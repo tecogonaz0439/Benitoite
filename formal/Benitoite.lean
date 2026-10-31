@@ -341,3 +341,8 @@ import Benitoite.Release.Refinement.InversionCore
 import Benitoite.Release.Refinement.Canonical
 import Benitoite.Release.Refinement.BindCongr
 import Benitoite.Release.Refinement.DeclaredTransport
+
+import Benitoite.Release.Refinement.ValueFacts
+import Benitoite.Release.Refinement.HeldValues
+import Benitoite.Release.Refinement.TargetTable
+import Benitoite.Release.Refinement.ModelHttp

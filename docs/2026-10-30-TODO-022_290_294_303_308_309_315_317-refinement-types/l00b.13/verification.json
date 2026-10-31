@@ -1,0 +1,112 @@
+[
+  {
+    "name": "build",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T16:38:55.903113+00:00",
+    "elapsed_seconds": 0.155445,
+    "exit_code": 0,
+    "bytes": 33925,
+    "sha256": "1604af4f054cf52e9aad0c8edc3ae36cd7e29e33b4ad72bf0046b20ff9e93098",
+    "output": "build.log",
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "name": "boundary",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.13/boundary.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T16:38:56.059084+00:00",
+    "elapsed_seconds": 1.605557,
+    "exit_code": 0,
+    "bytes": 11482,
+    "sha256": "22b3cd054eaf20efd7259a11d5708f7beb8c2e7752b5e61a8883680f8a5952fd",
+    "output": "boundary.log",
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "name": "review-ground-boundary",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.13/review-ground-boundary.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T16:38:57.665402+00:00",
+    "elapsed_seconds": 1.841515,
+    "exit_code": 0,
+    "bytes": 11265,
+    "sha256": "8b2248034f826295ec0ecc012945133246cace7dda433c728371044fc0308b06",
+    "output": "review-ground-boundary.log",
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "name": "review-reference",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.13/rv-13-w2.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T16:38:59.507500+00:00",
+    "elapsed_seconds": 0.645283,
+    "exit_code": 0,
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "output": "review-reference.log",
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "name": "axioms",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.13/axioms.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T16:39:00.153234+00:00",
+    "elapsed_seconds": 12.043162,
+    "exit_code": 0,
+    "bytes": 1485836,
+    "sha256": "93d742c27fdf86a544fe0207d8c1da5968f05b3323ce18d710e06c6182968cce",
+    "output": "<tmp>/l00b13-axioms-bsg76glk.log",
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "name": "public-api",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.13/public-api.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T16:39:12.213976+00:00",
+    "elapsed_seconds": 0.679889,
+    "exit_code": 0,
+    "bytes": 47234,
+    "sha256": "2c98eb0317da61b44bc98067f08a0e3b0b5a081aa68b3c5015f5fbac35385dc6",
+    "output": "public-api.log",
+    "rss": "未取得（計画上の非採取）"
+  }
+]

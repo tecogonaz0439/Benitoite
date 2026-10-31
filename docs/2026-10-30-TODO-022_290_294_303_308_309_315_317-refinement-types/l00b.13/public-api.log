@@ -1,0 +1,579 @@
+@Benitoite.Release.Refinement.HasTypeVQ.facts : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {v : Benitoite.Release.Refinement.Val}
+  {a : Benitoite.Release.Refinement.Ty} {t : Benitoite.Release.Refinement.Term},
+  Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C Γ Φ v a →
+    Eq.{1} v.toTerm? (Option.some.{0} t) →
+      ∀ (p : Benitoite.Release.Refinement.Pred),
+        Membership.mem.{0, 0} a.assume p →
+          Benitoite.Release.Refinement.Entails (HAppend.hAppend.{0, 0, 0} Γ.facts Φ) (p.open t)
+@Benitoite.Release.Refinement.HasTypeVQ.subtype_facts : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {v : Benitoite.Release.Refinement.Val}
+  {a b : Benitoite.Release.Refinement.Ty} {t : Benitoite.Release.Refinement.Term},
+  Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C Γ Φ v a →
+    Benitoite.Release.Refinement.Ty.LeQ Γ Φ a b →
+      Eq.{1} v.toTerm? (Option.some.{0} t) →
+        ∀ (p : Benitoite.Release.Refinement.Pred),
+          Membership.mem.{0, 0} b.assume p →
+            Benitoite.Release.Refinement.Entails (HAppend.hAppend.{0, 0, 0} Γ.facts Φ) (p.open t)
+@Benitoite.Release.Refinement.Ty.LeQ.dataCore : ∀ {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {a b : Benitoite.Release.Refinement.Ty}
+  {d : Benitoite.Release.DataName} {ts : List.{0} Benitoite.Release.Refinement.Ty},
+  Benitoite.Release.Refinement.Ty.LeQ Γ Φ a b →
+    Eq.{1} a.norm.core (Benitoite.Release.Refinement.Ty.data d ts) →
+      Eq.{1} b.norm.core (Benitoite.Release.Refinement.Ty.data d ts)
+@Benitoite.Release.Refinement.Ty.LeQ.constCore : ∀ {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {a b : Benitoite.Release.Refinement.Ty}
+  {c : Benitoite.Release.Refinement.Const},
+  Benitoite.Release.Refinement.Ty.LeQ Γ Φ a b →
+    Eq.{1} a.norm.core c.type.norm.core → Eq.{1} b.norm.core c.type.norm.core
+@Benitoite.Release.Refinement.HasTypeVQ.inv_const : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {v : Benitoite.Release.Refinement.Val}
+  {T : Benitoite.Release.Refinement.Ty} {c : Benitoite.Release.Refinement.Const},
+  Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C Γ Φ v T →
+    Eq.{1} v (Benitoite.Release.Refinement.Val.const c) →
+      Benitoite.Release.Refinement.ConstOK B c ∧ Eq.{1} T.norm.core c.type.norm.core
+@Benitoite.Release.Refinement.HasTypeVQ.integer_facts : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {T : Benitoite.Release.Refinement.Ty}
+  {n : Benitoite.Release.Integer64Value},
+  Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C Γ Φ
+      (Benitoite.Release.Refinement.Val.const (Benitoite.Release.Refinement.Const.integer n)) T →
+    Benitoite.Release.Refinement.ConstOK B (Benitoite.Release.Refinement.Const.integer n) ∧
+      Eq.{1} T.norm.core (Benitoite.Release.Refinement.Ty.base Benitoite.Release.BaseTy.integer) ∧
+        ∀ (p : Benitoite.Release.Refinement.Pred),
+          Membership.mem.{0, 0} T.assume p →
+            Benitoite.Release.Refinement.Entails (HAppend.hAppend.{0, 0, 0} Γ.facts Φ)
+              (p.open (Benitoite.Release.Refinement.Term.integer n.toInt))
+@Benitoite.Release.Refinement.HasTypeEachQ.member : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {vs : List.{0} Benitoite.Release.Refinement.Val}
+  {a : Benitoite.Release.Refinement.Ty} {v : Benitoite.Release.Refinement.Val},
+  Benitoite.Release.Refinement.HasTypeEachQ P B Ψ Q C Γ Φ vs a →
+    Membership.mem.{0, 0} vs v → Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C Γ Φ v a
+@Benitoite.Release.Refinement.HasTypeVsQ.get : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {vs : List.{0} Benitoite.Release.Refinement.Val}
+  {as : List.{0} Benitoite.Release.Refinement.Ty} {i : Nat} {a : Benitoite.Release.Refinement.Ty},
+  Benitoite.Release.Refinement.HasTypeVsQ P B Ψ Q C Γ Φ vs as →
+    Eq.{1} (GetElem?.getElem?.{0, 0, 0} as i) (Option.some.{0} a) →
+      Exists.{1} fun v =>
+        Eq.{1} (GetElem?.getElem?.{0, 0, 0} vs i) (Option.some.{0} v) ∧
+          Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C Γ Φ v a
+@Benitoite.Release.Refinement.HasTypeVQ.list_facts : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {v : Benitoite.Release.Refinement.Val}
+  {T : Benitoite.Release.Refinement.Ty} {vs : List.{0} Benitoite.Release.Refinement.Val},
+  Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C Γ Φ v T →
+    Eq.{1} v (Benitoite.Release.Refinement.Val.list vs) →
+      (Exists.{1} fun a =>
+          Exists.{1} fun b =>
+            Benitoite.Release.Refinement.HasTypeEachQ P B Ψ Q C Γ Φ vs a ∧
+              Eq.{1} T.listCore (Option.some.{0} b) ∧ Benitoite.Release.Refinement.Ty.LeQ Γ Φ a b) ∧
+        ∀ (p : Benitoite.Release.Refinement.Pred),
+          Membership.mem.{0, 0} T.assume p →
+            Benitoite.Release.Refinement.Entails (HAppend.hAppend.{0, 0, 0} Γ.facts Φ)
+              (p.open (Benitoite.Release.Refinement.Term.listValue (Benitoite.Release.Refinement.Val.toTermSlots vs)))
+@Benitoite.Release.Refinement.HasTypeVQ.inv_con : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {v : Benitoite.Release.Refinement.Val}
+  {T : Benitoite.Release.Refinement.Ty} {c : Benitoite.Release.ConName} {ts : List.{0} Benitoite.Release.Refinement.Ty}
+  {vs : List.{0} Benitoite.Release.Refinement.Val},
+  Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C Γ Φ v T →
+    Eq.{1} v (Benitoite.Release.Refinement.Val.con c ts vs) →
+      Exists.{1} fun cd =>
+        Eq.{1} (P.cons c) (Option.some.{0} cd) ∧
+          Eq.{1} (List.length.{0} ts) cd.ntys ∧
+            Benitoite.Release.Refinement.HasTypeVsQ P B Ψ Q C Γ Φ vs
+                (List.map.{0, 0} (Benitoite.Release.Refinement.Ty.subst ts List.nil.{0}) cd.args) ∧
+              Eq.{1} T.norm.core
+                (Benitoite.Release.Refinement.Ty.data cd.data (Benitoite.Release.Refinement.Ty.normTys ts))
+@Benitoite.Release.Refinement.HasTypeVQ.con_field : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {T : Benitoite.Release.Refinement.Ty} {c : Benitoite.Release.ConName}
+  {ts : List.{0} Benitoite.Release.Refinement.Ty} {vs : List.{0} Benitoite.Release.Refinement.Val}
+  {cd : Benitoite.Release.Refinement.ConDecl} {i : Nat} {a : Benitoite.Release.Refinement.Ty},
+  Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C Γ Φ (Benitoite.Release.Refinement.Val.con c ts vs) T →
+    Eq.{1} (P.cons c) (Option.some.{0} cd) →
+      Eq.{1} (GetElem?.getElem?.{0, 0, 0} cd.args i) (Option.some.{0} a) →
+        Exists.{1} fun v =>
+          Eq.{1} (GetElem?.getElem?.{0, 0, 0} vs i) (Option.some.{0} v) ∧
+            Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C Γ Φ v
+              (Benitoite.Release.Refinement.Ty.subst ts List.nil.{0} a)
+@Benitoite.Release.Refinement.HasTypeVQ.field_facts : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {T : Benitoite.Release.Refinement.Ty} {c : Benitoite.Release.ConName}
+  {ts : List.{0} Benitoite.Release.Refinement.Ty} {vs : List.{0} Benitoite.Release.Refinement.Val}
+  {cd : Benitoite.Release.Refinement.ConDecl} {i : Nat} {a : Benitoite.Release.Refinement.Ty}
+  {t : Benitoite.Release.Refinement.Term},
+  Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C Γ Φ (Benitoite.Release.Refinement.Val.con c ts vs) T →
+    Eq.{1} (P.cons c) (Option.some.{0} cd) →
+      Eq.{1} (GetElem?.getElem?.{0, 0, 0} cd.args i) (Option.some.{0} a) →
+        Eq.{1} (GetElem?.getElem?.{0, 0, 0} (Benitoite.Release.Refinement.Val.toTermSlots vs) i)
+            (Option.some.{0} (Option.some.{0} t)) →
+          ∀ (p : Benitoite.Release.Refinement.Pred),
+            Membership.mem.{0, 0} (Benitoite.Release.Refinement.Ty.subst ts List.nil.{0} a).assume p →
+              Benitoite.Release.Refinement.Entails (HAppend.hAppend.{0, 0, 0} Γ.facts Φ) (p.open t)
+Benitoite.Release.Refinement.Ty.Holds : Benitoite.Release.Refinement.Ty →
+  Benitoite.Release.OpaqueName → Benitoite.Scope.Domain.Kind → Benitoite.Release.Refinement.RangeIx → Prop
+Benitoite.Release.Refinement.RangeIx.Covers.refl : ∀ (ix : Benitoite.Release.Refinement.RangeIx), ix.Covers ix
+@Benitoite.Release.Refinement.RangeIx.Covers.trans : ∀ {a b c : Benitoite.Release.Refinement.RangeIx},
+  a.Covers b → b.Covers c → a.Covers c
+Benitoite.Release.Refinement.Ty.holds_norm : ∀ (a : Benitoite.Release.Refinement.Ty) (o : Benitoite.Release.OpaqueName)
+  (k : Benitoite.Scope.Domain.Kind) (ix : Benitoite.Release.Refinement.RangeIx), a.norm.Holds o k ix ↔ a.Holds o k ix
+Benitoite.Release.Refinement.Ty.holds_refined : ∀ (a : Benitoite.Release.Refinement.Ty)
+  (p : Benitoite.Release.Refinement.Pred) (o : Benitoite.Release.OpaqueName) (k : Benitoite.Scope.Domain.Kind)
+  (ix : Benitoite.Release.Refinement.RangeIx), (a.refined p).Holds o k ix ↔ a.Holds o k ix
+@Benitoite.Release.Refinement.Ty.Holds.unique_name : ∀ {a : Benitoite.Release.Refinement.Ty}
+  {o : Benitoite.Release.OpaqueName} {k : Benitoite.Scope.Domain.Kind} {ix : Benitoite.Release.Refinement.RangeIx}
+  {o' : Benitoite.Release.OpaqueName} {k' : Benitoite.Scope.Domain.Kind} {ix' : Benitoite.Release.Refinement.RangeIx},
+  a.Holds o k ix → a.Holds o' k' ix' → Eq.{1} o o'
+@Benitoite.Release.Refinement.Ty.LeQ.holds : ∀ {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {a b : Benitoite.Release.Refinement.Ty}
+  {o : Benitoite.Release.OpaqueName} {k : Benitoite.Scope.Domain.Kind} {ix : Benitoite.Release.Refinement.RangeIx},
+  Benitoite.Release.Refinement.Ty.LeQ Γ Φ a b → a.Holds o k ix → Exists.{1} fun jx => b.Holds o k jx ∧ jx.Covers ix
+@Benitoite.Release.Refinement.HasTypeVQ.inv_checked : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {v : Benitoite.Release.Refinement.Val}
+  {T : Benitoite.Release.Refinement.Ty} {target : Benitoite.Scope.Domain.Target},
+  Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C Γ Φ v T →
+    Eq.{1} v (Benitoite.Release.Refinement.Val.checked target) →
+      Exists.{1} fun o =>
+        Exists.{1} fun k =>
+          Exists.{1} fun range =>
+            Exists.{1} fun ix =>
+              Eq.{1} (B.valKind o) (Option.some.{0} k) ∧
+                Eq.{1} (B.valContent o) Option.none.{0} ∧
+                  Benitoite.Scope.Domain.Range.MemK k range target ∧
+                    T.Holds o k ix ∧
+                      ix.Covers
+                        (Benitoite.Release.Refinement.RangeIx.fixed
+                          (Benitoite.Release.Refinement.RangeExpr.absolute range))
+@Benitoite.Release.Refinement.HasTypeVQ.inv_checkedRequest : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {v : Benitoite.Release.Refinement.Val}
+  {T : Benitoite.Release.Refinement.Ty} {target : Benitoite.Scope.Domain.Target}
+  {req : Benitoite.Release.Refinement.Val},
+  Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C Γ Φ v T →
+    Eq.{1} v (Benitoite.Release.Refinement.Val.checkedRequest target req) →
+      Exists.{1} fun o =>
+        Exists.{1} fun range =>
+          Exists.{1} fun A =>
+            Exists.{1} fun ix =>
+              Eq.{1} (B.valKind o) (Option.some.{0} Benitoite.Scope.Domain.Kind.endpoint) ∧
+                Eq.{1} (B.valContent o) (Option.some.{0} A) ∧
+                  Benitoite.Release.Refinement.HasTypeV P B Ψ List.nil.{0} List.nil.{0} List.nil.{0} req A.norm ∧
+                    Eq.{1} (Benitoite.Release.Refinement.groundVal req) Bool.true ∧
+                      Eq.{1} req.reqTarget (Option.some.{0} target) ∧
+                        Benitoite.Scope.Domain.Range.MemK Benitoite.Scope.Domain.Kind.endpoint range target ∧
+                          T.Holds o Benitoite.Scope.Domain.Kind.endpoint ix ∧
+                            ix.Covers
+                              (Benitoite.Release.Refinement.RangeIx.fixed
+                                (Benitoite.Release.Refinement.RangeExpr.absolute range))
+@Benitoite.Release.Refinement.HasTypeVQ.checkedRequest_facts : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {T : Benitoite.Release.Refinement.Ty}
+  {target : Benitoite.Scope.Domain.Target} {req : Benitoite.Release.Refinement.Val},
+  Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C Γ Φ (Benitoite.Release.Refinement.Val.checkedRequest target req) T →
+    Exists.{1} fun A =>
+      Benitoite.Release.Refinement.HasTypeV P B Ψ List.nil.{0} List.nil.{0} List.nil.{0} req A.norm ∧
+        Eq.{1} (Benitoite.Release.Refinement.groundVal req) Bool.true ∧
+          Eq.{1} req.reqTarget (Option.some.{0} target) ∧
+            ∀ (t : Benitoite.Release.Refinement.Term),
+              Eq.{1} req.toTerm? (Option.some.{0} t) →
+                ∀ (p : Benitoite.Release.Refinement.Pred),
+                  Membership.mem.{0, 0} A.assume p → Benitoite.Release.Refinement.Entails List.nil.{0} (p.open t)
+@Benitoite.Release.Refinement.HasTypeVQ.checkedRequest_content : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {T : Benitoite.Release.Refinement.Ty}
+  {target : Benitoite.Scope.Domain.Target} {req : Benitoite.Release.Refinement.Val} {o : Benitoite.Release.OpaqueName}
+  {ix : Benitoite.Release.Refinement.RangeIx} {A : Benitoite.Release.Refinement.Ty},
+  Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C Γ Φ (Benitoite.Release.Refinement.Val.checkedRequest target req) T →
+    T.Holds o Benitoite.Scope.Domain.Kind.endpoint ix →
+      Eq.{1} (B.valContent o) (Option.some.{0} A) →
+        Benitoite.Release.Refinement.HasTypeV P B Ψ List.nil.{0} List.nil.{0} List.nil.{0} req A.norm ∧
+          Eq.{1} (Benitoite.Release.Refinement.groundVal req) Bool.true ∧ Eq.{1} req.reqTarget (Option.some.{0} target)
+@Benitoite.Release.Refinement.HasTypeVQ.checkedRequest_mismatch : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {T : Benitoite.Release.Refinement.Ty}
+  {target : Benitoite.Scope.Domain.Target} {req : Benitoite.Release.Refinement.Val},
+  Ne.{1} req.reqTarget (Option.some.{0} target) →
+    ¬Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C Γ Φ (Benitoite.Release.Refinement.Val.checkedRequest target req) T
+@Benitoite.Release.Refinement.HasTypeVQ.checked_without_request : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {T : Benitoite.Release.Refinement.Ty}
+  {target : Benitoite.Scope.Domain.Target} {o : Benitoite.Release.OpaqueName} {k : Benitoite.Scope.Domain.Kind}
+  {ix : Benitoite.Release.Refinement.RangeIx},
+  Ne.{1} (B.valContent o) Option.none.{0} →
+    T.Holds o k ix →
+      ¬Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C Γ Φ (Benitoite.Release.Refinement.Val.checked target) T
+@Benitoite.Release.Refinement.HasTypeVQ.checked_widen : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {o : Benitoite.Release.OpaqueName} {k : Benitoite.Scope.Domain.Kind}
+  {r : Benitoite.Scope.Domain.Range} {t : Benitoite.Scope.Domain.Target}
+  {outer : Benitoite.Release.Refinement.RangeExpr},
+  Eq.{1} (B.valKind o) (Option.some.{0} k) →
+    Eq.{1} (B.valContent o) Option.none.{0} →
+      Benitoite.Scope.Domain.Range.MemK k r t →
+        outer.Covers (Benitoite.Release.Refinement.RangeExpr.absolute r) →
+          Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C Γ Φ (Benitoite.Release.Refinement.Val.checked t)
+            (Benitoite.Release.Refinement.Ty.scoped o k (Benitoite.Release.Refinement.RangeIx.fixed outer))
+@Benitoite.Release.Refinement.HasTypeVQ.checkedRequest_widen : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {o : Benitoite.Release.OpaqueName} {r : Benitoite.Scope.Domain.Range}
+  {t : Benitoite.Scope.Domain.Target} {req : Benitoite.Release.Refinement.Val} {A : Benitoite.Release.Refinement.Ty}
+  {outer : Benitoite.Release.Refinement.RangeExpr},
+  Eq.{1} (B.valKind o) (Option.some.{0} Benitoite.Scope.Domain.Kind.endpoint) →
+    Eq.{1} (B.valContent o) (Option.some.{0} A) →
+      Benitoite.Release.Refinement.HasTypeV P B Ψ List.nil.{0} List.nil.{0} List.nil.{0} req A.norm →
+        Eq.{1} (Benitoite.Release.Refinement.groundVal req) Bool.true →
+          Eq.{1} req.reqTarget (Option.some.{0} t) →
+            Benitoite.Scope.Domain.Range.MemK Benitoite.Scope.Domain.Kind.endpoint r t →
+              outer.Covers (Benitoite.Release.Refinement.RangeExpr.absolute r) →
+                Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C Γ Φ
+                  (Benitoite.Release.Refinement.Val.checkedRequest t req)
+                  (Benitoite.Release.Refinement.Ty.scoped o Benitoite.Scope.Domain.Kind.endpoint
+                    (Benitoite.Release.Refinement.RangeIx.fixed outer))
+@Benitoite.Release.Refinement.HasTypeVQ.inv_checkedAt : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {v : Benitoite.Release.Refinement.Val}
+  {T : Benitoite.Release.Refinement.Ty} {r : Benitoite.Release.Refinement.RangeExpr}
+  {snapshot : Option.{0} Benitoite.Release.Refinement.PathEnv} {target : Benitoite.Scope.Domain.Target}
+  {req : Option.{0} Benitoite.Release.Refinement.Val},
+  Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C Γ Φ v T →
+    Eq.{1} v (Benitoite.Release.Refinement.Val.checkedAt r snapshot target req) →
+      Exists.{1} fun o =>
+        Exists.{1} fun k =>
+          Exists.{1} fun ix =>
+            Benitoite.Release.Refinement.CheckedWitness P B Ψ o k r snapshot target req ∧
+              T.Holds o k ix ∧ ix.Covers (Benitoite.Release.Refinement.RangeIx.fixed r)
+@Benitoite.Release.Refinement.CheckedWitness.request_content : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {o : Benitoite.Release.OpaqueName} {k : Benitoite.Scope.Domain.Kind} {r : Benitoite.Release.Refinement.RangeExpr}
+  {snapshot : Option.{0} Benitoite.Release.Refinement.PathEnv} {target : Benitoite.Scope.Domain.Target}
+  {req : Benitoite.Release.Refinement.Val},
+  Benitoite.Release.Refinement.CheckedWitness P B Ψ o k r snapshot target (Option.some.{0} req) →
+    Eq.{1} k Benitoite.Scope.Domain.Kind.endpoint ∧
+      Exists.{1} fun A =>
+        Eq.{1} (B.valContent o) (Option.some.{0} A) ∧
+          Benitoite.Release.Refinement.HasTypeV P B Ψ List.nil.{0} List.nil.{0} List.nil.{0} req A.norm ∧
+            Eq.{1} (Benitoite.Release.Refinement.groundVal req) Bool.true ∧
+              Eq.{1} req.reqTarget (Option.some.{0} target)
+@Benitoite.Release.Refinement.HasTypeVQ.checkedAt_request_mismatch : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {T : Benitoite.Release.Refinement.Ty}
+  {r : Benitoite.Release.Refinement.RangeExpr} {snapshot : Option.{0} Benitoite.Release.Refinement.PathEnv}
+  {target : Benitoite.Scope.Domain.Target} {req : Benitoite.Release.Refinement.Val},
+  Ne.{1} req.reqTarget (Option.some.{0} target) →
+    ¬Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C Γ Φ
+        (Benitoite.Release.Refinement.Val.checkedAt r snapshot target (Option.some.{0} req)) T
+@Benitoite.Release.Refinement.HasTypeVQ.checkedAt_without_request : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {T : Benitoite.Release.Refinement.Ty}
+  {r : Benitoite.Release.Refinement.RangeExpr} {snapshot : Option.{0} Benitoite.Release.Refinement.PathEnv}
+  {target : Benitoite.Scope.Domain.Target} {o : Benitoite.Release.OpaqueName} {k : Benitoite.Scope.Domain.Kind}
+  {ix : Benitoite.Release.Refinement.RangeIx},
+  Ne.{1} (B.valContent o) Option.none.{0} →
+    T.Holds o k ix →
+      ¬Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C Γ Φ
+          (Benitoite.Release.Refinement.Val.checkedAt r snapshot target Option.none.{0}) T
+Benitoite.Release.Refinement.TargetTable.clientRequestTy : Benitoite.Release.Refinement.Ty
+Benitoite.Release.Refinement.TargetTable.valContent : Benitoite.Release.OpaqueName →
+  Option.{0} Benitoite.Release.Refinement.Ty
+Benitoite.Release.Refinement.TargetTable.request_content : Eq.{1}
+  (Benitoite.Release.Refinement.TargetTable.valContent "Http.RequestIn")
+  (Option.some.{0} Benitoite.Release.Refinement.TargetTable.clientRequestTy)
+Benitoite.Release.Refinement.TargetTable.path_content : Eq.{1}
+  (Benitoite.Release.Refinement.TargetTable.valContent "Scope.PathIn") Option.none.{0}
+Benitoite.Release.Refinement.ModelHttp.valueRun : List.{0} Benitoite.Release.Refinement.Val →
+  Benitoite.Release.Refinement.Outcome
+@Benitoite.Release.Refinement.ModelHttp.valueRun_checkedRequest : ∀ {target : Benitoite.Scope.Domain.Target}
+  {req : Benitoite.Release.Refinement.Val},
+  Eq.{1} (Benitoite.Release.Refinement.groundVal req) Bool.true →
+    Eq.{1}
+      (Benitoite.Release.Refinement.ModelHttp.valueRun
+        (List.cons.{0} (Benitoite.Release.Refinement.Val.checkedRequest target req) List.nil.{0}))
+      (Benitoite.Release.Refinement.Outcome.val req)
+@Benitoite.Release.Refinement.ModelHttp.valueRun_typed : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {T : Benitoite.Release.Refinement.Ty}
+  {target : Benitoite.Scope.Domain.Target} {req : Benitoite.Release.Refinement.Val},
+  Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C Γ Φ (Benitoite.Release.Refinement.Val.checkedRequest target req) T →
+    Eq.{1}
+        (Benitoite.Release.Refinement.ModelHttp.valueRun
+          (List.cons.{0} (Benitoite.Release.Refinement.Val.checkedRequest target req) List.nil.{0}))
+        (Benitoite.Release.Refinement.Outcome.val req) ∧
+      Exists.{1} fun o =>
+        Exists.{1} fun A =>
+          Exists.{1} fun range =>
+            Exists.{1} fun ix =>
+              Eq.{1} (B.valContent o) (Option.some.{0} A) ∧
+                Benitoite.Release.Refinement.HasTypeV P B Ψ List.nil.{0} List.nil.{0} List.nil.{0} req A.norm ∧
+                  req.Ground ∧
+                    Eq.{1} req.reqTarget (Option.some.{0} target) ∧
+                      Benitoite.Scope.Domain.Range.MemK Benitoite.Scope.Domain.Kind.endpoint range target ∧
+                        T.Holds o Benitoite.Scope.Domain.Kind.endpoint ix ∧
+                          ix.Covers
+                            (Benitoite.Release.Refinement.RangeIx.fixed
+                              (Benitoite.Release.Refinement.RangeExpr.absolute range))
+@Benitoite.Release.Refinement.ModelHttp.valueRun_request : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {T : Benitoite.Release.Refinement.Ty}
+  {target : Benitoite.Scope.Domain.Target} {req : Benitoite.Release.Refinement.Val} {o : Benitoite.Release.OpaqueName}
+  {ix : Benitoite.Release.Refinement.RangeIx} {A : Benitoite.Release.Refinement.Ty},
+  Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C Γ Φ (Benitoite.Release.Refinement.Val.checkedRequest target req) T →
+    T.Holds o Benitoite.Scope.Domain.Kind.endpoint ix →
+      Eq.{1} (B.valContent o) (Option.some.{0} A) →
+        Eq.{1}
+            (Benitoite.Release.Refinement.ModelHttp.valueRun
+              (List.cons.{0} (Benitoite.Release.Refinement.Val.checkedRequest target req) List.nil.{0}))
+            (Benitoite.Release.Refinement.Outcome.val req) ∧
+          Benitoite.Release.Refinement.HasTypeV P B Ψ List.nil.{0} List.nil.{0} List.nil.{0} req A.norm ∧
+            req.Ground ∧ Eq.{1} req.reqTarget (Option.some.{0} target)
+@Benitoite.Release.Refinement.ModelHttp.valueRun_checkedAt : ∀ {r : Benitoite.Release.Refinement.RangeExpr}
+  {snapshot : Option.{0} Benitoite.Release.Refinement.PathEnv} {target : Benitoite.Scope.Domain.Target}
+  {req : Benitoite.Release.Refinement.Val},
+  Eq.{1} (Benitoite.Release.Refinement.groundVal req) Bool.true →
+    Eq.{1}
+      (Benitoite.Release.Refinement.ModelHttp.valueRun
+        (List.cons.{0} (Benitoite.Release.Refinement.Val.checkedAt r snapshot target (Option.some.{0} req))
+          List.nil.{0}))
+      (Benitoite.Release.Refinement.Outcome.val req)
+@Benitoite.Release.Refinement.ModelHttp.valueRun_checkedAt_typed : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {T : Benitoite.Release.Refinement.Ty}
+  {r : Benitoite.Release.Refinement.RangeExpr} {snapshot : Option.{0} Benitoite.Release.Refinement.PathEnv}
+  {target : Benitoite.Scope.Domain.Target} {req : Benitoite.Release.Refinement.Val},
+  Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C Γ Φ
+      (Benitoite.Release.Refinement.Val.checkedAt r snapshot target (Option.some.{0} req)) T →
+    Eq.{1}
+        (Benitoite.Release.Refinement.ModelHttp.valueRun
+          (List.cons.{0} (Benitoite.Release.Refinement.Val.checkedAt r snapshot target (Option.some.{0} req))
+            List.nil.{0}))
+        (Benitoite.Release.Refinement.Outcome.val req) ∧
+      Exists.{1} fun o =>
+        Exists.{1} fun A =>
+          Eq.{1} (B.valContent o) (Option.some.{0} A) ∧
+            Benitoite.Release.Refinement.HasTypeV P B Ψ List.nil.{0} List.nil.{0} List.nil.{0} req A.norm ∧
+              req.Ground ∧ Eq.{1} req.reqTarget (Option.some.{0} target)
+@Benitoite.Release.Refinement.ModelHttp.valueRun_checkedAt_request : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {T : Benitoite.Release.Refinement.Ty}
+  {r : Benitoite.Release.Refinement.RangeExpr} {snapshot : Option.{0} Benitoite.Release.Refinement.PathEnv}
+  {target : Benitoite.Scope.Domain.Target} {req : Benitoite.Release.Refinement.Val} {o : Benitoite.Release.OpaqueName}
+  {ix : Benitoite.Release.Refinement.RangeIx} {A : Benitoite.Release.Refinement.Ty},
+  Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C Γ Φ
+      (Benitoite.Release.Refinement.Val.checkedAt r snapshot target (Option.some.{0} req)) T →
+    T.Holds o Benitoite.Scope.Domain.Kind.endpoint ix →
+      Eq.{1} (B.valContent o) (Option.some.{0} A) →
+        Eq.{1}
+            (Benitoite.Release.Refinement.ModelHttp.valueRun
+              (List.cons.{0} (Benitoite.Release.Refinement.Val.checkedAt r snapshot target (Option.some.{0} req))
+                List.nil.{0}))
+            (Benitoite.Release.Refinement.Outcome.val req) ∧
+          Benitoite.Release.Refinement.HasTypeV P B Ψ List.nil.{0} List.nil.{0} List.nil.{0} req A.norm ∧
+            req.Ground ∧ Eq.{1} req.reqTarget (Option.some.{0} target)
+Benitoite.Release.Refinement.ModelHttp.groundTy_embed : ∀ (a : Benitoite.Release.Ty),
+  Eq.{1} (Benitoite.Release.Refinement.groundTy (Benitoite.Release.Refinement.embedTy a))
+    (Benitoite.Release.ModelHttp.groundTy a)
+Benitoite.Release.Refinement.ModelHttp.groundTys_embed : ∀ (as : List.{0} Benitoite.Release.Ty),
+  Eq.{1} (Benitoite.Release.Refinement.groundTys (Benitoite.Release.Refinement.embedTys as))
+    (Benitoite.Release.ModelHttp.groundTys as)
+Benitoite.Release.Refinement.ModelHttp.groundVal_embed : ∀ (v : Benitoite.Release.Val),
+  Eq.{1} (Benitoite.Release.Refinement.groundVal (Benitoite.Release.Refinement.embedVal v))
+    (Benitoite.Release.ModelHttp.groundVal v)
+Benitoite.Release.Refinement.ModelHttp.groundVals_embed : ∀ (vs : List.{0} Benitoite.Release.Val),
+  Eq.{1} (Benitoite.Release.Refinement.groundVals (Benitoite.Release.Refinement.embedVals vs))
+    (Benitoite.Release.ModelHttp.groundVals vs)
+Benitoite.Release.Refinement.ModelHttp.valueRun_embed : ∀ (vs : List.{0} Benitoite.Release.Val),
+  Eq.{1} (Benitoite.Release.Refinement.ModelHttp.valueRun (Benitoite.Release.Refinement.embedVals vs))
+    (Benitoite.Release.Refinement.embedOutcome (Benitoite.Release.ModelHttp.valueRun vs))
+@Benitoite.Release.Refinement.groundTy_notContCore : ∀ {a : Benitoite.Release.Refinement.Ty},
+  Eq.{1} (Benitoite.Release.Refinement.groundTy a) Bool.true → a.NotContCore
+@Benitoite.Release.Refinement.AtPrepared.request : ∀ {B : Benitoite.Release.Refinement.Builtins}
+  {cap : Benitoite.Release.Refinement.Capture} {kind : Benitoite.Scope.Domain.Kind}
+  {name : Benitoite.Release.OpaqueName} {bases : Option.{0} Benitoite.Release.Refinement.Val}
+  {pattern input : Benitoite.Release.Refinement.Val} {index : Benitoite.Release.Refinement.RangeIx}
+  {snapshot : Option.{0} Benitoite.Release.Refinement.PathEnv} {pat : Benitoite.Release.Refinement.RangeExpr}
+  {target : Benitoite.Release.Refinement.TargetInput} {bound : Benitoite.Release.Refinement.RangeExpr}
+  {T : Benitoite.Release.Refinement.Ty},
+  Eq.{1} (B.valContent name) (Option.some.{0} T) →
+    Benitoite.Release.Refinement.AtPrepared B cap kind name bases pattern input index snapshot pat target bound →
+      Eq.{1} (Benitoite.Release.Refinement.groundVal (Benitoite.Release.Refinement.closeVal cap input)) Bool.true ∧
+        Exists.{1} fun t =>
+          Eq.{1} (Benitoite.Release.Refinement.closeVal cap input).reqTarget (Option.some.{0} t) ∧
+            Eq.{1} target (Benitoite.Release.Refinement.TargetInput.absolute t)
+@Benitoite.Release.Refinement.parseUrlTarget_kind : ∀ {s : String} {t : Benitoite.Scope.Domain.Target},
+  Eq.{1} (Benitoite.Release.Refinement.parseUrlTarget s) (Option.some.{0} t) →
+    Eq.{1} t.kind Benitoite.Scope.Domain.Kind.endpoint
+@Benitoite.Release.Refinement.Val.reqTarget_kind : ∀ {v : Benitoite.Release.Refinement.Val}
+  {t : Benitoite.Scope.Domain.Target},
+  Eq.{1} v.reqTarget (Option.some.{0} t) → Eq.{1} t.kind Benitoite.Scope.Domain.Kind.endpoint
+@Benitoite.Release.Refinement.checkAt.absolute : ∀ {snapshot : Option.{0} Benitoite.Release.Refinement.PathEnv}
+  {kind : Benitoite.Scope.Domain.Kind} {pat : Benitoite.Release.Refinement.RangeExpr}
+  {t0 : Benitoite.Scope.Domain.Target} {bound : Benitoite.Release.Refinement.RangeExpr}
+  {t : Benitoite.Scope.Domain.Target},
+  Eq.{1}
+      (Benitoite.Release.Refinement.checkAt snapshot kind pat (Benitoite.Release.Refinement.TargetInput.absolute t0)
+        bound)
+      (Benitoite.Release.Refinement.AtResult.ok t) →
+    Eq.{1} t t0
+@Benitoite.Release.Refinement.CheckedWitness.of_prepared_request : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {cap : Benitoite.Release.Refinement.Capture} {name : Benitoite.Release.OpaqueName}
+  {kind : Benitoite.Scope.Domain.Kind} {T : Benitoite.Release.Refinement.Ty}
+  {bases : Option.{0} Benitoite.Release.Refinement.Val} {pattern input : Benitoite.Release.Refinement.Val}
+  {index : Benitoite.Release.Refinement.RangeIx} {snapshot : Option.{0} Benitoite.Release.Refinement.PathEnv}
+  {pat : Benitoite.Release.Refinement.RangeExpr} {target : Benitoite.Release.Refinement.TargetInput}
+  {bound : Benitoite.Release.Refinement.RangeExpr} {t : Benitoite.Scope.Domain.Target},
+  Eq.{1} (B.valKind name) (Option.some.{0} kind) →
+    Eq.{1} (B.valContent name) (Option.some.{0} T) →
+      Benitoite.Release.Refinement.HasTypeV P B Ψ List.nil.{0} List.nil.{0} List.nil.{0}
+          (Benitoite.Release.Refinement.closeVal cap input) T.norm →
+        Benitoite.Release.Refinement.AtPrepared B cap kind name bases pattern input index snapshot pat target bound →
+          (∀ (σ : Benitoite.Release.Refinement.PathEnv), Eq.{1} snapshot (Option.some.{0} σ) → σ.Valid) →
+            Eq.{1} (Benitoite.Release.Refinement.checkAt snapshot kind pat target bound)
+                (Benitoite.Release.Refinement.AtResult.ok t) →
+              Benitoite.Release.Refinement.CheckedWitness P B Ψ name kind bound snapshot t
+                (Benitoite.Release.Refinement.AtRequest B name (Benitoite.Release.Refinement.closeVal cap input))
+@Benitoite.Release.Refinement.HasTypeVQ.list_element_facts : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {T : Benitoite.Release.Refinement.Ty}
+  {vs : List.{0} Benitoite.Release.Refinement.Val} {b : Benitoite.Release.Refinement.Ty}
+  {v : Benitoite.Release.Refinement.Val} {t : Benitoite.Release.Refinement.Term},
+  Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C Γ Φ (Benitoite.Release.Refinement.Val.list vs) T →
+    Eq.{1} T.listCore (Option.some.{0} b) →
+      Membership.mem.{0, 0} vs v →
+        Eq.{1} v.toTerm? (Option.some.{0} t) →
+          ∀ (p : Benitoite.Release.Refinement.Pred),
+            Membership.mem.{0, 0} b.assume p →
+              Benitoite.Release.Refinement.Entails (HAppend.hAppend.{0, 0, 0} Γ.facts Φ) (p.open t)
+@Benitoite.Release.Refinement.HasTypeVQ.field_facts_by_type : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {T : Benitoite.Release.Refinement.Ty} {c : Benitoite.Release.ConName}
+  {ts : List.{0} Benitoite.Release.Refinement.Ty} {vs : List.{0} Benitoite.Release.Refinement.Val}
+  {cd : Benitoite.Release.Refinement.ConDecl} {us : List.{0} Benitoite.Release.Refinement.Ty} {i : Nat}
+  {a : Benitoite.Release.Refinement.Ty} {t : Benitoite.Release.Refinement.Term},
+  Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C Γ Φ (Benitoite.Release.Refinement.Val.con c ts vs) T →
+    Eq.{1} (P.cons c) (Option.some.{0} cd) →
+      Eq.{1} T.norm.core (Benitoite.Release.Refinement.Ty.data cd.data us) →
+        Eq.{1} (GetElem?.getElem?.{0, 0, 0} cd.args i) (Option.some.{0} a) →
+          Eq.{1} (GetElem?.getElem?.{0, 0, 0} (Benitoite.Release.Refinement.Val.toTermSlots vs) i)
+              (Option.some.{0} (Option.some.{0} t)) →
+            ∀ (p : Benitoite.Release.Refinement.Pred),
+              Membership.mem.{0, 0} (Benitoite.Release.Refinement.Ty.subst us List.nil.{0} a).assume p →
+                Benitoite.Release.Refinement.Entails (HAppend.hAppend.{0, 0, 0} Γ.facts Φ) (p.open t)
+@Benitoite.Release.Refinement.HasTypeVQ.V_CheckedRequest : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {o : Benitoite.Release.OpaqueName}
+  {range : Benitoite.Scope.Domain.Range} {target : Benitoite.Scope.Domain.Target}
+  {req : Benitoite.Release.Refinement.Val} {T : Benitoite.Release.Refinement.Ty},
+  Eq.{1} (B.valKind o) (Option.some.{0} Benitoite.Scope.Domain.Kind.endpoint) →
+    Eq.{1} (B.valContent o) (Option.some.{0} T) →
+      Benitoite.Release.Refinement.HasTypeVQ P B Ψ Benitoite.Release.Qempty List.nil.{0} List.nil.{0} List.nil.{0} req
+          T.norm →
+        Eq.{1} (Benitoite.Release.Refinement.groundVal req) Bool.true →
+          Eq.{1} req.reqTarget (Option.some.{0} target) →
+            Benitoite.Scope.Domain.Range.MemK Benitoite.Scope.Domain.Kind.endpoint range target →
+              Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C Γ Φ
+                (Benitoite.Release.Refinement.Val.checkedRequest target req)
+                (Benitoite.Release.Refinement.Ty.scoped o Benitoite.Scope.Domain.Kind.endpoint
+                  (Benitoite.Release.Refinement.RangeIx.fixed (Benitoite.Release.Refinement.RangeExpr.absolute range)))
+@Benitoite.Release.Refinement.CheckedWitness.request : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {o : Benitoite.Release.OpaqueName} {range : Benitoite.Release.Refinement.RangeExpr}
+  {snapshot : Option.{0} Benitoite.Release.Refinement.PathEnv} {target : Benitoite.Scope.Domain.Target}
+  {req : Benitoite.Release.Refinement.Val} {T : Benitoite.Release.Refinement.Ty},
+  Eq.{1} (B.valKind o) (Option.some.{0} Benitoite.Scope.Domain.Kind.endpoint) →
+    Eq.{1} (B.valContent o) (Option.some.{0} T) →
+      Benitoite.Release.Refinement.HasTypeVQ P B Ψ Benitoite.Release.Qempty List.nil.{0} List.nil.{0} List.nil.{0} req
+          T.norm →
+        Eq.{1} (Benitoite.Release.Refinement.groundVal req) Bool.true →
+          Eq.{1} req.reqTarget (Option.some.{0} target) →
+            Benitoite.Release.Refinement.SnapshotMem snapshot Benitoite.Scope.Domain.Kind.endpoint range target →
+              Benitoite.Release.Refinement.CheckedWitness P B Ψ o Benitoite.Scope.Domain.Kind.endpoint range snapshot
+                target (Option.some.{0} req)
+@Benitoite.Release.Refinement.HasTypeVQ.checkedRequest_opaque : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {o : Benitoite.Release.OpaqueName} {r : Benitoite.Scope.Domain.Range}
+  {t : Benitoite.Scope.Domain.Target} {req : Benitoite.Release.Refinement.Val} {T : Benitoite.Release.Refinement.Ty},
+  Eq.{1} (B.valKind o) (Option.some.{0} Benitoite.Scope.Domain.Kind.endpoint) →
+    Eq.{1} (B.valContent o) (Option.some.{0} T) →
+      Benitoite.Release.Refinement.HasTypeV P B Ψ List.nil.{0} List.nil.{0} List.nil.{0} req T →
+        Eq.{1} (Benitoite.Release.Refinement.groundVal req) Bool.true →
+          Eq.{1} req.reqTarget (Option.some.{0} t) →
+            Benitoite.Scope.Domain.Range.MemK Benitoite.Scope.Domain.Kind.endpoint r t →
+              Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C Γ Φ
+                (Benitoite.Release.Refinement.Val.checkedRequest t req)
+                (Benitoite.Release.Refinement.Ty.opaque o
+                  (Benitoite.Release.Refinement.RangeIx.fixed (Benitoite.Release.Refinement.RangeExpr.absolute r)))
+@Benitoite.Release.Refinement.CheckedWitness.absolute_request : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {o : Benitoite.Release.OpaqueName} {r : Benitoite.Scope.Domain.Range} {t : Benitoite.Scope.Domain.Target}
+  {req : Benitoite.Release.Refinement.Val} {T : Benitoite.Release.Refinement.Ty},
+  Eq.{1} (B.valKind o) (Option.some.{0} Benitoite.Scope.Domain.Kind.endpoint) →
+    Eq.{1} (B.valContent o) (Option.some.{0} T) →
+      Benitoite.Release.Refinement.HasTypeV P B Ψ List.nil.{0} List.nil.{0} List.nil.{0} req T →
+        Eq.{1} (Benitoite.Release.Refinement.groundVal req) Bool.true →
+          Eq.{1} req.reqTarget (Option.some.{0} t) →
+            Benitoite.Scope.Domain.Range.MemK Benitoite.Scope.Domain.Kind.endpoint r t →
+              Benitoite.Release.Refinement.CheckedWitness P B Ψ o Benitoite.Scope.Domain.Kind.endpoint
+                (Benitoite.Release.Refinement.RangeExpr.absolute r) Option.none.{0} t (Option.some.{0} req)
+Benitoite.Release.Refinement.groundTy : Benitoite.Release.Refinement.Ty → Bool
+Benitoite.Release.Refinement.groundTys : List.{0} Benitoite.Release.Refinement.Ty → Bool
+Benitoite.Release.Refinement.groundVal : Benitoite.Release.Refinement.Val → Bool
+Benitoite.Release.Refinement.groundVals : List.{0} Benitoite.Release.Refinement.Val → Bool
+@Benitoite.Release.Refinement.groundTy_wf : ∀ {nt nv : Nat} {a : Benitoite.Release.Refinement.Ty},
+  Eq.{1} (Benitoite.Release.Refinement.groundTy a) Bool.true → Benitoite.Release.Refinement.Ty.WF 0 nt nv a
+@Benitoite.Release.Refinement.groundTys_wf : ∀ {nt nv : Nat} {ts : List.{0} Benitoite.Release.Refinement.Ty},
+  Eq.{1} (Benitoite.Release.Refinement.groundTys ts) Bool.true → Benitoite.Release.Refinement.Ty.WFList 0 nt nv ts
+@Benitoite.Release.Refinement.groundVal_ground : ∀ {v : Benitoite.Release.Refinement.Val},
+  Eq.{1} (Benitoite.Release.Refinement.groundVal v) Bool.true → v.Ground
+@Benitoite.Release.Refinement.groundVals_closed : ∀ {vs : List.{0} Benitoite.Release.Refinement.Val},
+  Eq.{1} (Benitoite.Release.Refinement.groundVals vs) Bool.true → Benitoite.Release.Refinement.Val.ClosedList 0 0 vs
+Benitoite.Release.Refinement.ModelHttp.groundTy_embed : ∀ (a : Benitoite.Release.Ty),
+  Eq.{1} (Benitoite.Release.Refinement.groundTy (Benitoite.Release.Refinement.embedTy a))
+    (Benitoite.Release.ModelHttp.groundTy a)
+Benitoite.Release.Refinement.ModelHttp.groundTys_embed : ∀ (as : List.{0} Benitoite.Release.Ty),
+  Eq.{1} (Benitoite.Release.Refinement.groundTys (Benitoite.Release.Refinement.embedTys as))
+    (Benitoite.Release.ModelHttp.groundTys as)
+Benitoite.Release.Refinement.ModelHttp.groundVal_embed : ∀ (v : Benitoite.Release.Val),
+  Eq.{1} (Benitoite.Release.Refinement.groundVal (Benitoite.Release.Refinement.embedVal v))
+    (Benitoite.Release.ModelHttp.groundVal v)
+Benitoite.Release.Refinement.ModelHttp.groundVals_embed : ∀ (vs : List.{0} Benitoite.Release.Val),
+  Eq.{1} (Benitoite.Release.Refinement.groundVals (Benitoite.Release.Refinement.embedVals vs))
+    (Benitoite.Release.ModelHttp.groundVals vs)
+Benitoite.Release.Refinement.ModelHttp.valueRun_embed : ∀ (vs : List.{0} Benitoite.Release.Val),
+  Eq.{1} (Benitoite.Release.Refinement.ModelHttp.valueRun (Benitoite.Release.Refinement.embedVals vs))
+    (Benitoite.Release.Refinement.embedOutcome (Benitoite.Release.ModelHttp.valueRun vs))

@@ -170,6 +170,50 @@ def Val.reqTarget : Val → Option Target
   | .con "Http.ClientRequest" _ [_, .const (.string url), _, _, _] => parseUrlTarget url
   | _ => none
 
+private theorem parseAuthority_kind {s port t} (h : parseAuthority s port = some t) :
+    t.kind = .endpoint := by
+  unfold parseAuthority at h
+  split at h
+  · cases h
+  · split at h
+    · split at h
+      · obtain ⟨ip,_,hr⟩ := Option.bind_eq_some_iff.mp h
+        obtain ⟨port,_,he⟩ := Option.bind_eq_some_iff.mp hr
+        cases he
+        rfl
+      · cases h
+    · split at h
+      · obtain ⟨⟨hostText,suffix⟩,_,hr⟩ := Option.bind_eq_some_iff.mp h
+        obtain ⟨host,_,hr⟩ := Option.bind_eq_some_iff.mp hr
+        obtain ⟨port,_,hr⟩ := Option.bind_eq_some_iff.mp hr
+        split at hr
+        · cases host <;> cases hr <;> rfl
+        · cases hr; rfl
+      · obtain ⟨⟨hostText,suffix⟩,_,hr⟩ := Option.bind_eq_some_iff.mp h
+        obtain ⟨host,_,hr⟩ := Option.bind_eq_some_iff.mp hr
+        obtain ⟨port,_,hr⟩ := Option.bind_eq_some_iff.mp hr
+        split at hr
+        · cases host <;> cases hr <;> rfl
+        · cases hr; rfl
+      · cases h
+
+theorem parseUrlTarget_kind {s t} (h : parseUrlTarget s = some t) : t.kind = .endpoint := by
+  unfold parseUrlTarget at h
+  split at h
+  · cases h
+  · simp only [bind,Option.bind] at h
+    split at h
+    · exact parseAuthority_kind h
+    · split at h
+      · exact parseAuthority_kind h
+      · cases h
+
+theorem Val.reqTarget_kind {v : Val} {t : Target} (h : v.reqTarget = some t) : t.kind = .endpoint := by
+  unfold Val.reqTarget at h
+  split at h
+  · exact parseUrlTarget_kind h
+  · cases h
+
 def Val.target? : Val → Option Target
   | .checked t | .checkedRequest t _ | .checkedAt _ _ t _ => some t
   | _ => none

@@ -14,6 +14,7 @@ mutual
     | .base _ | .bytes => true
     | .data _ ts => groundTys ts
     | .list a => groundTy a
+    | .refined a p => groundTy a && decide (p.WF 1)
     | _ => false
   def groundTys : List Ty → Bool
     | [] => true
@@ -30,12 +31,24 @@ mutual
     | v :: vs => groundVal v && groundVals vs
 end
 
+theorem groundTy_notContCore {a : Ty} (h : groundTy a = true) : a.NotContCore := by
+  cases a <;> simp only [groundTy, Bool.false_eq_true] at h <;> try contradiction
+  all_goals try (intro b t e he; cases he)
+  case refined a p =>
+    simp only [Bool.and_eq_true] at h
+    exact groundTy_notContCore (a := a) h.1
+
 mutual
   theorem groundTy_wf {a : Ty} (h : groundTy a = true) : a.WF 0 nt nv := by
     cases a <;> simp only [groundTy, Bool.false_eq_true] at h <;> try contradiction
     all_goals try trivial
     case data d ts => exact groundTys_wf h
     case list a => exact groundTy_wf (a := a) h
+    case refined a p =>
+      simp only [Bool.and_eq_true,decide_eq_true_eq] at h
+      obtain ⟨ha,hp⟩ := h
+      exact ⟨groundTy_wf ha,Pred.varsIn_mono hp (by intro i hi; omega),
+        groundTy_notContCore ha⟩
   theorem groundTys_wf {ts : List Ty} (h : groundTys ts = true) : Ty.WFList 0 nt nv ts := by
     cases ts with
     | nil => trivial
@@ -74,29 +87,9 @@ private def prepareError (σ : Option PathEnv) (p : RangeExpr) (t : TargetInput)
   ⟨atDetail σ p t f, hf⟩
 
 noncomputable section
-private def prepareCore (B : Builtins) (cap : Capture) (kind : Kind) (name : OpaqueName)
-    (bases : Option Val) (pattern input : Val) (bound : RangeExpr) :
-    Except PreparationError (Option PathEnv × RangeExpr × TargetInput) := do
-  let pval := closeVal cap pattern
-  let ival := closeVal cap input
-  let pat ← match parseAtPattern kind pval with
-    | none => .error (prepareError none .top (.absolute (.path [])) .invalidPattern (by decide))
-    | some r => .ok r
-  let target ← match B.valContent name with
-    | none => match parseAtInput kind ival with
-      | none => .error (prepareError none pat (.absolute (.path [])) .invalidTarget (by decide))
-      | some t => .ok t
-    | some _ => (if groundVal ival then
-        match ival.reqTarget with
-        | none => .error (prepareError none pat (.absolute (.path [])) .invalidTarget (by decide))
-        | some t => .ok (.absolute t)
-      else .error (prepareError none pat (.absolute (.path [])) .invalidTarget (by decide)))
-  let snapshot ← match bases with
-    | none => .ok none
-    | some b => match closeVal cap b with
-      | .pathBases σ => (if σ.Valid then .ok (some σ)
-          else .error (prepareError none pat target .invalidTarget (by decide)))
-      | _ => .error (prepareError none pat target .invalidTarget (by decide))
+private def finishPreparation (B : Builtins) (kind : Kind) (name : OpaqueName)
+    (snapshot : Option PathEnv) (pat : RangeExpr) (target : TargetInput) (bound : RangeExpr) :
+    Except PreparationError (Option PathEnv × RangeExpr × TargetInput) :=
   if B.valKind name ≠ some kind then
     .error (prepareError snapshot pat target .invalidTarget (by decide))
   else if ¬ (bound.FitsKind kind ∧ bound.WF ∧ bound.Canonical) then
@@ -109,6 +102,47 @@ private def prepareCore (B : Builtins) (cap : Capture) (kind : Kind) (name : Opa
     | none, _, _, .based b _ => .error (prepareError snapshot pat target (.unbound b) (by intro h; cases h))
     | none, _, _, .secrets => .error (prepareError snapshot pat target .secretsUnbound (by decide))
     | _, _, _, _ => .ok (snapshot, pat, target)
+
+private theorem finishPreparation_target {B kind name snapshot pat target bound snapshot' pat' target'}
+    (h : finishPreparation B kind name snapshot pat target bound = .ok (snapshot',pat',target')) :
+    target' = target := by
+  unfold finishPreparation at h
+  split at h
+  · cases h
+  · split at h
+    · cases h
+    · cases snapshot <;> cases pat <;> cases target <;> cases bound <;> cases h <;> rfl
+
+private theorem except_bind_ok {ε α β : Type} {x : Except ε α} {f : α → Except ε β} {y : β}
+    (h : x.bind f = .ok y) : ∃ a, x = .ok a ∧ f a = .ok y := by
+  cases x with
+  | error e => cases h
+  | ok a => exact ⟨a,rfl,h⟩
+
+private def prepareCore (B : Builtins) (cap : Capture) (kind : Kind) (name : OpaqueName)
+    (bases : Option Val) (pattern input : Val) (bound : RangeExpr) :
+    Except PreparationError (Option PathEnv × RangeExpr × TargetInput) :=
+  let pval := closeVal cap pattern
+  let ival := closeVal cap input
+  Except.bind (match parseAtPattern kind pval with
+    | none => .error (prepareError none .top (.absolute (.path [])) .invalidPattern (by decide))
+    | some r => .ok r) fun pat =>
+  Except.bind (match B.valContent name with
+    | none => match parseAtInput kind ival with
+      | none => .error (prepareError none pat (.absolute (.path [])) .invalidTarget (by decide))
+      | some t => .ok t
+    | some _ => (if groundVal ival then
+        match ival.reqTarget with
+        | none => .error (prepareError none pat (.absolute (.path [])) .invalidTarget (by decide))
+        | some t => .ok (.absolute t)
+      else .error (prepareError none pat (.absolute (.path [])) .invalidTarget (by decide)))) fun target =>
+  Except.bind (match bases with
+    | none => .ok none
+    | some b => match closeVal cap b with
+      | .pathBases σ => (if σ.Valid then .ok (some σ)
+          else .error (prepareError none pat target .invalidTarget (by decide)))
+      | _ => .error (prepareError none pat target .invalidTarget (by decide))) fun snapshot =>
+  finishPreparation B kind name snapshot pat target bound
 
 def AtPrepare (B : Builtins) (cap : Capture) (kind : Kind) (name : OpaqueName)
     (bases : Option Val) (pattern input : Val) (index : RangeIx) :
@@ -134,6 +168,39 @@ theorem AtPrepared.fixed_index {B cap kind name bases pattern input index snapsh
     cases he : prepareCore B cap kind name bases pattern input r with
     | error e => simp [he] at h
     | ok value => rcases value with ⟨σ,p,t⟩; simp only [he, Except.ok.injEq, Prod.mk.injEq] at h; exact congrArg RangeIx.fixed h.2.2.2
+
+theorem AtPrepared.request {B cap kind name bases pattern input index snapshot pat target bound T}
+    (hc : B.valContent name = some T)
+    (h : AtPrepared B cap kind name bases pattern input index snapshot pat target bound) :
+    groundVal (closeVal cap input) = true ∧
+      ∃ t, (closeVal cap input).reqTarget = some t ∧ target = .absolute t := by
+  unfold AtPrepared AtPrepare at h
+  cases index with
+  | rvar i => cases h
+  | fixed r =>
+    cases he : prepareCore B cap kind name bases pattern input r with
+    | error e => simp [he] at h
+    | ok value =>
+      rcases value with ⟨snapshot',pat',target'⟩
+      simp only [he,Except.ok.injEq,Prod.mk.injEq] at h
+      obtain ⟨rfl,rfl,rfl,_⟩ := h
+      unfold prepareCore at he
+      obtain ⟨pat0,_,he⟩ := except_bind_ok he
+      obtain ⟨a,hgr,he⟩ := except_bind_ok he
+      have ha : groundVal (closeVal cap input) = true ∧
+          ∃ t, (closeVal cap input).reqTarget = some t ∧ a = .absolute t := by
+        simp only [hc] at hgr
+        cases hg : groundVal (closeVal cap input) with
+        | false => simp [hg] at hgr
+        | true =>
+          simp only [hg,ite_true] at hgr
+          cases hr : (closeVal cap input).reqTarget with
+          | none => simp [hr] at hgr
+          | some t0 => simp only [hr,Except.ok.injEq] at hgr; exact ⟨rfl,t0,rfl,hgr.symm⟩
+      obtain ⟨snapshot0,_,he⟩ := except_bind_ok he
+      have ht := finishPreparation_target he
+      rw [ht]
+      exact ha
 
 theorem AtPrepare.fixed_index {index : RangeIx} (h : index.WF 0) : ∃ bound, index = .fixed bound := by
   cases index with
