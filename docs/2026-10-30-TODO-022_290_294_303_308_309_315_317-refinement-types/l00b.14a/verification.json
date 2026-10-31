@@ -1,0 +1,93 @@
+[
+  {
+    "name": "build",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T17:25:26.570597+00:00",
+    "elapsed_seconds": 0.807447,
+    "exit_code": 0,
+    "bytes": 33963,
+    "sha256": "6b1ccdfa56b7ebae509b7c431186bbc6620459bcd6d8609b6d07ecf2d3904581",
+    "output": "build.log",
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "name": "boundary",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14a/boundary.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T17:25:27.379008+00:00",
+    "elapsed_seconds": 1.199386,
+    "exit_code": 0,
+    "bytes": 11211,
+    "sha256": "57fdfe810d25d9c8d35dfb6f4e6e6a7fffd1a0092185a8937710c5e84bb5d115",
+    "output": "boundary.log",
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "name": "axioms",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14a/axioms.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T17:25:28.579200+00:00",
+    "elapsed_seconds": 12.102255,
+    "exit_code": 0,
+    "bytes": 1489489,
+    "sha256": "4ff4704a3a0d41bf68546249b5ff951c0d2bad3bf9c7c6ba7611c2f21be71f61",
+    "output": "<tmp>/l00b14a-axioms-5o2q6k1j.log",
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "name": "public-api",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14a/public-api.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T17:25:40.697905+00:00",
+    "elapsed_seconds": 0.680973,
+    "exit_code": 0,
+    "bytes": 20376,
+    "sha256": "304085499b7724624e51ada7dbf29946173f66b7fc1384e76fee3331bb1bac02",
+    "output": "public-api.log",
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "name": "lean-version",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "--version"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T17:25:41.379311+00:00",
+    "elapsed_seconds": 0.084589,
+    "exit_code": 0,
+    "bytes": 106,
+    "sha256": "20f42f897511ec814f7616bd9a193ae7504aa2f52fb05299eb752936eb77ca6e",
+    "output": "lean-version.log",
+    "rss": "未取得（計画上の非採取）"
+  }
+]

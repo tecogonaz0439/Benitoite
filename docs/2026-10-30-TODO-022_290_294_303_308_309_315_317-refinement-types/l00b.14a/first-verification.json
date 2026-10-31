@@ -1,0 +1,74 @@
+[
+  {
+    "name": "build",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T16:59:32.163751+00:00",
+    "elapsed_seconds": 0.816039,
+    "exit_code": 0,
+    "bytes": 33963,
+    "sha256": "fe0abe1c12419457c404a29d42531e1afa0b724ce3f263577f54fa24430e81f5",
+    "output": "build.log",
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "name": "boundary",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14a/boundary.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T16:59:32.980709+00:00",
+    "elapsed_seconds": 1.112754,
+    "exit_code": 0,
+    "bytes": 8345,
+    "sha256": "5cd70050c4fa12c06d4fa5e3f3a102799f5860686681f48265125489d1224bed",
+    "output": "boundary.log",
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "name": "axioms",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14a/axioms.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T16:59:34.094169+00:00",
+    "elapsed_seconds": 12.15229,
+    "exit_code": 0,
+    "bytes": 1487741,
+    "sha256": "12caf3ed54b6c1a2f9dfd98b1a49332d5d883c0a9fd5a2aa18b125ed87346879",
+    "output": "<tmp>/l00b14a-axioms-izazsxd4.log",
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "name": "public-api",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14a/public-api.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T16:59:46.263286+00:00",
+    "elapsed_seconds": 0.649735,
+    "exit_code": 1,
+    "bytes": 315,
+    "sha256": "184895d660c8347e8e6b7ad338739354e0131265238efb342dd3a0b072303ed7",
+    "output": "public-api.log",
+    "rss": "未取得（計画上の非採取）"
+  }
+]

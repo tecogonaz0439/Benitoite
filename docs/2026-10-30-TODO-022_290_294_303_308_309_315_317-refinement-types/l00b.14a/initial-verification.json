@@ -1,0 +1,99 @@
+[
+  {
+    "name": "build",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T16:59:32.163751+00:00",
+    "elapsed_seconds": 0.816039,
+    "exit_code": 0,
+    "bytes": 33963,
+    "sha256": "fe0abe1c12419457c404a29d42531e1afa0b724ce3f263577f54fa24430e81f5",
+    "output": "build.log",
+    "rss": "未取得（計画上の非採取）",
+    "reused": true,
+    "reason": "変更は署名列挙器・検査実行器・署名文書だけ。Lean本番/境界/公理監査の入力は同じ。"
+  },
+  {
+    "name": "boundary",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14a/boundary.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T16:59:32.980709+00:00",
+    "elapsed_seconds": 1.112754,
+    "exit_code": 0,
+    "bytes": 8345,
+    "sha256": "5cd70050c4fa12c06d4fa5e3f3a102799f5860686681f48265125489d1224bed",
+    "output": "boundary.log",
+    "rss": "未取得（計画上の非採取）",
+    "reused": true,
+    "reason": "変更は署名列挙器・検査実行器・署名文書だけ。Lean本番/境界/公理監査の入力は同じ。"
+  },
+  {
+    "name": "axioms",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14a/axioms.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T16:59:34.094169+00:00",
+    "elapsed_seconds": 12.15229,
+    "exit_code": 0,
+    "bytes": 1487741,
+    "sha256": "12caf3ed54b6c1a2f9dfd98b1a49332d5d883c0a9fd5a2aa18b125ed87346879",
+    "output": "<tmp>/l00b14a-axioms-izazsxd4.log",
+    "rss": "未取得（計画上の非採取）",
+    "reused": true,
+    "reason": "変更は署名列挙器・検査実行器・署名文書だけ。Lean本番/境界/公理監査の入力は同じ。"
+  },
+  {
+    "name": "public-api",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14a/public-api.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T17:01:05.957474+00:00",
+    "elapsed_seconds": 0.6742,
+    "exit_code": 0,
+    "bytes": 14980,
+    "sha256": "d1b1ee447a07d23f7dd6df848b1cafc25e591bba2d7d674399d5871e452e44af",
+    "output": "public-api.log",
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "name": "lean-version",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "--version"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T17:01:06.635534+00:00",
+    "elapsed_seconds": 0.080904,
+    "exit_code": 0,
+    "bytes": 106,
+    "sha256": "20f42f897511ec814f7616bd9a193ae7504aa2f52fb05299eb752936eb77ca6e",
+    "output": "lean-version.log",
+    "rss": "未取得（計画上の非採取）"
+  }
+]
