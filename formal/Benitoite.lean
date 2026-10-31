@@ -330,3 +330,7 @@ import Benitoite.Release.Refinement.Context.WF
 import Benitoite.Release.Refinement.Context.Facts
 import Benitoite.Release.Refinement.Context.Declarations
 import Benitoite.Release.Refinement.Context.Capture
+
+import Benitoite.Release.Refinement.LogicSound
+import Benitoite.Release.Refinement.ClosedKeys
+import Benitoite.Release.Refinement.ExternalCheck

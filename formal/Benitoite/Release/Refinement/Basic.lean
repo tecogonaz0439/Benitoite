@@ -37,6 +37,9 @@ theorem Entails.bind {Ξ p} (h : Entails Ξ p) (σ : ObservationEnv) :
   | integer_eq h => exact .integer_eq h
   | integer_le h => exact .integer_le h
   | integer_lt h => exact .integer_lt h
+  | closed hw hs he =>
+    rw [Pred.bind_closed hw σ]
+    exact .closed hw hs he
 
 def shiftIndex (k c i : Nat) : Nat := if i < c then i else i+k
 

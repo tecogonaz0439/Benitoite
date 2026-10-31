@@ -1,4 +1,4 @@
-import Benitoite.Release.Refinement.Context
+import Benitoite.Release.Refinement.ClosedEvaluation
 
 namespace Benitoite.Release.Refinement
 
@@ -22,6 +22,12 @@ inductive Entails : List Pred → Pred → Prop where
   | integer_eq {Ξ n m} : n = m → Entails Ξ (.eq (.integer n) (.integer m))
   | integer_le {Ξ n m} : n ≤ m → Entails Ξ (.le (.integer n) (.integer m))
   | integer_lt {Ξ n m} : n < m → Entails Ξ (.lt (.integer n) (.integer m))
+  | closed {Ξ p} : p.WF 0 → p.Sorted [] none → p.evalClosed = some true → Entails Ξ p
+
+/-- 閉じた計算の成功から、仮定を使わず導く。 -/
+theorem Entails.ground {p : Pred} (hw : p.WF 0) (hs : p.Sorted [] none)
+    (he : p.evalClosed = some true) : Entails [] p := .closed hw hs he
+
 
 /-- 仮定の包含に沿う弱化。 -/
 theorem Entails.weaken {Ξ p} (h : Entails Ξ p) {Δ} (hm : ∀ q ∈ Ξ, q ∈ Δ) :
@@ -51,6 +57,7 @@ theorem Entails.weaken {Ξ p} (h : Entails Ξ p) {Δ} (hm : ∀ q ∈ Ξ, q ∈ 
   | integer_eq h => exact .integer_eq h
   | integer_le h => exact .integer_le h
   | integer_lt h => exact .integer_lt h
+  | closed hw hs he => exact .closed hw hs he
 
 private theorem consTransport {Ξ Δ : List Pred} (hm : ∀ q ∈ Ξ, Entails Δ q) (p : Pred) :
     ∀ q ∈ p::Ξ, Entails (p::Δ) q := by
@@ -81,5 +88,6 @@ theorem Entails.cut {Ξ p} (h : Entails Ξ p) {Δ} (hm : ∀ q ∈ Ξ, Entails �
   | integer_eq h => exact .integer_eq h
   | integer_le h => exact .integer_le h
   | integer_lt h => exact .integer_lt h
+  | closed hw hs he => exact .closed hw hs he
 
 end Benitoite.Release.Refinement
