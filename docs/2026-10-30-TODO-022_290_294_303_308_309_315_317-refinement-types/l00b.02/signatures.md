@@ -2670,3 +2670,76 @@ ClosureTy.capture_resolved は入力0個のこの構成を CaptureOk.substOk.ann
 | 範囲外の値変数を行に持つ遷移（軽2） | 遷移の表の行は重複 Fail と原子の差である。Fail の型の述語に範囲外の値変数を持つ行の E_Handle → E_Op を、L20 の E_Op の保存の検査に含める | RV-r4 の軽2 |
 | 型の置換の型付け | E_Fun・E_Meth・E_Op・E_OpPrim の `substTy` を保つ、旧 `TySubst`・`TySubstMain` に当たる補題は Refinement にまだない。plan.md の L20 の行が持つ「型/行/範囲/値の置換」の内数であり、移動・値の相互置換・narrowing の71場合とは別の族として数える。節の本体は `hideBuilders` の上で検査するので、`ClosureTy` の L・ρ には及ばない | RV-r4 の範囲外の一件 |
 
+
+## 32. `.02c` の共有数値層と adapter の決定（2026-10-31）
+
+B_WORK は `3a41d6c1b8b2922bbd04d89946a7b986bed05286`、指定ブランチは `m014/l00b.02c` である。git の照合・操作は行わない。第12.2節の `.02c` を対象とし、三族71場合と TypedFacts56場合は増やさない。主な定理の前提と結論、新公理、提供範囲、利用者の書ける形、精密な外部状態を変更しない。
+
+### 32.1 分離するモジュールと既存の公開名
+
+| モジュール（`Benitoite.` 以下） | 定義・依存 |
+|---|---|
+| `Shared.Integer` | Std だけを読む。旧 `Release.min64/max64`、`Integer64Value` と射影・境界、リテラルと負の大きさの変換を、定義と名前を保って移す |
+| `Shared.Interval` | `Shared.Integer` だけを読む。`Interval.IntKind`、min/max/bounds、IntegerValue、Interval、Mem/normalize/top/Subset/meet/join と既存の一般補題を移す |
+| `Interval.TypeAdapter` | `Shared.Interval` と旧 `Release.Types` を読む。旧 `IntKind.type/ofType/ofType_type` を定義ごと移す |
+| `Interval.Domain` | 互換入口。TypeAdapter と既存の例を残す。旧 import と公開名を維持する |
+| `Shared.Approximation` | `Shared.Interval` だけを読む。第6.3節の四型と三つの所属を置く |
+| `Interval.ApproxAdapter` | `Interval.Flow` と共有近似を読む。具体値、評価の三形、旧正常域、旧 FlowApprox を接続する |
+| `Release.ApproxAdapter` | 旧 Syntax と共有近似を読む。旧 Const/Val から共有の ApproxValue へ写す |
+| `Release.Refinement.ApproxAdapter` | 既存の Embedding・旧値 adapter・TypeAdapter を読む。新 Const/Val の写し、型の認定、埋め込みとの交換を示す |
+
+数値モジュールに旧 `Release` の名前空間の定数を置くのは、既存の定理の型に現れる定数名を保つためである。モジュールの依存と名前空間は区別する。新しい別名を旧定数の代わりに挟む案は採らず、定義そのものを移す。Atom/RangeIx は数値表現が読まないため、既存の Refinement の名前空間とファイルを保つ。旧 Release から Refinement への import は足さない。
+
+### 32.2 補助の契約と公開入口
+
+完全名の接頭辞は各行の名前空間である。後続段が使う新しい入口は以下である。
+
+```text
+Shared.ValueApprox.Mem : ValueApprox → ApproxValue → Prop
+Shared.FlowApprox.NormalMem / ReturnedMem : FlowApprox → ApproxValue → Prop
+Shared.FlowApprox.ResultMem {E : Type} : FlowApprox → EvalResult ApproxValue E → Prop
+Shared.ApproxValue.ofInt : Interval.IntKind → Int → ApproxValue
+Shared.EvalResult.map {V W E F : Type} :
+  (V → W) → (E → F) → EvalResult V E → EvalResult W F
+
+Interval.ConcreteValue.toApprox : ConcreteValue → Shared.ApproxValue
+Interval.EvalOutcome.toShared : EvalOutcome → Shared.EvalResult ConcreteValue Failure
+Interval.EvalOutcome.ofShared : Shared.EvalResult ConcreteValue Failure → EvalOutcome
+Interval.EvalOutcome.toApprox : EvalOutcome → Shared.EvalResult Shared.ApproxValue Failure
+Interval.normalToShared (type : Release.Ty) : NormalRange type → Shared.ValueApprox
+Interval.FlowApprox.toShared {type : Release.Ty} :
+  FlowApprox type → Shared.ValueApprox → Shared.FlowApprox
+
+Release.Const.toApprox / Release.Val.toApprox : Const / Val → Shared.ApproxValue
+Release.Refinement.Const.toApprox / Release.Refinement.Val.toApprox :
+  Const / Val → Shared.ApproxValue
+Interval.IntKind.refinementType : IntKind → Release.Refinement.Ty
+Interval.IntKind.ofRefinementType : Release.Refinement.Ty → Option IntKind
+```
+
+| 論点 | 採った案と理由 | 捨てた案 |
+|---|---|---|
+| 整数の所属 | 種類の等号と、その整数の数学上の値の区間所属の連言。依存型の値を無理に cast せず幅の不一致を拒む | 同じ数なら別幅でも所属する案は採らない |
+| 未観測の値 | unknown は全種類を含み、other は観測しない具体値を表す。整数と Boolean の近似は other を含まない | other を整数0や Boolean へ写す案は採らない |
+| 旧の幅付き定数 | `ofInt` が値域内のときだけ証拠付き整数を作る。旧構文は不正な幅の定数も保持できるため、範囲外は other に写す | 全旧 Const を追加の表現可能性の前提なしで証拠付き整数にする案は採らない。適格入力の型付けは後続の担当である |
+| 旧正常域 | 旧 Integer64 の区間と Boolean の二成分を保つ。旧のほかの型の Bool は、false を bottom、true を unknown へ写す。旧の幅付き整数の正常域もこの粗い表現を保つ | 旧解析が保持しない端点を作る案は採らない |
+| 旧 FlowApprox | normal/mayFail/warnings の構造と旧APIを保ち、`toShared flow returned` で戻り値の近似を明示させる。normal の所属の移送を証明し、returned は渡された近似そのものとする | 旧 FlowApprox の欄の追加、return を normal へ混ぜる案、情報がないことを bottom とする案は採らない |
+| 警告・失敗・追跡 | warnings は旧の型へ残す。共有 EvalResult は理由の型を引数 E に取り、三形を一対一に写す | 共有層から独立評価の Failure/ConcreteValue/trace/key/予算を読む案は採らない |
+| 新しい型の整数認定 | 裸の七種だけを認定する。`refinementType = embedTy ∘ type`、`ofRefinementType (embedTy a) = ofType a` を示す | 篩を無条件に除いて認定する案は、閉じた条件の評価を先取りするので採らない |
+| 既定 import | 全旧 import を維持し、新共有層と全 adapter、LocalResolve/LocalResolveLemmas を明示して追加する。ClosureTyping/StateTyping の既存 import も保つ | 旧ターゲットや旧定理を外して循環を解く案は採らない |
+
+三つの結果の所属を切り分ける ResultMem と、結果の三形を保つ map は共有層の補助であり、評価関係や主定理の仮定を増やさない。returned の一般の所属、独立評価と Release の算術・δの対応は第6.3節と O169 の後続段のままである。
+
+## 33. RV-L00b.02c を受けた第32節の補足と義務（2026-10-31、取りまとめの追記）
+
+[RV-L00b.02c](../reviews/RV-L00b.02c.md) は条件付き可（重なし、中2・軽4）だった。本番の Lean は変えず、次を後の段へ引き継ぐ。補助の証明は [rv-02c-checks.lean](rv-02c-checks.lean) と [rv-02c-checks2.lean](rv-02c-checks2.lean) にある。
+
+| 義務 | 内容 | 送り先 |
+|---|---|---|
+| 失敗の所属（中1） | `toShared_mayFail` は真偽値の保持であり、`ResultMem` の `.failed` の所属の移送ではない。旧解析の定理は NormalSoundness と WarningSoundness だけで、失敗の健全性はない。`failed_without_mayFail` のとおり、腕のない整数の `match 1 {}` は `.failed .unknown` に評価され、`Models` も成り立つのに `analyzeBase` の mayFail は偽である。失敗の所属を使うときは、入力の条件を置いて別に証明する。網羅的な入力に限れば成り立つかは未確認である | L20/L40（O169） |
+| 実解析の出力の写し（中2） | `Interval.FlowApprox` を読むのは Flow.lean と FlowExamples.lean だけで、中心の定理の出力は `BaseApprox`・`AnalysisResult` である。`baseToShared` と `baseToShared_mem` を本番へ置く。補助で証明済みである | L10（O169） |
+| 情報を保つことの言明（軽1） | `normalToShared_mem` は片向きである。`normalToShared_iff` を本番へ置く | L10 |
+| 型付き定数と `.other`（軽2） | `ConstOK` が値域を検査するので、型付き定数は `.other` に落ちない。`constOK_toApprox` を本番へ置き、Refinement/Syntax.lean の16行のコメントを直す | L10 |
+| 01-12 の出典の記述（軽3） | 01-12 の「Interval/Domain.lean を正とし」が移設で古くなった。第32.1節の「旧 import を維持」は、既定 import が追加だけであることを指す | 設計書の反映の段（L00b.15） |
+| 空の近似の表現（軽4） | `bottom`・`boolean false false`・`integer k .bottom` の複数の表現がある。L10 では `= .bottom` で判定しない | L10 |
+

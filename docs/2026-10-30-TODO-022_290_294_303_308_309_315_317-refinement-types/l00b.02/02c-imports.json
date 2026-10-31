@@ -1,0 +1,97 @@
+{
+  "default_targets": [
+    {
+      "target": "Benitoite",
+      "root": "Benitoite",
+      "before": 417,
+      "after": 424,
+      "lost_modules": []
+    },
+    {
+      "target": "desugarDiff",
+      "root": "DesugarDiff.Main",
+      "before": 180,
+      "after": 183,
+      "lost_modules": []
+    },
+    {
+      "target": "builtinCheck",
+      "root": "BuiltinCheck.Main",
+      "before": 181,
+      "after": 184,
+      "lost_modules": []
+    },
+    {
+      "target": "coverageDiff",
+      "root": "CoverageDiff.Main",
+      "before": 181,
+      "after": 184,
+      "lost_modules": []
+    },
+    {
+      "target": "coverageProgramDiff",
+      "root": "CoverageProgramDiff.Main",
+      "before": 182,
+      "after": 185,
+      "lost_modules": []
+    },
+    {
+      "target": "surfaceCheck",
+      "root": "SurfaceCheck.Main",
+      "before": 182,
+      "after": 185,
+      "lost_modules": []
+    },
+    {
+      "target": "surfaceCheckAll",
+      "root": "SurfaceCheck.All",
+      "before": 185,
+      "after": 188,
+      "lost_modules": []
+    },
+    {
+      "target": "intervalDiff",
+      "root": "IntervalDiff.Main",
+      "before": 225,
+      "after": 228,
+      "lost_modules": []
+    }
+  ],
+  "shared_closures": {
+    "Benitoite.Shared.Approximation": [
+      "Benitoite.Shared.Approximation",
+      "Benitoite.Shared.Integer",
+      "Benitoite.Shared.Interval"
+    ],
+    "Benitoite.Shared.Integer": [
+      "Benitoite.Shared.Integer"
+    ],
+    "Benitoite.Shared.Interval": [
+      "Benitoite.Shared.Integer",
+      "Benitoite.Shared.Interval"
+    ]
+  },
+  "domain_closure": [
+    "Benitoite.Interval.Domain",
+    "Benitoite.Interval.TypeAdapter",
+    "Benitoite.Release.Atom",
+    "Benitoite.Release.Types",
+    "Benitoite.Scope.Domain",
+    "Benitoite.Scope.Signature",
+    "Benitoite.Shared.Integer",
+    "Benitoite.Shared.Interval"
+  ],
+  "root_before": 417,
+  "root_after": 424,
+  "cycles": [],
+  "old_release_to_refinement": [],
+  "new_production_files": [
+    "formal/Benitoite/Interval/ApproxAdapter.lean",
+    "formal/Benitoite/Interval/TypeAdapter.lean",
+    "formal/Benitoite/Release/ApproxAdapter.lean",
+    "formal/Benitoite/Release/Refinement/ApproxAdapter.lean",
+    "formal/Benitoite/Shared/Approximation.lean",
+    "formal/Benitoite/Shared/Integer.lean",
+    "formal/Benitoite/Shared/Interval.lean"
+  ]
+}

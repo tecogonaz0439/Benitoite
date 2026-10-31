@@ -1,0 +1,155 @@
+[
+  {
+    "name": "shared-imports",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02c-shared-imports.lean"
+    ],
+    "exit": 0,
+    "elapsed_seconds": 0.657869666,
+    "bytes": 18,
+    "sha256": "debd419bc3eda55c1ca7b3658404856e204fe92675e992e581f2636fe1c14e7e",
+    "storage": "改造/l00b.02"
+  },
+  {
+    "name": "old-statements",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02c-old-statements.lean"
+    ],
+    "exit": 0,
+    "elapsed_seconds": 0.6842090829999999,
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "storage": "改造/l00b.02"
+  },
+  {
+    "name": "boundary",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02c-boundary.lean"
+    ],
+    "exit": 1,
+    "elapsed_seconds": 0.758038167,
+    "bytes": 374,
+    "sha256": "08bfece6f64c5099f9ff03f312dd2d4a686ecc24250b1d3c0b8054ab56e7f3fc",
+    "storage": "改造/l00b.02",
+    "output_name": "02c-boundary-first.log"
+  },
+  {
+    "name": "boundary",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02c-boundary.lean"
+    ],
+    "exit": 0,
+    "elapsed_seconds": 0.726516959,
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "storage": "改造/l00b.02"
+  },
+  {
+    "name": "axioms",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02c-axioms.lean"
+    ],
+    "exit": 0,
+    "elapsed_seconds": 10.334885125,
+    "bytes": 1235772,
+    "sha256": "463c6e5031deaee011cc90ebe12f6bcda7d445077efc77a9ac727eacc532bd98",
+    "storage": "<tmp>"
+  },
+  {
+    "name": "default-imports",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02c-default-imports.lean"
+    ],
+    "cwd": "formal",
+    "exit": 0,
+    "elapsed_seconds": 0.774894333,
+    "input_sha256": "4d11cb4a80382022e74c34bf6211b903abf67f833b0d13cae6424e844d675324",
+    "bytes": 20,
+    "sha256": "9d0b6692b86a15f6ee842f390098b5a073cbe017206265397f71e08c19f2c721",
+    "storage": "改造/l00b.02"
+  },
+  {
+    "name": "closures-api",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02b-closures-r4-public-api.lean"
+    ],
+    "cwd": "formal",
+    "exit": 0,
+    "elapsed_seconds": 0.683377791,
+    "input_sha256": "313402a1e875b2a9d50f1f679a989939c584b15931c4b3f46917d43ffec96add",
+    "bytes": 44941,
+    "sha256": "1cf9f8b4e49616476731dc8951a4716e8d1bb25760c3777247b8133ee55ed246",
+    "storage": "改造/l00b.02"
+  },
+  {
+    "name": "public-api",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02c-public-api.lean"
+    ],
+    "cwd": "formal",
+    "exit": 0,
+    "elapsed_seconds": 0.647626708,
+    "input_sha256": "dd850c98f954ca3f3ccac770c5f3453fa18bd993a68795a1c754c927e81f27f2",
+    "bytes": 6131,
+    "sha256": "d0ad51522b7b3c6edfa7812a28db73e0604fb6ec40993b3cc5dd20bd65c67303",
+    "storage": "改造/l00b.02"
+  },
+  {
+    "name": "boundary-with-axioms",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02c-boundary.lean"
+    ],
+    "cwd": "formal",
+    "exit": 0,
+    "elapsed_seconds": 0.716193625,
+    "bytes": 388,
+    "sha256": "bc9d3c8034f1912fddc2929dd1289d733e692440871b7fa350885e31b0b00867",
+    "input_sha256": "535550c629ebc1a2850cd9671f6c42f1263a1b5db5833b3b88ac01ff0bdd8c7d",
+    "storage": "改造/l00b.02"
+  }
+]

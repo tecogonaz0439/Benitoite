@@ -1681,3 +1681,113 @@ RowsのdupEは原子なし・UnitのFailが二重の形で、レビューのdupE
 ### `.02b-closures` の作業末の work
 
 取りまとめが sandbox の外で実行した。基準は `1170a4a6d81d49a6d098d2f222ed33c8f22c9230`。Refinement の生成物を消してから `/usr/bin/time -l scripts/check.sh --level work --base 1170a4a6d81d49a6d098d2f222ed33c8f22c9230` を実行した。選ばれたのは `formal_build` だけで、終了0、外側の時間57.41秒、最大常駐量 1,140,686,848 B（約1.06 GiB）である。群末のレビューは4回（不可 → 条件付き可 → 条件付き可 → 絞った確認で条件付き可）で、最後の所見は定義を変えず [signatures.md 第31節](signatures.md) の義務として L20 へ送った。
+
+
+## `.02c`：共有層と既定 import の群末（2026-10-31）
+
+B_WORK は `3a41d6c1b8b2922bbd04d89946a7b986bed05286`、指定ブランチは `m014/l00b.02c` である。開始前の取り込みは起動依頼の `45a17a0f` として受け取った。git の照合・操作は行っていない。本節が冒頭の「L00b.02c: 共有層と import」の未実施の状態を更新する。L00b.03 へは進んでいない。
+
+### 置いた定義と閉じた補題
+
+本番の新規は7ファイル、既存の変更は3ファイルである。完全な公開型は [公開宣言39件](02c-public-api.md)、変更と入力のハッシュは [変更一覧](02c-source-changes.json) と [最終入力](02c-inputs-final.json) にある。
+
+| ファイル（`formal/Benitoite/` 以下） | 置いた定義・閉じた補題 |
+|---|---|
+| [Shared/Integer.lean](../../../formal/Benitoite/Shared/Integer.lean) | 旧 `Release.min64/max64`、Integer64Value と toInt/toInt_bounds、Integer64Literal/Integer64Magnitude と変換を、名前と定義を保って移設 |
+| [Shared/Interval.lean](../../../formal/Benitoite/Shared/Interval.lean) | 旧 IntKind7、min/max/bounds、IntegerValue と射影、Interval2、Mem/normalize/top/Subset/meet/join、mem_normalize/mem_bounds/normalize_closed/mem_top/subset_iff/mem_meet/mem_join/join_least/meet_bounds/join_bounds を移設 |
+| [Interval/TypeAdapter.lean](../../../formal/Benitoite/Interval/TypeAdapter.lean) | 旧 IntKind.type/ofType/ofType_type を移設。Release.Types だけを読む型との対応 |
+| [Shared/Approximation.lean](../../../formal/Benitoite/Shared/Approximation.lean) | ValueApprox4/ApproxValue3/FlowApprox1/EvalResult3、ValueApprox.Mem、NormalMem/ReturnedMem/ResultMem。ofInt_bounded/ofInt_outside、mem_bottom/mem_unknown/mem_integer、map/map_id |
+| [Interval/ApproxAdapter.lean](../../../formal/Benitoite/Interval/ApproxAdapter.lean) | ConcreteValue.toApprox と ofInteger_toApprox。EvalOutcome.toShared/ofShared の両往復、toApprox。normalToShared_mem、旧 FlowApprox.toShared の normal/returned/mayFail の保持 |
+| [Release/ApproxAdapter.lean](../../../formal/Benitoite/Release/ApproxAdapter.lean) | 旧 Const/Val.toApprox。幅付き定数は ofInt で検査し、範囲外に有界整数の証拠を作らない |
+| [Release/Refinement/ApproxAdapter.lean](../../../formal/Benitoite/Release/Refinement/ApproxAdapter.lean) | 新 Const/Val.toApprox、embedConst_toApprox/embedVal_toApprox。IntKind.refinementType/ofRefinementType、七種の往復と旧型の embed との認定の交換 |
+
+旧の変更は `Release/Syntax.lean`（数値定義を共有モジュールから読む）、`Interval/Domain.lean`（互換入口と既存の例）、`Benitoite.lean`（既定 import の追加）である。新しい値・計算・状態の構成子は0であり、三族は各71場合、TypedFacts は28×2=56の場合のままである。新しい共有の近似型の11構成子を、この被覆義務へ加算していない。
+
+### 依存の分離の前後と旧 API
+
+```text
+前:
+  Interval.Domain → Release.Syntax → Release.TypeSubst → Release.Types
+
+後:
+  Shared.Integer → Std
+  Shared.Interval → Shared.Integer
+  Shared.Approximation → Shared.Interval
+  Release.Syntax → Shared.Integer / Release.TypeSubst
+  Interval.Domain → Interval.TypeAdapter → Shared.Interval / Release.Types
+  Interval.ApproxAdapter → Interval.Flow / Shared.Approximation
+  Release.ApproxAdapter → Release.Syntax / Shared.Approximation
+  Refinement.ApproxAdapter → Refinement.Embedding / Release.ApproxAdapter / Interval.TypeAdapter
+```
+
+数値層と共有近似は、推移的にも Release の型・項・型付け・独立評価を import しない。Release の名前空間の旧定数を共有ファイルへ置いたが、Release のモジュールへの依存を意味しない。`Interval.Domain` から `Release.Syntax` への推移依存もなくなった。旧 Release から Refinement への逆依存と、import の循環は0件である。Atom/RangeIx は数値層が読まないので、既存の新体系の配置を保った。
+
+[import の比較](02c-imports.json) で、8既定ターゲットの根から到達した旧モジュールの脱落は0件である。集約 `Benitoite` の到達は417から424モジュールとなり、[Lean 上の実 import の確認](02c-default-imports.lean)でも新旧424モジュールへ到達した。旧 LegacyCheck は元から既定外であり、今回外したものではない。ClosureTyping・StateTyping の既存 import を保ち、LocalResolve・LocalResolveLemmas を明示して追加した。
+
+旧定義の一致は、開始時のSHA-256と照合した [旧 Syntax](02c-old-release-syntax.txt)・[旧 Domain](02c-old-interval-domain.txt)・[旧 import](02c-old-default-imports.txt) から確認した。数値・区間・型adapterの宣言と証明は原文そのものであり、移設した旧定理14件の言明を [旧言明の確認](02c-old-statements.lean) で再び型検査した。他の既存427入力は開始時からハッシュが一致し、旧の主定理の言明も変えていない。[閉包群の公開型80件の再出力](02c-closures-api.log) は第4版の出力とバイト単位で一致した。
+
+### 補助の契約で決めたこと
+
+[signatures.md 第32節](signatures.md) に採用理由と捨てた案を記録した。
+
+1. 整数の所属は、種類の等号と数学上の値の区間所属の連言とする。幅の違う同じ整数を所属させない。
+2. unknown は全種類を含み、other は未観測の具体値を表す。整数と Boolean の近似は other を含まない。
+3. 旧構文の幅付き整数は、範囲内だけ証拠付き整数へ写し、範囲外は other とする。表現可能性の仮定や新公理を足さない。
+4. 旧正常域の Integer64 と Boolean は情報を保つ。他の型の Bool は false を bottom、true を unknown へ写す。旧幅付き整数の正常域も、この粗い表現を保つ。
+5. 旧 FlowApprox の構造を維持し、戻り値の近似を toShared の明示引数にする。戻り値を正常成分へ混ぜず、未知の戻り値を bottom にしない。
+6. warnings・trace/key/予算・Failure は独立評価側へ残す。共有 EvalResult は理由の型を引数とし、normal/returned/failed を一対一に写す。
+7. 新しい型の整数認定は裸の七種だけとする。篩を取り除く処理と閉じた条件の評価は先取りしない。
+8. 旧数値の完全名を保つため、旧定義そのものを共有ファイルへ移す。既定 import は追加だけとし、旧定理やターゲットを外さない。
+
+主な定理の前提と結論、新しい Lean の公理、提供範囲、利用者の書ける形、精密な外部状態は変更していない。CoreAssumptions・Step/step と型付けの構成子も変更していない。
+
+### 検査と公理依存
+
+[検査台本](02c-validate.py)、[コマンド](02c-commands.json)、[検査の集計](02c-validation.json)、[ビルド記録](02c-build-record.json)、[公理依存の集計](02c-axioms-summary.json)を置いた。Lean の各プロセスは `-M 12288` であり、既定ビルドは既存の lakefile.toml の同じ設定を使った。
+
+| 検査 | 結果 |
+|---|---|
+| `cd formal && lake build`（ライブラリと7実行ターゲット） | 終了0、683 jobs、148.98秒。移設による読者の再ビルドを含む増分ビルド。sorryなし |
+| 共有近似だけを import し、旧型・構文・評価を読まないことの確認 | 終了0 |
+| 旧定理の言明14件 | 終了0。原文の定義・証明の移設の一致も確認 |
+| 新旧の既定424モジュールの実 import | 終了0、脱落0件 |
+| 閉包群の公開型80件、新公開型39件 | 終了0。前者は前群の出力と完全一致 |
+| adapter の境界確認6定理 | 終了0。幅・u64上端・不正な旧定数・三結果・別種類のnormal/returned・具体値と旧値の写しの一致 |
+| 本番109モジュールと既存7確認対象の公理依存 | 終了0、12,188宣言。新規7ファイル・移設・旧Syntax・前群の全100モジュールを含み、非公開・生成宣言も確認 |
+| 許可する公理 | propext・Quot.sound・Classical.choiceだけ。許可外0件。境界確認6定理はpropextだけ |
+| 最終の本番入力 | 437入力。検査中の変更0件、変更10ファイル、新規7ファイル |
+| 禁止した抜け道の語 | 本番の変更にsorry/admit/axiom/native_decide/implemented_by/unsafe/partial/externは0件 |
+| 固定対象 | 処理系・設計書・plan・既存レビュー・rv-*等4,368件に変更なし |
+
+既存のsimp等の警告とリンク時の `-L` の警告は残るが、今回の新規ファイルの警告とsorryの警告はない。Rust の検査と Rust/Lean の全比較は今回の範囲外であり、作業末の work は起動依頼に従い取りまとめが行う。
+
+### 境界確認の関門と途中の失敗
+
+`test-audit` の作成時の関門では、持ち主を新しい共有近似と adapter の公開入口とした。既存の区間の端点・meet/joinの検査は増やさず、別幅の混同、旧の範囲外定数からの証拠の捏造、normal/returnedの取り違え、失敗理由の消失、旧 FlowApprox の戻り値の混入、具体値と旧値の観測の不一致を対象とした。既存の検査は新しいadapterを使っていなかったため、この境界に6つの定理を置いた。テストだけの差し込み口は加えていない。処理系のテストを変更したものではない。本番10ファイルの行数は移設前1,006行から移設後1,313行へ307行増え、改造内の境界確認は78行を新規に置いた。既存の検査の削除は0件である。
+
+局所の最初のコンパイルでは、ofInt_boundedのsimpの一致と、依存するNormalRangeのBool分岐の精緻化で失敗した。前者は値域の証拠で場合分けし、後者はBoolの分岐を明示して修正した。境界入力の初回は否定の自明な証明が残り [終了1](02c-boundary-first.log) であり、証明を閉じて [再確認を終了0](02c-boundary.log) とした。定義や期待値を緩めていない。Pythonの記録台本は標準のtomllibがない環境だったため、変更していないlakefileのname/root/defaultTargetsだけを読む形へ直した。
+
+全宣言の型式をreprStrで生出力する最初の照合試行は中断（終了130、個別の外側の時間は未採取）し、原文のハッシュと宣言の一致・旧言明の再型検査・全既定importの確認・前群の公開型の再出力へ切り替えた。検査の範囲や対象は減らしていない。100 KBを超える生の記録は `<tmp>` に置き、[large-records.md](large-records.md)へ大きさとSHA-256を追記した。
+
+### 義務の判定・残りと送り先
+
+| 義務・出どころ | 今回の判定 | 残る担当・条件 |
+|---|---|---|
+| 第12.2節 `.02c` | 完了。共有層・全adapter・旧API・新旧全既定ビルド・import・公理依存を確認 | 群末の独立レビューと受け入れは取りまとめ・設計者 |
+| O169 の L00b 分 | 完了。Releaseより下の数値層と共通の値近似、二成分、独立評価の三形の対応 | L10のWF、L20/L40の独立評価とReleaseの算術・δ・returned所属、L70の主定理・交換、R10b/R50の実装・交換。共通型の構成子を再び追加分として数えない |
+| O009・三族の件数 | 新規の値/計算の構成子0、三族各71とTypedFacts56を維持 | 後続の構成子の追加はその群で追随する |
+| L00b.03 | 今回は未実施 | 参照順序・None/extendを、既存CaptureWFとソース文脈の区別を保って検討する。数値と近似はSharedを直接読み、Domain/Eval経由で依存を戻さない |
+| 第31節・RV-closures-r4 | 新しい未完の義務は0。前群の公開型と定義を維持 | L20のnormContsとbuilderBody_image_norm/CaptureOk.normConts、緩い捕捉条件からの正則性、範囲外の値変数を行に持つE_Handle→E_Op、型/行/範囲/値の置換の型付け。三族71とは別の族として数える |
+| 閉じた篩の評価 | 共有の値と結果の型、adapterだけを完了 | `.04/.05`が全入れ子の篩の受信検査とexternalの契約・遷移を接続する |
+| 全状態の保存・進行と主定理 | 今回の完了には含めない | `.14a/.14b`の代表、L20とL70の既定の担当を保つ |
+| 作業末のwork・独立レビュー・受け入れ | 未実施 | 取りまとめ・設計者。自己点検を独立レビューとは数えない |
+
+### 計画との差と外側の時間
+
+本番の担当範囲・主な契約・提供範囲の計画からのずれはない。照合の手段を上記のとおり変更した。開始は **2026-10-31 15:43:38 JST**、本番の最終ビルド終了は **15:53:35.842 JST**、公理依存とimport等の集計終了は **15:56:57.676 JST** であった。文書・最終確認・受け渡しまでを含む外側の時間は [受け渡し記録](02c-delivery.json) に残す。能動時間と待ちは分離していない。RSS・CPU時間は未取得（計画上の非採取）であり、1〜3時間の見込みの上端の2倍には到達していない。
+
+群末のレビュー依頼は [RV-L00b.02c-request.md](../reviews/RV-L00b.02c-request.md) に置いた。新規ファイルの一覧を同依頼へ載せ、相対リンクと固定対象の最終照合は [最終確認](02c-final-check.json) に記録する。
+
+### `.02c` の作業末の work
+
+取りまとめが sandbox の外で実行した。基準は `3a41d6c1b8b2922bbd04d89946a7b986bed05286`。Refinement の生成物を消してから `/usr/bin/time -l scripts/check.sh --level work --base 3a41d6c1b8b2922bbd04d89946a7b986bed05286` を実行した。選ばれたのは `formal_build` だけで、終了0、外側の時間57.55秒、最大常駐量 1,153,908,736 B（約1.07 GiB）である。群末のレビューの所見は Lean を変えず、[signatures.md 第33節](signatures.md) と plan.md の O169 の行へ送った。

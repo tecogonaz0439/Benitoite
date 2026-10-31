@@ -71,3 +71,11 @@
 | 記録 | 保存先 | バイト | SHA-256 |
 |---|---|---:|---|
 | `02b-closures-r4-protected-inputs-start.json` | `<tmp>` | 567,293 | `e3452f991fc44d6aed47e2f363ab7d990af2df6315be069e9e8e8014e9248e56` |
+
+### `.02c` の共有層と既定 import の検査
+
+| 記録 | 保存先 | バイト | SHA-256 |
+|---|---|---:|---|
+| `02c-axioms.log` | `<tmp>` | 1,235,772 | `463c6e5031deaee011cc90ebe12f6bcda7d445077efc77a9ac727eacc532bd98` |
+| `02c-local-adapter.log` | `<tmp>` | 111,354 | `20a4a5b69e90216f033deaf37e33a950c415259e09cb24410effd4d2ce86e3ae` |
+| `02c-protected-before.json` | `<tmp>` | 567,494 | `9a3d4c97cc870f05e2e65dfbd13936699799af584801beb0432efc048acd4de8` |
