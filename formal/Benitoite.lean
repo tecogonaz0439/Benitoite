@@ -325,3 +325,8 @@ import Benitoite.Release.ApproxAdapter
 import Benitoite.Release.Refinement.ApproxAdapter
 import Benitoite.Release.Refinement.LocalResolve
 import Benitoite.Release.Refinement.LocalResolveLemmas
+
+import Benitoite.Release.Refinement.Context.WF
+import Benitoite.Release.Refinement.Context.Facts
+import Benitoite.Release.Refinement.Context.Declarations
+import Benitoite.Release.Refinement.Context.Capture

@@ -1,0 +1,501 @@
+{
+  "modules": [
+    {
+      "module": "Benitoite.Release.Refinement.Context.WF",
+      "declarations": 55
+    },
+    {
+      "module": "Benitoite.Release.Refinement.Context.Facts",
+      "declarations": 49
+    },
+    {
+      "module": "Benitoite.Release.Refinement.Context.Declarations",
+      "declarations": 119
+    },
+    {
+      "module": "Benitoite.Release.Refinement.Context.Capture",
+      "declarations": 24
+    },
+    {
+      "module": "Benitoite.Shared.Integer",
+      "declarations": 15
+    },
+    {
+      "module": "Benitoite.Shared.Interval",
+      "declarations": 141
+    },
+    {
+      "module": "Benitoite.Shared.Approximation",
+      "declarations": 136
+    },
+    {
+      "module": "Benitoite.Interval.TypeAdapter",
+      "declarations": 7
+    },
+    {
+      "module": "Benitoite.Interval.Domain",
+      "declarations": 0
+    },
+    {
+      "module": "Benitoite.Interval.ApproxAdapter",
+      "declarations": 67
+    },
+    {
+      "module": "Benitoite.Release.Syntax",
+      "declarations": 834
+    },
+    {
+      "module": "Benitoite.Release.ApproxAdapter",
+      "declarations": 6
+    },
+    {
+      "module": "Benitoite.Release.Refinement.ApproxAdapter",
+      "declarations": 15
+    },
+    {
+      "module": "Benitoite.Release.Refinement.LocalResolve",
+      "declarations": 26
+    },
+    {
+      "module": "Benitoite.Release.Refinement.LocalResolveLemmas",
+      "declarations": 269
+    },
+    {
+      "module": "Benitoite.Release.Refinement.ClosureTyping",
+      "declarations": 179
+    },
+    {
+      "module": "Benitoite.Release.Refinement.StateTyping",
+      "declarations": 81
+    },
+    {
+      "module": "Benitoite.Release.Refinement.Adequate",
+      "declarations": 66
+    },
+    {
+      "module": "Benitoite.Release.Refinement.Admissible",
+      "declarations": 96
+    },
+    {
+      "module": "Benitoite.Release.Refinement.AdmissibleMap",
+      "declarations": 14
+    },
+    {
+      "module": "Benitoite.Release.Refinement.AtContracts",
+      "declarations": 27
+    },
+    {
+      "module": "Benitoite.Release.Refinement.AtInput",
+      "declarations": 73
+    },
+    {
+      "module": "Benitoite.Release.Refinement.AtPatterns",
+      "declarations": 62
+    },
+    {
+      "module": "Benitoite.Release.Refinement.AtPrepare",
+      "declarations": 112
+    },
+    {
+      "module": "Benitoite.Release.Refinement.AtSound",
+      "declarations": 15
+    },
+    {
+      "module": "Benitoite.Release.Refinement.AtTyping",
+      "declarations": 13
+    },
+    {
+      "module": "Benitoite.Release.Refinement.AtomOrder",
+      "declarations": 31
+    },
+    {
+      "module": "Benitoite.Release.Refinement.Atoms",
+      "declarations": 87
+    },
+    {
+      "module": "Benitoite.Release.Refinement.Basic",
+      "declarations": 199
+    },
+    {
+      "module": "Benitoite.Release.Refinement.Bind",
+      "declarations": 58
+    },
+    {
+      "module": "Benitoite.Release.Refinement.BindCongr",
+      "declarations": 22
+    },
+    {
+      "module": "Benitoite.Release.Refinement.BindingShift",
+      "declarations": 57
+    },
+    {
+      "module": "Benitoite.Release.Refinement.BuilderExec",
+      "declarations": 81
+    },
+    {
+      "module": "Benitoite.Release.Refinement.BuiltinResponse",
+      "declarations": 35
+    },
+    {
+      "module": "Benitoite.Release.Refinement.Capture",
+      "declarations": 65
+    },
+    {
+      "module": "Benitoite.Release.Refinement.Codes",
+      "declarations": 270
+    },
+    {
+      "module": "Benitoite.Release.Refinement.ConstraintAssumptions",
+      "declarations": 80
+    },
+    {
+      "module": "Benitoite.Release.Refinement.Context",
+      "declarations": 478
+    },
+    {
+      "module": "Benitoite.Release.Refinement.ContextFacts",
+      "declarations": 39
+    },
+    {
+      "module": "Benitoite.Release.Refinement.ContextMap",
+      "declarations": 28
+    },
+    {
+      "module": "Benitoite.Release.Refinement.Declared",
+      "declarations": 60
+    },
+    {
+      "module": "Benitoite.Release.Refinement.DeclaredTransport",
+      "declarations": 162
+    },
+    {
+      "module": "Benitoite.Release.Refinement.EffectCover",
+      "declarations": 26
+    },
+    {
+      "module": "Benitoite.Release.Refinement.Embedding",
+      "declarations": 71
+    },
+    {
+      "module": "Benitoite.Release.Refinement.Exchange",
+      "declarations": 0
+    },
+    {
+      "module": "Benitoite.Release.Refinement.External",
+      "declarations": 126
+    },
+    {
+      "module": "Benitoite.Release.Refinement.ExternalResponse",
+      "declarations": 24
+    },
+    {
+      "module": "Benitoite.Release.Refinement.Ground",
+      "declarations": 48
+    },
+    {
+      "module": "Benitoite.Release.Refinement.HandlerAlgebra",
+      "declarations": 109
+    },
+    {
+      "module": "Benitoite.Release.Refinement.HandlerContracts",
+      "declarations": 52
+    },
+    {
+      "module": "Benitoite.Release.Refinement.HandlerTyping",
+      "declarations": 13
+    },
+    {
+      "module": "Benitoite.Release.Refinement.KindInference",
+      "declarations": 81
+    },
+    {
+      "module": "Benitoite.Release.Refinement.KindValues",
+      "declarations": 31
+    },
+    {
+      "module": "Benitoite.Release.Refinement.Kinds",
+      "declarations": 116
+    },
+    {
+      "module": "Benitoite.Release.Refinement.Le",
+      "declarations": 68
+    },
+    {
+      "module": "Benitoite.Release.Refinement.LocalTransport",
+      "declarations": 71
+    },
+    {
+      "module": "Benitoite.Release.Refinement.Logic",
+      "declarations": 45
+    },
+    {
+      "module": "Benitoite.Release.Refinement.MethodArguments",
+      "declarations": 40
+    },
+    {
+      "module": "Benitoite.Release.Refinement.Narrowing",
+      "declarations": 119
+    },
+    {
+      "module": "Benitoite.Release.Refinement.NarrowingObstruction",
+      "declarations": 22
+    },
+    {
+      "module": "Benitoite.Release.Refinement.Normalize",
+      "declarations": 108
+    },
+    {
+      "module": "Benitoite.Release.Refinement.OpenSubstitution",
+      "declarations": 57
+    },
+    {
+      "module": "Benitoite.Release.Refinement.Order",
+      "declarations": 247
+    },
+    {
+      "module": "Benitoite.Release.Refinement.PathResolution",
+      "declarations": 82
+    },
+    {
+      "module": "Benitoite.Release.Refinement.PatternSemantics",
+      "declarations": 44
+    },
+    {
+      "module": "Benitoite.Release.Refinement.PatternTransport",
+      "declarations": 22
+    },
+    {
+      "module": "Benitoite.Release.Refinement.PatternTypeShift",
+      "declarations": 17
+    },
+    {
+      "module": "Benitoite.Release.Refinement.Patterns",
+      "declarations": 124
+    },
+    {
+      "module": "Benitoite.Release.Refinement.Preparation",
+      "declarations": 208
+    },
+    {
+      "module": "Benitoite.Release.Refinement.RangeExchange",
+      "declarations": 58
+    },
+    {
+      "module": "Benitoite.Release.Refinement.RangeSubst",
+      "declarations": 202
+    },
+    {
+      "module": "Benitoite.Release.Refinement.RuntimeMatch",
+      "declarations": 50
+    },
+    {
+      "module": "Benitoite.Release.Refinement.RuntimeSyntax",
+      "declarations": 162
+    },
+    {
+      "module": "Benitoite.Release.Refinement.ScopeSyntax",
+      "declarations": 668
+    },
+    {
+      "module": "Benitoite.Release.Refinement.Semantics",
+      "declarations": 124
+    },
+    {
+      "module": "Benitoite.Release.Refinement.Shift",
+      "declarations": 25
+    },
+    {
+      "module": "Benitoite.Release.Refinement.ShiftOrder",
+      "declarations": 60
+    },
+    {
+      "module": "Benitoite.Release.Refinement.Source",
+      "declarations": 28
+    },
+    {
+      "module": "Benitoite.Release.Refinement.Step",
+      "declarations": 64
+    },
+    {
+      "module": "Benitoite.Release.Refinement.StoreTransport",
+      "declarations": 15
+    },
+    {
+      "module": "Benitoite.Release.Refinement.Subst",
+      "declarations": 127
+    },
+    {
+      "module": "Benitoite.Release.Refinement.SubstTyping",
+      "declarations": 193
+    },
+    {
+      "module": "Benitoite.Release.Refinement.SubstTypingObstruction",
+      "declarations": 157
+    },
+    {
+      "module": "Benitoite.Release.Refinement.Syntax",
+      "declarations": 1197
+    },
+    {
+      "module": "Benitoite.Release.Refinement.TelArguments",
+      "declarations": 19
+    },
+    {
+      "module": "Benitoite.Release.Refinement.TelTyping",
+      "declarations": 12
+    },
+    {
+      "module": "Benitoite.Release.Refinement.Telescope",
+      "declarations": 95
+    },
+    {
+      "module": "Benitoite.Release.Refinement.TermSyntax",
+      "declarations": 518
+    },
+    {
+      "module": "Benitoite.Release.Refinement.Transport",
+      "declarations": 66
+    },
+    {
+      "module": "Benitoite.Release.Refinement.TypeRenaming",
+      "declarations": 112
+    },
+    {
+      "module": "Benitoite.Release.Refinement.TypeShiftAlgebra",
+      "declarations": 58
+    },
+    {
+      "module": "Benitoite.Release.Refinement.TypeShiftContext",
+      "declarations": 52
+    },
+    {
+      "module": "Benitoite.Release.Refinement.TypeShiftContracts",
+      "declarations": 60
+    },
+    {
+      "module": "Benitoite.Release.Refinement.TypeShiftExchange",
+      "declarations": 159
+    },
+    {
+      "module": "Benitoite.Release.Refinement.TypeShiftKinds",
+      "declarations": 23
+    },
+    {
+      "module": "Benitoite.Release.Refinement.TypeShiftOrder",
+      "declarations": 25
+    },
+    {
+      "module": "Benitoite.Release.Refinement.TypeShiftSyntax",
+      "declarations": 42
+    },
+    {
+      "module": "Benitoite.Release.Refinement.TypeShiftTyping",
+      "declarations": 35
+    },
+    {
+      "module": "Benitoite.Release.Refinement.TypeSubst",
+      "declarations": 151
+    },
+    {
+      "module": "Benitoite.Release.Refinement.TypedFacts",
+      "declarations": 109
+    },
+    {
+      "module": "Benitoite.Release.Refinement.Types",
+      "declarations": 267
+    },
+    {
+      "module": "Benitoite.Release.Refinement.Typing",
+      "declarations": 310
+    },
+    {
+      "module": "Benitoite.Release.Refinement.TypingDeclared",
+      "declarations": 17
+    },
+    {
+      "module": "Benitoite.Release.Refinement.TypingShift",
+      "declarations": 198
+    },
+    {
+      "module": "Benitoite.Release.Refinement.TypingStore",
+      "declarations": 11
+    },
+    {
+      "module": "Benitoite.Release.Refinement.ValueBinding",
+      "declarations": 288
+    },
+    {
+      "module": "Benitoite.Release.Refinement.ValueClosed",
+      "declarations": 36
+    },
+    {
+      "module": "Benitoite.Release.Refinement.ValueExchange",
+      "declarations": 142
+    },
+    {
+      "module": "Benitoite.Release.Refinement.ValueInstantiation",
+      "declarations": 37
+    },
+    {
+      "module": "Benitoite.Release.Refinement.ValueReferences",
+      "declarations": 36
+    },
+    {
+      "module": "Benitoite.Release.Refinement.ValueRegularity",
+      "declarations": 134
+    },
+    {
+      "module": "Benitoite.Release.Refinement.ValueRenameAlgebra",
+      "declarations": 48
+    },
+    {
+      "module": "Benitoite.Release.Refinement.ValueSubst",
+      "declarations": 14
+    }
+  ],
+  "declarations": 12435,
+  "new_modules": [
+    {
+      "module": "Benitoite.Release.Refinement.Context.WF",
+      "declarations": 55
+    },
+    {
+      "module": "Benitoite.Release.Refinement.Context.Facts",
+      "declarations": 49
+    },
+    {
+      "module": "Benitoite.Release.Refinement.Context.Declarations",
+      "declarations": 119
+    },
+    {
+      "module": "Benitoite.Release.Refinement.Context.Capture",
+      "declarations": 24
+    }
+  ],
+  "used": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "boundary_used": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "rejected": [],
+  "old_main": {
+    "declarations": [
+      "Benitoite.Release.step_sound",
+      "Benitoite.Release.progress",
+      "Benitoite.Release.preservation",
+      "Benitoite.Release.effect_soundness",
+      "Benitoite.Release.effect_soundness_noLamNames"
+    ],
+    "used": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ]
+  },
+  "total_with_old_main": 12440
+}
