@@ -10,6 +10,8 @@ import Benitoite.Release.Refinement.Narrowing
 
 namespace Benitoite.Release.Refinement
 
+set_option maxHeartbeats 2000000
+
 private theorem lam_annotations {P B store Q C Γ Φ v a}
     (h : HasTypeVQ P B store Q C Γ Φ v a) :
     ∀ ns ps body, v = .lam ns ps body → Ty.WFList 0 C.length Γ.length ps := by
@@ -24,6 +26,7 @@ private theorem lam_annotations {P B store Q C Γ Φ v a}
   | .V_DependentLam .. | .V_Closure .. => intro ns ps body he; cases he
   | .V_Lam _ hw _ _ _ =>
       intro ns ps body he; cases he; exact hw.2.1
+  | .V_Normal hv => exact lam_annotations hv
   | .V_Sub hv _ _ _ _ => exact lam_annotations hv
   | .V_Refine hv _ _ _ _ _ _ _ => exact lam_annotations hv
 
@@ -38,10 +41,10 @@ private theorem return_value {P B store Q C Γ Φ R m a ε Δl}
   match h with
   | .C_Return hv => intro v he; cases he; exact ⟨_, hv⟩
   | .C_IssuePathBases _ _ _ _ _ _ _ _ | .C_CheckAt _
-  | .C_Handle _ _ _ | .C_Handle_Fail _ _ _ _ | .C_Match _ _ _ | .C_External _ _ _ _ | .C_Resume _ _ _ | .C_ResumeL _ _ _
+  | .C_Handle _ _ _ | .C_Handle_Fail _ _ _ _ | .C_Match _ _ _ | .C_External _ _ _ _ | .C_Resume _ _ _ | .C_ResumeL _ _ _ | .C_ResumeNorm _ _ _ | .C_ResumeLNorm _ _ _ _
   | .C_BuilderLet _ _ _ _ | .C_BuilderOp _ _ _ _ | .C_Meth _ _ _ _ _ _ _ _ _ _
   | .C_Let _ _ _ | .C_DependentApp .. | .C_App _ _ | .C_If _ _ _ | .C_Lazy _ _ | .C_Escape _ _ | .C_Use _ _ _ _ => intro v he; cases he
-  | .C_Sub hm _ _ _ _ _ | .C_Eff hm _ => exact return_value hm
+  | .C_Normal hm | .C_Sub hm _ _ _ _ _ | .C_Eff hm _ => exact return_value hm
 
 /-- return の型付けは、部分型・効果拡大の下にも値の導出を含む。 -/
 theorem HasTypeCQ.return_value_typable {P B store Q C Γ Φ R v a ε Δl}

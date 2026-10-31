@@ -142,14 +142,14 @@ old Eff.Covers ε' ε → Transport θ Γ Φ Δ Ψ →
 
 ### L00a の正規化と埋め込みの交換
 
-正規化は .06b から置く。`Normalize.lean:17–55,93` と `Typing.lean:274,278` に合わせ、次の契約を固定する。ここでの正規化は型の子と Fail 列の正規化であり、篩の平坦化と `T{true}=T` の追加は L00b.11 に残す。
+正規化は .06b から置く。2026-10-31 の取りまとめの判断に従い、L00b.11 で次の契約へ置き換える。実装と依存先の検査の状態は [L00b.11 の結果](../l00b.11/results.md)を参照する。
 
 | 新しい公開宣言 | L00a.06b の定義・義務 |
 |---|---|
-| `Refinement.Ty.norm : Ty → Ty` / `Ty.normTys : List Ty → List Ty` | 旧15構成子の全ての子と効果を再帰的に正規化する。`norm (refined a p) = refined (norm a) p`。p は変更しない |
+| `Refinement.Ty.norm : Ty → Ty` / `Ty.normTys : List Ty → List Ty` | 全ての子と効果を再帰的に正規化する。篩の入れ子と連言を芯・有限列へ写し、truth を除いて右結合で再構成する。列の順序と重複、falsity は保つ。空列は芯を返す。非依存の toTel の形で表せる dependentFn は fn へ正規化する |
 | `Refinement.tyCompare : Ty → Ty → Ordering` | 旧構成子の順位0〜14と各欄の比較を保ち、refined を順位15として carrier と有限の述語構文を比較する。論理同値で比較しない。旧 Order の原子の所属関数の比較と同じ扱いを保つ |
 | `Refinement.Eff.norm : Eff → Eff` | `norm (mk atoms fs) = mk atoms (sortUnique tyCompare (Ty.normTys fs))`。atoms は不変 |
-| `Refinement.Ty.Canonical : Ty → Prop` / `Eff.Canonical : Eff → Prop` | それぞれ `norm x = x` |
+| `Refinement.Ty.Normal : Ty → Prop` / `Tel.Normal : Tel → Prop` / `Ty.Canonical` / `Eff.Canonical` | `norm x = x`。WF から生の型の固定点は導かない。Ty/Tel/Eff の norm_idem と、正規化による WF・型付けの保存を別に証明する |
 | `Refinement.Eff.memFail : Eff → Ty → Prop` | `∃ x ∈ e.fails, x.norm = t.norm`。生の等号による列の所属へ置き換えない |
 | `Refinement.Eff.Sub : Eff → Eff → Prop` | 原子の点ごとの包含と上記 memFail の包含。内側が先 |
 | `Refinement.Eff.Covers` の Fail の欄 | `∀ t, inner.memFail t → outer.memFail t`。論理的な LeQ でエラー型を拡大しない |
@@ -168,6 +168,8 @@ embed_wf : old.Ty.WF nr nt t → Ty.WF nr nt nv (embedTy t)
 ```
 
 `embedTy` の単射性、型列の写し、`Ty.norm_idem`/`Eff.norm_idem`、`Eff.norm_memFail`、新型にも使える tyCompare の全順序の補題も .06b の義務とする。Fail の正規化の交換は一般の型代入の証明を先に仮定しない。公開 `Ty.bind` と `Eff.bind` はそれぞれ rawBind 後の norm を含む。型/行の像の中へ同じ置換を再適用しない点は旧 TypeSubst と同じである。
+
+L00b.11 の rawApply は `refined a p` を `refined (rawApply a as) p` に写す。篩の束縛は述語だけに及ぶため、型引数 as は移動しない。rawApply_norm は `(rawApply t.norm (Ty.normTys as)).norm = (rawApply t as).norm` とし、ProperApply や kind の前提を置かず全ての頭と引数を量化する。kind と ProperApply は適格な適用の逆転の入口に引き続き用いる。Ty.norm_rawBind はソースと像の両方に篩がある場合も量化した元の等号を保つ。論理同値は LeQ の篩の比較にだけ使い、正規形の構造の等号へ入れない。
 
 L00a の Reference/Set/Map鍵の構造規則は生の型が同じ場合を扱い、Fail の所属は既に正規化後の一致で扱う。この違いを混同しない。L00b.11 は篩の正規化を加えて不変位置も正規化後等号へ一般化し、その時点の比較・埋め込み・置換の補題も更新する。L00a.09 で残る一般の置換と正規化の交換は .06b の埋め込みとの交換とは別に報告する。
 

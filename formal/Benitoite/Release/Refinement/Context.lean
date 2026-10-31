@@ -11,10 +11,10 @@ namespace Benitoite.Release.Refinement
 abbrev Ctx := List (Option Ty)
 
 /-- 通常値を参照できる位置。継続を隠す操作と同じ境界を使う。 -/
-def Ordinary (a : Ty) : Prop := ∀ b t e, a ≠ .cont b t e
+def Ordinary (a : Ty) : Prop := ∀ b t e, a.core ≠ .cont b t e
 abbrev Ty.Ordinary (a : Ty) : Prop := Benitoite.Release.Refinement.Ordinary a
 
-@[simp] theorem ordinary_iff (a : Ty) : Ordinary a ↔ ∀ b t e, a ≠ .cont b t e := Iff.rfl
+@[simp] theorem ordinary_iff (a : Ty) : Ordinary a ↔ ∀ b t e, a.core ≠ .cont b t e := Iff.rfl
 
 def Ty.sort? : Ty → Option «Sort»
   | .base .integer | .base .integer8 | .base .integer16 | .base .integer32
@@ -42,17 +42,23 @@ theorem Ty.hasSort_unique {a : Ty} {s t : «Sort»} (h : a.HasSort s) (h' : a.Ha
 def Ty.IntegerCarrier (a : Ty) : Prop := a.HasSort .integer
 theorem Ty.integerCarrier_iff_hasSort (a : Ty) : a.IntegerCarrier ↔ a.HasSort .integer := Iff.rfl
 
-def Ty.core : Ty → Ty
-  | .refined a _ => a.core
-  | a => a
 def Ty.NotContCore (a : Ty) : Prop := ∀ b t e, a.core ≠ .cont b t e
 
 @[simp] theorem Ty.notContCore_norm (a : Ty) : a.norm.NotContCore ↔ a.NotContCore := by
-  cases a <;> simp [Ty.NotContCore, Ty.core, Ty.norm]
-  case refined a p => exact Ty.notContCore_norm a
+  cases a <;> simp only [Ty.norm, Ty.NotContCore, Ty.core]
+  case refined a p =>
+    rw [Ty.core_refineNorm]
+    exact Ty.notContCore_norm a
+  case dependentFn t =>
+    rw [Ty.core_foldFn]
+    unfold Ty.foldFn
+    split <;> simp
+  all_goals simp
+
 
 theorem Ty.HasSort.ordinary {a : Ty} {s : «Sort»} (h : a.HasSort s) : Ordinary a := by
-  cases a <;> simp_all [Ordinary, Ty.HasSort, Ty.sort?]
+  cases a <;> simp_all [Ordinary, Ty.core, Ty.HasSort, Ty.sort?]
+  case refined a p => exact Ty.HasSort.ordinary h
 
 theorem Ty.HasSort.notContCore {a : Ty} {s : «Sort»} (h : a.HasSort s) : a.NotContCore := by
   cases a <;> simp_all [Ty.HasSort, Ty.sort?, Ty.NotContCore, Ty.core]
@@ -61,6 +67,11 @@ theorem Ty.HasSort.notContCore {a : Ty} {s : «Sort»} (h : a.HasSort s) : a.Not
 theorem Ty.IntegerCarrier.notContCore {a : Ty} (h : a.IntegerCarrier) : a.NotContCore := by
   cases a <;> simp_all [Ty.IntegerCarrier, Ty.HasSort, Ty.sort?, Ty.NotContCore, Ty.core]
   case refined a p => exact Ty.IntegerCarrier.notContCore h
+
+theorem Ty.sort?_core (a : Ty) : a.core.sort? = a.sort? := by
+  cases a with
+  | refined a _ => exact Ty.sort?_core a
+  | _ => rfl
 
 def Ctx.Readable (Γ : Ctx) (i : Nat) : Prop := ∃ a, Γ[i]? = some (some a) ∧ Ordinary a
 def Term.References (Γ : Ctx) (t : Term) : Prop := t.VarsIn Γ.Readable
@@ -138,9 +149,41 @@ theorem Pred.references_wf {Γ : Ctx} {a : Ty} {p : Pred}
     (h : p.References Γ (some a)) : p.WF (Γ.length+1) :=
   Pred.varsIn_mono h (fun _ ⟨_, hi, _⟩ => (List.getElem?_eq_some_iff.mp hi).1)
 
-def Ty.assume : Ty → List Pred
-  | .refined a p => p :: a.assume
-  | _ => []
+def Ty.assume (a : Ty) : List Pred := match a.core with
+  | .cont _ _ _ => []
+  | _ => a.refinementPredicates
+
+ theorem Ty.assume_eq_predicates {a : Ty} (ho : a.Ordinary) : a.assume = a.refinementPredicates := by
+  unfold Ty.assume
+  cases hc : a.core <;> try rfl
+  exact False.elim (ho _ _ _ hc)
+
+ theorem Ty.assume_ordinary {a : Ty} {p : Pred} (hp : p ∈ a.assume) : a.Ordinary := by
+  unfold Ty.assume at hp
+  cases hc : a.core <;> simp only [hc] at hp <;> try cases hp
+  all_goals
+    change ∀ b t e, a.core ≠ .cont b t e
+    intro b t e he
+    rw [hc] at he
+    cases he
+
+theorem Ty.assume_eq_nil {a : Ty} (ho : ¬ a.Ordinary) : a.assume = [] := by
+  unfold Ty.assume
+  cases hc : a.core <;> try rfl
+  all_goals exact False.elim (ho (by
+    change ∀ b t e, a.core ≠ .cont b t e
+    rw [hc]; intros; simp))
+
+@[simp] theorem Ty.assume_norm (a : Ty) : a.norm.assume = a.assume := by
+  have hh : a.norm.Ordinary ↔ a.Ordinary := Ty.notContCore_norm a
+  by_cases ho : a.Ordinary
+  · rw [Ty.assume_eq_predicates (hh.mpr ho), Ty.assume_eq_predicates ho, Ty.predicates_norm]
+  · rw [Ty.assume_eq_nil ho, Ty.assume_eq_nil (fun h => ho (hh.mp h))]
+
+ theorem Ty.assume_refined {a : Ty} (ho : a.Ordinary) (p : Pred) :
+    (Ty.refined a p).assume = a.assume ++ p.conjuncts := by
+  rw [Ty.assume_eq_predicates (a := .refined a p) ho, Ty.assume_eq_predicates ho]
+  rfl
 
 /-- 文脈の番号を保ち、各変数の最外の篩だけを事実とする。 -/
 def Ctx.facts (Γ : Ctx) : List Pred :=
@@ -149,40 +192,6 @@ def Ctx.facts (Γ : Ctx) : List Pred :=
     | none => []
     | some a => a.assume.map (fun p => p.open (.var i))
 
-mutual
-  /-- 値の名前空間だけを移動する。篩の self は越えない。 -/
-  def Ty.shiftV (k c : Nat) : Ty → Ty
-    | .base b => .base b
-    | .opaque o ix => .opaque o ix
-    | .data d as => .data d (shiftVTys k c as)
-    | .list a => .list (a.shiftV k c)
-    | .fn ns ps r e => .fn ns (shiftVTys k c ps) (r.shiftV k c) (Eff.shiftV k c e)
-    | .tvar i => .tvar i
-    | .reference a => .reference (a.shiftV k c)
-    | .lazy a => .lazy (a.shiftV k c)
-    | .cont b t e => .cont (b.shiftV k c) (t.shiftV k c) (Eff.shiftV k c e)
-    | .map a b => .map (a.shiftV k c) (b.shiftV k c)
-    | .set a => .set (a.shiftV k c)
-    | .bytes => .bytes
-    | .dict cl a => .dict cl (a.shiftV k c)
-    | .tapp i as => .tapp i (shiftVTys k c as)
-    | .ctor φ => .ctor φ
-    | .refined a p => .refined (a.shiftV k c)
-        (predBind (fun i => some (.var (if i < c+1 then i else i+k))) p)
-    | .dependentFn t => .dependentFn (Tel.shiftV k c t)
-    | .external id as => .external id (shiftVTys k c as)
-    | .scoped o kind ix => .scoped o kind ix
-    | .pathBases => .pathBases
-    | .scopePattern kind => .scopePattern kind
-  def Tel.shiftV (k c : Nat) : Tel → Tel
-    | .done r e => .done (r.shiftV k c) (Eff.shiftV k c e)
-    | .param n a t => .param n (a.shiftV k c) (Tel.shiftV k (c+1) t)
-  def shiftVTys (k c : Nat) : List Ty → List Ty
-    | [] => []
-    | a :: as => a.shiftV k c :: shiftVTys k c as
-  def Eff.shiftV (k c : Nat) : Eff → Eff
-    | .mk a fs => .mk a (shiftVTys k c fs)
-end
 
 def Ctx.extend (Γ : Ctx) (a : Ty) : Ctx :=
   some (a.shiftV 1 0) :: Γ.map (Option.map (Ty.shiftV 1 0))
@@ -338,6 +347,7 @@ def rawApply (t : Ty) (as : List Ty) : Ty :=
   | .ctor .reference => .reference (as.headD (.base .unit))
   | .ctor .lazy => .lazy (as.headD (.base .unit))
   | .tvar i => .tapp i as
+  | .refined a p => .refined (rawApply a as) p
   | t => t
 
 def substAtoms (es : List Eff) (a : Atom → Bool) : Atom → Bool := fun x =>
@@ -385,6 +395,16 @@ mutual
     | .mk a fs => .mk (substAtoms θ.rows (instAtoms θ.ranges a))
         (rawBindTys θ fs ++ rowFails θ.rows a)
 end
+
+/-- 適格な適用の全結果。unit 補完・引数を捨てる枝を含まない。 -/
+inductive ProperApply : Ty → List Ty → Ty → Prop where
+  | variable (i as) : ProperApply (.tvar i) as (.tapp i as)
+  | list (a) : ProperApply (.ctor .list) [a] (.list a)
+  | set (a) : ProperApply (.ctor .set) [a] (.set a)
+  | reference (a) : ProperApply (.ctor .reference) [a] (.reference a)
+  | lazy (a) : ProperApply (.ctor .lazy) [a] (.lazy a)
+  | map (a b) : ProperApply (.ctor .map) [a,b] (.map a b)
+  | data (d as) : ProperApply (.ctor (.data d)) as (.data d as)
 
 noncomputable def Ty.bind (θ : SubstEnv) (t : Ty) : Ty := (t.rawBind θ).norm
 noncomputable def Eff.bind (θ : SubstEnv) (e : Eff) : Eff := (Eff.rawBind θ e).norm

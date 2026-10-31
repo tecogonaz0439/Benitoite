@@ -1,0 +1,114 @@
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/normalized-rules-boundary.lean:13:8: warning: This simp argument is unused:
+  raw
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [bad, badPred, U, Ty.WF, Pred.WF, Pred.VarsIn, Term.VarsIn, Ty.NotContCore, Ty.core]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/normalized-rules-boundary.lean:13:12: warning: This simp argument is unused:
+  bad
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [raw, badPred, U, Ty.WF, Pred.WF, Pred.VarsIn, Term.VarsIn, Ty.NotContCore, Ty.core]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/normalized-rules-boundary.lean:13:16: warning: This simp argument is unused:
+  badPred
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [raw, bad, U, Ty.WF, Pred.WF, Pred.VarsIn, Term.VarsIn, Ty.NotContCore, Ty.core]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/normalized-rules-boundary.lean:19:8: warning: This simp argument is unused:
+  raw
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [bad, badPred, U, Ty.norm, Ty.refineNorm, Ty.core, Ty.refinementPredicates, Ty.packRefinements,
+    Pred.conjuncts, Pred.ofConjuncts, Ty.Sorted, Pred.Sorted, Term.HasSort, Term.Shape, Term.References, Term.VarsIn]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/normalized-rules-boundary.lean:19:12: warning: This simp argument is unused:
+  bad
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [raw, badPred, U, Ty.norm, Ty.refineNorm, Ty.core, Ty.refinementPredicates, Ty.packRefinements,
+    Pred.conjuncts, Pred.ofConjuncts, Ty.Sorted, Pred.Sorted, Term.HasSort, Term.Shape, Term.References, Term.VarsIn]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/normalized-rules-boundary.lean:19:24: warning: This simp argument is unused:
+  U
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [raw, bad, badPred, Ty.norm, Ty.refineNorm, Ty.core, Ty.refinementPredicates, Ty.packRefinements,
+    Pred.conjuncts, Pred.ofConjuncts, Ty.Sorted, Pred.Sorted, Term.HasSort, Term.Shape, Term.References, Term.VarsIn]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/normalized-rules-boundary.lean:30:33: warning: This simp argument is unused:
+  Ty.Ordinary
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Ty.core]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/normalized-rules-boundary.lean:46:31: warning: This simp argument is unused:
+  Ty.Ordinary
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Ty.core, Ty.norm, raw, bad]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/normalized-rules-boundary.lean:46:59: warning: This simp argument is unused:
+  raw
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Ty.Ordinary, Ty.core, Ty.norm, bad]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/normalized-rules-boundary.lean:46:63: warning: This simp argument is unused:
+  bad
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Ty.Ordinary, Ty.core, Ty.norm, raw]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'Benitoite.Release.Refinement.NormalizedRulesBoundary.hidden_not_wf' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.NormalizedRulesBoundary.raw' does not depend on any axioms
+'Benitoite.Release.Refinement.NormalizedRulesBoundary.U' does not depend on any axioms
+'Benitoite.Release.Refinement.NormalizedRulesBoundary.comp_normal_entry' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.NormalizedRulesBoundary.annotation_preserved' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.NormalizedRulesBoundary.resumeContext' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.NormalizedRulesBoundary.bad' does not depend on any axioms
+'Benitoite.Release.Refinement.NormalizedRulesBoundary.raw_wf' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.NormalizedRulesBoundary.raw_declared' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.NormalizedRulesBoundary.resume_result_wf' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.NormalizedRulesBoundary.value_normal_entry' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.NormalizedRulesBoundary.normal_not_sorted' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.NormalizedRulesBoundary.dependent_application_derived' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.NormalizedRulesBoundary.badPred' does not depend on any axioms
+'Benitoite.Release.Refinement.NormalizedRulesBoundary.resume_normal_entry' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.NormalizedRulesBoundary.location_resume_result_wf' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.NormalizedRulesBoundary.raw_not_sorted' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

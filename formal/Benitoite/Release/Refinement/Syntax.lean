@@ -72,6 +72,11 @@ inductive ExternalMode where
   | borrow | own
   deriving DecidableEq, BEq
 
+noncomputable def BuilderKind.norm : BuilderKind → BuilderKind
+  | .list a => .list a.norm
+  | b => b
+
+
 structure ExternalTypeDecl where
   id : ExternalId
   component : ComponentId

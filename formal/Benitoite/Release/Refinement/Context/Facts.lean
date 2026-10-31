@@ -56,17 +56,20 @@ private theorem wellFormed_context {P C Γ Δ p} (h : Pred.WellFormed P C Γ p)
   simpa only [renEnv_values, id_eq, predBind_id] using h.map hm.values hm.references hd
 
 private theorem assume_subset (a : Ty) (p : Pred) :
-    ∀ q ∈ a.assume, q ∈ (Ty.refined a p).assume := fun _ h => List.mem_cons_of_mem _ h
+    ∀ q ∈ a.assume, q ∈ (Ty.refined a p).assume := by
+  intro q h
+  rw [Ty.assume_refined (Ty.assume_ordinary h)]
+  exact List.mem_append_left _ h
 
 private theorem refined_map (Γ : Ctx) (a : Ty) (p : Pred) :
     Ctx.TypeMap (Γ.extend a) (Γ.extend (.refined a p)) :=
   (Ctx.TypeMap.id Γ).extend a (.refined a p) (fun _ h => h)
-    (fun _ => by simp [Ordinary]) (assume_subset a p)
+    (fun ho => ho) (assume_subset a p)
 
 private theorem refined_declaration (P : Program) (C : List TParam) (Γ : Ctx) (a : Ty) (p : Pred) :
     DeclarationImages P C (Γ.extend a) (Γ.extend (.refined a p)) (fun i => some (.var i)) := by
   have h := (DeclarationImages.id P C Γ).extend a (.refined a p)
-    (fun _ => by simp [Ordinary]) (by simp [Ty.norm, Ty.core])
+    (fun ho => ho) (by simp [Ty.norm, Ty.core])
   simpa only [upValues_id] using h
 
 private theorem self_images (Γ : Ctx) (a : Ty) (p : Pred) :
@@ -91,7 +94,7 @@ private theorem self_images (Γ : Ctx) (a : Ty) (p : Pred) :
     | zero =>
       simp only [List.getElem?_cons_zero, Option.some.injEq] at hi
       cases hi
-      exact ⟨_, rfl, by simp [Ty.shiftV, Ordinary]⟩
+      exact ⟨_, rfl, (Ty.ordinary_shiftV _ _ _).mpr hb⟩
     | succ i =>
       exact ⟨b.shiftV 1 0, by simp [Ctx.lookup_extend, show Γ[i]? = some (some b) from hi],
         (Ty.ordinary_shiftV _ _ _).mpr hb⟩
@@ -99,21 +102,21 @@ private theorem self_images (Γ : Ctx) (a : Ty) (p : Pred) :
 /-- 篩の self と外側の注釈を、実際に束縛した文脈で検査する。 -/
 theorem Ty.assume_wellFormed {P C Γ a} (ha : Ty.Annotation P C Γ a) :
     ∀ p ∈ a.assume, Pred.WellFormed P C (Γ.extend a) p := by
-  cases a <;> simp only [Ty.assume]
-  all_goals first | exact fun p hp => False.elim (List.not_mem_nil hp) | skip
+  cases a <;> try (simp only [Ty.assume,Ty.core,Ty.refinementPredicates]; exact fun _ hp => False.elim (List.not_mem_nil hp))
   case refined a q =>
+    rw [Ty.assume_refined ha.wf.2.2]
     intro p hp
-    rcases List.mem_cons.mp hp with rfl | hp
-    · have hs : p.Sorted (Γ.extend (.refined a p)) none := by
-        simpa only [predBind_id] using ha.sorted.2.map
-          (Δ := Γ.extend (.refined a p)) (other := none) (self_images Γ a p).1 (self_images Γ a p).2
-      have hd : p.Declared P C (Γ.extend (.refined a p)) none := by
-        simpa only [predBind_id, Ctx.extend] using
-          (Pred.Declared.map (self := some a) (other := none) ha.declared.2
-            (refined_declaration P C Γ a p))
-      exact ⟨hs.wf_none, hs, hd⟩
+    rcases List.mem_append.mp hp with hp | hp
     · have h := Ty.assume_wellFormed ⟨ha.wf.1, ha.sorted.1, ha.declared.1⟩ p hp
       exact wellFormed_context h (refined_map Γ a q) (refined_declaration P C Γ a q)
+    · have hs : p.Sorted (Γ.extend (.refined a q)) none := by
+        simpa only [predBind_id] using (Pred.sorted_conjuncts ha.sorted.2 p hp).map
+          (Δ := Γ.extend (.refined a q)) (other := none) (self_images Γ a q).1 (self_images Γ a q).2
+      have hd : p.Declared P C (Γ.extend (.refined a q)) none := by
+        simpa only [predBind_id, Ctx.extend] using
+          (Pred.Declared.map (self := some a) (other := none) (ha.declared.2.conjuncts p hp)
+            (refined_declaration P C Γ a q))
+      exact ⟨hs.wf_none, hs, hd⟩
 
 /-- B は任意の表であり、組込みへの追加の信頼条件は要らない。 -/
 theorem Ctx.Regular.facts (B : Builtins) {P C Γ} (h : Ctx.Regular P C Γ) :
@@ -193,7 +196,7 @@ theorem Capture.facts_extend {P B Ψ} {Γ : Ctx} {Φ : List Pred} {cap : Capture
   rcases List.mem_append.mp hp with hp | hp
   · rcases Ctx.mem_facts_extend.mp hp with hp | ⟨q, hq, rfl⟩
     · rw [Capture.bind_extend_assume]
-      exact hv.assume_optional _ (Ty.assume_bind a (valEnv cap.env) p hp)
+      exact hv.assume_optional _ (Ty.assume_bind a (valEnv cap.env) (by intro i; simp [valEnv, Ty.Ordinary,Ty.core]) p hp)
     · rw [Capture.bind_extend_lift]
       exact hf q (List.mem_append_left _ hq)
   · obtain ⟨q, hq, rfl⟩ := List.mem_map.mp hp

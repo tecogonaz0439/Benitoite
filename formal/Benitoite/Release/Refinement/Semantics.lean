@@ -173,29 +173,29 @@ inductive Step (P : Program) (B : Builtins) (σ : PathEnv) : State → Option Ev
       Step P B σ (.exit n rs (.guardF v cap arms next body :: k) μ) none (.exit n rs k μ)
   | E_Prim {b ts es rs ws k μ s v} {q : Closure} :
       q.view = (.app (.prim b ts es rs) ws) →
-      B.sig b = some s → s.kind = .pure → B.delta b ts es rs ws = some (.val v) →
+      B.sig b = some s → s.kind = .pure → B.delta b (Ty.normTys ts) (es.map Eff.norm) rs ws = some (.val v) →
       Step P B σ (.run q k μ) none (.run (Closure.pure (.ret v)) k μ)
   | E_Err {b ts es rs ws k μ s r} {q : Closure} :
       q.view = (.app (.prim b ts es rs) ws) →
-      B.sig b = some s → s.kind = .pure → B.delta b ts es rs ws = some (.err r) →
+      B.sig b = some s → s.kind = .pure → B.delta b (Ty.normTys ts) (es.map Eff.norm) rs ws = some (.err r) →
       Step P B σ (.run q k μ) none (.error [r] k μ)
   
   | E_IO {b ts es rs ws k μ s v obs} {q : Closure} :
       q.view = (.app (.prim b ts es rs) ws) →
       B.sig b = some s → s.kind = .io → NoHandler k (.prim b) →
-      B.ioResponse b ts es ws (.val v) obs →
+      B.ioResponse b (Ty.normTys ts) (es.map Eff.norm) ws (.val v) obs →
       Step P B σ (.run q k μ) (some (.io b ws (.val v) obs)) (.run (Closure.pure (.ret v)) k μ)
   
   | E_IOErr {b ts es rs ws k μ s r obs} {q : Closure} :
       q.view = (.app (.prim b ts es rs) ws) →
       B.sig b = some s → (s.kind = .io ∨ s.kind = .exit) → NoHandler k (.prim b) →
-      B.ioResponse b ts es ws (.err r) obs →
+      B.ioResponse b (Ty.normTys ts) (es.map Eff.norm) ws (.err r) obs →
       Step P B σ (.run q k μ) (some (.io b ws (.err r) obs)) (.error [r] k μ)
   
   | E_Exit {b ts es rs ws k μ s n obs} {q : Closure} :
       q.view = (.app (.prim b ts es rs) ws) →
       B.sig b = some s → s.kind = .exit → NoHandler k (.prim b) →
-      B.ioResponse b ts es ws (.exit n) obs →
+      B.ioResponse b (Ty.normTys ts) (es.map Eff.norm) ws (.exit n) obs →
       Step P B σ (.run q k μ) (some (.io b ws (.exit n) obs)) (.exit n [] k μ)
   
   | E_RefNew {b ts es rs v k μ s l} {q : Closure} :

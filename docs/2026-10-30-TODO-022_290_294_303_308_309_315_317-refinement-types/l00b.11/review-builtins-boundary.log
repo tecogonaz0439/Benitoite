@@ -1,0 +1,68 @@
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/review-builtins-boundary.lean:26:84: warning: This simp argument is unused:
+  Order.sortUnique
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Tel.instR, Tel.substRAt, Tel.mapRanges, Tel.rawMapRanges, PrimSig.tel, sg, signatureTel, Tel.norm,
+    Ty.rawMapRanges, Ty.norm, Eff.rawMapRanges, Eff.norm, Eff.empty, Ty.normTys, U]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/review-builtins-boundary.lean:35:44: warning: This simp argument is unused:
+  Order.sortUnique
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [instantiatedTel, Tel.bind, Tel.rawBind, Tel.norm, Ty.rawBind, Ty.norm, U, Eff.rawBind, Eff.norm,
+    Eff.empty, typeEnvAt, rowFails, rawBindTys, instAtoms_nil, substAtoms_nil, Ty.normTys]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/review-builtins-boundary.lean:45:24: warning: Try `simp at h` instead of `simpa using h`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/review-builtins-boundary.lean:46:24: warning: Try `simp at h` instead of `simpa using h`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+'Benitoite.Release.Refinement.ReviewBuiltinBoundary.admissible' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ReviewBuiltinBoundary.responses' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ReviewBuiltinBoundary.rawRow' does not depend on any axioms
+'Benitoite.Release.Refinement.ReviewBuiltinBoundary.raw_view' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.ReviewBuiltinBoundary.nonempty_row_images' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ReviewBuiltinBoundary.raw_annotation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ReviewBuiltinBoundary.range_args' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ReviewBuiltinBoundary.sg' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.ReviewBuiltinBoundary.args_result' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ReviewBuiltinBoundary.B' does not depend on any axioms
+'Benitoite.Release.Refinement.ReviewBuiltinBoundary.original_args_normalized' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ReviewBuiltinBoundary.delta_entry' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ReviewBuiltinBoundary.signature' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ReviewBuiltinBoundary.rawClosure' does not depend on any axioms
+'Benitoite.Release.Refinement.ReviewBuiltinBoundary.src_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.ReviewBuiltinBoundary.originalB' does not depend on any axioms
+'Benitoite.Release.Refinement.ReviewBuiltinBoundary.sg.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.ReviewBuiltinBoundary.args_normalized' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ReviewBuiltinBoundary.raw' does not depend on any axioms
+'Benitoite.Release.Refinement.ReviewBuiltinBoundary.P' does not depend on any axioms
+'Benitoite.Release.Refinement.ReviewBuiltinBoundary.U' does not depend on any axioms
+'Benitoite.Release.Refinement.ReviewBuiltinBoundary.tel_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.ReviewBuiltinBoundary.prim_typed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ReviewBuiltinBoundary.io_entry' depends on axioms: [propext, Classical.choice, Quot.sound]

@@ -109,7 +109,7 @@ theorem Ty.substV_subst_closed_rows {nt a} (hw : Ty.WF 0 nt 0 a)
     (ts : List Ty) (es : List Eff) (ν : ObservationEnv) :
     (a.subst ts es).substV ν = a.subst (ts.map (Ty.substV ν)) (es.map (Eff.substV ν)) := by
   have hs := Ty.substAt_substV a 0 ts es ν
-  rw [Ty.substV_of_wf_zero hw] at hs
+  rw [Ty.substV_of_wf_zero hw, Ty.substAt_norm_source] at hs
   change (a.subst ts es).substV ν = a.subst _ _ at hs
   rw [hs]
   have he : Ty.substV ν = (fun t => (t.rawSubstV ν).norm) := by
@@ -124,7 +124,7 @@ theorem Ty.subst_shiftV_closed_rows {nt a} (hw : Ty.WF 0 nt 0 a)
     (ts : List Ty) (es : List Eff) (k c : Nat) :
     (a.subst ts es).shiftV k c = a.subst (ts.map (Ty.shiftV k c)) (es.map (Eff.shiftV k c)) := by
   have hs := Ty.substAt_substV a 0 ts es (fun i => some (.var (shiftIndex k c i)))
-  rw [Ty.substV_of_wf_zero hw] at hs
+  rw [Ty.substV_of_wf_zero hw, Ty.substAt_norm_source] at hs
   have he : Ty.rawSubstV (fun i => some (.var (shiftIndex k c i))) = Ty.shiftV k c := by
     funext t; rw [← renameTy_eq_rawSubstV, ← Ty.shiftV_eq_renameTy]
   have hf : Eff.rawSubstV (fun i => some (.var (shiftIndex k c i))) = Eff.shiftV k c := by

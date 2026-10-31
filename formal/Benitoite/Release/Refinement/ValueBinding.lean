@@ -307,10 +307,9 @@ theorem substEffValues_embed (σ : Nat → Val) (e : Benitoite.Release.Eff) :
   rw [← Eff.rawSubstV_eq_rawBind, Eff.rawSubstV_embed, ← embedEff_norm]
 
 theorem Ty.subst_values_of_wf_zero {nr nt a} (h : Ty.WF nr nt 0 a) (σ : Nat → Val) :
-    substTyValues σ a = a := by
+    substTyValues σ a = a.norm := by
   unfold substTyValues Ty.bind valEnv
   rw [← Ty.rawSubstV_eq_rawBind, Ty.rawSubstV_of_wf_zero h]
-  exact Ty.canonical_of_wf h
 
 theorem Eff.subst_values_of_wf_zero {nr nt e} (h : Eff.WF nr nt 0 e)
     (hc : e.Canonical) (σ : Nat → Val) : substEffValues σ e = e := by

@@ -337,3 +337,7 @@ import Benitoite.Release.Refinement.ExternalCheck
 
 import Benitoite.Release.Refinement.Certificate
 import Benitoite.Release.Refinement.ExternalConnection
+import Benitoite.Release.Refinement.InversionCore
+import Benitoite.Release.Refinement.Canonical
+import Benitoite.Release.Refinement.BindCongr
+import Benitoite.Release.Refinement.DeclaredTransport

@@ -1,3 +1,4 @@
+import Benitoite.Release.Refinement.TypingDeclared
 import Benitoite.Release.Refinement.ClosureTyping
 import Benitoite.Release.Refinement.ValueReferences
 

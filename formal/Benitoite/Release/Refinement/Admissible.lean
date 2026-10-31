@@ -23,7 +23,7 @@ def TypeAnnotations (P : Program) (C : List TParam) (Γ : Ctx) (ts : List Ty) : 
 
 def SatAll (B : Builtins) (C : List TParam) (ts : List Ty) (tps : List TParam) : Prop :=
   ts.length = tps.length ∧ ∀ (i : Nat) (t : Ty) (p : TParam),
-    ts[i]? = some t → tps[i]? = some p → B.sat C t p
+    ts[i]? = some t → tps[i]? = some p → B.sat C t.norm p
 
 mutual
   def QTy : Ty → NoFailCtx
@@ -90,7 +90,7 @@ structure Admissible (B : Builtins) (C : List TParam) (nv : Nat)
 structure PrimitiveAdmissible (C : List TParam) (nv : Nat) (s : PrimSig)
     (Q : NoFailCtx) (ts : List Ty) (es : List Eff) : Prop where
   typeCount : ts.length = s.tparams.length
-  admits : s.admits C ts
+  admits : s.admits C (Ty.normTys ts)
   typeScope : ∀ t ∈ ts, Ty.WF 0 C.length nv t ∧ Ordinary t
   rowCount : es.length = s.neffs
   rowScope : ∀ f ∈ es, Eff.WF 0 C.length nv f

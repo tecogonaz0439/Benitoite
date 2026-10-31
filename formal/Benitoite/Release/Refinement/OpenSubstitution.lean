@@ -40,13 +40,13 @@ noncomputable def outer : Eff := .mk (fun (a : Atom) => by
 def source (e : Eff) : Ty := .fn ["x", "y"] [.tvar 0, .tvar 1] (.opaque "Box" (.rvar 1)) e
 
 theorem context_facts : Γ.facts = [path] ∧
-    Δ.facts = [.and (predBind σ path) .truth] := ⟨rfl, rfl⟩
+    Δ.facts = [predBind σ path] := ⟨rfl, rfl⟩
 
 theorem context_none : Γ[1]? = some none ∧ Δ[1]? = some none := ⟨rfl, rfl⟩
 
-/-- And の仮定から必要な等式を取り出す。等式そのものは仮定に含めていない。 -/
+/-- truth を除いた有限の事実列から、必要な等式を取り出す。 -/
 theorem target_path_from_facts : Entails Δ.facts (predBind σ path) :=
-  .and_left (.hyp (by rw [context_facts.2]; exact List.mem_cons_self))
+  .hyp (by rw [context_facts.2]; exact List.mem_cons_self)
 
 theorem target_conditions_from_facts : ∀ p ∈ Ψ, Entails Δ.facts p := by
   intro p hp
@@ -75,7 +75,8 @@ theorem transport : Transport θ Γ [path] Δ Ψ := by
   · intro i
     by_cases hi : i = 0 <;> simp [hi, θ, dependentType, Ty.rawSubstV, Ordinary]
   · intro p hp
-    have hp : p = path := by simpa [termBind?, Γ, Ctx.facts, Ty.assume, Pred.open, predBind, termBind, path] using hp
+    have hp : p = path := by simpa [termBind?, Γ, Ctx.facts, Ty.assume,
+      Ty.refinementPredicates, Pred.conjuncts, Pred.open, predBind, termBind, path] using hp
     subst p
     exact target_path_from_facts.weaken (fun _ h => List.mem_append_left Ψ h)
 
@@ -119,7 +120,7 @@ theorem introduce_bind_shape :
       (.refined (.base .integer) (.le (.var 0) (.add (.var 3) (.integer 1))))
       (.refined (.refined (.base .integer) (.le (.var 0) (.add (.var 3) (.integer 1))))
         (.eq (.add (.var 3) (.integer 1)) (.integer 7))) := by
-  exact introduce_bind
+  exact .trans introduce_bind (.convert rfl)
 
 /-- None を一つ加えた後も、facts を使う同じ篩の導入を移せる。 -/
 theorem introduce_bind_under_none :

@@ -1,0 +1,677 @@
+{
+  "b_work": "5fd3664ed92b4eb20de0ba422e9e55c825019aff",
+  "basis": "git は使わず前回の差分記録と、r3 の編集時刻・編集対象から列挙。追加分の以前の SHA-256 が不明な欄は null とする。公理監査は候補の漏れを防ぐため Refinement 全129モジュールと集約モジュールを対象にする。",
+  "changes": [
+    {
+      "path": "formal/Benitoite.lean",
+      "kind": "changed",
+      "before_sha256": "3a29d52504ec14030940b1850870907201e8d974f0101763afc2d06622b81ade",
+      "after_sha256": "a920652501f58a7cb54c7ffcca4045f08984b40f62bcbbe96ee2e698642418cb",
+      "bytes": 12136
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/Admissible.lean",
+      "kind": "changed",
+      "before_sha256": null,
+      "before_note": "追加前の控えは OS 再起動後に残っていない。git を使った基準版との照合は取りまとめへ残す。",
+      "after_sha256": "c1ecc0532bb3f5091ddc5b8883fe771805b06cbf418e13bc7e5184a9e9d21871",
+      "bytes": 5795
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/AdmissibleMap.lean",
+      "kind": "changed",
+      "before_sha256": "3545e945f83a3f241b6db64aa1a4c3110e9d8f7484e63707ed8856f50ad8b353",
+      "after_sha256": "d80ef6afb973aacd0013cfa32a7fa7728b06b162c87e6082b5eeafb3a3a17f1d",
+      "bytes": 9170
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/AtTyping.lean",
+      "kind": "changed",
+      "before_sha256": null,
+      "before_note": "追加前の控えは OS 再起動後に残っていない。git を使った基準版との照合は取りまとめへ残す。",
+      "after_sha256": "d76ecf7e8a0fd2d43bd9cbc064b848e62d0366f256a330ce2fa1720d9899abed",
+      "bytes": 4054
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/Basic.lean",
+      "kind": "changed",
+      "before_sha256": "5d64f6045806a330d4bbec85832e1ef45c4d5b94f51efaf528e7bd1420e939d3",
+      "after_sha256": "6567b7ed789781d0bd1be19aec710c27ca0f42aa39b01fe36f948e28bc794a53",
+      "bytes": 12650
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/Bind.lean",
+      "kind": "changed",
+      "before_sha256": "7b112e0a035a3f72ba904b5e0639dabdc905c74f189ffd16a9e920dcb186ce26",
+      "after_sha256": "6dcb93de9b7de6c08be082edbb898b5098866a264ad296c3d71457e4e8b267be",
+      "bytes": 10832
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/BindingShift.lean",
+      "kind": "changed",
+      "before_sha256": "557b9375d9a7695d2a692fb83afc5eabf233cbe6c845aeb04c7a3c7eef91db3a",
+      "after_sha256": "1cccd23c71d5cd669bba7507db8d019076573120dc3e819e512e900b64236b8a",
+      "bytes": 685
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/BuiltinResponse.lean",
+      "kind": "changed",
+      "before_sha256": "2ca173426e761192fc8e160a401f685fbe8df8f7ea8545ca514239004ab6ba6d",
+      "before_note": "RV-L00b.11 で基準版との差分なしと確認されたファイル。レビュー対応前のハッシュを用いる。",
+      "after_sha256": "e374198fb01c55d15b17702fe12c9a5f34bcfb5cd53e71e726b6043494824301",
+      "bytes": 4089
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/Canonical.lean",
+      "kind": "new",
+      "before_sha256": null,
+      "after_sha256": "c9a003ec0c4d828324c95bbd5330c0714af79d1d7ce9abe4c140867e3a266e04",
+      "bytes": 4589
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/ClosedDecidable.lean",
+      "kind": "changed",
+      "before_sha256": "c9f2d4a7bb4055fa15403757be977745eddd1798a4a62ea72ba23cc48a145cd5",
+      "after_sha256": "1364ab1a7147adc932b5a8686a359b59f9b1e830fc13682c2e3efa1fb72a46f9",
+      "bytes": 3663
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/ClosureTyping.lean",
+      "kind": "changed",
+      "before_sha256": "3299a6203520c8a958a20c562a73fe4e91b56575dd3238a5354019d4b284f00e",
+      "after_sha256": "1d450b4c49304e8d97523567db437af90bf3e3480fafcc586e5be46f7c4cf089",
+      "bytes": 34415
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/Conjunction.lean",
+      "kind": "new",
+      "before_sha256": null,
+      "after_sha256": "5c3f2463920e0315ff5fd8f33bfbe9c289afe05a26d6b383f08b5fe6ee567fe1",
+      "bytes": 2816
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/ConstraintAssumptions.lean",
+      "kind": "changed",
+      "before_sha256": "7b9e1398485c0525d092505d2d83de2a9b3e9568c7e648131539d7ad0dbe261e",
+      "after_sha256": "87759683820af5063acc641af96f57e1f94905a6c8c1c1f751cd10dcbc67b2d9",
+      "bytes": 9515
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/Context.lean",
+      "kind": "changed",
+      "before_sha256": "679f2780f3821858a431abf865eff315cba566fd9992dc02d3d55958a906960a",
+      "after_sha256": "a1c8f28980e7e2baebec746a902183745399f7cf6b63a2a7de6c4cdf38759529",
+      "bytes": 18498
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/Context/Capture.lean",
+      "kind": "changed",
+      "before_sha256": null,
+      "before_note": "追加前の控えは OS 再起動後に残っていない。git を使った基準版との照合は取りまとめへ残す。",
+      "after_sha256": "cb16ebe953fc247b018b5ee3afc0996a3494057b844af6b29c98eed2bc32f88f",
+      "bytes": 12807
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/Context/Declarations.lean",
+      "kind": "changed",
+      "before_sha256": null,
+      "before_note": "追加前の控えは OS 再起動後に残っていない。git を使った基準版との照合は取りまとめへ残す。",
+      "after_sha256": "b17f9a8cb05947dfd22d45f4bf182996fa1b28a4cc83f513441b46bcfd4ece3d",
+      "bytes": 12870
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/Context/Facts.lean",
+      "kind": "changed",
+      "before_sha256": null,
+      "before_note": "追加前の控えは OS 再起動後に残っていない。git を使った基準版との照合は取りまとめへ残す。",
+      "after_sha256": "9a23da64f7be44ac51b85a818ac892f0733becc4130da1ca8b3d72bfa51832be",
+      "bytes": 10410
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/Context/WF.lean",
+      "kind": "changed",
+      "before_sha256": null,
+      "before_note": "追加前の控えは OS 再起動後に残っていない。git を使った基準版との照合は取りまとめへ残す。",
+      "after_sha256": "cf35462c0a9ce64459088dd3531ea5d3c893d255d1ae91bec99b46e58da760db",
+      "bytes": 9738
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/ContextFacts.lean",
+      "kind": "changed",
+      "before_sha256": "6a520b1bf3b3e5891c9286383cd9405bd3ebaf8a1e92d3bf23665732241a46ac",
+      "after_sha256": "a1c26903e860c008e36edbb2e969f28260557f42405829d0d546f3425ab54f74",
+      "bytes": 5838
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/DeclaredTransport.lean",
+      "kind": "changed",
+      "before_sha256": "b862dcddcec71ebaf1c394205775edea69a8f2a1473e528f4e67c5f1da2fff64",
+      "after_sha256": "0ad19444a0eae9253cec793eb84c95ecb18d64de3e79db5d1280193c96bd628d",
+      "bytes": 29904
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/ExternalCheck.lean",
+      "kind": "changed",
+      "before_sha256": "cdf64d891df1838c469e3b37b13f11d9659a5f015158af8b6eb1d917b929ce61",
+      "after_sha256": "e06329139df9219463ebc5a675b291d44f5469928eb41b670d847753f7a55ce6",
+      "bytes": 17781
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/FunctionNormalForm.lean",
+      "kind": "new",
+      "before_sha256": null,
+      "after_sha256": "3c560dce4facc755fb349091ae4cb3b7b3676b9cf87670fb97c9c99be7ff3c5d",
+      "bytes": 4902
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/HandlerAlgebra.lean",
+      "kind": "changed",
+      "before_sha256": null,
+      "before_note": "追加前の控えは OS 再起動後に残っていない。git を使った基準版との照合は取りまとめへ残す。",
+      "after_sha256": "df255bbe9523e1fc847ba726a2e4bd5b5592e27ca7a19d986ae4d2b461bb4520",
+      "bytes": 13219
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/HandlerTyping.lean",
+      "kind": "changed",
+      "before_sha256": null,
+      "before_note": "追加前の控えは OS 再起動後に残っていない。git を使った基準版との照合は取りまとめへ残す。",
+      "after_sha256": "16caf7d4fe9fbda47bcb05c982f0f960562c52448a0f70d2ff6dc3be1b4bc51c",
+      "bytes": 2190
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/InversionCore.lean",
+      "kind": "new",
+      "before_sha256": null,
+      "after_sha256": "aadb925e04c62fb888dd1bce07c5891c37148fe7ecae7dc9d5e8b6513c65db5e",
+      "bytes": 11064
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/KindValues.lean",
+      "kind": "changed",
+      "before_sha256": "ece5d0525146f0a3c8ff317eef7357cf010a98f20240104dd5cc3bdbcd43e7bb",
+      "after_sha256": "50cb75434fe16fa5e6a3542ca7b29808bce4e580a255a4db33aad082175a1002",
+      "bytes": 8735
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/Kinds.lean",
+      "kind": "changed",
+      "before_sha256": "3590751a789f905a0387f3c2d7047e2bfbcbd8838ea8c3d7bd6fe3f1288a39f6",
+      "after_sha256": "bedf99bb16413cb8c2168baecc14e10f36deb2ade31f74cd3db11c61425ce446",
+      "bytes": 6638
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/Le.lean",
+      "kind": "changed",
+      "before_sha256": "3ce2c56160187611652a38dde27e69cf3ffd16d71e04fd0e37847c84a2c2f230",
+      "after_sha256": "1a9a6fbbf434311f304b43dbd4d24fe3c6afacb5268641217c84e0c2a6c1f3db",
+      "bytes": 7864
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/LocalResolveLemmas.lean",
+      "kind": "changed",
+      "before_sha256": "f3457aacf3caeb9c4bc4e93e885d9c3cad9a349fc3bb666f8c04403ffe45f4e0",
+      "after_sha256": "9dd50f075c454f1975f05a7504cd31cf79a83d167ad555c99497860b08bfa21a",
+      "bytes": 18153
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/LocalTransport.lean",
+      "kind": "changed",
+      "before_sha256": "bc978d6d92ef9c8878d4b99fd182b13db53537ca1fa05f95a4934b0f70d4d0de",
+      "after_sha256": "e23313385d39e671e0f9c2ce6ea903a342a94e4b8fbe5d0638eebb787796b235",
+      "bytes": 7854
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/Narrowing.lean",
+      "kind": "changed",
+      "before_sha256": null,
+      "before_note": "追加前の控えは OS 再起動後に残っていない。git を使った基準版との照合は取りまとめへ残す。",
+      "after_sha256": "df45c1a073be1c951d1fc3d09be35d195c3cea3bbfb4a395a2e35d05cec6cf7c",
+      "bytes": 43042
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/NarrowingObstruction.lean",
+      "kind": "changed",
+      "before_sha256": null,
+      "before_note": "追加前の控えは OS 再起動後に残っていない。git を使った基準版との照合は取りまとめへ残す。",
+      "after_sha256": "a9754b1fb4be745de62be3c7bf7548aa65a46ca67aeece82422f54034e947045",
+      "bytes": 3443
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/NormalWellFormed.lean",
+      "kind": "new",
+      "before_sha256": null,
+      "after_sha256": "e058a2a82b5066a401c6d2ae9b0c9fc8bc80925205e66a3aff6b91a6e2842252",
+      "bytes": 11048
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/NormalizationLogic.lean",
+      "kind": "new",
+      "before_sha256": null,
+      "after_sha256": "7728b1cf93d3946137ee69674cafa295301283f0f120e69c663fddaaaf2851cd",
+      "bytes": 1367
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/Normalize.lean",
+      "kind": "changed",
+      "before_sha256": "0155cd2dec0ef72b415dc928e8479177f2cec671fca6c692e1e092c2daacfb16",
+      "after_sha256": "f9c606b3646554a25ddf0bb5f970cd2c6c54e93e390b18f06c455f5780c03414",
+      "bytes": 11114
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/NormalizedApplication.lean",
+      "kind": "new",
+      "before_sha256": null,
+      "before_note": "追加前の控えは OS 再起動後に残っていない。git を使った基準版との照合は取りまとめへ残す。",
+      "after_sha256": "d50a3f2b628074715cf693d5dc1648ce79bd8708277bef830c673cfe4844f2d7",
+      "bytes": 4732
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/OpenSubstitution.lean",
+      "kind": "changed",
+      "before_sha256": "4b88406524a42a8c5bc6e624a6e78d4a49c6b88650675558357bb37bde11518a",
+      "after_sha256": "8a6a56b379e004d111d8e720d1f353c1465e268b2ae7c6458c885987d216c74f",
+      "bytes": 10118
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/PatternSemantics.lean",
+      "kind": "changed",
+      "before_sha256": "f371fe6931817c890f97de9d3a751f209035641b499b3a05ee65e3f96a01ff6f",
+      "after_sha256": "b67945f0a24d17995827c8ae4c45540a0755fe2251714b4478f3104fe7d54a13",
+      "bytes": 14907
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/RangeExchange.lean",
+      "kind": "changed",
+      "before_sha256": "6c2bc9e10414bd8aeeecb19dbda6c37e92053b43ab6e59d45959e06dee9079fc",
+      "after_sha256": "05d8303e3dfc157f4b85ab425ceed42fb092060868f181c2f8451e4d322bbdfc",
+      "bytes": 12778
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/RangeSubst.lean",
+      "kind": "changed",
+      "before_sha256": "866d7fdcc864502fae166e2aaca462466b4e79cc373af38d627e31cdb6512b03",
+      "after_sha256": "22f2082cbe8e4041826167ed620553e9e2749ea7e7931ce60d725ba54c5b21ab",
+      "bytes": 19694
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/RawBindingShift.lean",
+      "kind": "new",
+      "before_sha256": null,
+      "after_sha256": "e567a41ff7142ff11533971c5e071fd7d4eb2db4d25545acb91012e43218aa3f",
+      "bytes": 5979
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/RefinementNormalForm.lean",
+      "kind": "new",
+      "before_sha256": null,
+      "after_sha256": "bb030662d5e514552423227e45d0afe9d404c2188b6b09c8b4dd155de775f3c7",
+      "bytes": 4484
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/Semantics.lean",
+      "kind": "changed",
+      "before_sha256": "341f99bc6ec3dcb3e906a30d281845fabe59dd9a9a1e1d278f83c6904a27774c",
+      "before_note": "RV-L00b.11 で基準版との差分なしと確認されたファイル。レビュー対応前のハッシュを用いる。",
+      "after_sha256": "4f98fd28559f3fc6426611c798a577ffa01ab4ae3a45b2819c14ca05d452e740",
+      "bytes": 20777
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/ShiftCancellation.lean",
+      "kind": "new",
+      "before_sha256": null,
+      "after_sha256": "71ad93a0bc5fe73ac4985bdc2929ef0398ba4e3a0039be40d109cea22f4b29f2",
+      "bytes": 2675
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/ShiftOrder.lean",
+      "kind": "changed",
+      "before_sha256": "88d5ceb96a65b435c3865d3eef44fe8498c6840b6ae3e83081ecd15cc98a0b49",
+      "after_sha256": "493e6931f68c355275cd138688e748f1ed08a1e04a23d1ddd27b7740c8714465",
+      "bytes": 2295
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/StateTyping.lean",
+      "kind": "changed",
+      "before_sha256": "7e6934e8e974c29356f4b35f6668cc35269d4872947bb1c6f1a7911c59a850d9",
+      "before_note": "RV-L00b.11 で基準版との差分なしと確認されたファイル。レビュー対応前のハッシュを用いる。",
+      "after_sha256": "42a9133d1e8b22407ba35376827428210674bc1b46725e4ade568323e309764f",
+      "bytes": 15226
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/Step.lean",
+      "kind": "changed",
+      "before_sha256": "147e891d71bbfa737b64ad77ef23a6142ed516b9dd64b9d72dde58d5ff1e5415",
+      "before_note": "RV-L00b.11 で基準版との差分なしと確認されたファイル。レビュー対応前のハッシュを用いる。",
+      "after_sha256": "fcef5f309ebe6527fbf560090b3ca7e4a5dd773338eefb8cf7e53bf1ad3234bc",
+      "bytes": 16842
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/SubstTyping.lean",
+      "kind": "changed",
+      "before_sha256": "462860986dd3558b51482ea5577e3cb24545a9d53faf1f52dbcad33dc4170e70",
+      "after_sha256": "92fa1a9a324d7623d878595b0230b9473b736fba8882daec67f3c6b87c4ab7d6",
+      "bytes": 97771
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/SubstTypingObstruction.lean",
+      "kind": "changed",
+      "before_sha256": null,
+      "before_note": "追加前の控えは OS 再起動後に残っていない。git を使った基準版との照合は取りまとめへ残す。",
+      "after_sha256": "125acee8eb78a93c529cab3dcd914ad95f6856ec707be68505cb0fd2f93581d8",
+      "bytes": 18927
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/SubstitutionContracts.lean",
+      "kind": "new",
+      "before_sha256": null,
+      "after_sha256": "669303e9b7248c9667d56a29dafdb825e0c7ce2e5f4ca528c23cac72f2ea09ed",
+      "bytes": 3186
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/Syntax.lean",
+      "kind": "changed",
+      "before_sha256": "c7317ce7f5f8777905e679065294ab2ff59921449b96308b59ff38073455b7c9",
+      "after_sha256": "7fd7b6bc140d24574cd347c09e2d4a01d06bd785670450d15f0274c1d528083b",
+      "bytes": 21962
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/TelTyping.lean",
+      "kind": "changed",
+      "before_sha256": "1c2e2388e107aa3c3e4e18c9eb692c1ed3391fbfa3393bfe442d0f9941958ef1",
+      "after_sha256": "1669536cf89332688e5ec4b5edecdf8315d3a55e8b1bef60bc77ccd22ffe02d9",
+      "bytes": 2341
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/Telescope.lean",
+      "kind": "changed",
+      "before_sha256": "94ba763faf541bb5fabf653c54a1aba470fcd9924567c022fa6ef1605df56e56",
+      "after_sha256": "07ca4a9fed8ff6ea6a51913ff9af7f7fafb02c8961a3fb2a7b5538278ffa4196",
+      "bytes": 7199
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/Transport.lean",
+      "kind": "changed",
+      "before_sha256": "92043cae730019ef94d2b7ecf8bdc23d27db252e3a2b7acc476d36403ecc0960",
+      "after_sha256": "5fdd7c26a47e9484ade6b166df37b85cff24c079f196d77b74f3e320c66885aa",
+      "bytes": 16109
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/TypeShiftAlgebra.lean",
+      "kind": "changed",
+      "before_sha256": "bac9823a268c86a0d747f63cd79ef8f5fcf40163c552d953b862d237ed649300",
+      "after_sha256": "94a10142d1bb446c68f71103715bcd15cbc08d0d8c8ddff72361e165a15a91f7",
+      "bytes": 6903
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/TypeShiftContext.lean",
+      "kind": "changed",
+      "before_sha256": "a2909e9e7d1a5b1cb02080023e19a56f16d6205ab708b0dbb9a10f40662dd2cf",
+      "after_sha256": "d8b38398326c121ba5e4facb8b3b1ecb863c202ac81950873bfec561a1273e0b",
+      "bytes": 13407
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/TypeShiftContracts.lean",
+      "kind": "changed",
+      "before_sha256": null,
+      "before_note": "追加前の控えは OS 再起動後に残っていない。git を使った基準版との照合は取りまとめへ残す。",
+      "after_sha256": "22a542f68edd0e16a1b7b61ce1bf3571c6e7e21484dd867486daf484de50f6c7",
+      "bytes": 14920
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/TypeShiftOrder.lean",
+      "kind": "changed",
+      "before_sha256": "0f8734501ae7df61b3e535ae2d74316842c0000cb8fe494e78adc8e065ce77fb",
+      "after_sha256": "0bd3b74708869b2ef32e041476f836648dce137f8b765b10d8c906abcdbcc6ed",
+      "bytes": 7040
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/TypeShiftTyping.lean",
+      "kind": "changed",
+      "before_sha256": null,
+      "before_note": "追加前の控えは OS 再起動後に残っていない。git を使った基準版との照合は取りまとめへ残す。",
+      "after_sha256": "c5e56a27260727fac295ad8b6dfd46d18ff8cf814764338bc220aa4ad9ecbbfb",
+      "bytes": 23681
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/TypeSubst.lean",
+      "kind": "changed",
+      "before_sha256": "f9de7533efa90acdd16aa88da23ac3d0fbf10e3ed135c2bd9f44452f7945cd22",
+      "after_sha256": "57eafebd869bad34f25fac1219a96c17fcbb4ab4edad532915c8a00ef99c7e00",
+      "bytes": 13384
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/TypedFacts.lean",
+      "kind": "changed",
+      "before_sha256": "73cebf0e929b057ad0e3902941bf07dc377bf1693a9da5c01312e57b607b9191",
+      "after_sha256": "3590451137aa433976c07ab688a32a42f8856cbfdc04a6edd315441a06d072f8",
+      "bytes": 16207
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/Typing.lean",
+      "kind": "changed",
+      "before_sha256": "e3b41eb6be3ceb202fbc680785ee074ce8d5dd3693de9bf6eed7043b4930772f",
+      "after_sha256": "85c7046a27e0ce8216bb83fcdbbb2ef39619a49cd46465319480506a2c32f642",
+      "bytes": 32182
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/TypingDeclared.lean",
+      "kind": "changed",
+      "before_sha256": null,
+      "before_note": "追加前の控えは OS 再起動後に残っていない。git を使った基準版との照合は取りまとめへ残す。",
+      "after_sha256": "ffcf4c31c429bdaee5a658a376edf73357257232b8079bc4f85db60533b51afa",
+      "bytes": 4440
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/TypingShift.lean",
+      "kind": "changed",
+      "before_sha256": null,
+      "before_note": "追加前の控えは OS 再起動後に残っていない。git を使った基準版との照合は取りまとめへ残す。",
+      "after_sha256": "d733eb93f693c30e12185775c8c5ae5a35e92027d1a04c9c473f5bef7d419735",
+      "bytes": 61207
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/ValueBinding.lean",
+      "kind": "changed",
+      "before_sha256": "dbadca72210970b9816912ecb18ace0ce2a989278438d597afe532d61f0835a6",
+      "after_sha256": "68528aadcf09acedf75bd2cae4b25031b687534b03e8c4984f103c3dd458ef1f",
+      "bytes": 14715
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/ValueClosed.lean",
+      "kind": "changed",
+      "before_sha256": "0de6765826988858dfe8f3c3e148ec92ed1b0430aefdcb1e83adcdd8bafb7fc6",
+      "after_sha256": "077a3038620916f1cdcb0d8faa9448e61bcceb2531e66a8ce7e51dcbd8812c90",
+      "bytes": 4395
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/ValueExchange.lean",
+      "kind": "changed",
+      "before_sha256": "301a80ccb078dd78325a8b0ca1b1f373d4aa7fd3011d4bc53c4190aacecafd05",
+      "after_sha256": "b6426c95e20b29b6d29febe3f9105c803649e597e5f8605af785e5b6761b732b",
+      "bytes": 11538
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/ValueInstantiation.lean",
+      "kind": "changed",
+      "before_sha256": "c1427c0779bc6fd2fbace7c725dde3deaf8863477df438f96e8cc005376ca64e",
+      "after_sha256": "49d4ebf39e20563d2cb7465c94e7c63033c1419aa81fb82032c223d27cb85c73",
+      "bytes": 6782
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/ValueReferences.lean",
+      "kind": "changed",
+      "before_sha256": "d437fd8c4934de49898d08bd5d1c7a5f0eeedfcfbe26132d12030f4386136f57",
+      "after_sha256": "b0439e3eddcb4b11201aab1ef132a304cb86b79acc1a3d339b2b9fdb18cbf82f",
+      "bytes": 12018
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/ValueRegularity.lean",
+      "kind": "changed",
+      "before_sha256": "986312c5adf54b9d90d336e0c138e2fb14887f52dc5f442e1b7051c3eb49f757",
+      "after_sha256": "3f71994f10715b73cdac0e708e907ae077885c87fa1ceaa73e991f0006a48e7b",
+      "bytes": 24887
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/ValueRenamingSyntax.lean",
+      "kind": "new",
+      "before_sha256": null,
+      "after_sha256": "0c29ff03377f73c87f2f7875002c450ff15410d42cea4d9788207a3cb6f63fcb",
+      "bytes": 7896
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/ValueShiftOrder.lean",
+      "kind": "new",
+      "before_sha256": null,
+      "after_sha256": "286af26b89f2aeaa078ee645f885178f9349a89af579f894497e92f1e8041ee3",
+      "bytes": 7386
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/ValueShiftSyntax.lean",
+      "kind": "new",
+      "before_sha256": null,
+      "after_sha256": "07c867802b8cb036605c8de0fa7fdc8e918017d6a62db4507c4e317af13b024f",
+      "bytes": 1990
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/ValueSubst.lean",
+      "kind": "changed",
+      "before_sha256": "1378be28ce9ee3c2620c3b87e4c80c7295b21eee667b4a1cf740419eda591062",
+      "after_sha256": "18e61e0970fa6f6674e90dec71e075484fb4f6c242e4286df6d34c82634b3831",
+      "bytes": 2206
+    }
+  ],
+  "audit_modules": [
+    "Benitoite.Release.Refinement.Adequate",
+    "Benitoite.Release.Refinement.Admissible",
+    "Benitoite.Release.Refinement.AdmissibleMap",
+    "Benitoite.Release.Refinement.ApproxAdapter",
+    "Benitoite.Release.Refinement.AtContracts",
+    "Benitoite.Release.Refinement.AtInput",
+    "Benitoite.Release.Refinement.AtPatterns",
+    "Benitoite.Release.Refinement.AtPrepare",
+    "Benitoite.Release.Refinement.AtSound",
+    "Benitoite.Release.Refinement.AtTyping",
+    "Benitoite.Release.Refinement.AtomOrder",
+    "Benitoite.Release.Refinement.Atoms",
+    "Benitoite.Release.Refinement.Basic",
+    "Benitoite.Release.Refinement.Bind",
+    "Benitoite.Release.Refinement.BindCongr",
+    "Benitoite.Release.Refinement.BindingShift",
+    "Benitoite.Release.Refinement.BuilderExec",
+    "Benitoite.Release.Refinement.BuiltinResponse",
+    "Benitoite.Release.Refinement.Canonical",
+    "Benitoite.Release.Refinement.Capture",
+    "Benitoite.Release.Refinement.Carrier",
+    "Benitoite.Release.Refinement.Certificate",
+    "Benitoite.Release.Refinement.ClosedDecidable",
+    "Benitoite.Release.Refinement.ClosedEvaluation",
+    "Benitoite.Release.Refinement.ClosedKeys",
+    "Benitoite.Release.Refinement.ClosureTyping",
+    "Benitoite.Release.Refinement.Codes",
+    "Benitoite.Release.Refinement.Conjunction",
+    "Benitoite.Release.Refinement.ConstraintAssumptions",
+    "Benitoite.Release.Refinement.Context.Capture",
+    "Benitoite.Release.Refinement.Context.Declarations",
+    "Benitoite.Release.Refinement.Context.Facts",
+    "Benitoite.Release.Refinement.Context.WF",
+    "Benitoite.Release.Refinement.Context",
+    "Benitoite.Release.Refinement.ContextFacts",
+    "Benitoite.Release.Refinement.ContextMap",
+    "Benitoite.Release.Refinement.Declared",
+    "Benitoite.Release.Refinement.DeclaredTransport",
+    "Benitoite.Release.Refinement.EffectCover",
+    "Benitoite.Release.Refinement.Embedding",
+    "Benitoite.Release.Refinement.Exchange",
+    "Benitoite.Release.Refinement.External",
+    "Benitoite.Release.Refinement.ExternalCheck",
+    "Benitoite.Release.Refinement.ExternalConnection",
+    "Benitoite.Release.Refinement.ExternalObservation",
+    "Benitoite.Release.Refinement.ExternalResponse",
+    "Benitoite.Release.Refinement.FunctionNormalForm",
+    "Benitoite.Release.Refinement.Ground",
+    "Benitoite.Release.Refinement.HandlerAlgebra",
+    "Benitoite.Release.Refinement.HandlerContracts",
+    "Benitoite.Release.Refinement.HandlerTyping",
+    "Benitoite.Release.Refinement.InversionCore",
+    "Benitoite.Release.Refinement.KindInference",
+    "Benitoite.Release.Refinement.KindValues",
+    "Benitoite.Release.Refinement.Kinds",
+    "Benitoite.Release.Refinement.Le",
+    "Benitoite.Release.Refinement.LocalResolve",
+    "Benitoite.Release.Refinement.LocalResolveLemmas",
+    "Benitoite.Release.Refinement.LocalTransport",
+    "Benitoite.Release.Refinement.Logic",
+    "Benitoite.Release.Refinement.LogicSound",
+    "Benitoite.Release.Refinement.MethodArguments",
+    "Benitoite.Release.Refinement.Narrowing",
+    "Benitoite.Release.Refinement.NarrowingObstruction",
+    "Benitoite.Release.Refinement.NormalWellFormed",
+    "Benitoite.Release.Refinement.NormalizationLogic",
+    "Benitoite.Release.Refinement.Normalize",
+    "Benitoite.Release.Refinement.NormalizedApplication",
+    "Benitoite.Release.Refinement.Observation",
+    "Benitoite.Release.Refinement.OpenSubstitution",
+    "Benitoite.Release.Refinement.Order",
+    "Benitoite.Release.Refinement.PathResolution",
+    "Benitoite.Release.Refinement.PatternSemantics",
+    "Benitoite.Release.Refinement.PatternTransport",
+    "Benitoite.Release.Refinement.PatternTypeShift",
+    "Benitoite.Release.Refinement.Patterns",
+    "Benitoite.Release.Refinement.Preparation",
+    "Benitoite.Release.Refinement.RangeExchange",
+    "Benitoite.Release.Refinement.RangeSubst",
+    "Benitoite.Release.Refinement.RawBindingShift",
+    "Benitoite.Release.Refinement.RefinementNormalForm",
+    "Benitoite.Release.Refinement.RuntimeMatch",
+    "Benitoite.Release.Refinement.RuntimeSyntax",
+    "Benitoite.Release.Refinement.ScopeSyntax",
+    "Benitoite.Release.Refinement.Semantics",
+    "Benitoite.Release.Refinement.Shift",
+    "Benitoite.Release.Refinement.ShiftCancellation",
+    "Benitoite.Release.Refinement.ShiftOrder",
+    "Benitoite.Release.Refinement.Source",
+    "Benitoite.Release.Refinement.StateTyping",
+    "Benitoite.Release.Refinement.Step",
+    "Benitoite.Release.Refinement.StoreTransport",
+    "Benitoite.Release.Refinement.Subst",
+    "Benitoite.Release.Refinement.SubstTyping",
+    "Benitoite.Release.Refinement.SubstTypingObstruction",
+    "Benitoite.Release.Refinement.SubstitutionContracts",
+    "Benitoite.Release.Refinement.Syntax",
+    "Benitoite.Release.Refinement.TelArguments",
+    "Benitoite.Release.Refinement.TelTyping",
+    "Benitoite.Release.Refinement.Telescope",
+    "Benitoite.Release.Refinement.TermSyntax",
+    "Benitoite.Release.Refinement.Transport",
+    "Benitoite.Release.Refinement.TypeRenaming",
+    "Benitoite.Release.Refinement.TypeShiftAlgebra",
+    "Benitoite.Release.Refinement.TypeShiftContext",
+    "Benitoite.Release.Refinement.TypeShiftContracts",
+    "Benitoite.Release.Refinement.TypeShiftExchange",
+    "Benitoite.Release.Refinement.TypeShiftKinds",
+    "Benitoite.Release.Refinement.TypeShiftOrder",
+    "Benitoite.Release.Refinement.TypeShiftSyntax",
+    "Benitoite.Release.Refinement.TypeShiftTyping",
+    "Benitoite.Release.Refinement.TypeSubst",
+    "Benitoite.Release.Refinement.TypedFacts",
+    "Benitoite.Release.Refinement.Types",
+    "Benitoite.Release.Refinement.Typing",
+    "Benitoite.Release.Refinement.TypingDeclared",
+    "Benitoite.Release.Refinement.TypingShift",
+    "Benitoite.Release.Refinement.TypingStore",
+    "Benitoite.Release.Refinement.ValueBinding",
+    "Benitoite.Release.Refinement.ValueClosed",
+    "Benitoite.Release.Refinement.ValueExchange",
+    "Benitoite.Release.Refinement.ValueInstantiation",
+    "Benitoite.Release.Refinement.ValueReferences",
+    "Benitoite.Release.Refinement.ValueRegularity",
+    "Benitoite.Release.Refinement.ValueRenameAlgebra",
+    "Benitoite.Release.Refinement.ValueRenamingSyntax",
+    "Benitoite.Release.Refinement.ValueShiftOrder",
+    "Benitoite.Release.Refinement.ValueShiftSyntax",
+    "Benitoite.Release.Refinement.ValueSubst",
+    "Benitoite"
+  ],
+  "review_correction": "RV-L00b.11 の実差分（既存56・新規14）を基準とし、BindCongr を候補から除外。今回新たに変えた既存4ファイルを加える。git は実行していない。"
+}

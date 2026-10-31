@@ -1,4 +1,6 @@
 import Benitoite.Release.Refinement.Declared
+import Benitoite.Release.Refinement.BindCongr
+import Benitoite.Release.Refinement.ShiftCancellation
 
 namespace Benitoite.Release.Refinement
 
@@ -18,9 +20,6 @@ theorem Ty.norm_rawSubstV (a : Ty) (ν : ObservationEnv) :
     (a.norm.rawSubstV ν).norm = (a.rawSubstV ν).norm := by
   simp only [Ty.rawSubstV_eq_rawBind, Ty.norm_rawBind]
 
-@[simp] theorem Ty.core_norm (a : Ty) : a.norm.core = a.core.norm := by
-  cases a <;> simp only [Ty.norm, Ty.core, Ty.core_norm]
-
 @[simp] theorem Ty.core_rawSubstV (a : Ty) (ν : ObservationEnv) :
     (a.rawSubstV ν).core = a.core.rawSubstV ν := by
   cases a <;> simp only [Ty.rawSubstV, Ty.core, Ty.core_rawSubstV]
@@ -32,16 +31,18 @@ theorem Ty.dataCore_substV {a : Ty} {d ts} (h : a.norm.core = .data d ts) (ν : 
   rw [Ty.core_norm, Ty.core_rawSubstV, hh]
   simp only [Ty.rawSubstV, Ty.norm, bindDataArgs_eq_norm]
 
-theorem Ty.substV_of_wf_zero {nr nt a} (h : Ty.WF nr nt 0 a) (ν : ObservationEnv) : a.substV ν = a := by
+theorem Ty.substV_of_wf_zero {nr nt a} (h : Ty.WF nr nt 0 a) (ν : ObservationEnv) : a.substV ν = a.norm := by
   simp only [Ty.substV, Ty.bind, SubstEnv.valuesOnly, ← Ty.rawSubstV_eq_rawBind,
     Ty.rawSubstV_of_wf_zero h ν]
-  exact Ty.canonical_of_wf h
 
 theorem Ty.substV_subst_closed {nt a} (h : Ty.WF 0 nt 0 a) (ts : List Ty) (ν : ObservationEnv) :
     (a.subst ts []).substV ν = a.subst (bindDataArgs ν ts) [] := by
   rw [bindDataArgs_eq_norm, Ty.subst_norm_images]
-  simp only [Ty.subst, Ty.substAt_substV, Ty.substV_of_wf_zero h ν,
-    List.map_nil, substVTys_eq_map]
+  have he := Ty.substAt_substV a 0 ts [] ν
+  rw [Ty.substV_of_wf_zero h] at he
+  change (a.subst ts []).substV ν = a.norm.subst _ [] at he
+  rw [he, substVTys_eq_map]
+  exact Ty.norm_rawBind _ a
 
 @[simp] theorem bindSlots_length (ν : ObservationEnv) (xs : List (Option Term)) :
     (bindSlots ν xs).length = xs.length := by
@@ -116,12 +117,11 @@ mutual
     | cons x xs => exact ⟨declaredSlot_bind (x := x) h.1 hm, declaredSlots_bind (xs := xs) h.2 hm⟩
 end
 
-@[simp] theorem Ty.core_shiftV (a : Ty) (k c : Nat) :
-    (a.shiftV k c).core = a.core.shiftV k c := by
-  cases a <;> simp only [Ty.shiftV, Ty.core, Ty.core_shiftV]
-
 theorem Ty.ordinary_of_dataCore {a : Ty} {d ts} (h : a.norm.core = .data d ts) : Ordinary a := by
   cases a <;> simp_all [Ty.norm, Ty.core, Ordinary]
+  case refined a p =>
+    apply Ty.ordinary_of_dataCore (a := a)
+    simpa only [Ty.core_norm] using h
 
 theorem Ty.dataCore_shiftV_iff (a : Ty) (k c : Nat) (d : DataName) (ts : List Ty) :
     (a.shiftV k c).norm.core = .data d ts ↔
@@ -367,6 +367,174 @@ theorem DeclarationImages.normSelf (P : Program) (C : List TParam) (Γ : Ctx) (a
     (fun h => (Ty.ordinary_norm _).mpr h) (by simp only [Ty.norm_idem, Ty.rawSubstV_id])
   simpa only [upValues_id] using h
 
+theorem Ty.Declared.dataConstructor {P C Γ a d ts} (h : Ty.Declared P C Γ a)
+    (he : a.norm.core = .data d ts) :
+    ∃ c cd, P.cons c = some cd ∧ cd.data = d ∧ cd.ntys = ts.length := by
+  cases a with
+  | refined a p =>
+    apply Ty.Declared.dataConstructor (a := a) h.1
+    simpa only [Ty.core_norm, Ty.core] using he
+  | data name as =>
+    obtain ⟨rfl, rfl⟩ := Ty.data.inj he
+    obtain ⟨n, hn, hl⟩ := h.1
+    obtain ⟨c, cd, hc, hd⟩ := hn.1
+    exact ⟨c, cd, hc, hd, (hn.2 c cd hc hd).trans (hl.symm.trans (by simp [Ty.normTys_eq_map]))⟩
+  | dependentFn t =>
+    simp only [Ty.norm, Ty.core_foldFn] at he
+    unfold Ty.foldFn at he
+    split at he <;> cases he
+  | _ => cases he
+
+private theorem declaredSlots_none {P C Γ} (n : Nat) :
+    declaredSlots P C Γ (List.replicate n none) := by
+  induction n with
+  | zero => trivial
+  | succ n ih => exact ⟨trivial, ih⟩
+
+private theorem declaredDropWitness {P C Γ a} (h : Ty.Declared P C Γ a) :
+    ∃ t : Term, t.Declared P C Γ ∧
+      ∀ d ts, a.norm.core = .data d ts → Term.HasData P Γ t d ts := by
+  classical
+  by_cases he : ∃ d ts, a.norm.core = .data d ts
+  · obtain ⟨d, ts, he⟩ := he
+    obtain ⟨c, cd, hc, hd, hn⟩ := h.dataConstructor he
+    refine ⟨.dataValue c (List.replicate cd.args.length none),
+      ⟨declaredSlots_none _, cd, hc, List.length_replicate⟩, ?_⟩
+    intro other us hu
+    obtain ⟨rfl, rfl⟩ := Ty.data.inj (he.symm.trans hu)
+    exact .value hc hd hn (List.length_replicate)
+  · refine ⟨.unitValue, trivial, ?_⟩
+    intro d ts hd; exact False.elim (he ⟨d, ts, hd⟩)
+
+theorem DeclarationImages.drop {P C Γ a t} (ht : Term.Declared P C Γ t)
+    (hd : ∀ d ts, a.norm.core = .data d ts → Term.HasData P Γ t d ts) :
+    DeclarationImages P C (Γ.extend a) Γ (dropValue t) := by
+  have cancel : ∀ us, Ty.normTys us = us → bindDataArgs (dropValue t) (shiftVTys 1 0 us) = us := by
+    intro us hn
+    rw [bindDataArgs_eq_norm, substVTys_shift_cancel _ (dropValue_shift t), hn]
+  constructor
+  · intro i b hi ho u hu
+    cases i with
+    | zero => cases hu; exact ht
+    | succ i =>
+      cases hu
+      simp only [Ctx.extend, List.getElem?_cons_succ, List.getElem?_map] at hi
+      obtain ⟨ob, hb, he⟩ := Option.map_eq_some_iff.mp hi
+      cases ob with
+      | none => cases he
+      | some b => cases he; exact ⟨b, hb, (Ty.ordinary_shiftV _ _ _).mp ho⟩
+  · intro i b d ts hi hb
+    cases i with
+    | zero =>
+      cases Option.some.inj hi
+      obtain ⟨us, he, rfl⟩ := (Ty.dataCore_shiftV_iff a 1 0 d ts).mp hb
+      rw [cancel us (Ty.dataCore_args_norm he)]
+      simpa only [termBind_var, dropValue, Option.getD_some] using hd d us he
+    | succ i =>
+      simp only [Ctx.extend, List.getElem?_cons_succ, List.getElem?_map] at hi
+      obtain ⟨ob, ho, he⟩ := Option.map_eq_some_iff.mp hi
+      cases ob with
+      | none => cases he
+      | some b =>
+        cases he
+        obtain ⟨us, he, rfl⟩ := (Ty.dataCore_shiftV_iff b 1 0 d ts).mp hb
+        rw [cancel us (Ty.dataCore_args_norm he)]
+        simpa only [termBind_var, dropValue, Option.getD_some] using Term.HasData.var ho he
+
+theorem Ty.Declared.shiftV_rev {P C Γ a b} (h : Ty.Declared P C (Γ.extend b) (a.shiftV 1 0))
+    (hb : Ty.Declared P C Γ b) : Ty.Declared P C Γ a := by
+  obtain ⟨t, ht, hd⟩ := declaredDropWitness hb
+  have hh := h.rawSubstV (DeclarationImages.drop ht hd)
+  rwa [Ty.substV_shift_cancel _ (dropValue_shift t)] at hh
+
+theorem declaredTys_shiftV_rev {P C Γ as b} (h : declaredTys P C (Γ.extend b) (shiftVTys 1 0 as))
+    (hb : Ty.Declared P C Γ b) : declaredTys P C Γ as := by
+  cases as with
+  | nil => trivial
+  | cons a as => exact ⟨Ty.Declared.shiftV_rev h.1 hb, declaredTys_shiftV_rev h.2 hb⟩
+
+theorem declaredEff_shiftV_rev {P C Γ e b} (h : declaredEff P C (Γ.extend b) (e.shiftV 1 0))
+    (hb : Ty.Declared P C Γ b) : declaredEff P C Γ e := by
+  cases e; exact declaredTys_shiftV_rev h hb
+
+theorem Ty.declared_of_toTel {P C Γ ns ps r e} (hn : NamesWF ns ps)
+    (h : Tel.Declared P C Γ (Ty.toTel ns ps r e)) : Ty.Declared P C Γ (.fn ns ps r e) := by
+  induction ns generalizing Γ ps r e with
+  | nil => cases ps with
+    | nil => exact ⟨trivial, h⟩
+    | cons => simp [NamesWF] at hn
+  | cons n ns ih => cases ps with
+    | nil => simp [NamesWF] at hn
+    | cons a ps =>
+      have hn' : NamesWF ns (shiftVTys 1 0 ps) :=
+        ⟨by simpa [NamesWF] using Nat.succ.inj hn.1, hn.2.of_cons⟩
+      have hh := ih hn' h.2
+      exact ⟨⟨h.1, declaredTys_shiftV_rev hh.1 h.1⟩,
+        Ty.Declared.shiftV_rev hh.2.1 h.1, declaredEff_shiftV_rev hh.2.2 h.1⟩
+
+theorem Ty.declared_foldFn {P C Γ t} (h : Tel.Declared P C Γ t) : Ty.Declared P C Γ (Ty.foldFn t) := by
+  classical
+  by_cases he : ∃ f : FnView, f.toTel = t
+  · obtain ⟨f, rfl⟩ := he
+    rw [Ty.foldFn_toTel]
+    exact Ty.declared_of_toTel f.names_wf h
+  · rw [Ty.foldFn_no_view he]; exact h
+
+theorem Pred.Declared.conjuncts {P C Γ self p} (h : Pred.Declared P C Γ self p) :
+    ∀ q ∈ p.conjuncts, Pred.Declared P C Γ self q := by
+  cases p with
+  | truth => intro q hq; cases hq
+  | and p q =>
+    intro r hr
+    rcases List.mem_append.mp hr with hr | hr
+    · exact Pred.Declared.conjuncts h.1 r hr
+    · exact Pred.Declared.conjuncts h.2 r hr
+  | _ => intro q hq; cases List.mem_singleton.mp hq; exact h
+
+theorem Pred.Declared.ofConjuncts {P C Γ self ps} (h : ∀ p ∈ ps, Pred.Declared P C Γ self p) :
+    Pred.Declared P C Γ self (Pred.ofConjuncts ps) := by
+  induction ps with
+  | nil => trivial
+  | cons p ps ih => cases ps with
+    | nil => exact h p List.mem_cons_self
+    | cons q qs => exact ⟨h p List.mem_cons_self, ih (fun r hr => h r (List.mem_cons_of_mem p hr))⟩
+
+theorem Ty.Declared.core {P C Γ a} (h : Ty.Declared P C Γ a) : Ty.Declared P C Γ a.core := by
+  cases a with
+  | refined a p => exact Ty.Declared.core (a := a) h.1
+  | _ => exact h
+
+private theorem declared_coreSelf {P C Γ a p} (h : Pred.Declared P C Γ (some a) p) :
+    Pred.Declared P C Γ (some a.core) p := by
+  have hm := (DeclarationImages.id P C Γ).extend a a.core
+    (fun ho => by simpa only [Ordinary, Ty.core_idem] using ho)
+    (by simp only [Ty.core_norm, Ty.core_idem, Ty.rawSubstV_id])
+  simpa only [upValues_id, predBind_id] using
+    Pred.Declared.map (Δ := Γ) (other := some a.core) h hm
+
+theorem Ty.Declared.predicates {P C Γ a} (h : Ty.Declared P C Γ a) :
+    ∀ p ∈ a.refinementPredicates, Pred.Declared P C Γ (some a.core) p := by
+  cases a with
+  | refined a p =>
+    intro q hq
+    rcases List.mem_append.mp hq with hq | hq
+    · exact Ty.Declared.predicates (a := a) h.1 q hq
+    · exact Pred.Declared.conjuncts (declared_coreSelf h.2) q hq
+  | _ => intro p hp; cases hp
+
+theorem Ty.declared_refineNorm {P C Γ a p} (ha : Ty.Declared P C Γ a) (hp : Pred.Declared P C Γ (some a) p) :
+    Ty.Declared P C Γ (a.refineNorm p) := by
+  unfold Ty.refineNorm
+  cases he : a.refinementPredicates ++ p.conjuncts with
+  | nil => exact ha.core
+  | cons q qs =>
+    refine ⟨ha.core, Pred.Declared.ofConjuncts ?_⟩
+    intro r hr
+    rw [←he] at hr
+    rcases List.mem_append.mp hr with hr | hr
+    · exact ha.predicates r hr
+    · exact Pred.Declared.conjuncts (declared_coreSelf hp) r hr
+
 private theorem declaredTys_iff {P C Γ as} : declaredTys P C Γ as ↔ ∀ a ∈ as, Ty.Declared P C Γ a := by
   induction as with
   | nil => simp [declaredTys]
@@ -382,12 +550,12 @@ mutual
     | external _ as => exact ⟨by simpa only [Ty.normTys_eq_map, List.length_map] using h.1,
         declaredTys_norm (as := as) h.2⟩
     | tapp _ as => exact declaredTys_norm (as := as) h
-    | dependentFn t => exact Tel.Declared.norm (t := t) h
+    | dependentFn t => exact Ty.declared_foldFn (Tel.Declared.norm (t := t) h)
     | fn ns ps r e => exact ⟨declaredTys_norm (as := ps) h.1, Ty.Declared.norm (a := r) h.2.1, declaredEff_norm (e := e) h.2.2⟩
     | cont b t e => exact ⟨Ty.Declared.norm (a := b) h.1, Ty.Declared.norm (a := t) h.2.1, declaredEff_norm (e := e) h.2.2⟩
     | map a b => exact ⟨Ty.Declared.norm (a := a) h.1, Ty.Declared.norm (a := b) h.2⟩
     | refined a p =>
-      refine ⟨Ty.Declared.norm (a := a) h.1, ?_⟩
+      apply Ty.declared_refineNorm (Ty.Declared.norm (a := a) h.1)
       simpa only [predBind_id] using Pred.Declared.map (Δ := Γ) (other := some a.norm) h.2 (DeclarationImages.normSelf P C Γ a)
   theorem Tel.Declared.norm {P C Γ t} (h : Tel.Declared P C Γ t) : Tel.Declared P C Γ (Tel.norm t) := by
     cases t with

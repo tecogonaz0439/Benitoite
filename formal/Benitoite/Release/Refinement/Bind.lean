@@ -1,4 +1,4 @@
-import Benitoite.Release.Refinement.Basic
+import Benitoite.Release.Refinement.RawBindingShift
 
 /-!
 # 同時置換と正規化
@@ -8,36 +8,124 @@ import Benitoite.Release.Refinement.Basic
 namespace Benitoite.Release.Refinement
 open Order
 
-@[simp] theorem rawBindTys_eq_map (θ : SubstEnv) (as : List Ty) :
-    rawBindTys θ as = as.map (Ty.rawBind θ) := by
-  induction as <;> simp_all [rawBindTys]
-
 @[simp] theorem Ty.normTys_append (as bs : List Ty) :
     Ty.normTys (as ++ bs) = Ty.normTys as ++ Ty.normTys bs := by
   simp only [Ty.normTys_eq_map, List.map_append]
 
-/-- 引数を捨てる既定の枝も含む、型構成子適用と正規化の交換。 -/
-theorem rawApply_norm (t : Ty) (as : List Ty) :
-    (rawApply t.norm (Ty.normTys as)).norm = (rawApply t as).norm := by
-  cases t <;> simp only [Ty.norm, rawApply, Ty.norm_idem, Ty.normTys_idem, Eff.norm_idem, Tel.norm_idem]
+/-- 適用の頭を変えず、型引数だけを正規化する交換。 -/
+theorem rawApply_norm_args (t : Ty) (as : List Ty) :
+    (rawApply t (Ty.normTys as)).norm = (rawApply t as).norm := by
+  cases t <;> try rfl
+  case refined a p => simp only [rawApply, Ty.norm, rawApply_norm_args a as]
+  case tvar i => simp only [rawApply, Ty.norm, Ty.normTys_idem]
   case ctor c =>
-    cases c <;> cases as <;> simp only [Ty.norm, Ty.normTys, Ty.norm_idem, Ty.normTys_idem,
-      List.headD_nil, List.headD_cons, List.tail_nil, List.tail_cons]
+    cases c <;> cases as <;> simp only [rawApply, Ty.norm, Ty.normTys, Ty.normTys_idem,
+      List.headD_nil, List.headD_cons, List.tail_nil, List.tail_cons, Ty.norm_idem]
     rename_i a as
     cases as <;> simp [Ty.norm, Ty.normTys, Ty.norm_idem]
+
+theorem rawApply_packRefinements (a : Ty) (ps : List Pred) (as : List Ty) :
+    rawApply (Ty.packRefinements a ps) as = Ty.packRefinements (rawApply a as) ps := by
+  cases ps <;> rfl
+
+theorem rawApply_core (a : Ty) (as : List Ty) :
+    (rawApply a as).core = rawApply a.core as := by
+  cases a <;> try rfl
+  case refined a p => exact rawApply_core a as
+  case ctor c => cases c <;> rfl
+
+theorem rawApply_predicates (a : Ty) (as : List Ty) :
+    (rawApply a as).refinementPredicates = a.refinementPredicates := by
+  cases a <;> try rfl
+  case refined a p => simp only [rawApply, Ty.refinementPredicates, rawApply_predicates]
+  case ctor c => cases c <;> rfl
+
+theorem rawApply_refineNorm_norm (a : Ty) (p : Pred) (as : List Ty) :
+    (rawApply (a.refineNorm p) as).norm = (rawApply a as).norm.refineNorm p := by
+  unfold Ty.refineNorm
+  rw [rawApply_packRefinements, Ty.norm_packRefinements]
+  · rw [Ty.core_norm, rawApply_core, Ty.predicates_norm, rawApply_predicates]
+  · rw [rawApply_core, Ty.core_idem]
+  · intro q hq
+    rcases List.mem_append.mp hq with hq | hq
+    · exact Ty.refinementPredicates_atoms a q hq
+    · exact Pred.conjuncts_atoms p q hq
+
+theorem rawApply_foldFn (t : Tel) (as : List Ty) : rawApply (Ty.foldFn t) as = Ty.foldFn t := by
+  unfold Ty.foldFn
+  split <;> rfl
+
+/-- 篩の下への適用を含む、頭と引数の正規化の交換。 -/
+theorem rawApply_norm (t : Ty) (as : List Ty) :
+    (rawApply t.norm (Ty.normTys as)).norm = (rawApply t as).norm := by
+  cases t <;> first | exact rawApply_norm_args _ _ | exact Ty.norm_idem _ | skip
+  case refined a p =>
+    simp only [Ty.norm, rawApply, rawApply_refineNorm_norm, rawApply_norm a as]
+  case dependentFn t =>
+    change (rawApply (Ty.foldFn (Tel.norm t)) (Ty.normTys as)).norm = Ty.foldFn (Tel.norm t)
+    rw [rawApply_foldFn, Ty.norm_foldFn, Tel.norm_idem]
+
+theorem rawApply_norm_args_congr (t : Ty) {as bs : List Ty}
+    (h : Ty.normTys as = Ty.normTys bs) :
+    (rawApply t as).norm = (rawApply t bs).norm := by
+  rw [←rawApply_norm_args, ←rawApply_norm_args t bs, h]
+
+noncomputable def FnView.rawBind (f : FnView) (θ : SubstEnv) : FnView :=
+  ⟨f.names, rawBindTys θ f.params, f.result.rawBind θ, Eff.rawBind θ f.effect,
+    ⟨by simpa only [rawBindTys_eq_map, List.length_map] using f.names_wf.1, f.names_wf.2⟩⟩
+
+theorem FnView.toTel_rawBind (f : FnView) (θ : SubstEnv) :
+    (f.rawBind θ).toTel = Tel.rawBind θ f.toTel :=
+  (Tel.rawBind_toTel _ _ _ _ _).symm
+
+theorem Ty.rawBind_foldFn_norm (t : Tel) (θ : SubstEnv) :
+    (Ty.rawBind θ (Ty.foldFn t)).norm = Ty.foldFn (Tel.norm (Tel.rawBind θ t)) := by
+  classical
+  by_cases h : ∃ f : FnView, f.toTel = t
+  · obtain ⟨f, rfl⟩ := h
+    rw [Ty.foldFn_toTel, ←FnView.toTel_rawBind, ←FnView.norm_toTel, Ty.foldFn_toTel]
+    rfl
+  · rw [Ty.foldFn_no_view h]
+    rfl
+
+private theorem rawBind_refineNorm_core (θ : SubstEnv) (a : Ty) (p : Pred)
+    (hc : a.core = a) (hz : a.refinementPredicates = []) :
+    (Ty.rawBind θ (Ty.refineNorm a p)).norm =
+      Ty.refineNorm (a.rawBind θ).norm (predBind (upValues θ.values) p) := by
+  unfold Ty.refineNorm
+  rw [hc, hz, List.nil_append]
+  cases hp : p.conjuncts with
+  | nil =>
+    change (a.rawBind θ).norm = Ty.packRefinements (a.rawBind θ).norm.core
+      ((a.rawBind θ).norm.refinementPredicates ++ (predBind (upValues θ.values) p).conjuncts)
+    rw [Pred.conjuncts_bind, hp, List.map_nil, List.append_nil]
+    exact (Ty.pack_parts_norm _).symm
+  | cons q qs =>
+    have hps : ∀ r ∈ q :: qs, r.ConjAtom := by rw [←hp]; exact Pred.conjuncts_atoms p
+    simp only [Ty.packRefinements, Ty.rawBind, Ty.norm]
+    unfold Ty.refineNorm
+    rw [Pred.conjuncts_bind, Pred.conjuncts_ofConjuncts hps, Pred.conjuncts_bind, hp]
+    rfl
+
+theorem Ty.rawBind_refineNorm_norm (a : Ty) (p : Pred) (θ : SubstEnv) :
+    (Ty.rawBind θ (Ty.refineNorm a p)).norm =
+      Ty.refineNorm (a.rawBind θ).norm (predBind (upValues θ.values) p) := by
+  cases a with
+  | refined a q =>
+    rw [Ty.refineNorm_refined, Ty.rawBind_refineNorm_norm]
+    simp only [Ty.rawBind, Ty.norm, predBind]
+    exact (Ty.refineNorm_assoc _ _ _).symm
+  | _ => exact rawBind_refineNorm_core θ _ p rfl rfl
 
 mutual
   /-- 正規化してから生の代入を行っても、結果の型の正規形は同じになる。 -/
   theorem Ty.norm_rawBind (θ : SubstEnv) (t : Ty) :
       (t.norm.rawBind θ).norm = (t.rawBind θ).norm := by
     cases t <;>
-      simp only [Ty.norm, Ty.rawBind, Ty.norm_rawBind, Ty.normTys_rawBind, Eff.norm_rawBind, Tel.norm_rawBind]
+      simp only [Ty.norm, Ty.rawBind, Ty.norm_rawBind, Ty.normTys_rawBind, Eff.norm_rawBind, Tel.norm_rawBind, Ty.rawBind_refineNorm_norm, Ty.rawBind_foldFn_norm]
     case tapp i as =>
-      have h := Ty.normTys_rawBind θ as
-      have h' := rawApply_norm (θ.types i) (rawBindTys θ as)
-      have h'' := rawApply_norm (θ.types i) (rawBindTys θ (Ty.normTys as))
-      rw [h] at h''
-      exact h''.symm.trans h'
+      exact rawApply_norm_args_congr _ (Ty.normTys_rawBind θ as)
+
 
   theorem Tel.norm_rawBind (θ : SubstEnv) (t : Tel) :
       Tel.norm (Tel.rawBind θ (Tel.norm t)) = Tel.norm (Tel.rawBind θ t) := by

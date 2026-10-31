@@ -50,7 +50,10 @@ private theorem image_shift {P B Ψ R} {cap : Capture} {i : Nat} {a : Ty} (h : I
     subst a
     exact .contLoc rfl (by rw [ht]; exact hc) (by rw [ht]; exact hw)
       (by rw [he]; exact hv) hl hr
-  | contVar _ _ hl => cases hl
+  | contVar _ _ hl => obtain ⟨_,_,_,hl,_⟩ := hl; cases hl
+  | hidden ho hc =>
+    exact .hidden (fun h => ho ((Ty.ordinary_shiftV _ _ _).mp h))
+      (by cases a <;> simp_all [Ty.shiftV])
 
 theorem CaptureOk.extend {P B Ψ R Γ Φ cap a v} (h : CaptureOk P B Ψ R Γ Φ cap)
     (ha : Ty.Annotation P [] Γ a) (hv : HasTypeVQ P B Ψ Qempty [] [] [] v (cap.closeTy a))

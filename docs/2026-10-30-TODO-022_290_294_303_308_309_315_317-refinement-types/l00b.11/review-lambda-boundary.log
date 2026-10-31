@@ -1,0 +1,27 @@
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/review-lambda-boundary.lean:13:10: warning: This simp argument is unused:
+  srcTel
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [nTel, Tel.norm, Ty.norm, Ty.refineNorm, Ty.core, Ty.refinementPredicates, Pred.conjuncts,
+    Ty.packRefinements, U, raw, Ty.shiftV, Eff.norm, Eff.empty, Ty.normTys, Order.sortUnique]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/review-lambda-boundary.lean:14:27: warning: This simp argument is unused:
+  raw
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [srcTel, nTel, Tel.norm, Ty.norm, Ty.refineNorm, Ty.core, Ty.refinementPredicates, Pred.conjuncts,
+    Ty.packRefinements, U, Ty.shiftV, Eff.norm, Eff.empty, Ty.normTys, Order.sortUnique]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/review-lambda-boundary.lean:14:71: warning: This simp argument is unused:
+  Order.sortUnique
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [srcTel, nTel, Tel.norm, Ty.norm, Ty.refineNorm, Ty.core, Ty.refinementPredicates, Pred.conjuncts,
+    Ty.packRefinements, U, raw, Ty.shiftV, Eff.norm, Eff.empty, Ty.normTys]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'Benitoite.Release.Refinement.ReviewLambdaBoundary.lam1_extract' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

@@ -96,16 +96,6 @@ theorem Ty.HasKind.constructor_shape {P : Program} {K : KindCtx} {a : Ty} {n : N
   cases a <;> simp only [Ty.HasKind] at h
   all_goals first | contradiction | exact Or.inl ⟨_, rfl, h⟩ | exact Or.inr ⟨_, rfl, h⟩
 
-/-- 適格な適用の全結果。unit 補完・引数を捨てる枝を含まない。 -/
-inductive ProperApply : Ty → List Ty → Ty → Prop where
-  | variable (i as) : ProperApply (.tvar i) as (.tapp i as)
-  | list (a) : ProperApply (.ctor .list) [a] (.list a)
-  | set (a) : ProperApply (.ctor .set) [a] (.set a)
-  | reference (a) : ProperApply (.ctor .reference) [a] (.reference a)
-  | lazy (a) : ProperApply (.ctor .lazy) [a] (.lazy a)
-  | map (a b) : ProperApply (.ctor .map) [a,b] (.map a b)
-  | data (d as) : ProperApply (.ctor (.data d)) as (.data d as)
-
 theorem rawApply_proper {P : Program} {K : KindCtx} {a : Ty} {n : Nat} {as : List Ty} (h : a.HasKind P K (.constructor n))
     (hn : as.length = n) : ProperApply a as (rawApply a as) := by
   rcases h.constructor_shape with ⟨c, rfl, hc⟩ | ⟨i, rfl, _⟩

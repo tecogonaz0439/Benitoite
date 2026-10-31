@@ -1,4 +1,4 @@
-import Benitoite.Release.Refinement.DeclaredTransport
+import Benitoite.Release.Refinement.Declared
 
 /-!
 # 値注釈の移送による kind の保存
@@ -6,6 +6,66 @@ import Benitoite.Release.Refinement.DeclaredTransport
 型の引数数と宣言したkindは、篩の述語や値の番号を読まない。
 -/
 namespace Benitoite.Release.Refinement
+
+mutual
+  theorem Ty.hasKind_shiftV_iff (a : Ty) (kind : TyKind) (k c : Nat) {P K} :
+      (a.shiftV k c).HasKind P K kind ↔ a.HasKind P K kind := by
+    cases kind with
+    | constructor n => cases a <;> rfl
+    | value =>
+      cases a <;> simp only [Ty.shiftV, Ty.HasKind, Ty.hasKind_shiftV_iff,
+        kindsList_shiftV_iff, kindsTel_shiftV_iff, kindsEff_shiftV_iff,
+        Ty.notContCore_shiftV]
+      all_goals simp only [NamesWF, shiftVTys_eq_map, List.length_map]
+  theorem kindsList_shiftV_iff (as : List Ty) (k c : Nat) {P K} :
+      kindsList P K (shiftVTys k c as) ↔ kindsList P K as := by
+    cases as <;> simp only [shiftVTys, kindsList, Ty.hasKind_shiftV_iff, kindsList_shiftV_iff]
+  theorem kindsTel_shiftV_iff (t : Tel) (k c : Nat) {P K} :
+      kindsTel P K (t.shiftV k c) ↔ kindsTel P K t := by
+    cases t <;> simp only [Tel.shiftV, kindsTel, Ty.hasKind_shiftV_iff, kindsTel_shiftV_iff, kindsEff_shiftV_iff]
+  theorem kindsEff_shiftV_iff (e : Eff) (k c : Nat) {P K} :
+      kindsEff P K (e.shiftV k c) ↔ kindsEff P K e := by
+    cases e; exact kindsList_shiftV_iff _ _ _
+end
+
+theorem Ty.kind_of_toTel {P K ns ps r e} (hn : NamesWF ns ps)
+    (h : kindsTel P K (Ty.toTel ns ps r e)) : (Ty.fn ns ps r e).HasKind P K .value := by
+  induction ns generalizing ps r e with
+  | nil =>
+    cases ps with
+    | nil => exact ⟨hn, trivial, h.1, h.2⟩
+    | cons => simp [NamesWF] at hn
+  | cons n ns ih =>
+    cases ps with
+    | nil => simp [NamesWF] at hn
+    | cons a ps =>
+      have hn' : NamesWF ns (shiftVTys 1 0 ps) :=
+        ⟨by simpa [NamesWF] using Nat.succ.inj hn.1, hn.2.of_cons⟩
+      have ht := ih hn' h.2
+      exact ⟨hn, ⟨h.1, (kindsList_shiftV_iff _ _ _).mp ht.2.1⟩,
+        (Ty.hasKind_shiftV_iff _ _ _ _).mp ht.2.2.1,
+        (kindsEff_shiftV_iff _ _ _).mp ht.2.2.2⟩
+
+theorem Ty.kind_foldFn {P K t} (h : kindsTel P K t) : (Ty.foldFn t).HasKind P K .value := by
+  classical
+  by_cases he : ∃ f : FnView, f.toTel = t
+  · obtain ⟨f, rfl⟩ := he
+    rw [Ty.foldFn_toTel]
+    exact Ty.kind_of_toTel f.names_wf h
+  · rw [Ty.foldFn_no_view he]
+    exact h
+
+theorem Ty.HasKind.core {P K a} (h : Ty.HasKind P K a .value) : a.core.HasKind P K .value := by
+  cases a with
+  | refined a _ => exact Ty.HasKind.core (a := a) h.1
+  | _ => exact h
+
+theorem Ty.kind_refineNorm {P K p} {a : Ty} (h : a.HasKind P K .value) (hc : a.NotContCore) :
+    (a.refineNorm p).HasKind P K .value := by
+  unfold Ty.refineNorm Ty.packRefinements
+  split
+  · exact h.core
+  · exact ⟨h.core, by simpa only [Ty.NotContCore, Ty.core_idem] using hc⟩
 
 mutual
   theorem Ty.HasKind.rawSubstV {P K a k} (h : Ty.HasKind P K a k) (ν : ObservationEnv) :
@@ -54,12 +114,12 @@ mutual
       case data d as => exact ⟨by simpa only [Ty.normTys_eq_map, List.length_map] using h.1, kindsList_norm h.2⟩
       case fn ns ps r e => exact ⟨by simpa only [NamesWF, Ty.normTys_eq_map, List.length_map] using h.1,
         kindsList_norm h.2.1, Ty.HasKind.norm h.2.2.1, kindsEff_norm h.2.2.2⟩
-      case dependentFn t => exact kindsTel_norm h
+      case dependentFn t => exact Ty.kind_foldFn (kindsTel_norm h)
       case cont b t e => exact ⟨Ty.HasKind.norm h.1, Ty.HasKind.norm h.2.1, kindsEff_norm h.2.2⟩
       case map a b => exact ⟨Ty.HasKind.norm h.1, Ty.HasKind.norm h.2⟩
       case dict cl a => obtain ⟨cd,hc,ha⟩ := h; exact ⟨cd,hc,Ty.HasKind.norm ha⟩
       case tapp i as => exact ⟨by simpa only [Ty.normTys_eq_map, List.length_map] using h.1, kindsList_norm h.2⟩
-      case refined a p => exact ⟨Ty.HasKind.norm h.1, (Ty.notContCore_norm _).mpr h.2⟩
+      case refined a p => exact Ty.kind_refineNorm (Ty.HasKind.norm h.1) ((Ty.notContCore_norm _).mpr h.2)
   theorem kindsTel_norm {P K t} (h : kindsTel P K t) : kindsTel P K (Tel.norm t) := by
     cases t with
     | done r e => exact ⟨Ty.HasKind.norm h.1, kindsEff_norm h.2⟩

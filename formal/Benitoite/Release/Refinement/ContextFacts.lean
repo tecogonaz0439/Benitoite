@@ -12,12 +12,13 @@ namespace Benitoite.Release.Refinement
 
 @[simp] theorem Ty.ordinary_shiftV (a : Ty) (k c : Nat) :
     Ordinary (a.shiftV k c) ↔ Ordinary a := by
-  cases a <;> simp [Ordinary, Ty.shiftV]
+  exact Ty.notContCore_shiftV a k c
 
 theorem Ty.assume_shiftV (a : Ty) (k c : Nat) :
     (a.shiftV k c).assume = a.assume.map (Pred.shiftV k (c+1)) := by
-  cases a <;> simp only [Ty.shiftV, Ty.assume, List.map_nil, List.map_cons,
-    Ty.assume_shiftV, Pred.shiftV, shiftIndex]
+  unfold Ty.assume
+  rw [Ty.core_shiftV, Ty.predicates_shiftV]
+  cases hc : a.core <;> rfl
 
 /-- 文脈の事実の所属を、lookup と self の開きに分ける。 -/
 theorem Ctx.mem_facts {Γ : Ctx} {q : Pred} : q ∈ Γ.facts ↔
@@ -112,9 +113,9 @@ theorem Ctx.mem_facts_extendNone {Γ : Ctx} {q : Pred} :
     q ∈ Γ.extendNone.facts ↔ ∃ p ∈ Γ.facts, p.lift = q := by
   have he : Γ.extendNone.facts = (Γ.extend (.base .unit)).facts := by
     simp only [Ctx.extendNone, Ctx.extend, Ctx.facts, List.zipIdx_cons,
-      List.flatMap_cons, Ty.shiftV, Ty.assume, List.map_nil, List.nil_append]
+      List.flatMap_cons, Ty.shiftV, Ty.assume, Ty.core, Ty.refinementPredicates, List.map_nil, List.nil_append]
   rw [he, Ctx.mem_facts_extend]
-  simp only [Ty.assume, List.not_mem_nil, false_or]
+  simp only [Ty.assume, Ty.core, Ty.refinementPredicates, List.not_mem_nil, false_or]
 
 
 end Benitoite.Release.Refinement

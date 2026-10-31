@@ -28,10 +28,20 @@ theorem renameKind_closed {b : BuilderKind} (h : LocTy.WF (.builder b)) (ξ : Na
     exact congrArg BuilderKind.list (Ty.rawSubstV_of_wf_zero h _)
 
 theorem substKind_closed {b : BuilderKind} (h : LocTy.WF (.builder b)) (ν : Nat → Val) :
-    substKind ν b = b := by
+    substKind ν b = b.norm := by
   cases b with
   | string | bytes => rfl
   | list a => exact congrArg BuilderKind.list (Ty.subst_values_of_wf_zero h ν)
+
+theorem BuilderKind.norm_idem (b : BuilderKind) : b.norm.norm = b.norm := by
+  cases b <;> simp only [BuilderKind.norm, Ty.norm_idem]
+
+theorem renameKind_norm (b : BuilderKind) (k c : Nat) :
+    renameKind (shiftIndex k c) b.norm = (renameKind (shiftIndex k c) b).norm := by
+  cases b <;> simp only [BuilderKind.norm, renameKind_shift, Ty.norm_shiftV]
+
+theorem substKind_norm (b : BuilderKind) (ν : Nat → Val) : substKind ν b.norm = substKind ν b := by
+  cases b <;> simp only [BuilderKind.norm, substKind, substTyValues, Ty.bind, Ty.norm_rawBind]
 
 theorem LocalCtx.Shift.empty (k c) (L : LocalCtx) : LocalCtx.Shift k c [] L := by
   intro i b hi; simp at hi
@@ -80,16 +90,18 @@ theorem LocalRef.HasKind.shift {Ψ Ψ' L L' r b k c}
     (h : LocalRef.HasKind Ψ L r b) (hw : Ψ.WF) (he : Ψ.Extends Ψ')
     (hl : LocalCtx.Shift k c L L') :
     LocalRef.HasKind Ψ' L' (r.rename (shiftIndex k c)) (renameKind (shiftIndex k c) b) := by
-  cases h with
+  induction h with
   | bound hi => exact .bound (hl _ _ hi)
   | loc hi => rw [renameKind_closed (hw _ _ hi)]; exact .loc (he _ _ hi)
+  | normal h ih => rw [renameKind_norm]; exact ih.normal
 
 theorem LocalRef.HasKind.lift {Ψ L r b} (h : LocalRef.HasKind Ψ L r b) (hw : Ψ.WF)
     (x : Option BuilderKind) :
     LocalRef.HasKind Ψ (LocalCtx.extend x L) (r.rename (· + 1)) (renameKind (shiftIndex 1 0) b) := by
-  cases h with
+  induction h with
   | bound hi => exact .bound (by simp [LocalCtx.extend, hi])
   | loc hi => rw [renameKind_closed (hw _ _ hi)]; exact .loc hi
+  | normal h ih => rw [renameKind_norm]; exact ih.normal
 
 theorem LocalSubstOk.empty (Ψ : StoreTy) (ν : Nat → Val) (ρ : Nat → LocalRef) (L : LocalCtx) :
     LocalSubstOk Ψ [] ν ρ L := by intro i b hi; simp at hi
@@ -123,9 +135,10 @@ theorem LocalSubstOk.extend {Ψ L L' ν ρ} (h : LocalSubstOk Ψ L ν ρ L') (hw
 theorem LocalRef.HasKind.subst {Ψ L L' r b ν ρ}
     (h : LocalRef.HasKind Ψ L r b) (hw : Ψ.WF) (hl : LocalSubstOk Ψ L ν ρ L') :
     LocalRef.HasKind Ψ L' (r.subst ρ) (substKind ν b) := by
-  cases h with
+  induction h with
   | bound hi => exact hl _ _ hi
-  | loc hi => rw [substKind_closed (hw _ _ hi)]; exact .loc hi
+  | loc hi => rw [substKind_closed (hw _ _ hi)]; exact (LocalRef.HasKind.loc hi).normal
+  | normal h ih => rw [substKind_norm]; exact ih
 
 @[simp] theorem BuilderKind.contents_rename (b : BuilderKind) (k c) :
     (renameKind (shiftIndex k c) b).contents = b.contents.shiftV k c := by

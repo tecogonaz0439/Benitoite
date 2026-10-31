@@ -7,6 +7,9 @@ import Benitoite.Release.Refinement.TypingStore
 -/
 namespace Benitoite.Release.Refinement
 
+set_option maxRecDepth 4096
+set_option maxHeartbeats 2000000
+
 
 /-- 継続の型の位置は、通常値の部分型による置換と区別して同じ型を保つ。 -/
 def Ctx.ContMap (Γ Δ : Ctx) : Prop :=
@@ -55,16 +58,28 @@ private theorem contView_none (a : Ty) : contView a = none ↔ a.NotContCore := 
   cases a <;> simp [contView, Ty.NotContCore, Ty.core]
   case refined a p => exact contView_none a
 
-private theorem contView_le {Γ Φ a b} (h : Ty.LeQ Γ Φ a b) : contView a = contView b := by
+private theorem contView_core (a : Ty) : contView a.core = contView a := by
+  cases a <;> simp only [Ty.core, contView]
+  case refined a p => exact contView_core a
+
+private theorem contView_norm_refined (a : Ty) (p : Pred) :
+    contView (Ty.refined a p).norm = contView a.norm := by
+  rw [←contView_core, Ty.core_norm, Ty.core, ←Ty.core_norm, contView_core]
+
+private theorem contView_foldFn (t : Tel) : contView (Ty.foldFn t) = none := by
+  unfold Ty.foldFn
+  split <;> rfl
+
+private theorem contView_le {Γ Φ a b} (h : Ty.LeQ Γ Φ a b) : contView a.norm = contView b.norm := by
   match h with
   | .refl => rfl
   | .trans h₁ h₂ => exact (contView_le h₁).trans (contView_le h₂)
-  | .refine (a := a) (b := b) h _ _ _ =>
-    change contView a = contView b
-    exact contView_le h
-  | .forget | .introduce .. => rfl
+  | .refine h _ _ _ => simpa only [contView_norm_refined] using contView_le h
+  | .forget | .introduce .. => simp only [contView_norm_refined]
+  | .convert he => exact congrArg contView he
+  | .dependentFn .. => simp only [Ty.norm, contView_foldFn]
   | .fn_effect .. | .list .. | .lazy .. | .map_value ..
-  | .dependentFn .. | .scoped .. | .scoped_forget => rfl
+  | .scoped .. | .scoped_forget => rfl
 
 private theorem contView_wf {nr nt nv a b t e} (hw : a.WF nr nt nv)
     (h : contView a = some (b,t,e)) : a = .cont b t e := by
@@ -74,10 +89,59 @@ private theorem contView_wf {nr nt nv a b t e} (hw : a.WF nr nt nv)
     have hn := (contView_none a).mpr hw.2.2
     rw [hn] at h
     cases h
+/-- 同じ生の束縛、または正規形の等号と元の型へ戻す注釈を持つ束縛。 -/
+private def ContImages (P : Program) (C : List TParam) (Γ Δ : Ctx) : Prop :=
+  ∀ (i : Nat) (a : Ty), Γ[i]? = some (some a) → ¬a.Ordinary →
+    ∃ a', Δ[i]? = some (some a') ∧ a'.norm = a.norm ∧
+      (a' = a ∨ ∃ b t e, a' = .cont b t e ∧ Ty.Annotation P C Δ a)
+
+private theorem ContImages.params {P C Γ Δ} (h : ContImages P C Γ Δ) (ps : List Ty) :
+    ContImages P C (bindParams Γ ps) (bindParams Δ ps) := by
+  intro i a hi ho
+  by_cases hil : i < ps.length
+  · exact ⟨a, by rw [bindParams, List.getElem?_append_left (by simpa using hil)] at hi ⊢; exact hi,
+      rfl, Or.inl rfl⟩
+  · rw [bindParams, List.getElem?_append_right (by simpa using Nat.le_of_not_gt hil)] at hi ⊢
+    simp only [List.length_map, List.length_reverse, List.getElem?_map] at hi
+    obtain ⟨u,hu,he⟩ := Option.map_eq_some_iff.mp hi
+    cases u with
+    | none => cases he
+    | some b =>
+      cases he
+      obtain ⟨b',hb,hn,hann⟩ := h _ _ hu (fun hh => ho ((Ty.ordinary_shiftV _ _ _).mpr hh))
+      refine ⟨b'.shiftV ps.length 0, by simp only [List.length_map, List.length_reverse, List.getElem?_map, hb, Option.map_some], ?_, ?_⟩
+      · simpa only [Ty.norm_shiftV] using congrArg (Ty.shiftV ps.length 0) hn
+      · rcases hann with he | ha
+        · exact Or.inl (congrArg (Ty.shiftV ps.length 0) he)
+        · obtain ⟨b,t,e,he,ha⟩ := ha
+          exact Or.inr ⟨b.shiftV ps.length 0,t.shiftV ps.length 0,Eff.shiftV ps.length 0 e,
+            by rw [he]; rfl,(ShiftMap.outer Δ ps).annotation ha⟩
+
+private theorem ContImages.none {P C Γ Δ} (h : ContImages P C Γ Δ) :
+    ContImages P C Γ.extendNone Δ.extendNone := by
+  intro i a hi ho
+  cases i with
+  | zero => simp [Ctx.extendNone] at hi
+  | succ i =>
+    simp only [Ctx.extendNone, List.getElem?_cons_succ, List.getElem?_map] at hi ⊢
+    obtain ⟨u,hu,he⟩ := Option.map_eq_some_iff.mp hi
+    cases u with
+    | none => cases he
+    | some b =>
+      cases he
+      obtain ⟨b',hb,hn,hann⟩ := h _ _ hu (fun hh => ho ((Ty.ordinary_shiftV _ _ _).mpr hh))
+      refine ⟨b'.shiftV 1 0, by simp only [hb, Option.map_some], ?_, ?_⟩
+      · simpa only [Ty.norm_shiftV] using congrArg (Ty.shiftV 1 0) hn
+      · rcases hann with he | ha
+        · exact Or.inl (congrArg (Ty.shiftV 1 0) he)
+        · obtain ⟨b,t,e,he,ha⟩ := ha
+          exact Or.inr ⟨b.shiftV 1 0,t.shiftV 1 0,Eff.shiftV 1 0 e,
+            by rw [he]; rfl,(ShiftMap.outerNone Δ).annotation ha⟩
+
 private structure ContextMap (P : Program) (B : Builtins) (store : StoreTy) (Q : NoFailCtx)
     (C : List TParam) (Γ Δ : Ctx) (Ξ : List Pred) : Prop where
   length : Δ.length = Γ.length
-  continuations : Ctx.ContMap Γ Δ
+  continuations : ContImages P C Γ Δ
   lookup : ∀ i a, Γ[i]? = some (some a) → a.Ordinary →
     HasTypeVQ P B store Q C Δ Ξ (.var i) a
 
@@ -216,6 +280,35 @@ private theorem ContextMap.annotation {P B store Q C Γ Δ Ξ a}
     Ty.Annotation P C Δ a :=
   ⟨by simpa only [h.length] using ha.wf, h.sorted ha.sorted, ha.declared.context h.declaration⟩
 
+private theorem ContextMap.resume {P B store Q C Γ Δ Ξ i b t e R v L}
+    (hm : ContextMap P B store Q C Γ Δ Ξ) (hi : Γ[i]? = some (some (.cont b t e)))
+    (hv : HasTypeVQ P B store Q C Δ Ξ v b) (hd : Ty.Declared P C Δ t) :
+    HasTypeCQ P B store Q C Δ Ξ R (.resume (.var i) v) t e L := by
+  obtain ⟨a',hi',hn,ha⟩ := hm.continuations _ _ hi (by simp [Ty.Ordinary, Ty.core])
+  rcases ha with he | ⟨b',t',e',he,ha⟩
+  · rw [he] at hi'; exact .C_Resume hi' hv hd
+  · rw [he] at hi' hn
+    obtain ⟨hb,ht,heff⟩ := Ty.cont.inj hn
+    have hv' : HasTypeVQ P B store Q C Δ Ξ v b'.norm := hb.symm ▸ hv.V_Normal
+    have hd' : Ty.Declared P C Δ t'.norm := ht.symm ▸ hd.norm
+    have hh := HasTypeCQ.C_ResumeNorm (Δ := L) (R := R) hi' hv' hd'
+    rw [ht,heff] at hh
+    have htAnn : Ty.Annotation P C Δ t := ⟨ha.wf.2.1, ha.sorted.2.1, ha.declared.2.1⟩
+    exact .C_Sub hh (.convert (Ty.norm_idem t))
+      (Eff.covers_norm_right.mpr (.refl _ _ _)) htAnn.wf htAnn.sorted htAnn.declared
+
+private theorem ContextMap.resumeNorm {P B store Q C Γ Δ Ξ i b t e R v L}
+    (hm : ContextMap P B store Q C Γ Δ Ξ) (hi : Γ[i]? = some (some (.cont b t e)))
+    (hv : HasTypeVQ P B store Q C Δ Ξ v b.norm) (hd : Ty.Declared P C Δ t.norm) :
+    HasTypeCQ P B store Q C Δ Ξ R (.resume (.var i) v) t.norm (Eff.norm e) L := by
+  obtain ⟨a',hi',hn,ha⟩ := hm.continuations _ _ hi (by simp [Ty.Ordinary, Ty.core])
+  rcases ha with he | ⟨b',t',e',he,ha⟩
+  · rw [he] at hi'; exact .C_ResumeNorm hi' hv hd
+  · rw [he] at hi' hn
+    obtain ⟨hb,ht,heff⟩ := Ty.cont.inj hn
+    have hh := HasTypeCQ.C_ResumeNorm (Δ := L) (R := R) hi' (hb.symm ▸ hv) (ht.symm ▸ hd)
+    simpa only [ht,heff] using hh
+
 private theorem ContextMap.signature {P B store Q C Γ Δ Ξ t ks ts es}
     (h : ContextMap P B store Q C Γ Δ Ξ) (ht : SignatureInstance P C Γ t ks ts es) :
     SignatureInstance P C Δ t ks ts es :=
@@ -236,8 +329,14 @@ private theorem ContextMap.shiftE {P B store Q C Γ Δ Ξ store'}
       | some b =>
         simp only [hg,Option.map_some,Option.some.injEq] at hi
         cases hi
-        rw [h.continuations i b hg (fun hb => ho ((Ty.ordinary_shiftTypes _ _ _).mpr hb))]
-        rfl
+        obtain ⟨b',hb,he,ha⟩ := h.continuations i b hg (fun hb => ho ((Ty.ordinary_shiftTypes _ _ _).mpr hb))
+        refine ⟨shiftTypes extra.length 0 b', by simp only [hb, Option.map_some], ?_, ?_⟩
+        · simpa only [Ty.norm_shiftTypes] using congrArg (shiftTypes extra.length 0) he
+        · rcases ha with he | ha
+          · exact Or.inl (congrArg (shiftTypes extra.length 0) he)
+          · obtain ⟨bin,bout,e,he,ha⟩ := ha
+            exact Or.inr ⟨shiftTypes extra.length 0 bin,shiftTypes extra.length 0 bout,shiftRowsTypes extra.length 0 e,
+              by rw [he]; rfl,(TypeCtxMap.shiftEAt Δ extra.length 0).annotation (by simp [Nat.add_comm]) ha⟩
   · intro i a hi ho
     simp only [Ctx.shiftE,Ctx.shiftEAt,List.getElem?_map] at hi
     cases hg : Γ[i]? with
@@ -364,6 +463,7 @@ mutual
       exact .V_Con hc hn hk hw (context_values hv hA hstore hm hf)
         ⟨by simpa only [hm.length] using ha.wf, hm.sorted ha.sorted, ha.declared.context hm.declaration⟩
     | .V_Super hv hc hmemb hd => exact .V_Super (context_value hv hA hstore hm hf) hc hmemb (hd.context hm.declaration)
+    | .V_Normal hv => exact .V_Normal (context_value hv hA hstore hm hf)
     | .V_Sub hv hl hw hs hd =>
       have hl' := hl.rawBind (SubstEnv.valuesOnly (fun i => some (.var i))) (hm.transport hf)
       change Ty.LeQ Δ Ξ (renameTy id _) (renameTy id _) at hl'
@@ -420,8 +520,11 @@ mutual
     | .C_Handle hb hc hh => exact .C_Handle (context_comp hb hA hstore hm hf) hc (context_clauses hh hA hstore hm hf)
     | .C_Handle_Fail hb hc hn hh => exact .C_Handle_Fail (context_comp hb hA hstore hm hf) hc hn (context_failure hh hA hstore hm hf)
     | .C_Resume hi hv hd =>
-      exact .C_Resume (hm.continuations _ _ hi (by simp))
-        (context_value hv hA hstore hm hf) (hd.context hm.declaration)
+      exact hm.resume hi (context_value hv hA hstore hm hf) (hd.context hm.declaration)
+    | .C_ResumeNorm hi hv hd =>
+      exact hm.resumeNorm hi (context_value hv hA hstore hm hf) (hd.context hm.declaration)
+    | .C_ResumeLNorm hl hr hv hd =>
+      exact .C_ResumeLNorm hl hr (context_value hv hA hstore hm hf) (hd.context hm.declaration)
     | .C_ResumeL hl hv hd =>
       exact .C_ResumeL hl (context_value hv hA hstore hm hf) (hd.context hm.declaration)
     | .C_Meth hv hc hmeth hn hs hi hr hargs hvs ha =>
@@ -430,6 +533,7 @@ mutual
     | .C_External hd hw ha hargs => exact .C_External hd hw ha (context_telArgs hargs hA hstore hm hf)
     | .C_IssuePathBases b sg hb hk ho hp hr he => exact .C_IssuePathBases b sg hb hk ho hp hr he
     | .C_CheckAt hc => exact .C_CheckAt (context_at_call hc hA hstore hm hf)
+    | .C_Normal hb => exact .C_Normal (context_comp hb hA hstore hm hf)
     | .C_Sub ht hl hc hw hs hd =>
       have hl' := hl.rawBind (SubstEnv.valuesOnly (fun i => some (.var i))) (hm.transport hf)
       change Ty.LeQ Δ Ξ (renameTy id _) (renameTy id _) at hl'
@@ -543,10 +647,28 @@ private theorem Ctx.Narrows.contextMap {P B store Q C Γ Φ Δ Ξ}
         have hb : ¬ b.Ordinary := fun hh => ho ((Ty.ordinary_shiftV _ _ _).mpr hh)
         cases b <;> simp at hb
         case cont bin bout eff =>
-          have heq : a = .cont bin bout eff := contView_wf haw (contView_le hl)
-          rw [heq]
-          rfl
-      | succ i => exact hi
+          have heq := contView_le hl
+          have hav : contView a ≠ none := by
+            intro hn
+            have haOrd : a.NotContCore := (contView_none a).mp hn
+            have hbOrd := hl.notContCore.mp haOrd
+            exact hbOrd bin bout eff rfl
+          obtain ⟨bin',bout',eff',hac⟩ : ∃ bin' bout' eff', a = .cont bin' bout' eff' := by
+            cases hc : contView a with
+            | none => exact False.elim (hav hc)
+            | some triple =>
+              obtain ⟨bin',bout',eff'⟩ := triple
+              exact ⟨bin',bout',eff',contView_wf haw hc⟩
+          rw [hac] at heq
+          have heq' : (Ty.cont bin' bout' eff').norm = (Ty.cont bin bout eff).norm := by
+            exact congrArg (fun x : Ty × Ty × Eff => Ty.cont x.1 x.2.1 x.2.2) (Option.some.inj heq)
+          refine ⟨a.shiftV 1 0, rfl, ?_, Or.inr ⟨bin'.shiftV 1 0,bout'.shiftV 1 0,Eff.shiftV 1 0 eff', by rw [hac]; rfl, ?_⟩⟩
+          · simpa only [Ty.norm_shiftV, hac] using congrArg (Ty.shiftV 1 0) heq'
+          · exact (ShiftMap.outer Γ [a]).annotation ⟨hw,hs,hd⟩
+        case refined core pred =>
+          obtain ⟨bin,bout,eff,he⟩ := hb
+          exact False.elim (hw.2.2 bin bout eff he)
+      | succ i => exact ⟨_,hi,rfl,Or.inl rfl⟩
     · intro i t hi ho
       cases i with
       | zero =>
@@ -629,10 +751,15 @@ theorem ImageOk.narrow {P B store Q C Γ Φ Δ Ξ R0 ν i a}
   match h with
   | .ordinary ho hv => exact .ordinary ho (hv.narrow hA hw hn)
   | .contLoc he ht ha hv hl hr => exact .contLoc he ht ha hv hl hr
+  | .hidden ho hc => exact .hidden ho hc
   | .contVar he hv hi =>
-    refine .contVar he hv ((hn.contextMap (Q := Q) hA hw).continuations _ _ hi ?_)
-    simp only [he,substTyValues,Ty.bind,Ty.rawBind,Ty.norm,Ty.Ordinary]
-    intro ho
-    exact ho _ _ _ rfl
+    obtain ⟨b,t,e,hi,heq⟩ := hi
+    obtain ⟨a',hi',hn,hann⟩ := (hn.contextMap (Q := Q) hA hw).continuations _ _ hi
+      (by simp [Ty.Ordinary,Ty.core])
+    rcases hann with hsame | ⟨b',t',e',hshape,ha⟩
+    · rw [hsame] at hi'
+      exact .contVar he hv ⟨b,t,e,hi',heq⟩
+    · rw [hshape] at hi' hn
+      exact .contVar he hv ⟨b',t',e',hi',hn.trans heq⟩
 
 end Benitoite.Release.Refinement

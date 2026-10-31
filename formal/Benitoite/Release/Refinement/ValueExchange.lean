@@ -101,8 +101,9 @@ def SubstEnv.mapValues (θ : SubstEnv) (σ : ObservationEnv) : SubstEnv :=
 private theorem rawApply_substV (t : Ty) (as : List Ty) (σ : ObservationEnv) :
     (rawApply t as).rawSubstV σ = rawApply (t.rawSubstV σ) (substVTys σ as) := by
   cases t <;> simp only [rawApply, Ty.rawSubstV]
+  case refined a p => rw [rawApply_substV a as]
   case ctor t =>
-    cases t <;> cases as <;> simp only [Ty.rawSubstV, substVTys,
+    cases t <;> cases as <;> simp only [rawApply, Ty.rawSubstV, substVTys,
       List.headD_nil, List.headD_cons, List.tail_nil, List.tail_cons]
     rename_i a as
     cases as <;> rfl
