@@ -40,3 +40,5 @@
 | 2026-10-31 | RV-L00b.02b-closures-r3 | Opus 5.5（medium） | 新規 | 約21分 | 382,582 | 条件付き可（重なし、中3・軽3）。差し替えの本体は成立。中1は K_Handle と CaptureOk の接続、中2は全遷移が依存する補題の不足（証明済み）、中3は builderBody_keepsBound の前提 |
 | 2026-10-31 | L00b.02b-closures 再開3（所見の対応） | Codex | 01a18fea の再開 | 約18分 | 累計1,945,974（差533,618） | CaptureOk の継続の項目で行を読まない形へ（案 (a)）、K_Handle にソースの ts、恒等・開放の補題を本番へ、builderBody_image、遷移の正例37行23種類。ビルド673ジョブ、公理は三つだけ |
 | 2026-10-31 | RV-L00b.02b-closures-r4（絞った確認） | Opus 5.5（medium） | 新規 | 約9分 | 230,591 | 条件付き可（重なし、中1・軽2）。緩和の範囲は正しい。定義の変更なし、義務を L20 へ |
+| 2026-10-31 | L00b.02c | Codex | 新規（01a190b2） | 約19分 | 281,733 | Shared.Integer／Interval／Approximation と adapter、Release.Syntax に依存しない共有層、ValueApprox4／ApproxValue3／FlowApprox1／EvalResult3。ビルド683ジョブ、公理は三つだけ |
+| 2026-10-31 | RV-L00b.02c | Opus 5.5（medium） | 新規 | 約8分 | 205,661 | 条件付き可（重なし、中2・軽4）。本番は変えず、失敗の所属と実解析の出力の写しを O169 へ |
