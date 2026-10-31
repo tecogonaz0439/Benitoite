@@ -351,3 +351,4 @@ import Benitoite.Release.Refinement.CapturedFacts
 import Benitoite.Release.Refinement.PathConditions
 import Benitoite.Release.Refinement.MatchPaths
 import Benitoite.Release.Refinement.MatchFacts
+import Benitoite.Release.Refinement.ReferencePreservation
