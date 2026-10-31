@@ -1,0 +1,106 @@
+[
+  {
+    "name": "build",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T11:27:29.133449+09:00",
+    "exit": 0,
+    "elapsed_seconds": 33.362519166000006,
+    "output": {
+      "name": "02b-handlers-r2-build.log",
+      "bytes": 27360,
+      "sha256": "9d45e7377ca412ef694da325cab487ff75b8a0346ddccdd3f168557903282bdb",
+      "storage": "改造/l00b.02"
+    }
+  },
+  {
+    "name": "boundary",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02b-handlers-r2-boundary.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T11:28:02.497008+09:00",
+    "exit": 0,
+    "elapsed_seconds": 1.4095888339999973,
+    "output": {
+      "name": "02b-handlers-r2-boundary.log",
+      "bytes": 8983,
+      "sha256": "1c45ff00fcfb3951b343ae6c63ec928f5a91226394f34e3da75384cd024717b5",
+      "storage": "改造/l00b.02"
+    },
+    "input_sha256": "bbebc9905af019f56a3c0fd425af5ccef5a70db0984a00ced13d3bc89272b8a4"
+  },
+  {
+    "name": "rows",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02b-handlers-r2-rows.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T11:28:03.907382+09:00",
+    "exit": 0,
+    "elapsed_seconds": 0.8279972089999958,
+    "output": {
+      "name": "02b-handlers-r2-rows.log",
+      "bytes": 15973,
+      "sha256": "dcf08690a8e1525d8e60074a9a4b268e27f6bc2dcb1ef4b59cf29670f5b7b6c6",
+      "storage": "改造/l00b.02"
+    },
+    "input_sha256": "c86efcdd2ce6ed8ac2e4d532b741a1f6cdb818369c896d8d74c464c6611d6db8"
+  },
+  {
+    "name": "axioms",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02b-handlers-r2-axioms.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T11:28:04.736195+09:00",
+    "exit": 0,
+    "elapsed_seconds": 9.557530207999996,
+    "output": {
+      "name": "02b-handlers-r2-axioms.log",
+      "bytes": 1070864,
+      "sha256": "f5a579990786839040952832f0728eeb82a8ac32dfb70a9d56c33e891d872e1c",
+      "storage": "<tmp>"
+    },
+    "input_sha256": "b6716e461c6e38fd60d79b5dc6f98ac781a537981ad118432a986071b03aecdb"
+  },
+  {
+    "name": "lean-version",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "--version"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T11:28:14.305015+09:00",
+    "exit": 0,
+    "elapsed_seconds": 0.0838856670000041,
+    "output": {
+      "name": "02b-handlers-r2-lean-version.log",
+      "bytes": 106,
+      "sha256": "20f42f897511ec814f7616bd9a193ae7504aa2f52fb05299eb752936eb77ca6e",
+      "storage": "改造/l00b.02"
+    }
+  }
+]

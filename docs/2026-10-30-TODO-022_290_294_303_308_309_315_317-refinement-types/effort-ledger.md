@@ -28,3 +28,7 @@
 | 2026-10-31 | L00b.02b-at | Codex | 新規（01a18f27） | 約52分 | 486,292 | 保持値の V6・C2・Witness2、PathEnv の Valid・Required・Ready、At の準備、Adequate、CoreAssumptions の改訂、Event3・Step76。ビルド650ジョブ、公理は三つだけ |
 | 2026-10-31 | RV-L00b.02b-at | Opus 5.5（medium） | 新規 | 約14分 | 284,234 | 条件付き可（重なし、中2・軽4）。中1は pathBases の署名の形の欄、中2は handler の下の発行 |
 | 2026-10-31 | L00b.02b-at 再開1（所見の対応） | Codex | 01a18f27 の再開 | 約10分 | 累計629,069（差142,777） | pathBases_shape の欄と旧の欄の改訂、発行から handler の検査を外す、AtError.Closed を削除、Source から .loc を除く。ビルド650ジョブ、公理は三つだけ |
+| 2026-10-31 | L00b.02b-handlers（着手で停止） | Codex | 新規（01a18f71） | 約11分 | 288,305 | 多相節で型パラメータを先頭に足すときの sat/admits の保存が出ないため停止（反例2つ）。0/14 |
+| 2026-10-31 | L00b.02b-handlers 再開1（型パラメータの改名の一般形で仕上げ） | Codex | 01a18f71 の再開 | 約91分 | 累計1,152,370（差864,065） | 14/14 導出（C5・Arms3・Clauses2・Failure1・ImageOk3）、PatTy7／PatTys2／AltsTy・Inhabits・Exhaustive、三族の被覆義務63。TypeParamRenaming による sat/admits の保存を TypeAssumptions に。ビルド669ジョブ、公理は三つだけ |
+| 2026-10-31 | RV-L00b.02b-handlers | Opus 5.5（medium） | 新規 | 約11分 | 233,000 | 条件付き可（重1・中1・軽3）。重1は guard の文脈が外側の構築器の専用操作を拒む点、中1は標準エラーの構成子一覧の固定 |
+| 2026-10-31 | L00b.02b-handlers 再開2（所見の対応） | Codex | 01a18f71 の再開 | 約12分 | 累計1,246,352（差93,982） | 重1は guard を元の Ψ と広げた局所文脈に戻し三族の guard の場合を閉じ直す、中1は StandardErrorComplete を宣言表の構成子一覧で一般化、軽1〜3は署名と義務の表。ビルド669ジョブ、公理は三つだけ |

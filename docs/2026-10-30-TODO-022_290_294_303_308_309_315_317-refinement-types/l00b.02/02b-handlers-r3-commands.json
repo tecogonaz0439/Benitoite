@@ -1,0 +1,128 @@
+[
+  {
+    "name": "build",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T11:52:24.144996+09:00",
+    "exit": 0,
+    "elapsed_seconds": 0.151890459,
+    "output": {
+      "name": "02b-handlers-r3-build.log",
+      "bytes": 24345,
+      "sha256": "ddd429a6bd29e91ff22e36300232d7d13b47cb097e5922e78cd57d8665746f7e",
+      "storage": "改造/l00b.02"
+    }
+  },
+  {
+    "name": "boundary",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02b-handlers-r3-boundary.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T11:52:24.297883+09:00",
+    "exit": 0,
+    "elapsed_seconds": 0.8708629999999999,
+    "output": {
+      "name": "02b-handlers-r3-boundary.log",
+      "bytes": 3772,
+      "sha256": "b57f93bbffd505641b4686359ed999c92cd3460f213b866a85fa6d40895e4ba5",
+      "storage": "改造/l00b.02"
+    },
+    "input_sha256": "6b060b6b7fffce68f96a4c782b7a19b0bd2276ed899c8bf3dd2cc47ab2d19b20"
+  },
+  {
+    "name": "rows",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02b-handlers-r3-rows.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T11:52:25.169517+09:00",
+    "exit": 0,
+    "elapsed_seconds": 0.8146975830000001,
+    "output": {
+      "name": "02b-handlers-r3-rows.log",
+      "bytes": 16053,
+      "sha256": "560799894ea5de436153c17f54f86dd91dece945ab4c973026eddc7a732c23df",
+      "storage": "改造/l00b.02"
+    },
+    "input_sha256": "5ff03fc5e49bd3ae75ce04b8a4204e49e6ca1feac88dcbde83231173587cc162"
+  },
+  {
+    "name": "prior-counterexamples",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02b-handlers-r2-boundary.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T11:52:25.985030+09:00",
+    "exit": 0,
+    "elapsed_seconds": 1.2660753340000002,
+    "output": {
+      "name": "02b-handlers-r3-prior-counterexamples.log",
+      "bytes": 8983,
+      "sha256": "1c45ff00fcfb3951b343ae6c63ec928f5a91226394f34e3da75384cd024717b5",
+      "storage": "改造/l00b.02"
+    },
+    "input_sha256": "bbebc9905af019f56a3c0fd425af5ccef5a70db0984a00ced13d3bc89272b8a4"
+  },
+  {
+    "name": "axioms",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02b-handlers-r2-axioms.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T11:52:27.251883+09:00",
+    "exit": 0,
+    "elapsed_seconds": 9.315901708000002,
+    "output": {
+      "name": "02b-handlers-r3-axioms.log",
+      "bytes": 1070968,
+      "sha256": "58aefaae39d9a1c3d0e54c1897abc9d94e8466c2b81394435ad151efe8db5e82",
+      "storage": "<tmp>"
+    },
+    "input_sha256": "b6716e461c6e38fd60d79b5dc6f98ac781a537981ad118432a986071b03aecdb"
+  },
+  {
+    "name": "lean-version",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "--version"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T11:52:36.578301+09:00",
+    "exit": 0,
+    "elapsed_seconds": 0.07715099999999886,
+    "output": {
+      "name": "02b-handlers-r3-lean-version.log",
+      "bytes": 106,
+      "sha256": "20f42f897511ec814f7616bd9a193ae7504aa2f52fb05299eb752936eb77ca6e",
+      "storage": "改造/l00b.02"
+    }
+  }
+]

@@ -1,4 +1,4 @@
-import Benitoite.Release.Refinement.SubstTyping
+import Benitoite.Release.Refinement.TypingStore
 
 /-!
 # 構文の文脈の narrowing
@@ -7,9 +7,77 @@ import Benitoite.Release.Refinement.SubstTyping
 -/
 namespace Benitoite.Release.Refinement
 
+
+/-- 継続の型の位置は、通常値の部分型による置換と区別して同じ型を保つ。 -/
+def Ctx.ContMap (Γ Δ : Ctx) : Prop :=
+  ∀ (i : Nat) (a : Ty), Γ[i]? = some (some a) → ¬ a.Ordinary → Δ[i]? = some (some a)
+
+theorem Ctx.ContMap.params {Γ Δ} (h : Ctx.ContMap Γ Δ) (ps : List Ty) :
+    Ctx.ContMap (bindParams Γ ps) (bindParams Δ ps) := by
+  intro i a hi ho
+  by_cases hil : i < ps.length
+  · rw [bindParams, List.getElem?_append_left (by simpa using hil)] at hi ⊢
+    exact hi
+  · rw [bindParams, List.getElem?_append_right (by simpa using Nat.le_of_not_gt hil)] at hi ⊢
+    simp only [List.length_map, List.length_reverse, List.getElem?_map] at hi ⊢
+    cases hu : Γ[i-ps.length]? with
+    | none => simp [hu] at hi
+    | some u => cases u with
+      | none => simp [hu] at hi
+      | some b =>
+        simp only [hu, Option.map_some, Option.some.injEq] at hi
+        cases hi
+        rw [h _ _ hu (fun hb => ho ((Ty.ordinary_shiftV _ _ _).mpr hb))]
+        rfl
+
+theorem Ctx.ContMap.none {Γ Δ} (h : Ctx.ContMap Γ Δ) : Ctx.ContMap Γ.extendNone Δ.extendNone := by
+  intro i a hi ho
+  cases i with
+  | zero => simp [Ctx.extendNone] at hi
+  | succ i =>
+    simp only [Ctx.extendNone, List.getElem?_cons_succ, List.getElem?_map] at hi ⊢
+    cases hu : Γ[i]? with
+    | none => simp [hu] at hi
+    | some u => cases u with
+      | none => simp [hu] at hi
+      | some b =>
+        simp only [hu, Option.map_some, Option.some.injEq] at hi
+        cases hi
+        rw [h _ _ hu (fun hb => ho ((Ty.ordinary_shiftV _ _ _).mpr hb))]
+        rfl
+
+private def contView : Ty → Option (Ty × Ty × Eff)
+  | .cont b t e => some (b,t,e)
+  | .refined a _ => contView a
+  | _ => none
+
+private theorem contView_none (a : Ty) : contView a = none ↔ a.NotContCore := by
+  cases a <;> simp [contView, Ty.NotContCore, Ty.core]
+  case refined a p => exact contView_none a
+
+private theorem contView_le {Γ Φ a b} (h : Ty.LeQ Γ Φ a b) : contView a = contView b := by
+  match h with
+  | .refl => rfl
+  | .trans h₁ h₂ => exact (contView_le h₁).trans (contView_le h₂)
+  | .refine (a := a) (b := b) h _ _ _ =>
+    change contView a = contView b
+    exact contView_le h
+  | .forget | .introduce .. => rfl
+  | .fn_effect .. | .list .. | .lazy .. | .map_value ..
+  | .dependentFn .. | .scoped .. | .scoped_forget => rfl
+
+private theorem contView_wf {nr nt nv a b t e} (hw : a.WF nr nt nv)
+    (h : contView a = some (b,t,e)) : a = .cont b t e := by
+  cases a <;> simp only [contView] at h <;> try cases h
+  case cont => rfl
+  case refined a p =>
+    have hn := (contView_none a).mpr hw.2.2
+    rw [hn] at h
+    cases h
 private structure ContextMap (P : Program) (B : Builtins) (store : StoreTy) (Q : NoFailCtx)
     (C : List TParam) (Γ Δ : Ctx) (Ξ : List Pred) : Prop where
   length : Δ.length = Γ.length
+  continuations : Ctx.ContMap Γ Δ
   lookup : ∀ i a, Γ[i]? = some (some a) → a.Ordinary →
     HasTypeVQ P B store Q C Δ Ξ (.var i) a
 
@@ -71,13 +139,26 @@ private theorem ContextMap.hide {P B store Q C Γ Δ Ξ}
   constructor
   · simpa only [hideConts, List.length_map] using h.length
   · intro i a hi ho
+    exact False.elim (ho (hideConts_lookup.mp hi).2)
+  · intro i a hi ho
     exact (h.lookup i a (hideConts_lookup.mp hi).1 ho).hide_context hA hstore (hideBuilders store) (StoreTy.preserves_hide _)
+
+private theorem ContextMap.hideConts {P B store Q C Γ Δ Ξ}
+    (h : ContextMap P B store Q C Γ Δ Ξ) (hA : Builtins.ValueAssumptions P B) (hw : store.WF) :
+    ContextMap P B store Q C (hideConts Γ) (hideConts Δ) Ξ := by
+  constructor
+  · simpa only [Refinement.hideConts,List.length_map] using h.length
+  · intro i a hi ho
+    exact False.elim (ho (hideConts_lookup.mp hi).2)
+  · intro i a hi ho
+    exact (h.lookup i a (hideConts_lookup.mp hi).1 ho).hide_context hA hw store (.refl _)
 
 private theorem ContextMap.params {P B store Q C Γ Δ Ξ}
     (h : ContextMap P B store Q C Γ Δ Ξ) (hA : Builtins.ValueAssumptions P B) (hstore : store.WF) (ps : List Ty) :
     ContextMap P B store Q C (bindParams Γ ps) (bindParams Δ ps) (liftMany ps.length Ξ) := by
   constructor
   · simp only [bindParams, List.length_append, List.length_map, List.length_reverse, h.length]
+  · exact h.continuations.params ps
   · intro i a hi ho
     by_cases hil : i < ps.length
     · apply HasTypeVQ.V_Var _ ho
@@ -102,6 +183,7 @@ private theorem ContextMap.none {P B store Q C Γ Δ Ξ}
     ContextMap P B store Q C Γ.extendNone Δ.extendNone (Ξ.map Pred.lift) := by
   constructor
   · simp only [Ctx.extendNone, List.length_cons, List.length_map, h.length]
+  · exact h.continuations.none
   · intro i a hi ho
     cases i with
     | zero => simp [Ctx.extendNone] at hi
@@ -139,6 +221,102 @@ private theorem ContextMap.signature {P B store Q C Γ Δ Ξ t ks ts es}
     SignatureInstance P C Δ t ks ts es :=
   ⟨ht.source, fun a ha => h.annotation (ht.types a ha), ht.kinds,
     fun e he => h.annotation (ht.rows e he), h.annotation ht.result⟩
+
+private theorem ContextMap.shiftE {P B store Q C Γ Δ Ξ store'}
+    (h : ContextMap P B store Q C Γ Δ Ξ) (extra : List TParam) :
+    ContextMap P B store' Q (extra++C) (Γ.shiftE extra.length) (Δ.shiftE extra.length) Ξ := by
+  constructor
+  · simpa only [Ctx.shiftE,Ctx.shiftEAt,List.length_map] using h.length
+  · intro i a hi ho
+    simp only [Ctx.shiftE,Ctx.shiftEAt,List.getElem?_map] at hi ⊢
+    cases hg : Γ[i]? with
+    | none => simp [hg] at hi
+    | some u => cases u with
+      | none => simp [hg] at hi
+      | some b =>
+        simp only [hg,Option.map_some,Option.some.injEq] at hi
+        cases hi
+        rw [h.continuations i b hg (fun hb => ho ((Ty.ordinary_shiftTypes _ _ _).mpr hb))]
+        rfl
+  · intro i a hi ho
+    simp only [Ctx.shiftE,Ctx.shiftEAt,List.getElem?_map] at hi
+    cases hg : Γ[i]? with
+    | none => simp [hg] at hi
+    | some u => cases u with
+      | none => simp [hg] at hi
+      | some b =>
+        simp only [hg,Option.map_some,Option.some.injEq] at hi
+        cases hi
+        exact (h.lookup i b hg ((Ty.ordinary_shiftTypes _ _ _).mp ho)).shift_types_var
+          (by simp [Nat.add_comm]) (TypeCtxMap.shiftEAt Δ extra.length 0)
+
+private theorem ContextMap.many {P B store Q C Γ Δ Ξ}
+    (h : ContextMap P B store Q C Γ Δ Ξ) (hA : Builtins.ValueAssumptions P B) (hw : store.WF) (ps : List Ty) :
+    ContextMap P B store Q C (Γ.extendMany ps) (Δ.extendMany ps) (liftMany ps.length Ξ) := by
+  induction ps generalizing Γ Δ Ξ with
+  | nil => exact h
+  | cons a as ih =>
+    have hh := ih (by simpa only [bindParams_single,liftMany_one,List.length_cons,List.length_nil,Nat.zero_add] using h.params hA hw [a])
+    simpa only [Ctx.extendMany,List.length_cons,←liftMany_one,liftMany_add,Nat.add_comm 1] using hh
+
+private theorem ContextMap.conditions_many {P B store Q C Γ Δ Ξ Φ}
+    (h : ContextMap P B store Q C Γ Δ Ξ)
+    (hA : Builtins.ValueAssumptions P B) (hw : store.WF)
+    (hf : ∀ p∈Φ,Entails (Δ.facts++Ξ) p) (ps : List Ty) :
+    ∀ p∈liftMany ps.length Φ,Entails ((Δ.extendMany ps).facts++liftMany ps.length Ξ) p := by
+  induction ps generalizing Γ Δ Φ Ξ with
+  | nil => exact hf
+  | cons a as ih =>
+    have hm : ContextMap P B store Q C (Γ.extend a) (Δ.extend a) (Ξ.map Pred.lift) := by
+      simpa only [bindParams_single,liftMany_one,List.length_cons,List.length_nil,Nat.zero_add] using h.params hA hw [a]
+    have hf1 : ∀ p∈Φ.map Pred.lift,Entails ((Δ.extend a).facts++Ξ.map Pred.lift) p := by
+      simpa only [bindParams_single,liftMany_one,List.length_cons,List.length_nil,Nat.zero_add] using h.conditions_params hf [a]
+    have hh := ih hm hf1
+    simpa only [Ctx.extendMany,List.length_cons,←liftMany_one,liftMany_add,Nat.add_comm 1] using hh
+
+private theorem ContextMap.clause {P B store Q C Γ Δ Ξ}
+    (h : ContextMap P B store Q C Γ Δ Ξ) (hA : Builtins.ValueAssumptions P B) (hw : store.WF)
+    (sg : OpSig) (t : Ty) (e : Eff) :
+    ContextMap P B (hideBuilders store) Q (sg.tparams++C) (sg.context Γ t e) (sg.context Δ t e)
+      (liftMany (sg.params.length+1) Ξ) := by
+  have hm := (h.shiftE (store' := hideBuilders store) sg.tparams).many hA hw.hide sg.params
+  have hh := hm.params hA hw.hide [sg.continuation t e]
+  simpa only [OpSig.context,bindParams_single,List.length_cons,List.length_nil,Nat.zero_add,
+    ←liftMany_one,liftMany_add] using hh
+
+private theorem ContextMap.conditions_clause {P B store Q C Γ Δ Ξ Φ}
+    (h : ContextMap P B store Q C Γ Δ Ξ) (hA : Builtins.ValueAssumptions P B) (hw : store.WF)
+    (hf : ∀ p∈Φ,Entails (Δ.facts++Ξ) p) (sg : OpSig) (t : Ty) (e : Eff) :
+    ∀ p∈liftMany (sg.params.length+1) Φ,Entails ((sg.context Δ t e).facts++liftMany (sg.params.length+1) Ξ) p := by
+  have hm := h.shiftE (store' := hideBuilders store) sg.tparams
+  have hf0 : ∀ p∈Φ,Entails ((Δ.shiftE sg.tparams.length).facts++Ξ) p :=
+    fun p hp => (TypeCtxMap.shiftEAt Δ sg.tparams.length 0).entails (hf p hp)
+  have hf1 := hm.conditions_many hA hw.hide hf0 sg.params
+  have hm1 := hm.many hA hw.hide sg.params
+  have hh := hm1.conditions_params hf1 [sg.continuation t e]
+  simpa only [OpSig.context,bindParams_single,List.length_cons,List.length_nil,Nat.zero_add,
+    ←liftMany_one,liftMany_add] using hh
+
+private theorem ContextMap.failure {P B store Q C Γ Δ Ξ}
+    (h : ContextMap P B store Q C Γ Δ Ξ) (hA : Builtins.ValueAssumptions P B) (hw : store.WF) (E : Ty) :
+    ContextMap P B (hideBuilders store) Q (({} : TParam)::C) (failureContext Γ E) (failureContext Δ E) (liftMany 2 Ξ) := by
+  have hm := (h.shiftE (store' := hideBuilders store) [{}]).params hA hw.hide [shiftTypes 1 0 E]
+  have hh := (hm.none hA hw.hide)
+  simpa only [failureContext,bindParams_single,List.length_cons,List.length_nil,Nat.zero_add,liftMany_one,
+    List.singleton_append,show liftMany 2 Ξ=(Ξ.map Pred.lift).map Pred.lift from rfl] using hh
+
+private theorem ContextMap.conditions_failure {P B store Q C Γ Δ Ξ Φ}
+    (h : ContextMap P B store Q C Γ Δ Ξ) (_hA : Builtins.ValueAssumptions P B) (_hw : store.WF)
+    (hf : ∀ p∈Φ,Entails (Δ.facts++Ξ) p) (E : Ty) :
+    ∀ p∈liftMany 2 Φ,Entails ((failureContext Δ E).facts++liftMany 2 Ξ) p := by
+  have hm := h.shiftE (store' := hideBuilders store) [{}]
+  have hf0 : ∀ p∈Φ,Entails ((Δ.shiftE 1).facts++Ξ) p :=
+    fun p hp => (TypeCtxMap.shiftEAt Δ 1 0).entails (hf p hp)
+  have hh := hm.conditions_params hf0 [shiftTypes 1 0 E]
+  simp only [bindParams_single,liftMany_one,List.length_cons,List.length_nil,Nat.zero_add] at hh
+  intro p hp
+  obtain ⟨q,hq,rfl⟩ := List.mem_map.mp hp
+  exact (hh q hq).under_none
 
 mutual
   private theorem context_value {P B store Q C Γ Φ v a}
@@ -224,6 +402,8 @@ mutual
     | .C_App hv hs => exact .C_App (context_value hv hA hstore hm hf) (context_values hs hA hstore hm hf)
     | .C_If hv hm' hn =>
       exact .C_If (context_value hv hA hstore hm hf) (context_comp hm' hA hstore hm hf) (context_comp hn hA hstore hm hf)
+    | .C_Match hv ha hx =>
+      exact .C_Match (context_value hv hA hstore hm hf) (context_arms ha hA hstore hm hf) hx
     | .C_Lazy hb ha =>
       exact .C_Lazy (context_comp hb hA hstore.hide (hm.hide hA hstore) (fun p hp => (hf p hp).hideConts))
         ⟨by simpa only [hm.length] using ha.wf, hm.sorted ha.sorted, ha.declared.context hm.declaration⟩
@@ -231,6 +411,13 @@ mutual
       exact .C_Escape (context_value hv hA hstore hm hf)
         ⟨by simpa only [hm.length] using ha.wf, hm.sorted ha.sorted, ha.declared.context hm.declaration⟩
     | .C_Use hv hr hb he => exact .C_Use (context_value hv hA hstore hm hf) hr (context_comp hb hA hstore hm hf) he
+    | .C_Handle hb hc hh => exact .C_Handle (context_comp hb hA hstore hm hf) hc (context_clauses hh hA hstore hm hf)
+    | .C_Handle_Fail hb hc hn hh => exact .C_Handle_Fail (context_comp hb hA hstore hm hf) hc hn (context_failure hh hA hstore hm hf)
+    | .C_Resume hi hv hd =>
+      exact .C_Resume (hm.continuations _ _ hi (by simp))
+        (context_value hv hA hstore hm hf) (hd.context hm.declaration)
+    | .C_ResumeL hl hv hd =>
+      exact .C_ResumeL hl (context_value hv hA hstore hm hf) (hd.context hm.declaration)
     | .C_Meth hv hc hmeth hn hs hi hr hargs hvs ha =>
       exact .C_Meth (context_value hv hA hstore hm hf) hc hmeth hn hs (hm.signature hi)
         (by simpa only [hm.length] using hr) hargs (context_values hvs hA hstore hm hf) (hm.annotation ha)
@@ -249,6 +436,42 @@ mutual
       simpa only [List.length_cons, List.length_nil, Nat.zero_add, liftMany_one,
         bindParams, Ctx.extend, List.reverse_cons, List.reverse_nil, List.map_cons, List.map_nil,
         List.nil_append, List.cons_append] using hb'
+  private theorem context_arms {P B store Q C Γ Φ R arms a b e L}
+      (h : HasTypeArmsQ P B store Q C Γ Φ R arms a b e L)
+      (hA : Builtins.ValueAssumptions P B) (hstore : store.WF) {Δ Ξ}
+      (hm : ContextMap P B store Q C Γ Δ Ξ)
+      (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) p) :
+      HasTypeArmsQ P B store Q C Δ Ξ R arms a b e L := by
+    match h with
+    | .nil ha => exact .nil (hm.annotation ha)
+    | .plain (δ := δ) hp hb hs =>
+      exact .plain hp (context_comp hb hA hstore (hm.params hA hstore δ)
+        (hm.conditions_params hf δ)) (context_arms hs hA hstore hm hf)
+    | .guarded (δ := δ) hp hg hb hs =>
+      exact .guarded hp
+        (context_comp hg hA hstore ((hm.params hA hstore δ).hideConts hA hstore)
+          (fun p hp => ((hm.conditions_params hf δ) p hp).hideConts))
+        (context_comp hb hA hstore (hm.params hA hstore δ) (hm.conditions_params hf δ))
+        (context_arms hs hA hstore hm hf)
+  private theorem context_clauses {P B store Q C Γ Φ R eb cs t e L}
+      (h : HasTypeClausesQ P B store Q C Γ Φ R eb cs t e L)
+      (hA : Builtins.ValueAssumptions P B) (hstore : store.WF) {Δ Ξ}
+      (hm : ContextMap P B store Q C Γ Δ Ξ) (hf : ∀ p∈Φ,Entails (Δ.facts++Ξ) p) :
+      HasTypeClausesQ P B store Q C Δ Ξ R eb cs t e L := by
+    match h with
+    | .nil => exact .nil
+    | .cons (sg := sg) hc hn hN hK hw hb hs =>
+      exact .cons hc hn hN hK hw (context_comp hb hA hstore.hide (hm.clause hA hstore sg t e)
+        (hm.conditions_clause hA hstore hf sg t e)) (context_clauses hs hA hstore hm hf)
+  private theorem context_failure {P B store Q C Γ Φ E R cs t e L}
+      (h : HasFailureClause P B store Q C Γ Φ E R cs t e L)
+      (hA : Builtins.ValueAssumptions P B) (hstore : store.WF) {Δ Ξ}
+      (hm : ContextMap P B store Q C Γ Δ Ξ) (hf : ∀ p∈Φ,Entails (Δ.facts++Ξ) p) :
+      HasFailureClause P B store Q C Δ Ξ E R cs t e L := by
+    match h with
+    | .one ha ht he hb =>
+      exact .one (hm.annotation ha) (hm.annotation ht) (fun f hf => hm.annotation (he f hf))
+        (context_comp hb hA hstore.hide (hm.failure hA hstore E) (hm.conditions_failure hA hstore hf E))
   private theorem context_telArgs {P B store Q C Γ Φ vs t a e}
       (h : HasTypeTelArgsQ P B store Q C Γ Φ vs t a e)
       (hA : Builtins.ValueAssumptions P B) (hstore : store.WF) {Δ Ξ}
@@ -276,7 +499,7 @@ end
 
 /-- 外側で検査した部分型による一位置の置換と、後続の束縛の列。 -/
 inductive Ctx.Narrows (P : Program) (C : List TParam) : Ctx → List Pred → Ctx → List Pred → Prop where
-  | here {Γ Φ a b} : Ty.LeQ Γ Φ a b → b.WF 0 C.length Γ.length → b.Sorted Γ → Ty.Declared P C Γ b →
+  | here {Γ Φ a b} : Ty.LeQ Γ Φ a b → a.WF 0 C.length Γ.length → b.WF 0 C.length Γ.length → b.Sorted Γ → Ty.Declared P C Γ b →
       Narrows P C (Γ.extend b) (Φ.map Pred.lift) (Γ.extend a) (Φ.map Pred.lift)
   | under {Γ Φ Δ Ξ} : Narrows P C Γ Φ Δ Ξ → (a : Ty) →
       Narrows P C (Γ.extend a) (Φ.map Pred.lift) (Δ.extend a) (Ξ.map Pred.lift)
@@ -285,15 +508,27 @@ inductive Ctx.Narrows (P : Program) (C : List TParam) : Ctx → List Pred → Ct
 
 theorem Ctx.Narrows.conditions {P C Γ Φ Δ Ξ} (h : Ctx.Narrows P C Γ Φ Δ Ξ) : Φ = Ξ := by
   induction h with
-  | here _ _ _ _ => rfl
+  | here _ _ _ _ _ => rfl
   | under _ _ ih | underNone _ ih => exact congrArg (List.map Pred.lift) ih
 
 private theorem Ctx.Narrows.contextMap {P B store Q C Γ Φ Δ Ξ}
     (h : Ctx.Narrows P C Γ Φ Δ Ξ) (hA : Builtins.ValueAssumptions P B) (hstore : store.WF) : ContextMap P B store Q C Γ Δ Ξ := by
   induction h with
-  | @here Γ Φ a b hl hw hs hd =>
+  | @here Γ Φ a b hl haw hw hs hd =>
     constructor
     · simp [Ctx.extend]
+    · intro i t hi ho
+      cases i with
+      | zero =>
+        simp only [Ctx.extend, List.getElem?_cons_zero, Option.some.injEq] at hi
+        cases hi
+        have hb : ¬ b.Ordinary := fun hh => ho ((Ty.ordinary_shiftV _ _ _).mpr hh)
+        cases b <;> simp at hb
+        case cont bin bout eff =>
+          have heq : a = .cont bin bout eff := contView_wf haw (contView_le hl)
+          rw [heq]
+          rfl
+      | succ i => exact hi
     · intro i t hi ho
       cases i with
       | zero =>
@@ -345,5 +580,35 @@ theorem HasTypeTelArgsQ.narrow {P B store Q C Γ Φ vs t a e Δ Ξ}
     HasTypeTelArgsQ P B store Q C Δ Ξ vs t a e :=
   context_telArgs h hA hstore (hn.contextMap hA hstore)
     (fun _ hp => .hyp (List.mem_append_right _ (hn.conditions ▸ hp)))
+
+theorem HasTypeArmsQ.narrow {P B store Q C Γ Φ R arms a b e L Δ Ξ}
+    (h : HasTypeArmsQ P B store Q C Γ Φ R arms a b e L)
+    (hA : Builtins.ValueAssumptions P B) (hstore : store.WF)
+    (hn : Ctx.Narrows P C Γ Φ Δ Ξ) : HasTypeArmsQ P B store Q C Δ Ξ R arms a b e L :=
+  context_arms h hA hstore (hn.contextMap hA hstore)
+    (fun _ hp => .hyp (List.mem_append_right _ (hn.conditions ▸ hp)))
+
+theorem HasTypeClausesQ.narrow {P B store Q C Γ Φ R eb cs t e L Δ Ξ}
+    (h : HasTypeClausesQ P B store Q C Γ Φ R eb cs t e L) (hA : Builtins.ValueAssumptions P B)
+    (hstore : store.WF) (hn : Ctx.Narrows P C Γ Φ Δ Ξ) : HasTypeClausesQ P B store Q C Δ Ξ R eb cs t e L :=
+  context_clauses h hA hstore (hn.contextMap hA hstore) (fun _ hp => .hyp (List.mem_append_right _ (hn.conditions ▸ hp)))
+
+theorem HasFailureClause.narrow {P B store Q C Γ Φ E R cs t e L Δ Ξ}
+    (h : HasFailureClause P B store Q C Γ Φ E R cs t e L) (hA : Builtins.ValueAssumptions P B)
+    (hstore : store.WF) (hn : Ctx.Narrows P C Γ Φ Δ Ξ) : HasFailureClause P B store Q C Δ Ξ E R cs t e L :=
+  context_failure h hA hstore (hn.contextMap hA hstore) (fun _ hp => .hyp (List.mem_append_right _ (hn.conditions ▸ hp)))
+
+theorem ImageOk.narrow {P B store Q C Γ Φ Δ Ξ R0 ν i a}
+    (h : ImageOk P B store Q C Γ Φ R0 ν i a)
+    (hA : Builtins.ValueAssumptions P B) (hw : store.WF) (hn : Ctx.Narrows P C Γ Φ Δ Ξ) :
+    ImageOk P B store Q C Δ Ξ R0 ν i a := by
+  match h with
+  | .ordinary ho hv => exact .ordinary ho (hv.narrow hA hw hn)
+  | .contLoc he ht ha hv hl hr => exact .contLoc he ht ha hv hl hr
+  | .contVar he hv hi =>
+    refine .contVar he hv ((hn.contextMap (Q := Q) hA hw).continuations _ _ hi ?_)
+    simp only [he,substTyValues,Ty.bind,Ty.rawBind,Ty.norm,Ty.Ordinary]
+    intro ho
+    exact ho _ _ _ rfl
 
 end Benitoite.Release.Refinement

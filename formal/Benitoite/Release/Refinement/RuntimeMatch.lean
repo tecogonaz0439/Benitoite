@@ -1,4 +1,4 @@
-import Benitoite.Release.Refinement.RuntimeSyntax
+import Benitoite.Release.Refinement.AtInput
 
 namespace Benitoite.Release.Refinement
 

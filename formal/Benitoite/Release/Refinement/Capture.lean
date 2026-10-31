@@ -1,3 +1,4 @@
+import Benitoite.Release.Refinement.HandlerContracts
 import Benitoite.Release.Refinement.Telescope
 
 namespace Benitoite.Release.Refinement
@@ -93,14 +94,10 @@ def Val.substTy (ts : List Ty) (es : List Eff) (v : Val) : Val := Val.substTyAt 
 /-- 宣言本体や辞書の値を、閉じた実引数で具体化する入口。 -/
 def Val.instantiate (vs : List Val) (v : Val) : Val := closeVal (Capture.empty.extendMany vs) v
 
-def Clause.op : Clause → OpRef
-  | .mk o _ _ _ => o
-  | .fail _ _ => .fail
-
 def Clause.body : Clause → Comp
   | .mk _ _ _ m | .fail _ m => m
 
-def handles (h : List Clause) (o : OpRef) : Bool := h.any (fun c => c.op == o)
+
 
 def Arm.alts : Arm → List Alt
   | .mk alts _ _ => alts

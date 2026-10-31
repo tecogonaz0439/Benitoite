@@ -1,3 +1,5 @@
+import Benitoite.Release.Refinement.HandlerAlgebra
+import Benitoite.Release.Refinement.PatternSemantics
 import Benitoite.Release.Refinement.ConstraintAssumptions
 import Benitoite.Release.Refinement.LocalTransport
 import Benitoite.Release.Refinement.MethodArguments
@@ -361,6 +363,192 @@ private theorem retained_shift_empty : ShiftMap 0 0 [] [] :=
 theorem Eff.shiftV_single (l : EffName) (k c : Nat) :
     Eff.shiftV k c (Eff.single l) = Eff.single l := rfl
 
+/-- 計算の移動では、resumeが読む継続の位置も保存する。 -/
+structure FullShiftMap (k c : Nat) (Γ Δ : Ctx) : Prop where
+  length : Δ.length = Γ.length+k
+  lookup : ∀ i a, Γ[i]? = some (some a) → Δ[shiftIndex k c i]? = some (some (a.shiftV k c))
+
+theorem FullShiftMap.values {k c Γ Δ} (h : FullShiftMap k c Γ Δ) : ShiftMap k c Γ Δ :=
+  ⟨h.length, fun i a hi _ => h.lookup i a hi⟩
+
+theorem ShiftMap.hideFull {k c Γ Δ} (h : ShiftMap k c Γ Δ) :
+    FullShiftMap k c (hideConts Γ) (hideConts Δ) :=
+  ⟨h.hide.length, fun i a hi => h.hide.lookup i a hi (hideConts_lookup.mp hi).2⟩
+
+theorem FullShiftMap.underParams {k c Γ Δ} (h : FullShiftMap k c Γ Δ) (ps : List Ty) :
+    FullShiftMap k (c+ps.length) (bindParams Γ ps) (bindParams Δ (ps.map (Ty.shiftV k c))) := by
+  constructor
+  · simp only [bindParams, List.length_append, List.length_map, List.length_reverse, h.length]
+    omega
+  · intro i a hi
+    by_cases hil : i < ps.length
+    · have hie : shiftIndex k (c+ps.length) i = i := by simp [shiftIndex, show i<c+ps.length by omega]
+      rw [hie]
+      rw [bindParams, List.getElem?_append_left (by simpa using hil)]
+      simp only [← List.map_reverse, List.getElem?_map, List.length_map]
+      rw [bindParams, List.getElem?_append_left (by simpa using hil)] at hi
+      simp only [List.getElem?_map] at hi
+      cases hu : ps.reverse[i]? with
+      | none => simp [hu] at hi
+      | some u =>
+        simp only [hu, Option.map_some, Option.some.injEq] at hi
+        cases hi
+        simp only [Option.map_some, Ty.shiftV_comm]
+    · have hij : ps.length ≤ shiftIndex k (c+ps.length) i := by unfold shiftIndex; split <;> omega
+      have hie : shiftIndex k (c+ps.length) i - ps.length = shiftIndex k c (i-ps.length) := by
+        unfold shiftIndex; split <;> split <;> omega
+      rw [bindParams, List.getElem?_append_right (by simpa using hij)]
+      simp only [List.length_map, List.length_reverse, List.getElem?_map, hie]
+      rw [bindParams, List.getElem?_append_right (by simpa using Nat.le_of_not_gt hil)] at hi
+      simp only [List.length_map, List.length_reverse, List.getElem?_map] at hi
+      cases hu : Γ[i-ps.length]? with
+      | none => simp [hu] at hi
+      | some u => cases u with
+        | none => simp [hu] at hi
+        | some u =>
+          simp only [hu, Option.map_some, Option.some.injEq] at hi
+          cases hi
+          rw [h.lookup _ u hu]
+          simp only [Option.map_some, Ty.shiftV_comm]
+
+theorem FullShiftMap.underNone {k c Γ Δ} (h : FullShiftMap k c Γ Δ) :
+    FullShiftMap k (c+1) Γ.extendNone Δ.extendNone := by
+  refine ⟨by simp [Ctx.extendNone, h.length]; omega, ?_⟩
+  intro i a hi
+  cases i with
+  | zero => simp [Ctx.extendNone] at hi
+  | succ i =>
+    simp only [Ctx.extendNone, List.getElem?_cons_succ, List.getElem?_map] at hi
+    obtain ⟨u, hu, he⟩ := Option.map_eq_some_iff.mp hi
+    cases u with
+    | none => cases he
+    | some b =>
+      cases he
+      have hh := h.lookup i b hu
+      have hs : shiftIndex k (c+1) (i+1) = shiftIndex k c i+1 := by unfold shiftIndex; split <;> split <;> omega
+      simp only [Ctx.extendNone, hs, List.getElem?_cons_succ, List.getElem?_map, hh,
+        Option.map_some, Ty.shiftV_comm]
+
+theorem FullShiftMap.outer (Γ : Ctx) (ps : List Ty) : FullShiftMap ps.length 0 Γ (bindParams Γ ps) := by
+  constructor
+  · simp only [bindParams, List.length_append, List.length_map, List.length_reverse]; omega
+  · intro i a hi
+    simp only [shiftIndex, Nat.not_lt_zero, ↓reduceIte, bindParams]
+    rw [List.getElem?_append_right (by simp only [List.length_map, List.length_reverse]; omega)]
+    simp only [List.length_map, List.length_reverse, Nat.add_sub_cancel_right, List.getElem?_map,
+      hi, Option.map_some]
+
+theorem FullShiftMap.outerNone (Γ : Ctx) : FullShiftMap 1 0 Γ Γ.extendNone := by
+  constructor
+  · simp [Ctx.extendNone]
+  · intro i a hi
+    simp only [shiftIndex, Nat.not_lt_zero, ↓reduceIte, Ctx.extendNone,
+      List.getElem?_cons_succ, List.getElem?_map, hi, Option.map_some]
+
+theorem FullShiftMap.hide {k c Γ Δ} (h : FullShiftMap k c Γ Δ) :
+    FullShiftMap k c (hideConts Γ) (hideConts Δ) := h.values.hideFull
+
+
+theorem Eff.shiftV_of_wf_zero {nr nt e} (h : Eff.WF nr nt 0 e) (k c : Nat) :
+    Eff.shiftV k c e = e := by
+  rw [Eff.shiftV_eq_renameEff, renameEff_eq_rawSubstV, Eff.rawSubstV_of_wf_zero h]
+
+theorem liftMany_add (m n : Nat) (Φ : List Pred) :
+    liftMany n (liftMany m Φ) = liftMany (m+n) Φ := by
+  simp only [liftMany_eq, List.map_map, Function.comp_def, Pred.shiftV_add]
+
+@[simp] theorem bindParams_single (Γ : Ctx) (a : Ty) : bindParams Γ [a]=Γ.extend a := rfl
+
+theorem FullShiftMap.underMany {k c Γ Δ} (h : FullShiftMap k c Γ Δ) (ps : List Ty) :
+    FullShiftMap k (c+ps.length) (Γ.extendMany ps) (Δ.extendMany (binderRenames k c ps)) := by
+  induction ps generalizing Γ Δ c with
+  | nil => simpa only [Ctx.extendMany,binderRenames,List.length_nil,Nat.add_zero] using h
+  | cons a as ih =>
+    have hh := ih (by simpa only [bindParams_single,List.map_cons,List.map_nil,List.length_cons,List.length_nil,Nat.zero_add] using h.underParams [a])
+    simpa only [Ctx.extendMany,binderRenames,List.length_cons,Nat.add_assoc,Nat.add_comm 1] using hh
+
+theorem FullShiftMap.shiftEAt {k c Γ Δ} (h : FullShiftMap k c Γ Δ) (n d : Nat) :
+    FullShiftMap k c (Γ.shiftEAt n d) (Δ.shiftEAt n d) := by
+  constructor
+  · simpa only [Ctx.shiftEAt,List.length_map] using h.length
+  · intro i a hi
+    simp only [Ctx.shiftEAt,List.getElem?_map] at hi ⊢
+    cases hg : Γ[i]? with
+    | none => simp [hg] at hi
+    | some u => cases u with
+      | none => simp [hg] at hi
+      | some b =>
+        simp only [hg,Option.map_some,Option.some.injEq] at hi
+        cases hi
+        rw [h.lookup _ _ hg]
+        simp only [Option.map_some,shiftTypes_shiftV]
+
+theorem FullShiftMap.conditions_many {k c Γ Δ Φ Ξ} (h : FullShiftMap k c Γ Δ)
+    (hf : ∀ p∈Φ,Entails (Δ.facts++Ξ) (p.shiftV k c)) (ps : List Ty) :
+    ∀ p∈liftMany ps.length Φ,
+      Entails ((Δ.extendMany (binderRenames k c ps)).facts++liftMany ps.length Ξ) (p.shiftV k (c+ps.length)) := by
+  induction ps generalizing Γ Δ c Φ Ξ with
+  | nil =>
+    change ∀ p∈Φ,Entails (Δ.facts++Ξ) (p.shiftV k c)
+    exact hf
+  | cons a as ih =>
+    have hm : FullShiftMap k (c+1) (Γ.extend a) (Δ.extend (a.shiftV k c)) := by
+      simpa only [bindParams_single,List.map_cons,List.map_nil,List.length_cons,List.length_nil,Nat.zero_add] using h.underParams [a]
+    have hf1 : ∀ p∈Φ.map Pred.lift,Entails ((Δ.extend (a.shiftV k c)).facts++Ξ.map Pred.lift) (p.shiftV k (c+1)) := by
+      simpa only [bindParams_single,List.map_cons,List.map_nil,List.length_cons,List.length_nil,Nat.zero_add,liftMany_one] using h.values.conditions_params hf [a]
+    have hh := ih hm hf1
+    simpa only [Ctx.extendMany,binderRenames,List.length_cons,←liftMany_one,liftMany_add,Nat.add_assoc,Nat.add_comm 1] using hh
+
+theorem OpSig.continuation_shift_values {sg : OpSig} (hw : sg.WF) (t : Ty) (e : Eff) (k c : Nat) :
+    (sg.continuation t e).shiftV k (c+sg.params.length)=sg.continuation (t.shiftV k c) (e.shiftV k c) := by
+  simp only [OpSig.continuation,Ty.shiftV,Ty.shiftV_fixed_before hw.2 k (c+sg.params.length) (by omega),
+    Ty.shiftV_comm,Eff.shiftV_comm,←shiftTypes_shiftV,←shiftRowsTypes_shiftV]
+
+theorem FullShiftMap.clause {k c Γ Δ} (h : FullShiftMap k c Γ Δ) (sg : OpSig) (hw : sg.WF) (t : Ty) (e : Eff) :
+    FullShiftMap k (c+(sg.params.length+1)) (sg.context Γ t e)
+      (sg.context Δ (t.shiftV k c) (e.shiftV k c)) := by
+  have hh := (h.shiftEAt sg.tparams.length 0).underMany sg.params
+  have hps : binderRenames k c sg.params=sg.params := by simpa using binderRenames_fixed hw.1 k c
+  rw [hps] at hh
+  have hx := hh.underParams [sg.continuation t e]
+  simpa only [OpSig.context,Ctx.shiftE,bindParams_single,List.map_cons,List.map_nil,List.length_cons,List.length_nil,
+    Nat.zero_add,Nat.add_assoc,OpSig.continuation_shift_values hw] using hx
+
+theorem FullShiftMap.conditions_clause {k c Γ Δ Φ Ξ} (h : FullShiftMap k c Γ Δ)
+    (hf : ∀ p∈Φ,Entails (Δ.facts++Ξ) (p.shiftV k c)) (sg : OpSig) (hw : sg.WF) (t : Ty) (e : Eff) :
+    ∀ p∈liftMany (sg.params.length+1) Φ,
+      Entails ((sg.context Δ (t.shiftV k c) (e.shiftV k c)).facts++liftMany (sg.params.length+1) Ξ)
+        (p.shiftV k (c+(sg.params.length+1))) := by
+  have hm0 := h.shiftEAt sg.tparams.length 0
+  have hf0 : ∀ p∈Φ,Entails ((Δ.shiftE sg.tparams.length).facts++Ξ) (p.shiftV k c) :=
+    fun p hp => (TypeCtxMap.shiftEAt Δ sg.tparams.length 0).entails (hf p hp)
+  have hm1 := hm0.underMany sg.params
+  have hf1 := hm0.conditions_many hf0 sg.params
+  have hps : binderRenames k c sg.params=sg.params := by simpa using binderRenames_fixed hw.1 k c
+  rw [hps] at hm1 hf1
+  have hh := hm1.values.conditions_params hf1 [sg.continuation t e]
+  simpa only [OpSig.context,Ctx.shiftE,bindParams_single,List.map_cons,List.map_nil,List.length_cons,List.length_nil,
+    Nat.zero_add,←liftMany_one,liftMany_add,Nat.add_assoc,OpSig.continuation_shift_values hw] using hh
+
+theorem FullShiftMap.failure {k c Γ Δ} (h : FullShiftMap k c Γ Δ) (E : Ty) :
+    FullShiftMap k (c+2) (failureContext Γ E) (failureContext Δ (E.shiftV k c)) := by
+  have hh := (h.shiftEAt 1 0).underParams [shiftTypes 1 0 E]
+  have hx := hh.underNone
+  simpa only [failureContext,Ctx.shiftE,bindParams_single,List.map_cons,List.map_nil,List.length_cons,List.length_nil,
+    Nat.zero_add,←shiftTypes_shiftV,Nat.add_assoc] using hx
+
+theorem FullShiftMap.conditions_failure {k c Γ Δ Φ Ξ} (h : FullShiftMap k c Γ Δ)
+    (hf : ∀ p∈Φ,Entails (Δ.facts++Ξ) (p.shiftV k c)) (E : Ty) :
+    ∀ p∈liftMany 2 Φ,Entails ((failureContext Δ (E.shiftV k c)).facts++liftMany 2 Ξ) (p.shiftV k (c+2)) := by
+  have hm0 := h.shiftEAt 1 0
+  have hf0 : ∀ p∈Φ,Entails ((Δ.shiftE 1).facts++Ξ) (p.shiftV k c) :=
+    fun p hp => (TypeCtxMap.shiftEAt Δ 1 0).entails (hf p hp)
+  have hf1 := hm0.values.conditions_params hf0 [shiftTypes 1 0 E]
+  simp only [bindParams_single,List.map_cons,List.map_nil,List.length_cons,List.length_nil,Nat.zero_add,liftMany_one,←shiftTypes_shiftV] at hf1
+  intro p hp
+  obtain ⟨q,hq,rfl⟩ := List.mem_map.mp hp
+  simpa only [failureContext,Ctx.shiftE,Pred.shiftV_lift,Nat.add_assoc,show liftMany 2 Ξ=(Ξ.map Pred.lift).map Pred.lift from rfl] using (hf1 q hq).under_none
+
 mutual
   theorem HasTypeVQ.shift_values {P B store Q C Γ Φ v a}
       (h : HasTypeVQ P B store Q C Γ Φ v a) {k c Δ Ξ store'}
@@ -383,7 +571,7 @@ mutual
       · simpa only [Ty.shiftV, shiftVTys_eq_map] using hm.wf hw
       · simpa only [Ty.shiftV, shiftVTys_eq_map] using hm.sorted hs
       · have hb' := HasTypeCQ.shift_values (store' := hideBuilders store') (L' := []) hb hA hstore.hide hpres.hide
-          (hm.hide.underParams ps) (.empty _ _ _)
+          (hm.hideFull.underParams ps) (.empty _ _ _)
           (hm.hide.conditions_params (fun p hp => (hf p hp).hideConts) ps)
         simpa only [List.length_map, Ty.shiftV_comm, Eff.shiftV_comm, Option.map_some] using hb'
       · simpa only [Ty.shiftV, shiftVTys_eq_map] using hm.declared hd
@@ -523,7 +711,7 @@ mutual
       (hA : Builtins.ValueAssumptions P B)
       (hstore : StoreTy.WF store)
       (hext : StoreTy.Extends store store')
-      (hm : ShiftMap k c Γ Δ)
+      (hm : FullShiftMap k c Γ Δ)
       (hL : LocalCtx.Shift k c L L')
       (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) (p.shiftV k c)) :
       HasTypeCQ P B store' Q C Δ Ξ (R.map (Ty.shiftV k c)) (m.rename (shiftIndex k c))
@@ -531,8 +719,8 @@ mutual
     match h with
     | .C_BuilderLet (kind := kind) ha hk hb hd =>
       simp only [Comp.rename, upRen_shiftIndex]
-      refine .C_BuilderLet (by simpa only [BuilderKind.contents_rename] using hm.annotation ha)
-        (by simpa only [BuilderKind.contents_rename, List.map_cons, List.map_nil] using hk.shift k c) ?_ (hm.declared hd)
+      refine .C_BuilderLet (by simpa only [BuilderKind.contents_rename] using hm.values.annotation ha)
+        (by simpa only [BuilderKind.contents_rename, List.map_cons, List.map_nil] using hk.shift k c) ?_ (hm.values.declared hd)
       have hh := HasTypeCQ.shift_values (Ξ := Ξ.map Pred.lift) hb hA hstore hext hm.underNone (hL.extend (some kind))
         (fun p hp => by
           obtain ⟨q, hq, rfl⟩ := List.mem_map.mp hp
@@ -541,44 +729,72 @@ mutual
     | .C_BuilderOp ha hk hr hv =>
       simp only [Comp.rename]
       rw [← BuilderOp.resultType_rename]
-      exact .C_BuilderOp (by simpa only [BuilderKind.contents_rename] using hm.annotation ha)
+      exact .C_BuilderOp (by simpa only [BuilderKind.contents_rename] using hm.values.annotation ha)
         (by simpa only [BuilderKind.contents_rename, List.map_cons, List.map_nil] using hk.shift k c)
         (hr.shift hstore hext hL)
-        (by simpa only [BuilderOp.parameters_rename] using HasTypeVsQ.shift_values hv hA hstore hext.preservesNormals hm hf)
-    | .C_Return hv => exact .C_Return (HasTypeVQ.shift_values hv hA hstore hext.preservesNormals hm hf)
+        (by simpa only [BuilderOp.parameters_rename] using HasTypeVsQ.shift_values hv hA hstore hext.preservesNormals hm.values hf)
+    | .C_Return hv => exact .C_Return (HasTypeVQ.shift_values hv hA hstore hext.preservesNormals hm.values hf)
     | .C_App hv hs =>
-      have hv' := HasTypeVQ.shift_values (store' := store') hv hA hstore hext.preservesNormals hm hf
+      have hv' := HasTypeVQ.shift_values (store' := store') hv hA hstore hext.preservesNormals hm.values hf
       simp only [Ty.shiftV, shiftVTys_eq_map] at hv'
-      exact .C_App hv' (HasTypeVsQ.shift_values hs hA hstore hext.preservesNormals hm hf)
+      exact .C_App hv' (HasTypeVsQ.shift_values hs hA hstore hext.preservesNormals hm.values hf)
     | .C_If hv hm' hn =>
-      exact .C_If (HasTypeVQ.shift_values hv hA hstore hext.preservesNormals hm hf)
+      exact .C_If (HasTypeVQ.shift_values hv hA hstore hext.preservesNormals hm.values hf)
         (HasTypeCQ.shift_values hm' hA hstore hext hm hL hf) (HasTypeCQ.shift_values hn hA hstore hext hm hL hf)
+    | .C_Match hv ha hx =>
+      exact .C_Match (HasTypeVQ.shift_values hv hA hstore hext.preservesNormals hm.values hf)
+        (HasTypeArmsQ.shift_values ha hA hstore hext hm hL hf)
+        (by rw [unguardedPats_rename]; exact hx.shift_values k c)
     | .C_Lazy hb ha =>
-      refine .C_Lazy ?_ (hm.annotation ha)
+      refine .C_Lazy ?_ (hm.values.annotation ha)
       exact HasTypeCQ.shift_values hb hA hstore.hide hext.preservesNormals.hide hm.hide (.empty _ _ _)
         (fun p hp => (hf p hp).hideConts)
     | .C_Escape hv ha =>
       exact .C_Escape
-        (HasTypeVQ.shift_values hv hA hstore hext.preservesNormals hm hf) (hm.annotation ha)
+        (HasTypeVQ.shift_values hv hA hstore hext.preservesNormals hm.values hf) (hm.values.annotation ha)
     | .C_Use hv hr hb he =>
       exact .C_Use
-        (HasTypeVQ.shift_values hv hA hstore hext.preservesNormals hm hf) hr
+        (HasTypeVQ.shift_values hv hA hstore hext.preservesNormals hm.values hf) hr
         (HasTypeCQ.shift_values hb hA hstore hext hm hL hf) (by cases e; exact he)
+    | .C_Handle hb hc hh =>
+      exact .C_Handle (HasTypeCQ.shift_values hb hA hstore hext hm hL hf)
+        (by simpa only [Eff.shiftV_union,handled_shift_values,handled_rename] using hc.shiftV (Δ := Δ) (Ψ := Ξ) k c)
+        (HasTypeClausesQ.shift_values hh hA hstore hext hm hL hf)
+    | .C_Handle_Fail hb hc hn hh =>
+      simp only [Comp.rename,Eff.shiftV_union]
+      exact .C_Handle_Fail (HasTypeCQ.shift_values hb hA hstore hext hm hL hf)
+        (by simpa only [Eff.shiftV_union,Eff.shiftV_singleFail] using hc.shiftV (Δ := Δ) (Ψ := Ξ) k c)
+        (hn.shift_values k c) (HasFailureClause.shift_values hh hA hstore hext hm hL hf)
+    | .C_Resume hi hv hd =>
+      exact .C_Resume (hm.lookup _ _ hi)
+        (HasTypeVQ.shift_values hv hA hstore hext.preservesNormals hm.values hf) (hm.values.declared hd)
+    | .C_ResumeL (b := b) (t := t) (ε := ε) (R := r) hl hv hd =>
+      have hw := hstore _ _ hl
+      have hb := Ty.shiftV_of_wf_zero hw.1 k c
+      have ht := Ty.shiftV_of_wf_zero hw.2.1 k c
+      have he := Eff.shiftV_of_wf_zero hw.2.2.1 k c
+      have hr : r.map (Ty.shiftV k c) = r := by
+        cases ho : r with
+        | none => rfl
+        | some x => simp only [Option.map_some]; exact congrArg some (Ty.shiftV_of_wf_zero (hw.2.2.2.2 x ho) k c)
+      have hv' := HasTypeVQ.shift_values hv hA hstore hext.preservesNormals hm.values hf
+      simp only [Comp.rename, Val.rename, hb, ht, he, hr] at hv' ⊢
+      exact .C_ResumeL (hext _ _ hl) hv' (by simpa only [ht] using hm.values.declared hd)
     | .C_Meth hv hc hmeth hn hs hi hr hargs hvs ha =>
       simp only [Comp.rename, renameTy_shiftIndex, renameEff_shiftIndex]
       have hs' := hs.map (Ty.shiftV k c) (fun a hm' p hp => by
         have hat := hi.types a (List.mem_append_left _ hm')
         simpa only [renameTy_shiftIndex] using hA.sat_rename C Γ Δ a p (shiftIndex k c)
-          (shiftIndex_strict k c) hat (by simpa only [renameTy_shiftIndex] using hm.annotation hat) hp)
+          (shiftIndex_strict k c) hat (by simpa only [renameTy_shiftIndex] using hm.values.annotation hat) hp)
       have hargs' := Tel.arguments_shift hargs k c
       rw [instantiatedTel_shift_eq hi.source] at hargs'
       simp only [List.map_append, List.map_cons, List.map_nil] at hargs'
-      exact .C_Meth (HasTypeVQ.shift_values hv hA hstore hext.preservesNormals hm hf) hc hmeth hn hs'
-        (by simpa only [List.map_append, List.map_cons, List.map_nil] using hm.signature hi)
-        (hm.methodRows hi.rows hr) hargs' (HasTypeVsQ.shift_values hvs hA hstore hext.preservesNormals hm hf)
-        (hm.annotation ha)
+      exact .C_Meth (HasTypeVQ.shift_values hv hA hstore hext.preservesNormals hm.values hf) hc hmeth hn hs'
+        (by simpa only [List.map_append, List.map_cons, List.map_nil] using hm.values.signature hi)
+        (hm.values.methodRows hi.rows hr) hargs' (HasTypeVsQ.shift_values hvs hA hstore hext.preservesNormals hm.values hf)
+        (hm.values.annotation ha)
     | .C_External (ts := ts) hd hw ha hargs =>
-      have hh := HasTypeTelArgsQ.shift_values hargs hA hstore hext.preservesNormals hm hf
+      have hh := HasTypeTelArgsQ.shift_values hargs hA hstore hext.preservesNormals hm.values hf
       have he := instantiatedTel_shift_eq hw.annotation.wf ts [] k c
       simp only [List.map_nil] at he
       change Tel.shiftV k c (Tel.bind (typeEnv _) _) = _ at he
@@ -587,22 +803,22 @@ mutual
     | .C_IssuePathBases b sg hb hk ho hp hr he =>
       exact .C_IssuePathBases b sg hb hk ho hp hr he
     | .C_CheckAt (bases := bases) hc =>
-      have hh := AtCallAdmissible.shift_values hc hA hstore hext.preservesNormals hm hf
+      have hh := AtCallAdmissible.shift_values hc hA hstore hext.preservesNormals hm.values hf
       cases bases <;> simpa only [Comp.rename, renameTy_shiftIndex, Ty.shiftV, shiftVTys,
         Eff.shiftV, Eff.empty] using
         (HasTypeCQ.C_CheckAt (R := R.map (Ty.shiftV k c)) (Δ := L')
           hh)
     | .C_Sub ht hl hc hw hs hd =>
-      have hl' := hl.rawBind (renEnv (shiftIndex k c)) (hm.transport hf)
+      have hl' := hl.rawBind (renEnv (shiftIndex k c)) (hm.values.transport hf)
       change Ty.LeQ Δ Ξ (renameTy (shiftIndex k c) _) (renameTy (shiftIndex k c) _) at hl'
       rw [renameTy_shiftIndex] at hl'
-      exact .C_Sub (HasTypeCQ.shift_values ht hA hstore hext hm hL hf) hl' (hc.shiftV k c) (hm.wf hw) (hm.sorted hs) (hm.declared hd)
+      exact .C_Sub (HasTypeCQ.shift_values ht hA hstore hext hm hL hf) hl' (hc.shiftV k c) (hm.values.wf hw) (hm.values.sorted hs) (hm.values.declared hd)
     | .C_Eff ht hc => exact .C_Eff (HasTypeCQ.shift_values ht hA hstore hext hm hL hf) (hc.shiftV k c)
     | .C_Let (a := x) ht hb hd =>
       simp only [Comp.rename, upRen_shiftIndex]
-      refine .C_Let (HasTypeCQ.shift_values ht hA hstore hext hm hL hf) ?_ (hm.declared hd)
+      refine .C_Let (HasTypeCQ.shift_values ht hA hstore hext hm hL hf) ?_ (hm.values.declared hd)
       have hb' := HasTypeCQ.shift_values (store' := store') (L' := localExtend 1 L') hb hA hstore hext
-        (hm.underParams [x]) (hL.extend none) (hm.conditions_params hf [x])
+        (hm.underParams [x]) (hL.extend none) (hm.values.conditions_params hf [x])
       simp only [List.length_cons, List.length_nil, Nat.zero_add, List.map_cons, List.map_nil,
         Ty.shiftV_comm, Eff.shiftV_comm, Option.map_map] at hb'
       have hr : (fun x => (x.shiftV 1 0).shiftV k (c+1)) =
@@ -613,6 +829,70 @@ mutual
         Option.map_map, Function.comp_def, hr] using hb'
 
   termination_by structural h
+  theorem HasTypeArmsQ.shift_values {P B store Q C Γ Φ R arms a b e L}
+      (h : HasTypeArmsQ P B store Q C Γ Φ R arms a b e L) {k c Δ Ξ store' L'}
+      (hA : Builtins.ValueAssumptions P B) (hstore : StoreTy.WF store)
+      (hext : StoreTy.Extends store store') (hm : FullShiftMap k c Γ Δ)
+      (hL : LocalCtx.Shift k c L L')
+      (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) (p.shiftV k c)) :
+      HasTypeArmsQ P B store' Q C Δ Ξ (R.map (Ty.shiftV k c))
+        (Arm.renameList (shiftIndex k c) arms) (a.shiftV k c) (b.shiftV k c) (e.shiftV k c) L' := by
+    match h with
+    | .nil ha => exact .nil (hm.values.annotation ha)
+    | .plain (δ := δ) hp hb hs =>
+      refine .plain (hp.shift_values k c) ?_ (HasTypeArmsQ.shift_values hs hA hstore hext hm hL hf)
+      have hh := HasTypeCQ.shift_values hb hA hstore hext (hm.underParams δ)
+        (hL.localExtend δ.length) (hm.values.conditions_params hf δ)
+      simpa only [List.length_map, Option.map_map, Function.comp_def,
+        Ty.shiftV_comm, Eff.shiftV_comm, hp.2.1, upRen_shiftIndex] using hh
+    | .guarded (δ := δ) hp hg hb hs =>
+      refine .guarded (hp.shift_values k c) ?_ ?_ (HasTypeArmsQ.shift_values hs hA hstore hext hm hL hf)
+      · have hh := HasTypeCQ.shift_values hg hA hstore hext
+          (hm.underParams δ).hide (hL.localExtend δ.length)
+          (fun p hp' => ((hm.values.conditions_params hf δ) p hp').hideConts)
+        simpa only [List.length_map, Option.map_none, Ty.shiftV, Eff.shiftV, Eff.empty, shiftVTys,
+          hp.2.1, upRen_shiftIndex] using hh
+      · have hh := HasTypeCQ.shift_values hb hA hstore hext (hm.underParams δ)
+          (hL.localExtend δ.length) (hm.values.conditions_params hf δ)
+        simpa only [List.length_map, Option.map_map, Function.comp_def,
+          Ty.shiftV_comm, Eff.shiftV_comm, hp.2.1, upRen_shiftIndex] using hh
+  termination_by structural h
+
+  theorem HasTypeClausesQ.shift_values {P B store Q C Γ Φ R eb cs t e L}
+      (h : HasTypeClausesQ P B store Q C Γ Φ R eb cs t e L) {k c Δ Ξ store' L'}
+      (hA : Builtins.ValueAssumptions P B) (hstore : store.WF) (hext : store.Extends store')
+      (hm : FullShiftMap k c Γ Δ) (_hL : LocalCtx.Shift k c L L')
+      (hf : ∀ p∈Φ,Entails (Δ.facts++Ξ) (p.shiftV k c)) :
+      HasTypeClausesQ P B store' Q C Δ Ξ (R.map (Ty.shiftV k c)) (eb.shiftV k c)
+        (Clause.renameList (shiftIndex k c) cs) (t.shiftV k c) (e.shiftV k c) L' := by
+    match h with
+    | .nil => exact .nil
+    | .cons (sg := sg) hc hnames hN hK hw hb hs =>
+      refine .cons (hc.shift_values k c) hnames hN hK hw ?_
+        (HasTypeClausesQ.shift_values hs hA hstore hext hm _hL hf)
+      have hh := HasTypeCQ.shift_values (L' := []) hb hA hstore.hide hext.preservesNormals.hide
+        (hm.clause sg hw t e) (.empty _ _ _) (hm.conditions_clause hf sg hw t e)
+      simpa only [Option.map_map,Function.comp_def,Ty.shiftV_comm,Eff.shiftV_comm,
+        ←shiftTypes_shiftV,←shiftRowsTypes_shiftV,hN,upRen_shiftIndex] using hh
+  termination_by structural h
+
+  theorem HasFailureClause.shift_values {P B store Q C Γ Φ E R cs t e L}
+      (h : HasFailureClause P B store Q C Γ Φ E R cs t e L) {k c Δ Ξ store' L'}
+      (hA : Builtins.ValueAssumptions P B) (hstore : store.WF) (hext : store.Extends store')
+      (hm : FullShiftMap k c Γ Δ) (_hL : LocalCtx.Shift k c L L')
+      (hf : ∀ p∈Φ,Entails (Δ.facts++Ξ) (p.shiftV k c)) :
+      HasFailureClause P B store' Q C Δ Ξ (E.shiftV k c) (R.map (Ty.shiftV k c))
+        (Clause.renameList (shiftIndex k c) cs) (t.shiftV k c) (e.shiftV k c) L' := by
+    match h with
+    | .one ha ht he hb =>
+      simp only [Clause.renameList,renameTy_shiftIndex]
+      refine .one (hm.values.annotation ha) (hm.values.annotation ht) (hm.values.rowAnnotations he) ?_
+      have hh := HasTypeCQ.shift_values (L' := []) hb hA hstore.hide hext.preservesNormals.hide
+        (hm.failure E) (.empty _ _ _) (hm.conditions_failure hf E)
+      simpa only [Option.map_map,Function.comp_def,Ty.shiftV_comm,Eff.shiftV_comm,
+        ←shiftTypes_shiftV,←shiftRowsTypes_shiftV,upRen_shiftIndex,renameTy_shiftIndex] using hh
+  termination_by structural h
+
   theorem HasTypeTelArgsQ.shift_values {P B store Q C Γ Φ vs t a e}
       (h : HasTypeTelArgsQ P B store Q C Γ Φ vs t a e) {k c Δ Ξ store'}
       (hA : Builtins.ValueAssumptions P B) (hstore : store.WF)

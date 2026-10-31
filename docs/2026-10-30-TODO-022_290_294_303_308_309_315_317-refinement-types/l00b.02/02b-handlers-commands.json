@@ -1,0 +1,85 @@
+[
+  {
+    "name": "build",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T09:58:03.751110+09:00",
+    "exit": 0,
+    "elapsed_seconds": 0.155701709,
+    "output": {
+      "name": "02b-handlers-build.log",
+      "bytes": 24345,
+      "sha256": "392b24bcca19ca34ba0a1fb39c1ce4a1e7f2dda94d7913e5bb4882e5ecc7e595",
+      "storage": "改造/l00b.02"
+    },
+    "reused_same_production_inputs": true
+  },
+  {
+    "name": "contract-boundary",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02b-handlers-contract-boundary.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T09:58:35.014913+09:00",
+    "exit": 0,
+    "elapsed_seconds": 1.3591170419999998,
+    "output": {
+      "name": "02b-handlers-contract-boundary.log",
+      "bytes": 6364,
+      "sha256": "c7ddb1bc2413519f54d3269b326a3bee9a6792b1dc2d787e13df470dc281ca98",
+      "storage": "改造/l00b.02"
+    },
+    "input_sha256": "d5785385187e99709635566c290bd9e440ce36f43b13b57531d13d66ac671633"
+  },
+  {
+    "name": "axioms",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02b-at-r2-axioms.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T09:58:36.375167+09:00",
+    "exit": 0,
+    "elapsed_seconds": 7.957913125000001,
+    "output": {
+      "name": "02b-handlers-axioms.log",
+      "bytes": 921882,
+      "sha256": "984c7be55765962e1d713cf484813b8dba82a3debf64a61f5e5ae4a73cd60972",
+      "storage": "<tmp>"
+    },
+    "input_sha256": "b01c435734b2559c5cba3b06ba72f08c8a15358863f73df76e0f57a9ca717a0f"
+  },
+  {
+    "name": "lean-version",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "--version"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T09:58:44.342600+09:00",
+    "exit": 0,
+    "elapsed_seconds": 0.07874391700000061,
+    "output": {
+      "name": "02b-handlers-lean-version.log",
+      "bytes": 106,
+      "sha256": "20f42f897511ec814f7616bd9a193ae7504aa2f52fb05299eb752936eb77ca6e",
+      "storage": "改造/l00b.02"
+    }
+  }
+]
