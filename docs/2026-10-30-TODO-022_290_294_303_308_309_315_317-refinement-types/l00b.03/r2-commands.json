@@ -1,0 +1,86 @@
+[
+  {
+    "label": "build",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T08:03:59.091998+00:00",
+    "exit": 0,
+    "elapsed_seconds": 0.8012275,
+    "input_sha256": null,
+    "output": {
+      "name": "r2-build.log",
+      "bytes": 25239,
+      "sha256": "9f0c7333b4f736e54dbca07b2a2471aad66f2b827ac4c89d750293e8d9b81ca4",
+      "storage": "改造/l00b.03"
+    }
+  },
+  {
+    "label": "boundary",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.03/boundary.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T08:03:59.894075+00:00",
+    "exit": 0,
+    "elapsed_seconds": 1.070744833,
+    "input_sha256": "6f5895c1f588fcbd8f9dbc5e4c0c59f060a177bcbdf8053fb6b5db79c5400fb4",
+    "output": {
+      "name": "r2-boundary.log",
+      "bytes": 13383,
+      "sha256": "794d778ab09703c9d0e6cef7559a58072f41e18a3f0966bf29c924a2e95c6914",
+      "storage": "改造/l00b.03"
+    }
+  },
+  {
+    "label": "public-api",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.03/r2-public-api.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T08:04:00.965477+00:00",
+    "exit": 0,
+    "elapsed_seconds": 0.675174208,
+    "input_sha256": "c156da167194bd9b328e4a26fefb7e1f8029db324a898625347a1bfbecf7b409",
+    "output": {
+      "name": "r2-public-api.log",
+      "bytes": 30303,
+      "sha256": "6256a0ba614e4234fec8c2f29292590e3e6056effda1b5f186710d11d450f172",
+      "storage": "改造/l00b.03"
+    }
+  },
+  {
+    "label": "axioms",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.03/r2-axioms.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T08:04:01.641348+00:00",
+    "exit": 0,
+    "elapsed_seconds": 10.44980575,
+    "input_sha256": "803b47586336f283c96dd3c6562e1bd3c564c1fe92acd774d0b94c8531052385",
+    "output": {
+      "name": "r2-axioms.log",
+      "bytes": 1266280,
+      "sha256": "f52f2a54f320ac9c70c73cf832f029988ff43aae1c222aa6469b45eb6e2c67cc",
+      "storage": "<tmp>"
+    }
+  }
+]

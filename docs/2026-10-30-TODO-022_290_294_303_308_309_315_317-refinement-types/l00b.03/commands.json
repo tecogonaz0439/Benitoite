@@ -1,0 +1,166 @@
+[
+  {
+    "label": "build",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T07:37:38.778741+00:00",
+    "elapsed_seconds": 0.9128173329999999,
+    "exit": 0,
+    "output": {
+      "name": "build.log",
+      "bytes": 25239,
+      "sha256": "1fe4ce4bf3adcf9cb4b8fd13479e3aa003ccc0b52adb047524f13d0be03ea6eb",
+      "storage": "改造/l00b.03"
+    }
+  },
+  {
+    "label": "lean-version",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "--version"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T07:37:39.692660+00:00",
+    "elapsed_seconds": 0.08679916700000012,
+    "exit": 0,
+    "output": {
+      "name": "lean-version.log",
+      "bytes": 106,
+      "sha256": "20f42f897511ec814f7616bd9a193ae7504aa2f52fb05299eb752936eb77ca6e",
+      "storage": "改造/l00b.03"
+    }
+  },
+  {
+    "label": "boundary",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.03/boundary.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T07:37:39.779945+00:00",
+    "elapsed_seconds": 1.028468,
+    "exit": 0,
+    "output": {
+      "name": "boundary.log",
+      "bytes": 11679,
+      "sha256": "c56ce436b2b7137aa8fa84d52c3c55355b63a82aac512c035b6e62ecb39c2b30",
+      "storage": "改造/l00b.03"
+    }
+  },
+  {
+    "label": "public-api",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.03/public-api.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T07:37:40.809172+00:00",
+    "elapsed_seconds": 0.6571218750000001,
+    "exit": 0,
+    "output": {
+      "name": "public-api.log",
+      "bytes": 28997,
+      "sha256": "61c44e66e2284a827f2994677dfcdd25e6403116106034e3fc9becbbe8c54eed",
+      "storage": "改造/l00b.03"
+    }
+  },
+  {
+    "label": "axioms",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.03/axioms.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T07:37:41.467182+00:00",
+    "elapsed_seconds": 10.599614333,
+    "exit": 0,
+    "output": {
+      "name": "axioms.log",
+      "bytes": 1263524,
+      "sha256": "e78737c33f0a65a7c2fd96a35fc358a13ad9d46eeac5ba33901efc8a21296484",
+      "storage": "<tmp>"
+    }
+  },
+  {
+    "label": "closures-compat",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02b-closures-r4-public-api.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T07:37:52.091625+00:00",
+    "elapsed_seconds": 0.7123941249999994,
+    "exit": 0,
+    "output": {
+      "name": "closures-compat.log",
+      "bytes": 44941,
+      "sha256": "1cf9f8b4e49616476731dc8951a4716e8d1bb25760c3777247b8133ee55ed246",
+      "storage": "改造/l00b.03"
+    }
+  },
+  {
+    "label": "shared-compat",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02c-public-api.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T07:37:52.804869+00:00",
+    "elapsed_seconds": 0.6385807079999992,
+    "exit": 0,
+    "output": {
+      "name": "shared-compat.log",
+      "bytes": 6131,
+      "sha256": "d0ad51522b7b3c6edfa7812a28db73e0604fb6ec40993b3cc5dd20bd65c67303",
+      "storage": "改造/l00b.03"
+    }
+  },
+  {
+    "label": "old-main-axioms",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.03/old-axioms.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T07:40:20.829471+00:00",
+    "elapsed_seconds": 0.6600560830000001,
+    "exit": 0,
+    "output": {
+      "name": "old-main-axioms.log",
+      "bytes": 473,
+      "sha256": "107ec95400cb68006ffe8c6daaea3f0ed887e339b8472753147eec4d17d6f5bb",
+      "storage": "改造/l00b.03"
+    }
+  }
+]

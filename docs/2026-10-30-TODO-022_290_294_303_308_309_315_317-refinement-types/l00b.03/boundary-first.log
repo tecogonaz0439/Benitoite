@@ -1,0 +1,61 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.03/boundary.lean:40:28: error: `simp` made no progress
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.03/boundary.lean:117:35: warning: This simp argument is unused:
+  Ty.shiftV
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [same, Ordinary]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.03/boundary.lean:117:46: warning: This simp argument is unused:
+  Ordinary
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [same, Ty.shiftV]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.03/boundary.lean:130:58: warning: This simp argument is unused:
+  Ordinary
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [equalSeven, Ty.shiftV]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.03/boundary.lean:146:6: warning: This simp argument is unused:
+  SubstEnv.valuesOnly
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [closedTel, Capture.closeTel, tel, Tel.arguments, Tel.bind, Tel.norm, Tel.rawBind, Tel.argumentsEnv,
+    same, equalSeven, scalar, predBind, upValues, termBind, termBind?, valEnv, SubstEnv.up, Eff.rawBind, rawBindTys,
+    Eff.norm, Eff.empty, substAtoms_nil, instAtoms_nil, rowFails, Ty.rawBind, Ty.norm, Ty.normTys, cap0, Capture.env,
+    Capture.extend, Capture.empty, Capture.values, seven, Val.toTerm?]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.03/boundary.lean:237:47: error(lean.unknownIdentifier): Unknown identifier `slotsVarsIn`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.03/boundary.lean:237:60: error(lean.unknownIdentifier): Unknown identifier `slotVarsIn`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.03/boundary.lean:235:94: error: unsolved goals
+⊢ (Ty.References [some (Ty.fn [] [] (Ty.shiftV 1 0 scalar) (Eff.shiftV 1 0 Eff.empty))] scalar ∧
+      Eff.References [some (Ty.fn [] [] (Ty.shiftV 1 0 scalar) (Eff.shiftV 1 0 Eff.empty))] Eff.empty) ∧
+    varsInSlots
+      (Ctx.Readable
+        [some (Ty.fn [] [] scalar Eff.empty).list,
+          some (Ty.fn [] [] (Ty.shiftV 1 0 scalar) (Eff.shiftV 1 0 Eff.empty))])
+      [some (Term.var 1)]
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.03/boundary.lean:236:66: warning: This simp argument is unused:
+  Eff.References
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [snapshotType, functionType, Ty.References, referencesTys, Pred.References, Pred.VarsIn, Term.VarsIn,
+    slotsVarsIn, slotVarsIn, Ctx.Readable, Ctx.extend, Ty.shiftV, Ordinary]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.03/boundary.lean:270:87: error(lean.unknownIdentifier): Unknown identifier `Order.insert`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.03/boundary.lean:265:60: error: unsolved goals
+h : Ctx.WF 0 0 loose
+hc : duplicate.Canonical
+he : duplicate.norm.fails = duplicate.fails
+hn :
+  (Order.insertUnique tyCompare (Ty.base BaseTy.integer8)
+        (Order.insertUnique tyCompare (Ty.base BaseTy.integer8) [])).length =
+    2
+⊢ False

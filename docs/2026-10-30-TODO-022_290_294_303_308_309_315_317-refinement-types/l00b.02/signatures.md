@@ -804,7 +804,7 @@ Closure.instantiate : Closure → List Ty → List Eff → List Val → Closure
 
 Capture と Closure は Val/Comp と同じ相互帰納の有限構文に置く。values の none は None の束縛をその番号で残す。env の列の外の値は関係する WF の前提で読まれない。実際の値の環境を実行時に保存し、Γ/Φは CaptureOk/ClosureTy の構文の証拠に保持する。閉じた Φ を状態へ残す別案ではない。Γ は全体の番号で格納し、参照は外側だけという L00a の規約を保つ。closeTy/closeEff/closeR は valEnv と bind を使う。closeTyAt 等の Nat はこれから値を入れる内側の束縛数で、その位置を残して外側だけを置換する。引数なしの closeTy 等は cutoff0である。実行時に関数の型を推測して Capture の欄へ格納する操作は必要としない。
 
-`.03` はこの Capture を整形式にする参照順序・None・extend の補題を、`.14b` は実際の捕捉の代表を閉じる。Capture の型だけを置いたことを、捕捉した Φ の保存の完成にしない。
+`.03` はソースの注釈の参照順序と、Capture の None・extend の補題を、`.14b` は実際の捕捉の代表を閉じる。Capture の型だけを置いたことを、捕捉した Φ の保存の完成にしない。
 
 ### 6.2 Val / Comp / Arm / Clause
 
@@ -1131,7 +1131,7 @@ Program.WellTyped : Program → Builtins → Prop
 | HasFailureClause | one | None の継続位置、エラー型の不変、戻り値の契約 |
 | HasTypeTelArgsQ | done、param | 各実引数を検査した後に rest を値について bind して次へ進む |
 | TelBodyTy | done、param | done は自分の結果を R にする本体判断、param は先行引数だけの Γ/Φを延長 |
-| CaptureOk | mk | 有限・長さ一致・None の保存・外側参照順・閉じた型付き像・閉じた facts/Φ |
+| CaptureOk | mk | 有限・長さ一致・None の番号の保存・閉じた型付き像・閉じた facts/Φ。外側参照順はソース注釈の判断であり、この捕捉の判断の欄にはしない |
 | ClosureTy | mk | 捕捉環境の検査、ソースの入力 ss と閉じた像 ps、元の本体 code0、局所文脈 L と参照の像 ρ、close 後の結果/行/R（第30.2節） |
 | DependentClosureTy | mk | CaptureOk と TelBodyTy、閉じた捕捉環境の下で契約を bind |
 

@@ -42,3 +42,6 @@
 | 2026-10-31 | RV-L00b.02b-closures-r4（絞った確認） | Opus 5.5（medium） | 新規 | 約9分 | 230,591 | 条件付き可（重なし、中1・軽2）。緩和の範囲は正しい。定義の変更なし、義務を L20 へ |
 | 2026-10-31 | L00b.02c | Codex | 新規（01a190b2） | 約19分 | 281,733 | Shared.Integer／Interval／Approximation と adapter、Release.Syntax に依存しない共有層、ValueApprox4／ApproxValue3／FlowApprox1／EvalResult3。ビルド683ジョブ、公理は三つだけ |
 | 2026-10-31 | RV-L00b.02c | Opus 5.5（medium） | 新規 | 約8分 | 205,661 | 条件付き可（重なし、中2・軽4）。本番は変えず、失敗の所属と実解析の出力の写しを O169 へ |
+| 2026-10-31 | L00b.03 | Codex | 新規（01a190cf） | 約29分 | 377,306 | Context/ の4モジュール（公開定義18・定理69）。Ctx.Ordered／Regular、facts の再構成、宣言順の入力列、kind の固定、緩い捕捉の延長。入口の正例・負例54定理。ビルド687ジョブ、公理は三つだけ |
+| 2026-10-31 | RV-L00b.03 | Opus 5.5（medium） | 新規 | 約12分 | 303,714 | 条件付き可（重なし、中2・軽6）。中1は参照順序を読む判断がないこと、中2は extendNone の形を作る遷移がないこと |
+| 2026-10-31 | L00b.03 再開1（所見の対応） | Codex | 01a190cf の再開 | 約9分 | 累計443,082（差65,776） | 順序をソースの注釈の判断に、Regular.hideConts／bindParams、extendHidden／extendCont、Ctx.Depends、Pred.WellFormed へ改名。ビルド687ジョブ、公理は三つだけ |

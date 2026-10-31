@@ -1,0 +1,143 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.03/boundary.lean:278:110: error: unsolved goals
+ht : tyCompare (Ty.base BaseTy.integer8) (Ty.base BaseTy.integer8) = Ordering.eq
+⊢ (Eff.rawBind { types := Ty.tvar, rows := [], ranges := [], values := fun i => (looseCap.env i).toTerm? }
+        (EffR.mk (fun x => false) [Ty.base BaseTy.integer8, Ty.base BaseTy.integer8])).norm =
+    EffR.mk (fun x => false) [Ty.base BaseTy.integer8]
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.03/boundary.lean:280:61: warning: This simp argument is unused:
+  rawBindTys
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Capture.closeTy, substTyValues, Ty.bind, Ty.rawBind, valEnv, rowFails, instAtoms_nil, substAtoms_nil,
+    Ty.norm, Ty.normTys, Eff.norm, duplicate, normalRow, scalar, Order.sortUnique, Order.insertUnique, ht]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.03/boundary.lean:280:81: warning: This simp argument is unused:
+  rowFails
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Capture.closeTy, substTyValues, Ty.bind, Ty.rawBind, rawBindTys, valEnv, instAtoms_nil, substAtoms_nil,
+    Ty.norm, Ty.normTys, Eff.norm, duplicate, normalRow, scalar, Order.sortUnique, Order.insertUnique, ht]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.03/boundary.lean:281:4: warning: This simp argument is unused:
+  instAtoms_nil
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Capture.closeTy, substTyValues, Ty.bind, Ty.rawBind, rawBindTys, valEnv, rowFails, substAtoms_nil,
+    Ty.norm, Ty.normTys, Eff.norm, duplicate, normalRow, scalar, Order.sortUnique, Order.insertUnique, ht]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.03/boundary.lean:281:19: warning: This simp argument is unused:
+  substAtoms_nil
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Capture.closeTy, substTyValues, Ty.bind, Ty.rawBind, rawBindTys, valEnv, rowFails, instAtoms_nil,
+    Ty.norm, Ty.normTys, Eff.norm, duplicate, normalRow, scalar, Order.sortUnique, Order.insertUnique, ht]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.03/boundary.lean:281:44: warning: This simp argument is unused:
+  Ty.normTys
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Capture.closeTy, substTyValues, Ty.bind, Ty.rawBind, rawBindTys, valEnv, rowFails, instAtoms_nil,
+    substAtoms_nil, Ty.norm, Eff.norm, duplicate, normalRow, scalar, Order.sortUnique, Order.insertUnique, ht]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.03/boundary.lean:281:56: warning: This simp argument is unused:
+  Eff.norm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Capture.closeTy, substTyValues, Ty.bind, Ty.rawBind, rawBindTys, valEnv, rowFails, instAtoms_nil,
+    substAtoms_nil, Ty.norm, Ty.normTys, duplicate, normalRow, scalar, Order.sortUnique, Order.insertUnique, ht]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.03/boundary.lean:282:4: warning: This simp argument is unused:
+  Order.sortUnique
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Capture.closeTy, substTyValues, Ty.bind, Ty.rawBind, rawBindTys, valEnv, rowFails, instAtoms_nil,
+    substAtoms_nil, Ty.norm, Ty.normTys, Eff.norm, duplicate, normalRow, scalar, Order.insertUnique, ht]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.03/boundary.lean:282:22: warning: This simp argument is unused:
+  Order.insertUnique
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Capture.closeTy, substTyValues, Ty.bind, Ty.rawBind, rawBindTys, valEnv, rowFails, instAtoms_nil,
+    substAtoms_nil, Ty.norm, Ty.normTys, Eff.norm, duplicate, normalRow, scalar, Order.sortUnique, ht]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.03/boundary.lean:282:42: warning: This simp argument is unused:
+  ht
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Capture.closeTy, substTyValues, Ty.bind, Ty.rawBind, rawBindTys, valEnv, rowFails, instAtoms_nil,
+    substAtoms_nil, Ty.norm, Ty.normTys, Eff.norm, duplicate, normalRow, scalar, Order.sortUnique, Order.insertUnique]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.03/boundary.lean:299:10: error(lean.unknownIdentifier): Unknown identifier `hv`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.03/boundary.lean:299:4: error: Tactic `cases` failed: major premise type is not an inductive type
+  ?m.204
+
+Explanation: the `cases` tactic is for constructor-based reasoning as well as for applying custom cases principles with a 'using' clause or a registered '@[cases_eliminator]' theorem. The above type neither is an inductive type nor has a registered theorem.
+
+case refine_4
+P : Program
+B : Builtins
+v : Val
+ho : some v = some (Val.loc 0)
+x✝ : ?m.204
+⊢ v.Ground
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.03/boundary.lean:321:26: error: Insufficient number of fields for `⟨...⟩` constructor: Constructor `Benitoite.Release.Refinement.OpDecl.mk` has 6 explicit field, but only 5 were provided
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.03/boundary.lean:328:28: warning: declaration uses `sorry`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.03/boundary.lean:327:8: warning: declaration uses `sorry`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.03/boundary.lean:340:103: warning: declaration uses `sorry`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.03/boundary.lean:338:8: warning: declaration uses `sorry`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.03/boundary.lean:378:14: error: failed to synthesize
+  Decidable (Ty.WF 0 (List.map TParamDecl.constraints constructorD).length [].length (Ty.tvar 0))
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.03/boundary.lean:398:16: error: failed to synthesize
+  Decidable (Ty.WF 0 (List.map TParamDecl.constraints constructorD).length [].length (Ty.tvar 0))
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.03/boundary.lean:401:12: error: Tactic `introN` failed: There are no additional binders or `let` bindings in the goal to introduce
+
+case a.refine_5
+B : Builtins
+Ψ : StoreTy
+hsat : B.sat (List.map TParamDecl.constraints constructorD) (Ty.tvar 0) { }
+⊢ Eff.RowsIn (fun x => x < [].length) polymorphicDef.eff
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.03/boundary.lean:402:4: error: unsolved goals
+case a.refine_6.inl
+B : Builtins
+Ψ : StoreTy
+hsat : B.sat (List.map TParamDecl.constraints constructorD) (Ty.tvar 0) { }
+i : Nat
+h✝ : QTys polymorphicDef.params i
+⊢ i < [].length
+
+case a.refine_6.inr
+B : Builtins
+Ψ : StoreTy
+hsat : B.sat (List.map TParamDecl.constraints constructorD) (Ty.tvar 0) { }
+i : Nat
+h✝ : QTy polymorphicDef.ret i ∨ QEff polymorphicDef.eff i
+⊢ i < [].length
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.03/boundary.lean:403:4: error: unsolved goals
+case a.refine_7.inl
+B : Builtins
+Ψ : StoreTy
+hsat : B.sat (List.map TParamDecl.constraints constructorD) (Ty.tvar 0) { }
+i : Nat
+h✝ : QTys polymorphicDef.params i
+⊢ NoFail Qempty ([][i]?.getD (Eff.row i))
+
+case a.refine_7.inr
+B : Builtins
+Ψ : StoreTy
+hsat : B.sat (List.map TParamDecl.constraints constructorD) (Ty.tvar 0) { }
+i : Nat
+h✝ : QTy polymorphicDef.ret i ∨ QEff polymorphicDef.eff i
+⊢ NoFail Qempty ([][i]?.getD (Eff.row i))

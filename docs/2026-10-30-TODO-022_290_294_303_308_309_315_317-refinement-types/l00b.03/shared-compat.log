@@ -1,0 +1,76 @@
+Benitoite.Shared.ValueApprox : Type
+Benitoite.Shared.ApproxValue : Type
+Benitoite.Shared.FlowApprox : Type
+Benitoite.Shared.EvalResult (V E : Type) : Type
+Benitoite.Shared.ValueApprox.Mem : Benitoite.Shared.ValueApprox → Benitoite.Shared.ApproxValue → Prop
+Benitoite.Shared.FlowApprox.NormalMem (flow : Benitoite.Shared.FlowApprox) (value : Benitoite.Shared.ApproxValue) : Prop
+Benitoite.Shared.FlowApprox.ReturnedMem (flow : Benitoite.Shared.FlowApprox) (value : Benitoite.Shared.ApproxValue) :
+  Prop
+Benitoite.Shared.FlowApprox.ResultMem {E : Type} (flow : Benitoite.Shared.FlowApprox) :
+  Benitoite.Shared.EvalResult Benitoite.Shared.ApproxValue E → Prop
+Benitoite.Shared.ApproxValue.ofInt (kind : Benitoite.Interval.IntKind) (value : Int) : Benitoite.Shared.ApproxValue
+Benitoite.Shared.ApproxValue.ofInt_bounded (kind : Benitoite.Interval.IntKind)
+  (value : Benitoite.Interval.IntegerValue kind) :
+  Benitoite.Shared.ApproxValue.ofInt kind value.toInt = Benitoite.Shared.ApproxValue.integer kind value
+Benitoite.Shared.ApproxValue.ofInt_outside {kind : Benitoite.Interval.IntKind} {value : Int}
+  (h : ¬(kind.min ≤ value ∧ value ≤ kind.max)) :
+  Benitoite.Shared.ApproxValue.ofInt kind value = Benitoite.Shared.ApproxValue.other
+Benitoite.Shared.ValueApprox.mem_bottom (value : Benitoite.Shared.ApproxValue) :
+  ¬Benitoite.Shared.ValueApprox.bottom.Mem value
+Benitoite.Shared.ValueApprox.mem_unknown (value : Benitoite.Shared.ApproxValue) :
+  Benitoite.Shared.ValueApprox.unknown.Mem value
+Benitoite.Shared.ValueApprox.mem_integer (kind : Benitoite.Interval.IntKind)
+  (interval : Benitoite.Interval.Interval kind) (value : Benitoite.Interval.IntegerValue kind) :
+  (Benitoite.Shared.ValueApprox.integer kind interval).Mem (Benitoite.Shared.ApproxValue.integer kind value) ↔
+    Benitoite.Interval.Mem value.toInt interval
+Benitoite.Shared.EvalResult.map {V W E F : Type} (value : V → W) (failure : E → F) :
+  Benitoite.Shared.EvalResult V E → Benitoite.Shared.EvalResult W F
+Benitoite.Shared.EvalResult.map_id {V E : Type} (result : Benitoite.Shared.EvalResult V E) :
+  Benitoite.Shared.EvalResult.map id id result = result
+Benitoite.Interval.ConcreteValue.toApprox : Benitoite.Interval.ConcreteValue → Benitoite.Shared.ApproxValue
+Benitoite.Interval.ConcreteValue.ofInteger_toApprox (kind : Benitoite.Interval.IntKind)
+  (n : Benitoite.Interval.IntegerValue kind) :
+  (Benitoite.Interval.ConcreteValue.ofInteger kind n).toApprox = Benitoite.Shared.ApproxValue.integer kind n
+Benitoite.Interval.EvalOutcome.toShared :
+  Benitoite.Interval.EvalOutcome →
+    Benitoite.Shared.EvalResult Benitoite.Interval.ConcreteValue Benitoite.Interval.Failure
+Benitoite.Interval.EvalOutcome.ofShared :
+  Benitoite.Shared.EvalResult Benitoite.Interval.ConcreteValue Benitoite.Interval.Failure →
+    Benitoite.Interval.EvalOutcome
+Benitoite.Interval.EvalOutcome.ofShared_toShared (outcome : Benitoite.Interval.EvalOutcome) :
+  Benitoite.Interval.EvalOutcome.ofShared outcome.toShared = outcome
+Benitoite.Interval.EvalOutcome.toShared_ofShared
+  (result : Benitoite.Shared.EvalResult Benitoite.Interval.ConcreteValue Benitoite.Interval.Failure) :
+  (Benitoite.Interval.EvalOutcome.ofShared result).toShared = result
+Benitoite.Interval.EvalOutcome.toApprox (outcome : Benitoite.Interval.EvalOutcome) :
+  Benitoite.Shared.EvalResult Benitoite.Shared.ApproxValue Benitoite.Interval.Failure
+Benitoite.Interval.normalToShared (type : Benitoite.Release.Ty) (range : Benitoite.Interval.NormalRange type) :
+  Benitoite.Shared.ValueApprox
+Benitoite.Interval.normalToShared_mem {type : Benitoite.Release.Ty} {range : Benitoite.Interval.NormalRange type}
+  {value : Benitoite.Interval.ConcreteValue} (h : Benitoite.Interval.NormalMem type range value) :
+  (Benitoite.Interval.normalToShared type range).Mem value.toApprox
+Benitoite.Interval.FlowApprox.toShared {type : Benitoite.Release.Ty} (flow : Benitoite.Interval.FlowApprox type)
+  (returned : Benitoite.Shared.ValueApprox) : Benitoite.Shared.FlowApprox
+Benitoite.Interval.FlowApprox.toShared_normal {type : Benitoite.Release.Ty} (flow : Benitoite.Interval.FlowApprox type)
+  (returned : Benitoite.Shared.ValueApprox) {value : Benitoite.Interval.ConcreteValue}
+  (h : Benitoite.Interval.NormalMem type flow.normal value) : (flow.toShared returned).NormalMem value.toApprox
+Benitoite.Interval.FlowApprox.toShared_returned {type : Benitoite.Release.Ty}
+  (flow : Benitoite.Interval.FlowApprox type) (returned : Benitoite.Shared.ValueApprox)
+  (value : Benitoite.Shared.ApproxValue) : (flow.toShared returned).ReturnedMem value ↔ returned.Mem value
+Benitoite.Interval.FlowApprox.toShared_mayFail {type : Benitoite.Release.Ty} (flow : Benitoite.Interval.FlowApprox type)
+  (returned : Benitoite.Shared.ValueApprox) : (flow.toShared returned).mayFail = flow.mayFail
+Benitoite.Release.Const.toApprox : Benitoite.Release.Const → Benitoite.Shared.ApproxValue
+Benitoite.Release.Val.toApprox : Benitoite.Release.Val → Benitoite.Shared.ApproxValue
+Benitoite.Release.Refinement.Const.toApprox : Benitoite.Release.Refinement.Const → Benitoite.Shared.ApproxValue
+Benitoite.Release.Refinement.Val.toApprox : Benitoite.Release.Refinement.Val → Benitoite.Shared.ApproxValue
+Benitoite.Release.Refinement.embedConst_toApprox (c : Benitoite.Release.Const) :
+  (Benitoite.Release.Refinement.embedConst c).toApprox = c.toApprox
+Benitoite.Release.Refinement.embedVal_toApprox (v : Benitoite.Release.Val) :
+  (Benitoite.Release.Refinement.embedVal v).toApprox = v.toApprox
+Benitoite.Interval.IntKind.refinementType (kind : Benitoite.Interval.IntKind) : Benitoite.Release.Refinement.Ty
+Benitoite.Interval.IntKind.ofRefinementType : Benitoite.Release.Refinement.Ty → Option Benitoite.Interval.IntKind
+Benitoite.Interval.IntKind.ofRefinementType_type (kind : Benitoite.Interval.IntKind) :
+  Benitoite.Interval.IntKind.ofRefinementType kind.refinementType = some kind
+Benitoite.Interval.IntKind.ofRefinementType_embed (type : Benitoite.Release.Ty) :
+  Benitoite.Interval.IntKind.ofRefinementType (Benitoite.Release.Refinement.embedTy type) =
+    Benitoite.Interval.IntKind.ofType type
