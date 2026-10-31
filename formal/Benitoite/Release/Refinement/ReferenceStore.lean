@@ -77,7 +77,7 @@ theorem ContTy.store {P B σ Ψ R ε k a b Eb Re Ψ'}
   | K_Sub _ hl ih => exact .K_Sub ih hl
   | K_Let hq had ha hs _ ih => exact .K_Let (hq.store hA hw he) had ha hs ih
   | K_Mark _ ha ih => exact .K_Mark ih ha
-  | K_Update hl _ ih => exact .K_Update (he _ _ hl) ih
+  | K_Update hl ha _ ih => exact .K_Update (he _ _ hl) ha ih
   | K_Release hv had hr hs _ ih => exact .K_Release (hv.store_extend hA hw he) had hr hs ih
   | K_Drop hl hs _ ih => exact .K_Drop (he _ _ hl) hs ih
   | K_Handle _ hc hs hcap hcs hR ht hec heb ha has hr had ih =>

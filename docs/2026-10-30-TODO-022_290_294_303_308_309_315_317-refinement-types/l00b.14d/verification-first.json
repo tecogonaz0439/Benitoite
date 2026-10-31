@@ -1,0 +1,22 @@
+[
+  {
+    "label": "build",
+    "command": "cd formal && rtk proxy lake build",
+    "started_utc": "2026-10-31T22:32:43.431127+00:00",
+    "exit_code": 0,
+    "seconds": 4.408,
+    "bytes": 37001,
+    "sha256": "9702b8208091c5fb1129272c9d9f639b9fb4d2c046a5e0cc9f4cc60601a41d42",
+    "record": "build.log"
+  },
+  {
+    "label": "boundary",
+    "command": "cd formal && rtk proxy lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/boundary.lean",
+    "started_utc": "2026-10-31T22:32:47.839392+00:00",
+    "exit_code": 1,
+    "seconds": 1.321,
+    "bytes": 36205,
+    "sha256": "39454539339e527e9f4c48986624e16bce3ada11eb41407e2a54df69d6b02174",
+    "record": "boundary.log"
+  }
+]

@@ -53,6 +53,7 @@ inductive ContTy (P : Program) (B : Builtins) (σ : PathEnv) (Ψ : StoreTy) :
   | K_Mark {R ε k a b Eb Re} : ContTy P B σ Ψ R ε k a b Eb Re →
       Ty.Annotation P [] [] a → ContTy P B σ Ψ (some a) ε (.mark :: k) a b Eb Re
   | K_Update {R ε l k a b Eb Re} : Ψ l = some (.lazy a) →
+      Ty.Annotation P [] [] a →
       ContTy P B σ Ψ R ε k a b Eb Re →
       ContTy P B σ Ψ none ε (.update l :: k) a b Eb Re
   | K_Release {R ε v o k a b Eb Re} : HasTypeV P B Ψ [] [] [] v (.opaque o (.fixed .top)) →
@@ -267,7 +268,7 @@ theorem ContTy.end_normal {P B σ Ψ R ε k a b Eb Re}
     · exact ih (tail' he hk)
   | K_Let _ _ _ _ _ ih => exact ih (tail he (by intro _ _ h; cases h))
   | K_Mark _ _ ih => exact ih (tail he (by intro _ _ h; cases h))
-  | K_Update _ _ ih => exact ih (tail he (by intro _ _ h; cases h))
+  | K_Update _ _ _ ih => exact ih (tail he (by intro _ _ h; cases h))
   | K_Release _ _ _ _ _ ih => exact ih (tail he (by intro _ _ h; cases h))
   | K_Drop _ _ _ ih => exact ih (tail he (by intro _ _ h; cases h))
   | K_Guard _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ ih => exact ih (tail he (by intro _ _ h; cases h))
