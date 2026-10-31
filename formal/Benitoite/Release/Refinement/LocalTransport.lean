@@ -70,6 +70,12 @@ theorem LocalCtx.Shift.extend {k c L L'} (h : LocalCtx.Shift k c L L')
       simp only [LocalCtx.extend, hs, List.getElem?_cons_succ, List.getElem?_map,
         hh, Option.map_some, renameKind_comm]
 
+theorem LocalCtx.Shift.localExtend {k c L L'} (h : LocalCtx.Shift k c L L') (n : Nat) :
+    LocalCtx.Shift k (c+n) (localExtend n L) (localExtend n L') := by
+  induction n with
+  | zero => simpa only [Refinement.localExtend, Nat.add_zero] using h
+  | succ n ih => simpa only [Refinement.localExtend, Option.map_none, Nat.add_assoc] using ih.extend none
+
 theorem LocalRef.HasKind.shift {Ψ Ψ' L L' r b k c}
     (h : LocalRef.HasKind Ψ L r b) (hw : Ψ.WF) (he : Ψ.Extends Ψ')
     (hl : LocalCtx.Shift k c L L') :

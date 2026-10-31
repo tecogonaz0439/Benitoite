@@ -1,0 +1,55 @@
+{
+  "planned_added": 14,
+  "actual_added": 14,
+  "prior_total": 49,
+  "total_obligations_per_family": 63,
+  "typing_roots": {
+    "V": 26,
+    "C": 20,
+    "Vs": 2,
+    "Each": 2,
+    "TelArgs": 2,
+    "Arms": 3,
+    "Clauses": 2,
+    "Failure": 1
+  },
+  "checked_witness": {
+    "constructors": 2,
+    "shift_values": "相互に消去",
+    "subst_narrow_type_shift": "閉じた保持要求の同じ証拠を再利用"
+  },
+  "image_ok": {
+    "constructors": 3,
+    "shift_values": [
+      "ImageOk.lift",
+      "ImageOk.liftParams"
+    ],
+    "subst": [
+      "SubstOk.hide",
+      "SubstOk.upValue",
+      "SubstOk.params",
+      "ImageOk.shiftEAt",
+      "SubstOk.store"
+    ],
+    "narrow": [
+      "ImageOk.narrow"
+    ]
+  },
+  "additional_at_call": 1,
+  "patterns": {
+    "PatTy": 7,
+    "PatTys": 2,
+    "Inhabits": 23,
+    "InhabitsAll": 2,
+    "InhabitsEach": 2
+  },
+  "syntax_unchanged": {
+    "Val": 25,
+    "Comp": 16,
+    "Arm": 1,
+    "Clause": 2,
+    "Step": 76
+  },
+  "counting": "根の相互match、閉じた証拠の再利用、ImageOkの補助の3場合を区別した被覆義務の数。63個の相互matchとは主張しない。",
+  "constructor_audit": "02b-handlers-r2-axioms.leanの環境で個数を照合した。"
+}

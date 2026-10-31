@@ -1,0 +1,180 @@
+Benitoite.Release.Refinement.HasTypeArmsQ.guarded {P : Program} {B : Builtins} {Ψ : StoreTy} {Q : NoFailCtx}
+  {C : List TParam} {Γ : Ctx} {Φ : List Pred} {Δ : LocalCtx} {R : Option Ty} {alts : List Alt} {guard body : Comp}
+  {arms : List Arm} {a b : Ty} {ε : Eff} {δ : List Ty} :
+  AltsTy P alts a δ →
+    HasTypeCQ P B (hideBuilders Ψ) Q C (hideConts (bindParams Γ δ)) (liftMany δ.length Φ) none guard
+        (Ty.base BaseTy.boolean) Eff.empty →
+      HasTypeCQ P B Ψ Q C (bindParams Γ δ) (liftMany δ.length Φ) (Option.map (Ty.shiftV δ.length 0) R) body
+          (Ty.shiftV δ.length 0 b) (Eff.shiftV δ.length 0 ε) (localExtend δ.length Δ) →
+        HasTypeArmsQ P B Ψ Q C Γ Φ R arms a b ε Δ →
+          HasTypeArmsQ P B Ψ Q C Γ Φ R (Arm.mk alts (some guard) body :: arms) a b ε Δ
+Benitoite.Release.Refinement.HasTypeClausesQ.cons {P : Program} {B : Builtins} {Ψ : StoreTy} {Q : NoFailCtx}
+  {C : List TParam} {Γ : Ctx} {Φ : List Pred} {Δ : LocalCtx} {R : Option Ty} {eb : Eff} {o : OpRef} {n k : Nat}
+  {body : Comp} {cs : List Clause} {t : Ty} {ε : Eff} {sg : OpSig} :
+  ClauseSig P B eb o sg →
+    NamesWF sg.names sg.params →
+      n = sg.params.length →
+        k = sg.tparams.length →
+          sg.WF →
+            HasTypeCQ P B (hideBuilders Ψ) Q (sg.tparams ++ C) (sg.context Γ t ε) (liftMany (sg.params.length + 1) Φ)
+                (Option.map (fun r => Ty.shiftV (sg.params.length + 1) 0 (shiftTypes sg.tparams.length 0 r)) R) body
+                (Ty.shiftV (sg.params.length + 1) 0 (shiftTypes sg.tparams.length 0 t))
+                (Eff.shiftV (sg.params.length + 1) 0 (shiftRowsTypes sg.tparams.length 0 ε)) →
+              HasTypeClausesQ P B Ψ Q C Γ Φ R eb cs t ε Δ →
+                HasTypeClausesQ P B Ψ Q C Γ Φ R eb (Clause.mk o n k body :: cs) t ε Δ
+Benitoite.Release.Refinement.HasFailureClause.one {P : Program} {B : Builtins} {Ψ : StoreTy} {Q : NoFailCtx}
+  {C : List TParam} {Γ : Ctx} {Φ : List Pred} {Δ : LocalCtx} {E : Ty} {R : Option Ty} {body : Comp} {t : Ty}
+  {ec : Eff} :
+  Ty.Annotation P C Γ E →
+    Ty.Annotation P C Γ t →
+      RowAnnotations P C Γ [ec] →
+        HasTypeCQ P B (hideBuilders Ψ) Q ({ } :: C) (failureContext Γ E) (liftMany 2 Φ)
+            (Option.map (fun r => Ty.shiftV 2 0 (shiftTypes 1 0 r)) R) body (Ty.shiftV 2 0 (shiftTypes 1 0 t))
+            (Eff.shiftV 2 0 (shiftRowsTypes 1 0 ec)) →
+          HasFailureClause P B Ψ Q C Γ Φ E R [Clause.fail E body] t ec Δ
+Benitoite.Release.Refinement.HasTypeArmsQ.subst {P : Program} {B : Builtins} {store : StoreTy} {Q : NoFailCtx}
+  {C : List TParam} {Γ : Ctx} {Φ : List Pred} {R : Option Ty} {arms : List Arm} {a b : Ty} {e : Eff} {L L' : LocalCtx}
+  {Δ : Ctx} {Ξ : List Pred} {σ : Nat → Val} (h : HasTypeArmsQ P B store Q C Γ Φ R arms a b e L)
+  (hA : Builtins.SubstitutionAssumptions P B) (hstore : store.WF)
+  (ht : SubstOk P B store Q C Γ Φ Δ Ξ (Option.map (substTyValues σ) R) σ)
+  (hf : ∀ (p : Pred), p ∈ Φ → Entails (Δ.facts ++ Ξ) (predBind (valEnv σ).values p)) (ρ : Nat → LocalRef)
+  (hL : LocalSubstOk store L σ ρ L') :
+  HasTypeArmsQ P B store Q C Δ Ξ (Option.map (substTyValues σ) R) (Arm.substList σ arms ρ) (substTyValues σ a)
+    (substTyValues σ b) (substEffValues σ e) L'
+Benitoite.Release.Refinement.HasTypeClausesQ.subst {P : Program} {B : Builtins} {store : StoreTy} {Q : NoFailCtx}
+  {C : List TParam} {Γ : Ctx} {Φ : List Pred} {R : Option Ty} {eb : Eff} {cs : List Clause} {t : Ty} {e : Eff}
+  {L L' : LocalCtx} {Δ : Ctx} {Ξ : List Pred} {σ : Nat → Val} (h : HasTypeClausesQ P B store Q C Γ Φ R eb cs t e L)
+  (hA : Builtins.SubstitutionAssumptions P B) (hw : store.WF)
+  (ht : SubstOk P B store Q C Γ Φ Δ Ξ (Option.map (substTyValues σ) R) σ)
+  (hf : ∀ (p : Pred), p ∈ Φ → Entails (Δ.facts ++ Ξ) (predBind (valEnv σ).values p)) (ρ : Nat → LocalRef)
+  (hL : LocalSubstOk store L σ ρ L') :
+  HasTypeClausesQ P B store Q C Δ Ξ (Option.map (substTyValues σ) R) (substEffValues σ eb) (Clause.substList σ cs ρ)
+    (substTyValues σ t) (substEffValues σ e) L'
+Benitoite.Release.Refinement.HasFailureClause.subst {P : Program} {B : Builtins} {store : StoreTy} {Q : NoFailCtx}
+  {C : List TParam} {Γ : Ctx} {Φ : List Pred} {E : Ty} {R : Option Ty} {cs : List Clause} {t : Ty} {e : Eff}
+  {L L' : LocalCtx} {Δ : Ctx} {Ξ : List Pred} {σ : Nat → Val} (h : HasFailureClause P B store Q C Γ Φ E R cs t e L)
+  (hA : Builtins.SubstitutionAssumptions P B) (hw : store.WF)
+  (ht : SubstOk P B store Q C Γ Φ Δ Ξ (Option.map (substTyValues σ) R) σ)
+  (hf : ∀ (p : Pred), p ∈ Φ → Entails (Δ.facts ++ Ξ) (predBind (valEnv σ).values p)) (ρ : Nat → LocalRef)
+  (hL : LocalSubstOk store L σ ρ L') :
+  HasFailureClause P B store Q C Δ Ξ (substTyValues σ E) (Option.map (substTyValues σ) R) (Clause.substList σ cs ρ)
+    (substTyValues σ t) (substEffValues σ e) L'
+Benitoite.Release.Refinement.HasTypeCQ.subst_under_none {P : Program} {B : Builtins} {store : StoreTy} {Q : NoFailCtx}
+  {C : List TParam} {Γ : Ctx} {Φ : List Pred} {m : Comp} {a : Ty} {e : Eff} {L L' : LocalCtx} {Δ : Ctx} {Ξ : List Pred}
+  {σ : Nat → Val} {R : Option Ty}
+  (h : HasTypeCQ P B store Q C Γ.extendNone (List.map Pred.lift Φ) (Option.map (Ty.shiftV 1 0) R) m a e L)
+  (hA : Builtins.SubstitutionAssumptions P B) (hstore : store.WF)
+  (ht : SubstOk P B store Q C Γ Φ Δ Ξ (Option.map (substTyValues σ) R) σ)
+  (hf : ∀ (p : Pred), p ∈ Φ → Entails (Δ.facts ++ Ξ) (predBind (valEnv σ).values p)) (ρ : Nat → LocalRef)
+  (hL : LocalSubstOk store L (upSubst 1 σ) (upLocalSubst 1 ρ) L') :
+  HasTypeCQ P B store Q C Δ.extendNone (List.map Pred.lift Ξ)
+    (Option.map (Ty.shiftV 1 0) (Option.map (substTyValues σ) R)) (Comp.subst (upSubst 1 σ) m (upLocalSubst 1 ρ))
+    (substTyValues (upSubst 1 σ) a) (substEffValues (upSubst 1 σ) e) L'
+Benitoite.Release.Refinement.HasTypeArmsQ.subst_under_none {P : Program} {B : Builtins} {store : StoreTy}
+  {Q : NoFailCtx} {C : List TParam} {Γ : Ctx} {Φ : List Pred} {cs : List Arm} {a t : Ty} {e : Eff} {L L' : LocalCtx}
+  {Δ : Ctx} {Ξ : List Pred} {σ : Nat → Val} {R : Option Ty}
+  (h : HasTypeArmsQ P B store Q C Γ.extendNone (List.map Pred.lift Φ) (Option.map (Ty.shiftV 1 0) R) cs a t e L)
+  (hA : Builtins.SubstitutionAssumptions P B) (hw : store.WF)
+  (ht : SubstOk P B store Q C Γ Φ Δ Ξ (Option.map (substTyValues σ) R) σ)
+  (hf : ∀ (p : Pred), p ∈ Φ → Entails (Δ.facts ++ Ξ) (predBind (valEnv σ).values p)) (ρ : Nat → LocalRef)
+  (hL : LocalSubstOk store L (upSubst 1 σ) (upLocalSubst 1 ρ) L') :
+  HasTypeArmsQ P B store Q C Δ.extendNone (List.map Pred.lift Ξ)
+    (Option.map (Ty.shiftV 1 0) (Option.map (substTyValues σ) R)) (Arm.substList (upSubst 1 σ) cs (upLocalSubst 1 ρ))
+    (substTyValues (upSubst 1 σ) a) (substTyValues (upSubst 1 σ) t) (substEffValues (upSubst 1 σ) e) L'
+Benitoite.Release.Refinement.HasTypeClausesQ.subst_under_none {P : Program} {B : Builtins} {store : StoreTy}
+  {Q : NoFailCtx} {C : List TParam} {Γ : Ctx} {Φ : List Pred} {cs : List Clause} {eb : Eff} {t : Ty} {e : Eff}
+  {L L' : LocalCtx} {Δ : Ctx} {Ξ : List Pred} {σ : Nat → Val} {R : Option Ty}
+  (h : HasTypeClausesQ P B store Q C Γ.extendNone (List.map Pred.lift Φ) (Option.map (Ty.shiftV 1 0) R) eb cs t e L)
+  (hA : Builtins.SubstitutionAssumptions P B) (hw : store.WF)
+  (ht : SubstOk P B store Q C Γ Φ Δ Ξ (Option.map (substTyValues σ) R) σ)
+  (hf : ∀ (p : Pred), p ∈ Φ → Entails (Δ.facts ++ Ξ) (predBind (valEnv σ).values p)) (ρ : Nat → LocalRef)
+  (hL : LocalSubstOk store L (upSubst 1 σ) (upLocalSubst 1 ρ) L') :
+  HasTypeClausesQ P B store Q C Δ.extendNone (List.map Pred.lift Ξ)
+    (Option.map (Ty.shiftV 1 0) (Option.map (substTyValues σ) R)) (substEffValues (upSubst 1 σ) eb)
+    (Clause.substList (upSubst 1 σ) cs (upLocalSubst 1 ρ)) (substTyValues (upSubst 1 σ) t)
+    (substEffValues (upSubst 1 σ) e) L'
+Benitoite.Release.Refinement.HasFailureClause.subst_under_none {P : Program} {B : Builtins} {store : StoreTy}
+  {Q : NoFailCtx} {C : List TParam} {Γ : Ctx} {Φ : List Pred} {E : Ty} {cs : List Clause} {t : Ty} {e : Eff}
+  {L L' : LocalCtx} {Δ : Ctx} {Ξ : List Pred} {σ : Nat → Val} {R : Option Ty}
+  (h : HasFailureClause P B store Q C Γ.extendNone (List.map Pred.lift Φ) E (Option.map (Ty.shiftV 1 0) R) cs t e L)
+  (hA : Builtins.SubstitutionAssumptions P B) (hw : store.WF)
+  (ht : SubstOk P B store Q C Γ Φ Δ Ξ (Option.map (substTyValues σ) R) σ)
+  (hf : ∀ (p : Pred), p ∈ Φ → Entails (Δ.facts ++ Ξ) (predBind (valEnv σ).values p)) (ρ : Nat → LocalRef)
+  (hL : LocalSubstOk store L (upSubst 1 σ) (upLocalSubst 1 ρ) L') :
+  HasFailureClause P B store Q C Δ.extendNone (List.map Pred.lift Ξ) (substTyValues (upSubst 1 σ) E)
+    (Option.map (Ty.shiftV 1 0) (Option.map (substTyValues σ) R)) (Clause.substList (upSubst 1 σ) cs (upLocalSubst 1 ρ))
+    (substTyValues (upSubst 1 σ) t) (substEffValues (upSubst 1 σ) e) L'
+Benitoite.Release.Refinement.SubstOk.up {P : Program} {B : Builtins} {Ψ : StoreTy} {Q : NoFailCtx} {C : List TParam}
+  {Γ : Ctx} {Φ : List Pred} {Δ : Ctx} {Ξ : List Pred} {R0 : Option Ty} {ν : Nat → Val}
+  (h : SubstOk P B Ψ Q C Γ Φ Δ Ξ R0 ν) (hA : Builtins.ValueAssumptions P B) (hstore : Ψ.WF)
+  (_hf : ∀ (p : Pred), p ∈ Φ → Entails (Δ.facts ++ Ξ) (predBind (valEnv ν).values p)) (x : Ty)
+  (_hw : Ty.WF 0 C.length (List.length Γ) x) (_hs : Ty.Sorted Γ x) :
+  SubstOk P B Ψ Q C (Γ.extend x) (List.map Pred.lift Φ) (Δ.extend (substTyValues ν x)) (List.map Pred.lift Ξ)
+    (Option.map (Ty.shiftV 1 0) R0) (upSubst 1 ν)
+Benitoite.Release.Refinement.SubstOk.upN {P : Program} {B : Builtins} {Ψ : StoreTy} {Q : NoFailCtx} {C : List TParam}
+  {Γ : Ctx} {Φ : List Pred} {Δ : Ctx} {Ξ : List Pred} {R0 : Option Ty} {ν : Nat → Val}
+  (h : SubstOk P B Ψ Q C Γ Φ Δ Ξ R0 ν) (hA : Builtins.ValueAssumptions P B) (hstore : Ψ.WF)
+  (hf : ∀ (p : Pred), p ∈ Φ → Entails (Δ.facts ++ Ξ) (predBind (valEnv ν).values p)) (ps : List Ty)
+  (hw : BinderTypes.WF C.length Γ ps) (hs : BinderTypes.Sorted Γ ps) :
+  SubstOk P B Ψ Q C (Γ.extendMany ps) (liftMany ps.length Φ) (Δ.extendMany (binderImages ν ps)) (liftMany ps.length Ξ)
+    (Option.map (Ty.shiftV ps.length 0) R0) (upSubst ps.length ν)
+Benitoite.Release.Refinement.SubstOk.shiftE {P : Program} {B : Builtins} {Ψ : StoreTy} {Q : NoFailCtx} {C : List TParam}
+  {Γ : Ctx} {Φ : List Pred} {Δ : Ctx} {Ξ : List Pred} {R0 : Option Ty} {ν : Nat → Val}
+  (h : SubstOk P B Ψ Q C Γ Φ Δ Ξ R0 ν) (hA : Builtins.TypeAssumptions P B) (hstore : Ψ.WF) (_hΓ : Ctx.WF 0 C.length Γ)
+  (_hΔ : Ctx.WF 0 C.length Δ) (extra : List TParam) :
+  SubstOk P B Ψ Q (extra ++ C) (Γ.shiftE extra.length) Φ (Δ.shiftE extra.length) Ξ
+    (Option.map (shiftTypes extra.length 0) R0) fun i => Val.shiftE extra.length (ν i)
+Benitoite.Release.Refinement.SubstOk.handler_clause {P : Program} {B : Builtins} {Ψ : StoreTy} {Q : NoFailCtx}
+  {C : List TParam} {Γ : Ctx} {Φ : List Pred} {Δ : Ctx} {Ξ : List Pred} {R0 : Option Ty} {ν : Nat → Val}
+  (h : SubstOk P B Ψ Q C Γ Φ Δ Ξ R0 ν) (hA : Builtins.SubstitutionAssumptions P B) (hw : Ψ.WF) (sg : OpSig) (hs : sg.WF)
+  (t : Ty) (e : Eff) :
+  SubstOk P B (hideBuilders Ψ) Q (sg.tparams ++ C) (sg.context Γ t e) (liftMany (sg.params.length + 1) Φ)
+    (sg.context Δ (substTyValues ν t) (substEffValues ν e)) (liftMany (sg.params.length + 1) Ξ)
+    (Option.map (fun r => Ty.shiftV (sg.params.length + 1) 0 (shiftTypes sg.tparams.length 0 r)) R0)
+    (upSubst (sg.params.length + 1) fun i => Val.shiftEAt sg.tparams.length 0 (ν i))
+Benitoite.Release.Refinement.SubstOk.handler_failure {P : Program} {B : Builtins} {Ψ : StoreTy} {Q : NoFailCtx}
+  {C : List TParam} {Γ : Ctx} {Φ : List Pred} {Δ : Ctx} {Ξ : List Pred} {R0 : Option Ty} {ν : Nat → Val}
+  (h : SubstOk P B Ψ Q C Γ Φ Δ Ξ R0 ν) (hA : Builtins.SubstitutionAssumptions P B) (hw : Ψ.WF) (E : Ty) :
+  SubstOk P B (hideBuilders Ψ) Q ({ } :: C) (failureContext Γ E) (liftMany 2 Φ) (failureContext Δ (substTyValues ν E))
+    (liftMany 2 Ξ) (Option.map (fun r => Ty.shiftV 2 0 (shiftTypes 1 0 r)) R0)
+    (upSubst 2 fun i => Val.shiftEAt 1 0 (ν i))
+Benitoite.Release.Refinement.ImageOk.narrow {P : Program} {B : Builtins} {store : StoreTy} {Q : NoFailCtx}
+  {C : List TParam} {Γ : Ctx} {Φ : List Pred} {Δ : Ctx} {Ξ : List Pred} {R0 : Option Ty} {ν : Nat → Val} {i : Nat}
+  {a : Ty} (h : ImageOk P B store Q C Γ Φ R0 ν i a) (hA : Builtins.ValueAssumptions P B) (hw : store.WF)
+  (hn : Ctx.Narrows P C Γ Φ Δ Ξ) : ImageOk P B store Q C Δ Ξ R0 ν i a
+BOUNDARY_DECLARATIONS 31
+'Benitoite.Release.Refinement.HandlerRows.all_clause_facts' depends on axioms: [propext, Quot.sound]
+'Benitoite.Release.Refinement.HandlerRows.clause_fact_kept' depends on axioms: [propext, Quot.sound]
+'Benitoite.Release.Refinement.HandlerRows.continuationStore' does not depend on any axioms
+'Benitoite.Release.Refinement.HandlerRows.continuationStore.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.HandlerRows.continuation_position' depends on axioms: [propext]
+'Benitoite.Release.Refinement.HandlerRows.dependentSig' does not depend on any axioms
+'Benitoite.Release.Refinement.HandlerRows.dependentSig.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.HandlerRows.dependent_local_wf' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.HandlerRows.empty_images' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.HandlerRows.error_position' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.HandlerRows.fact' does not depend on any axioms
+'Benitoite.Release.Refinement.HandlerRows.fact.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.HandlerRows.fail_fact_kept' depends on axioms: [propext, Quot.sound]
+'Benitoite.Release.Refinement.HandlerRows.failure_subst_syntax' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.HandlerRows.guard_fact_kept' depends on axioms: [propext, Quot.sound]
+'Benitoite.Release.Refinement.HandlerRows.kTy' does not depend on any axioms
+'Benitoite.Release.Refinement.HandlerRows.loc_image' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.HandlerRows.none_position' depends on axioms: [propext]
+'Benitoite.Release.Refinement.HandlerRows.pathBases_clause' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.HandlerRows.poly_outer_position' depends on axioms: [propext]
+'Benitoite.Release.Refinement.HandlerRows.poly_subst_syntax' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.HandlerRows.resumeL' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.HandlerRows.resumeVar' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.HandlerRows.resume_substituted' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.HandlerRows.standard_exhaustive' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.HandlerRows.standard_fields' depends on axioms: [propext, Quot.sound]
+'Benitoite.Release.Refinement.HandlerRows.typeImage' does not depend on any axioms
+'Benitoite.Release.Refinement.HandlerRows.unitTy' does not depend on any axioms
+'Benitoite.Release.Refinement.HandlerRows.unitTy.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.HandlerRows.var_image' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.HandlerRows.wrong_R_rejected' depends on axioms: [propext, Classical.choice, Quot.sound]

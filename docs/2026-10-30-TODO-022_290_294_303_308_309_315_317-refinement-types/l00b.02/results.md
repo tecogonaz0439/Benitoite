@@ -1044,3 +1044,238 @@ Val25/Comp16/Event3/Step76と保持値の49判断は起動表どおりである�
 - コマンド: `/usr/bin/time -l scripts/check.sh --level work --base 1874fe91aa3684662dca4c69b284ea9614b9fb56`（sandbox の外）。選ばれた単位は `formal_build`（`cd formal && lake build` と `sorry` を使う宣言の拒否）だけである。先に `formal/.lake/build` の `Benitoite/Release/Refinement` の生成物（lib と ir）を消した。
 - 結果: 終了0（selected checks passed）。外側の時間は44.41秒、最大常駐量は1,070,383,104バイト（約1.00 GiB）。
 - 計画からのずれ: なし。
+
+## `.02b-handlers`：多相節の信頼条件での停止（2026-10-31）
+
+この節は停止時点の記録である。取りまとめの承認後に再開し、下記「再開後の完成」の節のとおり本番の実装と群末の検査を終えた。
+
+**この群は未完了である。** 指定された第12.2節の14導出を実装する前に、SubstOk.shiftEの通常値の像を移すためのsat/admitsの条件の不足を、本番の型付け判断で再現した。主な定理が読む信頼条件に関わるため、起動依頼の停止条件とsignaturesのS1に従い止めた。時間超過ではない。B_WORKは `5a602b7a2adc40e487f60c8ffc738d2f4595289c`、ブランチは `m014/l00b.02b-handlers` という起動依頼の指定値を使用した。gitの照合・操作・切替・コミットは行っていない。
+
+### 残した定義・補題と本番の状態
+
+本番Leanと既定importを変更していない。14導出、PatTy等、三族・TypedFacts・Declared・Ground・Captureの追加は0件であり、前群のV26/C15/Vs2/Each2/TelArgs2/CheckedWitness2の49構成子を維持した。AtCallAdmissibleの補助1構成子もそのままである。処理系・設計書・plan・旧Releaseは変更していない。
+
+[補助Lean](02b-handlers-contract-boundary.lean)に次を証明した。名前の接頭辞は `Benitoite.Release.Refinement.HandlerContractBoundary.` である。これらは停止点の証拠であり、新しい本番の公開APIではない。
+
+| 補助入力の群 | 閉じた定義・補題 |
+|---|---|
+| 閉じた型の例 | P/B、value_conditions/core_conditions、integer_annotation/source_typed、source_context_wf/target_context_wf、source_subst_ok、shape_unchanged、target_untypable/no_shifted_typed_image/no_shifted_subst_ok。現在のCoreAssumptionsを満たしても、型パラメータの先頭追加で通常値の像の型付けを失う |
+| 開いた型の例 | Open.B/element/value/sourceCtx/shiftedCtx/ν、Open.core_rename/zero_values/zero_rename/value_conditions/core_conditions/sat_local/element_annotation/source_typed、Open.setCore/setCore_le/set_constraint、Open.shifted_element_rejected/target_untypable/source_subst_ok/no_shifted_subst_ok。sat_local相当を満たしてもSet[α₀]→Set[α₁]の移送を導けない |
+| 検査 | Leanの環境から補助入力の全52宣言を列挙し、公理依存を照合した。定義・手書きの補題・生成された等式定理の数を分けず、この52は機械が列挙した全宣言数として記録する |
+
+### 場合の数の予定と実際
+
+| 対象 | この群の予定 | 今回の実際 |
+|---|---|---|
+| 計算・腕・節・像 | Cの5、Arms3、Clauses2、Failure1、ImageOk3の計14導出を追加 | **0/14**。現行49導出を維持 |
+| 三族 | 追加14場合、累計63判断を被覆 | 未着手。移動の根は前群の49とAtCall補助1、置換/narrowingの根は各47とAtCall補助1のまま |
+| PatTy/PatTys/AltsTy・Inhabits/Exhaustive | 腕が読む全形と移動・置換 | 追加0件 |
+| TypedFacts | V26のまま維持 | 追加0件。前群の全入口を変更していない |
+| R0・None・継続の改名・多相束縛・guardの全Φ | 同じ群で閉じる | 実装・境界の照合とも未着手。今回の二反例をこれらの完了証拠へ加算しない |
+
+### 補助契約と停止点の判断
+
+[signatures第28節](signatures.md)と[停止点の契約](02b-handlers-contract.md)に、採った検証方法・理由・採らなかった扱いを記録した。通常値の像を閉じた型へ限定せず、R0・None・guard・多相節の契約を保つ。Ctx.WFの未定義の予約名を小さい同名の代用で実装したとはしない。型付けの不成立はV_Sub/V_Refineも含めて証明した。
+
+推す再開案は、型パラメータの先頭追加に対するsat/admits保存を信頼条件へ明記する**案A**である。これは値の改名・値置換の四保存則とは別であり、まだ採っていない。CoreAssumptionsの意味の変更に当たるため、取りまとめ・設計者へ判断を戻す。代案の具体的な構造への制約の変更、ClosedTyへの制限、移送先の型付けの外部前提化も停止点の契約に記した。
+
+### ビルド・公理依存・入力
+
+[台本](02b-handlers-validate.py)、[検査全体](02b-handlers-validation.json)、[コマンドと時刻](02b-handlers-commands.json)、[全407入力のハッシュ](02b-handlers-inputs-final.json)、[補助入力のハッシュ](02b-handlers-artifact-inputs.json)を保存した。本番入力は開始時・検査前・検査後で一致した。
+
+| 検査 | 結果・範囲 | 証拠 |
+|---|---|---|
+| 旧・並置体系と全既定ターゲット | `cd formal && lake build`、**終了0、650 jobs、0.156秒**。既存成果物の再利用であり、全ファイルを新たに検査した時間とはしない。既存のlint警告は再表示された。以後は本番入力が変わっていないため、この一回を引用した | [出力](02b-handlers-build.log) |
+| 停止点の補助入力 | `lake env lean -M 12288`、**終了0、1.359秒、52宣言**。現行CoreAssumptionsの充足と、二つの実際のSubstOkの正・負の証明。旧sat_localとの違いも含む | [入力](02b-handlers-contract-boundary.lean) / [出力](02b-handlers-contract-boundary.log) |
+| A-L | `02b-at-r2-axioms.lean`を同一本番入力へ再実行、**終了0、7.958秒**。77モジュールと旧指定7宣言、計**8,979宣言**。一意な数とモジュール別件数+7が一致 | [集計](02b-handlers-axioms-summary.json) |
+| 固定版・上限 | Lean **4.34.1**。既定lakefileのmoreLeanArgsと補助入力・A-Lは **-M 12288**。固定版・設定を変更していない | [版](02b-handlers-lean-version.log) / [入力一覧](02b-handlers-inputs-final.json) |
+| 公理・抜け道 | 本番8,979宣言と補助入力52宣言とも、**propext・Quot.sound・Classical.choiceのみ**。sorryAx・独自公理・許可外依存はない。本番Refinementのsorry/admit/axiom/native_decide/implemented_by/unsafe/partialの語の検出は0件 | [検査全体](02b-handlers-validation.json) |
+| work・RSS・全比較・レビュー | workは依頼に従い取りまとめへ残した。RSSは未取得（計画上の非採取）。Rust・全比較・独立レビュー・受け入れは未実施 | [停止点のレビュー依頼](../reviews/RV-L00b.02b-handlers-request.md) |
+
+A-Lの全出力は **921,882バイト** なので `<tmp>` へ置き、[large-records](large-records.md)にSHA-256と大きさを記録した。本番差分は0件なので差分の写しは作っていない。大きい生の記録の絶対パスは文書と台本に書いていない。
+
+途中の補助入力の型検査では、依存した添字を固定した帰納法の停止性、未定義のCtx.WFの予約名、rawBindとrawSubstVの交換の書換え、全宣言を列挙するLeanメタコードで失敗し、補助入力を直した。最後の成功には回復用sorryAxを含まない。途中の入力の写し・時計は未採取であり、途中の結果を最終入力の再現証拠として使わない。本番の規則・結論を弱める変更は行っていない。
+
+### テストの作成時の関門
+
+持ち主は本番の型付け・SubstOkと組込みの信頼条件であり、検査する独立した契約は「現行の信頼条件とWFな型付き像から、多相節の型パラメータの先頭追加が成立するか」である。値だけの四保存則又はsat_localを型の先頭追加に流用すると失敗する例を、実際の型付き導出とその否定で示した。既存の境界は型の先頭追加を扱わないため、この不足を捕まえない。テスト用の本番API・フラグ・差し込み口は加えていない。
+
+### 残りと送り先、計画との差
+
+| 義務 | 今回の判定 | 担当・時期 |
+|---|---|---|
+| 群末の14導出と全相互補題 | **未完了**。前群の状態を維持し、補助入力に二反例を保存した | 信頼条件の判断後、同じ`.02b-handlers`で再開。L10/L20へ再配賦して完了にしない |
+| RV-L00a.12中1とR0の拘束 | **未着手** | 同じ群でImageOk.contVar/contLoc、hide/up/None、CQ/Arms/Clauses/Failureの公開署名を一緒に閉じる |
+| RV-L00b.02b-at中1・中2のhandlersの担当分 | **未着手** | 同じ群でPathBasesの節と修正済みissueの遷移へ接続。全状態の進行・保存はL20/L70 |
+| AtErrorの構成子と網羅性 | **未着手** | 同じ群でvalues/values_typedを使い、内部・公開の一覧と網羅性を一致させる。U02と文言の最終対応はL50/L70 |
+| O016のA-L | 現在の本番8,979宣言と補助52宣言を検査 | 群再開後の変更にも再実行し、後続各L段の義務は維持 |
+| O010/O160の所要 | 下記の外側の時間だけを取得 | 能動時間・待ちの較正と改造全体の見込み更新は取りまとめ |
+| 次の閉包・状態の群 | **未起動** | handlersが閉じるまで進まない。前群からのkind表付きD29・fn/Tel・場所のDeclared・外部TelArgsの義務をそのまま引き継ぐ |
+| 独立レビュー・受け入れ | 未実施 | 取りまとめ・設計者。今回の検査を独立レビューと数えない |
+
+予定との差は、14導出の実装前に信頼条件で停止したことである。構成子や利用者の書ける形、提供範囲、主な定理の前提・結論は変更していない。候補の新しい信頼条件も採用していない。作業全体の開始は **2026-10-31 09:52:02 JST**、最終検査終了は **09:58:44 JST**、外側は **402.46秒（約6.71分）** である。文書の仕上げと提出前の照合までの外側の時間は[受け渡し](02b-handlers-delivery.json)へ記録する。能動時間と待ちは分離しておらず、能動時間の実測と扱わない。12時間には達していない。
+
+
+## `.02b-handlers`：再開後の完成（2026-10-31）
+
+初回提出時の結果を以下に残す。独立レビューで判明したguardの文脈と標準エラーの一覧の問題は、末尾の「レビューの所見の対応」で修正した。現在の契約はsignatures第29節の改訂後の行を正とする。
+
+第12.2節の14導出と、移動・値の相互置換・narrowingの追加の場合を本番へ置いた。取りまとめが採った一般の型パラメータ改名の保存をCoreAssumptionsへ明記し、停止点の二反例の表が現行の条件では成立しないことを証明した。新しい停止点はない。B_WORKは `5a602b7a2adc40e487f60c8ffc738d2f4595289c`、指定ブランチは `m014/l00b.02b-handlers` である。gitの操作は行っていない。
+
+### 閉じた定義と補題
+
+| 対象 | 本番へ置いた内容 |
+|---|---|
+| 信頼条件 | TParam.Contains、TypeParamRenamingとid/prefix/under/insert/suffix、全型・Tel・型列・行のrawRenameTypes/renameTypes。Builtins.TypeAssumptionsの一般のsat_renameTypes/admits_renameTypesと旧sat_subst/admits_subst、恒等改名からのsat_local/admits_local、先頭追加の特殊化、SubstitutionAssumptionsとCoreAssumptionsへの接続 |
+| 型付け | C_Match/Handle/Handle_Fail/Resume/ResumeL、Armsのnil/plain/guarded、Clausesのnil/cons、Failure.one、ImageOkのordinary/contLoc/contVar。HasTypeArms/ClausesのQemptyの略記も置いた |
+| パターン・網羅性 | PatTy7/PatTys2、AltsTyのslotsの順列・selectSlotsとwitness、Inhabits23/All2/Each2、Exhaustive。値の移動/置換と型の移動、unguardedPatsの各構文操作との交換 |
+| 値の移動 | FullShiftMap、逐次入力列・None・型パラメータ追加の下の移送、continuation/節/Failの文脈と全Φの移送。V/Vs/Each/CQ/Arms/Clauses/Failure/TelArgs/AtCallとCheckedWitnessの相互の場合 |
+| 型の移動 | TypeShiftOrder/Algebra/Context/Contracts/Kinds/Exchange/Typing、宣言とkind/Annotationの移動、型の挿入と値の改名/置換/Tel.open/argumentsの交換。通常値の型付き像とSubstOk.shiftEAt/shiftEへ接続 |
+| 値の相互置換 | SubstOk.hide/upValue/up/upNValue/upN/extendNone/params/shiftE/clause、ImageOkの3場合のlift/liftParams/shiftEAt/store移送、逐次のbinderImagesとTransport.many_values/clause_values。V/Vs/Each/CQ/Arms/Clauses/Failure/TelArgsのsubstとNone版。CQ/Arms/Clauses/FailureのR0を結論のRの像へ拘束 |
+| narrowing・正則性 | Ctx.ContMapと、双方の型のWFを受けるCtx.Narrows.here、全型付け族とImageOk.narrow。CQ/ArmsのDeclaredとResumeのDeclared、hide/空ストア移送をTypingStoreへ分けた |
+| PathBasesと標準エラー | CoreAssumptions.pathBases_clause_signature、HasTypeCQ.resume_location_contract。atErrorConstructors/Program.StandardErrorComplete/atErrorPattern、PatTy/PatTys.variables、AtError.match_pattern/match_pattern_typed、Exhaustive.atError。七欄をvalues/values_typedと同じ形で照合 |
+
+[公開宣言の一覧](02b-handlers-r2-public-api.md)は新規・変更32モジュールの公開の手書き宣言を列挙する。本番の新規ファイルは19、既存の変更は13である。[変更のハッシュと一覧](02b-handlers-r2-source-changes.json)には既定importの更新も含む。新しいVal/Comp/Arm/Clauseの構成子は追加しておらず、既存のGround/Capture/Source/構文操作は元からこれらの形を持つ。Clause.substListだけは多相の像の型パラメータ移動を修正し、全構文の値改名との交換も証明した。Val25/Comp16/Arm1/Clause2/Step76を維持したことをLeanの環境で照合した。
+
+### 場合の数の予定と実際
+
+| 対象 | 予定 | 実際 |
+|---|---:|---:|
+| Cの追加 | 5 | 5、Cの累計20 |
+| Arms/Clauses/Failure | 3/2/1 | 3/2/1 |
+| ImageOk | 3 | 3 |
+| 起動単位の導出の追加 | 14 | **14/14** |
+| 三族の被覆義務 | 各49+14=63 | **各63**。内訳は下記のとおり |
+| PatTy/PatTys | 7/2 | 7/2、値の移動・置換と型の移動を閉じた |
+| Inhabits/All/Each | 腕の参照に必要な全形 | 23/2/2 |
+| TypedFacts | V26を保持 | V26を保持。値の新規規則は0件 |
+
+63の内訳は、V26/C20/Vs2/Each2/TelArgs2/Arms3/Clauses2/Failure1の58、CheckedWitness2、ImageOk3である。移動はCheckedWitnessも相互に消去する。置換・narrowing・型の移動は、保持要求の同じ閉じた証拠を再利用する。ImageOkはlift/liftParams・hide/up/store/shiftEAt・narrowの補助で3場合を処理する。**63個の相互matchを書いたという件数ではない。** AtCallAdmissibleの補助1構成子は別記し、63へ加算しない。[場合数の記録](02b-handlers-r2-case-inventory.json)とA-Lの構成子数の照合を参照する。
+
+### 補助契約の選択と計画との差
+
+[signatures第29節](signatures.md)に、各案・理由・捨てた案を記録した。採った細部は次のとおりである。
+
+- R0はCQ/Arms/Clauses/Failureの結論のRの像へ固定する。C_ResumeLとその逆転は同じRを要求する。contVarは改名先のlookupを持ち、contLocは閉じた型・R0・場所の型を照合する。
+- 置換の公開入口はSubstitutionAssumptionsを受ける。多相節の下では、置換像の型を移動してから値の束縛へ持ち上げる。通常の値の像を閉じた型へ制限しない。
+- 操作の入力は宣言順の逐次の束縛とし、前の入力への依存を保つ。通常節は全入力の後の継続、Failはerrorの後のNoneを保持する。R/結果/行は型と値の双方の束縛数を反映する。
+- guardはhideBuilders/hideConts・R=none・空の局所文脈を使い、全Φは保持する。通常節とFail節も全Φを持つ。unguardedPatsだけで網羅性を検査する。
+- Resumeの葉は結果のDeclaredを受ける。narrowingのhereは元と先の型のWFを受け、継続のlookupを同じ型へ写す。
+- 一般の型改名はnormする。生のshiftTypesについては順序保存を証明して正規化と交換する。PatTyのdataの欄は宣言の閉じた型パラメータの範囲で検査し、Inhabitsの篩はcarrierからの保守的な導入とする。
+- 標準エラーは、現在の宣言表の構成子一覧と内部一覧の一致を明示してExhaustiveへ接続する。U02と文言の最終対応は既定のL50/L70に残す。StandardErrorの一構成子の存在だけから他がないとは仮定しない。
+- 非公開のTypedImages/ContextMapと相互証明は実装補助のままとし、交換・束縛・型/ストア移送の共有補助を別モジュールへ分けた。
+
+予定との差は、先に停止した後、承認された一般の型改名則と旧四欄の移行を同じ変更へ含めたこと、型の移動の相互補題と交換を独立モジュールに分けたことである。これらの信頼条件の意味の変更は、担当の補助契約の裁量だけで決めたものではない。主な定理の結論・提供範囲・利用者の書ける形・精密な外部状態は変更せず、新しい公理も置いていない。
+
+### 群末の検査と証拠
+
+[台本](02b-handlers-r2-validate.py)、[コマンドと所要](02b-handlers-r2-commands.json)、[検査全体](02b-handlers-r2-validation.json)、[全426入力のハッシュ](02b-handlers-r2-inputs-final.json)、[補助入力のハッシュ](02b-handlers-r2-artifact-inputs.json)を保存した。検査中の本番入力の変更は0件で、旧Release・固定版・lakefileを変更していない。
+
+| 検査 | 結果 | 証拠 |
+|---|---|---|
+| 全既定ターゲット | `cd formal && lake build`、**終了0、669 jobs、33.363秒**。関係する変更モジュールを再ビルドした。旧のInterval等の既存lint警告は再表示された | [出力](02b-handlers-r2-build.log) |
+| 二反例の保存と現条件による除外 | `lake env lean -M 12288`、**終了0、1.410秒、69宣言**。PriorCoreAssumptionsの充足と旧反例、closed_table_excluded/open_table_excluded | [入力](02b-handlers-r2-boundary.lean) / [出力](02b-handlers-r2-boundary.log) |
+| 行の境界 | 同じ上限で **終了0、0.828秒、31宣言**。R0の不一致を部分型/効果拡大の下でも拒否、contVar/contLocとResumeの置換、None/error/continuation/外側の位置、先行する入力に依存する多相の署名、型付き像の型移動、guard/節/Failの非空Φ、AtError七欄とExhaustive、PathBasesのClauseSig、公開署名の#check | [入力](02b-handlers-r2-rows.lean) / [出力](02b-handlers-r2-rows.log) |
+| A-L | 同じ上限で **終了0、9.558秒**。本番Refinementの全96モジュールと旧指定7宣言、計 **10,307宣言**。一意な件数とモジュール別件数+7が一致 | [入力](02b-handlers-r2-axioms.lean) / [集計](02b-handlers-r2-axioms-summary.json) |
+| 公理と抜け道 | 本番10,307宣言と境界69+31宣言の依存は **propext・Quot.sound・Classical.choiceのみ**。許可外依存、sorryAx、独自公理は0件。本番Refinementのsorry/admit/axiom/native_decide/implemented_by/unsafe/partialの語の検出も0件 | [検査全体](02b-handlers-r2-validation.json) |
+| 固定版と上限 | Lean **4.34.1**。既定のmoreLeanArgsと単独検査は **-M 12288**。RSSは計画上の非採取で未取得 | [版](02b-handlers-r2-lean-version.log) |
+
+A-Lは生成された宣言と非公開の証明も含めて全件を検査した。旧指定7宣言には旧三モデルのassumptionsを含むが、新しいTypeAssumptionsを三モデルが満たす証明まで今回完成したという意味ではない。新しい三モデルの充足はL50へ残る。
+
+公理依存の全出力は **1,070,864バイト** なので `<tmp>` に保存し、[large-records](large-records.md)に大きさとSHA-256を記録した。文書と台本に手元の絶対パスを残していない。workは依頼どおり実行していない。
+
+途中の検査では、importの循環、raw型移動と正規化の順序、Noneの二重移動、相互の補題の暗黙引数、旧境界でのValueAssumptionsからSubstitutionAssumptionsへの更新漏れ、補助入力の定義的等式に関する失敗を検出して直した。上表は全修正後の入力に対する結果である。停止時点の元の反例入力は保管し、現行API用の写しで旧条件の充足と新条件による除外を照合した。
+
+検査の作成時の関門では、本番のR0・束縛・表の契約を持ち主とした。既存の境界には多相節の像の型移動と新しいResume/Arms/Clausesの行がなかったため、今回の補助入力を加えた。専用の本番フラグや検査用のAPIは追加していない。モデルの充足と全状態の保存を、小さい境界の証明で代用していない。
+
+### 残りと次群への申し送り
+
+| 残る義務・手順 | 担当・閉じる条件 | 見込み時間 |
+|---|---|---|
+| 閉包・状態の8導出 | 次の`.02b-closures`。V_DependentLam/Closure、C_DependentApp、TelBody/CaptureOk/ClosureTy/DependentClosureTyとContTy/StoreOk/StateTy。今回の63のうち新規の場合だけを増やす | 既定の3〜6時間 |
+| 閉包の三族と観測 | 次群。HasTypeVQ.shift_types_varの不可能な値の枝を新しい値規則へ追随する。捕捉したΓ/Φ・型付き像・依存βの交換とhideを接続する | 上記の内数 |
+| 外部適用と場所のDeclared | 次群でVs+argumentsからTelArgsへの逆向き、StoreOk等のDeclaredを供給。保存への適用はL20。kind表付きD29とfn/Telの等号の既定の送り先を維持 | 上記の内数・後段は不明 |
+| handle/resume/drop・PathBasesの全状態保存 | L20/L70。今回閉じた一般の置換・up・パターンの追随を再配賦しない | 不明 |
+| 型改名・具体化と三モデル | L50。一般の制約包含を保つ改名、旧sat_subst/admits_substと値の四保存則を全モデルで示す | 不明 |
+| 標準エラーの公開形・文言 | L50/L70。U02の公開形とP.cons/StandardError/RuntimeMatch/観測を一括して照合する | 不明 |
+| D28の対照と報告 | .15・取りまとめ。今回の一般の型改名則による意味の変更を設計者へ報告する | 不明 |
+| 独立レビュー | 取りまとめ・レビュー担当。[群末の依頼](../reviews/RV-L00b.02b-handlers-request.md)の観点と全新規ファイルを確認する | 不明 |
+| 作業末のwork | 取りまとめ。共通入口の形式化ビルドと禁止宣言の検査を実行する。今回の担当は実行していない | 不明 |
+| 受け入れ・取り込み | 取りまとめ・設計者。レビューの所見と上記の残る義務を確認する | 不明 |
+
+再開の開始は **2026-10-31 10:03:24 JST**、群末の最終検査終了は **11:28:14 JST**、外側は **5,090.43秒（約84.84分）** である。文書と提出時の照合を含む外側の時間は受け渡しの記録を正とする。能動時間と待ちを分離しておらず、L10/L20から移した枠の能動時間の実測とは扱わない。12時間の停止条件には達していない。git、Rustの処理系、現行設計書、plan.mdの変更、work、次群の実装は行っていない。
+
+
+### レビューの所見の対応（2026-10-31）
+
+[独立レビューRV-L00b.02b-handlers](../reviews/RV-L00b.02b-handlers.md)の条件付き可（重1・中1・軽3）と、planの2026-10-31の先頭の判断に従い、以下を修正した。前回のguardの文脈は利用者の書ける形を狭めていたため撤回した。主な定理の前提・結論、CoreAssumptions、新しい公理、提供範囲、精密な外部状態は変更していない。停止を要する新しい変更はない。
+
+| 所見 | 直した箇所・対応 | 判定と残る義務 |
+|---|---|---|
+| **重1：guardの文脈** | TypingのHasTypeArmsQ.guardedを元のΨと `localExtend δ.length Δ` に戻した。hideConts・R=none・Eff.empty・`liftMany δ.length Φ` は保持。TypingShift/SubstTyping/Narrowingのguardの場合と、TypeShiftTypingの型パラメータの移動の同じ場合を閉じ直した。narrowingはストアを変えずに継続を隠すContextMap.hideContsを使う | **修正済み**。signatures第29.3節の採った案・捨てた案を改訂し、旧のhideBuilders/空局所文脈の案を撤回した。K_Guardの型付けも同じΨ/局所文脈を使う義務を第24節へ追加 |
+| **中1：標準エラーの網羅性** | AtPatternsのProgram.StandardErrorCompleteに `cs : List (ConName × ConDecl)` を追加。各項目のlookup・data・arityと、同じdataの全構成子の収載を検査する。atErrorConstructors csは各構成子の全変数のパターン列、atErrorPatterns csは内部At用のパターンを先頭へ加えた列とした。Exhaustive.atErrorをその全列について一般化 | **修正済み**。At/OutsideScopeの2構成子を持つ表でStandardErrorCompleteとStandardErrorを証明し、一般化したExhaustiveを適用した。OutsideScopeの値と内部の.atError値の双方を覆う。Atだけの列ではOutsideScopeを覆えないことも保存。U02の公開形・文言の最終照合はL50/L70 |
+| **軽1：D29の正則性の供給** | 第24節の義務表に、C_Resumeの結果のDeclared、C_ResumeLの結果のDeclared、通常節のOpSig.WF、Fail節のAnnotation、空の腕のAnnotationを**各一行**で追加。旧導出とProgram/文脈/場所の正則性から供給する道筋を明記 | **文書対応済み**。実際のD29の埋め込みはL20/L70。Programの正則性とStoreOk等は.03・次群を依存とし、内側の節から外側の継続への二重の移動も照合する |
+| **軽2：sat_localの旧欄との差** | 第29.1節に、旧欄のWFだけと、現在のCおよびC++extraの両側のAnnotation（Sorted・Declaredを含む）との差を明記。admits_localも両側のTypeAnnotationsを受けることを記した | **文書対応済み**。L20で旧証明を移す各使用箇所で供給し、Annotationを導けない場合は取りまとめへ報告する。信頼条件自体は今回変更していない |
+| **軽3：篩の網羅性の後の変更** | 第24節と第29.4節のL10/L40/L70の行へ、C_MatchのExhaustiveの前提又はInhabits.refinedの定義を変更し、三族と網羅性の移送の該当場合を同じ変更で閉じ直すことを明記 | **文書対応済み**。Month・空型・非空List・長さを読むD27の網羅性の実装は既定の後続の担当であり、今回C_Match/Inhabitsを変更したとは数えない |
+
+今回の本番の変更は既存6ファイル（AtPatterns、Typing、TypingShift、SubstTyping、Narrowing、TypeShiftTyping）で、新規の本番ファイルはない。[修正後の公開署名](02b-handlers-r3-public-api.md)と[変更のハッシュ](02b-handlers-r3-source-changes.json)を置いた。導出の構成子数は14追加・累計63のままである。
+
+[境界の補助入力](02b-handlers-r3-boundary.lean)では、パターン束縛の外側のStringBuilderへ `.bound 1` でlengthを行うguardと、そのguardを持つ腕の型付けを示した。元のストアを読む `.loc 0` の専用操作も示した。さらに同じ腕について、値の移動、値の相互置換、Noneの下でIntegerを篩付きIntegerへ狭めるnarrowingを適用した。これにより、局所文脈だけでなく元のΨを残す修正も検査した。
+
+同じ入力にAtとOutsideScopeの表を置いた。OutsideScopeの二つのString欄と内部Atの七欄をそれぞれのパターンで覆い、Atだけの列の非網羅性も証明した。元の単一構成子用の前提を、D61に従う表にも成立するものとして引用していない。csの条件はExhaustive.atErrorの補助の前提だけであり、C_Matchや主な定理へ一覧の前提を追加していない。
+
+#### ビルド・公理依存・再現入力
+
+[検査台本](02b-handlers-r3-validate.py)、[コマンドと所要](02b-handlers-r3-commands.json)、[検査全体](02b-handlers-r3-validation.json)、[全426本番入力](02b-handlers-r3-inputs-final.json)、[補助入力のハッシュ](02b-handlers-r3-artifact-inputs.json)を保存した。
+
+| 検査 | 結果・範囲 |
+|---|---|
+| 既定ビルド | `cd formal && lake build`、**終了0、669 jobs、0.152秒**。修正した関係モジュールは途中のビルドで検査済みであり、最終回はその成果物を再利用した。既存のInterval等のlint警告は再表示された。[出力](02b-handlers-r3-build.log) |
+| 所見の境界 | `lake env lean -M 12288`、**終了0、34宣言、0.871秒**。guardの構築器操作、三族の適用、At/OutsideScopeと内部Atの網羅性。[出力](02b-handlers-r3-boundary.log) |
+| R0・None・Φ等の回帰 | 同じ上限で **終了0、31宣言、0.815秒**。r2の行の境界の現行API用の写しで、標準エラーの一覧の引数だけを追随。[入力](02b-handlers-r3-rows.lean) / [出力](02b-handlers-r3-rows.log) |
+| 旧二反例の除外の回帰 | 同じ上限で **終了0、69宣言、1.266秒**。r2の同じ反例入力を再実行。[出力](02b-handlers-r3-prior-counterexamples.log) |
+| A-L | 同じ上限で **終了0、9.316秒**。r2の全件列挙の台本を現行入力へ適用し、本番Refinementの96モジュールと旧指定7宣言、計 **10,308宣言**を検査。一意な件数とモジュール別件数+7が一致。[集計](02b-handlers-r3-axioms-summary.json) |
+| 公理・抜け道 | 本番10,308宣言と境界34+31+69＝134宣言の依存は **propext・Quot.sound・Classical.choiceのみ**。sorryAx・許可外依存・独自公理は0件。本番Refinementの禁止トークンの検出も0件 |
+| 入力と範囲 | 検査中の全426本番入力は不変。planとレビュー原本も開始時のハッシュと一致。旧Release・処理系・設計書・CoreAssumptions・固定版・lakefileを変更していない。work・次群は未実行 |
+
+公理依存の全出力は **1,070,968バイト** なので `<tmp>` に置いた。SHA-256は `58aefaae39d9a1c3d0e54c1897abc9d94e8466c2b81394435ad151efe8db5e82` で、[large-records](large-records.md)にも追記した。文書と台本に手元の絶対パスは書いていない。
+
+途中の局所検査では、ContextMap.hideContsと同名の構文操作の名前解決、補助入力の暗黙の型と具体的な定数の推論で失敗し、修正した。上の表は全修正後の成功であり、途中の回復用sorryAxを含まない。
+
+検査の作成時の関門では、guardの公開の型付け規則と、宣言表から得る一覧による網羅性を持ち主とした。旧r2の境界はguardの構築器操作もOutsideScopeも含まなかったため、今回の誤りを検出できなかった。専用の本番フラグや検査用のAPIは増やしていない。
+
+開始は **2026-10-31 11:46:27 JST**、最終検査終了は **11:52:36 JST**、外側は **369.69秒（約6.16分）** である。文書と提出時の照合までを含む時間は受け渡しの記録を正とする。能動時間と待ちは分離しておらず、1〜2時間の見込みを更新するための能動時間の実測とは扱わない。
+
+今回の新規の改造内ファイルは次の一覧にまとめる。初回/r2の記録は保管し、現在の署名の検査にはr3を使う。レビュー原本は変更していない。
+
+- [02b-handlers-r3-artifact-inputs.json](02b-handlers-r3-artifact-inputs.json)
+- [02b-handlers-r3-axioms-summary.json](02b-handlers-r3-axioms-summary.json)
+- [02b-handlers-r3-boundary.lean](02b-handlers-r3-boundary.lean)
+- [02b-handlers-r3-boundary.log](02b-handlers-r3-boundary.log)
+- [02b-handlers-r3-build.log](02b-handlers-r3-build.log)
+- [02b-handlers-r3-commands.json](02b-handlers-r3-commands.json)
+- [02b-handlers-r3-delivery.json](02b-handlers-r3-delivery.json)
+- [02b-handlers-r3-final-check.json](02b-handlers-r3-final-check.json)
+- [02b-handlers-r3-inputs-final.json](02b-handlers-r3-inputs-final.json)
+- [02b-handlers-r3-lean-version.log](02b-handlers-r3-lean-version.log)
+- [02b-handlers-r3-prior-counterexamples.log](02b-handlers-r3-prior-counterexamples.log)
+- [02b-handlers-r3-public-api.md](02b-handlers-r3-public-api.md)
+- [02b-handlers-r3-rows.lean](02b-handlers-r3-rows.lean)
+- [02b-handlers-r3-rows.log](02b-handlers-r3-rows.log)
+- [02b-handlers-r3-source-changes.json](02b-handlers-r3-source-changes.json)
+- [02b-handlers-r3-start.json](02b-handlers-r3-start.json)
+- [02b-handlers-r3-validate.py](02b-handlers-r3-validate.py)
+- [02b-handlers-r3-validation.json](02b-handlers-r3-validation.json)
+
+| 残る手順 | 担当・内容 | 見込み時間 |
+|---|---|---|
+| 所見への対応の再確認 | 取りまとめ・レビュー担当。重1/中1の境界と軽の送り先を確認する | 不明 |
+| 作業末のwork | 取りまとめ。今回の担当は実行していない | 不明 |
+| 受け入れと次群の起動 | 取りまとめ・設計者。今回の修正を受け入れた後、閉包・状態の群を別途起動する | 受け入れは不明、次群は既定の3〜6時間 |
+
+## .02b-handlers の作業末の work（取りまとめ、2026-10-31）
+
+- 基準: `5a602b7a2adc40e487f60c8ffc738d2f4595289c`。作業ツリーは RV-L00b.02b-handlers の所見の対応（本番の Lean の修正を含む）を終えた状態。
+- コマンド: `/usr/bin/time -l scripts/check.sh --level work --base 5a602b7a2adc40e487f60c8ffc738d2f4595289c`（sandbox の外）。選ばれた単位は `formal_build`（`cd formal && lake build` と `sorry` を使う宣言の拒否）だけである。先に `formal/.lake/build` の `Benitoite/Release/Refinement` の生成物（lib と ir）を消した。
+- 結果: 終了0（selected checks passed）。外側の時間は53.65秒、最大常駐量は1,078,444,032バイト（約1.00 GiB）。
+- 計画からのずれ: なし。

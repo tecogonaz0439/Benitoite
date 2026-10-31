@@ -2254,13 +2254,29 @@ planの同日の先頭の判断に従う。以下の「今回」はレビュー�
 
 | 所見・義務 | 今回の対応 | 後続の担当・閉じる条件 |
 |---|---|---|
-| 中1 / D28のPathBases署名と旧四欄 | CoreAssumptions.pathBases_shapeとPrimSig.PathBasesShapeを追加し、opEff_io/effect_opsにpathBasesを含め、store_admits/store_shapeから除いた。issuePathBases_typed、pathBases_empty_arguments/empty_values、pathBases_apply_destinationを本番で証明した | **L20・L70**で全状態の保存・進行へ接続する。**.02b-handlers**で節の型付けとの接続を行い、**L50**で三モデルの充足を示す。**.15・取りまとめ**でD28/07-04の対照と設計者への報告を行う |
+| 中1 / D28のPathBases署名と旧四欄 | CoreAssumptions.pathBases_shapeとPrimSig.PathBasesShapeを追加し、opEff_io/effect_opsにpathBasesを含め、store_admits/store_shapeから除いた。issuePathBases_typed、pathBases_empty_arguments/empty_values、pathBases_apply_destinationを本番で証明した | **L20・L70**で全状態の保存・進行へ接続する。**.02b-handlers**の節の型付けへの接続は第29.4節で完了。**L50**で三モデルの充足を示す。**.15・取りまとめ**でD28/07-04の対照と設計者への報告を行う |
 | 中1 / O060の事象と効果 | Event.Coveredとcovered_pathBasesをSemanticsに置き、pathBasesはProcess.EnvironmentのTopの被覆を要求する。IOの効果名の範囲は存在量化し、対象健全性そのものをこの定義で仮定しない | **L20・L70**で事象と継続末尾の効果を接続し、空効果から事象を出さないeffect_soundnessを証明する。結論の形は変更しない。IOの対象の許可は既定のL50の担当である |
-| 中2 / 発行のhandlerの再検査 | E_IssuePathBasesとstepから検査を削除した。handlerを持つ旧handled_stuck相当の状態で、Stepと実行器の双方の遷移を境界で示した | **.02b-handlers・L20**はこの遷移を使って状態との接続を行う。Sourceからissueを作る経路は追加していない |
-| 軽1 / エラーの文言・公開構成子・網羅性 | 内部の七String欄とScope.ScopeError.Atを今回公開APIとして確定したとは扱わない | **L50・L70**でtextFieldsを処理系の文言の契約から定める表示関数へ差し替え、U02で決めた公開構成子の形にStandardError・RuntimeMatch・TypedFactsをそろえる。**.02b-handlers**の網羅性では内部と公開の構成子一覧を一致させる。reprStrの一致だけを処理系の文言の対応と数えない |
+| 中2 / 発行のhandlerの再検査 | E_IssuePathBasesとstepから検査を削除した。handlerを持つ旧handled_stuck相当の状態で、Stepと実行器の双方の遷移を境界で示した | **.02b-handlers**の節への接続は第29.4節で完了。**L20**はこの遷移を状態へ接続する。Sourceからissueを作る経路は追加していない |
+| 軽1 / エラーの文言・公開構成子・網羅性 | 内部の七String欄とScope.ScopeError.Atを今回公開APIとして確定したとは扱わない | **L50・L70**でtextFieldsを処理系の文言の契約から定める表示関数へ差し替え、U02で決めた公開構成子の形にStandardError・RuntimeMatch・TypedFactsをそろえる。**.02b-handlers**では宣言表から受け取る全構成子のパターン列と内部At用のパターンを併せて網羅性を証明した（RV-handlers中1への対応、第29.4節）。公開形への差替えは同じ表・パターン・観測へ一括して適用する。reprStrの一致だけを処理系の文言の対応と数えない |
 | 軽2 / 内容のないClosed | AtError.Closedの定義とV_AtErrorの前提を削除し、三族・TypedFacts・Declared・障害例のmatchを追随した | **今回完了**。エラーの構文に値・型の変数を持ち込む変更を行う場合は、改めて閉性を設計する |
 | 軽3 / 実行時の場所とSource | Val.Sourceの.locをFalseとし、入れ子のList内の場所も拒否する境界を置いた | **今回の局所修正を完了**。Sourceの除外だけをStoreOkや全状態の適格性の代用にしない |
 | 軽4 / D20を前提とするD29の旧絶対形 | 旧V_CheckedはvalContent=noneの場合だけ、旧V_CheckedRequestはGroundとreqTargetの端点一致を持つ場合だけ埋め込むと固定する | **L20・L70**のD29の旧導出の埋め込みに明示する。D20/O044と07-04・現行01-12の対照を行い、旧の無条件の規則をそのまま埋め込めると主張しない |
+
+### RV-L00b.02b-handlersの義務の対応（2026-10-31）
+
+以下は取りまとめが同日のplanの先頭で採った判断による。正則性の前提の供給はD29の埋め込みの義務として残し、今回その埋め込みを完成したとは数えない。
+
+| 所見・義務 | 担当 | 閉じる条件 |
+|---|---|---|
+| 軽1 / C_Resumeの結果型のDeclared | **L20・L70** | 旧導出とProgram/文脈の正則性から、節の継続型と結果型のDeclaredを供給する。保護本体のHasTypeCQ.declaredと移動を使い、内側の節から外側の継続を参照する場合の二重の移動も照合する |
+| 軽1 / C_ResumeLの結果型のDeclared | **.02b-closures**（StoreOk等）、**L20・L70**（D29） | 場所の型と捕捉した契約のDeclaredをStoreOk等の正則性に保持し、旧ResumeLの結果型のDeclaredを移動後の文脈へ供給する。閉じたWFだけで名目型のDeclaredを代用しない |
+| 軽1 / 通常節のOpSig.WF | **.03**（Programの正則性）、**L20・L70**（D29） | 操作の宣言の正則性から、宣言順の各入力のLocalWFと全入力の下の結果のWFを供給する。型パラメータ・範囲の具体化を経たClauseSigの署名についても照合する |
+| 軽1 / Fail節のAnnotation | **L20・L70** | 旧Fail節のE・結果型t・行ecのWFに、旧導出とProgram/文脈の正則性からSorted・Declaredを加え、E/tのAnnotationと[ec]のRowAnnotationsを供給する |
+| 軽1 / 空の腕のAnnotation | **L20・L70** | 旧Arms.nilの結果型のWFに、旧導出とProgram/文脈の正則性からSorted・Declaredを加え、結果型のAnnotationを供給する。供給できない旧導出を無言でD29の対象から外さない |
+| 軽2 / sat_local・admits_localの利用 | **L20** | 旧欄のWFだけと、現在の両側のAnnotation/TypeAnnotationsを区別する。旧の証明の各使用箇所で不足分を導き、導けなければ取りまとめへ報告する。第29.1節に差を記録した |
+| 軽3 / D27の篩を使う網羅性 | **L10・L40・L70** | Month・空型・非空List・長さを使う網羅性は、C_MatchのExhaustiveの前提又はInhabits.refinedの定義の変更として入れる。補題の追加だけで済ませず、三族のC_Match/Inhabitsと網羅性の移送の該当場合を同じ変更で閉じ直す |
+| 重1 / K_Guardの文脈 | **.02b-closures・.14a・L20** | 継続の枠のguardの判断も元のΨとパターン束縛分のlocalExtendを使う。hideConts・R=none・Eff.empty・全Φの移動と、成功/失敗後の元の契約をHasTypeArmsQ.guardedと一致させる |
+| 中1 / 標準エラーの網羅性 | **今回修正済み**、公開形の最終照合は**L50・L70** | 宣言表から受け取る全構成子のパターンと内部At用のパターンを併せてExhaustiveを示した。AtとOutsideScopeの表で条件の充足と適用を照合した。U02の公開形・文言の差替えは表・パターン・観測を同じ変更でそろえる |
 
 ## 25. `.02b-external` の補助契約と実装（2026-10-31）
 
@@ -2417,3 +2433,90 @@ Event.Covered B Γ Φ ε evはIOの署名のopEffと同じ名前の一原子の�
 軽3はVal.Sourceの.locだけをFalseとする。理由: Sourceは表層と実行時だけの構文を区別する補助であり、場所は表層から作らない。Sourceを内部の四形だけの除外と読み替える案は採らない。値の型付けやストアの場所を受け入れる範囲は変更しない。
 
 軽1の処理系の文言とU02の公開APIとの対応、および軽4のD20を前提とするD29の埋め込みは、第24節に送り先と閉じる条件を追加した。後続の証明や公開APIの決定を今回終えたとは扱わない。
+
+## 28. `.02b-handlers` の停止点：多相節での制約の保存（2026-10-31）
+
+本節は停止時点の記録である。取りまとめの判断によって再開し、第29節とresultsの再開後の節のとおり完了した。以下の未実装・判断待ちは当時の状態を示す。
+
+B_WORK は `5a602b7a2adc40e487f60c8ffc738d2f4595289c`、指定ブランチは `m014/l00b.02b-handlers` である。第12.2節の14導出の実装前に、第7.3節の `SubstOk.shiftE` に要る通常値の型付き像の移送が、現行の信頼条件から成立しないことを確かめた。**本群は停止中であり、未実装である。** 本番の定義・公開署名・既定import・planは変更していない。
+
+| 論点 | 今回採った扱いと理由 | 採らなかった扱い |
+|---|---|---|
+| 不足の検証 | 本番のHasTypeVQ/SubstOk/CoreAssumptionsを使い、閉じたIntegerのSetと開いたα₀のSetの二例で、型パラメータの先頭追加後の型付き像とSubstOkの不成立を証明する | satの保存だけの机上の反例から、型付け全体の不成立まで断定しない。V_Sub/V_Refineも処理する |
+| 旧sat_localとの区別 | 開いた例ではsat_local相当の外側への延長も証明する。型パラメータの先頭追加はそれとは別の条件である | 未移行のsat_localを加えるだけで一般のshiftEが閉じるとしない。旧の全信頼条件を移した後の反例とも主張しない |
+| Ctx.WFの予約名 | 未定義の判断を補助入力へ同名で作らず、必要なスロットのWFを直接確認する | 小さい代用のCtx.WFを本番の文脈の正則性の完成として使わない |
+| 信頼条件の扱い | 型の先頭追加に対するsat/admits保存をCoreAssumptionsから供給する案Aを推す案として記録し、未採用のまま判断へ戻す | 値保存の案Aの四欄と同じ条件だと扱って追加しない。型付け又はSubstOkに移送後の成立を無言で要求しない |
+| 既存の契約 | R0拘束・ImageOk3・None・guard・多相節・開いた値依存の範囲を維持する。実装は再開後に同じ群で行う | 通常値の像を閉じた型に制限する案、継続の改名の枝を除く案、次の群へ担当分を送って完了にする案は採らない |
+
+採ったのは上表の検証・記録の方法だけであり、新しい信頼条件の採用ではない。案A〜D、欄の候補、理由と限界は [停止点の契約](02b-handlers-contract.md)に置いた。反例は [補助Lean](02b-handlers-contract-boundary.lean)で検査し、52宣言の公理依存はpropext・Quot.sound・Classical.choiceだけである。
+
+| 義務 | 現在の判定 | 再開後の担当・閉じる条件 |
+|---|---|---|
+| 型パラメータの先頭追加とsat/admits | **信頼条件の判断待ち**。主な定理が読むCoreAssumptionsの変更を要するため、起動依頼の停止条件とS1を適用 | 取りまとめ・設計者が案を決める。案AならD28の対照を記録し、`.02b-handlers`で型の移動とSubstOk.shiftEへ接続、L50で三モデルの充足を示す |
+| 第12.2節のhandlersの14導出と三族 | **0/14、未着手**。既存49判断を維持 | 同じ`.02b-handlers`でPatTy7/PatTys2/AltsTy・Inhabits/Exhaustive、三族・正則性・R0拘束・hide/up/None/全多相束縛を閉じる。L10/L20から移した枠を後段へ戻さない |
+| 第24節のPathBases節との接続・issueの遷移 | **未着手**。前群の修正済み遷移と信頼条件を維持 | 同じ`.02b-handlers`で節の型付けへ接続し、全状態の保存・進行はL20/L70 |
+| 第24節の標準エラーの構成子と網羅性 | **未着手**。前群のAtError.values/values_typedを維持 | 同じ`.02b-handlers`で内部と公開の構成子一覧を一致させた網羅性へ接続する。U02と文言の差替えの最終対応はL50/L70 |
+| 閉包・状態の群 | **未起動** | handlersを再開して閉じた後に、取りまとめが`.02b-closures`を起動する |
+
+## 29. `.02b-handlers` の再開：一般の型パラメータ改名（2026-10-31）
+
+取りまとめがplanの2026-10-31の先頭の判断で案Aを一般の型パラメータ改名へ広げて採ったため、第28節の停止から再開した。以下はD28の意味の変更として採用済みであり、担当の補助契約の裁量だけで加えた条件ではない。新しいLeanの公理、主な定理の結論、提供範囲、利用者の書ける形、精密な外部状態は変更しない。
+
+### 29.1 信頼条件と旧欄の対応
+
+`TParam.Contains outer inner` はinnerのequality/keyの要求をouterが含むこと、`TypeParamRenaming C C' ρ` はCの各lookupをC'のρの位置のlookupとContainsへ写すこととする。型変数・型構成子変数の両方を同じρで写す。値の番号・範囲・行の変数は変えない。
+
+`Ty.rawRenameTypes` は全21型とTel・型列・行の生の改名、`Ty.renameTypes a ρ` はその後にnormする公開入口である。理由: 一般のρは順序を保つとは限らず、Fail列の整列・重複除去を改名後に行う必要がある。生の改名をCanonicalと仮定する案は採らない。先頭追加の特殊化は既存の正規化する`Ty.shift`と一致する。`shiftTypes`の生の形との等式も別に置き、正規化する操作と区別する。
+
+`Builtins.TypeAssumptions P B` に、元・先のAnnotation（型列はTypeAnnotations）とTypeParamRenamingを前提とする`B.sat`/`PrimSig.admits`の保存を置く。値の四保存則は既存のValueAssumptionsのまま保つ。両者をSubstitutionAssumptionsへまとめ、CoreAssumptionsがこれを含む。型の改名の欄の中に、型付けの移動そのものを仮定として埋め込まない。
+
+旧の`CoreAssumptions.sat_subst/admits_subst`は、閉じた型のWF、SatAll、個数一致を受け、既存のTy.substAt（bindによる正規化）で具体化する欄としてTypeAssumptionsへ移す。旧ClosedSatの連言はWFとSatAllの別々の前提に展開した。`sat_local/admits_local`相当の外側への延長は、Annotationを照合した上で恒等改名から導く。独立の重複した信頼条件の欄にはしない。TypeParamRenaming.prefix/under/insert/suffixにより、先頭追加と束縛の下の途中への挿入を同じ一般条件へ接続する。
+
+| 義務 | 担当・時期 | 閉じる条件 |
+|---|---|---|
+| 一般の型改名・値の四保存則・旧四欄の照合 | 今回の`.02b-handlers` | 本番の条件、特殊化、二つの旧反例の新条件による除外を示す。多相節の型付き像の移動へ接続する |
+| 三モデルの充足 | **L50** | 型パラメータの宣言した制約と篩を除いた構造からsat/admitsを定める。一般の制約包含を保つ改名と、型の具体化、値の四保存則をすべて示す。Fail列の順序・重複に依存させない |
+| D28と07-04の対照・設計者への報告 | **.15・取りまとめ** | 今回の型の保存則と先の値の四保存則を区別し、量化範囲と意味の変更を記録する |
+
+**旧欄との差（RV-handlers軽2）:** 旧sat_localは型のWFだけを前提としたが、恒等改名から導いた現行sat_localはCと `C ++ extra` の両側のAnnotation（WF・Sorted・Declared）を読む。admits_localの利用者も両側のTypeAnnotationsを供給する。L20で旧の証明を移す際、WFだけからは適用せず、両側のAnnotationを導く。導けない箇所があればその時点で取りまとめへ報告し、旧のWFだけの欄を復活させて済ませない。
+
+### 29.2 継続の像と計算の移動の補助契約
+
+| 論点 | 採った案と理由 | 捨てた案 |
+|---|---|---|
+| ImageOkの正の相互帰納 | ordinary/contLoc/contVarをHasTypeVQ/CQと同じmutualへ置く。SubstOkはlookupした各some位置のImageOkを要求する | 再帰する型付けをOr/Existsの中へ包んだ相互定義にはしない |
+| contVarのWF前提 | 改名先の変数と置換後の継続型のlookupを検査する。独立のWF前提は外す。継続の論理参照は禁止済みで、resumeもlookupを読むので、像のWF保存にこの前提は使わない | 新しい束縛の下で任意の文脈の全型のWFを要求するためだけにこの前提を残す案は採らない。ストアの継続場所は閉じたWFとR0の条件を保つ |
+| 値の束縛の下のup | SubstOk.upValueは任意の型の新しい位置を、通常値ならV_Var、継続ならcontVarで作る。元のupのAnnotationに要るWF/SortedとΦの移送を受ける入口も系として保つ | 通常値と継続を一律にV_Varへ写す案、Noneを値の束縛へ変える案は採らない |
+| 計算の移動 | FullShiftMapは継続の位置を含む全some位置を移す。値のShiftMapは従来のOrdinaryの位置だけを移し、捕捉で継続を隠すことを許す | 旧ShiftMapだけでC_Resumeも移せるとする案は、移動先に継続の位置がない場合を除けないので採らない。主な定理の前提へ新しい外部の仮定を加える変更ではない |
+
+群末の検査と実際の場合数はresultsの再開後の節に記録した。第12.2節の14導出と三族を本番へ置き、閉包・状態の次群には進んでいない。
+
+### 29.3 腕・節と置換の採用した補助契約
+
+| 論点 | 採った案と理由 | 捨てた案 |
+|---|---|---|
+| CQと腕・節のR0 | CQ/Arms/Clauses/FailureのsubstのSubstOkは `R.map (substTyValues ν)` に固定する。None版は親Rを持ち、像と値の一束縛の移動を交換する。C_ResumeLは場所のRと現在のRを同一にする | 像の継続場所ごとにR0を独立に選ぶ案は、元のRと違う場所へのresumeを許すため採らない |
+| 値の相互置換の信頼条件 | 公開substとNone版はSubstitutionAssumptionsを受ける。値の像がラムダを含み、その本体の多相節へ入る場合も一般の型改名則を使う。shift_valuesとnarrowはValueAssumptionsのままである | 既に承認された型改名則を多相節の外からの置換だけに限定する案、通常の値の像を閉じた型へ限定する案は採らない |
+| 型の移動の正規形 | 任意の型改名はnormする。shiftTypesの番号の写像は狭義単調なのでtyCompareを保ち、Fail列の整列と交換することをTypeShiftOrderで証明した | 生の任意の改名をCanonicalとする案、節の下だけ正規形の検査を省く案は採らない |
+| 多相節の構文の置換 | Clause.substListは通常節でk、Fail節で1だけ置換像の型パラメータを移動してから、入力数+1又は2だけupSubstする。localRefの像は同じ値束縛数でupLocalSubstする | 値の番号だけをupして像の外側の型変数を節の型変数へ捕捉する旧の処理は採らない |
+| 操作の入力列 | BinderTypes.LocalWFはn番目の入力を値束縛n個の下で検査し、retは全入力の下で検査する。OpSig.contextは型パラメータの先頭追加、extendMany、最後のcontinuationの順に作る。入力の先行参照を保ち、binderImages/binderRenamesで逐次の束縛と交換する | 宣言順の全入力を同じ外側の文脈だけで検査する案と、全入力を同時にbindParamsへ渡す案は、入力間の依存の番号を誤るため採らない |
+| 通常節のΦとR | 元の全Φを入力数+1だけliftManyする。R・結果・行も型パラメータ数と値束縛数の双方を移す。節のストアはhideBuilders、局所文脈は空である | Φを空にする案、継続又は一部の入力だけを束縛数へ加える案は採らない |
+| Fail節 | 型パラメータ1個、error値、最後のNoneの順である。全Φ/R/結果/行を2値束縛の下へ移す。E/結果/行はAnnotationで検査する | Noneの位置を詰める案、Failの継続へ型を与える案は採らない |
+| guard（RV-handlers重1で改訂） | Armsのnil/plain/guardedを分ける。guardは元のΨと `localExtend δ.length Δ` で検査する。hideConts・R=none・Eff.empty・全Φの移動を保ち、外側の構築器の専用操作を許す。理由: 現行01-06/01-12・表層・旧Releaseと同じ文脈を使うためである。網羅性はunguardedPatsだけを読む | 前回のhideBuilders Ψと空の局所文脈の案は、外側の構築器の操作を拒み書ける形を狭めるため撤回した。guardを網羅性の無条件の被覆へ加える案、Φを消す案も採らない。新しい有限事実の追加は既定のL13に残す |
+| ResumeのDeclared | C_Resume/C_ResumeLの結果型のDeclaredを葉の前提に持たせる。CQ.declaredはその証拠を使う。場所の閉じたWFとDeclaredは別である | StoreTy.WFだけから名目型の宣言照合まで導く案は採らない。次群のStoreOk等とL20が場所のDeclaredを供給する既定の義務を保つ |
+| narrowingの元の型 | Ctx.Narrows.hereは新しい型aと元の型bの双方のWFを受ける。継続の位置は同じ型へ写し、通常値の位置は既存の部分型で写す | 整形式でない篩付きContから篩を忘れ、継続のlookupを変える案は採らない。これは補助の文脈の関係の条件であり、主定理の前提を追加したものではない |
+| PatTyとInhabits | PatTy7/PatTys2、AltsTyの束縛列・slotsの順列とselectSlots、全型を扱うInhabits23/All2/Each2を置く。dataの欄は宣言の閉じた型パラメータの範囲でWFを確認する。篩のInhabitsはcarrierから導く保守的な形とする | 篩の述語を網羅性の補助だけで解いたとする案は採らない。篩による網羅性の一般の接続はL10/L40/L70に残す |
+| 標準エラーの表（RV-handlers中1で改訂） | `cs : List (ConName × ConDecl)` をPの宣言表から受け取る。Program.StandardErrorComplete P csは、各項目のlookup・Scope.ScopeErrorへの所属・arity 0と、同じdataの全構成子の収載を検査する。atErrorConstructors csは各構成子の全欄を変数にしたパターン列、atErrorPatterns csはその先頭に内部値用のatErrorPatternを置く。Exhaustive.atErrorはこの全列について示す。理由: D61のOutsideScope等を残した表にも適用するためである | 前回のAtだけに固定した一覧は、D61に従う表で前提が満たせないため撤回した。StandardErrorの存在条件だけから一覧の完全性を推測する案は採らない。U02の公開形と文言の最終対応はL50/L70に残す |
+| PathBasesの節 | CoreAssumptions.pathBases_clause_signatureはlookupとkindから、ClauseSig・空の型/値入力・PathBasesの結果・OpSig.WFを導く。issueの専用発行の遷移は前群のまま使う | 専用発行を通常のhandlerの節から除く案、σを節の静的な判断へ渡す案は採らない。全状態の保存・進行はL20/L70に残す |
+| 非公開の補助とimport | 型付き像の観測を得るTypedImages、narrowingのContextMapと相互証明の実装は非公開とする。型移動と値改名の交換、逐次束縛、型付きストア移送は公開補助に分ける。RuntimeMatchは型付けに依存せず、TypingStoreはhide/空ストアの共通補助を持つ | 循環importを避けるために同じ判断を二重に定義する案、回復用のaxiomやsorryを残す案は採らない |
+
+### 29.4 第24節の今回の義務の完了と送り先
+
+| 対象 | 今回閉じた部分 | 残る担当・閉じる条件 |
+|---|---|---|
+| RV-L00a.12中1・相互置換 | contVar/contLocと普通の像の3場合、hide/up/upN/None/shiftE/clause、R0拘束、節の全多相束縛を三族へ接続 | L20へ同じ一般の置換の証明を戻さない。新しい構成子の追加の場合だけ各後続群で増やす |
+| L10から移した既存の追随 | PatTy7/PatTys2/AltsTy・Inhabits/Exhaustiveの移動/置換、Coversと型のraw移動、CQ/腕のDeclaredと節の注釈の該当場合 | 新しい部分型規則と篩の網羅性の一般の接続は既定のL10/L40/L70。篩の網羅性はC_MatchのExhaustiveの前提又はInhabits.refinedの定義を変更し、三族の該当場合も同じ変更で閉じ直す |
+| RV-at中1・中2 | PathBasesのClauseSigへの接続、R0に一致するresumeの逆転を追加。前群の発行の遷移を維持 | handle/resume/dropと発行の全状態の保存・進行はL20/L70 |
+| RV-at軽1・RV-handlers中1 | 宣言表から受け取る全構成子列と内部At値のパターンを併せたExhaustiveを証明。AtとOutsideScopeの表で条件の充足と適用を確認し、七欄のPatTy・values/values_typedも保持 | U02の公開形、内部表、処理系の文言への差替えをL50/L70で同時に照合する |
+| 三モデルとD28 | 一般の型改名・旧四欄の移行を本番へ置き、二反例の表を新条件が除くことを証明 | 第29.1節どおりL50が三モデルを証明し、.15・取りまとめがD28の意味の変更を設計者へ報告する |
+| 次の閉包・状態 | 今回は起動していない | V_DependentLam/Closure、C_DependentApp、TelBody/CaptureOk/ClosureTy群とContTy/StoreOk等、外部TelArgsの逆向き接続を次群で行う |

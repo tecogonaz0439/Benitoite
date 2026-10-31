@@ -27,7 +27,6 @@ def telBinders : Tel → Nat
   | .done _ _ => 0
   | .param _ _ t => telBinders t + 1
 
-private def armBinders (alts : List Alt) : Nat := Benitoite.Release.Arm.bindersOf alts
 
 mutual
   def Val.rename (ξ : Nat → Nat) : Val → Val
@@ -83,10 +82,10 @@ mutual
   def Arm.renameList (ξ : Nat → Nat) : List Arm → List Arm
     | [] => []
     | .mk alts none m :: arms =>
-        .mk alts none (Comp.rename (upRen (armBinders alts) ξ) m) :: Arm.renameList ξ arms
+        .mk alts none (Comp.rename (upRen (Benitoite.Release.Arm.bindersOf alts) ξ) m) :: Arm.renameList ξ arms
     | .mk alts (some g) m :: arms =>
-        .mk alts (some (Comp.rename (upRen (armBinders alts) ξ) g))
-          (Comp.rename (upRen (armBinders alts) ξ) m) :: Arm.renameList ξ arms
+        .mk alts (some (Comp.rename (upRen (Benitoite.Release.Arm.bindersOf alts) ξ) g))
+          (Comp.rename (upRen (Benitoite.Release.Arm.bindersOf alts) ξ) m) :: Arm.renameList ξ arms
 
   def Clause.renameList (ξ : Nat → Nat) : List Clause → List Clause
     | [] => []
@@ -106,6 +105,109 @@ noncomputable def substKind (σ : Nat → Val) : BuilderKind → BuilderKind
 
 def upSubst (k : Nat) (σ : Nat → Val) (i : Nat) : Val :=
   if i < k then .var i else (σ (i - k)).rename (· + k)
+
+mutual
+  def shiftTypes (k c : Nat) : Ty → Ty
+    | .base b => .base b
+    | .opaque o ix => .opaque o ix
+    | .data d as => .data d (shiftTypesList k c as)
+    | .list a => .list (shiftTypes k c a)
+    | .fn ns ps r e => .fn ns (shiftTypesList k c ps) (shiftTypes k c r) (shiftRowsTypes k c e)
+    | .tvar i => .tvar (if i < c then i else i+k)
+    | .reference a => .reference (shiftTypes k c a)
+    | .lazy a => .lazy (shiftTypes k c a)
+    | .cont b t e => .cont (shiftTypes k c b) (shiftTypes k c t) (shiftRowsTypes k c e)
+    | .map a b => .map (shiftTypes k c a) (shiftTypes k c b)
+    | .set a => .set (shiftTypes k c a)
+    | .bytes => .bytes
+    | .dict cl a => .dict cl (shiftTypes k c a)
+    | .tapp i as => .tapp (if i < c then i else i+k) (shiftTypesList k c as)
+    | .ctor φ => .ctor φ
+    | .refined a p => .refined (shiftTypes k c a) p
+    | .dependentFn t => .dependentFn (shiftTelTypes k c t)
+    | .external id as => .external id (shiftTypesList k c as)
+    | .scoped o kind ix => .scoped o kind ix
+    | .pathBases => .pathBases
+    | .scopePattern kind => .scopePattern kind
+  def shiftTelTypes (k c : Nat) : Tel → Tel
+    | .done r e => .done (shiftTypes k c r) (shiftRowsTypes k c e)
+    | .param n a t => .param n (shiftTypes k c a) (shiftTelTypes k c t)
+  def shiftTypesList (k c : Nat) : List Ty → List Ty
+    | [] => []
+    | a :: as => shiftTypes k c a :: shiftTypesList k c as
+  def shiftRowsTypes (k c : Nat) : Eff → Eff
+    | .mk a fs => .mk a (shiftTypesList k c fs)
+end
+
+def shiftKindE (k c : Nat) : BuilderKind → BuilderKind
+  | .string => .string
+  | .bytes => .bytes
+  | .list a => .list (shiftTypes k c a)
+
+mutual
+  def Val.shiftEAt (k c : Nat) : Val → Val
+    | .var i => .var i
+    | .const c => .const c
+    | .fnRef f tys effs => .fnRef f (tys.map (shiftTypes k c)) (effs.map (shiftRowsTypes k c))
+    | .prim b tys effs rs => .prim b (tys.map (shiftTypes k c)) (effs.map (shiftRowsTypes k c)) rs
+    | .lam names params body => .lam names (params.map (shiftTypes k c)) (Comp.shiftEAt k c body)
+    | .dependentLam t body => .dependentLam (shiftTelTypes k c t) (Comp.shiftEAt k c body)
+    | .closure t body => .closure t body
+    | .con con tys args => .con con (tys.map (shiftTypes k c)) (Val.shiftEListAt k c args)
+    | .list elems => .list (Val.shiftEListAt k c elems)
+    | .op o tys => .op o (tys.map (shiftTypes k c))
+    | .raise t e => .raise (shiftTypes k c t) (shiftTypes k c e)
+    | .loc l => .loc l
+    | .mapV ks vs => .mapV (Val.shiftEListAt k c ks) (Val.shiftEListAt k c vs)
+    | .setV elems => .setV (Val.shiftEListAt k c elems)
+    | .bytesV bs => .bytesV bs
+    | .dict i tys args => .dict i (tys.map (shiftTypes k c)) (Val.shiftEListAt k c args)
+    | .super v cl => .super (Val.shiftEAt k c v) cl
+    | .externalRef f tys => .externalRef f (tys.map (shiftTypes k c))
+    | .externalHandle h tys => .externalHandle h (tys.map (shiftTypes k c))
+    | .pathBases σ => .pathBases σ
+    | .scopePattern r => .scopePattern r
+    | .checkedAt r σ t req => .checkedAt r σ t req
+    | .atError d => .atError d
+    | .checked t => .checked t
+    | .checkedRequest t c => .checkedRequest t c
+
+  def Val.shiftEListAt (k c : Nat) : List Val → List Val
+    | [] => []
+    | v :: vs => Val.shiftEAt k c v :: Val.shiftEListAt k c vs
+
+  def Comp.shiftEAt (k c : Nat) : Comp → Comp
+    | .builderLet kind body => .builderLet (shiftKindE k c kind) (Comp.shiftEAt k c body)
+    | .builderOp kind op r args => .builderOp (shiftKindE k c kind) op r (Val.shiftEListAt k c args)
+    | .ret v => .ret (Val.shiftEAt k c v)
+    | .letIn m n => .letIn (Comp.shiftEAt k c m) (Comp.shiftEAt k c n)
+    | .app f args => .app (Val.shiftEAt k c f) (Val.shiftEListAt k c args)
+    | .ite v m n => .ite (Val.shiftEAt k c v) (Comp.shiftEAt k c m) (Comp.shiftEAt k c n)
+    | .match v arms => .match (Val.shiftEAt k c v) (Arm.shiftEListAt k c arms)
+    | .lazyC m => .lazyC (Comp.shiftEAt k c m)
+    | .escape v => .escape (Val.shiftEAt k c v)
+    | .use v m => .use (Val.shiftEAt k c v) (Comp.shiftEAt k c m)
+    | .handle m h => .handle (Comp.shiftEAt k c m) (Clause.shiftEListAt k c h)
+    | .resume cont v => .resume (Val.shiftEAt k c cont) (Val.shiftEAt k c v)
+    | .externalCall f tys args => .externalCall f (tys.map (shiftTypes k c)) (Val.shiftEListAt k c args)
+    | .issuePathBases b => .issuePathBases b
+    | .checkAt kind o sh bs p v ix => .checkAt kind o {sh with errorType := shiftTypes k c sh.errorType}
+        (match bs with | none => none | some b => some (b.shiftEAt k c)) (p.shiftEAt k c) (v.shiftEAt k c) ix
+    | .meth d m tys effs args => .meth (Val.shiftEAt k c d) m (tys.map (shiftTypes k c)) (effs.map (shiftRowsTypes k c)) (Val.shiftEListAt k c args)
+
+  def Arm.shiftEListAt (k c : Nat) : List Arm → List Arm
+    | [] => []
+    | .mk alts none m :: arms =>
+        .mk alts none (Comp.shiftEAt k c m) :: Arm.shiftEListAt k c arms
+    | .mk alts (some g) m :: arms =>
+        .mk alts (some (Comp.shiftEAt k c g))
+          (Comp.shiftEAt k c m) :: Arm.shiftEListAt k c arms
+
+  def Clause.shiftEListAt (k c : Nat) : List Clause → List Clause
+    | [] => []
+    | .mk o n k' m :: cs => .mk o n k' (Comp.shiftEAt k (c + k') m) :: Clause.shiftEListAt k c cs
+    | .fail e m :: cs => .fail (shiftTypes k c e) (Comp.shiftEAt k (c+1) m) :: Clause.shiftEListAt k c cs
+end
 
 noncomputable section
 mutual
@@ -166,52 +268,19 @@ mutual
     match arms with
     | [] => []
     | .mk alts none m :: arms =>
-        .mk alts none (Comp.subst (upSubst (armBinders alts) σ) m (upLocalSubst (armBinders alts) ρ)) :: Arm.substList σ arms ρ
+        .mk alts none (Comp.subst (upSubst (Benitoite.Release.Arm.bindersOf alts) σ) m (upLocalSubst (Benitoite.Release.Arm.bindersOf alts) ρ)) :: Arm.substList σ arms ρ
     | .mk alts (some g) m :: arms =>
-        .mk alts (some (Comp.subst (upSubst (armBinders alts) σ) g (upLocalSubst (armBinders alts) ρ)))
-          (Comp.subst (upSubst (armBinders alts) σ) m (upLocalSubst (armBinders alts) ρ)) :: Arm.substList σ arms ρ
+        .mk alts (some (Comp.subst (upSubst (Benitoite.Release.Arm.bindersOf alts) σ) g (upLocalSubst (Benitoite.Release.Arm.bindersOf alts) ρ)))
+          (Comp.subst (upSubst (Benitoite.Release.Arm.bindersOf alts) σ) m (upLocalSubst (Benitoite.Release.Arm.bindersOf alts) ρ)) :: Arm.substList σ arms ρ
 
   def Clause.substList (σ : Nat → Val) (cs : List Clause) (ρ : Nat → LocalRef := LocalRef.bound) : List Clause :=
     match cs with
     | [] => []
-    | .mk o n k m :: cs => .mk o n k (Comp.subst (upSubst (n + 1) σ) m (upLocalSubst (n + 1) ρ)) :: Clause.substList σ cs ρ
-    | .fail e m :: cs => .fail (substTyValues σ e) (Comp.subst (upSubst 2 σ) m (upLocalSubst 2 ρ)) :: Clause.substList σ cs ρ
+    | .mk o n k m :: cs => .mk o n k (Comp.subst (upSubst (n + 1) (fun i => (σ i).shiftEAt k 0)) m (upLocalSubst (n + 1) ρ)) :: Clause.substList σ cs ρ
+    | .fail e m :: cs => .fail (substTyValues σ e) (Comp.subst (upSubst 2 (fun i => (σ i).shiftEAt 1 0)) m (upLocalSubst 2 ρ)) :: Clause.substList σ cs ρ
 end
 end
 
-
-mutual
-  def shiftTypes (k c : Nat) : Ty → Ty
-    | .base b => .base b
-    | .opaque o ix => .opaque o ix
-    | .data d as => .data d (shiftTypesList k c as)
-    | .list a => .list (shiftTypes k c a)
-    | .fn ns ps r e => .fn ns (shiftTypesList k c ps) (shiftTypes k c r) (shiftRowsTypes k c e)
-    | .tvar i => .tvar (if i < c then i else i+k)
-    | .reference a => .reference (shiftTypes k c a)
-    | .lazy a => .lazy (shiftTypes k c a)
-    | .cont b t e => .cont (shiftTypes k c b) (shiftTypes k c t) (shiftRowsTypes k c e)
-    | .map a b => .map (shiftTypes k c a) (shiftTypes k c b)
-    | .set a => .set (shiftTypes k c a)
-    | .bytes => .bytes
-    | .dict cl a => .dict cl (shiftTypes k c a)
-    | .tapp i as => .tapp (if i < c then i else i+k) (shiftTypesList k c as)
-    | .ctor φ => .ctor φ
-    | .refined a p => .refined (shiftTypes k c a) p
-    | .dependentFn t => .dependentFn (shiftTelTypes k c t)
-    | .external id as => .external id (shiftTypesList k c as)
-    | .scoped o kind ix => .scoped o kind ix
-    | .pathBases => .pathBases
-    | .scopePattern kind => .scopePattern kind
-  def shiftTelTypes (k c : Nat) : Tel → Tel
-    | .done r e => .done (shiftTypes k c r) (shiftRowsTypes k c e)
-    | .param n a t => .param n (shiftTypes k c a) (shiftTelTypes k c t)
-  def shiftTypesList (k c : Nat) : List Ty → List Ty
-    | [] => []
-    | a :: as => shiftTypes k c a :: shiftTypesList k c as
-  def shiftRowsTypes (k c : Nat) : Eff → Eff
-    | .mk a fs => .mk a (shiftTypesList k c fs)
-end
 
 def typeEnvAt (c : Nat) (ts : List Ty) (es : List Eff) : SubstEnv :=
   ⟨(fun i => if i < c then .tvar i
@@ -283,9 +352,9 @@ mutual
   def Arm.substTyAtList (c : Nat) (ts : List Ty) (es : List Eff) : List Arm → List Arm
     | [] => []
     | .mk alts none m :: arms =>
-        .mk alts none (Comp.substTyAt c (ts.map (Ty.shiftV (armBinders alts) 0)) (es.map (Eff.shiftV (armBinders alts) 0)) m) :: Arm.substTyAtList c ts es arms
+        .mk alts none (Comp.substTyAt c (ts.map (Ty.shiftV (Benitoite.Release.Arm.bindersOf alts) 0)) (es.map (Eff.shiftV (Benitoite.Release.Arm.bindersOf alts) 0)) m) :: Arm.substTyAtList c ts es arms
     | .mk alts (some g) m :: arms =>
-        .mk alts (some (Comp.substTyAt c (ts.map (Ty.shiftV (armBinders alts) 0)) (es.map (Eff.shiftV (armBinders alts) 0)) g)) (Comp.substTyAt c (ts.map (Ty.shiftV (armBinders alts) 0)) (es.map (Eff.shiftV (armBinders alts) 0)) m) :: Arm.substTyAtList c ts es arms
+        .mk alts (some (Comp.substTyAt c (ts.map (Ty.shiftV (Benitoite.Release.Arm.bindersOf alts) 0)) (es.map (Eff.shiftV (Benitoite.Release.Arm.bindersOf alts) 0)) g)) (Comp.substTyAt c (ts.map (Ty.shiftV (Benitoite.Release.Arm.bindersOf alts) 0)) (es.map (Eff.shiftV (Benitoite.Release.Arm.bindersOf alts) 0)) m) :: Arm.substTyAtList c ts es arms
 
   /-- 節の本体では、操作の型パラメータの個数だけ、束縛された型の変数が増える。 -/
   def Clause.substTyAtList (c : Nat) (ts : List Ty) (es : List Eff) : List Clause → List Clause

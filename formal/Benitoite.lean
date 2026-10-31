@@ -304,3 +304,11 @@ import Benitoite.Release.Refinement.AtTyping
 import Benitoite.Release.Refinement.Preparation
 import Benitoite.Release.Refinement.Source
 import Benitoite.Release.Refinement.AtSound
+
+import Benitoite.Release.Refinement.TypeRenaming
+
+import Benitoite.Release.Refinement.PatternTransport
+
+import Benitoite.Release.Refinement.AtPatterns
+
+import Benitoite.Release.Refinement.HandlerTyping

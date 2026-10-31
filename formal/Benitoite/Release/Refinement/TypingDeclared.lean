@@ -53,6 +53,12 @@ theorem HasTypeTelArgsQ.declared {P B store Q C Γ Φ vs t a e}
     (h : HasTypeTelArgsQ P B store Q C Γ Φ vs t a e) : Ty.Declared P C Γ a :=
   h.result_annotation.declared
 
+theorem HasTypeArmsQ.declared {P B store Q C Γ Φ R arms a b e L}
+    (h : HasTypeArmsQ P B store Q C Γ Φ R arms a b e L) : Ty.Declared P C Γ b := by
+  match h with
+  | .nil ha => exact ha.declared
+  | .plain _ _ hs | .guarded _ _ _ hs => exact hs.declared
+
 theorem HasTypeCQ.declared {P B store Q C Γ Φ R m a e L}
     (h : HasTypeCQ P B store Q C Γ Φ R m a e L) (hΓ : Ctx.Declared P C Γ) :
     Ty.Declared P C Γ a := by
@@ -69,7 +75,10 @@ theorem HasTypeCQ.declared {P B store Q C Γ Φ R m a e L}
   | .C_BuilderOp (kind := kind) (op := op) ha _ _ _ =>
     cases op <;> cases kind <;> first | exact ha.declared | trivial
   | .C_If _ hm _ => exact hm.declared hΓ
+  | .C_Handle hb _ _ | .C_Handle_Fail hb _ _ _ => exact hb.declared hΓ
   | .C_Lazy _ ha | .C_Escape _ ha | .C_Meth _ _ _ _ _ _ _ _ _ ha => exact ha.declared
+  | .C_Match _ ha _ => exact ha.declared
+  | .C_Resume _ _ hd | .C_ResumeL _ _ hd => exact hd
   | .C_Use _ _ hb _ => exact hb.declared hΓ
   | .C_Sub _ _ _ _ _ hd => exact hd
   | .C_Eff hb _ => exact hb.declared hΓ
@@ -77,8 +86,8 @@ theorem HasTypeCQ.declared {P B store Q C Γ Φ R m a e L}
 /-- narrowing の呼出し元は、元の値の導出から b の宣言照合を供給できる。 -/
 theorem Ctx.Narrows.of_value {P B store Q C Γ Φ v a b}
     (hb : HasTypeVQ P B store Q C Γ Φ v b) (hΓ : Ctx.Declared P C Γ)
-    (hl : Ty.LeQ Γ Φ a b) (hw : b.WF 0 C.length Γ.length) (hs : b.Sorted Γ) :
+    (hl : Ty.LeQ Γ Φ a b) (ha : a.WF 0 C.length Γ.length) (hw : b.WF 0 C.length Γ.length) (hs : b.Sorted Γ) :
     Ctx.Narrows P C (Γ.extend b) (Φ.map Pred.lift) (Γ.extend a) (Φ.map Pred.lift) :=
-  .here hl hw hs (hb.declared hΓ)
+  .here hl ha hw hs (hb.declared hΓ)
 
 end Benitoite.Release.Refinement

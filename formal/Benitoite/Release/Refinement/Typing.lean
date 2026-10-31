@@ -5,6 +5,7 @@ import Benitoite.Release.Refinement.TelArguments
 import Benitoite.Release.Refinement.External
 import Benitoite.Release.Refinement.AtContracts
 import Benitoite.Release.Refinement.AtInput
+import Benitoite.Release.Refinement.HandlerContracts
 
 /-!
 # 有限の文脈と経路条件を持つ値・計算の型付け
@@ -229,6 +230,11 @@ mutual
         HasTypeVQ P B Ψ Q C Γ Φ v (.base .boolean) →
         HasTypeCQ P B Ψ Q C Γ Φ R m a ε Δ → HasTypeCQ P B Ψ Q C Γ Φ R n a ε Δ →
         HasTypeCQ P B Ψ Q C Γ Φ R (.ite v m n) a ε Δ
+    | C_Match {Ψ Q C Γ Φ Δ R v arms a b ε} :
+        HasTypeVQ P B Ψ Q C Γ Φ v a →
+        HasTypeArmsQ P B Ψ Q C Γ Φ R arms a b ε Δ →
+        Exhaustive P a (unguardedPats arms) →
+        HasTypeCQ P B Ψ Q C Γ Φ R (.match v arms) b ε Δ
     | C_Lazy {Ψ Q C Γ Φ Δ R m a} :
         HasTypeCQ P B (hideBuilders Ψ) Q C (hideConts Γ) Φ none m a Eff.empty [] →
         Ty.Annotation P C Γ a →
@@ -240,6 +246,22 @@ mutual
         HasTypeVQ P B Ψ Q C Γ Φ v (.opaque o (.fixed .top)) → B.isResource o = true →
         HasTypeCQ P B Ψ Q C Γ Φ R m a ε Δ → ε.test (.name stateEff (.fixed .top)) = true →
         HasTypeCQ P B Ψ Q C Γ Φ R (.use v m) a ε Δ
+    | C_Handle {Ψ Q C Γ Φ Δ R m h t εm ε} : HasTypeCQ P B Ψ Q C Γ Φ R m t εm Δ →
+        Eff.Covers Γ Φ (Eff.union ε (handled P B h)) εm →
+        HasTypeClausesQ P B Ψ Q C Γ Φ R εm h t ε Δ →
+        HasTypeCQ P B Ψ Q C Γ Φ R (.handle m h) t ε Δ
+    | C_Handle_Fail {Ψ Q C Γ Φ Δ R m h t E eb rest ec} : HasTypeCQ P B Ψ Q C Γ Φ R m t eb Δ →
+        Eff.Covers Γ Φ (Eff.union (Eff.singleFail E) rest) eb → NoFail Q rest →
+        HasFailureClause P B Ψ Q C Γ Φ E R h t ec Δ →
+        HasTypeCQ P B Ψ Q C Γ Φ R (.handle m h) t (Eff.union rest ec) Δ
+    | C_Resume {Ψ Q C Γ Φ Δ R i v b t ε} :
+        Γ[i]? = some (some (.cont b t ε)) → HasTypeVQ P B Ψ Q C Γ Φ v b →
+        Ty.Declared P C Γ t →
+        HasTypeCQ P B Ψ Q C Γ Φ R (.resume (.var i) v) t ε Δ
+    | C_ResumeL {Ψ Q C Γ Φ Δ R l v b t ε} :
+        Ψ l = some (.cont b t ε R) → HasTypeVQ P B Ψ Q C Γ Φ v b →
+        Ty.Declared P C Γ t →
+        HasTypeCQ P B Ψ Q C Γ Φ R (.resume (.loc l) v) t ε Δ
     | C_Meth {Ψ Q C Γ Φ Δ R v cl τ cd m ms ss es ws as a ε} :
         HasTypeVQ P B Ψ Q C Γ Φ v (.dict cl τ) → P.classes cl = some cd → cd.methods m = some ms →
         NamesWF ms.names ms.params → SatAll B C ss (ms.tparams.map TParamDecl.constraints) →
@@ -298,6 +320,64 @@ mutual
         (∀ r, index = .fixed r → r.WF ∧ r.Canonical ∧ r.FitsKind kind) →
         AtCallAdmissible P B Ψ Q C Γ Φ kind name shape bases pattern input index
 
+  /-- 通常値、継続の場所、継続変数の改名を分けた型付き像。 -/
+  inductive HasTypeArmsQ (P : Program) (B : Builtins) :
+      StoreTy → NoFailCtx → List TParam → Ctx → List Pred → Option Ty →
+      List Arm → Ty → Ty → Eff → (Δ : LocalCtx := []) → Prop where
+    | nil {Ψ Q C Γ Φ Δ R a b ε} : Ty.Annotation P C Γ b →
+        HasTypeArmsQ P B Ψ Q C Γ Φ R [] a b ε Δ
+    | plain {Ψ Q C Γ Φ Δ R alts body arms a b ε δ} : AltsTy P alts a δ →
+        HasTypeCQ P B Ψ Q C (bindParams Γ δ) (liftMany δ.length Φ)
+          (R.map (Ty.shiftV δ.length 0)) body (b.shiftV δ.length 0) (ε.shiftV δ.length 0)
+          (localExtend δ.length Δ) →
+        HasTypeArmsQ P B Ψ Q C Γ Φ R arms a b ε Δ →
+        HasTypeArmsQ P B Ψ Q C Γ Φ R (.mk alts none body :: arms) a b ε Δ
+    | guarded {Ψ Q C Γ Φ Δ R alts guard body arms a b ε δ} : AltsTy P alts a δ →
+        HasTypeCQ P B Ψ Q C (hideConts (bindParams Γ δ)) (liftMany δ.length Φ)
+          none guard (.base .boolean) Eff.empty (localExtend δ.length Δ) →
+        HasTypeCQ P B Ψ Q C (bindParams Γ δ) (liftMany δ.length Φ)
+          (R.map (Ty.shiftV δ.length 0)) body (b.shiftV δ.length 0) (ε.shiftV δ.length 0)
+          (localExtend δ.length Δ) →
+        HasTypeArmsQ P B Ψ Q C Γ Φ R arms a b ε Δ →
+        HasTypeArmsQ P B Ψ Q C Γ Φ R (.mk alts (some guard) body :: arms) a b ε Δ
+
+  inductive HasTypeClausesQ (P : Program) (B : Builtins) :
+      StoreTy → NoFailCtx → List TParam → Ctx → List Pred → Option Ty → Eff →
+      List Clause → Ty → Eff → (Δ : LocalCtx := []) → Prop where
+    | nil {Ψ Q C Γ Φ Δ R eb t ε} : HasTypeClausesQ P B Ψ Q C Γ Φ R eb [] t ε Δ
+    | cons {Ψ Q C Γ Φ Δ R eb o n k body cs t ε sg} : ClauseSig P B eb o sg →
+        NamesWF sg.names sg.params → n=sg.params.length → k=sg.tparams.length → sg.WF →
+        HasTypeCQ P B (hideBuilders Ψ) Q (sg.tparams++C) (sg.context Γ t ε)
+          (liftMany (sg.params.length+1) Φ)
+          (R.map (fun r => (shiftTypes sg.tparams.length 0 r).shiftV (sg.params.length+1) 0))
+          body ((shiftTypes sg.tparams.length 0 t).shiftV (sg.params.length+1) 0)
+          ((shiftRowsTypes sg.tparams.length 0 ε).shiftV (sg.params.length+1) 0) [] →
+        HasTypeClausesQ P B Ψ Q C Γ Φ R eb cs t ε Δ →
+        HasTypeClausesQ P B Ψ Q C Γ Φ R eb (.mk o n k body::cs) t ε Δ
+
+  inductive HasFailureClause (P : Program) (B : Builtins) :
+      StoreTy → NoFailCtx → List TParam → Ctx → List Pred → Ty → Option Ty →
+      List Clause → Ty → Eff → (Δ : LocalCtx := []) → Prop where
+    | one {Ψ Q C Γ Φ Δ E R body t ec} : Ty.Annotation P C Γ E → Ty.Annotation P C Γ t →
+        RowAnnotations P C Γ [ec] →
+        HasTypeCQ P B (hideBuilders Ψ) Q (({} : TParam)::C) (failureContext Γ E) (liftMany 2 Φ)
+          (R.map (fun r => (shiftTypes 1 0 r).shiftV 2 0)) body
+          ((shiftTypes 1 0 t).shiftV 2 0) ((shiftRowsTypes 1 0 ec).shiftV 2 0) [] →
+        HasFailureClause P B Ψ Q C Γ Φ E R [.fail E body] t ec Δ
+
+  inductive ImageOk (P : Program) (B : Builtins) :
+      StoreTy → NoFailCtx → List TParam → Ctx → List Pred → Option Ty →
+      (Nat → Val) → Nat → Ty → Prop where
+    | ordinary {Ψ Q C Δ Ξ R0 ν i a} : a.Ordinary →
+        HasTypeVQ P B Ψ Q C Δ Ξ (ν i) (substTyValues ν a) →
+        ImageOk P B Ψ Q C Δ Ξ R0 ν i a
+    | contLoc {Ψ Q C Δ Ξ R0 ν i a b t e b' t' e' l} :
+        a = .cont b t e → substTyValues ν a = .cont b' t' e' →
+        (substTyValues ν a).WF 0 0 0 → ν i = .loc l → Ψ l = some (.cont b' t' e' R0) →
+        (∀ r, R0 = some r → r.WF 0 0 0) → ImageOk P B Ψ Q C Δ Ξ R0 ν i a
+    | contVar {Ψ Q C Δ Ξ R0 ν i a b t e j} : a = .cont b t e → ν i = .var j →
+        Δ[j]? = some (some (substTyValues ν a)) → ImageOk P B Ψ Q C Δ Ξ R0 ν i a
+
 end
 
 theorem HasTypeVQ.refine_integer {P B store Q C Γ Φ v a t p}
@@ -313,6 +393,8 @@ abbrev HasTypeV (P : Program) (B : Builtins) (Ψ : StoreTy) := HasTypeVQ P B Ψ 
 abbrev HasTypeVs (P : Program) (B : Builtins) (Ψ : StoreTy) := HasTypeVsQ P B Ψ Qempty
 abbrev HasTypeEach (P : Program) (B : Builtins) (Ψ : StoreTy) := HasTypeEachQ P B Ψ Qempty
 abbrev HasTypeC (P : Program) (B : Builtins) (Ψ : StoreTy) := HasTypeCQ P B Ψ Qempty
+abbrev HasTypeArms (P : Program) (B : Builtins) (Ψ : StoreTy) := HasTypeArmsQ P B Ψ Qempty
+abbrev HasTypeClauses (P : Program) (B : Builtins) (Ψ : StoreTy) := HasTypeClausesQ P B Ψ Qempty
 abbrev HasTypeCL (P : Program) (B : Builtins) (Ψ : StoreTy) (C : List TParam)
     (Δ : LocalCtx) (Γ : Ctx) (Φ : List Pred) (R : Option Ty) (m : Comp) (a : Ty) (ε : Eff) :=
   HasTypeCQ P B Ψ Qempty C Γ Φ R m a ε Δ
