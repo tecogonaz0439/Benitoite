@@ -1,0 +1,132 @@
+[
+  {
+    "name": "build",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T14:49:26.115525+09:00",
+    "exit": 0,
+    "elapsed_seconds": 0.14974275,
+    "output": {
+      "name": "02b-closures-r3-build.log",
+      "bytes": 24345,
+      "sha256": "8a750005d9736d8cf003ebaa54de29b42c5172a20e67a5b82dbdae4a3974f45e",
+      "storage": "改造/l00b.02"
+    }
+  },
+  {
+    "name": "boundary",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "-R",
+      ".lake/closures-r3",
+      "-o",
+      ".lake/build/lib/lean/ClosureR3Boundary.olean",
+      ".lake/closures-r3/ClosureR3Boundary.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T14:49:26.266278+09:00",
+    "exit": 0,
+    "elapsed_seconds": 2.757757666,
+    "output": {
+      "name": "02b-closures-r3-boundary.log",
+      "bytes": 33311,
+      "sha256": "721268bff1bf3c0613d47be4b63522279214e0efdd31a59c4bac53f81e1b3f61",
+      "storage": "改造/l00b.02"
+    },
+    "input_sha256": "0728896e98877108106e7ca1725f6018c16e957fd57ff2b0dad4af723d69ab03"
+  },
+  {
+    "name": "extra",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02b-closures-r3-extra.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T14:49:29.025152+09:00",
+    "exit": 0,
+    "elapsed_seconds": 1.0462176669999996,
+    "output": {
+      "name": "02b-closures-r3-extra.log",
+      "bytes": 9024,
+      "sha256": "bb8b718376a9f6dec1655bdcf50f22a6de4e7464923cbe96c7c4dfce8dfe7f7c",
+      "storage": "改造/l00b.02"
+    },
+    "input_sha256": "11dfeb9658c38cf01e4505de60370939ba79a12df7c44895400eccbbe89e7981"
+  },
+  {
+    "name": "public-api",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02b-closures-r3-public-api.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T14:49:30.072168+09:00",
+    "exit": 0,
+    "elapsed_seconds": 0.6539983749999996,
+    "output": {
+      "name": "02b-closures-r3-public-api.log",
+      "bytes": 26052,
+      "sha256": "d86cda3759d68bc8ad09caf821fd5e7794c49538241db6763b3eb26e48ba6d03",
+      "storage": "改造/l00b.02"
+    },
+    "input_sha256": "b689213c94d06def166b72ca1339d3f5db4f1624ec9caaa107a110b54726a0d4"
+  },
+  {
+    "name": "axioms",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02b-closures-r3-axioms.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T14:49:30.727134+09:00",
+    "exit": 0,
+    "elapsed_seconds": 9.494929249999998,
+    "output": {
+      "name": "02b-closures-r3-axioms.log",
+      "bytes": 1139089,
+      "sha256": "f06115fd5407c7446b7e564f6013fe03afaf80f500e1720daec927300879a3a9",
+      "storage": "<tmp>"
+    },
+    "input_sha256": "a2bc93d34bae1359bcaaa15a8bc2149690dc51d7ca8dc5fc7685efc07bf4947c"
+  },
+  {
+    "name": "lean-version",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "--version"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T14:49:40.240140+09:00",
+    "exit": 0,
+    "elapsed_seconds": 0.07781987499999943,
+    "output": {
+      "name": "02b-closures-r3-lean-version.log",
+      "bytes": 106,
+      "sha256": "20f42f897511ec814f7616bd9a193ae7504aa2f52fb05299eb752936eb77ca6e",
+      "storage": "改造/l00b.02"
+    }
+  }
+]

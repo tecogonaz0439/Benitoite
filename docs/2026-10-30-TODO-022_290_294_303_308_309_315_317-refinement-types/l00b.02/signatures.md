@@ -1132,7 +1132,7 @@ Program.WellTyped : Program → Builtins → Prop
 | HasTypeTelArgsQ | done、param | 各実引数を検査した後に rest を値について bind して次へ進む |
 | TelBodyTy | done、param | done は自分の結果を R にする本体判断、param は先行引数だけの Γ/Φを延長 |
 | CaptureOk | mk | 有限・長さ一致・None の保存・外側参照順・閉じた型付き像・閉じた facts/Φ |
-| ClosureTy | mk | 捕捉環境の検査、List Ty の未束縛の入力（let 本体等）、ソースの CQ、close 後の結果/行/R |
+| ClosureTy | mk | 捕捉環境の検査、ソースの入力 ss と閉じた像 ps、元の本体 code0、局所文脈 L と参照の像 ρ、close 後の結果/行/R（第30.2節） |
 | DependentClosureTy | mk | CaptureOk と TelBodyTy、閉じた捕捉環境の下で契約を bind |
 
 この表に加え、第7.3節の ImageOk（ordinary/contLoc/contVar）と第7.2節の CheckedWitness（plain/request）を同じ相互帰納に含める。この表は構成子集合を固定する。旧予約名を nil だけの空の判断として置かない。静的規則の全ての前提の機械的なコード化は実装時の対象だが、次の新しい入口の署名は本書で固定する。暗黙引数は、P/B/Ψ/Q/C/Γ/Φ/R/Δ は上の判断の対応する型、f : ExternalFunctionId、ts : List Ty、vs : List Val、decl : ExternalSignature、a : Ty、e : Eff、σ0 : PathEnv とする。
@@ -1520,6 +1520,32 @@ ContTy の R/許す効果/入力型/最終結果型/固定末尾効果 Eb/末尾
 
 ContTy は旧の10構成子を置く。K_Handle_Fail を K_Handle と一つに数えない。runtime の σ は全構成子で不変で、Cont.Adequate σ と各 Closure/Capture の適格性を対応する前提へ含める。
 
+K_Guard と K_Handle の捕捉契約の主要部は以下である。継続末尾・適格性・効果の包含等は本番の構成子のままである。
+
+```text
+K_Guard :
+  CaptureOk P B Ψ R Γ Φ cap → HasTypeV P B Ψ [] Γ Φ vs t →
+  HasTypeArmsQ P B Ψ Qempty [] Γ Φ Rs arms0 t as es L →
+  CaptureLocals Ψ cap.env L ρ → arms = Arm.resolveLocalsList ρ arms0 →
+  (∀ r, Rs = some r → r.Declared P [] Γ) → Exhaustive P t (unguardedPats arms0) →
+  v = closeVal cap vs →
+  cap.closeR Rs = R → cap.closeTy as = a → cap.closeEff es = e1 →
+  ClosureTy P B Ψ [] R body a e1 → Eff.Sub e1 ε → MatchPrefix v arms next →
+  ContTy P B σ Ψ R ε k a b Eb Re → Frame.Adequate σ (guardF v cap arms next body) →
+  ContTy P B σ Ψ none Eff.empty (guardF v cap arms next body :: k) (base boolean) b Eb Re
+
+K_Handle :
+  ContTy P B σ Ψ R ε k t b Eb Re → Eff.Covers [] [] ε ec →
+  Eff.Sub eb (Eff.union ec (handled P B h)) →
+  CaptureOk P B (hideBuilders Ψ) R Γ Φ cap →
+  HasTypeClausesQ P B (hideBuilders Ψ) Qempty [] Γ Φ Rs ebs h ts ecs [] →
+  cap.closeR Rs = R → cap.closeTy ts = t → cap.closeEff ecs = ec → cap.closeEff ebs = eb →
+  Ty.Annotation P [] [] (dependentFn (done t ec)) → Ty.Annotation P [] Γ ts →
+  (∀ a, Rs = some a → a.Declared P [] Γ) →
+  Frame.Adequate σ (handleF cap h) →
+  ContTy P B σ Ψ R eb (handleF cap h :: k) t b Eb Re
+```
+
 CellOk の6場合は次の定義の形を保つ。暗黙の `P/B/σ/Ψ/l` は上の型による。
 
 ```text
@@ -1540,6 +1566,7 @@ CellOk P B σ Ψ l used ↔ ∃ b t e r, Ψ l = some (cont b t e r)
 StoreOk P B σ Ψ μ ↔
   (∃ n : Nat, ∀ l : Nat, n ≤ l → μ l = none) ∧
   (∀ l x, Ψ l = some x → LocTy.WF x) ∧
+  StoreTy.Declared P Ψ ∧
   (∀ l x, Ψ l = some x → μ l ≠ none) ∧
   (∀ l c, μ l = some c → CellOk P B σ Ψ l c)
 ```
@@ -1558,10 +1585,12 @@ StateTyE P B σ Eb (run q k μ) ↔
 StateTyE P B σ Eb (matchRun v cap arms next k μ) ↔
   ∃ Ψ R a b e e1,
     StoreOk P B σ Ψ μ ∧
-    ClosureTy P B Ψ [] R (Closure.mk cap (Comp.match v arms)) a e1 ∧ Eff.Sub e1 e ∧
+    (∃ vs, v = closeVal cap vs ∧
+      ClosureTy P B Ψ [] R (Closure.mk cap (Comp.match vs arms)) a e1) ∧ Eff.Sub e1 e ∧
     ContTy P B σ Ψ R e k a b Eb none ∧
     Val.Adequate σ v ∧ Capture.Adequate σ cap ∧
-    MatchPrefix v arms next ∧ ClosedStateParts (matchRun v cap arms next k μ)
+    MatchPrefix v arms next ∧ v.Ground ∧ adequateArms σ arms ∧
+    cap.Closed ∧ Arm.ClosedList 0 cap.values.length arms ∧ k.Closed ∧ μ.Closed
 
 StateTyE P B σ Eb (error errors k μ) ↔
   ∃ Ψ R a b e, StoreOk P B σ Ψ μ ∧ ContTy P B σ Ψ R e k a b Eb none ∧
@@ -1577,21 +1606,25 @@ StateTy P B σ state ↔
 
 StateTy は Valid だけを要求する。既知の契約の未束縛の拒否は第4.1節の初期状態の準備の条件であり、到達する全状態へ Ready の保存を要求しない。StateTyE の遷移保存では σ と Eb を両方固定する。error/exit の存在を否定せず、戻り値の存在も要求しない。
 
-CaptureOkのmkが検査する条件は以下である。下の↔の連言は説明上の分解であり、mutual inductiveの実装では各条件を別々のカリー化した前提にする。Γ/Φ等は構成子の引数として持ち、再帰する判断の出現をAnd/Existsへ包まない。ClosureTy/DependentClosureTyのmkも同じ規約に従う。型付き像の条件は第7.3節の ImageOk を同じ相互判断の中に置き、HasTypeVQ → CaptureOk → SubstOk → HasTypeVQ の未検査の再帰的な定義にしない。
+CaptureOkのmkが検査する条件は以下である。下の↔の連言は説明上の分解であり、mutual inductiveの実装では各条件を別々のカリー化した前提にする。Γ/Φ等は構成子の引数として持ち、再帰する判断の出現をAnd/Existsへ包まない。DependentClosureTyのmkも同じ規約に従う。ClosureTy は、この相互帰納の外に置く。型付き像の条件は第7.3節の ImageOk を同じ相互判断の中に置き、HasTypeVQ → CaptureOk → SubstOk → HasTypeVQ の未検査の再帰的な定義にしない。
 
 ```text
 Ctx.WF : Nat → Nat → Ctx → Prop
 
 CaptureOk P B Ψ R0 Γ Φ cap ↔
-  Ctx.WF 0 0 Γ ∧ cap.values.length = Γ.length ∧
-  (∀ p ∈ Φ, p.WF Γ.length ∧ Pred.Sorted Γ none p) ∧
+  Ctx.CaptureWF 0 0 Γ ∧ cap.values.length = Γ.length ∧
+  (∀ i a, Γ[i]? = some (some a) → ∃ v, cap.values[i]? = some (some v)) ∧
+  (∀ i a, Γ[i]? = some (some a) → a.CaptureSorted Γ ∧ a.CaptureDeclared P [] Γ) ∧
+  (∀ p ∈ Φ, p.WF Γ.length ∧ Pred.Sorted Γ none p ∧ Pred.Declared P [] Γ none p) ∧
   (∀ ov ∈ cap.values, ∀ v : Val, ov = some v → Val.Ground v) ∧
   (∀ i a, Γ[i]? = some (some a) →
     ImageOk P B Ψ O.Qempty [] [] [] R0 cap.env i a) ∧
   (∀ p ∈ Γ.facts ++ Φ, Entails [] (predBind (valEnv cap.env).values p))
 ```
 
-Ctx.WF の二つの Nat は nr/nt であり、nv は Γ.length。後続の型から外側だけを読む順序、None、Ty.WF/Sorted/Declared との役割を `.03` で具体化する。None の位置を詰めず、そこに残る実行値は通常値の型付き像や事実として読まない。ClosureTy の mk は、この Γ/Φを存在量化して保持し、code をその文脈（未束縛入力があればさらに延長した文脈）で型付け、closeTyAt/closeEffAt/closeRAt との等号を出力の契約へ要求する。run に使う引数列は空であり、その契約は閉じる。DependentClosureTy の mk は hideConts した外側で作った CaptureOk と TelBodyTy を使う。
+CaptureWF / CaptureSorted / CaptureDeclared は、継続の項目 cont b t e に対して b と t の WF / Sorted / Declared だけを読み、eを読まない。それ以外の型には従来の全条件を要求する。継続の閉じた像の全WF（行のWF・正準性を含む）は ImageOk.contLoc が持つ。CaptureOk.continuation_image_wf で取り出す。Noneの位置の扱い、someの位置の実値の存在、全ImageOk、Ground、Φとfactsの条件は変わらない。Ctx.WF の定義自体は変えない。
+
+Ctx.WF の二つの Nat は nr/nt であり、nv は Γ.length。後続の型から外側だけを読む順序、None、Ty.WF/Sorted/Declared との役割を `.03` で具体化する。None の位置を詰めず、そこに残る実行値は通常値の型付き像や事実として読まない。ClosureTy の mk は、この Γ/Φを存在量化して保持し、局所参照を場所へ置換する前の code0 を、その文脈（未束縛入力があればソースの ss で延長した文脈）の HasTypeCQ で型付け、code = code0.resolveLocals ρ と局所の種類の捕捉像を保持し、closeTyAt/closeEffAt/closeRAt との等号を出力の契約へ要求する。run に使う引数列は空であり、その契約は閉じる。DependentClosureTy の mk は hideConts した外側で作った CaptureOk と TelBodyTy を使う。
 
 CaptureOk/ClosureTy の規則は、実行時の意味の所属を仮定する欄ではない。ソースの Γ/Φ・関係する型付けの導出と、有限環境の型付き像を構文の判断として照合する。閉じた facts/Φの導出を D19 の ground で作る作業は `.04/.14b` に残る。ここで `∀p, true` のような条件で置き換えたり、Γを空にして source の証拠を失ったりしない（R4）。
 
@@ -2278,6 +2311,17 @@ planの同日の先頭の判断に従う。以下の「今回」はレビュー�
 | 重1 / K_Guardの文脈 | **.02b-closures・.14a・L20** | 継続の枠のguardの判断も元のΨとパターン束縛分のlocalExtendを使う。hideConts・R=none・Eff.empty・全Φの移動と、成功/失敗後の元の契約をHasTypeArmsQ.guardedと一致させる |
 | 中1 / 標準エラーの網羅性 | **今回修正済み**、公開形の最終照合は**L50・L70** | 宣言表から受け取る全構成子のパターンと内部At用のパターンを併せてExhaustiveを示した。AtとOutsideScopeの表で条件の充足と適用を照合した。U02の公開形・文言の差替えは表・パターン・観測を同じ変更でそろえる |
 
+### RV-L00b.02b-closuresの義務の対応（2026-10-31）
+
+| 所見 | 担当・時期 | 固定する義務・完了の確認 |
+|---|---|---|
+| 軽2 / closeValの型付け | **L20**（`.11` の fn / dependentFn の接続の後） | CaptureOk とソースの値の型付けから closeVal の型付けを導く。lam が closure に変わる場合を含め、HasTypeVQ.subst だけで代用しない |
+| 軽2 / CaptureOkのhide | **L20** | 捕捉した Γ を hideConts Γ、実行時 Ψ を hideBuilders Ψ、Rをnoneへ移す。Noneの番号とΓ/Φの型付き像・条件の導出を保つ。通常の場所の型を同じまま保つ |
+| 軽3 / 計算結果の正則性 | **L20** | HasTypeCQ の結果の型の WF / Sorted を、文脈・場所・ソースの整形式の前提から導く。Declaredだけで Annotation を供給済みとは扱わない |
+| 軽4 / 腕の効果の拡大 | **L20** | HasTypeArmsQ の各本体に C_Sub / C_Eff を適用し、外側の拡大後の型・効果にそろえる。K_Guard の Eff.Sub e1 ε を供給する |
+| 再々レビュー軽3 / handlerの内側のAnnotationと節の効果 | **今回**（補題と正例）、**L20**（全場合への適用） | done_annotation_of_coversは外側の閉じたAnnotationとCovers・内側の行の正準性から内側のAnnotationを得る。E_Opの先では、εの原子とecのFailを持つ行へC_Effで広げる。Eff.Covers.widen_atomsはそのCoversとεへのEff.Subを、done_annotation_with_atomsは必要なAnnotationを供給する |
+| 重2の同因箇所 / 開いた実行コード | **今回**（元のcode0、像の本体、交換・恒等・開放の補題、37正例）、**L20**（全遷移への適用） | 構築器の生成はbuilderBody_imageとComp.builderBody_resolveによる交換、入力と腕はCaptureLocals.apply_one / extendManyによる開放、値と節はresolve_idによる恒等を使う。分岐は同じL/ρを使う。closeValの型付けと全76遷移の保存は別の義務である |
+
 ## 25. `.02b-external` の補助契約と実装（2026-10-31）
 
 起動依頼で委ねられた補助契約の細部を、以下の形で本番へ置いた。基準B_WORKは `9184a3ced427d4897fcb234d2ac277f95b60ac0f`、指定ブランチは `m014/l00b.02b-external` である。gitによる照合・操作は行っていない。主な定理の前提・結論、新しい公理、提供範囲、利用者の書ける形、精密な外部状態を変更していない。第5節の三つの外部条件を具体化し、CoreAssumptionsに接続した。第24節の後続の義務は引き続き同じ担当へ残す。
@@ -2520,3 +2564,109 @@ B_WORK は `5a602b7a2adc40e487f60c8ffc738d2f4595289c`、指定ブランチは `m
 | RV-at軽1・RV-handlers中1 | 宣言表から受け取る全構成子列と内部At値のパターンを併せたExhaustiveを証明。AtとOutsideScopeの表で条件の充足と適用を確認し、七欄のPatTy・values/values_typedも保持 | U02の公開形、内部表、処理系の文言への差替えをL50/L70で同時に照合する |
 | 三モデルとD28 | 一般の型改名・旧四欄の移行を本番へ置き、二反例の表を新条件が除くことを証明 | 第29.1節どおりL50が三モデルを証明し、.15・取りまとめがD28の意味の変更を設計者へ報告する |
 | 次の閉包・状態 | 今回は起動していない | V_DependentLam/Closure、C_DependentApp、TelBody/CaptureOk/ClosureTy群とContTy/StoreOk等、外部TelArgsの逆向き接続を次群で行う |
+
+## 30. `.02b-closures` の補助契約と本番の接続（2026-10-31）
+
+B_WORK は `1170a4a6d81d49a6d098d2f222ed33c8f22c9230`、指定ブランチは `m014/l00b.02b-closures` である。git の照合・操作は行っていない。起動依頼が委ねた補助契約の細部を以下の形に具体化した。主な定理の前提と結論、新しい公理、提供範囲、利用者の書ける形、精密な外部状態は変更していない。新しい StateTy の定義を置いたことと、全状態の進行・保存を証明したことを区別する。
+
+### 30.1 8導出と三族
+
+V_DependentLam と V_Closure、C_DependentApp、TelBodyTy.done/param、CaptureOk.mk、ClosureTy.mk、DependentClosureTy.mk の計8導出を置いた。V は28、C は21、相互判断の構成子の合計は71である。AtCallAdmissible の1構成子、状態の判断、PatTy 等はこの71に加算しない。
+
+```text
+V_DependentLam : Annotation P C Γ (dependentFn t) →
+  TelBodyTy P B (hideBuilders Ψ) Q C (hideConts Γ) Φ t body →
+  HasTypeVQ P B Ψ Q C Γ Φ (dependentLam t body) (dependentFn t)
+
+V_Closure : Annotation P C Γ (dependentFn t) →
+  Tel.RuntimeShape runtime t → DependentClosureTy P B Ψ body t →
+  HasTypeVQ P B Ψ Q C Γ Φ (closure runtime body) (dependentFn t)
+
+C_DependentApp : HasTypeVQ P B Ψ Q C Γ Φ f (dependentFn t) →
+  HasTypeTelArgsQ P B Ψ Q C Γ Φ args t a e →
+  HasTypeCQ P B Ψ Q C Γ Φ R (app f args) a e Δ
+```
+
+TelBodyTy.param は引数を一つずつ Γ.extend し、全 Φ を Pred.lift する。本体の Comp 自体は同じであり、done が終端の結果型を自分の R として HasTypeCQ を検査する。値の改名・置換では本体の下の束縛数を telBinders t から得る。shift_values、shift_types、subst、narrow を同じ本体判断へ接続した。V_DependentLam の捕捉境界は元の V_Lam と同じ hideBuilders/hideConts である。
+
+V_Closure の有限環境と本体は、捕捉環境と組で外側の Γ/Φ/C に対して閉じている。コード中の注釈を捕捉値で置き換えたとは扱わず、外側の Γ/Φ/C の操作を再適用しない。移動では型付き像・本体をストアの移送で再構成し、置換・narrowing・型の移動では元の閉じた証拠を再利用する。外側の型注釈の移送は各族の既存の Annotation の補題で検査する。TypedFacts の data_observation、observation_declared、observation_references、observation、assume、assume_optional と、Declared の正則性・既存の逆転にも新しい場合を加えた。
+
+### 30.2 採った補助契約と捨てた案
+
+| 論点 | 採った案と理由 | 捨てた案 |
+|---|---|---|
+| 実行用の閉包署名 | Tel.SameInputs は名前と各入力型を照合し、終端の結果・効果は読まない。RuntimeShape は実行用と静的契約の閉じた WF と SameInputs を持つ。V_Closure は静的契約を DependentClosureTy の本体から検査する。理由: closeVal が旧lamに使う lambdaShape の Unit/empty は実行の入力形であり、結果契約ではないためである | 実行用署名と静的 Tel 全体の等号を要求する案は、Boolean 等を返す旧lamを閉じられないため採らない。実行時に結果型を推測する案も採らない |
+| CaptureOk（再々レビュー中1、案a） | 元のΓ/Φを保持し、CaptureWF / CaptureSorted / CaptureDeclaredで継続の項目の入力・結果だけを検査する。行は閉じたImageOk.contLocのWFへ委ねる。通常の値の項目は元のWF/Sorted/Declaredを全て要求する。有限長・someの実値・Noneの番号・全someの型付き像・Ground・Φ/factsの条件は不変である | ソースの継続の行にも正準性を要求する案は、dupEの節の文脈を拒むため撤回する。案bのC_HandleへのεのAnnotationの追加、案cの約71場合の別の置換補題は、取りまとめの判断に従い採らない |
+| ClosureTy（重1） | ソースの入力 ss の Annotation を Γ で検査し、本体を bindParams Γ ss / liftMany ss.length Φ で検査する。添字の ps は ss.map cap.closeTy そのものであり、等号を構成子の出力で表す。結果・行・R は closeTyAt/closeEffAt/closeRAt ss.length で閉じる。ソースと出力双方の R の Declared、出力の Annotation も保持する | 閉じた ps を開いたソースの本体へ渡す旧の案は、T(x) と T(7) が一致せず E_Let の後を作れないため撤回する。K_Let 専用の判断を増やす案も採らず、一般の ClosureTy に ss とその像を保持する |
+| ストアと局所の像（再レビュー中2） | 閉じた実行時 Ψ を固定し、元の本体 code0 を HasTypeCQ の L で検査する。CaptureLocals Ψ (upSubst ss.length cap.env) L ρ は、L の some kind ごとに ρ i = loc l と Ψ l = builder (substKind ν kind) を要求する。通常の場所は同じ Ψ を読む。理由: 捕捉に依存する種類は、元の局所参照の契約に保持できる | CaptureView / shiftBuilders / OpenCodeTy / OpenArmsTy と typed の WF-or-BuilderLocFree 条件を撤回する。元のソース規則と実行コード用の規則を二重に維持し、内側の束縛の前提のずれを作るためである。最初のレビューの案b（Stepで注釈を閉じる）・案c（kindの値依存を禁止）も採らない |
+| 局所参照だけの置換と束縛 | Val / Comp / Arm / Clause の相互関数 resolveLocals を置き、値・型・効果の注釈は変更せず、局所の参照だけを ρ で置き換える。let の下では localExtend 1 L と upLocalSubst 1 ρ、腕の下ではパターンの束縛数分の延長を使う。subst_resolveLocals と resolveLocals_builderSubst は全構文の相互帰納で証明した。builderBody_image は値の束縛を除いた本体を、型・行・R・局所文脈の像で型付ける。C_Subの連なりも既存のHasTypeCQ.substで処理する。substKind_image / CaptureLocals.imageLocal / closeTy_builder_image / closeEff_builder_imageで捕捉後の像の一致を示し、builderBody_resolveで実行の場所置換と照合する | code = code0.subst (fun i => var i) ρ とする案は、Comp.subst が型注釈を正規化して元のコードの構文と異なるため採らない。bind後の型を先に比較するだけの案も、この構文上の差を解消しない |
+| 本体の像（再々レビュー中3） | builderBody_imageはhA・Ψ.WF・ソースΓのCtx.WF・本体の型付けから、置換後のR/a/eとimageLocal Lの本体判断を返す。正規化の前後で閉じる像は一致する。境界のbuilder_sub_chainでC_Subを二つ重ねた場合も照合した | builderBody_keepsBoundを核とした前の説明は撤回する。hR/ha/he/hk/hLがソースの正準性を要求し、C_BuilderLetやClosureTyから一般に供給できないため、定義ごと除いた |
+| 解決の恒等と捕捉の開放（再々レビュー中2） | HasTypeVQ / VsQ / EachQ / TelArgsQ / TelBodyTy / ClausesQ / FailureClauseのresolve_idは任意のρで不変を示す。CQ / ArmsQはLocalsFixedの条件で不変である。CaptureLocals.apply_oneは入力1個、extendManyは腕の束縛を環境へ追加する向きを閉じる | 入力の適用や腕への移行もComp.substの交換だけで処理するとした前の記述を撤回する。これらの遷移は捕捉を延長し、Comp.substを使わない |
+| 局所文脈（再レビュー軽1） | 任意の L と CaptureLocals を保持する。空列、None列の延長、構築器の追加を empty / localExtend / localExtend_many / pushBuilder で閉じた。元の HasTypeCQ が束縛下の種類の shift を担当する | NoBuilders に制限する案は撤回する。局所の参照を保持する現在の構成では some kind が必要である。L=[] に戻す専用の移送も要求しない |
+| handler の結果（再々レビュー中1・軽2） | K_Handleは閉じたdone(t,ec)のAnnotationと、ソースの結果型tsだけのAnnotationを持つ。ソースRsのDeclaredも維持する。閉じたt単独のAnnotationはdone型に含まれるため除いた | ソースecsのAnnotationやdeclaredEff ebsは要求しない。閉じた像だけで節のCaptureOkを作れるとした前の説明は撤回した。C_Handleは変更しない |
+| ハンドラの包含（中1） | C_Handle / C_Handle_Fail を Eff.Sub に戻す。Eff.Sub.bind / shiftV / shiftTypes と三族のハンドラの場合を閉じ直す。K_Handle の Sub は保持する | K_Handle を Covers に緩める案は採らない。C_Sub / C_Eff の Covers は従来どおりである |
+| DependentClosureTy | hideBuilders Ψ の CaptureOk と hideConts Γ の TelBodyTy、ソース Tel の Annotation、閉じた Tel の Annotation を保持する。各入力の下で外側の捕捉値だけを具体化する | 閉じた結果だけを示してソースの契約の Declared を省く案、すべての入力型を同じ外側の Γ だけで読む案は採らない |
+| ストアの移送 | CaptureOk/ImageOk/DependentClosureTy は PreservesNormals、任意の計算を持つ ClosureTy は Extends を使う。閉包の捕捉境界では hideBuilders 同士の Extends を PreservesNormals から導く | 計算中の構築器の場所を消す移送を許す案は採らない |
+| TelBody の置換と R | 内部の ReturnFreeImages は全 R0 について SubstOk を作れる像を表す。None と some Unit の二つの証拠から contLoc を除外する changeReturn を証明し、値の束縛の下の up を構成する。これにより終端で決まる自分の return 契約を選べる。公開の TelBodyTy.subst は全 R0 の像を受け取る。V_DependentLam の入口は hide から内部で供給する | 本体の結果を決める前に任意の継続場所の R を一つに固定する案、像を閉じた通常値に限る案は採らない。一般の CQ の R0 拘束は前群のまま保つ |
+| 逆向きの TelArgs | of_arguments は Tel.arguments の結果、HasTypeVsQ、元の dependentFn の Annotation、Γ の WF を受ける。一束縛を除く openValue の型付き像と、shift の取消しを作り、後続 Tel の Annotation を逐次導く。新しい組込みの信頼条件は不要である | TelArgs から Vs への既存の arguments を逆向きの証拠として使う案、逐次の各 Annotation を未証明の前提として呼出し側へ渡す案は採らない |
+| 依存 β の構文 | Capture.openTel は一引数の bind と環境延長の交換、Capture.instantiate は全入力について Tel.instantiate と Capture.extendMany が同じ終端の型・行を返すことを示す。closeVals の観測が Val.substList と一致することから、実行が読む値でも closeTel と instantiate の交換を示す | Val.substList だけの等式を closeVals の実行の証拠とする案は採らない。関数を観測できることにする案、全状態の保存をこの構文の等式だけから主張する案も採らない |
+| 旧lamとの接続 | bindParams_cons と TelBodyTy.toTel_iff で、旧lamの全入力を一括で束縛する本体判断と、Tel の逐次束縛を一致させる。SameInputs.toTel/bind と閉じた値置換の不変性も置く | 旧lamの結果を Unit に固定する案、依存入力の順を失う一括置換へ Tel を変更する案は採らない |
+| 場所の Declared | LocTy.Declared/StoreTy.Declared を StoreOk の WF と別の欄に持つ。ref/lazy の内容と cont の入力・結果・行・R を閉じた文脈で照合する。reference_declared/lazy_declared/cont_result_declared は任意の C/Γ へ移して供給する | 閉じた WF から宣言表との整合も従うとする案は採らない。宣言されていない data の場所が WF を満たし StoreOk を満たさない例を境界入力に置く |
+| guard の枠（再レビュー中1・中2） | 元の Ψ、HasTypeArmsQ の arms0 / L、CaptureLocals Ψ cap.env L ρ、arms = Arm.resolveLocalsList ρ arms0 を持つ。値は v = closeVal cap vs。HasTypeVQ.resolve_idにより解決後の値と等しい。guard と body は同じ Ψ / localExtend を使い、guard だけ hideConts・R=none・empty とする。Rs の Declared、元の捕捉 Γ/Φ、成功時の閉包、MatchPrefix を保持する | ソースの結果・効果に Ty.Declared (.dependentFn (.done as es)) を足す案は、元の腕から導けないため撤回する。OpenArmsTy による二重の判断や guard だけ hideBuilders Ψ にする案も採らない |
+| 状態の適格性と閉性（重3） | matchRun は ∃ vs, v = closeVal cap vs と、ソースの match vs arms の ClosureTy を保持する。実行値 v.Ground と、ソースの腕の Arm.ClosedList 0 cap.values.length arms は分ける。ContTy.adequate、adequateArms、Valid σ、末尾の BuiltinOnly/Eb は保持する | 閉じた v を、開いた腕と同じソース文脈で再検査する旧の案は撤回する。Ready を全状態へ要求する案も採らない |
+| 定義の配置（再レビュー軽2） | ClosureTy はソースの相互帰納の直後へ出し、CaptureOk / HasTypeCQ へ一方向に依存させる。相互帰納の型は17から14へ減った（ClosureTy と OpenCodeTy / OpenArmsTy を除く）。ソースの71構成子は ClosureTy.mk を含めて不変である。LocalResolve / LocalResolveLemmas を本番へ追加した | 型付き像を循環する関数の定義で回避する案は採らない。相互に依存しない ClosureTy まで同じ帰納へ含める旧の配置は撤回する |
+
+再レビュー後の ClosureTy.mk の主要部は次の形である。ソースの71構成子は不変で、ClosureTy は相互帰納の外にある。外側の移動・置換・narrowing は捕捉済みの証拠を再利用し、ストアの拡張は ClosureTy.store で HasTypeCQ と CaptureLocals の双方へ適用する。
+
+```text
+CaptureLocals Ψ ν L ρ ↔
+  ∀ i kind, L[i]? = some (some kind) →
+    ∃ l, ρ i = loc l ∧ Ψ l = some (builder (substKind ν kind))
+
+ClosureTy.mk :
+  CaptureOk P B Ψ R Γ Φ cap →
+  HasTypeCQ P B Ψ Qempty [] (bindParams Γ ss) (liftMany ss.length Φ) Rs code0 a e L →
+  CaptureLocals Ψ (upSubst ss.length cap.env) L ρ → code = code0.resolveLocals ρ →
+  TypeAnnotations P [] Γ ss → TypeAnnotations P [] [] (ss.map cap.closeTy) →
+  cap.closeRAt ss.length Rs = R →
+  Annotation P [] (bindParams [] (ss.map cap.closeTy)) (cap.closeTyAt ss.length a) →
+  Annotation P [] (bindParams [] (ss.map cap.closeTy))
+    (dependentFn (done (cap.closeTyAt ss.length a) (cap.closeEffAt ss.length e))) →
+  (∀ r, Rs = some r → r.Declared P [] (bindParams Γ ss)) →
+  (∀ r, R = some r → r.Declared P [] (bindParams [] (ss.map cap.closeTy))) →
+  ClosureTy P B Ψ (ss.map cap.closeTy) R (mk cap code)
+    (cap.closeTyAt ss.length a) (cap.closeEffAt ss.length e)
+```
+
+ClosureTy.capture_resolved は入力0個のこの構成を CaptureOk.substOk.annotation から作る。ClosureTy.capture は L=[] の場合を恒等の参照置換で作る。ClosureTy.pure は閉じた本体の型付けと結果・効果の Annotation から作り、Ψ.WF は要求しない。完全な宣言は [第4版の公開宣言の一覧](02b-closures-r4-public-api.md)に置く。
+
+### 30.3 第24節の今回の義務と送り先
+
+| 出どころ | この群で閉じた部分 | 残る担当・条件 |
+|---|---|---|
+| RV-values 中2・D29 | C_DependentApp と本体の逐次 Tel の判断、旧lamの本体との toTel_iff、実行用署名と静的契約の照合 | `.11` が fn と dependentFn(toTel …) の正規化後の等号、L20/L70 が kind 表付きの適格な旧導出の埋め込みを閉じる |
+| RV-external 軽3 | C_DependentApp の TelArgs と、文脈の WF・元の Tel の Annotation・Vs・arguments からの of_arguments。捕捉の bind と instantiate/extendMany の交換 | L20 がこの補題と捕捉の具体化から E_ExternalApply の保存を示す。外部の受信後の篩検査は既定の `.04/.05` |
+| RV-values 軽4・RV-handlers 軽1 | StoreOk の場所の Declared、腕・節の捕捉したソース契約の Declared、ClosureTy のソースと出力 R の Declared、DependentClosureTy のソースと出力 Tel の Annotation、場所の Declared を任意の文脈へ渡す補題 | L20 が E_RefNew/E_Lazy/継続の保存で生成時の証拠を供給し、L20/L70 が D29 の ResumeL 等に接続する |
+| RV-handlers 重1 | guard_context は元の Source の Ψ / localExtend を保持する。K_Guard は同じ Ψ の HasTypeArmsQ、元の arms0 / L / ρ と CaptureLocals を持つ。hideConts/R=none/empty/全Φの扱いは Source とそろえる | `.14a` の代表と L20 の全状態の保存で、成功・失敗の遷移へ接続する |
+| L10/L20から移した一般化 | 8導出、三族・TypedFacts・正則性、TelBody/捕捉環境/依存βの構文の交換、ContTy10/CellOk6/StoreOk/StateTyE4/StateTy | `.03` の参照順序・None/extend、`.14a` の固定 Eb の代表、`.14b` の ground からの Φ の代表、L20 の全76遷移の保存・進行・step_sound は残る。同じ構文の交換を再配賦しない |
+| RV-closures 軽2 / closeVal の型付け | 今回は対象の遷移の値を具体的に型付けた | L20 が `.11` の fn と dependentFn の接続後に一般の closeVal の型付けを閉じる。Val.subst の型付けでは代用しない |
+| RV-closures 軽2 / CaptureOk の hide | None の番号と閉じた実行時 Ψ を保持した | L20 が hideConts Γ / hideBuilders Ψ / R=none への移送と、通常の場所の型の保持を閉じる |
+| RV-closures 軽3 / 結果の正則性 | 今回の正例では必要な Annotation を直接構成した | L20 が HasTypeCQ の結果の WF / Sorted を一般に導く |
+| RV-closures 軽4 / 腕の効果の拡大 | K_Guard の Sub と HasTypeArmsQ のソース契約を保持した | L20 が HasTypeArmsQ の結果・効果を広げる補題を閉じる |
+| RV-closures 重2の同因箇所・再々レビュー中2・中3 | code0 / L / ρ、builderBody_image、構文の交換、解決の恒等、CaptureLocalsの開放、37正例を置いた | L20が構築器の生成に交換、入力と腕にCaptureLocalsの開放、値と節に恒等の補題を使い、全遷移の保存へ接続する。分岐は同じL/ρ。closeValの一般の型付けは別に閉じる |
+| 再々レビュー軽3 / 効果の拡大 | done_annotation_of_covers、Eff.Covers.widen_atoms、done_annotation_with_atomsを置き、重複Fail・ε≠ec・CoversだがSubではない正例でE_Handle/E_Opを閉じた | L20がC_Eff/C_Subの下のhandlerの反転で内側のAnnotationを得る。E_Opの節はεの原子・ecのFailの行へ広げ、その行のSubをStateTyEへ渡す |
+| 次の群 | この群の実装だけを既定 import に含めた | `.02c` は共有層・import の整合を担当する。この群では共有層へ進んでいない |
+
+群末の実際の件数・ビルド・公理依存・境界入力は [results.md](results.md) と [第4版の公開宣言の一覧](02b-closures-r4-public-api.md)に記録する。独立レビューと受け入れは取りまとめ・設計者の担当である。
+
+## 31. RV-L00b.02b-closures-r4 を受けた L20 の義務（2026-10-31、取りまとめの追記）
+
+[RV-L00b.02b-closures-r4](../reviews/RV-L00b.02b-closures-r4.md) は条件付き可（重なし、中1・軽2）だった。定義は変えず、次の義務を L20 の最初に引き継ぐ。第24節と第30.3節の該当の行に加えて、この節を読む。
+
+| 義務 | 内容 | 根拠 |
+|---|---|---|
+| E_BuilderNew の保存の道筋（中1） | `CaptureOk` は継続の項目の行を読まないので、`builderBody_image` の前提 `Ctx.WF` を `ClosureTy` から供給できない閉包がある。前提を外す案は成り立たない（`Γ.extendNone` から同じ Γ への `SubstOk` が偽である）。継続の行だけを正規化した文脈 `Ctx.normConts Γ` へ移す `builderBody_image_norm` を本番へ置き、`CaptureOk.normConts` の接続を証明する。接続は未実行である | [rv-02b-closures-r4-builder-dup.lean](rv-02b-closures-r4-builder-dup.lean) |
+| 結果の正則性の前提（軽1） | `HasTypeVQ.declared`・`HasTypeCQ.declared` の `Ctx.Declared`、`SubstOk.openValue`・`HasTypeTelArgsQ.of_arguments` の `Ctx.WF` は、一般の閉包の文脈で供給できない。L20 の結果の正則性は、緩めた `CaptureWF`・`CaptureSorted`・`CaptureDeclared` から導く | RV-r4 の軽1 |
+| 範囲外の値変数を行に持つ遷移（軽2） | 遷移の表の行は重複 Fail と原子の差である。Fail の型の述語に範囲外の値変数を持つ行の E_Handle → E_Op を、L20 の E_Op の保存の検査に含める | RV-r4 の軽2 |
+| 型の置換の型付け | E_Fun・E_Meth・E_Op・E_OpPrim の `substTy` を保つ、旧 `TySubst`・`TySubstMain` に当たる補題は Refinement にまだない。plan.md の L20 の行が持つ「型/行/範囲/値の置換」の内数であり、移動・値の相互置換・narrowing の71場合とは別の族として数える。節の本体は `hideBuilders` の上で検査するので、`ClosureTy` の L・ρ には及ばない | RV-r4 の範囲外の一件 |
+

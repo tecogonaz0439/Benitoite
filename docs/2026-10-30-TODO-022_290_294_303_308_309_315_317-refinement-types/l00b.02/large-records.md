@@ -20,3 +20,54 @@
 | `02b-handlers-r2-axioms.log` | 1070657 | `c63ea4767f682ef5f072737bf4b468fc88ac8f33b78d16ce3b06d7944693afee` |
 | `02b-handlers-r2-axioms.log` | 1070864 | `f5a579990786839040952832f0728eeb82a8ac32dfb70a9d56c33e891d872e1c` |
 | `02b-handlers-r3-axioms.log` | 1070968 | `58aefaae39d9a1c3d0e54c1897abc9d94e8466c2b81394435ad151efe8db5e82` |
+
+### `.02b-closures` の初回照合（捕捉した腕・節の契約のDeclaredを補足する前）
+
+| 記録 | 保存先 | バイト | SHA-256 |
+|---|---|---:|---|
+| `02b-closures-axioms.log` | `<tmp>` | 1,106,308 | `06a4ba0d23d135ce65d1b2fc0dca8fa04586ae713554d0b617e5be7f88b9d901` |
+
+### `.02b-closures` の再照合（Noneの実行値を許す補足前）
+
+| 記録 | 保存先 | バイト | SHA-256 |
+|---|---|---:|---|
+| `02b-closures-axioms.log` | `<tmp>` | 1,106,308 | `06a4ba0d23d135ce65d1b2fc0dca8fa04586ae713554d0b617e5be7f88b9d901` |
+
+### `.02b-closures` の群末
+
+| 記録 | 保存先 | バイト | SHA-256 |
+|---|---|---:|---|
+| `02b-closures-axioms.log` | `<tmp>` | 1,106,308 | `06a4ba0d23d135ce65d1b2fc0dca8fa04586ae713554d0b617e5be7f88b9d901` |
+
+### `.02b-closures` の再レビュー前の検査
+
+| 記録 | 保存先 | バイト | SHA-256 |
+|---|---|---:|---|
+| `02b-closures-r2-public-api.log` | `<tmp>` | 104,637 | `85cdcd71ca14584b36bbaff28cfcd8d4ab91567f4f7b9ccaeabd12d511abbcfe` |
+| `02b-closures-r2-axioms.log` | `<tmp>` | 1,121,008 | `7eee7931e7c4f11fc88d007ed9e9667f978ff8d595c4da8c59e42a3183445549` |
+
+### `.02b-closures` の第3版の検査
+
+| 記録 | 保存先 | バイト | SHA-256 |
+|---|---|---:|---|
+| `02b-closures-r3-public-api.log` | `<tmp>` | 184,980 | `8fb1273b2401a48b34b75358bc330fef590fff6bcb90037d2add40cf89f8af1a` |
+| `02b-closures-r3-public-api.md` | `<tmp>` | 185,019 | `83bc12cdc107641276efc94a3096dbdafd2522a581a853fb284855d8d38af242` |
+| `02b-closures-r3-axioms.log` | `<tmp>` | 1,139,066 | `8af5abe18bdd9e3cc72eedfb55dd30334125bed7d0255ffb352a125ea1d4975a` |
+
+### `.02b-closures` の第3版の検査
+
+| 記録 | 保存先 | バイト | SHA-256 |
+|---|---|---:|---|
+| `02b-closures-r3-axioms.log` | `<tmp>` | 1,139,089 | `f06115fd5407c7446b7e564f6013fe03afaf80f500e1720daec927300879a3a9` |
+
+### `.02b-closures` の第4版の検査
+
+| 記録 | 保存先 | バイト | SHA-256 |
+|---|---|---:|---|
+| `02b-closures-r4-axioms.log` | `<tmp>` | 1,147,490 | `80011ee67547648aa7693f932ef4590e2c952664de309e339fb43c9f16be612d` |
+
+### `.02b-closures` 第4版の固定対象の開始時入力
+
+| 記録 | 保存先 | バイト | SHA-256 |
+|---|---|---:|---|
+| `02b-closures-r4-protected-inputs-start.json` | `<tmp>` | 567,293 | `e3452f991fc44d6aed47e2f363ab7d990af2df6315be069e9e8e8014e9248e56` |

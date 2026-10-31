@@ -331,6 +331,10 @@ mutual
       refine .V_Lam hn (by simpa only [hm.length] using hw) (hm.sorted hs) ?_ (hd.context hm.declaration)
       exact context_comp hb hA hstore.hide ((hm.hide hA hstore).params hA hstore.hide ps)
         ((hm.hide hA hstore).conditions_params (fun p hp => (hf p hp).hideConts) ps)
+    | .V_DependentLam ha hb =>
+      exact .V_DependentLam (hm.annotation ha) (context_telBody hb hA hstore.hide
+        (hm.hide hA hstore) (fun p hp => (hf p hp).hideConts))
+    | .V_Closure ha hw hb => exact .V_Closure (hm.annotation ha) hw hb
     | .V_List he hw hs hd =>
       exact .V_List (context_each he hA hstore hm hf) (by simpa only [hm.length] using hw) (hm.sorted hs) (hd.context hm.declaration)
     | .V_Fun hd hn ha hi => exact .V_Fun hd hn (by simpa only [hm.length] using ha) (hm.signature hi)
@@ -399,6 +403,8 @@ mutual
           exact (hf q hq).under_none)) (hd.context hm.declaration)
     | .C_BuilderOp ha hk hr hv => exact .C_BuilderOp (hm.annotation ha) hk hr (context_values hv hA hstore hm hf)
     | .C_Return hv => exact .C_Return (context_value hv hA hstore hm hf)
+    | .C_DependentApp hv ht =>
+      exact .C_DependentApp (context_value hv hA hstore hm hf) (context_telArgs ht hA hstore hm hf)
     | .C_App hv hs => exact .C_App (context_value hv hA hstore hm hf) (context_values hs hA hstore hm hf)
     | .C_If hv hm' hn =>
       exact .C_If (context_value hv hA hstore hm hf) (context_comp hm' hA hstore hm hf) (context_comp hn hA hstore hm hf)
@@ -483,6 +489,18 @@ mutual
     | .param ha hv ht =>
       exact .param (hm.annotation ha) (context_value hv hA hstore hm hf)
         (context_telArgs ht hA hstore hm hf)
+
+  private theorem context_telBody {P B store Q C Γ Φ t body}
+      (h : TelBodyTy P B store Q C Γ Φ t body)
+      (hA : Builtins.ValueAssumptions P B) (hw : store.WF) {Δ Ξ}
+      (hm : ContextMap P B store Q C Γ Δ Ξ)
+      (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) p) :
+      TelBodyTy P B store Q C Δ Ξ t body := by
+    match h with
+    | .done hb => exact .done (context_comp hb hA hw hm hf)
+    | .param (a := a) hb =>
+      exact .param (context_telBody hb hA hw (by simpa only [bindParams_single,List.length_cons,List.length_nil,Nat.zero_add,liftMany_one] using hm.params hA hw [a])
+        (by simpa only [bindParams_single,List.length_cons,List.length_nil,Nat.zero_add,liftMany_one] using hm.conditions_params hf [a]))
 
   private theorem context_at_call {P B store Q C Γ Φ kind name shape bases pattern input index}
       (h : AtCallAdmissible P B store Q C Γ Φ kind name shape bases pattern input index)
@@ -573,6 +591,12 @@ theorem HasTypeCQ.narrow {P B store Q C Γ Φ R m a e L Δ Ξ}
     (h : HasTypeCQ P B store Q C Γ Φ R m a e L) (hA : Builtins.ValueAssumptions P B) (hstore : store.WF) (hn : Ctx.Narrows P C Γ Φ Δ Ξ) :
     HasTypeCQ P B store Q C Δ Ξ R m a e L :=
   context_comp h hA hstore (hn.contextMap hA hstore) (fun _ hp => .hyp (List.mem_append_right _ (hn.conditions ▸ hp)))
+
+theorem TelBodyTy.narrow {P B store Q C Γ Φ t body Δ Ξ}
+    (h : TelBodyTy P B store Q C Γ Φ t body)
+    (hA : Builtins.ValueAssumptions P B) (hw : store.WF) (hn : Ctx.Narrows P C Γ Φ Δ Ξ) :
+    TelBodyTy P B store Q C Δ Ξ t body :=
+  context_telBody h hA hw (hn.contextMap hA hw) (fun _ hp => .hyp (List.mem_append_right _ (hn.conditions ▸ hp)))
 
 theorem HasTypeTelArgsQ.narrow {P B store Q C Γ Φ vs t a e Δ Ξ}
     (h : HasTypeTelArgsQ P B store Q C Γ Φ vs t a e)

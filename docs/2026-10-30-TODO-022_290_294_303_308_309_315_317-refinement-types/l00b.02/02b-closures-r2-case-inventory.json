@@ -1,0 +1,422 @@
+[
+  {
+    "type": "Benitoite.Release.Refinement.Sort",
+    "constructors": 14,
+    "names": "[Benitoite.Release.Refinement.Sort.integer,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.Term",
+    "constructors": 20,
+    "names": "[Benitoite.Release.Refinement.Term.var,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.Pred",
+    "constructors": 14,
+    "names": "[Benitoite.Release.Refinement.Pred.truth,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.Ty",
+    "constructors": 21,
+    "names": "[Benitoite.Release.Refinement.Ty.base,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.Tel",
+    "constructors": 2,
+    "names": "[Benitoite.Release.Refinement.Tel.done,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.Atom",
+    "constructors": 2,
+    "names": "[Benitoite.Release.Refinement.Atom.name,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.RangeExpr",
+    "constructors": 3,
+    "names": "[Benitoite.Release.Refinement.RangeExpr.absolute,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.RangeIx",
+    "constructors": 2,
+    "names": "[Benitoite.Release.Refinement.RangeIx.fixed,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.Const",
+    "constructors": 16,
+    "names": "[Benitoite.Release.Refinement.Const.integer,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.PathBase",
+    "constructors": 5,
+    "names": "[Benitoite.Release.Refinement.PathBase.root,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.PathEnv",
+    "constructors": 1,
+    "names": "[Benitoite.Release.Refinement.PathEnv.mk]"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.TargetInput",
+    "constructors": 3,
+    "names": "[Benitoite.Release.Refinement.TargetInput.absolute,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.AtFailure",
+    "constructors": 7,
+    "names": "[Benitoite.Release.Refinement.AtFailure.outsideScope,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.AtError",
+    "constructors": 1,
+    "names": "[Benitoite.Release.Refinement.AtError.mk]"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.ExternalId",
+    "constructors": 1,
+    "names": "[Benitoite.Release.Refinement.ExternalId.mk]"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.ComponentId",
+    "constructors": 1,
+    "names": "[Benitoite.Release.Refinement.ComponentId.mk]"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.ExternalFunctionId",
+    "constructors": 1,
+    "names": "[Benitoite.Release.Refinement.ExternalFunctionId.mk]"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.FieldRef",
+    "constructors": 1,
+    "names": "[Benitoite.Release.Refinement.FieldRef.mk]"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.Measure",
+    "constructors": 7,
+    "names": "[Benitoite.Release.Refinement.Measure.stringBytes,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.Comparison",
+    "constructors": 6,
+    "names": "[Benitoite.Release.Refinement.Comparison.eq,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.FloatClass",
+    "constructors": 6,
+    "names": "[Benitoite.Release.Refinement.FloatClass.finite,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.FloatWidth",
+    "constructors": 2,
+    "names": "[Benitoite.Release.Refinement.FloatWidth.binary32,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.TyKind",
+    "constructors": 2,
+    "names": "[Benitoite.Release.Refinement.TyKind.value,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.TParamDecl",
+    "constructors": 1,
+    "names": "[Benitoite.Release.Refinement.TParamDecl.mk]"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.ClassDecl",
+    "constructors": 1,
+    "names": "[Benitoite.Release.Refinement.ClassDecl.mk]"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.Def",
+    "constructors": 1,
+    "names": "[Benitoite.Release.Refinement.Def.mk]"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.MethSig",
+    "constructors": 1,
+    "names": "[Benitoite.Release.Refinement.MethSig.mk]"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.PrimSig",
+    "constructors": 1,
+    "names": "[Benitoite.Release.Refinement.PrimSig.mk]"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.ProperApply",
+    "constructors": 7,
+    "names": "[Benitoite.Release.Refinement.ProperApply.variable,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.Term.HasData",
+    "constructors": 3,
+    "names": "[Benitoite.Release.Refinement.Term.HasData.var,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.Ty.LeQ",
+    "constructors": 12,
+    "names": "[Benitoite.Release.Refinement.Ty.LeQ.refl,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.TelLe",
+    "constructors": 2,
+    "names": "[Benitoite.Release.Refinement.TelLe.done,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.TelClosure",
+    "constructors": 2,
+    "names": "[Benitoite.Release.Refinement.TelClosure.refl,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.CheckedWitness",
+    "constructors": 2,
+    "names": "[Benitoite.Release.Refinement.CheckedWitness.plain,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.AtCallAdmissible",
+    "constructors": 1,
+    "names": "[Benitoite.Release.Refinement.AtCallAdmissible.mk]"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.PathEnv.Required",
+    "constructors": 2,
+    "names": "[Benitoite.Release.Refinement.PathEnv.Required.base,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.PreparationNode.Reachable",
+    "constructors": 2,
+    "names": "[Benitoite.Release.Refinement.PreparationNode.Reachable.root,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.PrimKind",
+    "constructors": 9,
+    "names": "[Benitoite.Release.Refinement.PrimKind.pure,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.ResultShape",
+    "constructors": 1,
+    "names": "[Benitoite.Release.Refinement.ResultShape.mk]"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.HasTypeVQ",
+    "constructors": 28,
+    "names": "[Benitoite.Release.Refinement.HasTypeVQ.V_Var,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.HasTypeArmsQ",
+    "constructors": 3,
+    "names": "[Benitoite.Release.Refinement.HasTypeArmsQ.nil,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.HasTypeClausesQ",
+    "constructors": 2,
+    "names": "[Benitoite.Release.Refinement.HasTypeClausesQ.nil,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.HasFailureClause",
+    "constructors": 1,
+    "names": "[Benitoite.Release.Refinement.HasFailureClause.one]"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.ImageOk",
+    "constructors": 3,
+    "names": "[Benitoite.Release.Refinement.ImageOk.ordinary,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.PatTy",
+    "constructors": 7,
+    "names": "[Benitoite.Release.Refinement.PatTy.P_Wild,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.PatTys",
+    "constructors": 2,
+    "names": "[Benitoite.Release.Refinement.PatTys.nil,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.Inhabits",
+    "constructors": 23,
+    "names": "[Benitoite.Release.Refinement.Inhabits.const,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.InhabitsAll",
+    "constructors": 2,
+    "names": "[Benitoite.Release.Refinement.InhabitsAll.nil,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.InhabitsEach",
+    "constructors": 2,
+    "names": "[Benitoite.Release.Refinement.InhabitsEach.nil,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.HasTypeCQ",
+    "constructors": 21,
+    "names": "[Benitoite.Release.Refinement.HasTypeCQ.C_BuilderLet,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.HasTypeTelArgsQ",
+    "constructors": 2,
+    "names": "[Benitoite.Release.Refinement.HasTypeTelArgsQ.done,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.TelBodyTy",
+    "constructors": 2,
+    "names": "[Benitoite.Release.Refinement.TelBodyTy.done,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.CaptureOk",
+    "constructors": 1,
+    "names": "[Benitoite.Release.Refinement.CaptureOk.mk]"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.ClosureTy",
+    "constructors": 1,
+    "names": "[Benitoite.Release.Refinement.ClosureTy.mk]"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.OpenCodeTy",
+    "constructors": 11,
+    "names": "[Benitoite.Release.Refinement.OpenCodeTy.typed,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.OpenArmsTy",
+    "constructors": 4,
+    "names": "[Benitoite.Release.Refinement.OpenArmsTy.typed,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.DependentClosureTy",
+    "constructors": 1,
+    "names": "[Benitoite.Release.Refinement.DependentClosureTy.mk]"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.ContTy",
+    "constructors": 10,
+    "names": "[Benitoite.Release.Refinement.ContTy.K_Empty,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.ExternalMode",
+    "constructors": 2,
+    "names": "[Benitoite.Release.Refinement.ExternalMode.borrow,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.ExternalKey",
+    "constructors": 2,
+    "names": "[Benitoite.Release.Refinement.ExternalKey.type,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.ExternalDecl",
+    "constructors": 2,
+    "names": "[Benitoite.Release.Refinement.ExternalDecl.type,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.ExternalPosition",
+    "constructors": 2,
+    "names": "[Benitoite.Release.Refinement.ExternalPosition.argument,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.ExternalPathStep",
+    "constructors": 4,
+    "names": "[Benitoite.Release.Refinement.ExternalPathStep.element,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.ExternalValueType",
+    "constructors": 9,
+    "names": "[Benitoite.Release.Refinement.ExternalValueType.scalar,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.ExternalOccurrence",
+    "constructors": 6,
+    "names": "[Benitoite.Release.Refinement.ExternalOccurrence.root,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.ExternalUseAt",
+    "constructors": 3,
+    "names": "[Benitoite.Release.Refinement.ExternalUseAt.argument,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.ExternalTelWF",
+    "constructors": 2,
+    "names": "[Benitoite.Release.Refinement.ExternalTelWF.done,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.HasTypeVsQ",
+    "constructors": 2,
+    "names": "[Benitoite.Release.Refinement.HasTypeVsQ.nil,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.HasTypeEachQ",
+    "constructors": 2,
+    "names": "[Benitoite.Release.Refinement.HasTypeEachQ.nil,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.Val",
+    "constructors": 25,
+    "names": "[Benitoite.Release.Refinement.Val.var,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.Comp",
+    "constructors": 16,
+    "names": "[Benitoite.Release.Refinement.Comp.builderLet,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.Capture",
+    "constructors": 1,
+    "names": "[Benitoite.Release.Refinement.Capture.mk]"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.Closure",
+    "constructors": 1,
+    "names": "[Benitoite.Release.Refinement.Closure.mk]"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.LocTy",
+    "constructors": 4,
+    "names": "[Benitoite.Release.Refinement.LocTy.builder,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.Frame",
+    "constructors": 7,
+    "names": "[Benitoite.Release.Refinement.Frame.letF,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.Cell",
+    "constructors": 6,
+    "names": "[Benitoite.Release.Refinement.Cell.builder,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.State",
+    "constructors": 4,
+    "names": "[Benitoite.Release.Refinement.State.run,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.Event",
+    "constructors": 3,
+    "names": "[Benitoite.Release.Refinement.Event.io,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.BuilderContents",
+    "constructors": 3,
+    "names": "[Benitoite.Release.Refinement.BuilderContents.string,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.LocalRef.HasKind",
+    "constructors": 2,
+    "names": "[Benitoite.Release.Refinement.LocalRef.HasKind.bound,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.Step",
+    "constructors": 76,
+    "names": "[Benitoite.Release.Refinement.Step.E_BuilderNew,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.Steps",
+    "constructors": 2,
+    "names": "[Benitoite.Release.Refinement.Steps.nil,"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.Arm",
+    "constructors": 1,
+    "names": "[Benitoite.Release.Refinement.Arm.mk]"
+  },
+  {
+    "type": "Benitoite.Release.Refinement.Clause",
+    "constructors": 2,
+    "names": "[Benitoite.Release.Refinement.Clause.mk,"
+  }
+]

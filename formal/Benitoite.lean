@@ -312,3 +312,6 @@ import Benitoite.Release.Refinement.PatternTransport
 import Benitoite.Release.Refinement.AtPatterns
 
 import Benitoite.Release.Refinement.HandlerTyping
+
+import Benitoite.Release.Refinement.ClosureTyping
+import Benitoite.Release.Refinement.StateTyping

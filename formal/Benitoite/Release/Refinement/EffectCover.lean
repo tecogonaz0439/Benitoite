@@ -99,6 +99,28 @@ theorem Eff.Covers.bind {Γ Φ Δ Ψ outer inner} (h : Covers Γ Φ outer inner)
         rwa [Atom.covers_rho_iff.mp hbi] at hb
       exact Or.inr ⟨i, f, x, hf, ho, hx, hxt⟩
 
+theorem Eff.sub_norm_left {e f} : Eff.Sub e.norm f ↔ Eff.Sub e f := by
+  simp only [Eff.Sub,Eff.mem_norm,Eff.norm_memFail]
+
+theorem Eff.sub_norm_right {e f} : Eff.Sub e f.norm ↔ Eff.Sub e f := by
+  simp only [Eff.Sub,Eff.mem_norm,Eff.norm_memFail]
+
+/-- 構造上の包含は、一原子の被覆と区別したまま同時置換で保存する。 -/
+theorem Eff.Sub.bind {inner outer} (h : Eff.Sub inner outer) (θ : SubstEnv) :
+    Eff.Sub (Eff.bind θ inner) (Eff.bind θ outer) := by
+  rw [Eff.bind,Eff.bind,Eff.sub_norm_left,Eff.sub_norm_right]
+  constructor
+  · intro a ha
+    rcases (Eff.mem_rawBind θ inner a).mp ha with ⟨b,hb,he,hi⟩ | ⟨i,f,hf,hi,ha⟩
+    · exact (Eff.mem_rawBind θ outer a).mpr (Or.inl ⟨b,h.1 b hb,he,hi⟩)
+    · exact (Eff.mem_rawBind θ outer a).mpr (Or.inr ⟨i,f,hf,h.1 _ hi,ha⟩)
+  · intro t ht
+    rw [Eff.memFail_rawBind] at ht ⊢
+    rcases ht with ⟨x,hx,hxt⟩ | ⟨i,f,x,hf,hi,hx,hxt⟩
+    · obtain ⟨y,hy,hyx⟩ := h.2 x ⟨x,hx,rfl⟩
+      exact Or.inl ⟨y,hy,(Ty.rawBind_norm_congr θ hyx).trans hxt⟩
+    · exact Or.inr ⟨i,f,x,hf,h.1 _ hi,hx,hxt⟩
+
 /-- 対象の集合が二つの範囲に含まれても、一原子を二原子に分割して覆えない。 -/
 theorem cannot_split_one_atom (Γ : Ctx) (Φ : List Pred) (l : EffName) (host : Scope.Domain.HostPattern) :
     ¬ Eff.Covers Γ Φ

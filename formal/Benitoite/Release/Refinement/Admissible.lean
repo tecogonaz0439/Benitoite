@@ -9,6 +9,10 @@ namespace Benitoite.Release.Refinement
 
 noncomputable section
 
+def Ctx.WF (nr nt : Nat) (Γ : Ctx) : Prop :=
+  ∀ (i : Nat) (a : Ty), Γ[i]? = some (some a) → a.WF nr nt Γ.length
+
+
 structure Ty.Annotation (P : Program) (C : List TParam) (Γ : Ctx) (a : Ty) : Prop where
   wf : a.WF 0 C.length Γ.length
   sorted : a.Sorted Γ

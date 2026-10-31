@@ -1,0 +1,150 @@
+Benitoite.Release.Refinement.ContTy.K_Guard {P : Program} {B : Builtins} {σ : PathEnv} {Ψ : StoreTy} {R : Option Ty}
+  {ε : Eff} {v : Val} {cap : Capture} {arms : List Arm} {next : Nat} {body : Closure} {k : Cont} {a b : Ty} {Eb : Eff}
+  {Re : Option Ty} {e1 : Eff} {Γ : Ctx} {Φ : List Pred} {Rs : Option Ty} {vs : Val} {t as : Ty} {es : Eff} :
+  CaptureOk P B Ψ R Γ Φ cap →
+    HasTypeV P B Ψ [] Γ Φ vs t →
+      HasTypeArmsQ P B Ψ Qempty [] Γ Φ Rs arms t as es →
+        Ty.Declared P [] Γ (Ty.dependentFn (Tel.done as es)) →
+          (∀ (r : Ty), Rs = some r → Ty.Declared P [] Γ r) →
+            Exhaustive P t (unguardedPats arms) →
+              v = closeVal cap vs →
+                cap.closeR Rs = R →
+                  cap.closeTy as = a →
+                    cap.closeEff es = e1 →
+                      ClosureTy P B Ψ [] R body a e1 →
+                        e1.Sub ε →
+                          MatchPrefix v arms next →
+                            ContTy P B σ Ψ R ε k a b Eb Re →
+                              Frame.Adequate σ (Frame.guardF v cap arms next body) →
+                                ContTy P B σ Ψ none Eff.empty (Frame.guardF v cap arms next body :: k)
+                                  (Ty.base BaseTy.boolean) b Eb Re
+Benitoite.Release.Refinement.ContTy.K_Handle_Fail {P : Program} {B : Builtins} {σ : PathEnv} {Ψ : StoreTy}
+  {R : Option Ty} {ε ec rest : Eff} {E : Ty} {cap : Capture} {h : List Clause} {k : Cont} {t b : Ty} {Eb : Eff}
+  {Re : Option Ty} {Γ : Ctx} {Φ : List Pred} {Rs : Option Ty} {ts : Ty} {ecs : Eff} {Es : Ty} :
+  ContTy P B σ Ψ R ε k t b Eb Re →
+    Eff.Covers [] [] ε rest →
+      NoFail Qempty rest →
+        CaptureOk P B (hideBuilders Ψ) R Γ Φ cap →
+          HasFailureClause P B (hideBuilders Ψ) Qempty [] Γ Φ Es Rs h ts ecs →
+            cap.closeR Rs = R →
+              cap.closeTy ts = t →
+                cap.closeEff ecs = ec →
+                  cap.closeTy Es = E →
+                    (∀ (a : Ty), Rs = some a → Ty.Declared P [] Γ a) →
+                      Eff.Covers [] [] ε ec →
+                        Ty.Annotation P [] [] t →
+                          Frame.Adequate σ (Frame.handleF cap h) →
+                            ContTy P B σ Ψ R ((Eff.singleFail E).union rest) (Frame.handleF cap h :: k) t b Eb Re
+Benitoite.Release.Refinement.StoreOk.cont_result_declared {P : Program} {B : Builtins} {σ : PathEnv} {Ψ : StoreTy}
+  {μ : Store} {l : Nat} {a b : Ty} {e : Eff} {R : Option Ty} {C : List TParam} {Γ : Ctx} (h : StoreOk P B σ Ψ μ)
+  (hl : Ψ l = some (LocTy.cont a b e R)) : Ty.Declared P C Γ b
+Benitoite.Release.Refinement.TelBodyTy.subst {P : Program} {B : Builtins} {Ψ : StoreTy} {Q : NoFailCtx}
+  {C : List TParam} {Γ : Ctx} {Φ : List Pred} {t : Tel} {body : Comp} {Δ : Ctx} {Ξ : List Pred} {ν : Nat → Val}
+  (h : TelBodyTy P B Ψ Q C Γ Φ t body) (hA : Builtins.SubstitutionAssumptions P B) (hw : Ψ.WF)
+  (ht : ∀ (R0 : Option Ty), SubstOk P B Ψ Q C Γ Φ Δ Ξ R0 ν)
+  (hf : ∀ (p : Pred), p ∈ Φ → Entails (Δ.facts ++ Ξ) (predBind (valEnv ν).values p))
+  (ρ : Nat → LocalRef := LocalRef.bound) :
+  TelBodyTy P B Ψ Q C Δ Ξ (Tel.bind (valEnv ν) t)
+    (Comp.subst (upSubst (telBinders t) ν) body (upLocalSubst (telBinders t) ρ))
+Benitoite.Release.Refinement.TelBodyTy.narrow {P : Program} {B : Builtins} {store : StoreTy} {Q : NoFailCtx}
+  {C : List TParam} {Γ : Ctx} {Φ : List Pred} {t : Tel} {body : Comp} {Δ : Ctx} {Ξ : List Pred}
+  (h : TelBodyTy P B store Q C Γ Φ t body) (hA : Builtins.ValueAssumptions P B) (hw : store.WF)
+  (hn : Ctx.Narrows P C Γ Φ Δ Ξ) : TelBodyTy P B store Q C Δ Ξ t body
+Benitoite.Release.Refinement.TelBodyTy.shift_values {P : Program} {B : Builtins} {store : StoreTy} {Q : NoFailCtx}
+  {C : List TParam} {Γ : Ctx} {Φ : List Pred} {t : Tel} {body : Comp} (h : TelBodyTy P B store Q C Γ Φ t body)
+  {k c : Nat} {Δ : Ctx} {Ξ : List Pred} {store' : StoreTy} (hA : Builtins.ValueAssumptions P B) (hw : store.WF)
+  (hext : store.Extends store') (hm : FullShiftMap k c Γ Δ)
+  (hf : ∀ (p : Pred), p ∈ Φ → Entails (Δ.facts ++ Ξ) (Pred.shiftV k c p)) :
+  TelBodyTy P B store' Q C Δ Ξ (Tel.shiftV k c t) (Comp.rename (upRen (telBinders t) (shiftIndex k c)) body)
+Benitoite.Release.Refinement.TelBodyTy.shift_types {P : Program} {B : Builtins} {store : StoreTy} {Q : NoFailCtx}
+  {C : List TParam} {Γ : Ctx} {Φ : List Pred} {t : Tel} {body : Comp} (h : TelBodyTy P B store Q C Γ Φ t body)
+  {C' : List TParam} {Δ : Ctx} {k c : Nat} (hA : Builtins.TypeAssumptions P B) (hw : store.WF)
+  (hC : TypeParamRenaming C C' (shiftIndex k c)) (hn : C'.length = C.length + k) (hm : TypeCtxMap k c Γ Δ) :
+  TelBodyTy P B store Q C' Δ Φ (shiftTelTypes k c t) (Comp.shiftEAt k c body)
+Benitoite.Release.Refinement.StateTy (P : Program) (B : Builtins) (σ : PathEnv) (s : State) : Prop
+Benitoite.Release.Refinement.Step.E_Lam {P : Program} {B : Builtins} {σ : PathEnv} {q : Closure} {signature : Tel}
+  {body : Closure} {ws : List Val} {k : Cont} {μ : Store} :
+  q.view = Comp.app (Val.closure signature body) ws →
+    ws.length = signature.arity → Step P B σ (State.run q k μ) none (State.run (body.apply ws) (markPush k) μ)
+Benitoite.Release.Refinement.step (P : Program) (B : Builtins) (σ : PathEnv) (oracle : Oracle)
+  (externalOracle : ExternalOracle) (rel : Val → Option ErrKind) (fresh : Store → Nat) :
+  State → Option (Option Event × State)
+BOUNDARY_DECLARATIONS 57
+'Benitoite.Release.Refinement.ClosureBoundary.undeclared_prior_conditions' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ClosureBoundary.dependent_lambda' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ClosureBoundary.legacy_closure' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.ClosureBoundary.seven.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.ClosureBoundary.dependent_lam_step' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ClosureBoundary.refined.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.ClosureBoundary.guard_frame._simp_1_3' depends on axioms: [propext]
+'Benitoite.Release.Refinement.ClosureBoundary.unit_state' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.ClosureBoundary.guard_with_builder' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ClosureBoundary.undeclaredHeap' does not depend on any axioms
+'Benitoite.Release.Refinement.ClosureBoundary.refinement.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.ClosureBoundary.closed_closure' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.ClosureBoundary.seven_typed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.ClosureBoundary.refined' does not depend on any axioms
+'Benitoite.Release.Refinement.ClosureBoundary.unitCode' does not depend on any axioms
+'Benitoite.Release.Refinement.ClosureBoundary.undeclared_wf' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.ClosureBoundary.seven' does not depend on any axioms
+'Benitoite.Release.Refinement.ClosureBoundary.undeclaredStore' does not depend on any axioms
+'Benitoite.Release.Refinement.ClosureBoundary.captured_fact' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.ClosureBoundary.beta_environment' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ClosureBoundary.capturedΓ.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.ClosureBoundary.undeclaredStore.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.ClosureBoundary.variableAlt' does not depend on any axioms
+'Benitoite.Release.Refinement.ClosureBoundary.dependent_call' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.ClosureBoundary.masked_capture' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.ClosureBoundary.guardedArms' does not depend on any axioms
+'Benitoite.Release.Refinement.ClosureBoundary.capture.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.ClosureBoundary.capturedΓ' does not depend on any axioms
+'Benitoite.Release.Refinement.ClosureBoundary.scalar' does not depend on any axioms
+'Benitoite.Release.Refinement.ClosureBoundary.scalar_annotation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ClosureBoundary.captured_beta' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.ClosureBoundary.dependent_arguments' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ClosureBoundary.capturedΦ' does not depend on any axioms
+'Benitoite.Release.Refinement.ClosureBoundary.guard_frame._simp_1_4' depends on axioms: [propext]
+'Benitoite.Release.Refinement.ClosureBoundary.variable_alt' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.ClosureBoundary.undeclared_prior_conditions._proof_1_3' depends on axioms: [propext,
+ Quot.sound]
+'Benitoite.Release.Refinement.ClosureBoundary.builderStore' does not depend on any axioms
+'Benitoite.Release.Refinement.ClosureBoundary.scalar.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.ClosureBoundary.guard_frame' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.ClosureBoundary.guardCode' does not depend on any axioms
+'Benitoite.Release.Refinement.ClosureBoundary.dependent_body' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.ClosureBoundary.variableAlt.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.ClosureBoundary.undeclared_not_storeOk' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ClosureBoundary.legacy_shape' depends on axioms: [propext]
+'Benitoite.Release.Refinement.ClosureBoundary.refinement' does not depend on any axioms
+'Benitoite.Release.Refinement.ClosureBoundary.undeclaredHeap.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.ClosureBoundary.string_kinded' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.ClosureBoundary.dependent' does not depend on any axioms
+'Benitoite.Release.Refinement.ClosureBoundary.capture_typed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.ClosureBoundary.dependent_capture_subst' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ClosureBoundary.dependent.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.ClosureBoundary.builderStore.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.ClosureBoundary.dependent_annotation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ClosureBoundary.emptyProgram' does not depend on any axioms
+'Benitoite.Release.Refinement.ClosureBoundary.capturedΦ.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.ClosureBoundary.capture' does not depend on any axioms
+'Benitoite.Release.Refinement.ClosureBoundary.guardedArms.eq_1' does not depend on any axioms

@@ -21,6 +21,7 @@ private theorem lam_annotations {P B store Q C Γ Φ v a}
   | .V_ExternalRef _ _ _ _ | .V_ExternalHandle _ _ _ _ _ _ _
   | .V_Bytes _ | .V_Con _ _ _ _ _ _ | .V_Super _ _ _ _ =>
       intro ns ps body he; cases he
+  | .V_DependentLam .. | .V_Closure .. => intro ns ps body he; cases he
   | .V_Lam _ hw _ _ _ =>
       intro ns ps body he; cases he; exact hw.2.1
   | .V_Sub hv _ _ _ _ => exact lam_annotations hv
@@ -39,7 +40,7 @@ private theorem return_value {P B store Q C Γ Φ R m a ε Δl}
   | .C_IssuePathBases _ _ _ _ _ _ _ _ | .C_CheckAt _
   | .C_Handle _ _ _ | .C_Handle_Fail _ _ _ _ | .C_Match _ _ _ | .C_External _ _ _ _ | .C_Resume _ _ _ | .C_ResumeL _ _ _
   | .C_BuilderLet _ _ _ _ | .C_BuilderOp _ _ _ _ | .C_Meth _ _ _ _ _ _ _ _ _ _
-  | .C_Let _ _ _ | .C_App _ _ | .C_If _ _ _ | .C_Lazy _ _ | .C_Escape _ _ | .C_Use _ _ _ _ => intro v he; cases he
+  | .C_Let _ _ _ | .C_DependentApp .. | .C_App _ _ | .C_If _ _ _ | .C_Lazy _ _ | .C_Escape _ _ | .C_Use _ _ _ _ => intro v he; cases he
   | .C_Sub hm _ _ _ _ _ | .C_Eff hm _ => exact return_value hm
 
 /-- return の型付けは、部分型・効果拡大の下にも値の導出を含む。 -/

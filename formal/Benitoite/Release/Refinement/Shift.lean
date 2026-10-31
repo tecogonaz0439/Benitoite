@@ -68,6 +68,11 @@ theorem Eff.Covers.shiftV {Γ Φ Δ Ψ e f} (h : Eff.Covers Γ Φ e f) (k c : Na
   rw [Eff.shiftV_eq_renameEff, Eff.shiftV_eq_renameEff]
   exact Eff.covers_norm_right.mp (Eff.covers_norm_left.mp (h.bind (renEnv (shiftIndex k c))))
 
+theorem Eff.Sub.shiftV {e f} (h : Eff.Sub e f) (k c : Nat) :
+    Eff.Sub (e.shiftV k c) (f.shiftV k c) := by
+  rw [Eff.shiftV_eq_renameEff,Eff.shiftV_eq_renameEff]
+  exact Eff.sub_norm_right.mp (Eff.sub_norm_left.mp (h.bind (renEnv (shiftIndex k c))))
+
 theorem Pred.sorted_shiftV {Γ : Ctx} {a : Ty} {p : Pred} (h : p.Sorted Γ (some a)) (k c : Nat) :
     (p.shiftV k (c+1)).Sorted (Γ.shiftV k c) (some (a.shiftV k c)) := by
   unfold Pred.shiftV

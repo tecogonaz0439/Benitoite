@@ -205,6 +205,12 @@ theorem Eff.Covers.shiftTypes {Γ Φ Δ Ξ e f} (h : Eff.Covers Γ Φ e f) (k c 
   simp only [Eff.bind,Eff.rawBind_shiftTypes] at hh
   exact Eff.covers_norm_right.mp (Eff.covers_norm_left.mp hh)
 
+theorem Eff.Sub.shiftTypes {e f} (h : Eff.Sub e f) (k c : Nat) :
+    Eff.Sub (shiftRowsTypes k c e) (shiftRowsTypes k c f) := by
+  have hh := h.bind (.shiftTypes k c)
+  simp only [Eff.bind,Eff.rawBind_shiftTypes] at hh
+  exact Eff.sub_norm_right.mp (Eff.sub_norm_left.mp hh)
+
 theorem instantiatedTel_shiftTypes {nt t} (hw : (Ty.dependentFn t).WF 0 nt 0)
     (ts : List Ty) (es : List Eff) (hn : nt≤ts.length) (k c : Nat) :
     shiftTelTypes k c (instantiatedTel t ts es)=

@@ -4,6 +4,17 @@ import Benitoite.Release.Refinement.Telescope
 namespace Benitoite.Release.Refinement
 noncomputable section
 
+/-- 実行が読む名前・入力だけを照合し、旧lamの終端のダミーを契約に使わない。 -/
+def Tel.SameInputs : Tel → Tel → Prop
+  | .done _ _, .done _ _ => True
+  | .param n a t, .param m b u => n = m ∧ a = b ∧ Tel.SameInputs t u
+  | _, _ => False
+
+structure Tel.RuntimeShape (runtime contract : Tel) : Prop where
+  runtime_wf : Tel.WF 0 0 0 runtime
+  contract_wf : Tel.WF 0 0 0 contract
+  inputs : runtime.SameInputs contract
+
 def Capture.env (cap : Capture) (i : Nat) : Val := ((cap.values[i]?).join).getD (.const .unit)
 def Capture.closeTy (cap : Capture) : Ty → Ty := substTyValues cap.env
 def Capture.closeEff (cap : Capture) : Eff → Eff := substEffValues cap.env
@@ -93,6 +104,10 @@ def Val.substTy (ts : List Ty) (es : List Eff) (v : Val) : Val := Val.substTyAt 
 
 /-- 宣言本体や辞書の値を、閉じた実引数で具体化する入口。 -/
 def Val.instantiate (vs : List Val) (v : Val) : Val := closeVal (Capture.empty.extendMany vs) v
+
+/-- 型・行の実引数で本体を具体化してから、値の実引数を捕捉する。 -/
+def Closure.instantiate (q : Closure) (ts : List Ty) (es : List Eff) (vs : List Val) : Closure :=
+  .mk (q.capture.extendMany vs) (q.code.substTy ts es)
 
 def Clause.body : Clause → Comp
   | .mk _ _ _ m | .fail _ m => m

@@ -1,0 +1,84 @@
+[
+  {
+    "name": "build",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T12:37:37.136801+09:00",
+    "exit": 0,
+    "elapsed_seconds": 0.1531435,
+    "output": {
+      "name": "02b-closures-build.log",
+      "bytes": 24345,
+      "sha256": "fd4c0d61fd290ca376b35f5a11aeb1478627665be2e031fdcc2451d26c0399b0",
+      "storage": "改造/l00b.02"
+    }
+  },
+  {
+    "name": "boundary",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02b-closures-boundary.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T12:37:37.291003+09:00",
+    "exit": 0,
+    "elapsed_seconds": 1.211165584,
+    "output": {
+      "name": "02b-closures-boundary.log",
+      "bytes": 11552,
+      "sha256": "197f8e15b8dfcef28d26d21c1944961a7b93d38e41a6b6535521224cdf08b24d",
+      "storage": "改造/l00b.02"
+    },
+    "input_sha256": "6eddf27ddffb5a743e2c1d60eef03860a3795346aba20626fa02fda025769d2d"
+  },
+  {
+    "name": "axioms",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02b-closures-axioms.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T12:37:38.503029+09:00",
+    "exit": 0,
+    "elapsed_seconds": 9.227964291,
+    "output": {
+      "name": "02b-closures-axioms.log",
+      "bytes": 1106308,
+      "sha256": "06a4ba0d23d135ce65d1b2fc0dca8fa04586ae713554d0b617e5be7f88b9d901",
+      "storage": "<tmp>"
+    },
+    "input_sha256": "7e7a5698fa9264937b5b9bb375abcd188b947d83d2bb2c2d0f74f18d6dcc2432"
+  },
+  {
+    "name": "lean-version",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "--version"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T12:37:47.747890+09:00",
+    "exit": 0,
+    "elapsed_seconds": 0.07868979099999862,
+    "output": {
+      "name": "02b-closures-lean-version.log",
+      "bytes": 106,
+      "sha256": "20f42f897511ec814f7616bd9a193ae7504aa2f52fb05299eb752936eb77ca6e",
+      "storage": "改造/l00b.02"
+    }
+  }
+]
