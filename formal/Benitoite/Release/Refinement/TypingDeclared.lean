@@ -34,6 +34,7 @@ theorem HasTypeVQ.declared {P B store Q C Γ Φ v a}
   | .V_PathBases _ | .V_ScopePattern _ _ _ | .V_Checked _ _ _ |
       .V_CheckedRequest _ _ _ _ _ _ | .V_CheckedAt _ => trivial
   | .V_AtError hs => exact hs.errorType_declared
+  | .V_Normal hv => exact (hv.declared hΓ).norm
   | .V_Sub _ _ _ _ hd => exact hd
   | .V_Refine _ _ _ _ _ _ hda hdp => exact ⟨hda, hdp⟩
 
@@ -81,6 +82,8 @@ theorem HasTypeCQ.declared {P B store Q C Γ Φ R m a e L}
   | .C_Match _ ha _ => exact ha.declared
   | .C_Resume _ _ hd | .C_ResumeL _ _ hd => exact hd
   | .C_Use _ _ hb _ => exact hb.declared hΓ
+  | .C_Normal hb => exact (hb.declared hΓ).norm
+  | .C_ResumeNorm _ _ hd | .C_ResumeLNorm _ _ _ hd => exact hd
   | .C_Sub _ _ _ _ _ hd => exact hd
   | .C_Eff hb _ => exact hb.declared hΓ
 

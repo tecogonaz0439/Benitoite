@@ -1,0 +1,24 @@
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/rv-11-primraw.lean:26:4: warning: This simp argument is unused:
+  Order.sortUnique
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Tel.instR, Tel.substRAt, Tel.mapRanges, Tel.rawMapRanges, PrimSig.tel, sg, signatureTel, Tel.norm,
+    Ty.rawMapRanges, Ty.norm, Eff.rawMapRanges, Eff.norm, Eff.empty, Ty.normTys, U]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/rv-11-primraw.lean:34:49: warning: This simp argument is unused:
+  Order.sortUnique
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [instantiatedTel, Tel.bind, Tel.rawBind, Tel.norm, Ty.rawBind, Ty.norm, U, Eff.rawBind, Eff.norm,
+    Eff.empty, typeEnvAt, rowFails, rawBindTys, instAtoms_nil, substAtoms_nil, Ty.normTys]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/rv-11-primraw.lean:49:26: warning: Try `simp at h` instead of `simpa using h`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/rv-11-primraw.lean:50:26: warning: Try `simp at h` instead of `simpa using h`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+'Benitoite.Release.Refinement.PrimRaw.prim_typed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.PrimRaw.args_rejected' depends on axioms: [propext, Classical.choice, Quot.sound]

@@ -1,0 +1,57 @@
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/normalization-contract-obstruction.lean:9:48: warning: This simp argument is unused:
+  source
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Ty.WF, Ty.WFList]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/normalization-contract-obstruction.lean:11:8: warning: This simp argument is unused:
+  arg
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Ty.HasKind, Ty.NotContCore]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/normalization-contract-obstruction.lean:13:8: warning: This simp argument is unused:
+  source
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [arg, Ty.subst, Ty.substAt, substTypeAt, Ty.bind, Ty.rawBind, typeEnvAt, rawBindTys, rawApply,
+    shiftTypes_zero, Ty.norm, Ty.refineNorm, Ty.packRefinements, Ty.refinementPredicates, Pred.conjuncts]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/normalization-contract-obstruction.lean:17:8: warning: This simp argument is unused:
+  source
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [arg, Ty.subst, Ty.substAt, substTypeAt, Ty.bind, Ty.rawBind, typeEnvAt, rawBindTys, rawApply,
+    shiftTypes_zero, Ty.norm, Ty.refineNorm, Ty.packRefinements, Ty.refinementPredicates, Pred.conjuncts, Ty.normTys]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/normalization-contract-obstruction.lean:17:16: warning: This simp argument is unused:
+  arg
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [source, Ty.subst, Ty.substAt, substTypeAt, Ty.bind, Ty.rawBind, typeEnvAt, rawBindTys, rawApply,
+    shiftTypes_zero, Ty.norm, Ty.refineNorm, Ty.packRefinements, Ty.refinementPredicates, Pred.conjuncts, Ty.normTys]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'Benitoite.Release.Refinement.L00b11ContractCounter.arg' does not depend on any axioms
+'Benitoite.Release.Refinement.L00b11ContractCounter.image_value_kind' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.L00b11ContractCounter.normalize_then_substitute' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.L00b11ContractCounter.proper_constructor_unchanged' depends on axioms: [propext]
+'Benitoite.Release.Refinement.L00b11ContractCounter.refined_head_keeps_arguments' depends on axioms: [propext]
+'Benitoite.Release.Refinement.L00b11ContractCounter.source' does not depend on any axioms
+'Benitoite.Release.Refinement.L00b11ContractCounter.source_wf' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.L00b11ContractCounter.substitute_then_normalize' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.L00b11ContractCounter.unrestricted_image_normalization' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

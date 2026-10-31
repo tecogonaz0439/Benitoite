@@ -7,26 +7,10 @@ import Benitoite.Release.Refinement.RangeExchange
 -/
 namespace Benitoite.Release.Refinement
 
-def Tel.names : Tel → List String
-  | .done _ _ => []
-  | .param n _ t => n :: t.names
 
 def Tel.arity (t : Tel) : Nat := t.names.length
 
-def Ty.toTel : List String → List Ty → Ty → Eff → Tel
-  | n :: ns, a :: ps, r, e => .param n a (Ty.toTel ns (shiftVTys 1 0 ps) (r.shiftV 1 0) (Eff.shiftV 1 0 e))
-  | _, _, r, e => .done r e
 
-theorem Tel.names_toTel {ns ps r e} (h : NamesWF ns ps) : (Ty.toTel ns ps r e).names = ns := by
-  induction ns generalizing ps r e with
-  | nil => cases ps <;> simp_all [NamesWF, Ty.toTel, Tel.names]
-  | cons n ns ih =>
-    cases ps with
-    | nil => simp [NamesWF] at h
-    | cons a ps =>
-      simp only [Ty.toTel, Tel.names]
-      congr 1
-      exact ih ⟨by simpa [NamesWF] using h.1, h.2.of_cons⟩
 
 theorem Tel.arity_toTel {ns ps r e} (h : NamesWF ns ps) : (Ty.toTel ns ps r e).arity = ps.length := by
   simp only [Tel.arity, Tel.names_toTel h, h.1]
@@ -46,26 +30,6 @@ theorem Tel.names_shiftV (t : Tel) (k c : Nat) : (Tel.shiftV k c t).names = t.na
   | done r e => rfl
   | param n a t => simp only [Tel.shiftV, Tel.names, Tel.names_shiftV]
 
-theorem Tel.rawBind_toTel (ns ps r e) (θ : SubstEnv) :
-    Tel.rawBind θ (Ty.toTel ns ps r e) =
-      Ty.toTel ns (rawBindTys θ ps) (r.rawBind θ) (Eff.rawBind θ e) := by
-  induction ns generalizing ps r e θ with
-  | nil => rfl
-  | cons n ns ih =>
-    cases ps with
-    | nil => rfl
-    | cons a ps =>
-      simp only [Ty.toTel, rawBindTys, Tel.rawBind, ih, rawBindTys_up, Ty.rawBind_up, Eff.rawBind_up]
-
-theorem Tel.norm_toTel (ns ps r e) :
-    Tel.norm (Ty.toTel ns ps r e) = Ty.toTel ns (Ty.normTys ps) r.norm e.norm := by
-  induction ns generalizing ps r e with
-  | nil => rfl
-  | cons n ns ih =>
-    cases ps with
-    | nil => rfl
-    | cons a ps =>
-      simp only [Ty.toTel, Ty.normTys, Tel.norm, ih, Ty.normTys_shiftV, Ty.norm_shiftV, Eff.norm_shiftV]
 
 theorem Tel.bind_toTel (ns ps r e) (θ : SubstEnv) :
     Tel.bind θ (Ty.toTel ns ps r e) =
@@ -74,21 +38,6 @@ theorem Tel.bind_toTel (ns ps r e) (θ : SubstEnv) :
     Ty.bind, Eff.bind, List.map_map]
   rfl
 
-theorem Tel.shiftV_toTel (ns ps r e) (k c : Nat) :
-    Tel.shiftV k c (Ty.toTel ns ps r e) =
-      Ty.toTel ns (shiftVTys k c ps) (r.shiftV k c) (Eff.shiftV k c e) := by
-  induction ns generalizing ps r e c with
-  | nil => rfl
-  | cons n ns ih =>
-    cases ps with
-    | nil => rfl
-    | cons a ps =>
-      simp only [Ty.toTel, shiftVTys, Tel.shiftV, ih, Ty.shiftV_comm, Eff.shiftV_comm,
-        shiftVTys_eq_map, List.map_map]
-      congr 2
-      congr 1
-      funext a
-      exact Ty.shiftV_comm a 1 k c
 
 theorem Tel.wf_toTel {nr nt nv ns ps r e}
     (hn : NamesWF ns ps) (hp : Ty.WFList nr nt nv ps) (hr : r.WF nr nt nv)

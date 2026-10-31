@@ -13,6 +13,16 @@ def splitHandler (o : OpRef) : Cont → Option (Cont × Capture × List Clause �
       else (splitHandler o k).map fun (k1, cap', h', k2) => (.handleF cap h :: k1, cap', h', k2)
   | f :: k => (splitHandler o k).map fun (k1, cap, h, k2) => (f :: k1, cap, h, k2)
 
+/-- ハンドラを含まない継続では、実行関数も外部の応答を選ぶ。 -/
+theorem NoHandler.splitHandler_none {k o} (h : NoHandler k o) : splitHandler o k = none := by
+  induction k with
+  | nil => rfl
+  | cons f k ih =>
+    have hk : NoHandler k o := fun cap h' hm => h cap h' (List.mem_cons_of_mem _ hm)
+    cases f <;> try simp only [splitHandler,ih hk,Option.map_none]
+    case handleF cap cs =>
+      simp only [splitHandler,h cap cs List.mem_cons_self,Bool.false_eq_true,ite_false,ih hk,Option.map_none]
+
 def releaseStep (rel : Val → Option ErrKind) (v : Val) (ok : State) (err : ErrKind → State) :
     Option (Option Event × State) := match rel v with
   | none => some (some (.release v none), ok)
@@ -91,7 +101,7 @@ private def stepRun (P : Program) (B : Builtins) (σ : PathEnv) (oracle : Oracle
       | some s =>
           match s.kind, ws with
           | .pure, _ =>
-              match B.delta b ts es rs ws with
+              match B.delta b (Ty.normTys ts) (es.map Eff.norm) rs ws with
               | some (.val v) => some (none, .run (Closure.pure (.ret v)) k μ)
               | some (.err r) => some (none, .error [r] k μ)
               | _ => none
@@ -109,7 +119,7 @@ private def stepRun (P : Program) (B : Builtins) (σ : PathEnv) (oracle : Oracle
                   if ts.isEmpty && es.isEmpty && rs.isEmpty && ws.isEmpty then
                     some (none, .run (.mk q.capture (.issuePathBases b)) k μ)
                   else none
-                else match s.kind, oracle b ts es ws with
+                else match s.kind, oracle b (Ty.normTys ts) (es.map Eff.norm) ws with
                   | .io, (.val v, obs) => some (some (.io b ws (.val v) obs), .run (Closure.pure (.ret v)) k μ)
                   | _, (.err r, obs) => some (some (.io b ws (.err r) obs), .error [r] k μ)
                   | .exit, (.exit n, obs) => some (some (.io b ws (.exit n) obs), .exit n [] k μ)
@@ -237,6 +247,68 @@ def step (P : Program) (B : Builtins) (σ : PathEnv) (oracle : Oracle) (external
       | _ => none
   | .exit n rs (_ :: k) σ => some (none, .exit n rs k σ)
   | .exit _ _ [] _ => none
+
+
+/-- raw の項の型引数は保持し、信頼条件へ渡す入力だけを正規化する。 -/
+theorem step_prim_val {P B σ oracle externalOracle rel fresh q b ts es rs ws k μ sg v}
+    (hq : q.view = .app (.prim b ts es rs) ws) (hs : B.sig b = some sg)
+    (hk : sg.kind = .pure)
+    (hd : B.delta b (Ty.normTys ts) (es.map Eff.norm) rs ws = some (.val v)) :
+    step P B σ oracle externalOracle rel fresh (.run q k μ) =
+      some (none,.run (Closure.pure (.ret v)) k μ) ∧
+    Step P B σ (.run q k μ) none (.run (Closure.pure (.ret v)) k μ) := by
+  constructor
+  · simp only [step,hq,stepRun,hs,hk,hd]
+  · exact .E_Prim hq hs hk hd
+
+theorem step_prim_err {P B σ oracle externalOracle rel fresh q b ts es rs ws k μ sg r}
+    (hq : q.view = .app (.prim b ts es rs) ws) (hs : B.sig b = some sg)
+    (hk : sg.kind = .pure)
+    (hd : B.delta b (Ty.normTys ts) (es.map Eff.norm) rs ws = some (.err r)) :
+    step P B σ oracle externalOracle rel fresh (.run q k μ) = some (none,.error [r] k μ) ∧
+    Step P B σ (.run q k μ) none (.error [r] k μ) := by
+  constructor
+  · simp only [step,hq,stepRun,hs,hk,hd]
+  · exact .E_Err hq hs hk hd
+
+theorem step_io_val {P B σ oracle externalOracle rel fresh q b ts es rs ws k μ sg v obs}
+    (hq : q.view = .app (.prim b ts es rs) ws) (hs : B.sig b = some sg)
+    (hk : sg.kind = .io) (hn : NoHandler k (.prim b))
+    (ho : oracle b (Ty.normTys ts) (es.map Eff.norm) ws = (.val v,obs))
+    (hr : B.ioResponse b (Ty.normTys ts) (es.map Eff.norm) ws (.val v) obs) :
+    step P B σ oracle externalOracle rel fresh (.run q k μ) =
+      some (some (.io b ws (.val v) obs),.run (Closure.pure (.ret v)) k μ) ∧
+    Step P B σ (.run q k μ) (some (.io b ws (.val v) obs)) (.run (Closure.pure (.ret v)) k μ) := by
+  simp only [Ty.normTys_eq_map] at ho
+  constructor
+  · simp [step,hq,stepRun,hs,hk,hn.splitHandler_none,ho]
+  · exact .E_IO hq hs hk hn hr
+
+theorem step_io_err {P B σ oracle externalOracle rel fresh q b ts es rs ws k μ sg r obs}
+    (hq : q.view = .app (.prim b ts es rs) ws) (hs : B.sig b = some sg)
+    (hk : sg.kind = .io ∨ sg.kind = .exit) (hn : NoHandler k (.prim b))
+    (ho : oracle b (Ty.normTys ts) (es.map Eff.norm) ws = (.err r,obs))
+    (hr : B.ioResponse b (Ty.normTys ts) (es.map Eff.norm) ws (.err r) obs) :
+    step P B σ oracle externalOracle rel fresh (.run q k μ) =
+      some (some (.io b ws (.err r) obs),.error [r] k μ) ∧
+    Step P B σ (.run q k μ) (some (.io b ws (.err r) obs)) (.error [r] k μ) := by
+  simp only [Ty.normTys_eq_map] at ho
+  constructor
+  · rcases hk with hk | hk <;> simp [step,hq,stepRun,hs,hk,hn.splitHandler_none,ho]
+  · exact .E_IOErr hq hs hk hn hr
+
+theorem step_io_exit {P B σ oracle externalOracle rel fresh q b ts es rs ws k μ sg n obs}
+    (hq : q.view = .app (.prim b ts es rs) ws) (hs : B.sig b = some sg)
+    (hk : sg.kind = .exit) (hn : NoHandler k (.prim b))
+    (ho : oracle b (Ty.normTys ts) (es.map Eff.norm) ws = (.exit n,obs))
+    (hr : B.ioResponse b (Ty.normTys ts) (es.map Eff.norm) ws (.exit n) obs) :
+    step P B σ oracle externalOracle rel fresh (.run q k μ) =
+      some (some (.io b ws (.exit n) obs),.exit n [] k μ) ∧
+    Step P B σ (.run q k μ) (some (.io b ws (.exit n) obs)) (.exit n [] k μ) := by
+  simp only [Ty.normTys_eq_map] at ho
+  constructor
+  · simp [step,hq,stepRun,hs,hk,hn.splitHandler_none,ho]
+  · exact .E_Exit hq hs hk hn hr
 
 end
 end Benitoite.Release.Refinement

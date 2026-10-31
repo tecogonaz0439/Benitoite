@@ -95,8 +95,9 @@ noncomputable def SubstEnv.mapRanges (θ : SubstEnv) (ρ : Nat → RangeIx) : Su
 private theorem rawApply_mapRanges (t : Ty) (as : List Ty) (ρ : Nat → RangeIx) :
     (rawApply t as).rawMapRanges ρ = rawApply (t.rawMapRanges ρ) (mapRangesTys ρ as) := by
   cases t <;> simp only [rawApply, Ty.rawMapRanges]
+  case refined a p => rw [rawApply_mapRanges a as]
   case ctor t =>
-    cases t <;> cases as <;> simp only [Ty.rawMapRanges, mapRangesTys,
+    cases t <;> cases as <;> simp only [rawApply, Ty.rawMapRanges, mapRangesTys,
       List.headD_nil, List.headD_cons, List.tail_nil, List.tail_cons]
     rename_i a as
     cases as <;> rfl

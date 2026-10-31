@@ -13,24 +13,12 @@ namespace Benitoite.Release.Refinement
 
 theorem Ty.IntegerCarrier.ordinary {a : Ty} (h : a.IntegerCarrier) : a.Ordinary := Ty.HasSort.ordinary h
 
-theorem Ty.assume_ordinary {a : Ty} {p : Pred} (hp : p ∈ a.assume) : a.Ordinary := by
-  cases a <;> simp_all [Ty.assume, Ty.Ordinary]
-
 theorem Ty.NotContCore.ordinary {a : Ty} (h : a.NotContCore) : a.Ordinary := by
   cases a <;> simp_all [Ty.Ordinary, Ty.NotContCore, Ty.core]
 
 theorem Ty.notContCore_of_wf_ordinary {nr nt nv a} (hw : Ty.WF nr nt nv a)
     (ho : a.Ordinary) : a.NotContCore := by
   cases a <;> simp_all [Ty.Ordinary, Ty.NotContCore, Ty.core]
-  case refined a p => exact hw.2.2
-
-theorem Ty.LeQ.notContCore {Γ Φ a b} (h : Ty.LeQ Γ Φ a b) : a.NotContCore ↔ b.NotContCore := by
-  match h with
-  | .refl => rfl
-  | .trans h₁ h₂ => exact h₁.notContCore.trans h₂.notContCore
-  | .fn_effect _ | .list _ | .lazy _ | .map_value _ _ | .dependentFn _ | .scoped _ | .scoped_forget => simp [Ty.NotContCore, Ty.core]
-  | .forget | .introduce _ _ => rfl
-  | .refine hv _ _ _ => exact hv.notContCore
 
 /-- 使える変数だけを移し、None と捕捉時に隠す継続は要求しない。 -/
 structure ShiftMap (k c : Nat) (Γ Δ : Ctx) : Prop where
@@ -101,7 +89,7 @@ theorem hideConts_lookup {Γ : Ctx} {i : Nat} {a : Ty} : (hideConts Γ)[i]? = so
   | some x => cases x with
     | none => simp
     | some t =>
-      cases t <;> simp [Ty.Ordinary] <;> rintro rfl <;> simp
+      cases hc : t.core <;> simp [hc, Ty.Ordinary, Ordinary] <;> rintro rfl <;> simp [hc]
 
 theorem ShiftMap.hide {k c Γ Δ} (h : ShiftMap k c Γ Δ) :
     ShiftMap k c (hideConts Γ) (hideConts Δ) := by
@@ -317,9 +305,24 @@ theorem ShiftMap.signature {P C k c Γ Δ t ks ts es} (h : ShiftMap k c Γ Δ)
     SignatureInstance P C Δ t ks (ts.map (Ty.shiftV k c)) (es.map (Eff.shiftV k c)) := by
   refine ⟨ht.source, h.typeAnnotations ht.types, ht.kinds.shift k c, h.rowAnnotations ht.rows, ?_⟩
   have hh := h.annotation ht.result
-  change Ty.Annotation P C Δ (((Ty.dependentFn t).subst ts es).shiftV k c) at hh
-  rw [Ty.subst_shiftV_closed_rows ht.source] at hh
-  exact hh
+  simpa only [Ty.shiftV, instantiatedTel_shift_eq ht.source] using hh
+
+theorem Builtins.ValueAssumptions.sat_shiftV_norm {P B C Γ Δ a p k c}
+    (hA : Builtins.ValueAssumptions P B) (ha : Ty.Annotation P C Γ a)
+    (hb : Ty.Annotation P C Δ (a.shiftV k c)) (hs : B.sat C a.norm p) :
+    B.sat C (a.shiftV k c).norm p := by
+  have hh := hA.sat_rename C Γ Δ a.norm p (shiftIndex k c) (shiftIndex_strict k c) ha.norm
+    (by simpa only [renameTy_shiftIndex, ← Ty.norm_shiftV] using hb.norm) hs
+  simpa only [renameTy_shiftIndex, ← Ty.norm_shiftV] using hh
+
+theorem Builtins.ValueAssumptions.admits_shiftV_norm {P B C Γ Δ b sg ts k c}
+    (hA : Builtins.ValueAssumptions P B) (hl : B.sig b = some sg)
+    (ha : TypeAnnotations P C Γ ts) (hb : TypeAnnotations P C Δ (ts.map (Ty.shiftV k c)))
+    (hs : sg.admits C (Ty.normTys ts)) : sg.admits C (Ty.normTys (ts.map (Ty.shiftV k c))) := by
+  have he : (Ty.normTys ts).map (renameTy (shiftIndex k c)) = Ty.normTys (ts.map (Ty.shiftV k c)) := by
+    simp only [renameTy_shiftIndex, Ty.normTys_eq_map, List.map_map, Function.comp_def, Ty.norm_shiftV]
+  simpa only [he] using hA.admits_rename b sg C Γ Δ (Ty.normTys ts) (shiftIndex k c) hl
+    (shiftIndex_strict k c) ha.norm (by simpa only [he] using hb.norm) hs
 
 theorem ShiftMap.admissible {P B C k c Γ Δ tps ne Qs Qt ts es e}
     (h : ShiftMap k c Γ Δ) (hA : Builtins.ValueAssumptions P B)
@@ -329,8 +332,7 @@ theorem ShiftMap.admissible {P B C k c Γ Δ tps ne Qs Qt ts es e}
   apply ha.map (Ty.shiftV k c) (Eff.shiftV k c)
   · apply ha.types.map
     intro a ha p hp
-    simpa only [renameTy_shiftIndex] using hA.sat_rename C Γ Δ a p (shiftIndex k c)
-      (shiftIndex_strict k c) (ht a ha) (by simpa only [renameTy_shiftIndex] using h.annotation (ht a ha)) hp
+    exact hA.sat_shiftV_norm (ht a ha) (h.annotation (ht a ha)) hp
   · intro a hm; exact ⟨h.wf (ht a hm).wf, (Ty.ordinary_shiftV _ _ _).mpr (ha.typeScope a hm).2⟩
   · intro e he'; exact (h.annotation (he e he')).wf.2.2.2.1
   · exact ha.noFailRows.map _ (fun _ hn => hn.shift_values k c) (fun _ => rfl)
@@ -341,8 +343,7 @@ theorem ShiftMap.primitive {P B C k c Γ Δ b sg Q ts es}
     (ha : PrimitiveAdmissible C Γ.length sg Q ts es) :
     PrimitiveAdmissible C Δ.length sg Q (ts.map (Ty.shiftV k c)) (es.map (Eff.shiftV k c)) := by
   apply ha.map (Ty.shiftV k c) (Eff.shiftV k c)
-  · simpa only [renameTy_shiftIndex] using hA.admits_rename b sg C Γ Δ ts (shiftIndex k c) hb
-      (shiftIndex_strict k c) ht (by simpa only [renameTy_shiftIndex] using h.typeAnnotations ht) ha.admits
+  · exact hA.admits_shiftV_norm hb ht (h.typeAnnotations ht) ha.admits
   · intro a hm; exact ⟨h.wf (ht a hm).wf, (Ty.ordinary_shiftV _ _ _).mpr (ha.typeScope a hm).2⟩
   · intro e hm; exact (h.annotation (he e hm)).wf.2.2.2.1
   · exact ha.noFailRows.map _ (fun _ hn => hn.shift_values k c) (fun _ => rfl)
@@ -619,8 +620,7 @@ mutual
         instantiatedTel_shift hi.source] using hh
     | .V_Op ho hn ha hi =>
       have hs := ha.map (Ty.shiftV k c) (fun a ha p hp => by
-        simpa only [renameTy_shiftIndex] using hA.sat_rename C Γ Δ a p (shiftIndex k c)
-          (shiftIndex_strict k c) (hi.types a ha) (by simpa only [renameTy_shiftIndex] using hm.annotation (hi.types a ha)) hp)
+        exact hA.sat_shiftV_norm (hi.types a ha) (hm.annotation (hi.types a ha)) hp)
       have hh := HasTypeVQ.V_Op (Q := Q) (Ψ := store') (Φ := Ξ) ho hn hs (hm.signature hi)
       simpa only [Val.rename, renameTy_shiftIndex, renameEff_shiftIndex, List.map_nil,
         instantiatedTel_shift hi.source] using hh
@@ -648,11 +648,11 @@ mutual
     | .V_Map hk hv hn hs ha hb =>
       exact .V_Map (HasTypeEachQ.shift_values hk hA hstore hpres hm hf)
         (HasTypeEachQ.shift_values hv hA hstore hpres hm hf) (by simpa using hn)
-        (by simpa only [renameTy_shiftIndex] using (hA.sat_rename C Γ Δ _ _ (shiftIndex k c) (shiftIndex_strict k c) ha (by simpa only [renameTy_shiftIndex] using hm.annotation ha) hs))
+        (hA.sat_shiftV_norm ha (hm.annotation ha) hs)
         (hm.annotation ha) (hm.annotation hb)
     | .V_Set hv hs ha =>
       exact .V_Set (HasTypeEachQ.shift_values hv hA hstore hpres hm hf)
-        (by simpa only [renameTy_shiftIndex] using (hA.sat_rename C Γ Δ _ _ (shiftIndex k c) (shiftIndex_strict k c) ha (by simpa only [renameTy_shiftIndex] using hm.annotation ha) hs)) (hm.annotation ha)
+        (hA.sat_shiftV_norm ha (hm.annotation ha) hs) (hm.annotation ha)
     | .V_Dict (id := id) (ts := ts) hi hs ht hk hw htarget hv ha =>
       have hv' := HasTypeVsQ.shift_values hv hA hstore hpres hm hf
       have he : (id.dictTys.map (Ty.subst ts [])).map (Ty.shiftV k c) =
@@ -660,8 +660,7 @@ mutual
         rw [List.map_map]; exact List.map_congr_left (fun a ha => Ty.subst_shiftV_closed (hw a ha) ts k c)
       rw [he] at hv'
       have hs' := hs.map (Ty.shiftV k c) (fun a hm' p hp => by
-        simpa only [renameTy_shiftIndex] using hA.sat_rename C Γ Δ a p (shiftIndex k c)
-          (shiftIndex_strict k c) (ht a hm') (by simpa only [renameTy_shiftIndex] using hm.annotation (ht a hm')) hp)
+        exact hA.sat_shiftV_norm (ht a hm') (hm.annotation (ht a hm')) hp)
       have ha' := hm.annotation ha
       simp only [Ty.shiftV, Ty.subst_shiftV_closed htarget] at ha' ⊢
       simpa only [Val.rename, renameTy_shiftIndex] using
@@ -694,6 +693,8 @@ mutual
       exact .V_Con hc (by simpa only [List.length_map] using hn) (hk.shift k c) hw hh (by simpa only [Ty.shiftV, shiftVTys_eq_map] using hm.annotation ha)
     | .V_Super hv hc hmemb hd =>
       exact .V_Super (HasTypeVQ.shift_values hv hA hstore hpres hm hf) hc hmemb (hm.declared hd)
+    | .V_Normal hv =>
+      simpa only [Ty.norm_shiftV] using (HasTypeVQ.shift_values hv hA hstore hpres hm hf).V_Normal
     | .V_Sub hv hl hw hs hd =>
       have hl' := hl.rawBind (renEnv (shiftIndex k c)) (hm.transport hf)
       change Ty.LeQ Δ Ξ (renameTy (shiftIndex k c) _) (renameTy (shiftIndex k c) _) at hl'
@@ -773,6 +774,8 @@ mutual
     | .C_DependentApp hv ht =>
       exact .C_DependentApp (HasTypeVQ.shift_values hv hA hstore hext.preservesNormals hm.values hf)
         (HasTypeTelArgsQ.shift_values ht hA hstore hext.preservesNormals hm.values hf)
+    | .C_Normal hb =>
+      simpa only [Ty.norm_shiftV] using (HasTypeCQ.shift_values hb hA hstore hext hm hL hf).C_Normal
     | .C_If hv hm' hn =>
       exact .C_If (HasTypeVQ.shift_values hv hA hstore hext.preservesNormals hm.values hf)
         (HasTypeCQ.shift_values hm' hA hstore hext hm hL hf) (HasTypeCQ.shift_values hn hA hstore hext hm hL hf)
@@ -803,6 +806,31 @@ mutual
     | .C_Resume hi hv hd =>
       exact .C_Resume (hm.lookup _ _ hi)
         (HasTypeVQ.shift_values hv hA hstore hext.preservesNormals hm.values hf) (hm.values.declared hd)
+    | .C_ResumeNorm hi hv hd =>
+      have hv' := HasTypeVQ.shift_values hv hA hstore hext.preservesNormals hm.values hf
+      have hd' := hm.values.declared hd
+      have hh := HasTypeCQ.C_ResumeNorm (R := R.map (Ty.shiftV k c)) (Δ := L') (hm.lookup _ _ hi)
+        (by simpa only [← Ty.norm_shiftV] using hv')
+        (by simpa only [← Ty.norm_shiftV] using hd')
+      simpa only [Ty.norm_shiftV, Eff.norm_shiftV, Comp.rename, Val.rename] using hh
+    | .C_ResumeLNorm (b := b) (t := t) (ε := ε) (R' := r) hl hr hv hd =>
+      have hw := hstore _ _ hl
+      have hb := Ty.shiftV_of_wf_zero hw.1 k c
+      have ht := Ty.shiftV_of_wf_zero hw.2.1 k c
+      have he := Eff.shiftV_of_wf_zero hw.2.2.1 k c
+      have hbr : b.norm.shiftV k c = b.norm := by rw [← Ty.norm_shiftV, hb]
+      have hR : r.map (Ty.shiftV k c) = r := by
+        cases ho : r with
+        | none => rfl
+        | some a => exact congrArg some (Ty.shiftV_of_wf_zero (hw.2.2.2.2 a ho) k c)
+      have comm (R : Option Ty) : (R.map Ty.norm).map (Ty.shiftV k c) =
+          (R.map (Ty.shiftV k c)).map Ty.norm := by
+        cases R <;> simp only [Option.map_none, Option.map_some, Ty.norm_shiftV]
+      have hr' := congrArg (Option.map (Ty.shiftV k c)) hr
+      rw [comm, comm, hR] at hr'
+      have hv' := HasTypeVQ.shift_values hv hA hstore hext.preservesNormals hm.values hf
+      simp only [Comp.rename, Val.rename, ←Ty.norm_shiftV, ←Eff.norm_shiftV, hb, ht, he] at hv' ⊢
+      exact .C_ResumeLNorm (hext _ _ hl) hr' hv' (by simpa only [←Ty.norm_shiftV, ht] using hm.values.declared hd)
     | .C_ResumeL (b := b) (t := t) (ε := ε) (R := r) hl hv hd =>
       have hw := hstore _ _ hl
       have hb := Ty.shiftV_of_wf_zero hw.1 k c
@@ -819,8 +847,7 @@ mutual
       simp only [Comp.rename, renameTy_shiftIndex, renameEff_shiftIndex]
       have hs' := hs.map (Ty.shiftV k c) (fun a hm' p hp => by
         have hat := hi.types a (List.mem_append_left _ hm')
-        simpa only [renameTy_shiftIndex] using hA.sat_rename C Γ Δ a p (shiftIndex k c)
-          (shiftIndex_strict k c) hat (by simpa only [renameTy_shiftIndex] using hm.values.annotation hat) hp)
+        exact hA.sat_shiftV_norm hat (hm.values.annotation hat) hp)
       have hargs' := Tel.arguments_shift hargs k c
       rw [instantiatedTel_shift_eq hi.source] at hargs'
       simp only [List.map_append, List.map_cons, List.map_nil] at hargs'
@@ -984,6 +1011,7 @@ mutual
         ⟨rfl, by intro i a h _; simpa only [shiftIndex_zero,id_eq,Ty.shiftV_zero] using h⟩
         (Ξ := Ξ) (fun p hp => by rw [Pred.shiftV_zero]; exact .hyp (List.mem_append_right _ hp))
       simpa only [shiftIndex_zero, Val.rename_identity, Ty.shiftV_zero] using hh
+    | .hidden hn hc => exact .hidden hn hc
     | .contLoc ha hb hc hl ht hr => exact .contLoc ha hb hc hl (hp _ _ ht trivial) hr
     | .contVar ha hv ht => exact .contVar ha hv ht
   termination_by structural h
@@ -1023,7 +1051,7 @@ mutual
         (match bases with | none => none | some b => some (b.rename (shiftIndex k c)))
         (pattern.rename (shiftIndex k c)) (input.rename (shiftIndex k c)) index := by
     match h with
-    | .mk hs hk hb hp ht hv hw hi =>
+    | .mk (inputTy := inputTy) hs hk hb hp ht hv hw hi =>
       have hb' := fun b (he : bases = some b) =>
         HasTypeVQ.shift_values (hb b he) hA hstore hpres hm hf
       have he : {shape with errorType := shape.errorType.shiftV k c} = shape := by
@@ -1031,18 +1059,17 @@ mutual
           rw [hs.errorType_eq]; rfl
         simp only [hx]
       rw [he]
-      refine .mk hs hk ?_ (HasTypeVQ.shift_values hp hA hstore hpres hm hf) ?_
-        (HasTypeVQ.shift_values hv hA hstore hpres hm hf) hw hi
+      refine AtCallAdmissible.mk (inputTy := inputTy) hs hk ?_ (HasTypeVQ.shift_values hp hA hstore hpres hm hf) ht ?_ hw hi
       · intro v he
         cases bases with
         | none => cases he
         | some b =>
           cases he
           exact hb' b rfl
-      · rcases ht with ⟨rfl, ht⟩ | ht
-        · exact Or.inl ⟨rfl, ht⟩
-        · exact Or.inr ⟨by rw [Ty.shiftV_of_wf_zero ht.2]; exact ht.1,
-            by rw [Ty.shiftV_of_wf_zero ht.2]; exact ht.2⟩
+      · have hh := HasTypeVQ.shift_values hv hA hstore hpres hm hf
+        rcases ht with ⟨rfl, ht⟩ | ht
+        · exact hh
+        · simpa only [← Ty.norm_shiftV, Ty.shiftV_of_wf_zero ht.2] using hh
 
   termination_by structural h
 end

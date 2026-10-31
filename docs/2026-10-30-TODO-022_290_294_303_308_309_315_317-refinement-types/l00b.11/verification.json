@@ -1,0 +1,380 @@
+[
+  {
+    "name": "build",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T15:30:51.616393+00:00",
+    "elapsed_seconds": 0.154717,
+    "exit_code": 0,
+    "bytes": 33925,
+    "sha256": "2ff7bf8d578743e9cb8ceb07cda1a8c8f556abcc3fdaab3465fde09b31587436",
+    "output": "build.log",
+    "maximum_resident_set_size_bytes": 71909376,
+    "resource_measurement": "wait4 ru_maxrss"
+  },
+  {
+    "name": "local-build",
+    "command": [
+      "lake",
+      "build",
+      "Benitoite.Release.Refinement.ConstraintAssumptions",
+      "Benitoite.Release.Refinement.Canonical",
+      "Benitoite.Release.Refinement.BindCongr",
+      "Benitoite.Release.Refinement.SubstitutionContracts",
+      "Benitoite.Release.Refinement.NormalWellFormed",
+      "Benitoite.Release.Refinement.TypeShiftOrder",
+      "Benitoite.Release.Refinement.ExternalCheck",
+      "Benitoite.Release.Refinement.OpenSubstitution",
+      "Benitoite.Release.Refinement.ValueRegularity",
+      "Benitoite.Release.Refinement.DeclaredTransport",
+      "Benitoite.Release.Refinement.AdmissibleMap",
+      "Benitoite.Release.Refinement.TypedFacts",
+      "Benitoite.Release.Refinement.LocalTransport",
+      "Benitoite.Release.Refinement.LocalResolveLemmas",
+      "Benitoite.Release.Refinement.ValueReferences",
+      "Benitoite.Release.Refinement.PatternSemantics",
+      "Benitoite.Release.Refinement.TelTyping",
+      "Benitoite.Release.Refinement.TypeShiftContext",
+      "Benitoite.Release.Refinement.TypeShiftTyping",
+      "Benitoite.Release.Refinement.SubstTyping",
+      "Benitoite.Release.Refinement.Narrowing",
+      "Benitoite.Release.Refinement.ClosureTyping",
+      "Benitoite.Release.Refinement.NormalizedApplication",
+      "Benitoite.Release.Refinement.BuiltinResponse",
+      "Benitoite.Release.Refinement.Step",
+      "Benitoite.Release.Refinement.StateTyping"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T15:30:51.772019+00:00",
+    "elapsed_seconds": 0.156262,
+    "exit_code": 0,
+    "bytes": 8443,
+    "sha256": "62cea7998b5145dd998def7d17252d59bf016ec48b6978efba8250c4687b228c",
+    "output": "local-build.log",
+    "maximum_resident_set_size_bytes": 64569344,
+    "resource_measurement": "wait4 ru_maxrss"
+  },
+  {
+    "name": "boundary",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/boundary.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T15:30:51.929026+00:00",
+    "elapsed_seconds": 0.857389,
+    "exit_code": 0,
+    "bytes": 4623,
+    "sha256": "ad838f051c21ecee336fcdb5fd77609bdec814ce5b6df5c48d993b3d3c0c067e",
+    "output": "boundary.log",
+    "maximum_resident_set_size_bytes": 1427079168,
+    "resource_measurement": "wait4 ru_maxrss"
+  },
+  {
+    "name": "normalization-boundary",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/normalization-boundary.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T15:30:52.787101+00:00",
+    "elapsed_seconds": 0.766402,
+    "exit_code": 0,
+    "bytes": 2866,
+    "sha256": "ce6554fcf0bde4aecdc0285ccbc618269a8d8fc38e8a959036658e4ca8e782de",
+    "output": "normalization-boundary.log",
+    "maximum_resident_set_size_bytes": 1411235840,
+    "resource_measurement": "wait4 ru_maxrss"
+  },
+  {
+    "name": "normalization-obstruction",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/normalization-obstruction.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T15:30:53.553999+00:00",
+    "elapsed_seconds": 0.760345,
+    "exit_code": 0,
+    "bytes": 2052,
+    "sha256": "89606d946ac5bc97f2f5d87c850a1af74964ca4fd413f742557280ac44961ab9",
+    "output": "normalization-obstruction.log",
+    "maximum_resident_set_size_bytes": 1410170880,
+    "resource_measurement": "wait4 ru_maxrss"
+  },
+  {
+    "name": "normalization-contract-obstruction",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/normalization-contract-obstruction.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T15:30:54.314857+00:00",
+    "elapsed_seconds": 0.815326,
+    "exit_code": 0,
+    "bytes": 3329,
+    "sha256": "92ff481b20f85ab75eccfb1261c1148d1c08f9c560aadd4f4a2342f1c7b69df6",
+    "output": "normalization-contract-obstruction.log",
+    "maximum_resident_set_size_bytes": 1406435328,
+    "resource_measurement": "wait4 ru_maxrss"
+  },
+  {
+    "name": "typing-normalization-obstruction",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/typing-normalization-obstruction.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T15:30:55.130703+00:00",
+    "elapsed_seconds": 1.772789,
+    "exit_code": 0,
+    "bytes": 5726,
+    "sha256": "9f036e1d0021ce95650ae13ec2394d88d9e0a9e05d85fee077268bf7a7152832",
+    "output": "typing-normalization-obstruction.log",
+    "maximum_resident_set_size_bytes": 1558085632,
+    "resource_measurement": "wait4 ru_maxrss"
+  },
+  {
+    "name": "normalization-retractions",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/normalization-retractions.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T15:30:56.904038+00:00",
+    "elapsed_seconds": 0.793944,
+    "exit_code": 0,
+    "bytes": 6912,
+    "sha256": "dc96054662105a479cec75268a804445857b3f4362adcdcba6fdca23604b2418",
+    "output": "normalization-retractions.log",
+    "maximum_resident_set_size_bytes": 1448394752,
+    "resource_measurement": "wait4 ru_maxrss"
+  },
+  {
+    "name": "type-shift-normalization-obstruction",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/type-shift-normalization-obstruction.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T15:30:57.698616+00:00",
+    "elapsed_seconds": 1.029673,
+    "exit_code": 0,
+    "bytes": 4525,
+    "sha256": "cbe60fd024f7a9fdac8809ec0106ed2b74cd8b45ec8d28ea968ac5458d1f0f9c",
+    "output": "type-shift-normalization-obstruction.log",
+    "maximum_resident_set_size_bytes": 1452113920,
+    "resource_measurement": "wait4 ru_maxrss"
+  },
+  {
+    "name": "normalized-rules-boundary",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/normalized-rules-boundary.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T15:30:58.728834+00:00",
+    "elapsed_seconds": 0.774524,
+    "exit_code": 0,
+    "bytes": 6160,
+    "sha256": "fe5197c32f03227d43f14fcaefc7a50213d5bd9a2308531406315f88122a9e1f",
+    "output": "normalized-rules-boundary.log",
+    "maximum_resident_set_size_bytes": 1445396480,
+    "resource_measurement": "wait4 ru_maxrss"
+  },
+  {
+    "name": "resume-return-contract-obstruction",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/resume-return-contract-obstruction.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T15:30:59.504019+00:00",
+    "elapsed_seconds": 0.766799,
+    "exit_code": 0,
+    "bytes": 1613,
+    "sha256": "223a7c227eca3c29d8690fa0b2ac5d71c793b89f6808c93e807c7e321680772f",
+    "output": "resume-return-contract-obstruction.log",
+    "maximum_resident_set_size_bytes": 1442922496,
+    "resource_measurement": "wait4 ru_maxrss"
+  },
+  {
+    "name": "review-builtins-boundary",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/review-builtins-boundary.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T15:31:00.271405+00:00",
+    "elapsed_seconds": 1.004619,
+    "exit_code": 0,
+    "bytes": 4212,
+    "sha256": "7145c99e5d78088b0b41d12106a77056f6b5755d58ff9de479f77267693752d3",
+    "output": "review-builtins-boundary.log",
+    "maximum_resident_set_size_bytes": 1450655744,
+    "resource_measurement": "wait4 ru_maxrss"
+  },
+  {
+    "name": "review-store-boundary",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/review-store-boundary.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T15:31:01.276595+00:00",
+    "elapsed_seconds": 0.786157,
+    "exit_code": 0,
+    "bytes": 1139,
+    "sha256": "2a58f01b74fd562e37a75582e67360efa5b8463feba678fba1879afb2535b545",
+    "output": "review-store-boundary.log",
+    "maximum_resident_set_size_bytes": 1443905536,
+    "resource_measurement": "wait4 ru_maxrss"
+  },
+  {
+    "name": "review-lambda-boundary",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/review-lambda-boundary.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T15:31:02.063325+00:00",
+    "elapsed_seconds": 0.34565,
+    "exit_code": 0,
+    "bytes": 1593,
+    "sha256": "5a222c6235e63e78834b35b70d9f3014879d51f524c7be10529168256e13f384",
+    "output": "review-lambda-boundary.log",
+    "maximum_resident_set_size_bytes": 758857728,
+    "resource_measurement": "wait4 ru_maxrss"
+  },
+  {
+    "name": "rv-11-primraw",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/rv-11-primraw.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T15:31:02.409552+00:00",
+    "elapsed_seconds": 0.521093,
+    "exit_code": 0,
+    "bytes": 1687,
+    "sha256": "db7430575025dfba9251a4ba36d121388fb9c3453422e031d78a13581b5466e3",
+    "output": "rv-11-primraw.log",
+    "maximum_resident_set_size_bytes": 755449856,
+    "resource_measurement": "wait4 ru_maxrss"
+  },
+  {
+    "name": "rv-11-count",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/rv-11-count.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T15:31:02.931214+00:00",
+    "elapsed_seconds": 0.63471,
+    "exit_code": 0,
+    "bytes": 359,
+    "sha256": "38373d74b3a969abf969eef6ce89045d9694c6a1f0685fbd78d1a013a05f9573",
+    "output": "rv-11-count.log",
+    "maximum_resident_set_size_bytes": 1613217792,
+    "resource_measurement": "wait4 ru_maxrss"
+  },
+  {
+    "name": "axioms",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/axioms.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T15:31:03.566458+00:00",
+    "elapsed_seconds": 11.61092,
+    "exit_code": 0,
+    "bytes": 1464398,
+    "sha256": "8abe1af64333cc0bb543c5d96f47541eb4a7f0a6f42f686bf32bbfe7eb3d230d",
+    "output": "<tmp>/l00b11-axioms-rboaok2k.log",
+    "maximum_resident_set_size_bytes": 1684078592,
+    "resource_measurement": "wait4 ru_maxrss"
+  },
+  {
+    "name": "public-api",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/public-api.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T15:31:15.203720+00:00",
+    "elapsed_seconds": 20.159404,
+    "exit_code": 0,
+    "bytes": 10662025,
+    "sha256": "1ce4e37817dae4c8a7032b1d8e67b46ca6d1bc38d70a85fed240ffee6326b102",
+    "output": "<tmp>/l00b11-public-api-zg1psb67.log",
+    "maximum_resident_set_size_bytes": 1700397056,
+    "resource_measurement": "wait4 ru_maxrss"
+  }
+]

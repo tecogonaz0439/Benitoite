@@ -109,8 +109,8 @@ theorem Tel.annotation_open {P B Ψ Q C Γ Φ name a t v}
   have ha : Ty.Annotation P C Γ a := ⟨h.wf.1, h.sorted.1, h.declared.1⟩
   have ht : Ty.Annotation P C (Γ.extend a) (.dependentFn t) :=
     ⟨by simpa [Ctx.extend, Ty.WF] using h.wf.2, h.sorted.2, h.declared.2⟩
-  have hs := (SubstOk.openValue (R := none) hv ha hΓ).annotation ht
-  simpa only [substTyValues, Ty.bind, Ty.rawBind, Ty.norm, valEnv_openValue, Tel.bind] using hs
+  have hs := (SubstOk.openValue (R := none) hv ha hΓ).telAnnotation ht
+  simpa only [valEnv_openValue] using hs
 
 def TypeArgsKindedAt (P : Program) (D : List TParamDecl) (ts : List Ty) (ks : List TyKind) : Prop :=
   ts.length = ks.length ∧ ∀ (i : Nat) (a : Ty) (k : TyKind),

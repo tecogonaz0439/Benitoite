@@ -44,6 +44,7 @@ theorem HasTypeVQ.notContCore {P B Ψ Q C Γ Φ v a}
     (h : HasTypeVQ P B Ψ Q C Γ Φ v a) (hw : Ctx.WF 0 C.length Γ) : a.NotContCore := by
   match h with
   | .V_Var hi ho => exact Ty.notContCore_of_wf_ordinary (hw _ _ hi) ho
+  | .V_Normal hv => exact (Ty.notContCore_norm _).mpr (hv.notContCore hw)
   | .V_Sub hv hl _ _ _ => exact hl.notContCore.mp (hv.notContCore hw)
   | .V_Refine hv .. => exact hv.notContCore hw
   | .V_AtError hs => rw [hs.errorType_eq]; simp [Ty.NotContCore,Ty.core,atErrorType]
@@ -64,8 +65,8 @@ theorem SubstOk.openValue {P B Ψ Q C Γ Φ v a R}
     simp only [Ctx.extend, List.getElem?_cons_zero, Option.some.injEq] at hi
     cases hi
     refine .ordinary ((Ty.ordinary_shiftV _ _ _).mpr (hv.notContCore hΓ).ordinary) ?_
-    rw [Ty.openValue_shift, Ty.canonical_of_wf ha.wf]
-    exact hv
+    rw [Ty.openValue_shift]
+    exact hv.V_Normal
   | succ i =>
     simp only [Ctx.extend, List.getElem?_cons_succ, List.getElem?_map] at hi
     obtain ⟨x,hx,he⟩ := Option.map_eq_some_iff.mp hi
@@ -75,17 +76,15 @@ theorem SubstOk.openValue {P B Ψ Q C Γ Φ v a R}
       cases he
       by_cases ho : t.Ordinary
       · refine .ordinary ((Ty.ordinary_shiftV _ _ _).mpr ho) ?_
-        rw [Ty.openValue_shift, Ty.canonical_of_wf (hΓ _ _ hx)]
-        exact .V_Var hx ho
-      · cases t <;> simp [Ty.Ordinary] at ho
-        case cont b t e =>
-          refine .contVar rfl rfl ?_
-          have hw := hΓ _ _ hx
-          have hn : (Ty.cont b t e).norm = .cont b t e := by
-            change Ty.cont b.norm t.norm (Eff.norm e) = .cont b t e
-            rw [Ty.canonical_of_wf hw.1,Ty.canonical_of_wf hw.2.1,hw.2.2.2]
-          rw [Ty.openValue_shift,hn]
-          exact hx
+        rw [Ty.openValue_shift]
+        exact (HasTypeVQ.V_Var (P := P) (B := B) (Ψ := Ψ) (Q := Q) (C := C) (Φ := Φ) hx ho).V_Normal
+      · have hc : ∃ b r e, t = .cont b r e := by
+          apply Classical.byContradiction
+          intro hn
+          exact ho (Ty.WF.ordinary_of_not_cont (hΓ _ _ hx)
+            (fun b r e he => hn ⟨b,r,e,he⟩))
+        obtain ⟨b,r,e,rfl⟩ := hc
+        exact .contVar rfl rfl ⟨b,r,e,hx,(Ty.openValue_shift _ v).symm⟩
 
 theorem SubstOk.annotation {P B Ψ Q C Γ Φ Δ Ξ R ν a}
     (h : SubstOk P B Ψ Q C Γ Φ Δ Ξ R ν) (ha : Ty.Annotation P C Γ a) :
@@ -95,10 +94,24 @@ theorem SubstOk.annotation {P B Ψ Q C Γ Φ Δ Ξ R ν a}
   simpa only [substTyValues, valEnv_valuesOnly] using
     Ty.sorted_bind_values ha.sorted (valEnv ν).values ht.values ht.references
 
+theorem SubstOk.telAnnotation {P B Ψ Q C Γ Φ Δ Ξ R ν t}
+    (h : SubstOk P B Ψ Q C Γ Φ Δ Ξ R ν)
+    (ha : Ty.Annotation P C Γ (.dependentFn t)) :
+    Ty.Annotation P C Δ (.dependentFn (Tel.bind (valEnv ν) t)) := by
+  have htr := h.transport (Φ := []) (by simp)
+  refine ⟨?_,?_,?_⟩
+  · simpa only [Ty.WF, valEnv_valuesOnly] using
+      Tel.wf_bind_values (t := t) ha.wf ha.sorted.references (valEnv ν).values htr.imageWF
+  · simpa only [Ty.Sorted, valEnv_valuesOnly] using
+      Tel.sorted_bind_values (t := t) ha.sorted (valEnv ν).values htr.values htr.references
+  · simpa only [Ty.Declared, valEnv_valuesOnly] using
+      Tel.Declared.bind_values (t := t) ha.declared h.declaration
+
 theorem HasTypeTelArgsQ.of_arguments {P B Ψ Q C Γ Φ vs t as a e}
     (hargs : Tel.arguments t vs = some (as,a,e))
     (hvs : HasTypeVsQ P B Ψ Q C Γ Φ vs as)
-    (ht : Ty.Annotation P C Γ (.dependentFn t)) (hΓ : Ctx.WF 0 C.length Γ) :
+    (ht : Ty.Annotation P C Γ (.dependentFn t)) (hΓ : Ctx.WF 0 C.length Γ)
+    (hn : t.Normal) :
     HasTypeTelArgsQ P B Ψ Q C Γ Φ vs t a e := by
   induction vs generalizing t as a e with
   | nil =>
@@ -107,8 +120,8 @@ theorem HasTypeTelArgsQ.of_arguments {P B Ψ Q C Γ Φ vs t as a e}
     | done r eff =>
       simp only [Tel.arguments, Option.some.injEq, Prod.mk.injEq] at hargs
       obtain ⟨rfl,rfl,rfl⟩ := hargs
-      have hn : r.norm = r := Ty.canonical_of_wf ht.wf.1
-      rw [hn, ht.wf.2.2]
+      obtain ⟨hnr,hne⟩ := Tel.done.inj hn
+      rw [hnr, hne]
       exact .done ht
   | cons v vs ih =>
     cases t with
@@ -121,15 +134,15 @@ theorem HasTypeTelArgsQ.of_arguments {P B Ψ Q C Γ Φ vs t as a e}
       | cons hv hs =>
         have hx : Ty.Annotation P C Γ x := ⟨ht.wf.1, ht.sorted.1, ht.declared.1⟩
         have hv' : HasTypeVQ P B Ψ Q C Γ Φ v x := by
-          have hn : x.norm = x := Ty.canonical_of_wf hx.wf
-          rw [hn] at hv
+          have hnx : x.norm = x := (Tel.param.inj hn).2.1
+          rw [hnx] at hv
           exact hv
         have hs0 : SubstOk P B Ψ Q C (Γ.extend x) (Φ.map Pred.lift) Γ Φ none (openValue v) :=
           SubstOk.openValue hv' hx hΓ
         have hb : Ty.Annotation P C (Γ.extend x) (.dependentFn rest) := ⟨by simpa [Ctx.extend,Ty.WF] using ht.wf.2,ht.sorted.2,ht.declared.2⟩
-        have hb' := hs0.annotation hb
-        rw [substTyValues_eq_bind, valEnv_openValue] at hb'
-        exact .param hx hv' (ih hr hs hb')
+        have hb' := hs0.telAnnotation hb
+        rw [valEnv_openValue] at hb'
+        exact .param hx hv' (ih hr hs hb' (Tel.norm_idem _))
 
 theorem CaptureOk.substOk {P B Ψ R Γ Φ cap} (h : CaptureOk P B Ψ R Γ Φ cap) :
     SubstOk P B Ψ Qempty [] Γ Φ [] [] R cap.env := by
@@ -146,11 +159,8 @@ theorem CaptureOk.transport {P B Ψ R Γ Φ cap} (h : CaptureOk P B Ψ R Γ Φ c
   h.substOk.transport (fun p hp => h.conditions p (List.mem_append_right _ hp))
 
 theorem Tel.bind_values_of_wf_zero {nr nt t} (hw : Tel.WF nr nt 0 t) (ν : Nat → Val) :
-    Tel.bind (valEnv ν) t = t := by
-  have hn : Tel.norm t = t := by
-    have he := Ty.canonical_of_wf (show (Ty.dependentFn t).WF nr nt 0 from hw)
-    exact Ty.dependentFn.inj he
-  simp only [Tel.bind,valEnv,←Tel.rawSubstV_eq_rawBind,Tel.rawSubstV_of_wf_zero hw,hn]
+    Tel.bind (valEnv ν) t = Tel.norm t := by
+  simp only [Tel.bind,valEnv,←Tel.rawSubstV_eq_rawBind,Tel.rawSubstV_of_wf_zero hw]
 
 theorem Capture.closeTel_instantiate (cap : Capture) (t : Tel) (vs : List Val) :
     Tel.instantiate (cap.closeTel t) (Val.substList cap.env vs) =
@@ -293,7 +303,8 @@ theorem CaptureOk.continuation_image_wf {P : Program} {B : Builtins} {Ψ : Store
   cases hh with
   | ordinary ho _ => exact False.elim (ho b t e rfl)
   | contLoc _ _ hw _ _ _ => exact hw
-  | contVar _ _ hx => cases hx
+  | contVar _ _ hx => obtain ⟨_,_,_,hx,_⟩ := hx; cases hx
+  | hidden _ hc => exact False.elim (hc b t e rfl)
 
 theorem ClosureTy.annotation {P B Ψ ps R q a e} (h : ClosureTy P B Ψ ps R q a e) :
     Ty.Annotation P [] (bindParams [] ps) (.dependentFn (.done a e)) := by
@@ -304,16 +315,12 @@ theorem DependentClosureTy.annotation {P B Ψ q t} (h : DependentClosureTy P B �
   cases h with | mk _ _ _ ha => exact ha
 
 
-theorem CaptureOk.empty (P : Program) (B : Builtins) (Ψ : StoreTy) (R : Option Ty) :
-    CaptureOk P B Ψ R [] [] Capture.empty := by
-  refine .mk ?_ rfl ?_ ?_ ?_ ?_ ?_ ?_
-  · intro i a hi; cases hi
-  · intro i a hi; cases hi
-  · intro i a hi; cases hi
-  · intro p hp; cases hp
-  · intro ov ho; cases ho
-  · intro i a hi; cases hi
-  · intro p hp; cases hp
+/-- 実際の閉包が保持する依存列は closeTel による正規形である。 -/
+theorem DependentClosureTy.normal {P B Ψ q t} (h : DependentClosureTy P B Ψ q t) :
+    t.Normal := by
+  cases h
+  exact Tel.norm_idem _
+
 
 theorem CaptureLocals.empty (Ψ : StoreTy) (ν : Nat → Val) (ρ : Nat → LocalRef) : CaptureLocals Ψ ν [] ρ := by
   intro i kind hi; cases hi
@@ -352,17 +359,34 @@ theorem CaptureLocals.pushBuilder {Ψ ν L ρ kind l} (h : CaptureLocals Ψ ν L
   | zero => cases hi; exact ⟨l,rfl,hl⟩
   | succ i => exact h i b hi
 
+/-- 閉じた戻り先の型は正規形であり、生の R の比較へ戻すときに使える。 -/
+theorem Capture.closeRAt_normal {cap : Capture} {n : Nat} {R : Option Ty} {r : Ty}
+    (h : cap.closeRAt n R = some r) : r.Normal := by
+  cases R with
+  | none => cases h
+  | some a =>
+    have he : substTyValues (upSubst n cap.env) a = r := Option.some.inj h
+    rw [←he]; exact substTyValues_normal _ _
+
+theorem ClosureTy.return_normal {P B Ψ ps R q a e} (h : ClosureTy P B Ψ ps R q a e) :
+    ∀ r, R = some r → r.Normal := by
+  cases h with
+  | mk hc hb hl he hss hcs hR ha hae hdr hdc =>
+    intro r hr
+    exact Capture.closeRAt_normal (hR.trans hr)
+
 theorem ClosureTy.pure {P B Ψ R body a e}
     (hb : HasTypeC P B Ψ [] [] [] R body a e)
     (ha : Ty.Annotation P [] [] (.dependentFn (.done a e)))
-    (hr : ∀ r, R = some r → r.WF 0 0 0 ∧ r.Declared P [] []) :
+    (hr : ∀ r, R = some r → r.WF 0 0 0 ∧ r.Declared P [] [])
+    (hn : a.Normal) (hRn : ∀ r, R = some r → r.Normal) :
     ClosureTy P B Ψ [] R (Closure.pure body) a e := by
-  have hca : Capture.empty.closeTyAt 0 a = a := Ty.subst_values_of_wf_zero ha.wf.1 _
+  have hca : Capture.empty.closeTyAt 0 a = a := (Ty.subst_values_of_wf_zero ha.wf.1 _).trans hn
   have hce : Capture.empty.closeEffAt 0 e = e := Eff.subst_values_of_wf_zero ha.wf.2.1 ha.wf.2.2 _
   have hR : Capture.empty.closeRAt 0 R = R := by
     cases h : R with
     | none => rfl
-    | some r => exact congrArg some (Ty.subst_values_of_wf_zero (hr r h).1 _)
+    | some r => exact congrArg some ((Ty.subst_values_of_wf_zero (hr r h).1 _).trans (hRn r h))
   have hh := ClosureTy.mk (ss := []) (Rs := R) (a := a) (e := e) (CaptureOk.empty P B Ψ R) hb
     (CaptureLocals.empty _ _ _) (Comp.resolveLocals_id body).symm
     (by simp [TypeAnnotations]) (by simp [TypeAnnotations]) hR
@@ -378,7 +402,7 @@ theorem ClosureTy.capture_resolved {P B Ψ R Rs Γ Φ cap body a e L ρ}
     (ha : Ty.Annotation P [] Γ (.dependentFn (.done a e)))
     (hR : cap.closeR Rs = R) (hr : ∀ r, Rs = some r → r.Declared P [] Γ) :
     ClosureTy P B Ψ [] R (.mk cap (body.resolveLocals ρ)) (cap.closeTy a) (cap.closeEff e) := by
-  have ht := hc.substOk.annotation ha
+  have ht := hc.substOk.telAnnotation ha
   change Ty.Annotation P [] [] (.dependentFn (.done (cap.closeTy a) (cap.closeEff e))) at ht
   have hr' : ∀ r, R = some r → r.Declared P [] [] := by
     intro r hh
@@ -459,7 +483,7 @@ theorem substKind_apply (cap : Capture) (v : Val) (k : BuilderKind)
     rw [←he] at h
     have hs : Ty.bind (Tel.argumentsEnv v) (substTyValues (upSubst 1 cap.env) a) =
         substTyValues (upSubst 1 cap.env) a := by
-      rw [←valEnv_openValue]; exact Ty.subst_values_of_wf_zero ha _
+      rw [←valEnv_openValue]; exact (Ty.subst_values_of_wf_zero ha _).trans (substTyValues_normal _ _)
     rw [hs] at h
     exact congrArg BuilderKind.list h.symm
 
@@ -536,15 +560,18 @@ theorem HasTypeCQ.builderBody_image {P B Ψ Q C Γ Φ} {R : Option Ty} {body : C
       | none => cases hh
       | some t =>
         cases hh
-        have hn : substTyValues builderValueSubst (t.shiftV 1 0) = t := by
-          have := Ty.openValue_shift t (.const .unit)
-          rw [Ty.canonical_of_wf (hΓ _ _ hx),builderValueSubst_eq] at this
-          exact this
+        have hn : substTyValues builderValueSubst (t.shiftV 1 0) = t.norm := by
+          simpa only [builderValueSubst_eq] using Ty.openValue_shift t (.const .unit)
         by_cases ho : t.Ordinary
         · refine .ordinary ((Ty.ordinary_shiftV _ _ _).mpr ho) ?_
-          rw [hn]; exact .V_Var hx ho
-        · cases t <;> simp [Ty.Ordinary] at ho
-          case cont b t e => exact .contVar rfl rfl (by rw [hn]; exact hx)
+          rw [hn]; exact (HasTypeVQ.V_Var (P := P) (B := B) (Ψ := Ψ) (Q := Q) (C := C) (Φ := Φ) hx ho).V_Normal
+        · have hc : ∃ b r e, t = .cont b r e := by
+            apply Classical.byContradiction
+            intro hc
+            exact ho (Ty.WF.ordinary_of_not_cont (hΓ _ _ hx)
+              (fun b r e he => hc ⟨b,r,e,he⟩))
+          obtain ⟨b,r,e,rfl⟩ := hc
+          exact .contVar rfl rfl ⟨b,r,e,hx,hn.symm⟩
   have hf : ∀ p ∈ Φ.map Pred.lift, Entails (Γ.facts ++ Φ)
       (predBind (valEnv builderValueSubst).values p) := by
     intro p hp
@@ -602,10 +629,10 @@ theorem Capture.closeTy_builder_image (cap : Capture) (a : Ty) :
 
 theorem Eff.openValue_shift (e : Eff) (v : Val) :
     substEffValues (openValue v) (e.shiftV 1 0) = e.norm := by
-  have h := Ty.openValue_shift (.dependentFn (.done (.base .unit) e)) v
-  change Ty.dependentFn (.done (.base .unit) (substEffValues (openValue v) (e.shiftV 1 0))) =
-    Ty.dependentFn (.done (.base .unit) e.norm) at h
-  exact (Tel.done.inj (Ty.dependentFn.inj h)).2
+  have h := Ty.openValue_shift (.fn [] [] (.base .unit) e) v
+  change Ty.fn [] [] (.base .unit) (substEffValues (openValue v) (e.shiftV 1 0)) =
+    Ty.fn [] [] (.base .unit) e.norm at h
+  exact (Ty.fn.inj h).2.2.2
 
 theorem Capture.closeEff_builder_image (cap : Capture) (e : Eff) :
     cap.closeEff (substEffValues builderValueSubst (e.shiftV 1 0)) = cap.closeEff e := by
@@ -649,7 +676,7 @@ theorem done_annotation_of_covers {P : Program} {a : Ty} {e1 ec : Eff}
       cases e1 with
       | mk p fs => exact wfList_mem.mp ha.wf.2.1 y hy
     have : y = x := by
-      rw [←Ty.canonical_of_wf hyw,he,Eff.canonical_mem hn hx]
+      rw [←Eff.canonical_mem ha.wf.2.2 hy,he,Eff.canonical_mem hn hx]
     exact this ▸ hy
   obtain ⟨hw,hs,hd⟩ := ha
   obtain ⟨hw1,hw2,_⟩ := hw

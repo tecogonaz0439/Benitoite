@@ -16,12 +16,6 @@ set_option maxHeartbeats 1600000
 def ClosedTy (P : Program) (B : Builtins) (store : StoreTy) (v : Val) (a : Ty) : Prop :=
   ∀ Q C Γ Φ, HasTypeVQ P B store Q C Γ Φ v a
 
-/-- 通常値は置換後の型で検査し、継続場所の閉じた契約と R0 は保つ。 -/
-def SubstOk (P : Program) (B : Builtins) (store : StoreTy) (Q : NoFailCtx) (C : List TParam)
-    (Γ : Ctx) (_Φ : List Pred) (Δ : Ctx) (Ξ : List Pred) (R0 : Option Ty) (σ : Nat → Val) : Prop :=
-  ∀ i a, Γ[i]? = some (some a) →
-    ImageOk P B store Q C Δ Ξ R0 σ i a
-
 private def TypedImages (P : Program) (B : Builtins) (store : StoreTy) (Q : NoFailCtx) (C : List TParam)
     (Γ Δ : Ctx) (Ξ : List Pred) (σ : Nat → Val) : Prop :=
   ∀ i a, Γ[i]? = some (some a) → a.Ordinary →
@@ -32,8 +26,9 @@ private theorem SubstOk.images {P B store Q C Γ Φ Δ Ξ R σ}
   intro i a hi ho
   cases h i a hi with
   | ordinary _ hv => exact hv
-  | contLoc he _ _ _ _ _ => exact False.elim (ho _ _ _ he)
-  | contVar he _ _ => exact False.elim (ho _ _ _ he)
+  | hidden hn _ => exact False.elim (hn ho)
+  | contLoc he _ _ _ _ _ => exact False.elim (ho _ _ _ (by rw [he]; rfl))
+  | contVar he _ _ => exact False.elim (ho _ _ _ (by rw [he]; rfl))
 
 private theorem TypedImages.values {P B store Q C Γ Δ Ξ σ}
     (h : TypedImages P B store Q C Γ Δ Ξ σ) :
@@ -71,7 +66,7 @@ private theorem TypedImages.transport {P B store Q C Γ Δ Ξ σ Φ}
   · obtain ⟨i, a, q, hi, hq, rfl⟩ := Ctx.mem_facts.mp hp
     have ht := h i a hi (Ty.assume_ordinary hq)
     have he := ht.assume_optional (predBind (upValues (valEnv σ).values) q)
-      (Ty.assume_bind a (valEnv σ) q hq)
+      (Ty.assume_bind a (valEnv σ) (by intro i; simp [valEnv, Ordinary, Ty.core]) q hq)
     change Entails _ (predBind (valEnv σ).values (q.openOptional (some (.var i))))
     rw [predBind_open_optional]
     exact he
@@ -98,8 +93,8 @@ theorem SubstOk.transport {P B store Q C Γ Φ Δ Ξ R σ}
 theorem Ty.ordinary_bind_values (a : Ty) (σ : Nat → Val) :
     (substTyValues σ a).Ordinary ↔ a.Ordinary := by
   unfold substTyValues Ty.bind valEnv
-  rw [← Ty.rawSubstV_eq_rawBind]
-  cases a <;> simp [Ty.rawSubstV, Ty.norm, Ty.Ordinary]
+  rw [Ty.ordinary_norm, ← Ty.rawSubstV_eq_rawBind]
+  exact Ty.ordinary_rawSubstV a _
 
 private theorem TypedImages.hide {P B store Q C Γ Δ Ξ σ}
     (h : TypedImages P B store Q C Γ Δ Ξ σ) (hA : Builtins.ValueAssumptions P B) (hstore : StoreTy.WF store)
@@ -223,14 +218,76 @@ private theorem TypedImages.rowAnnotations {P B store Q C Γ Δ Ξ σ es}
   intro a ha; obtain ⟨x, hx, rfl⟩ := List.mem_map.mp ha
   simpa only [substTyValues, Ty.bind_fn, List.map_nil, Ty.bind_base, substEffValues] using h.annotation (ht x hx)
 
+private theorem TypedImages.telAnnotation {P B store Q C Γ Δ Ξ σ t}
+    (h : TypedImages P B store Q C Γ Δ Ξ σ) (ha : Ty.Annotation P C Γ (.dependentFn t)) :
+    Ty.Annotation P C Δ (.dependentFn (Tel.bind (valEnv σ) t)) := by
+  have htr := h.transport (Φ := []) (by simp)
+  refine ⟨?_, ?_, ?_⟩
+  · simpa only [Ty.WF, valEnv_valuesOnly] using
+      Tel.wf_bind_values (t := t) ha.wf ha.sorted.references (valEnv σ).values htr.imageWF
+  · simpa only [Ty.Sorted, valEnv_valuesOnly] using
+      Tel.sorted_bind_values (t := t) ha.sorted (valEnv σ).values htr.values htr.references
+  · simpa only [Ty.Declared, valEnv_valuesOnly] using
+      Tel.Declared.bind_values (t := t) ha.declared h.declaration
+
+@[simp] theorem substTyValues_norm_source (a : Ty) (ν : Nat → Val) :
+    substTyValues ν a.norm = substTyValues ν a := Ty.norm_rawBind _ a
+
+@[simp] theorem substEffValues_norm_source (e : Eff) (ν : Nat → Val) :
+    substEffValues ν e.norm = substEffValues ν e := by
+  exact Eff.norm_rawBind (valEnv ν) e
+
+@[simp] theorem substTyValues_normal (a : Ty) (ν : Nat → Val) :
+    (substTyValues ν a).norm = substTyValues ν a := Ty.norm_idem _
+
+private theorem substReturn_norm (R : Option Ty) (σ : Nat → Val) :
+    (R.map Ty.norm).map (substTyValues σ) = (R.map (substTyValues σ)).map Ty.norm := by
+  cases R <;> simp only [Option.map_none, Option.map_some, substTyValues_norm_source, substTyValues_normal]
+
+private theorem substReturn_closed {R : Option Ty} (σ : Nat → Val)
+    (hw : ∀ a, R = some a → a.WF 0 0 0) :
+    (R.map (substTyValues σ)).map Ty.norm = R.map Ty.norm := by
+  cases he : R with
+  | none => rfl
+  | some a => simp only [Option.map_some, Ty.subst_values_of_wf_zero (hw a he), Ty.norm_idem]
+
+private theorem TypedImages.closedDeclared {P B store Q C Γ Δ Ξ σ a}
+    (h : TypedImages P B store Q C Γ Δ Ξ σ) (hc : a.WF 0 0 0)
+    (ha : Ty.Declared P C Γ a) : Ty.Declared P C Δ a := by
+  have hh := ha.rawSubstV h.declaration
+  rwa [Ty.rawSubstV_of_wf_zero hc] at hh
+
+private theorem TypedImages.closedAnnotation {P B store Q C Γ Δ Ξ σ a}
+    (h : TypedImages P B store Q C Γ Δ Ξ σ) (hc : a.WF 0 0 0)
+    (ha : Ty.Annotation P C Γ a) : Ty.Annotation P C Δ a := by
+  refine ⟨hc.weaken (by omega) (by omega), ?_, h.closedDeclared hc ha.declared⟩
+  have hh := Ty.sorted_rawSubstV ha.sorted (valEnv σ).values h.values h.references
+  rwa [Ty.rawSubstV_of_wf_zero hc] at hh
+
 private theorem TypedImages.signature {P B store Q C Γ Δ Ξ σ t ks ts es}
     (h : TypedImages P B store Q C Γ Δ Ξ σ) (ht : SignatureInstance P C Γ t ks ts es) :
     SignatureInstance P C Δ t ks (ts.map (substTyValues σ)) (es.map (substEffValues σ)) := by
   refine ⟨ht.source, h.typeAnnotations ht.types, ht.kinds.subst σ, h.rowAnnotations ht.rows, ?_⟩
-  have hh := h.annotation ht.result
-  change Ty.Annotation P C Δ (((Ty.dependentFn t).subst ts es).substV (valEnv σ).values) at hh
-  rw [Ty.substV_subst_closed_rows ht.source] at hh
-  exact hh
+  rw [← instantiatedTel_subst_eq ht.source]
+  exact h.telAnnotation ht.result
+
+private theorem TypedImages.sat_normal {P B store Q C Γ Δ Ξ σ a p}
+    (h : TypedImages P B store Q C Γ Δ Ξ σ) (hA : Builtins.ValueAssumptions P B)
+    (ha : Ty.Annotation P C Γ a) (hs : B.sat C a.norm p) :
+    B.sat C (substTyValues σ a).norm p := by
+  have hh := hA.sat_values store Q C Γ Δ Ξ σ a.norm p h ha.norm hs
+  simpa only [substTyValues, Ty.bind, Ty.norm_rawBind, Ty.norm_idem] using hh
+
+private theorem TypedImages.admits_normal {P B store Q C Γ Δ Ξ σ b sg ts}
+    (h : TypedImages P B store Q C Γ Δ Ξ σ) (hA : Builtins.ValueAssumptions P B)
+    (hl : B.sig b = some sg) (ha : TypeAnnotations P C Γ ts)
+    (hs : sg.admits C (Ty.normTys ts)) : sg.admits C (Ty.normTys (ts.map (substTyValues σ))) := by
+  have he : (Ty.normTys ts).map (substTyValues σ) = Ty.normTys (ts.map (substTyValues σ)) := by
+    simp only [Ty.normTys_eq_map, List.map_map, Function.comp_def]
+    apply List.map_congr_left
+    intro a ha
+    simp only [substTyValues, Ty.bind, Ty.norm_rawBind, Ty.norm_idem]
+  simpa only [he] using hA.admits_values b sg store Q C Γ Δ Ξ σ (Ty.normTys ts) hl h ha.norm hs
 
 private theorem TypedImages.admissible {P B store Q C Γ Δ Ξ σ tps ne Qs Qt ts es e}
     (h : TypedImages P B store Q C Γ Δ Ξ σ) (hA : Builtins.ValueAssumptions P B)
@@ -238,7 +295,7 @@ private theorem TypedImages.admissible {P B store Q C Γ Δ Ξ σ tps ne Qs Qt t
     (ha : Admissible B C Γ.length tps ne Qs Qt ts es e) :
     Admissible B C Δ.length tps ne Qs Qt (ts.map (substTyValues σ)) (es.map (substEffValues σ)) e := by
   apply ha.map (substTyValues σ) (substEffValues σ)
-  · exact ha.types.map _ (fun a hm p hp => hA.sat_values store Q C Γ Δ Ξ σ a p h (ht a hm) hp)
+  · exact ha.types.map _ (fun a hm p hp => h.sat_normal hA (ht a hm) hp)
   · intro a hm; exact ⟨(h.annotation (ht a hm)).wf, (Ty.ordinary_bind_values _ _).mpr (ha.typeScope a hm).2⟩
   · intro e hm; exact ((h.rowAnnotations he) _ (List.mem_map.mpr ⟨e, hm, rfl⟩)).wf.2.2.2.1
   · exact ha.noFailRows.map _ (fun _ hn => hn.subst_values σ) (fun i => by
@@ -251,7 +308,7 @@ private theorem TypedImages.primitive {P B store Q C Γ Δ Ξ σ b sg ts es}
     (ha : PrimitiveAdmissible C Γ.length sg Q ts es) :
     PrimitiveAdmissible C Δ.length sg Q (ts.map (substTyValues σ)) (es.map (substEffValues σ)) := by
   apply ha.map (substTyValues σ) (substEffValues σ)
-  · exact hA.admits_values b sg store Q C Γ Δ Ξ σ ts hb h ht ha.admits
+  · exact h.admits_normal hA hb ht ha.admits
   · intro a hm; exact ⟨(h.annotation (ht a hm)).wf, (Ty.ordinary_bind_values _ _).mpr (ha.typeScope a hm).2⟩
   · intro e hm; exact ((h.rowAnnotations he) _ (List.mem_map.mpr ⟨e, hm, rfl⟩)).wf.2.2.2.1
   · exact ha.noFailRows.map _ (fun _ hn => hn.subst_values σ) (fun i => by
@@ -336,8 +393,9 @@ theorem SubstOk.hide {P B Ψ Q C Γ Φ Δ Ξ R0 ν}
   obtain ⟨hi,ho⟩ := hideConts_lookup.mp hi
   cases h i a hi with
   | ordinary _ hv => exact .ordinary ho (hv.hide_context hA hw Ψ' hp)
-  | contLoc he _ _ _ _ _ => exact False.elim (ho _ _ _ he)
-  | contVar he _ _ => exact False.elim (ho _ _ _ he)
+  | hidden hn _ => exact False.elim (hn ho)
+  | contLoc he _ _ _ _ _ => exact False.elim (ho _ _ _ (by rw [he]; rfl))
+  | contVar he _ _ => exact False.elim (ho _ _ _ (by rw [he]; rfl))
 
 /-- 一つ束縛を増やす前後で、古い像の番号と依存する型を同時に移す。 -/
 theorem ImageOk.lift {P B Ψ Q C Δ Ξ R0 ν i a}
@@ -354,6 +412,9 @@ theorem ImageOk.lift {P B Ψ Q C Δ Ξ R0 ν i a}
     have hh := hv.shift_values (store' := Ψ) hA hw (.refl _) (ShiftMap.outerOption Δ x)
       (Ξ := Ξ.map Pred.lift) (fun p hp => .hyp (List.mem_append_right _ (List.mem_map.mpr ⟨p,hp,rfl⟩)))
     simpa only [upSubst, hn, ↓reduceIte, Nat.add_sub_cancel, shiftIndex_add] using hh
+  | .hidden hno hnc =>
+    exact .hidden (fun hn => hno ((Ty.ordinary_shiftV _ _ _).mp hn))
+      (by cases a <;> simp_all [Ty.shiftV])
   | .contLoc (b := b) (t := t) (e := e) (b' := b') (t' := t') (e' := e')
       ha hb hclosed hl hs hr =>
     have hc : (substTyValues ν a).shiftV 1 0 = substTyValues ν a := Ty.shiftV_of_wf_zero hclosed _ _
@@ -371,8 +432,11 @@ theorem ImageOk.lift {P B Ψ Q C Δ Ξ R0 ν i a}
     refine .contVar (j := j+1) (b := b.shiftV 1 0) (t := t.shiftV 1 0) (e := Eff.shiftV 1 0 e) ?_ ?_ ?_
     · simp only [ha, Ty.shiftV]
     · simp only [upSubst, hn, ↓reduceIte, Nat.add_sub_cancel, hv, Val.rename]
-    · rw [he]
-      cases x <;> simp [Ctx.extendOption, Ctx.extend, Ctx.extendNone, List.getElem?_map, hl]
+    · obtain ⟨b', t', e', hi, heq⟩ := hl
+      refine ⟨b'.shiftV 1 0, t'.shiftV 1 0, Eff.shiftV 1 0 e', ?_, ?_⟩
+      · cases x <;> simp [Ctx.extendOption, Ctx.extend, Ctx.extendNone, List.getElem?_map, hi, Ty.shiftV]
+      · rw [he]
+        exact (Ty.norm_shiftV (.cont b' t' e') 1 0).trans (congrArg (Ty.shiftV 1 0) heq)
 
 theorem SubstOk.extendNone {P B Ψ Q C Γ Φ Δ Ξ R0 ν}
     (h : SubstOk P B Ψ Q C Γ Φ Δ Ξ R0 ν)
@@ -398,13 +462,14 @@ theorem SubstOk.wf {P B Ψ Q C Γ Φ Δ Ξ R0 ν a}
   have ht := h0.transport (by simp)
   exact Ty.wf_bind_values hw hs.references (valEnv ν).values ht.imageWF
 
-theorem SubstOk.upValue {P B Ψ Q C Γ Φ Δ Ξ R0 ν}
+private theorem SubstOk.extendNorm {P B Ψ Q C Γ Φ Δ Ξ R0 ν}
     (h : SubstOk P B Ψ Q C Γ Φ Δ Ξ R0 ν)
-    (hA : Builtins.ValueAssumptions P B) (hstore : Ψ.WF)
-    (x : Ty) :
-    SubstOk P B Ψ Q C (Γ.extend x) (Φ.map Pred.lift)
-      (Δ.extend (substTyValues ν x)) (Ξ.map Pred.lift)
+    (hA : Builtins.ValueAssumptions P B) (hstore : Ψ.WF) (x y : Ty)
+    (hy : y.norm = substTyValues ν x)
+    (hc : ∀ b t e, x = .cont b t e → ∃ b' t' e', y = .cont b' t' e') :
+    SubstOk P B Ψ Q C (Γ.extend x) (Φ.map Pred.lift) (Δ.extend y) (Ξ.map Pred.lift)
       (R0.map (Ty.shiftV 1 0)) (upSubst 1 ν) := by
+  classical
   intro i a hi
   cases i with
   | zero =>
@@ -412,22 +477,45 @@ theorem SubstOk.upValue {P B Ψ Q C Γ Φ Δ Ξ R0 ν}
     cases hi
     have he := Ty.bind_shiftV_values x 1 ν
     by_cases ho : x.Ordinary
-    · refine .ordinary ((Ty.ordinary_shiftV _ _ _).mpr ho) ?_
-      rw [he]
-      exact .V_Var rfl ((Ty.ordinary_shiftV _ _ _).mpr ((Ty.ordinary_bind_values x ν).mpr ho))
-    · cases x <;> simp at ho
-      case cont b t e =>
-        refine .contVar (j := 0) rfl rfl ?_
-        · rw [he]; rfl
-
+    · have hyo : y.Ordinary := (Ty.ordinary_norm y).mp
+        (hy.symm ▸ (Ty.ordinary_bind_values x ν).mpr ho)
+      refine .ordinary ((Ty.ordinary_shiftV _ _ _).mpr ho) ?_
+      rw [he, ←hy]
+      have hh : HasTypeVQ P B Ψ Q C (Δ.extend y) (Ξ.map Pred.lift) (.var 0) (y.shiftV 1 0) :=
+        .V_Var rfl ((Ty.ordinary_shiftV _ _ _).mpr hyo)
+      simpa only [Ty.norm_shiftV, upSubst, show 0 < 1 from by omega, if_true] using hh.V_Normal
+    · by_cases hn : ∀ b t e, x ≠ .cont b t e
+      · exact .hidden (fun h => ho ((Ty.ordinary_shiftV _ _ _).mp h))
+          (by cases x <;> simp_all [Ty.shiftV])
+      · have hex : ∃ b t e, x = .cont b t e := by
+          apply Classical.byContradiction
+          intro hh
+          exact hn (fun b t e hx => hh ⟨b,t,e,hx⟩)
+        obtain ⟨b,t,e,hx⟩ := hex
+        obtain ⟨b',t',e',hyc⟩ := hc b t e hx
+        refine .contVar (j := 0) (b := b.shiftV 1 0) (t := t.shiftV 1 0)
+          (e := Eff.shiftV 1 0 e) (by rw [hx]; rfl) rfl ?_
+        refine ⟨b'.shiftV 1 0, t'.shiftV 1 0, Eff.shiftV 1 0 e', ?_, ?_⟩
+        · simp only [Ctx.extend, List.getElem?_cons_zero, hyc, Ty.shiftV]
+        · rw [he]
+          exact (Ty.norm_shiftV (.cont b' t' e') 1 0).trans
+            (congrArg (Ty.shiftV 1 0) (by simpa only [hyc] using hy))
   | succ i =>
     simp only [Ctx.extend, List.getElem?_cons_succ, List.getElem?_map] at hi
     obtain ⟨v,hv,he⟩ := Option.map_eq_some_iff.mp hi
     cases v with
     | none => cases he
-    | some b =>
-      cases he
-      exact (h i b hv).lift hA hstore (some (substTyValues ν x))
+    | some b => cases he; exact (h i b hv).lift hA hstore (some y)
+
+theorem SubstOk.upValue {P B Ψ Q C Γ Φ Δ Ξ R0 ν}
+    (h : SubstOk P B Ψ Q C Γ Φ Δ Ξ R0 ν)
+    (hA : Builtins.ValueAssumptions P B) (hstore : Ψ.WF) (x : Ty) :
+    SubstOk P B Ψ Q C (Γ.extend x) (Φ.map Pred.lift)
+      (Δ.extend (substTyValues ν x)) (Ξ.map Pred.lift)
+      (R0.map (Ty.shiftV 1 0)) (upSubst 1 ν) :=
+  h.extendNorm hA hstore x _ (substTyValues_normal _ _) (by
+    intro b t e he; subst x
+    exact ⟨substTyValues ν b, substTyValues ν t, substEffValues ν e, rfl⟩)
 
 theorem SubstOk.up {P B Ψ Q C Γ Φ Δ Ξ R0 ν}
     (h : SubstOk P B Ψ Q C Γ Φ Δ Ξ R0 ν)
@@ -495,6 +583,7 @@ theorem SubstOk.store {P B Ψ Ψ' Q C Γ Φ Δ Ξ R0 ν}
     have hh := hv.shift_values hA hw hp hm (Ξ := Ξ)
       (fun p hp => by rw [Pred.shiftV_zero]; exact .hyp (List.mem_append_right _ hp))
     simpa only [shiftIndex_zero,Val.rename_identity,Ty.shiftV_zero] using hh
+  | .hidden hn hc => exact .hidden hn hc
   | .contLoc he ht hw hv hl hr => exact .contLoc he ht hw hv (hp _ _ hl trivial) hr
   | .contVar he hv hi => exact .contVar he hv hi
 
@@ -533,6 +622,9 @@ theorem ImageOk.liftParams {P B Ψ Q C Δ Ξ R0 ν i a}
       (Ξ := liftMany ps.length Ξ) (fun p hp => .hyp (List.mem_append_right _ (by
         rw [liftMany_eq]; exact List.mem_map.mpr ⟨p,hp,rfl⟩)))
     simpa only [upSubst, hn, ↓reduceIte, Nat.add_sub_cancel, shiftIndex_add] using hh
+  | .hidden hno hnc =>
+    exact .hidden (fun hn => hno ((Ty.ordinary_shiftV _ _ _).mp hn))
+      (by cases a <;> simp_all [Ty.shiftV])
   | .contLoc (b := b) (t := t) (e := e) (b' := b') (t' := t') (e' := e') ha hb hc hv hl hr =>
     have hec : (substTyValues ν a).shiftV ps.length 0 = substTyValues ν a := Ty.shiftV_of_wf_zero hc _ _
     have hR : R0.map (Ty.shiftV ps.length 0) = R0 := by
@@ -549,10 +641,13 @@ theorem ImageOk.liftParams {P B Ψ Q C Δ Ξ R0 ν i a}
     refine .contVar (j := j+ps.length) (b := b.shiftV ps.length 0) (t := t.shiftV ps.length 0)
       (e := Eff.shiftV ps.length 0 e) (by simp only [ha, Ty.shiftV]) ?_ ?_
     · simp only [upSubst, hn, ↓reduceIte, Nat.add_sub_cancel, hv, Val.rename]
-    · rw [he]
-      rw [bindParams, List.getElem?_append_right (by simp only [List.length_map, List.length_reverse]; omega)]
-      simp only [List.length_map, List.length_reverse, Nat.add_sub_cancel_right,
-        List.getElem?_map, hl, Option.map_some]
+    · obtain ⟨b', t', e', hi, heq⟩ := hl
+      refine ⟨b'.shiftV ps.length 0, t'.shiftV ps.length 0, Eff.shiftV ps.length 0 e', ?_, ?_⟩
+      · rw [bindParams, List.getElem?_append_right (by simp only [List.length_map, List.length_reverse]; omega)]
+        simp only [List.length_map, List.length_reverse, Nat.add_sub_cancel_right,
+          List.getElem?_map, hi, Option.map_some, Ty.shiftV]
+      · rw [he]
+        exact (Ty.norm_shiftV (.cont b' t' e') ps.length 0).trans (congrArg (Ty.shiftV ps.length 0) heq)
 
 theorem SubstOk.params {P B Ψ Q C Γ Φ Δ Ξ R0 ν}
     (h : SubstOk P B Ψ Q C Γ Φ Δ Ξ R0 ν)
@@ -571,12 +666,20 @@ theorem SubstOk.params {P B Ψ Q C Γ Φ Δ Ξ R0 ν}
       | some u =>
         simp only [hu, Option.map_some, Option.some.injEq] at hi
         cases hi
-        cases u <;> simp [Ty.shiftV] at ho
+        cases u <;> simp only [Ty.shiftV, Ty.Ordinary, Ordinary, Ty.core] at ho
+        all_goals try (solve | apply False.elim; apply ho; intros; simp)
+        case refined a p =>
+          exact .hidden ho (by intros; simp [Ty.shiftV])
         case cont b t e =>
           refine .contVar (j := i) rfl (by simp [upSubst, hil]) ?_
           rw [Ty.bind_shiftV_values]
           rw [bindParams, List.getElem?_append_left (by simpa using hil)]
-          simp only [← List.map_reverse, List.getElem?_map, List.length_map, hu, Option.map_some]
+          refine ⟨(substTyValues ν b).shiftV ps.length 0, (substTyValues ν t).shiftV ps.length 0,
+            Eff.shiftV ps.length 0 (substEffValues ν e), ?_, ?_⟩
+          · simp only [← List.map_reverse, List.getElem?_map, List.length_map, hu, Option.map_some,
+              substTyValues, Ty.bind, Ty.rawBind, Ty.norm, Ty.shiftV, substEffValues, Eff.bind]
+          · exact (Ty.norm_shiftV (substTyValues ν (.cont b t e)) ps.length 0).trans
+              (congrArg (Ty.shiftV ps.length 0) (substTyValues_normal _ _))
     · rw [bindParams, List.getElem?_append_right (by simpa using Nat.le_of_not_gt hil)] at hi
       simp only [List.length_map, List.length_reverse, List.getElem?_map] at hi
       cases hu : Γ[i-ps.length]? with
@@ -599,6 +702,9 @@ theorem ImageOk.shiftEAt {P B Ψ Q C Δ Ξ R0 ν i a C' k c}
     refine .ordinary ((Ty.ordinary_shiftTypes _ _ _).mpr ho) ?_
     rw [substTyValues_shiftEAt]
     exact hv.shift_types hA hstore hC hn (TypeCtxMap.shiftEAt Δ k c)
+  | .hidden hno hnc =>
+    exact .hidden (fun hn => hno ((Ty.ordinary_shiftTypes _ _ _).mp hn))
+      (by cases a <;> simp_all [shiftTypes])
   | .contLoc (b' := b') (t' := t') (e' := e') (l := l) he ht hw hv hl hr =>
     have hc := Ty.shiftTypes_of_wf_zero hw k c
     have hR : R0.map (shiftTypes k c)=R0 := by
@@ -615,8 +721,11 @@ theorem ImageOk.shiftEAt {P B Ψ Q C Δ Ξ R0 ν i a C' k c}
   | .contVar (j := j) he hv hi =>
     subst he
     refine .contVar (j := j) rfl (by simp only [hv,Val.shiftEAt]) ?_
-    rw [substTyValues_shiftEAt]
-    exact (TypeCtxMap.shiftEAt Δ k c).lookup _ _ hi
+    obtain ⟨b', t', e', hi, heq⟩ := hi
+    refine ⟨shiftTypes k c b', shiftTypes k c t', shiftRowsTypes k c e', ?_, ?_⟩
+    · exact (TypeCtxMap.shiftEAt Δ k c).lookup _ _ hi
+    · rw [substTyValues_shiftEAt]
+      exact (Ty.norm_shiftTypes (.cont b' t' e') k c).trans (congrArg (shiftTypes k c) heq)
 
 theorem SubstOk.shiftEAt {P B Ψ Q C Γ Φ Δ Ξ R0 ν C' k c}
     (h : SubstOk P B Ψ Q C Γ Φ Δ Ξ R0 ν) (hA : Builtins.TypeAssumptions P B)
@@ -716,6 +825,52 @@ theorem shifted_values_facts {Δ : Ctx} {Ξ Φ : List Pred} {ν : Nat → Val} (
   have hh := (TypeCtxMap.shiftEAt Δ k 0).entails (hf p hp)
   simpa only [Ctx.shiftE, valEnv,Val.toTerm_shiftEAt] using hh
 
+private theorem SubstOk.fixedParameters {P B Ψ Q C Γ Φ Δ Ξ R0 ν nt n ps}
+    (hw : BinderTypes.LocalWF nt n ps)
+    (h : SubstOk P B Ψ Q C Γ Φ Δ Ξ R0 (upSubst n ν))
+    (hA : Builtins.ValueAssumptions P B) (hs : Ψ.WF) :
+    SubstOk P B Ψ Q C (Γ.extendMany ps) (liftMany ps.length Φ)
+      (Δ.extendMany ps) (liftMany ps.length Ξ) (R0.map (Ty.shiftV ps.length 0))
+      (upSubst ps.length (upSubst n ν)) := by
+  induction ps generalizing Γ Δ Φ Ξ R0 n with
+  | nil => simpa only [Ctx.extendMany, List.length_nil, liftMany_eq, List.map_id, show Pred.shiftV 0 0 = _root_.id from funext (fun p : Pred => p.shiftV_zero 0), upSubst_zero, Ty.shiftV_zero, Option.map_id, id_eq, show Ty.shiftV 0 0 = id from funext (fun a => a.shiftV_zero 0)] using h
+  | cons x xs ih =>
+    have hx := h.extendNorm hA hs x x (Ty.subst_up_fixed hw.1 ν).symm
+      (by intro b t e he; exact ⟨b,t,e,he⟩)
+    have he : upSubst 1 (upSubst n ν) = upSubst (n+1) ν := by rw [upSubst_add]
+    rw [he] at hx
+    have hh := ih hw.2 hx
+    simpa only [Ctx.extendMany, List.length_cons, ←liftMany_one, liftMany_add,
+      upSubst_add, Option.map_map, Function.comp_def, Ty.shiftV_add, Nat.add_assoc, Nat.add_comm 1] using hh
+
+private theorem Transport.up_norm {θ Γ Φ Δ Ξ} (h : Transport θ Γ Φ Δ Ξ)
+    (x y : Ty) (hy : y.norm = x.bind θ) :
+    Transport θ.up (Γ.extend x) (Φ.map Pred.lift) (Δ.extend y) (Ξ.map Pred.lift) := by
+  apply h.extend x y
+  · intro sort hs
+    apply (Ty.hasSort_norm _ _).mp
+    rw [hy]; exact Ty.hasSort_bind hs θ
+  · intro ho
+    apply (Ty.ordinary_norm _).mp
+    rw [hy]; exact Ty.ordinary_bind ho θ h.typeImages
+  · intro p hp
+    have hh := Ty.assume_bind x θ h.typeImages p hp
+    rwa [←hy, Ty.assume_norm] at hh
+
+private theorem Transport.fixedParameters {Γ Φ Δ Ξ ν nt n ps}
+    (hw : BinderTypes.LocalWF nt n ps)
+    (h : Transport (valEnv (upSubst n ν)) Γ Φ Δ Ξ) :
+    Transport (valEnv (upSubst ps.length (upSubst n ν)))
+      (Γ.extendMany ps) (liftMany ps.length Φ) (Δ.extendMany ps) (liftMany ps.length Ξ) := by
+  induction ps generalizing Γ Δ Φ Ξ n with
+  | nil => simpa only [Ctx.extendMany, List.length_nil, liftMany_eq, List.map_id, show Pred.shiftV 0 0 = _root_.id from funext (fun p : Pred => p.shiftV_zero 0), upSubst_zero, id_eq, show (fun p => Pred.shiftV 0 0 p) = _root_.id from funext (fun p : Pred => p.shiftV_zero 0)] using h
+  | cons x xs ih =>
+    have hx := h.up_norm x x (Ty.subst_up_fixed hw.1 ν).symm
+    rw [←valEnv_upSubst_one, upSubst_add] at hx
+    have hh := ih hw.2 hx
+    simpa only [Ctx.extendMany, List.length_cons, ←liftMany_one, liftMany_add, upSubst_add,
+      Nat.add_assoc, Nat.add_comm 1] using hh
+
 theorem SubstOk.handler_clause {P B Ψ Q C Γ Φ Δ Ξ R0 ν}
     (h : SubstOk P B Ψ Q C Γ Φ Δ Ξ R0 ν) (hA : Builtins.SubstitutionAssumptions P B)
     (hw : Ψ.WF) (sg : OpSig) (hs : sg.WF) (t : Ty) (e : Eff) :
@@ -724,11 +879,16 @@ theorem SubstOk.handler_clause {P B Ψ Q C Γ Φ Δ Ξ R0 ν}
       (liftMany (sg.params.length+1) Ξ)
       (R0.map (fun r => (shiftTypes sg.tparams.length 0 r).shiftV (sg.params.length+1) 0))
       (upSubst (sg.params.length+1) (fun i => (ν i).shiftEAt sg.tparams.length 0)) := by
-  have hh := (h.poly hA hw sg.tparams).clauseValue hA.toValueAssumptions hw.hide sg.params (some (sg.continuation t e))
-  have hp : binderImages (fun i => (ν i).shiftEAt sg.tparams.length 0) sg.params=sg.params := by
-    simpa only [upSubst_zero] using binderImages_fixed hs.1 (fun i => (ν i).shiftEAt sg.tparams.length 0)
-  simpa only [OpSig.context,Ctx.extendOption,Option.map_some,hp,OpSig.continuation_subst_values hs,
-    Option.map_map,Function.comp_def] using hh
+  let μ := fun i => (ν i).shiftEAt sg.tparams.length 0
+  have hp := SubstOk.fixedParameters (ν := μ) hs.1 (by
+    simpa only [upSubst_zero] using h.poly hA hw sg.tparams) hA.toValueAssumptions hw.hide
+  simp only [upSubst_zero] at hp
+  have hh := hp.extendNorm hA.toValueAssumptions hw.hide (sg.continuation t e)
+    (sg.continuation (substTyValues ν t) (substEffValues ν e))
+    (OpSig.continuation_subst_values hs t e ν).symm
+    (by intro b u f he; exact ⟨sg.ret,_,_,rfl⟩)
+  simpa only [OpSig.context, ←liftMany_one, liftMany_add, upSubst_add,
+    Option.map_map, Function.comp_def, Ty.shiftV_add, Nat.add_comm 1] using hh
 
 theorem SubstOk.handler_conditions {P B Ψ Q C Γ Φ Δ Ξ R0 ν}
     (h : SubstOk P B Ψ Q C Γ Φ Δ Ξ R0 ν) (hA : Builtins.SubstitutionAssumptions P B)
@@ -737,13 +897,18 @@ theorem SubstOk.handler_conditions {P B Ψ Q C Γ Φ Δ Ξ R0 ν}
     ∀ p∈liftMany (sg.params.length+1) Φ,
       Entails ((sg.context Δ (substTyValues ν t) (substEffValues ν e)).facts++liftMany (sg.params.length+1) Ξ)
         (predBind (valEnv (upSubst (sg.params.length+1) (fun i => (ν i).shiftEAt sg.tparams.length 0))).values p) := by
-  have hh := ((h.poly hA hw sg.tparams).transport (shifted_values_facts sg.tparams.length hf)).clause_values
-    sg.params (some (sg.continuation t e))
-  have hp : binderImages (fun i => (ν i).shiftEAt sg.tparams.length 0) sg.params=sg.params := by
-    simpa only [upSubst_zero] using binderImages_fixed hs.1 (fun i => (ν i).shiftEAt sg.tparams.length 0)
-  intro p hp'
-  have hx := hh.facts p (List.mem_append_right _ hp')
-  simpa only [OpSig.context,Ctx.extendOption,Option.map_some,hp,OpSig.continuation_subst_values hs] using hx
+  let μ := fun i => (ν i).shiftEAt sg.tparams.length 0
+  have hp := Transport.fixedParameters (ν := μ) hs.1 (by
+    simpa only [upSubst_zero] using
+      (h.poly hA hw sg.tparams).transport (shifted_values_facts sg.tparams.length hf))
+  simp only [upSubst_zero] at hp
+  have hh := hp.up_norm (sg.continuation t e)
+    (sg.continuation (substTyValues ν t) (substEffValues ν e))
+    (OpSig.continuation_subst_values hs t e ν).symm
+  intro p hm
+  have hx := hh.facts p (List.mem_append_right _ hm)
+  simpa only [OpSig.context, ←liftMany_one, liftMany_add, ←valEnv_upSubst_one, upSubst_add,
+    Nat.add_comm 1] using hx
 
 theorem SubstOk.handler_failure {P B Ψ Q C Γ Φ Δ Ξ R0 ν}
     (h : SubstOk P B Ψ Q C Γ Φ Δ Ξ R0 ν) (hA : Builtins.SubstitutionAssumptions P B)
@@ -784,10 +949,12 @@ private theorem ImageOk.changeReturn {P B Ψ Q C Δ Ξ ν i a}
     ImageOk P B Ψ Q C Δ Ξ R ν i a := by
   cases h with
   | ordinary ho hv => exact .ordinary ho hv
+  | hidden hn hc => exact .hidden hn hc
   | contVar ha hv ht => exact .contVar ha hv ht
   | contLoc ha hb hc hl hs hr =>
     cases h1 with
     | ordinary ho hv => subst a; exact False.elim (ho _ _ _ rfl)
+    | hidden hn hc => exact False.elim (hc _ _ _ ha)
     | contVar ha1 hv1 ht1 => rw [hl] at hv1; cases hv1
     | contLoc ha1 hb1 hc1 hl1 hs1 hr1 =>
       rw [hl] at hl1
@@ -835,29 +1002,30 @@ mutual
         (show ReturnFreeImages P B (hideBuilders store) Q C (hideConts Γ) (hideConts Δ) Ξ σ from
           fun R => ht.hide_substOk hA hstore _ (StoreTy.preserves_hide _) R)
         (fun p hp => (hf p hp).hideConts)
-      simpa only [Val.subst, substTyValues, Ty.bind, Ty.rawBind, Ty.norm, Tel.bind] using
-        HasTypeVQ.V_DependentLam (ht.annotation ha) hh
+      simpa only [Val.subst, substTyValues, Ty.bind, Ty.rawBind, Ty.norm, Tel.bind, Ty.norm_foldFn, Tel.norm_idem, Ty.norm_idem] using
+        (HasTypeVQ.V_DependentLam (ht.telAnnotation ha) hh).V_Normal
     | .V_Closure (runtime := runtime) (t := t) ha hw hb =>
-      have he := Ty.subst_values_of_wf_zero (show (Ty.dependentFn t).WF 0 0 0 from hw.contract_wf) σ
+      have hc : (Ty.dependentFn t).WF 0 0 0 := hw.contract_wf
+      have he := Ty.subst_values_of_wf_zero hc σ
       simpa only [Val.subst, he] using
-        HasTypeVQ.V_Closure (Ψ := store) (Q := Q) (Φ := Ξ)
-          (by simpa only [he] using ht.annotation ha) hw hb
+        (HasTypeVQ.V_Closure (Ψ := store) (Q := Q) (Φ := Ξ)
+          (ht.closedAnnotation hc ha) hw hb).V_Normal
     | .V_List he hw hs hd =>
       exact .V_List (subst_each he hA hT hstore ρ ht hf) (ht.wf hw hs) (ht.sorted hs) (hd.bind_values ht.declaration)
     | .V_Fun hd hn ha hi =>
       have hh := HasTypeVQ.V_Fun (Ψ := store) (Φ := Ξ) hd hn (ht.admissible hA hi.types hi.rows ha) (ht.signature hi)
-      simpa only [Val.subst, instantiatedTel_subst hi.source] using hh
+      simpa only [Val.subst, instantiatedTel_subst hi.source] using hh.V_Normal
     | .V_Prim hb hr hn ha hi =>
       have hh := HasTypeVQ.V_Prim (Ψ := store) (Φ := Ξ) hb hr hn (ht.primitive hA hb hi.types hi.rows ha) (ht.signature hi)
-      simpa only [Val.subst, instantiatedTel_subst hi.source] using hh
+      simpa only [Val.subst, instantiatedTel_subst hi.source] using hh.V_Normal
     | .V_Op ho hn ha hi =>
-      have hs := ha.map (substTyValues σ) (fun a hm p hp => hA.sat_values store Q C Γ Δ Ξ σ a p ht (hi.types a hm) hp)
+      have hs := ha.map (substTyValues σ) (fun a hm p hp => ht.sat_normal hA (hi.types a hm) hp)
       have hh := HasTypeVQ.V_Op (Q := Q) (Ψ := store) (Φ := Ξ) ho hn hs (ht.signature hi)
-      simpa only [Val.subst, List.map_nil, instantiatedTel_subst hi.source] using hh
+      simpa only [Val.subst, List.map_nil, instantiatedTel_subst hi.source] using hh.V_Normal
     | .V_ExternalRef hd hw ha hi =>
       have hh := HasTypeVQ.V_ExternalRef (Q := Q) (Ψ := store) (Φ := Ξ) hd hw
         (ha.map hw (substTyValues σ)) (ht.signature hi)
-      simpa only [Val.subst, List.map_nil, instantiatedTel_subst hi.source] using hh
+      simpa only [Val.subst, List.map_nil, instantiatedTel_subst hi.source] using hh.V_Normal
     | .V_ExternalHandle h td hd hc hr hn ha =>
       simpa only [Val.subst, substTyValues, Ty.bind_external, substTyValues_eq_bind] using
         HasTypeVQ.V_ExternalHandle (Ψ := store) (Φ := Ξ) h td hd hc hr
@@ -874,16 +1042,16 @@ mutual
         (HasTypeVQ.V_AtError (Ψ := store) (Q := Q) (C := C) (Γ := Δ) (Φ := Ξ) hs)
     | .V_Map hk hv hn hs ha hb =>
       exact .V_Map (subst_each hk hA hT hstore ρ ht hf) (subst_each hv hA hT hstore ρ ht hf)
-        (by simpa using hn) (hA.sat_values store Q C Γ Δ Ξ σ _ _ ht ha hs) (ht.annotation ha) (ht.annotation hb)
+        (by simpa using hn) (ht.sat_normal hA ha hs) (ht.annotation ha) (ht.annotation hb)
     | .V_Set hv hs ha =>
-      exact .V_Set (subst_each hv hA hT hstore ρ ht hf) (hA.sat_values store Q C Γ Δ Ξ σ _ _ ht ha hs) (ht.annotation ha)
+      exact .V_Set (subst_each hv hA hT hstore ρ ht hf) (ht.sat_normal hA ha hs) (ht.annotation ha)
     | .V_Dict (id := id) (ts := ts) hi hs hts hk hw htarget hv ha =>
       have hv' := subst_values hv hA hT hstore ρ ht hf
       have he : (id.dictTys.map (Ty.subst ts [])).map (substTyValues σ) =
           id.dictTys.map (Ty.subst (ts.map (substTyValues σ)) []) := by
         rw [List.map_map]; exact List.map_congr_left (fun a ha => Ty.substV_subst_closed (hw a ha) ts (valEnv σ).values)
       rw [he] at hv'
-      have hs' := hs.map (substTyValues σ) (fun a hm p hp => hA.sat_values store Q C Γ Δ Ξ σ a p ht (hts a hm) hp)
+      have hs' := hs.map (substTyValues σ) (fun a hm p hp => ht.sat_normal hA (hts a hm) hp)
       have ha' := ht.annotation ha
       simp only [Ty.bind_dict, Ty.subst_values_closed htarget] at ha' ⊢
       simpa only [Val.subst] using HasTypeVQ.V_Dict hi hs' (ht.typeAnnotations hts) (hk.subst σ) hw htarget hv' ha'
@@ -892,15 +1060,15 @@ mutual
       simp only [Val.subst, substTyValues, Ty.bind_fn, Eff.bind_singleFail] at hh ⊢
       exact .V_Raise hh
     | .V_LocRef (a := a) hl hd =>
-      have he := Ty.subst_values_of_wf_zero (hstore _ _ hl) σ
-      change HasTypeVQ P B store Q C Δ Ξ (.loc _) (.reference (substTyValues σ a))
-      rw [he]
-      exact .V_LocRef hl (by simpa only [← substTyValues_eq_bind, he, valEnv_valuesOnly] using hd.bind_values ht.declaration)
+      have hc : (Ty.reference a).WF 0 0 0 := hstore _ _ hl
+      have he := Ty.subst_values_of_wf_zero hc σ
+      simpa only [Val.subst, he] using
+        (HasTypeVQ.V_LocRef hl (ht.closedDeclared hc hd)).V_Normal
     | .V_LocLazy (a := a) hl hd =>
-      have he := Ty.subst_values_of_wf_zero (hstore _ _ hl) σ
-      change HasTypeVQ P B store Q C Δ Ξ (.loc _) (.lazy (substTyValues σ a))
-      rw [he]
-      exact .V_LocLazy hl (by simpa only [← substTyValues_eq_bind, he, valEnv_valuesOnly] using hd.bind_values ht.declaration)
+      have hc : (Ty.lazy a).WF 0 0 0 := hstore _ _ hl
+      have he := Ty.subst_values_of_wf_zero hc σ
+      simpa only [Val.subst, he] using
+        (HasTypeVQ.V_LocLazy hl (ht.closedDeclared hc hd)).V_Normal
     | .V_Bytes hb => exact .V_Bytes hb
     | .V_Con (cd := cd) (ts := ts) hc hn hk hw hv ha =>
       have hh := subst_values hv hA hT hstore ρ ht hf
@@ -913,6 +1081,9 @@ mutual
       exact .V_Con hc (by simpa only [List.length_map] using hn) (hk.subst σ) hw hh (by simpa only [substTyValues_eq_bind, substTyValues, Ty.bind_data] using ht.annotation ha)
     | .V_Super hv hc hmemb hd =>
       exact .V_Super (subst_value hv hA hT hstore ρ ht hf) hc hmemb (hd.bind_values ht.declaration)
+    | .V_Normal hv =>
+      simpa only [substTyValues_norm_source, substTyValues_normal] using
+        (subst_value hv hA hT hstore ρ ht hf).V_Normal
     | .V_Sub hv hl hw hs hd =>
       exact .V_Sub (subst_value hv hA hT hstore ρ ht hf) (hl.bind (valEnv σ) (ht.transport hf))
         (ht.wf hw hs) (ht.sorted hs) (hd.bind_values ht.declaration)
@@ -923,6 +1094,10 @@ mutual
       have hs' := Pred.sorted_bind hs (valEnv σ).values (fun _ h => Ty.hasSort_bind h (valEnv σ))
         (fun h => Ty.ordinary_bind h (valEnv σ) (ht.transport hf).typeImages)
         (ht.transport hf).values (ht.transport hf).references
+      rw [show substTyValues σ (.refined a p) =
+        (Ty.refined (substTyValues σ a) (predBind (upValues (valEnv σ).values) p)).norm from by
+          simp only [substTyValues, Ty.bind, Ty.rawBind, Ty.norm, Ty.norm_idem]]
+      apply HasTypeVQ.V_Normal
       refine .V_Refine (subst_value hv hA hT hstore ρ ht hf) (Ty.hasSort_bind hi (valEnv σ))
         (ht.observation hterm hus ρ) hs' (Pred.wf_of_sorted hs') ?_
         (hda.bind_values ht.declaration) (hdp.bind_values ht.declaration)
@@ -974,9 +1149,13 @@ mutual
         (hr.subst hstore hL)
         (by simpa only [BuilderOp.parameters_subst] using subst_values hv hA hT hstore ρ ht.images hf)
     | .C_Return hv => rw [substEffValues_empty]; exact .C_Return (subst_value hv hA hT hstore ρ ht.images hf)
-    | .C_DependentApp hv ha =>
-      exact .C_DependentApp (subst_value hv hA hT hstore ρ ht.images hf)
-        (subst_telArgs ha hA hT hstore ρ ht.images hf)
+    | .C_DependentApp (t := t) hv ha =>
+      apply HasTypeCQ.C_DependentAppNorm (t := Tel.bind (valEnv σ) t)
+      · simpa only [substTyValues, Ty.bind, Ty.rawBind, Ty.norm, Tel.bind, Tel.norm_idem] using
+          subst_value hv hA hT hstore ρ ht.images hf
+      · exact subst_telArgs ha hA hT hstore ρ ht.images hf
+    | .C_Normal hb =>
+      simpa only [substTyValues_norm_source] using subst_comp hb hA hT hstore ρ ht hL hf
     | .C_App hv hs =>
       have hv' := subst_value hv hA hT hstore ρ ht.images hf
       rw [substTyValues, Ty.bind_fn] at hv'
@@ -1009,12 +1188,14 @@ mutual
         (by simpa only [←substEffValues_eq_bind,substEffValues_union,substEffValues_singleFail] using hc.bind (valEnv σ))
         (hn.subst_values σ) (subst_failure hh hA hT hstore ρ ht hL hf)
     | .C_Resume (i := i) (v := v) (b := b) (t := t) (ε := ε) hi hv hd =>
-      have hv' := subst_value hv hA hT hstore ρ ht.images hf
+      have hv' : HasTypeVQ P B store Q C Δ Ξ (v.subst σ ρ) (substTyValues σ b) := by
+        simpa only [substTyValues_norm_source] using subst_value hv hA hT hstore ρ ht.images hf
       have hd' := hd.bind_values ht.declaration
       change HasTypeCQ P B store Q C Δ Ξ (R.map (substTyValues σ))
         (.resume (σ i) (v.subst σ ρ)) (substTyValues σ t) (substEffValues σ ε) L'
       cases ht i (.cont b t ε) hi with
       | ordinary ho _ => exact False.elim (ho b t ε rfl)
+      | hidden _ hc => exact False.elim (hc b t ε rfl)
       | contLoc _ hty _ himg hloc _ =>
         have heq : Ty.cont (substTyValues σ b) (substTyValues σ t) (substEffValues σ ε) = _ := hty
         obtain ⟨hb,hr,he⟩ := Ty.cont.inj heq
@@ -1022,23 +1203,65 @@ mutual
         rw [himg]
         exact .C_ResumeL hloc hv' hd'
       | contVar _ himg hlookup =>
+        obtain ⟨b',t',e',hl,heq⟩ := hlookup
+        change Ty.cont b'.norm t'.norm (Eff.norm e') = Ty.cont (substTyValues σ b)
+          (substTyValues σ t) (substEffValues σ ε) at heq
+        obtain ⟨hb,hr,he⟩ := Ty.cont.inj heq
+        rw [himg, ←hr, ←he]
+        exact .C_ResumeNorm hl (by rw [hb]; exact hv') (by rw [hr]; exact hd')
+    | .C_ResumeNorm (i := i) (v := v) (b := b) (t := t) (ε := ε) hi hv hd =>
+      have hv' : HasTypeVQ P B store Q C Δ Ξ (v.subst σ ρ) (substTyValues σ b) := by
+        simpa only [substTyValues_norm_source] using subst_value hv hA hT hstore ρ ht.images hf
+      have hd' : Ty.Declared P C Δ (substTyValues σ t) := by
+        simpa only [substTyValues, Ty.bind, Ty.norm_rawBind, valEnv_valuesOnly] using hd.bind_values ht.declaration
+      simp only [substTyValues_norm_source, substEffValues_norm_source]
+      change HasTypeCQ P B store Q C Δ Ξ (R.map (substTyValues σ))
+        (.resume (σ i) (v.subst σ ρ)) (substTyValues σ t) (substEffValues σ ε) L'
+      cases ht i (.cont b t ε) hi with
+      | ordinary ho _ => exact False.elim (ho b t ε rfl)
+      | hidden _ hc => exact False.elim (hc b t ε rfl)
+      | contLoc _ hty _ himg hloc _ =>
+        have heq : Ty.cont (substTyValues σ b) (substTyValues σ t) (substEffValues σ ε) = _ := hty
+        obtain ⟨hb,hr,he⟩ := Ty.cont.inj heq
+        cases hb; cases hr; cases he
         rw [himg]
-        exact .C_Resume hlookup hv' hd'
+        exact .C_ResumeL hloc hv' hd'
+      | contVar _ himg hlookup =>
+        obtain ⟨b',t',e',hl,heq⟩ := hlookup
+        change Ty.cont b'.norm t'.norm (Eff.norm e') = Ty.cont (substTyValues σ b)
+          (substTyValues σ t) (substEffValues σ ε) at heq
+        obtain ⟨hb,hr,he⟩ := Ty.cont.inj heq
+        rw [himg, ←hr, ←he]
+        exact .C_ResumeNorm hl (by rw [hb]; exact hv') (by rw [hr]; exact hd')
     | .C_ResumeL (b := b) (t := t) (ε := ε) (R := r) hl hv hd =>
       have hw := hstore _ _ hl
       have hb := Ty.subst_values_of_wf_zero hw.1 σ
       have hr := Ty.subst_values_of_wf_zero hw.2.1 σ
       have he := Eff.subst_values_of_wf_zero hw.2.2.1 hw.2.2.2.1 σ
-      have hR : r.map (substTyValues σ) = r := by
-        cases ho : r with
-        | none => rfl
-        | some x => simp only [Option.map_some]; exact congrArg some (Ty.subst_values_of_wf_zero (hw.2.2.2.2 x ho) σ)
       have hv' := subst_value hv hA hT hstore ρ ht.images hf
-      simp only [Comp.subst, Val.subst, hb, hr, he, hR] at hv' ⊢
-      exact .C_ResumeL hl hv' (by simpa only [← substTyValues_eq_bind, hr, valEnv_valuesOnly] using hd.bind_values ht.declaration)
+      have hd' := hd.bind_values ht.declaration
+      simp only [←substTyValues_eq_bind, hr, valEnv_valuesOnly] at hd'
+      simp only [Comp.subst, Val.subst, hb, hr, he] at hv' ⊢
+      have hh := HasTypeCQ.C_ResumeLNorm (Δ := L') hl (substReturn_closed σ hw.2.2.2.2).symm hv' hd'
+      simpa only [show Eff.norm ε = ε from hw.2.2.2.1] using hh
+    | .C_ResumeLNorm (b := b) (t := t) (ε := ε) (R := r) (R' := r') hl hR hv hd =>
+      have hw := hstore _ _ hl
+      have hb := Ty.subst_values_of_wf_zero hw.1 σ
+      have hr := Ty.subst_values_of_wf_zero hw.2.1 σ
+      have he := Eff.subst_values_of_wf_zero hw.2.2.1 hw.2.2.2.1 σ
+      have hv' := subst_value hv hA hT hstore ρ ht.images hf
+      have hd' := hd.bind_values ht.declaration
+      simp only [substTyValues, Ty.bind, Ty.norm_rawBind] at hd'
+      change Ty.Declared P C Δ (substTyValues σ t) at hd'
+      rw [hr] at hd'
+      have hR' := congrArg (Option.map (substTyValues σ)) hR
+      rw [substReturn_norm, substReturn_norm, substReturn_closed σ hw.2.2.2.2] at hR'
+      simp only [Comp.subst, Val.subst, substTyValues_norm_source, substEffValues_norm_source, hb, hr, he] at hv' ⊢
+      have hh := HasTypeCQ.C_ResumeLNorm (Δ := L') hl hR' hv' hd'
+      simpa only [show Eff.norm ε = ε from hw.2.2.2.1] using hh
     | .C_Meth (ms := ms) (ss := ss) (τ := τ) (es := es) (ws := ws) hv hc hmeth hn hs hi hr hargs hvs ha =>
       have hs' := hs.map (substTyValues σ) (fun a hm' p hp =>
-        hA.sat_values store Q C Γ Δ Ξ σ a p ht.images (hi.types a (List.mem_append_left _ hm')) hp)
+        ht.images.sat_normal hA (hi.types a (List.mem_append_left _ hm')) hp)
       have hargs' := Tel.arguments_subst (instantiatedTel ms.tel (ss ++ [τ]) es) ws σ ρ
       rw [instantiatedTel_subst_eq hi.source, hargs, Option.map_some] at hargs'
       simp only [List.map_append, List.map_cons, List.map_nil] at hargs'
@@ -1151,7 +1374,7 @@ mutual
       HasTypeTelArgsQ P B store Q C Δ Ξ (Val.substList σ vs ρ) (Tel.bind (valEnv σ) t)
         (substTyValues σ a) (substEffValues σ e) := by
     match h with
-    | .done ha => exact .done (ht.annotation ha)
+    | .done ha => exact .done (ht.telAnnotation ha)
     | .param (rest := rest) (v := v) (vs := vs) ha hv hs =>
       apply HasTypeTelArgsQ.param (ht.annotation ha) (subst_value hv hA hT hstore ρ ht hf)
       change HasTypeTelArgsQ P B store Q C Δ Ξ (Val.substList σ vs ρ)
@@ -1191,23 +1414,23 @@ mutual
         (match bases with | none => none | some b => some (b.subst σ ρ))
         (pattern.subst σ ρ) (input.subst σ ρ) index := by
     match h with
-    | .mk hs hk hb hp hty hv hw hi =>
+    | .mk (inputTy := inputTy) hs hk hb hp hty hv hw hi =>
       have hb' := fun b (he : bases = some b) => subst_value (hb b he) hA hT hstore ρ ht hf
       have he : {shape with errorType := substTyValues σ shape.errorType} = shape := by
         have hx : substTyValues σ shape.errorType = shape.errorType := by
           rw [hs.errorType_eq]; rfl
         simp only [hx]
       rw [he]
-      refine .mk hs hk ?_ (subst_value hp hA hT hstore ρ ht hf) ?_
-        (subst_value hv hA hT hstore ρ ht hf) hw hi
+      refine AtCallAdmissible.mk (inputTy := inputTy) hs hk ?_ (subst_value hp hA hT hstore ρ ht hf) hty ?_ hw hi
       · intro v he
         cases bases with
         | none => cases he
         | some b => cases he; exact hb' b rfl
-      · rcases hty with ⟨rfl, hy⟩ | hy
-        · exact Or.inl ⟨rfl, hy⟩
-        · exact Or.inr ⟨by rw [Ty.subst_values_of_wf_zero hy.2]; exact hy.1,
-            by rw [Ty.subst_values_of_wf_zero hy.2]; exact hy.2⟩
+      · have hv' := subst_value hv hA hT hstore ρ ht hf
+        rcases hty with ⟨rfl, hy⟩ | hy
+        · exact hv'
+        · simpa only [substTyValues_norm_source, Ty.subst_values_of_wf_zero hy.2] using hv'
+
 
 end
 

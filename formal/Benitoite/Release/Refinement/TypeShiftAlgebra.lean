@@ -15,8 +15,9 @@ theorem SubstEnv.mapTypeIndices_up (θ : SubstEnv) (k c : Nat) :
 theorem shiftTypes_rawApply (t : Ty) (as : List Ty) (k c : Nat) :
     shiftTypes k c (rawApply t as) = rawApply (shiftTypes k c t) (shiftTypesList k c as) := by
   cases t <;> simp only [rawApply, shiftTypes]
+  case refined a p => rw [shiftTypes_rawApply a as k c]
   case ctor con =>
-    cases con <;> cases as <;> simp [shiftTypes, shiftTypesList]
+    cases con <;> cases as <;> simp [rawApply, shiftTypes, shiftTypesList]
     rename_i a as
     cases as <;> rfl
 

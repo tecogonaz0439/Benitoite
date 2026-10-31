@@ -41,10 +41,7 @@ theorem Entails.bind {Ξ p} (h : Entails Ξ p) (σ : ObservationEnv) :
     rw [Pred.bind_closed hw σ]
     exact .closed hw hs he
 
-def shiftIndex (k c i : Nat) : Nat := if i < c then i else i+k
 
-def Pred.shiftV (k c : Nat) (p : Pred) : Pred :=
-  predBind (fun i => some (.var (shiftIndex k c i))) p
 
 theorem upValues_shiftIndex (k c : Nat) :
     upValues (fun i => some (.var (shiftIndex k c i))) =

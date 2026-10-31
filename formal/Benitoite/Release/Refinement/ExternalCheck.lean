@@ -80,9 +80,9 @@ mutual
     | list {vs a} : ExternalCarrierEach P B Ψ vs a → Ty.Annotation P [] [] a →
         ExternalCarrier P B Ψ (.list vs) (.list a)
     | map {ks vs a b} : ExternalCarrierEach P B Ψ ks a → ExternalCarrierEach P B Ψ vs b →
-        ks.length = vs.length → B.sat [] a TParam.keyC →
+        ks.length = vs.length → B.sat [] a.norm TParam.keyC →
         Ty.Annotation P [] [] a → Ty.Annotation P [] [] b → ExternalCarrier P B Ψ (.mapV ks vs) (.map a b)
-    | set {vs a} : ExternalCarrierEach P B Ψ vs a → B.sat [] a TParam.keyC →
+    | set {vs a} : ExternalCarrierEach P B Ψ vs a → B.sat [] a.norm TParam.keyC →
         Ty.Annotation P [] [] a → ExternalCarrier P B Ψ (.setV vs) (.set a)
     | data {c cd ts vs} : P.cons c = some cd → ts.length = cd.ntys →
         TypeArgsKinded P [] ts (List.replicate cd.ntys .value) →
@@ -138,10 +138,28 @@ private def ExternalLeafShape (v : Val) : Ty → Prop
   | .refined a _ => ExternalLeafShape v a
   | _ => True
 
+private theorem leafShape_core (v : Val) (a : Ty) :
+    ExternalLeafShape v a.core ↔ ExternalLeafShape v a := by
+  cases a with
+  | refined a p => exact leafShape_core v a
+  | _ => rfl
+
+private theorem leafShape_refineNorm (v : Val) (a : Ty) (p : Pred) :
+    ExternalLeafShape v (a.refineNorm p) ↔ ExternalLeafShape v a := by
+  unfold Ty.refineNorm Ty.packRefinements
+  split <;> simp only [ExternalLeafShape, leafShape_core]
+
+private theorem leafShape_norm (v : Val) (a : Ty) :
+    ExternalLeafShape v a.norm ↔ ExternalLeafShape v a := by
+  cases a <;> try rfl
+  case refined a p => simp only [Ty.norm, leafShape_refineNorm, ExternalLeafShape, leafShape_norm]
+  case dependentFn t => unfold Ty.norm Ty.foldFn; split <;> rfl
+
 private theorem leafShape_le {Γ Φ a b v} (h : Ty.LeQ Γ Φ a b) :
     ExternalLeafShape v a → ExternalLeafShape v b := by
   match h with
   | .refl => exact id
+  | .convert he => intro hs; exact (leafShape_norm v b).mp (he ▸ (leafShape_norm v a).mpr hs)
   | .trans h₁ h₂ => exact fun hs => leafShape_le h₂ (leafShape_le h₁ hs)
   | .forget | .introduce _ _ => exact id
   | @Ty.LeQ.refine Γ Φ a b p q h _ _ _ => exact leafShape_le (a := a) (b := b) h
@@ -157,6 +175,7 @@ private theorem leafShape_typed {P B Ψ Q C Γ Φ v a}
     cases c <;> first | exact ⟨_,rfl,rfl⟩ | trivial
   | .V_ExternalHandle h td _ _ _ _ _ => intro _; exact ⟨h,_,rfl,rfl⟩
   | .V_Bytes hb => intro _; exact ⟨_,rfl,hb⟩
+  | .V_Normal hv => intro he; exact (leafShape_norm _ _).mpr (leafShape_typed hv he)
   | .V_Sub hv hl _ _ _ => intro he; exact leafShape_le hl (leafShape_typed hv he)
   | @HasTypeVQ.V_Refine _ _ Ψ Q C Γ Φ v a t p sort hv _ _ _ _ _ _ _ =>
     intro he; exact leafShape_typed (a := a) hv he

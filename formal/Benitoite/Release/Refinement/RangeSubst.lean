@@ -82,6 +82,52 @@ theorem Ctx.rawMapRanges_extend (Γ : Ctx) (a : Ty) (ρ : Nat → RangeIx) :
     mapRangesTys ρ as = as.map (Ty.rawMapRanges ρ) := by
   induction as <;> simp_all [mapRangesTys]
 
+theorem Ty.core_rawMapRanges (a : Ty) (ρ : Nat → RangeIx) :
+    (a.rawMapRanges ρ).core = a.core.rawMapRanges ρ := by
+  cases a with
+  | refined a _ => exact Ty.core_rawMapRanges a ρ
+  | _ => rfl
+
+theorem Ty.predicates_rawMapRanges (a : Ty) (ρ : Nat → RangeIx) :
+    (a.rawMapRanges ρ).refinementPredicates = a.refinementPredicates := by
+  cases a <;> simp only [Ty.rawMapRanges, Ty.refinementPredicates, Ty.predicates_rawMapRanges]
+
+theorem Ty.rawMapRanges_refineNorm (a : Ty) (p : Pred) (ρ : Nat → RangeIx) :
+    (Ty.refineNorm a p).rawMapRanges ρ = Ty.refineNorm (a.rawMapRanges ρ) p := by
+  unfold Ty.refineNorm
+  rw [Ty.core_rawMapRanges, Ty.predicates_rawMapRanges]
+  cases a.refinementPredicates ++ p.conjuncts <;> rfl
+
+theorem Tel.rawMapRanges_toTel (ns ps r e) (ρ : Nat → RangeIx) :
+    Tel.rawMapRanges ρ (Ty.toTel ns ps r e) =
+      Ty.toTel ns (mapRangesTys ρ ps) (r.rawMapRanges ρ) (Eff.rawMapRanges ρ e) := by
+  induction ns generalizing ps r e with
+  | nil => rfl
+  | cons n ns ih =>
+    cases ps with
+    | nil => rfl
+    | cons a ps =>
+      simp only [Ty.toTel, Tel.rawMapRanges, mapRangesTys, ih, mapRangesTys_shiftV,
+        Ty.rawMapRanges_shiftV, Eff.rawMapRanges_shiftV]
+
+noncomputable def FnView.rawMapRanges (f : FnView) (ρ : Nat → RangeIx) : FnView :=
+  ⟨f.names, mapRangesTys ρ f.params, f.result.rawMapRanges ρ, Eff.rawMapRanges ρ f.effect,
+    ⟨by simpa only [mapRangesTys_eq_map, List.length_map] using f.names_wf.1, f.names_wf.2⟩⟩
+
+theorem FnView.toTel_rawMapRanges (f : FnView) (ρ : Nat → RangeIx) :
+    (f.rawMapRanges ρ).toTel = Tel.rawMapRanges ρ f.toTel :=
+  (Tel.rawMapRanges_toTel _ _ _ _ _).symm
+
+theorem Ty.rawMapRanges_foldFn_norm (t : Tel) (ρ : Nat → RangeIx) :
+    ((Ty.foldFn t).rawMapRanges ρ).norm = Ty.foldFn (Tel.norm (Tel.rawMapRanges ρ t)) := by
+  classical
+  by_cases h : ∃ f : FnView, f.toTel = t
+  · obtain ⟨f, rfl⟩ := h
+    rw [Ty.foldFn_toTel, ←FnView.toTel_rawMapRanges, ←FnView.norm_toTel, Ty.foldFn_toTel]
+    rfl
+  · rw [Ty.foldFn_no_view h]
+    rfl
+
 noncomputable def Ty.mapRanges (ρ : Nat → RangeIx) (a : Ty) : Ty := (a.rawMapRanges ρ).norm
 noncomputable def Eff.mapRanges (ρ : Nat → RangeIx) (e : Eff) : Eff := (Eff.rawMapRanges ρ e).norm
 
@@ -89,7 +135,8 @@ mutual
   theorem Ty.norm_rawMapRanges (a : Ty) (ρ : Nat → RangeIx) :
       (a.norm.rawMapRanges ρ).norm = (a.rawMapRanges ρ).norm := by
     cases a <;> simp only [Ty.norm, Ty.rawMapRanges, Ty.norm_rawMapRanges,
-      normTys_rawMapRanges, Eff.norm_rawMapRanges, Tel.norm_rawMapRanges]
+      normTys_rawMapRanges, Eff.norm_rawMapRanges, Tel.norm_rawMapRanges,
+      Ty.rawMapRanges_refineNorm, Ty.norm_refineNorm, Ty.rawMapRanges_foldFn_norm]
   theorem Tel.norm_rawMapRanges (t : Tel) (ρ : Nat → RangeIx) :
       Tel.norm (Tel.rawMapRanges ρ (Tel.norm t)) = Tel.norm (Tel.rawMapRanges ρ t) := by
     cases t <;> simp only [Tel.norm, Tel.rawMapRanges, Ty.norm_rawMapRanges, Eff.norm_rawMapRanges, Tel.norm_rawMapRanges]
@@ -111,7 +158,9 @@ end
 
 @[simp] theorem Ty.assume_rawMapRanges (a : Ty) (ρ : Nat → RangeIx) :
     (a.rawMapRanges ρ).assume = a.assume := by
-  cases a <;> simp only [Ty.rawMapRanges, Ty.assume, Ty.assume_rawMapRanges]
+  unfold Ty.assume
+  rw [Ty.core_rawMapRanges, Ty.predicates_rawMapRanges]
+  cases hc : a.core <;> rfl
 
 @[simp] theorem Ty.hasSort_rawMapRanges (a : Ty) (ρ : Nat → RangeIx) (s : «Sort») :
     (a.rawMapRanges ρ).HasSort s ↔ a.HasSort s := by
@@ -124,6 +173,7 @@ end
 @[simp] theorem Ty.ordinary_rawMapRanges (a : Ty) (ρ : Nat → RangeIx) :
     Ordinary (a.rawMapRanges ρ) ↔ Ordinary a := by
   cases a <;> simp [Ordinary, Ty.rawMapRanges]
+  case refined a p => exact Ty.ordinary_rawMapRanges a ρ
 
 noncomputable def Ctx.mapRanges (Γ : Ctx) (ρ : Nat → RangeIx) : Ctx :=
   Γ.map (Option.map (Ty.mapRanges ρ))
@@ -203,6 +253,9 @@ mutual
       Ty.LeQ (Γ.rawMapRanges ρ) Φ (a.rawMapRanges ρ) (b.rawMapRanges ρ) := by
     match h with
     | .refl => exact .refl
+    | .convert he =>
+      apply Ty.LeQ.convert
+      rw [←Ty.norm_rawMapRanges, ←Ty.norm_rawMapRanges b, he]
     | .trans h₁ h₂ => exact .trans (h₁.rawMapRanges ρ) (h₂.rawMapRanges ρ)
     | .fn_effect hc => exact .fn_effect (Eff.covers_norm_right.mp (Eff.covers_norm_left.mp (hc.mapRanges ρ)))
     | .list hv => exact .list (hv.rawMapRanges ρ)
@@ -292,7 +345,7 @@ mutual
     cases a <;> simp only [Ty.rawMapRanges, Ty.rawBind, Ty.rawMapRanges_rangesOnly,
       mapRangesTys_rangesOnly, Eff.rawMapRanges_rangesOnly, Tel.rawMapRanges_rangesOnly, mapIx_rangeAt,
       rawApply]
-    all_goals simp [SubstEnv.rangesOnly, upValues_id, predBind_id]
+    all_goals simp [SubstEnv.rangesOnly, rawApply, upValues_id, predBind_id]
   theorem Tel.rawMapRanges_rangesOnly (t : Tel) (rs : List RangeExpr) :
       Tel.rawMapRanges (rangeAt 0 rs) t = Tel.rawBind (SubstEnv.rangesOnly rs) t := by
     cases t with

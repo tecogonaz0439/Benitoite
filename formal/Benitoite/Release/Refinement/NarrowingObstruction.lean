@@ -18,7 +18,7 @@ private theorem variable_origin_aux {P B store Q C Γ Φ v a}
       .V_CheckedRequest _ _ _ _ _ _ | .V_CheckedAt _ | .V_AtError _
   | .V_ExternalRef _ _ _ _ | .V_ExternalHandle _ _ _ _ _ _ _
   | .V_Bytes _ | .V_Con _ _ _ _ _ _ | .V_Super _ _ _ _ => intro i he; cases he
-  | .V_Sub hv _ _ _ _ | .V_Refine hv _ _ _ _ _ _ _ => exact variable_origin_aux hv
+  | .V_Normal hv | .V_Sub hv _ _ _ _ | .V_Refine hv _ _ _ _ _ _ _ => exact variable_origin_aux hv
 
 theorem HasTypeVQ.variable_origin {P B store Q C Γ Φ i a}
     (h : HasTypeVQ P B store Q C Γ Φ (.var i) a) :
@@ -44,18 +44,21 @@ theorem b_sorted : b.Sorted [] := ⟨a_sorted, trivial⟩
 
 theorem subtype_outside : Ty.LeQ [] [] a b := .introduce trivial .truth
 
-theorem context_facts : Γ.facts = [.truth] ∧ Δ.facts = [] := ⟨rfl, rfl⟩
+theorem context_facts : Γ.facts = [] ∧ Δ.facts = [] := ⟨rfl, rfl⟩
 
 theorem facts_preserved : ∀ p ∈ Γ.facts, Entails Δ.facts p := by
   intro p hp
   rw [context_facts.1] at hp
-  have he : p = .truth := List.mem_singleton.mp hp
-  subst p
-  exact .truth
+  cases hp
 
-theorem source_variable {P B store Q C} :
-    HasTypeVQ P B store Q C Γ [] (.var 0) b :=
-  .V_Var rfl (by intro u t e he; cases he)
+/-- 篩付きの継続は、WFに加えて通常値の変数の入口でも拒まれる。 -/
+theorem source_variable_untypable {P B store Q C Φ t} :
+    ¬ HasTypeVQ P B store Q C Γ Φ (.var 0) t := by
+  intro h
+  obtain ⟨u,hu,ho⟩ := h.variable_origin
+  have he : u = b := by simpa [Γ,Ctx.extend,a,b,Ty.shiftV,Eff.shiftV,Eff.empty,shiftVTys,Pred.shiftV,predBind] using hu.symm
+  subst u
+  exact ho _ _ _ rfl
 
 theorem target_variable_untypable {P B store Q C Φ t} :
     ¬ HasTypeVQ P B store Q C Δ Φ (.var 0) t := by
@@ -65,8 +68,11 @@ theorem target_variable_untypable {P B store Q C Φ t} :
   subst u
   exact ho _ _ _ rfl
 
-theorem source_return {P B store Q C R L} :
-    HasTypeCQ P B store Q C Γ [] R (.ret (.var 0)) b Eff.empty L := .C_Return source_variable
+theorem source_return_untypable {P B store Q C Φ R t e L} :
+    ¬ HasTypeCQ P B store Q C Γ Φ R (.ret (.var 0)) t e L := by
+  intro h
+  obtain ⟨u,hu⟩ := h.return_value_typable
+  exact source_variable_untypable hu
 
 theorem target_return_untypable {P B store Q C Φ R t e L} :
     ¬ HasTypeCQ P B store Q C Δ Φ R (.ret (.var 0)) t e L := by

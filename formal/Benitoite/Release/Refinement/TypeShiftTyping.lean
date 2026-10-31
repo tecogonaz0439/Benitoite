@@ -105,6 +105,8 @@ mutual
           (by simpa only [shiftTypes,shiftTypesList_eq_map] using hm.annotation hn ha)
     | .V_Super hv hc hs hd =>
       exact .V_Super (HasTypeVQ.shift_types hv hA hstore hC hn hm) hc hs (hd.shiftTypes hm)
+    | .V_Normal hv =>
+      simpa only [Ty.norm_shiftTypes] using (HasTypeVQ.shift_types hv hA hstore hC hn hm).V_Normal
     | .V_Sub hv hl hw hs hd =>
       exact .V_Sub (HasTypeVQ.shift_types hv hA hstore hC hn hm) (hl.shiftTypes hm)
         (by simpa only [hn,hm.length] using Ty.wf_shiftTypes hw k c) (Ty.sorted_shiftTypes hs hm) (hd.shiftTypes hm)
@@ -162,6 +164,8 @@ mutual
     | .C_App hv hs =>
       exact .C_App (HasTypeVQ.shift_types hv hA hstore hC hn hm)
         (by simpa only [shiftTypesList_eq_map] using HasTypeVsQ.shift_types hs hA hstore hC hn hm)
+    | .C_Normal hb =>
+      simpa only [Ty.norm_shiftTypes] using (HasTypeCQ.shift_types hb hA hstore hC hn hm).C_Normal
     | .C_If hv hb he =>
       exact .C_If (HasTypeVQ.shift_types hv hA hstore hC hn hm)
         (HasTypeCQ.shift_types hb hA hstore hC hn hm) (HasTypeCQ.shift_types he hA hstore hC hn hm)
@@ -183,6 +187,31 @@ mutual
         (by simpa only [Eff.shiftTypes_union,raw_singleFail] using hc.shiftTypes k c)
         (hnf.shiftTypes k c) (HasFailureClause.shift_types hh hA hstore hC hn hm)
     | .C_Resume hi hv hd => exact .C_Resume (hm.lookup _ _ hi) (HasTypeVQ.shift_types hv hA hstore hC hn hm) (hd.shiftTypes hm)
+    | .C_ResumeNorm hi hv hd =>
+      have hv' := HasTypeVQ.shift_types hv hA hstore hC hn hm
+      have hd' := hd.shiftTypes (C' := C') hm
+      have hh := HasTypeCQ.C_ResumeNorm (R := R.map (shiftTypes k c)) (Δ := L.shiftEAt k c) (hm.lookup _ _ hi)
+        (by simpa only [← Ty.norm_shiftTypes] using hv')
+        (by simpa only [← Ty.norm_shiftTypes] using hd')
+      simpa only [Ty.norm_shiftTypes, Eff.norm_shiftTypes, Comp.shiftEAt, Val.shiftEAt] using hh
+    | .C_ResumeLNorm (b := b) (t := t) (ε := ε) (R' := r) hl hr hv hd =>
+      have hw := hstore _ _ hl
+      have hb := Ty.shiftTypes_of_wf_zero hw.1 k c
+      have ht := Ty.shiftTypes_of_wf_zero hw.2.1 k c
+      have he := Eff.shiftTypes_of_wf_zero hw.2.2.1 k c
+      have hbr : shiftTypes k c b.norm = b.norm := by rw [← Ty.norm_shiftTypes, hb]
+      have hR : r.map (shiftTypes k c) = r := by
+        cases ho : r with
+        | none => rfl
+        | some a => exact congrArg some (Ty.shiftTypes_of_wf_zero (hw.2.2.2.2 a ho) k c)
+      have comm (R : Option Ty) : (R.map Ty.norm).map (shiftTypes k c) =
+          (R.map (shiftTypes k c)).map Ty.norm := by
+        cases R <;> simp only [Option.map_none, Option.map_some, Ty.norm_shiftTypes]
+      have hr' := congrArg (Option.map (shiftTypes k c)) hr
+      rw [comm, comm, hR] at hr'
+      have hv' := HasTypeVQ.shift_types hv hA hstore hC hn hm
+      simp only [Comp.shiftEAt, Val.shiftEAt, ←Ty.norm_shiftTypes, ←Eff.norm_shiftTypes, hb, ht, he] at hv' ⊢
+      exact .C_ResumeLNorm hl hr' hv' (by simpa only [←Ty.norm_shiftTypes, ht] using hd.shiftTypes hm)
     | .C_ResumeL (b := b) (t := t) (ε := ε) (R := r) hl hv hd =>
       have hw := hstore _ _ hl
       have hb := Ty.shiftTypes_of_wf_zero hw.1 k c
@@ -319,22 +348,22 @@ mutual
       AtCallAdmissible P B store Q C' Δ Φ kind name {shape with errorType := shiftTypes k c shape.errorType}
         (bases.map (Val.shiftEAt k c)) (pattern.shiftEAt k c) (input.shiftEAt k c) index := by
     match h with
-    | .mk hs hk hb hp ht hv hw hi =>
+    | .mk (inputTy := inputTy) hs hk hb hp ht hv hw hi =>
       have hb' := fun b he => HasTypeVQ.shift_types (hb b he) hA hstore hC hn hm
       have he : {shape with errorType := shiftTypes k c shape.errorType}=shape := by
         have hx : shiftTypes k c shape.errorType=shape.errorType := by rw [hs.errorType_eq]; rfl
         simp only [hx]
       rw [he]
-      refine .mk hs hk ?_ (HasTypeVQ.shift_types hp hA hstore hC hn hm) ?_
-        (HasTypeVQ.shift_types hv hA hstore hC hn hm) hw hi
+      refine AtCallAdmissible.mk (inputTy := inputTy) hs hk ?_ (HasTypeVQ.shift_types hp hA hstore hC hn hm) ht ?_ hw hi
       · intro v he
         cases bases with
         | none => cases he
         | some b => cases he; exact hb' b rfl
-      · rcases ht with ⟨rfl,ht⟩|ht
-        · exact Or.inl ⟨rfl,ht⟩
-        · exact Or.inr ⟨by rw [Ty.shiftTypes_of_wf_zero ht.2]; exact ht.1,
-            by simpa only [Ty.shiftTypes_of_wf_zero ht.2] using ht.2⟩
+      · have hh := HasTypeVQ.shift_types hv hA hstore hC hn hm
+        rcases ht with ⟨rfl, ht⟩ | ht
+        · exact hh
+        · simpa only [← Ty.norm_shiftTypes, Ty.shiftTypes_of_wf_zero ht.2] using hh
+
   termination_by structural h
 end
 

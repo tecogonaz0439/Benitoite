@@ -10,6 +10,7 @@ theorem upLocalSubst_bound (n : Nat) : upLocalSubst n LocalRef.bound = LocalRef.
   · simp [upLocalSubst,hi]
   · simp [upLocalSubst,hi,LocalRef.rename,Nat.sub_add_cancel (Nat.le_of_not_gt hi)]
 
+
 mutual
   theorem Val.resolveLocals_id (v : Val) : v.resolveLocals LocalRef.bound = v := by
     cases v <;> simp only [Val.resolveLocals,Val.resolveLocals_id,Val.resolveLocalsList_id,Comp.resolveLocals_id,upLocalSubst_bound]
@@ -156,6 +157,13 @@ theorem Comp.builderBody_resolve (m : Comp) (l : Nat) (ρ : Nat → LocalRef) :
 def LocalsFixed (Δ : LocalCtx) (ρ : Nat → LocalRef) : Prop :=
   ∀ i b, Δ[i]? = some (some b) → ρ i = .bound i
 
+theorem LocalRef.HasKind.resolve_fixed {Ψ L r b ρ} (h : LocalRef.HasKind Ψ L r b)
+    (hf : LocalsFixed L ρ) : r.subst ρ = r := by
+  induction h with
+  | bound hi => exact hf _ _ hi
+  | loc _ => rfl
+  | normal _ ih => exact ih
+
 theorem LocalsFixed.empty (ρ) : LocalsFixed [] ρ := by intro i b h; cases h
 
 theorem LocalsFixed.ext {Δ ρ} (h : LocalsFixed Δ ρ) (x) :
@@ -195,6 +203,7 @@ mutual
     | .V_Con _ _ _ _ hv _ => simp only [Val.resolveLocals,HasTypeVsQ.resolve_id hv]
     | .V_Super hv _ _ _ => simp only [Val.resolveLocals,HasTypeVQ.resolve_id hv]
     | .V_List he _ _ _ => simp only [Val.resolveLocals,HasTypeEachQ.resolve_id he]
+    | .V_Normal hv => exact HasTypeVQ.resolve_id hv ρ
     | .V_Sub hv _ _ _ _ => exact HasTypeVQ.resolve_id hv ρ
     | .V_Refine hv _ _ _ _ _ _ _ => exact HasTypeVQ.resolve_id hv ρ
   termination_by structural h
@@ -220,9 +229,7 @@ mutual
       simp only [Comp.resolveLocals,HasTypeCQ.resolve_id hb _ (hf.ext _)]
     | .C_BuilderOp _ _ hr hs =>
       simp only [Comp.resolveLocals,HasTypeVsQ.resolve_id hs]
-      cases hr with
-      | bound hi => simp only [LocalRef.subst,hf _ _ hi]
-      | loc _ => rfl
+      rw [hr.resolve_fixed hf]
     | .C_Return hv => simp only [Comp.resolveLocals,HasTypeVQ.resolve_id hv]
     | .C_Let hm hn _ =>
       simp only [Comp.resolveLocals,HasTypeCQ.resolve_id hm _ hf,HasTypeCQ.resolve_id hn _ (hf.many 1)]
@@ -240,7 +247,8 @@ mutual
       simp only [Comp.resolveLocals,HasTypeCQ.resolve_id hm _ hf,HasTypeClausesQ.resolve_id hc]
     | .C_Handle_Fail hm _ _ hc =>
       simp only [Comp.resolveLocals,HasTypeCQ.resolve_id hm _ hf,HasFailureClause.resolve_id hc]
-    | .C_Resume _ hv _ => simp only [Comp.resolveLocals,Val.resolveLocals,HasTypeVQ.resolve_id hv]
+    | .C_Resume _ hv _ | .C_ResumeNorm _ hv _ => simp only [Comp.resolveLocals,Val.resolveLocals,HasTypeVQ.resolve_id hv]
+    | .C_ResumeLNorm _ _ hv _ => simp only [Comp.resolveLocals,Val.resolveLocals,HasTypeVQ.resolve_id hv]
     | .C_ResumeL _ hv _ => simp only [Comp.resolveLocals,Val.resolveLocals,HasTypeVQ.resolve_id hv]
     | .C_Meth hv _ _ _ _ _ _ _ hs _ =>
       simp only [Comp.resolveLocals,HasTypeVQ.resolve_id hv,HasTypeVsQ.resolve_id hs]
@@ -253,6 +261,7 @@ mutual
       | none => simp only [Comp.resolveLocals,h2,h3]
       | some v => simp only [Comp.resolveLocals,h1 v rfl,h2,h3]
     | .C_Sub hm _ _ _ _ _ => exact HasTypeCQ.resolve_id hm ρ hf
+    | .C_Normal hm => exact HasTypeCQ.resolve_id hm ρ hf
     | .C_Eff hm _ => exact HasTypeCQ.resolve_id hm ρ hf
   termination_by structural h
 

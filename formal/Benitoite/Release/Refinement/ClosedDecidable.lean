@@ -29,6 +29,12 @@ instance Pred.varsDecidable (P : Nat → Prop) [DecidablePred P] (p : Pred) : De
 instance Term.closedDecidable (t : Term) : Decidable t.Closed := Term.varsDecidable _ _
 instance Pred.wfDecidable (n : Nat) (p : Pred) : Decidable (p.WF n) := Pred.varsDecidable _ _
 instance Ty.hasSortDecidable (a : Ty) (s : «Sort») : Decidable (a.HasSort s) := inferInstanceAs (Decidable (a.sort? = some s))
+instance Ty.ordinaryDecidable (a : Ty) : Decidable (Ordinary a) := by
+  cases a with
+  | refined a _ => exact Ty.ordinaryDecidable a
+  | cont b t e => exact isFalse (fun h => h b t e rfl)
+  | _ => exact isTrue (by intro b t e h; cases h)
+
 instance Ctx.readableDecidable (Γ : Ctx) (i : Nat) : Decidable (Γ.Readable i) := by
   unfold Ctx.Readable
   cases Γ[i]? with
@@ -37,8 +43,7 @@ instance Ctx.readableDecidable (Γ : Ctx) (i : Nat) : Decidable (Γ.Readable i) 
     cases x with
     | none => exact isFalse (by simp)
     | some a =>
-      have hi : Decidable (Ordinary a) := by
-        cases a <;> simp [Ordinary] <;> infer_instance
+      have hi : Decidable (Ordinary a) := Ty.ordinaryDecidable a
       exact decidable_of_iff (Ordinary a) (by simp)
 instance Term.referencesDecidable (Γ : Ctx) (t : Term) : Decidable (t.References Γ) := Term.varsDecidable _ _
 instance Term.shapeDecidable (Γ : Ctx) (t : Term) (s : «Sort») : Decidable (t.Shape Γ s) := by

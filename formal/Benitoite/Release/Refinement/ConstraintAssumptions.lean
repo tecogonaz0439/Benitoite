@@ -1,3 +1,4 @@
+import Benitoite.Release.Refinement.SubstitutionContracts
 import Benitoite.Release.Refinement.TypeRenaming
 import Benitoite.Release.Refinement.TypedFacts
 import Benitoite.Release.Refinement.ExternalResponse
@@ -11,45 +12,6 @@ import Benitoite.Release.Refinement.Semantics
 モデルは篩の条件と値の番号を読まないcarrierの骨格からこの証拠を作る。
 -/
 namespace Benitoite.Release.Refinement
-
-def TypedValueImages (P : Program) (B : Builtins) (Ψ : StoreTy) (Q : NoFailCtx)
-    (C : List TParam) (Γ Δ : Ctx) (Ξ : List Pred) (ν : Nat → Val) : Prop :=
-  ∀ (i : Nat) (a : Ty), Γ[i]? = some (some a) → a.Ordinary →
-    HasTypeVQ P B Ψ Q C Δ Ξ (ν i) (substTyValues ν a)
-
-structure Builtins.ValueAssumptions (P : Program) (B : Builtins) : Prop where
-  sat_rename : ∀ C Γ Δ a p (ξ : Nat → Nat), (∀ i j, i < j → ξ i < ξ j) →
-    Ty.Annotation P C Γ a → Ty.Annotation P C Δ (renameTy ξ a) →
-    B.sat C a p → B.sat C (renameTy ξ a) p
-  admits_rename : ∀ b sg C Γ Δ ts (ξ : Nat → Nat), B.sig b = some sg →
-    (∀ i j, i < j → ξ i < ξ j) → TypeAnnotations P C Γ ts →
-    TypeAnnotations P C Δ (ts.map (renameTy ξ)) →
-    sg.admits C ts → sg.admits C (ts.map (renameTy ξ))
-  sat_values : ∀ Ψ Q C Γ Δ Ξ ν a p, TypedValueImages P B Ψ Q C Γ Δ Ξ ν →
-    Ty.Annotation P C Γ a → B.sat C a p → B.sat C (substTyValues ν a) p
-  admits_values : ∀ b sg Ψ Q C Γ Δ Ξ ν ts, B.sig b = some sg →
-    TypedValueImages P B Ψ Q C Γ Δ Ξ ν → TypeAnnotations P C Γ ts →
-    sg.admits C ts → sg.admits C (ts.map (substTyValues ν))
-
-/-- 型パラメータの制約を保つ改名と、閉じた型による具体化の条件。 -/
-structure Builtins.TypeAssumptions (P : Program) (B : Builtins) : Prop where
-  sat_renameTypes : ∀ C C' Γ Δ a p ρ, TypeParamRenaming C C' ρ →
-    Ty.Annotation P C Γ a → Ty.Annotation P C' Δ (a.renameTypes ρ) →
-    B.sat C a p → B.sat C' (a.renameTypes ρ) p
-  admits_renameTypes : ∀ b sg C C' Γ Δ ts ρ, B.sig b = some sg → TypeParamRenaming C C' ρ →
-    TypeAnnotations P C Γ ts → TypeAnnotations P C' Δ (ts.map (fun a => a.renameTypes ρ)) →
-    sg.admits C ts → sg.admits C' (ts.map (fun a => a.renameTypes ρ))
-  sat_subst : ∀ C0 C1 a p ts es,
-    B.sat (C1 ++ C0) a p →
-    (∀ t ∈ ts, t.WF 0 0 0) → SatAll B C1 ts C0 → ts.length = C0.length →
-    B.sat C1 (a.substAt C1.length ts es) p
-  admits_subst : ∀ b sg C0 C1 ts ts' es', B.sig b = some sg → sg.admits (C1 ++ C0) ts →
-    (∀ t ∈ ts', t.WF 0 0 0) → SatAll B C1 ts' C0 → ts'.length = C0.length →
-    sg.admits C1 (ts.map (Ty.substAt C1.length ts' es'))
-
-/-- 値の置換が多相節の下へ入るときに使う二種類の保存則。 -/
-structure Builtins.SubstitutionAssumptions (P : Program) (B : Builtins) : Prop extends
-    Builtins.ValueAssumptions P B, Builtins.TypeAssumptions P B
 
 
 theorem Builtins.TypeAssumptions.sat_shiftTypes {P B} (h : Builtins.TypeAssumptions P B)
@@ -72,28 +34,27 @@ theorem Builtins.TypeAssumptions.admits_shiftTypes {P B} (h : Builtins.TypeAssum
     h.admits_renameTypes b sg C (extra ++ C) Γ Δ ts _ hl hr ha
       (by simpa only [Ty.renameTypes_shift] using hb) hs
 
-/-- 旧の外側への延長は、恒等の型改名から得る。注釈の照合を明示する。 -/
+/-- 恒等の型改名は正規化を含む。外側への延長でも正規化した型を返す。 -/
 theorem Builtins.TypeAssumptions.sat_local {P B} (h : Builtins.TypeAssumptions P B)
     {C Γ a p} (extra : List TParam) (ha : Ty.Annotation P C Γ a)
-    (hb : Ty.Annotation P (C ++ extra) Γ a) (hs : B.sat C a p) : B.sat (C ++ extra) a p := by
-  have hn : a.norm = a := Ty.canonical_of_wf ha.wf
-  simpa only [Ty.renameTypes_id_eq_norm, hn] using h.sat_renameTypes C (C ++ extra) Γ Γ a p id
-    (TypeParamRenaming.suffix C extra) ha (by simpa only [Ty.renameTypes_id_eq_norm, hn] using hb) hs
+    (hb : Ty.Annotation P (C ++ extra) Γ a) (hs : B.sat C a p) : B.sat (C ++ extra) a.norm p := by
+  simpa only [Ty.renameTypes_id_eq_norm] using h.sat_renameTypes C (C ++ extra) Γ Γ a p id
+    (TypeParamRenaming.suffix C extra) ha
+      (by simpa only [Ty.renameTypes_id_eq_norm] using hb.norm) hs
 
 theorem Builtins.TypeAssumptions.admits_local {P B} (h : Builtins.TypeAssumptions P B)
     {C Γ ts b sg} (extra : List TParam) (hl : B.sig b = some sg)
     (ha : TypeAnnotations P C Γ ts) (hb : TypeAnnotations P (C ++ extra) Γ ts)
-    (hs : sg.admits C ts) : sg.admits (C ++ extra) ts := by
-  have hn : ts.map (fun a => a.renameTypes id) = ts := by
-    calc
-      ts.map (fun a => a.renameTypes id) = ts.map id := List.map_congr_left (fun a hm =>
-        (Ty.renameTypes_id_eq_norm a).trans (Ty.canonical_of_wf (ha a hm).wf))
-      _ = ts := List.map_id ts
-  simpa only [hn] using h.admits_renameTypes b sg C (C ++ extra) Γ Γ ts id hl
-    (TypeParamRenaming.suffix C extra) ha (by simpa only [hn] using hb) hs
+    (hs : sg.admits C ts) : sg.admits (C ++ extra) (ts.map Ty.norm) := by
+  simpa only [Ty.renameTypes_id_eq_norm] using
+    h.admits_renameTypes b sg C (C ++ extra) Γ Γ ts id hl
+      (TypeParamRenaming.suffix C extra) ha (by
+        intro a ha
+        obtain ⟨x, hx, rfl⟩ := List.mem_map.mp ha
+        simpa only [Ty.renameTypes_id_eq_norm] using (hb x hx).norm) hs
 
 theorem SatAll.map {B C ts tps} (h : SatAll B C ts tps) (f : Ty → Ty)
-    (hf : ∀ a ∈ ts, ∀ p, B.sat C a p → B.sat C (f a) p) : SatAll B C (ts.map f) tps := by
+    (hf : ∀ a ∈ ts, ∀ p, B.sat C a.norm p → B.sat C (f a).norm p) : SatAll B C (ts.map f) tps := by
   refine ⟨by simpa using h.1, ?_⟩
   intro i a p hi hp
   rw [List.getElem?_map] at hi

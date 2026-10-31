@@ -11,10 +11,9 @@ theorem Ty.shiftV_fixed_before {nr nt nv a} (hw : Ty.WF nr nt nv a) (k c : Nat) 
   simp [shiftIndex,show i<c by omega]
 
 theorem Ty.subst_up_fixed {nr nt nv a} (hw : Ty.WF nr nt nv a) (ν : Nat → Val) :
-    substTyValues (upSubst nv ν) a=a := by
+    substTyValues (upSubst nv ν) a=a.norm := by
   simp only [substTyValues,Ty.bind,valEnv,←Ty.rawSubstV_eq_rawBind]
   rw [Ty.rawSubstV_fixed hw _ (by intro i hi; simp [upSubst,hi,Val.toTerm?])]
-  exact Ty.canonical_of_wf hw
 
 def binderRenames (k c : Nat) : List Ty → List Ty
   | [] => []
@@ -35,12 +34,12 @@ theorem binderRenames_fixed {nt n ps} (hw : BinderTypes.LocalWF nt n ps) (k c : 
     simpa only [Nat.add_assoc] using ih hw.2 c
 
 theorem binderImages_fixed {nt n ps} (hw : BinderTypes.LocalWF nt n ps) (ν : Nat → Val) :
-    binderImages (upSubst n ν) ps=ps := by
+    binderImages (upSubst n ν) ps=ps.map Ty.norm := by
   induction ps generalizing n ν with
   | nil => rfl
   | cons a as ih =>
-    simp only [binderImages,Ty.subst_up_fixed hw.1,upSubst_add]
-    exact congrArg (List.cons a) (ih hw.2 ν)
+    simp only [binderImages, List.map_cons, Ty.subst_up_fixed hw.1,upSubst_add]
+    exact congrArg (List.cons a.norm) (ih hw.2 ν)
 
 theorem Ty.shiftTypes_fixed_before {nr nt nv a} (hw : Ty.WF nr nt nv a) (k c : Nat) (hc : nt≤c) :
     shiftTypes k c a=a := by
@@ -151,6 +150,9 @@ private theorem shift_var_aux {P B Ψ Q C Γ Φ v a}
     (hm : TypeCtxMap k c Γ Δ) : ∀ i,v=.var i → HasTypeVQ P B Ψ' Q C' Δ Φ (.var i) (shiftTypes k c a) := by
   match h with
   | .V_Var hi ho => intro i he; cases he; exact .V_Var (hm.lookup _ _ hi) ((Ty.ordinary_shiftTypes _ _ _).mpr ho)
+  | .V_Normal hv =>
+    intro i he
+    simpa only [Ty.norm_shiftTypes] using (shift_var_aux hv hn hm i he).V_Normal
   | .V_Sub hv hl hw hs hd =>
     intro i he
     exact .V_Sub (shift_var_aux hv hn hm i he) (hl.shiftTypes hm)
@@ -232,11 +234,13 @@ theorem TypeCtxMap.failure {k c Γ Δ} (h : TypeCtxMap k c Γ Δ) (E : Ty) :
 
 theorem OpSig.continuation_subst_values {sg : OpSig} (hw : sg.WF) (t : Ty) (e : Eff) (ν : Nat → Val) :
     substTyValues (upSubst sg.params.length (fun i => (ν i).shiftEAt sg.tparams.length 0))
-      (sg.continuation t e)=sg.continuation (substTyValues ν t) (substEffValues ν e) := by
+      (sg.continuation t e)=(sg.continuation (substTyValues ν t) (substEffValues ν e)).norm := by
   simp only [OpSig.continuation]
   change Ty.cont (substTyValues _ sg.ret) (substTyValues _ _) (substEffValues _ _)=_
   rw [Ty.subst_up_fixed hw.2,Ty.bind_shiftV_values,Eff.bind_shiftV_values,
     substTyValues_shiftEAt,substEffValues_shiftEAt]
+  simp only [Ty.norm, ← Ty.norm_shiftV, Ty.norm_shiftTypes, ← Eff.norm_shiftV, Eff.norm_shiftTypes]
+  simp only [substTyValues, substEffValues, Ty.bind, Eff.bind, Ty.norm_shiftV, Ty.norm_shiftTypes, Eff.norm_shiftV, Eff.norm_shiftTypes, Ty.norm_idem, Eff.norm_idem]
 
  theorem handled_subst_values (P : Program) (B : Builtins) (cs : List Clause) (ν : Nat → Val) :
     substEffValues ν (handled P B cs)=handled P B cs := by

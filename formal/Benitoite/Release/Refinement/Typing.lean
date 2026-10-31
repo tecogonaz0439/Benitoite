@@ -19,8 +19,10 @@ import Benitoite.Release.Refinement.Ground
 namespace Benitoite.Release.Refinement
 
 def hideConts (Γ : Ctx) : Ctx := Γ.map fun a => match a with
-  | some (.cont _ _ _) => none
-  | a => a
+  | some t => match t.core with
+    | .cont _ _ _ => none
+    | _ => some t
+  | none => none
 
 def hideBuilders (Ψ : StoreTy) : StoreTy := fun l => match Ψ l with
   | some (.builder _) => none
@@ -85,6 +87,7 @@ def localExtend : Nat → LocalCtx → LocalCtx
 inductive LocalRef.HasKind (Ψ : StoreTy) (L : LocalCtx) : LocalRef → BuilderKind → Prop where
   | bound {i b} : L[i]? = some (some b) → LocalRef.HasKind Ψ L (.bound i) b
   | loc {l b} : Ψ l = some (.builder b) → LocalRef.HasKind Ψ L (.loc l) b
+  | normal {r b} : LocalRef.HasKind Ψ L r b → LocalRef.HasKind Ψ L r b.norm
 
 def LocalCtx.Shift (k c : Nat) (L L' : LocalCtx) : Prop :=
   ∀ i b, L[i]? = some (some b) →
@@ -121,7 +124,7 @@ mutual
   /-- 値の型付け。経路条件は通常の文脈の番号で読む。 -/
   inductive HasTypeVQ (P : Program) (B : Builtins) :
       StoreTy → NoFailCtx → List TParam → Ctx → List Pred → Val → Ty → Prop where
-    | V_Var {Ψ Q C Γ Φ i a} : Γ[i]? = some (some a) → (∀ b t ε, a ≠ .cont b t ε) →
+    | V_Var {Ψ Q C Γ Φ i a} : Γ[i]? = some (some a) → Ordinary a →
         HasTypeVQ P B Ψ Q C Γ Φ (.var i) a
     | V_Const {Ψ Q C Γ Φ c} : ConstOK B c →
         HasTypeVQ P B Ψ Q C Γ Φ (.const c) (Const.type c)
@@ -167,7 +170,7 @@ mutual
         Scope.Domain.Range.MemK k range target →
         HasTypeVQ P B Ψ Q C Γ Φ (.checked target) (.scoped o k (.fixed (.absolute range)))
     | V_CheckedRequest {Ψ Q C Γ Φ o range target req T} : B.valKind o = some .endpoint →
-        B.valContent o = some T → HasTypeVQ P B Ψ Qempty [] [] [] req T →
+        B.valContent o = some T → HasTypeVQ P B Ψ Qempty [] [] [] req T.norm →
         req.Ground → req.reqTarget = some target →
         Scope.Domain.Range.MemK .endpoint range target →
         HasTypeVQ P B Ψ Q C Γ Φ (.checkedRequest target req)
@@ -179,11 +182,11 @@ mutual
         HasTypeVQ P B Ψ Q C Γ Φ (.atError detail) shape.errorType
     | V_Map {Ψ Q C Γ Φ ks vs a b} :
         HasTypeEachQ P B Ψ Q C Γ Φ ks a → HasTypeEachQ P B Ψ Q C Γ Φ vs b →
-        ks.length = vs.length → B.sat C a TParam.keyC →
+        ks.length = vs.length → B.sat C a.norm TParam.keyC →
         Ty.Annotation P C Γ a → Ty.Annotation P C Γ b →
         HasTypeVQ P B Ψ Q C Γ Φ (.mapV ks vs) (.map a b)
     | V_Set {Ψ Q C Γ Φ vs a} : HasTypeEachQ P B Ψ Q C Γ Φ vs a →
-        B.sat C a TParam.keyC → Ty.Annotation P C Γ a →
+        B.sat C a.norm TParam.keyC → Ty.Annotation P C Γ a →
         HasTypeVQ P B Ψ Q C Γ Φ (.setV vs) (.set a)
     | V_Dict {Ψ Q C Γ Φ i id ts vs} : P.impls i = some id → SatAll B C ts id.tparams →
         TypeAnnotations P C Γ ts → TypeArgsKinded P C ts (List.replicate id.tparams.length .value) →
@@ -216,6 +219,8 @@ mutual
     | V_Sub {Ψ Q C Γ Φ v a b} : HasTypeVQ P B Ψ Q C Γ Φ v a →
         Ty.LeQ Γ Φ a b → Ty.WF 0 C.length Γ.length b → Ty.Sorted Γ b → Ty.Declared P C Γ b →
         HasTypeVQ P B Ψ Q C Γ Φ v b
+    | V_Normal {Ψ Q C Γ Φ v a} : HasTypeVQ P B Ψ Q C Γ Φ v a →
+        HasTypeVQ P B Ψ Q C Γ Φ v a.norm
     | V_Refine {Ψ Q C Γ Φ v a t p sort} : HasTypeVQ P B Ψ Q C Γ Φ v a →
         Ty.HasSort a sort → v.toTerm? = some t → Pred.Sorted Γ (some a) p →
         Pred.WF (Γ.length+1) p → Entails (Γ.facts ++ Φ) (p.open t) →
@@ -298,6 +303,17 @@ mutual
         Ψ l = some (.cont b t ε R) → HasTypeVQ P B Ψ Q C Γ Φ v b →
         Ty.Declared P C Γ t →
         HasTypeCQ P B Ψ Q C Γ Φ R (.resume (.loc l) v) t ε Δ
+    | C_ResumeNorm {Ψ Q C Γ Φ Δ R i v b t ε} :
+        Γ[i]? = some (some (.cont b t ε)) → HasTypeVQ P B Ψ Q C Γ Φ v b.norm →
+        Ty.Declared P C Γ t.norm →
+        HasTypeCQ P B Ψ Q C Γ Φ R (.resume (.var i) v) t.norm (Eff.norm ε) Δ
+    | C_ResumeLNorm {Ψ Q C Γ Φ Δ R R' l v b t ε} :
+        Ψ l = some (.cont b t ε R') → R'.map Ty.norm = R.map Ty.norm →
+        HasTypeVQ P B Ψ Q C Γ Φ v b.norm → Ty.Declared P C Γ t.norm →
+        HasTypeCQ P B Ψ Q C Γ Φ R (.resume (.loc l) v) t.norm (Eff.norm ε) Δ
+    | C_Normal {Ψ Q C Γ Φ Δ R m a ε} :
+        HasTypeCQ P B Ψ Q C Γ Φ R m a ε Δ →
+        HasTypeCQ P B Ψ Q C Γ Φ R m a.norm ε Δ
     | C_Meth {Ψ Q C Γ Φ Δ R v cl τ cd m ms ss es ws as a ε} :
         HasTypeVQ P B Ψ Q C Γ Φ v (.dict cl τ) → P.classes cl = some cd → cd.methods m = some ms →
         NamesWF ms.names ms.params → SatAll B C ss (ms.tparams.map TParamDecl.constraints) →
@@ -371,7 +387,7 @@ mutual
         target.kind = k → SnapshotMem snapshot k range target →
         CheckedWitness P B Ψ o k range snapshot target none
     | request {Ψ o range snapshot target req T} : B.valKind o = some .endpoint →
-        B.valContent o = some T → HasTypeVQ P B Ψ Qempty [] [] [] req T →
+        B.valContent o = some T → HasTypeVQ P B Ψ Qempty [] [] [] req T.norm →
         req.Ground → req.reqTarget = some target → SnapshotMem snapshot .endpoint range target →
         CheckedWitness P B Ψ o .endpoint range snapshot target (some req)
 
@@ -383,7 +399,7 @@ mutual
         (∀ v, bases = some v → HasTypeVQ P B Ψ Q C Γ Φ v .pathBases) →
         HasTypeVQ P B Ψ Q C Γ Φ pattern (.scopePattern kind) →
         (inputTy = .base .string ∧ B.valContent name = none ∨ B.valContent name = some inputTy ∧ inputTy.WF 0 0 0) →
-        HasTypeVQ P B Ψ Q C Γ Φ input inputTy → index.WF 0 →
+        HasTypeVQ P B Ψ Q C Γ Φ input inputTy.norm → index.WF 0 →
         (∀ r, index = .fixed r → r.WF ∧ r.Canonical ∧ r.FitsKind kind) →
         AtCallAdmissible P B Ψ Q C Γ Φ kind name shape bases pattern input index
 
@@ -438,12 +454,15 @@ mutual
     | ordinary {Ψ Q C Δ Ξ R0 ν i a} : a.Ordinary →
         HasTypeVQ P B Ψ Q C Δ Ξ (ν i) (substTyValues ν a) →
         ImageOk P B Ψ Q C Δ Ξ R0 ν i a
+    | hidden {Ψ Q C Δ Ξ R0 ν i a} : ¬ a.Ordinary →
+        (∀ b t e, a ≠ .cont b t e) → ImageOk P B Ψ Q C Δ Ξ R0 ν i a
     | contLoc {Ψ Q C Δ Ξ R0 ν i a b t e b' t' e' l} :
         a = .cont b t e → substTyValues ν a = .cont b' t' e' →
         (substTyValues ν a).WF 0 0 0 → ν i = .loc l → Ψ l = some (.cont b' t' e' R0) →
         (∀ r, R0 = some r → r.WF 0 0 0) → ImageOk P B Ψ Q C Δ Ξ R0 ν i a
     | contVar {Ψ Q C Δ Ξ R0 ν i a b t e j} : a = .cont b t e → ν i = .var j →
-        Δ[j]? = some (some (substTyValues ν a)) → ImageOk P B Ψ Q C Δ Ξ R0 ν i a
+        (∃ b' t' e', Δ[j]? = some (some (.cont b' t' e')) ∧
+          (Ty.cont b' t' e').norm = substTyValues ν a) → ImageOk P B Ψ Q C Δ Ξ R0 ν i a
 
 end
 
@@ -470,6 +489,27 @@ theorem HasTypeVQ.refine_integer {P B store Q C Γ Φ v a t p}
     (hs : Pred.Sorted Γ (some a) p) (hw : p.WF (Γ.length+1))
     (he : Entails (Γ.facts ++ Φ) (p.open t)) : HasTypeVQ P B store Q C Γ Φ v (.refined a p) :=
   .V_Refine h hi ht hs hw he hda hdp
+
+theorem HasTypeVQ.convert {P B Ψ Q C Γ Φ v a b}
+    (h : HasTypeVQ P B Ψ Q C Γ Φ v a) (he : a.norm = b.norm)
+    (hb : Ty.Annotation P C Γ b) : HasTypeVQ P B Ψ Q C Γ Φ v b :=
+  .V_Sub h (.convert he) hb.wf hb.sorted hb.declared
+
+theorem HasTypeCQ.convert {P B Ψ Q C Γ Φ R m a b e L}
+    (h : HasTypeCQ P B Ψ Q C Γ Φ R m a e L) (he : a.norm = b.norm)
+    (hb : Ty.Annotation P C Γ b) : HasTypeCQ P B Ψ Q C Γ Φ R m b e L :=
+  .C_Sub h (.convert he) (Eff.Covers.refl Γ Φ e) hb.wf hb.sorted hb.declared
+
+theorem CaptureOk.empty (P : Program) (B : Builtins) (Ψ : StoreTy) (R : Option Ty) :
+    CaptureOk P B Ψ R [] [] Capture.empty := by
+  refine .mk ?_ rfl ?_ ?_ ?_ ?_ ?_ ?_
+  · intro i a hi; cases hi
+  · intro i a hi; cases hi
+  · intro i a hi; cases hi
+  · intro p hp; cases hp
+  · intro ov ho; cases ho
+  · intro i a hi; cases hi
+  · intro p hp; cases hp
 
 abbrev HasTypeTelArgs (P : Program) (B : Builtins) (Ψ : StoreTy) := HasTypeTelArgsQ P B Ψ Qempty
 

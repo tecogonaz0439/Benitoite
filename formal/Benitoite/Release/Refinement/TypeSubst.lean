@@ -1,4 +1,5 @@
 import Benitoite.Release.Refinement.Exchange
+import Benitoite.Release.Refinement.NormalWellFormed
 
 /-!
 # 型と行の有限列による置換
@@ -13,12 +14,12 @@ noncomputable def Ctx.bindTypes (Γ : Ctx) (θ : SubstEnv) : Ctx :=
 
 /-- 値を恒等に保つ型・行・範囲の置換では、元の事実が新しい事実に含まれる。 -/
 theorem Ctx.facts_bindTypes (Γ : Ctx) (θ : SubstEnv) (hv : θ.values = (fun i => some (.var i)))
-    {p : Pred} (hp : p ∈ Γ.facts) : p ∈ (Γ.bindTypes θ).facts := by
+    (ht : ∀ i, Ordinary (θ.types i)) {p : Pred} (hp : p ∈ Γ.facts) : p ∈ (Γ.bindTypes θ).facts := by
   obtain ⟨i, a, q, hi, hq, rfl⟩ := Ctx.mem_facts.mp hp
   apply Ctx.mem_facts.mpr
   refine ⟨i, a.bind θ, q, ?_, ?_, rfl⟩
   · simp only [Ctx.bindTypes, List.getElem?_map, hi, Option.map_some]
-  · simpa only [hv, upValues_id, predBind_id] using Ty.assume_bind a θ q hq
+  · simpa only [hv, upValues_id, predBind_id] using Ty.assume_bind a θ ht q hq
 
 /-- 型・行・範囲の像によって事実が増えることを許す、構文の移送。 -/
 theorem Transport.types (Γ : Ctx) (Φ : List Pred) (θ : SubstEnv) (hv : θ.values = (fun i => some (.var i)))
@@ -39,7 +40,7 @@ theorem Transport.types (Γ : Ctx) (Φ : List Pred) (θ : SubstEnv) (hv : θ.val
     rw [hv, predBind_id]
     apply Entails.hyp
     rcases List.mem_append.mp hp with hp | hp
-    · exact List.mem_append_left _ (Ctx.facts_bindTypes Γ θ hv hp)
+    · exact List.mem_append_left _ (Ctx.facts_bindTypes Γ θ hv ht hp)
     · exact List.mem_append_right _ hp
 
 noncomputable def Ty.substAt (c : Nat) (ts : List Ty) (es : List Eff) (a : Ty) : Ty :=
@@ -51,6 +52,7 @@ noncomputable def Eff.subst (ts : List Ty) (es : List Eff) (e : Eff) : Eff := Ef
 
 theorem shiftTypes_ordinary {a : Ty} (h : Ordinary a) (k c : Nat) : Ordinary (shiftTypes k c a) := by
   cases a <;> simp_all [shiftTypes, Ordinary]
+  case refined a p => exact shiftTypes_ordinary (a := a) h k c
 
 theorem typeEnvAt_ordinary (c : Nat) (ts : List Ty) (es : List Eff)
     (ht : ∀ a ∈ ts, Ordinary a) : ∀ i, Ordinary ((typeEnvAt c ts es).types i) := by
@@ -160,12 +162,6 @@ mutual
     simp only [shiftRowsTypes, shiftTypesList_zero]
 end
 
-theorem Ty.wfList_iff {nr nt nv : Nat} {as : List Ty} :
-    Ty.WFList nr nt nv as ↔ ∀ a ∈ as, a.WF nr nt nv := by
-  induction as with
-  | nil => simp [Ty.WFList]
-  | cons a as ih => simp only [Ty.WFList, ih, List.mem_cons, forall_eq_or_imp]
-
 private theorem wfList_sortUnique {nr nt nv : Nat} {as : List Ty} (h : Ty.WFList nr nt nv as) :
     Ty.WFList nr nt nv (Order.sortUnique tyCompare as) := by
   rw [Ty.wfList_iff] at h ⊢
@@ -195,8 +191,10 @@ mutual
         Eff.wf_shiftTypes_norm h.2.2.1 k c, Eff.norm_idem _⟩
     case map a b => exact ⟨Ty.wf_shiftTypes_norm h.1 k c, Ty.wf_shiftTypes_norm h.2 k c⟩
     case tapp i as => exact ⟨by split <;> omega, wfList_shiftTypes_norm h.2 k c⟩
-    case refined a p => exact ⟨Ty.wf_shiftTypes_norm h.1 k c, h.2.1,
-      (Ty.notContCore_norm _).mpr ((Ty.notContCore_shiftTypes _ _ _).mpr h.2.2)⟩
+    case refined a p =>
+      exact Ty.wf_refineNorm (Ty.wf_shiftTypes_norm h.1 k c) h.2.1
+        ((Ty.notContCore_norm _).mpr ((Ty.notContCore_shiftTypes _ _ _).mpr h.2.2))
+    case dependentFn t => exact Ty.wf_foldFn (Tel.wf_shiftTypes_norm h k c)
   theorem Tel.wf_shiftTypes_norm {nr nt nv : Nat} {t : Tel} (h : Tel.WF nr nt nv t) (k c : Nat) :
       Tel.WF nr (nt+k) nv (Tel.norm (shiftTelTypes k c t)) := by
     cases t with
@@ -223,7 +221,7 @@ mutual
       a.rawBind (SubstEnv.shiftTypes k c) = shiftTypes k c a := by
     cases a <;> simp only [Ty.rawBind, shiftTypes, rawApply,
       Ty.rawBind_shiftTypes, rawBindTys_shiftTypes, Eff.rawBind_shiftTypes, Tel.rawBind_shiftTypes]
-    all_goals simp [SubstEnv.shiftTypes, RangeIx.inst_nil, upValues_id, predBind_id, shiftIndex]
+    all_goals simp [SubstEnv.shiftTypes, rawApply, RangeIx.inst_nil, upValues_id, predBind_id, shiftIndex]
   theorem Tel.rawBind_shiftTypes (t : Tel) (k c : Nat) :
       Tel.rawBind (SubstEnv.shiftTypes k c) t = shiftTelTypes k c t := by
     cases t with
@@ -254,5 +252,11 @@ theorem Ty.wf_shift {nr nt nv : Nat} {a : Ty} (h : a.WF nr nt nv) (k c : Nat) :
 theorem Eff.wf_shift {nr nt nv : Nat} {e : Eff} (h : e.WF nr nt nv) (k c : Nat) :
     (Eff.shift k c e).WF nr (nt+k) nv := by
   simpa only [Eff.shift, Eff.bind, Eff.rawBind_shiftTypes] using Eff.wf_shiftTypes_norm h k c
+
+@[simp] theorem Ty.substAt_norm_source (a : Ty) (c : Nat) (ts : List Ty) (es : List Eff) :
+    a.norm.substAt c ts es = a.substAt c ts es := Ty.norm_rawBind _ a
+
+@[simp] theorem Ty.subst_norm_source (a : Ty) (ts : List Ty) (es : List Eff) :
+    a.norm.subst ts es = a.subst ts es := Ty.norm_rawBind _ a
 
 end Benitoite.Release.Refinement

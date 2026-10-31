@@ -1,4 +1,6 @@
 import Benitoite.Release.Refinement.OpenSubstitution
+import Benitoite.Release.Refinement.ShiftCancellation
+import Benitoite.Release.Refinement.DeclaredTransport
 import Benitoite.Release.Refinement.ValueClosed
 import Benitoite.Release.Refinement.Typing
 
@@ -103,6 +105,166 @@ private theorem sortedTys_iff {Γ as} : sortedTys Γ as ↔ ∀ a ∈ as, a.Sort
   | nil => simp [sortedTys]
   | cons a as ih => simp only [sortedTys, ih, List.mem_cons, forall_eq_or_imp]
 
+private def sortWitness : «Sort» → Term
+  | .integer => .integer 0
+  | .character => .character 'a'
+  | .float64 => .float64 0
+  | .float32 => .float32 0
+  | .decimal => .decimal 0 0
+  | .boolean => .boolean false
+  | .unit => .unitValue
+  | .string => .string ""
+  | .list => .listValue []
+  | .bytes => .bytesValue []
+  | .map => .mapValue [] []
+  | .set => .setValue []
+  | .data => .dataValue "" []
+  | .target .path => .targetValue none (.path [])
+  | .target .host => .targetValue none (.host (.name []))
+  | .target .endpoint => .targetValue none (.endpoint ⟨.name [], 0⟩)
+
+private theorem sortWitness_sorted (Γ : Ctx) (s : «Sort») : (sortWitness s).HasSort Γ s := by
+  cases s <;> try exact ⟨trivial, rfl⟩
+  case target k => cases k <;> exact ⟨trivial, rfl⟩
+  case map => exact ⟨⟨trivial, trivial⟩, rfl⟩
+
+private theorem dropWitness (Γ : Ctx) (a : Ty) :
+    ∃ t : Term, t.References Γ ∧ ∀ s, a.HasSort s → t.HasSort Γ s := by
+  cases he : a.sort? with
+  | none =>
+    refine ⟨.unitValue, trivial, ?_⟩
+    intro s hs; change a.sort? = some s at hs; rw [he] at hs; cases hs
+  | some s =>
+    refine ⟨sortWitness s, (sortWitness_sorted Γ s).1, ?_⟩
+    intro r hr
+    cases Option.some.inj (he.symm.trans hr)
+    exact sortWitness_sorted Γ s
+
+theorem Term.drop_images {Γ : Ctx} {a : Ty} {t : Term} (ht : t.References Γ)
+    (hs : ∀ s, a.HasSort s → t.HasSort Γ s) :
+    Term.ImagesSorted (Γ.extend a) Γ (dropValue t) ∧
+      Term.ImageReferences (Γ.extend a) Γ (dropValue t) := by
+  constructor
+  · intro i b s hi hb
+    cases i with
+    | zero =>
+      cases Option.some.inj hi
+      exact ⟨t, rfl, hs s ((Ty.hasSort_shiftV _ _ _ _).mp hb)⟩
+    | succ i =>
+      simp only [Ctx.extend, List.getElem?_cons_succ, List.getElem?_map] at hi
+      obtain ⟨ob, hob, ho⟩ := Option.map_eq_some_iff.mp hi
+      cases ob with
+      | none => cases ho
+      | some b =>
+        cases ho
+        exact ⟨.var i, rfl, ⟨b, hob, ((Ty.hasSort_shiftV _ _ _ _).mp hb).ordinary⟩,
+          b, hob, (Ty.hasSort_shiftV _ _ _ _).mp hb⟩
+  · intro i b hi hb u hu
+    cases i with
+    | zero => cases hu; exact ht
+    | succ i =>
+      cases hu
+      simp only [Ctx.extend, List.getElem?_cons_succ, List.getElem?_map] at hi
+      obtain ⟨ob, hob, ho⟩ := Option.map_eq_some_iff.mp hi
+      cases ob with
+      | none => cases ho
+      | some b => cases ho; exact ⟨b, hob, (Ty.ordinary_shiftV _ _ _).mp hb⟩
+
+theorem Term.drop_reference_images (Γ : Ctx) (b : Ty) :
+    ∃ t : Term, Term.ImageReferences (Γ.extend b) Γ (dropValue t) := by
+  obtain ⟨t, ht, hs⟩ := dropWitness Γ b
+  exact ⟨t, (Term.drop_images ht hs).2⟩
+
+theorem Ty.sorted_shiftV_rev {Γ : Ctx} {a b : Ty} (h : (a.shiftV 1 0).Sorted (Γ.extend b)) : a.Sorted Γ := by
+  obtain ⟨t, ht, hs⟩ := dropWitness Γ b
+  have hh := Ty.sorted_rawSubstV h (dropValue t) (Term.drop_images ht hs).1 (Term.drop_images ht hs).2
+  rwa [Ty.substV_shift_cancel _ (dropValue_shift t)] at hh
+
+theorem sortedTys_shiftV_rev {Γ : Ctx} {as : List Ty} {b : Ty} (h : sortedTys (Γ.extend b) (shiftVTys 1 0 as)) : sortedTys Γ as := by
+  cases as with
+  | nil => trivial
+  | cons a as => exact ⟨Ty.sorted_shiftV_rev h.1, sortedTys_shiftV_rev h.2⟩
+
+theorem sortedEff_shiftV_rev {Γ : Ctx} {e : Eff} {b : Ty} (h : sortedEff (Γ.extend b) (e.shiftV 1 0)) : sortedEff Γ e := by
+  cases e; exact sortedTys_shiftV_rev h
+
+theorem Ty.sorted_of_toTel {Γ ns ps r e} (hn : NamesWF ns ps)
+    (h : Tel.Sorted Γ (Ty.toTel ns ps r e)) : (Ty.fn ns ps r e).Sorted Γ := by
+  induction ns generalizing Γ ps r e with
+  | nil => cases ps with
+    | nil => exact ⟨trivial, h⟩
+    | cons => simp [NamesWF] at hn
+  | cons n ns ih => cases ps with
+    | nil => simp [NamesWF] at hn
+    | cons a ps =>
+      have hn' : NamesWF ns (shiftVTys 1 0 ps) :=
+        ⟨by simpa [NamesWF] using Nat.succ.inj hn.1, hn.2.of_cons⟩
+      have hh := ih hn' h.2
+      exact ⟨⟨h.1, sortedTys_shiftV_rev hh.1⟩, Ty.sorted_shiftV_rev hh.2.1, sortedEff_shiftV_rev hh.2.2⟩
+
+theorem Ty.sorted_foldFn {Γ t} (h : Tel.Sorted Γ t) : (Ty.foldFn t).Sorted Γ := by
+  classical
+  by_cases he : ∃ f : FnView, f.toTel = t
+  · obtain ⟨f, rfl⟩ := he
+    rw [Ty.foldFn_toTel]
+    exact Ty.sorted_of_toTel f.names_wf h
+  · rw [Ty.foldFn_no_view he]; exact h
+
+theorem Pred.sorted_conjuncts {Γ : Ctx} {self : Option Ty} {p : Pred} (h : p.Sorted Γ self) : ∀ q : Pred, q ∈ p.conjuncts → q.Sorted Γ self := by
+  cases p with
+  | truth => intro q hq; cases hq
+  | and p q =>
+    intro r hr
+    rcases List.mem_append.mp hr with hr | hr
+    · exact Pred.sorted_conjuncts h.1 r hr
+    · exact Pred.sorted_conjuncts h.2 r hr
+  | _ => intro q hq; cases List.mem_singleton.mp hq; exact h
+
+theorem Pred.sorted_ofConjuncts {Γ : Ctx} {self : Option Ty} {ps : List Pred} (h : ∀ p ∈ ps, p.Sorted Γ self) :
+    (Pred.ofConjuncts ps).Sorted Γ self := by
+  induction ps with
+  | nil => trivial
+  | cons p ps ih => cases ps with
+    | nil => exact h p List.mem_cons_self
+    | cons q qs => exact ⟨h p List.mem_cons_self, ih (fun r hr => h r (List.mem_cons_of_mem p hr))⟩
+
+private theorem sorted_coreSelf {Γ : Ctx} {a : Ty} {p : Pred} (h : p.Sorted Γ (some a)) : p.Sorted Γ (some a.core) := by
+  simpa only [upValues_id, predBind_id] using
+    Pred.sorted_bind h (fun i => some (.var i))
+      (fun s hs => by
+        have he : a.core.sort? = a.sort? := Ty.sort?_core a
+        exact he.trans hs)
+      (fun ho => by simpa only [Ordinary, Ty.core_idem] using ho)
+      (Transport.id Γ []).values (Transport.id Γ []).references
+
+theorem Ty.Sorted.core {Γ : Ctx} {a : Ty} (h : a.Sorted Γ) : a.core.Sorted Γ := by
+  cases a with
+  | refined a p => exact Ty.Sorted.core (a := a) h.1
+  | _ => exact h
+
+theorem Ty.Sorted.predicates {Γ : Ctx} {a : Ty} (h : a.Sorted Γ) :
+    ∀ p : Pred, p ∈ a.refinementPredicates → p.Sorted Γ (some a.core) := by
+  cases a with
+  | refined a p =>
+    intro q hq
+    rcases List.mem_append.mp hq with hq | hq
+    · exact Ty.Sorted.predicates (a := a) h.1 q hq
+    · exact Pred.sorted_conjuncts (sorted_coreSelf h.2) q hq
+  | _ => intro p hp; cases hp
+
+theorem Ty.sorted_refineNorm {Γ : Ctx} {a : Ty} {p : Pred} (ha : a.Sorted Γ) (hp : p.Sorted Γ (some a)) :
+    (a.refineNorm p).Sorted Γ := by
+  unfold Ty.refineNorm
+  cases he : a.refinementPredicates ++ p.conjuncts with
+  | nil => exact ha.core
+  | cons q qs =>
+    refine ⟨ha.core, Pred.sorted_ofConjuncts ?_⟩
+    intro r hr
+    rw [←he] at hr
+    rcases List.mem_append.mp hr with hr | hr
+    · exact ha.predicates r hr
+    · exact Pred.sorted_conjuncts (sorted_coreSelf hp) r hr
+
 mutual
   theorem Ty.sorted_norm {Γ a} (h : Ty.Sorted Γ a) : a.norm.Sorted Γ := by
     cases a <;> simp only [Ty.Sorted] at h <;> simp only [Ty.norm, Ty.Sorted]
@@ -110,8 +272,9 @@ mutual
     case fn ns ps r e => exact ⟨sortedTys_norm h.1, Ty.sorted_norm h.2.1, sortedEff_norm h.2.2⟩
     case cont b t e => exact ⟨Ty.sorted_norm h.1, Ty.sorted_norm h.2.1, sortedEff_norm h.2.2⟩
     case map a b => exact ⟨Ty.sorted_norm h.1, Ty.sorted_norm h.2⟩
+    case dependentFn t => exact Ty.sorted_foldFn (Tel.sorted_norm h)
     case refined a p =>
-      refine ⟨Ty.sorted_norm h.1, ?_⟩
+      apply Ty.sorted_refineNorm (Ty.sorted_norm h.1)
       simpa only [upValues_id, predBind_id] using
         Pred.sorted_bind h.2 (fun i => some (.var i))
           (fun sort hi => (Ty.hasSort_norm _ sort).mpr hi)
@@ -194,7 +357,8 @@ mutual
     case cont b t e => exact ⟨wf_norm_of_bounds h.1, wf_norm_of_bounds h.2.1, wfEff_norm_of_bounds h.2.2, Eff.norm_idem _⟩
     case map a b => exact ⟨wf_norm_of_bounds h.1, wf_norm_of_bounds h.2⟩
     case tapp i as => exact ⟨h.1, wfList_norm_of_bounds h.2⟩
-    case refined a p => exact ⟨wf_norm_of_bounds h.1, h.2.1, (Ty.notContCore_norm _).mpr h.2.2⟩
+    case refined a p => exact Ty.wf_refineNorm (wf_norm_of_bounds h.1) h.2.1 ((Ty.notContCore_norm _).mpr h.2.2)
+    case dependentFn t => exact Ty.wf_foldFn (wfTel_norm_of_bounds h)
   private theorem wfTel_norm_of_bounds {nr nt nv t} (h : BoundsTel nr nt nv t) : Tel.WF nr nt nv (Tel.norm t) := by
     cases t with
     | done r e => exact ⟨wf_norm_of_bounds h.1, wfEff_norm_of_bounds h.2, Eff.norm_idem e⟩
@@ -321,5 +485,21 @@ theorem Tel.sorted_bind_values {Γ Δ t} (h : Tel.Sorted Γ t) (σ : Observation
   unfold SubstEnv.valuesOnly
   rw [← Tel.rawSubstV_eq_rawBind]
   exact Tel.sorted_norm (Tel.sorted_rawSubstV h σ hs hr)
+
+/-- WFな文脈では、芯での継続の非表示は従来の最外での非表示と一致する。 -/
+theorem hideConts_of_wf {Γ nr nt} (h : Ctx.WF nr nt Γ) :
+    hideConts Γ = Γ.map (fun a => match a with | some (.cont _ _ _) => none | a => a) := by
+  apply List.map_congr_left
+  intro oa hm
+  cases oa with
+  | none => rfl
+  | some a =>
+    obtain ⟨i, hi⟩ := List.mem_iff_getElem?.mp hm
+    have hw := h i a hi
+    cases a <;> try rfl
+    case refined a p =>
+      change (match a.core with | .cont _ _ _ => none | _ => some (Ty.refined a p)) = some (Ty.refined a p)
+      cases hc : a.core <;> try rfl
+      exact False.elim (hw.2.2 _ _ _ hc)
 
 end Benitoite.Release.Refinement

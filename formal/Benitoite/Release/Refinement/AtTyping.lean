@@ -34,7 +34,7 @@ theorem HasTypeVQ.checkedRequest_opaque {P B Ψ Q C Γ Φ o r t req T}
     (hv : HasTypeV P B Ψ [] [] [] req T) (hg : req.Ground)
     (ht : req.reqTarget = some t) (hm : Scope.Domain.Range.MemK .endpoint r t) :
     HasTypeVQ P B Ψ Q C Γ Φ (.checkedRequest t req) (.opaque o (.fixed (.absolute r))) :=
-  .V_Sub (.V_CheckedRequest hk hc hv hg ht hm) .scoped_forget trivial trivial trivial
+  .V_Sub (.V_CheckedRequest hk hc hv.V_Normal hg ht hm) .scoped_forget trivial trivial trivial
 
 theorem CheckedWitness.absolute_plain {P B Ψ o k r t}
     (hk : B.valKind o = some k) (hc : B.valContent o = none)
@@ -45,7 +45,7 @@ theorem CheckedWitness.absolute_request {P B Ψ o r t req T}
     (hk : B.valKind o = some .endpoint) (hc : B.valContent o = some T)
     (hv : HasTypeV P B Ψ [] [] [] req T) (hg : req.Ground)
     (ht : req.reqTarget = some t) (hm : Scope.Domain.Range.MemK .endpoint r t) :
-    CheckedWitness P B Ψ o .endpoint (.absolute r) none t (some req) := .request hk hc hv hg ht hm
+    CheckedWitness P B Ψ o .endpoint (.absolute r) none t (some req) := .request hk hc hv.V_Normal hg ht hm
 
 theorem HasTypeVQ.checkedAt_subst {P B Ψ Q C Γ Φ o k r snapshot t req}
     (ν : Nat → Val) (ρ : Nat → LocalRef) (h : CheckedWitness P B Ψ o k r snapshot t req) :

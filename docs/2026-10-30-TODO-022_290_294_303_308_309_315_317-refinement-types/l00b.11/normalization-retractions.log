@@ -1,0 +1,127 @@
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/normalization-retractions.lean:37:26: warning: This simp argument is unused:
+  valEnv
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Eff.rawBind, instAtoms_nil, substAtoms_nil, rowFails, List.length_nil, List.range_zero,
+    List.filter_nil, List.flatMap_nil, rawBindTys, List.nil_append, Eff.norm, Ty.normTys, U, Ty.rawBind, Ty.norm,
+    Eff.empty, Order.sortUnique]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/normalization-retractions.lean:39:21: warning: This simp argument is unused:
+  Eff.norm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Eff.rawBind, valEnv, instAtoms_nil, substAtoms_nil, rowFails, List.length_nil, List.range_zero,
+    List.filter_nil, List.flatMap_nil, rawBindTys, List.nil_append, Ty.normTys, U, Ty.rawBind, Ty.norm, Eff.empty,
+    Order.sortUnique]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/normalization-retractions.lean:39:31: warning: This simp argument is unused:
+  Ty.normTys
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Eff.rawBind, valEnv, instAtoms_nil, substAtoms_nil, rowFails, List.length_nil, List.range_zero,
+    List.filter_nil, List.flatMap_nil, rawBindTys, List.nil_append, Eff.norm, U, Ty.rawBind, Ty.norm, Eff.empty,
+    Order.sortUnique]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/normalization-retractions.lean:39:46: warning: This simp argument is unused:
+  Ty.rawBind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Eff.rawBind, valEnv, instAtoms_nil, substAtoms_nil, rowFails, List.length_nil, List.range_zero,
+    List.filter_nil, List.flatMap_nil, rawBindTys, List.nil_append, Eff.norm, Ty.normTys, U, Ty.norm, Eff.empty,
+    Order.sortUnique]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/normalization-retractions.lean:39:58: warning: This simp argument is unused:
+  Ty.norm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Eff.rawBind, valEnv, instAtoms_nil, substAtoms_nil, rowFails, List.length_nil, List.range_zero,
+    List.filter_nil, List.flatMap_nil, rawBindTys, List.nil_append, Eff.norm, Ty.normTys, U, Ty.rawBind, Eff.empty,
+    Order.sortUnique]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/normalization-retractions.lean:40:4: warning: This simp argument is unused:
+  Order.sortUnique
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Eff.rawBind, valEnv, instAtoms_nil, substAtoms_nil, rowFails, List.length_nil, List.range_zero,
+    List.filter_nil, List.flatMap_nil, rawBindTys, List.nil_append, Eff.norm, Ty.normTys, U, Ty.rawBind, Ty.norm,
+    Eff.empty]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.11/normalization-retractions.lean:83:70: warning: This simp argument is unused:
+  Order.sortUnique
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Tel.arguments, raw, U, Ty.norm, Ty.refineNorm, Ty.core, Ty.refinementPredicates, Ty.packRefinements,
+    Pred.conjuncts, Eff.norm, Eff.empty, Ty.normTys]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'Benitoite.Release.Refinement.NormalizationRetractions.U' does not depend on any axioms
+'Benitoite.Release.Refinement.NormalizationRetractions.close_return_normal' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.NormalizationRetractions.closed_builder_subst_not_raw' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.NormalizationRetractions.closed_builder_wf' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.NormalizationRetractions.closed_tel_bind_not_raw' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.NormalizationRetractions.closed_value_subst_not_raw' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.NormalizationRetractions.closure_result_normal' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.NormalizationRetractions.closure_return_normal' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.NormalizationRetractions.continuation_raw_components_differ' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.NormalizationRetractions.done_annotation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.NormalizationRetractions.done_typed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.NormalizationRetractions.instantiatedTel_raw_equality_false' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.NormalizationRetractions.of_arguments_without_normal_false' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.NormalizationRetractions.pure_without_normal_false' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.NormalizationRetractions.pure_without_return_normal_false' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.NormalizationRetractions.raw' does not depend on any axioms
+'Benitoite.Release.Refinement.NormalizationRetractions.raw_not_normal' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.NormalizationRetractions.raw_renameTypes_not_raw_shift' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.NormalizationRetractions.raw_result_typed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.NormalizationRetractions.raw_wf' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.NormalizationRetractions.tel_arguments_raw_result_false' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.NormalizationRetractions.tel_instantiate_raw_result_false' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.NormalizationRetractions.tel_normal_without_premise_false' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

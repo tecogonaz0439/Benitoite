@@ -9,9 +9,19 @@ import Benitoite.Release.Refinement.ContextFacts
 -/
 namespace Benitoite.Release.Refinement
 
+theorem Ty.sort?_refineNorm (a : Ty) (p : Pred) : (Ty.refineNorm a p).sort? = a.sort? := by
+  rw [←Ty.sort?_core, Ty.core_refineNorm, Ty.sort?_core]
+
+theorem Ty.sort?_foldFn (t : Tel) : (Ty.foldFn t).sort? = none := by
+  unfold Ty.foldFn
+  split <;> rfl
+
 @[simp] theorem Ty.hasSort_norm (a : Ty) (s : «Sort») : a.norm.HasSort s ↔ a.HasSort s := by
   cases a <;> simp only [Ty.norm, Ty.HasSort, Ty.sort?]
-  case refined a p => exact Ty.hasSort_norm a s
+  case refined a p =>
+    rw [Ty.sort?_refineNorm]
+    exact Ty.hasSort_norm a s
+  case dependentFn t => rw [Ty.sort?_foldFn]
 
 theorem Ty.hasSort_rawBind {a : Ty} {s : «Sort»} (h : a.HasSort s) (θ : SubstEnv) :
     (a.rawBind θ).HasSort s := by
@@ -28,36 +38,45 @@ theorem Ty.IntegerCarrier.bind {a : Ty} (h : a.IntegerCarrier) (θ : SubstEnv) :
     (a.bind θ).IntegerCarrier := Ty.hasSort_bind h θ
 
 @[simp] theorem Ty.ordinary_norm (a : Ty) : Ordinary a.norm ↔ Ordinary a := by
-  cases a <;> simp [Ordinary, Ty.norm]
+  exact Ty.notContCore_norm a
 
 private theorem rawApply_ordinary {a : Ty} (h : Ordinary a) (as : List Ty) : Ordinary (rawApply a as) := by
-  cases a <;> simp_all [rawApply, Ordinary]
-  case ctor c => cases c <;> simp []
+  cases a <;> simp_all [rawApply, Ordinary, Ty.core]
+  case ctor c => cases c <;> simp [rawApply, Ty.core]
+  case refined a p => exact rawApply_ordinary (a := a) h as
 
 theorem Ty.ordinary_rawBind {a : Ty} (h : Ordinary a) (θ : SubstEnv)
     (ht : ∀ i, Ordinary (θ.types i)) : Ordinary (a.rawBind θ) := by
-  cases a <;> simp_all [Ty.rawBind, Ordinary]
+  cases a <;> simp_all [Ty.rawBind, Ordinary, Ty.core]
+  case refined a p => exact Ty.ordinary_rawBind h θ ht
   case tapp i as => exact rawApply_ordinary (ht i) _
 
 theorem Ty.ordinary_bind {a : Ty} (h : Ordinary a) (θ : SubstEnv)
     (ht : ∀ i, Ordinary (θ.types i)) : Ordinary (a.bind θ) :=
   (Ty.ordinary_norm _).mpr (Ty.ordinary_rawBind h θ ht)
 
-@[simp] theorem Ty.assume_norm (a : Ty) : a.norm.assume = a.assume := by
-  cases a <;> simp only [Ty.norm, Ty.assume, Ty.assume_norm]
-
 /-- 型像が新しい篩を含んでも、元の最外の事実を失わない。 -/
-theorem Ty.assume_bind (a : Ty) (θ : SubstEnv) :
-    ∀ p ∈ a.assume, predBind (upValues θ.values) p ∈ (a.bind θ).assume := by
-  unfold Ty.bind
-  rw [Ty.assume_norm]
-  cases a <;> simp only [Ty.assume]
-  all_goals first | exact fun _ h => False.elim (List.not_mem_nil h) | skip
-  case refined a p =>
+theorem Ty.predicates_rawBind (a : Ty) (θ : SubstEnv) :
+    ∀ p ∈ a.refinementPredicates,
+      predBind (upValues θ.values) p ∈ (a.rawBind θ).refinementPredicates := by
+  cases a with
+  | refined a p =>
     intro q hq
-    rcases List.mem_cons.mp hq with rfl | hq
-    · exact List.mem_cons_self
-    · exact List.mem_cons_of_mem _ (by simpa only [Ty.bind, Ty.assume_norm] using Ty.assume_bind a θ q hq)
+    change q ∈ a.refinementPredicates ++ p.conjuncts at hq
+    change predBind _ q ∈ (a.rawBind θ).refinementPredicates ++ (predBind (upValues θ.values) p).conjuncts
+    rcases List.mem_append.mp hq with hq | hq
+    · exact List.mem_append_left _ (Ty.predicates_rawBind a θ q hq)
+    · rw [Pred.conjuncts_bind]
+      exact List.mem_append_right _ (List.mem_map.mpr ⟨q, hq, rfl⟩)
+  | _ => intro p hp; cases hp
+
+theorem Ty.assume_bind (a : Ty) (θ : SubstEnv) (ht : ∀ i, Ordinary (θ.types i)) :
+    ∀ p ∈ a.assume, predBind (upValues θ.values) p ∈ (a.bind θ).assume := by
+  intro q hq
+  have ho := Ty.assume_ordinary hq
+  rw [Ty.assume_eq_predicates ho] at hq
+  rw [Ty.assume_eq_predicates (Ty.ordinary_bind ho θ ht)]
+  simpa only [Ty.bind, Ty.predicates_norm] using Ty.predicates_rawBind a θ q hq
 
 /-- 元の整数の観測を、行き先で型のある整数項へ写す構文の条件。 -/
 structure Transport (θ : SubstEnv) (Γ : Ctx) (Φ : List Pred) (Δ : Ctx) (Ψ : List Pred) : Prop where
@@ -81,7 +100,7 @@ theorem Transport.assumptions {θ Γ Φ Δ Ψ} (ht : Transport θ Γ Φ Δ Ψ) (
       Entails (assumptions Δ Ψ (a.bind θ)) (predBind (upValues θ.values) p) := by
   intro p hp
   rcases List.mem_append.mp hp with hp | hp
-  · exact .hyp (List.mem_append_left _ (Ty.assume_bind a θ p hp))
+  · exact .hyp (List.mem_append_left _ (Ty.assume_bind a θ ht.typeImages p hp))
   · obtain ⟨q, hq, rfl⟩ := List.mem_map.mp hp
     rw [predBind_lift]
     exact ((ht.facts q hq).bind (fun i => some (.var (i+1)))).weaken
@@ -163,7 +182,7 @@ theorem Transport.up {θ Γ Φ Δ Ψ} (ht : Transport θ Γ Φ Δ Ψ) (a : Ty) :
     Transport θ.up (Γ.extend a) (Φ.map Pred.lift)
       (Δ.extend (a.bind θ)) (Ψ.map Pred.lift) :=
   ht.extend a (a.bind θ) (fun _ h => Ty.hasSort_bind h θ)
-    (fun h => Ty.ordinary_bind h θ ht.typeImages) (Ty.assume_bind a θ)
+    (fun h => Ty.ordinary_bind h θ ht.typeImages) (Ty.assume_bind a θ ht.typeImages)
 
 /-- 生の型注釈を使う項の置換にも同じ束縛の証明を渡す。 -/
 theorem Transport.up_raw {θ Γ Φ Δ Ψ} (ht : Transport θ Γ Φ Δ Ψ) (a : Ty) :
@@ -173,7 +192,7 @@ theorem Transport.up_raw {θ Γ Φ Δ Ψ} (ht : Transport θ Γ Φ Δ Ψ) (a : T
   · intro s h; exact Ty.hasSort_rawBind h θ
   · intro h; exact Ty.ordinary_rawBind h θ ht.typeImages
   · intro p hp
-    simpa only [Ty.bind, Ty.assume_norm] using Ty.assume_bind a θ p hp
+    simpa only [Ty.bind, Ty.assume_norm] using Ty.assume_bind a θ ht.typeImages p hp
 
 /-- None の束縛も番号を残し、外側の移送条件を up で保つ。 -/
 theorem Transport.extendNone {θ Γ Φ Δ Ψ} (ht : Transport θ Γ Φ Δ Ψ) :
@@ -235,57 +254,11 @@ theorem Transport.extendNone {θ Γ Φ Δ Ψ} (ht : Transport θ Γ Φ Δ Ψ) :
 
 mutual
 /-- 新判断の全構成子に対し、置換後の構文の導出を返す。 -/
-theorem Ty.LeQ.bind {Γ Φ a b} (h : Ty.LeQ Γ Φ a b) (θ : SubstEnv) {Δ Ψ}
-    (ht : Transport θ Γ Φ Δ Ψ) : Ty.LeQ Δ Ψ (a.bind θ) (b.bind θ) := by
-  match h with
-  | .refl => exact .refl
-  | .trans h₁ h₂ => exact .trans (Ty.LeQ.bind h₁ θ ht) (Ty.LeQ.bind h₂ θ ht)
-  | .fn_effect hc => exact .fn_effect (hc.bind θ)
-  | .list hv => exact .list (Ty.LeQ.bind hv θ ht)
-  | .lazy hv => exact .lazy (Ty.LeQ.bind hv θ ht)
-  | .map_value hk hv => exact .map_value (congrArg (Ty.bind θ) hk) (Ty.LeQ.bind hv θ ht)
-  | .forget => exact .forget
-  | .introduce hs he =>
-    apply Ty.LeQ.introduce
-    · exact Pred.sorted_bind hs θ.values (fun _ h => Ty.hasSort_bind h θ) (fun h => Ty.ordinary_bind h θ ht.typeImages) ht.values ht.references
-    · exact (he.bind (upValues θ.values)).cut (by
-        intro p hp
-        obtain ⟨q, hq, rfl⟩ := List.mem_map.mp hp
-        exact ht.assumptions _ q hq)
-  | .refine hv hp hq he =>
-    apply Ty.LeQ.refine (Ty.LeQ.bind hv θ ht)
-    · exact Pred.sorted_bind hp θ.values (fun _ h => Ty.hasSort_bind h θ) (fun h => Ty.ordinary_bind h θ ht.typeImages) ht.values ht.references
-    · exact Pred.sorted_bind hq θ.values (fun _ h => Ty.hasSort_bind h θ) (fun h => Ty.ordinary_bind h θ ht.typeImages) ht.values ht.references
-    · apply (he.bind (upValues θ.values)).cut
-      intro p hp
-      rcases List.mem_cons.mp hp with rfl | hp
-      · exact .hyp List.mem_cons_self
-      · obtain ⟨q, hq, rfl⟩ := List.mem_map.mp hp
-        exact (ht.assumptions _ q hq).weaken (fun _ => List.mem_cons_of_mem _)
-
-  | .dependentFn hs => exact .dependentFn (TelClosure.bind hs θ ht)
-  | .scoped hc => exact .scoped (hc.inst θ.ranges)
-  | .scoped_forget => exact .scoped_forget
-
-  theorem TelLe.bind {Γ Φ t u} (h : TelLe Γ Φ t u) (θ : SubstEnv) {Δ Ψ}
-      (ht : Transport θ Γ Φ Δ Ψ) : TelLe Δ Ψ (Tel.bind θ t) (Tel.bind θ u) := by
-    match h with
-    | .done hr he => exact .done (Ty.LeQ.bind hr θ ht) (he.bind θ)
-    | .param ha hs => exact .param (Ty.LeQ.bind ha θ ht) (TelLe.bind hs θ.up (ht.up _))
-
-  theorem TelClosure.bind {Γ Φ t u} (h : TelClosure Γ Φ t u) (θ : SubstEnv) {Δ Ψ}
-      (ht : Transport θ Γ Φ Δ Ψ) : TelClosure Δ Ψ (Tel.bind θ t) (Tel.bind θ u) := by
-    match h with
-    | .refl => exact .refl
-    | .tail hpre hs => exact .tail (TelClosure.bind hpre θ ht) (TelLe.bind hs θ ht)
-end
-
-mutual
-/-- 新判断の全構成子に対し、置換後の構文の導出を返す。 -/
 theorem Ty.LeQ.rawBind {Γ Φ a b} (h : Ty.LeQ Γ Φ a b) (θ : SubstEnv) {Δ Ψ}
     (ht : Transport θ Γ Φ Δ Ψ) : Ty.LeQ Δ Ψ (a.rawBind θ) (b.rawBind θ) := by
   match h with
   | .refl => exact .refl
+  | .convert he => exact .convert (Ty.rawBind_norm_congr θ he)
   | .trans h₁ h₂ => exact .trans (Ty.LeQ.rawBind h₁ θ ht) (Ty.LeQ.rawBind h₂ θ ht)
   | .fn_effect hc => exact .fn_effect (Eff.covers_norm_right.mp (Eff.covers_norm_left.mp (hc.bind θ)))
   | .list hv => exact .list (Ty.LeQ.rawBind hv θ ht)
@@ -328,16 +301,33 @@ theorem Ty.LeQ.rawBind {Γ Φ a b} (h : Ty.LeQ Γ Φ a b) (θ : SubstEnv) {Δ Ψ
     | .tail hpre hs => exact .tail (TelClosure.rawBind hpre θ ht) (TelLe.rawBind hs θ ht)
 end
 
+mutual
+/-- 新判断の全構成子に対し、置換後の構文の導出を返す。 -/
+theorem Ty.LeQ.bind {Γ Φ a b} (h : Ty.LeQ Γ Φ a b) (θ : SubstEnv) {Δ Ψ}
+    (ht : Transport θ Γ Φ Δ Ψ) : Ty.LeQ Δ Ψ (a.bind θ) (b.bind θ) := by
+  exact (h.rawBind θ ht).norm
+
+  theorem TelLe.bind {Γ Φ t u} (h : TelLe Γ Φ t u) (θ : SubstEnv) {Δ Ψ}
+      (ht : Transport θ Γ Φ Δ Ψ) : TelLe Δ Ψ (Tel.bind θ t) (Tel.bind θ u) := by
+    match h with
+    | .done hr he => exact .done (Ty.LeQ.bind hr θ ht) (he.bind θ)
+    | .param ha hs => exact .param (Ty.LeQ.bind ha θ ht) (TelLe.bind hs θ.up (ht.up _))
+
+  theorem TelClosure.bind {Γ Φ t u} (h : TelClosure Γ Φ t u) (θ : SubstEnv) {Δ Ψ}
+      (ht : Transport θ Γ Φ Δ Ψ) : TelClosure Δ Ψ (Tel.bind θ t) (Tel.bind θ u) := by
+    match h with
+    | .refl => exact .refl
+    | .tail hpre hs => exact .tail (TelClosure.bind hpre θ ht) (TelLe.bind hs θ ht)
+end
+
+
 theorem Transport.id (Γ : Ctx) (Φ : List Pred) : Transport (renEnv id) Γ Φ Γ Φ := by
   constructor
   · intro i a s hi ha; exact ⟨.var i, rfl, ⟨a, hi, ha.ordinary⟩, a, hi, ha⟩
   · intro i a hi ho t ht; cases ht; exact ⟨a, hi, ho⟩
-  · intro i; simp [renEnv, Ordinary]
+  · intro i; simp [renEnv, Ordinary, Ty.core]
   · intro p hp
     simpa only [renEnv, id_eq, predBind_id] using (Entails.hyp hp)
 
-/-- 子と Fail の正規化を、構文の導出として保存する。 -/
-theorem Ty.LeQ.norm {Γ Φ a b} (h : Ty.LeQ Γ Φ a b) : Ty.LeQ Γ Φ a.norm b.norm := by
-  simpa only [Ty.bind, Ty.rawBind_id] using h.bind (renEnv id) (Transport.id Γ Φ)
 
 end Benitoite.Release.Refinement

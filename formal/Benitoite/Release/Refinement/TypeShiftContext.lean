@@ -50,6 +50,7 @@ theorem Ty.hasSort_shiftTypes (a : Ty) (k c : Nat) (s : «Sort») :
 theorem Ty.ordinary_shiftTypes (a : Ty) (k c : Nat) :
     Ordinary (Refinement.shiftTypes k c a) ↔ Ordinary a := by
   cases a <;> simp [Refinement.shiftTypes, Ordinary]
+  case refined a p => simpa only [Ty.Ordinary, Benitoite.Release.Refinement.Ordinary, Ty.core_shiftTypes] using Ty.ordinary_shiftTypes a k c
 
 theorem TypeCtxMap.images {k c Γ Δ} (h : TypeCtxMap k c Γ Δ) :
     Term.ImagesSorted Γ Δ (fun i => some (.var i)) := by
@@ -91,11 +92,6 @@ mutual
       sortedEff Δ (shiftRowsTypes k c e) := by
     cases e; exact sortedTys_shiftTypes ha h
 end
-
-theorem Ty.core_shiftTypes (a : Ty) (k c : Nat) :
-    (Refinement.shiftTypes k c a).core = Refinement.shiftTypes k c a.core := by
-  cases a <;> simp [Refinement.shiftTypes, Ty.core]
-  case refined a p => exact Ty.core_shiftTypes a k c
 
 theorem Term.HasData.shiftTypes {P Γ Δ t d ts k c} (ht : Term.HasData P Γ t d ts)
     (h : TypeCtxMap k c Γ Δ) : Term.HasData P Δ t d (ts.map (Refinement.shiftTypes k c)) := by
@@ -201,17 +197,36 @@ mutual
     cases e; exact declaredTys_shiftTypes ht h
 end
 
-theorem Ty.wf_shiftTypes {nr nt nv a} (hw : Ty.WF nr nt nv a) (k c : Nat) :
-    Ty.WF nr (nt+k) nv (Refinement.shiftTypes k c a) := by
-  have hh := Ty.wf_shiftTypes_norm hw k c
-  rwa [Ty.norm_shiftTypes,Ty.canonical_of_wf hw] at hh
-
-theorem Eff.wf_shiftTypes {nr nt nv e} (hw : Eff.WF nr nt nv e) (k c : Nat) :
-    Eff.WF nr (nt+k) nv (shiftRowsTypes k c e) := by
-  cases e; exact Ty.wfList_iff.mpr (by
-    intro a ha
-    obtain ⟨b,hb,rfl⟩ := List.mem_map.mp (by simpa only [shiftTypesList_eq_map] using ha)
-    exact Ty.wf_shiftTypes (Ty.wfList_iff.mp hw b hb) k c)
+mutual
+  theorem Ty.wf_shiftTypes {nr nt nv a} (hw : Ty.WF nr nt nv a) (k c : Nat) :
+      Ty.WF nr (nt+k) nv (Refinement.shiftTypes k c a) := by
+    cases a <;> simp only [Ty.WF] at hw <;> simp only [shiftTypes, Ty.WF]
+    all_goals first | exact hw | exact Ty.wf_shiftTypes hw k c | exact wfList_shiftTypes hw k c | skip
+    case tvar i => split <;> omega
+    case fn ns ps r e => exact ⟨⟨by simpa [shiftTypesList_eq_map] using hw.1.1, hw.1.2⟩,
+      wfList_shiftTypes hw.2.1 k c, Ty.wf_shiftTypes hw.2.2.1 k c,
+      Eff.wf_shiftTypes hw.2.2.2.1 k c, by change (shiftRowsTypes k c e).norm = _; rw [Eff.norm_shiftTypes, hw.2.2.2.2]⟩
+    case cont b t e => exact ⟨Ty.wf_shiftTypes hw.1 k c, Ty.wf_shiftTypes hw.2.1 k c,
+      Eff.wf_shiftTypes hw.2.2.1 k c, by change (shiftRowsTypes k c e).norm = _; rw [Eff.norm_shiftTypes, hw.2.2.2]⟩
+    case map a b => exact ⟨Ty.wf_shiftTypes hw.1 k c, Ty.wf_shiftTypes hw.2 k c⟩
+    case tapp i as => exact ⟨by split <;> omega, wfList_shiftTypes hw.2 k c⟩
+    case refined a p => exact ⟨Ty.wf_shiftTypes hw.1 k c, hw.2.1, (Ty.ordinary_shiftTypes _ _ _).mpr hw.2.2⟩
+    case dependentFn t => exact Tel.wf_shiftTypes hw k c
+  theorem Tel.wf_shiftTypes {nr nt nv t} (hw : Tel.WF nr nt nv t) (k c : Nat) :
+      Tel.WF nr (nt+k) nv (shiftTelTypes k c t) := by
+    cases t with
+    | done r e => exact ⟨Ty.wf_shiftTypes hw.1 k c, Eff.wf_shiftTypes hw.2.1 k c,
+        by change (shiftRowsTypes k c e).norm = _; rw [Eff.norm_shiftTypes, hw.2.2]⟩
+    | param n a t => exact ⟨Ty.wf_shiftTypes hw.1 k c, Tel.wf_shiftTypes hw.2 k c⟩
+  theorem wfList_shiftTypes {nr nt nv as} (hw : Ty.WFList nr nt nv as) (k c : Nat) :
+      Ty.WFList nr (nt+k) nv (shiftTypesList k c as) := by
+    cases as with
+    | nil => trivial
+    | cons a as => exact ⟨Ty.wf_shiftTypes hw.1 k c, wfList_shiftTypes hw.2 k c⟩
+  theorem Eff.wf_shiftTypes {nr nt nv e} (hw : Eff.WF nr nt nv e) (k c : Nat) :
+      Eff.WF nr (nt+k) nv (shiftRowsTypes k c e) := by
+    cases e; exact wfList_shiftTypes hw k c
+end
 
 theorem TypeCtxMap.annotation {P C C' Γ Δ a k c} (h : TypeCtxMap k c Γ Δ)
     (hn : C'.length = C.length+k) (ha : Ty.Annotation P C Γ a) :
