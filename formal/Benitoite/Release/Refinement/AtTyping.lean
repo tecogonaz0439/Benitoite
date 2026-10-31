@@ -1,6 +1,7 @@
 import Benitoite.Release.Refinement.TypingDeclared
 import Benitoite.Release.Refinement.Adequate
 import Benitoite.Release.Refinement.AtPrepare
+import Benitoite.Release.Refinement.AtSound
 
 /-! # 保持対象の静的な証拠と固定したσへの接続 -/
 namespace Benitoite.Release.Refinement
@@ -31,7 +32,7 @@ theorem HasTypeVQ.checked_opaque {P B Ψ Q C Γ Φ o k r t}
 
 theorem HasTypeVQ.checkedRequest_opaque {P B Ψ Q C Γ Φ o r t req T}
     (hk : B.valKind o = some .endpoint) (hc : B.valContent o = some T)
-    (hv : HasTypeV P B Ψ [] [] [] req T) (hg : req.Ground)
+    (hv : HasTypeV P B Ψ [] [] [] req T) (hg : groundVal req = true)
     (ht : req.reqTarget = some t) (hm : Scope.Domain.Range.MemK .endpoint r t) :
     HasTypeVQ P B Ψ Q C Γ Φ (.checkedRequest t req) (.opaque o (.fixed (.absolute r))) :=
   .V_Sub (.V_CheckedRequest hk hc hv.V_Normal hg ht hm) .scoped_forget trivial trivial trivial
@@ -43,9 +44,29 @@ theorem CheckedWitness.absolute_plain {P B Ψ o k r t}
 
 theorem CheckedWitness.absolute_request {P B Ψ o r t req T}
     (hk : B.valKind o = some .endpoint) (hc : B.valContent o = some T)
-    (hv : HasTypeV P B Ψ [] [] [] req T) (hg : req.Ground)
+    (hv : HasTypeV P B Ψ [] [] [] req T) (hg : groundVal req = true)
     (ht : req.reqTarget = some t) (hm : Scope.Domain.Range.MemK .endpoint r t) :
     CheckedWitness P B Ψ o .endpoint (.absolute r) none t (some req) := .request hk hc hv.V_Normal hg ht hm
+
+/-- 準備と所属検査の成功から、遷移が作る同じ要求の保持証拠を得る。 -/
+theorem CheckedWitness.of_prepared_request
+    {P B Ψ cap name kind T bases pattern input index snapshot pat target bound t}
+    (hk : B.valKind name = some kind) (hc : B.valContent name = some T)
+    (hi : HasTypeV P B Ψ [] [] [] (closeVal cap input) T.norm)
+    (hp : AtPrepared B cap kind name bases pattern input index snapshot pat target bound)
+    (hv : ∀ σ, snapshot = some σ → σ.Valid)
+    (ha : checkAt snapshot kind pat target bound = .ok t) :
+    CheckedWitness P B Ψ name kind bound snapshot t (AtRequest B name (closeVal cap input)) := by
+  obtain ⟨hg,t0,hr,ht⟩ := hp.request hc
+  rw [ht] at ha
+  have he := checkAt.absolute ha
+  subst t0
+  have hm := (checkAt.sound hv ha).2
+  have hend := Val.reqTarget_kind hr
+  have hk' : kind = .endpoint := hm.kind.symm.trans hend
+  subst kind
+  simp only [AtRequest,hc]
+  exact .request hk hc hi hg hr hm
 
 theorem HasTypeVQ.checkedAt_subst {P B Ψ Q C Γ Φ o k r snapshot t req}
     (ν : Nat → Val) (ρ : Nat → LocalRef) (h : CheckedWitness P B Ψ o k r snapshot t req) :

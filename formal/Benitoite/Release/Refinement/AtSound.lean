@@ -39,4 +39,17 @@ theorem checkAt.sound {snapshot kind pattern input bound target}
   exact ⟨snapshot_of_resolved hv hp hk (Classical.byContradiction hmPattern),
     snapshot_of_resolved hv hb hk (Classical.byContradiction hmBound)⟩
 
+theorem checkAt.absolute {snapshot kind pat t0 bound t}
+    (h : checkAt snapshot kind pat (.absolute t0) bound = .ok t) : t = t0 := by
+  unfold checkAt at h
+  have hr : resolveTargetSnapshot snapshot (.absolute t0) = some t0 := by cases snapshot <;> rfl
+  rw [hr] at h
+  split at h <;> try cases h
+  all_goals (split at h <;> try cases h)
+  all_goals (split at h <;> try cases h)
+  all_goals (split at h <;> try cases h)
+  all_goals (split at h <;> try cases h)
+  all_goals (simp_all)
+  all_goals (try (cases h; rfl))
+
 end Benitoite.Release.Refinement

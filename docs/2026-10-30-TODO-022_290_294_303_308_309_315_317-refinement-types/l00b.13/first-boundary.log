@@ -1,0 +1,688 @@
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.13/boundary.lean:57:17: error: unsolved goals
+⊢ Pred.Sorted [] (some ((Ty.base BaseTy.integer).refined (Pred.le (Term.integer 0) (Term.var 0)))) ?m.28
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.13/boundary.lean:96:2: error: unsolved goals
+case refine_1
+⊢ «Sort».list = Measure.listLength.input ∧ «Sort».integer = Measure.listLength.output
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.13/boundary.lean:97:59: warning: This simp argument is unused:
+  Ty.NotContCore
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [lengthOne, Pred.Sorted, Term.HasSort, Term.References, Term.VarsIn, Term.Shape, Ctx.Readable,
+    Ty.HasSort, Ty.sort?, Ordinary, Ty.core]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.13/boundary.lean:101:38: warning: This simp argument is unused:
+  Ty.NotContCore
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [lengthOne, Pred.Declared, Term.Declared, Ctx.declarationSelf, Ctx.extend, Ty.shiftV, Ctx.Readable,
+    Ordinary, Ty.core]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.13/boundary.lean:201:4: error: 'change' tactic failed, pattern
+  HasTypeVs P B StoreTy.empty [] [] [] ?m.136
+    [Ty.base BaseTy.string, Ty.base BaseTy.string, pair.list, Ty.bytes, Ty.base BaseTy.integer]
+is not definitionally equal to target
+  HasTypeVsQ P B0 StoreTy.empty Qempty [] [] []
+    [Val.const (Const.string "GET"), Val.const (Const.string "https://api.example.com/"), Val.list [], Val.bytesV [],
+      Val.const (Const.integer timeout)]
+    (List.map (Ty.subst [] []) reqDecl.args)
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.13/boundary.lean:213:2: error: (deterministic) timeout at `whnf`, maximum number of heartbeats (2000000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.13/boundary.lean:252:2: error: don't know how to synthesize implicit argument `k`
+  @HasTypeVQ.checkedAt_without_request P B StoreTy.empty Qempty [] [] []
+    (Ty.opaque "Http.RequestIn" (RangeIx.fixed RangeExpr.top)) (RangeExpr.absolute range) none target "Http.RequestIn"
+    ?m.18 (RangeIx.fixed RangeExpr.top) (of_decide_eq_true (id (Eq.refl true))) (Or.inr rfl)
+context:
+⊢ Kind
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.13/boundary.lean:252:51: error: don't know how to synthesize implicit argument `a`
+  @Or.inr
+    ((Ty.opaque "Http.RequestIn" (RangeIx.fixed RangeExpr.top)).norm.core =
+      Ty.scoped "Http.RequestIn" ?m.18 (RangeIx.fixed RangeExpr.top))
+    ((Ty.opaque "Http.RequestIn" (RangeIx.fixed RangeExpr.top)).norm.core =
+      Ty.opaque "Http.RequestIn" (RangeIx.fixed RangeExpr.top))
+    rfl
+context:
+⊢ Prop
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.13/boundary.lean:281:19: error: unsolved goals
+⊢ ∀ (b t : Ty) (e : EffR), ¬(Ty.shiftV 1 0 TargetTable.clientRequestTy).core = b.cont t e
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.13/boundary.lean:276:69: warning: This simp argument is unused:
+  Ty.NotContCore
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [constructorFact, Pred.Sorted, Term.HasSort, Term.References, Term.VarsIn, Term.Shape, Ctx.Readable,
+    Ty.HasSort, Ty.sort?, TargetTable.clientRequestTy, Benitoite.Release.TargetTable.clientRequestTy, embedTy, Ordinary,
+    Ty.core]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.13/boundary.lean:281:37: warning: This simp argument is unused:
+  Ty.NotContCore
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Ordinary, Ty.core]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.13/boundary.lean:281:52: warning: This simp argument is unused:
+  Ty.core
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Ordinary, Ty.NotContCore]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.13/boundary.lean:315:10: error(lean.unknownIdentifier): Unknown constant `Benitoite.Release.Refinement.ClosureTy.pure`
+
+Note: Inferred this name from the expected resulting type of `.pure`:
+  ClosureTy P B StoreTy.empty [] none (Closure.pure body) result Eff.empty
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.13/boundary.lean:322:39: error: Application type mismatch: The argument
+  trivial
+has type
+  True
+but is expected to have type
+  ConstOK ?m.21 ?m.27
+in the application
+  HasTypeVQ.V_Const trivial
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.13/boundary.lean:323:36: error: Application type mismatch: The argument
+  req_ground
+has type
+  groundVal req = true
+but is expected to have type
+  groundVal held = true
+in the application
+  groundVal_ground req_ground
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.13/boundary.lean:323:64: error: Application type mismatch: The argument
+  req_ground
+has type
+  groundVal req = true
+but is expected to have type
+  groundVal held = true
+in the application
+  groundVal_ground req_ground
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.13/boundary.lean:327:55: error: Application type mismatch: The argument
+  req_ground
+has type
+  groundVal req = true
+but is expected to have type
+  groundVal held = true
+in the application
+  groundVal_ground req_ground
+BOUNDARY_DECLARATIONS 470
+'Applicative.toPure.eq_1' does not depend on any axioms
+'Array.empty.eq_1' does not depend on any axioms
+'Array.emptyWithCapacity.eq_1' does not depend on any axioms
+'Array.toList.eq_1' does not depend on any axioms
+'BEq.beq.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.Ctx.Readable.eq_def' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Ctx.declarationSelf.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.Ctx.declarationSelf.eq_2' does not depend on any axioms
+'Benitoite.Release.Refinement.Measure.input.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.Measure.input.eq_2' does not depend on any axioms
+'Benitoite.Release.Refinement.Measure.input.eq_3' does not depend on any axioms
+'Benitoite.Release.Refinement.Measure.input.eq_4' does not depend on any axioms
+'Benitoite.Release.Refinement.Measure.input.eq_5' does not depend on any axioms
+'Benitoite.Release.Refinement.Measure.input.eq_6' does not depend on any axioms
+'Benitoite.Release.Refinement.Measure.input.eq_7' does not depend on any axioms
+'Benitoite.Release.Refinement.Measure.output.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.Observation.measure._sparseCasesOn_1.else_eq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Observation.measure._sparseCasesOn_2.else_eq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Observation.measure._sparseCasesOn_3.else_eq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Observation.measure._sparseCasesOn_4.else_eq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Observation.measure._sparseCasesOn_5.else_eq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Observation.measure._sparseCasesOn_6.else_eq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Observation.measure.eq_1' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Observation.measure.eq_2' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Observation.measure.eq_3' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Observation.measure.eq_4' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Observation.measure.eq_5' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Observation.measure.eq_6' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Observation.measure.eq_7' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Observation.measure.eq_8' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Observation.measure.eq_def' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Observation.sort.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.Observation.sort.eq_10' does not depend on any axioms
+'Benitoite.Release.Refinement.Observation.sort.eq_11' does not depend on any axioms
+'Benitoite.Release.Refinement.Observation.sort.eq_12' does not depend on any axioms
+'Benitoite.Release.Refinement.Observation.sort.eq_13' does not depend on any axioms
+'Benitoite.Release.Refinement.Observation.sort.eq_14' does not depend on any axioms
+'Benitoite.Release.Refinement.Observation.sort.eq_2' does not depend on any axioms
+'Benitoite.Release.Refinement.Observation.sort.eq_3' does not depend on any axioms
+'Benitoite.Release.Refinement.Observation.sort.eq_4' does not depend on any axioms
+'Benitoite.Release.Refinement.Observation.sort.eq_5' does not depend on any axioms
+'Benitoite.Release.Refinement.Observation.sort.eq_6' does not depend on any axioms
+'Benitoite.Release.Refinement.Observation.sort.eq_7' does not depend on any axioms
+'Benitoite.Release.Refinement.Observation.sort.eq_8' does not depend on any axioms
+'Benitoite.Release.Refinement.Observation.sort.eq_9' does not depend on any axioms
+'Benitoite.Release.Refinement.Pred.atomReady.eq_1' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Pred.atomReady.eq_10' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Pred.atomReady.eq_11' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Pred.atomReady.eq_12' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Pred.atomReady.eq_13' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Pred.atomReady.eq_14' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Pred.atomReady.eq_15' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Pred.atomReady.eq_2' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Pred.atomReady.eq_3' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Pred.atomReady.eq_4' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Pred.atomReady.eq_5' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Pred.atomReady.eq_6' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Pred.atomReady.eq_7' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Pred.atomReady.eq_8' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Pred.atomReady.eq_9' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.TargetTable.clientRequestTy.eq_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.ValueLeafBoundary.B' depends on axioms: [propext]
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.Bf' depends on axioms: [propext]
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.P' depends on axioms: [propext]
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.P.eq_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.actual_step' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.after' depends on axioms: [propext]
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.after_leaf' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.after_state' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.after_typed' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.arity' depends on axioms: [propext]
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.before' depends on axioms: [propext]
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.before_state' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.checked_at' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.checked_at_no_request' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.checked_at_wrong' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.constructorFact' does not depend on any axioms
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.constructorFact.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.held' depends on axioms: [propext]
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.held_refined_content' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.held_top' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.held_typed' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.no_request' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.other' depends on axioms: [propext]
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.pair' does not depend on any axioms
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.pairDecl' does not depend on any axioms
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.pairDecl.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.pair_declared' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.projection' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.projection_known_content' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.range' depends on axioms: [propext]
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.range_member' depends on axioms: [propext, Quot.sound]
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.refinedRequest' depends on axioms: [propext]
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.refined_req' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.req' does not depend on any axioms
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.reqDecl' depends on axioms: [propext]
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.reqDecl.eq_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.req_ground' depends on axioms: [propext]
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.req_target' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.req_typed' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.req_typed._simp_1_3' depends on axioms: [propext]
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.req_typed._simp_1_4' depends on axioms: [propext]
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.result' does not depend on any axioms
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.result_ann' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.result_fn_ann' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.retained_fact' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.target' depends on axioms: [propext]
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.target._proof_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.timeout' does not depend on any axioms
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.timeout._proof_1' does not depend on any axioms
+'Benitoite.Release.Refinement.ValueLeafBoundary.Http.wrong_endpoint' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ValueLeafBoundary.P' does not depend on any axioms
+'Benitoite.Release.Refinement.ValueLeafBoundary.P.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.ValueLeafBoundary._aux__stdin___macroRules_Benitoite_Release_Refinement_ValueLeafBoundary_tacticScalar_ann_1' does not depend on any axioms
+'Benitoite.Release.Refinement.ValueLeafBoundary.bare_request_rejected' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ValueLeafBoundary.boxInt' does not depend on any axioms
+'Benitoite.Release.Refinement.ValueLeafBoundary.boxInt.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.ValueLeafBoundary.boxText' does not depend on any axioms
+'Benitoite.Release.Refinement.ValueLeafBoundary.box_arity' does not depend on any axioms
+'Benitoite.Release.Refinement.ValueLeafBoundary.box_field_fact' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ValueLeafBoundary.box_typed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.ValueLeafBoundary.box_typed._simp_1_2' depends on axioms: [propext]
+'Benitoite.Release.Refinement.ValueLeafBoundary.box_wrapped' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.ValueLeafBoundary.integer_extracted' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ValueLeafBoundary.lengthOne' does not depend on any axioms
+'Benitoite.Release.Refinement.ValueLeafBoundary.lengthOne.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.ValueLeafBoundary.list_element' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.ValueLeafBoundary.list_length_fact' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ValueLeafBoundary.list_raw' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.ValueLeafBoundary.list_refined' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ValueLeafBoundary.list_wrapped' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.ValueLeafBoundary.nested' does not depend on any axioms
+'Benitoite.Release.Refinement.ValueLeafBoundary.nested.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.ValueLeafBoundary.nested_ann' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.ValueLeafBoundary.nested_to_positive' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ValueLeafBoundary.other_constructor' does not depend on any axioms
+'Benitoite.Release.Refinement.ValueLeafBoundary.p' does not depend on any axioms
+'Benitoite.Release.Refinement.ValueLeafBoundary.p.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.ValueLeafBoundary.positive' does not depend on any axioms
+'Benitoite.Release.Refinement.ValueLeafBoundary.positive.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.ValueLeafBoundary.positive_ann' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.ValueLeafBoundary.q' does not depend on any axioms
+'Benitoite.Release.Refinement.ValueLeafBoundary.q.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.ValueLeafBoundary.rawUnit' does not depend on any axioms
+'Benitoite.Release.Refinement.ValueLeafBoundary.rawUnit.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.ValueLeafBoundary.raw_unit' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.ValueLeafBoundary.raw_unit_inverted' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ValueLeafBoundary.resource_kind' depends on axioms: [propext]
+'Benitoite.Release.Refinement.ValueLeafBoundary.resource_opaque' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ValueLeafBoundary.scalar' does not depend on any axioms
+'Benitoite.Release.Refinement.ValueLeafBoundary.scalar.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.ValueLeafBoundary.seven' does not depend on any axioms
+'Benitoite.Release.Refinement.ValueLeafBoundary.sevenN' does not depend on any axioms
+'Benitoite.Release.Refinement.ValueLeafBoundary.sevenN._proof_1' does not depend on any axioms
+'Benitoite.Release.Refinement.ValueLeafBoundary.seven_nested' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.ValueLeafBoundary.seven_positive' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ValueLeafBoundary.seven_wrapped' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ValueLeafBoundary.subtype_fact_direct' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.ValueLeafBoundary.tacticScalar_ann' does not depend on any axioms
+'Benitoite.Release.Refinement.embedConDecl.eq_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.parseUrlTarget.eq_1' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.termReady.eq_1' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Scope.Domain.FourDigitLabels.eq_1' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Scope.Domain.NameLabelWF.eq_1' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Scope.Domain.NameWordWF.eq_1' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Scope.Domain.instDecidableNameLabelWF.eq_1' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Scope.Domain.instDecidableNameWordWF.eq_1' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Scope.Domain.lowerAlphaNumeric.eq_1' does not depend on any axioms
+'Bind.bind.eq_1' does not depend on any axioms
+'BitVec.decEq.eq_1' does not depend on any axioms
+'BitVec.decEq.eq_def' does not depend on any axioms
+'BitVec.toFin.eq_1' does not depend on any axioms
+'Bool.decEq.eq_1' does not depend on any axioms
+'Bool.decEq.eq_2' does not depend on any axioms
+'Bool.decEq.eq_3' does not depend on any axioms
+'Bool.decEq.eq_4' does not depend on any axioms
+'Bool.decEq.eq_def' does not depend on any axioms
+'ByteArray.emptyWithCapacity.eq_1' does not depend on any axioms
+'ByteArray.get.congr_simp' does not depend on any axioms
+'ByteArray.get.eq_1' does not depend on any axioms
+'Char.val.eq_1' does not depend on any axioms
+'Fin.val.eq_1' does not depend on any axioms
+'GetElem.getElem.eq_1' does not depend on any axioms
+'Int.decEq.eq_1' does not depend on any axioms
+'Int.decEq.eq_2' does not depend on any axioms
+'Int.decEq.eq_3' does not depend on any axioms
+'Int.decEq.eq_4' does not depend on any axioms
+'Int.decEq.eq_def' does not depend on any axioms
+'Int.instDecidableEq.eq_1' does not depend on any axioms
+'LE.le.eq_1' does not depend on any axioms
+'LT.lt.eq_1' does not depend on any axioms
+'List.all.eq_1' does not depend on any axioms
+'List.all.eq_2' does not depend on any axioms
+'List.all.eq_def' does not depend on any axioms
+'List.decidableBAll.eq_1' does not depend on any axioms
+'List.decidableBAll.eq_2' does not depend on any axioms
+'List.decidableBAll.eq_def' does not depend on any axioms
+'List.head?.eq_1' does not depend on any axioms
+'List.head?.eq_2' does not depend on any axioms
+'List.instDecidableMemOfLawfulBEq.congr_simp' depends on axioms: [propext]
+'List.instDecidableMemOfLawfulBEq.eq_1' depends on axioms: [propext]
+'List.instMembership.eq_1' does not depend on any axioms
+'Membership.mem.eq_1' does not depend on any axioms
+'Monad.toApplicative.eq_1' does not depend on any axioms
+'Monad.toBind.eq_1' does not depend on any axioms
+'NatCast.natCast.eq_1' does not depend on any axioms
+'Not.eq_1' does not depend on any axioms
+'Option.any.eq_1' does not depend on any axioms
+'Option.any.eq_2' does not depend on any axioms
+'Option.instDecidableEq.eq_1' does not depend on any axioms
+'Option.instDecidableEq.eq_2' does not depend on any axioms
+'Option.instDecidableEq.eq_3' does not depend on any axioms
+'Option.instDecidableEq.eq_4' does not depend on any axioms
+'Option.instDecidableEq.eq_def' does not depend on any axioms
+'Pure.pure.eq_1' does not depend on any axioms
+'String.Pos.Raw.byteDistance.eq_1' does not depend on any axioms
+'String.Pos.Raw.byteIdx.eq_1' does not depend on any axioms
+'String.Pos.Raw.inc.eq_1' does not depend on any axioms
+'String.Pos.mk.congr_simp' does not depend on any axioms
+'String.Pos.offset.eq_1' does not depend on any axioms
+'String.Slice.Pattern.ForwardPattern.startsWith.eq_1' does not depend on any axioms
+'String.Slice.Pattern.ForwardSliceSearcher.instForwardPattern_1.eq_1' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'String.Slice.Pattern.ForwardSliceSearcher.skipPrefix?.eq_1' depends on axioms: [propext, Classical.choice, Quot.sound]
+'String.Slice.Pattern.ForwardSliceSearcher.skipPrefix?.eq_def' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'String.Slice.Pattern.ForwardSliceSearcher.startsWith.eq_1' depends on axioms: [propext, Quot.sound]
+'String.Slice.Pattern.ForwardSliceSearcher.startsWith.eq_def' depends on axioms: [propext, Quot.sound]
+'String.Slice.Pattern.Internal.memcmpSlice.eq_1' depends on axioms: [propext, Quot.sound]
+'String.Slice.Pattern.Internal.memcmpStr.congr_simp' depends on axioms: [propext, Quot.sound]
+'String.Slice.Pattern.Internal.memcmpStr.eq_1' depends on axioms: [propext, Quot.sound]
+'String.Slice.Pos.offset.eq_1' does not depend on any axioms
+'String.Slice.endExclusive.eq_1' does not depend on any axioms
+'String.Slice.rawEndPos.eq_1' does not depend on any axioms
+'String.Slice.startInclusive.eq_1' does not depend on any axioms
+'String.Slice.startsWith.eq_1' does not depend on any axioms
+'String.Slice.str.eq_1' does not depend on any axioms
+'String.Slice.utf8ByteSize.eq_1' does not depend on any axioms
+'String.decEq.eq_1' does not depend on any axioms
+'String.decEq.eq_def' does not depend on any axioms
+'String.endPos.eq_1' depends on axioms: [propext, Classical.choice, Quot.sound]
+'String.startPos.eq_1' depends on axioms: [propext, Quot.sound]
+'String.startsWith.eq_1' depends on axioms: [propext, Classical.choice, Quot.sound]
+'String.toByteArray.eq_1' does not depend on any axioms
+'String.toSlice.eq_1' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Subtype.val.eq_1' does not depend on any axioms
+'UInt32.decEq.eq_1' does not depend on any axioms
+'UInt32.decEq.eq_def' does not depend on any axioms
+'UInt32.toBitVec.eq_1' does not depend on any axioms
+'UInt8.decEq.eq_1' does not depend on any axioms
+'UInt8.toBitVec.eq_1' does not depend on any axioms
+'UInt8.toUInt32.eq_1' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.AtInput.0.Benitoite.Release.Refinement.breakDoubleColon._sparseCasesOn_3.else_eq' depends on axioms: [propext]
+'_private.Benitoite.Release.Refinement.AtInput.0.Benitoite.Release.Refinement.parseAuthority.eq_1' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'_private.Benitoite.Release.Refinement.AtInput.0.Benitoite.Release.Refinement.parseHost.eq_1' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'_private.Benitoite.Release.Refinement.AtInput.0.Benitoite.Release.Refinement.parseIPv4._sparseCasesOn_1.else_eq' depends on axioms: [propext]
+'_private.Benitoite.Release.Refinement.AtInput.0.Benitoite.Release.Refinement.parseIPv4.eq_1' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'_private.Benitoite.Release.Refinement.AtInput.0.Benitoite.Release.Refinement.splitChars.eq_1' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.AtInput.0.Benitoite.Release.Refinement.splitChars.eq_2' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.AtInput.0.Benitoite.Release.Refinement.splitChars.eq_def' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.AtInput.0.Benitoite.Release.Refinement.splitText.eq_1' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'_private.Benitoite.Release.Refinement.AtInput.0.Benitoite.Release.Refinement.urlAlphabet.eq_1' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'_private.Benitoite.Release.Refinement.AtInput.0.Benitoite.Release.Refinement.validPercent.eq_1' depends on axioms: [propext]
+'_private.Benitoite.Release.Refinement.AtInput.0.Benitoite.Release.Refinement.validPercent.eq_2' depends on axioms: [propext]
+'_private.Benitoite.Release.Refinement.AtInput.0.Benitoite.Release.Refinement.validPercent.eq_3' depends on axioms: [propext]
+'_private.Benitoite.Release.Refinement.AtInput.0.Benitoite.Release.Refinement.validPercent.eq_4' depends on axioms: [propext]
+'_private.Benitoite.Release.Refinement.AtInput.0.Benitoite.Release.Refinement.validPercent.eq_def' depends on axioms: [propext]
+'_private.Init.Data.String.Pattern.Basic.0.String.Slice.Pattern.Internal.memcmpStr.go.eq_1' depends on axioms: [propext,
+ Quot.sound]
+'_private._stdin.0.Benitoite.Release.Refinement.Ctx.declarationSelf.match_1.eq_1' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Ctx.declarationSelf.match_1.eq_2' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Ctx.declarationSelf.match_1.splitter' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Measure.input.match_1.eq_1' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Measure.input.match_1.eq_2' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Measure.input.match_1.eq_3' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Measure.input.match_1.eq_4' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Measure.input.match_1.eq_5' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Measure.input.match_1.eq_6' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Measure.input.match_1.eq_7' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Measure.input.match_1.splitter' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Observation.measure.match_1.eq_1' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Observation.measure.match_1.eq_2' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Observation.measure.match_1.eq_3' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Observation.measure.match_1.eq_4' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Observation.measure.match_1.eq_5' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Observation.measure.match_1.eq_6' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Observation.measure.match_1.eq_7' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Observation.measure.match_1.eq_8' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Observation.measure.match_1.splitter' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Observation.measure.match_1.splitter._sparseCasesOn_10' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Observation.measure.match_1.splitter._sparseCasesOn_12' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Observation.measure.match_1.splitter._sparseCasesOn_14' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Observation.measure.match_1.splitter._sparseCasesOn_16' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Observation.measure.match_1.splitter._sparseCasesOn_18' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Observation.measure.match_1.splitter._sparseCasesOn_8' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Observation.sort.match_1.eq_1' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Observation.sort.match_1.eq_10' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Observation.sort.match_1.eq_11' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Observation.sort.match_1.eq_12' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Observation.sort.match_1.eq_13' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Observation.sort.match_1.eq_14' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Observation.sort.match_1.eq_2' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Observation.sort.match_1.eq_3' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Observation.sort.match_1.eq_4' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Observation.sort.match_1.eq_5' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Observation.sort.match_1.eq_6' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Observation.sort.match_1.eq_7' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Observation.sort.match_1.eq_8' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Observation.sort.match_1.eq_9' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Observation.sort.match_1.splitter' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Pred.atomValue.match_1.eq_1' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Pred.atomValue.match_1.eq_2' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Pred.atomValue.match_1.splitter' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Pred.atomValue.match_12.eq_1' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Pred.atomValue.match_12.eq_2' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Pred.atomValue.match_12.splitter' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Pred.atomValue.match_12.splitter._sparseCasesOn_2' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Pred.atomValue.match_15.eq_1' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Pred.atomValue.match_15.eq_10' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Pred.atomValue.match_15.eq_11' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Pred.atomValue.match_15.eq_12' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Pred.atomValue.match_15.eq_13' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Pred.atomValue.match_15.eq_14' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Pred.atomValue.match_15.eq_2' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Pred.atomValue.match_15.eq_3' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Pred.atomValue.match_15.eq_4' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Pred.atomValue.match_15.eq_5' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Pred.atomValue.match_15.eq_6' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Pred.atomValue.match_15.eq_7' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Pred.atomValue.match_15.eq_8' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Pred.atomValue.match_15.eq_9' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Pred.atomValue.match_15.splitter' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Pred.interpret.match_1.eq_1' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Pred.interpret.match_1.eq_2' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Pred.interpret.match_1.eq_3' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Pred.interpret.match_1.eq_4' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Pred.interpret.match_1.splitter' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Pred.interpret.match_1.splitter._sparseCasesOn_4' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Pred.open.match_1.eq_1' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Pred.open.match_1.eq_2' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Pred.open.match_1.splitter' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.Term.VarsIn.match_1.eq_1' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Term.VarsIn.match_1.eq_10' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Term.VarsIn.match_1.eq_11' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Term.VarsIn.match_1.eq_2' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Term.VarsIn.match_1.eq_3' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Term.VarsIn.match_1.eq_4' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Term.VarsIn.match_1.eq_5' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Term.VarsIn.match_1.eq_6' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Term.VarsIn.match_1.eq_7' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Term.VarsIn.match_1.eq_8' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Term.VarsIn.match_1.eq_9' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Term.VarsIn.match_1.splitter' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.Term.VarsIn.match_1.splitter._sparseCasesOn_11' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.ValueLeafBoundary.Http.state_of_comp' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'_private._stdin.0.Benitoite.Release.Refinement.integerAs.match_1.eq_1' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.integerAs.match_1.eq_2' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.integerAs.match_1.splitter' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.integerAs.match_1.splitter._sparseCasesOn_2' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.observeAs.match_1.eq_1' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.observeAs.match_1.eq_2' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.observeAs.match_1.splitter' does not depend on any axioms
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.13/boundary.lean:335:0: error(lean.unknownIdentifier): Unknown constant `_private._stdin.0.Benitoite.Release.Refinement.parseAuthority.match_3.eq_1`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.13/boundary.lean:335:0: error(lean.unknownIdentifier): Unknown constant `_private._stdin.0.Benitoite.Release.Refinement.parseAuthority.match_3.eq_2`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.13/boundary.lean:335:0: error(lean.unknownIdentifier): Unknown constant `_private._stdin.0.Benitoite.Release.Refinement.parseAuthority.match_3.eq_3`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.13/boundary.lean:335:0: error(lean.unknownIdentifier): Unknown constant `_private._stdin.0.Benitoite.Release.Refinement.parseAuthority.match_3.splitter`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.13/boundary.lean:335:0: error(lean.unknownIdentifier): Unknown constant `_private._stdin.0.Benitoite.Release.Refinement.parseAuthority.match_3.splitter._sparseCasesOn_3`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.13/boundary.lean:335:0: error(lean.unknownIdentifier): Unknown constant `_private._stdin.0.Benitoite.Release.Refinement.parseAuthority.match_3.splitter._sparseCasesOn_5`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.13/boundary.lean:335:0: error(lean.unknownIdentifier): Unknown constant `_private._stdin.0.Benitoite.Release.Refinement.parseAuthority.match_7.eq_1`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.13/boundary.lean:335:0: error(lean.unknownIdentifier): Unknown constant `_private._stdin.0.Benitoite.Release.Refinement.parseAuthority.match_7.splitter`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.13/boundary.lean:335:0: error(lean.unknownIdentifier): Unknown constant `_private._stdin.0.Benitoite.Release.Refinement.parseHost.match_1.eq_1`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.13/boundary.lean:335:0: error(lean.unknownIdentifier): Unknown constant `_private._stdin.0.Benitoite.Release.Refinement.parseHost.match_1.eq_2`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.13/boundary.lean:335:0: error(lean.unknownIdentifier): Unknown constant `_private._stdin.0.Benitoite.Release.Refinement.parseHost.match_1.splitter`
+'_private._stdin.0.Benitoite.Release.Refinement.parseUrlTarget.match_1.eq_1' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.parseUrlTarget.match_1.splitter' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.splitChars.match_1.eq_1' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.splitChars.match_1.eq_2' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.splitChars.match_1.splitter' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.splitChars.match_3.eq_1' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.splitChars.match_3.eq_2' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.splitChars.match_3.splitter' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.validPercent.match_1.eq_1' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.validPercent.match_1.eq_2' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.validPercent.match_1.eq_3' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.validPercent.match_1.eq_4' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.validPercent.match_1.splitter' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.validPercent.match_1.splitter._sparseCasesOn_3' depends on axioms: [propext]
+'_private._stdin.0.BitVec.decEq.match_1.eq_1' does not depend on any axioms
+'_private._stdin.0.BitVec.decEq.match_1.splitter' does not depend on any axioms
+'_private._stdin.0.Bool.decEq.match_1.eq_1' does not depend on any axioms
+'_private._stdin.0.Bool.decEq.match_1.eq_2' does not depend on any axioms
+'_private._stdin.0.Bool.decEq.match_1.eq_3' does not depend on any axioms
+'_private._stdin.0.Bool.decEq.match_1.eq_4' does not depend on any axioms
+'_private._stdin.0.Bool.decEq.match_1.splitter' does not depend on any axioms
+'_private._stdin.0.ByteArray.get.match_1.eq_1' does not depend on any axioms
+'_private._stdin.0.ByteArray.get.match_1.splitter' does not depend on any axioms
+'_private._stdin.0.Int.add.match_1.eq_1' does not depend on any axioms
+'_private._stdin.0.Int.add.match_1.eq_2' does not depend on any axioms
+'_private._stdin.0.Int.add.match_1.eq_3' does not depend on any axioms
+'_private._stdin.0.Int.add.match_1.eq_4' does not depend on any axioms
+'_private._stdin.0.Int.add.match_1.splitter' does not depend on any axioms
+'_private._stdin.0.Int.decEq.match_1.eq_1' does not depend on any axioms
+'_private._stdin.0.Int.decEq.match_1.eq_2' does not depend on any axioms
+'_private._stdin.0.Int.decEq.match_1.splitter' does not depend on any axioms
+'_private._stdin.0.List.any.match_1.eq_1' does not depend on any axioms
+'_private._stdin.0.List.any.match_1.eq_2' does not depend on any axioms
+'_private._stdin.0.List.any.match_1.splitter' does not depend on any axioms
+'_private._stdin.0.List.decidableBAll.match_5.eq_1' does not depend on any axioms
+'_private._stdin.0.List.decidableBAll.match_5.eq_2' does not depend on any axioms
+'_private._stdin.0.List.decidableBAll.match_5.splitter' does not depend on any axioms
+'_private._stdin.0.List.filter.match_1.eq_1' does not depend on any axioms
+'_private._stdin.0.List.filter.match_1.eq_2' does not depend on any axioms
+'_private._stdin.0.List.filter.match_1.splitter' does not depend on any axioms
+'_private._stdin.0.List.getLast?.match_1.eq_1' does not depend on any axioms
+'_private._stdin.0.List.getLast?.match_1.eq_2' does not depend on any axioms
+'_private._stdin.0.List.getLast?.match_1.splitter' does not depend on any axioms
+'_private._stdin.0.Nat.decEq.match_1.eq_1' does not depend on any axioms
+'_private._stdin.0.Nat.decEq.match_1.eq_2' does not depend on any axioms
+'_private._stdin.0.Nat.decEq.match_1.splitter' does not depend on any axioms
+'_private._stdin.0.Option.instDecidableEq.match_1.eq_1' does not depend on any axioms
+'_private._stdin.0.Option.instDecidableEq.match_1.eq_2' does not depend on any axioms
+'_private._stdin.0.Option.instDecidableEq.match_1.splitter' does not depend on any axioms
+'_private._stdin.0.Option.instDecidableEq.match_3.eq_1' does not depend on any axioms
+'_private._stdin.0.Option.instDecidableEq.match_3.eq_2' does not depend on any axioms
+'_private._stdin.0.Option.instDecidableEq.match_3.splitter' does not depend on any axioms
+'_private._stdin.0.Option.isSome.match_1.eq_1' does not depend on any axioms
+'_private._stdin.0.Option.isSome.match_1.eq_2' does not depend on any axioms
+'_private._stdin.0.Option.isSome.match_1.splitter' does not depend on any axioms
+'_private._stdin.0.String.decEq.match_3.eq_1' does not depend on any axioms
+'_private._stdin.0.String.decEq.match_3.splitter' does not depend on any axioms
+'_private._stdin.0.UInt32.decEq.match_1.eq_1' does not depend on any axioms
+'_private._stdin.0.UInt32.decEq.match_1.splitter' does not depend on any axioms
+'_private._stdin.0.UInt8.decEq.match_1.eq_1' does not depend on any axioms
+'_private._stdin.0.UInt8.decEq.match_1.splitter' does not depend on any axioms
+'_private._stdin.0.instDecidableAnd.match_1.eq_1' does not depend on any axioms
+'_private._stdin.0.instDecidableAnd.match_1.eq_2' does not depend on any axioms
+'_private._stdin.0.instDecidableAnd.match_1.splitter' does not depend on any axioms
+'_private._stdin.0.instDecidableEqChar.match_1.eq_1' does not depend on any axioms
+'_private._stdin.0.instDecidableEqChar.match_1.eq_2' does not depend on any axioms
+'_private._stdin.0.instDecidableEqChar.match_1.splitter' does not depend on any axioms
+'_private._stdin.0.instDecidableEqFin.match_1.eq_1' does not depend on any axioms
+'_private._stdin.0.instDecidableEqFin.match_1.eq_2' does not depend on any axioms
+'_private._stdin.0.instDecidableEqFin.match_1.splitter' does not depend on any axioms
+'_private._stdin.0.instDecidableEqList.match_1.eq_1' does not depend on any axioms
+'_private._stdin.0.instDecidableEqList.match_1.eq_2' does not depend on any axioms
+'_private._stdin.0.instDecidableEqList.match_1.splitter' does not depend on any axioms
+'decEq.eq_1' does not depend on any axioms
+'decidable_of_decidable_of_eq.congr_simp' does not depend on any axioms
+'decidable_of_decidable_of_eq.eq_1' does not depend on any axioms
+'decidable_of_decidable_of_iff.congr_simp' does not depend on any axioms
+'decidable_of_decidable_of_iff.eq_1' does not depend on any axioms
+'instBEqOfDecidableEq.eq_1' does not depend on any axioms
+'instDecidableAnd.eq_1' does not depend on any axioms
+'instDecidableAnd.eq_2' does not depend on any axioms
+'instDecidableAnd.eq_3' does not depend on any axioms
+'instDecidableAnd.eq_def' does not depend on any axioms
+'instDecidableEqBitVec.eq_1' does not depend on any axioms
+'instDecidableEqBool.eq_1' does not depend on any axioms
+'instDecidableEqChar.eq_1' does not depend on any axioms
+'instDecidableEqFin.eq_1' does not depend on any axioms
+'instDecidableEqList.eq_1' does not depend on any axioms
+'instDecidableEqList.eq_2' does not depend on any axioms
+'instDecidableEqList.eq_3' does not depend on any axioms
+'instDecidableEqList.eq_4' does not depend on any axioms
+'instDecidableEqList.eq_def' does not depend on any axioms
+'instDecidableEqNat.eq_1' does not depend on any axioms
+'instDecidableEqString.eq_1' does not depend on any axioms
+'instDecidableEqUInt32.eq_1' does not depend on any axioms
+'instDecidableEqUInt8.eq_1' does not depend on any axioms
+'instDecidableNot.eq_1' does not depend on any axioms
+'instDecidableNot.eq_2' does not depend on any axioms
+'instDecidableNot.eq_def' does not depend on any axioms
+'instLEBitVec.eq_1' does not depend on any axioms

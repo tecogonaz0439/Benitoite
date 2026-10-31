@@ -1,0 +1,36 @@
+[
+  {
+    "name": "build",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T15:58:05.782651+00:00",
+    "elapsed_seconds": 36.074539,
+    "exit_code": 0,
+    "bytes": 37908,
+    "sha256": "4a477617151ffc566913a9f093c3df8e638967ef527e0a93762fe68c542907d2",
+    "output": "build.log",
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "name": "boundary",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.13/boundary.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-10-31T15:58:41.857779+00:00",
+    "elapsed_seconds": 43.890823,
+    "exit_code": 1,
+    "bytes": 51149,
+    "sha256": "25b3f198c98efa996defc7b9da04ba660add61b1167e6ce8d57b7f34a8a86a5f",
+    "output": "boundary.log",
+    "rss": "未取得（計画上の非採取）"
+  }
+]

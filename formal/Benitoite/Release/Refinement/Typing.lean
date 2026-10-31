@@ -9,6 +9,7 @@ import Benitoite.Release.Refinement.AtInput
 import Benitoite.Release.Refinement.HandlerContracts
 import Benitoite.Release.Refinement.Capture
 import Benitoite.Release.Refinement.Ground
+import Benitoite.Release.Refinement.AtPrepare
 
 /-!
 # 有限の文脈と経路条件を持つ値・計算の型付け
@@ -169,9 +170,10 @@ mutual
     | V_Checked {Ψ Q C Γ Φ o k range target} : B.valKind o = some k → B.valContent o = none →
         Scope.Domain.Range.MemK k range target →
         HasTypeVQ P B Ψ Q C Γ Φ (.checked target) (.scoped o k (.fixed (.absolute range)))
+    /-- 保持要求の判定成功と、固定した解析による端点一致を保持する。閉性は groundVal_ground で得る。 -/
     | V_CheckedRequest {Ψ Q C Γ Φ o range target req T} : B.valKind o = some .endpoint →
         B.valContent o = some T → HasTypeVQ P B Ψ Qempty [] [] [] req T.norm →
-        req.Ground → req.reqTarget = some target →
+        groundVal req = true → req.reqTarget = some target →
         Scope.Domain.Range.MemK .endpoint range target →
         HasTypeVQ P B Ψ Q C Γ Φ (.checkedRequest target req)
           (.scoped o .endpoint (.fixed (.absolute range)))
@@ -388,7 +390,7 @@ mutual
         CheckedWitness P B Ψ o k range snapshot target none
     | request {Ψ o range snapshot target req T} : B.valKind o = some .endpoint →
         B.valContent o = some T → HasTypeVQ P B Ψ Qempty [] [] [] req T.norm →
-        req.Ground → req.reqTarget = some target → SnapshotMem snapshot .endpoint range target →
+        groundVal req = true → req.reqTarget = some target → SnapshotMem snapshot .endpoint range target →
         CheckedWitness P B Ψ o .endpoint range snapshot target (some req)
 
   inductive AtCallAdmissible (P : Program) (B : Builtins) :
