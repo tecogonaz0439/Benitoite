@@ -1,0 +1,174 @@
+Benitoite.Release.Refinement.HasTypeVQ.subst {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {v : Benitoite.Release.Refinement.Val}
+  {a : Benitoite.Release.Refinement.Ty} {Δ : Benitoite.Release.Refinement.Ctx}
+  {Ξ : List Benitoite.Release.Refinement.Pred} {R : Option Benitoite.Release.Refinement.Ty}
+  {σ : Nat → Benitoite.Release.Refinement.Val} (h : Benitoite.Release.Refinement.HasTypeVQ P B store Q C Γ Φ v a)
+  (hA : Benitoite.Release.Refinement.Builtins.SubstitutionAssumptions P B) (hstore : store.WF)
+  (ht : Benitoite.Release.Refinement.SubstOk P B store Q C Γ Φ Δ Ξ R σ)
+  (hf :
+    ∀ (p : Benitoite.Release.Refinement.Pred),
+      p ∈ Φ →
+        Benitoite.Release.Refinement.Entails (Δ.facts ++ Ξ)
+          (Benitoite.Release.Refinement.predBind (Benitoite.Release.Refinement.valEnv σ).values p))
+  (ρ : Nat → Benitoite.Release.LocalRef := Benitoite.Release.LocalRef.bound) :
+  Benitoite.Release.Refinement.HasTypeVQ P B store Q C Δ Ξ (Benitoite.Release.Refinement.Val.subst σ v ρ)
+    (Benitoite.Release.Refinement.substTyValues σ a)
+
+Benitoite.Release.Refinement.HasTypeVQ.subst_under_none {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {v : Benitoite.Release.Refinement.Val}
+  {a : Benitoite.Release.Refinement.Ty} {Δ : Benitoite.Release.Refinement.Ctx}
+  {Ξ : List Benitoite.Release.Refinement.Pred} {R : Option Benitoite.Release.Refinement.Ty}
+  {σ : Nat → Benitoite.Release.Refinement.Val}
+  (h :
+    Benitoite.Release.Refinement.HasTypeVQ P B store Q C Γ.extendNone
+      (List.map Benitoite.Release.Refinement.Pred.lift Φ) v a)
+  (hA : Benitoite.Release.Refinement.Builtins.SubstitutionAssumptions P B) (hstore : store.WF)
+  (ht : Benitoite.Release.Refinement.SubstOk P B store Q C Γ Φ Δ Ξ R σ)
+  (hf :
+    ∀ (p : Benitoite.Release.Refinement.Pred),
+      p ∈ Φ →
+        Benitoite.Release.Refinement.Entails (Δ.facts ++ Ξ)
+          (Benitoite.Release.Refinement.predBind (Benitoite.Release.Refinement.valEnv σ).values p))
+  (ρ : Nat → Benitoite.Release.LocalRef := Benitoite.Release.LocalRef.bound) :
+  Benitoite.Release.Refinement.HasTypeVQ P B store Q C Δ.extendNone (List.map Benitoite.Release.Refinement.Pred.lift Ξ)
+    (Benitoite.Release.Refinement.Val.subst (Benitoite.Release.Refinement.upSubst 1 σ) v
+      (Benitoite.Release.upLocalSubst 1 ρ))
+    (Benitoite.Release.Refinement.substTyValues (Benitoite.Release.Refinement.upSubst 1 σ) a)
+
+Benitoite.Release.Refinement.HasTypeVQ.shift_values {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {v : Benitoite.Release.Refinement.Val}
+  {a : Benitoite.Release.Refinement.Ty} (h : Benitoite.Release.Refinement.HasTypeVQ P B store Q C Γ Φ v a) {k c : Nat}
+  {Δ : Benitoite.Release.Refinement.Ctx} {Ξ : List Benitoite.Release.Refinement.Pred}
+  {store' : Benitoite.Release.Refinement.StoreTy} (hA : Benitoite.Release.Refinement.Builtins.ValueAssumptions P B)
+  (hstore : store.WF) (hpres : store.PreservesNormals store') (hm : Benitoite.Release.Refinement.ShiftMap k c Γ Δ)
+  (hf :
+    ∀ (p : Benitoite.Release.Refinement.Pred),
+      p ∈ Φ → Benitoite.Release.Refinement.Entails (Δ.facts ++ Ξ) (Benitoite.Release.Refinement.Pred.shiftV k c p)) :
+  Benitoite.Release.Refinement.HasTypeVQ P B store' Q C Δ Ξ
+    (Benitoite.Release.Refinement.Val.rename (Benitoite.Release.Refinement.shiftIndex k c) v)
+    (Benitoite.Release.Refinement.Ty.shiftV k c a)
+
+Benitoite.Release.Refinement.HasTypeVQ.shift_types {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {v : Benitoite.Release.Refinement.Val}
+  {a : Benitoite.Release.Refinement.Ty} (h : Benitoite.Release.Refinement.HasTypeVQ P B store Q C Γ Φ v a)
+  {C' : List Benitoite.Release.TParam} {Δ : Benitoite.Release.Refinement.Ctx} {k c : Nat}
+  (hA : Benitoite.Release.Refinement.Builtins.TypeAssumptions P B) (hstore : store.WF)
+  (hC : Benitoite.Release.Refinement.TypeParamRenaming C C' (Benitoite.Release.Refinement.shiftIndex k c))
+  (hn : C'.length = C.length + k) (hm : Benitoite.Release.Refinement.TypeCtxMap k c Γ Δ) :
+  Benitoite.Release.Refinement.HasTypeVQ P B store Q C' Δ Φ (Benitoite.Release.Refinement.Val.shiftEAt k c v)
+    (Benitoite.Release.Refinement.shiftTypes k c a)
+
+Benitoite.Release.Refinement.HasTypeVQ.narrow {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {v : Benitoite.Release.Refinement.Val}
+  {a : Benitoite.Release.Refinement.Ty} {Δ : Benitoite.Release.Refinement.Ctx}
+  {Ξ : List Benitoite.Release.Refinement.Pred} (h : Benitoite.Release.Refinement.HasTypeVQ P B store Q C Γ Φ v a)
+  (hA : Benitoite.Release.Refinement.Builtins.ValueAssumptions P B) (hstore : store.WF)
+  (hn : Benitoite.Release.Refinement.Ctx.Narrows P C Γ Φ Δ Ξ) :
+  Benitoite.Release.Refinement.HasTypeVQ P B store Q C Δ Ξ v a
+
+Benitoite.Release.Refinement.HasTypeCQ.subst {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {R : Option Benitoite.Release.Refinement.Ty}
+  {m : Benitoite.Release.Refinement.Comp} {a : Benitoite.Release.Refinement.Ty} {e : Benitoite.Release.Refinement.Eff}
+  {L L' : Benitoite.Release.Refinement.LocalCtx} {Δ : Benitoite.Release.Refinement.Ctx}
+  {Ξ : List Benitoite.Release.Refinement.Pred} {σ : Nat → Benitoite.Release.Refinement.Val}
+  (h : Benitoite.Release.Refinement.HasTypeCQ P B store Q C Γ Φ R m a e L)
+  (hA : Benitoite.Release.Refinement.Builtins.SubstitutionAssumptions P B) (hstore : store.WF)
+  (ht :
+    Benitoite.Release.Refinement.SubstOk P B store Q C Γ Φ Δ Ξ
+      (Option.map (Benitoite.Release.Refinement.substTyValues σ) R) σ)
+  (hf :
+    ∀ (p : Benitoite.Release.Refinement.Pred),
+      p ∈ Φ →
+        Benitoite.Release.Refinement.Entails (Δ.facts ++ Ξ)
+          (Benitoite.Release.Refinement.predBind (Benitoite.Release.Refinement.valEnv σ).values p))
+  (ρ : Nat → Benitoite.Release.LocalRef) (hL : Benitoite.Release.Refinement.LocalSubstOk store L σ ρ L') :
+  Benitoite.Release.Refinement.HasTypeCQ P B store Q C Δ Ξ (Option.map (Benitoite.Release.Refinement.substTyValues σ) R)
+    (Benitoite.Release.Refinement.Comp.subst σ m ρ) (Benitoite.Release.Refinement.substTyValues σ a)
+    (Benitoite.Release.Refinement.substEffValues σ e) L'
+
+Benitoite.Release.Refinement.HasTypeCQ.subst_under_none {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {m : Benitoite.Release.Refinement.Comp}
+  {a : Benitoite.Release.Refinement.Ty} {e : Benitoite.Release.Refinement.Eff}
+  {L L' : Benitoite.Release.Refinement.LocalCtx} {Δ : Benitoite.Release.Refinement.Ctx}
+  {Ξ : List Benitoite.Release.Refinement.Pred} {σ : Nat → Benitoite.Release.Refinement.Val}
+  {R : Option Benitoite.Release.Refinement.Ty}
+  (h :
+    Benitoite.Release.Refinement.HasTypeCQ P B store Q C Γ.extendNone
+      (List.map Benitoite.Release.Refinement.Pred.lift Φ) (Option.map (Benitoite.Release.Refinement.Ty.shiftV 1 0) R) m
+      a e L)
+  (hA : Benitoite.Release.Refinement.Builtins.SubstitutionAssumptions P B) (hstore : store.WF)
+  (ht :
+    Benitoite.Release.Refinement.SubstOk P B store Q C Γ Φ Δ Ξ
+      (Option.map (Benitoite.Release.Refinement.substTyValues σ) R) σ)
+  (hf :
+    ∀ (p : Benitoite.Release.Refinement.Pred),
+      p ∈ Φ →
+        Benitoite.Release.Refinement.Entails (Δ.facts ++ Ξ)
+          (Benitoite.Release.Refinement.predBind (Benitoite.Release.Refinement.valEnv σ).values p))
+  (ρ : Nat → Benitoite.Release.LocalRef)
+  (hL :
+    Benitoite.Release.Refinement.LocalSubstOk store L (Benitoite.Release.Refinement.upSubst 1 σ)
+      (Benitoite.Release.upLocalSubst 1 ρ) L') :
+  Benitoite.Release.Refinement.HasTypeCQ P B store Q C Δ.extendNone (List.map Benitoite.Release.Refinement.Pred.lift Ξ)
+    (Option.map (Benitoite.Release.Refinement.Ty.shiftV 1 0)
+      (Option.map (Benitoite.Release.Refinement.substTyValues σ) R))
+    (Benitoite.Release.Refinement.Comp.subst (Benitoite.Release.Refinement.upSubst 1 σ) m
+      (Benitoite.Release.upLocalSubst 1 ρ))
+    (Benitoite.Release.Refinement.substTyValues (Benitoite.Release.Refinement.upSubst 1 σ) a)
+    (Benitoite.Release.Refinement.substEffValues (Benitoite.Release.Refinement.upSubst 1 σ) e) L'
+
+Benitoite.Release.Refinement.HasTypeCQ.shift_values {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {R : Option Benitoite.Release.Refinement.Ty}
+  {m : Benitoite.Release.Refinement.Comp} {a : Benitoite.Release.Refinement.Ty} {e : Benitoite.Release.Refinement.Eff}
+  {L : Benitoite.Release.Refinement.LocalCtx} (h : Benitoite.Release.Refinement.HasTypeCQ P B store Q C Γ Φ R m a e L)
+  {k c : Nat} {Δ : Benitoite.Release.Refinement.Ctx} {Ξ : List Benitoite.Release.Refinement.Pred}
+  {store' : Benitoite.Release.Refinement.StoreTy} {L' : Benitoite.Release.Refinement.LocalCtx}
+  (hA : Benitoite.Release.Refinement.Builtins.ValueAssumptions P B) (hstore : store.WF) (hext : store.Extends store')
+  (hm : Benitoite.Release.Refinement.FullShiftMap k c Γ Δ) (hL : Benitoite.Release.Refinement.LocalCtx.Shift k c L L')
+  (hf :
+    ∀ (p : Benitoite.Release.Refinement.Pred),
+      p ∈ Φ → Benitoite.Release.Refinement.Entails (Δ.facts ++ Ξ) (Benitoite.Release.Refinement.Pred.shiftV k c p)) :
+  Benitoite.Release.Refinement.HasTypeCQ P B store' Q C Δ Ξ (Option.map (Benitoite.Release.Refinement.Ty.shiftV k c) R)
+    (Benitoite.Release.Refinement.Comp.rename (Benitoite.Release.Refinement.shiftIndex k c) m)
+    (Benitoite.Release.Refinement.Ty.shiftV k c a) (Benitoite.Release.Refinement.Eff.shiftV k c e) L'
+
+Benitoite.Release.Refinement.HasTypeCQ.shift_types {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {R : Option Benitoite.Release.Refinement.Ty}
+  {m : Benitoite.Release.Refinement.Comp} {a : Benitoite.Release.Refinement.Ty} {e : Benitoite.Release.Refinement.Eff}
+  {L : Benitoite.Release.Refinement.LocalCtx} (h : Benitoite.Release.Refinement.HasTypeCQ P B store Q C Γ Φ R m a e L)
+  {C' : List Benitoite.Release.TParam} {Δ : Benitoite.Release.Refinement.Ctx} {k c : Nat}
+  (hA : Benitoite.Release.Refinement.Builtins.TypeAssumptions P B) (hstore : store.WF)
+  (hC : Benitoite.Release.Refinement.TypeParamRenaming C C' (Benitoite.Release.Refinement.shiftIndex k c))
+  (hn : C'.length = C.length + k) (hm : Benitoite.Release.Refinement.TypeCtxMap k c Γ Δ) :
+  Benitoite.Release.Refinement.HasTypeCQ P B store Q C' Δ Φ (Option.map (Benitoite.Release.Refinement.shiftTypes k c) R)
+    (Benitoite.Release.Refinement.Comp.shiftEAt k c m) (Benitoite.Release.Refinement.shiftTypes k c a)
+    (Benitoite.Release.Refinement.shiftRowsTypes k c e) (L.shiftEAt k c)
+
+Benitoite.Release.Refinement.HasTypeCQ.narrow {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {R : Option Benitoite.Release.Refinement.Ty}
+  {m : Benitoite.Release.Refinement.Comp} {a : Benitoite.Release.Refinement.Ty} {e : Benitoite.Release.Refinement.Eff}
+  {L : Benitoite.Release.Refinement.LocalCtx} {Δ : Benitoite.Release.Refinement.Ctx}
+  {Ξ : List Benitoite.Release.Refinement.Pred} (h : Benitoite.Release.Refinement.HasTypeCQ P B store Q C Γ Φ R m a e L)
+  (hA : Benitoite.Release.Refinement.Builtins.ValueAssumptions P B) (hstore : store.WF)
+  (hn : Benitoite.Release.Refinement.Ctx.Narrows P C Γ Φ Δ Ξ) :
+  Benitoite.Release.Refinement.HasTypeCQ P B store Q C Δ Ξ R m a e L

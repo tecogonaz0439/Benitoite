@@ -236,9 +236,9 @@ mutual
     | .C_App hv hs => simp only [Comp.resolveLocals,HasTypeVQ.resolve_id hv,HasTypeVsQ.resolve_id hs]
     | .C_DependentApp hv hs =>
       simp only [Comp.resolveLocals,HasTypeVQ.resolve_id hv,HasTypeTelArgsQ.resolve_id hs]
-    | .C_If hv hm hn =>
+    | .C_If hv ht hm hn =>
       simp only [Comp.resolveLocals,HasTypeVQ.resolve_id hv,HasTypeCQ.resolve_id hm _ hf,HasTypeCQ.resolve_id hn _ hf]
-    | .C_Match hv ha _ =>
+    | .C_Match hv _ ha _ =>
       simp only [Comp.resolveLocals,HasTypeVQ.resolve_id hv,HasTypeArmsQ.resolve_id ha _ hf]
     | .C_Lazy hm _ => simp only [Comp.resolveLocals,HasTypeCQ.resolve_id hm _ (LocalsFixed.empty _)]
     | .C_Escape hv _ => simp only [Comp.resolveLocals,HasTypeVQ.resolve_id hv]
@@ -287,15 +287,15 @@ mutual
     | .mk (bases := bases) _ _ hb hp _ hi _ _ =>
       exact ⟨fun v hv => HasTypeVQ.resolve_id (hb v hv) ρ,HasTypeVQ.resolve_id hp ρ,HasTypeVQ.resolve_id hi ρ⟩
 
-  theorem HasTypeArmsQ.resolve_id {P B Ψ Q C Γ Φ R arms a b e Δ}
-      (h : HasTypeArmsQ P B Ψ Q C Γ Φ R arms a b e Δ) (ρ) (hf : LocalsFixed Δ ρ) :
+  theorem HasTypeArmsQ.resolve_id {P B Ψ Q C Γ Φ R obs arms a b e Δ}
+      (h : HasTypeArmsQ P B Ψ Q C Γ Φ R obs arms a b e Δ) (ρ) (hf : LocalsFixed Δ ρ) :
       Arm.resolveLocalsList ρ arms = arms := by
     match h with
     | .nil _ => rfl
-    | .plain hp hb hs =>
+    | .plain hp _ hb hs =>
       have hl := hp.2.1
       simp only [Arm.resolveLocalsList,←hl,HasTypeCQ.resolve_id hb _ (hf.many _),HasTypeArmsQ.resolve_id hs _ hf]
-    | .guarded hp hg hb hs =>
+    | .guarded hp _ _ hg hb hs =>
       have hl := hp.2.1
       simp only [Arm.resolveLocalsList,←hl,HasTypeCQ.resolve_id hg _ (hf.many _),
         HasTypeCQ.resolve_id hb _ (hf.many _),HasTypeArmsQ.resolve_id hs _ hf]

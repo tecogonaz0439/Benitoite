@@ -145,6 +145,13 @@ private structure ContextMap (P : Program) (B : Builtins) (store : StoreTy) (Q :
   lookup : ∀ i a, Γ[i]? = some (some a) → a.Ordinary →
     HasTypeVQ P B store Q C Δ Ξ (.var i) a
 
+private theorem ContextMap.add_conditions {P B store Q C Γ Δ Ξ}
+    (h : ContextMap P B store Q C Γ Δ Ξ) (added : List Pred)
+    (hA : Builtins.ValueAssumptions P B) (hw : store.WF) :
+    ContextMap P B store Q C Γ Δ (added ++ Ξ) :=
+  ⟨h.length,h.continuations,fun i a hi ho => (h.lookup i a hi ho).weaken_conditions hA hw
+    (by intro p hp; exact .hyp (List.mem_append_right _ (List.mem_append_right _ hp)))⟩
+
 private theorem ContextMap.values {P B store Q C Γ Δ Ξ}
     (h : ContextMap P B store Q C Γ Δ Ξ) :
     Term.ImagesSorted Γ Δ (fun i => some (.var i)) := by
@@ -506,10 +513,21 @@ mutual
     | .C_DependentApp hv ht =>
       exact .C_DependentApp (context_value hv hA hstore hm hf) (context_telArgs ht hA hstore hm hf)
     | .C_App hv hs => exact .C_App (context_value hv hA hstore hm hf) (context_values hs hA hstore hm hf)
-    | .C_If hv hm' hn =>
-      exact .C_If (context_value hv hA hstore hm hf) (context_comp hm' hA hstore hm hf) (context_comp hn hA hstore hm hf)
-    | .C_Match hv ha hx =>
-      exact .C_Match (context_value hv hA hstore hm hf) (context_arms ha hA hstore hm hf) hx
+    | .C_If hv ht hm' hn =>
+      refine .C_If (context_value hv hA hstore hm hf) ht ?_ ?_
+      · exact context_comp hm' hA hstore
+          ⟨hm.length,hm.continuations,fun i a hi ho => (hm.lookup i a hi ho).weaken_conditions hA hstore
+            (by intro p hp; exact .hyp (List.mem_append_right _ (List.mem_cons_of_mem _ hp)))⟩
+          (Entails.conditions_cons hf (.hyp (List.mem_append_right _ List.mem_cons_self)))
+      · exact context_comp hn hA hstore
+          ⟨hm.length,hm.continuations,fun i a hi ho => (hm.lookup i a hi ho).weaken_conditions hA hstore
+            (by intro p hp; exact .hyp (List.mem_append_right _ (List.mem_cons_of_mem _ hp)))⟩
+          (Entails.conditions_cons hf (.hyp (List.mem_append_right _ List.mem_cons_self)))
+    | .C_Match hv ho ha hx =>
+      refine .C_Match (context_value hv hA hstore hm hf) ?_ (context_arms ha hA hstore hm hf) hx
+      intro t ht
+      obtain ⟨hv,s,hs⟩ := ho t ht
+      exact ⟨hv,s,by simpa only [termBind_id] using Term.hasSort_termBind hs _ hm.values hm.references⟩
     | .C_Lazy hb ha =>
       exact .C_Lazy (context_comp hb hA hstore.hide (hm.hide hA hstore) (fun p hp => (hf p hp).hideConts))
         ⟨by simpa only [hm.length] using ha.wf, hm.sorted ha.sorted, ha.declared.context hm.declaration⟩
@@ -546,23 +564,39 @@ mutual
       simpa only [List.length_cons, List.length_nil, Nat.zero_add, liftMany_one,
         bindParams, Ctx.extend, List.reverse_cons, List.reverse_nil, List.map_cons, List.map_nil,
         List.nil_append, List.cons_append] using hb'
-  private theorem context_arms {P B store Q C Γ Φ R arms a b e L}
-      (h : HasTypeArmsQ P B store Q C Γ Φ R arms a b e L)
+  private theorem context_arms {P B store Q C Γ Φ R obs arms a b e L}
+      (h : HasTypeArmsQ P B store Q C Γ Φ R obs arms a b e L)
       (hA : Builtins.ValueAssumptions P B) (hstore : store.WF) {Δ Ξ}
       (hm : ContextMap P B store Q C Γ Δ Ξ)
       (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) p) :
-      HasTypeArmsQ P B store Q C Δ Ξ R arms a b e L := by
+      HasTypeArmsQ P B store Q C Δ Ξ R obs arms a b e L := by
     match h with
     | .nil ha => exact .nil (hm.annotation ha)
-    | .plain (δ := δ) hp hb hs =>
-      exact .plain hp (context_comp hb hA hstore (hm.params hA hstore δ)
-        (hm.conditions_params hf δ)) (context_arms hs hA hstore hm hf)
-    | .guarded (δ := δ) hp hg hb hs =>
-      exact .guarded hp
-        (context_comp hg hA hstore ((hm.params hA hstore δ).hideConts hA hstore)
-          (fun p hp => ((hm.conditions_params hf δ) p hp).hideConts))
-        (context_comp hb hA hstore (hm.params hA hstore δ) (hm.conditions_params hf δ))
+    | .plain (δ := δ) (alts := alts) hp hw hb hs =>
+      have hw' : FactsWF P C Δ (pathFacts obs (matchedTests alts ++ excludedTests alts)) := by
+        intro p hp
+        simpa only [predBind_id] using (hw p hp).map hm.values hm.references hm.declaration
+      have hmf := Entails.extend_conditions hf (added := pathFacts obs (matchedTests alts)) (added' := pathFacts obs (matchedTests alts)) (by simp)
+      have hef := Entails.extend_conditions hf (added := pathFacts obs (excludedTests alts)) (added' := pathFacts obs (excludedTests alts)) (by simp)
+      have hmm := hm.add_conditions (pathFacts obs (matchedTests alts)) hA hstore
+      have hme := hm.add_conditions (pathFacts obs (excludedTests alts)) hA hstore
+      exact .plain hp hw' (context_comp hb hA hstore (hmm.params hA hstore δ)
+        (hmm.conditions_params hmf δ)) (context_arms hs hA hstore hme hef)
+    | .guarded (δ := δ) (alts := alts) (p := p) hp hw hgp hg hb hs =>
+      have hw' : FactsWF P C Δ (pathFacts obs (matchedTests alts ++ excludedTests alts)) := by
+        intro p hp
+        simpa only [predBind_id] using (hw p hp).map hm.values hm.references hm.declaration
+      have hmf := Entails.extend_conditions hf (added := pathFacts obs (matchedTests alts)) (added' := pathFacts obs (matchedTests alts)) (by simp)
+      have hmm := hm.add_conditions (pathFacts obs (matchedTests alts)) hA hstore
+      have hparams := hmm.params hA hstore δ
+      have hguard := hparams.hideConts hA hstore
+      have hconds := hmm.conditions_params hmf δ
+      refine .guarded hp hw' (hguard.annotation hgp)
+        (context_comp hg hA hstore hguard (fun p hp => (hconds p hp).hideConts)) ?_
         (context_arms hs hA hstore hm hf)
+      exact context_comp hb hA hstore
+        (hparams.add_conditions [p.open (.boolean true)] hA hstore)
+        (Entails.conditions_cons hconds (.hyp (List.mem_append_right _ List.mem_cons_self)))
   private theorem context_clauses {P B store Q C Γ Φ R eb cs t e L}
       (h : HasTypeClausesQ P B store Q C Γ Φ R eb cs t e L)
       (hA : Builtins.ValueAssumptions P B) (hstore : store.WF) {Δ Ξ}
@@ -727,10 +761,10 @@ theorem HasTypeTelArgsQ.narrow {P B store Q C Γ Φ vs t a e Δ Ξ}
   context_telArgs h hA hstore (hn.contextMap hA hstore)
     (fun _ hp => .hyp (List.mem_append_right _ (hn.conditions ▸ hp)))
 
-theorem HasTypeArmsQ.narrow {P B store Q C Γ Φ R arms a b e L Δ Ξ}
-    (h : HasTypeArmsQ P B store Q C Γ Φ R arms a b e L)
+theorem HasTypeArmsQ.narrow {P B store Q C Γ Φ R obs arms a b e L Δ Ξ}
+    (h : HasTypeArmsQ P B store Q C Γ Φ R obs arms a b e L)
     (hA : Builtins.ValueAssumptions P B) (hstore : store.WF)
-    (hn : Ctx.Narrows P C Γ Φ Δ Ξ) : HasTypeArmsQ P B store Q C Δ Ξ R arms a b e L :=
+    (hn : Ctx.Narrows P C Γ Φ Δ Ξ) : HasTypeArmsQ P B store Q C Δ Ξ R obs arms a b e L :=
   context_arms h hA hstore (hn.contextMap hA hstore)
     (fun _ hp => .hyp (List.mem_append_right _ (hn.conditions ▸ hp)))
 

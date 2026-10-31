@@ -1,0 +1,84 @@
+[
+  {
+    "label": "build",
+    "command": "cd formal && lake build",
+    "started_utc": "2026-10-31T20:55:12.528706+00:00",
+    "exit_code": 0,
+    "seconds": 0.703,
+    "bytes": 36713,
+    "sha256": "23e541982fc0c82b1d294af716c0b6797984737c152ccb7bd7290c89ee5d55f9"
+  },
+  {
+    "label": "boundary",
+    "command": "cd formal && lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14b-paths/boundary.lean",
+    "started_utc": "2026-10-31T20:55:13.231972+00:00",
+    "exit_code": 0,
+    "seconds": 2.456,
+    "bytes": 40220,
+    "sha256": "974bc5e7dbaabfcd1731255474cb1b5c3463b801c0ad26054809cb8e29a43e41",
+    "axioms": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "axiom_reports": 249
+  },
+  {
+    "label": "match-boundary",
+    "command": "cd formal && lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14b-paths/match-boundary.lean",
+    "started_utc": "2026-10-31T20:55:15.688580+00:00",
+    "exit_code": 0,
+    "seconds": 1.874,
+    "bytes": 19472,
+    "sha256": "cdeb40806f56da65c428ef14655684fc37190a7108b585da0b58ba75edea220f",
+    "axioms": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "axiom_reports": 180
+  },
+  {
+    "label": "public-api",
+    "command": "cd formal && lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14b-paths/public-api.lean",
+    "started_utc": "2026-10-31T20:55:17.563417+00:00",
+    "exit_code": 0,
+    "seconds": 0.678,
+    "bytes": 128349,
+    "sha256": "b9c9b0abf4a17ad26aae010ad2682eb7fa954be848ccc256d5724e1512389efc",
+    "unchanged_primary_signatures": 10,
+    "root_shape_exclusion_signatures": 3,
+    "closed_typing_entry_signatures": 4,
+    "guard_context_removed": true,
+    "signature_parts": [
+      {
+        "path": "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14b-paths/public-api-1.log",
+        "bytes": 79797,
+        "sha256": "c1a71308aedff6e78cfc1f2f0dc73c17aeb0c20167cc4166e00b5b2580973d90"
+      },
+      {
+        "path": "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14b-paths/public-api-2.log",
+        "bytes": 48552,
+        "sha256": "5d9003fbea888eb39d43be3121625e95e27f2d3a352a1035b40d43438b4ba200"
+      }
+    ]
+  },
+  {
+    "label": "axioms",
+    "command": "cd formal && lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14b-paths/axioms.lean",
+    "started_utc": "2026-10-31T20:55:18.247656+00:00",
+    "exit_code": 0,
+    "seconds": 12.638,
+    "bytes": 1589609,
+    "sha256": "0219fa1e39cefc914fd4a426587c6dda113ad51d004178d4eb6395580b015409",
+    "axioms": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "axiom_reports": 14785,
+    "modules": 141,
+    "changed_modules": 17,
+    "changed_modules_covered": true
+  }
+]

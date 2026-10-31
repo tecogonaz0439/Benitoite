@@ -977,6 +977,28 @@ private theorem ReturnFreeImages.up {P B Ψ Q C Γ Δ Ξ ν}
   exact ImageOk.changeReturn h0 (by simpa only [Option.map_some, Ty.shiftV] using h1) R
 
 
+theorem SubstOk.add_conditions {P B store Q C Γ Φ Δ Ξ R ν} (added : List Pred)
+    (h : SubstOk P B store Q C Γ Φ Δ Ξ R ν)
+    (hA : Builtins.ValueAssumptions P B) (hw : store.WF) :
+    SubstOk P B store Q C Γ Φ Δ (added ++ Ξ) R ν := by
+  intro i a hi
+  exact (h i a hi).weaken_conditions hA hw
+    (by intro p hp; exact .hyp (List.mem_append_right _ (List.mem_append_right _ hp)))
+
+private theorem TypedImages.raw_bool_annotation {P B store Q C Γ Δ Ξ ν p}
+    (h : TypedImages P B store Q C Γ Δ Ξ ν)
+    (ha : Ty.Annotation P C Γ (.refined (.base .boolean) p)) :
+    Ty.Annotation P C Δ (.refined (.base .boolean) (predBind (upValues (valEnv ν).values) p)) := by
+  have hs := Pred.sorted_bind ha.sorted.2 (valEnv ν).values (fun _ h => h) (fun h => h) h.values h.references
+  exact ⟨⟨trivial,Pred.wf_of_sorted hs,by simp [Ty.NotContCore,Ty.core]⟩,⟨trivial,hs⟩,
+    ⟨trivial,ha.declared.2.bind_values h.declaration⟩⟩
+
+theorem SubstOk.raw_bool_annotation {P B store Q C Γ Φ Δ Ξ R ν p}
+    (h : SubstOk P B store Q C Γ Φ Δ Ξ R ν)
+    (ha : Ty.Annotation P C Γ (.refined (.base .boolean) p)) :
+    Ty.Annotation P C Δ (.refined (.base .boolean) (predBind (upValues (valEnv ν).values) p)) :=
+  h.images.raw_bool_annotation ha
+
 mutual
   private theorem subst_value {P B store Q C Γ Φ v a}
       (h : HasTypeVQ P B store Q C Γ Φ v a) (hA : Builtins.ValueAssumptions P B) (hT : Builtins.TypeAssumptions P B) (hstore : StoreTy.WF store) {Δ Ξ σ} (ρ : Nat → LocalRef)
@@ -1160,12 +1182,46 @@ mutual
       have hv' := subst_value hv hA hT hstore ρ ht.images hf
       rw [substTyValues, Ty.bind_fn] at hv'
       exact .C_App hv' (subst_values hs hA hT hstore ρ ht.images hf)
-    | .C_If hv hm hn =>
-      exact .C_If (subst_value hv hA hT hstore ρ ht.images hf) (subst_comp hm hA hT hstore ρ ht hL hf) (subst_comp hn hA hT hstore ρ ht hL hf)
-    | .C_Match hv ha hx =>
-      exact .C_Match (subst_value hv hA hT hstore ρ ht.images hf)
+    | .C_If (t := t) hv hobs hm hn =>
+      refine .C_If (subst_value hv hA hT hstore ρ ht.images hf)
+        (ht.observation hv rfl hobs ρ) ?_ ?_
+      · exact subst_comp hm hA hT hstore ρ
+          (fun i a hi => (ht i a hi).weaken_conditions hA hstore (by
+            intro p hp; exact .hyp (List.mem_append_right _ (List.mem_cons_of_mem _ hp)))) hL
+          (by
+            intro p hp
+            rcases List.mem_cons.mp hp with rfl | hp
+            · exact .hyp (List.mem_append_right _ List.mem_cons_self)
+            · exact (hf p hp).weaken (by
+                intro q hq
+                rcases List.mem_append.mp hq with hq | hq
+                · exact List.mem_append_left _ hq
+                · exact List.mem_append_right _ (List.mem_cons_of_mem _ hq)))
+      · exact subst_comp hn hA hT hstore ρ
+          (fun i a hi => (ht i a hi).weaken_conditions hA hstore (by
+            intro p hp; exact .hyp (List.mem_append_right _ (List.mem_cons_of_mem _ hp)))) hL
+          (by
+            intro p hp
+            rcases List.mem_cons.mp hp with rfl | hp
+            · exact .hyp (List.mem_append_right _ List.mem_cons_self)
+            · exact (hf p hp).weaken (by
+                intro q hq
+                rcases List.mem_append.mp hq with hq | hq
+                · exact List.mem_append_left _ hq
+                · exact List.mem_append_right _ (List.mem_cons_of_mem _ hq)))
+    | .C_Match (obs := obs) hv ho ha hx =>
+      refine .C_Match (subst_value hv hA hT hstore ρ ht.images hf) ?_
         (subst_arms ha hA hT hstore ρ ht hL hf)
         (by rw [unguardedPats_subst]; exact hx.subst_values σ)
+      intro t hobs
+      cases obs with
+      | none => cases hobs
+      | some u =>
+        obtain ⟨hu,s,hs⟩ := ho u rfl
+        obtain ⟨w,hw,hws⟩ := Term.hasSort_bind hs _ ht.images.values ht.images.references
+        simp only [Option.bind_some,hw,Option.some.injEq] at hobs
+        subst t
+        exact ⟨by simpa only [termBind,hw,Option.getD_some] using ht.images.observation hu hs ρ,s,hws⟩
     | .C_Lazy hb ha =>
       rw [substEffValues_empty]
       refine .C_Lazy ?_ (ht.images.annotation ha)
@@ -1299,35 +1355,60 @@ mutual
         bindParams, Ctx.extend, List.reverse_cons, List.reverse_nil, List.nil_append,
         List.cons_append, liftMany_one, Option.map_map, Function.comp_def,
         Ty.bind_shiftV_values, Eff.bind_shiftV_values, Option.map_none, localExtend] using hb'
-  private theorem subst_arms {P B store Q C Γ Φ R arms a b e L}
-      (h : HasTypeArmsQ P B store Q C Γ Φ R arms a b e L)
+  private theorem subst_arms {P B store Q C Γ Φ R obs arms a b e L}
+      (h : HasTypeArmsQ P B store Q C Γ Φ R obs arms a b e L)
       (hA : Builtins.ValueAssumptions P B) (hT : Builtins.TypeAssumptions P B) (hstore : StoreTy.WF store) {Δ Ξ σ L'} (ρ : Nat → LocalRef)
       (ht : SubstOk P B store Q C Γ Φ Δ Ξ (R.map (substTyValues σ)) σ)
       (hL : LocalSubstOk store L σ ρ L')
       (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) (predBind (valEnv σ).values p)) :
-      HasTypeArmsQ P B store Q C Δ Ξ (R.map (substTyValues σ)) (Arm.substList σ arms ρ)
+      HasTypeArmsQ P B store Q C Δ Ξ (R.map (substTyValues σ)) (obs.bind (termBind? (valEnv σ).values)) (Arm.substList σ arms ρ)
         (substTyValues σ a) (substTyValues σ b) (substEffValues σ e) L' := by
     match h with
     | .nil ha => exact .nil (ht.images.annotation ha)
-    | .plain (δ := δ) hp hb hs =>
-      refine .plain (hp.subst_values σ) ?_ (subst_arms hs hA hT hstore ρ ht hL hf)
+    | .plain (δ := δ) (alts := alts) hp hw hb hs =>
+      have hw' := hw.bind_paths ht.images.values ht.images.references ht.images.declaration
+      rw [pathFacts_append] at hw
+      have hmf := Entails.extend_conditions hf (pathFacts_bind hw.left ht.images.values ht.images.references)
+      have hef := Entails.extend_conditions hf (pathFacts_bind hw.right ht.images.values ht.images.references)
+      have htm := ht.add_conditions (pathFacts (obs.bind (termBind? (valEnv σ).values)) (matchedTests alts)) hA hstore
+      have hte := ht.add_conditions (pathFacts (obs.bind (termBind? (valEnv σ).values)) (excludedTests alts)) hA hstore
+      refine .plain (hp.subst_values σ) hw' ?_ (subst_arms hs hA hT hstore ρ hte hL hef)
       have hh := subst_comp hb hA hT hstore (upLocalSubst δ.length ρ)
-        (by simpa only [Option.map_map, Function.comp_def, Ty.bind_shiftV_values] using ht.params hA hstore δ)
-        (hL.localExtend hstore δ.length) (ht.images.conditions_params hf δ)
-      simpa only [List.length_map, Option.map_map, Function.comp_def,
-        Ty.bind_shiftV_values, Eff.bind_shiftV_values, hp.2.1] using hh
-    | .guarded (δ := δ) hp hg hb hs =>
-      refine .guarded (hp.subst_values σ) ?_ ?_ (subst_arms hs hA hT hstore ρ ht hL hf)
-      · have hh := subst_comp hg hA hT hstore (upLocalSubst δ.length ρ)
-          ((ht.params hA hstore δ).hide hA hstore (.refl _) none) (hL.localExtend hstore δ.length)
-          (fun p hp' => ((ht.images.conditions_params hf δ) p hp').hideConts)
-        simpa only [List.length_map, Option.map_none, substTyValues, Ty.bind, Ty.rawBind, Ty.norm,
-          substEffValues_empty, hp.2.1] using hh
-      · have hh := subst_comp hb hA hT hstore (upLocalSubst δ.length ρ)
-          (by simpa only [Option.map_map, Function.comp_def, Ty.bind_shiftV_values] using ht.params hA hstore δ)
-          (hL.localExtend hstore δ.length) (ht.images.conditions_params hf δ)
-        simpa only [List.length_map, Option.map_map, Function.comp_def,
-          Ty.bind_shiftV_values, Eff.bind_shiftV_values, hp.2.1] using hh
+        (by simpa only [SubstOk,Option.map_map,Function.comp_def,Ty.bind_shiftV_values] using htm.params hA hstore δ)
+        (hL.localExtend hstore δ.length) (htm.images.conditions_params hmf δ)
+      simpa only [List.length_map,Option.map_map,Function.comp_def,
+        Ty.bind_shiftV_values,Eff.bind_shiftV_values,hp.2.1,List.cons_append,List.nil_append] using hh
+    | .guarded (δ := δ) (alts := alts) (p := p) hp hw hgp hg hb hs =>
+      have hw' := hw.bind_paths ht.images.values ht.images.references ht.images.declaration
+      rw [pathFacts_append] at hw
+      have hmf := Entails.extend_conditions hf (pathFacts_bind hw.left ht.images.values ht.images.references)
+      have htm := ht.add_conditions (pathFacts (obs.bind (termBind? (valEnv σ).values)) (matchedTests alts)) hA hstore
+      have hparams := htm.params hA hstore δ
+      have hguard := hparams.hide hA hstore (.refl _) none
+      have hgAnn := hguard.images.raw_bool_annotation hgp
+      have hconds := htm.images.conditions_params hmf δ
+      refine .guarded (hp.subst_values σ) hw' hgAnn ?_ ?_ (subst_arms hs hA hT hstore ρ ht hL hf)
+      · have hh := subst_comp hg hA hT hstore (upLocalSubst δ.length ρ) hguard
+          (hL.localExtend hstore δ.length) (fun p hp => (hconds p hp).hideConts)
+        have he : substTyValues (upSubst δ.length σ) (.refined (.base .boolean) p) =
+            (Ty.refined (.base .boolean) (predBind (upValues (valEnv (upSubst δ.length σ)).values) p)).norm := by
+          simp only [substTyValues,Ty.bind,Ty.rawBind,Ty.norm,Ty.norm_idem]
+        rw [he,substEffValues_empty] at hh
+        have hh' := HasTypeCQ.C_Sub hh (.convert (Ty.norm_idem _)) (Eff.Covers.refl _ _ _)
+          hgAnn.wf hgAnn.sorted hgAnn.declared
+        simpa only [List.length_map,Option.map_none,substEffValues_empty,hp.2.1] using hh'
+      · have hconds' := Entails.extend_conditions hconds
+          (added := [p.open (.boolean true)])
+          (added' := [(predBind (upValues (valEnv (upSubst δ.length σ)).values) p).open (.boolean true)])
+          (by
+            simp only [List.map_cons,List.map_nil,List.cons.injEq,and_true]
+            exact predBind_open_of_some _ p (.boolean true) (.boolean true) rfl)
+        have hh := subst_comp hb hA hT hstore (upLocalSubst δ.length ρ)
+          (by simpa only [SubstOk,Option.map_map,Function.comp_def,Ty.bind_shiftV_values] using
+            hparams.add_conditions [(predBind (upValues (valEnv (upSubst δ.length σ)).values) p).open (.boolean true)] hA hstore)
+          (hL.localExtend hstore δ.length) hconds'
+        simpa only [List.length_map,Option.map_map,Function.comp_def,
+          Ty.bind_shiftV_values,Eff.bind_shiftV_values,hp.2.1,List.cons_append,List.nil_append] using hh
   private theorem subst_clauses {P B store Q C Γ Φ R eb cs t e L}
       (h : HasTypeClausesQ P B store Q C Γ Φ R eb cs t e L)
       (hA : Builtins.ValueAssumptions P B) (hT : Builtins.TypeAssumptions P B) (hstore : store.WF)
@@ -1484,13 +1565,13 @@ theorem HasTypeTelArgsQ.subst {P B store Q C Γ Φ vs t a e Δ Ξ R0 σ}
       (substTyValues σ a) (substEffValues σ e) :=
   subst_telArgs h hA.toValueAssumptions hA.toTypeAssumptions hstore ρ ht.images hf
 
-theorem HasTypeArmsQ.subst {P B store Q C Γ Φ R arms a b e L L' Δ Ξ σ}
-    (h : HasTypeArmsQ P B store Q C Γ Φ R arms a b e L)
+theorem HasTypeArmsQ.subst {P B store Q C Γ Φ R obs arms a b e L L' Δ Ξ σ}
+    (h : HasTypeArmsQ P B store Q C Γ Φ R obs arms a b e L)
     (hA : Builtins.SubstitutionAssumptions P B) (hstore : StoreTy.WF store)
     (ht : SubstOk P B store Q C Γ Φ Δ Ξ (R.map (substTyValues σ)) σ)
     (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) (predBind (valEnv σ).values p))
     (ρ : Nat → LocalRef) (hL : LocalSubstOk store L σ ρ L') :
-    HasTypeArmsQ P B store Q C Δ Ξ (R.map (substTyValues σ)) (Arm.substList σ arms ρ)
+    HasTypeArmsQ P B store Q C Δ Ξ (R.map (substTyValues σ)) (obs.bind (termBind? (valEnv σ).values)) (Arm.substList σ arms ρ)
       (substTyValues σ a) (substTyValues σ b) (substEffValues σ e) L' :=
   subst_arms h hA.toValueAssumptions hA.toTypeAssumptions hstore ρ ht hL hf
 
@@ -1597,14 +1678,15 @@ theorem HasTypeTelArgsQ.subst_under_none {P B store Q C Γ Φ vs t a e Δ Ξ R0 
   subst_telArgs h hA.toValueAssumptions hA.toTypeAssumptions hstore _ (ht.images.none hA.toValueAssumptions hstore) (fun p hp =>
     Transport.facts (ht.transport_extendNone hf) p (List.mem_append_right _ hp))
 
-theorem HasTypeArmsQ.subst_under_none {P B store Q C Γ Φ cs a t e L L' Δ Ξ σ} {R : Option Ty}
-    (h : HasTypeArmsQ P B store Q C Γ.extendNone (Φ.map Pred.lift) (R.map (Ty.shiftV 1 0)) cs a t e L)
+theorem HasTypeArmsQ.subst_under_none {P B store Q C Γ Φ obs cs a t e L L' Δ Ξ σ} {R : Option Ty}
+    (h : HasTypeArmsQ P B store Q C Γ.extendNone (Φ.map Pred.lift) (R.map (Ty.shiftV 1 0)) obs cs a t e L)
     (hA : Builtins.SubstitutionAssumptions P B) (hw : store.WF)
     (ht : SubstOk P B store Q C Γ Φ Δ Ξ (R.map (substTyValues σ)) σ)
     (hf : ∀ p∈Φ,Entails (Δ.facts++Ξ) (predBind (valEnv σ).values p))
     (ρ : Nat → LocalRef) (hL : LocalSubstOk store L (upSubst 1 σ) (upLocalSubst 1 ρ) L') :
     HasTypeArmsQ P B store Q C Δ.extendNone (Ξ.map Pred.lift)
-      ((R.map (substTyValues σ)).map (Ty.shiftV 1 0)) (Arm.substList (upSubst 1 σ) cs (upLocalSubst 1 ρ))
+      ((R.map (substTyValues σ)).map (Ty.shiftV 1 0))
+      (obs.bind (termBind? (valEnv (upSubst 1 σ)).values)) (Arm.substList (upSubst 1 σ) cs (upLocalSubst 1 ρ))
       (substTyValues (upSubst 1 σ) a) (substTyValues (upSubst 1 σ) t) (substEffValues (upSubst 1 σ) e) L' := by
   have hh := h.subst hA hw (by
     simpa only [Option.map_map,Function.comp_def,Ty.bind_shiftV_values] using ht.extendNone hA.toValueAssumptions hw)

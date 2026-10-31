@@ -1,4 +1,5 @@
 import Benitoite.Release.Refinement.Subst
+import Benitoite.Release.Refinement.PathFacts
 import Benitoite.Release.Refinement.LocalResolve
 import Benitoite.Release.Refinement.Le
 import Benitoite.Release.Refinement.StoreTransport
@@ -120,6 +121,24 @@ def Ty.CaptureDeclared (P : Program) (C : List TParam) (Γ : Ctx) : Ty → Prop
 def Ctx.CaptureWF (nr nt : Nat) (Γ : Ctx) : Prop :=
   ∀ (i : Nat) (a : Ty), Γ[i]? = some (some a) → a.CaptureWF nr nt Γ.length
 
+
+/-- 条件値の真偽を表す、通常の文脈の述語。 -/
+def boolCond (t : Term) (b : Bool) : Pred :=
+  .compare .boolean .eq t (.boolean b)
+
+/-- 既存の条件の移しを、新しい一条件の下へ延長する。 -/
+theorem Entails.conditions_cons {Γ : Ctx} {Φ Ξ : List Pred} {p q : Pred}
+    (hf : ∀ r ∈ Φ, Entails (Γ.facts ++ Ξ) r)
+    (hq : Entails (Γ.facts ++ q :: Ξ) p) :
+    ∀ r ∈ p :: Φ, Entails (Γ.facts ++ q :: Ξ) r := by
+  intro r hr
+  rcases List.mem_cons.mp hr with rfl | hr
+  · exact hq
+  · exact (hf r hr).weaken (by
+      intro s hs
+      rcases List.mem_append.mp hs with hs | hs
+      · exact List.mem_append_left _ hs
+      · exact List.mem_append_right _ (List.mem_cons_of_mem _ hs))
 
 mutual
   /-- 値の型付け。経路条件は通常の文脈の番号で読む。 -/
@@ -269,13 +288,16 @@ mutual
         HasTypeVQ P B Ψ Q C Γ Φ f (.dependentFn t) →
         HasTypeTelArgsQ P B Ψ Q C Γ Φ args t a e →
         HasTypeCQ P B Ψ Q C Γ Φ R (.app f args) a e Δ
-    | C_If {Ψ Q C Γ Φ Δ R v m n a ε} :
+    | C_If {Ψ Q C Γ Φ Δ R v t m n a ε} :
         HasTypeVQ P B Ψ Q C Γ Φ v (.base .boolean) →
-        HasTypeCQ P B Ψ Q C Γ Φ R m a ε Δ → HasTypeCQ P B Ψ Q C Γ Φ R n a ε Δ →
+        v.toTerm? = some t →
+        HasTypeCQ P B Ψ Q C Γ (boolCond t true :: Φ) R m a ε Δ →
+        HasTypeCQ P B Ψ Q C Γ (boolCond t false :: Φ) R n a ε Δ →
         HasTypeCQ P B Ψ Q C Γ Φ R (.ite v m n) a ε Δ
-    | C_Match {Ψ Q C Γ Φ Δ R v arms a b ε} :
+    | C_Match {Ψ Q C Γ Φ Δ R v obs arms a b ε} :
         HasTypeVQ P B Ψ Q C Γ Φ v a →
-        HasTypeArmsQ P B Ψ Q C Γ Φ R arms a b ε Δ →
+        (∀ t, obs = some t → v.toTerm? = some t ∧ ∃ s, t.HasSort Γ s) →
+        HasTypeArmsQ P B Ψ Q C Γ Φ R obs arms a b ε Δ →
         Exhaustive P a (unguardedPats arms) →
         HasTypeCQ P B Ψ Q C Γ Φ R (.match v arms) b ε Δ
     | C_Lazy {Ψ Q C Γ Φ Δ R m a} :
@@ -405,26 +427,32 @@ mutual
         (∀ r, index = .fixed r → r.WF ∧ r.Canonical ∧ r.FitsKind kind) →
         AtCallAdmissible P B Ψ Q C Γ Φ kind name shape bases pattern input index
 
-  /-- 通常値、継続の場所、継続変数の改名を分けた型付き像。 -/
+  /-- 被検査値の観測を共有し、各腕で確かめた条件を本体へ渡す。 -/
   inductive HasTypeArmsQ (P : Program) (B : Builtins) :
-      StoreTy → NoFailCtx → List TParam → Ctx → List Pred → Option Ty →
+      StoreTy → NoFailCtx → List TParam → Ctx → List Pred → Option Ty → Option Term →
       List Arm → Ty → Ty → Eff → (Δ : LocalCtx := []) → Prop where
-    | nil {Ψ Q C Γ Φ Δ R a b ε} : Ty.Annotation P C Γ b →
-        HasTypeArmsQ P B Ψ Q C Γ Φ R [] a b ε Δ
-    | plain {Ψ Q C Γ Φ Δ R alts body arms a b ε δ} : AltsTy P alts a δ →
-        HasTypeCQ P B Ψ Q C (bindParams Γ δ) (liftMany δ.length Φ)
+    | nil {Ψ Q C Γ Φ Δ R obs a b ε} : Ty.Annotation P C Γ b →
+        HasTypeArmsQ P B Ψ Q C Γ Φ R obs [] a b ε Δ
+    | plain {Ψ Q C Γ Φ Δ R obs alts body arms a b ε δ} : AltsTy P alts a δ →
+        FactsWF P C Γ (pathFacts obs (matchedTests alts ++ excludedTests alts)) →
+        HasTypeCQ P B Ψ Q C (bindParams Γ δ)
+          (liftMany δ.length (pathFacts obs (matchedTests alts) ++ Φ))
           (R.map (Ty.shiftV δ.length 0)) body (b.shiftV δ.length 0) (ε.shiftV δ.length 0)
           (localExtend δ.length Δ) →
-        HasTypeArmsQ P B Ψ Q C Γ Φ R arms a b ε Δ →
-        HasTypeArmsQ P B Ψ Q C Γ Φ R (.mk alts none body :: arms) a b ε Δ
-    | guarded {Ψ Q C Γ Φ Δ R alts guard body arms a b ε δ} : AltsTy P alts a δ →
-        HasTypeCQ P B Ψ Q C (hideConts (bindParams Γ δ)) (liftMany δ.length Φ)
-          none guard (.base .boolean) Eff.empty (localExtend δ.length Δ) →
-        HasTypeCQ P B Ψ Q C (bindParams Γ δ) (liftMany δ.length Φ)
+        HasTypeArmsQ P B Ψ Q C Γ (pathFacts obs (excludedTests alts) ++ Φ) R obs arms a b ε Δ →
+        HasTypeArmsQ P B Ψ Q C Γ Φ R obs (.mk alts none body :: arms) a b ε Δ
+    | guarded {Ψ Q C Γ Φ Δ R obs alts guard body arms a b ε δ p} : AltsTy P alts a δ →
+        FactsWF P C Γ (pathFacts obs (matchedTests alts ++ excludedTests alts)) →
+        Ty.Annotation P C (hideConts (bindParams Γ δ)) (.refined (.base .boolean) p) →
+        HasTypeCQ P B Ψ Q C (hideConts (bindParams Γ δ))
+          (liftMany δ.length (pathFacts obs (matchedTests alts) ++ Φ))
+          none guard (.refined (.base .boolean) p) Eff.empty (localExtend δ.length Δ) →
+        HasTypeCQ P B Ψ Q C (bindParams Γ δ)
+          (p.open (.boolean true) :: liftMany δ.length (pathFacts obs (matchedTests alts) ++ Φ))
           (R.map (Ty.shiftV δ.length 0)) body (b.shiftV δ.length 0) (ε.shiftV δ.length 0)
           (localExtend δ.length Δ) →
-        HasTypeArmsQ P B Ψ Q C Γ Φ R arms a b ε Δ →
-        HasTypeArmsQ P B Ψ Q C Γ Φ R (.mk alts (some guard) body :: arms) a b ε Δ
+        HasTypeArmsQ P B Ψ Q C Γ Φ R obs arms a b ε Δ →
+        HasTypeArmsQ P B Ψ Q C Γ Φ R obs (.mk alts (some guard) body :: arms) a b ε Δ
 
   inductive HasTypeClausesQ (P : Program) (B : Builtins) :
       StoreTy → NoFailCtx → List TParam → Ctx → List Pred → Option Ty → Eff →

@@ -9,43 +9,6 @@ import Benitoite.Release.Refinement.Context.WF
 namespace Benitoite.Release.Refinement
 noncomputable section
 
-def Ctx.sortSelf (Γ : Ctx) : Option Ty → Ctx
-  | none => Γ
-  | some a => some a :: Γ
-
-theorem Pred.Sorted.map {Γ Δ : Ctx} {self other : Option Ty} {ν : ObservationEnv} {p : Pred}
-    (h : p.Sorted Γ self)
-    (hs : Term.ImagesSorted (Ctx.sortSelf Γ self)
-      (Ctx.sortSelf Δ other) ν)
-    (hr : Term.ImageReferences (Ctx.sortSelf Γ self)
-      (Ctx.sortSelf Δ other) ν) :
-    (predBind ν p).Sorted Δ other := by
-  cases p <;> simp only [Pred.Sorted] at h <;> simp only [predBind, Pred.Sorted]
-  all_goals first
-    | trivial
-    | exact ⟨Term.hasSort_termBind h.1 _ hs hr, Term.hasSort_termBind h.2 _ hs hr⟩
-    | exact ⟨h.1, Term.hasSort_termBind h.2.1 _ hs hr, Term.hasSort_termBind h.2.2 _ hs hr⟩
-    | exact Term.hasSort_termBind h _ hs hr
-    | exact ⟨Pred.Sorted.map (Γ := Γ) (Δ := Δ) (self := self) (other := other) (ν := ν) h.1 hs hr, Pred.Sorted.map (Γ := Γ) (Δ := Δ) (self := self) (other := other) (ν := ν) h.2 hs hr⟩
-    | exact Pred.Sorted.map (Γ := Γ) (Δ := Δ) (self := self) (other := other) (ν := ν) h hs hr
-
-theorem Pred.Sorted.wf_none {Γ : Ctx} {p : Pred} (h : p.Sorted Γ none) : p.WF Γ.length :=
-  Pred.varsIn_mono h.references (fun _ ⟨_, hi, _⟩ => (List.getElem?_eq_some_iff.mp hi).1)
-
-structure Pred.WellFormed (P : Program) (C : List TParam) (Γ : Ctx) (p : Pred) : Prop where
-  wf : p.WF Γ.length
-  sorted : p.Sorted Γ none
-  declared : p.Declared P C Γ none
-
-def FactsWF (P : Program) (C : List TParam) (Γ : Ctx) (Φ : List Pred) : Prop :=
-  ∀ p ∈ Φ, Pred.WellFormed P C Γ p
-
-theorem Pred.WellFormed.map {P C Γ Δ p ν} (h : Pred.WellFormed P C Γ p)
-    (hs : Term.ImagesSorted Γ Δ ν) (hr : Term.ImageReferences Γ Δ ν)
-    (hd : DeclarationImages P C Γ Δ ν) : Pred.WellFormed P C Δ (predBind ν p) := by
-  have hp : (predBind ν p).Sorted Δ none := h.sorted.map hs hr
-  exact ⟨hp.wf_none, hp, h.declared.map hd⟩
-
 theorem Pred.WellFormed.shift {P C Γ Δ p k c} (hm : ShiftMap k c Γ Δ)
     (h : Pred.WellFormed P C Γ p) : Pred.WellFormed P C Δ (p.shiftV k c) :=
   h.map hm.values hm.references hm.declarationRenaming.images

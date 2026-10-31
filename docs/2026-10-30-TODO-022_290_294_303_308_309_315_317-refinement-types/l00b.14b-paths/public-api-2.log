@@ -1,0 +1,582 @@
+Benitoite.Release.Refinement.ClosureTy.match_input_ground {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {R : Option Benitoite.Release.Refinement.Ty} {q : Benitoite.Release.Refinement.Closure}
+  {a : Benitoite.Release.Refinement.Ty} {e : Benitoite.Release.Refinement.Eff} {v : Benitoite.Release.Refinement.Val}
+  {arms : List Benitoite.Release.Refinement.Arm} (hq : Benitoite.Release.Refinement.ClosureTy P B Ψ [] R q a e)
+  (hc : Benitoite.Release.Refinement.Closure.ClosedAt 0 q)
+  (hv : q.view = Benitoite.Release.Refinement.Comp.match v arms) : v.Ground
+Benitoite.Release.Refinement.StateTyE.match_start {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {σ : Benitoite.Release.Refinement.PathEnv}
+  {Eb : Benitoite.Release.Refinement.Eff} {q : Benitoite.Release.Refinement.Closure}
+  {k : Benitoite.Release.Refinement.Cont} {μ : Benitoite.Release.Refinement.Store}
+  {v : Benitoite.Release.Refinement.Val} {arms : List Benitoite.Release.Refinement.Arm}
+  (h : Benitoite.Release.Refinement.StateTyE P B σ Eb (Benitoite.Release.Refinement.State.run q k μ))
+  (hv : q.view = Benitoite.Release.Refinement.Comp.match v arms) :
+  Benitoite.Release.Refinement.StateTyE P B σ Eb (Benitoite.Release.Refinement.State.matchRun v q.capture arms 0 k μ)
+Benitoite.Release.Refinement.MatchPrefix.advance {v : Benitoite.Release.Refinement.Val}
+  {arms : List Benitoite.Release.Refinement.Arm} {n : Nat} {alts : List Benitoite.Release.Alt}
+  {guard : Option Benitoite.Release.Refinement.Comp} {body : Benitoite.Release.Refinement.Comp}
+  (hp : Benitoite.Release.Refinement.MatchPrefix v arms n)
+  (hi : arms[n]? = Option.some (Benitoite.Release.Refinement.Arm.mk alts guard body))
+  (hf : Benitoite.Release.Refinement.firstAlt v alts = Option.none) :
+  Benitoite.Release.Refinement.MatchPrefix v arms (n + 1)
+Benitoite.Release.Refinement.StateTyE.match_skip {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {σ : Benitoite.Release.Refinement.PathEnv}
+  {Eb : Benitoite.Release.Refinement.Eff} {v : Benitoite.Release.Refinement.Val}
+  {cap : Benitoite.Release.Refinement.Capture} {arms : List Benitoite.Release.Refinement.Arm} {n : Nat}
+  {alts : List Benitoite.Release.Alt} {guard : Option Benitoite.Release.Refinement.Comp}
+  {body : Benitoite.Release.Refinement.Comp} {k : Benitoite.Release.Refinement.Cont}
+  {μ : Benitoite.Release.Refinement.Store}
+  (h : Benitoite.Release.Refinement.StateTyE P B σ Eb (Benitoite.Release.Refinement.State.matchRun v cap arms n k μ))
+  (hi : arms[n]? = Option.some (Benitoite.Release.Refinement.Arm.mk alts guard body))
+  (hf : Benitoite.Release.Refinement.firstAlt v alts = Option.none) :
+  Benitoite.Release.Refinement.StateTyE P B σ Eb (Benitoite.Release.Refinement.State.matchRun v cap arms (n + 1) k μ)
+Benitoite.Release.Refinement.PathsEvaluated (v : Benitoite.Release.Refinement.Val)
+  (tests : List Benitoite.Release.Refinement.PathTest) : Prop
+Benitoite.Release.Refinement.MatchPathsEvaluated (v : Benitoite.Release.Refinement.Val)
+  (arms : List Benitoite.Release.Refinement.Arm) (next : Nat) : Prop
+Benitoite.Release.Refinement.CaptureOk.addEvaluatedFacts {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {R : Option Benitoite.Release.Refinement.Ty} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {cap : Benitoite.Release.Refinement.Capture}
+  {added : List Benitoite.Release.Refinement.Pred} (hc : Benitoite.Release.Refinement.CaptureOk P B Ψ R Γ Φ cap)
+  (hw : Benitoite.Release.Refinement.FactsWF P [] Γ added)
+  (he :
+    ∀ (p : Benitoite.Release.Refinement.Pred),
+      p ∈ added →
+        (Benitoite.Release.Refinement.predBind (Benitoite.Release.Refinement.valEnv cap.env).values p).evalClosed =
+          Option.some Bool.true) :
+  Benitoite.Release.Refinement.CaptureOk P B Ψ R Γ (added ++ Φ) cap
+Benitoite.Release.Refinement.CaptureOk.paths_evaluate {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {R : Option Benitoite.Release.Refinement.Ty} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {cap : Benitoite.Release.Refinement.Capture}
+  {vs : Benitoite.Release.Refinement.Val} {obs : Option Benitoite.Release.Refinement.Term}
+  {tests : List Benitoite.Release.Refinement.PathTest} {v : Benitoite.Release.Refinement.Val}
+  (hc : Benitoite.Release.Refinement.CaptureOk P B Ψ R Γ Φ cap)
+  (ho :
+    ∀ (t : Benitoite.Release.Refinement.Term),
+      obs = Option.some t → vs.toTerm? = Option.some t ∧ ∃ sort, Benitoite.Release.Refinement.Term.HasSort Γ t sort)
+  (hv : v = Benitoite.Release.Refinement.closeVal cap vs) (he : Benitoite.Release.Refinement.PathsEvaluated v tests)
+  (p : Benitoite.Release.Refinement.Pred) :
+  p ∈ Benitoite.Release.Refinement.pathFacts obs tests →
+    (Benitoite.Release.Refinement.predBind (Benitoite.Release.Refinement.valEnv cap.env).values p).evalClosed =
+      Option.some Bool.true
+Benitoite.Release.Refinement.Arm.resolveLocalsList_at {arms : List Benitoite.Release.Refinement.Arm} {n : Nat}
+  {ρ : Nat → Benitoite.Release.LocalRef} {arm : Benitoite.Release.Refinement.Arm}
+  (h : (Benitoite.Release.Refinement.Arm.resolveLocalsList ρ arms)[n]? = Option.some arm) :
+  ∃ alts guard body,
+    arms[n]? = Option.some (Benitoite.Release.Refinement.Arm.mk alts guard body) ∧
+      arm =
+        Benitoite.Release.Refinement.Arm.mk alts
+          (Option.map
+            (Benitoite.Release.Refinement.Comp.resolveLocals
+              (Benitoite.Release.upLocalSubst (Benitoite.Release.Arm.bindersOf alts) ρ))
+            guard)
+          (Benitoite.Release.Refinement.Comp.resolveLocals
+            (Benitoite.Release.upLocalSubst (Benitoite.Release.Arm.bindersOf alts) ρ) body)
+Benitoite.Release.Refinement.MatchPathsEvaluated.unresolve {v : Benitoite.Release.Refinement.Val}
+  {arms : List Benitoite.Release.Refinement.Arm} {n : Nat} {ρ : Nat → Benitoite.Release.LocalRef}
+  (h :
+    Benitoite.Release.Refinement.MatchPathsEvaluated v (Benitoite.Release.Refinement.Arm.resolveLocalsList ρ arms) n) :
+  Benitoite.Release.Refinement.MatchPathsEvaluated v arms n
+Benitoite.Release.Refinement.ClosureTy.match_source {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {R : Option Benitoite.Release.Refinement.Ty} {cap : Benitoite.Release.Refinement.Capture}
+  {vs : Benitoite.Release.Refinement.Val} {arms : List Benitoite.Release.Refinement.Arm}
+  {a : Benitoite.Release.Refinement.Ty} {e : Benitoite.Release.Refinement.Eff}
+  (hq :
+    Benitoite.Release.Refinement.ClosureTy P B Ψ [] R
+      (Benitoite.Release.Refinement.Closure.mk cap (Benitoite.Release.Refinement.Comp.match vs arms)) a e) :
+  ∃ Γ Φ Rs root obs arms0 input as es L ρ,
+    Benitoite.Release.Refinement.CaptureOk P B Ψ R Γ Φ cap ∧
+      Benitoite.Release.Refinement.HasTypeV P B Ψ [] Γ Φ root input ∧
+        (∀ (t : Benitoite.Release.Refinement.Term),
+            obs = Option.some t →
+              root.toTerm? = Option.some t ∧ ∃ sort, Benitoite.Release.Refinement.Term.HasSort Γ t sort) ∧
+          Benitoite.Release.Refinement.HasTypeArmsQ P B Ψ Benitoite.Release.Qempty [] Γ Φ Rs obs arms0 input as es L ∧
+            Benitoite.Release.Refinement.CaptureLocals Ψ cap.env L ρ ∧
+              arms = Benitoite.Release.Refinement.Arm.resolveLocalsList ρ arms0 ∧
+                vs = root ∧
+                  cap.closeR Rs = R ∧
+                    cap.closeTy as = a ∧
+                      cap.closeEff es = e ∧
+                        (∀ (r : Benitoite.Release.Refinement.Ty),
+                            Rs = Option.some r → Benitoite.Release.Refinement.Ty.Declared P [] Γ r) ∧
+                          Benitoite.Release.Refinement.Exhaustive P input
+                            (Benitoite.Release.Refinement.unguardedPats arms0)
+Benitoite.Release.Refinement.adequateArms_body {σ : Benitoite.Release.Refinement.PathEnv}
+  {arms : List Benitoite.Release.Refinement.Arm} {n : Nat} {alts : List Benitoite.Release.Alt}
+  {guard : Option Benitoite.Release.Refinement.Comp} {body : Benitoite.Release.Refinement.Comp}
+  (h : Benitoite.Release.Refinement.adequateArms σ arms)
+  (hi : arms[n]? = Option.some (Benitoite.Release.Refinement.Arm.mk alts guard body)) :
+  Benitoite.Release.Refinement.Comp.Adequate σ body
+Benitoite.Release.Refinement.Arm.ClosedList_body {nt nv : Nat} {arms : List Benitoite.Release.Refinement.Arm} {n : Nat}
+  {alts : List Benitoite.Release.Alt} {guard : Option Benitoite.Release.Refinement.Comp}
+  {body : Benitoite.Release.Refinement.Comp} (h : Benitoite.Release.Refinement.Arm.ClosedList nt nv arms)
+  (hi : arms[n]? = Option.some (Benitoite.Release.Refinement.Arm.mk alts guard body)) :
+  Benitoite.Release.Refinement.Comp.ClosedAt nt (nv + Benitoite.Release.Arm.bindersOf alts) body
+Benitoite.Release.Refinement.StateTyE.match_body_zero {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {σ : Benitoite.Release.Refinement.PathEnv}
+  {Eb : Benitoite.Release.Refinement.Eff} {v : Benitoite.Release.Refinement.Val}
+  {cap : Benitoite.Release.Refinement.Capture} {arms : List Benitoite.Release.Refinement.Arm} {n : Nat}
+  {alts : List Benitoite.Release.Alt} {body : Benitoite.Release.Refinement.Comp} {k : Benitoite.Release.Refinement.Cont}
+  {μ : Benitoite.Release.Refinement.Store}
+  (h : Benitoite.Release.Refinement.StateTyE P B σ Eb (Benitoite.Release.Refinement.State.matchRun v cap arms n k μ))
+  (hi : arms[n]? = Option.some (Benitoite.Release.Refinement.Arm.mk alts Option.none body))
+  (hz : Benitoite.Release.Arm.bindersOf alts = 0)
+  (_hmatch : Benitoite.Release.Refinement.firstAlt v alts = Option.some [])
+  (heval : Benitoite.Release.Refinement.MatchPathsEvaluated v arms n) :
+  Benitoite.Release.Refinement.StateTyE P B σ Eb
+    (Benitoite.Release.Refinement.State.run (Benitoite.Release.Refinement.Closure.mk cap body) k μ)
+Benitoite.Release.Refinement.StateTy.guard_true {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {σ : Benitoite.Release.Refinement.PathEnv}
+  {q : Benitoite.Release.Refinement.Closure} {v : Benitoite.Release.Refinement.Val}
+  {cap : Benitoite.Release.Refinement.Capture} {arms : List Benitoite.Release.Refinement.Arm} {next : Nat}
+  {body : Benitoite.Release.Refinement.Closure} {k : List Benitoite.Release.Refinement.Frame}
+  {μ : Benitoite.Release.Refinement.Store} (hA : Benitoite.Release.Refinement.Builtins.SubstitutionAssumptions P B)
+  (h :
+    Benitoite.Release.Refinement.StateTy P B σ
+      (Benitoite.Release.Refinement.State.run q (Benitoite.Release.Refinement.Frame.guardF v cap arms next body :: k)
+        μ))
+  (hv :
+    q.view =
+      Benitoite.Release.Refinement.Comp.ret
+        (Benitoite.Release.Refinement.Val.const (Benitoite.Release.Refinement.Const.boolean Bool.true))) :
+  Benitoite.Release.Refinement.StateTy P B σ (Benitoite.Release.Refinement.State.run body k μ)
+Benitoite.Release.Refinement.StateTy.guard_false {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {σ : Benitoite.Release.Refinement.PathEnv}
+  {q : Benitoite.Release.Refinement.Closure} {v : Benitoite.Release.Refinement.Val}
+  {cap : Benitoite.Release.Refinement.Capture} {arms : List Benitoite.Release.Refinement.Arm} {next : Nat}
+  {body : Benitoite.Release.Refinement.Closure} {k : List Benitoite.Release.Refinement.Frame}
+  {μ : Benitoite.Release.Refinement.Store}
+  (h :
+    Benitoite.Release.Refinement.StateTy P B σ
+      (Benitoite.Release.Refinement.State.run q (Benitoite.Release.Refinement.Frame.guardF v cap arms next body :: k)
+        μ))
+  (hv :
+    q.view =
+      Benitoite.Release.Refinement.Comp.ret
+        (Benitoite.Release.Refinement.Val.const (Benitoite.Release.Refinement.Const.boolean Bool.false))) :
+  Benitoite.Release.Refinement.StateTy P B σ (Benitoite.Release.Refinement.State.matchRun v cap arms next k μ)
+Benitoite.Release.Refinement.StateTy.match_start {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {σ : Benitoite.Release.Refinement.PathEnv}
+  {q : Benitoite.Release.Refinement.Closure} {v : Benitoite.Release.Refinement.Val}
+  {arms : List Benitoite.Release.Refinement.Arm} {k : Benitoite.Release.Refinement.Cont}
+  {μ : Benitoite.Release.Refinement.Store}
+  (h : Benitoite.Release.Refinement.StateTy P B σ (Benitoite.Release.Refinement.State.run q k μ))
+  (hv : q.view = Benitoite.Release.Refinement.Comp.match v arms) :
+  Benitoite.Release.Refinement.StateTy P B σ (Benitoite.Release.Refinement.State.matchRun v q.capture arms 0 k μ)
+Benitoite.Release.Refinement.StateTy.match_skip {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {σ : Benitoite.Release.Refinement.PathEnv}
+  {v : Benitoite.Release.Refinement.Val} {cap : Benitoite.Release.Refinement.Capture}
+  {arms : List Benitoite.Release.Refinement.Arm} {n : Nat} {alts : List Benitoite.Release.Alt}
+  {guard : Option Benitoite.Release.Refinement.Comp} {body : Benitoite.Release.Refinement.Comp}
+  {k : Benitoite.Release.Refinement.Cont} {μ : Benitoite.Release.Refinement.Store}
+  (h : Benitoite.Release.Refinement.StateTy P B σ (Benitoite.Release.Refinement.State.matchRun v cap arms n k μ))
+  (hi : arms[n]? = Option.some (Benitoite.Release.Refinement.Arm.mk alts guard body))
+  (hf : Benitoite.Release.Refinement.firstAlt v alts = Option.none) :
+  Benitoite.Release.Refinement.StateTy P B σ (Benitoite.Release.Refinement.State.matchRun v cap arms (n + 1) k μ)
+Benitoite.Release.Refinement.StateTy.match_body_zero {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {σ : Benitoite.Release.Refinement.PathEnv}
+  {v : Benitoite.Release.Refinement.Val} {cap : Benitoite.Release.Refinement.Capture}
+  {arms : List Benitoite.Release.Refinement.Arm} {n : Nat} {alts : List Benitoite.Release.Alt}
+  {body : Benitoite.Release.Refinement.Comp} {k : Benitoite.Release.Refinement.Cont}
+  {μ : Benitoite.Release.Refinement.Store}
+  (h : Benitoite.Release.Refinement.StateTy P B σ (Benitoite.Release.Refinement.State.matchRun v cap arms n k μ))
+  (hi : arms[n]? = Option.some (Benitoite.Release.Refinement.Arm.mk alts Option.none body))
+  (hz : Benitoite.Release.Arm.bindersOf alts = 0) (hm : Benitoite.Release.Refinement.firstAlt v alts = Option.some [])
+  (he : Benitoite.Release.Refinement.MatchPathsEvaluated v arms n) :
+  Benitoite.Release.Refinement.StateTy P B σ
+    (Benitoite.Release.Refinement.State.run (Benitoite.Release.Refinement.Closure.mk cap body) k μ)
+Benitoite.Release.Refinement.GuardBodyTy (P : Benitoite.Release.Refinement.Program)
+  (B : Benitoite.Release.Refinement.Builtins) (Ψ : Benitoite.Release.Refinement.StoreTy)
+  (R : Option Benitoite.Release.Refinement.Ty) :
+  Benitoite.Release.Refinement.Closure →
+    Benitoite.Release.Refinement.Ty → Benitoite.Release.Refinement.Ty → Benitoite.Release.Refinement.Eff → Prop
+Benitoite.Release.Refinement.GuardBodyTy.mk {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {R : Option Benitoite.Release.Refinement.Ty} {cap : Benitoite.Release.Refinement.Capture}
+  {code0 code : Benitoite.Release.Refinement.Comp} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {Rs : Option Benitoite.Release.Refinement.Ty}
+  {p : Benitoite.Release.Refinement.Pred} {a : Benitoite.Release.Refinement.Ty} {e : Benitoite.Release.Refinement.Eff}
+  {L : Benitoite.Release.Refinement.LocalCtx} {ρ : Nat → Benitoite.Release.LocalRef} :
+  Benitoite.Release.Refinement.CaptureOk P B Ψ R Γ Φ cap →
+    Benitoite.Release.Refinement.Ty.Annotation P [] Γ
+        ((Benitoite.Release.Refinement.Ty.base Benitoite.Release.BaseTy.boolean).refined p) →
+      Benitoite.Release.Refinement.HasTypeCQ P B Ψ Benitoite.Release.Qempty [] Γ
+          (p.open (Benitoite.Release.Refinement.Term.boolean Bool.true) :: Φ) Rs code0 a e L →
+        Benitoite.Release.Refinement.CaptureLocals Ψ cap.env L ρ →
+          code = Benitoite.Release.Refinement.Comp.resolveLocals ρ code0 →
+            Benitoite.Release.Refinement.Ty.Annotation P [] []
+                (Benitoite.Release.Refinement.Ty.dependentFn
+                  (Benitoite.Release.Refinement.Tel.done (cap.closeTy a) (cap.closeEff e))) →
+              cap.closeR Rs = R →
+                (∀ (r : Benitoite.Release.Refinement.Ty),
+                    Rs = Option.some r → Benitoite.Release.Refinement.Ty.Declared P [] Γ r) →
+                  Benitoite.Release.Refinement.GuardBodyTy P B Ψ R (Benitoite.Release.Refinement.Closure.mk cap code)
+                    (cap.closeTy ((Benitoite.Release.Refinement.Ty.base Benitoite.Release.BaseTy.boolean).refined p))
+                    (cap.closeTy a) (cap.closeEff e)
+Benitoite.Release.Refinement.HasTypeCQ.C_Match {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {Δ : Benitoite.Release.Refinement.LocalCtx}
+  {R : Option Benitoite.Release.Refinement.Ty} {v : Benitoite.Release.Refinement.Val}
+  {obs : Option Benitoite.Release.Refinement.Term} {arms : List Benitoite.Release.Refinement.Arm}
+  {a b : Benitoite.Release.Refinement.Ty} {ε : Benitoite.Release.Refinement.Eff} :
+  Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C Γ Φ v a →
+    (∀ (t : Benitoite.Release.Refinement.Term),
+        obs = Option.some t → v.toTerm? = Option.some t ∧ ∃ s, Benitoite.Release.Refinement.Term.HasSort Γ t s) →
+      Benitoite.Release.Refinement.HasTypeArmsQ P B Ψ Q C Γ Φ R obs arms a b ε Δ →
+        Benitoite.Release.Refinement.Exhaustive P a (Benitoite.Release.Refinement.unguardedPats arms) →
+          Benitoite.Release.Refinement.HasTypeCQ P B Ψ Q C Γ Φ R (Benitoite.Release.Refinement.Comp.match v arms) b ε Δ
+Benitoite.Release.Refinement.HasTypeArmsQ.nil {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {Δ : Benitoite.Release.Refinement.LocalCtx}
+  {R : Option Benitoite.Release.Refinement.Ty} {obs : Option Benitoite.Release.Refinement.Term}
+  {a b : Benitoite.Release.Refinement.Ty} {ε : Benitoite.Release.Refinement.Eff} :
+  Benitoite.Release.Refinement.Ty.Annotation P C Γ b →
+    Benitoite.Release.Refinement.HasTypeArmsQ P B Ψ Q C Γ Φ R obs [] a b ε Δ
+Benitoite.Release.Refinement.SubstOk.add_conditions {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {Δ : Benitoite.Release.Refinement.Ctx}
+  {Ξ : List Benitoite.Release.Refinement.Pred} {R : Option Benitoite.Release.Refinement.Ty}
+  {ν : Nat → Benitoite.Release.Refinement.Val} (added : List Benitoite.Release.Refinement.Pred)
+  (h : Benitoite.Release.Refinement.SubstOk P B store Q C Γ Φ Δ Ξ R ν)
+  (hA : Benitoite.Release.Refinement.Builtins.ValueAssumptions P B) (hw : store.WF) :
+  Benitoite.Release.Refinement.SubstOk P B store Q C Γ Φ Δ (added ++ Ξ) R ν
+Benitoite.Release.Refinement.SubstOk.raw_bool_annotation {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {store : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {Δ : Benitoite.Release.Refinement.Ctx}
+  {Ξ : List Benitoite.Release.Refinement.Pred} {R : Option Benitoite.Release.Refinement.Ty}
+  {ν : Nat → Benitoite.Release.Refinement.Val} {p : Benitoite.Release.Refinement.Pred}
+  (h : Benitoite.Release.Refinement.SubstOk P B store Q C Γ Φ Δ Ξ R ν)
+  (ha :
+    Benitoite.Release.Refinement.Ty.Annotation P C Γ
+      ((Benitoite.Release.Refinement.Ty.base Benitoite.Release.BaseTy.boolean).refined p)) :
+  Benitoite.Release.Refinement.Ty.Annotation P C Δ
+    ((Benitoite.Release.Refinement.Ty.base Benitoite.Release.BaseTy.boolean).refined
+      (Benitoite.Release.Refinement.predBind
+        (Benitoite.Release.Refinement.upValues (Benitoite.Release.Refinement.valEnv ν).values) p))
+Benitoite.Release.Refinement.PathLiteral : Type
+Benitoite.Release.Refinement.PathLiteral.term :
+  Benitoite.Release.Refinement.PathLiteral → Benitoite.Release.Refinement.Term
+Benitoite.Release.Refinement.PathLiteral.predicate (lit : Benitoite.Release.Refinement.PathLiteral)
+  (t : Benitoite.Release.Refinement.Term) : Benitoite.Release.Refinement.Pred
+Benitoite.Release.Refinement.pathLiteral? : Benitoite.Release.Const → Option Benitoite.Release.Refinement.PathLiteral
+Benitoite.Release.Refinement.patternTest? : Benitoite.Release.Pat → Option Benitoite.Release.Refinement.PathTest
+Benitoite.Release.Refinement.alternativesTest :
+  List Benitoite.Release.Alt → Option Benitoite.Release.Refinement.PathTest
+Benitoite.Release.Refinement.irrefutableField : Benitoite.Release.Pat → Bool
+Benitoite.Release.Refinement.excludedTest? : Benitoite.Release.Pat → Option Benitoite.Release.Refinement.PathTest
+Benitoite.Release.Refinement.HasTypeArmsQ.capture_plain {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Γ : Benitoite.Release.Refinement.Ctx} {Φ : List Benitoite.Release.Refinement.Pred}
+  {R Rs : Option Benitoite.Release.Refinement.Ty} {obs : Option Benitoite.Release.Refinement.Term}
+  {arms : List Benitoite.Release.Refinement.Arm} {a b : Benitoite.Release.Refinement.Ty}
+  {e : Benitoite.Release.Refinement.Eff} {L : Benitoite.Release.Refinement.LocalCtx}
+  {cap : Benitoite.Release.Refinement.Capture} {vs v : Benitoite.Release.Refinement.Val} {n : Nat}
+  {alts : List Benitoite.Release.Alt} {body : Benitoite.Release.Refinement.Comp}
+  (h : Benitoite.Release.Refinement.HasTypeArmsQ P B Ψ Benitoite.Release.Qempty [] Γ Φ Rs obs arms a b e L)
+  (hc : Benitoite.Release.Refinement.CaptureOk P B Ψ R Γ Φ cap)
+  (ho :
+    ∀ (t : Benitoite.Release.Refinement.Term),
+      obs = Option.some t → vs.toTerm? = Option.some t ∧ ∃ sort, Benitoite.Release.Refinement.Term.HasSort Γ t sort)
+  (hv : v = Benitoite.Release.Refinement.closeVal cap vs)
+  (hi : arms[n]? = Option.some (Benitoite.Release.Refinement.Arm.mk alts Option.none body))
+  (he : Benitoite.Release.Refinement.MatchPathsEvaluated v arms n) :
+  ∃ δ Ξ,
+    Benitoite.Release.Refinement.AltsTy P alts a δ ∧
+      Benitoite.Release.Refinement.CaptureOk P B Ψ R Γ Ξ cap ∧
+        Benitoite.Release.Refinement.HasTypeCQ P B Ψ Benitoite.Release.Qempty []
+          (Benitoite.Release.Refinement.bindParams Γ δ) (Benitoite.Release.Refinement.liftMany δ.length Ξ)
+          (Option.map (Benitoite.Release.Refinement.Ty.shiftV δ.length 0) Rs) body
+          (Benitoite.Release.Refinement.Ty.shiftV δ.length 0 b) (Benitoite.Release.Refinement.Eff.shiftV δ.length 0 e)
+          (Benitoite.Release.Refinement.localExtend δ.length L)
+Benitoite.Release.Refinement.MatchFacts.PatTy.binders_length {P : Benitoite.Release.Refinement.Program}
+  {p : Benitoite.Release.Pat} {a : Benitoite.Release.Refinement.Ty} {δ : List Benitoite.Release.Refinement.Ty}
+  (h : Benitoite.Release.Refinement.PatTy P p a δ) : δ.length = p.binders
+Benitoite.Release.Refinement.MatchFacts.PatTys.binders_length {P : Benitoite.Release.Refinement.Program}
+  {ps : List Benitoite.Release.Pat} {as δ : List Benitoite.Release.Refinement.Ty}
+  (h : Benitoite.Release.Refinement.PatTys P ps as δ) : δ.length = Benitoite.Release.Pat.bindersList ps
+Benitoite.Release.Refinement.MatchFacts.matchVal_binders {p : Benitoite.Release.Pat}
+  {v : Benitoite.Release.Refinement.Val} {ws : List Benitoite.Release.Refinement.Val}
+  (h : Benitoite.Release.Refinement.matchVal p v = Option.some ws) : ws.length = p.binders
+Benitoite.Release.Refinement.MatchFacts.matchList_binders {ps : List Benitoite.Release.Pat}
+  {vs ws : List Benitoite.Release.Refinement.Val} (h : Benitoite.Release.Refinement.matchList ps vs = Option.some ws) :
+  ws.length = Benitoite.Release.Pat.bindersList ps
+Benitoite.Release.Refinement.MatchFacts.selectSlots_total {α : Type} {xs : List α} {slots : List Nat}
+  (h : ∀ (i : Nat), i ∈ slots → i < xs.length) :
+  ∃ ys, Benitoite.Release.Refinement.selectSlots xs slots = Option.some ys
+Benitoite.Release.Refinement.MatchFacts.firstAlt_none_all {P : Benitoite.Release.Refinement.Program}
+  {alts : List Benitoite.Release.Alt} {a : Benitoite.Release.Refinement.Ty} {δ : List Benitoite.Release.Refinement.Ty}
+  {v : Benitoite.Release.Refinement.Val} (ha : Benitoite.Release.Refinement.AltsTy P alts a δ)
+  (hf : Benitoite.Release.Refinement.firstAlt v alts = Option.none) (alt : Benitoite.Release.Alt) :
+  alt ∈ alts → Benitoite.Release.Refinement.matchVal alt.pat v = Option.none
+Benitoite.Release.Refinement.MatchFacts.firstAlt_some_mem {v : Benitoite.Release.Refinement.Val}
+  {ws : List Benitoite.Release.Refinement.Val} {alts : List Benitoite.Release.Alt} :
+  Benitoite.Release.Refinement.firstAlt v alts = Option.some ws →
+    ∃ alt, alt ∈ alts ∧ ∃ us, Benitoite.Release.Refinement.matchVal alt.pat v = Option.some us
+Benitoite.Release.Refinement.MatchFacts.con_root {c : Benitoite.Release.ConName} {ps : List Benitoite.Release.Pat}
+  {v : Benitoite.Release.Refinement.Val} {ws : List Benitoite.Release.Refinement.Val}
+  (h : Benitoite.Release.Refinement.matchVal (Benitoite.Release.Pat.con c ps) v = Option.some ws) :
+  ∃ slots, v.toTerm? = Option.some (Benitoite.Release.Refinement.Term.dataValue c slots)
+Benitoite.Release.Refinement.MatchFacts.list_root {b : List Benitoite.Release.Pat}
+  {r : Option Benitoite.Release.ListRest} {a : List Benitoite.Release.Pat} {v : Benitoite.Release.Refinement.Val}
+  {ws : List Benitoite.Release.Refinement.Val}
+  (hn : (!Decidable.decide ((b.isEmpty && a.isEmpty) = Bool.true)) = Bool.true)
+  (h : Benitoite.Release.Refinement.matchVal (Benitoite.Release.Pat.list b r a) v = Option.some ws) :
+  ∃ slots, v.toTerm? = Option.some (Benitoite.Release.Refinement.Term.listValue slots) ∧ 0 < slots.length
+Benitoite.Release.Refinement.MatchFacts.observeSlots_length (η : Benitoite.Release.Refinement.ObservationEnvModel)
+  (slots : List (Option Benitoite.Release.Refinement.Term)) :
+  (Benitoite.Release.Refinement.observeSlots η slots).length = slots.length
+Benitoite.Release.Refinement.MatchFacts.eval_constructor (c d : Benitoite.Release.ConName)
+  (slots : List (Option Benitoite.Release.Refinement.Term)) :
+  Benitoite.Release.Refinement.Pred.evalWith (fun x => Option.none)
+      (Benitoite.Release.Refinement.Pred.constructorIs (Benitoite.Release.Refinement.Term.dataValue d slots) c) =
+    Option.some (Decidable.decide (d = c))
+Benitoite.Release.Refinement.MatchFacts.eval_nonempty (slots : List (Option Benitoite.Release.Refinement.Term)) :
+  Benitoite.Release.Refinement.Pred.evalWith (fun x => Option.none)
+      (Benitoite.Release.Refinement.PathTest.nonempty.predicate (Benitoite.Release.Refinement.Term.listValue slots)) =
+    Option.some (Decidable.decide (0 < slots.length))
+Benitoite.Release.Refinement.MatchFacts.eval_empty (slots : List (Option Benitoite.Release.Refinement.Term)) :
+  Benitoite.Release.Refinement.Pred.evalWith (fun x => Option.none)
+      (Benitoite.Release.Refinement.PathTest.empty.predicate (Benitoite.Release.Refinement.Term.listValue slots)) =
+    Option.some (Decidable.decide (slots.length = 0))
+Benitoite.Release.Refinement.MatchFacts.literal_test_true {c : Benitoite.Release.Const}
+  {v : Benitoite.Release.Refinement.Val} {ws : List Benitoite.Release.Refinement.Val}
+  {lit : Benitoite.Release.Refinement.PathLiteral} {t : Benitoite.Release.Refinement.Term}
+  (hp : Benitoite.Release.Refinement.pathLiteral? c = Option.some lit)
+  (hm : Benitoite.Release.Refinement.matchVal (Benitoite.Release.Pat.const c) v = Option.some ws)
+  (ht : v.toTerm? = Option.some t) :
+  Benitoite.Release.Refinement.Pred.evalWith (fun x => Option.none)
+      ((Benitoite.Release.Refinement.PathTest.literal lit).predicate t) =
+    Option.some Bool.true
+Benitoite.Release.Refinement.MatchFacts.range_test_true {lo hi : Benitoite.Release.Const}
+  {v : Benitoite.Release.Refinement.Val} {ws : List Benitoite.Release.Refinement.Val}
+  {test : Benitoite.Release.Refinement.PathTest} {t : Benitoite.Release.Refinement.Term}
+  (hp : Benitoite.Release.Refinement.patternTest? (Benitoite.Release.Pat.range lo hi) = Option.some test)
+  (hm : Benitoite.Release.Refinement.matchVal (Benitoite.Release.Pat.range lo hi) v = Option.some ws)
+  (ht : v.toTerm? = Option.some t) :
+  Benitoite.Release.Refinement.Pred.evalWith (fun x => Option.none) (test.predicate t) = Option.some Bool.true
+Benitoite.Release.Refinement.MatchFacts.empty_root {v : Benitoite.Release.Refinement.Val}
+  {ws : List Benitoite.Release.Refinement.Val}
+  (hm : Benitoite.Release.Refinement.matchVal (Benitoite.Release.Pat.list [] Option.none []) v = Option.some ws) :
+  ∃ slots, v.toTerm? = Option.some (Benitoite.Release.Refinement.Term.listValue slots) ∧ slots.length = 0
+Benitoite.Release.Refinement.MatchFacts.pattern_test_true {pat : Benitoite.Release.Pat}
+  {v : Benitoite.Release.Refinement.Val} {ws : List Benitoite.Release.Refinement.Val}
+  {test : Benitoite.Release.Refinement.PathTest} {t : Benitoite.Release.Refinement.Term}
+  (hp : Benitoite.Release.Refinement.patternTest? pat = Option.some test)
+  (hm : Benitoite.Release.Refinement.matchVal pat v = Option.some ws) (ht : v.toTerm? = Option.some t) :
+  Benitoite.Release.Refinement.Pred.evalWith (fun x => Option.none) (test.predicate t) = Option.some Bool.true
+Benitoite.Release.Refinement.MatchFacts.alternatives_test_true {alts : List Benitoite.Release.Alt}
+  {test : Benitoite.Release.Refinement.PathTest} {alt : Benitoite.Release.Alt} {v : Benitoite.Release.Refinement.Val}
+  {ws : List Benitoite.Release.Refinement.Val} {t : Benitoite.Release.Refinement.Term}
+  (hp : Benitoite.Release.Refinement.alternativesTest alts = Option.some test) (ha : alt ∈ alts)
+  (hm : Benitoite.Release.Refinement.matchVal alt.pat v = Option.some ws) (ht : v.toTerm? = Option.some t) :
+  Benitoite.Release.Refinement.Pred.evalWith (fun x => Option.none) (test.predicate t) = Option.some Bool.true
+Benitoite.Release.Refinement.MatchFacts.matched_true {v : Benitoite.Release.Refinement.Val}
+  {ws : List Benitoite.Release.Refinement.Val} {alts : List Benitoite.Release.Alt}
+  {test : Benitoite.Release.Refinement.PathTest} {t : Benitoite.Release.Refinement.Term}
+  (hf : Benitoite.Release.Refinement.firstAlt v alts = Option.some ws)
+  (hm : test ∈ Benitoite.Release.Refinement.matchedTests alts) (ht : v.toTerm? = Option.some t) :
+  Benitoite.Release.Refinement.Pred.evalWith (fun x => Option.none) (test.predicate t) = Option.some Bool.true
+Benitoite.Release.Refinement.MatchFacts.matched_evalClosed_true {v : Benitoite.Release.Refinement.Val}
+  {ws : List Benitoite.Release.Refinement.Val} {alts : List Benitoite.Release.Alt}
+  {test : Benitoite.Release.Refinement.PathTest} {t : Benitoite.Release.Refinement.Term}
+  (hf : Benitoite.Release.Refinement.firstAlt v alts = Option.some ws)
+  (hm : test ∈ Benitoite.Release.Refinement.matchedTests alts) (ht : v.toTerm? = Option.some t)
+  (hw : Benitoite.Release.Refinement.Pred.WF 0 (test.predicate t))
+  (hs : Benitoite.Release.Refinement.Pred.Sorted [] Option.none (test.predicate t)) :
+  (test.predicate t).evalClosed = Option.some Bool.true
+Benitoite.Release.Refinement.MatchFacts.literal_test_false {P : Benitoite.Release.Refinement.Program}
+  {c : Benitoite.Release.Const} {v : Benitoite.Release.Refinement.Val} {lit : Benitoite.Release.Refinement.PathLiteral}
+  {t : Benitoite.Release.Refinement.Term} (hc : c.patternAllowed = Bool.true)
+  (hv : Benitoite.Release.Refinement.MatchFacts.RootShape P (Benitoite.Release.Refinement.embedConst c).type v)
+  (hp : Benitoite.Release.Refinement.pathLiteral? c = Option.some lit)
+  (hm : Benitoite.Release.Refinement.matchVal (Benitoite.Release.Pat.const c) v = Option.none)
+  (ht : v.toTerm? = Option.some t) :
+  Benitoite.Release.Refinement.Pred.evalWith (fun x => Option.none)
+      ((Benitoite.Release.Refinement.PathTest.literal lit).predicate t) =
+    Option.some Bool.false
+Benitoite.Release.Refinement.MatchFacts.character_le_decide (a b : Char) :
+  (Decidable.decide (a.toNat < b.toNat) || a == b) = Decidable.decide (a.toNat ≤ b.toNat)
+Benitoite.Release.Refinement.MatchFacts.eval_integer_range (lo hi n : Benitoite.Release.Integer64Value) :
+  Benitoite.Release.Refinement.Pred.evalWith (fun x => Option.none)
+      ((Benitoite.Release.Refinement.PathTest.integerRange lo.val hi.val).predicate
+        (Benitoite.Release.Refinement.Term.integer n.val)) =
+    Option.some
+      (Benitoite.Release.Refinement.patternRange (Benitoite.Release.Const.integer lo)
+        (Benitoite.Release.Const.integer hi) (Benitoite.Release.Refinement.Const.integer n))
+Benitoite.Release.Refinement.MatchFacts.eval_character_range (lo hi n : Char) :
+  Benitoite.Release.Refinement.Pred.evalWith (fun x => Option.none)
+      ((Benitoite.Release.Refinement.PathTest.characterRange lo hi).predicate
+        (Benitoite.Release.Refinement.Term.character n)) =
+    Option.some
+      (Benitoite.Release.Refinement.patternRange (Benitoite.Release.Const.character lo)
+        (Benitoite.Release.Const.character hi) (Benitoite.Release.Refinement.Const.character n))
+Benitoite.Release.Refinement.MatchFacts.range_test_false {P : Benitoite.Release.Refinement.Program}
+  {lo hi : Benitoite.Release.Const} {v : Benitoite.Release.Refinement.Val}
+  {test : Benitoite.Release.Refinement.PathTest} {t : Benitoite.Release.Refinement.Term}
+  {a : Benitoite.Release.Refinement.Ty} {δ : List Benitoite.Release.Refinement.Ty}
+  (hpat : Benitoite.Release.Refinement.PatTy P (Benitoite.Release.Pat.range lo hi) a δ)
+  (hv : Benitoite.Release.Refinement.MatchFacts.RootShape P a v)
+  (hp : Benitoite.Release.Refinement.patternTest? (Benitoite.Release.Pat.range lo hi) = Option.some test)
+  (hm : Benitoite.Release.Refinement.matchVal (Benitoite.Release.Pat.range lo hi) v = Option.none)
+  (ht : v.toTerm? = Option.some t) :
+  Benitoite.Release.Refinement.Pred.evalWith (fun x => Option.none) (test.predicate t) = Option.some Bool.false
+Benitoite.Release.Refinement.MatchFacts.PatTys.arity_length {P : Benitoite.Release.Refinement.Program}
+  {ps : List Benitoite.Release.Pat} {as δ : List Benitoite.Release.Refinement.Ty}
+  (h : Benitoite.Release.Refinement.PatTys P ps as δ) : ps.length = as.length
+Benitoite.Release.Refinement.MatchFacts.irrefutable_fields_match {ps : List Benitoite.Release.Pat}
+  {vs : List Benitoite.Release.Refinement.Val} (hf : ps.all Benitoite.Release.Refinement.irrefutableField = Bool.true)
+  (hl : ps.length = vs.length) : ∃ ws, Benitoite.Release.Refinement.matchList ps vs = Option.some ws
+Benitoite.Release.Refinement.MatchFacts.constructor_test_false {P : Benitoite.Release.Refinement.Program}
+  {c : Benitoite.Release.ConName} {ps : List Benitoite.Release.Pat} {cd : Benitoite.Release.Refinement.ConDecl}
+  {ts δ : List Benitoite.Release.Refinement.Ty} {v : Benitoite.Release.Refinement.Val}
+  {t : Benitoite.Release.Refinement.Term} (hc : P.cons c = Option.some cd)
+  (hp : Benitoite.Release.Refinement.PatTys P ps (List.map (Benitoite.Release.Refinement.Ty.subst ts []) cd.args) δ)
+  (hfields : ps.all Benitoite.Release.Refinement.irrefutableField = Bool.true)
+  (hv : Benitoite.Release.Refinement.MatchFacts.RootShape P (Benitoite.Release.Refinement.Ty.data cd.data ts) v)
+  (hm : Benitoite.Release.Refinement.matchVal (Benitoite.Release.Pat.con c ps) v = Option.none)
+  (ht : v.toTerm? = Option.some t) :
+  Benitoite.Release.Refinement.Pred.evalWith (fun x => Option.none)
+      (Benitoite.Release.Refinement.Pred.constructorIs t c) =
+    Option.some Bool.false
+Benitoite.Release.Refinement.MatchFacts.empty_test_excluded {P : Benitoite.Release.Refinement.Program}
+  {a : Benitoite.Release.Refinement.Ty} {δ : List Benitoite.Release.Refinement.Ty}
+  {v : Benitoite.Release.Refinement.Val} {t : Benitoite.Release.Refinement.Term}
+  (hp : Benitoite.Release.Refinement.PatTy P (Benitoite.Release.Pat.list [] Option.none []) a δ)
+  (hv : Benitoite.Release.Refinement.MatchFacts.RootShape P a v)
+  (hm : Benitoite.Release.Refinement.matchVal (Benitoite.Release.Pat.list [] Option.none []) v = Option.none)
+  (ht : v.toTerm? = Option.some t) :
+  Benitoite.Release.Refinement.Pred.evalWith (fun x => Option.none)
+      (Benitoite.Release.Refinement.PathTest.nonempty.predicate t) =
+    Option.some Bool.true
+Benitoite.Release.Refinement.MatchFacts.pattern_excluded_true {P : Benitoite.Release.Refinement.Program}
+  {pat : Benitoite.Release.Pat} {a : Benitoite.Release.Refinement.Ty} {δ : List Benitoite.Release.Refinement.Ty}
+  {v : Benitoite.Release.Refinement.Val} {test : Benitoite.Release.Refinement.PathTest}
+  {t : Benitoite.Release.Refinement.Term} (hpat : Benitoite.Release.Refinement.PatTy P pat a δ)
+  (hv : Benitoite.Release.Refinement.MatchFacts.RootShape P a v)
+  (hp : Benitoite.Release.Refinement.excludedTest? pat = Option.some test)
+  (hm : Benitoite.Release.Refinement.matchVal pat v = Option.none) (ht : v.toTerm? = Option.some t) :
+  Benitoite.Release.Refinement.Pred.evalWith (fun x => Option.none) (test.predicate t) = Option.some Bool.true
+Benitoite.Release.Refinement.MatchFacts.excluded_true {P : Benitoite.Release.Refinement.Program}
+  {alts : List Benitoite.Release.Alt} {a : Benitoite.Release.Refinement.Ty} {δ : List Benitoite.Release.Refinement.Ty}
+  {v : Benitoite.Release.Refinement.Val} {test : Benitoite.Release.Refinement.PathTest}
+  {t : Benitoite.Release.Refinement.Term} (ha : Benitoite.Release.Refinement.AltsTy P alts a δ)
+  (hv : Benitoite.Release.Refinement.MatchFacts.RootShape P a v)
+  (hf : Benitoite.Release.Refinement.firstAlt v alts = Option.none)
+  (hm : test ∈ Benitoite.Release.Refinement.excludedTests alts) (ht : v.toTerm? = Option.some t) :
+  Benitoite.Release.Refinement.Pred.evalWith (fun x => Option.none) (test.predicate t) = Option.some Bool.true
+Benitoite.Release.Refinement.MatchFacts.excluded_evalClosed_true {P : Benitoite.Release.Refinement.Program}
+  {alts : List Benitoite.Release.Alt} {a : Benitoite.Release.Refinement.Ty} {δ : List Benitoite.Release.Refinement.Ty}
+  {v : Benitoite.Release.Refinement.Val} {test : Benitoite.Release.Refinement.PathTest}
+  {t : Benitoite.Release.Refinement.Term} (ha : Benitoite.Release.Refinement.AltsTy P alts a δ)
+  (hv : Benitoite.Release.Refinement.MatchFacts.RootShape P a v)
+  (hf : Benitoite.Release.Refinement.firstAlt v alts = Option.none)
+  (hm : test ∈ Benitoite.Release.Refinement.excludedTests alts) (ht : v.toTerm? = Option.some t)
+  (hw : Benitoite.Release.Refinement.Pred.WF 0 (test.predicate t))
+  (hs : Benitoite.Release.Refinement.Pred.Sorted [] Option.none (test.predicate t)) :
+  (test.predicate t).evalClosed = Option.some Bool.true
+Benitoite.Release.Refinement.MatchFacts.matched_paths_true {v : Benitoite.Release.Refinement.Val}
+  {alts : List Benitoite.Release.Alt} {ws : List Benitoite.Release.Refinement.Val}
+  (hm : Benitoite.Release.Refinement.firstAlt v alts = Option.some ws)
+  (hw :
+    ∀ (p : Benitoite.Release.Refinement.Pred),
+      p ∈ Benitoite.Release.Refinement.pathFacts v.toTerm? (Benitoite.Release.Refinement.matchedTests alts) →
+        Benitoite.Release.Refinement.Pred.WF 0 p ∧ Benitoite.Release.Refinement.Pred.Sorted [] Option.none p) :
+  Benitoite.Release.Refinement.PathsEvaluated v (Benitoite.Release.Refinement.matchedTests alts)
+Benitoite.Release.Refinement.MatchFacts.excluded_paths_true {P : Benitoite.Release.Refinement.Program}
+  {alts : List Benitoite.Release.Alt} {a : Benitoite.Release.Refinement.Ty} {δ : List Benitoite.Release.Refinement.Ty}
+  {v : Benitoite.Release.Refinement.Val} (ha : Benitoite.Release.Refinement.AltsTy P alts a δ)
+  (hv : Benitoite.Release.Refinement.MatchFacts.RootShape P a v)
+  (hm : Benitoite.Release.Refinement.firstAlt v alts = Option.none)
+  (hw :
+    ∀ (p : Benitoite.Release.Refinement.Pred),
+      p ∈ Benitoite.Release.Refinement.pathFacts v.toTerm? (Benitoite.Release.Refinement.excludedTests alts) →
+        Benitoite.Release.Refinement.Pred.WF 0 p ∧ Benitoite.Release.Refinement.Pred.Sorted [] Option.none p) :
+  Benitoite.Release.Refinement.PathsEvaluated v (Benitoite.Release.Refinement.excludedTests alts)
+Benitoite.Release.Refinement.MatchFacts.RootShape (P : Benitoite.Release.Refinement.Program) :
+  Benitoite.Release.Refinement.Ty → Benitoite.Release.Refinement.Val → Prop
+Benitoite.Release.Refinement.MatchFacts.RootShape.core {P : Benitoite.Release.Refinement.Program}
+  {a : Benitoite.Release.Refinement.Ty} {v : Benitoite.Release.Refinement.Val} :
+  Benitoite.Release.Refinement.MatchFacts.RootShape P a.core v ↔ Benitoite.Release.Refinement.MatchFacts.RootShape P a v
+Benitoite.Release.Refinement.MatchFacts.RootShape.refineNorm {P : Benitoite.Release.Refinement.Program}
+  {a : Benitoite.Release.Refinement.Ty} {p : Benitoite.Release.Refinement.Pred} {v : Benitoite.Release.Refinement.Val} :
+  Benitoite.Release.Refinement.MatchFacts.RootShape P (a.refineNorm p) v ↔
+    Benitoite.Release.Refinement.MatchFacts.RootShape P a v
+Benitoite.Release.Refinement.MatchFacts.RootShape.norm {P : Benitoite.Release.Refinement.Program}
+  {a : Benitoite.Release.Refinement.Ty} {v : Benitoite.Release.Refinement.Val} :
+  Benitoite.Release.Refinement.MatchFacts.RootShape P a.norm v ↔ Benitoite.Release.Refinement.MatchFacts.RootShape P a v
+Benitoite.Release.Refinement.MatchFacts.RootShape.subtype {P : Benitoite.Release.Refinement.Program}
+  {Γ : Benitoite.Release.Refinement.Ctx} {Φ : List Benitoite.Release.Refinement.Pred}
+  {a b : Benitoite.Release.Refinement.Ty} {v : Benitoite.Release.Refinement.Val}
+  (h : Benitoite.Release.Refinement.Ty.LeQ Γ Φ a b) (hv : Benitoite.Release.Refinement.MatchFacts.RootShape P a v) :
+  Benitoite.Release.Refinement.MatchFacts.RootShape P b v
+Benitoite.Release.Refinement.MatchFacts.RootShape.scalar {P : Benitoite.Release.Refinement.Program}
+  {a : Benitoite.Release.Refinement.Ty} {v : Benitoite.Release.Refinement.Val} {base : Benitoite.Release.BaseTy}
+  (h : Benitoite.Release.Refinement.MatchFacts.RootShape P a v) (ha : a = Benitoite.Release.Refinement.Ty.base base) :
+  ∃ c, v = Benitoite.Release.Refinement.Val.const c ∧ c.type = Benitoite.Release.Refinement.Ty.base base
+Benitoite.Release.Refinement.MatchFacts.RootShape.list {P : Benitoite.Release.Refinement.Program}
+  {a : Benitoite.Release.Refinement.Ty} {v : Benitoite.Release.Refinement.Val}
+  {element : Benitoite.Release.Refinement.Ty} (h : Benitoite.Release.Refinement.MatchFacts.RootShape P a v)
+  (ha : a = element.list) : ∃ elems, v = Benitoite.Release.Refinement.Val.list elems
+Benitoite.Release.Refinement.MatchFacts.RootShape.data {P : Benitoite.Release.Refinement.Program}
+  {a : Benitoite.Release.Refinement.Ty} {v : Benitoite.Release.Refinement.Val} {d : Benitoite.Release.DataName}
+  {ts : List Benitoite.Release.Refinement.Ty} (h : Benitoite.Release.Refinement.MatchFacts.RootShape P a v)
+  (ha : a = Benitoite.Release.Refinement.Ty.data d ts) :
+  (∃ c tys args cd,
+      v = Benitoite.Release.Refinement.Val.con c tys args ∧ P.cons c = Option.some cd ∧ args.length = cd.args.length) ∨
+    ∃ detail cd,
+      v = Benitoite.Release.Refinement.Val.atError detail ∧
+        P.cons "Scope.ScopeError.At" = Option.some cd ∧ cd.args.length = detail.values.length
+Benitoite.Release.Refinement.MatchFacts.typed_values_length {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {vs : List Benitoite.Release.Refinement.Val}
+  {as : List Benitoite.Release.Refinement.Ty} (h : Benitoite.Release.Refinement.HasTypeVsQ P B Ψ Q C Γ Φ vs as) :
+  vs.length = as.length
+Benitoite.Release.Refinement.MatchFacts.rootShape_of_typing {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Φ : List Benitoite.Release.Refinement.Pred}
+  {v : Benitoite.Release.Refinement.Val} {a : Benitoite.Release.Refinement.Ty}
+  (h : Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C [] Φ v a) :
+  Benitoite.Release.Refinement.MatchFacts.RootShape P a v
+Benitoite.Release.Refinement.MatchFacts.excluded_true_of_typing {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Φ : List Benitoite.Release.Refinement.Pred}
+  {alts : List Benitoite.Release.Alt} {a : Benitoite.Release.Refinement.Ty} {δ : List Benitoite.Release.Refinement.Ty}
+  {v : Benitoite.Release.Refinement.Val} {test : Benitoite.Release.Refinement.PathTest}
+  {t : Benitoite.Release.Refinement.Term} (ha : Benitoite.Release.Refinement.AltsTy P alts a δ)
+  (hv : Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C [] Φ v a)
+  (hf : Benitoite.Release.Refinement.firstAlt v alts = Option.none)
+  (hm : test ∈ Benitoite.Release.Refinement.excludedTests alts) (ht : v.toTerm? = Option.some t) :
+  Benitoite.Release.Refinement.Pred.evalWith (fun x => Option.none) (test.predicate t) = Option.some Bool.true
+Benitoite.Release.Refinement.MatchFacts.excluded_evalClosed_true_of_typing {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Φ : List Benitoite.Release.Refinement.Pred}
+  {alts : List Benitoite.Release.Alt} {a : Benitoite.Release.Refinement.Ty} {δ : List Benitoite.Release.Refinement.Ty}
+  {v : Benitoite.Release.Refinement.Val} {test : Benitoite.Release.Refinement.PathTest}
+  {t : Benitoite.Release.Refinement.Term} (ha : Benitoite.Release.Refinement.AltsTy P alts a δ)
+  (hv : Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C [] Φ v a)
+  (hf : Benitoite.Release.Refinement.firstAlt v alts = Option.none)
+  (hm : test ∈ Benitoite.Release.Refinement.excludedTests alts) (ht : v.toTerm? = Option.some t)
+  (hw : Benitoite.Release.Refinement.Pred.WF 0 (test.predicate t))
+  (hs : Benitoite.Release.Refinement.Pred.Sorted [] Option.none (test.predicate t)) :
+  (test.predicate t).evalClosed = Option.some Bool.true
+Benitoite.Release.Refinement.MatchFacts.excluded_paths_true_of_typing {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Φ : List Benitoite.Release.Refinement.Pred}
+  {alts : List Benitoite.Release.Alt} {a : Benitoite.Release.Refinement.Ty} {δ : List Benitoite.Release.Refinement.Ty}
+  {v : Benitoite.Release.Refinement.Val} (ha : Benitoite.Release.Refinement.AltsTy P alts a δ)
+  (hv : Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C [] Φ v a)
+  (hm : Benitoite.Release.Refinement.firstAlt v alts = Option.none)
+  (hw :
+    ∀ (p : Benitoite.Release.Refinement.Pred),
+      p ∈ Benitoite.Release.Refinement.pathFacts v.toTerm? (Benitoite.Release.Refinement.excludedTests alts) →
+        Benitoite.Release.Refinement.Pred.WF 0 p ∧ Benitoite.Release.Refinement.Pred.Sorted [] Option.none p) :
+  Benitoite.Release.Refinement.PathsEvaluated v (Benitoite.Release.Refinement.excludedTests alts)

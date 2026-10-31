@@ -28,6 +28,19 @@ def BuilderCellOk (P : Program) (B : Builtins) (Ψ : StoreTy)
   | .list a, .list vs => Ty.Annotation P [] [] a ∧ HasTypeEach P B Ψ [] [] [] vs a
   | _, _ => False
 
+/-- guard の評価前の環境と、真の条件の下の本体の導出。 -/
+inductive GuardBodyTy (P : Program) (B : Builtins) (Ψ : StoreTy) (R : Option Ty) :
+    Closure → Ty → Ty → Eff → Prop where
+  | mk {cap code0 code Γ Φ Rs p a e L ρ} :
+      CaptureOk P B Ψ R Γ Φ cap →
+      Ty.Annotation P [] Γ (.refined (.base .boolean) p) →
+      HasTypeCQ P B Ψ Qempty [] Γ (p.open (.boolean true) :: Φ) Rs code0 a e L →
+      CaptureLocals Ψ cap.env L ρ → code = code0.resolveLocals ρ →
+      Ty.Annotation P [] [] (.dependentFn (.done (cap.closeTy a) (cap.closeEff e))) →
+      cap.closeR Rs = R → (∀ r, Rs = some r → r.Declared P [] Γ) →
+      GuardBodyTy P B Ψ R (.mk cap code)
+        (cap.closeTy (.refined (.base .boolean) p)) (cap.closeTy a) (cap.closeEff e)
+
 inductive ContTy (P : Program) (B : Builtins) (σ : PathEnv) (Ψ : StoreTy) :
     Option Ty → Eff → Cont → Ty → Ty → Eff → Option Ty → Prop where
   | K_Empty {R ε a Eb} : Eff.Sub ε Eb → Ty.Annotation P [] [] a →
@@ -67,17 +80,18 @@ inductive ContTy (P : Program) (B : Builtins) (σ : PathEnv) (Ψ : StoreTy) :
       (Eff.mem e' (.name stateEff (.fixed .top)) → Eff.mem ε (.name stateEff (.fixed .top))) →
       ContTy P B σ Ψ R ε k a b Eb Re →
       ContTy P B σ Ψ R ε (.drop l :: k) a b Eb Re
-  | K_Guard {R ε v cap arms next body k a b Eb Re e1 Γ Φ Rs vs t as es arms0 L ρ} :
+  | K_Guard {R ε v cap arms next body k a b Eb Re e1 Γ Φ Rs vs t as es arms0 L ρ obs input} :
       CaptureOk P B Ψ R Γ Φ cap →
       HasTypeV P B Ψ [] Γ Φ vs t →
-      HasTypeArmsQ P B Ψ Qempty [] Γ Φ Rs arms0 t as es L →
+      (∀ term, obs = some term → vs.toTerm? = some term ∧ ∃ sort, term.HasSort Γ sort) →
+      HasTypeArmsQ P B Ψ Qempty [] Γ Φ Rs obs arms0 t as es L →
       CaptureLocals Ψ cap.env L ρ → arms = Arm.resolveLocalsList ρ arms0 →
       (∀ r, Rs = some r → Ty.Declared P [] Γ r) →
       Exhaustive P t (unguardedPats arms0) →
       v = closeVal cap vs → cap.closeR Rs = R → cap.closeTy as = a → cap.closeEff es = e1 →
-      ClosureTy P B Ψ [] R body a e1 → Eff.Sub e1 ε → MatchPrefix v arms next →
+      GuardBodyTy P B Ψ R body input a e1 → Eff.Sub e1 ε → MatchPrefix v arms next →
       ContTy P B σ Ψ R ε k a b Eb Re → Frame.Adequate σ (.guardF v cap arms next body) →
-      ContTy P B σ Ψ none Eff.empty (.guardF v cap arms next body :: k) (.base .boolean) b Eb Re
+      ContTy P B σ Ψ none Eff.empty (.guardF v cap arms next body :: k) input b Eb Re
   | K_Sub {R ε k a a' b Eb Re} : ContTy P B σ Ψ R ε k a' b Eb Re → Ty.LeQ [] [] a a' →
       ContTy P B σ Ψ R ε k a b Eb Re
 
@@ -201,25 +215,6 @@ theorem CellOk.adequate {P B σ Ψ l c} (h : CellOk P B σ Ψ l c) : c.Adequate 
 theorem StoreOk.adequate {P B σ Ψ μ} (h : StoreOk P B σ Ψ μ) : μ.Adequate σ :=
   fun l c hc => (h.2.2.2.2 l c hc).adequate
 
-/-- guardの証拠は元のストアと、パターン束縛数だけ延長した局所文脈を読む。 -/
-theorem HasTypeArmsQ.guard_context {P B Ψ Q C Γ Φ R arms a b e L alts guard body}
-    (h : HasTypeArmsQ P B Ψ Q C Γ Φ R arms a b e L)
-    (hm : Arm.mk alts (some guard) body ∈ arms) :
-    ∃ δ, AltsTy P alts a δ ∧ HasTypeCQ P B Ψ Q C
-      (hideConts (bindParams Γ δ)) (liftMany δ.length Φ) none guard
-      (.base .boolean) Eff.empty (localExtend δ.length L) := by
-  match h with
-  | .nil _ => cases hm
-  | .plain hp hb hs =>
-    rcases List.mem_cons.mp hm with he | hh
-    · cases he
-    · exact hs.guard_context hh
-  | .guarded (δ := δ) hp hg hb hs =>
-    rcases List.mem_cons.mp hm with he | hh
-    · cases he; exact ⟨δ,hp,hg⟩
-    · exact hs.guard_context hh
-
-
 theorem closeR_normal {cap : Capture} {R : Option Ty} {r : Ty}
     (h : cap.closeR R = some r) : r.Normal := by
   cases R with
@@ -275,7 +270,7 @@ theorem ContTy.end_normal {P B σ Ψ R ε k a b Eb Re}
   | K_Update _ _ ih => exact ih (tail he (by intro _ _ h; cases h))
   | K_Release _ _ _ _ _ ih => exact ih (tail he (by intro _ _ h; cases h))
   | K_Drop _ _ _ ih => exact ih (tail he (by intro _ _ h; cases h))
-  | K_Guard _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ ih => exact ih (tail he (by intro _ _ h; cases h))
+  | K_Guard _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ ih => exact ih (tail he (by intro _ _ h; cases h))
 
 /-- StoreOk の下では、継続の場所の格納 R は再開の規則が読む正規化の等号から生の等号へ戻せる（現在の R が正規形のとき）。 -/
 theorem resume_raw_return {P B σ Ψ μ l b t e r R k}
