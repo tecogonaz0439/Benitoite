@@ -166,12 +166,16 @@ mutual
         (by simpa only [shiftTypesList_eq_map] using HasTypeVsQ.shift_types hs hA hstore hC hn hm)
     | .C_Normal hb =>
       simpa only [Ty.norm_shiftTypes] using (HasTypeCQ.shift_types hb hA hstore hC hn hm).C_Normal
-    | .C_If hv hb he =>
+    | .C_If hv ht hb he =>
       exact .C_If (HasTypeVQ.shift_types hv hA hstore hC hn hm)
+        (by simpa only [Val.toTerm_shiftEAt] using ht)
         (HasTypeCQ.shift_types hb hA hstore hC hn hm) (HasTypeCQ.shift_types he hA hstore hC hn hm)
-    | .C_Match hv ha hx =>
-      exact .C_Match (HasTypeVQ.shift_types hv hA hstore hC hn hm)
+    | .C_Match hv ho ha hx =>
+      refine .C_Match (HasTypeVQ.shift_types hv hA hstore hC hn hm) ?_
         (HasTypeArmsQ.shift_types ha hA hstore hC hn hm) (by rw [unguardedPats_shiftEAt]; exact hx.shift_types k c)
+      intro t ht
+      obtain ⟨hv,s,hs⟩ := ho t ht
+      exact ⟨by simpa only [Val.toTerm_shiftEAt] using hv,s,(by simpa only [termBind_id] using Term.hasSort_termBind hs _ hm.images hm.references)⟩
     | .C_Lazy hb ha => exact .C_Lazy (HasTypeCQ.shift_types hb hA hstore.hide hC hn hm.hide) (hm.annotation hn ha)
     | .C_Escape hv ha => exact .C_Escape (HasTypeVQ.shift_types hv hA hstore hC hn hm) (hm.annotation hn ha)
     | .C_Use hv hr hb he =>
@@ -257,22 +261,32 @@ mutual
       simpa only [shiftTypes_shiftV,shiftRowsTypes_shiftV,Option.map_map,Function.comp_def,LocalCtx.shiftEAt_localExtend] using hh
   termination_by structural h
 
-  theorem HasTypeArmsQ.shift_types {P B store Q C Γ Φ R arms a b e L}
-      (h : HasTypeArmsQ P B store Q C Γ Φ R arms a b e L) {C' Δ k c}
+  theorem HasTypeArmsQ.shift_types {P B store Q C Γ Φ R obs arms a b e L}
+      (h : HasTypeArmsQ P B store Q C Γ Φ R obs arms a b e L) {C' Δ k c}
       (hA : Builtins.TypeAssumptions P B) (hstore : store.WF)
       (hC : TypeParamRenaming C C' (shiftIndex k c)) (hn : C'.length=C.length+k) (hm : TypeCtxMap k c Γ Δ) :
-      HasTypeArmsQ P B store Q C' Δ Φ (R.map (shiftTypes k c)) (Arm.shiftEListAt k c arms)
+      HasTypeArmsQ P B store Q C' Δ Φ (R.map (shiftTypes k c)) obs (Arm.shiftEListAt k c arms)
         (shiftTypes k c a) (shiftTypes k c b) (shiftRowsTypes k c e) (L.shiftEAt k c) := by
     match h with
     | .nil ha => exact .nil (hm.annotation hn ha)
-    | .plain (δ := δ) hp hb hs =>
-      refine .plain (hp.shift_types k c) ?_ (HasTypeArmsQ.shift_types hs hA hstore hC hn hm)
+    | .plain (δ := δ) (alts := alts) hp hw hb hs =>
+      have hw' : FactsWF P C' Δ (pathFacts obs (matchedTests alts ++ excludedTests alts)) := by
+        intro p hp
+        have h := hw p hp
+        exact ⟨by simpa only [hm.length] using h.wf,(by simpa only [predBind_id] using h.sorted.map (Δ := Δ) (other := none) hm.images hm.references),h.declared.shiftTypes hm⟩
+      refine .plain (hp.shift_types k c) hw' ?_ (HasTypeArmsQ.shift_types hs hA hstore hC hn hm)
       have hh := HasTypeCQ.shift_types hb hA hstore hC hn (hm.params δ)
       simpa only [shiftTypes_shiftV,shiftRowsTypes_shiftV,Option.map_map,Function.comp_def,
         List.length_map,LocalCtx.shiftEAt_localExtend] using hh
-    | .guarded (δ := δ) hp hg hb hs =>
-      refine .guarded (hp.shift_types k c) ?_ ?_ (HasTypeArmsQ.shift_types hs hA hstore hC hn hm)
-      · simpa only [Option.map_none,shiftTypes,shiftRowsTypes,shiftTypesList,Eff.empty,LocalCtx.shiftEAt_localExtend,List.length_map] using
+    | .guarded (δ := δ) (alts := alts) hp hw hgp hg hb hs =>
+      have hw' : FactsWF P C' Δ (pathFacts obs (matchedTests alts ++ excludedTests alts)) := by
+        intro p hp
+        have h := hw p hp
+        exact ⟨by simpa only [hm.length] using h.wf,(by simpa only [predBind_id] using h.sorted.map (Δ := Δ) (other := none) hm.images hm.references),h.declared.shiftTypes hm⟩
+      refine .guarded (hp.shift_types k c) hw' (by simpa only [shiftTypes] using (hm.params δ).hide.annotation hn hgp)
+        ?_ ?_ (HasTypeArmsQ.shift_types hs hA hstore hC hn hm)
+      · simpa only [Option.map_none,shiftTypes,shiftRowsTypes,shiftTypesList,Eff.empty,
+          LocalCtx.shiftEAt_localExtend,List.length_map] using
           HasTypeCQ.shift_types hg hA hstore hC hn (hm.params δ).hide
       · have hh := HasTypeCQ.shift_types hb hA hstore hC hn (hm.params δ)
         simpa only [shiftTypes_shiftV,shiftRowsTypes_shiftV,Option.map_map,Function.comp_def,

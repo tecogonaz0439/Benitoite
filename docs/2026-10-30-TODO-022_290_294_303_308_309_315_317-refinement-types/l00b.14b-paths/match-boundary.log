@@ -1,0 +1,254 @@
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14b-paths/match-boundary.lean:114:45: warning: This simp argument is unused:
+  openingEnv
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [fact, chosen, yesTest, noTest, PathTest.predicate, PathLiteral.predicate, Pred.shiftV, Pred.open,
+    predBind, termBind, termBind?, shiftIndex]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14b-paths/match-boundary.lean:237:111: warning: This simp argument is unused:
+  ite_false
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [input, actual, MatchFacts.RootShape, Bool.not_true, Bool.not_false, ite_true]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'Benitoite.Release.Refinement.MatchPathsBoundary.B' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.Case' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.Case._sizeOf_1' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.Case._sizeOf_inst' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.Case.box' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.Case.box.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.Case.box.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.Case.casesOn' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.Case.characterLit' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.Case.characterLit.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.Case.characterLit.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.Case.characterRange' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.Case.characterRange.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.Case.characterRange.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.Case.ctorElim' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.Case.ctorElimType' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.Case.ctorIdx' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.Case.emptyList' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.Case.emptyList.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.Case.emptyList.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.Case.falseLit' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.Case.falseLit.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.Case.falseLit.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.Case.integerLit' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.Case.integerLit.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.Case.integerLit.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.Case.integerRange' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.Case.integerRange.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.Case.integerRange.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.Case.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.Case.noConfusionType' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.Case.ofNat' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.Case.ofNat_ctorIdx' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.Case.rec' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.Case.recOn' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.Case.stringLit' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.Case.stringLit.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.Case.stringLit.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.Case.trueLit' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.Case.trueLit.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.Case.trueLit.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.CheckedAt.boxAlts' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.CheckedAt.boxAlts.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.CheckedAt.box_alts_typed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.MatchPathsBoundary.CheckedAt.box_example' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.MatchPathsBoundary.CheckedAt.box_excluded_from_typing' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.MatchPathsBoundary.CheckedAt.box_excluded_from_typing._simp_1_3' depends on axioms: [propext]
+'Benitoite.Release.Refinement.MatchPathsBoundary.CheckedAt.box_failure' depends on axioms: [propext]
+'Benitoite.Release.Refinement.MatchPathsBoundary.CheckedAt.checkedAt_not_inhabits' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.MatchPathsBoundary.CheckedAt.con_typed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.MatchPathsBoundary.CheckedAt.data_annotation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.MatchPathsBoundary.CheckedAt.decl' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.CheckedAt.decl.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.CheckedAt.emptyAlts' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.CheckedAt.emptyAlts.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.CheckedAt.empty_alts_typed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.MatchPathsBoundary.CheckedAt.list_checkedAt_not_inhabits' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.MatchPathsBoundary.CheckedAt.list_example' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.MatchPathsBoundary.CheckedAt.list_excluded_from_typing' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.MatchPathsBoundary.CheckedAt.list_excluded_from_typing._simp_1_3' depends on axioms: [propext]
+'Benitoite.Release.Refinement.MatchPathsBoundary.CheckedAt.list_failure' depends on axioms: [propext]
+'Benitoite.Release.Refinement.MatchPathsBoundary.CheckedAt.list_normal_root' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.MatchPathsBoundary.CheckedAt.list_typed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.MatchPathsBoundary.CheckedAt.opaque_typed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.MatchPathsBoundary.CheckedAt.program' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.OrPattern.Out' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.OrPattern.Out.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.OrPattern.alts' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.OrPattern.alts_typed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.MatchPathsBoundary.OrPattern.annotation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.MatchPathsBoundary.OrPattern.arm' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.MatchPathsBoundary.OrPattern.body' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.MatchPathsBoundary.OrPattern.body_requires_or' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.MatchPathsBoundary.OrPattern.excluded_fact_true' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.MatchPathsBoundary.OrPattern.facts_wf' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.MatchPathsBoundary.OrPattern.facts_wf._simp_1_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.MatchPathsBoundary.OrPattern.facts_wf._simp_1_2' depends on axioms: [propext]
+'Benitoite.Release.Refinement.MatchPathsBoundary.OrPattern.failure' depends on axioms: [propext]
+'Benitoite.Release.Refinement.MatchPathsBoundary.OrPattern.predicate' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.OrPattern.predicate.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.OrPattern.second_fact_true' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.MatchPathsBoundary.OrPattern.success_first' depends on axioms: [propext]
+'Benitoite.Release.Refinement.MatchPathsBoundary.OrPattern.success_second' depends on axioms: [propext]
+'Benitoite.Release.Refinement.MatchPathsBoundary.OrPattern.test' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.OrPattern.test.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.OrPattern.tests' depends on axioms: [propext]
+'Benitoite.Release.Refinement.MatchPathsBoundary.OrPattern.Γ' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.P' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary._aux__stdin___macroRules_Benitoite_Release_Refinement_MatchPathsBoundary_tacticMetadata_1' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.actual' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.actual._proof_1' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.actual._proof_2' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.actual.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.actual.eq_2' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.actual.eq_3' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.actual.eq_4' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.actual.eq_5' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.actual.eq_6' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.actual.eq_7' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.actual.eq_8' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.actual.eq_9' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.actual_excluded_fact' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.MatchPathsBoundary.actual_failure' depends on axioms: [propext]
+'Benitoite.Release.Refinement.MatchPathsBoundary.actual_match' depends on axioms: [propext]
+'Benitoite.Release.Refinement.MatchPathsBoundary.actual_matched_fact' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.MatchPathsBoundary.actual_observed' depends on axioms: [propext]
+'Benitoite.Release.Refinement.MatchPathsBoundary.actual_root' depends on axioms: [propext]
+'Benitoite.Release.Refinement.MatchPathsBoundary.alts' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.alts.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.alts_typed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.MatchPathsBoundary.arms' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.arms.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.arms_typed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.MatchPathsBoundary.body' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.MatchPathsBoundary.body_requires_fact' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.MatchPathsBoundary.body_requires_fact._simp_1_2' depends on axioms: [propext]
+'Benitoite.Release.Refinement.MatchPathsBoundary.cd' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.cd.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.chosen' depends on axioms: [propext]
+'Benitoite.Release.Refinement.MatchPathsBoundary.chosen.eq_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.MatchPathsBoundary.constrained_field_counterexample' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.MatchPathsBoundary.constrained_field_not_entailed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.MatchPathsBoundary.counter' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.counter.match_1' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.ctx' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.ctx.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.excluded_tests' depends on axioms: [propext]
+'Benitoite.Release.Refinement.MatchPathsBoundary.fact' depends on axioms: [propext]
+'Benitoite.Release.Refinement.MatchPathsBoundary.fact.eq_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.MatchPathsBoundary.facts_wf' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.MatchPathsBoundary.input' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.input.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.input.eq_2' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.input.eq_3' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.input.eq_4' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.input.eq_5' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.input.eq_6' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.input.eq_7' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.input.eq_8' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.input.eq_9' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.input.match_1' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.input_annotation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.MatchPathsBoundary.instDecidableEqCase' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.instDecidableEqCase._proof_1' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.instDecidableEqCase._proof_2' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.matched_tests' depends on axioms: [propext]
+'Benitoite.Release.Refinement.MatchPathsBoundary.noTest' depends on axioms: [propext]
+'Benitoite.Release.Refinement.MatchPathsBoundary.noTest._sparseCasesOn_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.MatchPathsBoundary.noTest._sparseCasesOn_1.else_eq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.MatchPathsBoundary.noTest.eq_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.MatchPathsBoundary.noTest.eq_2' depends on axioms: [propext]
+'Benitoite.Release.Refinement.MatchPathsBoundary.noTest.eq_3' depends on axioms: [propext]
+'Benitoite.Release.Refinement.MatchPathsBoundary.noTest.match_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.MatchPathsBoundary.observed' depends on axioms: [propext]
+'Benitoite.Release.Refinement.MatchPathsBoundary.observed.eq_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.MatchPathsBoundary.observed_wf' depends on axioms: [propext, Quot.sound]
+'Benitoite.Release.Refinement.MatchPathsBoundary.open_fact' depends on axioms: [propext, Quot.sound]
+'Benitoite.Release.Refinement.MatchPathsBoundary.out' depends on axioms: [propext]
+'Benitoite.Release.Refinement.MatchPathsBoundary.out.eq_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.MatchPathsBoundary.out_annotation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.MatchPathsBoundary.pat' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.pat._proof_1' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.pat._proof_2' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.pat._proof_3' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.pat.match_1' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.pat_typed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.MatchPathsBoundary.source_typed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.MatchPathsBoundary.tacticMetadata' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.test_wf' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.MatchPathsBoundary.wild_typed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.MatchPathsBoundary.yesTest' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.yesTest.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.yesTest.eq_2' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.yesTest.eq_3' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.yesTest.eq_4' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.yesTest.eq_5' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.yesTest.eq_6' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.yesTest.eq_7' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.yesTest.eq_8' does not depend on any axioms
+'Benitoite.Release.Refinement.MatchPathsBoundary.yesTest.eq_9' does not depend on any axioms
+MATCH_BOUNDARY_DECLARATIONS 180

@@ -1,0 +1,657 @@
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14b-paths/boundary.lean:376:6: warning: This simp argument is unused:
+  Arm.bindersOf
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Closure.ClosedAt, cp, Capture.empty, Capture.extend, Capture.Closed, Capture.values, captureSlotsClosed,
+    Val.ClosedAt, Val.ClosedList, Comp.ClosedAt, Arm.ClosedList, arms, alts, Pat.binders, Pat.bindersList]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14b-paths/boundary.lean:376:20: warning: This simp argument is unused:
+  Pat.binders
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Closure.ClosedAt, cp, Capture.empty, Capture.extend, Capture.Closed, Capture.values, captureSlotsClosed,
+    Val.ClosedAt, Val.ClosedList, Comp.ClosedAt, Arm.ClosedList, arms, alts, Arm.bindersOf, Pat.bindersList]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14b-paths/boundary.lean:376:32: warning: This simp argument is unused:
+  Pat.bindersList
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Closure.ClosedAt, cp, Capture.empty, Capture.extend, Capture.Closed, Capture.values, captureSlotsClosed,
+    Val.ClosedAt, Val.ClosedList, Comp.ClosedAt, Arm.ClosedList, arms, alts, Arm.bindersOf, Pat.binders]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14b-paths/boundary.lean:457:25: warning: This simp argument is unused:
+  Order.sortUnique
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Tel.instR, Tel.substRAt, Tel.mapRanges, Tel.rawMapRanges, PrimSig.tel, signature, signatureTel, tel,
+    Result, IntTy, BoolTy, Tel.norm, Ty.rawMapRanges, Ty.norm, Ty.refineNorm, Ty.packRefinements,
+    Ty.refinementPredicates, relation, Pred.conjuncts, Pred.ofConjuncts, Eff.rawMapRanges, Eff.norm, Eff.empty,
+    Ty.normTys]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14b-paths/boundary.lean:465:15: warning: This simp argument is unused:
+  Order.sortUnique
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [instantiatedTel, Tel.bind, Tel.rawBind, Tel.norm, Ty.rawBind, Ty.norm, tel, Result, IntTy, BoolTy,
+    Eff.rawBind, Eff.norm, Eff.empty, typeEnvAt, rowFails, rawBindTys, instAtoms_nil, substAtoms_nil, Ty.normTys,
+    Ty.refineNorm, Ty.packRefinements, Ty.refinementPredicates, relation, Pred.conjuncts, Pred.ofConjuncts, SubstEnv.up,
+    upValues, predBind, termBind, termBind?, boolCond]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14b-paths/boundary.lean:477:27: warning: Try `simp at hi` instead of `simpa using hi`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14b-paths/boundary.lean:478:27: warning: Try `simp at hi` instead of `simpa using hi`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14b-paths/boundary.lean:611:46: warning: This simp argument is unused:
+  Pat.bindersList
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [frame, Frame.Closed, Val.Ground, num, cp, Capture.empty, Capture.extend, Capture.Closed, Capture.values,
+    captureSlotsClosed, Val.ClosedAt, Val.ClosedList, Closure.ClosedAt, Comp.ClosedAt, Arm.ClosedList, arms, alts,
+    guard, Arm.bindersOf, Pat.binders]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14b-paths/boundary.lean:625:47: warning: This simp argument is unused:
+  Pat.bindersList
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Closure.pure, Closure.ClosedAt, Capture.empty, Capture.Closed, captureSlotsClosed, Capture.values,
+    Comp.ClosedAt, Arm.ClosedList, arms, alts, guard, num, Val.ClosedAt, Val.ClosedList, Arm.bindersOf, Pat.binders]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14b-paths/boundary.lean:743:40: warning: This simp argument is unused:
+  Ty.Ordinary
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Result, Ordinary, Ty.shiftV, Ty.core]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14b-paths/boundary.lean:749:27: warning: This simp argument is unused:
+  Result
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Ty.Ordinary, Ordinary, Ty.shiftV, Ty.core]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14b-paths/boundary.lean:749:34: warning: This simp argument is unused:
+  Ty.Ordinary
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Result, Ordinary, Ty.shiftV, Ty.core]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14b-paths/boundary.lean:749:55: warning: This simp argument is unused:
+  Ty.shiftV
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Result, Ty.Ordinary, Ordinary, Ty.core]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14b-paths/boundary.lean:782:46: warning: This simp argument is unused:
+  Ty.WFList
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Out, fact, ctx, Ctx.extend, Input, Ty.WF, Ty.Sorted, sortedTys, Pred.WF, Pred.VarsIn, Term.VarsIn,
+    Ty.NotContCore, Ty.core, Ty.shiftV, Pred.Sorted, Term.HasSort, Term.References, Term.Shape, Measure.input,
+    Measure.output, Ty.HasSort, Ty.sort?, Ordinary, Ty.Declared, Pred.Declared, Ctx.declarationSelf, Term.Declared,
+    Ctx.Readable, declaredTys]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14b-paths/boundary.lean:782:66: warning: This simp argument is unused:
+  sortedTys
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Out, fact, ctx, Ctx.extend, Input, Ty.WF, Ty.WFList, Ty.Sorted, Pred.WF, Pred.VarsIn, Term.VarsIn,
+    Ty.NotContCore, Ty.core, Ty.shiftV, Pred.Sorted, Term.HasSort, Term.References, Term.Shape, Measure.input,
+    Measure.output, Ty.HasSort, Ty.sort?, Ordinary, Ty.Declared, Pred.Declared, Ctx.declarationSelf, Term.Declared,
+    Ctx.Readable, declaredTys]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14b-paths/boundary.lean:785:33: warning: This simp argument is unused:
+  declaredTys
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Out, fact, ctx, Ctx.extend, Input, Ty.WF, Ty.WFList, Ty.Sorted, sortedTys, Pred.WF, Pred.VarsIn,
+    Term.VarsIn, Ty.NotContCore, Ty.core, Ty.shiftV, Pred.Sorted, Term.HasSort, Term.References, Term.Shape,
+    Measure.input, Measure.output, Ty.HasSort, Ty.sort?, Ordinary, Ty.Declared, Pred.Declared, Ctx.declarationSelf,
+    Term.Declared, Ctx.Readable]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14b-paths/boundary.lean:796:32: warning: This simp argument is unused:
+  Input
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [fact, ctx, Ctx.extend, Pred.WF, Pred.VarsIn, Term.VarsIn, Pred.Sorted, Term.HasSort, Term.References,
+    Term.Shape, Measure.input, Measure.output, Ty.HasSort, Ty.sort?, Ty.shiftV, Ordinary, Ty.core, Pred.Declared,
+    Term.Declared, Ctx.declarationSelf, Ctx.Readable]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14b-paths/boundary.lean:884:84: warning: This simp argument is unused:
+  Ty.Ordinary
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [BoolTy, Ordinary, Ty.core]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14b-paths/boundary.lean:923:39: warning: This simp argument is unused:
+  Ty.Ordinary
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Inner, Ordinary, Ty.shiftV, Ty.core]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14b-paths/boundary.lean:928:27: warning: This simp argument is unused:
+  Inner
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Ty.Ordinary, Ordinary, Ty.shiftV, Ty.core]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14b-paths/boundary.lean:928:33: warning: This simp argument is unused:
+  Ty.Ordinary
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Inner, Ordinary, Ty.shiftV, Ty.core]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14b-paths/boundary.lean:928:54: warning: This simp argument is unused:
+  Ty.shiftV
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Inner, Ty.Ordinary, Ordinary, Ty.core]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14b-paths/boundary.lean:1055:71: warning: This simp argument is unused:
+  openingEnv
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [guardPred, fact, Pred.lift, Pred.open, predBind, termBind, termBind?, shiftIndex]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14b-paths/boundary.lean:1055:82: warning: This simp argument is unused:
+  shiftIndex
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [guardPred, fact, Pred.lift, Pred.open, predBind, termBind, termBind?, openingEnv]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'Benitoite.Release.Refinement.PathConditionsBoundary.B' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.BoolTy' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.BoundObservation.B' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.BoundObservation.Input' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.BoundObservation.IntTy' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.BoundObservation.Out' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.BoundObservation.Out.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.BoundObservation.Outs' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.BoundObservation.Outs.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.BoundObservation.P0' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.BoundObservation.Pm' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.BoundObservation.alts' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.BoundObservation.alts_typed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.BoundObservation.arms_typed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.BoundObservation.body' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.BoundObservation.box_cons' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.BoundObservation.cd' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.BoundObservation.cd.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.BoundObservation.fact' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.BoundObservation.fact.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.BoundObservation.fact_wf' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.BoundObservation.guardPred' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.BoundObservation.guardPred.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.BoundObservation.guardResult' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.BoundObservation.guardResult.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.BoundObservation.guard_annotation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.BoundObservation.guard_reads_match' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.BoundObservation.guard_requires_match' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.BoundObservation.guarded_body' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.BoundObservation.input_ann' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.BoundObservation.observed_guarded_arm' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.BoundObservation.out_ann' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.BoundObservation.out_shift_ann' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.BoundObservation.paths_wf' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.BoundObservation.Γb' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.BoundObservation.Γb.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.BoundObservation.Γm' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.BoundObservation.Γm.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.Bg' depends on axioms: [propext]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.Bg._sparseCasesOn_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.Bg._sparseCasesOn_2' depends on axioms: [propext]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.Bg._sparseCasesOn_3' depends on axioms: [propext]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.Bg._sparseCasesOn_4' depends on axioms: [propext]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.Bg.match_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.IntTy' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.Out' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.Out.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.Result' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.Result.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard._aux__stdin___macroRules_Benitoite_Release_Refinement_PathConditionsBoundary_Guard_tacticGuard_annotation_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.alts' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.alts.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.alts_typed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.arms' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.arms._proof_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.arms.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.arms_typed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.before_guard' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.before_result' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.body_requires_condition' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.body_typed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.bound_relation' depends on axioms: [propext]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.captured' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.close_out' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.compare_nine_step' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.compare_three_step' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.continuation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.cp' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.cp.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.ctx' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.ctx.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.exhaustive' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.false_intermediate' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.false_step' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.false_target' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.frame' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.frame.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.frame_closed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.guard' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.guard.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.guard_true_fact' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.guard_typed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.instance_tel' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.let_if_connect' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.locals' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.match_guard_step' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.match_start' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.nine_body_not_closed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.num' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.num.congr_simp' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.num.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.out_ann' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.pending' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.primitive' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.relation' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.relation.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.result_ann' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.sig_admits' depends on axioms: [propext]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.signature' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.signature.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.source' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.source_tel' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.substitution_assumptions' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.tacticGuard_annotation' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.tel' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.tel.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.tel_ann' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.test' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.test.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.true_intermediate' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.true_step' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Guard.true_target' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.Excluded.Out' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.Excluded.Out.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.Excluded.absent' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.Excluded.absent.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.Excluded.alts' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.Excluded.alts.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.Excluded.alts_typed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.Excluded.annotation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.Excluded.arms' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.Excluded.arms.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.Excluded.arms_typed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.Excluded.exclusion_is_closed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.Excluded.facts_wf' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.Excluded.first_body' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.Excluded.later_body' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.Excluded.later_requires_excluded' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.Excluded.later_step' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.Excluded.later_target' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.Excluded.later_target._proof_1_1' depends on axioms: [propext,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.Excluded.predicate' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.Excluded.predicate.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.Excluded.skip_step' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.Excluded.skipped' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.Excluded.source' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.Input' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.Out' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.Pm' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.alts' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.alts.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.alts_typed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.arms' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.arms.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.arms_typed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.body_step' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.body_target' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.body_target._proof_1_1' depends on axioms: [propext,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.body_target._simp_1_2' depends on axioms: [propext]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.body_target._simp_1_3' depends on axioms: [propext]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.capture_ok' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.cd' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.cd.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.cm' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.cm.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.code_typed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.con_typed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.cp' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.cp.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.exhaustive' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.fact' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.fact.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.fallback' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.input_ann' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.matched_wf' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.matched_wf._simp_1_3' depends on axioms: [propext]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.matched_wf._simp_1_4' depends on axioms: [propext]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.out_ann' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.selected_body' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.selected_body_requires_fact' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.source' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.start' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.start_step' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.Γm' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Match.Γm.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Nonempty.Input' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Nonempty.Out' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Nonempty.Out.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Nonempty.alts' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Nonempty.alts.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Nonempty.annotation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Nonempty.arm' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Nonempty.body' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Nonempty.ctx' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Nonempty.ctx.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Nonempty.evaluates' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Nonempty.fact' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Nonempty.fact.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Nonempty.matching' depends on axioms: [propext]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Nonempty.paths_wf' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.P' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.ShortCircuit.B' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.ShortCircuit.BoolTy' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.ShortCircuit.Inner' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.ShortCircuit.Inner.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.ShortCircuit.Out' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.ShortCircuit.Out.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.ShortCircuit.P' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.ShortCircuit._aux__stdin___macroRules_Benitoite_Release_Refinement_PathConditionsBoundary_ShortCircuit_tacticAnn_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.ShortCircuit.bool_var' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.ShortCircuit.bool_var'' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.ShortCircuit.condition' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.ShortCircuit.condition_typed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.ShortCircuit.else_branch' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.ShortCircuit.em' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.ShortCircuit.inner_ann' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.ShortCircuit.q' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.ShortCircuit.q.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.ShortCircuit.short_circuit_reads_left' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.ShortCircuit.tacticAnn' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.ShortCircuit.then_branch' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.ShortCircuit.tt' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.ShortCircuit.tt.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.ShortCircuit.whole' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.ShortCircuit.Γ2' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.ShortCircuit.Γ2.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.arms_do_not_identify_scrutinee' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.cap' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.cap.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.captured' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.code' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.code.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.code_typed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.code_with_conversions' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.excluded_state_target' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.false_branch' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.guard_false_state_target' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.guard_true_state_target' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.if_false_execution' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.if_false_target' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.if_true_execution' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.if_true_target' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.let_comparison_connect' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.lost_observation_drops_facts' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.match_state_target' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.p' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.p.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.result' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.result.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.result_ann' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.source' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.source_typed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.state_empty_effect' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.true_branch' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.true_branch_requires_condition' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.wrong_constructor_fact' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.PathConditionsBoundary.Γ' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.Γ.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.PathConditionsBoundary.σ' does not depend on any axioms
+BOUNDARY_DECLARATIONS 249

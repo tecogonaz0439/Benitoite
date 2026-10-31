@@ -41,9 +41,9 @@ private theorem return_value {P B store Q C Γ Φ R m a ε Δl}
   match h with
   | .C_Return hv => intro v he; cases he; exact ⟨_, hv⟩
   | .C_IssuePathBases _ _ _ _ _ _ _ _ | .C_CheckAt _
-  | .C_Handle _ _ _ | .C_Handle_Fail _ _ _ _ | .C_Match _ _ _ | .C_External _ _ _ _ | .C_Resume _ _ _ | .C_ResumeL _ _ _ | .C_ResumeNorm _ _ _ | .C_ResumeLNorm _ _ _ _
+  | .C_Handle _ _ _ | .C_Handle_Fail _ _ _ _ | .C_Match _ _ _ _ | .C_External _ _ _ _ | .C_Resume _ _ _ | .C_ResumeL _ _ _ | .C_ResumeNorm _ _ _ | .C_ResumeLNorm _ _ _ _
   | .C_BuilderLet _ _ _ _ | .C_BuilderOp _ _ _ _ | .C_Meth _ _ _ _ _ _ _ _ _ _
-  | .C_Let _ _ _ | .C_DependentApp .. | .C_App _ _ | .C_If _ _ _ | .C_Lazy _ _ | .C_Escape _ _ | .C_Use _ _ _ _ => intro v he; cases he
+  | .C_Let _ _ _ | .C_DependentApp .. | .C_App _ _ | .C_If _ _ _ _ | .C_Lazy _ _ | .C_Escape _ _ | .C_Use _ _ _ _ => intro v he; cases he
   | .C_Normal hm | .C_Sub hm _ _ _ _ _ | .C_Eff hm _ => exact return_value hm
 
 /-- return の型付けは、部分型・効果拡大の下にも値の導出を含む。 -/
