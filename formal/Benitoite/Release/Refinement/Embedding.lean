@@ -4,7 +4,6 @@ import Benitoite.Release.Semantics
 namespace Benitoite.Release.Refinement
 noncomputable section
 
-abbrev embedPrimKind (k : Benitoite.Release.PrimKind) : PrimKind := k
 
 def embedBuilderKind : Benitoite.Release.BuilderKind → BuilderKind
   | .string => .string

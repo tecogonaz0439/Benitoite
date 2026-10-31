@@ -593,6 +593,7 @@ RangeIx : Type
 TargetInput : Type
   absolute (target : Target)
   relativePath (segments : Word)
+  homePath (segments : Word)
 
 RangeExpr.resolve : PathEnv → RangeExpr → Option (List Scope.Domain.Range)
 TargetInput.resolve : PathEnv → TargetInput → Option Target
@@ -1204,7 +1205,7 @@ SnapshotMem の none は absolute の範囲の所属だけ、some ρ は Valid �
 
 要求の typed の証拠を持つため、CheckedWitness は HasTypeVQ と同じ正の相互帰納に置く。req の存在だけや target.kind だけで RequestIn を型付けない。旧 checked/checkedRequest は absolute/none の特殊化としてこの葉へ対応させる。旧 opaque での型付けを残す必要な場合は、同じ保持値の scoped から旧 opaque への互換の導出を使い、要求のない裸の opaque の値を新たに認めない。
 
-`HasTypeVQ.V_AtError` は `ResultShape.Declared P shape`、shape.errorType が閉じた宣言済みの標準 AtError 型であること、detail の元/解決後の欄が閉じた有限データであることを前提に、`atError detail : shape.errorType` を与える。任意の errorType に同じエラー値を型付けしない。atError の toTerm? は固定した標準の構成子と有限欄の dataValue に写し、data sort の observation も成立させる。`AtError.Closed : AtError → Prop` と `ResultShape.StandardError : Program → ResultShape → Prop` を公開し、ResultShape.Declared の中で後者を検査する。
+`HasTypeVQ.V_AtError` は `ResultShape.Declared P shape` を前提に、`atError detail : shape.errorType` を与える。shape.errorTypeが閉じた宣言済みの標準エラー型であることはDeclared内で検査する。AtErrorは値・型の変数を含まない有限データであるため、常に真となるAtError.Closedは定義と前提の双方から削除した（RV-L00b.02b-at軽2）。任意のerrorTypeに同じエラー値を型付けしない。toTerm?は内部の構成子と有限欄のdataValueに写し、data sortのobservationも成立させる。`ResultShape.StandardError : Program → ResultShape → Prop` を公開し、ResultShape.Declaredの中で検査する。内部の構成子と文言を公開APIへ合わせる義務は第24節に残す。
 
 SnapshotMem を持つ値の Adequate σ は、some ρ なら ρ=σ、none なら絶対形であることと、要求全体の適格性を再帰して要求する。したがって閉じた静的な葉と実行の所属の橋は、別の σ へ token を移す仮定なしに証明する候補になる。
 
@@ -1635,13 +1636,13 @@ Step.E_PathBasesApply : ∀ (b : PrimName) (sg : PrimSig),
 
 Step.E_IssuePathBases : ∀ (b : PrimName) (sg : PrimSig),
   B.sig b = some sg → sg.kind = .pathBases →
-  sg.opEff = some processEnvironmentEff → NoHandler k (.prim b) → PathEnv.Valid σ →
+  sg.opEff = some processEnvironmentEff → PathEnv.Valid σ →
   Step P B σ (run (q(issuePathBases b)) k μ)
     (some (Event.pathBases b σ))
     (run (Closure.mk Capture.empty (ret (pathBases σ))) k μ)
 ```
 
-`NoHandler : Cont → O.OpRef → Prop` は capture 付きの handleF を読む新しい定義である。E_OpPrim の kind の場合へ pathBases を加え、handler があるときは通常の節/捕捉の規則を先に適用する。issuePathBases は Source に書く値ではなく、専用の apply 規則が作る内部計算である。Process.Environment を handler で捕捉したとき、組込みの発行だけが handler を迂回する規則にしない。
+`NoHandler : Cont → O.OpRef → Prop` は capture 付きの handleF を読む新しい定義である。E_OpPrim の kind の場合へ pathBases を加え、handler があるときは通常の節/捕捉の規則を先に適用する。issuePathBases は Source に書く計算ではなく、専用の apply 規則が作る内部計算である。handlerの検査はappの段階で行い、issueの発行段階では繰り返さない。内部のissueの下にhandlerがあっても発行できる（RV-L00b.02b-at中2、planの2026-10-31の判断）。
 
 E_AtOk/E_AtError の準備は以下の一つの関数と、その成功の略記で表す。入力を閉じるときは shape.errorType も closeTy する。以下では `errorTy = cap.closeTy shape.errorType` を表示上の略記とし、`shape` は元の ResultShape である。
 
@@ -1987,7 +1988,7 @@ RV-L00b.02b-externalを受け、閉じた評価を置く後続の起動単位へ
 | 軽2 | 1.4 | Pred.Source/Sortedでcompare.integerを拒否し、許すsort/operationの表を追加 |
 | 軽3 | 1.1 | Ty.sort?でHasSortを定義し一意性を公開 |
 | 軽4 | 2.1、11.1、本作業の結果記録 | .11までC_App/C_DependentAppが並置されることと、完全性を主張しないことを明記 |
-| 軽5 | 7.2 | V_AtErrorに宣言済み標準エラー型とAtError.Closedを要求 |
+| 軽5 | 7.2 | V_AtErrorに宣言済み標準エラー型を要求。初稿のAtError.Closedは常に真だったため、RV-L00b.02b-at軽2で定義と前提を削除 |
 | 軽6 | 9 | AtPrepare.fixed_index/no_staticIndexの義務を追加 |
 | 軽7 | 13 | 入れ子の再帰は補助Leanで成功、DecidableEqの自動導出は拒否。構造の等号とKey.equalを区別 |
 | 軽8 | 3.3 | 重複Mapは元の鍵を保つことを明記 |
@@ -2246,6 +2247,21 @@ Frame7/Cell6/LocTy4/State4、Val19/Comp13、Step68を維持した。旧Val17/Com
 
 2026-10-31、[RV-L00b.02b-external](../reviews/RV-L00b.02b-external.md)後の上の5行は、planの同日の先頭の判断を固定した追記である。元のRV-valuesの7行も維持する。本番の信頼条件と遷移の改訂を今回済ませたとは扱わない。
 
+
+### RV-L00b.02b-atの義務の対応（2026-10-31）
+
+planの同日の先頭の判断に従う。以下の「今回」はレビュー後の修正を指し、上のRV-values・RV-externalの担当を変更しない。
+
+| 所見・義務 | 今回の対応 | 後続の担当・閉じる条件 |
+|---|---|---|
+| 中1 / D28のPathBases署名と旧四欄 | CoreAssumptions.pathBases_shapeとPrimSig.PathBasesShapeを追加し、opEff_io/effect_opsにpathBasesを含め、store_admits/store_shapeから除いた。issuePathBases_typed、pathBases_empty_arguments/empty_values、pathBases_apply_destinationを本番で証明した | **L20・L70**で全状態の保存・進行へ接続する。**.02b-handlers**で節の型付けとの接続を行い、**L50**で三モデルの充足を示す。**.15・取りまとめ**でD28/07-04の対照と設計者への報告を行う |
+| 中1 / O060の事象と効果 | Event.Coveredとcovered_pathBasesをSemanticsに置き、pathBasesはProcess.EnvironmentのTopの被覆を要求する。IOの効果名の範囲は存在量化し、対象健全性そのものをこの定義で仮定しない | **L20・L70**で事象と継続末尾の効果を接続し、空効果から事象を出さないeffect_soundnessを証明する。結論の形は変更しない。IOの対象の許可は既定のL50の担当である |
+| 中2 / 発行のhandlerの再検査 | E_IssuePathBasesとstepから検査を削除した。handlerを持つ旧handled_stuck相当の状態で、Stepと実行器の双方の遷移を境界で示した | **.02b-handlers・L20**はこの遷移を使って状態との接続を行う。Sourceからissueを作る経路は追加していない |
+| 軽1 / エラーの文言・公開構成子・網羅性 | 内部の七String欄とScope.ScopeError.Atを今回公開APIとして確定したとは扱わない | **L50・L70**でtextFieldsを処理系の文言の契約から定める表示関数へ差し替え、U02で決めた公開構成子の形にStandardError・RuntimeMatch・TypedFactsをそろえる。**.02b-handlers**の網羅性では内部と公開の構成子一覧を一致させる。reprStrの一致だけを処理系の文言の対応と数えない |
+| 軽2 / 内容のないClosed | AtError.Closedの定義とV_AtErrorの前提を削除し、三族・TypedFacts・Declared・障害例のmatchを追随した | **今回完了**。エラーの構文に値・型の変数を持ち込む変更を行う場合は、改めて閉性を設計する |
+| 軽3 / 実行時の場所とSource | Val.Sourceの.locをFalseとし、入れ子のList内の場所も拒否する境界を置いた | **今回の局所修正を完了**。Sourceの除外だけをStoreOkや全状態の適格性の代用にしない |
+| 軽4 / D20を前提とするD29の旧絶対形 | 旧V_CheckedはvalContent=noneの場合だけ、旧V_CheckedRequestはGroundとreqTargetの端点一致を持つ場合だけ埋め込むと固定する | **L20・L70**のD29の旧導出の埋め込みに明示する。D20/O044と07-04・現行01-12の対照を行い、旧の無条件の規則をそのまま埋め込めると主張しない |
+
 ## 25. `.02b-external` の補助契約と実装（2026-10-31）
 
 起動依頼で委ねられた補助契約の細部を、以下の形で本番へ置いた。基準B_WORKは `9184a3ced427d4897fcb234d2ac277f95b60ac0f`、指定ブランチは `m014/l00b.02b-external` である。gitによる照合・操作は行っていない。主な定理の前提・結論、新しい公理、提供範囲、利用者の書ける形、精密な外部状態を変更していない。第5節の三つの外部条件を具体化し、CoreAssumptionsに接続した。第24節の後続の義務は引き続き同じ担当へ残す。
@@ -2329,3 +2345,75 @@ E_ExternalApply/External/ExternalErrを既存のStepへ追加し、すべてラ�
 | 受信後の篩の所属（RV-external中1） | 篩付きの型を受け付けたまま、external_typedの保証をcarrierまでとし、E_Externalで全入れ子の篩を閉じた評価で検査する。違反はerrとする。`.04`・`.05`で本番の条件と遷移を改訂し、L60で三モデルの充足を示す。現行の篩までの信頼はその改訂まで暫定とする | 表層で篩付き外部宣言を拒む案はD02/D03の書ける形を狭めるため採らない。ゲストが篩を満たすことを信頼する案は、受信後の所属検査を必須にする調べの方針とD18に従わない |
 
 実装の全一覧・検査・場合数・後続の義務は [results.md](results.md) の `.02b-external` の節と [公開宣言の一覧](02b-external-public-api.md) に記録する。群末の独立レビューと受け入れは取りまとめ・設計者の担当であり、今回の自己点検を独立レビューとして数えない。
+
+
+## 26. `.02b-at` の補助契約の具体化（2026-10-31）
+
+初回の実装では、起動依頼の補助契約の委任に従い以下の案を採った。RV-L00b.02b-at後のD28の改訂と局所修正は第27節を正とする。基準は `1874fe91aa3684662dca4c69b284ea9614b9fb56`、指定ブランチは `m014/l00b.02b-at` である。主な定理の前提と結論、新しい公理、提供範囲、利用者の書ける形、精密な外部状態は変えない。第24節の後続の義務と、`.04`・`.05`にある外部の受信検査の義務はそのまま残す。
+
+| 論点 | 採った案と理由 | 捨てた案・限界 |
+|---|---|---|
+| Requiredの既知の契約 | `PathEnv.Required P B s`、`PathEnv.Ready P B σ s`、`InitialPrepared P B σ s` とし、補助判断にBを加える。PreparationNodeの子の関係と帰納的Reachableから、静的な型・行・篩のmember・明示の範囲引数・名目型に属する全構成子の欄・lookupした宣言と組込み署名の起点を有限の導出で辿る。B.sig内の固定起点も既知契約であるため、Pだけでは足りない | Bを渡さず、組込み署名の固定起点を見落とす案、任意のBを存在量化して全起点を必須にする案は採らない。Program.defsの全列挙や有限支持は要求しない。検査器との対応はL70/R70で行う |
+| 動的なScopePattern | Requiredは型や契約の範囲を辿るが、`Val.scopePattern`の動的な内容を静的な契約へ加えない。未束縛の動的起点はAtのErrorにする | 動的な内容までReadyへ加え、AtのErrorの経路を初期準備で一律に排除する案は採らない |
+| BuiltinArgsの組込み名 | `BuiltinArgs P B Ψ b sg ts es rs ws a e` とし、bを補助の引数へ加える。PrimitiveAdmissible・bに対するRangeAdmissible・SignatureInstance・TelArgs・Ground・閉じたWF/Canonicalを検査する | 同じsgを持つ別名のbでadmitsRを取り違える存在量化や、全別名のadmitsRを一律に要求する案は採らない。δ/IOの結論とAdequateResultの全有効σの量化は第7.1節どおりである |
+| Atの入力判断 | `AtCallAdmissible.mk`をHasTypeVQと同じ相互帰納に置く。任意のsomeのbasesをpathBasesで型付け、patternはscopePattern、入力はStringかvalContentの宣言型で型付ける。indexはWF 0で、fixedの範囲のWF/Canonical/種類を検査する | 長さだけの検査や、Atの成功・所属を仮定として受け取る案は採らない。Optionalの型付けは全称と等式で表し、別の型付け体系を増やさない |
+| valContentの要求型 | AtCallAdmissibleの要求側は、valContentの型がWF 0 0 0であることも検査する。表に格納する閉じた要求型を値の移動・置換で保つためである | 任意の開いたvalContentの型をそのまま再利用する案は採らない。通常の型引数や篩の外側の値依存を閉じたものへ制限しない |
+| 保持要求 | 旧checkedRequestと新checkedAtの要求は、改名・値置換・型置換・捕捉でそのまま保つ。requestの葉は空C/Γ/ΦのHasTypeV、Ground、reqTargetの一致を持ち、型付けとCheckedWitnessを同じ相互帰納に置く。ストアの移送は相互のshift_valuesのcutoff0を使う | 空文脈の要求に外側の置換を再適用する案は採らない。値置換とnarrowingでは、同じストア・同じ空文脈の要求の証拠を再利用できるため、恒等の証拠を得るだけの別の相互帰納を増やさない |
+| Adequate | 値・code・捕捉環境・閉包・全Frame/Cell/Cont/Storeの有限な保持箇所を再帰する。pathBasesのsnapshotは現在のσと等しく、checkedAtのnoneはabsoluteだけ、someは同じσ、要求全体も適格でなければならない | 場所からストアを追う無限再帰や、Sourceにないことだけで実行時の適格性を省く案は採らない。Readyは保存の前提へ追加しない |
+| 標準エラーとResult | ResultShape.DeclaredでResultのarity2・Ok/Errorの宣言と引数位置・相異を照合する。StandardErrorは閉じた標準Scope.ScopeError型、arity0、標準の内部構成子Scope.ScopeError.Atの7欄を照合する。detail自体は元のpattern/target、解決後の全原子、両起点とfailureを保存する。toTerm?は7個のStringの観測を持つdata snapshotとする。RuntimeMatchも同じ七欄の値を構成子パターンへ渡す。内部のreprStrは全データを保ち、利用者向けShowとは区別する | 任意のerrorTypeへのV_AtError、lookupなしで構成子名を信頼する案、表示の切詰めを保持データへ適用する案は採らない。内部の七欄と表層のScopeErrorの公開構成子の対応はL50/L70で照合する |
+| 範囲のWFの検査位置 | FitsKind/WF/Canonicalとその決定手続をPathResolutionへ移す。checkAtは未解決のpatternとboundを検査する。起点のWordは正規な対象の要素であり、ディレクトリ名の文字`*`を含んでもよい | 解決後のprefixに対しパターンの字句WFを再要求する案は、正規な起点にあるリテラルの`*`まで拒むので採らない。所属はprefixをリテラルとして計算する |
+| エラーの欄の観測の自己点検 | 最初の下書きのnone七欄を撤回し、String型の各欄の実際の値と同じsnapshotを作る。AtError.values_typedを置き、matchValにもこの内部値の一場合だけを加える | 観測可能なStringの欄をnoneにし、後のClosedObservableの義務を満たせなくする案は採らない。腕・節・ハンドラの型付けの群には進まない |
+| 準備のindex | AtPrepareはrvarだけを準備のstaticIndexにする。privateなPreparationErrorに「準備のその他の失敗はstaticIndexでない」という証明を保持し、公開結果ではAtErrorだけを返す。AtPrepared.fixed_indexとWF 0からのAtPrepare.fixed_index/no_staticIndexを証明する | 型付きの状態にも未具体化のrvarを残す案、準備失敗で遷移を失う案は採らない。checkAtの静的所属違反のstaticIndexとは区別する |
+| 動的対象のhome | TargetInputに内部のhomePathを加え、既存の`~`・`~/...`をhomeとして保持する。relativePathはcwdのまま、absoluteは絶対形のままである。TargetInputは2形から3形になるが、Val/Comp/Stepの数は変わらない | `~`をcwdの下のリテラルとして扱う案、Wordに不正な空要素の目印を埋め込む案は採らない。既に決定した書ける形を保つための補助構文の追加であり、新しい変数展開は認めない |
+| 文字列・Requestの入口 | parseAtInput/parseAtPattern/Val.reqTargetを有限の純粋関数にする。HTTP要求のurl欄と全要求の保持を分け、groundValは旧の定数・Bytes・List・構成子の計算できる十分条件を写し、Groundを導く。動的パスは`/`・`.`・先頭`./`・`~`と`~/`を区別し、途中のdot・空要素・余分な末尾/・`..`・`~user`を拒否する。URLはASCII・percent・userinfo・port・IPの族を検査する | OS照会や解析の正しさの新しい信頼条件は加えない。文字列解析と既存のreqTarget/Scopeの供給境界との一致はL50、表層の変換と評価順はL70が照合する。今回の境界入力だけで解析全体の同値を済ませたとはしない |
+| PathBasesの発行 | 新名前空間のPrimKindを9形にし、旧8形を構造的に埋め込む。E_OpPrimと実行器の通常のhandler経路にpathBasesを加える。無handlerのapplyからissueを作り、σの専用発行だけがEvent.pathBasesを出す | 旧PrimKindの改変、δ/IO応答が別実行のtokenを選ぶ経路は採らない。appでの通常のhandler処理を保ち、issueでの再検査は第27節に従って削除した |
+| 場合数の数え方 | 今回の判断はV26/C15/Vs2/Each2/TelArgs2/CheckedWitness2の49構成子である。AtCallAdmissibleの補助1構成子は別記する。shiftはWitnessも相互に消去する。置換とnarrowingは、保持要求の空文脈と同じストアが変わらないのでWitnessを再利用する | 再利用した証拠を、新たに証明した2つの相互のmatchと数えない。全状態の保存や三モデルの充足へ件数を加算しない |
+
+本番の入口・場合数・検査と残る義務はresultsの`.02b-at`節へ記録する。群末の自己点検は独立レビューの代わりにしない。
+
+
+## 27. RV-L00b.02b-atを受けたD28の改訂と局所修正（2026-10-31）
+
+[独立レビュー](../reviews/RV-L00b.02b-at.md)とplanの同日の先頭の判断に従い、中2件・軽4件へ対応した。第26節初回の「主な定理の前提を変えない」という判断に、PathBasesの署名を供給する信頼条件が欠けていた。今回のCoreAssumptionsへの追加・改訂は、取りまとめが承認した**D28の意味の変更**であり、単なる補助契約の具体化とはしない。主な定理の結論、提供範囲、利用者の書ける形、精密な外部状態は変更しない。新しい公理は置かない。
+
+### 27.1 採った欄と補題
+
+```text
+PrimSig.PathBasesShape s :=
+  s.tparams = [] ∧ s.neffs = 0 ∧ s.rkinds = [] ∧ s.params = [] ∧
+  s.ret = .pathBases ∧ s.eff = Eff.single processEnvironmentEff ∧
+  s.opEff = some processEnvironmentEff
+
+CoreAssumptions.pathBases_shape :
+  ∀ b s, B.sig b = some s → s.kind = .pathBases → s.PathBasesShape
+CoreAssumptions.opEff_io :
+  ∀ b s l, B.sig b = some s → s.opEff = some l →
+    s.kind = .io ∨ s.kind = .exit ∨ s.kind = .pathBases
+CoreAssumptions.effect_ops :
+  ∀ l bs b, B.effects l = some bs → b ∈ bs →
+    ∃ s, B.sig b = some s ∧
+      (s.kind = .io ∨ s.kind = .exit ∨ s.kind = .pathBases) ∧ s.opEff = some l
+CoreAssumptions.store_shape :
+  ∀ b s, B.sig b = some s → s.kind ≠ .pathBases → s.StoreShape
+CoreAssumptions.store_admits :
+  ∀ b s C ts, B.sig b = some s → s.kind ≠ .pure → s.kind ≠ .io →
+    s.kind ≠ .exit → s.kind ≠ .pathBases → ts.length = s.tparams.length → s.admits C ts
+```
+
+PathBasesShapeは実際には上の七条件を名前付きの欄として持つPropの構造体である。StoreShapeは旧のrefNew/refGet/refSet/refUpdate/forceの名前・個数・引数・結果・State/空効果・空範囲を新しい型で表し、型パラメータの個数はtparams.lengthで読む。pathBasesの場合はFalseとし、store_shapeはその場合を前提で除く。pure/io/exitは従来どおりTrueである。IO応答のio_kindの分類へpathBasesを混ぜず、σは専用発行だけから得る。
+
+理由: kindだけを見るE_PathBasesApplyから、C_IssuePathBasesの要求する形を供給し、実行器の空の具体化の検査とも一致させる必要がある。署名の形を遷移の前提へ足して不正な表を無言でstuckにする案と、旧の四欄をそのまま移してpathBasesをIOまたは可変のセルの項目に分類する案は採らない。
+
+CoreAssumptions.issuePathBases_typedはlookupとkindからC_IssuePathBasesを導く。pathBases_empty_argumentsはPrimitiveAdmissibleとRangeAdmissibleの個数から型・行・範囲の列が空であることを導き、pathBases_empty_valuesはTelArgsから実引数が空であることを導く。pathBases_apply_destinationはE_PathBasesApplyの局所の場合として、実際の遷移と到達先の計算の型付けを同時に与える。これらを全状態の進行・保存の完成と数えない。
+
+Event.Covered B Γ Φ ε evはIOの署名のopEffと同じ名前の一原子の被覆、解放のState、σ発行のProcess.Environmentを照合する。IOの範囲は存在量化し、ここで観測対象の許可の条件を追加しない。covered_pathBasesはσ発行の被覆がProcess.Environmentの被覆そのものであることを与える。effect_soundnessの証明は第24節どおりL20・L70に残る。
+
+### 27.2 局所修正の選択
+
+中2はレビューの案(a)を採り、発行のE_IssuePathBasesとstepだけからhandlerの再検査を外す。理由: appでは従来どおりhandlerの節を先に選び、無handlerの場合にissueを作る。内部のissue自体は継続によらず発行できるようにすれば、レビューのhandled_stuck相当の状態にも遷移がある。二遷移を一つに統合する案(b)とStateTyへ新しい禁止条件を置く案(c)は採らない。
+
+軽2はAtError.Closedを定義と前提の双方から外す案を採る。理由: AtErrorの各欄に値・型の変数の構文がなく、閉性はデータ型で保証済みである。常に真の条件を公開前提に残す案、整形式や所属の条件を「閉性」に混ぜて新しい制限を作る案は採らない。V_AtErrorのDeclaredの検査は保つ。
+
+軽3はVal.Sourceの.locだけをFalseとする。理由: Sourceは表層と実行時だけの構文を区別する補助であり、場所は表層から作らない。Sourceを内部の四形だけの除外と読み替える案は採らない。値の型付けやストアの場所を受け入れる範囲は変更しない。
+
+軽1の処理系の文言とU02の公開APIとの対応、および軽4のD20を前提とするD29の埋め込みは、第24節に送り先と閉じる条件を追加した。後続の証明や公開APIの決定を今回終えたとは扱わない。

@@ -22,6 +22,8 @@ mutual
     | .const c, .const c' => if patternMatches c c' then some [] else none
     | .con c ps, .con c' _ args =>
         if c = c' then matchList ps args else none
+    | .con c ps, .atError detail =>
+        if c = "Scope.ScopeError.At" then matchList ps detail.values else none
     | .range lo hi, .const c => if patternRange lo hi c then some [] else none
     | .list before rest after, .list elems => do
         let n := before.length + after.length

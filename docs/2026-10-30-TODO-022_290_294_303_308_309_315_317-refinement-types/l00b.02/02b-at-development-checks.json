@@ -1,0 +1,26 @@
+[
+  {
+    "name": "02b-at-first-build.log",
+    "exit": 1,
+    "bytes": 28528,
+    "sha256": "7bb27275c6a088f2af461e68e255c7110ee2618035b3c7150e18ff11d3b29621",
+    "interpretation": "新構成子に対する既存の障害例の不可能な場合が不足。言明を変えず追加して修正した。",
+    "elapsed_seconds": null,
+    "input_snapshot": "当時の入力の写しは未採取。最終入力の成功とは区別する。"
+  },
+  {
+    "name": "02b-at-first-boundary.log",
+    "exit": 1,
+    "bytes": 13099,
+    "sha256": "8c0ad360a27aa86e7207c17f6c9a6e6a654187308db62f93aab0e806ed0c9749",
+    "interpretation": "初回の境界の暗黙引数・Stringの閉じた評価・局所文脈の引数が不適切だった。最終の境界で修正した。",
+    "elapsed_seconds": null,
+    "input_snapshot": "当時の入力の写しは未採取。最終入力の成功とは区別する。"
+  },
+  {
+    "name": "境界の閉じたStringの評価",
+    "exit": 130,
+    "interpretation": "長いURLのcbvによる証明作成が長引いたため二回中断した。文字列の大きい例をコマンドの実行で照合し、保持要求の形式的な証拠は同じClientRequest形の最小のURLで作った。実行した真偽を定理の公理にしない。",
+    "elapsed_seconds": null
+  }
+]

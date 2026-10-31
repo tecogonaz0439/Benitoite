@@ -359,6 +359,15 @@ private theorem TypedImages.none {P B store Q C Γ Δ Ξ σ}
         simpa only [upSubst, Nat.succ_lt_succ_iff, Nat.not_lt_zero, ↓reduceIte,
           Nat.add_one_sub_one, shiftIndex_add] using ht
 
+theorem Eff.subst_values_empty (ν : Nat → Val) : substEffValues ν Eff.empty = Eff.empty := by
+  simp [substEffValues, Eff.bind, Eff.rawBind, rowFails, valEnv, rawBindTys,
+    Eff.norm, Eff.empty, Ty.normTys, substAtoms_nil, instAtoms_nil]
+
+theorem Eff.subst_values_single (ν : Nat → Val) (l : EffName) :
+    substEffValues ν (Eff.single l) = Eff.single l := by
+  simp [substEffValues, Eff.bind, Eff.rawBind, rowFails, valEnv, rawBindTys,
+    Eff.norm, Eff.single, Ty.normTys, substAtoms_nil, instAtoms_nil]
+
 mutual
   private theorem subst_value {P B store Q C Γ Φ v a}
       (h : HasTypeVQ P B store Q C Γ Φ v a) (hA : Builtins.ValueAssumptions P B) (hstore : StoreTy.WF store) {Δ Ξ σ} (ρ : Nat → LocalRef)
@@ -396,6 +405,15 @@ mutual
         HasTypeVQ.V_ExternalHandle (Ψ := store) (Φ := Ξ) h td hd hc hr
           (by simpa only [List.length_map] using hn)
           (by simpa only [substTyValues, Ty.bind_external, substTyValues_eq_bind] using ht.annotation ha)
+    | .V_PathBases hs => exact .V_PathBases hs
+    | .V_ScopePattern hw hc hk => exact .V_ScopePattern hw hc hk
+    | .V_Checked hk hc hm => exact .V_Checked hk hc hm
+    | .V_CheckedRequest hk hc hv hg ht hm => exact .V_CheckedRequest hk hc hv hg ht hm
+    | .V_CheckedAt hw => exact .V_CheckedAt hw
+    | .V_AtError hs =>
+      simpa only [Val.subst, hs.errorType_eq, atErrorType, substTyValues, Ty.bind, Ty.rawBind, rawBindTys,
+        Ty.norm, Ty.normTys] using
+        (HasTypeVQ.V_AtError (Ψ := store) (Q := Q) (C := C) (Γ := Δ) (Φ := Ξ) hs)
     | .V_Map hk hv hn hs ha hb =>
       exact .V_Map (subst_each hk hA hstore ρ ht hf) (subst_each hv hA hstore ρ ht hf)
         (by simpa using hn) (hA.sat_values store Q C Γ Δ Ξ σ _ _ ht ha hs) (ht.annotation ha) (ht.annotation hb)
@@ -530,6 +548,15 @@ mutual
       change Tel.bind (valEnv σ) (Tel.bind (typeEnv ts) _) = _ at he
       rw [he] at hh
       exact .C_External hd hw (ha.map hw _) hh
+    | .C_IssuePathBases b sg hb hk ho hp hr he =>
+      rw [Eff.subst_values_single]
+      exact .C_IssuePathBases b sg hb hk ho hp hr he
+    | .C_CheckAt (bases := bases) hc =>
+      have hh := subst_at_call hc hA hstore ρ ht hf
+      rw [Eff.subst_values_empty]
+      cases bases <;> simpa [Comp.subst, substTyValues, Ty.bind, Ty.rawBind, rawBindTys,
+        Ty.norm, Ty.normTys, valEnv, RangeIx.inst_nil] using
+        (HasTypeCQ.C_CheckAt (R := R.map (substTyValues σ)) (Δ := L') hh)
     | .C_Sub hm hl hc hw hs hd =>
       exact .C_Sub (subst_comp hm hA hstore ρ ht hL hf) (hl.bind (valEnv σ) (ht.transport hf))
         (hc.bind (valEnv σ)) (ht.wf hw hs) (ht.sorted hs) (hd.bind_values ht.declaration)
@@ -556,6 +583,34 @@ mutual
         (Tel.bind (Tel.argumentsEnv (v.subst σ ρ)) (Tel.bind (valEnv σ).up rest)) _ _
       rw [← valEnv_upSubst_one, Tel.open_subst]
       exact subst_telArgs hs hA hstore ρ ht hf
+
+  private theorem subst_at_call {P B store Q C Γ Φ kind name shape bases pattern input index}
+      (h : AtCallAdmissible P B store Q C Γ Φ kind name shape bases pattern input index)
+      (hA : Builtins.ValueAssumptions P B) (hstore : store.WF) {Δ Ξ σ} (ρ : Nat → LocalRef)
+      (ht : TypedImages P B store Q C Γ Δ Ξ σ)
+      (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) (predBind (valEnv σ).values p)) :
+      AtCallAdmissible P B store Q C Δ Ξ kind name
+        {shape with errorType := substTyValues σ shape.errorType}
+        (match bases with | none => none | some b => some (b.subst σ ρ))
+        (pattern.subst σ ρ) (input.subst σ ρ) index := by
+    match h with
+    | .mk hs hk hb hp hty hv hw hi =>
+      have hb' := fun b (he : bases = some b) => subst_value (hb b he) hA hstore ρ ht hf
+      have he : {shape with errorType := substTyValues σ shape.errorType} = shape := by
+        have hx : substTyValues σ shape.errorType = shape.errorType := by
+          rw [hs.errorType_eq]; rfl
+        simp only [hx]
+      rw [he]
+      refine .mk hs hk ?_ (subst_value hp hA hstore ρ ht hf) ?_
+        (subst_value hv hA hstore ρ ht hf) hw hi
+      · intro v he
+        cases bases with
+        | none => cases he
+        | some b => cases he; exact hb' b rfl
+      · rcases hty with ⟨rfl, hy⟩ | hy
+        · exact Or.inl ⟨rfl, hy⟩
+        · exact Or.inr ⟨by rw [Ty.subst_values_of_wf_zero hy.2]; exact hy.1,
+            by rw [Ty.subst_values_of_wf_zero hy.2]; exact hy.2⟩
 
 end
 

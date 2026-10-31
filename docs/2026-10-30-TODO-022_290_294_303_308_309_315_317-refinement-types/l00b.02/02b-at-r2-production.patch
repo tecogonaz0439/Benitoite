@@ -1,0 +1,319 @@
+--- before/formal/Benitoite/Release/Refinement/ConstraintAssumptions.lean
++++ after/formal/Benitoite/Release/Refinement/ConstraintAssumptions.lean
+@@ -1,6 +1,7 @@
+ import Benitoite.Release.Refinement.TypedFacts
+ import Benitoite.Release.Refinement.ExternalResponse
+ import Benitoite.Release.Refinement.BuiltinResponse
++import Benitoite.Release.Refinement.Semantics
+ 
+ /-!
+ # 組込みの制約と値注釈の移送の条件
+@@ -37,9 +38,49 @@
+   obtain ⟨x, hx, rfl⟩ := Option.map_eq_some_iff.mp hi
+   exact hf x (List.mem_of_getElem? hx) p (h.2 i x p hx hp)
+ 
+-/-- 既存の組込み・応答の条件は、それらの判断を追加する群で同じ構造体へ加える。 -/
++/-- PathBasesの発行が要求する閉じた、引数のない署名。 -/
++structure PrimSig.PathBasesShape (s : PrimSig) : Prop where
++  types : s.tparams = []
++  rows : s.neffs = 0
++  ranges : s.rkinds = []
++  arguments : s.params = []
++  result : s.ret = .pathBases
++  effect : s.eff = Eff.single processEnvironmentEff
++  operation : s.opEff = some processEnvironmentEff
++
++/-- 可変のセルと明示遅延の項目の形。PathBasesはこの分類へ入れない。 -/
++def PrimSig.StoreShape (s : PrimSig) : Prop :=
++  match s.kind with
++  | .refNew => s.names = ["value"] ∧ s.tparams.length = 1 ∧ s.neffs = 0 ∧
++      s.params = [.tvar 0] ∧ s.ret = .reference (.tvar 0) ∧
++      s.eff = Eff.single stateEff ∧ s.rkinds = []
++  | .refGet => s.names = ["reference"] ∧ s.tparams.length = 1 ∧ s.neffs = 0 ∧
++      s.params = [.reference (.tvar 0)] ∧ s.ret = .tvar 0 ∧
++      s.eff = Eff.single stateEff ∧ s.rkinds = []
++  | .refSet => s.names = ["reference", "value"] ∧ s.tparams.length = 1 ∧ s.neffs = 0 ∧
++      s.params = [.reference (.tvar 0), .tvar 0] ∧ s.ret = .base .unit ∧
++      s.eff = Eff.single stateEff ∧ s.rkinds = []
++  | .refUpdate => s.names = ["reference", "f"] ∧ s.tparams.length = 1 ∧ s.neffs = 0 ∧
++      s.params = [.reference (.tvar 0), .fn ["value"] [.tvar 0] (.tvar 0) Eff.empty] ∧
++      s.ret = .base .unit ∧ s.eff = Eff.single stateEff ∧ s.rkinds = []
++  | .force => s.names = ["value"] ∧ s.tparams.length = 1 ∧ s.neffs = 0 ∧
++      s.params = [.lazy (.tvar 0)] ∧ s.ret = .tvar 0 ∧ s.eff = Eff.empty ∧ s.rkinds = []
++  | .pathBases => False
++  | .pure | .io | .exit => True
++
++/-- D28の信頼条件。旧欄の残りは担当する後続の群で加える。 -/
+ structure Builtins.CoreAssumptions (P : Program) (B : Builtins) : Prop extends
+-    Builtins.ValueAssumptions P B, Builtins.ExternalAssumptions P B, Builtins.ResponseAssumptions P B
++    Builtins.ValueAssumptions P B, Builtins.ExternalAssumptions P B, Builtins.ResponseAssumptions P B where
++  /-- σを発行する項目はC_IssuePathBasesと実行器の空引数の検査を満たす。 -/
++  pathBases_shape : ∀ b s, B.sig b = some s → s.kind = .pathBases → s.PathBasesShape
++  /-- 操作の分類には専用のσ発行も含む。IO応答の分類は変更しない。 -/
++  opEff_io : ∀ b s l, B.sig b = some s → s.opEff = some l →
++    s.kind = .io ∨ s.kind = .exit ∨ s.kind = .pathBases
++  effect_ops : ∀ l bs b, B.effects l = some bs → b ∈ bs →
++    ∃ s, B.sig b = some s ∧ (s.kind = .io ∨ s.kind = .exit ∨ s.kind = .pathBases) ∧ s.opEff = some l
++  store_shape : ∀ b s, B.sig b = some s → s.kind ≠ .pathBases → s.StoreShape
++  store_admits : ∀ b s C ts, B.sig b = some s → s.kind ≠ .pure → s.kind ≠ .io →
++    s.kind ≠ .exit → s.kind ≠ .pathBases → ts.length = s.tparams.length → s.admits C ts
+ 
+ /-- 主定理のCoreAssumptionsから、補助の移送が使う四条件を供給する。 -/
+ theorem Builtins.CoreAssumptions.values {P B} (h : Builtins.CoreAssumptions P B) :
+@@ -49,4 +90,46 @@
+ theorem Builtins.CoreAssumptions.responses {P B} (h : Builtins.CoreAssumptions P B) :
+     Builtins.ResponseAssumptions P B := h.toResponseAssumptions
+ 
++/-- E_PathBasesApplyの署名とkindから、遷移先の計算の型付けを得る。 -/
++theorem Builtins.CoreAssumptions.issuePathBases_typed {P B Ψ Q C Γ Φ R Δ b s}
++    (h : Builtins.CoreAssumptions P B) (hs : B.sig b = some s) (hk : s.kind = .pathBases) :
++    HasTypeCQ P B Ψ Q C Γ Φ R (.issuePathBases b) .pathBases (Eff.single processEnvironmentEff) Δ := by
++  have sh := h.pathBases_shape b s hs hk
++  exact .C_IssuePathBases b s hs hk sh.operation sh.arguments sh.result sh.effect
++
++/-- 型・行・範囲の個数が合うPathBasesの呼出しは、実行器の空の具体化の検査を通る。 -/
++theorem Builtins.CoreAssumptions.pathBases_empty_arguments {P B C nv s b Q ts es rs}
++    (h : Builtins.CoreAssumptions P B) (hs : B.sig b = some s) (hk : s.kind = .pathBases)
++    (ha : PrimitiveAdmissible C nv s Q ts es) (hr : B.RangeAdmissible b s rs) :
++    ts = [] ∧ es = [] ∧ rs = [] := by
++  have sh := h.pathBases_shape b s hs hk
++  have ht := ha.typeCount
++  have he := ha.rowCount
++  have hrr := hr.1
++  rw [sh.types] at ht
++  rw [sh.rows] at he
++  rw [sh.ranges] at hrr
++  exact ⟨List.length_eq_zero_iff.mp ht, List.length_eq_zero_iff.mp he, List.length_eq_zero_iff.mp hrr⟩
++
++/-- 型付きの引数の束も、引数なしの署名では空になる。 -/
++theorem Builtins.CoreAssumptions.pathBases_empty_values {P B Ψ Q C Γ Φ s b ts es rs ws a e}
++    (h : Builtins.CoreAssumptions P B) (hs : B.sig b = some s) (hk : s.kind = .pathBases)
++    (ha : HasTypeTelArgsQ P B Ψ Q C Γ Φ ws
++      (instantiatedTel (Tel.instR rs s.tel) ts es) a e) : ws = [] := by
++  have sh := h.pathBases_shape b s hs hk
++  have ht : s.tel = .done s.ret s.eff := by
++    cases hn : s.names <;> simp [PrimSig.tel, signatureTel, sh.arguments, hn]
++  simp only [ht, Tel.instR, instantiatedTel, Tel.bind] at ha
++  cases ha
++  rfl
++
++/-- E_PathBasesApplyの実際の遷移から到達先のviewを反転する局所の場合。 -/
++theorem Builtins.CoreAssumptions.pathBases_apply_destination {P B σ q b s k μ}
++    (h : Builtins.CoreAssumptions P B) (hv : q.view = .app (.prim b [] [] []) [])
++    (hs : B.sig b = some s) (hk : s.kind = .pathBases) (hn : NoHandler k (.prim b)) :
++    Step P B σ (.run q k μ) none (.run (.mk q.capture (.issuePathBases b)) k μ) ∧
++    ∀ Ψ Q C Γ Φ R Δ, HasTypeCQ P B Ψ Q C Γ Φ R
++      (.issuePathBases b) .pathBases (Eff.single processEnvironmentEff) Δ :=
++  ⟨.E_PathBasesApply hv hs hk hn, fun _ _ _ _ _ _ _ => h.issuePathBases_typed hs hk⟩
++
+ end Benitoite.Release.Refinement
+--- before/formal/Benitoite/Release/Refinement/Narrowing.lean
++++ after/formal/Benitoite/Release/Refinement/Narrowing.lean
+@@ -165,7 +165,7 @@
+     | .V_Checked hk hc hm => exact .V_Checked hk hc hm
+     | .V_CheckedRequest hk hc hv hg ht hm => exact .V_CheckedRequest hk hc hv hg ht hm
+     | .V_CheckedAt hw => exact .V_CheckedAt hw
+-    | .V_AtError hs hc => exact .V_AtError hs hc
++    | .V_AtError hs => exact .V_AtError hs
+     | .V_Map hk hv hn hs ha hb =>
+       exact .V_Map (context_each hk hA hstore hm hf)
+         (context_each hv hA hstore hm hf) hn hs (hm.annotation ha) (hm.annotation hb)
+--- before/formal/Benitoite/Release/Refinement/NarrowingObstruction.lean
++++ after/formal/Benitoite/Release/Refinement/NarrowingObstruction.lean
+@@ -15,7 +15,7 @@
+   | .V_Const _ | .V_Lam _ _ _ _ _ | .V_List _ _ _ _ | .V_Raise _ | .V_LocRef _ _ | .V_LocLazy _ _
+   | .V_Fun _ _ _ _ | .V_Prim _ _ _ _ _ | .V_Op _ _ _ _ | .V_Map _ _ _ _ _ _ | .V_Set _ _ _ | .V_Dict _ _ _ _ _ _ _ _
+   | .V_PathBases _ | .V_ScopePattern _ _ _ | .V_Checked _ _ _ |
+-      .V_CheckedRequest _ _ _ _ _ _ | .V_CheckedAt _ | .V_AtError _ _
++      .V_CheckedRequest _ _ _ _ _ _ | .V_CheckedAt _ | .V_AtError _
+   | .V_ExternalRef _ _ _ _ | .V_ExternalHandle _ _ _ _ _ _ _
+   | .V_Bytes _ | .V_Con _ _ _ _ _ _ | .V_Super _ _ _ _ => intro i he; cases he
+   | .V_Sub hv _ _ _ _ | .V_Refine hv _ _ _ _ _ _ _ => exact variable_origin_aux hv
+--- before/formal/Benitoite/Release/Refinement/PathResolution.lean
++++ after/formal/Benitoite/Release/Refinement/PathResolution.lean
+@@ -68,8 +68,6 @@
+   | none => cases r <;> unfold SnapshotMem <;> infer_instance
+   | some σ => unfold SnapshotMem; infer_instance
+ 
+-def AtError.Closed (_ : AtError) : Prop := True
+-
+ inductive AtResult where
+   | ok (target : Target)
+   | error (detail : AtError)
+--- before/formal/Benitoite/Release/Refinement/Semantics.lean
++++ after/formal/Benitoite/Release/Refinement/Semantics.lean
+@@ -3,6 +3,18 @@
+ 
+ namespace Benitoite.Release.Refinement
+ noncomputable section
++
++/-- 事象が要求する効果名の被覆。IOの範囲は存在量化し、対象の許可は後続の対象健全性で扱う。
++σの発行と解放は範囲なし（Top）のProcess.EnvironmentとStateをそれぞれ要求する。 -/
++def Event.Covered (B : Builtins) (Γ : Ctx) (Φ : List Pred) (ε : Eff) : Event → Prop
++  | .io b _ _ _ => ∃ s l r, B.sig b = some s ∧ s.opEff = some l ∧
++      ε.Covers Γ Φ (.mk (fun a => decide (a = .name l r)) [])
++  | .release _ _ => ε.Covers Γ Φ (Eff.single stateEff)
++  | .pathBases _ _ => ε.Covers Γ Φ (Eff.single processEnvironmentEff)
++
++/-- σ発行の被覆はProcess.Environmentの被覆そのものであり、組込み名やsnapshotに依存しない。 -/
++theorem Event.covered_pathBases {B Γ Φ ε b σ} :
++    (Event.pathBases b σ).Covered B Γ Φ ε ↔ ε.Covers Γ Φ (Eff.single processEnvironmentEff) := Iff.rfl
+ 
+ def markPush : Cont → Cont
+   | .mark :: k => .mark :: k
+@@ -83,7 +95,7 @@
+       Step P B σ (.run q k μ) none (.run (.mk q.capture (.issuePathBases b)) k μ)
+   | E_IssuePathBases {q : Closure} {b sg k μ} :
+       q.view = .issuePathBases b → B.sig b = some sg → sg.kind = .pathBases →
+-      sg.opEff = some processEnvironmentEff → NoHandler k (.prim b) → σ.Valid →
++      sg.opEff = some processEnvironmentEff → σ.Valid →
+       Step P B σ (.run q k μ) (some (.pathBases b σ))
+         (.run (Closure.pure (.ret (.pathBases σ))) k μ)
+   | E_AtOk {q : Closure} {kind name shape bases pattern input index snapshot pat target bound t k μ} :
+--- before/formal/Benitoite/Release/Refinement/Source.lean
++++ after/formal/Benitoite/Release/Refinement/Source.lean
+@@ -5,7 +5,7 @@
+ mutual
+   def Val.Source : Val → Prop
+     | .pathBases _ | .checkedAt _ _ _ _ | .atError _ | .externalHandle _ _ |
+-        .closure _ _ | .checked _ | .checkedRequest _ _ => False
++        .closure _ _ | .checked _ | .checkedRequest _ _ | .loc _ => False
+     | .lam _ _ body | .dependentLam _ body => body.Source
+     | .con _ _ vs | .dict _ _ vs | .list vs | .setV vs => sourceVals vs
+     | .mapV ks vs => sourceVals ks ∧ sourceVals vs
+--- before/formal/Benitoite/Release/Refinement/Step.lean
++++ after/formal/Benitoite/Release/Refinement/Step.lean
+@@ -132,12 +132,12 @@
+               | _ => none
+           | _, _ => none
+   | (.issuePathBases b), k, μ =>
+-      match B.sig b, splitHandler (.prim b) k with
+-      | some sg, none =>
++      match B.sig b with
++      | some sg =>
+         if sg.kind = .pathBases ∧ sg.opEff = some processEnvironmentEff ∧ σ.Valid then
+           some (some (.pathBases b σ), .run (Closure.pure (.ret (.pathBases σ))) k μ)
+         else none
+-      | _, _ => none
++      | none => none
+   | (.checkAt _ _ _ _ _ _ _), k, μ =>
+       match q.code with
+       | .checkAt kind name shape bases pattern input index =>
+--- before/formal/Benitoite/Release/Refinement/SubstTyping.lean
++++ after/formal/Benitoite/Release/Refinement/SubstTyping.lean
+@@ -410,10 +410,10 @@
+     | .V_Checked hk hc hm => exact .V_Checked hk hc hm
+     | .V_CheckedRequest hk hc hv hg ht hm => exact .V_CheckedRequest hk hc hv hg ht hm
+     | .V_CheckedAt hw => exact .V_CheckedAt hw
+-    | .V_AtError hs hc =>
++    | .V_AtError hs =>
+       simpa only [Val.subst, hs.errorType_eq, atErrorType, substTyValues, Ty.bind, Ty.rawBind, rawBindTys,
+         Ty.norm, Ty.normTys] using
+-        (HasTypeVQ.V_AtError (Ψ := store) (Q := Q) (C := C) (Γ := Δ) (Φ := Ξ) hs hc)
++        (HasTypeVQ.V_AtError (Ψ := store) (Q := Q) (C := C) (Γ := Δ) (Φ := Ξ) hs)
+     | .V_Map hk hv hn hs ha hb =>
+       exact .V_Map (subst_each hk hA hstore ρ ht hf) (subst_each hv hA hstore ρ ht hf)
+         (by simpa using hn) (hA.sat_values store Q C Γ Δ Ξ σ _ _ ht ha hs) (ht.annotation ha) (ht.annotation hb)
+--- before/formal/Benitoite/Release/Refinement/SubstTypingObstruction.lean
++++ after/formal/Benitoite/Release/Refinement/SubstTypingObstruction.lean
+@@ -16,7 +16,7 @@
+   | .V_Var _ _ | .V_Const _ | .V_List _ _ _ _ | .V_Raise _ | .V_LocRef _ _ | .V_LocLazy _ _
+   | .V_Fun _ _ _ _ | .V_Prim _ _ _ _ _ | .V_Op _ _ _ _ | .V_Map _ _ _ _ _ _ | .V_Set _ _ _ | .V_Dict _ _ _ _ _ _ _ _
+   | .V_PathBases _ | .V_ScopePattern _ _ _ | .V_Checked _ _ _ |
+-      .V_CheckedRequest _ _ _ _ _ _ | .V_CheckedAt _ | .V_AtError _ _
++      .V_CheckedRequest _ _ _ _ _ _ | .V_CheckedAt _ | .V_AtError _
+   | .V_ExternalRef _ _ _ _ | .V_ExternalHandle _ _ _ _ _ _ _
+   | .V_Bytes _ | .V_Con _ _ _ _ _ _ | .V_Super _ _ _ _ =>
+       intro ns ps body he; cases he
+--- before/formal/Benitoite/Release/Refinement/TypedFacts.lean
++++ after/formal/Benitoite/Release/Refinement/TypedFacts.lean
+@@ -63,7 +63,7 @@
+   | .V_Map _ _ _ _ _ _ | .V_Set _ _ _ | .V_Dict _ _ _ _ _ _ _ _ => cases hd
+   | .V_PathBases _ | .V_ScopePattern _ _ _ | .V_Checked _ _ _ |
+       .V_CheckedRequest _ _ _ _ _ _ | .V_CheckedAt _ => cases hd
+-  | .V_AtError hs _ =>
++  | .V_AtError hs =>
+     rw [hs.errorType_eq] at hd
+     simp only [atErrorType, Ty.norm, Ty.core, Ty.normTys] at hd
+     cases hd
+@@ -93,7 +93,7 @@
+     | .V_Set hv _ _ => cases ht; exact HasTypeEachQ.observation_declared hv
+     | .V_PathBases _ | .V_ScopePattern _ _ _ => cases ht
+     | .V_Checked _ _ _ | .V_CheckedRequest _ _ _ _ _ _ | .V_CheckedAt _ => cases ht; trivial
+-    | .V_AtError hs _ => cases ht; exact hs.error_observation_declared
++    | .V_AtError hs => cases ht; exact hs.error_observation_declared
+     | .V_Sub hv _ _ _ _ => exact hv.observation_declared ht
+     | .V_Refine hv _ _ _ _ _ _ _ => exact hv.observation_declared ht
+   theorem HasTypeVsQ.observation_declared {P B store Q C Γ Φ vs as}
+@@ -136,7 +136,7 @@
+     | .V_Set hv _ _ => cases ht; exact HasTypeEachQ.observation_references hv
+     | .V_PathBases _ | .V_ScopePattern _ _ _ => cases ht
+     | .V_Checked _ _ _ | .V_CheckedRequest _ _ _ _ _ _ | .V_CheckedAt _ => cases ht; trivial
+-    | .V_AtError _ _ => cases ht; simp [Term.References, Term.VarsIn, varsInSlots, varsInSlot, AtError.textFields, List.map]
++    | .V_AtError _ => cases ht; simp [Term.References, Term.VarsIn, varsInSlots, varsInSlot, AtError.textFields, List.map]
+     | .V_Sub hv _ _ _ _ => exact hv.observation_references ht
+     | .V_Refine hv _ _ _ _ _ _ _ => exact hv.observation_references ht
+   theorem HasTypeVsQ.observation_references {P B store Q C Γ Φ vs as}
+@@ -193,7 +193,7 @@
+       | plain _ _ ht _ => exact ht
+       | request _ _ _ _ _ hm => cases snapshot <;> cases range <;> simp_all [SnapshotMem, RangeExpr.Mem, Scope.Domain.Range.MemK]
+     exact ⟨_, rfl, trivial, by simpa [Term.Shape, hk] using (Option.some.inj hi).symm⟩
+-  | .V_AtError hs _ =>
++  | .V_AtError hs =>
+     rw [hs.errorType_eq] at hi
+     exact ⟨_, rfl, by simp [Term.References, Term.VarsIn, varsInSlots, varsInSlot, AtError.textFields, List.map], (Option.some.inj hi).symm⟩
+   | .V_Sub hv hl _ _ _ => exact hv.observation (hl.hasSort_source hi)
+@@ -229,7 +229,7 @@
+   | .V_ExternalRef _ _ _ _ | .V_ExternalHandle _ _ _ _ _ _ _ => intro p hp; cases hp
+   | .V_PathBases _ | .V_ScopePattern _ _ _ | .V_Checked _ _ _ |
+       .V_CheckedRequest _ _ _ _ _ _ | .V_CheckedAt _ => intro p hp; cases hp
+-  | .V_AtError hs _ => rw [hs.errorType_eq]; intro p hp; cases hp
++  | .V_AtError hs => rw [hs.errorType_eq]; intro p hp; cases hp
+   | .V_Sub hv hl _ _ _ =>
+     intro p hp
+     apply ((hl.assume p hp).bind (fun i => match i with
+@@ -264,7 +264,7 @@
+   | .V_ExternalRef _ _ _ _ | .V_ExternalHandle _ _ _ _ _ _ _ => intro p hp; cases hp
+   | .V_PathBases _ | .V_ScopePattern _ _ _ | .V_Checked _ _ _ |
+       .V_CheckedRequest _ _ _ _ _ _ | .V_CheckedAt _ => intro p hp; cases hp
+-  | .V_AtError hs _ => rw [hs.errorType_eq]; intro p hp; cases hp
++  | .V_AtError hs => rw [hs.errorType_eq]; intro p hp; cases hp
+   | .V_Sub hv hl _ _ _ =>
+     intro p hp
+     apply ((hl.assume p hp).bind (fun i => match i with
+--- before/formal/Benitoite/Release/Refinement/Typing.lean
++++ after/formal/Benitoite/Release/Refinement/Typing.lean
+@@ -142,7 +142,7 @@
+     | V_CheckedAt {Ψ Q C Γ Φ o k range snapshot target request} :
+         CheckedWitness P B Ψ o k range snapshot target request →
+         HasTypeVQ P B Ψ Q C Γ Φ (.checkedAt range snapshot target request) (.scoped o k (.fixed range))
+-    | V_AtError {Ψ Q C Γ Φ} {shape : ResultShape} {detail : AtError} : shape.Declared P → detail.Closed →
++    | V_AtError {Ψ Q C Γ Φ} {shape : ResultShape} {detail : AtError} : shape.Declared P →
+         HasTypeVQ P B Ψ Q C Γ Φ (.atError detail) shape.errorType
+     | V_Map {Ψ Q C Γ Φ ks vs a b} :
+         HasTypeEachQ P B Ψ Q C Γ Φ ks a → HasTypeEachQ P B Ψ Q C Γ Φ vs b →
+--- before/formal/Benitoite/Release/Refinement/TypingDeclared.lean
++++ after/formal/Benitoite/Release/Refinement/TypingDeclared.lean
+@@ -32,7 +32,7 @@
+   | .V_Bytes _ => trivial
+   | .V_PathBases _ | .V_ScopePattern _ _ _ | .V_Checked _ _ _ |
+       .V_CheckedRequest _ _ _ _ _ _ | .V_CheckedAt _ => trivial
+-  | .V_AtError hs _ => exact hs.errorType_declared
++  | .V_AtError hs => exact hs.errorType_declared
+   | .V_Sub _ _ _ _ hd => exact hd
+   | .V_Refine _ _ _ _ _ _ hda hdp => exact ⟨hda, hdp⟩
+ 
+--- before/formal/Benitoite/Release/Refinement/TypingShift.lean
++++ after/formal/Benitoite/Release/Refinement/TypingShift.lean
+@@ -422,9 +422,9 @@
+       simp only [retained_shiftIndex_zero, Val.rename_identity, retained_shift_zero] at hh
+       exact .V_CheckedRequest hk hc hh hg ht hm
+     | .V_CheckedAt hw => exact .V_CheckedAt (CheckedWitness.shift_store hw hA hstore hpres)
+-    | .V_AtError (shape := shape) hs hc =>
++    | .V_AtError (shape := shape) hs =>
+       simpa only [Val.rename, hs.errorType_eq, atErrorType, Ty.shiftV, shiftVTys] using
+-        (HasTypeVQ.V_AtError (Ψ := store') (Q := Q) (C := C) (Γ := Δ) (Φ := Ξ) hs hc)
++        (HasTypeVQ.V_AtError (Ψ := store') (Q := Q) (C := C) (Γ := Δ) (Φ := Ξ) hs)
+     | .V_Map hk hv hn hs ha hb =>
+       exact .V_Map (HasTypeEachQ.shift_values hk hA hstore hpres hm hf)
+         (HasTypeEachQ.shift_values hv hA hstore hpres hm hf) (by simpa using hn)

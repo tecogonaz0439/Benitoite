@@ -61,6 +61,14 @@ theorem HasTypeVQ.data_observation {P B store Q C Γ Φ v a d ts}
   | .V_Raise _ | .V_LocRef _ _ | .V_LocLazy _ _ | .V_Bytes _ => cases hd
   | .V_Fun _ _ _ _ | .V_Prim _ _ _ _ _ | .V_Op _ _ _ _ | .V_ExternalRef _ _ _ _ | .V_ExternalHandle _ _ _ _ _ _ _ => cases hd
   | .V_Map _ _ _ _ _ _ | .V_Set _ _ _ | .V_Dict _ _ _ _ _ _ _ _ => cases hd
+  | .V_PathBases _ | .V_ScopePattern _ _ _ | .V_Checked _ _ _ |
+      .V_CheckedRequest _ _ _ _ _ _ | .V_CheckedAt _ => cases hd
+  | .V_AtError hs =>
+    rw [hs.errorType_eq] at hd
+    simp only [atErrorType, Ty.norm, Ty.core, Ty.normTys] at hd
+    cases hd
+    cases ht
+    exact hs.error_data
   | .V_Sub hv hl _ _ _ => exact hv.data_observation (hl.dataCore_source hd) ht
   | .V_Refine hv _ _ _ _ _ _ _ => exact hv.data_observation hd ht
 
@@ -83,6 +91,9 @@ mutual
     | .V_Fun _ _ _ _ | .V_Prim _ _ _ _ _ | .V_Op _ _ _ _ | .V_Dict _ _ _ _ _ _ _ _ | .V_ExternalRef _ _ _ _ | .V_ExternalHandle _ _ _ _ _ _ _ => cases ht
     | .V_Map hk hv _ _ _ _ => cases ht; exact ⟨HasTypeEachQ.observation_declared hk, HasTypeEachQ.observation_declared hv⟩
     | .V_Set hv _ _ => cases ht; exact HasTypeEachQ.observation_declared hv
+    | .V_PathBases _ | .V_ScopePattern _ _ _ => cases ht
+    | .V_Checked _ _ _ | .V_CheckedRequest _ _ _ _ _ _ | .V_CheckedAt _ => cases ht; trivial
+    | .V_AtError hs => cases ht; exact hs.error_observation_declared
     | .V_Sub hv _ _ _ _ => exact hv.observation_declared ht
     | .V_Refine hv _ _ _ _ _ _ _ => exact hv.observation_declared ht
   theorem HasTypeVsQ.observation_declared {P B store Q C Γ Φ vs as}
@@ -123,6 +134,9 @@ mutual
     | .V_Fun _ _ _ _ | .V_Prim _ _ _ _ _ | .V_Op _ _ _ _ | .V_Dict _ _ _ _ _ _ _ _ | .V_ExternalRef _ _ _ _ | .V_ExternalHandle _ _ _ _ _ _ _ => cases ht
     | .V_Map hk hv _ _ _ _ => cases ht; exact ⟨HasTypeEachQ.observation_references hk, HasTypeEachQ.observation_references hv⟩
     | .V_Set hv _ _ => cases ht; exact HasTypeEachQ.observation_references hv
+    | .V_PathBases _ | .V_ScopePattern _ _ _ => cases ht
+    | .V_Checked _ _ _ | .V_CheckedRequest _ _ _ _ _ _ | .V_CheckedAt _ => cases ht; trivial
+    | .V_AtError _ => cases ht; simp [Term.References, Term.VarsIn, varsInSlots, varsInSlot, AtError.textFields, List.map]
     | .V_Sub hv _ _ _ _ => exact hv.observation_references ht
     | .V_Refine hv _ _ _ _ _ _ _ => exact hv.observation_references ht
   theorem HasTypeVsQ.observation_references {P B store Q C Γ Φ vs as}
@@ -168,6 +182,20 @@ theorem HasTypeVQ.observation {P B store Q C Γ Φ v a sort}
   | .V_Fun _ _ _ _ | .V_Prim _ _ _ _ _ | .V_Op _ _ _ _ | .V_Dict _ _ _ _ _ _ _ _ | .V_ExternalRef _ _ _ _ | .V_ExternalHandle _ _ _ _ _ _ _ => cases hi
   | .V_Map hk hv _ _ _ _ => exact ⟨_, rfl, ⟨HasTypeEachQ.observation_references hk, HasTypeEachQ.observation_references hv⟩, (Option.some.inj hi).symm⟩
   | .V_Set hv _ _ => exact ⟨_, rfl, HasTypeEachQ.observation_references hv, (Option.some.inj hi).symm⟩
+  | .V_PathBases _ | .V_ScopePattern _ _ _ => cases hi
+  | .V_Checked _ _ hm =>
+    exact ⟨_, rfl, trivial, by simpa [Term.Shape, hm.1] using (Option.some.inj hi).symm⟩
+  | .V_CheckedRequest _ _ _ _ _ hm =>
+    exact ⟨_, rfl, trivial, by simpa [Term.Shape, hm.1] using (Option.some.inj hi).symm⟩
+  | .V_CheckedAt (target := target) (k := k) (snapshot := snapshot) (range := range) hw =>
+    have hk : target.kind = k := by
+      cases hw with
+      | plain _ _ ht _ => exact ht
+      | request _ _ _ _ _ hm => cases snapshot <;> cases range <;> simp_all [SnapshotMem, RangeExpr.Mem, Scope.Domain.Range.MemK]
+    exact ⟨_, rfl, trivial, by simpa [Term.Shape, hk] using (Option.some.inj hi).symm⟩
+  | .V_AtError hs =>
+    rw [hs.errorType_eq] at hi
+    exact ⟨_, rfl, by simp [Term.References, Term.VarsIn, varsInSlots, varsInSlot, AtError.textFields, List.map], (Option.some.inj hi).symm⟩
   | .V_Sub hv hl _ _ _ => exact hv.observation (hl.hasSort_source hi)
   | .V_Refine hv _ _ _ _ _ _ _ => exact hv.observation hi
 
@@ -199,6 +227,9 @@ theorem HasTypeVQ.assume {P B store Q C Γ Φ v a}
   | .V_Fun _ _ _ _ | .V_Prim _ _ _ _ _ | .V_Op _ _ _ _ | .V_Dict _ _ _ _ _ _ _ _
   | .V_Map _ _ _ _ _ _ | .V_Set _ _ _
   | .V_ExternalRef _ _ _ _ | .V_ExternalHandle _ _ _ _ _ _ _ => intro p hp; cases hp
+  | .V_PathBases _ | .V_ScopePattern _ _ _ | .V_Checked _ _ _ |
+      .V_CheckedRequest _ _ _ _ _ _ | .V_CheckedAt _ => intro p hp; cases hp
+  | .V_AtError hs => rw [hs.errorType_eq]; intro p hp; cases hp
   | .V_Sub hv hl _ _ _ =>
     intro p hp
     apply ((hl.assume p hp).bind (fun i => match i with
@@ -231,6 +262,9 @@ theorem HasTypeVQ.assume_optional {P B store Q C Γ Φ v a}
   | .V_Fun _ _ _ _ | .V_Prim _ _ _ _ _ | .V_Op _ _ _ _ | .V_Dict _ _ _ _ _ _ _ _
   | .V_Map _ _ _ _ _ _ | .V_Set _ _ _
   | .V_ExternalRef _ _ _ _ | .V_ExternalHandle _ _ _ _ _ _ _ => intro p hp; cases hp
+  | .V_PathBases _ | .V_ScopePattern _ _ _ | .V_Checked _ _ _ |
+      .V_CheckedRequest _ _ _ _ _ _ | .V_CheckedAt _ => intro p hp; cases hp
+  | .V_AtError hs => rw [hs.errorType_eq]; intro p hp; cases hp
   | .V_Sub hv hl _ _ _ =>
     intro p hp
     apply ((hl.assume p hp).bind (fun i => match i with

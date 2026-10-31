@@ -1,0 +1,174 @@
+[
+  {
+    "name": "build",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T09:46:32.892738+09:00",
+    "exit": 0,
+    "elapsed_seconds": 0.15517324999999998,
+    "output": {
+      "name": "02b-at-r2-build.log",
+      "bytes": 24345,
+      "sha256": "392b24bcca19ca34ba0a1fb39c1ce4a1e7f2dda94d7913e5bb4882e5ecc7e595",
+      "storage": "改造/l00b.02"
+    },
+    "input_sha256": null
+  },
+  {
+    "name": "boundary",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02b-at-r2-boundary.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T09:46:33.048580+09:00",
+    "exit": 0,
+    "elapsed_seconds": 2.055235583,
+    "output": {
+      "name": "02b-at-r2-boundary.log",
+      "bytes": 10339,
+      "sha256": "5abdc8382987b9b801b353ef3f4773b830dbaaf589da0cb49d0c0374aedcfc88",
+      "storage": "改造/l00b.02"
+    },
+    "input_sha256": "dee9927442a5c0e3dfd4f33e4f7376f0efef6ad68be7be1d9d18a0cada00ac60"
+  },
+  {
+    "name": "previous-boundary",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02a-r4-boundary.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T09:46:35.104891+09:00",
+    "exit": 0,
+    "elapsed_seconds": 0.635997583,
+    "output": {
+      "name": "02b-at-r2-previous-boundary.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "storage": "改造/l00b.02"
+    },
+    "input_sha256": "890e8f09e1e235919405367bbfa0f7feb587f6771be42067664c0abc145a39c1"
+  },
+  {
+    "name": "kind-boundary",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02a-r5-kind-boundary.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T09:46:35.741441+09:00",
+    "exit": 0,
+    "elapsed_seconds": 0.38581804099999983,
+    "output": {
+      "name": "02b-at-r2-kind-boundary.log",
+      "bytes": 2671,
+      "sha256": "1b09da9cea78456861a8874912ac4835a2006b502e04518ec63087a643f56e1a",
+      "storage": "改造/l00b.02"
+    },
+    "input_sha256": "65d8b5097225f41a89eded150fe67d8742a7422c6a983e0a0722d694258bde57"
+  },
+  {
+    "name": "values-boundary",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02b-at-r2-values-boundary.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T09:46:36.127885+09:00",
+    "exit": 0,
+    "elapsed_seconds": 0.8490939169999998,
+    "output": {
+      "name": "02b-at-r2-values-boundary.log",
+      "bytes": 3860,
+      "sha256": "ff086e0eba7a179898a311c167fb5a257d7f029796bc3a1e486351375c11f5be",
+      "storage": "改造/l00b.02"
+    },
+    "input_sha256": "057bc35a4913cee3c091293fd18dc2e49978b1b4bf6e73b94316589de8942864"
+  },
+  {
+    "name": "external-boundary",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02b-external-boundary.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T09:46:36.977662+09:00",
+    "exit": 0,
+    "elapsed_seconds": 1.0315250420000002,
+    "output": {
+      "name": "02b-at-r2-external-boundary.log",
+      "bytes": 9534,
+      "sha256": "2260dba6d96360ee51163f267e80cc3caaf0de5a35923d17ec04b7c0ae5af2f4",
+      "storage": "改造/l00b.02"
+    },
+    "input_sha256": "009066ab0bde17761d94ea12feb1e60bddce8258e4f36cdea591090a54146762"
+  },
+  {
+    "name": "axioms",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02b-at-r2-axioms.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T09:46:38.009958+09:00",
+    "exit": 0,
+    "elapsed_seconds": 7.2671807500000005,
+    "output": {
+      "name": "02b-at-r2-axioms.log",
+      "bytes": 921882,
+      "sha256": "984c7be55765962e1d713cf484813b8dba82a3debf64a61f5e5ae4a73cd60972",
+      "storage": "<tmp>"
+    },
+    "input_sha256": "b01c435734b2559c5cba3b06ba72f08c8a15358863f73df76e0f57a9ca717a0f"
+  },
+  {
+    "name": "lean-version",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "--version"
+    ],
+    "cwd": "formal",
+    "start": "2026-10-31T09:46:45.289631+09:00",
+    "exit": 0,
+    "elapsed_seconds": 0.07693795900000033,
+    "output": {
+      "name": "02b-at-r2-lean-version.log",
+      "bytes": 106,
+      "sha256": "20f42f897511ec814f7616bd9a193ae7504aa2f52fb05299eb752936eb77ca6e",
+      "storage": "改造/l00b.02"
+    },
+    "input_sha256": null
+  }
+]

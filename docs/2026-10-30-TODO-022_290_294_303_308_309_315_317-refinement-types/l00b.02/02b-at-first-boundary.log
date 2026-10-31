@@ -1,0 +1,202 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02b-at-boundary.lean:48:46: error: Dependent elimination failed: Failed to solve equation
+  "project" = "elsewhere"
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02b-at-boundary.lean:56:51: error: Application type mismatch: The argument
+  rfl
+has type
+  ?m.23 = ?m.23
+but is expected to have type
+  SnapshotAdequate σ ?m.13 pat
+in the application
+  CheckedWitness.membership (CheckedWitness.plain rfl rfl rfl ?m.21) rfl
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02b-at-boundary.lean:56:42: error: Expected type must not contain metavariables
+  SnapshotMem ?m.13 Kind.path pat t
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02b-at-boundary.lean:104:63: error: Tactic `decide` failed for proposition
+  req.reqTarget = some endpoint
+because its `Decidable` instance
+  req.reqTarget.instDecidableEq (some endpoint)
+did not reduce to `isTrue` or `isFalse`.
+
+After unfolding the instances `decEq`, `instDecidableAnd`, `instDecidableEqBitVec`, `instDecidableEqBool`, `instDecidableEqFin`, `instDecidableEqList`, `instDecidableEqNat`, `instDecidableEqString`, `instDecidableEqUInt8`, `instDecidableLeBitVec`, `instDecidableNot`, `instDecidableOr`, `BitVec.decEq`, `Bool.decEq`, `Char.instDecidableLe`, `Classical.propDecidable`, `List.hasDecEq`, `Nat.decEq`, `Nat.decLe`, `Nat.decLt`, `Option.instDecidableEq`, `String.decEq`, `UInt32.decLe`, and `UInt8.decEq`, reduction got stuck at the `Decidable` instance
+  match req.reqTarget with
+  | none =>
+    match some endpoint with
+    | none => isTrue ⋯
+    | some val => isFalse ⋯
+  | some a =>
+    match some endpoint with
+    | none => isFalse ⋯
+    | some b =>
+      match instDecidableEqTarget a b with
+      | isTrue h => isTrue ⋯
+      | isFalse n => isFalse ⋯
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02b-at-boundary.lean:126:106: error: Tactic `decide` failed for proposition
+  req.reqTarget ≠ some (Target.endpoint { host := HostTarget.name ["evil", "example"], port := 443 })
+because its `Decidable` instance
+  instDecidableNot
+did not reduce to `isTrue` or `isFalse`.
+
+After unfolding the instances `decEq`, `instDecidableAnd`, `instDecidableEqBitVec`, `instDecidableEqBool`, `instDecidableEqFin`, `instDecidableEqList`, `instDecidableEqNat`, `instDecidableEqString`, `instDecidableEqUInt8`, `instDecidableLeBitVec`, `instDecidableNot`, `instDecidableOr`, `BitVec.decEq`, `Bool.decEq`, `Char.instDecidableLe`, `Classical.propDecidable`, `List.hasDecEq`, `Nat.decEq`, `Nat.decLe`, `Nat.decLt`, `Option.instDecidableEq`, `String.decEq`, `UInt32.decLe`, and `UInt8.decEq`, reduction got stuck at the `Decidable` instance
+  match req.reqTarget with
+  | none =>
+    match some (Target.endpoint { host := HostTarget.name ["evil", "example"], port := 443 }) with
+    | none => isTrue ⋯
+    | some val => isFalse ⋯
+  | some a =>
+    match some (Target.endpoint { host := HostTarget.name ["evil", "example"], port := 443 }) with
+    | none => isFalse ⋯
+    | some b =>
+      match instDecidableEqTarget a b with
+      | isTrue h => isTrue ⋯
+      | isFalse n => isFalse ⋯
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02b-at-boundary.lean:146:2: error: failed to synthesize
+  Decidable
+    ((match RangeIx.fixed RangeExpr.top with
+      | RangeIx.rvar index =>
+        Except.error (atDetail none RangeExpr.top (TargetInput.absolute (Target.path [])) AtFailure.staticIndex)
+      | RangeIx.fixed bound =>
+        match
+          Benitoite.Release.Refinement.prepareCore✝ B Capture.empty Kind.path "Scope.PathIn" none
+            (Val.scopePattern RangeExpr.top) (Val.const (Const.string "/project/data/a.txt")) bound with
+        | Except.error e => Except.error (Benitoite.Release.Refinement.PreparationError.detail✝ e)
+        | Except.ok (snapshot, pat, target) => Except.ok (snapshot, pat, target, bound)) =
+      Except.ok (none, RangeExpr.top, TargetInput.absolute t, RangeExpr.top))
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02b-at-boundary.lean:150:28: error: Function expected at
+  HasTypeC P B StoreTy.empty [] [] [] none (Comp.issuePathBases "Scope.pathBases") Ty.pathBases
+    (Eff.single processEnvironmentEff)
+but this term has type
+  Prop
+
+Note: Expected a function because this term is being applied to the argument
+  []
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02b-at-boundary.lean:164:43: error: Dependent elimination failed: Failed to solve equation
+  some ρ = ?m.49
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02b-at-boundary.lean:166:94: error: Tactic `decide` failed for proposition
+  parseUrlTarget "https://user@api.example.com/%ZZ" = none
+because its `Decidable` instance
+  (parseUrlTarget "https://user@api.example.com/%ZZ").decidableEqNone
+did not reduce to `isTrue` or `isFalse`.
+
+After unfolding the instances `decEq`, `instDecidableAnd`, `instDecidableEqBitVec`, `instDecidableEqBool`, `instDecidableEqFin`, `instDecidableEqNat`, `instDecidableEqUInt8`, `instDecidableLeBitVec`, `instDecidableNot`, `instDecidableOr`, `BitVec.decEq`, `Bool.decEq`, `Char.instDecidableLe`, `Classical.propDecidable`, `Nat.decEq`, `Nat.decLe`, `Nat.decLt`, `Option.decidableEqNone`, `UInt32.decLe`, and `UInt8.decEq`, reduction got stuck at the `Decidable` instance
+  match parseUrlTarget "https://user@api.example.com/%ZZ" with
+  | none => isTrue ⋯
+  | some val => isFalse ⋯
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.02/02b-at-boundary.lean:168:60: error: Tactic `decide` failed for proposition
+  parseUrlTarget "https://[::ffff:192.0.2.1]/" =
+    some (Target.endpoint { host := HostTarget.ip (IPAddr.v6 281473902969345 ⋯), port := 443 })
+because its `Decidable` instance
+  (parseUrlTarget "https://[::ffff:192.0.2.1]/").instDecidableEq
+    (some (Target.endpoint { host := HostTarget.ip (IPAddr.v6 281473902969345 ⋯), port := 443 }))
+did not reduce to `isTrue` or `isFalse`.
+
+After unfolding the instances `decEq`, `instDecidableAnd`, `instDecidableEqBitVec`, `instDecidableEqBool`, `instDecidableEqFin`, `instDecidableEqNat`, `instDecidableEqUInt8`, `instDecidableLeBitVec`, `instDecidableNot`, `instDecidableOr`, `BitVec.decEq`, `Bool.decEq`, `Char.instDecidableLe`, `Classical.propDecidable`, `Nat.decEq`, `Nat.decLe`, `Nat.decLt`, `Option.instDecidableEq`, `UInt32.decLe`, and `UInt8.decEq`, reduction got stuck at the `Decidable` instance
+  match parseUrlTarget "https://[::ffff:192.0.2.1]/" with
+  | none =>
+    match some (Target.endpoint { host := HostTarget.ip (IPAddr.v6 281473902969345 ⋯), port := 443 }) with
+    | none => isTrue ⋯
+    | some val => isFalse ⋯
+  | some a =>
+    match some (Target.endpoint { host := HostTarget.ip (IPAddr.v6 281473902969345 ⋯), port := 443 }) with
+    | none => isFalse ⋯
+    | some b =>
+      match instDecidableEqTarget a b with
+      | isTrue h => isTrue ⋯
+      | isFalse n => isFalse ⋯
+'Benitoite.Release.Refinement.AtBoundary.endpoint' depends on axioms: [propext]
+'Benitoite.Release.Refinement.AtBoundary.req' does not depend on any axioms
+'Benitoite.Release.Refinement.AtBoundary.checked_typed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.AtBoundary.unbound_is_error' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.AtBoundary.at_success_transition' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.AtBoundary.t' does not depend on any axioms
+'Benitoite.Release.Refinement.AtBoundary.ipv6_url_keeps_family' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.AtBoundary.request_typed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.AtBoundary.prepare_index' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.AtBoundary.checked_snapshot_subst' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.AtBoundary.diagnosticDecl.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.AtBoundary.request_typed._simp_1_3' depends on axioms: [propext]
+'Benitoite.Release.Refinement.AtBoundary.P.match_1' does not depend on any axioms
+'Benitoite.Release.Refinement.AtBoundary.request_ground' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.AtBoundary.other' does not depend on any axioms
+'Benitoite.Release.Refinement.AtBoundary.retained_request_typed' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.AtBoundary.foreign_token_rejected' depends on axioms: [propext, sorryAx]
+'Benitoite.Release.Refinement.AtBoundary.bare_request_rejected' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.AtBoundary.token_typed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.AtBoundary.req._proof_1' does not depend on any axioms
+'Benitoite.Release.Refinement.AtBoundary.baseSig' does not depend on any axioms
+'Benitoite.Release.Refinement.AtBoundary.endpoint._proof_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.AtBoundary.initial_does_not_require_dynamic_pattern' depends on axioms: [propext]
+'Benitoite.Release.Refinement.AtBoundary.requestType' does not depend on any axioms
+'Benitoite.Release.Refinement.AtBoundary.missing_secrets_is_unbound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.AtBoundary.B' does not depend on any axioms
+'Benitoite.Release.Refinement.AtBoundary.P.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.AtBoundary.checked_current' depends on axioms: [propext, sorryAx]
+'Benitoite.Release.Refinement.AtBoundary.errorDecl.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.AtBoundary.σ' does not depend on any axioms
+'Benitoite.Release.Refinement.AtBoundary.shape' does not depend on any axioms
+'Benitoite.Release.Refinement.AtBoundary.literal_star_in_base' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.AtBoundary.okDecl.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.AtBoundary.token_same_run' depends on axioms: [propext]
+'Benitoite.Release.Refinement.AtBoundary.open_request_rejected' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.AtBoundary.dynamic_and_index_failures_distinct' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.AtBoundary.diagnosticDecl' does not depend on any axioms
+'Benitoite.Release.Refinement.AtBoundary.shape_declared' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.AtBoundary.request_endpoint' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.AtBoundary.absolute_without_token' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.AtBoundary.okDecl' does not depend on any axioms
+'Benitoite.Release.Refinement.AtBoundary.invalid_url_rejected' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.AtBoundary.prepared_index_exact' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.AtBoundary.request_typed._simp_1_2' depends on axioms: [propext]
+'Benitoite.Release.Refinement.AtBoundary.sigma_valid' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.AtBoundary.requestDecl' does not depend on any axioms
+'Benitoite.Release.Refinement.AtBoundary.emptySecrets' does not depend on any axioms
+'Benitoite.Release.Refinement.AtBoundary.index_rejected' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.AtBoundary.issue_event' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.AtBoundary.wrong_endpoint_rejected' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.AtBoundary.requestDecl.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.AtBoundary.pat' does not depend on any axioms
+'Benitoite.Release.Refinement.AtBoundary.errorDecl' does not depend on any axioms
+'Benitoite.Release.Refinement.AtBoundary.empty_secrets_is_bound' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.AtBoundary.P' does not depend on any axioms
+'Benitoite.Release.Refinement.AtBoundary.relative_uses_cwd' does not depend on any axioms

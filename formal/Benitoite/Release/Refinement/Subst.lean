@@ -50,6 +50,10 @@ mutual
     | .super v cl => .super (Val.rename ξ v) cl
     | .externalRef f tys => .externalRef f (tys.map (renameTy ξ))
     | .externalHandle h tys => .externalHandle h (tys.map (renameTy ξ))
+    | .pathBases σ => .pathBases σ
+    | .scopePattern r => .scopePattern r
+    | .checkedAt r σ t req => .checkedAt r σ t req
+    | .atError d => .atError d
     | .checked t => .checked t
     | .checkedRequest t c => .checkedRequest t c
 
@@ -71,6 +75,9 @@ mutual
     | .handle m h => .handle (Comp.rename ξ m) (Clause.renameList ξ h)
     | .resume k v => .resume (Val.rename ξ k) (Val.rename ξ v)
     | .externalCall f tys args => .externalCall f (tys.map (renameTy ξ)) (Val.renameList ξ args)
+    | .issuePathBases b => .issuePathBases b
+    | .checkAt k o sh bs p v ix => .checkAt k o {sh with errorType := renameTy ξ sh.errorType}
+        (match bs with | none => none | some b => some (b.rename ξ)) (p.rename ξ) (v.rename ξ) ix
     | .meth d m tys effs args => .meth (Val.rename ξ d) m (tys.map (renameTy ξ)) (effs.map (renameEff ξ)) (Val.renameList ξ args)
 
   def Arm.renameList (ξ : Nat → Nat) : List Arm → List Arm
@@ -123,6 +130,10 @@ mutual
     | .super v cl => .super (Val.subst σ v ρ) cl
     | .externalRef f tys => .externalRef f (tys.map (substTyValues σ))
     | .externalHandle h tys => .externalHandle h (tys.map (substTyValues σ))
+    | .pathBases σ => .pathBases σ
+    | .scopePattern r => .scopePattern r
+    | .checkedAt r σ t req => .checkedAt r σ t req
+    | .atError d => .atError d
     | .checked t => .checked t
     | .checkedRequest t c => .checkedRequest t c
 
@@ -146,6 +157,9 @@ mutual
     | .handle m h => .handle (Comp.subst σ m ρ) (Clause.substList σ h ρ)
     | .resume k v => .resume (Val.subst σ k ρ) (Val.subst σ v ρ)
     | .externalCall f tys args => .externalCall f (tys.map (substTyValues σ)) (Val.substList σ args ρ)
+    | .issuePathBases b => .issuePathBases b
+    | .checkAt k o sh bs p v ix => .checkAt k o {sh with errorType := substTyValues σ sh.errorType}
+        (match bs with | none => none | some b => some (b.subst σ ρ)) (p.subst σ ρ) (v.subst σ ρ) ix
     | .meth d m tys effs args => .meth (Val.subst σ d ρ) m (tys.map (substTyValues σ)) (effs.map (substEffValues σ)) (Val.substList σ args ρ)
 
   def Arm.substList (σ : Nat → Val) (arms : List Arm) (ρ : Nat → LocalRef := LocalRef.bound) : List Arm :=
@@ -234,6 +248,10 @@ mutual
     | .super v cl => .super (Val.substTyAt c ts es v) cl
     | .externalRef f tys => .externalRef f (tys.map (substTypeAt c ts es))
     | .externalHandle h tys => .externalHandle h (tys.map (substTypeAt c ts es))
+    | .pathBases σ => .pathBases σ
+    | .scopePattern r => .scopePattern r
+    | .checkedAt r σ t req => .checkedAt r σ t req
+    | .atError d => .atError d
     | .checked t => .checked t
     | .checkedRequest t c => .checkedRequest t c
 
@@ -255,6 +273,9 @@ mutual
     | .handle m h => .handle (Comp.substTyAt c ts es m) (Clause.substTyAtList c ts es h)
     | .resume k v => .resume (Val.substTyAt c ts es k) (Val.substTyAt c ts es v)
     | .externalCall f tys args => .externalCall f (tys.map (substTypeAt c ts es)) (Val.substTyAtList c ts es args)
+    | .issuePathBases b => .issuePathBases b
+    | .checkAt k o sh bs p v ix => .checkAt k o {sh with errorType := substTypeAt c ts es sh.errorType}
+        (match bs with | none => none | some b => some (b.substTyAt c ts es)) (p.substTyAt c ts es) (v.substTyAt c ts es) ix
     | .meth d m tys effs args =>
         .meth (Val.substTyAt c ts es d) m (tys.map (substTypeAt c ts es)) (effs.map (substRowAt c ts es))
           (Val.substTyAtList c ts es args)

@@ -1,7 +1,20 @@
 import Benitoite.Release.Refinement.RuntimeMatch
+import Benitoite.Release.Refinement.AtPrepare
 
 namespace Benitoite.Release.Refinement
 noncomputable section
+
+/-- 事象が要求する効果名の被覆。IOの範囲は存在量化し、対象の許可は後続の対象健全性で扱う。
+σの発行と解放は範囲なし（Top）のProcess.EnvironmentとStateをそれぞれ要求する。 -/
+def Event.Covered (B : Builtins) (Γ : Ctx) (Φ : List Pred) (ε : Eff) : Event → Prop
+  | .io b _ _ _ => ∃ s l r, B.sig b = some s ∧ s.opEff = some l ∧
+      ε.Covers Γ Φ (.mk (fun a => decide (a = .name l r)) [])
+  | .release _ _ => ε.Covers Γ Φ (Eff.single stateEff)
+  | .pathBases _ _ => ε.Covers Γ Φ (Eff.single processEnvironmentEff)
+
+/-- σ発行の被覆はProcess.Environmentの被覆そのものであり、組込み名やsnapshotに依存しない。 -/
+theorem Event.covered_pathBases {B Γ Φ ε b σ} :
+    (Event.pathBases b σ).Covered B Γ Φ ε ↔ ε.Covers Γ Φ (Eff.single processEnvironmentEff) := Iff.rfl
 
 def markPush : Cont → Cont
   | .mark :: k => .mark :: k
@@ -76,6 +89,36 @@ inductive Step (P : Program) (B : Builtins) (σ : PathEnv) : State → Option Ev
       q.view = .externalCall f ts ws → P.externalFunction f = some decl →
       B.externalResponse f ts ws (.err r) obs →
       Step P B σ (.run q k μ) none (.error [r] k μ)
+  | E_PathBasesApply {q : Closure} {b sg k μ} :
+      q.view = .app (.prim b [] [] []) [] → B.sig b = some sg → sg.kind = .pathBases →
+      NoHandler k (.prim b) →
+      Step P B σ (.run q k μ) none (.run (.mk q.capture (.issuePathBases b)) k μ)
+  | E_IssuePathBases {q : Closure} {b sg k μ} :
+      q.view = .issuePathBases b → B.sig b = some sg → sg.kind = .pathBases →
+      sg.opEff = some processEnvironmentEff → σ.Valid →
+      Step P B σ (.run q k μ) (some (.pathBases b σ))
+        (.run (Closure.pure (.ret (.pathBases σ))) k μ)
+  | E_AtOk {q : Closure} {kind name shape bases pattern input index snapshot pat target bound t k μ} :
+      q.code = .checkAt kind name shape bases pattern input index →
+      AtPrepared B q.capture kind name bases pattern input index snapshot pat target bound →
+      (∀ ρ, snapshot = some ρ → ρ = σ) → checkAt snapshot kind pat target bound = .ok t →
+      Step P B σ (.run q k μ) none
+        (.run (Closure.pure (.ret (.con shape.ok
+          [.scoped name kind (.fixed bound), q.capture.closeTy shape.errorType]
+          [.checkedAt bound snapshot t (AtRequest B name (closeVal q.capture input))]))) k μ)
+  | E_AtError {q : Closure} {kind name shape bases pattern input index snapshot pat target bound detail k μ} :
+      q.code = .checkAt kind name shape bases pattern input index →
+      AtPrepared B q.capture kind name bases pattern input index snapshot pat target bound →
+      (∀ ρ, snapshot = some ρ → ρ = σ) → checkAt snapshot kind pat target bound = .error detail →
+      Step P B σ (.run q k μ) none
+        (.run (Closure.pure (.ret (.con shape.error
+          [.scoped name kind (.fixed bound), q.capture.closeTy shape.errorType] [.atError detail]))) k μ)
+  | E_AtPrepareError {q : Closure} {kind name shape bases pattern input index detail k μ} :
+      q.code = .checkAt kind name shape bases pattern input index →
+      AtPrepare B q.capture kind name bases pattern input index = .error detail →
+      Step P B σ (.run q k μ) none
+        (.run (Closure.pure (.ret (.con shape.error
+          [.scoped name kind index, q.capture.closeTy shape.errorType] [.atError detail]))) k μ)
   | E_Fun {f ts es ws k μ d} {q : Closure} :
       q.view = (.app (.fnRef f ts es) ws) →
       P.defs f = some d →
@@ -266,7 +309,7 @@ inductive Step (P : Program) (B : Builtins) (σ : PathEnv) : State → Option Ev
   
   | E_OpPrim {b ts es rs ws k μ s k1 h k2 c κ} {q : Closure} {hcap : Capture} :
       q.view = (.app (.prim b ts es rs) ws) →
-      B.sig b = some s → (s.kind = .io ∨ s.kind = .exit) →
+      B.sig b = some s → (s.kind = .io ∨ s.kind = .exit ∨ s.kind = .pathBases) →
       SplitAt (.prim b) k k1 hcap h k2 → findClause h (.prim b) = some c → μ κ = none →
       Step P B σ (.run q k μ) none
         (.run (Closure.mk (hcap.extendMany (ws ++ [.loc κ])) (c.body.substTy ts [])) (.drop κ :: k2) (μ.set κ (.cont (k1 ++ [.handleF hcap h]))))

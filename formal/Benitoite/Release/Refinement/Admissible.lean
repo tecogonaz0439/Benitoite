@@ -117,20 +117,6 @@ structure SignatureInstance (P : Program) (C : List TParam) (Γ : Ctx)
   rows : RowAnnotations P C Γ es
   result : Ty.Annotation P C Γ (.dependentFn (instantiatedTel t ts es))
 
-def RangeExpr.FitsKind (r : RangeExpr) (k : Scope.Domain.Kind) : Prop := match r with
-  | .absolute r => r.FitsKind k
-  | .based _ _ | .secrets => k = .path
-
-def RangeExpr.WF : RangeExpr → Prop
-  | .absolute r => r.WF
-  | .based _ p => (Scope.Domain.Range.path p).WF
-  | .secrets => True
-
-def RangeExpr.Canonical : RangeExpr → Prop
-  | .absolute r => r.Canonical
-  | .based _ p => (Scope.Domain.Range.path p).Canonical
-  | .secrets => True
-
 def Builtins.RangeAdmissible (B : Builtins) (b : PrimName) (s : PrimSig)
     (rs : List RangeExpr) : Prop :=
   rs.length = s.rkinds.length ∧
