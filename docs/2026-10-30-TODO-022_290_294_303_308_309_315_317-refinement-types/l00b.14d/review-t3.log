@@ -1,0 +1,23 @@
+@Benitoite.Release.Refinement.StateTyE.lazy_update_any_cell : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {σ : Benitoite.Release.Refinement.PathEnv}
+  {Eb : Benitoite.Release.Refinement.Eff} {v : Benitoite.Release.Refinement.Val} {l : Nat}
+  {k : List Benitoite.Release.Refinement.Frame} {μ : Benitoite.Release.Refinement.Store},
+  Benitoite.Release.Refinement.Builtins.CoreAssumptions P B →
+    Benitoite.Release.Refinement.StateTyE P B σ Eb
+        (Benitoite.Release.Refinement.State.run
+          (Benitoite.Release.Refinement.Closure.pure (Benitoite.Release.Refinement.Comp.ret v))
+          (Benitoite.Release.Refinement.Frame.update l :: k) μ) →
+      Benitoite.Release.Refinement.closeVal Benitoite.Release.Refinement.Capture.empty v = v →
+        Benitoite.Release.Refinement.Step P B σ
+            (Benitoite.Release.Refinement.State.run
+              (Benitoite.Release.Refinement.Closure.pure (Benitoite.Release.Refinement.Comp.ret v))
+              (Benitoite.Release.Refinement.Frame.update l :: k) μ)
+            none
+            (Benitoite.Release.Refinement.State.run
+              (Benitoite.Release.Refinement.Closure.pure (Benitoite.Release.Refinement.Comp.ret v)) k
+              (μ.set l (Benitoite.Release.Refinement.Cell.done v))) ∧
+          Benitoite.Release.Refinement.StateTyE P B σ Eb
+            (Benitoite.Release.Refinement.State.run
+              (Benitoite.Release.Refinement.Closure.pure (Benitoite.Release.Refinement.Comp.ret v)) k
+              (μ.set l (Benitoite.Release.Refinement.Cell.done v)))
+'Benitoite.Release.Refinement.StateTyE.lazy_update_any_cell' depends on axioms: [propext, Classical.choice, Quot.sound]

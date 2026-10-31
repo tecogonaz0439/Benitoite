@@ -1,0 +1,99 @@
+[
+  {
+    "label": "build",
+    "command": "cd formal && rtk proxy lake build",
+    "started_utc": "2026-10-31T23:00:26.230637+00:00",
+    "exit_code": 0,
+    "seconds": 0.166,
+    "bytes": 36753,
+    "sha256": "451b3fd4ca6245c5f7e1342894af656bc3d319dc49643677b836183b94b20c8a",
+    "record": "build.log"
+  },
+  {
+    "label": "boundary",
+    "command": "cd formal && rtk proxy lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/boundary.lean",
+    "started_utc": "2026-10-31T23:00:26.396501+00:00",
+    "exit_code": 0,
+    "seconds": 1.4,
+    "bytes": 33488,
+    "sha256": "4e28b95c3d181af08b74f80025fa6dcf213f0311af6daf34e670e109b7edd67a",
+    "record": "boundary.log",
+    "axioms": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "axiom_reports": 186,
+    "boundary_declarations": 186
+  },
+  {
+    "label": "public-api",
+    "command": "cd formal && rtk proxy lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/public-api.lean",
+    "started_utc": "2026-10-31T23:00:27.796962+00:00",
+    "exit_code": 0,
+    "seconds": 0.32,
+    "bytes": 25085,
+    "sha256": "5b360269de707b1cbd9e748747526b9c6f1dfdec31fe3836f496c7bd3434568d",
+    "record": "public-api.log",
+    "public_declarations": 20
+  },
+  {
+    "label": "review-t3",
+    "command": "cd formal && rtk proxy lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/rv-14d-t3.lean",
+    "started_utc": "2026-10-31T23:00:28.117873+00:00",
+    "exit_code": 0,
+    "seconds": 0.293,
+    "bytes": 1722,
+    "sha256": "6deb343f969c39198c89bc3f33808cd2d81805c702e70f4325659d8e4fc112be",
+    "record": "review-t3.log",
+    "axioms": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "axiom_reports": 1
+  },
+  {
+    "label": "axioms",
+    "command": "cd formal && rtk proxy lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/axioms.lean",
+    "started_utc": "2026-10-31T23:00:28.411447+00:00",
+    "exit_code": 0,
+    "seconds": 13.483,
+    "bytes": 1654599,
+    "sha256": "d6b2a10379e663cd5e74439c8cacce3138cfa358ae886ed6037366b52a70a238",
+    "record": "<tmp>/benitoite-lazy-1_h5cjpk/axioms.log",
+    "axioms": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "axiom_reports": 15277,
+    "modules": 147,
+    "cases": [
+      "cases Benitoite.Release.Refinement.Ty: 21",
+      "cases Benitoite.Release.Refinement.Ty.LeQ: 13",
+      "cases Benitoite.Release.Refinement.TelLe: 2",
+      "cases Benitoite.Release.Refinement.TelClosure: 2",
+      "cases Benitoite.Release.Refinement.HasTypeVQ: 29",
+      "cases Benitoite.Release.Refinement.HasTypeCQ: 24",
+      "cases Benitoite.Release.Refinement.ImageOk: 4",
+      "cases Benitoite.Release.Refinement.LocalRef.HasKind: 3",
+      "cases Benitoite.Release.Refinement.ProperApply: 7",
+      "cases Benitoite.Release.Refinement.Step: 76",
+      "cases Benitoite.Release.Refinement.PathTest: 9",
+      "cases Benitoite.Release.Refinement.PathLiteral: 5",
+      "cases Benitoite.Release.Refinement.GuardBodyTy: 1",
+      "cases Benitoite.Release.Refinement.ContTy: 10",
+      "cases Benitoite.Release.Refinement.Frame: 7",
+      "cases Benitoite.Release.Refinement.Cell: 6",
+      "THREE_FAMILY_CASES 76 (71 + 5)",
+      "cases Benitoite.Release.Ty: 15",
+      "cases Benitoite.Release.Val: 17",
+      "cases Benitoite.Release.Refinement.Const: 16",
+      "cases Benitoite.Release.Refinement.RangeIx: 2",
+      "cases Benitoite.Release.Refinement.HasTypeEachQ: 2",
+      "cases Benitoite.Release.Refinement.HasTypeVsQ: 2",
+      "cases Benitoite.Release.Refinement.CheckedWitness: 2"
+    ]
+  }
+]

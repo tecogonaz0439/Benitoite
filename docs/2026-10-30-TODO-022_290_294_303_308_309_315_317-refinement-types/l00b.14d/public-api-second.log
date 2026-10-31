@@ -1,0 +1,308 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/public-api.lean:4:0: error: Unknown option `pp.width`
+Benitoite.Release.Refinement.Ty.lazyCore : Benitoite.Release.Refinement.Ty → Option.{0} Benitoite.Release.Refinement.Ty
+def Benitoite.Release.Refinement.Ty.lazyCore : Benitoite.Release.Refinement.Ty →
+  Option.{0} Benitoite.Release.Refinement.Ty :=
+fun x =>
+  @Benitoite.Release.Refinement.Ty.brecOn.{1} (fun x => Option.{0} Benitoite.Release.Refinement.Ty) (fun t => PUnit.{1})
+    (fun t => PUnit.{1}) (fun t => PUnit.{1}) x Benitoite.Release.Refinement.Ty.lazyCore._f (fun t f => PUnit.unit.{1})
+    (fun t f => PUnit.unit.{1}) fun t f => PUnit.unit.{1}
+Benitoite.Release.Refinement.Ty.lazyCore_norm : ∀ (a : Benitoite.Release.Refinement.Ty),
+  @Eq.{1} (Option.{0} Benitoite.Release.Refinement.Ty) a.norm.lazyCore
+    (@Option.map.{0, 0} Benitoite.Release.Refinement.Ty Benitoite.Release.Refinement.Ty
+      Benitoite.Release.Refinement.Ty.norm a.lazyCore)
+@Benitoite.Release.Refinement.Ty.LeQ.lazyCore : ∀ {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {a b x : Benitoite.Release.Refinement.Ty},
+  Benitoite.Release.Refinement.Ty.LeQ Γ Φ a b →
+    @Eq.{1} (Option.{0} Benitoite.Release.Refinement.Ty) a.lazyCore
+        (@Option.some.{0} Benitoite.Release.Refinement.Ty x) →
+      @Exists.{1} Benitoite.Release.Refinement.Ty fun y =>
+        And
+          (@Eq.{1} (Option.{0} Benitoite.Release.Refinement.Ty) b.lazyCore
+            (@Option.some.{0} Benitoite.Release.Refinement.Ty y))
+          (Benitoite.Release.Refinement.Ty.LeQ Γ Φ x y)
+@Benitoite.Release.Refinement.Ty.LeQ.lazyCore_right : ∀ {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {a b y : Benitoite.Release.Refinement.Ty},
+  Benitoite.Release.Refinement.Ty.LeQ Γ Φ a b →
+    @Eq.{1} (Option.{0} Benitoite.Release.Refinement.Ty) b.lazyCore
+        (@Option.some.{0} Benitoite.Release.Refinement.Ty y) →
+      @Exists.{1} Benitoite.Release.Refinement.Ty fun x =>
+        And
+          (@Eq.{1} (Option.{0} Benitoite.Release.Refinement.Ty) a.lazyCore
+            (@Option.some.{0} Benitoite.Release.Refinement.Ty x))
+          (Benitoite.Release.Refinement.Ty.LeQ Γ Φ x y)
+@Benitoite.Release.Refinement.HasTypeVQ.canonical_lazy : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List.{0} Benitoite.Release.TParam}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {v : Benitoite.Release.Refinement.Val}
+  {T a : Benitoite.Release.Refinement.Ty},
+  Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C (@List.nil.{0} (Option.{0} Benitoite.Release.Refinement.Ty)) Φ v T →
+    @Eq.{1} (Option.{0} Benitoite.Release.Refinement.Ty) T.lazyCore
+        (@Option.some.{0} Benitoite.Release.Refinement.Ty a) →
+      @Exists.{1} Nat fun l =>
+        @Exists.{1} Benitoite.Release.Refinement.Ty fun b =>
+          And (@Eq.{1} Benitoite.Release.Refinement.Val v (Benitoite.Release.Refinement.Val.loc l))
+            (And
+              (@Eq.{1} (Option.{0} Benitoite.Release.Refinement.LocTy) (Ψ l)
+                (@Option.some.{0} Benitoite.Release.Refinement.LocTy (Benitoite.Release.Refinement.LocTy.lazy b)))
+              (Benitoite.Release.Refinement.Ty.LeQ (@List.nil.{0} (Option.{0} Benitoite.Release.Refinement.Ty)) Φ b a))
+@Benitoite.Release.Refinement.StoreOk.write_done : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {σ : Benitoite.Release.Refinement.PathEnv}
+  {Ψ : Benitoite.Release.Refinement.StoreTy} {μ : Benitoite.Release.Refinement.Store} {l : Nat}
+  {a : Benitoite.Release.Refinement.Ty} {v : Benitoite.Release.Refinement.Val},
+  Benitoite.Release.Refinement.StoreOk P B σ Ψ μ →
+    @Eq.{1} (Option.{0} Benitoite.Release.Refinement.LocTy) (Ψ l)
+        (@Option.some.{0} Benitoite.Release.Refinement.LocTy (Benitoite.Release.Refinement.LocTy.lazy a)) →
+      Benitoite.Release.Refinement.HasTypeV P B Ψ (@List.nil.{0} Benitoite.Release.TParam)
+          (@List.nil.{0} (Option.{0} Benitoite.Release.Refinement.Ty)) (@List.nil.{0} Benitoite.Release.Refinement.Pred)
+          v a →
+        Benitoite.Release.Refinement.Val.Adequate σ v →
+          Benitoite.Release.Refinement.StoreOk P B σ Ψ (μ.set l (Benitoite.Release.Refinement.Cell.done v))
+@Benitoite.Release.Refinement.StoreOk.allocate_lazy : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {σ : Benitoite.Release.Refinement.PathEnv}
+  {Ψ : Benitoite.Release.Refinement.StoreTy} {μ : Benitoite.Release.Refinement.Store} {l : Nat}
+  {a : Benitoite.Release.Refinement.Ty} {q : Benitoite.Release.Refinement.Closure},
+  Benitoite.Release.Refinement.StoreOk P B σ Ψ μ →
+    Benitoite.Release.Refinement.Builtins.ValueAssumptions P B →
+      @Eq.{1} (Option.{0} Benitoite.Release.Refinement.Cell) (μ l)
+          (@Option.none.{0} Benitoite.Release.Refinement.Cell) →
+        Benitoite.Release.Refinement.Ty.Annotation P (@List.nil.{0} Benitoite.Release.TParam)
+            (@List.nil.{0} (Option.{0} Benitoite.Release.Refinement.Ty)) a →
+          Benitoite.Release.Refinement.ClosureTy P B (Benitoite.Release.Refinement.hideBuilders Ψ)
+              (@List.nil.{0} Benitoite.Release.Refinement.Ty) (@Option.none.{0} Benitoite.Release.Refinement.Ty) q a
+              Benitoite.Release.Refinement.Eff.empty →
+            Benitoite.Release.Refinement.Closure.Adequate σ q →
+              Benitoite.Release.Refinement.StoreOk P B σ (Ψ.put l (Benitoite.Release.Refinement.LocTy.lazy a))
+                (μ.set l (Benitoite.Release.Refinement.Cell.thunk q))
+@Benitoite.Release.Refinement.ContTy.update_inv : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {σ : Benitoite.Release.Refinement.PathEnv}
+  {Ψ : Benitoite.Release.Refinement.StoreTy} {R : Option.{0} Benitoite.Release.Refinement.Ty}
+  {ε : Benitoite.Release.Refinement.Eff} {k : List.{0} Benitoite.Release.Refinement.Frame}
+  {a b : Benitoite.Release.Refinement.Ty} {Eb : Benitoite.Release.Refinement.Eff}
+  {Re : Option.{0} Benitoite.Release.Refinement.Ty} {l : Nat},
+  Benitoite.Release.Refinement.ContTy P B σ Ψ R ε
+      (@List.cons.{0} Benitoite.Release.Refinement.Frame (Benitoite.Release.Refinement.Frame.update l) k) a b Eb Re →
+    And (@Eq.{1} (Option.{0} Benitoite.Release.Refinement.Ty) R (@Option.none.{0} Benitoite.Release.Refinement.Ty))
+      (@Exists.{1} Benitoite.Release.Refinement.Ty fun x =>
+        @Exists.{1} (Option.{0} Benitoite.Release.Refinement.Ty) fun R' =>
+          And
+            (@Eq.{1} (Option.{0} Benitoite.Release.Refinement.LocTy) (Ψ l)
+              (@Option.some.{0} Benitoite.Release.Refinement.LocTy (Benitoite.Release.Refinement.LocTy.lazy x)))
+            (And
+              (Benitoite.Release.Refinement.Ty.LeQ (@List.nil.{0} (Option.{0} Benitoite.Release.Refinement.Ty))
+                (@List.nil.{0} Benitoite.Release.Refinement.Pred) a x)
+              (Benitoite.Release.Refinement.ContTy P B σ Ψ R' ε k x b Eb Re)))
+Benitoite.Release.Refinement.lazy_no_sort : ∀ (a : Benitoite.Release.Refinement.Ty),
+  @Eq.{1} (Option.{0} Benitoite.Release.Refinement.Sort) a.lazy.sort?
+    (@Option.none.{0} Benitoite.Release.Refinement.Sort)
+Benitoite.Release.Refinement.lazy_no_observation : ∀ (l : Nat),
+  @Eq.{1} (Option.{0} Benitoite.Release.Refinement.Term) (Benitoite.Release.Refinement.Val.loc l).toTerm?
+    (@Option.none.{0} Benitoite.Release.Refinement.Term)
+Benitoite.Release.Refinement.lazy_no_observed_fact : ∀ (l : Nat)
+  (tests : List.{0} Benitoite.Release.Refinement.PathTest),
+  @Eq.{1} (List.{0} Benitoite.Release.Refinement.Pred)
+    (Benitoite.Release.Refinement.pathFacts (Benitoite.Release.Refinement.Val.loc l).toTerm? tests)
+    (@List.nil.{0} Benitoite.Release.Refinement.Pred)
+@Benitoite.Release.Refinement.BuiltinArgs.force : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {b : Benitoite.Release.PrimName} {s : Benitoite.Release.Refinement.PrimSig}
+  {ts : List.{0} Benitoite.Release.Refinement.Ty} {es : List.{0} Benitoite.Release.Refinement.Eff}
+  {rs : List.{0} Benitoite.Release.Refinement.RangeExpr} {l : Nat} {r : Benitoite.Release.Refinement.Ty}
+  {e : Benitoite.Release.Refinement.Eff},
+  Benitoite.Release.Refinement.BuiltinArgs P B Ψ b s ts es rs
+      (@List.cons.{0} Benitoite.Release.Refinement.Val (Benitoite.Release.Refinement.Val.loc l)
+        (@List.nil.{0} Benitoite.Release.Refinement.Val))
+      r e →
+    s.StoreShape →
+      @Eq.{1} Benitoite.Release.Refinement.PrimKind s.kind Benitoite.Release.Refinement.PrimKind.force →
+        @Exists.{1} Benitoite.Release.Refinement.Ty fun a =>
+          And
+            (Benitoite.Release.Refinement.Ty.Annotation P (@List.nil.{0} Benitoite.Release.TParam)
+              (@List.nil.{0} (Option.{0} Benitoite.Release.Refinement.Ty)) a)
+            (And a.Normal
+              (And
+                (Benitoite.Release.Refinement.HasTypeV P B Ψ (@List.nil.{0} Benitoite.Release.TParam)
+                  (@List.nil.{0} (Option.{0} Benitoite.Release.Refinement.Ty))
+                  (@List.nil.{0} Benitoite.Release.Refinement.Pred) (Benitoite.Release.Refinement.Val.loc l) a.lazy)
+                (And (@Eq.{1} Benitoite.Release.Refinement.Ty r a)
+                  (@Eq.{1} Benitoite.Release.Refinement.Eff e Benitoite.Release.Refinement.Eff.empty))))
+@Benitoite.Release.Refinement.StateTyE.force_done_transition : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {σ : Benitoite.Release.Refinement.PathEnv}
+  {Eb : Benitoite.Release.Refinement.Eff} {b : Benitoite.Release.PrimName}
+  {ts : List.{0} Benitoite.Release.Refinement.Ty} {es : List.{0} Benitoite.Release.Refinement.Eff}
+  {rs : List.{0} Benitoite.Release.Refinement.RangeExpr} {l : Nat} {k : Benitoite.Release.Refinement.Cont}
+  {μ : Benitoite.Release.Refinement.Store} {s : Benitoite.Release.Refinement.PrimSig}
+  {v : Benitoite.Release.Refinement.Val},
+  Benitoite.Release.Refinement.Builtins.CoreAssumptions P B →
+    Benitoite.Release.Refinement.StateTyE P B σ Eb
+        (Benitoite.Release.Refinement.State.run
+          (Benitoite.Release.Refinement.Closure.pure
+            (Benitoite.Release.Refinement.Comp.app (Benitoite.Release.Refinement.Val.prim b ts es rs)
+              (@List.cons.{0} Benitoite.Release.Refinement.Val (Benitoite.Release.Refinement.Val.loc l)
+                (@List.nil.{0} Benitoite.Release.Refinement.Val))))
+          k μ) →
+      @Eq.{1} (Option.{0} Benitoite.Release.Refinement.PrimSig) (B.sig b)
+          (@Option.some.{0} Benitoite.Release.Refinement.PrimSig s) →
+        @Eq.{1} Benitoite.Release.Refinement.PrimKind s.kind Benitoite.Release.Refinement.PrimKind.force →
+          @Eq.{1} (Option.{0} Benitoite.Release.Refinement.Cell) (μ l)
+              (@Option.some.{0} Benitoite.Release.Refinement.Cell (Benitoite.Release.Refinement.Cell.done v)) →
+            And
+              (Benitoite.Release.Refinement.Step P B σ
+                (Benitoite.Release.Refinement.State.run
+                  (Benitoite.Release.Refinement.Closure.pure
+                    (Benitoite.Release.Refinement.Comp.app (Benitoite.Release.Refinement.Val.prim b ts es rs)
+                      (@List.cons.{0} Benitoite.Release.Refinement.Val (Benitoite.Release.Refinement.Val.loc l)
+                        (@List.nil.{0} Benitoite.Release.Refinement.Val))))
+                  k μ)
+                (@Option.none.{0} Benitoite.Release.Refinement.Event)
+                (Benitoite.Release.Refinement.State.run
+                  (Benitoite.Release.Refinement.Closure.pure (Benitoite.Release.Refinement.Comp.ret v)) k μ))
+              (Benitoite.Release.Refinement.StateTyE P B σ Eb
+                (Benitoite.Release.Refinement.State.run
+                  (Benitoite.Release.Refinement.Closure.pure (Benitoite.Release.Refinement.Comp.ret v)) k μ))
+@Benitoite.Release.Refinement.StateTyE.force_thunk_transition : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {σ : Benitoite.Release.Refinement.PathEnv}
+  {Eb : Benitoite.Release.Refinement.Eff} {b : Benitoite.Release.PrimName}
+  {ts : List.{0} Benitoite.Release.Refinement.Ty} {es : List.{0} Benitoite.Release.Refinement.Eff}
+  {rs : List.{0} Benitoite.Release.Refinement.RangeExpr} {l : Nat} {k : Benitoite.Release.Refinement.Cont}
+  {μ : Benitoite.Release.Refinement.Store} {s : Benitoite.Release.Refinement.PrimSig}
+  {m : Benitoite.Release.Refinement.Closure},
+  Benitoite.Release.Refinement.Builtins.CoreAssumptions P B →
+    Benitoite.Release.Refinement.StateTyE P B σ Eb
+        (Benitoite.Release.Refinement.State.run
+          (Benitoite.Release.Refinement.Closure.pure
+            (Benitoite.Release.Refinement.Comp.app (Benitoite.Release.Refinement.Val.prim b ts es rs)
+              (@List.cons.{0} Benitoite.Release.Refinement.Val (Benitoite.Release.Refinement.Val.loc l)
+                (@List.nil.{0} Benitoite.Release.Refinement.Val))))
+          k μ) →
+      @Eq.{1} (Option.{0} Benitoite.Release.Refinement.PrimSig) (B.sig b)
+          (@Option.some.{0} Benitoite.Release.Refinement.PrimSig s) →
+        @Eq.{1} Benitoite.Release.Refinement.PrimKind s.kind Benitoite.Release.Refinement.PrimKind.force →
+          @Eq.{1} (Option.{0} Benitoite.Release.Refinement.Cell) (μ l)
+              (@Option.some.{0} Benitoite.Release.Refinement.Cell (Benitoite.Release.Refinement.Cell.thunk m)) →
+            And
+              (Benitoite.Release.Refinement.Step P B σ
+                (Benitoite.Release.Refinement.State.run
+                  (Benitoite.Release.Refinement.Closure.pure
+                    (Benitoite.Release.Refinement.Comp.app (Benitoite.Release.Refinement.Val.prim b ts es rs)
+                      (@List.cons.{0} Benitoite.Release.Refinement.Val (Benitoite.Release.Refinement.Val.loc l)
+                        (@List.nil.{0} Benitoite.Release.Refinement.Val))))
+                  k μ)
+                (@Option.none.{0} Benitoite.Release.Refinement.Event)
+                (Benitoite.Release.Refinement.State.run m
+                  (@List.cons.{0} Benitoite.Release.Refinement.Frame (Benitoite.Release.Refinement.Frame.update l) k)
+                  μ))
+              (Benitoite.Release.Refinement.StateTyE P B σ Eb
+                (Benitoite.Release.Refinement.State.run m
+                  (@List.cons.{0} Benitoite.Release.Refinement.Frame (Benitoite.Release.Refinement.Frame.update l) k)
+                  μ))
+@Benitoite.Release.Refinement.ClosureTy.lazy_body : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {R : Option.{0} Benitoite.Release.Refinement.Ty} {q : Benitoite.Release.Refinement.Closure}
+  {a : Benitoite.Release.Refinement.Ty} {e : Benitoite.Release.Refinement.Eff} {m : Benitoite.Release.Refinement.Comp},
+  Benitoite.Release.Refinement.Builtins.ValueAssumptions P B →
+    Ψ.WF →
+      Benitoite.Release.Refinement.ClosureTy P B Ψ (@List.nil.{0} Benitoite.Release.Refinement.Ty) R q a e →
+        @Eq.{1} Benitoite.Release.Refinement.Comp q.view m.lazyC →
+          @Exists.{1} Benitoite.Release.Refinement.Ty fun x =>
+            And
+              (Benitoite.Release.Refinement.Ty.Annotation P (@List.nil.{0} Benitoite.Release.TParam)
+                (@List.nil.{0} (Option.{0} Benitoite.Release.Refinement.Ty)) x)
+              (And
+                (Benitoite.Release.Refinement.ClosureTy P B (Benitoite.Release.Refinement.hideBuilders Ψ)
+                  (@List.nil.{0} Benitoite.Release.Refinement.Ty) (@Option.none.{0} Benitoite.Release.Refinement.Ty)
+                  (Benitoite.Release.Refinement.Closure.mk q.capture m) x Benitoite.Release.Refinement.Eff.empty)
+                (Benitoite.Release.Refinement.Ty.LeQ (@List.nil.{0} (Option.{0} Benitoite.Release.Refinement.Ty))
+                  (@List.nil.{0} Benitoite.Release.Refinement.Pred) x.lazy a))
+@Benitoite.Release.Refinement.ClosureTy.return_const : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {R : Option.{0} Benitoite.Release.Refinement.Ty} {q : Benitoite.Release.Refinement.Closure}
+  {a : Benitoite.Release.Refinement.Ty} {e : Benitoite.Release.Refinement.Eff} {c : Benitoite.Release.Refinement.Const},
+  Benitoite.Release.Refinement.Builtins.CoreAssumptions P B →
+    Ψ.WF →
+      Benitoite.Release.Refinement.ClosureTy P B Ψ (@List.nil.{0} Benitoite.Release.Refinement.Ty) R q a e →
+        @Eq.{1} Benitoite.Release.Refinement.Comp q.view
+            (Benitoite.Release.Refinement.Comp.ret (Benitoite.Release.Refinement.Val.const c)) →
+          Benitoite.Release.Refinement.HasTypeV P B Ψ (@List.nil.{0} Benitoite.Release.TParam)
+            (@List.nil.{0} (Option.{0} Benitoite.Release.Refinement.Ty))
+            (@List.nil.{0} Benitoite.Release.Refinement.Pred) (Benitoite.Release.Refinement.Val.const c) a
+@Benitoite.Release.Refinement.StateTyE.lazy_transition : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {σ : Benitoite.Release.Refinement.PathEnv}
+  {Eb : Benitoite.Release.Refinement.Eff} {q : Benitoite.Release.Refinement.Closure}
+  {m : Benitoite.Release.Refinement.Comp} {k : Benitoite.Release.Refinement.Cont}
+  {μ : Benitoite.Release.Refinement.Store} {l : Nat},
+  Benitoite.Release.Refinement.Builtins.CoreAssumptions P B →
+    Benitoite.Release.Refinement.StateTyE P B σ Eb (Benitoite.Release.Refinement.State.run q k μ) →
+      @Eq.{1} Benitoite.Release.Refinement.Comp q.view m.lazyC →
+        @Eq.{1} (Option.{0} Benitoite.Release.Refinement.Cell) (μ l)
+            (@Option.none.{0} Benitoite.Release.Refinement.Cell) →
+          And
+            (Benitoite.Release.Refinement.Step P B σ (Benitoite.Release.Refinement.State.run q k μ)
+              (@Option.none.{0} Benitoite.Release.Refinement.Event)
+              (Benitoite.Release.Refinement.State.run
+                (Benitoite.Release.Refinement.Closure.pure
+                  (Benitoite.Release.Refinement.Comp.ret (Benitoite.Release.Refinement.Val.loc l)))
+                k
+                (μ.set l
+                  (Benitoite.Release.Refinement.Cell.thunk (Benitoite.Release.Refinement.Closure.mk q.capture m)))))
+            (Benitoite.Release.Refinement.StateTyE P B σ Eb
+              (Benitoite.Release.Refinement.State.run
+                (Benitoite.Release.Refinement.Closure.pure
+                  (Benitoite.Release.Refinement.Comp.ret (Benitoite.Release.Refinement.Val.loc l)))
+                k
+                (μ.set l
+                  (Benitoite.Release.Refinement.Cell.thunk (Benitoite.Release.Refinement.Closure.mk q.capture m)))))
+@Benitoite.Release.Refinement.StateTyE.lazy_update_transition : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {σ : Benitoite.Release.Refinement.PathEnv}
+  {Eb : Benitoite.Release.Refinement.Eff} {v : Benitoite.Release.Refinement.Val} {l : Nat}
+  {k : List.{0} Benitoite.Release.Refinement.Frame} {μ : Benitoite.Release.Refinement.Store}
+  {m : Benitoite.Release.Refinement.Closure},
+  Benitoite.Release.Refinement.Builtins.CoreAssumptions P B →
+    Benitoite.Release.Refinement.StateTyE P B σ Eb
+        (Benitoite.Release.Refinement.State.run
+          (Benitoite.Release.Refinement.Closure.pure (Benitoite.Release.Refinement.Comp.ret v))
+          (@List.cons.{0} Benitoite.Release.Refinement.Frame (Benitoite.Release.Refinement.Frame.update l) k) μ) →
+      @Eq.{1} (Option.{0} Benitoite.Release.Refinement.Cell) (μ l)
+          (@Option.some.{0} Benitoite.Release.Refinement.Cell (Benitoite.Release.Refinement.Cell.thunk m)) →
+        @Eq.{1} Benitoite.Release.Refinement.Val
+            (Benitoite.Release.Refinement.closeVal Benitoite.Release.Refinement.Capture.empty v) v →
+          And
+            (Benitoite.Release.Refinement.Step P B σ
+              (Benitoite.Release.Refinement.State.run
+                (Benitoite.Release.Refinement.Closure.pure (Benitoite.Release.Refinement.Comp.ret v))
+                (@List.cons.{0} Benitoite.Release.Refinement.Frame (Benitoite.Release.Refinement.Frame.update l) k) μ)
+              (@Option.none.{0} Benitoite.Release.Refinement.Event)
+              (Benitoite.Release.Refinement.State.run
+                (Benitoite.Release.Refinement.Closure.pure (Benitoite.Release.Refinement.Comp.ret v)) k
+                (μ.set l (Benitoite.Release.Refinement.Cell.done v))))
+            (Benitoite.Release.Refinement.StateTyE P B σ Eb
+              (Benitoite.Release.Refinement.State.run
+                (Benitoite.Release.Refinement.Closure.pure (Benitoite.Release.Refinement.Comp.ret v)) k
+                (μ.set l (Benitoite.Release.Refinement.Cell.done v))))
+@Benitoite.Release.Refinement.StateTyE.lazy_update_const_transition : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {σ : Benitoite.Release.Refinement.PathEnv}
+  {Eb : Benitoite.Release.Refinement.Eff} {q : Benitoite.Release.Refinement.Closure}
+  {c : Benitoite.Release.Refinement.Const} {l : Nat} {k : List.{0} Benitoite.Release.Refinement.Frame}
+  {μ : Benitoite.Release.Refinement.Store} {m : Benitoite.Release.Refinement.Closure},
+  Benitoite.Release.Refinement.Builtins.CoreAssumptions P B →
+    Benitoite.Release.Refinement.StateTyE P B σ Eb
+        (Benitoite.Release.Refinement.State.run q
+          (@List.cons.{0} Benitoite.Release.Refinement.Frame (Benitoite.Release.Refinement.Frame.update l) k) μ) →
+      @Eq.{1} Benitoite.Release.Refinement.Comp q.view
+          (Benitoite.Release.Refinement.Comp.ret (Benitoite.Release.Refinement.Val.const c)) →
+        @Eq.{1} (Option.{0} Benitoite.Release.Refinement.Cell) (μ l)
+            (@Option.some.{0} Benitoite.Release.Refinement.Cell (Benitoite.Release.Refinement.Cell.thunk m)) →
+          And
+            (Benitoite.Release.Refinement.Step P B σ
+              (Benitoite.Release.Refinement.State.run q
+                (@List.cons.{0} Benitoite.Release.Refinement.Frame (Benitoite.Release.Refinement.Frame.update l) k) μ)
+              (@Option.none.{0} Benitoite.Release.Refinement.Event)
+              (Benitoite.Release.Refinement.State.run
+                (Benitoite.Release.Refinement.Closure.pure
+                  (Benitoite.Release.Refinement.Comp.ret (Benitoite.Release.Refinement.Val.const c)))
+                k (μ.set l (Benitoite.Release.Refinement.Cell.done (Benitoite.Release.Refinement.Val.const c)))))
+            (Benitoite.Release.Refinement.StateTyE P B σ Eb
+              (Benitoite.Release.Refinement.State.run
+                (Benitoite.Release.Refinement.Closure.pure
+                  (Benitoite.Release.Refinement.Comp.ret (Benitoite.Release.Refinement.Val.const c)))
+                k (μ.set l (Benitoite.Release.Refinement.Cell.done (Benitoite.Release.Refinement.Val.const c)))))

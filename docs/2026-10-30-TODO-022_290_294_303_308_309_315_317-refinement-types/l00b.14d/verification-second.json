@@ -1,0 +1,39 @@
+[
+  {
+    "label": "build",
+    "command": "cd formal && rtk proxy lake build",
+    "started_utc": "2026-10-31T22:33:55.956104+00:00",
+    "exit_code": 0,
+    "seconds": 0.157,
+    "bytes": 36753,
+    "sha256": "451b3fd4ca6245c5f7e1342894af656bc3d319dc49643677b836183b94b20c8a",
+    "record": "build.log"
+  },
+  {
+    "label": "boundary",
+    "command": "cd formal && rtk proxy lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/boundary.lean",
+    "started_utc": "2026-10-31T22:33:56.113913+00:00",
+    "exit_code": 0,
+    "seconds": 1.357,
+    "bytes": 32143,
+    "sha256": "330c5943b61f1b77579b5d5a67e4449350ecae9d9d8041183534f45db313d6d6",
+    "record": "boundary.log",
+    "axioms": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "axiom_reports": 174,
+    "boundary_declarations": 174
+  },
+  {
+    "label": "public-api",
+    "command": "cd formal && rtk proxy lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/public-api.lean",
+    "started_utc": "2026-10-31T22:33:57.471621+00:00",
+    "exit_code": 1,
+    "seconds": 0.307,
+    "bytes": 23372,
+    "sha256": "7cad209b985a011c78dc832c6663683bdd8af64c83ea8b6403309f27cb783b02",
+    "record": "public-api.log"
+  }
+]

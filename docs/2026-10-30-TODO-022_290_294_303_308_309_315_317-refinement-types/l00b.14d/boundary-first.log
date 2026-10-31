@@ -1,0 +1,517 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/boundary.lean:103:24: warning: This simp argument is unused:
+  Small
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [p, Ty.WF, Ty.NotContCore, Ty.core, Pred.WF, Pred.VarsIn, Term.VarsIn, Ty.Sorted, Pred.Sorted,
+    Term.HasSort, Term.References, Term.Shape, Ctx.declarationSelf, Ty.HasSort, Ty.sort?, Ordinary, Ty.Declared,
+    Pred.Declared, Term.Declared, Ctx.Readable, Ctx.extend, Ty.shiftV, I]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/boundary.lean:103:30: warning: This simp argument is unused:
+  p
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Small, Ty.WF, Ty.NotContCore, Ty.core, Pred.WF, Pred.VarsIn, Term.VarsIn, Ty.Sorted, Pred.Sorted,
+    Term.HasSort, Term.References, Term.Shape, Ctx.declarationSelf, Ty.HasSort, Ty.sort?, Ordinary, Ty.Declared,
+    Pred.Declared, Term.Declared, Ctx.Readable, Ctx.extend, Ty.shiftV, I]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/boundary.lean:122:71: warning: This simp argument is unused:
+  Ty.normTys
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [sg, PrimSig.tel, signatureTel, instantiatedTel, Tel.instR, Tel.substRAt, Tel.mapRanges,
+    Tel.rawMapRanges, Ty.rawMapRanges, Eff.rawMapRanges, Tel.norm, Ty.norm, Tel.bind, Tel.rawBind, Ty.rawBind,
+    rawBindTys, Eff.rawBind, typeEnvAt, SubstEnv.up, upValues, shiftTypes_zero, Ty.shiftV_of_wf_zero ha.wf, Eff.empty,
+    substAtoms_nil, instAtoms_nil, rowFails, mapRangesTys, mapRangeAtoms_rangeAt, Order.sortUnique, Ty.toTel, hn,
+    Eff.shiftV]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/boundary.lean:123:36: warning: This simp argument is unused:
+  rawBindTys
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [sg, PrimSig.tel, signatureTel, instantiatedTel, Tel.instR, Tel.substRAt, Tel.mapRanges,
+    Tel.rawMapRanges, Ty.rawMapRanges, Eff.rawMapRanges, Tel.norm, Ty.norm, Ty.normTys, Tel.bind, Tel.rawBind,
+    Ty.rawBind, Eff.rawBind, typeEnvAt, SubstEnv.up, upValues, shiftTypes_zero, Ty.shiftV_of_wf_zero ha.wf, Eff.empty,
+    substAtoms_nil, instAtoms_nil, rowFails, mapRangesTys, mapRangeAtoms_rangeAt, Order.sortUnique, Ty.toTel, hn,
+    Eff.shiftV]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/boundary.lean:123:47: warning: This simp argument is unused:
+  Eff.rawBind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [sg, PrimSig.tel, signatureTel, instantiatedTel, Tel.instR, Tel.substRAt, Tel.mapRanges,
+    Tel.rawMapRanges, Ty.rawMapRanges, Eff.rawMapRanges, Tel.norm, Ty.norm, Ty.normTys, Tel.bind, Tel.rawBind,
+    Ty.rawBind, rawBindTys, typeEnvAt, SubstEnv.up, upValues, shiftTypes_zero, Ty.shiftV_of_wf_zero ha.wf, Eff.empty,
+    substAtoms_nil, instAtoms_nil, rowFails, mapRangesTys, mapRangeAtoms_rangeAt, Order.sortUnique, Ty.toTel, hn,
+    Eff.shiftV]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/boundary.lean:123:81: warning: This simp argument is unused:
+  upValues
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [sg, PrimSig.tel, signatureTel, instantiatedTel, Tel.instR, Tel.substRAt, Tel.mapRanges,
+    Tel.rawMapRanges, Ty.rawMapRanges, Eff.rawMapRanges, Tel.norm, Ty.norm, Ty.normTys, Tel.bind, Tel.rawBind,
+    Ty.rawBind, rawBindTys, Eff.rawBind, typeEnvAt, SubstEnv.up, shiftTypes_zero, Ty.shiftV_of_wf_zero ha.wf, Eff.empty,
+    substAtoms_nil, instAtoms_nil, rowFails, mapRangesTys, mapRangeAtoms_rangeAt, Order.sortUnique, Ty.toTel, hn,
+    Eff.shiftV]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/boundary.lean:124:57: warning: This simp argument is unused:
+  substAtoms_nil
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [sg, PrimSig.tel, signatureTel, instantiatedTel, Tel.instR, Tel.substRAt, Tel.mapRanges,
+    Tel.rawMapRanges, Ty.rawMapRanges, Eff.rawMapRanges, Tel.norm, Ty.norm, Ty.normTys, Tel.bind, Tel.rawBind,
+    Ty.rawBind, rawBindTys, Eff.rawBind, typeEnvAt, SubstEnv.up, upValues, shiftTypes_zero, Ty.shiftV_of_wf_zero ha.wf,
+    Eff.empty, instAtoms_nil, rowFails, mapRangesTys, mapRangeAtoms_rangeAt, Order.sortUnique, Ty.toTel, hn, Eff.shiftV]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/boundary.lean:124:86: warning: This simp argument is unused:
+  rowFails
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [sg, PrimSig.tel, signatureTel, instantiatedTel, Tel.instR, Tel.substRAt, Tel.mapRanges,
+    Tel.rawMapRanges, Ty.rawMapRanges, Eff.rawMapRanges, Tel.norm, Ty.norm, Ty.normTys, Tel.bind, Tel.rawBind,
+    Ty.rawBind, rawBindTys, Eff.rawBind, typeEnvAt, SubstEnv.up, upValues, shiftTypes_zero, Ty.shiftV_of_wf_zero ha.wf,
+    Eff.empty, substAtoms_nil, instAtoms_nil, mapRangesTys, mapRangeAtoms_rangeAt, Order.sortUnique, Ty.toTel, hn,
+    Eff.shiftV]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/boundary.lean:125:39: warning: This simp argument is unused:
+  Order.sortUnique
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [sg, PrimSig.tel, signatureTel, instantiatedTel, Tel.instR, Tel.substRAt, Tel.mapRanges,
+    Tel.rawMapRanges, Ty.rawMapRanges, Eff.rawMapRanges, Tel.norm, Ty.norm, Ty.normTys, Tel.bind, Tel.rawBind,
+    Ty.rawBind, rawBindTys, Eff.rawBind, typeEnvAt, SubstEnv.up, upValues, shiftTypes_zero, Ty.shiftV_of_wf_zero ha.wf,
+    Eff.empty, substAtoms_nil, instAtoms_nil, rowFails, mapRangesTys, mapRangeAtoms_rangeAt, Ty.toTel, hn, Eff.shiftV]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/boundary.lean:126:39: warning: This simp argument is unused:
+  Eff.empty
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Eff.rawBind, Eff.norm, substAtoms_nil, instAtoms_nil, rowFails, Eff.shiftV]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/boundary.lean:126:87: warning: This simp argument is unused:
+  Eff.shiftV
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Eff.rawBind, Eff.norm, Eff.empty, substAtoms_nil, instAtoms_nil, rowFails]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/boundary.lean:147:23: warning: This simp argument is unused:
+  NamesWF
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [sg, PrimSig.tel, signatureTel, Tel.instR, Tel.substRAt, Tel.mapRanges, Tel.rawMapRanges,
+    Ty.rawMapRanges, Eff.rawMapRanges, Tel.norm, Ty.norm, Ty.normTys, Ty.WF, Tel.WF, Ty.WFList, Eff.WF, Eff.Canonical,
+    Eff.norm, Eff.empty, mapRangesTys, Order.sortUnique, mapRangeAtoms_rangeAt, instAtoms_nil]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/boundary.lean:147:31: warning: This simp argument is unused:
+  Order.sortUnique
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [sg, PrimSig.tel, signatureTel, Tel.instR, Tel.substRAt, Tel.mapRanges, Tel.rawMapRanges,
+    Ty.rawMapRanges, Eff.rawMapRanges, Tel.norm, Ty.norm, Ty.normTys, Ty.WF, Tel.WF, Ty.WFList, Eff.WF, Eff.Canonical,
+    Eff.norm, Eff.empty, mapRangesTys, NamesWF, mapRangeAtoms_rangeAt, instAtoms_nil]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/boundary.lean:186:44: warning: This simp argument is unused:
+  Ordinary
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Ty.core, I]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/boundary.lean:196:54: warning: This simp argument is unused:
+  Ordinary
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Small, Ty.core, I]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/boundary.lean:197:14: warning: This simp argument is unused:
+  Small
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [I, Ty.HasKind, Ty.NotContCore]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/boundary.lean:240:20: error(lean.inferDefTypeFailed): Failed to infer type of theorem `lazy_pair`
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/boundary.lean:259:21: error(lean.inferDefTypeFailed): Failed to infer type of theorem `force_pair`
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/boundary.lean:261:22: error(lean.inferDefTypeFailed): Failed to infer type of theorem `update_pair`
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/boundary.lean:289:27: error(lean.inferDefTypeFailed): Failed to infer type of theorem `force_again_pair`
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/boundary.lean:298:60: warning: This simp argument is unused:
+  Small
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Ordinary, Ty.core, Ty.shiftV, I]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/boundary.lean:298:66: warning: This simp argument is unused:
+  I
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Ordinary, Ty.core, Ty.shiftV, Small]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/boundary.lean:300:73: warning: This simp argument is unused:
+  Ty.shiftV
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Ordinary, Ty.core, Small, I]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/boundary.lean:330:10: warning: This simp argument is unused:
+  s0
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Closure.ClosedAt, Closure.pure, program, afterLazy, afterForce, Comp.ClosedAt, Val.ClosedAt,
+    Val.ClosedList, Capture.empty, Capture.Closed, captureSlotsClosed, Capture.values, three]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/boundary.lean:338:37: warning: This simp argument is unused:
+  Small
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [p, Ty.assume, Ty.core, Ty.refinementPredicates, Pred.conjuncts]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/boundary.lean:402:24: warning: This simp argument is unused:
+  p
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Γ, Ctx.extend, Pred.WF, Pred.VarsIn, Term.VarsIn, Pred.Sorted, Term.HasSort, Term.References,
+    Term.Shape, Ctx.declarationSelf, Ctx.Readable, Ty.HasSort, Ty.sort?, Ordinary, Ty.core, Ty.shiftV, I, Pred.Declared,
+    Term.Declared]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/boundary.lean:404:64: warning: This simp argument is unused:
+  I
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [p, Γ, Ctx.extend, Pred.WF, Pred.VarsIn, Term.VarsIn, Pred.Sorted, Term.HasSort, Term.References,
+    Term.Shape, Ctx.declarationSelf, Ctx.Readable, Ty.HasSort, Ty.sort?, Ordinary, Ty.core, Ty.shiftV, Pred.Declared,
+    Term.Declared]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/boundary.lean:412:57: warning: This simp argument is unused:
+  Ty.shiftV
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Ordinary, Ty.core, I]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/boundary.lean:419:54: warning: This simp argument is unused:
+  Small
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [p, Ty.assume, Ty.core, Ty.refinementPredicates, Pred.conjuncts]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/boundary.lean:448:20: error(lean.inferDefTypeFailed): Failed to infer type of theorem `allocated`
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/boundary.lean:465:14: warning: This simp argument is unused:
+  Ordinary
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Ty.core, Ty.norm, I]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/boundary.lean:465:39: warning: This simp argument is unused:
+  I
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Ordinary, Ty.core, Ty.norm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/boundary.lean:482:19: error(lean.inferDefTypeFailed): Failed to infer type of theorem `set_pair`
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/boundary.lean:512:21: error(lean.inferDefTypeFailed): Failed to infer type of theorem `force_pair`
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/boundary.lean:514:22: error(lean.inferDefTypeFailed): Failed to infer type of theorem `update_pair`
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/boundary.lean:545:21: error(lean.inferDefTypeFailed): Failed to infer type of theorem `later_pair`
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/boundary.lean:594:16: error(lean.inferDefTypeFailed): Failed to infer type of theorem `first`
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/boundary.lean:595:17: error(lean.inferDefTypeFailed): Failed to infer type of theorem `second`
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/boundary.lean:612:28: warning: This simp argument is unused:
+  Ty.WFList
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [declaration, Ty.WF, Small, p, Pred.WF, Pred.VarsIn, Term.VarsIn, Ty.NotContCore, Ty.core, I]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14d/boundary.lean:634:32: warning: This simp argument is unused:
+  alternativesTest
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [value, alts, matchedTests, patternTest?, pathFacts, PathTest.predicate, Val.toTerm?, Val.toTermSlots,
+    three] at hp
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+BOUNDARY_DECLARATIONS 173
+'Benitoite.Release.Refinement.LazyBoundary.B' depends on axioms: [propext]
+'Benitoite.Release.Refinement.LazyBoundary.E' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.E.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.I' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.LazyField.PM' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.LazyField.actual_match' depends on axioms: [propext]
+'Benitoite.Release.Refinement.LazyBoundary.LazyField.alts' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.LazyField.alts.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.LazyField.declaration' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.LazyField.declaration.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.LazyField.field0' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.LazyField.field1' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.LazyField.immutable_field' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.LazyField.live_fact_fails' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.LazyField.live_field_undeclared' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.LazyField.missing_field' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.LazyField.observation' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.LazyField.partial_observation' depends on axioms: [propext]
+'Benitoite.Release.Refinement.LazyBoundary.LazyField.root_fact' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.LazyField.root_shape' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.LazyField.ty' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.LazyField.value' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.LazyField.value.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.LazyField.value_typed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.P' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.Reentry.first' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.Reentry.q' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.Reentry.q.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.Reentry.q_typed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.Reentry.same_thunk' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.Reentry.second' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.Reentry.start' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.Reentry.store' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.Reentry.store._proof_1_1' depends on axioms: [propext, Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.Reentry.ΨR' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.Reentry.ΨR.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.Reentry.μR' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.Reentry.μR.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.Small' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.Snapshot.allocated' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.Snapshot.body' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.Snapshot.body_needs_fact' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.Snapshot.cap' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.Snapshot.cap.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.Snapshot.captured' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.Snapshot.captured_after_set' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.Snapshot.delayed' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.Snapshot.delayed.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.Snapshot.delayed_typed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.Snapshot.done_closed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.Snapshot.done_store' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.Snapshot.fact_wf' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.Snapshot.force_pair' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.Snapshot.force_start' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.Snapshot.later_force' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.Snapshot.later_pair' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.Snapshot.later_start' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.Snapshot.later_value' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.Snapshot.lazy_typed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.Snapshot.pending_closed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.Snapshot.pending_store' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.Snapshot.q' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.Snapshot.q.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.Snapshot.ref_closed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.Snapshot.ref_store' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.Snapshot.set_head' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.Snapshot.set_pair' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.Snapshot.set_start' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.Snapshot.start' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.Snapshot.update_pair' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.Snapshot.written_closed' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.Snapshot.written_store' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.Snapshot.Γ' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.Snapshot.Γ.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.Snapshot.ΨC' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.Snapshot.ΨR' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.Snapshot.μC' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.Snapshot.μC.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.Snapshot.μD' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.Snapshot.μD.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.Snapshot.μR' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.Snapshot.μR.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.Snapshot.μW' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.Snapshot.μW.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.U' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.afterForce' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.afterForce.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.afterLazy' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.afterLazy.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.assumptions' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.capT' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.contract_removed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.done_closed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.done_contract' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.done_rejects_nine' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.done_store' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.execution' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.final_done' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.final_view' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.force_again_pair' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.force_again_start' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.force_i' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.force_pair' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.force_prim' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.force_small' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.force_start' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.force_without_contract' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.i_ann' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.instOfNatInteger64ValueOfNatNat__stdin' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.instOfNatInteger64ValueOfNatNat__stdin._proof_1' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.instOfNatInteger64ValueOfNatNat__stdin_1' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.instOfNatInteger64ValueOfNatNat__stdin_1._proof_1' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.kF' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.kT' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.lazy_covariant' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.lazy_pair' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.lazy_start' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.lazy_var_no_sort' depends on axioms: [propext]
+'Benitoite.Release.Refinement.LazyBoundary.loc_integer' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.loc_small' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.nine' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.nine_not_small' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.p' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.program' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.program.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.program_start' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.program_typed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.reference_invariant' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.s0' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.s0.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.s1' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.s2' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.s3' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.s4' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.s5' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.s6' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.s7' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.s8' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.sg' depends on axioms: [propext]
+'Benitoite.Release.Refinement.LazyBoundary.sg._sparseCasesOn_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.LazyBoundary.sg._sparseCasesOn_1.else_eq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.LazyBoundary.sg.eq_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.LazyBoundary.sg.eq_2' depends on axioms: [propext]
+'Benitoite.Release.Refinement.LazyBoundary.sg.eq_3' depends on axioms: [propext]
+'Benitoite.Release.Refinement.LazyBoundary.sg.eq_4' depends on axioms: [propext]
+'Benitoite.Release.Refinement.LazyBoundary.sg.eq_5' depends on axioms: [propext]
+'Benitoite.Release.Refinement.LazyBoundary.sg.match_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.LazyBoundary.sig_cases' depends on axioms: [propext]
+'Benitoite.Release.Refinement.LazyBoundary.small_ann' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.store' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.store_closed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.three' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.three_small' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.thunk' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.thunk_typed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.update_pair' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LazyBoundary.Ψ' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.Ψwide' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.μ' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.μ.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.μdone' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.μdone.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.LazyBoundary.σ' does not depend on any axioms
+'_private._stdin.0.Benitoite.Release.Refinement.LazyBoundary.closed_ann' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'_private._stdin.0.Benitoite.Release.Refinement.LazyBoundary.empty_ann' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'_private._stdin.0.Benitoite.Release.Refinement.LazyBoundary.force_tel_instance' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'_private._stdin.0.Benitoite.Release.Refinement.LazyBoundary.sg.match_1.eq_1' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.LazyBoundary.sg.match_1.eq_2' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.LazyBoundary.sg.match_1.eq_3' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.LazyBoundary.sg.match_1.eq_4' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.LazyBoundary.sg.match_1.eq_5' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.LazyBoundary.sg.match_1.splitter' depends on axioms: [propext]
+'_private._stdin.0.Benitoite.Release.Refinement.LazyBoundary.sub_refl' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
