@@ -76,16 +76,17 @@ def PrimSig.StoreShape (s : PrimSig) : Prop :=
   match s.kind with
   | .refNew => s.names = ["value"] ∧ s.tparams.length = 1 ∧ s.neffs = 0 ∧
       s.params = [.tvar 0] ∧ s.ret = .reference (.tvar 0) ∧
-      s.eff = Eff.single stateEff ∧ s.rkinds = []
+      s.eff = Eff.single stateEff ∧ s.rkinds = [] ∧ s.tparams.map TParamDecl.kind = [.value]
   | .refGet => s.names = ["reference"] ∧ s.tparams.length = 1 ∧ s.neffs = 0 ∧
       s.params = [.reference (.tvar 0)] ∧ s.ret = .tvar 0 ∧
-      s.eff = Eff.single stateEff ∧ s.rkinds = []
+      s.eff = Eff.single stateEff ∧ s.rkinds = [] ∧ s.tparams.map TParamDecl.kind = [.value]
   | .refSet => s.names = ["reference", "value"] ∧ s.tparams.length = 1 ∧ s.neffs = 0 ∧
       s.params = [.reference (.tvar 0), .tvar 0] ∧ s.ret = .base .unit ∧
-      s.eff = Eff.single stateEff ∧ s.rkinds = []
+      s.eff = Eff.single stateEff ∧ s.rkinds = [] ∧ s.tparams.map TParamDecl.kind = [.value]
   | .refUpdate => s.names = ["reference", "f"] ∧ s.tparams.length = 1 ∧ s.neffs = 0 ∧
       s.params = [.reference (.tvar 0), .fn ["value"] [.tvar 0] (.tvar 0) Eff.empty] ∧
-      s.ret = .base .unit ∧ s.eff = Eff.single stateEff ∧ s.rkinds = []
+      s.ret = .base .unit ∧ s.eff = Eff.single stateEff ∧ s.rkinds = [] ∧
+      s.tparams.map TParamDecl.kind = [.value]
   | .force => s.names = ["value"] ∧ s.tparams.length = 1 ∧ s.neffs = 0 ∧
       s.params = [.lazy (.tvar 0)] ∧ s.ret = .tvar 0 ∧ s.eff = Eff.empty ∧ s.rkinds = []
   | .pathBases => False
@@ -101,6 +102,8 @@ structure Builtins.CoreAssumptions (P : Program) (B : Builtins) : Prop extends
     s.kind = .io ∨ s.kind = .exit ∨ s.kind = .pathBases
   effect_ops : ∀ l bs b, B.effects l = some bs → b ∈ bs →
     ∃ s, B.sig b = some s ∧ (s.kind = .io ∨ s.kind = .exit ∨ s.kind = .pathBases) ∧ s.opEff = some l
+  ref_get : ∃ s, B.sig B.refGet = some s ∧ s.kind = .refGet
+  ref_set : ∃ s, B.sig B.refSet = some s ∧ s.kind = .refSet
   store_shape : ∀ b s, B.sig b = some s → s.kind ≠ .pathBases → s.StoreShape
   store_admits : ∀ b s C ts, B.sig b = some s → s.kind ≠ .pure → s.kind ≠ .io →
     s.kind ≠ .exit → s.kind ≠ .pathBases → ts.length = s.tparams.length → s.admits C ts
