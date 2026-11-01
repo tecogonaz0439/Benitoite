@@ -3112,16 +3112,44 @@ builders_no_captureとbuilders_block_no_captureは、Aligned Γ ΔからEnvReads
 
 `TypeParamRenaming C C' ρ` は、対応する宣言の kind の等号と、移送先の組み込みの制約が移送元の制約を含むことを要求する。`kindRenaming` はこの対応から kind の列の改名を取り出す。型変数の移動と変数の型付けの補助 `shift_types_var` は、この対応を使って tapp の宣言照合を保つ。文脈の長さの一致だけでは、kind の異なる同長の文脈への移送はできない。
 
-`ClosedTypeSubstInput P B C0 C1 Γ ts es` は、型像の個数と WF000、C0 の kind の列との一致、空の型・値文脈での型像の Annotation、C1 の制約の下での C0 の制約への適合、行像の WF000・Annotation・kind、および元の Γ の `CaptureContextRegular P (C1 ++ C0)` を持つ。NoFail の文脈どうしの `RowTransport` はこの入力に含めない。型付けの保存の結論を入力欄には含めない。
+`TypeSubstInput P B C0 C1 ts es` は、型像の個数と WF000、C0 の kind の列との一致、空の型・値文脈での型像の Annotation、C1 の制約の下での C0 の制約への適合、行像の WF000・Annotation・kind を持つ。値文脈 Γ を引数に持たず、形成と型付けの各 case の内部入力として使う。`ClosedTypeSubstInput P B C0 C1 Γ ts es` は、この八欄に元の Γ の `CaptureContextRegular P (C1 ++ C0)` を加えた公開入口の入力である。NoFail の文脈どうしの `RowTransport` と型付けの保存の結論は、どちらの入力欄にも含めない。
+
+```lean
+structure TypeSubstInput (P : Program) (B : Builtins)
+    (C0 C1 : TypeCtx) (ts : List Ty) (es : List Eff) : Prop where
+  typeCount : ts.length = C0.length
+  typeWF : ∀ t ∈ ts, t.WF 0 0 0
+  typeKinds : TypeArgsKinded P [] ts (TypeCtx.kinds C0)
+  typeAnnotations : TypeAnnotations P [] [] ts
+  constraints : SatAll B C1 ts (TypeCtx.constraints C0)
+  rowWF : ∀ e ∈ es, e.WF 0 0 0
+  rowAnnotations : RowAnnotations P [] [] es
+  rowKinds : ∀ e ∈ es, kindsEff P [] e
+
+structure ClosedTypeSubstInput (P : Program) (B : Builtins)
+    (C0 C1 : TypeCtx) (Γ : Ctx) (ts : List Ty) (es : List Eff)
+    : Prop extends TypeSubstInput P B C0 C1 ts es where
+  context : CaptureContextRegular P (C1 ++ C0) Γ
+```
+
+公開の S02 の14定義は ClosedTypeSubstInput を読む。`S02Internal.C/Body/Arms/Clauses` は、TypeSubstInput を受けて任意の Γ で量化した内部の契約であり、各 toPublic は公開入口の toTypeSubstInput を渡して対応する S02 を返す。これらの Prop の定義と公開への射影は、全相互帰納の証明を意味しない。TelBodyTy.param の子や腕の束縛で値文脈が変わっても、内部入力を作り直す必要はない。操作節の型束縛の下では、TypeSubstInput.under が閉じた型像の制約を既存の sat_shiftTypes により弱める。
 
 コードの型置換の契約は `S02_V` などの14個の Prop として既定ビルドに含める。Q を移す十成分は、形成の入力とは別に `TypeSubstCode es source` を受ける。この条件は `es = [] ∨ ∃ nr nt ne nv, source nr nt ne nv` であり、source は各成分の元の値・計算・列・腕・節に対する SourceScoped である。CaptureOk・DependentClosureTy・CheckedWitness の恒等の三成分と ImageOk の True の成分には、この条件を要求しない。Prop の定義は契約の型を検査し、その命題の証明を意味しない。
+
+`ExternalSignature.WF` は、署名全体について `sourceTelRows : d.parameters.RowsIn (· < 0)` を要求する。外部署名には行変数の束縛がないため、data の欄が使わない型引数も含めて、自由な行変数を拒む。At の内容型を valContent から選ぶ枝も、`inputTy.WF 0 0 0` と `inputTy.RowsIn (· < 0)` を要求する。WF000 だけでは、関数型の潜在効果にある行変数を制限しない。いずれも宣言又は呼出しの構造条件であり、CoreAssumptions の欄にはしない。
+
+`TypeSubstRowObstruction` は、行を含む組み込み操作の署名・At の内容型・data の未使用の型引数を含む外部署名について、対応する判断が拒否する境界を証明する。`clause_sig_rejects_row`・`at_rejects_row`・`external_rejects_row` は、これらの判断の不成立を示す。
+
+`TypeSubstCalls` の `gate_op_case`・`gate_fun_case` は、Sub・Normal・Refine の包装を含む操作と関数参照の型置換を、TypeSubstInput と RowTransport の下で証明する。依存する引数列の具体化と型置換の交換には、署名全体の行支持と `Tel.arguments_typeSubst` を使う。メソッド・raise・escape・lambda の case 補題は、新しい判断の結論を構成する。メソッドと lambda と escape の子の移送は、case 補題の明示した前提である。これら三つの補題は外側の Sub・Normal・Refine・Eff の包装を処理しない。`HasTypeVQ.raise_annotation_kind` は元の raise の Annotation、結果型の Ordinary と value kind を返し、`fail_input` は任意の閉じた結果型の置換入力を作る。これらは S02 の全成分の証明を意味しない。
+
+`NestedContinuation` の定理 `list_cont_empty` は、空の値文脈で `.list (.cont b t e)` の型を持つ値が空 List であることを示す。`singleton_no_match` はその値と一要素のパターンの照合が失敗することを示す。導出は HasTypeVQ.notContCore と部分型の要素の逆転を使い、Ordinary を再帰的に強めない。data の欄は con_field、捕捉の List の位置は ImageOk.ordinary が返す閉じた値の型付けから同じ定理へ接続する。空 List と、この入れ子の型を型引数に持つ操作の型付けは成立する。
 
 場所と実行時閉包のコードは SourceScoped を満たさない。対応する四つの構成子の型置換の case 補題は、行像が空の場合に格納型を正規化して結論を作り、行像が空でない場合は源の構文の条件から矛盾を得る。ストア型の WF000 は行変数を制限せず、これを全ての行置換に対する不変性として使わない。
 
 
 `Ty.HasKind.closed_context` と `kindsEff.closed_context` は、型変数を持たない WF の型・行について kind の文脈を変更する。`Ty.HasKind.substAt`・`Tel.kinded_substAt`・`TypeArgsKinded.substAt` は、元の `C1 ++ C0` と像の `TypeCtx.kinds C0` を照合し、残す C1 の下で kind を保存する。行像にも空の kind 文脈での `kindsEff` を要求する。constructor の適用は `ProperApply` の各構成子を使い、`rawApply` の既定の枝を形成の根拠にしない。data の構成子の arity は、`TyCon.arity_data` と `TyCon.dataArity_of_arity` で `Program.DataArity` と双方向に対応する。
 
-`Ty.Declared.substAt`・`Tel.Declared.substAt`・`declaredTys_substAt`・`declaredEff_substAt` は、プログラムの整形式・本体の型付け・CoreAssumptions・ストア型の WF、同じ `ClosedTypeSubstInput`、元の Annotation から宣言照合を保存する。移送先は `Γ.bindTypes (typeEnvAt C1.length ts es)` である。`Ty.Annotation.substAt` は WF・Sorted・Declared を合成し、型と行の列の Annotation も保存する。全中間注釈に value kind は要求しない。Tel の束縛下の宣言照合では、元と像の引数型をそれぞれの値文脈へ加えて対応を延長する。`ClosedTypeSubstInput.extend` は元の引数型の Annotation から `context` を `Γ.extend a` へ延長する。
+`Ty.Declared.substAt`・`Tel.Declared.substAt`・`declaredTys_substAt`・`declaredEff_substAt` は、プログラムの整形式・本体の型付け・CoreAssumptions・ストア型の WF、同じ `TypeSubstInput`、元の Annotation から宣言照合を保存する。移送先は `Γ.bindTypes (typeEnvAt C1.length ts es)` である。`Ty.Annotation.substAt` は WF・Sorted・Declared を合成し、型と行の列の Annotation も保存する。全中間注釈に value kind は要求しない。Tel の束縛下の宣言照合では、元と像の引数型をそれぞれの値文脈へ加えて対応を延長する。`Ty.Declared.typeSubst` と `Tel.Declared.typeSubst` は、元の Declared だけから同じ移送を証明する。C_Let などで WF・Sorted の形成を別に要求しない。`ClosedTypeSubstInput.extend` は公開入口の context を元の注釈から延長する補助であり、内部の帰納の入力には使わない。
 
 
 `V_Const` は `ConstOK B c` を前提とする。符号付き四幅のうち Integer64 は値自身が値域の証拠を保持し、Integer8/16/32 と符号なし三幅は各構成子の整数がその幅の上下限内にあることを検査する。Byte は自然数の値が255以下、Decimal は係数が −79228162514264337593543950335 以上79228162514264337593543950335以下で scale が28以下であることを要求する。`V_Bytes` は、これとは別にバイト列の全要素が255以下であることを前提とする。述語の観測では七整数と Byte は共通の integer sort を使うが、数の演算に暗黙の型変換を加えない。
@@ -3240,7 +3268,7 @@ structure SignatureInstance (P : Program) (C : TypeCtx) (Γ : Ctx)
 
 `LegacyOutputInput.node` は、局所規則、親の `LegacyNodeRegular`、全ての子の同じ入力を要求する。各 node の全結果型・型列・戻り先・効果・文脈・ストアの型を検査するため、let の中間型と拡張した値文脈、呼出しの中間型、空の腕、resume、節内の型も対象に含む。旧の型付けから中間型の kind が無条件に得られるとはしない。`LegacyRule.old` と `LegacyOutputInput.old` は、この入力から旧判断を復元する。
 
-`LegacyPrimSignature.sourceTelRows` は、新しい署名全体が `neffs` 未満の行変数だけを読むことを要求する。`sourceTelRowsAt` は、旧呼び出しの rowCount と表の neffs の対応から、範囲具体化後の依存列について、写した行引数列の長さを上限とする証拠を返す。旧の型付けの結論は、この欄の入力に含めない。
+`LegacyPrimSignature.sourceTelRows` は、新しい署名全体が `neffs` 未満の行変数だけを読むことを要求する。`sourceTelRowsAt` は、旧呼び出しの rowCount と表の neffs の対応から、署名の依存列について、写した行引数列の長さを上限とする証拠を返す。`LegacyPrimSignature.clauseSig` は同じ欄から組み込みの節の構造条件を供給する。旧の型付けの結論は、この欄の入力に含めない。`CurrentSignatureRows` は旧三モデル・TargetTable の全項目・Examples の署名全体の行支持を既定ビルドで検査する。
 
 `LegacyPrimSignature.operationKinds` は、`s.opEff ≠ none` の組み込みの型パラメータのkindの列が全てvalueであることを要求する。操作でない組み込みのkindはこの条件で制限しない。理由: 旧の通常節の子の判断は型パラメータをvalueとして読み、新しい通常節も同じ型文脈で検査するためである。
 
@@ -3325,7 +3353,7 @@ let の到達先の型付けでは、前半と後半の計算を外側の効果�
 
 組み込みの δ と IO の応答へ渡す型・行の引数は、遷移時に `Ty.normTys ts` と `es.map Eff.norm` に正規化する（`E_Prim`・`E_Err`・`E_IO`・`E_IOErr`・`E_Exit` と同じ選択をする `step`）。範囲と実引数の値はこの正規化で変えない。`BuiltinArgs` は、その正規形の型・行、範囲の許容、`SignatureInstance`、依存する実引数列の型付け、閉性、結果と効果の整形式・正規形をまとめる。生の値の全箇所に正規形の不変条件を加える規則ではない。
 
-外部宣言は `Program.externals` の有限な表に置き、型と関数の名目ID、コンポーネント、resource の対応を照合する。`Program.ExternalWF` はキーの一意性と宣言の整合を要求する。`ExternalSignature.WF` は型パラメータと kind の列が空の単相宣言、依存列の注釈、受け渡せる型、外部型の全出現と uses の過不足・重複を検査する。外部型の入力は borrow、結果は own として位置と入れ子の道筋を保持する。uses が空なら潜在効果は空、外部型の出現があるなら State とする。外部状態の精密なヒープは表さない。
+外部宣言は `Program.externals` の有限な表に置き、型と関数の名目ID、コンポーネント、resource の対応を照合する。`Program.ExternalWF` はキーの一意性と宣言の整合を要求する。`ExternalSignature.WF` は型パラメータと kind の列が空の単相宣言、依存列の注釈、受け渡せる型、外部型の全出現と uses の過不足・重複、署名全体の行支持の空性を検査する。外部型の入力は borrow、結果は own として位置と入れ子の道筋を保持する。uses が空なら潜在効果は空、外部型の出現があるなら State とする。外部状態の精密なヒープは表さない。
 
 外部の応答は `externalReceive` が宣言と同じ型引数・実引数から結果型を具体化し、`externalCheck` で全入れ子の篩を検査する。data の欄は元の宣言を具体化して検査する。受信の信頼条件は篩の真を含まない `Outcome.Carrier` までであり、閉じた評価が T の篩だけを受け付ける。偽と評価不能は `ExternalRefinement` の実行時エラーになる。外部の生の err はそのまま返し、exit は外部の信頼条件で除く。外部の遷移は IO の事象を出さない。
 
@@ -3366,13 +3394,14 @@ At の呼出しの許容条件は、次の判断の全定義である。結果�
         shape.Declared P → B.valKind name = some kind →
         (∀ v, bases = some v → HasTypeVQ P B Ψ Q C Γ Φ v .pathBases) →
         HasTypeVQ P B Ψ Q C Γ Φ pattern (.scopePattern kind) →
-        (inputTy = .base .string ∧ B.valContent name = none ∨ B.valContent name = some inputTy ∧ inputTy.WF 0 0 0) →
+        (inputTy = .base .string ∧ B.valContent name = none ∨
+          B.valContent name = some inputTy ∧ inputTy.WF 0 0 0 ∧ inputTy.RowsIn (· < 0)) →
         HasTypeVQ P B Ψ Q C Γ Φ input inputTy.norm → index.WF 0 →
         (∀ r, index = .fixed r → r.WF ∧ r.Canonical ∧ r.FitsKind kind) →
         AtCallAdmissible P B Ψ Q C Γ Φ kind name shape bases pattern input index
 ```
 
-節の署名は、次の範囲の条件と opSigAt を合わせて決める。操作の引数の後に継続を束縛する文脈と、失敗の型変数・値・使用できない継続の位置を持つ文脈を区別する。以下は ClauseRangeIs/ClauseIxOk/ClauseSig/OpSig.continuation/OpSig.context/failureContext の写しである。
+節の署名は、次の範囲の条件と opSigAt を合わせて決める。組み込みの節は、署名全体の行変数が宣言した行数未満であることも要求する。この構造条件は呼出しの許容条件と同じ上限を読み、節だけを持つコードにも適用する。操作の引数の後に継続を束縛する文脈と、失敗の型変数・値・使用できない継続の位置を持つ文脈を区別する。以下は ClauseRangeIs/ClauseIxOk/ClauseSig/OpSig.continuation/OpSig.context/failureContext の写しである。
 
 ```lean
 def Eff.ClauseRangeIs (e : Eff) (l : EffName) (r : RangeExpr) : Prop :=
@@ -3383,7 +3412,9 @@ def ClauseIxOk (B : Builtins) (e : Eff) (o : OpRef) (S : RangeExpr) : Prop :=
   S=.absolute .top ∨ ∃ b s l,o=.prim b ∧ B.sig b=some s ∧ s.opEff=some l ∧ e.ClauseRangeIs l S
 
 def ClauseSig (P : Program) (B : Builtins) (e : Eff) (o : OpRef) (sg : OpSig) : Prop :=
-  ∃ S,ClauseIxOk B e o S ∧ opSigAt P B S o=some sg
+  ∃ S,ClauseIxOk B e o S ∧ opSigAt P B S o=some sg ∧
+    ∀ (b : PrimName) (s : PrimSig), o = .prim b → B.sig b = some s →
+      s.tel.RowsIn (· < s.neffs)
 def OpSig.continuation (sg : OpSig) (t : Ty) (e : Eff) : Ty :=
   .cont sg.ret ((shiftTypes sg.tparams.length 0 t).shiftV sg.params.length 0)
     ((shiftRowsTypes sg.tparams.length 0 e).shiftV sg.params.length 0)

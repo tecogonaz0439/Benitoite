@@ -95,8 +95,8 @@ theorem Eff.shiftTypes_union (e f : Eff) (k c : Nat) :
 
 theorem ClauseSig.same_atoms {P B e f o sg} (h : ClauseSig P B e o sg) (he : f.atoms=e.atoms) :
     ClauseSig P B f o sg := by
-  obtain ⟨S,hS,hs⟩ := h
-  refine ⟨S,?_,hs⟩
+  obtain ⟨S,hS,hs,hr⟩ := h
+  refine ⟨S,?_,hs,hr⟩
   rcases hS with hS|⟨b,s,l,ho,hb,hl,hr⟩
   · exact Or.inl hS
   · exact Or.inr ⟨b,s,l,ho,hb,hl,by simpa only [Eff.ClauseRangeIs,Eff.mem,Eff.test,he] using hr⟩

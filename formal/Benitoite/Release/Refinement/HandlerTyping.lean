@@ -11,10 +11,16 @@ theorem Builtins.CoreAssumptions.pathBases_clause_signature {P B b s eb}
     ∃ sg, ClauseSig P B eb (.prim b) sg ∧ sg.tparams=[] ∧ sg.params=[] ∧ sg.ret=.pathBases ∧ sg.WF := by
   have hs := h.pathBases_shape b s hl hk
   let sg : OpSig := ⟨[],s.names,[],.pathBases,processEnvironmentEff⟩
-  refine ⟨sg,ClauseSig.of_opSig ?_,rfl,rfl,rfl,?_⟩
+  refine ⟨sg,ClauseSig.of_opSig ?_ ?_,rfl,rfl,rfl,?_⟩
   · simp only [opSig,opSigAt,hl,hs.operation,hs.types,hs.arguments,List.map_nil,
       Option.map_some,hs.result]
     rfl
+  · intro b' s' ho hl'
+    cases ho
+    have he := Option.some.inj (hl.symm.trans hl')
+    subst s'
+    simp [PrimSig.tel, signatureTel, hs.arguments, hs.result, hs.effect, hs.rows,
+      Ty.RowsIn, Ty.RowsInList, Tel.RowsIn, Eff.RowsIn, processEnvironmentEff, Eff.single]
   · exact ⟨trivial,trivial⟩
 
 private theorem resume_location_inv {P B Ψ Q C Γ Φ R m t e L}

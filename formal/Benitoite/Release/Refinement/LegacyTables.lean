@@ -49,11 +49,20 @@ theorem LegacyPrimSignature.sourceTelRowsAt
     {ts : List Benitoite.Release.Ty} {es : List Benitoite.Release.Eff}
     {rs : List Scope.Domain.Range}
     (h : LegacyPrimSignature s0 s)
-    (ha : Benitoite.Release.PrimitiveAdmissible C (s0.inst rs) Q ts es)
-    (ranges : List RangeExpr) :
-    (Tel.instR ranges s.tel).RowsIn (· < (es.map embedEff).length) := by
+    (ha : Benitoite.Release.PrimitiveAdmissible C (s0.inst rs) Q ts es) :
+    s.tel.RowsIn (· < (es.map embedEff).length) := by
   have he : es.length = s.neffs := ha.rowCount.trans h.neffs.symm
-  simpa only [List.length_map,he] using Tel.rowsIn_instR h.sourceTelRows ranges
+  simpa only [List.length_map,he] using h.sourceTelRows
+
+theorem LegacyPrimSignature.clauseSig {P B e b s0 s S sg}
+    (h : LegacyPrimSignature s0 s) (hb : B.sig b = some s)
+    (hi : ClauseIxOk B e (.prim b) S) (hl : opSigAt P B S (.prim b) = some sg) :
+    ClauseSig P B e (.prim b) sg := by
+  refine ⟨S, hi, hl, ?_⟩
+  intro b' s' ho hs
+  cases ho
+  cases Option.some.inj (hb.symm.trans hs)
+  exact h.sourceTelRows
 
 end
 end Benitoite.Release.Refinement

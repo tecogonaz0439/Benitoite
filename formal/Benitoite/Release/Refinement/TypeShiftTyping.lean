@@ -378,7 +378,7 @@ mutual
       · have hh := HasTypeVQ.shift_types hv hA hstore hC hn hm
         rcases ht with ⟨rfl, ht⟩ | ht
         · exact hh
-        · simpa only [← Ty.norm_shiftTypes, Ty.shiftTypes_of_wf_zero ht.2] using hh
+        · simpa only [← Ty.norm_shiftTypes, Ty.shiftTypes_of_wf_zero ht.2.1] using hh
 
   termination_by structural h
 end
