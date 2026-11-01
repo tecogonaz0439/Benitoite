@@ -353,3 +353,5 @@ import Benitoite.Release.Refinement.MatchPaths
 import Benitoite.Release.Refinement.MatchFacts
 import Benitoite.Release.Refinement.ReferencePreservation
 import Benitoite.Release.Refinement.LazyPreservation
+
+import Benitoite.Release.Refinement.HandlerOperation

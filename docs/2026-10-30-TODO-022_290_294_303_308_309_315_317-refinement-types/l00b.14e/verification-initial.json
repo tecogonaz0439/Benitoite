@@ -1,0 +1,85 @@
+[
+  {
+    "label": "build",
+    "command": "cd formal && rtk proxy lake build",
+    "started_utc": "2026-10-31T23:22:19.606161+00:00",
+    "exit_code": 0,
+    "seconds": 1.465,
+    "bytes": 36787,
+    "sha256": "ba23e3c329fe12ca4e728ffb3b105f576983d2ddb1ea7b51c00260c27ca3f53e",
+    "record": "build.log",
+    "reused_after_input_hash_check": true,
+    "input_record": "verified-build.json"
+  },
+  {
+    "label": "boundary",
+    "command": "cd formal && rtk proxy lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14e/boundary.lean",
+    "started_utc": "2026-10-31T23:23:18.375159+00:00",
+    "exit_code": 0,
+    "seconds": 1.326,
+    "bytes": 10398,
+    "sha256": "c2575ab4b71d816431ecaf0b1d650b7735c94b0dc22e26b1ce0dd144d84bcd4b",
+    "record": "boundary.log",
+    "axioms": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "axiom_reports": 100,
+    "boundary_declarations": 100
+  },
+  {
+    "label": "public-api",
+    "command": "cd formal && rtk proxy lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14e/public-api.lean",
+    "started_utc": "2026-10-31T23:23:19.701790+00:00",
+    "exit_code": 0,
+    "seconds": 0.333,
+    "bytes": 23258,
+    "sha256": "2120db1b501f84a36a37cb4f274fff2fa94378640665ea91adb9f8a4101e9b33",
+    "record": "public-api.log",
+    "public_declarations": 17
+  },
+  {
+    "label": "axioms",
+    "command": "cd formal && rtk proxy lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14e/axioms.lean",
+    "started_utc": "2026-10-31T23:23:20.036071+00:00",
+    "exit_code": 0,
+    "seconds": 13.7,
+    "bytes": 1675914,
+    "sha256": "9b71b25f238e5ce8a462090cb4ed37125a148b6cf812860b0c7df95cec470e21",
+    "record": "<tmp>/benitoite-handler-tmiv2rab/axioms.log",
+    "axioms": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "axiom_reports": 15418,
+    "modules": 152,
+    "cases": [
+      "cases Benitoite.Release.Refinement.Ty: 21",
+      "cases Benitoite.Release.Refinement.Ty.LeQ: 13",
+      "cases Benitoite.Release.Refinement.TelLe: 2",
+      "cases Benitoite.Release.Refinement.TelClosure: 2",
+      "cases Benitoite.Release.Refinement.HasTypeVQ: 29",
+      "cases Benitoite.Release.Refinement.HasTypeCQ: 24",
+      "cases Benitoite.Release.Refinement.ImageOk: 4",
+      "cases Benitoite.Release.Refinement.LocalRef.HasKind: 3",
+      "cases Benitoite.Release.Refinement.ProperApply: 7",
+      "cases Benitoite.Release.Refinement.Step: 76",
+      "cases Benitoite.Release.Refinement.PathTest: 9",
+      "cases Benitoite.Release.Refinement.PathLiteral: 5",
+      "cases Benitoite.Release.Refinement.GuardBodyTy: 1",
+      "cases Benitoite.Release.Refinement.ContTy: 10",
+      "cases Benitoite.Release.Refinement.Frame: 7",
+      "cases Benitoite.Release.Refinement.Cell: 6",
+      "THREE_FAMILY_CASES 76 (71 + 5)",
+      "cases Benitoite.Release.Ty: 15",
+      "cases Benitoite.Release.Val: 17",
+      "cases Benitoite.Release.Refinement.Const: 16",
+      "cases Benitoite.Release.Refinement.RangeIx: 2",
+      "cases Benitoite.Release.Refinement.HasTypeEachQ: 2",
+      "cases Benitoite.Release.Refinement.HasTypeVsQ: 2",
+      "cases Benitoite.Release.Refinement.CheckedWitness: 2"
+    ]
+  }
+]

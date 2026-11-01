@@ -102,6 +102,8 @@ structure Builtins.CoreAssumptions (P : Program) (B : Builtins) : Prop extends
     s.kind = .io ∨ s.kind = .exit ∨ s.kind = .pathBases
   effect_ops : ∀ l bs b, B.effects l = some bs → b ∈ bs →
     ∃ s, B.sig b = some s ∧ (s.kind = .io ∨ s.kind = .exit ∨ s.kind = .pathBases) ∧ s.opEff = some l
+  /-- State は組み込みに予約し、処理する操作を持たない。 -/
+  state_effect : B.effects stateEff = some []
   ref_get : ∃ s, B.sig B.refGet = some s ∧ s.kind = .refGet
   ref_set : ∃ s, B.sig B.refSet = some s ∧ s.kind = .refSet
   store_shape : ∀ b s, B.sig b = some s → s.kind ≠ .pathBases → s.StoreShape
