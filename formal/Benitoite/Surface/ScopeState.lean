@@ -989,7 +989,7 @@ def stepCost (T : ScopeTable Release.Val) (st : ScopeState) : Step → Nat
 
 /-- 計上。操作数を加え、計上の後の保持数を確かめる。操作数を保持数より先に、本体を全体より先に報告する。
 拒否では候補の状態を採用しない。 -/
-def Budget.admit (L : Limits) (b : Budget) (ops held : Nat) : Except LimitFailure Budget :=
+def Budget.checkLimit (L : Limits) (b : Budget) (ops held : Nat) : Except LimitFailure Budget :=
   let next : Budget := { b with bodyOperations := b.bodyOperations + ops,
                                 wholeOperations := b.wholeOperations + ops }
   if next.bodyOperations > L.body.operations then .error ⟨.body, .operations⟩
@@ -1004,10 +1004,10 @@ def Budget.Within (L : Limits) (b : Budget) (held : Nat) : Prop :=
     held ≤ L.body.items ∧ b.outerItems + held ≤ L.whole.items
 
 /-- 成功した計上は、本体と全体の操作数に同じ数を加え、上限内にある。 -/
-theorem Budget.admit_ok {L : Limits} {b b' : Budget} {ops held : Nat} (h : b.admit L ops held = .ok b') :
+theorem Budget.checkLimit_ok {L : Limits} {b b' : Budget} {ops held : Nat} (h : b.checkLimit L ops held = .ok b') :
     b'.bodyOperations = b.bodyOperations + ops ∧ b'.wholeOperations = b.wholeOperations + ops ∧
       b'.outerItems = b.outerItems ∧ b'.Within L held := by
-  simp only [Budget.admit] at h
+  simp only [Budget.checkLimit] at h
   split at h
   · cases h
   · split at h
@@ -1020,13 +1020,13 @@ theorem Budget.admit_ok {L : Limits} {b b' : Budget} {ops held : Nat} (h : b.adm
           refine ⟨rfl, rfl, rfl, ?_, ?_, ?_, ?_⟩ <;> simp_all <;> omega
 
 /-- 拒否の理由は、候補の状態がどの上限を超えたかを表す。 -/
-theorem Budget.admit_error {L : Limits} {b : Budget} {ops held : Nat} {f : LimitFailure}
-    (h : b.admit L ops held = .error f) :
+theorem Budget.checkLimit_error {L : Limits} {b : Budget} {ops held : Nat} {f : LimitFailure}
+    (h : b.checkLimit L ops held = .error f) :
     (f = ⟨.body, .operations⟩ ∧ L.body.operations < b.bodyOperations + ops) ∨
       (f = ⟨.whole, .operations⟩ ∧ L.whole.operations < b.wholeOperations + ops) ∨
       (f = ⟨.body, .items⟩ ∧ L.body.items < held) ∨
       (f = ⟨.whole, .items⟩ ∧ L.whole.items < b.outerItems + held) := by
-  simp only [Budget.admit] at h
+  simp only [Budget.checkLimit] at h
   split at h
   · next h1 => cases h; exact .inl ⟨rfl, h1⟩
   · split at h
@@ -1085,7 +1085,7 @@ def Run.exceeded : Run → Option ExceedReason
 def Run.step (T : ScopeTable Release.Val) (L : Limits) : Run → Step → Run
   | .running st b, s =>
     let next := absStep T st s
-    match b.admit L (stepCost T st s) (heldItems next) with
+    match b.checkLimit L (stepCost T st s) (heldItems next) with
     | .ok b' => .running next b'
     | .error f => .stopped f (blindStep st.forgetAll s) b
   | .stopped f st b, s => .stopped f (blindStep st s) b

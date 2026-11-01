@@ -1,0 +1,296 @@
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/k/boundary.lean:193:95: error: Type mismatch
+  option_kind
+has type
+  Ty.HasKind (embedProgramWithKinds hkKinds hkProgram) [] (embedTy (Release.Ty.ctor (TyCon.data "Option")))
+    (TyKind.constructor 1)
+but is expected to have type
+  Ty.HasKind (embedProgramWithKinds hkKinds hkProgram) [] (embedTy (Release.Ty.ctor (TyCon.data "Option")))
+      (TyKind.constructor 1) ∧
+    (TyKind.constructor 1 = TyKind.value → Ordinary (embedTy (Release.Ty.ctor (TyCon.data "Option"))))
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/k/boundary.lean:309:104: error: Type mismatch
+  option_type_input
+has type
+  LegacyTypeInput hkKinds hkProgram LegacyInputCtx.closed (Release.Ty.ctor (TyCon.data "Option")) (TyKind.constructor 1)
+but is expected to have type
+  LegacyTypeInput hkKinds hkProgram LegacyInputCtx.closed (Release.Ty.ctor (TyCon.data "Option"))
+      (TyKind.constructor 1) ∧
+    (TyKind.constructor 1 = TyKind.value → Ordinary (embedTy (Release.Ty.ctor (TyCon.data "Option"))))
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/k/boundary.lean:464:11: error: Application type mismatch: The argument
+  opt_kind
+has type
+  Ty.HasKind (embedProgramWithKinds K P0) [] (embedTy opt) (TyKind.constructor 1)
+but is expected to have type
+  LegacyTypeInput K P0 LegacyInputCtx.closed opt (TyKind.constructor 1)
+in the application
+  And.intro opt_kind
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/k/boundary.lean:464:10: error: Invalid `⟨...⟩` notation: The expected type
+  TyKind.constructor 1 = TyKind.value → Ordinary (embedTy opt)
+is not an inductive type
+
+Note: This notation can only be used when the expected type is an inductive type with a single constructor
+BOUNDARY_CONSTANTS 208
+'Benitoite.Release.Refinement.L10KApplied.B' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KApplied.B0' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KApplied.K' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KApplied.K.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KApplied.P0' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KApplied.arity' depends on axioms: [propext]
+'Benitoite.Release.Refinement.L10KApplied.atoms' depends on axioms: [propext]
+'Benitoite.Release.Refinement.L10KApplied.canon' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KApplied.ctx' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KApplied.decls' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KApplied.eE' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KApplied.eE.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KApplied.fd' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KApplied.fd.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KApplied.node' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KApplied.node_input' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.L10KApplied.node_input._simp_1_2' depends on axioms: [propext]
+'Benitoite.Release.Refinement.L10KApplied.old_admissible' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KApplied.old_admissible._simp_1_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.L10KApplied.old_q' depends on axioms: [propext]
+'Benitoite.Release.Refinement.L10KApplied.opt' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KApplied.opt_kind' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KApplied.optionDecl' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KApplied.result' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KApplied.result_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KApplied.result_input' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KApplied.rows_nil' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KApplied.source_input' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KApplied.store' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KApplied.subst_eff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KApplied.syntax_' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KApplied.tel_eq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.L10KApplied.unit' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KApplied.unit.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KApplied.unit_input' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KBoundary.annotation_unit' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KBoundary.arityProgram' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KBoundary.arityProgram.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KBoundary.badConstructor' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KBoundary.badConstructor.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KBoundary.badLeft' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KBoundary.badLet' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KBoundary.badProgram' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KBoundary.badRight' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KBoundary.badType' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KBoundary.bad_left_old' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KBoundary.bad_let_old' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KBoundary.bad_let_rule' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KBoundary.bad_root_regular' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KBoundary.builtins' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KBoundary.builtins.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KBoundary.constNode' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KBoundary.const_input' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KBoundary.const_regular' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KBoundary.context_empty' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KBoundary.context_one' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KBoundary.empty_row' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KBoundary.empty_row._simp_1_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.L10KBoundary.input_unit' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KBoundary.kinds' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KBoundary.leftNode' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KBoundary.left_input' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KBoundary.left_input._simp_1_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.L10KBoundary.left_regular' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KBoundary.letNode' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KBoundary.let_input' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KBoundary.let_input._simp_1_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.L10KBoundary.let_input._simp_1_2' depends on axioms: [propext]
+'Benitoite.Release.Refinement.L10KBoundary.let_old' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KBoundary.let_regular' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KBoundary.oldBuiltins' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KBoundary.oldBuiltins.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KBoundary.program' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KBoundary.program.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KBoundary.reject_bad_children' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.L10KBoundary.reject_constructor_annotation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.L10KBoundary.reject_constructor_arity' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.L10KBoundary.reject_constructor_table' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.L10KBoundary.reject_intermediate' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.L10KBoundary.rightNode' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KBoundary.right_input' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KBoundary.right_input._simp_1_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.L10KBoundary.right_regular' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KBoundary.store' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KBoundary.tables' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KBoundary.unit' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KBoundary.unit.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KBoundary.unscopedConstructor' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KBoundary.unscopedConstructor.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KBoundary.unscopedProgram' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KBoundary.variableNode' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KBoundary.variable_input' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KBoundary.variable_regular' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KClauseSource.B' depends on axioms: [propext]
+'Benitoite.Release.Refinement.L10KClauseSource.B0' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KClauseSource.C0' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KClauseSource.K' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KClauseSource.P0' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KClauseSource.Q0' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KClauseSource.body' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KClauseSource.clause' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KClauseSource.eE' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KClauseSource.newSig' depends on axioms: [propext]
+'Benitoite.Release.Refinement.L10KClauseSource.oldSig' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KClauseSource.old_holds' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KClauseSource.reject_clause_node' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.L10KClauseSource.reject_clause_source' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.L10KClauseSource.reject_clause_source._proof_1_1' depends on axioms: [propext, Quot.sound]
+'Benitoite.Release.Refinement.L10KClauseSource.scopedBuiltins' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KClauseSource.scopedOldSig' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KClauseSource.scopedTop' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KClauseSource.scopedTop.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KClauseSource.sg0' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KClauseSource.sg0.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KClauseSource.signature_at_range' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.L10KClauseSource.store' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KClauseSource.unit' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KClauseSource.Γc' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KFieldsHeld.B' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KFieldsHeld.B0' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KFieldsHeld.K' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KFieldsHeld.P0' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KFieldsHeld.arity' depends on axioms: [propext]
+'Benitoite.Release.Refinement.L10KFieldsHeld.con_scoped' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KFieldsHeld.ctx' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KFieldsHeld.held' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KFieldsHeld.held_input' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KFieldsHeld.held_input._simp_1_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.L10KFieldsHeld.old_content' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KFieldsHeld.reject_content' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KFieldsHeld.someDecl' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KFieldsHeld.someDecl.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KFieldsHeld.store' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KFieldsHeld.tables' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KFieldsHeld.tables._simp_1_2' depends on axioms: [propext]
+'Benitoite.Release.Refinement.L10KFieldsHeld.target' depends on axioms: [propext]
+'Benitoite.Release.Refinement.L10KFieldsHeld.variance' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KHeld.content_typed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KHeld.content_typed._simp_1_2' depends on axioms: [propext]
+'Benitoite.Release.Refinement.L10KHeld.content_typed._simp_1_3' depends on axioms: [propext]
+'Benitoite.Release.Refinement.L10KHeld.endpoint_kept' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KHeld.reject_byte' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KHeld.reject_byte._proof_1_1' depends on axioms: [propext, Quot.sound]
+'Benitoite.Release.Refinement.L10KHeld.reject_bytes' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KHeld.reject_bytes._proof_1_1' depends on axioms: [propext, Quot.sound]
+'Benitoite.Release.Refinement.L10KHeld.reject_wrong_endpoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KHeld.request' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KHeld.requestBuiltins' depends on axioms: [propext]
+'Benitoite.Release.Refinement.L10KHeld.requestDecl' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KHeld.requestDecl.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KHeld.requestOldBuiltins' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KHeld.requestProgram' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KHeld.requestType' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KHeld.request_arity' depends on axioms: [propext]
+'Benitoite.Release.Refinement.L10KHeld.request_ground' depends on axioms: [propext]
+'Benitoite.Release.Refinement.L10KHeld.request_leaf' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KHeld.request_syntax' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KHeld.target' depends on axioms: [propext]
+'Benitoite.Release.Refinement.L10KHeld.target._proof_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.L10KHigherKinds.all_value_loses_kind' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.L10KHigherKinds.arity' depends on axioms: [propext]
+'Benitoite.Release.Refinement.L10KHigherKinds.badSource' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KHigherKinds.badSourceProgram' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KHigherKinds.classDecl' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KHigherKinds.classDecl.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KHigherKinds.functionDecl' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KHigherKinds.functionDecl.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KHigherKinds.function_admissible' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.L10KHigherKinds.function_admissible._simp_1_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.L10KHigherKinds.function_entry' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.L10KHigherKinds.function_signature' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.L10KHigherKinds.function_signature._simp_1_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.L10KHigherKinds.function_signature_actual' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.L10KHigherKinds.function_source_input' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.L10KHigherKinds.functor_dictionary' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.L10KHigherKinds.hkKinds' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KHigherKinds.hkKinds.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KHigherKinds.hkProgram' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KHigherKinds.hkProgram.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KHigherKinds.hk_tables' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KHigherKinds.kinds_wf' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KHigherKinds.legacy_function_syntax' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.L10KHigherKinds.methodDecl' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KHigherKinds.methodDecl.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KHigherKinds.method_entry' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.L10KHigherKinds.method_signature' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.L10KHigherKinds.method_signature._simp_1_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.L10KHigherKinds.optionDecl' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KHigherKinds.optionDecl.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KHigherKinds.option_annotation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.L10KHigherKinds.option_args' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.L10KHigherKinds.option_kind' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KHigherKinds.option_not_value' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.L10KHigherKinds.option_type_input' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.L10KHigherKinds.reject_signature_source' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.L10KHigherKinds.reject_signature_source._proof_1_1' depends on axioms: [propext,
+ Quot.sound]
+'Benitoite.Release.Refinement.L10KHigherKinds.valueKinds' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KOneWay.admits_new_only' depends on axioms: [propext]
+'Benitoite.Release.Refinement.L10KOneWay.newSig' depends on axioms: [propext]
+'Benitoite.Release.Refinement.L10KOneWay.oldSig' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KOneWay.permissive' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KOneWay.permissive.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KOneWay.range_new_only' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KOneWay.restrictive' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KOneWay.restrictive.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KOneWay.sat_new_only' does not depend on any axioms
+'Benitoite.Release.Refinement.L10KOneWay.signature' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.L10KOneWay.tables' depends on axioms: [propext, Classical.choice, Quot.sound]

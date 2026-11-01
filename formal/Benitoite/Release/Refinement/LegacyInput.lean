@@ -172,7 +172,10 @@ def LegacyDeclarationsInput (K : DeclarationKinds) (P0 : Benitoite.Release.Progr
     LegacyCompInput K P0 B0 B ⟨K.functionParams f, fd.tparams, 0, fd.params.length⟩ fd.body) ∧
   (∀ o od, P0.ops o = some od →
     LegacyTypeInput K P0 ⟨List.replicate od.tparams.length .value, od.tparams, 0, 0⟩
-      (.fn od.names od.params od.ret (Benitoite.Release.Eff.single od.eff)) .value) ∧
+      (.fn od.names od.params od.ret (Benitoite.Release.Eff.single od.eff)) .value ∧
+    (∀ p ∈ od.dictParams, p.2 < od.tparams.length) ∧
+    (embedOpDecl od).params.take od.dictParams.length =
+      od.dictParams.map (fun p => Ty.dict p.1 (.tvar p.2))) ∧
   (∀ cl cd m ms, P0.classes cl = some cd → cd.methods m = some ms →
     LegacyTypeInput K P0 ⟨K.methodParams cl m ++ [K.classArgument cl], ms.tparams ++ [({} : Benitoite.Release.TParam)], 0, 0⟩
       (.fn ms.names ms.params ms.ret ms.eff) .value) ∧
@@ -187,6 +190,26 @@ def LegacyDeclarationsInput (K : DeclarationKinds) (P0 : Benitoite.Release.Progr
       LegacyCompInput K P0 B0 B
         ⟨K.methodParams id.cls m ++ List.replicate id.tparams.length .value,
           ms.tparams ++ id.tparams, 0, id.dictTys.length + ms.params.length⟩ body))
+
+/-- 操作の辞書の添字と先頭の一致を、宣言の形成へ渡す。 -/
+theorem LegacyDeclarationsInput.op_dictionaryInputs {K P0 B0 B o od}
+    (h : LegacyDeclarationsInput K P0 B0 B) (lookup : P0.ops o = some od) :
+    (∀ p ∈ od.dictParams, p.2 < od.tparams.length) ∧
+    (embedOpDecl od).params.take od.dictParams.length =
+      od.dictParams.map (fun p => Ty.dict p.1 (.tvar p.2)) :=
+  (h.2.1 o od lookup).2
+
+/-- 実装の辞書型の kind は既存の型入力から得る（設計書 01-12「旧判断の適格な入力」）。 -/
+theorem LegacyDeclarationsInput.impl_dictionaryKinds {K P0 B0 B i id}
+    (h : LegacyDeclarationsInput K P0 B0 B) (lookup : P0.impls i = some id) :
+    ∀ a ∈ (embedImplDecl id).dictTys,
+      a.HasKind (embedProgramWithKinds K P0)
+        (List.replicate id.tparams.length .value) .value := by
+  intro a ha
+  obtain ⟨p, hp, rfl⟩ := List.mem_map.mp ha
+  have oldMem : Benitoite.Release.Ty.dict p.1 (.tvar p.2) ∈ id.dictTys :=
+    List.mem_map.mpr ⟨p, hp, rfl⟩
+  exact ((h.2.2.2 i id lookup).2.1 _ oldMem).1
 
 end
 end Benitoite.Release.Refinement

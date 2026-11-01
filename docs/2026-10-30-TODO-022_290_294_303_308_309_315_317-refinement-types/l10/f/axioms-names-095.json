@@ -1,0 +1,867 @@
+[
+  {
+    "name": "Benitoite.Interval.Budget.Step.noConfusion",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.Step.noConfusionType",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.Step.ok",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.Step.ok.elim",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.Step.ok.inj",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.Step.ok.injEq",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Interval.Budget.Step.ok.noConfusion",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.Step.ok.sizeOf_spec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.Step.rec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.Step.recOn",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.Step.state",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.Step.state.eq_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.Step.state.eq_2",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.Step.stopped",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.Step.stopped.elim",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.Step.stopped.inj",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.Step.stopped.injEq",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Interval.Budget.Step.stopped.noConfusion",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.Step.stopped.sizeOf_spec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.StopReason",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.StopReason._sizeOf_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.StopReason._sizeOf_inst",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.StopReason.casesOn",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.StopReason.ctorElim",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.StopReason.ctorElimType",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.StopReason.ctorIdx",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.StopReason.exceeded",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.StopReason.exceeded.elim",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.StopReason.exceeded.inj",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.StopReason.exceeded.injEq",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Interval.Budget.StopReason.exceeded.noConfusion",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.StopReason.exceeded.sizeOf_spec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.StopReason.noConfusion",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.StopReason.noConfusionType",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.StopReason.rec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.StopReason.recOn",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.StopReason.unidentified",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.StopReason.unidentified.elim",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.StopReason.unidentified.inj",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.StopReason.unidentified.injEq",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Interval.Budget.StopReason.unidentified.noConfusion",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.StopReason.unidentified.sizeOf_spec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.WholeState",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.WholeState._sizeOf_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.WholeState._sizeOf_inst",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.WholeState.casesOn",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.WholeState.ctorIdx",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.WholeState.mk",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.WholeState.mk._flat_ctor",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.WholeState.mk.inj",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.WholeState.mk.injEq",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Interval.Budget.WholeState.mk.noConfusion",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.WholeState.mk.sizeOf_spec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.WholeState.noConfusion",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.WholeState.noConfusionType",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.WholeState.operations",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.WholeState.operations._default",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.WholeState.peak",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.WholeState.peak._default",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.WholeState.rec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.WholeState.recOn",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.WholeState.saved",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.WholeState.saved._default",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.charge",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.charge_accepted",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Interval.Budget.charge_rejected",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Interval.Budget.charge_temporary",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Interval.Budget.charge_valid",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Interval.Budget.charge_within",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Interval.Budget.charge_within._proof_1_5",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Interval.Budget.finishBody",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.finishBody.eq_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.finish_held",
+    "axioms": [
+      "propext",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Interval.Budget.finish_held._proof_1_5",
+    "axioms": [
+      "propext",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Interval.Budget.finish_operations",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.finish_peak",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.finish_saved",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Interval.Budget.finish_valid",
+    "axioms": [
+      "propext",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Interval.Budget.finish_valid._proof_1_6",
+    "axioms": [
+      "propext",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Interval.Budget.finish_within",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Interval.Budget.finish_within._proof_1_3",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Interval.Budget.initial_valid",
+    "axioms": [
+      "propext",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Interval.Budget.initial_within",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqBodyState",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqBodyState.decEq",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqBodyState.decEq._proof_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqBodyState.decEq._proof_2",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqBodyState.decEq._proof_3",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqBodyState.decEq._proof_4",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqBodyState.decEq._proof_5",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqBodyState.decEq.match_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqCap",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqCap.decEq",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqCap.decEq._proof_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqCap.decEq._proof_2",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqCap.decEq._proof_3",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqCap.decEq.match_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqItem",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqItem._proof_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqItem._proof_2",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqLifetime",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqLifetime._proof_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqLifetime._proof_2",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqLimitFailure",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqLimitFailure.decEq",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqLimitFailure.decEq._proof_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqLimitFailure.decEq._proof_2",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqLimitFailure.decEq._proof_3",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqLimitFailure.decEq.match_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqLimits",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqLimits.decEq",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqLimits.decEq._proof_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqLimits.decEq._proof_2",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqLimits.decEq._proof_3",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqLimits.decEq.match_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqOperation",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqOperation._proof_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqOperation._proof_2",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqResource",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqResource._proof_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqResource._proof_2",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqScope",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqScope._proof_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqScope._proof_2",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqState",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqState.decEq",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqState.decEq._proof_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqState.decEq._proof_2",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqState.decEq._proof_3",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqState.decEq.match_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqStep",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqStep.decEq",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqStep.decEq._proof_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqStep.decEq._proof_2",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqStep.decEq._proof_3",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqStep.decEq._proof_4",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqStep.decEq._proof_5",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqStep.decEq._proof_6",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqStep.decEq._proof_7",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqStep.decEq.match_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqStopReason",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqStopReason.decEq",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqStopReason.decEq._proof_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqStopReason.decEq._proof_2",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqStopReason.decEq._proof_3",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqStopReason.decEq._proof_4",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqStopReason.decEq._proof_5",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqStopReason.decEq._proof_6",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqStopReason.decEq.match_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqWholeState",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqWholeState.decEq",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqWholeState.decEq._proof_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqWholeState.decEq._proof_2",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqWholeState.decEq._proof_3",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqWholeState.decEq._proof_4",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instDecidableEqWholeState.decEq.match_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instReprBodyState",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instReprBodyState.repr",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instReprCap",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instReprCap.repr",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instReprItem",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instReprItem.repr",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instReprItem.repr.match_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instReprLifetime",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instReprLifetime.repr",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instReprLifetime.repr.match_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instReprLimitFailure",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instReprLimitFailure.repr",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instReprLimits",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instReprLimits.repr",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instReprOperation",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instReprOperation.repr",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instReprOperation.repr.match_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instReprResource",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instReprResource.repr",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instReprResource.repr.match_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instReprScope",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instReprScope.repr",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instReprScope.repr.match_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instReprState",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instReprState.repr",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instReprStep",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instReprStep.repr",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instReprStep.repr.match_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instReprStopReason",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instReprStopReason.repr",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instReprStopReason.repr.match_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instReprWholeState",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.instReprWholeState.repr",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.numbering_state",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Interval.Budget.release",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.release.congr_simp",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.release.eq_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.release.eq_2",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.release.match_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.releaseSaved",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.releaseSaved.eq_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Interval.Budget.releaseSaved_held",
+    "axioms": [
+      "propext",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Interval.Budget.releaseSaved_held._proof_1_4",
+    "axioms": [
+      "propext",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Interval.Budget.releaseSaved_valid",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  }
+]

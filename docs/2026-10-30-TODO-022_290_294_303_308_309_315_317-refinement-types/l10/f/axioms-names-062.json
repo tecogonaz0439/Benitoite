@@ -1,0 +1,978 @@
+[
+  {
+    "name": "_private.Benitoite.Release.Refinement.SubstTypingObstruction.0.Benitoite.Release.Refinement.Ctx.declarationSelf.match_1.splitter",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.SubstTypingObstruction.0.Benitoite.Release.Refinement.Eff.WF.match_1.eq_1",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.SubstTypingObstruction.0.Benitoite.Release.Refinement.Eff.WF.match_1.splitter",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.SubstTypingObstruction.0.Benitoite.Release.Refinement.declaredEff.match_1.eq_1",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.SubstTypingObstruction.0.Benitoite.Release.Refinement.declaredEff.match_1.splitter",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.SubstTypingObstruction.0.Benitoite.Release.Refinement.lam_annotations",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.SubstTypingObstruction.0.Benitoite.Release.Refinement.lam_annotations.match_1_1",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.SubstTypingObstruction.0.Benitoite.Release.Refinement.lam_annotations.match_1_7",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.SubstTypingObstruction.0.Benitoite.Release.Refinement.return_value",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.SubstTypingObstruction.0.Benitoite.Release.Refinement.return_value.match_1_1",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.SubstTypingObstruction.0.Benitoite.Release.Refinement.return_value.match_1_7",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.SubstTypingObstruction.0.Ordering.then.match_1.eq_1",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.SubstTypingObstruction.0.Ordering.then.match_1.eq_2",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.SubstTypingObstruction.0.Ordering.then.match_1.splitter",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.SubstTypingObstruction.0.Ordering.then.match_1.splitter._sparseCasesOn_2",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.SubstitutionAssumptions",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.SubstitutionAssumptions.casesOn",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.SubstitutionAssumptions.mk",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.SubstitutionAssumptions.mk._flat_ctor",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.SubstitutionAssumptions.rec",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.SubstitutionAssumptions.recOn",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.SubstitutionAssumptions.toTypeAssumptions",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.SubstitutionAssumptions.toValueAssumptions",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.TypeAssumptions",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.TypeAssumptions.admits_renameTypes",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.TypeAssumptions.admits_subst",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.TypeAssumptions.casesOn",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.TypeAssumptions.mk",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.TypeAssumptions.mk._flat_ctor",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.TypeAssumptions.rec",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.TypeAssumptions.recOn",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.TypeAssumptions.sat_renameTypes",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.TypeAssumptions.sat_subst",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.ValueAssumptions",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.ValueAssumptions.admits_rename",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.ValueAssumptions.admits_values",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.ValueAssumptions.casesOn",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.ValueAssumptions.mk",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.ValueAssumptions.mk._flat_ctor",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.ValueAssumptions.rec",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.ValueAssumptions.recOn",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.ValueAssumptions.sat_rename",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.ValueAssumptions.sat_values",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.SubstOk",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.TypedValueImages",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Arm",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Arm._sizeOf_inst",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Arm.below",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Arm.brecOn",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Arm.brecOn.eq",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Arm.brecOn.go",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Arm.casesOn",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Arm.ctorIdx",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Arm.mk",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Arm.mk.inj",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Arm.mk.injEq",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Arm.mk.noConfusion",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Arm.mk.sizeOf_spec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Arm.noConfusion",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Arm.noConfusionType",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Arm.rec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Arm.recOn",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.AtError.values",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.BuilderKind",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.BuilderKind._sizeOf_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.BuilderKind._sizeOf_inst",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.BuilderKind.bytes",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.BuilderKind.bytes.elim",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.BuilderKind.bytes.sizeOf_spec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.BuilderKind.casesOn",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.BuilderKind.ctorElim",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.BuilderKind.ctorElimType",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.BuilderKind.ctorIdx",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.BuilderKind.list",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.BuilderKind.list.elim",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.BuilderKind.list.inj",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.BuilderKind.list.injEq",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.BuilderKind.list.noConfusion",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.BuilderKind.list.sizeOf_spec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.BuilderKind.noConfusion",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.BuilderKind.noConfusionType",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.BuilderKind.norm",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.BuilderKind.norm._sparseCasesOn_1",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.BuilderKind.norm.match_1",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.BuilderKind.rec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.BuilderKind.recOn",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.BuilderKind.string",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.BuilderKind.string.elim",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.BuilderKind.string.sizeOf_spec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.BuilderOp",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins._sizeOf_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins._sizeOf_inst",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.admitsR",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.admitsR._default",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.casesOn",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.ctorIdx",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.delta",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.effKind",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.effKind._default",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.effects",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.externalResponse",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.externalResponse._default",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.ioResponse",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.isResource",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.mk",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.mk._flat_ctor",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.mk.inj",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.mk.injEq",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.mk.noConfusion",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.mk.sizeOf_spec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.noConfusion",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.noConfusionType",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.rec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.recOn",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.refGet",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.refSet",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.releaseResponse",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.sat",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.sig",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.valContent",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.valContent._default",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.valKind",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Builtins.valKind._default",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Capture",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Capture._sizeOf_inst",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Capture.below",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Capture.brecOn",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Capture.brecOn.eq",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Capture.brecOn.go",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Capture.casesOn",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Capture.ctorIdx",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Capture.empty",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Capture.mk",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Capture.mk.inj",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Capture.mk.injEq",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Capture.mk.noConfusion",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Capture.mk.sizeOf_spec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Capture.noConfusion",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Capture.noConfusionType",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Capture.rec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Capture.recOn",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Capture.values",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Capture.values.match_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ClassDecl",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ClassDecl._sizeOf_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ClassDecl._sizeOf_inst",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ClassDecl.argumentKind",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ClassDecl.argumentKind._default",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ClassDecl.casesOn",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ClassDecl.ctorIdx",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ClassDecl.methods",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ClassDecl.mk",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ClassDecl.mk._flat_ctor",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ClassDecl.mk.inj",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ClassDecl.mk.injEq",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ClassDecl.mk.noConfusion",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ClassDecl.mk.sizeOf_spec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ClassDecl.noConfusion",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ClassDecl.noConfusionType",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ClassDecl.rec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ClassDecl.recOn",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ClassDecl.supers",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Clause",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Clause._sizeOf_inst",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Clause.below",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Clause.brecOn",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Clause.brecOn.eq",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Clause.brecOn.go",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Clause.casesOn",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Clause.ctorElim",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Clause.ctorElimType",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Clause.ctorIdx",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Clause.fail",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Clause.fail.elim",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Clause.fail.inj",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Clause.fail.injEq",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Clause.fail.noConfusion",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Clause.fail.sizeOf_spec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Clause.mk",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Clause.mk.elim",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Clause.mk.inj",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Clause.mk.injEq",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Clause.mk.noConfusion",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Clause.mk.sizeOf_spec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Clause.noConfusion",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Clause.noConfusionType",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Clause.rec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Clause.recOn",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Closure",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Closure._sizeOf_inst",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Closure.below",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Closure.brecOn",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Closure.brecOn.eq",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Closure.brecOn.go",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Closure.capture",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Closure.capture.match_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Closure.casesOn",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Closure.code",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Closure.ctorIdx",
+    "axioms": []
+  }
+]

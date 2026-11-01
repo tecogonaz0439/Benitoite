@@ -1,0 +1,85 @@
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/f/boundary.lean:35:80: error: unsolved goals
+h : LegacyDeclarationsInput K (opProgram badOp) B0 B
+same : Ty.shiftV 0 0 (Ty.base BaseTy.unit) = Ty.dict "C" (Ty.tvar 0)
+⊢ False
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/f/boundary.lean:52:17: error: Application type mismatch: The argument
+  trivial
+has type
+  True
+but is expected to have type
+  Ty.WF { kinds := [TyKind.value], constraints := [{ }], nr := 0, nv := 0 }.nr
+    { kinds := [TyKind.value], constraints := [{ }], nr := 0, nv := 0 }.kinds.length
+    { kinds := [TyKind.value], constraints := [{ }], nr := 0, nv := 0 }.nv
+    (embedTy (Release.Ty.dict "C" (Release.Ty.tvar 0)))
+in the application
+  And.intro trivial
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/f/boundary.lean:50:38: warning: This simp argument is unused:
+  embedTys
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [NamesWF, goodOp, embedTy]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/f/boundary.lean:53:38: warning: This simp argument is unused:
+  embedTys
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [NamesWF, goodOp, embedTy]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/f/boundary.lean:102:59: error: Application type mismatch: The argument
+  trivial
+has type
+  True
+but is expected to have type
+  Ty.WF { kinds := List.replicate impl.tparams.length TyKind.value, constraints := impl.tparams, nr := 0, nv := 0 }.nr
+    { kinds := List.replicate impl.tparams.length TyKind.value, constraints := impl.tparams, nr := 0,
+          nv := 0 }.kinds.length
+    { kinds := List.replicate impl.tparams.length TyKind.value, constraints := impl.tparams, nr := 0, nv := 0 }.nv
+    (embedTy (Release.Ty.dict "C" (Release.Ty.tvar 0)))
+in the application
+  And.intro trivial
+BOUNDARY_CONSTANTS 23
+'Benitoite.Release.Refinement.L10FBoundary.B' does not depend on any axioms
+'Benitoite.Release.Refinement.L10FBoundary.B0' does not depend on any axioms
+'Benitoite.Release.Refinement.L10FBoundary.K' does not depend on any axioms
+'Benitoite.Release.Refinement.L10FBoundary.badIndex' does not depend on any axioms
+'Benitoite.Release.Refinement.L10FBoundary.badIndex.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.L10FBoundary.badOp' does not depend on any axioms
+'Benitoite.Release.Refinement.L10FBoundary.badOp.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.L10FBoundary.cd' does not depend on any axioms
+'Benitoite.Release.Refinement.L10FBoundary.goodOp' does not depend on any axioms
+'Benitoite.Release.Refinement.L10FBoundary.goodOp.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.L10FBoundary.good_declarations' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.L10FBoundary.good_impl_declarations' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.L10FBoundary.good_impl_declarations._simp_1_2' depends on axioms: [propext]
+'Benitoite.Release.Refinement.L10FBoundary.good_op_inputs' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.L10FBoundary.good_source' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.L10FBoundary.impl' does not depend on any axioms
+'Benitoite.Release.Refinement.L10FBoundary.impl.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.L10FBoundary.implProgram' does not depend on any axioms
+'Benitoite.Release.Refinement.L10FBoundary.impl_kind_supplied' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.L10FBoundary.impl_missing_class_rejected' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.L10FBoundary.opProgram' does not depend on any axioms
+'Benitoite.Release.Refinement.L10FBoundary.reject_bad_head' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.L10FBoundary.reject_bad_index' depends on axioms: [propext, Classical.choice, Quot.sound]
