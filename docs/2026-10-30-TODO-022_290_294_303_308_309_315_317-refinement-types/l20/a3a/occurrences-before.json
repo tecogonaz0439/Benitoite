@@ -1,0 +1,576 @@
+[
+  {
+    "file": "formal/Benitoite/Release/Refinement/CaptureRegularity.lean",
+    "line": 17,
+    "column": 46,
+    "disposition": "change",
+    "source": "def CaptureContextRegular (P : Program) (C : List TParam) (Γ : Ctx) : Prop :="
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/CaptureRegularity.lean",
+    "line": 147,
+    "column": 47,
+    "disposition": "change",
+    "source": "theorem checked_annotation (P : Program) (C : List TParam) (Γ : Ctx)"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/CaptureRegularity.lean",
+    "line": 236,
+    "column": 26,
+    "disposition": "change",
+    "source": "    {Q : NoFailCtx} {C : List TParam} {Γ : Ctx} {Φ : List Pred} {v : Val} {a : Ty}"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/CaptureRegularity.lean",
+    "line": 243,
+    "column": 26,
+    "disposition": "change",
+    "source": "    {Q : NoFailCtx} {C : List TParam} {Γ : Ctx} {Φ : List Pred}"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Narrowing.lean",
+    "line": 95,
+    "column": 43,
+    "disposition": "change",
+    "source": "private def ContImages (P : Program) (C : List TParam) (Γ Δ : Ctx) : Prop :="
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Narrowing.lean",
+    "line": 144,
+    "column": 10,
+    "disposition": "change",
+    "source": "    (C : List TParam) (Γ Δ : Ctx) (Ξ : List Pred) : Prop where"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Narrowing.lean",
+    "line": 328,
+    "column": 51,
+    "disposition": "change",
+    "source": "    (h : ContextMap P B store Q C Γ Δ Ξ) (extra : List TParam) :"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Narrowing.lean",
+    "line": 659,
+    "column": 42,
+    "disposition": "change",
+    "source": "inductive Ctx.Narrows (P : Program) (C : List TParam) : Ctx → List Pred → Ctx → List Pred → Prop where"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/SubstTyping.lean",
+    "line": 19,
+    "column": 93,
+    "disposition": "change",
+    "source": "private def TypedImages (P : Program) (B : Builtins) (store : StoreTy) (Q : NoFailCtx) (C : List TParam)"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/SubstTyping.lean",
+    "line": 743,
+    "column": 86,
+    "disposition": "change",
+    "source": "    (hstore : Ψ.WF) (_hΓ : Ctx.WF 0 C.length Γ) (_hΔ : Ctx.WF 0 C.length Δ) (extra : List TParam) :"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/SubstTyping.lean",
+    "line": 806,
+    "column": 26,
+    "disposition": "change",
+    "source": "    (hw : Ψ.WF) (extra : List TParam) :"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/SubstTyping.lean",
+    "line": 961,
+    "column": 10,
+    "disposition": "change",
+    "source": "    (C : List TParam) (Γ Δ : Ctx) (Ξ : List Pred) (ν : Nat → Val) : Prop :="
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/DeclaredTransport.lean",
+    "line": 91,
+    "column": 48,
+    "disposition": "change",
+    "source": "structure DeclarationImages (P : Program) (C : List TParam) (Γ Δ : Ctx) (ν : ObservationEnv) : Prop where"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/DeclaredTransport.lean",
+    "line": 275,
+    "column": 49,
+    "disposition": "change",
+    "source": "theorem DeclarationImages.id (P : Program) (C : List TParam) (Γ : Ctx) :"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/DeclaredTransport.lean",
+    "line": 373,
+    "column": 55,
+    "disposition": "change",
+    "source": "theorem DeclarationImages.normSelf (P : Program) (C : List TParam) (Γ : Ctx) (a : Ty) :"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/HandlerContracts.lean",
+    "line": 13,
+    "column": 13,
+    "disposition": "change",
+    "source": "  tparams : List TParam"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Declared.lean",
+    "line": 38,
+    "column": 43,
+    "disposition": "change",
+    "source": "def FieldRef.Declared (P : Program) (_C : List TParam) (Γ : Ctx) (receiver : Term) (ref : FieldRef) : Prop :="
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Declared.lean",
+    "line": 44,
+    "column": 40,
+    "disposition": "change",
+    "source": "  def Term.Declared (P : Program) (C : List TParam) (Γ : Ctx) : Term → Prop"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Declared.lean",
+    "line": 53,
+    "column": 39,
+    "disposition": "change",
+    "source": "  def declaredSlot (P : Program) (C : List TParam) (Γ : Ctx) : Option Term → Prop"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Declared.lean",
+    "line": 56,
+    "column": 40,
+    "disposition": "change",
+    "source": "  def declaredSlots (P : Program) (C : List TParam) (Γ : Ctx) : List (Option Term) → Prop"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Declared.lean",
+    "line": 65,
+    "column": 38,
+    "disposition": "change",
+    "source": "def Pred.Declared (P : Program) (C : List TParam) (Γ : Ctx) (self : Option Ty) : Pred → Prop"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Declared.lean",
+    "line": 79,
+    "column": 38,
+    "disposition": "change",
+    "source": "  def Ty.Declared (P : Program) (C : List TParam) (Γ : Ctx) : Ty → Prop"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Declared.lean",
+    "line": 93,
+    "column": 39,
+    "disposition": "change",
+    "source": "  def Tel.Declared (P : Program) (C : List TParam) (Γ : Ctx) : Tel → Prop"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Declared.lean",
+    "line": 96,
+    "column": 38,
+    "disposition": "change",
+    "source": "  def declaredTys (P : Program) (C : List TParam) (Γ : Ctx) : List Ty → Prop"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Declared.lean",
+    "line": 99,
+    "column": 38,
+    "disposition": "change",
+    "source": "  def declaredEff (P : Program) (C : List TParam) (Γ : Ctx) : Eff → Prop"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/External.lean",
+    "line": 124,
+    "column": 68,
+    "disposition": "change",
+    "source": "structure ExternalCallAdmissible (P : Program) (B : Builtins) (C : List TParam)"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/KindValues.lean",
+    "line": 153,
+    "column": 39,
+    "disposition": "change",
+    "source": "def TypeArgsKinded (P : Program) (C : List TParam) (ts : List Ty) (ks : List TyKind) : Prop :="
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/SubstitutionContracts.lean",
+    "line": 8,
+    "column": 10,
+    "disposition": "change",
+    "source": "    (C : List TParam) (Γ Δ : Ctx) (Ξ : List Pred) (ν : Nat → Val) : Prop :="
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/SubstitutionContracts.lean",
+    "line": 48,
+    "column": 81,
+    "disposition": "change",
+    "source": "def SubstOk (P : Program) (B : Builtins) (store : StoreTy) (Q : NoFailCtx) (C : List TParam)"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/ProgramWellFormed.lean",
+    "line": 104,
+    "column": 40,
+    "disposition": "change",
+    "source": "def SignatureScoped (P : Program) (C : List TParam) (K : KindCtx) (ne : Nat) (t : Tel) : Prop :="
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Syntax.lean",
+    "line": 109,
+    "column": 13,
+    "disposition": "keep",
+    "source": "  tparams : List TParam"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Syntax.lean",
+    "line": 252,
+    "column": 13,
+    "disposition": "keep",
+    "source": "  tparams : List TParam"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Syntax.lean",
+    "line": 312,
+    "column": 13,
+    "disposition": "keep",
+    "source": "  tparams : List TParam"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Syntax.lean",
+    "line": 386,
+    "column": 12,
+    "disposition": "keep",
+    "source": "  admits : List TParam → List Ty → Prop"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Syntax.lean",
+    "line": 414,
+    "column": 9,
+    "disposition": "keep",
+    "source": "  sat : List TParam → Ty → TParam → Prop"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Typing.lean",
+    "line": 119,
+    "column": 43,
+    "disposition": "change",
+    "source": "def Ty.CaptureDeclared (P : Program) (C : List TParam) (Γ : Ctx) : Ty → Prop"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Typing.lean",
+    "line": 148,
+    "column": 29,
+    "disposition": "change",
+    "source": "      StoreTy → NoFailCtx → List TParam → Ctx → List Pred → Val → Ty → Prop where"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Typing.lean",
+    "line": 255,
+    "column": 29,
+    "disposition": "change",
+    "source": "      StoreTy → NoFailCtx → List TParam → Ctx → List Pred → List Val → List Ty → Prop where"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Typing.lean",
+    "line": 261,
+    "column": 29,
+    "disposition": "change",
+    "source": "      StoreTy → NoFailCtx → List TParam → Ctx → List Pred → List Val → Ty → Prop where"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Typing.lean",
+    "line": 267,
+    "column": 29,
+    "disposition": "change",
+    "source": "      StoreTy → NoFailCtx → List TParam → Ctx → List Pred → Option Ty →"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Typing.lean",
+    "line": 371,
+    "column": 29,
+    "disposition": "change",
+    "source": "      StoreTy → NoFailCtx → List TParam → Ctx → List Pred → List Val → Tel → Ty → Eff → Prop where"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Typing.lean",
+    "line": 381,
+    "column": 29,
+    "disposition": "change",
+    "source": "      StoreTy → NoFailCtx → List TParam → Ctx → List Pred → Tel → Comp → Prop where"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Typing.lean",
+    "line": 422,
+    "column": 29,
+    "disposition": "change",
+    "source": "      StoreTy → NoFailCtx → List TParam → Ctx → List Pred → Scope.Domain.Kind →"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Typing.lean",
+    "line": 435,
+    "column": 29,
+    "disposition": "change",
+    "source": "      StoreTy → NoFailCtx → List TParam → Ctx → List Pred → Option Ty → Option Term →"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Typing.lean",
+    "line": 461,
+    "column": 29,
+    "disposition": "change",
+    "source": "      StoreTy → NoFailCtx → List TParam → Ctx → List Pred → Option Ty → Eff →"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Typing.lean",
+    "line": 475,
+    "column": 29,
+    "disposition": "change",
+    "source": "      StoreTy → NoFailCtx → List TParam → Ctx → List Pred → Ty → Option Ty →"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Typing.lean",
+    "line": 485,
+    "column": 29,
+    "disposition": "change",
+    "source": "      StoreTy → NoFailCtx → List TParam → Ctx → List Pred → Option Ty →"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Typing.lean",
+    "line": 555,
+    "column": 66,
+    "disposition": "change",
+    "source": "abbrev HasTypeCL (P : Program) (B : Builtins) (Ψ : StoreTy) (C : List TParam)"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/TypeRenaming.lean",
+    "line": 46,
+    "column": 31,
+    "disposition": "change",
+    "source": "def TypeParamRenaming (C C' : List TParam) (ρ : Nat → Nat) : Prop :="
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/TypeRenaming.lean",
+    "line": 49,
+    "column": 35,
+    "disposition": "change",
+    "source": "theorem TypeParamRenaming.id (C : List TParam) : TypeParamRenaming C C id :="
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/TypeRenaming.lean",
+    "line": 52,
+    "column": 45,
+    "disposition": "change",
+    "source": "theorem TypeParamRenaming.prefix (C extra : List TParam) :"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/TypeRenaming.lean",
+    "line": 61,
+    "column": 14,
+    "disposition": "change",
+    "source": "    (extra : List TParam) : TypeParamRenaming (extra ++ C) (extra ++ C') (upRen extra.length ρ) := by"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/TypeRenaming.lean",
+    "line": 72,
+    "column": 45,
+    "disposition": "change",
+    "source": "theorem TypeParamRenaming.suffix (C extra : List TParam) :"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/TypeRenaming.lean",
+    "line": 80,
+    "column": 55,
+    "disposition": "change",
+    "source": "theorem TypeParamRenaming.insert (inner extra outer : List TParam) :"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/TypingDeclared.lean",
+    "line": 13,
+    "column": 37,
+    "disposition": "change",
+    "source": "def Ctx.Declared (P : Program) (C : List TParam) (Γ : Ctx) : Prop :="
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/StateTyping.lean",
+    "line": 185,
+    "column": 44,
+    "disposition": "change",
+    "source": "theorem Ty.WF.closed_context {a : Ty} {C : List TParam} {Γ : Ctx}"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/StateTyping.lean",
+    "line": 193,
+    "column": 10,
+    "disposition": "change",
+    "source": "    {C : List TParam} {Γ : Ctx} (h : Ty.Annotation P [] [] a) : Ty.Annotation P C Γ a :="
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Admissible.lean",
+    "line": 16,
+    "column": 44,
+    "disposition": "change",
+    "source": "structure Ty.Annotation (P : Program) (C : List TParam) (Γ : Ctx) (a : Ty) : Prop where"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Admissible.lean",
+    "line": 21,
+    "column": 40,
+    "disposition": "change",
+    "source": "def TypeAnnotations (P : Program) (C : List TParam) (Γ : Ctx) (ts : List Ty) : Prop :="
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Admissible.lean",
+    "line": 24,
+    "column": 32,
+    "disposition": "change",
+    "source": "def SatAll (B : Builtins) (C : List TParam) (ts : List Ty) (tps : List TParam) : Prop :="
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Admissible.lean",
+    "line": 24,
+    "column": 67,
+    "disposition": "keep",
+    "source": "def SatAll (B : Builtins) (C : List TParam) (ts : List Ty) (tps : List TParam) : Prop :="
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Admissible.lean",
+    "line": 79,
+    "column": 42,
+    "disposition": "change",
+    "source": "structure Admissible (B : Builtins) (C : List TParam) (nv : Nat)"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Admissible.lean",
+    "line": 80,
+    "column": 12,
+    "disposition": "keep",
+    "source": "    (tps : List TParam) (ne : Nat) (Qs Qt : NoFailCtx)"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Admissible.lean",
+    "line": 90,
+    "column": 36,
+    "disposition": "change",
+    "source": "structure PrimitiveAdmissible (C : List TParam) (nv : Nat) (s : PrimSig)"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Admissible.lean",
+    "line": 101,
+    "column": 31,
+    "disposition": "change",
+    "source": "def MethodRowsAdmissible (C : List TParam) (nv : Nat) (Q : NoFailCtx) (ms : MethSig)"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Admissible.lean",
+    "line": 109,
+    "column": 39,
+    "disposition": "change",
+    "source": "def RowAnnotations (P : Program) (C : List TParam) (Γ : Ctx) (es : List Eff) : Prop :="
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Admissible.lean",
+    "line": 116,
+    "column": 48,
+    "disposition": "change",
+    "source": "structure SignatureInstance (P : Program) (C : List TParam) (Γ : Ctx)"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/PathFacts.lean",
+    "line": 32,
+    "column": 46,
+    "disposition": "change",
+    "source": "structure Pred.WellFormed (P : Program) (C : List TParam) (Γ : Ctx) (p : Pred) : Prop where"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/PathFacts.lean",
+    "line": 37,
+    "column": 32,
+    "disposition": "change",
+    "source": "def FactsWF (P : Program) (C : List TParam) (Γ : Ctx) (Φ : List Pred) : Prop :="
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/ConstraintAssumptions.lean",
+    "line": 18,
+    "column": 26,
+    "disposition": "change",
+    "source": "    {C Γ Δ a p} (extra : List TParam) (ha : Ty.Annotation P C Γ a)"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/ConstraintAssumptions.lean",
+    "line": 27,
+    "column": 30,
+    "disposition": "change",
+    "source": "    {C Γ Δ ts b sg} (extra : List TParam) (hl : B.sig b = some sg)"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/ConstraintAssumptions.lean",
+    "line": 39,
+    "column": 24,
+    "disposition": "change",
+    "source": "    {C Γ a p} (extra : List TParam) (ha : Ty.Annotation P C Γ a)"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/ConstraintAssumptions.lean",
+    "line": 46,
+    "column": 28,
+    "disposition": "change",
+    "source": "    {C Γ ts b sg} (extra : List TParam) (hl : B.sig b = some sg)"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/VarianceValidation.lean",
+    "line": 52,
+    "column": 43,
+    "disposition": "change",
+    "source": "def VarianceSubstInput (P : Program) (C : List TParam) (Γ : Ctx)"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/LegacyValues.lean",
+    "line": 8,
+    "column": 42,
+    "disposition": "change",
+    "source": "  {Q : Benitoite.Release.NoFailCtx} {C : List TParam} {Γ : Ctx} {Φ : List Pred}"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/LegacyValues.lean",
+    "line": 81,
+    "column": 14,
+    "disposition": "change",
+    "source": "      (C D : List TParam) (Γ Δ : Ctx) :"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/LegacyValues.lean",
+    "line": 87,
+    "column": 14,
+    "disposition": "change",
+    "source": "      (C D : List TParam) (Γ Δ : Ctx) :"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/LegacyValues.lean",
+    "line": 91,
+    "column": 14,
+    "disposition": "change",
+    "source": "      (C D : List TParam) (Γ Δ : Ctx) :"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Context/Facts.lean",
+    "line": 32,
+    "column": 56,
+    "disposition": "change",
+    "source": "private theorem refined_declaration (P : Program) (C : List TParam) (Γ : Ctx) (a : Ty) (p : Pred) :"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Context/Declarations.lean",
+    "line": 13,
+    "column": 48,
+    "disposition": "change",
+    "source": "def BinderTypes.Annotations (P : Program) (C : List TParam) : Ctx → List Ty → Prop"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Context/WF.lean",
+    "line": 208,
+    "column": 42,
+    "disposition": "change",
+    "source": "structure Ctx.Regular (P : Program) (C : List TParam) (Γ : Ctx) : Prop where"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Context/WF.lean",
+    "line": 214,
+    "column": 46,
+    "disposition": "change",
+    "source": "theorem Ctx.Regular.empty (P : Program) (C : List TParam) : Ctx.Regular P C [] := by"
+  }
+]

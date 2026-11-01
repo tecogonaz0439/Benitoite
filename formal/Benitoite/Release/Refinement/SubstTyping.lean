@@ -16,7 +16,7 @@ set_option maxHeartbeats 1600000
 def ClosedTy (P : Program) (B : Builtins) (store : StoreTy) (v : Val) (a : Ty) : Prop :=
   ∀ Q C Γ Φ, HasTypeVQ P B store Q C Γ Φ v a
 
-private def TypedImages (P : Program) (B : Builtins) (store : StoreTy) (Q : NoFailCtx) (C : List TParam)
+private def TypedImages (P : Program) (B : Builtins) (store : StoreTy) (Q : NoFailCtx) (C : TypeCtx)
     (Γ Δ : Ctx) (Ξ : List Pred) (σ : Nat → Val) : Prop :=
   ∀ i a, Γ[i]? = some (some a) → a.Ordinary →
     HasTypeVQ P B store Q C Δ Ξ (σ i) (substTyValues σ a)
@@ -268,15 +268,15 @@ private theorem TypedImages.signature {P B store Q C Γ Δ Ξ σ t ks ts es}
 
 private theorem TypedImages.sat_normal {P B store Q C Γ Δ Ξ σ a p}
     (h : TypedImages P B store Q C Γ Δ Ξ σ) (hA : Builtins.ValueAssumptions P B)
-    (ha : Ty.Annotation P C Γ a) (hs : B.sat C a.norm p) :
-    B.sat C (substTyValues σ a).norm p := by
+    (ha : Ty.Annotation P C Γ a) (hs : B.sat (TypeCtx.constraints C) a.norm p) :
+    B.sat (TypeCtx.constraints C) (substTyValues σ a).norm p := by
   have hh := hA.sat_values store Q C Γ Δ Ξ σ a.norm p h ha.norm hs
   simpa only [substTyValues, Ty.bind, Ty.norm_rawBind, Ty.norm_idem] using hh
 
 private theorem TypedImages.admits_normal {P B store Q C Γ Δ Ξ σ b sg ts}
     (h : TypedImages P B store Q C Γ Δ Ξ σ) (hA : Builtins.ValueAssumptions P B)
     (hl : B.sig b = some sg) (ha : TypeAnnotations P C Γ ts)
-    (hs : sg.admits C (Ty.normTys ts)) : sg.admits C (Ty.normTys (ts.map (substTyValues σ))) := by
+    (hs : sg.admits (TypeCtx.constraints C) (Ty.normTys ts)) : sg.admits (TypeCtx.constraints C) (Ty.normTys (ts.map (substTyValues σ))) := by
   have he : (Ty.normTys ts).map (substTyValues σ) = Ty.normTys (ts.map (substTyValues σ)) := by
     simp only [Ty.normTys_eq_map, List.map_map, Function.comp_def]
     apply List.map_congr_left
@@ -740,7 +740,7 @@ theorem SubstOk.shiftEAt {P B Ψ Q C Γ Φ Δ Ξ R0 ν C' k c}
 
 theorem SubstOk.shiftE {P B Ψ Q C Γ Φ Δ Ξ R0 ν}
     (h : SubstOk P B Ψ Q C Γ Φ Δ Ξ R0 ν) (hA : Builtins.TypeAssumptions P B)
-    (hstore : Ψ.WF) (_hΓ : Ctx.WF 0 C.length Γ) (_hΔ : Ctx.WF 0 C.length Δ) (extra : List TParam) :
+    (hstore : Ψ.WF) (_hΓ : Ctx.WF 0 C.length Γ) (_hΔ : Ctx.WF 0 C.length Δ) (extra : TypeCtx) :
     SubstOk P B Ψ Q (extra++C) (Γ.shiftE extra.length) Φ (Δ.shiftE extra.length) Ξ
       (R0.map (shiftTypes extra.length 0)) (fun i => (ν i).shiftE extra.length) := by
   apply h.shiftEAt hA hstore
@@ -803,7 +803,7 @@ theorem Transport.clause_values {Γ Φ Δ Ξ ν} (h : Transport (valEnv ν) Γ �
 
 theorem SubstOk.poly {P B Ψ Q C Γ Φ Δ Ξ R0 ν}
     (h : SubstOk P B Ψ Q C Γ Φ Δ Ξ R0 ν) (hA : Builtins.SubstitutionAssumptions P B)
-    (hw : Ψ.WF) (extra : List TParam) :
+    (hw : Ψ.WF) (extra : TypeCtx) :
     SubstOk P B (hideBuilders Ψ) Q (extra++C) (Γ.shiftE extra.length) Φ
       (Δ.shiftE extra.length) Ξ (R0.map (shiftTypes extra.length 0))
       (fun i => (ν i).shiftEAt extra.length 0) := by
@@ -908,11 +908,11 @@ theorem SubstOk.handler_conditions {P B Ψ Q C Γ Φ Δ Ξ R0 ν}
 theorem SubstOk.handler_failure {P B Ψ Q C Γ Φ Δ Ξ R0 ν}
     (h : SubstOk P B Ψ Q C Γ Φ Δ Ξ R0 ν) (hA : Builtins.SubstitutionAssumptions P B)
     (hw : Ψ.WF) (E : Ty) :
-    SubstOk P B (hideBuilders Ψ) Q (({} : TParam)::C) (failureContext Γ E) (liftMany 2 Φ)
+    SubstOk P B (hideBuilders Ψ) Q (TypeCtx.valueParam::C) (failureContext Γ E) (liftMany 2 Φ)
       (failureContext Δ (substTyValues ν E)) (liftMany 2 Ξ)
       (R0.map (fun r => (shiftTypes 1 0 r).shiftV 2 0))
       (upSubst 2 (fun i => (ν i).shiftEAt 1 0)) := by
-  have hh := (h.poly hA hw [{}]).clauseValue hA.toValueAssumptions hw.hide [shiftTypes 1 0 E] none
+  have hh := (h.poly hA hw [TypeCtx.valueParam]).clauseValue hA.toValueAssumptions hw.hide [shiftTypes 1 0 E] none
   simpa only [failureContext,Ctx.extendOption,binderImages,Ctx.extendMany,List.singleton_append,Nat.reduceAdd,List.length_cons,List.length_nil,
     Nat.zero_add,Option.map_none,Option.map_map,Function.comp_def,substTyValues_shiftEAt] using hh
 
@@ -922,7 +922,7 @@ theorem SubstOk.failure_conditions {P B Ψ Q C Γ Φ Δ Ξ R0 ν}
     (hf : ∀ p∈Φ,Entails (Δ.facts++Ξ) (predBind (valEnv ν).values p)) :
     ∀ p∈liftMany 2 Φ,Entails ((failureContext Δ (substTyValues ν E)).facts++liftMany 2 Ξ)
       (predBind (valEnv (upSubst 2 (fun i => (ν i).shiftEAt 1 0))).values p) := by
-  have hh := ((h.poly hA hw [{}]).transport (shifted_values_facts 1 hf)).clause_values [shiftTypes 1 0 E] none
+  have hh := ((h.poly hA hw [TypeCtx.valueParam]).transport (shifted_values_facts 1 hf)).clause_values [shiftTypes 1 0 E] none
   intro p hp
   have hx := hh.facts p (List.mem_append_right _ hp)
   simpa only [failureContext,Ctx.extendOption,binderImages,Ctx.extendMany,List.singleton_append,Nat.reduceAdd,List.length_cons,List.length_nil,
@@ -958,7 +958,7 @@ private theorem ImageOk.changeReturn {P B Ψ Q C Δ Ξ ν i a}
       cases hs1
 
 private def ReturnFreeImages (P : Program) (B : Builtins) (Ψ : StoreTy) (Q : NoFailCtx)
-    (C : List TParam) (Γ Δ : Ctx) (Ξ : List Pred) (ν : Nat → Val) : Prop :=
+    (C : TypeCtx) (Γ Δ : Ctx) (Ξ : List Pred) (ν : Nat → Val) : Prop :=
   ∀ R, SubstOk P B Ψ Q C Γ [] Δ Ξ R ν
 
 private theorem ReturnFreeImages.up {P B Ψ Q C Γ Δ Ξ ν}
@@ -1072,10 +1072,10 @@ mutual
       have ha' := ht.annotation ha
       simp only [Ty.bind_dict, Ty.subst_values_closed htarget] at ha' ⊢
       simpa only [Val.subst] using HasTypeVQ.V_Dict hi hs' (ht.typeAnnotations hts) (hk.subst σ) hw htarget hv' ha'
-    | .V_Raise (t := t) (e := e) ha hot hoe =>
+    | .V_Raise (t := t) (e := e) ha hot hoe hkind =>
       have hh := ht.annotation ha
       simp only [Val.subst, substTyValues, Ty.bind_fn, Eff.bind_singleFail] at hh ⊢
-      exact .V_Raise hh ((Ty.ordinary_bind_values _ _).mpr hot) ((Ty.ordinary_bind_values _ _).mpr hoe)
+      exact .V_Raise hh ((Ty.ordinary_bind_values _ _).mpr hot) ((Ty.ordinary_bind_values _ _).mpr hoe) (hkind.bind_values σ)
     | .V_LocRef (a := a) hl hd =>
       have hc : (Ty.reference a).WF 0 0 0 := hstore _ _ hl
       have he := Ty.subst_values_of_wf_zero hc σ

@@ -1,0 +1,106 @@
+structure Benitoite.Release.Refinement.LegacyPrimSignature (s0 : Benitoite.Release.PrimSig)
+  (s : Benitoite.Release.Refinement.PrimSig) : Prop
+number of parameters: 2
+fields:
+  Benitoite.Release.Refinement.LegacyPrimSignature.constraints : List.map
+        Benitoite.Release.Refinement.TParamDecl.constraints s.tparams =
+      s0.tparams
+  Benitoite.Release.Refinement.LegacyPrimSignature.neffs : s.neffs = s0.neffs
+  Benitoite.Release.Refinement.LegacyPrimSignature.names : s.names = s0.names
+  Benitoite.Release.Refinement.LegacyPrimSignature.params : s.params =
+      Benitoite.Release.Refinement.embedParameters s0.params
+  Benitoite.Release.Refinement.LegacyPrimSignature.ret : s.ret =
+      Benitoite.Release.Refinement.Ty.shiftV s0.params.length 0 (Benitoite.Release.Refinement.embedTy s0.ret)
+  Benitoite.Release.Refinement.LegacyPrimSignature.eff : s.eff =
+      Benitoite.Release.Refinement.Eff.shiftV s0.params.length 0 (Benitoite.Release.Refinement.embedEff s0.eff)
+  Benitoite.Release.Refinement.LegacyPrimSignature.kind : s.kind = Benitoite.Release.Refinement.embedPrimKind s0.kind
+  Benitoite.Release.Refinement.LegacyPrimSignature.opEff : s.opEff = s0.opEff
+  Benitoite.Release.Refinement.LegacyPrimSignature.rkinds : s.rkinds = s0.rkinds
+  Benitoite.Release.Refinement.LegacyPrimSignature.shape : s.shape = s0.shape
+  Benitoite.Release.Refinement.LegacyPrimSignature.admits : ∀ (C : List Benitoite.Release.TParam)
+      (ts : List Benitoite.Release.Ty),
+      s0.admits C ts → s.admits C (Benitoite.Release.Refinement.Ty.normTys (Benitoite.Release.Refinement.embedTys ts))
+  Benitoite.Release.Refinement.LegacyPrimSignature.operationKinds : s.opEff ≠ none →
+      Benitoite.Release.Refinement.TypeCtx.kinds s.tparams =
+        List.replicate s.tparams.length Benitoite.Release.Refinement.TyKind.value
+constructor:
+  Benitoite.Release.Refinement.LegacyPrimSignature.mk {s0 : Benitoite.Release.PrimSig}
+    {s : Benitoite.Release.Refinement.PrimSig}
+    (constraints : List.map Benitoite.Release.Refinement.TParamDecl.constraints s.tparams = s0.tparams)
+    (neffs : s.neffs = s0.neffs) (names : s.names = s0.names)
+    (params : s.params = Benitoite.Release.Refinement.embedParameters s0.params)
+    (ret :
+      s.ret = Benitoite.Release.Refinement.Ty.shiftV s0.params.length 0 (Benitoite.Release.Refinement.embedTy s0.ret))
+    (eff :
+      s.eff = Benitoite.Release.Refinement.Eff.shiftV s0.params.length 0 (Benitoite.Release.Refinement.embedEff s0.eff))
+    (kind : s.kind = Benitoite.Release.Refinement.embedPrimKind s0.kind) (opEff : s.opEff = s0.opEff)
+    (rkinds : s.rkinds = s0.rkinds) (shape : s.shape = s0.shape)
+    (admits :
+      ∀ (C : List Benitoite.Release.TParam) (ts : List Benitoite.Release.Ty),
+        s0.admits C ts →
+          s.admits C (Benitoite.Release.Refinement.Ty.normTys (Benitoite.Release.Refinement.embedTys ts)))
+    (operationKinds :
+      s.opEff ≠ none →
+        Benitoite.Release.Refinement.TypeCtx.kinds s.tparams =
+          List.replicate s.tparams.length Benitoite.Release.Refinement.TyKind.value) :
+    Benitoite.Release.Refinement.LegacyPrimSignature s0 s
+@Benitoite.Release.Refinement.LegacyPrimSignature.operationKinds : ∀ {s0 : Benitoite.Release.PrimSig}
+  {s : Benitoite.Release.Refinement.PrimSig},
+  Benitoite.Release.Refinement.LegacyPrimSignature s0 s →
+    s.opEff ≠ none →
+      Benitoite.Release.Refinement.TypeCtx.kinds s.tparams =
+        List.replicate s.tparams.length Benitoite.Release.Refinement.TyKind.value
+Benitoite.Release.Refinement.TypeCtx.kinds_eq_map : ∀ (C : Benitoite.Release.Refinement.TypeCtx),
+  C.kinds = List.map Benitoite.Release.Refinement.TParamDecl.kind C
+@Benitoite.Release.Refinement.HasTypeVQ.V_Fun : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : Benitoite.Release.Refinement.TypeCtx} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {f : Benitoite.Release.FunName} {d : Benitoite.Release.Refinement.Def}
+  {ts : List Benitoite.Release.Refinement.Ty} {es : List Benitoite.Release.Refinement.Eff},
+  P.defs f = some d →
+    Benitoite.Release.Refinement.NamesWF d.names d.params →
+      Benitoite.Release.Refinement.Admissible B C (List.length Γ)
+          (Benitoite.Release.Refinement.TypeCtx.constraints d.tparams) d.neffs
+          (Benitoite.Release.Refinement.Qsig d.params d.ret d.eff) Q ts es d.eff →
+        Benitoite.Release.Refinement.SignatureInstance P C Γ d.tel
+            (Benitoite.Release.Refinement.TypeCtx.kinds d.tparams) ts es →
+          Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C Γ Φ (Benitoite.Release.Refinement.Val.fnRef f ts es)
+            (Benitoite.Release.Refinement.Ty.dependentFn (Benitoite.Release.Refinement.instantiatedTel d.tel ts es))
+@Benitoite.Release.Refinement.HasTypeVQ.V_Prim : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : Benitoite.Release.Refinement.TypeCtx} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {b : Benitoite.Release.PrimName}
+  {s : Benitoite.Release.Refinement.PrimSig} {ts : List Benitoite.Release.Refinement.Ty}
+  {es : List Benitoite.Release.Refinement.Eff} {rs : List Benitoite.Release.Refinement.RangeExpr},
+  B.sig b = some s →
+    B.RangeAdmissible b s rs →
+      Benitoite.Release.Refinement.NamesWF s.names s.params →
+        Benitoite.Release.Refinement.PrimitiveAdmissible C (List.length Γ) s Q ts es →
+          Benitoite.Release.Refinement.SignatureInstance P C Γ (Benitoite.Release.Refinement.Tel.instR rs s.tel)
+              (Benitoite.Release.Refinement.TypeCtx.kinds s.tparams) ts es →
+            Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C Γ Φ (Benitoite.Release.Refinement.Val.prim b ts es rs)
+              (Benitoite.Release.Refinement.Ty.dependentFn
+                (Benitoite.Release.Refinement.instantiatedTel (Benitoite.Release.Refinement.Tel.instR rs s.tel) ts es))
+@Benitoite.Release.Refinement.HasTypeCQ.C_Meth : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : Benitoite.Release.Refinement.TypeCtx} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {Δ : Benitoite.Release.Refinement.LocalCtx}
+  {R : Option Benitoite.Release.Refinement.Ty} {v : Benitoite.Release.Refinement.Val} {cl : Benitoite.Release.ClassName}
+  {τ : Benitoite.Release.Refinement.Ty} {cd : Benitoite.Release.Refinement.ClassDecl} {m : Benitoite.Release.MethName}
+  {ms : Benitoite.Release.Refinement.MethSig} {ss : List Benitoite.Release.Refinement.Ty}
+  {es : List Benitoite.Release.Refinement.Eff} {ws : List Benitoite.Release.Refinement.Val}
+  {as : List Benitoite.Release.Refinement.Ty} {a : Benitoite.Release.Refinement.Ty}
+  {ε : Benitoite.Release.Refinement.Eff},
+  Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C Γ Φ v (Benitoite.Release.Refinement.Ty.dict cl τ) →
+    P.classes cl = some cd →
+      cd.methods m = some ms →
+        Benitoite.Release.Refinement.NamesWF ms.names ms.params →
+          Benitoite.Release.Refinement.SatAll B C ss (Benitoite.Release.Refinement.TypeCtx.constraints ms.tparams) →
+            Benitoite.Release.Refinement.SignatureInstance P C Γ ms.tel
+                (Benitoite.Release.Refinement.TypeCtx.kinds ms.tparams ++ [cd.argumentKind]) (ss ++ [τ]) es →
+              Benitoite.Release.Refinement.MethodRowsAdmissible C (List.length Γ) Q ms es →
+                (Benitoite.Release.Refinement.instantiatedTel ms.tel (ss ++ [τ]) es).arguments ws = some (as, a, ε) →
+                  Benitoite.Release.Refinement.HasTypeVsQ P B Ψ Q C Γ Φ ws as →
+                    Benitoite.Release.Refinement.Ty.Annotation P C Γ a →
+                      Benitoite.Release.Refinement.HasTypeCQ P B Ψ Q C Γ Φ R
+                        (Benitoite.Release.Refinement.Comp.meth v m ss es ws) a ε Δ

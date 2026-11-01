@@ -29,7 +29,7 @@ private theorem refined_map (Γ : Ctx) (a : Ty) (p : Pred) :
   (Ctx.TypeMap.id Γ).extend a (.refined a p) (fun _ h => h)
     (fun ho => ho) (assume_subset a p)
 
-private theorem refined_declaration (P : Program) (C : List TParam) (Γ : Ctx) (a : Ty) (p : Pred) :
+private theorem refined_declaration (P : Program) (C : TypeCtx) (Γ : Ctx) (a : Ty) (p : Pred) :
     DeclarationImages P C (Γ.extend a) (Γ.extend (.refined a p)) (fun i => some (.var i)) := by
   have h := (DeclarationImages.id P C Γ).extend a (.refined a p)
     (fun ho => ho) (by simp [Ty.norm, Ty.core])

@@ -939,7 +939,7 @@ legacyTypeCtx_kinds : ∀ {C κ}, κ.length = C.length →
 
 `LegacyKindArgs.kinded` の長さだけの引数は不十分になるため、target の C を上の legacyTypeCtx と固定するか、`(TypeCtx.kinds C)=κ` の等号を受ける。等号は上の既存の補題から導く。新しい独立の kind 入力を LegacyOutputInput に足さない。LegacyTypeInput の Declared の使用、LegacyTypeInput.annotation/annotation_at/annotation_normal、LegacyKindArgs.kinded、legacy_signatureInstance と関数/メソッドの二包装の8定義・宣言と、S12.11のcontext三宣言を合わせた**11橋**を追随する。LegacyRowsInput は各行の fn 型について既に value kind を持つので、S12.8 の rowKinds もここから供給する。
 
-L10の handoff は当時の署名の記録として保持し、新しい `LegacyTypingContracts.lean` に七つの完全署名を Cκ で展開して記録する。旧 Release の定義・主定理を変えず、新旧 import を保つ。
+L10の handoff は当時の署名の記録として保持し、L20.123 が `LegacyTyping.lean` の骨格に七つの完全署名を Cκ で展開して固定する。旧 Release の定義・主定理を変えず、新旧 import を保つ。
 
 ### S12.6: 明示した型注記の全出現と案1との比較
 

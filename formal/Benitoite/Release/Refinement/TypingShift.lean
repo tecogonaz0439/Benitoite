@@ -311,8 +311,8 @@ theorem ShiftMap.signature {P C k c Γ Δ t ks ts es} (h : ShiftMap k c Γ Δ)
 
 theorem Builtins.ValueAssumptions.sat_shiftV_norm {P B C Γ Δ a p k c}
     (hA : Builtins.ValueAssumptions P B) (ha : Ty.Annotation P C Γ a)
-    (hb : Ty.Annotation P C Δ (a.shiftV k c)) (hs : B.sat C a.norm p) :
-    B.sat C (a.shiftV k c).norm p := by
+    (hb : Ty.Annotation P C Δ (a.shiftV k c)) (hs : B.sat (TypeCtx.constraints C) a.norm p) :
+    B.sat (TypeCtx.constraints C) (a.shiftV k c).norm p := by
   have hh := hA.sat_rename C Γ Δ a.norm p (shiftIndex k c) (shiftIndex_strict k c) ha.norm
     (by simpa only [renameTy_shiftIndex, ← Ty.norm_shiftV] using hb.norm) hs
   simpa only [renameTy_shiftIndex, ← Ty.norm_shiftV] using hh
@@ -320,7 +320,7 @@ theorem Builtins.ValueAssumptions.sat_shiftV_norm {P B C Γ Δ a p k c}
 theorem Builtins.ValueAssumptions.admits_shiftV_norm {P B C Γ Δ b sg ts k c}
     (hA : Builtins.ValueAssumptions P B) (hl : B.sig b = some sg)
     (ha : TypeAnnotations P C Γ ts) (hb : TypeAnnotations P C Δ (ts.map (Ty.shiftV k c)))
-    (hs : sg.admits C (Ty.normTys ts)) : sg.admits C (Ty.normTys (ts.map (Ty.shiftV k c))) := by
+    (hs : sg.admits (TypeCtx.constraints C) (Ty.normTys ts)) : sg.admits (TypeCtx.constraints C) (Ty.normTys (ts.map (Ty.shiftV k c))) := by
   have he : (Ty.normTys ts).map (renameTy (shiftIndex k c)) = Ty.normTys (ts.map (Ty.shiftV k c)) := by
     simp only [renameTy_shiftIndex, Ty.normTys_eq_map, List.map_map, Function.comp_def, Ty.norm_shiftV]
   simpa only [he] using hA.admits_rename b sg C Γ Δ (Ty.normTys ts) (shiftIndex k c) hl
@@ -667,11 +667,11 @@ mutual
       simp only [Ty.shiftV, Ty.subst_shiftV_closed htarget] at ha' ⊢
       simpa only [Val.rename, renameTy_shiftIndex] using
         HasTypeVQ.V_Dict hi hs' (hm.typeAnnotations ht) (hk.shift k c) hw htarget hv' ha'
-    | .V_Raise (t := t) (e := e) ha hot hoe =>
+    | .V_Raise (t := t) (e := e) ha hot hoe hkind =>
       have hh := hm.annotation ha
       simp only [Val.rename, renameTy_shiftIndex, Ty.shiftV, shiftVTys_eq_map,
         List.map_cons, List.map_nil, Eff.shiftV_singleFail]
-      refine HasTypeVQ.V_Raise ?_ ((Ty.ordinary_shiftV _ _ _).mpr hot) ((Ty.ordinary_shiftV _ _ _).mpr hoe)
+      refine HasTypeVQ.V_Raise ?_ ((Ty.ordinary_shiftV _ _ _).mpr hot) ((Ty.ordinary_shiftV _ _ _).mpr hoe) (hkind.shift_values k c)
       simpa only [Ty.shiftV, shiftVTys_eq_map, List.map_cons, List.map_nil, Eff.shiftV_singleFail] using hh
     | .V_LocRef (a := a) hl hd =>
       have hw := hstore _ _ hl

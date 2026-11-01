@@ -1,0 +1,50 @@
+⚠ [72/115] Replayed Benitoite.Release.Refinement.TypeSubst
+warning: Benitoite/Release/Refinement/TypeSubst.lean:224:51: This simp argument is unused:
+  rawApply
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Ty.rawBind, shiftTypes, Ty.rawBind_shiftTypes, rawBindTys_shiftTypes, Eff.rawBind_shiftTypes,
+    Tel.rawBind_shiftTypes]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [74/115] Replayed Benitoite.Release.Refinement.RangeSubst
+warning: Benitoite/Release/Refinement/RangeSubst.lean:361:6: This simp argument is unused:
+  rawApply
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Ty.rawMapRanges, Ty.rawBind, Ty.rawMapRanges_rangesOnly, mapRangesTys_rangesOnly,
+    Eff.rawMapRanges_rangesOnly, Tel.rawMapRanges_rangesOnly, mapIx_rangeAt]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [97/115] Replayed Benitoite.Release.Refinement.ObservationOrder
+warning: Benitoite/Release/Refinement/ObservationOrder.lean:258:27: Try `simp at hm` instead of `simpa using hm`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Release/Refinement/ObservationOrder.lean:258:27: Try `simp at hm` instead of `simpa using hm`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Release/Refinement/ObservationOrder.lean:258:27: Try `simp at hm` instead of `simpa using hm`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Release/Refinement/ObservationOrder.lean:258:27: Try `simp at hm` instead of `simpa using hm`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Release/Refinement/ObservationOrder.lean:258:27: Try `simp at hm` instead of `simpa using hm`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Release/Refinement/ObservationOrder.lean:258:27: Try `simp at hm` instead of `simpa using hm`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✖ [99/115] Building Benitoite.Release.Refinement.TypeRenaming (629ms)
+trace: .> LEAN_PATH=<repo>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <repo>/formal/Benitoite/Release/Refinement/TypeRenaming.lean -o <repo>/formal/.lake/build/lib/lean/Benitoite/Release/Refinement/TypeRenaming.olean -i <repo>/formal/.lake/build/lib/lean/Benitoite/Release/Refinement/TypeRenaming.ilean -c <repo>/formal/.lake/build/ir/Benitoite/Release/Refinement/TypeRenaming.c --setup <repo>/formal/.lake/build/ir/Benitoite/Release/Refinement/TypeRenaming.setup.json --json
+error: Benitoite/Release/Refinement/TypeRenaming.lean:62:2: Type mismatch: After simplification, term
+  he
+ has type
+  p.kind = ki
+but is expected to have type
+  some p.kind = some ki
+✔ [102/115] Built Benitoite.Release.Refinement.OpenSubstitution (563ms)
+✔ [114/115] Built Benitoite.Release.Refinement.InversionCore (644ms)
+Some required targets logged failures:
+- Benitoite.Release.Refinement.TypeRenaming
+error: build failed

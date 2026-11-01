@@ -1,0 +1,58 @@
+✔ [43/83] Built Benitoite.Release.Refinement.Types (372ms)
+✔ [44/83] Built Benitoite.Release.Refinement.VarianceSyntax (303ms)
+✔ [45/83] Built Benitoite.Release.Refinement.Order (5.4s)
+✔ [46/83] Built Benitoite.Release.Refinement.ValueShiftSyntax (257ms)
+✔ [47/83] Built Benitoite.Release.Refinement.ValueShiftOrder (4.2s)
+✔ [48/83] Built Benitoite.Release.Refinement.ValueRenamingSyntax (556ms)
+✔ [49/83] Built Benitoite.Release.Refinement.FunctionNormalForm (296ms)
+✔ [50/83] Built Benitoite.Release.Refinement.RefinementNormalForm (321ms)
+✔ [51/83] Built Benitoite.Release.Refinement.Normalize (504ms)
+✔ [52/83] Built Benitoite.Release.Refinement.Context (1.1s)
+✔ [53/83] Built Benitoite.Release.Refinement.ClosedDecidable (657ms)
+✔ [54/83] Built Benitoite.Release.Refinement.Syntax (1.1s)
+✔ [55/83] Built Benitoite.Release.Refinement.Observation (1.2s)
+✔ [56/83] Built Benitoite.Release.Refinement.Subst (464ms)
+✔ [57/83] Built Benitoite.Release.Refinement.ClosedEvaluation (698ms)
+✔ [58/83] Built Benitoite.Release.Refinement.Logic (267ms)
+✔ [59/83] Built Benitoite.Release.Refinement.NormalizationLogic (256ms)
+✔ [60/83] Built Benitoite.Release.Refinement.Le (483ms)
+✔ [61/83] Built Benitoite.Release.Refinement.Basic (545ms)
+✔ [62/83] Built Benitoite.Release.Refinement.ShiftOrder (329ms)
+✔ [63/83] Built Benitoite.Release.Refinement.RawBindingShift (457ms)
+✔ [64/83] Built Benitoite.Release.Refinement.NormalWellFormed (597ms)
+✔ [65/83] Built Benitoite.Release.Refinement.Bind (379ms)
+✔ [66/83] Built Benitoite.Release.Refinement.EffectCover (315ms)
+✔ [67/83] Built Benitoite.Release.Refinement.BindingShift (282ms)
+✔ [68/83] Built Benitoite.Release.Refinement.ContextFacts (331ms)
+✔ [69/83] Built Benitoite.Release.Refinement.Transport (846ms)
+✔ [70/83] Built Benitoite.Release.Refinement.Shift (353ms)
+✔ [71/83] Built Benitoite.Release.Refinement.Exchange (240ms)
+⚠ [72/83] Built Benitoite.Release.Refinement.TypeSubst (638ms)
+warning: Benitoite/Release/Refinement/TypeSubst.lean:224:51: This simp argument is unused:
+  rawApply
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Ty.rawBind, shiftTypes, Ty.rawBind_shiftTypes, rawBindTys_shiftTypes, Eff.rawBind_shiftTypes,
+    Tel.rawBind_shiftTypes]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [73/83] Built Benitoite.Release.Refinement.ContextMap (322ms)
+⚠ [74/83] Built Benitoite.Release.Refinement.RangeSubst (777ms)
+warning: Benitoite/Release/Refinement/RangeSubst.lean:361:6: This simp argument is unused:
+  rawApply
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Ty.rawMapRanges, Ty.rawBind, Ty.rawMapRanges_rangesOnly, mapRangesTys_rangesOnly,
+    Eff.rawMapRanges_rangesOnly, Tel.rawMapRanges_rangesOnly, mapIx_rangeAt]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [75/83] Built Benitoite.Release.Refinement.ValueSubst (252ms)
+✔ [76/83] Built Benitoite.Release.Refinement.ValueExchange (579ms)
+✔ [77/83] Built Benitoite.Release.Refinement.RangeExchange (417ms)
+✔ [78/83] Built Benitoite.Release.Refinement.Telescope (371ms)
+✔ [79/83] Built Benitoite.Release.Refinement.ValueClosed (444ms)
+✔ [80/83] Built Benitoite.Release.Refinement.Kinds (482ms)
+✔ [81/83] Built Benitoite.Release.Refinement.ObservationType (640ms)
+✔ [82/83] Built Benitoite.Release.Refinement.Declared (316ms)
+✔ [83/83] Built Benitoite.Release.Refinement.KindValues (568ms)
+Build completed successfully (83 jobs).

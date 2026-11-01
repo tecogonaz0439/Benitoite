@@ -89,7 +89,11 @@
 
 パターン型付けには、篩へ同じ束縛を移す `P_Refined` と、正規形の等号で入力型を移す `P_Convert` を含む。型付けの値29・計算24を含む76構成子と、値移動・型移動・値置換・narrowing の主な署名は維持する。閉じた型付けの全導出から `ValueMeaning` を構成する証明、任意の部分型の全移送、任意の捕捉と腕への全接続は、この代表の証明からは結論しない。意味を主な定理へ独立の仮定として追加していない。
 
-`TypeArgsKinded` と宣言で kind を固定した `TypeArgsKindedAt` は、value kind の型引数に Ordinary を要求する。constructor kind は型の形から Ordinary を満たす。`V_Raise` は結果型とエラー型の Ordinary を別に検査する。`TypeArgumentRegularity` は SignatureInstance、操作の型付け、辞書の型付け、メソッド呼出しから、実際に置換する型列の WF と Ordinary を取り出し、Ty.substAt_wf と Ty.LeQ.substAt へ渡す。操作とメソッドの変数を返す本体について、型置換後の型付けも証明する。HasTypeVQ と HasTypeCQ の値移動・型移動・値置換・None の下の値置換・narrowing の前提と結論は保つ。
+型付けの型文脈は `TypeCtx = List TParamDecl` であり、kind と組み込みの制約を同じ宣言の位置から射影する。`TypeArgsKinded P C` は `TypeCtx.kinds C` を使い、その別名 `TypeArgsKindedAt` とともに value kind の型引数に Ordinary を要求する。`Ty.Declared` の tapp は、head の宣言の kind が引数の個数と一致する constructor であることを検査する。`SatAll` と admits へ渡す文脈は `TypeCtx.constraints C` であり、組み込みの表の生の制約の型は保つ。constructor kind は型の形から Ordinary を満たす。`V_Raise` は結果型とエラー型の Ordinary を別に検査し、結果型の value kind も同じ C で検査する。Fail 節の新しい型束縛は `TypeCtx.valueParam` である。`TypeArgumentRegularity` は SignatureInstance、操作の型付け、辞書の型付け、メソッド呼出しから、実際に置換する型列の WF と Ordinary を取り出し、Ty.substAt_wf と Ty.LeQ.substAt へ渡す。操作とメソッドの変数を返す本体について、型置換後の型付けも証明する。HasTypeVQ と HasTypeCQ の値移動・型移動・値置換・None の下の値置換・narrowing の前提と結論は保つ。
+
+`TypeParamRenaming` は制約の包含と kind の一致を保持し、型移動の宣言照合と `shift_types_var` の入力になる。`TypeSubstContracts` は、型・行の閉じた像の形成と、元の構文の文脈の三条件を `ClosedTypeSubstInput` にまとめる。型付けの保存の結論をこの入力や CoreAssumptions の新しい欄として仮定しない。
+
+旧表との対応の `LegacyPrimSignature` は、操作を表す `opEff` を持つ組み込みの型パラメータが全てvalue kindであることを要求する。これにより、旧の通常節が読むvalue固定のkindの列と、新しい通常節の型文脈のkindを対応させる。操作を持たない組み込みにはこの条件を課さない。
 
 旧導出を受け取る LegacyTypesInput は、旧型引数の各型が NotCont を満たすとき、Ordinary を加える前の各型の入力条件と同値である。閉性は要求しない。旧型の NotCont と embedTy 後の Ordinary の同値を使う。継続を保持する文脈の一般の LegacyTypeInput に、この制限は追加しない。
 

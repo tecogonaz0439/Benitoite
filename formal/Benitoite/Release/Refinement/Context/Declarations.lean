@@ -10,7 +10,7 @@ import Benitoite.Release.Refinement.KindInference
 namespace Benitoite.Release.Refinement
 noncomputable section
 
-def BinderTypes.Annotations (P : Program) (C : List TParam) : Ctx → List Ty → Prop
+def BinderTypes.Annotations (P : Program) (C : TypeCtx) : Ctx → List Ty → Prop
   | _, [] => True
   | Γ, a :: as => Ty.Annotation P C Γ a ∧ BinderTypes.Annotations P C (Γ.extend a) as
 
@@ -112,14 +112,10 @@ theorem Tel.annotation_open {P B Ψ Q C Γ Φ name a t v}
   have hs := (SubstOk.openValue (R := none) hv ha hΓ).telAnnotation ht
   simpa only [valEnv_openValue] using hs
 
-def TypeArgsKindedAt (P : Program) (D : List TParamDecl) (ts : List Ty) (ks : List TyKind) : Prop :=
-  ts.length = ks.length ∧ ∀ (i : Nat) (a : Ty) (k : TyKind),
-    ts[i]? = some a → ks[i]? = some k →
-      a.HasKind P (D.map TParamDecl.kind) k ∧ (k = .value → Ordinary a)
+abbrev TypeArgsKindedAt := TypeArgsKinded
 
 theorem TypeArgsKindedAt.forget {P D ts ks} (h : TypeArgsKindedAt P D ts ks) :
-    TypeArgsKinded P (D.map TParamDecl.constraints) ts ks :=
-  ⟨h.1, D.map TParamDecl.kind, by simp, h.2⟩
+    TypeArgsKinded P D ts ks := h
 
 theorem TypeArgsKindedAt.shift {P D ts ks} (h : TypeArgsKindedAt P D ts ks) (k c : Nat) :
     TypeArgsKindedAt P D (ts.map (Ty.shiftV k c)) ks := by
@@ -140,13 +136,13 @@ theorem TypeArgsKindedAt.subst {P D ts ks} (h : TypeArgsKindedAt P D ts ks) (ν 
 structure SignatureInstanceAt (P : Program) (D : List TParamDecl) (Γ : Ctx)
     (t : Tel) (ks : List TyKind) (ts : List Ty) (es : List Eff) : Prop where
   source : (Ty.dependentFn t).WF 0 ks.length 0
-  types : TypeAnnotations P (D.map TParamDecl.constraints) Γ ts
+  types : TypeAnnotations P D Γ ts
   kinds : TypeArgsKindedAt P D ts ks
-  rows : RowAnnotations P (D.map TParamDecl.constraints) Γ es
-  result : Ty.Annotation P (D.map TParamDecl.constraints) Γ (.dependentFn (instantiatedTel t ts es))
+  rows : RowAnnotations P D Γ es
+  result : Ty.Annotation P D Γ (.dependentFn (instantiatedTel t ts es))
 
 theorem SignatureInstanceAt.forget {P D Γ t ks ts es} (h : SignatureInstanceAt P D Γ t ks ts es) :
-    SignatureInstance P (D.map TParamDecl.constraints) Γ t ks ts es :=
+    SignatureInstance P D Γ t ks ts es :=
   ⟨h.source, h.types, h.kinds.forget, h.rows, h.result⟩
 
 def OpDecl.SignatureWF (d : OpDecl) : Prop :=
@@ -159,7 +155,7 @@ theorem Program.OpSignaturesWF.user {P B S o sg} (h : Program.OpSignaturesWF P)
   simp only [opSigAt] at hl
   obtain ⟨d, hd, he⟩ := Option.map_eq_some_iff.mp hl
   cases he
-  exact h o d hd
+  simpa only [OpSig.WF, OpDecl.SignatureWF, TypeCtx.length_values] using h o d hd
 
 theorem Ty.instTarget_fixed {nt nv a} (h : Ty.WF 0 nt nv a) (rs : List RangeExpr) :
     a.instTarget rs = a := by

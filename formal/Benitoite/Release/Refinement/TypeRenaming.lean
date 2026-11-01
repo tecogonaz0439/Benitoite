@@ -36,6 +36,13 @@ mutual
     | .mk a fs => .mk a (rawRenameTypesList ρ fs)
 end
 
+def KindRenaming (K L : KindCtx) (ρ : Nat → Nat) : Prop :=
+  ∀ (i : Nat) (ki : TyKind), K[i]?=some ki → L[ρ i]?=some ki
+
+@[simp] theorem rawRenameTypesList_length (as : List Ty) (ρ : Nat → Nat) :
+    (rawRenameTypesList ρ as).length = as.length := by
+  induction as <;> simp_all [rawRenameTypesList]
+
 /-- 型の改名の後に、Fail列を含む注釈を正規化する。 -/
 noncomputable def Ty.renameTypes (a : Ty) (ρ : Nat → Nat) : Ty := (a.rawRenameTypes ρ).norm
 
@@ -43,41 +50,49 @@ noncomputable def Ty.renameTypes (a : Ty) (ρ : Nat → Nat) : Ty := (a.rawRenam
 def TParam.Contains (outer inner : TParam) : Prop :=
   (inner.equality = true → outer.equality = true) ∧ (inner.key = true → outer.key = true)
 
-def TypeParamRenaming (C C' : List TParam) (ρ : Nat → Nat) : Prop :=
-  ∀ i p, C[i]? = some p → ∃ q, C'[ρ i]? = some q ∧ TParam.Contains q p
+def TypeParamRenaming (C C' : TypeCtx) (ρ : Nat → Nat) : Prop :=
+  ∀ i p, C[i]? = some p → ∃ q, C'[ρ i]? = some q ∧ q.kind = p.kind ∧ TParam.Contains q.constraints p.constraints
 
-theorem TypeParamRenaming.id (C : List TParam) : TypeParamRenaming C C id :=
-  fun _ p hp => ⟨p, hp, _root_.id, _root_.id⟩
+theorem TypeParamRenaming.kindRenaming {C C' ρ} (h : TypeParamRenaming C C' ρ) :
+    KindRenaming (TypeCtx.kinds C) (TypeCtx.kinds C') ρ := by
+  intro i ki hi
+  obtain ⟨p, hp, he⟩ := Option.map_eq_some_iff.mp (by
+    simpa only [TypeCtx.kinds, List.getElem?_map] using hi)
+  obtain ⟨q, hq, hk, _⟩ := h i p hp
+  simp only [TypeCtx.kinds, List.getElem?_map, hq, Option.map_some, hk, he]
 
-theorem TypeParamRenaming.prefix (C extra : List TParam) :
+theorem TypeParamRenaming.id (C : TypeCtx) : TypeParamRenaming C C id :=
+  fun _ p hp => ⟨p, hp, rfl, _root_.id, _root_.id⟩
+
+theorem TypeParamRenaming.prefix (C extra : TypeCtx) :
     TypeParamRenaming C (extra ++ C) (fun i => i + extra.length) := by
   intro i p hp
-  refine ⟨p, ?_, _root_.id, _root_.id⟩
+  refine ⟨p, ?_, rfl, _root_.id, _root_.id⟩
   change (extra ++ C)[i + extra.length]? = some p
   rw [List.getElem?_append_right (by omega)]
   simpa using hp
 
 theorem TypeParamRenaming.under {C C' ρ} (h : TypeParamRenaming C C' ρ)
-    (extra : List TParam) : TypeParamRenaming (extra ++ C) (extra ++ C') (upRen extra.length ρ) := by
+    (extra : TypeCtx) : TypeParamRenaming (extra ++ C) (extra ++ C') (upRen extra.length ρ) := by
   intro i p hp
   by_cases hi : i < extra.length
-  · exact ⟨p, by simpa [upRen, hi, List.getElem?_append_left hi] using hp, _root_.id, _root_.id⟩
+  · exact ⟨p, by simpa [upRen, hi, List.getElem?_append_left hi] using hp, rfl, _root_.id, _root_.id⟩
   · rw [List.getElem?_append_right (by omega)] at hp
-    obtain ⟨q, hq, hc⟩ := h (i-extra.length) p hp
-    refine ⟨q, ?_, hc⟩
+    obtain ⟨q, hq, hk, hc⟩ := h (i-extra.length) p hp
+    refine ⟨q, ?_, hk, hc⟩
     simp only [upRen, hi, ↓reduceIte]
     rw [List.getElem?_append_right (by omega)]
     simpa using hq
 
-theorem TypeParamRenaming.suffix (C extra : List TParam) :
+theorem TypeParamRenaming.suffix (C extra : TypeCtx) :
     TypeParamRenaming C (C ++ extra) _root_.id := by
   intro i p hp
-  refine ⟨p, ?_, _root_.id, _root_.id⟩
+  refine ⟨p, ?_, rfl, _root_.id, _root_.id⟩
   change (C ++ extra)[i]? = some p
   rw [List.getElem?_append_left (List.getElem?_eq_some_iff.mp hp).1]
   exact hp
 
-theorem TypeParamRenaming.insert (inner extra outer : List TParam) :
+theorem TypeParamRenaming.insert (inner extra outer : TypeCtx) :
     TypeParamRenaming (inner ++ outer) (inner ++ (extra ++ outer))
       (shiftIndex extra.length inner.length) := by
   have h := (TypeParamRenaming.prefix outer extra).under inner

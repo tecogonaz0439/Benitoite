@@ -2,33 +2,6 @@ import Benitoite.Release.Refinement.TypeShiftContext
 
 namespace Benitoite.Release.Refinement
 
-private def insertKinds (K : KindCtx) (k c : Nat) : KindCtx :=
-  K.take c ++ List.replicate k .value ++ K.drop c
-
-private theorem insertKinds_length (K : KindCtx) (k c : Nat) :
-    (insertKinds K k c).length = K.length+k := by
-  simp only [insertKinds,List.length_append,List.length_take,List.length_replicate,List.length_drop]
-  omega
-
-private theorem insertKinds_lookup {K : KindCtx} {i : Nat} {a : TyKind} (h : K[i]?=some a) (k c : Nat) :
-    (insertKinds K k c)[shiftIndex k c i]? = some a := by
-  have hi := (List.getElem?_eq_some_iff.mp h).1
-  by_cases hc : i<c
-  · have hm : i<min c K.length := by omega
-    simpa [insertKinds,shiftIndex,hc,List.getElem?_append,hm] using (List.getElem?_eq_some_iff.mp h).2
-  · have hm : min c K.length=c := by omega
-    have he : c+(i+k-c-k)=i := by omega
-    have hge : ¬i+k<c := by omega
-    have hrep : ¬i+k-c<k := by omega
-    simp [insertKinds,shiftIndex,hc,List.getElem?_append,hm,hge,hrep,List.getElem?_drop,he,h]
-
-def KindRenaming (K L : KindCtx) (ρ : Nat → Nat) : Prop :=
-  ∀ (i : Nat) (ki : TyKind), K[i]?=some ki → L[ρ i]?=some ki
-
-@[simp] theorem rawRenameTypesList_length (as : List Ty) (ρ : Nat → Nat) :
-    (rawRenameTypesList ρ as).length = as.length := by
-  induction as <;> simp_all [rawRenameTypesList]
-
 theorem Ty.notContCore_rawRenameTypes (a : Ty) (ρ : Nat → Nat) :
     (a.rawRenameTypes ρ).NotContCore ↔ a.NotContCore := by
   cases a <;> simp [Ty.rawRenameTypes,Ty.NotContCore,Ty.core]
@@ -68,15 +41,14 @@ mutual
     cases e; exact kindsList_renameTypes ha h
 end
 
-theorem TypeArgsKinded.shiftTypes {P C C' ts ks} (h : TypeArgsKinded P C ts ks)
-    (k c : Nat) (hn : C'.length=C.length+k) :
+theorem TypeArgsKinded.shiftTypes {P C C' ts ks k c} (h : TypeArgsKinded P C ts ks)
+    (hC : TypeParamRenaming C C' (shiftIndex k c)) :
     TypeArgsKinded P C' (ts.map (shiftTypes k c)) ks := by
-  obtain ⟨hl,K,hK,h⟩ := h
-  refine ⟨by simpa using hl,insertKinds K k c,by rw [insertKinds_length,hK,hn],?_⟩
+  refine ⟨by simpa using h.1, ?_⟩
   intro i a ki ha hk
   obtain ⟨b,hb,rfl⟩ := Option.map_eq_some_iff.mp (by simpa only [List.getElem?_map] using ha)
-  refine ⟨?_, fun hv => (Ty.ordinary_shiftTypes _ _ _).mpr ((h i b ki hb hk).2 hv)⟩
+  refine ⟨?_, fun hv => (Ty.ordinary_shiftTypes _ _ _).mpr ((h.2 i b ki hb hk).2 hv)⟩
   rw [←Ty.rawRenameTypes_shift]
-  exact (h i b ki hb hk).1.renameTypes (fun _ _ hi => insertKinds_lookup hi k c)
+  exact (h.2 i b ki hb hk).1.renameTypes hC.kindRenaming
 
 end Benitoite.Release.Refinement

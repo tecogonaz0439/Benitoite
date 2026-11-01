@@ -11,13 +11,13 @@ def LegacyKindArgs (K : DeclarationKinds) (P0 : Benitoite.Release.Program)
     ts[i]? = some a → ks[i]? = some k → (embedTy a).HasKind (embedProgramWithKinds K P0) κ k ∧ (k = .value → Ordinary (embedTy a))
 
 theorem LegacyKindArgs.kinded {K P0 κ ts ks C}
-    (h : LegacyKindArgs K P0 κ ts ks) (hc : κ.length = C.length) :
+    (h : LegacyKindArgs K P0 κ ts ks) (hc : TypeCtx.kinds C = κ) :
     TypeArgsKinded (embedProgramWithKinds K P0) C (embedTys ts) ks := by
-  refine ⟨by simpa using h.1, κ, hc, ?_⟩
+  refine ⟨by simpa using h.1, ?_⟩
   intro i a k ha hk
   obtain ⟨b, hb, rfl⟩ := Option.map_eq_some_iff.mp
     (by simpa only [embedTys_eq_map, List.getElem?_map] using ha)
-  exact h.2 i b k hb hk
+  simpa only [hc] using h.2 i b k hb hk
 
 theorem embedDefWithKinds_parameters {K P0 f d} (wf : DeclarationKinds.WF K P0)
     (hd : P0.defs f = some d) :
@@ -59,25 +59,25 @@ theorem legacy_signatureInstance {K : DeclarationKinds} {P0 : Benitoite.Release.
     {ts : List Benitoite.Release.Ty} {es : List Benitoite.Release.Eff} {ks : List TyKind}
     (hc : κ.length = C.length)
     (source : (Ty.dependentFn t).WF 0 ks.length 0)
-    (types : TypeAnnotations (embedProgramWithKinds K P0) C Γ (embedTys ts))
+    (types : TypeAnnotations (embedProgramWithKinds K P0) (legacyTypeCtx C κ) Γ (embedTys ts))
     (args : LegacyKindArgs K P0 κ ts ks)
-    (rows : RowAnnotations (embedProgramWithKinds K P0) C Γ (es.map embedEff))
-    (result : Ty.Annotation (embedProgramWithKinds K P0) C Γ
+    (rows : RowAnnotations (embedProgramWithKinds K P0) (legacyTypeCtx C κ) Γ (es.map embedEff))
+    (result : Ty.Annotation (embedProgramWithKinds K P0) (legacyTypeCtx C κ) Γ
       (.dependentFn (instantiatedTel t (embedTys ts) (es.map embedEff)))) :
-    SignatureInstance (embedProgramWithKinds K P0) C Γ t ks (embedTys ts) (es.map embedEff) :=
-  ⟨source, types, args.kinded hc, rows, result⟩
+    SignatureInstance (embedProgramWithKinds K P0) (legacyTypeCtx C κ) Γ t ks (embedTys ts) (es.map embedEff) :=
+  ⟨source, types, args.kinded (legacyTypeCtx_kinds hc), rows, result⟩
 
 /-- 関数の実際の宣言が読む kind 列へ同じ入力を接続する。 -/
 theorem embedDefWithKinds_signatureInstance {K P0 κ C Γ f d ts}
     {es : List Benitoite.Release.Eff}
     (wf : K.WF P0) (hd : P0.defs f = some d) (hc : κ.length = C.length)
     (source : (Ty.dependentFn (embedDefWithKinds (K.functionParams f) d).tel).WF 0 (K.functionParams f).length 0)
-    (types : TypeAnnotations (embedProgramWithKinds K P0) C Γ (embedTys ts))
+    (types : TypeAnnotations (embedProgramWithKinds K P0) (legacyTypeCtx C κ) Γ (embedTys ts))
     (args : LegacyKindArgs K P0 κ ts (K.functionParams f))
-    (rows : RowAnnotations (embedProgramWithKinds K P0) C Γ (es.map embedEff))
-    (result : Ty.Annotation (embedProgramWithKinds K P0) C Γ
+    (rows : RowAnnotations (embedProgramWithKinds K P0) (legacyTypeCtx C κ) Γ (es.map embedEff))
+    (result : Ty.Annotation (embedProgramWithKinds K P0) (legacyTypeCtx C κ) Γ
       (.dependentFn (instantiatedTel (embedDefWithKinds (K.functionParams f) d).tel (embedTys ts) (es.map embedEff)))) :
-    SignatureInstance (embedProgramWithKinds K P0) C Γ (embedDefWithKinds (K.functionParams f) d).tel
+    SignatureInstance (embedProgramWithKinds K P0) (legacyTypeCtx C κ) Γ (embedDefWithKinds (K.functionParams f) d).tel
       ((embedDefWithKinds (K.functionParams f) d).tparams.map TParamDecl.kind) (embedTys ts) (es.map embedEff) := by
   rw [(embedDefWithKinds_parameters wf hd).2]
   exact legacy_signatureInstance hc source types args rows result
@@ -89,12 +89,12 @@ theorem embedMethSigWithKinds_signatureInstance {K P0 κ C Γ cl cd m ms ts}
     (hc : κ.length = C.length)
     (source : (Ty.dependentFn (embedMethSigWithKinds (K.methodParams cl m) ms).tel).WF 0
       (K.methodParams cl m ++ [K.classArgument cl]).length 0)
-    (types : TypeAnnotations (embedProgramWithKinds K P0) C Γ (embedTys ts))
+    (types : TypeAnnotations (embedProgramWithKinds K P0) (legacyTypeCtx C κ) Γ (embedTys ts))
     (args : LegacyKindArgs K P0 κ ts (K.methodParams cl m ++ [K.classArgument cl]))
-    (rows : RowAnnotations (embedProgramWithKinds K P0) C Γ (es.map embedEff))
-    (result : Ty.Annotation (embedProgramWithKinds K P0) C Γ
+    (rows : RowAnnotations (embedProgramWithKinds K P0) (legacyTypeCtx C κ) Γ (es.map embedEff))
+    (result : Ty.Annotation (embedProgramWithKinds K P0) (legacyTypeCtx C κ) Γ
       (.dependentFn (instantiatedTel (embedMethSigWithKinds (K.methodParams cl m) ms).tel (embedTys ts) (es.map embedEff)))) :
-    SignatureInstance (embedProgramWithKinds K P0) C Γ (embedMethSigWithKinds (K.methodParams cl m) ms).tel
+    SignatureInstance (embedProgramWithKinds K P0) (legacyTypeCtx C κ) Γ (embedMethSigWithKinds (K.methodParams cl m) ms).tel
       ((embedMethSigWithKinds (K.methodParams cl m) ms).tparams.map TParamDecl.kind ++
         [(embedClassDeclWithKinds K cl cd).argumentKind]) (embedTys ts) (es.map embedEff) := by
   rw [(embedMethSigWithKinds_parameters wf hcl hm).2]

@@ -101,30 +101,29 @@ mutual
 end
 
 /-- WF は依存列内の深さを増やし、Annotation は参照順序・sort・宣言を同時に読む。 -/
-def SignatureScoped (P : Program) (C : List TParam) (K : KindCtx) (ne : Nat) (t : Tel) : Prop :=
-  (Ty.dependentFn t).SourceScoped 0 K.length ne 0 ∧ t.RowsIn (· < ne) ∧
-    Ty.HasKind P K (.dependentFn t) .value ∧ Ty.Annotation P C [] (.dependentFn t)
+def SignatureScoped (P : Program) (C : TypeCtx) (ne : Nat) (t : Tel) : Prop :=
+  (Ty.dependentFn t).SourceScoped 0 C.length ne 0 ∧ t.RowsIn (· < ne) ∧
+    Ty.HasKind P (TypeCtx.kinds C) (.dependentFn t) .value ∧ Ty.Annotation P C [] (.dependentFn t)
 
 def Def.Scoped (P : Program) (d : Def) : Prop :=
   NamesWF d.names d.params ∧
-    SignatureScoped P (d.tparams.map TParamDecl.constraints) (d.tparams.map TParamDecl.kind) d.neffs d.tel ∧
+    SignatureScoped P d.tparams d.neffs d.tel ∧
     d.body.SourceScoped 0 d.ntys d.neffs d.params.length
 
 def ConDecl.Scoped (P : Program) (cd : ConDecl) : Prop :=
   ∀ a ∈ cd.args, a.SourceScoped 0 cd.ntys 0 0 ∧
-    Ty.Annotation P (List.replicate cd.ntys ({} : TParam)) [] a ∧
+    Ty.Annotation P (List.replicate cd.ntys TypeCtx.valueParam) [] a ∧
     Ty.HasKind P (List.replicate cd.ntys .value) a .value
 
 def OpDecl.Scoped (P : Program) (od : OpDecl) : Prop :=
   NamesWF od.names od.params ∧
     (∀ p ∈ od.dictParams, p.2 < od.tparams.length) ∧
     od.params.take od.dictParams.length = od.dictParams.map (fun p => .dict p.1 (.tvar p.2)) ∧
-    SignatureScoped P od.tparams (List.replicate od.tparams.length .value) 0 od.tel
+    SignatureScoped P (TypeCtx.values od.tparams) 0 od.tel
 
 def MethSig.Scoped (P : Program) (argumentKind : TyKind) (ms : MethSig) : Prop :=
   NamesWF ms.names ms.params ∧
-    SignatureScoped P (ms.tparams.map TParamDecl.constraints ++ [({} : TParam)])
-      (ms.tparams.map TParamDecl.kind ++ [argumentKind]) ms.neffs ms.tel
+    SignatureScoped P (ms.tparams ++ [⟨{}, argumentKind⟩]) ms.neffs ms.tel
 
 def ClassDecl.Scoped (P : Program) (cl : ClassDecl) : Prop :=
   ∀ m ms, cl.methods m = some ms → ms.Scoped P cl.argumentKind
@@ -132,8 +131,8 @@ def ClassDecl.Scoped (P : Program) (cl : ClassDecl) : Prop :=
 def ImplDecl.Scoped (P : Program) (id : ImplDecl) : Prop :=
   (∀ p ∈ id.dictParams, p.2 < id.tparams.length) ∧
     id.target.SourceScoped 0 id.tparams.length 0 0 ∧
-    Ty.Annotation P id.tparams [] id.target ∧
-    TypeAnnotations P id.tparams [] id.dictTys ∧
+    Ty.Annotation P (TypeCtx.values id.tparams) [] id.target ∧
+    TypeAnnotations P (TypeCtx.values id.tparams) [] id.dictTys ∧
     (∀ a ∈ id.dictTys, a.HasKind P (List.replicate id.tparams.length .value) .value) ∧
     (∀ s u, id.supers s = some u → u.SourceScoped 0 id.tparams.length 0 id.dictTys.length) ∧
     (∀ cd m ms body, P.classes id.cls = some cd → cd.methods m = some ms → id.methods m = some body →
@@ -146,7 +145,7 @@ def Program.MetadataScoped (P : Program) : Prop :=
     (∀ c cd, P.cons c = some cd → cd.data = d → cd.ntys = info.arity) ∧
     (∀ a ∈ info.requirements ++ info.publicBoundary.map Prod.snd,
       a.SourceScoped 0 info.arity 0 0 ∧
-      Ty.Annotation P (List.replicate info.arity ({} : TParam)) [] a ∧
+      Ty.Annotation P (List.replicate info.arity TypeCtx.valueParam) [] a ∧
       Ty.HasKind P (List.replicate info.arity .value) a .value)
 
 structure Program.WellFormed (P : Program) : Prop where

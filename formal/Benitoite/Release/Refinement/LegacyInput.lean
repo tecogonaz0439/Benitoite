@@ -23,7 +23,7 @@ def LegacyTypeInput (K : DeclarationKinds) (P0 : Benitoite.Release.Program)
   (embedTy a).HasKind (embedProgramWithKinds K P0) Δ.kinds kind ∧
   (embedTy a).WF Δ.nr Δ.kinds.length Δ.nv ∧
   (embedTy a).Sorted (List.replicate Δ.nv none) ∧
-  (embedTy a).Declared (embedProgramWithKinds K P0) Δ.constraints (List.replicate Δ.nv none) ∧
+  (embedTy a).Declared (embedProgramWithKinds K P0) (legacyTypeCtx Δ.constraints Δ.kinds) (List.replicate Δ.nv none) ∧
   (embedTy a).RangesScoped Δ.nr
 
 def LegacyTypesInput (K : DeclarationKinds) (P0 : Benitoite.Release.Program)
@@ -161,7 +161,7 @@ def LegacyContextInput (K : DeclarationKinds) (P0 : Benitoite.Release.Program)
   Δ.constraints = C ∧ Δ.nv = Γ.length ∧ Δ.kinds.length = C.length ∧
   (∀ l lt, Ψ l = some lt → LegacyLocInput K P0 .closed lt) ∧
   (∀ (i : Nat) (a : Benitoite.Release.Ty), Γ[i]? = some (some a) → LegacyTypeInput K P0 Δ a .value ∧
-    Ty.Annotation (embedProgramWithKinds K P0) C (Γ.map (Option.map embedTy)) (embedTy a))
+    Ty.Annotation (embedProgramWithKinds K P0) (legacyTypeCtx C Δ.kinds) (Γ.map (Option.map embedTy)) (embedTy a))
 
 /-- 宣言本体を構文として走査する。型付き本体の結論を入力にしない。 -/
 def LegacyDeclarationsInput (K : DeclarationKinds) (P0 : Benitoite.Release.Program)

@@ -22,6 +22,27 @@ def embedTParam (p : Benitoite.Release.TParam) : TParamDecl := ⟨p, .value⟩
 @[simp] theorem embedTParam_kind (p : Benitoite.Release.TParam) :
     (embedTParam p).kind = .value := rfl
 
+/-- 宣言した kind と組込みの制約を、同じ型パラメータの位置で保持する。 -/
+abbrev TypeCtx := List TParamDecl
+
+namespace TypeCtx
+  def constraints (C : TypeCtx) : List Benitoite.Release.TParam :=
+    C.map TParamDecl.constraints
+  def kinds (C : TypeCtx) : KindCtx := C.map TParamDecl.kind
+  def values (ps : List Benitoite.Release.TParam) : TypeCtx := ps.map embedTParam
+  def valueParam : TParamDecl := ⟨{}, .value⟩
+
+  theorem kinds_eq_map (C : TypeCtx) : kinds C = C.map TParamDecl.kind := rfl
+
+  @[simp] theorem constraints_values (ps : List Benitoite.Release.TParam) :
+      constraints (values ps) = ps := by simp [constraints, values, List.map_map, Function.comp_def]
+  @[simp] theorem kinds_values (ps : List Benitoite.Release.TParam) :
+      kinds (values ps) = List.replicate ps.length .value := by
+    induction ps <;> simp_all [kinds, values, embedTParam, List.replicate_succ, Function.comp_def]
+  @[simp] theorem length_values (ps : List Benitoite.Release.TParam) :
+      (values ps).length = ps.length := by simp [values]
+end TypeCtx
+
 theorem embedTParam_injective : Function.Injective embedTParam := by
   intro a b h
   exact congrArg TParamDecl.constraints h

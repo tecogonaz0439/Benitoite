@@ -383,3 +383,5 @@ import Benitoite.Release.Refinement.EffectFacts
 import Benitoite.Release.Refinement.TypeArgumentRegularity
 
 import Benitoite.Release.Refinement.CaptureRegularity
+
+import Benitoite.Release.Refinement.TypeSubstContracts

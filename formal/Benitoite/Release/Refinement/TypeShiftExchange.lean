@@ -99,7 +99,7 @@ theorem TypeCtxMap.methodRows {P C C' Γ Δ ms Q es k c} (hm : TypeCtxMap k c Γ
   refine ⟨by simpa using ha.1,?_,by simpa using ha.2.2.1,by simpa using ha.2.2.2.1,?_⟩
   · intro f hf
     obtain ⟨e,he',rfl⟩ := List.mem_map.mp hf
-    exact (hm.annotation hn (he e he')).wf.2.2.2.1
+    simpa only [hn, hm.length] using Eff.wf_shiftTypes (ha.2.1 e he') k c
   · exact ha.2.2.2.2.map _ (fun _ h => h.shiftTypes k c) (fun _ => rfl)
 
 theorem unguardedPats_shiftEAt (arms : List Arm) (k c : Nat) :

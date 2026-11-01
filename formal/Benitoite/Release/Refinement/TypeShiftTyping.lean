@@ -27,36 +27,36 @@ mutual
       · simpa only [shiftTypes,shiftTypesList_eq_map] using Ty.sorted_shiftTypes hs hm
       · have hh := HasTypeCQ.shift_types hb hA hstore.hide hC hn (hm.hide.params ps)
         simpa only [shiftTypes_shiftV,shiftRowsTypes_shiftV,List.length_map,Option.map_some,LocalCtx.shiftEAt,List.map_nil] using hh
-      · simpa only [shiftTypes,shiftTypesList_eq_map] using hd.shiftTypes hm
+      · simpa only [shiftTypes,shiftTypesList_eq_map] using hd.shiftTypes hm hC
     | .V_DependentLam ha hb =>
-      exact .V_DependentLam (hm.annotation hn ha) (TelBodyTy.shift_types hb hA hstore.hide hC hn hm.hide)
+      exact .V_DependentLam ((hm.annotation hn ha hC)) (TelBodyTy.shift_types hb hA hstore.hide hC hn hm.hide)
     | .V_Closure (runtime := runtime) (t := t) ha hw hb =>
       have he := Ty.shiftTypes_of_wf_zero (show (Ty.dependentFn t).WF 0 0 0 from hw.contract_wf) k c
       simpa only [Val.shiftEAt, he] using
         HasTypeVQ.V_Closure (Ψ := store) (Q := Q) (Φ := Φ)
-          (by simpa only [he] using hm.annotation hn ha) hw hb
+          (by simpa only [he] using (hm.annotation hn ha hC)) hw hb
     | .V_List hv hw hs hd =>
       exact .V_List (HasTypeEachQ.shift_types hv hA hstore hC hn hm)
-        (by simpa only [hn,hm.length] using Ty.wf_shiftTypes hw k c) (Ty.sorted_shiftTypes hs hm) (hd.shiftTypes hm)
+        (by simpa only [hn,hm.length] using Ty.wf_shiftTypes hw k c) (Ty.sorted_shiftTypes hs hm) (hd.shiftTypes hm hC)
     | .V_Fun hd hnames ha hi =>
       have hc := hi.kinds.1
-      have hh := HasTypeVQ.V_Fun (Ψ := store) (Q := Q) (Φ := Φ) hd hnames (hm.admissible hn hA hC hi.types hi.rows ha) (hm.signature hn hi)
+      have hh := HasTypeVQ.V_Fun (Ψ := store) (Q := Q) (Φ := Φ) hd hnames (hm.admissible hn hA hC hi.types hi.rows ha) ((hm.signature hn hi hC))
       simpa only [Val.shiftEAt,shiftTypes,hi.shiftTel k c] using hh
     | .V_Prim hb hr hnames ha hi =>
       have hc := hi.kinds.1
-      have hh := HasTypeVQ.V_Prim (Ψ := store) (Q := Q) (Φ := Φ) hb hr hnames (hm.primitive hn hA hC hb hi.types hi.rows ha) (hm.signature hn hi)
+      have hh := HasTypeVQ.V_Prim (Ψ := store) (Q := Q) (Φ := Φ) hb hr hnames (hm.primitive hn hA hC hb hi.types hi.rows ha) ((hm.signature hn hi hC))
       simpa only [Val.shiftEAt,shiftTypes,hi.shiftTel k c] using hh
     | .V_Op ho hnames ha hi =>
       have hc := hi.kinds.1
-      have hh := HasTypeVQ.V_Op (Ψ := store) (Q := Q) (Φ := Φ) ho hnames (ha.shiftTypes hA hC hm hn hi.types) (hm.signature hn hi)
+      have hh := HasTypeVQ.V_Op (Ψ := store) (Q := Q) (Φ := Φ) ho hnames (ha.shiftTypes hA hC hm hn hi.types) ((hm.signature hn hi hC))
       simpa only [Val.shiftEAt,shiftTypes,List.map_nil,hi.shiftTel k c] using hh
     | .V_ExternalRef hd hw ha hi =>
       have hc := hi.kinds.1
-      have hh := HasTypeVQ.V_ExternalRef (Ψ := store) (Q := Q) (Φ := Φ) hd hw (ha.shiftTypes hw k c) (hm.signature hn hi)
+      have hh := HasTypeVQ.V_ExternalRef (Ψ := store) (Q := Q) (Φ := Φ) hd hw (ha.shiftTypes hw k c) ((hm.signature hn hi hC))
       simpa only [Val.shiftEAt,shiftTypes,List.map_nil,hi.shiftTel k c] using hh
     | .V_ExternalHandle h td hd hc hr hl ha =>
       simpa only [Val.shiftEAt,shiftTypes,shiftTypesList_eq_map] using
-        HasTypeVQ.V_ExternalHandle h td hd hc hr (by simpa using hl) (hm.annotation hn ha)
+        HasTypeVQ.V_ExternalHandle h td hd hc hr (by simpa using hl) ((hm.annotation hn ha hC))
     | .V_PathBases hs => exact .V_PathBases hs
     | .V_ScopePattern hw hc hk => exact .V_ScopePattern hw hc hk
     | .V_Checked hk hc ht => exact .V_Checked hk hc ht
@@ -68,10 +68,10 @@ mutual
     | .V_Map hv hw hl hs ha hb =>
       exact .V_Map (HasTypeEachQ.shift_types hv hA hstore hC hn hm)
         (HasTypeEachQ.shift_types hw hA hstore hC hn hm) (by simpa using hl)
-        (hA.sat_shiftTypes_raw hC ha (hm.annotation hn ha) hs) (hm.annotation hn ha) (hm.annotation hn hb)
+        (hA.sat_shiftTypes_raw hC ha ((hm.annotation hn ha hC)) hs) ((hm.annotation hn ha hC)) ((hm.annotation hn hb hC))
     | .V_Set hv hs ha =>
       exact .V_Set (HasTypeEachQ.shift_types hv hA hstore hC hn hm)
-        (hA.sat_shiftTypes_raw hC ha (hm.annotation hn ha) hs) (hm.annotation hn ha)
+        (hA.sat_shiftTypes_raw hC ha ((hm.annotation hn ha hC)) hs) ((hm.annotation hn ha hC))
     | .V_Dict (id := id) (ts := ts) hi hs ht hk hw htarget hv ha =>
       have hl := hs.1
       have hv' := HasTypeVsQ.shift_types hv hA hstore hC hn hm
@@ -80,19 +80,20 @@ mutual
         rw [List.map_map]
         exact List.map_congr_left (fun a ha => Ty.subst_shiftTypes (hw a ha) ts [] (by omega) k c)
       rw [he] at hv'
-      have ha' := hm.annotation hn ha
+      have ha' := (hm.annotation hn ha hC)
       simp only [shiftTypes,Ty.subst_shiftTypes htarget ts [] (by omega)] at ha' ⊢
-      exact .V_Dict hi (hs.shiftTypes hA hC hm hn ht) (hm.annotations hn ht) (hk.shiftTypes k c hn) hw htarget hv' ha'
-    | .V_Raise ha hot hoe =>
+      exact .V_Dict hi (hs.shiftTypes hA hC hm hn ht) ((hm.annotations hn ht hC)) (hk.shiftTypes hC) hw htarget hv' ha'
+    | .V_Raise ha hot hoe hkind =>
       simpa only [Val.shiftEAt,shiftTypes,shiftTypesList,List.map_cons,List.map_nil,raw_singleFail] using
-        HasTypeVQ.V_Raise (by simpa only [shiftTypes,shiftTypesList,raw_singleFail] using hm.annotation hn ha)
+        HasTypeVQ.V_Raise (by simpa only [shiftTypes,shiftTypesList,raw_singleFail] using (hm.annotation hn ha hC))
           ((Ty.ordinary_shiftTypes _ _ _).mpr hot) ((Ty.ordinary_shiftTypes _ _ _).mpr hoe)
+          (by rw [← Ty.rawRenameTypes_shift]; exact hkind.renameTypes hC.kindRenaming)
     | .V_LocRef (a := a) hl hd =>
       have he := Ty.shiftTypes_of_wf_zero (hstore _ _ hl) k c
-      simpa only [Val.shiftEAt,shiftTypes,he] using HasTypeVQ.V_LocRef hl (he ▸ hd.shiftTypes hm)
+      simpa only [Val.shiftEAt,shiftTypes,he] using HasTypeVQ.V_LocRef hl (he ▸ hd.shiftTypes hm hC)
     | .V_LocLazy (a := a) hl hd =>
       have he := Ty.shiftTypes_of_wf_zero (hstore _ _ hl) k c
-      simpa only [Val.shiftEAt,shiftTypes,he] using HasTypeVQ.V_LocLazy hl (he ▸ hd.shiftTypes hm)
+      simpa only [Val.shiftEAt,shiftTypes,he] using HasTypeVQ.V_LocLazy hl (he ▸ hd.shiftTypes hm hC)
     | .V_Bytes hb => exact .V_Bytes hb
     | .V_Con (cd := cd) (ts := ts) hc hl hk hw hv ha =>
       have hh := HasTypeVsQ.shift_types hv hA hstore hC hn hm
@@ -102,20 +103,20 @@ mutual
         exact List.map_congr_left (fun a ha => Ty.subst_shiftTypes (hw a ha) ts [] (by omega) k c)
       rw [he] at hh
       simpa only [Val.shiftEAt,shiftTypes,shiftTypesList_eq_map] using
-        HasTypeVQ.V_Con hc (by simpa using hl) (hk.shiftTypes k c hn) hw hh
-          (by simpa only [shiftTypes,shiftTypesList_eq_map] using hm.annotation hn ha)
+        HasTypeVQ.V_Con hc (by simpa using hl) (hk.shiftTypes hC) hw hh
+          (by simpa only [shiftTypes,shiftTypesList_eq_map] using (hm.annotation hn ha hC))
     | .V_Super hv hc hs hd =>
-      exact .V_Super (HasTypeVQ.shift_types hv hA hstore hC hn hm) hc hs (hd.shiftTypes hm)
+      exact .V_Super (HasTypeVQ.shift_types hv hA hstore hC hn hm) hc hs (hd.shiftTypes hm hC)
     | .V_Normal hv =>
       simpa only [Ty.norm_shiftTypes] using (HasTypeVQ.shift_types hv hA hstore hC hn hm).V_Normal
     | .V_Sub hv hl hw hs hd =>
       exact .V_Sub (HasTypeVQ.shift_types hv hA hstore hC hn hm) (hl.shiftTypes hm)
-        (by simpa only [hn,hm.length] using Ty.wf_shiftTypes hw k c) (Ty.sorted_shiftTypes hs hm) (hd.shiftTypes hm)
+        (by simpa only [hn,hm.length] using Ty.wf_shiftTypes hw k c) (Ty.sorted_shiftTypes hs hm) (hd.shiftTypes hm hC)
     | .V_Refine hv hi ht hs hw he hda hdp =>
       exact .V_Refine (HasTypeVQ.shift_types hv hA hstore hC hn hm)
         ((Ty.hasSort_shiftTypes _ _ _ _).mpr hi) (by simpa only [Val.toTerm_shiftEAt] using ht)
         (Pred.sorted_shiftTypes hs hm) (by simpa only [hm.length] using hw) (hm.entails he)
-        (hda.shiftTypes hm) (hdp.shiftTypes hm)
+        (hda.shiftTypes hm hC) (hdp.shiftTypes hm)
   termination_by structural h
 
   theorem HasTypeVsQ.shift_types {P B store Q C Γ Φ vs as}
@@ -147,16 +148,16 @@ mutual
     match h with
     | .C_BuilderLet (kind := kind) ha hk hb hd =>
       simp only [Comp.shiftEAt]
-      refine .C_BuilderLet (by simpa only [shiftKindE_contents] using hm.annotation hn ha)
-        (by simpa only [shiftKindE_contents,List.map_cons,List.map_nil] using hk.shiftTypes k c hn) ?_ (hd.shiftTypes hm)
+      refine .C_BuilderLet (by simpa only [shiftKindE_contents] using (hm.annotation hn ha hC))
+        (by simpa only [shiftKindE_contents,List.map_cons,List.map_nil] using hk.shiftTypes hC) ?_ (hd.shiftTypes hm hC)
       have hh := HasTypeCQ.shift_types hb hA hstore hC hn hm.none
       simpa only [shiftTypes_shiftV,shiftRowsTypes_shiftV,Option.map_map,Function.comp_def,
         LocalCtx.shiftEAt_extend,Option.map_some,shiftKindE_rename,localExtend] using hh
     | .C_BuilderOp ha hk hr hv =>
       simp only [Comp.shiftEAt]
       rw [←shiftKindE_result]
-      exact .C_BuilderOp (by simpa only [shiftKindE_contents] using hm.annotation hn ha)
-        (by simpa only [shiftKindE_contents,List.map_cons,List.map_nil] using hk.shiftTypes k c hn)
+      exact .C_BuilderOp (by simpa only [shiftKindE_contents] using (hm.annotation hn ha hC))
+        (by simpa only [shiftKindE_contents,List.map_cons,List.map_nil] using hk.shiftTypes hC)
         (hr.shiftTypes hstore k c) (by simpa only [shiftKindE_parameters] using HasTypeVsQ.shift_types hv hA hstore hC hn hm)
     | .C_Return hv => exact .C_Return (HasTypeVQ.shift_types hv hA hstore hC hn hm)
     | .C_DependentApp hv ht =>
@@ -177,8 +178,8 @@ mutual
       intro t ht
       obtain ⟨hv,s,hs⟩ := ho t ht
       exact ⟨by simpa only [Val.toTerm_shiftEAt] using hv,s,(by simpa only [termBind_id] using Term.hasSort_termBind hs _ hm.images hm.references)⟩
-    | .C_Lazy hb ha => exact .C_Lazy (HasTypeCQ.shift_types hb hA hstore.hide hC hn hm.hide) (hm.annotation hn ha)
-    | .C_Escape hv ha => exact .C_Escape (HasTypeVQ.shift_types hv hA hstore hC hn hm) (hm.annotation hn ha)
+    | .C_Lazy hb ha => exact .C_Lazy (HasTypeCQ.shift_types hb hA hstore.hide hC hn hm.hide) ((hm.annotation hn ha hC))
+    | .C_Escape hv ha => exact .C_Escape (HasTypeVQ.shift_types hv hA hstore hC hn hm) ((hm.annotation hn ha hC))
     | .C_Use hv hr hb he =>
       exact .C_Use (HasTypeVQ.shift_types hv hA hstore hC hn hm) hr
         (HasTypeCQ.shift_types hb hA hstore hC hn hm) (by cases e; exact he)
@@ -191,10 +192,10 @@ mutual
       exact .C_Handle_Fail (HasTypeCQ.shift_types hb hA hstore hC hn hm)
         (by simpa only [Eff.shiftTypes_union,raw_singleFail] using hc.shiftTypes k c)
         (hnf.shiftTypes k c) (HasFailureClause.shift_types hh hA hstore hC hn hm)
-    | .C_Resume hi hv hd => exact .C_Resume (hm.lookup _ _ hi) (HasTypeVQ.shift_types hv hA hstore hC hn hm) (hd.shiftTypes hm)
+    | .C_Resume hi hv hd => exact .C_Resume (hm.lookup _ _ hi) (HasTypeVQ.shift_types hv hA hstore hC hn hm) (hd.shiftTypes hm hC)
     | .C_ResumeNorm hi hv hd =>
       have hv' := HasTypeVQ.shift_types hv hA hstore hC hn hm
-      have hd' := hd.shiftTypes (C' := C') hm
+      have hd' := hd.shiftTypes (C' := C') hm hC
       have hh := HasTypeCQ.C_ResumeNorm (R := R.map (shiftTypes k c)) (Δ := L.shiftEAt k c) (hm.lookup _ _ hi)
         (by simpa only [← Ty.norm_shiftTypes] using hv')
         (by simpa only [← Ty.norm_shiftTypes] using hd')
@@ -216,7 +217,7 @@ mutual
       rw [comm, comm, hR] at hr'
       have hv' := HasTypeVQ.shift_types hv hA hstore hC hn hm
       simp only [Comp.shiftEAt, Val.shiftEAt, ←Ty.norm_shiftTypes, ←Eff.norm_shiftTypes, hb, ht, he] at hv' ⊢
-      exact .C_ResumeLNorm hl hr' hv' (by simpa only [←Ty.norm_shiftTypes, ht] using hd.shiftTypes hm)
+      exact .C_ResumeLNorm hl hr' hv' (by simpa only [←Ty.norm_shiftTypes, ht] using hd.shiftTypes hm hC)
     | .C_ResumeL (b := b) (t := t) (ε := ε) (R := r) hl hv hd =>
       have hw := hstore _ _ hl
       have hb := Ty.shiftTypes_of_wf_zero hw.1 k c
@@ -228,7 +229,7 @@ mutual
         | some a => exact congrArg some (Ty.shiftTypes_of_wf_zero (hw.2.2.2.2 a ho) k c)
       have hv' := HasTypeVQ.shift_types hv hA hstore hC hn hm
       simp only [Comp.shiftEAt,Val.shiftEAt,hb,ht,he,hr] at hv' ⊢
-      exact .C_ResumeL hl hv' (ht ▸ hd.shiftTypes hm)
+      exact .C_ResumeL hl hv' (ht ▸ hd.shiftTypes hm hC)
     | .C_Meth hv hc hmeth hnames hs hi hr hargs hvs ha =>
       have hkc := hi.kinds.1
       have hl := hs.1
@@ -237,8 +238,8 @@ mutual
       rw [hi.shiftTel k c] at hargs'
       simp only [List.map_append,List.map_cons,List.map_nil] at hargs'
       exact .C_Meth (HasTypeVQ.shift_types hv hA hstore hC hn hm) hc hmeth hnames hs'
-        (by simpa only [List.map_append,List.map_cons,List.map_nil] using hm.signature hn hi)
-        (hm.methodRows hn hi.rows hr) hargs' (HasTypeVsQ.shift_types hvs hA hstore hC hn hm) (hm.annotation hn ha)
+        (by simpa only [List.map_append,List.map_cons,List.map_nil] using (hm.signature hn hi hC))
+        (hm.methodRows hn hi.rows hr) hargs' (HasTypeVsQ.shift_types hvs hA hstore hC hn hm) ((hm.annotation hn ha hC))
     | .C_External (ts := ts) hd hw ha ht =>
       have hh := HasTypeTelArgsQ.shift_types ht hA hstore hC hn hm
       have hlen := ha.count
@@ -254,10 +255,10 @@ mutual
         HasTypeCQ.C_CheckAt (R := R.map (shiftTypes k c)) (Δ := L.shiftEAt k c) hh
     | .C_Sub hb hl hc hw hs hd =>
       exact .C_Sub (HasTypeCQ.shift_types hb hA hstore hC hn hm) (hl.shiftTypes hm) (hc.shiftTypes k c)
-        (by simpa only [hn,hm.length] using Ty.wf_shiftTypes hw k c) (Ty.sorted_shiftTypes hs hm) (hd.shiftTypes hm)
+        (by simpa only [hn,hm.length] using Ty.wf_shiftTypes hw k c) (Ty.sorted_shiftTypes hs hm) (hd.shiftTypes hm hC)
     | .C_Eff hb hc => exact .C_Eff (HasTypeCQ.shift_types hb hA hstore hC hn hm) (hc.shiftTypes k c)
     | .C_Let (a := x) ht hb hd =>
-      refine .C_Let (HasTypeCQ.shift_types ht hA hstore hC hn hm) ?_ (hd.shiftTypes hm)
+      refine .C_Let (HasTypeCQ.shift_types ht hA hstore hC hn hm) ?_ (hd.shiftTypes hm hC)
       have hh := HasTypeCQ.shift_types hb hA hstore hC hn (hm.extend x)
       simpa only [shiftTypes_shiftV,shiftRowsTypes_shiftV,Option.map_map,Function.comp_def,LocalCtx.shiftEAt_localExtend] using hh
   termination_by structural h
@@ -269,7 +270,7 @@ mutual
       HasTypeArmsQ P B store Q C' Δ Φ (R.map (shiftTypes k c)) obs (Arm.shiftEListAt k c arms)
         (shiftTypes k c a) (shiftTypes k c b) (shiftRowsTypes k c e) (L.shiftEAt k c) := by
     match h with
-    | .nil ha => exact .nil (hm.annotation hn ha)
+    | .nil ha => exact .nil ((hm.annotation hn ha hC))
     | .plain (δ := δ) (alts := alts) hp hw hb hs =>
       have hw' : FactsWF P C' Δ (pathFacts obs (matchedTests alts ++ excludedTests alts)) := by
         intro p hp
@@ -284,7 +285,7 @@ mutual
         intro p hp
         have h := hw p hp
         exact ⟨by simpa only [hm.length] using h.wf,(by simpa only [predBind_id] using h.sorted.map (Δ := Δ) (other := none) hm.images hm.references),h.declared.shiftTypes hm⟩
-      refine .guarded (hp.shift_types k c) hw' (by simpa only [shiftTypes] using (hm.params δ).hide.annotation hn hgp)
+      refine .guarded (hp.shift_types k c) hw' (by simpa only [shiftTypes] using (hm.params δ).hide.annotation hn hgp hC)
         ?_ ?_ (HasTypeArmsQ.shift_types hs hA hstore hC hn hm)
       · simpa only [Option.map_none,shiftTypes,shiftRowsTypes,shiftTypesList,Eff.empty,
           LocalCtx.shiftEAt_localExtend,List.length_map] using
@@ -321,11 +322,11 @@ mutual
     match h with
     | .one ha ht he hb =>
       simp only [Clause.shiftEListAt]
-      refine .one (hm.annotation hn ha) (hm.annotation hn ht)
-        (by simpa only [List.map_cons,List.map_nil] using hm.rows hn he) ?_
-      have hC' : TypeParamRenaming (({} : TParam)::C) (({} : TParam)::C') (shiftIndex k (c+1)) := by
-        simpa only [List.singleton_append,List.length_cons,List.length_nil,Nat.zero_add,upRen_shiftIndex] using hC.under [{}]
-      have hn' : (({} : TParam)::C').length=(({} : TParam)::C).length+k := by simp only [List.length_cons,hn]; omega
+      refine .one ((hm.annotation hn ha hC)) ((hm.annotation hn ht hC))
+        (by simpa only [List.map_cons,List.map_nil] using (hm.rows hn he hC)) ?_
+      have hC' : TypeParamRenaming (TypeCtx.valueParam::C) (TypeCtx.valueParam::C') (shiftIndex k (c+1)) := by
+        simpa only [List.singleton_append,List.length_cons,List.length_nil,Nat.zero_add,upRen_shiftIndex] using hC.under [TypeCtx.valueParam]
+      have hn' : (TypeCtx.valueParam::C').length=(TypeCtx.valueParam::C).length+k := by simp only [List.length_cons,hn]; omega
       have hh := HasTypeCQ.shift_types hb hA hstore.hide hC' hn' (hm.failure E)
       simpa only [Option.map_map,Function.comp_def,shiftTypes_shiftV,shiftRowsTypes_shiftV,
         shiftTypes_comm,shiftRowsTypes_comm,LocalCtx.shiftEAt,List.map_nil] using hh
@@ -338,9 +339,9 @@ mutual
       HasTypeTelArgsQ P B store Q C' Δ Φ (Val.shiftEListAt k c vs) (shiftTelTypes k c t)
         (shiftTypes k c a) (shiftRowsTypes k c e) := by
     match h with
-    | .done ha => exact .done (hm.annotation hn ha)
+    | .done ha => exact .done ((hm.annotation hn ha hC))
     | .param ha hv ht =>
-      refine .param (hm.annotation hn ha) (HasTypeVQ.shift_types hv hA hstore hC hn hm) ?_
+      refine .param ((hm.annotation hn ha hC)) (HasTypeVQ.shift_types hv hA hstore hC hn hm) ?_
       rw [Tel.open_shiftTypes]
       exact HasTypeTelArgsQ.shift_types ht hA hstore hC hn hm
   termination_by structural h

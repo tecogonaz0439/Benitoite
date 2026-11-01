@@ -171,7 +171,7 @@ def StateTy (P : Program) (B : Builtins) (σ : PathEnv) (s : State) : Prop :=
 
 theorem Ty.Declared.closed_context {P a C Γ} (hd : Ty.Declared P [] [] a) (hw : a.WF 0 0 0) :
     Ty.Declared P C Γ a := by
-  have h0 : Ty.Declared P C [] (Refinement.shiftTypes 0 0 a) := hd.shiftTypes (TypeCtxMap.shiftEAt [] 0 0)
+  have h0 : Ty.Declared P C [] (Refinement.shiftTypes 0 0 a) := hd.shiftTypes (TypeCtxMap.shiftEAt [] 0 0) (by intro i p hi; simp at hi)
   rw [Ty.shiftTypes_of_wf_zero hw] at h0
   have hm : ShiftMap Γ.length 0 [] Γ := ⟨by simp,by intro i a hi; cases hi⟩
   have hh := hm.declared h0
@@ -182,7 +182,7 @@ theorem Ty.Sorted.closed_context {a : Ty} {Γ : Ctx}
     (h : a.Sorted []) : a.Sorted Γ :=
   h.context ⟨by intro i a hi; cases hi⟩
 
-theorem Ty.WF.closed_context {a : Ty} {C : List TParam} {Γ : Ctx}
+theorem Ty.WF.closed_context {a : Ty} {C : TypeCtx} {Γ : Ctx}
     (h : a.WF 0 0 0) : a.WF 0 C.length Γ.length := by
   have ht := Ty.wf_shiftTypes h C.length 0
   rw [Ty.shiftTypes_of_wf_zero h] at ht
@@ -190,7 +190,7 @@ theorem Ty.WF.closed_context {a : Ty} {C : List TParam} {Γ : Ctx}
   simpa only [Nat.zero_add, Ty.shiftV_of_wf_zero h] using hv
 
 theorem Ty.Annotation.closed_context {P : Program} {a : Ty}
-    {C : List TParam} {Γ : Ctx} (h : Ty.Annotation P [] [] a) : Ty.Annotation P C Γ a :=
+    {C : TypeCtx} {Γ : Ctx} (h : Ty.Annotation P [] [] a) : Ty.Annotation P C Γ a :=
   ⟨h.wf.closed_context, h.sorted.closed_context, h.declared.closed_context h.wf⟩
 
 /-- 捕捉元の三条件から場所の型の注釈を得る。セルと有限性は要求しない。 -/

@@ -3106,7 +3106,13 @@ builders_no_captureとbuilders_block_no_captureは、Aligned Γ ΔからEnvReads
 
 型・エフェクトの行・範囲・値の変数は別の名前空間を持ち、いずれも自然数の番号で表す。型の整形式は `Ty.WF nr nt nv`、述語の番号の上限は `Pred.WF nv` で検査する。`Ty.Annotation P C Γ a` は、番号の上限と内部の行の正規形、観測の種類と参照、宣言表との整合をそれぞれ `WF`・`Sorted`・`Declared` で検査する。`Ty.WF` は、篩の内側の芯が継続の型である形を拒む。述語の自己の可読性と、型代入の形成の補助では `Ordinary` も検査する。`HasKind … .value` だけでは継続型を排除しない。
 
-型付けの判断は、値について `HasTypeVQ P B Ψ Q C Γ Φ v a`、計算について `HasTypeCQ P B Ψ Q C Γ Φ R m a e Δ` と書く。Q は NoFail の文脈、C は型パラメータの制約、Γ は some の通常の位置と none の内部の位置を保つ値の文脈、Φ は有限の述語の列、Δ は構築器の局所文脈である。篩の述語の番号0は self、外側の値はその次から読む。self の種類と参照を調べる文脈と、外側の注釈を移して宣言を照合する文脈は区別する。
+型付けの判断は、値について `HasTypeVQ P B Ψ Q C Γ Φ v a`、計算について `HasTypeCQ P B Ψ Q C Γ Φ R m a e Δ` と書く。Q は NoFail の文脈、C は kind と組み込みの制約を持つ型パラメータの宣言列 `TypeCtx = List TParamDecl`、Γ は some の通常の位置と none の内部の位置を保つ値の文脈、Φ は有限の述語の列、Δ は構築器の局所文脈である。篩の述語の番号0は self、外側の値はその次から読む。self の種類と参照を調べる文脈と、外側の注釈を移して宣言を照合する文脈は区別する。
+
+`TypeCtx.kinds` と `TypeCtx.constraints` は、同じ宣言列から kind と制約をそれぞれ射影する。`TypeCtx.values` は、生の制約列を value kind の宣言列へ写す。`TypeArgsKindedAt` は `TypeArgsKinded` の別名であり、出現ごとに別の kind 文脈を選ばない。`Ty.Declared P C Γ (.tapp i as)` は、`(TypeCtx.kinds C)[i]? = some (.constructor as.length)` と各引数の宣言照合を要求する。`Annotation` の欄は WF・Sorted・Declared の三つである。
+
+`TypeParamRenaming C C' ρ` は、対応する宣言の kind の等号と、移送先の組み込みの制約が移送元の制約を含むことを要求する。`kindRenaming` はこの対応から kind の列の改名を取り出す。型変数の移動と変数の型付けの補助 `shift_types_var` は、この対応を使って tapp の宣言照合を保つ。文脈の長さの一致だけでは、kind の異なる同長の文脈への移送はできない。
+
+`ClosedTypeSubstInput P B C0 C1 Γ ts es` は、型像の個数と WF000、C0 の kind の列との一致、空の型・値文脈での型像の Annotation、C1 の制約の下での C0 の制約への適合、行像の WF000・Annotation・kind、および元の Γ の `CaptureContextRegular P (C1 ++ C0)` を持つ。NoFail の文脈どうしの `RowTransport` はこの入力に含めない。型付けの保存の結論を入力欄には含めない。
 
 `V_Const` は `ConstOK B c` を前提とする。符号付き四幅のうち Integer64 は値自身が値域の証拠を保持し、Integer8/16/32 と符号なし三幅は各構成子の整数がその幅の上下限内にあることを検査する。Byte は自然数の値が255以下、Decimal は係数が −79228162514264337593543950335 以上79228162514264337593543950335以下で scale が28以下であることを要求する。`V_Bytes` は、これとは別にバイト列の全要素が255以下であることを前提とする。述語の観測では七整数と Byte は共通の integer sort を使うが、数の演算に暗黙の型変換を加えない。
 
@@ -3114,9 +3120,9 @@ builders_no_captureとbuilders_block_no_captureは、Aligned Γ ΔからEnvReads
 
 `V_Refine` は、型 a の値 v、a の観測の種類、`v.toTerm? = some t`、p の種類・番号の上限・宣言照合、および `Entails (Γ.facts ++ Φ) (p.open t)` から `refined a p` の型付けを作る。整数だけに限る規則ではない。`C_DependentApp` は関数と `HasTypeTelArgsQ` の導出から、実引数によって具体化した結果型と効果を返す。`TelBodyTy` は、param ごとに値の文脈と Φ を移して本体を検査する。関数参照・組み込み参照・操作・外部参照の型付けは、宣言の kind の列と同じ `SignatureInstance` を要求する。kind は value 又は引数数を持つ constructor であり、型パラメータの宣言と型クラスの引数の kind を保持する。
 
-`TypeArgsKinded` は、各型引数 a と対応する kind k について `HasKind P K a k` と `k = .value → Ordinary a` を要求する。`Ordinary a` は、篩を外した芯の最上位が継続型でないことを表す。Listの要素などに入れ子の継続型を持つ型引数は、この条件で拒まない。Annotation と value kind だけからはこの条件を導かない。constructor kind の型引数は型構成子又は型変数なので、同じ条件を形から導ける。これにより SignatureInstance を使う関数・組み込み・操作・外部参照とメソッド、TypeArgsKinded を直接使う構成子・辞書・構築器が、型置換の像の非継続を供給する。C_Meth の `ss ++ [τ]` の WF と Ordinary も SignatureInstance から得る。
+`TypeArgsKinded P C ts ks` は、型引数と kind の列の長さが等しいことと、各型引数 a と対応する kind k について `HasKind P (TypeCtx.kinds C) a k` と `k = .value → Ordinary a` を要求する。`Ordinary a` は、篩を外した芯の最上位が継続型でないことを表す。Listの要素などに入れ子の継続型を持つ型引数は、この条件で拒まない。Annotation と value kind だけからはこの条件を導かない。constructor kind の型引数は型構成子又は型変数なので、同じ条件を形から導ける。これにより SignatureInstance を使う関数・組み込み・操作・外部参照とメソッド、TypeArgsKinded を直接使う構成子・辞書・構築器が、型置換の像の非継続を供給する。C_Meth の `ss ++ [τ]` の WF と Ordinary も SignatureInstance から得る。
 
-`V_Raise` は、関数型 `fn ["error"] [e] t (singleFail e)` の Annotation に加え、`Ordinary t` と `Ordinary e` を要求する。操作の型引数 ts とメソッド本体へ代入する `ss ++ ts` の Ordinary は、対応する型付けの導出から取り出す。継続を保持する文脈と resume の規則は、型引数とは別に継続型を扱う。
+`V_Raise` は、関数型 `fn ["error"] [e] t (singleFail e)` の Annotation に加え、`Ordinary t` と `Ordinary e`、結果型 t の `HasKind P (TypeCtx.kinds C) t .value` を要求する。操作の型引数 ts とメソッド本体へ代入する `ss ++ ts` の Ordinary は、対応する型付けの導出から取り出す。継続を保持する文脈と resume の規則は、型引数とは別に継続型を扱う。
 
 `RangeExpr` は閉じた絶対範囲、`based base pattern`、secrets の三構成子を持つ。基準名は root/cwd/home/work/tmp である。`PathEnv` は root/cwd/home と任意の work/tmp、未指定と空を区別する任意の秘密パターン列を保持する。被覆は、絶対範囲どうし、同じ基準名の範囲どうし、secrets どうしをそれぞれ比較し、RangeExpr の Top は RangeExpr のすべての式を覆う。異なる種類の記号付き範囲を実行の σ で具体化してから静的に比較する規則はない。`RangeIx` は fixed/rvar を区別する。固定範囲の Top は rvar を覆わず、範囲変数どうしは同じ番号のときだけ覆う。短い具体化の列は未解決の変数を残す。
 
@@ -3154,7 +3160,7 @@ builders_no_captureとbuilders_block_no_captureは、Aligned Γ ΔからEnvReads
 
 `Tel.fnViewWith? s t` は注釈の値移動を外側へ戻して候補を作り、名前の長さ・重複と、候補を `toTel` で戻した構造を、元の候補列 s による有限比較で検査する。支持の下では `some f` と `f.toTel = t` が同値であり、`fnView?` に一致する。`normWith` は型・型列・効果・依存列について、子の正規化、Fail の整列と重複除去、篩の平坦化、`foldFnWith` の順で計算する。支持の下で既存の正規化と一致し、支持の保存・正規形・冪等性・候補列からの独立性を満たす。効果の最上位の所属関数は変えないため、`Eff.normWith_eq_norm_of_fails` は Fail の内部型の支持だけを前提とする。
 
-型付けの `V_Normal`・`C_Normal` は結果型を正規形へ変え、`Ty.LeQ.convert` は正規化後の構造の一致から部分型を与える。`SatAll` は `B.sat C a.norm p`、`Admissible` は `SatAll` を使う。`PrimitiveAdmissible` は `sg.admits C (Ty.normTys ts)` を読む。Map/Set の鍵と外部の値構造の鍵も `B.sat` へ正規形を渡す。信頼条件の欄自体に、任意の型での正規化不変性を仮定する変更は加えない。
+型付けの `V_Normal`・`C_Normal` は結果型を正規形へ変え、`Ty.LeQ.convert` は正規化後の構造の一致から部分型を与える。`SatAll` は `B.sat (TypeCtx.constraints C) a.norm p`、`Admissible` は `SatAll` を使う。`PrimitiveAdmissible` は `sg.admits (TypeCtx.constraints C) (Ty.normTys ts)` を読む。Map/Set の鍵と外部の値構造の鍵も `B.sat` へ正規形を渡す。信頼条件の欄自体に、任意の型での正規化不変性を仮定する変更は加えない。
 
 部分型 `Ty.LeQ P Γ Φ a b` は有限の導出である。篩の除去、導入、篩どうしの含意は `Entails` を使い、仮定には型の自己の事実と `Γ.facts ++ Φ` の移動した列を用いる。List と Lazy の要素・結果は共変、Map の値は共変で鍵は同じ型、Reference の内容と Fail の型は正規化後の等号で照合する。関数の比較は `TelLe` とその反射推移閉包 `TelClosure` を用いる。引数を反変に比較し、後続は渡し先の引数を加えた文脈で比較し、終端の結果と潜在効果を共変に比較する。`Eff.Covers Γ Φ outer inner` は内側の各原子を外側の一原子で覆い、Fail は不変に含める。`Eff.Sub inner outer` は構造上の包含であり、引数の順も異なる。
 
@@ -3176,13 +3182,15 @@ builders_no_captureとbuilders_block_no_captureは、Aligned Γ ΔからEnvReads
 
 ### 篩を含む定義とプログラムの適格性
 
-【決定】`Def.WellTyped P B d` は、契約名の `NamesWF`、宣言した kind の列での `dependentFn d.tel` の value kind、制約の列と空の値文脈での同じ型の `Annotation`、および空のストアでの `TelBodyTy` を要求する。本体の NoFail の文脈は `QTel d.tel`、型文脈は宣言の制約の列、初期の値文脈と Φ は空である。`TelBodyTy.param` は引数の注釈で値文脈を拡張し、Φ を移す。`done a e` は、本体を結果型 a、効果 e、return の契約 `some a`、空の局所文脈で検査する。
+【決定】`Def.WellTyped P B d` は、契約名の `NamesWF`、宣言した kind の列での `dependentFn d.tel` の value kind、同じ宣言列と空の値文脈での同じ型の `Annotation`、および空のストアでの `TelBodyTy` を要求する。本体の NoFail の文脈は `QTel d.tel`、型文脈は宣言の `d.tparams`、初期の値文脈と Φ は空である。`TelBodyTy.param` は引数の注釈で値文脈を拡張し、Φ を移す。`done a e` は、本体を結果型 a、効果 e、return の契約 `some a`、空の局所文脈で検査する。
 
 `NamesWF ns ps` の下で `QTel (signatureTel ns ps r e) = Qsig ps r e` が成り立つ。`Def.QTel_eq_Qsig` と `MethSig.QTel_eq_Qsig` は、この等号を各宣言へ適用する。呼出し側の `Admissible`・`MethodRowsAdmissible` が読む条件と同じであり、新たな NoFail の前提を呼出し側に要求しない。
 
-`ImplDecl.WellTyped P B id` は、対象のクラス宣言 cd の存在、メソッドと上位辞書の定義域の厳密な一致、実装の対象の `cd.argumentKind`、辞書引数の型の `Annotation` を要求する。各メソッド ms について、`g = ms.tparams.length`、`θ = typeEnvAt g [id.target] []`、`t = Tel.bind θ ms.tel` とする。型文脈は `ms.tparams.map constraints ++ id.tparams`、値文脈は `bindParams [] (id.dictTys.map (Ty.shift g 0))` である。`t' = Tel.shiftV id.dictTys.length 0 t` とし、空のストアと Φ、代入前の `QTel ms.tel` の下で本体の `TelBodyTy` を要求する。型クラスの引数への型代入と、辞書引数分の値参照の移動は別の操作である。`ImplDecl.WellTyped.method_body` は、同じ本体を `C_Meth` が読む代入前の `Qsig ms.params ms.ret ms.eff` で取り出す。上位辞書 u は、実装の制約と辞書引数だけの文脈で `dict s id.target` の型を持つ。
+`ImplDecl.WellTyped P B id` は、対象のクラス宣言 cd の存在、メソッドと上位辞書の定義域の厳密な一致、実装の対象の `cd.argumentKind`、辞書引数の型の `Annotation` を要求する。各メソッド ms について、`g = ms.tparams.length`、`θ = typeEnvAt g [id.target] []`、`t = Tel.bind θ ms.tel` とする。型文脈は `ms.tparams ++ TypeCtx.values id.tparams`、値文脈は `bindParams [] (id.dictTys.map (Ty.shift g 0))` である。`t' = Tel.shiftV id.dictTys.length 0 t` とし、空のストアと Φ、代入前の `QTel ms.tel` の下で本体の `TelBodyTy` を要求する。型クラスの引数への型代入と、辞書引数分の値参照の移動は別の操作である。`ImplDecl.WellTyped.method_body` は、同じ本体を `C_Meth` が読む代入前の `Qsig ms.params ms.ret ms.eff` で取り出す。上位辞書 u は、実装の制約と辞書引数だけの文脈で `dict s id.target` の型を持つ。
 
 `Program.WellTyped P B` は、同じ P の `VarianceValid` と `ExternalWF`、全ての関数・実装の lookup に対する `WellTyped` を持つ。`WellFormed` の証拠を別に受け取らない入口でも `variance` を射影できる。`ValueMeaning` と型付けから所属への命題を信頼する欄は持たない。
+
+`OpSig.tparams` は TypeCtx である。利用者操作は `TypeCtx.values od.tparams`、組み込み操作は `s.tparams` を保持する。通常節の型文脈は `sg.tparams ++ C`、Fail 節の型文脈は `TypeCtx.valueParam :: C` である。`SignatureScoped` は別の kind 文脈を受け取らず、同じ C の長さ・kind・Annotation を読む。
 
 `Program.WellFormed P` は、各宣言の `Scoped`、同名 data の全構成子の arity の一致、`MetadataScoped`、`ExternalWF` を要求する。依存列の `SignatureScoped` は、範囲・型・行・値の上限、kind、順に拡張する値文脈での `Annotation` を検査する。本体と上位辞書の `SourceScoped nr nt ne nv` は、四名前空間の深さを受け取り、lambda・let・依存列・腕・節で束縛数を増やす。実行時専用の構文と場所への直接参照を拒む。`Eff.WF` が読まない効果原子の範囲添字は `RangesScoped` で再帰検査する。構成子の欄には上限・行なし・`Annotation`・value kind、操作には依存列と辞書の添字、および `dictParams` の辞書型の列と `params` の先頭の一致を要求する。実装の辞書引数の型にも value kind を要求し、クラス宣言の存在とその引数の kind を検査する。メソッドは自身の型パラメータにクラス引数一つを加え、最後の kind をクラスの `argumentKind` とする。実装の本体はメソッドと実装の型パラメータ、辞書と値引数の下で検査する。
 
@@ -3194,13 +3202,15 @@ builders_no_captureとbuilders_block_no_captureは、Aligned Γ ΔからEnvReads
 
 理由: 旧宣言は kind のデータを持たない。型構成子を value kind に置き換えると、高カインドの引数を使う旧導出の写しとして使えない。
 
-`LegacyInputCtx` は kind と組み込みの制約の列、範囲と値の変数の深さを持つ。`LegacyTypeInput` は写した型の kind、番号の上限、観測の種類、宣言との対応、内部の範囲の番号を検査する。値・計算・腕・節の入力は、旧構文への相互再帰で定める。数値とバイト列の表現可能性、裸の不透明値に保持対象も保持内容もないこと、型引数と注釈、束縛数を検査する。関数・組み込み・操作の参照と通常節の元の操作署名、実装の対象と辞書型も宣言側の型文脈で検査する。通常節は、操作自身の型パラメータだけからなる kind・制約の列、範囲と値の深さ0で `opSig` の元の署名を検査し、外側の制約列で署名内の範囲外の型変数を補わない。具体化後の結果型の適格性だけでは代用しない。lambda、let、腕、通常節、Fail 節でそれぞれの文脈を延長する。`use` の本体は値を束縛しない。 操作の宣言の入力は、辞書の添字が型パラメータの個数未満であり、写した引数列の先頭が宣言した辞書型の列と一致することも要求する。実装の辞書型の value kind は各 LegacyTypeInput から取り出す。
+`LegacyInputCtx` は kind と組み込みの制約の列、範囲と値の変数の深さを持つ。宣言照合の型文脈は `legacyTypeCtx Δ.constraints Δ.kinds` とする。`legacyTypeCtx` は制約と kind を位置ごとに組み合わせ、両列の長さが等しいとき、それぞれの射影が元の列に等しい。`LegacyTypeInput` は写した型の kind、番号の上限、観測の種類、宣言との対応、内部の範囲の番号を検査する。値・計算・腕・節の入力は、旧構文への相互再帰で定める。数値とバイト列の表現可能性、裸の不透明値に保持対象も保持内容もないこと、型引数と注釈、束縛数を検査する。関数・組み込み・操作の参照と通常節の元の操作署名、実装の対象と辞書型も宣言側の型文脈で検査する。通常節は、操作自身の型パラメータだけからなる kind・制約の列、範囲と値の深さ0で `opSig` の元の署名を検査し、外側の制約列で署名内の範囲外の型変数を補わない。具体化後の結果型の適格性だけでは代用しない。lambda、let、腕、通常節、Fail 節でそれぞれの文脈を延長する。`use` の本体は値を束縛しない。 操作の宣言の入力は、辞書の添字が型パラメータの個数未満であり、写した引数列の先頭が宣言した辞書型の列と一致することも要求する。実装の辞書型の value kind は各 LegacyTypeInput から取り出す。
 
 検査済みの要求は、空の型・値文脈で内容を再帰検査し、`groundVal` の成功、`reqTarget` と保持端点の一致、同じ型名の `valContent` の対応を要求する。構文だけでは保持値の型名と範囲が定まらないため、`LegacyHeldTypeInput` が各値判断の実際の旧型とも照合する。内容の新しい型付け自体は、これらの入力の条件にしない。
 
 `LegacyJudgment` は、値・値列・同じ型の値列・計算・腕・通常節・Fail 節の七判断をデータとして表す。各判断は kind 文脈と旧のストア、NoFail、制約、値文脈、項、結果型を持ち、計算以下は戻り先の型、効果、局所文脈も持つ。`LegacyRule` は、旧の46局所規則の親判断、全ての型付け前提の子判断、旧の局所前提を記録する。親子の kind 文脈は同じ列を使い、通常節では操作の value kind 列を、Fail 節では value kind 一つを先頭に加える。保持要求の内容は空の kind 文脈を使う。メソッドの元の署名と型引数は、局所規則で選ばれた実際のクラスとメソッドの kind 列でも検査する。
 
 `LegacyOutputInput.node` は、局所規則、親の `LegacyNodeRegular`、全ての子の同じ入力を要求する。各 node の全結果型・型列・戻り先・効果・文脈・ストアの型を検査するため、let の中間型と拡張した値文脈、呼出しの中間型、空の腕、resume、節内の型も対象に含む。旧の型付けから中間型の kind が無条件に得られるとはしない。`LegacyRule.old` と `LegacyOutputInput.old` は、この入力から旧判断を復元する。
+
+`LegacyPrimSignature.operationKinds` は、`s.opEff ≠ none` の組み込みの型パラメータのkindの列が全てvalueであることを要求する。操作でない組み込みのkindはこの条件で制限しない。理由: 旧の通常節の子の判断は型パラメータをvalueとして読み、新しい通常節も同じ型文脈で検査するためである。
 
 `LegacyTables` は、組み込みの署名・許容・制約・範囲・保持対象の表の対応と、同名 data の構成子の arity の一致、全欄の `Annotation`・value kind・宣言の上限を要求する。この条件から、写した各構成子の `Scoped` と、metadata を持たず型引数を不変とするプログラムの `VarianceValid` を導く。制約の `sat`、型引数の `admits`、範囲の `admitsR` の対応は旧の受理から新の受理への含意であり、逆向きの含意は要求しない。新しい型付け、状態の型付け、遷移の結論は表の条件に含めない。
 
@@ -3318,7 +3328,7 @@ At の呼出しの許容条件は、次の判断の全定義である。結果�
 
 ```lean
   inductive AtCallAdmissible (P : Program) (B : Builtins) :
-      StoreTy → NoFailCtx → List TParam → Ctx → List Pred → Scope.Domain.Kind →
+      StoreTy → NoFailCtx → TypeCtx → Ctx → List Pred → Scope.Domain.Kind →
       OpaqueName → ResultShape → Option Val → Val → Val → RangeIx → Prop where
     | mk {Ψ Q C Γ Φ kind name shape bases pattern input index inputTy} :
         shape.Declared P → B.valKind name = some kind →
@@ -3466,7 +3476,7 @@ CoreAssumptions は、制約のない閉じた型の具体化、組み込みの�
   /-- 制約のない型パラメータは、閉じた整形式の型の正規形で具体化できる。 -/
   sat_unconstrained : ∀ (t : Ty), t.WF 0 0 0 → B.sat [] t.norm ({} : TParam)
   /-- 組み込みの許容は、同じ型引数列の制約と個数も満たす。 -/
-  admits_sat : ∀ b s C ts, B.sig b = some s → s.admits C (Ty.normTys ts) →
+  admits_sat : ∀ b s C ts, B.sig b = some s → s.admits (TypeCtx.constraints C) (Ty.normTys ts) →
     SatAll B C ts (s.tparams.map TParamDecl.constraints)
   /-- 型付きの全資源値について、解放の応答が少なくとも一つある。 -/
   release_exists : ∀ Ψ v o, HasTypeV P B Ψ [] [] [] v (.opaque o (.fixed .top)) →
