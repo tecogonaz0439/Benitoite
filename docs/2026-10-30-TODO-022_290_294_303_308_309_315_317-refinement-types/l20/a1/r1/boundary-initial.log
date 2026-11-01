@@ -1,0 +1,264 @@
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a1/boundary.lean:237:37: error: Application type mismatch: The argument
+  []
+has type
+  List ?m.15
+but is expected to have type
+  Atom → Bool
+in the application
+  EffR.mk []
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a1/boundary.lean:262:74: error: unsolved goals
+case refine_1.isTrue
+P : Program
+l : Nat
+x : LocTy
+h✝ : l = 0
+hx : LocTy.builder (BuilderKind.list Ty.bytes) = x
+⊢ match x with
+  | LocTy.builder BuilderKind.string => True
+  | LocTy.builder BuilderKind.bytes => True
+  | LocTy.builder (BuilderKind.list a) => Ty.WF 0 0 0 a
+  | LocTy.ref a => Ty.WF 0 0 0 a
+  | LocTy.lazy a => Ty.WF 0 0 0 a
+  | LocTy.cont b t e r =>
+    Ty.WF 0 0 0 b ∧ Ty.WF 0 0 0 t ∧ Eff.WF 0 0 0 e ∧ e.norm = e ∧ ∀ (a : Ty), r = some a → Ty.WF 0 0 0 a
+
+case refine_1.isFalse.isTrue
+P : Program
+l : Nat
+x : LocTy
+h✝ : l = 1
+hx : LocTy.ref Ty.bytes = x
+⊢ match x with
+  | LocTy.builder BuilderKind.string => True
+  | LocTy.builder BuilderKind.bytes => True
+  | LocTy.builder (BuilderKind.list a) => Ty.WF 0 0 0 a
+  | LocTy.ref a => Ty.WF 0 0 0 a
+  | LocTy.lazy a => Ty.WF 0 0 0 a
+  | LocTy.cont b t e r =>
+    Ty.WF 0 0 0 b ∧ Ty.WF 0 0 0 t ∧ Eff.WF 0 0 0 e ∧ e.norm = e ∧ ∀ (a : Ty), r = some a → Ty.WF 0 0 0 a
+
+case refine_1.isFalse.isFalse.isTrue
+P : Program
+l : Nat
+x : LocTy
+h✝ : l = 2
+hx : LocTy.lazy Ty.bytes = x
+⊢ match x with
+  | LocTy.builder BuilderKind.string => True
+  | LocTy.builder BuilderKind.bytes => True
+  | LocTy.builder (BuilderKind.list a) => Ty.WF 0 0 0 a
+  | LocTy.ref a => Ty.WF 0 0 0 a
+  | LocTy.lazy a => Ty.WF 0 0 0 a
+  | LocTy.cont b t e r =>
+    Ty.WF 0 0 0 b ∧ Ty.WF 0 0 0 t ∧ Eff.WF 0 0 0 e ∧ e.norm = e ∧ ∀ (a : Ty), r = some a → Ty.WF 0 0 0 a
+
+case refine_1.isFalse.isFalse.isFalse.isTrue
+P : Program
+l : Nat
+x : LocTy
+h✝ : l = 3
+hx : LocTy.cont Ty.bytes Ty.bytes (EffR.mk (fun x => false) []) none = x
+⊢ match x with
+  | LocTy.builder BuilderKind.string => True
+  | LocTy.builder BuilderKind.bytes => True
+  | LocTy.builder (BuilderKind.list a) => Ty.WF 0 0 0 a
+  | LocTy.ref a => Ty.WF 0 0 0 a
+  | LocTy.lazy a => Ty.WF 0 0 0 a
+  | LocTy.cont b t e r =>
+    Ty.WF 0 0 0 b ∧ Ty.WF 0 0 0 t ∧ Eff.WF 0 0 0 e ∧ e.norm = e ∧ ∀ (a : Ty), r = some a → Ty.WF 0 0 0 a
+
+case refine_2.isTrue
+P : Program
+l : Nat
+x : LocTy
+h✝ : l = 0
+hx : LocTy.builder (BuilderKind.list Ty.bytes) = x
+⊢ match x with
+  | LocTy.builder (BuilderKind.list a) => Ty.Sorted [] a
+  | LocTy.ref a => Ty.Sorted [] a
+  | LocTy.lazy a => Ty.Sorted [] a
+  | LocTy.builder BuilderKind.string => True
+  | LocTy.builder BuilderKind.bytes => True
+  | LocTy.cont b t e r => Ty.Sorted [] b ∧ Ty.Sorted [] t ∧ sortedEff [] e
+
+case refine_2.isFalse.isTrue
+P : Program
+l : Nat
+x : LocTy
+h✝ : l = 1
+hx : LocTy.ref Ty.bytes = x
+⊢ match x with
+  | LocTy.builder (BuilderKind.list a) => Ty.Sorted [] a
+  | LocTy.ref a => Ty.Sorted [] a
+  | LocTy.lazy a => Ty.Sorted [] a
+  | LocTy.builder BuilderKind.string => True
+  | LocTy.builder BuilderKind.bytes => True
+  | LocTy.cont b t e r => Ty.Sorted [] b ∧ Ty.Sorted [] t ∧ sortedEff [] e
+
+case refine_2.isFalse.isFalse.isTrue
+P : Program
+l : Nat
+x : LocTy
+h✝ : l = 2
+hx : LocTy.lazy Ty.bytes = x
+⊢ match x with
+  | LocTy.builder (BuilderKind.list a) => Ty.Sorted [] a
+  | LocTy.ref a => Ty.Sorted [] a
+  | LocTy.lazy a => Ty.Sorted [] a
+  | LocTy.builder BuilderKind.string => True
+  | LocTy.builder BuilderKind.bytes => True
+  | LocTy.cont b t e r => Ty.Sorted [] b ∧ Ty.Sorted [] t ∧ sortedEff [] e
+
+case refine_2.isFalse.isFalse.isFalse.isTrue
+P : Program
+l : Nat
+x : LocTy
+h✝ : l = 3
+hx : LocTy.cont Ty.bytes Ty.bytes (EffR.mk (fun x => false) []) none = x
+⊢ match x with
+  | LocTy.builder (BuilderKind.list a) => Ty.Sorted [] a
+  | LocTy.ref a => Ty.Sorted [] a
+  | LocTy.lazy a => Ty.Sorted [] a
+  | LocTy.builder BuilderKind.string => True
+  | LocTy.builder BuilderKind.bytes => True
+  | LocTy.cont b t e r => Ty.Sorted [] b ∧ Ty.Sorted [] t ∧ sortedEff [] e
+
+case refine_3.isTrue
+P : Program
+l : Nat
+x : LocTy
+h✝ : l = 0
+hx : LocTy.builder (BuilderKind.list Ty.bytes) = x
+⊢ match x with
+  | LocTy.builder (BuilderKind.list a) => Ty.Declared P [] [] a
+  | LocTy.ref a => Ty.Declared P [] [] a
+  | LocTy.lazy a => Ty.Declared P [] [] a
+  | LocTy.builder kind => True
+  | LocTy.cont b t e r =>
+    Ty.Declared P [] [] b ∧
+      Ty.Declared P [] [] t ∧ declaredEff P [] [] e ∧ ∀ (a : Ty), r = some a → Ty.Declared P [] [] a
+
+case refine_3.isFalse.isTrue
+P : Program
+l : Nat
+x : LocTy
+h✝ : l = 1
+hx : LocTy.ref Ty.bytes = x
+⊢ match x with
+  | LocTy.builder (BuilderKind.list a) => Ty.Declared P [] [] a
+  | LocTy.ref a => Ty.Declared P [] [] a
+  | LocTy.lazy a => Ty.Declared P [] [] a
+  | LocTy.builder kind => True
+  | LocTy.cont b t e r =>
+    Ty.Declared P [] [] b ∧
+      Ty.Declared P [] [] t ∧ declaredEff P [] [] e ∧ ∀ (a : Ty), r = some a → Ty.Declared P [] [] a
+
+case refine_3.isFalse.isFalse.isTrue
+P : Program
+l : Nat
+x : LocTy
+h✝ : l = 2
+hx : LocTy.lazy Ty.bytes = x
+⊢ match x with
+  | LocTy.builder (BuilderKind.list a) => Ty.Declared P [] [] a
+  | LocTy.ref a => Ty.Declared P [] [] a
+  | LocTy.lazy a => Ty.Declared P [] [] a
+  | LocTy.builder kind => True
+  | LocTy.cont b t e r =>
+    Ty.Declared P [] [] b ∧
+      Ty.Declared P [] [] t ∧ declaredEff P [] [] e ∧ ∀ (a : Ty), r = some a → Ty.Declared P [] [] a
+
+case refine_3.isFalse.isFalse.isFalse.isTrue
+P : Program
+l : Nat
+x : LocTy
+h✝ : l = 3
+hx : LocTy.cont Ty.bytes Ty.bytes (EffR.mk (fun x => false) []) none = x
+⊢ match x with
+  | LocTy.builder (BuilderKind.list a) => Ty.Declared P [] [] a
+  | LocTy.ref a => Ty.Declared P [] [] a
+  | LocTy.lazy a => Ty.Declared P [] [] a
+  | LocTy.builder kind => True
+  | LocTy.cont b t e r =>
+    Ty.Declared P [] [] b ∧
+      Ty.Declared P [] [] t ∧ declaredEff P [] [] e ∧ ∀ (a : Ty), r = some a → Ty.Declared P [] [] a
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a1/boundary.lean:268:64: warning: This simp argument is unused:
+  Ty.WF
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [LocTy.WF, LocTy.Sorted, LocTy.Declared, Ty.Sorted, Ty.Declared, Eff.WF, Eff.Canonical, Eff.empty,
+    Eff.norm, Ty.WFList, sortedEff, sortedTys, declaredEff, declaredTys]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a1/boundary.lean:268:71: warning: This simp argument is unused:
+  Ty.Sorted
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [LocTy.WF, LocTy.Sorted, LocTy.Declared, Ty.WF, Ty.Declared, Eff.WF, Eff.Canonical, Eff.empty,
+    Eff.norm, Ty.WFList, sortedEff, sortedTys, declaredEff, declaredTys]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a1/boundary.lean:269:6: warning: This simp argument is unused:
+  Ty.Declared
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [LocTy.WF, LocTy.Sorted, LocTy.Declared, Ty.WF, Ty.Sorted, Eff.WF, Eff.Canonical, Eff.empty,
+    Eff.norm, Ty.WFList, sortedEff, sortedTys, declaredEff, declaredTys]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a1/boundary.lean:269:19: warning: This simp argument is unused:
+  Eff.WF
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [LocTy.WF, LocTy.Sorted, LocTy.Declared, Ty.WF, Ty.Sorted, Ty.Declared, Eff.Canonical, Eff.empty,
+    Eff.norm, Ty.WFList, sortedEff, sortedTys, declaredEff, declaredTys]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a1/boundary.lean:269:53: warning: This simp argument is unused:
+  Eff.norm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [LocTy.WF, LocTy.Sorted, LocTy.Declared, Ty.WF, Ty.Sorted, Ty.Declared, Eff.WF, Eff.Canonical,
+    Eff.empty, Ty.WFList, sortedEff, sortedTys, declaredEff, declaredTys]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a1/boundary.lean:269:63: warning: This simp argument is unused:
+  Ty.WFList
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [LocTy.WF, LocTy.Sorted, LocTy.Declared, Ty.WF, Ty.Sorted, Ty.Declared, Eff.WF, Eff.Canonical,
+    Eff.empty, Eff.norm, sortedEff, sortedTys, declaredEff, declaredTys]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a1/boundary.lean:270:6: warning: This simp argument is unused:
+  sortedEff
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [LocTy.WF, LocTy.Sorted, LocTy.Declared, Ty.WF, Ty.Sorted, Ty.Declared, Eff.WF, Eff.Canonical,
+    Eff.empty, Eff.norm, Ty.WFList, sortedTys, declaredEff, declaredTys]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a1/boundary.lean:270:17: warning: This simp argument is unused:
+  sortedTys
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [LocTy.WF, LocTy.Sorted, LocTy.Declared, Ty.WF, Ty.Sorted, Ty.Declared, Eff.WF, Eff.Canonical,
+    Eff.empty, Eff.norm, Ty.WFList, sortedEff, declaredEff, declaredTys]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a1/boundary.lean:270:28: warning: This simp argument is unused:
+  declaredEff
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [LocTy.WF, LocTy.Sorted, LocTy.Declared, Ty.WF, Ty.Sorted, Ty.Declared, Eff.WF, Eff.Canonical,
+    Eff.empty, Eff.norm, Ty.WFList, sortedEff, sortedTys, declaredTys]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a1/boundary.lean:270:41: warning: This simp argument is unused:
+  declaredTys
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [LocTy.WF, LocTy.Sorted, LocTy.Declared, Ty.WF, Ty.Sorted, Ty.Declared, Eff.WF, Eff.Canonical,
+    Eff.empty, Eff.norm, Ty.WFList, sortedEff, sortedTys, declaredEff]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

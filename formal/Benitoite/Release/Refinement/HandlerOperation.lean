@@ -299,11 +299,11 @@ theorem StateTyE.operation_one {P B σ Eb o name x y eff v cap cs k1 k2 k μ bod
     have hdecl : LocTy.Declared P (.cont result t ec Rh) :=
       ⟨hra.declared,han.declared.1,han.declared.2,fun r hr' => (hr r hr').declared⟩
     have hend : EndsWithHandle (k1 ++ [.handleF cap cs]) := ⟨k1,cap,cs,rfl⟩
-    have hs' := hs.allocate_continuation hA.values hf hw hdecl hend ⟨R,e,.K_Sub hks hle⟩
+    have hs' := hs.allocate_continuation hA.values hf hw hra.sorted han.sorted.1 han.sorted.2 hdecl hend ⟨R,e,.K_Sub hks hle⟩
     have hnone : Ψ l = none := by
       cases hp : Ψ l with
       | none => rfl
-      | some x => exact False.elim (hs.2.2.2.1 l x hp hf)
+      | some x => exact False.elim (hs.domain l x hp hf)
     have hext := StoreTy.extends_put (x := LocTy.cont result t ec Rh) hnone
     let Ψ' := Ψ.put l (.cont result t ec Rh)
     have hhideExt : (hideBuilders Ψ).Extends Ψ' := fun i x hi => hext i x (StoreTy.hide_extends Ψ i x hi)

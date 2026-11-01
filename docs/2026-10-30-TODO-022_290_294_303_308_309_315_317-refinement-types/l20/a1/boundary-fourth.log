@@ -1,0 +1,42 @@
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a1/boundary.lean:174:43: error: unsolved goals
+P : Program
+B : Builtins
+σ : PathEnv
+hA : Builtins.ValueAssumptions P B
+ha : Ty.Annotation P [] [] Ty.bytes
+han : Ty.Annotation P [] [] (Ty.dependentFn (Tel.done Ty.bytes Eff.empty))
+hk : ContTy P B σ StoreTy.empty none Eff.empty [Frame.handleF Capture.empty []] Ty.bytes Ty.bytes Eff.empty none
+hs :
+  StoreOk P B σ (StoreTy.empty.put 0 (LocTy.cont Ty.bytes Ty.bytes Eff.empty none))
+    (Store.empty.set 0 (Cell.cont ([] ++ [Frame.handleF Capture.empty []])))
+⊢ Ty.bytes = ?m.221 ∧ Ty.bytes = ?m.222 ∧ Eff.empty = ?m.223 ∧ none = ?m.224
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a1/boundary.lean:156:71: error: unsolved goals
+P : Program
+B : Builtins
+σ : PathEnv
+hA : Builtins.ValueAssumptions P B
+ha : Ty.Annotation P [] [] Ty.bytes
+han : Ty.Annotation P [] [] (Ty.dependentFn (Tel.done Ty.bytes Eff.empty))
+hk : ContTy P B σ StoreTy.empty none Eff.empty [Frame.handleF Capture.empty []] Ty.bytes Ty.bytes Eff.empty none
+hs :
+  StoreOk P B σ (StoreTy.empty.put 0 (LocTy.cont Ty.bytes Ty.bytes Eff.empty none))
+    (Store.empty.set 0 (Cell.cont ([] ++ [Frame.handleF Capture.empty []])))
+⊢ let saved := [Frame.handleF Capture.empty []];
+  let Ψ := StoreTy.empty.put 0 (LocTy.cont Ty.bytes Ty.bytes Eff.empty none);
+  let μ := Store.empty.set 0 (Cell.cont saved);
+  StoreOk P B σ Ψ μ ∧
+    StoreOk P B σ Ψ (μ.set 0 Cell.used) ∧ Ty.Annotation P [] [] (Ty.dependentFn (Tel.done Ty.bytes Eff.empty))
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a1/boundary.lean:167:76: warning: This simp argument is unused:
+  Eff.subst_values_empty
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Capture.closeEff]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a1/boundary.lean:168:34: warning: This simp argument is unused:
+  Eff.subst_values_empty
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Capture.closeEff]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

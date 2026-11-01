@@ -182,7 +182,7 @@ theorem StateTyE.reference_new {P B σ Eb b ts es rs v k μ s l}
   have hnone : Ψ l = none := by
     cases hp : Ψ l with
     | none => rfl
-    | some t => exact False.elim (hsμ.2.2.2.1 l t hp hl)
+    | some t => exact False.elim (hsμ.domain l t hp hl)
   have hext := StoreTy.extends_put (x := LocTy.ref x) hnone
   have hs' := hsμ.allocate_reference hA.values hl hx hn hv had.2.2.1
   have hv' : HasTypeV P B (Ψ.put l (.ref x)) [] [] [] (.loc l) (.reference x) :=

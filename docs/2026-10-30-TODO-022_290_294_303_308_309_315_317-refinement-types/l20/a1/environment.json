@@ -1,0 +1,27 @@
+{
+  "system": "Darwin",
+  "release": "27.2.0",
+  "machine": "arm64",
+  "tools": [
+    {
+      "command": [
+        "lake",
+        "--version"
+      ],
+      "exit": 0,
+      "output": "Lake version 5.0.0-src+5045d00 (Lean version 4.34.1)"
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "--version"
+      ],
+      "exit": 0,
+      "output": "Lean (version 4.34.1, arm64-apple-darwin24.6.0, commit 5045d0056413266e57c625dcd7c365b10e377c52, Release)"
+    }
+  ]
+}

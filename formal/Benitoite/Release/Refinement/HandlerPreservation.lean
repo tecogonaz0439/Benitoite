@@ -236,7 +236,7 @@ theorem StateTyE.resume_const {P B σ Eb q l c k μ saved}
   obtain ⟨x,t,ec,r,hp,hr,hv',hle,hcov⟩ := resume_inv (resume_closed hA.substitutions hs.wf hq hv) rfl
   have hrraw := resume_raw_return hs hp hl hr hq.return_normal
   subst r
-  obtain ⟨x',t',ec',r',hp',hend,R0,e0,hks⟩ := hs.2.2.2.2 l _ hl
+  obtain ⟨x',t',ec',r',hp',hend,R0,e0,hks⟩ := hs.cell l _ hl
   cases Option.some.inj (hp'.symm.trans hp)
   have ht := hks.resume_append hend (.trans (.convert (Ty.norm_idem _).symm) hle) hk
     (he.covers.trans hcov)
@@ -291,7 +291,7 @@ theorem StateTyE.drop_rel_const {P B σ Eb q c l k μ saved} (hdecl : P.EffectsO
   obtain ⟨t,b',t',e',R',hp,hcond,hle,ht⟩ := drop_release_inv hk
   have hv' := hq.ret_const hA.substitutions hs.wf hv
   have ha : Ty.Annotation P [] [] a := ⟨hq.annotation.wf.1,hq.annotation.sorted.1,hq.annotation.declared.1⟩
-  obtain ⟨x,t2,e2,r2,hp2,_,R0,e0,hsv⟩ := hs.2.2.2.2 l _ hl
+  obtain ⟨x,t2,e2,r2,hp2,_,R0,e0,hsv⟩ := hs.cell l _ hl
   cases Option.some.inj (hp2.symm.trans hp)
   have ht2 := ContTy.prepend_releases (hdecl.noStateHandled hA) hsv ht hcond
   obtain ⟨R2,hRn,ht3⟩ := normal_return_tail ht2 rfl a ha (closure_normal hq) hle
@@ -317,7 +317,7 @@ theorem StateTyE.esc_drop_rel_const {P B σ Eb c l k μ saved}
     StateTyE P B σ Eb (.run (Closure.pure (.escape (.const c))) (releases saved ++ k) (μ.set l .used)) := by
   obtain ⟨Ψ,R,a,b,e,e1,hs,hq,he,hk,had,hcl,hkc,hμ⟩ := h
   obtain ⟨t,b',t',e',R',hp,hcond,hle,ht⟩ := drop_release_inv hk
-  obtain ⟨x,t2,e2,r2,hp2,_,R0,e0,hsv⟩ := hs.2.2.2.2 l _ hl
+  obtain ⟨x,t2,e2,r2,hp2,_,R0,e0,hsv⟩ := hs.cell l _ hl
   cases Option.some.inj (hp2.symm.trans hp)
   have ht2 := ContTy.prepend_releases (hdecl.noStateHandled hA) hsv (.K_Sub ht hle) hcond
   refine ⟨.E_EscDropRel rfl hl,Ψ,R,a,b,e,e1,hs.use_continuation hp,hq,he,ht2,had,hcl,?_,closed_set hμ trivial⟩
@@ -336,7 +336,7 @@ theorem StateTyE.err_drop_rel {P B σ Eb rs l k μ saved}
     StateTyE P B σ Eb (.error rs (releases saved ++ k) (μ.set l .used)) := by
   obtain ⟨Ψ,R,a,b,e,hs,hk,hkc,hμ⟩ := h
   obtain ⟨t,b',t',e',R',hp,hcond,hle,ht⟩ := drop_release_inv hk
-  obtain ⟨x,t2,e2,r2,hp2,_,R0,e0,hsv⟩ := hs.2.2.2.2 l _ hl
+  obtain ⟨x,t2,e2,r2,hp2,_,R0,e0,hsv⟩ := hs.cell l _ hl
   cases Option.some.inj (hp2.symm.trans hp)
   have ht2 := ContTy.prepend_releases (hdecl.noStateHandled hA) hsv ht hcond
   refine ⟨.E_ErrDropRel hl,Ψ,R,t,b,e,hs.use_continuation hp,ht2,?_,closed_set hμ trivial⟩
@@ -355,7 +355,7 @@ theorem StateTyE.exit_drop_rel {P B σ Eb n rs l k μ saved}
     StateTyE P B σ Eb (.exit n rs (releases saved ++ k) (μ.set l .used)) := by
   obtain ⟨Ψ,R,a,b,e,hs,hk,hkc,hμ⟩ := h
   obtain ⟨t,b',t',e',R',hp,hcond,hle,ht⟩ := drop_release_inv hk
-  obtain ⟨x,t2,e2,r2,hp2,_,R0,e0,hsv⟩ := hs.2.2.2.2 l _ hl
+  obtain ⟨x,t2,e2,r2,hp2,_,R0,e0,hsv⟩ := hs.cell l _ hl
   cases Option.some.inj (hp2.symm.trans hp)
   have ht2 := ContTy.prepend_releases (hdecl.noStateHandled hA) hsv ht hcond
   refine ⟨.E_ExitDropRel hl,Ψ,R,t,b,e,hs.use_continuation hp,ht2,?_,closed_set hμ trivial⟩

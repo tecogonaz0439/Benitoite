@@ -1,0 +1,62 @@
+{
+  "HasTypeVQ.subst": {
+    "file": "formal/Benitoite/Release/Refinement/SubstTyping.lean",
+    "signature": "theorem HasTypeVQ.subst {P B store Q C Γ Φ v a Δ Ξ R σ}\n    (h : HasTypeVQ P B store Q C Γ Φ v a)\n    (hA : Builtins.SubstitutionAssumptions P B)\n    (hstore : StoreTy.WF store)\n    (ht : SubstOk P B store Q C Γ Φ Δ Ξ R σ)\n    (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) (predBind (valEnv σ).values p))\n    (ρ : Nat → LocalRef",
+    "file_sha256": "6b9b8bf2774c6032fd49369df03f2a80e0c84d08a53f9b0bc7d6723fd0540c09",
+    "unchanged": true
+  },
+  "HasTypeVQ.subst_under_none": {
+    "file": "formal/Benitoite/Release/Refinement/SubstTyping.lean",
+    "signature": "theorem HasTypeVQ.subst_under_none {P B store Q C Γ Φ v a Δ Ξ R σ}\n    (h : HasTypeVQ P B store Q C Γ.extendNone (Φ.map Pred.lift) v a)\n    (hA : Builtins.SubstitutionAssumptions P B)\n    (hstore : StoreTy.WF store)\n    (ht : SubstOk P B store Q C Γ Φ Δ Ξ R σ)\n    (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) (predBind (valEnv σ).values p))\n    (ρ : Nat → LocalRef",
+    "file_sha256": "6b9b8bf2774c6032fd49369df03f2a80e0c84d08a53f9b0bc7d6723fd0540c09",
+    "unchanged": true
+  },
+  "HasTypeCQ.subst": {
+    "file": "formal/Benitoite/Release/Refinement/SubstTyping.lean",
+    "signature": "theorem HasTypeCQ.subst {P B store Q C Γ Φ R m a e L L' Δ Ξ σ}\n    (h : HasTypeCQ P B store Q C Γ Φ R m a e L)\n    (hA : Builtins.SubstitutionAssumptions P B)\n    (hstore : StoreTy.WF store)\n    (ht : SubstOk P B store Q C Γ Φ Δ Ξ (R.map (substTyValues σ)) σ)\n    (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) (predBind (valEnv σ).values p))\n    (ρ : Nat → LocalRef) (hL : LocalSubstOk store L σ ρ L') :\n    HasTypeCQ P B store Q C Δ Ξ (R.map (substTyValues σ)) (m.subst σ ρ)\n      (substTyValues σ a) (substEffValues σ e) L'",
+    "file_sha256": "6b9b8bf2774c6032fd49369df03f2a80e0c84d08a53f9b0bc7d6723fd0540c09",
+    "unchanged": true
+  },
+  "HasTypeCQ.subst_under_none": {
+    "file": "formal/Benitoite/Release/Refinement/SubstTyping.lean",
+    "signature": "theorem HasTypeCQ.subst_under_none {P B store Q C Γ Φ m a e L L' Δ Ξ σ} {R : Option Ty}\n    (h : HasTypeCQ P B store Q C Γ.extendNone (Φ.map Pred.lift) (R.map (Ty.shiftV 1 0)) m a e L)\n    (hA : Builtins.SubstitutionAssumptions P B) (hstore : store.WF)\n    (ht : SubstOk P B store Q C Γ Φ Δ Ξ (R.map (substTyValues σ)) σ)\n    (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) (predBind (valEnv σ).values p))\n    (ρ : Nat → LocalRef) (hL : LocalSubstOk store L (upSubst 1 σ) (upLocalSubst 1 ρ) L') :\n    HasTypeCQ P B store Q C Δ.extendNone (Ξ.map Pred.lift)\n      ((R.map (substTyValues σ)).map (Ty.shiftV 1 0))\n      (m.subst (upSubst 1 σ) (upLocalSubst 1 ρ))\n      (substTyValues (upSubst 1 σ) a) (substEffValues (upSubst 1 σ) e) L'",
+    "file_sha256": "6b9b8bf2774c6032fd49369df03f2a80e0c84d08a53f9b0bc7d6723fd0540c09",
+    "unchanged": true
+  },
+  "HasTypeVQ.shift_values": {
+    "file": "formal/Benitoite/Release/Refinement/TypingShift.lean",
+    "signature": "theorem HasTypeVQ.shift_values {P B store Q C Γ Φ v a}\n      (h : HasTypeVQ P B store Q C Γ Φ v a) {k c Δ Ξ store'}\n      (hA : Builtins.ValueAssumptions P B)\n      (hstore : StoreTy.WF store)\n      (hpres : StoreTy.PreservesNormals store store')\n      (hm : ShiftMap k c Γ Δ)\n      (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) (p.shiftV k c)) :\n      HasTypeVQ P B store' Q C Δ Ξ (v.rename (shiftIndex k c)) (a.shiftV k c)",
+    "file_sha256": "1be879923d79ae496b444743f2c7df5f19ad1c7d82f776477b535ec6ad9a1b32",
+    "unchanged": true
+  },
+  "HasTypeCQ.shift_values": {
+    "file": "formal/Benitoite/Release/Refinement/TypingShift.lean",
+    "signature": "theorem HasTypeCQ.shift_values {P B store Q C Γ Φ R m a e L}\n      (h : HasTypeCQ P B store Q C Γ Φ R m a e L) {k c Δ Ξ store' L'}\n      (hA : Builtins.ValueAssumptions P B)\n      (hstore : StoreTy.WF store)\n      (hext : StoreTy.Extends store store')\n      (hm : FullShiftMap k c Γ Δ)\n      (hL : LocalCtx.Shift k c L L')\n      (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) (p.shiftV k c)) :\n      HasTypeCQ P B store' Q C Δ Ξ (R.map (Ty.shiftV k c)) (m.rename (shiftIndex k c))\n        (a.shiftV k c) (Eff.shiftV k c e) L'",
+    "file_sha256": "1be879923d79ae496b444743f2c7df5f19ad1c7d82f776477b535ec6ad9a1b32",
+    "unchanged": true
+  },
+  "HasTypeVQ.shift_types": {
+    "file": "formal/Benitoite/Release/Refinement/TypeShiftTyping.lean",
+    "signature": "theorem HasTypeVQ.shift_types {P B store Q C Γ Φ v a}\n      (h : HasTypeVQ P B store Q C Γ Φ v a) {C' Δ k c}\n      (hA : Builtins.TypeAssumptions P B) (hstore : store.WF)\n      (hC : TypeParamRenaming C C' (shiftIndex k c)) (hn : C'.length=C.length+k)\n      (hm : TypeCtxMap k c Γ Δ) :\n      HasTypeVQ P B store Q C' Δ Φ (v.shiftEAt k c) (shiftTypes k c a)",
+    "file_sha256": "c0fc8644661e825b820a360abb557f48158629306fd8c39946910ab2d49e9df0",
+    "unchanged": true
+  },
+  "HasTypeCQ.shift_types": {
+    "file": "formal/Benitoite/Release/Refinement/TypeShiftTyping.lean",
+    "signature": "theorem HasTypeCQ.shift_types {P B store Q C Γ Φ R m a e L}\n      (h : HasTypeCQ P B store Q C Γ Φ R m a e L) {C' Δ k c}\n      (hA : Builtins.TypeAssumptions P B) (hstore : store.WF)\n      (hC : TypeParamRenaming C C' (shiftIndex k c)) (hn : C'.length=C.length+k) (hm : TypeCtxMap k c Γ Δ) :\n      HasTypeCQ P B store Q C' Δ Φ (R.map (shiftTypes k c)) (m.shiftEAt k c)\n        (shiftTypes k c a) (shiftRowsTypes k c e) (L.shiftEAt k c)",
+    "file_sha256": "c0fc8644661e825b820a360abb557f48158629306fd8c39946910ab2d49e9df0",
+    "unchanged": true
+  },
+  "HasTypeVQ.narrow": {
+    "file": "formal/Benitoite/Release/Refinement/Narrowing.lean",
+    "signature": "theorem HasTypeVQ.narrow {P B store Q C Γ Φ v a Δ Ξ}\n    (h : HasTypeVQ P B store Q C Γ Φ v a) (hA : Builtins.ValueAssumptions P B) (hstore : store.WF) (hn : Ctx.Narrows P C Γ Φ Δ Ξ) :\n    HasTypeVQ P B store Q C Δ Ξ v a",
+    "file_sha256": "d691b9c7c2c6035a201d7b3908fea4a85ed4fb1f3277767586205a58ba5e68c0",
+    "unchanged": true
+  },
+  "HasTypeCQ.narrow": {
+    "file": "formal/Benitoite/Release/Refinement/Narrowing.lean",
+    "signature": "theorem HasTypeCQ.narrow {P B store Q C Γ Φ R m a e L Δ Ξ}\n    (h : HasTypeCQ P B store Q C Γ Φ R m a e L) (hA : Builtins.ValueAssumptions P B) (hstore : store.WF) (hn : Ctx.Narrows P C Γ Φ Δ Ξ) :\n    HasTypeCQ P B store Q C Δ Ξ R m a e L",
+    "file_sha256": "d691b9c7c2c6035a201d7b3908fea4a85ed4fb1f3277767586205a58ba5e68c0",
+    "unchanged": true
+  }
+}

@@ -81,7 +81,7 @@ theorem StateTyE.force_done_transition {P B σ Eb b ts es rs l k μ s v}
   obtain ⟨x,hx,hn,hv,rfl,rfl⟩ := hargs.force (hA.store_shape b s hs (by rw [hk]; decide)) hk
   obtain ⟨loc,y,hvl,hΨ,hxy⟩ := hv.canonical_lazy rfl
   cases Val.loc.inj hvl
-  obtain ⟨y',hΨ',hread,had'⟩ := hsμ.2.2.2.2 l _ hl
+  obtain ⟨y',hΨ',hread,had'⟩ := hsμ.cell l _ hl
   cases Option.some.inj (hΨ'.symm.trans hΨ)
   have hvx : HasTypeV P B Ψ [] [] [] v r := .V_Sub hread hxy hx.wf hx.sorted hx.declared
   exact ⟨step,Ψ,R,r,c,ε,Eff.empty,hsμ,hq.pure_return hvx hx hn,
@@ -101,7 +101,7 @@ theorem StateTyE.force_thunk_transition {P B σ Eb b ts es rs l k μ s m}
   obtain ⟨x,hx,hn,hv,rfl,rfl⟩ := hargs.force (hA.store_shape b s hs (by rw [hk]; decide)) hk
   obtain ⟨loc,y,hvl,hΨ,hxy⟩ := hv.canonical_lazy rfl
   cases Val.loc.inj hvl
-  obtain ⟨y',hΨ',hbody,had'⟩ := hsμ.2.2.2.2 l _ hl
+  obtain ⟨y',hΨ',hbody,had'⟩ := hsμ.cell l _ hl
   cases Option.some.inj (hΨ'.symm.trans hΨ)
   refine ⟨step,Ψ,none,y,c,ε,Eff.empty,hsμ,
     hbody.store hA.values hsμ.wf.hide (StoreTy.hide_extends Ψ),empty_sub ε,
@@ -289,7 +289,7 @@ theorem StateTyE.lazy_transition {P B σ Eb q m k μ l}
   have hnone : Ψ l = none := by
     cases hp : Ψ l with
     | none => rfl
-    | some t => exact False.elim (hsμ.2.2.2.1 l t hp hl)
+    | some t => exact False.elim (hsμ.domain l t hp hl)
   have hext := StoreTy.extends_put (x := LocTy.lazy x) hnone
   have hmc : (Closure.mk q.capture m).ClosedAt 0 := by
     cases q with
