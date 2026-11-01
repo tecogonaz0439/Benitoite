@@ -1,0 +1,40 @@
+⚠ [72/114] Replayed Benitoite.Release.Refinement.TypeSubst
+warning: Benitoite/Release/Refinement/TypeSubst.lean:224:51: This simp argument is unused:
+  rawApply
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Ty.rawBind, shiftTypes, Ty.rawBind_shiftTypes, rawBindTys_shiftTypes, Eff.rawBind_shiftTypes,
+    Tel.rawBind_shiftTypes]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [76/114] Replayed Benitoite.Release.Refinement.RangeSubst
+warning: Benitoite/Release/Refinement/RangeSubst.lean:361:6: This simp argument is unused:
+  rawApply
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Ty.rawMapRanges, Ty.rawBind, Ty.rawMapRanges_rangesOnly, mapRangesTys_rangesOnly,
+    Eff.rawMapRanges_rangesOnly, Tel.rawMapRanges_rangesOnly, mapIx_rangeAt]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [101/114] Replayed Benitoite.Release.Refinement.ObservationOrder
+warning: Benitoite/Release/Refinement/ObservationOrder.lean:258:27: Try `simp at hm` instead of `simpa using hm`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Release/Refinement/ObservationOrder.lean:258:27: Try `simp at hm` instead of `simpa using hm`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Release/Refinement/ObservationOrder.lean:258:27: Try `simp at hm` instead of `simpa using hm`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Release/Refinement/ObservationOrder.lean:258:27: Try `simp at hm` instead of `simpa using hm`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Release/Refinement/ObservationOrder.lean:258:27: Try `simp at hm` instead of `simpa using hm`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Release/Refinement/ObservationOrder.lean:258:27: Try `simp at hm` instead of `simpa using hm`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [113/114] Built Benitoite.Release.Refinement.TypeRegularity (347ms)
+✔ [114/114] Built Benitoite.Release.Refinement.TypeBounds (461ms)
+Build completed successfully (114 jobs).

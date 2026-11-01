@@ -395,5 +395,12 @@ theorem StateTyE.operation_one {P B σ Eb o name x y eff v cap cs k1 k2 k μ bod
       · simp only [Store.set,hil,↓reduceIte] at hcell
         exact hμ i cell hcell
 
+/-- 型引数を持つE_Opで、本体の型置換へ渡す閉じたWFとOrdinary。 -/
+theorem StateTyE.operation_typeScope {P B σ Eb o ts v k μ}
+    (h : StateTyE P B σ Eb (.run (Closure.pure (.app (.op o ts) [v])) k μ)) :
+    ∀ t ∈ ts, t.WF 0 0 0 ∧ Ordinary t := by
+  obtain ⟨_, _, _, _, _, _, _, hq, _⟩ := h
+  exact hq.pure_operation_typeScope
+
 end
 end Benitoite.Release.Refinement

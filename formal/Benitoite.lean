@@ -373,3 +373,11 @@ import Benitoite.Release.Refinement.LegacyTableFacts
 import Benitoite.Release.Refinement.LegacyValues
 
 import Benitoite.Release.Refinement.Finite
+
+import Benitoite.Release.Refinement.TypeRegularity
+import Benitoite.Release.Refinement.TypeBounds
+import Benitoite.Release.Refinement.TypeRows
+import Benitoite.Release.Refinement.TypeVariables
+import Benitoite.Release.Refinement.TypeShiftFacts
+import Benitoite.Release.Refinement.EffectFacts
+import Benitoite.Release.Refinement.TypeArgumentRegularity

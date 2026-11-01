@@ -1,0 +1,27 @@
+{
+  "label": "main-contracts",
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-M",
+    "12288",
+    "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/s2/main-contracts.lean"
+  ],
+  "cwd": "formal",
+  "start_utc": "2026-11-01T11:24:22.115544+00:00",
+  "exit": 0,
+  "seconds": 0.649868291,
+  "bytes": 1040,
+  "sha256": "51b80000c3dbdb58a9c8c38193fbb204c4bbda2da21217fb8f9c986af4ed1777",
+  "log": "run-061-main-contracts.txt",
+  "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "disallowed_axioms": [],
+  "print_axioms_count": 10,
+  "sorry": false,
+  "warnings": 0
+}

@@ -1,0 +1,86 @@
+Benitoite/Release/Refinement/TypeBounds.lean:36:34: error: Application type mismatch: The argument
+  he
+has type
+  Eff.shiftV 1 0 e ∈ θ.up.rows
+but is expected to have type
+  e ∈ θ.rows
+in the application
+  h.rows e he
+Benitoite/Release/Refinement/TypeBounds.lean:46:14: error: unsolved goals
+case data
+as : List Ty
+d✝ : DataName
+h : (Ty.ctor (TyCon.data d✝)).NotContCore
+⊢ ∀ (b t : Ty) (e : EffR), ¬(rawApply (Ty.ctor (TyCon.data d✝)) as).core = b.cont t e
+
+case list
+as : List Ty
+h : (Ty.ctor TyCon.list).NotContCore
+⊢ ∀ (b t : Ty) (e : EffR), ¬(rawApply (Ty.ctor TyCon.list) as).core = b.cont t e
+
+case set
+as : List Ty
+h : (Ty.ctor TyCon.set).NotContCore
+⊢ ∀ (b t : Ty) (e : EffR), ¬(rawApply (Ty.ctor TyCon.set) as).core = b.cont t e
+
+case map
+as : List Ty
+h : (Ty.ctor TyCon.map).NotContCore
+⊢ ∀ (b t : Ty) (e : EffR), ¬(rawApply (Ty.ctor TyCon.map) as).core = b.cont t e
+
+case reference
+as : List Ty
+h : (Ty.ctor TyCon.reference).NotContCore
+⊢ ∀ (b t : Ty) (e : EffR), ¬(rawApply (Ty.ctor TyCon.reference) as).core = b.cont t e
+
+case lazy
+as : List Ty
+h : (Ty.ctor TyCon.lazy).NotContCore
+⊢ ∀ (b t : Ty) (e : EffR), ¬(rawApply (Ty.ctor TyCon.lazy) as).core = b.cont t e
+Benitoite/Release/Refinement/TypeBounds.lean:41:8: error: fail to show termination for
+  Benitoite.Release.Refinement.rawApply_notContCore
+with errors
+failed to infer structural recursion:
+Not considering parameter h of Benitoite.Release.Refinement.rawApply_notContCore:
+  its type is not an inductive
+Not considering parameter as of Benitoite.Release.Refinement.rawApply_notContCore:
+  it is unchanged in the recursive calls
+Cannot use parameter t:
+  failed to eliminate recursive application
+    rawApply_notContCore h as
+
+
+failed to prove termination, possible solutions:
+  - Use `have`-expressions to prove the remaining goals
+  - Use `termination_by` to specify a different well-founded relation
+  - Use `decreasing_by` to specify your own tactic for discharging this kind of goal
+as : List Ty
+_x : (t : Ty) ×' t.NotContCore
+a✝² :
+  ∀ (y : (t : Ty) ×' t.NotContCore),
+    (invImage (fun x => PSigma.casesOn x fun t h => t) sizeOfWFRel).1 y _x → (rawApply y.1 as).NotContCore
+t : Ty
+h✝¹ : t.NotContCore
+a✝¹ :
+  ∀ (y : (t : Ty) ×' t.NotContCore),
+    (invImage (fun x => PSigma.casesOn x fun t h => t) sizeOfWFRel).1 y ⟨t, h✝¹⟩ → (rawApply y.1 as).NotContCore
+a✝ : Ty
+p✝ : Pred
+h✝ : t = a✝.refined p✝
+h : (a✝.refined p✝).NotContCore
+⊢ 1 + sizeOf a✝ + sizeOf p✝ < sizeOf t
+Benitoite/Release/Refinement/TypeBounds.lean:46:51: warning: This simp argument is unused:
+  Ty.core
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Ty.NotContCore]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Benitoite/Release/Refinement/TypeBounds.lean:112:31: error: Application type mismatch: The argument
+  hi.rows f (List.mem_of_getElem? hf)
+has type
+  Eff.WF mr mt mv f
+but is expected to have type
+  Ty.WFList ?m.843 ?m.844 ?m.845 ?m.846
+in the application
+  Ty.wfList_iff.mp (hi.rows f (List.mem_of_getElem? hf))

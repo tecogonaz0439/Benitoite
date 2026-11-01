@@ -1,0 +1,27 @@
+{
+  "label": "v-boundary",
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-M",
+    "12288",
+    "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/v/boundary.lean"
+  ],
+  "cwd": "formal",
+  "start_utc": "2026-11-01T11:23:30.703217+00:00",
+  "exit": 0,
+  "seconds": 2.1257094160000003,
+  "bytes": 3846,
+  "sha256": "644914fd8e2f87f3606900dad85522db49a85865b91be7e91bb6a5932d0d6505",
+  "log": "run-057-v-boundary.txt",
+  "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "disallowed_axioms": [],
+  "print_axioms_count": 55,
+  "sorry": false,
+  "warnings": 0
+}

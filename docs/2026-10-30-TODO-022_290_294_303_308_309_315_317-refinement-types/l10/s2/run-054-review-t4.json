@@ -1,0 +1,27 @@
+{
+  "label": "review-t4",
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-M",
+    "12288",
+    "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/s2/rv-s2-t4.lean"
+  ],
+  "cwd": "formal",
+  "start_utc": "2026-11-01T11:23:30.710233+00:00",
+  "exit": 0,
+  "seconds": 1.9281265410000001,
+  "bytes": 83,
+  "sha256": "30937b0d0c4f5e0b59a8b241dd06f49ded439ce9fbcf2da5532e3706eb2fef34",
+  "log": "run-054-review-t4.txt",
+  "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "disallowed_axioms": [],
+  "print_axioms_count": 1,
+  "sorry": false,
+  "warnings": 0
+}

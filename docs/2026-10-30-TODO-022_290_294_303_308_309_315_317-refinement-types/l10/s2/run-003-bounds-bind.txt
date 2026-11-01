@@ -1,0 +1,140 @@
+Benitoite/Release/Refinement/TypeBounds.lean:12:17: error(lean.invalidField): Invalid field notation: Type of
+  ix
+is not known; cannot resolve field `WF`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Atom.WF`
+  • `Release.Eff.WF`
+  • `Release.Ty.WF`
+  • `Std.DHashMap.Raw.WF`
+  • `Std.DTreeMap.Raw.WF`
+  • `Std.HashMap.Raw.WF`
+  • `Std.HashSet.Raw.WF`
+  • `Std.TreeMap.Raw.WF`
+  • `Std.TreeSet.Raw.WF`
+  • `BinderTypes.WF`
+  • `Ctx.WF`
+  • `Eff.WF`
+  • `ExternalSignature.WF`
+  • `LocTy.WF`
+  • `OpSig.WF`
+  • `Pred.WF`
+  • `RangeExpr.WF`
+  • `RangeIx.WF`
+  • `StoreTy.WF`
+  • `Tel.WF`
+  • `Ty.WF`
+  • `Scope.Domain.CIDR.WF`
+  • `Scope.Domain.EndpointPattern.WF`
+  • `Scope.Domain.HostPattern.WF`
+  • `Scope.Domain.HostTarget.WF`
+  • `Scope.Domain.IPPattern.WF`
+  • `Scope.Domain.NamePattern.WF`
+  • `Scope.Domain.PathPattern.WF`
+  • `Scope.Domain.PortRange.WF`
+  • `Scope.Domain.Range.WF`
+  • `Scope.Domain.Target.WF`
+  • `Scope.Signature.Ix.WF`
+  • `Std.DTreeMap.Internal.Impl.WF`
+  • `Std.Sat.AIG.Cache.WF`
+Benitoite/Release/Refinement/TypeBounds.lean:12:29: error(lean.invalidField): Invalid field notation: Type of
+  ix
+is not known; cannot resolve field `inst`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Std.BundledIterM.inst`
+  • `PrimSig.inst`
+  • `RangeIx.inst`
+  • `Scope.Signature.Ix.inst`
+  • `Std.Http.Header.Connection.inst`
+  • `Std.Http.Header.ContentLength.inst`
+  • `Std.Http.Header.Expect.inst`
+  • `Std.Http.Header.Host.inst`
+  • `Std.Http.Header.TransferEncoding.inst`
+  • `Std.Time.Database.TZdb.inst`
+  • `Std.Time.Database.WindowsDb.inst`
+  • `RangeIx.Covers.inst`
+Benitoite/Release/Refinement/TypeBounds.lean:31:11: error(lean.invalidField): Invalid field `WFImages`: The environment does not contain `Benitoite.Release.Refinement.SubstEnv.WFImages`, so it is not possible to project the field `WFImages` from an expression
+  θ
+of type `SubstEnv`
+Benitoite/Release/Refinement/TypeBounds.lean:31:46: error(lean.invalidField): Invalid field `WFImages`: The environment does not contain `Benitoite.Release.Refinement.SubstEnv.WFImages`, so it is not possible to project the field `WFImages` from an expression
+  θ.up
+of type `SubstEnv`
+Benitoite/Release/Refinement/TypeBounds.lean:32:2: error: Tactic `constructor` failed: target is not an inductive datatype
+
+nr nt nv mr mt mv : Nat
+θ : SubstEnv
+h : sorry
+⊢ sorry
+Benitoite/Release/Refinement/TypeBounds.lean:43:14: error: `simp` made no progress
+Benitoite/Release/Refinement/TypeBounds.lean:42:35: error: unsolved goals
+case scopePattern
+as : List Ty
+kind✝ : Scope.Domain.Kind
+h : (Ty.scopePattern kind✝).NotContCore
+⊢ (Ty.scopePattern kind✝).NotContCore
+Benitoite/Release/Refinement/TypeBounds.lean:41:8: error: (kernel) declaration has metavariables 'Benitoite.Release.Refinement.rawApply_notContCore'
+Benitoite/Release/Refinement/TypeBounds.lean:52:14: error: `simp` made no progress
+Benitoite/Release/Refinement/TypeBounds.lean:51:66: error: unsolved goals
+case scopePattern
+nr nt nv : Nat
+as : List Ty
+hs : Ty.WFList nr nt nv as
+kind✝ : Scope.Domain.Kind
+ht : Ty.WF nr nt nv (Ty.scopePattern kind✝)
+⊢ Ty.WF nr nt nv (Ty.scopePattern kind✝)
+Benitoite/Release/Refinement/TypeBounds.lean:50:8: error: (kernel) declaration has metavariables 'Benitoite.Release.Refinement.rawApply_wf'
+Benitoite/Release/Refinement/TypeBounds.lean:72:34: error(lean.invalidField): Invalid field `WFImages`: The environment does not contain `Benitoite.Release.Refinement.SubstEnv.WFImages`, so it is not possible to project the field `WFImages` from an expression
+  θ
+of type `SubstEnv`
+Benitoite/Release/Refinement/TypeBounds.lean:94:42: error(lean.invalidField): Invalid field `WFImages`: The environment does not contain `Benitoite.Release.Refinement.SubstEnv.WFImages`, so it is not possible to project the field `WFImages` from an expression
+  θ
+of type `SubstEnv`
+Benitoite/Release/Refinement/TypeBounds.lean:100:34: error(lean.invalidField): Invalid field `WFImages`: The environment does not contain `Benitoite.Release.Refinement.SubstEnv.WFImages`, so it is not possible to project the field `WFImages` from an expression
+  θ
+of type `SubstEnv`
+Benitoite/Release/Refinement/TypeBounds.lean:114:34: error(lean.invalidField): Invalid field `WFImages`: The environment does not contain `Benitoite.Release.Refinement.SubstEnv.WFImages`, so it is not possible to project the field `WFImages` from an expression
+  θ
+of type `SubstEnv`
+Benitoite/Release/Refinement/TypeBounds.lean:73:40: error: unsolved goals
+case opaque
+nr nt nv mr mt mv : Nat
+θ : SubstEnv
+hi : sorry
+o✝ : OpaqueName
+ix✝ : RangeIx
+h : RangeIx.WF nr ix✝
+⊢ RangeIx.WF mr (RangeIx.inst θ.ranges ix✝)
+
+case scoped
+nr nt nv mr mt mv : Nat
+θ : SubstEnv
+hi : sorry
+name✝ : OpaqueName
+kind✝ : Scope.Domain.Kind
+index✝ : RangeIx
+h : RangeIx.WF nr index✝
+⊢ RangeIx.WF mr (RangeIx.inst θ.ranges index✝)
+Benitoite/Release/Refinement/TypeBounds.lean:109:98: error: Type mismatch
+  ha
+has type
+  a ∈ Ty.normTys (rowFails θ.rows atoms)
+but is expected to have type
+  a ∈ List.map Ty.norm (rowFails θ.rows atoms)
+Benitoite/Release/Refinement/TypeBounds.lean:122:32: error(lean.invalidField): Invalid field `WFImages`: The environment does not contain `Benitoite.Release.Refinement.SubstEnv.WFImages`, so it is not possible to project the field `WFImages` from an expression
+  θ
+of type `SubstEnv`
+Benitoite/Release/Refinement/TypeBounds.lean:135:111: error: Type mismatch
+  hb
+has type
+  e.mem b
+but is expected to have type
+  e.mem (Atom.instR (typeEnvAt c ts es).ranges b)
+Benitoite/Release/Refinement/TypeBounds.lean:138:23: error: Application type mismatch: The argument
+  hm
+has type
+  (shiftRowsTypes c 0 g).mem (Atom.name l ix)
+but is expected to have type
+  g.mem (Atom.name l ix)
+in the application
+  he g hg l ix hm

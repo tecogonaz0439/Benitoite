@@ -1,0 +1,1590 @@
+{
+  "counts": {
+    "不要": 43,
+    "本群で完了": 68,
+    "既済": 16,
+    "前群で完了": 31
+  },
+  "rows": [
+    {
+      "id": "FND001",
+      "old": "Ty.LeOld.le",
+      "old_file": "formal/Benitoite/Release/CoverCompat.lean",
+      "detail_status": "不要",
+      "disposition": "不要",
+      "unit": null,
+      "new": null,
+      "reason": "旧LeOldとの同値はD29の片方向の条件に不要。旧互換を新規則の正にしない"
+    },
+    {
+      "id": "FND002",
+      "old": "Ty.le_iff_leOld",
+      "old_file": "formal/Benitoite/Release/CoverCompat.lean",
+      "detail_status": "不要",
+      "disposition": "不要",
+      "unit": null,
+      "new": null,
+      "reason": "旧LeOldとの同値はD29の片方向の条件に不要。旧互換を新規則の正にしない"
+    },
+    {
+      "id": "FND003",
+      "old": "Eff.memFail_singleFail",
+      "old_file": "formal/Benitoite/Release/Effect.lean",
+      "detail_status": "L10・.51",
+      "disposition": "本群で完了",
+      "unit": 51,
+      "new": "Benitoite.Release.Refinement.Eff.memFail_singleFail",
+      "reason": "新Eff.Sub/Covers/Failとrow置換の条件付きの新形"
+    },
+    {
+      "id": "FND004",
+      "old": "Eff.eq_of_sub_of_sub",
+      "old_file": "formal/Benitoite/Release/Effect.lean",
+      "detail_status": "L10・.51",
+      "disposition": "本群で完了",
+      "unit": 51,
+      "new": "Benitoite.Release.Refinement.Eff.eq_of_sub_of_sub",
+      "reason": "新Eff.Sub/Covers/Failとrow置換の条件付きの新形"
+    },
+    {
+      "id": "FND005",
+      "old": "Eff.allows_norm",
+      "old_file": "formal/Benitoite/Release/EffectCover.lean",
+      "detail_status": "L10・.51",
+      "disposition": "本群で完了",
+      "unit": 51,
+      "new": "Benitoite.Release.Refinement.Eff.allows_norm",
+      "reason": "新Eff.Sub/Covers/Failとrow置換の条件付きの新形"
+    },
+    {
+      "id": "FND006",
+      "old": "Eff.TopAtoms.norm",
+      "old_file": "formal/Benitoite/Release/EffectCover.lean",
+      "detail_status": "L10・.51",
+      "disposition": "本群で完了",
+      "unit": 51,
+      "new": "Benitoite.Release.Refinement.Eff.TopAtoms.norm",
+      "reason": "新Eff.Sub/Covers/Failとrow置換の条件付きの新形"
+    },
+    {
+      "id": "FND007",
+      "old": "Eff.covers_norm_left",
+      "old_file": "formal/Benitoite/Release/EffectCoverDef.lean",
+      "detail_status": "済",
+      "disposition": "既済",
+      "unit": null,
+      "new": "Benitoite.Release.Refinement.Eff.covers_norm_left",
+      "reason": "R/EffectCover.lean：Eff.covers_norm_left"
+    },
+    {
+      "id": "FND008",
+      "old": "Eff.covers_norm_right",
+      "old_file": "formal/Benitoite/Release/EffectCoverDef.lean",
+      "detail_status": "済",
+      "disposition": "既済",
+      "unit": null,
+      "new": "Benitoite.Release.Refinement.Eff.covers_norm_right",
+      "reason": "R/EffectCover.lean：Eff.covers_norm_right"
+    },
+    {
+      "id": "FND009",
+      "old": "Ty.normWith_eq_norm",
+      "old_file": "formal/Benitoite/Release/Finite.lean",
+      "detail_status": "L10・.43",
+      "disposition": "前群で完了",
+      "unit": 43,
+      "new": "Benitoite.Release.Refinement.Ty.normWith_eq_norm",
+      "reason": "normWith一致/支持/正規形/冪等/支持独立の新形"
+    },
+    {
+      "id": "FND010",
+      "old": "Ty.normTysWith_eq_norm",
+      "old_file": "formal/Benitoite/Release/Finite.lean",
+      "detail_status": "L10・.43",
+      "disposition": "前群で完了",
+      "unit": 43,
+      "new": "Benitoite.Release.Refinement.Ty.normTysWith_eq_norm",
+      "reason": "normWith一致/支持/正規形/冪等/支持独立の新形"
+    },
+    {
+      "id": "FND011",
+      "old": "Eff.normWith_eq_norm_of_fails",
+      "old_file": "formal/Benitoite/Release/Finite.lean",
+      "detail_status": "L10・.43",
+      "disposition": "前群で完了",
+      "unit": 43,
+      "new": "Benitoite.Release.Refinement.Eff.normWith_eq_norm_of_fails",
+      "reason": "normWith一致/支持/正規形/冪等/支持独立の新形"
+    },
+    {
+      "id": "FND012",
+      "old": "Eff.normWith_eq_norm",
+      "old_file": "formal/Benitoite/Release/Finite.lean",
+      "detail_status": "L10・.43",
+      "disposition": "前群で完了",
+      "unit": 43,
+      "new": "Benitoite.Release.Refinement.Eff.normWith_eq_norm",
+      "reason": "normWith一致/支持/正規形/冪等/支持独立の新形"
+    },
+    {
+      "id": "FND013",
+      "old": "Ty.normWith_legacy",
+      "old_file": "formal/Benitoite/Release/Finite.lean",
+      "detail_status": "不要",
+      "disposition": "不要",
+      "unit": null,
+      "new": null,
+      "reason": "旧Legacy表現への橋。有限な新normとの一致だけを証明する"
+    },
+    {
+      "id": "FND014",
+      "old": "Ty.normTysWith_legacy",
+      "old_file": "formal/Benitoite/Release/Finite.lean",
+      "detail_status": "不要",
+      "disposition": "不要",
+      "unit": null,
+      "new": null,
+      "reason": "旧Legacy表現への橋。有限な新normとの一致だけを証明する"
+    },
+    {
+      "id": "FND015",
+      "old": "Eff.normWith_legacy",
+      "old_file": "formal/Benitoite/Release/Finite.lean",
+      "detail_status": "不要",
+      "disposition": "不要",
+      "unit": null,
+      "new": null,
+      "reason": "旧Legacy表現への橋。有限な新normとの一致だけを証明する"
+    },
+    {
+      "id": "FND016",
+      "old": "Ty.normWith_support",
+      "old_file": "formal/Benitoite/Release/Finite.lean",
+      "detail_status": "L10・.43",
+      "disposition": "前群で完了",
+      "unit": 43,
+      "new": "Benitoite.Release.Refinement.Ty.normWith_support",
+      "reason": "normWith一致/支持/正規形/冪等/支持独立の新形"
+    },
+    {
+      "id": "FND017",
+      "old": "Eff.normWith_support",
+      "old_file": "formal/Benitoite/Release/Finite.lean",
+      "detail_status": "L10・.43",
+      "disposition": "前群で完了",
+      "unit": 43,
+      "new": "Benitoite.Release.Refinement.Eff.normWith_support",
+      "reason": "normWith一致/支持/正規形/冪等/支持独立の新形"
+    },
+    {
+      "id": "FND018",
+      "old": "Ty.normWith_canonical",
+      "old_file": "formal/Benitoite/Release/Finite.lean",
+      "detail_status": "L10・.43",
+      "disposition": "前群で完了",
+      "unit": 43,
+      "new": "Benitoite.Release.Refinement.Ty.normWith_canonical",
+      "reason": "normWith一致/支持/正規形/冪等/支持独立の新形"
+    },
+    {
+      "id": "FND019",
+      "old": "Eff.normWith_canonical",
+      "old_file": "formal/Benitoite/Release/Finite.lean",
+      "detail_status": "L10・.43",
+      "disposition": "前群で完了",
+      "unit": 43,
+      "new": "Benitoite.Release.Refinement.Eff.normWith_canonical",
+      "reason": "normWith一致/支持/正規形/冪等/支持独立の新形"
+    },
+    {
+      "id": "FND020",
+      "old": "Ty.normWith_idem",
+      "old_file": "formal/Benitoite/Release/Finite.lean",
+      "detail_status": "L10・.43",
+      "disposition": "前群で完了",
+      "unit": 43,
+      "new": "Benitoite.Release.Refinement.Ty.normWith_idem",
+      "reason": "normWith一致/支持/正規形/冪等/支持独立の新形"
+    },
+    {
+      "id": "FND021",
+      "old": "Eff.normWith_idem",
+      "old_file": "formal/Benitoite/Release/Finite.lean",
+      "detail_status": "L10・.43",
+      "disposition": "前群で完了",
+      "unit": 43,
+      "new": "Benitoite.Release.Refinement.Eff.normWith_idem",
+      "reason": "normWith一致/支持/正規形/冪等/支持独立の新形"
+    },
+    {
+      "id": "FND022",
+      "old": "Ty.normWith_support_independent",
+      "old_file": "formal/Benitoite/Release/Finite.lean",
+      "detail_status": "L10・.43",
+      "disposition": "前群で完了",
+      "unit": 43,
+      "new": "Benitoite.Release.Refinement.Ty.normWith_support_independent",
+      "reason": "normWith一致/支持/正規形/冪等/支持独立の新形"
+    },
+    {
+      "id": "FND023",
+      "old": "Eff.normWith_support_independent",
+      "old_file": "formal/Benitoite/Release/Finite.lean",
+      "detail_status": "L10・.43",
+      "disposition": "前群で完了",
+      "unit": 43,
+      "new": "Benitoite.Release.Refinement.Eff.normWith_support_independent",
+      "reason": "normWith一致/支持/正規形/冪等/支持独立の新形"
+    },
+    {
+      "id": "FND024",
+      "old": "Ty.support_of_norm",
+      "old_file": "formal/Benitoite/Release/FiniteSupport.lean",
+      "detail_status": "L10・.36",
+      "disposition": "前群で完了",
+      "unit": 36,
+      "new": "Benitoite.Release.Refinement.Ty.support_of_norm",
+      "reason": "新Supportとnorm/Coversの逆向きの支持。最初3件は同種17件"
+    },
+    {
+      "id": "FND025",
+      "old": "Ty.supportList_of_norm",
+      "old_file": "formal/Benitoite/Release/FiniteSupport.lean",
+      "detail_status": "L10・.36",
+      "disposition": "前群で完了",
+      "unit": 36,
+      "new": "Benitoite.Release.Refinement.Ty.supportList_of_norm",
+      "reason": "新Supportとnorm/Coversの逆向きの支持。最初3件は同種17件"
+    },
+    {
+      "id": "FND026",
+      "old": "Eff.support_of_norm",
+      "old_file": "formal/Benitoite/Release/FiniteSupport.lean",
+      "detail_status": "L10・.36",
+      "disposition": "前群で完了",
+      "unit": 36,
+      "new": "Benitoite.Release.Refinement.Eff.support_of_norm",
+      "reason": "新Supportとnorm/Coversの逆向きの支持。最初3件は同種17件"
+    },
+    {
+      "id": "FND027",
+      "old": "Eff.norm_fails_support",
+      "old_file": "formal/Benitoite/Release/FiniteSupport.lean",
+      "detail_status": "L10・.37",
+      "disposition": "前群で完了",
+      "unit": 37,
+      "new": "Benitoite.Release.Refinement.Eff.norm_fails_support",
+      "reason": "新Supportとnorm/Coversの逆向きの支持。最初17件後の残二件。別単位で所要を記録"
+    },
+    {
+      "id": "FND028",
+      "old": "Eff.support_of_sub",
+      "old_file": "formal/Benitoite/Release/FiniteSupport.lean",
+      "detail_status": "L10・.37",
+      "disposition": "前群で完了",
+      "unit": 37,
+      "new": "Benitoite.Release.Refinement.Eff.support_of_sub",
+      "reason": "新Supportとnorm/Coversの逆向きの支持。最初17件後の残二件。別単位で所要を記録"
+    },
+    {
+      "id": "FND029",
+      "old": "Eff.substRho_empty",
+      "old_file": "formal/Benitoite/Release/Lemmas/Basic.lean",
+      "detail_status": "L10・.51",
+      "disposition": "本群で完了",
+      "unit": 51,
+      "new": "Benitoite.Release.Refinement.Eff.substRho_empty",
+      "reason": "新Eff.Sub/Covers/Failとrow置換の条件付きの新形"
+    },
+    {
+      "id": "FND030",
+      "old": "Eff.substRho_name",
+      "old_file": "formal/Benitoite/Release/Lemmas/Basic.lean",
+      "detail_status": "L10・.51",
+      "disposition": "本群で完了",
+      "unit": 51,
+      "new": "Benitoite.Release.Refinement.Eff.substRho_name",
+      "reason": "新Eff.Sub/Covers/Failとrow置換の条件付きの新形"
+    },
+    {
+      "id": "FND031",
+      "old": "Ty.Le.refl",
+      "old_file": "formal/Benitoite/Release/Lemmas/Basic.lean",
+      "detail_status": "済",
+      "disposition": "既済",
+      "unit": null,
+      "new": "Benitoite.Release.Refinement.Ty.LeQ.refl",
+      "reason": "R/Le.lean：Ty.LeQ.refl"
+    },
+    {
+      "id": "FND032",
+      "old": "Ty.Le.trans",
+      "old_file": "formal/Benitoite/Release/Lemmas/Basic.lean",
+      "detail_status": "済",
+      "disposition": "既済",
+      "unit": null,
+      "new": "Benitoite.Release.Refinement.Ty.LeQ.trans",
+      "reason": "R/Le.lean：Ty.LeQ.trans"
+    },
+    {
+      "id": "FND033",
+      "old": "normTys_sortUnique",
+      "old_file": "formal/Benitoite/Release/Normalize.lean",
+      "detail_status": "済",
+      "disposition": "既済",
+      "unit": null,
+      "new": "Benitoite.Release.Refinement.normTys_sortUnique",
+      "reason": "R/Normalize.lean：private normTys_sortUnique"
+    },
+    {
+      "id": "FND034",
+      "old": "Ty.norm_idem",
+      "old_file": "formal/Benitoite/Release/Normalize.lean",
+      "detail_status": "済",
+      "disposition": "既済",
+      "unit": null,
+      "new": "Benitoite.Release.Refinement.Ty.norm_idem",
+      "reason": "R/Normalize.lean：Ty.norm_idem"
+    },
+    {
+      "id": "FND035",
+      "old": "Ty.normTys_idem",
+      "old_file": "formal/Benitoite/Release/Normalize.lean",
+      "detail_status": "済",
+      "disposition": "既済",
+      "unit": null,
+      "new": "Benitoite.Release.Refinement.Ty.normTys_idem",
+      "reason": "R/Normalize.lean：Ty.normTys_idem"
+    },
+    {
+      "id": "FND036",
+      "old": "Eff.norm_idem",
+      "old_file": "formal/Benitoite/Release/Normalize.lean",
+      "detail_status": "済",
+      "disposition": "既済",
+      "unit": null,
+      "new": "Benitoite.Release.Refinement.Eff.norm_idem",
+      "reason": "R/Normalize.lean：Eff.norm_idem"
+    },
+    {
+      "id": "FND037",
+      "old": "Eff.norm_memFail",
+      "old_file": "formal/Benitoite/Release/Normalize.lean",
+      "detail_status": "済",
+      "disposition": "既済",
+      "unit": null,
+      "new": "Benitoite.Release.Refinement.Eff.norm_memFail",
+      "reason": "R/Normalize.lean：Eff.norm_memFail"
+    },
+    {
+      "id": "FND038",
+      "old": "Ty.norm_legacy",
+      "old_file": "formal/Benitoite/Release/Normalize.lean",
+      "detail_status": "不要",
+      "disposition": "不要",
+      "unit": null,
+      "new": null,
+      "reason": "旧のさらに古いLegacy表現への橋。新旧Releaseの橋embedTy_norm等と別"
+    },
+    {
+      "id": "FND039",
+      "old": "Ty.normTys_legacy",
+      "old_file": "formal/Benitoite/Release/Normalize.lean",
+      "detail_status": "不要",
+      "disposition": "不要",
+      "unit": null,
+      "new": null,
+      "reason": "旧のさらに古いLegacy表現への橋。新旧Releaseの橋embedTy_norm等と別"
+    },
+    {
+      "id": "FND040",
+      "old": "Eff.norm_legacy",
+      "old_file": "formal/Benitoite/Release/Normalize.lean",
+      "detail_status": "不要",
+      "disposition": "不要",
+      "unit": null,
+      "new": null,
+      "reason": "旧のさらに古いLegacy表現への橋。新旧Releaseの橋embedTy_norm等と別"
+    },
+    {
+      "id": "FND041",
+      "old": "Ty.canonical_of_failsLeOne",
+      "old_file": "formal/Benitoite/Release/Normalize.lean",
+      "detail_status": "不要",
+      "disposition": "不要",
+      "unit": null,
+      "new": null,
+      "reason": "failsLeOneからの旧Canonical。新しい篩/Telを含む正規化へ移植しない"
+    },
+    {
+      "id": "FND042",
+      "old": "Ty.canonicalTys_of_failsLeOne",
+      "old_file": "formal/Benitoite/Release/Normalize.lean",
+      "detail_status": "不要",
+      "disposition": "不要",
+      "unit": null,
+      "new": null,
+      "reason": "failsLeOneからの旧Canonical。新しい篩/Telを含む正規化へ移植しない"
+    },
+    {
+      "id": "FND043",
+      "old": "Eff.canonical_of_failsLeOne",
+      "old_file": "formal/Benitoite/Release/Normalize.lean",
+      "detail_status": "不要",
+      "disposition": "不要",
+      "unit": null,
+      "new": null,
+      "reason": "failsLeOneからの旧Canonical。新しい篩/Telを含む正規化へ移植しない"
+    },
+    {
+      "id": "FND044",
+      "old": "Ty.shift_compare_norm",
+      "old_file": "formal/Benitoite/Release/Order/Shift.lean",
+      "detail_status": "L10・.50",
+      "disposition": "本群で完了",
+      "unit": 50,
+      "new": "Benitoite.Release.Refinement.Ty.shift_compare_norm",
+      "reason": "型の移動と順序/正規化。現行ShiftOrderを再使用し不足の包装を追加"
+    },
+    {
+      "id": "FND045",
+      "old": "Ty.shift_compare",
+      "old_file": "formal/Benitoite/Release/Order/Shift.lean",
+      "detail_status": "L10・.50",
+      "disposition": "本群で完了",
+      "unit": 50,
+      "new": "Benitoite.Release.Refinement.Ty.shift_compare",
+      "reason": "型の移動と順序/正規化。現行ShiftOrderを再使用し不足の包装を追加"
+    },
+    {
+      "id": "FND046",
+      "old": "shift_map",
+      "old_file": "formal/Benitoite/Release/Order/Shift.lean",
+      "detail_status": "L10・.50",
+      "disposition": "本群で完了",
+      "unit": 50,
+      "new": "Benitoite.Release.Refinement.shift_map",
+      "reason": "型の移動と順序/正規化。現行ShiftOrderを再使用し不足の包装を追加"
+    },
+    {
+      "id": "FND047",
+      "old": "Ty.shift_compareList",
+      "old_file": "formal/Benitoite/Release/Order/Shift.lean",
+      "detail_status": "L10・.50",
+      "disposition": "本群で完了",
+      "unit": 50,
+      "new": "Benitoite.Release.Refinement.Ty.shift_compareList",
+      "reason": "型の移動と順序/正規化。現行ShiftOrderを再使用し不足の包装を追加"
+    },
+    {
+      "id": "FND048",
+      "old": "Ty.sortUnique_shift",
+      "old_file": "formal/Benitoite/Release/Order/Shift.lean",
+      "detail_status": "L10・.50",
+      "disposition": "本群で完了",
+      "unit": 50,
+      "new": "Benitoite.Release.Refinement.Ty.sortUnique_shift",
+      "reason": "型の移動と順序/正規化。現行ShiftOrderを再使用し不足の包装を追加"
+    },
+    {
+      "id": "FND049",
+      "old": "Ty.wf_iff_old",
+      "old_file": "formal/Benitoite/Release/RangeWF.lean",
+      "detail_status": "不要",
+      "disposition": "不要",
+      "unit": null,
+      "new": null,
+      "reason": "旧RangeWF表現との同値/旧意味の信頼欄の橋。新Γ/Φ/RangeIxの実装は直接扱い、旧同値を公開しない。旧読者の代替：L20 G04、R/Contextの四名前空間のWFとRangeSubstの範囲の移送を直接使う。旧WFとの同値を経由しない"
+    },
+    {
+      "id": "FND050",
+      "old": "Ty.wfList_iff_old",
+      "old_file": "formal/Benitoite/Release/RangeWF.lean",
+      "detail_status": "不要",
+      "disposition": "不要",
+      "unit": null,
+      "new": null,
+      "reason": "旧RangeWF表現との同値/旧意味の信頼欄の橋。新Γ/Φ/RangeIxの実装は直接扱い、旧同値を公開しない"
+    },
+    {
+      "id": "FND051",
+      "old": "Eff.wf_iff_old",
+      "old_file": "formal/Benitoite/Release/RangeWF.lean",
+      "detail_status": "不要",
+      "disposition": "不要",
+      "unit": null,
+      "new": null,
+      "reason": "旧RangeWF表現との同値/旧意味の信頼欄の橋。新Γ/Φ/RangeIxの実装は直接扱い、旧同値を公開しない"
+    },
+    {
+      "id": "FND052",
+      "old": "Ty.varsIn_iff_old",
+      "old_file": "formal/Benitoite/Release/RangeWF.lean",
+      "detail_status": "不要",
+      "disposition": "不要",
+      "unit": null,
+      "new": null,
+      "reason": "旧RangeWF表現との同値/旧意味の信頼欄の橋。新Γ/Φ/RangeIxの実装は直接扱い、旧同値を公開しない。旧読者の代替：L20 G04／L70、型/行/範囲/値のscopeを直接分解。PrimRange/DesugarRangeの新しい署名のWF/RowsIn/Referencesの射影へ置換"
+    },
+    {
+      "id": "FND053",
+      "old": "Ty.varsInList_iff_old",
+      "old_file": "formal/Benitoite/Release/RangeWF.lean",
+      "detail_status": "不要",
+      "disposition": "不要",
+      "unit": null,
+      "new": null,
+      "reason": "旧RangeWF表現との同値/旧意味の信頼欄の橋。新Γ/Φ/RangeIxの実装は直接扱い、旧同値を公開しない。旧読者の代替：L20 G04／L70、型列のWF/RowsIn/Referencesを要素ごとに射影し、旧型列との同値を使わない"
+    },
+    {
+      "id": "FND054",
+      "old": "Eff.varsIn_iff_old",
+      "old_file": "formal/Benitoite/Release/RangeWF.lean",
+      "detail_status": "不要",
+      "disposition": "不要",
+      "unit": null,
+      "new": null,
+      "reason": "旧RangeWF表現との同値/旧意味の信頼欄の橋。新Γ/Φ/RangeIxの実装は直接扱い、旧同値を公開しない。旧読者の代替：L20 G04／L70、新EffのRowsInとFail型のWF、範囲添字のWFを直接使う"
+    },
+    {
+      "id": "FND055",
+      "old": "Ty.RangesIn.opaque",
+      "old_file": "formal/Benitoite/Release/RangeWF.lean",
+      "detail_status": "不要",
+      "disposition": "不要",
+      "unit": null,
+      "new": null,
+      "reason": "旧RangeWF表現との同値/旧意味の信頼欄の橋。新Γ/Φ/RangeIxの実装は直接扱い、旧同値を公開しない。旧読者の代替：L20 G04、RangeIx.WFの射影と同じ添字のinstR/shiftRのscope保存を使う"
+    },
+    {
+      "id": "FND056",
+      "old": "Ty.RangesInList.opaque",
+      "old_file": "formal/Benitoite/Release/RangeWF.lean",
+      "detail_status": "不要",
+      "disposition": "不要",
+      "unit": null,
+      "new": null,
+      "reason": "旧RangeWF表現との同値/旧意味の信頼欄の橋。新Γ/Φ/RangeIxの実装は直接扱い、旧同値を公開しない"
+    },
+    {
+      "id": "FND057",
+      "old": "Eff.RangesIn.opaque",
+      "old_file": "formal/Benitoite/Release/RangeWF.lean",
+      "detail_status": "不要",
+      "disposition": "不要",
+      "unit": null,
+      "new": null,
+      "reason": "旧RangeWF表現との同値/旧意味の信頼欄の橋。新Γ/Φ/RangeIxの実装は直接扱い、旧同値を公開しない"
+    },
+    {
+      "id": "FND058",
+      "old": "Ty.WF.old",
+      "old_file": "formal/Benitoite/Release/RangeWF.lean",
+      "detail_status": "不要",
+      "disposition": "不要",
+      "unit": null,
+      "new": null,
+      "reason": "旧RangeWF表現との同値/旧意味の信頼欄の橋。新Γ/Φ/RangeIxの実装は直接扱い、旧同値を公開しない"
+    },
+    {
+      "id": "FND059",
+      "old": "Ty.wf_iff_old_of_opaqueRangesIn",
+      "old_file": "formal/Benitoite/Release/RangeWF.lean",
+      "detail_status": "不要",
+      "disposition": "不要",
+      "unit": null,
+      "new": null,
+      "reason": "旧RangeWF表現との同値/旧意味の信頼欄の橋。新Γ/Φ/RangeIxの実装は直接扱い、旧同値を公開しない"
+    },
+    {
+      "id": "FND060",
+      "old": "Ty.wf_iff_old_of_rangeFree",
+      "old_file": "formal/Benitoite/Release/RangeWF.lean",
+      "detail_status": "不要",
+      "disposition": "不要",
+      "unit": null,
+      "new": null,
+      "reason": "旧RangeWF表現との同値/旧意味の信頼欄の橋。新Γ/Φ/RangeIxの実装は直接扱い、旧同値を公開しない"
+    },
+    {
+      "id": "FND061",
+      "old": "Ty.VarsIn.old",
+      "old_file": "formal/Benitoite/Release/RangeWF.lean",
+      "detail_status": "不要",
+      "disposition": "不要",
+      "unit": null,
+      "new": null,
+      "reason": "旧RangeWF表現との同値/旧意味の信頼欄の橋。新Γ/Φ/RangeIxの実装は直接扱い、旧同値を公開しない"
+    },
+    {
+      "id": "FND062",
+      "old": "Ty.varsIn_iff_old_of_rangeFree",
+      "old_file": "formal/Benitoite/Release/RangeWF.lean",
+      "detail_status": "不要",
+      "disposition": "不要",
+      "unit": null,
+      "new": null,
+      "reason": "旧RangeWF表現との同値/旧意味の信頼欄の橋。新Γ/Φ/RangeIxの実装は直接扱い、旧同値を公開しない"
+    },
+    {
+      "id": "FND063",
+      "old": "sat_unconstrained_iff_old",
+      "old_file": "formal/Benitoite/Release/RangeWF.lean",
+      "detail_status": "不要",
+      "disposition": "不要",
+      "unit": null,
+      "new": null,
+      "reason": "旧RangeWF表現との同値/旧意味の信頼欄の橋。新Γ/Φ/RangeIxの実装は直接扱い、旧同値を公開しない"
+    },
+    {
+      "id": "FND064",
+      "old": "sat_unconstrained_of_old",
+      "old_file": "formal/Benitoite/Release/RangeWF.lean",
+      "detail_status": "不要",
+      "disposition": "不要",
+      "unit": null,
+      "new": null,
+      "reason": "旧RangeWF表現との同値/旧意味の信頼欄の橋。新Γ/Φ/RangeIxの実装は直接扱い、旧同値を公開しない"
+    },
+    {
+      "id": "FND065",
+      "old": "sat_local_iff_old",
+      "old_file": "formal/Benitoite/Release/RangeWF.lean",
+      "detail_status": "不要",
+      "disposition": "不要",
+      "unit": null,
+      "new": null,
+      "reason": "旧RangeWF表現との同値/旧意味の信頼欄の橋。新Γ/Φ/RangeIxの実装は直接扱い、旧同値を公開しない"
+    },
+    {
+      "id": "FND066",
+      "old": "sat_local_of_old",
+      "old_file": "formal/Benitoite/Release/RangeWF.lean",
+      "detail_status": "不要",
+      "disposition": "不要",
+      "unit": null,
+      "new": null,
+      "reason": "旧RangeWF表現との同値/旧意味の信頼欄の橋。新Γ/Φ/RangeIxの実装は直接扱い、旧同値を公開しない"
+    },
+    {
+      "id": "FND067",
+      "old": "admits_local_iff_old",
+      "old_file": "formal/Benitoite/Release/RangeWF.lean",
+      "detail_status": "不要",
+      "disposition": "不要",
+      "unit": null,
+      "new": null,
+      "reason": "旧RangeWF表現との同値/旧意味の信頼欄の橋。新Γ/Φ/RangeIxの実装は直接扱い、旧同値を公開しない"
+    },
+    {
+      "id": "FND068",
+      "old": "admits_local_of_old",
+      "old_file": "formal/Benitoite/Release/RangeWF.lean",
+      "detail_status": "不要",
+      "disposition": "不要",
+      "unit": null,
+      "new": null,
+      "reason": "旧RangeWF表現との同値/旧意味の信頼欄の橋。新Γ/Φ/RangeIxの実装は直接扱い、旧同値を公開しない"
+    },
+    {
+      "id": "FND069",
+      "old": "PrimSig.scoped_iff_old",
+      "old_file": "formal/Benitoite/Release/RangeWF.lean",
+      "detail_status": "不要",
+      "disposition": "不要",
+      "unit": null,
+      "new": null,
+      "reason": "旧RangeWF表現との同値/旧意味の信頼欄の橋。新Γ/Φ/RangeIxの実装は直接扱い、旧同値を公開しない。旧読者の代替：L20 G08／L70、新PrimSig.Scopedを定義し各成分を直接使う。旧ScopedOldとの同値は提供しない"
+    },
+    {
+      "id": "FND070",
+      "old": "sig_scoped_iff_old_of_rangeFree",
+      "old_file": "formal/Benitoite/Release/RangeWF.lean",
+      "detail_status": "不要",
+      "disposition": "不要",
+      "unit": null,
+      "new": null,
+      "reason": "旧RangeWF表現との同値/旧意味の信頼欄の橋。新Γ/Φ/RangeIxの実装は直接扱い、旧同値を公開しない。旧読者の代替：L20 G08／L70、新sig_scopedの全量化と各実表の充足を直接供給。新表層の署名の入口も新Scopedへ切替"
+    },
+    {
+      "id": "FND071",
+      "old": "Ty.WF.raw",
+      "old_file": "formal/Benitoite/Release/TypeBounds.lean",
+      "detail_status": "不要",
+      "disposition": "不要",
+      "unit": null,
+      "new": null,
+      "reason": "旧RawWFとCanonicalを分離した二層を採らない。新WFの移送は像の条件付きの別の命題で示す。旧読者の代替：L20 G04、L10.44/.45の像の条件付きbind/substのWFとProperApply/HasKindを使い、RawWF層を経由しない"
+    },
+    {
+      "id": "FND072",
+      "old": "Ty.WFList.raw",
+      "old_file": "formal/Benitoite/Release/TypeBounds.lean",
+      "detail_status": "不要",
+      "disposition": "不要",
+      "unit": null,
+      "new": null,
+      "reason": "旧RawWFとCanonicalを分離した二層を採らない。新WFの移送は像の条件付きの別の命題で示す。旧読者の代替：L20 G04、上と同じ型列のWFの移送を使う。Dict/TyLemmasの適用にはKind/ProperApplyの入力を渡す"
+    },
+    {
+      "id": "FND073",
+      "old": "Eff.WF.raw",
+      "old_file": "formal/Benitoite/Release/TypeBounds.lean",
+      "detail_status": "不要",
+      "disposition": "不要",
+      "unit": null,
+      "new": null,
+      "reason": "旧RawWFとCanonicalを分離した二層を採らない。新WFの移送は像の条件付きの別の命題で示す。旧読者の代替：L20 G04、行の像とFail内部のWFから、正規化後のbind/substのWFへ直接進む"
+    },
+    {
+      "id": "FND074",
+      "old": "Ty.norm_rawWF",
+      "old_file": "formal/Benitoite/Release/TypeBounds.lean",
+      "detail_status": "不要",
+      "disposition": "不要",
+      "unit": null,
+      "new": null,
+      "reason": "旧RawWFとCanonicalを分離した二層を採らない。新WFの移送は像の条件付きの別の命題で示す。旧読者の代替：L20 G04、新WFの正規化保存と、像のWFを前提にした代入後の形成で置換"
+    },
+    {
+      "id": "FND075",
+      "old": "Ty.normTys_rawWF",
+      "old_file": "formal/Benitoite/Release/TypeBounds.lean",
+      "detail_status": "不要",
+      "disposition": "不要",
+      "unit": null,
+      "new": null,
+      "reason": "旧RawWFとCanonicalを分離した二層を採らない。新WFの移送は像の条件付きの別の命題で示す"
+    },
+    {
+      "id": "FND076",
+      "old": "Eff.norm_rawWF",
+      "old_file": "formal/Benitoite/Release/TypeBounds.lean",
+      "detail_status": "不要",
+      "disposition": "不要",
+      "unit": null,
+      "new": null,
+      "reason": "旧RawWFとCanonicalを分離した二層を採らない。新WFの移送は像の条件付きの別の命題で示す"
+    },
+    {
+      "id": "FND077",
+      "old": "Ty.rawBind_rawWF",
+      "old_file": "formal/Benitoite/Release/TypeBounds.lean",
+      "detail_status": "L10・.45",
+      "disposition": "本群で完了",
+      "unit": 45,
+      "new": "Benitoite.Release.Refinement.Ty.rawBind_norm_wf",
+      "reason": "旧RawWFを複製せず、新WF/像のWF/束縛順の前提付きのbind・substの命題へ置換"
+    },
+    {
+      "id": "FND078",
+      "old": "Ty.rawBindTys_rawWF",
+      "old_file": "formal/Benitoite/Release/TypeBounds.lean",
+      "detail_status": "L10・.45",
+      "disposition": "本群で完了",
+      "unit": 45,
+      "new": "Benitoite.Release.Refinement.rawBindTys_norm_wf",
+      "reason": "旧RawWFを複製せず、新WF/像のWF/束縛順の前提付きのbind・substの命題へ置換"
+    },
+    {
+      "id": "FND079",
+      "old": "Eff.rawBind_rawWF",
+      "old_file": "formal/Benitoite/Release/TypeBounds.lean",
+      "detail_status": "L10・.45",
+      "disposition": "本群で完了",
+      "unit": 45,
+      "new": "Benitoite.Release.Refinement.Eff.rawBind_norm_wf",
+      "reason": "旧RawWFを複製せず、新WF/像のWF/束縛順の前提付きのbind・substの命題へ置換"
+    },
+    {
+      "id": "FND080",
+      "old": "Eff.substAt_atoms_wf",
+      "old_file": "formal/Benitoite/Release/TypeBounds.lean",
+      "detail_status": "L10・.45",
+      "disposition": "本群で完了",
+      "unit": 45,
+      "new": "Benitoite.Release.Refinement.Eff.substAt_atoms_wf",
+      "reason": "旧RawWFを複製せず、新WF/像のWF/束縛順の前提付きのbind・substの命題へ置換"
+    },
+    {
+      "id": "FND081",
+      "old": "Ty.bind_wf",
+      "old_file": "formal/Benitoite/Release/TypeBounds.lean",
+      "detail_status": "L10・.45",
+      "disposition": "本群で完了",
+      "unit": 45,
+      "new": "Benitoite.Release.Refinement.Ty.bind_wf",
+      "reason": "旧RawWFを複製せず、新WF/像のWF/束縛順の前提付きのbind・substの命題へ置換"
+    },
+    {
+      "id": "FND082",
+      "old": "Ty.rawShift_eq_rawBind",
+      "old_file": "formal/Benitoite/Release/TypeBounds.lean",
+      "detail_status": "L10・.45",
+      "disposition": "本群で完了",
+      "unit": 45,
+      "new": "Benitoite.Release.Refinement.Ty.rawShift_eq_rawBind",
+      "reason": "旧RawWFを複製せず、新WF/像のWF/束縛順の前提付きのbind・substの命題へ置換"
+    },
+    {
+      "id": "FND083",
+      "old": "Ty.rawShiftTys_eq_rawBindTys",
+      "old_file": "formal/Benitoite/Release/TypeBounds.lean",
+      "detail_status": "L10・.45",
+      "disposition": "本群で完了",
+      "unit": 45,
+      "new": "Benitoite.Release.Refinement.Ty.rawShiftTys_eq_rawBindTys",
+      "reason": "旧RawWFを複製せず、新WF/像のWF/束縛順の前提付きのbind・substの命題へ置換"
+    },
+    {
+      "id": "FND084",
+      "old": "Eff.rawShift_eq_rawBind",
+      "old_file": "formal/Benitoite/Release/TypeBounds.lean",
+      "detail_status": "L10・.46",
+      "disposition": "本群で完了",
+      "unit": 46,
+      "new": "Benitoite.Release.Refinement.Eff.rawShift_eq_rawBind",
+      "reason": "旧RawWFを複製せず、新WF/像のWF/束縛順の前提付きのbind・substの命題へ置換"
+    },
+    {
+      "id": "FND085",
+      "old": "Ty.shift_wf",
+      "old_file": "formal/Benitoite/Release/TypeBounds.lean",
+      "detail_status": "済",
+      "disposition": "既済",
+      "unit": null,
+      "new": "Benitoite.Release.Refinement.Ty.wf_shift",
+      "reason": "R/TypeSubst.lean：Ty.wf_shift"
+    },
+    {
+      "id": "FND086",
+      "old": "Ty.substAt_wf",
+      "old_file": "formal/Benitoite/Release/TypeBounds.lean",
+      "detail_status": "L10・.46",
+      "disposition": "本群で完了",
+      "unit": 46,
+      "new": "Benitoite.Release.Refinement.Ty.substAt_wf",
+      "reason": "旧RawWFを複製せず、新WF/像のWF/束縛順の前提付きのbind・substの命題へ置換"
+    },
+    {
+      "id": "FND087",
+      "old": "Ty.subst_wf",
+      "old_file": "formal/Benitoite/Release/TypeBounds.lean",
+      "detail_status": "L10・.46",
+      "disposition": "本群で完了",
+      "unit": 46,
+      "new": "Benitoite.Release.Refinement.Ty.subst_wf",
+      "reason": "旧RawWFを複製せず、新WF/像のWF/束縛順の前提付きのbind・substの命題へ置換"
+    },
+    {
+      "id": "FND088",
+      "old": "Eff.bind_wf",
+      "old_file": "formal/Benitoite/Release/TypeBounds.lean",
+      "detail_status": "L10・.46",
+      "disposition": "本群で完了",
+      "unit": 46,
+      "new": "Benitoite.Release.Refinement.Eff.bind_wf",
+      "reason": "旧RawWFを複製せず、新WF/像のWF/束縛順の前提付きのbind・substの命題へ置換"
+    },
+    {
+      "id": "FND089",
+      "old": "Eff.subst_wf",
+      "old_file": "formal/Benitoite/Release/TypeBounds.lean",
+      "detail_status": "L10・.46",
+      "disposition": "本群で完了",
+      "unit": 46,
+      "new": "Benitoite.Release.Refinement.Eff.subst_wf",
+      "reason": "旧RawWFを複製せず、新WF/像のWF/束縛順の前提付きのbind・substの命題へ置換"
+    },
+    {
+      "id": "FND090",
+      "old": "Ty.substList_wf",
+      "old_file": "formal/Benitoite/Release/TypeBounds.lean",
+      "detail_status": "L10・.46",
+      "disposition": "本群で完了",
+      "unit": 46,
+      "new": "Benitoite.Release.Refinement.Ty.substList_wf",
+      "reason": "旧RawWFを複製せず、新WF/像のWF/束縛順の前提付きのbind・substの命題へ置換"
+    },
+    {
+      "id": "FND091",
+      "old": "Eff.substAt_wf",
+      "old_file": "formal/Benitoite/Release/TypeBounds.lean",
+      "detail_status": "L10・.46",
+      "disposition": "本群で完了",
+      "unit": 46,
+      "new": "Benitoite.Release.Refinement.Eff.substAt_wf",
+      "reason": "旧RawWFを複製せず、新WF/像のWF/束縛順の前提付きのbind・substの命題へ置換"
+    },
+    {
+      "id": "FND092",
+      "old": "Ty.WF.canonical",
+      "old_file": "formal/Benitoite/Release/TypeRegularity.lean",
+      "detail_status": "不要",
+      "disposition": "不要",
+      "unit": null,
+      "new": null,
+      "reason": "新WFはTy全体のCanonicalを含まず、refine/convertのLeQから任意のWFを導けない。旧言明のまま移さない。旧読者の代替：L20 G04／L70、WFからCanonicalを結論しない。正規化した入口とnorm_idemを使い、元と同じ型へ戻す箇所は明示のNormalの証拠でつなぐ"
+    },
+    {
+      "id": "FND093",
+      "old": "Ty.WFList.norm_eq",
+      "old_file": "formal/Benitoite/Release/TypeRegularity.lean",
+      "detail_status": "不要",
+      "disposition": "不要",
+      "unit": null,
+      "new": null,
+      "reason": "新WFはTy全体のCanonicalを含まず、refine/convertのLeQから任意のWFを導けない。旧言明のまま移さない"
+    },
+    {
+      "id": "FND094",
+      "old": "Ty.norm_WF",
+      "old_file": "formal/Benitoite/Release/TypeRegularity.lean",
+      "detail_status": "済",
+      "disposition": "既済",
+      "unit": null,
+      "new": "Benitoite.Release.Refinement.Ty.wf_norm",
+      "reason": "R/NormalWellFormed.lean：Ty.wf_norm"
+    },
+    {
+      "id": "FND095",
+      "old": "Ty.WFList.iff",
+      "old_file": "formal/Benitoite/Release/TypeRegularity.lean",
+      "detail_status": "済",
+      "disposition": "既済",
+      "unit": null,
+      "new": "Benitoite.Release.Refinement.Ty.wfList_iff",
+      "reason": "R/NormalWellFormed.lean：Ty.wfList_iff"
+    },
+    {
+      "id": "FND096",
+      "old": "Eff.norm_WF",
+      "old_file": "formal/Benitoite/Release/TypeRegularity.lean",
+      "detail_status": "済",
+      "disposition": "既済",
+      "unit": null,
+      "new": "Benitoite.Release.Refinement.Eff.wf_norm",
+      "reason": "R/NormalWellFormed.lean：Eff.wf_norm"
+    },
+    {
+      "id": "FND097",
+      "old": "Ty.Le.wf",
+      "old_file": "formal/Benitoite/Release/TypeRegularity.lean",
+      "detail_status": "不要",
+      "disposition": "不要",
+      "unit": null,
+      "new": null,
+      "reason": "新WFはTy全体のCanonicalを含まず、refine/convertのLeQから任意のWFを導けない。旧言明のまま移さない"
+    },
+    {
+      "id": "FND098",
+      "old": "Ty.Le.wf_rev",
+      "old_file": "formal/Benitoite/Release/TypeRegularity.lean",
+      "detail_status": "不要",
+      "disposition": "不要",
+      "unit": null,
+      "new": null,
+      "reason": "新WFはTy全体のCanonicalを含まず、refine/convertのLeQから任意のWFを導けない。旧言明のまま移さない"
+    },
+    {
+      "id": "FND099",
+      "old": "Ty.WF.mono",
+      "old_file": "formal/Benitoite/Release/TypeRegularity.lean",
+      "detail_status": "済",
+      "disposition": "既済",
+      "unit": null,
+      "new": "Benitoite.Release.Refinement.Ty.WF.weaken",
+      "reason": "R/NormalWellFormed.lean：Ty.WF.weaken（型の上限）"
+    },
+    {
+      "id": "FND100",
+      "old": "Ty.WFList.mono",
+      "old_file": "formal/Benitoite/Release/TypeRegularity.lean",
+      "detail_status": "済",
+      "disposition": "既済",
+      "unit": null,
+      "new": "Benitoite.Release.Refinement.Ty.WFList.weaken",
+      "reason": "R/NormalWellFormed.lean：Ty.WFList.weaken（同左）"
+    },
+    {
+      "id": "FND101",
+      "old": "Eff.WF.mono",
+      "old_file": "formal/Benitoite/Release/TypeRegularity.lean",
+      "detail_status": "済",
+      "disposition": "既済",
+      "unit": null,
+      "new": "Benitoite.Release.Refinement.Eff.WF.weaken",
+      "reason": "R/NormalWellFormed.lean：Eff.WF.weaken（同左）"
+    },
+    {
+      "id": "FND102",
+      "old": "Ty.rawShift_of_wf",
+      "old_file": "formal/Benitoite/Release/TypeRegularity.lean",
+      "detail_status": "L10・.44",
+      "disposition": "本群で完了",
+      "unit": 44,
+      "new": "Benitoite.Release.Refinement.Ty.rawShift_of_wf",
+      "reason": "rawはshiftTypesの恒等、正規化付きshiftの結論はa.norm。a=a.normがある場合だけ旧形"
+    },
+    {
+      "id": "FND103",
+      "old": "Ty.rawShiftTys_of_wf",
+      "old_file": "formal/Benitoite/Release/TypeRegularity.lean",
+      "detail_status": "L10・.44",
+      "disposition": "本群で完了",
+      "unit": 44,
+      "new": "Benitoite.Release.Refinement.Ty.rawShiftTys_of_wf",
+      "reason": "rawはshiftTypesの恒等、正規化付きshiftの結論はa.norm。a=a.normがある場合だけ旧形"
+    },
+    {
+      "id": "FND104",
+      "old": "Eff.rawShift_of_wf",
+      "old_file": "formal/Benitoite/Release/TypeRegularity.lean",
+      "detail_status": "L10・.44",
+      "disposition": "本群で完了",
+      "unit": 44,
+      "new": "Benitoite.Release.Refinement.Eff.rawShift_of_wf",
+      "reason": "rawはshiftTypesの恒等、正規化付きshiftの結論はa.norm。a=a.normがある場合だけ旧形"
+    },
+    {
+      "id": "FND105",
+      "old": "Ty.shift_of_wf",
+      "old_file": "formal/Benitoite/Release/TypeRegularity.lean",
+      "detail_status": "L10・.44",
+      "disposition": "本群で完了",
+      "unit": 44,
+      "new": "Benitoite.Release.Refinement.Ty.shift_of_wf",
+      "reason": "rawはshiftTypesの恒等、正規化付きshiftの結論はa.norm。a=a.normがある場合だけ旧形"
+    },
+    {
+      "id": "FND106",
+      "old": "Eff.shift_of_wf",
+      "old_file": "formal/Benitoite/Release/TypeRegularity.lean",
+      "detail_status": "L10・.44",
+      "disposition": "本群で完了",
+      "unit": 44,
+      "new": "Benitoite.Release.Refinement.Eff.shift_of_wf",
+      "reason": "rawはshiftTypesの恒等、正規化付きshiftの結論はa.norm。a=a.normがある場合だけ旧形"
+    },
+    {
+      "id": "FND107",
+      "old": "Ty.RowsInList.iff",
+      "old_file": "formal/Benitoite/Release/TypeRows.lean",
+      "detail_status": "L10・.47",
+      "disposition": "本群で完了",
+      "unit": 47,
+      "new": "Benitoite.Release.Refinement.Ty.RowsInList.iff",
+      "reason": "新rows/ranges/Fail内部/Telを含む再帰述語の形へ置換"
+    },
+    {
+      "id": "FND108",
+      "old": "Ty.RowsIn.mono",
+      "old_file": "formal/Benitoite/Release/TypeRows.lean",
+      "detail_status": "L10・.47",
+      "disposition": "本群で完了",
+      "unit": 47,
+      "new": "Benitoite.Release.Refinement.Ty.RowsIn.mono",
+      "reason": "新rows/ranges/Fail内部/Telを含む再帰述語の形へ置換"
+    },
+    {
+      "id": "FND109",
+      "old": "Ty.RowsInList.mono",
+      "old_file": "formal/Benitoite/Release/TypeRows.lean",
+      "detail_status": "L10・.47",
+      "disposition": "本群で完了",
+      "unit": 47,
+      "new": "Benitoite.Release.Refinement.Ty.RowsInList.mono",
+      "reason": "新rows/ranges/Fail内部/Telを含む再帰述語の形へ置換"
+    },
+    {
+      "id": "FND110",
+      "old": "Eff.RowsIn.mono",
+      "old_file": "formal/Benitoite/Release/TypeRows.lean",
+      "detail_status": "L10・.47",
+      "disposition": "本群で完了",
+      "unit": 47,
+      "new": "Benitoite.Release.Refinement.Eff.RowsIn.mono",
+      "reason": "新rows/ranges/Fail内部/Telを含む再帰述語の形へ置換"
+    },
+    {
+      "id": "FND111",
+      "old": "Ty.norm_rowsIn",
+      "old_file": "formal/Benitoite/Release/TypeRows.lean",
+      "detail_status": "L10・.47",
+      "disposition": "本群で完了",
+      "unit": 47,
+      "new": "Benitoite.Release.Refinement.Ty.norm_rowsIn",
+      "reason": "新rows/ranges/Fail内部/Telを含む再帰述語の形へ置換"
+    },
+    {
+      "id": "FND112",
+      "old": "Ty.normTys_rowsIn",
+      "old_file": "formal/Benitoite/Release/TypeRows.lean",
+      "detail_status": "L10・.47",
+      "disposition": "本群で完了",
+      "unit": 47,
+      "new": "Benitoite.Release.Refinement.Ty.normTys_rowsIn",
+      "reason": "新rows/ranges/Fail内部/Telを含む再帰述語の形へ置換"
+    },
+    {
+      "id": "FND113",
+      "old": "Eff.norm_rowsIn",
+      "old_file": "formal/Benitoite/Release/TypeRows.lean",
+      "detail_status": "L10・.47",
+      "disposition": "本群で完了",
+      "unit": 47,
+      "new": "Benitoite.Release.Refinement.Eff.norm_rowsIn",
+      "reason": "新rows/ranges/Fail内部/Telを含む再帰述語の形へ置換"
+    },
+    {
+      "id": "FND114",
+      "old": "Ty.rowsIn_true",
+      "old_file": "formal/Benitoite/Release/TypeRows.lean",
+      "detail_status": "L10・.47",
+      "disposition": "本群で完了",
+      "unit": 47,
+      "new": "Benitoite.Release.Refinement.Ty.rowsIn_true",
+      "reason": "新rows/ranges/Fail内部/Telを含む再帰述語の形へ置換"
+    },
+    {
+      "id": "FND115",
+      "old": "Ty.rowsInList_true",
+      "old_file": "formal/Benitoite/Release/TypeRows.lean",
+      "detail_status": "L10・.47",
+      "disposition": "本群で完了",
+      "unit": 47,
+      "new": "Benitoite.Release.Refinement.Ty.rowsInList_true",
+      "reason": "新rows/ranges/Fail内部/Telを含む再帰述語の形へ置換"
+    },
+    {
+      "id": "FND116",
+      "old": "Eff.rowsIn_true",
+      "old_file": "formal/Benitoite/Release/TypeRows.lean",
+      "detail_status": "L10・.47",
+      "disposition": "本群で完了",
+      "unit": 47,
+      "new": "Benitoite.Release.Refinement.Eff.rowsIn_true",
+      "reason": "新rows/ranges/Fail内部/Telを含む再帰述語の形へ置換"
+    },
+    {
+      "id": "FND117",
+      "old": "shiftIndex_compare",
+      "old_file": "formal/Benitoite/Release/TypeShift.lean",
+      "detail_status": "L10・.49",
+      "disposition": "本群で完了",
+      "unit": 49,
+      "new": "Benitoite.Release.Refinement.shiftIndex_compare",
+      "reason": "現行shiftTypes/TypeShiftAlgebraを再使用し、旧rawShift/公開shiftの新規則での包装"
+    },
+    {
+      "id": "FND118",
+      "old": "Ty.rawShift_compare",
+      "old_file": "formal/Benitoite/Release/TypeShift.lean",
+      "detail_status": "L10・.49",
+      "disposition": "本群で完了",
+      "unit": 49,
+      "new": "Benitoite.Release.Refinement.Ty.shiftTypes_compare",
+      "reason": "現行shiftTypes/TypeShiftAlgebraを再使用し、旧rawShift/公開shiftの新規則での包装"
+    },
+    {
+      "id": "FND119",
+      "old": "Ty.rawShiftTys_compare",
+      "old_file": "formal/Benitoite/Release/TypeShift.lean",
+      "detail_status": "L10・.49",
+      "disposition": "本群で完了",
+      "unit": 49,
+      "new": "Benitoite.Release.Refinement.Ty.trees_shiftTypes_compare",
+      "reason": "現行shiftTypes/TypeShiftAlgebraを再使用し、旧rawShift/公開shiftの新規則での包装"
+    },
+    {
+      "id": "FND120",
+      "old": "Eff.rawShift_compare",
+      "old_file": "formal/Benitoite/Release/TypeShift.lean",
+      "detail_status": "L10・.49",
+      "disposition": "本群で完了",
+      "unit": 49,
+      "new": "Benitoite.Release.Refinement.Eff.tree_shiftTypes_compare",
+      "reason": "現行shiftTypes/TypeShiftAlgebraを再使用し、旧rawShift/公開shiftの新規則での包装"
+    },
+    {
+      "id": "FND121",
+      "old": "Ty.norm_rawShift",
+      "old_file": "formal/Benitoite/Release/TypeShift.lean",
+      "detail_status": "L10・.49",
+      "disposition": "本群で完了",
+      "unit": 49,
+      "new": "Benitoite.Release.Refinement.Ty.norm_shiftTypes",
+      "reason": "現行shiftTypes/TypeShiftAlgebraを再使用し、旧rawShift/公開shiftの新規則での包装"
+    },
+    {
+      "id": "FND122",
+      "old": "Ty.normTys_rawShift",
+      "old_file": "formal/Benitoite/Release/TypeShift.lean",
+      "detail_status": "L10・.49",
+      "disposition": "本群で完了",
+      "unit": 49,
+      "new": "Benitoite.Release.Refinement.Ty.normTys_shiftTypes",
+      "reason": "現行shiftTypes/TypeShiftAlgebraを再使用し、旧rawShift/公開shiftの新規則での包装"
+    },
+    {
+      "id": "FND123",
+      "old": "Eff.norm_rawShift",
+      "old_file": "formal/Benitoite/Release/TypeShift.lean",
+      "detail_status": "L10・.49",
+      "disposition": "本群で完了",
+      "unit": 49,
+      "new": "Benitoite.Release.Refinement.Eff.norm_shiftTypes",
+      "reason": "現行shiftTypes/TypeShiftAlgebraを再使用し、旧rawShift/公開shiftの新規則での包装"
+    },
+    {
+      "id": "FND124",
+      "old": "Ty.rawShift_canonical",
+      "old_file": "formal/Benitoite/Release/TypeShift.lean",
+      "detail_status": "L10・.49",
+      "disposition": "本群で完了",
+      "unit": 49,
+      "new": "Benitoite.Release.Refinement.Ty.rawShift_canonical",
+      "reason": "現行shiftTypes/TypeShiftAlgebraを再使用し、旧rawShift/公開shiftの新規則での包装"
+    },
+    {
+      "id": "FND125",
+      "old": "Eff.rawShift_canonical",
+      "old_file": "formal/Benitoite/Release/TypeShift.lean",
+      "detail_status": "L10・.50",
+      "disposition": "本群で完了",
+      "unit": 50,
+      "new": "Benitoite.Release.Refinement.Eff.rawShift_canonical",
+      "reason": "現行shiftTypes/TypeShiftAlgebraを再使用し、旧rawShift/公開shiftの新規則での包装"
+    },
+    {
+      "id": "FND126",
+      "old": "Ty.shift_canonical",
+      "old_file": "formal/Benitoite/Release/TypeShift.lean",
+      "detail_status": "L10・.50",
+      "disposition": "本群で完了",
+      "unit": 50,
+      "new": "Benitoite.Release.Refinement.Ty.shift_canonical",
+      "reason": "現行shiftTypes/TypeShiftAlgebraを再使用し、旧rawShift/公開shiftの新規則での包装"
+    },
+    {
+      "id": "FND127",
+      "old": "Eff.shift_canonical",
+      "old_file": "formal/Benitoite/Release/TypeShift.lean",
+      "detail_status": "L10・.50",
+      "disposition": "本群で完了",
+      "unit": 50,
+      "new": "Benitoite.Release.Refinement.Eff.shift_canonical",
+      "reason": "現行shiftTypes/TypeShiftAlgebraを再使用し、旧rawShift/公開shiftの新規則での包装"
+    },
+    {
+      "id": "FND128",
+      "old": "Ty.rawShift_zero",
+      "old_file": "formal/Benitoite/Release/TypeShift.lean",
+      "detail_status": "L10・.50",
+      "disposition": "本群で完了",
+      "unit": 50,
+      "new": "Benitoite.Release.Refinement.shiftTypes_zero",
+      "reason": "現行shiftTypes/TypeShiftAlgebraを再使用し、旧rawShift/公開shiftの新規則での包装"
+    },
+    {
+      "id": "FND129",
+      "old": "Ty.rawShiftTys_zero",
+      "old_file": "formal/Benitoite/Release/TypeShift.lean",
+      "detail_status": "L10・.50",
+      "disposition": "本群で完了",
+      "unit": 50,
+      "new": "Benitoite.Release.Refinement.shiftTypesList_zero",
+      "reason": "現行shiftTypes/TypeShiftAlgebraを再使用し、旧rawShift/公開shiftの新規則での包装"
+    },
+    {
+      "id": "FND130",
+      "old": "Eff.rawShift_zero",
+      "old_file": "formal/Benitoite/Release/TypeShift.lean",
+      "detail_status": "L10・.50",
+      "disposition": "本群で完了",
+      "unit": 50,
+      "new": "Benitoite.Release.Refinement.shiftRowsTypes_zero",
+      "reason": "現行shiftTypes/TypeShiftAlgebraを再使用し、旧rawShift/公開shiftの新規則での包装"
+    },
+    {
+      "id": "FND131",
+      "old": "Ty.shift_zero_norm",
+      "old_file": "formal/Benitoite/Release/TypeShift.lean",
+      "detail_status": "L10・.50",
+      "disposition": "本群で完了",
+      "unit": 50,
+      "new": "Benitoite.Release.Refinement.Ty.shift_zero_norm",
+      "reason": "現行shiftTypes/TypeShiftAlgebraを再使用し、旧rawShift/公開shiftの新規則での包装"
+    },
+    {
+      "id": "FND132",
+      "old": "Eff.shift_zero_norm",
+      "old_file": "formal/Benitoite/Release/TypeShift.lean",
+      "detail_status": "L10・.50",
+      "disposition": "本群で完了",
+      "unit": 50,
+      "new": "Benitoite.Release.Refinement.Eff.shift_zero_norm",
+      "reason": "現行shiftTypes/TypeShiftAlgebraを再使用し、旧rawShift/公開shiftの新規則での包装"
+    },
+    {
+      "id": "FND133",
+      "old": "Ty.norm_support",
+      "old_file": "formal/Benitoite/Release/TypeSupport.lean",
+      "detail_status": "L10・.33",
+      "disposition": "前群で完了",
+      "unit": 33,
+      "new": "Benitoite.Release.Refinement.Ty.norm_support",
+      "reason": "新norm/Telの支持"
+    },
+    {
+      "id": "FND134",
+      "old": "Ty.normTys_support",
+      "old_file": "formal/Benitoite/Release/TypeSupport.lean",
+      "detail_status": "L10・.33",
+      "disposition": "前群で完了",
+      "unit": 33,
+      "new": "Benitoite.Release.Refinement.Ty.normTys_support",
+      "reason": "新norm/Telの支持"
+    },
+    {
+      "id": "FND135",
+      "old": "Eff.norm_support",
+      "old_file": "formal/Benitoite/Release/TypeSupport.lean",
+      "detail_status": "L10・.33",
+      "disposition": "前群で完了",
+      "unit": 33,
+      "new": "Benitoite.Release.Refinement.Eff.norm_support",
+      "reason": "新norm/Telの支持"
+    },
+    {
+      "id": "FND136",
+      "old": "Ty.rawShift_support",
+      "old_file": "formal/Benitoite/Release/TypeSupport.lean",
+      "detail_status": "L10・.34",
+      "disposition": "前群で完了",
+      "unit": 34,
+      "new": "Benitoite.Release.Refinement.Ty.rawShift_support",
+      "reason": "型移動は同じ支持。新shiftTypes/shiftへ対応"
+    },
+    {
+      "id": "FND137",
+      "old": "Ty.rawShiftTys_support",
+      "old_file": "formal/Benitoite/Release/TypeSupport.lean",
+      "detail_status": "L10・.34",
+      "disposition": "前群で完了",
+      "unit": 34,
+      "new": "Benitoite.Release.Refinement.Ty.rawShiftTys_support",
+      "reason": "型移動は同じ支持。新shiftTypes/shiftへ対応"
+    },
+    {
+      "id": "FND138",
+      "old": "Eff.rawShift_support",
+      "old_file": "formal/Benitoite/Release/TypeSupport.lean",
+      "detail_status": "L10・.34",
+      "disposition": "前群で完了",
+      "unit": 34,
+      "new": "Benitoite.Release.Refinement.Eff.rawShift_support",
+      "reason": "型移動は同じ支持。新shiftTypes/shiftへ対応"
+    },
+    {
+      "id": "FND139",
+      "old": "Ty.shift_support",
+      "old_file": "formal/Benitoite/Release/TypeSupport.lean",
+      "detail_status": "L10・.34",
+      "disposition": "前群で完了",
+      "unit": 34,
+      "new": "Benitoite.Release.Refinement.Ty.shift_support",
+      "reason": "型移動は同じ支持。新shiftTypes/shiftへ対応"
+    },
+    {
+      "id": "FND140",
+      "old": "Eff.shift_support",
+      "old_file": "formal/Benitoite/Release/TypeSupport.lean",
+      "detail_status": "L10・.34",
+      "disposition": "前群で完了",
+      "unit": 34,
+      "new": "Benitoite.Release.Refinement.Eff.shift_support",
+      "reason": "型移動は同じ支持。新shiftTypes/shiftへ対応"
+    },
+    {
+      "id": "FND141",
+      "old": "Ty.rawBind_support",
+      "old_file": "formal/Benitoite/Release/TypeSupport.lean",
+      "detail_status": "L10・.35",
+      "disposition": "前群で完了",
+      "unit": 35,
+      "new": "Benitoite.Release.Refinement.Ty.rawBind_support",
+      "reason": "SupportTransportの像の条件付き。一般の範囲/行の変換もL10"
+    },
+    {
+      "id": "FND142",
+      "old": "Ty.rawBindTys_support",
+      "old_file": "formal/Benitoite/Release/TypeSupport.lean",
+      "detail_status": "L10・.35",
+      "disposition": "前群で完了",
+      "unit": 35,
+      "new": "Benitoite.Release.Refinement.Ty.rawBindTys_support",
+      "reason": "SupportTransportの像の条件付き。一般の範囲/行の変換もL10"
+    },
+    {
+      "id": "FND143",
+      "old": "Eff.rawBind_support",
+      "old_file": "formal/Benitoite/Release/TypeSupport.lean",
+      "detail_status": "L10・.35",
+      "disposition": "前群で完了",
+      "unit": 35,
+      "new": "Benitoite.Release.Refinement.Eff.rawBind_support",
+      "reason": "SupportTransportの像の条件付き。一般の範囲/行の変換もL10"
+    },
+    {
+      "id": "FND144",
+      "old": "SubstEnv.at_support",
+      "old_file": "formal/Benitoite/Release/TypeSupport.lean",
+      "detail_status": "L10・.35",
+      "disposition": "前群で完了",
+      "unit": 35,
+      "new": "Benitoite.Release.Refinement.typeEnvAt_support",
+      "reason": "SupportTransportの像の条件付き。一般の範囲/行の変換もL10"
+    },
+    {
+      "id": "FND145",
+      "old": "Ty.substAt_support",
+      "old_file": "formal/Benitoite/Release/TypeSupport.lean",
+      "detail_status": "L10・.35",
+      "disposition": "前群で完了",
+      "unit": 35,
+      "new": "Benitoite.Release.Refinement.Ty.substAt_support",
+      "reason": "SupportTransportの像の条件付き。一般の範囲/行の変換もL10"
+    },
+    {
+      "id": "FND146",
+      "old": "Eff.substAt_support",
+      "old_file": "formal/Benitoite/Release/TypeSupport.lean",
+      "detail_status": "L10・.35",
+      "disposition": "前群で完了",
+      "unit": 35,
+      "new": "Benitoite.Release.Refinement.Eff.substAt_support",
+      "reason": "SupportTransportの像の条件付き。一般の範囲/行の変換もL10"
+    },
+    {
+      "id": "FND147",
+      "old": "Ty.VarsInList.iff",
+      "old_file": "formal/Benitoite/Release/TypeVariables.lean",
+      "detail_status": "L10・.48",
+      "disposition": "本群で完了",
+      "unit": 48,
+      "new": "Benitoite.Release.Refinement.Ty.VarsInList.iff",
+      "reason": "型変数の支持を新四名前空間と値のWFから区別して置換"
+    },
+    {
+      "id": "FND148",
+      "old": "Ty.VarsIn.wf",
+      "old_file": "formal/Benitoite/Release/TypeVariables.lean",
+      "detail_status": "L10・.48",
+      "disposition": "本群で完了",
+      "unit": 48,
+      "new": "Benitoite.Release.Refinement.Ty.VarsIn.wf",
+      "reason": "型変数の支持を新四名前空間と値のWFから区別して置換"
+    },
+    {
+      "id": "FND149",
+      "old": "Ty.VarsInList.wf",
+      "old_file": "formal/Benitoite/Release/TypeVariables.lean",
+      "detail_status": "L10・.48",
+      "disposition": "本群で完了",
+      "unit": 48,
+      "new": "Benitoite.Release.Refinement.Ty.VarsInList.wf",
+      "reason": "型変数の支持を新四名前空間と値のWFから区別して置換"
+    },
+    {
+      "id": "FND150",
+      "old": "Eff.VarsIn.wf",
+      "old_file": "formal/Benitoite/Release/TypeVariables.lean",
+      "detail_status": "L10・.48",
+      "disposition": "本群で完了",
+      "unit": 48,
+      "new": "Benitoite.Release.Refinement.Eff.VarsIn.wf",
+      "reason": "型変数の支持を新四名前空間と値のWFから区別して置換"
+    },
+    {
+      "id": "FND151",
+      "old": "Ty.VarsIn.rows",
+      "old_file": "formal/Benitoite/Release/TypeVariables.lean",
+      "detail_status": "L10・.48",
+      "disposition": "本群で完了",
+      "unit": 48,
+      "new": "Benitoite.Release.Refinement.Ty.VarsIn.rows",
+      "reason": "型変数の支持を新四名前空間と値のWFから区別して置換"
+    },
+    {
+      "id": "FND152",
+      "old": "Ty.VarsInList.rows",
+      "old_file": "formal/Benitoite/Release/TypeVariables.lean",
+      "detail_status": "L10・.48",
+      "disposition": "本群で完了",
+      "unit": 48,
+      "new": "Benitoite.Release.Refinement.Ty.VarsInList.rows",
+      "reason": "型変数の支持を新四名前空間と値のWFから区別して置換"
+    },
+    {
+      "id": "FND153",
+      "old": "Eff.VarsIn.rows",
+      "old_file": "formal/Benitoite/Release/TypeVariables.lean",
+      "detail_status": "L10・.48",
+      "disposition": "本群で完了",
+      "unit": 48,
+      "new": "Benitoite.Release.Refinement.Eff.VarsIn.rows",
+      "reason": "型変数の支持を新四名前空間と値のWFから区別して置換"
+    },
+    {
+      "id": "FND154",
+      "old": "Ty.VarsIn.mono",
+      "old_file": "formal/Benitoite/Release/TypeVariables.lean",
+      "detail_status": "L10・.48",
+      "disposition": "本群で完了",
+      "unit": 48,
+      "new": "Benitoite.Release.Refinement.Ty.VarsIn.mono",
+      "reason": "型変数の支持を新四名前空間と値のWFから区別して置換"
+    },
+    {
+      "id": "FND155",
+      "old": "Ty.VarsInList.mono",
+      "old_file": "formal/Benitoite/Release/TypeVariables.lean",
+      "detail_status": "L10・.48",
+      "disposition": "本群で完了",
+      "unit": 48,
+      "new": "Benitoite.Release.Refinement.Ty.VarsInList.mono",
+      "reason": "型変数の支持を新四名前空間と値のWFから区別して置換"
+    },
+    {
+      "id": "FND156",
+      "old": "Eff.VarsIn.mono",
+      "old_file": "formal/Benitoite/Release/TypeVariables.lean",
+      "detail_status": "L10・.48",
+      "disposition": "本群で完了",
+      "unit": 48,
+      "new": "Benitoite.Release.Refinement.Eff.VarsIn.mono",
+      "reason": "型変数の支持を新四名前空間と値のWFから区別して置換"
+    },
+    {
+      "id": "FND157",
+      "old": "Ty.norm_VarsIn",
+      "old_file": "formal/Benitoite/Release/TypeVariables.lean",
+      "detail_status": "L10・.48",
+      "disposition": "本群で完了",
+      "unit": 48,
+      "new": "Benitoite.Release.Refinement.Ty.norm_VarsIn",
+      "reason": "型変数の支持を新四名前空間と値のWFから区別して置換"
+    },
+    {
+      "id": "FND158",
+      "old": "Eff.norm_VarsIn",
+      "old_file": "formal/Benitoite/Release/TypeVariables.lean",
+      "detail_status": "L10・.48",
+      "disposition": "本群で完了",
+      "unit": 48,
+      "new": "Benitoite.Release.Refinement.Eff.norm_VarsIn",
+      "reason": "型変数の支持を新四名前空間と値のWFから区別して置換"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/s2/boundary.lean:285:2: error: No goals to be solved
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/s2/boundary.lean:283:22: warning: This simp argument is unused:
+  effectSource
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [insertedRow, Eff.rawBind, typeEnvAt, instAtoms_nil, substAtoms, Eff.test, Eff.atoms, redundantAtom]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/s2/boundary.lean:283:49: warning: This simp argument is unused:
+  Eff.rawBind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [effectSource, insertedRow, typeEnvAt, instAtoms_nil, substAtoms, Eff.test, Eff.atoms, redundantAtom]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

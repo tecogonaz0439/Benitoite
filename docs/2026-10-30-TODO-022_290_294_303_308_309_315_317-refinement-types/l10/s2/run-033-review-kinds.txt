@@ -1,0 +1,53 @@
+⚠ [72/113] Replayed Benitoite.Release.Refinement.TypeSubst
+warning: Benitoite/Release/Refinement/TypeSubst.lean:224:51: This simp argument is unused:
+  rawApply
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Ty.rawBind, shiftTypes, Ty.rawBind_shiftTypes, rawBindTys_shiftTypes, Eff.rawBind_shiftTypes,
+    Tel.rawBind_shiftTypes]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [74/113] Replayed Benitoite.Release.Refinement.RangeSubst
+warning: Benitoite/Release/Refinement/RangeSubst.lean:361:6: This simp argument is unused:
+  rawApply
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Ty.rawMapRanges, Ty.rawBind, Ty.rawMapRanges_rangesOnly, mapRangesTys_rangesOnly,
+    Eff.rawMapRanges_rangesOnly, Tel.rawMapRanges_rangesOnly, mapIx_rangeAt]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [93/113] Replayed Benitoite.Release.Refinement.ObservationOrder
+warning: Benitoite/Release/Refinement/ObservationOrder.lean:258:27: Try `simp at hm` instead of `simpa using hm`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Release/Refinement/ObservationOrder.lean:258:27: Try `simp at hm` instead of `simpa using hm`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Release/Refinement/ObservationOrder.lean:258:27: Try `simp at hm` instead of `simpa using hm`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Release/Refinement/ObservationOrder.lean:258:27: Try `simp at hm` instead of `simpa using hm`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Release/Refinement/ObservationOrder.lean:258:27: Try `simp at hm` instead of `simpa using hm`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Release/Refinement/ObservationOrder.lean:258:27: Try `simp at hm` instead of `simpa using hm`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✖ [95/113] Building Benitoite.Release.Refinement.KindValues (581ms)
+trace: .> LEAN_PATH=<repo>/formal/.lake/build/lib/lean <user>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <repo>/formal/Benitoite/Release/Refinement/KindValues.lean -o <repo>/formal/.lake/build/lib/lean/Benitoite/Release/Refinement/KindValues.olean -i <repo>/formal/.lake/build/lib/lean/Benitoite/Release/Refinement/KindValues.ilean -c <repo>/formal/.lake/build/ir/Benitoite/Release/Refinement/KindValues.c --setup <repo>/formal/.lake/build/ir/Benitoite/Release/Refinement/KindValues.setup.json --json
+error: Benitoite/Release/Refinement/KindValues.lean:167:78: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  d ≥ 0
+  c ≥ 0
+  c - d ≥ 0
+  b ≥ 0
+  b - c ≥ 1
+where
+ b := ↑ts.length
+ c := ↑i
+ d := ↑ks.length
+Some required targets logged failures:
+- Benitoite.Release.Refinement.KindValues
+error: build failed

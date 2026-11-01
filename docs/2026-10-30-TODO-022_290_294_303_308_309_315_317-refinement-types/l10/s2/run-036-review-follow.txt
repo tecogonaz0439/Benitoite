@@ -1,0 +1,262 @@
+⚠ [72/173] Replayed Benitoite.Release.Refinement.TypeSubst
+warning: Benitoite/Release/Refinement/TypeSubst.lean:224:51: This simp argument is unused:
+  rawApply
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Ty.rawBind, shiftTypes, Ty.rawBind_shiftTypes, rawBindTys_shiftTypes, Eff.rawBind_shiftTypes,
+    Tel.rawBind_shiftTypes]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [74/173] Replayed Benitoite.Release.Refinement.RangeSubst
+warning: Benitoite/Release/Refinement/RangeSubst.lean:361:6: This simp argument is unused:
+  rawApply
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Ty.rawMapRanges, Ty.rawBind, Ty.rawMapRanges_rangesOnly, mapRangesTys_rangesOnly,
+    Eff.rawMapRanges_rangesOnly, Tel.rawMapRanges_rangesOnly, mapIx_rangeAt]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [93/173] Replayed Benitoite.Release.Refinement.ObservationOrder
+warning: Benitoite/Release/Refinement/ObservationOrder.lean:258:27: Try `simp at hm` instead of `simpa using hm`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Release/Refinement/ObservationOrder.lean:258:27: Try `simp at hm` instead of `simpa using hm`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Release/Refinement/ObservationOrder.lean:258:27: Try `simp at hm` instead of `simpa using hm`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Release/Refinement/ObservationOrder.lean:258:27: Try `simp at hm` instead of `simpa using hm`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Release/Refinement/ObservationOrder.lean:258:27: Try `simp at hm` instead of `simpa using hm`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Release/Refinement/ObservationOrder.lean:258:27: Try `simp at hm` instead of `simpa using hm`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [103/173] Built Benitoite.Release.Refinement.Admissible (331ms)
+✔ [104/173] Built Benitoite.Release.Refinement.StoreTransport (421ms)
+✔ [105/173] Built Benitoite.Release.Refinement.External (488ms)
+✔ [106/173] Built Benitoite.Release.Refinement.Ground (449ms)
+✔ [107/173] Built Benitoite.Release.Refinement.VarianceValidation (428ms)
+✔ [108/173] Built Benitoite.Release.Refinement.AtInput (652ms)
+✔ [109/173] Built Benitoite.Release.Refinement.Source (317ms)
+✔ [110/173] Built Benitoite.Release.Refinement.AtContracts (402ms)
+✔ [111/173] Built Benitoite.Release.Refinement.RuntimeMatch (321ms)
+✔ [112/173] Built Benitoite.Release.Refinement.Patterns (305ms)
+✔ [113/173] Built Benitoite.Release.Refinement.HandlerContracts (297ms)
+✔ [114/173] Built Benitoite.Release.Refinement.ValueMeaning (360ms)
+✔ [115/173] Built Benitoite.Release.Refinement.Capture (339ms)
+✔ [116/173] Built Benitoite.Release.Refinement.PatternNormalForm (501ms)
+✔ [117/173] Built Benitoite.Release.Refinement.AtPrepare (585ms)
+✔ [118/173] Built Benitoite.Release.Refinement.Typing (2.7s)
+✔ [119/173] Built Benitoite.Release.Refinement.SubstitutionContracts (444ms)
+✔ [120/173] Built Benitoite.Release.Refinement.BuilderExec (494ms)
+✔ [121/173] Built Benitoite.Release.Refinement.ProgramTyping (563ms)
+✔ [122/173] Built Benitoite.Release.Refinement.RuntimeSyntax (359ms)
+✔ [123/173] Built Benitoite.Release.Refinement.ValueRegularity (1.3s)
+✔ [124/173] Built Benitoite.Release.Refinement.Adequate (423ms)
+✔ [125/173] Built Benitoite.Release.Refinement.ValueReferences (555ms)
+✔ [126/173] Built Benitoite.Release.Refinement.Canonical (1.9s)
+✔ [127/173] Built Benitoite.Release.Refinement.ValueBinding (1.9s)
+✔ [128/173] Built Benitoite.Release.Refinement.MethodArguments (612ms)
+✔ [129/173] Built Benitoite.Release.Refinement.ValueInstantiation (583ms)
+✔ [130/173] Built Benitoite.Release.Refinement.LocalTransport (602ms)
+✔ [131/173] Built Benitoite.Release.Refinement.ValueRenameAlgebra (723ms)
+✔ [132/173] Built Benitoite.Release.Refinement.PatternTransport (709ms)
+✔ [133/173] Built Benitoite.Release.Refinement.AdmissibleMap (415ms)
+✔ [134/173] Built Benitoite.Release.Refinement.TypeShiftAlgebra (615ms)
+✔ [135/173] Built Benitoite.Release.Refinement.VarianceFormation (574ms)
+✔ [136/173] Built Benitoite.Release.Refinement.NormalizedApplication (530ms)
+✔ [137/173] Built Benitoite.Release.Refinement.TypeRegularity (497ms)
+✔ [138/173] Built Benitoite.Release.Refinement.TypeShiftContext (918ms)
+✔ [139/173] Built Benitoite.Release.Refinement.ExternalCheck (4.5s)
+✔ [140/173] Built Benitoite.Release.Refinement.TypeShiftKinds (637ms)
+✔ [141/173] Built Benitoite.Release.Refinement.TypeBounds (714ms)
+✔ [142/173] Built Benitoite.Release.Refinement.ExternalResponse (324ms)
+✔ [143/173] Built Benitoite.Release.Refinement.VarianceTransport (1.4s)
+✔ [144/173] Built Benitoite.Release.Refinement.TelTyping (677ms)
+✔ [145/173] Built Benitoite.Release.Refinement.Semantics (855ms)
+✔ [146/173] Built Benitoite.Release.Refinement.BuiltinResponse (507ms)
+⚠ [147/173] Built Benitoite.Release.Refinement.Step (1.4s)
+warning: Benitoite/Release/Refinement/Step.lean:24:17: This simp argument is unused:
+  splitHandler
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [h cap cs List.mem_cons_self, Bool.false_eq_true, ite_false, ih hk, Option.map_none]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Release/Refinement/Step.lean:24:87: This simp argument is unused:
+  ih hk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [splitHandler, h cap cs List.mem_cons_self, Bool.false_eq_true, ite_false, Option.map_none]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Release/Refinement/Step.lean:24:93: This simp argument is unused:
+  Option.map_none
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [splitHandler, h cap cs List.mem_cons_self, Bool.false_eq_true, ite_false, ih hk]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [148/173] Built Benitoite.Release.Refinement.PatternSemantics (4.6s)
+warning: Benitoite/Release/Refinement/PatternSemantics.lean:40:32: This simp argument is unused:
+  Ty.core
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hca, Const.type_core, substTyValues, Ty.bind, Ty.rawBind, Ty.norm, rawBindTys_eq_map,
+    Ty.normTys_eq_map, List.map_map, valEnv, RangeIx.inst_nil] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Release/Refinement/PatternSemantics.lean:50:41: This simp argument is unused:
+  Const.type_core
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hca, Ty.core, substTyValues, Ty.bind, Ty.rawBind, Ty.norm, rawBindTys_eq_map, Ty.normTys_eq_map,
+    List.map_map, valEnv, RangeIx.inst_nil, Ty.data.injEq] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Release/Refinement/PatternSemantics.lean:66:32: This simp argument is unused:
+  Ty.core
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hca, Const.type_core, substTyValues, Ty.bind, Ty.rawBind, Ty.norm, rawBindTys_eq_map,
+    Ty.normTys_eq_map, List.map_map, valEnv, RangeIx.inst_nil] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Release/Refinement/PatternSemantics.lean:66:41: This simp argument is unused:
+  Const.type_core
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hca, Ty.core, substTyValues, Ty.bind, Ty.rawBind, Ty.norm, rawBindTys_eq_map, Ty.normTys_eq_map,
+    List.map_map, valEnv, RangeIx.inst_nil] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Release/Refinement/PatternSemantics.lean:83:41: This simp argument is unused:
+  Const.type_core
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hca, Ty.core, substTyValues, Ty.bind, Ty.rawBind, Ty.norm, rawBindTys_eq_map, Ty.normTys_eq_map,
+    List.map_map, valEnv, RangeIx.inst_nil, Ty.list.injEq] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Release/Refinement/PatternSemantics.lean:93:41: This simp argument is unused:
+  Const.type_core
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hca, Ty.core, substTyValues, Ty.bind, Ty.rawBind, Ty.norm, rawBindTys_eq_map, Ty.normTys_eq_map,
+    List.map_map, valEnv, RangeIx.inst_nil] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Release/Refinement/PatternSemantics.lean:105:41: This simp argument is unused:
+  Const.type_core
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hca, Ty.core, substTyValues, Ty.bind, Ty.rawBind, Ty.norm, rawBindTys_eq_map, Ty.normTys_eq_map,
+    List.map_map, valEnv, RangeIx.inst_nil] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Release/Refinement/PatternSemantics.lean:115:41: This simp argument is unused:
+  Const.type_core
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hca, Ty.core, substTyValues, Ty.bind, Ty.rawBind, Ty.norm, rawBindTys_eq_map, Ty.normTys_eq_map,
+    List.map_map, valEnv, RangeIx.inst_nil] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Release/Refinement/PatternSemantics.lean:125:41: This simp argument is unused:
+  Const.type_core
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hca, Ty.core, substTyValues, Ty.bind, Ty.rawBind, Ty.norm, rawBindTys_eq_map, Ty.normTys_eq_map,
+    List.map_map, valEnv, RangeIx.inst_nil] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [149/173] Built Benitoite.Release.Refinement.TypeFormation (2.3s)
+✔ [150/173] Built Benitoite.Release.Refinement.Embedding (478ms)
+✔ [151/173] Built Benitoite.Release.Refinement.LegacyKinds (349ms)
+✔ [152/173] Built Benitoite.Release.Refinement.LegacyDeclarations (388ms)
+✔ [153/173] Built Benitoite.Release.Refinement.PatternTypeShift (1.0s)
+✔ [154/173] Built Benitoite.Release.Refinement.TypedFacts (4.8s)
+✔ [155/173] Built Benitoite.Release.Refinement.ConstraintAssumptions (449ms)
+✔ [156/173] Built Benitoite.Release.Refinement.LocalResolveLemmas (7.5s)
+✔ [157/173] Built Benitoite.Release.Refinement.TypeShiftContracts (686ms)
+✔ [158/173] Built Benitoite.Release.Refinement.ValueFacts (1.5s)
+✔ [159/173] Built Benitoite.Release.Refinement.TypeShiftExchange (1.2s)
+⚠ [160/173] Built Benitoite.Release.Refinement.HandlerAlgebra (1.3s)
+warning: Benitoite/Release/Refinement/HandlerAlgebra.lean:242:22: This simp argument is unused:
+  ← Ty.norm_shiftV
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Ty.norm, Ty.norm_shiftTypes, ← Eff.norm_shiftV, Eff.norm_shiftTypes]
+
+Note: Simp arguments with `←` have the additional effect of removing the other direction from the simp set, even if the simp argument itself is unused. If the hint above does not work, try replacing `←` with `-` to only get that effect and silence this warning.
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Release/Refinement/HandlerAlgebra.lean:242:40: This simp argument is unused:
+  Ty.norm_shiftTypes
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Ty.norm, ← Ty.norm_shiftV, ← Eff.norm_shiftV, Eff.norm_shiftTypes]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Release/Refinement/HandlerAlgebra.lean:242:60: This simp argument is unused:
+  ← Eff.norm_shiftV
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Ty.norm, ← Ty.norm_shiftV, Ty.norm_shiftTypes, Eff.norm_shiftTypes]
+
+Note: Simp arguments with `←` have the additional effect of removing the other direction from the simp set, even if the simp argument itself is unused. If the hint above does not work, try replacing `←` with `-` to only get that effect and silence this warning.
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Release/Refinement/HandlerAlgebra.lean:242:79: This simp argument is unused:
+  Eff.norm_shiftTypes
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Ty.norm, ← Ty.norm_shiftV, Ty.norm_shiftTypes, ← Eff.norm_shiftV]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [161/173] Built Benitoite.Release.Refinement.TypeShiftTyping (5.6s)
+✔ [162/173] Built Benitoite.Release.Refinement.TypingShift (7.6s)
+✔ [163/173] Built Benitoite.Release.Refinement.TypingStore (304ms)
+✔ [164/173] Built Benitoite.Release.Refinement.Narrowing (5.2s)
+✔ [165/173] Built Benitoite.Release.Refinement.TypingDeclared (1.7s)
+⚠ [166/173] Built Benitoite.Release.Refinement.SubstTyping (7.2s)
+warning: Benitoite/Release/Refinement/SubstTyping.lean:69:62: This simp argument is unused:
+  Ordinary
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [valEnv, Ty.core]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Release/Refinement/SubstTyping.lean:481:69: `if_true` has been deprecated: Use `ite_true` instead
+warning: Benitoite/Release/Refinement/SubstTyping.lean:1305:17: This simp argument is unused:
+  substTyValues
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Ty.bind, Ty.norm_rawBind] at hd'
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Benitoite/Release/Refinement/SubstTyping.lean:1390:62: This simp argument is unused:
+  Ty.norm_idem
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [substTyValues, Ty.bind, Ty.rawBind, Ty.norm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [167/173] Built Benitoite.Release.Refinement.ClosureTyping (1.4s)
+warning: Benitoite/Release/Refinement/ClosureTyping.lean:59:40: Variable name `ha` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _ha
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+✔ [168/173] Built Benitoite.Release.Refinement.Context.WF (375ms)
+✔ [169/173] Built Benitoite.Release.Refinement.ProgramWellFormed (339ms)
+✔ [170/173] Built Benitoite.Release.Refinement.LegacyInput (347ms)
+✔ [171/173] Built Benitoite.Release.Refinement.LegacyRegularity (558ms)
+✔ [172/173] Built Benitoite.Release.Refinement.LegacyTables (278ms)
+✔ [173/173] Built Benitoite.Release.Refinement.LegacyValues (396ms)
+Build completed successfully (173 jobs).

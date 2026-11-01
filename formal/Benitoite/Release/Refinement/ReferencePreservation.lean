@@ -291,7 +291,7 @@ private theorem reference_head {P B b s a} (hA : Builtins.CoreAssumptions P B)
         refine ⟨rfl,[],rfl,?_⟩
         intro i t kind ht hk'
         cases i with
-        | zero => cases Option.some.inj ht; cases Option.some.inj hk'; exact hkind
+        | zero => cases Option.some.inj ht; cases Option.some.inj hk'; exact ⟨hkind, fun _ => ho⟩
         | succ i => cases ht
       · rw [ht]
         have wa (n : Nat) : a.WF 0 0 n := by simpa using (closed_annotation ha (List.replicate n none)).wf
@@ -456,7 +456,7 @@ theorem StateTyE.reference_update {P B σ Eb b ts es rs l runtime body k μ s}
   have hK0 : K = [] := List.length_eq_zero_iff.mp hK
   have hxkind : x.HasKind P [] .value := by
     subst K
-    exact hkind 0 x .value (by rw [hts]; rfl) (by rw [hshape.2.2.2.2.2.2.2]; rfl)
+    exact (hkind 0 x .value (by rw [hts]; rfl) (by rw [hshape.2.2.2.2.2.2.2]; rfl)).1
   have hops := hA.reference_primitives hts hx hn ho hxkind
   obtain ⟨y,hts',hg,hst⟩ := hops
   cases List.cons.inj (hts'.symm.trans hts) |>.1

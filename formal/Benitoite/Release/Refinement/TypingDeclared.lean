@@ -30,7 +30,7 @@ theorem HasTypeVQ.declared {P B store Q C Γ Φ v a}
   | .V_Dict _ _ _ _ _ _ _ ha => exact ha.declared
   | .V_Con _ _ _ _ _ ha => exact ha.declared
   | .V_Super _ _ _ hd => exact hd
-  | .V_Raise ha => exact ha.declared
+  | .V_Raise ha hot hoe => exact ha.declared
   | .V_LocRef _ hd | .V_LocLazy _ hd => exact hd
   | .V_Bytes _ => trivial
   | .V_PathBases _ | .V_ScopePattern _ _ _ | .V_Checked _ _ _ |

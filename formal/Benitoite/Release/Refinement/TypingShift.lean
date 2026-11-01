@@ -667,11 +667,11 @@ mutual
       simp only [Ty.shiftV, Ty.subst_shiftV_closed htarget] at ha' ⊢
       simpa only [Val.rename, renameTy_shiftIndex] using
         HasTypeVQ.V_Dict hi hs' (hm.typeAnnotations ht) (hk.shift k c) hw htarget hv' ha'
-    | .V_Raise (t := t) (e := e) ha =>
+    | .V_Raise (t := t) (e := e) ha hot hoe =>
       have hh := hm.annotation ha
       simp only [Val.rename, renameTy_shiftIndex, Ty.shiftV, shiftVTys_eq_map,
         List.map_cons, List.map_nil, Eff.shiftV_singleFail]
-      apply HasTypeVQ.V_Raise
+      refine HasTypeVQ.V_Raise ?_ ((Ty.ordinary_shiftV _ _ _).mpr hot) ((Ty.ordinary_shiftV _ _ _).mpr hoe)
       simpa only [Ty.shiftV, shiftVTys_eq_map, List.map_cons, List.map_nil, Eff.shiftV_singleFail] using hh
     | .V_LocRef (a := a) hl hd =>
       have hw := hstore _ _ hl

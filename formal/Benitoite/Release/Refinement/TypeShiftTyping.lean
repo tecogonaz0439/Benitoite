@@ -83,9 +83,10 @@ mutual
       have ha' := hm.annotation hn ha
       simp only [shiftTypes,Ty.subst_shiftTypes htarget ts [] (by omega)] at ha' ⊢
       exact .V_Dict hi (hs.shiftTypes hA hC hm hn ht) (hm.annotations hn ht) (hk.shiftTypes k c hn) hw htarget hv' ha'
-    | .V_Raise ha =>
+    | .V_Raise ha hot hoe =>
       simpa only [Val.shiftEAt,shiftTypes,shiftTypesList,List.map_cons,List.map_nil,raw_singleFail] using
         HasTypeVQ.V_Raise (by simpa only [shiftTypes,shiftTypesList,raw_singleFail] using hm.annotation hn ha)
+          ((Ty.ordinary_shiftTypes _ _ _).mpr hot) ((Ty.ordinary_shiftTypes _ _ _).mpr hoe)
     | .V_LocRef (a := a) hl hd =>
       have he := Ty.shiftTypes_of_wf_zero (hstore _ _ hl) k c
       simpa only [Val.shiftEAt,shiftTypes,he] using HasTypeVQ.V_LocRef hl (he ▸ hd.shiftTypes hm)

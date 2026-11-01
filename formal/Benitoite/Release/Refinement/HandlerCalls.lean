@@ -115,12 +115,19 @@ private theorem op_inv {P B Ψ Q C Γ Φ v T o ts}
     .V_LocRef .. | .V_LocLazy .. | .V_Bytes .. => cases hv
 termination_by structural h
 
-private theorem operation_call_aux {P B Ψ Q C Γ Φ R code a e L o v od}
+/-- 操作の型引数の形成と非継続は、V_OpとSignatureInstanceから得る。 -/
+theorem HasTypeVQ.op_typeScope {P B Ψ Q C Γ Φ o ts a}
+    (h : HasTypeVQ P B Ψ Q C Γ Φ (.op o ts) a) :
+    ∀ t ∈ ts, t.WF 0 C.length Γ.length ∧ Ordinary t := by
+  obtain ⟨_, _, _, hi, _, _⟩ := op_inv h rfl
+  exact hi.typeScope
+
+private theorem operation_call_aux {P B Ψ Q C Γ Φ R code a e L o v od ts}
     (h : HasTypeCQ P B Ψ Q C Γ Φ R code a e L)
     (hQ : Q = Qempty) (hC : C = []) (hΓ : Γ = []) (hΦ : Φ = [])
-    (hc : code = .app (.op o []) [v]) (hd : P.ops o = some od) :
+    (hc : code = .app (.op o ts) [v]) (hd : P.ops o = some od) :
     ∃ r f, HasTypeTelArgsQ P B Ψ Qempty [] [] [] [v]
-      (instantiatedTel od.tel [] []) r f ∧ Ty.LeQ P [] [] r a ∧ Eff.Covers [] [] e f := by
+      (instantiatedTel od.tel ts []) r f ∧ Ty.LeQ P [] [] r a ∧ Eff.Covers [] [] e f := by
   match h with
   | .C_DependentApp hv ha =>
     subst Q C Γ Φ
@@ -157,18 +164,18 @@ private theorem operation_call_aux {P B Ψ Q C Γ Φ R code a e L o v od}
     .C_External .. | .C_IssuePathBases .. | .C_CheckAt .. => cases hc
 termination_by structural h
 
-theorem HasTypeCQ.operation_call {P B Ψ R o v a e L od}
-    (h : HasTypeCQ P B Ψ Qempty [] [] [] R (.app (.op o []) [v]) a e L)
+theorem HasTypeCQ.operation_call {P B Ψ R o v a e L od ts}
+    (h : HasTypeCQ P B Ψ Qempty [] [] [] R (.app (.op o ts) [v]) a e L)
     (hd : P.ops o = some od) :
     ∃ r f, HasTypeTelArgsQ P B Ψ Qempty [] [] [] [v]
-      (instantiatedTel od.tel [] []) r f ∧
+      (instantiatedTel od.tel ts []) r f ∧
       Ty.LeQ P [] [] r a ∧ Eff.Covers [] [] e f :=
   operation_call_aux h rfl rfl rfl rfl rfl hd
 
-private theorem operation_signature_aux {P B Ψ Q C Γ Φ R code a e L o v od}
+private theorem operation_signature_aux {P B Ψ Q C Γ Φ R code a e L o v od ts}
     (h : HasTypeCQ P B Ψ Q C Γ Φ R code a e L)
-    (hc : code = .app (.op o []) [v]) (hd : P.ops o = some od) :
-    Ty.Annotation P C Γ (.dependentFn (instantiatedTel od.tel [] [])) := by
+    (hc : code = .app (.op o ts) [v]) (hd : P.ops o = some od) :
+    Ty.Annotation P C Γ (.dependentFn (instantiatedTel od.tel ts [])) := by
   match h with
   | .C_App hv _ | .C_DependentApp hv _ =>
     cases hc
@@ -182,9 +189,9 @@ private theorem operation_signature_aux {P B Ψ Q C Γ Φ R code a e L o v od}
     .C_External .. | .C_IssuePathBases .. | .C_CheckAt .. => cases hc
 termination_by structural h
 
-private theorem operation_annotation {P B Ψ Q C Γ Φ R code a e L o v}
+private theorem operation_annotation {P B Ψ Q C Γ Φ R code a e L o v ts}
     (h : HasTypeCQ P B Ψ Q C Γ Φ R code a e L)
-    (hc : code = .app (.op o []) [v]) : Ty.Annotation P C Γ a := by
+    (hc : code = .app (.op o ts) [v]) : Ty.Annotation P C Γ a := by
   match h with
   | .C_App hv _ =>
     cases hc
@@ -213,12 +220,12 @@ private theorem app_resolve {P B Ψ Q C Γ Φ R code a e L f ws}
     .C_External .. | .C_IssuePathBases .. | .C_CheckAt .. => cases hc
 termination_by structural h
 
-theorem ClosureTy.pure_operation {P B Ψ R a e o v od}
+theorem ClosureTy.pure_operation {P B Ψ R a e o v od ts}
     (hA : Builtins.ValueAssumptions P B) (hw : Ψ.WF)
-    (h : ClosureTy P B Ψ [] R (Closure.pure (.app (.op o []) [v])) a e)
+    (h : ClosureTy P B Ψ [] R (Closure.pure (.app (.op o ts) [v])) a e)
     (hd : P.ops o = some od) :
     ∃ r f, HasTypeTelArgsQ P B Ψ Qempty [] [] [] [v]
-      (instantiatedTel od.tel [] []) r f ∧
+      (instantiatedTel od.tel ts []) r f ∧
       Ty.LeQ P [] [] r a ∧ Eff.Covers [] [] e f := by
   obtain ⟨cap,Γ,Φ,Rs,code0,as,es0,L,ρ,hq,hcap,hbody,hL,hR,ha,he,hr⟩ := h.open_zero
   have hc : cap = Capture.empty := (Closure.mk.inj hq).1.symm
@@ -227,7 +234,7 @@ theorem ClosureTy.pure_operation {P B Ψ R a e o v od}
     cases hcap with
     | mk _ hn _ _ _ _ _ _ => exact List.length_eq_zero_iff.mp hn.symm
   subst Γ
-  have hcode : code0.resolveLocals ρ = .app (.op o []) [v] := (Closure.mk.inj hq).2.symm
+  have hcode : code0.resolveLocals ρ = .app (.op o ts) [v] := (Closure.mk.inj hq).2.symm
   have htag : (match code0 with | .app .. => true | _ => false) = true := by
     have hh := congrArg (fun code => match code with | .app .. => true | _ => false) hcode
     cases code0 <;> exact hh
@@ -256,10 +263,10 @@ theorem ClosureTy.pure_operation {P B Ψ R a e o v od}
   rwa [he] at hh
 
 /-- 呼出しを包む部分型付けの下にも、元の宣言の依存列の注釈が存在する。 -/
-theorem ClosureTy.pure_operation_signature {P B Ψ R a e o v od}
-    (h : ClosureTy P B Ψ [] R (Closure.pure (.app (.op o []) [v])) a e)
+theorem ClosureTy.pure_operation_signature {P B Ψ R a e o v od ts}
+    (h : ClosureTy P B Ψ [] R (Closure.pure (.app (.op o ts) [v])) a e)
     (hd : P.ops o = some od) :
-    Ty.Annotation P [] [] (.dependentFn (instantiatedTel od.tel [] [])) := by
+    Ty.Annotation P [] [] (.dependentFn (instantiatedTel od.tel ts [])) := by
   obtain ⟨cap,Γ,Φ,Rs,code0,as,es,L,ρ,hq,hcap,hbody,_,_,_,_,_⟩ := h.open_zero
   have hc : cap = Capture.empty := (Closure.mk.inj hq).1.symm
   subst cap
@@ -267,7 +274,7 @@ theorem ClosureTy.pure_operation_signature {P B Ψ R a e o v od}
     cases hcap with
     | mk _ hn _ _ _ _ _ _ => exact List.length_eq_zero_iff.mp hn.symm
   subst Γ
-  have hcode : code0.resolveLocals ρ = .app (.op o []) [v] := (Closure.mk.inj hq).2.symm
+  have hcode : code0.resolveLocals ρ = .app (.op o ts) [v] := (Closure.mk.inj hq).2.symm
   have htag : (match code0 with | .app .. => true | _ => false) = true := by
     have hh := congrArg (fun code => match code with | .app .. => true | _ => false) hcode
     cases code0 <;> exact hh
@@ -275,6 +282,38 @@ theorem ClosureTy.pure_operation_signature {P B Ψ R a e o v od}
   rw [app_resolve hbody rfl ρ] at hcode
   cases hcode
   exact operation_signature_aux hbody rfl hd
+
+private theorem operation_typeScope_aux {P B Ψ Q C Γ Φ R m a e D o ts v}
+    (h : HasTypeCQ P B Ψ Q C Γ Φ R m a e D) (hm : m = .app (.op o ts) [v]) :
+    ∀ t ∈ ts, t.WF 0 C.length Γ.length ∧ Ordinary t := by
+  match h with
+  | .C_App hv _ | .C_DependentApp hv _ => cases hm; exact hv.op_typeScope
+  | .C_Sub h .. | .C_Normal h | .C_Eff h _ => exact operation_typeScope_aux h hm
+  | .C_BuilderLet .. | .C_BuilderOp .. | .C_Return .. | .C_Let .. | .C_If .. |
+    .C_Match .. | .C_Lazy .. | .C_Escape .. | .C_Use .. | .C_Handle .. | .C_Handle_Fail .. |
+    .C_Resume .. | .C_ResumeL .. | .C_ResumeNorm .. | .C_ResumeLNorm .. | .C_Meth .. |
+    .C_External .. | .C_IssuePathBases .. | .C_CheckAt .. => cases hm
+termination_by structural h
+
+/-- 捕捉の無い操作の呼出しでも、型引数は空列に限定しない。 -/
+theorem ClosureTy.pure_operation_typeScope {P B Ψ R a e o v ts}
+    (h : ClosureTy P B Ψ [] R (Closure.pure (.app (.op o ts) [v])) a e) :
+    ∀ t ∈ ts, t.WF 0 0 0 ∧ Ordinary t := by
+  obtain ⟨cap, Γ, Φ, Rs, code, as, es, L, ρ, hq, hcap, hbody, _⟩ := h.open_zero
+  have hc : cap = Capture.empty := (Closure.mk.inj hq).1.symm
+  subst cap
+  have hΓ : Γ = [] := by
+    cases hcap with
+    | mk _ hn _ _ _ _ _ _ => exact List.length_eq_zero_iff.mp hn.symm
+  subst Γ
+  have hcode : code.resolveLocals ρ = .app (.op o ts) [v] := (Closure.mk.inj hq).2.symm
+  have htag : (match code with | .app .. => true | _ => false) = true := by
+    have hh := congrArg (fun code => match code with | .app .. => true | _ => false) hcode
+    cases code <;> exact hh
+  cases code <;> try cases htag
+  rw [app_resolve hbody rfl ρ] at hcode
+  cases hcode
+  exact operation_typeScope_aux hbody rfl
 
 end
 end Benitoite.Release.Refinement

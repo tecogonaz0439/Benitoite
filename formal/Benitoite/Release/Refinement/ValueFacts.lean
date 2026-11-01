@@ -183,11 +183,12 @@ theorem Ty.Annotation.data_args {P C Γ d ts} (h : Ty.Annotation P C Γ (.data d
 theorem HasTypeVQ.constructor_field_inputs {P B Ψ Q C Γ Φ T c ts vs cd us} {i : Nat} {a : Ty}
     (h : HasTypeVQ P B Ψ Q C Γ Φ (.con c ts vs) T) (hc : P.cons c = some cd)
     (hT : T.norm.core = .data cd.data us) (ha : cd.args[i]? = some a)
-    (valid : P.VarianceValid) (sourceOrd : ∀ t ∈ ts, Ordinary t)
+    (valid : P.VarianceValid)
     (targetTypes : TypeAnnotations P C Γ us) (targetOrd : ∀ t ∈ us, Ordinary t) :
     Ty.Annotation P C Γ (a.subst ts []) ∧ Ty.Annotation P C Γ (a.subst us []) ∧
       VarianceSubstInput P C Γ (P.varianceFor cd.data ts.length) (Ty.normTys ts) us := by
-  obtain ⟨cd', hc', hn, _, hat, _, xs, ht, hr⟩ := h.inv_con rfl
+  obtain ⟨cd', hc', hn, hk, hat, _, xs, ht, hr⟩ := h.inv_con rfl
+  have sourceOrd := hk.ordinary
   have he : cd' = cd := Option.some.inj (hc'.symm.trans hc)
   subst cd'
   have hx : xs = us := (Ty.data.inj (ht.symm.trans hT)).2
@@ -205,11 +206,12 @@ theorem HasTypeVQ.constructor_field_inputs {P B Ψ Q C Γ Φ T c ts vs cd us} {i
 theorem HasTypeVQ.con_field_by_type {P B Ψ Q C Γ Φ T c ts vs cd us} {i : Nat} {a : Ty}
     (h : HasTypeVQ P B Ψ Q C Γ Φ (.con c ts vs) T) (hc : P.cons c = some cd)
     (hT : T.norm.core = .data cd.data us) (ha : cd.args[i]? = some a)
-    (valid : P.VarianceValid) (sourceOrd : ∀ t ∈ ts, Ordinary t)
+    (valid : P.VarianceValid)
     (targetTypes : TypeAnnotations P C Γ us) (targetOrd : ∀ t ∈ us, Ordinary t) :
     ∃ v, vs[i]? = some v ∧ HasTypeVQ P B Ψ Q C Γ Φ v (a.subst us []) := by
-  obtain ⟨_, targetField, _⟩ := h.constructor_field_inputs hc hT ha valid sourceOrd targetTypes targetOrd
-  obtain ⟨cd',hc',hn,_,_,_,xs,ht,hr⟩ := h.inv_con rfl
+  obtain ⟨_, targetField, _⟩ := h.constructor_field_inputs hc hT ha valid targetTypes targetOrd
+  obtain ⟨cd',hc',hn,hk,_,_,xs,ht,hr⟩ := h.inv_con rfl
+  have sourceOrd := hk.ordinary
   have he : cd' = cd := Option.some.inj (hc'.symm.trans hc)
   subst cd'
   have hx : xs = us := (Ty.data.inj (ht.symm.trans hT)).2
@@ -229,11 +231,11 @@ theorem HasTypeVQ.con_field_by_type {P B Ψ Q C Γ Φ T c ts vs cd us} {i : Nat}
 theorem HasTypeVQ.field_facts_by_type {P B Ψ Q C Γ Φ T c ts vs cd us} {i : Nat} {a : Ty} {t : Term}
     (h : HasTypeVQ P B Ψ Q C Γ Φ (.con c ts vs) T) (hc : P.cons c = some cd)
     (hT : T.norm.core = .data cd.data us) (ha : cd.args[i]? = some a)
-    (valid : P.VarianceValid) (sourceOrd : ∀ t ∈ ts, Ordinary t)
+    (valid : P.VarianceValid)
     (targetTypes : TypeAnnotations P C Γ us) (targetOrd : ∀ t ∈ us, Ordinary t)
     (hs : (Val.toTermSlots vs)[i]? = some (some t)) :
     ∀ p ∈ (a.subst us []).assume, Entails (Γ.facts ++ Φ) (p.open t) := by
-  obtain ⟨v,hv,hvty⟩ := h.con_field_by_type hc hT ha valid sourceOrd targetTypes targetOrd
+  obtain ⟨v,hv,hvty⟩ := h.con_field_by_type hc hT ha valid targetTypes targetOrd
   have he : v.toTerm? = some t := by
     simpa only [Val.toTermSlots_eq_map, List.getElem?_map, hv, Option.map_some,
       Option.some.injEq] using hs

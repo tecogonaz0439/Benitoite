@@ -1,0 +1,20 @@
+Benitoite/Release/Refinement/TypeBounds.lean:165:58: error: Application type mismatch: The argument
+  fun x => x
+has type
+  ?m.59 → ?m.59
+but is expected to have type
+  ?m.56 < ?m.57
+in the application
+  Nat.lt_of_lt_of_le fun x => x
+Benitoite/Release/Refinement/TypeBounds.lean:189:2: error: Type mismatch: After simplification, term
+  substAt_wf 0 ts es ht he ho a (Eq.mpr (id (congrFun' (congrFun' (congrArg (WF nr) (Nat.zero_add ts.length)) nv) a)) h)
+ has type
+  WF nr n nv (substAt 0 ts es a)
+but is expected to have type
+  WF nr n nv (subst ts es a)
+Benitoite/Release/Refinement/TypeBounds.lean:205:2: error: Type mismatch: After simplification, term
+  substAt_wf 0 ts es ht he ho e (Eq.mpr (id (congrFun' (congrFun' (congrArg (WF nr) (Nat.zero_add ts.length)) nv) e)) h)
+ has type
+  WF nr n nv (substAt 0 ts es e)
+but is expected to have type
+  WF nr n nv (subst ts es e)

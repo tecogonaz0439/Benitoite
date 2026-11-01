@@ -114,7 +114,8 @@ theorem Tel.annotation_open {P B Ψ Q C Γ Φ name a t v}
 
 def TypeArgsKindedAt (P : Program) (D : List TParamDecl) (ts : List Ty) (ks : List TyKind) : Prop :=
   ts.length = ks.length ∧ ∀ (i : Nat) (a : Ty) (k : TyKind),
-    ts[i]? = some a → ks[i]? = some k → a.HasKind P (D.map TParamDecl.kind) k
+    ts[i]? = some a → ks[i]? = some k →
+      a.HasKind P (D.map TParamDecl.kind) k ∧ (k = .value → Ordinary a)
 
 theorem TypeArgsKindedAt.forget {P D ts ks} (h : TypeArgsKindedAt P D ts ks) :
     TypeArgsKinded P (D.map TParamDecl.constraints) ts ks :=
@@ -125,14 +126,16 @@ theorem TypeArgsKindedAt.shift {P D ts ks} (h : TypeArgsKindedAt P D ts ks) (k c
   refine ⟨by simpa using h.1, ?_⟩
   intro i a t ha ht
   obtain ⟨b, hb, rfl⟩ := Option.map_eq_some_iff.mp (by simpa only [List.getElem?_map] using ha)
-  exact (h.2 i b t hb ht).shift_values k c
+  exact ⟨(h.2 i b t hb ht).1.shift_values k c, fun hv =>
+    (Ty.ordinary_shiftV _ _ _).mpr ((h.2 i b t hb ht).2 hv)⟩
 
 theorem TypeArgsKindedAt.subst {P D ts ks} (h : TypeArgsKindedAt P D ts ks) (ν : Nat → Val) :
     TypeArgsKindedAt P D (ts.map (substTyValues ν)) ks := by
   refine ⟨by simpa using h.1, ?_⟩
   intro i a t ha ht
   obtain ⟨b, hb, rfl⟩ := Option.map_eq_some_iff.mp (by simpa only [List.getElem?_map] using ha)
-  exact (h.2 i b t hb ht).bind_values ν
+  exact ⟨(h.2 i b t hb ht).1.bind_values ν, fun hv =>
+    (Ty.ordinary_bind_values _ _).mpr ((h.2 i b t hb ht).2 hv)⟩
 
 structure SignatureInstanceAt (P : Program) (D : List TParamDecl) (Γ : Ctx)
     (t : Tel) (ks : List TyKind) (ts : List Ty) (es : List Eff) : Prop where

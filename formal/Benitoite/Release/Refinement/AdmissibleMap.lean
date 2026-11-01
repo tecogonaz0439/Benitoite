@@ -36,7 +36,8 @@ theorem TypeArgsKinded.norm {P C ts ks} (h : TypeArgsKinded P C ts ks) :
   refine ⟨by simpa only [Ty.normTys_eq_map,List.length_map] using hn,K,hK,?_⟩
   intro i a k ha hk
   obtain ⟨b,hb,rfl⟩ := Option.map_eq_some_iff.mp (by simpa only [Ty.normTys_eq_map,List.getElem?_map] using ha)
-  exact (h i b k hb hk).norm
+  exact ⟨(h i b k hb hk).1.norm, fun hv =>
+    (Ty.ordinary_norm _).mpr ((h i b k hb hk).2 hv)⟩
 
 theorem SignatureInstance.norm_images {P C Γ t ks ts es}
     (h : SignatureInstance P C Γ t ks ts es) :

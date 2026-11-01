@@ -44,7 +44,7 @@ theorem HasTypeVQ.data_observation {P B store Q C Γ Φ v a d ts}
     exact .value hc rfl (by simpa only [Ty.normTys_eq_map, List.length_map] using hn.symm)
       (by simpa only [Val.toTermSlots_length, List.length_map] using hv.length)
   | .V_Super _ _ _ _ => first | exact False.elim (Ty.notDataCore_dependentFn hd) | cases hd
-  | .V_Raise _ | .V_LocRef _ _ | .V_LocLazy _ _ | .V_Bytes _ => first | exact False.elim (Ty.notDataCore_dependentFn hd) | cases hd
+  | .V_Raise .. | .V_LocRef _ _ | .V_LocLazy _ _ | .V_Bytes _ => first | exact False.elim (Ty.notDataCore_dependentFn hd) | cases hd
   | .V_Fun _ _ _ _ | .V_Prim _ _ _ _ _ | .V_Op _ _ _ _ | .V_ExternalRef _ _ _ _ | .V_ExternalHandle _ _ _ _ _ _ _ => first | exact False.elim (Ty.notDataCore_dependentFn hd) | cases hd
   | .V_Map _ _ _ _ _ _ | .V_Set _ _ _ | .V_Dict _ _ _ _ _ _ _ _ => first | exact False.elim (Ty.notDataCore_dependentFn hd) | cases hd
   | .V_PathBases _ | .V_ScopePattern _ _ _ | .V_Checked _ _ _ |
@@ -75,7 +75,7 @@ mutual
       exact ⟨HasTypeVsQ.observation_declared hv, _, hc,
         by simpa only [Val.toTermSlots_length, List.length_map] using hv.length⟩
     | .V_Super _ _ _ _ => cases ht
-    | .V_Raise _ | .V_LocRef _ _ | .V_LocLazy _ _ => cases ht
+    | .V_Raise .. | .V_LocRef _ _ | .V_LocLazy _ _ => cases ht
     | .V_Bytes _ => cases ht; trivial
     | .V_Fun _ _ _ _ | .V_Prim _ _ _ _ _ | .V_Op _ _ _ _ | .V_Dict _ _ _ _ _ _ _ _ | .V_ExternalRef _ _ _ _ | .V_ExternalHandle _ _ _ _ _ _ _ => cases ht
     | .V_Map hk hv _ _ _ _ => cases ht; exact ⟨HasTypeEachQ.observation_declared hk, HasTypeEachQ.observation_declared hv⟩
@@ -119,7 +119,7 @@ mutual
     | .V_List hv _ _ _ => cases ht; exact HasTypeEachQ.observation_references hv
     | .V_Con _ _ _ _ hv _ => cases ht; exact HasTypeVsQ.observation_references hv
     | .V_Super _ _ _ _ => cases ht
-    | .V_Raise _ | .V_LocRef _ _ | .V_LocLazy _ _ => cases ht
+    | .V_Raise .. | .V_LocRef _ _ | .V_LocLazy _ _ => cases ht
     | .V_Bytes _ => cases ht; trivial
     | .V_Fun _ _ _ _ | .V_Prim _ _ _ _ _ | .V_Op _ _ _ _ | .V_Dict _ _ _ _ _ _ _ _ | .V_ExternalRef _ _ _ _ | .V_ExternalHandle _ _ _ _ _ _ _ => cases ht
     | .V_Map hk hv _ _ _ _ => cases ht; exact ⟨HasTypeEachQ.observation_references hk, HasTypeEachQ.observation_references hv⟩
@@ -168,7 +168,7 @@ theorem HasTypeVQ.observation {P B store Q C Γ Φ v a sort}
     exact ⟨_, rfl, HasTypeEachQ.observation_references hv, hs⟩
   | .V_Con _ _ _ _ hv _ => exact ⟨_, rfl, HasTypeVsQ.observation_references hv, (Option.some.inj hi).symm⟩
   | .V_Super _ _ _ _ => cases hi
-  | .V_Raise _ | .V_LocRef _ _ | .V_LocLazy _ _ => cases hi
+  | .V_Raise .. | .V_LocRef _ _ | .V_LocLazy _ _ => cases hi
   | .V_Bytes _ => exact ⟨_, rfl, trivial, (Option.some.inj hi).symm⟩
   | .V_Fun _ _ _ _ | .V_Prim _ _ _ _ _ | .V_Op _ _ _ _ | .V_Dict _ _ _ _ _ _ _ _ | .V_ExternalRef _ _ _ _ | .V_ExternalHandle _ _ _ _ _ _ _ => cases hi
   | .V_Map hk hv _ _ _ _ => exact ⟨_, rfl, ⟨HasTypeEachQ.observation_references hk, HasTypeEachQ.observation_references hv⟩, (Option.some.inj hi).symm⟩
@@ -215,7 +215,7 @@ theorem HasTypeVQ.assume {P B store Q C Γ Φ v a}
   | .V_Const (c := c) _ =>
     cases c <;> simp [Const.type, Ty.assume, Ty.refinementPredicates]
   | .V_DependentLam .. | .V_Closure .. | .V_Lam _ _ _ _ _ | .V_List _ _ _ _ => intro p hp; cases hp
-  | .V_Con _ _ _ _ _ _ | .V_Super _ _ _ _ | .V_Raise _ | .V_LocRef _ _ | .V_LocLazy _ _ | .V_Bytes _ => intro p hp; cases hp
+  | .V_Con _ _ _ _ _ _ | .V_Super _ _ _ _ | .V_Raise .. | .V_LocRef _ _ | .V_LocLazy _ _ | .V_Bytes _ => intro p hp; cases hp
   | .V_Fun _ _ _ _ | .V_Prim _ _ _ _ _ | .V_Op _ _ _ _ | .V_Dict _ _ _ _ _ _ _ _
   | .V_Map _ _ _ _ _ _ | .V_Set _ _ _
   | .V_ExternalRef _ _ _ _ | .V_ExternalHandle _ _ _ _ _ _ _ => intro p hp; cases hp
@@ -256,7 +256,7 @@ theorem HasTypeVQ.assume_optional {P B store Q C Γ Φ v a}
   | .V_Const (c := c) _ =>
     cases c <;> simp [Const.type, Ty.assume, Ty.refinementPredicates]
   | .V_DependentLam .. | .V_Closure .. | .V_Lam _ _ _ _ _ | .V_List _ _ _ _ => intro p hp; cases hp
-  | .V_Con _ _ _ _ _ _ | .V_Super _ _ _ _ | .V_Raise _ | .V_LocRef _ _ | .V_LocLazy _ _ | .V_Bytes _ => intro p hp; cases hp
+  | .V_Con _ _ _ _ _ _ | .V_Super _ _ _ _ | .V_Raise .. | .V_LocRef _ _ | .V_LocLazy _ _ | .V_Bytes _ => intro p hp; cases hp
   | .V_Fun _ _ _ _ | .V_Prim _ _ _ _ _ | .V_Op _ _ _ _ | .V_Dict _ _ _ _ _ _ _ _
   | .V_Map _ _ _ _ _ _ | .V_Set _ _ _
   | .V_ExternalRef _ _ _ _ | .V_ExternalHandle _ _ _ _ _ _ _ => intro p hp; cases hp

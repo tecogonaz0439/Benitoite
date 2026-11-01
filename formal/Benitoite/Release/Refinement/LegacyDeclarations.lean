@@ -8,7 +8,7 @@ noncomputable section
 def LegacyKindArgs (K : DeclarationKinds) (P0 : Benitoite.Release.Program)
     (κ : KindCtx) (ts : List Benitoite.Release.Ty) (ks : List TyKind) : Prop :=
   ts.length = ks.length ∧ ∀ (i : Nat) (a : Benitoite.Release.Ty) (k : TyKind),
-    ts[i]? = some a → ks[i]? = some k → (embedTy a).HasKind (embedProgramWithKinds K P0) κ k
+    ts[i]? = some a → ks[i]? = some k → (embedTy a).HasKind (embedProgramWithKinds K P0) κ k ∧ (k = .value → Ordinary (embedTy a))
 
 theorem LegacyKindArgs.kinded {K P0 κ ts ks C}
     (h : LegacyKindArgs K P0 κ ts ks) (hc : κ.length = C.length) :
