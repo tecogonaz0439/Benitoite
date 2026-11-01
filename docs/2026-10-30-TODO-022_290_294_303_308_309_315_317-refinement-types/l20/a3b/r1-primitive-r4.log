@@ -1,0 +1,45 @@
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3b/r1-primitive.lean:26:30: warning: Try `simp at hh` instead of `simpa using hh`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3b/r1-primitive.lean:39:14: warning: This simp argument is unused:
+  shiftTypes
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Tel.substAt, instantiatedTel, Tel.bind, Tel.rawBind, Tel.norm, sig, PrimSig.tel, signatureTel, inner,
+    Ty.rawBind, Ty.norm, rawBindTys, Ty.normTys, Eff.rawBind, Eff.norm, typeEnvAt, Eff.test, Eff.empty, Eff.row,
+    Eff.atoms, substAtoms, instAtoms, rowFails, shiftRowsTypes, shiftTypesList] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3b/r1-primitive.lean:62:49: error: Tactic `rfl` failed: The left-hand side
+  Tel.instR [] sig.tel
+is not definitionally equal to the right-hand side
+  sig.tel
+
+P : Program
+B : Builtins
+Ψ : StoreTy
+hb : B.sig "bad" = some sig
+hr : B.RangeAdmissible "bad" sig []
+⊢ Tel.instR [] sig.tel = sig.tel
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3b/r1-primitive.lean:63:2: error: Type mismatch: After simplification, term
+  signature P
+ has type
+  SignatureInstance P [] []
+    { tparams := [], neffs := 0, names := ["f"], params := [inner], ret := Ty.base BaseTy.unit, eff := Eff.empty,
+        admits := fun x x_1 => True, kind := PrimKind.pure, opEff := none }.tel
+    [] [] []
+but is expected to have type
+  SignatureInstance P [] []
+    (Tel.instR []
+      { tparams := [], neffs := 0, names := ["f"], params := [inner], ret := Ty.base BaseTy.unit, eff := Eff.empty,
+          admits := fun x x_1 => True, kind := PrimKind.pure, opEff := none }.tel)
+    [] [] []
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3b/r1-primitive.lean:81:30: warning: Try `simp at hh` instead of `simpa using hh`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+'Benitoite.Release.Refinement.A3bPrimitive.exchange_false' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.A3bPrimitive.primitive_source' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.A3bPrimitive.io_shape' depends on axioms: [propext]

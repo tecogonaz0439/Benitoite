@@ -1,0 +1,30 @@
+Benitoite/Release/Refinement/KindTypeSubst.lean:27:6: error: No goals to be solved
+Benitoite/Release/Refinement/KindTypeSubst.lean:34:6: error: Case tag `tvar` not found.
+
+Hint: Available tags:
+  • `value.cont`: t̵v̵a̵r̵v̲a̲l̲u̲e̲.̲c̲o̲n̲t̲
+  • `value.map`: t̵v̵a̵r̵v̲a̲l̲u̲e̲.̲m̲a̲p̲
+  • `value.dict`: t̵v̵a̵r̵v̲a̲l̲u̲e̲.̲d̲i̲c̲t̲
+  • `value.tapp`: t̵v̵a̵r̵v̲a̲l̲u̲e̲.̲t̲a̲p̲p̲
+  • `value.refined`: t̵v̵a̵r̵v̲a̲l̲u̲e̲.̲r̲e̲f̲i̲n̲e̲d̲
+Benitoite/Release/Refinement/KindTypeSubst.lean:74:11: error: unsolved goals
+case some.mk
+P : Program
+K : KindCtx
+es : List Eff
+a : Atom → Bool
+h : ∀ (e : Eff), e ∈ es → kindsEff P K e
+t : Ty
+ht✝ : t ∈ rowFails es a
+i : Nat
+hi : i ∈ List.filter (fun i => a (Atom.rho i)) (List.range es.length)
+ht :
+  t ∈
+    match es[i]? with
+    | some e => e.fails
+    | none => []
+atoms✝ : Atom → Bool
+fails✝ : List Ty
+he : es[i]? = some (EffR.mk atoms✝ fails✝)
+⊢ Ty.HasKind P K t TyKind.value
+Benitoite/Release/Refinement/KindTypeSubst.lean:76:9: error: unexpected token 'at'; expected command

@@ -1,0 +1,423 @@
+Benitoite/Release/Refinement/TypeSubstFormation.lean:16:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  (List.range es.length).any fun i =>
+    a (Atom.rho i) &&
+      match es[i]? with
+      | some e => e.test x
+      | none => false
+in the target expression
+  ((match x with
+      | Atom.name l r => a (Atom.name l r)
+      | Atom.rho i => if i < es.length then false else a (Atom.rho i)) ||
+      (List.range es.length).any fun i =>
+        a (Atom.rho i) &&
+          match es[i]? with
+          | some e => e.test x
+          | none => false) =
+    a x
+
+es : List Eff
+a : Atom → Bool
+h : ∀ (i : Nat), a (Atom.rho i) = false
+x : Atom
+hh :
+  ((List.range es.length).any fun i =>
+      a (Atom.rho i) &&
+        match es[i]? with
+        | some e => e.test x
+        | none => false) =
+    false
+⊢ ((match x with
+      | Atom.name l r => a (Atom.name l r)
+      | Atom.rho i => if i < es.length then false else a (Atom.rho i)) ||
+      (List.range es.length).any fun i =>
+        a (Atom.rho i) &&
+          match es[i]? with
+          | some e => e.test x
+          | none => false) =
+    a x
+Benitoite/Release/Refinement/TypeSubstFormation.lean:35:18: error: unsolved goals
+case hv
+f : Nat → Ty
+θ : SubstEnv
+hv : θ.values = fun i => some (Term.var i)
+hg : θ.ranges = []
+d✝ : DataName
+args✝ : List Ty
+ha : noTappTys args✝
+hr : Ty.RowsInList (fun x => x < 0) args✝
+⊢ θ.values = fun i => some (Term.var i)
+
+case hg
+f : Nat → Ty
+θ : SubstEnv
+hv : θ.values = fun i => some (Term.var i)
+hg : θ.ranges = []
+d✝ : DataName
+args✝ : List Ty
+ha : noTappTys args✝
+hr : Ty.RowsInList (fun x => x < 0) args✝
+⊢ θ.ranges = []
+Benitoite/Release/Refinement/TypeSubstFormation.lean:36:22: error: unsolved goals
+case hv
+f : Nat → Ty
+θ : SubstEnv
+hv : θ.values = fun i => some (Term.var i)
+hg : θ.ranges = []
+id✝ : ExternalId
+arguments✝ : List Ty
+ha : noTappTys arguments✝
+hr : Ty.RowsInList (fun x => x < 0) arguments✝
+⊢ θ.values = fun i => some (Term.var i)
+
+case hg
+f : Nat → Ty
+θ : SubstEnv
+hv : θ.values = fun i => some (Term.var i)
+hg : θ.ranges = []
+id✝ : ExternalId
+arguments✝ : List Ty
+ha : noTappTys arguments✝
+hr : Ty.RowsInList (fun x => x < 0) arguments✝
+⊢ θ.ranges = []
+Benitoite/Release/Refinement/TypeSubstFormation.lean:37:20: error: unsolved goals
+case hv
+f : Nat → Ty
+θ : SubstEnv
+hv : θ.values = fun i => some (Term.var i)
+hg : θ.ranges = []
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+ha : noTappTys params✝ ∧ ret✝.NoTapp ∧ noTappEff eff✝
+hr : Ty.RowsInList (fun x => x < 0) params✝ ∧ Ty.RowsIn (fun x => x < 0) ret✝ ∧ Eff.RowsIn (fun x => x < 0) eff✝
+⊢ θ.values = fun i => some (Term.var i)
+
+case hg
+f : Nat → Ty
+θ : SubstEnv
+hv : θ.values = fun i => some (Term.var i)
+hg : θ.ranges = []
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+ha : noTappTys params✝ ∧ ret✝.NoTapp ∧ noTappEff eff✝
+hr : Ty.RowsInList (fun x => x < 0) params✝ ∧ Ty.RowsIn (fun x => x < 0) ret✝ ∧ Eff.RowsIn (fun x => x < 0) eff✝
+⊢ θ.ranges = []
+
+case hv
+f : Nat → Ty
+θ : SubstEnv
+hv : θ.values = fun i => some (Term.var i)
+hg : θ.ranges = []
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+ha : noTappTys params✝ ∧ ret✝.NoTapp ∧ noTappEff eff✝
+hr : Ty.RowsInList (fun x => x < 0) params✝ ∧ Ty.RowsIn (fun x => x < 0) ret✝ ∧ Eff.RowsIn (fun x => x < 0) eff✝
+⊢ θ.values = fun i => some (Term.var i)
+
+case hg
+f : Nat → Ty
+θ : SubstEnv
+hv : θ.values = fun i => some (Term.var i)
+hg : θ.ranges = []
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+ha : noTappTys params✝ ∧ ret✝.NoTapp ∧ noTappEff eff✝
+hr : Ty.RowsInList (fun x => x < 0) params✝ ∧ Ty.RowsIn (fun x => x < 0) ret✝ ∧ Eff.RowsIn (fun x => x < 0) eff✝
+⊢ θ.ranges = []
+
+case hv
+f : Nat → Ty
+θ : SubstEnv
+hv : θ.values = fun i => some (Term.var i)
+hg : θ.ranges = []
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+ha : noTappTys params✝ ∧ ret✝.NoTapp ∧ noTappEff eff✝
+hr : Ty.RowsInList (fun x => x < 0) params✝ ∧ Ty.RowsIn (fun x => x < 0) ret✝ ∧ Eff.RowsIn (fun x => x < 0) eff✝
+⊢ θ.values = fun i => some (Term.var i)
+
+case hg
+f : Nat → Ty
+θ : SubstEnv
+hv : θ.values = fun i => some (Term.var i)
+hg : θ.ranges = []
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+ha : noTappTys params✝ ∧ ret✝.NoTapp ∧ noTappEff eff✝
+hr : Ty.RowsInList (fun x => x < 0) params✝ ∧ Ty.RowsIn (fun x => x < 0) ret✝ ∧ Eff.RowsIn (fun x => x < 0) eff✝
+⊢ θ.ranges = []
+Benitoite/Release/Refinement/TypeSubstFormation.lean:38:20: error: unsolved goals
+case hv
+f : Nat → Ty
+θ : SubstEnv
+hv : θ.values = fun i => some (Term.var i)
+hg : θ.ranges = []
+b✝ t✝ : Ty
+eff✝ : EffR
+ha : b✝.NoTapp ∧ t✝.NoTapp ∧ noTappEff eff✝
+hr : Ty.RowsIn (fun x => x < 0) b✝ ∧ Ty.RowsIn (fun x => x < 0) t✝ ∧ Eff.RowsIn (fun x => x < 0) eff✝
+⊢ θ.values = fun i => some (Term.var i)
+
+case hg
+f : Nat → Ty
+θ : SubstEnv
+hv : θ.values = fun i => some (Term.var i)
+hg : θ.ranges = []
+b✝ t✝ : Ty
+eff✝ : EffR
+ha : b✝.NoTapp ∧ t✝.NoTapp ∧ noTappEff eff✝
+hr : Ty.RowsIn (fun x => x < 0) b✝ ∧ Ty.RowsIn (fun x => x < 0) t✝ ∧ Eff.RowsIn (fun x => x < 0) eff✝
+⊢ θ.ranges = []
+
+case hv
+f : Nat → Ty
+θ : SubstEnv
+hv : θ.values = fun i => some (Term.var i)
+hg : θ.ranges = []
+b✝ t✝ : Ty
+eff✝ : EffR
+ha : b✝.NoTapp ∧ t✝.NoTapp ∧ noTappEff eff✝
+hr : Ty.RowsIn (fun x => x < 0) b✝ ∧ Ty.RowsIn (fun x => x < 0) t✝ ∧ Eff.RowsIn (fun x => x < 0) eff✝
+⊢ θ.values = fun i => some (Term.var i)
+
+case hg
+f : Nat → Ty
+θ : SubstEnv
+hv : θ.values = fun i => some (Term.var i)
+hg : θ.ranges = []
+b✝ t✝ : Ty
+eff✝ : EffR
+ha : b✝.NoTapp ∧ t✝.NoTapp ∧ noTappEff eff✝
+hr : Ty.RowsIn (fun x => x < 0) b✝ ∧ Ty.RowsIn (fun x => x < 0) t✝ ∧ Eff.RowsIn (fun x => x < 0) eff✝
+⊢ θ.ranges = []
+
+case hv
+f : Nat → Ty
+θ : SubstEnv
+hv : θ.values = fun i => some (Term.var i)
+hg : θ.ranges = []
+b✝ t✝ : Ty
+eff✝ : EffR
+ha : b✝.NoTapp ∧ t✝.NoTapp ∧ noTappEff eff✝
+hr : Ty.RowsIn (fun x => x < 0) b✝ ∧ Ty.RowsIn (fun x => x < 0) t✝ ∧ Eff.RowsIn (fun x => x < 0) eff✝
+⊢ θ.values = fun i => some (Term.var i)
+
+case hg
+f : Nat → Ty
+θ : SubstEnv
+hv : θ.values = fun i => some (Term.var i)
+hg : θ.ranges = []
+b✝ t✝ : Ty
+eff✝ : EffR
+ha : b✝.NoTapp ∧ t✝.NoTapp ∧ noTappEff eff✝
+hr : Ty.RowsIn (fun x => x < 0) b✝ ∧ Ty.RowsIn (fun x => x < 0) t✝ ∧ Eff.RowsIn (fun x => x < 0) eff✝
+⊢ θ.ranges = []
+Benitoite/Release/Refinement/TypeSubstFormation.lean:39:17: error: unsolved goals
+case hv
+f : Nat → Ty
+θ : SubstEnv
+hv : θ.values = fun i => some (Term.var i)
+hg : θ.ranges = []
+k✝ v✝ : Ty
+ha : k✝.NoTapp ∧ v✝.NoTapp
+hr : Ty.RowsIn (fun x => x < 0) k✝ ∧ Ty.RowsIn (fun x => x < 0) v✝
+⊢ θ.values = fun i => some (Term.var i)
+
+case hg
+f : Nat → Ty
+θ : SubstEnv
+hv : θ.values = fun i => some (Term.var i)
+hg : θ.ranges = []
+k✝ v✝ : Ty
+ha : k✝.NoTapp ∧ v✝.NoTapp
+hr : Ty.RowsIn (fun x => x < 0) k✝ ∧ Ty.RowsIn (fun x => x < 0) v✝
+⊢ θ.ranges = []
+
+case hv
+f : Nat → Ty
+θ : SubstEnv
+hv : θ.values = fun i => some (Term.var i)
+hg : θ.ranges = []
+k✝ v✝ : Ty
+ha : k✝.NoTapp ∧ v✝.NoTapp
+hr : Ty.RowsIn (fun x => x < 0) k✝ ∧ Ty.RowsIn (fun x => x < 0) v✝
+⊢ θ.values = fun i => some (Term.var i)
+
+case hg
+f : Nat → Ty
+θ : SubstEnv
+hv : θ.values = fun i => some (Term.var i)
+hg : θ.ranges = []
+k✝ v✝ : Ty
+ha : k✝.NoTapp ∧ v✝.NoTapp
+hr : Ty.RowsIn (fun x => x < 0) k✝ ∧ Ty.RowsIn (fun x => x < 0) v✝
+⊢ θ.ranges = []
+Benitoite/Release/Refinement/TypeSubstFormation.lean:40:23: error: unsolved goals
+case hv
+f : Nat → Ty
+θ : SubstEnv
+hv : θ.values = fun i => some (Term.var i)
+hg : θ.ranges = []
+signature✝ : Tel
+ha : noTappTel signature✝
+hr : Tel.RowsIn (fun x => x < 0) signature✝
+⊢ θ.values = fun i => some (Term.var i)
+
+case hg
+f : Nat → Ty
+θ : SubstEnv
+hv : θ.values = fun i => some (Term.var i)
+hg : θ.ranges = []
+signature✝ : Tel
+ha : noTappTel signature✝
+hr : Tel.RowsIn (fun x => x < 0) signature✝
+⊢ θ.ranges = []
+Benitoite/Release/Refinement/TypeSubstFormation.lean:30:61: error: unsolved goals
+case list.hv
+f : Nat → Ty
+θ : SubstEnv
+hv : θ.values = fun i => some (Term.var i)
+hg : θ.ranges = []
+a✝ : Ty
+ha : a✝.NoTapp
+hr : Ty.RowsIn (fun x => x < 0) a✝
+⊢ θ.values = fun i => some (Term.var i)
+
+case list.hg
+f : Nat → Ty
+θ : SubstEnv
+hv : θ.values = fun i => some (Term.var i)
+hg : θ.ranges = []
+a✝ : Ty
+ha : a✝.NoTapp
+hr : Ty.RowsIn (fun x => x < 0) a✝
+⊢ θ.ranges = []
+
+case reference.hv
+f : Nat → Ty
+θ : SubstEnv
+hv : θ.values = fun i => some (Term.var i)
+hg : θ.ranges = []
+a✝ : Ty
+ha : a✝.NoTapp
+hr : Ty.RowsIn (fun x => x < 0) a✝
+⊢ θ.values = fun i => some (Term.var i)
+
+case reference.hg
+f : Nat → Ty
+θ : SubstEnv
+hv : θ.values = fun i => some (Term.var i)
+hg : θ.ranges = []
+a✝ : Ty
+ha : a✝.NoTapp
+hr : Ty.RowsIn (fun x => x < 0) a✝
+⊢ θ.ranges = []
+
+case lazy.hv
+f : Nat → Ty
+θ : SubstEnv
+hv : θ.values = fun i => some (Term.var i)
+hg : θ.ranges = []
+a✝ : Ty
+ha : a✝.NoTapp
+hr : Ty.RowsIn (fun x => x < 0) a✝
+⊢ θ.values = fun i => some (Term.var i)
+
+case lazy.hg
+f : Nat → Ty
+θ : SubstEnv
+hv : θ.values = fun i => some (Term.var i)
+hg : θ.ranges = []
+a✝ : Ty
+ha : a✝.NoTapp
+hr : Ty.RowsIn (fun x => x < 0) a✝
+⊢ θ.ranges = []
+
+case set.hv
+f : Nat → Ty
+θ : SubstEnv
+hv : θ.values = fun i => some (Term.var i)
+hg : θ.ranges = []
+a✝ : Ty
+ha : a✝.NoTapp
+hr : Ty.RowsIn (fun x => x < 0) a✝
+⊢ θ.values = fun i => some (Term.var i)
+
+case set.hg
+f : Nat → Ty
+θ : SubstEnv
+hv : θ.values = fun i => some (Term.var i)
+hg : θ.ranges = []
+a✝ : Ty
+ha : a✝.NoTapp
+hr : Ty.RowsIn (fun x => x < 0) a✝
+⊢ θ.ranges = []
+
+case dict.hv
+f : Nat → Ty
+θ : SubstEnv
+hv : θ.values = fun i => some (Term.var i)
+hg : θ.ranges = []
+cl✝ : ClassName
+τ✝ : Ty
+ha : τ✝.NoTapp
+hr : Ty.RowsIn (fun x => x < 0) τ✝
+⊢ θ.values = fun i => some (Term.var i)
+
+case dict.hg
+f : Nat → Ty
+θ : SubstEnv
+hv : θ.values = fun i => some (Term.var i)
+hg : θ.ranges = []
+cl✝ : ClassName
+τ✝ : Ty
+ha : τ✝.NoTapp
+hr : Ty.RowsIn (fun x => x < 0) τ✝
+⊢ θ.ranges = []
+Benitoite/Release/Refinement/TypeSubstFormation.lean:61:56: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  rowFails ?m.671 ats
+in the target expression
+  EffR.mk ats
+      (rawBindTys θ (rawBindTys { types := f, rows := [], ranges := [], values := fun i => some (Term.var i) } fs) ++
+        List.flatMap
+          (fun i =>
+            match θ.rows[i]? with
+            | some e => e.fails
+            | none => [])
+          (List.filter (fun i => ats (Atom.rho i)) (List.range θ.rows.length))) =
+    EffR.mk ats
+      (rawBindTys
+        { types := fun i => Ty.rawBind θ (f i), rows := [], ranges := [], values := fun i => some (Term.var i) } fs)
+
+case mk
+f : Nat → Ty
+θ : SubstEnv
+hv : θ.values = fun i => some (Term.var i)
+hg : θ.ranges = []
+ats : Atom → Bool
+fs : List Ty
+ha : noTappEff (EffR.mk ats fs)
+hr : Eff.RowsIn (fun x => x < 0) (EffR.mk ats fs)
+hz : ∀ (i : Nat), ats (Atom.rho i) = false
+⊢ EffR.mk ats
+      (rawBindTys θ (rawBindTys { types := f, rows := [], ranges := [], values := fun i => some (Term.var i) } fs) ++
+        List.flatMap
+          (fun i =>
+            match θ.rows[i]? with
+            | some e => e.fails
+            | none => [])
+          (List.filter (fun i => ats (Atom.rho i)) (List.range θ.rows.length))) =
+    EffR.mk ats
+      (rawBindTys
+        { types := fun i => Ty.rawBind θ (f i), rows := [], ranges := [], values := fun i => some (Term.var i) } fs)

@@ -1,0 +1,18 @@
+Benitoite/Release/Refinement/TypeSubstFormation.lean:307:54: error: unexpected token '('; expected 'end'
+Benitoite/Release/Refinement/TypeSubstFormation.lean:304:8: error(lean.unknownIdentifier): Unknown identifier `declared_raw_tys`
+Benitoite/Release/Refinement/TypeSubstFormation.lean:306:8: error(lean.unknownIdentifier): Unknown identifier `declared_raw_tys`
+Benitoite/Release/Refinement/TypeSubstFormation.lean:307:19: error: Type mismatch
+  declared_apply (hk i (TyKind.constructor as.length) h.left).left
+has type
+  List.length ?m.394 = as.length → declaredTys P D ?m.391 ?m.394 → Ty.Declared P D ?m.391 (rawApply (θ.types i) ?m.394)
+but is expected to have type
+  Ty.Declared P D Δ (Ty.rawBind θ (Ty.tapp i as))
+Benitoite/Release/Refinement/TypeSubstFormation.lean:298:4: error: Alternative `fn` has not been provided
+Benitoite/Release/Refinement/TypeSubstFormation.lean:298:4: error: Alternative `cont` has not been provided
+Benitoite/Release/Refinement/TypeSubstFormation.lean:298:4: error: Alternative `map` has not been provided
+Benitoite/Release/Refinement/TypeSubstFormation.lean:298:4: error: Alternative `refined` has not been provided
+Benitoite/Release/Refinement/TypeSubstFormation.lean:298:4: error: Alternative `dependentFn` has not been provided
+Benitoite/Release/Refinement/TypeSubstFormation.lean:363:0: error: Missing name after `end`: Expected the current scope name `Refinement`
+
+Hint: To end the current scope `Refinement`, specify its name:
+  end ̲R̲e̲f̲i̲n̲e̲m̲e̲n̲t̲

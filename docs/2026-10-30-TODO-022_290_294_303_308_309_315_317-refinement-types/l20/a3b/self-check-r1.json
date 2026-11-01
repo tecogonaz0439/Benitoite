@@ -1,0 +1,62 @@
+{
+  "base": "98188437a88c6b70a76735d24764753b6a645f37",
+  "review": "RV-L20.a3b",
+  "completed": [
+    "major_1",
+    "minor_1",
+    "minor_2",
+    "minor_3",
+    "minor_4"
+  ],
+  "medium_1": {
+    "investigation": "complete",
+    "exchange_equality": "refuted_in_Lean",
+    "ShapeOk_and_StoreShape": "insufficient_for_full_signature_row_bound",
+    "proposed_field": "sourceTelRows : s.tel.RowsIn (fun i => i < es.length)",
+    "production_field_added": false,
+    "new_independent_trust_assumption": false,
+    "implementation": "pending_orchestrator_decision"
+  },
+  "S02_definitions_in_default_build": 14,
+  "guarded_transfers": 10,
+  "identity_components": 3,
+  "True_components": 1,
+  "ClosedTypeSubstInput_fields": 9,
+  "runtime_case_proofs": 4,
+  "closure_full_typing_refutation": true,
+  "path_provision": [
+    "E_Fun:Program.WellFormed.defs",
+    "E_Meth:Program.WellFormed.impls",
+    "E_Op:empty_rows",
+    "E_OpFail:empty_rows"
+  ],
+  "checks": {
+    "r1-runtime-cases": 0,
+    "r1-paths": 0,
+    "r1-closure-r2": 0,
+    "r1-review-reproduction": 0,
+    "r1-primitive-r5": 0,
+    "r1-work": 0,
+    "r1-contract-print": 0,
+    "r1-all-contracts": 0,
+    "r1-contract-equality": 0,
+    "r1-public-signatures": 0,
+    "r1-contracts-realized": 0,
+    "r1-axioms": 0
+  },
+  "axiom_declarations": 1500,
+  "additional_named_axiom_checks": 18,
+  "probe_axiom_checks": 15,
+  "unexpected_axioms": [],
+  "sorryAx": 0,
+  "main_ten_unchanged": true,
+  "typing_rule_source_unchanged": true,
+  "CoreAssumptions_unchanged": true,
+  "PrimitiveAdmissible_unchanged": true,
+  "SourceScoped_unchanged": true,
+  "old_release_unchanged": true,
+  "git_used": false,
+  "default_import_exclusions": 0,
+  "acceptance": "pending",
+  "verified_epoch": 1793563830.284405
+}

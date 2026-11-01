@@ -1,0 +1,445 @@
+def Benitoite.Release.Refinement.TypeSubstCode : List Benitoite.Release.Refinement.Eff →
+  (Nat → Nat → Nat → Nat → Prop) → Prop :=
+fun es source =>
+  Or (@Eq (List Benitoite.Release.Refinement.Eff) es (@List.nil Benitoite.Release.Refinement.Eff))
+    (@Exists Nat fun nr => @Exists Nat fun nt => @Exists Nat fun ne => @Exists Nat fun nv => source nr nt ne nv)
+def Benitoite.Release.Refinement.S02_V : Prop :=
+∀ {P : Benitoite.Release.Refinement.Program} {B : Benitoite.Release.Refinement.Builtins}
+  {Ψ : Benitoite.Release.Refinement.StoreTy} {Q Q' : Benitoite.Release.NoFailCtx}
+  {C0 C1 : Benitoite.Release.Refinement.TypeCtx} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {v : Benitoite.Release.Refinement.Val}
+  {a : Benitoite.Release.Refinement.Ty} {ts : List Benitoite.Release.Refinement.Ty}
+  {es : List Benitoite.Release.Refinement.Eff},
+  And P.WellFormed (And (P.WellTyped B) (And (Benitoite.Release.Refinement.Builtins.CoreAssumptions P B) Ψ.WF)) →
+    Benitoite.Release.Refinement.ClosedTypeSubstInput P B C0 C1 Γ ts es →
+      (Benitoite.Release.Refinement.TypeSubstCode es fun nr nt ne nv =>
+          Benitoite.Release.Refinement.Val.SourceScoped nr nt ne nv v) →
+        Benitoite.Release.Refinement.RowTransport Q Q' es →
+          Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q
+              (@HAppend.hAppend Benitoite.Release.Refinement.TypeCtx Benitoite.Release.Refinement.TypeCtx
+                Benitoite.Release.Refinement.TypeCtx
+                (@instHAppendOfAppend Benitoite.Release.Refinement.TypeCtx
+                  (@List.instAppend Benitoite.Release.Refinement.TParamDecl))
+                C1 C0)
+              Γ Φ v a →
+            Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q' C1
+              ((fun Δ =>
+                  Δ.bindTypes
+                    (Benitoite.Release.Refinement.typeEnvAt (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts
+                      es))
+                Γ)
+              Φ
+              (Benitoite.Release.Refinement.Val.substTyAt (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts
+                es v)
+              (Benitoite.Release.Refinement.Ty.substAt (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts es
+                a)
+def Benitoite.Release.Refinement.S02_Vs : Prop :=
+∀ {P : Benitoite.Release.Refinement.Program} {B : Benitoite.Release.Refinement.Builtins}
+  {Ψ : Benitoite.Release.Refinement.StoreTy} {Q Q' : Benitoite.Release.NoFailCtx}
+  {C0 C1 : Benitoite.Release.Refinement.TypeCtx} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {vs : List Benitoite.Release.Refinement.Val}
+  {as ts : List Benitoite.Release.Refinement.Ty} {es : List Benitoite.Release.Refinement.Eff},
+  And P.WellFormed (And (P.WellTyped B) (And (Benitoite.Release.Refinement.Builtins.CoreAssumptions P B) Ψ.WF)) →
+    Benitoite.Release.Refinement.ClosedTypeSubstInput P B C0 C1 Γ ts es →
+      (Benitoite.Release.Refinement.TypeSubstCode es fun nr nt ne nv =>
+          Benitoite.Release.Refinement.scopedValues nr nt ne nv vs) →
+        Benitoite.Release.Refinement.RowTransport Q Q' es →
+          Benitoite.Release.Refinement.HasTypeVsQ P B Ψ Q
+              (@HAppend.hAppend Benitoite.Release.Refinement.TypeCtx Benitoite.Release.Refinement.TypeCtx
+                Benitoite.Release.Refinement.TypeCtx
+                (@instHAppendOfAppend Benitoite.Release.Refinement.TypeCtx
+                  (@List.instAppend Benitoite.Release.Refinement.TParamDecl))
+                C1 C0)
+              Γ Φ vs as →
+            Benitoite.Release.Refinement.HasTypeVsQ P B Ψ Q' C1
+              ((fun Δ =>
+                  Δ.bindTypes
+                    (Benitoite.Release.Refinement.typeEnvAt (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts
+                      es))
+                Γ)
+              Φ
+              (@List.map Benitoite.Release.Refinement.Val Benitoite.Release.Refinement.Val
+                (Benitoite.Release.Refinement.Val.substTyAt (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts
+                  es)
+                vs)
+              (@List.map Benitoite.Release.Refinement.Ty Benitoite.Release.Refinement.Ty
+                (Benitoite.Release.Refinement.Ty.substAt (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts
+                  es)
+                as)
+def Benitoite.Release.Refinement.S02_Each : Prop :=
+∀ {P : Benitoite.Release.Refinement.Program} {B : Benitoite.Release.Refinement.Builtins}
+  {Ψ : Benitoite.Release.Refinement.StoreTy} {Q Q' : Benitoite.Release.NoFailCtx}
+  {C0 C1 : Benitoite.Release.Refinement.TypeCtx} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {vs : List Benitoite.Release.Refinement.Val}
+  {a : Benitoite.Release.Refinement.Ty} {ts : List Benitoite.Release.Refinement.Ty}
+  {es : List Benitoite.Release.Refinement.Eff},
+  And P.WellFormed (And (P.WellTyped B) (And (Benitoite.Release.Refinement.Builtins.CoreAssumptions P B) Ψ.WF)) →
+    Benitoite.Release.Refinement.ClosedTypeSubstInput P B C0 C1 Γ ts es →
+      (Benitoite.Release.Refinement.TypeSubstCode es fun nr nt ne nv =>
+          Benitoite.Release.Refinement.scopedValues nr nt ne nv vs) →
+        Benitoite.Release.Refinement.RowTransport Q Q' es →
+          Benitoite.Release.Refinement.HasTypeEachQ P B Ψ Q
+              (@HAppend.hAppend Benitoite.Release.Refinement.TypeCtx Benitoite.Release.Refinement.TypeCtx
+                Benitoite.Release.Refinement.TypeCtx
+                (@instHAppendOfAppend Benitoite.Release.Refinement.TypeCtx
+                  (@List.instAppend Benitoite.Release.Refinement.TParamDecl))
+                C1 C0)
+              Γ Φ vs a →
+            Benitoite.Release.Refinement.HasTypeEachQ P B Ψ Q' C1
+              ((fun Δ =>
+                  Δ.bindTypes
+                    (Benitoite.Release.Refinement.typeEnvAt (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts
+                      es))
+                Γ)
+              Φ
+              (@List.map Benitoite.Release.Refinement.Val Benitoite.Release.Refinement.Val
+                (Benitoite.Release.Refinement.Val.substTyAt (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts
+                  es)
+                vs)
+              (Benitoite.Release.Refinement.Ty.substAt (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts es
+                a)
+def Benitoite.Release.Refinement.S02_C : Prop :=
+∀ {P : Benitoite.Release.Refinement.Program} {B : Benitoite.Release.Refinement.Builtins}
+  {Ψ : Benitoite.Release.Refinement.StoreTy} {Q Q' : Benitoite.Release.NoFailCtx}
+  {C0 C1 : Benitoite.Release.Refinement.TypeCtx} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {R : Option Benitoite.Release.Refinement.Ty}
+  {m : Benitoite.Release.Refinement.Comp} {a : Benitoite.Release.Refinement.Ty} {e : Benitoite.Release.Refinement.Eff}
+  {L : Benitoite.Release.Refinement.LocalCtx} {ts : List Benitoite.Release.Refinement.Ty}
+  {es : List Benitoite.Release.Refinement.Eff},
+  And P.WellFormed (And (P.WellTyped B) (And (Benitoite.Release.Refinement.Builtins.CoreAssumptions P B) Ψ.WF)) →
+    Benitoite.Release.Refinement.ClosedTypeSubstInput P B C0 C1 Γ ts es →
+      (Benitoite.Release.Refinement.TypeSubstCode es fun nr nt ne nv =>
+          Benitoite.Release.Refinement.Comp.SourceScoped nr nt ne nv m) →
+        Benitoite.Release.Refinement.RowTransport Q Q' es →
+          Benitoite.Release.Refinement.HasTypeCQ P B Ψ Q
+              (@HAppend.hAppend Benitoite.Release.Refinement.TypeCtx Benitoite.Release.Refinement.TypeCtx
+                Benitoite.Release.Refinement.TypeCtx
+                (@instHAppendOfAppend Benitoite.Release.Refinement.TypeCtx
+                  (@List.instAppend Benitoite.Release.Refinement.TParamDecl))
+                C1 C0)
+              Γ Φ R m a e L →
+            Benitoite.Release.Refinement.HasTypeCQ P B Ψ Q' C1
+              ((fun Δ =>
+                  Δ.bindTypes
+                    (Benitoite.Release.Refinement.typeEnvAt (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts
+                      es))
+                Γ)
+              Φ
+              (@Option.map Benitoite.Release.Refinement.Ty Benitoite.Release.Refinement.Ty
+                (Benitoite.Release.Refinement.Ty.substAt (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts
+                  es)
+                R)
+              (Benitoite.Release.Refinement.Comp.substTyAt (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts
+                es m)
+              (Benitoite.Release.Refinement.Ty.substAt (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts es
+                a)
+              (Benitoite.Release.Refinement.Eff.substAt (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts es
+                e)
+              ((fun L =>
+                  @List.map (Option Benitoite.Release.Refinement.BuilderKind)
+                    (Option Benitoite.Release.Refinement.BuilderKind)
+                    (@Option.map Benitoite.Release.Refinement.BuilderKind Benitoite.Release.Refinement.BuilderKind
+                      fun b =>
+                      Benitoite.Release.Refinement.S02_C.match_1 (fun b => Benitoite.Release.Refinement.BuilderKind) b
+                        (fun a =>
+                          Benitoite.Release.Refinement.BuilderKind.list
+                            (Benitoite.Release.Refinement.Ty.substAt
+                              (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts es a))
+                        (fun _ => Benitoite.Release.Refinement.BuilderKind.string) fun _ =>
+                        Benitoite.Release.Refinement.BuilderKind.bytes)
+                    L)
+                L)
+def Benitoite.Release.Refinement.S02_Args : Prop :=
+∀ {P : Benitoite.Release.Refinement.Program} {B : Benitoite.Release.Refinement.Builtins}
+  {Ψ : Benitoite.Release.Refinement.StoreTy} {Q Q' : Benitoite.Release.NoFailCtx}
+  {C0 C1 : Benitoite.Release.Refinement.TypeCtx} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {vs : List Benitoite.Release.Refinement.Val}
+  {t : Benitoite.Release.Refinement.Tel} {a : Benitoite.Release.Refinement.Ty} {e : Benitoite.Release.Refinement.Eff}
+  {ts : List Benitoite.Release.Refinement.Ty} {es : List Benitoite.Release.Refinement.Eff},
+  And P.WellFormed (And (P.WellTyped B) (And (Benitoite.Release.Refinement.Builtins.CoreAssumptions P B) Ψ.WF)) →
+    Benitoite.Release.Refinement.ClosedTypeSubstInput P B C0 C1 Γ ts es →
+      (Benitoite.Release.Refinement.TypeSubstCode es fun nr nt ne nv =>
+          Benitoite.Release.Refinement.scopedValues nr nt ne nv vs) →
+        Benitoite.Release.Refinement.RowTransport Q Q' es →
+          Benitoite.Release.Refinement.HasTypeTelArgsQ P B Ψ Q
+              (@HAppend.hAppend Benitoite.Release.Refinement.TypeCtx Benitoite.Release.Refinement.TypeCtx
+                Benitoite.Release.Refinement.TypeCtx
+                (@instHAppendOfAppend Benitoite.Release.Refinement.TypeCtx
+                  (@List.instAppend Benitoite.Release.Refinement.TParamDecl))
+                C1 C0)
+              Γ Φ vs t a e →
+            Benitoite.Release.Refinement.HasTypeTelArgsQ P B Ψ Q' C1
+              ((fun Δ =>
+                  Δ.bindTypes
+                    (Benitoite.Release.Refinement.typeEnvAt (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts
+                      es))
+                Γ)
+              Φ
+              (@List.map Benitoite.Release.Refinement.Val Benitoite.Release.Refinement.Val
+                (Benitoite.Release.Refinement.Val.substTyAt (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts
+                  es)
+                vs)
+              (Benitoite.Release.Refinement.Tel.substAt (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts es
+                t)
+              (Benitoite.Release.Refinement.Ty.substAt (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts es
+                a)
+              (Benitoite.Release.Refinement.Eff.substAt (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts es
+                e)
+def Benitoite.Release.Refinement.S02_Body : Prop :=
+∀ {P : Benitoite.Release.Refinement.Program} {B : Benitoite.Release.Refinement.Builtins}
+  {Ψ : Benitoite.Release.Refinement.StoreTy} {Q Q' : Benitoite.Release.NoFailCtx}
+  {C0 C1 : Benitoite.Release.Refinement.TypeCtx} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {t : Benitoite.Release.Refinement.Tel}
+  {m : Benitoite.Release.Refinement.Comp} {ts : List Benitoite.Release.Refinement.Ty}
+  {es : List Benitoite.Release.Refinement.Eff},
+  And P.WellFormed (And (P.WellTyped B) (And (Benitoite.Release.Refinement.Builtins.CoreAssumptions P B) Ψ.WF)) →
+    Benitoite.Release.Refinement.ClosedTypeSubstInput P B C0 C1 Γ ts es →
+      (Benitoite.Release.Refinement.TypeSubstCode es fun nr nt ne nv =>
+          Benitoite.Release.Refinement.Comp.SourceScoped nr nt ne nv m) →
+        Benitoite.Release.Refinement.RowTransport Q Q' es →
+          Benitoite.Release.Refinement.TelBodyTy P B Ψ Q
+              (@HAppend.hAppend Benitoite.Release.Refinement.TypeCtx Benitoite.Release.Refinement.TypeCtx
+                Benitoite.Release.Refinement.TypeCtx
+                (@instHAppendOfAppend Benitoite.Release.Refinement.TypeCtx
+                  (@List.instAppend Benitoite.Release.Refinement.TParamDecl))
+                C1 C0)
+              Γ Φ t m →
+            Benitoite.Release.Refinement.TelBodyTy P B Ψ Q' C1
+              ((fun Δ =>
+                  Δ.bindTypes
+                    (Benitoite.Release.Refinement.typeEnvAt (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts
+                      es))
+                Γ)
+              Φ
+              (Benitoite.Release.Refinement.Tel.substAt (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts es
+                t)
+              (Benitoite.Release.Refinement.Comp.substTyAt (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts
+                es m)
+def Benitoite.Release.Refinement.S02_Capture : Prop :=
+∀ {P : Benitoite.Release.Refinement.Program} {B : Benitoite.Release.Refinement.Builtins}
+  {Ψ : Benitoite.Release.Refinement.StoreTy} {R : Option Benitoite.Release.Refinement.Ty}
+  {Γ : Benitoite.Release.Refinement.Ctx} {Φ : List Benitoite.Release.Refinement.Pred}
+  {cap : Benitoite.Release.Refinement.Capture},
+  Benitoite.Release.Refinement.CaptureOk P B Ψ R Γ Φ cap → Benitoite.Release.Refinement.CaptureOk P B Ψ R Γ Φ cap
+def Benitoite.Release.Refinement.S02_Closure : Prop :=
+∀ {P : Benitoite.Release.Refinement.Program} {B : Benitoite.Release.Refinement.Builtins}
+  {Ψ : Benitoite.Release.Refinement.StoreTy} {q : Benitoite.Release.Refinement.Closure}
+  {t : Benitoite.Release.Refinement.Tel},
+  Benitoite.Release.Refinement.DependentClosureTy P B Ψ q t → Benitoite.Release.Refinement.DependentClosureTy P B Ψ q t
+def Benitoite.Release.Refinement.S02_Witness : Prop :=
+∀ {P : Benitoite.Release.Refinement.Program} {B : Benitoite.Release.Refinement.Builtins}
+  {Ψ : Benitoite.Release.Refinement.StoreTy} {o : Benitoite.Release.OpaqueName} {k : Benitoite.Scope.Domain.Kind}
+  {r : Benitoite.Release.Refinement.RangeExpr} {snapshot : Option Benitoite.Release.Refinement.PathEnv}
+  {target : Benitoite.Scope.Domain.Target} {req : Option Benitoite.Release.Refinement.Val},
+  Benitoite.Release.Refinement.CheckedWitness P B Ψ o k r snapshot target req →
+    Benitoite.Release.Refinement.CheckedWitness P B Ψ o k r snapshot target req
+def Benitoite.Release.Refinement.S02_At : Prop :=
+∀ {P : Benitoite.Release.Refinement.Program} {B : Benitoite.Release.Refinement.Builtins}
+  {Ψ : Benitoite.Release.Refinement.StoreTy} {Q Q' : Benitoite.Release.NoFailCtx}
+  {C0 C1 : Benitoite.Release.Refinement.TypeCtx} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {k : Benitoite.Scope.Domain.Kind} {o : Benitoite.Release.OpaqueName}
+  {shape : Benitoite.Release.Refinement.ResultShape} {bases : Option Benitoite.Release.Refinement.Val}
+  {pattern input : Benitoite.Release.Refinement.Val} {ix : Benitoite.Release.Refinement.RangeIx}
+  {ts : List Benitoite.Release.Refinement.Ty} {es : List Benitoite.Release.Refinement.Eff},
+  And P.WellFormed (And (P.WellTyped B) (And (Benitoite.Release.Refinement.Builtins.CoreAssumptions P B) Ψ.WF)) →
+    Benitoite.Release.Refinement.ClosedTypeSubstInput P B C0 C1 Γ ts es →
+      (Benitoite.Release.Refinement.TypeSubstCode es fun nr nt ne nv =>
+          And
+            (Benitoite.Release.Refinement.S02_At.match_1 (fun bases => Prop) bases (fun _ => True) fun b =>
+              Benitoite.Release.Refinement.Val.SourceScoped nr nt ne nv b)
+            (And (Benitoite.Release.Refinement.Val.SourceScoped nr nt ne nv pattern)
+              (Benitoite.Release.Refinement.Val.SourceScoped nr nt ne nv input))) →
+        Benitoite.Release.Refinement.RowTransport Q Q' es →
+          Benitoite.Release.Refinement.AtCallAdmissible P B Ψ Q
+              (@HAppend.hAppend Benitoite.Release.Refinement.TypeCtx Benitoite.Release.Refinement.TypeCtx
+                Benitoite.Release.Refinement.TypeCtx
+                (@instHAppendOfAppend Benitoite.Release.Refinement.TypeCtx
+                  (@List.instAppend Benitoite.Release.Refinement.TParamDecl))
+                C1 C0)
+              Γ Φ k o shape bases pattern input ix →
+            Benitoite.Release.Refinement.AtCallAdmissible P B Ψ Q' C1
+              ((fun Δ =>
+                  Δ.bindTypes
+                    (Benitoite.Release.Refinement.typeEnvAt (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts
+                      es))
+                Γ)
+              Φ k o shape
+              (@Option.map Benitoite.Release.Refinement.Val Benitoite.Release.Refinement.Val
+                (Benitoite.Release.Refinement.Val.substTyAt (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts
+                  es)
+                bases)
+              (Benitoite.Release.Refinement.Val.substTyAt (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts
+                es pattern)
+              (Benitoite.Release.Refinement.Val.substTyAt (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts
+                es input)
+              ix
+def Benitoite.Release.Refinement.S02_Arms : Prop :=
+∀ {P : Benitoite.Release.Refinement.Program} {B : Benitoite.Release.Refinement.Builtins}
+  {Ψ : Benitoite.Release.Refinement.StoreTy} {Q Q' : Benitoite.Release.NoFailCtx}
+  {C0 C1 : Benitoite.Release.Refinement.TypeCtx} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {R : Option Benitoite.Release.Refinement.Ty}
+  {obs : Option Benitoite.Release.Refinement.Term} {arms : List Benitoite.Release.Refinement.Arm}
+  {a b : Benitoite.Release.Refinement.Ty} {e : Benitoite.Release.Refinement.Eff}
+  {L : Benitoite.Release.Refinement.LocalCtx} {ts : List Benitoite.Release.Refinement.Ty}
+  {es : List Benitoite.Release.Refinement.Eff},
+  And P.WellFormed (And (P.WellTyped B) (And (Benitoite.Release.Refinement.Builtins.CoreAssumptions P B) Ψ.WF)) →
+    Benitoite.Release.Refinement.ClosedTypeSubstInput P B C0 C1 Γ ts es →
+      (Benitoite.Release.Refinement.TypeSubstCode es fun nr nt ne nv =>
+          Benitoite.Release.Refinement.scopedArms nr nt ne nv arms) →
+        Benitoite.Release.Refinement.RowTransport Q Q' es →
+          Benitoite.Release.Refinement.HasTypeArmsQ P B Ψ Q
+              (@HAppend.hAppend Benitoite.Release.Refinement.TypeCtx Benitoite.Release.Refinement.TypeCtx
+                Benitoite.Release.Refinement.TypeCtx
+                (@instHAppendOfAppend Benitoite.Release.Refinement.TypeCtx
+                  (@List.instAppend Benitoite.Release.Refinement.TParamDecl))
+                C1 C0)
+              Γ Φ R obs arms a b e L →
+            Benitoite.Release.Refinement.HasTypeArmsQ P B Ψ Q' C1
+              ((fun Δ =>
+                  Δ.bindTypes
+                    (Benitoite.Release.Refinement.typeEnvAt (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts
+                      es))
+                Γ)
+              Φ
+              (@Option.map Benitoite.Release.Refinement.Ty Benitoite.Release.Refinement.Ty
+                (Benitoite.Release.Refinement.Ty.substAt (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts
+                  es)
+                R)
+              obs
+              (Benitoite.Release.Refinement.Arm.substTyAtList (@List.length Benitoite.Release.Refinement.TParamDecl C1)
+                ts es arms)
+              (Benitoite.Release.Refinement.Ty.substAt (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts es
+                a)
+              (Benitoite.Release.Refinement.Ty.substAt (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts es
+                b)
+              (Benitoite.Release.Refinement.Eff.substAt (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts es
+                e)
+              ((fun L =>
+                  @List.map (Option Benitoite.Release.Refinement.BuilderKind)
+                    (Option Benitoite.Release.Refinement.BuilderKind)
+                    (@Option.map Benitoite.Release.Refinement.BuilderKind Benitoite.Release.Refinement.BuilderKind
+                      fun b =>
+                      Benitoite.Release.Refinement.S02_C.match_1 (fun b => Benitoite.Release.Refinement.BuilderKind) b
+                        (fun a =>
+                          Benitoite.Release.Refinement.BuilderKind.list
+                            (Benitoite.Release.Refinement.Ty.substAt
+                              (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts es a))
+                        (fun _ => Benitoite.Release.Refinement.BuilderKind.string) fun _ =>
+                        Benitoite.Release.Refinement.BuilderKind.bytes)
+                    L)
+                L)
+def Benitoite.Release.Refinement.S02_Clauses : Prop :=
+∀ {P : Benitoite.Release.Refinement.Program} {B : Benitoite.Release.Refinement.Builtins}
+  {Ψ : Benitoite.Release.Refinement.StoreTy} {Q Q' : Benitoite.Release.NoFailCtx}
+  {C0 C1 : Benitoite.Release.Refinement.TypeCtx} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {R : Option Benitoite.Release.Refinement.Ty}
+  {eb : Benitoite.Release.Refinement.Eff} {clauses : List Benitoite.Release.Refinement.Clause}
+  {t : Benitoite.Release.Refinement.Ty} {e : Benitoite.Release.Refinement.Eff}
+  {L : Benitoite.Release.Refinement.LocalCtx} {ts : List Benitoite.Release.Refinement.Ty}
+  {es : List Benitoite.Release.Refinement.Eff},
+  And P.WellFormed (And (P.WellTyped B) (And (Benitoite.Release.Refinement.Builtins.CoreAssumptions P B) Ψ.WF)) →
+    Benitoite.Release.Refinement.ClosedTypeSubstInput P B C0 C1 Γ ts es →
+      (Benitoite.Release.Refinement.TypeSubstCode es fun nr nt ne nv =>
+          Benitoite.Release.Refinement.scopedClauses nr nt ne nv clauses) →
+        Benitoite.Release.Refinement.RowTransport Q Q' es →
+          Benitoite.Release.Refinement.HasTypeClausesQ P B Ψ Q
+              (@HAppend.hAppend Benitoite.Release.Refinement.TypeCtx Benitoite.Release.Refinement.TypeCtx
+                Benitoite.Release.Refinement.TypeCtx
+                (@instHAppendOfAppend Benitoite.Release.Refinement.TypeCtx
+                  (@List.instAppend Benitoite.Release.Refinement.TParamDecl))
+                C1 C0)
+              Γ Φ R eb clauses t e L →
+            Benitoite.Release.Refinement.HasTypeClausesQ P B Ψ Q' C1
+              ((fun Δ =>
+                  Δ.bindTypes
+                    (Benitoite.Release.Refinement.typeEnvAt (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts
+                      es))
+                Γ)
+              Φ
+              (@Option.map Benitoite.Release.Refinement.Ty Benitoite.Release.Refinement.Ty
+                (Benitoite.Release.Refinement.Ty.substAt (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts
+                  es)
+                R)
+              (Benitoite.Release.Refinement.Eff.substAt (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts es
+                eb)
+              (Benitoite.Release.Refinement.Clause.substTyAtList
+                (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts es clauses)
+              (Benitoite.Release.Refinement.Ty.substAt (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts es
+                t)
+              (Benitoite.Release.Refinement.Eff.substAt (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts es
+                e)
+              ((fun L =>
+                  @List.map (Option Benitoite.Release.Refinement.BuilderKind)
+                    (Option Benitoite.Release.Refinement.BuilderKind)
+                    (@Option.map Benitoite.Release.Refinement.BuilderKind Benitoite.Release.Refinement.BuilderKind
+                      fun b =>
+                      Benitoite.Release.Refinement.S02_C.match_1 (fun b => Benitoite.Release.Refinement.BuilderKind) b
+                        (fun a =>
+                          Benitoite.Release.Refinement.BuilderKind.list
+                            (Benitoite.Release.Refinement.Ty.substAt
+                              (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts es a))
+                        (fun _ => Benitoite.Release.Refinement.BuilderKind.string) fun _ =>
+                        Benitoite.Release.Refinement.BuilderKind.bytes)
+                    L)
+                L)
+def Benitoite.Release.Refinement.S02_Failure : Prop :=
+∀ {P : Benitoite.Release.Refinement.Program} {B : Benitoite.Release.Refinement.Builtins}
+  {Ψ : Benitoite.Release.Refinement.StoreTy} {Q Q' : Benitoite.Release.NoFailCtx}
+  {C0 C1 : Benitoite.Release.Refinement.TypeCtx} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {err : Benitoite.Release.Refinement.Ty}
+  {R : Option Benitoite.Release.Refinement.Ty} {clauses : List Benitoite.Release.Refinement.Clause}
+  {t : Benitoite.Release.Refinement.Ty} {e : Benitoite.Release.Refinement.Eff}
+  {L : Benitoite.Release.Refinement.LocalCtx} {ts : List Benitoite.Release.Refinement.Ty}
+  {es : List Benitoite.Release.Refinement.Eff},
+  And P.WellFormed (And (P.WellTyped B) (And (Benitoite.Release.Refinement.Builtins.CoreAssumptions P B) Ψ.WF)) →
+    Benitoite.Release.Refinement.ClosedTypeSubstInput P B C0 C1 Γ ts es →
+      (Benitoite.Release.Refinement.TypeSubstCode es fun nr nt ne nv =>
+          Benitoite.Release.Refinement.scopedClauses nr nt ne nv clauses) →
+        Benitoite.Release.Refinement.RowTransport Q Q' es →
+          Benitoite.Release.Refinement.HasFailureClause P B Ψ Q
+              (@HAppend.hAppend Benitoite.Release.Refinement.TypeCtx Benitoite.Release.Refinement.TypeCtx
+                Benitoite.Release.Refinement.TypeCtx
+                (@instHAppendOfAppend Benitoite.Release.Refinement.TypeCtx
+                  (@List.instAppend Benitoite.Release.Refinement.TParamDecl))
+                C1 C0)
+              Γ Φ err R clauses t e L →
+            Benitoite.Release.Refinement.HasFailureClause P B Ψ Q' C1
+              ((fun Δ =>
+                  Δ.bindTypes
+                    (Benitoite.Release.Refinement.typeEnvAt (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts
+                      es))
+                Γ)
+              Φ
+              (Benitoite.Release.Refinement.Ty.substAt (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts es
+                err)
+              (@Option.map Benitoite.Release.Refinement.Ty Benitoite.Release.Refinement.Ty
+                (Benitoite.Release.Refinement.Ty.substAt (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts
+                  es)
+                R)
+              (Benitoite.Release.Refinement.Clause.substTyAtList
+                (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts es clauses)
+              (Benitoite.Release.Refinement.Ty.substAt (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts es
+                t)
+              (Benitoite.Release.Refinement.Eff.substAt (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts es
+                e)
+              ((fun L =>
+                  @List.map (Option Benitoite.Release.Refinement.BuilderKind)
+                    (Option Benitoite.Release.Refinement.BuilderKind)
+                    (@Option.map Benitoite.Release.Refinement.BuilderKind Benitoite.Release.Refinement.BuilderKind
+                      fun b =>
+                      Benitoite.Release.Refinement.S02_C.match_1 (fun b => Benitoite.Release.Refinement.BuilderKind) b
+                        (fun a =>
+                          Benitoite.Release.Refinement.BuilderKind.list
+                            (Benitoite.Release.Refinement.Ty.substAt
+                              (@List.length Benitoite.Release.Refinement.TParamDecl C1) ts es a))
+                        (fun _ => Benitoite.Release.Refinement.BuilderKind.string) fun _ =>
+                        Benitoite.Release.Refinement.BuilderKind.bytes)
+                    L)
+                L)
+def Benitoite.Release.Refinement.S02_Image : Prop :=
+∀ {P : Benitoite.Release.Refinement.Program} {B : Benitoite.Release.Refinement.Builtins}
+  {Ψ : Benitoite.Release.Refinement.StoreTy} {Q : Benitoite.Release.NoFailCtx}
+  {C : Benitoite.Release.Refinement.TypeCtx} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {R : Option Benitoite.Release.Refinement.Ty}
+  {ν : Nat → Benitoite.Release.Refinement.Val} {i : Nat} {a : Benitoite.Release.Refinement.Ty},
+  Benitoite.Release.Refinement.ImageOk P B Ψ Q C Γ Φ R ν i a → True

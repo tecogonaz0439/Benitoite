@@ -1,0 +1,39 @@
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3b/r1-primitive.lean:26:2: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  a ≥ 1
+where
+ a := ↑sig.neffs
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3b/r1-primitive.lean:33:36: error(lean.invalidField): Invalid field `test`: The environment does not contain `Benitoite.Release.Refinement.EffR.test`, so it is not possible to project the field `test` from an expression
+  e
+of type `EffR`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3b/r1-primitive.lean:30:64: error: unsolved goals
+h : Tel.substAt 0 [] [Eff.empty] (instantiatedTel sig.tel [] []) = instantiatedTel sig.tel [] []
+he : True
+⊢ False
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3b/r1-primitive.lean:38:4: warning: This simp argument is unused:
+  Eff.test
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Tel.substAt, instantiatedTel, Tel.bind, Tel.rawBind, Tel.norm, sig, PrimSig.tel, signatureTel, inner,
+    Ty.rawBind, Ty.norm, rawBindTys, Ty.normTys, Eff.rawBind, Eff.norm, typeEnvAt, Eff.empty, Eff.row, Eff.atoms,
+    substAtoms, instAtoms, rowFails, shiftTypes, shiftRowsTypes, shiftTypesList] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3b/r1-primitive.lean:38:34: warning: This simp argument is unused:
+  Eff.atoms
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Tel.substAt, instantiatedTel, Tel.bind, Tel.rawBind, Tel.norm, sig, PrimSig.tel, signatureTel, inner,
+    Ty.rawBind, Ty.norm, rawBindTys, Ty.normTys, Eff.rawBind, Eff.norm, typeEnvAt, Eff.test, Eff.empty, Eff.row,
+    substAtoms, instAtoms, rowFails, shiftTypes, shiftRowsTypes, shiftTypesList] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3b/r1-primitive.lean:39:14: warning: This simp argument is unused:
+  shiftTypes
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Tel.substAt, instantiatedTel, Tel.bind, Tel.rawBind, Tel.norm, sig, PrimSig.tel, signatureTel, inner,
+    Ty.rawBind, Ty.norm, rawBindTys, Ty.normTys, Eff.rawBind, Eff.norm, typeEnvAt, Eff.test, Eff.empty, Eff.row,
+    Eff.atoms, substAtoms, instAtoms, rowFails, shiftRowsTypes, shiftTypesList] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

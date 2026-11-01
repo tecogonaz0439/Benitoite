@@ -1,0 +1,11 @@
+Benitoite/Release/Refinement/KindTypeSubst.lean:164:8: error(lean.unknownIdentifier): Unknown constant `Benitoite.Release.Refinement.Eff.rawRenameTypes_shift`
+Benitoite/Release/Refinement/KindTypeSubst.lean:161:79: error: unsolved goals
+P : Program
+C1 : TypeCtx
+ts : List Ty
+es : List Eff
+h : ∀ (e : Eff), e ∈ es → kindsEff P [] e
+f : Eff
+hf : f ∈ es
+he : shiftRowsTypes (List.length C1) 0 f ∈ (typeEnvAt (List.length C1) ts es).rows
+⊢ kindsEff P C1.kinds (shiftRowsTypes (List.length C1) 0 f)

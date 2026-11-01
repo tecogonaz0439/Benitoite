@@ -1,0 +1,112 @@
+<tmp>/benitoite-r2-range.lean:8:93: error: Type mismatch
+  h
+has type
+  Ty.RowsInList pe args✝
+but is expected to have type
+  Ty.RowsInList pe (mapRangesTys ρ args✝)
+<tmp>/benitoite-r2-range.lean:8:93: error: Type mismatch
+  h
+has type
+  Ty.RowsIn pe a✝
+but is expected to have type
+  Ty.RowsIn pe (Ty.rawMapRanges ρ a✝)
+<tmp>/benitoite-r2-range.lean:8:93: error: Type mismatch
+  h
+has type
+  Ty.RowsInList pe params✝ ∧ Ty.RowsIn pe ret✝ ∧ Eff.RowsIn pe eff✝
+but is expected to have type
+  Ty.RowsInList pe (mapRangesTys ρ params✝) ∧
+    Ty.RowsIn pe (Ty.rawMapRanges ρ ret✝) ∧ Eff.RowsIn pe (Eff.rawMapRanges ρ eff✝)
+<tmp>/benitoite-r2-range.lean:8:93: error: Type mismatch
+  h
+has type
+  Ty.RowsIn pe a✝
+but is expected to have type
+  Ty.RowsIn pe (Ty.rawMapRanges ρ a✝)
+<tmp>/benitoite-r2-range.lean:8:93: error: Type mismatch
+  h
+has type
+  Ty.RowsIn pe a✝
+but is expected to have type
+  Ty.RowsIn pe (Ty.rawMapRanges ρ a✝)
+<tmp>/benitoite-r2-range.lean:8:93: error: Type mismatch
+  h
+has type
+  Ty.RowsIn pe b✝ ∧ Ty.RowsIn pe t✝ ∧ Eff.RowsIn pe eff✝
+but is expected to have type
+  Ty.RowsIn pe (Ty.rawMapRanges ρ b✝) ∧ Ty.RowsIn pe (Ty.rawMapRanges ρ t✝) ∧ Eff.RowsIn pe (Eff.rawMapRanges ρ eff✝)
+<tmp>/benitoite-r2-range.lean:8:93: error: Type mismatch
+  h
+has type
+  Ty.RowsIn pe k✝ ∧ Ty.RowsIn pe v✝
+but is expected to have type
+  Ty.RowsIn pe (Ty.rawMapRanges ρ k✝) ∧ Ty.RowsIn pe (Ty.rawMapRanges ρ v✝)
+<tmp>/benitoite-r2-range.lean:8:93: error: Type mismatch
+  h
+has type
+  Ty.RowsIn pe a✝
+but is expected to have type
+  Ty.RowsIn pe (Ty.rawMapRanges ρ a✝)
+<tmp>/benitoite-r2-range.lean:8:93: error: Type mismatch
+  h
+has type
+  Ty.RowsIn pe τ✝
+but is expected to have type
+  Ty.RowsIn pe (Ty.rawMapRanges ρ τ✝)
+<tmp>/benitoite-r2-range.lean:8:93: error: Type mismatch
+  h
+has type
+  Ty.RowsInList pe args✝
+but is expected to have type
+  Ty.RowsInList pe (mapRangesTys ρ args✝)
+<tmp>/benitoite-r2-range.lean:8:93: error: Type mismatch
+  h
+has type
+  Ty.RowsIn pe a✝
+but is expected to have type
+  Ty.RowsIn pe (Ty.rawMapRanges ρ a✝)
+<tmp>/benitoite-r2-range.lean:8:93: error: Type mismatch
+  h
+has type
+  Tel.RowsIn pe signature✝
+but is expected to have type
+  Tel.RowsIn pe (Tel.rawMapRanges ρ signature✝)
+<tmp>/benitoite-r2-range.lean:8:93: error: Type mismatch
+  h
+has type
+  Ty.RowsInList pe arguments✝
+but is expected to have type
+  Ty.RowsInList pe (mapRangesTys ρ arguments✝)
+<tmp>/benitoite-r2-range.lean:25:66: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  Decidable (∃ y, ats y = true ∧ mapAtomRanges ρ y = Atom.rho i)
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+<tmp>/benitoite-r2-range.lean:29:37: error(lean.unknownIdentifier): Unknown identifier `j`
+<tmp>/benitoite-r2-range.lean:8:43: warning: This simp argument is unused:
+  rows_map
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Ty.rawMapRanges, Ty.RowsIn, rows_maps, rows_map_eff, rows_map_tel]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+<tmp>/benitoite-r2-range.lean:8:52: warning: This simp argument is unused:
+  rows_maps
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Ty.rawMapRanges, Ty.RowsIn, rows_map, rows_map_eff, rows_map_tel]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+<tmp>/benitoite-r2-range.lean:8:62: warning: This simp argument is unused:
+  rows_map_eff
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Ty.rawMapRanges, Ty.RowsIn, rows_map, rows_maps, rows_map_tel]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+<tmp>/benitoite-r2-range.lean:8:75: warning: This simp argument is unused:
+  rows_map_tel
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Ty.rawMapRanges, Ty.RowsIn, rows_map, rows_maps, rows_map_eff]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

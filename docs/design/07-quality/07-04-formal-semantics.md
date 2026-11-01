@@ -93,6 +93,18 @@
 
 `TypeParamRenaming` は制約の包含と kind の一致を保持し、型移動の宣言照合と `shift_types_var` の入力になる。`TypeSubstContracts` は、型・行の閉じた像の形成と、元の構文の文脈の三条件を `ClosedTypeSubstInput` にまとめる。型付けの保存の結論をこの入力や CoreAssumptions の新しい欄として仮定しない。
 
+`TypeSubstContracts` の `S02_V` などの14個の Prop は、既定ビルドで契約の型を検査する。十の移送は、行像が空又は源のコードが SourceScoped という `TypeSubstCode` を受け、恒等三成分と True 一成分はそのままとする。`TypeSubstFormation` の場所・実行時閉包の四つの case 補題は、この条件の下で既存の型付けの構成子を組み立てる。`Def.WellTyped` は本体の SourceScoped を含まず、関数とメソッドの本体の SourceScoped は `Program.WellFormed` が返す宣言の Scoped から得る。操作と Fail の遷移では行像が空である。これらは全14成分の本体の証明を含まない。
+
+
+`KindTypeSubst` は、Ty・Tel・型の列・Eff の全構文で型と行の像の kind を保存する。Ty の constructor/value を分けた47枝は同じ相互の族である。`TypeSubstFormation` は、Declared の四族26構文形、欄と述語の宣言照合、WF と Sorted を合成した型・行の Annotation の保存を証明する。tapp の head は元の Declared と型像の kind で検査し、全注釈の value kind を前提にしない。Tel の下では、元と像の型を加えた値文脈の対応を延長する。`ClosedTypeSubstInput.extend` は、元の注釈による捕捉文脈の延長を与える。
+
+`SignatureInstance` と `SignatureInstanceAt` の `rowKinds` は、固定した呼出し元の kind 文脈における行像の条件である。値の移動・置換、型の移動、文脈変更、正規化、旧署名の具体化がこの欄を保つ。旧署名の三包装は同じ κ の行の kind を受け、`LegacyRowsInput.rowKinds` はその形の証拠を返す。三包装を呼ぶ旧導出の型付けの本体は、既定ビルドに含まれていない。これらは型・行の形成と既存移送の証明であり、コードの全型置換の証明又は Rust との全比較を含まない。
+
+
+`PrimitiveAdmissible.sourceTelRows` は、署名全体の行変数が実際の行引数列の長さ未満であることを要求する。外側の効果だけを検査する sourceRows と区別し、引数の関数型の潜在効果・戻り型・Fail 型の内部も対象にする。V_Prim と BuiltinArgs は同じ許容条件を読む。norm/map と型の移動がこの欄を保ち、値の移動・置換は map、文脈変更は同じ証拠を使う。CoreAssumptions の独立の欄は要求しない。`Tel.rowsIn_instR` は範囲の具体化で行の上限を保ち、`instantiatedTel_substAt` は宣言の WF・型引数の個数・署名全体の行の上限から依存列と像の型置換の交換を証明する。NoTapp と kind の追加条件は要求しない。参照四形と force の証拠は、既存の StoreShape の各形から得る。
+
+`LegacyPrimSignature.sourceTelRows` は、署名全体の行変数の上限を表の対応の入力として受ける。`sourceTelRowsAt` は旧の rowCount と neffs の対応を使い、範囲具体化後の依存列の証拠を返す。これは旧導出の型付けの結論を入力にする条件ではない。
+
 旧表との対応の `LegacyPrimSignature` は、操作を表す `opEff` を持つ組み込みの型パラメータが全てvalue kindであることを要求する。これにより、旧の通常節が読むvalue固定のkindの列と、新しい通常節の型文脈のkindを対応させる。操作を持たない組み込みにはこの条件を課さない。
 
 旧導出を受け取る LegacyTypesInput は、旧型引数の各型が NotCont を満たすとき、Ordinary を加える前の各型の入力条件と同値である。閉性は要求しない。旧型の NotCont と embedTy 後の Ordinary の同値を使う。継続を保持する文脈の一般の LegacyTypeInput に、この制限は追加しない。
@@ -776,6 +788,7 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 | TypeRegularity・TypeBounds・TypeRows・TypeVariables・TypeShiftFacts・EffectFacts | 「篩の正規形と制約の読み方」。WFの像の条件付き置換、四名前空間の再帰条件、型移動の比較と整列、効果の構造等号と行置換 |
 | ProgramTyping・ProgramWellFormed | 「篩を含む定義とプログラムの適格性」。本体の型付けと、格納済みの宣言・metadata の範囲と arity の検査。原ソースの収集の一致は含まない |
 | ObservationType | 同節の観測用の型の射影と `DataObservationLe`。篩の事実を射影から取り出さない |
+| KindTypeSubst・TypeSubstContracts・TypeSubstFormation | 「篩を含むコア計算の形式化」の kind 像、閉じた型・行像の入力、一般の Declared と Annotation の型置換の形成。コードの全型置換は含まない |
 | TypeFormation・ValueFacts | 同節の検証済みの欄の型代入の形成、`Declared`・`HasData` の型置換、構成子の反転と欄の型付け |
 | RefinementObservation・ObservationOrder・ObservationSubstitution・ObservationInterpretation・ValueMeaning・ValueMeaningInhabits・PatternNormalForm・Patterns・PatternTransport・PatternSemantics・PatternTypeShift・CoverageRefinement | 「篩を読む網羅性と値の意味」 |
 | Observation・ClosedEvaluation・Logic・LogicSound・Context/Capture・CapturedFacts・CaptureRegularity | 「閉じた述語の評価と捕捉」。開いた全結果形成と、元の注釈・包含・場所からの捕捉後の効果形成を含む |

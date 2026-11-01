@@ -1,0 +1,27 @@
+<tmp>/benitoite-r2-exchange.lean:79:31: error: Application type mismatch: The argument
+  Or.inr ?m.497
+has type
+  ?m.495 ∨ ?m.496
+but is expected to have type
+  ∃ i f, σ.rows[i]? = some f ∧ e.mem (Atom.rho i) ∧ f.mem (Atom.rho j)
+in the application
+  And.intro (Or.inr ?m.497)
+<tmp>/benitoite-r2-exchange.lean:79:38: error: Invalid `⟨...⟩` notation: The expected type of this term could not be determined
+<tmp>/benitoite-r2-exchange.lean:89:27: error: Application type mismatch: The argument
+  Or.inr ?m.805
+has type
+  ?m.803 ∨ ?m.804
+but is expected to have type
+  ∃ i f, σ.rows[i]? = some f ∧ e.mem (Atom.rho i) ∧ f.mem (Atom.rho j)
+in the application
+  ⟨hj, Or.inr ?m.805⟩
+<tmp>/benitoite-r2-exchange.lean:89:34: error: Invalid `⟨...⟩` notation: The expected type of this term could not be determined
+<tmp>/benitoite-r2-exchange.lean:90:31: error: Application type mismatch: The argument
+  Or.inr ?m.818
+has type
+  ?m.816 ∨ ?m.817
+but is expected to have type
+  ∃ i f, σ.rows[i]? = some f ∧ e.mem (Atom.rho i) ∧ f.mem (Atom.rho k)
+in the application
+  And.intro (Or.inr ?m.818)
+<tmp>/benitoite-r2-exchange.lean:90:38: error: Invalid `⟨...⟩` notation: The expected type of this term could not be determined

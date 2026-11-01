@@ -1,0 +1,48 @@
+<tmp>/benitoite-r2-exchange.lean:265:4: error: Tactic `rfl` failed: The left-hand side
+  List.map
+    (Eff.bind
+        {
+          types := fun i =>
+            if i < c then Ty.tvar i
+            else if i - c < us.length then shiftTypes c 0 (us[i - c]?.getD (Ty.tvar i)) else Ty.tvar (i - us.length),
+          rows := List.map (shiftRowsTypes c 0) fs, ranges := [], values := fun i => some (Term.var i) } ∘
+      shiftRowsTypes 0 0)
+    es
+is not definitionally equal to the right-hand side
+  List.map (shiftRowsTypes 0 0 ∘ Eff.substAt c us fs) es
+
+case rows
+nt : Nat
+t : Tel
+hw : Ty.WF 0 nt 0 (Ty.dependentFn t)
+ts : List Ty
+es : List Eff
+hn : nt ≤ ts.length
+hr : Tel.RowsIn (fun x => x < es.length) t
+c : Nat
+us : List Ty
+fs : List Eff
+⊢ List.map
+      (Eff.bind
+          {
+            types := fun i =>
+              if i < c then Ty.tvar i
+              else if i - c < us.length then shiftTypes c 0 (us[i - c]?.getD (Ty.tvar i)) else Ty.tvar (i - us.length),
+            rows := List.map (shiftRowsTypes c 0) fs, ranges := [], values := fun i => some (Term.var i) } ∘
+        shiftRowsTypes 0 0)
+      es =
+    List.map (shiftRowsTypes 0 0 ∘ Eff.substAt c us fs) es
+<tmp>/benitoite-r2-exchange.lean:264:33: warning: This simp argument is unused:
+  shiftRowsTypes_zero
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [compose, typeEnvAt, List.map_id, List.map_map]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+<tmp>/benitoite-r2-exchange.lean:264:53: warning: This simp argument is unused:
+  List.map_id
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [compose, typeEnvAt, shiftRowsTypes_zero, List.map_map]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

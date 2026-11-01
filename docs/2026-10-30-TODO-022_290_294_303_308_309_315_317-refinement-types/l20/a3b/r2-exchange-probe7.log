@@ -1,0 +1,189 @@
+<tmp>/benitoite-r2-exchange.lean:165:18: error: fail to show termination for
+  _private._stdin.0.Benitoite.Release.Refinement.comp_ty
+  _private._stdin.0.Benitoite.Release.Refinement.comp_tel
+  _private._stdin.0.Benitoite.Release.Refinement.comp_eff
+  _private._stdin.0.Benitoite.Release.Refinement.comp_tys
+with errors
+failed to infer structural recursion:
+Not considering parameter hs of _private._stdin.0.Benitoite.Release.Refinement.comp_ty:
+  its type Eq is an inductive family and indices are not variables
+    σ.ranges = []
+Not considering parameter ht of _private._stdin.0.Benitoite.Release.Refinement.comp_ty:
+  its type Eq is an inductive family and indices are not variables
+    τ.ranges = []
+Not considering parameter hv of _private._stdin.0.Benitoite.Release.Refinement.comp_ty:
+  its type Eq is an inductive family and indices are not variables
+    σ.values = fun i => some (Term.var i)
+Not considering parameter hu of _private._stdin.0.Benitoite.Release.Refinement.comp_ty:
+  its type Eq is an inductive family and indices are not variables
+    τ.values = fun i => some (Term.var i)
+Not considering parameter hr of _private._stdin.0.Benitoite.Release.Refinement.comp_ty:
+  its type is not an inductive
+Not considering parameter hs of _private._stdin.0.Benitoite.Release.Refinement.comp_tel:
+  its type Eq is an inductive family and indices are not variables
+    σ.ranges = []
+Not considering parameter ht of _private._stdin.0.Benitoite.Release.Refinement.comp_tel:
+  its type Eq is an inductive family and indices are not variables
+    τ.ranges = []
+Not considering parameter hv of _private._stdin.0.Benitoite.Release.Refinement.comp_tel:
+  its type Eq is an inductive family and indices are not variables
+    σ.values = fun i => some (Term.var i)
+Not considering parameter hu of _private._stdin.0.Benitoite.Release.Refinement.comp_tel:
+  its type Eq is an inductive family and indices are not variables
+    τ.values = fun i => some (Term.var i)
+Not considering parameter hr of _private._stdin.0.Benitoite.Release.Refinement.comp_tel:
+  its type is not an inductive
+Not considering parameter hs of _private._stdin.0.Benitoite.Release.Refinement.comp_eff:
+  its type Eq is an inductive family and indices are not variables
+    σ.ranges = []
+Not considering parameter ht of _private._stdin.0.Benitoite.Release.Refinement.comp_eff:
+  its type Eq is an inductive family and indices are not variables
+    τ.ranges = []
+Not considering parameter hv of _private._stdin.0.Benitoite.Release.Refinement.comp_eff:
+  its type Eq is an inductive family and indices are not variables
+    σ.values = fun i => some (Term.var i)
+Not considering parameter hu of _private._stdin.0.Benitoite.Release.Refinement.comp_eff:
+  its type Eq is an inductive family and indices are not variables
+    τ.values = fun i => some (Term.var i)
+Not considering parameter hr of _private._stdin.0.Benitoite.Release.Refinement.comp_eff:
+  its type is not an inductive
+Not considering parameter hs of _private._stdin.0.Benitoite.Release.Refinement.comp_tys:
+  its type Eq is an inductive family and indices are not variables
+    σ.ranges = []
+Not considering parameter ht of _private._stdin.0.Benitoite.Release.Refinement.comp_tys:
+  its type Eq is an inductive family and indices are not variables
+    τ.ranges = []
+Not considering parameter hv of _private._stdin.0.Benitoite.Release.Refinement.comp_tys:
+  its type Eq is an inductive family and indices are not variables
+    σ.values = fun i => some (Term.var i)
+Not considering parameter hu of _private._stdin.0.Benitoite.Release.Refinement.comp_tys:
+  its type Eq is an inductive family and indices are not variables
+    τ.values = fun i => some (Term.var i)
+Not considering parameter hr of _private._stdin.0.Benitoite.Release.Refinement.comp_tys:
+  its type is not an inductive
+Too many possible combinations of parameters of type SubstEnv (or please indicate the recursive argument explicitly using `termination_by structural`).
+Skipping arguments of type List
+  Ty, as _private._stdin.0.Benitoite.Release.Refinement.comp_ty has no compatible argument.
+Cannot use parameters a of _private._stdin.0.Benitoite.Release.Refinement.comp_ty, t of _private._stdin.0.Benitoite.Release.Refinement.comp_tel, e of _private._stdin.0.Benitoite.Release.Refinement.comp_eff, and as of _private._stdin.0.Benitoite.Release.Refinement.comp_tys:
+  failed to eliminate recursive application
+    comp_ty y σ τ hs ht hv hu hyr
+
+
+Could not find a decreasing measure.
+The basic measures relate at each recursive call as follows:
+(<, ≤, =: relation proved, ? all proofs failed, _: no proof attempted)
+Call from _private._stdin.0.Benitoite.Release.Refinement.comp_ty to _private._stdin.0.Benitoite.Release.Refinement.comp_tys at 190:12-41:
+    #1 #2 #3
+#10  <  ?  _
+#11  ?  =  _
+#12  ?  ?  =
+Call from _private._stdin.0.Benitoite.Release.Refinement.comp_ty to _private._stdin.0.Benitoite.Release.Refinement.comp_ty at 189:12-40:
+ #1 #2 #3
+  <  =  =
+Call from _private._stdin.0.Benitoite.Release.Refinement.comp_ty to _private._stdin.0.Benitoite.Release.Refinement.comp_tys at 175:29-61:
+    #1 #2 #3
+#10  <  _  _
+#11  _  =  _
+#12  _  _  =
+Call from _private._stdin.0.Benitoite.Release.Refinement.comp_ty to _private._stdin.0.Benitoite.Release.Refinement.comp_ty at 175:62-94:
+ #1 #2 #3
+  <  =  =
+Call from _private._stdin.0.Benitoite.Release.Refinement.comp_ty to _private._stdin.0.Benitoite.Release.Refinement.comp_eff at 175:95-128:
+   #1 #2 #3
+#7  <  ?  _
+#8  ?  =  _
+#9  ?  _  =
+Call from _private._stdin.0.Benitoite.Release.Refinement.comp_ty to _private._stdin.0.Benitoite.Release.Refinement.comp_ty at 189:12-40:
+ #1 #2 #3
+  <  =  =
+Call from _private._stdin.0.Benitoite.Release.Refinement.comp_ty to _private._stdin.0.Benitoite.Release.Refinement.comp_ty at 189:12-40:
+ #1 #2 #3
+  <  =  =
+Call from _private._stdin.0.Benitoite.Release.Refinement.comp_ty to _private._stdin.0.Benitoite.Release.Refinement.comp_ty at 176:27-57:
+ #1 #2 #3
+  <  =  =
+Call from _private._stdin.0.Benitoite.Release.Refinement.comp_ty to _private._stdin.0.Benitoite.Release.Refinement.comp_ty at 176:58-90:
+ #1 #2 #3
+  <  =  =
+Call from _private._stdin.0.Benitoite.Release.Refinement.comp_ty to _private._stdin.0.Benitoite.Release.Refinement.comp_eff at 176:91-124:
+   #1 #2 #3
+#7  <  _  _
+#8  _  =  _
+#9  _  _  =
+Call from _private._stdin.0.Benitoite.Release.Refinement.comp_ty to _private._stdin.0.Benitoite.Release.Refinement.comp_ty at 177:24-54:
+ #1 #2 #3
+  <  =  =
+Call from _private._stdin.0.Benitoite.Release.Refinement.comp_ty to _private._stdin.0.Benitoite.Release.Refinement.comp_ty at 177:55-85:
+ #1 #2 #3
+  <  =  =
+Call from _private._stdin.0.Benitoite.Release.Refinement.comp_ty to _private._stdin.0.Benitoite.Release.Refinement.comp_ty at 189:12-40:
+ #1 #2 #3
+  <  =  =
+Call from _private._stdin.0.Benitoite.Release.Refinement.comp_ty to _private._stdin.0.Benitoite.Release.Refinement.comp_ty at 189:12-40:
+ #1 #2 #3
+  <  =  =
+Call from _private._stdin.0.Benitoite.Release.Refinement.comp_ty to _private._stdin.0.Benitoite.Release.Refinement.comp_tys at 181:10-40:
+    #1 #2 #3
+#10  <  _  _
+#11  _  =  _
+#12  _  _  =
+Call from _private._stdin.0.Benitoite.Release.Refinement.comp_ty to _private._stdin.0.Benitoite.Release.Refinement.comp_ty at 185:10-38:
+ #1 #2 #3
+  <  =  =
+Call from _private._stdin.0.Benitoite.Release.Refinement.comp_ty to _private._stdin.0.Benitoite.Release.Refinement.comp_tel at 187:30-59:
+   #1 #2 #3
+#4  <  _  _
+#5  ?  =  _
+#6  ?  _  =
+Call from _private._stdin.0.Benitoite.Release.Refinement.comp_ty to _private._stdin.0.Benitoite.Release.Refinement.comp_tys at 190:12-41:
+    #1 #2 #3
+#10  <  _  _
+#11  _  =  _
+#12  _  _  =
+Call from _private._stdin.0.Benitoite.Release.Refinement.comp_tel to _private._stdin.0.Benitoite.Release.Refinement.comp_ty at 206:38-68:
+   #4 #5 #6
+#1  <  _  _
+#2  _  =  _
+#3  _  _  =
+Call from _private._stdin.0.Benitoite.Release.Refinement.comp_tel to _private._stdin.0.Benitoite.Release.Refinement.comp_eff at 206:69-100:
+   #4 #5 #6
+#7  <  _  _
+#8  _  =  _
+#9  _  _  =
+Call from _private._stdin.0.Benitoite.Release.Refinement.comp_tel to _private._stdin.0.Benitoite.Release.Refinement.comp_ty at 210:38-68:
+   #4 #5 #6
+#1  <  _  _
+#2  _  =  _
+#3  _  _  =
+Call from _private._stdin.0.Benitoite.Release.Refinement.comp_tel to _private._stdin.0.Benitoite.Release.Refinement.comp_tel at 211:10-212:65:
+ #4 #5 #6
+  <  ?  ?
+Call from _private._stdin.0.Benitoite.Release.Refinement.comp_eff to _private._stdin.0.Benitoite.Release.Refinement.comp_ty at 227:19-48:
+   #7 #8 #9
+#1  ?  _  _
+#2  _  _  _
+#3  _  _  _
+Call from _private._stdin.0.Benitoite.Release.Refinement.comp_tys to _private._stdin.0.Benitoite.Release.Refinement.comp_ty at 198:52-82:
+   #10 #11 #12
+#1   _   _   _
+#2   _   _   _
+#3   _   _   _
+Call from _private._stdin.0.Benitoite.Release.Refinement.comp_tys to _private._stdin.0.Benitoite.Release.Refinement.comp_tys at 198:83-115:
+ #10 #11 #12
+   _   _   _
+
+
+#1: sizeOf a
+#2: sizeOf σ
+#3: sizeOf τ
+#4: sizeOf t
+#5: sizeOf σ
+#6: sizeOf τ
+#7: sizeOf e
+#8: sizeOf σ
+#9: sizeOf τ
+#10: sizeOf as
+#11: sizeOf σ
+#12: sizeOf τ
+
+Please use `termination_by` to specify a decreasing measure.

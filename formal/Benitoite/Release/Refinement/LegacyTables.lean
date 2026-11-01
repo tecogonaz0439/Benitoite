@@ -1,5 +1,6 @@
 import Benitoite.Release.Refinement.LegacyRegularity
 import Benitoite.Release.WellFormed
+import Benitoite.Release.Refinement.TypeRows
 
 /-! # 旧表との対応と構成子の形成 -/
 namespace Benitoite.Release.Refinement
@@ -19,6 +20,7 @@ structure LegacyPrimSignature (s0 : Benitoite.Release.PrimSig) (s : PrimSig) : P
   admits : ∀ C ts, s0.admits C ts → s.admits C (Ty.normTys (embedTys ts))
   operationKinds : s.opEff ≠ none →
     TypeCtx.kinds s.tparams = List.replicate s.tparams.length .value
+  sourceTelRows : s.tel.RowsIn (· < s.neffs)
 
 /-- 新型付けや遷移の結論ではなく、表の各位置の対応を読む。 -/
 structure LegacyTables (K : DeclarationKinds) (P0 : Benitoite.Release.Program)
@@ -40,6 +42,18 @@ structure LegacyTables (K : DeclarationKinds) (P0 : Benitoite.Release.Program)
     Ty.HasKind (embedProgramWithKinds K P0) (List.replicate cd.ntys .value) (embedTy a) .value
   constructorScope : ∀ c cd, P0.cons c = some cd → ∀ a ∈ cd.args,
     (embedTy a).SourceScoped 0 cd.ntys 0 0
+
+theorem LegacyPrimSignature.sourceTelRowsAt
+    {s0 : Benitoite.Release.PrimSig} {s : PrimSig}
+    {C : List Benitoite.Release.TParam} {Q : Benitoite.Release.NoFailCtx}
+    {ts : List Benitoite.Release.Ty} {es : List Benitoite.Release.Eff}
+    {rs : List Scope.Domain.Range}
+    (h : LegacyPrimSignature s0 s)
+    (ha : Benitoite.Release.PrimitiveAdmissible C (s0.inst rs) Q ts es)
+    (ranges : List RangeExpr) :
+    (Tel.instR ranges s.tel).RowsIn (· < (es.map embedEff).length) := by
+  have he : es.length = s.neffs := ha.rowCount.trans h.neffs.symm
+  simpa only [List.length_map,he] using Tel.rowsIn_instR h.sourceTelRows ranges
 
 end
 end Benitoite.Release.Refinement

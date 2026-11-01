@@ -1,0 +1,70 @@
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3b/r2-boundary.lean:16:30: warning: Try `simp at hh` instead of `simpa using hh`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3b/r2-boundary.lean:29:14: warning: This simp argument is unused:
+  shiftTypes
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Tel.substAt, instantiatedTel, Tel.bind, Tel.rawBind, Tel.norm, sig, PrimSig.tel, signatureTel, inner,
+    Ty.rawBind, Ty.norm, rawBindTys, Ty.normTys, Eff.rawBind, Eff.norm, typeEnvAt, Eff.test, Eff.empty, Eff.row,
+    Eff.atoms, substAtoms, instAtoms, rowFails, shiftRowsTypes, shiftTypesList] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3b/r2-boundary.lean:63:30: warning: Try `simp at hh` instead of `simpa using hh`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+'Benitoite.Release.Refinement.A3bPrimitiveR2.exchange_false' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.A3bPrimitiveR2.io_shape' depends on axioms: [propext]
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3b/r2-boundary.lean:83:10: error: Tactic `introN` failed: There are no additional binders or `let` bindings in the goal to introduce
+
+case refine_3
+⊢ Eff.RowsIn (fun x => x < [Eff.row 0].length) higher.eff
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3b/r2-boundary.lean:110:4: error: Tactic `assumption` failed
+
+P : Program
+B : Builtins
+Ψ : StoreTy
+Q Q' : NoFailCtx
+C : TypeCtx
+Γ : Ctx
+Φ : List Pred
+b : PrimName
+sg : PrimSig
+ts : List Ty
+es : List Eff
+rs : List RangeExpr
+c : Nat
+us : List Ty
+fs : List Eff
+D : TypeCtx
+Δ : Ctx
+hb : B.sig b = some sg
+hrr : B.RangeAdmissible b sg rs
+hn : NamesWF sg.names sg.params
+ha : PrimitiveAdmissible C (List.length Γ) sg Q ts es
+hi : SignatureInstance P C Γ (Tel.instR rs sg.tel) (TypeCtx.kinds sg.tparams) ts es
+ha' : PrimitiveAdmissible D (List.length Δ) sg Q' (List.map (Ty.substAt c us fs) ts) (List.map (Eff.substAt c us fs) es)
+hi' :
+  SignatureInstance P D Δ (Tel.instR rs sg.tel) (TypeCtx.kinds sg.tparams) (List.map (Ty.substAt c us fs) ts)
+    (List.map (Eff.substAt c us fs) es)
+hrows : Tel.RowsIn (fun x => x < es.length) (Tel.instR rs sg.tel)
+⊢ sg.tparams.length ≤ sg.tparams.length
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3b/r2-boundary.lean:113:2: error: Type mismatch: After simplification, term
+  have this := Eq.symm he ▸ hv;
+  this
+ has type
+  HasTypeVQ P B Ψ Q' D Δ Φ (Val.prim b (List.map (Ty.substAt c us fs) ts) (List.map (Eff.substAt c us fs) es) rs)
+    (Ty.dependentFn (Tel.rawBind (typeEnvAt c us fs) (Tel.rawBind (typeEnvAt 0 ts es) (Tel.instR rs sg.tel)).norm).norm)
+but is expected to have type
+  HasTypeVQ P B Ψ Q' D Δ Φ (Val.prim b (List.map (substTypeAt c us fs) ts) (List.map (substRowAt c us fs) es) rs)
+    (Ty.foldFn (Tel.rawBind (typeEnvAt c us fs) (Tel.rawBind (typeEnvAt 0 ts es) (Tel.instR rs sg.tel)).norm).norm)
+'Benitoite.Release.Refinement.A3bPrimitiveR2.rejected' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.A3bPrimitiveR2.higher_admissible' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.A3bPrimitiveR2.higher_exchange' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.A3bPrimitiveR2.primitive_branch' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]

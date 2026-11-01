@@ -1,0 +1,29 @@
+{
+  "base": "98188437a88c6b70a76735d24764753b6a645f37",
+  "branch_from_request": "m014/l20.a3b",
+  "git_used": false,
+  "platform": "macOS-27.2-arm64-arm-64bit",
+  "machine": "arm64",
+  "python": "3.9.6",
+  "lean_memory_mib": 12288,
+  "default_targets": [
+    "Benitoite",
+    "desugarDiff",
+    "builtinCheck",
+    "coverageDiff",
+    "coverageProgramDiff",
+    "surfaceCheck",
+    "surfaceCheckAll",
+    "intervalDiff"
+  ],
+  "inputs": {
+    "formal/lakefile.toml": "10f2661bff8fce95a9253d976427d0ca44038ec12350c955badbc1cf1efa6e3a",
+    "formal/lean-toolchain": "d5edba4e4b8faad9c1baeadb265716d20d03be4d1a2647dc5e35b0c0325bea7b",
+    "formal/lake-manifest.json": "f4a9b127f95cf577c7da1c2269f85ffd5754f76afccace5dc310d56ef8f41a32",
+    "scripts/check.sh": "346759324694465213cdcbb6d9d272c6e55de7697ce2204bd98a22c5b661bf34"
+  },
+  "toolchain": "leanprover/lean4:v4.34.1",
+  "lean_version": "Lean (version 4.34.1, arm64-apple-darwin24.6.0, commit 5045d0056413266e57c625dcd7c365b10e377c52, Release)",
+  "lake_version": "Lake version 5.0.0-src+5045d00 (Lean version 4.34.1)",
+  "rss": "未取得（計画上の非採取）"
+}

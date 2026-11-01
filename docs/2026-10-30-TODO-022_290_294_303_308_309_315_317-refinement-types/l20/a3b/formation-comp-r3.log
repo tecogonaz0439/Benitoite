@@ -1,0 +1,24 @@
+Benitoite/Release/Refinement/TypeSubstFormation.lean:56:25: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  rawBindTys θ (rawBindTys (SubstEnv.typesOnly f) fs)
+in the target expression
+  EffR.mk ats
+      (rawBindTys θ (rawBindTys { types := f, rows := [], ranges := [], values := fun i => some (Term.var i) } fs)) =
+    EffR.mk ats
+      (rawBindTys
+        { types := fun i => Ty.rawBind θ (f i), rows := [], ranges := [], values := fun i => some (Term.var i) } fs)
+
+case mk
+f : Nat → Ty
+θ : SubstEnv
+hv : θ.values = fun i => some (Term.var i)
+hg : θ.ranges = []
+ats : Atom → Bool
+fs : List Ty
+ha : noTappEff (EffR.mk ats fs)
+hr : Eff.RowsIn (fun x => x < 0) (EffR.mk ats fs)
+hz : ∀ (i : Nat), ats (Atom.rho i) = false
+⊢ EffR.mk ats
+      (rawBindTys θ (rawBindTys { types := f, rows := [], ranges := [], values := fun i => some (Term.var i) } fs)) =
+    EffR.mk ats
+      (rawBindTys
+        { types := fun i => Ty.rawBind θ (f i), rows := [], ranges := [], values := fun i => some (Term.var i) } fs)

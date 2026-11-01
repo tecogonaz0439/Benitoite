@@ -305,9 +305,12 @@ theorem ShiftMap.rowAnnotations {P C k c Γ Δ es} (h : ShiftMap k c Γ Δ)
 theorem ShiftMap.signature {P C k c Γ Δ t ks ts es} (h : ShiftMap k c Γ Δ)
     (ht : SignatureInstance P C Γ t ks ts es) :
     SignatureInstance P C Δ t ks (ts.map (Ty.shiftV k c)) (es.map (Eff.shiftV k c)) := by
-  refine ⟨ht.source, h.typeAnnotations ht.types, ht.kinds.shift k c, h.rowAnnotations ht.rows, ?_⟩
-  have hh := h.annotation ht.result
-  simpa only [Ty.shiftV, instantiatedTel_shift_eq ht.source] using hh
+  refine ⟨ht.source, h.typeAnnotations ht.types, ht.kinds.shift k c, h.rowAnnotations ht.rows, ?_, ?_⟩
+  · intro e he
+    obtain ⟨f, hf, rfl⟩ := List.mem_map.mp he
+    exact (kindsEff_shiftV_iff f k c).mpr (ht.rowKinds f hf)
+  · have hh := h.annotation ht.result
+    simpa only [Ty.shiftV, instantiatedTel_shift_eq ht.source] using hh
 
 theorem Builtins.ValueAssumptions.sat_shiftV_norm {P B C Γ Δ a p k c}
     (hA : Builtins.ValueAssumptions P B) (ha : Ty.Annotation P C Γ a)

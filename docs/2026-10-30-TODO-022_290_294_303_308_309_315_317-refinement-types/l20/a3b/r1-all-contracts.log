@@ -1,0 +1,191 @@
+∀ {P : Program} {B : Builtins} {Ψ : StoreTy} {Q Q' : NoFailCtx} {C0 C1 : TypeCtx} {Γ : Ctx} {Φ : List Pred} {v : Val}
+  {a : Ty} {ts : List Ty} {es : List Eff},
+  P.WellFormed ∧ P.WellTyped B ∧ Builtins.CoreAssumptions P B ∧ Ψ.WF →
+    ClosedTypeSubstInput P B C0 C1 Γ ts es →
+      (TypeSubstCode es fun nr nt ne nv => Val.SourceScoped nr nt ne nv v) →
+        RowTransport Q Q' es →
+          HasTypeVQ P B Ψ Q (C1 ++ C0) Γ Φ v a →
+            HasTypeVQ P B Ψ Q' C1 ((fun Δ => Δ.bindTypes (typeEnvAt (List.length C1) ts es)) Γ) Φ
+              (Val.substTyAt (List.length C1) ts es v) (Ty.substAt (List.length C1) ts es a) : Prop
+∀ {P : Program} {B : Builtins} {Ψ : StoreTy} {Q Q' : NoFailCtx} {C0 C1 : TypeCtx} {Γ : Ctx} {Φ : List Pred}
+  {vs : List Val} {as ts : List Ty} {es : List Eff},
+  P.WellFormed ∧ P.WellTyped B ∧ Builtins.CoreAssumptions P B ∧ Ψ.WF →
+    ClosedTypeSubstInput P B C0 C1 Γ ts es →
+      (TypeSubstCode es fun nr nt ne nv => scopedValues nr nt ne nv vs) →
+        RowTransport Q Q' es →
+          HasTypeVsQ P B Ψ Q (C1 ++ C0) Γ Φ vs as →
+            HasTypeVsQ P B Ψ Q' C1 ((fun Δ => Δ.bindTypes (typeEnvAt (List.length C1) ts es)) Γ) Φ
+              (List.map (Val.substTyAt (List.length C1) ts es) vs)
+              (List.map (Ty.substAt (List.length C1) ts es) as) : Prop
+∀ {P : Program} {B : Builtins} {Ψ : StoreTy} {Q Q' : NoFailCtx} {C0 C1 : TypeCtx} {Γ : Ctx} {Φ : List Pred}
+  {vs : List Val} {a : Ty} {ts : List Ty} {es : List Eff},
+  P.WellFormed ∧ P.WellTyped B ∧ Builtins.CoreAssumptions P B ∧ Ψ.WF →
+    ClosedTypeSubstInput P B C0 C1 Γ ts es →
+      (TypeSubstCode es fun nr nt ne nv => scopedValues nr nt ne nv vs) →
+        RowTransport Q Q' es →
+          HasTypeEachQ P B Ψ Q (C1 ++ C0) Γ Φ vs a →
+            HasTypeEachQ P B Ψ Q' C1 ((fun Δ => Δ.bindTypes (typeEnvAt (List.length C1) ts es)) Γ) Φ
+              (List.map (Val.substTyAt (List.length C1) ts es) vs) (Ty.substAt (List.length C1) ts es a) : Prop
+∀ {P : Program} {B : Builtins} {Ψ : StoreTy} {Q Q' : NoFailCtx} {C0 C1 : TypeCtx} {Γ : Ctx} {Φ : List Pred}
+  {R : Option Ty} {m : Comp} {a : Ty} {e : Eff} {L : LocalCtx} {ts : List Ty} {es : List Eff},
+  P.WellFormed ∧ P.WellTyped B ∧ Builtins.CoreAssumptions P B ∧ Ψ.WF →
+    ClosedTypeSubstInput P B C0 C1 Γ ts es →
+      (TypeSubstCode es fun nr nt ne nv => Comp.SourceScoped nr nt ne nv m) →
+        RowTransport Q Q' es →
+          HasTypeCQ P B Ψ Q (C1 ++ C0) Γ Φ R m a e L →
+            HasTypeCQ P B Ψ Q' C1 ((fun Δ => Δ.bindTypes (typeEnvAt (List.length C1) ts es)) Γ) Φ
+              (Option.map (Ty.substAt (List.length C1) ts es) R) (Comp.substTyAt (List.length C1) ts es m)
+              (Ty.substAt (List.length C1) ts es a) (Eff.substAt (List.length C1) ts es e)
+              ((fun L =>
+                  List.map
+                    (Option.map fun b =>
+                      match b with
+                      | BuilderKind.list a => BuilderKind.list (Ty.substAt (List.length C1) ts es a)
+                      | BuilderKind.string => BuilderKind.string
+                      | BuilderKind.bytes => BuilderKind.bytes)
+                    L)
+                L) : Prop
+∀ {P : Program} {B : Builtins} {Ψ : StoreTy} {Q Q' : NoFailCtx} {C0 C1 : TypeCtx} {Γ : Ctx} {Φ : List Pred}
+  {vs : List Val} {t : Tel} {a : Ty} {e : Eff} {ts : List Ty} {es : List Eff},
+  P.WellFormed ∧ P.WellTyped B ∧ Builtins.CoreAssumptions P B ∧ Ψ.WF →
+    ClosedTypeSubstInput P B C0 C1 Γ ts es →
+      (TypeSubstCode es fun nr nt ne nv => scopedValues nr nt ne nv vs) →
+        RowTransport Q Q' es →
+          HasTypeTelArgsQ P B Ψ Q (C1 ++ C0) Γ Φ vs t a e →
+            HasTypeTelArgsQ P B Ψ Q' C1 ((fun Δ => Δ.bindTypes (typeEnvAt (List.length C1) ts es)) Γ) Φ
+              (List.map (Val.substTyAt (List.length C1) ts es) vs) (Tel.substAt (List.length C1) ts es t)
+              (Ty.substAt (List.length C1) ts es a) (Eff.substAt (List.length C1) ts es e) : Prop
+∀ {P : Program} {B : Builtins} {Ψ : StoreTy} {Q Q' : NoFailCtx} {C0 C1 : TypeCtx} {Γ : Ctx} {Φ : List Pred} {t : Tel}
+  {m : Comp} {ts : List Ty} {es : List Eff},
+  P.WellFormed ∧ P.WellTyped B ∧ Builtins.CoreAssumptions P B ∧ Ψ.WF →
+    ClosedTypeSubstInput P B C0 C1 Γ ts es →
+      (TypeSubstCode es fun nr nt ne nv => Comp.SourceScoped nr nt ne nv m) →
+        RowTransport Q Q' es →
+          TelBodyTy P B Ψ Q (C1 ++ C0) Γ Φ t m →
+            TelBodyTy P B Ψ Q' C1 ((fun Δ => Δ.bindTypes (typeEnvAt (List.length C1) ts es)) Γ) Φ
+              (Tel.substAt (List.length C1) ts es t) (Comp.substTyAt (List.length C1) ts es m) : Prop
+∀ {P : Program} {B : Builtins} {Ψ : StoreTy} {R : Option Ty} {Γ : Ctx} {Φ : List Pred} {cap : Capture},
+  CaptureOk P B Ψ R Γ Φ cap → CaptureOk P B Ψ R Γ Φ cap : Prop
+∀ {P : Program} {B : Builtins} {Ψ : StoreTy} {q : Closure} {t : Tel},
+  DependentClosureTy P B Ψ q t → DependentClosureTy P B Ψ q t : Prop
+∀ {P : Program} {B : Builtins} {Ψ : StoreTy} {o : OpaqueName} {k : Scope.Domain.Kind} {r : RangeExpr}
+  {snapshot : Option PathEnv} {target : Scope.Domain.Target} {req : Option Val},
+  CheckedWitness P B Ψ o k r snapshot target req → CheckedWitness P B Ψ o k r snapshot target req : Prop
+∀ {P : Program} {B : Builtins} {Ψ : StoreTy} {Q Q' : NoFailCtx} {C0 C1 : TypeCtx} {Γ : Ctx} {Φ : List Pred}
+  {k : Scope.Domain.Kind} {o : OpaqueName} {shape : ResultShape} {bases : Option Val} {pattern input : Val}
+  {ix : RangeIx} {ts : List Ty} {es : List Eff},
+  P.WellFormed ∧ P.WellTyped B ∧ Builtins.CoreAssumptions P B ∧ Ψ.WF →
+    ClosedTypeSubstInput P B C0 C1 Γ ts es →
+      (TypeSubstCode es fun nr nt ne nv =>
+          (match bases with
+            | none => True
+            | some b => Val.SourceScoped nr nt ne nv b) ∧
+            Val.SourceScoped nr nt ne nv pattern ∧ Val.SourceScoped nr nt ne nv input) →
+        RowTransport Q Q' es →
+          AtCallAdmissible P B Ψ Q (C1 ++ C0) Γ Φ k o shape bases pattern input ix →
+            AtCallAdmissible P B Ψ Q' C1 ((fun Δ => Δ.bindTypes (typeEnvAt (List.length C1) ts es)) Γ) Φ k o shape
+              (Option.map (Val.substTyAt (List.length C1) ts es) bases) (Val.substTyAt (List.length C1) ts es pattern)
+              (Val.substTyAt (List.length C1) ts es input) ix : Prop
+∀ {P : Program} {B : Builtins} {Ψ : StoreTy} {Q Q' : NoFailCtx} {C0 C1 : TypeCtx} {Γ : Ctx} {Φ : List Pred}
+  {R : Option Ty} {obs : Option Term} {arms : List Arm} {a b : Ty} {e : Eff} {L : LocalCtx} {ts : List Ty}
+  {es : List Eff},
+  P.WellFormed ∧ P.WellTyped B ∧ Builtins.CoreAssumptions P B ∧ Ψ.WF →
+    ClosedTypeSubstInput P B C0 C1 Γ ts es →
+      (TypeSubstCode es fun nr nt ne nv => scopedArms nr nt ne nv arms) →
+        RowTransport Q Q' es →
+          HasTypeArmsQ P B Ψ Q (C1 ++ C0) Γ Φ R obs arms a b e L →
+            HasTypeArmsQ P B Ψ Q' C1 ((fun Δ => Δ.bindTypes (typeEnvAt (List.length C1) ts es)) Γ) Φ
+              (Option.map (Ty.substAt (List.length C1) ts es) R) obs (Arm.substTyAtList (List.length C1) ts es arms)
+              (Ty.substAt (List.length C1) ts es a) (Ty.substAt (List.length C1) ts es b)
+              (Eff.substAt (List.length C1) ts es e)
+              ((fun L =>
+                  List.map
+                    (Option.map fun b =>
+                      match b with
+                      | BuilderKind.list a => BuilderKind.list (Ty.substAt (List.length C1) ts es a)
+                      | BuilderKind.string => BuilderKind.string
+                      | BuilderKind.bytes => BuilderKind.bytes)
+                    L)
+                L) : Prop
+∀ {P : Program} {B : Builtins} {Ψ : StoreTy} {Q Q' : NoFailCtx} {C0 C1 : TypeCtx} {Γ : Ctx} {Φ : List Pred}
+  {R : Option Ty} {eb : Eff} {clauses : List Clause} {t : Ty} {e : Eff} {L : LocalCtx} {ts : List Ty} {es : List Eff},
+  P.WellFormed ∧ P.WellTyped B ∧ Builtins.CoreAssumptions P B ∧ Ψ.WF →
+    ClosedTypeSubstInput P B C0 C1 Γ ts es →
+      (TypeSubstCode es fun nr nt ne nv => scopedClauses nr nt ne nv clauses) →
+        RowTransport Q Q' es →
+          HasTypeClausesQ P B Ψ Q (C1 ++ C0) Γ Φ R eb clauses t e L →
+            HasTypeClausesQ P B Ψ Q' C1 ((fun Δ => Δ.bindTypes (typeEnvAt (List.length C1) ts es)) Γ) Φ
+              (Option.map (Ty.substAt (List.length C1) ts es) R) (Eff.substAt (List.length C1) ts es eb)
+              (Clause.substTyAtList (List.length C1) ts es clauses) (Ty.substAt (List.length C1) ts es t)
+              (Eff.substAt (List.length C1) ts es e)
+              ((fun L =>
+                  List.map
+                    (Option.map fun b =>
+                      match b with
+                      | BuilderKind.list a => BuilderKind.list (Ty.substAt (List.length C1) ts es a)
+                      | BuilderKind.string => BuilderKind.string
+                      | BuilderKind.bytes => BuilderKind.bytes)
+                    L)
+                L) : Prop
+∀ {P : Program} {B : Builtins} {Ψ : StoreTy} {Q Q' : NoFailCtx} {C0 C1 : TypeCtx} {Γ : Ctx} {Φ : List Pred} {err : Ty}
+  {R : Option Ty} {clauses : List Clause} {t : Ty} {e : Eff} {L : LocalCtx} {ts : List Ty} {es : List Eff},
+  P.WellFormed ∧ P.WellTyped B ∧ Builtins.CoreAssumptions P B ∧ Ψ.WF →
+    ClosedTypeSubstInput P B C0 C1 Γ ts es →
+      (TypeSubstCode es fun nr nt ne nv => scopedClauses nr nt ne nv clauses) →
+        RowTransport Q Q' es →
+          HasFailureClause P B Ψ Q (C1 ++ C0) Γ Φ err R clauses t e L →
+            HasFailureClause P B Ψ Q' C1 ((fun Δ => Δ.bindTypes (typeEnvAt (List.length C1) ts es)) Γ) Φ
+              (Ty.substAt (List.length C1) ts es err) (Option.map (Ty.substAt (List.length C1) ts es) R)
+              (Clause.substTyAtList (List.length C1) ts es clauses) (Ty.substAt (List.length C1) ts es t)
+              (Eff.substAt (List.length C1) ts es e)
+              ((fun L =>
+                  List.map
+                    (Option.map fun b =>
+                      match b with
+                      | BuilderKind.list a => BuilderKind.list (Ty.substAt (List.length C1) ts es a)
+                      | BuilderKind.string => BuilderKind.string
+                      | BuilderKind.bytes => BuilderKind.bytes)
+                    L)
+                L) : Prop
+∀ {P : Program} {B : Builtins} {Ψ : StoreTy} {Q : NoFailCtx} {C : TypeCtx} {Γ : Ctx} {Φ : List Pred} {R : Option Ty}
+  {ν : Nat → Val} {i : Nat} {a : Ty}, ImageOk P B Ψ Q C Γ Φ R ν i a → True : Prop
+∀ {P : Program} {K K' : KindCtx} {a : Ty} {k : TyKind} {nr nv : Nat},
+  Ty.WF nr 0 nv a → Ty.HasKind P K a k → Ty.HasKind P K' a k : Prop
+∀ {P : Program} {K K' : KindCtx} {e : Eff} {nr nv : Nat}, Eff.WF nr 0 nv e → kindsEff P K e → kindsEff P K' e : Prop
+∀ {P : Program} {C0 C1 : TypeCtx} {a : Ty} {k : TyKind} {ts : List Ty} {es : List Eff},
+  Ty.HasKind P (C1 ++ C0).kinds a k →
+    TypeArgsKinded P [] ts C0.kinds →
+      (∀ (e : Eff), e ∈ es → kindsEff P [] e) → Ty.HasKind P C1.kinds (Ty.substAt (List.length C1) ts es a) k : Prop
+∀ {P : Program} {C0 C1 : TypeCtx} {t : Tel} {ts : List Ty} {es : List Eff},
+  kindsTel P (C1 ++ C0).kinds t →
+    TypeArgsKinded P [] ts C0.kinds →
+      (∀ (e : Eff), e ∈ es → kindsEff P [] e) → kindsTel P C1.kinds (Tel.substAt (List.length C1) ts es t) : Prop
+∀ {P : Program} {C0 C1 : TypeCtx} {as : List Ty} {ks : List TyKind} {ts : List Ty} {es : List Eff},
+  TypeArgsKinded P (C1 ++ C0) as ks →
+    TypeArgsKinded P [] ts C0.kinds →
+      (∀ (e : Eff), e ∈ es → kindsEff P [] e) →
+        TypeArgsKinded P C1 (List.map (Ty.substAt (List.length C1) ts es) as) ks : Prop
+∀ {P : Program} {B : Builtins} {Ψ : StoreTy} {C0 C1 : TypeCtx} {Γ : Ctx} {a : Ty} {ts : List Ty} {es : List Eff},
+  P.WellFormed ∧ P.WellTyped B ∧ Builtins.CoreAssumptions P B ∧ Ψ.WF →
+    ClosedTypeSubstInput P B C0 C1 Γ ts es →
+      Ty.Annotation P (C1 ++ C0) Γ a →
+        Ty.Declared P C1 ((fun Δ => Δ.bindTypes (typeEnvAt (List.length C1) ts es)) Γ)
+          (Ty.substAt (List.length C1) ts es a) : Prop
+∀ {P : Program} {B : Builtins} {Ψ : StoreTy} {C0 C1 : TypeCtx} {Γ : Ctx} {t : Tel} {ts : List Ty} {es : List Eff},
+  P.WellFormed ∧ P.WellTyped B ∧ Builtins.CoreAssumptions P B ∧ Ψ.WF →
+    ClosedTypeSubstInput P B C0 C1 Γ ts es →
+      Ty.Annotation P (C1 ++ C0) Γ (Ty.dependentFn t) →
+        Tel.Declared P C1 ((fun Δ => Δ.bindTypes (typeEnvAt (List.length C1) ts es)) Γ)
+          (Tel.substAt (List.length C1) ts es t) : Prop
+∀ {P : Program} {B : Builtins} {Ψ : StoreTy} {C0 C1 : TypeCtx} {Γ : Ctx} {as ts : List Ty} {es : List Eff},
+  P.WellFormed ∧ P.WellTyped B ∧ Builtins.CoreAssumptions P B ∧ Ψ.WF →
+    ClosedTypeSubstInput P B C0 C1 Γ ts es →
+      TypeAnnotations P (C1 ++ C0) Γ as →
+        declaredTys P C1 ((fun Δ => Δ.bindTypes (typeEnvAt (List.length C1) ts es)) Γ)
+          (List.map (Ty.substAt (List.length C1) ts es) as) : Prop
+∀ {P : Program} {B : Builtins} {Ψ : StoreTy} {C0 C1 : TypeCtx} {Γ : Ctx} {e : Eff} {ts : List Ty} {es : List Eff},
+  P.WellFormed ∧ P.WellTyped B ∧ Builtins.CoreAssumptions P B ∧ Ψ.WF →
+    ClosedTypeSubstInput P B C0 C1 Γ ts es →
+      RowAnnotations P (C1 ++ C0) Γ [e] →
+        declaredEff P C1 ((fun Δ => Δ.bindTypes (typeEnvAt (List.length C1) ts es)) Γ)
+          (Eff.substAt (List.length C1) ts es e) : Prop

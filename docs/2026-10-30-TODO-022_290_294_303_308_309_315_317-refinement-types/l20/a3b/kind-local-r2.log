@@ -1,0 +1,6 @@
+Benitoite/Release/Refinement/KindTypeSubst.lean:74:82: error: Type mismatch: After simplification, term
+  ht
+ has type
+  @Membership.mem Ty (List Ty) List.instMembership (Eff.fails (EffR.mk atoms fs)) t
+but is expected to have type
+  @Membership.mem Ty (List Ty) List.instMembership fs t

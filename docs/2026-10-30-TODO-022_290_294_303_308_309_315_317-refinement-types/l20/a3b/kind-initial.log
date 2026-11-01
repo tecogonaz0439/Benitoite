@@ -1,0 +1,287 @@
+Benitoite/Release/Refinement/KindTypeSubst.lean:17:32: error: Application type mismatch: The argument
+  he
+has type
+  TyCon.data d = TyCon.list
+but is expected to have type
+  ∃ x, ?m.125 x
+in the application
+  Classical.choose_spec he
+Benitoite/Release/Refinement/KindTypeSubst.lean:10:64: error: unsolved goals
+case h_3
+P : Program
+d : DataName
+n : Nat
+x✝ : TyCon
+heq✝ : TyCon.data d = TyCon.reference
+h : some 1 = some n
+⊢ P.DataArity d n
+
+case h_4
+P : Program
+d : DataName
+n : Nat
+x✝ : TyCon
+heq✝ : TyCon.data d = TyCon.lazy
+h : some 1 = some n
+⊢ P.DataArity d n
+
+case h_5
+P : Program
+d : DataName
+n : Nat
+x✝ : TyCon
+heq✝ : TyCon.data d = TyCon.map
+h : some 2 = some n
+⊢ P.DataArity d n
+
+case h_6
+P : Program
+d : DataName
+n : Nat
+x✝ : TyCon
+d✝ : DataName
+heq✝ : TyCon.data d = TyCon.data d✝
+h : (if h : ∃ n, P.DataArity d✝ n then some (Classical.choose h) else none) = some n
+⊢ P.DataArity d n
+Benitoite/Release/Refinement/KindTypeSubst.lean:22:12: error(lean.invalidField): Invalid field notation: Type of
+  a
+is not known; cannot resolve field `WF`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Atom.WF`
+  • `Release.Eff.WF`
+  • `Release.Ty.WF`
+  • `Std.DHashMap.Raw.WF`
+  • `Std.DTreeMap.Raw.WF`
+  • `Std.HashMap.Raw.WF`
+  • `Std.HashSet.Raw.WF`
+  • `Std.TreeMap.Raw.WF`
+  • `Std.TreeSet.Raw.WF`
+  • `BinderTypes.WF`
+  • `Ctx.WF`
+  • `Eff.WF`
+  • `ExternalSignature.WF`
+  • `LocTy.WF`
+  • `OpSig.WF`
+  • `Pred.WF`
+  • `RangeExpr.WF`
+  • `RangeIx.WF`
+  • `StoreTy.WF`
+  • `Tel.WF`
+  • `Ty.WF`
+  • `Scope.Domain.CIDR.WF`
+  • `Scope.Domain.EndpointPattern.WF`
+  • `Scope.Domain.HostPattern.WF`
+  • `Scope.Domain.HostTarget.WF`
+  • `Scope.Domain.IPPattern.WF`
+  • `Scope.Domain.NamePattern.WF`
+  • `Scope.Domain.PathPattern.WF`
+  • `Scope.Domain.PortRange.WF`
+  • `Scope.Domain.Range.WF`
+  • `Scope.Domain.Target.WF`
+  • `Scope.Signature.Ix.WF`
+  • `Std.DTreeMap.Internal.Impl.WF`
+  • `Std.Sat.AIG.Cache.WF`
+Benitoite/Release/Refinement/KindTypeSubst.lean:22:31: error(lean.invalidField): Invalid field notation: Type of
+  a
+is not known; cannot resolve field `HasKind`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Release.LocalRef.HasKind`
+  • `LocalRef.HasKind`
+  • `Ty.HasKind`
+Benitoite/Release/Refinement/KindTypeSubst.lean:22:50: error(lean.invalidField): Invalid field notation: Type of
+  a
+is not known; cannot resolve field `HasKind`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Release.LocalRef.HasKind`
+  • `LocalRef.HasKind`
+  • `Ty.HasKind`
+Benitoite/Release/Refinement/KindTypeSubst.lean:23:4: error: Tactic `cases` failed: major premise type is not an inductive type
+  ?m.14
+
+Explanation: the `cases` tactic is for constructor-based reasoning as well as for applying custom cases principles with a 'using' clause or a registered '@[cases_eliminator]' theorem. The above type neither is an inductive type nor has a registered theorem.
+
+P : ?m.1
+K : ?m.11
+K' : ?m.12
+a : ?m.13
+k : ?m.14
+nr : ?m.15
+nv : ?m.16
+hw : sorry
+h : sorry
+⊢ sorry
+Benitoite/Release/Refinement/KindTypeSubst.lean:74:37: error: Application type mismatch: The argument
+  h e (List.mem_of_getElem? he)
+has type
+  kindsEff P K e
+but is expected to have type
+  kindsList ?m.86 ?m.87 ?m.88
+in the application
+  kindsList_iff.mp (h e (List.mem_of_getElem? he))
+Benitoite/Release/Refinement/KindTypeSubst.lean:76:68: error(lean.invalidField): Invalid field notation: Type of
+  θ
+is not known; cannot resolve field `types`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Release.Admissible.types`
+  • `Release.SubstEnv.types`
+  • `Lean.Meta.ExtractLetsConfig.types`
+  • `Admissible.types`
+  • `ExternalCallAdmissible.types`
+  • `SignatureInstance.types`
+  • `SubstEnv.types`
+  • `Transport.types`
+  • `Lean.Meta.Command.ReduceConfig.types`
+  • `SubstEnv.AgreesBelow.types`
+  • `SubstEnv.SameTypes.types`
+  • `SubstEnv.WFImages.types`
+Benitoite/Release/Refinement/KindTypeSubst.lean:77:27: error(lean.invalidField): Invalid field notation: Type of
+  θ
+is not known; cannot resolve field `up`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `PLift.up`
+  • `PULift.up`
+  • `ULift.up`
+  • `DeclarationImages.up`
+  • `SubstEnv.up`
+  • `Transport.up`
+  • `SubstEnv.AgreesBelow.up`
+  • `SubstEnv.SameTypes.up`
+  • `SubstEnv.WFImages.up`
+Benitoite/Release/Refinement/KindTypeSubst.lean:81:47: error(lean.invalidField): Invalid field notation: Type of
+  θ
+is not known; cannot resolve field `rows`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Release.SubstEnv.rows`
+  • `Eff.VarsIn.rows`
+  • `SignatureInstance.rows`
+  • `SubstEnv.rows`
+  • `Ty.VarsIn.rows`
+  • `Ty.VarsInList.rows`
+  • `SubstEnv.AgreesBelow.rows`
+  • `SubstEnv.SameTypes.rows`
+  • `SubstEnv.WFImages.rows`
+Benitoite/Release/Refinement/KindTypeSubst.lean:82:10: error(lean.invalidField): Invalid field notation: Type of
+  θ
+is not known; cannot resolve field `up`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `PLift.up`
+  • `PULift.up`
+  • `ULift.up`
+  • `DeclarationImages.up`
+  • `SubstEnv.up`
+  • `Transport.up`
+  • `SubstEnv.AgreesBelow.up`
+  • `SubstEnv.SameTypes.up`
+  • `SubstEnv.WFImages.up`
+Benitoite/Release/Refinement/KindTypeSubst.lean:84:41: error: Application type mismatch: The argument
+  he
+has type
+  Membership.mem.{0, u_2} ?m.16 e
+but is expected to have type
+  Membership.mem.{?u.18, ?u.18} (List.map ?m.38 ?m.39) ?m.37
+in the application
+  List.mem_map.mp he
+Benitoite/Release/Refinement/KindTypeSubst.lean:106:63: error: unexpected token '('; expected 'end'
+Benitoite/Release/Refinement/KindTypeSubst.lean:88:48: error(lean.invalidField): Invalid field notation: Type of
+  a
+is not known; cannot resolve field `HasKind`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Release.LocalRef.HasKind`
+  • `LocalRef.HasKind`
+  • `HasKind`
+Benitoite/Release/Refinement/KindTypeSubst.lean:89:35: error(lean.invalidField): Invalid field notation: Type of
+  θ
+is not known; cannot resolve field `types`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Release.Admissible.types`
+  • `Release.SubstEnv.types`
+  • `Lean.Meta.ExtractLetsConfig.types`
+  • `Admissible.types`
+  • `ExternalCallAdmissible.types`
+  • `SignatureInstance.types`
+  • `SubstEnv.types`
+  • `Transport.types`
+  • `Lean.Meta.Command.ReduceConfig.types`
+  • `SubstEnv.AgreesBelow.types`
+  • `SubstEnv.SameTypes.types`
+  • `SubstEnv.WFImages.types`
+Benitoite/Release/Refinement/KindTypeSubst.lean:90:18: error(lean.invalidField): Invalid field notation: Type of
+  θ
+is not known; cannot resolve field `rows`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Release.SubstEnv.rows`
+  • `Eff.VarsIn.rows`
+  • `SignatureInstance.rows`
+  • `SubstEnv.rows`
+  • `Ty.VarsIn.rows`
+  • `Ty.VarsInList.rows`
+  • `SubstEnv.AgreesBelow.rows`
+  • `SubstEnv.SameTypes.rows`
+  • `SubstEnv.WFImages.rows`
+Benitoite/Release/Refinement/KindTypeSubst.lean:90:63: error(lean.invalidField): Invalid field notation: Type of
+  θ
+is not known; cannot resolve field `types`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Release.Admissible.types`
+  • `Release.SubstEnv.types`
+  • `Lean.Meta.ExtractLetsConfig.types`
+  • `Admissible.types`
+  • `ExternalCallAdmissible.types`
+  • `SignatureInstance.types`
+  • `SubstEnv.types`
+  • `Transport.types`
+  • `Lean.Meta.Command.ReduceConfig.types`
+  • `SubstEnv.AgreesBelow.types`
+  • `SubstEnv.SameTypes.types`
+  • `SubstEnv.WFImages.types`
+Benitoite/Release/Refinement/KindTypeSubst.lean:91:7: error(lean.invalidField): Invalid field notation: Type of
+  a
+is not known; cannot resolve field `rawBind`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Release.Eff.rawBind`
+  • `Release.Ty.rawBind`
+  • `Eff.rawBind`
+  • `FnView.rawBind`
+  • `Tel.rawBind`
+  • `TelClosure.rawBind`
+  • `TelLe.rawBind`
+  • `rawBind`
+  • `TypeArgsLe.rawBind`
+  • `LeQ.rawBind`
+Benitoite/Release/Refinement/KindTypeSubst.lean:92:4: error: Tactic `cases` failed: major premise type is not an inductive type
+  ?m.23
+
+Explanation: the `cases` tactic is for constructor-based reasoning as well as for applying custom cases principles with a 'using' clause or a registered '@[cases_eliminator]' theorem. The above type neither is an inductive type nor has a registered theorem.
+
+P : Program
+K L : KindCtx
+a : ?m.22
+k : ?m.23
+θ : ?m.24
+h : sorry
+hi : TypeImagesKinded P K L sorry
+hr : ∀ (e : Eff), e ∈ ?m.13 → kindsEff P L e
+ho : ∀ (i : ?m.28 h hi hr), sorry.Ordinary
+⊢ sorry
+Benitoite/Release/Refinement/KindTypeSubst.lean:114:25: error(lean.unknownIdentifier): Unknown constant `Benitoite.Release.Refinement.Ty.HasKind.rawBind`
+Benitoite/Release/Refinement/KindTypeSubst.lean:114:58: error(lean.unknownIdentifier): Unknown identifier `kindsEff_rawBind`
+Benitoite/Release/Refinement/KindTypeSubst.lean:115:28: error(lean.unknownIdentifier): Unknown constant `Benitoite.Release.Refinement.Ty.HasKind.rawBind`
+Benitoite/Release/Refinement/KindTypeSubst.lean:116:30: error(lean.unknownIdentifier): Unknown identifier `kindImages_up`
+Benitoite/Release/Refinement/KindTypeSubst.lean:116:49: error(lean.unknownIdentifier): Unknown identifier `rowKinds_up`
+Benitoite/Release/Refinement/KindTypeSubst.lean:123:26: error(lean.unknownIdentifier): Unknown constant `Benitoite.Release.Refinement.Ty.HasKind.rawBind`
+Benitoite/Release/Refinement/KindTypeSubst.lean:130:0: error: Missing name after `end`: Expected the current scope name `Refinement`
+
+Hint: To end the current scope `Refinement`, specify its name:
+  end ̲R̲e̲f̲i̲n̲e̲m̲e̲n̲t̲

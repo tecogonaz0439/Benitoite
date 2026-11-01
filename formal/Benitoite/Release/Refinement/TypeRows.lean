@@ -1,5 +1,6 @@
 import Benitoite.Release.Refinement.TypeSupport
 import Benitoite.Release.Refinement.Admissible
+import Benitoite.Release.Refinement.Telescope
 
 /-! Fail・篩・依存列内部の行変数の条件。範囲添字のWFとは区別する。
 設計書01-12「コア計算と脱糖」の支持を使う。 -/
@@ -99,6 +100,50 @@ mutual
     cases t with
     | done r e => exact ⟨Ty.rowsIn_true r, Eff.rowsIn_true e⟩
     | param n a t => exact ⟨Ty.rowsIn_true a, Tel.rowsIn_true t⟩
+end
+
+noncomputable section
+mutual
+  private theorem rows_map (a : Ty) {pe} (h : a.RowsIn pe) (ρ : Nat → RangeIx) :
+      (a.rawMapRanges ρ).RowsIn pe := by
+    cases a <;> simp only [Ty.RowsIn] at h <;> simp only [Ty.rawMapRanges,Ty.RowsIn]
+    all_goals first
+      | exact h
+      | exact rows_map _ h ρ
+      | exact rows_maps _ h ρ
+      | exact rows_map_tel _ h ρ
+      | skip
+    case fn ns ps r e => exact ⟨rows_maps ps h.1 ρ,rows_map r h.2.1 ρ,rows_map_eff e h.2.2 ρ⟩
+    case cont b t e => exact ⟨rows_map b h.1 ρ,rows_map t h.2.1 ρ,rows_map_eff e h.2.2 ρ⟩
+    case map a b => exact ⟨rows_map a h.1 ρ,rows_map b h.2 ρ⟩
+  private theorem rows_maps (as : List Ty) {pe} (h : Ty.RowsInList pe as) (ρ : Nat → RangeIx) :
+      Ty.RowsInList pe (mapRangesTys ρ as) := by
+    cases as with
+    | nil => trivial
+    | cons a as => exact ⟨rows_map a h.1 ρ,rows_maps as h.2 ρ⟩
+  private theorem rows_map_tel (t : Tel) {pe} (h : t.RowsIn pe) (ρ : Nat → RangeIx) :
+      (Tel.rawMapRanges ρ t).RowsIn pe := by
+    cases t with
+    | done r e => exact ⟨rows_map r h.1 ρ,rows_map_eff e h.2 ρ⟩
+    | param n a t => exact ⟨rows_map a h.1 ρ,rows_map_tel t h.2 ρ⟩
+  private theorem rows_map_eff (e : Eff) {pe} (h : e.RowsIn pe) (ρ : Nat → RangeIx) :
+      (Eff.rawMapRanges ρ e).RowsIn pe := by
+    classical
+    cases e with
+    | mk ats fs =>
+      refine ⟨?_,rows_maps fs h.2 ρ⟩
+      intro i hi
+      have he : ∃ y, ats y = true ∧ mapAtomRanges ρ y = .rho i := of_decide_eq_true hi
+      obtain ⟨y,hy,he⟩ := he
+      cases y with
+      | name l ix => cases he
+      | rho j => cases he; exact h.1 _ hy
+end
+
+theorem Tel.rowsIn_instR {pe : Nat → Prop} {t : Tel}
+    (h : t.RowsIn pe) (rs : List RangeExpr) :
+    (Tel.instR rs t).RowsIn pe :=
+  Tel.norm_rowsIn _ (rows_map_tel t h _)
 end
 
 end Benitoite.Release.Refinement

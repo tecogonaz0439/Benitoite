@@ -1,0 +1,35 @@
+theorem HasTypeVQ.type_subst_locRef {P B} {Ψ : StoreTy} {Q C0 C1 Γ Φ l a ts es}
+    (hf : P.WellFormed ∧ P.WellTyped B ∧ B.CoreAssumptions P ∧ Ψ.WF)
+    (hi : ClosedTypeSubstInput P B C0 C1 Γ ts es)
+    (hc : TypeSubstCode es (fun nr nt ne nv => (Val.loc l).SourceScoped nr nt ne nv))
+    (hl : Ψ l = some (.ref a)) (hd : Ty.Declared P (C1 ++ C0) Γ a) :
+    HasTypeVQ P B Ψ Q C1 (Γ.bindTypes (typeEnvAt C1.length ts es)) Φ (.loc l)
+      ((Ty.reference a).substAt C1.length ts es)
+
+theorem HasTypeVQ.type_subst_locLazy {P B} {Ψ : StoreTy} {Q C0 C1 Γ Φ l a ts es}
+    (hf : P.WellFormed ∧ P.WellTyped B ∧ B.CoreAssumptions P ∧ Ψ.WF)
+    (hi : ClosedTypeSubstInput P B C0 C1 Γ ts es)
+    (hc : TypeSubstCode es (fun nr nt ne nv => (Val.loc l).SourceScoped nr nt ne nv))
+    (hl : Ψ l = some (.lazy a)) (hd : Ty.Declared P (C1 ++ C0) Γ a) :
+    HasTypeVQ P B Ψ Q C1 (Γ.bindTypes (typeEnvAt C1.length ts es)) Φ (.loc l)
+      ((Ty.lazy a).substAt C1.length ts es)
+
+theorem HasTypeCQ.type_subst_resumeL {P B} {Ψ : StoreTy} {Q C0 C1 Γ Φ R L l v b t e ts es}
+    (hf : P.WellFormed ∧ P.WellTyped B ∧ B.CoreAssumptions P ∧ Ψ.WF)
+    (hi : ClosedTypeSubstInput P B C0 C1 Γ ts es)
+    (hc : TypeSubstCode es (fun nr nt ne nv => (Comp.resume (.loc l) v).SourceScoped nr nt ne nv))
+    (hl : Ψ l = some (.cont b t e R)) (hd : Ty.Declared P (C1 ++ C0) Γ t)
+    (hv : HasTypeVQ P B Ψ Q C1 (Γ.bindTypes (typeEnvAt C1.length ts es)) Φ
+      (v.substTyAt C1.length ts es) (b.substAt C1.length ts es)) :
+    HasTypeCQ P B Ψ Q C1 (Γ.bindTypes (typeEnvAt C1.length ts es)) Φ
+      (R.map (Ty.substAt C1.length ts es)) (.resume (.loc l) (v.substTyAt C1.length ts es))
+      (t.substAt C1.length ts es) (Eff.substAt C1.length ts es e) L
+
+theorem HasTypeVQ.type_subst_closure {P B} {Ψ : StoreTy} {Q C0 C1 Γ Φ runtime body t ts es}
+    (hf : P.WellFormed ∧ P.WellTyped B ∧ B.CoreAssumptions P ∧ Ψ.WF)
+    (hi : ClosedTypeSubstInput P B C0 C1 Γ ts es)
+    (hc : TypeSubstCode es (fun nr nt ne nv => (Val.closure runtime body).SourceScoped nr nt ne nv))
+    (ha : Ty.Annotation P (C1 ++ C0) Γ (.dependentFn t))
+    (hr : Tel.RuntimeShape runtime t) (hb : DependentClosureTy P B Ψ body t) :
+    HasTypeVQ P B Ψ Q C1 (Γ.bindTypes (typeEnvAt C1.length ts es)) Φ (.closure runtime body)
+      ((Ty.dependentFn t).substAt C1.length ts es)
