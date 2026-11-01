@@ -71,6 +71,10 @@
 
 移動・値の置換・narrowing の相互の証明は、値29、計算24、腕・節・引数列・捕捉・閉包などを合わせた76構成子を扱う。これは Step の全76遷移に対する保存の証明とは別である。篩の平坦化と true の除去、非依存関数型の正規化、`SatAll`・admits・鍵の制約を正規形で読む規則、組み込み遷移の入力の正規化も、この体系の定義と証明へ含む。
 
+`Refinement/TypeSupport.lean`・`FiniteSupport.lean` は、篩・外部型・依存列・Fail 内部までの支持と収集を定義し、支持の単調性、収集の完全性と健全性、正規化による保存と反映、移動と像の条件付き置換の支持を証明する。`FiniteCompare.lean` は型・型列・効果・依存列の有限比較を既存の木比較へ接続する。新原子を旧原子の `.rho a.code` へ写す有限の符号化を使い、支持の下で `encodeAtoms` と一致することを証明する。
+
+`FiniteFunctionView.lean` は逆移動と有限比較から非依存列を判定し、既存の `fnView?` と `foldFn` への一致を証明する。`Finite.lean` は計算できる正規化四族と既存正規化への一致、支持・正規形・冪等性・支持候補からの独立性を持つ。実行時には非計算的な `norm`・`foldFn`・`toTree`・`encodeAtoms` や `Classical.choose` を使わない。比較の正しさには両入力の有限支持を明示し、型全域の決定可能等号や任意の効果関数の有限性へ一般化しない。
+
 網羅性は正規形を入口とし、`ValueMeaning` は全子値の意味と最外の全篩述語の真を持つ。範囲付き型の形は添字と成功値を結ぶ `ScopedValue` に絞り、範囲の拡大と `scoped_forget` による意味の移送を証明する。`ObservationOrder`・`ObservationSubstitution` は内部 slot の情報の順序、鍵コードと大きさ、観測と三値評価の単調性、自己を保つ値置換の確定値の保存を証明する。`PatternNormalForm`・`PatternSemantics` は正規化と全型の値置換反映を証明し、無条件の `Inhabits.of_core` は置かない。`ValueMeaningInhabits` は意味から正規形への所属を導く。`CoverageRefinement` は refine の意味の移送と `V_Sub` の代表、Month・空篩・非空 List・観測不能な要素の代表、任意の閉じた長さからの `V_Refine` と網羅性、開いた型への反映を持つ。
 
 パターン型付けには、篩へ同じ束縛を移す `P_Refined` と、正規形の等号で入力型を移す `P_Convert` を含む。型付けの値29・計算24を含む76構成子と、値移動・型移動・値置換・narrowing の主な署名は維持する。閉じた型付けの全導出から `ValueMeaning` を構成する証明、任意の部分型の全移送、任意の捕捉と腕への全接続は、この代表の証明からは結論しない。意味を主な定理へ独立の仮定として追加していない。

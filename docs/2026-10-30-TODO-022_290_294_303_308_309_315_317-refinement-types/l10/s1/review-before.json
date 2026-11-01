@@ -1,0 +1,177 @@
+{
+  "started_utc": "2026-11-01T09:48:01.804638+00:00",
+  "base": "78aa5cca81cf24a420c266e6b714934297ce434e",
+  "branch": "m014/l10.s1",
+  "rss": "未取得（計画上の非採取）",
+  "protected_count": 608,
+  "build": {
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-11-01T09:48:01.822992+00:00",
+    "seconds": 0.155,
+    "exit_code": 0,
+    "output": "build-output.txt",
+    "bytes": 40447,
+    "sha256": "0f9ca98cff73cf195d913c616cd581bda22c03aef9f4e6a1f70dda371013fe01",
+    "axioms": [],
+    "disallowed_axioms": [],
+    "print_axioms_count": 0,
+    "sorry_diagnostic": false,
+    "warnings": 141,
+    "jobs": 765
+  },
+  "signatures": {
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/s1/signatures.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-11-01T09:48:01.979061+00:00",
+    "seconds": 0.773,
+    "exit_code": 0,
+    "output": "signatures-output.txt",
+    "bytes": 29085,
+    "sha256": "c80467026319e8b3de72eb9f1bb1c7098bc16368a8a42b93c08a096412d40735",
+    "axioms": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "disallowed_axioms": [],
+    "print_axioms_count": 99,
+    "sorry_diagnostic": false,
+    "warnings": 77,
+    "constants": 99,
+    "complete": true
+  },
+  "boundary": {
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/s1/boundary.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-11-01T09:48:02.753318+00:00",
+    "seconds": 1.039,
+    "exit_code": 0,
+    "output": "boundary-output.txt",
+    "bytes": 3095,
+    "sha256": "fcca47bf869b799bcf0110d118e230dc63c02a8c8194d8f49b0329f3dc8d85cb",
+    "axioms": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "disallowed_axioms": [],
+    "print_axioms_count": 43,
+    "sorry_diagnostic": false,
+    "warnings": 0,
+    "constants": 43,
+    "complete": true
+  },
+  "execution-path": {
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/s1/execution-path.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-11-01T09:48:03.792546+00:00",
+    "seconds": 0.809,
+    "exit_code": 0,
+    "output": "execution-path-output.txt",
+    "bytes": 621,
+    "sha256": "8b30e5a55cc2b4a278d73f5b17b7be3e87a18b9d92c90c68695f31697d5a00ac",
+    "axioms": [],
+    "disallowed_axioms": [],
+    "print_axioms_count": 0,
+    "sorry_diagnostic": false,
+    "warnings": 0,
+    "roots": {
+      "Benitoite.Release.Refinement.tyCompareWith": 1050,
+      "Benitoite.Release.Refinement.tysCompareWith": 1050,
+      "Benitoite.Release.Refinement.effCompareWith": 1050,
+      "Benitoite.Release.Refinement.telCompareWith": 1050,
+      "Benitoite.Release.Refinement.finiteEncodeAtoms": 551,
+      "Benitoite.Release.Refinement.Tel.fnViewWith?": 1172,
+      "Benitoite.Release.Refinement.Ty.foldFnWith": 1174,
+      "Benitoite.Release.Refinement.Ty.normWith": 1207,
+      "Benitoite.Release.Refinement.Ty.normTysWith": 1207,
+      "Benitoite.Release.Refinement.Eff.normWith": 1207,
+      "Benitoite.Release.Refinement.Tel.normWith": 1207
+    },
+    "complete": true
+  },
+  "axioms": {
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/s1/axioms.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-11-01T09:48:04.601361+00:00",
+    "seconds": 1.083,
+    "exit_code": 0,
+    "output": "axioms-output.txt",
+    "bytes": 75174,
+    "sha256": "d7a603765ea3c4339185cd40f9b50183b041df60867c4f7014e79aa3888824d0",
+    "axioms": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "disallowed_axioms": [],
+    "print_axioms_count": 654,
+    "sorry_diagnostic": false,
+    "warnings": 0,
+    "modules": {
+      "Benitoite.Release.Refinement.TypeSupport": 136,
+      "Benitoite.Release.Refinement.FiniteSupport": 79,
+      "Benitoite.Release.Refinement.FiniteCompare": 288,
+      "Benitoite.Release.Refinement.FiniteFunctionView": 29,
+      "Benitoite.Release.Refinement.Finite": 104
+    },
+    "cases": {
+      "SINGLE": 26,
+      "PAIR": 450
+    },
+    "complete": true
+  },
+  "inputs": {
+    "formal/Benitoite.lean": "595c0bc484dc43715f569803e519deb9c8aa56c9dfa4dbb5529bf09827069e87",
+    "formal/lakefile.toml": "10f2661bff8fce95a9253d976427d0ca44038ec12350c955badbc1cf1efa6e3a",
+    "formal/Benitoite/Release/Refinement/TypeSupport.lean": "d4d1ce1f193fe213493be707fb7ffd350c7f7a4f96f77471fdcec20c5c0a7070",
+    "formal/Benitoite/Release/Refinement/FiniteSupport.lean": "faefb19bf003ef3316cdc3488d7d94430c5d84f074af5174362e23b0b1e05d50",
+    "formal/Benitoite/Release/Refinement/FiniteCompare.lean": "50bda8f07615115fead657eab0275656ee1980390615f61722467b2ee26532cb",
+    "formal/Benitoite/Release/Refinement/FiniteFunctionView.lean": "4ca18428807e84c0fda92f47d8849b8e3ab59e6f6d3c945202109fe60613518b",
+    "formal/Benitoite/Release/Refinement/Finite.lean": "77733357cd0e6cb56430e3e7db8cb75c8612737c80b1102e1c0ba7fafefb938b",
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/s1/check.py": "c1f47f2c75b96a9ba3701b1a45fe982c0ce603a7ab34bef154b5ba2a18d7adb9",
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/s1/boundary.lean": "cb3210f2dcc19254ae15dfb07e73145688b1a85fc9805fb3494cd038199d6874",
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/s1/signatures.md": "ebaaf35d643446a2c94d58c70e261f1c71d93028315f91e00ea35a1a1b8d5b93",
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/s1/signatures.lean": "05f472e236593a034faa1ab62df9841843d40ff42c448b85e80c46302e480feb",
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/s1/execution-path.lean": "da07b97167dd443778fc22bbfd644492f6f23ad64a064e36864e8a4ff4088d69",
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/s1/axioms.lean": "5de08aea110b190f49fdacf7695e1da14b1602a844d48e8b9413873ac101f636",
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/s1/protected-inputs.json": "c8be65a45fc386e765a8f825d81c091b0fb481da49f7e6af2df2093b95bcc914",
+    "docs/design/01-spec/01-12-core-calculus.md": "1b698d88394d9964ef19d71294ca419ecc3cd862c5cb33a7618a18cc4dec34ae",
+    "docs/design/07-quality/07-04-formal-semantics.md": "5918d5a54feca819f161a62f533880b609f4b4e599fcba1efd24344333d4a3a2",
+    "docs/design/00-overview/00-04-glossary.md": "57997e56c8a12a97851fc48af8973ced6a3239d33693683fb9af0c44999a7b9b"
+  },
+  "seconds": 3.899,
+  "ended_utc": "2026-11-01T09:48:05.703634+00:00"
+}

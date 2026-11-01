@@ -1,0 +1,36 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-M",
+    "12288",
+    "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/s1/execution-path.lean"
+  ],
+  "cwd": "formal",
+  "started_utc": "2026-11-01T10:07:43.399974+00:00",
+  "seconds": 0.801,
+  "exit_code": 0,
+  "output": "execution-path-output.txt",
+  "bytes": 617,
+  "sha256": "336cb712def038a7c905dba3a9ece39b0a714fa3b04a248ab0788253e9b42b06",
+  "axioms": [],
+  "disallowed_axioms": [],
+  "print_axioms_count": 0,
+  "sorry_diagnostic": false,
+  "warnings": 0,
+  "roots": {
+    "Benitoite.Release.Refinement.tyCompareWith": 953,
+    "Benitoite.Release.Refinement.tysCompareWith": 953,
+    "Benitoite.Release.Refinement.effCompareWith": 953,
+    "Benitoite.Release.Refinement.telCompareWith": 953,
+    "Benitoite.Release.Refinement.finiteEncodeAtoms": 551,
+    "Benitoite.Release.Refinement.Tel.fnViewWith?": 1043,
+    "Benitoite.Release.Refinement.Ty.foldFnWith": 1045,
+    "Benitoite.Release.Refinement.Ty.normWith": 1089,
+    "Benitoite.Release.Refinement.Ty.normTysWith": 1089,
+    "Benitoite.Release.Refinement.Eff.normWith": 1089,
+    "Benitoite.Release.Refinement.Tel.normWith": 1089
+  },
+  "complete": true
+}
