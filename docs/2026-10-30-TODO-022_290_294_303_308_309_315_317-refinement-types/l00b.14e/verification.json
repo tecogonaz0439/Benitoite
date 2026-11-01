@@ -1,0 +1,83 @@
+[
+  {
+    "label": "build",
+    "command": "cd formal && rtk proxy lake build",
+    "started_utc": "2026-10-31T23:57:49.738788+00:00",
+    "exit_code": 0,
+    "seconds": 0.158,
+    "bytes": 36675,
+    "sha256": "262ab46b889cc384c7572e81488b257f1033001aa18af8e518bda5078517ec0d",
+    "record": "build.log"
+  },
+  {
+    "label": "boundary",
+    "command": "cd formal && rtk proxy lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14e/boundary.lean",
+    "started_utc": "2026-10-31T23:57:49.921948+00:00",
+    "exit_code": 0,
+    "seconds": 1.42,
+    "bytes": 16690,
+    "sha256": "ba9ebfabb525af09055f611464b0311de10b181d8f5cbed1b7daece5fb8f5a8a",
+    "record": "boundary.log",
+    "axioms": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "axiom_reports": 155,
+    "boundary_declarations": 155
+  },
+  {
+    "label": "public-api",
+    "command": "cd formal && rtk proxy lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14e/public-api.lean",
+    "started_utc": "2026-10-31T23:57:51.342776+00:00",
+    "exit_code": 0,
+    "seconds": 0.324,
+    "bytes": 42725,
+    "sha256": "b20559f23924b828d8f51cb3c095f91ad26d6322eb5983246979bd55f1ffe97c",
+    "record": "public-api.log",
+    "public_declarations": 36
+  },
+  {
+    "label": "axioms",
+    "command": "cd formal && rtk proxy lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.14e/axioms.lean",
+    "started_utc": "2026-10-31T23:57:51.668326+00:00",
+    "exit_code": 0,
+    "seconds": 13.626,
+    "bytes": 1685493,
+    "sha256": "e34f10f07fff22909cb913abeec9902007c8e930c81788518c352cb8c1bb2fae",
+    "record": "<tmp>/benitoite-handler-gwp8cf5a/axioms.log",
+    "axioms": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "axiom_reports": 15497,
+    "modules": 155,
+    "cases": [
+      "cases Benitoite.Release.Refinement.Ty: 21",
+      "cases Benitoite.Release.Refinement.Ty.LeQ: 13",
+      "cases Benitoite.Release.Refinement.TelLe: 2",
+      "cases Benitoite.Release.Refinement.TelClosure: 2",
+      "cases Benitoite.Release.Refinement.HasTypeVQ: 29",
+      "cases Benitoite.Release.Refinement.HasTypeCQ: 24",
+      "cases Benitoite.Release.Refinement.ImageOk: 4",
+      "cases Benitoite.Release.Refinement.LocalRef.HasKind: 3",
+      "cases Benitoite.Release.Refinement.ProperApply: 7",
+      "cases Benitoite.Release.Refinement.Step: 76",
+      "cases Benitoite.Release.Refinement.PathTest: 9",
+      "cases Benitoite.Release.Refinement.PathLiteral: 5",
+      "cases Benitoite.Release.Refinement.GuardBodyTy: 1",
+      "cases Benitoite.Release.Refinement.ContTy: 10",
+      "cases Benitoite.Release.Refinement.Frame: 7",
+      "cases Benitoite.Release.Refinement.Cell: 6",
+      "THREE_FAMILY_CASES 76 (71 + 5)",
+      "cases Benitoite.Release.Ty: 15",
+      "cases Benitoite.Release.Val: 17",
+      "cases Benitoite.Release.Refinement.Const: 16",
+      "cases Benitoite.Release.Refinement.RangeIx: 2",
+      "cases Benitoite.Release.Refinement.HasTypeEachQ: 2",
+      "cases Benitoite.Release.Refinement.HasTypeVsQ: 2",
+      "cases Benitoite.Release.Refinement.CheckedWitness: 2"
+    ]
+  }
+]
