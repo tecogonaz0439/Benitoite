@@ -1,0 +1,16 @@
+Benitoite/Release/Refinement/TypeSubstFormation.lean:143:2: error: Type mismatch
+  hh
+has type
+  TypeArgsLe P [] [] (P.varianceFor d (List.map (Ty.bind (SubstEnv.typesOnly θ.types)) as).length)
+    (observationTypes (List.map (Ty.bind (SubstEnv.typesOnly θ.types)) as))
+    (observationTypes (List.map (Ty.bind (SubstEnv.typesOnly θ.types)) bs))
+but is expected to have type
+  TypeArgsLe P [] [] (P.varianceFor d (List.map (Ty.bind θ) as).length)
+    (observationTypes (List.map (Ty.bind (SubstEnv.typesOnly θ.types)) as))
+    (observationTypes (List.map (Ty.bind (SubstEnv.typesOnly θ.types)) bs))
+Benitoite/Release/Refinement/TypeSubstFormation.lean:242:51: warning: Variable name `hm` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _hm
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`

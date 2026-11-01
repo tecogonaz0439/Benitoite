@@ -62,10 +62,15 @@ theorem legacy_signatureInstance {K : DeclarationKinds} {P0 : Benitoite.Release.
     (types : TypeAnnotations (embedProgramWithKinds K P0) (legacyTypeCtx C κ) Γ (embedTys ts))
     (args : LegacyKindArgs K P0 κ ts ks)
     (rows : RowAnnotations (embedProgramWithKinds K P0) (legacyTypeCtx C κ) Γ (es.map embedEff))
+    (rowKinds : ∀ e ∈ es, kindsEff (embedProgramWithKinds K P0) κ (embedEff e))
     (result : Ty.Annotation (embedProgramWithKinds K P0) (legacyTypeCtx C κ) Γ
       (.dependentFn (instantiatedTel t (embedTys ts) (es.map embedEff)))) :
     SignatureInstance (embedProgramWithKinds K P0) (legacyTypeCtx C κ) Γ t ks (embedTys ts) (es.map embedEff) :=
-  ⟨source, types, args.kinded (legacyTypeCtx_kinds hc), rows, result⟩
+  ⟨source, types, args.kinded (legacyTypeCtx_kinds hc), rows, by
+    intro e he
+    obtain ⟨f, hf, rfl⟩ := List.mem_map.mp he
+    rw [legacyTypeCtx_kinds hc]
+    exact rowKinds f hf, result⟩
 
 /-- 関数の実際の宣言が読む kind 列へ同じ入力を接続する。 -/
 theorem embedDefWithKinds_signatureInstance {K P0 κ C Γ f d ts}
@@ -75,12 +80,13 @@ theorem embedDefWithKinds_signatureInstance {K P0 κ C Γ f d ts}
     (types : TypeAnnotations (embedProgramWithKinds K P0) (legacyTypeCtx C κ) Γ (embedTys ts))
     (args : LegacyKindArgs K P0 κ ts (K.functionParams f))
     (rows : RowAnnotations (embedProgramWithKinds K P0) (legacyTypeCtx C κ) Γ (es.map embedEff))
+    (rowKinds : ∀ e ∈ es, kindsEff (embedProgramWithKinds K P0) κ (embedEff e))
     (result : Ty.Annotation (embedProgramWithKinds K P0) (legacyTypeCtx C κ) Γ
       (.dependentFn (instantiatedTel (embedDefWithKinds (K.functionParams f) d).tel (embedTys ts) (es.map embedEff)))) :
     SignatureInstance (embedProgramWithKinds K P0) (legacyTypeCtx C κ) Γ (embedDefWithKinds (K.functionParams f) d).tel
       ((embedDefWithKinds (K.functionParams f) d).tparams.map TParamDecl.kind) (embedTys ts) (es.map embedEff) := by
   rw [(embedDefWithKinds_parameters wf hd).2]
-  exact legacy_signatureInstance hc source types args rows result
+  exact legacy_signatureInstance hc source types args rows rowKinds result
 
 /-- メソッド自身のパラメータの後に、クラス引数の kind を置く。 -/
 theorem embedMethSigWithKinds_signatureInstance {K P0 κ C Γ cl cd m ms ts}
@@ -92,13 +98,14 @@ theorem embedMethSigWithKinds_signatureInstance {K P0 κ C Γ cl cd m ms ts}
     (types : TypeAnnotations (embedProgramWithKinds K P0) (legacyTypeCtx C κ) Γ (embedTys ts))
     (args : LegacyKindArgs K P0 κ ts (K.methodParams cl m ++ [K.classArgument cl]))
     (rows : RowAnnotations (embedProgramWithKinds K P0) (legacyTypeCtx C κ) Γ (es.map embedEff))
+    (rowKinds : ∀ e ∈ es, kindsEff (embedProgramWithKinds K P0) κ (embedEff e))
     (result : Ty.Annotation (embedProgramWithKinds K P0) (legacyTypeCtx C κ) Γ
       (.dependentFn (instantiatedTel (embedMethSigWithKinds (K.methodParams cl m) ms).tel (embedTys ts) (es.map embedEff)))) :
     SignatureInstance (embedProgramWithKinds K P0) (legacyTypeCtx C κ) Γ (embedMethSigWithKinds (K.methodParams cl m) ms).tel
       ((embedMethSigWithKinds (K.methodParams cl m) ms).tparams.map TParamDecl.kind ++
         [(embedClassDeclWithKinds K cl cd).argumentKind]) (embedTys ts) (es.map embedEff) := by
   rw [(embedMethSigWithKinds_parameters wf hcl hm).2]
-  exact legacy_signatureInstance hc source types args rows result
+  exact legacy_signatureInstance hc source types args rows rowKinds result
 
 end
 end Benitoite.Release.Refinement

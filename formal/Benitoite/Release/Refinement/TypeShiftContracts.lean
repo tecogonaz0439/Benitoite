@@ -90,10 +90,14 @@ theorem instantiatedTel_shiftTypes {nt t} (hw : (Ty.dependentFn t).WF 0 nt 0)
 theorem TypeCtxMap.signature {P C C' Γ Δ t ks ts es k c} (h : TypeCtxMap k c Γ Δ)
     (hn : C'.length=C.length+k) (ha : SignatureInstance P C Γ t ks ts es) (hC : TypeParamRenaming C C' (shiftIndex k c)) :
     SignatureInstance P C' Δ t ks (ts.map (shiftTypes k c)) (es.map (shiftRowsTypes k c)) := by
-  refine ⟨ha.source,(h.annotations hn ha.types hC),ha.kinds.shiftTypes hC,(h.rows hn ha.rows hC),?_⟩
-  have hh := (h.annotation hn ha.result hC)
-  have he := instantiatedTel_shiftTypes ha.source ts es (by have hk := ha.kinds.1; omega) k c
-  simpa only [shiftTypes, he] using hh
+  refine ⟨ha.source,(h.annotations hn ha.types hC),ha.kinds.shiftTypes hC,(h.rows hn ha.rows hC),?_,?_⟩
+  · intro e he
+    obtain ⟨f, hf, rfl⟩ := List.mem_map.mp he
+    rw [← rawRenameRowsTypes_shift]
+    exact kindsEff_renameTypes (ha.rowKinds f hf) hC.kindRenaming
+  · have hh := (h.annotation hn ha.result hC)
+    have he := instantiatedTel_shiftTypes ha.source ts es (by have hk := ha.kinds.1; omega) k c
+    simpa only [shiftTypes, he] using hh
 
 theorem NoFail.shiftTypes {Q e} (h : NoFail Q e) (k c : Nat) : NoFail Q (shiftRowsTypes k c e) := by
   cases e with
@@ -121,7 +125,7 @@ theorem TypeCtxMap.primitive {P B C C' Γ Δ b sg Q ts es k c}
     (ha : PrimitiveAdmissible C Γ.length sg Q ts es) :
     PrimitiveAdmissible C' Δ.length sg Q (ts.map (shiftTypes k c)) (es.map (shiftRowsTypes k c)) := by
   refine ⟨by simpa using ha.typeCount,hA.admits_shiftTypes_raw hr hb ht ((h.annotations hn ht hr)) ha.admits,
-    ?_,by simpa using ha.rowCount,?_,(by simpa only [List.length_map] using ha.sourceRows),(by simpa only [List.length_map] using ha.sourceQ),?_⟩
+    ?_,by simpa using ha.rowCount,?_,(by simpa only [List.length_map] using ha.sourceRows),(by simpa only [List.length_map] using ha.sourceQ),?_,(by simpa only [List.length_map] using ha.sourceTelRows)⟩
   · intro a hm
     obtain ⟨b,hb,rfl⟩ := List.mem_map.mp hm
     exact ⟨((h.annotation hn (ht b hb) hr)).wf,(Ty.ordinary_shiftTypes _ _ _).mpr (ha.typeScope b hb).2⟩

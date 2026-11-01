@@ -1,0 +1,77 @@
+Benitoite/Release/Refinement/TypeSubstFormation.lean:56:49: error: unsolved goals
+f : Nat → Ty
+θ : SubstEnv
+hv : θ.values = fun i => some (Term.var i)
+hg : θ.ranges = []
+ats : Atom → Bool
+fs : List Ty
+ha : noTappEff (EffR.mk ats fs)
+hr : Eff.RowsIn (fun x => x < 0) (EffR.mk ats fs)
+hz : ∀ (i : Nat), ats (Atom.rho i) = false
+i : ?m.607
+hi : i ∈ ?m.609
+⊢ ?m.608 i = false
+Benitoite/Release/Refinement/TypeSubstFormation.lean:57:10: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  rawBindTys θ (rawBindTys (SubstEnv.typesOnly f) fs)
+in the target expression
+  EffR.mk ats
+      (rawBindTys θ (rawBindTys { types := f, rows := [], ranges := [], values := fun i => some (Term.var i) } fs) ++
+        List.flatMap
+          (fun i =>
+            match θ.rows[i]? with
+            | some e => e.fails
+            | none => [])
+          (List.filter (fun i => false) (List.range θ.rows.length))) =
+    EffR.mk ats
+      (rawBindTys
+        { types := fun i => Ty.rawBind θ (f i), rows := [], ranges := [], values := fun i => some (Term.var i) } fs)
+
+case mk
+f : Nat → Ty
+θ : SubstEnv
+hv : θ.values = fun i => some (Term.var i)
+hg : θ.ranges = []
+ats : Atom → Bool
+fs : List Ty
+ha : noTappEff (EffR.mk ats fs)
+hr : Eff.RowsIn (fun x => x < 0) (EffR.mk ats fs)
+hz : ∀ (i : Nat), ats (Atom.rho i) = false
+⊢ EffR.mk ats
+      (rawBindTys θ (rawBindTys { types := f, rows := [], ranges := [], values := fun i => some (Term.var i) } fs) ++
+        List.flatMap
+          (fun i =>
+            match θ.rows[i]? with
+            | some e => e.fails
+            | none => [])
+          (List.filter (fun i => false) (List.range θ.rows.length))) =
+    EffR.mk ats
+      (rawBindTys
+        { types := fun i => Ty.rawBind θ (f i), rows := [], ranges := [], values := fun i => some (Term.var i) } fs)
+Benitoite/Release/Refinement/TypeSubstFormation.lean:56:21: warning: This simp argument is unused:
+  List.filter_eq_nil_iff.mpr (by intro i hi; simp [hz])
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hz, List.flatMap_nil, List.append_nil]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Benitoite/Release/Refinement/TypeSubstFormation.lean:56:76: warning: This simp argument is unused:
+  List.flatMap_nil
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hz, List.filter_eq_nil_iff.mpr (by intro i hi; simp [hz]), List.append_nil]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Benitoite/Release/Refinement/TypeSubstFormation.lean:56:94: warning: This simp argument is unused:
+  List.append_nil
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hz, List.filter_eq_nil_iff.mpr (by intro i hi; simp [hz]), List.flatMap_nil]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Benitoite/Release/Refinement/TypeSubstFormation.lean:56:70: warning: This simp argument is unused:
+  hz
+
+Hint: Omit it from the simp argument list.
+  [apply] simp
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

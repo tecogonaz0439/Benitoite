@@ -1,0 +1,23 @@
+<tmp>/benitoite-r2-exchange.lean:205:113: error: unexpected identifier; expected 'end'
+<tmp>/benitoite-r2-exchange.lean:173:65: error: No goals to be solved
+<tmp>/benitoite-r2-exchange.lean:174:67: error: No goals to be solved
+<tmp>/benitoite-r2-exchange.lean:175:95: error(lean.unknownIdentifier): Unknown identifier `comp_eff`
+<tmp>/benitoite-r2-exchange.lean:176:91: error(lean.unknownIdentifier): Unknown identifier `comp_eff`
+<tmp>/benitoite-r2-exchange.lean:205:81: error(lean.unknownIdentifier): Unknown identifier `comp_eff`
+<tmp>/benitoite-r2-exchange.lean:205:15: error: unsolved goals
+case done
+σ τ : SubstEnv
+hs : σ.ranges = []
+ht : τ.ranges = []
+hv : σ.values = fun i => some (Term.var i)
+hu : τ.values = fun i => some (Term.var i)
+r : Ty
+e : EffR
+hr : Tel.RowsIn (fun x => x < σ.rows.length) (Tel.done r e)
+⊢ Tel.done (Ty.rawBind (compose σ τ) r).norm (Eff.rawBind τ (Eff.rawBind σ e)).norm =
+    Tel.done (Ty.rawBind (compose σ τ) r).norm (Eff.rawBind (compose σ τ) e).norm
+<tmp>/benitoite-r2-exchange.lean:204:4: error: Alternative `param` has not been provided
+<tmp>/benitoite-r2-exchange.lean:234:0: error: Missing name after `end`: Expected the current scope name `Refinement`
+
+Hint: To end the current scope `Refinement`, specify its name:
+  end ̲R̲e̲f̲i̲n̲e̲m̲e̲n̲t̲

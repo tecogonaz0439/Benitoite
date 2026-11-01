@@ -42,10 +42,13 @@ theorem TypeArgsKinded.norm {P C ts ks} (h : TypeArgsKinded P C ts ks) :
 theorem SignatureInstance.norm_images {P C Γ t ks ts es}
     (h : SignatureInstance P C Γ t ks ts es) :
     SignatureInstance P C Γ t ks (Ty.normTys ts) (es.map Eff.norm) := by
-  refine ⟨h.source,h.types.norm,h.kinds.norm,?_,?_⟩
+  refine ⟨h.source,h.types.norm,h.kinds.norm,?_,?_,?_⟩
   · intro e he
     obtain ⟨f,hf,rfl⟩ := List.mem_map.mp he
     simpa only [Ty.norm,Ty.normTys] using (h.rows f hf).norm
+  · intro e he
+    obtain ⟨f, hf, rfl⟩ := List.mem_map.mp he
+    exact kindsEff_norm (h.rowKinds f hf)
   · rw [instantiatedTel_norm_images]; exact h.result
 
 theorem instantiatedTel_shift_eq {nt t} (h : (Ty.dependentFn t).WF 0 nt 0) (ts es k c) :
@@ -120,7 +123,7 @@ theorem NoFail.norm {Q e} (h : NoFail Q e) : NoFail Q e.norm := by
 theorem PrimitiveAdmissible.norm {C nv s Q ts es}
     (h : PrimitiveAdmissible C nv s Q ts es) :
     PrimitiveAdmissible C nv s Q (Ty.normTys ts) (es.map Eff.norm) := by
-  refine ⟨?_,?_,?_,?_,?_,?_,?_,?_⟩
+  refine ⟨?_,?_,?_,?_,?_,?_,?_,?_,by simpa only [List.length_map] using h.sourceTelRows⟩
   · simpa only [Ty.normTys_eq_map,List.length_map] using h.typeCount
   · simpa only [Ty.normTys_eq_map,List.map_map,Function.comp_def,Ty.norm_idem] using h.admits
   · intro a ha
@@ -158,7 +161,7 @@ theorem PrimitiveAdmissible.map {C nv s Q ts es}
     (he : ∀ e ∈ es, (g e).WF 0 C.length nv')
     (hn : RowTransport (Qsig s.params s.ret s.eff) Q (es.map g)) :
     PrimitiveAdmissible C nv' s Q (ts.map f) (es.map g) := by
-  refine ⟨by simpa using h.typeCount, ha, ?_, by simpa using h.rowCount, ?_, ?_, ?_, hn⟩
+  refine ⟨by simpa using h.typeCount, ha, ?_, by simpa using h.rowCount, ?_, ?_, ?_, hn, by simpa only [List.length_map] using h.sourceTelRows⟩
   · intro a ha; obtain ⟨x, hx, rfl⟩ := List.mem_map.mp ha; exact ht x hx
   · intro a ha; obtain ⟨x, hx, rfl⟩ := List.mem_map.mp ha; exact he x hx
   · simpa only [List.length_map] using h.sourceRows

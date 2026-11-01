@@ -139,11 +139,12 @@ structure SignatureInstanceAt (P : Program) (D : List TParamDecl) (Γ : Ctx)
   types : TypeAnnotations P D Γ ts
   kinds : TypeArgsKindedAt P D ts ks
   rows : RowAnnotations P D Γ es
+  rowKinds : ∀ e ∈ es, kindsEff P (TypeCtx.kinds D) e
   result : Ty.Annotation P D Γ (.dependentFn (instantiatedTel t ts es))
 
 theorem SignatureInstanceAt.forget {P D Γ t ks ts es} (h : SignatureInstanceAt P D Γ t ks ts es) :
     SignatureInstance P D Γ t ks ts es :=
-  ⟨h.source, h.types, h.kinds.forget, h.rows, h.result⟩
+  ⟨h.source, h.types, h.kinds.forget, h.rows, h.rowKinds, h.result⟩
 
 def OpDecl.SignatureWF (d : OpDecl) : Prop :=
   BinderTypes.LocalWF d.tparams.length 0 d.params ∧ d.ret.WF 0 d.tparams.length d.params.length

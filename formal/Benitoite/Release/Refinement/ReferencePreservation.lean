@@ -1,8 +1,22 @@
 import Benitoite.Release.Refinement.ReferenceCalls
+import Benitoite.Release.Refinement.TypeRows
 
 /-! # 参照の実際の遷移に対する保存の代表 -/
 namespace Benitoite.Release.Refinement
 noncomputable section
+
+/-- 参照と明示遅延の署名は、内側の関数型にも自由な行変数を持たない。 -/
+theorem PrimSig.StoreShape.sourceTelRows {s : PrimSig}
+    (h : s.StoreShape)
+    (hk : s.kind = .refNew ∨ s.kind = .refGet ∨ s.kind = .refSet ∨
+      s.kind = .refUpdate ∨ s.kind = .force) :
+    s.tel.RowsIn (· < s.neffs) := by
+  rcases hk with hk | hk | hk | hk | hk
+  all_goals
+    simp only [PrimSig.StoreShape,hk] at h
+    rcases h with ⟨hns,hnt,hne,hps,hr,he,_⟩
+    simp [PrimSig.tel,hns,hps,hr,he,hne,signatureTel,Tel.RowsIn,Ty.RowsIn,
+      Ty.RowsInList,Eff.RowsIn,Eff.single,Eff.empty]
 
 private theorem stateEff_annotation (P : Program) (a : Ty)
     (ha : Ty.Annotation P [] [] a) :
@@ -268,7 +282,7 @@ private theorem reference_head {P B b s a} (hA : Builtins.CoreAssumptions P B)
     all_goals
       simp only [PrimSig.StoreShape,hk] at sh
       rcases sh with ⟨hns,hnt,hne,hps,hr,he,hrr,hks⟩
-      refine ⟨by simp [hnt],?_,?_,by simp [hne],by simp,?_,?_,?_⟩
+      refine ⟨by simp [hnt],?_,?_,by simp [hne],by simp,?_,?_,?_,?_⟩
       · have hh := hA.store_admits b s [] [a] hs (by rw [hk]; decide)
           (by rw [hk]; decide) (by rw [hk]; decide) (by rw [hk]; decide) (by simp [hnt])
         change a.norm = a at hn
@@ -277,11 +291,12 @@ private theorem reference_head {P B b s a} (hA : Builtins.CoreAssumptions P B)
       · simp [he,Eff.RowsIn,Eff.single,Ty.RowsInList]
       · simp [hps,hr,he,Qsig,QTys,QTy,QEff,Eff.single,Qempty]
       · simp [hps,hr,he,Qsig,QTys,QTy,QEff,Eff.single,Qempty,RowTransport]
+      · simp [PrimSig.tel,hns,hps,hr,he,signatureTel,Tel.RowsIn,Ty.RowsIn,Eff.RowsIn,Eff.single,Ty.RowsInList]
   · rcases hk with hk | hk
     all_goals
       simp only [PrimSig.StoreShape,hk] at sh
       rcases sh with ⟨hns,hnt,hne,hps,hr,he,hrr,hks⟩
-      refine ⟨?_,?_,?_,by simp [RowAnnotations],?_⟩
+      refine ⟨?_,?_,?_,by simp [RowAnnotations],(by intro e he; cases he),?_⟩
       · simp [TypeCtx.kinds_eq_map,hks,PrimSig.tel,hns,hps,hr,he,signatureTel,Tel.instR,Tel.substRAt,Tel.mapRanges,
           Tel.rawMapRanges,Ty.rawMapRanges,Eff.rawMapRanges,Tel.norm,Ty.norm,Ty.normTys,
           Ty.WF,Tel.WF,Ty.WFList,Eff.WF,Eff.Canonical,Eff.norm,Eff.single,

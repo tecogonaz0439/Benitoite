@@ -36,6 +36,11 @@ def LegacyRowsInput (K : DeclarationKinds) (P0 : Benitoite.Release.Program)
     (Δ : LegacyInputCtx) (es : List Benitoite.Release.Eff) : Prop :=
   ∀ e ∈ es, LegacyTypeInput K P0 Δ (.fn [] [] (.base .unit) e) .value
 
+theorem LegacyRowsInput.rowKinds {K P0 Δ es} (h : LegacyRowsInput K P0 Δ es) :
+    ∀ e ∈ es, kindsEff (embedProgramWithKinds K P0) Δ.kinds (embedEff e) := by
+  intro e he
+  exact (h e he).1.2.2.2
+
 def LegacyBuilderInput (K : DeclarationKinds) (P0 : Benitoite.Release.Program)
     (Δ : LegacyInputCtx) (k : Benitoite.Release.BuilderKind) : Prop :=
   LegacyTypeInput K P0 Δ k.contents .value ∧ Ordinary (embedTy k.contents)

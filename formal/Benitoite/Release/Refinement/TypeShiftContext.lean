@@ -164,6 +164,13 @@ theorem Pred.Declared.shiftTypes {P C C' Γ Δ self p k c} (ht : Pred.Declared P
   case or p q hp hq => exact ⟨hp ht.1,hq ht.2⟩
   case not p hp => exact hp ht
 
+theorem Ty.Declared.rename_tapp {P C C' Γ Δ i as ρ}
+    (h : Ty.Declared P C Γ (.tapp i as))
+    (hk : KindRenaming (TypeCtx.kinds C) (TypeCtx.kinds C') ρ)
+    (hs : declaredTys P C' Δ (rawRenameTypesList ρ as)) :
+    Ty.Declared P C' Δ ((Ty.tapp i as).rawRenameTypes ρ) :=
+  ⟨by simpa only [rawRenameTypesList_length] using hk i _ h.1, hs⟩
+
 mutual
   theorem Ty.Declared.shiftTypes {P C C' Γ Δ a k c} (ht : Ty.Declared P C Γ a)
       (h : TypeCtxMap k c Γ Δ) (hC : TypeParamRenaming C C' (shiftIndex k c)) : Ty.Declared P C' Δ (Refinement.shiftTypes k c a) := by
@@ -175,7 +182,10 @@ mutual
         declaredTys_shiftTypes ht.2 h hC⟩
     | external _ as => exact ⟨by simpa only [shiftTypesList_eq_map, List.length_map] using ht.1,
         declaredTys_shiftTypes ht.2 h hC⟩
-    | tapp i as => exact ⟨by simpa only [shiftTypesList_eq_map, List.length_map, shiftIndex] using hC.kindRenaming _ _ ht.1, declaredTys_shiftTypes ht.2 h hC⟩
+    | tapp i as =>
+      rw [← Ty.rawRenameTypes_shift]
+      exact ht.rename_tapp hC.kindRenaming (by
+        simpa only [rawRenameTypesList_shift] using declaredTys_shiftTypes ht.2 h hC)
     | dependentFn t => exact Tel.Declared.shiftTypes ht h hC
     | fn ns ps r e => exact ⟨declaredTys_shiftTypes ht.1 h hC,
         Ty.Declared.shiftTypes ht.2.1 h hC,declaredEff_shiftTypes ht.2.2 h hC⟩

@@ -3114,13 +3114,43 @@ builders_no_captureとbuilders_block_no_captureは、Aligned Γ ΔからEnvReads
 
 `ClosedTypeSubstInput P B C0 C1 Γ ts es` は、型像の個数と WF000、C0 の kind の列との一致、空の型・値文脈での型像の Annotation、C1 の制約の下での C0 の制約への適合、行像の WF000・Annotation・kind、および元の Γ の `CaptureContextRegular P (C1 ++ C0)` を持つ。NoFail の文脈どうしの `RowTransport` はこの入力に含めない。型付けの保存の結論を入力欄には含めない。
 
+コードの型置換の契約は `S02_V` などの14個の Prop として既定ビルドに含める。Q を移す十成分は、形成の入力とは別に `TypeSubstCode es source` を受ける。この条件は `es = [] ∨ ∃ nr nt ne nv, source nr nt ne nv` であり、source は各成分の元の値・計算・列・腕・節に対する SourceScoped である。CaptureOk・DependentClosureTy・CheckedWitness の恒等の三成分と ImageOk の True の成分には、この条件を要求しない。Prop の定義は契約の型を検査し、その命題の証明を意味しない。
+
+場所と実行時閉包のコードは SourceScoped を満たさない。対応する四つの構成子の型置換の case 補題は、行像が空の場合に格納型を正規化して結論を作り、行像が空でない場合は源の構文の条件から矛盾を得る。ストア型の WF000 は行変数を制限せず、これを全ての行置換に対する不変性として使わない。
+
+
+`Ty.HasKind.closed_context` と `kindsEff.closed_context` は、型変数を持たない WF の型・行について kind の文脈を変更する。`Ty.HasKind.substAt`・`Tel.kinded_substAt`・`TypeArgsKinded.substAt` は、元の `C1 ++ C0` と像の `TypeCtx.kinds C0` を照合し、残す C1 の下で kind を保存する。行像にも空の kind 文脈での `kindsEff` を要求する。constructor の適用は `ProperApply` の各構成子を使い、`rawApply` の既定の枝を形成の根拠にしない。data の構成子の arity は、`TyCon.arity_data` と `TyCon.dataArity_of_arity` で `Program.DataArity` と双方向に対応する。
+
+`Ty.Declared.substAt`・`Tel.Declared.substAt`・`declaredTys_substAt`・`declaredEff_substAt` は、プログラムの整形式・本体の型付け・CoreAssumptions・ストア型の WF、同じ `ClosedTypeSubstInput`、元の Annotation から宣言照合を保存する。移送先は `Γ.bindTypes (typeEnvAt C1.length ts es)` である。`Ty.Annotation.substAt` は WF・Sorted・Declared を合成し、型と行の列の Annotation も保存する。全中間注釈に value kind は要求しない。Tel の束縛下の宣言照合では、元と像の引数型をそれぞれの値文脈へ加えて対応を延長する。`ClosedTypeSubstInput.extend` は元の引数型の Annotation から `context` を `Γ.extend a` へ延長する。
+
+
 `V_Const` は `ConstOK B c` を前提とする。符号付き四幅のうち Integer64 は値自身が値域の証拠を保持し、Integer8/16/32 と符号なし三幅は各構成子の整数がその幅の上下限内にあることを検査する。Byte は自然数の値が255以下、Decimal は係数が −79228162514264337593543950335 以上79228162514264337593543950335以下で scale が28以下であることを要求する。`V_Bytes` は、これとは別にバイト列の全要素が255以下であることを前提とする。述語の観測では七整数と Byte は共通の integer sort を使うが、数の演算に暗黙の型変換を加えない。
 
 裸の `Const.opaque o id` の `ConstOK` は `B.valKind o = none` と `B.valContent o = none` の両方を要求する。対象や要求を持つ名前は、範囲が Top でも裸の定数として型付けしない。対象を保持する `V_Checked` と要求を保持する `V_CheckedRequest` は別の規則であり、後者は同じ要求の型付け、groundVal の成功、保持端点との reqTarget の一致を要求する（「保持要求と組み込みの遷移」）。これは数値の値域と Top の不透明値に関する旧 Release の抽象化を変更した規則であり、旧体系の主定理は旧体系の前提と結論について成立する。実行時のあふれ、Decimal の丸め、Float32 の丸めの実装の証明を、この定数の適格性からは結論しない。
 
 `V_Refine` は、型 a の値 v、a の観測の種類、`v.toTerm? = some t`、p の種類・番号の上限・宣言照合、および `Entails (Γ.facts ++ Φ) (p.open t)` から `refined a p` の型付けを作る。整数だけに限る規則ではない。`C_DependentApp` は関数と `HasTypeTelArgsQ` の導出から、実引数によって具体化した結果型と効果を返す。`TelBodyTy` は、param ごとに値の文脈と Φ を移して本体を検査する。関数参照・組み込み参照・操作・外部参照の型付けは、宣言の kind の列と同じ `SignatureInstance` を要求する。kind は value 又は引数数を持つ constructor であり、型パラメータの宣言と型クラスの引数の kind を保持する。
 
+`PrimitiveAdmissible` は、署名全体の行変数の上限を `sourceTelRows : s.tel.RowsIn (· < es.length)` で検査する。型引数・行引数の個数、像の整形式、外側の効果に対する `sourceRows`、NoFail の条件と区別する。引数にある関数型の潜在効果、戻り型、Fail 型の内部も、署名が `neffs` で宣言した行変数だけを読める。`V_Prim` と組み込み応答の `BuiltinArgs` は、この呼び出しの許容条件を要求する。CoreAssumptions の独立の欄にはしない。
+
+`PrimitiveAdmissible.norm`・`map` と型の移動は `sourceTelRows` を保つ。値の移動と置換は map、文脈変更は同じ許容条件を使う。`Tel.rowsIn_instR` は範囲の具体化で行の条件を保つ。`instantiatedTel_substAt` は、宣言の WF、十分な数の型引数、署名全体の行の上限から、具体化した依存列への型置換と型・行像への型置換の等号を証明する。kind 又は NoTapp の追加条件は要求しない。参照四形と force の行の上限は、実際の StoreShape から得る。
+
 `TypeArgsKinded P C ts ks` は、型引数と kind の列の長さが等しいことと、各型引数 a と対応する kind k について `HasKind P (TypeCtx.kinds C) a k` と `k = .value → Ordinary a` を要求する。`Ordinary a` は、篩を外した芯の最上位が継続型でないことを表す。Listの要素などに入れ子の継続型を持つ型引数は、この条件で拒まない。Annotation と value kind だけからはこの条件を導かない。constructor kind の型引数は型構成子又は型変数なので、同じ条件を形から導ける。これにより SignatureInstance を使う関数・組み込み・操作・外部参照とメソッド、TypeArgsKinded を直接使う構成子・辞書・構築器が、型置換の像の非継続を供給する。C_Meth の `ss ++ [τ]` の WF と Ordinary も SignatureInstance から得る。
+
+`SignatureInstance` と `SignatureInstanceAt` は、次の六欄で同じ kind の条件を持つ。`rowKinds` は行像の内部の Fail 型を検査する。RowAnnotations の意味は WF・Sorted・Declared のままである。
+
+```lean
+structure SignatureInstance (P : Program) (C : TypeCtx) (Γ : Ctx)
+    (t : Tel) (ks : List TyKind) (ts : List Ty) (es : List Eff) : Prop where
+  source : (Ty.dependentFn t).WF 0 ks.length 0
+  types : TypeAnnotations P C Γ ts
+  kinds : TypeArgsKinded P C ts ks
+  rows : RowAnnotations P C Γ es
+  rowKinds : ∀ e ∈ es, kindsEff P (TypeCtx.kinds C) e
+  result : Ty.Annotation P C Γ (.dependentFn (instantiatedTel t ts es))
+```
+
+値の移動・値の置換・型の移動・正規化は行像の kind を保存し、値の文脈の変更では同じ証拠を使う。`legacy_signatureInstance` と関数・メソッドの包装は、同じ κ の行の kind を受ける。`LegacyRowsInput.rowKinds` は、その形の証拠を返す。これらの三包装を使う旧導出の型付けの本体は、既定ビルドに含まれていない。
+
 
 `V_Raise` は、関数型 `fn ["error"] [e] t (singleFail e)` の Annotation に加え、`Ordinary t` と `Ordinary e`、結果型 t の `HasKind P (TypeCtx.kinds C) t .value` を要求する。操作の型引数 ts とメソッド本体へ代入する `ss ++ ts` の Ordinary は、対応する型付けの導出から取り出す。継続を保持する文脈と resume の規則は、型引数とは別に継続型を扱う。
 
@@ -3209,6 +3239,8 @@ builders_no_captureとbuilders_block_no_captureは、Aligned Γ ΔからEnvReads
 `LegacyJudgment` は、値・値列・同じ型の値列・計算・腕・通常節・Fail 節の七判断をデータとして表す。各判断は kind 文脈と旧のストア、NoFail、制約、値文脈、項、結果型を持ち、計算以下は戻り先の型、効果、局所文脈も持つ。`LegacyRule` は、旧の46局所規則の親判断、全ての型付け前提の子判断、旧の局所前提を記録する。親子の kind 文脈は同じ列を使い、通常節では操作の value kind 列を、Fail 節では value kind 一つを先頭に加える。保持要求の内容は空の kind 文脈を使う。メソッドの元の署名と型引数は、局所規則で選ばれた実際のクラスとメソッドの kind 列でも検査する。
 
 `LegacyOutputInput.node` は、局所規則、親の `LegacyNodeRegular`、全ての子の同じ入力を要求する。各 node の全結果型・型列・戻り先・効果・文脈・ストアの型を検査するため、let の中間型と拡張した値文脈、呼出しの中間型、空の腕、resume、節内の型も対象に含む。旧の型付けから中間型の kind が無条件に得られるとはしない。`LegacyRule.old` と `LegacyOutputInput.old` は、この入力から旧判断を復元する。
+
+`LegacyPrimSignature.sourceTelRows` は、新しい署名全体が `neffs` 未満の行変数だけを読むことを要求する。`sourceTelRowsAt` は、旧呼び出しの rowCount と表の neffs の対応から、範囲具体化後の依存列について、写した行引数列の長さを上限とする証拠を返す。旧の型付けの結論は、この欄の入力に含めない。
 
 `LegacyPrimSignature.operationKinds` は、`s.opEff ≠ none` の組み込みの型パラメータのkindの列が全てvalueであることを要求する。操作でない組み込みのkindはこの条件で制限しない。理由: 旧の通常節の子の判断は型パラメータをvalueとして読み、新しい通常節も同じ型文脈で検査するためである。
 

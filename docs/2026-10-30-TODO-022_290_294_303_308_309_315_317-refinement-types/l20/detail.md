@@ -238,6 +238,8 @@ capture_comp_annotation : ∀ {P B Ψ R Γ Φ cap Rs m a e L},
 
 ### S02: Q を移すコード型置換の14署名（形成入力の充足は未確認）
 
+2026-11-02 の追記: S02 の十の移送の前提に `TypeSubstCode` を足した。完全な定義と十四署名は `l20/a3b/signatures.md` と本番の `TypeSubstContracts.lean` を正とし、本節の字面より優先する。WF 0 0 0 の型は自由な行変数を含み得るので、行置換で不変とは扱わない。反映の内容は `l20/a3b/r1-detail-handoff.md` にある。
+
 `θ := typeEnvAt c ts es`、`A a := a.substAt c ts es`、`E e := Eff.substAt c ts es e`、`G Γ := Γ.bindTypes θ`、`Lθ L := L.map (Option.map Kθ)`、`Kθ (.list a) := .list (A a)`、他の BuilderKind は恒等、と定める。これは既存 Comp.substTyAt が使う型・行の写しそのものである。
 
 ```lean

@@ -1,0 +1,345 @@
+<tmp>/benitoite-r2-exchange.lean:17:31: error: Tactic `rfl` failed: The left-hand side
+  Ty.rawBind θ (rawApply (Ty.tapp i bs) as)
+is not definitionally equal to the right-hand side
+  rawApply (Ty.rawBind θ (Ty.tapp i bs)) (rawBindTys θ as)
+
+case data
+as : List Ty
+θ : SubstEnv
+i : Nat
+bs : List Ty
+d✝ : DataName
+h : θ.types i = Ty.ctor (TyCon.data d✝)
+⊢ Ty.rawBind θ (rawApply (Ty.tapp i bs) as) = rawApply (Ty.rawBind θ (Ty.tapp i bs)) (rawBindTys θ as)
+<tmp>/benitoite-r2-exchange.lean:17:31: error: Tactic `rfl` failed: The left-hand side
+  Ty.rawBind θ (rawApply (Ty.tapp i bs) as)
+is not definitionally equal to the right-hand side
+  rawApply (Ty.rawBind θ (Ty.tapp i bs)) (rawBindTys θ as)
+
+case list
+as : List Ty
+θ : SubstEnv
+i : Nat
+bs : List Ty
+h : θ.types i = Ty.ctor TyCon.list
+⊢ Ty.rawBind θ (rawApply (Ty.tapp i bs) as) = rawApply (Ty.rawBind θ (Ty.tapp i bs)) (rawBindTys θ as)
+<tmp>/benitoite-r2-exchange.lean:17:31: error: Tactic `rfl` failed: The left-hand side
+  Ty.rawBind θ (rawApply (Ty.tapp i bs) as)
+is not definitionally equal to the right-hand side
+  rawApply (Ty.rawBind θ (Ty.tapp i bs)) (rawBindTys θ as)
+
+case set
+as : List Ty
+θ : SubstEnv
+i : Nat
+bs : List Ty
+h : θ.types i = Ty.ctor TyCon.set
+⊢ Ty.rawBind θ (rawApply (Ty.tapp i bs) as) = rawApply (Ty.rawBind θ (Ty.tapp i bs)) (rawBindTys θ as)
+<tmp>/benitoite-r2-exchange.lean:17:31: error: Tactic `rfl` failed: The left-hand side
+  Ty.rawBind θ (rawApply (Ty.tapp i bs) as)
+is not definitionally equal to the right-hand side
+  rawApply (Ty.rawBind θ (Ty.tapp i bs)) (rawBindTys θ as)
+
+case map
+as : List Ty
+θ : SubstEnv
+i : Nat
+bs : List Ty
+h : θ.types i = Ty.ctor TyCon.map
+⊢ Ty.rawBind θ (rawApply (Ty.tapp i bs) as) = rawApply (Ty.rawBind θ (Ty.tapp i bs)) (rawBindTys θ as)
+<tmp>/benitoite-r2-exchange.lean:17:31: error: Tactic `rfl` failed: The left-hand side
+  Ty.rawBind θ (rawApply (Ty.tapp i bs) as)
+is not definitionally equal to the right-hand side
+  rawApply (Ty.rawBind θ (Ty.tapp i bs)) (rawBindTys θ as)
+
+case reference
+as : List Ty
+θ : SubstEnv
+i : Nat
+bs : List Ty
+h : θ.types i = Ty.ctor TyCon.reference
+⊢ Ty.rawBind θ (rawApply (Ty.tapp i bs) as) = rawApply (Ty.rawBind θ (Ty.tapp i bs)) (rawBindTys θ as)
+<tmp>/benitoite-r2-exchange.lean:17:31: error: Tactic `rfl` failed: The left-hand side
+  Ty.rawBind θ (rawApply (Ty.tapp i bs) as)
+is not definitionally equal to the right-hand side
+  rawApply (Ty.rawBind θ (Ty.tapp i bs)) (rawBindTys θ as)
+
+case lazy
+as : List Ty
+θ : SubstEnv
+i : Nat
+bs : List Ty
+h : θ.types i = Ty.ctor TyCon.lazy
+⊢ Ty.rawBind θ (rawApply (Ty.tapp i bs) as) = rawApply (Ty.rawBind θ (Ty.tapp i bs)) (rawBindTys θ as)
+<tmp>/benitoite-r2-exchange.lean:21:8: error: Type mismatch: After simplification, term
+  Eq.symm (this a ?m.915 ?m.916)
+ has type
+  rawApply a ?m.915 = rawApply (rawApply a ?m.915) ?m.916
+but is expected to have type
+  (rawApply a (rawBindTys θ bs)).refined p = (rawApply (rawApply a (rawBindTys θ bs)) (rawBindTys θ as)).refined p
+<tmp>/benitoite-r2-exchange.lean:23:6: error: The `induction` tactic does not support the type `Benitoite.Release.Refinement.Ty` because it is mutually inductive
+
+Hint: Consider using the `cases` tactic instead
+<tmp>/benitoite-r2-exchange.lean:15:17: error: unsolved goals
+case base
+as : List Ty
+θ : SubstEnv
+i : Nat
+bs : List Ty
+ι✝ : BaseTy
+h : θ.types i = Ty.base ι✝
+⊢ Ty.rawBind θ (rawApply (Ty.tapp i bs) as) = rawApply (Ty.rawBind θ (Ty.tapp i bs)) (rawBindTys θ as)
+
+case opaque
+as : List Ty
+θ : SubstEnv
+i : Nat
+bs : List Ty
+o✝ : OpaqueName
+ix✝ : RangeIx
+h : θ.types i = Ty.opaque o✝ ix✝
+⊢ Ty.rawBind θ (rawApply (Ty.tapp i bs) as) = rawApply (Ty.rawBind θ (Ty.tapp i bs)) (rawBindTys θ as)
+
+case data
+as : List Ty
+θ : SubstEnv
+i : Nat
+bs : List Ty
+d✝ : DataName
+args✝ : List Ty
+h : θ.types i = Ty.data d✝ args✝
+⊢ Ty.rawBind θ (rawApply (Ty.tapp i bs) as) = rawApply (Ty.rawBind θ (Ty.tapp i bs)) (rawBindTys θ as)
+
+case list
+as : List Ty
+θ : SubstEnv
+i : Nat
+bs : List Ty
+a✝ : Ty
+h : θ.types i = a✝.list
+⊢ Ty.rawBind θ (rawApply (Ty.tapp i bs) as) = rawApply (Ty.rawBind θ (Ty.tapp i bs)) (rawBindTys θ as)
+
+case fn
+as : List Ty
+θ : SubstEnv
+i : Nat
+bs : List Ty
+names✝ : List String
+params✝ : List Ty
+ret✝ : Ty
+eff✝ : EffR
+h : θ.types i = Ty.fn names✝ params✝ ret✝ eff✝
+⊢ Ty.rawBind θ (rawApply (Ty.tapp i bs) as) = rawApply (Ty.rawBind θ (Ty.tapp i bs)) (rawBindTys θ as)
+
+case tvar
+as : List Ty
+θ : SubstEnv
+i : Nat
+bs : List Ty
+i✝ : Nat
+h : θ.types i = Ty.tvar i✝
+⊢ Ty.rawBind θ (rawApply (Ty.tapp i bs) as) = rawApply (Ty.rawBind θ (Ty.tapp i bs)) (rawBindTys θ as)
+
+case reference
+as : List Ty
+θ : SubstEnv
+i : Nat
+bs : List Ty
+a✝ : Ty
+h : θ.types i = a✝.reference
+⊢ Ty.rawBind θ (rawApply (Ty.tapp i bs) as) = rawApply (Ty.rawBind θ (Ty.tapp i bs)) (rawBindTys θ as)
+
+case lazy
+as : List Ty
+θ : SubstEnv
+i : Nat
+bs : List Ty
+a✝ : Ty
+h : θ.types i = a✝.lazy
+⊢ Ty.rawBind θ (rawApply (Ty.tapp i bs) as) = rawApply (Ty.rawBind θ (Ty.tapp i bs)) (rawBindTys θ as)
+
+case cont
+as : List Ty
+θ : SubstEnv
+i : Nat
+bs : List Ty
+b✝ t✝ : Ty
+eff✝ : EffR
+h : θ.types i = b✝.cont t✝ eff✝
+⊢ Ty.rawBind θ (rawApply (Ty.tapp i bs) as) = rawApply (Ty.rawBind θ (Ty.tapp i bs)) (rawBindTys θ as)
+
+case map
+as : List Ty
+θ : SubstEnv
+i : Nat
+bs : List Ty
+k✝ v✝ : Ty
+h : θ.types i = k✝.map v✝
+⊢ Ty.rawBind θ (rawApply (Ty.tapp i bs) as) = rawApply (Ty.rawBind θ (Ty.tapp i bs)) (rawBindTys θ as)
+
+case set
+as : List Ty
+θ : SubstEnv
+i : Nat
+bs : List Ty
+a✝ : Ty
+h : θ.types i = a✝.set
+⊢ Ty.rawBind θ (rawApply (Ty.tapp i bs) as) = rawApply (Ty.rawBind θ (Ty.tapp i bs)) (rawBindTys θ as)
+
+case bytes
+as : List Ty
+θ : SubstEnv
+i : Nat
+bs : List Ty
+h : θ.types i = Ty.bytes
+⊢ Ty.rawBind θ (rawApply (Ty.tapp i bs) as) = rawApply (Ty.rawBind θ (Ty.tapp i bs)) (rawBindTys θ as)
+
+case dict
+as : List Ty
+θ : SubstEnv
+i : Nat
+bs : List Ty
+cl✝ : ClassName
+τ✝ : Ty
+h : θ.types i = Ty.dict cl✝ τ✝
+⊢ Ty.rawBind θ (rawApply (Ty.tapp i bs) as) = rawApply (Ty.rawBind θ (Ty.tapp i bs)) (rawBindTys θ as)
+
+case tapp
+as : List Ty
+θ : SubstEnv
+i : Nat
+bs : List Ty
+i✝ : Nat
+args✝ : List Ty
+h : θ.types i = Ty.tapp i✝ args✝
+⊢ Ty.rawBind θ (rawApply (Ty.tapp i bs) as) = rawApply (Ty.rawBind θ (Ty.tapp i bs)) (rawBindTys θ as)
+
+case dependentFn
+as : List Ty
+θ : SubstEnv
+i : Nat
+bs : List Ty
+signature✝ : Tel
+h : θ.types i = Ty.dependentFn signature✝
+⊢ Ty.rawBind θ (rawApply (Ty.tapp i bs) as) = rawApply (Ty.rawBind θ (Ty.tapp i bs)) (rawBindTys θ as)
+
+case external
+as : List Ty
+θ : SubstEnv
+i : Nat
+bs : List Ty
+id✝ : ExternalId
+arguments✝ : List Ty
+h : θ.types i = Ty.external id✝ arguments✝
+⊢ Ty.rawBind θ (rawApply (Ty.tapp i bs) as) = rawApply (Ty.rawBind θ (Ty.tapp i bs)) (rawBindTys θ as)
+
+case scoped
+as : List Ty
+θ : SubstEnv
+i : Nat
+bs : List Ty
+name✝ : OpaqueName
+kind✝ : Scope.Domain.Kind
+index✝ : RangeIx
+h : θ.types i = Ty.scoped name✝ kind✝ index✝
+⊢ Ty.rawBind θ (rawApply (Ty.tapp i bs) as) = rawApply (Ty.rawBind θ (Ty.tapp i bs)) (rawBindTys θ as)
+
+case pathBases
+as : List Ty
+θ : SubstEnv
+i : Nat
+bs : List Ty
+h : θ.types i = Ty.pathBases
+⊢ Ty.rawBind θ (rawApply (Ty.tapp i bs) as) = rawApply (Ty.rawBind θ (Ty.tapp i bs)) (rawBindTys θ as)
+
+case scopePattern
+as : List Ty
+θ : SubstEnv
+i : Nat
+bs : List Ty
+kind✝ : Scope.Domain.Kind
+h : θ.types i = Ty.scopePattern kind✝
+⊢ Ty.rawBind θ (rawApply (Ty.tapp i bs) as) = rawApply (Ty.rawBind θ (Ty.tapp i bs)) (rawBindTys θ as)
+<tmp>/benitoite-r2-exchange.lean:36:4: error: Tactic `apply` failed: could not unify the conclusion of `@List.map_congr_left`
+  List.map ?f ?l = List.map ?g ?l
+with the goal
+  List.map (fun x => Eff.bind τ.up (Eff.shiftV 1 0 x)) σ.rows = List.map (Eff.shiftV 1 0) (compose σ τ).rows
+
+Note: The full type of `@List.map_congr_left` is
+  ∀ {α : Type ?u.21} {l : List α} {α_1 : Type ?u.20} {f g : α → α_1},
+    (∀ (a : α), a ∈ l → f a = g a) → List.map f l = List.map g l
+
+case e_rows
+σ τ : SubstEnv
+⊢ List.map (fun x => Eff.bind τ.up (Eff.shiftV 1 0 x)) σ.rows = List.map (Eff.shiftV 1 0) (compose σ τ).rows
+<tmp>/benitoite-r2-exchange.lean:48:2: error: Type mismatch: After simplification, term
+  Eff.mem_substAtoms θ.rows ?m.68 x
+ has type
+  substAtoms θ.rows
+        (match (motive := Eff → Atom → Bool) ?m.68 with
+        | EffR.mk a fails => a)
+        x =
+      true ↔
+    (match x with
+      | Atom.name l r =>
+        (match (motive := Eff → Atom → Bool) ?m.68 with
+            | EffR.mk a fails => a)
+            (Atom.name l r) =
+          true
+      | Atom.rho i =>
+        θ.rows.length ≤ i ∧
+          (match (motive := Eff → Atom → Bool) ?m.68 with
+              | EffR.mk a fails => a)
+              (Atom.rho i) =
+            true) ∨
+      ∃ i f,
+        θ.rows[i]? = some f ∧
+          (match (motive := Eff → Atom → Bool) ?m.68 with
+                | EffR.mk a fails => a)
+                (Atom.rho i) =
+              true ∧
+            (match (motive := Eff → Atom → Bool) f with
+                | EffR.mk a fails => a)
+                x =
+              true
+but is expected to have type
+  substAtoms θ.rows atoms✝ x = true ↔
+    (match x with
+      | Atom.name l r => atoms✝ (Atom.name l r) = true
+      | Atom.rho i => θ.rows.length ≤ i ∧ atoms✝ (Atom.rho i) = true) ∨
+      ∃ i f,
+        θ.rows[i]? = some f ∧
+          atoms✝ (Atom.rho i) = true ∧
+            (match (motive := Eff → Atom → Bool) f with
+                | EffR.mk a fails => a)
+                x =
+              true
+<tmp>/benitoite-r2-exchange.lean:66:3: error: unknown tactic
+<tmp>/benitoite-r2-exchange.lean:53:58: error: Invalid projection: Projections extract constructor fields for one-constructor inductive types. The expression
+  hr
+has type
+  Eff.RowsIn (fun x => x < σ.rows.length) e
+which is not a one-constructor inductive type.
+<tmp>/benitoite-r2-exchange.lean:52:76: error: unsolved goals
+σ τ : SubstEnv
+hs : σ.ranges = []
+ht : τ.ranges = []
+e : Eff
+hr : Eff.RowsIn (fun x => x < σ.rows.length) e
+x : Atom
+bound : ∀ (i : Nat), e.mem (Atom.rho i) → i < σ.rows.length
+first :
+  ∀ (x : Atom),
+    (Eff.bind σ e).mem x ↔
+      (match x with
+        | Atom.name l r => e.mem (Atom.name l r)
+        | Atom.rho index => False) ∨
+        ∃ i f, σ.rows[i]? = some f ∧ e.mem (Atom.rho i) ∧ f.mem x
+⊢ ((match x with
+      | Atom.name l r => (Eff.bind σ e).mem (Atom.name l r)
+      | Atom.rho i => τ.rows.length ≤ i ∧ (Eff.bind σ e).mem (Atom.rho i)) ∨
+      ∃ i f, τ.rows[i]? = some f ∧ (Eff.bind σ e).mem (Atom.rho i) ∧ f.mem x) ↔
+    (match x with
+      | Atom.name l r => e.mem (Atom.name l r)
+      | Atom.rho i => σ.rows.length ≤ i ∧ e.mem (Atom.rho i)) ∨
+      ∃ i f, (∃ a, σ.rows[i]? = some a ∧ Eff.bind τ a = f) ∧ e.mem (Atom.rho i) ∧ f.mem x

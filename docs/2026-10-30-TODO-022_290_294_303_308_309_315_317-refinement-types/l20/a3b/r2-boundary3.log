@@ -1,0 +1,195 @@
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3b/r2-boundary.lean:16:30: warning: Try `simp at hh` instead of `simpa using hh`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3b/r2-boundary.lean:29:14: warning: This simp argument is unused:
+  shiftTypes
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Tel.substAt, instantiatedTel, Tel.bind, Tel.rawBind, Tel.norm, sig, PrimSig.tel, signatureTel, inner,
+    Ty.rawBind, Ty.norm, rawBindTys, Ty.normTys, Eff.rawBind, Eff.norm, typeEnvAt, Eff.test, Eff.empty, Eff.row,
+    Eff.atoms, substAtoms, instAtoms, rowFails, shiftRowsTypes, shiftTypesList] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3b/r2-boundary.lean:63:30: warning: Try `simp at hh` instead of `simpa using hh`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+'Benitoite.Release.Refinement.A3bPrimitiveR2.exchange_false' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.A3bPrimitiveR2.io_shape' depends on axioms: [propext]
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3b/r2-boundary.lean:97:2: error: unsolved goals
+case refine_4.refl.wf
+P : Program
+he : Eff.row 0 ∈ [Eff.row 0]
+⊢ NamesWF [] []
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3b/r2-boundary.lean:102:2: error: unsolved goals
+case refine_6.wf
+P : Program
+⊢ (Ty.WFList 0 0 0
+        (Order.sortUnique tyCompare
+          (List.map Ty.norm
+            (Eff.fails
+              (EffR.mk
+                (fun a =>
+                  match a with
+                  | Atom.rho j => decide (j = 0)
+                  | x => false)
+                [])))) ∧
+      Order.sortUnique tyCompare
+          (List.map Ty.norm
+            (Order.sortUnique tyCompare
+              (List.map Ty.norm
+                (Eff.fails
+                  (EffR.mk
+                    (fun a =>
+                      match a with
+                      | Atom.rho j => decide (j = 0)
+                      | x => false)
+                    []))))) =
+        Order.sortUnique tyCompare
+          (List.map Ty.norm
+            (Eff.fails
+              (EffR.mk
+                (fun a =>
+                  match a with
+                  | Atom.rho j => decide (j = 0)
+                  | x => false)
+                [])))) ∧
+    Ty.WFList 0 0 1
+        (Order.sortUnique tyCompare
+          (List.map Ty.norm
+            (Eff.shiftV 1 0
+                (EffR.mk
+                  (fun a =>
+                    match a with
+                    | Atom.rho j => decide (j = 0)
+                    | x => false)
+                  [])).fails)) ∧
+      Order.sortUnique tyCompare
+          (List.map Ty.norm
+            (Order.sortUnique tyCompare
+              (List.map Ty.norm
+                (Eff.shiftV 1 0
+                    (EffR.mk
+                      (fun a =>
+                        match a with
+                        | Atom.rho j => decide (j = 0)
+                        | x => false)
+                      [])).fails))) =
+        Order.sortUnique tyCompare
+          (List.map Ty.norm
+            (Eff.shiftV 1 0
+                (EffR.mk
+                  (fun a =>
+                    match a with
+                    | Atom.rho j => decide (j = 0)
+                    | x => false)
+                  [])).fails)
+
+case refine_6.sorted
+P : Program
+⊢ sortedTys []
+      (Order.sortUnique tyCompare
+        (List.map Ty.norm
+          (Eff.fails
+            (EffR.mk
+              (fun a =>
+                match a with
+                | Atom.rho j => decide (j = 0)
+                | x => false)
+              [])))) ∧
+    sortedTys
+      (Ctx.extend []
+        (Ty.fn [] [] (Ty.base BaseTy.unit)
+          (EffR.mk
+            (substAtoms
+              [EffR.mk
+                  (fun a =>
+                    match a with
+                    | Atom.rho j => decide (j = 0)
+                    | x => false)
+                  []]
+              fun a =>
+              match a with
+              | Atom.rho j => decide (j = 0)
+              | x => false)
+            (Order.sortUnique tyCompare
+              (List.map Ty.norm
+                (Eff.fails
+                  (EffR.mk
+                    (fun a =>
+                      match a with
+                      | Atom.rho j => decide (j = 0)
+                      | x => false)
+                    [])))))))
+      (Order.sortUnique tyCompare
+        (List.map Ty.norm
+          (Eff.shiftV 1 0
+              (EffR.mk
+                (fun a =>
+                  match a with
+                  | Atom.rho j => decide (j = 0)
+                  | x => false)
+                [])).fails))
+
+case refine_6.declared
+P : Program
+⊢ declaredTys P [] []
+      (Order.sortUnique tyCompare
+        (List.map Ty.norm
+          (Eff.fails
+            (EffR.mk
+              (fun a =>
+                match a with
+                | Atom.rho j => decide (j = 0)
+                | x => false)
+              [])))) ∧
+    declaredTys P []
+      (Ctx.extend []
+        (Ty.fn [] [] (Ty.base BaseTy.unit)
+          (EffR.mk
+            (substAtoms
+              [EffR.mk
+                  (fun a =>
+                    match a with
+                    | Atom.rho j => decide (j = 0)
+                    | x => false)
+                  []]
+              fun a =>
+              match a with
+              | Atom.rho j => decide (j = 0)
+              | x => false)
+            (Order.sortUnique tyCompare
+              (List.map Ty.norm
+                (Eff.fails
+                  (EffR.mk
+                    (fun a =>
+                      match a with
+                      | Atom.rho j => decide (j = 0)
+                      | x => false)
+                    [])))))))
+      (Order.sortUnique tyCompare
+        (List.map Ty.norm
+          (Eff.shiftV 1 0
+              (EffR.mk
+                (fun a =>
+                  match a with
+                  | Atom.rho j => decide (j = 0)
+                  | x => false)
+                [])).fails))
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3b/r2-boundary.lean:105:6: warning: This simp argument is unused:
+  substAtoms_nil
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [higher, instantiatedTel, Tel.bind, Tel.rawBind, Tel.norm, sig, PrimSig.tel, signatureTel, inner,
+    Ty.rawBind, Ty.norm, rawBindTys, Ty.normTys, Eff.rawBind, Eff.norm, typeEnvAt, Eff.row, Eff.empty, rowFails,
+    instAtoms_nil, Ty.WF, Tel.WF, Ty.WFList, Eff.WF, Eff.Canonical, NamesWF, Ty.Sorted, Tel.Sorted, sortedTys,
+    sortedEff, Ty.Declared, Tel.Declared, declaredTys, declaredEff]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'Benitoite.Release.Refinement.A3bPrimitiveR2.rejected' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.A3bPrimitiveR2.higher_admissible' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.A3bPrimitiveR2.higher_exchange' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.A3bPrimitiveR2.primitive_branch' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

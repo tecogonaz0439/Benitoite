@@ -1,0 +1,39 @@
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3b/r1-primitive.lean:26:30: warning: Try `simp at hh` instead of `simpa using hh`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3b/r1-primitive.lean:39:14: warning: This simp argument is unused:
+  shiftTypes
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Tel.substAt, instantiatedTel, Tel.bind, Tel.rawBind, Tel.norm, sig, PrimSig.tel, signatureTel, inner,
+    Ty.rawBind, Ty.norm, rawBindTys, Ty.normTys, Eff.rawBind, Eff.norm, typeEnvAt, Eff.test, Eff.empty, Eff.row,
+    Eff.atoms, substAtoms, instAtoms, rowFails, shiftRowsTypes, shiftTypesList] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3b/r1-primitive.lean:61:56: error: Application type mismatch: The argument
+  admissible
+has type
+  PrimitiveAdmissible [] 0 sig Qempty [] []
+but is expected to have type
+  PrimitiveAdmissible [] [].length sig Q [] []
+in the application
+  HasTypeVQ.V_Prim hb hr
+    (of_eq_true
+      (Eq.trans
+        (congr (congrArg And (Eq.trans (congr (congrArg Eq (Nat.zero_add 1)) (Nat.zero_add 1)) (eq_self 1)))
+          (Eq.trans List.nodup_cons._simp_1
+            (Eq.trans
+              (congr (congrArg And (Eq.trans (congrArg Not List.not_mem_nil._simp_1) not_false_eq_true))
+                List.nodup_nil._simp_1)
+              (and_self True))))
+        (and_self True)))
+    admissible
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3b/r1-primitive.lean:80:30: warning: Try `simp at hh` instead of `simpa using hh`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+'Benitoite.Release.Refinement.A3bPrimitive.exchange_false' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.A3bPrimitive.primitive_source' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.A3bPrimitive.io_shape' depends on axioms: [propext]

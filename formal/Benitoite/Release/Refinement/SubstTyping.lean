@@ -262,9 +262,14 @@ private theorem TypedImages.closedAnnotation {P B store Q C Γ Δ Ξ σ a}
 private theorem TypedImages.signature {P B store Q C Γ Δ Ξ σ t ks ts es}
     (h : TypedImages P B store Q C Γ Δ Ξ σ) (ht : SignatureInstance P C Γ t ks ts es) :
     SignatureInstance P C Δ t ks (ts.map (substTyValues σ)) (es.map (substEffValues σ)) := by
-  refine ⟨ht.source, h.typeAnnotations ht.types, ht.kinds.subst σ, h.rowAnnotations ht.rows, ?_⟩
-  rw [← instantiatedTel_subst_eq ht.source]
-  exact h.telAnnotation ht.result
+  refine ⟨ht.source, h.typeAnnotations ht.types, ht.kinds.subst σ, h.rowAnnotations ht.rows, ?_, ?_⟩
+  · intro e he
+    obtain ⟨f, hf, rfl⟩ := List.mem_map.mp he
+    have hk : Ty.HasKind P (TypeCtx.kinds C) (.fn [] [] (.base .unit) f) .value :=
+      ⟨by simp [NamesWF], trivial, trivial, ht.rowKinds f hf⟩
+    exact (hk.bind_values σ).2.2.2
+  · rw [← instantiatedTel_subst_eq ht.source]
+    exact h.telAnnotation ht.result
 
 private theorem TypedImages.sat_normal {P B store Q C Γ Δ Ξ σ a p}
     (h : TypedImages P B store Q C Γ Δ Ξ σ) (hA : Builtins.ValueAssumptions P B)

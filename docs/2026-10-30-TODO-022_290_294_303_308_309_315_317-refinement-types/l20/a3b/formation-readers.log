@@ -1,0 +1,53 @@
+Benitoite/Release/Refinement/TypeSubstFormation.lean:108:2: error: Case tag `data` not found.
+
+Hint: The only available case tag is `refined`.
+  r̲e̲f̲i̲n̲e̲da̵t̵a̵
+Benitoite/Release/Refinement/TypeSubstFormation.lean:120:21: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  (rawApply (θ.types i) ?as).observationType
+in the target expression
+  (rawApply (θ.types i).observationType (observationTypes (rawBindTys θ as))).observationType =
+    (rawApply ((SubstEnv.typesOnly θ.types).types i) (rawBindTys (SubstEnv.typesOnly θ.types) as)).observationType
+
+θ : SubstEnv
+i : Nat
+as : List Ty
+⊢ (rawApply (θ.types i).observationType (observationTypes (rawBindTys θ as))).observationType =
+    (rawApply ((SubstEnv.typesOnly θ.types).types i) (rawBindTys (SubstEnv.typesOnly θ.types) as)).observationType
+Benitoite/Release/Refinement/TypeSubstFormation.lean:133:2: error: Tactic `simp` failed with a nested error:
+maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
+Benitoite/Release/Refinement/TypeSubstFormation.lean:182:20: error(lean.invalidField): Invalid field `varianceValid`: The environment does not contain `Benitoite.Release.Refinement.Program.WellFormed.varianceValid`, so it is not possible to project the field `varianceValid` from an expression
+  hp
+of type `P.WellFormed`
+Benitoite/Release/Refinement/TypeSubstFormation.lean:195:18: error(lean.invalidField): Invalid field `varianceValid`: The environment does not contain `Benitoite.Release.Refinement.Program.WellFormed.varianceValid`, so it is not possible to project the field `varianceValid` from an expression
+  hp
+of type `P.WellFormed`
+Benitoite/Release/Refinement/TypeSubstFormation.lean:193:37: error: unsolved goals
+P : Program
+C D : TypeCtx
+Γ Δ : Ctx
+t : Term
+ref : FieldRef
+θ : SubstEnv
+hp : P.WellFormed
+hm : DeclMap Γ Δ θ
+hv : θ.values = fun i => some (Term.var i)
+hg : θ.ranges = []
+xs : List Ty
+cd : ConDecl
+a : Ty
+ht : Term.HasData P Γ t ref.owner xs
+hc : P.cons ref.constructor = some cd
+hd : cd.data = ref.owner
+hn : cd.ntys = xs.length
+ha : cd.args[ref.position]? = some a
+hw : Ty.WF 0 cd.ntys 0 a
+hs : (Ty.subst xs [] a).HasSort ref.result
+⊢ FieldRef.Declared P D Δ t ref
+Benitoite/Release/Refinement/TypeSubstFormation.lean:233:25: warning: Variable name `hm` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _hm
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`

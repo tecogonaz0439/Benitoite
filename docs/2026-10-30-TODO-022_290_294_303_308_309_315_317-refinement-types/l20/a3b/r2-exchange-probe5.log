@@ -1,0 +1,71 @@
+<tmp>/benitoite-r2-exchange.lean:175:22: error: unsolved goals
+σ τ : SubstEnv
+hs : σ.ranges = []
+ht : τ.ranges = []
+hv : σ.values = fun i => some (Term.var i)
+hu : τ.values = fun i => some (Term.var i)
+ns : List String
+ps : List Ty
+r : Ty
+e : EffR
+hr :
+  Ty.RowsInList (fun x => x < σ.rows.length) ps ∧
+    Ty.RowsIn (fun x => x < σ.rows.length) r ∧ Eff.RowsIn (fun x => x < σ.rows.length) e
+⊢ Ty.fn ns (Ty.normTys (rawBindTys (compose σ τ) ps)) (Ty.rawBind (compose σ τ) r).norm (Eff.bind (compose σ τ) e) =
+    Ty.fn ns (Ty.normTys (rawBindTys (compose σ τ) ps)) (Ty.rawBind (compose σ τ) r).norm
+      (Eff.rawBind (compose σ τ) e).norm
+<tmp>/benitoite-r2-exchange.lean:176:20: error: unsolved goals
+σ τ : SubstEnv
+hs : σ.ranges = []
+ht : τ.ranges = []
+hv : σ.values = fun i => some (Term.var i)
+hu : τ.values = fun i => some (Term.var i)
+b t : Ty
+e : EffR
+hr :
+  Ty.RowsIn (fun x => x < σ.rows.length) b ∧
+    Ty.RowsIn (fun x => x < σ.rows.length) t ∧ Eff.RowsIn (fun x => x < σ.rows.length) e
+⊢ (Ty.rawBind (compose σ τ) b).norm.cont (Ty.rawBind (compose σ τ) t).norm (Eff.bind (compose σ τ) e) =
+    (Ty.rawBind (compose σ τ) b).norm.cont (Ty.rawBind (compose σ τ) t).norm (Eff.rawBind (compose σ τ) e).norm
+<tmp>/benitoite-r2-exchange.lean:182:6: error: Tactic `rfl` failed: The left-hand side
+  (rawApply (Ty.rawBind τ (σ.types i)).norm (Ty.normTys (rawBindTys (compose σ τ) as))).norm
+is not definitionally equal to the right-hand side
+  (rawApply ((compose σ τ).types i).norm (Ty.normTys (rawBindTys (compose σ τ) as))).norm
+
+σ τ : SubstEnv
+hs : σ.ranges = []
+ht : τ.ranges = []
+hv : σ.values = fun i => some (Term.var i)
+hu : τ.values = fun i => some (Term.var i)
+i : Nat
+as : List Ty
+hr : Ty.RowsInList (fun x => x < σ.rows.length) as
+⊢ (rawApply (Ty.rawBind τ (σ.types i)).norm (Ty.normTys (rawBindTys (compose σ τ) as))).norm =
+    (rawApply ((compose σ τ).types i).norm (Ty.normTys (rawBindTys (compose σ τ) as))).norm
+<tmp>/benitoite-r2-exchange.lean:183:21: error: unsolved goals
+σ τ : SubstEnv
+hs : σ.ranges = []
+ht : τ.ranges = []
+hv : σ.values = fun i => some (Term.var i)
+hu : τ.values = fun i => some (Term.var i)
+a : Ty
+p : Pred
+hr : Ty.RowsIn (fun x => x < σ.rows.length) a
+⊢ (Ty.rawBind (compose σ τ) a).norm.refineNorm p =
+    (Ty.rawBind
+            { types := fun i => Ty.bind τ (σ.types i), rows := List.map (Eff.bind τ) σ.rows, ranges := [],
+              values := fun i => some (Term.var i) }
+            a).norm.refineNorm
+      p
+<tmp>/benitoite-r2-exchange.lean:204:15: error: unsolved goals
+case done
+σ τ : SubstEnv
+hs : σ.ranges = []
+ht : τ.ranges = []
+hv : σ.values = fun i => some (Term.var i)
+hu : τ.values = fun i => some (Term.var i)
+r : Ty
+e : EffR
+hr : Tel.RowsIn (fun x => x < σ.rows.length) (Tel.done r e)
+⊢ Tel.done (Ty.rawBind (compose σ τ) r).norm (Eff.bind (compose σ τ) e) =
+    Tel.done (Ty.rawBind (compose σ τ) r).norm (Eff.rawBind (compose σ τ) e).norm

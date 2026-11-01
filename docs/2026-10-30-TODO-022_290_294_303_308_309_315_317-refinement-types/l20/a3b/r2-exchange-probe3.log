@@ -1,0 +1,48 @@
+<tmp>/benitoite-r2-exchange.lean:128:12: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  Ty.bind (compose σ τ) y
+in the target expression
+  Ty.bind
+      { types := fun i => Ty.bind τ (σ.types i), rows := List.map (Eff.bind τ) σ.rows, ranges := [],
+        values := fun i => some (Term.var i) }
+      y =
+    t.norm
+
+case mp.inl.inl
+σ τ : SubstEnv
+hs : σ.ranges = []
+e : Eff
+hr : Eff.RowsIn (fun x => x < σ.rows.length) e
+ih : ∀ (x : Ty), e.memFail x → Ty.bind τ (Ty.bind σ x) = Ty.bind (compose σ τ) x
+t : Ty
+first :
+  ∀ (j : Nat), (Eff.bind σ e).mem (Atom.rho j) ↔ ∃ i f, σ.rows[i]? = some f ∧ e.mem (Atom.rho i) ∧ f.mem (Atom.rho j)
+x : Ty
+hx : (Eff.bind σ e).memFail x
+he : Ty.bind τ x = t.norm
+y : Ty
+hy : e.memFail y
+hey : Ty.bind σ y = x.norm
+⊢ Ty.bind
+      { types := fun i => Ty.bind τ (σ.types i), rows := List.map (Eff.bind τ) σ.rows, ranges := [],
+        values := fun i => some (Term.var i) }
+      y =
+    t.norm
+<tmp>/benitoite-r2-exchange.lean:149:8: error: Tactic `apply` failed: could not unify the conclusion of `@funext`
+  ?f = ?g
+with the goal
+  EffR.mk a es = EffR.mk b fs
+
+Note: The full type of `@funext` is
+  ∀ {α : Sort ?u.18} {β : α → Sort ?u.17} {f g : (x : α) → β x}, (∀ (x : α), f x = g x) → f = g
+
+case mk.mk
+a : Atom → Bool
+es : List Ty
+hn : Eff.norm (EffR.mk a es) = EffR.mk a es
+b : Atom → Bool
+fs : List Ty
+hm : Eff.norm (EffR.mk b fs) = EffR.mk b fs
+ha : ∀ (x : Atom), Eff.mem (EffR.mk a es) x ↔ Eff.mem (EffR.mk b fs) x
+hf : ∀ (t : Ty), Eff.memFail (EffR.mk a es) t ↔ Eff.memFail (EffR.mk b fs) t
+⊢ EffR.mk a es = EffR.mk b fs
+<tmp>/benitoite-r2-exchange.lean:150:6: error: No goals to be solved

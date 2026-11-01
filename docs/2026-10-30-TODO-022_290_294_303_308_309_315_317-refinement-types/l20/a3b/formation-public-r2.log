@@ -1,0 +1,23 @@
+Benitoite/Release/Refinement/TypeSubstFormation.lean:433:71: error(lean.invalidField): Invalid field `norm`: The environment does not contain `Benitoite.Release.Refinement.declaredEff.norm`, so it is not possible to project the field `norm` from an expression
+  declared_raw_eff (ha e ?m.27).declared.right.right hf.left hf.right.left.variance
+    (declMap_bindTypes Γ (typeEnvAt (List.length C1) ts es)
+      (typeEnvAt_ordinary (List.length C1) ts es (TypeArgsKinded.ordinary hi.typeKinds)))
+    rfl rfl (TypeArgsKinded.typeEnvAt hi.typeKinds) (closed_type_decl hi) (closed_row_decl hi)
+of type
+  declaredEff P C1 (Γ.bindTypes (typeEnvAt (List.length C1) ts es)) (Eff.rawBind (typeEnvAt (List.length C1) ts es) e)
+Benitoite/Release/Refinement/TypeSubstFormation.lean:462:47: error: `simp` made no progress
+Benitoite/Release/Refinement/TypeSubstFormation.lean:461:35: error: unsolved goals
+case scopePattern
+P : Program
+C D : TypeCtx
+Γ Δ : Ctx
+θ : SubstEnv
+hm : DeclMap Γ Δ θ
+hv : θ.values = fun i => some (Term.var i)
+hk : TypeImagesKinded P C.kinds D.kinds θ.types
+ht : ∀ (i : Nat), Ty.Sorted Δ (θ.types i)
+he : ∀ (e : Eff), e ∈ θ.rows → sortedEff Δ e
+kind✝ : Scope.Domain.Kind
+h hd : True
+⊢ Ty.Sorted Δ (Ty.rawBind θ (Ty.scopePattern kind✝))
+Benitoite/Release/Refinement/TypeSubstFormation.lean:457:18: error: (kernel) declaration has metavariables '_private.Benitoite.Release.Refinement.TypeSubstFormation.0.Benitoite.Release.Refinement.sorted_raw'

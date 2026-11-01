@@ -322,7 +322,7 @@ private theorem ContextMap.signature {P B store Q C Γ Δ Ξ t ks ts es}
     (h : ContextMap P B store Q C Γ Δ Ξ) (ht : SignatureInstance P C Γ t ks ts es) :
     SignatureInstance P C Δ t ks ts es :=
   ⟨ht.source, fun a ha => h.annotation (ht.types a ha), ht.kinds,
-    fun e he => h.annotation (ht.rows e he), h.annotation ht.result⟩
+    fun e he => h.annotation (ht.rows e he), ht.rowKinds, h.annotation ht.result⟩
 
 private theorem ContextMap.shiftE {P B store Q C Γ Δ Ξ store'}
     (h : ContextMap P B store Q C Γ Δ Ξ) (extra : TypeCtx) :

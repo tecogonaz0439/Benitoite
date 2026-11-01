@@ -1,0 +1,51 @@
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3b/r2-current-signatures.lean:16:4: error: Case tag `cont` not found.
+
+Hint: Available tags:
+  • `map`: c̵o̵n̵t̵m̲a̲p̲
+  • `tapp`: c̵o̵n̵ta̲p̲p̲
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3b/r2-current-signatures.lean:30:31: error(lean.invalidField): Invalid field notation: Type of
+  a
+is not known; cannot resolve field `RowsIn`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Release.Eff.RowsIn`
+  • `Release.Ty.RowsIn`
+  • `Eff.RowsIn`
+  • `Tel.RowsIn`
+  • `Ty.RowsIn`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3b/r2-current-signatures.lean:30:59: error(lean.invalidField): Invalid field notation: Type of
+  a
+is not known; cannot resolve field `shiftV`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Ctx.shiftV`
+  • `DataObservationLe.shiftV`
+  • `Eff.shiftV`
+  • `Entails.shiftV`
+  • `Pred.shiftV`
+  • `Tel.shiftV`
+  • `TelClosure.shiftV`
+  • `TelLe.shiftV`
+  • `Transport.shiftV`
+  • `Ty.shiftV`
+  • `Eff.Covers.shiftV`
+  • `Eff.Sub.shiftV`
+  • `Ty.LeQ.shiftV`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3b/r2-current-signatures.lean:50:10: error(lean.unknownIdentifier): Unknown identifier `rows_shift`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3b/r2-current-signatures.lean:51:4: error: No goals to be solved
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3b/r2-current-signatures.lean:53:10: error(lean.unknownIdentifier): Unknown identifier `rows_shift`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3b/r2-current-signatures.lean:59:20: error(lean.inferBinderTypeFailed): Failed to infer type of binder `P`
+
+Note: All parameter types and holes (e.g., `_`) in the header of a theorem are resolved before the proof is processed; information from the proof cannot be used to infer what these values should be
+'Benitoite.Release.Refinement.A3bCurrentRowsR2.scoped_signature' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.A3bCurrentRowsR2.model_rows' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.A3bCurrentRowsR2.target_entries_rows' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]

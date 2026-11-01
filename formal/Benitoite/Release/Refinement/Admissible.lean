@@ -97,6 +97,7 @@ structure PrimitiveAdmissible (C : TypeCtx) (nv : Nat) (s : PrimSig)
   sourceRows : Eff.RowsIn (· < es.length) s.eff
   sourceQ : ∀ i, Qsig s.params s.ret s.eff i → i < es.length
   noFailRows : RowTransport (Qsig s.params s.ret s.eff) Q es
+  sourceTelRows : s.tel.RowsIn (· < es.length)
 
 def MethodRowsAdmissible (C : TypeCtx) (nv : Nat) (Q : NoFailCtx) (ms : MethSig)
     (es : List Eff) : Prop :=
@@ -119,6 +120,7 @@ structure SignatureInstance (P : Program) (C : TypeCtx) (Γ : Ctx)
   types : TypeAnnotations P C Γ ts
   kinds : TypeArgsKinded P C ts ks
   rows : RowAnnotations P C Γ es
+  rowKinds : ∀ e ∈ es, kindsEff P (TypeCtx.kinds C) e
   result : Ty.Annotation P C Γ (.dependentFn (instantiatedTel t ts es))
 
 /-- 宣言のkindにかかわらず、適格な型引数は継続型ではない。 -/

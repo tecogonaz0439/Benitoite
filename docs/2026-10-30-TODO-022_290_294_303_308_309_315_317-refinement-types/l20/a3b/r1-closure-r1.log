@@ -1,0 +1,55 @@
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3b/r1-closure.lean:37:8: warning: This simp argument is unused:
+  tel
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [inner, Tel.substAt, Tel.bind, Tel.rawBind, Tel.norm, Ty.rawBind, Ty.norm, rawBindTys, Ty.normTys,
+    Eff.rawBind, Eff.norm, typeEnvAt, Eff.test, Eff.row, Eff.empty, Eff.atoms, substAtoms, instAtoms, rowFails] at hx
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3b/r1-closure.lean:37:20: warning: This simp argument is unused:
+  Tel.substAt
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [tel, inner, Tel.bind, Tel.rawBind, Tel.norm, Ty.rawBind, Ty.norm, rawBindTys, Ty.normTys, Eff.rawBind,
+    Eff.norm, typeEnvAt, Eff.test, Eff.row, Eff.empty, Eff.atoms, substAtoms, instAtoms, rowFails] at hx
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3b/r1-closure.lean:37:33: warning: This simp argument is unused:
+  Tel.bind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [tel, inner, Tel.substAt, Tel.rawBind, Tel.norm, Ty.rawBind, Ty.norm, rawBindTys, Ty.normTys,
+    Eff.rawBind, Eff.norm, typeEnvAt, Eff.test, Eff.row, Eff.empty, Eff.atoms, substAtoms, instAtoms, rowFails] at hx
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3b/r1-closure.lean:37:43: warning: This simp argument is unused:
+  Tel.rawBind
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [tel, inner, Tel.substAt, Tel.bind, Tel.norm, Ty.rawBind, Ty.norm, rawBindTys, Ty.normTys, Eff.rawBind,
+    Eff.norm, typeEnvAt, Eff.test, Eff.row, Eff.empty, Eff.atoms, substAtoms, instAtoms, rowFails] at hx
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3b/r1-closure.lean:37:56: warning: This simp argument is unused:
+  Tel.norm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [tel, inner, Tel.substAt, Tel.bind, Tel.rawBind, Ty.rawBind, Ty.norm, rawBindTys, Ty.normTys,
+    Eff.rawBind, Eff.norm, typeEnvAt, Eff.test, Eff.row, Eff.empty, Eff.atoms, substAtoms, instAtoms, rowFails] at hx
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3b/r1-closure.lean:55:2: error: The `induction` tactic does not support the type `Benitoite.Release.Refinement.TelClosure` because it is mutually inductive
+
+Hint: Consider using the `cases` tactic instead
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3b/r1-closure.lean:74:67: error: unexpected token '='; expected ':=' or '|'
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3b/r1-closure.lean:74:12: error: type expected, got
+  ((Ty.substAt 0 [] [Eff.empty] (Ty.dependentFn tel)).fnCore : Option Tel)
+'Benitoite.Release.Refinement.A3bClosure.substituted_not_typed' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.A3bClosure.captured' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.A3bClosure.source' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.A3bClosure.target_runtime_shape_false' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
