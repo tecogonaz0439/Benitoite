@@ -11,6 +11,8 @@ import Benitoite.Release.Refinement.MethodArguments
 -/
 namespace Benitoite.Release.Refinement
 
+variable {P : Program}
+
 theorem Ty.IntegerCarrier.ordinary {a : Ty} (h : a.IntegerCarrier) : a.Ordinary := Ty.HasSort.ordinary h
 
 theorem Ty.NotContCore.ordinary {a : Ty} (h : a.NotContCore) : a.Ordinary := by
@@ -697,7 +699,7 @@ mutual
       simpa only [Ty.norm_shiftV] using (HasTypeVQ.shift_values hv hA hstore hpres hm hf).V_Normal
     | .V_Sub hv hl hw hs hd =>
       have hl' := hl.rawBind (renEnv (shiftIndex k c)) (hm.transport hf)
-      change Ty.LeQ Δ Ξ (renameTy (shiftIndex k c) _) (renameTy (shiftIndex k c) _) at hl'
+      change Ty.LeQ P Δ Ξ (renameTy (shiftIndex k c) _) (renameTy (shiftIndex k c) _) at hl'
       rw [renameTy_shiftIndex] at hl'
       exact .V_Sub (HasTypeVQ.shift_values hv hA hstore hpres hm hf) hl' (hm.wf hw) (hm.sorted hs) (hm.declared hd)
     | .V_Refine (a := a) (t := t) (p := p) hv hi ht hs hw he hda hdp =>
@@ -901,7 +903,7 @@ mutual
           hh)
     | .C_Sub ht hl hc hw hs hd =>
       have hl' := hl.rawBind (renEnv (shiftIndex k c)) (hm.values.transport hf)
-      change Ty.LeQ Δ Ξ (renameTy (shiftIndex k c) _) (renameTy (shiftIndex k c) _) at hl'
+      change Ty.LeQ P Δ Ξ (renameTy (shiftIndex k c) _) (renameTy (shiftIndex k c) _) at hl'
       rw [renameTy_shiftIndex] at hl'
       exact .C_Sub (HasTypeCQ.shift_values ht hA hstore hext hm hL hf) hl' (hc.shiftV k c) (hm.values.wf hw) (hm.values.sorted hs) (hm.values.declared hd)
     | .C_Eff ht hc => exact .C_Eff (HasTypeCQ.shift_values ht hA hstore hext hm hL hf) (hc.shiftV k c)

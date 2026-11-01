@@ -1,15 +1,19 @@
 import Benitoite.Release.Refinement.Kinds
 import Benitoite.Release.Refinement.ValueClosed
+import Benitoite.Release.Refinement.ObservationType
 
 /-!
 # 観測する欄と名目の宣言の照合
 
 有限の FieldRef 自身を証拠とせず、受け手の型と宣言表の欄型を読む。
-構成子の欄は不変である。モジュールの可視性はこの表からは検査しない。
+欄の観測では型引数の変性による対応も読む。モジュールの可視性はこの表からは検査しない。
 -/
 namespace Benitoite.Release.Refinement
 
-/-- data の受け手が持つ名目型と型引数。内部 snapshot は元の構成子を保つ。 -/
+/-- data の受け手を観測するときの名目型と型引数。
+widen 後の引数は観測の射影で関係する引数であり、受け手の実の型引数とは限らない。
+欄の sort を元の引数へ反映するには Program.VarianceValid を用いる。
+内部 snapshot は元の構成子を保つ。 -/
 inductive Term.HasData (P : Program) (Γ : Ctx) : Term → DataName → List Ty → Prop where
   | var {i a d ts} : Γ[i]? = some (some a) → a.norm.core = .data d ts →
       Term.HasData P Γ (.var i) d ts
@@ -21,6 +25,15 @@ inductive Term.HasData (P : Program) (Γ : Ctx) : Term → DataName → List Ty 
       cd.args[ref.position]? = some a → a.WF 0 cd.ntys 0 → (a.subst ts []).HasSort ref.result →
       (a.subst ts []).norm.core = .data d us →
       Term.HasData P Γ (.field ref t) d us
+  /-- 観測の範囲で引数を読み替える。完全な部分型や欄の型付けを結論しない。 -/
+  | widen {t d as bs} : Term.HasData P Γ t d as → DataObservationLe P d as bs →
+      Term.HasData P Γ t d bs
+
+theorem Term.HasData.not_integer {P Γ t d as n} (h : Term.HasData P Γ t d as)
+    (he : t = .integer n) : False := by
+  match h with
+  | .widen h _ => exact h.not_integer he
+  | .var .. | .value .. | .field .. => cases he
 
 def FieldRef.Declared (P : Program) (_C : List TParam) (Γ : Ctx) (receiver : Term) (ref : FieldRef) : Prop :=
   ∃ ts cd a, Term.HasData P Γ receiver ref.owner ts ∧

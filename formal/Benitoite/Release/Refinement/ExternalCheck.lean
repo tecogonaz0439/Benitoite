@@ -9,6 +9,8 @@ import Benitoite.Release.Refinement.ClosedEvaluation
 carrierは篩の述語を信用しない。dataの欄は元の宣言を具体化して辿る。
 -/
 namespace Benitoite.Release.Refinement
+
+variable {P : Program}
 noncomputable section
 
 def Outcome.Typed (P : Program) (B : Builtins) (Ψ : StoreTy) (out : Outcome) (a : Ty) : Prop :=
@@ -155,15 +157,15 @@ private theorem leafShape_norm (v : Val) (a : Ty) :
   case refined a p => simp only [Ty.norm, leafShape_refineNorm, ExternalLeafShape, leafShape_norm]
   case dependentFn t => unfold Ty.norm Ty.foldFn; split <;> rfl
 
-private theorem leafShape_le {Γ Φ a b v} (h : Ty.LeQ Γ Φ a b) :
+private theorem leafShape_le {Γ Φ a b v} (h : Ty.LeQ P Γ Φ a b) :
     ExternalLeafShape v a → ExternalLeafShape v b := by
   match h with
   | .refl => exact id
   | .convert he => intro hs; exact (leafShape_norm v b).mp (he ▸ (leafShape_norm v a).mpr hs)
   | .trans h₁ h₂ => exact fun hs => leafShape_le h₂ (leafShape_le h₁ hs)
   | .forget | .introduce _ _ => exact id
-  | @Ty.LeQ.refine Γ Φ a b p q h _ _ _ => exact leafShape_le (a := a) (b := b) h
-  | .fn_effect .. | .list .. | .lazy .. | .map_value .. | .dependentFn .. | .scoped .. | .scoped_forget .. =>
+  | @Ty.LeQ.refine _ Γ Φ a b p q h _ _ _ => exact leafShape_le (a := a) (b := b) h
+  | .data .. | .fn_effect .. | .list .. | .lazy .. | .map_value .. | .dependentFn .. | .scoped .. | .scoped_forget .. =>
     exact fun _ => trivial
 
 private theorem leafShape_typed {P B Ψ Q C Γ Φ v a}

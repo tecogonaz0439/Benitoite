@@ -2,6 +2,8 @@ import Benitoite.Release.Refinement.TypeSubst
 
 namespace Benitoite.Release.Refinement
 
+variable {P : Program}
+
 /-- 番号を保ち、観測・参照・最外の事実を保存する型の対応。 -/
 structure Ctx.TypeMap (Γ Δ : Ctx) : Prop where
   lookup : ∀ (i : Nat) (a : Ty), Γ[i]? = some (some a) → ∃ b : Ty, Δ[i]? = some (some b) ∧
@@ -88,16 +90,16 @@ theorem Ctx.TypeMap.extend {Γ Δ} (h : Ctx.TypeMap Γ Δ) (a b : Ty)
         exact ⟨v.shiftV 1 0, by simp [Ctx.extend, List.getElem?_map, hv],
           (shifted u v hs ho hf).1, (shifted u v hs ho hf).2.1, (shifted u v hs ho hf).2.2⟩
 
-theorem Ty.LeQ.context {Γ Δ Φ a b} (h : Ty.LeQ Γ Φ a b) (hm : Ctx.TypeMap Γ Δ) : Ty.LeQ Δ Φ a b := by
+theorem Ty.LeQ.context {Γ Δ Φ a b} (h : Ty.LeQ P Γ Φ a b) (hm : Ctx.TypeMap Γ Δ) : Ty.LeQ P Δ Φ a b := by
   simpa only [Ty.rawBind_id] using h.rawBind (renEnv _root_.id) (hm.transport Φ)
-theorem TelLe.context {Γ Δ Φ t u} (h : TelLe Γ Φ t u) (hm : Ctx.TypeMap Γ Δ) : TelLe Δ Φ t u := by
+theorem TelLe.context {Γ Δ Φ t u} (h : TelLe P Γ Φ t u) (hm : Ctx.TypeMap Γ Δ) : TelLe P Δ Φ t u := by
   simpa only [Tel.rawBind_id] using h.rawBind (renEnv _root_.id) (hm.transport Φ)
-theorem TelClosure.context {Γ Δ Φ t u} (h : TelClosure Γ Φ t u) (hm : Ctx.TypeMap Γ Δ) : TelClosure Δ Φ t u := by
+theorem TelClosure.context {Γ Δ Φ t u} (h : TelClosure P Γ Φ t u) (hm : Ctx.TypeMap Γ Δ) : TelClosure P Δ Φ t u := by
   simpa only [Tel.rawBind_id] using h.rawBind (renEnv _root_.id) (hm.transport Φ)
 
-theorem TelLe.norm {Γ Φ t u} (h : TelLe Γ Φ t u) : TelLe Γ Φ (Tel.norm t) (Tel.norm u) := by
+theorem TelLe.norm {Γ Φ t u} (h : TelLe P Γ Φ t u) : TelLe P Γ Φ (Tel.norm t) (Tel.norm u) := by
   simpa only [Tel.bind, Tel.rawBind_id] using h.bind (renEnv _root_.id) (Transport.id Γ Φ)
-theorem TelClosure.norm {Γ Φ t u} (h : TelClosure Γ Φ t u) : TelClosure Γ Φ (Tel.norm t) (Tel.norm u) := by
+theorem TelClosure.norm {Γ Φ t u} (h : TelClosure P Γ Φ t u) : TelClosure P Γ Φ (Tel.norm t) (Tel.norm u) := by
   simpa only [Tel.bind, Tel.rawBind_id] using h.bind (renEnv _root_.id) (Transport.id Γ Φ)
 
 mutual

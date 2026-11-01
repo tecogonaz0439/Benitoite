@@ -7,6 +7,8 @@ import Benitoite.Release.Refinement.SubstTypingObstruction
 -/
 namespace Benitoite.Release.Refinement
 
+variable {P : Program}
+
 private theorem variable_origin_aux {P B store Q C Γ Φ v a}
     (h : HasTypeVQ P B store Q C Γ Φ v a) :
     ∀ i, v = .var i → ∃ b, Γ[i]? = some (some b) ∧ b.Ordinary := by
@@ -42,7 +44,7 @@ theorem nested_not_wf {nr nt nv : Nat} : ¬ (Ty.refined b .truth).WF nr nt nv :=
 theorem a_sorted : a.Sorted [] := ⟨trivial, trivial, trivial⟩
 theorem b_sorted : b.Sorted [] := ⟨a_sorted, trivial⟩
 
-theorem subtype_outside : Ty.LeQ [] [] a b := .introduce trivial .truth
+theorem subtype_outside : Ty.LeQ P [] [] a b := .introduce trivial .truth
 
 theorem context_facts : Γ.facts = [] ∧ Δ.facts = [] := ⟨rfl, rfl⟩
 

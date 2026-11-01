@@ -2,6 +2,8 @@ import Benitoite.Release.Refinement.HandlerEffects
 
 /-! # 節からの返却と一度だけの再開の代表 -/
 namespace Benitoite.Release.Refinement
+
+variable {P : Program}
 noncomputable section
 
 theorem ContTy.return_annotation {P B σ Ψ R ε k a b Eb Re}
@@ -32,7 +34,7 @@ private theorem closure_normal {P B Ψ R q a e}
 
 private theorem normal_return_tail {P B σ Ψ R ε k a b Eb Re}
     (h : ContTy P B σ Ψ R ε k a b Eb Re) (hRe : Re = none)
-    (n : Ty) (ha : Ty.Annotation P [] [] n) (hn : n.Normal) (hl : Ty.LeQ [] [] n a) :
+    (n : Ty) (ha : Ty.Annotation P [] [] n) (hn : n.Normal) (hl : Ty.LeQ P [] [] n a) :
     ∃ R', (∀ r, R' = some r → r.Normal) ∧ ContTy P B σ Ψ R' ε k n b Eb Re := by
   match h with
   | hh@(.K_Empty ..) =>
@@ -70,7 +72,7 @@ private theorem empty_annotation {P a} (ha : Ty.Annotation P [] [] a) :
 
 private theorem handler_inv {P B σ Ψ R e k a b Eb Re cap cs}
     (h : ContTy P B σ Ψ R e (.handleF cap cs :: k) a b Eb Re) :
-    ∃ t et, Ty.LeQ [] [] a t ∧ ContTy P B σ Ψ R et k t b Eb Re := by
+    ∃ t et, Ty.LeQ P [] [] a t ∧ ContTy P B σ Ψ R et k t b Eb Re := by
   generalize he : (.handleF cap cs :: k) = frames at h
   induction h with
   | K_Handle ht _ _ _ _ _ _ _ _ _ _ _ _ => cases he; exact ⟨_,_,.refl,ht⟩
@@ -82,7 +84,7 @@ private theorem handler_inv {P B σ Ψ R e k a b Eb Re cap cs}
 
 private theorem drop_inv {P B σ Ψ R e k a b Eb Re l}
     (h : ContTy P B σ Ψ R e (.drop l :: k) a b Eb Re) :
-    ∃ t, Ty.LeQ [] [] a t ∧ ContTy P B σ Ψ R e k t b Eb Re := by
+    ∃ t, Ty.LeQ P [] [] a t ∧ ContTy P B σ Ψ R e k t b Eb Re := by
   generalize he : (.drop l :: k) = frames at h
   induction h with
   | K_Drop _ _ ht => cases he; exact ⟨_,.refl,ht⟩
@@ -187,7 +189,7 @@ private theorem resume_closed {P B Ψ R q l c a e}
 private theorem resume_inv {P B Ψ Q C Γ Φ R code a e L l c}
     (h : HasTypeCQ P B Ψ Q C Γ Φ R code a e L) (he : code = .resume (.loc l) (.const c)) :
     ∃ x t ec r, Ψ l = some (.cont x t ec r) ∧ r.map Ty.norm = R.map Ty.norm ∧
-      HasTypeVQ P B Ψ Q C Γ Φ (.const c) x.norm ∧ Ty.LeQ Γ Φ t.norm a ∧ Eff.Covers Γ Φ e ec := by
+      HasTypeVQ P B Ψ Q C Γ Φ (.const c) x.norm ∧ Ty.LeQ P Γ Φ t.norm a ∧ Eff.Covers Γ Φ e ec := by
   match h with
   | .C_ResumeL hl hv hd => cases he; exact ⟨_,_,_,_,hl,rfl,hv.V_Normal,.convert (Ty.norm_idem _),.refl _ _ _⟩
   | .C_ResumeLNorm hl hr hv hd => cases he; exact ⟨_,_,_,_,hl,hr,hv,.refl,Eff.covers_norm_left.mpr (.refl _ _ _)⟩
@@ -254,7 +256,7 @@ theorem StateTyE.resume_const {P B σ Eb q l c k μ saved}
 private theorem drop_release_inv {P B σ Ψ R e k a b Eb Re l}
     (h : ContTy P B σ Ψ R e (.drop l :: k) a b Eb Re) :
     ∃ t b' t' e' R', Ψ l = some (.cont b' t' e' R') ∧ (e'.mem (.name stateEff (.fixed .top)) → e.mem (.name stateEff (.fixed .top))) ∧
-      Ty.LeQ [] [] a t ∧ ContTy P B σ Ψ R e k t b Eb Re := by
+      Ty.LeQ P [] [] a t ∧ ContTy P B σ Ψ R e k t b Eb Re := by
   generalize he : (.drop l :: k) = frames at h
   induction h with
   | K_Drop hl hc ht => cases he; exact ⟨_,_,_,_,_,hl,hc,.refl,ht⟩

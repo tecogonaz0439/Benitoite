@@ -9,6 +9,8 @@ import Benitoite.Release.Refinement.AtTyping
 -/
 namespace Benitoite.Release.Refinement
 
+variable {P : Program}
+
 def Ty.Holds (a : Ty) (o : OpaqueName) (k : Scope.Domain.Kind) (ix : RangeIx) : Prop :=
   a.norm.core = .scoped o k ix ∨ a.norm.core = .opaque o ix
 
@@ -34,7 +36,7 @@ theorem Ty.Holds.unique_name {a : Ty} {o k ix o' k' ix'} (h : a.Holds o k ix)
   all_goals rfl
 
 theorem Ty.LeQ.holds {Γ Φ a b o k ix}
-    (h : Ty.LeQ Γ Φ a b) (ha : a.Holds o k ix) :
+    (h : Ty.LeQ P Γ Φ a b) (ha : a.Holds o k ix) :
     ∃ jx, b.Holds o k jx ∧ jx.Covers ix := by
   match h with
   | .refl => exact ⟨ix,ha,.refl _⟩
@@ -57,7 +59,7 @@ theorem Ty.LeQ.holds {Γ Φ a b o k ix}
       obtain ⟨rfl,rfl,rfl⟩ := ha
       exact ⟨_,Or.inr rfl,.refl _⟩
     · cases ha
-  | .fn_effect _ | .list _ | .lazy _ | .map_value _ _ => rcases ha with ha | ha <;> cases ha
+  | .data _ | .fn_effect _ | .list _ | .lazy _ | .map_value _ _ => rcases ha with ha | ha <;> cases ha
   | .dependentFn _ =>
     rcases ha with ha | ha
     all_goals simp only [Ty.norm, Ty.core_foldFn] at ha

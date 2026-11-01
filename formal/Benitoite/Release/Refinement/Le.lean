@@ -1,4 +1,5 @@
 import Benitoite.Release.Refinement.NormalizationLogic
+import Benitoite.Release.Refinement.Syntax
 
 /-!
 # 有限の論理を使う部分型と被覆
@@ -22,53 +23,99 @@ def assumptions (Γ : Ctx) (Φ : List Pred) (a : Ty) : List Pred :=
 
 mutual
 /-- 有限の論理の文脈を持つ部分型判断。 -/
-inductive Ty.LeQ : Ctx → List Pred → Ty → Ty → Prop where
-  | refl {Γ Φ} {a} : Ty.LeQ Γ Φ a a
-  | convert {Γ Φ a b} : a.norm = b.norm → Ty.LeQ Γ Φ a b
-  | trans {Γ Φ} {a b c} : Ty.LeQ Γ Φ a b → Ty.LeQ Γ Φ b c → Ty.LeQ Γ Φ a c
+inductive Ty.LeQ (P : Program) : Ctx → List Pred → Ty → Ty → Prop where
+  | refl {Γ Φ} {a} : Ty.LeQ P Γ Φ a a
+  | convert {Γ Φ a b} : a.norm = b.norm → Ty.LeQ P Γ Φ a b
+  | trans {Γ Φ} {a b c} : Ty.LeQ P Γ Φ a b → Ty.LeQ P Γ Φ b c → Ty.LeQ P Γ Φ a c
   | fn_effect {Γ Φ} {ns ps r ε ε'} : Eff.Covers Γ Φ ε' ε →
-      Ty.LeQ Γ Φ (.fn ns ps r ε) (.fn ns ps r ε')
-  | list {Γ Φ} {a b} : Ty.LeQ Γ Φ a b → Ty.LeQ Γ Φ (.list a) (.list b)
-  | lazy {Γ Φ} {a b} : Ty.LeQ Γ Φ a b → Ty.LeQ Γ Φ (.lazy a) (.lazy b)
-  | map_value {Γ Φ} {k k' a b} : k = k' → Ty.LeQ Γ Φ a b → Ty.LeQ Γ Φ (.map k a) (.map k' b)
-  | forget {Γ Φ} {a p} : Ty.LeQ Γ Φ (.refined a p) a
+      Ty.LeQ P Γ Φ (.fn ns ps r ε) (.fn ns ps r ε')
+  | list {Γ Φ} {a b} : Ty.LeQ P Γ Φ a b → Ty.LeQ P Γ Φ (.list a) (.list b)
+  | lazy {Γ Φ} {a b} : Ty.LeQ P Γ Φ a b → Ty.LeQ P Γ Φ (.lazy a) (.lazy b)
+  | map_value {Γ Φ} {k k' a b} : k = k' → Ty.LeQ P Γ Φ a b → Ty.LeQ P Γ Φ (.map k a) (.map k' b)
+  | forget {Γ Φ} {a p} : Ty.LeQ P Γ Φ (.refined a p) a
   | introduce {Γ Φ} {a p} : p.Sorted Γ (some a) → Entails (assumptions Γ Φ a) p →
-      Ty.LeQ Γ Φ a (.refined a p)
-  | refine {Γ Φ} {a b p q} : Ty.LeQ Γ Φ a b → p.Sorted Γ (some a) → q.Sorted Γ (some b) →
-      Entails (p :: assumptions Γ Φ a) q → Ty.LeQ Γ Φ (.refined a p) (.refined b q)
+      Ty.LeQ P Γ Φ a (.refined a p)
+  | refine {Γ Φ} {a b p q} : Ty.LeQ P Γ Φ a b → p.Sorted Γ (some a) → q.Sorted Γ (some b) →
+      Entails (p :: assumptions Γ Φ a) q → Ty.LeQ P Γ Φ (.refined a p) (.refined b q)
 
-  | dependentFn {Γ Φ t u} : TelClosure Γ Φ t u → Ty.LeQ Γ Φ (.dependentFn t) (.dependentFn u)
+  | dependentFn {Γ Φ t u} : TelClosure P Γ Φ t u → Ty.LeQ P Γ Φ (.dependentFn t) (.dependentFn u)
   | scoped {Γ Φ o k inner outer} : RangeIx.Covers outer inner →
-      Ty.LeQ Γ Φ (.scoped o k inner) (.scoped o k outer)
-  | scoped_forget {Γ Φ o k ix} : Ty.LeQ Γ Φ (.scoped o k ix) (.opaque o ix)
+      Ty.LeQ P Γ Φ (.scoped o k inner) (.scoped o k outer)
+  | scoped_forget {Γ Φ o k ix} : Ty.LeQ P Γ Φ (.scoped o k ix) (.opaque o ix)
 
-inductive TelLe : Ctx → List Pred → Tel → Tel → Prop where
-  | done {Γ Φ r s e f} : Ty.LeQ Γ Φ r s → Eff.Covers Γ Φ f e →
-      TelLe Γ Φ (.done r e) (.done s f)
-  | param {Γ Φ n a b t u} : Ty.LeQ Γ Φ b a →
-      TelLe (Γ.extend b) (Φ.map Pred.lift) t u →
-      TelLe Γ Φ (.param n a t) (.param n b u)
+  | data {Γ Φ d as bs} : TypeArgsLe P Γ Φ (P.varianceFor d as.length) as bs →
+      Ty.LeQ P Γ Φ (.data d as) (.data d bs)
 
-inductive TelClosure : Ctx → List Pred → Tel → Tel → Prop where
-  | refl {Γ Φ t} : TelClosure Γ Φ t t
-  | tail {Γ Φ t u v} : TelClosure Γ Φ t u → TelLe Γ Φ u v → TelClosure Γ Φ t v
+inductive TelLe (P : Program) : Ctx → List Pred → Tel → Tel → Prop where
+  | done {Γ Φ r s e f} : Ty.LeQ P Γ Φ r s → Eff.Covers Γ Φ f e →
+      TelLe P Γ Φ (.done r e) (.done s f)
+  | param {Γ Φ n a b t u} : Ty.LeQ P Γ Φ b a →
+      TelLe P (Γ.extend b) (Φ.map Pred.lift) t u →
+      TelLe P Γ Φ (.param n a t) (.param n b u)
+
+inductive TelClosure (P : Program) : Ctx → List Pred → Tel → Tel → Prop where
+  | refl {Γ Φ t} : TelClosure P Γ Φ t t
+  | tail {Γ Φ t u v} : TelClosure P Γ Φ t u → TelLe P Γ Φ u v → TelClosure P Γ Φ t v
+
+inductive TypeArgsLe (P : Program) : Ctx → List Pred → List Variance → List Ty → List Ty → Prop where
+  | nil {Γ Φ} : TypeArgsLe P Γ Φ [] [] []
+  | covariant_cons {Γ Φ vs a b as bs} : Ty.LeQ P Γ Φ a b → TypeArgsLe P Γ Φ vs as bs →
+      TypeArgsLe P Γ Φ (.covariant :: vs) (a :: as) (b :: bs)
+  | contravariant_cons {Γ Φ vs a b as bs} : Ty.LeQ P Γ Φ b a → TypeArgsLe P Γ Φ vs as bs →
+      TypeArgsLe P Γ Φ (.contravariant :: vs) (a :: as) (b :: bs)
+  | invariant_cons {Γ Φ vs a b as bs} : a.norm = b.norm → TypeArgsLe P Γ Φ vs as bs →
+      TypeArgsLe P Γ Φ (.invariant :: vs) (a :: as) (b :: bs)
 end
 
 /-- 正規化の前後の型を、検査した構造等号でつなぐ。 -/
-theorem Ty.LeQ.norm {Γ Φ a b} (h : Ty.LeQ Γ Φ a b) : Ty.LeQ Γ Φ a.norm b.norm :=
+theorem Ty.LeQ.norm {P : Program} {Γ Φ a b} (h : Ty.LeQ P Γ Φ a b) : Ty.LeQ P Γ Φ a.norm b.norm :=
   .trans (.convert (Ty.norm_idem a)) (.trans h (.convert (Ty.norm_idem b).symm))
 
-theorem Ty.LeQ.notContCore {Γ Φ a b} (h : Ty.LeQ Γ Φ a b) : a.NotContCore ↔ b.NotContCore := by
+theorem TypeArgsLe.length {P Γ Φ vs as bs} (h : TypeArgsLe P Γ Φ vs as bs) :
+    as.length = vs.length ∧ bs.length = vs.length := by
+  match h with
+  | .nil => exact ⟨rfl, rfl⟩
+  | .covariant_cons _ h | .contravariant_cons _ h | .invariant_cons _ h =>
+    exact ⟨congrArg Nat.succ h.length.1, congrArg Nat.succ h.length.2⟩
+
+theorem TypeArgsLe.refl {P Γ Φ} (vs : List Variance) (as : List Ty)
+    (hl : as.length = vs.length) : TypeArgsLe P Γ Φ vs as as := by
+  match vs, as with
+  | [], [] => exact .nil
+  | v :: vs, a :: as =>
+    have ht := TypeArgsLe.refl (P := P) (Γ := Γ) (Φ := Φ) vs as (Nat.succ.inj hl)
+    cases v
+    · exact .covariant_cons .refl ht
+    · exact .contravariant_cons .refl ht
+    · exact .invariant_cons rfl ht
+
+theorem TypeArgsLe.trans {P Γ Φ vs as bs cs} (h : TypeArgsLe P Γ Φ vs as bs)
+    (g : TypeArgsLe P Γ Φ vs bs cs) : TypeArgsLe P Γ Φ vs as cs := by
+  match h, g with
+  | .nil, .nil => exact .nil
+  | .covariant_cons h t, .covariant_cons g u => exact .covariant_cons (.trans h g) (t.trans u)
+  | .contravariant_cons h t, .contravariant_cons g u => exact .contravariant_cons (.trans g h) (t.trans u)
+  | .invariant_cons h t, .invariant_cons g u => exact .invariant_cons (h.trans g) (t.trans u)
+
+theorem TypeArgsLe.norm {P Γ Φ vs as bs} (h : TypeArgsLe P Γ Φ vs as bs) :
+    TypeArgsLe P Γ Φ vs (Ty.normTys as) (Ty.normTys bs) := by
+  match h with
+  | .nil => exact .nil
+  | .covariant_cons h t => exact .covariant_cons h.norm t.norm
+  | .contravariant_cons h t => exact .contravariant_cons h.norm t.norm
+  | .invariant_cons h t => exact .invariant_cons (by simpa only [Ty.norm_idem] using h) t.norm
+
+theorem Ty.LeQ.notContCore {P : Program} {Γ Φ a b} (h : Ty.LeQ P Γ Φ a b) : a.NotContCore ↔ b.NotContCore := by
   match h with
   | .refl => rfl
   | .convert he => rw [← Ty.notContCore_norm a, he, Ty.notContCore_norm]
   | .trans h₁ h₂ => exact h₁.notContCore.trans h₂.notContCore
-  | .fn_effect _ | .list _ | .lazy _ | .map_value _ _ | .dependentFn _ | .scoped _ | .scoped_forget => simp [Ty.NotContCore, Ty.core]
+  | .data _ | .fn_effect _ | .list _ | .lazy _ | .map_value _ _ | .dependentFn _ | .scoped _ | .scoped_forget => simp [Ty.NotContCore, Ty.core]
   | .forget | .introduce _ _ => rfl
   | .refine hv _ _ _ => exact hv.notContCore
 
 /-- 部分型の導出で、行き先の各最外の事実を元の事実から導く。 -/
-theorem Ty.LeQ.assume {Γ Φ a b} (h : Ty.LeQ Γ Φ a b) :
+theorem Ty.LeQ.assume {P : Program} {Γ Φ a b} (h : Ty.LeQ P Γ Φ a b) :
     ∀ q ∈ b.assume, Entails (a.assume ++ (Γ.facts ++ Φ).map Pred.lift) q := by
   match h with
   | .refl => intro q hq; exact .hyp (List.mem_append_left _ hq)
@@ -84,7 +131,7 @@ theorem Ty.LeQ.assume {Γ Φ a b} (h : Ty.LeQ Γ Φ a b) :
     · exact ih₁ r hr
     · exact .hyp (List.mem_append_right _ hr)
   | .fn_effect _ | .dependentFn _ | .scoped _ | .scoped_forget => intro q hq; cases hq
-  | .list _ => intro q hq; cases hq
+  | .data _ | .list _ => intro q hq; cases hq
   | .lazy _ => intro q hq; cases hq
   | .map_value _ _ => intro q hq; cases hq
   | .forget =>
@@ -156,8 +203,8 @@ theorem embedCovers {outer inner : Benitoite.Release.Eff} {Γ Φ}
           exact he
 
 /-- 旧 Le の等号と最外関数の二枝を、新判断の規則で再構成する。 -/
-theorem embedLe {a b : Benitoite.Release.Ty} {Γ Φ} (h : Benitoite.Release.Ty.Le a b) :
-    Ty.LeQ Γ Φ (embedTy a) (embedTy b) := by
+theorem embedLe {a b : Benitoite.Release.Ty} {P : Program} {Γ Φ} (h : Benitoite.Release.Ty.Le a b) :
+    Ty.LeQ P Γ Φ (embedTy a) (embedTy b) := by
   rcases h with rfl | ⟨ns, ps, r, ε, ε', rfl, rfl, hc⟩
   · exact .refl
   · exact .fn_effect (embedCovers hc)

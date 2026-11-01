@@ -11,6 +11,8 @@ import Benitoite.Release.Refinement.ValueFacts
 状態の代表では同じストア・継続の結果・固定した末尾の効果を使う。
 -/
 namespace Benitoite.Release.Refinement
+
+variable {P : Program}
 noncomputable section
 
 theorem HasTypeCQ.open_one {P B Ψ Q C Γ Φ R body a e x v}
@@ -85,7 +87,7 @@ theorem ClosureTy.dependent_one {P B Ψ name x a e body v}
 /-- R が some のときも含め、先頭の mark を逆転する。 -/
 theorem ContTy.mark_inv {P B σ Ψ R ε k0 a b Eb Re}
     (h : ContTy P B σ Ψ R ε k0 a b Eb Re) :
-    ∀ k, k0 = .mark :: k → ∃ r R', R = some r ∧ Ty.LeQ [] [] a r ∧ ContTy P B σ Ψ R' ε k r b Eb Re := by
+    ∀ k, k0 = .mark :: k → ∃ r R', R = some r ∧ Ty.LeQ P [] [] a r ∧ ContTy P B σ Ψ R' ε k r b Eb Re := by
   induction h with
   | K_Mark h ha => 
     intro k he; cases he

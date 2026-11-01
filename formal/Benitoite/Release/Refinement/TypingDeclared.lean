@@ -7,6 +7,8 @@ import Benitoite.Release.Refinement.Narrowing
 -/
 namespace Benitoite.Release.Refinement
 
+variable {P : Program}
+
 /-- lookup が返す型を、その番号を読む文脈で照合する。 -/
 def Ctx.Declared (P : Program) (C : List TParam) (Γ : Ctx) : Prop :=
   ∀ (i : Nat) (a : Ty), Γ[i]? = some (some a) → Ty.Declared P C Γ a
@@ -90,7 +92,7 @@ theorem HasTypeCQ.declared {P B store Q C Γ Φ R m a e L}
 /-- narrowing の呼出し元は、元の値の導出から b の宣言照合を供給できる。 -/
 theorem Ctx.Narrows.of_value {P B store Q C Γ Φ v a b}
     (hb : HasTypeVQ P B store Q C Γ Φ v b) (hΓ : Ctx.Declared P C Γ)
-    (hl : Ty.LeQ Γ Φ a b) (ha : a.WF 0 C.length Γ.length) (hw : b.WF 0 C.length Γ.length) (hs : b.Sorted Γ) :
+    (hl : Ty.LeQ P Γ Φ a b) (ha : a.WF 0 C.length Γ.length) (hw : b.WF 0 C.length Γ.length) (hs : b.Sorted Γ) :
     Ctx.Narrows P C (Γ.extend b) (Φ.map Pred.lift) (Γ.extend a) (Φ.map Pred.lift) :=
   .here hl ha hw hs (hb.declared hΓ)
 

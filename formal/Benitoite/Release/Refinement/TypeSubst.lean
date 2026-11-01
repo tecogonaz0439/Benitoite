@@ -8,6 +8,8 @@ import Benitoite.Release.Refinement.NormalWellFormed
 -/
 namespace Benitoite.Release.Refinement
 
+variable {P : Program}
+
 /-- 値の番号を保ったまま、格納された型を置換する。 -/
 noncomputable def Ctx.bindTypes (Γ : Ctx) (θ : SubstEnv) : Ctx :=
   Γ.map (Option.map (Ty.bind θ))
@@ -67,14 +69,14 @@ theorem typeEnvAt_ordinary (c : Nat) (ts : List Ty) (es : List Eff)
     · simp [Ordinary]
 
 /-- 型引数の cutoff は値の束縛と独立であり、型・行の像は外側値に依存してよい。 -/
-theorem Ty.LeQ.substAt {Γ Φ a b} (h : Ty.LeQ Γ Φ a b) (c : Nat) (ts : List Ty) (es : List Eff)
+theorem Ty.LeQ.substAt {Γ Φ a b} (h : Ty.LeQ P Γ Φ a b) (c : Nat) (ts : List Ty) (es : List Eff)
     (ht : ∀ a ∈ ts, Ordinary a) :
-    Ty.LeQ (Γ.bindTypes (typeEnvAt c ts es)) Φ (a.substAt c ts es) (b.substAt c ts es) :=
+    Ty.LeQ P (Γ.bindTypes (typeEnvAt c ts es)) Φ (a.substAt c ts es) (b.substAt c ts es) :=
   h.bind _ (Transport.types Γ Φ _ rfl (typeEnvAt_ordinary c ts es ht))
 
-theorem Ty.LeQ.subst {Γ Φ a b} (h : Ty.LeQ Γ Φ a b) (ts : List Ty) (es : List Eff)
+theorem Ty.LeQ.subst {Γ Φ a b} (h : Ty.LeQ P Γ Φ a b) (ts : List Ty) (es : List Eff)
     (ht : ∀ a ∈ ts, Ordinary a) :
-    Ty.LeQ (Γ.bindTypes (typeEnvAt 0 ts es)) Φ (a.subst ts es) (b.subst ts es) :=
+    Ty.LeQ P (Γ.bindTypes (typeEnvAt 0 ts es)) Φ (a.subst ts es) (b.subst ts es) :=
   h.substAt 0 ts es ht
 
 theorem Eff.Covers.substAt {Γ Φ Δ Ψ e f} (h : Eff.Covers Γ Φ e f)
@@ -91,8 +93,8 @@ def SubstEnv.shiftTypes (k c : Nat) : SubstEnv :=
 noncomputable def Ty.shift (k c : Nat) (a : Ty) : Ty := a.bind (.shiftTypes k c)
 noncomputable def Eff.shift (k c : Nat) (e : Eff) : Eff := Eff.bind (.shiftTypes k c) e
 
-theorem Ty.LeQ.shift {Γ Φ a b} (h : Ty.LeQ Γ Φ a b) (k c : Nat) :
-    Ty.LeQ (Γ.bindTypes (.shiftTypes k c)) Φ (a.shift k c) (b.shift k c) :=
+theorem Ty.LeQ.shift {Γ Φ a b} (h : Ty.LeQ P Γ Φ a b) (k c : Nat) :
+    Ty.LeQ P (Γ.bindTypes (.shiftTypes k c)) Φ (a.shift k c) (b.shift k c) :=
   h.bind _ (Transport.types Γ Φ _ rfl (by intro i; simp [SubstEnv.shiftTypes]))
 
 theorem Eff.Covers.shift {Γ Φ Δ Ψ e f} (h : Eff.Covers Γ Φ e f) (k c : Nat) :

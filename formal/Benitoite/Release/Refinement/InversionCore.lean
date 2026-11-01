@@ -9,6 +9,8 @@ import Benitoite.Release.Refinement.EffectCover
 -/
 namespace Benitoite.Release.Refinement
 
+variable {P : Program}
+
 def Ty.listCore : Ty → Option Ty
   | .list a => some a
   | .refined a _ => a.listCore
@@ -25,7 +27,7 @@ def Ty.refCore : Ty → Option Ty
   | .refined a _ => a.refCore
   | _ => none
 
-theorem TelLe.of_norm_eq {Γ Φ t u} (h : Tel.norm t = Tel.norm u) : TelLe Γ Φ t u := by
+theorem TelLe.of_norm_eq {Γ Φ t u} (h : Tel.norm t = Tel.norm u) : TelLe P Γ Φ t u := by
   cases t <;> cases u <;> simp only [Tel.norm, Tel.done.injEq, Tel.param.injEq] at h
   case done.done r e s f =>
     exact .done (.convert h.1) ((Eff.covers_norm_left.mp
@@ -101,14 +103,14 @@ theorem Ty.fnCore_norm (a : Ty) : a.norm.fnCore = a.fnCore.map Tel.norm := by
   split <;> intro he <;> cases he
 
 theorem TelClosure.trans {Γ Φ t u v}
-    (h : TelClosure Γ Φ t u) (g : TelClosure Γ Φ u v) : TelClosure Γ Φ t v := by
+    (h : TelClosure P Γ Φ t u) (g : TelClosure P Γ Φ u v) : TelClosure P Γ Φ t v := by
   match g with
   | .refl => exact h
   | .tail g s => exact .tail (h.trans g) s
 
 theorem TelLe.toTel_effect {Γ Φ ns ps r e f}
     (h : Eff.Covers Γ Φ f e) :
-    TelLe Γ Φ (Ty.toTel ns ps r e) (Ty.toTel ns ps r f) := by
+    TelLe P Γ Φ (Ty.toTel ns ps r e) (Ty.toTel ns ps r f) := by
   induction ns generalizing Γ Φ ps r e f with
   | nil => exact .done .refl h
   | cons n ns ih =>
@@ -156,34 +158,34 @@ private theorem OptionRel.of_map_eq {α β : Type} {R : α → α → Prop} {f :
   cases a <;> cases b <;> simp only [Option.map_none, Option.map_some, Option.some.injEq] at h
   all_goals first | exact True.intro | exact hf _ _ h | contradiction
 
-private theorem list_relation {Γ Φ a b} (h : Ty.LeQ Γ Φ a b) :
-    OptionRel (Ty.LeQ Γ Φ) a.listCore b.listCore := by
+private theorem list_relation {Γ Φ a b} (h : Ty.LeQ P Γ Φ a b) :
+    OptionRel (Ty.LeQ P Γ Φ) a.listCore b.listCore := by
   match h with
   | .refl => exact OptionRel.refl (fun _ => .refl) _
   | .convert he =>
     apply OptionRel.of_map_eq (f := Ty.norm) (fun _ _ he => Ty.LeQ.convert he)
     rw [←Ty.listCore_norm, ←Ty.listCore_norm, he]
-  | .trans h g => exact OptionRel.trans (R := Ty.LeQ Γ Φ) (fun h g => Ty.LeQ.trans h g) (list_relation h) (list_relation g)
+  | .trans h g => exact OptionRel.trans (R := Ty.LeQ P Γ Φ) (fun h g => Ty.LeQ.trans h g) (list_relation h) (list_relation g)
   | .list h => exact h
   | .forget | .introduce .. => exact OptionRel.refl (fun _ => .refl) _
   | .refine h .. => simpa only [Ty.listCore] using list_relation h
-  | .fn_effect _ | .lazy _ | .map_value _ _ | .dependentFn _ | .scoped _ | .scoped_forget => trivial
+  | .data _ | .fn_effect _ | .lazy _ | .map_value _ _ | .dependentFn _ | .scoped _ | .scoped_forget => trivial
 
-private theorem fn_relation {Γ Φ a b} (h : Ty.LeQ Γ Φ a b) :
-    OptionRel (TelClosure Γ Φ) a.fnCore b.fnCore := by
+private theorem fn_relation {Γ Φ a b} (h : Ty.LeQ P Γ Φ a b) :
+    OptionRel (TelClosure P Γ Φ) a.fnCore b.fnCore := by
   match h with
   | .refl => exact OptionRel.refl (fun _ => .refl) _
   | .convert he =>
     apply OptionRel.of_map_eq (f := Tel.norm) (fun _ _ he => TelClosure.tail .refl (TelLe.of_norm_eq he))
     rw [←Ty.fnCore_norm, ←Ty.fnCore_norm, he]
-  | .trans h g => exact OptionRel.trans (R := TelClosure Γ Φ) (fun h g => TelClosure.trans h g) (fn_relation h) (fn_relation g)
+  | .trans h g => exact OptionRel.trans (R := TelClosure P Γ Φ) (fun h g => TelClosure.trans h g) (fn_relation h) (fn_relation g)
   | .fn_effect h => exact .tail .refl (TelLe.toTel_effect h)
   | .dependentFn h => exact h
   | .forget | .introduce .. => exact OptionRel.refl (fun _ => .refl) _
   | .refine h .. => simpa only [Ty.fnCore] using fn_relation h
-  | .list _ | .lazy _ | .map_value _ _ | .scoped _ | .scoped_forget => trivial
+  | .data _ | .list _ | .lazy _ | .map_value _ _ | .scoped _ | .scoped_forget => trivial
 
-private theorem ref_relation {Γ Φ a b} (h : Ty.LeQ Γ Φ a b) :
+private theorem ref_relation {Γ Φ a b} (h : Ty.LeQ P Γ Φ a b) :
     OptionRel (fun x y : Ty => x.norm = y.norm) a.refCore b.refCore := by
   match h with
   | .refl => exact OptionRel.refl (R := fun x y : Ty => x.norm = y.norm) (fun _ => rfl) _
@@ -193,37 +195,37 @@ private theorem ref_relation {Γ Φ a b} (h : Ty.LeQ Γ Φ a b) :
   | .trans h g => exact OptionRel.trans (R := fun x y : Ty => x.norm = y.norm) (fun h g => h.trans g) (ref_relation h) (ref_relation g)
   | .forget | .introduce .. => exact OptionRel.refl (R := fun x y : Ty => x.norm = y.norm) (fun _ => rfl) _
   | .refine h .. => simpa only [Ty.refCore] using ref_relation h
-  | .fn_effect _ | .dependentFn _ | .list _ | .lazy _ | .map_value _ _ | .scoped _ | .scoped_forget => trivial
+  | .data _ | .fn_effect _ | .dependentFn _ | .list _ | .lazy _ | .map_value _ _ | .scoped _ | .scoped_forget => trivial
 
 theorem Ty.LeQ.listCore {Γ Φ a b x}
-    (h : Ty.LeQ Γ Φ a b) (ha : a.listCore = some x) :
-    ∃ y, b.listCore = some y ∧ Ty.LeQ Γ Φ x y := (list_relation h).left ha
+    (h : Ty.LeQ P Γ Φ a b) (ha : a.listCore = some x) :
+    ∃ y, b.listCore = some y ∧ Ty.LeQ P Γ Φ x y := (list_relation h).left ha
 
 theorem Ty.LeQ.listCore_right {Γ Φ a b y}
-    (h : Ty.LeQ Γ Φ a b) (hb : b.listCore = some y) :
-    ∃ x, a.listCore = some x ∧ Ty.LeQ Γ Φ x y := (list_relation h).right hb
+    (h : Ty.LeQ P Γ Φ a b) (hb : b.listCore = some y) :
+    ∃ x, a.listCore = some x ∧ Ty.LeQ P Γ Φ x y := (list_relation h).right hb
 
 theorem Ty.LeQ.fnCore {Γ Φ a b t}
-    (h : Ty.LeQ Γ Φ a b) (ha : a.fnCore = some t) :
-    ∃ u, b.fnCore = some u ∧ TelClosure Γ Φ t u := (fn_relation h).left ha
+    (h : Ty.LeQ P Γ Φ a b) (ha : a.fnCore = some t) :
+    ∃ u, b.fnCore = some u ∧ TelClosure P Γ Φ t u := (fn_relation h).left ha
 
 theorem Ty.LeQ.fnCore_right {Γ Φ a b u}
-    (h : Ty.LeQ Γ Φ a b) (hb : b.fnCore = some u) :
-    ∃ t, a.fnCore = some t ∧ TelClosure Γ Φ t u := (fn_relation h).right hb
+    (h : Ty.LeQ P Γ Φ a b) (hb : b.fnCore = some u) :
+    ∃ t, a.fnCore = some t ∧ TelClosure P Γ Φ t u := (fn_relation h).right hb
 
 theorem Ty.LeQ.names_eq {Γ Φ a b t u}
-    (h : Ty.LeQ Γ Φ a b) (ha : a.fnCore = some t) (hb : b.fnCore = some u) :
+    (h : Ty.LeQ P Γ Φ a b) (ha : a.fnCore = some t) (hb : b.fnCore = some u) :
     t.names = u.names := by
   obtain ⟨v, hv, ht⟩ := h.fnCore ha
   have he := Option.some.inj (hv.symm.trans hb)
   exact ht.names.trans (congrArg Tel.names he)
 
 theorem Ty.LeQ.refCore {Γ Φ a b x}
-    (h : Ty.LeQ Γ Φ a b) (ha : a.refCore = some x) :
+    (h : Ty.LeQ P Γ Φ a b) (ha : a.refCore = some x) :
     ∃ y, b.refCore = some y ∧ x.norm = y.norm := (ref_relation h).left ha
 
 theorem Ty.LeQ.refCore_right {Γ Φ a b y}
-    (h : Ty.LeQ Γ Φ a b) (hb : b.refCore = some y) :
+    (h : Ty.LeQ P Γ Φ a b) (hb : b.refCore = some y) :
     ∃ x, a.refCore = some x ∧ x.norm = y.norm := (ref_relation h).right hb
 
 theorem Eff.memFail_single_iff (a b : Ty) :

@@ -3104,7 +3104,7 @@ builders_no_captureとbuilders_block_no_captureは、Aligned Γ ΔからEnvReads
 
 `param` の後続は、その引数を先頭に加えた値の文脈で読む。結果の型と潜在効果も全引数の下で読む。`Tel.arguments`・`Tel.instantiate` は、宣言順に実引数を一つずつ代入する。非依存の関数型 `fn` から作る `Ty.toTel` は、外側の参照を束縛数に応じて移す。依存する宣言の列を包む `signatureTel` と区別する。
 
-型・エフェクトの行・範囲・値の変数は別の名前空間を持ち、いずれも自然数の番号で表す。型の整形式は `Ty.WF nr nt nv`、述語の番号の上限は `Pred.WF nv` で検査する。`Ty.Annotation P C Γ a` は、番号の上限と内部の行の正規形、観測の種類と参照、宣言表との整合をそれぞれ `WF`・`Sorted`・`Declared` で検査する。`Ty.WF` は、篩の内側の芯が継続の型である形を拒む。継続を述語の自己や型引数として扱わない。
+型・エフェクトの行・範囲・値の変数は別の名前空間を持ち、いずれも自然数の番号で表す。型の整形式は `Ty.WF nr nt nv`、述語の番号の上限は `Pred.WF nv` で検査する。`Ty.Annotation P C Γ a` は、番号の上限と内部の行の正規形、観測の種類と参照、宣言表との整合をそれぞれ `WF`・`Sorted`・`Declared` で検査する。`Ty.WF` は、篩の内側の芯が継続の型である形を拒む。述語の自己の可読性と、型代入の形成の補助では `Ordinary` も検査する。`HasKind … .value` だけでは継続型を排除しない。
 
 型付けの判断は、値について `HasTypeVQ P B Ψ Q C Γ Φ v a`、計算について `HasTypeCQ P B Ψ Q C Γ Φ R m a e Δ` と書く。Q は NoFail の文脈、C は型パラメータの制約、Γ は some の通常の位置と none の内部の位置を保つ値の文脈、Φ は有限の述語の列、Δ は構築器の局所文脈である。篩の述語の番号0は self、外側の値はその次から読む。self の種類と参照を調べる文脈と、外側の注釈を移して宣言を照合する文脈は区別する。
 
@@ -3128,14 +3128,20 @@ builders_no_captureとbuilders_block_no_captureは、Aligned Γ ΔからEnvReads
 
 型付けの `V_Normal`・`C_Normal` は結果型を正規形へ変え、`Ty.LeQ.convert` は正規化後の構造の一致から部分型を与える。`SatAll` は `B.sat C a.norm p`、`Admissible` は `SatAll` を使う。`PrimitiveAdmissible` は `sg.admits C (Ty.normTys ts)` を読む。Map/Set の鍵と外部の値構造の鍵も `B.sat` へ正規形を渡す。信頼条件の欄自体に、任意の型での正規化不変性を仮定する変更は加えない。
 
-部分型 `Ty.LeQ Γ Φ a b` は有限の導出である。篩の除去、導入、篩どうしの含意は `Entails` を使い、仮定には型の自己の事実と `Γ.facts ++ Φ` の移動した列を用いる。List と Lazy の要素・結果は共変、Map の値は共変で鍵は同じ型、Reference の内容と Fail の型は正規化後の等号で照合する。関数の比較は `TelLe` とその反射推移閉包 `TelClosure` を用いる。引数を反変に比較し、後続は渡し先の引数を加えた文脈で比較し、終端の結果と潜在効果を共変に比較する。`Eff.Covers Γ Φ outer inner` は内側の各原子を外側の一原子で覆い、Fail は不変に含める。`Eff.Sub inner outer` は構造上の包含であり、引数の順も異なる。
+部分型 `Ty.LeQ P Γ Φ a b` は有限の導出である。篩の除去、導入、篩どうしの含意は `Entails` を使い、仮定には型の自己の事実と `Γ.facts ++ Φ` の移動した列を用いる。List と Lazy の要素・結果は共変、Map の値は共変で鍵は同じ型、Reference の内容と Fail の型は正規化後の等号で照合する。関数の比較は `TelLe` とその反射推移閉包 `TelClosure` を用いる。引数を反変に比較し、後続は渡し先の引数を加えた文脈で比較し、終端の結果と潜在効果を共変に比較する。`Eff.Covers Γ Φ outer inner` は内側の各原子を外側の一原子で覆い、Fail は不変に含める。`Eff.Sub inner outer` は構造上の包含であり、引数の順も異なる。
+
+同じ名目の data の型引数は、宣言表 P の `varianceFor` が返す変性（variance）の列に従って `TypeArgsLe P Γ Φ` で比較する。共変の位置は元から先への部分型、反変の位置は逆向きの部分型、不変の位置は正規化後の等号を要求する。`Ty.LeQ`・`TelLe`・`TelClosure`・`TypeArgsLe` は同じ P を用いる。metadata がない場合と引数数が合わない場合は、全位置を不変として読む。欄に現れない型パラメータにも不変を要求し、unused の変性は設けない。
+
+`Program.VarianceValid` は、metadata の arity、欄の総称の注釈と value kind、および正負の出現を検査する。関数の引数は極性を反転し、Reference・Set・Map の鍵・辞書の対象・継続・Fail の型・外部型の引数・型構成子の適用は不変の位置として検査する。要件の型は不変、公開境界の型は指定された極性で検査する。欄の単調性は、総称の欄の `WF`・`Sorted []`、出現の検査、および両側の通常値の型引数（`Ordinary`）から導く。推移の中間の型引数に `Annotation` は要求しない。
+
+`Term.HasData.widen` は `DataObservationLe` によって観測用の型引数を読み替える。観測の射影は List などの子の型と篩の事実を捨てるため、読み替えた引数を受け手の実の型引数と同一視しない。欄の sort を元の引数へ反映するときは `VarianceValid` による欄の出現の検査を用いる。検証済みの総称の欄と、個数が一致する `Annotation`・`Ordinary` を満たす型引数から、具体化した欄の `Annotation` を導く。構成子の反転 `inv_con` は、元の `V_Con` の kind と data の注釈も保持する。
 
 範囲付きの型の部分型については、LeQ の次の二構成子を用いる。同じ名前と kind のまま範囲を広げ、又は scoped から同じ名前・範囲の opaque へ移す。保持した値を消す構文操作ではない。これは全 LeQ のうち範囲付きの型に関する二規則の写しである。
 
 ```lean
   | scoped {Γ Φ o k inner outer} : RangeIx.Covers outer inner →
-      Ty.LeQ Γ Φ (.scoped o k inner) (.scoped o k outer)
-  | scoped_forget {Γ Φ o k ix} : Ty.LeQ Γ Φ (.scoped o k ix) (.opaque o ix)
+      Ty.LeQ P Γ Φ (.scoped o k inner) (.scoped o k outer)
+  | scoped_forget {Γ Φ o k ix} : Ty.LeQ P Γ Φ (.scoped o k ix) (.opaque o ix)
 ```
 
 ### 閉じた述語の評価と捕捉
@@ -3440,7 +3446,7 @@ inductive ContTy (P : Program) (B : Builtins) (σ : PathEnv) (Ψ : StoreTy) :
       GuardBodyTy P B Ψ R body input a e1 → Eff.Sub e1 ε → MatchPrefix v arms next →
       ContTy P B σ Ψ R ε k a b Eb Re → Frame.Adequate σ (.guardF v cap arms next body) →
       ContTy P B σ Ψ none Eff.empty (.guardF v cap arms next body :: k) input b Eb Re
-  | K_Sub {R ε k a a' b Eb Re} : ContTy P B σ Ψ R ε k a' b Eb Re → Ty.LeQ [] [] a a' →
+  | K_Sub {R ε k a a' b Eb Re} : ContTy P B σ Ψ R ε k a' b Eb Re → Ty.LeQ P [] [] a a' →
       ContTy P B σ Ψ R ε k a b Eb Re
 ```
 

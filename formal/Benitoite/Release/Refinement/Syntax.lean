@@ -1,5 +1,6 @@
 import Benitoite.Release.Refinement.Context
 import Benitoite.Release.Refinement.PathResolution
+import Benitoite.Release.Refinement.VarianceSyntax
 
 namespace Benitoite.Release.Refinement
 
@@ -328,6 +329,23 @@ structure Program where
   classes : ClassName → Option ClassDecl
   impls : ImplName → Option ImplDecl
   externals : List (ExternalKey × ExternalDecl) := []
+  dataInfo : DataName → Option DataVarianceDecl := fun _ => none
+
+/-- arity の不一致や metadata のない旧宣言には不変の列を使う。 -/
+def Program.varianceFor (P : Program) (d : DataName) (n : Nat) : List Variance :=
+  match P.dataInfo d with
+  | some info => if info.arity = n ∧ info.variances.length = n then info.variances
+      else List.replicate n .invariant
+  | none => List.replicate n .invariant
+
+@[simp] theorem Program.varianceFor_length (P : Program) (d : DataName) (n : Nat) :
+    (P.varianceFor d n).length = n := by
+  simp only [Program.varianceFor]
+  split
+  · split
+    · rename_i h; exact h.2
+    · exact List.length_replicate
+  · exact List.length_replicate
 
 
 def Program.externalType (P : Program) (id : ExternalId) : Option ExternalTypeDecl :=

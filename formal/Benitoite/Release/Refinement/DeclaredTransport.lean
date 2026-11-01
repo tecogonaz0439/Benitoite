@@ -53,10 +53,19 @@ def DataImages (P : Program) (Γ Δ : Ctx) (ν : ObservationEnv) : Prop :=
   ∀ i a d ts, Γ[i]? = some (some a) → a.norm.core = .data d ts →
     Term.HasData P Δ (termBind ν (.var i)) d (bindDataArgs ν ts)
 
+@[simp] theorem observationTypes_bindDataArgs (ν : ObservationEnv) (ts : List Ty) :
+    observationTypes (bindDataArgs ν ts) = observationTypes ts := by
+  simp only [bindDataArgs_eq_norm, observationTypes_norm, observationTypes_rawSubstV]
+
+theorem DataObservationLe.bindDataArgs {P d as bs} (h : DataObservationLe P d as bs) (ν : ObservationEnv) :
+    DataObservationLe P d (bindDataArgs ν as) (bindDataArgs ν bs) := by
+  simpa only [DataObservationLe, bindDataArgs_length, observationTypes_bindDataArgs] using h
+
 theorem Term.HasData.bind {P Γ Δ ν t d ts} (h : Term.HasData P Γ t d ts)
     (hm : DataImages P Γ Δ ν) :
     Term.HasData P Δ (termBind ν t) d (bindDataArgs ν ts) := by
   match h with
+  | .widen hr hs => exact .widen (hr.bind hm) (hs.bindDataArgs ν)
   | .var hi hd => exact hm _ _ _ _ hi hd
   | .value hc hd hn hl =>
     simp only [termBind_dataValue]
@@ -232,7 +241,7 @@ theorem DeclarationImages.extend {P C Γ Δ ν} (h : DeclarationImages P C Γ Δ
           obtain ⟨us, he, rfl⟩ := (Ty.dataCore_shiftV_iff t 1 0 d ts).mp hd
           have hh := h.data i t d us hg he
           cases hv : ν i with
-          | none => simp only [termBind_var, hv, Option.getD_none] at hh; cases hh
+          | none => simp only [termBind_var, hv, Option.getD_none] at hh; exact False.elim (hh.not_integer rfl)
           | some v =>
             simp only [termBind_var, hv, Option.getD_some] at hh
             have hl := hh.bind (DeclarationRenaming.images (C := C) (DeclarationRenaming.outer Δ b)).data
