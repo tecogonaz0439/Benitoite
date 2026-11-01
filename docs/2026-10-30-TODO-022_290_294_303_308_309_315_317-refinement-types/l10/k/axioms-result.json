@@ -1,0 +1,44 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-M",
+    "12288",
+    "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/k/axioms.lean"
+  ],
+  "cwd": "formal",
+  "started_utc": "2026-11-01T09:13:33.735636+00:00",
+  "seconds": 1.335,
+  "exit_code": 0,
+  "output": "axioms-output.txt",
+  "bytes": 37712,
+  "sha256": "423a9f19b1f275c2a22a49a84f170198ec3e5cdaf93576d0dab1c5604c092c24",
+  "axioms_seen": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "disallowed_axioms": [],
+  "print_axioms_count": 351,
+  "sorry_diagnostic": false,
+  "modules": {
+    "Benitoite": 0,
+    "Benitoite.Release.Refinement.LegacyKinds": 38,
+    "Benitoite.Release.Refinement.LegacyDeclarations": 11,
+    "Benitoite.Release.Refinement.LegacyInput": 58,
+    "Benitoite.Release.Refinement.LegacyRegularity": 122,
+    "Benitoite.Release.Refinement.LegacyTables": 36,
+    "Benitoite.Release.Refinement.LegacyTableFacts": 24,
+    "Benitoite.Release.Refinement.LegacyValues": 44
+  },
+  "case_totals": {
+    "OLD_TYPING": 46,
+    "LEGACY_RULES": 46,
+    "LEGACY_JUDGMENTS": 7,
+    "OLD_SYNTAX": 33,
+    "SUBTYPE": 22,
+    "TYPING": 76
+  },
+  "complete": true
+}

@@ -3158,6 +3158,26 @@ builders_no_captureとbuilders_block_no_captureは、Aligned Γ ΔからEnvReads
 
 `MetadataScoped` は、格納された各 `some info` の変性の列の長さと arity、同名構成子の arity、requirements と publicBoundary の全ての型の上限・行なし・`Annotation`・value kind を検査する。`dataInfo d = none` ならその項目への全称条件、requirements 又は publicBoundary が空ならその列への全称条件だけが空に成り立つ。対応する構成子を持たない metadata の同名 arity の条件も空に成り立つ。構成子の欄の形成・変性と、存在する構成子どうしの arity の一致はそれぞれの条件として残る。これらは格納された表に対する検査であり、原ソースの辞書制約・公開境界の収集の完全性を主張しない。この形式化は、その収集の完全性と原ソースとの一致を保証しない。
 
+### 旧判断の適格な入力
+
+【決定】旧 Release からの構文の写しには、全てを value kind とする既存の `embedProgram` と、宣言の kind を保持する `embedProgramWithKinds` がある。後者の `DeclarationKinds` は、クラス引数の kind、関数とメソッドの型パラメータの kind の列を持つ。`DeclarationKinds.WF` は、lookup した旧宣言の型パラメータの個数と列の長さを照合する。型パラメータの組み込みの制約、契約名、行パラメータの個数、本体は保存する。非依存の旧引数は `embedParameters` で先行引数の下へ移し、結果型と効果は全引数の下へ移す。操作と実装の型パラメータは value kind とする。組み込みの kind は、対応する実際の署名から読む。
+
+理由: 旧宣言は kind のデータを持たない。型構成子を value kind に置き換えると、高カインドの引数を使う旧導出の写しとして使えない。
+
+`LegacyInputCtx` は kind と組み込みの制約の列、範囲と値の変数の深さを持つ。`LegacyTypeInput` は写した型の kind、番号の上限、観測の種類、宣言との対応、内部の範囲の番号を検査する。値・計算・腕・節の入力は、旧構文への相互再帰で定める。数値とバイト列の表現可能性、裸の不透明値に保持対象も保持内容もないこと、型引数と注釈、束縛数を検査する。関数・組み込み・操作の参照と通常節の元の操作署名、実装の対象と辞書型も宣言側の型文脈で検査する。通常節は、操作自身の型パラメータだけからなる kind・制約の列、範囲と値の深さ0で `opSig` の元の署名を検査し、外側の制約列で署名内の範囲外の型変数を補わない。具体化後の結果型の適格性だけでは代用しない。lambda、let、腕、通常節、Fail 節でそれぞれの文脈を延長する。`use` の本体は値を束縛しない。
+
+検査済みの要求は、空の型・値文脈で内容を再帰検査し、`groundVal` の成功、`reqTarget` と保持端点の一致、同じ型名の `valContent` の対応を要求する。構文だけでは保持値の型名と範囲が定まらないため、`LegacyHeldTypeInput` が各値判断の実際の旧型とも照合する。内容の新しい型付け自体は、これらの入力の条件にしない。
+
+`LegacyJudgment` は、値・値列・同じ型の値列・計算・腕・通常節・Fail 節の七判断をデータとして表す。各判断は kind 文脈と旧のストア、NoFail、制約、値文脈、項、結果型を持ち、計算以下は戻り先の型、効果、局所文脈も持つ。`LegacyRule` は、旧の46局所規則の親判断、全ての型付け前提の子判断、旧の局所前提を記録する。親子の kind 文脈は同じ列を使い、通常節では操作の value kind 列を、Fail 節では value kind 一つを先頭に加える。保持要求の内容は空の kind 文脈を使う。メソッドの元の署名と型引数は、局所規則で選ばれた実際のクラスとメソッドの kind 列でも検査する。
+
+`LegacyOutputInput.node` は、局所規則、親の `LegacyNodeRegular`、全ての子の同じ入力を要求する。各 node の全結果型・型列・戻り先・効果・文脈・ストアの型を検査するため、let の中間型と拡張した値文脈、呼出しの中間型、空の腕、resume、節内の型も対象に含む。旧の型付けから中間型の kind が無条件に得られるとはしない。`LegacyRule.old` と `LegacyOutputInput.old` は、この入力から旧判断を復元する。
+
+`LegacyTables` は、組み込みの署名・許容・制約・範囲・保持対象の表の対応と、同名 data の構成子の arity の一致、全欄の `Annotation`・value kind・宣言の上限を要求する。この条件から、写した各構成子の `Scoped` と、metadata を持たず型引数を不変とするプログラムの `VarianceValid` を導く。制約の `sat`、型引数の `admits`、範囲の `admitsR` の対応は旧の受理から新の受理への含意であり、逆向きの含意は要求しない。新しい型付け、状態の型付け、遷移の結論は表の条件に含めない。
+
+最上位の対象の位置の `instTarget` は、同じ長さの範囲の列どうしで `WF` を保つ。`LegacyClausesInput.signature_wf` は、Top の `opSig` に対する元の署名の入力から、実際に選ばれた節の範囲 S の `opSigAt` の埋め込み型の `WF` を導く。
+
+旧構文から新判断へ直接示している値の葉は、表現可能な定数、バイト列、検査済み対象、内容の新しい型付けと解析成功・端点一致を持つ検査済み要求である。後二者は `scoped_forget` で同じ旧 opaque の型へも移せる。正規化の等号については `(embedTy a).norm = (embedTy b).norm` と `a.norm = b.norm` の同値を示す。旧型の `WF` は値の深さに依存せず、`Sorted` と `Declared` も値文脈を読む述語を持たない。この性質を旧型の構文への相互再帰で示し、構文入力の注釈を任意の値文脈と正規化後の型へ移す。これらは全型付けの埋め込みや旧新の一段遷移の可換性を主張しない。
+
 ### 篩を読む網羅性と値の意味
 
 【決定】この名前空間の `Inhabits P a v` は、照合が読む値の形の上側近似である。篩の規則は、`Inhabits P a v` と `RefinementPossible p v` から `Inhabits P (refined a p) v` を作る。`selfObservation v` は `v.toTerm?` を空の外側環境で観測した結果である。`RefinementPossible p v` は、番号0へこの観測を置き、外側の全位置を未観測の `none` にした三値評価が `some false` と異なることである。評価不能の値は残し、篩が偽と確定した値だけを除く。`checkedAt range snapshot target request` は、範囲を忘れた任意の `opaque o ix` の値の形にも含める。
