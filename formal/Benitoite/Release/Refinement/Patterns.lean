@@ -1,4 +1,5 @@
 import Benitoite.Release.Refinement.RuntimeMatch
+import Benitoite.Release.Refinement.RefinementObservation
 import Benitoite.Release.Refinement.AtContracts
 import Benitoite.Release.Refinement.TypeRenaming
 
@@ -27,6 +28,8 @@ mutual
         PatTys P after (List.replicate after.length a) δa →
         (rest = none → after = []) →
         PatTy P (.list before rest after) (.list a) (δb ++ restTys rest a ++ δa)
+    | P_Convert {p a b δ} : a.norm = b.norm → PatTy P p a δ → PatTy P p b (δ.map Ty.norm)
+    | P_Refined {p a φ δ} : PatTy P p a δ → PatTy P p (.refined a φ) δ
     | P_Con {c ps cd ts δ} : P.cons c = some cd → ts.length = cd.ntys →
         (∀ a ∈ cd.args, a.WF 0 cd.ntys 0) →
         PatTys P ps (cd.args.map (Ty.subst ts [])) δ →
@@ -37,7 +40,7 @@ mutual
         PatTys P (p :: ps) (a :: as) (δ ++ δs)
 end
 
-/- 構成子の一覧は型付けと同じP.consを読む。篩の所属による絞込みは別の判断で扱う。 -/
+/- 構成子の一覧は型付けと同じP.consを読む。篩は self で false と確定する値だけを除く。 -/
 mutual
   inductive Inhabits (P : Program) : Ty → Val → Prop where
     | const {c} : Inhabits P c.type (.const c)
@@ -65,9 +68,11 @@ mutual
     | scoped {o k ix v} : Inhabits P (.scoped o k ix) v
     | pathBases {v} : Inhabits P .pathBases v
     | scopePattern {k v} : Inhabits P (.scopePattern k) v
-    | refined {a p v} : Inhabits P a v → Inhabits P (.refined a p) v
+    | refined {a p v} : Inhabits P a v → RefinementPossible p v → Inhabits P (.refined a p) v
     | checked {o r t} : Inhabits P (.opaque o (.fixed r)) (.checked t)
     | checkedRequest {o r t req} : Inhabits P (.opaque o (.fixed r)) (.checkedRequest t req)
+    | checkedAtOpaque {o ix r snapshot target req} :
+        Inhabits P (.opaque o ix) (.checkedAt r snapshot target req)
   inductive InhabitsAll (P : Program) : List Ty → List Val → Prop where
     | nil : InhabitsAll P [] []
     | cons {a as v vs} : Inhabits P a v → InhabitsAll P as vs → InhabitsAll P (a :: as) (v :: vs)
@@ -77,7 +82,7 @@ mutual
 end
 
 def Exhaustive (P : Program) (a : Ty) (ps : List Pat) : Prop :=
-  ∀ v, Inhabits P a v → ∃ p ∈ ps, (matchVal p v).isSome
+  ∀ v, Inhabits P a.norm v → ∃ p ∈ ps, (matchVal p v).isSome
 
 def AltsTy (P : Program) (alts : List Alt) (a : Ty) (δ : List Ty) : Prop :=
   alts ≠ [] ∧ δ.length = Arm.bindersOf alts ∧

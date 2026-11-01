@@ -7,6 +7,10 @@ mutual
   theorem PatTy.shift_types {P p a δ} (h : PatTy P p a δ) (k c : Nat) :
       PatTy P p (Refinement.shiftTypes k c a) (δ.map (Refinement.shiftTypes k c)) := by
     match h with
+    | .P_Refined hp => exact .P_Refined (hp.shift_types k c)
+    | .P_Convert he hp =>
+      have hh := PatTy.P_Convert (b := shiftTypes k c a) (by simpa only [Ty.norm_shiftTypes] using congrArg (shiftTypes k c) he) (hp.shift_types k c)
+      simpa only [List.map_map,Function.comp_def,Ty.norm_shiftTypes] using hh
     | .P_Wild => exact .P_Wild
     | .P_Var => exact .P_Var
     | .P_Const (c := con) hc =>
@@ -88,14 +92,15 @@ mutual
       all_goals simp only [Refinement.shiftTypes, shiftTypesList_eq_map] at he
       all_goals try cases he
 
-    | .refined hs =>
+    | .refined hs hp =>
       intro a he
       cases a <;> try first | exact .fn | exact .dependentFn | exact .tvar | exact .reference | exact .lazy | exact .cont | exact .map | exact .set | exact .bytes | exact .dict | exact .tapp | exact .ctor | exact .external | exact .scoped | exact .pathBases | exact .scopePattern
       all_goals simp only [Refinement.shiftTypes, shiftTypesList_eq_map, Ty.refined.injEq] at he
       all_goals try cases he
 
-      rename_i a p ha hp
-      exact .refined (hs.of_shiftTypes k c a ha)
+      rename_i a p ha hep
+      cases hep
+      exact .refined (hs.of_shiftTypes k c a ha) hp
     | .checked =>
       intro a he
       cases a <;> try first | exact .fn | exact .dependentFn | exact .tvar | exact .reference | exact .lazy | exact .cont | exact .map | exact .set | exact .bytes | exact .dict | exact .tapp | exact .ctor | exact .external | exact .scoped | exact .pathBases | exact .scopePattern
@@ -110,6 +115,13 @@ mutual
       all_goals try cases he
 
       exact .checkedRequest
+    | .checkedAtOpaque =>
+      intro a he
+      cases a <;> try first | exact .fn | exact .dependentFn | exact .tvar | exact .reference | exact .lazy | exact .cont | exact .map | exact .set | exact .bytes | exact .dict | exact .tapp | exact .ctor | exact .external | exact .scoped | exact .pathBases | exact .scopePattern
+      all_goals simp only [Refinement.shiftTypes, shiftTypesList_eq_map] at he
+      all_goals try cases he
+
+      exact .checkedAtOpaque
   theorem InhabitsAll.of_shiftTypes {P bs vs} (k c : Nat) (h : InhabitsAll P bs vs) :
       ∀ as, bs = as.map (Refinement.shiftTypes k c) → InhabitsAll P as vs := by
     match h with
@@ -134,6 +146,7 @@ theorem AltsTy.shift_types {P alts a δ} (h : AltsTy P alts a δ) (k c : Nat) :
   h.map _ (fun _ _ _ hp => hp.shift_types k c)
 
 theorem Exhaustive.shift_types {P a ps} (h : Exhaustive P a ps) (k c : Nat) :
-    Exhaustive P (shiftTypes k c a) ps := fun v hv => h v (hv.of_shiftTypes k c a rfl)
+    Exhaustive P (shiftTypes k c a) ps := fun v hv => h v ((Inhabits.norm_all_iff a v).mpr
+    (((Inhabits.norm_all_iff _ v).mp hv).of_shiftTypes k c a rfl))
 
 end Benitoite.Release.Refinement
