@@ -139,7 +139,7 @@
 |---|---|---|
 | 群Vの独立レビュー・取りまとめ | 新六モジュール、形成と単調性の分離、型引数の Ordinary、観測の widen の型置換と、三章の写しを再レビュー | 不明 |
 | 群Vの受け入れ・設計者/取りまとめ | 修正後の所見の確認、work、取り込みと次のB_WORKの固定 | 不明 |
-| 群X・次の起動 | P付きLeQと存在を返すdataCoreを使う。ValueMeaningのdataの場合は元の欄型とTypeArgsLeを扱い、con_field_by_type へ元の型引数の Ordinary と行き先の型引数の Annotation・Ordinary を渡し、欄の Annotation は本番の補題から得る。HasData.widen の引数は実の引数ではない。欄の sort を元へ反映するには VarianceValid が要る。ValueMeaning や主な定理へ形成の前提を追加しない | detailの群Xの枠。今回は着手しない |
+| 群X・次の起動 | P付きLeQと存在を返すdataCoreを使う。ValueMeaningのdataの場合は元の欄型とTypeArgsLeを扱い、con_field_by_type は元の型引数の Ordinary を V_Con の TypeArgsKinded から導き、呼出し側は行き先の型引数の Annotation・Ordinary を渡し、欄の Annotation は本番の補題から得る。HasData.widen の引数は実の引数ではない。欄の sort を元へ反映するには VarianceValid が要る。ValueMeaning や主な定理へ形成の前提を追加しない | detailの群Xの枠。今回は着手しない |
 | 群W・.21〜.23 | Program.WellTypedのvariance欄へVarianceValidを格納。metadataのAnnotation/scope/kind/arityをWellFormedへ接続 | detailの群Wの枠 |
 | L30/L40・観測の準備 | Declared だけでは欄の sort を元へ反映できない。検証済みの表の VarianceValid を観測の準備の証明で用いる。rv-v-t4 の sort_reflect_aux が補助入力である | 不明 |
 | L20/L40/L70・予定の各段 | 主定理とValueMeaning/全保存への全合成、利用側の標準dataの葉、各表の充足と旧入力の全埋め込み | 各段の既存の枠 |
@@ -160,3 +160,7 @@
 ## 作業末の work
 
 取りまとめが実行した。基準は `c668ff024b99287de702c5823c6280f8130a6aa5`、コマンドは `scripts/check.sh --level work --base <基準>`、終了状態は 0、外側の時間は 92.34 秒である。実行の前に Refinement の生成物を消した。
+
+## RV-L10.s2重1による追随
+
+2026-11-01。value kindの型引数のOrdinaryをTypeArgsKindedが検査する規則へ追随した。constructor_field_inputs・con_field_by_type・field_facts_by_typeのsourceOrdの前提を取り除き、inv_conの元の型引数の検査から導く。境界のV_Conでも新しい欄を満たすことを示し、sourceOrdを別に仮定しない。今回の検査の記録はl10/s2/results.mdに集める。

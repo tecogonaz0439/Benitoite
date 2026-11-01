@@ -3110,6 +3110,10 @@ builders_no_captureとbuilders_block_no_captureは、Aligned Γ ΔからEnvReads
 
 `V_Refine` は、型 a の値 v、a の観測の種類、`v.toTerm? = some t`、p の種類・番号の上限・宣言照合、および `Entails (Γ.facts ++ Φ) (p.open t)` から `refined a p` の型付けを作る。整数だけに限る規則ではない。`C_DependentApp` は関数と `HasTypeTelArgsQ` の導出から、実引数によって具体化した結果型と効果を返す。`TelBodyTy` は、param ごとに値の文脈と Φ を移して本体を検査する。関数参照・組み込み参照・操作・外部参照の型付けは、宣言の kind の列と同じ `SignatureInstance` を要求する。kind は value 又は引数数を持つ constructor であり、型パラメータの宣言と型クラスの引数の kind を保持する。
 
+`TypeArgsKinded` は、各型引数 a と対応する kind k について `HasKind P K a k` と `k = .value → Ordinary a` を要求する。`Ordinary a` は、篩を外した芯の最上位が継続型でないことを表す。Listの要素などに入れ子の継続型を持つ型引数は、この条件で拒まない。Annotation と value kind だけからはこの条件を導かない。constructor kind の型引数は型構成子又は型変数なので、同じ条件を形から導ける。これにより SignatureInstance を使う関数・組み込み・操作・外部参照とメソッド、TypeArgsKinded を直接使う構成子・辞書・構築器が、型置換の像の非継続を供給する。C_Meth の `ss ++ [τ]` の WF と Ordinary も SignatureInstance から得る。
+
+`V_Raise` は、関数型 `fn ["error"] [e] t (singleFail e)` の Annotation に加え、`Ordinary t` と `Ordinary e` を要求する。操作の型引数 ts とメソッド本体へ代入する `ss ++ ts` の Ordinary は、対応する型付けの導出から取り出す。継続を保持する文脈と resume の規則は、型引数とは別に継続型を扱う。
+
 `RangeExpr` は閉じた絶対範囲、`based base pattern`、secrets の三構成子を持つ。基準名は root/cwd/home/work/tmp である。`PathEnv` は root/cwd/home と任意の work/tmp、未指定と空を区別する任意の秘密パターン列を保持する。被覆は、絶対範囲どうし、同じ基準名の範囲どうし、secrets どうしをそれぞれ比較し、RangeExpr の Top は RangeExpr のすべての式を覆う。異なる種類の記号付き範囲を実行の σ で具体化してから静的に比較する規則はない。`RangeIx` は fixed/rvar を区別する。固定範囲の Top は rvar を覆わず、範囲変数どうしは同じ番号のときだけ覆う。短い具体化の列は未解決の変数を残す。
 
 共有する正常値と明示 return の近似は `Shared/Approximation.lean` にある。`ValueApprox` は bottom/幅を持つ整数の区間/Boolean の二フラグ/unknown、`ApproxValue` は証拠付き整数/Boolean/other である。`FlowApprox` は normal/returned/mayFail の三成分を持ち、`EvalResult` は normal/returned/failed を区別する。`NormalMem` と `ReturnedMem` は別々の成分の所属を読み、`ResultMem.failed` は mayFail=true を要求する。これらは共有層の定義であり、旧解析の正常値の定理を returned/failed の定理へ拡張するものではない。
@@ -3124,9 +3128,15 @@ builders_no_captureとbuilders_block_no_captureは、Aligned Γ ΔからEnvReads
 
 `Ty.Canonical a` は `a.norm = a` であり、`Ty.Normal` はその別名である。`Tel.Normal` と `Eff.Canonical` もそれぞれ正規化の固定点を表す。整形式と正規形は別の判断であり、「整形式なら正規化の固定点」とは定めない。正規化は冪等である（`Ty.norm_idem`・`Tel.norm_idem`・`Eff.norm_idem`）。
 
+型の移動の生の操作 `shiftTypes` は型変数と型構成子変数の番号だけを変え、行・範囲・値の番号は変えない。`a.WF nr c nv` の下では、cutoff c での生の移動は a に等しい。公開する `Ty.shift` と `Eff.shift` は正規化も行うため、同じ条件での結果は a.norm に等しい。元の a と等しいと結論するときは、Canonical の証拠を別に使う。生の移動は構造の比較と可換であり、公開する移動は正規化した入力の比較と一致する。Canonical な型の列では、公開する移動と整列・重複除去も可換である。
+
+`SubstEnv.WFImages nr nt nv mr mt mv θ` は、入力と出力の範囲・型・値の深さを分け、範囲内の型像のWF、行像のWF、範囲添字の像のWF、観測できた値像の番号の上限、および型像の Ordinary を要求する。この条件と入力のWFから、`rawBind` の正規化後および `bind` のWFを導く。生の結果自体のWFは結論しない。理由: 行の挿入と型像の変更は、型内部の潜在効果のFail列を未整列にし得る。依存列のparamと篩のselfを越えるときは値の環境をupし、型と範囲の深さを増やさない。`substAt c ts es` は c 個の内側の型束縛を残し、型像の上限 n に対して結果の型の上限を n+c とする。型像が持つ外側の値参照は、型のcutoffと独立に扱う。これらのWFの補題は、適用のarity・kind、述語の種類、宣言との整合を結論しない。
+
 依存のない引数列は `Ty.foldFn` で `fn` へ戻す。判定は、各束縛の下の移動を戻せる関数型の見方 `FnView` が存在することであり、単に結果に値変数がないことだけを調べるものではない。適用の構文操作 `rawApply` は、篩について `rawApply (refined a p) args = refined (rawApply a args) p` として内側へ通る。型引数を捨てる既定の枝へ先に落とさない。適切な適用は `Ty.HasKind` と `ProperApply` で別に検査する。
 
 支持 `Ty.Support p a`・`Ty.SupportList p as`・`Eff.Support p e`・`Tel.Support p t` は、型・型列・効果・依存列に現れるすべての効果原子が述語 p を満たすことを表す。型の子、潜在効果、Fail の内部型へ再帰する。篩の述語は効果を持たないため、篩を付ける型の支持を読み、述語の値参照の整形式とは区別する。`Eff.mk f fs` の支持は `(∀ a, f a = true → p a) ∧ Ty.SupportList p fs` である。`Ty.Finite` と `Eff.Finite` は、支持を覆う有限の原子列の存在を表し、任意の所属関数の有限性を無条件には要求しない。
+
+`RowsIn pe` は、支持のうち行原子 `.rho i` だけに pe i を要求する再帰条件である。型の範囲添字と効果の名前の原子の範囲添字は `RangesScoped nr` で検査する。`VarsIn nr nt nv pe` はWF・RowsIn・RangesScopedを束ね、型・行・範囲・値の四名前空間を区別する。peを行変数の有限上限にすると、既存の `SourceScoped nr nt ne nv` と同じ条件になる。篩・外部型・依存列・Fail内部を含め、これらの条件は正規化で保存される。VarsInは変数の範囲の条件であり、利用者の型注釈の適格性を単独では表さない。
 
 `collectAtoms s` は、候補列 s を最上位の所属関数で絞り、同じ子へ再帰して原子を収集する。入力の支持が s に入る場合、収集結果も入力を覆い、収集した原子は実際に入力の支持に属する。支持は正規化で保存・反映される。型変数の移動は支持を保ち、値の改名前後では支持が同値である。一般の置換では原子の範囲や行の像が変わるため、`SupportTransport p q θ` に型像・行像の q による支持と、p に属する各単一原子の置換像の q による支持を要求する。`typeEnvAt` は範囲の像が空なので、単一原子の条件を p から q への含意と行の像の支持から導ける。`substAt_support_of_imp` はこの条件を供給し、`substAt_support_same` は同じ支持を保つ場合を表す。
 
@@ -3139,6 +3149,8 @@ builders_no_captureとbuilders_block_no_captureは、Aligned Γ ΔからEnvReads
 部分型 `Ty.LeQ P Γ Φ a b` は有限の導出である。篩の除去、導入、篩どうしの含意は `Entails` を使い、仮定には型の自己の事実と `Γ.facts ++ Φ` の移動した列を用いる。List と Lazy の要素・結果は共変、Map の値は共変で鍵は同じ型、Reference の内容と Fail の型は正規化後の等号で照合する。関数の比較は `TelLe` とその反射推移閉包 `TelClosure` を用いる。引数を反変に比較し、後続は渡し先の引数を加えた文脈で比較し、終端の結果と潜在効果を共変に比較する。`Eff.Covers Γ Φ outer inner` は内側の各原子を外側の一原子で覆い、Fail は不変に含める。`Eff.Sub inner outer` は構造上の包含であり、引数の順も異なる。
 
 同じ名目の data の型引数は、宣言表 P の `varianceFor` が返す変性（variance）の列に従って `TypeArgsLe P Γ Φ` で比較する。共変の位置は元から先への部分型、反変の位置は逆向きの部分型、不変の位置は正規化後の等号を要求する。`Ty.LeQ`・`TelLe`・`TelClosure`・`TypeArgsLe` は同じ P を用いる。metadata がない場合と引数数が合わない場合は、全位置を不変として読む。欄に現れない型パラメータにも不変を要求し、unused の変性は設けない。
+
+効果の正規化は名前と行の所属、Failの正規化後の型の所属を保つ。`Eff.eq_of_sub_of_sub` は、両辺のCanonicalと双方向のSubから構造等号を導く。双方向のCoversだけでは、冗長な原子を加えた二つの効果を区別できない。`Eff.Allows σ κ e l t` は、κ l が返す対象の種類と、eに属する同じ名前の固定したRangeExprへの `Mem σ` を要求する。κ l がnoneの場合と、範囲変数の原子からは対象の許可を導かない。この関係は正規化で不変である。`TopAtoms` は最上位の原子がTopの名前か行である条件で、Fail内部の型を制限せず、正規化で保存される。行だけを置換する `substRho` は空の効果を保ち、名前の原子を消さない。
 
 `Program.VarianceValid` は、metadata の arity、欄の総称の注釈と value kind、および正負の出現を検査する。関数の引数は極性を反転し、Reference・Set・Map の鍵・辞書の対象・継続・Fail の型・外部型の引数・型構成子の適用は不変の位置として検査する。要件の型は不変、公開境界の型は指定された極性で検査する。欄の単調性は、総称の欄の `WF`・`Sorted []`、出現の検査、および両側の通常値の型引数（`Ordinary`）から導く。推移の中間の型引数に `Annotation` は要求しない。
 

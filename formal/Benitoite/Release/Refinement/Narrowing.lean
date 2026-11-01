@@ -463,8 +463,8 @@ mutual
     | .V_Dict hi hs ht hk hw htarget hv ha =>
       exact .V_Dict hi hs (fun a hm' => hm.annotation (ht a hm'))
         hk hw htarget (context_values hv hA hstore hm hf) (hm.annotation ha)
-    | .V_Raise ha => exact .V_Raise ⟨by simpa only [hm.length] using ha.wf,
-        hm.sorted ha.sorted, ha.declared.context hm.declaration⟩
+    | .V_Raise ha hot hoe => exact .V_Raise ⟨by simpa only [hm.length] using ha.wf,
+        hm.sorted ha.sorted, ha.declared.context hm.declaration⟩ hot hoe
     | .V_LocRef hl hd => exact .V_LocRef hl (hd.context hm.declaration)
     | .V_LocLazy hl hd => exact .V_LocLazy hl (hd.context hm.declaration)
     | .V_Bytes hb => exact .V_Bytes hb

@@ -233,6 +233,8 @@
 | telescope | telescope | 先行する束縛を後続の型から参照できる、型注釈付きの束縛の列。コアの `Tel` は引数の列と終端の結果型・潜在効果を表す | [コア計算と脱糖](../01-spec/01-12-core-calculus.md#篩を含むコア計算の形式化) |
 | 効果原子の支持 | support | 型・型列・効果・依存列の内部に現れる効果原子を制限する述語。有限支持は、その原子を覆う有限列の存在を表す。述語の値参照の整形式とは別である | [コア計算と脱糖](../01-spec/01-12-core-calculus.md#篩の正規形と制約の読み方) |
 | 型の正規形 | normal form | コアの型を `Ty.norm` で正規化した結果。`Ty.Normal` はその固定点の判断で、型の整形式とは別である。ソースの整形の正規形とも区別する | [コア計算と脱糖](../01-spec/01-12-core-calculus.md#篩の正規形と制約の読み方) |
+| 型の整形式 | well-formedness | コアの `Ty.WF nr nt nv` は範囲・型・値の番号、契約名と内部の潜在効果の正規形を検査する。型全体の正規形とは別である。置換の補助 `WFImages` は、入出力の各深さと型・行・範囲・値の像の条件を分ける | [コア計算と脱糖](../01-spec/01-12-core-calculus.md#篩の正規形と制約の読み方) |
+| `RowsIn`・`VarsIn` | —（形式化の判断名） | `RowsIn pe` は型・効果・依存列の内部の行変数の条件。`VarsIn nr nt nv pe` はWFとRowsInと範囲添字の条件RangesScopedを束ね、型・行・範囲・値の四名前空間を区別する | [コア計算と脱糖](../01-spec/01-12-core-calculus.md#篩の正規形と制約の読み方) |
 | `ValueMeaning` | —（形式化の判断名） | 篩を含む形式化で、正規形の値の形、data の全欄と List の全要素の意味、最外の全篩述語の真を保持する相互の判断。網羅性が読む上側近似の所属 `Inhabits` と区別する | [コア計算と脱糖](../01-spec/01-12-core-calculus.md#篩を読む網羅性と値の意味) |
 | information order | information order (`Observation.InfoLE`) | 未観測の slot に情報を加え、既にある scalar・snapshot・構成子名・slot の位置と数を保つ部分順序。確定した三値評価の保存を述べるために使う | [コア計算と脱糖](../01-spec/01-12-core-calculus.md#篩を読む網羅性と値の意味) |
 | 強い Kleene の三値 | strong Kleene three-valued logic | 真・偽・評価不能の三結果で And/Or/Not を定める。偽との連言と真との選言は相手が評価不能でも決まる。有限述語の閉じた評価に使い、通常の計算の短絡演算とは区別する | [コア計算と脱糖](../01-spec/01-12-core-calculus.md#閉じた述語の評価と捕捉) |
@@ -292,7 +294,7 @@
 | fine-grain call-by-value | fine-grain call-by-value | 項を値と計算に分け、計算を `return` と `let` でつなぐコア計算の形 | [コア計算と脱糖](../01-spec/01-12-core-calculus.md) |
 | 値と計算 | value and computation | コア計算の項の二つの種類。値はそれ以上実行しない項（変数、定数、関数など）、計算は実行して値を結果とする項 | [コア計算と脱糖](../01-spec/01-12-core-calculus.md) |
 | 枠 | frame | 継続の一段。`let x ⇐ □ in N` の形で、「結果を x に束縛して N を続ける」ことを表す | [コア計算と脱糖](../01-spec/01-12-core-calculus.md) |
-| 継続の型付け | continuation typing | 継続が受け取る値の型と、最後に結果とする値の型を定める規則。抽象機械の状態に型が付くことの定義に使う | [コア計算と脱糖](../01-spec/01-12-core-calculus.md) |
+| 継続の型付け | continuation typing | 継続が受け取る値の型と、最後に結果とする値の型を定める規則。抽象機械の状態に型が付くことの定義に使う。篩の形式化では、通常値の型引数の芯が継続型でないことを Ordinary で検査し、継続自体は文脈や場所の型として保持する | [コア計算と脱糖](../01-spec/01-12-core-calculus.md) |
 | エフェクトの健全性 | effect soundness | エフェクトが空集合の計算は、実行しても IO を起こさないという性質 | [コア計算と脱糖](../01-spec/01-12-core-calculus.md) |
 | 型の情報を付けた表層の構文 | elaborated surface syntax | 名前解決と型検査を終えた表層の構文に、型検査が決めた情報（多相な名前の型引数、演算子のオペランドの型、ラムダの引数の型など）を書き込んだもの。脱糖の入力である | [コア計算と脱糖](../01-spec/01-12-core-calculus.md)、[形式意味論と検証](../07-quality/07-04-formal-semantics.md) |
 | 表層の型付け | surface typing | 型の情報を付けた表層の構文に書き込まれた情報が型の規則を満たすかを検査する判断。型推論の規則とは別の判断で、脱糖の型の保存（性質 1）の前提に使う | [コア計算と脱糖](../01-spec/01-12-core-calculus.md)、[形式意味論と検証](../07-quality/07-04-formal-semantics.md) |

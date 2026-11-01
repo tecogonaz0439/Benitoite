@@ -75,7 +75,8 @@ theorem TypeArgsKinded.shiftTypes {P C C' ts ks} (h : TypeArgsKinded P C ts ks)
   refine ⟨by simpa using hl,insertKinds K k c,by rw [insertKinds_length,hK,hn],?_⟩
   intro i a ki ha hk
   obtain ⟨b,hb,rfl⟩ := Option.map_eq_some_iff.mp (by simpa only [List.getElem?_map] using ha)
+  refine ⟨?_, fun hv => (Ty.ordinary_shiftTypes _ _ _).mpr ((h i b ki hb hk).2 hv)⟩
   rw [←Ty.rawRenameTypes_shift]
-  exact (h i b ki hb hk).renameTypes (fun _ _ hi => insertKinds_lookup hi k c)
+  exact (h i b ki hb hk).1.renameTypes (fun _ _ hi => insertKinds_lookup hi k c)
 
 end Benitoite.Release.Refinement

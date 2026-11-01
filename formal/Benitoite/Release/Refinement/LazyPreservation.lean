@@ -202,7 +202,7 @@ private theorem value_closed_wf {P B Ψ Q C Γ Φ v a}
   | .V_List _ ha _ _ => subst C Γ; exact ha
   | .V_Map _ _ _ _ ha hb => subst C Γ; exact ⟨ha.wf,hb.wf⟩
   | .V_Set _ _ ha => subst C Γ; exact ha.wf
-  | .V_Raise ha => subst C Γ; exact ha.wf
+  | .V_Raise ha hot hoe => subst C Γ; exact ha.wf
   | .V_Super hh _ _ _ =>
     have hh' := value_closed_wf hh hw hC hΓ
     exact hh'

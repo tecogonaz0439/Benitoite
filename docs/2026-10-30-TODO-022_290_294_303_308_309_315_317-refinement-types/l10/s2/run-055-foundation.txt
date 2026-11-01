@@ -1,0 +1,390 @@
+Benitoite.Release.Refinement.Eff.memFail_singleFail (a b : Benitoite.Release.Refinement.Ty) :
+  (Benitoite.Release.Refinement.Eff.singleFail a).memFail b ↔ a.norm = b.norm
+Benitoite.Release.Refinement.Eff.eq_of_sub_of_sub {e f : Benitoite.Release.Refinement.Eff} (he : e.Canonical)
+  (hf : f.Canonical) (hef : e.Sub f) (hfe : f.Sub e) : e = f
+Benitoite.Release.Refinement.Eff.allows_norm {σ : Benitoite.Release.Refinement.PathEnv}
+  {κ : Benitoite.Release.EffName → Option Benitoite.Scope.Domain.Kind} {e : Benitoite.Release.Refinement.Eff}
+  {l : Benitoite.Release.EffName} {t : Benitoite.Scope.Domain.Target} :
+  Benitoite.Release.Refinement.Eff.Allows σ κ e.norm l t ↔ Benitoite.Release.Refinement.Eff.Allows σ κ e l t
+Benitoite.Release.Refinement.Eff.TopAtoms.norm {e : Benitoite.Release.Refinement.Eff} (h : e.TopAtoms) : e.norm.TopAtoms
+Benitoite.Release.Refinement.Eff.covers_norm_left {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {e f : Benitoite.Release.Refinement.Eff} :
+  Benitoite.Release.Refinement.Eff.Covers Γ Φ e.norm f ↔ Benitoite.Release.Refinement.Eff.Covers Γ Φ e f
+Benitoite.Release.Refinement.Eff.covers_norm_right {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {e f : Benitoite.Release.Refinement.Eff} :
+  Benitoite.Release.Refinement.Eff.Covers Γ Φ e f.norm ↔ Benitoite.Release.Refinement.Eff.Covers Γ Φ e f
+Benitoite.Release.Refinement.Ty.normWith_eq_norm (s : List Benitoite.Release.Refinement.Atom)
+  (t : Benitoite.Release.Refinement.Ty) (h : Benitoite.Release.Refinement.Ty.Support (fun x => x ∈ s) t) :
+  Benitoite.Release.Refinement.Ty.normWith s t = t.norm
+Benitoite.Release.Refinement.Ty.normTysWith_eq_norm (s : List Benitoite.Release.Refinement.Atom)
+  (ts : List Benitoite.Release.Refinement.Ty) (h : Benitoite.Release.Refinement.Ty.SupportList (fun x => x ∈ s) ts) :
+  Benitoite.Release.Refinement.Ty.normTysWith s ts = Benitoite.Release.Refinement.Ty.normTys ts
+Benitoite.Release.Refinement.Eff.normWith_eq_norm_of_fails (s : List Benitoite.Release.Refinement.Atom)
+  (e : Benitoite.Release.Refinement.Eff) (h : Benitoite.Release.Refinement.Ty.SupportList (fun x => x ∈ s) e.fails) :
+  Benitoite.Release.Refinement.Eff.normWith s e = e.norm
+Benitoite.Release.Refinement.Eff.normWith_eq_norm (s : List Benitoite.Release.Refinement.Atom)
+  (e : Benitoite.Release.Refinement.Eff) (h : Benitoite.Release.Refinement.Eff.Support (fun x => x ∈ s) e) :
+  Benitoite.Release.Refinement.Eff.normWith s e = e.norm
+Benitoite.Release.Refinement.Ty.normWith_support (s : List Benitoite.Release.Refinement.Atom)
+  (a : Benitoite.Release.Refinement.Ty) (h : Benitoite.Release.Refinement.Ty.Support (fun x => x ∈ s) a) :
+  Benitoite.Release.Refinement.Ty.Support (fun x => x ∈ s) (Benitoite.Release.Refinement.Ty.normWith s a)
+Benitoite.Release.Refinement.Eff.normWith_support (s : List Benitoite.Release.Refinement.Atom)
+  (a : Benitoite.Release.Refinement.Eff) (h : Benitoite.Release.Refinement.Eff.Support (fun x => x ∈ s) a) :
+  Benitoite.Release.Refinement.Eff.Support (fun x => x ∈ s) (Benitoite.Release.Refinement.Eff.normWith s a)
+Benitoite.Release.Refinement.Ty.normWith_canonical (s : List Benitoite.Release.Refinement.Atom)
+  (a : Benitoite.Release.Refinement.Ty) (h : Benitoite.Release.Refinement.Ty.Support (fun x => x ∈ s) a) :
+  (Benitoite.Release.Refinement.Ty.normWith s a).Canonical
+Benitoite.Release.Refinement.Eff.normWith_canonical (s : List Benitoite.Release.Refinement.Atom)
+  (a : Benitoite.Release.Refinement.Eff) (h : Benitoite.Release.Refinement.Eff.Support (fun x => x ∈ s) a) :
+  (Benitoite.Release.Refinement.Eff.normWith s a).Canonical
+Benitoite.Release.Refinement.Ty.normWith_idem (s : List Benitoite.Release.Refinement.Atom)
+  (a : Benitoite.Release.Refinement.Ty) (h : Benitoite.Release.Refinement.Ty.Support (fun x => x ∈ s) a) :
+  Benitoite.Release.Refinement.Ty.normWith s (Benitoite.Release.Refinement.Ty.normWith s a) =
+    Benitoite.Release.Refinement.Ty.normWith s a
+Benitoite.Release.Refinement.Eff.normWith_idem (s : List Benitoite.Release.Refinement.Atom)
+  (a : Benitoite.Release.Refinement.Eff) (h : Benitoite.Release.Refinement.Eff.Support (fun x => x ∈ s) a) :
+  Benitoite.Release.Refinement.Eff.normWith s (Benitoite.Release.Refinement.Eff.normWith s a) =
+    Benitoite.Release.Refinement.Eff.normWith s a
+Benitoite.Release.Refinement.Ty.normWith_support_independent (s t : List Benitoite.Release.Refinement.Atom)
+  (a : Benitoite.Release.Refinement.Ty) (hs : Benitoite.Release.Refinement.Ty.Support (fun x => x ∈ s) a)
+  (ht : Benitoite.Release.Refinement.Ty.Support (fun x => x ∈ t) a) :
+  Benitoite.Release.Refinement.Ty.normWith s a = Benitoite.Release.Refinement.Ty.normWith t a
+Benitoite.Release.Refinement.Eff.normWith_support_independent (s t : List Benitoite.Release.Refinement.Atom)
+  (a : Benitoite.Release.Refinement.Eff) (hs : Benitoite.Release.Refinement.Eff.Support (fun x => x ∈ s) a)
+  (ht : Benitoite.Release.Refinement.Eff.Support (fun x => x ∈ t) a) :
+  Benitoite.Release.Refinement.Eff.normWith s a = Benitoite.Release.Refinement.Eff.normWith t a
+Benitoite.Release.Refinement.Ty.support_of_norm {p : Benitoite.Release.Refinement.Atom → Prop}
+  (t : Benitoite.Release.Refinement.Ty) (h : Benitoite.Release.Refinement.Ty.Support p t.norm) :
+  Benitoite.Release.Refinement.Ty.Support p t
+Benitoite.Release.Refinement.Ty.supportList_of_norm {p : Benitoite.Release.Refinement.Atom → Prop}
+  (ts : List Benitoite.Release.Refinement.Ty)
+  (h : Benitoite.Release.Refinement.Ty.SupportList p (Benitoite.Release.Refinement.Ty.normTys ts)) :
+  Benitoite.Release.Refinement.Ty.SupportList p ts
+Benitoite.Release.Refinement.Eff.support_of_norm {p : Benitoite.Release.Refinement.Atom → Prop}
+  (e : Benitoite.Release.Refinement.Eff) (h : Benitoite.Release.Refinement.Eff.Support p e.norm) :
+  Benitoite.Release.Refinement.Eff.Support p e
+Benitoite.Release.Refinement.Eff.norm_fails_support {p : Benitoite.Release.Refinement.Atom → Prop}
+  (e : Benitoite.Release.Refinement.Eff) (h : Benitoite.Release.Refinement.Ty.SupportList p e.fails) :
+  Benitoite.Release.Refinement.Ty.SupportList p e.norm.fails
+Benitoite.Release.Refinement.Eff.support_of_sub {p : Benitoite.Release.Refinement.Atom → Prop}
+  {a b : Benitoite.Release.Refinement.Eff} (hb : Benitoite.Release.Refinement.Eff.Support p b) (h : a.Sub b) :
+  Benitoite.Release.Refinement.Eff.Support p a
+Benitoite.Release.Refinement.Eff.substRho_empty (es : List Benitoite.Release.Refinement.Eff) :
+  Benitoite.Release.Refinement.Eff.substRho es Benitoite.Release.Refinement.Eff.empty =
+    Benitoite.Release.Refinement.Eff.empty
+Benitoite.Release.Refinement.Eff.substRho_name {es : List Benitoite.Release.Refinement.Eff}
+  {e : Benitoite.Release.Refinement.Eff} {l : Benitoite.Release.EffName} {ix : Benitoite.Release.Refinement.RangeIx}
+  (h : e.mem (Benitoite.Release.Refinement.Atom.name l ix)) :
+  (Benitoite.Release.Refinement.Eff.substRho es e).mem (Benitoite.Release.Refinement.Atom.name l ix)
+Benitoite.Release.Refinement.Ty.LeQ.refl {P : Benitoite.Release.Refinement.Program}
+  {Γ : Benitoite.Release.Refinement.Ctx} {Φ : List Benitoite.Release.Refinement.Pred}
+  {a : Benitoite.Release.Refinement.Ty} : Benitoite.Release.Refinement.Ty.LeQ P Γ Φ a a
+Benitoite.Release.Refinement.Ty.LeQ.trans {P : Benitoite.Release.Refinement.Program}
+  {Γ : Benitoite.Release.Refinement.Ctx} {Φ : List Benitoite.Release.Refinement.Pred}
+  {a b c : Benitoite.Release.Refinement.Ty} :
+  Benitoite.Release.Refinement.Ty.LeQ P Γ Φ a b →
+    Benitoite.Release.Refinement.Ty.LeQ P Γ Φ b c → Benitoite.Release.Refinement.Ty.LeQ P Γ Φ a c
+Benitoite.Release.Refinement.Ty.norm_idem (t : Benitoite.Release.Refinement.Ty) : t.norm.norm = t.norm
+Benitoite.Release.Refinement.Ty.normTys_idem (as : List Benitoite.Release.Refinement.Ty) :
+  Benitoite.Release.Refinement.Ty.normTys (Benitoite.Release.Refinement.Ty.normTys as) =
+    Benitoite.Release.Refinement.Ty.normTys as
+Benitoite.Release.Refinement.Eff.norm_idem (e : Benitoite.Release.Refinement.Eff) : e.norm.norm = e.norm
+Benitoite.Release.Refinement.Eff.norm_memFail (e : Benitoite.Release.Refinement.Eff)
+  (t : Benitoite.Release.Refinement.Ty) : e.norm.memFail t ↔ e.memFail t
+Benitoite.Release.Refinement.Ty.shift_compare_norm (k c : Nat) (a b : Benitoite.Release.Refinement.Ty) :
+  Benitoite.Release.Refinement.tyCompare (Benitoite.Release.Refinement.Ty.shift k c a)
+      (Benitoite.Release.Refinement.Ty.shift k c b) =
+    Benitoite.Release.Refinement.tyCompare a.norm b.norm
+Benitoite.Release.Refinement.Ty.shift_compare (k c : Nat) (a b : Benitoite.Release.Refinement.Ty) (ha : a.Canonical)
+  (hb : b.Canonical) :
+  Benitoite.Release.Refinement.tyCompare (Benitoite.Release.Refinement.Ty.shift k c a)
+      (Benitoite.Release.Refinement.Ty.shift k c b) =
+    Benitoite.Release.Refinement.tyCompare a b
+Benitoite.Release.Refinement.shift_map (k c : Nat) (as : List Benitoite.Release.Refinement.Ty)
+  (ha : ∀ (a : Benitoite.Release.Refinement.Ty), a ∈ as → a.Canonical) :
+  List.map (Benitoite.Release.Refinement.Ty.shift k c) as = List.map (Benitoite.Release.Refinement.shiftTypes k c) as
+Benitoite.Release.Refinement.Ty.shift_compareList (k c : Nat) (as bs : List Benitoite.Release.Refinement.Ty)
+  (ha : ∀ (a : Benitoite.Release.Refinement.Ty), a ∈ as → a.Canonical)
+  (hb : ∀ (b : Benitoite.Release.Refinement.Ty), b ∈ bs → b.Canonical) :
+  Benitoite.Release.Order.treesCompare Benitoite.Release.Order.labelCompare
+      (Benitoite.Release.Refinement.Ty.toTrees (List.map (Benitoite.Release.Refinement.Ty.shift k c) as))
+      (Benitoite.Release.Refinement.Ty.toTrees (List.map (Benitoite.Release.Refinement.Ty.shift k c) bs)) =
+    Benitoite.Release.Order.treesCompare Benitoite.Release.Order.labelCompare
+      (Benitoite.Release.Refinement.Ty.toTrees as) (Benitoite.Release.Refinement.Ty.toTrees bs)
+Benitoite.Release.Refinement.Ty.sortUnique_shift (k c : Nat) (as : List Benitoite.Release.Refinement.Ty)
+  (ha : ∀ (a : Benitoite.Release.Refinement.Ty), a ∈ as → a.Canonical) :
+  Benitoite.Release.Order.sortUnique Benitoite.Release.Refinement.tyCompare
+      (List.map (Benitoite.Release.Refinement.Ty.shift k c) as) =
+    List.map (Benitoite.Release.Refinement.Ty.shift k c)
+      (Benitoite.Release.Order.sortUnique Benitoite.Release.Refinement.tyCompare as)
+Benitoite.Release.Refinement.Ty.rawBind_norm_wf {nr nt nv mr mt mv : Nat} {θ : Benitoite.Release.Refinement.SubstEnv}
+  (a : Benitoite.Release.Refinement.Ty) (h : Benitoite.Release.Refinement.Ty.WF nr nt nv a)
+  (hi : Benitoite.Release.Refinement.SubstEnv.WFImages nr nt nv mr mt mv θ) :
+  Benitoite.Release.Refinement.Ty.WF mr mt mv (Benitoite.Release.Refinement.Ty.rawBind θ a).norm
+Benitoite.Release.Refinement.rawBindTys_norm_wf {nr nt nv mr mt mv : Nat} {θ : Benitoite.Release.Refinement.SubstEnv}
+  (as : List Benitoite.Release.Refinement.Ty) (h : Benitoite.Release.Refinement.Ty.WFList nr nt nv as)
+  (hi : Benitoite.Release.Refinement.SubstEnv.WFImages nr nt nv mr mt mv θ) :
+  Benitoite.Release.Refinement.Ty.WFList mr mt mv
+    (Benitoite.Release.Refinement.Ty.normTys (Benitoite.Release.Refinement.rawBindTys θ as))
+Benitoite.Release.Refinement.Eff.rawBind_norm_wf {nr nt nv mr mt mv : Nat} {θ : Benitoite.Release.Refinement.SubstEnv}
+  (e : Benitoite.Release.Refinement.Eff) (h : Benitoite.Release.Refinement.Eff.WF nr nt nv e)
+  (hi : Benitoite.Release.Refinement.SubstEnv.WFImages nr nt nv mr mt mv θ) :
+  Benitoite.Release.Refinement.Eff.WF mr mt mv (Benitoite.Release.Refinement.Eff.rawBind θ e).norm
+Benitoite.Release.Refinement.Eff.substAt_atoms_wf {nr c : Nat} {ts : List Benitoite.Release.Refinement.Ty}
+  {es : List Benitoite.Release.Refinement.Eff} {e : Benitoite.Release.Refinement.Eff}
+  (h : Benitoite.Release.Refinement.Eff.AtomsWF nr e)
+  (he : ∀ (f : Benitoite.Release.Refinement.Eff), f ∈ es → Benitoite.Release.Refinement.Eff.AtomsWF nr f) :
+  Benitoite.Release.Refinement.Eff.AtomsWF nr (Benitoite.Release.Refinement.Eff.substAt c ts es e)
+Benitoite.Release.Refinement.Ty.bind_wf {nr nt nv mr mt mv : Nat} {θ : Benitoite.Release.Refinement.SubstEnv}
+  (a : Benitoite.Release.Refinement.Ty) (h : Benitoite.Release.Refinement.Ty.WF nr nt nv a)
+  (hi : Benitoite.Release.Refinement.SubstEnv.WFImages nr nt nv mr mt mv θ) :
+  Benitoite.Release.Refinement.Ty.WF mr mt mv (Benitoite.Release.Refinement.Ty.bind θ a)
+Benitoite.Release.Refinement.Ty.rawShift_eq_rawBind (k c : Nat) (a : Benitoite.Release.Refinement.Ty) :
+  Benitoite.Release.Refinement.shiftTypes k c a =
+    Benitoite.Release.Refinement.Ty.rawBind (Benitoite.Release.Refinement.SubstEnv.shiftTypes k c) a
+Benitoite.Release.Refinement.Ty.rawShiftTys_eq_rawBindTys (k c : Nat) (as : List Benitoite.Release.Refinement.Ty) :
+  Benitoite.Release.Refinement.shiftTypesList k c as =
+    Benitoite.Release.Refinement.rawBindTys (Benitoite.Release.Refinement.SubstEnv.shiftTypes k c) as
+Benitoite.Release.Refinement.Eff.rawShift_eq_rawBind (k c : Nat) (e : Benitoite.Release.Refinement.Eff) :
+  Benitoite.Release.Refinement.shiftRowsTypes k c e =
+    Benitoite.Release.Refinement.Eff.rawBind (Benitoite.Release.Refinement.SubstEnv.shiftTypes k c) e
+Benitoite.Release.Refinement.Ty.wf_shift {nr nt nv : Nat} {a : Benitoite.Release.Refinement.Ty}
+  (h : Benitoite.Release.Refinement.Ty.WF nr nt nv a) (k c : Nat) :
+  Benitoite.Release.Refinement.Ty.WF nr (nt + k) nv (Benitoite.Release.Refinement.Ty.shift k c a)
+Benitoite.Release.Refinement.Ty.substAt_wf {nr n nv : Nat} (c : Nat) (ts : List Benitoite.Release.Refinement.Ty)
+  (es : List Benitoite.Release.Refinement.Eff)
+  (ht : ∀ (a : Benitoite.Release.Refinement.Ty), a ∈ ts → Benitoite.Release.Refinement.Ty.WF nr n nv a)
+  (he : ∀ (e : Benitoite.Release.Refinement.Eff), e ∈ es → Benitoite.Release.Refinement.Eff.WF nr n nv e)
+  (ho : ∀ (a : Benitoite.Release.Refinement.Ty), a ∈ ts → a.Ordinary) (a : Benitoite.Release.Refinement.Ty)
+  (h : Benitoite.Release.Refinement.Ty.WF nr (c + ts.length) nv a) :
+  Benitoite.Release.Refinement.Ty.WF nr (n + c) nv (Benitoite.Release.Refinement.Ty.substAt c ts es a)
+Benitoite.Release.Refinement.Ty.subst_wf {nr n nv : Nat} (ts : List Benitoite.Release.Refinement.Ty)
+  (es : List Benitoite.Release.Refinement.Eff)
+  (ht : ∀ (a : Benitoite.Release.Refinement.Ty), a ∈ ts → Benitoite.Release.Refinement.Ty.WF nr n nv a)
+  (he : ∀ (e : Benitoite.Release.Refinement.Eff), e ∈ es → Benitoite.Release.Refinement.Eff.WF nr n nv e)
+  (ho : ∀ (a : Benitoite.Release.Refinement.Ty), a ∈ ts → a.Ordinary) (a : Benitoite.Release.Refinement.Ty)
+  (h : Benitoite.Release.Refinement.Ty.WF nr ts.length nv a) :
+  Benitoite.Release.Refinement.Ty.WF nr n nv (Benitoite.Release.Refinement.Ty.subst ts es a)
+Benitoite.Release.Refinement.Eff.bind_wf {nr nt nv mr mt mv : Nat} {θ : Benitoite.Release.Refinement.SubstEnv}
+  (e : Benitoite.Release.Refinement.Eff) (h : Benitoite.Release.Refinement.Eff.WF nr nt nv e)
+  (hi : Benitoite.Release.Refinement.SubstEnv.WFImages nr nt nv mr mt mv θ) :
+  Benitoite.Release.Refinement.Eff.WF mr mt mv (Benitoite.Release.Refinement.Eff.bind θ e)
+Benitoite.Release.Refinement.Eff.subst_wf {nr n nv : Nat} (ts : List Benitoite.Release.Refinement.Ty)
+  (es : List Benitoite.Release.Refinement.Eff)
+  (ht : ∀ (a : Benitoite.Release.Refinement.Ty), a ∈ ts → Benitoite.Release.Refinement.Ty.WF nr n nv a)
+  (he : ∀ (e : Benitoite.Release.Refinement.Eff), e ∈ es → Benitoite.Release.Refinement.Eff.WF nr n nv e)
+  (ho : ∀ (a : Benitoite.Release.Refinement.Ty), a ∈ ts → Benitoite.Release.Refinement.Ordinary a)
+  (e : Benitoite.Release.Refinement.Eff) (h : Benitoite.Release.Refinement.Eff.WF nr ts.length nv e) :
+  Benitoite.Release.Refinement.Eff.WF nr n nv (Benitoite.Release.Refinement.Eff.subst ts es e)
+Benitoite.Release.Refinement.Ty.substList_wf {nr n nv : Nat} (ts : List Benitoite.Release.Refinement.Ty)
+  (es : List Benitoite.Release.Refinement.Eff)
+  (ht : ∀ (a : Benitoite.Release.Refinement.Ty), a ∈ ts → Benitoite.Release.Refinement.Ty.WF nr n nv a)
+  (he : ∀ (e : Benitoite.Release.Refinement.Eff), e ∈ es → Benitoite.Release.Refinement.Eff.WF nr n nv e)
+  (ho : ∀ (a : Benitoite.Release.Refinement.Ty), a ∈ ts → a.Ordinary) (as : List Benitoite.Release.Refinement.Ty)
+  (h : Benitoite.Release.Refinement.Ty.WFList nr ts.length nv as) :
+  Benitoite.Release.Refinement.Ty.WFList nr n nv (List.map (Benitoite.Release.Refinement.Ty.subst ts es) as)
+Benitoite.Release.Refinement.Eff.substAt_wf {nr n nv : Nat} (c : Nat) (ts : List Benitoite.Release.Refinement.Ty)
+  (es : List Benitoite.Release.Refinement.Eff)
+  (ht : ∀ (a : Benitoite.Release.Refinement.Ty), a ∈ ts → Benitoite.Release.Refinement.Ty.WF nr n nv a)
+  (he : ∀ (e : Benitoite.Release.Refinement.Eff), e ∈ es → Benitoite.Release.Refinement.Eff.WF nr n nv e)
+  (ho : ∀ (a : Benitoite.Release.Refinement.Ty), a ∈ ts → Benitoite.Release.Refinement.Ordinary a)
+  (e : Benitoite.Release.Refinement.Eff) (h : Benitoite.Release.Refinement.Eff.WF nr (c + ts.length) nv e) :
+  Benitoite.Release.Refinement.Eff.WF nr (n + c) nv (Benitoite.Release.Refinement.Eff.substAt c ts es e)
+Benitoite.Release.Refinement.Ty.wf_norm {a : Benitoite.Release.Refinement.Ty} {nr nt nv : Nat}
+  (h : Benitoite.Release.Refinement.Ty.WF nr nt nv a) : Benitoite.Release.Refinement.Ty.WF nr nt nv a.norm
+Benitoite.Release.Refinement.Ty.wfList_iff {nr nt nv : Nat} {as : List Benitoite.Release.Refinement.Ty} :
+  Benitoite.Release.Refinement.Ty.WFList nr nt nv as ↔
+    ∀ (a : Benitoite.Release.Refinement.Ty), a ∈ as → Benitoite.Release.Refinement.Ty.WF nr nt nv a
+Benitoite.Release.Refinement.Eff.wf_norm {e : Benitoite.Release.Refinement.Eff} {nr nt nv : Nat}
+  (h : Benitoite.Release.Refinement.Eff.WF nr nt nv e) : Benitoite.Release.Refinement.Eff.WF nr nt nv e.norm
+Benitoite.Release.Refinement.Ty.WF.weaken {nr nt nv nt' nv' : Nat} {a : Benitoite.Release.Refinement.Ty}
+  (h : Benitoite.Release.Refinement.Ty.WF nr nt nv a) (ht : nt ≤ nt') (hv : nv ≤ nv') :
+  Benitoite.Release.Refinement.Ty.WF nr nt' nv' a
+Benitoite.Release.Refinement.Ty.WFList.weaken {nr nt nv nt' nv' : Nat} {as : List Benitoite.Release.Refinement.Ty}
+  (h : Benitoite.Release.Refinement.Ty.WFList nr nt nv as) (ht : nt ≤ nt') (hv : nv ≤ nv') :
+  Benitoite.Release.Refinement.Ty.WFList nr nt' nv' as
+Benitoite.Release.Refinement.Eff.WF.weaken {nr nt nv nt' nv' : Nat} {e : Benitoite.Release.Refinement.Eff}
+  (h : Benitoite.Release.Refinement.Eff.WF nr nt nv e) (ht : nt ≤ nt') (hv : nv ≤ nv') :
+  Benitoite.Release.Refinement.Eff.WF nr nt' nv' e
+Benitoite.Release.Refinement.Ty.rawShift_of_wf {nr nv c : Nat} (k : Nat) (a : Benitoite.Release.Refinement.Ty)
+  (h : Benitoite.Release.Refinement.Ty.WF nr c nv a) : Benitoite.Release.Refinement.shiftTypes k c a = a
+Benitoite.Release.Refinement.Ty.rawShiftTys_of_wf {nr nv c : Nat} (k : Nat) (as : List Benitoite.Release.Refinement.Ty)
+  (h : Benitoite.Release.Refinement.Ty.WFList nr c nv as) : Benitoite.Release.Refinement.shiftTypesList k c as = as
+Benitoite.Release.Refinement.Eff.rawShift_of_wf {nr nv c : Nat} (k : Nat) (e : Benitoite.Release.Refinement.Eff)
+  (h : Benitoite.Release.Refinement.Eff.WF nr c nv e) : Benitoite.Release.Refinement.shiftRowsTypes k c e = e
+Benitoite.Release.Refinement.Ty.shift_of_wf {nr nv c : Nat} (k : Nat) (a : Benitoite.Release.Refinement.Ty)
+  (h : Benitoite.Release.Refinement.Ty.WF nr c nv a) : Benitoite.Release.Refinement.Ty.shift k c a = a.norm
+Benitoite.Release.Refinement.Eff.shift_of_wf {nr nv c : Nat} (k : Nat) (e : Benitoite.Release.Refinement.Eff)
+  (h : Benitoite.Release.Refinement.Eff.WF nr c nv e) : Benitoite.Release.Refinement.Eff.shift k c e = e.norm
+Benitoite.Release.Refinement.Ty.RowsInList.iff {pe : Nat → Prop} {as : List Benitoite.Release.Refinement.Ty} :
+  Benitoite.Release.Refinement.Ty.RowsInList pe as ↔
+    ∀ (a : Benitoite.Release.Refinement.Ty), a ∈ as → Benitoite.Release.Refinement.Ty.RowsIn pe a
+Benitoite.Release.Refinement.Ty.RowsIn.mono {pe pf : Nat → Prop} (hp : ∀ (i : Nat), pe i → pf i)
+  (a : Benitoite.Release.Refinement.Ty) (h : Benitoite.Release.Refinement.Ty.RowsIn pe a) :
+  Benitoite.Release.Refinement.Ty.RowsIn pf a
+Benitoite.Release.Refinement.Ty.RowsInList.mono {pe pf : Nat → Prop} (hp : ∀ (i : Nat), pe i → pf i)
+  (as : List Benitoite.Release.Refinement.Ty) (h : Benitoite.Release.Refinement.Ty.RowsInList pe as) :
+  Benitoite.Release.Refinement.Ty.RowsInList pf as
+Benitoite.Release.Refinement.Eff.RowsIn.mono {pe pf : Nat → Prop} (hp : ∀ (i : Nat), pe i → pf i)
+  (e : Benitoite.Release.Refinement.Eff) (h : Benitoite.Release.Refinement.Eff.RowsIn pe e) :
+  Benitoite.Release.Refinement.Eff.RowsIn pf e
+Benitoite.Release.Refinement.Ty.norm_rowsIn {pe : Nat → Prop} (a : Benitoite.Release.Refinement.Ty)
+  (h : Benitoite.Release.Refinement.Ty.RowsIn pe a) : Benitoite.Release.Refinement.Ty.RowsIn pe a.norm
+Benitoite.Release.Refinement.Ty.normTys_rowsIn {pe : Nat → Prop} (as : List Benitoite.Release.Refinement.Ty)
+  (h : Benitoite.Release.Refinement.Ty.RowsInList pe as) :
+  Benitoite.Release.Refinement.Ty.RowsInList pe (Benitoite.Release.Refinement.Ty.normTys as)
+Benitoite.Release.Refinement.Eff.norm_rowsIn {pe : Nat → Prop} (e : Benitoite.Release.Refinement.Eff)
+  (h : Benitoite.Release.Refinement.Eff.RowsIn pe e) : Benitoite.Release.Refinement.Eff.RowsIn pe e.norm
+Benitoite.Release.Refinement.Ty.rowsIn_true (a : Benitoite.Release.Refinement.Ty) :
+  Benitoite.Release.Refinement.Ty.RowsIn (fun x => True) a
+Benitoite.Release.Refinement.Ty.rowsInList_true (as : List Benitoite.Release.Refinement.Ty) :
+  Benitoite.Release.Refinement.Ty.RowsInList (fun x => True) as
+Benitoite.Release.Refinement.Eff.rowsIn_true (e : Benitoite.Release.Refinement.Eff) :
+  Benitoite.Release.Refinement.Eff.RowsIn (fun x => True) e
+Benitoite.Release.Refinement.shiftIndex_compare (k c i j : Nat) :
+  compare (Benitoite.Release.Refinement.shiftIndex k c i) (Benitoite.Release.Refinement.shiftIndex k c j) = compare i j
+Benitoite.Release.Refinement.Ty.shiftTypes_compare (k c : Nat) (a b : Benitoite.Release.Refinement.Ty) :
+  Benitoite.Release.Refinement.tyCompare (Benitoite.Release.Refinement.shiftTypes k c a)
+      (Benitoite.Release.Refinement.shiftTypes k c b) =
+    Benitoite.Release.Refinement.tyCompare a b
+Benitoite.Release.Refinement.Ty.trees_shiftTypes_compare (k c : Nat) (as bs : List Benitoite.Release.Refinement.Ty) :
+  Benitoite.Release.Order.treesCompare Benitoite.Release.Order.labelCompare
+      (Benitoite.Release.Refinement.Ty.toTrees (Benitoite.Release.Refinement.shiftTypesList k c as))
+      (Benitoite.Release.Refinement.Ty.toTrees (Benitoite.Release.Refinement.shiftTypesList k c bs)) =
+    Benitoite.Release.Order.treesCompare Benitoite.Release.Order.labelCompare
+      (Benitoite.Release.Refinement.Ty.toTrees as) (Benitoite.Release.Refinement.Ty.toTrees bs)
+Benitoite.Release.Refinement.Eff.tree_shiftTypes_compare (k c : Nat) (e f : Benitoite.Release.Refinement.Eff) :
+  Benitoite.Release.Order.treeCompare Benitoite.Release.Order.labelCompare
+      (Benitoite.Release.Refinement.shiftRowsTypes k c e).toTree
+      (Benitoite.Release.Refinement.shiftRowsTypes k c f).toTree =
+    Benitoite.Release.Order.treeCompare Benitoite.Release.Order.labelCompare e.toTree f.toTree
+Benitoite.Release.Refinement.Ty.norm_shiftTypes (a : Benitoite.Release.Refinement.Ty) (k c : Nat) :
+  (Benitoite.Release.Refinement.shiftTypes k c a).norm = Benitoite.Release.Refinement.shiftTypes k c a.norm
+Benitoite.Release.Refinement.Ty.normTys_shiftTypes (as : List Benitoite.Release.Refinement.Ty) (k c : Nat) :
+  Benitoite.Release.Refinement.Ty.normTys (Benitoite.Release.Refinement.shiftTypesList k c as) =
+    Benitoite.Release.Refinement.shiftTypesList k c (Benitoite.Release.Refinement.Ty.normTys as)
+Benitoite.Release.Refinement.Eff.norm_shiftTypes (e : Benitoite.Release.Refinement.Eff) (k c : Nat) :
+  (Benitoite.Release.Refinement.shiftRowsTypes k c e).norm = Benitoite.Release.Refinement.shiftRowsTypes k c e.norm
+Benitoite.Release.Refinement.Ty.rawShift_canonical (k c : Nat) {a : Benitoite.Release.Refinement.Ty} (h : a.Canonical) :
+  (Benitoite.Release.Refinement.shiftTypes k c a).Canonical
+Benitoite.Release.Refinement.Eff.rawShift_canonical (k c : Nat) {e : Benitoite.Release.Refinement.Eff}
+  (h : e.Canonical) : (Benitoite.Release.Refinement.shiftRowsTypes k c e).Canonical
+Benitoite.Release.Refinement.Ty.shift_canonical (k c : Nat) (a : Benitoite.Release.Refinement.Ty) :
+  (Benitoite.Release.Refinement.Ty.shift k c a).Canonical
+Benitoite.Release.Refinement.Eff.shift_canonical (k c : Nat) (e : Benitoite.Release.Refinement.Eff) :
+  (Benitoite.Release.Refinement.Eff.shift k c e).Canonical
+Benitoite.Release.Refinement.shiftTypes_zero (a : Benitoite.Release.Refinement.Ty) (c : Nat) :
+  Benitoite.Release.Refinement.shiftTypes 0 c a = a
+Benitoite.Release.Refinement.shiftTypesList_zero (as : List Benitoite.Release.Refinement.Ty) (c : Nat) :
+  Benitoite.Release.Refinement.shiftTypesList 0 c as = as
+Benitoite.Release.Refinement.shiftRowsTypes_zero (e : Benitoite.Release.Refinement.Eff) (c : Nat) :
+  Benitoite.Release.Refinement.shiftRowsTypes 0 c e = e
+Benitoite.Release.Refinement.Ty.shift_zero_norm (c : Nat) (a : Benitoite.Release.Refinement.Ty) :
+  Benitoite.Release.Refinement.Ty.shift 0 c a = a.norm
+Benitoite.Release.Refinement.Eff.shift_zero_norm (c : Nat) (e : Benitoite.Release.Refinement.Eff) :
+  Benitoite.Release.Refinement.Eff.shift 0 c e = e.norm
+Benitoite.Release.Refinement.Ty.norm_support {p : Benitoite.Release.Refinement.Atom → Prop}
+  (t : Benitoite.Release.Refinement.Ty) (h : Benitoite.Release.Refinement.Ty.Support p t) :
+  Benitoite.Release.Refinement.Ty.Support p t.norm
+Benitoite.Release.Refinement.Ty.normTys_support {p : Benitoite.Release.Refinement.Atom → Prop}
+  (ts : List Benitoite.Release.Refinement.Ty) (h : Benitoite.Release.Refinement.Ty.SupportList p ts) :
+  Benitoite.Release.Refinement.Ty.SupportList p (Benitoite.Release.Refinement.Ty.normTys ts)
+Benitoite.Release.Refinement.Eff.norm_support {p : Benitoite.Release.Refinement.Atom → Prop}
+  (e : Benitoite.Release.Refinement.Eff) (h : Benitoite.Release.Refinement.Eff.Support p e) :
+  Benitoite.Release.Refinement.Eff.Support p e.norm
+Benitoite.Release.Refinement.Ty.rawShift_support {p : Benitoite.Release.Refinement.Atom → Prop} (k c : Nat)
+  (t : Benitoite.Release.Refinement.Ty) (h : Benitoite.Release.Refinement.Ty.Support p t) :
+  Benitoite.Release.Refinement.Ty.Support p (Benitoite.Release.Refinement.shiftTypes k c t)
+Benitoite.Release.Refinement.Ty.rawShiftTys_support {p : Benitoite.Release.Refinement.Atom → Prop} (k c : Nat)
+  (ts : List Benitoite.Release.Refinement.Ty) (h : Benitoite.Release.Refinement.Ty.SupportList p ts) :
+  Benitoite.Release.Refinement.Ty.SupportList p (Benitoite.Release.Refinement.shiftTypesList k c ts)
+Benitoite.Release.Refinement.Eff.rawShift_support {p : Benitoite.Release.Refinement.Atom → Prop} (k c : Nat)
+  (e : Benitoite.Release.Refinement.Eff) (h : Benitoite.Release.Refinement.Eff.Support p e) :
+  Benitoite.Release.Refinement.Eff.Support p (Benitoite.Release.Refinement.shiftRowsTypes k c e)
+Benitoite.Release.Refinement.Ty.shift_support {p : Benitoite.Release.Refinement.Atom → Prop} (k c : Nat)
+  (t : Benitoite.Release.Refinement.Ty) (h : Benitoite.Release.Refinement.Ty.Support p t) :
+  Benitoite.Release.Refinement.Ty.Support p (Benitoite.Release.Refinement.Ty.shift k c t)
+Benitoite.Release.Refinement.Eff.shift_support {p : Benitoite.Release.Refinement.Atom → Prop} (k c : Nat)
+  (e : Benitoite.Release.Refinement.Eff) (h : Benitoite.Release.Refinement.Eff.Support p e) :
+  Benitoite.Release.Refinement.Eff.Support p (Benitoite.Release.Refinement.Eff.shift k c e)
+Benitoite.Release.Refinement.Ty.rawBind_support (p q : Benitoite.Release.Refinement.Atom → Prop)
+  (θ : Benitoite.Release.Refinement.SubstEnv) (a : Benitoite.Release.Refinement.Ty)
+  (h : Benitoite.Release.Refinement.Ty.Support p a) (ht : Benitoite.Release.Refinement.SupportTransport p q θ) :
+  Benitoite.Release.Refinement.Ty.Support q (Benitoite.Release.Refinement.Ty.rawBind θ a)
+Benitoite.Release.Refinement.Ty.rawBindTys_support (p q : Benitoite.Release.Refinement.Atom → Prop)
+  (θ : Benitoite.Release.Refinement.SubstEnv) (as : List Benitoite.Release.Refinement.Ty)
+  (h : Benitoite.Release.Refinement.Ty.SupportList p as) (ht : Benitoite.Release.Refinement.SupportTransport p q θ) :
+  Benitoite.Release.Refinement.Ty.SupportList q (Benitoite.Release.Refinement.rawBindTys θ as)
+Benitoite.Release.Refinement.Eff.rawBind_support (p q : Benitoite.Release.Refinement.Atom → Prop)
+  (θ : Benitoite.Release.Refinement.SubstEnv) (e : Benitoite.Release.Refinement.Eff)
+  (h : Benitoite.Release.Refinement.Eff.Support p e) (ht : Benitoite.Release.Refinement.SupportTransport p q θ) :
+  Benitoite.Release.Refinement.Eff.Support q (Benitoite.Release.Refinement.Eff.rawBind θ e)
+Benitoite.Release.Refinement.typeEnvAt_support (p q : Benitoite.Release.Refinement.Atom → Prop) (c : Nat)
+  (ts : List Benitoite.Release.Refinement.Ty) (es : List Benitoite.Release.Refinement.Eff)
+  (ht : ∀ (a : Benitoite.Release.Refinement.Ty), a ∈ ts → Benitoite.Release.Refinement.Ty.Support q a)
+  (he : ∀ (e : Benitoite.Release.Refinement.Eff), e ∈ es → Benitoite.Release.Refinement.Eff.Support q e)
+  (ha :
+    ∀ (a : Benitoite.Release.Refinement.Atom),
+      p a →
+        Benitoite.Release.Refinement.Eff.Support q
+          (Benitoite.Release.Refinement.Eff.rawBind (Benitoite.Release.Refinement.typeEnvAt c ts es)
+            (Benitoite.Release.Refinement.EffR.mk (fun b => decide (b = a)) []))) :
+  Benitoite.Release.Refinement.SupportTransport p q (Benitoite.Release.Refinement.typeEnvAt c ts es)
+Benitoite.Release.Refinement.Ty.substAt_support (p q : Benitoite.Release.Refinement.Atom → Prop) (c : Nat)
+  (ts : List Benitoite.Release.Refinement.Ty) (es : List Benitoite.Release.Refinement.Eff)
+  (a : Benitoite.Release.Refinement.Ty) (h : Benitoite.Release.Refinement.Ty.Support p a)
+  (ht : ∀ (t : Benitoite.Release.Refinement.Ty), t ∈ ts → Benitoite.Release.Refinement.Ty.Support q t)
+  (he : ∀ (e : Benitoite.Release.Refinement.Eff), e ∈ es → Benitoite.Release.Refinement.Eff.Support q e)
+  (ha :
+    ∀ (x : Benitoite.Release.Refinement.Atom),
+      p x →
+        Benitoite.Release.Refinement.Eff.Support q
+          (Benitoite.Release.Refinement.Eff.rawBind (Benitoite.Release.Refinement.typeEnvAt c ts es)
+            (Benitoite.Release.Refinement.EffR.mk (fun b => decide (b = x)) []))) :
+  Benitoite.Release.Refinement.Ty.Support q (Benitoite.Release.Refinement.Ty.substAt c ts es a)
+Benitoite.Release.Refinement.Eff.substAt_support (p q : Benitoite.Release.Refinement.Atom → Prop) (c : Nat)
+  (ts : List Benitoite.Release.Refinement.Ty) (es : List Benitoite.Release.Refinement.Eff)
+  (a : Benitoite.Release.Refinement.Eff) (h : Benitoite.Release.Refinement.Eff.Support p a)
+  (ht : ∀ (t : Benitoite.Release.Refinement.Ty), t ∈ ts → Benitoite.Release.Refinement.Ty.Support q t)
+  (he : ∀ (e : Benitoite.Release.Refinement.Eff), e ∈ es → Benitoite.Release.Refinement.Eff.Support q e)
+  (ha :
+    ∀ (x : Benitoite.Release.Refinement.Atom),
+      p x →
+        Benitoite.Release.Refinement.Eff.Support q
+          (Benitoite.Release.Refinement.Eff.rawBind (Benitoite.Release.Refinement.typeEnvAt c ts es)
+            (Benitoite.Release.Refinement.EffR.mk (fun b => decide (b = x)) []))) :
+  Benitoite.Release.Refinement.Eff.Support q (Benitoite.Release.Refinement.Eff.substAt c ts es a)
+Benitoite.Release.Refinement.Ty.VarsInList.iff {nr nt nv : Nat} {pe : Nat → Prop}
+  {as : List Benitoite.Release.Refinement.Ty} :
+  Benitoite.Release.Refinement.Ty.VarsInList nr nt nv pe as ↔
+    ∀ (a : Benitoite.Release.Refinement.Ty), a ∈ as → Benitoite.Release.Refinement.Ty.VarsIn nr nt nv pe a
+Benitoite.Release.Refinement.Ty.VarsIn.wf {nr nt nv : Nat} {pe : Nat → Prop} (a : Benitoite.Release.Refinement.Ty)
+  (h : Benitoite.Release.Refinement.Ty.VarsIn nr nt nv pe a) : Benitoite.Release.Refinement.Ty.WF nr nt nv a
+Benitoite.Release.Refinement.Ty.VarsInList.wf {nr nt nv : Nat} {pe : Nat → Prop}
+  (as : List Benitoite.Release.Refinement.Ty) (h : Benitoite.Release.Refinement.Ty.VarsInList nr nt nv pe as) :
+  Benitoite.Release.Refinement.Ty.WFList nr nt nv as
+Benitoite.Release.Refinement.Eff.VarsIn.wf {nr nt nv : Nat} {pe : Nat → Prop} (e : Benitoite.Release.Refinement.Eff)
+  (h : Benitoite.Release.Refinement.Eff.VarsIn nr nt nv pe e) : Benitoite.Release.Refinement.Eff.WF nr nt nv e
+Benitoite.Release.Refinement.Ty.VarsIn.rows {nr nt nv : Nat} {pe : Nat → Prop} (a : Benitoite.Release.Refinement.Ty)
+  (h : Benitoite.Release.Refinement.Ty.VarsIn nr nt nv pe a) : Benitoite.Release.Refinement.Ty.RowsIn pe a
+Benitoite.Release.Refinement.Ty.VarsInList.rows {nr nt nv : Nat} {pe : Nat → Prop}
+  (as : List Benitoite.Release.Refinement.Ty) (h : Benitoite.Release.Refinement.Ty.VarsInList nr nt nv pe as) :
+  Benitoite.Release.Refinement.Ty.RowsInList pe as
+Benitoite.Release.Refinement.Eff.VarsIn.rows {nr nt nv : Nat} {pe : Nat → Prop} (e : Benitoite.Release.Refinement.Eff)
+  (h : Benitoite.Release.Refinement.Eff.VarsIn nr nt nv pe e) : Benitoite.Release.Refinement.Eff.RowsIn pe e
+Benitoite.Release.Refinement.Ty.VarsIn.mono {nr nt nv mt mv : Nat} {pe pf : Nat → Prop} (ht : nt ≤ mt) (hv : nv ≤ mv)
+  (hp : ∀ (i : Nat), pe i → pf i) (a : Benitoite.Release.Refinement.Ty)
+  (h : Benitoite.Release.Refinement.Ty.VarsIn nr nt nv pe a) : Benitoite.Release.Refinement.Ty.VarsIn nr mt mv pf a
+Benitoite.Release.Refinement.Ty.VarsInList.mono {nr nt nv mt mv : Nat} {pe pf : Nat → Prop} (ht : nt ≤ mt)
+  (hv : nv ≤ mv) (hp : ∀ (i : Nat), pe i → pf i) (as : List Benitoite.Release.Refinement.Ty)
+  (h : Benitoite.Release.Refinement.Ty.VarsInList nr nt nv pe as) :
+  Benitoite.Release.Refinement.Ty.VarsInList nr mt mv pf as
+Benitoite.Release.Refinement.Eff.VarsIn.mono {nr nt nv mt mv : Nat} {pe pf : Nat → Prop} (ht : nt ≤ mt) (hv : nv ≤ mv)
+  (hp : ∀ (i : Nat), pe i → pf i) (e : Benitoite.Release.Refinement.Eff)
+  (h : Benitoite.Release.Refinement.Eff.VarsIn nr nt nv pe e) : Benitoite.Release.Refinement.Eff.VarsIn nr mt mv pf e
+Benitoite.Release.Refinement.Ty.norm_VarsIn {nr nt nv : Nat} {pe : Nat → Prop} (a : Benitoite.Release.Refinement.Ty)
+  (h : Benitoite.Release.Refinement.Ty.VarsIn nr nt nv pe a) : Benitoite.Release.Refinement.Ty.VarsIn nr nt nv pe a.norm
+Benitoite.Release.Refinement.Eff.norm_VarsIn {nr nt nv : Nat} {pe : Nat → Prop} (e : Benitoite.Release.Refinement.Eff)
+  (h : Benitoite.Release.Refinement.Eff.VarsIn nr nt nv pe e) :
+  Benitoite.Release.Refinement.Eff.VarsIn nr nt nv pe e.norm
+FOUNDATION_CHECKED 115

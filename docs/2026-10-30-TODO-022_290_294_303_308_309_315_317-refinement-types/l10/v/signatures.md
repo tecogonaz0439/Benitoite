@@ -136,7 +136,7 @@ theorem Program.VarianceValid.field_annotation {P C Γ c cd a xs} (valid : P.Var
     (ht : TypeAnnotations P C Γ xs) (ho : ∀ t ∈ xs, Ordinary t) : Ty.Annotation P C Γ (a.subst xs [])
 ```
 
-`HasKind … .value` は継続型も含むため、通常値の型引数であることを kind だけから導く契約にはしない。`Ordinary` は補助の入力であり、`V_Con` 又は主な定理へ新しい前提を加えない。
+`HasKind … .value` 自体は継続型も含む。型引数の検査TypeArgsKindedはvalue kindにOrdinaryを要求し、V_Conの導出から元の型引数のOrdinaryを取り出す。constructor_field_inputs・con_field_by_type・field_facts_by_typeへsourceOrdを別の入力として渡さない。主な移送定理の前提と結論は保つ。
 
 `Ty.NoTapp` は型構成子変数の適用を含まないという内部の構造条件である。型構成子そのものを禁止しない。すべて value の kind 文脈で検査済みの欄から `Ty.HasKind.noTapp` で導けるので、`field_annotation` の利用者へ新しい構文の制限として要求しない。値・行・範囲を恒等に保つ `SubstEnv.typesOnly` を用い、WF・Sorted・Declared を別々に移した後に正規化する。
 
@@ -190,20 +190,20 @@ theorem HasTypeVQ.inv_con {P B Ψ Q C Γ Φ v T c ts vs}
 theorem HasTypeVQ.constructor_field_inputs {P B Ψ Q C Γ Φ T c ts vs cd us} {i : Nat} {a : Ty}
     (h : HasTypeVQ P B Ψ Q C Γ Φ (.con c ts vs) T) (hc : P.cons c = some cd)
     (hT : T.norm.core = .data cd.data us) (ha : cd.args[i]? = some a)
-    (valid : P.VarianceValid) (sourceOrd : ∀ t ∈ ts, Ordinary t)
+    (valid : P.VarianceValid)
     (targetTypes : TypeAnnotations P C Γ us) (targetOrd : ∀ t ∈ us, Ordinary t) :
     Ty.Annotation P C Γ (a.subst ts []) ∧ Ty.Annotation P C Γ (a.subst us []) ∧
       VarianceSubstInput P C Γ (P.varianceFor cd.data ts.length) (Ty.normTys ts) us
 theorem HasTypeVQ.con_field_by_type {P B Ψ Q C Γ Φ T c ts vs cd us} {i : Nat} {a : Ty}
     (h : HasTypeVQ P B Ψ Q C Γ Φ (.con c ts vs) T) (hc : P.cons c = some cd)
     (hT : T.norm.core = .data cd.data us) (ha : cd.args[i]? = some a)
-    (valid : P.VarianceValid) (sourceOrd : ∀ t ∈ ts, Ordinary t)
+    (valid : P.VarianceValid)
     (targetTypes : TypeAnnotations P C Γ us) (targetOrd : ∀ t ∈ us, Ordinary t) :
     ∃ v, vs[i]? = some v ∧ HasTypeVQ P B Ψ Q C Γ Φ v (a.subst us [])
 theorem HasTypeVQ.field_facts_by_type {P B Ψ Q C Γ Φ T c ts vs cd us} {i : Nat} {a : Ty} {t : Term}
     (h : HasTypeVQ P B Ψ Q C Γ Φ (.con c ts vs) T) (hc : P.cons c = some cd)
     (hT : T.norm.core = .data cd.data us) (ha : cd.args[i]? = some a)
-    (valid : P.VarianceValid) (sourceOrd : ∀ t ∈ ts, Ordinary t)
+    (valid : P.VarianceValid)
     (targetTypes : TypeAnnotations P C Γ us) (targetOrd : ∀ t ∈ us, Ordinary t)
     (hs : (Val.toTermSlots vs)[i]? = some (some t)) :
     ∀ p ∈ (a.subst us []).assume, Entails (Γ.facts ++ Φ) (p.open t)

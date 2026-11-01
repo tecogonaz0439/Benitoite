@@ -1,0 +1,27 @@
+{
+  "label": "review-t5",
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-M",
+    "12288",
+    "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/s2/rv-s2-t5.lean"
+  ],
+  "cwd": "formal",
+  "start_utc": "2026-11-01T11:39:32.164639+00:00",
+  "exit": 0,
+  "seconds": 0.885420041,
+  "bytes": 163,
+  "sha256": "08ec2f23317805453ed93f74931efc8eb323a907dc0888c1ff944a90f4c3ad81",
+  "log": "run-066-review-t5.txt",
+  "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "disallowed_axioms": [],
+  "print_axioms_count": 2,
+  "sorry": false,
+  "warnings": 0
+}

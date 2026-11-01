@@ -29,7 +29,8 @@ def LegacyTypeInput (K : DeclarationKinds) (P0 : Benitoite.Release.Program)
 def LegacyTypesInput (K : DeclarationKinds) (P0 : Benitoite.Release.Program)
     (Δ : LegacyInputCtx) (ts : List Benitoite.Release.Ty) (ks : List TyKind) : Prop :=
   ts.length = ks.length ∧ ∀ (i : Nat) (a : Benitoite.Release.Ty) (k : TyKind),
-    ts[i]? = some a → ks[i]? = some k → LegacyTypeInput K P0 Δ a k
+    ts[i]? = some a → ks[i]? = some k →
+      LegacyTypeInput K P0 Δ a k ∧ (k = .value → Ordinary (embedTy a))
 
 def LegacyRowsInput (K : DeclarationKinds) (P0 : Benitoite.Release.Program)
     (Δ : LegacyInputCtx) (es : List Benitoite.Release.Eff) : Prop :=
@@ -37,7 +38,7 @@ def LegacyRowsInput (K : DeclarationKinds) (P0 : Benitoite.Release.Program)
 
 def LegacyBuilderInput (K : DeclarationKinds) (P0 : Benitoite.Release.Program)
     (Δ : LegacyInputCtx) (k : Benitoite.Release.BuilderKind) : Prop :=
-  LegacyTypeInput K P0 Δ k.contents .value
+  LegacyTypeInput K P0 Δ k.contents .value ∧ Ordinary (embedTy k.contents)
 
 mutual
   def LegacyValueInput (K : DeclarationKinds) (P0 : Benitoite.Release.Program)
@@ -60,7 +61,8 @@ mutual
         LegacyTypeInput K P0 ⟨List.replicate od.tparams.length .value, od.tparams, 0, 0⟩
           (.fn od.names od.params od.ret (Benitoite.Release.Eff.single od.eff)) .value ∧
         LegacyTypesInput K P0 Δ ts (List.replicate od.tparams.length .value)
-    | .raise a e => LegacyTypeInput K P0 Δ a .value ∧ LegacyTypeInput K P0 Δ e .value
+    | .raise a e => (LegacyTypeInput K P0 Δ a .value ∧ Ordinary (embedTy a)) ∧
+        (LegacyTypeInput K P0 Δ e .value ∧ Ordinary (embedTy e))
     | .lam ns ps body => Benitoite.Release.NamesWF ns ps ∧
         (∀ a ∈ ps, LegacyTypeInput K P0 Δ a .value) ∧ LegacyCompInput K P0 B0 B (Δ.values ps.length) body
     | .con c ts vs => (∃ cd, P0.cons c = some cd ∧

@@ -1,0 +1,95 @@
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/s2/boundary.lean:19:49: error: failed to synthesize
+  Decidable (Ty.WF 0 1 1 (Ty.tvar 0))
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/s2/boundary.lean:19:60: error: failed to synthesize
+  Decidable (Ty.WF 0 1 (1 + 1) (Ty.tvar 0))
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/s2/boundary.lean:27:69: warning: This simp argument is unused:
+  upValues
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [signature, outerImage, underImage, Tel.rawBind, Ty.rawBind, typeEnvAt, SubstEnv.up, upValues_id,
+    Eff.rawBind, substAtoms_nil, rowFails, instAtoms_nil, rawBindTys, Ty.shiftV, shiftVTys, predBind, termBind,
+    termBind?, shiftIndex, Eff.empty]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/s2/boundary.lean:28:4: warning: This simp argument is unused:
+  shiftIndex
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [signature, outerImage, underImage, Tel.rawBind, Ty.rawBind, typeEnvAt, SubstEnv.up, upValues_id,
+    Eff.rawBind, substAtoms_nil, rowFails, instAtoms_nil, rawBindTys, Ty.shiftV, shiftVTys, predBind, termBind,
+    termBind?, upValues, Eff.empty]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/s2/boundary.lean:47:14: error: failed to synthesize
+  Decidable (Ty.WF 0 (1 + [outerImage].length) 1 (Ty.tvar 0))
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/s2/boundary.lean:47:25: error: failed to synthesize
+  Decidable (Ty.WF 0 (1 + [outerImage].length) 1 (Ty.tvar 1))
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/s2/boundary.lean:61:13: error: unsolved goals
+case ranges.rvar
+i : Nat
+hi : RangeIx.WF 1 (RangeIx.rvar i)
+this : i = 0
+⊢ RangeIx.WF 0 (RangeIx.inst allImages.ranges (RangeIx.rvar i))
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/s2/boundary.lean:54:57: error: unsolved goals
+case values
+⊢ ∀ (i : Nat), i < 1 → ∀ (t : Term), allImages.values i = some t → termWF 1 t
+
+case ordinary
+⊢ ∀ (i : Nat), Ordinary (allImages.types i)
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/s2/boundary.lean:62:17: error: unexpected identifier; expected command
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/s2/boundary.lean:71:13: error: failed to synthesize
+  Decidable (Ty.WF 1 1 1 (Ty.tvar 0))
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/s2/boundary.lean:71:24: error: failed to synthesize
+  Decidable (Ty.WF 1 1 1 (Ty.scoped "" Benitoite.Scope.Domain.Kind.path (RangeIx.rvar 0)))
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/s2/boundary.lean:116:12: error: failed to synthesize
+  Decidable (Ty.WF 0 1 0 (Ty.tvar 0))
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/s2/boundary.lean:136:24: error: Application type mismatch: The argument
+  trivial
+has type
+  True
+but is expected to have type
+  Ty.RowsInList (fun x => x < 4) [Ty.fn [] [] (Ty.base Benitoite.Release.BaseTy.integer) row3]
+in the application
+  ⟨?m.13, trivial⟩
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/s2/boundary.lean:137:2: error: Tactic `constructor` failed: target is not an inductive datatype
+
+⊢ ∀ (i : Nat), (fun x => false) (Atom.rho i) = true → (fun x => x < 4) i
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/s2/boundary.lean:158:30: warning: This simp argument is unused:
+  badRangeRow
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Eff.test, Eff.atoms] at hi
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/s2/boundary.lean:158:43: warning: This simp argument is unused:
+  Eff.test
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [badRangeRow, Eff.atoms] at hi
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/s2/boundary.lean:158:53: warning: This simp argument is unused:
+  Eff.atoms
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [badRangeRow, Eff.test] at hi
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/s2/boundary.lean:166:55: error: failed to synthesize
+  Decidable (Ty.RangesScoped 1 (Ty.scoped "" Benitoite.Scope.Domain.Kind.path (RangeIx.rvar 0)))
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.

@@ -1,0 +1,29 @@
+{
+  "label": "signatures",
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-M",
+    "12288",
+    "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/s2/signatures.lean"
+  ],
+  "cwd": "formal",
+  "start_utc": "2026-11-01T10:32:04.612637+00:00",
+  "exit": 0,
+  "seconds": 0.879018291,
+  "bytes": 90682,
+  "sha256": "d6e46a64888fdcff16ccc4a5a4f235f73c6afa9eb95ffad68f799cc006b21f7f",
+  "log": "run-027-signatures.txt",
+  "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "disallowed_axioms": [],
+  "print_axioms_count": 116,
+  "sorry": false,
+  "warnings": 368,
+  "constants": 116,
+  "complete": true
+}

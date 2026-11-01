@@ -95,7 +95,7 @@ end
 
 theorem LegacyTypesInput.kindArgs {K P0 Δ ts ks} (h : LegacyTypesInput K P0 Δ ts ks) :
     LegacyKindArgs K P0 Δ.kinds ts ks :=
-  ⟨h.1, fun i a k ha hk => (h.2 i a k ha hk).1⟩
+  ⟨h.1, fun i a k ha hk => ⟨(h.2 i a k ha hk).1.1, (h.2 i a k ha hk).2⟩⟩
 
 theorem LegacyTypeInput.annotation {K P0 Δ a k} (h : LegacyTypeInput K P0 Δ a k)
     (nr : Δ.nr = 0) (count : Δ.kinds.length = Δ.constraints.length) :

@@ -1,0 +1,27 @@
+{
+  "label": "review-t3",
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-M",
+    "12288",
+    "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/s2/rv-s2-t3.lean"
+  ],
+  "cwd": "formal",
+  "start_utc": "2026-11-01T11:23:30.712869+00:00",
+  "exit": 0,
+  "seconds": 1.9110959170000001,
+  "bytes": 160,
+  "sha256": "fa76ee978f2b9a88ac0adc9d1d265ef577fe2aa120775f2ed6780fc409c629c8",
+  "log": "run-053-review-t3.txt",
+  "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "disallowed_axioms": [],
+  "print_axioms_count": 2,
+  "sorry": false,
+  "warnings": 0
+}

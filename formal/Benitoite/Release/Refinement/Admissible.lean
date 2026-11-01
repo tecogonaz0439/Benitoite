@@ -121,6 +121,15 @@ structure SignatureInstance (P : Program) (C : List TParam) (Γ : Ctx)
   rows : RowAnnotations P C Γ es
   result : Ty.Annotation P C Γ (.dependentFn (instantiatedTel t ts es))
 
+/-- 宣言のkindにかかわらず、適格な型引数は継続型ではない。 -/
+theorem SignatureInstance.ordinary {P C Γ t ks ts es}
+    (h : SignatureInstance P C Γ t ks ts es) : ∀ a ∈ ts, Ordinary a := h.kinds.ordinary
+
+theorem SignatureInstance.typeScope {P C Γ t ks ts es}
+    (h : SignatureInstance P C Γ t ks ts es) :
+    ∀ a ∈ ts, a.WF 0 C.length Γ.length ∧ Ordinary a :=
+  fun a ha => ⟨(h.types a ha).wf, h.ordinary a ha⟩
+
 def Builtins.RangeAdmissible (B : Builtins) (b : PrimName) (s : PrimSig)
     (rs : List RangeExpr) : Prop :=
   rs.length = s.rkinds.length ∧

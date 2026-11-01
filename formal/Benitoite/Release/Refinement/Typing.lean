@@ -219,6 +219,7 @@ mutual
         HasTypeVQ P B Ψ Q C Γ Φ (.dict i ts vs) (.dict id.cls (id.target.subst ts []))
     | V_Raise {Ψ Q C Γ Φ t e} :
         Ty.Annotation P C Γ (.fn ["error"] [e] t (Eff.singleFail e)) →
+        Ordinary t → Ordinary e →
         HasTypeVQ P B Ψ Q C Γ Φ (.raise t e) (.fn ["error"] [e] t (Eff.singleFail e))
     | V_LocRef {Ψ Q C Γ Φ l a} : Ψ l = some (.ref a) → Ty.Declared P C Γ a →
         HasTypeVQ P B Ψ Q C Γ Φ (.loc l) (.reference a)

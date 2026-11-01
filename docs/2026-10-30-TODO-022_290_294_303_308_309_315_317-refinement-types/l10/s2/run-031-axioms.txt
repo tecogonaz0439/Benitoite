@@ -1,0 +1,292 @@
+AUDIT_MODULE Benitoite.Release.Refinement.TypeRegularity 10
+'Benitoite.Release.Refinement.Eff.rawShift_of_wf' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Eff.rawShift_of_wf._f' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Eff.shift_of_wf' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Tel.rawShift_of_wf' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Tel.rawShift_of_wf._f' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Ty.rawShiftTys_of_wf' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Ty.rawShiftTys_of_wf._f' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Ty.rawShift_of_wf' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Ty.rawShift_of_wf._f' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Ty.shift_of_wf' depends on axioms: [propext, Classical.choice, Quot.sound]
+AUDIT_MODULE Benitoite.Release.Refinement.TypeBounds 44
+'Benitoite.Release.Refinement.Eff.AtomsWF' does not depend on any axioms
+'Benitoite.Release.Refinement.Eff.bind_wf' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Eff.rawBind_norm_wf' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Eff.rawBind_norm_wf._f' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Eff.rawShift_eq_rawBind' depends on axioms: [propext, Quot.sound]
+'Benitoite.Release.Refinement.Eff.subst.eq_1' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Eff.substAt_atoms_wf' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Eff.substAt_wf' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Eff.subst_wf' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.SubstEnv.WFImages' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.SubstEnv.WFImages.casesOn' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.SubstEnv.WFImages.mk' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.SubstEnv.WFImages.mk._flat_ctor' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.SubstEnv.WFImages.ordinary' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.SubstEnv.WFImages.ranges' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.SubstEnv.WFImages.rec' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.SubstEnv.WFImages.recOn' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.SubstEnv.WFImages.rows' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.SubstEnv.WFImages.types' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.SubstEnv.WFImages.up' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.SubstEnv.WFImages.values' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Tel.rawBind_norm_wf' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Tel.rawBind_norm_wf._f' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Ty.bind_wf' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Ty.rawBind_norm_wf' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Ty.rawBind_norm_wf._f' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Ty.rawShiftTys_eq_rawBindTys' depends on axioms: [propext, Quot.sound]
+'Benitoite.Release.Refinement.Ty.rawShift_eq_rawBind' depends on axioms: [propext, Quot.sound]
+'Benitoite.Release.Refinement.Ty.substAt_wf' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Ty.substList_wf' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Ty.subst_wf' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.observationWF_up' depends on axioms: [propext, Quot.sound]
+'Benitoite.Release.Refinement.observationWF_up._proof_1_2' depends on axioms: [propext, Quot.sound]
+'Benitoite.Release.Refinement.observationWF_up._simp_1_1' depends on axioms: [propext, Quot.sound]
+'Benitoite.Release.Refinement.rawApply_notContCore' depends on axioms: [propext, Quot.sound]
+'Benitoite.Release.Refinement.rawApply_notContCore._f' depends on axioms: [propext, Quot.sound]
+'Benitoite.Release.Refinement.rawApply_wf' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.rawApply_wf._f' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.rawBindTys_norm_wf' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.rawBindTys_norm_wf._f' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.typeEnvAt_wfImages' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.typeEnvAt_wfImages._proof_1_1' depends on axioms: [propext, Quot.sound]
+'Benitoite.Release.Refinement.typeEnvAt_wfImages._proof_1_2' depends on axioms: [propext, Quot.sound]
+'_private.Benitoite.Release.Refinement.TypeBounds.0.Benitoite.Release.Refinement.wfList_sortUnique' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+AUDIT_MODULE Benitoite.Release.Refinement.TypeRows 85
+'Benitoite.Release.Refinement.Eff.RowsIn.mono' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Eff.norm_rowsIn' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Eff.rowsIn_iff_support' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Eff.rowsIn_iff_support._f' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Eff.rowsIn_true' does not depend on any axioms
+'Benitoite.Release.Refinement.Eff.rowsIn_true._f' does not depend on any axioms
+'Benitoite.Release.Refinement.Tel.RowsIn.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.Tel.RowsIn.eq_2' does not depend on any axioms
+'Benitoite.Release.Refinement.Tel.RowsIn.eq_def' does not depend on any axioms
+'Benitoite.Release.Refinement.Tel.RowsIn.mono' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Tel.norm_rowsIn' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Tel.rowsIn_iff_support' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Tel.rowsIn_iff_support._f' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Tel.rowsIn_true' does not depend on any axioms
+'Benitoite.Release.Refinement.Tel.rowsIn_true._f' does not depend on any axioms
+'Benitoite.Release.Refinement.Ty.RowsIn.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.Ty.RowsIn.eq_10' does not depend on any axioms
+'Benitoite.Release.Refinement.Ty.RowsIn.eq_11' does not depend on any axioms
+'Benitoite.Release.Refinement.Ty.RowsIn.eq_12' does not depend on any axioms
+'Benitoite.Release.Refinement.Ty.RowsIn.eq_13' does not depend on any axioms
+'Benitoite.Release.Refinement.Ty.RowsIn.eq_14' does not depend on any axioms
+'Benitoite.Release.Refinement.Ty.RowsIn.eq_15' does not depend on any axioms
+'Benitoite.Release.Refinement.Ty.RowsIn.eq_16' does not depend on any axioms
+'Benitoite.Release.Refinement.Ty.RowsIn.eq_17' does not depend on any axioms
+'Benitoite.Release.Refinement.Ty.RowsIn.eq_18' does not depend on any axioms
+'Benitoite.Release.Refinement.Ty.RowsIn.eq_19' does not depend on any axioms
+'Benitoite.Release.Refinement.Ty.RowsIn.eq_2' does not depend on any axioms
+'Benitoite.Release.Refinement.Ty.RowsIn.eq_20' does not depend on any axioms
+'Benitoite.Release.Refinement.Ty.RowsIn.eq_21' does not depend on any axioms
+'Benitoite.Release.Refinement.Ty.RowsIn.eq_3' does not depend on any axioms
+'Benitoite.Release.Refinement.Ty.RowsIn.eq_4' does not depend on any axioms
+'Benitoite.Release.Refinement.Ty.RowsIn.eq_5' does not depend on any axioms
+'Benitoite.Release.Refinement.Ty.RowsIn.eq_6' does not depend on any axioms
+'Benitoite.Release.Refinement.Ty.RowsIn.eq_7' does not depend on any axioms
+'Benitoite.Release.Refinement.Ty.RowsIn.eq_8' does not depend on any axioms
+'Benitoite.Release.Refinement.Ty.RowsIn.eq_9' does not depend on any axioms
+'Benitoite.Release.Refinement.Ty.RowsIn.eq_def' does not depend on any axioms
+'Benitoite.Release.Refinement.Ty.RowsIn.mono' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Ty.RowsInList.iff' depends on axioms: [propext, Quot.sound]
+'Benitoite.Release.Refinement.Ty.RowsInList.iff._simp_1_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Ty.RowsInList.iff._simp_1_2' depends on axioms: [propext, Quot.sound]
+'Benitoite.Release.Refinement.Ty.RowsInList.iff._simp_1_3' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Ty.RowsInList.mono' depends on axioms: [propext, Quot.sound]
+'Benitoite.Release.Refinement.Ty.normTys_rowsIn' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Ty.norm_rowsIn' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Ty.rowsInList_iff_support' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Ty.rowsInList_iff_support._f' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Ty.rowsInList_true' does not depend on any axioms
+'Benitoite.Release.Refinement.Ty.rowsInList_true._f' does not depend on any axioms
+'Benitoite.Release.Refinement.Ty.rowsIn_iff_support' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Ty.rowsIn_iff_support._f' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Ty.rowsIn_true' does not depend on any axioms
+'Benitoite.Release.Refinement.Ty.rowsIn_true._f' does not depend on any axioms
+'Benitoite.Release.Refinement.rowCondition' does not depend on any axioms
+'Benitoite.Release.Refinement.rowCondition.match_1' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.TypeRows.0.Benitoite.Release.Refinement.QEff.match_1.eq_1' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.TypeRows.0.Benitoite.Release.Refinement.QEff.match_1.splitter' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.TypeRows.0.Benitoite.Release.Refinement.QTel.match_1.eq_1' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.TypeRows.0.Benitoite.Release.Refinement.QTel.match_1.eq_2' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.TypeRows.0.Benitoite.Release.Refinement.QTel.match_1.splitter' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.TypeRows.0.Benitoite.Release.Refinement.QTy.match_1.eq_1' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.TypeRows.0.Benitoite.Release.Refinement.QTy.match_1.eq_10' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.TypeRows.0.Benitoite.Release.Refinement.QTy.match_1.eq_11' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.TypeRows.0.Benitoite.Release.Refinement.QTy.match_1.eq_12' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.TypeRows.0.Benitoite.Release.Refinement.QTy.match_1.eq_13' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.TypeRows.0.Benitoite.Release.Refinement.QTy.match_1.eq_14' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.TypeRows.0.Benitoite.Release.Refinement.QTy.match_1.eq_15' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.TypeRows.0.Benitoite.Release.Refinement.QTy.match_1.eq_16' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.TypeRows.0.Benitoite.Release.Refinement.QTy.match_1.eq_17' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.TypeRows.0.Benitoite.Release.Refinement.QTy.match_1.eq_18' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.TypeRows.0.Benitoite.Release.Refinement.QTy.match_1.eq_19' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.TypeRows.0.Benitoite.Release.Refinement.QTy.match_1.eq_2' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.TypeRows.0.Benitoite.Release.Refinement.QTy.match_1.eq_20' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.TypeRows.0.Benitoite.Release.Refinement.QTy.match_1.eq_21' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.TypeRows.0.Benitoite.Release.Refinement.QTy.match_1.eq_3' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.TypeRows.0.Benitoite.Release.Refinement.QTy.match_1.eq_4' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.TypeRows.0.Benitoite.Release.Refinement.QTy.match_1.eq_5' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.TypeRows.0.Benitoite.Release.Refinement.QTy.match_1.eq_6' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.TypeRows.0.Benitoite.Release.Refinement.QTy.match_1.eq_7' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.TypeRows.0.Benitoite.Release.Refinement.QTy.match_1.eq_8' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.TypeRows.0.Benitoite.Release.Refinement.QTy.match_1.eq_9' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.TypeRows.0.Benitoite.Release.Refinement.QTy.match_1.splitter' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.TypeRows.0.Benitoite.Release.Refinement.QTys.match_1.eq_1' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.TypeRows.0.Benitoite.Release.Refinement.QTys.match_1.eq_2' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.TypeRows.0.Benitoite.Release.Refinement.QTys.match_1.splitter' does not depend on any axioms
+AUDIT_MODULE Benitoite.Release.Refinement.TypeVariables 72
+'Benitoite.Release.Refinement.Eff.RangesScoped.eq_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Eff.RangesScoped.eq_def' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Eff.VarsIn' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Eff.VarsIn.mono' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Eff.VarsIn.rows' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Eff.VarsIn.wf' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Eff.norm_VarsIn' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Eff.rangesScoped_iff_support' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Eff.rangesScoped_iff_support._f' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.Eff.varsIn_iff_sourceScoped' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Tel.VarsIn' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Tel.VarsIn.mono' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Tel.VarsIn.rows' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Tel.VarsIn.wf' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Tel.norm_VarsIn' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Tel.rangesScoped_iff_support' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Tel.rangesScoped_iff_support._f' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.Ty.RangesScoped._sparseCasesOn_1.else_eq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Ty.RangesScoped.eq_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Ty.RangesScoped.eq_10' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Ty.RangesScoped.eq_11' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Ty.RangesScoped.eq_12' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Ty.RangesScoped.eq_13' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Ty.RangesScoped.eq_14' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Ty.RangesScoped.eq_15' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Ty.RangesScoped.eq_16' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Ty.RangesScoped.eq_2' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Ty.RangesScoped.eq_3' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Ty.RangesScoped.eq_4' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Ty.RangesScoped.eq_5' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Ty.RangesScoped.eq_6' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Ty.RangesScoped.eq_7' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Ty.RangesScoped.eq_8' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Ty.RangesScoped.eq_9' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Ty.RangesScoped.eq_def' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Ty.VarsIn' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Ty.VarsIn.mono' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Ty.VarsIn.rows' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Ty.VarsIn.wf' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Ty.VarsInList' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Ty.VarsInList.iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Ty.VarsInList.mono' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Ty.VarsInList.rows' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Ty.VarsInList.wf' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Ty.norm_VarsIn' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Ty.rangesScoped_iff_support' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Ty.rangesScoped_iff_support._f' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Ty.varsIn_iff_sourceScoped' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.rangeCondition' does not depend on any axioms
+'Benitoite.Release.Refinement.rangeCondition.match_1' does not depend on any axioms
+'Benitoite.Release.Refinement.rangesScopedTypes_iff_support' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.rangesScopedTypes_iff_support._f' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'_private.Benitoite.Release.Refinement.TypeVariables.0.Benitoite.Release.Refinement.Eff.RangesScoped.match_1.eq_1' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.TypeVariables.0.Benitoite.Release.Refinement.Eff.RangesScoped.match_1.splitter' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.TypeVariables.0.Benitoite.Release.Refinement.Ty.RangesScoped.match_1.eq_1' depends on axioms: [propext]
+'_private.Benitoite.Release.Refinement.TypeVariables.0.Benitoite.Release.Refinement.Ty.RangesScoped.match_1.eq_10' depends on axioms: [propext]
+'_private.Benitoite.Release.Refinement.TypeVariables.0.Benitoite.Release.Refinement.Ty.RangesScoped.match_1.eq_11' depends on axioms: [propext]
+'_private.Benitoite.Release.Refinement.TypeVariables.0.Benitoite.Release.Refinement.Ty.RangesScoped.match_1.eq_12' depends on axioms: [propext]
+'_private.Benitoite.Release.Refinement.TypeVariables.0.Benitoite.Release.Refinement.Ty.RangesScoped.match_1.eq_13' depends on axioms: [propext]
+'_private.Benitoite.Release.Refinement.TypeVariables.0.Benitoite.Release.Refinement.Ty.RangesScoped.match_1.eq_14' depends on axioms: [propext]
+'_private.Benitoite.Release.Refinement.TypeVariables.0.Benitoite.Release.Refinement.Ty.RangesScoped.match_1.eq_15' depends on axioms: [propext]
+'_private.Benitoite.Release.Refinement.TypeVariables.0.Benitoite.Release.Refinement.Ty.RangesScoped.match_1.eq_16' depends on axioms: [propext]
+'_private.Benitoite.Release.Refinement.TypeVariables.0.Benitoite.Release.Refinement.Ty.RangesScoped.match_1.eq_2' depends on axioms: [propext]
+'_private.Benitoite.Release.Refinement.TypeVariables.0.Benitoite.Release.Refinement.Ty.RangesScoped.match_1.eq_3' depends on axioms: [propext]
+'_private.Benitoite.Release.Refinement.TypeVariables.0.Benitoite.Release.Refinement.Ty.RangesScoped.match_1.eq_4' depends on axioms: [propext]
+'_private.Benitoite.Release.Refinement.TypeVariables.0.Benitoite.Release.Refinement.Ty.RangesScoped.match_1.eq_5' depends on axioms: [propext]
+'_private.Benitoite.Release.Refinement.TypeVariables.0.Benitoite.Release.Refinement.Ty.RangesScoped.match_1.eq_6' depends on axioms: [propext]
+'_private.Benitoite.Release.Refinement.TypeVariables.0.Benitoite.Release.Refinement.Ty.RangesScoped.match_1.eq_7' depends on axioms: [propext]
+'_private.Benitoite.Release.Refinement.TypeVariables.0.Benitoite.Release.Refinement.Ty.RangesScoped.match_1.eq_8' depends on axioms: [propext]
+'_private.Benitoite.Release.Refinement.TypeVariables.0.Benitoite.Release.Refinement.Ty.RangesScoped.match_1.eq_9' depends on axioms: [propext]
+'_private.Benitoite.Release.Refinement.TypeVariables.0.Benitoite.Release.Refinement.Ty.RangesScoped.match_1.splitter' depends on axioms: [propext]
+'_private.Benitoite.Release.Refinement.TypeVariables.0.Benitoite.Release.Refinement.Ty.RangesScoped.match_1.splitter._sparseCasesOn_16' depends on axioms: [propext]
+AUDIT_MODULE Benitoite.Release.Refinement.TypeShiftFacts 17
+'Benitoite.Release.Refinement.Eff.rawShift_canonical' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Eff.shift_canonical' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Eff.shift_zero_norm' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Ty.rawShift_canonical' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Ty.shift_canonical' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Ty.shift_compare' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Ty.shift_compareList' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Ty.shift_compareList._simp_1_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Ty.shift_compare_norm' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Ty.shift_zero_norm' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Ty.sortUnique_shift' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.shiftIndex_compare' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.shiftIndex_compare._proof_1_1' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.shiftIndex_compare._proof_1_2' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.shiftIndex_compare._proof_1_3' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.shiftIndex_compare._proof_1_4' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.shift_map' depends on axioms: [propext, Classical.choice, Quot.sound]
+AUDIT_MODULE Benitoite.Release.Refinement.EffectFacts 24
+'Benitoite.Release.Refinement.Atom.TopImage' does not depend on any axioms
+'Benitoite.Release.Refinement.Atom.TopImage.match_1' does not depend on any axioms
+'Benitoite.Release.Refinement.Eff.Allows' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Eff.Allows.eq_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Eff.TopAtoms' does not depend on any axioms
+'Benitoite.Release.Refinement.Eff.TopAtoms.norm' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Eff.allows_norm' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Eff.allows_norm._simp_1_2' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Eff.eq_of_sub_of_sub' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Eff.eq_of_sub_of_sub._simp_1_1' depends on axioms: [propext, Quot.sound]
+'Benitoite.Release.Refinement.Eff.memFail_singleFail' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Eff.memFail_singleFail._simp_1_2' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Eff.memFail_singleFail._simp_1_3' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Eff.substAt.eq_1' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Eff.substRho' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Eff.substRho.eq_1' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Eff.substRho_empty' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Eff.substRho_name' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.rowFails_false' depends on axioms: [propext, Quot.sound]
+'Benitoite.Release.Refinement.substAtoms_false' depends on axioms: [propext, Quot.sound]
+'Benitoite.Release.Refinement.substRowAt.eq_1' depends on axioms: [propext, Classical.choice, Quot.sound]
+'_private.Benitoite.Release.Refinement.EffectFacts.0.Benitoite.Release.Refinement.substAtoms.match_3.eq_1' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.EffectFacts.0.Benitoite.Release.Refinement.substAtoms.match_3.eq_2' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.EffectFacts.0.Benitoite.Release.Refinement.substAtoms.match_3.splitter' does not depend on any axioms
+'Benitoite.Release.Model.assumptions' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.ModelTargets.assumptions' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.ModelHttp.assumptions' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.progress' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.preservation' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.step_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.effect_soundness' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.effect_soundness_noLamNames' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.HasTypeVQ.subst' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.HasTypeCQ.subst' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.HasTypeVQ.subst_under_none' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.HasTypeCQ.subst_under_none' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.HasTypeVQ.shift_values' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.HasTypeCQ.shift_values' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.HasTypeVQ.shift_types' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.HasTypeCQ.shift_types' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.HasTypeVQ.narrow' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.HasTypeCQ.narrow' depends on axioms: [propext, Classical.choice, Quot.sound]
+CASES Benitoite.Release.Refinement.Ty 21
+CASES List 2
+CASES Benitoite.Release.Refinement.EffR 1
+CASES Benitoite.Release.Refinement.Tel 2
+CASE_TOTAL_SINGLE 26
+CASE_TOTAL_PAIR 450

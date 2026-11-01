@@ -143,10 +143,34 @@ theorem Ty.HasKind.shift_values {P K a t} (h : Ty.HasKind P K a t) (k c : Nat) :
   rw [Ty.shiftV_eq_renameTy, renameTy, renEnv, ← Ty.rawSubstV_eq_rawBind]
   exact h.rawSubstV _
 
+theorem Ty.ordinary_bind_values (a : Ty) (σ : Nat → Val) :
+    (substTyValues σ a).Ordinary ↔ a.Ordinary := by
+  unfold substTyValues Ty.bind valEnv
+  rw [Ty.ordinary_norm, ← Ty.rawSubstV_eq_rawBind]
+  exact Ty.ordinary_rawSubstV a _
+
 /-- 呼出し先の宣言のkindと、同じ呼出し元のkind文脈で全型引数を照合する。 -/
 def TypeArgsKinded (P : Program) (C : List TParam) (ts : List Ty) (ks : List TyKind) : Prop :=
   ts.length = ks.length ∧ ∃ K : KindCtx, K.length = C.length ∧
-    ∀ (i : Nat) (a : Ty) (k : TyKind), ts[i]? = some a → ks[i]? = some k → a.HasKind P K k
+    ∀ (i : Nat) (a : Ty) (k : TyKind), ts[i]? = some a → ks[i]? = some k → a.HasKind P K k ∧ (k = .value → Ordinary a)
+
+/-- 型構成子kindの像はctor又はtvarであり、継続型にはならない。 -/
+theorem Ty.HasKind.constructor_ordinary {P K a n} (h : Ty.HasKind P K a (.constructor n)) :
+    Ordinary a := by
+  rcases h.constructor_shape with ⟨c, rfl, _⟩ | ⟨i, rfl, _⟩ <;> simp [Ordinary, Ty.core]
+
+/-- valueの明示の条件とconstructorの形から、全型引数の非継続を得る。 -/
+theorem TypeArgsKinded.ordinary {P C ts ks} (h : TypeArgsKinded P C ts ks) :
+    ∀ a ∈ ts, Ordinary a := by
+  intro a ha
+  obtain ⟨i, hi⟩ := List.mem_iff_getElem?.mp ha
+  have hn := h.1
+  have hil : i < ks.length := by have := (List.getElem?_eq_some_iff.mp hi).1; omega
+  obtain ⟨K, _, hargs⟩ := h.2
+  have hk := hargs i a ks[i] hi (List.getElem?_eq_getElem hil)
+  cases he : ks[i] with
+  | value => exact hk.2 he
+  | constructor n => rw [he] at hk; exact hk.1.constructor_ordinary
 
 theorem TypeArgsKinded.shift {P C ts ks} (h : TypeArgsKinded P C ts ks) (k c : Nat) :
     TypeArgsKinded P C (ts.map (Ty.shiftV k c)) ks := by
@@ -154,7 +178,8 @@ theorem TypeArgsKinded.shift {P C ts ks} (h : TypeArgsKinded P C ts ks) (k c : N
   refine ⟨by simpa only [List.length_map] using hn,K,hK,?_⟩
   intro i a t ha hk
   obtain ⟨b,hb,rfl⟩ := Option.map_eq_some_iff.mp (by simpa only [List.getElem?_map] using ha)
-  exact (h i b t hb hk).shift_values k c
+  exact ⟨(h i b t hb hk).1.shift_values k c, fun hv =>
+    (Ty.ordinary_shiftV _ _ _).mpr ((h i b t hb hk).2 hv)⟩
 
 theorem TypeArgsKinded.subst {P C ts ks} (h : TypeArgsKinded P C ts ks) (ν : Nat → Val) :
     TypeArgsKinded P C (ts.map (substTyValues ν)) ks := by
@@ -162,6 +187,7 @@ theorem TypeArgsKinded.subst {P C ts ks} (h : TypeArgsKinded P C ts ks) (ν : Na
   refine ⟨by simpa only [List.length_map] using hn,K,hK,?_⟩
   intro i a t ha hk
   obtain ⟨b,hb,rfl⟩ := Option.map_eq_some_iff.mp (by simpa only [List.getElem?_map] using ha)
-  exact (h i b t hb hk).bind_values ν
+  exact ⟨(h i b t hb hk).1.bind_values ν, fun hv =>
+    (Ty.ordinary_bind_values _ _).mpr ((h i b t hb hk).2 hv)⟩
 
 end Benitoite.Release.Refinement

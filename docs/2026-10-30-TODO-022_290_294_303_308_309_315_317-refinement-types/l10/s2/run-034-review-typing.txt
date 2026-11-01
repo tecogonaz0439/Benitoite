@@ -1,0 +1,58 @@
+⚠ [72/115] Replayed Benitoite.Release.Refinement.TypeSubst
+warning: Benitoite/Release/Refinement/TypeSubst.lean:224:51: This simp argument is unused:
+  rawApply
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Ty.rawBind, shiftTypes, Ty.rawBind_shiftTypes, rawBindTys_shiftTypes, Eff.rawBind_shiftTypes,
+    Tel.rawBind_shiftTypes]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [74/115] Replayed Benitoite.Release.Refinement.RangeSubst
+warning: Benitoite/Release/Refinement/RangeSubst.lean:361:6: This simp argument is unused:
+  rawApply
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Ty.rawMapRanges, Ty.rawBind, Ty.rawMapRanges_rangesOnly, mapRangesTys_rangesOnly,
+    Eff.rawMapRanges_rangesOnly, Tel.rawMapRanges_rangesOnly, mapIx_rangeAt]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [91/115] Replayed Benitoite.Release.Refinement.ObservationOrder
+warning: Benitoite/Release/Refinement/ObservationOrder.lean:258:27: Try `simp at hm` instead of `simpa using hm`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Release/Refinement/ObservationOrder.lean:258:27: Try `simp at hm` instead of `simpa using hm`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Release/Refinement/ObservationOrder.lean:258:27: Try `simp at hm` instead of `simpa using hm`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Release/Refinement/ObservationOrder.lean:258:27: Try `simp at hm` instead of `simpa using hm`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Release/Refinement/ObservationOrder.lean:258:27: Try `simp at hm` instead of `simpa using hm`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Release/Refinement/ObservationOrder.lean:258:27: Try `simp at hm` instead of `simpa using hm`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [96/115] Built Benitoite.Release.Refinement.KindValues (585ms)
+✔ [97/115] Built Benitoite.Release.Refinement.Admissible (300ms)
+✔ [98/115] Built Benitoite.Release.Refinement.StoreTransport (337ms)
+✔ [99/115] Built Benitoite.Release.Refinement.External (402ms)
+✔ [100/115] Built Benitoite.Release.Refinement.Ground (387ms)
+✔ [101/115] Built Benitoite.Release.Refinement.AtInput (562ms)
+✔ [102/115] Built Benitoite.Release.Refinement.AtContracts (368ms)
+✔ [103/115] Built Benitoite.Release.Refinement.RuntimeMatch (305ms)
+✔ [104/115] Built Benitoite.Release.Refinement.Patterns (303ms)
+✔ [105/115] Built Benitoite.Release.Refinement.HandlerContracts (268ms)
+✔ [106/115] Built Benitoite.Release.Refinement.Capture (318ms)
+✔ [107/115] Built Benitoite.Release.Refinement.AtPrepare (531ms)
+✔ [108/115] Built Benitoite.Release.Refinement.Typing (2.7s)
+✔ [109/115] Built Benitoite.Release.Refinement.ValueRegularity (816ms)
+✔ [110/115] Built Benitoite.Release.Refinement.ValueBinding (1.6s)
+✔ [111/115] Built Benitoite.Release.Refinement.ValueInstantiation (310ms)
+✔ [112/115] Built Benitoite.Release.Refinement.AdmissibleMap (318ms)
+✔ [113/115] Built Benitoite.Release.Refinement.TypeShiftAlgebra (432ms)
+✔ [114/115] Built Benitoite.Release.Refinement.TypeShiftContext (528ms)
+✔ [115/115] Built Benitoite.Release.Refinement.TypeShiftKinds (417ms)
+Build completed successfully (115 jobs).

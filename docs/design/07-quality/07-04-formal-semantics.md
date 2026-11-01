@@ -75,9 +75,17 @@
 
 `FiniteFunctionView.lean` は逆移動と有限比較から非依存列を判定し、既存の `fnView?` と `foldFn` への一致を証明する。`Finite.lean` は計算できる正規化四族と既存正規化への一致、支持・正規形・冪等性・支持候補からの独立性を持つ。実行時には非計算的な `norm`・`foldFn`・`toTree`・`encodeAtoms` や `Classical.choose` を使わない。比較の正しさには両入力の有限支持を明示し、型全域の決定可能等号や任意の効果関数の有限性へ一般化しない。
 
+`TypeRegularity` はWFを前提とする生の型移動の恒等式と、公開する移動の正規化後の等式を証明する。`TypeBounds` は範囲・型・値の入出力の深さと行像を `WFImages` に分け、篩・外部型・依存列を含む同時置換と有限列の置換のWFを証明する。結論は正規化後のWFである。適用のkindとarity、SortedとDeclaredの全移送をこの補題だけからは結論しない。
+
+`TypeRows` は既存のRowsIn四族を支持へ接続し、単調性と正規化保存を証明する。`TypeVariables` はWF・RowsIn・RangesScopedを束ねたVarsInと、有限上限でのSourceScopedとの一致を示し、四名前空間の条件を正規化が保つことを示す。`TypeShiftFacts` は既存の生の比較・正規化・移動の代数を使い、Canonicalとzero、公開する移動の比較と整列の可換性を証明する。`EffectFacts` はsingleFail、Canonicalな効果の両包含からの等号、固定したσでのAllowsとTopAtomsの正規化不変性、空の行置換と名前の保存を証明する。構造等号の証明にCoversをSubの代わりとして使わない。
+
 網羅性は正規形を入口とし、`ValueMeaning` は全子値の意味と最外の全篩述語の真を持つ。範囲付き型の形は添字と成功値を結ぶ `ScopedValue` に絞り、範囲の拡大と `scoped_forget` による意味の移送を証明する。`ObservationOrder`・`ObservationSubstitution` は内部 slot の情報の順序、鍵コードと大きさ、観測と三値評価の単調性、自己を保つ値置換の確定値の保存を証明する。`PatternNormalForm`・`PatternSemantics` は正規化と全型の値置換反映を証明し、無条件の `Inhabits.of_core` は置かない。`ValueMeaningInhabits` は意味から正規形への所属を導く。`CoverageRefinement` は refine の意味の移送と `V_Sub` の代表、Month・空篩・非空 List・観測不能な要素の代表、任意の閉じた長さからの `V_Refine` と網羅性、開いた型への反映を持つ。
 
 パターン型付けには、篩へ同じ束縛を移す `P_Refined` と、正規形の等号で入力型を移す `P_Convert` を含む。型付けの値29・計算24を含む76構成子と、値移動・型移動・値置換・narrowing の主な署名は維持する。閉じた型付けの全導出から `ValueMeaning` を構成する証明、任意の部分型の全移送、任意の捕捉と腕への全接続は、この代表の証明からは結論しない。意味を主な定理へ独立の仮定として追加していない。
+
+`TypeArgsKinded` と宣言で kind を固定した `TypeArgsKindedAt` は、value kind の型引数に Ordinary を要求する。constructor kind は型の形から Ordinary を満たす。`V_Raise` は結果型とエラー型の Ordinary を別に検査する。`TypeArgumentRegularity` は SignatureInstance、操作の型付け、辞書の型付け、メソッド呼出しから、実際に置換する型列の WF と Ordinary を取り出し、Ty.substAt_wf と Ty.LeQ.substAt へ渡す。操作とメソッドの変数を返す本体について、型置換後の型付けも証明する。HasTypeVQ と HasTypeCQ の値移動・型移動・値置換・None の下の値置換・narrowing の前提と結論は保つ。
+
+旧導出を受け取る LegacyTypesInput は、旧型引数の各型が NotCont を満たすとき、Ordinary を加える前の各型の入力条件と同値である。閉性は要求しない。旧型の NotCont と embedTy 後の Ordinary の同値を使う。継続を保持する文脈の一般の LegacyTypeInput に、この制限は追加しない。
 
 `ProgramTyping` は関数・実装の `WellTyped`、`QTel` と `Qsig` の一致、および `Program.WellTyped` を定義する。後者は同じ P の `VarianceValid`・`ExternalWF` と全 lookup の本体の型付けを持つ。`ProgramWellFormed` は各宣言の `Scoped`、依存列の上限・kind・`Annotation`、四名前空間の `SourceScoped`、同名 data の arity、格納済み metadata の適格性を定義する。メソッド本体は代入前の Q を使い、`method_body` が呼出し規則の Qsig で同じ本体を取り出す。実装の辞書型の kind と操作の辞書型の先頭の対応も検査する。意味の所属を信頼する欄と、呼出し側への新しい NoFail の前提は追加しない。
 
@@ -748,6 +756,7 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 | VarianceSyntax・VarianceValidation | 「篩の正規形と制約の読み方」の data の変性、metadata と総称の欄の検証 |
 | VarianceFormation・VarianceTransport | 同節の `Sorted` の移送、型引数の比較と欄の単調性。中間の型引数の注釈を要求しない |
 | LegacyKinds・LegacyDeclarations・LegacyInput・LegacyRegularity・LegacyTables・LegacyTableFacts・LegacyValues | 「旧判断の適格な入力」。kind を保持する宣言の写し、七判断46局所規則と全中間判断の入力、旧判断への復元、通常節の元の操作署名の形成と同じ長さの範囲具体化への移送、constructor 欄と不変の変性、旧受理から新受理への表の条件、四つの値の葉と正規化の限定等号。全型付け・状態・一段遷移の埋め込みは含まない |
+| TypeRegularity・TypeBounds・TypeRows・TypeVariables・TypeShiftFacts・EffectFacts | 「篩の正規形と制約の読み方」。WFの像の条件付き置換、四名前空間の再帰条件、型移動の比較と整列、効果の構造等号と行置換 |
 | ProgramTyping・ProgramWellFormed | 「篩を含む定義とプログラムの適格性」。本体の型付けと、格納済みの宣言・metadata の範囲と arity の検査。原ソースの収集の一致は含まない |
 | ObservationType | 同節の観測用の型の射影と `DataObservationLe`。篩の事実を射影から取り出さない |
 | TypeFormation・ValueFacts | 同節の検証済みの欄の型代入の形成、`Declared`・`HasData` の型置換、構成子の反転と欄の型付け |

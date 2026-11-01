@@ -119,7 +119,7 @@ mutual
       exact ⟨HasTypeEachQ.close_ground hk hc hC hcap hv.1,HasTypeEachQ.close_ground hv' hc hC hcap hv.2⟩
     | .V_Dict _ _ hts _ _ _ hs _ => exact ⟨hc.close_annotations hts hC,HasTypeVsQ.close_ground hs hc hC hcap hv.2⟩
     | .V_Super h _ _ _ => exact h.close_ground hc hC hcap hv
-    | .V_Raise ha =>
+    | .V_Raise ha hot hoe =>
       have ha := hC ▸ ha
       exact ⟨(hc.substOk.annotation ⟨ha.wf.2.2.1,ha.sorted.2.1,ha.declared.2.1⟩).wf,
         (hc.substOk.annotation ⟨ha.wf.2.1.1,ha.sorted.1.1,ha.declared.1.1⟩).wf⟩

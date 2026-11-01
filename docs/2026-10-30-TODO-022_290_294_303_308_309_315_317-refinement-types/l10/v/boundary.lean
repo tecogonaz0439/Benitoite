@@ -254,7 +254,7 @@ theorem built {B Ψ Q} :
       cases i with
       | zero =>
         cases Option.some.inj ha; cases Option.some.inj hk
-        exact ⟨trivial, by simp [intT, Ty.NotContCore, Ty.core]⟩
+        exact ⟨⟨trivial, by simp [intT, Ty.NotContCore, Ty.core]⟩, fun _ => by simp [posT, intT, Ordinary, Ty.core]⟩
       | succ i => simp at ha
     · intro t ht
       simp only [cd, List.mem_singleton] at ht
@@ -273,8 +273,6 @@ theorem field_widened {B Ψ Q} :
   have hc : Pb.cons "C" = some (cd fieldCo) := by simp [Pb, single]
   apply (built (B := B) (Ψ := Ψ) (Q := Q)).con_field_by_type hc rfl rfl co_valid
   · intro t ht; have he := List.mem_singleton.mp ht; subst t
-    simp [posT, intT, Ordinary, Ty.core]
-  · intro t ht; have he := List.mem_singleton.mp ht; subst t
     exact ann_int _ _
   · intro t ht; have he := List.mem_singleton.mp ht; subst t
     simp [intT, Ordinary, Ty.core, Ty.norm]
@@ -285,8 +283,6 @@ theorem supplied_sourceField_and_inputs (B : Builtins) (Ψ : StoreTy) (Q : Relea
       VarianceSubstInput Pb [] Γ0 (Pb.varianceFor "Box" 1) (Ty.normTys [posT]) [intT] := by
   have hc : Pb.cons "C" = some (cd fieldCo) := by simp [Pb, single]
   apply (built (B := B) (Ψ := Ψ) (Q := Q)).constructor_field_inputs (i := 0) hc rfl rfl co_valid
-  · intro t ht; have he := List.mem_singleton.mp ht; subst t
-    simp [posT, intT, Ordinary, Ty.core]
   · intro t ht; have he := List.mem_singleton.mp ht; subst t
     exact ann_int _ _
   · intro t ht; have he := List.mem_singleton.mp ht; subst t

@@ -90,11 +90,6 @@ theorem SubstOk.transport {P B store Q C Γ Φ Δ Ξ R σ}
     (hf : ∀ p ∈ Φ, Entails (Δ.facts ++ Ξ) (predBind (valEnv σ).values p)) :
     Transport (valEnv σ) Γ Φ Δ Ξ := h.images.transport hf
 
-theorem Ty.ordinary_bind_values (a : Ty) (σ : Nat → Val) :
-    (substTyValues σ a).Ordinary ↔ a.Ordinary := by
-  unfold substTyValues Ty.bind valEnv
-  rw [Ty.ordinary_norm, ← Ty.rawSubstV_eq_rawBind]
-  exact Ty.ordinary_rawSubstV a _
 
 private theorem TypedImages.hide {P B store Q C Γ Δ Ξ σ}
     (h : TypedImages P B store Q C Γ Δ Ξ σ) (hA : Builtins.ValueAssumptions P B) (hstore : StoreTy.WF store)
@@ -1077,10 +1072,10 @@ mutual
       have ha' := ht.annotation ha
       simp only [Ty.bind_dict, Ty.subst_values_closed htarget] at ha' ⊢
       simpa only [Val.subst] using HasTypeVQ.V_Dict hi hs' (ht.typeAnnotations hts) (hk.subst σ) hw htarget hv' ha'
-    | .V_Raise (t := t) (e := e) ha =>
+    | .V_Raise (t := t) (e := e) ha hot hoe =>
       have hh := ht.annotation ha
       simp only [Val.subst, substTyValues, Ty.bind_fn, Eff.bind_singleFail] at hh ⊢
-      exact .V_Raise hh
+      exact .V_Raise hh ((Ty.ordinary_bind_values _ _).mpr hot) ((Ty.ordinary_bind_values _ _).mpr hoe)
     | .V_LocRef (a := a) hl hd =>
       have hc : (Ty.reference a).WF 0 0 0 := hstore _ _ hl
       have he := Ty.subst_values_of_wf_zero hc σ
