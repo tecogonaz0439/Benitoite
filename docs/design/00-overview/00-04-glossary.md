@@ -236,6 +236,7 @@
 | 型の整形式 | well-formedness | コアの `Ty.WF nr nt nv` は範囲・型・値の番号、契約名と内部の潜在効果の正規形を検査する。型全体の正規形とは別である。置換の補助 `WFImages` は、入出力の各深さと型・行・範囲・値の像の条件を分ける | [コア計算と脱糖](../01-spec/01-12-core-calculus.md#篩の正規形と制約の読み方) |
 | `RowsIn`・`VarsIn` | —（形式化の判断名） | `RowsIn pe` は型・効果・依存列の内部の行変数の条件。`VarsIn nr nt nv pe` はWFとRowsInと範囲添字の条件RangesScopedを束ね、型・行・範囲・値の四名前空間を区別する | [コア計算と脱糖](../01-spec/01-12-core-calculus.md#篩の正規形と制約の読み方) |
 | `ValueMeaning` | —（形式化の判断名） | 篩を含む形式化で、正規形の値の形、data の全欄と List の全要素の意味、最外の全篩述語の真を保持する相互の判断。網羅性が読む上側近似の所属 `Inhabits` と区別する | [コア計算と脱糖](../01-spec/01-12-core-calculus.md#篩を読む網羅性と値の意味) |
+| `ValueApprox`・`FlowApprox` | —（形式化の定義名） | 共有層の値の近似と、normal・returned・mayFail の三成分の近似。値の近似の `possible` は所属する値の存在を判定し、bottom・整数の bottom・Boolean の両フラグ false の三表現を空とする。実 Report の写しは非整数・非Boolean の正常値の有無も保持する。正常値の非所属から returned や失敗の非所属は結論しない | [コア計算と脱糖](../01-spec/01-12-core-calculus.md#篩を含むコア計算の形式化) |
 | information order | information order (`Observation.InfoLE`) | 未観測の slot に情報を加え、既にある scalar・snapshot・構成子名・slot の位置と数を保つ部分順序。確定した三値評価の保存を述べるために使う | [コア計算と脱糖](../01-spec/01-12-core-calculus.md#篩を読む網羅性と値の意味) |
 | 強い Kleene の三値 | strong Kleene three-valued logic | 真・偽・評価不能の三結果で And/Or/Not を定める。偽との連言と真との選言は相手が評価不能でも決まる。有限述語の閉じた評価に使い、通常の計算の短絡演算とは区別する | [コア計算と脱糖](../01-spec/01-12-core-calculus.md#閉じた述語の評価と捕捉) |
 | 分岐 | arm | `match … with` の「`case` パターン `->` 本体」の一つ。`handle` の節も同じ形で書く | [代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md) |

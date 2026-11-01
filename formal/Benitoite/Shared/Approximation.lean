@@ -41,6 +41,72 @@ def ValueApprox.Mem : ValueApprox → ApproxValue → Prop
       (if value then mayTrue else mayFalse) = true
   | _, _ => False
 
+/-- 正常値が一つでも属しうるか。空を表す三つの形を区別せず判定する。 -/
+def ValueApprox.possible : ValueApprox → Bool
+  | .bottom => false
+  | .integer _ .bottom => false
+  | .integer _ (.closed _ _ _) => true
+  | .boolean mayFalse mayTrue => mayFalse || mayTrue
+  | .unknown => true
+
+/-- 空の表現を制限せず、閉区間の証拠に記した値域と順序を確認する。 -/
+def ValueApprox.WF : ValueApprox → Prop
+  | .integer kind (.closed lo hi _) => kind.min ≤ lo ∧ lo ≤ hi ∧ hi ≤ kind.max
+  | _ => True
+
+def FlowApprox.WF (a : FlowApprox) : Prop := a.normal.WF ∧ a.returned.WF
+
+theorem ValueApprox.wf (a : ValueApprox) : a.WF := by
+  cases a with
+  | integer kind interval => cases interval with
+    | bottom => trivial
+    | closed _ _ valid => exact valid
+  | _ => trivial
+
+theorem FlowApprox.wf (a : FlowApprox) : a.WF := ⟨a.normal.wf, a.returned.wf⟩
+
+/-- 可能性の判定は、近似へ属する値の存在と一致する。 -/
+theorem ValueApprox.possible_iff (a : ValueApprox) :
+    a.possible = true ↔ ∃ v, a.Mem v := by
+  cases a with
+  | bottom =>
+    simp [possible, Mem]
+  | integer kind interval =>
+    cases interval with
+    | bottom =>
+      simp only [possible, Bool.false_eq_true, false_iff]
+      rintro ⟨v, hv⟩
+      cases v <;> simp_all [Mem, Benitoite.Interval.Mem]
+    | closed lo hi valid =>
+      exact ⟨fun _ => ⟨.integer kind ⟨lo, by omega⟩, rfl, Int.le_refl _, valid.2.1⟩,
+        fun _ => rfl⟩
+  | boolean f t =>
+    cases f <;> cases t
+    case false.false =>
+      simp only [possible, Bool.or_false, Bool.false_eq_true, false_iff]
+      rintro ⟨v, hv⟩
+      cases v with
+      | boolean b => cases b <;> simp [Mem] at hv
+      | integer k n => exact hv
+      | other => exact hv
+    case false.true => exact ⟨fun _ => ⟨.boolean true, rfl⟩, fun _ => rfl⟩
+    case true.false => exact ⟨fun _ => ⟨.boolean false, rfl⟩, fun _ => rfl⟩
+    case true.true => exact ⟨fun _ => ⟨.boolean true, rfl⟩, fun _ => rfl⟩
+  | unknown => exact ⟨fun _ => ⟨.other, trivial⟩, fun _ => rfl⟩
+
+theorem ValueApprox.not_possible_iff (a : ValueApprox) :
+    a.possible = false ↔ ∀ v, ¬ a.Mem v := by
+  constructor
+  · intro empty v inside
+    have := a.possible_iff.mpr ⟨v, inside⟩
+    simp_all
+  · intro empty
+    cases hp : a.possible with
+    | false => rfl
+    | true =>
+      obtain ⟨v, inside⟩ := a.possible_iff.mp hp
+      exact False.elim (empty v inside)
+
 def FlowApprox.NormalMem (flow : FlowApprox) (value : ApproxValue) : Prop :=
   flow.normal.Mem value
 
