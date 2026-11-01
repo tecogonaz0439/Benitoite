@@ -9,6 +9,8 @@ import Benitoite.Release.Refinement.ContextFacts
 -/
 namespace Benitoite.Release.Refinement
 
+variable {P : Program}
+
 theorem Ty.sort?_refineNorm (a : Ty) (p : Pred) : (Ty.refineNorm a p).sort? = a.sort? := by
   rw [←Ty.sort?_core, Ty.core_refineNorm, Ty.sort?_core]
 
@@ -254,13 +256,16 @@ theorem Transport.extendNone {θ Γ Φ Δ Ψ} (ht : Transport θ Γ Φ Δ Ψ) :
 
 mutual
 /-- 新判断の全構成子に対し、置換後の構文の導出を返す。 -/
-theorem Ty.LeQ.rawBind {Γ Φ a b} (h : Ty.LeQ Γ Φ a b) (θ : SubstEnv) {Δ Ψ}
-    (ht : Transport θ Γ Φ Δ Ψ) : Ty.LeQ Δ Ψ (a.rawBind θ) (b.rawBind θ) := by
+theorem Ty.LeQ.rawBind {Γ Φ a b} (h : Ty.LeQ P Γ Φ a b) (θ : SubstEnv) {Δ Ψ}
+    (ht : Transport θ Γ Φ Δ Ψ) : Ty.LeQ P Δ Ψ (a.rawBind θ) (b.rawBind θ) := by
   match h with
   | .refl => exact .refl
   | .convert he => exact .convert (Ty.rawBind_norm_congr θ he)
   | .trans h₁ h₂ => exact .trans (Ty.LeQ.rawBind h₁ θ ht) (Ty.LeQ.rawBind h₂ θ ht)
   | .fn_effect hc => exact .fn_effect (Eff.covers_norm_right.mp (Eff.covers_norm_left.mp (hc.bind θ)))
+  | .data (as := as) hs =>
+    apply Ty.LeQ.data
+    simpa only [rawBindTys_eq_map, List.length_map] using TypeArgsLe.rawBind hs θ ht
   | .list hv => exact .list (Ty.LeQ.rawBind hv θ ht)
   | .lazy hv => exact .lazy (Ty.LeQ.rawBind hv θ ht)
   | .map_value hk hv => exact .map_value (congrArg (Ty.rawBind θ) hk) (Ty.LeQ.rawBind hv θ ht)
@@ -288,33 +293,41 @@ theorem Ty.LeQ.rawBind {Γ Φ a b} (h : Ty.LeQ Γ Φ a b) (θ : SubstEnv) {Δ Ψ
   | .scoped hc => exact .scoped (hc.inst θ.ranges)
   | .scoped_forget => exact .scoped_forget
 
-  theorem TelLe.rawBind {Γ Φ t u} (h : TelLe Γ Φ t u) (θ : SubstEnv) {Δ Ψ}
-      (ht : Transport θ Γ Φ Δ Ψ) : TelLe Δ Ψ (Tel.rawBind θ t) (Tel.rawBind θ u) := by
+  theorem TelLe.rawBind {Γ Φ t u} (h : TelLe P Γ Φ t u) (θ : SubstEnv) {Δ Ψ}
+      (ht : Transport θ Γ Φ Δ Ψ) : TelLe P Δ Ψ (Tel.rawBind θ t) (Tel.rawBind θ u) := by
     match h with
     | .done hr he => exact .done (Ty.LeQ.rawBind hr θ ht) (Eff.covers_norm_right.mp (Eff.covers_norm_left.mp (he.bind θ)))
     | .param ha hs => exact .param (Ty.LeQ.rawBind ha θ ht) (TelLe.rawBind hs θ.up (ht.up_raw _))
 
-  theorem TelClosure.rawBind {Γ Φ t u} (h : TelClosure Γ Φ t u) (θ : SubstEnv) {Δ Ψ}
-      (ht : Transport θ Γ Φ Δ Ψ) : TelClosure Δ Ψ (Tel.rawBind θ t) (Tel.rawBind θ u) := by
+  theorem TelClosure.rawBind {Γ Φ t u} (h : TelClosure P Γ Φ t u) (θ : SubstEnv) {Δ Ψ}
+      (ht : Transport θ Γ Φ Δ Ψ) : TelClosure P Δ Ψ (Tel.rawBind θ t) (Tel.rawBind θ u) := by
     match h with
     | .refl => exact .refl
     | .tail hpre hs => exact .tail (TelClosure.rawBind hpre θ ht) (TelLe.rawBind hs θ ht)
+  theorem TypeArgsLe.rawBind {Γ Φ vs as bs} (h : TypeArgsLe P Γ Φ vs as bs)
+      (θ : SubstEnv) {Δ Ψ} (ht : Transport θ Γ Φ Δ Ψ) :
+      TypeArgsLe P Δ Ψ vs (rawBindTys θ as) (rawBindTys θ bs) := by
+    match h with
+    | .nil => exact .nil
+    | .covariant_cons h t => exact .covariant_cons (Ty.LeQ.rawBind h θ ht) (TypeArgsLe.rawBind t θ ht)
+    | .contravariant_cons h t => exact .contravariant_cons (Ty.LeQ.rawBind h θ ht) (TypeArgsLe.rawBind t θ ht)
+    | .invariant_cons h t => exact .invariant_cons (Ty.rawBind_norm_congr θ h) (TypeArgsLe.rawBind t θ ht)
 end
 
 mutual
 /-- 新判断の全構成子に対し、置換後の構文の導出を返す。 -/
-theorem Ty.LeQ.bind {Γ Φ a b} (h : Ty.LeQ Γ Φ a b) (θ : SubstEnv) {Δ Ψ}
-    (ht : Transport θ Γ Φ Δ Ψ) : Ty.LeQ Δ Ψ (a.bind θ) (b.bind θ) := by
+theorem Ty.LeQ.bind {Γ Φ a b} (h : Ty.LeQ P Γ Φ a b) (θ : SubstEnv) {Δ Ψ}
+    (ht : Transport θ Γ Φ Δ Ψ) : Ty.LeQ P Δ Ψ (a.bind θ) (b.bind θ) := by
   exact (h.rawBind θ ht).norm
 
-  theorem TelLe.bind {Γ Φ t u} (h : TelLe Γ Φ t u) (θ : SubstEnv) {Δ Ψ}
-      (ht : Transport θ Γ Φ Δ Ψ) : TelLe Δ Ψ (Tel.bind θ t) (Tel.bind θ u) := by
+  theorem TelLe.bind {Γ Φ t u} (h : TelLe P Γ Φ t u) (θ : SubstEnv) {Δ Ψ}
+      (ht : Transport θ Γ Φ Δ Ψ) : TelLe P Δ Ψ (Tel.bind θ t) (Tel.bind θ u) := by
     match h with
     | .done hr he => exact .done (Ty.LeQ.bind hr θ ht) (he.bind θ)
     | .param ha hs => exact .param (Ty.LeQ.bind ha θ ht) (TelLe.bind hs θ.up (ht.up _))
 
-  theorem TelClosure.bind {Γ Φ t u} (h : TelClosure Γ Φ t u) (θ : SubstEnv) {Δ Ψ}
-      (ht : Transport θ Γ Φ Δ Ψ) : TelClosure Δ Ψ (Tel.bind θ t) (Tel.bind θ u) := by
+  theorem TelClosure.bind {Γ Φ t u} (h : TelClosure P Γ Φ t u) (θ : SubstEnv) {Δ Ψ}
+      (ht : Transport θ Γ Φ Δ Ψ) : TelClosure P Δ Ψ (Tel.bind θ t) (Tel.bind θ u) := by
     match h with
     | .refl => exact .refl
     | .tail hpre hs => exact .tail (TelClosure.bind hpre θ ht) (TelLe.bind hs θ ht)

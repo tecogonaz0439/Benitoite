@@ -6,6 +6,8 @@ import Benitoite.Release.Refinement.ContextMap
 閉じた具体化と、開いた範囲変数を保つ Nat/cutoff の置換を分ける。
 -/
 namespace Benitoite.Release.Refinement
+
+variable {P : Program}
 open Order
 
 /-- fixed の範囲を変えず、範囲変数だけを置換する。 -/
@@ -249,8 +251,8 @@ private theorem rangeIxCovers_mapRanges {r s : RangeIx} (h : r.Covers s) (ρ : N
     cases he : ρ i <;> simp [mapIx, he, RangeIx.Covers, RangeExpr.Covers.refl]
 
 mutual
-  theorem Ty.LeQ.rawMapRanges {Γ Φ a b} (h : Ty.LeQ Γ Φ a b) (ρ : Nat → RangeIx) :
-      Ty.LeQ (Γ.rawMapRanges ρ) Φ (a.rawMapRanges ρ) (b.rawMapRanges ρ) := by
+  theorem Ty.LeQ.rawMapRanges {Γ Φ a b} (h : Ty.LeQ P Γ Φ a b) (ρ : Nat → RangeIx) :
+      Ty.LeQ P (Γ.rawMapRanges ρ) Φ (a.rawMapRanges ρ) (b.rawMapRanges ρ) := by
     match h with
     | .refl => exact .refl
     | .convert he =>
@@ -258,6 +260,9 @@ mutual
       rw [←Ty.norm_rawMapRanges, ←Ty.norm_rawMapRanges b, he]
     | .trans h₁ h₂ => exact .trans (h₁.rawMapRanges ρ) (h₂.rawMapRanges ρ)
     | .fn_effect hc => exact .fn_effect (Eff.covers_norm_right.mp (Eff.covers_norm_left.mp (hc.mapRanges ρ)))
+    | .data hs =>
+      apply Ty.LeQ.data
+      simpa only [mapRangesTys_eq_map, List.length_map] using hs.rawMapRanges ρ
     | .list hv => exact .list (hv.rawMapRanges ρ)
     | .lazy hv => exact .lazy (hv.rawMapRanges ρ)
     | .map_value hk hv => exact .map_value (congrArg (Ty.rawMapRanges ρ) hk) (hv.rawMapRanges ρ)
@@ -269,8 +274,8 @@ mutual
     | .dependentFn hc => exact .dependentFn (hc.rawMapRanges ρ)
     | .scoped hc => exact .scoped (rangeIxCovers_mapRanges hc ρ)
     | .scoped_forget => exact .scoped_forget
-  theorem TelLe.rawMapRanges {Γ Φ t u} (h : TelLe Γ Φ t u) (ρ : Nat → RangeIx) :
-      TelLe (Γ.rawMapRanges ρ) Φ (Tel.rawMapRanges ρ t) (Tel.rawMapRanges ρ u) := by
+  theorem TelLe.rawMapRanges {Γ Φ t u} (h : TelLe P Γ Φ t u) (ρ : Nat → RangeIx) :
+      TelLe P (Γ.rawMapRanges ρ) Φ (Tel.rawMapRanges ρ t) (Tel.rawMapRanges ρ u) := by
     match h with
     | .done hr he =>
       exact .done (hr.rawMapRanges ρ)
@@ -278,15 +283,24 @@ mutual
     | .param ha ht =>
       apply TelLe.param (ha.rawMapRanges ρ)
       simpa only [Ctx.rawMapRanges_extend] using ht.rawMapRanges ρ
-  theorem TelClosure.rawMapRanges {Γ Φ t u} (h : TelClosure Γ Φ t u) (ρ : Nat → RangeIx) :
-      TelClosure (Γ.rawMapRanges ρ) Φ (Tel.rawMapRanges ρ t) (Tel.rawMapRanges ρ u) := by
+  theorem TelClosure.rawMapRanges {Γ Φ t u} (h : TelClosure P Γ Φ t u) (ρ : Nat → RangeIx) :
+      TelClosure P (Γ.rawMapRanges ρ) Φ (Tel.rawMapRanges ρ t) (Tel.rawMapRanges ρ u) := by
     match h with
     | .refl => exact .refl
     | .tail hp hs => exact .tail (hp.rawMapRanges ρ) (hs.rawMapRanges ρ)
+  theorem TypeArgsLe.rawMapRanges {Γ Φ vs as bs} (h : TypeArgsLe P Γ Φ vs as bs)
+      (ρ : Nat → RangeIx) :
+      TypeArgsLe P (Γ.rawMapRanges ρ) Φ vs (mapRangesTys ρ as) (mapRangesTys ρ bs) := by
+    match h with
+    | .nil => exact .nil
+    | .covariant_cons h t => exact .covariant_cons (h.rawMapRanges ρ) (t.rawMapRanges ρ)
+    | .contravariant_cons h t => exact .contravariant_cons (h.rawMapRanges ρ) (t.rawMapRanges ρ)
+    | .invariant_cons h t =>
+      exact .invariant_cons (by simpa only [Ty.norm_rawMapRanges] using congrArg (fun a => (a.rawMapRanges ρ).norm) h) (t.rawMapRanges ρ)
 end
 
-theorem Ty.LeQ.mapRanges {Γ Φ a b} (h : Ty.LeQ Γ Φ a b) (ρ : Nat → RangeIx) :
-    Ty.LeQ (Γ.mapRanges ρ) Φ (a.mapRanges ρ) (b.mapRanges ρ) := by
+theorem Ty.LeQ.mapRanges {Γ Φ a b} (h : Ty.LeQ P Γ Φ a b) (ρ : Nat → RangeIx) :
+    Ty.LeQ P (Γ.mapRanges ρ) Φ (a.mapRanges ρ) (b.mapRanges ρ) := by
   have he := (h.rawMapRanges ρ).norm.context (Ctx.TypeMap.norm (Γ.rawMapRanges ρ))
   have hc : (Γ.rawMapRanges ρ).map (Option.map Ty.norm) = Γ.mapRanges ρ := by
     simp only [Ctx.rawMapRanges, Ctx.mapRanges, List.map_map, Function.comp_def, Option.map_map]
@@ -310,8 +324,8 @@ noncomputable def Eff.instR (rs : List RangeExpr) (e : Eff) : Eff := Eff.substRA
 noncomputable def Ty.shiftR (k c : Nat) (a : Ty) : Ty := a.mapRanges (fun i => .rvar (shiftIndex k c i))
 noncomputable def Eff.shiftR (k c : Nat) (e : Eff) : Eff := Eff.mapRanges (fun i => .rvar (shiftIndex k c i)) e
 
-theorem Ty.LeQ.substRAt {Γ Φ a b} (h : Ty.LeQ Γ Φ a b) (c : Nat) (rs : List RangeExpr) :
-    Ty.LeQ (Γ.mapRanges (rangeAt c rs)) Φ (a.substRAt c rs) (b.substRAt c rs) := h.mapRanges _
+theorem Ty.LeQ.substRAt {Γ Φ a b} (h : Ty.LeQ P Γ Φ a b) (c : Nat) (rs : List RangeExpr) :
+    Ty.LeQ P (Γ.mapRanges (rangeAt c rs)) Φ (a.substRAt c rs) (b.substRAt c rs) := h.mapRanges _
 
 theorem Eff.Covers.substRAt {Γ Φ Δ Ψ e f} (h : Eff.Covers Γ Φ e f) (c : Nat) (rs : List RangeExpr) :
     Eff.Covers Δ Ψ (Eff.substRAt c rs e) (Eff.substRAt c rs f) := h.mapRanges _
@@ -379,11 +393,11 @@ theorem Eff.instR_eq_bind (e : Eff) (rs : List RangeExpr) :
     Eff.instR rs e = Eff.bind (.rangesOnly rs) e := by
   simp only [Eff.instR, Eff.substRAt, Eff.mapRanges, Eff.bind, Eff.rawMapRanges_rangesOnly, SubstEnv.rangesOnly]
 
-theorem Ty.LeQ.instR {Γ Φ a b} (h : Ty.LeQ Γ Φ a b) (rs : List RangeExpr) :
-    Ty.LeQ (Γ.mapRanges (rangeAt 0 rs)) Φ (a.instR rs) (b.instR rs) := h.substRAt 0 rs
+theorem Ty.LeQ.instR {Γ Φ a b} (h : Ty.LeQ P Γ Φ a b) (rs : List RangeExpr) :
+    Ty.LeQ P (Γ.mapRanges (rangeAt 0 rs)) Φ (a.instR rs) (b.instR rs) := h.substRAt 0 rs
 
-theorem Ty.LeQ.shiftR {Γ Φ a b} (h : Ty.LeQ Γ Φ a b) (k c : Nat) :
-    Ty.LeQ (Γ.mapRanges (fun i => .rvar (shiftIndex k c i))) Φ (a.shiftR k c) (b.shiftR k c) := h.mapRanges _
+theorem Ty.LeQ.shiftR {Γ Φ a b} (h : Ty.LeQ P Γ Φ a b) (k c : Nat) :
+    Ty.LeQ P (Γ.mapRanges (fun i => .rvar (shiftIndex k c i))) Φ (a.shiftR k c) (b.shiftR k c) := h.mapRanges _
 
 theorem Eff.Covers.instR {Γ Φ Δ Ψ e f} (h : Eff.Covers Γ Φ e f) (rs : List RangeExpr) :
     Eff.Covers Δ Ψ (Eff.instR rs e) (Eff.instR rs f) := h.substRAt 0 rs

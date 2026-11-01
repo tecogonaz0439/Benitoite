@@ -20,6 +20,8 @@ import Benitoite.Release.Refinement.AtPrepare
 
 namespace Benitoite.Release.Refinement
 
+variable {P : Program}
+
 def hideConts (Γ : Ctx) : Ctx := Γ.map fun a => match a with
   | some t => match t.core with
     | .cont _ _ _ => none
@@ -238,7 +240,7 @@ mutual
         Ty.WF 0 C.length Γ.length a → Ty.Sorted Γ a → Ty.Declared P C Γ a →
         HasTypeVQ P B Ψ Q C Γ Φ (.list vs) (.list a)
     | V_Sub {Ψ Q C Γ Φ v a b} : HasTypeVQ P B Ψ Q C Γ Φ v a →
-        Ty.LeQ Γ Φ a b → Ty.WF 0 C.length Γ.length b → Ty.Sorted Γ b → Ty.Declared P C Γ b →
+        Ty.LeQ P Γ Φ a b → Ty.WF 0 C.length Γ.length b → Ty.Sorted Γ b → Ty.Declared P C Γ b →
         HasTypeVQ P B Ψ Q C Γ Φ v b
     | V_Normal {Ψ Q C Γ Φ v a} : HasTypeVQ P B Ψ Q C Γ Φ v a →
         HasTypeVQ P B Ψ Q C Γ Φ v a.norm
@@ -359,7 +361,7 @@ mutual
         HasTypeCQ P B Ψ Q C Γ Φ R (.checkAt kind name shape bases pattern input index)
           (.data shape.owner [.scoped name kind index, shape.errorType]) Eff.empty Δ
     | C_Sub {Ψ Q C Γ Φ Δ R m a b ε ε'} : HasTypeCQ P B Ψ Q C Γ Φ R m a ε Δ →
-        Ty.LeQ Γ Φ a b → Eff.Covers Γ Φ ε' ε → Ty.WF 0 C.length Γ.length b → Ty.Sorted Γ b → Ty.Declared P C Γ b →
+        Ty.LeQ P Γ Φ a b → Eff.Covers Γ Φ ε' ε → Ty.WF 0 C.length Γ.length b → Ty.Sorted Γ b → Ty.Declared P C Γ b →
         HasTypeCQ P B Ψ Q C Γ Φ R m b ε' Δ
     | C_Eff {Ψ Q C Γ Φ Δ R m a ε ε'} : HasTypeCQ P B Ψ Q C Γ Φ R m a ε Δ →
         Eff.Covers Γ Φ ε' ε → HasTypeCQ P B Ψ Q C Γ Φ R m a ε' Δ

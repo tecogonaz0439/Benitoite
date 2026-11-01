@@ -7,6 +7,8 @@ import Benitoite.Release.Refinement.RangeExchange
 -/
 namespace Benitoite.Release.Refinement
 
+variable {P : Program}
+
 
 def Tel.arity (t : Tel) : Nat := t.names.length
 
@@ -61,18 +63,18 @@ noncomputable def Tel.instantiate : Tel → List Val → Option (Ty × Eff)
   | _, _ => none
 termination_by _ vs => vs.length
 
-theorem TelLe.names {Γ Φ t u} (h : TelLe Γ Φ t u) : t.names = u.names := by
+theorem TelLe.names {Γ Φ t u} (h : TelLe P Γ Φ t u) : t.names = u.names := by
   match h with
   | .done _ _ => rfl
   | .param _ ht => exact congrArg (List.cons _) ht.names
 
-theorem TelClosure.names {Γ Φ t u} (h : TelClosure Γ Φ t u) : t.names = u.names := by
+theorem TelClosure.names {Γ Φ t u} (h : TelClosure P Γ Φ t u) : t.names = u.names := by
   match h with
   | .refl => rfl
   | .tail hp hs => exact hp.names.trans hs.names
 
-theorem TelLe.arity {Γ Φ t u} (h : TelLe Γ Φ t u) : t.arity = u.arity := congrArg List.length h.names
-theorem TelClosure.arity {Γ Φ t u} (h : TelClosure Γ Φ t u) : t.arity = u.arity := congrArg List.length h.names
+theorem TelLe.arity {Γ Φ t u} (h : TelLe P Γ Φ t u) : t.arity = u.arity := congrArg List.length h.names
+theorem TelClosure.arity {Γ Φ t u} (h : TelClosure P Γ Φ t u) : t.arity = u.arity := congrArg List.length h.names
 
 noncomputable def Tel.substAt (c : Nat) (ts : List Ty) (es : List Eff) (t : Tel) : Tel :=
   Tel.bind (typeEnvAt c ts es) t
@@ -84,26 +86,26 @@ noncomputable def Tel.substRAt (c : Nat) (rs : List RangeExpr) (t : Tel) : Tel :
 noncomputable def Tel.instR (rs : List RangeExpr) (t : Tel) : Tel := Tel.substRAt 0 rs t
 noncomputable def Tel.shiftR (k c : Nat) (t : Tel) : Tel := Tel.mapRanges (fun i => .rvar (shiftIndex k c i)) t
 
-theorem TelLe.substV {Γ Φ Δ Ψ t u ν} (h : TelLe Γ Φ t u)
+theorem TelLe.substV {Γ Φ Δ Ψ t u ν} (h : TelLe P Γ Φ t u)
     (hm : Transport (SubstEnv.valuesOnly ν) Γ Φ Δ Ψ) :
-    TelLe Δ Ψ (Tel.substV ν t) (Tel.substV ν u) := h.bind _ hm
+    TelLe P Δ Ψ (Tel.substV ν t) (Tel.substV ν u) := h.bind _ hm
 
-theorem TelClosure.substV {Γ Φ Δ Ψ t u ν} (h : TelClosure Γ Φ t u)
+theorem TelClosure.substV {Γ Φ Δ Ψ t u ν} (h : TelClosure P Γ Φ t u)
     (hm : Transport (SubstEnv.valuesOnly ν) Γ Φ Δ Ψ) :
-    TelClosure Δ Ψ (Tel.substV ν t) (Tel.substV ν u) := h.bind _ hm
+    TelClosure P Δ Ψ (Tel.substV ν t) (Tel.substV ν u) := h.bind _ hm
 
-theorem TelLe.substAt {Γ Φ t u} (h : TelLe Γ Φ t u) (c : Nat) (ts : List Ty) (es : List Eff)
+theorem TelLe.substAt {Γ Φ t u} (h : TelLe P Γ Φ t u) (c : Nat) (ts : List Ty) (es : List Eff)
     (ho : ∀ a ∈ ts, Ordinary a) :
-    TelLe (Γ.bindTypes (typeEnvAt c ts es)) Φ (Tel.substAt c ts es t) (Tel.substAt c ts es u) :=
+    TelLe P (Γ.bindTypes (typeEnvAt c ts es)) Φ (Tel.substAt c ts es t) (Tel.substAt c ts es u) :=
   h.bind _ (Transport.types Γ Φ _ rfl (typeEnvAt_ordinary c ts es ho))
 
-theorem TelClosure.substAt {Γ Φ t u} (h : TelClosure Γ Φ t u) (c : Nat) (ts : List Ty) (es : List Eff)
+theorem TelClosure.substAt {Γ Φ t u} (h : TelClosure P Γ Φ t u) (c : Nat) (ts : List Ty) (es : List Eff)
     (ho : ∀ a ∈ ts, Ordinary a) :
-    TelClosure (Γ.bindTypes (typeEnvAt c ts es)) Φ (Tel.substAt c ts es t) (Tel.substAt c ts es u) :=
+    TelClosure P (Γ.bindTypes (typeEnvAt c ts es)) Φ (Tel.substAt c ts es t) (Tel.substAt c ts es u) :=
   h.bind _ (Transport.types Γ Φ _ rfl (typeEnvAt_ordinary c ts es ho))
 
-theorem TelLe.mapRanges {Γ Φ t u} (h : TelLe Γ Φ t u) (ρ : Nat → RangeIx) :
-    TelLe (Γ.mapRanges ρ) Φ (Tel.mapRanges ρ t) (Tel.mapRanges ρ u) := by
+theorem TelLe.mapRanges {Γ Φ t u} (h : TelLe P Γ Φ t u) (ρ : Nat → RangeIx) :
+    TelLe P (Γ.mapRanges ρ) Φ (Tel.mapRanges ρ t) (Tel.mapRanges ρ u) := by
   have he := (h.rawMapRanges ρ).norm.context (Ctx.TypeMap.norm (Γ.rawMapRanges ρ))
   have hc : (Γ.rawMapRanges ρ).map (Option.map Ty.norm) = Γ.mapRanges ρ := by
     simp only [Ctx.rawMapRanges, Ctx.mapRanges, List.map_map, Function.comp_def, Option.map_map]
@@ -111,8 +113,8 @@ theorem TelLe.mapRanges {Γ Φ t u} (h : TelLe Γ Φ t u) (ρ : Nat → RangeIx)
   rw [hc] at he
   exact he
 
-theorem TelClosure.mapRanges {Γ Φ t u} (h : TelClosure Γ Φ t u) (ρ : Nat → RangeIx) :
-    TelClosure (Γ.mapRanges ρ) Φ (Tel.mapRanges ρ t) (Tel.mapRanges ρ u) := by
+theorem TelClosure.mapRanges {Γ Φ t u} (h : TelClosure P Γ Φ t u) (ρ : Nat → RangeIx) :
+    TelClosure P (Γ.mapRanges ρ) Φ (Tel.mapRanges ρ t) (Tel.mapRanges ρ u) := by
   have he := (h.rawMapRanges ρ).norm.context (Ctx.TypeMap.norm (Γ.rawMapRanges ρ))
   have hc : (Γ.rawMapRanges ρ).map (Option.map Ty.norm) = Γ.mapRanges ρ := by
     simp only [Ctx.rawMapRanges, Ctx.mapRanges, List.map_map, Function.comp_def, Option.map_map]
@@ -137,13 +139,13 @@ theorem Tel.instantiate_length {t vs result} (h : Tel.instantiate t vs = some re
       have hh := ih (t := Tel.bind (Tel.argumentsEnv v) t) (by simpa only [Tel.instantiate] using h)
       simpa only [Tel.arity, Tel.names, List.length_cons, Tel.names_bind] using congrArg Nat.succ hh
 
-theorem TelLe.shiftV {Γ Φ t u} (h : TelLe Γ Φ t u) (k c : Nat) :
-    TelLe (Γ.shiftV k c) (Φ.map (Pred.shiftV k c)) (Tel.shiftV k c t) (Tel.shiftV k c u) := by
+theorem TelLe.shiftV {Γ Φ t u} (h : TelLe P Γ Φ t u) (k c : Nat) :
+    TelLe P (Γ.shiftV k c) (Φ.map (Pred.shiftV k c)) (Tel.shiftV k c t) (Tel.shiftV k c u) := by
   rw [Tel.shiftV_eq_rawBind, Tel.shiftV_eq_rawBind]
   exact h.rawBind _ (Transport.shiftV Γ Φ k c)
 
-theorem TelClosure.shiftV {Γ Φ t u} (h : TelClosure Γ Φ t u) (k c : Nat) :
-    TelClosure (Γ.shiftV k c) (Φ.map (Pred.shiftV k c)) (Tel.shiftV k c t) (Tel.shiftV k c u) := by
+theorem TelClosure.shiftV {Γ Φ t u} (h : TelClosure P Γ Φ t u) (k c : Nat) :
+    TelClosure P (Γ.shiftV k c) (Φ.map (Pred.shiftV k c)) (Tel.shiftV k c t) (Tel.shiftV k c u) := by
   rw [Tel.shiftV_eq_rawBind, Tel.shiftV_eq_rawBind]
   exact h.rawBind _ (Transport.shiftV Γ Φ k c)
 

@@ -5,6 +5,8 @@ import Benitoite.Release.Refinement.NormalizedApplication
 
 namespace Benitoite.Release.Refinement
 
+variable {P : Program}
+
 theorem Ty.shiftTypes_of_wf_zero {nr nv a} (hw : Ty.WF nr 0 nv a) (k c : Nat) :
     shiftTypes k c a = a := by
   have hh := Ty.rawBind_agrees (θ := .shiftTypes k c) (τ := renEnv id) hw
@@ -217,8 +219,8 @@ theorem TypeCtxMap.transport {k c Γ Δ Φ} (h : TypeCtxMap k c Γ Δ) :
     · exact .hyp (List.mem_append_left _ (h.facts hp))
     · exact .hyp (List.mem_append_right _ hp)
 
-theorem Ty.LeQ.shiftTypes {Γ Δ Φ a b k c} (h : Ty.LeQ Γ Φ a b) (hm : TypeCtxMap k c Γ Δ) :
-    Ty.LeQ Δ Φ (shiftTypes k c a) (shiftTypes k c b) := by
+theorem Ty.LeQ.shiftTypes {Γ Δ Φ a b k c} (h : Ty.LeQ P Γ Φ a b) (hm : TypeCtxMap k c Γ Δ) :
+    Ty.LeQ P Δ Φ (shiftTypes k c a) (shiftTypes k c b) := by
   simpa only [Ty.rawBind_shiftTypes] using h.rawBind (.shiftTypes k c) hm.transport
 
 theorem Eff.Covers.shiftTypes {Γ Φ Δ Ξ e f} (h : Eff.Covers Γ Φ e f) (k c : Nat) :

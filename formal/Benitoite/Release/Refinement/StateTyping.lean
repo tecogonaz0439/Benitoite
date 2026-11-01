@@ -10,6 +10,8 @@ import Benitoite.Release.Refinement.LocalResolveLemmas
 場所の閉じた整形式と宣言照合は別々の不変条件である。
 -/
 namespace Benitoite.Release.Refinement
+
+variable {P : Program}
 noncomputable section
 
 def LocTy.Declared (P : Program) : LocTy → Prop
@@ -93,7 +95,7 @@ inductive ContTy (P : Program) (B : Builtins) (σ : PathEnv) (Ψ : StoreTy) :
       GuardBodyTy P B Ψ R body input a e1 → Eff.Sub e1 ε → MatchPrefix v arms next →
       ContTy P B σ Ψ R ε k a b Eb Re → Frame.Adequate σ (.guardF v cap arms next body) →
       ContTy P B σ Ψ none Eff.empty (.guardF v cap arms next body :: k) input b Eb Re
-  | K_Sub {R ε k a a' b Eb Re} : ContTy P B σ Ψ R ε k a' b Eb Re → Ty.LeQ [] [] a a' →
+  | K_Sub {R ε k a a' b Eb Re} : ContTy P B σ Ψ R ε k a' b Eb Re → Ty.LeQ P [] [] a a' →
       ContTy P B σ Ψ R ε k a b Eb Re
 
 theorem ContTy.adequate {P B σ Ψ R ε k a b Eb Re}

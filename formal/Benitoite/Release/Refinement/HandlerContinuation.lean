@@ -2,6 +2,8 @@ import Benitoite.Release.Refinement.LazyPreservation
 
 /-! # 捕捉を保持するハンドラの切り出しと継続の接続 -/
 namespace Benitoite.Release.Refinement
+
+variable {P : Program}
 noncomputable section
 
 def HandlerFrameTy (P : Program) (B : Builtins) (Ψ : StoreTy) (R : Option Ty)
@@ -15,7 +17,7 @@ def HandlerFrameTy (P : Program) (B : Builtins) (Ψ : StoreTy) (R : Option Ty)
 
 theorem ContTy.nil_inv {P B σ Ψ R ε k a b Eb Re}
     (h : ContTy P B σ Ψ R ε k a b Eb Re) (hk : k = []) :
-    Ty.LeQ [] [] a b ∧ Eff.Sub ε Eb ∧ R = Re ∧ Ty.Annotation P [] [] b := by
+    Ty.LeQ P [] [] a b ∧ Eff.Sub ε Eb ∧ R = Re ∧ Ty.Annotation P [] [] b := by
   induction h with
   | K_Empty he ha => exact ⟨.refl,he,rfl,ha⟩
   | K_Sub _ hl ih =>
@@ -39,7 +41,7 @@ private theorem end_tail' {f : Frame} {k : Cont} (h : EndsWithHandle (f :: k))
 
 theorem ContTy.resume_append {P B σ Ψ R ε saved a t ec Rh}
     (hs : ContTy P B σ Ψ R ε saved a t ec Rh) (hend : EndsWithHandle saved)
-    {k u b Eb Re e} (hl : Ty.LeQ [] [] t u)
+    {k u b Eb Re e} (hl : Ty.LeQ P [] [] t u)
     (hk : ContTy P B σ Ψ Rh e k u b Eb Re) (he : Eff.Covers [] [] e ec) :
     ContTy P B σ Ψ R ε (saved ++ k) a b Eb Re := by
   induction hs generalizing u with

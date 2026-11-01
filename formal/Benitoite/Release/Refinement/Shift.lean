@@ -8,6 +8,8 @@ None の位置を残し、cutoff に利用不能な変数を挿入する。
 -/
 namespace Benitoite.Release.Refinement
 
+variable {P : Program}
+
 /-- 型の全体の番号を移し、cutoff に k 個の None を挿入する。 -/
 def Ctx.shiftV (Γ : Ctx) (k c : Nat) : Ctx :=
   (Γ.take c).map (Option.map (Ty.shiftV k c)) ++ List.replicate k none ++
@@ -57,8 +59,8 @@ theorem Transport.shiftV (Γ : Ctx) (Φ : List Pred) (k c : Nat) :
     · exact List.mem_append_right _ (List.mem_map.mpr ⟨p, hp, rfl⟩)
 
 /-- 部分型の導出は開いた Γ/Φ と任意の Nat/cutoff について移動する。 -/
-theorem Ty.LeQ.shiftV {Γ Φ a b} (h : Ty.LeQ Γ Φ a b) (k c : Nat) :
-    Ty.LeQ (Γ.shiftV k c) (Φ.map (Pred.shiftV k c)) (a.shiftV k c) (b.shiftV k c) := by
+theorem Ty.LeQ.shiftV {Γ Φ a b} (h : Ty.LeQ P Γ Φ a b) (k c : Nat) :
+    Ty.LeQ P (Γ.shiftV k c) (Φ.map (Pred.shiftV k c)) (a.shiftV k c) (b.shiftV k c) := by
   rw [Ty.shiftV_eq_renameTy, Ty.shiftV_eq_renameTy]
   exact h.rawBind _ (Transport.shiftV Γ Φ k c)
 

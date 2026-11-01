@@ -7,6 +7,8 @@ import Benitoite.Release.Refinement.TypingStore
 -/
 namespace Benitoite.Release.Refinement
 
+variable {P : Program}
+
 set_option maxRecDepth 4096
 set_option maxHeartbeats 2000000
 
@@ -70,7 +72,7 @@ private theorem contView_foldFn (t : Tel) : contView (Ty.foldFn t) = none := by
   unfold Ty.foldFn
   split <;> rfl
 
-private theorem contView_le {Γ Φ a b} (h : Ty.LeQ Γ Φ a b) : contView a.norm = contView b.norm := by
+private theorem contView_le {Γ Φ a b} (h : Ty.LeQ P Γ Φ a b) : contView a.norm = contView b.norm := by
   match h with
   | .refl => rfl
   | .trans h₁ h₂ => exact (contView_le h₁).trans (contView_le h₂)
@@ -78,7 +80,7 @@ private theorem contView_le {Γ Φ a b} (h : Ty.LeQ Γ Φ a b) : contView a.norm
   | .forget | .introduce .. => simp only [contView_norm_refined]
   | .convert he => exact congrArg contView he
   | .dependentFn .. => simp only [Ty.norm, contView_foldFn]
-  | .fn_effect .. | .list .. | .lazy .. | .map_value ..
+  | .data .. | .fn_effect .. | .list .. | .lazy .. | .map_value ..
   | .scoped .. | .scoped_forget => rfl
 
 private theorem contView_wf {nr nt nv a b t e} (hw : a.WF nr nt nv)
@@ -473,7 +475,7 @@ mutual
     | .V_Normal hv => exact .V_Normal (context_value hv hA hstore hm hf)
     | .V_Sub hv hl hw hs hd =>
       have hl' := hl.rawBind (SubstEnv.valuesOnly (fun i => some (.var i))) (hm.transport hf)
-      change Ty.LeQ Δ Ξ (renameTy id _) (renameTy id _) at hl'
+      change Ty.LeQ P Δ Ξ (renameTy id _) (renameTy id _) at hl'
       simp only [renameTy_id] at hl'
       exact .V_Sub (context_value hv hA hstore hm hf) hl' (by simpa only [hm.length] using hw) (hm.sorted hs) (hd.context hm.declaration)
     | .V_Refine hv hi ht hs hw he hda hdp =>
@@ -554,7 +556,7 @@ mutual
     | .C_Normal hb => exact .C_Normal (context_comp hb hA hstore hm hf)
     | .C_Sub ht hl hc hw hs hd =>
       have hl' := hl.rawBind (SubstEnv.valuesOnly (fun i => some (.var i))) (hm.transport hf)
-      change Ty.LeQ Δ Ξ (renameTy id _) (renameTy id _) at hl'
+      change Ty.LeQ P Δ Ξ (renameTy id _) (renameTy id _) at hl'
       simp only [renameTy_id] at hl'
       exact .C_Sub (context_comp ht hA hstore hm hf) hl' hc (by simpa only [hm.length] using hw) (hm.sorted hs) (hd.context hm.declaration)
     | .C_Eff ht hc => exact .C_Eff (context_comp ht hA hstore hm hf) hc
@@ -655,7 +657,7 @@ end
 
 /-- 外側で検査した部分型による一位置の置換と、後続の束縛の列。 -/
 inductive Ctx.Narrows (P : Program) (C : List TParam) : Ctx → List Pred → Ctx → List Pred → Prop where
-  | here {Γ Φ a b} : Ty.LeQ Γ Φ a b → a.WF 0 C.length Γ.length → b.WF 0 C.length Γ.length → b.Sorted Γ → Ty.Declared P C Γ b →
+  | here {Γ Φ a b} : Ty.LeQ P Γ Φ a b → a.WF 0 C.length Γ.length → b.WF 0 C.length Γ.length → b.Sorted Γ → Ty.Declared P C Γ b →
       Narrows P C (Γ.extend b) (Φ.map Pred.lift) (Γ.extend a) (Φ.map Pred.lift)
   | under {Γ Φ Δ Ξ} : Narrows P C Γ Φ Δ Ξ → (a : Ty) →
       Narrows P C (Γ.extend a) (Φ.map Pred.lift) (Δ.extend a) (Ξ.map Pred.lift)
@@ -716,7 +718,7 @@ private theorem Ctx.Narrows.contextMap {P B store Q C Γ Φ Δ Ξ}
         have hl' := hl.rawBind (renEnv (shiftIndex 1 0)) (hm.transport (Ξ := Φ.map Pred.lift) (fun p hp => by
           change Entails _ p.lift
           exact .hyp (List.mem_append_right _ (List.mem_map.mpr ⟨p,hp,rfl⟩))))
-        change Ty.LeQ (Γ.extend a) (Φ.map Pred.lift) (renameTy (shiftIndex 1 0) a) (renameTy (shiftIndex 1 0) b) at hl'
+        change Ty.LeQ P (Γ.extend a) (Φ.map Pred.lift) (renameTy (shiftIndex 1 0) a) (renameTy (shiftIndex 1 0) b) at hl'
         rw [renameTy_shiftIndex] at hl'
         exact .V_Sub hv hl' (hm.wf hw) (hm.sorted hs) (hm.declared hd)
       | succ i =>

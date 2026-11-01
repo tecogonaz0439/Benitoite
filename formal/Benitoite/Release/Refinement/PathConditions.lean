@@ -3,10 +3,12 @@ import Benitoite.Release.Refinement.Narrowing
 
 /-! # 条件値の観測から分岐の閉包を型付ける -/
 namespace Benitoite.Release.Refinement
+
+variable {P : Program}
 noncomputable section
 
-theorem Ty.LeQ.weaken_conditions {Γ Φ Ξ a b} (h : Ty.LeQ Γ Φ a b)
-    (hf : ∀ p ∈ Φ, Entails (Γ.facts ++ Ξ) p) : Ty.LeQ Γ Ξ a b := by
+theorem Ty.LeQ.weaken_conditions {Γ Φ Ξ a b} (h : Ty.LeQ P Γ Φ a b)
+    (hf : ∀ p ∈ Φ, Entails (Γ.facts ++ Ξ) p) : Ty.LeQ P Γ Ξ a b := by
   have ht := Transport.id Γ Φ
   have hh := h.rawBind (renEnv id) (Δ := Γ) (Ψ := Ξ)
     ⟨ht.values,ht.references,ht.typeImages,by

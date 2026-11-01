@@ -1,0 +1,261 @@
+{
+  "B_WORK": "c668ff024b99287de702c5823c6280f8130a6aa5",
+  "branch_as_instructed": "m014/l10.v",
+  "git_verification": false,
+  "changed_files": [
+    "formal/Benitoite/Release/Refinement/Canonical.lean",
+    "formal/Benitoite/Release/Refinement/ContextMap.lean",
+    "formal/Benitoite/Release/Refinement/Declared.lean",
+    "formal/Benitoite/Release/Refinement/DeclaredTransport.lean",
+    "formal/Benitoite/Release/Refinement/DependentBeta.lean",
+    "formal/Benitoite/Release/Refinement/Embedding.lean",
+    "formal/Benitoite/Release/Refinement/ExternalCheck.lean",
+    "formal/Benitoite/Release/Refinement/HandlerCalls.lean",
+    "formal/Benitoite/Release/Refinement/HandlerContinuation.lean",
+    "formal/Benitoite/Release/Refinement/HandlerPreservation.lean",
+    "formal/Benitoite/Release/Refinement/HeldValues.lean",
+    "formal/Benitoite/Release/Refinement/InversionCore.lean",
+    "formal/Benitoite/Release/Refinement/LazyInversion.lean",
+    "formal/Benitoite/Release/Refinement/LazyPreservation.lean",
+    "formal/Benitoite/Release/Refinement/LazyStore.lean",
+    "formal/Benitoite/Release/Refinement/Le.lean",
+    "formal/Benitoite/Release/Refinement/MatchFacts.lean",
+    "formal/Benitoite/Release/Refinement/MatchPaths.lean",
+    "formal/Benitoite/Release/Refinement/Narrowing.lean",
+    "formal/Benitoite/Release/Refinement/NarrowingObstruction.lean",
+    "formal/Benitoite/Release/Refinement/OpenSubstitution.lean",
+    "formal/Benitoite/Release/Refinement/PathConditions.lean",
+    "formal/Benitoite/Release/Refinement/RangeSubst.lean",
+    "formal/Benitoite/Release/Refinement/ReferenceCalls.lean",
+    "formal/Benitoite/Release/Refinement/Shift.lean",
+    "formal/Benitoite/Release/Refinement/StateTyping.lean",
+    "formal/Benitoite/Release/Refinement/SubstTypingObstruction.lean",
+    "formal/Benitoite/Release/Refinement/Syntax.lean",
+    "formal/Benitoite/Release/Refinement/Telescope.lean",
+    "formal/Benitoite/Release/Refinement/Transport.lean",
+    "formal/Benitoite/Release/Refinement/TypeShiftContext.lean",
+    "formal/Benitoite/Release/Refinement/TypeShiftContracts.lean",
+    "formal/Benitoite/Release/Refinement/TypeSubst.lean",
+    "formal/Benitoite/Release/Refinement/TypedFacts.lean",
+    "formal/Benitoite/Release/Refinement/Typing.lean",
+    "formal/Benitoite/Release/Refinement/TypingDeclared.lean",
+    "formal/Benitoite/Release/Refinement/TypingShift.lean",
+    "formal/Benitoite/Release/Refinement/ValueFacts.lean",
+    "formal/Benitoite/Release/Refinement/ValueSubst.lean",
+    "formal/Benitoite.lean"
+  ],
+  "new_files": [
+    "formal/Benitoite/Release/Refinement/ObservationType.lean",
+    "formal/Benitoite/Release/Refinement/TypeFormation.lean",
+    "formal/Benitoite/Release/Refinement/VarianceFormation.lean",
+    "formal/Benitoite/Release/Refinement/VarianceSyntax.lean",
+    "formal/Benitoite/Release/Refinement/VarianceTransport.lean",
+    "formal/Benitoite/Release/Refinement/VarianceValidation.lean"
+  ],
+  "files": {
+    "formal/Benitoite/Release/Refinement/Canonical.lean": {
+      "before": "c9a003ec0c4d828324c95bbd5330c0714af79d1d7ce9abe4c140867e3a266e04",
+      "after": "ac422b57f8bd39cfb8e84d0979d76ed9232664926005eed81d5b67b5795c797f"
+    },
+    "formal/Benitoite/Release/Refinement/ContextMap.lean": {
+      "before": "d0d0403e42c68ce4c9e46bf4efea8c499d8481d220447a1ed1ce3b8d5c345dbc",
+      "after": "518d820f9fbeb16e2a58101a6c9747c7b56157586e1f48261db6e16318ceea18"
+    },
+    "formal/Benitoite/Release/Refinement/Declared.lean": {
+      "before": "49d5cc854916c975934324ade5d9814a7f07701676c90d672afb8091ed52145b",
+      "after": "d91433b4332a0257354b48064eb9bb782f7d0cab35bd851019f9f75b39e270c3"
+    },
+    "formal/Benitoite/Release/Refinement/DeclaredTransport.lean": {
+      "before": "0ad19444a0eae9253cec793eb84c95ecb18d64de3e79db5d1280193c96bd628d",
+      "after": "2b049178d90f2398782023a8d88cb3e6481b4d056c064e35e1fa742b40722782"
+    },
+    "formal/Benitoite/Release/Refinement/DependentBeta.lean": {
+      "before": "4b1e41202e8d272ab730da40f39eca8f648da752c39869d5c61fa5abddc1a998",
+      "after": "c5c162a125cfc24602158becd78dcee4cc925646ed8eb1dfbab822db4c6746a1"
+    },
+    "formal/Benitoite/Release/Refinement/Embedding.lean": {
+      "before": "2cda0fce1228822423c00aedb6fe7930a7004babdd28a188d9af872cdb13541a",
+      "after": "bebf2c02d9d71914e60b69ca26b7d5ab66326fa647aa55ce1a21282f17bbcd00"
+    },
+    "formal/Benitoite/Release/Refinement/ExternalCheck.lean": {
+      "before": "e06329139df9219463ebc5a675b291d44f5469928eb41b670d847753f7a55ce6",
+      "after": "c64635f0fef824b3cd6ef8e6a7a0c888d3d8b3bbd26f941b40b2afb36ad229c7"
+    },
+    "formal/Benitoite/Release/Refinement/HandlerCalls.lean": {
+      "before": "da558e0a41c61810fbf14eb140a27229dfb3e0525cc4a79c1845cf51c43c9e7a",
+      "after": "7b6cf6adf2a44a3bf591805731750fc8ed18ec8f996030a12db98b99d71b3ee8"
+    },
+    "formal/Benitoite/Release/Refinement/HandlerContinuation.lean": {
+      "before": "7e44bb9c9d59919475bbbc9d8b037ceccc392d7bd529541919d1899544c75781",
+      "after": "8a59408186fcf3ac6eed9c1c58fecc226cbb70edc433687881146e5de0e57e43"
+    },
+    "formal/Benitoite/Release/Refinement/HandlerPreservation.lean": {
+      "before": "7a91a8bb3ae3befa1bc5ecac924b5bc5b7cec69a97ff45d9dd26b118129c4ac0",
+      "after": "22cf1b5241bbfb382b267e11cbcffefc01b431b2a68e3d5aa6afb3dd22ed7418"
+    },
+    "formal/Benitoite/Release/Refinement/HeldValues.lean": {
+      "before": "a9dff8e342e3b0ad97b94e65f1d586175b91bcfbc3630d08798502ea5936a1af",
+      "after": "cb84c25e7d3248ae0f848bd0d2747006dba6ec8b76e285718178afbb9b6ec849"
+    },
+    "formal/Benitoite/Release/Refinement/InversionCore.lean": {
+      "before": "aadb925e04c62fb888dd1bce07c5891c37148fe7ecae7dc9d5e8b6513c65db5e",
+      "after": "a7c765ef25038ff684aa588e656a023c51247187cb0d5239ef74070b7652a0e4"
+    },
+    "formal/Benitoite/Release/Refinement/LazyInversion.lean": {
+      "before": "a5f6a6a111091405d3fda31e0898a6353adcc9866fc4bb830e6975bdf9e8662b",
+      "after": "25dd4a7d7a5b55a0ec07d2bf2a3c39a4c361fda9668cd1d3277c273db4b12c03"
+    },
+    "formal/Benitoite/Release/Refinement/LazyPreservation.lean": {
+      "before": "9b2b07b70195cee4dadf3a8b7f7cb694e3111d9307d821ef109ac4cf1fae48f7",
+      "after": "451c97b5a35bfe1f251b4d4bb43523fedb820003c193300031555dd887c61ace"
+    },
+    "formal/Benitoite/Release/Refinement/LazyStore.lean": {
+      "before": "fa836e984c38a536b74cd1972b1f68a9a110c35a76e388e0abf9350f51c93daf",
+      "after": "90a9e90d3b05ef3d20d95510353d29382f9580b44d5b0153694b5dd035a8e299"
+    },
+    "formal/Benitoite/Release/Refinement/Le.lean": {
+      "before": "1a9a6fbbf434311f304b43dbd4d24fe3c6afacb5268641217c84e0c2a6c1f3db",
+      "after": "78aa058f7d83bb7c86c7f50f1501a6c11d3c2603661430b8b5e01e1396f8511c"
+    },
+    "formal/Benitoite/Release/Refinement/MatchFacts.lean": {
+      "before": "c32e6605cba19c70f030a3dfbd520a29fff4e18ec51b94dfc3317d6511ff1071",
+      "after": "0f487ad367d26a1982cab3a0b657acc19c4a61cdea30bd68b4abd0553d0d5032"
+    },
+    "formal/Benitoite/Release/Refinement/MatchPaths.lean": {
+      "before": "41d46d324a5d9158ae856b3cecc841b753fc2126249ca8144fb38a5aeff9f0c9",
+      "after": "551aa0c1a0609816d7ef3bb033ff8ac780b519ea7de54beb93682922043bd2fd"
+    },
+    "formal/Benitoite/Release/Refinement/Narrowing.lean": {
+      "before": "c6dd6662d2658c567bb89eda41a5ec529691c57066ef89ccdbf9845e11ec2fab",
+      "after": "8c77b2076e5cd4c03506f433b8547527cd2488bf6346a009b7c25f24fd119519"
+    },
+    "formal/Benitoite/Release/Refinement/NarrowingObstruction.lean": {
+      "before": "a9754b1fb4be745de62be3c7bf7548aa65a46ca67aeece82422f54034e947045",
+      "after": "0fea5b7ba067cfb50f0dc107d0cd37b470b2aba1e604c87842e87adf3e7f61ca"
+    },
+    "formal/Benitoite/Release/Refinement/ObservationType.lean": {
+      "before": null,
+      "after": "ec5c7d9975179c230251677b200153624eb7fa4597b785386de97cb952d8cf0a"
+    },
+    "formal/Benitoite/Release/Refinement/OpenSubstitution.lean": {
+      "before": "8a6a56b379e004d111d8e720d1f353c1465e268b2ae7c6458c885987d216c74f",
+      "after": "f5558614ff3c3c8d715dd18eb0ddc2910d8c78e3b767c92dc1acc3b3c28dae4c"
+    },
+    "formal/Benitoite/Release/Refinement/PathConditions.lean": {
+      "before": "71b419ac20941b4a8bdef2e9a7afab7055d22ed86cfc4e295724cc5647ccee9d",
+      "after": "31ab7b51a9445af1d4af9fd72f9c2909af39828f44c0a1d265dd8ff2fab4d9fb"
+    },
+    "formal/Benitoite/Release/Refinement/RangeSubst.lean": {
+      "before": "22f2082cbe8e4041826167ed620553e9e2749ea7e7931ce60d725ba54c5b21ab",
+      "after": "2a95587afda9802d740b1c9320bb1c9a69eabfac6bda4f9b87435d28a2fd9790"
+    },
+    "formal/Benitoite/Release/Refinement/ReferenceCalls.lean": {
+      "before": "21d670dd563a4cfe92679a1a0e86c459b8652f1e154acf533d85324d14b1cb8e",
+      "after": "1c011da6d27b014dcb67ad7cfe5d6e0565848eb8d9c4271bb2d5be074597fdd2"
+    },
+    "formal/Benitoite/Release/Refinement/Shift.lean": {
+      "before": "2df041a2d87bd03aefaa981774fa8b89a621a3c7482d86a404f606bef5886635",
+      "after": "3c2c1458069cffc72af884995e6ad4a31be643e749ee754e644d4298b2428c22"
+    },
+    "formal/Benitoite/Release/Refinement/StateTyping.lean": {
+      "before": "5fac374f683360496ee62af564818979343ced1b8e3ecba3f4ebd10b45468f5a",
+      "after": "9013eeb2017b040ee639abc873bf0ff29abc8e1ef59ddfe00ad76f749f47bb31"
+    },
+    "formal/Benitoite/Release/Refinement/SubstTypingObstruction.lean": {
+      "before": "1df39d52e476d182c5e4d96354c2057fd49cdfbfbf5a4b6892d2e88af636c5a4",
+      "after": "33f6ffafffeebad3bb87488c9bf45f505cce590e4414d45a8bea5a5a8942ea28"
+    },
+    "formal/Benitoite/Release/Refinement/Syntax.lean": {
+      "before": "7fd7b6bc140d24574cd347c09e2d4a01d06bd785670450d15f0274c1d528083b",
+      "after": "e3e9460bc896f9220c375a8ef9e0d082b0b7bd1e47bf0e3681c330e95879f3ce"
+    },
+    "formal/Benitoite/Release/Refinement/Telescope.lean": {
+      "before": "07ca4a9fed8ff6ea6a51913ff9af7f7fafb02c8961a3fb2a7b5538278ffa4196",
+      "after": "93756fbeb9601a0cd916dccace8b144bd5a0677a74bc40b93dfcd99471533737"
+    },
+    "formal/Benitoite/Release/Refinement/Transport.lean": {
+      "before": "5fdd7c26a47e9484ade6b166df37b85cff24c079f196d77b74f3e320c66885aa",
+      "after": "24100a2326b93c057d0c7e0ae7912b5b97ef2cc9fea1b3cab0b4822fdfe69ec0"
+    },
+    "formal/Benitoite/Release/Refinement/TypeShiftContext.lean": {
+      "before": "d8b38398326c121ba5e4facb8b3b1ecb863c202ac81950873bfec561a1273e0b",
+      "after": "4a355c72d8e291d746b6042595c38223572b12467f8b346a228aaf9debe8af3b"
+    },
+    "formal/Benitoite/Release/Refinement/TypeShiftContracts.lean": {
+      "before": "22a542f68edd0e16a1b7b61ce1bf3571c6e7e21484dd867486daf484de50f6c7",
+      "after": "bf50e3e5af73252965f92655f5be045df7e159668252980e612a9a7368de981b"
+    },
+    "formal/Benitoite/Release/Refinement/TypeSubst.lean": {
+      "before": "57eafebd869bad34f25fac1219a96c17fcbb4ab4edad532915c8a00ef99c7e00",
+      "after": "40eb1273a3284c7e45be62383481d51eaf6145329a838a20473dad0cc9ff94c8"
+    },
+    "formal/Benitoite/Release/Refinement/TypedFacts.lean": {
+      "before": "3590451137aa433976c07ab688a32a42f8856cbfdc04a6edd315441a06d072f8",
+      "after": "fba89315ba5f31681f458194989075a5d1f4b4b60a64235c3fd53ecaac86cb5b"
+    },
+    "formal/Benitoite/Release/Refinement/Typing.lean": {
+      "before": "591c44a697ef3c47e73d1756d6c727387ddcd025c8c0ffb7e4c402c4e1bc2c09",
+      "after": "31d39d5fe06513d04f3fa0b1c2c72e2764e67cf529ab442c5ccd1f21ac19b643"
+    },
+    "formal/Benitoite/Release/Refinement/TypingDeclared.lean": {
+      "before": "83c26664b97796975c1cde87bf0b294aba4010fa5f94c8d1333b22d7005e7587",
+      "after": "a4776514235ab94ccb7abeb635e6d01b925f7676fe78f157b5a7d0730901ae5d"
+    },
+    "formal/Benitoite/Release/Refinement/TypingShift.lean": {
+      "before": "6ad634445006c77ec998eb8628d11600f48ab5c9928dd500cdd40266190d9f30",
+      "after": "3c7b01371af2e7c79134ea61366e6b6202a326fa920ab8cfe3b3f4d75b3b33e4"
+    },
+    "formal/Benitoite/Release/Refinement/ValueFacts.lean": {
+      "before": "96b1e7939432e5d6a6f36e242c8ec15d9b275a6cf3adff3a39cbea1d8a60283a",
+      "after": "0b3a003db2bac77c6d5abdb62209fdc2b1c2e1432c020e30fd9c99564facd801"
+    },
+    "formal/Benitoite/Release/Refinement/ValueSubst.lean": {
+      "before": "18e61e0970fa6f6674e90dec71e075484fb4f6c242e4286df6d34c82634b3831",
+      "after": "bdd22ba724b7eff85afa2ca4bf5f15240a1cc906b1690c4a4b0f710ee20813bb"
+    },
+    "formal/Benitoite/Release/Refinement/VarianceFormation.lean": {
+      "before": null,
+      "after": "face94ec8f5e99e7355c862b03b4dafc815f5b279cf034f017d6a2fd04fed383"
+    },
+    "formal/Benitoite/Release/Refinement/VarianceSyntax.lean": {
+      "before": null,
+      "after": "fe4d2cedbf2bd8ea8009546496437c2545bb95d90ef4c4972978e5ca0fb73251"
+    },
+    "formal/Benitoite/Release/Refinement/VarianceTransport.lean": {
+      "before": null,
+      "after": "df0e2bccf4953a2ac8da235ec219d1df3d26a7e94b6589aeec22d3a34a40caa7"
+    },
+    "formal/Benitoite/Release/Refinement/VarianceValidation.lean": {
+      "before": null,
+      "after": "0e4e492e56cc21f9c2dd85987abb2de945827bf6b6b4ec553f52a0c3f9f966b3"
+    },
+    "formal/Benitoite.lean": {
+      "before": "7e8907d777b21e0aa978675fb8e1e78d1a7d9b1bd27c48a07a5093f481f4573f",
+      "after": "2b2facc01b748bb975c923abcfebf8a1d03272e69c86781bd53822bb413f2922"
+    },
+    "formal/Benitoite/Release/Refinement/TypeFormation.lean": {
+      "before": null,
+      "after": "7b3ff9b8533452f52450fea49c416823041a5aab2d00fa2b456c4346e9803885"
+    },
+    "docs/design/01-spec/01-12-core-calculus.md": {
+      "before": "0c85d6913b18a3be114596f2f7f1b9c194f9253894ed5d6e7de104ee0a0535d5",
+      "after": "6377bd26e3da316d0096c8816940316a7cd507694ea0a3eaacf632c31fbc953c"
+    },
+    "docs/design/07-quality/07-04-formal-semantics.md": {
+      "before": "55273ec3ca2d41b414ae4258994f9a87a55e4c08efe8df81f453666751e52d2b",
+      "after": "5cd1c06968bc17474c67f14379a1628ea1ce42e81c92faafdd8a6a4f788f91f5"
+    },
+    "docs/design/00-overview/00-04-glossary.md": {
+      "before": "f9b4c93902bf8baf451f5fbed1fc6a6dbc67fcf200a4295f38f12198801e9ba3",
+      "after": "e2f5e4be8c70bc9f2e7417e0b261adb2b08698a803b1a6eec2c249b6ae3b3ff6"
+    }
+  },
+  "lean_lines_added": 1962,
+  "lean_lines_removed": 283,
+  "boundary_lines": 320,
+  "design_files": [
+    "docs/design/01-spec/01-12-core-calculus.md",
+    "docs/design/07-quality/07-04-formal-semantics.md",
+    "docs/design/00-overview/00-04-glossary.md"
+  ]
+}

@@ -10,6 +10,8 @@ import Benitoite.Release.Refinement.Narrowing
 
 namespace Benitoite.Release.Refinement
 
+variable {P : Program}
+
 set_option maxHeartbeats 2000000
 
 private theorem lam_annotations {P B store Q C Γ Φ v a}
@@ -167,7 +169,7 @@ theorem path_lift_wf : path.lift.WF (Γ.length+1) := by
   simp [termBind?, Term.VarsIn, Pred.VarsIn, path, Pred.lift, predBind, termBind, Pred.WF, Γ]
 
 /-- 文脈の事実を実際に使う、外側の篩の導入。 -/
-theorem source_le : Ty.LeQ Γ Φ valueTy resultTy := by
+theorem source_le : Ty.LeQ P Γ Φ valueTy resultTy := by
   apply Ty.LeQ.introduce path_lift_sorted
   exact .hyp (List.mem_append_right _ (List.mem_map.mpr
     ⟨path, List.mem_append_left _ (by rw [context_facts.1]; exact List.mem_cons_self), rfl⟩))
@@ -318,7 +320,7 @@ theorem narrows {P} : Ctx.Narrows P [] source (Φ.map Pred.lift) target (Φ.map 
   .here .forget (by exact ⟨original_wf, trivial, by intro b t e h; cases h⟩) original_wf original_sorted (by
     simp [refinedInt, Ty.Declared, Pred.Declared, Term.Declared, Ctx.declarationSelf, Ctx.extend, Ctx.Readable, Ty.shiftV, Ordinary])
 
-theorem source_le : Ty.LeQ source (Φ.map Pred.lift) refinedInt result := by
+theorem source_le : Ty.LeQ P source (Φ.map Pred.lift) refinedInt result := by
   apply Ty.LeQ.introduce
   · simp [Ty.shiftV, termBind?, Term.HasSort, Term.Shape, Term.References, Ctx.Readable, Term.VarsIn, Ty.HasSort, Ty.sort?, path, Pred.lift, predBind, termBind, Pred.Sorted, source,
       Ctx.extend, refinedInt]

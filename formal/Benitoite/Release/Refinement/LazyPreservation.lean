@@ -2,6 +2,8 @@ import Benitoite.Release.Refinement.LazyStore
 
 /-! # 明示遅延の実際の遷移に対する保存の代表 -/
 namespace Benitoite.Release.Refinement
+
+variable {P : Program}
 noncomputable section
 
 private theorem store_arguments {P B Ψ b s ts es rs ws r e}
@@ -114,7 +116,7 @@ private theorem lazy_inv {P B Ψ Q C Γ Φ R code a e L m}
     (h : HasTypeCQ P B Ψ Q C Γ Φ R code a e L) (hc : code = .lazyC m) :
     ∃ x, Ty.Annotation P C Γ x ∧
       HasTypeCQ P B (hideBuilders Ψ) Q C (hideConts Γ) Φ none m x Eff.empty [] ∧
-      Ty.LeQ Γ Φ (.lazy x) a := by
+      Ty.LeQ P Γ Φ (.lazy x) a := by
   match h with
   | .C_Lazy hb ha => cases hc; exact ⟨_,ha,hb,.refl⟩
   | .C_Sub hh hl _ _ _ _ =>
@@ -145,7 +147,7 @@ theorem ClosureTy.lazy_body {P B Ψ R q a e m}
     (h : ClosureTy P B Ψ [] R q a e) (hv : q.view = .lazyC m) :
     ∃ x, Ty.Annotation P [] [] x ∧
       ClosureTy P B (hideBuilders Ψ) [] none (.mk q.capture m) x Eff.empty ∧
-      Ty.LeQ [] [] (.lazy x) a := by
+      Ty.LeQ P [] [] (.lazy x) a := by
   obtain ⟨cap,Γ,Φ,Rs,code0,as,es,L,ρ,hq,hcap,hbody,hL,hR,ha,he,hr⟩ := h.open_zero
   subst q
   have htag : isLazy code0 = true := by
@@ -167,7 +169,7 @@ theorem ClosureTy.lazy_body {P B Ψ R q a e m}
   have hxclosed := hc'.substOk.annotation hx'
   have hcl := ClosureTy.capture hc' hb ht (by rfl) (by intros; contradiction)
   have hle' := hle.bind (valEnv cap.env) hcap.transport
-  change Ty.LeQ [] [] (.lazy (cap.closeTy x)) (cap.closeTy as) at hle'
+  change Ty.LeQ P [] [] (.lazy (cap.closeTy x)) (cap.closeTy as) at hle'
   rw [ha] at hle'
   exact ⟨cap.closeTy x,hxclosed,by simpa only [Closure.capture,Capture.closeEff,Eff.subst_values_empty,hm0] using hcl,hle'⟩
 
@@ -309,7 +311,7 @@ theorem StateTyE.lazy_transition {P B σ Eb q m k μ l}
 
 private theorem normal_return_tail {P B σ Ψ R ε k a b Eb Re}
     (h : ContTy P B σ Ψ R ε k a b Eb Re) (hRe : Re = none)
-    (n : Ty) (ha : Ty.Annotation P [] [] n) (hn : n.Normal) (hl : Ty.LeQ [] [] n a) :
+    (n : Ty) (ha : Ty.Annotation P [] [] n) (hn : n.Normal) (hl : Ty.LeQ P [] [] n a) :
     ∃ R', (∀ r, R' = some r → r.Normal) ∧ ContTy P B σ Ψ R' ε k n b Eb Re := by
   match h with
   | hh@(.K_Empty ..) =>

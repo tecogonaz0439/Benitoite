@@ -1,3 +1,9 @@
+import Benitoite.Release.Refinement.TypeFormation
+import Benitoite.Release.Refinement.VarianceSyntax
+import Benitoite.Release.Refinement.VarianceValidation
+import Benitoite.Release.Refinement.VarianceFormation
+import Benitoite.Release.Refinement.VarianceTransport
+import Benitoite.Release.Refinement.ObservationType
 import Benitoite.Core.Syntax
 import Benitoite.Core.Subst
 import Benitoite.Core.Typing

@@ -2,6 +2,8 @@ import Benitoite.Release.Refinement.LazyInversion
 
 /-! # 遅延セルの割当てと結果の書戻し -/
 namespace Benitoite.Release.Refinement
+
+variable {P : Program}
 noncomputable section
 
 private theorem store_set_finite {μ : Store} (h : ∃ n, ∀ l, n ≤ l → μ l = none)
@@ -67,7 +69,7 @@ theorem StoreOk.allocate_lazy {P B σ Ψ μ l a q}
 
 theorem ContTy.update_inv {P B σ Ψ R ε k a b Eb Re l}
     (h : ContTy P B σ Ψ R ε (.update l :: k) a b Eb Re) :
-    R = none ∧ ∃ x R', Ψ l = some (.lazy x) ∧ Ty.LeQ [] [] a x ∧
+    R = none ∧ ∃ x R', Ψ l = some (.lazy x) ∧ Ty.LeQ P [] [] a x ∧
       Ty.Annotation P [] [] x ∧ ContTy P B σ Ψ R' ε k x b Eb Re := by
   generalize heq : (.update l :: k) = frames at h
   induction h with

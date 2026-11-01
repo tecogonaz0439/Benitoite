@@ -7,6 +7,8 @@ import Benitoite.Release.Refinement.RangeSubst
 -/
 namespace Benitoite.Release.Refinement
 
+variable {P : Program}
+
 def SubstEnv.valuesOnly (σ : ObservationEnv) : SubstEnv := ⟨Ty.tvar, [], [], σ⟩
 
 /-- c 個の値の束縛を残し、外側の像の番号を移す。 -/
@@ -26,13 +28,13 @@ noncomputable def Eff.substV (σ : ObservationEnv) (e : Eff) : Eff := Eff.bind (
 noncomputable def Ty.substVAt (c : Nat) (σ : ObservationEnv) (a : Ty) : Ty := a.substV (upTerms c σ)
 noncomputable def Eff.substVAt (c : Nat) (σ : ObservationEnv) (e : Eff) : Eff := Eff.substV (upTerms c σ) e
 
-theorem Ty.LeQ.substV {Γ Φ a b Δ Ψ} (h : Ty.LeQ Γ Φ a b) (σ : ObservationEnv)
+theorem Ty.LeQ.substV {Γ Φ a b Δ Ψ} (h : Ty.LeQ P Γ Φ a b) (σ : ObservationEnv)
     (ht : Transport (.valuesOnly σ) Γ Φ Δ Ψ) :
-    Ty.LeQ Δ Ψ (a.substV σ) (b.substV σ) := h.bind _ ht
+    Ty.LeQ P Δ Ψ (a.substV σ) (b.substV σ) := h.bind _ ht
 
-theorem Ty.LeQ.substVAt {Γ Φ a b Δ Ψ} (h : Ty.LeQ Γ Φ a b) (c : Nat) (σ : ObservationEnv)
+theorem Ty.LeQ.substVAt {Γ Φ a b Δ Ψ} (h : Ty.LeQ P Γ Φ a b) (c : Nat) (σ : ObservationEnv)
     (ht : Transport (.valuesOnly (upTerms c σ)) Γ Φ Δ Ψ) :
-    Ty.LeQ Δ Ψ (a.substVAt c σ) (b.substVAt c σ) := h.bind _ ht
+    Ty.LeQ P Δ Ψ (a.substVAt c σ) (b.substVAt c σ) := h.bind _ ht
 
 theorem Eff.Covers.substV {Γ Φ Δ Ψ e f} (h : Eff.Covers Γ Φ e f) (σ : ObservationEnv) :
     Eff.Covers Δ Ψ (Eff.substV σ e) (Eff.substV σ f) := h.bind _

@@ -96,6 +96,7 @@ end
 theorem Term.HasData.shiftTypes {P Γ Δ t d ts k c} (ht : Term.HasData P Γ t d ts)
     (h : TypeCtxMap k c Γ Δ) : Term.HasData P Δ t d (ts.map (Refinement.shiftTypes k c)) := by
   match ht with
+  | .widen hr hs => exact .widen (hr.shiftTypes h) (hs.shiftTypes k c)
   | .var (a := a) hi he =>
     refine Term.HasData.var (h.lookup _ _ hi) ?_
     rw [Ty.norm_shiftTypes, Ty.core_shiftTypes, he]

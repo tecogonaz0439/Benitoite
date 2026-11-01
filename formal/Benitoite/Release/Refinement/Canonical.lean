@@ -4,20 +4,22 @@ import Benitoite.Release.Refinement.Typing
 /-!
 # 型付き値からの構文情報の取り出し
 
-V_Sub の鎖では要素の LeQ と TelClosure を合成する。
+V_Sub の鎖では要素の LeQ と TelClosure P を合成する。
 受信前の carrier ではなく、元の型の値の導出を入力にする。
 -/
 namespace Benitoite.Release.Refinement
 
+variable {P : Program}
+
 theorem HasTypeVQ.inv_list {P B Ψ Q C Γ Φ v T vs}
     (h : HasTypeVQ P B Ψ Q C Γ Φ v T) (hv : v = .list vs) :
     ∃ a, HasTypeEachQ P B Ψ Q C Γ Φ vs a ∧
-      ∃ b, T.listCore = some b ∧ Ty.LeQ Γ Φ a b := by
+      ∃ b, T.listCore = some b ∧ Ty.LeQ P Γ Φ a b := by
   match h with
   | .V_List hs _ _ _ => cases hv; exact ⟨_, hs, _, rfl, .refl⟩
   | .V_Normal (a := T0) h =>
     obtain ⟨a, hs, b, hb, hab⟩ := h.inv_list hv
-    have hl : Ty.LeQ Γ Φ T0 T0.norm := .convert (Ty.norm_idem T0).symm
+    have hl : Ty.LeQ P Γ Φ T0 T0.norm := .convert (Ty.norm_idem T0).symm
     obtain ⟨c, hc, hbc⟩ := hl.listCore hb
     exact ⟨a, hs, c, hc, .trans hab hbc⟩
   | .V_Sub h hl _ _ _ =>
@@ -39,12 +41,12 @@ theorem HasTypeVQ.inv_closure {P B Ψ Q C Γ Φ v T runtime body}
     (h : HasTypeVQ P B Ψ Q C Γ Φ v T) (hv : v = .closure runtime body) :
     ∃ t u, Ty.Annotation P C Γ (.dependentFn t) ∧
       Tel.RuntimeShape runtime t ∧ DependentClosureTy P B Ψ body t ∧
-      T.fnCore = some u ∧ TelClosure Γ Φ t u := by
+      T.fnCore = some u ∧ TelClosure P Γ Φ t u := by
   match h with
   | .V_Closure ha hr hb => cases hv; exact ⟨_, _, ha, hr, hb, rfl, .refl⟩
   | .V_Normal (a := T0) h =>
     obtain ⟨t, u, ha, hr, hb, hu, htu⟩ := h.inv_closure hv
-    have hl : Ty.LeQ Γ Φ T0 T0.norm := .convert (Ty.norm_idem T0).symm
+    have hl : Ty.LeQ P Γ Φ T0 T0.norm := .convert (Ty.norm_idem T0).symm
     obtain ⟨w, hw, huw⟩ := hl.fnCore hu
     exact ⟨t, w, ha, hr, hb, hw, htu.trans huw⟩
   | .V_Sub h hl _ _ _ =>
@@ -70,7 +72,7 @@ private theorem canonical_ref_aux {P B Ψ Q C Γ Φ v T a}
   | .V_Const (c := c) _ => cases c <;> simp [Const.type, Ty.refCore] at ha
   | .V_LocRef hi _ => cases ha; exact ⟨_, _, rfl, hi, rfl⟩
   | .V_Normal (a := T0) h =>
-    have hl : Ty.LeQ Γ Φ T0 T0.norm := .convert (Ty.norm_idem T0).symm
+    have hl : Ty.LeQ P Γ Φ T0 T0.norm := .convert (Ty.norm_idem T0).symm
     obtain ⟨b, hb, he⟩ := hl.refCore_right ha
     obtain ⟨l, c, hv, hc, hcb⟩ := canonical_ref_aux h hΓ hb
     exact ⟨l, c, hv, hc, hcb.trans he⟩

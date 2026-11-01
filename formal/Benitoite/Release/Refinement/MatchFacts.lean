@@ -2,6 +2,8 @@ import Benitoite.Release.Refinement.MatchPaths
 
 /-! # 実際の照合の成否から得る経路条件 -/
 namespace Benitoite.Release.Refinement.MatchFacts
+
+variable {P : Program}
 noncomputable section
 
 mutual
@@ -365,14 +367,14 @@ theorem RootShape.norm {P a v} : RootShape P a.norm v ↔ RootShape P a v := by
   | dependentFn t => unfold Ty.norm Ty.foldFn; split <;> rfl
   | _ => rfl
 
-theorem RootShape.subtype {P Γ Φ a b v} (h : Ty.LeQ Γ Φ a b)
+theorem RootShape.subtype {P Γ Φ a b v} (h : Ty.LeQ P Γ Φ a b)
     (hv : RootShape P a v) : RootShape P b v := by
   match h with
   | .refl => exact hv
   | .convert he => exact RootShape.norm.mp (he ▸ RootShape.norm.mpr hv)
   | .trans h g => exact RootShape.subtype g (RootShape.subtype h hv)
   | .refine (a := a) (b := b) h .. => exact RootShape.subtype (a := a) (b := b) h hv
-  | .forget | .introduce .. | .list .. => exact hv
+  | .data .. | .forget | .introduce .. | .list .. => exact hv
   | .fn_effect .. | .lazy .. | .map_value .. | .dependentFn .. | .scoped .. | .scoped_forget => trivial
 
 theorem typed_values_length {P B Ψ Q C Γ Φ vs as}

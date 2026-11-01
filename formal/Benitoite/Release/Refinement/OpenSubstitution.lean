@@ -7,6 +7,8 @@ import Benitoite.Release.Refinement.RangeExchange
 -/
 namespace Benitoite.Release.Refinement.OpenSubstitution
 
+variable {P : Program}
+
 def Γ : Ctx := [some (.refined (.base .integer) (.eq (.var 0) (.integer 7))), none]
 def Δ : Ctx := [some (.refined (.base .integer)
   (.and (.eq (.add (.var 3) (.integer 1)) (.integer 7)) .truth)), none, some (.base .integer)]
@@ -96,14 +98,14 @@ theorem source_covers : Eff.Covers Γ [path] outer inner := by
 
 /-- 範囲と型・行・値が開いたまま、新しい関数型の導出を返す。 -/
 theorem all_open_derivation :
-    Ty.LeQ Δ Ψ ((source inner).bind θ) ((source outer).bind θ) :=
+    Ty.LeQ P Δ Ψ ((source inner).bind θ) ((source outer).bind θ) :=
   (Ty.LeQ.fn_effect source_covers).bind θ transport
 
 theorem all_open_covers :
     Eff.Covers Δ Ψ (Eff.bind θ outer) (Eff.bind θ inner) := source_covers.bind θ
 
 /-- Γ.facts の path を self の下へ移し、外側の値を観測する篩を導入する。 -/
-theorem source_introduce (Φ : List Pred) : Ty.LeQ Γ Φ (.tvar 0) (.refined (.tvar 0) path.lift) := by
+theorem source_introduce (Φ : List Pred) : Ty.LeQ P Γ Φ (.tvar 0) (.refined (.tvar 0) path.lift) := by
   apply Ty.LeQ.introduce
   · simp [termBind?, Term.HasSort, Term.Shape, Term.References, Ctx.Readable, Term.VarsIn, Ty.HasSort, Ty.sort?, path, Pred.lift, predBind, termBind, Pred.Sorted, Γ]
   · exact .hyp (List.mem_append_right _ (List.mem_map.mpr
@@ -111,12 +113,12 @@ theorem source_introduce (Φ : List Pred) : Ty.LeQ Γ Φ (.tvar 0) (.refined (.t
 
 /-- 篩の導入の枝で facts を移送し、篩付きで値に依存する型像を受け取る。 -/
 theorem introduce_bind :
-    Ty.LeQ Δ Ψ ((.tvar 0 : Ty).bind θ) ((Ty.refined (.tvar 0) path.lift).bind θ) :=
+    Ty.LeQ P Δ Ψ ((.tvar 0 : Ty).bind θ) ((Ty.refined (.tvar 0) path.lift).bind θ) :=
   (source_introduce [path]).bind θ transport
 
 /-- 源の型変数を、篩付きの像へ置き換えた導出の具体的な形。 -/
 theorem introduce_bind_shape :
-    Ty.LeQ Δ Ψ
+    Ty.LeQ P Δ Ψ
       (.refined (.base .integer) (.le (.var 0) (.add (.var 3) (.integer 1))))
       (.refined (.refined (.base .integer) (.le (.var 0) (.add (.var 3) (.integer 1))))
         (.eq (.add (.var 3) (.integer 1)) (.integer 7))) := by
@@ -124,7 +126,7 @@ theorem introduce_bind_shape :
 
 /-- None を一つ加えた後も、facts を使う同じ篩の導入を移せる。 -/
 theorem introduce_bind_under_none :
-    Ty.LeQ Δ.extendNone (Ψ.map Pred.lift)
+    Ty.LeQ P Δ.extendNone (Ψ.map Pred.lift)
       (((.tvar 0 : Ty).shiftV 1 0).bind θ.up)
       (((Ty.refined (.tvar 0) path.lift).shiftV 1 0).bind θ.up) :=
   ((source_introduce [path]).shiftV 1 0).bind θ.up transport.extendNone

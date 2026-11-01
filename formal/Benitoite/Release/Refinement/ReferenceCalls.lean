@@ -3,9 +3,11 @@ import Benitoite.Release.Refinement.ConstraintAssumptions
 
 /-! # 参照の呼出しが使う引数列の逆転 -/
 namespace Benitoite.Release.Refinement
+
+variable {P : Program}
 noncomputable section
 
-private theorem narrow_transport {Γ Φ a b} (h : Ty.LeQ Γ Φ b a) :
+private theorem narrow_transport {Γ Φ a b} (h : Ty.LeQ P Γ Φ b a) :
     Transport (renEnv id) (Γ.extend a) (Φ.map Pred.lift) (Γ.extend b) (Φ.map Pred.lift) := by
   have look : ∀ (i : Nat) (x : Ty), (Γ.extend a)[i]? = some (some x) →
       ∃ y : Ty, (Γ.extend b)[i]? = some (some y) ∧
@@ -44,16 +46,16 @@ private theorem narrow_transport {Γ Φ a b} (h : Ty.LeQ Γ Φ b a) :
       · exact .hyp (List.mem_append_left _ (Ctx.mem_facts_extend.mpr (Or.inr ⟨q,hq,rfl⟩)))
     · exact .hyp (List.mem_append_right _ hp)
 
-private theorem tel_narrow {Γ Φ a b t u} (h : Ty.LeQ Γ Φ b a)
-    (ht : TelClosure (Γ.extend a) (Φ.map Pred.lift) t u) :
-    TelClosure (Γ.extend b) (Φ.map Pred.lift) t u := by
+private theorem tel_narrow {Γ Φ a b t u} (h : Ty.LeQ P Γ Φ b a)
+    (ht : TelClosure P (Γ.extend a) (Φ.map Pred.lift) t u) :
+    TelClosure P (Γ.extend b) (Φ.map Pred.lift) t u := by
   have hh := ht.rawBind (renEnv id) (narrow_transport h)
   simpa only [Tel.rawBind_id] using hh
 
-private theorem param_inv_aux {Γ Φ s u} (h : TelClosure Γ Φ s u) :
+private theorem param_inv_aux {Γ Φ s u} (h : TelClosure P Γ Φ s u) :
     ∀ n a t, s = .param n a t →
-      ∃ b v, u = .param n b v ∧ Ty.LeQ Γ Φ b a ∧
-        TelClosure (Γ.extend b) (Φ.map Pred.lift) t v := by
+      ∃ b v, u = .param n b v ∧ Ty.LeQ P Γ Φ b a ∧
+        TelClosure P (Γ.extend b) (Φ.map Pred.lift) t v := by
   match h with
   | .refl => intro n a t hs; cases hs; exact ⟨a,t,rfl,.refl,.refl⟩
   | .tail hpre hl =>
@@ -64,13 +66,13 @@ private theorem param_inv_aux {Γ Φ s u} (h : TelClosure Γ Φ s u) :
     | param hcb htail => exact ⟨_,_,rfl,.trans hcb hba,.tail (tel_narrow hcb ht) htail⟩
 termination_by structural h
 
-private theorem param_inv {Γ Φ n a t u} (h : TelClosure Γ Φ (.param n a t) u) :
-    ∃ b v, u = .param n b v ∧ Ty.LeQ Γ Φ b a ∧
-      TelClosure (Γ.extend b) (Φ.map Pred.lift) t v := param_inv_aux h n a t rfl
+private theorem param_inv {Γ Φ n a t u} (h : TelClosure P Γ Φ (.param n a t) u) :
+    ∃ b v, u = .param n b v ∧ Ty.LeQ P Γ Φ b a ∧
+      TelClosure P (Γ.extend b) (Φ.map Pred.lift) t v := param_inv_aux h n a t rfl
 
-private theorem done_inv_aux {Γ Φ s u} (h : TelClosure Γ Φ s u) :
+private theorem done_inv_aux {Γ Φ s u} (h : TelClosure P Γ Φ s u) :
     ∀ a e, s = .done a e →
-      ∃ b f, u = .done b f ∧ Ty.LeQ Γ Φ a b ∧ Eff.Covers Γ Φ f e := by
+      ∃ b f, u = .done b f ∧ Ty.LeQ P Γ Φ a b ∧ Eff.Covers Γ Φ f e := by
   match h with
   | .refl => intro a e hs; cases hs; exact ⟨a,e,rfl,.refl,.refl _ _ _⟩
   | .tail hpre hl =>
@@ -81,15 +83,15 @@ private theorem done_inv_aux {Γ Φ s u} (h : TelClosure Γ Φ s u) :
     | done hbc hg => exact ⟨_,_,rfl,.trans hab hbc,hg.trans hcov⟩
 termination_by structural h
 
-private theorem done_inv {Γ Φ a e u} (h : TelClosure Γ Φ (.done a e) u) :
-    ∃ b f, u = .done b f ∧ Ty.LeQ Γ Φ a b ∧ Eff.Covers Γ Φ f e := done_inv_aux h a e rfl
+private theorem done_inv {Γ Φ a e u} (h : TelClosure P Γ Φ (.done a e) u) :
+    ∃ b f, u = .done b f ∧ Ty.LeQ P Γ Φ a b ∧ Eff.Covers Γ Φ f e := done_inv_aux h a e rfl
 
 theorem HasTypeTelArgsQ.pullback {P B Ψ ws t u a e}
     (ht : Ty.Annotation P [] [] (.dependentFn t))
-    (hr : TelClosure [] [] t u)
+    (hr : TelClosure P [] [] t u)
     (ha : HasTypeTelArgsQ P B Ψ Qempty [] [] [] ws u a e) :
     ∃ b f, HasTypeTelArgsQ P B Ψ Qempty [] [] [] ws t b f ∧
-      Ty.LeQ [] [] b a ∧ Eff.Covers [] [] e f := by
+      Ty.LeQ P [] [] b a ∧ Eff.Covers [] [] e f := by
   induction ws generalizing t u a e with
   | nil =>
     cases t with
@@ -204,12 +206,12 @@ private theorem prim_inv {P B Ψ Q C Γ Φ v T b ts es rs}
     ∃ s u, B.sig b = some s ∧ B.RangeAdmissible b s rs ∧
       PrimitiveAdmissible C Γ.length s Q ts es ∧
       SignatureInstance P C Γ (Tel.instR rs s.tel) (s.tparams.map TParamDecl.kind) ts es ∧
-      T.fnCore = some u ∧ TelClosure Γ Φ (instantiatedTel (Tel.instR rs s.tel) ts es) u := by
+      T.fnCore = some u ∧ TelClosure P Γ Φ (instantiatedTel (Tel.instR rs s.tel) ts es) u := by
   match h with
   | .V_Prim hs hr hn ha hi => cases hv; exact ⟨_,_,hs,hr,ha,hi,rfl,.refl⟩
   | .V_Normal (a := T0) hh =>
     obtain ⟨s,u,hs,hr,ha,hi,hu,ht⟩ := prim_inv hh hv
-    have hl : Ty.LeQ Γ Φ T0 T0.norm := .convert (Ty.norm_idem T0).symm
+    have hl : Ty.LeQ P Γ Φ T0 T0.norm := .convert (Ty.norm_idem T0).symm
     obtain ⟨w,hw,ht'⟩ := hl.fnCore hu
     exact ⟨s,w,hs,hr,ha,hi,hw,ht.trans ht'⟩
   | .V_Sub hh hl _ _ _ =>
@@ -232,7 +234,7 @@ private theorem primitive_call_aux {P B Ψ Q C Γ Φ R code a e L b ts es rs ws 
     (hg : ∀ v ∈ ws, v.Ground)
     (hc : code = .app (.prim b ts es rs) ws) (hs : B.sig b = some s) :
     ∃ r f, BuiltinArgs P B Ψ b s (Ty.normTys ts) (es.map Eff.norm) rs ws r f ∧
-      Ty.LeQ [] [] r a ∧ Eff.Covers [] [] e f := by
+      Ty.LeQ P [] [] r a ∧ Eff.Covers [] [] e f := by
   match h with
   | .C_DependentApp hv ha =>
     subst Q C Γ Φ
@@ -277,7 +279,7 @@ theorem HasTypeCQ.primitive_call {P B Ψ R code a e L b ts es rs ws s}
     (hg : ∀ v ∈ ws, v.Ground)
     (hc : code = .app (.prim b ts es rs) ws) (hs : B.sig b = some s) :
     ∃ r f, BuiltinArgs P B Ψ b s (Ty.normTys ts) (es.map Eff.norm) rs ws r f ∧
-      Ty.LeQ [] [] r a ∧ Eff.Covers [] [] e f :=
+      Ty.LeQ P [] [] r a ∧ Eff.Covers [] [] e f :=
   primitive_call_aux h rfl rfl rfl rfl hg hc hs
 
 private theorem primitive_annotation {P B Ψ Q C Γ Φ R code a e L b ts es rs ws}
@@ -319,7 +321,7 @@ theorem ClosureTy.pure_primitive {P B Ψ R a e b ts es rs ws s}
     (h : ClosureTy P B Ψ [] R (Closure.pure (.app (.prim b ts es rs) ws)) a e)
     (hg : ∀ v ∈ ws, v.Ground) (hs : B.sig b = some s) :
     ∃ r f, BuiltinArgs P B Ψ b s (Ty.normTys ts) (es.map Eff.norm) rs ws r f ∧
-      Ty.LeQ [] [] r a ∧ Eff.Covers [] [] e f := by
+      Ty.LeQ P [] [] r a ∧ Eff.Covers [] [] e f := by
   obtain ⟨cap,Γ,Φ,Rs,code0,as,es0,L,ρ,hq,hcap,hbody,hL,hR,ha,he,hr⟩ := h.open_zero
   have hc : cap = Capture.empty := (Closure.mk.inj hq).1.symm
   subst cap

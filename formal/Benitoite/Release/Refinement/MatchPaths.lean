@@ -3,6 +3,8 @@ import Benitoite.Release.Refinement.ClosedCapture
 
 /-! # 照合と guard の経路条件を閉じる入口 -/
 namespace Benitoite.Release.Refinement
+
+variable {P : Program}
 noncomputable section
 
 abbrev BooleanTy : Ty := .base .boolean
@@ -154,7 +156,7 @@ private theorem ContTy.guard_true_inv {P B σ Ψ R ε ks input b Eb Re a}
     (h : ContTy P B σ Ψ R ε ks input b Eb Re) {v cap arms next body k}
     (hframes : ks = .guardF v cap arms next body :: k)
     (hv : HasTypeV P B Ψ [] [] [] (.const (.boolean true)) a)
-    (hle : Ty.LeQ [] [] a input) :
+    (hle : Ty.LeQ P [] [] a input) :
     ∃ R' ε' t e, ClosureTy P B Ψ [] R' body t e ∧ Eff.Sub e ε' ∧
       ContTy P B σ Ψ R' ε' k t b Eb Re := by
   match h with
@@ -170,7 +172,7 @@ termination_by structural h
 theorem ContTy.guard_true {P B σ Ψ R ε v cap arms next body k input b Eb Re a}
     (h : ContTy P B σ Ψ R ε (.guardF v cap arms next body :: k) input b Eb Re)
     (hv : HasTypeV P B Ψ [] [] [] (.const (.boolean true)) a)
-    (hle : Ty.LeQ [] [] a input) :
+    (hle : Ty.LeQ P [] [] a input) :
     ∃ R' ε' t e, ClosureTy P B Ψ [] R' body t e ∧ Eff.Sub e ε' ∧
       ContTy P B σ Ψ R' ε' k t b Eb Re := h.guard_true_inv rfl hv hle
 
@@ -272,19 +274,19 @@ theorem StateTyE.guard_false {P B σ Eb q v cap arms next body k μ}
   exact ⟨Ψ,R',t,b,ε',e',hs,hb,hsub,hk',hf.1,hf.2.1,hp,hc.1,hf.2.2.1,
     ⟨hc.2.1,hc.2.2.1⟩,(fun f hh => hkc f (List.mem_cons_of_mem _ hh)),hμc⟩
 
-theorem Ty.LeQ.under_params {Γ Φ a b} (h : Ty.LeQ Γ Φ a b) (ps : List Ty) :
-    Ty.LeQ (bindParams Γ ps) (liftMany ps.length Φ) (a.shiftV ps.length 0) (b.shiftV ps.length 0) := by
+theorem Ty.LeQ.under_params {Γ Φ a b} (h : Ty.LeQ P Γ Φ a b) (ps : List Ty) :
+    Ty.LeQ P (bindParams Γ ps) (liftMany ps.length Φ) (a.shiftV ps.length 0) (b.shiftV ps.length 0) := by
   have hm := ShiftMap.outer Γ ps
   have hh := h.rawBind (renEnv (shiftIndex ps.length 0))
     (hm.transport (fun p hp => (Entails.hyp (List.mem_append_right _ hp)).under_params ps))
-  change Ty.LeQ (bindParams Γ ps) (liftMany ps.length Φ)
+  change Ty.LeQ P (bindParams Γ ps) (liftMany ps.length Φ)
     (renameTy (shiftIndex ps.length 0) a) (renameTy (shiftIndex ps.length 0) b) at hh
   rwa [renameTy_shiftIndex] at hh
 
 /-- 全腕の期待型と効果を拡大する。追加した経路条件も同じ導出で読む。 -/
 theorem HasTypeArmsQ.sub_result {P B Ψ Q C Γ Φ R obs arms a b e L b' e'}
     (h : HasTypeArmsQ P B Ψ Q C Γ Φ R obs arms a b e L)
-    (hle : Ty.LeQ Γ Φ b b') (he : Eff.Covers Γ Φ e' e) (ha : Ty.Annotation P C Γ b') :
+    (hle : Ty.LeQ P Γ Φ b b') (he : Eff.Covers Γ Φ e' e) (ha : Ty.Annotation P C Γ b') :
     HasTypeArmsQ P B Ψ Q C Γ Φ R obs arms a b' e' L := by
   match h with
   | .nil _ => exact .nil ha

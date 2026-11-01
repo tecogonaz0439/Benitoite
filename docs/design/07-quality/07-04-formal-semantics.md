@@ -733,6 +733,10 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 |---|---|
 | Types・TermSyntax・Context・Declared | 「篩を含むコア計算の形式化」 |
 | Conjunction・RefinementNormalForm・FunctionNormalForm・Normalize・Le・Admissible・Typing | 「篩の正規形と制約の読み方」 |
+| VarianceSyntax・VarianceValidation | 「篩の正規形と制約の読み方」の data の変性、metadata と総称の欄の検証 |
+| VarianceFormation・VarianceTransport | 同節の `Sorted` の移送、型引数の比較と欄の単調性。中間の型引数の注釈を要求しない |
+| ObservationType | 同節の観測用の型の射影と `DataObservationLe`。篩の事実を射影から取り出さない |
+| TypeFormation・ValueFacts | 同節の検証済みの欄の型代入の形成、`Declared`・`HasData` の型置換、構成子の反転と欄の型付け |
 | Observation・ClosedEvaluation・Logic・LogicSound・Context/Capture・CapturedFacts | 「閉じた述語の評価と捕捉」 |
 | PathFacts・PathConditions・MatchPaths・MatchFacts・Typing・StateTyping | 「条件とパターンからの事実」 |
 | Typing・HandlerContracts・RuntimeSyntax・AtPrepare・AtTyping・BuiltinResponse・ConstraintAssumptions・BuiltinEffects・Semantics・Step・ExternalCheck・ExternalResponse・ExternalConnection | 「保持要求と組み込みの遷移」 |

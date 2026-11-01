@@ -2,6 +2,8 @@ import Benitoite.Release.Refinement.HandlerStore
 
 /-! # 操作の宣言に対する引数と依存する結果の逆転 -/
 namespace Benitoite.Release.Refinement
+
+variable {P : Program}
 noncomputable section
 
 private theorem toTel_annotation {P ns ps r e}
@@ -91,12 +93,12 @@ private theorem op_inv {P B Ψ Q C Γ Φ v T o ts}
     (h : HasTypeVQ P B Ψ Q C Γ Φ v T) (hv : v = .op o ts) :
     ∃ od u, P.ops o = some od ∧
       SignatureInstance P C Γ od.tel (List.replicate od.tparams.length .value) ts [] ∧
-      T.fnCore = some u ∧ TelClosure Γ Φ (instantiatedTel od.tel ts []) u := by
+      T.fnCore = some u ∧ TelClosure P Γ Φ (instantiatedTel od.tel ts []) u := by
   match h with
   | .V_Op hs hn ha hi => cases hv; exact ⟨_,_,hs,hi,rfl,.refl⟩
   | .V_Normal (a := T0) hh =>
     obtain ⟨s,u,hs,hi,hu,ht⟩ := op_inv hh hv
-    have hl : Ty.LeQ Γ Φ T0 T0.norm := .convert (Ty.norm_idem T0).symm
+    have hl : Ty.LeQ P Γ Φ T0 T0.norm := .convert (Ty.norm_idem T0).symm
     obtain ⟨w,hw,ht'⟩ := hl.fnCore hu
     exact ⟨s,w,hs,hi,hw,ht.trans ht'⟩
   | .V_Sub hh hl _ _ _ =>
@@ -118,7 +120,7 @@ private theorem operation_call_aux {P B Ψ Q C Γ Φ R code a e L o v od}
     (hQ : Q = Qempty) (hC : C = []) (hΓ : Γ = []) (hΦ : Φ = [])
     (hc : code = .app (.op o []) [v]) (hd : P.ops o = some od) :
     ∃ r f, HasTypeTelArgsQ P B Ψ Qempty [] [] [] [v]
-      (instantiatedTel od.tel [] []) r f ∧ Ty.LeQ [] [] r a ∧ Eff.Covers [] [] e f := by
+      (instantiatedTel od.tel [] []) r f ∧ Ty.LeQ P [] [] r a ∧ Eff.Covers [] [] e f := by
   match h with
   | .C_DependentApp hv ha =>
     subst Q C Γ Φ
@@ -160,7 +162,7 @@ theorem HasTypeCQ.operation_call {P B Ψ R o v a e L od}
     (hd : P.ops o = some od) :
     ∃ r f, HasTypeTelArgsQ P B Ψ Qempty [] [] [] [v]
       (instantiatedTel od.tel [] []) r f ∧
-      Ty.LeQ [] [] r a ∧ Eff.Covers [] [] e f :=
+      Ty.LeQ P [] [] r a ∧ Eff.Covers [] [] e f :=
   operation_call_aux h rfl rfl rfl rfl rfl hd
 
 private theorem operation_signature_aux {P B Ψ Q C Γ Φ R code a e L o v od}
@@ -217,7 +219,7 @@ theorem ClosureTy.pure_operation {P B Ψ R a e o v od}
     (hd : P.ops o = some od) :
     ∃ r f, HasTypeTelArgsQ P B Ψ Qempty [] [] [] [v]
       (instantiatedTel od.tel [] []) r f ∧
-      Ty.LeQ [] [] r a ∧ Eff.Covers [] [] e f := by
+      Ty.LeQ P [] [] r a ∧ Eff.Covers [] [] e f := by
   obtain ⟨cap,Γ,Φ,Rs,code0,as,es0,L,ρ,hq,hcap,hbody,hL,hR,ha,he,hr⟩ := h.open_zero
   have hc : cap = Capture.empty := (Closure.mk.inj hq).1.symm
   subst cap

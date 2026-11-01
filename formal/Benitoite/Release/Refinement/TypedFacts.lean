@@ -1,4 +1,5 @@
 import Benitoite.Release.Refinement.AdmissibleMap
+import Benitoite.Release.Refinement.VarianceTransport
 
 /-!
 # 型付きの値から得る整数観測と篩の事実
@@ -7,7 +8,9 @@ import Benitoite.Release.Refinement.AdmissibleMap
 -/
 namespace Benitoite.Release.Refinement
 
-theorem Ty.LeQ.integerCarrier {Γ Φ a b} (h : Ty.LeQ Γ Φ a b) :
+variable {P : Program}
+
+theorem Ty.LeQ.integerCarrier {Γ Φ a b} (h : Ty.LeQ P Γ Φ a b) :
     a.IntegerCarrier ↔ b.IntegerCarrier := by
   match h with
   | .refl => rfl
@@ -15,36 +18,11 @@ theorem Ty.LeQ.integerCarrier {Γ Φ a b} (h : Ty.LeQ Γ Φ a b) :
     change a.HasSort .integer ↔ b.HasSort .integer
     rw [←Ty.hasSort_norm a, ←Ty.hasSort_norm b, he]
   | .trans h₁ h₂ => exact h₁.integerCarrier.trans h₂.integerCarrier
-  | .fn_effect _ | .list _ | .lazy _ | .map_value _ _ => rfl
+  | .data _ | .fn_effect _ | .list _ | .lazy _ | .map_value _ _ => rfl
   | .forget | .introduce _ _ => rfl
   | .refine hv _ _ _ => exact hv.integerCarrier
   | .dependentFn _ | .scoped _ => rfl
   | .scoped_forget => simp [Ty.IntegerCarrier, Ty.HasSort, Ty.sort?]
-
-theorem Ty.LeQ.hasSort_source {Γ Φ a b sort} (h : Ty.LeQ Γ Φ a b) (hs : b.HasSort sort) :
-    a.HasSort sort := by
-  match h with
-  | .refl => exact hs
-  | .convert he =>
-    apply (Ty.hasSort_norm a sort).mp
-    rw [he]
-    exact (Ty.hasSort_norm b sort).mpr hs
-  | .trans h₁ h₂ => exact h₁.hasSort_source (h₂.hasSort_source hs)
-  | .fn_effect _ | .list _ | .lazy _ | .map_value _ _ => exact hs
-  | .forget | .introduce _ _ => exact hs
-  | .refine hv _ _ _ => exact hv.hasSort_source hs
-  | .dependentFn _ | .scoped _ => exact hs
-  | .scoped_forget => cases hs
-
-theorem Ty.LeQ.dataCore_source {Γ Φ a b d ts} (h : Ty.LeQ Γ Φ a b)
-    (hd : b.norm.core = .data d ts) : a.norm.core = .data d ts := by
-  match h with
-  | .refl => exact hd
-  | .convert he => rwa [he]
-  | .trans h₁ h₂ => exact h₁.dataCore_source (h₂.dataCore_source hd)
-  | .fn_effect _ | .list _ | .lazy _ | .map_value _ _ | .dependentFn _ | .scoped _ | .scoped_forget => first | exact False.elim (Ty.notDataCore_dependentFn hd) | cases hd
-  | .forget | .introduce _ _ => simpa only [Ty.refined_norm_core] using hd
-  | .refine hv _ _ _ => simpa only [Ty.refined_norm_core] using hv.dataCore_source (by simpa only [Ty.refined_norm_core] using hd)
 
 theorem HasTypeVsQ.length {P B store Q C Γ Φ vs as}
     (h : HasTypeVsQ P B store Q C Γ Φ vs as) : vs.length = as.length := by
@@ -78,7 +56,9 @@ theorem HasTypeVQ.data_observation {P B store Q C Γ Φ v a d ts}
     cases ht
     exact hs.error_data
   | .V_Normal hv => exact hv.data_observation (by simpa only [Ty.norm_idem] using hd) ht
-  | .V_Sub hv hl _ _ _ => exact hv.data_observation (hl.dataCore_source hd) ht
+  | .V_Sub hv hl _ _ _ =>
+    obtain ⟨us, hu, hs⟩ := hl.dataCore_source hd
+    exact .widen (hv.data_observation hu ht) (DataObservationLe.of_args hs)
   | .V_Refine hv _ _ _ _ _ _ _ => exact hv.data_observation (by simpa only [Ty.refined_norm_core] using hd) ht
 
 mutual
