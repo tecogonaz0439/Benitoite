@@ -3,6 +3,11 @@ import Benitoite.Release.Refinement.ValueBinding
 
 namespace Benitoite.Release.Refinement
 
+private theorem PatTy.refineNorm {P p a φ δ} (h : PatTy P p a δ)
+    (hn : δ.map Ty.norm = δ) : PatTy P p (a.refineNorm φ) δ := by
+  rw [←hn]
+  exact .P_Convert (by simp only [Ty.norm,Ty.norm_refineNorm]) (.P_Refined (φ := φ) h)
+
 theorem restTys_map (f : Ty → Ty) (rest : Option ListRest) (a : Ty)
     (hl : f (.list a) = .list (f a)) : (restTys rest a).map f = restTys rest (f a) := by
   cases rest with
@@ -13,6 +18,10 @@ mutual
   theorem PatTy.shift_values {P p a δ} (h : PatTy P p a δ) (k c : Nat) :
       PatTy P p (a.shiftV k c) (δ.map (Ty.shiftV k c)) := by
     match h with
+    | .P_Convert he hp =>
+      have hh := PatTy.P_Convert (b := a.shiftV k c) (by simpa only [Ty.norm_shiftV] using congrArg (Ty.shiftV k c) he) (hp.shift_values k c)
+      simpa only [List.map_map,Function.comp_def,Ty.norm_shiftV] using hh
+    | .P_Refined hp => exact .P_Refined (hp.shift_values k c)
     | .P_Wild => exact .P_Wild
     | .P_Var => exact .P_Var
     | .P_Const (c := con) hc =>
@@ -47,6 +56,12 @@ mutual
   theorem PatTy.subst_values {P p a δ} (h : PatTy P p a δ) (ν : Nat → Val) :
       PatTy P p (substTyValues ν a) (δ.map (substTyValues ν)) := by
     match h with
+    | .P_Convert he hp =>
+      have hh := PatTy.P_Convert (b := substTyValues ν a) (by simpa only [substTyValues,Ty.bind,Ty.norm_idem] using Ty.rawBind_norm_congr (valEnv ν) he) (hp.subst_values ν)
+      simpa only [List.map_map,Function.comp_def,substTyValues,Ty.bind,Ty.norm_rawBind,Ty.norm_idem] using hh
+    | .P_Refined hp =>
+      simp only [substTyValues,Ty.bind,Ty.rawBind,Ty.norm]
+      exact PatTy.refineNorm (hp.subst_values ν) (by simp only [List.map_map,Function.comp_def,substTyValues,Ty.bind,Ty.norm_idem]; rfl)
     | .P_Wild => exact .P_Wild
     | .P_Var => exact .P_Var
     | .P_Const (c := con) hc =>

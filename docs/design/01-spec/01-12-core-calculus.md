@@ -3144,6 +3144,20 @@ builders_no_captureとbuilders_block_no_captureは、Aligned Γ ΔからEnvReads
   | scoped_forget {Γ Φ o k ix} : Ty.LeQ P Γ Φ (.scoped o k ix) (.opaque o ix)
 ```
 
+### 篩を読む網羅性と値の意味
+
+【決定】この名前空間の `Inhabits P a v` は、照合が読む値の形の上側近似である。篩の規則は、`Inhabits P a v` と `RefinementPossible p v` から `Inhabits P (refined a p) v` を作る。`selfObservation v` は `v.toTerm?` を空の外側環境で観測した結果である。`RefinementPossible p v` は、番号0へこの観測を置き、外側の全位置を未観測の `none` にした三値評価が `some false` と異なることである。評価不能の値は残し、篩が偽と確定した値だけを除く。`checkedAt range snapshot target request` は、範囲を忘れた任意の `opaque o ix` の値の形にも含める。
+
+網羅性は `Exhaustive P a ps := ∀ v, Inhabits P a.norm v → ∃ p ∈ ps, (matchVal p v).isSome` と定める。プログラムの宣言 P に加えて組み込み表・値の文脈・経路条件を引数へ足さない。Month の1以上12以下、偽の篩、非空 List は観測した自己から初期領域へ反映する。外側の値に依存する長さの等号だけでは空 List を除かない。有限の含意を用いて被検査値へ非空の自己述語を持つ型を付け、その型の網羅性を適用する。
+
+パターン型付けの `P_Refined` は、a で型付けした同じパターンを `refined a p` へ移し、束縛する型の列を保つ。`P_Convert` は、`a.norm = b.norm` と `PatTy P pat a δ` から `PatTy P pat b (δ.map Ty.norm)` を作る。変換後の束縛型も正規形とする。理由: 入れ子の篩を平坦化しても、その途中の篩型を束縛した導出を値置換の後に保持するためである。部分型の含意から任意の入力型へ移す規則ではない。
+
+`ValueMeaning P η a v` は、`a.norm.core` に対する `ValueShapeMeaning` と、`a.norm.refinementPredicates` の全述語が `selfModel η v` の二値の解釈で真であることを持つ。data の全欄は `ValueMeanings`、List の全要素は `ValueMeaningEach` を介して同じ意味の判断を要求する。`scoped o k ix` の意味は `ScopedValue ix v` を要求し、fixed の添字には成功値 `checked` と `checkedRequest`、任意の添字には `checkedAt` を認める。この判断は範囲の拡大と `scoped_forget` に対する意味の移送を保つ。その他の、照合が内部を観測しない型の形は `Inhabits` と同じ上側近似である。自己を加える前の外側のモデル η と、既に閉じた実行時値 v を分ける。`assume` が継続型の事実を空にすることを理由に、型に書かれた篩の真を省略しない。適格な篩型では `assume` と全述語の列は一致する。
+
+information order に当たる `Observation.InfoLE` は、scalar と対象の snapshot を等号で保ち、List・Map・Set・data の内部の未観測 slot に情報を加える。slot の位置・数と構成子名は保つ。反射性・推移性・反対称性、および鍵コード・大きさ・項の観測の単調性を示す。`Pred.evalWith_mono` は一度確定した真偽が情報の追加で変わらないことを示す。全域の解釈の既定値について、無条件の不変性は要求しない。
+
+`ValueMeaning.norm_iff` と `Inhabits.norm_iff`、自己を保つ値置換の確定値の保存、全型と述語の反映を用いた所属の値置換反映を証明する。core の等号だけから篩の所属を復元する規則はない。意味から正規形への所属は、述語が二値で真であることと三値評価の健全性から導く。意味の判断は主な定理の独立の仮定ではない。現在の証明には、refine の carrier の帰納仮定と有限の含意を使う `V_Sub` の代表、Month・空篩・非空 List の網羅性、任意の閉じた長さと正の長さから `V_Refine` を構成する代表、閉じた捕捉の意味から元の開いた型へ所属を反映する接続を含む。
+
 ### 閉じた述語の評価と捕捉
 
 【決定】`Pred.evalClosed` は、最初に `WF 0` と `Sorted [] none` を検査し、成功したときだけ空の観測環境で `evalWith` を評価する。原子は、必要な観測、種類、比較の許容、対象の所属を解決できることを `atomReady` で確認してから真偽を求める。観測や範囲の解決に失敗した原子の結果は `none` である。

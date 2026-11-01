@@ -232,6 +232,8 @@
 | 篩型 | refinement type | 型に有限の述語を付け、その型の値に条件を課すもの。コアでは `Ty.refined a p` で表す。処理系の表層で提供する構文とは区別する | [コア計算と脱糖](../01-spec/01-12-core-calculus.md#篩を含むコア計算の形式化) |
 | telescope | telescope | 先行する束縛を後続の型から参照できる、型注釈付きの束縛の列。コアの `Tel` は引数の列と終端の結果型・潜在効果を表す | [コア計算と脱糖](../01-spec/01-12-core-calculus.md#篩を含むコア計算の形式化) |
 | 型の正規形 | normal form | コアの型を `Ty.norm` で正規化した結果。`Ty.Normal` はその固定点の判断で、型の整形式とは別である。ソースの整形の正規形とも区別する | [コア計算と脱糖](../01-spec/01-12-core-calculus.md#篩の正規形と制約の読み方) |
+| `ValueMeaning` | —（形式化の判断名） | 篩を含む形式化で、正規形の値の形、data の全欄と List の全要素の意味、最外の全篩述語の真を保持する相互の判断。網羅性が読む上側近似の所属 `Inhabits` と区別する | [コア計算と脱糖](../01-spec/01-12-core-calculus.md#篩を読む網羅性と値の意味) |
+| information order | information order (`Observation.InfoLE`) | 未観測の slot に情報を加え、既にある scalar・snapshot・構成子名・slot の位置と数を保つ部分順序。確定した三値評価の保存を述べるために使う | [コア計算と脱糖](../01-spec/01-12-core-calculus.md#篩を読む網羅性と値の意味) |
 | 強い Kleene の三値 | strong Kleene three-valued logic | 真・偽・評価不能の三結果で And/Or/Not を定める。偽との連言と真との選言は相手が評価不能でも決まる。有限述語の閉じた評価に使い、通常の計算の短絡演算とは区別する | [コア計算と脱糖](../01-spec/01-12-core-calculus.md#閉じた述語の評価と捕捉) |
 | 分岐 | arm | `match … with` の「`case` パターン `->` 本体」の一つ。`handle` の節も同じ形で書く | [代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md) |
 | ブロック式 | block expression | `block … end block` と書く、局所の文列を評価して最後の式の値を返す式。空か末尾が束縛なら Unit。名前の範囲を作り、return の作用先と効果の除去境界は作らない | [構文](../01-spec/01-02-syntax.md#ブロック式) |
@@ -359,3 +361,7 @@ refinement type は [LiquidHaskell の仕様](https://ucsd-progsys.github.io/liq
 telescope は [Agda の公式文書](https://agda.readthedocs.io/en/stable/language/telescopes.html)が、先行する変数に後続の型が依存できる束縛の列に用いる語である。本書は原語を用い、`Tel` が終端の結果と効果も持つことは Benitoite の定義として述べる。
 
 強い Kleene の三値は strong Kleene three-valued logic の呼び名を併記する。And/Or/Not の三値表は [PostgreSQL の公式文書](https://www.postgresql.org/docs/17/functions-logical.html)と[日本語版](https://www.postgresql.jp/document/13/html/functions-logical.html)でも確認できる。本プロジェクトの第三の結果は SQL の値 NULL ではなく、述語の評価不能である。01-12 の表を定義とする。
+
+`ValueMeaning` は形式化の判断名として記し、「値の意味」を専門用語の訳語として登録しない。[Skorstengaard の *An Introduction to Logical Relations*](https://cs.au.dk/~birke/papers/AnIntroductionToLogicalRelations.pdf)（2019年、7.3節）は、値に関する型の解釈を value interpretation と呼ぶ。本形式化の判断は一部の型の形を上側近似するため、同文献の関数の解釈を含む論理関係そのものとは同一視しない。
+
+information order は [Niu の *Cost-sensitive programming, verification, and semantics*](https://www.cs.cmu.edu/~rwh/students/niu.pdf)（2024年、第6章、本文72頁）で、要素が持つ確定した情報の量を比較する順序に使われる呼び名である。本書は原語を用いる。`Observation.InfoLE` について証明するのは上表の部分順序と確定した評価の保存であり、領域理論の完全性や連続性まで結論しない。

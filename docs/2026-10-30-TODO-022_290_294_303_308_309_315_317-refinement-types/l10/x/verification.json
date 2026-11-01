@@ -1,0 +1,66 @@
+[
+  {
+    "step": "build",
+    "cwd": "formal",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "exit": 0,
+    "seconds": 42.64,
+    "bytes": 43230,
+    "sha256": "8fd93395de97219bd4f2276960b37f75112441f986725edcd32d45e197b9d7a2",
+    "output": "build-output.txt"
+  },
+  {
+    "step": "boundary",
+    "cwd": "formal",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/x/boundary.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.767,
+    "bytes": 5087,
+    "sha256": "2959476a6ac5b94d510526c05a83fb36ff3c8269a1b8bbe6b4baad0c68f5062a",
+    "output": "boundary-output.txt"
+  },
+  {
+    "step": "signatures",
+    "cwd": "formal",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/x/signatures.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.648,
+    "bytes": 43495,
+    "sha256": "fb8c8afec31c5fb7b31ef0b0e12756385b8d5cd8043ab9f900414f7a16c2e125",
+    "output": "signatures-output.txt"
+  },
+  {
+    "step": "axioms",
+    "cwd": "formal",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/x/axioms.lean"
+    ],
+    "exit": 0,
+    "seconds": 1.941,
+    "bytes": 184818,
+    "sha256": "5f9125c120ca3db9f54e2a32b6a35715066b051fded8f318d092072110264a9b",
+    "output": "<tmp>/axioms.txt"
+  }
+]

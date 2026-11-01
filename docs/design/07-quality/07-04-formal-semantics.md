@@ -71,6 +71,10 @@
 
 移動・値の置換・narrowing の相互の証明は、値29、計算24、腕・節・引数列・捕捉・閉包などを合わせた76構成子を扱う。これは Step の全76遷移に対する保存の証明とは別である。篩の平坦化と true の除去、非依存関数型の正規化、`SatAll`・admits・鍵の制約を正規形で読む規則、組み込み遷移の入力の正規化も、この体系の定義と証明へ含む。
 
+網羅性は正規形を入口とし、`ValueMeaning` は全子値の意味と最外の全篩述語の真を持つ。範囲付き型の形は添字と成功値を結ぶ `ScopedValue` に絞り、範囲の拡大と `scoped_forget` による意味の移送を証明する。`ObservationOrder`・`ObservationSubstitution` は内部 slot の情報の順序、鍵コードと大きさ、観測と三値評価の単調性、自己を保つ値置換の確定値の保存を証明する。`PatternNormalForm`・`PatternSemantics` は正規化と全型の値置換反映を証明し、無条件の `Inhabits.of_core` は置かない。`ValueMeaningInhabits` は意味から正規形への所属を導く。`CoverageRefinement` は refine の意味の移送と `V_Sub` の代表、Month・空篩・非空 List・観測不能な要素の代表、任意の閉じた長さからの `V_Refine` と網羅性、開いた型への反映を持つ。
+
+パターン型付けには、篩へ同じ束縛を移す `P_Refined` と、正規形の等号で入力型を移す `P_Convert` を含む。型付けの値29・計算24を含む76構成子と、値移動・型移動・値置換・narrowing の主な署名は維持する。閉じた型付けの全導出から `ValueMeaning` を構成する証明、任意の部分型の全移送、任意の捕捉と腕への全接続は、この代表の証明からは結論しない。意味を主な定理へ独立の仮定として追加していない。
+
 現在の状態に関する証明の範囲は次のとおりである。依存 β と捕捉した closure の代表は、共通の本体の導出から開始・到達の型付けと Step を作る。これは、開始の `StateTyE` の任意の導出を逆転する定理とは区別する。
 
 | 対象 | 現在の Lean の定理の範囲 |
@@ -83,7 +87,7 @@
 | 節・resume・破棄 | `HandlerOperation` の pure・単相一引数・辞書なしの操作、`HandlerPreservation` の定数の resume/返却/drop と used の再開、解放を伴う通常返却・escape・error・exit の代表。依存列の捕捉の延長は任意の長さである |
 | 外部受信 | `ExternalConnection` の三条件と型付き入力からの受信後の型付け・Ground・適格性・no-exit、`ExternalCheck` の全入れ子の篩の受理の健全性 |
 
-`StateTyE` と `StateTy` の定義はあるが、この名前空間に全状態の `preservation`・`progress`・`step_sound`・`effect_soundness` はない。最終の `Program.WellTyped` もこの体系には定義していない。旧 Release の主定理や既定ビルドの成功を、この体系の主定理の証明と読まない。`RootShape` による除外の健全性は型付きの閉じた値へ接続しているが、網羅性が読む `Inhabits` は `checkedAt` の全型付けを覆う定義にはなっていない。
+`StateTyE` と `StateTy` の定義はあるが、この名前空間に全状態の `preservation`・`progress`・`step_sound`・`effect_soundness` はない。最終の `Program.WellTyped` もこの体系には定義していない。旧 Release の主定理や既定ビルドの成功を、この体系の主定理の証明と読まない。`RootShape` による除外の健全性は型付きの閉じた値へ接続しているが、網羅性が読む `Inhabits` は自己の三値評価が false と確定した値だけを篩から除き、範囲を忘れた `checkedAt` の形も含む。
 
 【決定】Rust との接続済みの範囲を述べる本章の既存の表は、Release・Surface・既存の交換器と区間・Scope の入口についてのものである。篩を含む形式化の成功を、その範囲へ追加したものとはしない。Lean の閉じた評価は強い Kleene の三値であり、型や値に篩が書けること、同じ分岐の事実を Rust が作ること、Rust の外部受信が同じ検査を行うこと、篩を含む交換の全比較が成功したことは、この段階の証拠に含めない。
 
@@ -737,6 +741,7 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 | VarianceFormation・VarianceTransport | 同節の `Sorted` の移送、型引数の比較と欄の単調性。中間の型引数の注釈を要求しない |
 | ObservationType | 同節の観測用の型の射影と `DataObservationLe`。篩の事実を射影から取り出さない |
 | TypeFormation・ValueFacts | 同節の検証済みの欄の型代入の形成、`Declared`・`HasData` の型置換、構成子の反転と欄の型付け |
+| RefinementObservation・ObservationOrder・ObservationSubstitution・ObservationInterpretation・ValueMeaning・ValueMeaningInhabits・PatternNormalForm・Patterns・PatternTransport・PatternSemantics・PatternTypeShift・CoverageRefinement | 「篩を読む網羅性と値の意味」 |
 | Observation・ClosedEvaluation・Logic・LogicSound・Context/Capture・CapturedFacts | 「閉じた述語の評価と捕捉」 |
 | PathFacts・PathConditions・MatchPaths・MatchFacts・Typing・StateTyping | 「条件とパターンからの事実」 |
 | Typing・HandlerContracts・RuntimeSyntax・AtPrepare・AtTyping・BuiltinResponse・ConstraintAssumptions・BuiltinEffects・Semantics・Step・ExternalCheck・ExternalResponse・ExternalConnection | 「保持要求と組み込みの遷移」 |

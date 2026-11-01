@@ -9,6 +9,8 @@ noncomputable section
 mutual
   theorem PatTy.binders_length {P p a δ} (h : PatTy P p a δ) : δ.length = p.binders := by
     match h with
+    | .P_Refined hp => exact PatTy.binders_length hp
+    | .P_Convert _ hp => simpa only [List.length_map] using PatTy.binders_length hp
     | .P_Wild | .P_Var | .P_Const _ | .P_RangeInt | .P_RangeChar => rfl
     | .P_Con _ _ _ hs => exact PatTys.binders_length hs
     | .P_List (rest := rest) hb ha _ =>
@@ -465,12 +467,15 @@ theorem eval_character_range (lo hi n : Char) :
   rw [character_le_decide,character_le_decide]
   by_cases h1 : lo.toNat ≤ n.toNat <;> by_cases h2 : n.toNat ≤ hi.toNat <;> simp [patternRange,h1,h2]
 
-theorem range_test_false {P lo hi v test t a δ}
-    (hpat : PatTy P (.range lo hi) a δ) (hv : RootShape P a v)
+private theorem range_test_false_aux {P pat lo hi v test t a δ}
+    (hpat : PatTy P pat a δ) (hr : pat = .range lo hi) (hv : RootShape P a v)
     (hp : patternTest? (.range lo hi) = some test) (hm : matchVal (.range lo hi) v = none)
     (ht : v.toTerm? = some t) : (test.predicate t).evalWith (fun _ => none) = some false := by
-  cases hpat with
-  | P_RangeInt =>
+  match hpat with
+  | .P_Refined hp' => exact range_test_false_aux hp' hr hv hp hm ht
+  | .P_Convert he hp' => exact range_test_false_aux hp' hr (RootShape.norm.mp (he.symm ▸ RootShape.norm.mpr hv)) hp hm ht
+  | .P_RangeInt =>
+    cases hr
     obtain ⟨c,rfl,hc⟩ := RootShape.scalar hv rfl
     cases c <;> simp [Const.type] at hc
     rename_i lo hi n
@@ -483,7 +488,8 @@ theorem range_test_false {P lo hi v test t a δ}
     have he : test = .integerRange lo.val hi.val := by simpa [patternTest?] using hp.symm
     subst test
     simpa only [Integer64Value.toInt,hb] using eval_integer_range lo hi n
-  | P_RangeChar =>
+  | .P_RangeChar =>
+    cases hr
     obtain ⟨c,rfl,hc⟩ := RootShape.scalar hv rfl
     cases c <;> simp [Const.type] at hc
     rename_i lo hi n
@@ -496,8 +502,14 @@ theorem range_test_false {P lo hi v test t a δ}
     have he : test = .characterRange lo hi := by simpa [patternTest?] using hp.symm
     subst test
     simpa only [hb] using eval_character_range lo hi n
+  | .P_Wild | .P_Var | .P_Const _ | .P_List _ _ _ | .P_Con _ _ _ _ => cases hr
+termination_by structural hpat
 
-
+theorem range_test_false {P lo hi v test t a δ}
+    (hpat : PatTy P (.range lo hi) a δ) (hv : RootShape P a v)
+    (hp : patternTest? (.range lo hi) = some test) (hm : matchVal (.range lo hi) v = none)
+    (ht : v.toTerm? = some t) : (test.predicate t).evalWith (fun _ => none) = some false :=
+  range_test_false_aux hpat rfl hv hp hm ht
 
 theorem PatTys.arity_length {P ps as δ} (h : PatTys P ps as δ) : ps.length = as.length := by
   match h with
@@ -544,12 +556,15 @@ theorem constructor_test_false {P c ps cd ts δ v t}
     cases ht
     simpa [he] using eval_constructor c "Scope.ScopeError.At" (detail.textFields.map (fun x => some (.string x)))
 
-theorem empty_test_excluded {P a δ v t}
-    (hp : PatTy P (.list [] none []) a δ) (hv : RootShape P a v)
+private theorem empty_test_excluded_aux {P pat a δ v t}
+    (hp : PatTy P pat a δ) (hr : pat = .list [] none []) (hv : RootShape P a v)
     (hm : matchVal (.list [] none []) v = none) (ht : v.toTerm? = some t) :
     (PathTest.nonempty.predicate t).evalWith (fun _ => none) = some true := by
-  cases hp with
-  | P_List hb ha _ =>
+  match hp with
+  | .P_Refined hp' => exact empty_test_excluded_aux hp' hr hv hm ht
+  | .P_Convert he hp' => exact empty_test_excluded_aux hp' hr (RootShape.norm.mp (he.symm ▸ RootShape.norm.mpr hv)) hm ht
+  | .P_List hb ha _ =>
+    cases hr
     obtain ⟨elems,rfl⟩ := RootShape.list hv rfl
     have hpos : 0 < elems.length := by
       by_cases h : 0 < elems.length
@@ -559,8 +574,14 @@ theorem empty_test_excluded {P a δ v t}
       simp [matchVal,matchList] at hm
     cases ht
     simpa [Val.toTermSlots_eq_map,hpos] using eval_nonempty (Val.toTermSlots elems)
+  | .P_Wild | .P_Var | .P_Const _ | .P_RangeInt | .P_RangeChar | .P_Con _ _ _ _ => cases hr
+termination_by structural hp
 
-
+theorem empty_test_excluded {P a δ v t}
+    (hp : PatTy P (.list [] none []) a δ) (hv : RootShape P a v)
+    (hm : matchVal (.list [] none []) v = none) (ht : v.toTerm? = some t) :
+    (PathTest.nonempty.predicate t).evalWith (fun _ => none) = some true :=
+  empty_test_excluded_aux hp rfl hv hm ht
 
 theorem excluded_list_cases {before rest after test}
     (hp : excludedTest? (.list before rest after) = some test) :
@@ -579,9 +600,11 @@ theorem pattern_excluded_true {P pat a δ v test t}
     (hp : excludedTest? pat = some test) (hm : matchVal pat v = none)
     (ht : v.toTerm? = some t) : (test.predicate t).evalWith (fun _ => none) = some true := by
   have hpat0 := hpat
-  cases hpat with
-  | P_Wild | P_Var => cases hp
-  | P_Const hc =>
+  match hpat with
+  | .P_Refined hp' => exact pattern_excluded_true hp' hv hp hm ht
+  | .P_Convert he hp' => exact pattern_excluded_true hp' (RootShape.norm.mp (he.symm ▸ RootShape.norm.mpr hv)) hp hm ht
+  | .P_Wild | .P_Var => cases hp
+  | .P_Const hc =>
     rename_i c
     cases hl : pathLiteral? c with
     | none => simp [excludedTest?,hl] at hp
@@ -590,22 +613,22 @@ theorem pattern_excluded_true {P pat a δ v test t}
       subst test
       have hf := literal_test_false hc hv hl hm ht
       simpa only [PathTest.predicate] using eval_not_of_false hf
-  | P_RangeInt =>
+  | .P_RangeInt =>
     rename_i lo hi
     have he : test = .negated (.integerRange lo.val hi.val) := by simpa [excludedTest?] using hp.symm
     subst test
     have hf := range_test_false hpat0 hv (test := .integerRange lo.val hi.val) rfl hm ht
     simpa only [PathTest.predicate] using eval_not_of_false hf
-  | P_RangeChar =>
+  | .P_RangeChar =>
     rename_i lo hi
     have he : test = .negated (.characterRange lo hi) := by simpa [excludedTest?] using hp.symm
     subst test
     have hf := range_test_false hpat0 hv (test := .characterRange lo hi) rfl hm ht
     simpa only [PathTest.predicate] using eval_not_of_false hf
-  | P_List hb ha _ =>
+  | .P_List hb ha _ =>
     obtain ⟨rfl,rfl,rfl,rfl⟩ := excluded_list_cases hp
     exact empty_test_excluded hpat0 hv hm ht
-  | P_Con hc hn hw hps =>
+  | .P_Con hc hn hw hps =>
     simp only [excludedTest?] at hp
     split at hp
     · rename_i hall

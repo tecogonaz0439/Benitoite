@@ -363,3 +363,5 @@ import Benitoite.Release.Refinement.LazyPreservation
 import Benitoite.Release.Refinement.HandlerOperation
 
 import Benitoite.Release.Refinement.BuiltinEffects
+
+import Benitoite.Release.Refinement.CoverageRefinement

@@ -72,8 +72,8 @@ private theorem atError_match_all {P a v cs}
     exact ⟨atErrorPattern,List.mem_cons_self,by simp only [AtError.match_pattern,Option.isSome_some]⟩
   | .const (c := c) => intro he; cases c <;> cases he
   | .list _ | .fn | .dependentFn | .tvar | .reference | .lazy | .cont | .map | .set | .bytes |
-    .dict | .tapp | .ctor | .external | .scoped | .pathBases | .scopePattern | .refined _ |
-    .checked | .checkedRequest => intro he; cases he
+    .dict | .tapp | .ctor | .external | .scoped | .pathBases | .scopePattern | .refined _ _ |
+    .checked | .checkedRequest | .checkedAtOpaque => intro he; cases he
 
 theorem Exhaustive.atError {P shape cs} (_hs : ResultShape.StandardError P shape)
     (hc : P.StandardErrorComplete cs) : Exhaustive P atErrorType (atErrorPatterns cs) := by
