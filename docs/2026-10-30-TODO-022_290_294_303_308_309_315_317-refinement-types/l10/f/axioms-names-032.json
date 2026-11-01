@@ -1,0 +1,985 @@
+[
+  {
+    "name": "Benitoite.Release.Refinement.Val.resolveLocals_builderSubst._f",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Val.resolveLocals_id",
+    "axioms": [
+      "propext",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Val.resolveLocals_id._f",
+    "axioms": [
+      "propext",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Val.substList_resolveLocals",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Val.substList_resolveLocals._f",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Val.subst_resolveLocals",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Val.subst_resolveLocals._f",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.builderImages_resolve",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.builderImages_shiftE",
+    "axioms": [
+      "propext",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.builderValueSubst.eq_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.builderValueSubst.eq_2",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.closeVal_resolved",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.localCompose",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.localCompose.eq_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.localCompose_builder",
+    "axioms": [
+      "propext",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.pushLocal",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.pushLocal.eq_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.pushLocal.eq_2",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.pushLocal.match_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.telBinders_arity",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.telBinders_arity._f",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.telBinders_bind",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.upLocalSubst_bound",
+    "axioms": [
+      "propext",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.upLocalSubst_compose",
+    "axioms": [
+      "propext",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.upLocalSubst_compose._proof_1_2",
+    "axioms": [
+      "propext",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.builderLocalSubst.eq_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.builderLocalSubst.eq_2",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.LocalRef.Scoped.match_1.eq_1",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.LocalRef.Scoped.match_1.eq_2",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.LocalRef.Scoped.match_1.splitter",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Arm.renameList.match_1.eq_1",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Arm.renameList.match_1.eq_2",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Arm.renameList.match_1.eq_3",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Arm.renameList.match_1.splitter",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Arm.resolveLocalsList.match_1.eq_1",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Arm.resolveLocalsList.match_1.eq_2",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Arm.resolveLocalsList.match_1.eq_3",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Arm.resolveLocalsList.match_1.splitter",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Clause.renameList.match_1.eq_1",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Clause.renameList.match_1.eq_2",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Clause.renameList.match_1.eq_3",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Clause.renameList.match_1.splitter",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Clause.resolveLocalsList.match_1.eq_1",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Clause.resolveLocalsList.match_1.eq_2",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Clause.resolveLocalsList.match_1.eq_3",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Clause.resolveLocalsList.match_1.splitter",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Comp.rename.match_1.eq_1",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Comp.rename.match_1.eq_2",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Comp.rename.match_1.splitter",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Comp.rename.match_3.eq_1",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Comp.rename.match_3.eq_10",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Comp.rename.match_3.eq_11",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Comp.rename.match_3.eq_12",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Comp.rename.match_3.eq_13",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Comp.rename.match_3.eq_14",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Comp.rename.match_3.eq_15",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Comp.rename.match_3.eq_16",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Comp.rename.match_3.eq_2",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Comp.rename.match_3.eq_3",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Comp.rename.match_3.eq_4",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Comp.rename.match_3.eq_5",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Comp.rename.match_3.eq_6",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Comp.rename.match_3.eq_7",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Comp.rename.match_3.eq_8",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Comp.rename.match_3.eq_9",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Comp.rename.match_3.splitter",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Comp.resolveLocals.match_1.eq_1",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Comp.resolveLocals.match_1.eq_2",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Comp.resolveLocals.match_1.splitter",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Comp.resolveLocals.match_3.eq_1",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Comp.resolveLocals.match_3.eq_10",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Comp.resolveLocals.match_3.eq_11",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Comp.resolveLocals.match_3.eq_12",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Comp.resolveLocals.match_3.eq_13",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Comp.resolveLocals.match_3.eq_14",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Comp.resolveLocals.match_3.eq_15",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Comp.resolveLocals.match_3.eq_16",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Comp.resolveLocals.match_3.eq_2",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Comp.resolveLocals.match_3.eq_3",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Comp.resolveLocals.match_3.eq_4",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Comp.resolveLocals.match_3.eq_5",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Comp.resolveLocals.match_3.eq_6",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Comp.resolveLocals.match_3.eq_7",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Comp.resolveLocals.match_3.eq_8",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Comp.resolveLocals.match_3.eq_9",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Comp.resolveLocals.match_3.splitter",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.rename.match_1.eq_1",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.rename.match_1.eq_10",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.rename.match_1.eq_11",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.rename.match_1.eq_12",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.rename.match_1.eq_13",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.rename.match_1.eq_14",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.rename.match_1.eq_15",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.rename.match_1.eq_16",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.rename.match_1.eq_17",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.rename.match_1.eq_18",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.rename.match_1.eq_19",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.rename.match_1.eq_2",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.rename.match_1.eq_20",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.rename.match_1.eq_21",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.rename.match_1.eq_22",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.rename.match_1.eq_23",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.rename.match_1.eq_24",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.rename.match_1.eq_25",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.rename.match_1.eq_3",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.rename.match_1.eq_4",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.rename.match_1.eq_5",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.rename.match_1.eq_6",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.rename.match_1.eq_7",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.rename.match_1.eq_8",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.rename.match_1.eq_9",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.rename.match_1.splitter",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.resolveLocals.match_1.eq_1",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.resolveLocals.match_1.eq_10",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.resolveLocals.match_1.eq_11",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.resolveLocals.match_1.eq_12",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.resolveLocals.match_1.eq_13",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.resolveLocals.match_1.eq_14",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.resolveLocals.match_1.eq_15",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.resolveLocals.match_1.eq_16",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.resolveLocals.match_1.eq_17",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.resolveLocals.match_1.eq_18",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.resolveLocals.match_1.eq_19",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.resolveLocals.match_1.eq_2",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.resolveLocals.match_1.eq_20",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.resolveLocals.match_1.eq_21",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.resolveLocals.match_1.eq_22",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.resolveLocals.match_1.eq_23",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.resolveLocals.match_1.eq_24",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.resolveLocals.match_1.eq_25",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.resolveLocals.match_1.eq_3",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.resolveLocals.match_1.eq_4",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.resolveLocals.match_1.eq_5",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.resolveLocals.match_1.eq_6",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.resolveLocals.match_1.eq_7",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.resolveLocals.match_1.eq_8",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.resolveLocals.match_1.eq_9",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.resolveLocals.match_1.splitter",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.resolveLocalsList.match_1.eq_1",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.resolveLocalsList.match_1.eq_2",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.Val.resolveLocalsList.match_1.splitter",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.builderValueSubst.match_1.eq_1",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.builderValueSubst.match_1.eq_2",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.builderValueSubst.match_1.splitter",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.localExtend.match_1.eq_1",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.localExtend.match_1.eq_2",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.localExtend.match_1.splitter",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.pushLocal.match_1.eq_1",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.pushLocal.match_1.eq_2",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.Refinement.pushLocal.match_1.splitter",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.builderLocalSubst.match_1.eq_1",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.builderLocalSubst.match_1.eq_2",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.LocalResolveLemmas.0.Benitoite.Release.builderLocalSubst.match_1.splitter",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.BuilderKind.contents.eq_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.BuilderKind.contents.eq_2",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.BuilderKind.contents.eq_3",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.BuilderKind.contents_rename",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.BuilderKind.contents_subst",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.BuilderKind.item.eq_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.BuilderKind.item.eq_2",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.BuilderKind.item.eq_3",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.BuilderKind.norm_idem",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.BuilderOp.parameters._sparseCasesOn_1.else_eq",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.BuilderOp.parameters.eq_1",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.BuilderOp.parameters.eq_2",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.BuilderOp.parameters.eq_3",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.BuilderOp.parameters.eq_4",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.BuilderOp.parameters.eq_5",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.BuilderOp.parameters_rename",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.BuilderOp.parameters_subst",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.BuilderOp.resultType_rename",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.BuilderOp.resultType_subst",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.LocalCtx.Shift.empty",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.LocalCtx.Shift.extend",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.LocalCtx.Shift.extend._proof_1_3",
+    "axioms": [
+      "propext",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.LocalCtx.Shift.extend._proof_1_4",
+    "axioms": [
+      "propext",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.LocalCtx.Shift.extend._proof_1_5",
+    "axioms": [
+      "propext",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.LocalCtx.Shift.extend._proof_1_6",
+    "axioms": [
+      "propext",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.LocalCtx.Shift.extend._simp_1_2",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.LocalCtx.Shift.localExtend",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.LocalCtx.Shift.refl",
+    "axioms": [
+      "propext",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.LocalCtx.Shift.refl._simp_1_1",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.LocalRef.HasKind.lift",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.LocalRef.HasKind.shift",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.LocalRef.HasKind.subst",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.LocalSubstOk.empty",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.LocalSubstOk.extend",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.LocalSubstOk.extend._simp_1_3",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.LocalSubstOk.extend._simp_1_4",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.renameKind_closed",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.renameKind_closed._simp_1_1",
+    "axioms": [
+      "propext",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.renameKind_comm",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.renameKind_norm",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.renameKind_shift",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.renameKind_shift._sparseCasesOn_1",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.renameKind_shift.match_1",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.substKind.eq_1",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.substKind.eq_2",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.substKind.eq_3",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.substKind_closed",
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  }
+]

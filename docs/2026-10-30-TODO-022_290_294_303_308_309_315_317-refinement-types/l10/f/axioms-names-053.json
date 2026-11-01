@@ -1,0 +1,860 @@
+[
+  {
+    "name": "Benitoite.Release.Refinement.selectSlots._f",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.selectSlots._sunfold",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.selectSlots._unsafe_rec",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.selectSlots.eq_1",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.selectSlots.eq_2",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.selectSlots.eq_def",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.selectSlots.match_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.selectSlots_map",
+    "axioms": [
+      "propext",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.selectSlots_mem",
+    "axioms": [
+      "propext",
+      "Quot.sound"
+    ]
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.RuntimeMatch.0.Benitoite.Release.Refinement.selectSlots.match_1.eq_1",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.RuntimeMatch.0.Benitoite.Release.Refinement.selectSlots.match_1.eq_2",
+    "axioms": []
+  },
+  {
+    "name": "_private.Benitoite.Release.Refinement.RuntimeMatch.0.Benitoite.Release.Refinement.selectSlots.match_1.splitter",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Cell",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Cell._sizeOf_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Cell._sizeOf_inst",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Cell.builder",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Cell.builder.elim",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Cell.builder.inj",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Cell.builder.injEq",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Cell.builder.noConfusion",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Cell.builder.sizeOf_spec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Cell.casesOn",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Cell.cont",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Cell.cont.elim",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Cell.cont.inj",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Cell.cont.injEq",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Cell.cont.noConfusion",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Cell.cont.sizeOf_spec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Cell.ctorElim",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Cell.ctorElimType",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Cell.ctorIdx",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Cell.done",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Cell.done.elim",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Cell.done.inj",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Cell.done.injEq",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Cell.done.noConfusion",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Cell.done.sizeOf_spec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Cell.noConfusion",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Cell.noConfusionType",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Cell.rec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Cell.recOn",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Cell.thunk",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Cell.thunk.elim",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Cell.thunk.inj",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Cell.thunk.injEq",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Cell.thunk.noConfusion",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Cell.thunk.sizeOf_spec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Cell.used",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Cell.used.elim",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Cell.used.sizeOf_spec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Cell.val",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Cell.val.elim",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Cell.val.inj",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Cell.val.injEq",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Cell.val.noConfusion",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Cell.val.sizeOf_spec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Cont",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Event",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Event._sizeOf_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Event._sizeOf_inst",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Event.casesOn",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Event.ctorElim",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Event.ctorElimType",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Event.ctorIdx",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Event.io",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Event.io.elim",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Event.io.inj",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Event.io.injEq",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Event.io.noConfusion",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Event.io.sizeOf_spec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Event.noConfusion",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Event.noConfusionType",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Event.pathBases",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Event.pathBases.elim",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Event.pathBases.inj",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Event.pathBases.injEq",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Event.pathBases.noConfusion",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Event.pathBases.sizeOf_spec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Event.rec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Event.recOn",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Event.release",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Event.release.elim",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Event.release.inj",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Event.release.injEq",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Event.release.noConfusion",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Event.release.sizeOf_spec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame._sizeOf_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame._sizeOf_inst",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.casesOn",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.ctorElim",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.ctorElimType",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.ctorIdx",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.drop",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.drop.elim",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.drop.inj",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.drop.injEq",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.drop.noConfusion",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.drop.sizeOf_spec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.guardF",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.guardF.elim",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.guardF.inj",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.guardF.injEq",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.guardF.noConfusion",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.guardF.sizeOf_spec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.handleF",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.handleF.elim",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.handleF.inj",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.handleF.injEq",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.handleF.noConfusion",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.handleF.sizeOf_spec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.letF",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.letF.elim",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.letF.inj",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.letF.injEq",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.letF.noConfusion",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.letF.sizeOf_spec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.mark",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.mark.elim",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.mark.sizeOf_spec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.noConfusion",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.noConfusionType",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.rec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.recOn",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.release",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.release.elim",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.release.inj",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.release.injEq",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.release.noConfusion",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.release.sizeOf_spec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.update",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.update.elim",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.update.inj",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.update.injEq",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.update.noConfusion",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Frame.update.sizeOf_spec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.State",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.State._sizeOf_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.State._sizeOf_inst",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.State.casesOn",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.State.ctorElim",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.State.ctorElimType",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.State.ctorIdx",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.State.error",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.State.error.elim",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.State.error.inj",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.State.error.injEq",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.State.error.noConfusion",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.State.error.sizeOf_spec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.State.exit",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.State.exit.elim",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.State.exit.inj",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.State.exit.injEq",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.State.exit.noConfusion",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.State.exit.sizeOf_spec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.State.matchRun",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.State.matchRun.elim",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.State.matchRun.inj",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.State.matchRun.injEq",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.State.matchRun.noConfusion",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.State.matchRun.sizeOf_spec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.State.noConfusion",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.State.noConfusionType",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.State.rec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.State.recOn",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.State.run",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.State.run.elim",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.State.run.inj",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.State.run.injEq",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.State.run.noConfusion",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.State.run.sizeOf_spec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Store",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Store.empty",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.Store.set",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.AtError",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.AtError._sizeOf_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.AtError._sizeOf_inst",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.AtError.casesOn",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.AtError.ctorIdx",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.AtError.failure",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.AtError.mk",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.AtError.mk._flat_ctor",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.AtError.mk.inj",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.AtError.mk.injEq",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.AtError.mk.noConfusion",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.AtError.mk.sizeOf_spec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.AtError.noConfusion",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.AtError.noConfusionType",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.AtError.originalPattern",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.AtError.originalTarget",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.AtError.patternBase",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.AtError.rec",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.AtError.recOn",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.AtError.resolvedPatterns",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.AtError.resolvedTarget",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.AtError.targetBase",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.AtError.textFields",
+    "axioms": [
+      "propext"
+    ]
+  },
+  {
+    "name": "Benitoite.Release.Refinement.AtFailure",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.AtFailure._sizeOf_1",
+    "axioms": []
+  },
+  {
+    "name": "Benitoite.Release.Refinement.AtFailure._sizeOf_inst",
+    "axioms": []
+  }
+]

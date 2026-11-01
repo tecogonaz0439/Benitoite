@@ -1,0 +1,817 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-M",
+    "12288",
+    "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/axioms.lean"
+  ],
+  "cwd": "formal",
+  "started_utc": "2026-11-01T12:58:19.607990+00:00",
+  "exit": 0,
+  "seconds": 17.862015125,
+  "bytes": 2109416,
+  "sha256": "fd4f4dd84071d5f3f6a3b4116498fcdadc8c5f360c03413d2b13fb02c5627ef7",
+  "raw_output": "<tmp>/benitoite-l10-f-wz9u7q55/axioms-output.txt",
+  "sorry": false,
+  "printed": 20067,
+  "dependencies": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "unapproved": [],
+  "modules": [
+    {
+      "name": "Benitoite.Release.Refinement.Adequate",
+      "count": 66
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Admissible",
+      "count": 98
+    },
+    {
+      "name": "Benitoite.Release.Refinement.AdmissibleMap",
+      "count": 27
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ApproxAdapter",
+      "count": 52
+    },
+    {
+      "name": "Benitoite.Release.Refinement.AtContracts",
+      "count": 43
+    },
+    {
+      "name": "Benitoite.Release.Refinement.AtInput",
+      "count": 91
+    },
+    {
+      "name": "Benitoite.Release.Refinement.AtPatterns",
+      "count": 62
+    },
+    {
+      "name": "Benitoite.Release.Refinement.AtPrepare",
+      "count": 125
+    },
+    {
+      "name": "Benitoite.Release.Refinement.AtSound",
+      "count": 16
+    },
+    {
+      "name": "Benitoite.Release.Refinement.AtTyping",
+      "count": 15
+    },
+    {
+      "name": "Benitoite.Release.Refinement.AtomOrder",
+      "count": 31
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Atoms",
+      "count": 87
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Basic",
+      "count": 149
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Bind",
+      "count": 71
+    },
+    {
+      "name": "Benitoite.Release.Refinement.BindCongr",
+      "count": 22
+    },
+    {
+      "name": "Benitoite.Release.Refinement.BindingShift",
+      "count": 5
+    },
+    {
+      "name": "Benitoite.Release.Refinement.BuilderExec",
+      "count": 81
+    },
+    {
+      "name": "Benitoite.Release.Refinement.BuiltinEffects",
+      "count": 18
+    },
+    {
+      "name": "Benitoite.Release.Refinement.BuiltinResponse",
+      "count": 39
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Canonical",
+      "count": 27
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Capture",
+      "count": 65
+    },
+    {
+      "name": "Benitoite.Release.Refinement.CapturedFacts",
+      "count": 7
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Carrier",
+      "count": 145
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Certificate",
+      "count": 222
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ClosedCapture",
+      "count": 18
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ClosedDecidable",
+      "count": 212
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ClosedEvaluation",
+      "count": 192
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ClosedKeys",
+      "count": 87
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ClosureTyping",
+      "count": 182
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Codes",
+      "count": 270
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Conjunction",
+      "count": 42
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ConstraintAssumptions",
+      "count": 60
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Context",
+      "count": 444
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Context.Capture",
+      "count": 23
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Context.Declarations",
+      "count": 131
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Context.Facts",
+      "count": 24
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Context.WF",
+      "count": 67
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ContextFacts",
+      "count": 37
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ContextMap",
+      "count": 28
+    },
+    {
+      "name": "Benitoite.Release.Refinement.CoverageRefinement",
+      "count": 60
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Declared",
+      "count": 65
+    },
+    {
+      "name": "Benitoite.Release.Refinement.DeclaredTransport",
+      "count": 188
+    },
+    {
+      "name": "Benitoite.Release.Refinement.DependentBeta",
+      "count": 28
+    },
+    {
+      "name": "Benitoite.Release.Refinement.EffectCover",
+      "count": 26
+    },
+    {
+      "name": "Benitoite.Release.Refinement.EffectFacts",
+      "count": 24
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Embedding",
+      "count": 73
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Exchange",
+      "count": 0
+    },
+    {
+      "name": "Benitoite.Release.Refinement.External",
+      "count": 126
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalCheck",
+      "count": 312
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalConnection",
+      "count": 8
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalObservation",
+      "count": 9
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalResponse",
+      "count": 25
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Finite",
+      "count": 104
+    },
+    {
+      "name": "Benitoite.Release.Refinement.FiniteCompare",
+      "count": 263
+    },
+    {
+      "name": "Benitoite.Release.Refinement.FiniteFunctionView",
+      "count": 26
+    },
+    {
+      "name": "Benitoite.Release.Refinement.FiniteSupport",
+      "count": 79
+    },
+    {
+      "name": "Benitoite.Release.Refinement.FunctionNormalForm",
+      "count": 50
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Ground",
+      "count": 48
+    },
+    {
+      "name": "Benitoite.Release.Refinement.HandlerAlgebra",
+      "count": 111
+    },
+    {
+      "name": "Benitoite.Release.Refinement.HandlerCalls",
+      "count": 45
+    },
+    {
+      "name": "Benitoite.Release.Refinement.HandlerContinuation",
+      "count": 10
+    },
+    {
+      "name": "Benitoite.Release.Refinement.HandlerContracts",
+      "count": 52
+    },
+    {
+      "name": "Benitoite.Release.Refinement.HandlerEffects",
+      "count": 33
+    },
+    {
+      "name": "Benitoite.Release.Refinement.HandlerFailure",
+      "count": 9
+    },
+    {
+      "name": "Benitoite.Release.Refinement.HandlerOperation",
+      "count": 66
+    },
+    {
+      "name": "Benitoite.Release.Refinement.HandlerPreservation",
+      "count": 38
+    },
+    {
+      "name": "Benitoite.Release.Refinement.HandlerStore",
+      "count": 5
+    },
+    {
+      "name": "Benitoite.Release.Refinement.HandlerTelescope",
+      "count": 22
+    },
+    {
+      "name": "Benitoite.Release.Refinement.HandlerTyping",
+      "count": 13
+    },
+    {
+      "name": "Benitoite.Release.Refinement.HeldValues",
+      "count": 34
+    },
+    {
+      "name": "Benitoite.Release.Refinement.InversionCore",
+      "count": 123
+    },
+    {
+      "name": "Benitoite.Release.Refinement.KindInference",
+      "count": 81
+    },
+    {
+      "name": "Benitoite.Release.Refinement.KindValues",
+      "count": 58
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Kinds",
+      "count": 105
+    },
+    {
+      "name": "Benitoite.Release.Refinement.LazyInversion",
+      "count": 54
+    },
+    {
+      "name": "Benitoite.Release.Refinement.LazyPreservation",
+      "count": 54
+    },
+    {
+      "name": "Benitoite.Release.Refinement.LazyStore",
+      "count": 9
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Le",
+      "count": 105
+    },
+    {
+      "name": "Benitoite.Release.Refinement.LegacyDeclarations",
+      "count": 11
+    },
+    {
+      "name": "Benitoite.Release.Refinement.LegacyInput",
+      "count": 60
+    },
+    {
+      "name": "Benitoite.Release.Refinement.LegacyKinds",
+      "count": 38
+    },
+    {
+      "name": "Benitoite.Release.Refinement.LegacyRegularity",
+      "count": 122
+    },
+    {
+      "name": "Benitoite.Release.Refinement.LegacyTableFacts",
+      "count": 24
+    },
+    {
+      "name": "Benitoite.Release.Refinement.LegacyTables",
+      "count": 36
+    },
+    {
+      "name": "Benitoite.Release.Refinement.LegacyValues",
+      "count": 44
+    },
+    {
+      "name": "Benitoite.Release.Refinement.LocalResolve",
+      "count": 26
+    },
+    {
+      "name": "Benitoite.Release.Refinement.LocalResolveLemmas",
+      "count": 270
+    },
+    {
+      "name": "Benitoite.Release.Refinement.LocalTransport",
+      "count": 78
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Logic",
+      "count": 48
+    },
+    {
+      "name": "Benitoite.Release.Refinement.LogicSound",
+      "count": 16
+    },
+    {
+      "name": "Benitoite.Release.Refinement.MatchFacts",
+      "count": 418
+    },
+    {
+      "name": "Benitoite.Release.Refinement.MatchPaths",
+      "count": 71
+    },
+    {
+      "name": "Benitoite.Release.Refinement.MethodArguments",
+      "count": 40
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ModelHttp",
+      "count": 68
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Narrowing",
+      "count": 134
+    },
+    {
+      "name": "Benitoite.Release.Refinement.NarrowingObstruction",
+      "count": 24
+    },
+    {
+      "name": "Benitoite.Release.Refinement.NormalWellFormed",
+      "count": 64
+    },
+    {
+      "name": "Benitoite.Release.Refinement.NormalizationLogic",
+      "count": 6
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Normalize",
+      "count": 133
+    },
+    {
+      "name": "Benitoite.Release.Refinement.NormalizedApplication",
+      "count": 11
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Observation",
+      "count": 349
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ObservationInterpretation",
+      "count": 66
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ObservationOrder",
+      "count": 306
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ObservationSubstitution",
+      "count": 62
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ObservationType",
+      "count": 93
+    },
+    {
+      "name": "Benitoite.Release.Refinement.OpenSubstitution",
+      "count": 61
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Order",
+      "count": 247
+    },
+    {
+      "name": "Benitoite.Release.Refinement.PathConditions",
+      "count": 26
+    },
+    {
+      "name": "Benitoite.Release.Refinement.PathFacts",
+      "count": 306
+    },
+    {
+      "name": "Benitoite.Release.Refinement.PathResolution",
+      "count": 82
+    },
+    {
+      "name": "Benitoite.Release.Refinement.PatternNormalForm",
+      "count": 33
+    },
+    {
+      "name": "Benitoite.Release.Refinement.PatternSemantics",
+      "count": 53
+    },
+    {
+      "name": "Benitoite.Release.Refinement.PatternTransport",
+      "count": 23
+    },
+    {
+      "name": "Benitoite.Release.Refinement.PatternTypeShift",
+      "count": 17
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Patterns",
+      "count": 130
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Preparation",
+      "count": 208
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ProgramTyping",
+      "count": 29
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ProgramWellFormed",
+      "count": 83
+    },
+    {
+      "name": "Benitoite.Release.Refinement.RangeExchange",
+      "count": 49
+    },
+    {
+      "name": "Benitoite.Release.Refinement.RangeSubst",
+      "count": 205
+    },
+    {
+      "name": "Benitoite.Release.Refinement.RawBindingShift",
+      "count": 45
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ReferenceCalls",
+      "count": 41
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ReferencePreservation",
+      "count": 307
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ReferenceStore",
+      "count": 19
+    },
+    {
+      "name": "Benitoite.Release.Refinement.RefinementNormalForm",
+      "count": 54
+    },
+    {
+      "name": "Benitoite.Release.Refinement.RefinementObservation",
+      "count": 4
+    },
+    {
+      "name": "Benitoite.Release.Refinement.RuntimeMatch",
+      "count": 50
+    },
+    {
+      "name": "Benitoite.Release.Refinement.RuntimeSyntax",
+      "count": 162
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ScopeSyntax",
+      "count": 668
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Semantics",
+      "count": 124
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Shift",
+      "count": 25
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ShiftCancellation",
+      "count": 14
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ShiftOrder",
+      "count": 8
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Source",
+      "count": 28
+    },
+    {
+      "name": "Benitoite.Release.Refinement.StateTyping",
+      "count": 92
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Step",
+      "count": 193
+    },
+    {
+      "name": "Benitoite.Release.Refinement.StoreTransport",
+      "count": 15
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Subst",
+      "count": 128
+    },
+    {
+      "name": "Benitoite.Release.Refinement.SubstTyping",
+      "count": 241
+    },
+    {
+      "name": "Benitoite.Release.Refinement.SubstTypingObstruction",
+      "count": 105
+    },
+    {
+      "name": "Benitoite.Release.Refinement.SubstitutionContracts",
+      "count": 30
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Syntax",
+      "count": 1209
+    },
+    {
+      "name": "Benitoite.Release.Refinement.TargetTable",
+      "count": 4
+    },
+    {
+      "name": "Benitoite.Release.Refinement.TelArguments",
+      "count": 19
+    },
+    {
+      "name": "Benitoite.Release.Refinement.TelTyping",
+      "count": 20
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Telescope",
+      "count": 68
+    },
+    {
+      "name": "Benitoite.Release.Refinement.TermSyntax",
+      "count": 518
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Transport",
+      "count": 62
+    },
+    {
+      "name": "Benitoite.Release.Refinement.TypeArgumentRegularity",
+      "count": 28
+    },
+    {
+      "name": "Benitoite.Release.Refinement.TypeBounds",
+      "count": 50
+    },
+    {
+      "name": "Benitoite.Release.Refinement.TypeFormation",
+      "count": 213
+    },
+    {
+      "name": "Benitoite.Release.Refinement.TypeRegularity",
+      "count": 10
+    },
+    {
+      "name": "Benitoite.Release.Refinement.TypeRenaming",
+      "count": 112
+    },
+    {
+      "name": "Benitoite.Release.Refinement.TypeRows",
+      "count": 85
+    },
+    {
+      "name": "Benitoite.Release.Refinement.TypeShiftAlgebra",
+      "count": 47
+    },
+    {
+      "name": "Benitoite.Release.Refinement.TypeShiftContext",
+      "count": 61
+    },
+    {
+      "name": "Benitoite.Release.Refinement.TypeShiftContracts",
+      "count": 67
+    },
+    {
+      "name": "Benitoite.Release.Refinement.TypeShiftExchange",
+      "count": 159
+    },
+    {
+      "name": "Benitoite.Release.Refinement.TypeShiftFacts",
+      "count": 17
+    },
+    {
+      "name": "Benitoite.Release.Refinement.TypeShiftKinds",
+      "count": 23
+    },
+    {
+      "name": "Benitoite.Release.Refinement.TypeShiftOrder",
+      "count": 50
+    },
+    {
+      "name": "Benitoite.Release.Refinement.TypeShiftSyntax",
+      "count": 42
+    },
+    {
+      "name": "Benitoite.Release.Refinement.TypeShiftTyping",
+      "count": 37
+    },
+    {
+      "name": "Benitoite.Release.Refinement.TypeSubst",
+      "count": 135
+    },
+    {
+      "name": "Benitoite.Release.Refinement.TypeSupport",
+      "count": 142
+    },
+    {
+      "name": "Benitoite.Release.Refinement.TypeVariables",
+      "count": 72
+    },
+    {
+      "name": "Benitoite.Release.Refinement.TypedFacts",
+      "count": 91
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Types",
+      "count": 267
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Typing",
+      "count": 333
+    },
+    {
+      "name": "Benitoite.Release.Refinement.TypingDeclared",
+      "count": 18
+    },
+    {
+      "name": "Benitoite.Release.Refinement.TypingShift",
+      "count": 203
+    },
+    {
+      "name": "Benitoite.Release.Refinement.TypingStore",
+      "count": 13
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ValueBinding",
+      "count": 288
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ValueClosed",
+      "count": 32
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ValueExchange",
+      "count": 133
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ValueFacts",
+      "count": 30
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ValueInstantiation",
+      "count": 37
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ValueMeaning",
+      "count": 104
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ValueMeaningInhabits",
+      "count": 13
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ValueReferences",
+      "count": 51
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ValueRegularity",
+      "count": 161
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ValueRenameAlgebra",
+      "count": 48
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ValueRenamingSyntax",
+      "count": 132
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ValueShiftOrder",
+      "count": 114
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ValueShiftSyntax",
+      "count": 28
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ValueSubst",
+      "count": 14
+    },
+    {
+      "name": "Benitoite.Release.Refinement.VarianceFormation",
+      "count": 32
+    },
+    {
+      "name": "Benitoite.Release.Refinement.VarianceSyntax",
+      "count": 98
+    },
+    {
+      "name": "Benitoite.Release.Refinement.VarianceTransport",
+      "count": 197
+    },
+    {
+      "name": "Benitoite.Release.Refinement.VarianceValidation",
+      "count": 31
+    },
+    {
+      "name": "Benitoite.Shared.Integer",
+      "count": 15
+    },
+    {
+      "name": "Benitoite.Shared.Interval",
+      "count": 141
+    },
+    {
+      "name": "Benitoite.Shared.Approximation",
+      "count": 159
+    },
+    {
+      "name": "Benitoite.Interval.ApproxAdapter",
+      "count": 94
+    },
+    {
+      "name": "Benitoite.Interval.BudgetAnalyze",
+      "count": 187
+    },
+    {
+      "name": "Benitoite.Interval.Budget",
+      "count": 484
+    },
+    {
+      "name": "Benitoite.Surface.ScopeState",
+      "count": 804
+    }
+  ],
+  "expected_printed": 20067,
+  "unique_printed": 20057
+}

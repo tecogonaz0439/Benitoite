@@ -14,7 +14,8 @@ inductive Const where
   | byte (n : Nat)
   | decimal (n : Int) (scale : Nat)
   | opaque (o : OpaqueName) (id : Nat)
-  /-- 幅と符号は構成子で区別する。値域の検査は型付けの条件にしない（設計書 07-04「01-12 との対応」）。 -/
+  /-- 幅と符号は構成子で区別し、ConstOK が各幅の値域を型付けの前提として検査する
+  （設計書 01-12「篩を含むコア計算の形式化」、07-04「篩を含む形式化の範囲」）。 -/
   | integer8 (n : Int)
   | integer16 (n : Int)
   | integer32 (n : Int)
@@ -454,7 +455,12 @@ abbrev StoreTy := Nat → Option LocTy
 
 abbrev LocalCtx := List (Option BuilderKind)
 
-/-- 数値の表現可能性と、標準対象型の裸 opaque の除外。 -/
+/-- V_Const の適格性。Integer64 は証拠付きの値、他の六整数幅・Byte・Decimal は
+この述語で表現可能性を検査する。V_Bytes の全要素の上限は別の前提である。
+裸 opaque は valKind と valContent がともに none の名前に限る。Top でもこの条件を外さず、
+対象を保持する値と要求は V_Checked/V_CheckedRequest で型付けする。
+旧 Release の数値・Top の抽象化からの規則の変更であり、旧主定理の欠陥の修正ではない
+（設計書 01-12「篩を含むコア計算の形式化」、07-04「篩を含む形式化の範囲」）。 -/
 def ConstOK (B : Builtins) : Const → Prop
   | .integer _ => True
   | .integer8 n => -128 ≤ n ∧ n ≤ 127

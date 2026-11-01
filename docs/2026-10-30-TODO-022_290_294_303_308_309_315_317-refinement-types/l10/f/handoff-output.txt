@@ -1,0 +1,249 @@
+Benitoite.Release.Refinement.LegacyTables : Benitoite.Release.Refinement.DeclarationKinds →
+  Benitoite.Release.Program → Benitoite.Release.Builtins → Benitoite.Release.Refinement.Builtins → Prop
+Benitoite.Release.Refinement.LegacyPrimSignature : Benitoite.Release.PrimSig →
+  Benitoite.Release.Refinement.PrimSig → Prop
+Benitoite.Release.Refinement.LegacyInputCtx : Type
+Benitoite.Release.Refinement.DeclarationKinds.WF : Benitoite.Release.Refinement.DeclarationKinds →
+  Benitoite.Release.Program → Prop
+Benitoite.Release.Refinement.LegacyTypeInput : Benitoite.Release.Refinement.DeclarationKinds →
+  Benitoite.Release.Program →
+    Benitoite.Release.Refinement.LegacyInputCtx → Benitoite.Release.Ty → Benitoite.Release.Refinement.TyKind → Prop
+Benitoite.Release.Refinement.LegacyTypesInput : Benitoite.Release.Refinement.DeclarationKinds →
+  Benitoite.Release.Program →
+    Benitoite.Release.Refinement.LegacyInputCtx →
+      List Benitoite.Release.Ty → List Benitoite.Release.Refinement.TyKind → Prop
+Benitoite.Release.Refinement.LegacyRowsInput : Benitoite.Release.Refinement.DeclarationKinds →
+  Benitoite.Release.Program → Benitoite.Release.Refinement.LegacyInputCtx → List Benitoite.Release.Eff → Prop
+Benitoite.Release.Refinement.LegacyContextInput : Benitoite.Release.Refinement.DeclarationKinds →
+  Benitoite.Release.Program →
+    Benitoite.Release.StoreTy →
+      List Benitoite.Release.TParam →
+        List (Option Benitoite.Release.Ty) → Benitoite.Release.Refinement.LegacyInputCtx → Prop
+Benitoite.Release.Refinement.LegacyDeclarationsInput : Benitoite.Release.Refinement.DeclarationKinds →
+  Benitoite.Release.Program → Benitoite.Release.Builtins → Benitoite.Release.Refinement.Builtins → Prop
+Benitoite.Release.Refinement.LegacyNodeContext : Benitoite.Release.Refinement.DeclarationKinds →
+  Benitoite.Release.Program →
+    Benitoite.Release.Refinement.KindCtx →
+      Benitoite.Release.StoreTy → List Benitoite.Release.TParam → List (Option Benitoite.Release.Ty) → Prop
+Benitoite.Release.Refinement.LegacyNodeTypes : Benitoite.Release.Refinement.DeclarationKinds →
+  Benitoite.Release.Program →
+    Benitoite.Release.Refinement.KindCtx → List Benitoite.Release.TParam → Nat → List Benitoite.Release.Ty → Prop
+Benitoite.Release.Refinement.LegacyNodeLocal : Benitoite.Release.Refinement.DeclarationKinds →
+  Benitoite.Release.Program →
+    Benitoite.Release.Refinement.KindCtx → List Benitoite.Release.TParam → Nat → Benitoite.Release.LocalCtx → Prop
+Benitoite.Release.Refinement.LegacyNodeRegular : Benitoite.Release.Refinement.DeclarationKinds →
+  Benitoite.Release.Program →
+    Benitoite.Release.Builtins →
+      Benitoite.Release.Refinement.Builtins → Benitoite.Release.Refinement.LegacyJudgment → Prop
+Benitoite.Release.Refinement.LegacyRule.old : ∀ (K : Benitoite.Release.Refinement.DeclarationKinds)
+  (P0 : Benitoite.Release.Program) (B0 : Benitoite.Release.Builtins) (j : Benitoite.Release.Refinement.LegacyJudgment)
+  (children : List Benitoite.Release.Refinement.LegacyJudgment),
+  Benitoite.Release.Refinement.LegacyRule K P0 B0 j children →
+    (∀ (child : Benitoite.Release.Refinement.LegacyJudgment),
+        child ∈ children → Benitoite.Release.Refinement.LegacyJudgment.OldHolds P0 B0 child) →
+      Benitoite.Release.Refinement.LegacyJudgment.OldHolds P0 B0 j
+@Benitoite.Release.Refinement.LegacyOutputInput.old : ∀ {K : Benitoite.Release.Refinement.DeclarationKinds}
+  {P0 : Benitoite.Release.Program} {B0 : Benitoite.Release.Builtins} {B : Benitoite.Release.Refinement.Builtins}
+  {j : Benitoite.Release.Refinement.LegacyJudgment},
+  Benitoite.Release.Refinement.LegacyOutputInput K P0 B0 B j →
+    Benitoite.Release.Refinement.LegacyJudgment.OldHolds P0 B0 j
+@Benitoite.Release.Refinement.LegacyOutputInput.regular : ∀ {K : Benitoite.Release.Refinement.DeclarationKinds}
+  {P0 : Benitoite.Release.Program} {B0 : Benitoite.Release.Builtins} {B : Benitoite.Release.Refinement.Builtins}
+  {j : Benitoite.Release.Refinement.LegacyJudgment},
+  Benitoite.Release.Refinement.LegacyOutputInput K P0 B0 B j →
+    Benitoite.Release.Refinement.LegacyNodeRegular K P0 B0 B j
+@Benitoite.Release.Refinement.LegacyTables.dataArity : ∀ {K : Benitoite.Release.Refinement.DeclarationKinds}
+  {P0 : Benitoite.Release.Program} {B0 : Benitoite.Release.Builtins} {B : Benitoite.Release.Refinement.Builtins},
+  Benitoite.Release.Refinement.LegacyTables K P0 B0 B →
+    ∀ {c : Benitoite.Release.ConName} {cd : Benitoite.Release.ConDecl},
+      P0.cons c = some cd → (Benitoite.Release.Refinement.embedProgramWithKinds K P0).DataArity cd.data cd.ntys
+@Benitoite.Release.Refinement.LegacyTables.constructor_scoped : ∀ {K : Benitoite.Release.Refinement.DeclarationKinds}
+  {P0 : Benitoite.Release.Program} {B0 : Benitoite.Release.Builtins} {B : Benitoite.Release.Refinement.Builtins},
+  Benitoite.Release.Refinement.LegacyTables K P0 B0 B →
+    ∀ {c : Benitoite.Release.ConName} {cd : Benitoite.Release.ConDecl},
+      P0.cons c = some cd →
+        Benitoite.Release.Refinement.ConDecl.Scoped (Benitoite.Release.Refinement.embedProgramWithKinds K P0)
+          (Benitoite.Release.Refinement.embedConDecl cd)
+@Benitoite.Release.Refinement.LegacyTables.varianceValid : ∀ {K : Benitoite.Release.Refinement.DeclarationKinds}
+  {P0 : Benitoite.Release.Program} {B0 : Benitoite.Release.Builtins} {B : Benitoite.Release.Refinement.Builtins},
+  Benitoite.Release.Refinement.LegacyTables K P0 B0 B →
+    (Benitoite.Release.Refinement.embedProgramWithKinds K P0).VarianceValid
+@Benitoite.Release.Refinement.LegacyClausesInput.signature_wf : ∀ {K : Benitoite.Release.Refinement.DeclarationKinds}
+  {P0 : Benitoite.Release.Program} {B0 : Benitoite.Release.Builtins} {B : Benitoite.Release.Refinement.Builtins}
+  {Δ : Benitoite.Release.Refinement.LegacyInputCtx} {o : Benitoite.Release.OpRef} {n k : Nat}
+  {body : Benitoite.Release.Comp} {cs : List Benitoite.Release.Clause},
+  Benitoite.Release.Refinement.LegacyClausesInput K P0 B0 B Δ (Benitoite.Release.Clause.mk o n k body :: cs) →
+    ∀ {S : Benitoite.Scope.Domain.Range} {sg : Benitoite.Release.OpSig},
+      Benitoite.Release.opSigAt P0 B0 S o = some sg →
+        Benitoite.Release.Refinement.Ty.WF 0 sg.tparams.length 0
+          (Benitoite.Release.Refinement.embedTy
+            (Benitoite.Release.Ty.fn sg.names sg.params sg.ret (Benitoite.Release.Eff.single sg.eff)))
+@Benitoite.Release.Refinement.legacy_signatureInstance : ∀ {K : Benitoite.Release.Refinement.DeclarationKinds}
+  {P0 : Benitoite.Release.Program} {κ : Benitoite.Release.Refinement.KindCtx} {C : List Benitoite.Release.TParam}
+  {Γ : Benitoite.Release.Refinement.Ctx} {t : Benitoite.Release.Refinement.Tel} {ts : List Benitoite.Release.Ty}
+  {es : List Benitoite.Release.Eff} {ks : List Benitoite.Release.Refinement.TyKind},
+  List.length κ = C.length →
+    Benitoite.Release.Refinement.Ty.WF 0 ks.length 0 (Benitoite.Release.Refinement.Ty.dependentFn t) →
+      Benitoite.Release.Refinement.TypeAnnotations (Benitoite.Release.Refinement.embedProgramWithKinds K P0) C Γ
+          (Benitoite.Release.Refinement.embedTys ts) →
+        Benitoite.Release.Refinement.LegacyKindArgs K P0 κ ts ks →
+          Benitoite.Release.Refinement.RowAnnotations (Benitoite.Release.Refinement.embedProgramWithKinds K P0) C Γ
+              (List.map Benitoite.Release.Refinement.embedEff es) →
+            Benitoite.Release.Refinement.Ty.Annotation (Benitoite.Release.Refinement.embedProgramWithKinds K P0) C Γ
+                (Benitoite.Release.Refinement.Ty.dependentFn
+                  (Benitoite.Release.Refinement.instantiatedTel t (Benitoite.Release.Refinement.embedTys ts)
+                    (List.map Benitoite.Release.Refinement.embedEff es))) →
+              Benitoite.Release.Refinement.SignatureInstance (Benitoite.Release.Refinement.embedProgramWithKinds K P0) C
+                Γ t ks (Benitoite.Release.Refinement.embedTys ts) (List.map Benitoite.Release.Refinement.embedEff es)
+@Benitoite.Release.Refinement.embed_const : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} (c : Benitoite.Release.Const),
+  Benitoite.Release.Refinement.ConstOK B (Benitoite.Release.Refinement.embedConst c) →
+    Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C Γ Φ
+      (Benitoite.Release.Refinement.Val.const (Benitoite.Release.Refinement.embedConst c))
+      (Benitoite.Release.Refinement.embedTy c.type)
+@Benitoite.Release.Refinement.embed_bytes : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} (bs : List Nat),
+  (∀ (b : Nat), b ∈ bs → b ≤ 255) →
+    Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C Γ Φ (Benitoite.Release.Refinement.Val.bytesV bs)
+      Benitoite.Release.Refinement.Ty.bytes
+@Benitoite.Release.Refinement.embed_checked : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {o : Benitoite.Release.OpaqueName} {k : Benitoite.Scope.Domain.Kind}
+  {range : Benitoite.Scope.Domain.Range} {target : Benitoite.Scope.Domain.Target},
+  B.valKind o = some k →
+    B.valContent o = none →
+      Benitoite.Scope.Domain.Range.MemK k range target →
+        Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C Γ Φ (Benitoite.Release.Refinement.Val.checked target)
+          (Benitoite.Release.Refinement.Ty.scoped o k
+            (Benitoite.Release.Refinement.RangeIx.fixed (Benitoite.Release.Refinement.RangeExpr.absolute range)))
+@Benitoite.Release.Refinement.embed_checkedRequest : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {o : Benitoite.Release.OpaqueName} {range : Benitoite.Scope.Domain.Range}
+  {target : Benitoite.Scope.Domain.Target} {req : Benitoite.Release.Val} {T : Benitoite.Release.Refinement.Ty},
+  B.valKind o = some Benitoite.Scope.Domain.Kind.endpoint →
+    B.valContent o = some T →
+      Benitoite.Release.Refinement.HasTypeVQ P B Ψ Benitoite.Release.Qempty [] [] []
+          (Benitoite.Release.Refinement.embedVal req) T.norm →
+        Benitoite.Release.Refinement.groundVal (Benitoite.Release.Refinement.embedVal req) = true →
+          (Benitoite.Release.Refinement.embedVal req).reqTarget = some target →
+            Benitoite.Scope.Domain.Range.MemK Benitoite.Scope.Domain.Kind.endpoint range target →
+              Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C Γ Φ
+                (Benitoite.Release.Refinement.Val.checkedRequest target (Benitoite.Release.Refinement.embedVal req))
+                (Benitoite.Release.Refinement.Ty.scoped o Benitoite.Scope.Domain.Kind.endpoint
+                  (Benitoite.Release.Refinement.RangeIx.fixed (Benitoite.Release.Refinement.RangeExpr.absolute range)))
+Benitoite.Release.Refinement.embed_normal_eq_iff : ∀ (a b : Benitoite.Release.Ty),
+  (Benitoite.Release.Refinement.embedTy a).norm = (Benitoite.Release.Refinement.embedTy b).norm ↔ a.norm = b.norm
+@Benitoite.Release.Refinement.SignatureInstance.typeScope : ∀ {P : Benitoite.Release.Refinement.Program}
+  {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx} {t : Benitoite.Release.Refinement.Tel}
+  {ks : List Benitoite.Release.Refinement.TyKind} {ts : List Benitoite.Release.Refinement.Ty}
+  {es : List Benitoite.Release.Refinement.Eff},
+  Benitoite.Release.Refinement.SignatureInstance P C Γ t ks ts es →
+    ∀ (a : Benitoite.Release.Refinement.Ty),
+      a ∈ ts → Benitoite.Release.Refinement.Ty.WF 0 C.length (List.length Γ) a ∧ Benitoite.Release.Refinement.Ordinary a
+@Benitoite.Release.Refinement.SignatureInstance.method_typeScope : ∀ {P : Benitoite.Release.Refinement.Program}
+  {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx} {t : Benitoite.Release.Refinement.Tel}
+  {ss : List Benitoite.Release.Refinement.Ty} {τ : Benitoite.Release.Refinement.Ty}
+  {es : List Benitoite.Release.Refinement.Eff} {ms : Benitoite.Release.Refinement.MethSig}
+  {cd : Benitoite.Release.Refinement.ClassDecl},
+  Benitoite.Release.Refinement.SignatureInstance P C Γ t
+      (List.map Benitoite.Release.Refinement.TParamDecl.kind ms.tparams ++ [cd.argumentKind]) (ss ++ [τ]) es →
+    ∀ (a : Benitoite.Release.Refinement.Ty),
+      a ∈ ss ++ [τ] →
+        Benitoite.Release.Refinement.Ty.WF 0 C.length (List.length Γ) a ∧ Benitoite.Release.Refinement.Ordinary a
+@Benitoite.Release.Refinement.HasTypeVQ.op_typeScope : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {o : Benitoite.Release.OpName}
+  {ts : List Benitoite.Release.Refinement.Ty} {a : Benitoite.Release.Refinement.Ty},
+  Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C Γ Φ (Benitoite.Release.Refinement.Val.op o ts) a →
+    ∀ (t : Benitoite.Release.Refinement.Ty),
+      t ∈ ts → Benitoite.Release.Refinement.Ty.WF 0 C.length (List.length Γ) t ∧ Benitoite.Release.Refinement.Ordinary t
+@Benitoite.Release.Refinement.HasTypeVQ.dict_typeScope : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {v : Benitoite.Release.Refinement.Val}
+  {a : Benitoite.Release.Refinement.Ty} {i : Benitoite.Release.ImplName} {ts : List Benitoite.Release.Refinement.Ty}
+  {vs : List Benitoite.Release.Refinement.Val},
+  Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C Γ Φ v a →
+    v = Benitoite.Release.Refinement.Val.dict i ts vs →
+      ∀ (t : Benitoite.Release.Refinement.Ty),
+        t ∈ ts →
+          Benitoite.Release.Refinement.Ty.WF 0 C.length (List.length Γ) t ∧ Benitoite.Release.Refinement.Ordinary t
+@Benitoite.Release.Refinement.HasTypeVQ.raise_typeScope : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {v : Benitoite.Release.Refinement.Val}
+  {a t e : Benitoite.Release.Refinement.Ty},
+  Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C Γ Φ v a →
+    v = Benitoite.Release.Refinement.Val.raise t e →
+      (Benitoite.Release.Refinement.Ty.WF 0 C.length (List.length Γ) t ∧ Benitoite.Release.Refinement.Ordinary t) ∧
+        Benitoite.Release.Refinement.Ty.WF 0 C.length (List.length Γ) e ∧ Benitoite.Release.Refinement.Ordinary e
+@Benitoite.Release.Refinement.HasTypeVQ.raise_subst_wf : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {t e T a : Benitoite.Release.Refinement.Ty},
+  Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C Γ Φ (Benitoite.Release.Refinement.Val.raise t e) T →
+    Benitoite.Release.Refinement.Ty.WF 0 1 (List.length Γ) a →
+      Benitoite.Release.Refinement.Ty.WF 0 C.length (List.length Γ) (Benitoite.Release.Refinement.Ty.subst [t] [] a)
+@Benitoite.Release.Refinement.HasTypeVQ.raise_subst_le : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {t e T a b : Benitoite.Release.Refinement.Ty},
+  Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C Γ Φ (Benitoite.Release.Refinement.Val.raise t e) T →
+    Benitoite.Release.Refinement.Ty.LeQ P Γ Φ a b →
+      Benitoite.Release.Refinement.Ty.LeQ P (Γ.bindTypes (Benitoite.Release.Refinement.typeEnvAt 0 [t] [])) Φ
+        (Benitoite.Release.Refinement.Ty.subst [t] [] a) (Benitoite.Release.Refinement.Ty.subst [t] [] b)
+@Benitoite.Release.Refinement.HasTypeCQ.method_body_typeScope : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List Benitoite.Release.Refinement.Pred} {R : Option Benitoite.Release.Refinement.Ty}
+  {m : Benitoite.Release.Refinement.Comp} {a : Benitoite.Release.Refinement.Ty} {e : Benitoite.Release.Refinement.Eff}
+  {D : Benitoite.Release.Refinement.LocalCtx} {i : Benitoite.Release.ImplName}
+  {ts : List Benitoite.Release.Refinement.Ty} {vs : List Benitoite.Release.Refinement.Val}
+  {name : Benitoite.Release.MethName} {ss : List Benitoite.Release.Refinement.Ty}
+  {es : List Benitoite.Release.Refinement.Eff} {ws : List Benitoite.Release.Refinement.Val},
+  Benitoite.Release.Refinement.HasTypeCQ P B Ψ Q C Γ Φ R m a e D →
+    m = Benitoite.Release.Refinement.Comp.meth (Benitoite.Release.Refinement.Val.dict i ts vs) name ss es ws →
+      (∀ (t : Benitoite.Release.Refinement.Ty),
+          t ∈ ss ++ ts →
+            Benitoite.Release.Refinement.Ty.WF 0 C.length (List.length Γ) t ∧ Benitoite.Release.Refinement.Ordinary t) ∧
+        ∀ (f : Benitoite.Release.Refinement.Eff),
+          f ∈ es → Benitoite.Release.Refinement.Eff.WF 0 C.length (List.length Γ) f
+@Benitoite.Release.Refinement.LegacyTypesInput.iff_of_notCont : ∀ {K : Benitoite.Release.Refinement.DeclarationKinds}
+  {P0 : Benitoite.Release.Program} {Δ : Benitoite.Release.Refinement.LegacyInputCtx} {ts : List Benitoite.Release.Ty}
+  {ks : List Benitoite.Release.Refinement.TyKind},
+  (∀ (t : Benitoite.Release.Ty), t ∈ ts → t.NotCont) →
+    (Benitoite.Release.Refinement.LegacyTypesInput K P0 Δ ts ks ↔
+      ts.length = ks.length ∧
+        ∀ (i : Nat) (a : Benitoite.Release.Ty) (k : Benitoite.Release.Refinement.TyKind),
+          ts[i]? = some a → ks[i]? = some k → Benitoite.Release.Refinement.LegacyTypeInput K P0 Δ a k)
+@Benitoite.Release.Refinement.notCont_of_legacyVarsInList : ∀ {nr nt : Nat} {pe : Nat → Prop}
+  {ts : List Benitoite.Release.Ty},
+  Benitoite.Release.Ty.VarsInList nr nt pe ts → ∀ (a : Benitoite.Release.Ty), a ∈ ts → a.NotCont
+Benitoite.Release.Refinement.LocalCtx.Shift.empty : ∀ (k c : Nat) (L : Benitoite.Release.Refinement.LocalCtx),
+  Benitoite.Release.Refinement.LocalCtx.Shift k c [] L
+@Benitoite.Release.Refinement.LegacyDeclarationsInput.op_dictionaryInputs : ∀
+  {K : Benitoite.Release.Refinement.DeclarationKinds} {P0 : Benitoite.Release.Program} {B0 : Benitoite.Release.Builtins}
+  {B : Benitoite.Release.Refinement.Builtins} {o : Benitoite.Release.OpName} {od : Benitoite.Release.OpDecl},
+  Benitoite.Release.Refinement.LegacyDeclarationsInput K P0 B0 B →
+    P0.ops o = some od →
+      (∀ (p : Benitoite.Release.ClassName × Nat), p ∈ od.dictParams → p.snd < od.tparams.length) ∧
+        List.take od.dictParams.length (Benitoite.Release.Refinement.embedOpDecl od).params =
+          List.map (fun p => Benitoite.Release.Refinement.Ty.dict p.fst (Benitoite.Release.Refinement.Ty.tvar p.snd))
+            od.dictParams
+@Benitoite.Release.Refinement.LegacyDeclarationsInput.impl_dictionaryKinds : ∀
+  {K : Benitoite.Release.Refinement.DeclarationKinds} {P0 : Benitoite.Release.Program} {B0 : Benitoite.Release.Builtins}
+  {B : Benitoite.Release.Refinement.Builtins} {i : Benitoite.Release.ImplName} {id : Benitoite.Release.ImplDecl},
+  Benitoite.Release.Refinement.LegacyDeclarationsInput K P0 B0 B →
+    P0.impls i = some id →
+      ∀ (a : Benitoite.Release.Refinement.Ty),
+        a ∈ (Benitoite.Release.Refinement.embedImplDecl id).dictTys →
+          Benitoite.Release.Refinement.Ty.HasKind (Benitoite.Release.Refinement.embedProgramWithKinds K P0)
+            (List.replicate id.tparams.length Benitoite.Release.Refinement.TyKind.value) a
+            Benitoite.Release.Refinement.TyKind.value

@@ -1,0 +1,212 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-M",
+    "12288",
+    "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/axioms.lean"
+  ],
+  "cwd": "formal",
+  "started_utc": "2026-11-01T12:21:31.253911+00:00",
+  "exit": 1,
+  "seconds": 4.805021792,
+  "bytes": 415769,
+  "sha256": "52cbef9a6c3c2b7c263a15089b4a8c19ba21324f2506aa7963b05c6ba2ac08ff",
+  "raw_output": "<tmp>/benitoite-l10-f-neq6ktpg/axioms-output.txt",
+  "sorry": false,
+  "printed": 3865,
+  "dependencies": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "unapproved": [],
+  "modules": [
+    {
+      "name": "Benitoite.Release.Refinement.Adequate",
+      "count": 66
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Admissible",
+      "count": 98
+    },
+    {
+      "name": "Benitoite.Release.Refinement.AdmissibleMap",
+      "count": 27
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ApproxAdapter",
+      "count": 52
+    },
+    {
+      "name": "Benitoite.Release.Refinement.AtContracts",
+      "count": 43
+    },
+    {
+      "name": "Benitoite.Release.Refinement.AtInput",
+      "count": 91
+    },
+    {
+      "name": "Benitoite.Release.Refinement.AtPatterns",
+      "count": 62
+    },
+    {
+      "name": "Benitoite.Release.Refinement.AtPrepare",
+      "count": 125
+    },
+    {
+      "name": "Benitoite.Release.Refinement.AtSound",
+      "count": 16
+    },
+    {
+      "name": "Benitoite.Release.Refinement.AtTyping",
+      "count": 15
+    },
+    {
+      "name": "Benitoite.Release.Refinement.AtomOrder",
+      "count": 31
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Atoms",
+      "count": 87
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Basic",
+      "count": 149
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Bind",
+      "count": 71
+    },
+    {
+      "name": "Benitoite.Release.Refinement.BindCongr",
+      "count": 22
+    },
+    {
+      "name": "Benitoite.Release.Refinement.BindingShift",
+      "count": 5
+    },
+    {
+      "name": "Benitoite.Release.Refinement.BuilderExec",
+      "count": 81
+    },
+    {
+      "name": "Benitoite.Release.Refinement.BuiltinEffects",
+      "count": 18
+    },
+    {
+      "name": "Benitoite.Release.Refinement.BuiltinResponse",
+      "count": 39
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Canonical",
+      "count": 27
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Capture",
+      "count": 65
+    },
+    {
+      "name": "Benitoite.Release.Refinement.CapturedFacts",
+      "count": 7
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Carrier",
+      "count": 145
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Certificate",
+      "count": 222
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ClosedCapture",
+      "count": 18
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ClosedDecidable",
+      "count": 212
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ClosedEvaluation",
+      "count": 192
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ClosedKeys",
+      "count": 87
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ClosureTyping",
+      "count": 182
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Codes",
+      "count": 270
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Conjunction",
+      "count": 42
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ConstraintAssumptions",
+      "count": 60
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Context",
+      "count": 444
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Context.Capture",
+      "count": 23
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Context.Declarations",
+      "count": 131
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Context.Facts",
+      "count": 24
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Context.WF",
+      "count": 67
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ContextFacts",
+      "count": 37
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ContextMap",
+      "count": 28
+    },
+    {
+      "name": "Benitoite.Release.Refinement.CoverageRefinement",
+      "count": 60
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Declared",
+      "count": 65
+    },
+    {
+      "name": "Benitoite.Release.Refinement.DeclaredTransport",
+      "count": 188
+    },
+    {
+      "name": "Benitoite.Release.Refinement.DependentBeta",
+      "count": 28
+    },
+    {
+      "name": "Benitoite.Release.Refinement.EffectCover",
+      "count": 26
+    },
+    {
+      "name": "Benitoite.Release.Refinement.EffectFacts",
+      "count": 24
+    },
+    {
+      "name": "Benitoite.Release.Refinement.Embedding",
+      "count": 73
+    }
+  ],
+  "expected_printed": 3865
+}

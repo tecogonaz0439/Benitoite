@@ -115,7 +115,7 @@ def Step.forNumbering : Step → Step
   | result => result
 
 /-- 同時超過時は本体を先に報告する。拒否では候補状態を採用しない。 -/
-private def admit (limits : Limits) (resource : Resource) (before after : State) : Step :=
+private def checkLimit (limits : Limits) (resource : Resource) (before after : State) : Step :=
   let bodyUse := match resource with
     | .operations => after.body.operations
     | .items => after.bodyHeld
@@ -134,7 +134,7 @@ private def admit (limits : Limits) (resource : Resource) (before after : State)
 
 /-- 実際の操作の直前に一回を計上する。拒否時には操作を行わない。 -/
 def charge (limits : Limits) (s : State) (_operation : Operation) : Step :=
-  admit limits .operations s
+  checkLimit limits .operations s
     { s with body.operations := s.body.operations + 1,
              whole.operations := s.whole.operations + 1 }
 
@@ -143,7 +143,7 @@ def reserve (limits : Limits) (s : State) (_item : Item) (lifetime : Lifetime) :
   let body := match lifetime with
     | .temporary => { s.body with temporary := s.body.temporary + 1 }
     | .saved => { s.body with saved := s.body.saved + 1 }
-  admit limits .items s
+  checkLimit limits .items s
     { body := { body with peak := max s.body.peak (s.bodyHeld + 1) },
       whole := { s.whole with peak := max s.whole.peak (s.wholeHeld + 1) } }
 
@@ -177,15 +177,15 @@ theorem initial_within (limits : Limits) : State.Within limits {} := by
   simp [State.Within]
 
 /-- 拒否された計上は、操作数・保持数・最大値のすべてを変えない。 -/
-private theorem admit_rejected {limits resource before after reason state}
-    (h : admit limits resource before after = .stopped reason state) : state = before := by
-  cases resource <;> simp only [admit] at h <;>
+private theorem checkLimit_rejected {limits resource before after reason state}
+    (h : checkLimit limits resource before after = .stopped reason state) : state = before := by
+  cases resource <;> simp only [checkLimit] at h <;>
     split at h <;> simp_all <;> split at h <;> simp_all
 
 /-- 成功した計上は候補状態をそのまま採用する。 -/
-private theorem admit_accepted {limits resource before after state}
-    (h : admit limits resource before after = .ok state) : state = after := by
-  cases resource <;> simp only [admit] at h <;>
+private theorem checkLimit_accepted {limits resource before after state}
+    (h : checkLimit limits resource before after = .ok state) : state = after := by
+  cases resource <;> simp only [checkLimit] at h <;>
     split at h <;> simp_all <;> split at h <;> simp_all
 
 /-- 成功した操作は、本体と全体の累積に正確に一回を加える。 -/
@@ -194,7 +194,7 @@ theorem charge_accepted {limits s operation state}
     state.body.operations = s.body.operations + 1 ∧
     state.whole.operations = s.whole.operations + 1 ∧
     state.bodyHeld = s.bodyHeld ∧ state.wholeHeld = s.wholeHeld := by
-  have eq := admit_accepted h
+  have eq := checkLimit_accepted h
   subst state
   simp [State.bodyHeld, State.wholeHeld]
 
@@ -205,7 +205,7 @@ theorem reserve_accepted {limits s item lifetime state}
     state.body.peak = max s.body.peak (s.bodyHeld + 1) ∧
     state.whole.peak = max s.whole.peak (s.wholeHeld + 1) := by
   unfold reserve at h
-  have eq := admit_accepted h
+  have eq := checkLimit_accepted h
   subst state
   cases lifetime <;> simp [State.bodyHeld, State.wholeHeld] <;> omega
 
@@ -213,7 +213,7 @@ theorem reserve_accepted {limits s item lifetime state}
 theorem reserve_rejected {limits s item lifetime reason state}
     (h : reserve limits s item lifetime = .stopped reason state) : state = s := by
   unfold reserve at h
-  exact admit_rejected h
+  exact checkLimit_rejected h
 
 /-- 番号未取得への分類は、消費した状態を変えない。 -/
 theorem numbering_state (result : Step) : result.forNumbering.state = result.state := by
@@ -252,12 +252,12 @@ theorem finish_within {limits : Limits} {s : State} (h : s.Within limits) :
 /-- 操作を拒否した場合にも、状態全体を保つ。 -/
 theorem charge_rejected {limits s operation reason state}
     (h : charge limits s operation = .stopped reason state) : state = s := by
-  exact admit_rejected h
+  exact checkLimit_rejected h
 
 /-- 操作の計上は状態の整合性を保つ。 -/
 theorem charge_valid (limits : Limits) (s : State) (operation : Operation) (h : s.Valid) :
     (charge limits s operation).state.Valid := by
-  dsimp [charge, admit]
+  dsimp [charge, checkLimit]
   split
   · exact h
   · split
@@ -268,7 +268,7 @@ theorem charge_valid (limits : Limits) (s : State) (operation : Operation) (h : 
 /-- 成功した操作の実消費と、拒否後の実消費は、いずれも上限内である。 -/
 theorem charge_within (limits : Limits) (s : State) (operation : Operation)
     (h : s.Within limits) : (charge limits s operation).state.Within limits := by
-  dsimp [charge, admit]
+  dsimp [charge, checkLimit]
   split
   · exact h
   · split
@@ -279,7 +279,7 @@ theorem charge_within (limits : Limits) (s : State) (operation : Operation)
 /-- 確保は両範囲の最大同時保持を更新し、整合性を保つ。 -/
 theorem reserve_valid (limits : Limits) (s : State) (item : Item) (lifetime : Lifetime)
     (h : s.Valid) : (reserve limits s item lifetime).state.Valid := by
-  cases lifetime <;> dsimp [reserve, admit] <;> split
+  cases lifetime <;> dsimp [reserve, checkLimit] <;> split
   · exact h
   · split
     · exact h
@@ -294,7 +294,7 @@ theorem reserve_valid (limits : Limits) (s : State) (item : Item) (lifetime : Li
 /-- 拒否前に最大値を更新せず、成功した確保だけが両上限へ収まる。 -/
 theorem reserve_within (limits : Limits) (s : State) (item : Item) (lifetime : Lifetime)
     (h : s.Within limits) : (reserve limits s item lifetime).state.Within limits := by
-  cases lifetime <;> dsimp [reserve, admit] <;> split
+  cases lifetime <;> dsimp [reserve, checkLimit] <;> split
   · exact h
   · split
     · exact h
@@ -372,7 +372,7 @@ theorem charge_temporary (limits : Limits) (s : State) (operation : Operation) :
     (charge limits s operation).state.body.temporary = s.body.temporary := by
   cases h : charge limits s operation with
   | ok state =>
-    have eq := admit_accepted h
+    have eq := checkLimit_accepted h
     subst state
     rfl
   | stopped reason state => rw [charge_rejected h]; rfl
@@ -383,7 +383,7 @@ theorem reserve_accepted_temporary {limits s item lifetime state}
     state.body.temporary = s.body.temporary +
       (match lifetime with | .temporary => 1 | .saved => 0) := by
   unfold reserve at h
-  have eq := admit_accepted h
+  have eq := checkLimit_accepted h
   subst state
   cases lifetime <;> simp
 
