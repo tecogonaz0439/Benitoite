@@ -85,9 +85,15 @@
 
 `TypeRows` は既存のRowsIn四族を支持へ接続し、単調性と正規化保存を証明する。`TypeVariables` はWF・RowsIn・RangesScopedを束ねたVarsInと、有限上限でのSourceScopedとの一致を示し、四名前空間の条件を正規化が保つことを示す。`TypeShiftFacts` は既存の生の比較・正規化・移動の代数を使い、Canonicalとzero、公開する移動の比較と整列の可換性を証明する。`EffectFacts` はsingleFail、Canonicalな効果の両包含からの等号、固定したσでのAllowsとTopAtomsの正規化不変性、空の行置換と名前の保存を証明する。構造等号の証明にCoversをSubの代わりとして使わない。
 
-網羅性は正規形を入口とし、`ValueMeaning` は全子値の意味と最外の全篩述語の真を持つ。範囲付き型の形は添字と成功値を結ぶ `ScopedValue` に絞り、範囲の拡大と `scoped_forget` による意味の移送を証明する。`ObservationOrder`・`ObservationSubstitution` は内部 slot の情報の順序、鍵コードと大きさ、観測と三値評価の単調性、自己を保つ値置換の確定値の保存を証明する。`PatternNormalForm`・`PatternSemantics` は正規化と全型の値置換反映を証明し、無条件の `Inhabits.of_core` は置かない。`ValueMeaningInhabits` は意味から正規形への所属を導く。`CoverageRefinement` は refine の意味の移送と `V_Sub` の代表、Month・空篩・非空 List・観測不能な要素の代表、任意の閉じた長さからの `V_Refine` と網羅性、開いた型への反映を持つ。
+網羅性は正規形を入口とし、`ValueMeaning` は全子値の意味と最外の全篩述語の真を持つ。範囲付き型の形は添字と成功値を結ぶ `ScopedValue` に絞り、範囲の拡大と `scoped_forget` による意味の移送を証明する。`ObservationOrder`・`ObservationSubstitution` は内部 slot の情報の順序、鍵コードと大きさ、観測と三値評価の単調性、自己を保つ値置換の確定値の保存を証明する。`PatternNormalForm`・`PatternSemantics` は正規化と全型の値置換反映を証明し、無条件の `Inhabits.of_core` は置かない。`ValueMeaningInhabits` は意味から正規形への所属を導く。`CoverageRefinement` の `valueMeaning_refine` は任意の部分型に対する意味の移送の refine の枝に使う。同モジュールは Month・空篩・非空 List・観測不能な要素の代表、任意の閉じた長さからの `V_Refine` と網羅性、開いた型への反映も持つ。
 
-パターン型付けには、篩へ同じ束縛を移す `P_Refined` と、正規形の等号で入力型を移す `P_Convert` を含む。型付けの値29・計算24を含む76構成子と、値移動・型移動・値置換・narrowing の主な署名は維持する。閉じた型付けの全導出から `ValueMeaning` を構成する証明、任意の部分型の全移送、任意の捕捉と腕への全接続は、この代表の証明からは結論しない。意味を主な定理へ独立の仮定として追加していない。
+`MeaningOrder` は意味の移送に使う補助関係 `MeaningLe`・`MeaningArgs`、`LeQ`・`TypeArgsLe` からの写し、検証済みの欄の構造から具体化した欄の比較を作る `field_order` を証明する。型像の `Ordinary` を要求しない。型付けの部分型判断には用いず、関数・依存関数・lazy・map の内部を読まない規則は `ValueShapeMeaning` の形に一致する。`variance_meaning` は refined の基底へ下り同じ述語を保つ。入れ子の data は `variance_meaning_args` とともに各引数の変性を読む。
+
+`MeaningTransport` の外側の motive は、値の `sizeOf` と任意の `MeaningLe` を量化する。内側は `MeaningLe`・`MeaningArgs` の相互帰納であり、引数列の motive は True とする。導出から数値のサイズを作らない。`fields_meaning` と `order_data` は `field_order` が返す新しい比較へ子値の外側 IH を適用し、元の引数列の導出の IH と混同しない。`order_trans` は中間の型の注釈を要求せず内側の IH を合成する。`order_refine` は基底の IH と既存の `valueMeaning_refine` を使い、selfModel の facts と `Entails.sound` を供給する。`outer_complete` は全帰納を閉じ、`meaning_order_sound` と `valueMeaning_field_mono`、元の前提を保つ `valueMeaning_sub` を導く。
+
+`MeaningTransportObstruction.ordinary_supply_counterexample` は、検証済みの共変な data、型引数の部分型と data の部分型、文脈の事実の真、元の data の意味を満たしながら、両側の具体的な型引数の `Ordinary` が偽であることを証明する。これは `variance_field_mono` への入力の供給に対する反例であり、任意の部分型に対する意味の移送の否定の証明ではない。
+
+パターン型付けには、篩へ同じ束縛を移す `P_Refined` と、正規形の等号で入力型を移す `P_Convert` を含む。型付けの値29・計算24を含む76構成子と、値移動・型移動・値置換・narrowing の主な署名は維持する。閉じた型付けの全導出から `ValueMeaning` を構成する証明と、任意の捕捉と腕への全接続は、任意の部分型に対する意味の移送の証明からは結論しない。意味を主な定理へ独立の仮定として追加していない。
 
 型付けの型文脈は `TypeCtx = List TParamDecl` であり、kind と組み込みの制約を同じ宣言の位置から射影する。`TypeArgsKinded P C` は `TypeCtx.kinds C` を使い、その別名 `TypeArgsKindedAt` とともに value kind の型引数に Ordinary を要求する。`Ty.Declared` の tapp は、head の宣言の kind が引数の個数と一致する constructor であることを検査する。`SatAll` と admits へ渡す文脈は `TypeCtx.constraints C` であり、組み込みの表の生の制約の型は保つ。constructor kind は型の形から Ordinary を満たす。`V_Raise` は結果型とエラー型の Ordinary を別に検査し、結果型の value kind も同じ C で検査する。Fail 節の新しい型束縛は `TypeCtx.valueParam` である。`TypeArgumentRegularity` は SignatureInstance、操作の型付け、辞書の型付け、メソッド呼出しから、実際に置換する型列の WF と Ordinary を取り出し、Ty.substAt_wf と Ty.LeQ.substAt へ渡す。操作とメソッドの変数を返す本体について、型置換後の型付けも証明する。HasTypeVQ と HasTypeCQ の値移動・型移動・値置換・None の下の値置換・narrowing の前提と結論は保つ。
 
@@ -806,6 +812,7 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 | NestedContinuation | 同節の notContCore から閉じた List の空性と一要素の照合の失敗、data の欄・捕捉への適用 |
 | TypeFormation・ValueFacts | 同節の検証済みの欄の型代入の形成、`Declared`・`HasData` の型置換、構成子の反転と欄の型付け |
 | RefinementObservation・ObservationOrder・ObservationSubstitution・ObservationInterpretation・ValueMeaning・ValueMeaningInhabits・PatternNormalForm・Patterns・PatternTransport・PatternSemantics・PatternTypeShift・CoverageRefinement | 「篩を読む網羅性と値の意味」 |
+| MeaningOrder・MeaningTransport・MeaningTransportObstruction | 同節の構造による欄の比較、任意の部分型に対する意味の移送と辞書式の帰納、型引数の Ordinary の供給に対する反例 |
 | Observation・ClosedEvaluation・Logic・LogicSound・Context/Capture・CapturedFacts・CaptureRegularity | 「閉じた述語の評価と捕捉」。開いた全結果形成と、元の注釈・包含・場所からの捕捉後の効果形成を含む |
 | PathFacts・PathConditions・MatchPaths・MatchFacts・Typing・StateTyping | 「条件とパターンからの事実」 |
 | Typing・HandlerContracts・RuntimeSyntax・AtPrepare・AtTyping・BuiltinResponse・ConstraintAssumptions・BuiltinEffects・Semantics・Step・ExternalCheck・ExternalResponse・ExternalConnection | 「保持要求と組み込みの遷移」 |
