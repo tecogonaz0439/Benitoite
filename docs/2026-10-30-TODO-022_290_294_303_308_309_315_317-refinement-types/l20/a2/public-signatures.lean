@@ -1,0 +1,40 @@
+import Benitoite.Release.Refinement.CaptureRegularity
+set_option pp.universes true
+set_option pp.fullNames true
+set_option format.width 100
+#check @Benitoite.Release.Refinement.CaptureContextRegular
+#check @Benitoite.Release.Refinement.CaptureContextRegular.extend
+#check @Benitoite.Release.Refinement.CaptureContextRegular.extendNone
+#check @Benitoite.Release.Refinement.CaptureContextRegular.variable
+#check @Benitoite.Release.Refinement.CaptureOk.contextRegular
+#check @Benitoite.Release.Refinement.let_annotation
+#check @Benitoite.Release.Refinement.Ty.wf_shiftV_rev_extendNone
+#check @Benitoite.Release.Refinement.Ty.sorted_shiftV_rev_extendNone
+#check @Benitoite.Release.Refinement.Ty.Declared.shiftV_rev_extendNone
+#check @Benitoite.Release.Refinement.builder_annotation
+#check @Benitoite.Release.Refinement.used_annotation
+#check @Benitoite.Release.Refinement.locref_annotation
+#check @Benitoite.Release.Refinement.checked_annotation
+#check @Benitoite.Release.Refinement.open_value_annotation
+#check @Benitoite.Release.Refinement.open_comp_annotation
+#check @Benitoite.Release.Refinement.open_values_annotation
+#check @Benitoite.Release.Refinement.open_each_annotation
+#check @Benitoite.Release.Refinement.open_arms_annotation
+#check @Benitoite.Release.Refinement.open_telArgs_annotation
+#check @Benitoite.Release.Refinement.capture_value_annotation
+#check @Benitoite.Release.Refinement.capture_comp_annotation
+#check @Benitoite.Release.Refinement.capture_handle_body_annotation
+#check @Benitoite.Release.Refinement.failure_effect_upper_annotation
+#check @Benitoite.Release.Refinement.capture_failure_body_annotation
+#check @Benitoite.Release.Refinement.CaptureOk.continuation_annotation
+#check @Benitoite.Release.Refinement.CaptureOk.continuation_result_effect
+#check @Benitoite.Release.Refinement.capture_let_effect_annotations
+#check @Benitoite.Release.Refinement.capture_tel_annotation
+#check @Benitoite.Release.Refinement.capture_function_result_effect
+#check @Benitoite.Release.Refinement.HasFailureClause.capture_result_effect
+#check @Benitoite.Release.Refinement.done_inner
+#check @Benitoite.Release.Refinement.handle_inv
+#check @Benitoite.Release.Refinement.e_handle_supply
+#check @Benitoite.Release.Refinement.ContTy.return_wf
+#check @Benitoite.Release.Refinement.e_let_post
+#check @Benitoite.Release.Refinement.split_fail_annotated

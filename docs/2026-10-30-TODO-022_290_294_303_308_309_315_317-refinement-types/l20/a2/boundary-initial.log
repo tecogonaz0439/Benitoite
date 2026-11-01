@@ -1,0 +1,48 @@
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a2/boundary.lean:8:2: error: Insufficient number of fields for `⟨...⟩` constructor: Constructor `And.intro` has 2 explicit field, but only 1 was provided
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a2/boundary.lean:8:39: error: Tactic `introN` failed: There are no additional binders or `let` bindings in the goal to introduce
+
+P : Program
+i : Nat
+a : Ty
+hi : [][i]? = some (some a)
+⊢ ?m.14
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a2/boundary.lean:8:20: error: Missing eliminator: An eliminator must be provided when multiple induction targets are specified and no default eliminator has been registered
+
+Hint: Write `using <eliminator-name>` to specify an eliminator, or register a default eliminator with the attribute `[cases_eliminator]`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a2/boundary.lean:24:30: error: unsolved goals
+P : Program
+B : Builtins
+hp : P.WellFormed
+ht : P.WellTyped B
+hA : Builtins.CoreAssumptions P B
+⊢ ∀ (b t : Ty) (e : EffR), ¬(Ty.shiftV 1 0 (Ty.base Benitoite.Release.BaseTy.unit)).core = b.cont t e
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a2/boundary.lean:24:49: warning: This simp argument is unused:
+  Ty.core
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Ordinary]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a2/boundary.lean:48:38: error: unsolved goals
+P : Program
+B : Builtins
+hs : (Eff.singleFail (Ty.tvar 0)).Sub (Eff.empty.union (handled P B []))
+⊢ Ty.tvar 0 = (Ty.tvar 0).norm
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a2/boundary.lean:56:31: error(lean.unknownIdentifier): Unknown constant `Benitoite.Release.Refinement.Eff.mk`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a2/boundary.lean:76:5: error: Application type mismatch: The argument
+  trivial
+has type
+  True
+but is expected to have type
+  Ty.WF 0 (List.length ?m.17) (List.length ?m.18) ?m.19
+in the application
+  Ty.Annotation.mk trivial
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a2/boundary.lean:76:33: error: Application type mismatch: The argument
+  trivial
+has type
+  True
+but is expected to have type
+  Ty.WF 0 (List.length ?m.21) (List.length ?m.22) ?m.23
+in the application
+  Ty.Annotation.mk trivial
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a2/boundary.lean:77:29: error: `simp` made no progress

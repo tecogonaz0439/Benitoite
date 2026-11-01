@@ -1,0 +1,319 @@
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a2/public-signatures.lean:4:0: error: Unknown option `pp.width`
+Benitoite.Release.Refinement.CaptureContextRegular : Benitoite.Release.Refinement.Program →
+  List.{0} Benitoite.Release.TParam → Benitoite.Release.Refinement.Ctx → Prop
+@Benitoite.Release.Refinement.CaptureContextRegular.extend : ∀ {P : Benitoite.Release.Refinement.Program}
+  {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx} {a : Benitoite.Release.Refinement.Ty},
+  Benitoite.Release.Refinement.CaptureContextRegular P C Γ →
+    Benitoite.Release.Refinement.Ty.Annotation P C Γ a →
+      Benitoite.Release.Refinement.CaptureContextRegular P C (Γ.extend a)
+@Benitoite.Release.Refinement.CaptureContextRegular.extendNone : ∀ {P : Benitoite.Release.Refinement.Program}
+  {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx},
+  Benitoite.Release.Refinement.CaptureContextRegular P C Γ →
+    Benitoite.Release.Refinement.CaptureContextRegular P C Γ.extendNone
+@Benitoite.Release.Refinement.CaptureContextRegular.variable : ∀ {P : Benitoite.Release.Refinement.Program}
+  {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx} {a : Benitoite.Release.Refinement.Ty}
+  {i : Nat},
+  Benitoite.Release.Refinement.CaptureContextRegular P C Γ →
+    Eq.{1} (GetElem?.getElem?.{0, 0, 0} Γ i) (Option.some.{0} (Option.some.{0} a)) →
+      Benitoite.Release.Refinement.Ordinary a → Benitoite.Release.Refinement.Ty.Annotation P C Γ a
+@Benitoite.Release.Refinement.CaptureOk.contextRegular : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {R : Option.{0} Benitoite.Release.Refinement.Ty} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {cap : Benitoite.Release.Refinement.Capture},
+  Benitoite.Release.Refinement.CaptureOk P B Ψ R Γ Φ cap →
+    Benitoite.Release.Refinement.CaptureContextRegular P List.nil.{0} Γ
+@Benitoite.Release.Refinement.let_annotation : ∀ {P : Benitoite.Release.Refinement.Program}
+  {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {a b : Benitoite.Release.Refinement.Ty},
+  Benitoite.Release.Refinement.Ty.Annotation P C (Γ.extend a) (Benitoite.Release.Refinement.Ty.shiftV 1 0 b) →
+    Benitoite.Release.Refinement.Ty.Annotation P C Γ a → Benitoite.Release.Refinement.Ty.Annotation P C Γ b
+@Benitoite.Release.Refinement.Ty.wf_shiftV_rev_extendNone : ∀ {a : Benitoite.Release.Refinement.Ty} {nr nt : Nat}
+  {Γ : Benitoite.Release.Refinement.Ctx},
+  Benitoite.Release.Refinement.Ty.WF nr nt (List.length.{0} Γ.extendNone)
+      (Benitoite.Release.Refinement.Ty.shiftV 1 0 a) →
+    Benitoite.Release.Refinement.Ty.WF nr nt (List.length.{0} Γ) a
+@Benitoite.Release.Refinement.Ty.sorted_shiftV_rev_extendNone : ∀ {a : Benitoite.Release.Refinement.Ty}
+  {Γ : Benitoite.Release.Refinement.Ctx},
+  Benitoite.Release.Refinement.Ty.Sorted Γ.extendNone (Benitoite.Release.Refinement.Ty.shiftV 1 0 a) →
+    Benitoite.Release.Refinement.Ty.Sorted Γ a
+@Benitoite.Release.Refinement.Ty.Declared.shiftV_rev_extendNone : ∀ {P : Benitoite.Release.Refinement.Program}
+  {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx} {a : Benitoite.Release.Refinement.Ty},
+  Benitoite.Release.Refinement.Ty.Declared P C Γ.extendNone (Benitoite.Release.Refinement.Ty.shiftV 1 0 a) →
+    Benitoite.Release.Refinement.Ty.Declared P C Γ a
+@Benitoite.Release.Refinement.builder_annotation : ∀ {P : Benitoite.Release.Refinement.Program}
+  {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx} {a : Benitoite.Release.Refinement.Ty},
+  Benitoite.Release.Refinement.Ty.Annotation P C Γ.extendNone (Benitoite.Release.Refinement.Ty.shiftV 1 0 a) →
+    Benitoite.Release.Refinement.Ty.Declared P C Γ a → Benitoite.Release.Refinement.Ty.Annotation P C Γ a
+@Benitoite.Release.Refinement.used_annotation : ∀ {P : Benitoite.Release.Refinement.Program}
+  {Ψ : Benitoite.Release.Refinement.StoreTy} {l : Nat} {b t : Benitoite.Release.Refinement.Ty}
+  {e : Benitoite.Release.Refinement.Eff} {R : Option.{0} Benitoite.Release.Refinement.Ty}
+  {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx},
+  Ψ.WF →
+    Ψ.Sorted →
+      Benitoite.Release.Refinement.StoreTy.Declared P Ψ →
+        Eq.{1} (Ψ l) (Option.some.{0} (Benitoite.Release.Refinement.LocTy.cont b t e R)) →
+          Benitoite.Release.Refinement.Ty.Annotation P C Γ t
+@Benitoite.Release.Refinement.locref_annotation : ∀ {P : Benitoite.Release.Refinement.Program}
+  {Ψ : Benitoite.Release.Refinement.StoreTy} {l : Nat} {a : Benitoite.Release.Refinement.Ty}
+  {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx},
+  Ψ.WF →
+    Ψ.Sorted →
+      Benitoite.Release.Refinement.StoreTy.Declared P Ψ →
+        Eq.{1} (Ψ l) (Option.some.{0} (Benitoite.Release.Refinement.LocTy.ref a)) →
+          Benitoite.Release.Refinement.Ty.Annotation P C Γ a.reference
+Benitoite.Release.Refinement.checked_annotation : ∀ (P : Benitoite.Release.Refinement.Program)
+  (C : List.{0} Benitoite.Release.TParam) (Γ : Benitoite.Release.Refinement.Ctx) (o : Benitoite.Release.OpaqueName)
+  (k : Benitoite.Scope.Domain.Kind) (r : Benitoite.Scope.Domain.Range),
+  Benitoite.Release.Refinement.Ty.Annotation P C Γ
+    (Benitoite.Release.Refinement.Ty.scoped o k
+      (Benitoite.Release.Refinement.RangeIx.fixed (Benitoite.Release.Refinement.RangeExpr.absolute r)))
+@Benitoite.Release.Refinement.open_value_annotation : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {v : Benitoite.Release.Refinement.Val}
+  {a : Benitoite.Release.Refinement.Ty},
+  P.WellFormed →
+    P.WellTyped B →
+      Benitoite.Release.Refinement.Builtins.CoreAssumptions P B →
+        Ψ.WF →
+          Ψ.Sorted →
+            Benitoite.Release.Refinement.StoreTy.Declared P Ψ →
+              Benitoite.Release.Refinement.CaptureContextRegular P C Γ →
+                Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C Γ Φ v a →
+                  Benitoite.Release.Refinement.Ty.Annotation P C Γ a
+@Benitoite.Release.Refinement.open_comp_annotation : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {R : Option.{0} Benitoite.Release.Refinement.Ty}
+  {m : Benitoite.Release.Refinement.Comp} {a : Benitoite.Release.Refinement.Ty} {e : Benitoite.Release.Refinement.Eff}
+  {L : Benitoite.Release.Refinement.LocalCtx},
+  P.WellFormed →
+    P.WellTyped B →
+      Benitoite.Release.Refinement.Builtins.CoreAssumptions P B →
+        Ψ.WF →
+          Ψ.Sorted →
+            Benitoite.Release.Refinement.StoreTy.Declared P Ψ →
+              Benitoite.Release.Refinement.CaptureContextRegular P C Γ →
+                Benitoite.Release.Refinement.HasTypeCQ P B Ψ Q C Γ Φ R m a e L →
+                  Benitoite.Release.Refinement.Ty.Annotation P C Γ a
+@Benitoite.Release.Refinement.open_values_annotation : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {vs : List.{0} Benitoite.Release.Refinement.Val}
+  {as : List.{0} Benitoite.Release.Refinement.Ty},
+  P.WellFormed →
+    P.WellTyped B →
+      Benitoite.Release.Refinement.Builtins.CoreAssumptions P B →
+        Ψ.WF →
+          Ψ.Sorted →
+            Benitoite.Release.Refinement.StoreTy.Declared P Ψ →
+              Benitoite.Release.Refinement.CaptureContextRegular P C Γ →
+                Benitoite.Release.Refinement.HasTypeVsQ P B Ψ Q C Γ Φ vs as →
+                  Benitoite.Release.Refinement.TypeAnnotations P C Γ as
+@Benitoite.Release.Refinement.open_each_annotation : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {vs : List.{0} Benitoite.Release.Refinement.Val}
+  {a : Benitoite.Release.Refinement.Ty},
+  P.WellFormed →
+    P.WellTyped B →
+      Benitoite.Release.Refinement.Builtins.CoreAssumptions P B →
+        Ψ.WF →
+          Ψ.Sorted →
+            Benitoite.Release.Refinement.StoreTy.Declared P Ψ →
+              Benitoite.Release.Refinement.CaptureContextRegular P C Γ →
+                Benitoite.Release.Refinement.HasTypeEachQ P B Ψ Q C Γ Φ vs a →
+                  Ne.{1} vs List.nil.{0} → Benitoite.Release.Refinement.Ty.Annotation P C Γ a
+@Benitoite.Release.Refinement.open_arms_annotation : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {R : Option.{0} Benitoite.Release.Refinement.Ty}
+  {obs : Option.{0} Benitoite.Release.Refinement.Term} {arms : List.{0} Benitoite.Release.Refinement.Arm}
+  {a b : Benitoite.Release.Refinement.Ty} {e : Benitoite.Release.Refinement.Eff}
+  {L : Benitoite.Release.Refinement.LocalCtx},
+  Benitoite.Release.Refinement.HasTypeArmsQ P B Ψ Q C Γ Φ R obs arms a b e L →
+    Benitoite.Release.Refinement.Ty.Annotation P C Γ b
+@Benitoite.Release.Refinement.open_telArgs_annotation : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {vs : List.{0} Benitoite.Release.Refinement.Val}
+  {t : Benitoite.Release.Refinement.Tel} {a : Benitoite.Release.Refinement.Ty} {e : Benitoite.Release.Refinement.Eff},
+  Benitoite.Release.Refinement.HasTypeTelArgsQ P B Ψ Q C Γ Φ vs t a e →
+    Benitoite.Release.Refinement.Ty.Annotation P C Γ
+      (Benitoite.Release.Refinement.Ty.dependentFn (Benitoite.Release.Refinement.Tel.done a e))
+@Benitoite.Release.Refinement.capture_value_annotation : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {R : Option.{0} Benitoite.Release.Refinement.Ty} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {cap : Benitoite.Release.Refinement.Capture}
+  {v : Benitoite.Release.Refinement.Val} {a : Benitoite.Release.Refinement.Ty},
+  P.WellFormed →
+    P.WellTyped B →
+      Benitoite.Release.Refinement.Builtins.CoreAssumptions P B →
+        Ψ.WF →
+          Ψ.Sorted →
+            Benitoite.Release.Refinement.StoreTy.Declared P Ψ →
+              Benitoite.Release.Refinement.CaptureOk P B Ψ R Γ Φ cap →
+                Benitoite.Release.Refinement.HasTypeVQ P B Ψ Benitoite.Release.Qempty List.nil.{0} Γ Φ v a →
+                  Benitoite.Release.Refinement.Ty.Annotation P List.nil.{0} List.nil.{0} (cap.closeTy a)
+@Benitoite.Release.Refinement.capture_comp_annotation : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {R : Option.{0} Benitoite.Release.Refinement.Ty} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {cap : Benitoite.Release.Refinement.Capture}
+  {Rs : Option.{0} Benitoite.Release.Refinement.Ty} {m : Benitoite.Release.Refinement.Comp}
+  {a : Benitoite.Release.Refinement.Ty} {e : Benitoite.Release.Refinement.Eff}
+  {L : Benitoite.Release.Refinement.LocalCtx},
+  P.WellFormed →
+    P.WellTyped B →
+      Benitoite.Release.Refinement.Builtins.CoreAssumptions P B →
+        Ψ.WF →
+          Ψ.Sorted →
+            Benitoite.Release.Refinement.StoreTy.Declared P Ψ →
+              Benitoite.Release.Refinement.CaptureOk P B Ψ R Γ Φ cap →
+                Benitoite.Release.Refinement.HasTypeCQ P B Ψ Benitoite.Release.Qempty List.nil.{0} Γ Φ Rs m a e L →
+                  Benitoite.Release.Refinement.Ty.Annotation P List.nil.{0} List.nil.{0} (cap.closeTy a)
+@Benitoite.Release.Refinement.capture_handle_body_annotation : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {t : Benitoite.Release.Refinement.Ty}
+  {eb ec : Benitoite.Release.Refinement.Eff} {h : List.{0} Benitoite.Release.Refinement.Clause}
+  {cap : Benitoite.Release.Refinement.Capture},
+  Benitoite.Release.Refinement.Ty.Annotation P List.nil.{0} List.nil.{0}
+      (Benitoite.Release.Refinement.Ty.dependentFn
+        (Benitoite.Release.Refinement.Tel.done (cap.closeTy t) (cap.closeEff ec))) →
+    eb.Sub (ec.union (Benitoite.Release.Refinement.handled P B h)) →
+      Benitoite.Release.Refinement.Ty.Annotation P List.nil.{0} List.nil.{0}
+        (Benitoite.Release.Refinement.Ty.dependentFn
+          (Benitoite.Release.Refinement.Tel.done (cap.closeTy t) (cap.closeEff eb)))
+@Benitoite.Release.Refinement.failure_effect_upper_annotation : ∀ {P : Benitoite.Release.Refinement.Program}
+  {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx} {Q : Benitoite.Release.NoFailCtx}
+  {t E : Benitoite.Release.Refinement.Ty} {rest : Benitoite.Release.Refinement.Eff},
+  Benitoite.Release.Refinement.Ty.Annotation P C Γ t →
+    Benitoite.Release.Refinement.Ty.Annotation P C Γ E →
+      Benitoite.Release.Refinement.NoFail Q rest →
+        Benitoite.Release.Refinement.Ty.Annotation P C Γ
+          (Benitoite.Release.Refinement.Ty.dependentFn
+            (Benitoite.Release.Refinement.Tel.done t ((Benitoite.Release.Refinement.Eff.singleFail E).union rest)))
+@Benitoite.Release.Refinement.capture_failure_body_annotation : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {cap : Benitoite.Release.Refinement.Capture} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {R Rs : Option.{0} Benitoite.Release.Refinement.Ty}
+  {t E : Benitoite.Release.Refinement.Ty} {eb rest ec : Benitoite.Release.Refinement.Eff}
+  {h : List.{0} Benitoite.Release.Refinement.Clause} {L : Benitoite.Release.Refinement.LocalCtx},
+  Benitoite.Release.Refinement.CaptureOk P B Ψ R Γ Φ cap →
+    Benitoite.Release.Refinement.HasFailureClause P B Ψ Benitoite.Release.Qempty List.nil.{0} Γ Φ E Rs h t ec L →
+      Benitoite.Release.Refinement.NoFail Benitoite.Release.Qempty rest →
+        eb.Sub ((Benitoite.Release.Refinement.Eff.singleFail E).union rest) →
+          Benitoite.Release.Refinement.Ty.Annotation P List.nil.{0} List.nil.{0}
+            (Benitoite.Release.Refinement.Ty.dependentFn
+              (Benitoite.Release.Refinement.Tel.done (cap.closeTy t) (cap.closeEff eb)))
+@Benitoite.Release.Refinement.HasTypeClausesQ.same_input_atoms : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {R : Option.{0} Benitoite.Release.Refinement.Ty}
+  {eb eb' ec : Benitoite.Release.Refinement.Eff} {h : List.{0} Benitoite.Release.Refinement.Clause}
+  {t : Benitoite.Release.Refinement.Ty} {L : Benitoite.Release.Refinement.LocalCtx},
+  Benitoite.Release.Refinement.HasTypeClausesQ P B Ψ Q C Γ Φ R eb h t ec L →
+    Eq.{1} eb'.atoms eb.atoms → Benitoite.Release.Refinement.HasTypeClausesQ P B Ψ Q C Γ Φ R eb' h t ec L
+@Benitoite.Release.Refinement.handle_body_normalize : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {R : Option.{0} Benitoite.Release.Refinement.Ty}
+  {m : Benitoite.Release.Refinement.Comp} {t : Benitoite.Release.Refinement.Ty}
+  {eb ec : Benitoite.Release.Refinement.Eff} {h : List.{0} Benitoite.Release.Refinement.Clause}
+  {L : Benitoite.Release.Refinement.LocalCtx},
+  Benitoite.Release.Refinement.HasTypeCQ P B Ψ Q C Γ Φ R m t eb L →
+    eb.Sub (ec.union (Benitoite.Release.Refinement.handled P B h)) →
+      Benitoite.Release.Refinement.HasTypeClausesQ P B Ψ Q C Γ Φ R eb h t ec L →
+        Benitoite.Release.Refinement.HasTypeCQ P B Ψ Q C Γ Φ R m t eb.norm L ∧
+          eb.norm.Sub (ec.union (Benitoite.Release.Refinement.handled P B h)) ∧
+            Benitoite.Release.Refinement.HasTypeClausesQ P B Ψ Q C Γ Φ R eb.norm h t ec L
+@Benitoite.Release.Refinement.failure_body_widen : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {Q : Benitoite.Release.NoFailCtx} {C : List.{0} Benitoite.Release.TParam} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {R : Option.{0} Benitoite.Release.Refinement.Ty}
+  {m : Benitoite.Release.Refinement.Comp} {t E : Benitoite.Release.Refinement.Ty}
+  {eb rest : Benitoite.Release.Refinement.Eff} {L : Benitoite.Release.Refinement.LocalCtx},
+  Benitoite.Release.Refinement.HasTypeCQ P B Ψ Q C Γ Φ R m t eb L →
+    eb.Sub ((Benitoite.Release.Refinement.Eff.singleFail E).union rest) →
+      Benitoite.Release.Refinement.HasTypeCQ P B Ψ Q C Γ Φ R m t
+        ((Benitoite.Release.Refinement.Eff.singleFail E).union rest) L
+@Benitoite.Release.Refinement.CaptureOk.continuation_annotation : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {R : Option.{0} Benitoite.Release.Refinement.Ty} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {cap : Benitoite.Release.Refinement.Capture} {i : Nat}
+  {b t : Benitoite.Release.Refinement.Ty} {e : Benitoite.Release.Refinement.EffR},
+  Benitoite.Release.Refinement.CaptureOk P B Ψ R Γ Φ cap →
+    Ψ.WF →
+      Ψ.Sorted →
+        Benitoite.Release.Refinement.StoreTy.Declared P Ψ →
+          Eq.{1} (GetElem?.getElem?.{0, 0, 0} Γ i) (Option.some.{0} (Option.some.{0} (b.cont t e))) →
+            Benitoite.Release.Refinement.Ty.Annotation P List.nil.{0} List.nil.{0} (cap.closeTy (b.cont t e))
+@Benitoite.Release.Refinement.CaptureOk.continuation_result_effect : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {R : Option.{0} Benitoite.Release.Refinement.Ty} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {cap : Benitoite.Release.Refinement.Capture} {i : Nat}
+  {b t : Benitoite.Release.Refinement.Ty} {e : Benitoite.Release.Refinement.EffR},
+  Benitoite.Release.Refinement.CaptureOk P B Ψ R Γ Φ cap →
+    Ψ.WF →
+      Ψ.Sorted →
+        Benitoite.Release.Refinement.StoreTy.Declared P Ψ →
+          Eq.{1} (GetElem?.getElem?.{0, 0, 0} Γ i) (Option.some.{0} (Option.some.{0} (b.cont t e))) →
+            Benitoite.Release.Refinement.Ty.Annotation P List.nil.{0} List.nil.{0}
+              (Benitoite.Release.Refinement.Ty.dependentFn
+                (Benitoite.Release.Refinement.Tel.done (cap.closeTy t) (cap.closeEff e)))
+@Benitoite.Release.Refinement.capture_let_effect_annotations : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {R Rs : Option.{0} Benitoite.Release.Refinement.Ty} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {cap : Benitoite.Release.Refinement.Capture}
+  {m : Benitoite.Release.Refinement.Comp} {a b : Benitoite.Release.Refinement.Ty} {e : Benitoite.Release.Refinement.Eff}
+  {L : Benitoite.Release.Refinement.LocalCtx},
+  P.WellFormed →
+    P.WellTyped B →
+      Benitoite.Release.Refinement.Builtins.CoreAssumptions P B →
+        Ψ.WF →
+          Ψ.Sorted →
+            Benitoite.Release.Refinement.StoreTy.Declared P Ψ →
+              Benitoite.Release.Refinement.CaptureOk P B Ψ R Γ Φ cap →
+                Benitoite.Release.Refinement.HasTypeCQ P B Ψ Benitoite.Release.Qempty List.nil.{0} Γ Φ Rs m a e L →
+                  Benitoite.Release.Refinement.Ty.Annotation P List.nil.{0} List.nil.{0}
+                      (Benitoite.Release.Refinement.Ty.dependentFn
+                        (Benitoite.Release.Refinement.Tel.done (cap.closeTy b) (cap.closeEff e))) →
+                    Benitoite.Release.Refinement.Ty.Annotation P List.nil.{0} List.nil.{0}
+                        (Benitoite.Release.Refinement.Ty.dependentFn
+                          (Benitoite.Release.Refinement.Tel.done (cap.closeTy a) (cap.closeEff e))) ∧
+                      Benitoite.Release.Refinement.Ty.Annotation P List.nil.{0}
+                        (Benitoite.Release.Refinement.bindParams List.nil.{0}
+                          (List.cons.{0} (cap.closeTy a) List.nil.{0}))
+                        (Benitoite.Release.Refinement.Ty.dependentFn
+                          (Benitoite.Release.Refinement.Tel.done
+                            (cap.closeTyAt 1 (Benitoite.Release.Refinement.Ty.shiftV 1 0 b))
+                            (cap.closeEffAt 1 (Benitoite.Release.Refinement.Eff.shiftV 1 0 e))))
+@Benitoite.Release.Refinement.capture_tel_annotation : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {R : Option.{0} Benitoite.Release.Refinement.Ty} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {cap : Benitoite.Release.Refinement.Capture}
+  {t : Benitoite.Release.Refinement.Tel},
+  Benitoite.Release.Refinement.CaptureOk P B Ψ R Γ Φ cap →
+    Benitoite.Release.Refinement.Ty.Annotation P List.nil.{0} Γ (Benitoite.Release.Refinement.Ty.dependentFn t) →
+      Benitoite.Release.Refinement.Ty.Annotation P List.nil.{0} List.nil.{0}
+        (Benitoite.Release.Refinement.Ty.dependentFn (cap.closeTel t))
+@Benitoite.Release.Refinement.capture_function_result_effect : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {R : Option.{0} Benitoite.Release.Refinement.Ty} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {cap : Benitoite.Release.Refinement.Capture} {ns : List.{0} String}
+  {ps : List.{0} Benitoite.Release.Refinement.Ty} {r : Benitoite.Release.Refinement.Ty}
+  {e : Benitoite.Release.Refinement.EffR},
+  Benitoite.Release.Refinement.CaptureOk P B Ψ R Γ Φ cap →
+    Benitoite.Release.Refinement.Ty.Annotation P List.nil.{0} Γ (Benitoite.Release.Refinement.Ty.fn ns ps r e) →
+      Benitoite.Release.Refinement.Ty.Annotation P List.nil.{0} List.nil.{0}
+        (Benitoite.Release.Refinement.Ty.dependentFn
+          (Benitoite.Release.Refinement.Tel.done (cap.closeTy r) (cap.closeEff e)))
+@Benitoite.Release.Refinement.HasFailureClause.capture_result_effect : ∀ {P : Benitoite.Release.Refinement.Program}
+  {B : Benitoite.Release.Refinement.Builtins} {Ψ : Benitoite.Release.Refinement.StoreTy}
+  {cap : Benitoite.Release.Refinement.Capture} {Γ : Benitoite.Release.Refinement.Ctx}
+  {Φ : List.{0} Benitoite.Release.Refinement.Pred} {R Rs : Option.{0} Benitoite.Release.Refinement.Ty}
+  {E t : Benitoite.Release.Refinement.Ty} {ec : Benitoite.Release.Refinement.Eff}
+  {h : List.{0} Benitoite.Release.Refinement.Clause} {L : Benitoite.Release.Refinement.LocalCtx},
+  Benitoite.Release.Refinement.CaptureOk P B Ψ R Γ Φ cap →
+    Benitoite.Release.Refinement.HasFailureClause P B Ψ Benitoite.Release.Qempty List.nil.{0} Γ Φ E Rs h t ec L →
+      Benitoite.Release.Refinement.Ty.Annotation P List.nil.{0} List.nil.{0}
+        (Benitoite.Release.Refinement.Ty.dependentFn
+          (Benitoite.Release.Refinement.Tel.done (cap.closeTy t) (cap.closeEff ec)))

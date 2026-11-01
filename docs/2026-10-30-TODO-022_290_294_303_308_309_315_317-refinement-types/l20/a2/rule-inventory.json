@@ -1,0 +1,336 @@
+{
+  "value_rules": 29,
+  "computation_rules": 24,
+  "total": 53,
+  "categories": {
+    "文脈": 3,
+    "型の定義": 8,
+    "規則の注釈": 16,
+    "署名": 4,
+    "標準型の宣言": 2,
+    "場所": 4,
+    "子の帰納": 13,
+    "TelArgs": 2,
+    "腕の末尾": 1
+  },
+  "rules": [
+    {
+      "rule": "V_Var",
+      "category": "文脈",
+      "source": "hΓ.variable：CaptureWF.ordinary と CaptureSorted/Declared の通常型への射影",
+      "effect": "Ordinary は最上位の継続を除く。入れ子は除かない"
+    },
+    {
+      "rule": "V_Const",
+      "category": "型の定義",
+      "source": "Const.type の全16構成子で WF/Sorted/Declared を展開",
+      "effect": "ConstOK は数値等の適格性。結果形成の追加仮定には使わない"
+    },
+    {
+      "rule": "V_Lam",
+      "category": "規則の注釈",
+      "source": "構成子の明示 WF・Sorted・Declared",
+      "effect": "潜在効果も含む。body の IH は使わない"
+    },
+    {
+      "rule": "V_DependentLam",
+      "category": "規則の注釈",
+      "source": "明示 Annotation (.dependentFn t)",
+      "effect": "done の潜在効果を含む"
+    },
+    {
+      "rule": "V_Closure",
+      "category": "規則の注釈",
+      "source": "明示 Annotation (.dependentFn t)",
+      "effect": "DependentClosureTy の逆転は不要"
+    },
+    {
+      "rule": "V_Fun",
+      "category": "署名",
+      "source": "SignatureInstance.result",
+      "effect": "具体化済み依存列の全注釈"
+    },
+    {
+      "rule": "V_Prim",
+      "category": "署名",
+      "source": "SignatureInstance.result",
+      "effect": "範囲具体化後の全注釈"
+    },
+    {
+      "rule": "V_Op",
+      "category": "署名",
+      "source": "SignatureInstance.result",
+      "effect": "同じ"
+    },
+    {
+      "rule": "V_ExternalRef",
+      "category": "署名",
+      "source": "SignatureInstance.result",
+      "effect": "同じ"
+    },
+    {
+      "rule": "V_ExternalHandle",
+      "category": "規則の注釈",
+      "source": "明示 Annotation (.external id ts)",
+      "effect": "型引数列を別途仮定しない"
+    },
+    {
+      "rule": "V_PathBases",
+      "category": "型の定義",
+      "source": "WF/Sorted/Declared の pathBases の枝",
+      "effect": "snapshot.Valid と区別する"
+    },
+    {
+      "rule": "V_ScopePattern",
+      "category": "型の定義",
+      "source": "scopePattern の三定義",
+      "effect": "range の所属と型の形成は別"
+    },
+    {
+      "rule": "V_Checked",
+      "category": "型の定義",
+      "source": "checked_annotation：fixed absolute index の三定義",
+      "effect": "range の意味の所属は結果形成の供給元ではない"
+    },
+    {
+      "rule": "V_CheckedRequest",
+      "category": "型の定義",
+      "source": "fixed absolute index の三定義",
+      "effect": "req の子の IH は不要"
+    },
+    {
+      "rule": "V_CheckedAt",
+      "category": "型の定義",
+      "source": "fixed index の三定義",
+      "effect": "Witness の request の子の IH は不要"
+    },
+    {
+      "rule": "V_AtError",
+      "category": "標準型の宣言",
+      "source": "ResultShape.Declared.errorType_eq/errorType_declared と data [] の定義",
+      "effect": "WF/Sorted は標準型、Declared は shape から得る"
+    },
+    {
+      "rule": "V_Map",
+      "category": "規則の注釈",
+      "source": "a/b の明示 Annotation を組にする",
+      "effect": "空 Each に形成を要求しない"
+    },
+    {
+      "rule": "V_Set",
+      "category": "規則の注釈",
+      "source": "a の明示 Annotation の三射影",
+      "effect": "同じ"
+    },
+    {
+      "rule": "V_Dict",
+      "category": "規則の注釈",
+      "source": "dict 型の明示 Annotation",
+      "effect": "欄からの逆推論をしない"
+    },
+    {
+      "rule": "V_Raise",
+      "category": "規則の注釈",
+      "source": "fn 型の明示 Annotation",
+      "effect": "singleFail の E を含む"
+    },
+    {
+      "rule": "V_LocRef",
+      "category": "場所",
+      "source": "locref_annotation → StoreTy.reference_annotation",
+      "effect": "Ψ.WF/Sorted/Declared と lookup のみ。セルは不要"
+    },
+    {
+      "rule": "V_LocLazy",
+      "category": "場所",
+      "source": "StoreTy.lazy_annotation の三射影",
+      "effect": "同じ"
+    },
+    {
+      "rule": "V_Bytes",
+      "category": "型の定義",
+      "source": "bytes の三定義",
+      "effect": "255以下の前提と区別する"
+    },
+    {
+      "rule": "V_Con",
+      "category": "規則の注釈",
+      "source": "data 型の明示 Annotation",
+      "effect": "子の欄の型置換を要しない"
+    },
+    {
+      "rule": "V_Super",
+      "category": "子の帰納",
+      "source": "子 dict の WF/Sorted、規則の a.Declared",
+      "effect": "dict の Declared は対象だけを読む。クラス表の強い形成は不要"
+    },
+    {
+      "rule": "V_List",
+      "category": "規則の注釈",
+      "source": "a の明示 WF/Sorted/Declared",
+      "effect": "空 Each の IH は不要"
+    },
+    {
+      "rule": "V_Sub",
+      "category": "規則の注釈",
+      "source": "b の明示 WF/Sorted/Declared",
+      "effect": "元の a の形成で代用しない"
+    },
+    {
+      "rule": "V_Normal",
+      "category": "子の帰納",
+      "source": "子の Annotation.norm",
+      "effect": "正規化の三移送"
+    },
+    {
+      "rule": "V_Refine",
+      "category": "子の帰納",
+      "source": "子の Annotation と HasSort.ordinary、Pred の明示 Sorted/WF/Declared",
+      "effect": "Entails の真は結果形成に不要"
+    },
+    {
+      "rule": "C_BuilderLet",
+      "category": "子の帰納",
+      "source": "hΓ.extendNone、子の Annotation と builder_annotation",
+      "effect": "WF/Sorted の逆 shift、規則の Declared を使う"
+    },
+    {
+      "rule": "C_BuilderOp",
+      "category": "規則の注釈",
+      "source": "kind.contents の Annotation、op/kind を場合分け",
+      "effect": "contents を返すか基本型を返す。Eff.empty"
+    },
+    {
+      "rule": "C_Return",
+      "category": "子の帰納",
+      "source": "値の Annotation",
+      "effect": "Eff.empty"
+    },
+    {
+      "rule": "C_Let",
+      "category": "子の帰納",
+      "source": "前半の Annotation で hΓ.extend、後半の Annotation を let_annotation で戻す",
+      "effect": "WF/Sorted/Declared の逆 shift を実際に使用"
+    },
+    {
+      "rule": "C_App",
+      "category": "子の帰納",
+      "source": "f の fn Annotation から結果の三射影",
+      "effect": "潜在 e の三条件も同じ fn から得られる"
+    },
+    {
+      "rule": "C_DependentApp",
+      "category": "TelArgs",
+      "source": "HasTypeTelArgsQ.result_annotation（done/param 全枝）",
+      "effect": "open_telArgs_annotation が結果と潜在効果の全注釈を返す"
+    },
+    {
+      "rule": "C_If",
+      "category": "子の帰納",
+      "source": "真枝の IH を同じ hΓ で使う",
+      "effect": "Φ は任意。偽枝の CaptureOk を構成しない"
+    },
+    {
+      "rule": "C_Match",
+      "category": "腕の末尾",
+      "source": "arms_annotation：nil/ plain/guarded 全枝、末尾の Annotation",
+      "effect": "パターンの δ の形成を先に仮定しない"
+    },
+    {
+      "rule": "C_Lazy",
+      "category": "規則の注釈",
+      "source": "a の明示 Annotation を lazy の三射影へ",
+      "effect": "body の hidden Γ の IH は使わない"
+    },
+    {
+      "rule": "C_Escape",
+      "category": "規則の注釈",
+      "source": "a の明示 Annotation",
+      "effect": "任意 e の形成は主張しない"
+    },
+    {
+      "rule": "C_Use",
+      "category": "子の帰納",
+      "source": "本体の Annotation",
+      "effect": "State 所属は別の前提"
+    },
+    {
+      "rule": "C_Handle",
+      "category": "子の帰納",
+      "source": "本体 m の Annotation",
+      "effect": "閉じた効果は capture_handle_body_annotation"
+    },
+    {
+      "rule": "C_Handle_Fail",
+      "category": "子の帰納",
+      "source": "本体 m の Annotation",
+      "effect": "閉じた効果は capture_failure_body_annotation"
+    },
+    {
+      "rule": "C_Resume",
+      "category": "文脈",
+      "source": "hΓ の cont の入力/結果のうち t の WF/Sorted、規則の t.Declared",
+      "effect": "潜在行は hΓ に追加せず、捕捉後は continuation_result_effect"
+    },
+    {
+      "rule": "C_ResumeL",
+      "category": "場所",
+      "source": "used_annotation → StoreTy.cont_result_annotation",
+      "effect": "used セルの CellOk を使わない"
+    },
+    {
+      "rule": "C_ResumeNorm",
+      "category": "文脈",
+      "source": "hΓ の t の WF/Sorted を norm、規則の t.norm.Declared",
+      "effect": "潜在効果の norm と区別する"
+    },
+    {
+      "rule": "C_ResumeLNorm",
+      "category": "場所",
+      "source": "場所の結果 Annotation.norm",
+      "effect": "R の正規形一致は規則のまま"
+    },
+    {
+      "rule": "C_Normal",
+      "category": "子の帰納",
+      "source": "子の Annotation.norm",
+      "effect": "効果は変わらない"
+    },
+    {
+      "rule": "C_Meth",
+      "category": "規則の注釈",
+      "source": "a の明示 Annotation",
+      "effect": "潜在効果の具体化は署名/Tel の既存入力"
+    },
+    {
+      "rule": "C_External",
+      "category": "TelArgs",
+      "source": "HasTypeTelArgsQ.result_annotation",
+      "effect": "open_telArgs_annotation で潜在効果も得る"
+    },
+    {
+      "rule": "C_IssuePathBases",
+      "category": "型の定義",
+      "source": "pathBases の三定義",
+      "effect": "固定 processEnvironmentEff は Fail なし"
+    },
+    {
+      "rule": "C_CheckAt",
+      "category": "標準型の宣言",
+      "source": "AtCallAdmissible の index.WF、shape.arity/errorType_declared/errorType_eq",
+      "effect": "data の要素を直接形成。Eff.empty"
+    },
+    {
+      "rule": "C_Sub",
+      "category": "規則の注釈",
+      "source": "b の明示 WF/Sorted/Declared",
+      "effect": "任意の拡大先 ε′ の形成は主張しない"
+    },
+    {
+      "rule": "C_Eff",
+      "category": "子の帰納",
+      "source": "子の Annotation",
+      "effect": "同じ"
+    }
+  ]
+}

@@ -3246,6 +3246,12 @@ Not は T/F を反転し、U を保つ。`evalWith` は左右の部分述語の�
 
 捕捉環境 `Capture` は、値の列の `some`/`none` と元の番号を保つ。`CaptureOk` は、捕捉元の緩い整形式・種類・宣言照合、閉じた型付きの像、`Γ.facts ++ Φ` を捕捉で閉じた各述語の仮定なしの導出を持つ。継続の項目は入力・結果の型を読み、ソースの行を読まない。ソースの参照順を検査する `Ctx.Ordered` と、WF/Sorted/Declared/Ordered を合わせる `Ctx.Regular` を `CaptureOk` の追加条件とはしない。
 
+`CaptureContextRegular P C Γ` は、Γ の全 lookup に対する `CaptureWF 0 C.length`・`CaptureSorted`・`CaptureDeclared` を組にする。場所の型の WF・Sorted・Declared とこの三条件から、値29規則と計算24規則の全結果型の `Annotation` を導く。経路条件 Φ の真と実際の捕捉は要求しない。`let` の文脈は前半の結果の注釈で延長し、後半の結果を WF・Sorted・Declared の逆 shift で戻す。構築器の束縛では `extendNone` を使う。値列は全要素の注釈、各要素の判断は列が非空のときだけその型の注釈を返す。腕は末尾、依存する実引数列は done の注釈から結果の形成を得る。`CaptureOk.substOk.annotation` を合成すると、捕捉で閉じた結果型の注釈を得る。理由: 評価前の let の子や、偽の経路条件の下には実際の捕捉を作れないため、結果形成の帰納は構文上の三条件で行う。
+
+効果の形成は結果型の形成と分ける。通常の handler の本体の効果は、捕捉後の正規行について、外側の閉包効果から供給する。型変換・効果拡大・正規化を通す逆転で結論の効果を取り出し、閉じた被覆と内側の結果型の注釈からその効果の注釈を得た後、`Eff.Sub` から本体の Fail 内部の型の注釈を得る。`handled` の Fail 列は空である。失敗の handler は、節の既存の E・結果・効果の注釈と、`NoFail` が持つ rest の空の Fail 列を使う。節の導出は、逆転で得た元の本体効果と `ClauseSig` を保つ。失敗の継続を切り出す定理は、元の節の行注釈から得た `done` の注釈も返す。`C_Eff`・`C_Sub`・`C_Escape` の任意の効果の注釈は無条件には導かない。`Ty.Annotation` の効果に関する条件は Fail の型の形成と正規性であり、効果原子の名前や範囲の上限は別の条件である。
+
+let の到達先の型付けでは、前半と後半の計算を外側の効果へ `C_Eff` で広げる。後半の被覆は一束縛分だけ移す。末尾の return 契約が none の `ContTy` から入口の R の閉性を導き、`R.map (Ty.shiftV 1 0) = R` を用いて二つの閉包と `K_Let` を構成する。
+
 `CaptureOk.addEntailed` は閉じた導出を元の整形式の条件と合わせて Φ に加える。`addEvaluated` は評価成功からその導出を作る系である。`close_entails` は有限導出の置換と cut で開いた事実を閉じる。閉じた経路条件を実行状態の独立の欄として保存しない。Reference の現在のセル内容と、先に読み出した不変値の観測は区別する。
 
 ### 条件とパターンからの事実

@@ -1,0 +1,93 @@
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a2/boundary.lean:51:8: error: don't know how to synthesize implicit argument `B`
+  @HasTypeCQ.C_Resume P ?m.280 StoreTy.empty Benitoite.Release.Qempty []
+    [some
+        ((Ty.base Benitoite.Release.BaseTy.unit).cont (Ty.base Benitoite.Release.BaseTy.unit)
+          (Eff.singleFail (Ty.tvar 0)))]
+    impossible [] none 0 (Val.const Const.unit) (Ty.base Benitoite.Release.BaseTy.unit)
+    (Ty.base Benitoite.Release.BaseTy.unit) (Eff.singleFail (Ty.tvar 0)) rfl (HasTypeVQ.V_Const trivial) trivial
+context:
+P : Program
+B : Builtins
+hr :
+  CaptureContextRegular P []
+    [some
+        ((Ty.base Benitoite.Release.BaseTy.unit).cont (Ty.base Benitoite.Release.BaseTy.unit)
+          (Eff.singleFail (Ty.tvar 0)))]
+⊢ Builtins
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a2/boundary.lean:51:23: error: don't know how to synthesize implicit argument `B`
+  @HasTypeVQ.V_Const P ?m.280 StoreTy.empty Benitoite.Release.Qempty []
+    [some
+        ((Ty.base Benitoite.Release.BaseTy.unit).cont (Ty.base Benitoite.Release.BaseTy.unit)
+          (Eff.singleFail (Ty.tvar 0)))]
+    impossible Const.unit trivial
+context:
+P : Program
+B : Builtins
+hr :
+  CaptureContextRegular P []
+    [some
+        ((Ty.base Benitoite.Release.BaseTy.unit).cont (Ty.base Benitoite.Release.BaseTy.unit)
+          (Eff.singleFail (Ty.tvar 0)))]
+⊢ Builtins
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a2/boundary.lean:48:8: error: don't know how to synthesize implicit argument `B`
+  @open_comp_annotation P ?m.280 StoreTy.empty Benitoite.Release.Qempty []
+    [some
+        ((Ty.base Benitoite.Release.BaseTy.unit).cont (Ty.base Benitoite.Release.BaseTy.unit)
+          (Eff.singleFail (Ty.tvar 0)))]
+    impossible none (Comp.resume (Val.var 0) (Val.const Const.unit)) (Ty.base Benitoite.Release.BaseTy.unit)
+    (Eff.singleFail (Ty.tvar 0)) [] empty_wf empty_sorted (empty_declared P) hr
+context:
+P : Program
+B : Builtins
+hr :
+  CaptureContextRegular P []
+    [some
+        ((Ty.base Benitoite.Release.BaseTy.unit).cont (Ty.base Benitoite.Release.BaseTy.unit)
+          (Eff.singleFail (Ty.tvar 0)))]
+⊢ Builtins
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a2/boundary.lean:47:14: error: don't know how to synthesize placeholder for argument `right`
+context:
+P : Program
+B : Builtins
+hr :
+  CaptureContextRegular P []
+    [some
+        ((Ty.base Benitoite.Release.BaseTy.unit).cont (Ty.base Benitoite.Release.BaseTy.unit)
+          (Eff.singleFail (Ty.tvar 0)))]
+⊢ Ty.Annotation P []
+    [some
+        ((Ty.base Benitoite.Release.BaseTy.unit).cont (Ty.base Benitoite.Release.BaseTy.unit)
+          (Eff.singleFail (Ty.tvar 0)))]
+    (Ty.base Benitoite.Release.BaseTy.unit)
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a2/boundary.lean:36:2: error: don't know how to synthesize placeholder
+context:
+P : Program
+B : Builtins
+hr :
+  CaptureContextRegular P []
+    [some
+        ((Ty.base Benitoite.Release.BaseTy.unit).cont (Ty.base Benitoite.Release.BaseTy.unit)
+          (Eff.singleFail (Ty.tvar 0)))]
+⊢ CaptureContextRegular P []
+      [some
+          ((Ty.base Benitoite.Release.BaseTy.unit).cont (Ty.base Benitoite.Release.BaseTy.unit)
+            (Eff.singleFail (Ty.tvar 0)))] ∧
+    Ty.Annotation P []
+      [some
+          ((Ty.base Benitoite.Release.BaseTy.unit).cont (Ty.base Benitoite.Release.BaseTy.unit)
+            (Eff.singleFail (Ty.tvar 0)))]
+      (Ty.base Benitoite.Release.BaseTy.unit)
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a2/boundary.lean:34:73: error: unsolved goals
+P : Program
+B : Builtins
+hr :
+  CaptureContextRegular P []
+    [some
+        ((Ty.base Benitoite.Release.BaseTy.unit).cont (Ty.base Benitoite.Release.BaseTy.unit)
+          (Eff.singleFail (Ty.tvar 0)))]
+⊢ HasTypeCQ P ?m.280 StoreTy.empty Benitoite.Release.Qempty []
+    [some
+        ((Ty.base Benitoite.Release.BaseTy.unit).cont (Ty.base Benitoite.Release.BaseTy.unit)
+          (Eff.singleFail (Ty.tvar 0)))]
+    impossible none (Comp.resume (Val.var 0) (Val.const Const.unit)) (Ty.base Benitoite.Release.BaseTy.unit)
+    (Eff.singleFail (Ty.tvar 0))
