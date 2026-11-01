@@ -365,3 +365,6 @@ import Benitoite.Release.Refinement.HandlerOperation
 import Benitoite.Release.Refinement.BuiltinEffects
 
 import Benitoite.Release.Refinement.CoverageRefinement
+
+import Benitoite.Release.Refinement.ProgramTyping
+import Benitoite.Release.Refinement.ProgramWellFormed

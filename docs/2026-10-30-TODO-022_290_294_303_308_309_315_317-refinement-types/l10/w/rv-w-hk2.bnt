@@ -1,0 +1,17 @@
+data Wrap[F[_]]
+  Wrap(value: F[Integer])
+end data
+
+trait Describe[T]
+  function describe(x: T) -> String
+end trait
+
+implement[F[_]] Describe[Wrap[F]]
+  function describe(x: Wrap[F]) -> String
+    "wrapped"
+  end function
+end implement
+
+function main() -> Unit
+  ()
+end function

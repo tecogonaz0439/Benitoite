@@ -1,0 +1,99 @@
+{
+  "started_utc": "2026-11-01T08:04:58.866179+00:00",
+  "seconds": 12.932,
+  "cases": [
+    {
+      "case": "control",
+      "phase": "boundary",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 4.562,
+      "input_sha256": "962233280014bacd62c546a871df9f52384057b91ba7e61fa6f283647108d8d5",
+      "output_bytes": 54117,
+      "output_sha256": "fd81bbe8204cf3e7b71639cc6869ca4bbe1cce38f8b600a3944ee26e7e12e11a",
+      "diagnostic": "control accepted"
+    },
+    {
+      "case": "NoShift",
+      "phase": "method_body_qsig",
+      "exit_code": 1,
+      "passed": true,
+      "seconds": 0.486,
+      "input_sha256": "ae23e453e1955eef4b95152a8b4654d737682ccc01bb85435f146e454029abfc",
+      "output_bytes": 719,
+      "output_sha256": "2a020a5185367674d821117f8c3efe68666502ff4e4a5f0057f5fd8ba1f32d32",
+      "diagnostic": "error: Type mismatch: After simplification, term\n  ht\n has type\n  TelBodyTy P B StoreTy.empty (Qsig ms.params ms.ret ms.eff) (List.map TParamDecl.constraints ms.tparams ++ id.tparams)\n    (bindParams [] id.dictTys) []\n    (Tel.shiftV id.dictTys.length 0 (Tel.bind (typeEnvAt ms.tparams.length [id.target] []) ms.tel)) body\nbut is expected to have type\n  TelBodyTy P B StoreTy.empty (Qsig ms.params ms.ret ms.eff) (List.map TParamDecl.constraints ms.tparams ++ id.tparams)\n    (bindParams [] (List.map (Ty.shift ms.tparams.length 0) id.dictTys)) []\n    (Tel.shiftV id.dictTys.length 0 (Tel.bind (typeEnvAt ms.tparams.length [id.target] []) ms.tel)) body\n"
+    },
+    {
+      "case": "NoValueMove",
+      "phase": "method_body_qsig",
+      "exit_code": 1,
+      "passed": true,
+      "seconds": 0.493,
+      "input_sha256": "4899fb017d046a2bf834aa0b713e2f7cacf2b05c0a560b0b69cc07ea3d737ffe",
+      "output_bytes": 728,
+      "output_sha256": "a19f795d06446164fa1db9e4e4324e588f427c79b12ff88234104fcbca8a4965",
+      "diagnostic": "error: Type mismatch: After simplification, term\n  ht\n has type\n  TelBodyTy P B StoreTy.empty (Qsig ms.params ms.ret ms.eff) (List.map TParamDecl.constraints ms.tparams ++ id.tparams)\n    (bindParams [] (List.map (Ty.shift ms.tparams.length 0) id.dictTys)) []\n    (Tel.bind (typeEnvAt ms.tparams.length [id.target] []) ms.tel) body\nbut is expected to have type\n  TelBodyTy P B StoreTy.empty (Qsig ms.params ms.ret ms.eff) (List.map TParamDecl.constraints ms.tparams ++ id.tparams)\n    (bindParams [] (List.map (Ty.shift ms.tparams.length 0) id.dictTys)) []\n    (Tel.shiftV id.dictTys.length 0 (Tel.bind (typeEnvAt ms.tparams.length [id.target] []) ms.tel)) body\n"
+    },
+    {
+      "case": "SwapC",
+      "phase": "method_body_qsig",
+      "exit_code": 1,
+      "passed": true,
+      "seconds": 0.489,
+      "input_sha256": "649f72b7554f801577c83343464359ecb2c8728d75f303531e7734c6000e3a02",
+      "output_bytes": 761,
+      "output_sha256": "d7db2cb315ff61a2bd393519b0ce1c610356134787d31d81d1b4ea98248da82c",
+      "diagnostic": "error: Type mismatch: After simplification, term\n  ht\n has type\n  TelBodyTy P B StoreTy.empty (Qsig ms.params ms.ret ms.eff) (id.tparams ++ List.map TParamDecl.constraints ms.tparams)\n    (bindParams [] (List.map (Ty.shift ms.tparams.length 0) id.dictTys)) []\n    (Tel.shiftV id.dictTys.length 0 (Tel.bind (typeEnvAt ms.tparams.length [id.target] []) ms.tel)) body\nbut is expected to have type\n  TelBodyTy P B StoreTy.empty (Qsig ms.params ms.ret ms.eff) (List.map TParamDecl.constraints ms.tparams ++ id.tparams)\n    (bindParams [] (List.map (Ty.shift ms.tparams.length 0) id.dictTys)) []\n    (Tel.shiftV id.dictTys.length 0 (Tel.bind (typeEnvAt ms.tparams.length [id.target] []) ms.tel)) body\n"
+    },
+    {
+      "case": "QTrue",
+      "phase": "method_body_qsig",
+      "exit_code": 1,
+      "passed": true,
+      "seconds": 0.485,
+      "input_sha256": "5d427246635dff7cd13a87b12cb115a6ad61aa40f6022e23e6bd13d4c222ef2e",
+      "output_bytes": 746,
+      "output_sha256": "70f84d5d3041ce0cebd95a36cf65672555861ee52ef4f249576cf98b17dac652",
+      "diagnostic": "error: Type mismatch: After simplification, term\n  ht\n has type\n  TelBodyTy P B StoreTy.empty (fun x => True) (List.map TParamDecl.constraints ms.tparams ++ id.tparams)\n    (bindParams [] (List.map (Ty.shift ms.tparams.length 0) id.dictTys)) []\n    (Tel.shiftV id.dictTys.length 0 (Tel.bind (typeEnvAt ms.tparams.length [id.target] []) ms.tel)) body\nbut is expected to have type\n  TelBodyTy P B StoreTy.empty (Qsig ms.params ms.ret ms.eff) (List.map TParamDecl.constraints ms.tparams ++ id.tparams)\n    (bindParams [] (List.map (Ty.shift ms.tparams.length 0) id.dictTys)) []\n    (Tel.shiftV id.dictTys.length 0 (Tel.bind (typeEnvAt ms.tparams.length [id.target] []) ms.tel)) body\n"
+    },
+    {
+      "case": "NoDict",
+      "phase": "method_body_qsig",
+      "exit_code": 1,
+      "passed": true,
+      "seconds": 0.488,
+      "input_sha256": "00cd51d55debe25324a26428d26a6c3ff3715be1b9e1653380e30f37297646c9",
+      "output_bytes": 691,
+      "output_sha256": "affc008e2d7d6eec7d214017752800e368d838d179e42494945c62b722c54344",
+      "diagnostic": "error: Type mismatch: After simplification, term\n  ht\n has type\n  TelBodyTy P B StoreTy.empty (Qsig ms.params ms.ret ms.eff) (List.map TParamDecl.constraints ms.tparams ++ id.tparams)\n    [] [] (Tel.shiftV id.dictTys.length 0 (Tel.bind (typeEnvAt ms.tparams.length [id.target] []) ms.tel)) body\nbut is expected to have type\n  TelBodyTy P B StoreTy.empty (Qsig ms.params ms.ret ms.eff) (List.map TParamDecl.constraints ms.tparams ++ id.tparams)\n    (bindParams [] (List.map (Ty.shift ms.tparams.length 0) id.dictTys)) []\n    (Tel.shiftV id.dictTys.length 0 (Tel.bind (typeEnvAt ms.tparams.length [id.target] []) ms.tel)) body\n"
+    },
+    {
+      "case": "DefQTrue",
+      "phase": "boundary",
+      "exit_code": 1,
+      "passed": true,
+      "seconds": 4.78,
+      "input_sha256": "ba230999e7d8dc3ed622dea94d617f1fe3090cd8a6872f55af70c97f5d0d5b99",
+      "output_bytes": 54733,
+      "output_sha256": "378e6c74f8038ca843b348cd09ce8f24fdffbee94f68f6e4c11e2a2c1fe42718",
+      "diagnostic": "error: Application type mismatch: The argument\n  (def_q 0 0).mpr rfl\nhas type\n  QTel (definition 0).tel 0\nbut is expected to have type\n  True\nin the application\n  body_typed B 0 0 (fun x => True) ((def_q 0 0).mpr rfl)\n<repo>/docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/w/boundary.lean:933:43: error: Application type mismatch: The argument\n  hq\nhas type\n  True\nbut is expected to have type\n  QTel (definition 1).tel 1\nin the application\n  (def_q 1 1).mp hq\n"
+    },
+    {
+      "case": "PostSubstitutionQ",
+      "phase": "method_body_qsig",
+      "exit_code": 1,
+      "passed": true,
+      "seconds": 0.491,
+      "input_sha256": "fe2f6e5912f7d4c08d6e62cd36eeec70a7943111d537a2765cf3ad15a0a11ea4",
+      "output_bytes": 841,
+      "output_sha256": "83c2bc6920176c0d2b651f842449ece949e590767dbdce9884d68d0be1912435",
+      "diagnostic": "error: Type mismatch: After simplification, term\n  ht\n has type\n  TelBodyTy P B StoreTy.empty\n    (QTel (Tel.shiftV id.dictTys.length 0 (Tel.bind (typeEnvAt ms.tparams.length [id.target] []) ms.tel)))\n    (List.map TParamDecl.constraints ms.tparams ++ id.tparams)\n    (bindParams [] (List.map (Ty.shift ms.tparams.length 0) id.dictTys)) []\n    (Tel.shiftV id.dictTys.length 0 (Tel.bind (typeEnvAt ms.tparams.length [id.target] []) ms.tel)) body\nbut is expected to have type\n  TelBodyTy P B StoreTy.empty (Qsig ms.params ms.ret ms.eff) (List.map TParamDecl.constraints ms.tparams ++ id.tparams)\n    (bindParams [] (List.map (Ty.shift ms.tparams.length 0) id.dictTys)) []\n    (Tel.shiftV id.dictTys.length 0 (Tel.bind (typeEnvAt ms.tparams.length [id.target] []) ms.tel)) body\n"
+    }
+  ],
+  "source_sha256": "962233280014bacd62c546a871df9f52384057b91ba7e61fa6f283647108d8d5",
+  "output": "<tmp>/l10-w-mutations.log",
+  "bytes": 113457,
+  "sha256": "c5629a4c83e37bf8b03f3b06e521ce56d9939a3c762fe0e5145166ad291a0754",
+  "passed": true
+}
