@@ -240,6 +240,8 @@ capture_comp_annotation : ∀ {P B Ψ R Γ Φ cap Rs m a e L},
 
 2026-11-02 の追記: S02 の十の移送の前提に `TypeSubstCode` を足した。完全な定義と十四署名は `l20/a3b/signatures.md` と本番の `TypeSubstContracts.lean` を正とし、本節の字面より優先する。WF 0 0 0 の型は自由な行変数を含み得るので、行置換で不変とは扱わない。反映の内容は `l20/a3b/r1-detail-handoff.md` にある。
 
+2026-11-02 の追記（群 A3c）: 内部の入力 `TypeSubstInput` は Γ と `context` を持たず、公開の `ClosedTypeSubstInput` がこれと `context` を持つ。全帰納は `S02Internal` の形で書き、`toPublic` で公開の S02 へ接続する（L20.60）。S12.9 の `gate_annotation_escape`・`gate_annotation_lam` は本番では具体例であり、case 補題は包装を含まない。包装は L20.45・L20.50・L20.51 が受け持つ。節の文脈の原文と正規形を結ぶ橋は L20.54 が受け持つ。
+
 `θ := typeEnvAt c ts es`、`A a := a.substAt c ts es`、`E e := Eff.substAt c ts es e`、`G Γ := Γ.bindTypes θ`、`Lθ L := L.map (Option.map Kθ)`、`Kθ (.list a) := .list (A a)`、他の BuilderKind は恒等、と定める。これは既存 Comp.substTyAt が使う型・行の写しそのものである。
 
 ```lean

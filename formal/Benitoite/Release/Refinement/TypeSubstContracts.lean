@@ -4,8 +4,8 @@ import Benitoite.Release.Refinement.CaptureRegularity
 /-! 型・行の閉じた像の入力。型付けの保存の結論を入力欄には含めない。 -/
 namespace Benitoite.Release.Refinement
 
-structure ClosedTypeSubstInput (P : Program) (B : Builtins)
-    (C0 C1 : TypeCtx) (Γ : Ctx) (ts : List Ty) (es : List Eff) : Prop where
+structure TypeSubstInput (P : Program) (B : Builtins)
+    (C0 C1 : TypeCtx) (ts : List Ty) (es : List Eff) : Prop where
   typeCount : ts.length = C0.length
   typeWF : ∀ t ∈ ts, t.WF 0 0 0
   typeKinds : TypeArgsKinded P [] ts (TypeCtx.kinds C0)
@@ -14,6 +14,10 @@ structure ClosedTypeSubstInput (P : Program) (B : Builtins)
   rowWF : ∀ e ∈ es, e.WF 0 0 0
   rowAnnotations : RowAnnotations P [] [] es
   rowKinds : ∀ e ∈ es, kindsEff P [] e
+
+structure ClosedTypeSubstInput (P : Program) (B : Builtins)
+    (C0 C1 : TypeCtx) (Γ : Ctx) (ts : List Ty) (es : List Eff)
+    : Prop extends TypeSubstInput P B C0 C1 ts es where
   context : CaptureContextRegular P (C1 ++ C0) Γ
 
 theorem ClosedTypeSubstInput.extend {P B C0 C1 Γ ts es a}
@@ -116,5 +120,49 @@ def S02_Failure : Prop :=
 def S02_Image : Prop :=
   ∀ {P : Program} {B : Builtins} {Ψ : StoreTy} {Q C Γ Φ R ν i a},
   ImageOk P B Ψ Q C Γ Φ R ν i a → True
+
+namespace S02Internal
+
+def C : Prop :=
+  ∀ {P : Program} {B : Builtins} {Ψ : StoreTy} {Q Q' C0 C1 Γ Φ R m a e L ts es},
+  (P.WellFormed ∧ P.WellTyped B ∧ B.CoreAssumptions P ∧ Ψ.WF) → (TypeSubstInput P B C0 C1 ts es) → TypeSubstCode es (fun nr nt ne nv => m.SourceScoped nr nt ne nv) → RowTransport Q Q' es →
+  HasTypeCQ P B Ψ Q (C1 ++ C0) Γ Φ R m a e L →
+  HasTypeCQ P B Ψ Q' C1 ((fun (Δ : Ctx) => Δ.bindTypes (typeEnvAt C1.length ts es)) Γ) Φ ((Option.map (Ty.substAt C1.length ts es)) R) (m.substTyAt C1.length ts es) ((Ty.substAt C1.length ts es) a) ((Eff.substAt C1.length ts es) e) ((fun (L : LocalCtx) => L.map (Option.map (fun (b : BuilderKind) => match b with | .list a => .list (a.substAt C1.length ts es) | .string => .string | .bytes => .bytes))) L)
+
+
+def Body : Prop :=
+  ∀ {P : Program} {B : Builtins} {Ψ : StoreTy} {Q Q' C0 C1 Γ Φ t m ts es},
+  (P.WellFormed ∧ P.WellTyped B ∧ B.CoreAssumptions P ∧ Ψ.WF) → (TypeSubstInput P B C0 C1 ts es) → TypeSubstCode es (fun nr nt ne nv => m.SourceScoped nr nt ne nv) → RowTransport Q Q' es →
+  TelBodyTy P B Ψ Q (C1 ++ C0) Γ Φ t m →
+  TelBodyTy P B Ψ Q' C1 ((fun (Δ : Ctx) => Δ.bindTypes (typeEnvAt C1.length ts es)) Γ) Φ ((Tel.substAt C1.length ts es) t) (m.substTyAt C1.length ts es)
+
+
+def Arms : Prop :=
+  ∀ {P : Program} {B : Builtins} {Ψ : StoreTy} {Q Q' C0 C1 Γ Φ R obs arms a b e L ts es},
+  (P.WellFormed ∧ P.WellTyped B ∧ B.CoreAssumptions P ∧ Ψ.WF) → (TypeSubstInput P B C0 C1 ts es) → TypeSubstCode es (fun nr nt ne nv => scopedArms nr nt ne nv arms) → RowTransport Q Q' es →
+  HasTypeArmsQ P B Ψ Q (C1 ++ C0) Γ Φ R obs arms a b e L →
+  HasTypeArmsQ P B Ψ Q' C1 ((fun (Δ : Ctx) => Δ.bindTypes (typeEnvAt C1.length ts es)) Γ) Φ ((Option.map (Ty.substAt C1.length ts es)) R) obs ((Arm.substTyAtList C1.length ts es) arms) ((Ty.substAt C1.length ts es) a) ((Ty.substAt C1.length ts es) b) ((Eff.substAt C1.length ts es) e) ((fun (L : LocalCtx) => L.map (Option.map (fun (b : BuilderKind) => match b with | .list a => .list (a.substAt C1.length ts es) | .string => .string | .bytes => .bytes))) L)
+
+
+def Clauses : Prop :=
+  ∀ {P : Program} {B : Builtins} {Ψ : StoreTy} {Q Q' C0 C1 Γ Φ R eb clauses t e L ts es},
+  (P.WellFormed ∧ P.WellTyped B ∧ B.CoreAssumptions P ∧ Ψ.WF) → (TypeSubstInput P B C0 C1 ts es) → TypeSubstCode es (fun nr nt ne nv => scopedClauses nr nt ne nv clauses) → RowTransport Q Q' es →
+  HasTypeClausesQ P B Ψ Q (C1 ++ C0) Γ Φ R eb clauses t e L →
+  HasTypeClausesQ P B Ψ Q' C1 ((fun (Δ : Ctx) => Δ.bindTypes (typeEnvAt C1.length ts es)) Γ) Φ ((Option.map (Ty.substAt C1.length ts es)) R) ((Eff.substAt C1.length ts es) eb) ((Clause.substTyAtList C1.length ts es) clauses) ((Ty.substAt C1.length ts es) t) ((Eff.substAt C1.length ts es) e) ((fun (L : LocalCtx) => L.map (Option.map (fun (b : BuilderKind) => match b with | .list a => .list (a.substAt C1.length ts es) | .string => .string | .bytes => .bytes))) L)
+
+
+theorem C.toPublic (h : C) : S02_C :=
+  fun hf hi hc hq ht => h hf hi.toTypeSubstInput hc hq ht
+
+theorem Body.toPublic (h : Body) : S02_Body :=
+  fun hf hi hc hq ht => h hf hi.toTypeSubstInput hc hq ht
+
+theorem Arms.toPublic (h : Arms) : S02_Arms :=
+  fun hf hi hc hq ht => h hf hi.toTypeSubstInput hc hq ht
+
+theorem Clauses.toPublic (h : Clauses) : S02_Clauses :=
+  fun hf hi hc hq ht => h hf hi.toTypeSubstInput hc hq ht
+
+end S02Internal
 
 end Benitoite.Release.Refinement

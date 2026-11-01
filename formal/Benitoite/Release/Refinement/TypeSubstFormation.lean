@@ -364,8 +364,8 @@ private theorem declMap_bindTypes (Γ : Ctx) (θ : SubstEnv) (ho : ∀ i, Ordina
     exact ⟨a.bind θ, by simp [Ctx.bindTypes, List.getElem?_map, hi], Ty.norm_idem _⟩
   · exact ho
 
-private theorem closed_type_decl {P B C0 C1 Γ ts es}
-    (h : ClosedTypeSubstInput P B C0 C1 Γ ts es) :
+private theorem closed_type_decl {P B C0 C1 ts es} {Γ : Ctx}
+    (h : TypeSubstInput P B C0 C1 ts es) :
     ∀ i, Ty.Declared P C1 (Γ.bindTypes (typeEnvAt C1.length ts es))
       ((typeEnvAt C1.length ts es).types i) := by
   intro i
@@ -380,8 +380,8 @@ private theorem closed_type_decl {P B C0 C1 Γ ts es}
       exact (h.typeAnnotations _ (List.getElem_mem hi)).declared.closed_context (h.typeWF _ (List.getElem_mem hi))
     · trivial
 
-private theorem closed_row_decl {P B C0 C1 Γ ts es}
-    (h : ClosedTypeSubstInput P B C0 C1 Γ ts es) :
+private theorem closed_row_decl {P B C0 C1 ts es} {Γ : Ctx}
+    (h : TypeSubstInput P B C0 C1 ts es) :
     ∀ e ∈ (typeEnvAt C1.length ts es).rows,
       declaredEff P C1 (Γ.bindTypes (typeEnvAt C1.length ts es)) e := by
   intro e he
@@ -389,27 +389,41 @@ private theorem closed_row_decl {P B C0 C1 Γ ts es}
   rw [Eff.shiftTypes_of_wf_zero (h.rowWF f hf)]
   exact (h.rowAnnotations f hf).closed_context.declared.2.2
 
-theorem Ty.Declared.substAt {P B} {Ψ : StoreTy} {C0 C1 Γ a ts es}
+theorem Ty.Declared.typeSubst {P B} {Ψ : StoreTy} {C0 C1 Γ a ts es}
     (hf : P.WellFormed ∧ P.WellTyped B ∧ B.CoreAssumptions P ∧ Ψ.WF)
-    (hi : ClosedTypeSubstInput P B C0 C1 Γ ts es)
-    (ha : Ty.Annotation P (C1 ++ C0) Γ a) :
+    (hi : TypeSubstInput P B C0 C1 ts es)
+    (ha : Ty.Declared P (C1 ++ C0) Γ a) :
     Ty.Declared P C1 (Γ.bindTypes (typeEnvAt C1.length ts es)) (a.substAt C1.length ts es) :=
-  (declared_raw ha.declared hf.1 hf.2.1.variance
+  (declared_raw ha hf.1 hf.2.1.variance
     (declMap_bindTypes Γ _ (typeEnvAt_ordinary _ _ _ hi.typeKinds.ordinary)) rfl rfl
     hi.typeKinds.typeEnvAt (closed_type_decl hi) (closed_row_decl hi)).norm
+
+theorem Tel.Declared.typeSubst {P B} {Ψ : StoreTy} {C0 C1 Γ t ts es}
+    (hf : P.WellFormed ∧ P.WellTyped B ∧ B.CoreAssumptions P ∧ Ψ.WF)
+    (hi : TypeSubstInput P B C0 C1 ts es)
+    (ha : Tel.Declared P (C1 ++ C0) Γ t) :
+    Tel.Declared P C1 (Γ.bindTypes (typeEnvAt C1.length ts es)) (t.substAt C1.length ts es) :=
+  (declared_raw_tel ha hf.1 hf.2.1.variance
+    (declMap_bindTypes Γ _ (typeEnvAt_ordinary _ _ _ hi.typeKinds.ordinary)) rfl rfl
+    hi.typeKinds.typeEnvAt (closed_type_decl hi) (closed_row_decl hi)).norm
+
+theorem Ty.Declared.substAt {P B} {Ψ : StoreTy} {C0 C1 Γ a ts es}
+    (hf : P.WellFormed ∧ P.WellTyped B ∧ B.CoreAssumptions P ∧ Ψ.WF)
+    (hi : TypeSubstInput P B C0 C1 ts es)
+    (ha : Ty.Annotation P (C1 ++ C0) Γ a) :
+    Ty.Declared P C1 (Γ.bindTypes (typeEnvAt C1.length ts es)) (a.substAt C1.length ts es) :=
+  ha.declared.typeSubst hf hi
 
 theorem Tel.Declared.substAt {P B} {Ψ : StoreTy} {C0 C1 Γ t ts es}
     (hf : P.WellFormed ∧ P.WellTyped B ∧ B.CoreAssumptions P ∧ Ψ.WF)
-    (hi : ClosedTypeSubstInput P B C0 C1 Γ ts es)
+    (hi : TypeSubstInput P B C0 C1 ts es)
     (ha : Ty.Annotation P (C1 ++ C0) Γ (.dependentFn t)) :
     Tel.Declared P C1 (Γ.bindTypes (typeEnvAt C1.length ts es)) (t.substAt C1.length ts es) :=
-  (declared_raw_tel ha.declared hf.1 hf.2.1.variance
-    (declMap_bindTypes Γ _ (typeEnvAt_ordinary _ _ _ hi.typeKinds.ordinary)) rfl rfl
-    hi.typeKinds.typeEnvAt (closed_type_decl hi) (closed_row_decl hi)).norm
+  Tel.Declared.typeSubst hf hi ha.declared
 
 theorem declaredTys_substAt {P B} {Ψ : StoreTy} {C0 C1 Γ as ts es}
     (hf : P.WellFormed ∧ P.WellTyped B ∧ B.CoreAssumptions P ∧ Ψ.WF)
-    (hi : ClosedTypeSubstInput P B C0 C1 Γ ts es)
+    (hi : TypeSubstInput P B C0 C1 ts es)
     (ha : TypeAnnotations P (C1 ++ C0) Γ as) :
     declaredTys P C1 (Γ.bindTypes (typeEnvAt C1.length ts es)) (as.map (Ty.substAt C1.length ts es)) := by
   apply declared_list_iff.mpr
@@ -419,7 +433,7 @@ theorem declaredTys_substAt {P B} {Ψ : StoreTy} {C0 C1 Γ as ts es}
 
 theorem declaredEff_substAt {P B} {Ψ : StoreTy} {C0 C1 Γ e ts es}
     (hf : P.WellFormed ∧ P.WellTyped B ∧ B.CoreAssumptions P ∧ Ψ.WF)
-    (hi : ClosedTypeSubstInput P B C0 C1 Γ ts es)
+    (hi : TypeSubstInput P B C0 C1 ts es)
     (ha : RowAnnotations P (C1 ++ C0) Γ [e]) :
     declaredEff P C1 (Γ.bindTypes (typeEnvAt C1.length ts es)) (Eff.substAt C1.length ts es e) :=
   declaredEff_norm (declared_raw_eff (ha e (by simp)).declared.2.2 hf.1 hf.2.1.variance
@@ -518,8 +532,8 @@ mutual
           exact (sorted_list_iff.mp (he _ hf) b hb).shift_outer _
 end
 
-private theorem closed_type_sorted {P B C0 C1 Γ ts es}
-    (h : ClosedTypeSubstInput P B C0 C1 Γ ts es) :
+private theorem closed_type_sorted {P B C0 C1 ts es} {Γ : Ctx}
+    (h : TypeSubstInput P B C0 C1 ts es) :
     ∀ i, Ty.Sorted (Γ.bindTypes (typeEnvAt C1.length ts es))
       ((typeEnvAt C1.length ts es).types i) := by
   intro i
@@ -533,8 +547,8 @@ private theorem closed_type_sorted {P B C0 C1 Γ ts es}
       exact (h.typeAnnotations _ (List.getElem_mem hi)).sorted.closed_context
     · trivial
 
-private theorem closed_row_sorted {P B C0 C1 Γ ts es}
-    (h : ClosedTypeSubstInput P B C0 C1 Γ ts es) :
+private theorem closed_row_sorted {P B C0 C1 ts es} {Γ : Ctx}
+    (h : TypeSubstInput P B C0 C1 ts es) :
     ∀ e ∈ (typeEnvAt C1.length ts es).rows,
       sortedEff (Γ.bindTypes (typeEnvAt C1.length ts es)) e := by
   intro e he
@@ -544,7 +558,7 @@ private theorem closed_row_sorted {P B C0 C1 Γ ts es}
 
 theorem Ty.Annotation.substAt {P B} {Ψ : StoreTy} {C0 C1 Γ a ts es}
     (hf : P.WellFormed ∧ P.WellTyped B ∧ B.CoreAssumptions P ∧ Ψ.WF)
-    (hi : ClosedTypeSubstInput P B C0 C1 Γ ts es)
+    (hi : TypeSubstInput P B C0 C1 ts es)
     (ha : Ty.Annotation P (C1 ++ C0) Γ a) :
     Ty.Annotation P C1 (Γ.bindTypes (typeEnvAt C1.length ts es)) (a.substAt C1.length ts es) := by
   refine ⟨?_, ?_, Ty.Declared.substAt hf hi ha⟩
@@ -557,9 +571,25 @@ theorem Ty.Annotation.substAt {P B} {Ψ : StoreTy} {C0 C1 Γ a ts es}
       (declMap_bindTypes Γ _ (typeEnvAt_ordinary _ _ _ hi.typeKinds.ordinary)) rfl
       hi.typeKinds.typeEnvAt (closed_type_sorted hi) (closed_row_sorted hi))
 
+theorem Tel.annotation_substAt {P B} {Ψ : StoreTy} {C0 C1 Γ t ts es}
+    (hf : P.WellFormed ∧ P.WellTyped B ∧ B.CoreAssumptions P ∧ Ψ.WF)
+    (hi : TypeSubstInput P B C0 C1 ts es)
+    (ha : Ty.Annotation P (C1 ++ C0) Γ (.dependentFn t)) :
+    Ty.Annotation P C1 (Γ.bindTypes (typeEnvAt C1.length ts es))
+      (.dependentFn (t.substAt C1.length ts es)) := by
+  refine ⟨?_, ?_, Tel.Declared.substAt hf hi ha⟩
+  · have h := Tel.substAt_wf (nr := 0) (n := 0) (nv := Γ.length) C1.length ts es
+      (fun t ht => (hi.typeWF t ht).closed_context (C := []) (Γ := Γ))
+      (fun e he => ((hi.rowAnnotations e he).closed_context (C := []) (Γ := Γ)).wf.2.2.2.1)
+      hi.typeKinds.ordinary t (by simpa only [Ty.WF, List.length_append, hi.typeCount] using ha.wf)
+    simpa only [Ty.WF, Ctx.bindTypes, List.length_map, Nat.zero_add] using h
+  · exact Tel.sorted_norm (sorted_raw_tel ha.sorted ha.declared
+      (declMap_bindTypes Γ _ (typeEnvAt_ordinary _ _ _ hi.typeKinds.ordinary)) rfl
+      hi.typeKinds.typeEnvAt (closed_type_sorted hi) (closed_row_sorted hi))
+
 theorem TypeAnnotations.substAt {P B} {Ψ : StoreTy} {C0 C1 Γ as ts es}
     (hf : P.WellFormed ∧ P.WellTyped B ∧ B.CoreAssumptions P ∧ Ψ.WF)
-    (hi : ClosedTypeSubstInput P B C0 C1 Γ ts es)
+    (hi : TypeSubstInput P B C0 C1 ts es)
     (ha : TypeAnnotations P (C1 ++ C0) Γ as) :
     TypeAnnotations P C1 (Γ.bindTypes (typeEnvAt C1.length ts es)) (as.map (Ty.substAt C1.length ts es)) := by
   intro a hm
@@ -568,7 +598,7 @@ theorem TypeAnnotations.substAt {P B} {Ψ : StoreTy} {C0 C1 Γ as ts es}
 
 theorem RowAnnotations.substAt {P B} {Ψ : StoreTy} {C0 C1 Γ fs ts es}
     (hf : P.WellFormed ∧ P.WellTyped B ∧ B.CoreAssumptions P ∧ Ψ.WF)
-    (hi : ClosedTypeSubstInput P B C0 C1 Γ ts es)
+    (hi : TypeSubstInput P B C0 C1 ts es)
     (ha : RowAnnotations P (C1 ++ C0) Γ fs) :
     RowAnnotations P C1 (Γ.bindTypes (typeEnvAt C1.length ts es)) (fs.map (Eff.substAt C1.length ts es)) := by
   intro e hm
@@ -594,7 +624,7 @@ private theorem closed_subst_nil {a : Ty} (hw : a.WF 0 0 0) (c : Nat) (ts : List
 
 private theorem declared_closed_nil {P B} {Ψ : StoreTy} {C0 C1 Γ a ts}
     (hf : P.WellFormed ∧ P.WellTyped B ∧ B.CoreAssumptions P ∧ Ψ.WF)
-    (hi : ClosedTypeSubstInput P B C0 C1 Γ ts []) (hw : a.WF 0 0 0)
+    (hi : TypeSubstInput P B C0 C1 ts []) (hw : a.WF 0 0 0)
     (hd : Ty.Declared P (C1 ++ C0) Γ a) :
     Ty.Declared P C1 (Γ.bindTypes (typeEnvAt C1.length ts [])) a := by
   have h := declared_raw hd hf.1 hf.2.1.variance
@@ -604,7 +634,7 @@ private theorem declared_closed_nil {P B} {Ψ : StoreTy} {C0 C1 Γ a ts}
 
 theorem HasTypeVQ.type_subst_locRef {P B} {Ψ : StoreTy} {Q C0 C1 Γ Φ l a ts es}
     (hf : P.WellFormed ∧ P.WellTyped B ∧ B.CoreAssumptions P ∧ Ψ.WF)
-    (hi : ClosedTypeSubstInput P B C0 C1 Γ ts es)
+    (hi : TypeSubstInput P B C0 C1 ts es)
     (hc : TypeSubstCode es (fun nr nt ne nv => (Val.loc l).SourceScoped nr nt ne nv))
     (hl : Ψ l = some (.ref a)) (hd : Ty.Declared P (C1 ++ C0) Γ a) :
     HasTypeVQ P B Ψ Q C1 (Γ.bindTypes (typeEnvAt C1.length ts es)) Φ (.loc l)
@@ -617,7 +647,7 @@ theorem HasTypeVQ.type_subst_locRef {P B} {Ψ : StoreTy} {Q C0 C1 Γ Φ l a ts e
 
 theorem HasTypeVQ.type_subst_locLazy {P B} {Ψ : StoreTy} {Q C0 C1 Γ Φ l a ts es}
     (hf : P.WellFormed ∧ P.WellTyped B ∧ B.CoreAssumptions P ∧ Ψ.WF)
-    (hi : ClosedTypeSubstInput P B C0 C1 Γ ts es)
+    (hi : TypeSubstInput P B C0 C1 ts es)
     (hc : TypeSubstCode es (fun nr nt ne nv => (Val.loc l).SourceScoped nr nt ne nv))
     (hl : Ψ l = some (.lazy a)) (hd : Ty.Declared P (C1 ++ C0) Γ a) :
     HasTypeVQ P B Ψ Q C1 (Γ.bindTypes (typeEnvAt C1.length ts es)) Φ (.loc l)
@@ -630,7 +660,7 @@ theorem HasTypeVQ.type_subst_locLazy {P B} {Ψ : StoreTy} {Q C0 C1 Γ Φ l a ts 
 
 theorem HasTypeCQ.type_subst_resumeL {P B} {Ψ : StoreTy} {Q C0 C1 Γ Φ R L l v b t e ts es}
     (hf : P.WellFormed ∧ P.WellTyped B ∧ B.CoreAssumptions P ∧ Ψ.WF)
-    (hi : ClosedTypeSubstInput P B C0 C1 Γ ts es)
+    (hi : TypeSubstInput P B C0 C1 ts es)
     (hc : TypeSubstCode es (fun nr nt ne nv => (Comp.resume (.loc l) v).SourceScoped nr nt ne nv))
     (hl : Ψ l = some (.cont b t e R)) (hd : Ty.Declared P (C1 ++ C0) Γ t)
     (hv : HasTypeVQ P B Ψ Q C1 (Γ.bindTypes (typeEnvAt C1.length ts es)) Φ
@@ -656,7 +686,7 @@ theorem HasTypeCQ.type_subst_resumeL {P B} {Ψ : StoreTy} {Q C0 C1 Γ Φ R L l v
 
 theorem HasTypeVQ.type_subst_closure {P B} {Ψ : StoreTy} {Q C0 C1 Γ Φ runtime body t ts es}
     (hf : P.WellFormed ∧ P.WellTyped B ∧ B.CoreAssumptions P ∧ Ψ.WF)
-    (hi : ClosedTypeSubstInput P B C0 C1 Γ ts es)
+    (hi : TypeSubstInput P B C0 C1 ts es)
     (hc : TypeSubstCode es (fun nr nt ne nv => (Val.closure runtime body).SourceScoped nr nt ne nv))
     (ha : Ty.Annotation P (C1 ++ C0) Γ (.dependentFn t))
     (hr : Tel.RuntimeShape runtime t) (hb : DependentClosureTy P B Ψ body t) :

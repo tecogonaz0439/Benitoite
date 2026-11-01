@@ -17,4 +17,11 @@ theorem request_content : valContent "Http.RequestIn" = some clientRequestTy := 
 
 theorem path_content : valContent "Scope.PathIn" = none := rfl
 
+theorem content_rows {name a} (h : valContent name = some a) : a.RowsIn (· < 0) := by
+  simp only [valContent, Benitoite.Release.TargetTable.valContent] at h
+  split at h
+  · cases Option.some.inj h
+    trivial
+  · cases h
+
 end Benitoite.Release.Refinement.TargetTable

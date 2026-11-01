@@ -220,7 +220,7 @@ theorem Builtins.OpSignaturesWF.prim {P B S b sg} (h : Builtins.OpSignaturesWF B
 
 theorem ClauseSig.wf {P B e o sg} (hp : Program.OpSignaturesWF P)
     (hb : Builtins.OpSignaturesWF B) (h : ClauseSig P B e o sg) : sg.WF := by
-  obtain ⟨S, _, hl⟩ := h
+  obtain ⟨S, _, hl, _⟩ := h
   cases o with
   | fail => cases hl
   | user o => exact hp.user hl

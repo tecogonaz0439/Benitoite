@@ -80,6 +80,7 @@ structure ExternalSignature.WF (P : Program) (d : ExternalSignature) : Prop wher
   uses_exact : ∀ use, use ∈ d.uses ↔ ExternalUseAt P 0 d.parameters use
   uses_unique : d.uses.Nodup
   shape : ExternalTelWF P d.component (if d.uses = [] then Eff.empty else (EffR.mk (fun a => match a with | .name n (.fixed .top) => decide (n = stateEff) | _ => false) [])) d.parameters
+  sourceTelRows : d.parameters.RowsIn (· < 0)
 
 structure Program.ExternalWF (P : Program) : Prop where
   unique : (P.externals.map Prod.fst).Nodup

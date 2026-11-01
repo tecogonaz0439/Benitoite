@@ -35,15 +35,23 @@ def ClauseIxOk (B : Builtins) (e : Eff) (o : OpRef) (S : RangeExpr) : Prop :=
   S=.absolute .top ∨ ∃ b s l,o=.prim b ∧ B.sig b=some s ∧ s.opEff=some l ∧ e.ClauseRangeIs l S
 
 def ClauseSig (P : Program) (B : Builtins) (e : Eff) (o : OpRef) (sg : OpSig) : Prop :=
-  ∃ S,ClauseIxOk B e o S ∧ opSigAt P B S o=some sg
+  ∃ S,ClauseIxOk B e o S ∧ opSigAt P B S o=some sg ∧
+    ∀ (b : PrimName) (s : PrimSig), o = .prim b → B.sig b = some s →
+      s.tel.RowsIn (· < s.neffs)
 
 theorem ClauseSig.ne_fail {P B e o sg} (h : ClauseSig P B e o sg) : o≠.fail := by
-  obtain ⟨S,_,hh⟩ := h
+  obtain ⟨S,_,hh,_⟩ := h
   rintro rfl
   cases hh
 
-theorem ClauseSig.of_opSig {P B e o sg} (h : opSig P B o=some sg) : ClauseSig P B e o sg :=
-  ⟨.absolute .top,Or.inl rfl,h⟩
+theorem ClauseSig.sourceTelRows {P B e o sg b s}
+    (h : ClauseSig P B e o sg) (ho : o = .prim b) (hs : B.sig b = some s) :
+    s.tel.RowsIn (· < s.neffs) := h.choose_spec.2.2 b s ho hs
+
+theorem ClauseSig.of_opSig {P B e o sg} (h : opSig P B o=some sg)
+    (hr : ∀ (b : PrimName) (s : PrimSig), o = .prim b → B.sig b = some s →
+      s.tel.RowsIn (· < s.neffs)) : ClauseSig P B e o sg :=
+  ⟨.absolute .top,Or.inl rfl,h,hr⟩
 
 def effOps (P : Program) (B : Builtins) (l : EffName) : Option (List OpRef) :=
   match P.effects l with

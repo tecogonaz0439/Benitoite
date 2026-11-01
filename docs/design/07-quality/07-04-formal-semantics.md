@@ -91,19 +91,29 @@
 
 型付けの型文脈は `TypeCtx = List TParamDecl` であり、kind と組み込みの制約を同じ宣言の位置から射影する。`TypeArgsKinded P C` は `TypeCtx.kinds C` を使い、その別名 `TypeArgsKindedAt` とともに value kind の型引数に Ordinary を要求する。`Ty.Declared` の tapp は、head の宣言の kind が引数の個数と一致する constructor であることを検査する。`SatAll` と admits へ渡す文脈は `TypeCtx.constraints C` であり、組み込みの表の生の制約の型は保つ。constructor kind は型の形から Ordinary を満たす。`V_Raise` は結果型とエラー型の Ordinary を別に検査し、結果型の value kind も同じ C で検査する。Fail 節の新しい型束縛は `TypeCtx.valueParam` である。`TypeArgumentRegularity` は SignatureInstance、操作の型付け、辞書の型付け、メソッド呼出しから、実際に置換する型列の WF と Ordinary を取り出し、Ty.substAt_wf と Ty.LeQ.substAt へ渡す。操作とメソッドの変数を返す本体について、型置換後の型付けも証明する。HasTypeVQ と HasTypeCQ の値移動・型移動・値置換・None の下の値置換・narrowing の前提と結論は保つ。
 
-`TypeParamRenaming` は制約の包含と kind の一致を保持し、型移動の宣言照合と `shift_types_var` の入力になる。`TypeSubstContracts` は、型・行の閉じた像の形成と、元の構文の文脈の三条件を `ClosedTypeSubstInput` にまとめる。型付けの保存の結論をこの入力や CoreAssumptions の新しい欄として仮定しない。
+`TypeParamRenaming` は制約の包含と kind の一致を保持し、型移動の宣言照合と `shift_types_var` の入力になる。`TypeSubstContracts` は、型・行の閉じた像の八条件を、Γ に依存しない内部入力 `TypeSubstInput` にまとめる。公開入口の `ClosedTypeSubstInput` は、それを継承し context の条件を持つ。形成と case 補題は内部入力を使う。S02Internal の C/Body/Arms/Clauses は任意の Γ の下で同じ内部入力を受け、toPublic が公開の対応する S02 へ射影する。これらの契約の定義は全帰納の証明ではない。型付けの保存の結論をこの入力や CoreAssumptions の新しい欄として仮定しない。
 
 `TypeSubstContracts` の `S02_V` などの14個の Prop は、既定ビルドで契約の型を検査する。十の移送は、行像が空又は源のコードが SourceScoped という `TypeSubstCode` を受け、恒等三成分と True 一成分はそのままとする。`TypeSubstFormation` の場所・実行時閉包の四つの case 補題は、この条件の下で既存の型付けの構成子を組み立てる。`Def.WellTyped` は本体の SourceScoped を含まず、関数とメソッドの本体の SourceScoped は `Program.WellFormed` が返す宣言の Scoped から得る。操作と Fail の遷移では行像が空である。これらは全14成分の本体の証明を含まない。
 
 
-`KindTypeSubst` は、Ty・Tel・型の列・Eff の全構文で型と行の像の kind を保存する。Ty の constructor/value を分けた47枝は同じ相互の族である。`TypeSubstFormation` は、Declared の四族26構文形、欄と述語の宣言照合、WF と Sorted を合成した型・行の Annotation の保存を証明する。tapp の head は元の Declared と型像の kind で検査し、全注釈の value kind を前提にしない。Tel の下では、元と像の型を加えた値文脈の対応を延長する。`ClosedTypeSubstInput.extend` は、元の注釈による捕捉文脈の延長を与える。
+`KindTypeSubst` は、Ty・Tel・型の列・Eff の全構文で型と行の像の kind を保存する。Ty の constructor/value を分けた47枝は同じ相互の族である。`TypeSubstFormation` は、Declared の四族26構文形、欄と述語の宣言照合、WF と Sorted を合成した型・行の Annotation の保存を証明する。tapp の head は元の Declared と型像の kind で検査し、全注釈の value kind を前提にしない。Tel の下では、元と像の型を加えた値文脈の対応を延長する。`ClosedTypeSubstInput.extend` は公開入口の捕捉文脈の延長を与える。内部入力は Γ に依存せず、値束縛の子へそのまま渡す。型束縛を増やす TypeSubstInput.under は、閉じた型像の制約を既存の sat_shiftTypes で弱める。Ty.Declared.typeSubst/Tel.Declared.typeSubst は、元の Declared だけを受けるため、C_Let などの結果型へ S01 による追加の形成を要求しない。
 
 `SignatureInstance` と `SignatureInstanceAt` の `rowKinds` は、固定した呼出し元の kind 文脈における行像の条件である。値の移動・置換、型の移動、文脈変更、正規化、旧署名の具体化がこの欄を保つ。旧署名の三包装は同じ κ の行の kind を受け、`LegacyRowsInput.rowKinds` はその形の証拠を返す。三包装を呼ぶ旧導出の型付けの本体は、既定ビルドに含まれていない。これらは型・行の形成と既存移送の証明であり、コードの全型置換の証明又は Rust との全比較を含まない。
 
 
 `PrimitiveAdmissible.sourceTelRows` は、署名全体の行変数が実際の行引数列の長さ未満であることを要求する。外側の効果だけを検査する sourceRows と区別し、引数の関数型の潜在効果・戻り型・Fail 型の内部も対象にする。V_Prim と BuiltinArgs は同じ許容条件を読む。norm/map と型の移動がこの欄を保ち、値の移動・置換は map、文脈変更は同じ証拠を使う。CoreAssumptions の独立の欄は要求しない。`Tel.rowsIn_instR` は範囲の具体化で行の上限を保ち、`instantiatedTel_substAt` は宣言の WF・型引数の個数・署名全体の行の上限から依存列と像の型置換の交換を証明する。NoTapp と kind の追加条件は要求しない。参照四形と force の証拠は、既存の StoreShape の各形から得る。
 
-`LegacyPrimSignature.sourceTelRows` は、署名全体の行変数の上限を表の対応の入力として受ける。`sourceTelRowsAt` は旧の rowCount と neffs の対応を使い、範囲具体化後の依存列の証拠を返す。これは旧導出の型付けの結論を入力にする条件ではない。
+`LegacyPrimSignature.sourceTelRows` は、署名全体の行変数の上限を表の対応の入力として受ける。`sourceTelRowsAt` は旧の rowCount と neffs の対応を使い、呼出しの欄と同じ署名の依存列の証拠を返す。`LegacyPrimSignature.clauseSig` は同じ構造条件から節の署名を組み立てる。これは旧導出の型付けの結論を入力にする条件ではない。
+
+`ClauseSig` は、組み込みの節について `s.tel.RowsIn (· < s.neffs)` を要求する。HasTypeClausesQ.cons と K_Handle はこの同じ署名を使い、E_Op/E_OpPrim が読む節にも適用する。呼出しの PrimitiveAdmissible を通らない節でも構造条件を検査する。`CurrentSignatureRows` は、旧三モデル・TargetTable・Examples の現行署名の行支持を既定 import で照合する。
+
+`ExternalSignature.WF.sourceTelRows` は、行変数の束縛を持たない外部署名全体の行支持を空にする。AtCallAdmissible の valContent がある枝は、選んだ内容型の WF000 と行支持の空性を検査する。CoreAssumptions に保存則又は表の全域の条件を足さない。TargetTable.content_rows は、現行の valContent の各値がこの行支持の条件を満たすことを証明する。値の移動・置換と型の移動は同じ内容型と行の証拠を保つ。
+
+`TypeSubstRowObstruction` は、組み込み操作の署名・At の内容型・data の未使用の型引数に自由な行変数がある場合の拒否を証明する。clause_sig_rejects_row・at_rejects_row・external_rejects_row は、ClauseSig・AtCallAdmissible・ExternalSignature.WF がそれぞれ不成立であることを示す。
+
+`TypeSubstCalls` は、SignatureInstance・SatAll・NoFail と依存する実引数列の型置換の交換を証明する。gate_op_case と gate_fun_case は、Sub・Normal・Refine を含めて新しい HasTypeVQ の結論を返す。type_subst_meth・type_subst_lam・type_subst_escape は子の移送を明示した case 補題であり、type_subst_raise は V_Raise の結果型の kind を保つ。raise_annotation_kind は結果型の Ordinary も返し、fail_input は任意の閉じた結果型について通常の置換入力を構成する。メソッド・lambda・escape の case 補題は外側の包装を処理しない。TypeSubstGateExamples は、tvar を含む操作・関数参照・メソッド、Fail の本体、tapp を結果又は引数の注釈に持つ escape/lambda、constructor 宣言の list(tvar) の源と像の型付けを既定ビルドで検査する。逆の kind と tapp の誤個数も拒否する。S02 の全成分の帰納は、この範囲に含めない。
+
+`NestedContinuation` は、空の値文脈における HasTypeVQ.notContCore から list_cont_empty と singleton_no_match を証明する。reject_nested_cont_value はこの要素型の非空 List を拒否する。con_list_cont_field_empty と CaptureOk.list_cont_empty は、data の欄と捕捉された List の位置に同じ結果を適用する。高カインドの像は、TypeArgsKinded と元の Declared から型の適用の形を保ち、具体化した値の型付けを使う。Ordinary は最上位だけを検査する定義であり、入れ子の継続を持つ空 List と型引数を一律には排除しない。
 
 旧表との対応の `LegacyPrimSignature` は、操作を表す `opEff` を持つ組み込みの型パラメータが全てvalue kindであることを要求する。これにより、旧の通常節が読むvalue固定のkindの列と、新しい通常節の型文脈のkindを対応させる。操作を持たない組み込みにはこの条件を課さない。
 
@@ -789,6 +799,11 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 | ProgramTyping・ProgramWellFormed | 「篩を含む定義とプログラムの適格性」。本体の型付けと、格納済みの宣言・metadata の範囲と arity の検査。原ソースの収集の一致は含まない |
 | ObservationType | 同節の観測用の型の射影と `DataObservationLe`。篩の事実を射影から取り出さない |
 | KindTypeSubst・TypeSubstContracts・TypeSubstFormation | 「篩を含むコア計算の形式化」の kind 像、閉じた型・行像の入力、一般の Declared と Annotation の型置換の形成。コードの全型置換は含まない |
+| CurrentSignatureRows | 同節の旧三モデル・TargetTable・Examples の署名全体の行支持の照合 |
+| TypeSubstRowObstruction | 同節の ClauseSig・AtCallAdmissible・ExternalSignature.WF における自由な行変数の拒否の境界 |
+| TypeSubstCalls | 同節の操作と関数参照の包装を含む型置換、子の IH を受けるメソッド・lambda・escape の case 補題、依存する引数列の交換、一般の Fail の入力 |
+| TypeSubstGateExamples | 同節の型引数・tapp・型注釈の源と像の具体例、kind/arity の拒否、正則でない子への内部入力の接続の検査 |
+| NestedContinuation | 同節の notContCore から閉じた List の空性と一要素の照合の失敗、data の欄・捕捉への適用 |
 | TypeFormation・ValueFacts | 同節の検証済みの欄の型代入の形成、`Declared`・`HasData` の型置換、構成子の反転と欄の型付け |
 | RefinementObservation・ObservationOrder・ObservationSubstitution・ObservationInterpretation・ValueMeaning・ValueMeaningInhabits・PatternNormalForm・Patterns・PatternTransport・PatternSemantics・PatternTypeShift・CoverageRefinement | 「篩を読む網羅性と値の意味」 |
 | Observation・ClosedEvaluation・Logic・LogicSound・Context/Capture・CapturedFacts・CaptureRegularity | 「閉じた述語の評価と捕捉」。開いた全結果形成と、元の注釈・包含・場所からの捕捉後の効果形成を含む |

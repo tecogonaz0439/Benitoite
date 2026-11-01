@@ -98,7 +98,7 @@ private theorem clause_one {P B Ψ Q C Γ Φ R eb cs t ec L o name x y eff body}
       simp only [Clause.op] at hop
       cases hop
       cases Option.some.inj hc
-      obtain ⟨S,_,hsig⟩ := hs
+      obtain ⟨S,_,hsig,_⟩ := hs
       simp only [opSigAt,hd,Option.map_some,Option.some.injEq] at hsig
       cases hsig
       simpa only [OpSig.context,OpSig.continuation,Ctx.shiftE,Ctx.shiftEAt,TypeCtx.values,List.map_nil,

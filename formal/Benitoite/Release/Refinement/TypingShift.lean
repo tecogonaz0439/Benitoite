@@ -1118,7 +1118,7 @@ mutual
       · have hh := HasTypeVQ.shift_values hv hA hstore hpres hm hf
         rcases ht with ⟨rfl, ht⟩ | ht
         · exact hh
-        · simpa only [← Ty.norm_shiftV, Ty.shiftV_of_wf_zero ht.2] using hh
+        · simpa only [← Ty.norm_shiftV, Ty.shiftV_of_wf_zero ht.2.1] using hh
 
   termination_by structural h
 end

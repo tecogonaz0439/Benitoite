@@ -1510,7 +1510,7 @@ mutual
       · have hv' := subst_value hv hA hT hstore ρ ht hf
         rcases hty with ⟨rfl, hy⟩ | hy
         · exact hv'
-        · simpa only [substTyValues_norm_source, Ty.subst_values_of_wf_zero hy.2] using hv'
+        · simpa only [substTyValues_norm_source, Ty.subst_values_of_wf_zero hy.2.1] using hv'
 
 
 end
