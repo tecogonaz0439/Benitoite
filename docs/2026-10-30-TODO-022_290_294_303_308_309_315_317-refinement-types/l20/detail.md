@@ -113,13 +113,13 @@ S01 を使う場合も、入力は割当て**前**の `StoreOk` と元コード�
 | (a) G04 | S01 の開いた motive、V29/CQ24 全53規則の Annotation 供給表、効果の境界表。最も弱い C_Let/C_BuilderLet/C_ResumeL/V_LocRef/V_Checked の case 証明又は反例。逆 shift の WF/Sorted/Declared と extendNone の版を完了条件にする | `let_annotation/builder_annotation/used_annotation/locref_annotation/checked_annotation` を Lean で確認。前二者は子の Annotation を IH とする case 証明であり、全帰納の証明ではない。新 Sorted でreviewのused反例を拒否。refは旧StoreOkの反例ではなく、型の大きさによる帰納の負担として訂正する。**全53枝・handler の効果の供給は未完** |
 | (b) G03 | 固定した案4・rowKinds・Declared.tappを全読者へ反映。V_Op/V_Fun/C_Methの型引数3例に加え、escape/lambdaの注釈にtappを含む本体を新S02の結論まで閉じる。誤個数はsourceで拒否する | 新Declaredで誤個数の拒否、正しいtappの像、任意Γのlist(tvar)の像のAnnotation、値移送/norm/改名/shiftのheadのcase、実際のescapeの行先を補助Leanで確認。**本番全定義と全関門は未完**。.23で型注釈の実例を完成するまで通過しない |
 | (c) G03 | `HasTypeVQ.notContCore` から、閉じた `.list k0` の値が空であり `[y]` との照合が失敗することを Lean で証明。data の欄・高カインド・capture へこの結果を使う経路も供給表へ記載 | `list_cont_empty/singleton_no_match` は任意 P/B/Ψ/Q/C/Φ・空 Γ で証明できた。`.op "o" [.list k0]` の型付けを禁止しない。全状態での使用先の照合は未完 |
-| (d) G09 | S07a の外側の値の大きさ・内側の部分型導出の辞書式 motive と、`.data/.trans/.refine` の三枝。data で `variance_field_mono` が返す新導出を、元導出の IH と誤認しない | `.trans` の IH 合成を `meaning_trans` で確認。`.data/.refine` の本番に必要な全 case 証明は未確認（後掲の試行の限界）。三枝が閉じない間は通過しない |
+| (d) G09 | S07a の外側の値の大きさ・内側の MeaningLe の導出の辞書式 motive と、data/trans/refine の三枝。field_order が返す新導出へ子値の外側 IH を適用する | 済み（群A4）。order_data/trans/refine と outer_complete、valueMeaning_sub を証明。Ordinary を供給できないため、variance_field_mono から意味の側の補助関係へ変更した |
 
 独立の信頼条件である「全結果は形成済み」「全値は意味を持つ」を追加して関門を閉じない。特定した失敗について、定義、現行前提、導けない言明、Lean の反例又は未証明枝、代案、追加の所要時間（能動時間）と待ち、実用への影響を取りまとめへ返す。S00と、今回第一案として固定されたS12のCのkind保持・V_Raiseの変更は採用済みの見直し対象として記す。行像のkindを保持するS12.8とDeclaredのtappを読むS12.11も固定した案に含む。これを越える変更はJ表で扱う。
 
 ## 固定した署名の骨格（証明の成立とは別）
 
-以下を単位の署名欄から参照する。S00 は採用済みの定義の形、S01/S02/S04/S05/S07/S08 はこの形を起点に検証する契約である。証明と形成入力の充足は予定であり、定理が成立済みという意味ではない。S03/S06/S09〜S11 の未固定事項は各見出しで区別する。共通の暗黙変数は各式の使用判断から型を決め、`Qempty` は `Benitoite.Release.Qempty`、`TParam/NoFailCtx` は旧と共有する名前を使う。実装で宣言する前に群 A で全引数を印字して固定する。以後の署名変更は共通依頼文に従う。命題の型検査とその証明を別に記録する。
+以下を単位の署名欄から参照する。S00 は採用済みの定義の形、S01/S02/S04/S05/S07/S08 はこの形を起点に検証する契約である。このうち S07 の部分型に対する意味の移送と S07a は群A4で証明済みであり、型付けから意味と所属への接続は後続に残る。他の契約の証明と形成入力の充足は、各群の結果と区別する。S03/S06/S09〜S11 の未固定事項は各見出しで区別する。共通の暗黙変数は各式の使用判断から型を決め、`Qempty` は `Benitoite.Release.Qempty`、`TParam/NoFailCtx` は旧と共有する名前を使う。実装で宣言する前に群 A で全引数を印字して固定する。以後の署名変更は共通依頼文に従う。命題の型検査とその証明を別に記録する。
 
 ### S01: 開いた結果形成の motive と捕捉への系
 
@@ -361,7 +361,7 @@ Vs/Each は結果列を closeTy で写して closeVals を結論する。V_Lam �
 
 Closure.view の契約は Comp の16構文形すべてについて、一歩で閉じる値・型・行と、そのまま cap に残す子コードを列挙する case 定義の形とする。各枝は S05 の型付き値と ClosureTy の同じ a/e/R を供給する。view 全体を捕捉を失うソース Comp の型付けへ押し込む定理は要求しない。
 
-### S07: 全意味移送と型付けからの所属
+### S07: 任意の部分型に対する意味の移送と型付けからの所属
 
 ```lean
 valueMeaning_sub : ∀ {P Γ Φ a b v η},
@@ -369,21 +369,25 @@ valueMeaning_sub : ∀ {P Γ Φ a b v η},
   (∀ p ∈ Γ.facts ++ Φ, p.interpret η = true) →
   ValueMeaning P η a v → ValueMeaning P η b v
 typed_value_meaning_closed : ∀ {P B Ψ v a},
-  P.VarianceValid → B.CoreAssumptions P →
+  P.VarianceValid →
   HasTypeVQ P B Ψ Qempty [] [] [] v a → ValueMeaning P (fun _ => none) a v
 inhabits_of_typed : ∀ {P B Ψ v a},
-  P.VarianceValid → B.CoreAssumptions P →
+  P.VarianceValid →
   HasTypeVQ P B Ψ Qempty [] [] [] v a → Inhabits P a.norm v
 inhabits_of_typed_raw : ∀ {P B Ψ v a},
-  P.VarianceValid → B.CoreAssumptions P →
+  P.VarianceValid →
   HasTypeVQ P B Ψ Qempty [] [] [] v a → Inhabits P a v
 ```
 
-これは [X の最終署名](../l10/x/signatures.md)をそのまま引き継ぐ。data の欄の単調性は Annotation を独立に要求しない現在の `variance_field_mono` を使う。意味移送の相互四族と、LeQ 等の四族の帰納を同じ不変量で一度組む。型付けの側は V29/Vs2/Each2 の33場合を閉じる。閉じた変数は空 Γ から排除し、lambda の CQ 本体には意味の帰納を降ろさない。捕捉された値と任意の腕の入力は S05→閉じた型付け→本定理→`Inhabits.of_subst_values` で供給する。閉じた単純値の代表だけを全33場合の証拠にしない。
+`valueMeaning_sub` は [X の最終署名](../l10/x/signatures.md)の前提と結論を保ち、群A4で証明済みである。data の欄には、`MeaningOrder` の `variance_meaning`・`variance_meaning_args`・`field_order` を使う。`variance_field_mono` の型像の Ordinary は S07 の入力から供給できないため、意味を保つことを別に証明した補助関係 MeaningLe・MeaningArgs で比較する。これは O005・A の欄単調性を再実装しない方針の例外であり、P.VarianceValid の定義と既存の不変な位置の等号の証明は再使用する。
 
-### S07a: 辞書式の motive（未確認の枝を含む）
+後続の型付けから意味への補題と所属の二つの系は、B.CoreAssumptions を前提に持たない。理由: RV-L20.a4 の全33場合の補助入力はこの前提を使わず、閉じた型付けと同じ P の VarianceValid から意味と所属を構成できる。本番への配置と全例への適用は L20.89〜.93 に残す。型付けの側は V29/Vs2/Each2 の33場合を閉じる。閉じた変数は空 Γ から排除し、lambda の CQ 本体には意味の帰納を降ろさない。捕捉された値と任意の腕の入力は S05→閉じた型付け→本定理→`Inhabits.of_subst_values` で供給する。閉じた単純値の代表だけを全33場合の証拠にしない。
 
-`M v (h : Ty.LeQ P Γ Φ a b)` の完全な結論は、
+### S07a: 辞書式の motive（群A4で証明済み）
+
+この節の MeaningLe・MeaningArgs・MOrder・Outer・Below は MeaningTransport 名前空間に属する。
+
+`MOrder v (h : MeaningLe P Γ Φ a b)` の完全な結論は、
 
 ```lean
 ∀ (η : ObservationEnvModel),
@@ -397,38 +401,38 @@ inhabits_of_typed_raw : ∀ {P B Ψ v a},
 ∀ (n : Nat), ∀ (v : Val), sizeOf v = n →
   ∀ (P : Program), P.VarianceValid →
   ∀ (Γ : Ctx) (Φ : List Pred) (a b : Ty)
-    (h : Ty.LeQ P Γ Φ a b),
+    (h : MeaningLe P Γ Φ a b),
   ∀ (η : ObservationEnvModel),
     (∀ p ∈ Γ.facts ++ Φ, p.interpret η = true) →
     ValueMeaning P η a v → ValueMeaning P η b v
 ```
 
-とする。Prop の導出 h を Nat へ消去する「導出サイズ関数」は定義しない。ここでの辞書式は、(1) 子値なら任意の導出へ外側の IH、(2) 同じ値なら厳密な部分導出へ内側の IH、の二段の帰納を意味する。内側の四成分の完全な motive は次である。後の三成分は True とする。ValueMeaning の関数の形は本体の意味を要求しないため、TelLe の意味を別に定義する必要はない。data の欄では TypeArgsLe の証拠そのものを variance_field_mono に渡し、その返す導出へ外側の IH を使う。
+とする。Prop の導出 h を Nat へ消去するサイズ関数は定義しない。ここでの辞書式は、(1) 子値なら任意の MeaningLe の導出へ外側の IH、(2) 同じ値なら厳密な部分導出へ内側の IH、の二段の帰納を意味する。内側は MeaningLe と MeaningArgs の相互帰納であり、引数列の motive は `fun _ _ _ _ => True` とする。元の LeQ と TypeArgsLe は of_le・of_args で写す。依存関数の内部の意味を要求しないため、TelLe・TelClosure の導出には帰納しない。data の欄では MeaningArgs を field_order に渡し、その返す新しい MeaningLe へ外側の IH を使う。
 
 ```lean
-MLe {P : Program} {Γ : Ctx} {Φ : List Pred} {a b : Ty}
-    (v : Val) (_h : Ty.LeQ P Γ Φ a b) : Prop :=
+MOrder {P : Program} {Γ : Ctx} {Φ : List Pred} {a b : Ty}
+    (v : Val) (_h : MeaningLe P Γ Φ a b) : Prop :=
   ∀ (η : ObservationEnvModel),
     (∀ p ∈ Γ.facts ++ Φ, p.interpret η = true) →
     ValueMeaning P η a v → ValueMeaning P η b v
-MTelLe {P : Program} {Γ : Ctx} {Φ : List Pred} {t u : Tel}
-    (_h : TelLe P Γ Φ t u) : Prop := True
-MTelClosure {P : Program} {Γ : Ctx} {Φ : List Pred} {t u : Tel}
-    (_h : TelClosure P Γ Φ t u) : Prop := True
-MTypeArgs {P : Program} {Γ : Ctx} {Φ : List Pred}
-    {vs : List Variance} {as bs : List Ty}
-    (_h : TypeArgsLe P Γ Φ vs as bs) : Prop := True
+Outer (n : Nat) : Prop :=
+  ∀ (v : Val), sizeOf v = n →
+    ∀ (P : Program), P.VarianceValid →
+      ∀ (Γ : Ctx) (Φ : List Pred) (a b : Ty) (h : MeaningLe P Γ Φ a b),
+        MOrder v h
+Below (n : Nat) : Prop :=
+  ∀ (w : Val), sizeOf w < n → Outer (sizeOf w)
 ```
 
-この4成分で全caseを閉じられるかは未確認であり、群 A4 で印字と三枝の証明を完了するまで H を起動しない。
+群A4の order_step と outer_complete が内外の帰納を閉じた。meaning_order_sound と of_le から元の valueMeaning_sub を導く。群Hの L20.85〜.88 は済み（群A4）であり、追加実行を置かない。
 
 | 枝 | 証明の形と下降 | 今回の確認 |
 |---|---|---|
-| `.trans hab hbc` | 同じ v、部分導出 hab の IH を通して中間 b の意味を作り、hbc の IH を使う。b の Annotation を追加しない | meaning_trans の Lean case 証明あり |
-| `.data hargs` | ValueShapeMeaning.con を逆転。欄を `variance_field_mono` で比較し、その**新しい導出**へ `sizeOf child < sizeOf (.con c tys args)` の外側 IH を適用。ValueMeanings を再構成 | 欄単位の移送・サイズ・宣言照合の全合成は未確認。内側 hargs の IH で新導出を済ませたとしない |
-| `.refine hab hp hq he` | 元の ValueMeaning から基底 a と p の全 conjunct の真を得る。hab の内側 IH で b、`Entails.sound` を selfModel に適用して q、packRefinements/norm の同値で結論 | `.trans` と異なり論理の供給が残る。selfModel と Γ.facts/lift の真、a の Ordinary の扱いを含む case 証明は未確認 |
+| `.trans hab hbc` | 同じ v、部分導出 hab の IH を通して中間 b の意味を作り、hbc の IH を使う。b の Annotation を追加しない | order_trans で証明済み |
+| `.data hargs` | ValueShapeMeaning.con を反転。field_order が宣言の欄の型の比較を作り、その**新しい導出**へ子値の大きさの外側 IH を適用。ValueMeanings を再構成する | order_data・data_shape_meaning・fields_meaning で証明済み。内側 hargs の IH は使わない |
+| `.refine hab he` | 元の ValueMeaning から基底 a と p の真を得る。hab の内側 IH で b、Entails.sound を selfModel に適用して q を得る | order_refine と valueMeaning_refine で証明済み。facts/lift と Ordinary に応じた assume の扱いを含む |
 
-今回 `.data` では既存 variance_field_mono を適用する試行が型像 as/bs の Ordinary の二つの未解決目標を残した。これらは一般の S07 の前提からは自動で得られず、型付けの注釈を独立入力に足さずに導く方法又は意味に直接使う補助が必要である。`.refine` では基底の IH に元の refined の意味を直接渡す試行が型不一致になった。基底の意味と述語の真の分解・再構成が未完である。いずれも反例による不成立の証明ではない。これは群 A 未通過の理由であり、定理の前提を増やす根拠にはしない。G09 の最終の typed_value_meaning_closed は V29/Vs2/Each2 の33 case を一度組み、V_Sub から上の定理を使う。
+MeaningTransportObstruction は S07 の入力から型像の Ordinary を供給できない反例として残す。S07 自体の反例ではなく、同じ入力に valueMeaning_sub を適用できる。宣言の欄の型の Sorted は VarianceValid が持つが、本番の意味の移送はそれを独立入力に要求しない。G09 の typed_value_meaning_closed は V29/Vs2/Each2 の33 case を一度組み、V_Sub から上の定理を使う。L20.89〜.91 は .27 の直後へ前倒しできる。L20.92 は S05 の .74〜.77 を待つ。
 
 ### S08: パターン束縛の型保存
 
@@ -1243,9 +1247,9 @@ declaredEff_substAt : ∀ {P B Ψ C0 C1 Γ e ts es},
 
 ## 起動単位と群の完了条件
 
-**148単位・32群、所要時間（能動時間）97時間45分〜219時間45分**を積み上げた。r2の143単位93時間30分〜209時間5分へ、Declaredの定義/旧橋45〜100分、値移送/norm30〜60分、型改名/shiftと読者60〜150分、Declared全型置換60〜180分、注釈の関門60〜150分の5単位を追加した。追加は255〜640分。rowKindsの45〜150分はr2から計上済みで、固定案へ移したことだけでは二重加算しない。
+**番号は148単位・32群のまま、重複を除く見積もりは144単位・31群、所要時間（能動時間）95時間〜213時間30分**である。r3の積上げ97時間45分〜219時間45分から、群A4で済んだ群Hの4単位（2時間45分〜6時間15分）を差し引いた。A4自体の見込みを実績で置き換えず、同じ証明を二度実行する分だけを控除する。r3で追加したDeclaredの5単位255〜640分と、r2から計上済みのrowKindsは維持する。
 
-固定枠47〜109時間との差は下端＋50時間45分、上端＋110時間45分である。枠へ合わせて他を削らない。方式の成否、新しいDeclaredとkindの構造条件、所要時間の見直しを区別する。
+固定枠47〜109時間との差は下端＋48時間、上端＋104時間30分である。枠へ合わせて他を削らない。方式の成否、新しいDeclaredとkindの構造条件、所要時間の見直しを区別する。
 
 | 性質 | 件数 | 幅を置く根拠 | 所要時間（能動時間） |
 |---|---:|---|---:|
@@ -1254,11 +1258,11 @@ declaredEff_substAt : ∀ {P B Ψ C0 C1 Γ e ts es},
 | 定型 | 3 | q_monoの一つのrecursor。共通補助と再構成の種類で測り、76caseを単価へ掛けない | 1時間45分〜2時間50分 |
 | 証明 | 31 | 既存WF/Sorted/Declared/LeQのcase補題と全読者の照合 | 19時間〜37時間15分 |
 | 包装 | 22 | 既存定理の射影・恒等・既知の入力の結合 | 11時間〜16時間30分 |
-| 接続 | 71 | closeVal/実行/意味/旧導出の新しい合成と正規化・捕捉・依存列の不確かさ | 48時間30分〜116時間35分 |
+| 接続 | 67 | closeVal/実行/意味/旧導出の新しい合成と正規化・捕捉・依存列の不確かさ。群A4で済んだ群Hの4単位を重ねない | 45時間45分〜110時間20分 |
 
 基本の起動は30〜60分。不確かな接続は30〜75/45〜100分、関門・新しい帰納の方式は最大150〜180分の幅とし、最初の60分でcase補題・完全署名・未証明枝を保存して残りを見直す。単位ごとの幅の理由はr2を維持する。q_monoはmotive/定型の本体/公開接続の3単位、closeは通常lambda・依存lambda/closure・Sub・Normal・Refine・全33case合成へ分割したままである。群Dは22単位14時間〜27時間10分、G01は8単位7時間〜16時間40分。case数は漏れの検査へ使う。
 
-次表のファイルはR/以下、未作成のファイルは配置案である。実装時は既定importと01-12/07-04の写しも同じ単位でそろえる。結果は`l20/<IDの数字>/results.md`、群は`l20/<群の小文字>/results.md`へ残す予定であり、今回は作らない。全群の完了条件に、全単位の固有条件・公開署名と全読者の一致・既定build・定義/言明/仮定のレビューと所見処置を含む。独立レビュー実行の待ちは能動時間に混ぜない。
+群Hの重複控除は見積もりの控除であり、単位の番号は振り直さない。L20.89〜.91は.27の直後に起動できる。次表のファイルはR/以下、未作成のファイルは配置案である。実装時は既定importと01-12/07-04の写しも同じ単位でそろえる。結果は`l20/<IDの数字>/results.md`、群は`l20/<群の小文字>/results.md`へ残す予定であり、今回は作らない。全群の完了条件に、全単位の固有条件・公開署名と全読者の一致・既定build・定義/言明/仮定のレビューと所見処置を含む。独立レビュー実行の待ちは能動時間に混ぜない。
 
 | 群 | 単位 | 固有の完了条件（全単位・既定build・定義/言明/仮定レビューを含む） | 所要時間（能動時間） |
 |---|---|---|---:|
@@ -1280,8 +1284,8 @@ declaredEff_substAt : ∀ {P B Ψ C0 C1 Γ e ts es},
 | F2 | L20.74〜.77 | closeのSub/Normal/Refineと全33caseの合成 | 3時間〜6時間40分 |
 | F3 | L20.78 | 任意closeValから全実行view | 1時間〜2時間30分 |
 | G | L20.79〜.84 | 零・多引数と依存β | 3時間30分〜7時間50分 |
-| H | L20.85〜.88 | 全部分型の意味移送22規則 | 2時間45分〜6時間15分 |
-| I1 | L20.89〜.93 | 型付け33caseとInhabitsの全入口 | 2時間30分〜6時間15分 |
+| H | L20.85〜.88 | 済み（群A4）。任意の部分型に対する意味の移送22規則。追加の起動なし | 0分（群A4に含む） |
+| I1 | L20.89〜.93 | 型付け33caseとInhabitsの全入口。.89〜.91は.27直後へ前倒し可能。.92はS05、.93は.92を待つ | 2時間30分〜6時間15分 |
 | I2 | L20.94〜.96 | パターン束縛の全保存 | 1時間45分〜3時間55分 |
 | J | L20.97〜.100 | 照合・guardとhandler入口 | 2時間〜4時間 |
 | K | L20.101〜.105 | 操作・多相節・resume | 3時間15分〜7時間30分 |
@@ -1323,8 +1327,8 @@ declaredEff_substAt : ∀ {P B Ψ C0 C1 Γ e ts es},
 | L20.22・G03 | C_MethとE_OpFailの関門 | `TypeSubstContracts.lean`、予定の関門入力 | S12.9・gate_meth_case/fail_image_kind | C_Methのτ/ssにtvarを持つ本体をS02_Cの結論まで証明。E_OpFailはV_RaiseのT.kindを使い同じ族を適用。Fail用別入口は作らない | .21 | 60〜180分（方式） | K/W-L |
 | L20.23・G03 | 型注釈のescape・lambda・tappの関門 | `TypeSubstContracts.lean`、予定の関門入力 | S12.9/S12.11・gate_annotation_escape/lam | 正しいtappを結果/引数に持つescape/lambdaを新S02の結論まで閉じ、誤個数はsourceで拒否する。constructor宣言のlist(tvar)の像の形成と実際の型付けも確認。入力欄の型検査だけで通過させない | .22 | 60〜150分（方式） | K/W-L |
 | L20.24・G03 | 入れ子の継続の確認 | `TypeSubstContracts.lean` | S02 | notContCore→list_cont_empty→singleton_no_matchをLeanで閉じ、data/高kind/捕捉の使用先を追う。reject_nested_cont_valueも残す。Ordinaryを再帰化しない | .23 | 30〜80分（方式） | K/W-L |
-| L20.25・G09 | 値の大きさと導出の二段の motive | `MeaningTransport.lean` | S07a | 4相互成分の完全署名を印字する。証明からNatのサイズを作らず、子値と部分導出の下降を分ける | .04〜.24 | 45〜100分（方式） | K/W-L |
-| L20.26・G09 | data の欄の意味移送の関門 | `MeaningTransport.lean` | S07a | variance_field_monoのOrdinary/Sorted/VarianceOKを既存入力から供給し、新導出へ子値のIHを適用するcaseを閉じる | .25 | 60〜180分（方式） | K/W-L |
+| L20.25・G09 | 値の大きさと導出の二段の motive | `MeaningTransport.lean` | S07a | MOrder/Outer/BelowとMeaningArgsのTrueのmotiveを印字する。証明からNatのサイズを作らず、子値と部分導出の下降を分ける | .04〜.24 | 45〜100分（方式） | K/W-L |
+| L20.26・G09 | data の欄の意味移送の関門 | `MeaningOrder.lean`、`MeaningTransport.lean` | S07a | VarianceValidのVarianceOKと宣言の欄の型の構造からfield_orderで新しいMeaningLeを作り、子値の外側IHを適用する。Ordinary/Sortedを新しい入力にしない | .25 | 60〜180分（方式） | K/W-L |
 | L20.27・G09 | trans/refine の意味移送の関門 | `MeaningTransport.lean` | S07a | transは中間注釈なし、refineはselfModelのfactsとEntails.soundを供給してLeanのcaseを閉じる。未証明なら停止 | .26 | 45〜150分（方式） | K/W-L |
 | L20.28・G08 | PrimSig.Scopedとsig_scoped | `SourceScope.lean`、`PrimitiveScoped.lean`、`ProgramWellFormed.lean`、`ConstraintAssumptions.lean` | S09 | 範囲深さrkinds.lengthのtelの形成とinst後の深さ0を定義する。旧20欄の残1を新束へ接続し実表の後段義務を固定する | .25〜.27 | 45〜100分（接続） | K/W-L |
 | L20.29・G08 | 宣言入力と三親判断 | `LegacyDeclarationInputs.lean` | S09/G10 | SourceScopedとdeclarationBodyInputs、辞書の二供給元、代入前Qを射影する。G10後に証明する親判断の入力を固定する | .28 | 30〜60分（証明） | K/W-L |
@@ -1383,13 +1387,13 @@ declaredEff_substAt : ∀ {P B Ψ C0 C1 Γ e ts es},
 | L20.82・G02 | let/returnとmark | `ClosureStateLeaves.lean` | S06/S10・Let/Return/Mark | 任意の型付きvでK_Letを適用しret_value/markPushへ接続する。依存Rのshiftを消す根拠を示す | .81/.69〜.70 | 30〜45分（包装） | K/W-L |
 | L20.83・G02 | 関数・メソッドと辞書 | `ClosureStateLeaves.lean` | S02/S06・Fun/Meth/Super | Def/Implの本体にts又はss++tsと辞書vs++wsを正順で渡す。QTelの代入前後を等号で合わせる。O136用dependent_result_closeを公開し、値依存端点とΦのlen関係がclose/substの両順で同じになることを証明する | .55〜.60/.81/.29 | 45〜100分（接続） | K/W-L |
 | L20.84・G02 | 依存βの全葉 | `ClosureStateLeaves.lean` | S06/S10・E_Lam | 任意cap/零・多引数の葉を固定σ/Ebへ戻す。L40のcallable逆転とL70へ各前提の供給元を渡す | .82/.83 | 30〜75分（接続） | K/W-L |
-| L20.85・G09 | 意味移送のrefl/convert/trans | `MeaningTransport.lean` | S07・四族のmotive | 正規化と相互IH付きcase補題を閉じる。transの中間型の注釈を新しい入力にしない | .25〜.27/.55〜.60 | 30〜75分（接続） | K/W-L |
-| L20.86・G09 | 意味移送のdata/List | `MeaningTransport.lean` | S07・data/list/TypeArgs | variance_field_monoと値の子への下降を合わせる。kindと欄形成を新しい信頼条件にしない | .85 | 45〜100分（接続） | K/W-L |
-| L20.87・G09 | 意味移送の篩と範囲 | `MeaningTransport.lean` | S07・forget/introduce/refine/scoped | Entails.soundにfacts/Φの真を渡す。既存ScopedValue.covers/forgetを再使用し、評価不能を真にしない | .86 | 45〜100分（接続） | K/W-L |
-| L20.88・G09 | 全部分型の意味移送 | `MeaningTransport.lean` | S07・全22規則 | fn_effect/lazy/map_value/TelLe/TelClosureの残枝を閉じ、一つの相互帰納を完成する | .85〜.87 | 45〜100分（接続） | K/W-L |
-| L20.89・G09 | 型付けから意味の基本値 | `TypedMeaning.lean` | S07 | V29の基本/定数/保持/場所のcaseを既存の意味の定義で閉じる | .88 | 30〜75分（接続） | K/W-L |
+| L20.85・G09 | 意味移送のrefl/convert/trans | `MeaningTransport.lean` | S07・S07a | 済み（群A4）。of_le、order_stepのconvert/trans、order_trans。中間型の注釈は不要 | .27（群A4） | 0分（群A4に含む） | 群A4のK/W-L |
+| L20.86・G09 | 意味移送のdata/List | `MeaningTransport.lean` | S07・data/list/MeaningArgs | 済み（群A4）。field_orderと値の子への下降、order_data/list_shape_meaning。variance_field_monoを使わない | .27（群A4） | 0分（群A4に含む） | 群A4のK/W-L |
+| L20.87・G09 | 意味移送の篩と範囲 | `MeaningTransport.lean` | S07・forget/introduce/refine/scoped | 済み（群A4）。facts/ΦとEntails.sound、ScopedValue.covers/forgetを再使用。評価不能を真にしない | .27（群A4） | 0分（群A4に含む） | 群A4のK/W-L |
+| L20.88・G09 | 任意の部分型に対する意味の移送 | `MeaningTransport.lean` | S07・全22規則 | 済み（群A4）。of_le/of_argsとvalueMeaning_sub。依存関数の内部を読まないためTelLe/TelClosureには帰納しない | .27（群A4） | 0分（群A4に含む） | 群A4のK/W-L |
+| L20.89・G09 | 型付けから意味の基本値 | `TypedMeaning.lean` | S07 | V29の基本/定数/保持/場所のcaseを既存の意味の定義で閉じる。.27直後に起動可能 | .27 | 30〜75分（接続） | K/W-L |
 | L20.90・G09 | 型付けから意味の構造値 | `TypedMeaning.lean` | S07 | data/List/Map/Set/DictとVs2/Each2の子を使う。RootShapeを新しく仮定しない | .89 | 30〜75分（接続） | K/W-L |
-| L20.91・G09 | 型付けから意味の篩と部分型 | `TypedMeaning.lean` | S07 | V_Refineは観測/Entails.sound、V_Subは全意味移送、Normalはnorm_iff。33caseを一度合成 | .90 | 30〜75分（接続） | K/W-L |
+| L20.91・G09 | 型付けから意味の篩と部分型 | `TypedMeaning.lean` | S07 | V_Refineは観測/Entails.sound、V_Subは任意の部分型に対する意味の移送、Normalはnorm_iff。33caseを一度合成 | .90 | 30〜75分（接続） | K/W-L |
 | L20.92・G09 | 捕捉・腕の意味の入力 | `TypedMeaning.lean` | S05/S07/S08 | 任意closeValの閉じた型付けから意味を供給しmeaning_coverage/variable_coverageへ接続する。進行を循環使用しない | .74〜.77/.89〜.91 | 30〜75分（接続） | K/W-L |
 | L20.93・G09 | Inhabitsの全入口 | `TypedMeaning.lean` | S07・inhabits_of_typed/raw | 意味からの既存系とnorm_all_iffで二系を閉じる。Month/空型/非空List/unknownへ全定理を実際に適用する | .89〜.91/.92 | 30〜75分（接続） | K/W-L |
 | L20.94・G06 | 変数・篩・変換の束縛 | `PatternBindings.lean` | S08・Var/Refined/Convert | v:a.normからδ.map normを結論する。rawδへ不当に強めず、変換前後のprefixの事実を供給する。既存RootShape/rootShape_of_typingを使い、PatTy前提から必要なrootの形を供給する | .93/.66〜.68 | 30〜60分（証明） | K/W-L |
@@ -1462,10 +1466,10 @@ declaredEff_substAt : ∀ {P B Ψ C0 C1 Γ e ts es},
 | G06 | .94〜.99 | 3〜7時間 | 0時間 | 3〜7時間 | 3時間15分〜6時間40分 |
 | G07 | .110〜.122 | 5〜12時間 | 0時間 | 5〜12時間 | 9時間〜24時間35分 |
 | G08 | .28〜.29 | 1〜3時間 | 0時間 | 1〜3時間 | 1時間15分〜2時間40分 |
-| G09 | .25〜.27、.85〜.93 | 4〜8時間 | 0時間 | 4〜8時間 | 7時間45分〜19時間40分 |
+| G09 | .25〜.27、.89〜.93（.85〜.88は済み、群A4） | 4〜8時間 | 0時間 | 4〜8時間 | 5時間〜13時間25分 |
 | G10 | .123〜.148 | 13〜29時間 | 0時間 | 13〜29時間 | 17時間15分〜35時間20分 |
 
-固定枠はG01〜G09の39〜89から移管5〜9を控除して34〜80、G10の13〜29を加えた47〜109時間。積上げは97時間45分〜219時間45分。G04控除0、.02b-atはG03の保持値、.02b-closuresはG02を維持する。
+固定枠はG01〜G09の39〜89から移管5〜9を控除して34〜80、G10の13〜29を加えた47〜109時間。積上げは95時間〜213時間30分。群Hの重複2時間45分〜6時間15分をG09から一度だけ差し引く。G04控除0、.02b-atはG03の保持値、.02b-closuresはG02を維持する。
 
 | G10の区分 | 単位 | 元の配分 | 本書の積上げ・所要時間（能動時間） |
 |---|---|---:|---:|
@@ -1551,7 +1555,7 @@ A12/B16/C6/D1/E2はL10での分類として保存する。L20で再分類して�
 | O160・D | 担当・.129〜.134/本番追随表 | G10・embedHasTypeVQ。運用：値19規則を本番に残し通常resultsでAと待ちを分ける。同種残27規則を区別。残る段：L40は別種の通常記録を使用。比の一律適用なし |
 | O167・B | 担当・.08/.20〜.24/.30/.65/.66〜.68/.89〜.91/.99 | S01/S02/S07/S08/S12の拒否例。宣言value/constructorのtvarの双方向の不適合をS12.9で拒否し、DET-Lの移送に関する制限（非観測/None/循環/不変/unknown）を受理と拒否の対照で保持。残る段：L30/L40/L70→各R段/V10。構文の拒否はL70/R60 |
 | O169・A | 担当・.118〜.121/.122 | S11。独立評価との束縛/戻り先の対応を閉じ、returned/failedの入力と数値一致の必要な葉を固定。残る段：L40 H04の算術/δ/所属→L70主定理→R10b/R50 |
-| O005・A | 追加の使用先・.55〜.60/.86/.102 | S02/S07 の既存 P.VarianceValid の使用。P.VarianceValidを全型置換/意味移送/全保存の葉で使用する。定義と欄単調性を再実装しない。L40利用葉、L70/R10bの収集の一致が残る |
+| O005・A | 追加の使用先・.55〜.60/.26/.102（.86は済み、群A4） | S02/S07 の既存 P.VarianceValid の使用。定義と欄単調性を再実装しない。ただし意味の移送は例外としてvariance_meaning/variance_meaning_argsを追加した。理由: variance_field_monoの型像のOrdinaryをS07の入力から供給できず、同じPのVarianceOKからMeaningLeで比較する必要がある。既存の不変な位置の等号は再使用する。L40利用葉、L70/R10bの収集の一致が残る |
 | O033・A | 既済み継承・他段（新規L20単位なし） | 既存 VarianceValid.field_annotation。L40標準data/δ。L70/R10bで元の辞書制約/公開境界の全収集と変性を照合し、R50で接続。planのL10/L70追記は取りまとめ |
 | O016・E | 共通・.148と各群 | S00〜S11 と G10 の A-L。A-Lで既存と新宣言の全依存を監査し許可三公理だけとする。独立レビューとL70合成は取りまとめ |
 | O084・E | 共通・.148と各群 | S09/S10 の未完の区分。方式/前提/σ/externalの差と未完を記録し、例外と範囲を拡張しない。全L/R/Kの最終受入が残る |
@@ -1639,7 +1643,7 @@ SourceScope の配置は低い層の import を点検した案である。今回
 | J20-3 | 入れ子の継続を含む像で保存が成り立たず、Ordinaryを再帰的に強める必要が出る | 型付けの受理範囲に触れる。contはソースの記法にないが、内部の入れ子を制限してもソースに影響しないことは別途証明が必要。多相関数・空List/data欄の具体的な受理差を示す。単純に「書けないから無害」として採らない |
 | J20-4 | J04のfailed所属を述べるため、計画済みの入力条件では足りず主定理の前提追加・結論弱化・外部状態の精密化が必要になる | 正常値と警告の既存保証を維持する。全失敗の所属を新保証として追加しない。対象内の失敗と対象外境界の許す失敗を分け、候補条件・反例・L40への波及を示す |
 | J20-5 | G10の子のLegacyNodeTypes、checkedAt/atErrorの照合、全状態/親判断を既存入力から構成できない | 適格な旧導出の範囲をさらに狭める、ValueAssumptions/sig_scoped/新型付けの結論を橋の入力に足す変更は未承認。既存の合法ソースの辞書・保持値・網羅性に及ぶ受理差を示して停止 |
-| J20-6 | G09のS07aのdata/trans/refine又は型付けの33caseで全意味移送・inhabits_of_typedを閉じられない | 網羅性の健全性の根拠が欠ける。型付けに全値の意味を仮定として足す、Exhaustiveの保証を弱める、受理する型/パターンを狭める変更は採らず停止。どの合法ソースの網羅性・診断が変わるか反例と候補署名を示す |
+| J20-6 | G09のS07aのdata/trans/refine又は型付けの33caseで任意の部分型に対する意味の移送・inhabits_of_typedを閉じられない | 網羅性の健全性の根拠が欠ける。型付けに全値の意味を仮定として足す、Exhaustiveの保証を弱める、受理する型/パターンを狭める変更は採らず停止。どの合法ソースの網羅性・診断が変わるか反例と候補署名を示す |
 | J20-7 | 案4/Declared/rowKindsがRustの合法ソースを新しく拒む場合。特にimplのconstructorパラメータを本体の型引数として使う経路と、effectの操作の型パラメータの経路 | collect_implのparameters(..., true)とメソッドへのscope継承、check_declarationsのItem::Effect→signature→signature_with_file→parameters(..., true)までは読んだ。Leanのimpl/user操作はvalue固定。targetの既存HasKindによる制限と本体の新しい制限を区別する。両経路の合法な具体例の受理・構文/handler・新coreへの全変換は未確認。L70/R10b/R50で具体のソース・診断・保証の差を照合し、受理差が出れば停止。Rustの書ける形の縮小をこの担当で決めない |
 
 sig_scopedの旧欄の移行と、L10で既に明示した操作の辞書の先頭/添字、実装辞書のvalue kind、Ordinaryの最上位条件、代入前Qは継承する判断であり、再度の選択を求めない。今回選ぶ補助の名前・配置・帰納のmotiveは、上記の境界に触れない限り担当が具体化できる。変更が必要になった場合は、plan「全L作業の停止条件」とD71に従い、篩/σ/externalを切り分け、反例又は未証明の言明と追加の所要時間（能動時間）・待ちを返す。
@@ -1653,7 +1657,7 @@ sig_scopedの旧欄の移行と、L10で既に明示した操作の辞書の先�
 | K・各単位の途中 | `formal/` で `lake env lean -M 12288 Benitoite/Release/Refinement/<関係ファイル>.lean`。case補題・署名・境界の関係するものだけを検査 | 直近のL10Fの単一入力は約0.7秒。今回の成功を各新ファイルの時間へ一律に使わず、通常resultsで更新 |
 | W-L・各単位の作業末に一度 | 起動時に渡された完全B_WORKを使い、根で `scripts/check.sh --level work --base B_WORK --dry-run` 後、同じ引数の `scripts/check.sh --level work --base B_WORK`。既定全Leanと写しの読者を確認。text例を変えればspec_examples、構文を変えれば生成Skill/skill_docs/spec_tallyも方針どおり選ぶ。LeanだけへRust全libを足さない | 初回は直近の段末約102秒を参考に更新。増分/cleanの差を記す。単位の通常resultsへ終了・外側の時間・選択した実体を保存 |
 | A-L・.148/段末 | 改造内の `l20/axioms.lean` に既定新旧モジュールをimportし、新葉と使用定義・private/生成宣言、旧主定理/旧三モデル、十の移送を全名で `#print axioms`。`formal/` で `lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/axioms.lean` | 計画の1〜5分案。対象名一覧と生出力・件数を保存。許可はpropext/Quot.sound/Classical.choiceだけ。sorryAx/独自公理/未承認依存0を確認 |
-| 群末レビュー・取りまとめ | A1/A2/A3a/A3b/A3c/A4/B〜Sの32群の定義・言明・仮定・供給元・未完を確認。失敗例や都合の悪い読者をimportから外さない。所見への応答・修正は当該群の能動時間内、レビュー実行の待ちは別 | 不明。`reviews/` と群resultsへ取りまとめが保存。担当の自己点検を独立レビューと呼ばない |
+| 群末レビュー・取りまとめ | 番号上の32群のうち、群Hは群A4で済み、独立の起動は31群。各群の定義・言明・仮定・供給元・未完を確認。失敗例や都合の悪い読者をimportから外さない。所見への応答・修正は当該群の能動時間内、レビュー実行の待ちは別 | 不明。`reviews/` と群resultsへ取りまとめが保存。担当の自己点検を独立レビューと呼ばない |
 | 段末work・RSS・取りまとめ | 最後の同じworkにsandbox外でmacOSの `/usr/bin/time -l` 等を付ける。余分のbuildを追加しない。本体/計測器の終了・機械/OS/原単位を分離 | workに包含。ほかの単位のRSSは未取得（計画上の非採取）。L10の数値をL20へ引用しない |
 | 段末レビューと受け入れ | 28行と37行の段別証拠、方式の四関門、G10全46規則/状態、七つの条件付き判断、実表/主定理/表層/交換の残りを確認。取りまとめがplanへ転記し設計者が受け入れる | 待ちは不明。L70の全比較、Rustの検査、releaseはこの段に前倒ししない |
 
@@ -1661,7 +1665,7 @@ sig_scopedの旧欄の移行と、L10で既に明示した操作の辞書の先�
 
 ## 見込みの根拠と取りまとめへの転記
 
-本書は148単位・32群、所要時間（能動時間）97時間45分〜219時間45分。固定枠47〜109時間に対して下端＋50時間45分、上端＋110時間45分である。性質ごとの件数・分の積上げは前表とresultsへ記す。69型注記を69証明の単価として掛けず、四移送の再設計は0、局所追随39枝を計上する。G04の未確認の正則性も減額しない。
+番号は148単位・32群のまま、重複を除く見積もりは144単位・31群、所要時間（能動時間）95時間〜213時間30分である。固定枠47〜109時間に対して下端＋48時間、上端＋104時間30分となる。群Hの4単位は済み（群A4）とし、重複の2時間45分〜6時間15分だけを差し引いた。性質ごとの件数・分の積上げは前表とresultsへ記す。69型注記を69証明の単価として掛けず、四移送の再設計は0、局所追随39枝を計上する。G04の未確認の正則性も減額しない。
 
 [effort-ledger](../effort-ledger.md)では、L10のV〜Aは初回216分＋修正111分＝327分、Fは20＋24＝44分、計**約371分（6時間11分）**である。レビューはV〜A102分＋段末15分＝**約117分（1時間57分）**で、担当の時間へ混ぜない。計画担当の15＋63＋60分とそのレビュー13＋9分も別である。これらは丸めた外側の時間で、能動時間とビルド等の待ちは未分離である。59単位で速かったことを、未経験の捕捉の全正則性・全型置換・全埋め込みの単価にしない。
 
@@ -1673,9 +1677,9 @@ L00a/L00b の代表の比も本書の全帰納の単価へ掛けない。L10の�
 |---|---|---:|
 | r3の再確認とplanへの転記 | 取りまとめ。案4のC/射影/Declared/39枝、S00、固定したrowKinds/Declared.tapp、10移送＋4恒等/True、31位置、60義務、148単位と控除。枠の見直し・起動を判断 | 不明 |
 | 最初の群Aの6群 | S00/案4/Declared/rowKindsの全追随・型引数3本体と型注釈の実例・四関門。関係Leanと既定Lean、群の定義/言明/仮定レビュー。不成立なら停止票 | 所要時間（能動時間）21時間〜53時間。待ちは別 |
-| 群B〜Sの26群 | 本番証明・状態葉・G10の値19規則の通常記録と残27規則、状態と三親判断。単位末の既定Lean、群レビューと所見処置 | 所要時間（能動時間）76時間45分〜166時間45分。待ちは不明 |
+| 群B〜Sのうち群Hを除く25群 | 本番証明・状態葉・G10の値19規則の通常記録と残27規則、状態と三親判断。群Hは群A4で済み。単位末の既定Lean、群レビューと所見処置 | 所要時間（能動時間）74時間〜160時間30分。待ちは不明 |
 | 段末の依存監査・最後のworkとRSS | 群Sに含む。新旧全対象の公理依存と同じ最後のworkでのRSSの区分を保存 | 公理監査の実行1〜5分案、workは通常結果で更新。待ちは不明 |
 | 段末レビューと受け入れ | 取りまとめ/設計者。四関門、S00/案4/Declared/rowKindsの見直し、28＋37＋共通2の段別証拠、G10、J20-1〜7を確認 | 不明 |
 
-取りまとめへは、S00と案4・V_Raiseの採用済み変更、固定したrowKinds/Declared.tappと波及数、28行のL20分、追加O005と共通O016/O084/O027/O118、他段へ残す27行、G04控除0と移管5〜9、本番の値19規則の依存後の通常更新、七つの条件付き判断を転記する。今回はplan・レビュー・formal・Rustを変更していない。
+取りまとめへは、S00と案4・V_Raiseの採用済み変更、固定したrowKinds/Declared.tappと波及数、28行のL20分、追加O005と共通O016/O084/O027/O118、他段へ残す27行、G04控除0と移管5〜9、本番の値19規則の依存後の通常更新、七つの条件付き判断を転記する。A4 r2の見込みの控除とO005・Aの例外も転記する。planとレビューの記録、処理系は今回の担当では変更しない。
 

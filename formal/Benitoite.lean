@@ -394,3 +394,7 @@ import Benitoite.Release.Refinement.TypeSubstCalls
 
 import Benitoite.Release.Refinement.TypeSubstGateExamples
 import Benitoite.Release.Refinement.NestedContinuation
+
+import Benitoite.Release.Refinement.MeaningOrder
+import Benitoite.Release.Refinement.MeaningTransport
+import Benitoite.Release.Refinement.MeaningTransportObstruction
