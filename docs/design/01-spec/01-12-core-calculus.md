@@ -3144,6 +3144,20 @@ builders_no_captureとbuilders_block_no_captureは、Aligned Γ ΔからEnvReads
   | scoped_forget {Γ Φ o k ix} : Ty.LeQ P Γ Φ (.scoped o k ix) (.opaque o ix)
 ```
 
+### 篩を含む定義とプログラムの適格性
+
+【決定】`Def.WellTyped P B d` は、契約名の `NamesWF`、宣言した kind の列での `dependentFn d.tel` の value kind、制約の列と空の値文脈での同じ型の `Annotation`、および空のストアでの `TelBodyTy` を要求する。本体の NoFail の文脈は `QTel d.tel`、型文脈は宣言の制約の列、初期の値文脈と Φ は空である。`TelBodyTy.param` は引数の注釈で値文脈を拡張し、Φ を移す。`done a e` は、本体を結果型 a、効果 e、return の契約 `some a`、空の局所文脈で検査する。
+
+`NamesWF ns ps` の下で `QTel (signatureTel ns ps r e) = Qsig ps r e` が成り立つ。`Def.QTel_eq_Qsig` と `MethSig.QTel_eq_Qsig` は、この等号を各宣言へ適用する。呼出し側の `Admissible`・`MethodRowsAdmissible` が読む条件と同じであり、新たな NoFail の前提を呼出し側に要求しない。
+
+`ImplDecl.WellTyped P B id` は、対象のクラス宣言 cd の存在、メソッドと上位辞書の定義域の厳密な一致、実装の対象の `cd.argumentKind`、辞書引数の型の `Annotation` を要求する。各メソッド ms について、`g = ms.tparams.length`、`θ = typeEnvAt g [id.target] []`、`t = Tel.bind θ ms.tel` とする。型文脈は `ms.tparams.map constraints ++ id.tparams`、値文脈は `bindParams [] (id.dictTys.map (Ty.shift g 0))` である。`t' = Tel.shiftV id.dictTys.length 0 t` とし、空のストアと Φ、代入前の `QTel ms.tel` の下で本体の `TelBodyTy` を要求する。型クラスの引数への型代入と、辞書引数分の値参照の移動は別の操作である。`ImplDecl.WellTyped.method_body` は、同じ本体を `C_Meth` が読む代入前の `Qsig ms.params ms.ret ms.eff` で取り出す。上位辞書 u は、実装の制約と辞書引数だけの文脈で `dict s id.target` の型を持つ。
+
+`Program.WellTyped P B` は、同じ P の `VarianceValid` と `ExternalWF`、全ての関数・実装の lookup に対する `WellTyped` を持つ。`WellFormed` の証拠を別に受け取らない入口でも `variance` を射影できる。`ValueMeaning` と型付けから所属への命題を信頼する欄は持たない。
+
+`Program.WellFormed P` は、各宣言の `Scoped`、同名 data の全構成子の arity の一致、`MetadataScoped`、`ExternalWF` を要求する。依存列の `SignatureScoped` は、範囲・型・行・値の上限、kind、順に拡張する値文脈での `Annotation` を検査する。本体と上位辞書の `SourceScoped nr nt ne nv` は、四名前空間の深さを受け取り、lambda・let・依存列・腕・節で束縛数を増やす。実行時専用の構文と場所への直接参照を拒む。`Eff.WF` が読まない効果原子の範囲添字は `RangesScoped` で再帰検査する。構成子の欄には上限・行なし・`Annotation`・value kind、操作には依存列と辞書の添字、および `dictParams` の辞書型の列と `params` の先頭の一致を要求する。実装の辞書引数の型にも value kind を要求し、クラス宣言の存在とその引数の kind を検査する。メソッドは自身の型パラメータにクラス引数一つを加え、最後の kind をクラスの `argumentKind` とする。実装の本体はメソッドと実装の型パラメータ、辞書と値引数の下で検査する。
+
+`MetadataScoped` は、格納された各 `some info` の変性の列の長さと arity、同名構成子の arity、requirements と publicBoundary の全ての型の上限・行なし・`Annotation`・value kind を検査する。`dataInfo d = none` ならその項目への全称条件、requirements 又は publicBoundary が空ならその列への全称条件だけが空に成り立つ。対応する構成子を持たない metadata の同名 arity の条件も空に成り立つ。構成子の欄の形成・変性と、存在する構成子どうしの arity の一致はそれぞれの条件として残る。これらは格納された表に対する検査であり、原ソースの辞書制約・公開境界の収集の完全性を主張しない。この形式化は、その収集の完全性と原ソースとの一致を保証しない。
+
 ### 篩を読む網羅性と値の意味
 
 【決定】この名前空間の `Inhabits P a v` は、照合が読む値の形の上側近似である。篩の規則は、`Inhabits P a v` と `RefinementPossible p v` から `Inhabits P (refined a p) v` を作る。`selfObservation v` は `v.toTerm?` を空の外側環境で観測した結果である。`RefinementPossible p v` は、番号0へこの観測を置き、外側の全位置を未観測の `none` にした三値評価が `some false` と異なることである。評価不能の値は残し、篩が偽と確定した値だけを除く。`checkedAt range snapshot target request` は、範囲を忘れた任意の `opaque o ix` の値の形にも含める。

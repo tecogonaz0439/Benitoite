@@ -1,0 +1,36 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-M",
+    "12288",
+    "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/w/axioms.lean"
+  ],
+  "cwd": "formal",
+  "started_utc": "2026-11-01T08:04:57.844967+00:00",
+  "seconds": 0.915,
+  "exit_code": 0,
+  "output": "axioms-output.txt",
+  "bytes": 14939,
+  "sha256": "0594083f8dfe65ff006989722198db9e8b0a46c1e548fa7434076131f430913b",
+  "axioms_seen": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "disallowed_axioms": [],
+  "print_axioms_count": 130,
+  "sorry_diagnostic": false,
+  "modules": {
+    "Benitoite": 0,
+    "Benitoite.Release.Refinement.ProgramTyping": 29,
+    "Benitoite.Release.Refinement.ProgramWellFormed": 83
+  },
+  "case_totals": {
+    "SOURCE": 44,
+    "SUBTYPE": 22,
+    "TYPING": 76
+  },
+  "complete": true
+}

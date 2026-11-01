@@ -75,6 +75,10 @@
 
 パターン型付けには、篩へ同じ束縛を移す `P_Refined` と、正規形の等号で入力型を移す `P_Convert` を含む。型付けの値29・計算24を含む76構成子と、値移動・型移動・値置換・narrowing の主な署名は維持する。閉じた型付けの全導出から `ValueMeaning` を構成する証明、任意の部分型の全移送、任意の捕捉と腕への全接続は、この代表の証明からは結論しない。意味を主な定理へ独立の仮定として追加していない。
 
+`ProgramTyping` は関数・実装の `WellTyped`、`QTel` と `Qsig` の一致、および `Program.WellTyped` を定義する。後者は同じ P の `VarianceValid`・`ExternalWF` と全 lookup の本体の型付けを持つ。`ProgramWellFormed` は各宣言の `Scoped`、依存列の上限・kind・`Annotation`、四名前空間の `SourceScoped`、同名 data の arity、格納済み metadata の適格性を定義する。メソッド本体は代入前の Q を使い、`method_body` が呼出し規則の Qsig で同じ本体を取り出す。実装の辞書型の kind と操作の辞書型の先頭の対応も検査する。意味の所属を信頼する欄と、呼出し側への新しい NoFail の前提は追加しない。
+
+metadata が none の項目、requirements/publicBoundary の空列、対応する構成子を持たない metadata の同名 arity の全称条件は、その範囲だけ空に成り立つ。`VarianceValid` と `MetadataScoped` は提供された表を検査し、原ソースからの収集の完全性を証明しない。この形式化は、辞書制約と公開境界の収集の完全性および原ソースとの一致を保証しない。欄の単調性の補題は metadata の二列を読み出さず、欄の形成と正負の出現の検査から示す。
+
 現在の状態に関する証明の範囲は次のとおりである。依存 β と捕捉した closure の代表は、共通の本体の導出から開始・到達の型付けと Step を作る。これは、開始の `StateTyE` の任意の導出を逆転する定理とは区別する。
 
 | 対象 | 現在の Lean の定理の範囲 |
@@ -87,7 +91,7 @@
 | 節・resume・破棄 | `HandlerOperation` の pure・単相一引数・辞書なしの操作、`HandlerPreservation` の定数の resume/返却/drop と used の再開、解放を伴う通常返却・escape・error・exit の代表。依存列の捕捉の延長は任意の長さである |
 | 外部受信 | `ExternalConnection` の三条件と型付き入力からの受信後の型付け・Ground・適格性・no-exit、`ExternalCheck` の全入れ子の篩の受理の健全性 |
 
-`StateTyE` と `StateTy` の定義はあるが、この名前空間に全状態の `preservation`・`progress`・`step_sound`・`effect_soundness` はない。最終の `Program.WellTyped` もこの体系には定義していない。旧 Release の主定理や既定ビルドの成功を、この体系の主定理の証明と読まない。`RootShape` による除外の健全性は型付きの閉じた値へ接続しているが、網羅性が読む `Inhabits` は自己の三値評価が false と確定した値だけを篩から除き、範囲を忘れた `checkedAt` の形も含む。
+`StateTyE` と `StateTy` の定義はあるが、この名前空間に全状態の `preservation`・`progress`・`step_sound`・`effect_soundness` はない。`Program.WellTyped` と `Program.WellFormed` の定義を、これらを前提にした主定理の証明とは区別する。旧 Release の主定理や既定ビルドの成功を、この体系の主定理の証明と読まない。`RootShape` による除外の健全性は型付きの閉じた値へ接続しているが、網羅性が読む `Inhabits` は自己の三値評価が false と確定した値だけを篩から除き、範囲を忘れた `checkedAt` の形も含む。
 
 【決定】Rust との接続済みの範囲を述べる本章の既存の表は、Release・Surface・既存の交換器と区間・Scope の入口についてのものである。篩を含む形式化の成功を、その範囲へ追加したものとはしない。Lean の閉じた評価は強い Kleene の三値であり、型や値に篩が書けること、同じ分岐の事実を Rust が作ること、Rust の外部受信が同じ検査を行うこと、篩を含む交換の全比較が成功したことは、この段階の証拠に含めない。
 
@@ -739,6 +743,7 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 | Conjunction・RefinementNormalForm・FunctionNormalForm・Normalize・Le・Admissible・Typing | 「篩の正規形と制約の読み方」 |
 | VarianceSyntax・VarianceValidation | 「篩の正規形と制約の読み方」の data の変性、metadata と総称の欄の検証 |
 | VarianceFormation・VarianceTransport | 同節の `Sorted` の移送、型引数の比較と欄の単調性。中間の型引数の注釈を要求しない |
+| ProgramTyping・ProgramWellFormed | 「篩を含む定義とプログラムの適格性」。本体の型付けと、格納済みの宣言・metadata の範囲と arity の検査。原ソースの収集の一致は含まない |
 | ObservationType | 同節の観測用の型の射影と `DataObservationLe`。篩の事実を射影から取り出さない |
 | TypeFormation・ValueFacts | 同節の検証済みの欄の型代入の形成、`Declared`・`HasData` の型置換、構成子の反転と欄の型付け |
 | RefinementObservation・ObservationOrder・ObservationSubstitution・ObservationInterpretation・ValueMeaning・ValueMeaningInhabits・PatternNormalForm・Patterns・PatternTransport・PatternSemantics・PatternTypeShift・CoverageRefinement | 「篩を読む網羅性と値の意味」 |

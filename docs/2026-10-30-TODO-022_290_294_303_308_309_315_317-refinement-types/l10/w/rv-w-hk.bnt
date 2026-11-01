@@ -1,0 +1,13 @@
+trait Describe[T]
+  function describe(x: T) -> String
+end trait
+
+implement[F[_]] Describe[List[F[Integer]]]
+  function describe(x: List[F[Integer]]) -> String
+    "wrapped"
+  end function
+end implement
+
+function main() -> Unit
+  ()
+end function
