@@ -3146,11 +3146,9 @@ structure ClosedTypeSubstInput (P : Program) (B : Builtins)
 
 場所と実行時閉包のコードは SourceScoped を満たさない。対応する四つの構成子の型置換の case 補題は、行像が空の場合に格納型を正規化して結論を作り、行像が空でない場合は源の構文の条件から矛盾を得る。ストア型の WF000 は行変数を制限せず、これを全ての行置換に対する不変性として使わない。
 
-
 `Ty.HasKind.closed_context` と `kindsEff.closed_context` は、型変数を持たない WF の型・行について kind の文脈を変更する。`Ty.HasKind.substAt`・`Tel.kinded_substAt`・`TypeArgsKinded.substAt` は、元の `C1 ++ C0` と像の `TypeCtx.kinds C0` を照合し、残す C1 の下で kind を保存する。行像にも空の kind 文脈での `kindsEff` を要求する。constructor の適用は `ProperApply` の各構成子を使い、`rawApply` の既定の枝を形成の根拠にしない。data の構成子の arity は、`TyCon.arity_data` と `TyCon.dataArity_of_arity` で `Program.DataArity` と双方向に対応する。
 
 `Ty.Declared.substAt`・`Tel.Declared.substAt`・`declaredTys_substAt`・`declaredEff_substAt` は、プログラムの整形式・本体の型付け・CoreAssumptions・ストア型の WF、同じ `TypeSubstInput`、元の Annotation から宣言照合を保存する。移送先は `Γ.bindTypes (typeEnvAt C1.length ts es)` である。`Ty.Annotation.substAt` は WF・Sorted・Declared を合成し、型と行の列の Annotation も保存する。全中間注釈に value kind は要求しない。Tel の束縛下の宣言照合では、元と像の引数型をそれぞれの値文脈へ加えて対応を延長する。`Ty.Declared.typeSubst` と `Tel.Declared.typeSubst` は、元の Declared だけから同じ移送を証明する。C_Let などで WF・Sorted の形成を別に要求しない。`ClosedTypeSubstInput.extend` は公開入口の context を元の注釈から延長する補助であり、内部の帰納の入力には使わない。
-
 
 `V_Const` は `ConstOK B c` を前提とする。符号付き四幅のうち Integer64 は値自身が値域の証拠を保持し、Integer8/16/32 と符号なし三幅は各構成子の整数がその幅の上下限内にあることを検査する。Byte は自然数の値が255以下、Decimal は係数が −79228162514264337593543950335 以上79228162514264337593543950335以下で scale が28以下であることを要求する。`V_Bytes` は、これとは別にバイト列の全要素が255以下であることを前提とする。述語の観測では七整数と Byte は共通の integer sort を使うが、数の演算に暗黙の型変換を加えない。
 
@@ -3161,6 +3159,14 @@ structure ClosedTypeSubstInput (P : Program) (B : Builtins)
 `PrimitiveAdmissible` は、署名全体の行変数の上限を `sourceTelRows : s.tel.RowsIn (· < es.length)` で検査する。型引数・行引数の個数、像の整形式、外側の効果に対する `sourceRows`、NoFail の条件と区別する。引数にある関数型の潜在効果、戻り型、Fail 型の内部も、署名が `neffs` で宣言した行変数だけを読める。`V_Prim` と組み込み応答の `BuiltinArgs` は、この呼び出しの許容条件を要求する。CoreAssumptions の独立の欄にはしない。
 
 `PrimitiveAdmissible.norm`・`map` と型の移動は `sourceTelRows` を保つ。値の移動と置換は map、文脈変更は同じ許容条件を使う。`Tel.rowsIn_instR` は範囲の具体化で行の条件を保つ。`instantiatedTel_substAt` は、宣言の WF、十分な数の型引数、署名全体の行の上限から、具体化した依存列への型置換と型・行像への型置換の等号を証明する。kind 又は NoTapp の追加条件は要求しない。参照四形と force の行の上限は、実際の StoreShape から得る。
+
+`Ty.subst_substAt` は、型の具体化と型・行像への型置換の交換を、宣言の WF・十分な型引数・行支持の上限から証明する。`reject_unsorted_tapp_image` は、源の tapp が Sorted を満たしても、WF 0 0 0 だけを満たす像では Sorted を保存できないことを示す。像の kind と Annotation は、WF とは別に検査する。
+
+`TypeValueExchange` は、型・行・依存列の型置換と値置換の交換を、外側の値参照を持つ像について証明する。捕捉の下の型・行・戻り先と依存列、局所 kind の写像も同じ交換を使う。lambda と依存 lambda の閉じた値は、型置換した本体と同じ捕捉環境を持つ閉包である。実行時閉包を恒等で扱う Val.substTyAt を、閉包全体の型注釈の写像としては使わない。
+
+`Admissible.substAt`・`PrimitiveAdmissible.substAt`・`MethodRowsAdmissible.substAt` は、元の型・行の Annotation と TypeSubstInput、RowTransport から許容条件を保存する。組み込みの許容は既存の admits_subst を使う。`SignatureInstance.closedInput` は閉じた型・行引数と SatAll から内部入力を作る。RowTransport の移送には元の sourceQ の上限を使い、行引数列の外の番号を新たに具体化しない。`HasTypeVQ.dict_callInputs` は辞書の実際の型付けから型像の Annotation・kind・SatAll、結果型の正規形の core、および辞書引数の型付けを取り出す。`dict_call_link` は呼出しの類と実装の類の一致、および呼出しの対象型と実装の対象の像の正規形の一致を返す。`HasTypeCQ.method_body_input` は同じ実装とメソッドについて、これらの一致と辞書引数の型付け、メソッドの ss と辞書の ts を結合した `ss ++ ts` の TypeSubstInput を返す。型変換・正規化・効果拡大の包装を通り、行の個数と代入前の QTel の RowTransport も返す。
+
+`TypeSubstBindings` は、値束縛の extend・extendNone・bindParams・extendMany・hideConts、型束縛の shiftE と cutoff の増加、戻り先と局所 kind の写像を証明する。通常節の文脈は写像した OpSig の文脈へ移り、失敗節は型束縛1・値束縛2の failureContext へ移る。OpSig の原文と正規形は同一視しない。S02Internal.C.under_types は同じ内部の C の命題を前提に、型束縛を増やした子へその入力を渡す補題である。
 
 `TypeArgsKinded P C ts ks` は、型引数と kind の列の長さが等しいことと、各型引数 a と対応する kind k について `HasKind P (TypeCtx.kinds C) a k` と `k = .value → Ordinary a` を要求する。`Ordinary a` は、篩を外した芯の最上位が継続型でないことを表す。Listの要素などに入れ子の継続型を持つ型引数は、この条件で拒まない。Annotation と value kind だけからはこの条件を導かない。constructor kind の型引数は型構成子又は型変数なので、同じ条件を形から導ける。これにより SignatureInstance を使う関数・組み込み・操作・外部参照とメソッド、TypeArgsKinded を直接使う構成子・辞書・構築器が、型置換の像の非継続を供給する。C_Meth の `ss ++ [τ]` の WF と Ordinary も SignatureInstance から得る。
 
@@ -3178,7 +3184,6 @@ structure SignatureInstance (P : Program) (C : TypeCtx) (Γ : Ctx)
 ```
 
 値の移動・値の置換・型の移動・正規化は行像の kind を保存し、値の文脈の変更では同じ証拠を使う。`legacy_signatureInstance` と関数・メソッドの包装は、同じ κ の行の kind を受ける。`LegacyRowsInput.rowKinds` は、その形の証拠を返す。これらの三包装を使う旧導出の型付けの本体は、既定ビルドに含まれていない。
-
 
 `V_Raise` は、関数型 `fn ["error"] [e] t (singleFail e)` の Annotation に加え、`Ordinary t` と `Ordinary e`、結果型 t の `HasKind P (TypeCtx.kinds C) t .value` を要求する。操作の型引数 ts とメソッド本体へ代入する `ss ++ ts` の Ordinary は、対応する型付けの導出から取り出す。継続を保持する文脈と resume の規則は、型引数とは別に継続型を扱う。
 
@@ -3254,6 +3259,38 @@ structure SignatureInstance (P : Program) (C : TypeCtx) (Γ : Ctx)
 
 `MetadataScoped` は、格納された各 `some info` の変性の列の長さと arity、同名構成子の arity、requirements と publicBoundary の全ての型の上限・行なし・`Annotation`・value kind を検査する。`dataInfo d = none` ならその項目への全称条件、requirements 又は publicBoundary が空ならその列への全称条件だけが空に成り立つ。対応する構成子を持たない metadata の同名 arity の条件も空に成り立つ。構成子の欄の形成・変性と、存在する構成子どうしの arity の一致はそれぞれの条件として残る。これらは格納された表に対する検査であり、原ソースの辞書制約・公開境界の収集の完全性を主張しない。この形式化は、その収集の完全性と原ソースとの一致を保証しない。
 
+`PrimSig.Scoped P s` は、同じ s.tparams の kind を読み、範囲深さを s.rkinds.length として署名全体の四名前空間の上限を検査する。依存列の Sorted と Declared は、各引数を順に加えた値文脈で読む。tel は s.names・s.params・s.ret・s.eff から定義するため、独立の写しとの一致を仮定しない。制約と kind は同じ s.tparams の別の射影であり、Scoped は制約を検査しない。
+
+```lean
+/-- 範囲変数は操作の対象の最上位にあり、他の注釈は閉じた範囲を持つ。 -/
+def Ty.TargetWF (nr nt nv : Nat) : Ty → Prop
+  | .opaque _ (.rvar i) | .scoped _ _ (.rvar i) => i < nr
+  | a => a.WF 0 nt nv
+
+def BinderTypes.TargetWF (nr nt : Nat) : Nat → List Ty → Prop
+  | _, [] => True
+  | n, a :: as => a.TargetWF nr nt n ∧ BinderTypes.TargetWF nr nt (n+1) as
+
+def PrimSig.OperationWF (s : PrimSig) : Prop :=
+  BinderTypes.TargetWF s.rkinds.length s.tparams.length 0 s.params ∧
+    s.ret.WF 0 s.tparams.length s.params.length
+
+/-- 宣言した範囲・型・行の深さと、依存する値束縛の形成を同時に読む。 -/
+structure PrimSig.Scoped (P : Program) (s : PrimSig) : Prop where
+  names : NamesWF s.names s.params
+  source : (Ty.dependentFn s.tel).SourceScoped
+    s.rkinds.length s.tparams.length s.neffs 0
+  kinds : Ty.HasKind P (TypeCtx.kinds s.tparams) (.dependentFn s.tel) .value
+  sorted : Tel.Sorted [] s.tel
+  declared : Tel.Declared P s.tparams [] s.tel
+  operation : s.opEff ≠ none → s.OperationWF ∧
+    (∀ a ∈ s.params, (∃ o ix, a = .opaque o ix) ∨
+      (∃ o k ix, a = .scoped o k ix) ∨ a.RangesScoped 0) ∧
+    s.ret.RangesScoped 0
+```
+
+`CoreAssumptions.sig_scoped` の型は `∀ b s, B.sig b = some s → PrimSig.Scoped P s` である。`PrimSig.Scoped.inst` は、範囲列の長さの一致から、全範囲を具体化した依存列の SignatureScoped を範囲深さ0で返す。RangeAdmissible の入力では、その長さの欄を使う。操作の節が使う instTarget は引数の最上位だけを具体化するため、operation は opEff が none でない項目に、その位置の上限、最上位の opaque 又は scoped の対象以外に範囲変数がない引数型、および範囲変数のない結果型を要求する。理由: 節と呼出し側の継続が同じ結果型を読むためである。非操作の項目には引数の位置の条件を課さない。理由: V_Prim は Tel.instR で依存列全体の範囲を具体化するためである。効果原子の範囲は WF と別に RangesScoped で検査する。`CoreAssumptions.opSignaturesWF` はこの条件を射影し、型置換や捕捉に関する別の信頼条件を加えない。
+
 ### 旧判断の適格な入力
 
 【決定】旧 Release からの構文の写しには、全てを value kind とする既存の `embedProgram` と、宣言の kind を保持する `embedProgramWithKinds` がある。後者の `DeclarationKinds` は、クラス引数の kind、関数とメソッドの型パラメータの kind の列を持つ。`DeclarationKinds.WF` は、lookup した旧宣言の型パラメータの個数と列の長さを照合する。型パラメータの組み込みの制約、契約名、行パラメータの個数、本体は保存する。非依存の旧引数は `embedParameters` で先行引数の下へ移し、結果型と効果は全引数の下へ移す。操作と実装の型パラメータは value kind とする。組み込みの kind は、対応する実際の署名から読む。
@@ -3278,6 +3315,8 @@ structure SignatureInstance (P : Program) (C : TypeCtx) (Γ : Ctx)
 
 旧構文から新判断へ直接示している値の葉は、表現可能な定数、バイト列、検査済み対象、内容の新しい型付けと解析成功・端点一致を持つ検査済み要求である。後二者は `scoped_forget` で同じ旧 opaque の型へも移せる。正規化の等号については `(embedTy a).norm = (embedTy b).norm` と `a.norm = b.norm` の同値を示す。旧型の `WF` は値の深さに依存せず、`Sorted` と `Declared` も値文脈を読む述語を持たない。この性質を旧型の構文への相互再帰で示し、構文入力の注釈を任意の値文脈と正規化後の型へ移す。これらは全型付けの埋め込みや旧新の一段遷移の可換性を主張しない。
 
+`LegacyDeclarationInputs` は LegacyDeclarationsInput、関数・メソッド・上位辞書の declarationBodyInputs、および写した各本体の SourceScoped を持つ。三つの本体入力は旧の全導出の LegacyOutputInput を読み、新しい WellTyped を入力の欄にしない。メソッドの Q は、代入前の Qsig ms.params ms.ret ms.eff である。操作の辞書の先頭と実装の辞書型の kind は、LegacyDeclarationsInput.op_dictionaryInputs と impl_dictionaryKinds から供給する。
+
 ### 篩を読む網羅性と値の意味
 
 【決定】この名前空間の `Inhabits P a v` は、照合が読む値の形の上側近似である。篩の規則は、`Inhabits P a v` と `RefinementPossible p v` から `Inhabits P (refined a p) v` を作る。`selfObservation v` は `v.toTerm?` を空の外側環境で観測した結果である。`RefinementPossible p v` は、番号0へこの観測を置き、外側の全位置を未観測の `none` にした三値評価が `some false` と異なることである。評価不能の値は残し、篩が偽と確定した値だけを除く。`checkedAt range snapshot target request` は、範囲を忘れた任意の `opaque o ix` の値の形にも含める。
@@ -3297,6 +3336,8 @@ structure SignatureInstance (P : Program) (C : TypeCtx) (Γ : Ctx)
 information order に当たる `Observation.InfoLE` は、scalar と対象の snapshot を等号で保ち、List・Map・Set・data の内部の未観測 slot に情報を加える。slot の位置・数と構成子名は保つ。反射性・推移性・反対称性、および鍵コード・大きさ・項の観測の単調性を示す。`Pred.evalWith_mono` は一度確定した真偽が情報の追加で変わらないことを示す。全域の解釈の既定値について、無条件の不変性は要求しない。
 
 `ValueMeaning.norm_iff` と `Inhabits.norm_iff`、自己を保つ値置換の確定値の保存、全型と述語の反映を用いた所属の値置換反映を証明する。core の等号だけから篩の所属を復元する規則はない。意味から正規形への所属は、述語が二値で真であることと三値評価の健全性から導く。意味の判断は主な定理の独立の仮定ではない。`valueMeaning_refine` は任意の部分型に対する意味の移送の refine の枝に使い、基底の帰納仮定と有限の含意から篩の意味を導く。Month・空篩・非空 List の網羅性、任意の閉じた長さと正の長さから `V_Refine` を構成する代表、閉じた捕捉の意味から元の開いた型へ所属を反映する接続も証明する。
+
+`PatternTypeSubst` は、PatTy の9場合と PatTys・AltsTy の型置換を証明する。構成子の欄は Program.WellFormed.cons の行支持と宣言の WF を使い、像の kind や追加の行支持を前提にしない。Inhabits.of_substAt は、型置換した型に所属する同じ値が元の型の正規形にも所属することを示す。data と List の子には値の大きさの帰納を使い、篩は refineNorm_iff から基底と全述語の RefinementPossible を取り出す。checkedAt と atError も同じ反映に含む。Exhaustive.substAt は、この反映から元と同じパターン列の網羅性を保存する。`unguardedPats_substTy` は、腕の型置換前後で unguardedPats が返すパターン列の一致を証明する。
 
 ### 閉じた述語の評価と捕捉
 

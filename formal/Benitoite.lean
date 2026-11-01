@@ -398,3 +398,10 @@ import Benitoite.Release.Refinement.NestedContinuation
 import Benitoite.Release.Refinement.MeaningOrder
 import Benitoite.Release.Refinement.MeaningTransport
 import Benitoite.Release.Refinement.MeaningTransportObstruction
+import Benitoite.Release.Refinement.SourceScope
+import Benitoite.Release.Refinement.PrimitiveScoped
+import Benitoite.Release.Refinement.RangeFormation
+import Benitoite.Release.Refinement.LegacyDeclarationInputs
+import Benitoite.Release.Refinement.TypeValueExchange
+import Benitoite.Release.Refinement.PatternTypeSubst
+import Benitoite.Release.Refinement.TypeSubstBindings

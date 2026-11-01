@@ -102,7 +102,7 @@ theorem Inhabits.list_inv {P a v} (h : Inhabits P a v) :
   | .list hs => intro b he; cases he; exact ⟨_,rfl,hs⟩
   | .con _ _ _ _ | .atError _ | .fn | .dependentFn | .tvar | .reference | .lazy | .cont | .map | .set | .bytes | .dict | .tapp | .ctor | .external | .scoped | .pathBases | .scopePattern | .refined _ _ | .checked | .checkedRequest | .checkedAtOpaque => intro b he; cases he
 
-private theorem inhabits_data_inv {P a v} (h : Inhabits P a v) :
+theorem Inhabits.data_inv {P a v} (h : Inhabits P a v) :
     ∀ d ts, a = .data d ts →
       (∃ c tys args cd, v = .con c tys args ∧ P.cons c = some cd ∧ cd.data = d ∧
         cd.ntys = ts.length ∧ (∀ a ∈ cd.args, a.WF 0 cd.ntys 0) ∧
@@ -151,12 +151,12 @@ theorem Inhabits.norm_all_iff {P : Program} (a : Ty) (v : Val) :
       intro cd; apply List.map_congr_left; intro a _; exact a.subst_norm_images ts
     constructor
     · intro h
-      rcases inhabits_data_inv h d (Ty.normTys ts) rfl with ⟨c,tys,args,cd,rfl,hc,rfl,hn,hw,hs⟩ | ⟨rfl,ht,detail,rfl,hs⟩
+      rcases Inhabits.data_inv h d (Ty.normTys ts) rfl with ⟨c,tys,args,cd,rfl,hc,rfl,hn,hw,hs⟩ | ⟨rfl,ht,detail,rfl,hs⟩
       · exact .con hc (by simpa only [Ty.normTys_eq_map,List.length_map] using hn) hw (he cd ▸ hs)
       · have : ts = [] := by simpa only [Ty.normTys_eq_map,List.map_eq_nil_iff] using ht
         subst ts; exact .atError hs
     · intro h
-      rcases inhabits_data_inv h d ts rfl with ⟨c,tys,args,cd,rfl,hc,rfl,hn,hw,hs⟩ | ⟨rfl,rfl,detail,rfl,hs⟩
+      rcases Inhabits.data_inv h d ts rfl with ⟨c,tys,args,cd,rfl,hc,rfl,hn,hw,hs⟩ | ⟨rfl,rfl,detail,rfl,hs⟩
       · exact .con hc (by simpa only [Ty.normTys_eq_map,List.length_map] using hn) hw ((he cd).symm ▸ hs)
       · exact .atError hs
   | dependentFn t =>

@@ -125,7 +125,7 @@
 
 旧導出を受け取る LegacyTypesInput は、旧型引数の各型が NotCont を満たすとき、Ordinary を加える前の各型の入力条件と同値である。閉性は要求しない。旧型の NotCont と embedTy 後の Ordinary の同値を使う。継続を保持する文脈の一般の LegacyTypeInput に、この制限は追加しない。
 
-`ProgramTyping` は関数・実装の `WellTyped`、`QTel` と `Qsig` の一致、および `Program.WellTyped` を定義する。後者は同じ P の `VarianceValid`・`ExternalWF` と全 lookup の本体の型付けを持つ。`ProgramWellFormed` は各宣言の `Scoped`、依存列の上限・kind・`Annotation`、四名前空間の `SourceScoped`、同名 data の arity、格納済み metadata の適格性を定義する。メソッド本体は代入前の Q を使い、`method_body` が呼出し規則の Qsig で同じ本体を取り出す。実装の辞書型の kind と操作の辞書型の先頭の対応も検査する。意味の所属を信頼する欄と、呼出し側への新しい NoFail の前提は追加しない。
+`ProgramTyping` は関数・実装の `WellTyped`、`QTel` と `Qsig` の一致、および `Program.WellTyped` を定義する。後者は同じ P の `VarianceValid`・`ExternalWF` と全 lookup の本体の型付けを持つ。`ProgramWellFormed` は各宣言の `Scoped`、依存列の上限・kind・`Annotation`、同名 data の arity、格納済み metadata の適格性を定義し、四名前空間の `SourceScoped` は `SourceScope` から読む。メソッド本体は代入前の Q を使い、`method_body` が呼出し規則の Qsig で同じ本体を取り出す。実装の辞書型の kind と操作の辞書型の先頭の対応も検査する。意味の所属を信頼する欄と、呼出し側への新しい NoFail の前提は追加しない。
 
 metadata が none の項目、requirements/publicBoundary の空列、対応する構成子を持たない metadata の同名 arity の全称条件は、その範囲だけ空に成り立つ。`VarianceValid` と `MetadataScoped` は提供された表を検査し、原ソースからの収集の完全性を証明しない。辞書制約と公開境界の収集の完全性および原ソースとの一致は Lean の外であり、この形式化は保証しない。欄の単調性の補題は metadata の二列を読み出さず、欄の形成と正負の出現の検査から示す。
 
@@ -145,16 +145,23 @@ metadata が none の項目、requirements/publicBoundary の空列、対応す�
 | 節・resume・破棄 | `HandlerOperation` の pure・単相一引数・辞書なしの操作、`HandlerPreservation` の定数の resume/返却/drop と used の再開、解放を伴う通常返却・escape・error・exit の代表。依存列の捕捉の延長は任意の長さである |
 | 外部受信 | `ExternalConnection` の三条件と型付き入力からの受信後の型付け・Ground・適格性・no-exit、`ExternalCheck` の全入れ子の篩の受理の健全性 |
 
+`SourceScope` は四名前空間の SourceScoped と通常の SignatureScoped を定め、`PrimitiveScoped` は組み込みの宣言の範囲深さを保持する。`RangeFormation` は WFImages と行・範囲の支持の移送から具体化後の SourceScoped を導き、範囲の写像で Sorted・Declared・kind を保存する。効果原子の範囲と Fail の型の WF は別に検査する。
+
+`TypeValueExchange` は値依存の開いた型・行像について、型置換と値置換、捕捉した型・依存列・戻り先・局所 kind の交換を証明する。lambda の閉包は捕捉環境を保持する。`TypeSubstBindings` は値束縛の1・n・n+1・2、型束縛のk・1を扱う写像を持ち、同じ S02Internal.C の入力を子へ接続する。OpSig の文脈の写像は正規化したパラメータを読み、原文との等号を仮定しない。
+
+`PatternTypeSubst` は PatTy の9場合、PatTys・AltsTy、Inhabits の全構成子と列の反映を扱う。篩の述語は refineNorm_iff を通して保持し、data・List の子は値の大きさで帰納する。Exhaustive.substAt は同じ値とパターン列にこの反映を使い、unguardedPats_substTy が型置換前後の腕から取り出すパターン列の一致を返す。これらはパターンと形成の定理であり、S02 の全14成分の相互帰納や全状態の保存を意味しない。`HasTypeCQ.method_body_input` は、型付きのメソッド呼出しと辞書から、`ss ++ ts` の WF・kind・Annotation・制約を結合した内部入力と、元の QTel の行の対応を供給する。同じ逆転で、実装と呼出しの類の一致、対象型と実装の対象の像の正規形の一致、および捕捉する辞書引数の型付けも返す。dict_call_link はこの類と対象型の一致を射影する。kind を別の信頼条件にしない。
+
 `StateTyE` と `StateTy` の定義はあるが、この名前空間に全状態の `preservation`・`progress`・`step_sound`・`effect_soundness` はない。`Program.WellTyped` と `Program.WellFormed` の定義を、これらを前提にした主定理の証明とは区別する。旧 Release の主定理や既定ビルドの成功を、この体系の主定理の証明と読まない。`RootShape` による除外の健全性は型付きの閉じた値へ接続しているが、網羅性が読む `Inhabits` は自己の三値評価が false と確定した値だけを篩から除き、範囲を忘れた `checkedAt` の形も含む。
 
 【決定】Rust との接続済みの範囲を述べる本章の既存の表は、Release・Surface・既存の交換器と区間・Scope の入口についてのものである。篩を含む形式化の成功を、その範囲へ追加したものとはしない。Lean の閉じた評価は強い Kleene の三値であり、型や値に篩が書けること、同じ分岐の事実を Rust が作ること、Rust の外部受信が同じ検査を行うこと、篩を含む交換の全比較が成功したことは、この段階の証拠に含めない。
 
 ### 篩を含む形式化の信頼条件
 
-【決定】`Refinement.Builtins.CoreAssumptions P B` は、`SubstitutionAssumptions`・`ExternalAssumptions`・`ResponseAssumptions` を含み、PathBases とストアの項目、組み込みの操作表に関する欄を持つ。いずれも定理の引数とする条件であり、Lean の公理ではない。対象一致の `TargetAgreement` は別の構造体である。
+【決定】`Refinement.Builtins.CoreAssumptions P B` は、`SubstitutionAssumptions`・`ExternalAssumptions`・`ResponseAssumptions` を含み、宣言の形成、PathBases とストアの項目、組み込みの操作表に関する欄を持つ。いずれも定理の引数とする条件であり、Lean の公理ではない。対象一致の `TargetAgreement` は別の構造体である。
 
 | 条件 | 現在の定義と旧 Release との差 |
 |---|---|
+| 宣言の形成 | sig_scoped は、依存列と範囲の束縛を含む PrimSig.Scoped P s を、同じ B.sig の全 lookup に要求する。操作には最上位の opaque 又は scoped の対象の具体化と結果型の範囲変数なしも検査する。旧 Release と異なり、非操作の項目には引数の位置の条件を課さず、最上位の scoped も対象の位置に認める。理由: 非操作の V_Prim は依存列全体を Tel.instR で具体化するためである |
 | 型付きの組み込み入力 | `BuiltinArgs` は正規形の型・行、範囲の許容、宣言の kind、依存列に沿う実引数の型付けと Ground、具体化後の結果・効果を持つ。旧の独立した引数型列だけを量化する入力から変わる |
 | `delta_typed`・`io_typed` | 依存する結果 a に `Outcome.Typed` を求め、同じ応答に `AdequateResult ws out` を加える。後者は、すべての有効な σ と、その σ で適格な入力について結果も適格であるという条件である。B や応答を σ ごとに選び直さない |
 | `io_kind`・`io_exists` | 同じ `BuiltinArgs` を持つ入力を量化する。IO/exit の分類と応答の存在を分ける。応答の関係は観測 obs も量化し、範囲の列は関係の引数に加えない |
@@ -167,7 +174,7 @@ metadata が none の項目、requirements/publicBoundary の空列、対応す�
 | 制約と解放の存在 | `sat_unconstrained` は閉じた WF 0 0 0 の型の正規形について無制約の sat を要求する。`admits_sat` は lookup と正規形の列の admits から、型パラメータの制約の列との SatAll（個数を含む）を要求する。`release_exists` は空の型・値・事実文脈で型付きの全資源値について解放応答の存在を要求し、Ground/Adequate で量化を狭めない |
 | State | 旧の `state_effect` と同じ `B.effects stateEff = some []` を持つ。プログラム側の `EffectsOk` も旧と同じ三条件であり、両者から State が handled に含まれないことを導く |
 
-旧 CoreAssumptions の20欄のうち、19欄は新しい欄又は導出として対応し、sig_scoped だけは未移行である。Refinement には依存する引数列と範囲の束縛に対応する PrimSig.Scoped の定義がない。旧の全体の Assumptions と同一視せず、現在の定義にある条件を上表に示した。追加した三欄を含む小さな表の充足は確認しているが、これらを使う新しい全状態の進行・保存や標準の全表の充足を証明済みとはしない。
+旧 CoreAssumptions の20欄は、新しい欄又は導出として対応する。sig_scoped は PrimSig.Scoped P s を要求し、範囲・型・行・値の上限、同じ型パラメータの kind、依存列の Sorted・Declared、操作の対象位置と結果型の条件を読む。PrimSig.Scoped.inst は、範囲の列の長さの一致から範囲深さ0の SignatureScoped を導く。型置換・捕捉・意味に関する独立の保存則を追加しない。旧の全体の Assumptions と同一視せず、新しい全状態の進行・保存や標準の全表・三モデルの充足を、この対応だけで証明済みとはしない。
 
 ### 進め方
 
@@ -802,12 +809,16 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 | VarianceFormation・VarianceTransport | 同節の `Sorted` の移送、型引数の比較と欄の単調性。中間の型引数の注釈を要求しない |
 | LegacyKinds・LegacyDeclarations・LegacyInput・LegacyRegularity・LegacyTables・LegacyTableFacts・LegacyValues | 「旧判断の適格な入力」。kind を保持する宣言の写し、七判断46局所規則と全中間判断の入力、旧判断への復元、通常節の元の操作署名の形成と同じ長さの範囲具体化への移送、constructor 欄と不変の変性、旧受理から新受理への表の条件、操作の辞書の先頭と添字・実装の辞書型の kind の入力、四つの値の葉と正規化の限定等号。全型付け・状態・一段遷移の埋め込みは含まない |
 | TypeRegularity・TypeBounds・TypeRows・TypeVariables・TypeShiftFacts・EffectFacts | 「篩の正規形と制約の読み方」。WFの像の条件付き置換、四名前空間の再帰条件、型移動の比較と整列、効果の構造等号と行置換 |
+| SourceScope・PrimitiveScoped・RangeFormation | 「篩を含むコア計算の形式化」と「篩を含む定義とプログラムの適格性」。四名前空間の支持、組み込みの依存列の形成と範囲具体化後の形成 |
+| LegacyDeclarationInputs | 「旧判断の適格な入力」。旧判断の入力から関数・メソッド・上位辞書の本体の形成を取り出す |
+| TypeValueExchange・TypeSubstBindings | 「篩を含むコア計算の形式化」。値置換と型置換の交換、捕捉、文脈と束縛下の同じ内部入力の接続 |
+| PatternTypeSubst | 同節のパターンの型付けの移送、所属の反映、網羅性の型置換と腕のパターン列の一致 |
 | ProgramTyping・ProgramWellFormed | 「篩を含む定義とプログラムの適格性」。本体の型付けと、格納済みの宣言・metadata の範囲と arity の検査。原ソースの収集の一致は含まない |
 | ObservationType | 同節の観測用の型の射影と `DataObservationLe`。篩の事実を射影から取り出さない |
 | KindTypeSubst・TypeSubstContracts・TypeSubstFormation | 「篩を含むコア計算の形式化」の kind 像、閉じた型・行像の入力、一般の Declared と Annotation の型置換の形成。コードの全型置換は含まない |
 | CurrentSignatureRows | 同節の旧三モデル・TargetTable・Examples の署名全体の行支持の照合 |
 | TypeSubstRowObstruction | 同節の ClauseSig・AtCallAdmissible・ExternalSignature.WF における自由な行変数の拒否の境界 |
-| TypeSubstCalls | 同節の操作と関数参照の包装を含む型置換、子の IH を受けるメソッド・lambda・escape の case 補題、依存する引数列の交換、一般の Fail の入力 |
+| TypeSubstCalls | 同節の操作と関数参照の包装を含む型置換、子の IH を受けるメソッド・lambda・escape の case 補題、依存する引数列の交換、一般の Fail の入力、辞書とメソッド本体の入力の逆転。実装の類・対象型・辞書引数の型付けも返す |
 | TypeSubstGateExamples | 同節の型引数・tapp・型注釈の源と像の具体例、kind/arity の拒否、正則でない子への内部入力の接続の検査 |
 | NestedContinuation | 同節の notContCore から閉じた List の空性と一要素の照合の失敗、data の欄・捕捉への適用 |
 | TypeFormation・ValueFacts | 同節の検証済みの欄の型代入の形成、`Declared`・`HasData` の型置換、構成子の反転と欄の型付け |
