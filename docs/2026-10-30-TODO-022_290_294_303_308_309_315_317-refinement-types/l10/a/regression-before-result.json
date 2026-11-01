@@ -1,0 +1,20 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-M",
+    "12288",
+    "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/a/boundary.lean"
+  ],
+  "cwd": "formal",
+  "started_utc": "2026-11-01T12:10:54.472708+00:00",
+  "exit": 1,
+  "outer_seconds": 1.336,
+  "bytes": 26706,
+  "sha256": "04af41740abbee616003e7a8d83f8712b8864e3037065a0eaa092169e4fa1405",
+  "output": "regression-before-output.txt",
+  "purpose": "Unit の normal の空を保つ境界が修正前の adapter で失敗することの確認",
+  "adapter_olean_sha256": "52b8335ec9da3208ef77228619acb1db6bda145010d13c8283e86e8e62162e9c",
+  "boundary_sha256": "f741b6b244eb5ee67be1d012ebe3fe4839da5cfe5c70522bddb42dbe520c2e75"
+}

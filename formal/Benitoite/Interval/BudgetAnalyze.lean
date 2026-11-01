@@ -1,6 +1,7 @@
 import Benitoite.Interval.BudgetChildren
 import Benitoite.Interval.BudgetRange
 import Benitoite.Interval.BudgetSelect
+import Benitoite.Interval.ApproxAdapter
 
 /-!
 # 式・Block・腕列への共有予算の接続
@@ -405,6 +406,27 @@ structure Parameters where
 def Report.toAnalysisResult (output : Report) (type : Ty) : AnalysisResult :=
   ⟨fun value => value.type = type ∧ output.approx.Contains value,
     output.approx.mayFail, output.approx.warnings⟩
+
+/-- 同じ実解析の出力を共有層へ写す。return の近似は呼出し側が明示する。 -/
+def Report.sharedFlow (r : Report) (type : Ty)
+    (returned : Shared.ValueApprox) : Shared.FlowApprox :=
+  ⟨baseToShared type r.approx, returned, r.approx.mayFail⟩
+
+theorem Report.shared_normal (r : Report) (type : Ty)
+    (returned : Shared.ValueApprox) {v : ConcreteValue}
+    (h : (r.toAnalysisResult type).normal v) :
+    (r.sharedFlow type returned).NormalMem v.toApprox := by
+  change (baseToShared type r.approx).Mem v.toApprox
+  have inside := baseToShared_mem h.2
+  simpa only [h.1] using inside
+
+@[simp] theorem Report.shared_returned (r : Report) (type : Ty)
+    (returned : Shared.ValueApprox) (v : Shared.ApproxValue) :
+    (r.sharedFlow type returned).ReturnedMem v ↔ returned.Mem v := Iff.rfl
+
+@[simp] theorem Report.shared_mayFail (r : Report) (type : Ty)
+    (returned : Shared.ValueApprox) :
+    (r.sharedFlow type returned).mayFail = r.approx.mayFail := rfl
 
 /-- 共有予算を受け取る中心命題の入口。停止も成功と同じ射影を使う。 -/
 def analyze (env : AbstractEnv) (input : EvalInput) (parameters : Parameters) : AnalysisResult :=

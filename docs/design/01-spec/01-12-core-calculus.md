@@ -3118,6 +3118,12 @@ builders_no_captureとbuilders_block_no_captureは、Aligned Γ ΔからEnvReads
 
 共有する正常値と明示 return の近似は `Shared/Approximation.lean` にある。`ValueApprox` は bottom/幅を持つ整数の区間/Boolean の二フラグ/unknown、`ApproxValue` は証拠付き整数/Boolean/other である。`FlowApprox` は normal/returned/mayFail の三成分を持ち、`EvalResult` は normal/returned/failed を区別する。`NormalMem` と `ReturnedMem` は別々の成分の所属を読み、`ResultMem.failed` は mayFail=true を要求する。これらは共有層の定義であり、旧解析の正常値の定理を returned/failed の定理へ拡張するものではない。
 
+`ValueApprox.possible` は、bottom、整数の bottom、Boolean の両フラグが false の三表現で false を返し、それ以外では true を返す。`possible_iff` は true と所属する値の存在の同値、`not_possible_iff` は false と全値の非所属の同値を示す。`ValueApprox.WF` は、整数の非空閉区間の端点について、その幅の値域と端点の順序を要求する。他の形と整数の bottom は整形式である。区間が保持する証拠からすべての近似の WF が成り立ち（`ValueApprox.wf`）、normal と returned の WF を束ねる `FlowApprox.WF` もすべてのフローで成り立つ。空の三表現を一つへそろえる条件は課さない。normal が空でも returned や mayFail は残りうる。
+
+`Interval.normalToShared_iff` は、具体値の型が旧正常域の型に一致するとき、共有表現への所属と旧 `NormalMem` の同値を示す。`Interval.baseToShared` は、実解析の `BaseApprox` から、七整数では同じ幅の `rangeKind`、Boolean では二フラグを読む。それ以外は `other && nonIntegerOther` が true のとき unknown、false のとき bottom とし、正常値なしを保つ。`baseToShared_mem` は `BaseApprox.Contains` からの所属保存を示す。`BudgetAnalysis.Report.sharedFlow` は、この写しを実際の `Report.approx` へ適用して normal とし、明示引数の returned と `approx.mayFail` を保持する。`Report.shared_normal` は、同じ Report の `toAnalysisResult` の正常値を共有層へ移す。任意の命題から範囲を計算で取り出さず、警告・キー・停止・追跡は Report 側に残す。returned の推論と失敗の意味の健全性はこの写しの結論に含めない。
+
+`Release.Refinement` の `constOK_toApprox` は、`ConstOK B c` と `IntKind.ofRefinementType c.type = some k` から、同じ幅 k の証拠付き整数 n と `c.toApprox = integer k n` を示す。七整数に限る条件であり、Byte・Decimal・String などはこの写しでは other のままである。
+
 論理の項 `Term` は、変数、整数・Character・Float32/64 のビット列・Decimal・Boolean・Unit・String、List/Bytes/Map/Set/data/対象の観測、宣言を照合した欄、measure、整数の加算・符号反転・定数倍からなる。述語 `Pred` は、真偽、整数の等号と大小、種類を指定する比較、浮動小数点数の分類、Decimal の表現可能性、文字の範囲、対象の所属、構成子の判定、And/Or/Not の14構成子である。任意の関数呼出しや Lean の任意の命題を項・述語へ格納する欄はない。
 
 `Val.toTerm?` は観測できない根を `none` とする。複合値の観測は `List (Option Term)` で各要素・欄を保持するので、関数・Reference・Lazy の欄を観測できなくても、data の根や隣の不変な欄は残せる。`slotBind` は `none` を保つ。全域の構文操作 `termBind` の既定値を、観測の成功の証拠として使わない。

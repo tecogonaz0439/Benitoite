@@ -60,3 +60,25 @@ def IntKind.ofRefinementType : Release.Refinement.Ty → Option IntKind
   cases b <;> rfl
 
 end Benitoite.Interval
+
+namespace Benitoite.Release.Refinement
+
+/-- 七整数の適格な定数は、同じ幅の証拠付き整数へ写る。 -/
+theorem constOK_toApprox {B : Builtins} {c : Const} {k : Benitoite.Interval.IntKind}
+    (ok : ConstOK B c)
+    (kindOf : Benitoite.Interval.IntKind.ofRefinementType c.type = some k) :
+    ∃ n : Benitoite.Interval.IntegerValue k, c.toApprox = .integer k n := by
+  cases c <;> simp [Const.type, Benitoite.Interval.IntKind.ofRefinementType] at kindOf <;>
+    subst kindOf
+  case integer n => exact ⟨n, rfl⟩
+  case integer8 n => exact ⟨⟨n, ok⟩, Shared.ApproxValue.ofInt_bounded .integer8 ⟨n, ok⟩⟩
+  case integer16 n => exact ⟨⟨n, ok⟩, Shared.ApproxValue.ofInt_bounded .integer16 ⟨n, ok⟩⟩
+  case integer32 n => exact ⟨⟨n, ok⟩, Shared.ApproxValue.ofInt_bounded .integer32 ⟨n, ok⟩⟩
+  case unsignedInteger16 n =>
+    exact ⟨⟨n, ok⟩, Shared.ApproxValue.ofInt_bounded .unsignedInteger16 ⟨n, ok⟩⟩
+  case unsignedInteger32 n =>
+    exact ⟨⟨n, ok⟩, Shared.ApproxValue.ofInt_bounded .unsignedInteger32 ⟨n, ok⟩⟩
+  case unsignedInteger64 n =>
+    exact ⟨⟨n, ok⟩, Shared.ApproxValue.ofInt_bounded .unsignedInteger64 ⟨n, ok⟩⟩
+
+end Benitoite.Release.Refinement

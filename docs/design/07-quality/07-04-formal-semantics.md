@@ -752,6 +752,7 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 | Lean（`Release/Refinement/` 以下） | 01-12 の写し |
 |---|---|
 | Types・TermSyntax・Context・Declared | 「篩を含むコア計算の形式化」 |
+| ApproxAdapter（共有層の `Shared/Approximation`、旧解析の `Interval/ApproxAdapter`・`Interval/BudgetAnalyze` と接続） | 同節の正常・明示 return・失敗を分ける共有近似。空の三表現の判定と所属の同値、証拠付き区間からの WF、型一致の下での旧正常域の所属の同値、実 Report の正常値の写し、七整数の適格な定数の写し。実 Report の非整数・非Boolean の位置は other と nonIntegerOther の両フラグを読み、正常値なしを保つ。returned の範囲は明示引数であり、returned の推論、失敗の意味の健全性、Release の実行との意味の一致は含まない |
 | Conjunction・RefinementNormalForm・FunctionNormalForm・Normalize・Le・Admissible・Typing | 「篩の正規形と制約の読み方」 |
 | VarianceSyntax・VarianceValidation | 「篩の正規形と制約の読み方」の data の変性、metadata と総称の欄の検証 |
 | VarianceFormation・VarianceTransport | 同節の `Sorted` の移送、型引数の比較と欄の単調性。中間の型引数の注釈を要求しない |
