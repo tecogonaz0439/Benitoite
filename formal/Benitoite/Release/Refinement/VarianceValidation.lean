@@ -45,11 +45,11 @@ def Program.VarianceValid (P : Program) : Prop :=
   (∀ c cd, P.cons c = some cd →
     (∀ info, P.dataInfo cd.data = some info → info.arity = cd.ntys) ∧
     (∀ a ∈ cd.args,
-      Ty.Annotation P (List.replicate cd.ntys ({} : TParam)) [] a ∧
+      Ty.Annotation P (List.replicate cd.ntys TypeCtx.valueParam) [] a ∧
       Ty.HasKind P (List.replicate cd.ntys .value) a .value ∧
       Ty.VarianceOK P (P.varianceFor cd.data cd.ntys) .positive a))
 
-def VarianceSubstInput (P : Program) (C : List TParam) (Γ : Ctx)
+def VarianceSubstInput (P : Program) (C : TypeCtx) (Γ : Ctx)
     (vs : List Variance) (as bs : List Ty) : Prop :=
   as.length = vs.length ∧ bs.length = vs.length ∧
     (∀ t ∈ as ++ bs, Ty.Annotation P C Γ t)

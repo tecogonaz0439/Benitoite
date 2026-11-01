@@ -10,7 +10,7 @@ def Ty.instTarget (rs : List RangeExpr) : Ty → Ty
   | a => a
 
 structure OpSig where
-  tparams : List TParam
+  tparams : TypeCtx
   names : List String
   params : List Ty
   ret : Ty
@@ -18,11 +18,11 @@ structure OpSig where
 
 def opSigAt (P : Program) (B : Builtins) (S : RangeExpr) : OpRef → Option OpSig
   | .fail => none
-  | .user o => (P.ops o).map fun d => ⟨d.tparams,d.names,d.params,d.ret,d.eff⟩
+  | .user o => (P.ops o).map fun d => ⟨TypeCtx.values d.tparams,d.names,d.params,d.ret,d.eff⟩
   | .prim b => match B.sig b with
     | none => none
     | some s => s.opEff.map fun e =>
-        ⟨s.tparams.map TParamDecl.constraints,s.names,s.params.map (Ty.instTarget (List.replicate s.rkinds.length S)),s.ret,e⟩
+        ⟨s.tparams,s.names,s.params.map (Ty.instTarget (List.replicate s.rkinds.length S)),s.ret,e⟩
 
 def opSig (P : Program) (B : Builtins) : OpRef → Option OpSig :=
   opSigAt P B (.absolute .top)

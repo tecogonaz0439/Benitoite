@@ -17,6 +17,8 @@ structure LegacyPrimSignature (s0 : Benitoite.Release.PrimSig) (s : PrimSig) : P
   rkinds : s.rkinds = s0.rkinds
   shape : s.shape = s0.shape
   admits : ∀ C ts, s0.admits C ts → s.admits C (Ty.normTys (embedTys ts))
+  operationKinds : s.opEff ≠ none →
+    TypeCtx.kinds s.tparams = List.replicate s.tparams.length .value
 
 /-- 新型付けや遷移の結論ではなく、表の各位置の対応を読む。 -/
 structure LegacyTables (K : DeclarationKinds) (P0 : Benitoite.Release.Program)
@@ -34,7 +36,7 @@ structure LegacyTables (K : DeclarationKinds) (P0 : Benitoite.Release.Program)
   constructorArity : ∀ c cd c' cd', P0.cons c = some cd → P0.cons c' = some cd' →
     cd.data = cd'.data → cd.ntys = cd'.ntys
   constructorFields : ∀ c cd, P0.cons c = some cd → ∀ a ∈ cd.args,
-    Ty.Annotation (embedProgramWithKinds K P0) (List.replicate cd.ntys ({} : TParam)) [] (embedTy a) ∧
+    Ty.Annotation (embedProgramWithKinds K P0) (List.replicate cd.ntys TypeCtx.valueParam) [] (embedTy a) ∧
     Ty.HasKind (embedProgramWithKinds K P0) (List.replicate cd.ntys .value) (embedTy a) .value
   constructorScope : ∀ c cd, P0.cons c = some cd → ∀ a ∈ cd.args,
     (embedTy a).SourceScoped 0 cd.ntys 0 0

@@ -205,13 +205,13 @@ theorem Ctx.WF.extendNone {nr nt : Nat} {Γ : Ctx} (h : Ctx.WF nr nt Γ) :
 
 def Ctx.Sorted (Γ : Ctx) : Prop := ∀ (i : Nat) (a : Ty), Γ[i]? = some (some a) → a.Sorted Γ
 
-structure Ctx.Regular (P : Program) (C : List TParam) (Γ : Ctx) : Prop where
+structure Ctx.Regular (P : Program) (C : TypeCtx) (Γ : Ctx) : Prop where
   wf : Ctx.WF 0 C.length Γ
   sorted : Γ.Sorted
   declared : Ctx.Declared P C Γ
   ordered : Γ.Ordered
 
-theorem Ctx.Regular.empty (P : Program) (C : List TParam) : Ctx.Regular P C [] := by
+theorem Ctx.Regular.empty (P : Program) (C : TypeCtx) : Ctx.Regular P C [] := by
   constructor <;> simp [Ctx.WF, Ctx.Sorted, Ctx.Declared, Ctx.Ordered]
 
 theorem Ctx.Regular.extend {P C Γ a} (h : Ctx.Regular P C Γ)

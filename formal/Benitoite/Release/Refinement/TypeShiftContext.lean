@@ -166,36 +166,36 @@ theorem Pred.Declared.shiftTypes {P C C' Γ Δ self p k c} (ht : Pred.Declared P
 
 mutual
   theorem Ty.Declared.shiftTypes {P C C' Γ Δ a k c} (ht : Ty.Declared P C Γ a)
-      (h : TypeCtxMap k c Γ Δ) : Ty.Declared P C' Δ (Refinement.shiftTypes k c a) := by
+      (h : TypeCtxMap k c Γ Δ) (hC : TypeParamRenaming C C' (shiftIndex k c)) : Ty.Declared P C' Δ (Refinement.shiftTypes k c a) := by
     cases a with
     | base _ | bytes | «opaque» _ _ | «scoped» _ _ _ | pathBases | scopePattern _ | tvar _ => trivial
     | ctor con => cases con <;> exact ht
-    | list a | reference a | lazy a | set a | dict _ a => exact Ty.Declared.shiftTypes (a := a) ht h
+    | list a | reference a | lazy a | set a | dict _ a => exact Ty.Declared.shiftTypes (a := a) ht h hC
     | data d as => exact ⟨by simpa only [shiftTypesList_eq_map, List.length_map] using ht.1,
-        declaredTys_shiftTypes ht.2 h⟩
+        declaredTys_shiftTypes ht.2 h hC⟩
     | external _ as => exact ⟨by simpa only [shiftTypesList_eq_map, List.length_map] using ht.1,
-        declaredTys_shiftTypes ht.2 h⟩
-    | tapp _ as => exact declaredTys_shiftTypes ht h
-    | dependentFn t => exact Tel.Declared.shiftTypes ht h
-    | fn ns ps r e => exact ⟨declaredTys_shiftTypes ht.1 h,
-        Ty.Declared.shiftTypes ht.2.1 h,declaredEff_shiftTypes ht.2.2 h⟩
-    | cont b t e => exact ⟨Ty.Declared.shiftTypes ht.1 h,
-        Ty.Declared.shiftTypes ht.2.1 h,declaredEff_shiftTypes ht.2.2 h⟩
-    | map a b => exact ⟨Ty.Declared.shiftTypes ht.1 h,Ty.Declared.shiftTypes ht.2 h⟩
-    | refined a p => exact ⟨Ty.Declared.shiftTypes ht.1 h,Pred.Declared.shiftTypes ht.2 h⟩
+        declaredTys_shiftTypes ht.2 h hC⟩
+    | tapp i as => exact ⟨by simpa only [shiftTypesList_eq_map, List.length_map, shiftIndex] using hC.kindRenaming _ _ ht.1, declaredTys_shiftTypes ht.2 h hC⟩
+    | dependentFn t => exact Tel.Declared.shiftTypes ht h hC
+    | fn ns ps r e => exact ⟨declaredTys_shiftTypes ht.1 h hC,
+        Ty.Declared.shiftTypes ht.2.1 h hC,declaredEff_shiftTypes ht.2.2 h hC⟩
+    | cont b t e => exact ⟨Ty.Declared.shiftTypes ht.1 h hC,
+        Ty.Declared.shiftTypes ht.2.1 h hC,declaredEff_shiftTypes ht.2.2 h hC⟩
+    | map a b => exact ⟨Ty.Declared.shiftTypes ht.1 h hC,Ty.Declared.shiftTypes ht.2 h hC⟩
+    | refined a p => exact ⟨Ty.Declared.shiftTypes ht.1 h hC,Pred.Declared.shiftTypes ht.2 h⟩
   theorem Tel.Declared.shiftTypes {P C C' Γ Δ t k c} (ht : Tel.Declared P C Γ t)
-      (h : TypeCtxMap k c Γ Δ) : Tel.Declared P C' Δ (shiftTelTypes k c t) := by
+      (h : TypeCtxMap k c Γ Δ) (hC : TypeParamRenaming C C' (shiftIndex k c)) : Tel.Declared P C' Δ (shiftTelTypes k c t) := by
     cases t with
-    | done r e => exact ⟨Ty.Declared.shiftTypes ht.1 h,declaredEff_shiftTypes ht.2 h⟩
-    | param n a t => exact ⟨Ty.Declared.shiftTypes ht.1 h,Tel.Declared.shiftTypes ht.2 (h.extend a)⟩
+    | done r e => exact ⟨Ty.Declared.shiftTypes ht.1 h hC,declaredEff_shiftTypes ht.2 h hC⟩
+    | param n a t => exact ⟨Ty.Declared.shiftTypes ht.1 h hC,Tel.Declared.shiftTypes ht.2 (h.extend a) hC⟩
   theorem declaredTys_shiftTypes {P C C' Γ Δ as k c} (ht : declaredTys P C Γ as)
-      (h : TypeCtxMap k c Γ Δ) : declaredTys P C' Δ (shiftTypesList k c as) := by
+      (h : TypeCtxMap k c Γ Δ) (hC : TypeParamRenaming C C' (shiftIndex k c)) : declaredTys P C' Δ (shiftTypesList k c as) := by
     cases as with
     | nil => trivial
-    | cons a as => exact ⟨Ty.Declared.shiftTypes ht.1 h,declaredTys_shiftTypes ht.2 h⟩
+    | cons a as => exact ⟨Ty.Declared.shiftTypes ht.1 h hC,declaredTys_shiftTypes ht.2 h hC⟩
   theorem declaredEff_shiftTypes {P C C' Γ Δ e k c} (ht : declaredEff P C Γ e)
-      (h : TypeCtxMap k c Γ Δ) : declaredEff P C' Δ (shiftRowsTypes k c e) := by
-    cases e; exact declaredTys_shiftTypes ht h
+      (h : TypeCtxMap k c Γ Δ) (hC : TypeParamRenaming C C' (shiftIndex k c)) : declaredEff P C' Δ (shiftRowsTypes k c e) := by
+    cases e; exact declaredTys_shiftTypes ht h hC
 end
 
 mutual
@@ -230,9 +230,10 @@ mutual
 end
 
 theorem TypeCtxMap.annotation {P C C' Γ Δ a k c} (h : TypeCtxMap k c Γ Δ)
-    (hn : C'.length = C.length+k) (ha : Ty.Annotation P C Γ a) :
+    (hn : C'.length = C.length+k) (ha : Ty.Annotation P C Γ a)
+    (hC : TypeParamRenaming C C' (shiftIndex k c)) :
     Ty.Annotation P C' Δ (Refinement.shiftTypes k c a) :=
   ⟨by simpa only [hn,h.length] using Ty.wf_shiftTypes ha.wf k c,
-    Ty.sorted_shiftTypes ha.sorted h,ha.declared.shiftTypes h⟩
+    Ty.sorted_shiftTypes ha.sorted h,ha.declared.shiftTypes h hC⟩
 
 end Benitoite.Release.Refinement

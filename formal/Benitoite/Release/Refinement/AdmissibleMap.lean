@@ -32,8 +32,8 @@ theorem instantiatedTel_norm_images (t : Tel) (ts : List Ty) (es : List Eff) :
 
 theorem TypeArgsKinded.norm {P C ts ks} (h : TypeArgsKinded P C ts ks) :
     TypeArgsKinded P C (Ty.normTys ts) ks := by
-  obtain ⟨hn,K,hK,h⟩ := h
-  refine ⟨by simpa only [Ty.normTys_eq_map,List.length_map] using hn,K,hK,?_⟩
+  obtain ⟨hn,h⟩ := h
+  refine ⟨by simpa only [Ty.normTys_eq_map,List.length_map] using hn,?_⟩
   intro i a k ha hk
   obtain ⟨b,hb,rfl⟩ := Option.map_eq_some_iff.mp (by simpa only [Ty.normTys_eq_map,List.getElem?_map] using ha)
   exact ⟨(h i b k hb hk).1.norm, fun hv =>
@@ -153,7 +153,7 @@ theorem Admissible.map {B C nv tps ne Qs Qt ts es e}
 
 theorem PrimitiveAdmissible.map {C nv s Q ts es}
     (h : PrimitiveAdmissible C nv s Q ts es) {nv'} (f : Ty → Ty) (g : Eff → Eff)
-    (ha : s.admits C (Ty.normTys (ts.map f)))
+    (ha : s.admits (TypeCtx.constraints C) (Ty.normTys (ts.map f)))
     (ht : ∀ a ∈ ts, (f a).WF 0 C.length nv' ∧ (f a).Ordinary)
     (he : ∀ e ∈ es, (g e).WF 0 C.length nv')
     (hn : RowTransport (Qsig s.params s.ret s.eff) Q (es.map g)) :

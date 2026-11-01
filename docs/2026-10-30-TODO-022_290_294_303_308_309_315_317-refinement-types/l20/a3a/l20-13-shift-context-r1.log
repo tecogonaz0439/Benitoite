@@ -1,0 +1,61 @@
+⚠ [72/115] Replayed Benitoite.Release.Refinement.TypeSubst
+warning: Benitoite/Release/Refinement/TypeSubst.lean:224:51: This simp argument is unused:
+  rawApply
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Ty.rawBind, shiftTypes, Ty.rawBind_shiftTypes, rawBindTys_shiftTypes, Eff.rawBind_shiftTypes,
+    Tel.rawBind_shiftTypes]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [74/115] Replayed Benitoite.Release.Refinement.RangeSubst
+warning: Benitoite/Release/Refinement/RangeSubst.lean:361:6: This simp argument is unused:
+  rawApply
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Ty.rawMapRanges, Ty.rawBind, Ty.rawMapRanges_rangesOnly, mapRangesTys_rangesOnly,
+    Eff.rawMapRanges_rangesOnly, Tel.rawMapRanges_rangesOnly, mapIx_rangeAt]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [98/115] Replayed Benitoite.Release.Refinement.ObservationOrder
+warning: Benitoite/Release/Refinement/ObservationOrder.lean:258:27: Try `simp at hm` instead of `simpa using hm`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Release/Refinement/ObservationOrder.lean:258:27: Try `simp at hm` instead of `simpa using hm`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Release/Refinement/ObservationOrder.lean:258:27: Try `simp at hm` instead of `simpa using hm`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Release/Refinement/ObservationOrder.lean:258:27: Try `simp at hm` instead of `simpa using hm`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Release/Refinement/ObservationOrder.lean:258:27: Try `simp at hm` instead of `simpa using hm`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Benitoite/Release/Refinement/ObservationOrder.lean:258:27: Try `simp at hm` instead of `simpa using hm`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+✔ [101/115] Built Benitoite.Release.Refinement.TypeRenaming (487ms)
+✔ [102/115] Built Benitoite.Release.Refinement.TypeShiftSyntax (375ms)
+✔ [103/115] Built Benitoite.Release.Refinement.Patterns (389ms)
+✔ [104/115] Built Benitoite.Release.Refinement.HandlerContracts (279ms)
+✔ [105/115] Built Benitoite.Release.Refinement.Capture (327ms)
+✔ [106/115] Built Benitoite.Release.Refinement.AtPrepare (559ms)
+✔ [107/115] Built Benitoite.Release.Refinement.TypeShiftOrder (2.3s)
+✔ [108/115] Built Benitoite.Release.Refinement.Typing (2.8s)
+✔ [109/115] Built Benitoite.Release.Refinement.ValueRegularity (818ms)
+✔ [110/115] Built Benitoite.Release.Refinement.ValueBinding (1.6s)
+✔ [111/115] Built Benitoite.Release.Refinement.ValueInstantiation (313ms)
+✔ [112/115] Built Benitoite.Release.Refinement.AdmissibleMap (361ms)
+✔ [113/115] Built Benitoite.Release.Refinement.TypeShiftAlgebra (473ms)
+✖ [114/115] Building Benitoite.Release.Refinement.TypeShiftContext (513ms)
+trace: .> LEAN_PATH=<repo>/formal/.lake/build/lib/lean <home>/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean -M 12288 <repo>/formal/Benitoite/Release/Refinement/TypeShiftContext.lean -o <repo>/formal/.lake/build/lib/lean/Benitoite/Release/Refinement/TypeShiftContext.olean -i <repo>/formal/.lake/build/lib/lean/Benitoite/Release/Refinement/TypeShiftContext.ilean -c <repo>/formal/.lake/build/ir/Benitoite/Release/Refinement/TypeShiftContext.c --setup <repo>/formal/.lake/build/ir/Benitoite/Release/Refinement/TypeShiftContext.setup.json --json
+error: Benitoite/Release/Refinement/TypeShiftContext.lean:178:29: Type mismatch: After simplification, term
+  TypeParamRenaming.kindRenaming hC i (TyKind.constructor as.length) ht.left
+ has type
+  @Eq (Option TyKind) C'.kinds[shiftIndex k c i]? (some (TyKind.constructor as.length))
+but is expected to have type
+  @Eq (Option TyKind) C'.kinds[if i < c then i else i + k]? (some (TyKind.constructor as.length))
+Some required targets logged failures:
+- Benitoite.Release.Refinement.TypeShiftContext
+error: build failed

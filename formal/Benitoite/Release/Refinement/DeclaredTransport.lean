@@ -88,7 +88,7 @@ theorem FieldRef.Declared.bind {P C Γ Δ ν t ref} (h : FieldRef.Declared P C �
   · rw [← Ty.substV_subst_closed hw]
     exact Ty.hasSort_bind hs (SubstEnv.valuesOnly ν)
 
-structure DeclarationImages (P : Program) (C : List TParam) (Γ Δ : Ctx) (ν : ObservationEnv) : Prop where
+structure DeclarationImages (P : Program) (C : TypeCtx) (Γ Δ : Ctx) (ν : ObservationEnv) : Prop where
   values : ∀ i a, Γ[i]? = some (some a) → Ordinary a →
     ∀ t, ν i = some t → Term.Declared P C Δ t
   data : DataImages P Γ Δ ν
@@ -272,7 +272,7 @@ theorem Ty.dataCore_args_norm {a : Ty} {d ts} (h : a.norm.core = .data d ts) : T
   rw [hn, h] at hh
   exact (Ty.data.inj hh.symm).2
 
-theorem DeclarationImages.id (P : Program) (C : List TParam) (Γ : Ctx) :
+theorem DeclarationImages.id (P : Program) (C : TypeCtx) (Γ : Ctx) :
     DeclarationImages P C Γ Γ (fun i => some (.var i)) := by
   constructor
   · intro i a hi ho t ht; cases ht; exact ⟨a, hi, ho⟩
@@ -324,7 +324,7 @@ mutual
         declaredTys_rawSubstV (as := as) h.2 hm⟩
     | external _ as => exact ⟨by simpa only [substVTys_eq_map, List.length_map] using h.1,
         declaredTys_rawSubstV (as := as) h.2 hm⟩
-    | tapp _ as => exact declaredTys_rawSubstV (as := as) h hm
+    | tapp _ as => exact ⟨by simpa only [substVTys_eq_map, List.length_map] using h.1, declaredTys_rawSubstV (as := as) h.2 hm⟩
     | dependentFn t => exact Tel.Declared.rawSubstV (t := t) h hm
     | fn ns ps r e => exact ⟨declaredTys_rawSubstV (as := ps) h.1 hm,
         Ty.Declared.rawSubstV (a := r) h.2.1 hm, declaredEff_rawSubstV (e := e) h.2.2 hm⟩
@@ -370,7 +370,7 @@ theorem Pred.Declared.map {P C Γ Δ self other ν p} (h : Pred.Declared P C Γ 
   | and p q | or p q => exact ⟨Pred.Declared.map (p := p) h.1 hm, Pred.Declared.map (p := q) h.2 hm⟩
   | not p => exact Pred.Declared.map (p := p) h hm
 
-theorem DeclarationImages.normSelf (P : Program) (C : List TParam) (Γ : Ctx) (a : Ty) :
+theorem DeclarationImages.normSelf (P : Program) (C : TypeCtx) (Γ : Ctx) (a : Ty) :
     DeclarationImages P C (Γ.extend a) (Γ.extend a.norm) (fun i => some (.var i)) := by
   have h := (DeclarationImages.id P C Γ).extend a a.norm
     (fun h => (Ty.ordinary_norm _).mpr h) (by simp only [Ty.norm_idem, Ty.rawSubstV_id])
@@ -558,7 +558,7 @@ mutual
     | data d as => exact ⟨by simpa only [Ty.normTys_eq_map, List.length_map] using h.1, declaredTys_norm (as := as) h.2⟩
     | external _ as => exact ⟨by simpa only [Ty.normTys_eq_map, List.length_map] using h.1,
         declaredTys_norm (as := as) h.2⟩
-    | tapp _ as => exact declaredTys_norm (as := as) h
+    | tapp _ as => exact ⟨by simpa only [Ty.normTys_eq_map, List.length_map] using h.1, declaredTys_norm (as := as) h.2⟩
     | dependentFn t => exact Ty.declared_foldFn (Tel.Declared.norm (t := t) h)
     | fn ns ps r e => exact ⟨declaredTys_norm (as := ps) h.1, Ty.Declared.norm (a := r) h.2.1, declaredEff_norm (e := e) h.2.2⟩
     | cont b t e => exact ⟨Ty.Declared.norm (a := b) h.1, Ty.Declared.norm (a := t) h.2.1, declaredEff_norm (e := e) h.2.2⟩

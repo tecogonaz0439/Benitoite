@@ -1,0 +1,53 @@
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3a/stop-reproduction.lean:7:56: error: typeclass instance problem is stuck
+  GetElem? Ctx ?m.10 (Option Ty) (?m.20 i a)
+
+Note: Lean will not try to resolve this typeclass instance problem because the second type argument to `GetElem?` is a metavariable. This argument must be fully determined before Lean will try to resolve the typeclass.
+
+Hint: Adding type annotations and supplying implicit arguments to functions can give Lean more information for typeclass resolution. For example, if you have a variable `x` that you intend to be a `Nat`, but Lean reports it as having an unresolved type like `?m`, replacing `x` with `(x : Nat)` can get typeclass resolution un-stuck.
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3a/stop-reproduction.lean:41:2: error: unsolved goals
+case wf
+P : Program
+⊢ Eff.Canonical (EffR.mk (fun x => false) [Ty.tapp 0 []])
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3a/stop-reproduction.lean:42:27: warning: This simp argument is unused:
+  Eff.norm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [output, caller, context, Ty.WF, Ty.WFList, Eff.WF, Eff.singleFail, Ty.norm, Ty.normTys, NamesWF,
+    RangeIx.WF, Order.sortUnique]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3a/stop-reproduction.lean:42:46: warning: This simp argument is unused:
+  RangeIx.WF
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [output, caller, context, Ty.WF, Ty.WFList, Eff.WF, Eff.singleFail, Ty.norm, Ty.normTys, Eff.norm,
+    NamesWF, Order.sortUnique]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3a/stop-reproduction.lean:42:58: warning: This simp argument is unused:
+  Order.sortUnique
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [output, caller, context, Ty.WF, Ty.WFList, Eff.WF, Eff.singleFail, Ty.norm, Ty.normTys, Eff.norm,
+    NamesWF, RangeIx.WF]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3a/stop-reproduction.lean:54:2: error: unsolved goals
+case right.intro
+P : Program
+B : Builtins
+ha : Ty.Annotation P caller context output
+a w✝ : Ty
+h✝ : w✝ ∈ Eff.empty.fails ∧ w✝.norm = a.norm
+⊢ (Eff.singleFail (Ty.tapp 0 [])).memFail a
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3a/stop-reproduction.lean:59:13: error(lean.unknownIdentifier): Unknown identifier `result_declared`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3a/stop-reproduction.lean:57:79: error: unsolved goals
+P : Program
+B : Builtins
+h : HasTypeVQ P B StoreTy.empty Qempty changed context [] (Val.var 0) output
+⊢ False
+'Benitoite.Release.Refinement.A3aStop.source_typed' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.A3aStop.target_untyped' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]

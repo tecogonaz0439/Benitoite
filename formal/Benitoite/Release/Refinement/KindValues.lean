@@ -150,9 +150,8 @@ theorem Ty.ordinary_bind_values (a : Ty) (σ : Nat → Val) :
   exact Ty.ordinary_rawSubstV a _
 
 /-- 呼出し先の宣言のkindと、同じ呼出し元のkind文脈で全型引数を照合する。 -/
-def TypeArgsKinded (P : Program) (C : List TParam) (ts : List Ty) (ks : List TyKind) : Prop :=
-  ts.length = ks.length ∧ ∃ K : KindCtx, K.length = C.length ∧
-    ∀ (i : Nat) (a : Ty) (k : TyKind), ts[i]? = some a → ks[i]? = some k → a.HasKind P K k ∧ (k = .value → Ordinary a)
+def TypeArgsKinded (P : Program) (C : TypeCtx) (ts : List Ty) (ks : List TyKind) : Prop :=
+  ts.length = ks.length ∧ ∀ (i : Nat) (a : Ty) (k : TyKind), ts[i]? = some a → ks[i]? = some k → a.HasKind P (TypeCtx.kinds C) k ∧ (k = .value → Ordinary a)
 
 /-- 型構成子kindの像はctor又はtvarであり、継続型にはならない。 -/
 theorem Ty.HasKind.constructor_ordinary {P K a n} (h : Ty.HasKind P K a (.constructor n)) :
@@ -166,16 +165,15 @@ theorem TypeArgsKinded.ordinary {P C ts ks} (h : TypeArgsKinded P C ts ks) :
   obtain ⟨i, hi⟩ := List.mem_iff_getElem?.mp ha
   have hn := h.1
   have hil : i < ks.length := by have := (List.getElem?_eq_some_iff.mp hi).1; omega
-  obtain ⟨K, _, hargs⟩ := h.2
-  have hk := hargs i a ks[i] hi (List.getElem?_eq_getElem hil)
+  have hk := h.2 i a ks[i] hi (List.getElem?_eq_getElem hil)
   cases he : ks[i] with
   | value => exact hk.2 he
   | constructor n => rw [he] at hk; exact hk.1.constructor_ordinary
 
 theorem TypeArgsKinded.shift {P C ts ks} (h : TypeArgsKinded P C ts ks) (k c : Nat) :
     TypeArgsKinded P C (ts.map (Ty.shiftV k c)) ks := by
-  obtain ⟨hn,K,hK,h⟩ := h
-  refine ⟨by simpa only [List.length_map] using hn,K,hK,?_⟩
+  obtain ⟨hn,h⟩ := h
+  refine ⟨by simpa only [List.length_map] using hn,?_⟩
   intro i a t ha hk
   obtain ⟨b,hb,rfl⟩ := Option.map_eq_some_iff.mp (by simpa only [List.getElem?_map] using ha)
   exact ⟨(h i b t hb hk).1.shift_values k c, fun hv =>
@@ -183,8 +181,8 @@ theorem TypeArgsKinded.shift {P C ts ks} (h : TypeArgsKinded P C ts ks) (k c : N
 
 theorem TypeArgsKinded.subst {P C ts ks} (h : TypeArgsKinded P C ts ks) (ν : Nat → Val) :
     TypeArgsKinded P C (ts.map (substTyValues ν)) ks := by
-  obtain ⟨hn,K,hK,h⟩ := h
-  refine ⟨by simpa only [List.length_map] using hn,K,hK,?_⟩
+  obtain ⟨hn,h⟩ := h
+  refine ⟨by simpa only [List.length_map] using hn,?_⟩
   intro i a t ha hk
   obtain ⟨b,hb,rfl⟩ := Option.map_eq_some_iff.mp (by simpa only [List.getElem?_map] using ha)
   exact ⟨(h i b t hb hk).1.bind_values ν, fun hv =>

@@ -147,22 +147,22 @@ theorem handled_shift_types (P B cs k c) : shiftRowsTypes k c (handled P B cs)=h
 
 private theorem shift_var_aux {P B Ψ Q C Γ Φ v a}
     (h : HasTypeVQ P B Ψ Q C Γ Φ v a) {Ψ' C' Δ k c} (hn : C'.length=C.length+k)
-    (hm : TypeCtxMap k c Γ Δ) : ∀ i,v=.var i → HasTypeVQ P B Ψ' Q C' Δ Φ (.var i) (shiftTypes k c a) := by
+    (hm : TypeCtxMap k c Γ Δ) (hC : TypeParamRenaming C C' (shiftIndex k c)) : ∀ i,v=.var i → HasTypeVQ P B Ψ' Q C' Δ Φ (.var i) (shiftTypes k c a) := by
   match h with
   | .V_Var hi ho => intro i he; cases he; exact .V_Var (hm.lookup _ _ hi) ((Ty.ordinary_shiftTypes _ _ _).mpr ho)
   | .V_Normal hv =>
     intro i he
-    simpa only [Ty.norm_shiftTypes] using (shift_var_aux hv hn hm i he).V_Normal
+    simpa only [Ty.norm_shiftTypes] using (shift_var_aux hv hn hm hC i he).V_Normal
   | .V_Sub hv hl hw hs hd =>
     intro i he
-    exact .V_Sub (shift_var_aux hv hn hm i he) (hl.shiftTypes hm)
-      (by simpa only [hn,hm.length] using Ty.wf_shiftTypes hw k c) (Ty.sorted_shiftTypes hs hm) (hd.shiftTypes hm)
+    exact .V_Sub (shift_var_aux hv hn hm hC i he) (hl.shiftTypes hm)
+      (by simpa only [hn,hm.length] using Ty.wf_shiftTypes hw k c) (Ty.sorted_shiftTypes hs hm) (hd.shiftTypes hm hC)
   | .V_Refine hv hi ht hs hw he hda hdp =>
     intro i hvEq
-    have hh := shift_var_aux (Ψ' := Ψ') hv hn hm i hvEq
+    have hh := shift_var_aux (Ψ' := Ψ') hv hn hm hC i hvEq
     cases hvEq
     exact .V_Refine hh ((Ty.hasSort_shiftTypes _ _ _ _).mpr hi) ht (Pred.sorted_shiftTypes hs hm)
-      (by simpa only [hm.length] using hw) (hm.entails he) (hda.shiftTypes hm) (hdp.shiftTypes hm)
+      (by simpa only [hm.length] using hw) (hm.entails he) (hda.shiftTypes hm hC) (hdp.shiftTypes hm)
   | .V_Const _ | .V_DependentLam .. | .V_Closure .. | .V_Lam _ _ _ _ _ | .V_Fun _ _ _ _ | .V_Prim _ _ _ _ _ | .V_Op _ _ _ _
   | .V_ExternalRef _ _ _ _ | .V_ExternalHandle _ _ _ _ _ _ _ | .V_PathBases _
   | .V_ScopePattern _ _ _ | .V_Checked _ _ _ | .V_CheckedRequest _ _ _ _ _ _ | .V_CheckedAt _ | .V_AtError _
@@ -173,8 +173,8 @@ termination_by structural h
 
 theorem HasTypeVQ.shift_types_var {P B Ψ Q C Γ Φ i a}
     (h : HasTypeVQ P B Ψ Q C Γ Φ (.var i) a) {Ψ' C' Δ k c} (hn : C'.length=C.length+k)
-    (hm : TypeCtxMap k c Γ Δ) : HasTypeVQ P B Ψ' Q C' Δ Φ (.var i) (shiftTypes k c a) :=
-  shift_var_aux h hn hm i rfl
+    (hm : TypeCtxMap k c Γ Δ) (hC : TypeParamRenaming C C' (shiftIndex k c)) : HasTypeVQ P B Ψ' Q C' Δ Φ (.var i) (shiftTypes k c a) :=
+  shift_var_aux h hn hm hC i rfl
 
  theorem substEffValues_union (e f : Eff) (ν : Nat → Val) :
     substEffValues ν (Eff.union e f)=Eff.union (substEffValues ν e) (substEffValues ν f) := by

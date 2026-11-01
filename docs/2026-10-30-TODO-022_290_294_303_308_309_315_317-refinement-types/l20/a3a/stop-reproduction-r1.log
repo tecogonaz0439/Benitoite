@@ -1,0 +1,33 @@
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3a/stop-reproduction.lean:42:46: warning: This simp argument is unused:
+  RangeIx.WF
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [output, caller, context, Ty.WF, Ty.WFList, Eff.WF, Eff.Canonical, Eff.singleFail, Ty.norm, Ty.normTys,
+    Eff.norm, NamesWF, Order.sortUnique]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3a/stop-reproduction.lean:42:58: warning: This simp argument is unused:
+  Order.sortUnique
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [output, caller, context, Ty.WF, Ty.WFList, Eff.WF, Eff.Canonical, Eff.singleFail, Ty.norm, Ty.normTys,
+    Eff.norm, NamesWF, RangeIx.WF]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3a/stop-reproduction.lean:53:16: error: Type mismatch: After simplification, term
+  ha
+ has type
+  Eff.test (EffR.mk (fun x => false) []) a = true
+but is expected to have type
+  ∃ b, (Eff.singleFail (Ty.tapp 0 [])).test b = true ∧ b.Covers a
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3a/stop-reproduction.lean:54:16: error: Type mismatch: After simplification, term
+  ha
+ has type
+  ∃ x, x ∈ Eff.fails (EffR.mk (fun x => false) []) ∧ x.norm = a.norm
+but is expected to have type
+  ∃ x, x ∈ (Eff.singleFail (Ty.tapp 0 [])).fails ∧ x.norm = a.norm
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3a/stop-reproduction.lean:65:2: warning: Try `simp at hd` instead of `simpa using hd`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+'Benitoite.Release.Refinement.A3aStop.source_typed' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.A3aStop.target_untyped' depends on axioms: [propext, Classical.choice, Quot.sound]

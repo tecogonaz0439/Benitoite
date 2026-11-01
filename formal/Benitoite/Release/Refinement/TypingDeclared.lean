@@ -10,7 +10,7 @@ namespace Benitoite.Release.Refinement
 variable {P : Program}
 
 /-- lookup が返す型を、その番号を読む文脈で照合する。 -/
-def Ctx.Declared (P : Program) (C : List TParam) (Γ : Ctx) : Prop :=
+def Ctx.Declared (P : Program) (C : TypeCtx) (Γ : Ctx) : Prop :=
   ∀ (i : Nat) (a : Ty), Γ[i]? = some (some a) → Ty.Declared P C Γ a
 
 theorem HasTypeVQ.declared {P B store Q C Γ Φ v a}
@@ -30,7 +30,7 @@ theorem HasTypeVQ.declared {P B store Q C Γ Φ v a}
   | .V_Dict _ _ _ _ _ _ _ ha => exact ha.declared
   | .V_Con _ _ _ _ _ ha => exact ha.declared
   | .V_Super _ _ _ hd => exact hd
-  | .V_Raise ha hot hoe => exact ha.declared
+  | .V_Raise ha hot hoe hkind => exact ha.declared
   | .V_LocRef _ hd | .V_LocLazy _ hd => exact hd
   | .V_Bytes _ => trivial
   | .V_PathBases _ | .V_ScopePattern _ _ _ | .V_Checked _ _ _ |

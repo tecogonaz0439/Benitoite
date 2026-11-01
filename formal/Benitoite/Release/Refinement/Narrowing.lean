@@ -92,7 +92,7 @@ private theorem contView_wf {nr nt nv a b t e} (hw : a.WF nr nt nv)
     rw [hn] at h
     cases h
 /-- 同じ生の束縛、または正規形の等号と元の型へ戻す注釈を持つ束縛。 -/
-private def ContImages (P : Program) (C : List TParam) (Γ Δ : Ctx) : Prop :=
+private def ContImages (P : Program) (C : TypeCtx) (Γ Δ : Ctx) : Prop :=
   ∀ (i : Nat) (a : Ty), Γ[i]? = some (some a) → ¬a.Ordinary →
     ∃ a', Δ[i]? = some (some a') ∧ a'.norm = a.norm ∧
       (a' = a ∨ ∃ b t e, a' = .cont b t e ∧ Ty.Annotation P C Δ a)
@@ -141,7 +141,7 @@ private theorem ContImages.none {P C Γ Δ} (h : ContImages P C Γ Δ) :
             by rw [he]; rfl,(ShiftMap.outerNone Δ).annotation ha⟩
 
 private structure ContextMap (P : Program) (B : Builtins) (store : StoreTy) (Q : NoFailCtx)
-    (C : List TParam) (Γ Δ : Ctx) (Ξ : List Pred) : Prop where
+    (C : TypeCtx) (Γ Δ : Ctx) (Ξ : List Pred) : Prop where
   length : Δ.length = Γ.length
   continuations : ContImages P C Γ Δ
   lookup : ∀ i a, Γ[i]? = some (some a) → a.Ordinary →
@@ -325,7 +325,7 @@ private theorem ContextMap.signature {P B store Q C Γ Δ Ξ t ks ts es}
     fun e he => h.annotation (ht.rows e he), h.annotation ht.result⟩
 
 private theorem ContextMap.shiftE {P B store Q C Γ Δ Ξ store'}
-    (h : ContextMap P B store Q C Γ Δ Ξ) (extra : List TParam) :
+    (h : ContextMap P B store Q C Γ Δ Ξ) (extra : TypeCtx) :
     ContextMap P B store' Q (extra++C) (Γ.shiftE extra.length) (Δ.shiftE extra.length) Ξ := by
   constructor
   · simpa only [Ctx.shiftE,Ctx.shiftEAt,List.length_map] using h.length
@@ -345,7 +345,8 @@ private theorem ContextMap.shiftE {P B store Q C Γ Δ Ξ store'}
           · exact Or.inl (congrArg (shiftTypes extra.length 0) he)
           · obtain ⟨bin,bout,e,he,ha⟩ := ha
             exact Or.inr ⟨shiftTypes extra.length 0 bin,shiftTypes extra.length 0 bout,shiftRowsTypes extra.length 0 e,
-              by rw [he]; rfl,(TypeCtxMap.shiftEAt Δ extra.length 0).annotation (by simp [Nat.add_comm]) ha⟩
+              by rw [he]; rfl,(TypeCtxMap.shiftEAt Δ extra.length 0).annotation (by simp [Nat.add_comm]) ha
+                (by simpa only [List.nil_append, List.length_nil] using TypeParamRenaming.insert [] extra C)⟩
   · intro i a hi ho
     simp only [Ctx.shiftE,Ctx.shiftEAt,List.getElem?_map] at hi
     cases hg : Γ[i]? with
@@ -357,6 +358,7 @@ private theorem ContextMap.shiftE {P B store Q C Γ Δ Ξ store'}
         cases hi
         exact (h.lookup i b hg ((Ty.ordinary_shiftTypes _ _ _).mp ho)).shift_types_var
           (by simp [Nat.add_comm]) (TypeCtxMap.shiftEAt Δ extra.length 0)
+          (by simpa only [List.nil_append, List.length_nil] using TypeParamRenaming.insert [] extra C)
 
 private theorem ContextMap.many {P B store Q C Γ Δ Ξ}
     (h : ContextMap P B store Q C Γ Δ Ξ) (hA : Builtins.ValueAssumptions P B) (hw : store.WF) (ps : List Ty) :
@@ -407,8 +409,8 @@ private theorem ContextMap.conditions_clause {P B store Q C Γ Δ Ξ Φ}
 
 private theorem ContextMap.failure {P B store Q C Γ Δ Ξ}
     (h : ContextMap P B store Q C Γ Δ Ξ) (hA : Builtins.ValueAssumptions P B) (hw : store.WF) (E : Ty) :
-    ContextMap P B (hideBuilders store) Q (({} : TParam)::C) (failureContext Γ E) (failureContext Δ E) (liftMany 2 Ξ) := by
-  have hm := (h.shiftE (store' := hideBuilders store) [{}]).params hA hw.hide [shiftTypes 1 0 E]
+    ContextMap P B (hideBuilders store) Q (TypeCtx.valueParam::C) (failureContext Γ E) (failureContext Δ E) (liftMany 2 Ξ) := by
+  have hm := (h.shiftE (store' := hideBuilders store) [TypeCtx.valueParam]).params hA hw.hide [shiftTypes 1 0 E]
   have hh := (hm.none hA hw.hide)
   simpa only [failureContext,bindParams_single,List.length_cons,List.length_nil,Nat.zero_add,liftMany_one,
     List.singleton_append,show liftMany 2 Ξ=(Ξ.map Pred.lift).map Pred.lift from rfl] using hh
@@ -417,7 +419,7 @@ private theorem ContextMap.conditions_failure {P B store Q C Γ Δ Ξ Φ}
     (h : ContextMap P B store Q C Γ Δ Ξ) (_hA : Builtins.ValueAssumptions P B) (_hw : store.WF)
     (hf : ∀ p∈Φ,Entails (Δ.facts++Ξ) p) (E : Ty) :
     ∀ p∈liftMany 2 Φ,Entails ((failureContext Δ E).facts++liftMany 2 Ξ) p := by
-  have hm := h.shiftE (store' := hideBuilders store) [{}]
+  have hm := h.shiftE (store' := hideBuilders store) [TypeCtx.valueParam]
   have hf0 : ∀ p∈Φ,Entails ((Δ.shiftE 1).facts++Ξ) p :=
     fun p hp => (TypeCtxMap.shiftEAt Δ 1 0).entails (hf p hp)
   have hh := hm.conditions_params hf0 [shiftTypes 1 0 E]
@@ -463,8 +465,8 @@ mutual
     | .V_Dict hi hs ht hk hw htarget hv ha =>
       exact .V_Dict hi hs (fun a hm' => hm.annotation (ht a hm'))
         hk hw htarget (context_values hv hA hstore hm hf) (hm.annotation ha)
-    | .V_Raise ha hot hoe => exact .V_Raise ⟨by simpa only [hm.length] using ha.wf,
-        hm.sorted ha.sorted, ha.declared.context hm.declaration⟩ hot hoe
+    | .V_Raise ha hot hoe hkind => exact .V_Raise ⟨by simpa only [hm.length] using ha.wf,
+        hm.sorted ha.sorted, ha.declared.context hm.declaration⟩ hot hoe hkind
     | .V_LocRef hl hd => exact .V_LocRef hl (hd.context hm.declaration)
     | .V_LocLazy hl hd => exact .V_LocLazy hl (hd.context hm.declaration)
     | .V_Bytes hb => exact .V_Bytes hb
@@ -656,7 +658,7 @@ mutual
 end
 
 /-- 外側で検査した部分型による一位置の置換と、後続の束縛の列。 -/
-inductive Ctx.Narrows (P : Program) (C : List TParam) : Ctx → List Pred → Ctx → List Pred → Prop where
+inductive Ctx.Narrows (P : Program) (C : TypeCtx) : Ctx → List Pred → Ctx → List Pred → Prop where
   | here {Γ Φ a b} : Ty.LeQ P Γ Φ a b → a.WF 0 C.length Γ.length → b.WF 0 C.length Γ.length → b.Sorted Γ → Ty.Declared P C Γ b →
       Narrows P C (Γ.extend b) (Φ.map Pred.lift) (Γ.extend a) (Φ.map Pred.lift)
   | under {Γ Φ Δ Ξ} : Narrows P C Γ Φ Δ Ξ → (a : Ty) →

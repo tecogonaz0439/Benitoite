@@ -1,0 +1,11 @@
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3a/stop-reproduction.lean:53:16: error: Type mismatch: After simplification, term
+  ha
+ has type
+  Eff.atoms (EffR.mk (fun x => false) []) a = true
+but is expected to have type
+  ∃ b, (Eff.singleFail (Ty.tapp 0 [])).atoms b = true ∧ b.Covers a
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a3a/stop-reproduction.lean:54:16: warning: Try `simp at ha` instead of `simpa using ha`
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+'Benitoite.Release.Refinement.A3aStop.source_typed' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.A3aStop.target_untyped' depends on axioms: [propext, Classical.choice, Quot.sound]

@@ -1,0 +1,1477 @@
+[
+  {
+    "file": "formal/Benitoite/Release/Refinement/TypingShift.lean",
+    "branches": [
+      {
+        "theorem": "HasTypeVQ.shift_values",
+        "branch": "V_Var",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeVQ.shift_values",
+        "branch": "V_Const",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeVQ.shift_values",
+        "branch": "V_Lam",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeVQ.shift_values",
+        "branch": "V_DependentLam",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeVQ.shift_values",
+        "branch": "V_Closure",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeVQ.shift_values",
+        "branch": "V_List",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeVQ.shift_values",
+        "branch": "V_Fun",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeVQ.shift_values",
+        "branch": "V_Prim",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeVQ.shift_values",
+        "branch": "V_Op",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeVQ.shift_values",
+        "branch": "V_ExternalRef",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeVQ.shift_values",
+        "branch": "V_ExternalHandle",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeVQ.shift_values",
+        "branch": "V_PathBases",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeVQ.shift_values",
+        "branch": "V_ScopePattern",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeVQ.shift_values",
+        "branch": "V_Checked",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeVQ.shift_values",
+        "branch": "V_CheckedRequest",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeVQ.shift_values",
+        "branch": "V_CheckedAt",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeVQ.shift_values",
+        "branch": "V_AtError",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeVQ.shift_values",
+        "branch": "V_Map",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeVQ.shift_values",
+        "branch": "V_Set",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeVQ.shift_values",
+        "branch": "V_Dict",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeVQ.shift_values",
+        "branch": "V_Raise",
+        "modified": true
+      },
+      {
+        "theorem": "HasTypeVQ.shift_values",
+        "branch": "V_LocRef",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeVQ.shift_values",
+        "branch": "V_LocLazy",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeVQ.shift_values",
+        "branch": "V_Bytes",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeVQ.shift_values",
+        "branch": "V_Con",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeVQ.shift_values",
+        "branch": "V_Super",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeVQ.shift_values",
+        "branch": "V_Normal",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeVQ.shift_values",
+        "branch": "V_Sub",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeVQ.shift_values",
+        "branch": "V_Refine",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeVsQ.shift_values",
+        "branch": "nil",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeVsQ.shift_values",
+        "branch": "cons",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeEachQ.shift_values",
+        "branch": "nil",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeEachQ.shift_values",
+        "branch": "cons",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeCQ.shift_values",
+        "branch": "C_BuilderLet",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeCQ.shift_values",
+        "branch": "C_BuilderOp",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeCQ.shift_values",
+        "branch": "C_Return",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeCQ.shift_values",
+        "branch": "C_App",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeCQ.shift_values",
+        "branch": "C_DependentApp",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeCQ.shift_values",
+        "branch": "C_Normal",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeCQ.shift_values",
+        "branch": "C_If",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeCQ.shift_values",
+        "branch": "C_Match",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeCQ.shift_values",
+        "branch": "C_Lazy",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeCQ.shift_values",
+        "branch": "C_Escape",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeCQ.shift_values",
+        "branch": "C_Use",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeCQ.shift_values",
+        "branch": "C_Handle",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeCQ.shift_values",
+        "branch": "C_Handle_Fail",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeCQ.shift_values",
+        "branch": "C_Resume",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeCQ.shift_values",
+        "branch": "C_ResumeNorm",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeCQ.shift_values",
+        "branch": "C_ResumeLNorm",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeCQ.shift_values",
+        "branch": "C_ResumeL",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeCQ.shift_values",
+        "branch": "C_Meth",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeCQ.shift_values",
+        "branch": "C_External",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeCQ.shift_values",
+        "branch": "C_IssuePathBases",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeCQ.shift_values",
+        "branch": "C_CheckAt",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeCQ.shift_values",
+        "branch": "C_Sub",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeCQ.shift_values",
+        "branch": "C_Eff",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeCQ.shift_values",
+        "branch": "C_Let",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeArmsQ.shift_values",
+        "branch": "nil",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeArmsQ.shift_values",
+        "branch": "plain",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeArmsQ.shift_values",
+        "branch": "guarded",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeClausesQ.shift_values",
+        "branch": "nil",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeClausesQ.shift_values",
+        "branch": "cons",
+        "modified": false
+      },
+      {
+        "theorem": "HasFailureClause.shift_values",
+        "branch": "one",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeTelArgsQ.shift_values",
+        "branch": "done",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeTelArgsQ.shift_values",
+        "branch": "param",
+        "modified": false
+      },
+      {
+        "theorem": "TelBodyTy.shift_values",
+        "branch": "done",
+        "modified": false
+      },
+      {
+        "theorem": "TelBodyTy.shift_values",
+        "branch": "param",
+        "modified": false
+      },
+      {
+        "theorem": "CaptureOk.store",
+        "branch": "mk",
+        "modified": false
+      },
+      {
+        "theorem": "ImageOk.store",
+        "branch": "ordinary",
+        "modified": false
+      },
+      {
+        "theorem": "ImageOk.store",
+        "branch": "hidden",
+        "modified": false
+      },
+      {
+        "theorem": "ImageOk.store",
+        "branch": "contLoc",
+        "modified": false
+      },
+      {
+        "theorem": "ImageOk.store",
+        "branch": "contVar",
+        "modified": false
+      },
+      {
+        "theorem": "DependentClosureTy.store",
+        "branch": "mk",
+        "modified": false
+      },
+      {
+        "theorem": "CheckedWitness.shift_store",
+        "branch": "plain",
+        "modified": false
+      },
+      {
+        "theorem": "CheckedWitness.shift_store",
+        "branch": "request",
+        "modified": false
+      },
+      {
+        "theorem": "AtCallAdmissible.shift_values",
+        "branch": "mk",
+        "modified": false
+      }
+    ],
+    "modified": 1
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/TypeShiftTyping.lean",
+    "branches": [
+      {
+        "theorem": "HasTypeVQ.shift_types",
+        "branch": "V_Var",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeVQ.shift_types",
+        "branch": "V_Const",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeVQ.shift_types",
+        "branch": "V_Lam",
+        "modified": true
+      },
+      {
+        "theorem": "HasTypeVQ.shift_types",
+        "branch": "V_DependentLam",
+        "modified": true
+      },
+      {
+        "theorem": "HasTypeVQ.shift_types",
+        "branch": "V_Closure",
+        "modified": true
+      },
+      {
+        "theorem": "HasTypeVQ.shift_types",
+        "branch": "V_List",
+        "modified": true
+      },
+      {
+        "theorem": "HasTypeVQ.shift_types",
+        "branch": "V_Fun",
+        "modified": true
+      },
+      {
+        "theorem": "HasTypeVQ.shift_types",
+        "branch": "V_Prim",
+        "modified": true
+      },
+      {
+        "theorem": "HasTypeVQ.shift_types",
+        "branch": "V_Op",
+        "modified": true
+      },
+      {
+        "theorem": "HasTypeVQ.shift_types",
+        "branch": "V_ExternalRef",
+        "modified": true
+      },
+      {
+        "theorem": "HasTypeVQ.shift_types",
+        "branch": "V_ExternalHandle",
+        "modified": true
+      },
+      {
+        "theorem": "HasTypeVQ.shift_types",
+        "branch": "V_PathBases",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeVQ.shift_types",
+        "branch": "V_ScopePattern",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeVQ.shift_types",
+        "branch": "V_Checked",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeVQ.shift_types",
+        "branch": "V_CheckedRequest",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeVQ.shift_types",
+        "branch": "V_CheckedAt",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeVQ.shift_types",
+        "branch": "V_AtError",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeVQ.shift_types",
+        "branch": "V_Map",
+        "modified": true
+      },
+      {
+        "theorem": "HasTypeVQ.shift_types",
+        "branch": "V_Set",
+        "modified": true
+      },
+      {
+        "theorem": "HasTypeVQ.shift_types",
+        "branch": "V_Dict",
+        "modified": true
+      },
+      {
+        "theorem": "HasTypeVQ.shift_types",
+        "branch": "V_Raise",
+        "modified": true
+      },
+      {
+        "theorem": "HasTypeVQ.shift_types",
+        "branch": "V_LocRef",
+        "modified": true
+      },
+      {
+        "theorem": "HasTypeVQ.shift_types",
+        "branch": "V_LocLazy",
+        "modified": true
+      },
+      {
+        "theorem": "HasTypeVQ.shift_types",
+        "branch": "V_Bytes",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeVQ.shift_types",
+        "branch": "V_Con",
+        "modified": true
+      },
+      {
+        "theorem": "HasTypeVQ.shift_types",
+        "branch": "V_Super",
+        "modified": true
+      },
+      {
+        "theorem": "HasTypeVQ.shift_types",
+        "branch": "V_Normal",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeVQ.shift_types",
+        "branch": "V_Sub",
+        "modified": true
+      },
+      {
+        "theorem": "HasTypeVQ.shift_types",
+        "branch": "V_Refine",
+        "modified": true
+      },
+      {
+        "theorem": "HasTypeVsQ.shift_types",
+        "branch": "nil",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeVsQ.shift_types",
+        "branch": "cons",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeEachQ.shift_types",
+        "branch": "nil",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeEachQ.shift_types",
+        "branch": "cons",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeCQ.shift_types",
+        "branch": "C_BuilderLet",
+        "modified": true
+      },
+      {
+        "theorem": "HasTypeCQ.shift_types",
+        "branch": "C_BuilderOp",
+        "modified": true
+      },
+      {
+        "theorem": "HasTypeCQ.shift_types",
+        "branch": "C_Return",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeCQ.shift_types",
+        "branch": "C_DependentApp",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeCQ.shift_types",
+        "branch": "C_App",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeCQ.shift_types",
+        "branch": "C_Normal",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeCQ.shift_types",
+        "branch": "C_If",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeCQ.shift_types",
+        "branch": "C_Match",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeCQ.shift_types",
+        "branch": "C_Lazy",
+        "modified": true
+      },
+      {
+        "theorem": "HasTypeCQ.shift_types",
+        "branch": "C_Escape",
+        "modified": true
+      },
+      {
+        "theorem": "HasTypeCQ.shift_types",
+        "branch": "C_Use",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeCQ.shift_types",
+        "branch": "C_Handle",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeCQ.shift_types",
+        "branch": "C_Handle_Fail",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeCQ.shift_types",
+        "branch": "C_Resume",
+        "modified": true
+      },
+      {
+        "theorem": "HasTypeCQ.shift_types",
+        "branch": "C_ResumeNorm",
+        "modified": true
+      },
+      {
+        "theorem": "HasTypeCQ.shift_types",
+        "branch": "C_ResumeLNorm",
+        "modified": true
+      },
+      {
+        "theorem": "HasTypeCQ.shift_types",
+        "branch": "C_ResumeL",
+        "modified": true
+      },
+      {
+        "theorem": "HasTypeCQ.shift_types",
+        "branch": "C_Meth",
+        "modified": true
+      },
+      {
+        "theorem": "HasTypeCQ.shift_types",
+        "branch": "C_External",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeCQ.shift_types",
+        "branch": "C_IssuePathBases",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeCQ.shift_types",
+        "branch": "C_CheckAt",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeCQ.shift_types",
+        "branch": "C_Sub",
+        "modified": true
+      },
+      {
+        "theorem": "HasTypeCQ.shift_types",
+        "branch": "C_Eff",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeCQ.shift_types",
+        "branch": "C_Let",
+        "modified": true
+      },
+      {
+        "theorem": "HasTypeArmsQ.shift_types",
+        "branch": "nil",
+        "modified": true
+      },
+      {
+        "theorem": "HasTypeArmsQ.shift_types",
+        "branch": "plain",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeArmsQ.shift_types",
+        "branch": "guarded",
+        "modified": true
+      },
+      {
+        "theorem": "HasTypeClausesQ.shift_types",
+        "branch": "nil",
+        "modified": false
+      },
+      {
+        "theorem": "HasTypeClausesQ.shift_types",
+        "branch": "cons",
+        "modified": false
+      },
+      {
+        "theorem": "HasFailureClause.shift_types",
+        "branch": "one",
+        "modified": true
+      },
+      {
+        "theorem": "HasTypeTelArgsQ.shift_types",
+        "branch": "done",
+        "modified": true
+      },
+      {
+        "theorem": "HasTypeTelArgsQ.shift_types",
+        "branch": "param",
+        "modified": true
+      },
+      {
+        "theorem": "TelBodyTy.shift_types",
+        "branch": "done",
+        "modified": false
+      },
+      {
+        "theorem": "TelBodyTy.shift_types",
+        "branch": "param",
+        "modified": false
+      },
+      {
+        "theorem": "AtCallAdmissible.shift_types",
+        "branch": "mk",
+        "modified": false
+      }
+    ],
+    "modified": 35
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/SubstTyping.lean",
+    "branches": [
+      {
+        "theorem": "subst_value",
+        "branch": "V_Var",
+        "modified": false
+      },
+      {
+        "theorem": "subst_value",
+        "branch": "V_Const",
+        "modified": false
+      },
+      {
+        "theorem": "subst_value",
+        "branch": "V_Lam",
+        "modified": false
+      },
+      {
+        "theorem": "subst_value",
+        "branch": "V_DependentLam",
+        "modified": false
+      },
+      {
+        "theorem": "subst_value",
+        "branch": "V_Closure",
+        "modified": false
+      },
+      {
+        "theorem": "subst_value",
+        "branch": "V_List",
+        "modified": false
+      },
+      {
+        "theorem": "subst_value",
+        "branch": "V_Fun",
+        "modified": false
+      },
+      {
+        "theorem": "subst_value",
+        "branch": "V_Prim",
+        "modified": false
+      },
+      {
+        "theorem": "subst_value",
+        "branch": "V_Op",
+        "modified": false
+      },
+      {
+        "theorem": "subst_value",
+        "branch": "V_ExternalRef",
+        "modified": false
+      },
+      {
+        "theorem": "subst_value",
+        "branch": "V_ExternalHandle",
+        "modified": false
+      },
+      {
+        "theorem": "subst_value",
+        "branch": "V_PathBases",
+        "modified": false
+      },
+      {
+        "theorem": "subst_value",
+        "branch": "V_ScopePattern",
+        "modified": false
+      },
+      {
+        "theorem": "subst_value",
+        "branch": "V_Checked",
+        "modified": false
+      },
+      {
+        "theorem": "subst_value",
+        "branch": "V_CheckedRequest",
+        "modified": false
+      },
+      {
+        "theorem": "subst_value",
+        "branch": "V_CheckedAt",
+        "modified": false
+      },
+      {
+        "theorem": "subst_value",
+        "branch": "V_AtError",
+        "modified": false
+      },
+      {
+        "theorem": "subst_value",
+        "branch": "V_Map",
+        "modified": false
+      },
+      {
+        "theorem": "subst_value",
+        "branch": "V_Set",
+        "modified": false
+      },
+      {
+        "theorem": "subst_value",
+        "branch": "V_Dict",
+        "modified": false
+      },
+      {
+        "theorem": "subst_value",
+        "branch": "V_Raise",
+        "modified": true
+      },
+      {
+        "theorem": "subst_value",
+        "branch": "V_LocRef",
+        "modified": false
+      },
+      {
+        "theorem": "subst_value",
+        "branch": "V_LocLazy",
+        "modified": false
+      },
+      {
+        "theorem": "subst_value",
+        "branch": "V_Bytes",
+        "modified": false
+      },
+      {
+        "theorem": "subst_value",
+        "branch": "V_Con",
+        "modified": false
+      },
+      {
+        "theorem": "subst_value",
+        "branch": "V_Super",
+        "modified": false
+      },
+      {
+        "theorem": "subst_value",
+        "branch": "V_Normal",
+        "modified": false
+      },
+      {
+        "theorem": "subst_value",
+        "branch": "V_Sub",
+        "modified": false
+      },
+      {
+        "theorem": "subst_value",
+        "branch": "V_Refine",
+        "modified": false
+      },
+      {
+        "theorem": "subst_values",
+        "branch": "nil",
+        "modified": false
+      },
+      {
+        "theorem": "subst_values",
+        "branch": "cons",
+        "modified": false
+      },
+      {
+        "theorem": "subst_each",
+        "branch": "nil",
+        "modified": false
+      },
+      {
+        "theorem": "subst_each",
+        "branch": "cons",
+        "modified": false
+      },
+      {
+        "theorem": "subst_comp",
+        "branch": "C_BuilderLet",
+        "modified": false
+      },
+      {
+        "theorem": "subst_comp",
+        "branch": "C_BuilderOp",
+        "modified": false
+      },
+      {
+        "theorem": "subst_comp",
+        "branch": "C_Return",
+        "modified": false
+      },
+      {
+        "theorem": "subst_comp",
+        "branch": "C_DependentApp",
+        "modified": false
+      },
+      {
+        "theorem": "subst_comp",
+        "branch": "C_Normal",
+        "modified": false
+      },
+      {
+        "theorem": "subst_comp",
+        "branch": "C_App",
+        "modified": false
+      },
+      {
+        "theorem": "subst_comp",
+        "branch": "C_If",
+        "modified": false
+      },
+      {
+        "theorem": "subst_comp",
+        "branch": "C_Match",
+        "modified": false
+      },
+      {
+        "theorem": "subst_comp",
+        "branch": "C_Lazy",
+        "modified": false
+      },
+      {
+        "theorem": "subst_comp",
+        "branch": "C_Escape",
+        "modified": false
+      },
+      {
+        "theorem": "subst_comp",
+        "branch": "C_Use",
+        "modified": false
+      },
+      {
+        "theorem": "subst_comp",
+        "branch": "C_Handle",
+        "modified": false
+      },
+      {
+        "theorem": "subst_comp",
+        "branch": "C_Handle_Fail",
+        "modified": false
+      },
+      {
+        "theorem": "subst_comp",
+        "branch": "C_Resume",
+        "modified": false
+      },
+      {
+        "theorem": "subst_comp",
+        "branch": "C_ResumeNorm",
+        "modified": false
+      },
+      {
+        "theorem": "subst_comp",
+        "branch": "C_ResumeL",
+        "modified": false
+      },
+      {
+        "theorem": "subst_comp",
+        "branch": "C_ResumeLNorm",
+        "modified": false
+      },
+      {
+        "theorem": "subst_comp",
+        "branch": "C_Meth",
+        "modified": false
+      },
+      {
+        "theorem": "subst_comp",
+        "branch": "C_External",
+        "modified": false
+      },
+      {
+        "theorem": "subst_comp",
+        "branch": "C_IssuePathBases",
+        "modified": false
+      },
+      {
+        "theorem": "subst_comp",
+        "branch": "C_CheckAt",
+        "modified": false
+      },
+      {
+        "theorem": "subst_comp",
+        "branch": "C_Sub",
+        "modified": false
+      },
+      {
+        "theorem": "subst_comp",
+        "branch": "C_Eff",
+        "modified": false
+      },
+      {
+        "theorem": "subst_comp",
+        "branch": "C_Let",
+        "modified": false
+      },
+      {
+        "theorem": "subst_arms",
+        "branch": "nil",
+        "modified": false
+      },
+      {
+        "theorem": "subst_arms",
+        "branch": "plain",
+        "modified": false
+      },
+      {
+        "theorem": "subst_arms",
+        "branch": "guarded",
+        "modified": false
+      },
+      {
+        "theorem": "subst_clauses",
+        "branch": "nil",
+        "modified": false
+      },
+      {
+        "theorem": "subst_clauses",
+        "branch": "cons",
+        "modified": false
+      },
+      {
+        "theorem": "subst_failure",
+        "branch": "one",
+        "modified": false
+      },
+      {
+        "theorem": "subst_telArgs",
+        "branch": "done",
+        "modified": false
+      },
+      {
+        "theorem": "subst_telArgs",
+        "branch": "param",
+        "modified": false
+      },
+      {
+        "theorem": "subst_telBody",
+        "branch": "done",
+        "modified": false
+      },
+      {
+        "theorem": "subst_telBody",
+        "branch": "param",
+        "modified": false
+      },
+      {
+        "theorem": "subst_at_call",
+        "branch": "mk",
+        "modified": false
+      }
+    ],
+    "modified": 1
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Narrowing.lean",
+    "branches": [
+      {
+        "theorem": "context_value",
+        "branch": "V_Var",
+        "modified": false
+      },
+      {
+        "theorem": "context_value",
+        "branch": "V_Const",
+        "modified": false
+      },
+      {
+        "theorem": "context_value",
+        "branch": "V_Lam",
+        "modified": false
+      },
+      {
+        "theorem": "context_value",
+        "branch": "V_DependentLam",
+        "modified": false
+      },
+      {
+        "theorem": "context_value",
+        "branch": "V_Closure",
+        "modified": false
+      },
+      {
+        "theorem": "context_value",
+        "branch": "V_List",
+        "modified": false
+      },
+      {
+        "theorem": "context_value",
+        "branch": "V_Fun",
+        "modified": false
+      },
+      {
+        "theorem": "context_value",
+        "branch": "V_Prim",
+        "modified": false
+      },
+      {
+        "theorem": "context_value",
+        "branch": "V_Op",
+        "modified": false
+      },
+      {
+        "theorem": "context_value",
+        "branch": "V_ExternalRef",
+        "modified": false
+      },
+      {
+        "theorem": "context_value",
+        "branch": "V_ExternalHandle",
+        "modified": false
+      },
+      {
+        "theorem": "context_value",
+        "branch": "V_PathBases",
+        "modified": false
+      },
+      {
+        "theorem": "context_value",
+        "branch": "V_ScopePattern",
+        "modified": false
+      },
+      {
+        "theorem": "context_value",
+        "branch": "V_Checked",
+        "modified": false
+      },
+      {
+        "theorem": "context_value",
+        "branch": "V_CheckedRequest",
+        "modified": false
+      },
+      {
+        "theorem": "context_value",
+        "branch": "V_CheckedAt",
+        "modified": false
+      },
+      {
+        "theorem": "context_value",
+        "branch": "V_AtError",
+        "modified": false
+      },
+      {
+        "theorem": "context_value",
+        "branch": "V_Map",
+        "modified": false
+      },
+      {
+        "theorem": "context_value",
+        "branch": "V_Set",
+        "modified": false
+      },
+      {
+        "theorem": "context_value",
+        "branch": "V_Dict",
+        "modified": false
+      },
+      {
+        "theorem": "context_value",
+        "branch": "V_Raise",
+        "modified": true
+      },
+      {
+        "theorem": "context_value",
+        "branch": "V_LocRef",
+        "modified": false
+      },
+      {
+        "theorem": "context_value",
+        "branch": "V_LocLazy",
+        "modified": false
+      },
+      {
+        "theorem": "context_value",
+        "branch": "V_Bytes",
+        "modified": false
+      },
+      {
+        "theorem": "context_value",
+        "branch": "V_Con",
+        "modified": false
+      },
+      {
+        "theorem": "context_value",
+        "branch": "V_Super",
+        "modified": false
+      },
+      {
+        "theorem": "context_value",
+        "branch": "V_Normal",
+        "modified": false
+      },
+      {
+        "theorem": "context_value",
+        "branch": "V_Sub",
+        "modified": false
+      },
+      {
+        "theorem": "context_value",
+        "branch": "V_Refine",
+        "modified": false
+      },
+      {
+        "theorem": "context_values",
+        "branch": "nil",
+        "modified": false
+      },
+      {
+        "theorem": "context_values",
+        "branch": "cons",
+        "modified": false
+      },
+      {
+        "theorem": "context_each",
+        "branch": "nil",
+        "modified": false
+      },
+      {
+        "theorem": "context_each",
+        "branch": "cons",
+        "modified": false
+      },
+      {
+        "theorem": "context_comp",
+        "branch": "C_BuilderLet",
+        "modified": false
+      },
+      {
+        "theorem": "context_comp",
+        "branch": "C_BuilderOp",
+        "modified": false
+      },
+      {
+        "theorem": "context_comp",
+        "branch": "C_Return",
+        "modified": false
+      },
+      {
+        "theorem": "context_comp",
+        "branch": "C_DependentApp",
+        "modified": false
+      },
+      {
+        "theorem": "context_comp",
+        "branch": "C_App",
+        "modified": false
+      },
+      {
+        "theorem": "context_comp",
+        "branch": "C_If",
+        "modified": false
+      },
+      {
+        "theorem": "context_comp",
+        "branch": "C_Match",
+        "modified": false
+      },
+      {
+        "theorem": "context_comp",
+        "branch": "C_Lazy",
+        "modified": false
+      },
+      {
+        "theorem": "context_comp",
+        "branch": "C_Escape",
+        "modified": false
+      },
+      {
+        "theorem": "context_comp",
+        "branch": "C_Use",
+        "modified": false
+      },
+      {
+        "theorem": "context_comp",
+        "branch": "C_Handle",
+        "modified": false
+      },
+      {
+        "theorem": "context_comp",
+        "branch": "C_Handle_Fail",
+        "modified": false
+      },
+      {
+        "theorem": "context_comp",
+        "branch": "C_Resume",
+        "modified": false
+      },
+      {
+        "theorem": "context_comp",
+        "branch": "C_ResumeNorm",
+        "modified": false
+      },
+      {
+        "theorem": "context_comp",
+        "branch": "C_ResumeLNorm",
+        "modified": false
+      },
+      {
+        "theorem": "context_comp",
+        "branch": "C_ResumeL",
+        "modified": false
+      },
+      {
+        "theorem": "context_comp",
+        "branch": "C_Meth",
+        "modified": false
+      },
+      {
+        "theorem": "context_comp",
+        "branch": "C_External",
+        "modified": false
+      },
+      {
+        "theorem": "context_comp",
+        "branch": "C_IssuePathBases",
+        "modified": false
+      },
+      {
+        "theorem": "context_comp",
+        "branch": "C_CheckAt",
+        "modified": false
+      },
+      {
+        "theorem": "context_comp",
+        "branch": "C_Normal",
+        "modified": false
+      },
+      {
+        "theorem": "context_comp",
+        "branch": "C_Sub",
+        "modified": false
+      },
+      {
+        "theorem": "context_comp",
+        "branch": "C_Eff",
+        "modified": false
+      },
+      {
+        "theorem": "context_comp",
+        "branch": "C_Let",
+        "modified": false
+      },
+      {
+        "theorem": "context_arms",
+        "branch": "nil",
+        "modified": false
+      },
+      {
+        "theorem": "context_arms",
+        "branch": "plain",
+        "modified": false
+      },
+      {
+        "theorem": "context_arms",
+        "branch": "guarded",
+        "modified": false
+      },
+      {
+        "theorem": "context_clauses",
+        "branch": "nil",
+        "modified": false
+      },
+      {
+        "theorem": "context_clauses",
+        "branch": "cons",
+        "modified": false
+      },
+      {
+        "theorem": "context_failure",
+        "branch": "one",
+        "modified": false
+      },
+      {
+        "theorem": "context_telArgs",
+        "branch": "done",
+        "modified": false
+      },
+      {
+        "theorem": "context_telArgs",
+        "branch": "param",
+        "modified": false
+      },
+      {
+        "theorem": "context_telBody",
+        "branch": "done",
+        "modified": false
+      },
+      {
+        "theorem": "context_telBody",
+        "branch": "param",
+        "modified": false
+      },
+      {
+        "theorem": "context_at_call",
+        "branch": "mk",
+        "modified": false
+      }
+    ],
+    "modified": 1
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/HandlerAlgebra.lean",
+    "branches": [
+      {
+        "theorem": "shift_var_aux",
+        "branch": "V_Var",
+        "modified": false
+      },
+      {
+        "theorem": "shift_var_aux",
+        "branch": "V_Normal",
+        "modified": true
+      },
+      {
+        "theorem": "shift_var_aux",
+        "branch": "V_Sub",
+        "modified": true
+      },
+      {
+        "theorem": "shift_var_aux",
+        "branch": "V_Refine",
+        "modified": true
+      },
+      {
+        "theorem": "shift_var_aux",
+        "branch": "V_Const",
+        "modified": false
+      },
+      {
+        "theorem": "shift_var_aux",
+        "branch": "V_ExternalRef",
+        "modified": false
+      },
+      {
+        "theorem": "shift_var_aux",
+        "branch": "V_ScopePattern",
+        "modified": false
+      },
+      {
+        "theorem": "shift_var_aux",
+        "branch": "V_Map",
+        "modified": false
+      },
+      {
+        "theorem": "shift_var_aux",
+        "branch": "V_LocLazy",
+        "modified": false
+      }
+    ],
+    "modified": 3
+  }
+]

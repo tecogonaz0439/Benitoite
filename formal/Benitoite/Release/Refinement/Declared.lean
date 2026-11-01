@@ -35,13 +35,13 @@ theorem Term.HasData.not_integer {P Γ t d as n} (h : Term.HasData P Γ t d as)
   | .widen h _ => exact h.not_integer he
   | .var .. | .value .. | .field .. => cases he
 
-def FieldRef.Declared (P : Program) (_C : List TParam) (Γ : Ctx) (receiver : Term) (ref : FieldRef) : Prop :=
+def FieldRef.Declared (P : Program) (_C : TypeCtx) (Γ : Ctx) (receiver : Term) (ref : FieldRef) : Prop :=
   ∃ ts cd a, Term.HasData P Γ receiver ref.owner ts ∧
     P.cons ref.constructor = some cd ∧ cd.data = ref.owner ∧ cd.ntys = ts.length ∧
     cd.args[ref.position]? = some a ∧ a.WF 0 cd.ntys 0 ∧ (a.subst ts []).HasSort ref.result
 
 mutual
-  def Term.Declared (P : Program) (C : List TParam) (Γ : Ctx) : Term → Prop
+  def Term.Declared (P : Program) (C : TypeCtx) (Γ : Ctx) : Term → Prop
     | .var i => Γ.Readable i
     | .field ref t => Term.Declared P C Γ t ∧ FieldRef.Declared P C Γ t ref
     | .measure _ t | .neg t | .scale _ t => Term.Declared P C Γ t
@@ -50,10 +50,10 @@ mutual
     | .mapValue ks vs => declaredSlots P C Γ ks ∧ declaredSlots P C Γ vs
     | .dataValue c xs => declaredSlots P C Γ xs ∧ ∃ cd, P.cons c = some cd ∧ xs.length = cd.args.length
     | _ => True
-  def declaredSlot (P : Program) (C : List TParam) (Γ : Ctx) : Option Term → Prop
+  def declaredSlot (P : Program) (C : TypeCtx) (Γ : Ctx) : Option Term → Prop
     | none => True
     | some t => Term.Declared P C Γ t
-  def declaredSlots (P : Program) (C : List TParam) (Γ : Ctx) : List (Option Term) → Prop
+  def declaredSlots (P : Program) (C : TypeCtx) (Γ : Ctx) : List (Option Term) → Prop
     | [] => True
     | x :: xs => declaredSlot P C Γ x ∧ declaredSlots P C Γ xs
 end
@@ -62,7 +62,7 @@ def Ctx.declarationSelf (Γ : Ctx) : Option Ty → Ctx
   | none => Γ
   | some a => Γ.extend a
 
-def Pred.Declared (P : Program) (C : List TParam) (Γ : Ctx) (self : Option Ty) : Pred → Prop
+def Pred.Declared (P : Program) (C : TypeCtx) (Γ : Ctx) (self : Option Ty) : Pred → Prop
   | .truth | .falsity => True
   | .eq a b | .le a b | .lt a b | .compare _ _ a b =>
       let Δ := Γ.declarationSelf self
@@ -76,12 +76,12 @@ def Pred.Declared (P : Program) (C : List TParam) (Γ : Ctx) (self : Option Ty) 
   | .not p => Pred.Declared P C Γ self p
 
 mutual
-  def Ty.Declared (P : Program) (C : List TParam) (Γ : Ctx) : Ty → Prop
+  def Ty.Declared (P : Program) (C : TypeCtx) (Γ : Ctx) : Ty → Prop
     | .base _ | .bytes | .opaque _ _ | .scoped _ _ _ | .pathBases | .scopePattern _ | .tvar _ => True
     | .data d as => (∃ n, P.DataArity d n ∧ as.length = n) ∧ declaredTys P C Γ as
     | .external id as => (∃ td, P.externalType id = some td ∧ td.id = id ∧ as.length = td.arity) ∧
         declaredTys P C Γ as
-    | .tapp _ as => declaredTys P C Γ as
+    | .tapp i as => (TypeCtx.kinds C)[i]? = some (.constructor as.length) ∧ declaredTys P C Γ as
     | .ctor (.data d) => ∃ n, P.DataArity d n
     | .ctor _ => True
     | .list a | .reference a | .lazy a | .set a | .dict _ a => Ty.Declared P C Γ a
@@ -90,13 +90,13 @@ mutual
     | .cont b t e => Ty.Declared P C Γ b ∧ Ty.Declared P C Γ t ∧ declaredEff P C Γ e
     | .map a b => Ty.Declared P C Γ a ∧ Ty.Declared P C Γ b
     | .refined a p => Ty.Declared P C Γ a ∧ Pred.Declared P C Γ (some a) p
-  def Tel.Declared (P : Program) (C : List TParam) (Γ : Ctx) : Tel → Prop
+  def Tel.Declared (P : Program) (C : TypeCtx) (Γ : Ctx) : Tel → Prop
     | .done r e => Ty.Declared P C Γ r ∧ declaredEff P C Γ e
     | .param _ a t => Ty.Declared P C Γ a ∧ Tel.Declared P C (Γ.extend a) t
-  def declaredTys (P : Program) (C : List TParam) (Γ : Ctx) : List Ty → Prop
+  def declaredTys (P : Program) (C : TypeCtx) (Γ : Ctx) : List Ty → Prop
     | [] => True
     | a :: as => Ty.Declared P C Γ a ∧ declaredTys P C Γ as
-  def declaredEff (P : Program) (C : List TParam) (Γ : Ctx) : Eff → Prop
+  def declaredEff (P : Program) (C : TypeCtx) (Γ : Ctx) : Eff → Prop
     | .mk _ fs => declaredTys P C Γ fs
 end
 

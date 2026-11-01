@@ -491,7 +491,7 @@ end
 
 /-- 総称の型に、通常値型の注釈を代入して形成を保つ。 -/
 theorem Ty.Annotation.subst_types_closed {P C n a Γ xs}
-    (h : Ty.Annotation P (List.replicate n ({} : TParam)) [] a) (hk : a.HasKind P (List.replicate n .value) .value)
+    (h : Ty.Annotation P (List.replicate n TypeCtx.valueParam) [] a) (hk : a.HasKind P (List.replicate n .value) .value)
     (valid : P.VarianceValid) (hl : xs.length = n) (ht : TypeAnnotations P C Γ xs)
     (ho : ∀ t ∈ xs, Ordinary t) : Ty.Annotation P C Γ (a.subst xs []) := by
   let f := fun i => if i < xs.length then xs[i]?.getD (.tvar i) else .tvar (i-xs.length)

@@ -1,0 +1,25 @@
+{
+  "os": "Darwin",
+  "os_release": "27.2.0",
+  "machine": "arm64",
+  "python": "3.9.6",
+  "lean": "Lean (version 4.34.1, arm64-apple-darwin24.6.0, commit 5045d0056413266e57c625dcd7c365b10e377c52, Release)",
+  "lean_toolchain": "leanprover/lean4:v4.34.1",
+  "moreLeanArgs": [
+    "-M",
+    "12288"
+  ],
+  "default_targets": [
+    "Benitoite",
+    "desugarDiff",
+    "builtinCheck",
+    "coverageDiff",
+    "coverageProgramDiff",
+    "surfaceCheck",
+    "surfaceCheckAll",
+    "intervalDiff"
+  ],
+  "configuration_changed": false,
+  "exchange_or_manifest_changed": false,
+  "rss": "未取得（計画上の非採取）"
+}

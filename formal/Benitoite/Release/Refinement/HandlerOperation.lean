@@ -101,7 +101,7 @@ private theorem clause_one {P B Ψ Q C Γ Φ R eb cs t ec L o name x y eff body}
       obtain ⟨S,_,hsig⟩ := hs
       simp only [opSigAt,hd,Option.map_some,Option.some.injEq] at hsig
       cases hsig
-      simpa only [OpSig.context,OpSig.continuation,Ctx.shiftE,Ctx.shiftEAt,
+      simpa only [OpSig.context,OpSig.continuation,Ctx.shiftE,Ctx.shiftEAt,TypeCtx.values,List.map_nil,
         List.length_nil,List.length_cons,Nat.zero_add,List.nil_append,shiftTypes_zero,
         shiftRowsTypes_zero,Ctx.extendMany,Nat.reduceAdd,Option.map_id, List.map_id,show shiftTypes 0 0 = id from funext (fun a => shiftTypes_zero a 0)] using hb
     · exact clause_one hcs hd hc

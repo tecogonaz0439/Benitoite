@@ -1,0 +1,10 @@
+<tmp>/r2-clauses-probe.lean:86:2: error: 'change' tactic failed, pattern
+  TypeCtx.values sg0.tparams = sg.tparams
+is not definitionally equal to target
+  TypeCtx.values sg0.tparams ++ legacyTypeCtx [] [] = sg.tparams ++ legacyTypeCtx [] []
+'Benitoite.Release.Refinement.A3aR2.primitive_prefix' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.A3aR2.lookup_prefix' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.A3aR2.clauses_cons_primitive_case' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]

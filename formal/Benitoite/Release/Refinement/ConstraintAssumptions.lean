@@ -15,19 +15,19 @@ namespace Benitoite.Release.Refinement
 
 
 theorem Builtins.TypeAssumptions.sat_shiftTypes {P B} (h : Builtins.TypeAssumptions P B)
-    {C Γ Δ a p} (extra : List TParam) (ha : Ty.Annotation P C Γ a)
-    (hb : Ty.Annotation P (extra ++ C) Δ (a.shift extra.length 0)) (hs : B.sat C a p) :
-    B.sat (extra ++ C) (a.shift extra.length 0) p := by
+    {C Γ Δ a p} (extra : TypeCtx) (ha : Ty.Annotation P C Γ a)
+    (hb : Ty.Annotation P (extra ++ C) Δ (a.shift extra.length 0)) (hs : B.sat (TypeCtx.constraints C) a p) :
+    B.sat (TypeCtx.constraints (extra ++ C)) (a.shift extra.length 0) p := by
   have hr : TypeParamRenaming C (extra ++ C) (shiftIndex extra.length 0) := by
     simpa only [List.nil_append, List.length_nil] using TypeParamRenaming.insert [] extra C
   simpa only [Ty.renameTypes_shift] using
     h.sat_renameTypes C (extra ++ C) Γ Δ a p _ hr ha (by simpa only [Ty.renameTypes_shift] using hb) hs
 
 theorem Builtins.TypeAssumptions.admits_shiftTypes {P B} (h : Builtins.TypeAssumptions P B)
-    {C Γ Δ ts b sg} (extra : List TParam) (hl : B.sig b = some sg)
+    {C Γ Δ ts b sg} (extra : TypeCtx) (hl : B.sig b = some sg)
     (ha : TypeAnnotations P C Γ ts)
     (hb : TypeAnnotations P (extra ++ C) Δ (ts.map (Ty.shift extra.length 0)))
-    (hs : sg.admits C ts) : sg.admits (extra ++ C) (ts.map (Ty.shift extra.length 0)) := by
+    (hs : sg.admits (TypeCtx.constraints C) ts) : sg.admits (TypeCtx.constraints (extra ++ C)) (ts.map (Ty.shift extra.length 0)) := by
   have hr : TypeParamRenaming C (extra ++ C) (shiftIndex extra.length 0) := by
     simpa only [List.nil_append, List.length_nil] using TypeParamRenaming.insert [] extra C
   simpa only [Ty.renameTypes_shift] using
@@ -36,16 +36,16 @@ theorem Builtins.TypeAssumptions.admits_shiftTypes {P B} (h : Builtins.TypeAssum
 
 /-- 恒等の型改名は正規化を含む。外側への延長でも正規化した型を返す。 -/
 theorem Builtins.TypeAssumptions.sat_local {P B} (h : Builtins.TypeAssumptions P B)
-    {C Γ a p} (extra : List TParam) (ha : Ty.Annotation P C Γ a)
-    (hb : Ty.Annotation P (C ++ extra) Γ a) (hs : B.sat C a p) : B.sat (C ++ extra) a.norm p := by
+    {C Γ a p} (extra : TypeCtx) (ha : Ty.Annotation P C Γ a)
+    (hb : Ty.Annotation P (C ++ extra) Γ a) (hs : B.sat (TypeCtx.constraints C) a p) : B.sat (TypeCtx.constraints (C ++ extra)) a.norm p := by
   simpa only [Ty.renameTypes_id_eq_norm] using h.sat_renameTypes C (C ++ extra) Γ Γ a p id
     (TypeParamRenaming.suffix C extra) ha
       (by simpa only [Ty.renameTypes_id_eq_norm] using hb.norm) hs
 
 theorem Builtins.TypeAssumptions.admits_local {P B} (h : Builtins.TypeAssumptions P B)
-    {C Γ ts b sg} (extra : List TParam) (hl : B.sig b = some sg)
+    {C Γ ts b sg} (extra : TypeCtx) (hl : B.sig b = some sg)
     (ha : TypeAnnotations P C Γ ts) (hb : TypeAnnotations P (C ++ extra) Γ ts)
-    (hs : sg.admits C ts) : sg.admits (C ++ extra) (ts.map Ty.norm) := by
+    (hs : sg.admits (TypeCtx.constraints C) ts) : sg.admits (TypeCtx.constraints (C ++ extra)) (ts.map Ty.norm) := by
   simpa only [Ty.renameTypes_id_eq_norm] using
     h.admits_renameTypes b sg C (C ++ extra) Γ Γ ts id hl
       (TypeParamRenaming.suffix C extra) ha (by
@@ -54,7 +54,7 @@ theorem Builtins.TypeAssumptions.admits_local {P B} (h : Builtins.TypeAssumption
         simpa only [Ty.renameTypes_id_eq_norm] using (hb x hx).norm) hs
 
 theorem SatAll.map {B C ts tps} (h : SatAll B C ts tps) (f : Ty → Ty)
-    (hf : ∀ a ∈ ts, ∀ p, B.sat C a.norm p → B.sat C (f a).norm p) : SatAll B C (ts.map f) tps := by
+    (hf : ∀ a ∈ ts, ∀ p, B.sat (TypeCtx.constraints C) a.norm p → B.sat (TypeCtx.constraints C) (f a).norm p) : SatAll B C (ts.map f) tps := by
   refine ⟨by simpa using h.1, ?_⟩
   intro i a p hi hp
   rw [List.getElem?_map] at hi
@@ -109,7 +109,7 @@ structure Builtins.CoreAssumptions (P : Program) (B : Builtins) : Prop extends
   /-- 制約のない型パラメータは、閉じた整形式の型の正規形で具体化できる。 -/
   sat_unconstrained : ∀ (t : Ty), t.WF 0 0 0 → B.sat [] t.norm ({} : TParam)
   /-- 組み込みの許容は、同じ型引数列の制約と個数も満たす。 -/
-  admits_sat : ∀ b s C ts, B.sig b = some s → s.admits C (Ty.normTys ts) →
+  admits_sat : ∀ b s C ts, B.sig b = some s → s.admits (TypeCtx.constraints C) (Ty.normTys ts) →
     SatAll B C ts (s.tparams.map TParamDecl.constraints)
   /-- 型付きの全資源値について、解放の応答が少なくとも一つある。 -/
   release_exists : ∀ Ψ v o, HasTypeV P B Ψ [] [] [] v (.opaque o (.fixed .top)) →

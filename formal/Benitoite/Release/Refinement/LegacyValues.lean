@@ -5,7 +5,7 @@ namespace Benitoite.Release.Refinement
 noncomputable section
 
 variable {P : Program} {B : Builtins} {Ψ : StoreTy}
-  {Q : Benitoite.Release.NoFailCtx} {C : List TParam} {Γ : Ctx} {Φ : List Pred}
+  {Q : Benitoite.Release.NoFailCtx} {C : TypeCtx} {Γ : Ctx} {Φ : List Pred}
 
 theorem embed_const (c : Benitoite.Release.Const) (hc : ConstOK B (embedConst c)) :
     HasTypeVQ P B Ψ Q C Γ Φ (.const (embedConst c)) (embedTy c.type) := by
@@ -78,19 +78,20 @@ end
 
 mutual
   theorem embedTy_declared_context (a : Benitoite.Release.Ty) (P : Program)
-      (C D : List TParam) (Γ Δ : Ctx) :
+      (C D : TypeCtx) (Γ Δ : Ctx) (hk : TypeCtx.kinds C = TypeCtx.kinds D) :
       (embedTy a).Declared P C Γ ↔ (embedTy a).Declared P D Δ := by
-    cases a <;> simp only [embedTy, Ty.Declared, (fun a => embedTy_declared_context a P C D Γ Δ), (fun as => embedTys_declared_context as P C D Γ Δ),
-      (fun e => embedEff_declared_context e P C D Γ Δ)]
+    cases a <;> simp only [embedTy, Ty.Declared, (fun a => embedTy_declared_context a P C D Γ Δ hk), (fun as => embedTys_declared_context as P C D Γ Δ hk),
+      (fun e => embedEff_declared_context e P C D Γ Δ hk)]
+    case tapp i as => simp only [hk, embedTys_eq_map, List.length_map]
     case ctor c => cases c <;> rfl
   theorem embedTys_declared_context (as : List Benitoite.Release.Ty) (P : Program)
-      (C D : List TParam) (Γ Δ : Ctx) :
+      (C D : TypeCtx) (Γ Δ : Ctx) (hk : TypeCtx.kinds C = TypeCtx.kinds D) :
       declaredTys P C Γ (embedTys as) ↔ declaredTys P D Δ (embedTys as) := by
-    cases as <;> simp only [embedTys, declaredTys, (fun a => embedTy_declared_context a P C D Γ Δ), (fun as => embedTys_declared_context as P C D Γ Δ)]
+    cases as <;> simp only [embedTys, declaredTys, (fun a => embedTy_declared_context a P C D Γ Δ hk), (fun as => embedTys_declared_context as P C D Γ Δ hk)]
   theorem embedEff_declared_context (e : Benitoite.Release.Eff) (P : Program)
-      (C D : List TParam) (Γ Δ : Ctx) :
+      (C D : TypeCtx) (Γ Δ : Ctx) (hk : TypeCtx.kinds C = TypeCtx.kinds D) :
       declaredEff P C Γ (embedEff e) ↔ declaredEff P D Δ (embedEff e) := by
-    cases e; exact embedTys_declared_context _ P C D Γ Δ
+    cases e; exact embedTys_declared_context _ P C D Γ Δ hk
 end
 
 theorem LegacyTypesInput.kindArgs {K P0 Δ ts ks} (h : LegacyTypesInput K P0 Δ ts ks) :
@@ -99,23 +100,23 @@ theorem LegacyTypesInput.kindArgs {K P0 Δ ts ks} (h : LegacyTypesInput K P0 Δ 
 
 theorem LegacyTypeInput.annotation {K P0 Δ a k} (h : LegacyTypeInput K P0 Δ a k)
     (nr : Δ.nr = 0) (count : Δ.kinds.length = Δ.constraints.length) :
-    Ty.Annotation (embedProgramWithKinds K P0) Δ.constraints (List.replicate Δ.nv none) (embedTy a) :=
-  ⟨by simpa only [nr, List.length_replicate, count] using h.2.1, h.2.2.1, h.2.2.2.1⟩
+    Ty.Annotation (embedProgramWithKinds K P0) (legacyTypeCtx Δ.constraints Δ.kinds) (List.replicate Δ.nv none) (embedTy a) :=
+  ⟨by simpa only [nr, List.length_replicate, legacyTypeCtx_length count, count] using h.2.1, h.2.2.1, h.2.2.2.1⟩
 
 theorem LegacyTypeInput.normal_kind {K P0 Δ a k} (h : LegacyTypeInput K P0 Δ a k) :
     (embedTy a).norm.HasKind (embedProgramWithKinds K P0) Δ.kinds k := h.1.norm
 
 theorem LegacyTypeInput.annotation_at {K P0 Δ a k} (h : LegacyTypeInput K P0 Δ a k)
     (nr : Δ.nr = 0) (count : Δ.kinds.length = Δ.constraints.length) (Γ : Ctx) :
-    Ty.Annotation (embedProgramWithKinds K P0) Δ.constraints Γ (embedTy a) := by
+    Ty.Annotation (embedProgramWithKinds K P0) (legacyTypeCtx Δ.constraints Δ.kinds) Γ (embedTy a) := by
   refine ⟨?_, embedTy_sorted a Γ, ?_⟩
   · have moved := (embedTy_wf_values a Δ.nr Δ.kinds.length Δ.nv Γ.length).mp h.2.1
-    simpa only [nr, count] using moved
-  · exact (embedTy_declared_context a _ _ _ _ _).mp h.2.2.2.1
+    simpa only [nr, legacyTypeCtx_length count, count] using moved
+  · exact (embedTy_declared_context a _ _ _ _ _ rfl).mp h.2.2.2.1
 
 theorem LegacyTypeInput.annotation_normal {K P0 Δ a k} (h : LegacyTypeInput K P0 Δ a k)
     (nr : Δ.nr = 0) (count : Δ.kinds.length = Δ.constraints.length) (Γ : Ctx) :
-    Ty.Annotation (embedProgramWithKinds K P0) Δ.constraints Γ (embedTy a).norm :=
+    Ty.Annotation (embedProgramWithKinds K P0) (legacyTypeCtx Δ.constraints Δ.kinds) Γ (embedTy a).norm :=
   (h.annotation_at nr count Γ).norm
 
 /-- 最上位の範囲の具体化は、同じ長さの列どうしで WF を保つ。型変数は変えない。 -/

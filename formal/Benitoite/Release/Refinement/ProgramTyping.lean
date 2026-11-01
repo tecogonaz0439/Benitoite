@@ -37,28 +37,28 @@ theorem MethSig.QTel_eq_Qsig (ms : MethSig) (hn : NamesWF ms.names ms.params) :
 /-- 各引数を順に束縛し、done の結果型を return 契約にする。 -/
 def Def.WellTyped (P : Program) (B : Builtins) (d : Def) : Prop :=
   NamesWF d.names d.params ∧
-  Ty.HasKind P (d.tparams.map TParamDecl.kind) (.dependentFn d.tel) .value ∧
-  Ty.Annotation P (d.tparams.map TParamDecl.constraints) [] (.dependentFn d.tel) ∧
+  Ty.HasKind P (TypeCtx.kinds d.tparams) (.dependentFn d.tel) .value ∧
+  Ty.Annotation P d.tparams [] (.dependentFn d.tel) ∧
   TelBodyTy P B StoreTy.empty (QTel d.tel)
-    (d.tparams.map TParamDecl.constraints) [] [] d.tel d.body
+    d.tparams [] [] d.tel d.body
 
 /-- 型クラスの引数の型代入の後、実装の辞書の個数だけ値参照を移す。 -/
 def ImplDecl.WellTyped (P : Program) (B : Builtins) (id : ImplDecl) : Prop :=
   ∃ cd, P.classes id.cls = some cd ∧
     (∀ m, (id.methods m).isSome = (cd.methods m).isSome) ∧
     (∀ s, (id.supers s).isSome = decide (s ∈ cd.supers)) ∧
-    Ty.HasKind P (List.replicate id.tparams.length .value) id.target cd.argumentKind ∧
-    TypeAnnotations P id.tparams [] id.dictTys ∧
+    Ty.HasKind P (TypeCtx.kinds (TypeCtx.values id.tparams)) id.target cd.argumentKind ∧
+    TypeAnnotations P (TypeCtx.values id.tparams) [] id.dictTys ∧
     (∀ m ms, cd.methods m = some ms → ∃ body, id.methods m = some body ∧
       NamesWF ms.names ms.params ∧
       let θ := typeEnvAt ms.tparams.length [id.target] []
       let t := Tel.bind θ ms.tel
-      let C := ms.tparams.map TParamDecl.constraints ++ id.tparams
+      let C := ms.tparams ++ TypeCtx.values id.tparams
       let Γ := bindParams [] (id.dictTys.map (Ty.shift ms.tparams.length 0))
       let t' := Tel.shiftV id.dictTys.length 0 t
       TelBodyTy P B StoreTy.empty (QTel ms.tel) C Γ [] t' body) ∧
     (∀ s ∈ cd.supers, ∃ u, id.supers s = some u ∧
-      HasTypeV P B StoreTy.empty id.tparams (bindParams [] id.dictTys) []
+      HasTypeV P B StoreTy.empty (TypeCtx.values id.tparams) (bindParams [] id.dictTys) []
         u (.dict s id.target))
 
 /-- 呼出し規則 C-Meth が読む代入前の Qsig で、実装の本体を取り出す。 -/
@@ -67,7 +67,7 @@ theorem ImplDecl.WellTyped.method_body {P : Program} {B : Builtins} {id : ImplDe
     (hc : P.classes id.cls = some cd) (hm : cd.methods m = some ms) :
     ∃ body, id.methods m = some body ∧ NamesWF ms.names ms.params ∧
       TelBodyTy P B StoreTy.empty (Qsig ms.params ms.ret ms.eff)
-        (ms.tparams.map TParamDecl.constraints ++ id.tparams)
+        (ms.tparams ++ TypeCtx.values id.tparams)
         (bindParams [] (id.dictTys.map (Ty.shift ms.tparams.length 0))) []
         (Tel.shiftV id.dictTys.length 0
           (Tel.bind (typeEnvAt ms.tparams.length [id.target] []) ms.tel)) body := by

@@ -29,12 +29,12 @@ theorem Pred.Sorted.map {Γ Δ : Ctx} {self other : Option Ty} {ν : Observation
 theorem Pred.Sorted.wf_none {Γ : Ctx} {p : Pred} (h : p.Sorted Γ none) : p.WF Γ.length :=
   Pred.varsIn_mono h.references (fun _ ⟨_, hi, _⟩ => (List.getElem?_eq_some_iff.mp hi).1)
 
-structure Pred.WellFormed (P : Program) (C : List TParam) (Γ : Ctx) (p : Pred) : Prop where
+structure Pred.WellFormed (P : Program) (C : TypeCtx) (Γ : Ctx) (p : Pred) : Prop where
   wf : p.WF Γ.length
   sorted : p.Sorted Γ none
   declared : p.Declared P C Γ none
 
-def FactsWF (P : Program) (C : List TParam) (Γ : Ctx) (Φ : List Pred) : Prop :=
+def FactsWF (P : Program) (C : TypeCtx) (Γ : Ctx) (Φ : List Pred) : Prop :=
   ∀ p ∈ Φ, Pred.WellFormed P C Γ p
 
 theorem Pred.WellFormed.map {P C Γ Δ p ν} (h : Pred.WellFormed P C Γ p)

@@ -54,7 +54,7 @@ theorem HasTypeVQ.raise_typeScope {P B Ψ Q C Γ Φ v a t e}
     (h : HasTypeVQ P B Ψ Q C Γ Φ v a) (hv : v = .raise t e) :
     (t.WF 0 C.length Γ.length ∧ Ordinary t) ∧ (e.WF 0 C.length Γ.length ∧ Ordinary e) := by
   match h with
-  | .V_Raise ha ht he => cases hv; exact ⟨⟨ha.wf.2.2.1, ht⟩, ⟨ha.wf.2.1.1, he⟩⟩
+  | .V_Raise ha ht he _ => cases hv; exact ⟨⟨ha.wf.2.2.1, ht⟩, ⟨ha.wf.2.1.1, he⟩⟩
   | .V_Normal h | .V_Sub h .. | .V_Refine h .. => exact h.raise_typeScope hv
   | .V_Var .. | .V_Const .. | .V_Lam .. | .V_DependentLam .. | .V_Closure .. |
     .V_Fun .. | .V_Prim .. | .V_Op .. | .V_ExternalRef .. | .V_ExternalHandle .. |

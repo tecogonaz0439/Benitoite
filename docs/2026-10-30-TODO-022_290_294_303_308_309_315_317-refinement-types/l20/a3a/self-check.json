@@ -1,0 +1,66 @@
+{
+  "checked_at": "2026-11-01T18:43:23.350874+00:00",
+  "B_WORK": "14492156debe5f6b8925963e55c2d9aecdc6923c",
+  "group_complete": true,
+  "old_release_changes": [],
+  "explicit_source_sorry_or_axiom": [],
+  "main_ten_signature_bytes_unchanged": true,
+  "removed_default_imports": [],
+  "added_default_imports": [
+    "Benitoite.Release.Refinement.TypeSubstContracts"
+  ],
+  "changed_file_manifest_matches": true,
+  "unqualified_constraints_occurrences": [
+    {
+      "file": "formal/Benitoite/Release/Refinement/Syntax.lean",
+      "line": 109,
+      "source": "  tparams : List TParam"
+    },
+    {
+      "file": "formal/Benitoite/Release/Refinement/Syntax.lean",
+      "line": 252,
+      "source": "  tparams : List TParam"
+    },
+    {
+      "file": "formal/Benitoite/Release/Refinement/Syntax.lean",
+      "line": 312,
+      "source": "  tparams : List TParam"
+    },
+    {
+      "file": "formal/Benitoite/Release/Refinement/Syntax.lean",
+      "line": 386,
+      "source": "  admits : List TParam → List Ty → Prop"
+    },
+    {
+      "file": "formal/Benitoite/Release/Refinement/Syntax.lean",
+      "line": 414,
+      "source": "  sat : List TParam → Ty → TParam → Prop"
+    },
+    {
+      "file": "formal/Benitoite/Release/Refinement/Admissible.lean",
+      "line": 24,
+      "source": "def SatAll (B : Builtins) (C : TypeCtx) (ts : List Ty) (tps : List TParam) : Prop :="
+    },
+    {
+      "file": "formal/Benitoite/Release/Refinement/Admissible.lean",
+      "line": 80,
+      "source": "    (tps : List TParam) (ne : Nat) (Qs Qt : NoFailCtx)"
+    }
+  ],
+  "retained_occurrences_match": true,
+  "recorded_changed_annotations": 75,
+  "four_transports_modified_branches": 38,
+  "additional_private_var_branches": 3,
+  "outside_raise_arity_branches": 5,
+  "work_exit": 0,
+  "axioms_exit": 0,
+  "unapproved_axioms": [],
+  "contracts_count": 23,
+  "contracts_exit": 0,
+  "boundary_exit": 0,
+  "broken_links": [],
+  "records_over_100KB": [],
+  "absolute_local_paths_in_records": [],
+  "lake_moreLeanArgs_12288": true,
+  "independent_review": "未実施（取りまとめ担当）"
+}

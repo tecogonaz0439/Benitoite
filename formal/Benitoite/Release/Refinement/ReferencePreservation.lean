@@ -272,7 +272,7 @@ private theorem reference_head {P B b s a} (hA : Builtins.CoreAssumptions P B)
       · have hh := hA.store_admits b s [] [a] hs (by rw [hk]; decide)
           (by rw [hk]; decide) (by rw [hk]; decide) (by rw [hk]; decide) (by simp [hnt])
         change a.norm = a at hn
-        simpa only [Ty.normTys,hn] using hh
+        simpa only [Ty.normTys,hn, TypeCtx.constraints, List.map_nil] using hh
       · intro t ht; cases List.mem_singleton.mp ht; exact ⟨ha.wf,ho⟩
       · simp [he,Eff.RowsIn,Eff.single,Ty.RowsInList]
       · simp [hps,hr,he,Qsig,QTys,QTy,QEff,Eff.single,Qempty]
@@ -282,13 +282,13 @@ private theorem reference_head {P B b s a} (hA : Builtins.CoreAssumptions P B)
       simp only [PrimSig.StoreShape,hk] at sh
       rcases sh with ⟨hns,hnt,hne,hps,hr,he,hrr,hks⟩
       refine ⟨?_,?_,?_,by simp [RowAnnotations],?_⟩
-      · simp [hks,PrimSig.tel,hns,hps,hr,he,signatureTel,Tel.instR,Tel.substRAt,Tel.mapRanges,
+      · simp [TypeCtx.kinds_eq_map,hks,PrimSig.tel,hns,hps,hr,he,signatureTel,Tel.instR,Tel.substRAt,Tel.mapRanges,
           Tel.rawMapRanges,Ty.rawMapRanges,Eff.rawMapRanges,Tel.norm,Ty.norm,Ty.normTys,
           Ty.WF,Tel.WF,Ty.WFList,Eff.WF,Eff.Canonical,Eff.norm,Eff.single,
           mapRangesTys,mapRangeAtoms_rangeAt,instAtoms_nil]
       · intro t ht; cases List.mem_singleton.mp ht; exact ha
-      · rw [hks]
-        refine ⟨rfl,[],rfl,?_⟩
+      · rw [TypeCtx.kinds_eq_map, hks]
+        refine ⟨rfl,?_⟩
         intro i t kind ht hk'
         cases i with
         | zero => cases Option.some.inj ht; cases Option.some.inj hk'; exact ⟨hkind, fun _ => ho⟩
@@ -452,11 +452,9 @@ theorem StateTyE.reference_update {P B σ Eb b ts es rs l runtime body k μ s}
     hargs.reference_update (store_shape hA hs (Or.inr (Or.inr (Or.inr hk)))) hk
   have hshape := store_shape hA hs (Or.inr (Or.inr (Or.inr hk)))
   simp only [PrimSig.StoreShape,hk] at hshape
-  obtain ⟨_,K,hK,hkind⟩ := hargs.signature.kinds
-  have hK0 : K = [] := List.length_eq_zero_iff.mp hK
-  have hxkind : x.HasKind P [] .value := by
-    subst K
-    exact (hkind 0 x .value (by rw [hts]; rfl) (by rw [hshape.2.2.2.2.2.2.2]; rfl)).1
+  have hxkind : x.HasKind P [] .value :=
+    (hargs.signature.kinds.2 0 x .value (by rw [hts]; rfl)
+      (by rw [hshape.2.2.2.2.2.2.2]; rfl)).1
   have hops := hA.reference_primitives hts hx hn ho hxkind
   obtain ⟨y,hts',hg,hst⟩ := hops
   cases List.cons.inj (hts'.symm.trans hts) |>.1

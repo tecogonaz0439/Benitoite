@@ -14,7 +14,7 @@ namespace Benitoite.Release.Refinement
 noncomputable section
 
 /-- 結果形成の帰納で使う、捕捉元の三条件。 -/
-def CaptureContextRegular (P : Program) (C : List TParam) (Γ : Ctx) : Prop :=
+def CaptureContextRegular (P : Program) (C : TypeCtx) (Γ : Ctx) : Prop :=
   Ctx.CaptureWF 0 C.length Γ ∧
   ∀ (i : Nat) (a : Ty), Γ[i]? = some (some a) →
     a.CaptureSorted Γ ∧ a.CaptureDeclared P C Γ
@@ -144,7 +144,7 @@ theorem locref_annotation {P Ψ l a C Γ}
   have ha := StoreTy.reference_annotation (C := C) (Γ := Γ) hw hs hd hl
   exact ⟨ha.wf, ha.sorted, ha.declared⟩
 
-theorem checked_annotation (P : Program) (C : List TParam) (Γ : Ctx)
+theorem checked_annotation (P : Program) (C : TypeCtx) (Γ : Ctx)
     (o : OpaqueName) (k : Scope.Domain.Kind) (r : Scope.Domain.Range) :
     Ty.Annotation P C Γ (.scoped o k (.fixed (.absolute r))) :=
   ⟨by trivial, by trivial, by trivial⟩
@@ -168,7 +168,7 @@ mutual
     | .V_Fun _ _ _ hi | .V_Prim _ _ _ _ hi | .V_Op _ _ _ hi |
         .V_ExternalRef _ _ _ hi => exact hi.result
     | .V_ExternalHandle _ _ _ _ _ _ ha | .V_Dict _ _ _ _ _ _ _ ha |
-        .V_Con _ _ _ _ _ ha | .V_Raise ha _ _ => exact ha
+        .V_Con _ _ _ _ _ ha | .V_Raise ha _ _ _ => exact ha
     | .V_PathBases _ | .V_ScopePattern _ _ _ |
         .V_CheckedRequest _ _ _ _ _ _ | .V_CheckedAt _ | .V_Bytes _ =>
       exact ⟨by trivial, by trivial, by trivial⟩
@@ -233,14 +233,14 @@ end
 
 /-- Φ を任意に保った、値の結果形成。 -/
 theorem open_value_annotation {P : Program} {B : Builtins} {Ψ : StoreTy}
-    {Q : NoFailCtx} {C : List TParam} {Γ : Ctx} {Φ : List Pred} {v : Val} {a : Ty}
+    {Q : NoFailCtx} {C : TypeCtx} {Γ : Ctx} {Φ : List Pred} {v : Val} {a : Ty}
     (hw : Ψ.WF) (hs : Ψ.Sorted) (hd : StoreTy.Declared P Ψ)
     (hΓ : CaptureContextRegular P C Γ) (h : HasTypeVQ P B Ψ Q C Γ Φ v a) :
     Ty.Annotation P C Γ a := value_annotation h hw hs hd hΓ
 
 /-- let・builder・分岐の子でも、実際の捕捉を要求しない。 -/
 theorem open_comp_annotation {P : Program} {B : Builtins} {Ψ : StoreTy}
-    {Q : NoFailCtx} {C : List TParam} {Γ : Ctx} {Φ : List Pred}
+    {Q : NoFailCtx} {C : TypeCtx} {Γ : Ctx} {Φ : List Pred}
     {R : Option Ty} {m : Comp} {a : Ty} {e : Eff} {L : LocalCtx}
     (hw : Ψ.WF) (hs : Ψ.Sorted) (hd : StoreTy.Declared P Ψ)
     (hΓ : CaptureContextRegular P C Γ) (h : HasTypeCQ P B Ψ Q C Γ Φ R m a e L) :

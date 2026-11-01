@@ -116,7 +116,7 @@ def Ty.CaptureSorted (Γ : Ctx) : Ty → Prop
   | .cont b t _ => b.Sorted Γ ∧ t.Sorted Γ
   | a => a.Sorted Γ
 
-def Ty.CaptureDeclared (P : Program) (C : List TParam) (Γ : Ctx) : Ty → Prop
+def Ty.CaptureDeclared (P : Program) (C : TypeCtx) (Γ : Ctx) : Ty → Prop
   | .cont b t _ => b.Declared P C Γ ∧ t.Declared P C Γ
   | a => a.Declared P C Γ
 
@@ -145,7 +145,7 @@ theorem Entails.conditions_cons {Γ : Ctx} {Φ Ξ : List Pred} {p q : Pred}
 mutual
   /-- 値の型付け。経路条件は通常の文脈の番号で読む。 -/
   inductive HasTypeVQ (P : Program) (B : Builtins) :
-      StoreTy → NoFailCtx → List TParam → Ctx → List Pred → Val → Ty → Prop where
+      StoreTy → NoFailCtx → TypeCtx → Ctx → List Pred → Val → Ty → Prop where
     | V_Var {Ψ Q C Γ Φ i a} : Γ[i]? = some (some a) → Ordinary a →
         HasTypeVQ P B Ψ Q C Γ Φ (.var i) a
     | V_Const {Ψ Q C Γ Φ c} : ConstOK B c →
@@ -163,13 +163,13 @@ mutual
         Tel.RuntimeShape runtime t → DependentClosureTy P B Ψ body t →
         HasTypeVQ P B Ψ Q C Γ Φ (.closure runtime body) (.dependentFn t)
     | V_Fun {Ψ Q C Γ Φ f d ts es} : P.defs f = some d → NamesWF d.names d.params →
-        Admissible B C Γ.length (d.tparams.map TParamDecl.constraints) d.neffs
+        Admissible B C Γ.length (TypeCtx.constraints d.tparams) d.neffs
           (Qsig d.params d.ret d.eff) Q ts es d.eff →
-        SignatureInstance P C Γ d.tel (d.tparams.map TParamDecl.kind) ts es →
+        SignatureInstance P C Γ d.tel (TypeCtx.kinds d.tparams) ts es →
         HasTypeVQ P B Ψ Q C Γ Φ (.fnRef f ts es) (.dependentFn (instantiatedTel d.tel ts es))
     | V_Prim {Ψ Q C Γ Φ b s ts es rs} : B.sig b = some s → B.RangeAdmissible b s rs →
         NamesWF s.names s.params → PrimitiveAdmissible C Γ.length s Q ts es →
-        SignatureInstance P C Γ (Tel.instR rs s.tel) (s.tparams.map TParamDecl.kind) ts es →
+        SignatureInstance P C Γ (Tel.instR rs s.tel) (TypeCtx.kinds s.tparams) ts es →
         HasTypeVQ P B Ψ Q C Γ Φ (.prim b ts es rs)
           (.dependentFn (instantiatedTel (Tel.instR rs s.tel) ts es))
     | V_Op {Ψ Q C Γ Φ o od ts} : P.ops o = some od → NamesWF od.names od.params →
@@ -205,11 +205,11 @@ mutual
         HasTypeVQ P B Ψ Q C Γ Φ (.atError detail) shape.errorType
     | V_Map {Ψ Q C Γ Φ ks vs a b} :
         HasTypeEachQ P B Ψ Q C Γ Φ ks a → HasTypeEachQ P B Ψ Q C Γ Φ vs b →
-        ks.length = vs.length → B.sat C a.norm TParam.keyC →
+        ks.length = vs.length → B.sat (TypeCtx.constraints C) a.norm TParam.keyC →
         Ty.Annotation P C Γ a → Ty.Annotation P C Γ b →
         HasTypeVQ P B Ψ Q C Γ Φ (.mapV ks vs) (.map a b)
     | V_Set {Ψ Q C Γ Φ vs a} : HasTypeEachQ P B Ψ Q C Γ Φ vs a →
-        B.sat C a.norm TParam.keyC → Ty.Annotation P C Γ a →
+        B.sat (TypeCtx.constraints C) a.norm TParam.keyC → Ty.Annotation P C Γ a →
         HasTypeVQ P B Ψ Q C Γ Φ (.setV vs) (.set a)
     | V_Dict {Ψ Q C Γ Φ i id ts vs} : P.impls i = some id → SatAll B C ts id.tparams →
         TypeAnnotations P C Γ ts → TypeArgsKinded P C ts (List.replicate id.tparams.length .value) →
@@ -219,7 +219,7 @@ mutual
         HasTypeVQ P B Ψ Q C Γ Φ (.dict i ts vs) (.dict id.cls (id.target.subst ts []))
     | V_Raise {Ψ Q C Γ Φ t e} :
         Ty.Annotation P C Γ (.fn ["error"] [e] t (Eff.singleFail e)) →
-        Ordinary t → Ordinary e →
+        Ordinary t → Ordinary e → t.HasKind P (TypeCtx.kinds C) .value →
         HasTypeVQ P B Ψ Q C Γ Φ (.raise t e) (.fn ["error"] [e] t (Eff.singleFail e))
     | V_LocRef {Ψ Q C Γ Φ l a} : Ψ l = some (.ref a) → Ty.Declared P C Γ a →
         HasTypeVQ P B Ψ Q C Γ Φ (.loc l) (.reference a)
@@ -252,19 +252,19 @@ mutual
         HasTypeVQ P B Ψ Q C Γ Φ v (.refined a p)
 
   inductive HasTypeVsQ (P : Program) (B : Builtins) :
-      StoreTy → NoFailCtx → List TParam → Ctx → List Pred → List Val → List Ty → Prop where
+      StoreTy → NoFailCtx → TypeCtx → Ctx → List Pred → List Val → List Ty → Prop where
     | nil {Ψ Q C Γ Φ} : HasTypeVsQ P B Ψ Q C Γ Φ [] []
     | cons {Ψ Q C Γ Φ v vs a as} : HasTypeVQ P B Ψ Q C Γ Φ v a →
         HasTypeVsQ P B Ψ Q C Γ Φ vs as → HasTypeVsQ P B Ψ Q C Γ Φ (v::vs) (a::as)
 
   inductive HasTypeEachQ (P : Program) (B : Builtins) :
-      StoreTy → NoFailCtx → List TParam → Ctx → List Pred → List Val → Ty → Prop where
+      StoreTy → NoFailCtx → TypeCtx → Ctx → List Pred → List Val → Ty → Prop where
     | nil {Ψ Q C Γ Φ a} : HasTypeEachQ P B Ψ Q C Γ Φ [] a
     | cons {Ψ Q C Γ Φ v vs a} : HasTypeVQ P B Ψ Q C Γ Φ v a →
         HasTypeEachQ P B Ψ Q C Γ Φ vs a → HasTypeEachQ P B Ψ Q C Γ Φ (v::vs) a
 
   inductive HasTypeCQ (P : Program) (B : Builtins) :
-      StoreTy → NoFailCtx → List TParam → Ctx → List Pred → Option Ty →
+      StoreTy → NoFailCtx → TypeCtx → Ctx → List Pred → Option Ty →
       Comp → Ty → Eff → (Δ : LocalCtx := []) → Prop where
     | C_BuilderLet {Ψ Q C Γ Φ Δ R kind body a ε} :
         Ty.Annotation P C Γ kind.contents → TypeArgsKinded P C [kind.contents] [.value] →
@@ -343,8 +343,8 @@ mutual
         HasTypeCQ P B Ψ Q C Γ Φ R m a.norm ε Δ
     | C_Meth {Ψ Q C Γ Φ Δ R v cl τ cd m ms ss es ws as a ε} :
         HasTypeVQ P B Ψ Q C Γ Φ v (.dict cl τ) → P.classes cl = some cd → cd.methods m = some ms →
-        NamesWF ms.names ms.params → SatAll B C ss (ms.tparams.map TParamDecl.constraints) →
-        SignatureInstance P C Γ ms.tel (ms.tparams.map TParamDecl.kind ++ [cd.argumentKind]) (ss ++ [τ]) es →
+        NamesWF ms.names ms.params → SatAll B C ss (TypeCtx.constraints ms.tparams) →
+        SignatureInstance P C Γ ms.tel (TypeCtx.kinds ms.tparams ++ [cd.argumentKind]) (ss ++ [τ]) es →
         MethodRowsAdmissible C Γ.length Q ms es →
         Tel.arguments (instantiatedTel ms.tel (ss ++ [τ]) es) ws = some (as, a, ε) →
         HasTypeVsQ P B Ψ Q C Γ Φ ws as → Ty.Annotation P C Γ a →
@@ -368,7 +368,7 @@ mutual
         Eff.Covers Γ Φ ε' ε → HasTypeCQ P B Ψ Q C Γ Φ R m a ε' Δ
   /-- 実引数ごとに後続を具体化する。Rを持たず、各引数は同じΓ/Φで読む。 -/
   inductive HasTypeTelArgsQ (P : Program) (B : Builtins) :
-      StoreTy → NoFailCtx → List TParam → Ctx → List Pred → List Val → Tel → Ty → Eff → Prop where
+      StoreTy → NoFailCtx → TypeCtx → Ctx → List Pred → List Val → Tel → Ty → Eff → Prop where
     | done {Ψ Q C Γ Φ a e} : Ty.Annotation P C Γ (.dependentFn (.done a e)) →
         HasTypeTelArgsQ P B Ψ Q C Γ Φ [] (.done a e) a e
     | param {Ψ Q C Γ Φ name a rest v vs r e} : Ty.Annotation P C Γ a →
@@ -378,7 +378,7 @@ mutual
 
   /-- 本体は全引数を束縛した位置で検査し、doneの結果を自分のreturn契約とする。 -/
   inductive TelBodyTy (P : Program) (B : Builtins) :
-      StoreTy → NoFailCtx → List TParam → Ctx → List Pred → Tel → Comp → Prop where
+      StoreTy → NoFailCtx → TypeCtx → Ctx → List Pred → Tel → Comp → Prop where
     | done {Ψ Q C Γ Φ a e body} :
         HasTypeCQ P B Ψ Q C Γ Φ (some a) body a e [] →
         TelBodyTy P B Ψ Q C Γ Φ (.done a e) body
@@ -419,7 +419,7 @@ mutual
         CheckedWitness P B Ψ o .endpoint range snapshot target (some req)
 
   inductive AtCallAdmissible (P : Program) (B : Builtins) :
-      StoreTy → NoFailCtx → List TParam → Ctx → List Pred → Scope.Domain.Kind →
+      StoreTy → NoFailCtx → TypeCtx → Ctx → List Pred → Scope.Domain.Kind →
       OpaqueName → ResultShape → Option Val → Val → Val → RangeIx → Prop where
     | mk {Ψ Q C Γ Φ kind name shape bases pattern input index inputTy} :
         shape.Declared P → B.valKind name = some kind →
@@ -432,7 +432,7 @@ mutual
 
   /-- 被検査値の観測を共有し、各腕で確かめた条件を本体へ渡す。 -/
   inductive HasTypeArmsQ (P : Program) (B : Builtins) :
-      StoreTy → NoFailCtx → List TParam → Ctx → List Pred → Option Ty → Option Term →
+      StoreTy → NoFailCtx → TypeCtx → Ctx → List Pred → Option Ty → Option Term →
       List Arm → Ty → Ty → Eff → (Δ : LocalCtx := []) → Prop where
     | nil {Ψ Q C Γ Φ Δ R obs a b ε} : Ty.Annotation P C Γ b →
         HasTypeArmsQ P B Ψ Q C Γ Φ R obs [] a b ε Δ
@@ -458,7 +458,7 @@ mutual
         HasTypeArmsQ P B Ψ Q C Γ Φ R obs (.mk alts (some guard) body :: arms) a b ε Δ
 
   inductive HasTypeClausesQ (P : Program) (B : Builtins) :
-      StoreTy → NoFailCtx → List TParam → Ctx → List Pred → Option Ty → Eff →
+      StoreTy → NoFailCtx → TypeCtx → Ctx → List Pred → Option Ty → Eff →
       List Clause → Ty → Eff → (Δ : LocalCtx := []) → Prop where
     | nil {Ψ Q C Γ Φ Δ R eb t ε} : HasTypeClausesQ P B Ψ Q C Γ Φ R eb [] t ε Δ
     | cons {Ψ Q C Γ Φ Δ R eb o n k body cs t ε sg} : ClauseSig P B eb o sg →
@@ -472,17 +472,17 @@ mutual
         HasTypeClausesQ P B Ψ Q C Γ Φ R eb (.mk o n k body::cs) t ε Δ
 
   inductive HasFailureClause (P : Program) (B : Builtins) :
-      StoreTy → NoFailCtx → List TParam → Ctx → List Pred → Ty → Option Ty →
+      StoreTy → NoFailCtx → TypeCtx → Ctx → List Pred → Ty → Option Ty →
       List Clause → Ty → Eff → (Δ : LocalCtx := []) → Prop where
     | one {Ψ Q C Γ Φ Δ E R body t ec} : Ty.Annotation P C Γ E → Ty.Annotation P C Γ t →
         RowAnnotations P C Γ [ec] →
-        HasTypeCQ P B (hideBuilders Ψ) Q (({} : TParam)::C) (failureContext Γ E) (liftMany 2 Φ)
+        HasTypeCQ P B (hideBuilders Ψ) Q (TypeCtx.valueParam::C) (failureContext Γ E) (liftMany 2 Φ)
           (R.map (fun r => (shiftTypes 1 0 r).shiftV 2 0)) body
           ((shiftTypes 1 0 t).shiftV 2 0) ((shiftRowsTypes 1 0 ec).shiftV 2 0) [] →
         HasFailureClause P B Ψ Q C Γ Φ E R [.fail E body] t ec Δ
 
   inductive ImageOk (P : Program) (B : Builtins) :
-      StoreTy → NoFailCtx → List TParam → Ctx → List Pred → Option Ty →
+      StoreTy → NoFailCtx → TypeCtx → Ctx → List Pred → Option Ty →
       (Nat → Val) → Nat → Ty → Prop where
     | ordinary {Ψ Q C Δ Ξ R0 ν i a} : a.Ordinary →
         HasTypeVQ P B Ψ Q C Δ Ξ (ν i) (substTyValues ν a) →
@@ -552,7 +552,7 @@ abbrev HasTypeEach (P : Program) (B : Builtins) (Ψ : StoreTy) := HasTypeEachQ P
 abbrev HasTypeC (P : Program) (B : Builtins) (Ψ : StoreTy) := HasTypeCQ P B Ψ Qempty
 abbrev HasTypeArms (P : Program) (B : Builtins) (Ψ : StoreTy) := HasTypeArmsQ P B Ψ Qempty
 abbrev HasTypeClauses (P : Program) (B : Builtins) (Ψ : StoreTy) := HasTypeClausesQ P B Ψ Qempty
-abbrev HasTypeCL (P : Program) (B : Builtins) (Ψ : StoreTy) (C : List TParam)
+abbrev HasTypeCL (P : Program) (B : Builtins) (Ψ : StoreTy) (C : TypeCtx)
     (Δ : LocalCtx) (Γ : Ctx) (Φ : List Pred) (R : Option Ty) (m : Comp) (a : Ty) (ε : Eff) :=
   HasTypeCQ P B Ψ Qempty C Γ Φ R m a ε Δ
 

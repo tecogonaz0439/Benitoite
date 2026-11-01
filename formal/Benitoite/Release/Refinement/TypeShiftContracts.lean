@@ -28,7 +28,7 @@ theorem Ty.renameTypes_shift_of_wf {nr nt nv a} (_hw : Ty.WF nr nt nv a) (k c : 
 theorem Builtins.TypeAssumptions.sat_shiftTypes_raw {P B C C' Γ Δ a p k c}
     (h : Builtins.TypeAssumptions P B) (hr : TypeParamRenaming C C' (shiftIndex k c))
     (ha : Ty.Annotation P C Γ a) (hb : Ty.Annotation P C' Δ (shiftTypes k c a))
-    (hs : B.sat C a.norm p) : B.sat C' (shiftTypes k c a).norm p := by
+    (hs : B.sat (TypeCtx.constraints C) a.norm p) : B.sat (TypeCtx.constraints C') (shiftTypes k c a).norm p := by
   have he : a.norm.renameTypes (shiftIndex k c) = (shiftTypes k c a).norm := by
     simp only [Ty.renameTypes, Ty.rawRenameTypes_shift, Ty.norm_shiftTypes, Ty.norm_idem]
   simpa only [he] using h.sat_renameTypes C C' Γ Δ a.norm p _ hr ha.norm
@@ -38,7 +38,7 @@ theorem Builtins.TypeAssumptions.admits_shiftTypes_raw {P B C C' Γ Δ ts b sg k
     (h : Builtins.TypeAssumptions P B) (hr : TypeParamRenaming C C' (shiftIndex k c))
     (hl : B.sig b=some sg) (ha : TypeAnnotations P C Γ ts)
     (hb : TypeAnnotations P C' Δ (ts.map (shiftTypes k c)))
-    (hs : sg.admits C (Ty.normTys ts)) : sg.admits C' (Ty.normTys (ts.map (shiftTypes k c))) := by
+    (hs : sg.admits (TypeCtx.constraints C) (Ty.normTys ts)) : sg.admits (TypeCtx.constraints C') (Ty.normTys (ts.map (shiftTypes k c))) := by
   have he : (Ty.normTys ts).map (fun a => a.renameTypes (shiftIndex k c)) =
       Ty.normTys (ts.map (shiftTypes k c)) := by
     simp only [Ty.normTys_eq_map, List.map_map, Function.comp_def]
@@ -55,18 +55,18 @@ theorem Builtins.TypeAssumptions.admits_shiftTypes_raw {P B C C' Γ Δ ts b sg k
     (by simpa only [he] using hnb) hs
 
 theorem TypeCtxMap.annotations {P C C' Γ Δ ts k c} (h : TypeCtxMap k c Γ Δ)
-    (hn : C'.length=C.length+k) (ha : TypeAnnotations P C Γ ts) :
+    (hn : C'.length=C.length+k) (ha : TypeAnnotations P C Γ ts) (hC : TypeParamRenaming C C' (shiftIndex k c)) :
     TypeAnnotations P C' Δ (ts.map (shiftTypes k c)) := by
   intro a ha'
   obtain ⟨b,hb,rfl⟩ := List.mem_map.mp ha'
-  exact h.annotation hn (ha b hb)
+  exact (h.annotation hn (ha b hb) hC)
 
 theorem TypeCtxMap.rows {P C C' Γ Δ es k c} (h : TypeCtxMap k c Γ Δ)
-    (hn : C'.length=C.length+k) (ha : RowAnnotations P C Γ es) :
+    (hn : C'.length=C.length+k) (ha : RowAnnotations P C Γ es) (hC : TypeParamRenaming C C' (shiftIndex k c)) :
     RowAnnotations P C' Δ (es.map (shiftRowsTypes k c)) := by
   intro e he
   obtain ⟨f,hf,rfl⟩ := List.mem_map.mp he
-  simpa only [shiftTypes,shiftTypesList] using h.annotation hn (ha f hf)
+  simpa only [shiftTypes,shiftTypesList] using (h.annotation hn (ha f hf) hC)
 
 theorem SatAll.shiftTypes {P B C C' Γ Δ ts tps k c} (h : SatAll B C ts tps)
     (hA : Builtins.TypeAssumptions P B) (hr : TypeParamRenaming C C' (shiftIndex k c))
@@ -76,7 +76,7 @@ theorem SatAll.shiftTypes {P B C C' Γ Δ ts tps k c} (h : SatAll B C ts tps)
   intro i a p hi hp
   obtain ⟨b,hb,rfl⟩ := Option.map_eq_some_iff.mp (by simpa only [List.getElem?_map] using hi)
   exact hA.sat_shiftTypes_raw hr (ha b (List.mem_of_getElem? hb))
-    (hm.annotation hn (ha b (List.mem_of_getElem? hb))) (h.2 i b p hb hp)
+    ((hm.annotation hn (ha b (List.mem_of_getElem? hb)) hr)) (h.2 i b p hb hp)
 
 theorem instantiatedTel_shiftTypes {nt t} (hw : (Ty.dependentFn t).WF 0 nt 0)
     (ts : List Ty) (es : List Eff) (hn : nt≤ts.length) (k c : Nat) :
@@ -88,10 +88,10 @@ theorem instantiatedTel_shiftTypes {nt t} (hw : (Ty.dependentFn t).WF 0 nt 0)
     instantiatedTel, Tel.bind, Ty.foldFn_shiftTypes] using hh
 
 theorem TypeCtxMap.signature {P C C' Γ Δ t ks ts es k c} (h : TypeCtxMap k c Γ Δ)
-    (hn : C'.length=C.length+k) (ha : SignatureInstance P C Γ t ks ts es) :
+    (hn : C'.length=C.length+k) (ha : SignatureInstance P C Γ t ks ts es) (hC : TypeParamRenaming C C' (shiftIndex k c)) :
     SignatureInstance P C' Δ t ks (ts.map (shiftTypes k c)) (es.map (shiftRowsTypes k c)) := by
-  refine ⟨ha.source,h.annotations hn ha.types,ha.kinds.shiftTypes k c hn,h.rows hn ha.rows,?_⟩
-  have hh := h.annotation hn ha.result
+  refine ⟨ha.source,(h.annotations hn ha.types hC),ha.kinds.shiftTypes hC,(h.rows hn ha.rows hC),?_⟩
+  have hh := (h.annotation hn ha.result hC)
   have he := instantiatedTel_shiftTypes ha.source ts es (by have hk := ha.kinds.1; omega) k c
   simpa only [shiftTypes, he] using hh
 
@@ -108,10 +108,10 @@ theorem TypeCtxMap.admissible {P B C C' Γ Δ tps ne Qs Qt ts es e k c}
   refine ⟨ha.types.shiftTypes hA hr h hn ht,?_,by simpa using ha.rowCount,?_,(by simpa only [List.length_map] using ha.sourceRows),(by simpa only [List.length_map] using ha.sourceQ),?_⟩
   · intro a hm
     obtain ⟨b,hb,rfl⟩ := List.mem_map.mp hm
-    exact ⟨(h.annotation hn (ht b hb)).wf,(Ty.ordinary_shiftTypes _ _ _).mpr (ha.typeScope b hb).2⟩
+    exact ⟨((h.annotation hn (ht b hb) hr)).wf,(Ty.ordinary_shiftTypes _ _ _).mpr (ha.typeScope b hb).2⟩
   · intro f hf
     obtain ⟨g,hg,rfl⟩ := List.mem_map.mp hf
-    exact (h.annotation hn (he g hg)).wf.2.2.2.1
+    exact ((h.annotation hn (he g hg) hr)).wf.2.2.2.1
   · exact ha.noFailRows.map _ (fun _ hf => hf.shiftTypes k c) (fun _ => rfl)
 
 theorem TypeCtxMap.primitive {P B C C' Γ Δ b sg Q ts es k c}
@@ -120,14 +120,14 @@ theorem TypeCtxMap.primitive {P B C C' Γ Δ b sg Q ts es k c}
     (hb : B.sig b=some sg) (ht : TypeAnnotations P C Γ ts) (he : RowAnnotations P C Γ es)
     (ha : PrimitiveAdmissible C Γ.length sg Q ts es) :
     PrimitiveAdmissible C' Δ.length sg Q (ts.map (shiftTypes k c)) (es.map (shiftRowsTypes k c)) := by
-  refine ⟨by simpa using ha.typeCount,hA.admits_shiftTypes_raw hr hb ht (h.annotations hn ht) ha.admits,
+  refine ⟨by simpa using ha.typeCount,hA.admits_shiftTypes_raw hr hb ht ((h.annotations hn ht hr)) ha.admits,
     ?_,by simpa using ha.rowCount,?_,(by simpa only [List.length_map] using ha.sourceRows),(by simpa only [List.length_map] using ha.sourceQ),?_⟩
   · intro a hm
     obtain ⟨b,hb,rfl⟩ := List.mem_map.mp hm
-    exact ⟨(h.annotation hn (ht b hb)).wf,(Ty.ordinary_shiftTypes _ _ _).mpr (ha.typeScope b hb).2⟩
+    exact ⟨((h.annotation hn (ht b hb) hr)).wf,(Ty.ordinary_shiftTypes _ _ _).mpr (ha.typeScope b hb).2⟩
   · intro f hf
     obtain ⟨g,hg,rfl⟩ := List.mem_map.mp hf
-    exact (h.annotation hn (he g hg)).wf.2.2.2.1
+    exact ((h.annotation hn (he g hg) hr)).wf.2.2.2.1
   · exact ha.noFailRows.map _ (fun _ hf => hf.shiftTypes k c) (fun _ => rfl)
 
 theorem TypeCtxMap.params {k c Γ Δ} (h : TypeCtxMap k c Γ Δ) (ps : List Ty) :
@@ -245,7 +245,7 @@ theorem SignatureInstance.shiftTel {P C Γ t ks ts es} (hi : SignatureInstance P
 theorem ExternalCallAdmissible.shiftTypes {P B C C' d ts} (h : ExternalCallAdmissible P B C d ts)
     (hw : d.WF P) (k c : Nat) : ExternalCallAdmissible P B C' d (ts.map (shiftTypes k c)) := by
   rw [h.types_nil hw] at *
-  refine ⟨h.count,⟨h.kinds.1,List.replicate C'.length .value,by simp,?_⟩,⟨h.constraints.1,?_⟩,?_⟩
+  refine ⟨h.count,⟨h.kinds.1,?_⟩,⟨h.constraints.1,?_⟩,?_⟩
   · intro i a ki hi; simp at hi
   · intro i a p hi; simp at hi
   · intro a ha; simp at ha

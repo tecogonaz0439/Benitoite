@@ -121,7 +121,7 @@ theorem Program.ExternalWF.function_lookup {P : Program} (hw : P.ExternalWF) {f 
       exact (hw.keys _ _ (externalLookup_mem he)).2
 
 /-- 宣言は単相であるが、コアの呼出しは型引数の個数・kind・制約を明示して照合する。 -/
-structure ExternalCallAdmissible (P : Program) (B : Builtins) (C : List TParam)
+structure ExternalCallAdmissible (P : Program) (B : Builtins) (C : TypeCtx)
     (d : ExternalSignature) (ts : List Ty) : Prop where
   count : ts.length = d.tparams.length
   kinds : TypeArgsKinded P C ts d.kinds

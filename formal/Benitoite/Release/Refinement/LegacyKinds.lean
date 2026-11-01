@@ -40,6 +40,22 @@ theorem embedTParamsWithKinds_kinds (ps : List Benitoite.Release.TParam) (ks : L
     | cons k ks => simpa only [embedTParamsWithKinds, List.zip_cons_cons, List.map_cons] using
           (congrArg (k :: ·) (ih ks (Nat.succ.inj h)))
 
+def legacyTypeCtx (C : List Benitoite.Release.TParam) (κ : KindCtx) : TypeCtx :=
+  embedTParamsWithKinds C κ
+
+theorem legacyTypeCtx_constraints {C κ} (h : κ.length = C.length) :
+    TypeCtx.constraints (legacyTypeCtx C κ) = C :=
+  embedTParamsWithKinds_constraints C κ h
+
+theorem legacyTypeCtx_kinds {C κ} (h : κ.length = C.length) :
+    TypeCtx.kinds (legacyTypeCtx C κ) = κ :=
+  embedTParamsWithKinds_kinds C κ h
+
+theorem legacyTypeCtx_length {C κ} (h : κ.length = C.length) :
+    (legacyTypeCtx C κ).length = C.length := by
+  have he := congrArg List.length (legacyTypeCtx_constraints h)
+  simpa only [TypeCtx.constraints, List.length_map] using he
+
 def embedDefWithKinds (ks : List TyKind) (d : Benitoite.Release.Def) : Def :=
   { embedDef d with tparams := embedTParamsWithKinds d.tparams ks }
 

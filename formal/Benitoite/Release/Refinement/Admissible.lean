@@ -13,17 +13,17 @@ def Ctx.WF (nr nt : Nat) (Γ : Ctx) : Prop :=
   ∀ (i : Nat) (a : Ty), Γ[i]? = some (some a) → a.WF nr nt Γ.length
 
 
-structure Ty.Annotation (P : Program) (C : List TParam) (Γ : Ctx) (a : Ty) : Prop where
+structure Ty.Annotation (P : Program) (C : TypeCtx) (Γ : Ctx) (a : Ty) : Prop where
   wf : a.WF 0 C.length Γ.length
   sorted : a.Sorted Γ
   declared : a.Declared P C Γ
 
-def TypeAnnotations (P : Program) (C : List TParam) (Γ : Ctx) (ts : List Ty) : Prop :=
+def TypeAnnotations (P : Program) (C : TypeCtx) (Γ : Ctx) (ts : List Ty) : Prop :=
   ∀ t ∈ ts, Ty.Annotation P C Γ t
 
-def SatAll (B : Builtins) (C : List TParam) (ts : List Ty) (tps : List TParam) : Prop :=
+def SatAll (B : Builtins) (C : TypeCtx) (ts : List Ty) (tps : List TParam) : Prop :=
   ts.length = tps.length ∧ ∀ (i : Nat) (t : Ty) (p : TParam),
-    ts[i]? = some t → tps[i]? = some p → B.sat C t.norm p
+    ts[i]? = some t → tps[i]? = some p → B.sat (TypeCtx.constraints C) t.norm p
 
 mutual
   def QTy : Ty → NoFailCtx
@@ -76,7 +76,7 @@ def Eff.row (i : Nat) : Eff := .mk (fun a => match a with | .rho j => decide (j 
 def RowTransport (Qs Qt : NoFailCtx) (es : List Eff) : Prop :=
   ∀ i, Qs i → NoFail Qt ((es[i]?).getD (Eff.row i))
 
-structure Admissible (B : Builtins) (C : List TParam) (nv : Nat)
+structure Admissible (B : Builtins) (C : TypeCtx) (nv : Nat)
     (tps : List TParam) (ne : Nat) (Qs Qt : NoFailCtx)
     (ts : List Ty) (es : List Eff) (e : Eff) : Prop where
   types : SatAll B C ts tps
@@ -87,10 +87,10 @@ structure Admissible (B : Builtins) (C : List TParam) (nv : Nat)
   sourceQ : ∀ i, Qs i → i < es.length
   noFailRows : RowTransport Qs Qt es
 
-structure PrimitiveAdmissible (C : List TParam) (nv : Nat) (s : PrimSig)
+structure PrimitiveAdmissible (C : TypeCtx) (nv : Nat) (s : PrimSig)
     (Q : NoFailCtx) (ts : List Ty) (es : List Eff) : Prop where
   typeCount : ts.length = s.tparams.length
-  admits : s.admits C (Ty.normTys ts)
+  admits : s.admits (TypeCtx.constraints C) (Ty.normTys ts)
   typeScope : ∀ t ∈ ts, Ty.WF 0 C.length nv t ∧ Ordinary t
   rowCount : es.length = s.neffs
   rowScope : ∀ f ∈ es, Eff.WF 0 C.length nv f
@@ -98,7 +98,7 @@ structure PrimitiveAdmissible (C : List TParam) (nv : Nat) (s : PrimSig)
   sourceQ : ∀ i, Qsig s.params s.ret s.eff i → i < es.length
   noFailRows : RowTransport (Qsig s.params s.ret s.eff) Q es
 
-def MethodRowsAdmissible (C : List TParam) (nv : Nat) (Q : NoFailCtx) (ms : MethSig)
+def MethodRowsAdmissible (C : TypeCtx) (nv : Nat) (Q : NoFailCtx) (ms : MethSig)
     (es : List Eff) : Prop :=
   es.length = ms.neffs ∧ (∀ f ∈ es, Eff.WF 0 C.length nv f) ∧
   Eff.RowsIn (· < es.length) ms.eff ∧
@@ -106,14 +106,14 @@ def MethodRowsAdmissible (C : List TParam) (nv : Nat) (Q : NoFailCtx) (ms : Meth
   RowTransport (Qsig ms.params ms.ret ms.eff) Q es
 
 /-- 行引数にも、失敗の型にある値参照と宣言の照合を要求する。 -/
-def RowAnnotations (P : Program) (C : List TParam) (Γ : Ctx) (es : List Eff) : Prop :=
+def RowAnnotations (P : Program) (C : TypeCtx) (Γ : Ctx) (es : List Eff) : Prop :=
   ∀ e ∈ es, Ty.Annotation P C Γ (.fn [] [] (.base .unit) e)
 
 def instantiatedTel (t : Tel) (ts : List Ty) (es : List Eff) : Tel :=
   Tel.bind (typeEnvAt 0 ts es) t
 
 /-- 宣言側の閉性と、呼出し側で読む型・行の像を区別する。 -/
-structure SignatureInstance (P : Program) (C : List TParam) (Γ : Ctx)
+structure SignatureInstance (P : Program) (C : TypeCtx) (Γ : Ctx)
     (t : Tel) (ks : List TyKind) (ts : List Ty) (es : List Eff) : Prop where
   source : (Ty.dependentFn t).WF 0 ks.length 0
   types : TypeAnnotations P C Γ ts
