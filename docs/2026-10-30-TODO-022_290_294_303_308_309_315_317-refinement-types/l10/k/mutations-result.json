@@ -1,0 +1,101 @@
+{
+  "started_utc": "2026-11-01T09:13:35.128725+00:00",
+  "boundary_sha256": "b3eb161c6fb659fc719020e8beab1bb69515e41816d7fb86a541ecffe15818fe",
+  "seconds": 12.37,
+  "cases": [
+    {
+      "case": "control",
+      "phase": "boundary",
+      "exit_code": 0,
+      "passed": true,
+      "target": null,
+      "seconds": 1.995,
+      "input_sha256": {
+        "Benitoite/Release/Refinement/LegacyInput.lean": "9454cecd9ecdc42114aeb0416a78ddb753b339d99d2f2a63d2babcffe01c6bf5",
+        "Benitoite/Release/Refinement/LegacyRegularity.lean": "a64a61bc09ecbf1af86c3e26edea3ab1dd283d5a634c8feb2f570e9335486aa6",
+        "Benitoite/Release/Refinement/LegacyTables.lean": "b36a968691735faf7607d5a836640faebc194d7210077209652656a39e6fc602"
+      },
+      "output_bytes": 0,
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "case": "NodeKind",
+      "phase": "boundary",
+      "exit_code": 1,
+      "passed": true,
+      "target": "reject_intermediate",
+      "seconds": 1.976,
+      "input_sha256": {
+        "Benitoite/Release/Refinement/LegacyInput.lean": "9454cecd9ecdc42114aeb0416a78ddb753b339d99d2f2a63d2babcffe01c6bf5",
+        "Benitoite/Release/Refinement/LegacyRegularity.lean": "e119f7b95f2a1cf8af698db09fcc78c39a051222a081db2effe754b7d5bbfb4a",
+        "Benitoite/Release/Refinement/LegacyTables.lean": "b36a968691735faf7607d5a836640faebc194d7210077209652656a39e6fc602"
+      },
+      "output_bytes": 159,
+      "output_sha256": "74705e4a96768c07a346d96d7edb817735e666af37a946ed0f6e914814455271"
+    },
+    {
+      "case": "ConstructorKind",
+      "phase": "boundary",
+      "exit_code": 1,
+      "passed": true,
+      "target": "reject_constructor_table",
+      "seconds": 1.971,
+      "input_sha256": {
+        "Benitoite/Release/Refinement/LegacyInput.lean": "9454cecd9ecdc42114aeb0416a78ddb753b339d99d2f2a63d2babcffe01c6bf5",
+        "Benitoite/Release/Refinement/LegacyRegularity.lean": "a64a61bc09ecbf1af86c3e26edea3ab1dd283d5a634c8feb2f570e9335486aa6",
+        "Benitoite/Release/Refinement/LegacyTables.lean": "fe5c4b9013ea885ca0f9a3514e018fb6f857192a3256d1281eaa68047aefb1d2"
+      },
+      "output_bytes": 113,
+      "output_sha256": "da6dc0b0a6749f447f1412849df5458c7d2c9dda1c7bd758df6d0c0421df8a7b"
+    },
+    {
+      "case": "ConstructorArity",
+      "phase": "boundary",
+      "exit_code": 1,
+      "passed": true,
+      "target": "reject_constructor_arity",
+      "seconds": 1.968,
+      "input_sha256": {
+        "Benitoite/Release/Refinement/LegacyInput.lean": "9454cecd9ecdc42114aeb0416a78ddb753b339d99d2f2a63d2babcffe01c6bf5",
+        "Benitoite/Release/Refinement/LegacyRegularity.lean": "a64a61bc09ecbf1af86c3e26edea3ab1dd283d5a634c8feb2f570e9335486aa6",
+        "Benitoite/Release/Refinement/LegacyTables.lean": "b85bba5215c754da9b237cd4c3bb5cb2a52da561d15149bf8fbd5a61f1b17f20"
+      },
+      "output_bytes": 181,
+      "output_sha256": "ac59cd81acbc0f068d9f5ace681ed05a9be7db90013bfd0c757d5781e51d7a1f"
+    },
+    {
+      "case": "ClauseSource",
+      "phase": "boundary",
+      "exit_code": 1,
+      "passed": true,
+      "target": "reject_clause_source",
+      "seconds": 1.992,
+      "input_sha256": {
+        "Benitoite/Release/Refinement/LegacyInput.lean": "1b9dc59645a78de300c1e6890061425d3b3712609720bf27ea2bdde5863c8ca0",
+        "Benitoite/Release/Refinement/LegacyRegularity.lean": "a64a61bc09ecbf1af86c3e26edea3ab1dd283d5a634c8feb2f570e9335486aa6",
+        "Benitoite/Release/Refinement/LegacyTables.lean": "b36a968691735faf7607d5a836640faebc194d7210077209652656a39e6fc602"
+      },
+      "output_bytes": 197,
+      "output_sha256": "5ced19624b59fcb75f4a559e5a9721e408ec2deafa4956422eaa67dab1037014"
+    },
+    {
+      "case": "HeldContent",
+      "phase": "boundary",
+      "exit_code": 1,
+      "passed": true,
+      "target": "reject_content",
+      "seconds": 1.975,
+      "input_sha256": {
+        "Benitoite/Release/Refinement/LegacyInput.lean": "8e5354071cf496e08a4b1bb2c2600582be31919508cf166bf7e73be66e15869f",
+        "Benitoite/Release/Refinement/LegacyRegularity.lean": "a64a61bc09ecbf1af86c3e26edea3ab1dd283d5a634c8feb2f570e9335486aa6",
+        "Benitoite/Release/Refinement/LegacyTables.lean": "b36a968691735faf7607d5a836640faebc194d7210077209652656a39e6fc602"
+      },
+      "output_bytes": 509,
+      "output_sha256": "78ae99c04a905d283caac535169088e4a5e02dbe2da3a0728050029456198885"
+    }
+  ],
+  "output": "mutations-output.txt",
+  "bytes": 1269,
+  "sha256": "62a0236ed215e9ac253712d0c06d670adbdb34e5111407372e49f6b4971cba00",
+  "passed": true
+}

@@ -1,0 +1,48 @@
+CASE control
+
+CASE NodeKind
+<mutation>/boundary.lean:40:2: error: Type mismatch
+  typed.left
+has type
+  Ty.WF 0 [].length [].length (embedTy badType)
+but is expected to have type
+  False
+
+CASE ConstructorKind
+<mutation>/boundary.lean:47:2: error: Type mismatch
+  field
+has type
+  True
+but is expected to have type
+  False
+
+CASE ConstructorArity
+<mutation>/boundary.lean:59:24: error: Application type mismatch: The argument
+  same
+has type
+  True
+but is expected to have type
+  0 = 1
+in the application
+  Nat.zero_ne_one same
+
+CASE ClauseSource
+<mutation>/boundary.lean:220:29: error: Invalid projection: Projections extract constructor fields for one-constructor inductive types. The expression
+  source
+has type `True` which has no fields.
+
+CASE HeldContent
+<mutation>/boundary.lean:168:79: error: unsolved goals
+case intro
+T0 : Release.Ty
+T : Ty
+h :
+  LegacyOutputInput K P0 (B0 (some T0)) (B (some T))
+    (LegacyJudgment.value [] store Qempty [] [] (Release.Val.checked target) held)
+o : OpaqueName
+r : Scope.Domain.Range
+left✝² : held = Release.Ty.opaque o (Scope.Signature.Ix.fixed r)
+left✝¹ : (B0 (some T0)).valKind o = some target.kind
+left✝ : (B (some T)).valKind o = some target.kind
+right✝ : Scope.Domain.Range.MemK target.kind r target
+⊢ False

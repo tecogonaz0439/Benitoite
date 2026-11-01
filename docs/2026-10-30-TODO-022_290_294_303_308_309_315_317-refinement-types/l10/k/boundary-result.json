@@ -1,0 +1,27 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-M",
+    "12288",
+    "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/k/boundary.lean"
+  ],
+  "cwd": "formal",
+  "started_utc": "2026-11-01T09:13:31.900442+00:00",
+  "seconds": 1.168,
+  "exit_code": 0,
+  "output": "boundary-output.txt",
+  "bytes": 20435,
+  "sha256": "962a4b166b1d273b200df0f22bfd0ee7b71b430631df06ce1eaef9d49b423889",
+  "axioms_seen": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "disallowed_axioms": [],
+  "print_axioms_count": 208,
+  "sorry_diagnostic": false,
+  "constants": 208,
+  "complete": true
+}

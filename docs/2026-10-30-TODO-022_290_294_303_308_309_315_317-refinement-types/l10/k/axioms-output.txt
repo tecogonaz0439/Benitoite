@@ -1,0 +1,416 @@
+AUDIT_MODULE Benitoite 0
+AUDIT_MODULE Benitoite.Release.Refinement.LegacyKinds 38
+'Benitoite.Release.Refinement.DeclarationKinds' does not depend on any axioms
+'Benitoite.Release.Refinement.DeclarationKinds.WF' does not depend on any axioms
+'Benitoite.Release.Refinement.DeclarationKinds._sizeOf_1' does not depend on any axioms
+'Benitoite.Release.Refinement.DeclarationKinds._sizeOf_inst' does not depend on any axioms
+'Benitoite.Release.Refinement.DeclarationKinds.casesOn' does not depend on any axioms
+'Benitoite.Release.Refinement.DeclarationKinds.classArgument' does not depend on any axioms
+'Benitoite.Release.Refinement.DeclarationKinds.ctorIdx' does not depend on any axioms
+'Benitoite.Release.Refinement.DeclarationKinds.functionParams' does not depend on any axioms
+'Benitoite.Release.Refinement.DeclarationKinds.methodParams' does not depend on any axioms
+'Benitoite.Release.Refinement.DeclarationKinds.mk' does not depend on any axioms
+'Benitoite.Release.Refinement.DeclarationKinds.mk._flat_ctor' does not depend on any axioms
+'Benitoite.Release.Refinement.DeclarationKinds.mk.inj' does not depend on any axioms
+'Benitoite.Release.Refinement.DeclarationKinds.mk.injEq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.DeclarationKinds.mk.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.DeclarationKinds.mk.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.DeclarationKinds.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.DeclarationKinds.noConfusionType' does not depend on any axioms
+'Benitoite.Release.Refinement.DeclarationKinds.rec' does not depend on any axioms
+'Benitoite.Release.Refinement.DeclarationKinds.recOn' does not depend on any axioms
+'Benitoite.Release.Refinement.embedClassDeclWithKinds' depends on axioms: [propext]
+'Benitoite.Release.Refinement.embedClassDeclWithKinds_methods' depends on axioms: [propext]
+'Benitoite.Release.Refinement.embedDefWithKinds' depends on axioms: [propext]
+'Benitoite.Release.Refinement.embedMethSigWithKinds' depends on axioms: [propext]
+'Benitoite.Release.Refinement.embedProgramWithKinds' depends on axioms: [propext]
+'Benitoite.Release.Refinement.embedProgramWithKinds_classes' depends on axioms: [propext]
+'Benitoite.Release.Refinement.embedProgramWithKinds_cons' depends on axioms: [propext]
+'Benitoite.Release.Refinement.embedProgramWithKinds_dataInfo' depends on axioms: [propext]
+'Benitoite.Release.Refinement.embedProgramWithKinds_defs' depends on axioms: [propext]
+'Benitoite.Release.Refinement.embedProgramWithKinds_effects' depends on axioms: [propext]
+'Benitoite.Release.Refinement.embedProgramWithKinds_externals' depends on axioms: [propext]
+'Benitoite.Release.Refinement.embedProgramWithKinds_impls' depends on axioms: [propext]
+'Benitoite.Release.Refinement.embedProgramWithKinds_ops' depends on axioms: [propext]
+'Benitoite.Release.Refinement.embedProgramWithKinds_varianceFor' depends on axioms: [propext]
+'Benitoite.Release.Refinement.embedTParamsWithKinds' does not depend on any axioms
+'Benitoite.Release.Refinement.embedTParamsWithKinds.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.embedTParamsWithKinds.match_1' does not depend on any axioms
+'Benitoite.Release.Refinement.embedTParamsWithKinds_constraints' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.embedTParamsWithKinds_kinds' depends on axioms: [propext, Classical.choice, Quot.sound]
+AUDIT_MODULE Benitoite.Release.Refinement.LegacyDeclarations 11
+'Benitoite.Release.Refinement.LegacyKindArgs' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyKindArgs.kinded' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.embedDefWithKinds_parameters' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.embedDefWithKinds_signatureInstance' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.embedMethSigWithKinds_parameters' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.embedMethSigWithKinds_signatureInstance' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.embedProgramWithKinds_class' depends on axioms: [propext]
+'Benitoite.Release.Refinement.embedProgramWithKinds_def' depends on axioms: [propext]
+'Benitoite.Release.Refinement.embedProgramWithKinds_method' depends on axioms: [propext]
+'Benitoite.Release.Refinement.embed_dictionary_kind' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.legacy_signatureInstance' depends on axioms: [propext, Classical.choice, Quot.sound]
+AUDIT_MODULE Benitoite.Release.Refinement.LegacyInput 58
+'Benitoite.Release.Refinement.LegacyArmsInput' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyArmsInput._f' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyArmsInput._sunfold' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyArmsInput._unsafe_rec' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyArmsInput.match_1' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyArmsInput.match_3' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyBuilderInput' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyClausesInput' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyClausesInput._f' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyClausesInput._sunfold' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyClausesInput._unsafe_rec' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyClausesInput.match_1' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyCompInput' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyCompInput._f' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyCompInput._sunfold' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyCompInput._unsafe_rec' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyCompInput.match_1' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyContextInput' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyDeclarationsInput' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyHeldTypeInput' depends on axioms: [propext]
+'Benitoite.Release.Refinement.LegacyHeldTypeInput.match_1' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyInputCtx' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyInputCtx._sizeOf_1' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyInputCtx._sizeOf_inst' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyInputCtx.casesOn' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyInputCtx.closed' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyInputCtx.constraints' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyInputCtx.ctorIdx' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyInputCtx.kinds' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyInputCtx.mk' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyInputCtx.mk._flat_ctor' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyInputCtx.mk.inj' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyInputCtx.mk.injEq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.LegacyInputCtx.mk.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyInputCtx.mk.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyInputCtx.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyInputCtx.noConfusionType' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyInputCtx.nr' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyInputCtx.nv' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyInputCtx.rec' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyInputCtx.recOn' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyInputCtx.types' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyInputCtx.values' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyLocInput' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyLocInput.match_1' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyRowsInput' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyTypeInput' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyTypesInput' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyValueInput' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyValueInput._f' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyValueInput._sunfold' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyValueInput._unsafe_rec' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyValueInput.match_1' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyValuesInput' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyValuesInput._f' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyValuesInput._sunfold' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyValuesInput._unsafe_rec' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyValuesInput.match_1' does not depend on any axioms
+AUDIT_MODULE Benitoite.Release.Refinement.LegacyRegularity 122
+'Benitoite.Release.Refinement.LegacyJudgment' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyJudgment.OldHolds' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyJudgment.OldHolds.match_1' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyJudgment._sizeOf_1' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyJudgment._sizeOf_inst' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyJudgment.arms' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyJudgment.arms.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyJudgment.arms.inj' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyJudgment.arms.injEq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.LegacyJudgment.arms.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyJudgment.arms.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyJudgment.casesOn' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyJudgment.clauses' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyJudgment.clauses.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyJudgment.clauses.inj' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyJudgment.clauses.injEq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.LegacyJudgment.clauses.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyJudgment.clauses.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyJudgment.comp' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyJudgment.comp.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyJudgment.comp.inj' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyJudgment.comp.injEq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.LegacyJudgment.comp.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyJudgment.comp.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyJudgment.ctorElim' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyJudgment.ctorElimType' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyJudgment.ctorIdx' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyJudgment.each' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyJudgment.each.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyJudgment.each.inj' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyJudgment.each.injEq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.LegacyJudgment.each.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyJudgment.each.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyJudgment.failure' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyJudgment.failure.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyJudgment.failure.inj' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyJudgment.failure.injEq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.LegacyJudgment.failure.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyJudgment.failure.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyJudgment.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyJudgment.noConfusionType' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyJudgment.rec' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyJudgment.recOn' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyJudgment.value' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyJudgment.value.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyJudgment.value.inj' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyJudgment.value.injEq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.LegacyJudgment.value.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyJudgment.value.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyJudgment.values' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyJudgment.values.elim' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyJudgment.values.inj' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyJudgment.values.injEq' depends on axioms: [propext]
+'Benitoite.Release.Refinement.LegacyJudgment.values.noConfusion' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyJudgment.values.sizeOf_spec' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyNodeContext' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyNodeLocal' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyNodeRegular' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyNodeTypes' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyOutputInput' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyOutputInput.below' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyOutputInput.below.casesOn' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.LegacyOutputInput.below.node' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyOutputInput.below.rec' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyOutputInput.brecOn' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyOutputInput.casesOn' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyOutputInput.node' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyOutputInput.old' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyOutputInput.rec' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyOutputInput.recOn' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyOutputInput.regular' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyRule' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyRule.Arms_guarded' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyRule.Arms_nil' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyRule.Arms_plain' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyRule.C_App' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyRule.C_BuilderLet' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyRule.C_BuilderOp' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyRule.C_Eff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyRule.C_Escape' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyRule.C_Handle' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyRule.C_Handle_Fail' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyRule.C_If' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyRule.C_Lazy' depends on axioms: [propext]
+'Benitoite.Release.Refinement.LegacyRule.C_Let' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyRule.C_Match' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyRule.C_Meth' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyRule.C_Resume' depends on axioms: [propext]
+'Benitoite.Release.Refinement.LegacyRule.C_ResumeL' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyRule.C_Return' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyRule.C_Sub' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyRule.C_Use' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyRule.Clauses_cons' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyRule.Clauses_nil' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyRule.Each_cons' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyRule.Each_nil' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyRule.Failure_one' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyRule.V_Bytes' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyRule.V_Checked' depends on axioms: [propext]
+'Benitoite.Release.Refinement.LegacyRule.V_CheckedRequest' depends on axioms: [propext]
+'Benitoite.Release.Refinement.LegacyRule.V_Con' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyRule.V_Const' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyRule.V_Dict' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyRule.V_Fun' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyRule.V_Lam' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyRule.V_List' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyRule.V_LocLazy' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyRule.V_LocRef' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyRule.V_Map' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyRule.V_Op' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyRule.V_Prim' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyRule.V_Raise' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyRule.V_Set' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyRule.V_Sub' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyRule.V_Super' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyRule.V_Var' depends on axioms: [propext]
+'Benitoite.Release.Refinement.LegacyRule.Vs_cons' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyRule.Vs_nil' does not depend on any axioms
+'Benitoite.Release.Refinement.LegacyRule.casesOn' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyRule.old' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyRule.rec' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyRule.recOn' depends on axioms: [propext, Classical.choice, Quot.sound]
+AUDIT_MODULE Benitoite.Release.Refinement.LegacyTables 36
+'Benitoite.Release.Refinement.LegacyPrimSignature' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyPrimSignature.admits' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyPrimSignature.casesOn' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyPrimSignature.constraints' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.LegacyPrimSignature.eff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyPrimSignature.kind' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyPrimSignature.mk' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyPrimSignature.mk._flat_ctor' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.LegacyPrimSignature.names' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyPrimSignature.neffs' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyPrimSignature.opEff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyPrimSignature.params' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyPrimSignature.rec' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyPrimSignature.recOn' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyPrimSignature.ret' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyPrimSignature.rkinds' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyPrimSignature.shape' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyTables' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyTables.casesOn' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyTables.constructorArity' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyTables.constructorFields' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyTables.constructorScope' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyTables.effKind' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyTables.effects' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyTables.mk' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyTables.mk._flat_ctor' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyTables.primitives' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyTables.ranges' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyTables.rec' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyTables.recOn' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyTables.refGet' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyTables.refSet' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyTables.resources' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyTables.sat' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyTables.valContent' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyTables.valKind' depends on axioms: [propext, Classical.choice, Quot.sound]
+AUDIT_MODULE Benitoite.Release.Refinement.LegacyTableFacts 24
+'Benitoite.Release.Refinement.LegacyTables.constructor_scoped' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.LegacyTables.dataArity' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyTables.varianceValid' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Polarity.compose.eq_1' does not depend on any axioms
+'Benitoite.Release.Refinement.Polarity.compose.eq_2' does not depend on any axioms
+'Benitoite.Release.Refinement.Polarity.compose.eq_3' does not depend on any axioms
+'Benitoite.Release.Refinement.embedConDecl.eq_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.embedEff_invariantVariance' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.embedEff_invariantVariance._f' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.embedTy_invariantVariance' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.embedTy_invariantVariance._f' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.embedTys_invariantVariance' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.embedTys_invariantVariance._f' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.varianceTysOK.eq_1' depends on axioms: [propext]
+'Benitoite.Release.Refinement.varianceTysOK.eq_2' depends on axioms: [propext]
+'Benitoite.Release.Refinement.varianceTysOK.eq_def' depends on axioms: [propext]
+'_private.Benitoite.Release.Refinement.LegacyTableFacts.0.Benitoite.Release.Refinement.Polarity.compose.match_1.eq_1' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.LegacyTableFacts.0.Benitoite.Release.Refinement.Polarity.compose.match_1.eq_2' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.LegacyTableFacts.0.Benitoite.Release.Refinement.Polarity.compose.match_1.eq_3' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.LegacyTableFacts.0.Benitoite.Release.Refinement.Polarity.compose.match_1.splitter' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.LegacyTableFacts.0.Benitoite.Release.Refinement.legacy_varianceArgs_iff' depends on axioms: [propext]
+'_private.Benitoite.Release.Refinement.LegacyTableFacts.0.Benitoite.Release.Refinement.varianceTysOK.match_1.eq_1' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.LegacyTableFacts.0.Benitoite.Release.Refinement.varianceTysOK.match_1.eq_2' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.LegacyTableFacts.0.Benitoite.Release.Refinement.varianceTysOK.match_1.splitter' does not depend on any axioms
+AUDIT_MODULE Benitoite.Release.Refinement.LegacyValues 44
+'Benitoite.Release.Refinement.LegacyClausesInput.signature_wf' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.LegacyTypeInput.annotation' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyTypeInput.annotation_at' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyTypeInput.annotation_normal' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.LegacyTypeInput.normal_kind' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.LegacyTypesInput.kindArgs' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.embedEff_declared_context' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.embedEff_declared_context._f' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.embedEff_sorted' depends on axioms: [propext]
+'Benitoite.Release.Refinement.embedEff_sorted._f' depends on axioms: [propext]
+'Benitoite.Release.Refinement.embedEff_wf_values' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.embedEff_wf_values._f' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.embedTy_declared_context' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.embedTy_declared_context._f' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.embedTy_sorted' depends on axioms: [propext]
+'Benitoite.Release.Refinement.embedTy_sorted._f' depends on axioms: [propext]
+'Benitoite.Release.Refinement.embedTy_wf_values' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.embedTy_wf_values._f' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.embedTys_declared_context' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.embedTys_declared_context._f' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.embedTys_sorted' depends on axioms: [propext]
+'Benitoite.Release.Refinement.embedTys_sorted._f' depends on axioms: [propext]
+'Benitoite.Release.Refinement.embedTys_wf_values' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.embedTys_wf_values._f' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.embed_bytes' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.embed_checked' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.embed_checkedRequest' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.embed_checkedRequest_opaque' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.embed_checked_opaque' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.embed_clause_signature_wf' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.embed_const' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.embed_instTargetList_wf_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.embed_instTarget_wf_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.embed_instTarget_wf_iff._proof_1_1' depends on axioms: [propext, Quot.sound]
+'Benitoite.Release.Refinement.embed_instTarget_wf_iff._proof_1_2' depends on axioms: [propext, Quot.sound]
+'Benitoite.Release.Refinement.embed_normal_eq_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.legacy_opSigAt_signature_wf' depends on axioms: [propext, Classical.choice, Quot.sound]
+'_private.Benitoite.Release.Refinement.LegacyValues.0.Benitoite.Release.Refinement.RangeIx.inst.match_3.eq_1' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.LegacyValues.0.Benitoite.Release.Refinement.RangeIx.inst.match_3.eq_2' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.LegacyValues.0.Benitoite.Release.Refinement.RangeIx.inst.match_3.splitter' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.LegacyValues.0.Benitoite.Release.opSig.match_5.eq_1' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.LegacyValues.0.Benitoite.Release.opSig.match_5.eq_2' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.LegacyValues.0.Benitoite.Release.opSig.match_5.eq_3' does not depend on any axioms
+'_private.Benitoite.Release.Refinement.LegacyValues.0.Benitoite.Release.opSig.match_5.splitter' does not depend on any axioms
+'Benitoite.Release.Model.assumptions' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.ModelTargets.assumptions' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.ModelHttp.assumptions' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.progress' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.preservation' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.step_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.effect_soundness' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.effect_soundness_noLamNames' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.HasTypeVQ.subst' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.HasTypeCQ.subst' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.HasTypeVQ.subst_under_none' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.HasTypeCQ.subst_under_none' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.HasTypeVQ.shift_values' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.HasTypeCQ.shift_values' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.HasTypeVQ.shift_types' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.HasTypeCQ.shift_types' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.HasTypeVQ.narrow' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.HasTypeCQ.narrow' depends on axioms: [propext, Classical.choice, Quot.sound]
+CASES OLD_TYPING Benitoite.Release.HasTypeVQ 19
+CASES OLD_TYPING Benitoite.Release.HasTypeVsQ 2
+CASES OLD_TYPING Benitoite.Release.HasTypeEachQ 2
+CASES OLD_TYPING Benitoite.Release.HasTypeCQ 17
+CASES OLD_TYPING Benitoite.Release.HasTypeArmsQ 3
+CASES OLD_TYPING Benitoite.Release.HasTypeClausesQ 2
+CASES OLD_TYPING Benitoite.Release.HasFailureClause 1
+CASE_TOTAL OLD_TYPING 46
+CASES LEGACY_RULES Benitoite.Release.Refinement.LegacyRule 46
+CASE_TOTAL LEGACY_RULES 46
+CASES LEGACY_JUDGMENTS Benitoite.Release.Refinement.LegacyJudgment 7
+CASE_TOTAL LEGACY_JUDGMENTS 7
+CASES OLD_SYNTAX Benitoite.Release.Val 17
+CASES OLD_SYNTAX Benitoite.Release.Comp 13
+CASES OLD_SYNTAX Benitoite.Release.Arm 1
+CASES OLD_SYNTAX Benitoite.Release.Clause 2
+CASE_TOTAL OLD_SYNTAX 33
+CASES SUBTYPE Benitoite.Release.Refinement.Ty.LeQ 14
+CASES SUBTYPE Benitoite.Release.Refinement.TelLe 2
+CASES SUBTYPE Benitoite.Release.Refinement.TelClosure 2
+CASES SUBTYPE Benitoite.Release.Refinement.TypeArgsLe 4
+CASE_TOTAL SUBTYPE 22
+CASES TYPING Benitoite.Release.Refinement.HasTypeVQ 29
+CASES TYPING Benitoite.Release.Refinement.HasTypeCQ 24
+CASES TYPING Benitoite.Release.Refinement.HasTypeVsQ 2
+CASES TYPING Benitoite.Release.Refinement.HasTypeEachQ 2
+CASES TYPING Benitoite.Release.Refinement.HasTypeArmsQ 3
+CASES TYPING Benitoite.Release.Refinement.HasTypeClausesQ 2
+CASES TYPING Benitoite.Release.Refinement.HasFailureClause 1
+CASES TYPING Benitoite.Release.Refinement.HasTypeTelArgsQ 2
+CASES TYPING Benitoite.Release.Refinement.TelBodyTy 2
+CASES TYPING Benitoite.Release.Refinement.CaptureOk 1
+CASES TYPING Benitoite.Release.Refinement.ClosureTy 1
+CASES TYPING Benitoite.Release.Refinement.DependentClosureTy 1
+CASES TYPING Benitoite.Release.Refinement.CheckedWitness 2
+CASES TYPING Benitoite.Release.Refinement.ImageOk 4
+CASE_TOTAL TYPING 76

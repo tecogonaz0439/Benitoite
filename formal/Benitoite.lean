@@ -368,3 +368,6 @@ import Benitoite.Release.Refinement.CoverageRefinement
 
 import Benitoite.Release.Refinement.ProgramTyping
 import Benitoite.Release.Refinement.ProgramWellFormed
+
+import Benitoite.Release.Refinement.LegacyTableFacts
+import Benitoite.Release.Refinement.LegacyValues

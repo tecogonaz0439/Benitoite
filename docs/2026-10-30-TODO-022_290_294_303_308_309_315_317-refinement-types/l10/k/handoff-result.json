@@ -1,0 +1,27 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-M",
+    "12288",
+    "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/k/handoff.lean"
+  ],
+  "cwd": "formal",
+  "started_utc": "2026-11-01T09:13:33.069398+00:00",
+  "seconds": 0.666,
+  "exit_code": 0,
+  "output": "handoff-output.txt",
+  "bytes": 375,
+  "sha256": "41000ac79f1efb93f41099211da1a281390a55343a7f9989a98c719ae5a9623a",
+  "axioms_seen": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "disallowed_axioms": [],
+  "print_axioms_count": 3,
+  "sorry_diagnostic": false,
+  "constants": 3,
+  "complete": true
+}

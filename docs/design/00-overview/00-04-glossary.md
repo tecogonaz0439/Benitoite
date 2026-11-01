@@ -49,7 +49,7 @@
 | HM 型推論 | Hindley–Milner type inference | 型注釈のない式の型を、単一化によって決める型推論の方式 | 関数の本体の中の型を決めるのに使う（[型システム](../01-spec/01-06-type-system.md)） |
 | 単一化 | unification | 二つの型を等しくするように、型変数に型を割り当てること | [型検査器](../02-impl/02-05-typechecker.md) |
 | 型変数 | type variable | 型推論の途中で、まだ決まっていない型を表すもの | 利用者が書く型には現れない（[型システム](../01-spec/01-06-type-system.md)） |
-| 型注釈 | type annotation | プログラムに書き込んだ型 | トップレベルの関数には必須、関数の本体の中では任意（[型システム](../01-spec/01-06-type-system.md)）。篩を含む形式化では `Annotation` が上限・観測の種類と参照・宣言を検査し、宣言の適格性（実装の辞書型の kind と操作の辞書型の先頭の対応を含む）と本体の型付けは `WellFormed` と `WellTyped` で区別する（[コア計算と脱糖](../01-spec/01-12-core-calculus.md#篩を含む定義とプログラムの適格性)） |
+| 型注釈 | type annotation | プログラムに書き込んだ型 | トップレベルの関数には必須、関数の本体の中では任意（[型システム](../01-spec/01-06-type-system.md)）。篩を含む形式化では `Annotation` が上限・観測の種類と参照・宣言を検査し、旧判断からの写しでは、通常節の元の操作署名も操作自身の型文脈で検査する。宣言の適格性（実装の辞書型の kind と操作の辞書型の先頭の対応を含む）と本体の型付けは `WellFormed` と `WellTyped` で区別する（[コア計算と脱糖](../01-spec/01-12-core-calculus.md#篩を含む定義とプログラムの適格性)） |
 | エフェクト | effect | 計算が、値を返すことのほかに起こしうる作用（入出力、状態の変更など）。型でそれを追跡する方式をエフェクトシステムという | 関数の型が、起こしうるエフェクトの集合を持つ。エフェクトはモジュールの中で宣言し、`Console.Write`・`File.Read` などの組み込みのエフェクトと、利用者が宣言したエフェクトがある（[型システム](../01-spec/01-06-type-system.md)、[エフェクト](../01-spec/01-07-effects.md)） |
 | ファイル単位のエフェクトの宣言 | file-level effect declaration | ファイルの直下の関数の最外側の効果行へ一律に合併するための宣言。元の宣言は関数の個別の `uses` と区別して保持する | [01-02](../01-spec/01-02-syntax.md#ファイルの先頭の部分)、[01-07](../01-spec/01-07-effects.md#ファイル単位のエフェクトの宣言) |
 | 直接形式 | direct style | 外部に作用する処理を、普通の関数の呼び出しとして書き、結果をそのまま使う書き方。作用を値として組み立ててから実行する書き方（モナドの形）と対比する | Benitoite の表層の書き方である（[エフェクト](../01-spec/01-07-effects.md)） |
@@ -262,7 +262,7 @@
 | 上位の型クラス | superclass | ある型クラスを実装する型が、あらかじめ実装していなければならない別の型クラス。`trait Monoid[T: Semigroup]` の `Semigroup` がこれに当たる。型クラスの制約は、上位の型クラスの制約を含む | [型システム](../01-spec/01-06-type-system.md) |
 | 標準の型クラス | — | 標準ライブラリのモジュール `Benitoite.Trait` に置く型クラス（`Show`・`Order`・`Semigroup`・`Monoid`・`Functor`・`Applicative`・`Monad`・`Functor2`・`Applicative2`・`Monad2`・`Foldable`・`Traversable`）。prelude に入らず、import して使う。学習の目的のため、既存の関数との重複を原則 5 の例外として認めた | [標準ライブラリ](../03-interop/03-06-stdlib.md) |
 | 二引数の型クラス | type class for a binary type constructor | `F[_, _]`という二引数の型構成子を受け取る型クラス。標準のFunctor2・Applicative2・Monad2は、第二の型引数を保ち、第一の型引数についてmap・pure/apply・flatMapを提供する。Resultの実装では第二の型引数はエラーの型である | [標準ライブラリ](../03-interop/03-06-stdlib.md)の「標準の型クラス（初回リリース版）」 |
-| 高カインド型 | higher-kinded type | 型構成子（`Option` のように、型を受け取って型を作るもの）を引数にとる型。型クラスの引数に `F[_]` と書く | [型システム](../01-spec/01-06-type-system.md) |
+| 高カインド型 | higher-kinded type | 型構成子（`Option` のように、型を受け取って型を作るもの）を引数にとる型。型クラスの引数に `F[_]` と書く。形式化の kind は value 又は引数数を持つ constructor であり、旧宣言の写しでもクラス引数と関数・メソッドの型パラメータの kind を保持する（[旧判断の適格な入力](../01-spec/01-12-core-calculus.md#旧判断の適格な入力)） | [型システム](../01-spec/01-06-type-system.md) |
 | 孤立した実装 | orphan instance | 型クラスも対象の型も宣言していないモジュールに書いた実装。誤りとする | [型システム](../01-spec/01-06-type-system.md) |
 | 辞書渡し | dictionary passing | 型クラスの制約ごとに、実装のメソッドの組（辞書）を関数の隠れた引数として渡す、型クラスの実現の方式 | [型システム](../01-spec/01-06-type-system.md)、[コア計算と脱糖](../01-spec/01-12-core-calculus.md) |
 | ストア | store | コア計算の実行の状態の一部で、場所ごとに、可変のセルの中身と明示遅延の値（評価前の式か、評価済みの値）を持つ表 | [コア計算と脱糖](../01-spec/01-12-core-calculus.md) |

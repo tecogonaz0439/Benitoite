@@ -1,0 +1,170 @@
+{
+  "started_utc": "2026-11-01T09:13:31.725728+00:00",
+  "base": "99ff1579586c5b62db54c00b1fbb673b96d02dc4",
+  "branch": "m014/l10.k",
+  "protected_count": 593,
+  "inputs": {
+    "formal/Benitoite.lean": "f4305e0f028409efbd2539acd4f8cc3be58e8f79b7364b9a975cf26c5fd348d4",
+    "formal/lakefile.toml": "10f2661bff8fce95a9253d976427d0ca44038ec12350c955badbc1cf1efa6e3a",
+    "formal/Benitoite/Release/Refinement/LegacyKinds.lean": "9dfe5d592540f546e0940e10a892d3adae7c0bc9f773fc5e31bb222378d9f1ad",
+    "formal/Benitoite/Release/Refinement/LegacyDeclarations.lean": "9ff41c5407f5c3ce0acb4bbe7f689d1db4525b1ff54ea162a7b14007602a9a36",
+    "formal/Benitoite/Release/Refinement/LegacyInput.lean": "9454cecd9ecdc42114aeb0416a78ddb753b339d99d2f2a63d2babcffe01c6bf5",
+    "formal/Benitoite/Release/Refinement/LegacyRegularity.lean": "a64a61bc09ecbf1af86c3e26edea3ab1dd283d5a634c8feb2f570e9335486aa6",
+    "formal/Benitoite/Release/Refinement/LegacyTables.lean": "b36a968691735faf7607d5a836640faebc194d7210077209652656a39e6fc602",
+    "formal/Benitoite/Release/Refinement/LegacyTableFacts.lean": "7f20e62f5fb936d5df1d2743ca50766af1c65f4b0e1122b1a6550b3f15b130f9",
+    "formal/Benitoite/Release/Refinement/LegacyValues.lean": "10421a8715fe1492d51c3fbb26fc674559c81dd1fba3e3f42aea40cfa5802444",
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/k/boundary.lean": "769ddf026e3cfc6638e8514ccca4e521efe92c63597132faa302f4b82d781fbd",
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/k/axioms.lean": "d50f224501f20b6e9d667d4c5c10ac83bdeb7484dbcf25ec778950be185c6dae",
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/k/handoff.lean": "1ef424f04c88f5fd79fcb7c8281fed6a2a1cfa86a18c4326e5ad5e01349ab5d3",
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/k/signatures.md": "a72b504105c698c2907d2ce3eed7eb76d0603813bc4962e5b2dcd548a215b653",
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/k/mutations.py": "6d003792f4c767f2a3d816888f04546771e269d7df41117cd9cf50817d2cb22c",
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/k/check.py": "17a43a904c170dafb3126f6f2071d40ea71be484132efa33156ff733c7af8bfe",
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/k/review-immutable-inputs.json": "466efb33f8b22ab65aab93769c0e7f246fa0416a88272b0a53ff2a7bf9856d1d",
+    "docs/design/01-spec/01-12-core-calculus.md": "99b37a1a9052919d90988e0995331ef3b09f1b674e185c9ac439f1bd5d834510",
+    "docs/design/07-quality/07-04-formal-semantics.md": "c349d8bc0f5b0ba3586a3af714a998120d9c9265f72dacf61f441bd4c45b74ba",
+    "docs/design/00-overview/00-04-glossary.md": "871cccb1deb8788e313b6afef212562e3dd974d805f61dd8b9945499dc503d0f",
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/reviews/RV-L10.k.md": "d66f0ce86e2edaebfca2a2f6e9ec197f257bec83765e646d028bdf55af3b000a",
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/plan.md": "a290c2cf8f401010193e72954f9008fb6d40953e87e2645232e69feaa082c9e9",
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/detail.md": "e2f0b8ced4d3696522b5e62d7789558446aed7b77cd036cc0130efff2151b57f",
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/effort-ledger.md": "889a873b842d3a3d5e43e569697c6f4ae306b77bae7336c36264790b64584bbd",
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/k/rv-k-t1.lean": "8e876afc09d5a492a589a3d9276e13dcb287fd26ad6de91c46000a3db6756eb7",
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/k/rv-k-t3.lean": "af03504abedf07a86c50abc74860ea216848453b70483ed7d675c649416d68bb",
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/k/rv-k-t2.lean": "65889d4ebacd0e4bf7dca6d6d9ab2d750dd0ee21ec2a06c63d3a6d1c44c6aac6"
+  },
+  "rss": "未取得（計画上の非採取）",
+  "build": {
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-11-01T09:13:31.744117+00:00",
+    "seconds": 0.155,
+    "exit_code": 0,
+    "output": "build-output.txt",
+    "bytes": 40447,
+    "sha256": "7a390f45f0888ad1b4e360916ca4f918d284095c43993f31c93816eb0868a01f",
+    "axioms_seen": [],
+    "disallowed_axioms": [],
+    "print_axioms_count": 0,
+    "sorry_diagnostic": false,
+    "jobs": 760
+  },
+  "boundary": {
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/k/boundary.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-11-01T09:13:31.900442+00:00",
+    "seconds": 1.168,
+    "exit_code": 0,
+    "output": "boundary-output.txt",
+    "bytes": 20435,
+    "sha256": "962a4b166b1d273b200df0f22bfd0ee7b71b430631df06ce1eaef9d49b423889",
+    "axioms_seen": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "disallowed_axioms": [],
+    "print_axioms_count": 208,
+    "sorry_diagnostic": false,
+    "constants": 208,
+    "complete": true
+  },
+  "handoff": {
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/k/handoff.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-11-01T09:13:33.069398+00:00",
+    "seconds": 0.666,
+    "exit_code": 0,
+    "output": "handoff-output.txt",
+    "bytes": 375,
+    "sha256": "41000ac79f1efb93f41099211da1a281390a55343a7f9989a98c719ae5a9623a",
+    "axioms_seen": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "disallowed_axioms": [],
+    "print_axioms_count": 3,
+    "sorry_diagnostic": false,
+    "constants": 3,
+    "complete": true
+  },
+  "axioms": {
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/k/axioms.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-11-01T09:13:33.735636+00:00",
+    "seconds": 1.335,
+    "exit_code": 0,
+    "output": "axioms-output.txt",
+    "bytes": 37712,
+    "sha256": "423a9f19b1f275c2a22a49a84f170198ec3e5cdaf93576d0dab1c5604c092c24",
+    "axioms_seen": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "disallowed_axioms": [],
+    "print_axioms_count": 351,
+    "sorry_diagnostic": false,
+    "modules": {
+      "Benitoite": 0,
+      "Benitoite.Release.Refinement.LegacyKinds": 38,
+      "Benitoite.Release.Refinement.LegacyDeclarations": 11,
+      "Benitoite.Release.Refinement.LegacyInput": 58,
+      "Benitoite.Release.Refinement.LegacyRegularity": 122,
+      "Benitoite.Release.Refinement.LegacyTables": 36,
+      "Benitoite.Release.Refinement.LegacyTableFacts": 24,
+      "Benitoite.Release.Refinement.LegacyValues": 44
+    },
+    "case_totals": {
+      "OLD_TYPING": 46,
+      "LEGACY_RULES": 46,
+      "LEGACY_JUDGMENTS": 7,
+      "OLD_SYNTAX": 33,
+      "SUBTYPE": 22,
+      "TYPING": 76
+    },
+    "complete": true
+  },
+  "mutations": {
+    "command": [
+      "python3",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l10/k/mutations.py"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-11-01T09:13:35.071382+00:00",
+    "seconds": 12.43,
+    "exit_code": 0,
+    "output": "mutation-run-output.txt",
+    "bytes": 189,
+    "sha256": "19f6f4d692bc651abbd5feb0a43c08c6aaaf29e9581121827994f23bf9b1b0de",
+    "axioms_seen": [],
+    "disallowed_axioms": [],
+    "print_axioms_count": 0,
+    "sorry_diagnostic": false
+  },
+  "seconds": 15.795,
+  "ended_utc": "2026-11-01T09:13:47.520464+00:00"
+}
