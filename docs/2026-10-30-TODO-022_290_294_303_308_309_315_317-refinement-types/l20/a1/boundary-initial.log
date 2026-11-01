@@ -1,0 +1,53 @@
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a1/boundary.lean:51:53: warning: This simp argument is unused:
+  Eff.atoms
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Eff.Canonical, Eff.empty, Eff.norm, rowFails]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a1/boundary.lean:51:64: warning: This simp argument is unused:
+  rowFails
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Eff.Canonical, Eff.empty, Eff.norm, Eff.atoms]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a1/boundary.lean:79:53: warning: This simp argument is unused:
+  Eff.atoms
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Eff.Canonical, Eff.empty, Eff.norm, rowFails]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a1/boundary.lean:79:64: warning: This simp argument is unused:
+  rowFails
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Eff.Canonical, Eff.empty, Eff.norm, Eff.atoms]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a1/boundary.lean:124:60: error: Application type mismatch: The argument
+  rfl
+has type
+  ?m.75 = ?m.75
+but is expected to have type
+  Ty.Normal ?m.69
+in the application
+  StoreOk.write_reference hs ?m.71 rfl rfl
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a1/boundary.lean:136:55: warning: This simp argument is unused:
+  Eff.atoms
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Eff.Canonical, Eff.empty, Eff.norm, rowFails]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a1/boundary.lean:136:66: warning: This simp argument is unused:
+  rowFails
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Eff.Canonical, Eff.empty, Eff.norm, Eff.atoms]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a1/boundary.lean:151:78: error: unsolved goals
+Γ : Ctx
+⊢ Term.References [some (Ty.base Benitoite.Release.BaseTy.integer)] (Term.integer 1)

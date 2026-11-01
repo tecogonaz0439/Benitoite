@@ -1,0 +1,10 @@
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a1/boundary.lean:167:52: error: Application type mismatch: The argument
+  rfl
+has type
+  ?m.110 = ?m.110
+but is expected to have type
+  Capture.empty.closeEff Eff.empty = Eff.empty
+in the application
+  ContTy.K_Handle (ContTy.K_Empty (empty_sub Eff.empty) ha) (Eff.Covers.refl [] [] Eff.empty)
+    (empty_sub (Eff.empty.union (handled P B []))) (CaptureOk.empty P B (hideBuilders StoreTy.empty) none)
+    HasTypeClausesQ.nil rfl rfl ?m.108 rfl

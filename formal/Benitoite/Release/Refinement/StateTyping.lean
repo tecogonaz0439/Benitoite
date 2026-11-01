@@ -7,7 +7,7 @@ import Benitoite.Release.Refinement.LocalResolveLemmas
 # 捕捉環境を持つ継続・セル・状態の型付け
 
 実行全体の経路環境と継続末尾の効果は添字として固定する。
-場所の閉じた整形式と宣言照合は別々の不変条件である。
+場所の閉じた整形式、sort の適格性、宣言照合は別々の不変条件である。
 -/
 namespace Benitoite.Release.Refinement
 
@@ -21,6 +21,23 @@ def LocTy.Declared (P : Program) : LocTy → Prop
       ∀ a, r = some a → a.Declared P [] []
 
 def StoreTy.Declared (P : Program) (Ψ : StoreTy) : Prop := ∀ l x, Ψ l = some x → x.Declared P
+
+theorem StoreTy.Sorted.hide {Ψ : StoreTy} (h : Ψ.Sorted) : (hideBuilders Ψ).Sorted := by
+  intro l x hx
+  unfold hideBuilders at hx
+  cases hl : Ψ l with
+  | none => simp [hl] at hx
+  | some y => cases y <;> simp only [hl] at hx <;> try cases hx
+              all_goals exact h _ _ hl
+
+theorem StoreTy.Declared.hide {P : Program} {Ψ : StoreTy}
+    (h : StoreTy.Declared P Ψ) : StoreTy.Declared P (hideBuilders Ψ) := by
+  intro l x hx
+  unfold hideBuilders at hx
+  cases hl : Ψ l with
+  | none => simp [hl] at hx
+  | some y => cases y <;> simp only [hl] at hx <;> try cases hx
+              all_goals exact h _ _ hl
 
 def BuilderCellOk (P : Program) (B : Builtins) (Ψ : StoreTy)
     (k : BuilderKind) (c : BuilderContents) : Prop :=
@@ -132,7 +149,7 @@ def CellOk (P : Program) (B : Builtins) (σ : PathEnv) (Ψ : StoreTy) (l : Nat) 
   | .used => ∃ b t e r, Ψ l = some (.cont b t e r)
 
 def StoreOk (P : Program) (B : Builtins) (σ : PathEnv) (Ψ : StoreTy) (μ : Store) : Prop :=
-  (∃ n, ∀ l, n ≤ l → μ l = none) ∧ Ψ.WF ∧ StoreTy.Declared P Ψ ∧
+  (∃ n, ∀ l, n ≤ l → μ l = none) ∧ Ψ.WF ∧ Ψ.Sorted ∧ StoreTy.Declared P Ψ ∧
   (∀ l x, Ψ l = some x → μ l ≠ none) ∧ (∀ l c, μ l = some c → CellOk P B σ Ψ l c)
 
 def BuiltinOnly (P : Program) (B : Builtins) (e : Eff) : Prop :=
@@ -160,9 +177,97 @@ theorem Ty.Declared.closed_context {P a C Γ} (hd : Ty.Declared P [] [] a) (hw :
   have hh := hm.declared h0
   simpa only [Ty.shiftV_of_wf_zero hw] using hh
 
+/-- 閉じた型の sort は値文脈を任意に広げても変わらない。WF は要らない。 -/
+theorem Ty.Sorted.closed_context {a : Ty} {Γ : Ctx}
+    (h : a.Sorted []) : a.Sorted Γ :=
+  h.context ⟨by intro i a hi; cases hi⟩
+
+theorem Ty.WF.closed_context {a : Ty} {C : List TParam} {Γ : Ctx}
+    (h : a.WF 0 0 0) : a.WF 0 C.length Γ.length := by
+  have ht := Ty.wf_shiftTypes h C.length 0
+  rw [Ty.shiftTypes_of_wf_zero h] at ht
+  have hv := Ty.wf_shiftV ht Γ.length 0
+  simpa only [Nat.zero_add, Ty.shiftV_of_wf_zero h] using hv
+
+theorem Ty.Annotation.closed_context {P : Program} {a : Ty}
+    {C : List TParam} {Γ : Ctx} (h : Ty.Annotation P [] [] a) : Ty.Annotation P C Γ a :=
+  ⟨h.wf.closed_context, h.sorted.closed_context, h.declared.closed_context h.wf⟩
+
+/-- 捕捉元の三条件から場所の型の注釈を得る。セルと有限性は要求しない。 -/
+theorem StoreTy.reference_annotation {P Ψ l a C Γ}
+    (hw : Ψ.WF) (hs : Ψ.Sorted) (hd : StoreTy.Declared P Ψ)
+    (hl : Ψ l = some (.ref a)) : Ty.Annotation P C Γ a :=
+  (show Ty.Annotation P [] [] a from ⟨hw l _ hl, hs l _ hl, hd l _ hl⟩).closed_context
+
+theorem StoreTy.lazy_annotation {P Ψ l a C Γ}
+    (hw : Ψ.WF) (hs : Ψ.Sorted) (hd : StoreTy.Declared P Ψ)
+    (hl : Ψ l = some (.lazy a)) : Ty.Annotation P C Γ a :=
+  (show Ty.Annotation P [] [] a from ⟨hw l _ hl, hs l _ hl, hd l _ hl⟩).closed_context
+
+theorem StoreTy.cont_result_annotation {P Ψ l b t e r C Γ}
+    (hw : Ψ.WF) (hs : Ψ.Sorted) (hd : StoreTy.Declared P Ψ)
+    (hl : Ψ l = some (.cont b t e r)) : Ty.Annotation P C Γ t :=
+  (show Ty.Annotation P [] [] t from
+    ⟨(hw l _ hl).2.1, (hs l _ hl).2.1, (hd l _ hl).2.1⟩).closed_context
+
+theorem StoreTy.cont_annotation {P Ψ l b t e r}
+    (hw : Ψ.WF) (hs : Ψ.Sorted) (hd : StoreTy.Declared P Ψ)
+    (hl : Ψ l = some (.cont b t e r)) :
+    Ty.Annotation P [] [] (.dependentFn (.done t e)) :=
+  ⟨⟨(hw l _ hl).2.1, (hw l _ hl).2.2.1, (hw l _ hl).2.2.2.1⟩,
+    (hs l _ hl).2, (hd l _ hl).2.1, (hd l _ hl).2.2.1⟩
+
+/-- 継続の場所の像を作る際に使う、入力・結果・潜在効果の全注釈。 -/
+theorem StoreTy.cont_type_annotation {P Ψ l b t e r C Γ}
+    (hw : Ψ.WF) (hs : Ψ.Sorted) (hd : StoreTy.Declared P Ψ)
+    (hl : Ψ l = some (.cont b t e r)) : Ty.Annotation P C Γ (.cont b t e) :=
+  (show Ty.Annotation P [] [] (.cont b t e) from
+    ⟨⟨(hw l _ hl).1, (hw l _ hl).2.1, (hw l _ hl).2.2.1, (hw l _ hl).2.2.2.1⟩,
+      hs l _ hl, (hd l _ hl).1, (hd l _ hl).2.1, (hd l _ hl).2.2.1⟩).closed_context
+
+theorem StoreTy.builder_list_annotation {P Ψ l a C Γ}
+    (hw : Ψ.WF) (hs : Ψ.Sorted) (hd : StoreTy.Declared P Ψ)
+    (hl : Ψ l = some (.builder (.list a))) : Ty.Annotation P C Γ a :=
+  (show Ty.Annotation P [] [] a from ⟨hw l _ hl, hs l _ hl, hd l _ hl⟩).closed_context
+
+theorem StoreOk.finite {P B σ Ψ μ} (h : StoreOk P B σ Ψ μ) :
+    ∃ n, ∀ l, n ≤ l → μ l = none := h.1
+
 theorem StoreOk.wf {P B σ Ψ μ} (h : StoreOk P B σ Ψ μ) : Ψ.WF := h.2.1
 
-theorem StoreOk.declared {P B σ Ψ μ} (h : StoreOk P B σ Ψ μ) : StoreTy.Declared P Ψ := h.2.2.1
+theorem StoreOk.sorted {P B σ Ψ μ} (h : StoreOk P B σ Ψ μ) : Ψ.Sorted := h.2.2.1
+
+theorem StoreOk.declared {P B σ Ψ μ} (h : StoreOk P B σ Ψ μ) : StoreTy.Declared P Ψ := h.2.2.2.1
+
+theorem StoreOk.domain {P B σ Ψ μ} (h : StoreOk P B σ Ψ μ) :
+    ∀ l x, Ψ l = some x → μ l ≠ none := h.2.2.2.2.1
+
+theorem StoreOk.cell {P B σ Ψ μ} (h : StoreOk P B σ Ψ μ) :
+    ∀ l c, μ l = some c → CellOk P B σ Ψ l c := h.2.2.2.2.2
+
+theorem StoreOk.reference_annotation {P B σ Ψ μ l a C Γ} (h : StoreOk P B σ Ψ μ)
+    (hl : Ψ l = some (.ref a)) : Ty.Annotation P C Γ a :=
+  StoreTy.reference_annotation h.wf h.sorted h.declared hl
+
+theorem StoreOk.lazy_annotation {P B σ Ψ μ l a C Γ} (h : StoreOk P B σ Ψ μ)
+    (hl : Ψ l = some (.lazy a)) : Ty.Annotation P C Γ a :=
+  StoreTy.lazy_annotation h.wf h.sorted h.declared hl
+
+/-- 使用済みのセルも、場所の型の不変条件から結果の形成を保持する。 -/
+theorem StoreOk.cont_result_annotation {P B σ Ψ μ l b t e r C Γ}
+    (h : StoreOk P B σ Ψ μ) (hl : Ψ l = some (.cont b t e r)) : Ty.Annotation P C Γ t :=
+  StoreTy.cont_result_annotation h.wf h.sorted h.declared hl
+
+/-- 継続の結果と潜在効果の閉じた注釈。末尾の r の Sorted は要求しない。 -/
+theorem StoreOk.cont_annotation {P B σ Ψ μ l b t e r}
+    (h : StoreOk P B σ Ψ μ) (hl : Ψ l = some (.cont b t e r)) :
+    Ty.Annotation P [] [] (.dependentFn (.done t e)) :=
+  StoreTy.cont_annotation h.wf h.sorted h.declared hl
+
+/-- セルが使用済みでも、不適格な sort の結果型を持つストアは受理しない。 -/
+theorem StoreOk.no_unsorted_cont_result {P B σ Ψ μ l b t e r}
+    (hl : Ψ l = some (.cont b t e r)) (ht : ¬ t.Sorted []) : ¬ StoreOk P B σ Ψ μ :=
+  fun h => ht (h.cont_result_annotation (C := []) (Γ := []) hl).sorted
 
 theorem StoreOk.reference_declared {P B σ Ψ μ l a C Γ} (h : StoreOk P B σ Ψ μ)
     (hl : Ψ l = some (.ref a)) : Ty.Declared P C Γ a :=
@@ -198,11 +303,11 @@ theorem StoreOk.reference_read {P B σ Ψ μ l a b v}
     (hs : StoreOk P B σ Ψ μ) (hl : Ψ l = some (.ref b))
     (hc : μ l = some (.val v)) (he : b.norm = a.norm) (hn : a.Normal) :
     HasTypeV P B Ψ [] [] [] v a :=
-  (hs.2.2.2.2 l _ hc).val_read hl he hn
+  (hs.cell l _ hc).val_read hl he hn
 
 theorem StoreOk.empty (P : Program) (B : Builtins) (σ : PathEnv) :
     StoreOk P B σ StoreTy.empty Store.empty := by
-  refine ⟨⟨0,by intros; rfl⟩, StoreTy.WF.empty, ?_, ?_, ?_⟩
+  refine ⟨⟨0,by intros; rfl⟩, StoreTy.WF.empty, StoreTy.Sorted.empty, ?_, ?_, ?_⟩
   all_goals intro l x hx; cases hx
 
 theorem CellOk.adequate {P B σ Ψ l c} (h : CellOk P B σ Ψ l c) : c.Adequate σ := by
@@ -216,7 +321,7 @@ theorem CellOk.adequate {P B σ Ψ l c} (h : CellOk P B σ Ψ l c) : c.Adequate 
   | used => trivial
 
 theorem StoreOk.adequate {P B σ Ψ μ} (h : StoreOk P B σ Ψ μ) : μ.Adequate σ :=
-  fun l c hc => (h.2.2.2.2 l c hc).adequate
+  fun l c hc => (h.cell l c hc).adequate
 
 theorem closeR_normal {cap : Capture} {R : Option Ty} {r : Ty}
     (h : cap.closeR R = some r) : r.Normal := by
@@ -279,7 +384,7 @@ theorem ContTy.end_normal {P B σ Ψ R ε k a b Eb Re}
 theorem resume_raw_return {P B σ Ψ μ l b t e r R k}
     (hs : StoreOk P B σ Ψ μ) (hl : Ψ l = some (.cont b t e r)) (hμ : μ l = some (.cont k))
     (he : r.map Ty.norm = R.map Ty.norm) (hR : ∀ x, R = some x → x.Normal) : r = R := by
-  have hc := hs.2.2.2.2 l _ hμ
+  have hc := hs.cell l _ hμ
   obtain ⟨b',t',e',r',hl',hend,_,_,hk⟩ := hc
   rw [hl] at hl'
   cases Option.some.inj hl'

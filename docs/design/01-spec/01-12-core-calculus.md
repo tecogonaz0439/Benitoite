@@ -3437,7 +3437,7 @@ CoreAssumptions.io_op は io/exit の項目に Builtins.ShapeOk を要求する�
 
 【決定】実行中の計算は `Closure.mk capture code` で表す。`ClosureTy` は、捕捉元の Γ/Φ と本体 `code0`、局所文脈 L と局所参照の置換 ρ を保持し、実際の code を `code0.resolveLocals ρ` と等号で結ぶ。開いた本体に閉じた型だけを渡さず、入力・結果・潜在効果のソースの注釈と捕捉後の注釈の双方を検査する。
 
-`StoreOk P B σ Ψ μ` の σ は実行ごとに固定する `PathEnv`、μ は可変のストアである。σ を型付け・部分型・被覆の静的判断へ渡さない。`StoreOk` は μ の有限性、Ψ の WF と Declared、Ψ と μ の場所の一致、全セルの `CellOk` を要求する。
+`StoreOk P B σ Ψ μ` の σ は実行ごとに固定する `PathEnv`、μ は可変のストアである。σ を型付け・部分型・被覆の静的判断へ渡さない。`StoreOk` は μ の有限性、Ψ の WF・Sorted・Declared、Ψ と μ の場所の一致、全セルの `CellOk` を要求する。`LocTy.Sorted` は、List の builder・ref・lazy の要素型を空の値文脈で検査し、String と Bytes の builder では自明とする。cont では入力 b・結果 t・潜在効果 e の sort を空の値文脈で検査し、末尾の r は対象に含めない。`StoreTy.Sorted` は全ての宣言済みの場所にこの条件を要求する。理由: 使用済みの継続セルには値や継続の導出が残らないため、結果と潜在効果の形成をストア型に保持する。r の WF・Declared と正規形の照合は既存の条件で保つ。
 
 | セル | `CellOk` の内容 |
 |---|---|

@@ -19,11 +19,11 @@ theorem StoreOk.write_done {P B σ Ψ μ l a v}
     (h : StoreOk P B σ Ψ μ) (hl : Ψ l = some (.lazy a))
     (hv : HasTypeV P B Ψ [] [] [] v a) (ha : v.Adequate σ) :
     StoreOk P B σ Ψ (μ.set l (.done v)) := by
-  refine ⟨store_set_finite h.1 l _,h.wf,h.declared,?_,?_⟩
+  refine ⟨store_set_finite h.finite l _,h.wf,h.sorted,h.declared,?_,?_⟩
   · intro i x hx
     by_cases hi : i = l
     · simp [Store.set,hi]
-    · simpa only [Store.set,hi,↓reduceIte] using h.2.2.2.1 i x hx
+    · simpa only [Store.set,hi,↓reduceIte] using h.domain i x hx
   · intro i c hc
     by_cases hi : i = l
     · subst i
@@ -31,7 +31,7 @@ theorem StoreOk.write_done {P B σ Ψ μ l a v}
       subst c
       exact ⟨a,hl,hv,ha⟩
     · simp only [Store.set,hi,↓reduceIte] at hc
-      exact h.2.2.2.2 i c hc
+      exact h.cell i c hc
 
 theorem StoreOk.allocate_lazy {P B σ Ψ μ l a q}
     (h : StoreOk P B σ Ψ μ) (hA : Builtins.ValueAssumptions P B)
@@ -41,14 +41,19 @@ theorem StoreOk.allocate_lazy {P B σ Ψ μ l a q}
   have hnone : Ψ l = none := by
     cases he : Ψ l with
     | none => rfl
-    | some t => exact False.elim (h.2.2.2.1 l t he hl)
+    | some t => exact False.elim (h.domain l t he hl)
   have hext := StoreTy.extends_put (x := LocTy.lazy a) hnone
-  refine ⟨store_set_finite h.1 l _,?_,?_,?_,?_⟩
+  refine ⟨store_set_finite h.finite l _,?_,?_,?_,?_,?_⟩
   · intro i x hx
     by_cases hi : i = l
     · subst i; simp only [StoreTy.put,↓reduceIte,Option.some.injEq] at hx
       subst x; exact ht.wf
     · simp only [StoreTy.put,hi,↓reduceIte] at hx; exact h.wf i x hx
+  · intro i x hx
+    by_cases hi : i = l
+    · subst i; simp only [StoreTy.put,↓reduceIte,Option.some.injEq] at hx
+      subst x; exact ht.sorted
+    · simp only [StoreTy.put,hi,↓reduceIte] at hx; exact h.sorted i x hx
   · intro i x hx
     by_cases hi : i = l
     · subst i; simp only [StoreTy.put,↓reduceIte,Option.some.injEq] at hx
@@ -58,14 +63,14 @@ theorem StoreOk.allocate_lazy {P B σ Ψ μ l a q}
     by_cases hi : i = l
     · simp [Store.set,hi]
     · simp only [StoreTy.put,hi,↓reduceIte] at hx
-      simpa only [Store.set,hi,↓reduceIte] using h.2.2.2.1 i x hx
+      simpa only [Store.set,hi,↓reduceIte] using h.domain i x hx
   · intro i c hc
     by_cases hi : i = l
     · subst i; simp only [Store.set,↓reduceIte,Option.some.injEq] at hc
       subst c
       exact ⟨a,by simp [StoreTy.put],hq.store hA h.wf.hide hext.preservesNormals.hide,ha⟩
     · simp only [Store.set,hi,↓reduceIte] at hc
-      exact (h.2.2.2.2 i c hc).store hA h.wf hext
+      exact (h.cell i c hc).store hA h.wf hext
 
 theorem ContTy.update_inv {P B σ Ψ R ε k a b Eb Re l}
     (h : ContTy P B σ Ψ R ε (.update l :: k) a b Eb Re) :

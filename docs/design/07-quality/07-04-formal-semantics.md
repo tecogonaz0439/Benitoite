@@ -97,6 +97,8 @@
 
 metadata が none の項目、requirements/publicBoundary の空列、対応する構成子を持たない metadata の同名 arity の全称条件は、その範囲だけ空に成り立つ。`VarianceValid` と `MetadataScoped` は提供された表を検査し、原ソースからの収集の完全性を証明しない。辞書制約と公開境界の収集の完全性および原ソースとの一致は Lean の外であり、この形式化は保証しない。欄の単調性の補題は metadata の二列を読み出さず、欄の形成と正負の出現の検査から示す。
 
+`Refinement.StoreOk` は、有限性・WF・宣言照合・領域とセルの対応に加え、全ての場所の型の `StoreTy.Sorted` を持つ。cont の入力・結果・潜在効果を検査し、末尾の r は検査しない。使用済みのセルにも結果 t と閉じた `dependentFn (done t e)` の Annotation を供給する公開補題がある。これにより、不適格な sort の結果型を持つ使用済みの継続のストアは受理されない。空ストア・ref/lazy/cont の割当てと更新はこの条件を保つ。`hideBuilders` の後には WF・Sorted・Declared の三条件を移し、builder のセルを残したまま隠した Ψ に `StoreOk` は要求しない。
+
 現在の状態に関する証明の範囲は次のとおりである。依存 β と捕捉した closure の代表は、共通の本体の導出から開始・到達の型付けと Step を作る。これは、開始の `StateTyE` の任意の導出を逆転する定理とは区別する。
 
 | 対象 | 現在の Lean の定理の範囲 |
@@ -773,7 +775,7 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 | Observation・ClosedEvaluation・Logic・LogicSound・Context/Capture・CapturedFacts | 「閉じた述語の評価と捕捉」 |
 | PathFacts・PathConditions・MatchPaths・MatchFacts・Typing・StateTyping | 「条件とパターンからの事実」 |
 | Typing・HandlerContracts・RuntimeSyntax・AtPrepare・AtTyping・BuiltinResponse・ConstraintAssumptions・BuiltinEffects・Semantics・Step・ExternalCheck・ExternalResponse・ExternalConnection | 「保持要求と組み込みの遷移」 |
-| Typing・StateTyping・ConstraintAssumptions・ReferencePreservation・LazyPreservation・HandlerEffects・HandlerPreservation | 「篩を含む状態の型付け」 |
+| StoreTransport・Typing・StateTyping・ConstraintAssumptions・ReferenceStore・LazyStore・HandlerStore・ReferencePreservation・LazyPreservation・HandlerEffects・HandlerPreservation | 「篩を含む状態の型付け」 |
 
 以下の既存の表は Release などの対応である。
 

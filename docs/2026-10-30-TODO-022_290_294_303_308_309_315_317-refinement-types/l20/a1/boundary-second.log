@@ -1,0 +1,21 @@
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a1/boundary.lean:166:73: error: Application type mismatch: The argument
+  trivial
+has type
+  True
+but is expected to have type
+  Frame.Adequate σ (Frame.handleF Capture.empty [])
+in the application
+  ContTy.K_Handle (ContTy.K_Empty (empty_sub Eff.empty) ha) (Eff.Covers.refl [] [] Eff.empty)
+    (empty_sub (Eff.empty.union (handled P B []))) (CaptureOk.empty P B (hideBuilders StoreTy.empty) none)
+    HasTypeClausesQ.nil ?m.107 ?m.110 ?m.113 ?m.116 han ha ?m.117 trivial
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a1/boundary.lean:166:67: error: `simp` made no progress
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/a1/boundary.lean:166:52: error: Application type mismatch: The argument
+  rfl
+has type
+  ?m.115 = ?m.115
+but is expected to have type
+  Capture.empty.closeEff ?m.102 = Eff.empty
+in the application
+  ContTy.K_Handle (ContTy.K_Empty (empty_sub Eff.empty) ha) (Eff.Covers.refl [] [] Eff.empty)
+    (empty_sub (Eff.empty.union (handled P B []))) (CaptureOk.empty P B (hideBuilders StoreTy.empty) none)
+    HasTypeClausesQ.nil ?m.107 rfl ?m.113 rfl

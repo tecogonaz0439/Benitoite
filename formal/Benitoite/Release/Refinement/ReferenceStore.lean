@@ -131,11 +131,11 @@ theorem StoreOk.write_reference {P B σ Ψ μ l a b v}
     (he : b.norm = a.norm) (hn : a.Normal)
     (hv : HasTypeV P B Ψ [] [] [] v a) (ha : v.Adequate σ) :
     StoreOk P B σ Ψ (μ.set l (.val v)) := by
-  refine ⟨store_set_finite h.1 l _,h.wf,h.declared,?_,?_⟩
+  refine ⟨store_set_finite h.finite l _,h.wf,h.sorted,h.declared,?_,?_⟩
   · intro i x hx
     by_cases hi : i = l
     · simp [Store.set,hi]
-    · simpa only [Store.set,hi,↓reduceIte] using h.2.2.2.1 i x hx
+    · simpa only [Store.set,hi,↓reduceIte] using h.domain i x hx
   · intro i c hc
     by_cases hi : i = l
     · subst i
@@ -143,7 +143,7 @@ theorem StoreOk.write_reference {P B σ Ψ μ l a b v}
       subst c
       exact CellOk.val_write hl he hn hv ha
     · simp only [Store.set,hi,↓reduceIte] at hc
-      exact h.2.2.2.2 i c hc
+      exact h.cell i c hc
 
 theorem StoreOk.allocate_reference {P B σ Ψ μ l a v}
     (h : StoreOk P B σ Ψ μ) (hA : Builtins.ValueAssumptions P B)
@@ -153,14 +153,19 @@ theorem StoreOk.allocate_reference {P B σ Ψ μ l a v}
   have hnone : Ψ l = none := by
     cases he : Ψ l with
     | none => rfl
-    | some t => exact False.elim (h.2.2.2.1 l t he hl)
+    | some t => exact False.elim (h.domain l t he hl)
   have hext := StoreTy.extends_put (x := LocTy.ref a) hnone
-  refine ⟨store_set_finite h.1 l _,?_,?_,?_,?_⟩
+  refine ⟨store_set_finite h.finite l _,?_,?_,?_,?_,?_⟩
   · intro i x hx
     by_cases hi : i = l
     · subst i; simp only [StoreTy.put,↓reduceIte,Option.some.injEq] at hx
       subst x; exact ht.wf
     · simp only [StoreTy.put,hi,↓reduceIte] at hx; exact h.wf i x hx
+  · intro i x hx
+    by_cases hi : i = l
+    · subst i; simp only [StoreTy.put,↓reduceIte,Option.some.injEq] at hx
+      subst x; exact ht.sorted
+    · simp only [StoreTy.put,hi,↓reduceIte] at hx; exact h.sorted i x hx
   · intro i x hx
     by_cases hi : i = l
     · subst i; simp only [StoreTy.put,↓reduceIte,Option.some.injEq] at hx
@@ -170,14 +175,14 @@ theorem StoreOk.allocate_reference {P B σ Ψ μ l a v}
     by_cases hi : i = l
     · simp [Store.set,hi]
     · simp only [StoreTy.put,hi,↓reduceIte] at hx
-      simpa only [Store.set,hi,↓reduceIte] using h.2.2.2.1 i x hx
+      simpa only [Store.set,hi,↓reduceIte] using h.domain i x hx
   · intro i c hc
     by_cases hi : i = l
     · subst i; simp only [Store.set,↓reduceIte,Option.some.injEq] at hc
       subst c
       exact CellOk.val_write (by simp [StoreTy.put]) rfl hn (hv.store_extend hA h.wf hext) ha
     · simp only [Store.set,hi,↓reduceIte] at hc
-      exact (h.2.2.2.2 i c hc).store hA h.wf hext
+      exact (h.cell i c hc).store hA h.wf hext
 
 theorem reference_no_sort (a : Ty) : (Ty.reference a).sort? = none := rfl
 theorem reference_no_observation (l : Nat) : (Val.loc l).toTerm? = none := rfl

@@ -15,6 +15,14 @@ def LocTy.WF : LocTy → Prop
 
 def StoreTy.WF (Ψ : StoreTy) : Prop := ∀ l t, Ψ l = some t → t.WF
 
+def LocTy.Sorted : LocTy → Prop
+  | .builder (.list a) | .ref a | .lazy a => a.Sorted []
+  | .builder .string | .builder .bytes => True
+  | .cont b t e _ => b.Sorted [] ∧ t.Sorted [] ∧ sortedEff [] e
+
+def StoreTy.Sorted (Ψ : StoreTy) : Prop :=
+  ∀ (l : Nat) (x : LocTy), Ψ l = some x → x.Sorted
+
 def LocTy.Normal : LocTy → Prop
   | .builder _ => False
   | _ => True
@@ -41,6 +49,9 @@ def StoreTy.empty : StoreTy := fun _ => none
 
 theorem StoreTy.WF.empty : StoreTy.WF StoreTy.empty := by
   intro l t h; cases h
+
+theorem StoreTy.Sorted.empty : StoreTy.Sorted StoreTy.empty := by
+  intro l x h; cases h
 
 theorem StoreTy.Extends.empty (Ψ : StoreTy) : StoreTy.Extends StoreTy.empty Ψ := by
   intro l t h; cases h
