@@ -381,3 +381,5 @@ import Benitoite.Release.Refinement.TypeVariables
 import Benitoite.Release.Refinement.TypeShiftFacts
 import Benitoite.Release.Refinement.EffectFacts
 import Benitoite.Release.Refinement.TypeArgumentRegularity
+
+import Benitoite.Release.Refinement.CaptureRegularity

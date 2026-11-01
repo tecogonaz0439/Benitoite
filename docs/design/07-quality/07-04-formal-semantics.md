@@ -99,6 +99,8 @@ metadata が none の項目、requirements/publicBoundary の空列、対応す�
 
 `Refinement.StoreOk` は、有限性・WF・宣言照合・領域とセルの対応に加え、全ての場所の型の `StoreTy.Sorted` を持つ。cont の入力・結果・潜在効果を検査し、末尾の r は検査しない。使用済みのセルにも結果 t と閉じた `dependentFn (done t e)` の Annotation を供給する公開補題がある。これにより、不適格な sort の結果型を持つ使用済みの継続のストアは受理されない。空ストア・ref/lazy/cont の割当てと更新はこの条件を保つ。`hideBuilders` の後には WF・Sorted・Declared の三条件を移し、builder のセルを残したまま隠した Ψ に `StoreOk` は要求しない。
 
+`CaptureRegularity` は、捕捉元の三条件と場所の三条件から、開いた値29規則・計算24規則の全結果の注釈を証明する。Φ の真は前提とせず、値列・非空の各要素・腕・依存する実引数列と、捕捉後の結果への系も持つ。let の前後、関数と依存列、handler と失敗節、捕捉した継続の潜在効果の注釈を既存の入力から供給する。handler は外側の閉包効果と内側の結論の効果を区別し、型変換・効果拡大・正規化を通す逆転と閉じた被覆から本体の注釈を得る。Fail の継続の切り出しは潜在効果の注釈も返す。let の包装は前後を外側の効果へ広げ、末尾の return 契約が none の継続から R の閉性を導いて、二閉包・包含・K_Let を構成する。これらは形成と let の到達先の型付けの定理であり、全遷移の保存や Rust との接続を証明したものではない。
+
 現在の状態に関する証明の範囲は次のとおりである。依存 β と捕捉した closure の代表は、共通の本体の導出から開始・到達の型付けと Step を作る。これは、開始の `StateTyE` の任意の導出を逆転する定理とは区別する。
 
 | 対象 | 現在の Lean の定理の範囲 |
@@ -772,7 +774,7 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 | ObservationType | 同節の観測用の型の射影と `DataObservationLe`。篩の事実を射影から取り出さない |
 | TypeFormation・ValueFacts | 同節の検証済みの欄の型代入の形成、`Declared`・`HasData` の型置換、構成子の反転と欄の型付け |
 | RefinementObservation・ObservationOrder・ObservationSubstitution・ObservationInterpretation・ValueMeaning・ValueMeaningInhabits・PatternNormalForm・Patterns・PatternTransport・PatternSemantics・PatternTypeShift・CoverageRefinement | 「篩を読む網羅性と値の意味」 |
-| Observation・ClosedEvaluation・Logic・LogicSound・Context/Capture・CapturedFacts | 「閉じた述語の評価と捕捉」 |
+| Observation・ClosedEvaluation・Logic・LogicSound・Context/Capture・CapturedFacts・CaptureRegularity | 「閉じた述語の評価と捕捉」。開いた全結果形成と、元の注釈・包含・場所からの捕捉後の効果形成を含む |
 | PathFacts・PathConditions・MatchPaths・MatchFacts・Typing・StateTyping | 「条件とパターンからの事実」 |
 | Typing・HandlerContracts・RuntimeSyntax・AtPrepare・AtTyping・BuiltinResponse・ConstraintAssumptions・BuiltinEffects・Semantics・Step・ExternalCheck・ExternalResponse・ExternalConnection | 「保持要求と組み込みの遷移」 |
 | StoreTransport・Typing・StateTyping・ConstraintAssumptions・ReferenceStore・LazyStore・HandlerStore・ReferencePreservation・LazyPreservation・HandlerEffects・HandlerPreservation | 「篩を含む状態の型付け」 |
