@@ -4,6 +4,7 @@ import Benitoite.Release.Refinement.TypedFacts
 import Benitoite.Release.Refinement.ExternalResponse
 import Benitoite.Release.Refinement.BuiltinResponse
 import Benitoite.Release.Refinement.Semantics
+import Benitoite.Release.Refinement.PrimitiveScoped
 
 /-!
 # 組込みの制約と値注釈の移送の条件
@@ -103,9 +104,10 @@ def PrimSig.StoreShape (s : PrimSig) : Prop :=
   | .pathBases => False
   | .pure | .io | .exit => True
 
-/-- D28の信頼条件。旧欄の残りは担当する後続の群で加える。 -/
+/-- D28の信頼条件。宣言の形成と応答の条件を同じ表で読む。 -/
 structure Builtins.CoreAssumptions (P : Program) (B : Builtins) : Prop extends
     Builtins.SubstitutionAssumptions P B, Builtins.ExternalAssumptions P B, Builtins.ResponseAssumptions P B where
+  sig_scoped : ∀ b s, B.sig b = some s → PrimSig.Scoped P s
   /-- 制約のない型パラメータは、閉じた整形式の型の正規形で具体化できる。 -/
   sat_unconstrained : ∀ (t : Ty), t.WF 0 0 0 → B.sat [] t.norm ({} : TParam)
   /-- 組み込みの許容は、同じ型引数列の制約と個数も満たす。 -/

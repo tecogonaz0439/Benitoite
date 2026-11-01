@@ -172,11 +172,6 @@ theorem BinderTypes.LocalWF.instTarget {nt n ps} (h : BinderTypes.LocalWF nt n p
     rw [Ty.instTarget_fixed h.1 rs]
     exact ⟨h.1, ih h.2⟩
 
-/-- 範囲変数は操作の対象の最上位にあり、他の注釈は閉じた範囲を持つ。 -/
-def Ty.TargetWF (nr nt nv : Nat) : Ty → Prop
-  | .opaque _ (.rvar i) | .scoped _ _ (.rvar i) => i < nr
-  | a => a.WF 0 nt nv
-
 theorem Ty.TargetWF.instTarget {nr nt nv a rs} (h : Ty.TargetWF nr nt nv a)
     (hn : rs.length = nr) : (a.instTarget rs).WF 0 nt nv := by
   cases a <;> try exact h
@@ -188,19 +183,11 @@ theorem Ty.TargetWF.instTarget {nr nt nv a rs} (h : Ty.TargetWF nr nt nv a)
       have hr : rs[i]? = some rs[i] := List.getElem?_eq_some_iff.mpr ⟨hi, rfl⟩
       simp [Ty.instTarget, RangeIx.inst, hr, Ty.WF, RangeIx.WF]
 
-def BinderTypes.TargetWF (nr nt : Nat) : Nat → List Ty → Prop
-  | _, [] => True
-  | n, a :: as => a.TargetWF nr nt n ∧ BinderTypes.TargetWF nr nt (n+1) as
-
 theorem BinderTypes.TargetWF.instTarget {nr nt n ps rs} (h : BinderTypes.TargetWF nr nt n ps)
     (hn : rs.length = nr) : BinderTypes.LocalWF nt n (ps.map (Ty.instTarget rs)) := by
   induction ps generalizing n with
   | nil => trivial
   | cons a ps ih => exact ⟨h.1.instTarget hn, ih h.2⟩
-
-def PrimSig.OperationWF (s : PrimSig) : Prop :=
-  BinderTypes.TargetWF s.rkinds.length s.tparams.length 0 s.params ∧
-    s.ret.WF 0 s.tparams.length s.params.length
 
 def Builtins.OpSignaturesWF (B : Builtins) : Prop :=
   ∀ b s, B.sig b = some s → s.opEff ≠ none → s.OperationWF

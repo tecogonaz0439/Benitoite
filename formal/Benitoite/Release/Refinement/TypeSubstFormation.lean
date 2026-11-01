@@ -975,4 +975,34 @@ theorem instantiatedTel_substAt {nt : Nat} {t : Tel}
 
 end
 
+theorem Ty.subst_substAt {nt : Nat} {a : Ty} (hw : a.WF 0 nt 0)
+    (ts : List Ty) (es : List Eff) (hn : nt ≤ ts.length)
+    (hr : a.RowsIn (· < es.length)) (c : Nat) (us : List Ty) (fs : List Eff) :
+    (a.subst ts es).substAt c us fs =
+      a.subst (ts.map (Ty.substAt c us fs)) (es.map (Eff.substAt c us fs)) := by
+  have ht : (Ty.dependentFn (.done a Eff.empty)).WF 0 nt 0 := by
+    exact ⟨hw,by simp [Eff.WF,Eff.empty,Ty.WFList],by simp [Eff.Canonical,Eff.empty,Eff.norm,Ty.normTys]⟩
+  have he : (Tel.done a Eff.empty).RowsIn (· < es.length) := by
+    exact ⟨hr,by simp [Eff.RowsIn,Eff.empty,Ty.RowsInList]⟩
+  have h := congrArg Tel.result (instantiatedTel_substAt ht ts es hn he c us fs)
+  simpa only [instantiatedTel, Tel.substAt, Tel.bind, Tel.rawBind, Tel.norm, Tel.result,
+    Ty.subst, Ty.substAt, substTypeAt, Ty.bind] using h
+
+theorem reject_unsorted_tapp_image :
+    let image := Ty.refined (.base .string) (.eq (.var 0) (.integer 0))
+    image.WF 0 0 0 ∧ (Ty.tapp 0 []).Sorted [] ∧
+      ¬ ((Ty.tapp 0 []).substAt 0 [image] []).Sorted [] ∧
+      ∀ P : Program, ¬ Ty.Annotation P [] [] image ∧
+        ¬ image.HasKind P [] (.constructor 0) := by
+  intro image
+  have hw : image.WF 0 0 0 := by
+    simp [image,Ty.WF,Pred.WF,Pred.VarsIn,Term.VarsIn,Ty.NotContCore,Ty.core]
+  have hs : ¬ image.Sorted [] := by
+    simp [image,Ty.Sorted,Pred.Sorted,Term.HasSort,Term.Shape,Ty.HasSort,Ty.sort?]
+  have he : (Ty.tapp 0 []).substAt 0 [image] [] = image := by
+    simp [Ty.substAt,substTypeAt,Ty.bind,Ty.rawBind,typeEnvAt,rawApply,image,
+      Ty.norm,Ty.refineNorm,Ty.packRefinements,Pred.conjuncts,Pred.ofConjuncts,
+      Ty.core,Ty.refinementPredicates]
+  exact ⟨hw,by trivial,he.symm ▸ hs,fun P => ⟨fun h => hs h.sorted,by simp [image,Ty.HasKind]⟩⟩
+
 end Benitoite.Release.Refinement
