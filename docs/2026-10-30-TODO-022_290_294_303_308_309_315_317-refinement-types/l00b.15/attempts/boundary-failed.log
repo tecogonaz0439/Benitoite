@@ -1,0 +1,64 @@
+'Benitoite.Release.Refinement.Boundary15.rejects_evil' depends on axioms: [propext, Classical.choice, Quot.sound]
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.15/boundary.lean:89:75: warning: This simp argument is unused:
+  U
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Ty.WF, Tel.WF, Eff.WF, Eff.Canonical, Eff.norm, Eff.empty, Ty.WFList]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.15/boundary.lean:90:31: warning: This simp argument is unused:
+  U
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Ty.Sorted, Tel.Sorted, Eff.empty, sortedEff, sortedTys]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.15/boundary.lean:90:98: warning: This simp argument is unused:
+  U
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Ty.Declared, Tel.Declared, Eff.empty, declaredEff, declaredTys]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.15/boundary.lean:101:20: warning: This simp argument is unused:
+  Order.sortUnique
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [typeEnvAt]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.15/boundary.lean:108:19: warning: This simp argument is unused:
+  Order.sortUnique
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Tel.instR, Tel.substRAt, Tel.mapRanges, Tel.rawMapRanges, Ty.rawMapRanges, Eff.rawMapRanges, Tel.norm,
+    Ty.norm, Ty.normTys, Ty.WF, Tel.WF, Ty.WFList, Eff.WF, Eff.Canonical, Eff.norm, Eff.empty, mapRangesTys,
+    mapRangeAtoms_rangeAt, instAtoms_nil, U]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.15/boundary.lean:108:72: warning: This simp argument is unused:
+  U
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [Tel.instR, Tel.substRAt, Tel.mapRanges, Tel.rawMapRanges, Ty.rawMapRanges, Eff.rawMapRanges, Tel.norm,
+    Ty.norm, Ty.normTys, Ty.WF, Tel.WF, Ty.WFList, Eff.WF, Eff.Canonical, Eff.norm, Eff.empty, mapRangesTys,
+    Order.sortUnique, mapRangeAtoms_rangeAt, instAtoms_nil]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'Benitoite.Release.Refinement.Boundary15.typed' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Boundary15.step_io' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Benitoite.Release.Refinement.Boundary15.not_covered' depends on axioms: [propext, Classical.choice, Quot.sound]
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.15/boundary.lean:140:76: error: unexpected identifier; expected '}'
+../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.15/boundary.lean:152:33: error: Application type mismatch: The argument
+  rfl
+has type
+  ?m.18 = ?m.18
+but is expected to have type
+  basesSig.opEff = some processEnvironmentEff
+in the application
+  PrimSig.PathBasesShape.mk rfl rfl rfl rfl rfl ?m.16 rfl
+'Benitoite.Release.Refinement.Boundary15.accepts_io_shape' depends on axioms: [propext]
+'Benitoite.Release.Refinement.Boundary15.rejects_missing_pathBases_member' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Benitoite.Release.Refinement.Boundary15.accepts_pathBases_shape' depends on axioms: [sorryAx]

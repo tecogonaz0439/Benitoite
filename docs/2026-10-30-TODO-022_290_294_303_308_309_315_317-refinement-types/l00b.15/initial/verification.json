@@ -1,0 +1,104 @@
+[
+  {
+    "label": "build",
+    "command": "cd formal && rtk proxy lake build",
+    "started_utc": "2026-11-01T00:14:55.211042+00:00",
+    "exit_code": 0,
+    "seconds": 0.159,
+    "bytes": 36675,
+    "sha256": "262ab46b889cc384c7572e81488b257f1033001aa18af8e518bda5078517ec0d",
+    "record": "build.log"
+  },
+  {
+    "label": "mapping-initial",
+    "command": "cd formal && rtk proxy lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.15/mapping.lean",
+    "started_utc": "2026-11-01T00:14:55.370490+00:00",
+    "exit_code": 0,
+    "seconds": 0.732,
+    "bytes": 139532,
+    "sha256": "ac48d7f4c9bfe1a613043f2ea0fe8984792daba81ad3a008be39dc08a8d65ee0",
+    "record": "<tmp>/benitoite-l00b15-mymkm9zt/mapping-initial.log",
+    "names": 208
+  },
+  {
+    "label": "axioms",
+    "command": "cd formal && rtk proxy lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.15/axioms.lean",
+    "started_utc": "2026-11-01T00:14:56.102735+00:00",
+    "exit_code": 0,
+    "seconds": 14.498,
+    "bytes": 1749569,
+    "sha256": "04acbbaf4e7d2c59db5e0d013e121ff8f414facd0cb666a2c7738ad8e71073fe",
+    "record": "<tmp>/benitoite-l00b15-mymkm9zt/axioms.log",
+    "reports": 16165,
+    "dependencies": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "modules": 163
+  },
+  {
+    "label": "spec-examples-first",
+    "command": "rtk proxy cargo test --test spec_examples",
+    "started_utc": "2026-11-01T00:15:10.615764+00:00",
+    "exit_code": 101,
+    "seconds": 67.356,
+    "bytes": 6060,
+    "sha256": "e3220b1e07b7567436e676b1391073bc71209c0c2191db4fdacfc024246d550a",
+    "record": "<tmp>/benitoite-l00b15-mymkm9zt/spec-examples-first.log"
+  },
+  {
+    "label": "spec-examples-before-prose",
+    "command": "rtk proxy cargo test --test spec_examples",
+    "started_utc": "2026-11-01T00:17:16.883498+00:00",
+    "exit_code": 0,
+    "seconds": 3.383,
+    "bytes": 667,
+    "sha256": "af70384012c6e8de44288cf3b56c8e102bf09636f4e1a6f70c1f7f198e41eeb5",
+    "record": "spec-examples-before-prose.log"
+  },
+  {
+    "label": "mapping-origins-initial",
+    "command": "cd formal && rtk proxy lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.15/mapping-origins.lean",
+    "exit_code": 0,
+    "seconds": 0.612,
+    "timing": "exec_command wall_time_seconds",
+    "recorded_utc": "2026-11-01T00:19:22.114484+00:00",
+    "bytes": 20,
+    "sha256": "f1d35a33eaa504506203d897ee98b367885d9d2bccfecaf8607baf52e6f108a9",
+    "record": "<tmp>/benitoite-l00b15-mymkm9zt/mapping-origins-initial.log",
+    "names": 208
+  },
+  {
+    "label": "mapping",
+    "command": "cd formal && rtk proxy lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.15/mapping.lean",
+    "exit_code": 0,
+    "started_utc": "2026-11-01T00:21:15.160425+00:00",
+    "seconds": 0.745,
+    "bytes": 143811,
+    "sha256": "4fa2d93bb5d757a1598bd16a08b562463e0d4f465953e07a0d4996a926bc2556",
+    "record": "<tmp>/benitoite-l00b15-mymkm9zt/mapping.log",
+    "names": 223
+  },
+  {
+    "label": "mapping-origins",
+    "command": "cd formal && rtk proxy lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.15/mapping-origins.lean",
+    "exit_code": 0,
+    "started_utc": "2026-11-01T00:21:15.906295+00:00",
+    "seconds": 0.736,
+    "bytes": 20,
+    "sha256": "1595e47c3ec042cfa5f2a17c1813b640a3fe99ddb2c04293dce74d83b39aeb32",
+    "record": "mapping-origins.log",
+    "names": 223
+  },
+  {
+    "label": "spec-examples",
+    "command": "rtk proxy cargo test --test spec_examples",
+    "exit_code": 0,
+    "started_utc": "2026-11-01T00:21:37.223345+00:00",
+    "seconds": 3.323,
+    "bytes": 667,
+    "sha256": "017f743c9fc55aa978c0f851bdec27ad1db98b0d3a7a6dec4a40fcad609e3ae2",
+    "record": "spec-examples.log"
+  }
+]

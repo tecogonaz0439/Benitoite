@@ -1,0 +1,95 @@
+# L00b.15: 写しと主な定理の新旧対照の結果
+
+2026-11-01。今回、新たな Lean の規則の誤りは特定していない。既知の未完として、型付きの全値から Inhabits への含意は現行では成り立たず、checkedAt とその入れ子の接続が L20 に残る。io_op の要否、release_exists と旧の一部の欄の移行、新しい全状態の定理も未完である。Lean は変更せず、これらを [theorems.md](theorems.md) の G/H 行と別担当の表へ残した。
+
+B_WORK は **`8819025a0a35c9bac7e78fb97c7dff00829228db`**、指定ブランチは `m014/l00b.15`。指定値を記録したものであり、git で状態を照合していない。切替・作成・コミットを含む git の操作はしていない。L10 と work は実行していない。独立レビューと受け入れは取りまとめ・設計者の担当である。
+
+## 分類の取りまとめ
+
+| 作業 | 分類 | 証拠の範囲 | 一般化の送り先 |
+|---|---|---|---|
+| .14a | 閉じた | 一引数依存βの Step と両側の型付けの同時構成。任意 R/ストア、mark 併合を含む。開始の StateTyE の逆転を含まない | G01〜G04、H01 |
+| .14b | 閉じた | 捕捉 Φ を持つ一引数 closure の同時構成。開始の StateTyE の逆転を含まない | G01〜G05、H01/H03 |
+| .14b-paths | 閉じた | 開始の StateTyE から if/guard の真偽、match の開始・skip・束縛数0本体。最後は MatchPathsEvaluated も入力。照合の成否からの事実の健全性を含む | G06/G09、H01/H03、L30 |
+| .14c | 閉じた | 開始の StateTyE から pure caller の Reference 4種。snapshot の事実とセル現内容を区別 | G01/G07、H01 |
+| .14d | 一部 | 開始の StateTyE から Lazy の6種。K_Update の Annotation と done への書戻しを含む | 共通の closeVal と捕捉 caller は G01。全 canonical forms は H01 |
+| .14e | 一部 | 開始の StateTyE から節・resume・used と解放の代表9種。単相一引数の操作と定数の代表を含む | G01〜G05/G07/G08、H01 |
+
+詳細な限定、実際の本番の名前、各群の結果の出どころは theorems と [mapping.md](mapping.md) にある。閉じた代表を全状態の保存・進行の完了と数えていない。`.14b` の「Φ を増やす規則がない」という当時の残件は paths で処置されており、未処理のまま再計上していない。
+
+## 変えた文書と節
+
+| 文書 | 追加・訂正した節と内容 |
+|---|---|
+| docs/design/01-spec/01-12-core-calculus.md | 「本章の位置付け」で Release と Refinement の範囲を区別。「ハンドラ」の C-Handle の独立の Eff.WF(ε) を除き、表層の節の cons と区別。「整数の閉区間の領域」の正を Shared/Integer・Shared/Interval、旧型との対応を TypeAdapter に訂正。「確かめる性質」の全体の証明を旧 Release に限定 |
+| 同章の新しい6節 | 「篩を含むコア計算の形式化」「篩の正規形と制約の読み方」「閉じた述語の評価と捕捉」「条件とパターンからの事実」「保持要求と組み込みの遷移」「篩を含む状態の型付け」。D07/Ty.Normal/rawApply、sat/admits/鍵の正規形読み、δ/IO 入力の正規化、CellOk.val の a.norm、groundTy/groundVal/V_CheckedRequest、観測の添字と plain/guarded、GuardBodyTy/K_Guard、PathTest の全事実、K_Update、StoreShape の kind、State/EffectsOk を写した |
+| docs/design/07-quality/07-04-formal-semantics.md | 「目的と範囲」「証明する性質」「形式化で仮定するもの」で名前空間と証明の範囲を区別。「篩を含む形式化の範囲」「篩を含む形式化の信頼条件」を追加。「01-12 との対応」に新体系の表を追加し、共有層の出典も訂正 |
+| docs/design/00-overview/00-04-glossary.md | 「型とエフェクト」に篩型・telescope・型の正規形・強い Kleene の三値。「篩を含む形式化の用語の出典」に他の言語の呼び名と日本語の用例を一次資料で記録。telescope は原語を保つ |
+| l00b.15/theorems.md | 旧主定理と計画済みの新量化、四つの型付き入力の欄、旧 Assumptions 全欄との対応、代表の分類、残る一般化の全一覧・非重複配分・実績と見込み、見直し対象6件、義務行の判定 |
+| l00b.15/mapping.md | 定義・規則・局所定理を、Lean の名前・ファイル・01-12 の見出しへ対応。55行223名と共有層の別表。名前と定義元の双方を Lean で確認 |
+| reviews/RV-L00b.15-request.md | 今回の変更だけを対象とする独立レビュー依頼を新規作成 |
+
+既存の見出しの改名・削除はない。新しい章やファイル名の変更もなく、設計書の目次の章の一覧は変えていない。章から docs/todo・docs/archive・改造のディレクトリへのリンクを追加していない。
+
+強い Kleene の三値は、閉じた述語の評価の真理値表と、通常の短絡 or の実行時エラーの伝播との差を写した。Rust の受信検査が同じ三値を実装する義務は設計書の現在の保証へ加えず、theorems の R10b/R50・V10 の行へ送った。
+
+## 残りの一般化・見込みと見直し事項
+
+| 送り先 | 重複を除いて配分した残り | 能動時間の見込み |
+|---|---|---:|
+| L20 | G01〜G09。closeVal/callable、零/多引数と捕捉、型/行/範囲置換の別族、捕捉の緩い条件からの正則性、handler/節/used/drop、パターン束縛と guard 導入、全状態の葉と step の選択、準備/外部/解放/旧欄の入力、Inhabits の接続 | 39〜90時間 |
+| L40 | H01〜H04。開始の一般逆転と全 canonical forms、data の変性・初期領域と網羅性、全幅と標準の事実、正常/returned/failed の関係の葉 | 18〜42時間 |
+| 合計 | 計画の既存枠を配分した案。能動時間の実績比で外挿した値ではない | **57〜132時間** |
+| L70 | 最終の主定理・Program.WellTyped・表層/交換/規範の切替。上の葉の時間に加算していない | 既存24.5〜63時間 |
+| 検査・独立レビュー・設計者の再提示と受け入れの待ち | 本作業の検査以外の待ちを能動時間へ加えない | 不明 |
+
+各残件の言明・依存と、L10/L30/L50/L60/L70/R/V への全申し送りは theorems を正とする。外側の実績は能動時間と待ちを分離できないため旧枠を維持し、`.14a` と `.14b` の重なる逆転、Reference/Lazy/handler に共通の closeVal を別々に加算していない。L00a の中心の補題の比は O010 として分離し、O160 に再計上しない。
+
+**方式の変更を必要と示す新たな兆しは見つけていない。** 開始から逆転する代表と既知の反例の処置が本番にあることを根拠とする。全主定理への適合は未確定であり、G03/G04/G05/G09 と release_exists の未移行を、代表だけで閉じたとはしない。
+
+設計者の見直し対象は、State の旧前提の復帰、K_Update の Annotation、ref_get/ref_set と StoreShape の kind、HasTypeArmsQ の観測の添字、paths の追加と規則の前倒し、groundTy の refined の枝の **6件**である。theorems に各件の境界・影響・取り消した場合の手戻りを列挙した。D28 の AdequateResult・値の四保存則・型改名の二保存則・PathBases・外部受信の改訂とは別表である。
+
+## 検査と証拠
+
+[実行記録](verification.json) に、コマンド・終了・外側の時間・出力の大きさと SHA-256 がある。既定ビルドは lakefile の moreLeanArgs、単独の Lean は実引数で **-M 12288** を指定した。
+
+| 検査 | 結果と範囲 | 外側の時間・記録 |
+|---|---|---|
+| cd formal && rtk proxy lake build | 終了0、既定736ジョブ。既存の生成物を再利用した増分。旧定理や比較入口を外していない。sorry の宣言なし | 0.159秒、[build.log](build.log) |
+| lake env lean -M 12288 …/mapping.lean | 終了0、最終223名の完全名の存在と型を確認 | verification の最終 mapping 行。初回208名の出力も保持 |
+| 同 …/mapping-origins.lean | 終了0、最終223名が表に記した定義元モジュールと一致 | [mapping-origins.log](mapping-origins.log)。初回208名の記録も保持 |
+| 同 …/axioms.lean（A-L） | 終了0、163モジュール・16,165報告。全 Refinement、共有層、旧 Assumptions/主定理/モデルを含む。依存は propext・Quot.sound・Classical.choice のみ。sorryAx・未承認公理なし | 14.498秒、[集計](axioms-summary.json)・[対象モジュール](audited-modules.txt) |
+| rtk proxy cargo test --test spec_examples | 最終は終了0、7 passed。01-spec と付録08-04の例を検査。処理系の Rust は変更なし | [spec-examples.log](spec-examples.log)、外側の時間は verification の最終行 |
+| 文書の相対リンク・見出し・範囲・大きさ | 改名/削除した見出し0、見直し対象6件、リンクと100 KB上限、手元のパスの不在を確認 | [document-check.json](document-check.json)、台本 [check-documents.py](check-documents.py) |
+| 保護入力の照合 | Lean・Rust のソース、計画、既存レビュー/rv-* など6,488ファイルが開始時と同じ SHA-256 | [protected-check.json](protected-check.json)、全一覧の大きさとハッシュは [large-records.md](large-records.md) |
+| メモリ | Lean のプロセスごとの上限12,288 MiB。RSS・CPU時間は未取得（計画上の非採取） | 上限を RSS の実測値として扱わない |
+
+01-12 の C-Handle の text ブロックを変えたので仕様例を実行した。初回は追加した Tel の説明の text ブロックが実行例として読まれ、01-spec の1件が E0201 で失敗した（テスト全体は6成功・1失敗、終了101、67.356秒）。構成子の説明をインライン表記へ直し、同じテストで7成功を確認した。例外の印やテストの期待値・抽出器は変更していない。その後、本文の写しを補った最終状態でも同じテストを確認した。初回の失敗と修正直後、最終の成功を verification と生の出力に分けて残した。
+
+名前とモジュールの照合は、最初の208名に加え、本文へ補った V_Refine・依存列・記号付き範囲・外部宣言の15名を追加して再実行した。Lean の本番ソースと A-L の対象は変わっていないため、ビルドと公理監査は重ねていない。仕様例以外の Rust 全件、Rust/Lean の全比較、性能の測定、work は実行していない。
+
+既定ビルドには既存の lint とリンカの警告の再表示がある。これを今回の変更で解消したとはしない。本番 Lean の sorry の検索に該当はない。`admit` という名の既存の予算処理の関数は、証明の admit と区別した。
+
+## 入力と生成物の対応
+
+[baseline.json](baseline.json) に開始時刻・基準・保護対象数と全一覧のハッシュ、[formal-inputs-summary.json](formal-inputs-summary.json) に formal の全562入力（ソース・設定・補助入力等）の一覧のハッシュを記録した。これらは git の差分ではなくファイルの内容の照合である。対応表の機械入力は [mapping.json](mapping.json)、検査の入力は mapping.lean・mapping-origins.lean・axioms.lean、再実行の台本は [verify.py](verify.py) である。
+
+100 KB を超える公理出力・完全署名・保護対象一覧は `<tmp>` に置き、large-records に大きさと SHA-256 を記録した。初回の小さな Cargo の生出力も環境のパスを含むため一時領域に置いた。文書に手元の絶対パスを書いていない。新設した各成果物は100 KB以下である。
+
+## 義務の判定と計画との差
+
+O008/O051 は指定された代表の分類と一般化の全一覧を作り、全状態への義務は未完のままである。O054 は既存の or_elim/not_intro と残る合同を区別した。O056/O138 は paths の本番規則と事実の健全性を写し、標準の実表・Rust・全保存は未完として渡す。O160 はこの分類と判断の入力までを担当し、独立レビュー・設計者への再提示・受け入れは取りまとめに残す。
+
+担当の作業範囲の変更はない。共有層の出典と、もともと Lean にない C-Handle の前提を、Lean を正として文書だけ直した。新しい信頼条件・規則・公理の追加はしていない。見出しの改名がないので参照の追随もない。
+
+## 外側の時間と次の担当
+
+開始は **2026-11-01 00:02:28 UTC**。読取り・照合・文書化・検査・修正を含む最終照合の記録時刻は **2026-11-01 00:26:43 UTC**、開始からの外側の時間は **24分15秒**である。能動時間と局所確認の待ちは完全に分離していない。見込み1〜2時間、4時間を超えそうなら区切りで止める指定の範囲内である。
+
+| 残る手順 | 担当 | 見込み |
+|---|---|---|
+| 写し・新旧対照・分類・残件と定義/言明/仮定の独立レビュー | 取りまとめが起動するレビュー担当 | 不明 |
+| 所見の処置と関係する検査 | 実装担当。所見がある場合だけ | 不明 |
+| O160 の再提示、見直し対象6件と次段の受け入れ | 取りまとめ・設計者 | 不明 |
+
+今回の末で停止し、L10 へ進まない。

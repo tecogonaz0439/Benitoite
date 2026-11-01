@@ -355,3 +355,5 @@ import Benitoite.Release.Refinement.ReferencePreservation
 import Benitoite.Release.Refinement.LazyPreservation
 
 import Benitoite.Release.Refinement.HandlerOperation
+
+import Benitoite.Release.Refinement.BuiltinEffects

@@ -1,0 +1,131 @@
+# L00b.15: レビュー所見の処置結果
+
+**今回の承認範囲の外に残る主定理の前提は、sig_scoped・sat_unconstrained・admits_sat・release_exists の4欄である。** 旧の使用定理を [theorems.md](theorems.md#coreassumptions-と旧-assumptions-の全欄の対応) で名指しし、L20・G08 から各使用先への必須移行とした。この4欄は Lean へ追加していない。新しい全状態の主定理はまだない。
+
+2026-11-01。B_WORK は `8819025a0a35c9bac7e78fb97c7dff00829228db`、指定ブランチは `m014/l00b.15` である。git の照合・切替・作成・コミットはしていない。レビュー原本とその「取りまとめの追記」、plan の先頭の判断、補助の入力 rv-15-t1.lean を読んで処置した。処理系の Rust、ContTy、StateTyE、型付けと遷移の規則は変更していない。work と L10 は実行していない。
+
+## 前提の新旧と閉じた補題
+
+| 対象 | 修正前 | 修正後 |
+|---|---|---|
+| CoreAssumptions.io_op | 新体系に欄なし。opEff がなく効果が空の IO も表に置けた | 旧 Builtins.ShapeOk の全連言を新 Ty/RangeIx/Eff で写した。opEff、行引数なし、効果表への同じ組み込み名の所属、IOShape ごとの効果・範囲・対象引数の形を要求 |
+| PrimSig.PathBasesShape | 型/行/範囲/値引数なし、結果 pathBases、効果/opEff が Process.Environment | 同じ条件に B と b を添字として加え、∃ bs, B.effects Process.Environment=some bs ∧ b∈bs を追加 |
+
+旧 singleAt は、新 EffR.mk の同じ一原子で書く。single の対象引数は旧と同じ opaque o (rvar 0) とし、scoped の別枝を追加していない。専用 pathBases は旧にはない kind なので、io/exit の ShapeOk に混ぜず、専用署名の条件へ所属を足した。決定の理由と差は [theorems.md](theorems.md#io_op-と-pathbases-の決定の記録) にある。
+
+[本番の BuiltinEffects.lean](../../../formal/Benitoite/Release/Refinement/BuiltinEffects.lean) に閉じた補題は次の7件である。
+
+| 補題（Refinement 名前空間） | 結論の範囲 |
+|---|---|
+| Builtins.ShapeOk.operation | opEff、操作表への所属と、署名の効果が対応する一原子であること |
+| Builtins.CoreAssumptions.io_event_covered | 署名に書かれた効果が、その IO の事象を覆う |
+| Builtins.CoreAssumptions.io_transition_covered | 実際の E_IO の同じ入力から遷移と上の被覆を構成 |
+| Builtins.CoreAssumptions.pathBases_event_covered | 署名の効果による PathBases の事象の被覆 |
+| Builtins.CoreAssumptions.pathBases_transition_covered | 実際の E_IssuePathBases の同じ入力から遷移と被覆を構成 |
+| Program.EffectsOk.operation_not_handled | 所属する組み込み操作の節がなければ、その効果は handled に入らない |
+| Builtins.CoreAssumptions.pathBases_not_handled | PathBasesShape.membership を使った同じ非所属 |
+
+これらは宣言の効果に関する局所の補題である。型/行/範囲を具体化した後の効果から、継続の末尾の Eb まで伝える全状態の effect_soundness や対象健全性へ繰り上げない。その接続は G05/G07→L70 に残る。
+
+[boundary.lean](boundary.lean) は、原本の表の定義と typed/step_io/not_covered を保ち、rejects_evil によって新 CoreAssumptions を満たせないことを示す。固定 Top が rvar を覆わない例、所属のない PathBases の表の拒否、正しい IO/PathBases の形の受理も検査した。rv-15-t1.lean とレビュー原本は変更していない。
+
+本番に具体的な新 CoreAssumptions を構築する三モデルはまだない。旧 Model/ModelTargets/ModelHttp と全利用先は既定ビルドと公理依存の検査で閉じ直した。新 ModelHttp の射影の表を全 CoreAssumptions のモデルと数えない。.14e の正の表と全利用例を [model-compatibility.lean](model-compatibility.lean) に写し、io_op を加えて再検査した。実 IO/PathBases を含む全表の構築は L50/L60 の義務である。
+
+## 所見ごとの処置
+
+| 所見 | 処置 |
+|---|---|
+| 中1 | 旧 io_op/ShapeOk を復帰し PathBases に所属を追加。原本の表の拒否と実際の事象の被覆を上の本番補題・境界の例で検査。保存・effect_soundness・対象健全性への依存を明記 |
+| 中2 | 強い Kleene だけを設計者の選択の表とした。rawApply、制約の正規形読み、δ/IO 入力の正規化、CellOk.val は取りまとめの判断の別表へ移した。見直し対象は ShapeOk を加え7件 |
+| 中3 | 01-12 へ ContTy の全10枠、C_Handle_Fail/C_Use/C_IssuePathBases/C_CheckAt、AtCallAdmissible、ClauseSig/ClauseIxOk/OpSig.context/failureContext、PathBases/At/E_OpPrim の遷移、Event と Covered、scoped/scoped_forget を追加。全76遷移の列挙ではない範囲を明記。mapping を更新 |
+| 中4 | 01-12「本章の位置付け」で篩の6節を処理系との実装対応の対象から明示的に除いた |
+| 中5 | G/H の行ごとの数値は既存枠へ合わせた確度のない配分で、枠の他の作業も含むと明記。実績比と機械的な外挿は参考に限り、レビュー・処置・判断の待ちを含めないと追記 |
+| 軽1 | Admissible は SatAll を通じて制約を読み、admits は PrimitiveAdmissible が読むと訂正 |
+| 軽2 | 旧20欄を一欄ずつ分類。sat_unconstrained は HasFailureClause.instantiate/E_OpFail、admits_sat は preservationE/E_OpPrim、sig_scoped は PresBase/TySubstMain/Regularity/PresMain の使用定理を明記し、L20・G08→各使用先へ送った |
+| 軽3 | RangeExpr の Top の被覆と RangeIx の fixed/rvar を区別。fixed Top は rvar を覆わないことを本文と境界の例へ追加 |
+| 軽4 | 「同時構成」をやめ、共通の本体の導出から開始・到達の型付けと遷移を作るという説明に置き換えた |
+| 軽5 | 短絡の脱糖が新体系にあるという文を除き、Refinement にある C_If と真偽遷移の代表の範囲に直した |
+| 軽6 | .14e の実際の節の入力/出力・split・resume/used/release と .14d の実表・Rust の共変性/格納/観測、.04 の鍵の言語上の等値を L30、.14e の先頭 guard の空効果からの操作の不可能性を L40/H03 へ追記 |
+| 軽7 | 保存する portable-baseline.json の見出しと保護入力の指紋、verification-inputs.json の入力一覧を使う形へ変更。一時ログなしでも照合し、ログ欠落は区別して報告する。失敗時に成功済みの document-check.json を上書きしない。空の一時領域と意図的な失敗で確認 |
+| 出典の補足 | FSS2020 の PDF 本文を改めて照合せず、用例の主張とリンクを用語集から外した。三値表の PostgreSQL の出典と原語の併記は残す。新しい日本語の術語は追加していない |
+
+## 代表の分類と残り
+
+| 作業 | 分類 | 開始の入力と証明の範囲 |
+|---|---|---|
+| .14a | 閉じた | 共通の本体から一引数 β の両状態と Step を構成。開始の StateTyE の逆転は含まない |
+| .14b | 閉じた | 捕捉 Φ を持つ一引数 closure の両状態と Step を構成。開始の逆転は含まない |
+| .14b-paths | 閉じた | 開始の StateTyE。if/guard 真偽、match 開始/skip/束縛数0本体。match_body_zero は MatchPathsEvaluated も入力 |
+| .14c | 閉じた | 開始の StateTyE。pure caller の Reference 四種と同じ最終型/Eb |
+| .14d | 一部 | 開始の StateTyE。Lazy の6代表。捕捉 caller の一般 force、任意 ret view の closeVal は残る |
+| .14e | 一部 | 開始の StateTyE。操作・resume/used/drop・四解放の9代表。多相/辞書/複数引数・任意 view・全 handler の合成は残る |
+
+旧20欄の集計は **移行済み16（導出2を含む）、移行が必須・未着手4、不要0**。残りの全言明・依存・送り先は [theorems.md](theorems.md#一般化の残りの全一覧と重複しない配分) の G01〜G09/H01〜H04 と他段への表にある。今回復帰した io_op を「要否を調べる」残件には戻していない。
+
+| 配分 | 既存枠の配分値 | 確度と含めないもの |
+|---|---:|---|
+| L20・G01〜G09 | 39〜90時間 | 行ごとの実績に基づく再見積りではない。型置換の別族、捕捉の正則性、4欄の移行などが未確定 |
+| L40・H01〜H04 | 18〜42時間 | canonical forms、Inhabits、全幅・観測・正常/returned/failed の葉を含む既存枠 |
+| 合計 | **57〜132時間** | **確度のない配分の和**。他段と L70 の最終合成24.5〜63時間、検査・レビュー・処置・設計者の判断の待ちは含まない |
+
+.03〜.14e の担当の外側約12.7時間と計画22〜52時間の比は約0.24〜0.58である。.02 を含めるレビューの参考比は約0.4〜1.0であり、現行表の .02 の下端を4時間と数えると約0.40〜0.95である。.02 は途中で範囲が増えた。14〜77時間という機械的な外挿も参考にとどめ、残件の見込みには採用しない。
+
+**Nat/WF・捕捉環境・閉じた評価の方式を変更すべき兆しは見つからなかった。** 開始の逆転の代表と今回の旧前提の復帰が根拠の範囲であり、G03/G04/G09 が閉じたことを意味しない。前提の移行漏れと方式の変更の要否を分ける。
+
+設計者の見直し対象は次の7件である。各境界・影響・取消時の手戻りは theorems の同名の表にある。
+
+1. io_op/ShapeOk と PathBases の所属。
+2. state_effect と Program.EffectsOk の復帰。
+3. K_Update の結果型 Annotation。
+4. ref_get/ref_set と StoreShape の kind。
+5. HasTypeArmsQ の観測の添字。
+6. .14b-paths の追加と D16 の前倒し。
+7. groundTy の refined の枝。
+
+## 変えた文書と節
+
+| ファイル | 変更した節・内容 |
+|---|---|
+| docs/design/01-spec/01-12-core-calculus.md | 「本章の位置付け」「篩を含むコア計算の形式化」「篩の正規形と制約の読み方」「条件とパターンからの事実」「保持要求と組み込みの遷移」「篩を含む状態の型付け」。既存の見出しは変更していない |
+| docs/design/07-quality/07-04-formal-semantics.md | 「篩を含む形式化の範囲」「篩を含む形式化の信頼条件」「01-12 との対応」。io_op、PathBases の所属、局所の補題と全主定理の区別 |
+| docs/design/00-overview/00-04-glossary.md | 末尾の「強い Kleene の三値」の出典の段落。FSS2020 の用例の主張を除いた |
+| l00b.15/theorems.md | 旧20欄の一欄ずつの確定、ShapeOk の決定、代表の分類、残件と配分の確度、実績比、設計者の決定/取りまとめの判断/見直し7件、他段への漏れの補充 |
+| l00b.15/mapping.md・json・lean・mapping-origins.lean | 定義・規則・補題の名前・ファイル・01-12 の見出しを63行264名へ更新 |
+| l00b.15/verify.py・check-documents.py と記録 | 一時領域に依存しない入力の照合、成功記録の保全、境界の例・モデル利用例の検査、公理依存の対象追加 |
+| reviews/RV-L00b.15-request.md | 今回の12所見の処置と再レビューの範囲・検査の入口 |
+
+Lean の変更は ConstraintAssumptions.lean の ShapeOk/io_op と PathBasesShape の所属、追加した BuiltinEffects.lean、その既定 import だけである。ContTy/StateTyE/型付け/遷移のソースは変更していない。許可したファイル以外の6488ファイルの同一性は portable-baseline と protected-check で照合した。plan・レビュー原本・rv-* も含む。
+
+## 検査の結果と再照合
+
+検査結果の正は [verification.json](verification.json)、公理の集計は [axioms-summary.json](axioms-summary.json) である。Lean の全プロセスは lakefile の moreLeanArgs 又は単独実行の -M 12288 を用いる。
+
+| 検査 | 結果 | 記録 |
+|---|---|---|
+| cd formal && lake build | 終了0。既定 lake build、737ジョブ、sorry なし | [build の出力](build-resume-1_qvvo93.log)、0.158秒 |
+| cd formal && lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.15/mapping.lean | 終了0。対応表264名の存在と型 | [検査一覧](verification.json)、0.832秒 |
+| cd formal && lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.15/mapping-origins.lean | 終了0。同じ264名の定義元の一致 | [mapping-origins の出力](mapping-origins-resume-1_qvvo93.log)、0.722秒 |
+| cd formal && lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.15/axioms.lean | 終了0。164モジュール・16,187報告。propext/Quot.sound/Classical.choice のみ。sorryAx・独自公理なし | [集計](axioms-summary.json)、14.596秒 |
+| cd formal && lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.15/boundary.lean | 終了0。反例の表の拒否、実際の型付けと遷移、被覆不能、正の形。公理7報告は許可の三つだけ | [boundary の出力](boundary-resume-1_qvvo93.log)、0.676秒 |
+| cd formal && lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.15/model-compatibility.lean | 終了0。正の表と全利用例。公理155報告は許可の三つだけ | [model-compatibility の出力](model-compatibility-resume-1_qvvo93.log)、1.385秒 |
+| cargo test --test spec_examples | 終了0。リポジトリの根で cargo test --test spec_examples、7件成功 | [spec-examples の出力](spec-examples-resume-1_qvvo93.log)、3.383秒 |
+| 文書・見出し・相対リンク・大きさ | 成功。既存の見出しの改名/削除0、見直し7件。禁止リンクと手元のパスなし | [文書検査](document-check.json) |
+| 保護入力と保存記録 | 6488ファイルの指紋が一致、検査後の入力と記録が一致 | [保護入力](protected-check.json)・[記録照合](record-check.json) |
+
+[verify.py](verify.py) はリポジトリの根から `python3 <改造>/l00b.15/verify.py` で7検査を実行する。既存記録だけの照合は同じ入口の `--finalize-only` で行い、verification-inputs.json と portable-baseline.json を改造から読む。一時領域に生ログがなければ、入力・終了値・保存した集計を照合し、欠落したログの内容を再検査したとは記録しない。完全な再実行には固定した Lean/Cargo と依存・ビルド環境が要るが、初回の一時領域は要らない。
+
+[check-documents.py](check-documents.py) は同じ根から実行し、章の見出し・相対リンク・禁止リンク・7件の見直しの印・100 KB 上限・手元のパスを検査する。成功時だけ document-check.json を置き換える。[portability-check.json](portability-check.json) は、一時ログが二つとも見つからない空の別領域での照合と、文書検査の失敗が直前の成功記録を保つことを確認した記録である。
+
+100 KB を超える生の出力は改造内に置かず [large-records.md](large-records.md) へ大きさと SHA-256 を記した。初回の文書・台本・集計は [initial/README.md](initial/README.md) に区別して保つ。初回の成功を今回の新しい前提の検査に流用していない。
+
+## 外側の時間と受け渡し
+
+初回は 2026-11-01 00:02:28〜00:26:43 UTC の24分15秒であった。今回の開始は **2026-11-01 00:38:19 UTC**、最後の照合時刻は **2026-11-01 00:56:56 UTC**、今回の外側の時間は **18分37秒** である。能動時間と局所検査の待ちは完全には分離していない。初回と今回の間のレビュー・取りまとめの時間を担当の能動時間へ加えていない。今回の上限5時間以内で止める。
+
+| 残る手順 | 担当 | 見込み |
+|---|---|---|
+| 12所見の処置・前提・写し・検査記録の独立再レビュー | レビュー担当 | 不明 |
+| 主な定理の前提の差、見直し7件、O160 の再提示と受け入れ | 取りまとめ・設計者 | 不明 |
+| 必須の4欄と G/H の一般化 | L20/L40 | 上の57〜132時間は既存枠の確度のない配分。起動前に再見積り |
+
+この作業の処置までで止めた。次段の受け入れを代行していない。

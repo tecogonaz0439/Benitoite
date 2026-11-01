@@ -1,0 +1,60 @@
+[
+  {
+    "label": "build",
+    "command": "cd formal && lake build",
+    "started_utc": "2026-11-01T00:48:32.729005+00:00",
+    "exit_code": 0,
+    "seconds": 6.701,
+    "bytes": 37641,
+    "sha256": "4f00c90353c79033fc846279cc192e0c3e895ab21b1470d7c4818fec1ff6e4ff",
+    "record": "build.log"
+  },
+  {
+    "label": "mapping",
+    "command": "cd formal && lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.15/mapping.lean",
+    "started_utc": "2026-11-01T00:48:39.430118+00:00",
+    "exit_code": 0,
+    "seconds": 0.786,
+    "bytes": 178690,
+    "sha256": "257a82f3509d7f99a9a07773e60eb7e5b7f4c7e0c65c1c7e3c62b80c8abec58f",
+    "record": "<tmp>/benitoite-l00b15-resume-rsyke0b6/mapping.log",
+    "names": 262
+  },
+  {
+    "label": "mapping-origins",
+    "command": "cd formal && lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.15/mapping-origins.lean",
+    "started_utc": "2026-11-01T00:48:40.216762+00:00",
+    "exit_code": 0,
+    "seconds": 0.724,
+    "bytes": 20,
+    "sha256": "8f6c2f56d260f1d0fb02bb31307aa71697b7ae9d2ca3e7c6e9bab975dede3129",
+    "record": "mapping-origins.log"
+  },
+  {
+    "label": "axioms",
+    "command": "cd formal && lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.15/axioms.lean",
+    "started_utc": "2026-11-01T00:48:40.940821+00:00",
+    "exit_code": 0,
+    "seconds": 14.686,
+    "bytes": 1752534,
+    "sha256": "1e9ba6bc5d7e4e964e8656641a58ba4029de04a9206fce337a1d2c4f4a199e28",
+    "record": "<tmp>/benitoite-l00b15-resume-rsyke0b6/axioms.log",
+    "reports": 16187,
+    "dependencies": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "modules": 164
+  },
+  {
+    "label": "boundary",
+    "command": "cd formal && lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.15/boundary.lean",
+    "started_utc": "2026-11-01T00:48:55.641964+00:00",
+    "exit_code": 1,
+    "seconds": 0.683,
+    "bytes": 3720,
+    "sha256": "32ac37eda053345c0995db7d143cdc5b9b2a9a3c1dc8803960d25af0eefbaaf3",
+    "record": "boundary-failed.log"
+  }
+]
