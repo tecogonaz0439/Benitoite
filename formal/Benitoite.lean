@@ -371,3 +371,5 @@ import Benitoite.Release.Refinement.ProgramWellFormed
 
 import Benitoite.Release.Refinement.LegacyTableFacts
 import Benitoite.Release.Refinement.LegacyValues
+
+import Benitoite.Release.Refinement.Finite

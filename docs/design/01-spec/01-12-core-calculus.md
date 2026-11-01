@@ -3126,6 +3126,14 @@ builders_no_captureとbuilders_block_no_captureは、Aligned Γ ΔからEnvReads
 
 依存のない引数列は `Ty.foldFn` で `fn` へ戻す。判定は、各束縛の下の移動を戻せる関数型の見方 `FnView` が存在することであり、単に結果に値変数がないことだけを調べるものではない。適用の構文操作 `rawApply` は、篩について `rawApply (refined a p) args = refined (rawApply a args) p` として内側へ通る。型引数を捨てる既定の枝へ先に落とさない。適切な適用は `Ty.HasKind` と `ProperApply` で別に検査する。
 
+支持 `Ty.Support p a`・`Ty.SupportList p as`・`Eff.Support p e`・`Tel.Support p t` は、型・型列・効果・依存列に現れるすべての効果原子が述語 p を満たすことを表す。型の子、潜在効果、Fail の内部型へ再帰する。篩の述語は効果を持たないため、篩を付ける型の支持を読み、述語の値参照の整形式とは区別する。`Eff.mk f fs` の支持は `(∀ a, f a = true → p a) ∧ Ty.SupportList p fs` である。`Ty.Finite` と `Eff.Finite` は、支持を覆う有限の原子列の存在を表し、任意の所属関数の有限性を無条件には要求しない。
+
+`collectAtoms s` は、候補列 s を最上位の所属関数で絞り、同じ子へ再帰して原子を収集する。入力の支持が s に入る場合、収集結果も入力を覆い、収集した原子は実際に入力の支持に属する。支持は正規化で保存・反映される。型変数の移動は支持を保ち、値の改名前後では支持が同値である。一般の置換では原子の範囲や行の像が変わるため、`SupportTransport p q θ` に型像・行像の q による支持と、p に属する各単一原子の置換像の q による支持を要求する。`typeEnvAt` は範囲の像が空なので、単一原子の条件を p から q への含意と行の像の支持から導ける。`substAt_support_of_imp` はこの条件を供給し、`substAt_support_same` は同じ支持を保つ場合を表す。
+
+`tyCompareWith`・`tysCompareWith`・`effCompareWith`・`telCompareWith` は有限候補上で生の構造を比較する。両入力の支持が候補に入るとき、固定された木比較と一致する。篩の述語の有限構文と連言の順を区別し、論理同値による比較にはしない。候補が支持を覆わない場合の eq から、構造等号は結論しない。これは型全域の決定可能等号の定義ではない。
+
+`Tel.fnViewWith? s t` は注釈の値移動を外側へ戻して候補を作り、名前の長さ・重複と、候補を `toTel` で戻した構造を、元の候補列 s による有限比較で検査する。支持の下では `some f` と `f.toTel = t` が同値であり、`fnView?` に一致する。`normWith` は型・型列・効果・依存列について、子の正規化、Fail の整列と重複除去、篩の平坦化、`foldFnWith` の順で計算する。支持の下で既存の正規化と一致し、支持の保存・正規形・冪等性・候補列からの独立性を満たす。効果の最上位の所属関数は変えないため、`Eff.normWith_eq_norm_of_fails` は Fail の内部型の支持だけを前提とする。
+
 型付けの `V_Normal`・`C_Normal` は結果型を正規形へ変え、`Ty.LeQ.convert` は正規化後の構造の一致から部分型を与える。`SatAll` は `B.sat C a.norm p`、`Admissible` は `SatAll` を使う。`PrimitiveAdmissible` は `sg.admits C (Ty.normTys ts)` を読む。Map/Set の鍵と外部の値構造の鍵も `B.sat` へ正規形を渡す。信頼条件の欄自体に、任意の型での正規化不変性を仮定する変更は加えない。
 
 部分型 `Ty.LeQ P Γ Φ a b` は有限の導出である。篩の除去、導入、篩どうしの含意は `Entails` を使い、仮定には型の自己の事実と `Γ.facts ++ Φ` の移動した列を用いる。List と Lazy の要素・結果は共変、Map の値は共変で鍵は同じ型、Reference の内容と Fail の型は正規化後の等号で照合する。関数の比較は `TelLe` とその反射推移閉包 `TelClosure` を用いる。引数を反変に比較し、後続は渡し先の引数を加えた文脈で比較し、終端の結果と潜在効果を共変に比較する。`Eff.Covers Γ Φ outer inner` は内側の各原子を外側の一原子で覆い、Fail は不変に含める。`Eff.Sub inner outer` は構造上の包含であり、引数の順も異なる。
