@@ -62,7 +62,7 @@ theorem SatAll.map {B C ts tps} (h : SatAll B C ts tps) (f : Ty → Ty)
   exact hf x (List.mem_of_getElem? hx) p (h.2 i x p hx hp)
 
 /-- PathBasesの発行が要求する閉じた、引数のない署名。 -/
-structure PrimSig.PathBasesShape (s : PrimSig) : Prop where
+structure PrimSig.PathBasesShape (s : PrimSig) (B : Builtins) (b : PrimName) : Prop where
   types : s.tparams = []
   rows : s.neffs = 0
   ranges : s.rkinds = []
@@ -70,6 +70,17 @@ structure PrimSig.PathBasesShape (s : PrimSig) : Prop where
   result : s.ret = .pathBases
   effect : s.eff = Eff.single processEnvironmentEff
   operation : s.opEff = some processEnvironmentEff
+  membership : ∃ bs, B.effects processEnvironmentEff = some bs ∧ b ∈ bs
+
+/-- IO の項目の形。旧 Release の ShapeOk と同じ条件を、新しい型と範囲の位置で読む。 -/
+def Builtins.ShapeOk (B : Builtins) (b : PrimName) (s : PrimSig) : Prop :=
+  ∃ l bs, s.opEff = some l ∧ s.neffs = 0 ∧ B.effects l = some bs ∧ b ∈ bs ∧
+    match s.shape with
+    | .untargeted => B.effKind l = none ∧ s.rkinds = [] ∧ s.eff = Eff.single l
+    | .topTargeted k => B.effKind l = some k ∧ s.rkinds = [] ∧ s.eff = Eff.single l
+    | .single k p => B.effKind l = some k ∧ s.rkinds = [k] ∧
+        s.eff = .mk (fun a => decide (a = .name l (.rvar 0))) [] ∧
+        ∃ o, s.params[p]? = some (.opaque o (.rvar 0)) ∧ B.valKind o = some k
 
 /-- 可変のセルと明示遅延の項目の形。PathBasesはこの分類へ入れない。 -/
 def PrimSig.StoreShape (s : PrimSig) : Prop :=
@@ -95,8 +106,17 @@ def PrimSig.StoreShape (s : PrimSig) : Prop :=
 /-- D28の信頼条件。旧欄の残りは担当する後続の群で加える。 -/
 structure Builtins.CoreAssumptions (P : Program) (B : Builtins) : Prop extends
     Builtins.SubstitutionAssumptions P B, Builtins.ExternalAssumptions P B, Builtins.ResponseAssumptions P B where
+  /-- 制約のない型パラメータは、閉じた整形式の型の正規形で具体化できる。 -/
+  sat_unconstrained : ∀ (t : Ty), t.WF 0 0 0 → B.sat [] t.norm ({} : TParam)
+  /-- 組み込みの許容は、同じ型引数列の制約と個数も満たす。 -/
+  admits_sat : ∀ b s C ts, B.sig b = some s → s.admits C (Ty.normTys ts) →
+    SatAll B C ts (s.tparams.map TParamDecl.constraints)
+  /-- 型付きの全資源値について、解放の応答が少なくとも一つある。 -/
+  release_exists : ∀ Ψ v o, HasTypeV P B Ψ [] [] [] v (.opaque o (.fixed .top)) →
+    B.isResource o = true → ∃ r, B.releaseResponse v r
   /-- σを発行する項目はC_IssuePathBasesと実行器の空引数の検査を満たす。 -/
-  pathBases_shape : ∀ b s, B.sig b = some s → s.kind = .pathBases → s.PathBasesShape
+  pathBases_shape : ∀ b s, B.sig b = some s → s.kind = .pathBases → s.PathBasesShape B b
+  io_op : ∀ b s, B.sig b = some s → (s.kind = .io ∨ s.kind = .exit) → B.ShapeOk b s
   /-- 操作の分類には専用のσ発行も含む。IO応答の分類は変更しない。 -/
   opEff_io : ∀ b s l, B.sig b = some s → s.opEff = some l →
     s.kind = .io ∨ s.kind = .exit ∨ s.kind = .pathBases

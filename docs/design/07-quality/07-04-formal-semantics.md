@@ -4,7 +4,7 @@
 
 形式検証の段階 2（証明支援系で、選んだ性質を証明する。[ロードマップ](../00-overview/00-03-roadmap.md)の「形式検証の範囲」）の対象、進め方、道具、[コア計算と脱糖](../01-spec/01-12-core-calculus.md)との対応を定める。段階 1（参照インタプリタと VM の差分テストで反例を探す）は[処理系のテスト戦略](07-03-compiler-testing.md)の「差分テスト」で扱う。
 
-本章は、段階 2 の段階 A と段階 B（段階 B1・B2）と、脱糖の型の保存を扱う段階 C と、性質の前提を処理系の出力に結び付ける段階 E（後述）を定める。値の範囲を型で表す篩型は、初回リリース版に含めず、本章の対象にも含めない。
+本章は、段階 2 の段階 A と段階 B（段階 B1・B2）と、脱糖の型の保存を扱う段階 C と、性質の前提を処理系の出力に結び付ける段階 E（後述）を定める。値の範囲を型で表す篩型は初回リリース版に含めない。Lean 内で並置している篩を含む定義・規則と、その部分的な証明は「篩を含む形式化の範囲」に記す。
 
 ## 前提
 
@@ -17,6 +17,8 @@
 ## 仕様
 
 ### 証明する性質
+
+以下の性質 1〜3 の全体の証明は、`Benitoite.Release` とそれを読む表層・交換の判断について述べる。`Benitoite.Release.Refinement` の規則については、後述の「篩を含む形式化の範囲」で定義・局所定理・Rust との対応を区別する。
 
 【決定】段階 2 では、01-12 の性質 2（進行と保存）と性質 3（エフェクトの健全性）を証明する。理由: コア計算の規則そのものの誤りは、規則どおりに作った参照インタプリタと VM がともに誤るので、段階 1 の差分テストでは見つからないからである。
 
@@ -62,6 +64,48 @@
 【決定】型検査器の入口に必須の判定の受理を組み込み、プログラム全体の受理の述語を置く（`Surface/CheckAccept.lean`。01-12「Scope の必須の判定の受理と拒否の理由」）。入口 `checkProgramAccepted` は表層の型付けの検査 `checkProgram` に続けて全ての定義と実装のメソッドの本体を `acceptBody` で受理し、成功すれば型付けの検査の結論と全体の受理の述語 `Accepted` の両方が成り立つ（`checkProgramAccepted_sound`・`checkProgramAccepted_empty`）。健全な規則の項目で受理したプログラムの定義には接続定理が当たる（`accepted_check_connection`）。規則を持たない受理の入力（旧の像）では、入口は型付けの検査と同じ結果を返す（`checkProgramAccepted_noRules`）。受理は主定理（性質 1〜3、一段・到達先・表層の対象健全性）の前提に入れない。対象健全性は型付けと δ・応答の信頼条件から別に示しており、受理を前提にしなくても成り立つ。受理は、型検査器が狭い契約を必須の判定の結果を確かめたときだけ受け入れるという精度の説明にとどまる。コアの実行と表層の具体の評価（`ReachBlock`）の対応の補題は置かない（表層の評価とコアの実行の対応は保証の範囲に含めない）。したがって、受理したプログラムの実行で到達した状態について、受理が値の所属を保証するとは結論しない。理由: 「狭い契約は被覆を確かめたときだけ受理」を型検査器の入口とプログラム全体の述語で述べ、受理が主定理の保証を強めないことを区別するためである。
 
 【決定】幅付きの数の追加後の定義についても、性質 1〜3 と表層の検査の健全性を証明している。対象は基本型・定数・演算子・比較・補間・リテラルの脱糖と制約であり、各幅の値域・実行時の溢れ・Float32 の丸めの実装は証明の対象に含めない。理由: 型とエフェクトの規則の保証と、数の実装をテストで確かめる範囲を区別する。
+
+### 篩を含む形式化の範囲
+
+【決定】`Benitoite.Release.Refinement` は、篩型、依存する引数列、有限の論理、捕捉環境と実行時の閉包、固定した PathEnv、外部の宣言と受信検査を持つ。定義・規則の写しは 01-12 の「篩を含むコア計算の形式化」から「篩を含む状態の型付け」までである。これらは既定の `Benitoite` の import に含まれ、旧 Release の定義・主定理・モデルと並置している。
+
+移動・値の置換・narrowing の相互の証明は、値29、計算24、腕・節・引数列・捕捉・閉包などを合わせた76構成子を扱う。これは Step の全76遷移に対する保存の証明とは別である。篩の平坦化と true の除去、非依存関数型の正規化、`SatAll`・admits・鍵の制約を正規形で読む規則、組み込み遷移の入力の正規化も、この体系の定義と証明へ含む。
+
+現在の状態に関する証明の範囲は次のとおりである。依存 β と捕捉した closure の代表は、共通の本体の導出から開始・到達の型付けと Step を作る。これは、開始の `StateTyE` の任意の導出を逆転する定理とは区別する。
+
+| 対象 | 現在の Lean の定理の範囲 |
+|---|---|
+| 依存 β | `DependentBeta` の一引数の依存する結果・Fail の具体化と、共通の本体の導出から同じ末尾効果を持つ両状態と遷移を構成する証明。R とストアは任意で、既存の mark への併合を含む |
+| 捕捉した Φ | `CapturedFacts` の評価成功・有限導出からの閉じ方、捕捉した一引数の closure 呼出しの両状態と遷移を構成する証明。環境を捨てる場合の反例と区別する |
+| if・guard・match | `PathConditions`・`MatchPaths` の開始 `StateTyE` からの真偽枝、guard 真偽、match の開始・skip・束縛数0の本体の保存。本体の代表は `MatchPathsEvaluated` も入力とする。`MatchFacts` はリテラル・範囲・List・構成子・Or の照合の成否から事実の健全性を示す |
+| Reference | `ReferencePreservation` の開始 `StateTyE` からの new/get/set/update の代表。4種とも呼出し元は pure。snapshot の事実とセルの現内容を区別する |
+| Lazy | `LazyPreservation` の作成、pure な呼出し元の force、任意の現在セルへの書戻し、error/exit の更新枠の破棄。書戻しの一般入口は ret の `closeVal` の一致を入力とし、定数の系は任意の捕捉を扱う |
+| 節・resume・破棄 | `HandlerOperation` の pure・単相一引数・辞書なしの操作、`HandlerPreservation` の定数の resume/返却/drop と used の再開、解放を伴う通常返却・escape・error・exit の代表。依存列の捕捉の延長は任意の長さである |
+| 外部受信 | `ExternalConnection` の三条件と型付き入力からの受信後の型付け・Ground・適格性・no-exit、`ExternalCheck` の全入れ子の篩の受理の健全性 |
+
+`StateTyE` と `StateTy` の定義はあるが、この名前空間に全状態の `preservation`・`progress`・`step_sound`・`effect_soundness` はない。最終の `Program.WellTyped` もこの体系には定義していない。旧 Release の主定理や既定ビルドの成功を、この体系の主定理の証明と読まない。`RootShape` による除外の健全性は型付きの閉じた値へ接続しているが、網羅性が読む `Inhabits` は `checkedAt` の全型付けを覆う定義にはなっていない。
+
+【決定】Rust との接続済みの範囲を述べる本章の既存の表は、Release・Surface・既存の交換器と区間・Scope の入口についてのものである。篩を含む形式化の成功を、その範囲へ追加したものとはしない。Lean の閉じた評価は強い Kleene の三値であり、型や値に篩が書けること、同じ分岐の事実を Rust が作ること、Rust の外部受信が同じ検査を行うこと、篩を含む交換の全比較が成功したことは、この段階の証拠に含めない。
+
+### 篩を含む形式化の信頼条件
+
+【決定】`Refinement.Builtins.CoreAssumptions P B` は、`SubstitutionAssumptions`・`ExternalAssumptions`・`ResponseAssumptions` を含み、PathBases とストアの項目、組み込みの操作表に関する欄を持つ。いずれも定理の引数とする条件であり、Lean の公理ではない。対象一致の `TargetAgreement` は別の構造体である。
+
+| 条件 | 現在の定義と旧 Release との差 |
+|---|---|
+| 型付きの組み込み入力 | `BuiltinArgs` は正規形の型・行、範囲の許容、宣言の kind、依存列に沿う実引数の型付けと Ground、具体化後の結果・効果を持つ。旧の独立した引数型列だけを量化する入力から変わる |
+| `delta_typed`・`io_typed` | 依存する結果 a に `Outcome.Typed` を求め、同じ応答に `AdequateResult ws out` を加える。後者は、すべての有効な σ と、その σ で適格な入力について結果も適格であるという条件である。B や応答を σ ごとに選び直さない |
+| `io_kind`・`io_exists` | 同じ `BuiltinArgs` を持つ入力を量化する。IO/exit の分類と応答の存在を分ける。応答の関係は観測 obs も量化し、範囲の列は関係の引数に加えない |
+| 制約の値による移送 | `ValueAssumptions` の sat/admits の四欄は、単調な値変数の改名と型付きの値置換での保存を要求する。前後の注釈を照合し、任意の述語から保存を自動的に導いたことにはしない |
+| 制約の型による移送 | `TypeAssumptions` は型パラメータの制約を保つ一般の改名での二保存則と型・行の置換での二保存則を持つ。旧 sat_local/admits_local に相当する結果は、注釈を受け取り正規化した型について導く補題である |
+| 外部の三条件 | 外部宣言表の WF、名目ID、`ExternalArgs` の型付き入力の下で、生の応答は `Outcome.Carrier` までを満たし exit でなく、応答が存在し、外部 IO の対象を報告しない。篩の真は受信後に検査する。適格性は carrier から導く補題で、第四の信頼条件ではない |
+| PathBases | `pathBases_shape` は型・行・範囲の引数と値引数がない宣言、結果 PathBases、効果/opEff が Process.Environment であること、効果表の同じリストに組み込み名が所属することを要求する。`opEff_io`・`effect_ops` は専用の pathBases を含み、store_shape/store_admits はこの項目を除く |
+| IO の形 | `io_op` は旧 ShapeOk の opEff・効果表への所属・行引数なし・IOShape ごとの kind/範囲/対象引数の条件を、新しい型と範囲の添字で要求する。実際の E_IO と PathBases の遷移の入力から、宣言に書かれた効果による Event.Covered を導く代表がある。継続末尾までの全状態の定理とは区別する |
+| Reference | `ref_get`・`ref_set` は旧と同じ存在と種類の条件を持つ。`StoreShape` の Reference 四種は、型パラメータの kind の列 `[value]` も要求する。これらから `ReferencePrimitives` を導く |
+| 制約と解放の存在 | `sat_unconstrained` は閉じた WF 0 0 0 の型の正規形について無制約の sat を要求する。`admits_sat` は lookup と正規形の列の admits から、型パラメータの制約の列との SatAll（個数を含む）を要求する。`release_exists` は空の型・値・事実文脈で型付きの全資源値について解放応答の存在を要求し、Ground/Adequate で量化を狭めない |
+| State | 旧の `state_effect` と同じ `B.effects stateEff = some []` を持つ。プログラム側の `EffectsOk` も旧と同じ三条件であり、両者から State が handled に含まれないことを導く |
+
+旧 CoreAssumptions の20欄のうち、19欄は新しい欄又は導出として対応し、sig_scoped だけは未移行である。Refinement には依存する引数列と範囲の束縛に対応する PrimSig.Scoped の定義がない。旧の全体の Assumptions と同一視せず、現在の定義にある条件を上表に示した。追加した三欄を含む小さな表の充足は確認しているが、これらを使う新しい全状態の進行・保存や標準の全表の充足を証明済みとはしない。
 
 ### 進め方
 
@@ -204,6 +248,8 @@ checkInteger の成功は公開の minimum・maximum・value をこの順で呼�
 定義・言明・仮定のレビューでは、未知を Bottom と取り違えていないこと、未知の親の評価導出から子の警告の根拠を作らず、独立入力自身の保証を使うこと、正常引数を得ていない親に新しい警告の根拠を作らないこと、API の拒否と全体の異常終了を区別することを確かめる。警告が述べる原因と事象の拒否理由の一致も確認する。固定域の `domainRejected` は `.outsideDomain` で拒否し、算術の具体規則を加えるときは除数0を `.zeroDivisor`、あふれを `.overflow` で拒否する。各 profile を拡張しても、任意の環境と予算についての二つの中心命題の前提・結論を変えず、標準 API の意味や δ との一致の前提を追加しないことも確認する。既存の主定理・公理・`Builtins.Assumptions` は変更しない。Rust の前提とする区切りでは、既定の `lake build` の成功と、このレビューの両方を要する。
 
 ### 形式化で仮定するもの
+
+この節の既存の仮定と三つのモデルは `Benitoite.Release` のものである。篩を含む形式化の現在の条件は「篩を含む形式化の信頼条件」に記す。欄名が同じであっても、型付き入力と結果が別の判断になれば条件の内容も変わる。
 
 【方針】01-12 は、組み込みの関数の型と値（関数 δ）と IO の応答を、ほかの章に委ねている。形式化では、これらの中身を定義せず、次の性質を定理の仮定として与える。Lean の `axiom` としては置かず、定理の引数（`formal/` の `Builtins.Assumptions`）として明示する。
 
@@ -530,7 +576,7 @@ Range の型は `.data owner []` に揃え、Result の認定と閉じた評価�
 
 `Interval.Examples` の `Examples.RangeC3` は、独立した十進の期待値で、両端・一点・Integer64 の両端、逆転優先、両側の範囲外、三欄の保存と value の射影、偽の同定、二つの成功値と由来のない別個体、射影後の加算とあふれを確認する。解析器・評価器は `#guard` で実行する。minimum・maximum の表層の標準規則は追加せず、保存された三欄を小モデルの射影で観察する。実 VM では公開の minimum・maximum・value の三関数を使って同じ三欄を観察し、実ソースの書き出しと独立期待値に照合している。minimum・maximum は評価関係の具体規則へ加えず、この観察を評価関係との一致の証拠には数えない。定義内の独立例の成功を実 VM との一致や C3 の独立レビューの完了とは扱わない。
 
-【決定】`Benitoite.Interval.Domain` は、算術を持つ七種の整数の正常値の集合を表す閉区間の定義と証明を持ち、既定の `Benitoite` の import に含める。01-12「整数の閉区間の領域」に、空・非空・全値域・所属・正規化・包含・交差・合流の定義と言明を写す。`Interval kind` の非空区間は `IntKind.min`・`max` に収まる証拠を保持する。Integer64 は既存の `Release.min64`・`max64` を参照し、種類を省略した既存の解析も Integer64 を使う。Integer の別名に別の種類を作らず、算術を持たない Byte を含めない。`mem_normalize`・`normalize_closed`・`subset_iff`・`mem_meet`・`mem_join`・`join_least` が集合としての契約を示し、`mem_bounds`・`mem_top`・`meet_bounds`・`join_bounds` が各幅の値域との対応を示す。独立例は空・一点・七種の両端と直外の値・交差・包含の向きと、合流で穴を失う場合を確認する。
+【決定】`Benitoite.Interval` の `Shared/Integer.lean`・`Shared/Interval.lean` は、算術を持つ七種の整数の正常値の集合を表す値域と閉区間の定義・証明を持ち、既定の `Benitoite` の import に含める。旧 Release の型との対応は `Interval/TypeAdapter.lean`、`Interval/Domain.lean` は互換入口である。共有層は Release の型・構文を import しない。01-12「整数の閉区間の領域」に、空・非空・全値域・所属・正規化・包含・交差・合流の定義と言明を写す。`Interval kind` の非空区間は `IntKind.min`・`max` に収まる証拠を保持する。Integer64 は既存の `Release.min64`・`max64` を参照し、種類を省略した既存の解析も Integer64 を使う。Integer の別名に別の種類を作らず、算術を持たない Byte を含めない。`mem_normalize`・`normalize_closed`・`subset_iff`・`mem_meet`・`mem_join`・`join_least` が集合としての契約を示し、`mem_bounds`・`mem_top`・`meet_bounds`・`join_bounds` が各幅の値域との対応を示す。独立例は空・一点・七種の両端と直外の値・交差・包含の向きと、合流で穴を失う場合を確認する。
 
 `IntegerValue kind` は型ごとの値域の証拠を持ち、Integer64 の特殊化は `Release.Integer64Value` と定義上等しい。`Interval.Eval` の `ConcreteValue` に六種の幅付き整数を加え、`other` は `IntKind.ofType type = none` の証拠を要求する。`integerKind_value_in_top` は任意の `kind` の型から具体整数の形と `top kind` への所属を取り出す。既存の `integer_value_in_top` の言明は保つ。
 
@@ -679,6 +725,20 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 【決定】形式化した規則を変えるときは、Lean の定義と 01-12 の写しを同じ変更で直す。取り込む前に、`formal/` の `lake build` が `sorry` なしで通ることを確かめる。
 
 【決定】Lean の定義の名前は、01-12 の規則の名前に対応させる（規則 `E-Op` の遷移は構成子 `E_Op`、規則 `C-Sub` の計算の型付けは構成子 `C_Sub`、規則 `K-Handle` の継続の型付けは構成子 `K_Handle` とする）。01-12 の節と形式化の対応は、次の表で管理する。形式化のために 01-12 と違う形で書いた箇所は、「表現の違い」の欄にその内容と理由を記す。01-12 が規則の名前を付けずに文で書いた規則は、Lean では名前を付けた構成子として書く。`Reference.update` の遷移は `E_RefUpdate`、`lazy` と `escape` の型付けは `C_Lazy`・`C_Escape`、場所の値の型付けは `V_LocRef`・`V_LocLazy`、操作の型付けは `V_Op` である。
+
+
+篩を含む形式化の対応は次表のとおりである。右欄は Lean 内の定義・規則の写しであり、Rust との比較の済んだ範囲を増やす表ではない。
+
+| Lean（`Release/Refinement/` 以下） | 01-12 の写し |
+|---|---|
+| Types・TermSyntax・Context・Declared | 「篩を含むコア計算の形式化」 |
+| Conjunction・RefinementNormalForm・FunctionNormalForm・Normalize・Le・Admissible・Typing | 「篩の正規形と制約の読み方」 |
+| Observation・ClosedEvaluation・Logic・LogicSound・Context/Capture・CapturedFacts | 「閉じた述語の評価と捕捉」 |
+| PathFacts・PathConditions・MatchPaths・MatchFacts・Typing・StateTyping | 「条件とパターンからの事実」 |
+| Typing・HandlerContracts・RuntimeSyntax・AtPrepare・AtTyping・BuiltinResponse・ConstraintAssumptions・BuiltinEffects・Semantics・Step・ExternalCheck・ExternalResponse・ExternalConnection | 「保持要求と組み込みの遷移」 |
+| Typing・StateTyping・ConstraintAssumptions・ReferencePreservation・LazyPreservation・HandlerEffects・HandlerPreservation | 「篩を含む状態の型付け」 |
+
+以下の既存の表は Release などの対応である。
 
 | 01-12 の節 | 段 | 表現の違い |
 |---|---|---|

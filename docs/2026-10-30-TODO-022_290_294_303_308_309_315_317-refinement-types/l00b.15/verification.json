@@ -1,0 +1,92 @@
+[
+  {
+    "label": "build",
+    "command": "cd formal && lake build",
+    "started_utc": "2026-11-01T01:07:40.343786+00:00",
+    "exit_code": 0,
+    "seconds": 6.705,
+    "bytes": 37640,
+    "sha256": "cd14b5ea10a9893514d15549bc0cc9a746f7fb5a25c140f59b90c07b4c3ee161",
+    "record": "build-resume-1xl_dsan.log"
+  },
+  {
+    "label": "mapping",
+    "command": "cd formal && lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.15/mapping.lean",
+    "started_utc": "2026-11-01T01:07:47.048652+00:00",
+    "exit_code": 0,
+    "seconds": 0.781,
+    "bytes": 180457,
+    "sha256": "d8ebe6709f1a415e063a0e594eef264b4621bec06df8db96d36c70af97205f14",
+    "record": "<tmp>/benitoite-l00b15-resume-1xl_dsan/mapping.log",
+    "names": 267
+  },
+  {
+    "label": "mapping-origins",
+    "command": "cd formal && lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.15/mapping-origins.lean",
+    "started_utc": "2026-11-01T01:07:47.829722+00:00",
+    "exit_code": 0,
+    "seconds": 0.723,
+    "bytes": 20,
+    "sha256": "79607e426e9fc1ffa9762761a101600b3e95a7827a44ac701315e6cc72b44936",
+    "record": "mapping-origins-resume-1xl_dsan.log"
+  },
+  {
+    "label": "axioms",
+    "command": "cd formal && lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.15/axioms.lean",
+    "started_utc": "2026-11-01T01:07:48.553338+00:00",
+    "exit_code": 0,
+    "seconds": 14.694,
+    "bytes": 1752953,
+    "sha256": "142e9177ccf37f64a341b993d1b6d723a063c0f47ab2cd625672c48a890b4a3b",
+    "record": "<tmp>/benitoite-l00b15-resume-1xl_dsan/axioms.log",
+    "reports": 16190,
+    "dependencies": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "modules": 164
+  },
+  {
+    "label": "boundary",
+    "command": "cd formal && lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.15/boundary.lean",
+    "started_utc": "2026-11-01T01:08:03.262304+00:00",
+    "exit_code": 0,
+    "seconds": 1.105,
+    "bytes": 8509,
+    "sha256": "1731d654ce26ff38213a24cc3f2d395d209ba4701c9d829b9786a4948b63c3d6",
+    "record": "boundary-resume-1xl_dsan.log",
+    "reports": 64,
+    "dependencies": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ]
+  },
+  {
+    "label": "model-compatibility",
+    "command": "cd formal && lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l00b.15/model-compatibility.lean",
+    "started_utc": "2026-11-01T01:08:04.367367+00:00",
+    "exit_code": 0,
+    "seconds": 1.465,
+    "bytes": 17489,
+    "sha256": "5db4e58e4a1384ff0e96e6f53b5b3d918a22ec4967acc2a2e8bb99a148bed101",
+    "record": "model-compatibility-resume-1xl_dsan.log",
+    "reports": 155,
+    "dependencies": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ]
+  },
+  {
+    "label": "spec-examples",
+    "command": "cargo test --test spec_examples",
+    "started_utc": "2026-11-01T01:08:05.832862+00:00",
+    "exit_code": 0,
+    "seconds": 3.375,
+    "bytes": 667,
+    "sha256": "2a4f0fea3856caea3476f9134a0fa8a216c8a46cf73acede0aa60883b0a46383",
+    "record": "spec-examples-resume-1xl_dsan.log"
+  }
+]

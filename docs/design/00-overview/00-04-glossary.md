@@ -228,6 +228,10 @@
 
 | 語 | 原語 | 定義 | 定める章 |
 |---|---|---|---|
+| 篩型 | refinement type | 型に有限の述語を付け、その型の値に条件を課すもの。コアでは `Ty.refined a p` で表す。処理系の表層で提供する構文とは区別する | [コア計算と脱糖](../01-spec/01-12-core-calculus.md#篩を含むコア計算の形式化) |
+| telescope | telescope | 先行する束縛を後続の型から参照できる、型注釈付きの束縛の列。コアの `Tel` は引数の列と終端の結果型・潜在効果を表す | [コア計算と脱糖](../01-spec/01-12-core-calculus.md#篩を含むコア計算の形式化) |
+| 型の正規形 | normal form | コアの型を `Ty.norm` で正規化した結果。`Ty.Normal` はその固定点の判断で、型の整形式とは別である。ソースの整形の正規形とも区別する | [コア計算と脱糖](../01-spec/01-12-core-calculus.md#篩の正規形と制約の読み方) |
+| 強い Kleene の三値 | strong Kleene three-valued logic | 真・偽・評価不能の三結果で And/Or/Not を定める。偽との連言と真との選言は相手が評価不能でも決まる。有限述語の閉じた評価に使い、通常の計算の短絡演算とは区別する | [コア計算と脱糖](../01-spec/01-12-core-calculus.md#閉じた述語の評価と捕捉) |
 | 分岐 | arm | `match … with` の「`case` パターン `->` 本体」の一つ。`handle` の節も同じ形で書く | [代数的データ型とパターンマッチ](../01-spec/01-05-data-types.md) |
 | ブロック式 | block expression | `block … end block` と書く、局所の文列を評価して最後の式の値を返す式。空か末尾が束縛なら Unit。名前の範囲を作り、return の作用先と効果の除去境界は作らない | [構文](../01-spec/01-02-syntax.md#ブロック式) |
 | 第二級の値 | second-class value | 通常の変数への格納・関数からの返却・ラムダやlazyへの捕捉ができない値。第一級の値（first-class value）と対になる語である。Benitoiteの構築器は第二級の値であり、専用の局所bindと直接操作に限って使える | [型システム](../01-spec/01-06-type-system.md)の「関数内の構築器」 |
@@ -346,3 +350,11 @@ Osvaldほかの *Gentrification Gone too Far? Affordable 2nd-Class Values for Fu
 
 - [Stracheyの講義ノート（1967年、2000年の再刊）](https://www.cs.cmu.edu/afs/cs/user/crary/www/819-f09/Strachey67.pdf)
 - [Osvaldほかの論文（OOPSLA 2016）](https://www.cs.purdue.edu/homes/rompf/papers/osvald-oopsla16.pdf)
+
+### 篩を含む形式化の用語の出典
+
+refinement type は [LiquidHaskell の仕様](https://ucsd-progsys.github.io/liquidhaskell/specifications/)の呼び名に従う。日本語の「篩型」は [Erg の公式文書の日本語版](https://erg-lang.org/the-erg-book/JA/type/12_refinement.html)にも用例があり、本プロジェクトの既存の呼び名を用いる。
+
+telescope は [Agda の公式文書](https://agda.readthedocs.io/en/stable/language/telescopes.html)が、先行する変数に後続の型が依存できる束縛の列に用いる語である。本書は原語を用い、`Tel` が終端の結果と効果も持つことは Benitoite の定義として述べる。
+
+強い Kleene の三値は strong Kleene three-valued logic の呼び名を併記する。And/Or/Not の三値表は [PostgreSQL の公式文書](https://www.postgresql.org/docs/17/functions-logical.html)と[日本語版](https://www.postgresql.jp/document/13/html/functions-logical.html)でも確認できる。本プロジェクトの第三の結果は SQL の値 NULL ではなく、述語の評価不能である。01-12 の表を定義とする。

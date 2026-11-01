@@ -1,0 +1,717 @@
+[
+  {
+    "file": "formal/Benitoite/Release/Refinement/Types.lean",
+    "section": "篩を含むコア計算の形式化",
+    "names": [
+      "Ty",
+      "Ty.refined",
+      "Ty.dependentFn",
+      "Tel",
+      "Tel.done",
+      "Tel.param",
+      "TParamDecl",
+      "NamesWF"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/TermSyntax.lean",
+    "section": "篩を含むコア計算の形式化",
+    "names": [
+      "Term",
+      "Pred",
+      "termBind?",
+      "slotBind",
+      "termBind",
+      "Pred.WF"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Context.lean",
+    "section": "篩を含むコア計算の形式化",
+    "names": [
+      "Ty.WF",
+      "Ty.Sorted",
+      "Term.HasSort",
+      "Pred.Sorted",
+      "Ty.Ordinary"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Admissible.lean",
+    "section": "篩を含むコア計算の形式化",
+    "names": [
+      "Ty.Annotation",
+      "SignatureInstance"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Conjunction.lean",
+    "section": "篩の正規形と制約の読み方",
+    "names": [
+      "Pred.conjuncts",
+      "Pred.ofConjuncts",
+      "Pred.conjNorm"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/RefinementNormalForm.lean",
+    "section": "篩の正規形と制約の読み方",
+    "names": [
+      "Ty.core",
+      "Ty.refineNorm",
+      "Ty.refineNorm_assoc"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/FunctionNormalForm.lean",
+    "section": "篩の正規形と制約の読み方",
+    "names": [
+      "FnView",
+      "FnView.toTel",
+      "Tel.fnView?",
+      "Ty.foldFn"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Normalize.lean",
+    "section": "篩の正規形と制約の読み方",
+    "names": [
+      "Ty.norm",
+      "Ty.normTys",
+      "Tel.norm",
+      "Eff.norm",
+      "Ty.Canonical",
+      "Ty.Normal",
+      "Eff.Canonical",
+      "Tel.Normal"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Context.lean",
+    "section": "篩の正規形と制約の読み方",
+    "names": [
+      "rawApply"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Kinds.lean",
+    "section": "篩の正規形と制約の読み方",
+    "names": [
+      "Ty.HasKind",
+      "rawApply_proper"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Admissible.lean",
+    "section": "篩の正規形と制約の読み方",
+    "names": [
+      "SatAll",
+      "Admissible",
+      "PrimitiveAdmissible"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Le.lean",
+    "section": "篩の正規形と制約の読み方",
+    "names": [
+      "Ty.LeQ",
+      "Ty.LeQ.convert",
+      "Ty.LeQ.forget",
+      "Ty.LeQ.introduce",
+      "Ty.LeQ.refine",
+      "TelLe",
+      "TelLe.param",
+      "TelLe.done",
+      "TelClosure",
+      "Eff.Sub",
+      "Eff.Covers"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Typing.lean",
+    "section": "篩の正規形と制約の読み方",
+    "names": [
+      "HasTypeVQ.V_Normal",
+      "HasTypeCQ.C_Normal",
+      "HasTypeVQ.V_Map",
+      "HasTypeVQ.V_Set"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Observation.lean",
+    "section": "閉じた述語の評価と捕捉",
+    "names": [
+      "Term.observe"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Syntax.lean",
+    "section": "篩を含むコア計算の形式化",
+    "names": [
+      "Val.toTerm?"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/ClosedEvaluation.lean",
+    "section": "閉じた述語の評価と捕捉",
+    "names": [
+      "Pred.evalWith",
+      "Pred.evalClosed",
+      "Pred.atomReady",
+      "Pred.ClosedObservable",
+      "Pred.evalWith_sound",
+      "Pred.evalClosed_sound",
+      "Pred.evalClosed_complete"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Logic.lean",
+    "section": "閉じた述語の評価と捕捉",
+    "names": [
+      "Entails",
+      "Entails.closed",
+      "Entails.ground",
+      "Entails.or_elim",
+      "Entails.not_intro",
+      "Entails.cut"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/LogicSound.lean",
+    "section": "閉じた述語の評価と捕捉",
+    "names": [
+      "Entails.sound"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Context/WF.lean",
+    "section": "閉じた述語の評価と捕捉",
+    "names": [
+      "Ctx.outer",
+      "Ctx.Ordered",
+      "Ctx.Regular"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Capture.lean",
+    "section": "閉じた述語の評価と捕捉",
+    "names": [
+      "Capture.env",
+      "Capture.closeTy",
+      "Capture.closeEff",
+      "Capture.closeR",
+      "Capture.extend",
+      "Capture.extendMany"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Typing.lean",
+    "section": "閉じた述語の評価と捕捉",
+    "names": [
+      "CaptureOk",
+      "CaptureOk.mk"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/CapturedFacts.lean",
+    "section": "閉じた述語の評価と捕捉",
+    "names": [
+      "CaptureOk.addEntailed",
+      "CaptureOk.addEvaluated",
+      "CaptureOk.close_entails"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Typing.lean",
+    "section": "条件とパターンからの事実",
+    "names": [
+      "HasTypeCQ.C_If",
+      "HasTypeCQ.C_Match",
+      "HasTypeArmsQ",
+      "HasTypeArmsQ.plain",
+      "HasTypeArmsQ.guarded"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/PathFacts.lean",
+    "section": "条件とパターンからの事実",
+    "names": [
+      "PathLiteral",
+      "PathTest",
+      "pathLiteral?",
+      "patternTest?",
+      "alternativesTest",
+      "matchedTests",
+      "irrefutableField",
+      "excludedTest?",
+      "excludedTests",
+      "pathFacts",
+      "FactsWF"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/StateTyping.lean",
+    "section": "条件とパターンからの事実",
+    "names": [
+      "GuardBodyTy",
+      "GuardBodyTy.mk",
+      "ContTy.K_Guard"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/PathConditions.lean",
+    "section": "条件とパターンからの事実",
+    "names": [
+      "ClosureTy.ite_selected",
+      "StateTyE.if_true",
+      "StateTyE.if_false"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/MatchPaths.lean",
+    "section": "条件とパターンからの事実",
+    "names": [
+      "GuardBodyTy.of_true",
+      "StateTyE.guard_true",
+      "StateTyE.guard_false",
+      "StateTyE.match_start",
+      "StateTyE.match_skip",
+      "StateTyE.match_body_zero",
+      "HasTypeArmsQ.capture_plain"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/MatchFacts.lean",
+    "section": "条件とパターンからの事実",
+    "names": [
+      "MatchFacts.RootShape",
+      "MatchFacts.rootShape_of_typing",
+      "MatchFacts.matched_true",
+      "MatchFacts.excluded_true",
+      "MatchFacts.excluded_paths_true_of_typing"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/AtPrepare.lean",
+    "section": "保持要求と組み込みの遷移",
+    "names": [
+      "groundTy",
+      "groundVal",
+      "AtPrepared.request"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Typing.lean",
+    "section": "保持要求と組み込みの遷移",
+    "names": [
+      "HasTypeVQ.V_CheckedRequest",
+      "CheckedWitness.request"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/AtInput.lean",
+    "section": "保持要求と組み込みの遷移",
+    "names": [
+      "Val.reqTarget_kind"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/AtTyping.lean",
+    "section": "保持要求と組み込みの遷移",
+    "names": [
+      "CheckedWitness.of_prepared_request"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/BuiltinResponse.lean",
+    "section": "保持要求と組み込みの遷移",
+    "names": [
+      "BuiltinArgs",
+      "BuiltinArgs.normalized",
+      "Builtins.ResponseAssumptions"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Semantics.lean",
+    "section": "保持要求と組み込みの遷移",
+    "names": [
+      "Step",
+      "Step.E_Prim",
+      "Step.E_Err",
+      "Step.E_IO",
+      "Step.E_IOErr",
+      "Step.E_Exit"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Step.lean",
+    "section": "保持要求と組み込みの遷移",
+    "names": [
+      "step",
+      "step_prim_val",
+      "step_prim_err",
+      "step_io_val",
+      "step_io_err",
+      "step_io_exit"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/ExternalCheck.lean",
+    "section": "保持要求と組み込みの遷移",
+    "names": [
+      "Outcome.Typed",
+      "ExternalCarrier",
+      "Outcome.Carrier",
+      "externalCheck",
+      "externalCheckedOutcome"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/ExternalResponse.lean",
+    "section": "保持要求と組み込みの遷移",
+    "names": [
+      "ExternalArgs",
+      "Builtins.ExternalAssumptions",
+      "externalReceive"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/ExternalConnection.lean",
+    "section": "保持要求と組み込みの遷移",
+    "names": [
+      "Builtins.ExternalAssumptions.received_value",
+      "Builtins.ExternalAssumptions.receive_no_exit"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/RuntimeSyntax.lean",
+    "section": "篩を含む状態の型付け",
+    "names": [
+      "State",
+      "Frame",
+      "Cell"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Typing.lean",
+    "section": "篩を含む状態の型付け",
+    "names": [
+      "ClosureTy",
+      "ClosureTy.mk",
+      "CaptureLocals",
+      "DependentClosureTy"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/StateTyping.lean",
+    "section": "篩を含む状態の型付け",
+    "names": [
+      "CellOk",
+      "StoreOk",
+      "ContTy",
+      "ContTy.K_Update",
+      "BuiltinOnly",
+      "StateTyE",
+      "StateTy",
+      "CellOk.val_read",
+      "CellOk.val_write"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/ConstraintAssumptions.lean",
+    "section": "篩を含む状態の型付け",
+    "names": [
+      "PrimSig.StoreShape",
+      "PrimSig.PathBasesShape",
+      "Builtins.CoreAssumptions"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/HandlerEffects.lean",
+    "section": "篩を含む状態の型付け",
+    "names": [
+      "Program.EffectsOk",
+      "NoStateHandled",
+      "Program.EffectsOk.noStateHandled",
+      "ContTy.state_end",
+      "ContTy.prepend_releases"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/ReferencePreservation.lean",
+    "section": "篩を含む状態の型付け",
+    "names": [
+      "ReferencePrimitives",
+      "Builtins.CoreAssumptions.reference_primitives",
+      "StateTyE.reference_new_transition",
+      "StateTyE.reference_get_transition",
+      "StateTyE.reference_set_transition",
+      "StateTyE.reference_update_transition"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/LazyPreservation.lean",
+    "section": "篩を含む状態の型付け",
+    "names": [
+      "StateTyE.lazy_transition",
+      "StateTyE.force_done_transition",
+      "StateTyE.force_thunk_transition",
+      "StateTyE.lazy_update_any_cell",
+      "StateTyE.lazy_update_pop_error",
+      "StateTyE.lazy_update_pop_exit"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/DependentBeta.lean",
+    "section": "篩を含む状態の型付け",
+    "names": [
+      "StateTyE.dependent_beta_one",
+      "StateTy.dependent_beta_one"
+    ],
+    "note": "開始の逆転を含まない共通の本体の導出から両状態と遷移を構成"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/CapturedFacts.lean",
+    "section": "篩を含む状態の型付け",
+    "names": [
+      "StateTyE.captured_beta_one",
+      "StateTy.captured_beta_one"
+    ],
+    "note": "開始の逆転を含まない共通の本体の導出から両状態と遷移を構成"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/HandlerPreservation.lean",
+    "section": "篩を含む状態の型付け",
+    "names": [
+      "StateTyE.handler_return_const",
+      "StateTyE.drop_used_const",
+      "StateTyE.resume_used",
+      "StateTyE.resume_const",
+      "StateTyE.drop_rel_const",
+      "StateTyE.esc_drop_rel_const",
+      "StateTyE.err_drop_rel",
+      "StateTyE.exit_drop_rel"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/HandlerOperation.lean",
+    "section": "篩を含む状態の型付け",
+    "names": [
+      "StateTyE.operation_one",
+      "StateTyE.operation_under_guard_false"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Context.lean",
+    "section": "篩の正規形と制約の読み方",
+    "names": [
+      "ProperApply"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/AtSound.lean",
+    "section": "保持要求と組み込みの遷移",
+    "names": [
+      "checkAt.absolute"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/ScopeSyntax.lean",
+    "section": "篩を含むコア計算の形式化",
+    "names": [
+      "PathBase",
+      "PathEnv",
+      "RangeExpr",
+      "RangeIx"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Atoms.lean",
+    "section": "篩を含むコア計算の形式化",
+    "names": [
+      "RangeExpr.Covers",
+      "RangeIx.Covers",
+      "Atom.Covers"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Typing.lean",
+    "section": "篩を含むコア計算の形式化",
+    "names": [
+      "HasTypeVQ.V_Refine",
+      "HasTypeCQ.C_DependentApp",
+      "HasTypeTelArgsQ",
+      "TelBodyTy"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/External.lean",
+    "section": "篩を含むコア計算の形式化",
+    "names": [
+      "ExternalValueType",
+      "ExternalSignature.WF",
+      "Program.ExternalWF",
+      "ExternalUseAt"
+    ],
+    "note": ""
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Le.lean",
+    "section": "篩の正規形と制約の読み方",
+    "names": [
+      "Ty.LeQ.scoped",
+      "Ty.LeQ.scoped_forget"
+    ],
+    "note": "範囲付きの型に関する二規則"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Typing.lean",
+    "section": "保持要求と組み込みの遷移",
+    "names": [
+      "HasTypeCQ.C_Use",
+      "HasTypeCQ.C_Handle_Fail",
+      "HasTypeCQ.C_IssuePathBases",
+      "HasTypeCQ.C_CheckAt",
+      "AtCallAdmissible",
+      "AtCallAdmissible.mk"
+    ],
+    "note": "指定した計算規則と At の判断"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/HandlerContracts.lean",
+    "section": "保持要求と組み込みの遷移",
+    "names": [
+      "Eff.ClauseRangeIs",
+      "ClauseIxOk",
+      "ClauseSig",
+      "OpSig.continuation",
+      "OpSig.context",
+      "failureContext"
+    ],
+    "note": "節の署名と文脈"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/Semantics.lean",
+    "section": "保持要求と組み込みの遷移",
+    "names": [
+      "Step.E_PathBasesApply",
+      "Step.E_IssuePathBases",
+      "Step.E_AtOk",
+      "Step.E_AtError",
+      "Step.E_AtPrepareError",
+      "Step.E_OpPrim",
+      "Event.Covered"
+    ],
+    "note": "指定した六遷移と事象の被覆の全定義"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/StateTyping.lean",
+    "section": "篩を含む状態の型付け",
+    "names": [
+      "ContTy.K_Empty",
+      "ContTy.K_Let",
+      "ContTy.K_Mark",
+      "ContTy.K_Release",
+      "ContTy.K_Handle",
+      "ContTy.K_Handle_Fail",
+      "ContTy.K_Drop",
+      "ContTy.K_Sub"
+    ],
+    "note": "ContTy の全10構成子の写し"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/ConstraintAssumptions.lean",
+    "section": "保持要求と組み込みの遷移",
+    "names": [
+      "Builtins.ShapeOk",
+      "Builtins.CoreAssumptions.io_op",
+      "PrimSig.PathBasesShape.membership"
+    ],
+    "note": "旧 ShapeOk の復帰、PathBases の所属を追加"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/BuiltinEffects.lean",
+    "section": "保持要求と組み込みの遷移",
+    "names": [
+      "Builtins.ShapeOk.operation",
+      "Builtins.CoreAssumptions.io_event_covered",
+      "Builtins.CoreAssumptions.io_transition_covered",
+      "Builtins.CoreAssumptions.pathBases_event_covered",
+      "Builtins.CoreAssumptions.pathBases_transition_covered",
+      "Program.EffectsOk.operation_not_handled",
+      "Builtins.CoreAssumptions.pathBases_not_handled"
+    ],
+    "note": "宣言の効果による実際の事象の被覆。継続末尾への全合成は含まない"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/RuntimeSyntax.lean",
+    "section": "保持要求と組み込みの遷移",
+    "names": [
+      "Event",
+      "Event.pathBases"
+    ],
+    "note": "事象の全3構成子の写し"
+  },
+  {
+    "file": "formal/Benitoite/Release/Refinement/ConstraintAssumptions.lean",
+    "section": "篩を含む状態の型付け",
+    "names": [
+      "Builtins.CoreAssumptions.sat_unconstrained",
+      "Builtins.CoreAssumptions.admits_sat",
+      "Builtins.CoreAssumptions.release_exists"
+    ],
+    "note": "旧の3欄を新しい判断へ移す。Ground/Adequate や別の個数の前提を追加しない"
+  }
+]

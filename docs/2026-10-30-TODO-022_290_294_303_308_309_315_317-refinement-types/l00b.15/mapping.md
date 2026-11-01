@@ -1,0 +1,90 @@
+# L00b.15: Lean と 01-12 の照合
+
+B_WORK: `8819025a0a35c9bac7e78fb97c7dff00829228db`。表の名前は `Benitoite.Release.Refinement.` を先頭に付ける。相互の判断を定義するファイルと、その局所定理を置くファイルを分けた。各名前の存在は [mapping.lean](mapping.lean) の `#check`、定義を置くモジュールは [mapping-origins.lean](mapping-origins.lean) の267名の照合、公理依存は [axioms.lean](axioms.lean) で実際に確かめる。内容の一致は定義・規則を読んだ照合であり、名前の検査だけを写しの正しさの証明としない。
+
+| Lean の定義・規則・局所定理 | ファイル | 01-12 の見出し | 限定・注記 |
+|---|---|---|---|
+| `Ty`・`Ty.refined`・`Ty.dependentFn`・`Tel`・`Tel.done`・`Tel.param`・`TParamDecl`・`NamesWF` | [Types.lean](../../../formal/Benitoite/Release/Refinement/Types.lean) | [篩を含むコア計算の形式化](../../design/01-spec/01-12-core-calculus.md#篩を含むコア計算の形式化) |  |
+| `Term`・`Pred`・`termBind?`・`slotBind`・`termBind`・`Pred.WF` | [TermSyntax.lean](../../../formal/Benitoite/Release/Refinement/TermSyntax.lean) | [篩を含むコア計算の形式化](../../design/01-spec/01-12-core-calculus.md#篩を含むコア計算の形式化) |  |
+| `Ty.WF`・`Ty.Sorted`・`Term.HasSort`・`Pred.Sorted`・`Ty.Ordinary` | [Context.lean](../../../formal/Benitoite/Release/Refinement/Context.lean) | [篩を含むコア計算の形式化](../../design/01-spec/01-12-core-calculus.md#篩を含むコア計算の形式化) |  |
+| `Ty.Annotation`・`SignatureInstance` | [Admissible.lean](../../../formal/Benitoite/Release/Refinement/Admissible.lean) | [篩を含むコア計算の形式化](../../design/01-spec/01-12-core-calculus.md#篩を含むコア計算の形式化) |  |
+| `Pred.conjuncts`・`Pred.ofConjuncts`・`Pred.conjNorm` | [Conjunction.lean](../../../formal/Benitoite/Release/Refinement/Conjunction.lean) | [篩の正規形と制約の読み方](../../design/01-spec/01-12-core-calculus.md#篩の正規形と制約の読み方) |  |
+| `Ty.core`・`Ty.refineNorm`・`Ty.refineNorm_assoc` | [RefinementNormalForm.lean](../../../formal/Benitoite/Release/Refinement/RefinementNormalForm.lean) | [篩の正規形と制約の読み方](../../design/01-spec/01-12-core-calculus.md#篩の正規形と制約の読み方) |  |
+| `FnView`・`FnView.toTel`・`Tel.fnView?`・`Ty.foldFn` | [FunctionNormalForm.lean](../../../formal/Benitoite/Release/Refinement/FunctionNormalForm.lean) | [篩の正規形と制約の読み方](../../design/01-spec/01-12-core-calculus.md#篩の正規形と制約の読み方) |  |
+| `Ty.norm`・`Ty.normTys`・`Tel.norm`・`Eff.norm`・`Ty.Canonical`・`Ty.Normal`・`Eff.Canonical`・`Tel.Normal` | [Normalize.lean](../../../formal/Benitoite/Release/Refinement/Normalize.lean) | [篩の正規形と制約の読み方](../../design/01-spec/01-12-core-calculus.md#篩の正規形と制約の読み方) |  |
+| `rawApply` | [Context.lean](../../../formal/Benitoite/Release/Refinement/Context.lean) | [篩の正規形と制約の読み方](../../design/01-spec/01-12-core-calculus.md#篩の正規形と制約の読み方) |  |
+| `Ty.HasKind`・`rawApply_proper` | [Kinds.lean](../../../formal/Benitoite/Release/Refinement/Kinds.lean) | [篩の正規形と制約の読み方](../../design/01-spec/01-12-core-calculus.md#篩の正規形と制約の読み方) |  |
+| `SatAll`・`Admissible`・`PrimitiveAdmissible` | [Admissible.lean](../../../formal/Benitoite/Release/Refinement/Admissible.lean) | [篩の正規形と制約の読み方](../../design/01-spec/01-12-core-calculus.md#篩の正規形と制約の読み方) |  |
+| `Ty.LeQ`・`Ty.LeQ.convert`・`Ty.LeQ.forget`・`Ty.LeQ.introduce`・`Ty.LeQ.refine`・`TelLe`・`TelLe.param`・`TelLe.done`・`TelClosure`・`Eff.Sub`・`Eff.Covers` | [Le.lean](../../../formal/Benitoite/Release/Refinement/Le.lean) | [篩の正規形と制約の読み方](../../design/01-spec/01-12-core-calculus.md#篩の正規形と制約の読み方) |  |
+| `HasTypeVQ.V_Normal`・`HasTypeCQ.C_Normal`・`HasTypeVQ.V_Map`・`HasTypeVQ.V_Set` | [Typing.lean](../../../formal/Benitoite/Release/Refinement/Typing.lean) | [篩の正規形と制約の読み方](../../design/01-spec/01-12-core-calculus.md#篩の正規形と制約の読み方) |  |
+| `Term.observe` | [Observation.lean](../../../formal/Benitoite/Release/Refinement/Observation.lean) | [閉じた述語の評価と捕捉](../../design/01-spec/01-12-core-calculus.md#閉じた述語の評価と捕捉) |  |
+| `Val.toTerm?` | [Syntax.lean](../../../formal/Benitoite/Release/Refinement/Syntax.lean) | [篩を含むコア計算の形式化](../../design/01-spec/01-12-core-calculus.md#篩を含むコア計算の形式化) |  |
+| `Pred.evalWith`・`Pred.evalClosed`・`Pred.atomReady`・`Pred.ClosedObservable`・`Pred.evalWith_sound`・`Pred.evalClosed_sound`・`Pred.evalClosed_complete` | [ClosedEvaluation.lean](../../../formal/Benitoite/Release/Refinement/ClosedEvaluation.lean) | [閉じた述語の評価と捕捉](../../design/01-spec/01-12-core-calculus.md#閉じた述語の評価と捕捉) |  |
+| `Entails`・`Entails.closed`・`Entails.ground`・`Entails.or_elim`・`Entails.not_intro`・`Entails.cut` | [Logic.lean](../../../formal/Benitoite/Release/Refinement/Logic.lean) | [閉じた述語の評価と捕捉](../../design/01-spec/01-12-core-calculus.md#閉じた述語の評価と捕捉) |  |
+| `Entails.sound` | [LogicSound.lean](../../../formal/Benitoite/Release/Refinement/LogicSound.lean) | [閉じた述語の評価と捕捉](../../design/01-spec/01-12-core-calculus.md#閉じた述語の評価と捕捉) |  |
+| `Ctx.outer`・`Ctx.Ordered`・`Ctx.Regular` | [WF.lean](../../../formal/Benitoite/Release/Refinement/Context/WF.lean) | [閉じた述語の評価と捕捉](../../design/01-spec/01-12-core-calculus.md#閉じた述語の評価と捕捉) |  |
+| `Capture.env`・`Capture.closeTy`・`Capture.closeEff`・`Capture.closeR`・`Capture.extend`・`Capture.extendMany` | [Capture.lean](../../../formal/Benitoite/Release/Refinement/Capture.lean) | [閉じた述語の評価と捕捉](../../design/01-spec/01-12-core-calculus.md#閉じた述語の評価と捕捉) |  |
+| `CaptureOk`・`CaptureOk.mk` | [Typing.lean](../../../formal/Benitoite/Release/Refinement/Typing.lean) | [閉じた述語の評価と捕捉](../../design/01-spec/01-12-core-calculus.md#閉じた述語の評価と捕捉) |  |
+| `CaptureOk.addEntailed`・`CaptureOk.addEvaluated`・`CaptureOk.close_entails` | [CapturedFacts.lean](../../../formal/Benitoite/Release/Refinement/CapturedFacts.lean) | [閉じた述語の評価と捕捉](../../design/01-spec/01-12-core-calculus.md#閉じた述語の評価と捕捉) |  |
+| `HasTypeCQ.C_If`・`HasTypeCQ.C_Match`・`HasTypeArmsQ`・`HasTypeArmsQ.plain`・`HasTypeArmsQ.guarded` | [Typing.lean](../../../formal/Benitoite/Release/Refinement/Typing.lean) | [条件とパターンからの事実](../../design/01-spec/01-12-core-calculus.md#条件とパターンからの事実) |  |
+| `PathLiteral`・`PathTest`・`pathLiteral?`・`patternTest?`・`alternativesTest`・`matchedTests`・`irrefutableField`・`excludedTest?`・`excludedTests`・`pathFacts`・`FactsWF` | [PathFacts.lean](../../../formal/Benitoite/Release/Refinement/PathFacts.lean) | [条件とパターンからの事実](../../design/01-spec/01-12-core-calculus.md#条件とパターンからの事実) |  |
+| `GuardBodyTy`・`GuardBodyTy.mk`・`ContTy.K_Guard` | [StateTyping.lean](../../../formal/Benitoite/Release/Refinement/StateTyping.lean) | [条件とパターンからの事実](../../design/01-spec/01-12-core-calculus.md#条件とパターンからの事実) |  |
+| `ClosureTy.ite_selected`・`StateTyE.if_true`・`StateTyE.if_false` | [PathConditions.lean](../../../formal/Benitoite/Release/Refinement/PathConditions.lean) | [条件とパターンからの事実](../../design/01-spec/01-12-core-calculus.md#条件とパターンからの事実) |  |
+| `GuardBodyTy.of_true`・`StateTyE.guard_true`・`StateTyE.guard_false`・`StateTyE.match_start`・`StateTyE.match_skip`・`StateTyE.match_body_zero`・`HasTypeArmsQ.capture_plain` | [MatchPaths.lean](../../../formal/Benitoite/Release/Refinement/MatchPaths.lean) | [条件とパターンからの事実](../../design/01-spec/01-12-core-calculus.md#条件とパターンからの事実) |  |
+| `MatchFacts.RootShape`・`MatchFacts.rootShape_of_typing`・`MatchFacts.matched_true`・`MatchFacts.excluded_true`・`MatchFacts.excluded_paths_true_of_typing` | [MatchFacts.lean](../../../formal/Benitoite/Release/Refinement/MatchFacts.lean) | [条件とパターンからの事実](../../design/01-spec/01-12-core-calculus.md#条件とパターンからの事実) |  |
+| `groundTy`・`groundVal`・`AtPrepared.request` | [AtPrepare.lean](../../../formal/Benitoite/Release/Refinement/AtPrepare.lean) | [保持要求と組み込みの遷移](../../design/01-spec/01-12-core-calculus.md#保持要求と組み込みの遷移) |  |
+| `HasTypeVQ.V_CheckedRequest`・`CheckedWitness.request` | [Typing.lean](../../../formal/Benitoite/Release/Refinement/Typing.lean) | [保持要求と組み込みの遷移](../../design/01-spec/01-12-core-calculus.md#保持要求と組み込みの遷移) |  |
+| `Val.reqTarget_kind` | [AtInput.lean](../../../formal/Benitoite/Release/Refinement/AtInput.lean) | [保持要求と組み込みの遷移](../../design/01-spec/01-12-core-calculus.md#保持要求と組み込みの遷移) |  |
+| `CheckedWitness.of_prepared_request` | [AtTyping.lean](../../../formal/Benitoite/Release/Refinement/AtTyping.lean) | [保持要求と組み込みの遷移](../../design/01-spec/01-12-core-calculus.md#保持要求と組み込みの遷移) |  |
+| `BuiltinArgs`・`BuiltinArgs.normalized`・`Builtins.ResponseAssumptions` | [BuiltinResponse.lean](../../../formal/Benitoite/Release/Refinement/BuiltinResponse.lean) | [保持要求と組み込みの遷移](../../design/01-spec/01-12-core-calculus.md#保持要求と組み込みの遷移) |  |
+| `Step`・`Step.E_Prim`・`Step.E_Err`・`Step.E_IO`・`Step.E_IOErr`・`Step.E_Exit` | [Semantics.lean](../../../formal/Benitoite/Release/Refinement/Semantics.lean) | [保持要求と組み込みの遷移](../../design/01-spec/01-12-core-calculus.md#保持要求と組み込みの遷移) |  |
+| `step`・`step_prim_val`・`step_prim_err`・`step_io_val`・`step_io_err`・`step_io_exit` | [Step.lean](../../../formal/Benitoite/Release/Refinement/Step.lean) | [保持要求と組み込みの遷移](../../design/01-spec/01-12-core-calculus.md#保持要求と組み込みの遷移) |  |
+| `Outcome.Typed`・`ExternalCarrier`・`Outcome.Carrier`・`externalCheck`・`externalCheckedOutcome` | [ExternalCheck.lean](../../../formal/Benitoite/Release/Refinement/ExternalCheck.lean) | [保持要求と組み込みの遷移](../../design/01-spec/01-12-core-calculus.md#保持要求と組み込みの遷移) |  |
+| `ExternalArgs`・`Builtins.ExternalAssumptions`・`externalReceive` | [ExternalResponse.lean](../../../formal/Benitoite/Release/Refinement/ExternalResponse.lean) | [保持要求と組み込みの遷移](../../design/01-spec/01-12-core-calculus.md#保持要求と組み込みの遷移) |  |
+| `Builtins.ExternalAssumptions.received_value`・`Builtins.ExternalAssumptions.receive_no_exit` | [ExternalConnection.lean](../../../formal/Benitoite/Release/Refinement/ExternalConnection.lean) | [保持要求と組み込みの遷移](../../design/01-spec/01-12-core-calculus.md#保持要求と組み込みの遷移) |  |
+| `State`・`Frame`・`Cell` | [RuntimeSyntax.lean](../../../formal/Benitoite/Release/Refinement/RuntimeSyntax.lean) | [篩を含む状態の型付け](../../design/01-spec/01-12-core-calculus.md#篩を含む状態の型付け) |  |
+| `ClosureTy`・`ClosureTy.mk`・`CaptureLocals`・`DependentClosureTy` | [Typing.lean](../../../formal/Benitoite/Release/Refinement/Typing.lean) | [篩を含む状態の型付け](../../design/01-spec/01-12-core-calculus.md#篩を含む状態の型付け) |  |
+| `CellOk`・`StoreOk`・`ContTy`・`ContTy.K_Update`・`BuiltinOnly`・`StateTyE`・`StateTy`・`CellOk.val_read`・`CellOk.val_write` | [StateTyping.lean](../../../formal/Benitoite/Release/Refinement/StateTyping.lean) | [篩を含む状態の型付け](../../design/01-spec/01-12-core-calculus.md#篩を含む状態の型付け) |  |
+| `PrimSig.StoreShape`・`PrimSig.PathBasesShape`・`Builtins.CoreAssumptions` | [ConstraintAssumptions.lean](../../../formal/Benitoite/Release/Refinement/ConstraintAssumptions.lean) | [篩を含む状態の型付け](../../design/01-spec/01-12-core-calculus.md#篩を含む状態の型付け) |  |
+| `Program.EffectsOk`・`NoStateHandled`・`Program.EffectsOk.noStateHandled`・`ContTy.state_end`・`ContTy.prepend_releases` | [HandlerEffects.lean](../../../formal/Benitoite/Release/Refinement/HandlerEffects.lean) | [篩を含む状態の型付け](../../design/01-spec/01-12-core-calculus.md#篩を含む状態の型付け) |  |
+| `ReferencePrimitives`・`Builtins.CoreAssumptions.reference_primitives`・`StateTyE.reference_new_transition`・`StateTyE.reference_get_transition`・`StateTyE.reference_set_transition`・`StateTyE.reference_update_transition` | [ReferencePreservation.lean](../../../formal/Benitoite/Release/Refinement/ReferencePreservation.lean) | [篩を含む状態の型付け](../../design/01-spec/01-12-core-calculus.md#篩を含む状態の型付け) |  |
+| `StateTyE.lazy_transition`・`StateTyE.force_done_transition`・`StateTyE.force_thunk_transition`・`StateTyE.lazy_update_any_cell`・`StateTyE.lazy_update_pop_error`・`StateTyE.lazy_update_pop_exit` | [LazyPreservation.lean](../../../formal/Benitoite/Release/Refinement/LazyPreservation.lean) | [篩を含む状態の型付け](../../design/01-spec/01-12-core-calculus.md#篩を含む状態の型付け) |  |
+| `StateTyE.dependent_beta_one`・`StateTy.dependent_beta_one` | [DependentBeta.lean](../../../formal/Benitoite/Release/Refinement/DependentBeta.lean) | [篩を含む状態の型付け](../../design/01-spec/01-12-core-calculus.md#篩を含む状態の型付け) | 開始の逆転を含まない共通の本体の導出から両状態と遷移を構成 |
+| `StateTyE.captured_beta_one`・`StateTy.captured_beta_one` | [CapturedFacts.lean](../../../formal/Benitoite/Release/Refinement/CapturedFacts.lean) | [篩を含む状態の型付け](../../design/01-spec/01-12-core-calculus.md#篩を含む状態の型付け) | 開始の逆転を含まない共通の本体の導出から両状態と遷移を構成 |
+| `StateTyE.handler_return_const`・`StateTyE.drop_used_const`・`StateTyE.resume_used`・`StateTyE.resume_const`・`StateTyE.drop_rel_const`・`StateTyE.esc_drop_rel_const`・`StateTyE.err_drop_rel`・`StateTyE.exit_drop_rel` | [HandlerPreservation.lean](../../../formal/Benitoite/Release/Refinement/HandlerPreservation.lean) | [篩を含む状態の型付け](../../design/01-spec/01-12-core-calculus.md#篩を含む状態の型付け) |  |
+| `StateTyE.operation_one`・`StateTyE.operation_under_guard_false` | [HandlerOperation.lean](../../../formal/Benitoite/Release/Refinement/HandlerOperation.lean) | [篩を含む状態の型付け](../../design/01-spec/01-12-core-calculus.md#篩を含む状態の型付け) |  |
+| `ProperApply` | [Context.lean](../../../formal/Benitoite/Release/Refinement/Context.lean) | [篩の正規形と制約の読み方](../../design/01-spec/01-12-core-calculus.md#篩の正規形と制約の読み方) |  |
+| `checkAt.absolute` | [AtSound.lean](../../../formal/Benitoite/Release/Refinement/AtSound.lean) | [保持要求と組み込みの遷移](../../design/01-spec/01-12-core-calculus.md#保持要求と組み込みの遷移) |  |
+| `PathBase`・`PathEnv`・`RangeExpr`・`RangeIx` | [ScopeSyntax.lean](../../../formal/Benitoite/Release/Refinement/ScopeSyntax.lean) | [篩を含むコア計算の形式化](../../design/01-spec/01-12-core-calculus.md#篩を含むコア計算の形式化) |  |
+| `RangeExpr.Covers`・`RangeIx.Covers`・`Atom.Covers` | [Atoms.lean](../../../formal/Benitoite/Release/Refinement/Atoms.lean) | [篩を含むコア計算の形式化](../../design/01-spec/01-12-core-calculus.md#篩を含むコア計算の形式化) |  |
+| `HasTypeVQ.V_Refine`・`HasTypeCQ.C_DependentApp`・`HasTypeTelArgsQ`・`TelBodyTy` | [Typing.lean](../../../formal/Benitoite/Release/Refinement/Typing.lean) | [篩を含むコア計算の形式化](../../design/01-spec/01-12-core-calculus.md#篩を含むコア計算の形式化) |  |
+| `ExternalValueType`・`ExternalSignature.WF`・`Program.ExternalWF`・`ExternalUseAt` | [External.lean](../../../formal/Benitoite/Release/Refinement/External.lean) | [篩を含むコア計算の形式化](../../design/01-spec/01-12-core-calculus.md#篩を含むコア計算の形式化) |  |
+| `Ty.LeQ.scoped`・`Ty.LeQ.scoped_forget` | [Le.lean](../../../formal/Benitoite/Release/Refinement/Le.lean) | [篩の正規形と制約の読み方](../../design/01-spec/01-12-core-calculus.md#篩の正規形と制約の読み方) | 範囲付きの型に関する二規則 |
+| `HasTypeCQ.C_Use`・`HasTypeCQ.C_Handle_Fail`・`HasTypeCQ.C_IssuePathBases`・`HasTypeCQ.C_CheckAt`・`AtCallAdmissible`・`AtCallAdmissible.mk` | [Typing.lean](../../../formal/Benitoite/Release/Refinement/Typing.lean) | [保持要求と組み込みの遷移](../../design/01-spec/01-12-core-calculus.md#保持要求と組み込みの遷移) | 指定した計算規則と At の判断 |
+| `Eff.ClauseRangeIs`・`ClauseIxOk`・`ClauseSig`・`OpSig.continuation`・`OpSig.context`・`failureContext` | [HandlerContracts.lean](../../../formal/Benitoite/Release/Refinement/HandlerContracts.lean) | [保持要求と組み込みの遷移](../../design/01-spec/01-12-core-calculus.md#保持要求と組み込みの遷移) | 節の署名と文脈 |
+| `Step.E_PathBasesApply`・`Step.E_IssuePathBases`・`Step.E_AtOk`・`Step.E_AtError`・`Step.E_AtPrepareError`・`Step.E_OpPrim`・`Event.Covered` | [Semantics.lean](../../../formal/Benitoite/Release/Refinement/Semantics.lean) | [保持要求と組み込みの遷移](../../design/01-spec/01-12-core-calculus.md#保持要求と組み込みの遷移) | 指定した六遷移と事象の被覆の全定義 |
+| `ContTy.K_Empty`・`ContTy.K_Let`・`ContTy.K_Mark`・`ContTy.K_Release`・`ContTy.K_Handle`・`ContTy.K_Handle_Fail`・`ContTy.K_Drop`・`ContTy.K_Sub` | [StateTyping.lean](../../../formal/Benitoite/Release/Refinement/StateTyping.lean) | [篩を含む状態の型付け](../../design/01-spec/01-12-core-calculus.md#篩を含む状態の型付け) | ContTy の全10構成子の写し |
+| `Builtins.ShapeOk`・`Builtins.CoreAssumptions.io_op`・`PrimSig.PathBasesShape.membership` | [ConstraintAssumptions.lean](../../../formal/Benitoite/Release/Refinement/ConstraintAssumptions.lean) | [保持要求と組み込みの遷移](../../design/01-spec/01-12-core-calculus.md#保持要求と組み込みの遷移) | 旧 ShapeOk の復帰、PathBases の所属を追加 |
+| `Builtins.ShapeOk.operation`・`Builtins.CoreAssumptions.io_event_covered`・`Builtins.CoreAssumptions.io_transition_covered`・`Builtins.CoreAssumptions.pathBases_event_covered`・`Builtins.CoreAssumptions.pathBases_transition_covered`・`Program.EffectsOk.operation_not_handled`・`Builtins.CoreAssumptions.pathBases_not_handled` | [BuiltinEffects.lean](../../../formal/Benitoite/Release/Refinement/BuiltinEffects.lean) | [保持要求と組み込みの遷移](../../design/01-spec/01-12-core-calculus.md#保持要求と組み込みの遷移) | 宣言の効果による実際の事象の被覆。継続末尾への全合成は含まない |
+
+| `Event`・`Event.pathBases` | [RuntimeSyntax.lean](../../../formal/Benitoite/Release/Refinement/RuntimeSyntax.lean) | [保持要求と組み込みの遷移](../../design/01-spec/01-12-core-calculus.md#保持要求と組み込みの遷移) | 事象の全3構成子の写し |
+
+| `Builtins.CoreAssumptions.sat_unconstrained`・`Builtins.CoreAssumptions.admits_sat`・`Builtins.CoreAssumptions.release_exists` | [ConstraintAssumptions.lean](../../../formal/Benitoite/Release/Refinement/ConstraintAssumptions.lean) | [篩を含む状態の型付け](../../design/01-spec/01-12-core-calculus.md#篩を含む状態の型付け) | 旧の3欄を新しい判断へ移す。Ground/Adequate や別の個数の前提を追加しない |
+
+## 共有層と既存の規則の訂正
+
+| 対象 | 正の定義 | 01-12 の見出しと処置 |
+|---|---|---|
+| Integer64Value、min64/max64、IntKind、IntegerValue、Interval の領域 | Shared/Integer.lean、Shared/Interval.lean。旧の型との対応は Interval/TypeAdapter.lean | 「整数の閉区間の領域」の出典を更新。Interval/Domain.lean は互換入口 |
+| ValueApprox、FlowApprox、EvalResult、NormalMem/ReturnedMem/ResultMem | Shared/Approximation.lean。旧/新の値の adapter は Release/ApproxAdapter.lean と Refinement/ApproxAdapter.lean | 新旧対照の theorems.md に範囲を記録。旧区間の正常値の定理を returned/failed まで拡張していない |
+| C-Handle | Release/Typing.lean と Refinement/Typing.lean の HasTypeCQ.C_Handle | 「ハンドラ」の独立の Eff.WF(ε) を除き、表層の cons の条件と区別した |
+
+## 定理の範囲
+
+前表の状態の補題は、01-12 の「篩を含む状態の型付け」の定義を使う代表の証拠である。全状態の主定理の言明は設計書へ追加していない。分類・残り・予定の新量化は [theorems.md](theorems.md) にある。旧の五主定理は Release/Theorems.lean にあり、A-L の入力から除いていない。
+
+## 再レビューの正例と残る補題
+
+boundary.lean の Boundary15Full.assumptions は、untargeted・single・PathBases・get/set の表について追加3欄も含む CoreAssumptions を構成する。single_shape は単一対象の形、core_nonempty は全欄の前提の存在を示す。これらは改造内の境界の例で、01-12 の本番の一般定理には数えない。
+
+旧 ShapeOk.inst_eff_mem 相当は本番未追加で、theorems.md の G05・L20 の義務である。上表の s.eff による局所の被覆を、BuiltinArgs の具体化後の e による被覆と同一視しない。

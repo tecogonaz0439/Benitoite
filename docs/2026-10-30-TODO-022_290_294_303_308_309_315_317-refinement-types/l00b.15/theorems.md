@@ -1,0 +1,234 @@
+# L00b.15: 主な定理の新旧対照と O160 の判断の入力
+
+2026-11-01。B_WORK は `8819025a0a35c9bac7e78fb97c7dff00829228db`、指定ブランチは `m014/l00b.15` である。git の照合・操作はしていない。本書の「旧」は `Benitoite.Release`、「新」は `Benitoite.Release.Refinement` を指す。新しい全状態の定理の予定を、Lean の既存の宣言と区別する。定義・規則の写しは [mapping.md](mapping.md)、実行した検査は [results.md](results.md) にある。
+
+## 主な定理と量化の新旧
+
+旧の五主定理の正は `formal/Benitoite/Release/Theorems.lean`、内部の固定 Eb の保存は `Release/Lemmas/PresMain.lean` である。旧の前提は `hwf : P.WellFormed`、`hwt : P.WellTyped B`、`hdecl : P.EffectsOk B`、`hb : B.CoreAssumptions P` を区別する。旧 `Builtins.Assumptions` は CoreAssumptions と TargetAgreement の両方を含むが、五主定理は core の射影だけを使う。
+
+| 性質 | 旧の実際の言明・前提 | 計画済みの新しい量化・保持する結論 | L00b 末の証拠と残る担当 |
+|---|---|---|---|
+| 保存・型安全 | hwf/hwt/hdecl/hb。任意の s, ev, s' で `StateTy P B s → Step P B s ev s' → StateTy P B s'`。preservationE は固定 Eb | 新しい P/B/型付け・状態・遷移で同じ形を述べ、一実行の σ を固定する。保存は `StateTyE P B σ Eb` の同じ Eb、継続の同じ最終結果の契約へ戻す。篩付きの結果を carrier のみに弱めない | 新 StateTyE/StateTy と代表はある。新 Program.WellTyped と全 preservation はない。L20/L40 の葉、L70 の全合成 |
+| 進行 | hwt/hdecl/hb。型付き状態は Final 又は `∃ ev s', Step …` | 新しい閉包・ストア・篩・checkedAt・外部・PathBases を含むすべての型付き状態。正常返却・error・exit の終端を区別し、正常終了や停止性は要求しない | canonical forms、Inhabits と解放応答の存在の進行への接続が残る。L20/L40→L70 |
+| 実行関数の健全性 | hb、oracle/rel/fresh の選択が応答関係・空き場所に適合すること、StateTy。`step … = some (ev,s') → Step … ev s'` | 固定 σ と `ExternalOracle` を加え、IO・外部応答・解放の選択と fresh を明示する。型/行は遷移と同じ正規形で渡す。逆方向の完全性を追加しない | 新 step と Step はある。五つの組み込み選択の局所補題と外部の代表がある。全 step_sound は L20/L70 |
+| エフェクトの健全性 | hwf/hwt/hdecl/hb。閉じた m の型 `a ! empty` と ClosedNoEffVars。空ストア・空継続から任意の到達状態で、事象の遷移も UnhandledOp もない | 新 HasTypeC/ClosureTy と空捕捉の開始から、固定 σ の任意の有限実行。型付き入力・保持値・篩・外部の応答を全称量化する。pathBases も事象に含め、Process.Environment で覆う | Event.Covered.pathBases の定義・局所補題はあるが、全 effect_soundness はない。L20/L50/L60 の葉→L70 |
+| ラムダ名の前提を外す系 | effect_soundness_noLamNames は ClosedNoEffVars を VarsInNoLamNames に替え、型付けから名前の整合を得る | 依存列・捕捉と名前の整合を証明側で供給し、呼出し側へ未証明の正則性を渡さない | 旧定理を import に残す。新しい系は未証明、L70 |
+| 対象の健全性 | TargetAgreement と、許可・観測の被覆の条件を core の条件と分ける | σ、記号付き範囲、保存した対象/要求/端点を含む同じ応答と観測を扱う。範囲付き値を Top へ広げても保持値を捨てない | SnapshotMem.current、CheckedWitness、At の準備と同じ端点の補題まで。全到達先・全観測の合成は L50/L70 |
+| 脱糖・表層・交換 | 旧 Surface の適格なプログラムから旧 Program.WellTyped と範囲条件、純粋 main の系 | 新しい篩付きの型・結果・効果を保つ。旧導出の埋め込みは表現可能性・対象保持・宣言の kind 表を前提とする片方向。F3・変性・範囲共変で増えた受理の全面同値は要求しない | 構文の embed と一部の補題だけで全埋め込みとしない。L10/L20、表層・交換・切替は L70/R50 |
+| 区間と正常/return/失敗の所属 | 旧の中心定理は正常値と警告の健全性。returned と failed の全所属を結論しない | Shared.FlowApprox の NormalMem/ReturnedMem/ResultMem を分け、返却値を normal へ混ぜない。任意の failed の所属は旧解析からは移せない | adapter の定義と正常の移送まで。実解析の写しは L10、独立評価との意味の接続・returned/failed の条件は L20/L40（O169）、全体は L70 |
+
+新しい Program.WellTyped は予約した名前であり、現時点で Lean に宣言していない。上表は存在する新定理の完全署名ではなく、承認済みの量化を後段が具体化するための対照である。一般の新主定理に代表だけの Normal/pure/定数/一引数/空の辞書の条件を残すこと、σ ごとに B を選ぶことは認めない。
+
+σ は `PathEnv`、可変のストアは μ と書く。現在の StateTy は `σ.Valid ∧ ∃ Eb, BuiltinOnly … Eb ∧ StateTyE …` であり、各遷移は同じ σ を受け取る。必要な束縛の定義は PreparationNode.Reachable→PathEnv.Required→PathEnv.Ready、開始の証拠は InitialPrepared である。Ready は StateTyE の欄にはない。現在の代表に Ready が不要なことを、必要束縛の全準備の完成と数えない。開始で必要な準備、以後の保持と全対象の所属への接続は L50/L70 が証明する。全状態に独立の Ready を足して保存の結論を狭める案を、この対照で採用してはいない。
+
+## δ・IO・解放の型付き入力の対照
+
+旧の型付き実引数は `HasTypeVs … ws ((sg.inst rs).params.map (Ty.subst ts es))` で、結果は同じ置換による ret である。新しい `BuiltinArgs P B Ψ b sg ts es rs ws a e` は PrimitiveAdmissible、RangeAdmissible、宣言の kind と SignatureInstance、HasTypeTelArgsQ、各実引数の Ground、各型/行と結果 a/効果 e の WF・Canonical を持つ。依存する後続を先行する実引数で逐次具体化する。`BuiltinArgs.normalized` は生の導出から、遷移が読む `Ty.normTys ts` と `es.map Eff.norm` の入力を作る。
+
+| 欄 | 旧 Assumptions の量化・結論 | 現在の新 CoreAssumptions（継承した ResponseAssumptions を含む） | 計画の残り・意味の差 |
+|---|---|---|---|
+| delta_typed | Ψ,b,sg,rs,ts,es,ws。pure、範囲許容、個数、admits、旧引数型列。`∃ out, delta = some out ∧ no-exit ∧ OutcomeTy … out retθ` | Ψ,b,sg,ts,es,rs,ws,a,e。lookup/pure/BuiltinArgs。`∃ out, delta = some out ∧ no-exit ∧ Outcome.Typed … out a ∧ AdequateResult ws out` | 結果型は依存具体化後の a。Outcome.Typed.val は HasTypeV と Ground。入力は篩・依存・新部分型・正規化を含む。量化が別なので一律の強化/弱化や旧との同値とはしない |
+| io_typed | 上記の入力と out/obs、io 又は exit、ioResponse。OutcomeTy retθ | 同じ新入力と out/obs、io/exit、ioResponse。Outcome.Typed a と AdequateResult | 応答関係自体は rs/σ を受け取らない。正常値の篩をゲストの外部応答の条件と混同しない |
+| io_exists | io/exit、範囲・個数・admits・旧引数型列から `∃ out obs, ioResponse …` | lookup/io-or-exit/BuiltinArgs から同じ存在 | 型付き入力が依存列と閉性・正規形を含む。Canonical を外して信頼条件の入力を勝手に広げない |
+| release_exists | `∀ Ψ v o, HasTypeV … v (opaqueTop o) → isResource o = true → ∃ r, releaseResponse v r` | **CoreAssumptions.release_exists に移行済み**。`∀ Ψ v o, HasTypeV P B Ψ [] [] [] v (.opaque o (.fixed .top)) → B.isResource o = true → ∃ r, B.releaseResponse v r` | 新しい HasTypeV の全資源値を量化する。Ground/Adequate の追加条件なし。L20 が解放の進行と step の選択へ接続し、L50/L60 が実表、L70 が主定理と照合する |
+
+`AdequateResult ws out := ∀ σ, σ.Valid → (∀ w ∈ ws, w.Adequate σ) → out.Adequate σ`。同じ out についてすべての有効な σ を量化する。型付きであることだけから Adequate が従うと仮定しない。δ/IO の結果へのこの追加は独立した D28 の信頼条件の意味の変更であり、値・型パラメータの改名の保存則の追加とは別件である。
+
+旧 OutcomeTy.val は値の型付けと型変数を含まない条件、新 Outcome.Typed.val は新しい HasTypeV と Ground である。V_Normal と LeQ.convert、制約の正規形読み、CellOk.val の a.norm、保持要求の受理範囲の変更も、型付き値を量化するこれらの欄の意味に含まれる。同じ欄名であることを前提の維持の根拠にしない。
+
+## CoreAssumptions と旧 Assumptions の全欄の対応
+
+旧 CoreAssumptions の全20欄を、欄をまとめずに次表で分類する。「移行済み」は新しい量化の欄又は名前を挙げた導出があるという意味であり、旧との同値や新しい全状態の主定理の完成を意味しない。TargetAgreement は別構造体なので20欄へ数えない。
+
+| # | 旧の欄 | 分類 | 現在の新の対応、差、使用先又は義務 |
+|---|---|---|---|
+| 1 | sig_scoped | 移行が必須・未着手 | **L20・G08**。旧 `PresBase.store_prim_inv/refUpdate_typed`、`TySubstMain.opSigAt_scoped/MethodRowsAdmissible.substTy`、`Regularity.LocTy.WF.contT`、`PresMain.preservationE` の E_OpPrim が使用。宣言の全体の正則性を、呼出しごとの SignatureInstance/Annotation だけで代用したとはしない。新しい型・範囲・値の束縛に合う欄又は導出を移す |
+| 2 | admits_subst | 移行済み | TypeAssumptions.admits_subst。新型・依存列・篩の正規形を読む |
+| 3 | sat_subst | 移行済み | TypeAssumptions.sat_subst。閉じた置換像の WF は WF 0 0 0 |
+| 4 | sat_unconstrained | 移行済み（今回復帰） | CoreAssumptions.sat_unconstrained。閉じた `t.WF 0 0 0` から `B.sat [] t.norm {}`。旧 `PresFailure.HasFailureClause.instantiate`（E_OpFail の保存）への接続は L20・G05 に残る |
+| 5 | admits_sat | 移行済み（今回復帰） | CoreAssumptions.admits_sat。lookup と `s.admits C (Ty.normTys ts)` から `SatAll B C ts (s.tparams.map TParamDecl.constraints)`。旧 `PresMain.preservationE` の E_OpPrim への接続は L20・G05。個数も SatAll の結論に含む |
+| 6 | sat_local | 移行済み（導出） | TypeAssumptions.sat_local。一般の sat_renameTypes の恒等改名から導く。前後の Annotation を受け、結果は a.norm。旧欄をそのまま継承したものではない |
+| 7 | admits_local | 移行済み（導出） | TypeAssumptions.admits_local。admits_renameTypes から導き、結果は normTys |
+| 8 | delta_typed | 移行済み | ResponseAssumptions.delta_typed。BuiltinArgs、依存具体化後の結果 a、Ground と AdequateResult。量化と結論の差は前表 |
+| 9 | io_kind | 移行済み | ResponseAssumptions.io_kind。旧の全生応答から BuiltinArgs を持つ入力の分類へ変更 |
+| 10 | io_typed | 移行済み | ResponseAssumptions.io_typed。新しい型付き入力、Outcome.Typed と AdequateResult |
+| 11 | io_exists | 移行済み | ResponseAssumptions.io_exists。lookup/io-or-exit/BuiltinArgs から存在 |
+| 12 | io_op | 移行済み（今回復帰） | CoreAssumptions.io_op / Builtins.ShapeOk。lookup と io/exit から opEff、効果の表への所属、行引数なし、IOShape ごとの kind・範囲・効果・対象引数の形。旧 `EffectSound.no_event`、`PresMain.preservationE`（E_OpPrim）、`Builtins.TargetAgreement.obs_allowed` が使用。下の決定の記録を参照 |
+| 13 | effect_ops | 移行済み | CoreAssumptions.effect_ops。io/exit に専用 pathBases を追加 |
+| 14 | opEff_io | 移行済み | CoreAssumptions.opEff_io。同じ分類の追加 |
+| 15 | state_effect | 移行済み | B.effects stateEff = some [] を旧と同じ内容で復帰済み。EffectsOk と合わせ noStateHandled を導く |
+| 16 | store_shape | 移行済み | PrimSig.StoreShape。pathBases を除外、Reference 四種に kind=[value] を追加。force には追加しない |
+| 17 | store_admits | 移行済み | CoreAssumptions.store_admits。pathBases を除外し、型引数の個数と許容を要求 |
+| 18 | ref_get | 移行済み | 旧と同じ存在と種類。StoreShape と合わせ reference_primitives を導く |
+| 19 | ref_set | 移行済み | 同上。ReferencePrimitives を独立した信頼条件にしない |
+| 20 | release_exists | 移行済み（今回復帰） | CoreAssumptions.release_exists。新 HasTypeV の全資源値に対する解放応答の存在。旧 `Progress.progress_ret/progress_escape/progress_error/progress_exit` と `StepSound.rel_resp` への接続は L20・G07/G08。Ground/Adequate で量化を狭めない |
+
+集計は **移行済み19（うち導出2）、移行が必須・未着手1（sig_scoped）、不要0、全20欄**である。sig_scoped は Refinement に PrimSig.Scoped がなく、依存列と型・範囲・値の束縛に合う定義又は導出を L20・G08 で定める。新しい3欄の言明は今回移したが、それを使う進行・保存の全体が閉じた意味ではない。L20 が使用先へ接続し、L50/L60 が表の充足、L70 が主定理を照合する。
+
+| 旧20欄以外の条件 | 現在の新の対応と差 |
+|---|---|
+| 値の移送 | ValueAssumptions.sat_rename/admits_rename/sat_values/admits_values。単調改名と型付き値の像への四保存則を追加した独立条件。L50/L60 が充足を示す |
+| 型の改名 | TypeAssumptions.sat_renameTypes/admits_renameTypes。制約を保持する TypeParamRenaming、束縛下への挿入も扱う。L50/L60 |
+| PathBases の署名 | pathBases_shape / PrimSig.PathBasesShape。型・行・範囲・値引数なし、結果 pathBases、効果/opEff が Process.Environment。今回 B.effects の同じリストへの b の所属を追加。L50/L60 の実表照合 |
+| 対象の一致 | TargetAgreement.io_target は別構造体。新 BuiltinArgs の同じ呼出し・応答・観測を量化し、CoreAssumptions が含むとはしない |
+| 外部応答 | ExternalAssumptions.external_typed/external_exists/external_no_targets。ExternalWF・名目ID・ExternalArgs の下で carrier/no-exit、存在、obs=[]。篩は受信後に検査。external_adequate は導出。L60 |
+
+### io_op と PathBases の決定の記録
+
+レビューの `rv-15-t1.lean` は、kind=io、opEff=none、空の効果の署名を持ち、旧版の新 CoreAssumptions を満たした。型付きの空効果の計算から実際の E_IO の事象が生じ、Event.Covered は任意の効果について偽となる。本作業では規則や状態の型付けを変えず、旧 io_op の欠落を修正する。入力の原本は変更せず、[boundary.lean](boundary.lean) の rejects_evil が同じ表を新 CoreAssumptions が拒むことを示す。typed/step_io/not_covered も同じ表について再検査する。
+
+| 前提 | 修正前 | 修正後・旧との差 |
+|---|---|---|
+| io_op | 新 CoreAssumptions に欄なし | lookup と io/exit から Builtins.ShapeOk。旧の全連言を維持。対象なし/Top 対象は rkinds=[] と Eff.single、single は rkinds=[k]、範囲変数0の一原子、指定位置の opaque o (rvar 0) と valKind o=k。新 RangeIx/RangeExpr と新 Ty を読む点だけ表現が異なる。旧 singleAt は新 EffR.mk の一原子で書く。scoped を別枝で追加して受理を広げていない |
+| PathBasesShape | 署名の型・引数・結果・効果/opEff の形だけ | B と b を添字にし、∃ bs, B.effects Process.Environment=some bs ∧ b∈bs を追加。旧には専用 kind がなく、io_op の所属に相当する条件を専用 kind にも課す |
+
+本番 `BuiltinEffects.lean` の io_event_covered/io_transition_covered と pathBases_event_covered/pathBases_transition_covered は、実際の E_IO/E_IssuePathBases の入力から同じ遷移と**宣言に書かれた効果**による事象の被覆を与える。型/行/範囲の具体化後の効果から継続末尾 Eb まで移す全状態の健全性は G05/G07→L70 に残る。operation_not_handled/pathBases_not_handled は所属を使い、当該操作の節がなければ handled がその効果を消せないことを示す。
+
+本番には新 CoreAssumptions を具体的に構築する三モデルの定義はまだない。旧 Model/ModelTargets/ModelHttp の Assumptions は旧名前空間のままで、既定ビルドに含まれる。新 ModelHttp は対象に関する射影の表であり、全 CoreAssumptions の充足を主張しない。抽象の利用先は既定ビルドで閉じ直し、.14e の正の表とその全利用例を [model-compatibility.lean](model-compatibility.lean) に写して io_op と今回の3欄を追加した。admits には型引数の個数を要求し、代表の利用例を閉じ直した。過去の入力・レビューを上書きせず、新しい条件の下でもその表と代表が成り立つことを検査する。IO と PathBases を含む CoreAssumptions 全欄の小さな正例は boundary.lean の Boundary15Full にある。標準の実表と三モデルの全条件の構築は L50/L60 の既存義務である。
+
+プログラム側の `Program.EffectsOk` は旧と同じ三連言を Refinement に写した。利用者の効果と操作の相互所属、組み込み名との分離である。`state_effect` と組み合わせた `noStateHandled`、`ContTy.state_end/prepend_releases` と四解放遷移の代表は本番にある。NoStateHandled を独立の主定理の前提へ追加しない。
+
+### 3欄の移行の決定の記録
+
+再レビューの再中1と plan の先頭の判断に従い、旧の release_exists・sat_unconstrained・admits_sat を新しい判断へ移した。定理の結論、ContTy/StateTyE、型付け・遷移は変えていない。
+
+| 欄 | 旧 Release | 今回の新しい欄と差 |
+|---|---|---|
+| release_exists | 空の型・値文脈で opaqueTop o の HasTypeV、isResource o=true から解放応答の存在 | 新しい HasTypeV に空の事実文脈も渡し、型を opaque o (fixed Top) と書く。同じ全資源値の量化を保ち、Ground/Adequate/Normal の前提を足さない |
+| sat_unconstrained | Ty.WF 0 0 t から B.sat [] t {} | 値の名前空間を加えた Ty.WF 0 0 0 t から B.sat [] t.norm {}。新 SatAll の正規形読みと合わせる。Annotation/Sorted/Declared で対象を狭めない |
+| admits_sat | lookup と s.admits C ts から SatAll B C ts s.tparams | s.admits は Ty.normTys ts を読み、制約列は s.tparams.map TParamDecl.constraints。SatAll は各型の正規形を読み、個数も含む。別の個数の前提を加えて欄を弱めない |
+
+補助の原本 rv-15-t2.lean は変更せず、[boundary.lean](boundary.lean) の Boundary15Full に untargeted・single・PathBases・get/set の表を移した。IO の応答は原本と同じ err だけであり、任意の成功値を返す表の充足を示したものではない。single_shape は opaque PathIn (rvar 0) の単一対象の ShapeOk、assumptions は全 CoreAssumptions、core_nonempty はその存在を示す。
+
+新 admits_sat は型引数の個数も結論するため、原本の admits=True を保つと、個数が違う任意の列にも SatAll を作ることになり充足できない。移した表では型パラメータのない三署名は個数0、get/set は個数1を admits に要求した。.14e から写した model-compatibility の表も個数1を要求した。sat=True、各署名の型・kind・効果、IO 応答と解放応答は保ち、改名・値置換・型置換で個数が保たれることから全欄を閉じ直した。この表の変更は旧 admits_sat も要求する個数の条件を満たすためのものである。
+
+再軽1の残りは **G05・L20 の ShapeOk.inst_eff_mem 相当**である。lookup、ShapeOk、BuiltinArgs P B Ψ b s ts es rs ws a e と opEff=some l から `∃ ix, e.mem (.name l ix)` を導く。single の rvar 0 は rs で具体化されるため、宣言の s.eff の添字をそのまま使わない。この補題から具体化後の Event.Covered、G07 の継続末尾 Eb への伝播、L70 の effect_soundness/対象健全性へ接続する。今回は本番にこの補題を追加していない。
+
+## 状態の代表の分類
+
+「閉じた」は指定された代表の言明が閉じたことだけを指す。全状態の保存の判定ではない。基準の全76遷移と、各境界に並ぶ実行の遷移数も区別する。
+
+| 作業 | 分類 | 閉じた代表と入力の範囲 | 残る一般化 |
+|---|---|---|---|
+| .14a | 閉じた | dependent_beta_one。共通の本体から一引数の Step と両状態の型付けの構成。型/行/範囲の実引数なし・空の局所文脈・pure caller、実引数の Ground と hcv、引数列の Normal を要求。任意の R/ストア、mark の併合と builder を含む。**開始の StateTyE の逆転を含まない** | 多引数/零引数、多相、捕捉、任意の closeVal、開始の一般逆転 |
+| .14b | 閉じた | captured_beta_one。捕捉 Γ/Φ、評価・閉じた導出、非空の引数 facts を持つ closure の両状態の型付けの構成。一引数・型/行/範囲の実引数なし・空の局所文脈・pure caller、実引数の Ground と hcv を要求。**開始の StateTyE の逆転を含まない** | 呼出し元の捕捉、局所参照、多引数、多相、ContTy の各捕捉枠 |
+| .14b-paths | 閉じた | **開始の StateTyE を入力**。if 真偽、guard 真偽、match 開始/skip/束縛数0本体。match_body_zero は MatchPathsEvaluated も入力とする。リテラル・範囲・空リスト・構成子・Or の事実の健全性。RootShape は型付き閉値から導出 | 一般のパターン束縛と guard 導入、Inhabits の不足、開いた Boolean の合同、標準の実表 |
+| .14c | 閉じた | **開始の StateTyE を入力**。Reference new/get/set/update の4種、同じ最終型/Eb。4種とも caller は pure。snapshot を set 後も保持 | 捕捉 caller と任意の callable の閉性/適格性、全 let の合成 |
+| .14d | 一部 | **開始の StateTyE を入力**。Lazy 作成/force done/force thunk/任意の現在セルへの書戻し/error-pop/exit-pop の6種。K_Update の Annotation を復帰済み | 任意の ret view の closeVal と捕捉 caller の force。done への書戻し自体は閉じたので残件にしない |
+| .14e | 一部 | **開始の StateTyE を入力**。pure・単相一引数の操作、定数 resume/HRet/drop、resume-used、通常/escape/error/exit の解放の計9種。依存列の延長は任意長 | 多相・辞書・複数引数の操作全体、任意の view、OpPrim/OpFail、used/drop 全体、全状態の合成 |
+
+実際の補題名とファイルは [mapping.md](mapping.md) にある。全状態の主定理による合成がない実行例を、全 let の途中状態の保存の証拠にしない。`.14b` で残した「規則が Φ を増やさない」問題は paths の規則で解消した。guard_context、done への書戻し、解放列の型付け、依存列の延長と失敗節の切り出しを未実装の残件へ戻さない。
+
+## 一般化の残りの全一覧と重複しない配分
+
+以下の G/H 行は状態代表とその依存の一般化を、一つの担当先へまとめ直した案である。元の各 signatures/results の同じ closeVal・型置換・捕捉の記述を行ごとに加算しない。L20 の39〜90時間、L40 の18〜42時間という計画の既存枠を、**能動時間の実績が分離できないため維持**し、その内数を下表へ配分した。**行ごとの数値は既存枠に合わせた配分であり、実績で裏付けた見積りではなく、確度はない。** 各段の実績から更新する。見込みを確定したことや起動の了承を得たことを意味しない。
+
+| ID・送り先 | 残る言明 | 依存・出どころ | 既存枠の配分（確度未確認） |
+|---|---|---|---:|
+| G01・L20 | 任意の closeVal に対する型保存と実際の view/契約の一致、callable の改名の閉性・Adequate | .14a の hcv、.14b の lam→closure と caller、.14c の s4 capR/get・s7 capX/set と update、.14d の ret/force、.14e の ret/escape/resume をここへ統合。V_Sub/Normal/Refine と観測の合同 | 4〜9時間 |
+| G02・L20 | 零/多引数の Closure.apply/Tel.instantiate と捕捉 Γ/Φ/局所参照の型付け | extendTel・Capture.instantiate・CaptureLocals。β の局所復元、.14b の多引数と局所参照、.14e の操作全体への capture_tel/result_tel/args_under_capture の合成。既存の依存列の構文の補題を作り直さない | 4〜8時間 |
+| G03・L20 | 型/行/範囲のコードへの置換の型保存、関数/メソッド/多相節・dictParams の契約と本体の一致 | .02 第31節の TySubst/TySubstMain 相当の別族。相互の14判断76構成子を候補として棚卸し、実際に必要な族/場合を起動時に固定する。移動・値置換・narrowing の既存76場合を再計上しない。E_Fun/E_Meth/E_Op/E_OpPrim と外部の呼出しへ接続 | 8〜18時間 |
+| G04・L20 | 捕捉の緩い三条件から結果の正則性、hide と局所構築器への移送、ソース文脈の Regular の形成 | .02 第30/31節、.03 の shiftE/OpSig.context/failureContext/Narrows。normConts・builderBody_image_norm・CaptureOk.normConts の接続、結果 WF/Sorted/Declared、腕の結果/効果拡大。CaptureOk に強い Ctx.WF を足さない | 4〜10時間 |
+| G05・L20 | 全 handler/節/resume/used/drop の保存、任意の捕捉枠から Φ を閉じる | G01〜G04、ContTy の逆転・ストア拡張。復帰した io_op/ShapeOk と ClauseRangeIs を OpPrim の全保存へ接続。io_op は effect_soundness と対象健全性にも必要で、G07 から L70 の両定理へ渡す。**ShapeOk.inst_eff_mem 相当**（ShapeOk と BuiltinArgs から具体化後 e の同じ名前の原子の存在）を閉じ、宣言の一原子から具体化後の効果・継続末尾の被覆へ移す。OpFail の型束縛と extendHidden、範囲外変数を行に持つ Handle→Op。EffectsOk/state_effect を使い解放の既存4入口を合成 | 6〜14時間 |
+| G06・L20 | 任意のパターン束縛から CaptureOk を延長して MatchBody/MatchGuard を保存、guard の待機枠を導入 | paths の入力1〜3。開始から閉じた AltsTy/値の型付け、捕捉から閉じた WF/Sorted、hideConts の Annotation→GuardBodyTy の本体文脈。capture_plain は任意 δ で既存。RootShape の構成と照合の健全性も既存 | 3〜7時間 |
+| G07・L20 | 全 StoreOk/ContTy と各状態の葉の保存・step の選択へ合成する補題 | G01〜G06。let/return/mark、Reference/Lazy、構築器、At/外部の呼出しと受信。同じ最終型/Eb、有限性・領域・閉性を維持。fnView? の決定手続きとの一致、NamesWF/一意性、Tel の観測する項の termBind? 成功/getD 非到達も含む | 6〜14時間 |
+| G08・L20 | 準備・外部・解放・宣言の前提を実際の葉で供給する入力の一般化 | InitialPrepared/Ready と固定 σ、ExternalWF、旧20欄で残した sig_scoped の必須移行と、追加済み release_exists/sat_unconstrained/admits_sat の使用先への接続。最終のプログラム条件と表の充足は L50/L60/L70 へ渡す | 2〜5時間 |
+| G09・L20 | 進行に必要な HasTypeV→Inhabits の全域の接続と任意の閉じた値の照合の入力 | 現行 Inhabits は opaque に scoped_forget した checkedAt と、その List 要素/data 欄を覆わず、現行の全域の含意は偽。RootShape による除外と分け、量化を旧へ戻さず網羅性の入力を確定する。L40 の canonical forms へ渡す | 2〜5時間 |
+| H01・L40 | 全 canonical forms と開始の一般逆転、fn/dependentFn・部分型・正規化を通る各呼出しの契約 | .14a/.14b の開始の逆転の重複を一度だけ扱う。inv_closure/TelClosure、各 list/data/map/set/dict/ref/lazy、scoped と atError。G09 と同じ Inhabits の修正を二度数えない | 6〜14時間 |
+| H02・L40 | 宣言の data の変性と観測・置換の接続、篩の初期領域と網羅性 | .02 の DataImages/DeclarationImages/data_observation、D27 の Month/空型/非空 List。単なる carrier の網羅性へ結果を弱めない | 4〜10時間 |
+| H03・L40 | 全幅の整数/Byte と標準の比較・事実の葉、実際の応答と分岐への接続、.14e の head guard の空効果から操作が起きないこと | .13 の inv_const/facts/atError の欄、.14a の δ/IO/外部受信とβの契約の合成、.14b の経路条件。O054 の開いた Boolean 合同と組込み事実の L30 を依存とし、その証明自体は含めない | 4〜9時間 |
+| H04・L40 | 正常/returned/failed の所属と状態の結果への接続に要る葉 | O169 の旧独立評価と Release の意味の接続。失敗の所属を旧 normal/mayFail から導いたことにせず、入力条件を明示。G07 の実行の状態保存とは別に評価/近似の関係を証明 | 4〜9時間 |
+| 合計 | L20 の G01〜G09 **39〜90時間**、L40 の H01〜H04 **18〜42時間** | 既存二段の枠の内数。下の別担当の時間、検査待ち、レビュー/設計者待ちは含めない | **57〜132時間** |
+
+L20 の同じ枠には、起動時の1〜2時間と本番追随の最初の10〜20件、q_mono/store/hide/rename/localRefs、旧 RangeInst の移行も含む。L40 の同じ枠には Character/Float/Decimal/length/fields と Map/Set の全幅・契約の葉も含む。これらを除いて G/H の合計を確かな残時間とは扱えない。行ごとの独立した再見積りは未実施である。
+
+全状態の preservation/progress/step_sound/effect_soundness の最終の合成は plan の **L70 24.5〜63時間**の枠であり、上表で再計上していない。L20/L40 の葉の合成と L70 の主定理の合成を区別する。13行のすべてが独立に実装できる意味ではなく、例えば G01/G03/G04 が後続の共有依存である。
+
+次表は、L00b の記録に残る他段の義務の全分類である。上の57〜132時間へ加算しない。各段の残りの全体は取りまとめが起動前に詳細化する。個別の能動時間は、通常記録から分離できない限り不明である。
+
+| 送り先 | L00b から引き継ぐ残り・依存 | 時間の扱い |
+|---|---|---|
+| L10 | 適格な旧導出の kind 表付きの埋め込み、Shared への BaseApprox/AnalysisResult の実出力の写し、normalToShared の逆向き、ConstOK→非other、空の近似を構造等号だけで判定しないこと | 既存22〜48時間の内数。G/Hへ加算しない |
+| L30 | trace を信用しない否定標準形・線形 derive/combine/round/split/close、枝内参照・捨てる規則、EqProof の意味の合同と途中の sort、開いた measure 非負の葉、有限 builtinLemma 表、machine_exact/stable/represented。O054 の or_elim/not_intro は既にあり、残るのは開いた Boolean の相異/合同。let c の偽側・短絡の偽側、.14e の実際の節の入力/出力・split・resume/used/release、.14d の実表・Rust の結果型の共変性と篩の格納・観測、.04 の鍵の言語上の等値の義務を含む。入力と出力の論理的な導出を G05 の状態保存と分ける | 既存36〜84時間の内数 |
+| L30/R20 | Term/Pred の Classical な DecidableEq と実行する証明書検査の関係を確定。Lean で実行するなら構成的な比較を用意。Reference.update の引数名 value と Rust の名前違いのラムダの受理、Lazy の再入と VM の「評価の途中」の対応を実入力で照合 | 上記又は R20 の内数。比較の方式は未確定 |
+| L50 | 全対象の具体化/σ の必要束縛と初期準備、checked の Top への拡大・保持要求 facts の直接入口、標準 valKind/valContent、実δと論理の観測の一致、三モデルでの値/型の保存則・PathBases・AdequateResult と追加3欄の充足。**ShapeOk.single の署名の対象引数は opaque o (rvar 0) とする。scoped を宣言すると ShapeOk は受理しない。checkedAt 等の値は scoped_forget で opaque へ渡す** | 既存36.5〜84時間の内数。モデルの最終照合は L60 と役割を分ける |
+| L60 | 三モデルと実表の新しい CoreAssumptions/外部三条件の全照合。正規形の sat/admits/δ/IO、Reference の kind=[value] を確認。旧 Assumptions のまま成功したビルドを新の充足の証拠にしない | 既存17〜41時間の内数 |
+| L70 | Program.WellTyped/WellFormed、主定理、表層checker・脱糖・網羅性・交換六入口、旧互換の利用者と規範の切替、既存コーパスの全比較。篩を除去しただけの結果や未証明 lift に戻さない | 既存24.5〜63時間の内数 |
+| R10b/R50・V10 | O138 の同じパターン・guard/短絡の事実と合流の Rust 実装/比較/実CLI。Pair[String{true},String]、空でない閉じた篩、開いた述語の要求を比較する。外部受信も、Lean と同じ強い Kleene の三値で全入れ子を検査する。左の評価不能と右の true の Or、逆順、false との And、sort 不適合を含む。closedTrue だけの一致で実装済みとしない | 各既存 R/V 段の内数。Rust は本作業で未実行 |
+
+処理系の受信検査にも同じ三値を実装する義務はこの最終行へ送った。設計書には Lean の現在の定義と Rust との未接続の範囲だけを書き、Rust の今の保証としては書かない。
+
+## 実績と計画の見込み
+
+実績は [effort-ledger.md](../effort-ledger.md) と各 results の担当の記録を用いる。初回と再開の同一作業を合算し、レビュー担当の時間は足さない。能動時間・局所検査・読み直し・待ちの完全な分離がないので、外側の時間を能動時間へ置き換えたり、これらの比を全残件へ掛けたりしない。
+
+| 作業 | 担当の外側の時間（概数、初回＋再開） | 計画の能動時間の見込み | 分離と今回の扱い |
+|---|---:|---:|---|
+| .02（署名・全群） | 約12時間2分（ledger の Codex 各行の合計。検査記録で再計算した値とは区別） | .02a 1〜3、.02b 2〜4、.02c 1〜3時間。後に相互補題と状態の定義を L20 から移す判断あり | 範囲が変わるため単純な比で予測しない。下の参考の合計では区別して併記 |
+| .03 | 約38分 | 1〜3時間 | 能動・待ちは分離不能 |
+| .04 | 約53分 | 2〜5時間 | 同上 |
+| .05 | 約25分（ledger）。results の再開節は最終処置を約5分と記す | 1〜3時間 | 記録の粒度が異なるので精密な能動時間にしない |
+| .11 | 約4時間24分 | 3〜6時間 | 反例・正規化の改訂・OS 再起動による中断の作業を含む（中断の待ちそのものの長さは不明） |
+| .13 | 約49分 | 3〜6時間 | 能動・待ちは分離不能 |
+| .14a | 約35分（ledger）、再開の results は12分53秒 | 2〜4時間 | 同上。開始の逆転を含まない代表 |
+| .14b | 約22分（ledger）、再開の results は5分57秒 | 2〜5時間 | 同上 |
+| .14b-paths | 約2時間28分（26＋70＋38＋14分） | 3〜8時間（後から加えた枠） | 同上。相互規則の追加を含む |
+| .14c | 約54分（42＋12分） | 2〜5時間 | 同上 |
+| .14d | 約34分（25＋9分） | 1〜3時間 | 同上 |
+| .14e | 約40分（25＋15分）、results は初回25.1＋再開14.5分 | 2〜4時間 | 同上 |
+| .15 | 本作業の最終値は results | 1〜2時間 | 今回の再開は開始から3時間の上限。能動時間は分離して確定しない |
+
+参考として、.03〜.14e の11作業は外側約12.7時間／初期枠22〜52時間で比は0.24〜0.58、.02 を加えたレビューの概算は約24.7時間／25〜62時間で0.40〜0.99である。この概算は .02 の下端を3時間とした参考値である。現行の作業表の .02a/.02b/.02c を足すと4〜10時間なので、同じ算術を現行表へ合わせると合計26〜62時間、比は0.40〜0.95となる。.02 は途中で範囲が増えた。57〜132時間へ機械的に掛けると約14〜77時間になるが、これは参考の算術であり残りの見込みではない。**レビュー、処置の応答、取りまとめや設計者の判断を待つ時間は含まない。** 外側の記録には担当内の局所検査や読み直しを含み、能動時間との完全な分離はできない。
+
+O010 の L00a の中心の補題の実績比は、O160 のこの表に再計上しない。O160 の本番追随の最初の同種10〜20件は、L10/L20/L40 の予定の依存順で実際に移す一群から数える。今回は測るための試行も、代表の所要からの単純な外挿も追加していない。
+
+## 方式の変更の兆しと未確定の点
+
+**現時点で、Nat/WF・捕捉環境・閉じた評価で事実を閉じる方式を変更しなければならないと示す新たな根拠は見つけていない。** `.14a/.14b` の構成だけで判断せず、paths/Reference/Lazy/節の開始からの逆転と、保存先のストア・継続・事実の構成が本番で閉じたことを根拠とする。false の guard、set 後の snapshot、done の上書き、State を消す元の表の反例は、それぞれ規則の保持情報又は旧前提の復帰で処置されている。今回の opEff を持たない IO も旧 ShapeOk の復帰で排除した。方式の適否と、前提の移行漏れを区別する。
+
+全状態への方式の適合は未確定である。特に G03 の型置換の別族、G04 の緩い捕捉からの正則性、G09 の Inhabits、G05 の io_op の全保存への接続、sig_scoped の必須移行は、全主定理の証明に先立って確かめる。既知の未完を新しい方式の破綻と呼ばず、閉じた代表を全体系の健全性の証拠にも繰り上げない。未知の反例、追加の独立前提、結論の弱化が必要と分かれば plan の停止条件に戻る。
+
+## 設計者が見直す判断の全一覧
+
+plan「計画の変更と取りまとめへの確認点」で明示した「設計者の見直しの対象」は次の8件である。取りまとめが「推奨の方法で進める」という既存の指示に従って採った判断であり、本作業が新たに承認したものではない。
+
+| 判断・根拠 | 触れる境界 | 影響 | 取り消したときの手戻り |
+|---|---|---|---|
+| release_exists・sat_unconstrained・admits_sat の復帰（RV-.15 再中1） | 主定理の組み込み表の前提 | 解放応答の存在、無制約の型の具体化、admits から SatAll を新判断で要求。全欄の小さな表を閉じ直す | 3欄の充足と正例、E_OpFail/E_OpPrim の保存・解放の進行への接続を再検討。削除すれば旧の使用先で必要な入力を別に供給する必要がある |
+| io_op/ShapeOk と PathBases の所属（RV-.15 中1） | 主定理の組み込み表の条件、実際の事象と効果表 | opEff のない IO の反例を排除し、宣言の効果による IO/PathBases の被覆と handled の非所属を閉じる | 追加した被覆・非所属の補題と全 handler の合成を再検討。元の反例を防ぐ別条件が必要 |
+| state_effect と EffectsOk の復帰（RV-.14e 中1） | 主定理の前提。組み込み表とプログラム表 | State を handled で消す表を排除し、drop_rel と State の到達を閉じる。旧の等号と三条件をそのまま復帰 | 四解放入口と noStateHandled/state_end/prepend_releases、全 handler の合成を再検討。元の反例を残したまま全保存は主張できない |
+| K_Update の結果型 Annotation（RV-.14d 中1） | StateTyE が読む ContTy の定義 | 任意の現在セルへの書戻しを閉じる。thunk が作る更新枠から供給。公理・利用者の書ける形を変えない | update の逆転・ContTy.store・force_thunk と書戻しの証明、以後の継続の保存を戻す。done の再書戻しを扱う別案が要る |
+| ref_get/ref_set と StoreShape の kind（RV-.14c 中1） | 主定理の組み込み表の条件 | 旧の存在・種類の復帰に加え、Reference 四種に kind=[value] を要求。モデル表はこの kind。処理系の実表は L60 | ReferencePrimitives の導出と update の到達の型付けを再検討。constructor kind の元反例を解消する別条件が要る |
+| HasTypeArmsQ の観測の添字（.14b-paths 停止） | 腕の相互の言明 | C_Match と全腕が Option Term を共有し、変換後も像を保持。VQ/CQ の subst/shift/narrow の前提と結論は維持 | 腕の移動・置換・narrow の節、C_Match・K_Guard、事実の運用を作り直す。別名の腕判断では本番 C_Match の D16 を満たせない |
+| .14b-paths の追加と D16 の規則の前倒し（RV-.14b 中1/2） | 規則・K_Guard・相互76場合、工程配分 | if/guard/match で Φ を増やし、D19 の閉じ方を遷移で確認。標準組込みの事実と合同は後段に残す。L00b の見込み増 | 規則・K_Guard と相互補題を戻し、L20 後に追加するならその証明を再作成。O056/O138 と閉じた代表の評価を更新 |
+| groundTy の refined の枝（RV-.13 中1） | At の受理する要求の型引数、D07/D20 | groundTy a と p.WF 1 を検査し、閉じた篩の型引数を受理。開いた述語は拒否。誤った値の受理は型付けと reqTarget で防ぐ | 篩を持つ要求の At での受理と D07 の一致を再検討。AtPrepared.request、交換の補題、受理差の比較入力を更新 |
+
+これら8件とは別に、D28 の意味の変更と次の判断を区別する。
+
+| 設計者が選んだ判断 | 境界・影響 | 取り消したときの手戻り |
+|---|---|---|
+| 強い Kleene の三値 | 閉じた述語の評価で U Or T=T、U And F=F。通常の計算の短絡とは別 | evalWith/evalClosed と健全性・完全性、外部受信の検査、三値の比較入力を更新 |
+
+| 取りまとめが採った判断 | 触れる境界・影響 | 取り消したときの手戻り |
+|---|---|---|
+| rawApply が篩の下へ通る枝 | D07 の構文操作と高階の型引数。型引数を捨てない | 型置換・正規化・kind の補題と比較入力を更新 |
+| 制約の読み手が正規形を読む | SatAll、PrimitiveAdmissible.admits、Map/Set の鍵。Admissible は SatAll を読み、admits は読まない | 制約の移送、型付けの各変換、全表の照合を更新 |
+| δ/IO の型と行の入力を正規化 | 応答関係と Step/step、BuiltinArgs.normalized | 応答の信頼条件、実表、遷移と実行器の選択を更新 |
+| CellOk.val が a.norm を読む | Reference の格納と読み出し | val_read/val_write、ストアの保存と Reference の代表を更新 |
+
+この4件は設計者自身の選択とは記録しない。D28 の AdequateResult、値の四保存則、型改名の二保存則、PathBases の署名と旧四欄の改訂、external_typed の carrier 化と受信後の検査も、前の対照のとおり別の変更である。取りまとめは主定理の前提の差と8件の見直しを分けて再提示する。
+
+## 義務行の判定と受け渡し
+
+| 義務 | 今回の判定 | 残る担当 |
+|---|---|---|
+| O008 | 共通の本体の導出から両状態と遷移を作る構成と、開始の逆転の代表を区別して一覧化。全 StoreTy/ContTy は未完 | G01〜G09/H01、L70 |
+| O010 | L00a の補題・外挿と分離し、実績比を再加算しない | L00a の既存の取りまとめを正とする |
+| O051 | 捕捉 Φ・Reference・Lazy・節/resume の代表を分類。D19 の全状態での十分性は未完 | G/H、L70 |
+| O054 | or_elim/not_intro は既存。開いた等号合同と Boolean の相異を残す | L30、H03、R20 |
+| O056/O138 | paths の本番規則と実際の観測からの代表を写した。標準の事実・Rust・全保存は未完 | G06/H03、L30、R10b/R50、V10、L70 |
+| O160 | 分類・残件・非重複配分・時間・見直し一覧を本書へ提示。受け入れや次段起動を代行しない | 独立レビュー、取りまとめの再提示、設計者の受け入れ。その後に L10 |
+
+## 用語の出典と候補
+
+篩型・型の正規形・telescope・強い Kleene の三値を用語集へ追加した。外部の呼び名と一次資料・日本語の用例は用語集末尾に置いた。telescope の定着した日本語訳は今回確認していないため原語を用い、本文では「依存する引数列」と内容を説明する。「テレスコープ」を新しい訳語として採用しない。新しい日本語の候補を設計者の承認なしに追加したものはない。

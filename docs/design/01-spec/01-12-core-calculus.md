@@ -20,6 +20,10 @@
 
 【決定】本章のコア計算の規則のうち、形式検証の段階 2 で形式化したもの（構文、型付け規則、実行の規則、初回リリース版の拡張のうちコア計算に構成を加えるもの、確かめる性質の性質 2・3。`match` の選択肢・ガード・範囲のパターン・リストのパターンは段階 C7 で加えた）は、リポジトリの `formal/` の Lean の定義を正とする。本章のこれらの規則は、その写しである。写しと Lean の定義が食い違うときは、Lean の定義に従う。形式化が本章より広く定めた箇所（[形式意味論と検証](../07-quality/07-04-formal-semantics.md)の「01-12 との対応」の表に記したもの）は、Lean の定義に本章の条件を加えたものを規則とする。表層からの脱糖（形式化の段階 C1・C2 で形式化し、`match` のパターンの拡張を段階 C7 で加えた。後述の「型の情報を付けた表層の構文と型付け」を含む）と、初回リリース版の拡張の脱糖のうち段階 C4・C5・C6 で形式化したもの（段階 C6 は、`Decimal` のリテラル、リストの展開、文字列補間、レコード、トップレベルの定数）も、Lean の定義を正とする。初回リリース版の拡張のうち脱糖だけで表すものの残り（モジュール）、末尾呼び出しの保証、置き換えてよい等式は、本章を正とする。
 
+【決定】`Benitoite.Release.Refinement` に置いた定義・規則は、後述の「篩を含むコア計算の形式化」以下に写す。それ以前の Release の記述と、篩を含む形式化の記述は名前空間で区別する。篩を含む形式化は Lean 内で並置しており、処理系の表層構文の提供範囲や、Release の全状態の定理をそのまま拡張する記述ではない。両者の証明の範囲と Rust との対応は [形式意味論と検証](../07-quality/07-04-formal-semantics.md#篩を含む形式化の範囲)に定める。
+
+「篩を含むコア計算の形式化」から「篩を含む状態の型付け」までの節は、処理系の実装との対応の対象から除く。以下の処理系と抽象機械の対応の規定は、その範囲には適用しない。
+
 処理系は、本章の抽象機械と同じ観測できる振る舞い（IO の列と、終わり方）を示さなければならない。ただし、標準出力と標準エラー出力への書き込みの失敗は、[評価意味論](01-08-evaluation.md)の「実行時エラーによる停止」で例外として定める。処理系の内部の表現と手順は問わない。
 
 コア計算は、項を値と計算に分ける（fine-grain call-by-value）。`return V` は値 V をそのまま結果とする計算であり、`let x ⇐ M in N` は計算 M の結果を x に束縛して計算 N を続ける。この二つは、モナドの単位（pure）と bind に当たる。
@@ -1030,7 +1034,7 @@ Lean の段階 B の写しでは、原子 e が ε に属する命題を `Eff.me
 
 ```text
 (C-Handle) Γ; R ⊢c M : T ! εM     εM ⊆ ε ∪ handled(H)
-           Eff.WF(ε)     H の各節 op(x̄) k ⇒ N について、op : ∀ᾱ. (n̄:Ā) → B ! {L}、NamesWF(n̄, Ā)、ᾱ は宣言の組み込みの制約を持つ、ほかの何とも等しくない型として
+           H の各節 op(x̄) k ⇒ N について、op : ∀ᾱ. (n̄:Ā) → B ! {L}、NamesWF(n̄, Ā)、ᾱ は宣言の組み込みの制約を持つ、ほかの何とも等しくない型として
              Γ, x̄:Ā, k:Cont(B → T ! ε); R ⊢c N : T ! ε
            ─────────────────────────────────────────────
            Γ; R ⊢c handle M with H : T ! ε
@@ -1039,6 +1043,8 @@ Lean の段階 B の写しでは、原子 e が ε に属する命題を `Eff.me
            ─────────────────────────────────────
            Γ; R ⊢c resume k V : T ! ε
 ```
+
+C-Handle は最上位の `Eff.WF(ε)` を独立の前提に持たない。Release と Refinement の `HasTypeCQ.C_Handle` は、保護本体、構造上の包含、節の導出を前提とする。表層の節の並びの cons が求める効果の整形式の条件とは区別する。
 
 番号で表す形式化では、節が束縛する操作の型パラメータ数kに応じて、外側のΓ・R・Tと効果εを移動する。節の継続は `Cont(B → shift k 0 T ! Eff.shift k 0 ε)`、節本体の許容効果も `Eff.shift k 0 ε` となる。元の最上位のεにはCanonicalを求めない。捕まえた継続の型をストアに保存するときは効果を正規化し、元の効果との両方向の包含で接続する。
 
@@ -1185,7 +1191,7 @@ Leanの穴の脱糖は `ArgPlan.direct v` と `ArgPlan.evaluate m` のソース�
 
 ### 整数の閉区間の領域
 
-【決定】七種の整数の正常値の集合を表す領域は、`Benitoite.Interval` の `Interval/Domain.lean` を正とし、本節はその定義と言明の写しとする。コア計算の型・エフェクト・部分型の規則は変えない。理由: 正常値の集合を、言語の公開型と区別して扱うためである。
+【決定】七種の整数の正常値の集合を表す領域は、`Benitoite.Interval` の `Shared/Interval.lean` を正とし、本節はその定義と言明の写しとする。整数の値域と証拠付きの値は `Shared/Integer.lean`、旧コアの型との対応は `Interval/TypeAdapter.lean` にある。`Interval/Domain.lean` はこれらを読む互換入口である。コア計算の型・エフェクト・部分型の規則は変えない。理由: 正常値の集合を、言語の公開型と区別して扱うためである。
 
 `IntKind` は次の七種である。`Integer` と `Integer64` は同じ種類 `integer64` に対応し、八つ目の種類を作らない。`IntKind.type` は対応する解決済みの型を返し、`ofType` は七種の型だけを認定する。Byte は算術を持たないため含めない。
 
@@ -3090,9 +3096,357 @@ builders_no_captureとbuilders_block_no_captureは、Aligned Γ ΔからEnvReads
 
 専用コアの手書きの期待値はSurface.BuilderExamples.dedicated_loweringと、交換13/5の独立入力の19構築器定義で照合する。block・穴・Integer・Logを含む全45定義と通常網羅性6件・プログラム網羅性3件を六つの交換入口へ渡し、受理/拒否と期待値を確認する。比較専用の期待コアと未使用の定数も、共通の交換入口でIntegerの範囲を検査する。Integer64の型名はIntegerへ正規化する。交換の変換自体は上記の型保存・捕捉禁止の証明に含めない。Rustの書き出しも13/5を用いる。実ソース9入力52定義の局所比較は六入口で一致し、構築器5定義は手書きの表層と期待コアにも一致した。この局所比較を、構築器を含む新規則の本番全件の比較の証拠には含めない。
 
+### 篩を含むコア計算の形式化
+
+【決定】本節から「篩を含む状態の型付け」までは、`Benitoite.Release.Refinement` の定義と規則の写しである。ここでの `Ty`・`HasTypeVQ`・`HasTypeCQ`・`Step` などは、すべてこの名前空間のものを指す。表層の文法を追加する節ではない。
+
+篩型は `Ty.refined a p` で表す。`a` は篩を付ける型、`p` は有限構文の述語である。依存する関数型は `Ty.dependentFn t` で表し、引数列 `Tel` は、終端の `Tel.done result effect` と、引数を加える `Tel.param name argument rest` の二構成子を持つ。
+
+`param` の後続は、その引数を先頭に加えた値の文脈で読む。結果の型と潜在効果も全引数の下で読む。`Tel.arguments`・`Tel.instantiate` は、宣言順に実引数を一つずつ代入する。非依存の関数型 `fn` から作る `Ty.toTel` は、外側の参照を束縛数に応じて移す。依存する宣言の列を包む `signatureTel` と区別する。
+
+型・エフェクトの行・範囲・値の変数は別の名前空間を持ち、いずれも自然数の番号で表す。型の整形式は `Ty.WF nr nt nv`、述語の番号の上限は `Pred.WF nv` で検査する。`Ty.Annotation P C Γ a` は、番号の上限と内部の行の正規形、観測の種類と参照、宣言表との整合をそれぞれ `WF`・`Sorted`・`Declared` で検査する。`Ty.WF` は、篩の内側の芯が継続の型である形を拒む。継続を述語の自己や型引数として扱わない。
+
+型付けの判断は、値について `HasTypeVQ P B Ψ Q C Γ Φ v a`、計算について `HasTypeCQ P B Ψ Q C Γ Φ R m a e Δ` と書く。Q は NoFail の文脈、C は型パラメータの制約、Γ は some の通常の位置と none の内部の位置を保つ値の文脈、Φ は有限の述語の列、Δ は構築器の局所文脈である。篩の述語の番号0は self、外側の値はその次から読む。self の種類と参照を調べる文脈と、外側の注釈を移して宣言を照合する文脈は区別する。
+
+`V_Refine` は、型 a の値 v、a の観測の種類、`v.toTerm? = some t`、p の種類・番号の上限・宣言照合、および `Entails (Γ.facts ++ Φ) (p.open t)` から `refined a p` の型付けを作る。整数だけに限る規則ではない。`C_DependentApp` は関数と `HasTypeTelArgsQ` の導出から、実引数によって具体化した結果型と効果を返す。`TelBodyTy` は、param ごとに値の文脈と Φ を移して本体を検査する。関数参照・組み込み参照・操作・外部参照の型付けは、宣言の kind の列と同じ `SignatureInstance` を要求する。kind は value 又は引数数を持つ constructor であり、型パラメータの宣言と型クラスの引数の kind を保持する。
+
+`RangeExpr` は閉じた絶対範囲、`based base pattern`、secrets の三構成子を持つ。基準名は root/cwd/home/work/tmp である。`PathEnv` は root/cwd/home と任意の work/tmp、未指定と空を区別する任意の秘密パターン列を保持する。被覆は、絶対範囲どうし、同じ基準名の範囲どうし、secrets どうしをそれぞれ比較し、RangeExpr の Top は RangeExpr のすべての式を覆う。異なる種類の記号付き範囲を実行の σ で具体化してから静的に比較する規則はない。`RangeIx` は fixed/rvar を区別する。固定範囲の Top は rvar を覆わず、範囲変数どうしは同じ番号のときだけ覆う。短い具体化の列は未解決の変数を残す。
+
+共有する正常値と明示 return の近似は `Shared/Approximation.lean` にある。`ValueApprox` は bottom/幅を持つ整数の区間/Boolean の二フラグ/unknown、`ApproxValue` は証拠付き整数/Boolean/other である。`FlowApprox` は normal/returned/mayFail の三成分を持ち、`EvalResult` は normal/returned/failed を区別する。`NormalMem` と `ReturnedMem` は別々の成分の所属を読み、`ResultMem.failed` は mayFail=true を要求する。これらは共有層の定義であり、旧解析の正常値の定理を returned/failed の定理へ拡張するものではない。
+
+論理の項 `Term` は、変数、整数・Character・Float32/64 のビット列・Decimal・Boolean・Unit・String、List/Bytes/Map/Set/data/対象の観測、宣言を照合した欄、measure、整数の加算・符号反転・定数倍からなる。述語 `Pred` は、真偽、整数の等号と大小、種類を指定する比較、浮動小数点数の分類、Decimal の表現可能性、文字の範囲、対象の所属、構成子の判定、And/Or/Not の14構成子である。任意の関数呼出しや Lean の任意の命題を項・述語へ格納する欄はない。
+
+`Val.toTerm?` は観測できない根を `none` とする。複合値の観測は `List (Option Term)` で各要素・欄を保持するので、関数・Reference・Lazy の欄を観測できなくても、data の根や隣の不変な欄は残せる。`slotBind` は `none` を保つ。全域の構文操作 `termBind` の既定値を、観測の成功の証拠として使わない。
+
+### 篩の正規形と制約の読み方
+
+【決定】`Ty.norm` はすべての子の型と潜在効果を正規化する。入れ子の篩は、内側から順に述語の連言を有限列へ展開し、`truth` を除いて右に括り直す（`Pred.conjuncts`・`ofConjuncts`、`Ty.refineNorm`）。列が空なら篩を除く。したがって `T{true}` の正規形は T の正規形に等しく、`T{p}{q}` と `T{p and q}` も同じ正規形になる。連言の順序と重複は保ち、並べ替えや論理同値を型の等号に含めない。`false` は除かない。
+
+`Ty.Canonical a` は `a.norm = a` であり、`Ty.Normal` はその別名である。`Tel.Normal` と `Eff.Canonical` もそれぞれ正規化の固定点を表す。整形式と正規形は別の判断であり、「整形式なら正規化の固定点」とは定めない。正規化は冪等である（`Ty.norm_idem`・`Tel.norm_idem`・`Eff.norm_idem`）。
+
+依存のない引数列は `Ty.foldFn` で `fn` へ戻す。判定は、各束縛の下の移動を戻せる関数型の見方 `FnView` が存在することであり、単に結果に値変数がないことだけを調べるものではない。適用の構文操作 `rawApply` は、篩について `rawApply (refined a p) args = refined (rawApply a args) p` として内側へ通る。型引数を捨てる既定の枝へ先に落とさない。適切な適用は `Ty.HasKind` と `ProperApply` で別に検査する。
+
+型付けの `V_Normal`・`C_Normal` は結果型を正規形へ変え、`Ty.LeQ.convert` は正規化後の構造の一致から部分型を与える。`SatAll` は `B.sat C a.norm p`、`Admissible` は `SatAll` を使う。`PrimitiveAdmissible` は `sg.admits C (Ty.normTys ts)` を読む。Map/Set の鍵と外部の値構造の鍵も `B.sat` へ正規形を渡す。信頼条件の欄自体に、任意の型での正規化不変性を仮定する変更は加えない。
+
+部分型 `Ty.LeQ Γ Φ a b` は有限の導出である。篩の除去、導入、篩どうしの含意は `Entails` を使い、仮定には型の自己の事実と `Γ.facts ++ Φ` の移動した列を用いる。List と Lazy の要素・結果は共変、Map の値は共変で鍵は同じ型、Reference の内容と Fail の型は正規化後の等号で照合する。関数の比較は `TelLe` とその反射推移閉包 `TelClosure` を用いる。引数を反変に比較し、後続は渡し先の引数を加えた文脈で比較し、終端の結果と潜在効果を共変に比較する。`Eff.Covers Γ Φ outer inner` は内側の各原子を外側の一原子で覆い、Fail は不変に含める。`Eff.Sub inner outer` は構造上の包含であり、引数の順も異なる。
+
+範囲付きの型の部分型については、LeQ の次の二構成子を用いる。同じ名前と kind のまま範囲を広げ、又は scoped から同じ名前・範囲の opaque へ移す。保持した値を消す構文操作ではない。これは全 LeQ のうち範囲付きの型に関する二規則の写しである。
+
+```lean
+  | scoped {Γ Φ o k inner outer} : RangeIx.Covers outer inner →
+      Ty.LeQ Γ Φ (.scoped o k inner) (.scoped o k outer)
+  | scoped_forget {Γ Φ o k ix} : Ty.LeQ Γ Φ (.scoped o k ix) (.opaque o ix)
+```
+
+### 閉じた述語の評価と捕捉
+
+【決定】`Pred.evalClosed` は、最初に `WF 0` と `Sorted [] none` を検査し、成功したときだけ空の観測環境で `evalWith` を評価する。原子は、必要な観測、種類、比較の許容、対象の所属を解決できることを `atomReady` で確認してから真偽を求める。観測や範囲の解決に失敗した原子の結果は `none` である。
+
+`evalWith` の And/Or/Not は強い Kleene の三値（strong Kleene three-valued logic）で定める。T は `some true`、F は `some false`、U は `none` を表す。
+
+| p | q | And | Or |
+|---|---|---|---|
+| T | T | T | T |
+| T | F | F | T |
+| T | U | U | T |
+| F | T | F | T |
+| F | F | F | F |
+| F | U | F | U |
+| U | T | U | T |
+| U | F | F | U |
+| U | U | U | U |
+
+Not は T/F を反転し、U を保つ。`evalWith` は左右の部分述語の結果の組でこの表を定め、左の失敗だけで全体を打ち切る順序を規則にしない。通常の計算の短絡 `or` は左を先に実行し、左の計算が実行時エラーなら右を実行せず止まる。述語の評価では、左が U でも右が T なら Or は T となる。両者は異なる評価である。
+
+成功の健全性は `Pred.evalWith_sound`・`evalClosed_sound` が二値の `Pred.interpret` との一致として述べる。閉じた述語のすべてが評価できるとはしない。`ClosedObservable` を満たすときの完全性は `evalClosed_complete` にある。`Entails.closed`・`Entails.ground` は、閉じて種類も適合する述語の評価が T のときだけ導出を作る。`Entails` は仮定、真、偽の除去、And/Or/Not、等号・整数の比較、閉じた評価の有限規則を持つ。意味上の任意の含意を前提として導出を代用しない。
+
+捕捉環境 `Capture` は、値の列の `some`/`none` と元の番号を保つ。`CaptureOk` は、捕捉元の緩い整形式・種類・宣言照合、閉じた型付きの像、`Γ.facts ++ Φ` を捕捉で閉じた各述語の仮定なしの導出を持つ。継続の項目は入力・結果の型を読み、ソースの行を読まない。ソースの参照順を検査する `Ctx.Ordered` と、WF/Sorted/Declared/Ordered を合わせる `Ctx.Regular` を `CaptureOk` の追加条件とはしない。
+
+`CaptureOk.addEntailed` は閉じた導出を元の整形式の条件と合わせて Φ に加える。`addEvaluated` は評価成功からその導出を作る系である。`close_entails` は有限導出の置換と cut で開いた事実を閉じる。閉じた経路条件を実行状態の独立の欄として保存しない。Reference の現在のセル内容と、先に読み出した不変値の観測は区別する。
+
+### 条件とパターンからの事実
+
+【決定】`C_If` は Boolean 値 v の観測 `v.toTerm? = some t` を要求し、真枝を `boolCond t true :: Φ`、偽枝を `boolCond t false :: Φ` で検査する。`boolCond` は Boolean の等号の述語である。Refinement の計算には短絡 And/Or の独立の構成子はない。この規則と、真偽の if 遷移に対する経路条件の代表がある。
+
+腕の判断 `HasTypeArmsQ` は、被検査値の観測 `obs : Option Term` を添字に持つ。`C_Match` は、`obs = some t` なら被検査値の実際の観測が t であり t が種類を持つことを要求し、同じ obs を全腕へ渡す。`none` のとき `pathFacts` は空である。`some t` のときは次の有限な `PathTest` を t に適用する。
+
+| パターンの形 | 成功した腕での事実 | ガードなしの腕に失敗した後の事実 |
+|---|---|---|
+| Integer・Character・Boolean・String・Unit のリテラル | 同じリテラルに等しい | その等号の否定 |
+| Integer/Character の閉じた範囲 | 下端以上かつ上端以下 | その連言の否定 |
+| 空 List `[]` | 長さ0 | 長さが正 |
+| 固定の前後の要素を一つ以上持つ List | 長さが正 | 追加しない |
+| 構成子 | 根がその構成子 | 全欄のパターンが `_` 又は変数の場合だけ、その構成子でない |
+| 複数の選択肢 | 共通の同じ test、又は全選択肢が test を持つ場合の Or | 各選択肢から上記の安全な除外を集める |
+
+入れ子の欄の照合に失敗しうる構成子から、根の構成子の除外を作らない。成功時の根の構成子の事実に欄の成功を追加で要求しない。`matchedTests` は共通の test がなければ `alternativesTest` で Or を作り、test を作れない選択肢があるなら成功時の事実を作らない。観測と除外の健全性は、実際の `firstAlt` の成否、`AltsTy`、値の根と欄数の条件 `RootShape` から述べる。`rootShape_of_typing` は閉じた値の型付けからその条件を返す。これは `Exhaustive` が読む `Inhabits` とは別の判断である。状態の `match_body_zero` の代表は、先行する除外と選んだ腕の成功の事実を評価できることを `MatchPathsEvaluated` として追加の入力に持つ。照合の成否から事実を導く補題と、その状態への全体の接続を区別する。
+
+`HasTypeArmsQ.plain` は、成功の事実を Φ に加えて束縛数だけ移し、本体を検査する。残りの腕は除外の事実を Φ に加えて検査する。両列の事実には `FactsWF` を要求する。`guarded` は、成功の事実の下で、`hideConts` した文脈・R=none・空の効果で guard を検査する。ストア Ψ と広げた局所文脈は保つ。guard の結果型を `Boolean{p}` とし、本体は `p.open (boolean true)` を加えた文脈で検査する。**guarded の後続の腕は元の Φ で検査する。** guard が偽であった事実も、パターンの除外も後続へ渡さない。
+
+`GuardBodyTy` は、guard を評価する前の捕捉と、真の場合の条件の下のソースの本体、局所参照の解決、閉じた結果と効果の注釈を保持する。`K_Guard` はこれを待機する本体の型付けとして使い、入力を単なる Boolean に固定せず、捕捉で閉じた `Boolean{p}` とする。真の場合は返った値の型の事実から p の導出を作り、`GuardBodyTy.of_true` で実行する閉包を作る。偽の場合は元の捕捉と腕へ戻る。
+
+### 保持要求と組み込みの遷移
+
+【決定】`groundVal` は、定数・Bytes、再帰的に受理できる List、型引数と全欄を受理できる構成子の値だけを受理する。`groundTy` は基本型・Bytes、再帰的な List/data の型引数、および `refined a p` を受理する。篩の枝は `groundTy a && decide (p.WF 1)` である。p は self だけを参照でき、外側の値を参照できない。この判定自体は p の真偽を検査しない。関数・Reference・Lazy・Map/Set・型変数などはこの判定では受理しない。一般の構文の閉性 `Val.Ground` より狭い判定である。
+
+`V_CheckedRequest` は、`valKind o = some endpoint`、`valContent o = some T`、空の型・値・事実・NoFail の文脈で要求 req が `T.norm` の型を持つことに加え、**`groundVal req = true` と `req.reqTarget = some target`** を要求する。target の endpoint の範囲への所属も要求する。`reqTarget` から kind が endpoint であることが従う。`CheckedWitness.request` は同じ要求の条件と、保存した snapshot による所属を持つ。`AtPrepared.request` と `checkAt.absolute` は、準備に成功した同じ要求と端点を成功値へ引き継ぐことを述べる。
+
+組み込みの δ と IO の応答へ渡す型・行の引数は、遷移時に `Ty.normTys ts` と `es.map Eff.norm` に正規化する（`E_Prim`・`E_Err`・`E_IO`・`E_IOErr`・`E_Exit` と同じ選択をする `step`）。範囲と実引数の値はこの正規化で変えない。`BuiltinArgs` は、その正規形の型・行、範囲の許容、`SignatureInstance`、依存する実引数列の型付け、閉性、結果と効果の整形式・正規形をまとめる。生の値の全箇所に正規形の不変条件を加える規則ではない。
+
+外部宣言は `Program.externals` の有限な表に置き、型と関数の名目ID、コンポーネント、resource の対応を照合する。`Program.ExternalWF` はキーの一意性と宣言の整合を要求する。`ExternalSignature.WF` は型パラメータと kind の列が空の単相宣言、依存列の注釈、受け渡せる型、外部型の全出現と uses の過不足・重複を検査する。外部型の入力は borrow、結果は own として位置と入れ子の道筋を保持する。uses が空なら潜在効果は空、外部型の出現があるなら State とする。外部状態の精密なヒープは表さない。
+
+外部の応答は `externalReceive` が宣言と同じ型引数・実引数から結果型を具体化し、`externalCheck` で全入れ子の篩を検査する。data の欄は元の宣言を具体化して検査する。受信の信頼条件は篩の真を含まない `Outcome.Carrier` までであり、閉じた評価が T の篩だけを受け付ける。偽と評価不能は `ExternalRefinement` の実行時エラーになる。外部の生の err はそのまま返し、exit は外部の信頼条件で除く。外部の遷移は IO の事象を出さない。
+
+以下は、名指した Refinement の規則・定義の前提と結論の写しである。計算の全24規則と Step の全76遷移は Lean を正とし、以下はそのうち名指した規則だけを写す。旧 Release の同名の規則とは名前空間を区別する。
+
+C_Use/C_Handle/C_Handle_Fail と C_IssuePathBases/C_CheckAt は次のとおりである。C_Use の解放の効果は State を要求する。C_Handle_Fail は本体の Fail と残りの効果、NoFail、失敗節の導出を別々に検査する。
+
+```lean
+    | C_Use {Ψ Q C Γ Φ Δ R v o m a ε} :
+        HasTypeVQ P B Ψ Q C Γ Φ v (.opaque o (.fixed .top)) → B.isResource o = true →
+        HasTypeCQ P B Ψ Q C Γ Φ R m a ε Δ → ε.test (.name stateEff (.fixed .top)) = true →
+        HasTypeCQ P B Ψ Q C Γ Φ R (.use v m) a ε Δ
+    | C_Handle {Ψ Q C Γ Φ Δ R m h t εm ε} : HasTypeCQ P B Ψ Q C Γ Φ R m t εm Δ →
+        Eff.Sub εm (Eff.union ε (handled P B h)) →
+        HasTypeClausesQ P B Ψ Q C Γ Φ R εm h t ε Δ →
+        HasTypeCQ P B Ψ Q C Γ Φ R (.handle m h) t ε Δ
+    | C_Handle_Fail {Ψ Q C Γ Φ Δ R m h t E eb rest ec} : HasTypeCQ P B Ψ Q C Γ Φ R m t eb Δ →
+        Eff.Sub eb (Eff.union (Eff.singleFail E) rest) → NoFail Q rest →
+        HasFailureClause P B Ψ Q C Γ Φ E R h t ec Δ →
+        HasTypeCQ P B Ψ Q C Γ Φ R (.handle m h) t (Eff.union rest ec) Δ
+    | C_IssuePathBases {Ψ Q C Γ Φ Δ R} (b : PrimName) (sg : PrimSig) :
+        B.sig b = some sg → sg.kind = .pathBases → sg.opEff = some processEnvironmentEff →
+        sg.params = [] → sg.ret = .pathBases → sg.eff = Eff.single processEnvironmentEff →
+        HasTypeCQ P B Ψ Q C Γ Φ R (.issuePathBases b) .pathBases (Eff.single processEnvironmentEff) Δ
+    | C_CheckAt {Ψ Q C Γ Φ Δ R kind name shape bases pattern input index} :
+        AtCallAdmissible P B Ψ Q C Γ Φ kind name shape bases pattern input index →
+        HasTypeCQ P B Ψ Q C Γ Φ R (.checkAt kind name shape bases pattern input index)
+          (.data shape.owner [.scoped name kind index, shape.errorType]) Eff.empty Δ
+```
+
+At の呼出しの許容条件は、次の判断の全定義である。結果の構成子の形、valKind/valContent、bases と pattern と input の型、固定の範囲の添字を検査する。
+
+```lean
+  inductive AtCallAdmissible (P : Program) (B : Builtins) :
+      StoreTy → NoFailCtx → List TParam → Ctx → List Pred → Scope.Domain.Kind →
+      OpaqueName → ResultShape → Option Val → Val → Val → RangeIx → Prop where
+    | mk {Ψ Q C Γ Φ kind name shape bases pattern input index inputTy} :
+        shape.Declared P → B.valKind name = some kind →
+        (∀ v, bases = some v → HasTypeVQ P B Ψ Q C Γ Φ v .pathBases) →
+        HasTypeVQ P B Ψ Q C Γ Φ pattern (.scopePattern kind) →
+        (inputTy = .base .string ∧ B.valContent name = none ∨ B.valContent name = some inputTy ∧ inputTy.WF 0 0 0) →
+        HasTypeVQ P B Ψ Q C Γ Φ input inputTy.norm → index.WF 0 →
+        (∀ r, index = .fixed r → r.WF ∧ r.Canonical ∧ r.FitsKind kind) →
+        AtCallAdmissible P B Ψ Q C Γ Φ kind name shape bases pattern input index
+```
+
+節の署名は、次の範囲の条件と opSigAt を合わせて決める。操作の引数の後に継続を束縛する文脈と、失敗の型変数・値・使用できない継続の位置を持つ文脈を区別する。以下は ClauseRangeIs/ClauseIxOk/ClauseSig/OpSig.continuation/OpSig.context/failureContext の写しである。
+
+```lean
+def Eff.ClauseRangeIs (e : Eff) (l : EffName) (r : RangeExpr) : Prop :=
+  (∀ i,¬e.mem (.rho i)) ∧ e.mem (.name l (.fixed r)) ∧
+    ∀ ix,e.mem (.name l ix) → ix=.fixed r
+
+def ClauseIxOk (B : Builtins) (e : Eff) (o : OpRef) (S : RangeExpr) : Prop :=
+  S=.absolute .top ∨ ∃ b s l,o=.prim b ∧ B.sig b=some s ∧ s.opEff=some l ∧ e.ClauseRangeIs l S
+
+def ClauseSig (P : Program) (B : Builtins) (e : Eff) (o : OpRef) (sg : OpSig) : Prop :=
+  ∃ S,ClauseIxOk B e o S ∧ opSigAt P B S o=some sg
+def OpSig.continuation (sg : OpSig) (t : Ty) (e : Eff) : Ty :=
+  .cont sg.ret ((shiftTypes sg.tparams.length 0 t).shiftV sg.params.length 0)
+    ((shiftRowsTypes sg.tparams.length 0 e).shiftV sg.params.length 0)
+
+def OpSig.context (sg : OpSig) (Γ : Ctx) (t : Ty) (e : Eff) : Ctx :=
+  ((Γ.shiftE sg.tparams.length).extendMany sg.params).extend (sg.continuation t e)
+
+def failureContext (Γ : Ctx) (E : Ty) : Ctx :=
+  ((Γ.shiftE 1).extend (shiftTypes 1 0 E)).extendNone
+```
+
+PathBases と At の追加の遷移は次の五規則である。AtPrepared の成功/失敗と検査の成功/失敗を区別し、保存した snapshot があるときは実行の σ と等しいことを要求する。E_OpPrim も併記し、専用 pathBases を節が処理できることを明示する。これ以外の遷移をこの差分の列挙で置き換えない。
+
+```lean
+  | E_PathBasesApply {q : Closure} {b sg k μ} :
+      q.view = .app (.prim b [] [] []) [] → B.sig b = some sg → sg.kind = .pathBases →
+      NoHandler k (.prim b) →
+      Step P B σ (.run q k μ) none (.run (.mk q.capture (.issuePathBases b)) k μ)
+  | E_IssuePathBases {q : Closure} {b sg k μ} :
+      q.view = .issuePathBases b → B.sig b = some sg → sg.kind = .pathBases →
+      sg.opEff = some processEnvironmentEff → σ.Valid →
+      Step P B σ (.run q k μ) (some (.pathBases b σ))
+        (.run (Closure.pure (.ret (.pathBases σ))) k μ)
+  | E_AtOk {q : Closure} {kind name shape bases pattern input index snapshot pat target bound t k μ} :
+      q.code = .checkAt kind name shape bases pattern input index →
+      AtPrepared B q.capture kind name bases pattern input index snapshot pat target bound →
+      (∀ ρ, snapshot = some ρ → ρ = σ) → checkAt snapshot kind pat target bound = .ok t →
+      Step P B σ (.run q k μ) none
+        (.run (Closure.pure (.ret (.con shape.ok
+          [.scoped name kind (.fixed bound), q.capture.closeTy shape.errorType]
+          [.checkedAt bound snapshot t (AtRequest B name (closeVal q.capture input))]))) k μ)
+  | E_AtError {q : Closure} {kind name shape bases pattern input index snapshot pat target bound detail k μ} :
+      q.code = .checkAt kind name shape bases pattern input index →
+      AtPrepared B q.capture kind name bases pattern input index snapshot pat target bound →
+      (∀ ρ, snapshot = some ρ → ρ = σ) → checkAt snapshot kind pat target bound = .error detail →
+      Step P B σ (.run q k μ) none
+        (.run (Closure.pure (.ret (.con shape.error
+          [.scoped name kind (.fixed bound), q.capture.closeTy shape.errorType] [.atError detail]))) k μ)
+  | E_AtPrepareError {q : Closure} {kind name shape bases pattern input index detail k μ} :
+      q.code = .checkAt kind name shape bases pattern input index →
+      AtPrepare B q.capture kind name bases pattern input index = .error detail →
+      Step P B σ (.run q k μ) none
+        (.run (Closure.pure (.ret (.con shape.error
+          [.scoped name kind index, q.capture.closeTy shape.errorType] [.atError detail]))) k μ)
+  | E_OpPrim {b ts es rs ws k μ s k1 h k2 c κ} {q : Closure} {hcap : Capture} :
+      q.view = (.app (.prim b ts es rs) ws) →
+      B.sig b = some s → (s.kind = .io ∨ s.kind = .exit ∨ s.kind = .pathBases) →
+      SplitAt (.prim b) k k1 hcap h k2 → findClause h (.prim b) = some c → μ κ = none →
+      Step P B σ (.run q k μ) none
+        (.run (Closure.mk (hcap.extendMany (ws ++ [.loc κ])) (c.body.substTy ts [])) (.drop κ :: k2) (μ.set κ (.cont (k1 ++ [.handleF hcap h]))))
+```
+
+事象は IO・解放・PathBases の発行の三構成子を持つ。
+
+```lean
+inductive Event where
+  | io (name : PrimName) (arguments : List Val) (outcome : Outcome) (observed : List Scope.Domain.Target)
+  | release (value : Val) (error : Option ErrKind)
+  | pathBases (primitive : PrimName) (snapshot : PathEnv)
+```
+
+事象の被覆は次の全定義である。IO の範囲は存在量化し、具体的な対象の許可はこの判断だけでは述べない。
+
+```lean
+def Event.Covered (B : Builtins) (Γ : Ctx) (Φ : List Pred) (ε : Eff) : Event → Prop
+  | .io b _ _ _ => ∃ s l r, B.sig b = some s ∧ s.opEff = some l ∧
+      ε.Covers Γ Φ (.mk (fun a => decide (a = .name l r)) [])
+  | .release _ _ => ε.Covers Γ Φ (Eff.single stateEff)
+  | .pathBases _ _ => ε.Covers Γ Φ (Eff.single processEnvironmentEff)
+```
+
+PathBasesShape と ShapeOk の全定義は次のとおりである。
+
+```lean
+structure PrimSig.PathBasesShape (s : PrimSig) (B : Builtins) (b : PrimName) : Prop where
+  types : s.tparams = []
+  rows : s.neffs = 0
+  ranges : s.rkinds = []
+  arguments : s.params = []
+  result : s.ret = .pathBases
+  effect : s.eff = Eff.single processEnvironmentEff
+  operation : s.opEff = some processEnvironmentEff
+  membership : ∃ bs, B.effects processEnvironmentEff = some bs ∧ b ∈ bs
+
+/-- IO の項目の形。旧 Release の ShapeOk と同じ条件を、新しい型と範囲の位置で読む。 -/
+def Builtins.ShapeOk (B : Builtins) (b : PrimName) (s : PrimSig) : Prop :=
+  ∃ l bs, s.opEff = some l ∧ s.neffs = 0 ∧ B.effects l = some bs ∧ b ∈ bs ∧
+    match s.shape with
+    | .untargeted => B.effKind l = none ∧ s.rkinds = [] ∧ s.eff = Eff.single l
+    | .topTargeted k => B.effKind l = some k ∧ s.rkinds = [] ∧ s.eff = Eff.single l
+    | .single k p => B.effKind l = some k ∧ s.rkinds = [k] ∧
+        s.eff = .mk (fun a => decide (a = .name l (.rvar 0))) [] ∧
+        ∃ o, s.params[p]? = some (.opaque o (.rvar 0)) ∧ B.valKind o = some k
+```
+
+CoreAssumptions.io_op は io/exit の項目に Builtins.ShapeOk を要求する。opEff の存在、効果の表に同じ組み込み名が所属すること、行引数なし、および IOShape ごとの範囲と対象引数の形を検査する。PathBasesShape も、B.effects Process.Environment の同じ列への組み込み名の所属を要求する。宣言に書かれた効果で実際の E_IO と E_IssuePathBases の事象を覆う局所の補題がある。継続末尾の効果までの全状態の健全性は、この補題の結論には含めない。
+
+### 篩を含む状態の型付け
+
+【決定】実行中の計算は `Closure.mk capture code` で表す。`ClosureTy` は、捕捉元の Γ/Φ と本体 `code0`、局所文脈 L と局所参照の置換 ρ を保持し、実際の code を `code0.resolveLocals ρ` と等号で結ぶ。開いた本体に閉じた型だけを渡さず、入力・結果・潜在効果のソースの注釈と捕捉後の注釈の双方を検査する。
+
+`StoreOk P B σ Ψ μ` の σ は実行ごとに固定する `PathEnv`、μ は可変のストアである。σ を型付け・部分型・被覆の静的判断へ渡さない。`StoreOk` は μ の有限性、Ψ の WF と Declared、Ψ と μ の場所の一致、全セルの `CellOk` を要求する。
+
+| セル | `CellOk` の内容 |
+|---|---|
+| `val v` | `Ψ l = ref a`、閉じた v の型付けを **a.norm** で読むこと、`v.Adequate σ` |
+| `thunk q` | `Ψ l = lazy a`、hideBuilders した Ψ のもとで入力なし・R=none・結果 a・空の効果の `ClosureTy`、`q.Adequate σ` |
+| `done v` | `Ψ l = lazy a`、閉じた v の型付けを a で読むこと、`v.Adequate σ` |
+| `cont k` | Ψ の入力・結果・行・R、末尾が handle の枠であること、同じ σ の `ContTy` |
+| `used` | Ψ の継続の契約 |
+| `builder c` | Ψ の構築器の種類、内容型と論理上限、内容の適格性 |
+
+`K_Update` は `Ψ l = lazy a`、**`Ty.Annotation P [] [] a`**、残りの継続の型付けを前提とし、先頭の R を none とする。戻り値はこの注釈を使って格納型へ合わせる。書戻しの遷移は現在のセルを thunk に限定せず、同じ場所の done も上書きする。error/exit で更新枠を外す遷移は、セルを変えない。
+
+`PrimSig.StoreShape` は Reference の new/get/set/update の各署名について、既存の引数名・型・結果・State・範囲変数なしという形に加え、型パラメータの kind の列が `[value]` であることを要求する。force の枝にはこの kind の条件を加えていない。get/set の存在は `CoreAssumptions.ref_get/ref_set` が供給し、`ReferencePrimitives` はこれらと store_shape/store_admits から導く。
+
+`CoreAssumptions.state_effect` は `B.effects stateEff = some []` である。`Program.EffectsOk` は、利用者の効果から操作、操作から利用者の効果への二つの所属の対応と、利用者の効果名が組み込みの効果名と重ならないことの三連言である。両者から `NoStateHandled` を導き、どの handled も State を消さないこと、継続末尾までの State の保持、解放列の前置を述べる。`C_Handle` の本体の効果の条件は構造上の `Eff.Sub` であり、独立の `Eff.WF(ε)` の前提を持たない。
+
+CoreAssumptions は、制約のない閉じた型の具体化、組み込みの許容から型引数の制約への接続、資源の解放応答の存在について、次の三欄も持つ。sat_unconstrained は閉じた型の正規形を読み、admits_sat は正規形の列の許容から元の型引数列と宣言の制約列の SatAll を要求する。SatAll は個数も検査する。release_exists は新しい HasTypeV の全資源値を量化し、Ground/Adequate の追加条件を持たない。以下は三欄の全言明の写しである。
+
+```lean
+  /-- 制約のない型パラメータは、閉じた整形式の型の正規形で具体化できる。 -/
+  sat_unconstrained : ∀ (t : Ty), t.WF 0 0 0 → B.sat [] t.norm ({} : TParam)
+  /-- 組み込みの許容は、同じ型引数列の制約と個数も満たす。 -/
+  admits_sat : ∀ b s C ts, B.sig b = some s → s.admits C (Ty.normTys ts) →
+    SatAll B C ts (s.tparams.map TParamDecl.constraints)
+  /-- 型付きの全資源値について、解放の応答が少なくとも一つある。 -/
+  release_exists : ∀ Ψ v o, HasTypeV P B Ψ [] [] [] v (.opaque o (.fixed .top)) →
+    B.isResource o = true → ∃ r, B.releaseResponse v r
+```
+
+`ContTy P B σ Ψ R e k a b Eb Re` は、先頭と末尾の R と効果を区別する。`StateTyE P B σ Eb` は run・matchRun・error・exit の四状態について同じ末尾 Eb を保ち、末尾の R を none とする。run は `StoreOk`、入力なしの `ClosureTy`、計算の効果の構造上の包含、継続の型付け、閉性と保持値の適格性を持つ。matchRun は、実際の値が捕捉元の被検査値を閉じたものであること、元の match の閉包、`MatchPrefix`、腕と捕捉の閉性・適格性も持つ。error/exit はストアと継続の型付けと閉性を持つ。`StateTy` は `σ.Valid` と、`BuiltinOnly P B Eb` を満たす Eb が存在して `StateTyE` が成り立つことの連言である。
+
+次に ContTy の全10構成子を示す。入力/末尾の R と効果、捕捉した注釈、hideBuilders、Adequate を含む前提は、この写しに従う。K_Guard の待機本体の GuardBodyTy は「条件とパターンからの事実」の定義による。
+
+```lean
+inductive ContTy (P : Program) (B : Builtins) (σ : PathEnv) (Ψ : StoreTy) :
+    Option Ty → Eff → Cont → Ty → Ty → Eff → Option Ty → Prop where
+  | K_Empty {R ε a Eb} : Eff.Sub ε Eb → Ty.Annotation P [] [] a →
+      ContTy P B σ Ψ R ε [] a a Eb R
+  | K_Let {R ε q k a c b Eb e1 Re} :
+      ClosureTy P B Ψ [a] (R.map (Ty.shiftV 1 0)) q (c.shiftV 1 0) (e1.shiftV 1 0) →
+      q.Adequate σ → Ty.Annotation P [] [] a → Eff.Sub e1 ε →
+      ContTy P B σ Ψ R ε k c b Eb Re →
+      ContTy P B σ Ψ R ε (.letF q :: k) a b Eb Re
+  | K_Mark {R ε k a b Eb Re} : ContTy P B σ Ψ R ε k a b Eb Re →
+      Ty.Annotation P [] [] a → ContTy P B σ Ψ (some a) ε (.mark :: k) a b Eb Re
+  | K_Update {R ε l k a b Eb Re} : Ψ l = some (.lazy a) →
+      Ty.Annotation P [] [] a →
+      ContTy P B σ Ψ R ε k a b Eb Re →
+      ContTy P B σ Ψ none ε (.update l :: k) a b Eb Re
+  | K_Release {R ε v o k a b Eb Re} : HasTypeV P B Ψ [] [] [] v (.opaque o (.fixed .top)) →
+      v.Adequate σ → B.isResource o = true → Eff.mem ε (.name stateEff (.fixed .top)) →
+      ContTy P B σ Ψ R ε k a b Eb Re →
+      ContTy P B σ Ψ R ε (.release v :: k) a b Eb Re
+  | K_Handle {R ε ec eb cap h k t b Eb Re Γ Φ Rs ts ecs ebs} :
+      ContTy P B σ Ψ R ε k t b Eb Re → Eff.Covers [] [] ε ec → Eff.Sub eb (Eff.union ec (handled P B h)) →
+      CaptureOk P B (hideBuilders Ψ) R Γ Φ cap →
+      HasTypeClausesQ P B (hideBuilders Ψ) Qempty [] Γ Φ Rs ebs h ts ecs [] →
+      cap.closeR Rs = R → cap.closeTy ts = t → cap.closeEff ecs = ec → cap.closeEff ebs = eb →
+      Ty.Annotation P [] [] (.dependentFn (.done t ec)) →
+      Ty.Annotation P [] Γ ts → (∀ a, Rs = some a → a.Declared P [] Γ) →
+      Frame.Adequate σ (.handleF cap h) →
+      ContTy P B σ Ψ R eb (.handleF cap h :: k) t b Eb Re
+  | K_Handle_Fail {R ε ec rest E cap h k t b Eb Re Γ Φ Rs ts ecs Es} :
+      ContTy P B σ Ψ R ε k t b Eb Re → Eff.Covers [] [] ε rest → NoFail Qempty rest →
+      CaptureOk P B (hideBuilders Ψ) R Γ Φ cap →
+      HasFailureClause P B (hideBuilders Ψ) Qempty [] Γ Φ Es Rs h ts ecs [] →
+      cap.closeR Rs = R → cap.closeTy ts = t → cap.closeEff ecs = ec → cap.closeTy Es = E →
+      (∀ a, Rs = some a → a.Declared P [] Γ) → Eff.Covers [] [] ε ec → Ty.Annotation P [] [] t →
+      Frame.Adequate σ (.handleF cap h) →
+      ContTy P B σ Ψ R (Eff.union (Eff.singleFail E) rest) (.handleF cap h :: k) t b Eb Re
+  | K_Drop {R ε l k a b Eb Re b' t' e' R'} : Ψ l = some (.cont b' t' e' R') →
+      (Eff.mem e' (.name stateEff (.fixed .top)) → Eff.mem ε (.name stateEff (.fixed .top))) →
+      ContTy P B σ Ψ R ε k a b Eb Re →
+      ContTy P B σ Ψ R ε (.drop l :: k) a b Eb Re
+  | K_Guard {R ε v cap arms next body k a b Eb Re e1 Γ Φ Rs vs t as es arms0 L ρ obs input} :
+      CaptureOk P B Ψ R Γ Φ cap →
+      HasTypeV P B Ψ [] Γ Φ vs t →
+      (∀ term, obs = some term → vs.toTerm? = some term ∧ ∃ sort, term.HasSort Γ sort) →
+      HasTypeArmsQ P B Ψ Qempty [] Γ Φ Rs obs arms0 t as es L →
+      CaptureLocals Ψ cap.env L ρ → arms = Arm.resolveLocalsList ρ arms0 →
+      (∀ r, Rs = some r → Ty.Declared P [] Γ r) →
+      Exhaustive P t (unguardedPats arms0) →
+      v = closeVal cap vs → cap.closeR Rs = R → cap.closeTy as = a → cap.closeEff es = e1 →
+      GuardBodyTy P B Ψ R body input a e1 → Eff.Sub e1 ε → MatchPrefix v arms next →
+      ContTy P B σ Ψ R ε k a b Eb Re → Frame.Adequate σ (.guardF v cap arms next body) →
+      ContTy P B σ Ψ none Eff.empty (.guardF v cap arms next body :: k) input b Eb Re
+  | K_Sub {R ε k a a' b Eb Re} : ContTy P B σ Ψ R ε k a' b Eb Re → Ty.LeQ [] [] a a' →
+      ContTy P B σ Ψ R ε k a b Eb Re
+```
+
 ### 確かめる性質
 
-【方針】次の性質が成り立つように、本章と[型システム](01-06-type-system.md)を定める。形式検証の段階 1（[ロードマップ](../00-overview/00-03-roadmap.md)）で、ランダムに生成したプログラムを使って反例を探す。反例が見つかれば、仕様の誤りとして直す。性質 2 と性質 3 は、形式検証の段階 2 で、規則を Lean 4 で定義し、組み込みの関数についての仮定のもとで証明した。性質 1 は、前述の「表層からの脱糖」の全体（形式化の段階 C1・C2。`match` のパターンの拡張は段階 C7）と、初回リリース版の拡張の脱糖のうち段階 C4・C5・C6 で形式化したものについて、表層の型付けを満たす型の情報を付けた表層のプログラムを脱糖すると、すべての定義に型が付き、定義が範囲の条件を満たすことを証明した。この性質 1 と性質 3 を組み合わせ、表層の `main` のエフェクトが空なら、脱糖したプログラムの実行は IO の事象を伴う遷移をせず、どの `handle` の枠も処理しない操作を呼ばないことも証明した（[形式意味論と検証](../07-quality/07-04-formal-semantics.md)）。形式化した規則は Lean の定義を正とする（前述の「本章の位置付け」）。
+【方針】次の性質が成り立つように、本章と[型システム](01-06-type-system.md)を定める。形式検証の段階 1（[ロードマップ](../00-overview/00-03-roadmap.md)）で、ランダムに生成したプログラムを使って反例を探す。反例が見つかれば、仕様の誤りとして直す。以下で性質 1〜3 の証明に使う型付けと遷移は `Benitoite.Release` のものである。篩を含む `Benitoite.Release.Refinement` の定義への全状態の定理の適用は、この記述に含めない。性質 2 と性質 3 は、形式検証の段階 2 で、規則を Lean 4 で定義し、組み込みの関数についての仮定のもとで証明した。性質 1 は、前述の「表層からの脱糖」の全体（形式化の段階 C1・C2。`match` のパターンの拡張は段階 C7）と、初回リリース版の拡張の脱糖のうち段階 C4・C5・C6 で形式化したものについて、表層の型付けを満たす型の情報を付けた表層のプログラムを脱糖すると、すべての定義に型が付き、定義が範囲の条件を満たすことを証明した。この性質 1 と性質 3 を組み合わせ、表層の `main` のエフェクトが空なら、脱糖したプログラムの実行は IO の事象を伴う遷移をせず、どの `handle` の枠も処理しない操作を呼ばないことも証明した（[形式意味論と検証](../07-quality/07-04-formal-semantics.md)）。形式化した規則は Lean の定義を正とする（前述の「本章の位置付け」）。
 
 1. 脱糖の型の保存: [型システム](01-06-type-system.md)の型検査を通ったプログラムを脱糖すると、すべての定義に型が付く。
 2. 進行と保存: 型が付いた状態は、`⟨return V, []⟩` であるか、遷移できる。遷移した先の状態も型が付くか、`error(r)` である。IO の応答は、関数の戻り値の型の値であるとする。
