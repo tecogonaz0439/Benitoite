@@ -186,11 +186,9 @@ return と let の接続は、子の独立評価・実際の有限な実行・�
 
 `TypeSubstContracts` の `S02_V` などの14個の Prop は、型置換の契約である。十の移送は、行像が空又は源のコードが SourceScoped という `TypeSubstCode` を受け、恒等三成分と True 一成分はそのままとする。`TypeSubstFormation` の場所・実行時閉包の四つの case 補題は、この条件の下で既存の型付けの構成子を組み立て、全相互帰納から使う。`Def.WellTyped` は本体の SourceScoped を含まず、関数とメソッドの本体の SourceScoped は `Program.WellFormed` が返す宣言の Scoped から得る。操作と Fail の遷移では行像が空である。
 
-
 `KindTypeSubst` は、Ty・Tel・型の列・Eff の全構文で型と行の像の kind を保存する。Ty の constructor/value を分けた47枝は同じ相互の族である。`TypeSubstFormation` は、Declared の四族26構文形、欄と述語の宣言照合、WF と Sorted を合成した型・行の Annotation の保存を証明する。tapp の head は元の Declared と型像の kind で検査し、全注釈の value kind を前提にしない。Tel の下では、元と像の型を加えた値文脈の対応を延長する。`ClosedTypeSubstInput.extend` は公開入口の捕捉文脈の延長を与える。内部入力は Γ に依存せず、値束縛の子へそのまま渡す。型束縛を増やす TypeSubstInput.under は、閉じた型像の制約を既存の sat_shiftTypes で弱める。Ty.Declared.typeSubst/Tel.Declared.typeSubst は、元の Declared だけを受けるため、C_Let などの結果型へ S01 による追加の形成を要求しない。
 
 `SignatureInstance` と `SignatureInstanceAt` の `rowKinds` は、固定した呼出し元の kind 文脈における行像の条件である。値の移動・置換、型の移動、文脈変更、正規化、旧署名の具体化がこの欄を保つ。旧署名の三包装は同じ κ の行の kind を受け、`LegacyRowsInput.rowKinds` はその形の証拠を返す。三包装は、七判断の全導出の埋め込みから呼ぶ。これらは型・行の形成と既存移送の証明であり、コードの全型置換の証明又は Rust との全比較を含まない。
-
 
 `PrimitiveAdmissible.sourceTelRows` は、署名全体の行変数が実際の行引数列の長さ未満であることを要求する。外側の効果だけを検査する sourceRows と区別し、引数の関数型の潜在効果・戻り型・Fail 型の内部も対象にする。V_Prim と BuiltinArgs は同じ許容条件を読む。norm/map と型の移動がこの欄を保ち、値の移動・置換は map、文脈変更は同じ証拠を使う。CoreAssumptions の独立の欄は要求しない。`Tel.rowsIn_instR` は範囲の具体化で行の上限を保ち、`instantiatedTel_substAt` は宣言の WF・型引数の個数・署名全体の行の上限から依存列と像の型置換の交換を証明する。NoTapp と kind の追加条件は要求しない。参照四形と force の証拠は、既存の StoreShape の各形から得る。
 
@@ -232,7 +230,15 @@ return と let の接続は、子の独立評価・実際の有限な実行・�
 
 `LegacyContInput` は、旧 `ContTy` の証拠を添字に持つ帰納的な入力である。枠の七構文と、通常・失敗のハンドラおよび部分型を含む十規則に沿い、各位置の入出力型・戻り先・効果、let・guard のコード、release の値、handler の節を検査する。子の入力は有限な旧導出へ下降する。`LegacyCellInput` は builder・val・thunk・done・cont・used の六構文を検査する。List の専用セルは各要素の全導出と閉性を、保存継続は末尾の handler と旧 `ContTy` の入力を持つ。`LegacyStoreInput` は旧 `StoreOk`、閉じた場所の型入力、有限ストアの各セルの入力を要求する。場所の値から参照先のセルを再帰的に展開しない。
 
-`legacy_value_adequate`・`legacy_comp_adequate` と列・腕・節の相互証明は、任意の固定した経路環境 `σ` に対し旧構文の像の `Adequate` を証明する。枠・継続・セル・ストアにも適用する。旧構文の像に新しい snapshot はなく、保持要求の内容には構文に沿って下降するため、`Adequate` を独立の信頼条件にしない。旧状態の入力の定義と、七判断の埋め込みは、状態の新しい型付けや一段遷移の可換性とは区別する。
+`legacy_value_adequate`・`legacy_comp_adequate` と列・腕・節の相互証明は、任意の固定した経路環境 `σ` に対し旧構文の像の `Adequate` を証明する。枠・継続・セル・ストアにも適用する。旧構文の像に新しい snapshot はなく、保持要求の内容には構文に沿って下降するため、`Adequate` を独立の信頼条件にしない。`legacy_held_value_adequate` は空捕捉で閉じた保持値にも同じ性質を証明する。一段遷移の可換性はこれらの型付けの埋め込みに含めない。
+
+実行時に保持する照合値は `embedHeldVal v := closeVal Capture.empty (embedVal v)` とする。`embedFrame` の `guardF` と `embedState` の `matchRun` がこの像を使う。理由: 新しいガード枠と照合状態は、保持値が同じ捕捉でコード中の値を閉じた結果であることを要求し、旧 lambda の生の像はこの条件を満たさない。let 枠・thunk・run のコードは `embedVal`・`embedComp` で写す。release 枠と val・done・builder の List のセルは、生の値の像と既存の型付け・閉性の入力を使う。理由: それらの規則には、値が `closeVal` の像であるという条件がない。
+
+`embedHeldVal_typed` は、`DeclarationKinds.WF`・`LegacyTables` と、空の kind・制約・値文脈、`Qempty` での値の `LegacyOutputInput` から、同じ型の像による保持値の型付けを構成する。七判断の入力への帰納を使い、lambda は元の本体の導出から空捕捉の `DependentClosureTy` を構成する。値の意味を独立に仮定しない。`Capture.typed_coverage` は、この型付けと既存の表の変性の条件から閉じた値の所属を供給する。
+
+`embedContTy`・`embedStoreOk`・`embedStateTyE` は、`DeclarationKinds.WF`・`LegacyTables` と、それぞれ既存の `LegacyContInput`・`LegacyStoreInput`・`LegacyStateInput` を前提とする。枠7形と継続10規則、セル6形と有限ストア、状態4形の新しい型付けを片方向に構成する。任意の同じ `σ` と、状態の同じ `embedEff Eb` を使う。`StateTyE` の構成は `σ.Valid` を必要とせず、`StateTy` に含まれる `σ.Valid` と末尾の効果の `BuiltinOnly (embedProgramWithKinds K P0) B (embedEff Eb)` は、その判断の使用時に供給する。新しい型付け・状態の型付け・遷移を旧入力の条件へ追加しない。`LegacyStateEmbeddingExamples` は保持値を生の lambda のまま写した像の型付けの否定と、同じ旧継続・状態の保持値を空の捕捉で閉じた像の型付け、run・error・exit と空ストアへの適用を含む。`list_lambda_state` は lambda を保持する List を非空 List のパターンで照合し、束縛結果が空捕捉で閉じた lambda の像であることも示す。
+
+`embedDefWellTyped`・`embedImplWellTyped`・`embedProgramWellTyped`・`embedProgramWellFormed` は、宣言の kind 表の形成と `LegacyTables`、宣言の lookup と既存の旧本体入力から、新しい宣言の判断を構成する。後三者は `LegacyDeclarationInputs` を、実装・プログラムの型付けは元の旧 `WellTyped` を、プログラムの形成は元の旧 `WellFormed` を使う。旧実装の型付けは、クラスとメソッド・上位辞書の対応も供給する。メソッドは代入前の `Qsig` を保ち、辞書の値引数の後に通常の引数を束縛する。本体の新しい型付けは七入口から構成し、前提の欄にはしない。`LegacyProgramEmbeddingExamples` は同じプログラムと組み込み表で恒等関数の本体・全プログラムの型付け・形成へ適用する。`LegacyImplementationEmbeddingExamples.implementation_parents` は、二つのクラスと二つの Unit の実装について、旧宣言の入力と旧の型付け・形成、新しい実装・プログラムの型付け・形成、実際のメソッドと上位辞書の lookup を同時に構成する。
 
 `ProgramTyping` は関数・実装の `WellTyped`、`QTel` と `Qsig` の一致、および `Program.WellTyped` を定義する。後者は同じ P の `VarianceValid`・`ExternalWF` と全 lookup の本体の型付けを持つ。`ProgramWellFormed` は各宣言の `Scoped`、依存列の上限・kind・`Annotation`、同名 data の arity、格納済み metadata の適格性を定義し、四名前空間の `SourceScoped` は `SourceScope` から読む。メソッド本体は代入前の Q を使い、`method_body` が呼出し規則の Qsig で同じ本体を取り出す。実装の辞書型の kind と操作の辞書型の先頭の対応も検査する。意味の所属を信頼する欄と、呼出し側への新しい NoFail の前提は追加しない。
 
@@ -571,7 +577,6 @@ Rustの現在の書き出しはcorpus 15・sidecar 7であり、型検査済み�
 
 LeanのExchange.BuilderExamplesは、版13の専用コアを手書きのJSONと照合し、版12の構築器の再生成の理由、旧refsの新版への混入、必須の種類の欠落と余分な欄の拒否を既定ビルドで確認する。Surface.BuilderExamplesは、Stateを支持に含めない三種類・四操作のstrict/relaxedと、空の効果を宣言した関数の全プログラム検査を確認する。通常Reference.getを追記の引数に使う対照ではStateが残る。既存のコアの専用locの捕捉拒否と、表層の関数・遅延・部分適用・節のboundの捕捉拒否も保つ。
 
-
 交換11/4は `{"kind":"fail","error":<Ty>}` を型の潜在効果と行の具体化の内部まで読む。Failを含む型は有限支持上の正規化を使い、比較の両辺の順序と重複をそろえる。Headerと組み込み宣言はneffsと同数のeffParamsを必須とし、各要素のnoFailはBoolである。署名のparams・ret・effから計算するQと照合し、範囲外の行とNoFailの不一致を拒否する。操作はdictParamsとeffectKind、通常節はdictCountとfailureType=nullを持つ。表層節のarityは値引数数、コア節のarityは辞書を含む合計である。辞書の節への所属と深さはDictEv.clauseで交換し、checkerが検査する。標準Failは通常の操作表と分けたraise・handleFail、およびfailureTypeを持つ非再開のコア節で表す。旧版へのこれらの情報の混入は拒否する。理由: 読み捨てによる検査の成功を防ぎ、型付けと脱糖のモデルの区別を交換の境界でも保つためである。
 
 `formal/tests/test_batch2_exchange.py` は11/4の独立した五形式を六入口へ渡し、手書きのコア、文字の全域、必須欄・個数・番号・NoFail・辞書の所属の拒否を確認する。Releaseの補助上限の複数Failを読み取ることと、表層の具体化後の単一Failを区別する。`--rust-dir` は指定した五形式の局所Rust出力を追加で比較し、出力が存在しない場合は失敗する。Rustの辞書付き操作と型付きの失敗は11/4へ接続している。通常節はfailureType=nullとし、Failの原子・失敗節の固定エラー型・署名由来の各行のnoFailを実際の型情報から出力する。独立入力と実ソースの局所比較を区別し、対象外や空の比較を成功にしない。
@@ -696,7 +701,6 @@ fuel の初期値は、定数展開後の全元定義の根の surfaceSize 総�
 
 Surface の読者が表せない外部型を含む元定義は、理由 `externalType` として全定義の manifest と比較報告へ残す。除外の単位は元定義とそれに属する全別本体である。Rust の観測の親候補・独立入力の候補が空で、全本体の整数区間が Top または Bottom だけであり、発見と観測が全本体で揃う場合に限り受け入れる。独立入力の正常値を Lean との比較済み件数へ数えない。同じ入力の残る定義は元の予算状態で一つずつ再実行し、正常値・候補・独立入力・元位置・消費と最大保持を従来と同じ欄で比較する。各元定義と別本体の実消費を順に足した計上記録を、検査全体の最終消費へ照合する。除外した本体そのものの Rust/Lean の一致は主張しない。除外を認める根拠は、利用者へ出す警告の候補がないことである。この条件は、独立入力の正常値と本体自身の Bottom を比較しない。2026-10-27 の全比較では、除外した4入力・12元定義・16本体の独立入力355件中14件が Top でも Bottom でもない整数区間を持ち、本体14件は Bottom であり、いずれも Lean と未比較で残る。同じ除外を持つ全件系統と manifest 系統の件数を、固有の除外数へ二重に足さない。理由: 外部型を Surface に加えずに、除外で利用者の警告を落とさないことと、残る定義の比較を確認するためである。
 
-
 全10系統の負例の和集合には、integer・after・context・next・warnings・independent・userWarnings・phasePosition と externalType の candidates・integer・width・independent の全12種を要求する。全系統に integer・after・context・next・warnings を要求し、これらの免除はない。残る種も入力に該当の形がある系統では要求する。次の表の免除は、対応する形が入力にないことを条件とする。基本の欄を壊す負例の選択から、理由付き除外を持つ入力を外す。その入力は除外をまたぐ予算状態を使って定義ごとに比較するため、全体を直接再実行する負例には使えない。
 
 | 系統 | 系統ごとの要求から外す負例 | 入力にない形 |
@@ -711,7 +715,6 @@ Surface の読者が表せない外部型を含む元定義は、理由 `externa
 全比較の出力は `target/desugar-diff/run-ID/`・`target/coverage-diff/run-ID/`・`target/interval-diff/run-ID/` の三つに分ける。`scripts/check/formal_interval.py` が実パスの同一・親子関係・古い出力の再利用を拒み、実行前の入力ハッシュを保存する。既存六入口の最後の照合が成功した後に、10系統の全定義の対応、各比較の件数、三出力先の全入力・全報告のハッシュを manifest にまとめ、読み戻して追加・欠落・改変を拒否する。`Log.formatRecord` の公開利用は `batch3/g2` の `log-standard` に直接の call があることと、その入力ハッシュを持つ六入口の成功報告で照合する。これは通常の型付けと脱糖の接続であり、書式化の値や IO の正しさを区間解析の定理へ加えない。
 
 全件と独立プログラムの連結した入力は、元の二つの出力への相対パスを持つ索引から読む。索引と参照先をともに manifest のハッシュへ含め、同一の material・manifest・読者 corpus・観測を三出力先へ重ねて保存しない。実ソースの比較へ渡した入力の全文は、Lean の実行後に gzip で圧縮して保存する。実行時の JSON と復元後の全文は同一であり、比較対象と件数は変えない。
-
 
 出力先の指定と保存物は [formal/README.md「検査」](../../../formal/README.md#検査)、検査の割り当てと結果の引用は [07-03「実装の規約と静的な検査」](07-03-compiler-testing.md#実装の規約と静的な検査)に従う。`formal_build` の成功、独立入力だけの成功、全件を使わない局所比較の成功を、この全比較の実行済みという意味にはしない。
 
@@ -911,7 +914,6 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 
 【決定】Lean の定義の名前は、01-12 の規則の名前に対応させる（規則 `E-Op` の遷移は構成子 `E_Op`、規則 `C-Sub` の計算の型付けは構成子 `C_Sub`、規則 `K-Handle` の継続の型付けは構成子 `K_Handle` とする）。01-12 の節と形式化の対応は、次の表で管理する。形式化のために 01-12 と違う形で書いた箇所は、「表現の違い」の欄にその内容と理由を記す。01-12 が規則の名前を付けずに文で書いた規則は、Lean では名前を付けた構成子として書く。`Reference.update` の遷移は `E_RefUpdate`、`lazy` と `escape` の型付けは `C_Lazy`・`C_Escape`、場所の値の型付けは `V_LocRef`・`V_LocLazy`、操作の型付けは `V_Op` である。
 
-
 篩を含む形式化の対応は次表のとおりである。右欄は Lean 内の定義・規則の写しであり、Rust との比較の済んだ範囲を増やす表ではない。
 
 | Lean（`Release/Refinement/` 以下） | 01-12 の写し |
@@ -923,7 +925,7 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 | VarianceSyntax・VarianceValidation | 「篩の正規形と制約の読み方」の data の変性、metadata と総称の欄の検証。提供された表の構造検査に限る |
 | 原ソースの辞書制約・公開境界の収集 | Lean の外。上の表の構造検査は、収集の完全性と原ソースとの一致を保証しない |
 | VarianceFormation・VarianceTransport | 同節の `Sorted` の移送、型引数の比較と欄の単調性。中間の型引数の注釈を要求しない |
-| LegacyKinds・LegacyDeclarations・LegacyInput・LegacyRegularity・LegacyTables・LegacyTableFacts・LegacyValues | 「旧判断の適格な入力」。kind を保持する宣言の写し、七判断46局所規則と全中間判断の入力、旧判断への復元、通常節の元の操作署名の形成と同じ長さの範囲具体化への移送、constructor 欄と不変の変性、旧受理から新受理への表の条件、操作の辞書の先頭と添字・実装の辞書型の kind の入力、四つの値の葉と正規化の限定等号。型付けの全埋め込みは LegacyEmbedding に、状態の入力は LegacyStateInputs に対応する。状態・一段遷移の埋め込みは含まない |
+| LegacyKinds・LegacyDeclarations・LegacyInput・LegacyRegularity・LegacyTables・LegacyTableFacts・LegacyValues | 「旧判断の適格な入力」。kind を保持する宣言の写し、七判断46局所規則と全中間判断の入力、旧判断への復元、通常節の元の操作署名の形成と同じ長さの範囲具体化への移送、constructor 欄と不変の変性、旧受理から新受理への表の条件、操作の辞書の先頭と添字・実装の辞書型の kind の入力、四つの値の葉と正規化の限定等号。型付けの全埋め込みは LegacyEmbedding に、状態の入力は LegacyStateInputs に対応する。状態の型付けの埋め込みは LegacyStateTyping が行う。一段遷移の可換性は含まない |
 | TypeRegularity・TypeBounds・TypeRows・TypeVariables・TypeShiftFacts・EffectFacts | 「篩の正規形と制約の読み方」。WFの像の条件付き置換、四名前空間の再帰条件、型移動の比較と整列、効果の構造等号と行置換 |
 | SourceScope・PrimitiveScoped・RangeFormation | 「篩を含むコア計算の形式化」と「篩を含む定義とプログラムの適格性」。四名前空間の支持、組み込みの依存列の形成と範囲具体化後の形成 |
 | LegacyTyping・LegacyValueCases・LegacyCallInputs・LegacyPrimitiveCase・LegacyOperationCase・LegacyLambdaCase・LegacyCollectionCases・LegacyHeldCases・LegacySubCases・LegacyValueEmbedding | 「旧判断の適格な入力」。七判断を任意の Φ で述べる結論と node の帰納、子の結論から値19規則の親を再構成する補題、定数の構文の全導出の埋め込み。空・非空の局所文脈の橋は ValueAssumptions を要求しない。全導出の合成は LegacyEmbedding が行う |
@@ -931,8 +933,12 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 | LegacyPatterns・LegacyPatternMatch・LegacyPatternCoverage | 同節のパターン三判断の片方向の埋め込み、子の文脈からの束縛型の入力、全パターンの照合結果と束縛列の対応、範囲の深さ0の条件付きの網羅性。旧値の像の等号を仮定しない |
 | LegacyPatternExamples・LegacyEmbeddingExamples | 同節の具体の宣言表と組み込み表の充足、List・At の照合と七文字列の束縛、構成子名・欄数・型引数数の不適合、無条件の網羅性の含意の反例、let・腕・非空の局所文脈と参照位置、node の帰納と値規則への適用 |
 | LegacySequenceEmbedding・LegacyCompCases・LegacyMethodEmbedding・LegacyControlEmbedding・LegacyBuilderEmbedding・LegacyHandlerEmbedding・LegacyArmEmbedding・LegacyShiftAlgebra・LegacyClauseTables・LegacyClauseContexts・LegacyClauseEmbedding・LegacyEmbedding | 同節の旧列4・計算17・腕3・節3規則、既存の値19規則と合わせた全46規則の相互帰納。七つの主入口と空の Φ の系。新しい型付けの導出を構成する片方向の埋め込み |
-| LegacyStateInputs・LegacyAdequate・LegacyFullEmbeddingExamples | 同節の旧状態4形・枠7形・セル6形の入力。保存継続の有限な旧導出と、有限ストアの各セルの検査。任意の σ での旧構文の像の Adequate、七入口の具体例、C_If・通常節の具体例、Φ = [.truth] での照合の入口の適用、表現可能性を満たさない旧定数の拒否。状態の新しい型付けの埋め込みは含まない |
+| LegacyStateInputs・LegacyAdequate・LegacyFullEmbeddingExamples | 同節の旧状態4形・枠7形・セル6形の入力。保存継続の有限な旧導出と、有限ストアの各セルの検査。任意の σ での旧構文の像の Adequate、七入口の具体例、C_If・通常節の具体例、Φ = [.truth] での照合の入口の適用、表現可能性を満たさない旧定数の拒否。保持する値の像には legacy_held_value_adequate を適用する。状態の型付けの埋め込みは LegacyStateTyping が行う |
 | LegacyDeclarationInputs | 「旧判断の適格な入力」。旧判断の入力から関数・メソッド・上位辞書の本体の形成を取り出す |
+| LegacyHeldTyping・LegacyStateTyping | 同節の空捕捉で閉じた旧値の型付け、枠7形・継続10規則・セル6形と全ストア・状態4形の片方向の型付けの埋め込み。状態の効果と経路環境を保ち、一段遷移の可換性は含まない |
+| LegacyProgramTyping | 同節の旧宣言の kind と本体入力から、関数・実装・全プログラムの型付けと宣言の形成を構成する。メソッドの代入前の Q と上位辞書を保持する |
+| LegacyStateEmbeddingExamples・LegacyProgramEmbeddingExamples | 同節の、保持値を生の lambda のまま写した像の型付けの否定と、空捕捉で閉じた保持値の像の受理、全4状態・空ストア、lambdaを保持するListの照合、恒等関数の本体とプログラムへの具体の適用 |
+| LegacyImplementationEmbeddingExamples | 同節の二クラス・二実装の具体例。メソッドと上位辞書の本体の入力を構成し、実装とプログラムの型付け・形成の埋め込みに適用する |
 | TypeValueExchange・TypeSubstBindings | 「篩を含むコア計算の形式化」。値置換と型置換の交換、捕捉、文脈と束縛下の同じ内部入力の接続 |
 | PatternTypeSubst | 同節のパターンの型付けの移送、所属の反映、網羅性の型置換と腕のパターン列の一致 |
 | ProgramTyping・ProgramWellFormed | 「篩を含む定義とプログラムの適格性」。本体の型付けと、格納済みの宣言・metadata の範囲と arity の検査。原ソースの収集の一致は含まない |

@@ -46,6 +46,9 @@ mutual
     | cons c cs => cases c <;> exact ⟨legacy_comp_adequate _ σ,legacy_clauses_adequate cs σ⟩
 end
 
+theorem legacy_held_value_adequate (v : Benitoite.Release.Val) (σ : PathEnv) : (embedHeldVal v).Adequate σ :=
+  closeVal_adequate (by trivial) (legacy_value_adequate v σ)
+
 theorem legacy_frame_adequate (f : Benitoite.Release.Frame) (σ : PathEnv) : (embedFrame f).Adequate σ := by
   cases f <;> simp only [embedFrame,Frame.Adequate,Closure.Adequate,Closure.pure,Capture.Adequate,
     Capture.empty,adequateCaptureSlots]
@@ -54,7 +57,7 @@ theorem legacy_frame_adequate (f : Benitoite.Release.Frame) (σ : PathEnv) : (em
     | exact ⟨trivial,legacy_comp_adequate _ σ⟩
     | exact legacy_value_adequate _ σ
     | exact ⟨trivial,legacy_clauses_adequate _ σ⟩
-    | exact ⟨legacy_value_adequate _ σ,trivial,legacy_arms_adequate _ σ,trivial,legacy_comp_adequate _ σ⟩
+    | exact ⟨legacy_held_value_adequate _ σ,trivial,legacy_arms_adequate _ σ,trivial,legacy_comp_adequate _ σ⟩
 
 theorem legacy_cont_adequate (k : Benitoite.Release.Cont) (σ : PathEnv) : (embedCont k).Adequate σ := by
   intro f hf

@@ -1,0 +1,227 @@
+{
+  "base": "6425feef272403fc665579eae3d88c5df2f8ba21",
+  "start_utc": "2026-11-02T19:05:27+00:00",
+  "end_utc": "2026-11-02T19:27:26.242762+00:00",
+  "elapsed_seconds": 1319.2427620887756,
+  "active_seconds": null,
+  "waiting_seconds": null,
+  "work_runs": 1,
+  "default_build_jobs": 896,
+  "machine": "arm64",
+  "os": "macOS 27.2",
+  "rss_body": null,
+  "rss_instrument": null,
+  "rss_reason": "担当は非採取。正式な段末の同じworkで取りまとめが採取する。",
+  "checks": {
+    "audit-same2": {
+      "name": "audit-same2",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/axioms.lean"
+      ],
+      "start": 1793646382.4036422,
+      "end": 1793646399.239501,
+      "seconds": 16.835858821868896,
+      "exit": 0,
+      "bytes": 2598531,
+      "sha256": "cb80f41a364957e78e3c35aa79be473ffed172e6d0230fa63a1e728702cfbda2"
+    },
+    "list-example4": {
+      "name": "list-example4",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "Benitoite/Release/Refinement/LegacyStateEmbeddingExamples.lean"
+      ],
+      "start": 1793646670.340225,
+      "end": 1793646670.876184,
+      "seconds": 0.535959005355835,
+      "exit": 0,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "implementation-example2": {
+      "name": "implementation-example2",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "Benitoite/Release/Refinement/LegacyImplementationEmbeddingExamples.lean"
+      ],
+      "start": 1793646762.273412,
+      "end": 1793646763.2180932,
+      "seconds": 0.9446811676025391,
+      "exit": 0,
+      "bytes": 1148,
+      "sha256": "fee35df852542ae601113df2f9adf23d73e933320cef1c4af00f5ae48fbcd83e"
+    },
+    "examples-default": {
+      "name": "examples-default",
+      "command": [
+        "lake",
+        "build"
+      ],
+      "start": 1793646786.146,
+      "end": 1793646803.5066812,
+      "seconds": 17.360681295394897,
+      "exit": 0,
+      "bytes": 47283,
+      "sha256": "432efa79b59c8596a7f31a1ec7c30281439e8f9e212e2cab420669eaba4c00e7"
+    },
+    "audit": {
+      "name": "audit",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/axioms.lean"
+      ],
+      "start": 1793646834.974182,
+      "end": 1793646852.551618,
+      "seconds": 17.577437162399292,
+      "exit": 0,
+      "bytes": 2617243,
+      "sha256": "5c175df61ad6d6829bcf53368e40ff8d0fd4d19a4cea1a25bc9e6007b32e7fb5"
+    },
+    "inventory": {
+      "name": "inventory",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/audit-inventory.lean"
+      ],
+      "start": 1793646834.974198,
+      "end": 1793646851.962955,
+      "seconds": 16.988756895065308,
+      "exit": 0,
+      "bytes": 1969949,
+      "sha256": "b8f221d7c9d63d7af64bc4cc0b365343ec2d8263add63f1291c691a8f11be352"
+    },
+    "signatures2": {
+      "name": "signatures2",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/s/signatures.lean"
+      ],
+      "start": 1793646986.607692,
+      "end": 1793646987.2769542,
+      "seconds": 0.669262170791626,
+      "exit": 0,
+      "bytes": 60485,
+      "sha256": "aadb8f71d0b3b49b310e0e89871ca274f7a7ce8fe588d6e778c57533ef75ce43"
+    },
+    "contrast": {
+      "name": "contrast",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/s/obstruction.lean"
+      ],
+      "start": 1793647400.98609,
+      "end": 1793647401.638376,
+      "seconds": 0.6522860527038574,
+      "exit": 0,
+      "bytes": 8466,
+      "sha256": "ed6e209f0403dc3a554eb8794b3c08b6fc4e98b752b700d1ace147687a2e747c"
+    },
+    "validation-regenerate": {
+      "name": "validation-regenerate",
+      "command": [
+        "python3",
+        "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/s/validate.py"
+      ],
+      "start": 1793647366.932728,
+      "end": 1793647385.850195,
+      "seconds": 18.91746687889099,
+      "exit": 0,
+      "bytes": 381,
+      "sha256": "ff4bc9e29efb97e210889a7ea9e34ae69111d22110b0b3a2c43a5548df647d37"
+    },
+    "validation-final": {
+      "name": "validation-final",
+      "command": [
+        "python3",
+        "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/s/validate.py",
+        "--targets",
+        "<tmp>/l20-s-resume2-targets.txt",
+        "--axioms",
+        "<tmp>/l20-s-resume2-audit.log"
+      ],
+      "start": 1793647536.6186728,
+      "end": 1793647538.951415,
+      "seconds": 2.332742214202881,
+      "exit": 0,
+      "bytes": 381,
+      "sha256": "ff4bc9e29efb97e210889a7ea9e34ae69111d22110b0b3a2c43a5548df647d37"
+    },
+    "work-dry": {
+      "name": "work-dry",
+      "command": [
+        "scripts/check.sh",
+        "--level",
+        "work",
+        "--base",
+        "6425feef272403fc665579eae3d88c5df2f8ba21",
+        "--dry-run"
+      ],
+      "start": 1793647517.032851,
+      "end": 1793647517.1463091,
+      "seconds": 0.11345815658569336,
+      "exit": 0,
+      "bytes": 759,
+      "sha256": "49ba64b813b6e3c3600d64c2f2861aa0fe096f91e990815f49db62c406c6d6fc"
+    },
+    "work": {
+      "name": "work",
+      "command": [
+        "scripts/check.sh",
+        "--level",
+        "work",
+        "--base",
+        "6425feef272403fc665579eae3d88c5df2f8ba21"
+      ],
+      "start": 1793647535.485551,
+      "end": 1793647539.3073359,
+      "seconds": 3.8217859268188477,
+      "exit": 0,
+      "bytes": 5757,
+      "sha256": "b16648804186779dd827295f5e06491f2a6d81d2ba70537e77e046a639d01082"
+    }
+  },
+  "attempts": 23,
+  "failed_attempts": 8,
+  "handwritten": 125,
+  "public": 29,
+  "private": 96,
+  "stage_names": {
+    "declarations": 331,
+    "namespaces": 2,
+    "modules": 8,
+    "auxiliary": 1,
+    "rust": 1,
+    "unresolved": 0
+  },
+  "name_output_bytes": 25711,
+  "name_output_sha256": "d3efef14bec46515f7b519033c4f2d8cbd2b3197919dce84d2cac3bae034f47a"
+}

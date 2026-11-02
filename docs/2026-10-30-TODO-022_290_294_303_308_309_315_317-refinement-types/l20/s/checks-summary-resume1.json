@@ -1,0 +1,117 @@
+{
+  "base": "6425feef272403fc665579eae3d88c5df2f8ba21",
+  "machine": "arm64",
+  "os": "macOS 27.2",
+  "rss": {
+    "body": null,
+    "instrument": null,
+    "reason": "担当は非採取。正式な段末の同じworkで取りまとめが採取する。",
+    "unit": null,
+    "quoted": false
+  },
+  "default_build_jobs": 895,
+  "work_runs": 1,
+  "work": {
+    "name": "work",
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "6425feef272403fc665579eae3d88c5df2f8ba21"
+    ],
+    "start": 1793645274.034063,
+    "end": 1793645282.575066,
+    "seconds": 8.541002988815308,
+    "exit": 0,
+    "bytes": 5757,
+    "sha256": "42484cf240460dcc2c8cd3731630230a0892e91ae48de95c63b5ab0519446cde"
+  },
+  "dry_run": {
+    "name": "work-dry",
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "6425feef272403fc665579eae3d88c5df2f8ba21",
+      "--dry-run"
+    ],
+    "start": 1793645260.6541162,
+    "end": 1793645260.7698681,
+    "seconds": 0.11575198173522949,
+    "exit": 0,
+    "bytes": 759,
+    "sha256": "7b7d9fc7859cd1efcf128fea1806a2c6d2dc05dfae45b021432c35837848cc2d"
+  },
+  "axioms": {
+    "name": "audit-final",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/axioms.lean"
+    ],
+    "start": 1793645140.356093,
+    "end": 1793645141.70617,
+    "seconds": 1.3500771522521973,
+    "exit": 0,
+    "bytes": 2598531,
+    "sha256": "cb80f41a364957e78e3c35aa79be473ffed172e6d0230fa63a1e728702cfbda2"
+  },
+  "signatures": {
+    "name": "signatures2",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/s/signatures.lean"
+    ],
+    "start": 1793644599.1426828,
+    "end": 1793644599.845782,
+    "seconds": 0.703099250793457,
+    "exit": 0,
+    "bytes": 46193,
+    "sha256": "136fc347e50e193e537568b4d6352c35526751bb670c4a30e17ed08cb148fc53"
+  },
+  "contrast": {
+    "name": "obstruction",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/s/obstruction.lean"
+    ],
+    "start": 1793644599.900743,
+    "end": 1793644600.5065851,
+    "seconds": 0.605842113494873,
+    "exit": 0,
+    "bytes": 5364,
+    "sha256": "e262f5cb93f52dca07558a5d307fb70f78a73b5c2cb9ab6fb9d1be971a6f0da4"
+  },
+  "validation": {
+    "name": "validation-final",
+    "command": [
+      "python3",
+      "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/s/validate.py",
+      "<tmp>/l20-s-resume1-audit-final.log"
+    ],
+    "start": 1793645333.2117498,
+    "end": 1793645333.305461,
+    "seconds": 0.09371113777160645,
+    "exit": 0,
+    "bytes": 150,
+    "sha256": "392bf64b41d144d9ad443ec59b0d3d3021392ed3dda1e8d5d50b84e1ad1454dd"
+  },
+  "all_attempts": 55,
+  "failed_attempts": 31,
+  "handwritten": 92,
+  "public": 27,
+  "private": 65
+}

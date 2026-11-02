@@ -86,6 +86,9 @@ def embedProgram (P : Benitoite.Release.Program) : Program :=
 @[simp] theorem embedProgram_varianceFor (P : Benitoite.Release.Program) (d : DataName) (n : Nat) :
     (embedProgram P).varianceFor d n = List.replicate n .invariant := rfl
 
+/-- 旧の値の像を空の捕捉で閉じた、実行時の保持値の像。 -/
+def embedHeldVal (v : Benitoite.Release.Val) : Val := closeVal Capture.empty (embedVal v)
+
 def embedFrame : Benitoite.Release.Frame → Frame
   | .letF m => .letF (.pure (embedComp m))
   | .mark => .mark
@@ -93,7 +96,7 @@ def embedFrame : Benitoite.Release.Frame → Frame
   | .release v => .release (embedVal v)
   | .handleF h => .handleF Capture.empty (embedClauses h)
   | .drop k => .drop k
-  | .guardF v arms next body => .guardF (embedVal v) Capture.empty (embedArms arms) next (.pure (embedComp body))
+  | .guardF v arms next body => .guardF (embedHeldVal v) Capture.empty (embedArms arms) next (.pure (embedComp body))
 
 def embedCont (k : Benitoite.Release.Cont) : Cont := k.map embedFrame
 
@@ -120,10 +123,10 @@ def embedStoreTy (Ψ : Benitoite.Release.StoreTy) : StoreTy := fun l => (Ψ l).m
 
 def embedStore (μ : Benitoite.Release.Store) : Store := fun l => (μ l).map embedCell
 
-/-- 全域の構文変換である。型付け・遷移の対応は閉じた旧状態について別に証明する。 -/
+/-- 全域の構文変換である。閉じた旧状態の型付けの対応は LegacyStateTyping が証明する。一段遷移の対応は証明しない。 -/
 def embedState : Benitoite.Release.State → State
   | .run m k μ => .run (.pure (embedComp m)) (embedCont k) (embedStore μ)
-  | .matchRun v arms next k μ => .matchRun (embedVal v) Capture.empty (embedArms arms) next (embedCont k) (embedStore μ)
+  | .matchRun v arms next k μ => .matchRun (embedHeldVal v) Capture.empty (embedArms arms) next (embedCont k) (embedStore μ)
   | .error rs k μ => .error rs (embedCont k) (embedStore μ)
   | .exit n rs k μ => .exit n rs (embedCont k) (embedStore μ)
 

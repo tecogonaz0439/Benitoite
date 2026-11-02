@@ -95,7 +95,7 @@ theorem target_not_ordinary : ¬ Ordinary continuation := by
   intro h
   exact h (.base .unit) (.base .unit) Eff.empty rfl
 
-/-- S07 の前提と data の元の意味を満たしても、両側の型像の Ordinary は得られない。 -/
+/-- 部分型の意味の移送の前提と data の元の意味を満たしても、両側の型像の Ordinary は得られない。 -/
 theorem ordinary_supply_counterexample :
     boxProgram.VarianceValid ∧
     TypeArgsLe boxProgram [] [] (boxProgram.varianceFor "MeaningBox" 1)

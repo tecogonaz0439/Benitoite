@@ -1,0 +1,22 @@
+import Benitoite
+
+/-! 変更前の保持値の像の拒否と、同じ旧入力に対する現在の像の受理。 -/
+open Benitoite.Release.Refinement
+#check LegacyStateEmbeddingExamples.old_guard_embedding_impossible
+#check LegacyStateEmbeddingExamples.guard_embedding_accepted
+#check LegacyStateEmbeddingExamples.old_state_embedding_impossible
+#check LegacyStateEmbeddingExamples.state_embedding_accepted
+#check LegacyStateEmbeddingExamples.held_lambda_typed
+#check LegacyStateEmbeddingExamples.held_lambda_covered
+#check LegacyStateEmbeddingExamples.old_match_step
+#print axioms Benitoite.Release.Refinement.LegacyStateEmbeddingExamples.old_guard_embedding_impossible
+#print axioms Benitoite.Release.Refinement.LegacyStateEmbeddingExamples.guard_embedding_accepted
+#print axioms Benitoite.Release.Refinement.LegacyStateEmbeddingExamples.old_state_embedding_impossible
+#print axioms Benitoite.Release.Refinement.LegacyStateEmbeddingExamples.state_embedding_accepted
+#print axioms Benitoite.Release.Refinement.LegacyStateEmbeddingExamples.held_lambda_typed
+#print axioms Benitoite.Release.Refinement.LegacyStateEmbeddingExamples.held_lambda_covered
+
+#check LegacyStateEmbeddingExamples.state_typed_of_valid
+#check LegacyStateEmbeddingExamples.list_lambda_state
+#check LegacyProgramEmbeddingExamples.program_well_formed
+#check LegacyImplementationEmbeddingExamples.implementation_parents
