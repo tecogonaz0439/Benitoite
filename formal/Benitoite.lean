@@ -412,3 +412,20 @@ import Benitoite.Release.Refinement.ControlLeafSelection
 import Benitoite.Release.Refinement.IntervalConnection
 import Benitoite.Release.Refinement.IntervalConnectionExamples
 import Benitoite.Release.Refinement.IntervalRelationBoundary
+
+import Benitoite.Release.Refinement.LegacyTyping
+import Benitoite.Release.Refinement.LegacyPatterns
+import Benitoite.Release.Refinement.LegacyPatternMatch
+import Benitoite.Release.Refinement.LegacyPatternCoverage
+import Benitoite.Release.Refinement.LegacyPatternExamples
+import Benitoite.Release.Refinement.LegacyValueCases
+import Benitoite.Release.Refinement.LegacyCallInputs
+import Benitoite.Release.Refinement.LegacyRangeAlgebra
+import Benitoite.Release.Refinement.LegacyPrimitiveCase
+import Benitoite.Release.Refinement.LegacyOperationCase
+import Benitoite.Release.Refinement.LegacyLambdaCase
+import Benitoite.Release.Refinement.LegacyCollectionCases
+import Benitoite.Release.Refinement.LegacyHeldCases
+import Benitoite.Release.Refinement.LegacySubCases
+import Benitoite.Release.Refinement.LegacyValueEmbedding
+import Benitoite.Release.Refinement.LegacyEmbeddingExamples

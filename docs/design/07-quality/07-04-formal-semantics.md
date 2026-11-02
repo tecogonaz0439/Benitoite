@@ -210,6 +210,20 @@ return と let の接続は、子の独立評価・実際の有限な実行・�
 
 旧導出を受け取る LegacyTypesInput は、旧型引数の各型が NotCont を満たすとき、Ordinary を加える前の各型の入力条件と同値である。閉性は要求しない。旧型の NotCont と embedTy 後の Ordinary の同値を使う。継続を保持する文脈の一般の LegacyTypeInput に、この制限は追加しない。
 
+`LegacyJudgment.Embedded` は、七判断の結論を任意の経路条件 `Φ` で量化する。型文脈は `legacyTypeCtx C κ` とし、旧の値文脈・ストア・戻り先・局所文脈の像を使う。`LegacyOutputInput.induct_regular` は、親の規則と形成、全ての子の入力、および各子の帰納仮説を渡す。`LegacyRule.embed_value` は、`DeclarationKinds.WF`、`LegacyTables`、値の親の `LegacyNodeRegular`、その規則の全ての子についての `Embedded` から、親の `Embedded` を構成する。値の全19規則を扱う。lambda の本体では子の帰納仮説を `liftMany` で移した `Φ` に、保持要求の内容では空の `Φ` に特殊化する。これらの子の結論は相互帰納の帰納仮説であり、旧入力へ追加する独立の信頼条件ではない。
+
+関数・組み込み・操作の参照では、非依存の旧署名と新しい依存列の具体化を正規化した型の等号で対応させ、`V_Sub` の `convert` で旧型の像へ移す。組み込みの型の対応 `legacy_primitive_type` は、具体化した旧結果型の `LegacyTypeInput`、範囲の深さ0、同じ型引数の `LegacyTypesInput`、行引数の `LegacyRowsInput` を使う。最上位だけの範囲の具体化に全体の具体化を適用すると全体の具体化と一致することと、結果型・型引数・行引数の閉じた範囲を使って等号を示す。範囲のない署名に限定しない。旧 `Eff.instR` は最上位の Fail 列の並びを保つため、新しい効果の具体化との等号は正規化後に示す。値の型付けを意味の包含で代用しない。
+
+`legacy_local_zero` は、旧 `LocalCtx.extend n L` を写した局所文脈での計算の型付けを、新しい `localExtend n` で拡張した局所文脈へ移す。`L` は空でも非空でもよい。空の旧局所文脈で省略される末尾の `none` と、非空の局所文脈の先頭の `none` と参照位置を対応させる。`ValueAssumptions` を要求しない。`LegacyNodeContext.bindings` は、`binds δ ++ Γ` を持つ子の文脈から、任意の値の深さでの `LegacyNodeTypes δ` を取り出す。旧型の像が値参照を持たない性質を使い、型の適格性を独立に仮定しない。
+
+`embedPatTy`・`embedPatTys`・`embedAltsTy` は、`LegacyTables` と旧判断から、同じパターン・入力型の像・束縛型列の像を持つ新判断を構成する。構成子の欄の形成は表から供給する。これらの補題は、追加の `DeclarationKinds.WF` 又は `LegacyNodeTypes` を要求しない。
+
+網羅性の対応には、実行の値の写し `embedVal` と別に、照合が読む構造を保持する旧値 `legacyPatternVal` を使う。構成子と List の子を再帰的に写し、`checkedAt` と保持要求は同じ対象の旧 `checked` に、`atError` は標準の At 構成子と同じ七文字列に対応させる。パターンがビット値を比較しない Float64 は旧の `.float 0` に写し、Float32 のビット列は保持する。構造を読まない値の内部は復元しない。`legacy_matchVal` と `legacy_matchList` は、全てのパターンについて照合結果と束縛列の対応を証明する。この関数が型付け又は実行を保存するとは主張しない。
+
+`legacy_inhabits` は、`LegacyTables`、新しい `Inhabits P (embedTy a) v`、旧 `a.WF 0 nt` から、対応する旧値の旧 `Inhabits` を構成する。構成子の欄と List の要素にも下降する。`embedExhaustive` は、この対応と照合結果の対応を使い、`LegacyTables`、旧型の `a.WF 0 nt`、旧 `Exhaustive P0 a ps` から、同じ `ps` の新 `Exhaustive` を証明する。範囲の変数を持つ `opaque o (rvar 0)` には旧の所属値がなく、旧の空パターン列は網羅的だが、新しい `checkedAt` が属するため新しい空パターン列は網羅的でない。この型は旧型の範囲の深さ0の `WF` で拒否する。C_Match の照合値の子の `LegacyNodeRegular` からは、型入力の `WF` を `legacy_wf` で旧型へ移して供給する。
+
+`LegacyOutputInput.embed_constants` は、定数の構文を持つ旧導出について、部分型の枝を含め、任意の `Φ` での新しい型付けを証明する。この定理の入力は `LegacyOutputInput` だけである。値19規則の各枝の再構成は、計算・腕・節の子を含む七判断の全導出の埋め込み、状態の埋め込み、一段遷移の可換性とは区別する。
+
 `ProgramTyping` は関数・実装の `WellTyped`、`QTel` と `Qsig` の一致、および `Program.WellTyped` を定義する。後者は同じ P の `VarianceValid`・`ExternalWF` と全 lookup の本体の型付けを持つ。`ProgramWellFormed` は各宣言の `Scoped`、依存列の上限・kind・`Annotation`、同名 data の arity、格納済み metadata の適格性を定義し、四名前空間の `SourceScoped` は `SourceScope` から読む。メソッド本体は代入前の Q を使い、`method_body` が呼出し規則の Qsig で同じ本体を取り出す。実装の辞書型の kind と操作の辞書型の先頭の対応も検査する。意味の所属を信頼する欄と、呼出し側への新しい NoFail の前提は追加しない。
 
 metadata が none の項目、requirements/publicBoundary の空列、対応する構成子を持たない metadata の同名 arity の全称条件は、その範囲だけ空に成り立つ。`VarianceValid` と `MetadataScoped` は提供された表を検査し、原ソースからの収集の完全性を証明しない。辞書制約と公開境界の収集の完全性および原ソースとの一致は Lean の外であり、この形式化は保証しない。欄の単調性の補題は metadata の二列を読み出さず、欄の形成と正負の出現の検査から示す。
@@ -902,6 +916,10 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 | LegacyKinds・LegacyDeclarations・LegacyInput・LegacyRegularity・LegacyTables・LegacyTableFacts・LegacyValues | 「旧判断の適格な入力」。kind を保持する宣言の写し、七判断46局所規則と全中間判断の入力、旧判断への復元、通常節の元の操作署名の形成と同じ長さの範囲具体化への移送、constructor 欄と不変の変性、旧受理から新受理への表の条件、操作の辞書の先頭と添字・実装の辞書型の kind の入力、四つの値の葉と正規化の限定等号。全型付け・状態・一段遷移の埋め込みは含まない |
 | TypeRegularity・TypeBounds・TypeRows・TypeVariables・TypeShiftFacts・EffectFacts | 「篩の正規形と制約の読み方」。WFの像の条件付き置換、四名前空間の再帰条件、型移動の比較と整列、効果の構造等号と行置換 |
 | SourceScope・PrimitiveScoped・RangeFormation | 「篩を含むコア計算の形式化」と「篩を含む定義とプログラムの適格性」。四名前空間の支持、組み込みの依存列の形成と範囲具体化後の形成 |
+| LegacyTyping・LegacyValueCases・LegacyCallInputs・LegacyPrimitiveCase・LegacyOperationCase・LegacyLambdaCase・LegacyCollectionCases・LegacyHeldCases・LegacySubCases・LegacyValueEmbedding | 「旧判断の適格な入力」。七判断を任意の Φ で述べる結論と node の帰納、子の結論から値19規則の親を再構成する補題、定数の構文の全導出の埋め込み。空・非空の局所文脈の橋は ValueAssumptions を要求しない。計算・腕・節を含む全導出の合成は含まない |
+| LegacyTypeAlgebra・LegacyRangeAlgebra | 同節の型・行置換と範囲具体化の等号、非依存の署名と依存列の具体化、NoFail と行の入力。組み込みの型の二通りの具体化は、旧結果型と型・行引数の既存の入力から対応させる。効果の具体化の等号は正規化後 |
+| LegacyPatterns・LegacyPatternMatch・LegacyPatternCoverage | 同節のパターン三判断の片方向の埋め込み、子の文脈からの束縛型の入力、全パターンの照合結果と束縛列の対応、範囲の深さ0の条件付きの網羅性。旧値の像の等号を仮定しない |
+| LegacyPatternExamples・LegacyEmbeddingExamples | 同節の具体の宣言表と組み込み表の充足、List・At の照合と七文字列の束縛、構成子名・欄数・型引数数の不適合、無条件の網羅性の含意の反例、let・腕・非空の局所文脈と参照位置、node の帰納と値規則への適用 |
 | LegacyDeclarationInputs | 「旧判断の適格な入力」。旧判断の入力から関数・メソッド・上位辞書の本体の形成を取り出す |
 | TypeValueExchange・TypeSubstBindings | 「篩を含むコア計算の形式化」。値置換と型置換の交換、捕捉、文脈と束縛下の同じ内部入力の接続 |
 | PatternTypeSubst | 同節のパターンの型付けの移送、所属の反映、網羅性の型置換と腕のパターン列の一致 |
