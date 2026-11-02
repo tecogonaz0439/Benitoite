@@ -3201,7 +3201,7 @@ structure SignatureInstance (P : Program) (C : TypeCtx) (Γ : Ctx)
   result : Ty.Annotation P C Γ (.dependentFn (instantiatedTel t ts es))
 ```
 
-値の移動・値の置換・型の移動・正規化は行像の kind を保存し、値の文脈の変更では同じ証拠を使う。`legacy_signatureInstance` と関数・メソッドの包装は、同じ κ の行の kind を受ける。`LegacyRowsInput.rowKinds` は、その形の証拠を返す。これらの三包装を使う旧導出の型付けの本体は、既定ビルドに含まれていない。
+値の移動・値の置換・型の移動・正規化は行像の kind を保存し、値の文脈の変更では同じ証拠を使う。`legacy_signatureInstance` と関数・メソッドの包装は、同じ κ の行の kind を受ける。`LegacyRowsInput.rowKinds` は、その形の証拠を返す。これらの三包装は、七判断の全導出の埋め込みから呼ぶ。
 
 `V_Raise` は、関数型 `fn ["error"] [e] t (singleFail e)` の Annotation に加え、`Ordinary t` と `Ordinary e`、結果型 t の `HasKind P (TypeCtx.kinds C) t .value` を要求する。操作の型引数 ts とメソッド本体へ代入する `ss ++ ts` の Ordinary は、対応する型付けの導出から取り出す。継続を保持する文脈と resume の規則は、型引数とは別に継続型を扱う。
 
@@ -3345,7 +3345,17 @@ structure PrimSig.Scoped (P : Program) (s : PrimSig) : Prop where
 
 `legacy_inhabits` は、`LegacyTables`、新しい `Inhabits P (embedTy a) v`、旧 `a.WF 0 nt` から、対応する旧値の旧 `Inhabits` を構成する。構成子の欄と List の要素にも下降する。`embedExhaustive` は、この対応と照合結果の対応を使い、`LegacyTables`、旧型の `a.WF 0 nt`、旧 `Exhaustive P0 a ps` から、同じ `ps` の新 `Exhaustive` を証明する。範囲の変数を持つ `opaque o (rvar 0)` には旧の所属値がなく、旧の空パターン列は網羅的だが、新しい `checkedAt` が属するため新しい空パターン列は網羅的でない。この型は旧型の範囲の深さ0の `WF` で拒否する。C_Match の照合値の子の `LegacyNodeRegular` からは、型入力の `WF` を `legacy_wf` で旧型へ移して供給する。
 
-`LegacyOutputInput.embed_constants` は、定数の構文を持つ旧導出について、部分型の枝を含め、任意の `Φ` での新しい型付けを証明する。この定理の入力は `LegacyOutputInput` だけである。値19規則の各枝の再構成は、計算・腕・節の子を含む七判断の全導出の埋め込み、状態の埋め込み、一段遷移の可換性とは区別する。
+`LegacyOutputInput.embed` は、`DeclarationKinds.WF`・`LegacyTables`・`LegacyOutputInput` から、同じ旧導出の七判断の `Embedded` を構成する。値19・列4・計算17・腕3・通常節2・失敗節1の全46規則を、同じ `induct_regular` で合成する。`embedHasTypeVQ`・`embedHasTypeVsQ`・`embedHasTypeEachQ`・`embedHasTypeCQ`・`embedHasTypeArmsQ`・`embedHasTypeClausesQ`・`embedHasFailureClause` が判断ごとの入口である。表現可能性と対象保持は各 node の入力、宣言の kind の長さは `DeclarationKinds.WF`、表の片方向の対応は `LegacyTables` で検査する。文脈と項の入力は node に含まれ、旧型付けは `LegacyOutputInput.old` から導けるため、七入口の独立の前提にはしない。末尾が `_empty` の七つの系は空の `Φ` に特殊化し、同じ表の具体の値・列・計算・腕・通常節・失敗節へ適用する。
+
+計算の `if` は型付き Boolean から観測を取り出し、真偽の条件を加えた `Φ` へ子の帰納仮説を特殊化する。`match` と腕は `obs = none` を使い、`pathFacts` は空列である。ガードの真の篩には `truth` を使い、本体の帰納仮説はその条件を加えた `Φ` に特殊化する。`let` と腕の局所文脈は `legacy_local_zero` で対応させる。メソッドは辞書型の kind と実際の署名を照合し、引数列と結果の正規化を呼出し規則へ渡す。型の結論を部分型の変換で、効果の正規化を被覆で合わせる。
+
+通常節は `LegacyTables.opSigAt` と `clauseSig` で実際の範囲 `S` の署名を構成する。署名の形成は元の操作自身の文脈から、型文脈と値文脈の移動は親 node の形成から供給する。失敗節は型一つ・値二つの束縛を加え、`liftMany 2 Φ` で本体の帰納仮説を使う。旧型の像の値移動は恒等であり、旧型移動と新しい生の型移動の一致に必要な正規形は、既存の型・行の形成から導く。これらの証明は `ValueAssumptions` を要求せず、`ValueMeaning` や旧値の像の等号で型付けを代用しない。
+
+`LegacyStateInput K P0 B0 B Eb s` は、同じ旧状態のストアと継続の型付けの証拠、およびコード・中間型・保持値の構造検査を持つ。`run` と `matchRun` は空の型・値文脈のコード入力と旧の効果の包含を持ち、`matchRun` は同じ照合の接頭辞も持つ。`error` と `exit` は継続とストアを検査する。`LegacyClosedCompInput` は全導出の入力と、写したコードの型注釈・変数・局所参照の閉性を持つ。`LegacyStateInput.old` は、同じ証拠から旧 `StateTyE P0 B0 Eb s` を構成する。
+
+`LegacyContInput` は、旧 `ContTy` の証拠を添字に持つ帰納的な入力である。枠の七構文と、通常・失敗のハンドラおよび部分型を含む十規則に沿い、各位置の入出力型・戻り先・効果、let・guard のコード、release の値、handler の節を検査する。子の入力は有限な旧導出へ下降する。`LegacyCellInput` は builder・val・thunk・done・cont・used の六構文を検査する。List の専用セルは各要素の全導出と閉性を、保存継続は末尾の handler と旧 `ContTy` の入力を持つ。`LegacyStoreInput` は旧 `StoreOk`、閉じた場所の型入力、有限ストアの各セルの入力を要求する。場所の値から参照先のセルを再帰的に展開しない。
+
+`legacy_value_adequate`・`legacy_comp_adequate` と列・腕・節の相互証明は、任意の固定した経路環境 `σ` に対し旧構文の像の `Adequate` を証明する。枠・継続・セル・ストアにも適用する。旧構文の像に新しい snapshot はなく、保持要求の内容には構文に沿って下降するため、`Adequate` を独立の信頼条件にしない。旧状態の入力の定義と、七判断の埋め込みは、状態の新しい型付けや一段遷移の可換性とは区別する。
 
 `LegacyDeclarationInputs` は LegacyDeclarationsInput、関数・メソッド・上位辞書の declarationBodyInputs、および写した各本体の SourceScoped を持つ。三つの本体入力は旧の全導出の LegacyOutputInput を読み、新しい WellTyped を入力の欄にしない。メソッドの Q は、代入前の Qsig ms.params ms.ret ms.eff である。操作の辞書の先頭と実装の辞書型の kind は、LegacyDeclarationsInput.op_dictionaryInputs と impl_dictionaryKinds から供給する。
 

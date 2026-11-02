@@ -429,3 +429,19 @@ import Benitoite.Release.Refinement.LegacyHeldCases
 import Benitoite.Release.Refinement.LegacySubCases
 import Benitoite.Release.Refinement.LegacyValueEmbedding
 import Benitoite.Release.Refinement.LegacyEmbeddingExamples
+
+import Benitoite.Release.Refinement.LegacySequenceEmbedding
+import Benitoite.Release.Refinement.LegacyCompCases
+import Benitoite.Release.Refinement.LegacyMethodEmbedding
+import Benitoite.Release.Refinement.LegacyControlEmbedding
+import Benitoite.Release.Refinement.LegacyBuilderEmbedding
+import Benitoite.Release.Refinement.LegacyHandlerEmbedding
+import Benitoite.Release.Refinement.LegacyArmEmbedding
+import Benitoite.Release.Refinement.LegacyShiftAlgebra
+import Benitoite.Release.Refinement.LegacyClauseTables
+import Benitoite.Release.Refinement.LegacyClauseContexts
+import Benitoite.Release.Refinement.LegacyClauseEmbedding
+import Benitoite.Release.Refinement.LegacyEmbedding
+import Benitoite.Release.Refinement.LegacyStateInputs
+import Benitoite.Release.Refinement.LegacyAdequate
+import Benitoite.Release.Refinement.LegacyFullEmbeddingExamples
