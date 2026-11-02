@@ -1,0 +1,307 @@
+{
+  "base": "14dc5648d5c8cb866268ecd3f29020d8e43436b9",
+  "checks": [
+    {
+      "name": "counterexample-first",
+      "cwd": "formal",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/n/h04-counterexample.lean"
+      ],
+      "start_utc": "2026-11-02T14:28:24.995869+00:00",
+      "end_utc": "2026-11-02T14:28:25.935892+00:00",
+      "seconds": 0.94,
+      "exit": 1,
+      "log": {
+        "name": "<tmp>/benitoite-l20n-r3/counterexample-first.log",
+        "bytes": 12815,
+        "sha256": "a74c82bd16facb4b07eb914f21bb7cf715e45d45a66fd05c850f929585bb83f8"
+      }
+    },
+    {
+      "name": "counterexample-second",
+      "cwd": "formal",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/n/h04-counterexample.lean"
+      ],
+      "start_utc": "2026-11-02T14:28:49.695549+00:00",
+      "end_utc": "2026-11-02T14:28:50.401902+00:00",
+      "seconds": 0.706,
+      "exit": 1,
+      "log": {
+        "name": "<tmp>/benitoite-l20n-r3/counterexample-second.log",
+        "bytes": 1829,
+        "sha256": "718cbe51f19700ea9fa9672e841245c2bbd075c3dd614735e4308a505d40b8af"
+      }
+    },
+    {
+      "name": "counterexample-third",
+      "cwd": "formal",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/n/h04-counterexample.lean"
+      ],
+      "start_utc": "2026-11-02T14:29:01.604461+00:00",
+      "end_utc": "2026-11-02T14:29:02.312953+00:00",
+      "seconds": 0.708,
+      "exit": 0,
+      "log": {
+        "name": "<tmp>/benitoite-l20n-r3/counterexample-third.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "revised-counterexample-first",
+      "cwd": "formal",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/n/h04-counterexample.lean"
+      ],
+      "start_utc": "2026-11-02T14:35:05.362627+00:00",
+      "end_utc": "2026-11-02T14:35:06.120967+00:00",
+      "seconds": 0.758,
+      "exit": 1,
+      "log": {
+        "name": "<tmp>/benitoite-l20n-r3/revised-counterexample-first.log",
+        "bytes": 2576,
+        "sha256": "bd4101d729cf1d5b1a8a37be12e1f9b2f8249b4b5299d79e75a768df9fb9d90e"
+      }
+    },
+    {
+      "name": "revised-counterexample-second",
+      "cwd": "formal",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/n/h04-counterexample.lean"
+      ],
+      "start_utc": "2026-11-02T14:35:16.096187+00:00",
+      "end_utc": "2026-11-02T14:35:17.132202+00:00",
+      "seconds": 1.036,
+      "exit": 1,
+      "log": {
+        "name": "<tmp>/benitoite-l20n-r3/revised-counterexample-second.log",
+        "bytes": 18620,
+        "sha256": "dbecd98499d5a2640aac58ac14a64059c0423e93ffa9386720e95dfd3b13989c"
+      }
+    },
+    {
+      "name": "revised-counterexample-third",
+      "cwd": "formal",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/n/h04-counterexample.lean"
+      ],
+      "start_utc": "2026-11-02T14:36:05.524425+00:00",
+      "end_utc": "2026-11-02T14:36:06.296882+00:00",
+      "seconds": 0.772,
+      "exit": 0,
+      "log": {
+        "name": "<tmp>/benitoite-l20n-r3/revised-counterexample-third.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "handoff-first",
+      "cwd": "formal",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/n/h04-handoff.lean"
+      ],
+      "start_utc": "2026-11-02T14:37:12.526472+00:00",
+      "end_utc": "2026-11-02T14:37:13.181915+00:00",
+      "seconds": 0.655,
+      "exit": 0,
+      "log": {
+        "name": "<tmp>/benitoite-l20n-r3/handoff-first.log",
+        "bytes": 599,
+        "sha256": "9b67307ab3bcd9ef2f92cc219059f8af79ed2cdb7ab8311a0147b1e20dc2eda0"
+      }
+    },
+    {
+      "name": "build-final",
+      "cwd": "formal",
+      "command": [
+        "lake",
+        "build"
+      ],
+      "start_utc": "2026-11-02T14:43:19.955268+00:00",
+      "end_utc": "2026-11-02T14:43:21.969961+00:00",
+      "seconds": 2.015,
+      "exit": 0,
+      "log": {
+        "name": "<tmp>/benitoite-l20n-r3/build-final.log",
+        "bytes": 42996,
+        "sha256": "bd933907770c94cd256e1d95a45e20dada0d1c3e6e0559bebff5ae43c56a2001"
+      }
+    },
+    {
+      "name": "validation",
+      "cwd": ".",
+      "command": [
+        "python3",
+        "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/n/validate.py"
+      ],
+      "start_utc": "2026-11-02T14:44:45.106344+00:00",
+      "end_utc": "2026-11-02T14:44:45.241138+00:00",
+      "seconds": 0.135,
+      "exit": 0,
+      "log": {
+        "name": "<tmp>/benitoite-l20n-r3/validation.log",
+        "bytes": 446,
+        "sha256": "86727d75d74ecb395a42221206d49f9487f8036e30734c483b8a3da5411e68b6"
+      }
+    },
+    {
+      "name": "counterexample-final",
+      "cwd": "formal",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/n/h04-counterexample.lean"
+      ],
+      "start_utc": "2026-11-02T14:45:37.110526+00:00",
+      "end_utc": "2026-11-02T14:45:37.888545+00:00",
+      "seconds": 0.778,
+      "exit": 0,
+      "log": {
+        "name": "<tmp>/benitoite-l20n-r3/counterexample-final.log",
+        "bytes": 825,
+        "sha256": "af380ee9a695fd9c258c91b23be4fb40950dff3f82ec4053c7ba339cecfafdea"
+      }
+    },
+    {
+      "name": "handoff-final",
+      "cwd": "formal",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/n/h04-handoff.lean"
+      ],
+      "start_utc": "2026-11-02T14:45:37.938674+00:00",
+      "end_utc": "2026-11-02T14:45:38.551965+00:00",
+      "seconds": 0.613,
+      "exit": 0,
+      "log": {
+        "name": "<tmp>/benitoite-l20n-r3/handoff-final.log",
+        "bytes": 2018,
+        "sha256": "3580d01edac2a1058327ad2b1231a84ef87c2050fd3eb7ad130861e168c104dc"
+      }
+    },
+    {
+      "name": "validation-cases",
+      "cwd": ".",
+      "command": [
+        "python3",
+        "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/n/validate-cases.py"
+      ],
+      "start_utc": "2026-11-02T14:45:38.601921+00:00",
+      "end_utc": "2026-11-02T14:45:39.104633+00:00",
+      "seconds": 0.503,
+      "exit": 0,
+      "log": {
+        "name": "<tmp>/benitoite-l20n-r3/validation-cases.log",
+        "bytes": 262,
+        "sha256": "e7afb5ce0422ecef7edf3e6171022e7aeae05f62be59f9a31dd6a83d25283def"
+      }
+    },
+    {
+      "name": "axioms-final",
+      "cwd": "formal",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/n/axioms.lean"
+      ],
+      "start_utc": "2026-11-02T14:46:06.799547+00:00",
+      "end_utc": "2026-11-02T14:46:10.504302+00:00",
+      "seconds": 3.705,
+      "exit": 0,
+      "log": {
+        "name": "<tmp>/benitoite-l20n-r3/axioms-final.log",
+        "bytes": 1595933,
+        "sha256": "b97bff78ed2c531b959bc7e92903bc5742ff0e98e3c77f7482b983bb854a3edb"
+      }
+    },
+    {
+      "name": "work-dry-run",
+      "cwd": ".",
+      "command": [
+        "scripts/check.sh",
+        "--level",
+        "work",
+        "--base",
+        "14dc5648d5c8cb866268ecd3f29020d8e43436b9",
+        "--dry-run"
+      ],
+      "start_utc": "2026-11-02T14:48:07.790543+00:00",
+      "end_utc": "2026-11-02T14:48:07.907839+00:00",
+      "seconds": 0.117,
+      "exit": 0,
+      "log": {
+        "name": "<tmp>/benitoite-l20n-r3/work-dry-run.log",
+        "bytes": 759,
+        "sha256": "b5d58118041b2b8e3997ada32b1f057338ba56df5e7c2e31e77e6401d67a2693"
+      }
+    },
+    {
+      "name": "work-final",
+      "cwd": ".",
+      "command": [
+        "scripts/check.sh",
+        "--level",
+        "work",
+        "--base",
+        "14dc5648d5c8cb866268ecd3f29020d8e43436b9"
+      ],
+      "start_utc": "2026-11-02T14:49:35.328012+00:00",
+      "end_utc": "2026-11-02T14:49:39.042426+00:00",
+      "seconds": 3.714,
+      "exit": 0,
+      "log": {
+        "name": "<tmp>/benitoite-l20n-r3/work-final.log",
+        "bytes": 5757,
+        "sha256": "953f28e050ac004c7144eab5e4e9af3ad8dd3fb60c3c6317b0a5a44dc2677d30"
+      }
+    }
+  ]
+}

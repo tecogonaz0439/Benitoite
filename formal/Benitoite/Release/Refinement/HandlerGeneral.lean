@@ -1902,5 +1902,55 @@ theorem StateTyE.use_all {P B σ Eb q v m k μ}
     cases bs <;> (simp only [Comp.resolveLocals,Closure.view,Closure.code] at hv; injection hv)
   all_goals (simp only [Comp.resolveLocals,Closure.view,Closure.code] at hv; injection hv)
 
+private theorem escape_value {P B Ψ Q C Γ Φ R m a e L v}
+    (h : HasTypeCQ P B Ψ Q C Γ Φ R m a e L) (hm : m = .escape v) :
+    ∃ r, R = some r ∧ HasTypeVQ P B Ψ Q C Γ Φ v r := by
+  match h with
+  | .C_Escape hv _ => cases hm; exact ⟨_,rfl,hv⟩
+  | .C_Sub hb .. | .C_Normal hb | .C_Eff hb _ => exact escape_value hb hm
+  | .C_BuilderLet .. | .C_BuilderOp .. | .C_Return .. | .C_Let .. | .C_App .. |
+    .C_DependentApp .. | .C_If .. | .C_Match .. | .C_Lazy .. | .C_Use .. |
+    .C_Handle .. | .C_Handle_Fail .. | .C_Resume .. | .C_ResumeNorm .. |
+    .C_ResumeL .. | .C_ResumeLNorm .. | .C_Meth .. | .C_External .. |
+    .C_IssuePathBases .. | .C_CheckAt .. => cases hm
+termination_by structural h
+
+/-- escape の値は戻り先の型を持ち、通常の結果型から独立である。 -/
+theorem ClosureTy.escape_view_value {P B Ψ R q a e v}
+    (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)
+    (hw : Ψ.WF) (hs : Ψ.Sorted) (hd : StoreTy.Declared P Ψ)
+    (h : ClosureTy P B Ψ [] R q a e) (hv : q.view = .escape v)
+    : ∃ r, R = some r ∧ HasTypeV P B Ψ [] [] [] v r := by
+  obtain ⟨cap,Γ,Φ,Rs,m,as,es,L,ρ,rfl,hc,hb,_,hr,ha,he,_⟩ := h.open_zero
+  have ht : HasTypeCQ P B Ψ Qempty [] [] [] R (.escape v) a e [] := by
+    cases m
+    case escape v0 =>
+      have hh := close_escape_all hb hP hPB hB hw hs hd hc hr rfl rfl rfl
+      have hv0 : v0.resolveLocals ρ = v0 := by
+        obtain ⟨t,ht⟩ := hb.read_values v0 (by exact List.mem_cons_self)
+        exact ht.resolve_id ρ
+      simp only [Comp.resolveLocals,hv0,Closure.view,Closure.code] at hv
+      cases Comp.escape.inj hv
+      rwa [ha,he] at hh
+    case checkAt _ _ _ bs _ _ _ =>
+      cases bs <;> (simp only [Comp.resolveLocals,Closure.view,Closure.code] at hv; injection hv)
+    all_goals (simp only [Comp.resolveLocals,Closure.view,Closure.code] at hv; injection hv)
+  exact escape_value ht rfl
+
+
+theorem ContTy.handler_tail_annotated {P B σ Ψ R e k a b Eb Re cap cs}
+    (h : ContTy P B σ Ψ R e (.handleF cap cs :: k) a b Eb Re) :
+    ∃ t et, Ty.LeQ P [] [] a t ∧ Ty.Annotation P [] [] t ∧
+      ContTy P B σ Ψ R et k t b Eb Re := by
+  generalize he : (.handleF cap cs :: k) = frames at h
+  induction h with
+  | K_Handle ht _ _ _ _ _ _ _ _ ha _ _ _ =>
+    cases he; exact ⟨_,_,.refl,⟨ha.wf.1,ha.sorted.1,ha.declared.1⟩,ht⟩
+  | K_Handle_Fail ht _ _ _ _ _ _ _ _ _ _ ha _ _ => cases he; exact ⟨_,_,.refl,ha,ht⟩
+  | K_Sub _ hl ih =>
+    obtain ⟨t,et,hle,ha,ht⟩ := ih he
+    exact ⟨t,et,.trans hl hle,ha,ht⟩
+  | _ => cases he
+
 end
 end Benitoite.Release.Refinement
