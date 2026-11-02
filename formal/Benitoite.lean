@@ -298,6 +298,7 @@ import Benitoite.Release.Refinement.LogicSound
 import Benitoite.Release.Refinement.ClosedKeys
 import Benitoite.Release.Refinement.ExternalCheck
 import Benitoite.Release.Refinement.Certificate
+import Benitoite.Release.Refinement.LogicKernelExamples
 import Benitoite.Release.Refinement.ExternalConnection
 import Benitoite.Release.Refinement.InversionCore
 import Benitoite.Release.Refinement.Canonical

@@ -3218,6 +3218,8 @@ structure SignatureInstance (P : Program) (C : TypeCtx) (Γ : Ctx)
 
 ### 篩の正規形と制約の読み方
 
+`Ty.carrierFacts` は、芯の七整数型と Byte の上下限を自己変数0に対する二述語で表し、Decimal では `decimalRepresented self` を一述語で表す。他の芯には空列を返す。`Ty.assumeWithCarrier` は、継続型では空列、それ以外では `carrierFacts ++ refinementPredicates` を返す。`Ctx.factsWithCarrier` は文脈の元の番号を保ち、各列の自己をその番号の変数で開く。型付けと捕捉の判断は、明示した篩だけを読む `Ty.assume`・`Ctx.facts` を使い、`Ty.assumeWithCarrier`・`Ctx.factsWithCarrier` を読まない。`Const.NumericRepresented.carrierFacts` は、`Const.NumericRepresented` を満たす定数について、型域の全述語が自己モデルで真であることを示す。型付きの定数からこの前提を得るときは `ConstOK.represented` を使う。Integer64 は構文が持つ上下限を用いる。`ValueMeaning` の構成子は、芯の形と明示した篩の真の二条件を持つ。
+
 【決定】`Ty.norm` はすべての子の型と潜在効果を正規化する。入れ子の篩は、内側から順に述語の連言を有限列へ展開し、`truth` を除いて右に括り直す（`Pred.conjuncts`・`ofConjuncts`、`Ty.refineNorm`）。列が空なら篩を除く。したがって `T{true}` の正規形は T の正規形に等しく、`T{p}{q}` と `T{p and q}` も同じ正規形になる。連言の順序と重複は保ち、並べ替えや論理同値を型の等号に含めない。`false` は除かない。
 
 `Ty.Canonical a` は `a.norm = a` であり、`Ty.Normal` はその別名である。`Tel.Normal` と `Eff.Canonical` もそれぞれ正規化の固定点を表す。整形式と正規形は別の判断であり、「整形式なら正規化の固定点」とは定めない。正規化は冪等である（`Ty.norm_idem`・`Tel.norm_idem`・`Eff.norm_idem`）。
@@ -3415,6 +3417,14 @@ information order に当たる `Observation.InfoLE` は、scalar と対象の sn
 Not は T/F を反転し、U を保つ。`evalWith` は左右の部分述語の結果の組でこの表を定め、左の失敗だけで全体を打ち切る順序を規則にしない。通常の計算の短絡 `or` は左を先に実行し、左の計算が実行時エラーなら右を実行せず止まる。述語の評価では、左が U でも右が T なら Or は T となる。両者は異なる評価である。
 
 成功の健全性は `Pred.evalWith_sound`・`evalClosed_sound` が二値の `Pred.interpret` との一致として述べる。閉じた述語のすべてが評価できるとはしない。`ClosedObservable` を満たすときの完全性は `evalClosed_complete` にある。`Entails.closed`・`Entails.ground` は、閉じて種類も適合する述語の評価が T のときだけ導出を作る。`Entails` は仮定、真、偽の除去、And/Or/Not、等号・整数の比較、閉じた評価の有限規則を持つ。意味上の任意の含意を前提として導出を代用しない。
+
+`Linear` は数学Intの係数列とboundを持ち、`Holds` は係数と整数環境の内積がbound以下であることを表す。`Linear.toPred keys` は、鍵の各項に係数を掛けて加算する整数述語を作る。意味との対応は、鍵と係数の列長の一致を前提とする。`Linear.toPred_sound_at` は、任意の構文の値置換νを受けた述語の真と、置換された各鍵の整数射影における `Holds` を対応させる。鍵の相異性を要求しない。`Pred.scaled_le_at` と `eq_positive_at` は、同じνの像の上で非負の定数倍と等号を介した正値の含意を示す。閉じた葉と同一原子の正負も、その像の上で扱う。これらは意味の補題であり、`Entails` の追加の構成子ではない。
+
+整数の丸めは、除数dが正、元の全係数が出力係数のd倍、出力boundが元のboundの床除算であることを前提とする（`Linear.round_sound`）。係数を丸める規則はない。`integer_split` は、任意の整数xとcutについて `x ≤ cut ∨ cut+1 ≤ x` を示す。反証への合成は左右の両方の否定を入力とする。負のboundの床、`2*x=1` の矛盾、片側だけでは全整数を覆わない例を同じ規則で照合する。機械整数の正常応答とあふれの別は、この数学Intの規則とは区別する。
+
+`EqualityMode` は構造の一致と整数射影の等値を区別する。`RewritePosition p integer` は、自己を変える位置をeq/le/ltの両辺とadd/neg/scaleの下、および論理結合子の下に限る。他の項・原子では自己を含まないことを要求する。`RewritePosition.integer_sound` は、二つの値置換の自己位置の整数射影が等しく、他の位置の像が等しいとき、その述語の二値の意味が一致することを示す。構造の一致はsnapshot内にも使える。未観測の変数と整数0は整数射影で等しくても、Setの鍵としての観測を区別するので、整数射影の等値だけをsnapshot内の書換えに使わない。
+
+`measure_machine_exact` は、本番の `Observation.measure` の正常結果と受け手の部分観測の成功から、measure項の部分観測と二値の解釈が同じ非負整数になることを導く。`measure_stable` は、元の各変数の観測から置換像の部分観測への `OptionInfoLE` と、元のmeasureの正常結果を前提に、置換後も同じ結果を得ることを示す。失敗した観測の存在や、開いた述語そのものの不変は結論しない。
 
 捕捉環境 `Capture` は、値の列の `some`/`none` と元の番号を保つ。`CaptureOk` は、捕捉元の緩い整形式・種類・宣言照合、閉じた型付きの像、`Γ.facts ++ Φ` を捕捉で閉じた各述語の仮定なしの導出を持つ。継続の項目は入力・結果の型を読み、ソースの行を読まない。ソースの参照順を検査する `Ctx.Ordered` と、WF/Sorted/Declared/Ordered を合わせる `Ctx.Regular` を `CaptureOk` の追加条件とはしない。
 

@@ -1,0 +1,125 @@
+{
+  "checks": [
+    {
+      "name": "checked-at",
+      "directory": "formal",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "<tmp>/CheckedAtToyChecked.lean"
+      ],
+      "exit": 0,
+      "seconds": 0.476600042,
+      "start_utc": "2026-11-02T22:20:45.995309+00:00",
+      "end_utc": "2026-11-02T22:20:46.471985+00:00",
+      "raw": {
+        "file": "checked-at.log",
+        "bytes": 186,
+        "sha256": "39fcd94721186fe7e5dcd9eccd2d2031d75491fcd541196e852899ab911be60a"
+      }
+    },
+    {
+      "name": "inventory",
+      "directory": ".",
+      "command": [
+        "python3",
+        "-B",
+        "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l30/a/inventory.py"
+      ],
+      "exit": 0,
+      "seconds": 0.328801334,
+      "start_utc": "2026-11-02T22:20:45.995309+00:00",
+      "end_utc": "2026-11-02T22:20:46.324184+00:00",
+      "raw": {
+        "file": "inventory.log",
+        "bytes": 45413,
+        "sha256": "cc297128fa51a221c0fb8822f3563ce1ae28934b662db1ffb03b8d46ca241bc6"
+      }
+    },
+    {
+      "name": "lake-build",
+      "directory": "formal",
+      "command": [
+        "lake",
+        "build"
+      ],
+      "exit": 0,
+      "seconds": 3.121166917,
+      "start_utc": "2026-11-02T22:20:52.801619+00:00",
+      "end_utc": "2026-11-02T22:20:55.922865+00:00",
+      "raw": {
+        "file": "lake-build.log",
+        "bytes": 43453,
+        "sha256": "cc336aa03a88a5e9f34fb5586cc741402b5a0c01914fd5af98c33fc52aa2b1b4"
+      }
+    },
+    {
+      "name": "audit",
+      "directory": ".",
+      "command": [
+        "python3",
+        "-B",
+        "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l30/a/audit.py",
+        "--tmp",
+        "<tmp>"
+      ],
+      "exit": 0,
+      "seconds": 1.606896208,
+      "start_utc": "2026-11-02T22:21:25.657847+00:00",
+      "end_utc": "2026-11-02T22:21:27.264808+00:00",
+      "raw": {
+        "file": "audit.log",
+        "bytes": 1143,
+        "sha256": "21a3595c161fadd13d0ac0821ae02545892627ddc1e2f86e6bb201fe899e5340"
+      }
+    },
+    {
+      "name": "dry-run",
+      "directory": ".",
+      "command": [
+        "scripts/check.sh",
+        "--level",
+        "work",
+        "--base",
+        "4a53a88229805ff0b1065f7d85733b5dc3481c62",
+        "--dry-run"
+      ],
+      "exit": 0,
+      "seconds": 0.11330004199999999,
+      "start_utc": "2026-11-02T22:21:47.598496+00:00",
+      "end_utc": "2026-11-02T22:21:47.711859+00:00",
+      "raw": {
+        "file": "dry-run.log",
+        "bytes": 759,
+        "sha256": "0757c851ff2520609b9512cc0439676cc1b5ad19869ddd1b19d85281a5597f0b"
+      }
+    },
+    {
+      "name": "work",
+      "directory": ".",
+      "command": [
+        "scripts/check.sh",
+        "--level",
+        "work",
+        "--base",
+        "4a53a88229805ff0b1065f7d85733b5dc3481c62"
+      ],
+      "exit": 0,
+      "seconds": 3.699801833,
+      "start_utc": "2026-11-02T22:23:19.957583+00:00",
+      "end_utc": "2026-11-02T22:23:23.657470+00:00",
+      "raw": {
+        "file": "work.log",
+        "bytes": 5757,
+        "sha256": "8cac3ce1c33ac7949d4200bf3fe4dae68b2f8423986232cf9e57bbf0a4538343"
+      }
+    }
+  ],
+  "audit_declaration_delta": {
+    "Benitoite.Release.Refinement.CarrierFactsMeaning": -50,
+    "Benitoite.Release.Refinement.LogicKernelExamples": 2
+  }
+}

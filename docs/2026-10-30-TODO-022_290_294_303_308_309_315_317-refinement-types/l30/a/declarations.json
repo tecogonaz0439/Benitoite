@@ -1,0 +1,562 @@
+[
+  {
+    "module": "CarrierFacts",
+    "line": 10,
+    "name": "integerBounds",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "CarrierFacts",
+    "line": 13,
+    "name": "Ty.carrierFacts",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "CarrierFacts",
+    "line": 26,
+    "name": "Ty.assumeWithCarrier",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "CarrierFacts",
+    "line": 31,
+    "name": "Ctx.factsWithCarrier",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "CarrierFacts",
+    "line": 37,
+    "name": "Ty.assumeWithCarrier_eq_carrier_append",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "CarrierFactsMeaning",
+    "line": 9,
+    "name": "Const.NumericRepresented.carrierFacts",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "LinearSyntax",
+    "line": 6,
+    "name": "Linear",
+    "kind": "structure",
+    "private": false
+  },
+  {
+    "module": "LinearSyntax",
+    "line": 11,
+    "name": "linearDot",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "LinearSyntax",
+    "line": 15,
+    "name": "Linear.eval",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "LinearSyntax",
+    "line": 16,
+    "name": "Linear.Holds",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "LinearSyntax",
+    "line": 18,
+    "name": "linearTerm",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "LinearSyntax",
+    "line": 22,
+    "name": "Linear.toPred",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "LinearSyntax",
+    "line": 25,
+    "name": "linearTerm_bind",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "LinearSyntax",
+    "line": 36,
+    "name": "Linear.encode_bind",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "LinearSound",
+    "line": 6,
+    "name": "keyEnv",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "LinearSound",
+    "line": 9,
+    "name": "linearTerm_integerAs",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "LinearSound",
+    "line": 27,
+    "name": "Linear.toPred_sound",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "LinearSound",
+    "line": 34,
+    "name": "Linear.toPred_sound_at",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "LinearSound",
+    "line": 41,
+    "name": "integer_round",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "LinearSound",
+    "line": 44,
+    "name": "linearDot_scale",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "LinearSound",
+    "line": 50,
+    "name": "Linear.round_sound",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "LinearSound",
+    "line": 59,
+    "name": "integer_split",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "LinearSound",
+    "line": 61,
+    "name": "integer_split_refute",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "LinearSound",
+    "line": 67,
+    "name": "integer_combination",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "LinearSound",
+    "line": 71,
+    "name": "integerAs_round_at",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "LinearSound",
+    "line": 78,
+    "name": "integerAs_split_at",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "CertificateKernelBind",
+    "line": 10,
+    "name": "integerAs_eq_integerD",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "CertificateKernelBind",
+    "line": 17,
+    "name": "integerAs_bind_add",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "CertificateKernelBind",
+    "line": 22,
+    "name": "integerAs_bind_neg",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "CertificateKernelBind",
+    "line": 26,
+    "name": "integerAs_bind_scale",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "CertificateKernelBind",
+    "line": 30,
+    "name": "Pred.scaled_le_at",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "CertificateKernelBind",
+    "line": 39,
+    "name": "Pred.eq_positive_at",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "CertificateKernelBind",
+    "line": 47,
+    "name": "Pred.closed_sound_at",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "CertificateKernelBind",
+    "line": 53,
+    "name": "Pred.opposite_at",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "CertificateKernelBind",
+    "line": 57,
+    "name": "Pred.bind_implication_comp",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "EqCertificate",
+    "line": 10,
+    "name": "EqualityMode",
+    "kind": "inductive",
+    "private": false
+  },
+  {
+    "module": "EqCertificate",
+    "line": 15,
+    "name": "Term.IntegerRewritePosition",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "EqCertificate",
+    "line": 21,
+    "name": "RewritePosition",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "EqCertificate",
+    "line": 30,
+    "name": "Term.IntegerRewritePosition.sound",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "EqCertificate",
+    "line": 47,
+    "name": "RewritePosition.integer_sound",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "EqCertificate",
+    "line": 64,
+    "name": "RewritePosition.structural_sound",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "MeasureNonnegative",
+    "line": 6,
+    "name": "Observation.measure_nonnegative",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "MeasureContracts",
+    "line": 7,
+    "name": "measure_machine_exact",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "MeasureContracts",
+    "line": 16,
+    "name": "measure_stable",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "LogicKernelExamples",
+    "line": 13,
+    "name": "integer8_facts",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "LogicKernelExamples",
+    "line": 19,
+    "name": "decimal_facts",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "LogicKernelExamples",
+    "line": 25,
+    "name": "integer8_outside",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "LogicKernelExamples",
+    "line": 30,
+    "name": "integer8_carrier",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "LogicKernelExamples",
+    "line": 36,
+    "name": "scaled_snapshot",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "LogicKernelExamples",
+    "line": 42,
+    "name": "scaled_snapshot_comp",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "LogicKernelExamples",
+    "line": 49,
+    "name": "opposite_snapshot",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "LogicKernelExamples",
+    "line": 54,
+    "name": "closed_leaf",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "LogicKernelExamples",
+    "line": 58,
+    "name": "encoded_snapshot",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "LogicKernelExamples",
+    "line": 63,
+    "name": "negative_floor",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "LogicKernelExamples",
+    "line": 66,
+    "name": "odd_equality_rejected",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "LogicKernelExamples",
+    "line": 73,
+    "name": "split_both",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "LogicKernelExamples",
+    "line": 76,
+    "name": "split_second_needed",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "LogicKernelExamples",
+    "line": 78,
+    "name": "combination",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "LogicKernelExamples",
+    "line": 81,
+    "name": "round_image",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "LogicKernelExamples",
+    "line": 85,
+    "name": "split_image",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "LogicKernelExamples",
+    "line": 88,
+    "name": "snapshot_rewrite_rejected",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "LogicKernelExamples",
+    "line": 92,
+    "name": "snapshot_integer_equality_insufficient",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "LogicKernelExamples",
+    "line": 100,
+    "name": "integer_position",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "LogicKernelExamples",
+    "line": 107,
+    "name": "P",
+    "kind": "def",
+    "private": true
+  },
+  {
+    "module": "LogicKernelExamples",
+    "line": 109,
+    "name": "B",
+    "kind": "def",
+    "private": true
+  },
+  {
+    "module": "LogicKernelExamples",
+    "line": 110,
+    "name": "five",
+    "kind": "def",
+    "private": true
+  },
+  {
+    "module": "LogicKernelExamples",
+    "line": 111,
+    "name": "cap",
+    "kind": "def",
+    "private": true
+  },
+  {
+    "module": "LogicKernelExamples",
+    "line": 112,
+    "name": "Γ",
+    "kind": "def",
+    "private": true
+  },
+  {
+    "module": "LogicKernelExamples",
+    "line": 114,
+    "name": "captured_integer8",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "LogicKernelExamples",
+    "line": 132,
+    "name": "captured_snapshot",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "LogicKernelExamples",
+    "line": 139,
+    "name": "textSlots",
+    "kind": "def",
+    "private": true
+  },
+  {
+    "module": "LogicKernelExamples",
+    "line": 140,
+    "name": "field",
+    "kind": "def",
+    "private": true
+  },
+  {
+    "module": "LogicKernelExamples",
+    "line": 141,
+    "name": "dataCapture",
+    "kind": "def",
+    "private": true
+  },
+  {
+    "module": "LogicKernelExamples",
+    "line": 144,
+    "name": "declared_field",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "LogicKernelExamples",
+    "line": 148,
+    "name": "captured_field",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "LogicKernelExamples",
+    "line": 155,
+    "name": "captured_measure",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "LogicKernelExamples",
+    "line": 162,
+    "name": "list_length_image",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "LogicKernelExamples",
+    "line": 167,
+    "name": "measure_length",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "LogicKernelExamples",
+    "line": 172,
+    "name": "measure_length_stable",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "LogicKernelExamples",
+    "line": 178,
+    "name": "normal_and_stop",
+    "kind": "theorem",
+    "private": false
+  }
+]
