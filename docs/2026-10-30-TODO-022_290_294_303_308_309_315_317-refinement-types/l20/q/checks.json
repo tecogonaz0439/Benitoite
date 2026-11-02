@@ -1,0 +1,1203 @@
+[
+  {
+    "label": "sequence",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacySequenceEmbedding.lean"
+    ],
+    "exit": 1,
+    "seconds": 0.35077881813049316,
+    "bytes": 3614,
+    "sha256": "8086868d73ffd9165cc97fac528be8a9e38aa0461f739771e2387f284b414c3d",
+    "start": "2026-11-02T16:45:37.241580+00:00"
+  },
+  {
+    "label": "sequence2",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacySequenceEmbedding.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.3558781147003174,
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "start": "2026-11-02T16:45:49.307655+00:00"
+  },
+  {
+    "label": "comp1",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake build Benitoite.Release.Refinement.LegacySequenceEmbedding && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyCompCases.lean"
+    ],
+    "exit": 1,
+    "seconds": 0.9409751892089844,
+    "bytes": 15450,
+    "sha256": "13b170bb13377a16768bbb8791a8853762966f17cc40cfeba912f2321d251b44",
+    "start": "2026-11-02T16:46:10.002739+00:00"
+  },
+  {
+    "label": "comp2",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyCompCases.lean"
+    ],
+    "exit": 1,
+    "seconds": 0.47293710708618164,
+    "bytes": 796,
+    "sha256": "932aaca6e734632be69cdca7e33d2103096b9a9297ff0e93214ac2fcf770adba",
+    "start": "2026-11-02T16:46:25.006924+00:00"
+  },
+  {
+    "label": "comp3",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyCompCases.lean"
+    ],
+    "exit": 1,
+    "seconds": 0.4807469844818115,
+    "bytes": 143,
+    "sha256": "249cc41bf7e88525bda342fe8579ba6b8470b4be9b32825b794ed964aa949835",
+    "start": "2026-11-02T16:46:42.320529+00:00"
+  },
+  {
+    "label": "comp4",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyCompCases.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.48543381690979004,
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "start": "2026-11-02T16:46:55.838723+00:00"
+  },
+  {
+    "label": "comp-build",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake build"
+    ],
+    "exit": 0,
+    "seconds": 0.14998674392700195,
+    "bytes": 42716,
+    "sha256": "243c86826b48c8a4916c841d7ae4b2519883057adfc8b46bbe6c742731e5df2c",
+    "start": "2026-11-02T16:48:33.285976+00:00"
+  },
+  {
+    "label": "comp-import",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake build"
+    ],
+    "exit": 0,
+    "seconds": 1.2463898658752441,
+    "bytes": 42827,
+    "sha256": "5d554a8cbafa299907b28b4b6d364eb585bec8f844c6330e46c366a857d1b50c",
+    "start": "2026-11-02T16:48:39.294742+00:00"
+  },
+  {
+    "label": "meth1",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyMethodEmbedding.lean"
+    ],
+    "exit": 1,
+    "seconds": 0.3455779552459717,
+    "bytes": 3398,
+    "sha256": "c5c4681cf153488df28faab248e8777f6c5512bebb302bbf33e2dfb89b52a6d8",
+    "start": "2026-11-02T16:48:40.598474+00:00"
+  },
+  {
+    "label": "meth2",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyMethodEmbedding.lean"
+    ],
+    "exit": 1,
+    "seconds": 0.3527989387512207,
+    "bytes": 3154,
+    "sha256": "9c31f35d1f24d58c639b9afc299d85341595b66c3e40c624088f78ae536fb332",
+    "start": "2026-11-02T16:49:05.895437+00:00"
+  },
+  {
+    "label": "meth3",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyMethodEmbedding.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.34485816955566406,
+    "bytes": 1683,
+    "sha256": "2530c6c3f79af14509986407122267285e4e489d76b25d0ae1a50fd7097eba0f",
+    "start": "2026-11-02T16:49:11.963847+00:00"
+  },
+  {
+    "label": "meth4",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyMethodEmbedding.lean"
+    ],
+    "exit": 1,
+    "seconds": 0.3448011875152588,
+    "bytes": 1788,
+    "sha256": "f5ba0ac182df86b89cc89d10e3ab17679259793cd42d3b87451ea5fb7967d2b9",
+    "start": "2026-11-02T16:49:51.333699+00:00"
+  },
+  {
+    "label": "meth5",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyMethodEmbedding.lean"
+    ],
+    "exit": 1,
+    "seconds": 0.36098313331604004,
+    "bytes": 8951,
+    "sha256": "efeb58239ceba65ead54f5582e4887414f00ad189b9aa92a019ce299dc1f71a0",
+    "start": "2026-11-02T16:49:57.495400+00:00"
+  },
+  {
+    "label": "meth6",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyMethodEmbedding.lean"
+    ],
+    "exit": 1,
+    "seconds": 0.38352203369140625,
+    "bytes": 2273,
+    "sha256": "5cff2eadb828d1ef091b1d2989afdefcc75dbe0fe2c2f58e8c00a12e155e8761",
+    "start": "2026-11-02T16:50:10.221440+00:00"
+  },
+  {
+    "label": "meth7",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyMethodEmbedding.lean"
+    ],
+    "exit": 1,
+    "seconds": 0.43479394912719727,
+    "bytes": 5793,
+    "sha256": "096f912bf50edb23042d54762e505ad3c9880d2366b3f8dd2cb90172db87f6ca",
+    "start": "2026-11-02T16:50:15.937203+00:00"
+  },
+  {
+    "label": "meth8",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyMethodEmbedding.lean"
+    ],
+    "exit": 1,
+    "seconds": 0.42907190322875977,
+    "bytes": 4232,
+    "sha256": "775becc205715b781defe1ccdd29559e9c17f52ec10d7f0239114abef160e7bf",
+    "start": "2026-11-02T16:50:35.014579+00:00"
+  },
+  {
+    "label": "meth9",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyMethodEmbedding.lean"
+    ],
+    "exit": 1,
+    "seconds": 0.44457578659057617,
+    "bytes": 8086,
+    "sha256": "aeb403a198c171379112aeae8183e463c2fd5c7e8d900718f7803bf74eaf374d",
+    "start": "2026-11-02T16:50:43.765754+00:00"
+  },
+  {
+    "label": "meth10",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyMethodEmbedding.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.43248677253723145,
+    "bytes": 1683,
+    "sha256": "2530c6c3f79af14509986407122267285e4e489d76b25d0ae1a50fd7097eba0f",
+    "start": "2026-11-02T16:50:51.544762+00:00"
+  },
+  {
+    "label": "meth-import",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake build"
+    ],
+    "exit": 0,
+    "seconds": 1.137300968170166,
+    "bytes": 44516,
+    "sha256": "873e5aa4103356028579d4592248c3a3055d78bc7dd30fbaf328ddda7feab707",
+    "start": "2026-11-02T16:51:04.451316+00:00"
+  },
+  {
+    "label": "control1",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyControlEmbedding.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.30635595321655273,
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "start": "2026-11-02T16:51:05.635439+00:00"
+  },
+  {
+    "label": "control2",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyControlEmbedding.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.3812901973724365,
+    "bytes": 342,
+    "sha256": "e74e5bd4356e297dcb0eafe7947de63b64779fd6917acf25496de7bcac01fda2",
+    "start": "2026-11-02T16:51:20.336994+00:00"
+  },
+  {
+    "label": "control3",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyControlEmbedding.lean"
+    ],
+    "exit": 1,
+    "seconds": 0.3852989673614502,
+    "bytes": 1294,
+    "sha256": "9c5579acf5c85eeb19cf987ff49518605218b1edc251e7b088e79bf5127a020a",
+    "start": "2026-11-02T16:51:38.123308+00:00"
+  },
+  {
+    "label": "control4",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyControlEmbedding.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.3819098472595215,
+    "bytes": 342,
+    "sha256": "e74e5bd4356e297dcb0eafe7947de63b64779fd6917acf25496de7bcac01fda2",
+    "start": "2026-11-02T16:51:45.089573+00:00"
+  },
+  {
+    "label": "control-import",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake build"
+    ],
+    "exit": 0,
+    "seconds": 1.1399509906768799,
+    "bytes": 44933,
+    "sha256": "b21896caf4239f5de3539321922daaf6856393578ef0ab511b6db97c8b7e7baf",
+    "start": "2026-11-02T16:52:12.415149+00:00"
+  },
+  {
+    "label": "builder1",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyBuilderEmbedding.lean"
+    ],
+    "exit": 1,
+    "seconds": 0.3128378391265869,
+    "bytes": 869,
+    "sha256": "12ab51837291a9f3cea925fcca44fe8592b5f4be096043a3e6551cf048248c18",
+    "start": "2026-11-02T16:52:13.609976+00:00"
+  },
+  {
+    "label": "builder2",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyBuilderEmbedding.lean"
+    ],
+    "exit": 1,
+    "seconds": 0.34481000900268555,
+    "bytes": 696,
+    "sha256": "34c59870af789c9fab092c2f31733e44d7e5be60474b0d26defea52fa1e2577d",
+    "start": "2026-11-02T16:52:37.637750+00:00"
+  },
+  {
+    "label": "builder3",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyBuilderEmbedding.lean"
+    ],
+    "exit": 1,
+    "seconds": 0.3368399143218994,
+    "bytes": 119,
+    "sha256": "fe10da7b3cb6822f61c83f533892147b65f855acdfe07df29fd41e99a6b93edb",
+    "start": "2026-11-02T16:53:05.332440+00:00"
+  },
+  {
+    "label": "builder-import",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake build"
+    ],
+    "exit": 1,
+    "seconds": 0.48687005043029785,
+    "bytes": 45875,
+    "sha256": "5cce4982bd5be49147cbd2cc8486711a9f7a6c007f99d204a64ea94fdcc3f977",
+    "start": "2026-11-02T16:53:05.774345+00:00"
+  },
+  {
+    "label": "handler1",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyHandlerEmbedding.lean"
+    ],
+    "exit": 1,
+    "seconds": 0.13878893852233887,
+    "bytes": 277,
+    "sha256": "ad905d61cde155512d60374fe65e15e1a22b908964316c2b9d13d001c9f59665",
+    "start": "2026-11-02T16:53:06.317739+00:00"
+  },
+  {
+    "label": "builder4",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyBuilderEmbedding.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.34352684020996094,
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "start": "2026-11-02T16:53:17.491647+00:00"
+  },
+  {
+    "label": "builder-import2",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake build"
+    ],
+    "exit": 0,
+    "seconds": 1.0339510440826416,
+    "bytes": 45008,
+    "sha256": "a7712a55f4d185ad2737675d86c8cd48bb41ab07b0f1b5b7860b40d9d01457e5",
+    "start": "2026-11-02T16:53:17.882263+00:00"
+  },
+  {
+    "label": "handler2",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyHandlerEmbedding.lean"
+    ],
+    "exit": 1,
+    "seconds": 0.34980010986328125,
+    "bytes": 3930,
+    "sha256": "e0ceba573db2837fdced52237292213d561013382ebf51aa6d028d278d22ebf4",
+    "start": "2026-11-02T16:53:18.964423+00:00"
+  },
+  {
+    "label": "handler3",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyHandlerEmbedding.lean"
+    ],
+    "exit": 1,
+    "seconds": 0.4563157558441162,
+    "bytes": 6471,
+    "sha256": "2881ac6dec0f7340e994b400ee601984e29891bd1f7a310afd5660f945e53f78",
+    "start": "2026-11-02T16:53:58.895178+00:00"
+  },
+  {
+    "label": "handler4",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyHandlerEmbedding.lean"
+    ],
+    "exit": 1,
+    "seconds": 0.44686222076416016,
+    "bytes": 2461,
+    "sha256": "84c31e5dde887597977bd5b390cb5d8924d9001063a7426324d2c50ac19012d7",
+    "start": "2026-11-02T16:54:13.221734+00:00"
+  },
+  {
+    "label": "handler5",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyHandlerEmbedding.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.43536829948425293,
+    "bytes": 2010,
+    "sha256": "97051fc2ccff70c0dca09abdcfeb451cf22d44933f1bbe8a30b6cd3b38a8a546",
+    "start": "2026-11-02T16:54:24.814363+00:00"
+  },
+  {
+    "label": "handler6",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyHandlerEmbedding.lean"
+    ],
+    "exit": 1,
+    "seconds": 0.42072391510009766,
+    "bytes": 2241,
+    "sha256": "a8f16b30707f5d926654974d1cc0a8aeeb5d1e7b73f6ef4f56071da973776209",
+    "start": "2026-11-02T16:54:25.390090+00:00"
+  },
+  {
+    "label": "control5",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyControlEmbedding.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.39066290855407715,
+    "bytes": 342,
+    "sha256": "e74e5bd4356e297dcb0eafe7947de63b64779fd6917acf25496de7bcac01fda2",
+    "start": "2026-11-02T16:54:47.065509+00:00"
+  },
+  {
+    "label": "handler-import",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake build"
+    ],
+    "exit": 0,
+    "seconds": 1.8002967834472656,
+    "bytes": 47103,
+    "sha256": "23f84ec76d90a0dd1e8c901d45b12062d7fe409205d4b99981ee8d56fbef992c",
+    "start": "2026-11-02T16:55:08.718784+00:00"
+  },
+  {
+    "label": "arms1",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyArmEmbedding.lean"
+    ],
+    "exit": 1,
+    "seconds": 0.34743499755859375,
+    "bytes": 3155,
+    "sha256": "398e03ebd6065e06bcab68d597195b69e42d24f27fcdb7280cc0ef76af071bd9",
+    "start": "2026-11-02T16:55:29.232174+00:00"
+  },
+  {
+    "label": "arms2",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyArmEmbedding.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.3455979824066162,
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "start": "2026-11-02T16:55:45.023381+00:00"
+  },
+  {
+    "label": "arms-import",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake build"
+    ],
+    "exit": 0,
+    "seconds": 1.0286297798156738,
+    "bytes": 47089,
+    "sha256": "fd21c0de2f2a91bf32177c250e495c6247e2e47918193dc8383dd546d003cfaf",
+    "start": "2026-11-02T16:57:31.792954+00:00"
+  },
+  {
+    "label": "shift1",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyShiftAlgebra.lean"
+    ],
+    "exit": 1,
+    "seconds": 0.33271288871765137,
+    "bytes": 710,
+    "sha256": "bab23847bb5938dc67a6127b6cacb9fc9dae9194ef8c31a3c731cb6083c4b948",
+    "start": "2026-11-02T16:57:32.867636+00:00"
+  },
+  {
+    "label": "shift2",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyShiftAlgebra.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.35813021659851074,
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "start": "2026-11-02T16:58:06.241595+00:00"
+  },
+  {
+    "label": "shift-import",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake build"
+    ],
+    "exit": 0,
+    "seconds": 1.1412010192871094,
+    "bytes": 47089,
+    "sha256": "0fde6abf6582867c4decc6b41eba1bf78a3771b5ee5a8b64b8c40a39c389a5d3",
+    "start": "2026-11-02T16:58:06.703855+00:00"
+  },
+  {
+    "label": "clause-table1",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyClauseTables.lean"
+    ],
+    "exit": 1,
+    "seconds": 0.3253920078277588,
+    "bytes": 9988,
+    "sha256": "231508bbba125ad782d97705d2f1a2b9ecab0294df557b9c6d26c9cb6dc69f1a",
+    "start": "2026-11-02T16:58:07.904505+00:00"
+  },
+  {
+    "label": "clause-table2",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyClauseTables.lean"
+    ],
+    "exit": 1,
+    "seconds": 0.34886980056762695,
+    "bytes": 1444,
+    "sha256": "4747085314b55466382d78ed0e4f9106967aca16ec6637c6f17e6725ec9d5cde",
+    "start": "2026-11-02T16:58:50.079950+00:00"
+  },
+  {
+    "label": "clause-table3",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyClauseTables.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.34630918502807617,
+    "bytes": 595,
+    "sha256": "36cc8741f62c4ff4d7e6772ac578d2fd08b759e982e4b2a3562e8387d052fa75",
+    "start": "2026-11-02T16:58:54.879231+00:00"
+  },
+  {
+    "label": "clause-table4",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyClauseTables.lean"
+    ],
+    "exit": 1,
+    "seconds": 0.3532848358154297,
+    "bytes": 1184,
+    "sha256": "dc89c1f771e66b6408c34c417e3dd6063922bb81af5c3bf42492d23e90c55c18",
+    "start": "2026-11-02T16:59:30.479918+00:00"
+  },
+  {
+    "label": "clause-table5",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyClauseTables.lean"
+    ],
+    "exit": 1,
+    "seconds": 0.36200809478759766,
+    "bytes": 833,
+    "sha256": "acc980ca1f4d30a105666cbdd2132605bc5171fe53b7537bf89bb0590d81df30",
+    "start": "2026-11-02T16:59:37.446113+00:00"
+  },
+  {
+    "label": "clause-table6",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyClauseTables.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.35595107078552246,
+    "bytes": 595,
+    "sha256": "36cc8741f62c4ff4d7e6772ac578d2fd08b759e982e4b2a3562e8387d052fa75",
+    "start": "2026-11-02T16:59:55.926246+00:00"
+  },
+  {
+    "label": "clause-tables-import",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake build"
+    ],
+    "exit": 0,
+    "seconds": 1.1242973804473877,
+    "bytes": 47684,
+    "sha256": "c4971f6a6aa0e2224ccb5471ab21c57f979369d81edd87056cdf0c6e1a219cd2",
+    "start": "2026-11-02T17:00:30.930448+00:00"
+  },
+  {
+    "label": "clause-ctx1",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyClauseContexts.lean"
+    ],
+    "exit": 1,
+    "seconds": 0.3805980682373047,
+    "bytes": 13764,
+    "sha256": "222b796f75cc2aa279081fe3a96e2e6cc9bef4f9884d33ae7af1d8b5338f14cb",
+    "start": "2026-11-02T17:00:32.110945+00:00"
+  },
+  {
+    "label": "clause-ctx2",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyClauseContexts.lean"
+    ],
+    "exit": 1,
+    "seconds": 0.33621668815612793,
+    "bytes": 842,
+    "sha256": "0182c22803aef8954cc708f50fee7fcea06ece796f39e992964158db4491f6a1",
+    "start": "2026-11-02T17:00:52.000922+00:00"
+  },
+  {
+    "label": "clause-ctx3",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyClauseContexts.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.3385810852050781,
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "start": "2026-11-02T17:01:11.719911+00:00"
+  },
+  {
+    "label": "clause-ctx-import",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake build"
+    ],
+    "exit": 0,
+    "seconds": 1.0329859256744385,
+    "bytes": 47757,
+    "sha256": "9280b4ea3b2c2cd24bd52f01da642723296205dd91caa6accfe79f0368de1d32",
+    "start": "2026-11-02T17:01:12.163151+00:00"
+  },
+  {
+    "label": "clause1",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyClauseEmbedding.lean"
+    ],
+    "exit": 1,
+    "seconds": 0.335860013961792,
+    "bytes": 1532,
+    "sha256": "3bb197a93d5ca417a0a72bff63547ad58c9bb934460a15a4b505a3cc579b8dd4",
+    "start": "2026-11-02T17:01:13.245295+00:00"
+  },
+  {
+    "label": "clause2",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyClauseEmbedding.lean"
+    ],
+    "exit": 1,
+    "seconds": 0.38568925857543945,
+    "bytes": 5625,
+    "sha256": "18a69b55826db421ad65f4e7c6d0febd07d5c8701ea25c03401a530e42b5ad72",
+    "start": "2026-11-02T17:01:39.330866+00:00"
+  },
+  {
+    "label": "clause3",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyClauseEmbedding.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.3720860481262207,
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "start": "2026-11-02T17:01:46.613198+00:00"
+  },
+  {
+    "label": "clause4",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyClauseEmbedding.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.3781261444091797,
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "start": "2026-11-02T17:02:00.020513+00:00"
+  },
+  {
+    "label": "clause-import",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake build"
+    ],
+    "exit": 0,
+    "seconds": 1.1411449909210205,
+    "bytes": 47758,
+    "sha256": "4518654d23daccc93ce57f0e5341d733cd4521dcc4528826a86bb18133909b6d",
+    "start": "2026-11-02T17:02:32.514066+00:00"
+  },
+  {
+    "label": "compose1",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyEmbedding.lean"
+    ],
+    "exit": 1,
+    "seconds": 0.4162168502807617,
+    "bytes": 4224,
+    "sha256": "d3183ee103de6d10284614de4b2517bfa80c9d1d9940093bfa2260e45108046f",
+    "start": "2026-11-02T17:02:33.709677+00:00"
+  },
+  {
+    "label": "compose2",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyEmbedding.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.4287869930267334,
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "start": "2026-11-02T17:03:13.610658+00:00"
+  },
+  {
+    "label": "seven1",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyEmbedding.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.4349198341369629,
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "start": "2026-11-02T17:03:40.894751+00:00"
+  },
+  {
+    "label": "compose-import",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake build"
+    ],
+    "exit": 0,
+    "seconds": 1.2537500858306885,
+    "bytes": 47752,
+    "sha256": "9e0edeaf849435eb8eb698a31dcc9f9d59d10ee6277cc683bee09824e5f0ba49",
+    "start": "2026-11-02T17:05:33.054285+00:00"
+  },
+  {
+    "label": "state1",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyStateInputs.lean"
+    ],
+    "exit": 1,
+    "seconds": 0.3306770324707031,
+    "bytes": 7809,
+    "sha256": "f5ca4098003476c5434e0feefde858ab9e109f649a869428c603fbe099fc9c86",
+    "start": "2026-11-02T17:05:34.367466+00:00"
+  },
+  {
+    "label": "state2",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyStateInputs.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.3889470100402832,
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "start": "2026-11-02T17:06:38.685345+00:00"
+  },
+  {
+    "label": "state-import",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake build"
+    ],
+    "exit": 1,
+    "seconds": 1.5893199443817139,
+    "bytes": 49437,
+    "sha256": "fb75ca5b88e4b290419353608e9c87c6469f24cdefa74424dfafd37b247af333",
+    "start": "2026-11-02T17:07:15.312011+00:00"
+  },
+  {
+    "label": "adequate1",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyAdequate.lean"
+    ],
+    "exit": 1,
+    "seconds": 0.1390087604522705,
+    "bytes": 259,
+    "sha256": "e9f4277ad3e81e5061fbc1734b080f27faaa4aa44c8d3f357fcbea6e2d56ed5d",
+    "start": "2026-11-02T17:07:16.959866+00:00"
+  },
+  {
+    "label": "state-import2",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake build"
+    ],
+    "exit": 0,
+    "seconds": 1.1270983219146729,
+    "bytes": 47754,
+    "sha256": "877519f8c66561e9ff1c269e4f8d69485dfeed29aa76e790ac160df252c0fd97",
+    "start": "2026-11-02T17:07:50.280720+00:00"
+  },
+  {
+    "label": "adequate2",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyAdequate.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.5649642944335938,
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "start": "2026-11-02T17:07:51.454267+00:00"
+  },
+  {
+    "label": "adequate-import",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake build"
+    ],
+    "exit": 0,
+    "seconds": 1.3750982284545898,
+    "bytes": 47751,
+    "sha256": "f084f10e3da1f276b2c771e1f76eec2c8743c72f597949ad705bbecf33494ab1",
+    "start": "2026-11-02T17:09:01.525246+00:00"
+  },
+  {
+    "label": "examples1",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyFullEmbeddingExamples.lean"
+    ],
+    "exit": 1,
+    "seconds": 0.32535219192504883,
+    "bytes": 3137,
+    "sha256": "ac03542e276ab0c2413800c391e78f78f3b40c3176e212d8fdcc874121c83f60",
+    "start": "2026-11-02T17:09:02.956306+00:00"
+  },
+  {
+    "label": "examples2",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyFullEmbeddingExamples.lean"
+    ],
+    "exit": 1,
+    "seconds": 0.36923909187316895,
+    "bytes": 643,
+    "sha256": "2832d34ccca5b1537b5c1f9f7d66f959489e2e2b940a755dc30147aeb791678e",
+    "start": "2026-11-02T17:09:34.216234+00:00"
+  },
+  {
+    "label": "examples3",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyFullEmbeddingExamples.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.37697720527648926,
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "start": "2026-11-02T17:10:03.004242+00:00"
+  },
+  {
+    "label": "examples4",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyFullEmbeddingExamples.lean"
+    ],
+    "exit": 1,
+    "seconds": 0.35530996322631836,
+    "bytes": 694,
+    "sha256": "83e9b97fad69da56b58c84f29ee621fbbe77a29a4b0ba0bab6ea87aa1cb8f1c2",
+    "start": "2026-11-02T17:10:03.486576+00:00"
+  },
+  {
+    "label": "examples5",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyFullEmbeddingExamples.lean"
+    ],
+    "exit": 1,
+    "seconds": 0.3841080665588379,
+    "bytes": 330,
+    "sha256": "3b27f410ecefdcd62427bf30cdc05992d1a86b70474d5ded908076ed8621d761",
+    "start": "2026-11-02T17:10:09.360658+00:00"
+  },
+  {
+    "label": "examples6",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyFullEmbeddingExamples.lean"
+    ],
+    "exit": 1,
+    "seconds": 0.3582603931427002,
+    "bytes": 317,
+    "sha256": "8305ce37417f23e20dd22b61391306a5a0cddec7da530f3de7960f66e0183730",
+    "start": "2026-11-02T17:10:14.640656+00:00"
+  },
+  {
+    "label": "state3",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyStateInputs.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.40260982513427734,
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "start": "2026-11-02T17:10:42.679060+00:00"
+  },
+  {
+    "label": "state-final-build",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake build"
+    ],
+    "exit": 0,
+    "seconds": 1.6827392578125,
+    "bytes": 47826,
+    "sha256": "3451f6a12d37afdd9a07778c52f4d753247a0dafd45cf5f1958ffa56ff9fb304",
+    "start": "2026-11-02T17:10:43.128635+00:00"
+  },
+  {
+    "label": "adequate-rebuild",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyAdequate.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.564892053604126,
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "start": "2026-11-02T17:10:44.864953+00:00"
+  },
+  {
+    "label": "examples7",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 Benitoite/Release/Refinement/LegacyFullEmbeddingExamples.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.352031946182251,
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "start": "2026-11-02T17:10:45.476890+00:00"
+  },
+  {
+    "label": "examples-import",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake build"
+    ],
+    "exit": 0,
+    "seconds": 1.1419429779052734,
+    "bytes": 47764,
+    "sha256": "f106ee8749deaefab6246c8697d051d386aed38653dda6a599ed192053adb41e",
+    "start": "2026-11-02T17:12:15.587262+00:00"
+  },
+  {
+    "label": "clean-build",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake build"
+    ],
+    "exit": 0,
+    "seconds": 5.287448167800903,
+    "bytes": 44165,
+    "sha256": "5bcdbd5a2a64b6f913d156184bbbb35d1dc752c1a42c5a79ee13c69cdb47df06",
+    "start": "2026-11-02T17:13:14.697666+00:00"
+  },
+  {
+    "label": "signatures-main",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/q/signatures-main.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.6702888011932373,
+    "bytes": 34857,
+    "sha256": "555442d433cae3950c1a447f3eaf2893f3b13dea8be22882228a5f0e7f0332c3",
+    "start": "2026-11-02T17:13:51.686533+00:00"
+  },
+  {
+    "label": "signatures-aux",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/q/signatures-aux.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.6644296646118164,
+    "bytes": 84359,
+    "sha256": "f03ff1f4cbbf260af8b82d974f1c6bc3ad9d2341eee82f0eb86f9960cea7b792",
+    "start": "2026-11-02T17:13:52.404697+00:00"
+  },
+  {
+    "label": "axioms",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/q/axioms.lean"
+    ],
+    "exit": 0,
+    "seconds": 1.8954250812530518,
+    "bytes": 43573,
+    "sha256": "192b2f3a86f05662e8af7676556ac43d40af5aed4309c3fef21ec8e59d37023a",
+    "start": "2026-11-02T17:13:53.116628+00:00"
+  },
+  {
+    "label": "signatures-main-final",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/q/signatures-main.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.6924810409545898,
+    "bytes": 49330,
+    "sha256": "65667880ee27284e65f334aaeeb3172593aa4219ffd70df71b08a3049325db96",
+    "start": "2026-11-02T17:14:55.968182+00:00"
+  },
+  {
+    "label": "signatures-aux-final",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/q/signatures-aux.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.6652481555938721,
+    "bytes": 85693,
+    "sha256": "ceab0cbe81e3f54ddba71371823e780443df44937bacf40cc0e1c464bf187090",
+    "start": "2026-11-02T17:14:56.707764+00:00"
+  },
+  {
+    "label": "work-dry",
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "a6b13f1c4d41aed1d2889459fe975487bf659a54",
+      "--dry-run"
+    ],
+    "exit": 0,
+    "seconds": 0.11603879928588867,
+    "bytes": 759,
+    "sha256": "ddf0587b2a7524333409bc71302c32d0502dccc3459eac155275493ceb848645",
+    "start": "2026-11-02T17:14:57.420535+00:00"
+  },
+  {
+    "label": "signatures-main-complete",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/q/signatures-main.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.684377908706665,
+    "bytes": 50178,
+    "sha256": "3241a85f1264f4cbc72299ff4c8e3c32cc86bf7dd32337809e10ad8004aa8ad8",
+    "start": "2026-11-02T17:15:12.209553+00:00"
+  },
+  {
+    "label": "signatures-aux-complete",
+    "command": [
+      "zsh",
+      "-c",
+      "cd formal && lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/q/signatures-aux.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.661674976348877,
+    "bytes": 85693,
+    "sha256": "ceab0cbe81e3f54ddba71371823e780443df44937bacf40cc0e1c464bf187090",
+    "start": "2026-11-02T17:15:12.941064+00:00"
+  },
+  {
+    "label": "work",
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "a6b13f1c4d41aed1d2889459fe975487bf659a54"
+    ],
+    "exit": 0,
+    "seconds": 7.603636026382446,
+    "bytes": 5757,
+    "sha256": "176ef59a4db19feda139a906cde9eac715c37c344993ebc33fec57c67b493bb0",
+    "start": "2026-11-02T17:18:51.703991+00:00"
+  }
+]

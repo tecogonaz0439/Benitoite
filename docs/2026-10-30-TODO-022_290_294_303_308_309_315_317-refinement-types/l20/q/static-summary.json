@@ -1,0 +1,146 @@
+{
+  "findings": {
+    "sorry_or_axiom": [],
+    "task_ids": [],
+    "absolute_path": [],
+    "external_reference": [],
+    "new_typing_in_state_input": []
+  },
+  "legacyRules": [
+    "V_Var",
+    "V_Const",
+    "V_Fun",
+    "V_Prim",
+    "V_Op",
+    "V_Raise",
+    "V_Lam",
+    "V_Con",
+    "V_List",
+    "V_LocRef",
+    "V_LocLazy",
+    "V_Map",
+    "V_Set",
+    "V_Bytes",
+    "V_Dict",
+    "V_Super",
+    "V_Sub",
+    "V_Checked",
+    "V_CheckedRequest",
+    "Vs_nil",
+    "Vs_cons",
+    "Each_nil",
+    "Each_cons",
+    "C_BuilderLet",
+    "C_BuilderOp",
+    "C_Return",
+    "C_Sub",
+    "C_Eff",
+    "C_Let",
+    "C_App",
+    "C_If",
+    "C_Match",
+    "C_Lazy",
+    "C_Escape",
+    "C_Use",
+    "C_Handle",
+    "C_Handle_Fail",
+    "C_Resume",
+    "C_ResumeL",
+    "C_Meth",
+    "Arms_nil",
+    "Arms_plain",
+    "Arms_guarded",
+    "Clauses_nil",
+    "Clauses_cons",
+    "Failure_one"
+  ],
+  "legacyRuleCount": 46,
+  "sourceModules": 15,
+  "signatureBytes": {
+    "signatures.md": 50669,
+    "aux-signatures.md": 86194
+  },
+  "scope": "追加Leanと公開署名、旧46規則のinventory",
+  "signaturesComplete": true,
+  "publicDeclarations": 96,
+  "privateDeclarations": 12,
+  "legacyContInputConstructors": 10,
+  "defaultBuildJobs": 890,
+  "resultLinks": [
+    {
+      "file": "results.md",
+      "target": "signatures.md",
+      "exists": true
+    },
+    {
+      "file": "results.md",
+      "target": "aux-signatures.md",
+      "exists": true
+    },
+    {
+      "file": "results.md",
+      "target": "signature-draft.json",
+      "exists": true
+    },
+    {
+      "file": "results.md",
+      "target": "rule-times.json",
+      "exists": true
+    },
+    {
+      "file": "results.md",
+      "target": "rule-spans.json",
+      "exists": true
+    },
+    {
+      "file": "results.md",
+      "target": "declarations.tsv",
+      "exists": true
+    },
+    {
+      "file": "results.md",
+      "target": "axioms.lean",
+      "exists": true
+    },
+    {
+      "file": "results.md",
+      "target": "audit-modules.txt",
+      "exists": true
+    },
+    {
+      "file": "results.md",
+      "target": "audit-declarations.txt",
+      "exists": true
+    },
+    {
+      "file": "results.md",
+      "target": "audit-summary.json",
+      "exists": true
+    },
+    {
+      "file": "results.md",
+      "target": "checks.json",
+      "exists": true
+    },
+    {
+      "file": "results.md",
+      "target": "inputs.json",
+      "exists": true
+    },
+    {
+      "file": "results.md",
+      "target": "static-summary.json",
+      "exists": true
+    },
+    {
+      "file": "signatures.md",
+      "target": "signatures-main.lean",
+      "exists": true
+    },
+    {
+      "file": "aux-signatures.md",
+      "target": "signatures-aux.lean",
+      "exists": true
+    }
+  ]
+}

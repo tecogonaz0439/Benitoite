@@ -1,0 +1,31 @@
+{
+  "findings": {
+    "forbidden": [],
+    "taskIds": [],
+    "absolutePaths": [],
+    "temporaryReferences": []
+  },
+  "usedDefinition": "| .used => ∃ b t e r, Ψ l = some (.cont b t e r)",
+  "sourceDeclarations": 110,
+  "public": 98,
+  "private": 12,
+  "signatureBytes": {
+    "signatures.md": 50876,
+    "aux-signatures.md": 89462
+  },
+  "workRuns": 1,
+  "coveredNewLegacyRules": [
+    "Vs_nil",
+    "Vs_cons",
+    "Each_nil",
+    "Each_cons",
+    "C_Return",
+    "C_Match",
+    "C_If",
+    "Arms_nil",
+    "Arms_plain",
+    "Clauses_nil",
+    "Clauses_cons",
+    "Failure_one"
+  ]
+}
