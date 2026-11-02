@@ -3132,7 +3132,7 @@ structure ClosedTypeSubstInput (P : Program) (B : Builtins)
   context : CaptureContextRegular P (C1 ++ C0) Γ
 ```
 
-公開の S02 の14定義は ClosedTypeSubstInput を読む。`S02Internal.C/Body/Arms/Clauses` は、TypeSubstInput を受けて任意の Γ で量化した内部の契約であり、各 toPublic は公開入口の toTypeSubstInput を渡して対応する S02 を返す。これらの Prop の定義と公開への射影は、全相互帰納の証明を意味しない。TelBodyTy.param の子や腕の束縛で値文脈が変わっても、内部入力を作り直す必要はない。操作節の型束縛の下では、TypeSubstInput.under が閉じた型像の制約を既存の sat_shiftTypes により弱める。
+公開の S02 の十の移送は ClosedTypeSubstInput を読む。`S02Internal` の十の移送の契約は、TypeSubstInput を受けて任意の Γ で量化する。各 toPublic は公開入口の toTypeSubstInput を渡して対応する S02 を返す。TelBodyTy.param の子や腕の束縛で値文脈が変わっても、内部入力を作り直す必要はない。操作節の型束縛の下では、TypeSubstInput.under が閉じた型像の制約を既存の sat_shiftTypes により弱める。
 
 コードの型置換の契約は `S02_V` などの14個の Prop として既定ビルドに含める。Q を移す十成分は、形成の入力とは別に `TypeSubstCode es source` を受ける。この条件は `es = [] ∨ ∃ nr nt ne nv, source nr nt ne nv` であり、source は各成分の元の値・計算・列・腕・節に対する SourceScoped である。CaptureOk・DependentClosureTy・CheckedWitness の恒等の三成分と ImageOk の True の成分には、この条件を要求しない。Prop の定義は契約の型を検査し、その命題の証明を意味しない。
 
@@ -3147,6 +3147,14 @@ structure ClosedTypeSubstInput (P : Program) (B : Builtins)
 場所と実行時閉包のコードは SourceScoped を満たさない。対応する四つの構成子の型置換の case 補題は、行像が空の場合に格納型を正規化して結論を作り、行像が空でない場合は源の構文の条件から矛盾を得る。ストア型の WF000 は行変数を制限せず、これを全ての行置換に対する不変性として使わない。
 
 `Ty.HasKind.closed_context` と `kindsEff.closed_context` は、型変数を持たない WF の型・行について kind の文脈を変更する。`Ty.HasKind.substAt`・`Tel.kinded_substAt`・`TypeArgsKinded.substAt` は、元の `C1 ++ C0` と像の `TypeCtx.kinds C0` を照合し、残す C1 の下で kind を保存する。行像にも空の kind 文脈での `kindsEff` を要求する。constructor の適用は `ProperApply` の各構成子を使い、`rawApply` の既定の枝を形成の根拠にしない。data の構成子の arity は、`TyCon.arity_data` と `TyCon.dataArity_of_arity` で `Program.DataArity` と双方向に対応する。
+
+`TypeSubstTypingMotives` は、内部入力を使う十の移送について、元の型文脈の分解 `C = C1 ++ C0` を受ける帰納の命題を定義する。`TypeSubstTyping` は14判断76構成子の case 補題を持ち、一つの相互帰納に合成する。内訳は値29・計算24・値列2・同じ型を持つ値の列2・依存列の実引数2・依存列の本体2・捕捉1・依存閉包1・保持値2・At1・腕3・節2・失敗節1・像4である。Sub・Normal・Refine・Eff の包装もこの帰納に含む。`TypeSubstMain` の `type_subst_all` は、公開の S02 の十の移送、三つの恒等、像の True の全14命題を結論する。
+
+`Ctx.NormEq Γ Δ` は、文脈を `Option.map Ty.norm` で写した列の等号であり、長さと `none` の位置を保つ。文脈間の型付けの移送には、元の文脈と移送先の文脈で最上位が `.cont` である位置の対応も使う。`ContextNormEq` は恒等の値の像による既存の置換を使い、変数を V_Normal、継続の呼出しを C_ResumeNorm で揃える。Annotation・sort・facts の移送と、hideConts・bindParams の対応も持つ。捕捉済みの文脈と閉包は、外側の文脈を変更する置換の内部でも保持する。
+
+`TypeSubstLocalSignature` は、節の局所 WF と既存の行支持から、型置換された署名と元の署名の文脈の NormEq および継続の位置の対応を証明する。`OpSig.typeSubst_body` はこの対応を使い、型置換された節の本体を元の署名の文脈へ移す。節の結果型の WF は要求しない。`TypeSubstCallSites` は、型付きの関数・メソッドの呼出しから入力を得て、本体に公開の `type_subst_body` を適用する。元の QTel と行の対応を保つ。通常節と失敗節には `S02Internal.substC` を適用し、呼出し側の経路条件と節側の経路条件を別々に受け、節の捕捉文脈を保つ。`HasTypeClausesQ.findClause_body` は選択された節の署名と本体を返し、`hideBuilders_idem` は構築器を隠す操作の冪等性を与える。`type_subst_e_op_site`・`type_subst_e_opfail_site` は、ハンドラの節の型付けから行先の `c.body.substTy ts []`・`body.substTy [T] []` までを組み立てる。失敗節では raise の型と捕捉元のエラー型を別々に受ける。
+
+`Pred.Declared.typeSubst` と `Pred.Sorted.typeSubst` は、自己を表す型を含む述語の宣言照合と sort を同じ内部入力で移す。`Ctx.typeSubst_sortMap` は文脈内の型の sort と Ordinary の対応を返し、`FactsWF.typeSubst` は元の経路条件の整形式を保つ。前提は元の述語と `TypeSubstInput` である。
 
 `Ty.Declared.substAt`・`Tel.Declared.substAt`・`declaredTys_substAt`・`declaredEff_substAt` は、プログラムの整形式・本体の型付け・CoreAssumptions・ストア型の WF、同じ `TypeSubstInput`、元の Annotation から宣言照合を保存する。移送先は `Γ.bindTypes (typeEnvAt C1.length ts es)` である。`Ty.Annotation.substAt` は WF・Sorted・Declared を合成し、型と行の列の Annotation も保存する。全中間注釈に value kind は要求しない。Tel の束縛下の宣言照合では、元と像の引数型をそれぞれの値文脈へ加えて対応を延長する。`Ty.Declared.typeSubst` と `Tel.Declared.typeSubst` は、元の Declared だけから同じ移送を証明する。C_Let などで WF・Sorted の形成を別に要求しない。`ClosedTypeSubstInput.extend` は公開入口の context を元の注釈から延長する補助であり、内部の帰納の入力には使わない。
 

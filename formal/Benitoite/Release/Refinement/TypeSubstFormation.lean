@@ -1005,4 +1005,51 @@ theorem reject_unsorted_tapp_image :
       Ty.core,Ty.refinementPredicates]
   exact ⟨hw,by trivial,he.symm ▸ hs,fun P => ⟨fun h => hs h.sorted,by simp [image,Ty.HasKind]⟩⟩
 
+theorem Pred.Declared.typeSubst {P B} {Ψ : StoreTy} {C0 C1 Γ a p ts es}
+    (hf : P.WellFormed ∧ P.WellTyped B ∧ B.CoreAssumptions P ∧ Ψ.WF)
+    (hi : TypeSubstInput P B C0 C1 ts es)
+    (h : Pred.Declared P (C1 ++ C0) Γ (some a) p) :
+    Pred.Declared P C1 (Γ.bindTypes (typeEnvAt C1.length ts es))
+      (some (a.substAt C1.length ts es)) p := by
+  let θ := typeEnvAt C1.length ts es
+  have hm := declMap_bindTypes Γ θ (typeEnvAt_ordinary _ _ _ hi.typeKinds.ordinary)
+  exact pred_decl_bind h hf.1 hf.2.1.variance hm rfl rfl
+    (declMap_extend hm a (a.bind θ) (Ty.norm_idem _))
+
+theorem Pred.Sorted.typeSubst {P B C0 C1 Γ a p ts es}
+    (hi : TypeSubstInput P B C0 C1 ts es) (h : Pred.Sorted Γ (some a) p) :
+    Pred.Sorted (Γ.bindTypes (typeEnvAt C1.length ts es))
+      (some (a.substAt C1.length ts es)) p := by
+  let θ := typeEnvAt C1.length ts es
+  have hm := declMap_bindTypes Γ θ (typeEnvAt_ordinary _ _ _ hi.typeKinds.ordinary)
+  exact h.sortMap (declMap_sortMap hm) (fun _ hs => Ty.hasSort_bind hs θ)
+    (fun ho => Ty.ordinary_bind ho θ hm.ordinary)
+
+theorem Ctx.typeSubst_sortMap {P B C0 C1 ts es} (Γ : Ctx)
+    (hi : TypeSubstInput P B C0 C1 ts es) :
+    SortMap Γ (Γ.bindTypes (typeEnvAt C1.length ts es)) :=
+  declMap_sortMap (declMap_bindTypes Γ _ (typeEnvAt_ordinary _ _ _ hi.typeKinds.ordinary))
+
+theorem FactsWF.typeSubst {P B} {Ψ : StoreTy} {C0 C1 Γ Φ ts es}
+    (hf : P.WellFormed ∧ P.WellTyped B ∧ B.CoreAssumptions P ∧ Ψ.WF)
+    (hi : TypeSubstInput P B C0 C1 ts es) (h : FactsWF P (C1 ++ C0) Γ Φ) :
+    FactsWF P C1 (Γ.bindTypes (typeEnvAt C1.length ts es)) Φ := by
+  intro p hp
+  have hh := h p hp
+  have hm := declMap_bindTypes Γ (typeEnvAt C1.length ts es)
+    (typeEnvAt_ordinary C1.length ts es hi.typeKinds.ordinary)
+  refine ⟨by simpa only [Ctx.bindTypes,List.length_map] using hh.wf,
+    by simpa only [predBind_id] using (Pred.Sorted.map (Δ := Γ.bindTypes (typeEnvAt C1.length ts es))
+      (other := none) (ν := fun i => some (.var i)) hh.sorted
+      (Ctx.typeSubst_sortMap Γ hi).values (Ctx.typeSubst_sortMap Γ hi).references), ?_⟩
+  apply pred_decl_bind hh.declared hf.1 hf.2.1.variance hm rfl rfl
+  have ht : ts.map (Ty.shiftV 1 0) = ts := by
+    conv => rhs; rw [← List.map_id ts]
+    exact List.map_congr_left (fun t ht => Ty.shiftV_of_wf_zero (hi.typeWF t ht) 1 0)
+  have he : es.map (Eff.shiftV 1 0) = es := by
+    conv => rhs; rw [← List.map_id es]
+    exact List.map_congr_left (fun e he => Eff.shiftV_of_wf_zero (hi.rowWF e he) 1 0)
+  simpa only [Ctx.declarationSelf, typeEnvAt_up, ht, he] using hm
+
+
 end Benitoite.Release.Refinement
