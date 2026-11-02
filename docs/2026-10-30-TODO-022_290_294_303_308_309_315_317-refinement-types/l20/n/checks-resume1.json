@@ -1,0 +1,123 @@
+{
+  "base": "14dc5648d5c8cb866268ecd3f29020d8e43436b9",
+  "checks": [
+    {
+      "name": "build-final",
+      "cwd": "formal",
+      "command": [
+        "lake",
+        "build"
+      ],
+      "start_utc": "2026-11-02T13:24:22.943623+00:00",
+      "end_utc": "2026-11-02T13:24:23.097406+00:00",
+      "seconds": 0.154,
+      "exit": 0,
+      "log": {
+        "name": "<tmp>/benitoite-l20n-r1/build-final.log",
+        "bytes": 42716,
+        "sha256": "0f38798a0a14cc3a0314779becd4300634b7f692d48e9b718d508c0f1d63d558"
+      }
+    },
+    {
+      "name": "axioms-final",
+      "cwd": "formal",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/n/axioms.lean"
+      ],
+      "start_utc": "2026-11-02T13:24:27.308179+00:00",
+      "end_utc": "2026-11-02T13:24:30.751999+00:00",
+      "seconds": 3.444,
+      "exit": 0,
+      "log": {
+        "name": "<tmp>/benitoite-l20n-r1/axioms-final.log",
+        "bytes": 1365150,
+        "sha256": "ef0b3f4200ea10c9bc801b6251408ba336d66bf46683618bce83ce5316c13321"
+      }
+    },
+    {
+      "name": "handoff-typecheck",
+      "cwd": "formal",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/n/h04-handoff.lean"
+      ],
+      "start_utc": "2026-11-02T13:25:00.474573+00:00",
+      "end_utc": "2026-11-02T13:25:01.131680+00:00",
+      "seconds": 0.657,
+      "exit": 0,
+      "log": {
+        "name": "<tmp>/benitoite-l20n-r1/handoff-typecheck.log",
+        "bytes": 2159,
+        "sha256": "b288dcd16be200b40af750e37fafaf0a5a088d1bcd48983b03bdec835551ccd3"
+      }
+    },
+    {
+      "name": "validation",
+      "cwd": ".",
+      "command": [
+        "python3",
+        "-B",
+        "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/n/validate.py"
+      ],
+      "start_utc": "2026-11-02T13:25:01.194858+00:00",
+      "end_utc": "2026-11-02T13:25:01.245651+00:00",
+      "seconds": 0.051,
+      "exit": 0,
+      "log": {
+        "name": "<tmp>/benitoite-l20n-r1/validation.log",
+        "bytes": 184,
+        "sha256": "f3c1c2620992bede6ee278f13c2961a8485fea46cb09e132ea9b4731d7691fec"
+      }
+    },
+    {
+      "name": "work-dry-run",
+      "cwd": ".",
+      "command": [
+        "scripts/check.sh",
+        "--level",
+        "work",
+        "--base",
+        "14dc5648d5c8cb866268ecd3f29020d8e43436b9",
+        "--dry-run"
+      ],
+      "start_utc": "2026-11-02T13:25:07.276724+00:00",
+      "end_utc": "2026-11-02T13:25:07.389132+00:00",
+      "seconds": 0.112,
+      "exit": 0,
+      "log": {
+        "name": "<tmp>/benitoite-l20n-r1/work-dry-run.log",
+        "bytes": 759,
+        "sha256": "36863985d6558404c5c9b2e1a1e674df1ea0abe78f6833dedc06abcf4b9c6bd7"
+      }
+    },
+    {
+      "name": "work-final",
+      "cwd": ".",
+      "command": [
+        "scripts/check.sh",
+        "--level",
+        "work",
+        "--base",
+        "14dc5648d5c8cb866268ecd3f29020d8e43436b9"
+      ],
+      "start_utc": "2026-11-02T13:25:39.115425+00:00",
+      "end_utc": "2026-11-02T13:25:42.905781+00:00",
+      "seconds": 3.79,
+      "exit": 0,
+      "log": {
+        "name": "<tmp>/benitoite-l20n-r1/work-final.log",
+        "bytes": 5757,
+        "sha256": "b86d84fc031a313c6f77a276358915a1c95c745dba8821759344a4e2ae85f500"
+      }
+    }
+  ]
+}

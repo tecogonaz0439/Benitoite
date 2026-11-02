@@ -1,3 +1,4 @@
+import Benitoite.Release.Refinement.StepLeafSelection
 import Benitoite.Release.Refinement.ContinuationGeneral
 
 /-! # 構築器・継続破棄・資源の解放の具体的な全状態の適用例 -/
@@ -509,6 +510,44 @@ theorem list_builder_overflow (σ : PathEnv) :
       simp only [hh,↓reduceIte]
     exact (h.builder_error (kind := .list item) (op := .append) (args := [.const .unit]) rfl (by simp [μ,Store.set]) hb).2
   exact prove_for maxBuilderListLen rfl
+
+/-- 実際の資源と同じ表の契約を用いて、選んだ解放応答へ適用する。 -/
+theorem concrete_release_selection (σ : PathEnv) :
+    releaseStep modelBuiltins.selectRelease resource
+      (.error [] [] Store.empty) (fun r => .error [r] [] Store.empty) =
+      some (some (.release resource (modelBuiltins.selectRelease resource)),
+        match modelBuiltins.selectRelease resource with
+        | none => .error [] [] Store.empty | some r => .error [r] [] Store.empty) ∧
+      modelBuiltins.releaseResponse resource (modelBuiltins.selectRelease resource) :=
+  (release_cont σ).selected_release_step model_core
+
+/-- 同じ適格な操作の表で、選んだ継続の保存場所が実行関数と規則で一致する。 -/
+theorem concrete_fresh_operation (σ : PathEnv) :
+    modelProgram.WellFormed ∧ modelProgram.WellTyped modelBuiltins ∧ modelBuiltins.CoreAssumptions modelProgram ∧
+    ∃ events dest, step modelProgram modelBuiltins σ modelBuiltins.selectOracle
+      (fun _ _ _ => (.err "Unused",[])) modelBuiltins.selectRelease Store.selectFresh
+      (.run (Closure.pure (.app (.op "Example.identity" [.base .unit]) [.const .unit]))
+        [.handleF Capture.empty [.mk (.user "Example.identity") 1 1 (.ret (.var 1))]] Store.empty) = some (events,dest) ∧
+      Step modelProgram modelBuiltins σ
+        (.run (Closure.pure (.app (.op "Example.identity" [.base .unit]) [.const .unit]))
+          [.handleF Capture.empty [.mk (.user "Example.identity") 1 1 (.ret (.var 1))]] Store.empty) events dest := by
+  let cs : List Clause := [.mk (.user "Example.identity") 1 1 (.ret (.var 1))]
+  have input := FreshStepInputs.operation (B := modelBuiltins)
+    (q := Closure.pure (.app (.op "Example.identity" [.base .unit]) [.const .unit])) (μ := Store.empty)
+    rfl (show SplitAt (.user "Example.identity") [.handleF Capture.empty cs] [] Capture.empty cs [] from
+      ⟨rfl,rfl,(by simp [NoHandler])⟩) (show findClause cs (.user "Example.identity") = some (.mk (.user "Example.identity") 1 1 (.ret (.var 1))) from rfl)
+  exact ⟨model_wellFormed,model_wellTyped,model_core,none,_,step_fresh_selected (StoreOk.empty _ _ σ) input⟩
+
+/-- 実際の解放の枠で、ret と escape の両方が同じ選択を読む。 -/
+theorem concrete_release_frames (σ : PathEnv) (escape : Bool) :
+    ∃ event dest, step modelProgram modelBuiltins σ modelBuiltins.selectOracle
+      (fun _ _ _ => (.err "Unused",[])) modelBuiltins.selectRelease Store.selectFresh
+      (.run (Closure.pure (if escape then .escape (.const .unit) else .ret (.const .unit))) [.release resource] Store.empty) =
+        some (event,dest) ∧
+      Step modelProgram modelBuiltins σ
+        (.run (Closure.pure (if escape then .escape (.const .unit) else .ret (.const .unit))) [.release resource] Store.empty) event dest := by
+  refine ⟨_,_,step_release_selected (escape := escape) (w := .const .unit) ?_ ((release_cont σ).release_response_exists model_core)⟩
+  cases escape <;> rfl
 
 end
 end Benitoite.Release.Refinement.HandlerStoreExamples

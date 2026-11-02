@@ -201,6 +201,111 @@ theorem StateTyE.lazy_update_all {P B σ Eb q v l k μ}
     (fun r hr => ⟨(hret r hr).wf,(hret r hr).declared⟩) hq.result_normal hRn
   exact ⟨Ψ,R',a,b,e,Eff.empty,hs',hq',empty_sub e,hk'',⟨trivial,hva⟩,⟨trivial,hg⟩,
     (fun f hf => hkc f (List.mem_cons_of_mem _ hf)),hμ.set_cell hg⟩
+private theorem let_result_annotation {P B Ψ x c n} {R : Option Ty} {e : Eff}
+    (h : ClosureTy P B Ψ [x] (R.map (Ty.shiftV 1 0)) n (c.shiftV 1 0) (e.shiftV 1 0))
+    (hx : Ty.Annotation P [] [] x) : Ty.Annotation P [] [] c := by
+  have ha := h.annotation
+  have hc : Ty.Annotation P [] (Ctx.extend [] x) (c.shiftV 1 0) :=
+    ⟨ha.wf.1,ha.sorted.1,ha.declared.1⟩
+  exact ⟨Ty.wf_shiftV_rev (by omega) hc.wf,Ty.sorted_shiftV_rev hc.sorted,
+    hc.declared.shiftV_rev hx.declared⟩
+
+/-- let を飛ばす場合は、保存した後続の結果注釈を元の枠から取り出す。 -/
+theorem StateTyE.escape_let {P B σ Eb q v n k μ}
+    (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)
+    (h : StateTyE P B σ Eb (.run q (.letF n :: k) μ)) (hv : q.view = .escape v) :
+    Step P B σ (.run q (.letF n :: k) μ) none (.run (Closure.pure (.escape v)) k μ) ∧
+    StateTyE P B σ Eb (.run (Closure.pure (.escape v)) k μ) := by
+  obtain ⟨Ψ,R,a,b,e,e1,hs,hq,he,hk,had,hcl,hkc,hμ⟩ := h
+  obtain ⟨x,c,ec,hn,_,hx,_,_,ht⟩ := hk.let_inv n k rfl
+  obtain ⟨r,hr,hvty⟩ := hq.escape_view_value hP hPB hB hs.wf hs.sorted hs.declared hv
+  have hc := (let_result_annotation hn hx).norm
+  have hRn := hq.return_normal
+  have hret := hk.return_annotation rfl
+  subst R
+  have hq' := ClosureTy.pure (.C_Escape (ε := Eff.empty) hvty hc) hc.done_empty
+    (fun t hh => ⟨(hret t hh).wf,(hret t hh).declared⟩) (Ty.norm_idem _) hRn
+  have hva := Closure.view_adequate had
+  rw [hv] at hva
+  have hg := hq.view_read_ground hcl (by rw [hv]; exact List.mem_cons_self)
+  exact ⟨.E_EscLet hv,Ψ,some r,c.norm,b,e,Eff.empty,hs,hq',empty_sub e,
+    .K_Sub ht (.convert (Ty.norm_idem _)),⟨trivial,hva⟩,⟨trivial,hg⟩,
+    (fun f hf => hkc f (List.mem_cons_of_mem _ hf)),hμ⟩
+
+/-- handler を飛ばしても捕捉と戻り先の型を保つ。 -/
+theorem StateTyE.escape_handler {P B σ Eb q v cap cs k μ}
+    (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)
+    (h : StateTyE P B σ Eb (.run q (.handleF cap cs :: k) μ)) (hv : q.view = .escape v) :
+    Step P B σ (.run q (.handleF cap cs :: k) μ) none (.run (Closure.pure (.escape v)) k μ) ∧
+    StateTyE P B σ Eb (.run (Closure.pure (.escape v)) k μ) := by
+  obtain ⟨Ψ,R,a,b,e,e1,hs,hq,he,hk,had,hcl,hkc,hμ⟩ := h
+  obtain ⟨t,et,hle,ha,ht⟩ := hk.handler_tail_annotated
+  have hva := Closure.view_adequate had
+  rw [hv] at hva
+  have hg := hq.view_read_ground hcl (by rw [hv]; exact List.mem_cons_self)
+  -- escape は任意の結果型を取るので、元の handler の結果へ型付け直す。
+  obtain ⟨r,hr,hvty⟩ := hq.escape_view_value hP hPB hB hs.wf hs.sorted hs.declared hv
+  have hRn := hq.return_normal
+  have hret := hk.return_annotation rfl
+  subst R
+  have hq'' := ClosureTy.pure (.C_Escape (ε := Eff.empty) hvty ha.norm) ha.norm.done_empty
+    (fun t hh => ⟨(hret t hh).wf,(hret t hh).declared⟩) (Ty.norm_idem _) hRn
+  exact ⟨.E_EscHandle hv,Ψ,some r,t.norm,b,et,Eff.empty,hs,hq'',empty_sub et,
+    .K_Sub ht (.convert (Ty.norm_idem _)),⟨trivial,hva⟩,⟨trivial,hg⟩,
+    (fun f hf => hkc f (List.mem_cons_of_mem _ hf)),hμ⟩
+
+theorem StateTyE.escape_mark {P B σ Eb q v k μ}
+    (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)
+    (h : StateTyE P B σ Eb (.run q (.mark :: k) μ)) (hv : q.view = .escape v) :
+    Step P B σ (.run q (.mark :: k) μ) none (.run (Closure.pure (.ret v)) k μ) ∧
+    StateTyE P B σ Eb (.run (Closure.pure (.ret v)) k μ) := by
+  obtain ⟨Ψ,R,a,b,e,e1,hs,hq,he,hk,had,hcl,hkc,hμ⟩ := h
+  obtain ⟨r,R',hr,_,ht⟩ := hk.mark_inv k rfl
+  obtain ⟨r0,hr0,hvty⟩ := hq.escape_view_value hP hPB hB hs.wf hs.sorted hs.declared hv
+  cases Option.some.inj (hr0.symm.trans hr)
+  have ha := hk.return_annotation rfl r hr
+  have hn := hq.return_normal r hr
+  obtain ⟨R'',hRn,ht⟩ := ht.normal_return_tail rfl r ha hn .refl
+  have hret := ht.return_annotation rfl
+  have hq' := ClosureTy.pure (.C_Return hvty) ha.done_empty
+    (fun t hh => ⟨(hret t hh).wf,(hret t hh).declared⟩) hn hRn
+  have hva := Closure.view_adequate had
+  rw [hv] at hva
+  have hg := hq.view_read_ground hcl (by rw [hv]; exact List.mem_cons_self)
+  exact ⟨.E_EscMark hv,Ψ,R'',r,b,e,Eff.empty,hs,hq',empty_sub e,ht,
+    ⟨trivial,hva⟩,⟨trivial,hg⟩,(fun f hf => hkc f (List.mem_cons_of_mem _ hf)),hμ⟩
+
+theorem StateTyE.error_let {P B σ Eb rs n k μ}
+    (h : StateTyE P B σ Eb (.error rs (.letF n :: k) μ)) :
+    Step P B σ (.error rs (.letF n :: k) μ) none (.error rs k μ) ∧
+    StateTyE P B σ Eb (.error rs k μ) := by
+  obtain ⟨Ψ,R,a,b,e,hs,hk,hkc,hμ⟩ := h
+  obtain ⟨x,c,ec,_,_,_,_,_,ht⟩ := hk.let_inv n k rfl
+  exact ⟨.E_ErrPopLet,Ψ,R,c,b,e,hs,ht,(fun f hf => hkc f (List.mem_cons_of_mem _ hf)),hμ⟩
+
+theorem StateTyE.exit_let {P B σ Eb rs n k μ code}
+    (h : StateTyE P B σ Eb (.exit code rs (.letF n :: k) μ)) :
+    Step P B σ (.exit code rs (.letF n :: k) μ) none (.exit code rs k μ) ∧
+    StateTyE P B σ Eb (.exit code rs k μ) := by
+  obtain ⟨Ψ,R,a,b,e,hs,hk,hkc,hμ⟩ := h
+  obtain ⟨x,c,ec,_,_,_,_,_,ht⟩ := hk.let_inv n k rfl
+  exact ⟨.E_ExitPopLet,Ψ,R,c,b,e,hs,ht,(fun f hf => hkc f (List.mem_cons_of_mem _ hf)),hμ⟩
+
+theorem StateTyE.error_mark {P B σ Eb rs k μ}
+    (h : StateTyE P B σ Eb (.error rs (.mark :: k) μ)) :
+    Step P B σ (.error rs (.mark :: k) μ) none (.error rs k μ) ∧
+    StateTyE P B σ Eb (.error rs k μ) := by
+  obtain ⟨Ψ,R,a,b,e,hs,hk,hkc,hμ⟩ := h
+  obtain ⟨r,R',_,_,ht⟩ := hk.mark_inv k rfl
+  exact ⟨.E_ErrPopMark,Ψ,R',r,b,e,hs,ht,(fun f hf => hkc f (List.mem_cons_of_mem _ hf)),hμ⟩
+
+theorem StateTyE.exit_mark {P B σ Eb rs k μ code}
+    (h : StateTyE P B σ Eb (.exit code rs (.mark :: k) μ)) :
+    Step P B σ (.exit code rs (.mark :: k) μ) none (.exit code rs k μ) ∧
+    StateTyE P B σ Eb (.exit code rs k μ) := by
+  obtain ⟨Ψ,R,a,b,e,hs,hk,hkc,hμ⟩ := h
+  obtain ⟨r,R',_,_,ht⟩ := hk.mark_inv k rfl
+  exact ⟨.E_ExitPopMark,Ψ,R',r,b,e,hs,ht,(fun f hf => hkc f (List.mem_cons_of_mem _ hf)),hμ⟩
 
 end
 end Benitoite.Release.Refinement

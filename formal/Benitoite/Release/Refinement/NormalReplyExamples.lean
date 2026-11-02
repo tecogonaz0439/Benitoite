@@ -1,3 +1,4 @@
+import Benitoite.Release.Refinement.StepLeafSelection
 import Benitoite.Release.Refinement.StoreReplyLeaves
 import Benitoite.Release.Refinement.ContinuationGeneral
 
@@ -483,6 +484,35 @@ theorem concrete_normal_replies :
   have hσ : σ.Valid := by simp [PathEnv.Valid,σ,Scope.Domain.PathWordWF]
   exact ⟨σ,hσ,model_wellFormed,model_wellTyped,model_core,pure_reply σ hσ,io_reply σ hσ,
     external_reply σ hσ,at_reply σ hσ⟩
+
+/-- 同じ具体の表で pure/IO と二種類の割当ての選択を適用する。 -/
+theorem concrete_step_selections (σ : PathEnv) :
+    (∀ b∈["Example.unit","Example.ioUnit"], ∃ event dest,
+      step modelProgram modelBuiltins σ modelBuiltins.selectOracle (fun _ _ _ => (.err "Unused",[]))
+        modelBuiltins.selectRelease Store.selectFresh (.run (Closure.pure (call b)) [] Store.empty) = some (event,dest) ∧
+      Step modelProgram modelBuiltins σ (.run (Closure.pure (call b)) [] Store.empty) event dest) ∧
+    (∃ event dest, step modelProgram modelBuiltins σ modelBuiltins.selectOracle (fun _ _ _ => (.err "Unused",[]))
+        modelBuiltins.selectRelease Store.selectFresh
+        (.run (Closure.pure (.builderLet .string (.ret (.const .unit)))) [] Store.empty) = some (event,dest) ∧
+      Step modelProgram modelBuiltins σ (.run (Closure.pure (.builderLet .string (.ret (.const .unit)))) [] Store.empty) event dest) ∧
+    (∃ event dest, step modelProgram modelBuiltins σ modelBuiltins.selectOracle (fun _ _ _ => (.err "Unused",[]))
+        modelBuiltins.selectRelease Store.selectFresh
+        (.run (Closure.pure (.lazyC (.ret (.const .unit)))) [] Store.empty) = some (event,dest) ∧
+      Step modelProgram modelBuiltins σ (.run (Closure.pure (.lazyC (.ret (.const .unit)))) [] Store.empty) event dest) := by
+  constructor
+  · intro b hb
+    have hh : b = "Example.unit" ∨ b = "Example.ioUnit" := by simpa using hb
+    rcases hh with rfl | rfl
+    · have hb := call_typed (b := "Example.unit") (s := pureSig) (by simp [modelBuiltins]) (Or.inl rfl)
+      have ht := source_state (σ := σ) hb (unit_annotation (Or.inl rfl)) rfl (by simp [call,Comp.ClosedAt,Val.ClosedAt,Val.ClosedList]) (by trivial)
+      exact ht.selected_primitive_step (sg := pureSig) model_wellFormed model_wellTyped model_core rfl
+        (by simp [modelBuiltins]) (Or.inl rfl) (by simp [NoHandler])
+    · have hb := call_typed (b := "Example.ioUnit") (s := ioSig) (by simp [modelBuiltins]) (Or.inr rfl)
+      have ht := source_state (σ := σ) hb (unit_annotation (Or.inr rfl)) rfl (by simp [call,Comp.ClosedAt,Val.ClosedAt,Val.ClosedList]) (by trivial)
+      exact ht.selected_primitive_step model_wellFormed model_wellTyped model_core rfl
+          (sg := ioSig) (by simp [modelBuiltins]) (Or.inr (Or.inl rfl)) (by simp [NoHandler])
+  · exact ⟨⟨_,_,step_builder_new_selected (StoreOk.empty _ _ σ) rfl⟩,
+      ⟨_,_,step_lazy_selected (StoreOk.empty _ _ σ) rfl⟩⟩
 
 end
 end Benitoite.Release.Refinement.NormalReplyExamples

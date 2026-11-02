@@ -1,0 +1,332 @@
+{
+  "step_constructors": 76,
+  "table_rows": 76,
+  "duplicates": 0,
+  "general_inherited": 69,
+  "general_added": 7,
+  "declarations_resolved": 76,
+  "with_step": 60,
+  "state_only": [
+    "E_IfT",
+    "E_IfF",
+    "E_Match",
+    "E_MatchSkip",
+    "E_MatchBody",
+    "E_MatchGuard",
+    "E_GuardT",
+    "E_GuardF",
+    "E_ErrPopGuard",
+    "E_ExitPopGuard",
+    "E_Handle",
+    "E_HRet",
+    "E_Op",
+    "E_OpFail",
+    "E_OpPrim",
+    "E_Resume"
+  ],
+  "constructor_evidence": [
+    {
+      "transition": "E_BuilderNew",
+      "leaf": "BuilderStateLeaves.StateTyE.builder_new",
+      "constructor_leaf": "BuilderStateLeaves.StateTyE.builder_new"
+    },
+    {
+      "transition": "E_BuilderOp",
+      "leaf": "BuilderStateLeaves.StateTyE.builder_operation",
+      "constructor_leaf": "BuilderStateLeaves.StateTyE.builder_operation"
+    },
+    {
+      "transition": "E_BuilderErr",
+      "leaf": "BuilderStateLeaves.StateTyE.builder_error",
+      "constructor_leaf": "BuilderStateLeaves.StateTyE.builder_error"
+    },
+    {
+      "transition": "E_Let",
+      "leaf": "ClosureStateLeaves.StateTyE.let_step",
+      "constructor_leaf": "ClosureStateLeaves.StateTyE.let_step"
+    },
+    {
+      "transition": "E_Return",
+      "leaf": "ClosureStateLeaves.StateTyE.return_step",
+      "constructor_leaf": "ClosureStateLeaves.StateTyE.return_step"
+    },
+    {
+      "transition": "E_Lam",
+      "leaf": "ClosureStateLeaves.StateTyE.dependent_beta_all",
+      "constructor_leaf": "ClosureStateLeaves.StateTyE.dependent_beta_all"
+    },
+    {
+      "transition": "E_ExternalApply",
+      "leaf": "StoreReplyLeaves.StateTyE.store_reply",
+      "constructor_leaf": "ExternalStateLeaves.StateTyE.external_apply_all"
+    },
+    {
+      "transition": "E_External",
+      "leaf": "StoreReplyLeaves.StateTyE.store_reply",
+      "constructor_leaf": "ExternalStateLeaves.StateTyE.external_value_all"
+    },
+    {
+      "transition": "E_ExternalErr",
+      "leaf": "StoreReplyLeaves.StateTyE.store_reply",
+      "constructor_leaf": "ExternalStateLeaves.StateTyE.external_error_all"
+    },
+    {
+      "transition": "E_PathBasesApply",
+      "leaf": "StoreReplyLeaves.StateTyE.store_reply",
+      "constructor_leaf": "PathBasesLeaves.StateTyE.path_bases_apply_all"
+    },
+    {
+      "transition": "E_IssuePathBases",
+      "leaf": "StoreReplyLeaves.StateTyE.store_reply",
+      "constructor_leaf": "PathBasesLeaves.StateTyE.issue_path_bases_all"
+    },
+    {
+      "transition": "E_AtOk",
+      "leaf": "StoreReplyLeaves.StateTyE.store_reply",
+      "constructor_leaf": "AtStateLeaves.StateTyE.at_ok_all"
+    },
+    {
+      "transition": "E_AtError",
+      "leaf": "StoreReplyLeaves.StateTyE.store_reply",
+      "constructor_leaf": "AtStateLeaves.StateTyE.at_error_all"
+    },
+    {
+      "transition": "E_AtPrepareError",
+      "leaf": "StoreReplyLeaves.StateTyE.store_reply",
+      "constructor_leaf": "AtStateLeaves.StateTyE.at_prepare_error_all"
+    },
+    {
+      "transition": "E_Fun",
+      "leaf": "ClosureStateLeaves.StateTyE.fun_step",
+      "constructor_leaf": "ClosureStateLeaves.StateTyE.fun_step"
+    },
+    {
+      "transition": "E_Meth",
+      "leaf": "ClosureStateLeaves.StateTyE.method_step",
+      "constructor_leaf": "ClosureStateLeaves.StateTyE.method_step"
+    },
+    {
+      "transition": "E_Super",
+      "leaf": "ClosureStateLeaves.StateTyE.super_step",
+      "constructor_leaf": "ClosureStateLeaves.StateTyE.super_step"
+    },
+    {
+      "transition": "E_Prim",
+      "leaf": "StoreReplyLeaves.StateTyE.store_reply",
+      "constructor_leaf": "ReplyState.StateTyE.primitive_value_all"
+    },
+    {
+      "transition": "E_Err",
+      "leaf": "StoreReplyLeaves.StateTyE.store_reply",
+      "constructor_leaf": "ReplyState.StateTyE.primitive_error_all"
+    },
+    {
+      "transition": "E_IO",
+      "leaf": "StoreReplyLeaves.StateTyE.store_reply",
+      "constructor_leaf": "ReplyState.StateTyE.io_value_all"
+    },
+    {
+      "transition": "E_IOErr",
+      "leaf": "StoreReplyLeaves.StateTyE.store_reply",
+      "constructor_leaf": "ReplyState.StateTyE.io_error_all"
+    },
+    {
+      "transition": "E_Exit",
+      "leaf": "StoreReplyLeaves.StateTyE.store_reply",
+      "constructor_leaf": "ReplyState.StateTyE.io_exit_all"
+    },
+    {
+      "transition": "E_RefNew",
+      "leaf": "StateLeaves.StateTyE.reference_new_all",
+      "constructor_leaf": "StateLeaves.StateTyE.reference_new_all"
+    },
+    {
+      "transition": "E_RefGet",
+      "leaf": "StateLeaves.StateTyE.reference_get_all",
+      "constructor_leaf": "StateLeaves.StateTyE.reference_get_all"
+    },
+    {
+      "transition": "E_RefSet",
+      "leaf": "StateLeaves.StateTyE.reference_set_all",
+      "constructor_leaf": "StateLeaves.StateTyE.reference_set_all"
+    },
+    {
+      "transition": "E_RefUpdate",
+      "leaf": "StateLeaves.StateTyE.reference_update_all",
+      "constructor_leaf": "StateLeaves.StateTyE.reference_update_all"
+    },
+    {
+      "transition": "E_Lazy",
+      "leaf": "LazyPreservation.StateTyE.lazy_transition",
+      "constructor_leaf": "LazyPreservation.StateTyE.lazy_transition"
+    },
+    {
+      "transition": "E_ForceDone",
+      "leaf": "StateLeaves.StateTyE.force_done_all",
+      "constructor_leaf": "StateLeaves.StateTyE.force_done_all"
+    },
+    {
+      "transition": "E_Force",
+      "leaf": "StateLeaves.StateTyE.force_thunk_all",
+      "constructor_leaf": "StateLeaves.StateTyE.force_thunk_all"
+    },
+    {
+      "transition": "E_Update",
+      "leaf": "StateLeaves.StateTyE.lazy_update_all",
+      "constructor_leaf": "StateLeaves.StateTyE.lazy_update_all"
+    },
+    {
+      "transition": "E_Mark",
+      "leaf": "ClosureStateLeaves.StateTyE.mark_step",
+      "constructor_leaf": "ClosureStateLeaves.StateTyE.mark_step"
+    },
+    {
+      "transition": "E_EscLet",
+      "leaf": "StateLeaves.StateTyE.escape_let",
+      "constructor_leaf": "StateLeaves.StateTyE.escape_let"
+    },
+    {
+      "transition": "E_EscHandle",
+      "leaf": "StateLeaves.StateTyE.escape_handler",
+      "constructor_leaf": "StateLeaves.StateTyE.escape_handler"
+    },
+    {
+      "transition": "E_EscMark",
+      "leaf": "StateLeaves.StateTyE.escape_mark",
+      "constructor_leaf": "StateLeaves.StateTyE.escape_mark"
+    },
+    {
+      "transition": "E_Use",
+      "leaf": "HandlerGeneral.StateTyE.use_all",
+      "constructor_leaf": "HandlerGeneral.StateTyE.use_all"
+    },
+    {
+      "transition": "E_Release",
+      "leaf": "HandlerGeneral.StateTyE.return_release",
+      "constructor_leaf": "HandlerGeneral.StateTyE.return_release"
+    },
+    {
+      "transition": "E_RelErr",
+      "leaf": "HandlerGeneral.StateTyE.return_release_failure",
+      "constructor_leaf": "HandlerGeneral.StateTyE.return_release_failure"
+    },
+    {
+      "transition": "E_EscRel",
+      "leaf": "HandlerGeneral.StateTyE.escape_release",
+      "constructor_leaf": "HandlerGeneral.StateTyE.escape_release"
+    },
+    {
+      "transition": "E_EscRelErr",
+      "leaf": "HandlerGeneral.StateTyE.escape_release_failure",
+      "constructor_leaf": "HandlerGeneral.StateTyE.escape_release_failure"
+    },
+    {
+      "transition": "E_ErrPopLet",
+      "leaf": "StateLeaves.StateTyE.error_let",
+      "constructor_leaf": "StateLeaves.StateTyE.error_let"
+    },
+    {
+      "transition": "E_ErrPopMark",
+      "leaf": "StateLeaves.StateTyE.error_mark",
+      "constructor_leaf": "StateLeaves.StateTyE.error_mark"
+    },
+    {
+      "transition": "E_ErrPopUpdate",
+      "leaf": "LazyPreservation.StateTyE.lazy_update_pop_error",
+      "constructor_leaf": "LazyPreservation.StateTyE.lazy_update_pop_error"
+    },
+    {
+      "transition": "E_ErrPopHandle",
+      "leaf": "HandlerGeneral.StateTyE.error_handler",
+      "constructor_leaf": "HandlerGeneral.StateTyE.error_handler"
+    },
+    {
+      "transition": "E_ErrRel",
+      "leaf": "HandlerGeneral.StateTyE.error_release",
+      "constructor_leaf": "HandlerGeneral.StateTyE.error_release"
+    },
+    {
+      "transition": "E_ErrRelErr",
+      "leaf": "HandlerGeneral.StateTyE.error_release_failure",
+      "constructor_leaf": "HandlerGeneral.StateTyE.error_release_failure"
+    },
+    {
+      "transition": "E_ExitPopLet",
+      "leaf": "StateLeaves.StateTyE.exit_let",
+      "constructor_leaf": "StateLeaves.StateTyE.exit_let"
+    },
+    {
+      "transition": "E_ExitPopMark",
+      "leaf": "StateLeaves.StateTyE.exit_mark",
+      "constructor_leaf": "StateLeaves.StateTyE.exit_mark"
+    },
+    {
+      "transition": "E_ExitPopUpdate",
+      "leaf": "LazyPreservation.StateTyE.lazy_update_pop_exit",
+      "constructor_leaf": "LazyPreservation.StateTyE.lazy_update_pop_exit"
+    },
+    {
+      "transition": "E_ExitPopHandle",
+      "leaf": "HandlerGeneral.StateTyE.exit_handler",
+      "constructor_leaf": "HandlerGeneral.StateTyE.exit_handler"
+    },
+    {
+      "transition": "E_ExitRel",
+      "leaf": "HandlerGeneral.StateTyE.exit_release",
+      "constructor_leaf": "HandlerGeneral.StateTyE.exit_release"
+    },
+    {
+      "transition": "E_ExitRelErr",
+      "leaf": "HandlerGeneral.StateTyE.exit_release_failure",
+      "constructor_leaf": "HandlerGeneral.StateTyE.exit_release_failure"
+    },
+    {
+      "transition": "E_ResumeErr",
+      "leaf": "HandlerPreservation.StateTyE.resume_used",
+      "constructor_leaf": "HandlerPreservation.StateTyE.resume_used"
+    },
+    {
+      "transition": "E_Drop",
+      "leaf": "HandlerGeneral.StateTyE.drop_used_all",
+      "constructor_leaf": "HandlerGeneral.StateTyE.drop_used_all"
+    },
+    {
+      "transition": "E_DropRel",
+      "leaf": "HandlerGeneral.StateTyE.drop_release_all",
+      "constructor_leaf": "HandlerGeneral.StateTyE.drop_release_all"
+    },
+    {
+      "transition": "E_EscDrop",
+      "leaf": "HandlerGeneral.StateTyE.escape_drop_used",
+      "constructor_leaf": "HandlerGeneral.StateTyE.escape_drop_used"
+    },
+    {
+      "transition": "E_EscDropRel",
+      "leaf": "HandlerGeneral.StateTyE.escape_drop_release",
+      "constructor_leaf": "HandlerGeneral.StateTyE.escape_drop_release"
+    },
+    {
+      "transition": "E_ErrDrop",
+      "leaf": "HandlerGeneral.StateTyE.error_drop",
+      "constructor_leaf": "HandlerGeneral.StateTyE.error_drop"
+    },
+    {
+      "transition": "E_ErrDropRel",
+      "leaf": "HandlerPreservation.StateTyE.err_drop_rel",
+      "constructor_leaf": "HandlerPreservation.StateTyE.err_drop_rel"
+    },
+    {
+      "transition": "E_ExitDrop",
+      "leaf": "HandlerGeneral.StateTyE.exit_drop",
+      "constructor_leaf": "HandlerGeneral.StateTyE.exit_drop"
+    },
+    {
+      "transition": "E_ExitDropRel",
+      "leaf": "HandlerPreservation.StateTyE.exit_drop_rel",
+      "constructor_leaf": "HandlerPreservation.StateTyE.exit_drop_rel"
+    }
+  ],
+  "default_new_modules": 6,
+  "signature_bytes": 65066,
+  "missing_signatures": []
+}
