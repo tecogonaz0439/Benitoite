@@ -3432,7 +3432,19 @@ compare/floatClass/decimalRepresented/charactersIn/member/constructorIsの6原�
 
 整数の丸めは、除数dが正、元の全係数が出力係数のd倍、出力boundが元のboundの床除算であることを前提とする（`Linear.round_sound`）。係数を丸める規則はない。`integer_split` は、任意の整数xとcutについて `x ≤ cut ∨ cut+1 ≤ x` を示す。反証への合成は左右の両方の否定を入力とする。負のboundの床、`2*x=1` の矛盾、片側だけでは全整数を覆わない例を同じ規則で照合する。機械整数の正常応答とあふれの別は、この数学Intの規則とは区別する。
 
+`LinearStep` は非負結合と丸めの2構成子を持つ。非負結合は現在のfactsの先行位置を参照し、各参照先が線形不等式であること、乗数が非負であること、全係数列が鍵列と同じ長さであることを検査する。空和は同じ長さの零係数列と上限0とする。係数と上限を再計算し、expectedの全体と照合する。丸めは正除数・全係数の整除・床の上限・出力列長を検査する。`LinearStep.sound`は、検査成功と、現在のfactsのすべての線形の葉の`Holds`から出力の`Holds`を導く。係数と上限は数学Intであり、機械整数の幅を仮定しない。
+
+`Refutation`はconsume・cases・derive・closeLinear・closeAtom・split・discardTodo・discardFact・builtinの9構成子を持つ。`CertificateKernel.refute`は固定した鍵列、todo、factsを受け取る。consumeはtruthを捨て、falsityで閉じ、linearとliteralをfactsの末尾へ移し、Andをtodoへ分解する。Orはcasesだけで読む。casesは同じ元のfactsから左右の枝を検査する。deriveは検査した線形の結果をfactsの末尾へ加える。splitは存在する鍵番号について、単位係数の`x≤cut`と負の単位係数の`cut+1≤x`を別々のfactsへ加え、両枝を要求する。closeLinearは全係数0かつ負の上限、closeAtomは構造が同じ原子の正負を検査する。discardTodoは先頭を捨て、discardFactは存在する位置を削除して、その後の列を子へ渡す。組込みの葉を指定するbuiltinは拒否する。
+
+枝内の意味は`BranchHoldsAt`で、todoとfactsの各`toPred`を同じνとηの上で真とする条件である。各規則の`consume_sound_at`・`cases_sound_at`・`derive_sound_at`・`split_sound_at`・`close_linear_sound_at`・`close_atom_sound_at`・`discard_todo_sound_at`・`discard_fact_sound_at`は、子の枝がこの条件から矛盾することと、当該の検査成功から、親の枝も矛盾することを示す。正規化との接続は`normalize_holds_at`・`normalize_linear_at`で行う。線形化と正規化の二つの構造再帰を繰り返さず、同じ鍵列とνに対する意味保存を合成する。これらは個々の規則の健全性であり、反証全体から`Entails`を作る規則ではない。
+
 `EqualityMode` は構造の一致と整数射影の等値を区別する。`RewritePosition p integer` は、自己を変える位置をeq/le/ltの両辺とadd/neg/scaleの下、および論理結合子の下に限る。他の項・原子では自己を含まないことを要求する。`RewritePosition.integer_sound` は、二つの値置換の自己位置の整数射影が等しく、他の位置の像が等しいとき、その述語の二値の意味が一致することを示す。構造の一致はsnapshot内にも使える。未観測の変数と整数0は整数射影で等しくても、Setの鍵としての観測を区別するので、整数射影の等値だけをsnapshot内の書換えに使わない。
+
+`EqProof`はrefl・symm・trans・add・neg・scale・hyp・field・measureの9構成子を持つ。`checkRaw`のstructural modeは項の構造の等号を、integer modeは同じνの像の整数射影の等値を検査する。reflは展開済みの実際の端点を`termEq`で照合する。transは明示した中間項で二つの子を検査する。neg・scale・hypはinteger modeだけで受理し、hypは渡された現在のΦの整数eqを参照する。fieldは同じ名目型・constructor・欄位置・結果sortを含むFieldRefの一致、measureは同じmeasureの一致を要求し、どちらも子をstructural modeで検査する。構造が同じ受け手には、欄の同じ型引数の宣言の証人を使える。独立した別名の構成子や展開表は持たない。旧の`check`は空のΦとstructural modeで読み、`sound`は構文の等号を返す。
+
+上層の`EqProof.checkIn`は、rawの検査に加え、両端点と全中間の`Term.HasSort`・`Term.Declared`、integer modeの整数sort、同じPの`VarianceValid`、Φの全述語の`Sorted`・`Declared`を検査する。fieldの子のsortはdata、measureの子のsortはその入力sortである。`FieldRef.Declared`は同じ宣言表のconstructor・名目型・型引数の数・欄位置・具体化した結果sortを照合する。`KeyTable.checkIn`は、同じPの`VarianceValid`と、全鍵の整数sort・宣言照合を検査する。線形化のrawな整数射影とは別の入口である。宣言の判断を含むこの上層のBoolは非計算的な決定可能性を用い、rawの検査と構造比較は構成的な計算である。
+
+`rewritePosition`の計算が真であることは、`RewritePosition`と同値である。`EqProof.substitute_sound_at`は、rawな等号検査と置換位置の検査の成功、および同じνとηでのΦの真から、`p.open t`と`p.open u`の同じνの像の意味の一致を導く。`substituteIn`は等号の`checkIn`、置換位置、開いた前後の述語のsortと宣言を一緒に検査する。その健全性はこの前後の適格性と、同じ像の上の意味の一致を返す。`Certificate.check`のsubstituteは`EqProof.check`による構造一致を使う。
 
 `measure_machine_exact` は、本番の `Observation.measure` の正常結果と受け手の部分観測の成功から、measure項の部分観測と二値の解釈が同じ非負整数になることを導く。`measure_stable` は、元の各変数の観測から置換像の部分観測への `OptionInfoLE` と、元のmeasureの正常結果を前提に、置換後も同じ結果を得ることを示す。失敗した観測の存在や、開いた述語そのものの不変は結論しない。
 
