@@ -412,3 +412,10 @@ import Benitoite.Release.Refinement.TypeSubstLocalSignature
 import Benitoite.Release.Refinement.TypeSubstAux
 import Benitoite.Release.Refinement.TypeSubstMain
 import Benitoite.Release.Refinement.TypeSubstCallSites
+
+import Benitoite.Release.Refinement.ContextTransport
+import Benitoite.Release.Refinement.CaptureTransport
+import Benitoite.Release.Refinement.ContextRegularity
+import Benitoite.Release.Refinement.LocalTyping
+import Benitoite.Release.Refinement.SubstAgreement
+import Benitoite.Release.Refinement.SubstCongruence

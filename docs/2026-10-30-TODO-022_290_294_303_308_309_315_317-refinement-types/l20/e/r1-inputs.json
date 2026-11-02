@@ -1,0 +1,94 @@
+{
+  "B_WORK": "f5a9edabcab0e785ada937bd35bb793b2f4ddca8",
+  "target": "指定した基準に本記録の追加・変更を加えた作業木",
+  "files": {
+    "formal/Benitoite/Release/Refinement/ContextTransport.lean": {
+      "bytes": 16590,
+      "sha256": "cc46fd9939905bfea5d1f0ba75b5bdf9daaf279bec0cf55fc409ad100916c7a7"
+    },
+    "formal/Benitoite/Release/Refinement/CaptureTransport.lean": {
+      "bytes": 8002,
+      "sha256": "3c0c84bb0fbaed1e737d07ccc2e7efbbd6d1a86d975b3d8bf661ff1c08fe45cd"
+    },
+    "formal/Benitoite/Release/Refinement/ContextRegularity.lean": {
+      "bytes": 6264,
+      "sha256": "89a3fe44f4826932c62f1f9497c5b2346186cda6e8c6d2e0a80ed8e43e8e8672"
+    },
+    "formal/Benitoite/Release/Refinement/LocalTyping.lean": {
+      "bytes": 14711,
+      "sha256": "ec29d1c92ac9a2e5c77a338882594c9488a9d3392929c0c2ebb8f5765ec2e254"
+    },
+    "formal/Benitoite/Release/Refinement/SubstAgreement.lean": {
+      "bytes": 7883,
+      "sha256": "fdac150afb2a31efc865807b53a32c4ae1048bce9ff1c23138d6f4a906ba4e8d"
+    },
+    "formal/Benitoite/Release/Refinement/SubstCongruence.lean": {
+      "bytes": 13150,
+      "sha256": "0e5ab996af5fe4cd20caf556b1208902e4b835dad3546e49815af8a12028b0c8"
+    },
+    "formal/Benitoite.lean": {
+      "bytes": 15485,
+      "sha256": "ff3446c4a75df671f597958f71cad31742d16e99d3288e92618cda58316ecbde"
+    },
+    "docs/design/01-spec/01-12-core-calculus.md": {
+      "bytes": 731025,
+      "sha256": "cf0a663835045ee2cf777d585808ce26b11ae3ba685c0b98d9419b923ae794bb"
+    },
+    "docs/design/07-quality/07-04-formal-semantics.md": {
+      "bytes": 473909,
+      "sha256": "feeb1385b9d8cae499795f1fd3b2c0648e03125689741b4915a0430dc0143880"
+    },
+    "formal/lean-toolchain": {
+      "bytes": 25,
+      "sha256": "d5edba4e4b8faad9c1baeadb265716d20d03be4d1a2647dc5e35b0c0325bea7b"
+    },
+    "formal/lakefile.toml": {
+      "bytes": 872,
+      "sha256": "10f2661bff8fce95a9253d976427d0ca44038ec12350c955badbc1cf1efa6e3a"
+    },
+    "formal/lake-manifest.json": {
+      "bytes": 152,
+      "sha256": "f4a9b127f95cf577c7da1c2269f85ffd5754f76afccace5dc310d56ef8f41a32"
+    },
+    "rust-toolchain.toml": {
+      "bytes": 66,
+      "sha256": "4d7d5425fe623392e565a964fc135c563c316ce125058199eb40b2953ba6ecbb"
+    },
+    "Cargo.lock": {
+      "bytes": 50695,
+      "sha256": "075ddfa31b648a04030efcbfb30365910dff6d8de62b0e903b57d28dc5e6324d"
+    },
+    "fuzz/Cargo.lock": {
+      "bytes": 50173,
+      "sha256": "d38cf1d0837d41512c9bd5137cfe25fcd923d82fecb600bcef2c8e26c346330b"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/e/axioms.lean": {
+      "bytes": 2162,
+      "sha256": "bf30c3781eacc3660b9cc43bc0ba56d96a128d201996bf22a41fed145ae7beda"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/e/interfaces.lean": {
+      "bytes": 6924,
+      "sha256": "c6850c91c5fa6582cd73eae2dbf2501dcfa55e9f889412be34e4d35633ba5a5f"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/e/readers.lean": {
+      "bytes": 1966,
+      "sha256": "5c58988211d81981de26bcabfc698fa2dc67be888cd4238c1a1115db81260a4b"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/e/signatures.md": {
+      "bytes": 22583,
+      "sha256": "1d34f2fbfb8669409a33e8103b1ded92560b42777d8eeb31f87b562c8705faaa"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/e/closure-table.md": {
+      "bytes": 20940,
+      "sha256": "eeaa0631d7cf649625bf1dea5e2ee7a38f824a7b03337b42aac696976e4c8fd8"
+    }
+  },
+  "tools": {
+    "Lean": "4.34.1 / 5045d0056413266e57c625dcd7c365b10e377c52 / arm64-apple-darwin24.6.0",
+    "Lake": "5.0.0-src+5045d00",
+    "Cargo": "1.98.1 (797e8a9bc 2026-08-05)",
+    "Python": "3.9.6"
+  },
+  "memory": "Lean のプロセスごとに -M 12288。既定ビルドは lakefile.toml の moreLeanArgs。RSS は計画上の非採取。",
+  "record": "RV-L20.e の全所見を処置した r1 の作業木"
+}
