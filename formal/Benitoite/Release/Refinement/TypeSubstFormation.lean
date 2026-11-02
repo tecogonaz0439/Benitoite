@@ -1052,4 +1052,9 @@ theorem FactsWF.typeSubst {P B} {Ψ : StoreTy} {C0 C1 Γ Φ ts es}
   simpa only [Ctx.declarationSelf, typeEnvAt_up, ht, he] using hm
 
 
+/-- 生の型適用と同時置換の交換。 -/
+theorem rawApply_rawBind (a : Ty) (as : List Ty) (θ : SubstEnv) :
+    (rawApply a as).rawBind θ = rawApply (a.rawBind θ) (rawBindTys θ as) :=
+  apply_bind a as θ
+
 end Benitoite.Release.Refinement

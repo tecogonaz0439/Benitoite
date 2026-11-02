@@ -1722,4 +1722,14 @@ theorem HasFailureClause.subst_under_none {P B store Q C Γ Φ E cs t e L L' Δ 
     (fun p hp => Transport.facts (ht.transport_extendNone hf) p (List.mem_append_right _ hp)) _ hL
   simpa only [Option.map_map,Function.comp_def,Ty.bind_shiftV_values] using hh
 
+theorem SubstOk.signature {P B Ψ Q C Γ Φ Δ Ξ R ν t ks ts es}
+    (h : SubstOk P B Ψ Q C Γ Φ Δ Ξ R ν)
+    (hi : SignatureInstance P C Γ t ks ts es) :
+    SignatureInstance P C Δ t ks (ts.map (substTyValues ν)) (es.map (substEffValues ν)) := h.images.signature hi
+
+theorem SubstOk.methodRows {P B Ψ Q C Γ Φ Δ Ξ R ν ms es}
+    (h : SubstOk P B Ψ Q C Γ Φ Δ Ξ R ν)
+    (hr : RowAnnotations P C Γ es) (ha : MethodRowsAdmissible C Γ.length Q ms es) :
+    MethodRowsAdmissible C Δ.length Q ms (es.map (substEffValues ν)) := h.images.methodRows hr ha
+
 end Benitoite.Release.Refinement

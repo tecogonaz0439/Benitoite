@@ -147,12 +147,18 @@ metadata が none の項目、requirements/publicBoundary の空列、対応す�
 
 `CaptureRegularity` は、捕捉元の三条件と場所の三条件から、開いた値29規則・計算24規則の全結果の注釈を証明する。Φ の真は前提とせず、値列・非空の各要素・腕・依存する実引数列と、捕捉後の結果への系も持つ。let の前後、関数と依存列、handler と失敗節、捕捉した継続の潜在効果の注釈を既存の入力から供給する。handler は外側の閉包効果と内側の結論の効果を区別し、型変換・効果拡大・正規化を通す逆転と閉じた被覆から本体の注釈を得る。Fail の継続の切り出しは潜在効果の注釈も返す。let の包装は前後を外側の効果へ広げ、末尾の return 契約が none の継続から R の閉性を導いて、二閉包・包含・K_Let を構成する。これらは形成と let の到達先の型付けの定理であり、全遷移の保存や Rust との接続を証明したものではない。
 
-現在の状態に関する証明の範囲は次のとおりである。依存 β と捕捉した closure の代表は、共通の本体の導出から開始・到達の型付けと Step を作る。これは、開始の `StateTyE` の任意の導出を逆転する定理とは区別する。
+`CloseTyping` は任意の捕捉による値・値列・各要素の型保存を33規則について証明する。`ClosureViewTyping` は16種類の計算の構文について、通常値の閉じた型付けと残す本体のコード・局所参照の元の導出を `ClosureViewTy` に保持する。`CloseApplication` は同じ結果型と効果で実際の適用・メソッド呼出しを型付ける。`ClosureCallInputs` は閉包と宣言の呼出しから元の契約・実引数・本体を取り出す。`ClosureApply` は任意の捕捉・零引数・多引数について非依存の入力列と依存列の全引数の適用を証明し、行先の本体の型付けを入力にせず、元の本体と実引数から構成する。
+
+`MethodTypeComposition`・`MethodClosure` は、実装対象への部分的な型置換と呼出しの全置換を合成し、辞書と通常引数を `vs ++ ws` の順で捕捉する。`SuperClosure` は上位辞書の本体を型置換して捕捉で閉じ、`superStep` に沿って型付け・Ground・適格性を保つ。`CallBodyScope` は宣言本体の SourceScoped と閉じた型・行像から具体化後の閉性と適格性を導く。これらは既存の CoreAssumptions を使い、型置換や捕捉の健全性を独立の信頼条件にしない。
+
+現在の状態に関する証明の範囲は次のとおりである。`ClosureStateLeaves` の七つの遷移は開始の `StateTyE` から同じ σ・Eb の遷移先を導き、`StateTy` への入口も持つ。その他の行は表に記す範囲である。
 
 | 対象 | 現在の Lean の定理の範囲 |
 |---|---|
-| 依存 β | `DependentBeta` の一引数の依存する結果・Fail の具体化と、共通の本体の導出から同じ末尾効果を持つ両状態と遷移を構成する証明。R とストアは任意で、既存の mark への併合を含む |
-| 捕捉した Φ | `CapturedFacts` の評価成功・有限導出からの閉じ方、捕捉した一引数の closure 呼出しの両状態と遷移を構成する証明。環境を捨てる場合の反例と区別する |
+| let・return・mark | `ClosureStateLeaves` の任意の元状態と型付きの戻り値からの保存。`K_Let` の型変換と R の移動・実引数の置換を扱う |
+| 関数・メソッド・上位辞書 | `ClosureStateLeaves` の `E_Fun`・`E_Meth`・`E_Super`。元状態、規則の view、lookup と個数から同じ σ・Eb の行先を構成する。QTel は代入前のものと RowTransport を接続する |
+| 依存 β | `ClosureStateLeaves` の `dependent_beta_all`。任意の元状態、捕捉、零・多引数について `E_Lam` の実際の行先を構成する。通常・依存 lambda と既存 closure を、型付き view と閉包の逆転から同じ入口で扱う。mark の併合と同じ末尾効果を保つ |
+| 捕捉した Φ | `CapturedFacts` の評価成功・有限導出からの閉じ方、捕捉した一引数の closure 呼出しの両状態と遷移を構成する証明。環境を捨てる場合の反例と区別する。`CaptureApplicationAlgebra` の述語と Φ の全引数の適用の等式は、長さの観測を含む任意の条件を扱う。公開済みだが群 F・G の葉には読者がなく、最初の読者は値依存の入口を扱う後続の単位である |
 | if・guard・match | `PathConditions`・`MatchPaths` の開始 `StateTyE` からの真偽枝、guard 真偽、match の開始・skip・束縛数0の本体の保存。本体の代表は `MatchPathsEvaluated` も入力とする。`MatchFacts` はリテラル・範囲・List・構成子・Or の照合の成否から事実の健全性を示す |
 | Reference | `ReferencePreservation` の開始 `StateTyE` からの new/get/set/update の代表。4種とも呼出し元は pure。snapshot の事実とセルの現内容を区別する |
 | Lazy | `LazyPreservation` の作成、pure な呼出し元の force、任意の現在セルへの書戻し、error/exit の更新枠の破棄。書戻しの一般入口は ret の `closeVal` の一致を入力とし、定数の系は任意の捕捉を扱う |

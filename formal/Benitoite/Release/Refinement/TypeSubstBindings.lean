@@ -310,4 +310,8 @@ theorem S02Internal.C.under_types (ih : S02Internal.C) {P B} {Ψ : StoreTy}
   | some b => cases b <;> rfl
 
 end
+theorem Ty.rawBind_shift_source (a : Ty) (θ : SubstEnv) (k : Nat) :
+    (shiftTypes k 0 a).rawBind θ = a.rawBind {θ with types := fun i => θ.types (i+k)} :=
+  bind_shift_source a θ k
+
 end Benitoite.Release.Refinement

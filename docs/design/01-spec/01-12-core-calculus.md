@@ -3581,6 +3581,26 @@ CoreAssumptions.io_op は io/exit の項目に Builtins.ShapeOk を要求する�
 
 【決定】実行中の計算は `Closure.mk capture code` で表す。`ClosureTy` は、捕捉元の Γ/Φ と本体 `code0`、局所文脈 L と局所参照の置換 ρ を保持し、実際の code を `code0.resolveLocals ρ` と等号で結ぶ。開いた本体に閉じた型だけを渡さず、入力・結果・潜在効果のソースの注釈と捕捉後の注釈の双方を検査する。
 
+`close_value_typed`・`close_values_typed`・`close_each_typed` は、空の型文脈・NoFail 文脈で型付いた任意の値と列を、`CaptureOk` の捕捉で閉じた値と型へ移す。捕捉元の Γ・Φ と、場所の WF・Sorted・Declared を前提とする。値29規則、値列2規則、各要素2規則をすべて扱い、空の各要素の列には要素型の形成を要求しない。通常・依存 lambda は同じ本体と捕捉を持つ実行時閉包へ移り、既存の閉包と保持値は元の証拠を保つ。`V_Sub` は部分型の移送、`V_Normal` は bind と正規化の交換、`V_Refine` は閉じた観測と述語の含意を使う。
+
+`ClosureViewTy P B Ψ R q a e` は、一歩で読む通常値の型付けと、残す本体のコードの元の導出を同じ捕捉で結ぶ。元の Γ・Φ・R・結果型・効果、局所文脈 L と局所参照 ρ、および `q = Closure.mk cap (source.resolveLocals ρ)` を保持する。`Comp.readValues` は return の値、適用の関数と引数、メソッドの辞書と引数、条件・照合・escape・use の値、resume の通常引数、構築器の操作と外部呼出しの引数、checkAt の任意の基準とパターン・入力を読む。let・遅延・handler・構築器の束縛・issuePathBases は通常値を読まない。resume の継続の変数や場所は通常値として型付けず、元の計算の導出と捕捉にある継続の像を保つ。残す本体のコードを、その捕捉を捨てた空の文脈で型付けない。`ClosureTy.view_typed` は16種類の計算の構文をこの契約へ移す。通常値の閉じた型付けはそれぞれ `∃ t` であり、各構文の kind・型像・行像・errorType の注釈は返さない。個別の入口として、`app_view_typed`・`method_view_typed` は実際に閉じた適用・メソッド呼出しを元と同じ a・e で型付け、`ret_view_typed` は実際の戻り値を a で型付ける。
+
+全引数の適用は、非依存の入力列と依存列で入口を分ける。非依存の `ClosureTy` の入力列 ss は閉じた型の列であるが、結果 a・効果 e・戻り先 R はその入力を参照し得る。すべての入力を埋めるときの契約は次のとおりである。ここで `ν = (Capture.empty.extendMany vs).env` とする。
+
+```lean
+ClosureTy P B Ψ ss R q a e →
+HasTypeVsQ P B Ψ Qempty [] [] [] vs ss →
+(∀ v ∈ vs, v.Ground) →
+ClosureTy P B Ψ [] (R.map (substTyValues ν)) (q.apply vs)
+  (substTyValues ν a) (substEffValues ν e)
+```
+
+この入口 `ClosureTy.apply_all` は `P.WellFormed`・`P.WellTyped B`・`B.CoreAssumptions P`・`StoreOk P B σ Ψ μ` も受ける。依存する入力は `DependentClosureTy.apply_all` が扱い、同じ四前提と `DependentClosureTy P B Ψ q t`、`HasTypeTelArgsQ P B Ψ Qempty [] [] [] vs t a e`、各引数の Ground から `ClosureTy P B Ψ [] (some a) (q.apply vs) a e` を得る。引数を宣言順に捕捉へ追加し、後続の依存列を各値で具体化する。零引数は元の cap と code を保ち、任意の Γ・Φ・局所参照にも同じ方式を使う。
+
+型置換と捕捉による値の置換を結ぶ `Capture.closeTyAt_typeSubst`・`closeEffAt_typeSubst`・`closeTel_typeSubst`・`closeRAt_typeSubst` の四等式を公開している。自由な値参照を持つ結果・端点も対象である。群 F・G の葉には読者がなく、最初の読者は値依存の入口を扱う後続の単位である。閉じた宣言の結果型 a については、`a.WF 0 nt 0` から `dependent_result_close` が `cap.closeTy (a.subst ts []) = a.subst (ts.map cap.closeTy) []` を与え、上位辞書の本体を閉じる箇所で使う。
+
+`Capture.close_pred_apply_all`・`close_facts_apply_all` は、入力を残して閉じてから実引数を代入した述語・Φ と、捕捉を実引数で延長して一度で閉じたものを等号で結ぶ。長さの観測を含む述語も同じ等号の対象である。これらも公開済みだが、群 F・G の葉には読者がなく、最初の読者は値依存の入口を扱う後続の単位である。
+
 `StoreOk P B σ Ψ μ` の σ は実行ごとに固定する `PathEnv`、μ は可変のストアである。σ を型付け・部分型・被覆の静的判断へ渡さない。`StoreOk` は μ の有限性、Ψ の WF・Sorted・Declared、Ψ と μ の場所の一致、全セルの `CellOk` を要求する。`LocTy.Sorted` は、List の builder・ref・lazy の要素型を空の値文脈で検査し、String と Bytes の builder では自明とする。cont では入力 b・結果 t・潜在効果 e の sort を空の値文脈で検査し、末尾の r は対象に含めない。`StoreTy.Sorted` は全ての宣言済みの場所にこの条件を要求する。理由: 使用済みの継続セルには値や継続の導出が残らないため、結果と潜在効果の形成をストア型に保持する。r の WF・Declared と正規形の照合は既存の条件で保つ。
 
 | セル | `CellOk` の内容 |
