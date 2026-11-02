@@ -445,3 +445,10 @@ import Benitoite.Release.Refinement.LegacyEmbedding
 import Benitoite.Release.Refinement.LegacyStateInputs
 import Benitoite.Release.Refinement.LegacyAdequate
 import Benitoite.Release.Refinement.LegacyFullEmbeddingExamples
+
+import Benitoite.Release.Refinement.LegacyHeldTyping
+import Benitoite.Release.Refinement.LegacyStateTyping
+import Benitoite.Release.Refinement.LegacyProgramTyping
+import Benitoite.Release.Refinement.LegacyStateEmbeddingExamples
+import Benitoite.Release.Refinement.LegacyProgramEmbeddingExamples
+import Benitoite.Release.Refinement.LegacyImplementationEmbeddingExamples

@@ -1,0 +1,210 @@
+{
+  "intervals": [
+    {
+      "unit": "held",
+      "label": "保持する値の像と型付け",
+      "start_utc": "2026-11-02T18:05:18+00:00",
+      "end_utc": "2026-11-02T18:09:54.482048+00:00",
+      "seconds": 276.48204803466797,
+      "waiting_seconds": null,
+      "active_seconds": null,
+      "grouped": true
+    },
+    {
+      "unit": "cont",
+      "label": "枠7・継続10と照合の接頭辞",
+      "start_utc": "2026-11-02T18:09:54.482048+00:00",
+      "end_utc": "2026-11-02T18:12:56.652309+00:00",
+      "seconds": 182.17026090621948,
+      "waiting_seconds": null,
+      "active_seconds": null,
+      "grouped": true
+    },
+    {
+      "unit": "store",
+      "label": "セル6・全ストア",
+      "start_utc": "2026-11-02T18:12:56.652309+00:00",
+      "end_utc": "2026-11-02T18:14:43.726405+00:00",
+      "seconds": 107.07409620285034,
+      "waiting_seconds": null,
+      "active_seconds": null,
+      "grouped": true
+    },
+    {
+      "unit": "state",
+      "label": "状態4",
+      "start_utc": "2026-11-02T18:14:43.726405+00:00",
+      "end_utc": "2026-11-02T18:15:22.096581+00:00",
+      "seconds": 38.37017607688904,
+      "waiting_seconds": null,
+      "active_seconds": null,
+      "grouped": true
+    },
+    {
+      "unit": "parent",
+      "label": "三親判断とプログラム形成",
+      "start_utc": "2026-11-02T18:15:22.096581+00:00",
+      "end_utc": "2026-11-02T18:25:00.036793+00:00",
+      "seconds": 577.9402117729187,
+      "waiting_seconds": null,
+      "active_seconds": null,
+      "grouped": true
+    },
+    {
+      "unit": "examples",
+      "label": "読者と受理・拒否の具体例、既定ビルド",
+      "start_utc": "2026-11-02T18:25:00.036793+00:00",
+      "end_utc": "2026-11-02T18:30:03.948779+00:00",
+      "seconds": 303.9119861125946,
+      "waiting_seconds": null,
+      "active_seconds": null,
+      "grouped": true
+    }
+  ],
+  "shapes": {
+    "frames": [
+      {
+        "shape": "letF",
+        "interval": "cont",
+        "individual_seconds": null
+      },
+      {
+        "shape": "mark",
+        "interval": "cont",
+        "individual_seconds": null
+      },
+      {
+        "shape": "update",
+        "interval": "cont",
+        "individual_seconds": null
+      },
+      {
+        "shape": "release",
+        "interval": "cont",
+        "individual_seconds": null
+      },
+      {
+        "shape": "guardF",
+        "interval": "cont",
+        "individual_seconds": null
+      },
+      {
+        "shape": "handle",
+        "interval": "cont",
+        "individual_seconds": null
+      },
+      {
+        "shape": "drop",
+        "interval": "cont",
+        "individual_seconds": null
+      }
+    ],
+    "cont_rules": [
+      {
+        "shape": "K_Empty",
+        "interval": "cont",
+        "individual_seconds": null
+      },
+      {
+        "shape": "K_Let",
+        "interval": "cont",
+        "individual_seconds": null
+      },
+      {
+        "shape": "K_Mark",
+        "interval": "cont",
+        "individual_seconds": null
+      },
+      {
+        "shape": "K_Update",
+        "interval": "cont",
+        "individual_seconds": null
+      },
+      {
+        "shape": "K_Release",
+        "interval": "cont",
+        "individual_seconds": null
+      },
+      {
+        "shape": "K_Guard",
+        "interval": "cont",
+        "individual_seconds": null
+      },
+      {
+        "shape": "K_Handle",
+        "interval": "cont",
+        "individual_seconds": null
+      },
+      {
+        "shape": "K_HandleFail",
+        "interval": "cont",
+        "individual_seconds": null
+      },
+      {
+        "shape": "K_Drop",
+        "interval": "cont",
+        "individual_seconds": null
+      },
+      {
+        "shape": "K_Sub",
+        "interval": "cont",
+        "individual_seconds": null
+      }
+    ],
+    "cells": [
+      {
+        "shape": "val",
+        "interval": "store",
+        "individual_seconds": null
+      },
+      {
+        "shape": "thunk",
+        "interval": "store",
+        "individual_seconds": null
+      },
+      {
+        "shape": "done",
+        "interval": "store",
+        "individual_seconds": null
+      },
+      {
+        "shape": "cont",
+        "interval": "store",
+        "individual_seconds": null
+      },
+      {
+        "shape": "used",
+        "interval": "store",
+        "individual_seconds": null
+      },
+      {
+        "shape": "builder(string/list/bytes)",
+        "interval": "store",
+        "individual_seconds": null
+      }
+    ],
+    "states": [
+      {
+        "shape": "run",
+        "interval": "state",
+        "individual_seconds": null
+      },
+      {
+        "shape": "matchRun",
+        "interval": "state",
+        "individual_seconds": null
+      },
+      {
+        "shape": "error",
+        "interval": "state",
+        "individual_seconds": null
+      },
+      {
+        "shape": "exit",
+        "interval": "state",
+        "individual_seconds": null
+      }
+    ]
+  },
+  "note": "同じ区間を共有する形の時間は加算しない。初回の停止の草稿の時間は再開1の区間に含めない。"
+}

@@ -113,7 +113,6 @@
 
 形式化した計算用APIは、型と失敗型の内部までの原子を覆う有限支持Sを受け取る。`tyCompareWith`と`normWith`は、Sの上で計算した比較・正規化が数学上の定義と一致する。Sの並び・重複・余分な原子には依存しない。生の型と効果の比較は、失敗型の列の位置と重複を区別し、支持と比較の成功だけから等号を導く。Canonicalは比較の前提にしない。最上位の効果の正規化は原子関数を変更しないため、その一致には失敗型の内部の支持だけで足りる。
 
-
 形式化した表層の検査器は、この有限支持上のAPIを使い、Legacyでない型も検査する。支持の条件 `AtomsIn` はFailの型内部までを覆う。入力の注釈は正規化せずに整形式と範囲を検査し、型操作によって計算した型を正規化する。strict・relaxedの計算は、結果の型・効果と継続への要求の支持を保つ。通常の節の本体は型束縛を増やした文脈で検査し、実際の効果を外側へ戻して集計する。反復探索ではその効果で候補を広げ、確定後の厳密な検査では内外の許容効果への包含をともに検査する。型探索と反復で生じた要求の支持も追跡し、元のプログラムについて検査器の健全性を保つ。
 
 型と効果の移動・同時代入は、失敗型の内部の型と潜在効果にも再帰する。`Eff.substAt c ts es` は型と行を同時に代入し、行の像の中の失敗型も束縛数cだけ移動してから挿入する。挿入した像には同じ代入を重ねない。公開する移動・代入・和・型構成子への適用は正規化を通す。元の型との恒等式には必要な正規形を要求し、未整列の計算の効果には両方向の包含を使う。
@@ -125,7 +124,6 @@
 【決定】Releaseと表層の型付け判断は、NoFailと認める行の集合Qをパラメータに持つ。以下の規則ではQを省略し、本体・引数・分岐・節の判断へ同じQを渡す。V-Funは元の署名のQから現在のQへのAdmissibleを、V-Primは同じ条件と従来の組み込みの制約を要求する。型の像は整形式で、継続型ではないことを求める。C-Methは、メソッドの型引数とクラスの対象型の同じ範囲条件、および元のメソッド署名のQからの行の移送を要求する。閉じた実行状態と従来の式の入口は空Qを使う。定義本体は自身の署名のQ、実装メソッドの本体は型クラスが宣言した元のメソッド署名のQを使う。辞書の引数を加えてもQは変わらない。
 
 形式化した検査器の内部入力は、計算したQを`noFailRows`として保持する。定義と実装の入口で署名の行の範囲を検査してから設定し、本体の推論では増やさない。`instantiationCheck`は、呼び出し先の元の署名の行の範囲、型と行の像の整形式と個数、行の像のNoFailを検査する。通常の関数の値化、辞書付きの値化、組み込みの関数、メソッドの値化はこの判定を通す。支持と既存の型制約の検査成功からAdmissible等を導く。通常の行多相では、署名から印を得ない行にFailを具体化してよい。
-
 
 ### 型付け規則
 
@@ -2976,7 +2974,6 @@ Library.ResultLawsは本体の主定理の外にある小証明であり、Monad
 
 `LocalRef.Scoped depth` は bound の番号が depth 未満であることを表す。`Release.LocalRef` は付け替え・局所置換・束縛追加に対する範囲保存と、0番を専用の場所へ替えて残りの番号を一つ詰める置換の範囲保存を示す。対応する通常値の置換は0番を閉じた Unit とする。String/Bytes の論理上限 1,073,741,824 と List の上限 16,777,216 が max64 以下である補題も同モジュールに置く。専用 new の保存では、この範囲保存と通常値の置換の閉性を合わせて使う。
 
-
 【決定】`Surface.BuilderSyntax`・`Surface.Builders`・`Surface.Lemmas.Builders` は、局所構築器の分類と、表層とコアで共有する番号の対応を定義する。専用操作Expr.builderOpと専用宣言Block.builderBindを七判断と検査器へ接続している。脱糖はΓを変えず、専用のbuilderLet・builderOpを生成する。表層の専用操作は通常引数の効果だけを持ち、専用宣言は後続の効果を保つ。通常Referenceと解放のStateは保持する。構築器のRust出力との交換比較は、この段階の証拠に含めない。Δの扱いは後述の「構築器の局所文脈と旧構文の意味」に定める。
 
 構築器の分類 `BuilderKind` は `string`・`list T`・`bytes` であり、通常の `Release.Ty` の構成子とは分ける。`contents` はそれぞれString・List[T]・Bytes、`cell` はReference[contents]である。操作の分類 `BuilderOp` はappend・appendAll・copy・lengthの四つである。
@@ -3355,9 +3352,17 @@ structure PrimSig.Scoped (P : Program) (s : PrimSig) : Prop where
 
 `LegacyContInput` は、旧 `ContTy` の証拠を添字に持つ帰納的な入力である。枠の七構文と、通常・失敗のハンドラおよび部分型を含む十規則に沿い、各位置の入出力型・戻り先・効果、let・guard のコード、release の値、handler の節を検査する。子の入力は有限な旧導出へ下降する。`LegacyCellInput` は builder・val・thunk・done・cont・used の六構文を検査する。List の専用セルは各要素の全導出と閉性を、保存継続は末尾の handler と旧 `ContTy` の入力を持つ。`LegacyStoreInput` は旧 `StoreOk`、閉じた場所の型入力、有限ストアの各セルの入力を要求する。場所の値から参照先のセルを再帰的に展開しない。
 
-`legacy_value_adequate`・`legacy_comp_adequate` と列・腕・節の相互証明は、任意の固定した経路環境 `σ` に対し旧構文の像の `Adequate` を証明する。枠・継続・セル・ストアにも適用する。旧構文の像に新しい snapshot はなく、保持要求の内容には構文に沿って下降するため、`Adequate` を独立の信頼条件にしない。旧状態の入力の定義と、七判断の埋め込みは、状態の新しい型付けや一段遷移の可換性とは区別する。
+`legacy_value_adequate`・`legacy_comp_adequate` と列・腕・節の相互証明は、任意の固定した経路環境 `σ` に対し旧構文の像の `Adequate` を証明する。枠・継続・セル・ストアにも適用する。旧構文の像に新しい snapshot はなく、保持要求の内容には構文に沿って下降するため、`Adequate` を独立の信頼条件にしない。`legacy_held_value_adequate` は空捕捉で閉じた保持値にも同じ性質を証明する。一段遷移の可換性はこれらの型付けの埋め込みに含めない。
 
 `LegacyDeclarationInputs` は LegacyDeclarationsInput、関数・メソッド・上位辞書の declarationBodyInputs、および写した各本体の SourceScoped を持つ。三つの本体入力は旧の全導出の LegacyOutputInput を読み、新しい WellTyped を入力の欄にしない。メソッドの Q は、代入前の Qsig ms.params ms.ret ms.eff である。操作の辞書の先頭と実装の辞書型の kind は、LegacyDeclarationsInput.op_dictionaryInputs と impl_dictionaryKinds から供給する。
+
+実行時に保持する照合値は `embedHeldVal v := closeVal Capture.empty (embedVal v)` とする。`embedFrame` の `guardF` と `embedState` の `matchRun` がこの像を使う。理由: 新しいガード枠と照合状態は、保持値が同じ捕捉でコード中の値を閉じた結果であることを要求し、旧 lambda の生の像はこの条件を満たさない。let 枠・thunk・run のコードは `embedVal`・`embedComp` で写す。release 枠と val・done・builder の List のセルは、生の値の像と既存の型付け・閉性の入力を使う。理由: それらの規則には、値が `closeVal` の像であるという条件がない。
+
+`embedHeldVal_typed` は、`DeclarationKinds.WF`・`LegacyTables` と、空の kind・制約・値文脈、`Qempty` での値の `LegacyOutputInput` から、同じ型の像による保持値の型付けを構成する。七判断の入力への帰納を使い、lambda は元の本体の導出から空捕捉の `DependentClosureTy` を構成する。値の意味を独立に仮定しない。`Capture.typed_coverage` は、この型付けと既存の表の変性の条件から閉じた値の所属を供給する。
+
+`embedContTy`・`embedStoreOk`・`embedStateTyE` は、`DeclarationKinds.WF`・`LegacyTables` と、それぞれ既存の `LegacyContInput`・`LegacyStoreInput`・`LegacyStateInput` を前提とする。枠7形と継続10規則、セル6形と有限ストア、状態4形の新しい型付けを片方向に構成する。任意の同じ `σ` と、状態の同じ `embedEff Eb` を使う。`StateTyE` の構成は `σ.Valid` を必要とせず、`StateTy` に含まれる `σ.Valid` と末尾の効果の `BuiltinOnly (embedProgramWithKinds K P0) B (embedEff Eb)` は、その判断の使用時に供給する。新しい型付け・状態の型付け・遷移を旧入力の条件へ追加しない。`LegacyStateEmbeddingExamples` は保持値を生の lambda のまま写した像の型付けの否定と、同じ旧継続・状態の保持値を空の捕捉で閉じた像の型付け、run・error・exit と空ストアへの適用を含む。`list_lambda_state` は lambda を保持する List を非空 List のパターンで照合し、束縛結果が空捕捉で閉じた lambda の像であることも示す。
+
+`embedDefWellTyped`・`embedImplWellTyped`・`embedProgramWellTyped`・`embedProgramWellFormed` は、宣言の kind 表の形成と `LegacyTables`、宣言の lookup と既存の旧本体入力から、新しい宣言の判断を構成する。後三者は `LegacyDeclarationInputs` を、実装・プログラムの型付けは元の旧 `WellTyped` を、プログラムの形成は元の旧 `WellFormed` を使う。旧実装の型付けは、クラスとメソッド・上位辞書の対応も供給する。メソッドは代入前の `Qsig` を保ち、辞書の値引数の後に通常の引数を束縛する。本体の新しい型付けは七入口から構成し、前提の欄にはしない。`LegacyProgramEmbeddingExamples` は同じプログラムと組み込み表で恒等関数の本体・全プログラムの型付け・形成へ適用する。`LegacyImplementationEmbeddingExamples.implementation_parents` は、二つのクラスと二つの Unit の実装について、旧宣言の入力と旧の型付け・形成、新しい実装・プログラムの型付け・形成、実際のメソッドと上位辞書の lookup を同時に構成する。
 
 ### 篩を読む網羅性と値の意味
 
