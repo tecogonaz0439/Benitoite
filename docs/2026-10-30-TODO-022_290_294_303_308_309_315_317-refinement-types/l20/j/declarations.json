@@ -1,0 +1,1897 @@
+{
+  "scope": "7 new modules and all declarations of 5 modified modules; preexisting declarations included",
+  "modules": [
+    {
+      "path": "formal/Benitoite/Release/Refinement/PatternMatchAnnotations.lean",
+      "new_module": true,
+      "bytes": 12305,
+      "sha256": "e70aa81a02411abc93a757800005b2c63d834a64f25a1e0e517af370828efca8",
+      "authored_declarations": [
+        {
+          "kind": "def",
+          "name": "annotationType",
+          "private": true,
+          "line": 9
+        },
+        {
+          "kind": "theorem",
+          "name": "constructor_ordinary",
+          "private": true,
+          "line": 14
+        },
+        {
+          "kind": "theorem",
+          "name": "annotations_aux",
+          "private": true,
+          "line": 30
+        },
+        {
+          "kind": "theorem",
+          "name": "annotations_list_aux",
+          "private": true,
+          "line": 168
+        },
+        {
+          "kind": "theorem",
+          "name": "PatTy.bindings_annotation",
+          "private": false,
+          "line": 198
+        },
+        {
+          "kind": "theorem",
+          "name": "AltsTy.bindings_annotation",
+          "private": false,
+          "line": 207
+        }
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/PatternBindingsAdequate.lean",
+      "new_module": true,
+      "bytes": 4578,
+      "sha256": "b00a402b9cfef4744f25ff17b21c9d294eeec3402f8cee97ce3ba92ce5a6c761",
+      "authored_declarations": [
+        {
+          "kind": "theorem",
+          "name": "adequate_list_iff",
+          "private": true,
+          "line": 7
+        },
+        {
+          "kind": "theorem",
+          "name": "pattern_bindings_adequate",
+          "private": false,
+          "line": 12
+        },
+        {
+          "kind": "theorem",
+          "name": "patterns_bindings_adequate",
+          "private": false,
+          "line": 64
+        },
+        {
+          "kind": "theorem",
+          "name": "alternatives_bindings_adequate",
+          "private": false,
+          "line": 88
+        }
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/MatchStateLeaves.lean",
+      "new_module": true,
+      "bytes": 20887,
+      "sha256": "561104e8c31f7e7b0e6b0f69134152eed909b0515d2692fff584955d29aa0cac",
+      "authored_declarations": [
+        {
+          "kind": "theorem",
+          "name": "CaptureOk.match_extend",
+          "private": false,
+          "line": 12
+        },
+        {
+          "kind": "theorem",
+          "name": "CaptureOk.paths_wellFormed",
+          "private": false,
+          "line": 27
+        },
+        {
+          "kind": "theorem",
+          "name": "CaptureOk.matched_facts",
+          "private": false,
+          "line": 44
+        },
+        {
+          "kind": "theorem",
+          "name": "CaptureOk.excluded_facts",
+          "private": false,
+          "line": 60
+        },
+        {
+          "kind": "theorem",
+          "name": "prefix_tail",
+          "private": true,
+          "line": 78
+        },
+        {
+          "kind": "theorem",
+          "name": "HasTypeArmsQ.capture_plain_success",
+          "private": false,
+          "line": 83
+        },
+        {
+          "kind": "theorem",
+          "name": "Capture.closeTy_shift_many",
+          "private": false,
+          "line": 115
+        },
+        {
+          "kind": "theorem",
+          "name": "Capture.closeEff_shift_many",
+          "private": false,
+          "line": 124
+        },
+        {
+          "kind": "theorem",
+          "name": "MatchPrefix.unresolve",
+          "private": false,
+          "line": 128
+        },
+        {
+          "kind": "theorem",
+          "name": "StateTyE.match_body",
+          "private": false,
+          "line": 149
+        },
+        {
+          "kind": "theorem",
+          "name": "HasTypeArmsQ.capture_guard_success",
+          "private": false,
+          "line": 214
+        },
+        {
+          "kind": "theorem",
+          "name": "MatchPrefix.guard_advance",
+          "private": false,
+          "line": 249
+        },
+        {
+          "kind": "theorem",
+          "name": "adequateArms_guard",
+          "private": false,
+          "line": 272
+        },
+        {
+          "kind": "theorem",
+          "name": "Arm.ClosedList_guard",
+          "private": false,
+          "line": 283
+        },
+        {
+          "kind": "theorem",
+          "name": "StateTyE.err_pop_guard",
+          "private": false,
+          "line": 295
+        },
+        {
+          "kind": "theorem",
+          "name": "StateTyE.exit_pop_guard",
+          "private": false,
+          "line": 302
+        },
+        {
+          "kind": "theorem",
+          "name": "Ty.Annotation.done_empty",
+          "private": false,
+          "line": 310
+        },
+        {
+          "kind": "theorem",
+          "name": "Capture.closeEff_empty",
+          "private": false,
+          "line": 315
+        },
+        {
+          "kind": "theorem",
+          "name": "StateTyE.match_guard",
+          "private": false,
+          "line": 319
+        }
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/HandlerGeneral.lean",
+      "new_module": true,
+      "bytes": 81356,
+      "sha256": "59bd92638f9044c2cb5264760bfbb5d4ae315b414440fd1612c0364e5fb3fd3e",
+      "authored_declarations": [
+        {
+          "kind": "theorem",
+          "name": "clauses_hide_empty",
+          "private": true,
+          "line": 11
+        },
+        {
+          "kind": "theorem",
+          "name": "failure_hide_empty",
+          "private": true,
+          "line": 20
+        },
+        {
+          "kind": "theorem",
+          "name": "empty_sub",
+          "private": true,
+          "line": 26
+        },
+        {
+          "kind": "theorem",
+          "name": "handler_tail",
+          "private": true,
+          "line": 31
+        },
+        {
+          "kind": "theorem",
+          "name": "union_left_sub",
+          "private": true,
+          "line": 43
+        },
+        {
+          "kind": "theorem",
+          "name": "union_right_sub",
+          "private": true,
+          "line": 47
+        },
+        {
+          "kind": "theorem",
+          "name": "StateTyE.handle_step",
+          "private": false,
+          "line": 51
+        },
+        {
+          "kind": "theorem",
+          "name": "StateTyE.handler_return",
+          "private": false,
+          "line": 125
+        },
+        {
+          "kind": "theorem",
+          "name": "shifted_type_cancel",
+          "private": true,
+          "line": 143
+        },
+        {
+          "kind": "theorem",
+          "name": "shifted_eff_cancel",
+          "private": true,
+          "line": 157
+        },
+        {
+          "kind": "theorem",
+          "name": "shifted_context_cancel",
+          "private": true,
+          "line": 162
+        },
+        {
+          "kind": "theorem",
+          "name": "norm_context_lookup",
+          "private": true,
+          "line": 171
+        },
+        {
+          "kind": "theorem",
+          "name": "norm_context_eq",
+          "private": true,
+          "line": 181
+        },
+        {
+          "kind": "theorem",
+          "name": "capture_normal",
+          "private": true,
+          "line": 184
+        },
+        {
+          "kind": "theorem",
+          "name": "type_env_up",
+          "private": true,
+          "line": 232
+        },
+        {
+          "kind": "theorem",
+          "name": "signature_inst",
+          "private": true,
+          "line": 237
+        },
+        {
+          "kind": "theorem",
+          "name": "signature_inputs",
+          "private": true,
+          "line": 250
+        },
+        {
+          "kind": "theorem",
+          "name": "signature_result",
+          "private": true,
+          "line": 259
+        },
+        {
+          "kind": "theorem",
+          "name": "tel_extend_eq",
+          "private": true,
+          "line": 265
+        },
+        {
+          "kind": "theorem",
+          "name": "tel_lift_eq",
+          "private": true,
+          "line": 271
+        },
+        {
+          "kind": "theorem",
+          "name": "clause_selected",
+          "private": true,
+          "line": 279
+        },
+        {
+          "kind": "theorem",
+          "name": "op_context_inst",
+          "private": true,
+          "line": 304
+        },
+        {
+          "kind": "theorem",
+          "name": "op_result_inst",
+          "private": true,
+          "line": 320
+        },
+        {
+          "kind": "theorem",
+          "name": "op_effect_inst",
+          "private": true,
+          "line": 325
+        },
+        {
+          "kind": "theorem",
+          "name": "annotation_many",
+          "private": true,
+          "line": 330
+        },
+        {
+          "kind": "theorem",
+          "name": "declared_many",
+          "private": true,
+          "line": 338
+        },
+        {
+          "kind": "theorem",
+          "name": "extend_many_append",
+          "private": true,
+          "line": 346
+        },
+        {
+          "kind": "theorem",
+          "name": "operation_capture",
+          "private": true,
+          "line": 352
+        },
+        {
+          "kind": "theorem",
+          "name": "clauses_no_fail",
+          "private": true,
+          "line": 456
+        },
+        {
+          "kind": "theorem",
+          "name": "covers_state",
+          "private": true,
+          "line": 467
+        },
+        {
+          "kind": "theorem",
+          "name": "handle_no_failure",
+          "private": true,
+          "line": 477
+        },
+        {
+          "kind": "theorem",
+          "name": "clause_closed",
+          "private": true,
+          "line": 533
+        },
+        {
+          "kind": "theorem",
+          "name": "clause_adequate",
+          "private": true,
+          "line": 549
+        },
+        {
+          "kind": "theorem",
+          "name": "tel_args_store",
+          "private": true,
+          "line": 557
+        },
+        {
+          "kind": "theorem",
+          "name": "StateTyE.operation_all",
+          "private": false,
+          "line": 567
+        },
+        {
+          "kind": "theorem",
+          "name": "close_return_contract",
+          "private": true,
+          "line": 679
+        },
+        {
+          "kind": "theorem",
+          "name": "close_resume_aux",
+          "private": true,
+          "line": 696
+        },
+        {
+          "kind": "theorem",
+          "name": "resume_resolve",
+          "private": true,
+          "line": 786
+        },
+        {
+          "kind": "theorem",
+          "name": "resume_inv",
+          "private": true,
+          "line": 799
+        },
+        {
+          "kind": "theorem",
+          "name": "closed_set",
+          "private": true,
+          "line": 821
+        },
+        {
+          "kind": "theorem",
+          "name": "resume_view_typed",
+          "private": true,
+          "line": 830
+        },
+        {
+          "kind": "theorem",
+          "name": "StateTyE.resume_all",
+          "private": false,
+          "line": 849
+        },
+        {
+          "kind": "theorem",
+          "name": "StateTyE.operation_failure",
+          "private": false,
+          "line": 880
+        },
+        {
+          "kind": "theorem",
+          "name": "widen_opaque_value",
+          "private": true,
+          "line": 1010
+        },
+        {
+          "kind": "inductive",
+          "name": "TargetWiden",
+          "private": true,
+          "line": 1049
+        },
+        {
+          "kind": "theorem",
+          "name": "target_bind",
+          "private": true,
+          "line": 1056
+        },
+        {
+          "kind": "theorem",
+          "name": "target_value",
+          "private": true,
+          "line": 1063
+        },
+        {
+          "kind": "def",
+          "name": "TelTargetWiden",
+          "private": true,
+          "line": 1070
+        },
+        {
+          "kind": "theorem",
+          "name": "tel_target_bind",
+          "private": true,
+          "line": 1076
+        },
+        {
+          "kind": "theorem",
+          "name": "tel_target_arguments",
+          "private": true,
+          "line": 1091
+        },
+        {
+          "kind": "theorem",
+          "name": "map_atoms_closed",
+          "private": true,
+          "line": 1117
+        },
+        {
+          "kind": "theorem",
+          "name": "ranges_closed",
+          "private": true,
+          "line": 1139
+        },
+        {
+          "kind": "theorem",
+          "name": "ranges_types_closed",
+          "private": true,
+          "line": 1157
+        },
+        {
+          "kind": "theorem",
+          "name": "ranges_eff_closed",
+          "private": true,
+          "line": 1162
+        },
+        {
+          "kind": "theorem",
+          "name": "ranges_tel_closed",
+          "private": true,
+          "line": 1166
+        },
+        {
+          "kind": "theorem",
+          "name": "operation_param_map",
+          "private": true,
+          "line": 1173
+        },
+        {
+          "kind": "theorem",
+          "name": "map_signature",
+          "private": true,
+          "line": 1184
+        },
+        {
+          "kind": "def",
+          "name": "erase_effect",
+          "private": true,
+          "line": 1191
+        },
+        {
+          "kind": "theorem",
+          "name": "erase_effect_norm",
+          "private": true,
+          "line": 1195
+        },
+        {
+          "kind": "theorem",
+          "name": "erase_effect_annotation",
+          "private": true,
+          "line": 1200
+        },
+        {
+          "kind": "theorem",
+          "name": "erase_signature",
+          "private": true,
+          "line": 1214
+        },
+        {
+          "kind": "theorem",
+          "name": "operation_param_widen",
+          "private": true,
+          "line": 1219
+        },
+        {
+          "kind": "theorem",
+          "name": "signature_target_widen",
+          "private": true,
+          "line": 1242
+        },
+        {
+          "kind": "theorem",
+          "name": "handler_signature_annotation",
+          "private": true,
+          "line": 1257
+        },
+        {
+          "kind": "theorem",
+          "name": "tel_effect_atoms_bind",
+          "private": true,
+          "line": 1274
+        },
+        {
+          "kind": "theorem",
+          "name": "arguments_effect_atoms",
+          "private": true,
+          "line": 1285
+        },
+        {
+          "kind": "theorem",
+          "name": "signature_effect",
+          "private": true,
+          "line": 1293
+        },
+        {
+          "kind": "theorem",
+          "name": "inst_effect_mem",
+          "private": true,
+          "line": 1299
+        },
+        {
+          "kind": "theorem",
+          "name": "primitive_effect_shape",
+          "private": true,
+          "line": 1305
+        },
+        {
+          "kind": "theorem",
+          "name": "primitive_inst_member",
+          "private": true,
+          "line": 1327
+        },
+        {
+          "kind": "theorem",
+          "name": "tel_effect_norm",
+          "private": true,
+          "line": 1350
+        },
+        {
+          "kind": "theorem",
+          "name": "primitive_arguments_atoms",
+          "private": true,
+          "line": 1356
+        },
+        {
+          "kind": "theorem",
+          "name": "covered_name_general",
+          "private": true,
+          "line": 1363
+        },
+        {
+          "kind": "theorem",
+          "name": "StateTyE.operation_primitive",
+          "private": false,
+          "line": 1372
+        }
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/MatchStateExamples.lean",
+      "new_module": true,
+      "bytes": 12115,
+      "sha256": "eee885a87060e1cd2ebbf9749c73ed3a80d23d308a1c4ef0eaae79b660397291",
+      "authored_declarations": [
+        {
+          "kind": "def",
+          "name": "unit",
+          "private": true,
+          "line": 9
+        },
+        {
+          "kind": "def",
+          "name": "root",
+          "private": true,
+          "line": 10
+        },
+        {
+          "kind": "def",
+          "name": "result",
+          "private": true,
+          "line": 11
+        },
+        {
+          "kind": "def",
+          "name": "pairs",
+          "private": true,
+          "line": 12
+        },
+        {
+          "kind": "def",
+          "name": "wild",
+          "private": true,
+          "line": 13
+        },
+        {
+          "kind": "def",
+          "name": "plainArms",
+          "private": true,
+          "line": 14
+        },
+        {
+          "kind": "def",
+          "name": "guardArms",
+          "private": true,
+          "line": 15
+        },
+        {
+          "kind": "theorem",
+          "name": "unit_annotation",
+          "private": true,
+          "line": 17
+        },
+        {
+          "kind": "theorem",
+          "name": "empty_sub",
+          "private": true,
+          "line": 19
+        },
+        {
+          "kind": "theorem",
+          "name": "ret_unit",
+          "private": true,
+          "line": 24
+        },
+        {
+          "kind": "theorem",
+          "name": "pair_alts",
+          "private": true,
+          "line": 28
+        },
+        {
+          "kind": "theorem",
+          "name": "wild_alts",
+          "private": true,
+          "line": 35
+        },
+        {
+          "kind": "theorem",
+          "name": "boolean_typed",
+          "private": true,
+          "line": 41
+        },
+        {
+          "kind": "theorem",
+          "name": "boolean_annotation",
+          "private": true,
+          "line": 47
+        },
+        {
+          "kind": "theorem",
+          "name": "root_typed",
+          "private": true,
+          "line": 50
+        },
+        {
+          "kind": "theorem",
+          "name": "plain_code",
+          "private": true,
+          "line": 54
+        },
+        {
+          "kind": "theorem",
+          "name": "guard_code",
+          "private": true,
+          "line": 62
+        },
+        {
+          "kind": "theorem",
+          "name": "initial",
+          "private": true,
+          "line": 71
+        },
+        {
+          "kind": "theorem",
+          "name": "two_bindings",
+          "private": false,
+          "line": 80
+        },
+        {
+          "kind": "theorem",
+          "name": "guard_prepared",
+          "private": true,
+          "line": 89
+        },
+        {
+          "kind": "theorem",
+          "name": "guard_execution",
+          "private": false,
+          "line": 99
+        },
+        {
+          "kind": "theorem",
+          "name": "handler_returned",
+          "private": false,
+          "line": 117
+        },
+        {
+          "kind": "theorem",
+          "name": "guard_propagation",
+          "private": false,
+          "line": 126
+        },
+        {
+          "kind": "def",
+          "name": "unknownGuardType",
+          "private": true,
+          "line": 142
+        },
+        {
+          "kind": "theorem",
+          "name": "unknown_guard_typed",
+          "private": true,
+          "line": 144
+        },
+        {
+          "kind": "theorem",
+          "name": "reject_guard_unknown_elimination",
+          "private": false,
+          "line": 154
+        },
+        {
+          "kind": "theorem",
+          "name": "reject_false_fact_to_tail",
+          "private": false,
+          "line": 167
+        }
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/RuntimeTypeSubst.lean",
+      "new_module": true,
+      "bytes": 12320,
+      "sha256": "57388b7b0c35922d6a6bddb27eb31d540dd1d73ceaef1ebc8748c9dca51d2d3d",
+      "authored_declarations": [
+        {
+          "kind": "theorem",
+          "name": "type_inst_wf",
+          "private": true,
+          "line": 7
+        },
+        {
+          "kind": "theorem",
+          "name": "types_inst_wf",
+          "private": true,
+          "line": 14
+        },
+        {
+          "kind": "theorem",
+          "name": "rows_inst_wf",
+          "private": true,
+          "line": 22
+        },
+        {
+          "kind": "theorem",
+          "name": "Val.ClosedAt.runtime_type_inst",
+          "private": false,
+          "line": 33
+        },
+        {
+          "kind": "theorem",
+          "name": "closedValues_runtime_type_inst",
+          "private": false,
+          "line": 83
+        },
+        {
+          "kind": "theorem",
+          "name": "Comp.ClosedAt.runtime_type_inst",
+          "private": false,
+          "line": 95
+        },
+        {
+          "kind": "theorem",
+          "name": "closedArms_runtime_type_inst",
+          "private": false,
+          "line": 164
+        },
+        {
+          "kind": "theorem",
+          "name": "closedClauses_runtime_type_inst",
+          "private": false,
+          "line": 189
+        }
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/OperationStateExamples.lean",
+      "new_module": true,
+      "bytes": 21461,
+      "sha256": "7b3f24fe93b26faa5a73d163da866a14523be94d479b415af8199b399254303f",
+      "authored_declarations": [
+        {
+          "kind": "def",
+          "name": "unit",
+          "private": true,
+          "line": 8
+        },
+        {
+          "kind": "def",
+          "name": "rowType",
+          "private": true,
+          "line": 9
+        },
+        {
+          "kind": "def",
+          "name": "argument",
+          "private": true,
+          "line": 10
+        },
+        {
+          "kind": "def",
+          "name": "actualArgument",
+          "private": true,
+          "line": 11
+        },
+        {
+          "kind": "def",
+          "name": "declaration",
+          "private": true,
+          "line": 12
+        },
+        {
+          "kind": "def",
+          "name": "opEffect",
+          "private": true,
+          "line": 13
+        },
+        {
+          "kind": "def",
+          "name": "outputEffect",
+          "private": true,
+          "line": 14
+        },
+        {
+          "kind": "def",
+          "name": "clauses",
+          "private": true,
+          "line": 15
+        },
+        {
+          "kind": "def",
+          "name": "call",
+          "private": true,
+          "line": 16
+        },
+        {
+          "kind": "def",
+          "name": "source",
+          "private": true,
+          "line": 17
+        },
+        {
+          "kind": "def",
+          "name": "opState",
+          "private": true,
+          "line": 18
+        },
+        {
+          "kind": "def",
+          "name": "resumeState",
+          "private": true,
+          "line": 21
+        },
+        {
+          "kind": "theorem",
+          "name": "empty_sub",
+          "private": true,
+          "line": 25
+        },
+        {
+          "kind": "theorem",
+          "name": "row_annotation",
+          "private": true,
+          "line": 30
+        },
+        {
+          "kind": "theorem",
+          "name": "argument_typed",
+          "private": true,
+          "line": 33
+        },
+        {
+          "kind": "theorem",
+          "name": "call_signature",
+          "private": true,
+          "line": 37
+        },
+        {
+          "kind": "theorem",
+          "name": "source_code",
+          "private": true,
+          "line": 53
+        },
+        {
+          "kind": "theorem",
+          "name": "initial",
+          "private": true,
+          "line": 90
+        },
+        {
+          "kind": "theorem",
+          "name": "row_initial",
+          "private": true,
+          "line": 101
+        },
+        {
+          "kind": "theorem",
+          "name": "row_handle_operation_resume",
+          "private": false,
+          "line": 112
+        },
+        {
+          "kind": "theorem",
+          "name": "noFail_cutoff_accept",
+          "private": false,
+          "line": 127
+        },
+        {
+          "kind": "theorem",
+          "name": "noFail_cutoff_reject",
+          "private": false,
+          "line": 138
+        },
+        {
+          "kind": "theorem",
+          "name": "unit_annotation",
+          "private": true,
+          "line": 146
+        },
+        {
+          "kind": "theorem",
+          "name": "left_sub",
+          "private": true,
+          "line": 148
+        },
+        {
+          "kind": "theorem",
+          "name": "failure_state",
+          "private": false,
+          "line": 152
+        },
+        {
+          "kind": "def",
+          "name": "primitiveSig",
+          "private": true,
+          "line": 174
+        },
+        {
+          "kind": "def",
+          "name": "primitiveEffect",
+          "private": true,
+          "line": 177
+        },
+        {
+          "kind": "def",
+          "name": "primitiveClauses",
+          "private": true,
+          "line": 178
+        },
+        {
+          "kind": "theorem",
+          "name": "primitive_pathBases",
+          "private": false,
+          "line": 181
+        },
+        {
+          "kind": "def",
+          "name": "modelProgram",
+          "private": true,
+          "line": 235
+        },
+        {
+          "kind": "def",
+          "name": "modelGet",
+          "private": true,
+          "line": 243
+        },
+        {
+          "kind": "def",
+          "name": "modelSet",
+          "private": true,
+          "line": 254
+        },
+        {
+          "kind": "def",
+          "name": "modelBuiltins",
+          "private": true,
+          "line": 265
+        },
+        {
+          "kind": "theorem",
+          "name": "model_sig_cases",
+          "private": true,
+          "line": 277
+        },
+        {
+          "kind": "theorem",
+          "name": "model_external",
+          "private": true,
+          "line": 286
+        },
+        {
+          "kind": "theorem",
+          "name": "model_wellFormed",
+          "private": true,
+          "line": 291
+        },
+        {
+          "kind": "theorem",
+          "name": "model_wellTyped",
+          "private": true,
+          "line": 321
+        },
+        {
+          "kind": "theorem",
+          "name": "model_core",
+          "private": true,
+          "line": 327
+        },
+        {
+          "kind": "theorem",
+          "name": "row_concrete_model",
+          "private": false,
+          "line": 398
+        }
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/HandlerCalls.lean",
+      "new_module": false,
+      "bytes": 22000,
+      "sha256": "c93e75edbcce2ed6133cb8a7a11415ef8356cce9af2ed7faec928174183e841c",
+      "authored_declarations": [
+        {
+          "kind": "theorem",
+          "name": "toTel_annotation",
+          "private": true,
+          "line": 9
+        },
+        {
+          "kind": "theorem",
+          "name": "bind_shift_ty",
+          "private": true,
+          "line": 31
+        },
+        {
+          "kind": "theorem",
+          "name": "bind_shift_eff",
+          "private": true,
+          "line": 37
+        },
+        {
+          "kind": "theorem",
+          "name": "vs_normal",
+          "private": true,
+          "line": 43
+        },
+        {
+          "kind": "theorem",
+          "name": "vs_toTel",
+          "private": true,
+          "line": 50
+        },
+        {
+          "kind": "theorem",
+          "name": "op_annotation",
+          "private": true,
+          "line": 75
+        },
+        {
+          "kind": "theorem",
+          "name": "op_inv",
+          "private": true,
+          "line": 92
+        },
+        {
+          "kind": "theorem",
+          "name": "HasTypeVQ.op_signature",
+          "private": false,
+          "line": 119
+        },
+        {
+          "kind": "theorem",
+          "name": "HasTypeVQ.op_typeScope",
+          "private": false,
+          "line": 127
+        },
+        {
+          "kind": "theorem",
+          "name": "operation_call_aux",
+          "private": true,
+          "line": 133
+        },
+        {
+          "kind": "theorem",
+          "name": "HasTypeCQ.operation_call",
+          "private": false,
+          "line": 175
+        },
+        {
+          "kind": "theorem",
+          "name": "HasTypeCQ.operation_call_all",
+          "private": false,
+          "line": 184
+        },
+        {
+          "kind": "theorem",
+          "name": "operation_signature_aux",
+          "private": true,
+          "line": 192
+        },
+        {
+          "kind": "theorem",
+          "name": "operation_annotation",
+          "private": true,
+          "line": 209
+        },
+        {
+          "kind": "theorem",
+          "name": "app_resolve",
+          "private": true,
+          "line": 227
+        },
+        {
+          "kind": "theorem",
+          "name": "ClosureTy.pure_operation",
+          "private": false,
+          "line": 240
+        },
+        {
+          "kind": "theorem",
+          "name": "ClosureTy.pure_operation_signature",
+          "private": false,
+          "line": 283
+        },
+        {
+          "kind": "theorem",
+          "name": "operation_typeScope_aux",
+          "private": true,
+          "line": 303
+        },
+        {
+          "kind": "theorem",
+          "name": "ClosureTy.pure_operation_typeScope",
+          "private": false,
+          "line": 316
+        },
+        {
+          "kind": "theorem",
+          "name": "raise_inv",
+          "private": true,
+          "line": 334
+        },
+        {
+          "kind": "theorem",
+          "name": "raise_annotation",
+          "private": true,
+          "line": 359
+        },
+        {
+          "kind": "theorem",
+          "name": "raise_source_annotation",
+          "private": true,
+          "line": 376
+        },
+        {
+          "kind": "theorem",
+          "name": "failure_call_aux",
+          "private": true,
+          "line": 389
+        },
+        {
+          "kind": "theorem",
+          "name": "HasTypeCQ.failure_call",
+          "private": false,
+          "line": 431
+        }
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/ReferenceCalls.lean",
+      "new_module": false,
+      "bytes": 18357,
+      "sha256": "19b21c40fc1afd3650bdc4eeb0e33069e2304f7939b5fbcf546d5c41a811f808",
+      "authored_declarations": [
+        {
+          "kind": "theorem",
+          "name": "narrow_transport",
+          "private": true,
+          "line": 10
+        },
+        {
+          "kind": "theorem",
+          "name": "tel_narrow",
+          "private": true,
+          "line": 49
+        },
+        {
+          "kind": "theorem",
+          "name": "param_inv_aux",
+          "private": true,
+          "line": 55
+        },
+        {
+          "kind": "theorem",
+          "name": "param_inv",
+          "private": true,
+          "line": 69
+        },
+        {
+          "kind": "theorem",
+          "name": "done_inv_aux",
+          "private": true,
+          "line": 73
+        },
+        {
+          "kind": "theorem",
+          "name": "done_inv",
+          "private": true,
+          "line": 86
+        },
+        {
+          "kind": "theorem",
+          "name": "HasTypeTelArgsQ.pullback",
+          "private": false,
+          "line": 89
+        },
+        {
+          "kind": "theorem",
+          "name": "toTel_annotation",
+          "private": true,
+          "line": 121
+        },
+        {
+          "kind": "theorem",
+          "name": "bind_shift_ty",
+          "private": true,
+          "line": 143
+        },
+        {
+          "kind": "theorem",
+          "name": "bind_shift_eff",
+          "private": true,
+          "line": 149
+        },
+        {
+          "kind": "theorem",
+          "name": "vs_normal",
+          "private": true,
+          "line": 155
+        },
+        {
+          "kind": "theorem",
+          "name": "vs_toTel",
+          "private": true,
+          "line": 162
+        },
+        {
+          "kind": "theorem",
+          "name": "prim_annotation",
+          "private": true,
+          "line": 187
+        },
+        {
+          "kind": "theorem",
+          "name": "prim_inv",
+          "private": true,
+          "line": 204
+        },
+        {
+          "kind": "theorem",
+          "name": "HasTypeVQ.primitive_inputs",
+          "private": false,
+          "line": 232
+        },
+        {
+          "kind": "theorem",
+          "name": "primitive_call_aux",
+          "private": true,
+          "line": 240
+        },
+        {
+          "kind": "theorem",
+          "name": "HasTypeCQ.primitive_call",
+          "private": false,
+          "line": 286
+        },
+        {
+          "kind": "theorem",
+          "name": "primitive_annotation",
+          "private": true,
+          "line": 294
+        },
+        {
+          "kind": "theorem",
+          "name": "app_resolve",
+          "private": true,
+          "line": 312
+        },
+        {
+          "kind": "def",
+          "name": "isApp",
+          "private": true,
+          "line": 325
+        },
+        {
+          "kind": "theorem",
+          "name": "ClosureTy.pure_primitive",
+          "private": false,
+          "line": 328
+        },
+        {
+          "kind": "theorem",
+          "name": "HasTypeVsQ.toTel_normal",
+          "private": false,
+          "line": 369
+        }
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/HandlerContinuation.lean",
+      "new_module": false,
+      "bytes": 10624,
+      "sha256": "b61cb55d25693dbd7bb2e2afaff83cd2db28513fac8782e588064740dd355c20",
+      "authored_declarations": [
+        {
+          "kind": "def",
+          "name": "HandlerFrameTy",
+          "private": false,
+          "line": 10
+        },
+        {
+          "kind": "theorem",
+          "name": "ContTy.nil_inv",
+          "private": false,
+          "line": 19
+        },
+        {
+          "kind": "theorem",
+          "name": "end_tail",
+          "private": true,
+          "line": 29
+        },
+        {
+          "kind": "theorem",
+          "name": "end_tail'",
+          "private": true,
+          "line": 36
+        },
+        {
+          "kind": "theorem",
+          "name": "ContTy.resume_append",
+          "private": false,
+          "line": 43
+        },
+        {
+          "kind": "theorem",
+          "name": "failure_handles",
+          "private": true,
+          "line": 80
+        },
+        {
+          "kind": "theorem",
+          "name": "covered_name",
+          "private": true,
+          "line": 85
+        },
+        {
+          "kind": "theorem",
+          "name": "union_name_mem",
+          "private": true,
+          "line": 93
+        },
+        {
+          "kind": "theorem",
+          "name": "handle_name",
+          "private": true,
+          "line": 98
+        },
+        {
+          "kind": "theorem",
+          "name": "failure_name",
+          "private": true,
+          "line": 107
+        },
+        {
+          "kind": "theorem",
+          "name": "ContTy.split_handle",
+          "private": false,
+          "line": 115
+        }
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/CaptureRegularity.lean",
+      "new_module": false,
+      "bytes": 39095,
+      "sha256": "57fd98f0c15ecf10e4b93dfce4efe0e4f6a77006dbfb84cdc5de9ff16f69e33c",
+      "authored_declarations": [
+        {
+          "kind": "def",
+          "name": "CaptureContextRegular",
+          "private": false,
+          "line": 17
+        },
+        {
+          "kind": "theorem",
+          "name": "CaptureContextRegular.extend",
+          "private": false,
+          "line": 22
+        },
+        {
+          "kind": "theorem",
+          "name": "CaptureContextRegular.extendNone",
+          "private": false,
+          "line": 52
+        },
+        {
+          "kind": "theorem",
+          "name": "CaptureContextRegular.variable",
+          "private": false,
+          "line": 77
+        },
+        {
+          "kind": "theorem",
+          "name": "CaptureOk.contextRegular",
+          "private": false,
+          "line": 86
+        },
+        {
+          "kind": "theorem",
+          "name": "let_annotation",
+          "private": false,
+          "line": 91
+        },
+        {
+          "kind": "theorem",
+          "name": "none_typeMap",
+          "private": true,
+          "line": 97
+        },
+        {
+          "kind": "theorem",
+          "name": "Ty.wf_shiftV_rev_extendNone",
+          "private": false,
+          "line": 109
+        },
+        {
+          "kind": "theorem",
+          "name": "Ty.sorted_shiftV_rev_extendNone",
+          "private": false,
+          "line": 114
+        },
+        {
+          "kind": "theorem",
+          "name": "Ty.Declared.shiftV_rev_extendNone",
+          "private": false,
+          "line": 119
+        },
+        {
+          "kind": "theorem",
+          "name": "builder_annotation",
+          "private": false,
+          "line": 132
+        },
+        {
+          "kind": "theorem",
+          "name": "used_annotation",
+          "private": false,
+          "line": 136
+        },
+        {
+          "kind": "theorem",
+          "name": "locref_annotation",
+          "private": false,
+          "line": 141
+        },
+        {
+          "kind": "theorem",
+          "name": "checked_annotation",
+          "private": false,
+          "line": 147
+        },
+        {
+          "kind": "theorem",
+          "name": "arms_annotation",
+          "private": true,
+          "line": 152
+        },
+        {
+          "kind": "theorem",
+          "name": "value_annotation",
+          "private": true,
+          "line": 159
+        },
+        {
+          "kind": "theorem",
+          "name": "comp_annotation",
+          "private": true,
+          "line": 195
+        },
+        {
+          "kind": "theorem",
+          "name": "open_value_annotation",
+          "private": false,
+          "line": 235
+        },
+        {
+          "kind": "theorem",
+          "name": "open_comp_annotation",
+          "private": false,
+          "line": 242
+        },
+        {
+          "kind": "theorem",
+          "name": "open_values_annotation",
+          "private": false,
+          "line": 249
+        },
+        {
+          "kind": "theorem",
+          "name": "open_each_annotation",
+          "private": false,
+          "line": 261
+        },
+        {
+          "kind": "theorem",
+          "name": "open_arms_annotation",
+          "private": false,
+          "line": 269
+        },
+        {
+          "kind": "theorem",
+          "name": "open_telArgs_annotation",
+          "private": false,
+          "line": 273
+        },
+        {
+          "kind": "theorem",
+          "name": "capture_value_annotation",
+          "private": false,
+          "line": 280
+        },
+        {
+          "kind": "theorem",
+          "name": "capture_comp_annotation",
+          "private": false,
+          "line": 286
+        },
+        {
+          "kind": "theorem",
+          "name": "done_union_annotation",
+          "private": true,
+          "line": 292
+        },
+        {
+          "kind": "theorem",
+          "name": "noFail_done_annotation",
+          "private": true,
+          "line": 320
+        },
+        {
+          "kind": "theorem",
+          "name": "fail_done_annotation",
+          "private": true,
+          "line": 329
+        },
+        {
+          "kind": "theorem",
+          "name": "done_annotation_of_fail_sub",
+          "private": true,
+          "line": 338
+        },
+        {
+          "kind": "theorem",
+          "name": "capture_handle_body_annotation",
+          "private": false,
+          "line": 346
+        },
+        {
+          "kind": "theorem",
+          "name": "failure_effect_upper_annotation",
+          "private": false,
+          "line": 362
+        },
+        {
+          "kind": "theorem",
+          "name": "capture_failure_body_annotation",
+          "private": false,
+          "line": 368
+        },
+        {
+          "kind": "theorem",
+          "name": "CaptureOk.continuation_annotation",
+          "private": false,
+          "line": 380
+        },
+        {
+          "kind": "theorem",
+          "name": "CaptureOk.continuation_result_effect",
+          "private": false,
+          "line": 394
+        },
+        {
+          "kind": "theorem",
+          "name": "capture_let_effect_annotations",
+          "private": false,
+          "line": 403
+        },
+        {
+          "kind": "theorem",
+          "name": "capture_tel_annotation",
+          "private": false,
+          "line": 419
+        },
+        {
+          "kind": "theorem",
+          "name": "capture_function_result_effect",
+          "private": false,
+          "line": 424
+        },
+        {
+          "kind": "theorem",
+          "name": "HasFailureClause.capture_result_effect",
+          "private": false,
+          "line": 431
+        },
+        {
+          "kind": "theorem",
+          "name": "cover_close",
+          "private": true,
+          "line": 442
+        },
+        {
+          "kind": "theorem",
+          "name": "done_inner",
+          "private": false,
+          "line": 446
+        },
+        {
+          "kind": "theorem",
+          "name": "handle_inv",
+          "private": false,
+          "line": 455
+        },
+        {
+          "kind": "theorem",
+          "name": "e_handle_supply",
+          "private": false,
+          "line": 492
+        },
+        {
+          "kind": "theorem",
+          "name": "let_inv",
+          "private": true,
+          "line": 529
+        },
+        {
+          "kind": "theorem",
+          "name": "ContTy.return_wf",
+          "private": false,
+          "line": 556
+        },
+        {
+          "kind": "theorem",
+          "name": "e_let_post",
+          "private": false,
+          "line": 567
+        },
+        {
+          "kind": "theorem",
+          "name": "split_fail_annotated",
+          "private": false,
+          "line": 646
+        }
+      ]
+    },
+    {
+      "path": "formal/Benitoite/Release/Refinement/HandlerOperation.lean",
+      "new_module": false,
+      "bytes": 19911,
+      "sha256": "999d90df2da9129278cb86057bf6790e5e0e0d43527ff5e85cc264335106d5bf",
+      "authored_declarations": [
+        {
+          "kind": "theorem",
+          "name": "typeEnv_nil",
+          "private": true,
+          "line": 11
+        },
+        {
+          "kind": "theorem",
+          "name": "mono_tel",
+          "private": true,
+          "line": 15
+        },
+        {
+          "kind": "theorem",
+          "name": "annotation_closed",
+          "private": true,
+          "line": 35
+        },
+        {
+          "kind": "theorem",
+          "name": "annotation_one",
+          "private": true,
+          "line": 39
+        },
+        {
+          "kind": "theorem",
+          "name": "close_one",
+          "private": true,
+          "line": 55
+        },
+        {
+          "kind": "theorem",
+          "name": "clauses_no_fail",
+          "private": true,
+          "line": 73
+        },
+        {
+          "kind": "theorem",
+          "name": "clause_one",
+          "private": true,
+          "line": 84
+        },
+        {
+          "kind": "theorem",
+          "name": "closeEff_shift",
+          "private": true,
+          "line": 110
+        },
+        {
+          "kind": "theorem",
+          "name": "closeTy_two",
+          "private": true,
+          "line": 115
+        },
+        {
+          "kind": "theorem",
+          "name": "closeEff_two",
+          "private": true,
+          "line": 120
+        },
+        {
+          "kind": "theorem",
+          "name": "covers_state",
+          "private": true,
+          "line": 125
+        },
+        {
+          "kind": "theorem",
+          "name": "handle_no_fail",
+          "private": true,
+          "line": 135
+        },
+        {
+          "kind": "theorem",
+          "name": "ContTy.guard_effect",
+          "private": false,
+          "line": 191
+        },
+        {
+          "kind": "theorem",
+          "name": "StateTyE.operation_under_guard_false",
+          "private": false,
+          "line": 199
+        },
+        {
+          "kind": "theorem",
+          "name": "clause_closed",
+          "private": true,
+          "line": 218
+        },
+        {
+          "kind": "theorem",
+          "name": "clause_adequate",
+          "private": true,
+          "line": 234
+        },
+        {
+          "kind": "theorem",
+          "name": "ClosureTy.widen_atoms",
+          "private": false,
+          "line": 241
+        },
+        {
+          "kind": "theorem",
+          "name": "StateTyE.operation_one",
+          "private": false,
+          "line": 261
+        },
+        {
+          "kind": "theorem",
+          "name": "StateTyE.operation_typeScope",
+          "private": false,
+          "line": 399
+        }
+      ]
+    }
+  ],
+  "authored_count": 299,
+  "new_module_authored_count": 177
+}

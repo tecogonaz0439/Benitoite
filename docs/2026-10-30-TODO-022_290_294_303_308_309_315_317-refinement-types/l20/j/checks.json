@@ -1,0 +1,161 @@
+{
+  "base": "bc518cf27fabd493c0561e7faa2230eecb179b8d",
+  "resume": 1,
+  "work_executions": 1,
+  "dry_run": {
+    "command": "scripts/check.sh --level work --base bc518cf27fabd493c0561e7faa2230eecb179b8d --dry-run",
+    "exit": 0,
+    "elapsed_seconds": 0.11321075,
+    "start": "2026-11-02T16:54:28.894635+09:00",
+    "end": "2026-11-02T16:54:29.007849+09:00"
+  },
+  "selected": [
+    "spec_tally",
+    "spec_examples",
+    "formal_build"
+  ],
+  "work": {
+    "command": "scripts/check.sh --level work --base bc518cf27fabd493c0561e7faa2230eecb179b8d",
+    "exit": 0,
+    "elapsed_seconds": 3.7998712500000003,
+    "start": "2026-11-02T16:54:33.516083+09:00",
+    "end": "2026-11-02T16:54:37.315976+09:00"
+  },
+  "spec_examples_passed": 7,
+  "checkpoint_jobs": 832,
+  "axiom_audit_exit": 0,
+  "environment_constants": 614,
+  "source_authored_name_matches": 299,
+  "step_constructor_count": 76,
+  "step_table_names_equal": true,
+  "source_job_id_matches": 0,
+  "rss": {
+    "body": "not collected",
+    "instrument": "not collected",
+    "unit": null,
+    "cited": false,
+    "architecture": "arm64",
+    "os": "macOS 27.2",
+    "reason": "not collected according to the inherited plan; no reviewer RSS cited"
+  },
+  "previous_implementation": {
+    "base": "bc518cf27fabd493c0561e7faa2230eecb179b8d",
+    "work_executions": 1,
+    "dry_run_exit": 0,
+    "selected": [
+      "spec_tally",
+      "spec_examples",
+      "formal_build"
+    ],
+    "work": {
+      "command": "scripts/check.sh --level work --base bc518cf27fabd493c0561e7faa2230eecb179b8d",
+      "exit": 0,
+      "elapsed_seconds": 7.956213541,
+      "start": "2026-11-02T16:28:57.081355+09:00",
+      "end": "2026-11-02T16:29:05.037932+09:00"
+    },
+    "spec_examples_passed": 7,
+    "checkpoint_jobs": 832,
+    "axiom_audit_exit": 0,
+    "source_authored_name_matches": 289,
+    "step_constructor_count": 76,
+    "step_table_names_equal": true,
+    "source_job_id_matches": 0,
+    "rss": {
+      "body": "not collected",
+      "instrument": "not collected",
+      "unit": null,
+      "cited": false,
+      "architecture": "arm64",
+      "os": "macOS 27.2"
+    },
+    "outer_time": {
+      "start": "2026-11-02T14:19:12.831540",
+      "recorded_end": "2026-11-02T16:31:13.379492",
+      "seconds": 7920.547952,
+      "active_wait_separated": false,
+      "initial_reads_before_start": "not collected"
+    },
+    "final_documentation_and_import": [
+      {
+        "path": "docs/design/01-spec/01-12-core-calculus.md",
+        "bytes": 742582,
+        "sha256": "0b97dcaf0bd85f4daadfd03fa782da54b87671910d071acda5a9f7af0325a448"
+      },
+      {
+        "path": "docs/design/07-quality/07-04-formal-semantics.md",
+        "bytes": 482632,
+        "sha256": "9a04789f8bcf48f3ee358032e35d74eecf4479b4f991ea79322f92ea07613a22"
+      },
+      {
+        "path": "formal/Benitoite.lean",
+        "bytes": 16730,
+        "sha256": "7a39c1ec070efa80b3084a40c2b56ee83cb088eaefbf20dcb57d06df254b4ad8"
+      }
+    ]
+  },
+  "final_documentation_and_import": [
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "bytes": 743716,
+      "sha256": "b4c42189a0f40a97d358b06707379e991a58513dd8c13a621f15f1b957599267"
+    },
+    {
+      "path": "docs/design/07-quality/07-04-formal-semantics.md",
+      "bytes": 484157,
+      "sha256": "0a45509c0f772b91dccc160b08b1984d2f88041d92dde02574b953c160c04456"
+    },
+    {
+      "path": "formal/Benitoite.lean",
+      "bytes": 16730,
+      "sha256": "7a39c1ec070efa80b3084a40c2b56ee83cb088eaefbf20dcb57d06df254b4ad8"
+    }
+  ],
+  "signature_inventory": {
+    "bytes": 70334,
+    "sha256": "8ba75b8801f0c7b9c7c72bd52a24519826cac6c5c7914ed5932ab377aa8bc946",
+    "authored_count": 299,
+    "new_module_authored_count": 177,
+    "source_extract_after_implementation": true,
+    "pre_implementation_version_saved": false
+  },
+  "post_work_change": "records only plus deletion of an obligation identifier from the 07-04 example description; no code, rules or examples changed",
+  "final_artifacts": [
+    {
+      "path": "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/j/signatures.md",
+      "bytes": 70334,
+      "sha256": "8ba75b8801f0c7b9c7c72bd52a24519826cac6c5c7914ed5932ab377aa8bc946"
+    },
+    {
+      "path": "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/j/declarations.json",
+      "bytes": 44519,
+      "sha256": "a4498bd260f003b8aa4076669be6c5d798632c1ca5fbe2fc56c33fb0f6f63655"
+    },
+    {
+      "path": "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/j/inventory.py",
+      "bytes": 2542,
+      "sha256": "e12eb21c9a77cbc10d858352417990d035de0d949ebde46357b0a67c17d0f6f8"
+    },
+    {
+      "path": "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/j/axioms.lean",
+      "bytes": 6550,
+      "sha256": "839a1c63a593116e6f2e647d9e7479d2d5402ce03352289a163579e125cdc7c5"
+    },
+    {
+      "path": "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/j/audit-summary.json",
+      "bytes": 2112,
+      "sha256": "9f9c220af6270ecbf15d0ece8187fee987fc1557bd0292cc1feae854fdbc8d19"
+    },
+    {
+      "path": "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/j/logs.json",
+      "bytes": 1297,
+      "sha256": "1ee22739ea004c2e8d35e2afb01adaceb3dfd4e2060fd18735f2f55a395e1da9"
+    },
+    {
+      "path": "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/j/results.md",
+      "bytes": 26006,
+      "sha256": "da621195206b5a4c2c235a5cb584eb7d5a1c1171b1accc69c4c688e856b983be"
+    }
+  ],
+  "record_consistency_verified": true
+}

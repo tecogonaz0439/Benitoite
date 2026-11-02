@@ -290,7 +290,7 @@ theorem StateTyE.operation_one {P B σ Eb o name x y eff v cap cs k1 k2 k μ bod
       ←substEffValues_eq_bind,Eff.subst_values_single] at htail
     cases htail
     have hnf := handle_no_fail hk hsp.1 hsp.2.1
-    obtain ⟨t,ec,eb,et,Rh,hks,hkt,hcove,hsub,hframe⟩ := hk.split_handle hsp.1 hnf
+    obtain ⟨t,ec,eb,et,Rh,hks,hkt,hcove,hsub,hframe,_⟩ := hk.split_handle hsp.1 hnf
     obtain ⟨Γ,Φ,Rs,ts,ecs,ebs,hcap,hcs,hR,ht,hec,heb,han,has,hRs⟩ := hframe
     have hb := clause_one hcs hd hc
     have hr := hkt.return_annotation rfl

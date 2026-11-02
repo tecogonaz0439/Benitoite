@@ -648,68 +648,73 @@ theorem split_fail_annotated {P B σ Ψ R ε k a b Eb Re cap E0 body k1 k2}
     (he : k = k1 ++ .handleF cap [.fail E0 body] :: k2) :
     ∃ t ec et Rh, ContTy P B σ Ψ R ε (k1 ++ [.handleF cap [.fail E0 body]]) a t (.mk et.atoms ec.fails) Rh ∧
       ContTy P B σ Ψ Rh et k2 t b Eb Re ∧ Eff.Covers [] [] et ec ∧ Eff.Sub (.mk et.atoms ec.fails) et ∧
-        Ty.Annotation P [] [] (.dependentFn (.done t ec)) := by
+        Ty.Annotation P [] [] (.dependentFn (.done t ec)) ∧
+        ∃ Γ Φ Rs Es ts ecs,
+          CaptureOk P B (hideBuilders Ψ) Rh Γ Φ cap ∧
+          HasFailureClause P B (hideBuilders Ψ) Qempty [] Γ Φ Es Rs [.fail E0 body] ts ecs [] ∧
+          cap.closeR Rs = Rh ∧ cap.closeTy ts = t ∧ cap.closeEff ecs = ec ∧
+          (∀ r, Rs = some r → r.Declared P [] Γ) := by
   induction h generalizing k1 with
   | K_Empty _ _ => cases k1 <;> simp at he
   | K_Sub _ hl ih =>
-    obtain ⟨t,ec,et,Rh,h1,h2,h3,h4,h5⟩ := ih he
-    exact ⟨t,ec,et,Rh,.K_Sub h1 hl,h2,h3,h4,h5⟩
+    obtain ⟨t,ec,et,Rh,h1,h2,h3,h4,h5,h6⟩ := ih he
+    exact ⟨t,ec,et,Rh,.K_Sub h1 hl,h2,h3,h4,h5,h6⟩
   | K_Let hq had ha hs _ ih =>
     cases k1 with
     | nil => cases he
     | cons f k1 =>
       simp only [List.cons_append, List.cons.injEq] at he
       obtain ⟨rfl,he⟩ := he
-      obtain ⟨t,ec,et,Rh,h1,h2,h3,h4,h5⟩ := ih he
-      exact ⟨t,ec,et,Rh,.K_Let hq had ha hs h1,h2,h3,h4,h5⟩
+      obtain ⟨t,ec,et,Rh,h1,h2,h3,h4,h5,h6⟩ := ih he
+      exact ⟨t,ec,et,Rh,.K_Let hq had ha hs h1,h2,h3,h4,h5,h6⟩
   | K_Mark _ ha ih =>
     cases k1 with
     | nil => cases he
     | cons f k1 =>
       simp only [List.cons_append, List.cons.injEq] at he
       obtain ⟨rfl,he⟩ := he
-      obtain ⟨t,ec,et,Rh,h1,h2,h3,h4,h5⟩ := ih he
-      exact ⟨t,ec,et,Rh,.K_Mark h1 ha,h2,h3,h4,h5⟩
+      obtain ⟨t,ec,et,Rh,h1,h2,h3,h4,h5,h6⟩ := ih he
+      exact ⟨t,ec,et,Rh,.K_Mark h1 ha,h2,h3,h4,h5,h6⟩
   | K_Update hl ha _ ih =>
     cases k1 with
     | nil => cases he
     | cons f k1 =>
       simp only [List.cons_append, List.cons.injEq] at he
       obtain ⟨rfl,he⟩ := he
-      obtain ⟨t,ec,et,Rh,h1,h2,h3,h4,h5⟩ := ih he
-      exact ⟨t,ec,et,Rh,.K_Update hl ha h1,h2,h3,h4,h5⟩
+      obtain ⟨t,ec,et,Rh,h1,h2,h3,h4,h5,h6⟩ := ih he
+      exact ⟨t,ec,et,Rh,.K_Update hl ha h1,h2,h3,h4,h5,h6⟩
   | K_Release hv had hr hs _ ih =>
     cases k1 with
     | nil => cases he
     | cons f k1 =>
       simp only [List.cons_append, List.cons.injEq] at he
       obtain ⟨rfl,he⟩ := he
-      obtain ⟨t,ec,et,Rh,h1,h2,h3,h4,h5⟩ := ih he
-      exact ⟨t,ec,et,Rh,.K_Release hv had hr hs h1,h2,h3,h4,h5⟩
+      obtain ⟨t,ec,et,Rh,h1,h2,h3,h4,h5,h6⟩ := ih he
+      exact ⟨t,ec,et,Rh,.K_Release hv had hr hs h1,h2,h3,h4,h5,h6⟩
   | K_Drop hl hs _ ih =>
     cases k1 with
     | nil => cases he
     | cons f k1 =>
       simp only [List.cons_append, List.cons.injEq] at he
       obtain ⟨rfl,he⟩ := he
-      obtain ⟨t,ec,et,Rh,h1,h2,h3,h4,h5⟩ := ih he
-      exact ⟨t,ec,et,Rh,.K_Drop hl hs h1,h2,h3,h4,h5⟩
+      obtain ⟨t,ec,et,Rh,h1,h2,h3,h4,h5,h6⟩ := ih he
+      exact ⟨t,ec,et,Rh,.K_Drop hl hs h1,h2,h3,h4,h5,h6⟩
   | K_Guard hc hv ho hs hL har hr hx heq hR ht hef hb hsub hp _ had ih =>
     cases k1 with
     | nil => cases he
     | cons f k1 =>
       simp only [List.cons_append, List.cons.injEq] at he
       obtain ⟨rfl,he⟩ := he
-      obtain ⟨t,ec,et,Rh,h1,h2,h3,h4,h5⟩ := ih he
-      exact ⟨t,ec,et,Rh,.K_Guard hc hv ho hs hL har hr hx heq hR ht hef hb hsub hp h1 had,h2,h3,h4,h5⟩
+      obtain ⟨t,ec,et,Rh,h1,h2,h3,h4,h5,h6⟩ := ih he
+      exact ⟨t,ec,et,Rh,.K_Guard hc hv ho hs hL har hr hx heq hR ht hef hb hsub hp h1 had,h2,h3,h4,h5,h6⟩
   | K_Handle ht hc hb hcap hcs hR hty hec heb ha has hr had ih =>
     cases k1 with
     | nil => cases he; cases hcs
     | cons f k1 =>
       simp only [List.cons_append, List.cons.injEq] at he
       obtain ⟨rfl,he⟩ := he
-      obtain ⟨t,ec,et,Rh,h1,h2,h3,h4,h5⟩ := ih he
-      exact ⟨t,ec,et,Rh,.K_Handle h1 hc hb hcap hcs hR hty hec heb ha has hr had,h2,h3,h4,h5⟩
+      obtain ⟨t,ec,et,Rh,h1,h2,h3,h4,h5,h6⟩ := ih he
+      exact ⟨t,ec,et,Rh,.K_Handle h1 hc hb hcap hcs hR hty hec heb ha has hr had,h2,h3,h4,h5,h6⟩
   | @K_Handle_Fail R0 ε0 ec0 rest E cap0 cs0 tail t0 b0 E0' Re0 Γ Φ Rs ts ecs Es
       ht hc hnf hcap hcs hR hty hec hE hr hcov ha had ih =>
     cases k1 with
@@ -717,7 +722,7 @@ theorem split_fail_annotated {P B σ Ψ R ε k a b Eb Re cap E0 body k1 k2}
       cases he
       have hsub : Eff.Sub (.mk ε0.atoms ec0.fails) (.mk ε0.atoms ec0.fails) := ⟨fun _ h => h,fun _ h => h⟩
       have hcsa := hcs
-      refine ⟨_,ec0,ε0,_,?_,ht,hcov,hcov.widen_atoms.2,?_⟩
+      refine ⟨_,ec0,ε0,_,?_,ht,hcov,hcov.widen_atoms.2,?_,Γ,Φ,Rs,Es,ts,ecs,hcap,hcs,hR,hty,hec,hr⟩
       refine .K_Handle_Fail (ε := .mk ε0.atoms ec0.fails) (rest := rest) (ec := ec0) (.K_Empty hsub ha) ?_ hnf hcap hcs hR hty hec hE hr ?_ ha had
       · exact ⟨fun a ha => hc.1 a ha,fun t ht => by obtain ⟨_,hx,_⟩ := ht; rw [hnf.1] at hx; cases hx⟩
       · exact ⟨fun a ha => hcov.1 a ha,fun _ h => h⟩
@@ -725,8 +730,8 @@ theorem split_fail_annotated {P B σ Ψ R ε k a b Eb Re cap E0 body k1 k2}
     | cons f k1 =>
       simp only [List.cons_append, List.cons.injEq] at he
       obtain ⟨rfl,he⟩ := he
-      obtain ⟨t,ec,et,Rh,h1,h2,h3,h4,h5⟩ := ih he
-      exact ⟨t,ec,et,Rh,.K_Handle_Fail h1 hc hnf hcap hcs hR hty hec hE hr hcov ha had,h2,h3,h4,h5⟩
+      obtain ⟨t,ec,et,Rh,h1,h2,h3,h4,h5,h6⟩ := ih he
+      exact ⟨t,ec,et,Rh,.K_Handle_Fail h1 hc hnf hcap hcs hR hty hec hE hr hcov ha had,h2,h3,h4,h5,h6⟩
 
 
 end

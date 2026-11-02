@@ -379,3 +379,9 @@ import Benitoite.Release.Refinement.PatternBindingSupport
 import Benitoite.Release.Refinement.PatternBindings
 import Benitoite.Release.Refinement.PatternBindingsGround
 import Benitoite.Release.Refinement.PatternBindingExamples
+import Benitoite.Release.Refinement.PatternMatchAnnotations
+import Benitoite.Release.Refinement.MatchStateLeaves
+import Benitoite.Release.Refinement.PatternBindingsAdequate
+import Benitoite.Release.Refinement.HandlerGeneral
+import Benitoite.Release.Refinement.MatchStateExamples
+import Benitoite.Release.Refinement.OperationStateExamples
