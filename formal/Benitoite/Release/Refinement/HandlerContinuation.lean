@@ -1,4 +1,5 @@
 import Benitoite.Release.Refinement.LazyPreservation
+import Benitoite.Release.Refinement.HeldValues
 
 /-! # 捕捉を保持するハンドラの切り出しと継続の接続 -/
 namespace Benitoite.Release.Refinement
@@ -81,6 +82,36 @@ private theorem failure_handles {P B Ψ Q C Γ Φ E R cs t ec L}
   cases h
   simp [handles,Clause.op]
 
+private theorem covered_name {outer inner : Eff} {l ix}
+    (hc : Eff.Covers [] [] outer inner) (hm : inner.mem (.name l ix)) :
+    ∃ jx, outer.mem (.name l jx) ∧ jx.Covers ix := by
+  obtain ⟨a,ha,hcov⟩ := hc.1 _ hm
+  obtain ⟨jx,rfl⟩ := hcov.name_right
+  refine ⟨jx,ha,?_⟩
+  cases jx <;> cases ix <;> first | contradiction | exact hcov.2
+
+private theorem union_name_mem {e f : Eff} {a : Atom}
+    (hm : (Eff.union e f).mem a) : e.mem a ∨ f.mem a := by
+  change (e.atoms a || f.atoms a) = true at hm
+  simpa only [Bool.or_eq_true] using hm
+
+private theorem handle_name {eb ec et : Eff} {P B cs l ix}
+    (hb : Eff.Sub eb (Eff.union ec (handled P B cs)))
+    (hc : Eff.Covers [] [] et ec) (hm : eb.mem (.name l ix))
+    (hn : ∀ jx, ¬ (handled P B cs).mem (.name l jx)) :
+    ∃ jx, et.mem (.name l jx) ∧ jx.Covers ix := by
+  rcases union_name_mem (hb.1 _ hm) with hm | hm
+  · exact covered_name hc hm
+  · exact False.elim (hn ix hm)
+
+private theorem failure_name {rest ec : Eff} {E l ix}
+    (hc : Eff.Covers [] [] ec rest)
+    (hm : (Eff.union (Eff.singleFail E) rest).mem (.name l ix)) :
+    ∃ jx, ec.mem (.name l jx) ∧ jx.Covers ix := by
+  rcases union_name_mem hm with hm | hm
+  · cases hm
+  · exact covered_name hc hm
+
 theorem ContTy.split_handle {P B σ Ψ R ε k a b Eb Re cap cs k1 k2}
     (h : ContTy P B σ Ψ R ε k a b Eb Re)
     (he : k = k1 ++ .handleF cap cs :: k2) (hn : handles cs .fail = false) :
@@ -88,80 +119,105 @@ theorem ContTy.split_handle {P B σ Ψ R ε k a b Eb Re cap cs k1 k2}
       ContTy P B σ Ψ R ε (k1 ++ [.handleF cap cs]) a t ec Rh ∧
       ContTy P B σ Ψ Rh et k2 t b Eb Re ∧ Eff.Covers [] [] et ec ∧
       Eff.Sub eb (Eff.union ec (handled P B cs)) ∧
-      HandlerFrameTy P B Ψ Rh cap cs t ec eb := by
+      HandlerFrameTy P B Ψ Rh cap cs t ec eb ∧
+      (∀ l ix, ε.mem (.name l ix) →
+        (∀ cap' cs' jx, Frame.handleF cap' cs' ∈ k1 → ¬ (handled P B cs').mem (.name l jx)) →
+        ∃ jx, eb.mem (.name l jx) ∧ jx.Covers ix) := by
   induction h generalizing k1 with
   | K_Empty _ _ => cases k1 <;> simp at he
   | K_Sub _ hl ih =>
-    obtain ⟨t,ec,eb,et,Rh,h1,h2,h3,h4,h5⟩ := ih he
-    exact ⟨t,ec,eb,et,Rh,.K_Sub h1 hl,h2,h3,h4,h5⟩
+    obtain ⟨t,ec,eb,et,Rh,h1,h2,h3,h4,h5,h6⟩ := ih he
+    exact ⟨t,ec,eb,et,Rh,.K_Sub h1 hl,h2,h3,h4,h5,h6⟩
   | K_Let hq had ha hs _ ih =>
     cases k1 with
     | nil => cases he
     | cons f k1 =>
       simp only [List.cons_append, List.cons.injEq] at he
       obtain ⟨rfl,he⟩ := he
-      obtain ⟨t,ec,eb,et,Rh,h1,h2,h3,h4,h5⟩ := ih he
-      exact ⟨t,ec,eb,et,Rh,.K_Let hq had ha hs h1,h2,h3,h4,h5⟩
+      obtain ⟨t,ec,eb,et,Rh,h1,h2,h3,h4,h5,h6⟩ := ih he
+      exact ⟨t,ec,eb,et,Rh,.K_Let hq had ha hs h1,h2,h3,h4,h5,by
+        intro l ix hm hn
+        exact h6 l ix hm (fun cap cs jx hf => hn cap cs jx (List.mem_cons_of_mem _ hf))⟩
   | K_Mark _ ha ih =>
     cases k1 with
     | nil => cases he
     | cons f k1 =>
       simp only [List.cons_append, List.cons.injEq] at he
       obtain ⟨rfl,he⟩ := he
-      obtain ⟨t,ec,eb,et,Rh,h1,h2,h3,h4,h5⟩ := ih he
-      exact ⟨t,ec,eb,et,Rh,.K_Mark h1 ha,h2,h3,h4,h5⟩
+      obtain ⟨t,ec,eb,et,Rh,h1,h2,h3,h4,h5,h6⟩ := ih he
+      exact ⟨t,ec,eb,et,Rh,.K_Mark h1 ha,h2,h3,h4,h5,by
+        intro l ix hm hn
+        exact h6 l ix hm (fun cap cs jx hf => hn cap cs jx (List.mem_cons_of_mem _ hf))⟩
   | K_Update hl ha _ ih =>
     cases k1 with
     | nil => cases he
     | cons f k1 =>
       simp only [List.cons_append, List.cons.injEq] at he
       obtain ⟨rfl,he⟩ := he
-      obtain ⟨t,ec,eb,et,Rh,h1,h2,h3,h4,h5⟩ := ih he
-      exact ⟨t,ec,eb,et,Rh,.K_Update hl ha h1,h2,h3,h4,h5⟩
+      obtain ⟨t,ec,eb,et,Rh,h1,h2,h3,h4,h5,h6⟩ := ih he
+      exact ⟨t,ec,eb,et,Rh,.K_Update hl ha h1,h2,h3,h4,h5,by
+        intro l ix hm hn
+        exact h6 l ix hm (fun cap cs jx hf => hn cap cs jx (List.mem_cons_of_mem _ hf))⟩
   | K_Release hv had hr hs _ ih =>
     cases k1 with
     | nil => cases he
     | cons f k1 =>
       simp only [List.cons_append, List.cons.injEq] at he
       obtain ⟨rfl,he⟩ := he
-      obtain ⟨t,ec,eb,et,Rh,h1,h2,h3,h4,h5⟩ := ih he
-      exact ⟨t,ec,eb,et,Rh,.K_Release hv had hr hs h1,h2,h3,h4,h5⟩
+      obtain ⟨t,ec,eb,et,Rh,h1,h2,h3,h4,h5,h6⟩ := ih he
+      exact ⟨t,ec,eb,et,Rh,.K_Release hv had hr hs h1,h2,h3,h4,h5,by
+        intro l ix hm hn
+        exact h6 l ix hm (fun cap cs jx hf => hn cap cs jx (List.mem_cons_of_mem _ hf))⟩
   | K_Drop hl hs _ ih =>
     cases k1 with
     | nil => cases he
     | cons f k1 =>
       simp only [List.cons_append, List.cons.injEq] at he
       obtain ⟨rfl,he⟩ := he
-      obtain ⟨t,ec,eb,et,Rh,h1,h2,h3,h4,h5⟩ := ih he
-      exact ⟨t,ec,eb,et,Rh,.K_Drop hl hs h1,h2,h3,h4,h5⟩
+      obtain ⟨t,ec,eb,et,Rh,h1,h2,h3,h4,h5,h6⟩ := ih he
+      exact ⟨t,ec,eb,et,Rh,.K_Drop hl hs h1,h2,h3,h4,h5,by
+        intro l ix hm hn
+        exact h6 l ix hm (fun cap cs jx hf => hn cap cs jx (List.mem_cons_of_mem _ hf))⟩
   | K_Guard hc hv ho hs hL har hr hx heq hR ht hef hb hsub hp _ had ih =>
     cases k1 with
     | nil => cases he
     | cons f k1 =>
       simp only [List.cons_append, List.cons.injEq] at he
       obtain ⟨rfl,he⟩ := he
-      obtain ⟨t,ec,eb,et,Rh,h1,h2,h3,h4,h5⟩ := ih he
-      exact ⟨t,ec,eb,et,Rh,.K_Guard hc hv ho hs hL har hr hx heq hR ht hef hb hsub hp h1 had,h2,h3,h4,h5⟩
+      obtain ⟨t,ec,eb,et,Rh,h1,h2,h3,h4,h5,h6⟩ := ih he
+      exact ⟨t,ec,eb,et,Rh,.K_Guard hc hv ho hs hL har hr hx heq hR ht hef hb hsub hp h1 had,h2,h3,h4,h5,by
+        intro l ix hm hn
+        cases hm⟩
   | K_Handle ht hc hb hcap hcs hR hty hec heb ha has hr had ih =>
     cases k1 with
     | nil =>
       cases he
       exact ⟨_,_,_,_,_,.K_Handle (.K_Empty ⟨fun _ h => h,fun _ h => h⟩ ⟨ha.wf.1,ha.sorted.1,ha.declared.1⟩)
         (.refl _ _ _) hb hcap hcs hR hty hec heb ha has hr had,
-        ht,hc,hb,_,_,_,_,_,_,hcap,hcs,hR,hty,hec,heb,ha,has,hr⟩
+        ht,hc,hb,⟨_,_,_,_,_,_,hcap,hcs,hR,hty,hec,heb,ha,has,hr⟩,by
+          intro l ix hm _
+          exact ⟨ix,hm,RangeIx.Covers.refl ix⟩⟩
     | cons f k1 =>
       simp only [List.cons_append, List.cons.injEq] at he
       obtain ⟨rfl,he⟩ := he
-      obtain ⟨t,ec,eb,et,Rh,h1,h2,h3,h4,h5⟩ := ih he
-      exact ⟨t,ec,eb,et,Rh,.K_Handle h1 hc hb hcap hcs hR hty hec heb ha has hr had,h2,h3,h4,h5⟩
+      obtain ⟨t,ec,eb,et,Rh,h1,h2,h3,h4,h5,h6⟩ := ih he
+      exact ⟨t,ec,eb,et,Rh,.K_Handle h1 hc hb hcap hcs hR hty hec heb ha has hr had,h2,h3,h4,h5,by
+        intro l ix hm hn
+        obtain ⟨jx,hjm,hji⟩ := handle_name hb hc hm (fun jx => by apply hn _ _ jx; exact List.mem_cons_self)
+        obtain ⟨kx,hkm,hkj⟩ := h6 l jx hjm (fun cap cs jx hf => hn cap cs jx (List.mem_cons_of_mem _ hf))
+        exact ⟨kx,hkm,hkj.trans hji⟩⟩
   | K_Handle_Fail ht hc hnf hcap hcs hR hty hec hE hr hcov ha had ih =>
     cases k1 with
     | nil => cases he; rw [failure_handles hcs] at hn; cases hn
     | cons f k1 =>
       simp only [List.cons_append, List.cons.injEq] at he
       obtain ⟨rfl,he⟩ := he
-      obtain ⟨t,ec,eb,et,Rh,h1,h2,h3,h4,h5⟩ := ih he
-      exact ⟨t,ec,eb,et,Rh,.K_Handle_Fail h1 hc hnf hcap hcs hR hty hec hE hr hcov ha had,h2,h3,h4,h5⟩
+      obtain ⟨t,ec,eb,et,Rh,h1,h2,h3,h4,h5,h6⟩ := ih he
+      exact ⟨t,ec,eb,et,Rh,.K_Handle_Fail h1 hc hnf hcap hcs hR hty hec hE hr hcov ha had,h2,h3,h4,h5,by
+        intro l ix hm hn
+        obtain ⟨jx,hjm,hji⟩ := failure_name hc hm
+        obtain ⟨kx,hkm,hkj⟩ := h6 l jx hjm (fun cap cs jx hf => hn cap cs jx (List.mem_cons_of_mem _ hf))
+        exact ⟨kx,hkm,hkj.trans hji⟩⟩
 
 end
 end Benitoite.Release.Refinement

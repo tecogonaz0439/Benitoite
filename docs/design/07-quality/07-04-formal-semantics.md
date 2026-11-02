@@ -97,7 +97,17 @@
 
 `PatternBindingSupport` は `a.HasSort s` を持つ型と篩を持つ型の形成、全述語の一部を残す正規形の形成、正規化した篩の除去、型付き構成子の欄の移送を証明する。移送先の Ordinary は元の型引数と TypeArgsLe から供給する。`PatternBindings` は P_Refined・P_Convert を含む PatTy の9場合と PatTys の2場合を相互に証明し、a.norm の型付き値の照合から δ.map norm の型付き束縛を得る。List の前半・残りの list・後半、構成子の全欄、標準エラーの七欄を含む。firstAlt・selectSlots による代替パターンの束縛も同じ正規形で得る。前提は VarianceValid と各入口の型付け・照合であり、型付けの規則と CoreAssumptions は変更しない。
 
-`PatternBindingsGround` は照合と代替の成功で入力の Ground を束縛列へ移す。`PatternBindingExamples` は先頭と残りの list の型付けと同じ列の長さを合わせ、任意の closeVal の閉じた型付けから同じ閉じた先頭・残りの list の型付けと観測・長さを導く。二要素の成功と空 List の失敗、空の捕捉から CaptureOk.extend で整数5を加えて構成する Month の変数への網羅性も証明する。任意の腕の実行状態の保存と進行の合成は、この値と束縛の補題だけからは結論しない。意味を主な定理へ独立の仮定として追加していない。
+`PatternBindingsGround` は照合と代替の成功で入力の Ground を束縛列へ移す。`PatternBindingExamples` は先頭と残りの list の型付けと同じ列の長さを合わせ、任意の closeVal の閉じた型付けから同じ閉じた先頭・残りの list の型付けと観測・長さを導く。二要素の成功と空 List の失敗、空の捕捉から CaptureOk.extend で整数5を加えて構成する Month の変数への網羅性も証明する。この段は値と束縛の型保存を証明する。`PatternMatchAnnotations` は型付きのパターン・捕捉と閉じた入力値の型付け、および実際の照合成功から δ の注釈を供給する。`PatternBindingsAdequate` は元の値の Adequate σ から実際の束縛列へ適格性を移す。`MatchStateLeaves` は元の matchRun から任意の δ の MatchBody・MatchGuard と guard の error/exit の pop の全状態を構成する。prefix の非 guard 腕の失敗と現在の成功から事実の評価を得るので、MatchPathsEvaluated の追加前提を要求しない。guard の否定を後続へ追加しない。意味を主な定理へ独立の仮定として追加していない。進行と全保存の合成は別の段である。
+
+`MatchStateExamples` の対照は、任意の guard 付きの腕の網羅性の拒否と同じパターンの guard なしの受理、元の Φ での後続の return 13 の Month 型付けの拒否と偽の事実下での同じ本体の受理である。unknown の型を持つ guard が真を返す場合も網羅性に数えない。
+
+`HandlerGeneral` は任意の捕捉の Handle、任意の返却値の HRet、任意の型引数・前に置く辞書の引数を含む全実引数の Op、組み込みの OpPrim、失敗の OpFail、任意の値と保存継続の Resume を、元の StateTyE から同じ σ・Eb の行先へ接続する。通常の操作は型付き app、選択された節と同じ frame、S02 の実像、capture_tel/result_tel を使う。組み込み操作は共通の WellFormed・WellTyped・CoreAssumptions に加えEffectsOk を受け、BuiltinArgs、ShapeOk と io_op/pathBases_shape、ClauseRangeIs/opSigAt、末尾の効果による被覆を使う。呼出しの Φ0 と節の Φ は別に保持し、s.tparams と admits_sat から S02Internal.substC へ直接入力する。CaptureContextRegular の独立前提を追加しない。実値の範囲を広げる際は元の型付けを逆転し、意味から一般の型付けを仮定しない。
+
+`HandlerContinuation.split_handle` は分割で得た同じ証拠に対する、保護された本体の効果への名前の所属と範囲の被覆を返す。`StateTyE.operation_primitive` は、prefix の非 handled と EffectsOk を組み合わせて組み込みの節の範囲 S の被覆を導く。`CaptureRegularity.split_fail_annotated` は同じ証拠に対応する捕捉元の失敗節、closeR/closeTy/closeEff と done 注釈を返す。OpFail は V_Raise の T の value kind と sat_unconstrained を使い、None の継続場所を extendHidden で追加する。Resume は元の StoreOk で R の一致を得てから内容を used へ更新し、場所の型を維持する。
+
+`RuntimeTypeSubst` は元のコードの ClosedAt・Adequate と、全型像・行像の WF 0 0 0、全型像の Ordinary を前提に、ClosedAt と Adequate を同時に型置換後へ保つ五つの成分を相互に証明する。checkedAt・checkedRequest・closure では置換が変えない元の証拠を使う。inline の節へ新しい SourceScoped の前提を要求しない。`OperationStateExamples` は元の型付けから初期全状態を構成し、自由 row9 を持つ関数型を型引数・結果型・保存継続に含む Handle→Op→Resume、失敗を送出する操作、pathBases の組み込み操作へ各一般入口を具体に適用する。この例の lambda は、closeVal が作る closure を実引数に使う。同じ型像 rowType 一つ・cutoff 2 の置換が外の行9の番号を保つことを、Q9 の NoFail の受理と Qempty の拒否で示す。型像内の行9は、置換対象が型変数を持たない Eff.row 9 なので、この対照の結果には影響しない。
+
+`OperationStateExamples.row_concrete_model` は、identity 操作一つを持つ modelProgram と Reference.get・Reference.set の二署名を持つ modelBuiltins を構成し、同じ表に対する WellFormed・WellTyped・CoreAssumptions を証明して row_handle_operation_resume へ適用する。sat は常に真で、IO と外部応答はなく、外部宣言は空である。任意の σ の下で、型像・結果型・保存継続に行9を持つ三段階の状態を得る。primitive_pathBases の表の条件は仮定である。
 
 型付けの型文脈は `TypeCtx = List TParamDecl` であり、kind と組み込みの制約を同じ宣言の位置から射影する。`TypeArgsKinded P C` は `TypeCtx.kinds C` を使い、その別名 `TypeArgsKindedAt` とともに value kind の型引数に Ordinary を要求する。`Ty.Declared` の tapp は、head の宣言の kind が引数の個数と一致する constructor であることを検査する。`SatAll` と admits へ渡す文脈は `TypeCtx.constraints C` であり、組み込みの表の生の制約の型は保つ。constructor kind は型の形から Ordinary を満たす。`V_Raise` は結果型とエラー型の Ordinary を別に検査し、結果型の value kind も同じ C で検査する。Fail 節の新しい型束縛は `TypeCtx.valueParam` である。`TypeArgumentRegularity` は SignatureInstance、操作の型付け、辞書の型付け、メソッド呼出しから、実際に置換する型列の WF と Ordinary を取り出し、Ty.substAt_wf と Ty.LeQ.substAt へ渡す。操作とメソッドの変数を返す本体について、型置換後の型付けも証明する。HasTypeVQ と HasTypeCQ の値移動・型移動・値置換・None の下の値置換・narrowing の前提と結論は保つ。
 
@@ -163,10 +173,10 @@ metadata が none の項目、requirements/publicBoundary の空列、対応す�
 | 関数・メソッド・上位辞書 | `ClosureStateLeaves` の `E_Fun`・`E_Meth`・`E_Super`。元状態、規則の view、lookup と個数から同じ σ・Eb の行先を構成する。QTel は代入前のものと RowTransport を接続する |
 | 依存 β | `ClosureStateLeaves` の `dependent_beta_all`。任意の元状態、捕捉、零・多引数について `E_Lam` の実際の行先を構成する。通常・依存 lambda と既存 closure を、型付き view と閉包の逆転から同じ入口で扱う。mark の併合と同じ末尾効果を保つ |
 | 捕捉した Φ | `CapturedFacts` の評価成功・有限導出からの閉じ方、捕捉した一引数の closure 呼出しの両状態と遷移を構成する証明。環境を捨てる場合の反例と区別する。`CaptureApplicationAlgebra` の述語と Φ の全引数の適用の等式は、長さの観測を含む任意の条件を扱う。公開済みだが群 F・G の葉には読者がなく、最初の読者は値依存の入口を扱う後続の単位である |
-| if・guard・match | `PathConditions`・`MatchPaths` の開始 `StateTyE` からの真偽枝、guard 真偽、match の開始・skip・束縛数0の本体の保存。本体の代表は `MatchPathsEvaluated` も入力とする。`MatchFacts` はリテラル・範囲・List・構成子・Or の照合の成否から事実の健全性を示す |
+| if・guard・match | `PathConditions`・`MatchPaths` の真偽枝、guard 真偽、match の開始・skip と、`MatchStateLeaves` の任意 δ の本体・guard・error/exit の pop。元の状態と照合の成否から事実を供給する。`MatchStateExamples` は二束縛、真偽、unknown と偽事実を後続へ渡すことの拒否を示す。`MatchPaths` の `StateTyE.match_body_zero`・`StateTy.match_body_zero` と `MatchPathsEvaluated` は、一般の葉とは別に代表として残る |
 | Reference | `ReferencePreservation` の開始 `StateTyE` からの new/get/set/update の代表。4種とも呼出し元は pure。snapshot の事実とセルの現内容を区別する |
 | Lazy | `LazyPreservation` の作成、pure な呼出し元の force、任意の現在セルへの書戻し、error/exit の更新枠の破棄。書戻しの一般入口は ret の `closeVal` の一致を入力とし、定数の系は任意の捕捉を扱う |
-| 節・resume・破棄 | `HandlerOperation` の pure・単相一引数・辞書なしの操作、`HandlerPreservation` の定数の resume/返却/drop と used の再開、解放を伴う通常返却・escape・error・exit の代表。依存列の捕捉の延長は任意の長さである |
+| 節・resume・破棄 | `HandlerGeneral` の元状態からの通常/失敗 Handle・任意値の HRet・多相と前に置く辞書の引数を含む全引数の Op・OpPrim・OpFail・任意値と保存継続の Resume。OpPrim は EffectsOk も受ける。`HandlerPreservation` の drop と used の再開、解放を伴う通常返却・escape・error・exit の代表は別の葉である。`HandlerOperation` の一引数の `operation_one` と `HandlerPreservation` の定数返却の `resume_const` も代表として残る |
 | 外部受信 | `ExternalConnection` の三条件と型付き入力からの受信後の型付け・Ground・適格性・no-exit、`ExternalCheck` の全入れ子の篩の受理の健全性 |
 
 `SourceScope` は四名前空間の SourceScoped と通常の SignatureScoped を定め、`PrimitiveScoped` は組み込みの宣言の範囲深さを保持する。`RangeFormation` は WFImages と行・範囲の支持の移送から具体化後の SourceScoped を導き、範囲の写像で Sorted・Declared・kind を保存する。効果原子の範囲と Fail の型の WF は別に検査する。
@@ -791,7 +801,7 @@ Scope のモデルは、ホスト名には正規化済みのラベルの列、�
 
 【決定】`PresFailure`は、承認された `sat_unconstrained` と閉じた結果型Tの整形式から、Fail節の一つの型束縛へTだけを代入する。予約した0番はnoneのまま、1番へエラー値を置換する。保存継続の効果 `norm (Rest ∪ ec)` とCellOk、ストア更新、既存のdrop・解放へ接続している。この規則を含むReleaseについて、進行・保存・エフェクトの健全性とstepの健全性を証明している。性質1・表層のエフェクト健全性・検査器の健全性11件・網羅性の健全性も既存の外側の言明を保つ。`Model.lean`は空制約の成立を含む組み込みの仮定を満たす。`FailureExamples.lean`は通常のmatch/handleでResultを変換し、四例の有限遷移と型付けを確認する。
 
-表層のFail節と交換11/4の読者・書き戻し、Rustの型検査・脱糖・独立IR検査・実行へ接続している。Rustの交換器は、Failのエラー型の内部まで型を辿り、署名由来のNoFail、専用のraise値、固定EとT一個の束縛を持つFail節を出力する。通常操作・通常節の変換も保つ。独立した型付きの失敗の正負入力に加え、実ソースの型付き失敗・捕捉・高階・メソッド・穴・パイプを六入口で局所比較する。toResultのRest違反は、RustのE0515と同じ署名の変更を交換へ反映し、表層検査器もNoFailの具体化違反で拒否する。文字の判定を含む本番入力の全比較は、この局所比較とは別に行う。
+表層のFail節と交換11/4の読者・書き戻し、Rustの型検査・脱糖・独立IR検査・実行へ接続している。Rustの交換器は、Failのエラー型の内部まで型を辿り、署名由来のNoFail、専用のraise値、固定EとT一個の束縛を持つFail節を出力する。通常の操作・通常節の変換も保つ。独立した型付きの失敗の正負入力に加え、実ソースの型付き失敗・捕捉・高階・メソッド・穴・パイプを六入口で局所比較する。toResultのRest違反は、RustのE0515と同じ署名の変更を交換へ反映し、表層検査器もNoFailの具体化違反で拒否する。文字の判定を含む本番入力の全比較は、この局所比較とは別に行う。
 
 【決定】拡張可能な型の網羅性については、`Release/Coverage.lean` に view と将来の形を扱う判定を定義している。閉じた view と従来の列挙の一致（`shapesWithView_closed`）、既存の形の保存（`mem_shapesWithView`）、任意の view で現在の値の特殊化の証拠を保つこと（`shapesWithView_cover`）、将来の形を変数と `_` だけが覆うこと（`specialize_future_iff`）を証明している。Release の有用性の全再帰と網羅性・束縛・選ばれない選択肢の判定には view を接続している。
 
@@ -849,11 +859,11 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 | RefinementObservation・ObservationOrder・ObservationSubstitution・ObservationInterpretation・ValueMeaning・ValueMeaningInhabits・PatternNormalForm・Patterns・PatternTransport・PatternSemantics・PatternTypeShift・CoverageRefinement | 「篩を読む網羅性と値の意味」 |
 | MeaningOrder・MeaningTransport・MeaningTransportObstruction | 同節の構造による欄の比較、任意の部分型に対する意味の移送と辞書式の帰納、型引数の Ordinary の供給に対する反例 |
 | TypedMeaning・TypedCoverage・TypedMeaningExamples | 同節の閉じた型付け全33場合から意味と所属、捕捉の意味と網羅性、Month・空篩・非空 List・unknown への適用 |
-| PatternBindingSupport・PatternBindings・PatternBindingsGround・PatternBindingExamples | 同節の正規形での束縛の型保存、代替の選択、Ground と同じ先頭・残りの list の観測・長さ |
+| PatternBindingSupport・PatternBindings・PatternBindingsGround・PatternBindingExamples・PatternMatchAnnotations・PatternBindingsAdequate | 同節の正規形での束縛の型保存、代替の選択、元の δ の注釈、Ground・適格性と同じ先頭・残りの list の観測・長さ |
 | Observation・ClosedEvaluation・Logic・LogicSound・Context/Capture・CapturedFacts・CaptureRegularity | 「閉じた述語の評価と捕捉」。開いた全結果形成と、元の注釈・包含・場所からの捕捉後の効果形成を含む |
-| PathFacts・PathConditions・MatchPaths・MatchFacts・Typing・StateTyping | 「条件とパターンからの事実」 |
+| PathFacts・PathConditions・MatchPaths・MatchFacts・MatchStateLeaves・MatchStateExamples・Typing・StateTyping | 「条件とパターンからの事実」 |
 | Typing・HandlerContracts・RuntimeSyntax・AtPrepare・AtTyping・BuiltinResponse・ConstraintAssumptions・BuiltinEffects・Semantics・Step・ExternalCheck・ExternalResponse・ExternalConnection | 「保持要求と組み込みの遷移」 |
-| StoreTransport・Typing・StateTyping・ConstraintAssumptions・ReferenceStore・LazyStore・HandlerStore・ReferencePreservation・LazyPreservation・HandlerEffects・HandlerPreservation | 「篩を含む状態の型付け」 |
+| StoreTransport・Typing・StateTyping・ConstraintAssumptions・ReferenceStore・LazyStore・HandlerStore・ReferencePreservation・LazyPreservation・HandlerEffects・HandlerPreservation・HandlerOperation・HandlerGeneral・RuntimeTypeSubst・OperationStateExamples | 「篩を含む状態の型付け」 |
 
 以下の既存の表は Release などの対応である。
 

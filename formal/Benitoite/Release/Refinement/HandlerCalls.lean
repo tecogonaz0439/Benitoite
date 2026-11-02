@@ -115,6 +115,14 @@ private theorem op_inv {P B Ψ Q C Γ Φ v T o ts}
     .V_LocRef .. | .V_LocLazy .. | .V_Bytes .. => cases hv
 termination_by structural h
 
+/-- 実際の操作値から宣言とその具体化を取り出す。 -/
+theorem HasTypeVQ.op_signature {P B Ψ Q C Γ Φ o ts a}
+    (h : HasTypeVQ P B Ψ Q C Γ Φ (.op o ts) a) :
+    ∃ od, P.ops o = some od ∧
+      SignatureInstance P C Γ od.tel (List.replicate od.tparams.length .value) ts [] := by
+  obtain ⟨od,_,hd,hi,_,_⟩ := op_inv h rfl
+  exact ⟨od,hd,hi⟩
+
 /-- 操作の型引数の形成と非継続は、V_OpとSignatureInstanceから得る。 -/
 theorem HasTypeVQ.op_typeScope {P B Ψ Q C Γ Φ o ts a}
     (h : HasTypeVQ P B Ψ Q C Γ Φ (.op o ts) a) :
@@ -122,11 +130,11 @@ theorem HasTypeVQ.op_typeScope {P B Ψ Q C Γ Φ o ts a}
   obtain ⟨_, _, _, hi, _, _⟩ := op_inv h rfl
   exact hi.typeScope
 
-private theorem operation_call_aux {P B Ψ Q C Γ Φ R code a e L o v od ts}
+private theorem operation_call_aux {P B Ψ Q C Γ Φ R code a e L o ws od ts}
     (h : HasTypeCQ P B Ψ Q C Γ Φ R code a e L)
     (hQ : Q = Qempty) (hC : C = []) (hΓ : Γ = []) (hΦ : Φ = [])
-    (hc : code = .app (.op o ts) [v]) (hd : P.ops o = some od) :
-    ∃ r f, HasTypeTelArgsQ P B Ψ Qempty [] [] [] [v]
+    (hc : code = .app (.op o ts) ws) (hd : P.ops o = some od) :
+    ∃ r f, HasTypeTelArgsQ P B Ψ Qempty [] [] [] ws
       (instantiatedTel od.tel ts []) r f ∧ Ty.LeQ P [] [] r a ∧ Eff.Covers [] [] e f := by
   match h with
   | .C_DependentApp hv ha =>
@@ -168,6 +176,15 @@ theorem HasTypeCQ.operation_call {P B Ψ R o v a e L od ts}
     (h : HasTypeCQ P B Ψ Qempty [] [] [] R (.app (.op o ts) [v]) a e L)
     (hd : P.ops o = some od) :
     ∃ r f, HasTypeTelArgsQ P B Ψ Qempty [] [] [] [v]
+      (instantiatedTel od.tel ts []) r f ∧
+      Ty.LeQ P [] [] r a ∧ Eff.Covers [] [] e f :=
+  operation_call_aux h rfl rfl rfl rfl rfl hd
+
+/-- 呼出しの引数列を元の操作の依存列へ戻す。 -/
+theorem HasTypeCQ.operation_call_all {P B Ψ R o ws a e L od ts}
+    (h : HasTypeCQ P B Ψ Qempty [] [] [] R (.app (.op o ts) ws) a e L)
+    (hd : P.ops o = some od) :
+    ∃ r f, HasTypeTelArgsQ P B Ψ Qempty [] [] [] ws
       (instantiatedTel od.tel ts []) r f ∧
       Ty.LeQ P [] [] r a ∧ Eff.Covers [] [] e f :=
   operation_call_aux h rfl rfl rfl rfl rfl hd
@@ -314,6 +331,113 @@ theorem ClosureTy.pure_operation_typeScope {P B Ψ R a e o v ts}
   rw [app_resolve hbody rfl ρ] at hcode
   cases hcode
   exact operation_typeScope_aux hbody rfl
+private theorem raise_inv {P B Ψ Q C Γ Φ v A T E}
+    (h : HasTypeVQ P B Ψ Q C Γ Φ v A) (hv : v = .raise T E) :
+    ∃ u, A.fnCore = some u ∧
+      TelClosure P Γ Φ (Ty.toTel ["error"] [E] T (Eff.singleFail E)) u := by
+  match h with
+  | .V_Raise _ _ _ _ => cases hv; exact ⟨_,rfl,.refl⟩
+  | .V_Normal (a := A0) hh =>
+    obtain ⟨u,hu,ht⟩ := raise_inv hh hv
+    have hl : Ty.LeQ P Γ Φ A0 A0.norm := .convert (Ty.norm_idem A0).symm
+    obtain ⟨w,hw,ht'⟩ := hl.fnCore hu
+    exact ⟨w,hw,ht.trans ht'⟩
+  | .V_Sub hh hl _ _ _ =>
+    obtain ⟨u,hu,ht⟩ := raise_inv hh hv
+    obtain ⟨w,hw,ht'⟩ := hl.fnCore hu
+    exact ⟨w,hw,ht.trans ht'⟩
+  | .V_Refine hh .. =>
+    obtain ⟨u,hu,ht⟩ := raise_inv hh hv
+    exact ⟨u,hu,ht⟩
+  | .V_Var .. | .V_Const .. | .V_Lam .. | .V_DependentLam .. | .V_Closure .. | .V_Fun .. |
+    .V_Prim .. | .V_Op .. | .V_ExternalRef .. | .V_ExternalHandle .. | .V_PathBases .. |
+    .V_ScopePattern .. | .V_Checked .. | .V_CheckedRequest .. | .V_CheckedAt .. | .V_AtError .. |
+    .V_List .. | .V_Con .. | .V_Map .. | .V_Set .. | .V_Dict .. | .V_Super .. |
+    .V_LocRef .. | .V_LocLazy .. | .V_Bytes .. => cases hv
+termination_by structural h
+
+private theorem raise_annotation {P B Ψ Q C Γ Φ v A T E}
+    (h : HasTypeVQ P B Ψ Q C Γ Φ v A) (hv : v = .raise T E) :
+    Ty.Annotation P C Γ A := by
+  match h with
+  | .V_Raise ha _ _ _ => exact ha
+  | .V_Normal hh => exact (raise_annotation hh hv).norm
+  | .V_Sub _ _ hw hs hd => exact ⟨hw,hs,hd⟩
+  | .V_Refine hh hi ht hs hw he hd hp =>
+    have ha := raise_annotation hh hv
+    exact ⟨⟨ha.wf,hw,by simpa [Ty.NotContCore] using hi.ordinary⟩,⟨ha.sorted,hs⟩,⟨hd,hp⟩⟩
+  | .V_Var .. | .V_Const .. | .V_Lam .. | .V_DependentLam .. | .V_Closure .. | .V_Fun .. |
+    .V_Prim .. | .V_Op .. | .V_ExternalRef .. | .V_ExternalHandle .. | .V_PathBases .. |
+    .V_ScopePattern .. | .V_Checked .. | .V_CheckedRequest .. | .V_CheckedAt .. | .V_AtError .. |
+    .V_List .. | .V_Con .. | .V_Map .. | .V_Set .. | .V_Dict .. | .V_Super .. |
+    .V_LocRef .. | .V_LocLazy .. | .V_Bytes .. => cases hv
+termination_by structural h
+
+private theorem raise_source_annotation {P B Ψ Q C Γ Φ v A T E}
+    (h : HasTypeVQ P B Ψ Q C Γ Φ v A) (hv : v = .raise T E) :
+    Ty.Annotation P C Γ (.fn ["error"] [E] T (Eff.singleFail E)) := by
+  match h with
+  | .V_Raise ha _ _ _ => cases hv; exact ha
+  | .V_Normal hh | .V_Sub hh .. | .V_Refine hh .. => exact raise_source_annotation hh hv
+  | .V_Var .. | .V_Const .. | .V_Lam .. | .V_DependentLam .. | .V_Closure .. | .V_Fun .. |
+    .V_Prim .. | .V_Op .. | .V_ExternalRef .. | .V_ExternalHandle .. | .V_PathBases .. |
+    .V_ScopePattern .. | .V_Checked .. | .V_CheckedRequest .. | .V_CheckedAt .. | .V_AtError .. |
+    .V_List .. | .V_Con .. | .V_Map .. | .V_Set .. | .V_Dict .. | .V_Super .. |
+    .V_LocRef .. | .V_LocLazy .. | .V_Bytes .. => cases hv
+termination_by structural h
+
+private theorem failure_call_aux {P B Ψ Q C Γ Φ R code a e L T E v}
+    (h : HasTypeCQ P B Ψ Q C Γ Φ R code a e L)
+    (hQ : Q = Qempty) (hC : C = []) (hΓ : Γ = []) (hΦ : Φ = [])
+    (hc : code = .app (.raise T E) [v]) :
+    ∃ r f, HasTypeTelArgsQ P B Ψ Qempty [] [] [] [v]
+      (Ty.toTel ["error"] [E] T (Eff.singleFail E)) r f ∧
+      Ty.LeQ P [] [] r a ∧ Eff.Covers [] [] e f := by
+  match h with
+  | .C_DependentApp hv ha =>
+    subst Q C Γ Φ
+    cases hc
+    obtain ⟨u,hu,ht⟩ := raise_inv hv rfl
+    cases Option.some.inj hu
+    exact ha.pullback (toTel_annotation (raise_source_annotation hv rfl)) ht
+  | .C_App hv ha =>
+    subst Q C Γ Φ
+    cases hc
+    obtain ⟨u,hu,ht⟩ := raise_inv hv rfl
+    cases Option.some.inj hu
+    have hargs := vs_toTel (raise_annotation hv rfl) ha
+    rw [←Tel.norm_toTel] at hargs
+    obtain ⟨r,f,ha',hle,hcov⟩ := hargs.pullback (toTel_annotation (raise_source_annotation hv rfl))
+      (.tail ht (TelLe.of_norm_eq (Tel.norm_idem _).symm))
+    exact ⟨r,f,ha',.trans hle (.convert (Ty.norm_idem _)),Eff.covers_norm_left.mp hcov⟩
+  | .C_Sub hh hl he _ _ _ =>
+    obtain ⟨r,f,ha,hle,hcov⟩ := failure_call_aux hh hQ hC hΓ hΦ hc
+    subst Q C Γ Φ
+    exact ⟨r,f,ha,.trans hle hl,he.trans hcov⟩
+  | .C_Eff hh he =>
+    obtain ⟨r,f,ha,hle,hcov⟩ := failure_call_aux hh hQ hC hΓ hΦ hc
+    subst Q C Γ Φ
+    exact ⟨r,f,ha,hle,he.trans hcov⟩
+  | .C_Normal hh =>
+    obtain ⟨r,f,ha,hle,hcov⟩ := failure_call_aux hh hQ hC hΓ hΦ hc
+    exact ⟨r,f,ha,.trans hle (.convert (Ty.norm_idem _).symm),hcov⟩
+  | .C_BuilderLet .. | .C_BuilderOp .. | .C_Return .. | .C_Let .. | .C_If .. |
+    .C_Match .. | .C_Lazy .. | .C_Escape .. | .C_Use .. | .C_Handle .. | .C_Handle_Fail .. |
+    .C_Resume .. | .C_ResumeL .. | .C_ResumeNorm .. | .C_ResumeLNorm .. | .C_Meth .. |
+    .C_External .. | .C_IssuePathBases .. | .C_CheckAt .. => cases hc
+termination_by structural h
+
+/-- 失敗呼出しの引数と結果を、元の raise の型へ戻す。 -/
+theorem HasTypeCQ.failure_call {P B Ψ R T E v a e L}
+    (h : HasTypeCQ P B Ψ Qempty [] [] [] R (.app (.raise T E) [v]) a e L) :
+    HasTypeVQ P B Ψ Qempty [] [] [] v E.norm ∧
+      Ty.LeQ P [] [] T.norm a ∧ Eff.Covers [] [] e (Eff.singleFail E) := by
+  obtain ⟨r,f,hargs,hle,hcov⟩ := failure_call_aux h rfl rfl rfl rfl rfl
+  cases hargs with
+  | param ha hv ht =>
+    simp only [Ty.toTel,Tel.bind_done,bind_shift_ty,bind_shift_eff] at ht
+    cases ht
+    exact ⟨hv.V_Normal,hle,Eff.covers_norm_right.mp hcov⟩
 
 end
 end Benitoite.Release.Refinement

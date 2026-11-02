@@ -3412,11 +3412,25 @@ let の到達先の型付けでは、前半と後半の計算を外側の効果�
 | 構成子 | 根がその構成子 | 全欄のパターンが `_` 又は変数の場合だけ、その構成子でない |
 | 複数の選択肢 | 共通の同じ test、又は全選択肢が test を持つ場合の Or | 各選択肢から上記の安全な除外を集める |
 
-入れ子の欄の照合に失敗しうる構成子から、根の構成子の除外を作らない。成功時の根の構成子の事実に欄の成功を追加で要求しない。`matchedTests` は共通の test がなければ `alternativesTest` で Or を作り、test を作れない選択肢があるなら成功時の事実を作らない。観測と除外の健全性は、実際の `firstAlt` の成否、`AltsTy`、値の根と欄数の条件 `RootShape` から述べる。`rootShape_of_typing` は閉じた値の型付けからその条件を返す。これは `Exhaustive` が読む `Inhabits` とは別の判断である。状態の `match_body_zero` の代表は、先行する除外と選んだ腕の成功の事実を評価できることを `MatchPathsEvaluated` として追加の入力に持つ。照合の成否から事実を導く補題と、その状態への全体の接続を区別する。
+入れ子の欄の照合に失敗しうる構成子から、根の構成子の除外を作らない。成功時の根の構成子の事実に欄の成功を追加で要求しない。`matchedTests` は共通の test がなければ `alternativesTest` で Or を作り、test を作れない選択肢があるなら成功時の事実を作らない。観測と除外の健全性は、実際の `firstAlt` の成否、`AltsTy`、値の根と欄数の条件 `RootShape` から述べる。`rootShape_of_typing` は閉じた値の型付けからその条件を返す。これは `Exhaustive` が読む `Inhabits` とは別の判断である。`PatternMatchAnnotations` は PatTy・PatTys の全場合で、実際の照合成功と閉じた入力の型付けから束縛元の δ の注釈を導く。`CaptureOk.match_extend` は任意の δ と捕捉に対し、束縛列を加えた捕捉を構成する。`StateTyE.match_body` は元の matchRun 状態、前の非 guard 腕の失敗を保持する prefix、選んだ腕の成功から行先の全状態を構成する。成功と安全な除外の事実の評価は同じ照合から供給し、`MatchPathsEvaluated` を追加の入力にしない。obs が none のときは事実を追加しない。代表の `StateTyE.match_body_zero`・`StateTy.match_body_zero` と、その入力である `MatchPathsEvaluated` も残る。一般の `match_body` はこの追加の入力を要求しない。
 
 `HasTypeArmsQ.plain` は、成功の事実を Φ に加えて束縛数だけ移し、本体を検査する。残りの腕は除外の事実を Φ に加えて検査する。両列の事実には `FactsWF` を要求する。`guarded` は、成功の事実の下で、`hideConts` した文脈・R=none・空の効果で guard を検査する。ストア Ψ と広げた局所文脈は保つ。guard の結果型を `Boolean{p}` とし、本体は `p.open (boolean true)` を加えた文脈で検査する。**guarded の後続の腕は元の Φ で検査する。** guard が偽であった事実も、パターンの除外も後続へ渡さない。
 
-`GuardBodyTy` は、guard を評価する前の捕捉と、真の場合の条件の下のソースの本体、局所参照の解決、閉じた結果と効果の注釈を保持する。`K_Guard` はこれを待機する本体の型付けとして使い、入力を単なる Boolean に固定せず、捕捉で閉じた `Boolean{p}` とする。真の場合は返った値の型の事実から p の導出を作り、`GuardBodyTy.of_true` で実行する閉包を作る。偽の場合は元の捕捉と腕へ戻る。
+`MatchStateExamples.reject_guard_unknown_elimination` は、任意の guard 付きの腕を網羅性に数えないことと、同じパターンの guard なしの腕の網羅性を対照にする。unknown の型を持つ guard が真を返す場合もこの拒否に含む。`reject_false_fact_to_tail` は、元の Φ での後続の return 13 の Month 型付けを拒否し、偽の事実下で同じ本体を受理する。
+
+`GuardBodyTy` は、guard を評価する前の捕捉と、真の場合の条件の下のソースの本体、局所参照の解決、閉じた結果と効果の注釈を保持する。`K_Guard` はこれを待機する本体の型付けとして使い、入力を単なる Boolean に固定せず、捕捉で閉じた `Boolean{p}` とする。真の場合は返った値の型の事実から p の導出を作り、`GuardBodyTy.of_true` で実行する閉包を作る。偽の場合は元の捕捉と腕へ戻る。`StateTyE.match_guard` は任意の δ の捕捉からこの GuardBodyTy と guard の行先の全状態を構成し、真偽の既存の葉へ接続する。error・exit では guard 枠を取り除く全状態の葉を持つ。
+
+### 操作と保存継続の状態
+
+`HandlerGeneral` の Handle・HRet・Op・OpPrim・OpFail・Resume の葉は、元の StateTyE と規則が読む view・分割・lookup・新しい場所の空きを受け、同じ σ と末尾効果 Eb の行先を構成する。行先本体の型付けを前提にしない。Handle は通常と失敗の handler、HRet は任意の返却値を扱う。計算の型変換・正規化・効果拡大と、継続の K_Sub を逆転する。
+
+通常の操作は任意の型引数、前に置く辞書の引数を含む全値引数、保存する prefix を扱う。実際の操作の型付けから型像の WF・kind・Ordinary・制約と依存する実引数列の型付けを得て、選ばれた同じ節の型文脈を具体化する。節側の捕捉と Φ は frame の導出から得る。型束縛 k と値束縛 n+1 の shift を戻し、依存列に沿って捕捉を延長する。行像が空の型置換は、範囲外の自由な行変数を保つ。型像と行像を同じ名前空間の変数として扱わない。
+
+組み込み操作の葉は、通常の操作と共通の Program.WellFormed・Program.WellTyped・CoreAssumptions に加えて、Program.EffectsOk を受ける。呼出しの Φ0 と節の Φ を同一視しない。BuiltinArgs と ShapeOk、io_op 又は pathBases_shape から、具体化した効果の所属と実際の行引数が空であることを得る。prefix 内にその操作の節がないことと効果表の整合から、分割で得た同じ証拠を使って保護された本体の効果へ所属を移し、ClauseRangeIs と opSigAt の S が実際の範囲を覆うことを導く。実値の型付けから範囲を広げた節入力を構成し、s.tparams と admits_sat から S02Internal.substC の内部入力を作る。CaptureContextRegular を独立の前提に追加しない。io・exit・pathBases の三分類を扱う。
+
+失敗を送出する操作は split_fail_annotated が返す同じ証拠の節・捕捉・注釈を用いる。V_Raise が保持する結果型 T の value kind と sat_unconstrained から型像 [T] を作り、型束縛1・値束縛2を具体化する。エラー値の位置は型付きの像とし、None の位置の継続場所は extendHidden で加える。Resume は任意の値と保存継続を扱い、元のストアと正規形の契約一致から R の一致を得た後に、場所の型を保持して内容を used へ更新する。`HandlerOperation` の一引数の `StateTyE.operation_one` と `HandlerPreservation` の定数返却の `StateTyE.resume_const` は、一般の葉とは別に代表として残る。
+
+`OperationStateExamples.row_concrete_model` は、利用者の identity 操作一つを持つプログラムと、Reference.get・Reference.set の署名だけを持つ組み込みの表を構成する。WellFormed・WellTyped・CoreAssumptions をこの同じ表に対して証明し、任意の σ の下で Handle→Op→Resume の状態へ適用する。
 
 ### 保持要求と組み込みの遷移
 

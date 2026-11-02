@@ -228,6 +228,15 @@ private theorem prim_inv {P B Ψ Q C Γ Φ v T b ts es rs}
     .V_LocRef .. | .V_LocLazy .. | .V_Bytes .. => cases hv
 termination_by structural h
 
+/-- 型付きの組込み値から、元のkindと制約を持つ実際の型・行・範囲の入力を取り出す。 -/
+theorem HasTypeVQ.primitive_inputs {P B Ψ Q C Γ Φ b s ts es rs a}
+    (h : HasTypeVQ P B Ψ Q C Γ Φ (.prim b ts es rs) a) (hs : B.sig b = some s) :
+    B.RangeAdmissible b s rs ∧ PrimitiveAdmissible C Γ.length s Q ts es ∧
+      SignatureInstance P C Γ (Tel.instR rs s.tel) (s.tparams.map TParamDecl.kind) ts es := by
+  obtain ⟨sg,_,hl,hr,ha,hi,_,_⟩ := prim_inv h rfl
+  cases Option.some.inj (hl.symm.trans hs)
+  exact ⟨hr,ha,hi⟩
+
 private theorem primitive_call_aux {P B Ψ Q C Γ Φ R code a e L b ts es rs ws s}
     (h : HasTypeCQ P B Ψ Q C Γ Φ R code a e L)
     (hQ : Q = Qempty) (hC : C = []) (hΓ : Γ = []) (hΦ : Φ = [])
