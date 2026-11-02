@@ -401,7 +401,7 @@ private theorem pure_replace {P B Ψ R code olda olde body a e}
   have heqe : Capture.empty.closeEff e = e := Eff.subst_values_of_wf_zero ha.wf.2.1 ha.wf.2.2 _
   simpa only [Closure.pure,heqa,heqe] using hh
 
-private theorem update_body {P B Ψ a l f ts R}
+theorem reference_update_body {P B Ψ a l f ts R}
     (hA : Builtins.ValueAssumptions P B) (hw : Ψ.WF)
     (ha : Ty.Annotation P [] [] a) (ho : a.Ordinary)
     (hl : HasTypeV P B Ψ [] [] [] (.loc l) (.reference a))
@@ -477,7 +477,7 @@ theorem StateTyE.reference_update {P B σ Eb b ts es rs l runtime body k μ s}
   have hs' := hst.weaken_empty (store := Ψ) hA.values
   have htws : ∀ t ∈ Ty.normTys ts, t.WF 0 0 0 := by
     intro t ht; rw [hts] at ht; cases List.mem_singleton.mp ht; exact hx.wf
-  have hbody := fun Rs => update_body (R := Rs) hA.values hsμ.wf hx ho hl hf hg' hs' htws
+  have hbody := fun Rs => reference_update_body (R := Rs) hA.values hsμ.wf hx ho hl hf hg' hs' htws
   have han := hq.annotation
   have hdest : ClosureTy P B Ψ [] R _ (.base .unit) e :=
     pure_replace hq (fun Rs => .C_Eff (hbody Rs) hcov)

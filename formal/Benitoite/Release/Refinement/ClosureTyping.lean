@@ -541,7 +541,7 @@ theorem builderValueSubst_eq : openValue (.const .unit) = builderValueSubst := b
 
 /-- 前提 hR・ha・he・hk・hL を外し、結論を像で述べた形。 -/
 theorem HasTypeCQ.builderBody_image {P B Ψ Q C Γ Φ} {R : Option Ty} {body : Comp} {a : Ty} {e : Eff} {L k}
-    (hA : Builtins.SubstitutionAssumptions P B) (hw : Ψ.WF) (hΓ : Ctx.WF 0 C.length Γ)
+    (hA : Builtins.SubstitutionAssumptions P B) (hw : Ψ.WF)
     (hb : HasTypeCQ P B Ψ Q C Γ.extendNone (Φ.map Pred.lift) (R.map (Ty.shiftV 1 0)) body
       (a.shiftV 1 0) (e.shiftV 1 0) (LocalCtx.extend (some (renameKind (shiftIndex 1 0) k)) L)) :
     HasTypeCQ P B Ψ Q C Γ Φ ((R.map (Ty.shiftV 1 0)).map (substTyValues builderValueSubst))
@@ -565,13 +565,11 @@ theorem HasTypeCQ.builderBody_image {P B Ψ Q C Γ Φ} {R : Option Ty} {body : C
         by_cases ho : t.Ordinary
         · refine .ordinary ((Ty.ordinary_shiftV _ _ _).mpr ho) ?_
           rw [hn]; exact (HasTypeVQ.V_Var (P := P) (B := B) (Ψ := Ψ) (Q := Q) (C := C) (Φ := Φ) hx ho).V_Normal
-        · have hc : ∃ b r e, t = .cont b r e := by
-            apply Classical.byContradiction
-            intro hc
-            exact ho (Ty.WF.ordinary_of_not_cont (hΓ _ _ hx)
-              (fun b r e he => hc ⟨b,r,e,he⟩))
-          obtain ⟨b,r,e,rfl⟩ := hc
-          exact .contVar rfl rfl ⟨b,r,e,hx,hn.symm⟩
+        · by_cases ht : ∃ b r e, t = .cont b r e
+          · obtain ⟨b,r,e,rfl⟩ := ht
+            exact .contVar rfl rfl ⟨b,r,e,hx,hn.symm⟩
+          · exact .hidden (fun hh => ho ((Ty.ordinary_shiftV t 1 0).mp hh))
+              (by intro b r e hh; cases t <;> simp_all [Ty.shiftV])
   have hf : ∀ p ∈ Φ.map Pred.lift, Entails (Γ.facts ++ Φ)
       (predBind (valEnv builderValueSubst).values p) := by
     intro p hp

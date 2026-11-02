@@ -1532,5 +1532,375 @@ theorem StateTyE.operation_primitive {P B σ Eb q b s ts es rs ws k μ k1 cs k2 
     · simp only [Store.set,hil,↓reduceIte] at hcell
       exact hμ i cell hcell
 
+
+private theorem drop_tail_all {P B σ Ψ R e k a b Eb Re l}
+    (h : ContTy P B σ Ψ R e (.drop l :: k) a b Eb Re) :
+    ∃ x t ec r, Ψ l = some (.cont x t ec r) ∧
+      (ec.mem (.name stateEff (.fixed .top)) → e.mem (.name stateEff (.fixed .top))) ∧
+      ContTy P B σ Ψ R e k a b Eb Re := by
+  generalize hh : (.drop l :: k) = frames at h
+  induction h with
+  | K_Drop hl hc ht => cases hh; exact ⟨_,_,_,_,hl,hc,ht⟩
+  | K_Sub _ hl ih =>
+    obtain ⟨x,t,ec,r,hp,hc,ht⟩ := ih hh
+    exact ⟨x,t,ec,r,hp,hc,.K_Sub ht hl⟩
+  | _ => cases hh
+
+private theorem return_destination {P B σ Ψ R q a e k b Eb v}
+    (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)
+    (hw : Ψ.WF) (hs : Ψ.Sorted) (hd : StoreTy.Declared P Ψ)
+    (hq : ClosureTy P B Ψ [] R q a e) (hv : q.view = .ret v)
+    {ε : Eff} (hk : ContTy P B σ Ψ R ε k a b Eb none) :
+    ∃ R', ClosureTy P B Ψ [] R' (Closure.pure (.ret v)) a Eff.empty ∧
+      ContTy P B σ Ψ R' ε k a b Eb none := by
+  have ht := hq.ret_view_typed hP hPB hB hw hs hd hv
+  have ha : Ty.Annotation P [] [] a :=
+    ⟨hq.annotation.wf.1,hq.annotation.sorted.1,hq.annotation.declared.1⟩
+  obtain ⟨R',hRn,hk⟩ := hk.normal_return_tail rfl a ha hq.result_normal .refl
+  have hr := hk.return_annotation rfl
+  exact ⟨R',ClosureTy.pure (.C_Return ht) ha.done_empty
+    (fun r hh => ⟨(hr r hh).wf,(hr r hh).declared⟩) hq.result_normal hRn,hk⟩
+
+private theorem close_escape_all {P B Ψ Q C Γ Φ Rs m a e L cap R v}
+    (h : HasTypeCQ P B Ψ Q C Γ Φ Rs m a e L)
+    (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)
+    (hw : Ψ.WF) (hs : Ψ.Sorted) (hd : StoreTy.Declared P Ψ)
+    (hc : CaptureOk P B Ψ R Γ Φ cap) (hr : cap.closeR Rs = R)
+    (hQ : Q = Qempty) (hC : C = []) (hm : m = .escape v) :
+    HasTypeCQ P B Ψ Qempty [] [] [] R (.escape (closeVal cap v))
+      (cap.closeTy a) (cap.closeEff e) [] := by
+  match h with
+  | .C_Escape hv ha =>
+    subst Q C
+    cases hm
+    have hv' := close_value_typed hP hPB hB hw hs hd hc hv
+    have hh := HasTypeCQ.C_Escape (Δ := []) (ε := cap.closeEff e) hv' (hc.substOk.annotation ha)
+    rw [←hr]
+    exact hh
+  | .C_Sub hb hl he hwf hsort hdecl =>
+    have hh := close_escape_all hb hP hPB hB hw hs hd hc hr hQ hC hm
+    subst Q C
+    have ht := hc.substOk.annotation (Ty.Annotation.mk hwf hsort hdecl)
+    exact .C_Sub hh (hl.bind (valEnv cap.env) hc.transport)
+      (he.bind (valEnv cap.env)) ht.wf ht.sorted ht.declared
+  | .C_Normal hb =>
+    have hh := close_escape_all hb hP hPB hB hw hs hd hc hr hQ hC hm
+    simpa only [Capture.closeTy,substTyValues_norm_source] using hh
+  | .C_Eff hb he =>
+    have hh := close_escape_all hb hP hPB hB hw hs hd hc hr hQ hC hm
+    subst Q C
+    exact .C_Eff hh (he.bind (valEnv cap.env))
+  | .C_BuilderLet .. | .C_BuilderOp .. | .C_Return .. | .C_Let .. | .C_App .. |
+    .C_DependentApp .. | .C_If .. | .C_Match .. | .C_Lazy .. | .C_Use .. |
+    .C_Handle .. | .C_Handle_Fail .. | .C_Resume .. | .C_ResumeNorm .. |
+    .C_ResumeL .. | .C_ResumeLNorm .. | .C_Meth .. | .C_External .. |
+    .C_IssuePathBases .. | .C_CheckAt .. => cases hm
+termination_by structural h
+
+private theorem escape_destination {P B Ψ R q a e v}
+    (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)
+    (hw : Ψ.WF) (hs : Ψ.Sorted) (hd : StoreTy.Declared P Ψ)
+    (hq : ClosureTy P B Ψ [] R q a e) (hv : q.view = .escape v)
+    (hret : ∀ r, R = some r → Ty.Annotation P [] [] r) :
+    ClosureTy P B Ψ [] R (Closure.pure (.escape v)) a e := by
+  have hann := hq.annotation
+  have hn := hq.result_normal
+  have hrn := hq.return_normal
+  obtain ⟨cap,Γ,Φ,Rs,m,as,es,L,ρ,rfl,hc,hb,_,hr,ha,he,hrd⟩ := hq.open_zero
+  have htyped : HasTypeCQ P B Ψ Qempty [] [] [] R (.escape v) a e [] := by
+    cases m
+    case escape v0 =>
+      have hh := close_escape_all hb hP hPB hB hw hs hd hc hr rfl rfl rfl
+      have hv0 : v0.resolveLocals ρ = v0 := by
+        obtain ⟨t,ht⟩ := hb.read_values v0 (by exact List.mem_cons_self)
+        exact ht.resolve_id ρ
+      simp only [Comp.resolveLocals,hv0,Closure.view,Closure.code] at hv
+      cases Comp.escape.inj hv
+      rwa [ha,he] at hh
+    case checkAt _ _ _ bs _ _ _ =>
+      cases bs <;> (simp only [Comp.resolveLocals,Closure.view,Closure.code] at hv; injection hv)
+    all_goals (simp only [Comp.resolveLocals,Closure.view,Closure.code] at hv; injection hv)
+  exact ClosureTy.pure htyped hann (fun r hh => ⟨(hret r hh).wf,(hret r hh).declared⟩) hn hrn
+
+/-- 任意の返却値を取り出し、使用済みセルを残して drop を除く。 -/
+theorem StateTyE.drop_used_all {P B σ Eb q v l k μ}
+    (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)
+    (h : StateTyE P B σ Eb (.run q (.drop l :: k) μ))
+    (hv : q.view = .ret v) (hl : μ l = some .used) :
+    Step P B σ (.run q (.drop l :: k) μ) none (.run (Closure.pure (.ret v)) k μ) ∧
+      StateTyE P B σ Eb (.run (Closure.pure (.ret v)) k μ) := by
+  obtain ⟨Ψ,R,a,b,e,e1,hs,hq,he,hk,had,hcl,hkc,hμ⟩ := h
+  obtain ⟨_,_,_,_,_,_,ht⟩ := drop_tail_all hk
+  obtain ⟨R',hq',ht⟩ := return_destination hP hPB hB hs.wf hs.sorted hs.declared hq hv ht
+  have hva := Closure.view_adequate had
+  rw [hv] at hva
+  have hvg := hq.view_read_ground hcl (by rw [hv]; exact List.mem_cons_self)
+  exact ⟨.E_Drop hv hl,Ψ,R',a,b,e,Eff.empty,hs,hq',empty_sub e,ht,
+    ⟨trivial,hva⟩,⟨trivial,hvg⟩,(fun f hf => hkc f (List.mem_cons_of_mem _ hf)),hμ⟩
+
+/-- 保存継続の release と drop の順序を保って前置し、同じ場所型を used にする。 -/
+theorem StateTyE.drop_release_all {P B σ Eb q v l k μ saved}
+    (hdecl : P.EffectsOk B)
+    (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)
+    (h : StateTyE P B σ Eb (.run q (.drop l :: k) μ))
+    (hv : q.view = .ret v) (hl : μ l = some (.cont saved)) :
+    Step P B σ (.run q (.drop l :: k) μ) none
+      (.run (Closure.pure (.ret v)) (releases saved ++ k) (μ.set l .used)) ∧
+    StateTyE P B σ Eb (.run (Closure.pure (.ret v)) (releases saved ++ k) (μ.set l .used)) := by
+  obtain ⟨Ψ,R,a,b,e,e1,hs,hq,he,hk,had,hcl,hkc,hμ⟩ := h
+  obtain ⟨x,t,ec,r,hp,hcond,ht⟩ := drop_tail_all hk
+  obtain ⟨x',t',ec',r',hp',_,R0,e0,hsv⟩ := hs.cell l _ hl
+  cases Option.some.inj (hp'.symm.trans hp)
+  have ht2 := ContTy.prepend_releases (hdecl.noStateHandled hB) hsv ht hcond
+  obtain ⟨R',hq',ht3⟩ := return_destination hP hPB hB hs.wf hs.sorted hs.declared hq hv ht2
+  have hva := Closure.view_adequate had
+  rw [hv] at hva
+  have hvg := hq.view_read_ground hcl (by rw [hv]; exact List.mem_cons_self)
+  refine ⟨.E_DropRel hv hl,Ψ,R',a,b,e,Eff.empty,hs.use_continuation hp,hq',empty_sub e,ht3,
+    ⟨trivial,hva⟩,⟨trivial,hvg⟩,?_,closed_set hμ trivial⟩
+  intro f hf
+  rcases List.mem_append.mp hf with hf | hf
+  · exact hμ l _ hl f (releases_mem f saved hf)
+  · exact hkc f (List.mem_cons_of_mem _ hf)
+
+/-- escape の任意値と元の戻り先を保ち、使用済み drop を除く。 -/
+theorem StateTyE.escape_drop_used {P B σ Eb q v l k μ}
+    (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)
+    (h : StateTyE P B σ Eb (.run q (.drop l :: k) μ))
+    (hv : q.view = .escape v) (hl : μ l = some .used) :
+    Step P B σ (.run q (.drop l :: k) μ) none (.run (Closure.pure (.escape v)) k μ) ∧
+      StateTyE P B σ Eb (.run (Closure.pure (.escape v)) k μ) := by
+  obtain ⟨Ψ,R,a,b,e,e1,hs,hq,he,hk,had,hcl,hkc,hμ⟩ := h
+  obtain ⟨_,_,_,_,_,_,ht⟩ := drop_tail_all hk
+  have hq' := escape_destination hP hPB hB hs.wf hs.sorted hs.declared hq hv (hk.return_annotation rfl)
+  have hva := Closure.view_adequate had
+  rw [hv] at hva
+  have hvg := hq.view_read_ground hcl (by rw [hv]; exact List.mem_cons_self)
+  exact ⟨.E_EscDrop hv hl,Ψ,R,a,b,e,e1,hs,hq',he,ht,
+    ⟨trivial,hva⟩,⟨trivial,hvg⟩,(fun f hf => hkc f (List.mem_cons_of_mem _ hf)),hμ⟩
+
+theorem StateTyE.escape_drop_release {P B σ Eb q v l k μ saved}
+    (hdecl : P.EffectsOk B)
+    (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)
+    (h : StateTyE P B σ Eb (.run q (.drop l :: k) μ))
+    (hv : q.view = .escape v) (hl : μ l = some (.cont saved)) :
+    Step P B σ (.run q (.drop l :: k) μ) none
+      (.run (Closure.pure (.escape v)) (releases saved ++ k) (μ.set l .used)) ∧
+    StateTyE P B σ Eb (.run (Closure.pure (.escape v)) (releases saved ++ k) (μ.set l .used)) := by
+  obtain ⟨Ψ,R,a,b,e,e1,hs,hq,he,hk,had,hcl,hkc,hμ⟩ := h
+  obtain ⟨x,t,ec,r,hp,hcond,ht⟩ := drop_tail_all hk
+  obtain ⟨x',t',ec',r',hp',_,R0,e0,hsv⟩ := hs.cell l _ hl
+  cases Option.some.inj (hp'.symm.trans hp)
+  have ht2 := ContTy.prepend_releases (hdecl.noStateHandled hB) hsv ht hcond
+  have hq' := escape_destination hP hPB hB hs.wf hs.sorted hs.declared hq hv (hk.return_annotation rfl)
+  have hva := Closure.view_adequate had
+  rw [hv] at hva
+  have hvg := hq.view_read_ground hcl (by rw [hv]; exact List.mem_cons_self)
+  refine ⟨.E_EscDropRel hv hl,Ψ,R,a,b,e,e1,hs.use_continuation hp,hq',he,ht2,
+    ⟨trivial,hva⟩,⟨trivial,hvg⟩,?_,closed_set hμ trivial⟩
+  intro f hf
+  rcases List.mem_append.mp hf with hf | hf
+  · exact hμ l _ hl f (releases_mem f saved hf)
+  · exact hkc f (List.mem_cons_of_mem _ hf)
+
+
+private theorem release_tail_all {P B σ Ψ R e k a b Eb Re v}
+    (h : ContTy P B σ Ψ R e (.release v :: k) a b Eb Re) :
+    (∃ o, HasTypeV P B Ψ [] [] [] v (.opaque o (.fixed .top)) ∧
+      B.isResource o = true) ∧ ContTy P B σ Ψ R e k a b Eb Re := by
+  generalize hh : (.release v :: k) = frames at h
+  induction h with
+  | K_Release hv _ hr _ ht => cases hh; exact ⟨⟨_,hv,hr⟩,ht⟩
+  | K_Sub _ hl ih => obtain ⟨hv,ht⟩ := ih hh; exact ⟨hv,.K_Sub ht hl⟩
+  | _ => cases hh
+
+theorem StateTyE.error_drop {P B σ Eb rs l k μ}
+    (h : StateTyE P B σ Eb (.error rs ((.drop l) :: k) μ))
+    (hl : μ l = some .used) :
+    Step P B σ (.error rs ((.drop l) :: k) μ) none (.error rs k μ) ∧
+      StateTyE P B σ Eb (.error rs k μ) := by
+  obtain ⟨Ψ,R,a,b,e,hs,hk,hkc,hμ⟩ := h
+  obtain ⟨_,_,_,_,_,_,ht⟩ := drop_tail_all hk
+  exact ⟨.E_ErrDrop hl,Ψ,R,a,b,e,hs,ht,(fun f hf => hkc f (List.mem_cons_of_mem _ hf)),hμ⟩
+
+theorem StateTyE.exit_drop {P B σ Eb n rs l k μ}
+    (h : StateTyE P B σ Eb (.exit n rs ((.drop l) :: k) μ))
+    (hl : μ l = some .used) :
+    Step P B σ (.exit n rs ((.drop l) :: k) μ) none (.exit n rs k μ) ∧
+      StateTyE P B σ Eb (.exit n rs k μ) := by
+  obtain ⟨Ψ,R,a,b,e,hs,hk,hkc,hμ⟩ := h
+  obtain ⟨_,_,_,_,_,_,ht⟩ := drop_tail_all hk
+  exact ⟨.E_ExitDrop hl,Ψ,R,a,b,e,hs,ht,(fun f hf => hkc f (List.mem_cons_of_mem _ hf)),hμ⟩
+
+theorem StateTyE.error_handler {P B σ Eb rs cap cs k μ}
+    (h : StateTyE P B σ Eb (.error rs ((.handleF cap cs) :: k) μ)) :
+    Step P B σ (.error rs ((.handleF cap cs) :: k) μ) none (.error rs k μ) ∧
+      StateTyE P B σ Eb (.error rs k μ) := by
+  obtain ⟨Ψ,R,a,b,e,hs,hk,hkc,hμ⟩ := h
+  obtain ⟨t,et,hle,ht⟩ := handler_tail hk
+  exact ⟨.E_ErrPopHandle,Ψ,R,t,b,et,hs,ht,(fun f hf => hkc f (List.mem_cons_of_mem _ hf)),hμ⟩
+
+theorem StateTyE.exit_handler {P B σ Eb n rs cap cs k μ}
+    (h : StateTyE P B σ Eb (.exit n rs ((.handleF cap cs) :: k) μ)) :
+    Step P B σ (.exit n rs ((.handleF cap cs) :: k) μ) none (.exit n rs k μ) ∧
+      StateTyE P B σ Eb (.exit n rs k μ) := by
+  obtain ⟨Ψ,R,a,b,e,hs,hk,hkc,hμ⟩ := h
+  obtain ⟨t,et,hle,ht⟩ := handler_tail hk
+  exact ⟨.E_ExitPopHandle,Ψ,R,t,b,et,hs,ht,(fun f hf => hkc f (List.mem_cons_of_mem _ hf)),hμ⟩
+
+theorem StateTyE.error_release {P B σ Eb rs v k μ}
+    (h : StateTyE P B σ Eb (.error rs ((.release v) :: k) μ))
+    (hr : B.releaseResponse v none) :
+    Step P B σ (.error rs ((.release v) :: k) μ) (some (.release v none)) (.error rs k μ) ∧
+      StateTyE P B σ Eb (.error rs k μ) := by
+  obtain ⟨Ψ,R,a,b,e,hs,hk,hkc,hμ⟩ := h
+  obtain ⟨_,ht⟩ := release_tail_all hk
+  exact ⟨.E_ErrRel hr,Ψ,R,a,b,e,hs,ht,(fun f hf => hkc f (List.mem_cons_of_mem _ hf)),hμ⟩
+
+theorem StateTyE.error_release_failure {P B σ Eb rs v r k μ}
+    (h : StateTyE P B σ Eb (.error rs ((.release v) :: k) μ))
+    (hr : B.releaseResponse v (some r)) :
+    Step P B σ (.error rs ((.release v) :: k) μ) (some (.release v (some r))) (.error (rs ++ [r]) k μ) ∧
+      StateTyE P B σ Eb (.error (rs ++ [r]) k μ) := by
+  obtain ⟨Ψ,R,a,b,e,hs,hk,hkc,hμ⟩ := h
+  obtain ⟨_,ht⟩ := release_tail_all hk
+  exact ⟨.E_ErrRelErr hr,Ψ,R,a,b,e,hs,ht,(fun f hf => hkc f (List.mem_cons_of_mem _ hf)),hμ⟩
+
+theorem StateTyE.exit_release {P B σ Eb n rs v k μ}
+    (h : StateTyE P B σ Eb (.exit n rs ((.release v) :: k) μ))
+    (hr : B.releaseResponse v none) :
+    Step P B σ (.exit n rs ((.release v) :: k) μ) (some (.release v none)) (.exit n rs k μ) ∧
+      StateTyE P B σ Eb (.exit n rs k μ) := by
+  obtain ⟨Ψ,R,a,b,e,hs,hk,hkc,hμ⟩ := h
+  obtain ⟨_,ht⟩ := release_tail_all hk
+  exact ⟨.E_ExitRel hr,Ψ,R,a,b,e,hs,ht,(fun f hf => hkc f (List.mem_cons_of_mem _ hf)),hμ⟩
+
+theorem StateTyE.exit_release_failure {P B σ Eb n rs v r k μ}
+    (h : StateTyE P B σ Eb (.exit n rs ((.release v) :: k) μ))
+    (hr : B.releaseResponse v (some r)) :
+    Step P B σ (.exit n rs ((.release v) :: k) μ) (some (.release v (some r))) (.exit n (rs ++ [r]) k μ) ∧
+      StateTyE P B σ Eb (.exit n (rs ++ [r]) k μ) := by
+  obtain ⟨Ψ,R,a,b,e,hs,hk,hkc,hμ⟩ := h
+  obtain ⟨_,ht⟩ := release_tail_all hk
+  exact ⟨.E_ExitRelErr hr,Ψ,R,a,b,e,hs,ht,(fun f hf => hkc f (List.mem_cons_of_mem _ hf)),hμ⟩
+
+theorem StateTyE.return_release {P B σ Eb q w v k μ}
+    (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)
+    (h : StateTyE P B σ Eb (.run q (.release v :: k) μ))
+    (hv : q.view = .ret w) (hr : B.releaseResponse v none) :
+    Step P B σ (.run q (.release v :: k) μ) (some (.release v none))
+      (.run (Closure.pure (.ret w)) k μ) ∧ StateTyE P B σ Eb (.run (Closure.pure (.ret w)) k μ) := by
+  obtain ⟨Ψ,R,a,b,e,e1,hs,hq,he,hk,had,hcl,hkc,hμ⟩ := h
+  obtain ⟨_,ht⟩ := release_tail_all hk
+  obtain ⟨R',hq',ht⟩ := return_destination hP hPB hB hs.wf hs.sorted hs.declared hq hv ht
+  have hva := Closure.view_adequate had
+  rw [hv] at hva
+  have hvg := hq.view_read_ground hcl (by rw [hv]; exact List.mem_cons_self)
+  exact ⟨.E_Release hv hr,Ψ,R',a,b,e,Eff.empty,hs,hq',empty_sub e,ht,
+    ⟨trivial,hva⟩,⟨trivial,hvg⟩,(fun f hf => hkc f (List.mem_cons_of_mem _ hf)),hμ⟩
+
+theorem StateTyE.return_release_failure {P B σ Eb q w v k μ r}
+    (h : StateTyE P B σ Eb (.run q (.release v :: k) μ))
+    (hv : q.view = .ret w) (hr : B.releaseResponse v (some r)) :
+    Step P B σ (.run q (.release v :: k) μ) (some (.release v (some r)))
+      (.error [r] k μ) ∧ StateTyE P B σ Eb (.error [r] k μ) := by
+  obtain ⟨Ψ,R,a,b,e,e1,hs,hq,he,hk,had,hcl,hkc,hμ⟩ := h
+  obtain ⟨_,ht⟩ := release_tail_all hk
+  exact ⟨.E_RelErr hv hr,Ψ,R,a,b,e,hs,ht,(fun f hf => hkc f (List.mem_cons_of_mem _ hf)),hμ⟩
+
+theorem StateTyE.escape_release {P B σ Eb q w v k μ}
+    (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)
+    (h : StateTyE P B σ Eb (.run q (.release v :: k) μ))
+    (hv : q.view = .escape w) (hr : B.releaseResponse v none) :
+    Step P B σ (.run q (.release v :: k) μ) (some (.release v none))
+      (.run (Closure.pure (.escape w)) k μ) ∧ StateTyE P B σ Eb (.run (Closure.pure (.escape w)) k μ) := by
+  obtain ⟨Ψ,R,a,b,e,e1,hs,hq,he,hk,had,hcl,hkc,hμ⟩ := h
+  obtain ⟨_,ht⟩ := release_tail_all hk
+  have hq' := escape_destination hP hPB hB hs.wf hs.sorted hs.declared hq hv (hk.return_annotation rfl)
+  have hva := Closure.view_adequate had
+  rw [hv] at hva
+  have hvg := hq.view_read_ground hcl (by rw [hv]; exact List.mem_cons_self)
+  exact ⟨.E_EscRel hv hr,Ψ,R,a,b,e,e1,hs,hq',he,ht,
+    ⟨trivial,hva⟩,⟨trivial,hvg⟩,(fun f hf => hkc f (List.mem_cons_of_mem _ hf)),hμ⟩
+
+theorem StateTyE.escape_release_failure {P B σ Eb q w v k μ r}
+    (h : StateTyE P B σ Eb (.run q (.release v :: k) μ))
+    (hv : q.view = .escape w) (hr : B.releaseResponse v (some r)) :
+    Step P B σ (.run q (.release v :: k) μ) (some (.release v (some r)))
+      (.error [r] k μ) ∧ StateTyE P B σ Eb (.error [r] k μ) := by
+  obtain ⟨Ψ,R,a,b,e,e1,hs,hq,he,hk,had,hcl,hkc,hμ⟩ := h
+  obtain ⟨_,ht⟩ := release_tail_all hk
+  exact ⟨.E_EscRelErr hv hr,Ψ,R,a,b,e,hs,ht,(fun f hf => hkc f (List.mem_cons_of_mem _ hf)),hμ⟩
+
+/-- 解放の存在は型付きの全資源値について従来の条件から得る。 -/
+theorem ContTy.release_response_exists {P B σ Ψ R e k a b Eb Re v}
+    (hB : B.CoreAssumptions P)
+    (h : ContTy P B σ Ψ R e (.release v :: k) a b Eb Re) :
+    ∃ r, B.releaseResponse v r := by
+  obtain ⟨⟨o,hv,hr⟩,_⟩ := release_tail_all h
+  exact hB.release_exists Ψ v o hv hr
+
+
+private theorem use_inputs_all {P B Ψ Q C Γ Φ R code a e L v m}
+    (h : HasTypeCQ P B Ψ Q C Γ Φ R code a e L) (hh : code = .use v m) :
+    (∃ o, HasTypeVQ P B Ψ Q C Γ Φ v (.opaque o (.fixed .top)) ∧ B.isResource o = true) ∧
+      HasTypeCQ P B Ψ Q C Γ Φ R m a e L ∧ e.mem (.name stateEff (.fixed .top)) := by
+  match h with
+  | .C_Use hv hr hb he => cases hh; exact ⟨⟨_,hv,hr⟩,hb,he⟩
+  | .C_Sub hb hl he hw hs hd =>
+    obtain ⟨hv,hb,hm⟩ := use_inputs_all hb hh
+    exact ⟨hv,.C_Sub hb hl he hw hs hd,covers_state he hm⟩
+  | .C_Normal hb =>
+    obtain ⟨hv,hb,hm⟩ := use_inputs_all hb hh
+    exact ⟨hv,.C_Normal hb,hm⟩
+  | .C_Eff hb he =>
+    obtain ⟨hv,hb,hm⟩ := use_inputs_all hb hh
+    exact ⟨hv,.C_Eff hb he,covers_state he hm⟩
+  | .C_BuilderLet .. | .C_BuilderOp .. | .C_Return .. | .C_Let .. | .C_App .. |
+    .C_DependentApp .. | .C_If .. | .C_Match .. | .C_Lazy .. | .C_Escape .. |
+    .C_Handle .. | .C_Handle_Fail .. | .C_Resume .. | .C_ResumeNorm .. |
+    .C_ResumeL .. | .C_ResumeLNorm .. | .C_Meth .. | .C_External .. |
+    .C_IssuePathBases .. | .C_CheckAt .. => cases hh
+termination_by structural h
+
+/-- 資源の型と本体を元の導出から取り出し、実行が使う捕捉環境を残す。 -/
+theorem StateTyE.use_all {P B σ Eb q v m k μ}
+    (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)
+    (h : StateTyE P B σ Eb (.run q k μ)) (hv : q.view = .use v m) :
+    Step P B σ (.run q k μ) none (.run (.mk q.capture m) (.release v :: k) μ) ∧
+      StateTyE P B σ Eb (.run (.mk q.capture m) (.release v :: k) μ) := by
+  refine ⟨.E_Use hv,?_⟩
+  obtain ⟨Ψ,R,a,b,e,e1,hs,hq,he,hk,had,hcl,hkc,hμ⟩ := h
+  have hva := Closure.view_adequate had
+  rw [hv] at hva
+  have hann := hq.annotation
+  have hvg := hq.view_read_ground hcl (by rw [hv]; exact List.mem_cons_self)
+  obtain ⟨cap,Γ,Φ,Rs,code,as,es,L,ρ,rfl,hc,hb,hL,hR,ha,hee,hr⟩ := hq.open_zero
+  cases code
+  case use v0 m0 =>
+    obtain ⟨⟨o,hv0,hresource⟩,hbody,hm⟩ := use_inputs_all hb rfl
+    simp only [Comp.resolveLocals,hv0.resolve_id ρ,Closure.view,Closure.code] at hv
+    obtain ⟨rfl,rfl⟩ := Comp.use.inj hv
+    rw [←ha,←hee] at hann
+    have hbody' := ClosureTy.capture_resolved_closed hc hbody hL hann hR hr
+    have hvc := close_value_typed hP hPB hB hs.wf hs.sorted hs.declared hc hv0
+    have hvc' : HasTypeV P B Ψ [] [] [] (closeVal cap v0) (.opaque o (.fixed .top)) := by
+      simpa only [Capture.closeTy,substTyValues,Eff.bind,Ty.bind,Ty.rawBind,Ty.norm,RangeIx.inst] using hvc
+    have hm' : (cap.closeEff es).mem (.name stateEff (.fixed .top)) := by
+      change (substEffValues cap.env es).atoms _ = true
+      rw [substEffValues_atoms]
+      exact hm
+    have hcont := ContTy.K_Release hvc' hva.1 hresource
+      (covers_state (by rw [hee]; exact he.covers) hm') hk
+    rw [ha,hee] at hbody'
+    exact ⟨Ψ,R,a,b,e,e1,hs,hbody',he,hcont,
+      ⟨had.1,had.2.2⟩,⟨hcl.1,hcl.2.2⟩,
+      (by intro f hf; rcases List.mem_cons.mp hf with rfl | hf
+          · exact hvg
+          · exact hkc f hf),hμ⟩
+  case checkAt _ _ _ bs _ _ _ =>
+    cases bs <;> (simp only [Comp.resolveLocals,Closure.view,Closure.code] at hv; injection hv)
+  all_goals (simp only [Comp.resolveLocals,Closure.view,Closure.code] at hv; injection hv)
+
 end
 end Benitoite.Release.Refinement

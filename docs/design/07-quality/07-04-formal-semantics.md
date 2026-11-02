@@ -105,6 +105,43 @@
 
 `HandlerContinuation.split_handle` は分割で得た同じ証拠に対する、保護された本体の効果への名前の所属と範囲の被覆を返す。`StateTyE.operation_primitive` は、prefix の非 handled と EffectsOk を組み合わせて組み込みの節の範囲 S の被覆を導く。`CaptureRegularity.split_fail_annotated` は同じ証拠に対応する捕捉元の失敗節、closeR/closeTy/closeEff と done 注釈を返す。OpFail は V_Raise の T の value kind と sat_unconstrained を使い、None の継続場所を extendHidden で追加する。Resume は元の StoreOk で R の一致を得てから内容を used へ更新し、場所の型を維持する。
 
+`HandlerGeneral` は任意値の通常返却・escape の Drop/DropRel、使用済みの error/exit の Drop、use・解放の成功と失敗、error/exit の handler の pop を同じ σ・Eb へ接続する。通常値と escape の値を取り出す葉は WellFormed・WellTyped・CoreAssumptions を受け、解放付きの drop は EffectsOk も受ける。error/exit の使用済み drop と handler の pop は元状態だけを使う。解放の失敗と error/exit の伝播は元状態と view・応答だけを使い、失敗理由の追加順序を保つ。err_drop_rel・exit_drop_rel は既存の一般の葉を使う。応答の存在は従来の release_exists の量化から得る。定数返却だけを扱う旧の代表は別に残る。
+
+`BuilderStateLeaves` は構築器の三つの遷移の行先を元状態から構成する。割当ての追加前提は CoreAssumptions と空き場所である。成功した操作は WellFormed・WellTyped・CoreAssumptions、view・セルの lookup・応答を受け、エラーの葉はこれらの三つのプログラムと表の条件を要求しない。元の導出と CaptureOk から kind.contents の注釈を閉じ、CaptureLocals と builderBody_resolve で元の本体と実行コードを結ぶ。BuilderValueTyping は String・List・Bytes の全操作の成功応答の内容型・上限・Byte の範囲・返却値の型、RuntimeBuilderScope は束縛を取り除く実行コードの閉性と保持値の適格性を証明する。構築器の型・値の像を、行先コードの型付けの独立した前提で代用しない。
+
+`StoreGeneral` は同じ Ψ のセル更新、有限なストアの新しい場所への割当て、空き場所の存在と閉性の更新を扱う。allocate_cell の追加セルに対する CellOk は呼出し元で構成し、既存セルの移送には ValueAssumptions を使う。`ContinuationGeneral` は10構成子の name_end_ix・mono_end と、NoStateHandled の下での framesOk・drop_releases を持つ。FramesOk は保存する全 release/drop の State の条件と場所型を末尾の効果で検査する。ContTy.store と既存の Reference・Lazy・継続の割当ては再使用する。
+
+`HandlerStoreExamples` は identity 操作一つと Reference.get/set の署名を持つ具体の表について WellFormed・WellTyped・CoreAssumptions・EffectsOk を証明する。この表は sat と releaseResponse が常に真、isResource が常に true であり、IO と外部の応答はない。表を仮定する例と区別する。この同じ表で、List 値を返す drop と escape、使用済み再開、error/exit、全ての解放の応答、use、三種類の構築器の空き場所への割当て、String の copy、上限の長さの List に一要素を追加する場合の error を、開始の全状態から構成する。上限の例は記号的な長さの証明であり、その長さの列を実行して生成する測定ではない。
+
+`HiddenCaptureBoundary` は、全ての捕捉位置に残る閉包の専用参照の有効性が、現在の StateTyE の結論ではないことを具体の状態で示す。None の位置に Ground な閉包を保存し、その本体が空のストアにない専用場所7を参照しても、外側の return Unit の型付けは成り立つ。空の捕捉を持つ同じ本体との対照も既定ビルドに含む。検査する SlotBuilderLive はこの全位置の条件に必要な一段の検査であり、LocalRefs 全体の定義ではない。閉じた型付きのコードの実行の保存と、保持する全位置の参照の有効性を区別する。
+
+`CaptureReadBoundary` は、型文脈で None の捕捉位置の値を、抽象的な δ が読む場合の具体例である。捕捉元の Γ は [none]、Φ は空で、本体と型注釈にその位置の参照はない。同じ表の WellFormed・WellTyped・CoreAssumptions と二つの元状態の StateTyE を構成し、未使用位置の閉包にある専用場所の番号7と8が E_Err の異なる行先を選ぶことを証明する。組み込みの表には実際に呼び出す pure の署名があり、δ の応答の契約はその入力でも満たす。信頼条件から、実引数の閉包内の未使用位置を読まない性質は導かない。δ にストアは渡されないので、この例は専用セルの操作や型安全性の反例ではない。
+
+`ReadLocalRefs` の相互の条件は、型付きの値・計算・腕・節と捕捉を対象にする。専用参照の bound は深さ内、loc は同じストア型の builder の場所に限る。`Capture.LocalRefs P B Ψ Γ Φ cap` は、元の Γ・Φ と捕捉に対する Transport を残し、Γ の some の通常値の位置に値の条件を要求する。値の閉包の条件は CaptureOk と TelBodyTy を持つ。実行の Closure.LocalRefs は、同じ捕捉の CaptureOk と、ある経路条件 Ξ の下の導出、および元のコードと局所参照の解決の対応を持つ。Ξ と捕捉元の Φ の関係、R・Rs・a・e の元の ClosureTy との一致、TypeAnnotations はこの条件に含めない。経路条件・型注釈の一致は、併せて持つ StateTyE の ClosureTy が持つ。捕捉の Transport による Γ・Φ と述語の参照、元の型付けの型注釈・snapshot の検査も用いるため、None の位置を一律に無視してよいと仮定するものではない。継続の位置の値は通常値に含めず、同じ StoreOk の cont セルと ContTy で扱う。ClosedAt と Adequate の全位置の条件も引き続き必要である。
+
+`LocalInvariant` は、ClosureTy・ContTy の10構成子・CellOk の6形からこれらの条件を導き、四状態の StateTyE から `LocalStateInvariant` を導く。通常セルの値と専用 List の要素は、型付きの捕捉位置に自由な専用参照を持たない。thunk は builder を隠したストア型で検査する。`StateTyE.builder_live` は、現在の view の専用操作に現れる場所が実在する builder セルを指すことを結論する。`hidden_slot_read_localrefs` は隠れた位置の既存の状態がこの条件を満たすこと、`reject_executed_stale_builder` は存在しない場所の操作を直接実行する状態が型付けられないことを証明する。δ が場所の番号を読んで応答を選ぶことは、このセルの有効性の条件に含めない。
+
+`StateLeaves` は任意の捕捉を持つ元状態の view から Reference の4遷移、force の2遷移と書戻しを接続する。update の関数値は closure に限定せず、遷移が作る get/set の生の型引数をそのまま型付ける。`ClosedRename` は閉じた任意の値の rename と束縛の深さの拡張を証明する。Lazy の作成と error/exit の更新枠の pop は既存の一般の葉を使う。ReferencePreservation の pure の呼出し元と closure の更新関数の代表、LazyPreservation の pure の force と定数の書戻しの代表は別に残る。
+
+応答の葉の前提は、元の StateTyE と実際の規則の条件を共通とし、次のとおりに分ける。行先のコードの型付けを仮定しない。
+
+| 葉 | 追加の前提と型・行の供給元 |
+|---|---|
+| δ/IO の正常値 | WellFormed・WellTyped・CoreAssumptions と σ.Valid。元の app の導出と CaptureOk から BuiltinArgs と結果型の包含・効果の被覆を得る。既存の応答契約から型・Ground・Adequate を得る。σ.Valid は StateTy に含まれる条件である |
+| δ のエラー、IO のエラーと exit | 実際の view・署名・kind・応答。IO は NoHandler も使う。値の返却を行わず、同じ StoreOk と残継続を用いる |
+| external の適用と正常応答 | WellFormed・WellTyped・CoreAssumptions。元の externalRef/外部呼出しの導出と CaptureOk から ExternalArgs を作り、外部の正常応答は受信検査後の値だけを返す。ExternalWF は WellFormed から得る |
+| external のエラー | 実際の view・宣言・応答・受信検査のエラー。同じストアと継続を用いる |
+| At の成功 | WellFormed・WellTyped・CoreAssumptions と σ.Valid、AtPrepared・snapshot と実行の σ の一致・checkAt の成功。元の C_CheckAt と CaptureOk から要求の閉じた入力型・結果型の像を得て CheckedWitness を作る |
+| At の検査失敗と準備失敗 | 実際の raw code と失敗の条件。検査失敗には AtPrepared と snapshot の一致も使う。元の C_CheckAt の結果の宣言・型の像から error の構成子を型付ける |
+| PathBases の適用 | WellFormed・WellTyped・CoreAssumptions、署名の kind と NoHandler。元の捕捉を保持して閉じた issuePathBases の本体を構成する |
+| PathBases の発行 | 実際の view・署名・kind・opEff と σ.Valid。固定した同じ σ を型付きの値として返す |
+
+`StoreReplyInputs` は Reference の4、Lazy の6、δ/IO の5、external・At・PathBases の8構成子に対応するソース入力の和である。`StateTyE.store_reply` はこれら23件について実際の Step・同じ σ/Eb の StateTyE と LocalStateInvariant を作る。全76遷移の保存の定理ではない。`CaptureReadBoundary.hidden_capture_reply_states` は、前述の同じ具体の適格な表と番号7/8の呼出しにこの入口を適用する。
+
+`NormalReplyExamples.concrete_normal_replies` は、同じ具体のプログラム・組み込みの表・有効な σ について、WellFormed・WellTyped・CoreAssumptions と、δ・IO・外部の正常応答・At の成功の四つの store_reply の適用を同時に構成する。δ と IO は Unit を返し、IO は対象のない一つの事象を返す。外部宣言は引数なし・結果 Unit の関数一つであり、受信検査後の Unit を返す。At は snapshot なしで絶対パス `/` が Top に属することを検査し、結果の成功の構成子に checkedAt を返す。各例は元の計算の型付けから実際の Step と行先の StateTyE・LocalStateInvariant を得る。表の条件を独立の仮定にしていない。これは具体のモデルの充足であり、処理系の全実表の充足の証明とは区別する。
+
+`InitialPrepared.source_state` は、同じ固定した初期状態の InitialPrepared、Program.ExternalWF、空の捕捉・ストア・継続で型付くソース計算、終端の注釈、閉性・適格性・BuiltinOnly を受け、その初期状態の StateTy を構成する。StateTy の σ.Valid は InitialPrepared.ready の入力から取り出し、PathEnv.Ready と ExternalWF は入力をそのまま返す。表層からこれらの入力を作る合成と外部応答の存在は結論に含めない。`prepared_unit_source` は空の外部宣言を持つ前述の具体表で、任意の有効な σ の下の return Unit について準備と元の型付けを同時に構成する。
+
 `RuntimeTypeSubst` は元のコードの ClosedAt・Adequate と、全型像・行像の WF 0 0 0、全型像の Ordinary を前提に、ClosedAt と Adequate を同時に型置換後へ保つ五つの成分を相互に証明する。checkedAt・checkedRequest・closure では置換が変えない元の証拠を使う。inline の節へ新しい SourceScoped の前提を要求しない。`OperationStateExamples` は元の型付けから初期全状態を構成し、自由 row9 を持つ関数型を型引数・結果型・保存継続に含む Handle→Op→Resume、失敗を送出する操作、pathBases の組み込み操作へ各一般入口を具体に適用する。この例の lambda は、closeVal が作る closure を実引数に使う。同じ型像 rowType 一つ・cutoff 2 の置換が外の行9の番号を保つことを、Q9 の NoFail の受理と Qempty の拒否で示す。型像内の行9は、置換対象が型変数を持たない Eff.row 9 なので、この対照の結果には影響しない。
 
 `OperationStateExamples.row_concrete_model` は、identity 操作一つを持つ modelProgram と Reference.get・Reference.set の二署名を持つ modelBuiltins を構成し、同じ表に対する WellFormed・WellTyped・CoreAssumptions を証明して row_handle_operation_resume へ適用する。sat は常に真で、IO と外部応答はなく、外部宣言は空である。任意の σ の下で、型像・結果型・保存継続に行9を持つ三段階の状態を得る。primitive_pathBases の表の条件は仮定である。
@@ -174,10 +211,11 @@ metadata が none の項目、requirements/publicBoundary の空列、対応す�
 | 依存 β | `ClosureStateLeaves` の `dependent_beta_all`。任意の元状態、捕捉、零・多引数について `E_Lam` の実際の行先を構成する。通常・依存 lambda と既存 closure を、型付き view と閉包の逆転から同じ入口で扱う。mark の併合と同じ末尾効果を保つ |
 | 捕捉した Φ | `CapturedFacts` の評価成功・有限導出からの閉じ方、捕捉した一引数の closure 呼出しの両状態と遷移を構成する証明。環境を捨てる場合の反例と区別する。`CaptureApplicationAlgebra` の述語と Φ の全引数の適用の等式は、長さの観測を含む任意の条件を扱う。公開済みだが群 F・G の葉には読者がなく、最初の読者は値依存の入口を扱う後続の単位である |
 | if・guard・match | `PathConditions`・`MatchPaths` の真偽枝、guard 真偽、match の開始・skip と、`MatchStateLeaves` の任意 δ の本体・guard・error/exit の pop。元の状態と照合の成否から事実を供給する。`MatchStateExamples` は二束縛、真偽、unknown と偽事実を後続へ渡すことの拒否を示す。`MatchPaths` の `StateTyE.match_body_zero`・`StateTy.match_body_zero` と `MatchPathsEvaluated` は、一般の葉とは別に代表として残る |
-| Reference | `ReferencePreservation` の開始 `StateTyE` からの new/get/set/update の代表。4種とも呼出し元は pure。snapshot の事実とセルの現内容を区別する |
-| Lazy | `LazyPreservation` の作成、pure な呼出し元の force、任意の現在セルへの書戻し、error/exit の更新枠の破棄。書戻しの一般入口は ret の `closeVal` の一致を入力とし、定数の系は任意の捕捉を扱う |
-| 節・resume・破棄 | `HandlerGeneral` の元状態からの通常/失敗 Handle・任意値の HRet・多相と前に置く辞書の引数を含む全引数の Op・OpPrim・OpFail・任意値と保存継続の Resume。OpPrim は EffectsOk も受ける。`HandlerPreservation` の drop と used の再開、解放を伴う通常返却・escape・error・exit の代表は別の葉である。`HandlerOperation` の一引数の `operation_one` と `HandlerPreservation` の定数返却の `resume_const` も代表として残る |
-| 外部受信 | `ExternalConnection` の三条件と型付き入力からの受信後の型付け・Ground・適格性・no-exit、`ExternalCheck` の全入れ子の篩の受理の健全性 |
+| Reference | `StateLeaves` の任意の捕捉を持つ元状態からの4遷移。update は任意の型付き関数値と生の型引数を扱う。pure と closure の代表も残る。snapshot の事実とセルの現内容を区別する |
+| Lazy | 作成と error/exit の pop は既存の一般の葉。`StateLeaves` の force と書戻しは任意の捕捉の元状態と view から行先を構成する。pure の force と定数の系は代表として残る |
+| 節・resume・破棄 | `HandlerGeneral` の元状態からの通常/失敗 Handle・任意値の HRet・多相と前に置く辞書の引数を含む全引数の Op・OpPrim・OpFail・任意値と保存継続の Resume。OpPrim は EffectsOk も受ける。`HandlerGeneral` の全 drop・use・解放・error/exit の pop と、`HandlerPreservation` の一般の used の再開・error/exit の解放付き drop を含む。定数の返却・escape の代表は別の葉である。`HandlerOperation` の一引数の `operation_one` と `HandlerPreservation` の定数返却の `resume_const` も代表として残る |
+| 構築器・ストア・継続 | `BuilderStateLeaves` の三遷移、`BuilderValueTyping` の全成功応答と `RuntimeBuilderScope` の閉性・適格性。`StoreGeneral` の汎用更新・割当て・空き場所、`ContinuationGeneral` の末尾の被覆・包含・全 release/drop の条件。`ReadLocalRefs`・`LocalInvariant` は同じ導出が読む位置を検査し StateTyE から導く。捕捉の全位置を調べる条件とは区別する |
+| 応答と開始準備 | `ReplyState`・`ExternalStateLeaves`・`AtStateInputs`・`AtStateLeaves`・`PathBasesLeaves` の13遷移。上表の前提の差を保つ。`SourcePreparation` の同じ初期状態への接続。応答の存在と表層の開始の合成は含めない |
 
 `SourceScope` は四名前空間の SourceScoped と通常の SignatureScoped を定め、`PrimitiveScoped` は組み込みの宣言の範囲深さを保持する。`RangeFormation` は WFImages と行・範囲の支持の移送から具体化後の SourceScoped を導き、範囲の写像で Sorted・Declared・kind を保存する。効果原子の範囲と Fail の型の WF は別に検査する。
 
@@ -863,7 +901,7 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 | Observation・ClosedEvaluation・Logic・LogicSound・Context/Capture・CapturedFacts・CaptureRegularity | 「閉じた述語の評価と捕捉」。開いた全結果形成と、元の注釈・包含・場所からの捕捉後の効果形成を含む |
 | PathFacts・PathConditions・MatchPaths・MatchFacts・MatchStateLeaves・MatchStateExamples・Typing・StateTyping | 「条件とパターンからの事実」 |
 | Typing・HandlerContracts・RuntimeSyntax・AtPrepare・AtTyping・BuiltinResponse・ConstraintAssumptions・BuiltinEffects・Semantics・Step・ExternalCheck・ExternalResponse・ExternalConnection | 「保持要求と組み込みの遷移」 |
-| StoreTransport・Typing・StateTyping・ConstraintAssumptions・ReferenceStore・LazyStore・HandlerStore・ReferencePreservation・LazyPreservation・HandlerEffects・HandlerPreservation・HandlerOperation・HandlerGeneral・RuntimeTypeSubst・OperationStateExamples | 「篩を含む状態の型付け」 |
+| StoreTransport・Typing・StateTyping・ConstraintAssumptions・ReferenceStore・LazyStore・HandlerStore・ReferencePreservation・LazyPreservation・HandlerEffects・HandlerPreservation・HandlerOperation・HandlerGeneral・RuntimeTypeSubst・OperationStateExamples・RuntimeBuilderScope・StoreGeneral・BuilderValueTyping・BuilderStateLeaves・ContinuationGeneral・HandlerStoreExamples・HiddenCaptureBoundary・CaptureReadBoundary・ReadLocalRefs・LocalInvariant・ClosedRename・StateLeaves・ReplyState・ExternalStateLeaves・AtStateInputs・AtStateLeaves・PathBasesLeaves・SourcePreparation・StoreReplyLeaves | 「篩を含む状態の型付け」 |
 
 以下の既存の表は Release などの対応である。
 
