@@ -6,37 +6,44 @@ namespace Benitoite.Release.Refinement
 def keyEnv (η : ObservationEnvModel) (keys : List Term) : Nat → Int :=
   fun i => integerAs η (keys[i]?.getD (.integer 0))
 
-theorem linearTerm_integerAs (η : ObservationEnvModel) (keys : List Term) (cs : List Int)
-    (h : keys.length = cs.length) :
+theorem linearTerm_integerAs (η : ObservationEnvModel) (keys : List Term) (cs : List Int) :
     integerAs η (linearTerm keys cs) = linearDot cs (keyEnv η keys) := by
   induction keys generalizing cs with
-  | nil => cases cs <;> simp_all [linearTerm, linearDot, integerAs_eq_integerD,
-      Term.interpret, Observation.integerD]
+  | nil =>
+    induction cs with
+    | nil => simp [linearTerm, linearDot, integerAs_eq_integerD, Term.interpret, Observation.integerD]
+    | cons c cs ih =>
+      simp only [linearTerm, linearDot] at ih ⊢
+      have h0 : keyEnv η [] 0 = 0 := by
+        simp [keyEnv, integerAs_eq_integerD, Term.interpret, Observation.integerD]
+      have h2 : (fun i => keyEnv η [] (i+1)) = keyEnv η [] := by
+        funext i
+        simp [keyEnv]
+      rw [h0, h2, ← ih]
+      simp
   | cons k ks ih =>
     cases cs with
-    | nil => simp at h
+    | nil => simp [linearTerm, linearDot, integerAs_eq_integerD, Term.interpret, Observation.integerD]
     | cons c cs =>
-      simp only [List.length_cons, Nat.add_right_cancel_iff] at h
       rw [linearTerm]
       have ha := integerAs_bind_add η (fun i => some (.var i)) (.scale c k) (linearTerm ks cs)
       have hc := integerAs_bind_scale η (fun i => some (.var i)) c k
       simp only [termBind_id] at ha hc
-      rw [ha, hc, ih cs h]
+      rw [ha, hc, ih cs]
       rfl
 
-theorem Linear.toPred_sound (η : ObservationEnvModel) (keys : List Term) (l : Linear)
-    (h : keys.length = l.coefficients.length) :
+theorem Linear.toPred_sound (η : ObservationEnvModel) (keys : List Term) (l : Linear) :
     (l.toPred keys).interpret η = true ↔ l.Holds (keyEnv η keys) := by
   simp only [Linear.toPred, Pred.interpret, Pred.atomValue, decide_eq_true_eq,
-    linearTerm_integerAs η keys l.coefficients h, Linear.Holds, Linear.eval]
+    linearTerm_integerAs η keys l.coefficients, Linear.Holds, Linear.eval]
   rfl
 
 theorem Linear.toPred_sound_at (η : ObservationEnvModel) (ν : ObservationEnv)
-    (keys : List Term) (l : Linear) (h : keys.length = l.coefficients.length) :
+    (keys : List Term) (l : Linear) :
     (predBind ν (l.toPred keys)).interpret η = true ↔
       l.Holds (keyEnv η (keys.map (termBind ν))) := by
   rw [l.encode_bind]
-  exact l.toPred_sound η _ (by simpa using h)
+  exact l.toPred_sound η _
 
 theorem integer_round {x b d : Int} (hd : 0 < d) (h : d*x ≤ b) : x ≤ b/d :=
   (Int.le_ediv_iff_mul_le hd).mpr (by simpa only [Int.mul_comm] using h)

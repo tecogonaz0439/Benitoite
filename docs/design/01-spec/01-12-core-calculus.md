@@ -3418,7 +3418,17 @@ Not は T/F を反転し、U を保つ。`evalWith` は左右の部分述語の�
 
 成功の健全性は `Pred.evalWith_sound`・`evalClosed_sound` が二値の `Pred.interpret` との一致として述べる。閉じた述語のすべてが評価できるとはしない。`ClosedObservable` を満たすときの完全性は `evalClosed_complete` にある。`Entails.closed`・`Entails.ground` は、閉じて種類も適合する述語の評価が T のときだけ導出を作る。`Entails` は仮定、真、偽の除去、And/Or/Not、等号・整数の比較、閉じた評価の有限規則を持つ。意味上の任意の含意を前提として導出を代用しない。
 
-`Linear` は数学Intの係数列とboundを持ち、`Holds` は係数と整数環境の内積がbound以下であることを表す。`Linear.toPred keys` は、鍵の各項に係数を掛けて加算する整数述語を作る。意味との対応は、鍵と係数の列長の一致を前提とする。`Linear.toPred_sound_at` は、任意の構文の値置換νを受けた述語の真と、置換された各鍵の整数射影における `Holds` を対応させる。鍵の相異性を要求しない。`Pred.scaled_le_at` と `eq_positive_at` は、同じνの像の上で非負の定数倍と等号を介した正値の含意を示す。閉じた葉と同一原子の正負も、その像の上で扱う。これらは意味の補題であり、`Entails` の追加の構成子ではない。
+`Linear` は数学Intの係数列とboundを持ち、`Holds` は係数と整数環境の内積がbound以下であることを表す。`Linear.toPred keys` は、鍵の各項に係数を掛けて加算する整数述語を作る。意味との対応は、鍵と係数の列長の一致を要求しない。係数に対応する鍵がない位置では、`keyEnv`が整数0を返す。鍵が余る場合は、係数列の末尾で加算を終える。`Linear.toPred_sound_at` は、任意の構文の値置換νを受けた述語の真と、置換された各鍵の整数射影における `Holds` を対応させる。鍵の相異性を要求しない。`Pred.scaled_le_at` と `eq_positive_at` は、同じνの像の上で非負の定数倍と等号を介した正値の含意を示す。閉じた葉と同一原子の正負も、その像の上で扱う。これらは意味の補題であり、`Entails` の追加の構成子ではない。
+
+`termEq`・`predEq` は、項20構成子と述語14構成子の構造の一致を計算し、真であることと構文の等号との同値を証明する。snapshotのnone、各スロットの順序、Floatのビット列を保持する。既存の非計算的なDecidableEqは置き換えない。`KeyTable` は有限の項列であり、`keyIndex` は構造が一致する最初の位置を返す。未登録の項はnoneとなり、成功した位置には元の項がある（`keyIndex_sound`）。
+
+`linearize keys t` は係数列と定数項の組を返す。整数定数は零の係数列と定数項、addは係数ごとの和と定数項の和、neg・scaleは係数列と定数項の定数倍に写す。構文を先に分解し、残る項は登録済みの鍵の単位係数と定数項0に写す。各再帰の出力で係数列と鍵列の長さを照合し、加算では左右の列長も照合する。`linearize_length` は成功した出力の列長の一致を示す。`linearize_sound_at` は、任意のνとηについて、置換後の項の整数射影が、置換後の各鍵の整数射影との内積と定数項の和であることを示す。鍵の像の衝突や、元の鍵の像が加算・snapshotになる場合も含む。
+
+線形化は、鍵のsortや宣言を検査しない。既存の`Term.HasSort`では、character/float64/float32/decimal/boolean/unitValue/string/listValue/bytesValue/mapValue/setValue/dataValue/targetValueの13形は整数sortを満たさず、var・整数resultの欄・measureは満たしうる。欄の宣言との照合は`FieldRef.Declared`で別に表す。内部のsnapshotをmeasureの受け手にする場合と、そのsnapshot自体を整数sortにする場合を区別する。
+
+`NNF` はtruth・falsity・線形不等式・符号付き原子・And・Orの6構成子を持ち、`toPred`で既存の述語へ符号化する。`normalize keys p negative`は述語の構造と極性からこの形を再計算する。traceは入力にしない。truth/falsityは極性に応じて交換する。整数のeqの正側はa-b≤0とb-a≤0のAnd、負側はa-b≤−1とb-a≤−1のOrとする。leの正側はa-b≤0、負側はb-a≤−1、ltの正側はa-b≤−1、負側はb-a≤0とする。線形化の定数項は右辺から引く。線形化に失敗した比較はnoneとなる。
+
+compare/floatClass/decimalRepresented/charactersIn/member/constructorIsの6原子は、その構文と極性を保持する。Floatの順序の否定を別の順序比較へ変えず、部分観測の失敗を定数の偽へ置き換えない。And/Orの負側にはDe Morganの法則を適用し、Notは極性を反転して子へ進む。停止は入力Predの構造再帰による。`normalize_sound_at`は14構成子×2極性の28場合について、`predBind ν (q.toPred keys)`の意味と、元の述語の同じνの像の意味（負側ならその否定）の一致を示す。literalも同じνで置換し、鍵列のmapだけで代用しない。`normalize_sound`は恒等置換の系である。DNFの全枝列は生成しない。
 
 整数の丸めは、除数dが正、元の全係数が出力係数のd倍、出力boundが元のboundの床除算であることを前提とする（`Linear.round_sound`）。係数を丸める規則はない。`integer_split` は、任意の整数xとcutについて `x ≤ cut ∨ cut+1 ≤ x` を示す。反証への合成は左右の両方の否定を入力とする。負のboundの床、`2*x=1` の矛盾、片側だけでは全整数を覆わない例を同じ規則で照合する。機械整数の正常応答とあふれの別は、この数学Intの規則とは区別する。
 

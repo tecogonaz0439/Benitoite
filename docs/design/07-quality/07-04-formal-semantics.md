@@ -923,7 +923,9 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 | ApproxAdapter（共有層の `Shared/Approximation`、旧解析の `Interval/ApproxAdapter`・`Interval/BudgetAnalyze` と接続） | 同節の正常・明示 return・失敗を分ける共有近似。空の三表現の判定と所属の同値、証拠付き区間からの WF、型一致の下での旧正常域の所属の同値、実 Report の正常値の写し、七整数の適格な定数の写し。実 Report の非整数・非Boolean の位置は other と nonIntegerOther の両フラグを読み、正常値なしを保つ。returned の範囲は明示引数であり、returned の推論、失敗の意味の健全性、Release の実行との意味の一致は含まない |
 | Conjunction・RefinementNormalForm・FunctionNormalForm・Normalize・Le・Admissible・Typing | 「篩の正規形と制約の読み方」 |
 | CarrierFacts・CarrierFactsMeaning | 同節の型域の有限列、自己を開く文脈の列、NumericRepresentedを満たす定数からの意味の供給。型付き定数ではConstOK.representedで前提を供給する。型付け・捕捉は明示した篩を読むTy.assume/Ctx.factsを使い、Ty.assumeWithCarrier/Ctx.factsWithCarrierを読まない。ValueMeaningは芯の形と明示した篩の真の二条件を持つ |
-| LinearSyntax・LinearSound・CertificateKernelBind・EqCertificate | 「閉じた述語の評価と捕捉」の数学Intの線形式、任意の置換像の上の算術・正負原子・閉じた葉の意味、正除数と全係数の整除を要求する床丸め、両枝を要する整数分枝、構造と整数の置換位置。Entailsの規則の追加や、全証明書の健全性の証明は含まない |
+| LinearSyntax・LinearSound・CertificateKernelBind・EqualityMode・EqCertificate | 「閉じた述語の評価と捕捉」の数学Intの線形式、鍵と係数の列長の一致を要求しない符号化の意味、任意の置換像の上の算術・正負原子・閉じた葉の意味、正除数と全係数の整除を要求する床丸め、両枝を要する整数分枝、構造と整数の置換位置。Entailsの規則の追加や、全証明書の健全性の証明は含まない |
+| TermStructuralEq・CertificateSyntax・Linearization | 同節の構成的な構造比較、相異性を要求しない有限の鍵と最初の位置、係数列と定数項への線形化。成功した出力の列長と、任意のνの像の整数射影での意味の一致。既存Term.HasSortで13形は整数sortを満たさない。線形化は鍵のsort・宣言を検査しない |
+| LogicNormalization・LinearizationExamples・LogicNormalizationExamples | 同節のNNF6形、Pred14構成子×2極性の構造再帰と意味保存。整数の厳密境界と非整数原子の符号を保持し、traceは入力にしない。Term20形・NNF28場合、重複鍵・未知鍵・七measure・宣言した整数欄・NaN・観測不能な対象・四つの置換像への一般の健全性の適用。整数比較を子に持つDe Morgan、正規化の線形の葉からHoldsと非負結合への具体読者。Entailsや全証明書の規則の追加は含まない |
 | MeasureNonnegative・MeasureContracts・LogicKernelExamples | 同節の正常なmeasureからの非負と意味の一致、OptionInfoLEに沿う置換後の同じ観測。型域の定数、snapshotの危険な書換えの拒否、同じ具体の宣言表と組み込み表における捕捉・不変欄・measure、正常算術とあふれへの適用 |
 | VarianceSyntax・VarianceValidation | 「篩の正規形と制約の読み方」の data の変性、metadata と総称の欄の検証。提供された表の構造検査に限る |
 | 原ソースの辞書制約・公開境界の収集 | Lean の外。上の表の構造検査は、収集の完全性と原ソースとの一致を保証しない |
