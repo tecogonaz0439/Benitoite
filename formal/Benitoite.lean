@@ -456,3 +456,6 @@ import Benitoite.Release.Refinement.LegacyImplementationEmbeddingExamples
 
 import Benitoite.Release.Refinement.LinearizationExamples
 import Benitoite.Release.Refinement.LogicNormalizationExamples
+
+import Benitoite.Release.Refinement.RefutationExamples
+import Benitoite.Release.Refinement.EqCertificateExamples

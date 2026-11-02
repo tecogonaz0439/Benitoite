@@ -25,7 +25,7 @@ def keyCoefficients : Nat → Nat → List Int
   | n+1, 0 => 1 :: List.replicate n 0
   | n+1, i+1 => 0 :: keyCoefficients n i
 
-private theorem linearDot_zero (n : Nat) (ρ : Nat → Int) :
+theorem linearDot_zero (n : Nat) (ρ : Nat → Int) :
     linearDot (List.replicate n 0) ρ = 0 := by
   induction n generalizing ρ with
   | zero => rfl

@@ -1,5 +1,6 @@
 import Benitoite.Release.Refinement.CertificateKernelBind
-import Benitoite.Release.Refinement.EqualityMode
+import Benitoite.Release.Refinement.EqProofSyntax
+import Benitoite.Release.Refinement.ClosedDecidable
 
 /-! # 整数の等号を使える置換位置
 
@@ -59,5 +60,44 @@ theorem RewritePosition.integer_sound {p : Pred} (h : RewritePosition p .integer
 
 theorem RewritePosition.structural_sound (p : Pred) {t u : Term} (h : t = u) :
     p.open t = p.open u := congrArg p.open h
+
+instance Term.integerRewritePositionDecidable (t : Term) : Decidable t.IntegerRewritePosition := by
+  cases t <;> simp only [Term.IntegerRewritePosition]
+  all_goals first
+    | infer_instance
+    | exact Term.integerRewritePositionDecidable _
+    | exact @instDecidableAnd _ _ (Term.integerRewritePositionDecidable _) (Term.integerRewritePositionDecidable _)
+
+instance rewritePositionDecidable (p : Pred) (mode : EqualityMode) : Decidable (RewritePosition p mode) := by
+  cases mode with
+  | structural => cases p <;> exact isTrue trivial
+  | integer =>
+    cases p <;> simp only [RewritePosition]
+    all_goals first
+      | infer_instance
+      | exact rewritePositionDecidable _ .integer
+      | exact @instDecidableAnd _ _ (rewritePositionDecidable _ .integer) (rewritePositionDecidable _ .integer)
+
+def rewritePosition (p : Pred) (mode : EqualityMode) : Bool := decide (RewritePosition p mode)
+
+theorem rewritePosition_spec (p : Pred) (mode : EqualityMode) :
+    rewritePosition p mode = true ↔ RewritePosition p mode := decide_eq_true_iff
+
+/-- 開いた述語の意味を、外側のνの上で等号に沿って移す。 -/
+theorem EqProof.substitute_sound_at {Φ : List Pred} {mode : EqualityMode} {t u : Term} {c : EqProof}
+    (h : c.checkRaw Φ mode t u = true) {p : Pred} (hp : rewritePosition p mode = true)
+    (ν : ObservationEnv) (η : ObservationEnvModel)
+    (facts : ∀ q ∈ Φ, (predBind ν q).interpret η = true) :
+    (predBind ν (p.open t)).interpret η = (predBind ν (p.open u)).interpret η := by
+  cases mode with
+  | structural => rw [EqProof.structural_sound h]
+  | integer =>
+    simp only [Pred.open, predBind_comp]
+    apply RewritePosition.integer_sound ((rewritePosition_spec p .integer).mp hp)
+    · exact EqProof.integer_sound_at h ν η facts
+    · intro i hi
+      cases i with
+      | zero => contradiction
+      | succ i => rfl
 
 end Benitoite.Release.Refinement

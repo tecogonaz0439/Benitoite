@@ -1,0 +1,56 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-M",
+    "12288",
+    "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l30/d/audit.lean"
+  ],
+  "exit": 0,
+  "seconds": 2.8413632079999998,
+  "raw": {
+    "bytes": 290795,
+    "sha256": "baf5098bda30d73c4bab5ce41d5e54fd4a7aacad5e603eb427ca558af9790d19"
+  },
+  "targets": 1489,
+  "target_list": {
+    "bytes": 108711,
+    "sha256": "990c98bcf6e29bcf66371061f909a28b4d020b64d4a8699f820c4d0b6549f187"
+  },
+  "modules": {
+    "Benitoite.Release.Refinement.LinearSyntax": "47",
+    "Benitoite.Release.Refinement.CertificateKernelBind": "62",
+    "Benitoite.Release.Refinement.TermStructuralEq": "198",
+    "Benitoite.Release.Refinement.EqualityMode": "22",
+    "Benitoite.Release.Refinement.EqProofSyntax": "142",
+    "Benitoite.Release.Refinement.EqCertificate": "100",
+    "Benitoite.Release.Refinement.CertificateSyntax": "63",
+    "Benitoite.Release.Refinement.EqCertificateTyping": "26",
+    "Benitoite.Release.Refinement.PreparedLeafSyntax": "73",
+    "Benitoite.Release.Refinement.MeasureNonnegative": "23",
+    "Benitoite.Release.Refinement.Certificate": "118",
+    "Benitoite.Release.Refinement.CarrierFacts": "12",
+    "Benitoite.Release.Refinement.CarrierFactsMeaning": "109",
+    "Benitoite.Release.Refinement.LinearSound": "22",
+    "Benitoite.Release.Refinement.MeasureContracts": "2",
+    "Benitoite.Release.Refinement.LogicKernelExamples": "41",
+    "Benitoite.Release.Refinement.Linearization": "64",
+    "Benitoite.Release.Refinement.LinearizationExamples": "6",
+    "Benitoite.Release.Refinement.LogicNormalization": "52",
+    "Benitoite.Release.Refinement.LogicNormalizationExamples": "19",
+    "Benitoite.Release.Refinement.LinearCombination": "60",
+    "Benitoite.Release.Refinement.RefutationSyntax": "97",
+    "Benitoite.Release.Refinement.RefutationSound": "72",
+    "Benitoite.Release.Refinement.RefutationExamples": "10",
+    "Benitoite.Release.Refinement.EqCertificateExamples": "31"
+  },
+  "axiom_sets": {
+    "Classical.choice + Quot.sound + propext": 173,
+    "none": 635,
+    "propext": 653,
+    "Quot.sound + propext": 28
+  },
+  "private_or_generated_included": true,
+  "new_axioms": 0
+}

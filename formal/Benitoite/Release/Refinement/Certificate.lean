@@ -1,3 +1,5 @@
+import Benitoite.Release.Refinement.EqProofSyntax
+import Benitoite.Release.Refinement.PreparedLeafSyntax
 import Benitoite.Release.Refinement.ExternalCheck
 import Benitoite.Release.Refinement.LogicSound
 import Benitoite.Release.Refinement.TypedFacts
@@ -7,48 +9,11 @@ import Benitoite.Release.Refinement.MeasureNonnegative
 # 有限な証明書の葉と枝内の参照
 
 証明書は正規化の履歴や未検査の導出を含まない。閉じた葉は評価を再実行する。
-開いた算術と全sortの合同性は、この有限な入口を拡張して扱う。
+substituteはEqProof.checkによる構造の一致を使う。
+整数射影の等号と置換位置の照合はEqCertificateの入口で扱う。
 -/
 namespace Benitoite.Release.Refinement
 noncomputable section
-
-/-- 構文の等号の有限な証拠。別名の像を使う場合も、展開済みの実際の端点の
-同一性をreflで検査する。ソース名や未検査の置換表を等号の根拠にしない。 -/
-inductive EqProof where
-  | refl
-  | symm (proof : EqProof)
-  | trans (middle : Term) (left right : EqProof)
-  | add (left right : EqProof)
-
-def EqProof.check (t u : Term) : EqProof → Bool
-  | .refl => decide (t = u)
-  | .symm c => c.check u t
-  | .trans m l r => l.check t m && r.check m u
-  | .add l r => match t,u with
-    | .add a b, .add c d => l.check a c && r.check b d
-    | _,_ => false
-
-theorem EqProof.sound {t u c} (h : EqProof.check t u c = true) : t = u := by
-  induction c generalizing t u with
-  | refl => simpa [check] using h
-  | symm c ih => exact (ih h).symm
-  | trans m l r ihl ihr =>
-    simp only [check,Bool.and_eq_true] at h
-    exact (ihl h.1).trans (ihr h.2)
-  | add l r ihl ihr =>
-    cases t <;> cases u <;> simp only [check,Bool.false_eq_true] at h
-    rename_i a b c d
-    simp only [Bool.and_eq_true] at h
-    rw [ihl h.1,ihr h.2]
-
-inductive BuiltinLemma where
-  | closed
-  | lengthNonnegative
-  deriving DecidableEq
-
-structure PreparedLeaf where
-  predicate : Pred
-  lemma : BuiltinLemma
 
 def PreparedLeaf.check (l : PreparedLeaf) : Bool :=
   l.predicate.closedTrue && match l.lemma, l.predicate with
