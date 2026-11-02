@@ -1,6 +1,7 @@
 import Benitoite.Release.Refinement.ExternalCheck
 import Benitoite.Release.Refinement.LogicSound
 import Benitoite.Release.Refinement.TypedFacts
+import Benitoite.Release.Refinement.MeasureNonnegative
 
 /-!
 # 有限な証明書の葉と枝内の参照
@@ -11,15 +12,8 @@ import Benitoite.Release.Refinement.TypedFacts
 namespace Benitoite.Release.Refinement
 noncomputable section
 
-/-- measureの正常結果は有限な個数又は文字コードであり、数学上の非負整数である。 -/
-theorem Observation.measure_nonnegative {m o n} (h : Observation.measure m o = some (.integer n)) :
-    0 ≤ n := by
-  cases m <;> cases o <;> simp_all [Observation.measure]
-  all_goals first | omega | skip
-  case bytesLength.bytesValue bs => split at h <;> simp_all <;> omega
-  case mapSize.mapValue ks vs => cases he : mapKeys ks vs <;> simp_all <;> omega
-  case setSize.setValue xs => cases he : keySetCodes xs [] <;> simp_all <;> omega
-
+/-- 構文の等号の有限な証拠。別名の像を使う場合も、展開済みの実際の端点の
+同一性をreflで検査する。ソース名や未検査の置換表を等号の根拠にしない。 -/
 inductive EqProof where
   | refl
   | symm (proof : EqProof)

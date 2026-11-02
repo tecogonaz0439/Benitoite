@@ -1,10 +1,10 @@
 # L30: 論理と証明書の起動単位（下書き）
 
-2026-11-03、r1。実装、独立レビュー、設計者の受け入れを表さない。[共通依頼文](../implementation-request.md)、[plan](../plan.md)、[decisions](../decisions.md)、[README](../README.md)を引き継ぐ。取りまとめが本書の条件付きの署名を確認し、独立レビューと必要な判断を得て plan へ転記してから起動する。
+2026-11-03、r2。群Aの方式はRV-L30.aが可とし、取りまとめが案(ii)checkedAtを採った。全有限規則の実装と段全体の受け入れは別である。[共通依頼文](../implementation-request.md)、[plan](../plan.md)、[decisions](../decisions.md)、[README](../README.md)を引き継ぐ。取りまとめが本書の条件付きの署名を確認し、独立レビューと必要な判断を得て plan へ転記してから起動する。
 
-指定ブランチは `m014/l30-plan`、B_WORK は `5122e4085e269a113903842571a96f3a07c484f7` である。依頼で受領した値である。`R/`は`formal/Benitoite/Release/Refinement/`、旧`Release/`は`formal/Benitoite/Release/`を指す。Lean宣言は特記しない限り `Benitoite.Release.Refinement` の名前空間にある。
+群A再開1の指定ブランチは `m014/l30.a`、B_WORK は `4a53a88229805ff0b1065f7d85733b5dc3481c62` である。依頼で受領した値である。`R/`は`formal/Benitoite/Release/Refinement/`、旧`Release/`は`formal/Benitoite/Release/`を指す。Lean宣言は特記しない限り `Benitoite.Release.Refinement` の名前空間にある。
 
-**79単位・14群**の案である。所要時間（能動時間）は第11節の個別積上げによる。30〜60分を基本とし、帰納・切替・捕捉の再照合は別の幅を置く。J30-2はplanの2026-11-03の判断によりD02・D21の範囲として採択済みである。主定理の前提に入る判断の定義を変える内容を含む。A群で方式と署名を確認してから依存群を起動する。U03の回答を待つのは群Lだけである。
+**79単位・14群**の案である。所要時間（能動時間）は第11節の個別積上げによる。30〜60分を基本とし、帰納・切替・捕捉の再照合は別の幅を置く。J30-2はplanの2026-11-03の判断によりD02・D21の範囲として採択済みである。主定理の前提に入る判断の定義を変える内容を含む。群Aの署名を引き継いで依存群を起動する。U03は2026-11-03の設計者の決定で閉じ、群Lも回答を待たず依存順で起動する。
 
 ## 1. 入口の点検と既済み分の控除
 
@@ -13,10 +13,10 @@
 | 前提 | 読んで確かめた状態 | L30 の扱い |
 |---|---|---|
 | L10 の全 sort・measure・宣言・正規形 | [sort 対応16行](../l10/f/sort-correspondence.md)、`R/ScopeSyntax.lean` の Sort/Measure、`R/Context.lean` の HasSort/Sorted、`R/Declared.lean` の FieldRef.Declared | 定義を引き継ぐ。WF、sort、宣言照合、Source、観測の成功を別に検査する |
-| L20 の必要補題 | [段末](../l20/stage-results.md)と各群の結果。四関門、型置換14成分76場合、型付き意味33場合、全46旧規則の埋め込みを担当分完了としている | 最後の段末 work は終了0。段末資料冒頭の古い「転記・再レビュー未実施」より、末尾の取りまとめによる転記と再レビュー可の記録を優先する。設計者の受け入れは依頼どおり並行中であり、完了したとは記さない |
+| L20 の必要補題 | [段末](../l20/stage-results.md)と各群の結果。四関門、型置換14成分76場合、型付き意味33場合、全46旧規則の埋め込みを担当分完了としている | 最後の段末 work は終了0。段末資料冒頭の古い「転記・再レビュー未実施」より、末尾の取りまとめによる転記と再レビュー可の記録を優先する。設計者は2026-11-03に段末を受け入れた |
 | 共有定義の固定 | StoreOk の Sorted、kind を持つ C、rowKinds、SourceScoped、保持値の像の変更が取り込み済みの基準として渡された | L20 と共有定義を同時編集しない。再開があれば新基準を受ける。L40 は L20 と L30 の両方を待つ |
 | D06 の規則レビュー | 方式 C は採択済み。`l00b.05/signatures.md`「L30へ固定する全規則の義務」は残件である | 本書第3節がレビュー用の案。方式の採択と各追加規則の健全性の証明を区別する |
-| U03 | 幅・詳細な計上規則・版・計算量の制約は未決 | 第4節の比較を設計者へ示す。i128 を採用済みにしない |
+| U03 | 保存幅128ビット・一byte/一節点等/一演算・proof-steps-v1・個別予約で決定済み | 第4節の契約を使い、群Lは回答を待たず依存順で起動する。数学の幅は引数のまま保つ |
 | U08/U01/U09 | decisions 末尾と README の2026-10-30の回答で A/A/A・E に確定 | Nat/WFを維持。独立の深さ・枝数・入力長・証明書量の上限を追加しない。設定の選択の実装は R70 |
 | L30 と R20 | Lean の検査・正規化・有限規則は内側。探索の完全性と CPU/OS 時間の上限は外側 | R20 の遅延 DNF/FM/探索順序の実装を L30 で作らない。steps の定義と有限比較の入力は渡す |
 
@@ -33,7 +33,7 @@
 | C05 | `R/NormalizationLogic.lean`: conjuncts/of_conjuncts/assume_of_norm_eq、`R/ContextNormEq.lean`: NormEq と facts/sortMap/annotation/comp | 正規形の等しい文脈の橋は済み。暗黙の事実を足す場合の等号の維持だけを点検する |
 | C06 | `R/Certificate.lean`: EqProof の4構成子、check/sound/checkSorted_sound | 構文等号の4場合は済み。意味上の整数等号と限定合同、途中の sort の検査は残る |
 | C07 | 同上: Certificate の6構成子、check/sound/checkSorted_sound | use/leaf/substitute/consume/cases/discard の現行の健全性は済み。枝内の導出列・NNF・丸め・整数分枝は未実装 |
-| C08 | 同上: Observation.measure_nonnegative、PreparedLeaf.entails/machine_exact/stable | 全7 measure の正常結果の非負と閉じた葉の代表は済み。開いた葉、実際の正常結果、置換後の対応は残る |
+| C08 | `R/MeasureNonnegative.lean`: Observation.measure_nonnegative、`R/Certificate.lean`: PreparedLeaf.entails/machine_exact/stable | 全7 measure の正常結果の非負と閉じた葉の代表は済み。開いた葉、実際の正常結果、置換後の対応は残る |
 | C09 | `R/ExternalObservation.lean`: HasTypeVQ.closed_observation/represented、ConstOK.represented | 閉じた型付き値の toTerm? と数値の既存値域の証拠は済み。Map/Set の鍵の言語上の等値の一般の一致は未証明 |
 | C10 | `R/CloseTyping.lean`、`R/TypeValueExchange.lean`、`R/TypedMeaning.lean` の close_value_typed、型/行/値の交換、typed_value_meaning_closed | 全置換・closeVal の相互証明を作り直さない。新しい葉へ実際に適用し、必要な追随だけを行う |
 | C11 | `R/PatternBindings.lean` の pattern_length_relation、`R/CoverageRefinement.lean` の length_refinement_coverage/nonempty_from_entails、`R/TypedCoverage.lean` の捕捉の入口 | パターン束縛と閉じた非空の葉は済み。len(l)=n と n>0 からの開いた含意の証明書は L30、ソースからの静的な合成は L70/R10b |
@@ -76,7 +76,7 @@ theorem Ty.assume_eq_carrier_append {a : Ty} (h : a.Ordinary) :
   a.assume = a.carrierFacts ++ a.refinementPredicates
 ```
 
-ValueMeaning.mk は、現在の二条件に「`∀ p ∈ a.carrierFacts, p.interpret (selfModel η v) = true`」を加える形を候補とする。ValueShapeMeaning の23構成子は増やさない。`TypedMeaning.const_meaning` は `Const.NumericRepresented c` を入力とし、実際の V_Const では既存 `ConstOK.represented` から供給する。Const.NumericRepresented の定義の配置だけを Syntax の後へ下げ、TypedFacts への逆向きの import を作らない。この変更はCtx.factsを通じてTy.LeQ.introduce/refine（V_Sub・C_Subの前提）とCaptureOk.mkの事実の欄へ入る。主定理が量化する型付けの判断と状態の不変条件の定義を変える。typed_value_meaning_closed、valueMeaning_sub、close_value_typed、主要十移送と主定理の言明の形（量化の形と結論）は保つ。型域の事実のためだけに CoreAssumptions に欄を追加しない。
+ValueMeaning.mk は、二条件に「`∀ p ∈ a.carrierFacts, p.interpret (selfModel η v) = true`」を加える形を候補とする。ValueShapeMeaning の23構成子は増やさない。`TypedMeaning.const_meaning` は `Const.NumericRepresented c` を入力とし、実際の V_Const では既存 `ConstOK.represented` から供給する。Const.NumericRepresented.carrierFactsを意味の供給に使う。Const.NumericRepresented の定義の配置だけを Syntax の後へ下げ、TypedFacts への逆向きの import を作らない。この変更はCtx.factsを通じてTy.LeQ.introduce/refine（V_Sub・C_Subの前提）とCaptureOk.mkの事実の欄へ入る。主定理が量化する型付けの判断と状態の不変条件の定義を変える。typed_value_meaning_closed、valueMeaning_sub、close_value_typed、主要十移送と主定理の言明の形（量化の形と結論）は保つ。型域の事実のためだけに CoreAssumptions に欄を追加しない。
 
 並置名は `Ty.assumeWithCarrier : Ty → List Pred` と `Ctx.factsWithCarrier : Ctx → List Pred` とする。前者は上のmatch、後者は現行Ctx.factsと同じzipIdx/flatMapで前者を読む。L30.43〜.50では旧Ty.assume/Ctx.factsを保ち、新名の補題と意味の供給を準備する。ValueMeaningの変更案と全読者の修正箇所もここで確定するが、定義の切替はしない。**L30.51が切替の単位（180〜300分）**である。Ty.assume/Ctx.facts、ValueMeaning.mk/const_meaningと影響する全読者をまとめて変更し、既定ビルドを通して渡す。並置名は互換な略記へ寄せ、二つの判断を提供し続けない。.52〜.54は切替後の意味・捕捉・全読者の照合である。A.02でこの名前・切替単位・群末のビルド成功を確認できなければ、H/Iを起動せず再詳細化する。L20で閉じたCaptureOkの構成を開き直す分は第11節に含める。
 
@@ -102,9 +102,10 @@ inductive NNF where
 def NNF.toPred (keys : List Term) : NNF → Pred
 def normalize (keys : List Term) (p : Pred) (negative : Bool) : Option NNF
 -- 外から NNF/normalizationTrace を信用しない。keys の正しさも再計算する。
-theorem normalize_sound {keys p negative q} (h : normalize keys p negative = some q) :
-  ∀ η : ObservationEnvModel,
-    (q.toPred keys).interpret η = (if negative then !(p.interpret η) else p.interpret η)
+theorem normalize_sound_at {keys p negative q} (h : normalize keys p negative = some q) :
+  ∀ (ν : ObservationEnv) (η : ObservationEnvModel),
+    (predBind ν (q.toPred keys)).interpret η =
+      (if negative then !((predBind ν p).interpret η) else (predBind ν p).interpret η)
 
 inductive LinearStep where
   | combine (terms : List (Nat × Int)) (expected : Linear)
@@ -121,61 +122,40 @@ inductive Refutation where
   | builtin (leaf : PreparedLeaf) (next : Refutation)
 -- branch は todo、既に取り込んだ線形/符号付き原子の列、固定した keys を持つ。
 -- 子は現在の列だけを受け、枝の結果の列を兄弟へ渡さない。
-def refute (keys : List Term) (todo : List NNF) (facts : List NNF) : Refutation → Bool
-theorem refute_sound {keys todo facts c} (h : refute keys todo facts c = true) :
-  ∀ η : ObservationEnvModel,
-    (∀ q ∈ todo ++ facts, (q.toPred keys).interpret η = true) → False
-def check (premise goal : Pred) (c : Certificate) : Bool
--- Certificateの純粋な検査をpremise.conjunctsから呼ぶ。
--- refuteの入口はpremise ∧ not goalを内部でnormalizeし、初期factsを空にする。
-theorem check_sound {premise goal c} (h : check premise goal c = true) :
-  ∀ η : ObservationEnvModel,
-    (.and premise (.not goal)).interpret η ≠ true
-theorem implication_sound {premise goal c} (h : check premise goal c = true) :
-  ∀ η : ObservationEnvModel, premise.interpret η = true → goal.interpret η = true
--- A.03の案(i)だけで採用する署名。案(ii)では置換像上の健全性へ置き換える。
-theorem check_bind {premise goal c} (h : check premise goal c = true) (ν : ObservationEnv) :
-  ∃ c', check (predBind ν premise) (predBind ν goal) c' = true
-```
-
-このブロックの PreparedLeaf/Certificate/EqProof は、現行 Certificate.lean から純粋な有限データの定義だけを下層へ移したものを指す。PreparedLeaf の定義の形は S05、Certificate の7構成子は第3節の表を正とする。宣言順は Linear/NNF→EqProof→BuiltinLemma/PreparedLeaf→Refutation→Certificate とし、証明済みの Entails や型付けを下層へ import しない。`Certificate.check` は生の Φ を受ける現行の名前を保ち、上の `check` は一つの premise へまとめる接続用の入口である。型/宣言の検査は上層の checkIn に置く。下層でも成立する有限の恒等式以外を、上層のsort検査が通るという理由だけで受理しない。
-
-keysは有限の項列で、型付き入口だけがSource/HasSort/Declaredを要求する。符号化Linear.toPredのbind等号は補助Leanで確認したが、再線形化の鍵の照合・係数の位置まで保存する証拠ではない。A.03では次の二案を比較する。どちらもEntails.bindの公開署名を変えない。
-
-| 案 | 固定し、代表で証明するもの | 通過の判定と後続への条件 |
-|---|---|---|
-| (i) ∃c'を再構成 | 鍵を先に照合するか構造を先に分解するか、像の衝突/新しい一致の処理、splitの対象を線形式へ一般化する形 | 二鍵の同じ像、非鍵の像との一致、var 0→add(var 1,var 2)を含む代表についてcheck_bindを証明。単なるkeys.mapでは通過しない |
-| (ii) νを持つcheckedAt | 下のimplication_sound_atを各検査規則の帰納で直接証明し、bindはpredBind_compで合成 | 整数add/scale、snapshot、原子の正負、閉じたB01の代表を置換像上で証明。(i)のcheck_bindを要求しない。採用時はA末にD/Gの.19/.21〜.24/.37〜.40の署名・手順・見込みを改め、取りまとめが確認してから起動 |
-
-```lean
--- 案(ii)の下層の署名の形。元の健全性からの意味の置換だけでは導かない。
-theorem implication_sound_at {p q c} (h : check p q c = true) :
+def CertificateKernel.refute (keys : List Term) (todo facts : List NNF) : Refutation → Bool
+theorem CertificateKernel.refute_sound_at {keys todo facts c}
+    (h : CertificateKernel.refute keys todo facts c = true) :
+  ∀ (ν : ObservationEnv) (η : ObservationEnvModel),
+    (∀ q ∈ todo ++ facts, (predBind ν (q.toPred keys)).interpret η = true) → False
+def CertificateKernel.check (premise goal : Pred) (c : Certificate) : Bool
+theorem CertificateKernel.implication_sound_at {p q c}
+    (h : CertificateKernel.check p q c = true) :
   ∀ (ν : ObservationEnv) (η : ObservationEnvModel),
     (predBind ν p).interpret η = true → (predBind ν q).interpret η = true
--- Logic.leanに追加する一構成子の代案
-| checkedAt {Ξ p q c} (ν : ObservationEnv) :
-    check p q c = true → Entails Ξ (predBind ν p) → Entails Ξ (predBind ν q)
 ```
 
-案(ii)の整数射影の核とpredBind_compの適用は[独立レビュー](../reviews/RV-L30-plan.md)の補助Leanで確認されている。全有限規則の成立は未確認である。snapshotのslotのobserveと整数位置のinterpretは一般に交換しないので、置換前の健全性から任意の置換後の健全性を推論しない。案(i)のsplitの形も未確定であり、下のkey:NatはA.03前の候補に留める。
+案(ii)checkedAtを採る。全検査器の健全性を元の式で検査した証明書についてν上で直接証明し、恒等置換からcheck_sound/implication_soundを得る。check_bindの∃c'は後続の義務にしない。案(i)との比較と、同じ小さい検査器のν上の帰納・四つの像の代表は[群Aの比較](a/comparison.md)にある。全有限規則はB/C/D/E/F/Gで証明する。
+
+宣言順はEqualityMode/Linear/NNF→EqProof→BuiltinLemma/PreparedLeaf→Refutation→Certificate。群Bの.08でEqualityModeを独立させCertificateSyntaxより前へ置く。実物のLinearSyntax→CertificateKernelBind→EqCertificateの依存を保ち、下層CertificateKernelBindは一般の整数射影・置換合成を供給する。CertificateKernelはEntails・篩の型付けをimportしない。Certificate.checkは生のΦを受ける名前を保ち、CertificateKernel.checkはpremise.conjunctsを渡す。型/宣言の検査は上層checkInに置く。
+
+keysは有限の項列であり、原式と証明書の項・述語から再計算する。鍵の相異性を要求しない。linearizeは係数列と定数項の組を返す。literalを含むNNFの意味は、keysのmapだけでなくpredBind ν (q.toPred keys)で読む。snapshotのslotのobserveと整数位置のinterpretは一般には交換しないので、置換前の健全性から置換後を推論しない。splitの対象は鍵番号Natのまま、そのνの像の整数射影に二分を適用する。完全署名は[群Aの固定署名](a/signatures.md)に集める。
 
 ### S03: 構文による含意への接続
 
-追加するEntailsの構成子を一つにまとめる。以下はA.03の案(i)であり、案(ii)ならcheckedAtと恒等置換からのchecked導出に替える。下層の健全性とbindを先に証明し、Entailsの帰納は一度だけ直す。以下の `check` は S02 の有限な検査関数だけを指す。
+追加するEntailsの構成子はcheckedAt一つとし、checkedは恒等置換からの導出とする。下層の全有限規則のν上の健全性を先に証明し、四つの帰納を一度だけ直す。
 
 ```lean
--- Logic.lean の追加構成子の形。任意の Prop/意味上の含意は欄にしない。
-| checked {Ξ premise goal c} :
-    check premise goal c = true → Entails Ξ premise → Entails Ξ goal
-
--- 下層で各有限規則とその bind を証明した後に、既存の署名を保つ。
+| checkedAt {Ξ p q c} (ν : ObservationEnv) :
+    CertificateKernel.check p q c = true → Entails Ξ (predBind ν p) → Entails Ξ (predBind ν q)
+theorem Entails.checked {Ξ p q c} (hc : CertificateKernel.check p q c = true)
+    (hp : Entails Ξ p) : Entails Ξ q
 theorem Entails.bind {Ξ p} (h : Entails Ξ p) (ν : ObservationEnv) :
   Entails (Ξ.map (predBind ν)) (predBind ν p)
 theorem Certificate.refutation_entails {Φ goal c}
-    (h : check (Pred.ofConjuncts Φ) goal c = true) : Entails Φ goal
+    (h : CertificateKernel.check (Pred.ofConjuncts Φ) goal c = true) : Entails Φ goal
 ```
 
-weaken/cutは子へ帰納仮定を当てる。(i)のsound/bindはimplication_sound/check_bind、(ii)はimplication_sound_at/predBind_compを使う。直接の四帰納へ各1場合を足す。証明書の正しさをAssumptionsへ追加せず、意味上の全包含からEntailsを得る完全性も仮定しない。
+weaken/cutは子の帰納仮定を使い、soundはimplication_sound_atを使う。bindは元のνと外側のτをfun i => (ν i).bind (termBind? τ)へ合成し、predBind_compを使う。公開のEntails.bindの署名を変えず、直接の四帰納へ各一場合を足す。証明書の正しさをAssumptionsへ追加せず、意味上の全包含からEntailsを得る完全性も仮定しない。
 
 ### S04: EqProof と途中の適格性
 
@@ -185,11 +165,11 @@ weaken/cutは子へ帰納仮定を当てる。(i)のsound/bindはimplication_sou
 inductive EqualityMode where
   | structural
   | integer
--- EqProof は第3節の10構成子。hyp は現在の枝の整数 eq だけを参照。
+-- EqProof は第3節の9構成子。hyp は現在の枝の整数 eq だけを参照。
 def EqProof.checkIn (P : Program) (C : TypeCtx) (Γ : Ctx) (Φ : List Pred)
     (s : «Sort») (mode : EqualityMode)
     (t u : Term) (c : EqProof) : Bool
--- structural は検証した別名の展開後の構造一致。
+-- structural は展開済みの実際の端点の構造一致。
 -- integer は integerAs の等値。field/measure は structural の子だけを受ける。
 def RewritePosition (p : Pred) (mode : EqualityMode) : Prop
 -- integer は eq/le/lt の add/neg/scale の下の位置のみ。
@@ -199,7 +179,7 @@ theorem EqProof.integer_sound {P C Γ Φ t u c}
   ∀ η : ObservationEnvModel, (∀ p ∈ Φ, p.interpret η = true) → integerAs η t = integerAs η u
 ```
 
-同じ番号や文字列を「同じ対象」と信用しない。別名の証拠は、有限の置換の列を順に展開した同じ項であることを検査する。ソースの `let y=x` をこの有限の像へ写す仕事は L70/R10b、捕捉後の一致の葉は L30 の担当とする。dataの意味上の等値だけから全欄の合同を導かない。FieldRef.Declared、同じ P の VarianceValid、型引数/欄番号/名目型を入口で照合する。
+同じ番号や文字列を「同じ対象」と信用しない。別名は、有限の置換で得た実際の端点をreflで照合する。reflと同じ結論しか持たないalias構成子と未使用の展開表は設けない。ソースの `let y=x` を実像へ写す仕事はL70/R10b、捕捉後の同じ像の照合はL30の担当とする。dataの意味上の等値だけから全欄の合同を導かない。FieldRef.Declared、同じ P の VarianceValid、型引数/欄番号/名目型を入口で照合する。
 
 ### S05: PreparedLeaf と L40 への受渡し
 
@@ -222,7 +202,7 @@ theorem PreparedLeaf.bind_entails {P C Γ Φ l}
 theorem checked_refinement {P Γ Φ a b p q c}
     (hab : Ty.LeQ P Γ Φ a b)
     (hp : p.Sorted Γ (some a)) (hq : q.Sorted Γ (some b))
-    (hc : check (Pred.ofConjuncts (p :: assumptions Γ Φ a)) q c = true) :
+    (hc : CertificateKernel.check (Pred.ofConjuncts (p :: assumptions Γ Φ a)) q c = true) :
     Ty.LeQ P Γ Φ (.refined a p) (.refined b q)
 ```
 
@@ -234,7 +214,7 @@ represented は既存 HasTypeVQ.represented と ConstOK.represented を実際に
 
 ### S06: 本番の観測の接続の署名
 
-measure_machine_exact/measure_stableと既存HasTypeVQ.representedの完全署名・前提の供給元は[resultsのS06](results.md#r1-s06-本番の観測の接続の署名)に置く。.55/.56で実装し.62が使う。補助Leanの確認済みの範囲を保ち、Keyは.59/.60で具体化する。
+measure_machine_exact/measure_stableと既存HasTypeVQ.representedの完全署名・前提の供給元は[resultsのS06](results.md#r1-s06-本番の観測の接続の署名)に置く。二補題は群Aで本番へ実装した。.55/.56では全measure/観測への適用を行い、.62が使う。既存の一般補題を作り直さず、Keyは.59/.60で具体化する。
 
 ## 3. D06 の規則レビューと場合の対応
 
@@ -244,16 +224,16 @@ measure_machine_exact/measure_stableと既存HasTypeVQ.representedの完全署�
 
 | Pred の場合 | 正/負の数学上の意味と検査の規則 | 場合数 | 補題／単位 |
 |---|---|---:|---|
-| truth/falsity | true/false とその否定を交換 | 4 | normalize_sound の定数枝／.13 |
+| truth/falsity | true/false とその否定を交換 | 4 | normalize_sound_at の定数枝／.13 |
 | eq | a=b は a-b≤0 と b-a≤0。否定は a-b≤-1 又は b-a≤-1 | 2 | normalize_integer_eq／.14 |
 | le | a≤b は a-b≤0。否定は b-a≤-1 | 2 | normalize_integer_le／.14 |
 | lt | a<b は a-b≤-1。否定は b-a≤0 | 2 | normalize_integer_lt／.14 |
 | compare/floatClass/decimalRepresented/charactersIn/member/constructorIs | 各原子とその符号を保持する。Float の not lt を ge に書き換えず、未解決の対象所属も false に変えない | 12 | normalize_literal、6原子×2／.15〜.16 |
 | and/or | 同じ極性の再帰と De Morgan。DNF 全列の事前生成はしない | 4 | normalize_boolean／.17 |
 | not | 極性だけ反転して子へ再帰 | 2 | normalize_not／.17 |
-| 合計 | Pred14構成子×2極性 | **28** | .18 で全件合成、.19 で bind |
+| 合計 | Pred14構成子×2極性 | **28** | .18でν上の全件合成、.19で線形化の補題との接続 |
 
-線形化は Term20構成子を漏らさず検査する。整数定数・add・neg・scale の4場合は線形式へ写す。型付き入口ではvar・field・measureの3場合をinteger sort/Declaredと照合し、残るcharacter/float64/float32/decimal/boolean/unitValue/string/listValue/bytesValue/mapValue/setValue/dataValue/targetValueの13場合を整数式として拒否する。下層では検査したkeysのintegerAs射影を原子にできる。任意の置換でvarがBooleanやsnapshotへ写る場合は、A.03の案(i)の再構成又は案(ii)の置換像上の帰納で扱う。型付き入口の受理は広げない。下層でも13形を一律に拒否すると、無条件のEntails.bindを保てるとは限らないので、A.03で先に確認する。内部の閉じた値を measure の受け手にすることは別の入口で許し、Source の measure 入れ子禁止を内部 snapshot の禁止と取り違えない。`linearize_sound` の20場合を .09〜.12、鍵の照合の規則を .07〜.08 が受け持つ。
+線形化は Term20構成子を漏らさず検査する。整数定数・add・neg・scale の4場合は線形式へ写す。型付き入口ではvar・field・measureの3場合をinteger sort/Declaredと照合し、残るcharacter/float64/float32/decimal/boolean/unitValue/string/listValue/bytesValue/mapValue/setValue/dataValue/targetValueの13場合を整数式として拒否する。下層では検査したkeysのintegerAs射影を原子にできる。任意の置換でvarがBooleanやsnapshotへ写る場合は、採った案(ii)の置換像上の帰納で扱う。型付き入口の受理は広げない。下層でも13形を一律に拒否すると、無条件のEntails.bindを保てるとは限らないので、Bのν上の健全性で射影を読む。内部の閉じた値を measure の受け手にすることは別の入口で許し、Source の measure 入れ子禁止を内部 snapshot の禁止と取り違えない。`linearize_sound_at`の20場合を .09〜.12、鍵の照合の規則を .07〜.08 が受け持つ。
 
 ### 証明書と線形の導出
 
@@ -284,18 +264,17 @@ R20のroundは言語の整数除算（零への切捨て）と別である。正
 
 参照は枝内の先行する列に対する Nat とする。外部の番号→内部 index の変換は R20 で検査付きとする。兄弟・将来・循環・範囲外・sort違いの5種類と、期待式改竄・未知key・宣言不一致・負の乗数・非正除数・不正な丸め・片枝欠落の7種類、計12種類の拒否を .39/.30/.66/.71 で担当する。discardFact は削除後の列を子へ渡し、その列についてだけ参照を解決する。旧 index を黙って生き残らせない。
 
-### EqProof10構成子と限定合同
+### EqProof9構成子と限定合同
 
 | 規則 | modeと条件 | 意味の根拠 | 単位 |
 |---|---|---|---|
 | refl/symm/trans/add | 既存4。integer の add は整数射影、structural は構造の合同 | 既存 EqProof.sound を残し、mode別の補題で一般化 | .25/.28 |
 | neg/scale | integer。係数は数学Intで、Rustでは固定幅へ収まることを検査 | 等式に負号又は同じ定数倍を適用 | .26 |
 | hyp | 現在の枝の整数eqだけ | Φの事実から整数射影の等値を得る | .26 |
-| alias | 有限の束縛の展開が同じ構文へ到達することを確認。先行参照のみ | sourceの名前の一致だけでは受理しない。捕捉の同じ像への一致 | .27 |
 | field | structural の子、同じ宣言・constructor・型引数・欄番号・result sort | FieldRef.Declaredと既存観測の射影。同じPのVarianceValidを使う | .27/.29 |
 | measure | structural の子、同じmeasure。7種全部 | 同じ受け手の同じ部分観測。成功とnoneの両方を保つ | .28/.29 |
 
-integer の書換え位置は eq/le/lt の両辺と、その add/neg/scale の下に限る。structural の一致は全20項形の再構成へ使えるが、alias の同定を任意の意味上の等値から作らない。Boolean の相異は次の B04 で導く。Float の数としての等値をビットの同一性へ読み替えず、NaNへの反射則や、±0の分類を壊す置換を足さない。
+integer の書換え位置は eq/le/lt の両辺と、その add/neg/scale の下に限る。structuralの一致は全20項形の再構成へ使える。別名は展開済みの実際の端点をreflで読み、任意の意味上の等値から同定しない。Boolean の相異は次の B04 で導く。Float の数としての等値をビットの同一性へ読み替えず、NaNへの反射則や、±0の分類を壊す置換を足さない。
 
 ### 登録済みの論理補題12種類と本番の事実の出どころ
 
@@ -334,57 +313,48 @@ Fの比較/分類はfraction/exponentの共通補題を一度証明して二幅�
 
 ### 健全性と探索の不完全性
 
-証明の順は、線形化とNNFの意味の保存→combine/round/split/discard→refute_sound→check_sound→implication_sound→Entails.checked の sound/bind→PreparedLeaf→checked_refinement である。machine_exact/stable/represented の三条件は S05/S06 と本番の観測/型付き値の補題から各事実を構成し、PreparedLeaf の raw データに未検査の条件として保持しない。
+証明の順は、線形化とNNFのν上の意味の保存→combine/round/split/discard→refute_sound_at→implication_sound_at→恒等置換のcheck_sound/implication_sound→Entails.checkedAtのsound/bind→PreparedLeaf→checked_refinement である。machine_exact/stable/represented の三条件は S05/S06 と本番の観測/型付き値の補題から各事実を構成し、PreparedLeaf の raw データに未検査の条件として保持しない。
 
 refute_sound は「与えた有限証明書の検査がtrue」を前提とする。check_sound/implication_sound/checked_refinement も検査成功だけを前提にし、「探索が必ず証明書を返す」「全整数モデルを列挙した」「長さが機械整数幅で有界」を前提にしない。候補の整数割当だけで長さやMapの実値を作れるとは主張しない。反証候補の出力はR20/R60で元の値に実現できた場合だけ反例と呼び、未実現の候補は未証明のままとする。
 
-## 4. U03: 係数幅、steps、入力検査の案
+## 4. U03: 係数幅、steps、入力検査の決定
+
+2026-11-03の[設計者の決定](../README.md#設計者の決定)で、J30-1・J30-3・J30-4は閉じた。群Lは回答を待たず、各単位の依存順で起動する。
 
 ### 係数幅の判断 J30-1
 
-保存する線形式の係数・定数の幅と、一時の積・閉じた値の比較の計算域を分ける。以下はこの分離を前提とした三案である。数学の規則はLean.Intのまま置く。Rustの32bit構成でも同じ結果にする。
+証明書と検査器が保存する係数・定数は符号付き128ビット、−2^127以上2^127未満とする。数学の規則はLean.Intで、幅を引数にした対応へ128を適用する。一時の積は別の正確な計算域で求め、正規化後の保存時に128ビットの範囲を検査する。u64大の二係数の積は保存域を超え得るので、正確な一時値を得ても保存できなければ表現外unknownとする。min/−1・読取り・加算・負号・除算も照合し、32ビット構成で同じ意味を保つ。
 
-| 案 | 固定幅を使う計算と数学上の意味 | R20への影響 | 利用者の受理への影響 |
-|---|---|---|---|
-| A: 符号付き64bit | 保存係数/定数は−2^63〜2^63−1。係数積の一時値は別の正確な計算域 | 一積は128bit相当で計算しても保存時に64bit検査が要る。32bit構成も含む | u64最大値すら保存できず、単純な値域の契約でも表現外unknownが増える |
-| B: 符号付き128bit（推奨、未決） | 保存係数/定数は−2^127〜2^127−1。u64端点/96bit Decimal係数の単体は入る。u64大の二係数の積は約2^128で、保存域には入らない場合がある | 一積は256bit相当等で正確に計算し、合成/正規化後の保存時に表現を検査。min/−1、読取り、加算/負号/除算も照合。32bit構成で同じ意味を保つ | 大きい端点を使えるが、一回のFM消去でも表現外になりうる。幅を広げても完全性は保証しない |
-| C: 固定256bit | 保存係数/定数は−2^255〜2^255−1。一積は別の512bit相当等で扱う | 固定語列の算術・比較・除算の実装/証明が増える。32bit構成を保つ | Bより広いが表現外は残る。同じstepsの探索到達範囲も変わる |
-
-**閉じた比較は三案とも係数幅に入れない**。`R/Observation.lean`のObservation.compareのDecimal枝はc×10^tとd×10^sを比べる。最大近傍の96bit係数とscale 28の桁合わせは約2^189であり、128bitでは足りない。B01/B09等はこの比較を別の正確な計算で行う。Floatのビット比較も線形係数へ丸めず、現行の正確な意味を保つ。一時のu64の積も保存幅と同じ幅では計算しない。ただし正確に計算した結果を線形係数へ保存できなければunknownである。u64の本番演算のあふれは従来どおりStopであり、この一時域で成功へ変えない。
-
-推奨Bの条件は、この計算域の分離をL30.72のR20契約へ明記することである。別の正確な計算の実装と計上はR20で照合し、無料の算術にはしない。幅を引数にした数学の対応は回答前に進められる。設計者はD44/R70の実スクリプトの測定を見て決めてもよい。公開幅と群Lは回答を待つ。
+閉じたDecimal比較の桁合わせとu64の一時積は保存幅で計算しない。Observation.compareのDecimal枝はc×10^tとd×10^sを比べ、96ビット係数とscale 28の桁合わせは約2^189となる。別の正確な計算を使い、Floatのビット比較も係数へ丸めない。その実作業もstepsへ計上する。本番のu64算術のあふれはStopであり、一時の計算域で成功へ変えない。
 
 ```lean
 def CoefficientRepresented (bits : Nat) (n : Int) : Prop :=
   0 < bits ∧ -(2^(bits-1) : Int) ≤ n ∧ n < (2^(bits-1) : Int)
--- 保存域と一時の計算域は別の引数。checked成功の像=数学Intの結果を示す。
 ```
 
 ### 詳細計上と版 J30-3・計算量の契約 J30-4
 
-D43の全実作業を一回ずつ数える方式と、U08の独立上限を加えない決定を引き継ぐ。規則適用だけを数える案、処理段階ごとに独立上限を置く案は選択肢に戻さない。設計者へ問う詳細は次の三点に絞る。
+| 決定した点 | 契約とR20への受渡し |
+|---|---|
+| 基本操作の粒度 | byteの読取り/比較は一byte、構造は一節点/辺/要素、固定幅算術は一演算を一回ずつ数える。可変長の名前比較や一時算術の仕事を一節点に隠さない |
+| 版の字面 | proof-steps-v1。出力・設定・証明書で一致させる。公開の接続はU05と同じくR/Kの接続前に照合し、旧P2と同じ計上だと解釈しない |
+| 後始末の予約 | 要素を作る時に解放の操作を個別に内部予約し、破棄時に一度だけusedへ移す。used+reserved≤limitを維持し、rollback/共有handle/所有本体も対応させる。予約と実消費を二重計上しない |
 
-| 問う点 | 比較と推奨 | R20への影響 | 実用への影響（受理の差） |
-|---|---|---|---|
-| 基本操作の粒度 | **byte読取り/比較は一byte、構造は一節点/辺/要素、固定幅算術は一演算**を推す。一節点に可変長の文字列比較等を隠す粒度とは比較を分ける | 入力/clone/正規化/探索/証明書生成/独立検査/後始末の各ループに計上を対応させる。幅の異なる一時算術も明記 | 同じ100,000で到達する証明が変わり、unknownになるプログラムが変わる。型・エフェクトの規則は変わらない |
-| 版の字面 | 有限規則と計上の双方を識別する**`proof-steps-v1`**を候補として推す。字面と既存設定との対応は設計者が確定する。公開の契約として字面を固定するのは、U05 の版番号と同じく R/K の接続の前である | 出力/設定/証明書の版をL30.72で一致させる。無版の意味変更をしない | 字面だけなら受理差なし。同じ値を旧P2と同じ計上と解釈しない移行案内が要る |
-| 後始末の予約 | **生存要素を作る時に必要な解放の操作を内部予約し、実際の破棄時に一度だけusedへ移す**方式を推す。個別予約と、所有単位ごとの上界をまとめる方式を比較し、対応が小さい個別予約を第一候補にする | used+reserved≤limitを維持。予約と実消費を二重計上せず、rollback/共有handle/所有本体に対応。利用者の別上限は作らない | 予約の上界によって同じ上限でも早くunknownになる場合がある。まとめた過大予約は受理をさらに減らしうる |
+D43の全実作業を一回ずつ数える方式と、U08の独立上限を加えない決定を保つ。入力I・証明書Cの走査も同じstepsへ含め、展開後の仕事Pを隠さずO(I+C+P)の実作業を対応させる。証明書byte数だけのO(I+C)やCPU/OS/allocatorの時間上限は保証しない。prefix共有と明示スタックで枝全体の暗黙cloneを避ける。
 
-J30-4はこの粒度・予約に沿った実作業との対応を確定する項目であり、別の計算量保証を選ぶ問いを増やさない。入力I/証明書Cの走査も同じstepsに含め、展開後の仕事Pを隠さずO(I+C+P)の実作業を対応させる。証明書byte数だけのO(I+C)、CPU/OS/allocatorの時間上限は保証しない。prefix共有と明示スタックで枝全体の暗黙cloneを避ける。
-
-入力走査、可変長の名前比較、係数merge、DNF/FMの候補生成、反例候補の実現確認、証明書の書込み、最終検査と破棄まで計上する。malformed/coefficientRepresentation/stepsExhaustedを区別し、入力検査の途中で尽きた入力をprovedにしない。独立の深さ/枝数/証明書量のunknown、無検査usize cast、将来/兄弟/循環参照は加えない。群Lだけが上の回答に依存する。
+入力走査・名前比較・clone・係数merge・DNF/FMの候補生成・反例候補の実現確認・証明書の書込み・独立検査・後始末を計上する。malformed/coefficientRepresentation/stepsExhaustedを区別し、入力検査の途中で尽きたものをprovedにしない。独立の深さ/枝数/証明書量のunknown、無検査usize cast、将来/兄弟/循環参照は加えない。保存幅、粒度、予約で同じstepsでも受理は変わり得るが、型・エフェクトの規則は変えない。
 
 ## 5. 最初の群 A と、変更が波及する箇所
 
-A 群は方式を先に確認する6単位である。いずれも確認用に捨てる実装を作るのでなく、採用した定義・補題・反例を本番の読者が使う形に置く。採択済みのJ30-2と未決のU03を区別する。独立レビューの指摘を取り込んだ案であり、A 群の成功を前提に後の群を同時起動しない。
+A 群は方式を先に確認する6単位である。いずれも確認用に捨てる実装を作るのでなく、採用した定義・補題・反例を本番の読者が使う形に置く。採択済みのJ30-2・checkedAtと、決定済みのU03を引き継ぐ。独立レビューの指摘を取り込んだ案であり、A 群の成功を前提に後の群を同時起動しない。
 
-| 関門 | 最初に確かめるもの | 通過の判定 | 下書き時点の状態 |
+| 関門 | 最初に確かめるもの | 通過の判定 | 群Aで確認した状態 |
 |---|---|---|---|
-| A1・型域と意味（A.02） | 採択済みS01とCaptureOkの全構成。並置名Ty.assumeWithCarrier/Ctx.factsWithCarrier、切替L30.51 | 型付き値から事実を構成し、全読者を切替時に直して既定ビルドを通す道筋を固定。主定理の言明（量化の形と結論）を変える必要があれば停止。前提の判断の定義の変更はJ30-2の内容 | 欠けは補助Leanで確定。新しい全構成と切替の成立は未確認 |
-| A2・帰納とbind（A.03） | S02の(i)∃c'と(ii)checkedAtを比較 | (i)鍵照合/splitの形と三代表を証明、又は(ii)ν上の各規則の健全性の帰納を固定し代表を証明。Entails.bindの公開署名を保つ。(ii)ならA末にD/G表を改訂 | 符号化bindとレビューの整数射影の核のみ確認。両案の全体は未確認 |
-| A3・整数 | 除数正・全係数の整除・負の床・二分の被覆 | 2*x=1、bound=−3/d=2、cutの左右、片枝欠落を同じ規則で説明 | 床除算の一般の含意、−3/2=−2、整数分枝、2*x≠1を補助Leanで確認 |
-| A4・合同 | mode、RewritePosition、別名の有限展開、FieldRef.DeclaredとVarianceValid | 型付きの不変欄/measureと捕捉で同じ像を得る。数の等号をSetの鍵へ書換える反例を拒否 | 反例の各観測値は補助Leanで確認。別名と全16sortの橋は未確認 |
-| A5・葉の受渡し | S05。開いたlen(l)=n、n>0とL40のrefine | 証明書からEntails→同じTy.LeQ→既存bindへ接続。PreparedLeafの欄に未検査の意味の仮定を持たせない | 既存のL20の閉じた葉は確認。開いた証明書の合成は未確認 |
+| A1・型域と意味（A.02） | 採択済みS01とCaptureOkの全構成。並置名Ty.assumeWithCarrier/Ctx.factsWithCarrier、切替L30.51 | 型付き値から事実を構成し、全読者を切替時に直して既定ビルドを通す道筋を固定。主定理の言明（量化の形と結論）を変える必要があれば停止。前提の判断の定義の変更はJ30-2の内容 | NumericRepresentedの一般補題と具体の捕捉の四事実を本番で確認。全構成と切替はH/Iの担当 |
+| A2・帰納とbind（A.03） | S02の(i)∃c'と(ii)checkedAtの代表を比較 | ν上の帰納と代表から方式を固定し、Entails.bindの公開署名を保つ | 両代表が閉じ、取りまとめが(ii)を採択。検査器の水準の四つの像も再開1で確認。全有限規則は後続の担当 |
+| A3・整数 | 除数正・全係数の整除・負の床・二分の被覆 | 2*x=1、bound=−3/d=2、cutの左右、片枝欠落を同じ規則で説明 | 床除算の一般の含意、−3/2=−2、整数分枝、2*x≠1を本番で確認。全反証の合成はD/Gの担当 |
+| A4・合同 | mode、RewritePosition、展開済みの実像、FieldRef.DeclaredとVarianceValid | 型付きの不変欄/measureと捕捉で同じ像を得る。数の等号をSetの鍵へ書換える反例を拒否 | 一般の置換位置と反例、実捕捉と宣言した欄/measureを本番で確認。全16sortの橋はE/Jの担当 |
+| A5・葉の受渡し | S05。開いたlen(l)=n、n>0とL40のrefine | 証明書からEntails→同じTy.LeQ→既存bindへ接続。PreparedLeafの欄に未検査の意味の仮定を持たせない | 開いたlengthの意味の代表と既存CertificateからLeQへの型を確認。actual Certificateの合成はG/Kの担当 |
 
 短い試行は [results](results.md) に入力全文と結果を保存した。補助入力だけの成功を既定ビルド、全規則の実装、A 群の通過として扱わない。
 
@@ -392,11 +362,11 @@ A 群は方式を先に確認する6単位である。いずれも確認用に�
 
 | 変更案 | 理由 | 確認した波及の範囲と担当 |
 |---|---|---|
-| Entails.checked の追加、純粋な検査器の定義をLogicより下へ移す | 既存18規則だけでは開いた線形/Booleanの新しい含意を導けない | 構成子18→19。直接の帰納4か所に各1場合。HasType相互14判断76場合に新構成子を足す変更ではない。.37〜.42。(i)/(ii)のどちらでも既存の四読者を閉じられなければ、前提を強めず停止 |
+| Entails.checkedAtの追加、純粋な検査器の定義をLogicより下へ移す | 既存18規則だけでは開いた線形/Booleanの新しい含意を導けない | 構成子18→19。直接の帰納4か所に各1場合。HasType相互14判断76場合に新構成子を足す変更ではない。.37〜.42。checkedAtで既存の四読者を閉じられなければ、前提を強めず停止 |
 | Ty.carrierFacts/Ty.assume/Ctx.facts、Ty.LeQ.introduce/refine、CaptureOk.mk | D02/D21の値域を判断へ接続する採択済み変更 | assume検索29ファイル141行、CaptureOk検索50ファイル220行、明示の定義展開16ファイル25行。下表とresultsに全在庫。前提の判断の定義が変わる。.43〜.54で追随 |
 | ValueMeaning.mk のcarrierFactsの条件とconst_meaningの入力 | assumeの追加だけでは、現在の広い形の近似から型域を供給できない | ValueMeaningの構成子数1、ValueShapeMeaning23、値/値列/同型列の相互33場合は維持。TypedMeaningのV_Constとmkの再構成、MeaningTransport/CoverageRefinement/PatternNormalForm/TypedCoverage/各具体例を追随。.49〜.54。公開valueMeaning_sub等の言明を変える必要があれば停止 |
 | Certificate のデータの下層への移動、refute追加 | Logicに逆向きのimportを作らず有限検査を埋め込む | 6→7構成子。R/Certificate.lean外の本番読者は**0ファイル**、既定formal/Benitoite.leanのimportだけ。旧6場合の成功保存と既定importの維持は.38/.77へ統合し、独立の.73を削除する。 |
-| EqProof、PreparedLeaf、checkIn | 開いた合同と中間sortの検査、閉じたstableの一般化が必要 | EqProof4→10、BuiltinLemma2→12。旧check/soundの構文等号の入口は保つ。新checkInとentailsInを別に固定し、既存の閉じたstableを偽の等号に変更しない。.25〜.36/.61〜.66 |
+| EqProof、PreparedLeaf、checkIn | 開いた合同と中間sortの検査、閉じたstableの一般化が必要 | EqProof4→9、BuiltinLemma2→12。旧check/soundの構文等号の入口は保つ。新checkInとentailsInを別に固定し、既存の閉じたstableを偽の等号に変更しない。.25〜.36/.61〜.66 |
 | 構造比較 | ClassicalなDecidableEqのままでは核内のdecideで検査を再生できない | Term20/Pred14の明示的なbool比較と一致の証明。既存instanceの全面変更0。typedな宣言準備とrawな論理核の実行範囲を区分し、Ty/Effの関数を含む全表が計算可能になったとは言わない。.08/.30/.74 |
 
 J30-2はplanの2026-11-03の判断で採択済みである。Ty.LeQを通じて受理する導出が増え、CaptureOkの事実の欄を強める。主定理の言明の形を保ち、Integer8→Integer8{self≤127}等を可能にする。以下をL30.01の在庫に含め、.51で追随し、.54で各構成の事実の欄を照合する。
@@ -407,7 +377,7 @@ J30-2はplanの2026-11-03の判断で採択済みである。Ty.LeQを通じて�
 | 間接に構成する読者 | Context/Capture: extendTel、CaptureApplicationAlgebra: bindParams、CapturedFacts: addEvaluated、MatchPaths: addEvaluatedFacts/paths_evaluate、MatchStateLeaves: match_extend/matched_facts/excluded_facts、CaptureTransport: hideBuilders_hideConts、SuperClosure: closed_arguments、TypeSubstTyping: deriveCapture、CaptureReadBoundary: unread_capture_ok、ReferenceStore: reference_write_snapshot、ほかに capture_tel・primitive_reads_hidden_capture・HasTypeArmsQ.capture_plain・capture_plain_success（所在は results の在庫） | paths_evaluateは事実の証明を供給し、addEvaluatedFactsが捕捉を構成する。この鎖と状態葉の呼出しを照合 |
 | 定義を開く証明 | Context/Facts: Ty.assume_wellFormed、Context: assume_eq_predicates/assume_ordinary/assume_eq_nil、ContextFacts: assume_shiftV/mem_facts/mem_facts_extendNone、ContextNormEq: facts_map_norm、RangeSubst: assume_rawMapRanges/facts_mapRanges/facts_rawMapRanges、TypeShiftContracts: assume_shiftTypes、TypedFacts: HasTypeVQ.assume/assume_optional、ほかresultsの16ファイル表 | simp/simpa/unfold/dsimpでTy.assume/Ctx.factsを開く行を全件処分。空文脈で不変の証明も理由付きで保持 |
 
-検索はR/以下の全*.lean、コメント/例/属性を除外せず一致した物理行を一度数える。`assume`、`\bCaptureOk\b`、`\b(simp|simpa|unfold|dsimp)\b[^\n]*(Ctx\.facts\b|Ty\.assume\b)`を別集計する。未修飾/複数行の展開の見落としを避けるため`facts|assume`全48ファイル485行も候補にし、宣言全体を確認する。50ファイルのCaptureOk出現宣言、定義展開の行番号、検索の再現条件は[resultsのr1在庫](results.md#r1-読者の在庫)に置く。ファイル/一致行の数を変更補題の数としない。
+ValueMeaningの直接/間接の読者9ファイルは[群Aの在庫](a/inventory.md#valuemeaningmkの読者群iの入力)を使う。字句で拾えない簡約の読者は.51の既定ビルドで確定し.54で処分する。検索はR/以下の全*.lean、コメント/例/属性を除外せず一致した物理行を一度数える。`assume`、`\bCaptureOk\b`、`\b(simp|simpa|unfold|dsimp)\b[^\n]*(Ctx\.facts\b|Ty\.assume\b)`を別集計する。未修飾/複数行の展開の見落としを避けるため`facts|assume`全48ファイル485行も候補にし、宣言全体を確認する。50ファイルのCaptureOk出現宣言、定義展開の行番号、検索の再現条件は[resultsのr1在庫](results.md#r1-読者の在庫)に置く。ファイル/一致行の数を変更補題の数としない。
 
 ### 最初の同種16件の本番追随
 
@@ -422,18 +392,18 @@ J30-2はplanの2026-11-03の判断で採択済みである。Ty.LeQを通じて�
 
 | 群 | 内容 | 単位 | 群固有の完了条件（共通条件・独立レビューと所見処置を含む） | 所要時間（能動時間） |
 |---|---|---|---|---:|
-| A | 方式と署名の確認 | L30.01〜06 | S01〜S06と五関門を確認。J30-2は採択済み、U03非依存。A.03の選択とD/G改訂を取りまとめが確認。 | 3時間40分〜7時間15分 |
-| B | 線形の項と鍵 | L30.07〜12 | Term20場合と有限keysの位置、線形式の符号化が本番で一致する。 | 2時間50分〜5時間40分 |
+| A | 方式と署名の確認 | L30.01〜06 | S01〜S06と五関門を確認。checkedAt/U03の決定を引き継ぎ、全有限規則の実装とは分ける。 | 3時間40分〜7時間15分 |
+| B | 線形の項と鍵 | L30.07〜12 | Term20場合と有限keysの位置、線形式の符号化が本番で一致する。 | 2時間40分〜5時間20分 |
 | C | 否定標準形 | L30.13〜18 | Pred14×2の全28場合、停止と意味の保存。traceは入力にしない。 | 3時間5分〜6時間10分 |
-| D | 整数の導出と枝 | L30.19〜24 | combine/round/split/close/discardと枝内の列の意味が固定する。 | 3時間30分〜7時間 |
-| E | EqProofと限定合同 | L30.25〜30 | 10構成子、全16sortの適格性、途中のsortと危険な書換えの拒否。 | 3時間15分〜6時間30分 |
+| D | 整数の導出と枝 | L30.19〜24 | combine/round/split/close/discardと枝内の列の意味が固定する。 | 3時間〜6時間 |
+| E | EqProofと限定合同 | L30.25〜30 | 9構成子、全16sortの適格性、途中のsortと危険な書換えの拒否。 | 2時間55分〜5時間50分 |
 | F | 有限の論理補題 | L30.31〜36 | 12schema100分岐のsound/bind、30比較と12分類を本番定義に対応させる。 | 3時間35分〜7時間10分 |
-| G | 検査器とEntails | L30.37〜42 | Refutation9・Certificate7の全健全性とbind、Entails19場合の四読者を閉じる。 | 4時間15分〜8時間30分 |
+| G | 検査器とEntails | L30.37〜42 | Refutation9・Certificate7の全健全性とbind、Entails19場合の四読者を閉じる。 | 3時間45分〜7時間30分 |
 | H | 型域と最初の本番追随 | L30.43〜48 | 新名のfactsと最初の16補助を残し、旧assumeのまま既定ビルド成功。Aの後に開始できる。 | 3時間30分〜6時間40分 |
 | I | 型付き値と意味の追随 | L30.49〜54 | .51で全判断/意味/読者を切替え、.54でCaptureOk全構成と全在庫を照合。主定理の言明の形を維持。 | 7時間15分〜13時間30分 |
-| J | 本番の観測と正常結果 | L30.55〜60 | measure、正常算術、鍵の等値/大きさから三条件を導く。実δと実標準本体の残りを明示する。 | 3時間40分〜7時間15分 |
+| J | 本番の観測と正常結果 | L30.55〜60 | measure、正常算術、鍵の等値/大きさから三条件を導く。実δと実標準本体の残りを明示する。 | 3時間20分〜6時間40分 |
 | K | PreparedLeafとL40 | L30.61〜66 | 開いたList長、Boolean、欄、全sortを本番のTy.LeQとbindへ接続する。 | 3時間40分〜7時間 |
-| L | 固定幅とstepsの契約 | L30.67〜72 | U03回答後だけ起動。保存幅/一時積/閉じた比較、粒度/版/予約をR20へ渡す。 | 3時間〜6時間 |
+| L | 固定幅とstepsの契約 | L30.67〜72 | U03決定済み。依存順で起動。保存幅/一時積/閉じた比較、粒度/版/予約をR20へ渡す。 | 3時間〜6時間 |
 | M | 旧読者と義務の照合 | L30.74〜76 | 再生/証明、申し送り、全O行を照合。.73は.38/.77に統合。 | 1時間35分〜2時間55分 |
 | N | 段末監査と受け入れ | L30.77〜80 | 全有限規則・既定ビルド・A-L・写し・独立レビューの所見処置をそろえ、受入資料を提出する。 | 2時間5分〜3時間55分 |
 
@@ -443,47 +413,47 @@ J30-2はplanの2026-11-03の判断で採択済みである。Ty.LeQを通じて�
 |---|---|---|---|---|---|---|
 | L30.01/A | 入口と変更範囲を固定 | 既存Context/Logic/Certificate/MeaningTransport、群内署名 | S01〜S06、assume/CaptureOk/定義展開の全読者表 | 第5節とresultsの検索を再実行し、12直接構成・間接供給と全出現宣言を確認→各事実の供給元、変更/保持/切替の在庫が固定 | L10/L20 | 40〜75分/L |
 | L30.02/A | 採択済み型域と切替の方式 | Context/ValueMeaning/TypedMeaning（J30-2対象） | S01、assumeWithCarrier/factsWithCarrier、ValueMeaning.mkの3条件 | Integer8/DecimalとCaptureOkを確認→並置名と切替.51（180〜300分）、全読者同時追随を固定。主定理の言明（量化の形と結論）を変える必要があれば停止。前提の判断の定義の変更はJ30-2 | 01、J30-2は採択済み | 45〜90分/L |
-| L30.03/A | 検査器の帰納とbindを確認 | LinearSyntax/CertificateSyntax/CertificateKernelBind（新） | S02の(i)check_bindの∃c'又は(ii)implication_sound_at/checkedAt | (i)鍵照合/splitと像衝突・新一致・加算像の代表を証明、(ii)ν上の健全性とpredBind_compの代表を比較→Entails.bind不変。採用を記録し(ii)ならD/G表をA末に改訂 | 01 | 45〜90分/L |
+| L30.03/A | 検査器の帰納とbindを確認 | LinearSyntax/CertificateKernelBind、比較の補助入力 | S02のimplication_sound_at/checkedAt | 両案の代表の比較を終え(ii)を採択。元の証明書の任意ν上の健全性とpredBind_compを引き継ぎ、Entails.bindの公開署名を維持 | 01 | 45〜90分/L |
 | L30.04/A | 丸めと整数分枝の方式を確認 | LinearSound（新）、Interval/Arithmeticは読取り | d>0 ∧ d*x≤b → x≤b/d、x≤k ∨ k+1≤x | 負の床・係数整除・2*x=1を同じ形で扱う→切捨て/片枝で受理しない一般補題の形が固定 | 03 | 30〜60分/L |
 | L30.05/A | 限定合同と別名の方式を確認 | EqCertificate（新）、Declared/ObservationSubstitution | S04、integer/structuralの2mode | Set鍵の反例を残し、field/measureの同じ像と実捕捉の入力を照合→16sortと置換位置の供給表が固定 | 01/03 | 30〜60分/L |
 | L30.06/A | PreparedLeafとL40の署名を固定 | PreparedLeaf（新）、既存Certificate/Le | S05、checked_refinement | len(l)=n,n>0と型域・正常結果/Stopの3経路を接続する形を確認→B以降の完全署名、D06表、J30の扱いを取りまとめへ返す | 02〜05。U03の回答不要、幅/stepsは引数 | 30〜60分/L・W |
-| L30.07/B | 線形式と符号化を置く | LinearSyntax（新） | Linear/Linear.eval/Holds/toPred、S02 | 係数列・bound・keysの長さを定義しencode_bindを証明→数学Intと型幅を混同しない | A | 20〜40分/L |
-| L30.08/B | 鍵と枝内参照の定義 | CertificateSyntax/TermStructuralEq（新） | KeyTable=List Term、lookupのsome→所属、termEq=true↔t=u | 相異性を要求しない鍵列、枝prefix、構造比較を置く。A.03(i)の照合/変換、又は(ii)の像の評価に対応→不正indexを拒否 | 07 | 30〜60分/L |
-| L30.09/B | 整数定数と変数の線形化 | Linearization（新） | linearize keys t=some l → integerAs η t=l.eval(keyEnv η) | integer/varの2場合とlength検査→定数項・一単位係数が一致 | 07/08 | 30〜60分/L |
+| L30.07/B | 線形式の長さと読者を接続 | LinearSyntax（既存）、Linearization（新） | S02の列長の検査とLinear.encode_bindの読者 | Linear/eval/Holds/toPred/encode_bindはAで実装済み。長さ不一致の拒否と本番の読者へ接続し、定義やbindを作り直さない | A | 10〜20分/L |
+| L30.08/B | 鍵と枝内参照の定義 | EqualityMode/CertificateSyntax/TermStructuralEq（新） | KeyTable、keyIndex_sound、termEq_spec、EqualityMode | EqualityModeをEqCertificateから独立させCertificateSyntaxより前へ置く。相異性を要求しない鍵列と枝prefixを定め、像の評価と不正indexの拒否へ接続 | 07 | 30〜60分/L |
+| L30.09/B | 整数定数と変数の線形化 | Linearization（新） | linearize keys t=some (cs,b) → integerAs η (termBind ν t)=linearDot cs (keyEnv η (keys.map (termBind ν)))+b | integer/varの2場合とlength検査→定数項・一単位係数が一致 | 07/08 | 30〜60分/L |
 | L30.10/B | 加算の線形化 | Linearization（新） | linearize_add、dot(addCoeffs a b)=dot a+dot b | 左右の係数を同じkeysへmergeし定数を合成→加算の意味と係数位置が一致 | 09 | 30〜60分/L |
 | L30.11/B | 負号と定数倍の線形化 | Linearization（新） | linearize_neg/scale、dot(scale k a)=k*dot a | 負係数と0/1の係数も含める→非線形の項を入れない | 10 | 30〜60分/L |
-| L30.12/B | field/measureと拒否13形 | Linearization（新）、Context/Declared | linearize_soundのTerm20場合、整数sortの鍵3形 | 可視不変欄/7measureを鍵へ写し、型付き入口は13形を拒否。raw核はintegerAs原子のbindを保つ→20場合を合成 | 08〜11/05 | 30〜60分/L・W |
-| L30.13/C | NNFの定数 | LogicNormalization（新） | normalize_sound、truth/falsity×2 | 検査器内で極性を反転し、外からtraceを受け取らない→定数4場合 | B | 20〜40分/L |
-| L30.14/C | 整数の比較のNNF | LogicNormalization（新） | eq/le/lt×2のnormalize_sound | 厳密不等号の−1と等号の両向き、≠のOrを導く→整数6場合 | 12/13 | 30〜60分/L |
+| L30.12/B | field/measureと拒否13形 | Linearization（新）、Context/Declared | linearize_sound_atのTerm20場合、整数sortの鍵3形 | 可視不変欄/7measureを鍵へ写し、型付き入口は13形を拒否。raw核はintegerAs原子のbindを保つ→20場合を合成 | 08〜11/05 | 30〜60分/L・W |
+| L30.13/C | NNFの定数 | LogicNormalization（新） | normalize_sound_at、truth/falsity×2 | 検査器内で極性を反転し、任意のν上で定数を読む。外からtraceを受け取らない→定数4場合 | B | 20〜40分/L |
+| L30.14/C | 整数の比較のNNF | LogicNormalization（新） | eq/le/lt×2のnormalize_sound_at | ν上の整数射影で厳密不等号の−1と等号の両向き、≠のOrを導く→整数6場合 | 12/13 | 30〜60分/L |
 | L30.15/C | scalar比較とFloat分類のNNF | LogicNormalization（新） | compare/floatClass×2をliteralへ写す | not ltをgeにせず符号付き原子で保持→NaN/±0の境界を変えない | 13 | 30〜60分/L |
 | L30.16/C | 残る原子と対象所属のNNF | LogicNormalization（新） | decimalRepresented/charactersIn/member/constructorIs×2 | 正常観測とunknownを混同せず原子の同一性を保つ→残る8場合 | 13/15 | 30〜60分/L |
 | L30.17/C | And/Or/NotのNNF | LogicNormalization（新） | and/or×2、not×2の構造再帰 | De Morganと極性反転を一帰納で証明→DNFの全枝列を事前に作らない | 14〜16 | 30〜60分/L |
-| L30.18/C | 正規化の停止と全意味の合成 | LogicNormalization（新） | S02 normalize_soundの全28場合 | 入力Predの構造/極性の停止を確かめ、既に作った枝補題を合成→28場合の意味を閉じる。新しい28証明をここで作り直さない | 17 | 45〜90分/L・W |
-| L30.19/D | 符号化と正規化の置換 | LinearizationBind（新） | (i)NNF/keys/線形化の変換、又は(ii)NNF.toPredの置換像の意味 | (i)像の衝突・新一致・加算像を扱う。(ii)では整数射影add/scaleと原子の同じ像を帰納へ供給→A末に採用案の完全署名へ改訂 | B/C、A.03の選択後 | 45〜90分/L |
+| L30.18/C | 正規化の停止と全意味の合成 | LogicNormalization（新） | S02 normalize_sound_atの全28場合 | 入力Predの構造/極性の停止を確かめ、既に作った枝補題を合成→28場合の意味を閉じる。新しい28証明をここで作り直さない | 17 | 45〜90分/L・W |
+| L30.19/D | 線形化とNNFのν上の補題を合成 | Linearization/LogicNormalizationの既存補題、RefutationSoundの接続 | Bのlinearize_sound_atとCのnormalize_sound_at、同じkeys/ν | 二つの既済みの帰納を合成し、線形とliteralの像の意味を接続する。鍵の再構成や各場合の再証明をしない | B/C | 15〜30分/L |
 | L30.20/D | 係数の和・非負結合 | LinearSound（新） | combination_sound、Σk_i*l_i.Holds、k_i≥0 | 空和/一項/複数項、係数0と負乗数の拒否→数学上の和の一致 | 07/19 | 30〜60分/L |
-| L30.21/D | consumeとcasesの枝 | RefutationSound（新） | S02 refuteのNNF6形、todo/facts保存 | truth/falsity/linear/literal/And/Orの受理分岐を区別→両枝の事実を交差させない | 18/20 | 30〜60分/L |
-| L30.22/D | deriveのcombine | RefutationSound（新） | derive_soundのcombine、期待する全係数/定数の一致 | 先行factのlookupと非負結合を合成→改竄/範囲外を拒否 | 20/21 | 30〜60分/L |
-| L30.23/D | roundとsplit | RefutationSound（新） | round_sound、split_sound。splitの対象はA.03で固定 | 正除数・係数整除・負床を検査。(i)線形式の二分又は(ii)鍵の置換像の二分を使う→同じfactsの左右両枝で全整数を被覆 | 04/22 | 45〜90分/L |
-| L30.24/D | 矛盾と捨てる規則 | RefutationSound（新） | close_linear/atom、discard_todo/fact_sound | 0≤負数と原子の正負だけで閉じ、削除後のindexを再解決→無関係なOrを捨てられる | 21〜23 | 30〜60分/L・W |
+| L30.21/D | consumeとcasesの枝 | RefutationSound（新） | predBind ν (q.toPred keys)の真、NNF6形のtodo/facts | truth/falsity/linear/literal/And/Orを区分し、同じν上で枝の条件を保つ。Orは同じ元のfactsを使う左右両枝を検査 | 18/20 | 30〜60分/L |
+| L30.22/D | deriveのcombine | RefutationSound（新） | derive_sound_atのcombine、先行factsと全係数/boundの一致 | keyEnv η (keys.map (termBind ν))上で非負結合を読む。先行参照と期待式の一致を検査し改竄/範囲外を拒否 | 20/21 | 30〜60分/L |
+| L30.23/D | roundとsplit | RefutationSound（新）、LinearSound（既存） | Linear.round_sound、integerAs_split_at、splitはkey:Nat | 正除数・全係数の整除・負床を検査する。鍵のνの像を整数射影で二分し、同じfactsの左右両枝で全整数を被覆 | 04/22 | 45〜90分/L |
+| L30.24/D | 矛盾と捨てる規則 | RefutationSound（新） | close_linear/atom_sound_at、discard_todo/fact_sound_at | 同じν上で0≤負数と原子の正負を読む。discardは弱い前提でも矛盾することを使い、削除後の列でindexを再解決 | 21〜23 | 30〜60分/L・W |
 | L30.25/E | EqProofの旧4場合 | EqCertificate（新）、Certificate | S04 refl/symm/trans/addのmode別のsound | 旧の構文等号入口を保存し、整数射影の等式を分離→過去の正負例を維持 | 05/B/D | 30〜60分/L |
 | L30.26/E | 整数のhyp/neg/scale | EqCertificate（新） | integer_soundの新3場合、先行Φのeqだけを参照 | 負係数・中間項を含める→sort違い、兄弟/将来参照を拒否 | 25 | 30〜60分/L |
-| L30.27/E | 別名の有限展開 | EqCertificate（新）、ObservationSubstitution | aliasの展開列、展開後Termの構造一致 | 同じソース名だけでなく実像を照合→循環/将来展開を拒否しcaptureの同一性へ渡す | 08/25 | 30〜60分/L |
+| L30.27/E | 展開済みの別名の像を照合 | EqCertificate、ObservationSubstitution | termEq/refl、捕捉後の実際の端点の構造一致 | alias構成子/展開表は作らない。同じ名前だけを信用せず、有限の置換で得た実像をreflで検査する。ソースのletの像はL70/R10b | 08/25 | 20〜40分/L |
 | L30.28/E | field/measureの合同 | EqCertificate（新）、Declared | field/measureのstructural子、Measure7場合 | 同じ名目型・欄番号・型引数・同じmeasureを照合→一般UFを認めない | 27/12 | 30〜60分/L |
 | L30.29/E | 途中のsortと宣言を接続 | EqCertificate（新）、ClosedDecidable/Declared | S04 checkIn、HasSort/Pred.Declaredを途中にも保持 | structural16sortとintegerだけの書換え位置を分ける→substituteの中間不適格を拒否 | 26〜28 | 30〜60分/L |
-| L30.30/E | substituteの健全性と比較 | CertificateKernelBind（新）、TermStructuralEq（新） | RewritePositionのspec、p.open前後の含意、PredEq=true↔等号 | snapshot反例とFloatの危険な置換を拒否し、構造比較をTerm20/Pred14へ合成→意味と実行可能な比較が一致 | 19/29 | 45〜90分/L・W |
-| L30.31/F | 閉じた二つのbuiltin | BuiltinLogic（新）、既存ClosedEvaluation | B01/B02のrawcheck→意味、bind | 純粋なclosedTrueの定義とmeasure_nonnegativeを下層へ移す。rawはevalClosed_sound、上層は既存entailsを使う→循環importなし、旧成功保存 | C/E | 30〜60分/L |
+| L30.30/E | substituteの健全性と比較 | EqCertificate/CertificateKernelBind（既存）、TermStructuralEq（新） | rewritePosition_spec、p.open前後のν上の含意、predEq_spec | 一般のRewritePositionとsnapshotの拒否はAで実装済み。実行可能な検査を対応させ、Term20/Pred14の構造比較と途中の適格性へ合成する | 19/29 | 35〜70分/L・W |
+| L30.31/F | 閉じた二つのbuiltin | BuiltinLogic（新）、既存ClosedEvaluation/MeasureNonnegative | B01/B02のrawcheck→ν上の意味 | 純粋なclosedTrueの定義を下層へ移し、既存measure_nonnegativeを使う。rawはevalClosed_soundとbind_closed、上層は既存entailsを使う→循環importなし、旧成功保存 | C/E | 30〜60分/L |
 | L30.32/F | 全measureの開いた非負 | BuiltinLogic（新）、Observation/Certificate | B03の7場合、0≤integerAs η (.measure m t) | measure_nonnegativeと失敗時0を分解→開いたtにも使える。stableはbindの対応で示す | 31/12 | 30〜60分/L |
 | L30.33/F | Booleanの相異 | BuiltinLogic（新）、ClosedEvaluation | B04の2向き、eq(c,true)∧eq(c,false)→false | 既定射影を含む全モデルで証明→let cのapartを新しい仮定なしで導く | 31 | 20〜40分/L |
 | L30.34/F | scalar比較と分類 | BuiltinLogic（新）、ClosedEvaluation | B05の22補則/B09の30順序則/B12の12分類、比較30の対応 | 実際のieeeCompare/ieeeClass、Decimal比較、Char順序を読む→NaNを全順序扱いしない | 31/15 | 60〜120分/L |
 | L30.35/F | 文字範囲と構成子相異 | BuiltinLogic（新）、Observation/ClosedEvaluation | B06の包含/B07の相異、B10の符号範囲/B11の6比較 | 文字のallとtag、Charの符号範囲と比較を証明→一般正規表現/非対応sortを足さない | 31/16 | 30〜60分/L |
-| L30.36/F | 同じ観測と全builtinのbind | BuiltinLogic（新）、EqCertificate | B08の16sort、12schema100分岐のraw_sound/raw_bind | 同じ像の一致を各原子へ運び、全12種類の検査と変換を閉じる→任意Propや型域の無条件登録なし | 28〜35 | 45〜90分/L・W |
-| L30.37/G | 下層の全反証の健全性 | CertificateKernel（新） | (i)refute_sound、又は(ii)ν上のrefute_sound_at。Refutation9 | todo/facts/keysを一般化して一度帰納。A末に選んだ意味でbuiltin/round/splitを合成→全規則と兄弟の独立を閉じる | D/E/F | 60〜120分/L |
-| L30.38/G | Certificateの全7場合 | CertificateKernel（新）、CertificateSyntax（新） | Certificate.checkの意味、check_sound/implication_sound | 既存6場合とrefuteを合成しNNFを再計算→全モデルの含意。旧6成功の保存もここで照合し、独立の.73は置かない | 37 | 30〜60分/L |
-| L30.39/G | 検査器と置換の接続を合成 | CertificateKernelBind（新） | (i)check_bind、又は(ii)implication_sound_atとνの合成 | (i)7+9+10場合の変換からc'を構成。(ii)ν上で全規則を閉じ、恒等像/合成を証明→Entails.bindを元の署名で供給。A末にG表を改訂 | 19/30/36/38、A.03の選択後 | 60〜120分/L |
-| L30.40/G | Entailsへ一度接続 | Logic/Basic/LogicSound、純粋kernelのimport | S03 checked又はcheckedAtの一構成子、weaken/cut/sound/bind | Aで選んだ下層証明を使い四帰納へ各1場合→18→19、公開署名を維持 | 38/39 | 45〜90分/L |
+| L30.36/F | 同じ観測と全builtinのbind | BuiltinLogic（新）、EqCertificate | B08の16sort、12schema100分岐のraw_sound_at | 同じ像の一致を各原子へ運び、全12種類の検査のν上の健全性を閉じる→任意Propや型域の無条件登録なし | 28〜35 | 45〜90分/L・W |
+| L30.37/G | 下層の全反証の健全性 | CertificateKernel（新） | CertificateKernel.refute_sound_at、Refutation9 | todo/facts/keys/ν/ηを一般化して一度帰納し、builtin/round/splitをν上で合成。全規則と兄弟の独立を閉じる | D/E/F | 60〜120分/L |
+| L30.38/G | Certificateの全7場合 | CertificateKernel/CertificateSyntax（新） | Certificate.checkのν上の健全性、implication_sound_at | 旧6場合とrefuteをν上で合成しNNFを再計算。恒等置換からcheck_sound/implication_soundを一度導き、旧6成功はstructuralで保存 | 37 | 30〜60分/L |
+| L30.39/G | 検査器と置換合成を接続 | CertificateKernel（新）、CertificateKernelBind（既存の補助） | implication_sound_atとpredBind_compによるνの合成 | 全規則の帰納と恒等置換の系は.38で済ませ、元のνと外側のτの合成だけを示す。c'の再構成はせず、下層からKernelへの逆向きimportを作らない | 19/30/36/38 | 30〜60分/L |
+| L30.40/G | Entailsへ一度接続 | Logic/Basic/LogicSound、純粋kernelのimport | S03 checkedAt一構成子、checkedは導出、weaken/cut/sound/bind | 下層のν上の健全性を使い四帰納へ各一場合を足す。bindはpredBind_compを使い、18→19と公開署名の維持を確認 | 38/39 | 45〜90分/L |
 | L30.41/G | 型付けと葉の既存読者 | Le/Transport/TypedFacts/ReferenceStore/TypedMeaning | Entails.shiftV/under_none/hideContsと既存読者の形 | 新しいEntailsで全既存importを確認→型付け相互76場合へ新しい前提なし | 40 | 30〜60分/L |
 | L30.42/G | 実行する論理核の入口 | Certificate（上層接続）、CertificateKernelExamples（新） | Certificate.refutation_entailsとrawcheckのdecide | 開いた線形/Booleanの正例、不正証明書の負例を本番から再生→guard実行と核内証明を分けて保存 | 41 | 30〜60分/L・W |
-| L30.43/H | 並置の補助: 型域の定義 | Context、CarrierFacts（新） | Ty.carrierFacts/assumeWithCarrier/Ctx.factsWithCarrier、S01 | 8整数型の16端点とDecimal1項を並置→旧assume/factsの読者は切り替えない | A。G/U03の回答に依存しない | 30〜60分/L |
+| L30.43/H | 並置の補助: 型域の入力を接続 | Context、CarrierFacts（既存） | Ty.carrierFacts/assumeWithCarrier/Ctx.factsWithCarrier、S01 | Aの定義を再実装せず、8整数型の16端点とDecimal1項を本番の文脈・注釈の入力へ接続する。旧assume/factsは切り替えない | A。Gに依存しない | 30〜60分/L |
 | L30.44/H | 並置の補助: normとWF | Context/NormalWellFormed/NormalizationLogic | 新名版の16読者1/2/9/13/14、S01 | carrier/refinementの二列を新名で証明→旧等号は.51まで維持し、後継の使用箇所を準備 | 43 | 40〜75分/L |
 | L30.45/H | 並置の補助: shiftと文脈 | ContextFacts/ContextMap/ContextNormEq | 新名版の16読者3〜6/10/11/15/16 | None/self/後続変数の番号を保つ新factsの補題→旧Ctx.factsは切り替えず対応を記録 | 44 | 40〜75分/L |
 | L30.46/H | 並置の補助: 四置換 | Transport/TypeSubst/RangeSubst | 新名版の16読者7/8、carrierFacts_bind | 型変数の像で増える事実を包含で扱う→新名の型/行/範囲/値の移送を準備 | 44/45 | 40〜75分/L |
@@ -495,7 +465,7 @@ J30-2はplanの2026-11-03の判断で採択済みである。Ty.LeQを通じて�
 | L30.52/I | 切替後の読者: 意味の移送 | MeaningTransport/MeaningOrder | assumptions_meaning、valueMeaning_subの旧公開署名 | 新carrierFactsと明示述語を別々に供給する証明を整理→assumptions_meaning/valueMeaning_subの旧公開署名と辞書式帰納を維持 | 51 | 45〜90分/L |
 | L30.53/I | 切替後の読者: 網羅性と捕捉 | CoverageRefinement/TypedCoverage/PatternNormalForm/CloseTyping | 既存Inhabits/norm/close/captureの入口 | Month/空篩/観測不能List/unknownを確認し、bindParams/match_extend/paths_evaluate等の供給鎖を整理→捕捉した値の型域を実導出から得る | 51/52 | 30〜60分/L |
 | L30.54/I | 切替後の読者: 捕捉と全在庫 | 第5節とresultsの全在庫、HeldValues/RangeFormation等 | CaptureOkの12直接構成、全間接構成/供給、factsの定義展開の処分表 | 各CaptureOkの新しいΓ.factsの証拠を照合し変更/保持/後継を宣言名で閉じる→L20で閉じた構成を含め漏れ0、相互の仮定なし | 49〜53 | 90〜180分/L・W |
-| L30.55/J | 本番measureの正常結果 | Observation/ExternalObservation、MeasureContracts（新） | S06 measure_machine_exact | String二長/List/Bytes/Map/Set/characterCodeの7場合を分解→数学の非負と機械幅の表現可能性を分ける | F/I | 40〜75分/L |
+| L30.55/J | 本番measureの全7場合へ適用 | Observation/ExternalObservation、MeasureContracts（既存） | S06 measure_machine_exactとmeasure_stableの実読者 | 二つの一般補題はAで実装済み。String二長/List/Bytes/Map/Set/characterCodeへ適用し、数学の非負と機械幅の表現可能性を分ける | F/I | 20〜40分/L |
 | L30.56/J | 不変欄・snapshotのstable | MeasureContracts（新）、TypeValueExchange/CloseTyping/Declared | S06 measure_stable、closeValの既存観測交換 | 全16sort、可視な欄連鎖とNoneスロットで既存交換を使う→開いたpの不変等号を要求しない | 55/29/51 | 30〜60分/L |
 | L30.57/J | 整数の正常結果と表現可能性 | NumericContracts（新）、Interval/Evalの定義とInterval/Arithmeticの補題 | checkedAdd/Sub/Mul等の正常結果→数の一致とrepresented | 七幅の加算/減算/定数倍と符号付き四幅の負号、Byteの表現/変換を照合→中間Stopを成功へしない | 55/49 | 30〜60分/L |
 | L30.58/J | Decimal/Float/Characterの本番対応 | NumericContracts（新）、ClosedEvaluation/ExternalObservation | Decimalのrepresented、30比較と12分類の正常結果 | 既存bits/Char/係数scaleと同じ結果を導く→丸めやFloat算術を数学Intの線形へ拡大しない | 34/51/57 | 45〜90分/L |
@@ -507,34 +477,34 @@ J30-2はplanの2026-11-03の判断で採択済みである。Ty.LeQを通じて�
 | L30.64/K | L40への部分型の接続 | PreparedLeaf（新）、Le/Transport | S05 checked_refinement、同じLeQのbind/cut | 型/行/範囲/値の像と依存結果を含める→P4の試作の型を残さず本番のTy.LeQで閉じる | 62/63 | 40〜75分/L |
 | L30.65/K | Boolean・短絡と欄の実読者 | PreparedLeafExamples（新）、PathConditions/MatchPathsの既存葉 | apartの仮定をB04から導く、真偽の条件の含意 | let cの偽側/And/Or/Not、欄の別名からの同じmeasureを適用→偽guardの事実を後続へ足さない | 33/56/64 | 30〜60分/L |
 | L30.66/K | 全sortと有限補題の受渡し | PreparedLeafExamples（新）、16sort表の読者 | O015の16行、12schema100分岐の証拠/拒否対応 | characters/member/constructor/Booleanを含め全行へ供給元を記す→L50のσとL40の標準本体を区分 | 63〜65 | 40〜75分/L・W |
-| L30.67/L | 固定幅と数学Intの対応 | CoefficientModel（新）、本書のU03欄 | CoefficientRepresented bitsと一時域の別引数、checked成功→数学結果 | 回答の保存幅と一積の計算域を区別し、Decimalの閉じた比較を別の正確な計算へ分ける→32bit構成と表現外を照合 | A/D、J30-1/3/4の回答後 | 30〜60分/L |
-| L30.68/L | 一回ずつのstepsの定義 | StepAccounting（新）、本書U03欄 | Operationの有限タグ、used/reserved/remainingの状態遷移 | 入力/clone/正規化/探索/証明書/最終検査/後始末を定義→重みや別上限なし | 67、J30-3の粒度/版/予約の回答後 | 30〜60分/L |
+| L30.67/L | 固定幅と数学Intの対応 | CoefficientModel（新）、本書のU03欄 | CoefficientRepresented bitsと一時域の別引数、checked成功→数学結果 | 決定した保存幅128ビットと一積の計算域を区別し、Decimalの閉じた比較を別の正確な計算へ分ける→32bit構成と表現外を照合 | A/D、U03決定済み | 30〜60分/L |
+| L30.68/L | 一回ずつのstepsの定義 | StepAccounting（新）、本書U03欄 | Operationの有限タグ、used/reserved/remainingの状態遷移 | 入力/clone/正規化/探索/証明書/最終検査/後始末を定義→重みや別上限なし | 67、U03決定済み | 30〜60分/L |
 | L30.69/L | 各処理と計上の対応 | StepAccounting（新）、R20向け読者表 | operation列の長さ=使用数、使用数+予約≤上限 | lookup/係数merge/名前比較/枝rollbackの具体化を対応→未計上ループ/暗黙cloneを残さない | 68 | 30〜60分/L |
-| L30.70/L | 検査器の計算量の境界 | StepAccounting（新）、CertificateKernelの読者 | I/C/Pと仕事列の対応、不正参照の入力検査 | 共有prefix/明示スタック/型付きIDを点検→CPUや証明書byte線形の未証明主張をしない | 69/G、J30-4の実作業との対応の回答後 | 30〜60分/L |
+| L30.70/L | 検査器の計算量の境界 | StepAccounting（新）、CertificateKernelの読者 | I/C/Pと仕事列の対応、不正参照の入力検査 | 共有prefix/明示スタック/型付きIDを点検→CPUや証明書byte線形の未証明主張をしない | 69/G、U03決定済み | 30〜60分/L |
 | L30.71/L | 三種類の停止と拒否 | CoefficientModel/StepAccounting（新）、CertificateKernelExamples | malformed/representation/stepsExhaustedの別の結果形 | stepsが残る表現外、steps超過、不正証明書の入力を区別→unknownをproved/反例へしない | 67〜70 | 30〜60分/L |
-| L30.72/L | R20の契約を引き渡す | Lの本番宣言、本書のR20表 | 規則の版/係数幅の回答/入力と理由/計上の全読者 | 保存幅/一時積/閉じた比較、版、byte/節点の粒度、予約を引渡す→Rust探索順/u64既定値/設定元と健全性を分けて全処理の実装レビューへ | 71 | 30〜60分/L・W |
+| L30.72/L | R20の契約を引き渡す | Lの本番宣言、本書のR20表 | proof-steps-v1/保存幅128ビット/入力と理由/計上の全読者 | 保存幅/一時積/閉じた比較、版、byte/節点の粒度、予約を引渡す→Rust探索順/u64既定値/設定元と健全性を分けて全処理の実装レビューへ | 71 | 30〜60分/L・W |
 | L30.74/M | 再生と核内証明の照合 | CertificateKernelExamples/TermStructuralEq（新） | rawcheckの実行値、by decideで同じ等式を証明 | 同じ証明書のguard実行とカーネル証明を別に記録→実行時間を能動時間へ混ぜない | K。U03非依存、契約値は引数 | 20〜40分/L |
 | L30.75/M | レビュー申し送りの処分 | 本書第8節、対応する本番読者 | 論理の証拠とhandler/Reference/Lazy/Atの担当を分離 | 既済み/今回/L40/L50/L70/R段を理由付きで一件ずつ処分→Rustの未実装比較を実施済みにしない | 74 | 30〜60分/L |
-| L30.76/M | 義務と署名の全照合 | 本書第7節、L40/R20への実署名 | 27行+L20段末15行+O143+共通4行の段別判定 | 本番の定義名・証拠・残る段を対応し全署名を保存→義務全体の閉鎖とL30分の完了を区別 | 75。契約は引数、回答前はL未完を明記 | 45〜75分/L・W |
-| L30.77/N | 全ケースの完了を点検 | 全新規/変更Lean、既定Benitoite import | 28/20/7/9/2/10/12/100/16の各別の一覧 | 全有限規則・正常/拒否の読者と既定Certificate importを照合→未証明/無効化例0、旧6成功保存は.38の証拠を引用 | L/M | 45〜75分/L |
+| L30.76/M | 義務と署名の全照合 | 本書第7節、L40/R20への実署名 | 27行+L20段末15行+O143+共通4行の段別判定 | 本番の定義名・証拠・残る段を対応し全署名を保存→義務全体の閉鎖とL30分の完了を区別 | 75。数学の契約は引数で保ち、群Lの実装の完了を別に判定 | 45〜75分/L・W |
+| L30.77/N | 全ケースの完了を点検 | 全新規/変更Lean、既定Benitoite import | 28/20/7/9/2/9/12/100/16の各別の一覧 | 全有限規則・正常/拒否の読者と既定Certificate importを照合→未証明/無効化例0、旧6成功保存は.38の証拠を引用 | L/M | 45〜75分/L |
 | L30.78/N | 公理依存と最終work | 新旧主定理/新規葉、01-12/07-04の写し | A-L全定数一覧とprint axioms、同じ最後のwork | 許可三公理だけ、既定全対象とsorry拒否。正式RSSは取りまとめが同じworkへ付ける→生終了と入力を保存 | 77 | 30〜60分/L |
 | L30.79/N | 段末の独立レビューへ応答 | 当該変更と群/段末results | 定義/言明/仮定、J30、全O行の証拠の応答 | 取りまとめの独立所見を処置し影響した検査だけ更新→担当の自己点検と独立レビューを分ける | 78、レビュー実行は待ち | 30〜60分/L |
 | L30.80/N | 受け入れ資料と次段を固定 | 段末results、本書、L40/R20実署名 | 段別完了/全体残り、所要と待ち、未決の判断表 | 取りまとめへ転記を渡し設計者の受入を待つ→未受入を完了と書かない | 79 | 20〜40分/L・W |
 
 Aの後はB→C→D→E→F→G→H→I→J→K→L→M→Nを基本とする。DはFのbuiltinを参照する構文だけを先に置き、全Refutationの帰納はFの後のGで一度閉じる。既定ビルドを保つため途中の下層は未実装の枝をfalseで拒否してよいが、その枝の完成とは数えない。対応する群で規則の本体・sound・bind・既定の具体読者を同時に足し、Nの全場合表で拒否のまま残った規則がないことを確かめる。
 
-### U03の回答と群の依存
+### U03の決定と群の依存
 
-| 群 | 依存 | U03の回答 |
+| 群 | 依存 | U03の扱い |
 |---|---|---|
-| A | L10/必要なL20、採択済みJ30-2 | 不要。幅/stepsを引数にする |
-| B/C/D/E/F/G | Aと各行の前群。D/GはA.03で選んだ署名を確認 | 不要 |
-| H、I | HはAだけ、Gを待たずに並置可。Iの切替.51はG/H/.49/.50 | 不要 |
-| J/K/M | 各行のI/F/G/K等。Mの義務表はLの欄を未確定として先に作れる | 不要 |
-| L | A/DとJ30-1/3/4の回答 | **必要。全6単位を回答後に置く** |
-| N | 全群の成果とレビュー。Lの未回答があればL30段末は未完 | 段末の合流で必要 |
+| A | L10/L20、採択済みJ30-2 | 方式の確認は済み。数学の幅は引数を保つ |
+| B/C/D/E/F/G | 各行の前群。checkedAtの固定署名を使う | 回答待ちなし |
+| H、I | HはAだけ。Iの切替.51はG/H/.49/.50 | 回答待ちなし |
+| J/K/M | 各行のI/F/G/K等 | 回答待ちなし |
+| L | .67はA/D、.68→.69→.70はGも、.71→.72 | 保存幅/粒度/版/予約は決定済み。回答を待たず依存順で起動 |
+| N | 全群の成果とレビュー、L/M | 群Lの実装・照合も終えて合流 |
 
-.43〜.50は「並置の補助」、.51は「切替」、.52〜.54は「切替後の読者」である。切替の所要時間（能動時間）だけを分けると180〜300分。前後の補助・照合とは二重に足さない。長い単位も関係Lean/既定ビルドが通る途中の区切りを設け、上端の2倍へ達したら見直す。
+.43〜.50は並置の補助、.51は切替、.52〜.54は切替後の読者である。切替の所要時間（能動時間）は180〜300分を別掲し、前後の補助と二重に足さない。長い単位も関係Lean/既定ビルドが通る区切りを設け、上端の2倍へ達したら見直す。
 
 ## 7. 義務の一行ずつの対応
 
@@ -546,9 +516,9 @@ Aの後はB→C→D→E→F→G→H→I→J→K→L→M→Nを基本とする。
 |---|---|---|---|---|
 | O015 | 証明 | 12/16/29/56/66 | 16sortとmember/constructor/Booleanの有限規則、観測の成功との接続 | L50の対象所属/具体化、L40の標準葉 |
 | O017 | 契約 | 67〜72 | 全処理の無重み計上、版、実作業との対応を固定 | R20の実装レビュー/使用数、R50/R60の報告 |
-| O019 | 証明 | 07〜08/25〜42/61 | Certificate7/Refutation9/EqProof10、12種の不正証拠の拒否と全sound/bind | R20の独立検査器、R50の有限比較 |
+| O019 | 証明 | 07〜08/25〜42/61 | Certificate7/Refutation9/EqProof9、12種の不正証拠の拒否と全sound/bind | R20の独立検査器、R50の有限比較 |
 | O020 | 証明 | 21〜24/37/71 | discardTodo/discardFactとOr展開前の既知矛盾の反証を構成 | R20探索順、R70の不要な≠を含む本番測定 |
-| O021 | 計画 | 06/48/72/80 | 全79単位と48時間55分〜95時間30分の積上げ、正常算術/Stop/写しの担当を名指し | L40、R20と合わせた見込み更新。元の中心112を本番実績なしに80へ変更しない |
+| O021 | 計画 | 06/48/72/80 | 全79単位と47時間5分〜91時間55分の積上げ、正常算術/Stop/写しの担当を名指し | L40、R20と合わせた見込み更新。元の中心112を本番実績なしに80へ変更しない |
 | O022 | 証明 | 25〜36/43〜66 | 有限表と型域/鍵/欄を列挙し、本番から三条件を用いて葉を構成 | L40の標準本体/実δ、L50の対象/σ、L60のモデル |
 | O023 | 証明・記録 | 42/74 | 同じ証明書でrawcheckの実行とby decideの等式証明を別に保存 | R50の交換再生と対応する時間の記録 |
 | O026 | 契約 | 60/71/72 | 純化された数値割当を候補とし、負のlengthを実反例と呼ばない境界 | R20の実現確認、R60の診断/JSON |
@@ -569,7 +539,7 @@ Aの後はB→C→D→E→F→G→H→I→J→K→L→M→Nを基本とする。
 | O137 | 証明 | 51/57〜58/64 | 七幅の本番正常算術とByte/Decimal等の表現可能性、Stopの区別を葉へ渡す | L40の全実δ/標準契約・H04→R20/R10b/R40/R50→V10 |
 | O144 | 証明 | 09〜42/55〜66 | 量化子なし線形/論理/組込みmeasureの全規則、空篩/true/構造等号を継承 | L40の型/標準葉、L50対象→R20/R10b/R40/R50→V10。UF/SMT/量化/非線形/入れ子measureなし |
 | O158 | 契約 | 67〜72 | 回答済みU08=Aとの照合。stepsと係数表現外以外の独立unknownを足さない | R20/R70の実装と設定、V10でmalformedとの区別 |
-| O161 | 証明 | 67/71/72 | 数学Intと幅多相の部分演算の対応、表現外とstepsの別結果 | R20で回答後の幅、R60のJSON/診断、V10の別入力 |
+| O161 | 証明 | 67/71/72 | 数学Intと幅多相の部分演算の対応、表現外とstepsの別結果 | R20で決定した保存幅128ビットを適用、R60のJSON/診断、V10の別入力 |
 | O167 | 証明 | 12/25〜36/60/66/71 | L30が持つ非観測/限定合同/UF・非線形・入れ子measure/unknownの境界を受理と拒否の対照で示す | L40/L70→各R段/V10。比較連鎖/区間略記はL70/R60 |
 
 分類は証明23行（O023は再生の記録も含む）、契約3行（O017/O026/O158）、計画1行（O021）、計27行である。共同の行はL30分だけを判定する。O131の標準本体、O135のdata/decode、O137の全δ、O015/O144のσ等は、論理の規則を作る担当と本体/対象の意味を証明する担当が異なるため、右欄へ分けた。行全体を他段へ丸投げした件は0行である。
@@ -631,35 +601,37 @@ Aの後はB→C→D→E→F→G→H→I→J→K→L→M→Nを基本とする。
 
 | 項目 | 判断の状態・推奨 | 影響と止める位置 |
 |---|---|---|
-| J30-1・係数幅 | **設計者・未決**。128bitを推奨。第4節の計算域の分離が条件 | 保存係数の表現外で受理が変わる。閉じたDecimal比較とu64の一時積は同じ固定幅で計算しない。群L/公開契約は回答後 |
+| J30-1・係数幅 | **設計者・決定済み**。保存係数/定数は符号付き128ビット | 閉じたDecimal比較とu64の一時積は保存幅で計算しない。群Lは依存順で起動 |
 | J30-2・判断と意味の型域 | **採択済み**。planの2026-11-03の取りまとめの判断。D02・D21の範囲としてS01を採る | Ty.assume→Ctx.facts→Ty.LeQ.introduce/refine（V_Sub・C_Sub）とCaptureOk.mkの事実の欄に入る。主定理が量化する型付け判断と状態不変条件の定義を変える。言明の形（量化の形と結論）は維持。受理する導出が増え、書ける形は狭めない。L20のCapture構成の再追随も計上 |
-| J30-3・粒度/版/予約 | **設計者・未決**。byteと節点の実操作、proof-steps-v1、生成時の個別予約を推奨 | 第4節の三点だけを問う。粒度/予約は同じstepsでの受理を変えうる。版の字面だけなら差なし。群Lは回答後 |
-| J30-4・実作業と計算量の対応 | **設計者・U03の契約の確認**。J30-3の粒度/予約と実作業の対応、枝共有を推す | 新しい選択肢を増やさず三点へ集約。独立上限/重み/未計上cloneを追加せず、証明書byte数だけの線形時間やCPU/OS上限を保証しない |
-| J30-5・検査器/合同/葉 | **取りまとめと独立レビュー**。A.03の二案比較とA.05/.06の署名を確認 | Entails.bindを変えず、選んだ案をD/Gへ反映。A.02では主定理の言明（量化の形と結論）を変える必要があれば停止する。J30-2で採った前提の判断の定義の変更とは区別 |
+| J30-3・粒度/版/予約 | **設計者・決定済み**。一byte/一節点・辺・要素/一演算、proof-steps-v1、生成時の個別予約 | used+reserved≤limitを保ち、破棄時に一度だけusedへ移す。群Lに回答待ちはない |
+| J30-4・実作業と計算量の対応 | **設計者・U03の契約を決定済み**。第4節の粒度/予約と全実作業を対応させる | 独立上限/重み/未計上cloneを足さず、証明書byte数だけの線形時間やCPU/OS上限を保証しない |
+| J30-5・検査器/合同/葉 | **取りまとめが案(ii)checkedAtを採択済み**。限定合同と葉は群Aの署名を引継ぐ | Entails.bindを保つ。主定理の量化/結論の変更が要れば停止し、J30-2で採った判断の定義の変更と区別 |
 
 新公理、主定理の結論の弱化、新しい提供範囲の削減、書ける形の独立の制限、精密な外部状態の新設は提案しない。これらが必要と分かったら、反例/未証明の言明・差・代案・所要時間（能動時間）と待ち・実用への影響を示して止める。
 
-**取りまとめへの確認点**: planのREADMEと同じ範囲の上端は既に1,338.3時間で、旧相談基準1,188.8時間を149.5時間超える。2026-10-31の了承は相談の対象を「改造全体の見込みの上端」へ変えた。この了承と1,188.8時間の基準の関係、今回のL30上端95時間30分への更新後に相談が要るかを取りまとめが整理する。段の上端だけで自動停止とはしないが、超過を未発生とも書かない。
+**取りまとめへの確認点**: 第11節の重複控除後の見込みをplanへ転記し、改造全体の相談条件と合わせる。本担当はplanを編集しない。段の上端だけで自動停止とはせず、既存の停止条件は保つ。
 
 各単位の上端の2倍へ達したら原因と残りを報告し、既定ビルドが通る区切りで止め、新単位へ入らない。全単位一律120分とはしない。新公理等の停止条件はその時刻を待たない。
 
 ## 11. 見込みの根拠と取りまとめへの転記
 
-**79単位、所要時間（能動時間）48時間55分〜95時間30分、中心72時間12分30秒（約72時間13分）**。第6節の各行を加算した値で、単位数に一律45分を掛けていない。元枠36〜84時間（中心60）に対し、下端+12時間55分、上端+11時間30分、中心約+12時間13分となる。独立レビューの実行・ビルド/監査・回答/受け入れの待ちは別である。
+**79単位、所要時間（能動時間）47時間5分〜91時間55分、中心69時間30分（2,825〜5,515分）**。第6節の各行を加算した値で、単位数に一律45分を掛けていない。元枠36〜84時間（中心60）に対し、下端+11時間5分、上端+7時間55分、中心+9時間30分となる。独立レビューの実行・ビルド/監査・回答/受け入れの待ちは別である。
 
-帰納を合成する.18/.37/.39、分岐の多い.34/.36、全在庫の.54を個別に広げた。.51の切替は180〜300分を別掲する。L20で閉じたCaptureOkの構成を開き直す分は、.49の15〜30分、.51の60〜120分、.53の15〜30分、.54の60〜120分、計**2時間30分〜5時間**を各単位の内数として含めた。切替とその後の照合を二重に加算しない。守る既存読者0の.73は.38/.77に統合し、IDを詰めない。
+前倒しと重複の控除は.07が10〜20分、.19が30〜60分、.27が10〜20分、.30が10〜20分、.39が30〜60分、.55が20〜35分で、計110〜215分である。.19の線形化のν上の証明はB、正規化のν上の証明はCの既存の枠に含め、Dでは合成だけを数える。.38で全健全性と恒等置換の系、.39ではνの合成だけを数える。群Aの短い実績の比で一律に下げたものではない。
+
+帰納を合成する.18/.37、分岐の多い.34/.36、全在庫の.54を個別に広げた。.51の切替は180〜300分を別掲する。L20で閉じたCaptureOkの構成を開き直す分は、.49の15〜30分、.51の60〜120分、.53の15〜30分、.54の60〜120分、計**2時間30分〜5時間**を各単位の内数として含めた。切替とその後の照合を二重に加算しない。守る既存読者0の.73は.38/.77に統合し、IDを詰めない。
 
 [effort-ledger](../effort-ledger.md)の選択は、単位名が`L20 群 `で始まり担当Codexの全行（A1〜S、入口/停止/再開を含む）44行で約21時間54分。`RV-L20.`で始まる独立レビュー23行は約3時間20分。`L20-plan`の計画4行は約2時間59分、`RV-L20-plan`の計画レビュー4行は約29分として分離した。取りまとめのworkは足さない。[resultsの選択行表](results.md#r1-台帳の選択行)に全行名と元の行番号を載せる。待ちが分離されていない外側の時間を能動時間の確定値にはしない。
 
-L20の実装は詳細化の見込みを大きく下回ったが、新しい検査器/丸め/合同/型域の変更へ比を一律に掛けない。最初の16読者の新名版と本番切替の結果を区別し、通常resultsで分離できた同種の残りだけを更新する。Aで選ぶ帰納の形、Jの鍵の意味、回答待ちにはその単価を掛けない。
+L20の実装は詳細化の見込みを大きく下回ったが、新しい検査器/丸め/合同/型域の変更へ比を一律に掛けない。最初の16読者の新名版と本番切替の結果を区別し、通常resultsで分離できた同種の残りだけを更新する。checkedAtの全帰納とJの鍵の意味にはその単価を掛けない。
 
 | 残る手順 | 検査・レビュー・受け入れを含む内容 | 見込み |
 |---|---|---:|
-| r1の確認と転記 | 所見14件、79単位、35義務、担当追記4行、O056の処分、上端と相談条件を取りまとめが確認 | 不明 |
-| Aの方式の確認 | 6単位、関係/既定Lean、定義/言明/仮定の群末レビューと処置、D/Gの署名確定 | 所要時間（能動時間）3時間40分〜7時間15分、待ちは別 |
-| B〜Mの本番作業 | 69単位。LだけU03回答後。有限規則・本番読者・各群末の既定Leanとレビュー処置 | 所要時間（能動時間）43時間10分〜84時間20分、待ちは別 |
+| r2の確認と転記 | 軽9件の処置、79単位、35義務、重複控除後の上端と相談条件を取りまとめが確認 | 不明 |
+| Aの方式の確認 | 6単位の担当分と独立レビューは済み、再開1の処置の確認を取りまとめへ渡す。上の全体値はAの元の枠を含み、実績は別記 | 元の所要時間（能動時間）3時間40分〜7時間15分。再開1の実績はa/resultsへ |
+| B〜Mの本番作業 | 69単位。Lも決定済みU03と依存順に従う。有限規則・本番読者・各群末の既定Leanとレビュー処置 | 所要時間（能動時間）41時間20分〜80時間45分、待ちは別 |
 | Nの監査と受入資料 | 4単位、全場合/義務/署名、A-L、最後のwork/RSS、段末レビュー応答 | 所要時間（能動時間）2時間5分〜3時間55分、待ちは別 |
 | ビルド・監査・正式RSS | 同じ検査を引用。L20最後のwork147.71秒は参考だけ | 群末増分buildは約2.5分から更新、A-L旧案1〜5分。新規分/再実行は不明 |
-| 独立レビュー・U03回答・受け入れ | 群末/段末と設計者。L20の並行受け入れを区別 | 不明 |
+| 独立レビュー・受け入れ | 群末/段末と設計者。L20の段末は受入済み | 不明 |
 
 取りまとめは群/見込み/担当追記/J30/次段の実署名をplanへ転記する。主定理・実表・標準本体・Rust接続・最終比較の全体の完了とは区別する。
