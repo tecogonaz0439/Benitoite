@@ -356,5 +356,13 @@ theorem ClosureTy.pure_primitive {P B Ψ R a e b ts es rs ws s}
   change Eff.Covers [] [] (Capture.empty.closeEff es0) f at hh
   rwa [he] at hh
 
+/-- 非依存の引数列を、正規化した依存列の呼出しへ移す。 -/
+theorem HasTypeVsQ.toTel_normal {P B Ψ vs ns ps r e}
+    (ha : Ty.Annotation P [] [] (.fn ns ps r e))
+    (hs : HasTypeVsQ P B Ψ Qempty [] [] [] vs ps) :
+    HasTypeTelArgsQ P B Ψ Qempty [] [] [] vs
+      (Ty.toTel ns (Ty.normTys ps) r.norm (Eff.norm e)) r.norm (Eff.norm e) :=
+  vs_toTel ha hs
+
 end
 end Benitoite.Release.Refinement

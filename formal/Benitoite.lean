@@ -136,30 +136,23 @@ import Benitoite.Exchange.CheckInput
 import Benitoite.Exchange.RangeExamples
 import Benitoite.Exchange.Observe
 import Benitoite.Exchange.ObserveExamples
-
 import Benitoite.Release.CoverageExtension
-
 import Benitoite.Release.Order.FiniteAtoms
 import Benitoite.Release.Finite
 import Benitoite.Release.FiniteSupport
 import Benitoite.Surface.FiniteTools
 import Benitoite.Surface.FinitePredicates
 import Benitoite.Surface.FiniteExamples
-
 import Benitoite.Release.NoFail
 import Benitoite.Release.Admissible
 import Benitoite.Release.Lemmas.Irrelevant
 import Benitoite.Surface.NoFailCheck
 import Benitoite.Surface.NoFailCheckExamples
-
 import Benitoite.Release.FailureEffects
-
 import Benitoite.Release.FailureExamples
-
 import Benitoite.Surface.SingleFail
 import Benitoite.Surface.SingleFailCheck
 import Benitoite.Surface.FailureExamples
-
 import Benitoite.Checked.Access
 import Benitoite.Checked.Scope
 import Benitoite.Checked.Range
@@ -167,27 +160,17 @@ import Benitoite.Checked.ListLength
 import Benitoite.Checked.ListIndex
 import Benitoite.Checked.NonEmptyList
 import Benitoite.Surface.LogExamples
-
 import Benitoite.Library.ResultLaws
 import Benitoite.Surface.Monad2Examples
-
 import Benitoite.Surface.Builders
 import Benitoite.Surface.Lemmas.Builders
-
 import Benitoite.Surface.BuilderExamples
-
 import Benitoite.Release.CoverageIntegerExamples
-
 import Benitoite.Release.LocalRef
-
 import Benitoite.Release.LocalScope
-
 import Benitoite.Release.BuilderExamples
-
 import Benitoite.Exchange.BuilderExamples
-
 import Benitoite.Exchange.FormatExamples
-
 import Benitoite.Interval.Domain
 import Benitoite.Interval.Identity
 import Benitoite.Interval.BindingScope
@@ -197,22 +180,17 @@ import Benitoite.Interval.FixedDomain
 import Benitoite.Interval.Environment
 import Benitoite.Interval.Analyze
 import Benitoite.Interval.Arithmetic
-
 import Benitoite.Interval.Flow
-
 import Benitoite.Interval.Sound
 import Benitoite.Interval.FixedDomainExamples
 import Benitoite.Interval.DomainExamples
 import Benitoite.Interval.FlowExamples
-
 import Benitoite.Interval.Budget
 import Benitoite.Interval.BudgetExamples
-
 import Benitoite.Interval.BudgetScan
 import Benitoite.Interval.BudgetEnvironment
 import Benitoite.Interval.BudgetPatterns
 import Benitoite.Interval.BudgetScanExamples
-
 import Benitoite.Interval.BudgetWalk
 import Benitoite.Interval.BudgetIndependentRun
 import Benitoite.Interval.BudgetChildren
@@ -239,23 +217,17 @@ import Benitoite.Interval.BudgetChildrenExamples
 import Benitoite.Interval.BudgetIndependentExamples
 import Benitoite.Interval.SyntacticReachExamples
 import Benitoite.Interval.BudgetAnalysisExamples
-
 import Benitoite.Interval.EvalClosed
 import Benitoite.Interval.Examples
-
 import Benitoite.Interval.IdentityExamples
-
 import Benitoite.Interval.BudgetCount
 import Benitoite.Interval.BudgetDiscover
 import Benitoite.Interval.BudgetDiscoverProof
 import Benitoite.Interval.BudgetDiscoveryExamples
-
 import Benitoite.Interval.BudgetWhole
 import Benitoite.Interval.BudgetWholeExamples
-
 import Benitoite.Interval.Exchange
 import Benitoite.Interval.ExchangeExamples
-
 import Benitoite.Scope.RepresentationExamplesI
 import Benitoite.Scope.Domain
 import Benitoite.Scope.Signature
@@ -274,7 +246,6 @@ import Benitoite.Scope.SignatureExamples
 import Benitoite.Scope.InferenceExamples
 import Benitoite.Scope.CompatExamples
 import Benitoite.Scope.SwitchExamples
-
 import Benitoite.Surface.ScopeState
 import Benitoite.Surface.ScopeStateExamples
 import Benitoite.Surface.ScopeLower
@@ -290,38 +261,26 @@ import Benitoite.Surface.CheckAccept
 import Benitoite.Surface.CheckAcceptExamples
 import Benitoite.Surface.ScopeSound
 import Benitoite.Surface.ScopeSoundExamples
-
 import Benitoite.Release.Refinement.Typing
 import Benitoite.Release.Refinement.OpenSubstitution
 import Benitoite.Release.Refinement.SubstTypingObstruction
 import Benitoite.Release.Refinement.NarrowingObstruction
-
 import Benitoite.Release.Refinement.KindInference
 import Benitoite.Release.Refinement.ValueReferences
-
 import Benitoite.Release.Refinement.TypingDeclared
 import Benitoite.Release.Refinement.ValueInstantiation
-
 import Benitoite.Release.Refinement.Embedding
-
 import Benitoite.Release.Refinement.TelTyping
-
 import Benitoite.Release.Refinement.AtTyping
 import Benitoite.Release.Refinement.Preparation
 import Benitoite.Release.Refinement.Source
 import Benitoite.Release.Refinement.AtSound
-
 import Benitoite.Release.Refinement.TypeRenaming
-
 import Benitoite.Release.Refinement.PatternTransport
-
 import Benitoite.Release.Refinement.AtPatterns
-
 import Benitoite.Release.Refinement.HandlerTyping
-
 import Benitoite.Release.Refinement.ClosureTyping
 import Benitoite.Release.Refinement.StateTyping
-
 import Benitoite.Shared.Integer
 import Benitoite.Shared.Interval
 import Benitoite.Shared.Approximation
@@ -331,23 +290,19 @@ import Benitoite.Release.ApproxAdapter
 import Benitoite.Release.Refinement.ApproxAdapter
 import Benitoite.Release.Refinement.LocalResolve
 import Benitoite.Release.Refinement.LocalResolveLemmas
-
 import Benitoite.Release.Refinement.Context.WF
 import Benitoite.Release.Refinement.Context.Facts
 import Benitoite.Release.Refinement.Context.Declarations
 import Benitoite.Release.Refinement.Context.Capture
-
 import Benitoite.Release.Refinement.LogicSound
 import Benitoite.Release.Refinement.ClosedKeys
 import Benitoite.Release.Refinement.ExternalCheck
-
 import Benitoite.Release.Refinement.Certificate
 import Benitoite.Release.Refinement.ExternalConnection
 import Benitoite.Release.Refinement.InversionCore
 import Benitoite.Release.Refinement.Canonical
 import Benitoite.Release.Refinement.BindCongr
 import Benitoite.Release.Refinement.DeclaredTransport
-
 import Benitoite.Release.Refinement.ValueFacts
 import Benitoite.Release.Refinement.HeldValues
 import Benitoite.Release.Refinement.TargetTable
@@ -359,21 +314,14 @@ import Benitoite.Release.Refinement.MatchPaths
 import Benitoite.Release.Refinement.MatchFacts
 import Benitoite.Release.Refinement.ReferencePreservation
 import Benitoite.Release.Refinement.LazyPreservation
-
 import Benitoite.Release.Refinement.HandlerOperation
-
 import Benitoite.Release.Refinement.BuiltinEffects
-
 import Benitoite.Release.Refinement.CoverageRefinement
-
 import Benitoite.Release.Refinement.ProgramTyping
 import Benitoite.Release.Refinement.ProgramWellFormed
-
 import Benitoite.Release.Refinement.LegacyTableFacts
 import Benitoite.Release.Refinement.LegacyValues
-
 import Benitoite.Release.Refinement.Finite
-
 import Benitoite.Release.Refinement.TypeRegularity
 import Benitoite.Release.Refinement.TypeBounds
 import Benitoite.Release.Refinement.TypeRows
@@ -381,20 +329,15 @@ import Benitoite.Release.Refinement.TypeVariables
 import Benitoite.Release.Refinement.TypeShiftFacts
 import Benitoite.Release.Refinement.EffectFacts
 import Benitoite.Release.Refinement.TypeArgumentRegularity
-
 import Benitoite.Release.Refinement.CaptureRegularity
-
 import Benitoite.Release.Refinement.TypeSubstContracts
-
 import Benitoite.Release.Refinement.KindTypeSubst
 import Benitoite.Release.Refinement.TypeSubstFormation
 import Benitoite.Release.Refinement.CurrentSignatureRows
 import Benitoite.Release.Refinement.TypeSubstRowObstruction
 import Benitoite.Release.Refinement.TypeSubstCalls
-
 import Benitoite.Release.Refinement.TypeSubstGateExamples
 import Benitoite.Release.Refinement.NestedContinuation
-
 import Benitoite.Release.Refinement.MeaningOrder
 import Benitoite.Release.Refinement.MeaningTransport
 import Benitoite.Release.Refinement.MeaningTransportObstruction
@@ -412,10 +355,20 @@ import Benitoite.Release.Refinement.TypeSubstLocalSignature
 import Benitoite.Release.Refinement.TypeSubstAux
 import Benitoite.Release.Refinement.TypeSubstMain
 import Benitoite.Release.Refinement.TypeSubstCallSites
-
 import Benitoite.Release.Refinement.ContextTransport
 import Benitoite.Release.Refinement.CaptureTransport
 import Benitoite.Release.Refinement.ContextRegularity
 import Benitoite.Release.Refinement.LocalTyping
 import Benitoite.Release.Refinement.SubstAgreement
 import Benitoite.Release.Refinement.SubstCongruence
+import Benitoite.Release.Refinement.CloseTyping
+import Benitoite.Release.Refinement.ClosureViewTyping
+import Benitoite.Release.Refinement.CaptureApplicationAlgebra
+import Benitoite.Release.Refinement.ClosureApply
+import Benitoite.Release.Refinement.CloseApplication
+import Benitoite.Release.Refinement.ClosureCallInputs
+import Benitoite.Release.Refinement.ClosureStateLeaves
+import Benitoite.Release.Refinement.CallBodyScope
+import Benitoite.Release.Refinement.MethodTypeComposition
+import Benitoite.Release.Refinement.MethodClosure
+import Benitoite.Release.Refinement.SuperClosure

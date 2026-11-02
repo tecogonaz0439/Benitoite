@@ -32,7 +32,7 @@ private theorem closure_normal {P B Ψ R q a e}
   rw [←ha]
   exact substTyValues_normal _ _
 
-private theorem normal_return_tail {P B σ Ψ R ε k a b Eb Re}
+private theorem normal_return_tail_base {P B σ Ψ R ε k a b Eb Re}
     (h : ContTy P B σ Ψ R ε k a b Eb Re) (hRe : Re = none)
     (n : Ty) (ha : Ty.Annotation P [] [] n) (hn : n.Normal) (hl : Ty.LeQ P [] [] n a) :
     ∃ R', (∀ r, R' = some r → r.Normal) ∧ ContTy P B σ Ψ R' ε k n b Eb Re := by
@@ -49,14 +49,14 @@ private theorem normal_return_tail {P B σ Ψ R ε k a b Eb Re}
   | .K_Mark ht _ => exact ⟨some n,by intro r hr; cases hr; exact hn,.K_Mark (.K_Sub ht hl) ha⟩
   | hh@(.K_Update ..) | hh@(.K_Guard ..) => exact ⟨none,by intros; contradiction,.K_Sub hh hl⟩
   | .K_Release hv had hr hs ht =>
-    obtain ⟨R',hR,ht'⟩ := normal_return_tail ht hRe n ha hn hl
+    obtain ⟨R',hR,ht'⟩ := normal_return_tail_base ht hRe n ha hn hl
     exact ⟨R',hR,.K_Release hv had hr hs ht'⟩
   | .K_Drop hloc hs ht =>
-    obtain ⟨R',hR,ht'⟩ := normal_return_tail ht hRe n ha hn hl
+    obtain ⟨R',hR,ht'⟩ := normal_return_tail_base ht hRe n ha hn hl
     exact ⟨R',hR,.K_Drop hloc hs ht'⟩
   | hh@(.K_Handle _ _ _ _ _ hR ..) | hh@(.K_Handle_Fail _ _ _ _ _ hR ..) =>
     exact ⟨_,fun r hr => closeR_normal (hR.trans hr),.K_Sub hh hl⟩
-  | .K_Sub ht hle => exact normal_return_tail ht hRe n ha hn (.trans hl hle)
+  | .K_Sub ht hle => exact normal_return_tail_base ht hRe n ha hn (.trans hl hle)
 termination_by structural h
 
 
@@ -104,7 +104,7 @@ theorem StateTyE.handler_return_const {P B σ Eb q c cap cs k μ}
   obtain ⟨t,et,hle,ht⟩ := handler_inv hk
   have hv' := hq.ret_const hA.substitutions hs.wf hv
   have ha : Ty.Annotation P [] [] a := ⟨hq.annotation.wf.1,hq.annotation.sorted.1,hq.annotation.declared.1⟩
-  obtain ⟨R',hRn,ht⟩ := normal_return_tail ht rfl a ha (closure_normal hq) hle
+  obtain ⟨R',hRn,ht⟩ := normal_return_tail_base ht rfl a ha (closure_normal hq) hle
   have hr := ContTy.return_annotation ht rfl
   have hq' := ClosureTy.pure (.C_Return (R := R') hv') (empty_annotation ha)
     (fun r hh => ⟨(hr r hh).wf,(hr r hh).declared⟩) (closure_normal hq) hRn
@@ -122,7 +122,7 @@ theorem StateTyE.drop_used_const {P B σ Eb q c l k μ}
   obtain ⟨t,hle,ht⟩ := drop_inv hk
   have hv' := hq.ret_const hA.substitutions hs.wf hv
   have ha : Ty.Annotation P [] [] a := ⟨hq.annotation.wf.1,hq.annotation.sorted.1,hq.annotation.declared.1⟩
-  obtain ⟨R',hRn,ht⟩ := normal_return_tail ht rfl a ha (closure_normal hq) hle
+  obtain ⟨R',hRn,ht⟩ := normal_return_tail_base ht rfl a ha (closure_normal hq) hle
   have hr := ContTy.return_annotation ht rfl
   have hq' := ClosureTy.pure (.C_Return (R := R') hv') (empty_annotation ha)
     (fun r hh => ⟨(hr r hh).wf,(hr r hh).declared⟩) (closure_normal hq) hRn
@@ -242,7 +242,7 @@ theorem StateTyE.resume_const {P B σ Eb q l c k μ saved}
     (he.covers.trans hcov)
   have hxa := const_annotation hv' rfl
   have ht' := ContTy.K_Sub ht (Ty.LeQ.convert (Ty.norm_idem x))
-  obtain ⟨R'',hRn,ht''⟩ := normal_return_tail ht' rfl x.norm hxa (Ty.norm_idem _) .refl
+  obtain ⟨R'',hRn,ht''⟩ := normal_return_tail_base ht' rfl x.norm hxa (Ty.norm_idem _) .refl
   have hra := ContTy.return_annotation ht'' rfl
   have hq' := ClosureTy.pure (.C_Return (R := R'') hv') (empty_annotation hxa)
     (fun r hh => ⟨(hra r hh).wf,(hra r hh).declared⟩) (Ty.norm_idem _) hRn
@@ -294,7 +294,7 @@ theorem StateTyE.drop_rel_const {P B σ Eb q c l k μ saved} (hdecl : P.EffectsO
   obtain ⟨x,t2,e2,r2,hp2,_,R0,e0,hsv⟩ := hs.cell l _ hl
   cases Option.some.inj (hp2.symm.trans hp)
   have ht2 := ContTy.prepend_releases (hdecl.noStateHandled hA) hsv ht hcond
-  obtain ⟨R2,hRn,ht3⟩ := normal_return_tail ht2 rfl a ha (closure_normal hq) hle
+  obtain ⟨R2,hRn,ht3⟩ := normal_return_tail_base ht2 rfl a ha (closure_normal hq) hle
   have hr := ContTy.return_annotation ht3 rfl
   have hq' := ClosureTy.pure (.C_Return (R := R2) hv') (empty_annotation ha)
     (fun r hh => ⟨(hr r hh).wf,(hr r hh).declared⟩) (closure_normal hq) hRn
@@ -363,6 +363,17 @@ theorem StateTyE.exit_drop_rel {P B σ Eb n rs l k μ saved}
   rcases List.mem_append.mp hf with hf | hf
   · exact hμ l _ hl f (releases_mem f saved hf)
   · exact hkc f (List.mem_cons_of_mem _ hf)
+
+/-- 同じ入力の契約を保ち、返却先を正規形の証人で選び直す。 -/
+theorem ContTy.normal_return_tail {P B σ Ψ R ε k a b Eb Re}
+    (h : ContTy P B σ Ψ R ε k a b Eb Re) (hRe : Re = none)
+    (n : Ty) (ha : Ty.Annotation P [] [] n) (hn : n.Normal) (hl : Ty.LeQ P [] [] n a) :
+    ∃ R', (∀ r, R' = some r → r.Normal) ∧ ContTy P B σ Ψ R' ε k n b Eb Re :=
+  normal_return_tail_base h hRe n ha hn hl
+
+/-- 閉包の結果型は closeTyAt の像である。 -/
+theorem ClosureTy.result_normal {P B Ψ R q a e}
+    (hq : ClosureTy P B Ψ [] R q a e) : a.Normal := closure_normal hq
 
 end
 end Benitoite.Release.Refinement
