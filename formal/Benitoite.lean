@@ -372,3 +372,10 @@ import Benitoite.Release.Refinement.CallBodyScope
 import Benitoite.Release.Refinement.MethodTypeComposition
 import Benitoite.Release.Refinement.MethodClosure
 import Benitoite.Release.Refinement.SuperClosure
+import Benitoite.Release.Refinement.TypedMeaning
+import Benitoite.Release.Refinement.TypedCoverage
+import Benitoite.Release.Refinement.TypedMeaningExamples
+import Benitoite.Release.Refinement.PatternBindingSupport
+import Benitoite.Release.Refinement.PatternBindings
+import Benitoite.Release.Refinement.PatternBindingsGround
+import Benitoite.Release.Refinement.PatternBindingExamples
