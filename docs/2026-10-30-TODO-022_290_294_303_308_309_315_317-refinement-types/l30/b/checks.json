@@ -1,0 +1,49 @@
+{
+  "dry-run": {
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "13a27bb960e336332add2e9eed55c5b99c876fb5",
+      "--dry-run"
+    ],
+    "exit": 0,
+    "seconds": 0.11342037499999999,
+    "raw": {
+      "name": "dry-run.log",
+      "bytes": 759,
+      "sha256": "686f2bf44f14b410ed0983d2fcd148b190cc64eb993212c47227e807186074a2"
+    }
+  },
+  "work": {
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "13a27bb960e336332add2e9eed55c5b99c876fb5"
+    ],
+    "exit": 0,
+    "seconds": 8.9580605,
+    "raw": {
+      "name": "work.log",
+      "bytes": 5757,
+      "sha256": "5eab60c13b6661d4540cf9351b9f8f01f346b270c43c47ebcc374f282294b7ea"
+    }
+  },
+  "default-build": {
+    "command": [
+      "lake",
+      "build"
+    ],
+    "working_directory": "formal",
+    "exit": 0,
+    "seconds": 1.14255875,
+    "raw": {
+      "name": "default-build.log",
+      "bytes": 43394,
+      "sha256": "8d6fc5551f847e2352fa3fe66a873064a36bd21f83c3646e3d6341b4e93fe28e"
+    }
+  }
+}

@@ -1,4 +1,5 @@
 import Benitoite.Release.Refinement.CertificateKernelBind
+import Benitoite.Release.Refinement.EqualityMode
 
 /-! # 整数の等号を使える置換位置
 
@@ -6,11 +7,6 @@ import Benitoite.Release.Refinement.CertificateKernelBind
 整数の比較と add/neg/scale の下に限る。
 -/
 namespace Benitoite.Release.Refinement
-
-inductive EqualityMode where
-  | structural
-  | integer
-  deriving DecidableEq
 
 def Term.IntegerRewritePosition : Term → Prop
   | .var _ | .integer _ => True

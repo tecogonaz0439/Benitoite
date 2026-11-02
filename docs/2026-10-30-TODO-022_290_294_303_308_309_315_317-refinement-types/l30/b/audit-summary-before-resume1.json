@@ -1,0 +1,48 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-M",
+    "12288",
+    "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l30/b/audit.lean"
+  ],
+  "exit": 0,
+  "seconds": 2.1440631669999997,
+  "raw": {
+    "bytes": 201676,
+    "sha256": "356d3353e632dd6fdc20ee288630cdc95d50acb9e871dd5d928c927cbb690eeb"
+  },
+  "targets": 1029,
+  "target_list": {
+    "bytes": 75188,
+    "sha256": "1105e26a4e1259aa7f290b0ad78f23ac0abd3de270cf8419fc95332f50b78f2d"
+  },
+  "modules": {
+    "Benitoite.Release.Refinement.MeasureNonnegative": "23",
+    "Benitoite.Release.Refinement.Certificate": "214",
+    "Benitoite.Release.Refinement.CarrierFacts": "12",
+    "Benitoite.Release.Refinement.CarrierFactsMeaning": "125",
+    "Benitoite.Release.Refinement.LinearSyntax": "47",
+    "Benitoite.Release.Refinement.CertificateKernelBind": "46",
+    "Benitoite.Release.Refinement.LinearSound": "22",
+    "Benitoite.Release.Refinement.EqualityMode": "22",
+    "Benitoite.Release.Refinement.EqCertificate": "19",
+    "Benitoite.Release.Refinement.MeasureContracts": "2",
+    "Benitoite.Release.Refinement.LogicKernelExamples": "79",
+    "Benitoite.Release.Refinement.TermStructuralEq": "198",
+    "Benitoite.Release.Refinement.CertificateSyntax": "63",
+    "Benitoite.Release.Refinement.Linearization": "65",
+    "Benitoite.Release.Refinement.LinearizationExamples": "6",
+    "Benitoite.Release.Refinement.LogicNormalization": "52",
+    "Benitoite.Release.Refinement.LogicNormalizationExamples": "16"
+  },
+  "axiom_sets": {
+    "Classical.choice + Quot.sound + propext": 140,
+    "none": 406,
+    "propext": 460,
+    "Quot.sound + propext": 23
+  },
+  "private_or_generated_included": true,
+  "new_axioms": 0
+}

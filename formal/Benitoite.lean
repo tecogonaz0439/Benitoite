@@ -453,3 +453,6 @@ import Benitoite.Release.Refinement.LegacyProgramTyping
 import Benitoite.Release.Refinement.LegacyStateEmbeddingExamples
 import Benitoite.Release.Refinement.LegacyProgramEmbeddingExamples
 import Benitoite.Release.Refinement.LegacyImplementationEmbeddingExamples
+
+import Benitoite.Release.Refinement.LinearizationExamples
+import Benitoite.Release.Refinement.LogicNormalizationExamples

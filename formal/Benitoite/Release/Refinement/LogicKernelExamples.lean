@@ -58,7 +58,7 @@ theorem closed_leaf (ν : ObservationEnv) (η : ObservationEnvModel) :
 theorem encoded_snapshot (ν : ObservationEnv) (η : ObservationEnvModel) :
     (predBind ν ((Linear.mk [2] 7).toPred [.measure .setSize (.setValue [some (.var 0)])])).interpret η = true ↔
       (Linear.mk [2] 7).Holds (keyEnv η ([.measure .setSize (.setValue [some (.var 0)])].map (termBind ν))) :=
-  Linear.toPred_sound_at η ν _ _ rfl
+  Linear.toPred_sound_at η ν _ _
 
 theorem negative_floor (ρ : Nat → Int) (h : (Linear.mk [2] (-3)).Holds ρ) :
     (Linear.mk [1] (-2)).Holds ρ := Linear.round_sound 2 ρ (by decide) rfl (by decide) h
