@@ -1,0 +1,73 @@
+{
+  "B_WORK": "f5a9edabcab0e785ada937bd35bb793b2f4ddca8",
+  "target": "指定した基準に本記録の追加・変更を加えた作業木",
+  "files": {
+    "formal/Benitoite/Release/Refinement/ContextTransport.lean": {
+      "bytes": 16746,
+      "sha256": "76732d837ec006ef3ae87db47c940d888ab1088e469aebc9d88bbb70836b2db5"
+    },
+    "formal/Benitoite/Release/Refinement/CaptureTransport.lean": {
+      "bytes": 5609,
+      "sha256": "017653331a8d9c96fa9da9c62c10f2088ab152573c0d0734093cd2357a2bbcf5"
+    },
+    "formal/Benitoite/Release/Refinement/ContextRegularity.lean": {
+      "bytes": 5308,
+      "sha256": "d7e1a15fa5e29c572256f7484171191cb5e7080fab75e1002af34fd348c5ec00"
+    },
+    "formal/Benitoite/Release/Refinement/LocalTyping.lean": {
+      "bytes": 15015,
+      "sha256": "f903e3521ec0839730e1f2657f655034519a656657670dea7b3c562437cdeb54"
+    },
+    "formal/Benitoite/Release/Refinement/SubstAgreement.lean": {
+      "bytes": 7883,
+      "sha256": "fdac150afb2a31efc865807b53a32c4ae1048bce9ff1c23138d6f4a906ba4e8d"
+    },
+    "formal/Benitoite/Release/Refinement/SubstCongruence.lean": {
+      "bytes": 13150,
+      "sha256": "0e5ab996af5fe4cd20caf556b1208902e4b835dad3546e49815af8a12028b0c8"
+    },
+    "formal/Benitoite.lean": {
+      "bytes": 15485,
+      "sha256": "ff3446c4a75df671f597958f71cad31742d16e99d3288e92618cda58316ecbde"
+    },
+    "docs/design/01-spec/01-12-core-calculus.md": {
+      "bytes": 730246,
+      "sha256": "a7d4d5017316d6dcb6839f885f7078e9fe1c2aaeb733a4c3bf485447ac7fff9f"
+    },
+    "docs/design/07-quality/07-04-formal-semantics.md": {
+      "bytes": 473487,
+      "sha256": "49a9a2318ec0e01108a33b7c66b0efc70c0c5b15cce5eaa4e16a6112bc884322"
+    },
+    "formal/lean-toolchain": {
+      "bytes": 25,
+      "sha256": "d5edba4e4b8faad9c1baeadb265716d20d03be4d1a2647dc5e35b0c0325bea7b"
+    },
+    "formal/lakefile.toml": {
+      "bytes": 872,
+      "sha256": "10f2661bff8fce95a9253d976427d0ca44038ec12350c955badbc1cf1efa6e3a"
+    },
+    "formal/lake-manifest.json": {
+      "bytes": 152,
+      "sha256": "f4a9b127f95cf577c7da1c2269f85ffd5754f76afccace5dc310d56ef8f41a32"
+    },
+    "rust-toolchain.toml": {
+      "bytes": 66,
+      "sha256": "4d7d5425fe623392e565a964fc135c563c316ce125058199eb40b2953ba6ecbb"
+    },
+    "Cargo.lock": {
+      "bytes": 50695,
+      "sha256": "075ddfa31b648a04030efcbfb30365910dff6d8de62b0e903b57d28dc5e6324d"
+    },
+    "fuzz/Cargo.lock": {
+      "bytes": 50173,
+      "sha256": "d38cf1d0837d41512c9bd5137cfe25fcd923d82fecb600bcef2c8e26c346330b"
+    }
+  },
+  "tools": {
+    "Lean": "4.34.1 / 5045d0056413266e57c625dcd7c365b10e377c52 / arm64-apple-darwin24.6.0",
+    "Lake": "5.0.0-src+5045d00",
+    "Cargo": "1.98.1 (797e8a9bc 2026-08-05)",
+    "Python": "3.9.6"
+  },
+  "memory": "Lean のプロセスごとに -M 12288。既定ビルドは lakefile.toml の moreLeanArgs。RSS は計画上の非採取。"
+}

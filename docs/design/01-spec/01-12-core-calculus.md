@@ -3152,6 +3152,16 @@ structure ClosedTypeSubstInput (P : Program) (B : Builtins)
 
 `Ctx.NormEq Γ Δ` は、文脈を `Option.map Ty.norm` で写した列の等号であり、長さと `none` の位置を保つ。文脈間の型付けの移送には、元の文脈と移送先の文脈で最上位が `.cont` である位置の対応も使う。`ContextNormEq` は恒等の値の像による既存の置換を使い、変数を V_Normal、継続の呼出しを C_ResumeNorm で揃える。Annotation・sort・facts の移送と、hideConts・bindParams の対応も持つ。捕捉済みの文脈と閉包は、外側の文脈を変更する置換の内部でも保持する。
 
+`ContextTransport` の `q_mono` は、`∀ i, Q i → Q' i` の下で Q を持つ11判断を移す。対象は値・値列・同じ型の値列・計算・依存列の実引数と本体・At・腕・通常節・失敗節・像である。捕捉・依存閉包・保持値の三判断の `q_fixed` は元の証拠を返し、内部の Qempty を保つ。14判断76構成子を一つの構造的な相互証明で扱う。NoFail・行の対応・関数と組み込みとメソッドの許容条件も同じ向きで移す。
+
+`normContTy` は最上位が `.cont` である型の入力・結果・効果を正規化し、ほかの型を保つ。`normConts` は文脈の各 some の型へこの関数を適用する。`CaptureTransport` は長さ・None の位置・事実を保つ NormEq と、捕捉の三条件の保存を証明する。`builderBody_image_norm` は像の対象型を normContTy で写し、像の移送先の文脈と値は保つ。`CaptureOk.normConts` は同じ捕捉（`cap`）・戻り先・経路条件について捕捉を再構成し、`capture_normConts_value_annotation` と `capture_normConts_comp_annotation` はその結果を閉じた Annotation へ接続する。`normConts_cont` は継続の位置の対応を供給し、`HasTypeVQ.normConts` と `HasTypeCQ.normConts` は元の Γ の導出を正規化した型注釈を持つ置換後のコードの導出へ移す。`capture_value_annotation_via_normConts` と `capture_comp_annotation_via_normConts` は、元の Γ から同じ cap で閉じた結果までを合成する。`CaptureOk.hideBuilders_hideConts` は ValueAssumptions と元の Ψ.WF の下で、同じ cap を保ち、構築器を隠したストア型・継続を隠した文脈・任意の戻り先を持つ捕捉を構成する。
+
+`Ctx.Regular` は WF・Sorted・Declared・Ordered の四条件を持つ。hideConts・非依存の bindParams・extendNone は正則性を保つ。`ContextRegularity` は型文脈の前置きに対応する shiftE、操作の節の文脈、失敗節の文脈の正則性を証明する。操作の節では、前置きした型文脈での引数の `BinderTypes.Annotations` と、引数を束縛した文脈での継続型の Annotation を受ける。失敗節では元の E の Annotation を受け、型束縛一つ・値束縛一つ・None 一つを順に構成する。`reject_forward_or_cyclic_context` は、外側を向かない依存又は依存の循環がある文脈が Ordered を満たさないことを示す。`ContextOrderExamples.fwd_rejected` は自己参照する具体の文脈の拒否、`back_ordered` は外側を参照する具体の文脈が Ordered を満たすことを証明する。
+
+`LocalTyping` の `local_zero` は、`LocalCtx.Shift 0 0 L L'` の下で計算・腕・通常節・失敗節の局所文脈を変更する。同じ四判断の `withReturn` は、空のストア型と戻り先 none の導出から、任意の戻り先の導出を作る。元のストア型が空であることと戻り先が none であることは、等号の前提として受ける。値の判断は元の証拠を保持する。
+
+`SubstAgree Γ σ τ` は、Γ の some の型がある全位置で値置換の像が一致する条件であり、継続の位置も含む。`LocalSubstAgree L ρ η` は局所文脈の some の位置で局所参照の像が一致する条件である。`SubstAgreement` と `SubstCongruence` の `subst_congr` は、この二条件から型付きコードへの値・局所参照の置換結果の等号を証明する。型注釈の参照には既存の References を使い、述語中の snapshot も全 some slot の参照を検査する。値・値列・同じ型の値列・計算・依存列の実引数と本体・At・腕・通常節・失敗節を同じ相互証明で扱う。一般の改名は SubstOk を持つ値置換の特殊化として bind で正規化する。
+
 `TypeSubstLocalSignature` は、節の局所 WF と既存の行支持から、型置換された署名と元の署名の文脈の NormEq および継続の位置の対応を証明する。`OpSig.typeSubst_body` はこの対応を使い、型置換された節の本体を元の署名の文脈へ移す。節の結果型の WF は要求しない。`TypeSubstCallSites` は、型付きの関数・メソッドの呼出しから入力を得て、本体に公開の `type_subst_body` を適用する。元の QTel と行の対応を保つ。通常節と失敗節には `S02Internal.substC` を適用し、呼出し側の経路条件と節側の経路条件を別々に受け、節の捕捉文脈を保つ。`HasTypeClausesQ.findClause_body` は選択された節の署名と本体を返し、`hideBuilders_idem` は構築器を隠す操作の冪等性を与える。`type_subst_e_op_site`・`type_subst_e_opfail_site` は、ハンドラの節の型付けから行先の `c.body.substTy ts []`・`body.substTy [T] []` までを組み立てる。失敗節では raise の型と捕捉元のエラー型を別々に受ける。
 
 `Pred.Declared.typeSubst` と `Pred.Sorted.typeSubst` は、自己を表す型を含む述語の宣言照合と sort を同じ内部入力で移す。`Ctx.typeSubst_sortMap` は文脈内の型の sort と Ordinary の対応を返し、`FactsWF.typeSubst` は元の経路条件の整形式を保つ。前提は元の述語と `TypeSubstInput` である。

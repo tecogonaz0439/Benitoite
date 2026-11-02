@@ -103,6 +103,12 @@
 
 `ContextNormEq` は、`Option.map Ty.norm` で写した文脈の等号 `Ctx.NormEq` を定義する。最上位が `.cont` である位置の対応と合わせて恒等の値の像による既存の置換を使い、変数と継続の呼出しを正規形の型で揃える。Annotation・sort・facts、hideConts・bindParams の対応も証明する。捕捉済みの文脈と閉包は、外側の文脈を変更する置換の内部でも保持する。`TypeSubstCodeNormal` は型置換後のコードへの恒等の値置換がコードを変えないことを証明する。
 
+`ContextTransport` は Q の単調な拡張を11判断へ移す q_mono と、内部の Qempty を固定する三判断の q_fixed を持つ。相互の14判断76構成子を扱い、NoFail と三種の許容条件も同じ向きで移す。`CaptureTransport` の normConts は最上位の継続型だけを正規化する。元の CaptureWF・CaptureSorted・CaptureDeclared から対応する条件を導き、同じ捕捉（`cap`）と戻り先の CaptureOk と、値・計算の閉じた結果の Annotation を構成する。normConts_cont による継続の対応と HasTypeVQ/CQ.normConts により、元の Γ の導出から移送と閉じた結果形成を合成する。CaptureOk.hideBuilders_hideConts は同じ cap のまま、構築器を隠したストア型と継続を隠した文脈・戻り先の変更を合成する。
+
+`ContextRegularity` は shiftE・OpSig.context・failureContext の WF・Sorted・Declared・Ordered を合成する。hideConts・bindParams・extendNone には Context.WF と Context.Declarations の定理を使う。通常節の正則性には束縛順の引数の Annotation と継続型の Annotation、失敗節には元の E の Annotation を受ける。前方依存又は循環から Ordered の否定を導く `reject_forward_or_cyclic_context` と、自己参照の具体の拒否 fwd_rejected・外側への参照を持つ具体の受理 back_ordered も既定 import の対象である。
+
+`LocalTyping` は計算・腕・通常節・失敗節について local_zero と withReturn を証明する。local_zero は有効な局所参照の位置を保ち、withReturn は空のストア型と元の戻り先 none を前提とする。`SubstAgreement` は値と局所参照の一致を束縛下へ延長し、型・行・依存列の bind の合同を証明する。`SubstCongruence` は10判断の構造的な相互証明からコードの置換結果の等号を導く。some の型の位置には継続も含み、型注釈の述語にある snapshot の全 some slot は References と Pred.bind_congr により扱う。これらの証明の前提は、元の型付けと置換の一致である。
+
 `TypeSubstLocalSignature` は、節の局所 WF と既存の行支持から、型置換後の署名と原文の署名の文脈の NormEq および継続の位置の対応を証明する。`OpSig.typeSubst_body` は結果型の WF を要求せず、この対応で節の本体を移す。`TypeSubstCallSites` は、型付きの関数・メソッドの呼出しを逆転し、本体に公開の `type_subst_body` を適用する。関数とメソッドの SourceScoped は Program.WellFormed から、元の型付けは Program.WellTyped から得る。通常節と失敗節の本体には `S02Internal.substC` を使い、任意の捕捉文脈と節側の経路条件を保つ。呼出し側の経路条件は節側と別々に受け、失敗節の捕捉元のエラー型も raise の型と別々に受ける。行像は空である。節の選択と `hideBuilders_idem` を使う二つの site 定理は、ハンドラの節の型付けから行先の型置換された本体までを組み立てる。これは本体の型置換の接続であり、実行の全状態の保存とは区別する。
 
 `TypeSubstFormation` の `Pred.Declared.typeSubst`・`Pred.Sorted.typeSubst`・`Ctx.typeSubst_sortMap`・`FactsWF.typeSubst` は、値の Refine と経路条件の移送の補助である。前提は元の述語と同じ内部入力 `TypeSubstInput` である。

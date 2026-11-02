@@ -1,0 +1,121 @@
+import Lean
+import Benitoite
+set_option pp.all true
+set_option maxHeartbeats 4000000
+#check Benitoite.Release.Refinement.NoFail.q_mono
+#check Benitoite.Release.Refinement.RowTransport.q_mono
+#check Benitoite.Release.Refinement.Admissible.q_mono
+#check Benitoite.Release.Refinement.PrimitiveAdmissible.q_mono
+#check Benitoite.Release.Refinement.MethodRowsAdmissible.q_mono
+#check Benitoite.Release.Refinement.HasTypeVQ.q_mono
+#check Benitoite.Release.Refinement.HasTypeVsQ.q_mono
+#check Benitoite.Release.Refinement.HasTypeEachQ.q_mono
+#check Benitoite.Release.Refinement.HasTypeCQ.q_mono
+#check Benitoite.Release.Refinement.HasTypeTelArgsQ.q_mono
+#check Benitoite.Release.Refinement.TelBodyTy.q_mono
+#check Benitoite.Release.Refinement.CaptureOk.q_fixed
+#check Benitoite.Release.Refinement.DependentClosureTy.q_fixed
+#check Benitoite.Release.Refinement.CheckedWitness.q_fixed
+#check Benitoite.Release.Refinement.AtCallAdmissible.q_mono
+#check Benitoite.Release.Refinement.HasTypeArmsQ.q_mono
+#check Benitoite.Release.Refinement.HasTypeClausesQ.q_mono
+#check Benitoite.Release.Refinement.HasFailureClause.q_mono
+#check Benitoite.Release.Refinement.ImageOk.q_mono
+#check Benitoite.Release.Refinement.normContTy
+#check Benitoite.Release.Refinement.normConts
+#check Benitoite.Release.Refinement.normContTy_norm
+#check Benitoite.Release.Refinement.normConts_normEq
+#check Benitoite.Release.Refinement.normConts_typeMap
+#check Benitoite.Release.Refinement.normConts_lookup
+#check Benitoite.Release.Refinement.normContTy_subst
+#check Benitoite.Release.Refinement.builderBody_image_norm
+#check Benitoite.Release.Refinement.Ty.CaptureWF.normContTy
+#check Benitoite.Release.Refinement.Ty.CaptureSorted.normContTy
+#check Benitoite.Release.Refinement.Ty.CaptureDeclared.normContTy
+#check Benitoite.Release.Refinement.CaptureContextRegular.normConts
+#check Benitoite.Release.Refinement.CaptureOk.normConts
+#check Benitoite.Release.Refinement.capture_normConts_value_annotation
+#check Benitoite.Release.Refinement.capture_normConts_comp_annotation
+#check Benitoite.Release.Refinement.Ty.References.shiftTypes
+#check Benitoite.Release.Refinement.Tel.References.shiftTypes
+#check Benitoite.Release.Refinement.referencesTys_shiftTypes
+#check Benitoite.Release.Refinement.referencesEff_shiftTypes
+#check Benitoite.Release.Refinement.Ctx.Ordered.shiftE
+#check Benitoite.Release.Refinement.Ctx.Regular.shiftE
+#check Benitoite.Release.Refinement.OpSig.regular_context
+#check Benitoite.Release.Refinement.failureContext_regular
+#check Benitoite.Release.Refinement.reject_forward_or_cyclic_context
+#check Benitoite.Release.Refinement.renameKind_id
+#check Benitoite.Release.Refinement.renameKind_zero
+#check Benitoite.Release.Refinement.LocalCtx.Shift.zero_extend
+#check Benitoite.Release.Refinement.LocalCtx.Shift.zero_localExtend
+#check Benitoite.Release.Refinement.LocalRef.HasKind.local_zero
+#check Benitoite.Release.Refinement.HasTypeCQ.local_zero
+#check Benitoite.Release.Refinement.HasTypeArmsQ.local_zero
+#check Benitoite.Release.Refinement.HasTypeClausesQ.local_zero
+#check Benitoite.Release.Refinement.HasFailureClause.local_zero
+#check Benitoite.Release.Refinement.HasTypeCQ.withReturn
+#check Benitoite.Release.Refinement.HasTypeArmsQ.withReturn
+#check Benitoite.Release.Refinement.HasTypeClausesQ.withReturn
+#check Benitoite.Release.Refinement.HasFailureClause.withReturn
+#check Benitoite.Release.Refinement.SubstAgree
+#check Benitoite.Release.Refinement.LocalSubstAgree
+#check Benitoite.Release.Refinement.ObservationAgree
+#check Benitoite.Release.Refinement.SubstAgree.map
+#check Benitoite.Release.Refinement.SubstAgree.hide
+#check Benitoite.Release.Refinement.SubstAgree.extendOption
+#check Benitoite.Release.Refinement.SubstAgree.params
+#check Benitoite.Release.Refinement.SubstAgree.extendMany
+#check Benitoite.Release.Refinement.SubstAgree.shiftE
+#check Benitoite.Release.Refinement.SubstAgree.observation
+#check Benitoite.Release.Refinement.ObservationAgree.self
+#check Benitoite.Release.Refinement.ObservationAgree.extend
+#check Benitoite.Release.Refinement.Ty.rawSubstV_congr
+#check Benitoite.Release.Refinement.Tel.rawSubstV_congr
+#check Benitoite.Release.Refinement.substVTys_congr
+#check Benitoite.Release.Refinement.Eff.rawSubstV_congr
+#check Benitoite.Release.Refinement.substTyValues_congr
+#check Benitoite.Release.Refinement.substEffValues_congr
+#check Benitoite.Release.Refinement.telBindValues_congr
+#check Benitoite.Release.Refinement.LocalSubstAgree.empty
+#check Benitoite.Release.Refinement.LocalSubstAgree.extend
+#check Benitoite.Release.Refinement.LocalSubstAgree.localExtend
+#check Benitoite.Release.Refinement.LocalRef.HasKind.subst_congr
+#check Benitoite.Release.Refinement.substTypes_congr
+#check Benitoite.Release.Refinement.TypeAnnotations.subst_congr
+#check Benitoite.Release.Refinement.RowAnnotations.subst_congr
+#check Benitoite.Release.Refinement.substKind_congr
+#check Benitoite.Release.Refinement.HasTypeVQ.subst_congr
+#check Benitoite.Release.Refinement.HasTypeVsQ.subst_congr
+#check Benitoite.Release.Refinement.HasTypeEachQ.subst_congr
+#check Benitoite.Release.Refinement.HasTypeCQ.subst_congr
+#check Benitoite.Release.Refinement.HasTypeTelArgsQ.subst_congr
+#check Benitoite.Release.Refinement.TelBodyTy.subst_congr
+#check Benitoite.Release.Refinement.AtCallAdmissible.subst_congr
+#check Benitoite.Release.Refinement.HasTypeArmsQ.subst_congr
+#check Benitoite.Release.Refinement.HasTypeClausesQ.subst_congr
+#check Benitoite.Release.Refinement.HasFailureClause.subst_congr
+#check Benitoite.Release.Refinement.CaptureOk.hideBuilders_hideConts
+#check Benitoite.Release.Refinement.normConts_cont
+#check Benitoite.Release.Refinement.HasTypeCQ.normConts
+#check Benitoite.Release.Refinement.HasTypeVQ.normConts
+#check Benitoite.Release.Refinement.capture_value_annotation_via_normConts
+#check Benitoite.Release.Refinement.capture_comp_annotation_via_normConts
+#check Benitoite.Release.Refinement.ContextOrderExamples.selfRef
+#check Benitoite.Release.Refinement.ContextOrderExamples.okTy
+#check Benitoite.Release.Refinement.ContextOrderExamples.bwdRef
+#check Benitoite.Release.Refinement.ContextOrderExamples.fwd
+#check Benitoite.Release.Refinement.ContextOrderExamples.back
+#check Benitoite.Release.Refinement.ContextOrderExamples.fwd_dep
+#check Benitoite.Release.Refinement.ContextOrderExamples.fwd_rejected
+#check Benitoite.Release.Refinement.ContextOrderExamples.back_ordered
+open Lean Elab Command in
+run_cmd do
+  let env ← getEnv
+  let some idx := env.getModuleIdx? `Benitoite.Release.Refinement.SubstCongruence | throwError "module missing"
+  let mut count : Nat := 0
+  for (name, ci) in env.constants.toList do
+    if env.getModuleIdxFor? name == some idx && (name.toString.endsWith ".option_map_congr" || name.toString.endsWith ".checkAt_subst_congr") then
+      count := count + 1
+      logInfo m!"SIGNATURE {name}: {ci.type}"
+  unless count == 2 do throwError "private signature count {count}"
