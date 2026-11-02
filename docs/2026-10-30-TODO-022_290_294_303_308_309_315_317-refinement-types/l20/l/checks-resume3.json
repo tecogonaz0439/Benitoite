@@ -1,0 +1,158 @@
+{
+  "axioms": {
+    "command": [
+      "/usr/bin/time",
+      "-l",
+      "/bin/sh",
+      "<tmp>/run-axioms.sh",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/l/axioms.lean",
+      "<tmp>/axioms-exit.txt"
+    ],
+    "cwd": "formal",
+    "started": "2026-11-02T20:32:37.037805+09:00",
+    "finished": "2026-11-02T20:32:45.646480+09:00",
+    "elapsed_seconds": 8.609,
+    "exit_code": 1,
+    "stdout": {
+      "location": "<tmp>",
+      "name": "axioms-final.out",
+      "bytes": 4261667,
+      "sha256": "46eee67fb87b1d98bbffd6b37bd8fea55a697f1ad88dc9c389a037823459ccb8"
+    },
+    "stderr": {
+      "location": "<tmp>",
+      "name": "axioms-final.err",
+      "bytes": 106,
+      "sha256": "2baed0e907ff8a047dd3e85801136558ba37f2ca8c617b2f6dcf252e027c7a62"
+    },
+    "lean_exit_code": 0,
+    "measurement_exit_code": 1,
+    "maximum_resident_bytes": null,
+    "measurement": "macOS /usr/bin/time -l; bytes"
+  },
+  "axioms-aux": {
+    "command": [
+      "/usr/bin/time",
+      "-l",
+      "python3",
+      "<tmp>/axioms-resource.py",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/l/axioms.lean",
+      "<tmp>/axioms-resource.json"
+    ],
+    "cwd": "formal",
+    "started": "2026-11-02T20:35:27.360679+09:00",
+    "finished": "2026-11-02T20:35:36.325795+09:00",
+    "elapsed_seconds": 8.965,
+    "exit_code": 1,
+    "stdout": {
+      "location": "<tmp>",
+      "name": "axioms-aux-final.out",
+      "bytes": 4261667,
+      "sha256": "46eee67fb87b1d98bbffd6b37bd8fea55a697f1ad88dc9c389a037823459ccb8"
+    },
+    "stderr": {
+      "location": "<tmp>",
+      "name": "axioms-aux-final.err",
+      "bytes": 106,
+      "sha256": "5e8d5016ee5866a4e3888cb067fa37365cd85f9c677d5e13574454bf5578221b"
+    },
+    "lean_resource": {
+      "exit_code": 0,
+      "maximum_resident_bytes": 1739063296,
+      "elapsed_seconds": 8.923,
+      "method": "Python resource.getrusage(RUSAGE_CHILDREN); macOS bytes; auxiliary"
+    },
+    "measurement_exit_code": 1
+  },
+  "dry-run": {
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "2f2a27900721ad93b0189930359fc48f8c887db0",
+      "--dry-run"
+    ],
+    "cwd": ".",
+    "started": "2026-11-02T20:38:32.792602+09:00",
+    "finished": "2026-11-02T20:38:32.906585+09:00",
+    "elapsed_seconds": 0.114,
+    "exit_code": 0,
+    "stdout": {
+      "location": "<tmp>",
+      "name": "dry-run-final.out",
+      "bytes": 759,
+      "sha256": "34fddbb07fabe095b24c7a501b847a5ec658c931bf642e04ff91acb8c5d5b462"
+    },
+    "stderr": {
+      "location": "<tmp>",
+      "name": "dry-run-final.err",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "work": {
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "2f2a27900721ad93b0189930359fc48f8c887db0"
+    ],
+    "cwd": ".",
+    "started": "2026-11-02T20:43:27.340055+09:00",
+    "finished": "2026-11-02T20:43:31.078702+09:00",
+    "elapsed_seconds": 3.739,
+    "exit_code": 0,
+    "stdout": {
+      "location": "<tmp>",
+      "name": "work-final.out",
+      "bytes": 5757,
+      "sha256": "1eb7cd866a9bb6b8ef8c64576c48d1b4e80709e18797fe5c0e9c24a7ff193792"
+    },
+    "stderr": {
+      "location": "<tmp>",
+      "name": "work-final.err",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "default_build": {
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal",
+    "jobs": 852,
+    "exit_code": 0,
+    "elapsed_seconds": null,
+    "note": "外側の時間は未採取。追加モジュールと既定入口の構築の成功を生ログで確認。",
+    "stdout": {
+      "location": "<tmp>",
+      "name": "build-model-default.log",
+      "bytes": 42831,
+      "sha256": "b941f77ae326f2f692fcebb194efeb76cfea78db9f508ef399a4bcecbb52506e"
+    }
+  },
+  "inputs": {
+    "raw": {
+      "location": "<tmp>",
+      "name": "inputs-final.json",
+      "bytes": 5703,
+      "sha256": "4889af9386b04c1461d36ca1c5fe1bc527a18e06ea8cf47ff096606a78eb5e83"
+    },
+    "files": 31
+  },
+  "measurement": {
+    "formal_maximum_resident_bytes": null,
+    "reason": "/usr/bin/time -l: sysctl kern.clockrate: Operation not permitted",
+    "auxiliary": {
+      "exit_code": 0,
+      "maximum_resident_bytes": 1739063296,
+      "elapsed_seconds": 8.923,
+      "method": "Python resource.getrusage(RUSAGE_CHILDREN); macOS bytes; auxiliary"
+    },
+    "machine": "arm64/macOS 27.2",
+    "lean_memory_limit_MiB": 12288
+  }
+}

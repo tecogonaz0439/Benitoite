@@ -1,0 +1,101 @@
+{
+  "build": {
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal",
+    "started": "2026-11-02T19:48:28.992374+09:00",
+    "finished": "2026-11-02T19:48:30.455003+09:00",
+    "elapsed_seconds": 1.463,
+    "exit_code": 0,
+    "log": {
+      "location": "<tmp>",
+      "name": "build-final.log",
+      "bytes": 42831,
+      "sha256": "91b0a810e1b3fd03034d9c156c964001ee759ceaf97f988b9fe91a274c0573c7"
+    }
+  },
+  "axioms": {
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/l/axioms.lean"
+    ],
+    "cwd": "formal",
+    "started": "2026-11-02T19:49:18.793618+09:00",
+    "finished": "2026-11-02T19:49:27.208635+09:00",
+    "elapsed_seconds": 8.415,
+    "exit_code": 0,
+    "log": {
+      "location": "<tmp>",
+      "name": "axioms-final.log",
+      "bytes": 4155390,
+      "sha256": "c64ffe65af595a477f8c7a5c565e9768fb6af6d3ec2b9e7fd7b69feb57d6915c"
+    },
+    "environment": {
+      "L20_AXIOM_MODULES": "<tmp>/audit-modules.txt",
+      "L20_AXIOM_DECLARATIONS": "<tmp>/audit-declarations.txt"
+    }
+  },
+  "dry-run": {
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "2f2a27900721ad93b0189930359fc48f8c887db0",
+      "--dry-run"
+    ],
+    "cwd": ".",
+    "started": "2026-11-02T19:51:26.263231+09:00",
+    "finished": "2026-11-02T19:51:26.378098+09:00",
+    "elapsed_seconds": 0.115,
+    "exit_code": 0,
+    "log": {
+      "location": "<tmp>",
+      "name": "dry-run-final.log",
+      "bytes": 759,
+      "sha256": "dd863c2ce24b4262390b18f65cbd2b628c17b72bc5f519e419c65bc39e1ccfe0"
+    }
+  },
+  "work": {
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "2f2a27900721ad93b0189930359fc48f8c887db0"
+    ],
+    "cwd": ".",
+    "started": "2026-11-02T19:54:58.581923+09:00",
+    "finished": "2026-11-02T19:55:02.372619+09:00",
+    "elapsed_seconds": 3.791,
+    "exit_code": 0,
+    "log": {
+      "location": "<tmp>",
+      "name": "work-final.log",
+      "bytes": 5757,
+      "sha256": "598d78664a7d0338ba2c050048cfd1e33e1074ee3a4a0706d969e367ddec90da"
+    }
+  },
+  "inputs": {
+    "count": 40,
+    "raw": {
+      "location": "<tmp>",
+      "name": "inputs-full.json",
+      "bytes": 7221,
+      "sha256": "5840bbee76c13e3ddc3eb6c71ebdbd616b1a10f092fadf160ba26917a10f8fd3"
+    }
+  },
+  "collection_note": "build と A-L の実行は終了0。集計台本が結果を保存した後の終了処理で変数名を誤り、呼出し元へ例外を返した。集計台本を修正し、検査そのものの終了値と区別した。",
+  "resources": {
+    "host": "arm64/macOS 27.2",
+    "rss": "未取得",
+    "active_wait_split": "未採取",
+    "earliest_clock_sample": "2026-11-02T19:21:37+09:00（読取り開始時刻ではない）"
+  }
+}
