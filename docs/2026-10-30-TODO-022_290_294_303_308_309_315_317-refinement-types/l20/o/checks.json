@@ -1,0 +1,129 @@
+{
+  "command": [
+    "scripts/check.sh",
+    "--level",
+    "work",
+    "--base",
+    "428ed95f768f41d63cbc3353e2b21fca0bb88e42"
+  ],
+  "cwd": ".",
+  "started_utc": "2026-11-02T16:12:02.721662+00:00",
+  "ended_utc": "2026-11-02T16:12:10.503307+00:00",
+  "elapsed_outer_seconds": 7.781315,
+  "exit_code": 0,
+  "log": "<tmp>/benitoite-o-work-final.log",
+  "bytes": 5757,
+  "sha256": "db2da33b822c7878942353525b51860779b27d4c338e44de47746e6cfded5f6e",
+  "selected_checks": [
+    "spec_tally (self-test and tally)",
+    "spec_examples",
+    "formal_build (default lake build and sorry rejection)"
+  ],
+  "spec_examples": {
+    "passed": 7,
+    "failed": 0,
+    "ignored": 0,
+    "filtered": 0
+  },
+  "default_lean_build_jobs_last_direct_run": 875,
+  "related_checks": [
+    {
+      "command": [
+        "lake",
+        "build"
+      ],
+      "cwd": "formal",
+      "log": "<tmp>/benitoite-o-build-14.log",
+      "exit_code": 0,
+      "elapsed_outer_seconds": null,
+      "timing_note": "途中の既定ビルドの全経過時間は未採取。最終workは全経過を採取。",
+      "bytes": 43220,
+      "sha256": "d094622cfd1c26d5aaf69c9eae289ea97e70683c1cfddc7104baa01731170a36"
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/o/contracts.lean"
+      ],
+      "cwd": "formal",
+      "log": "<tmp>/benitoite-o-contracts.log",
+      "exit_code": 0,
+      "elapsed_outer_seconds": 0.720723167,
+      "timing_note": "署名と契約はツールが返した外側の時間。監査全体の外側の時間は未採取。",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/o/signatures-o.lean"
+      ],
+      "cwd": "formal",
+      "log": "<tmp>/benitoite-o-signatures-o.log",
+      "exit_code": 0,
+      "elapsed_outer_seconds": 0.751289042,
+      "timing_note": "署名と契約はツールが返した外側の時間。監査全体の外側の時間は未採取。",
+      "bytes": 29351,
+      "sha256": "432bac916e270938f53b15e401c1c9c7883f3d8220079959c831b96712bde070"
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/o/signatures-p.lean"
+      ],
+      "cwd": "formal",
+      "log": "<tmp>/benitoite-o-signatures-p.log",
+      "exit_code": 0,
+      "elapsed_outer_seconds": 0.776212666,
+      "timing_note": "署名と契約はツールが返した外側の時間。監査全体の外側の時間は未採取。",
+      "bytes": 54587,
+      "sha256": "04f0ab0b90b39879b69b08855a4a06b05556a47af3c801895443113fc3b22ceb"
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/o/axioms.lean"
+      ],
+      "cwd": "formal",
+      "log": "<tmp>/benitoite-o-axioms.log",
+      "exit_code": 0,
+      "elapsed_outer_seconds": null,
+      "timing_note": "署名と契約はツールが返した外側の時間。監査全体の外側の時間は未採取。",
+      "bytes": 67497,
+      "sha256": "2da539e366dba38cac9ef707c09046632a1e11254947b2e8abc377e1cbdb47ed"
+    },
+    {
+      "command": [
+        "scripts/check.sh",
+        "--level",
+        "work",
+        "--base",
+        "428ed95f768f41d63cbc3353e2b21fca0bb88e42",
+        "--dry-run"
+      ],
+      "cwd": ".",
+      "log": "<tmp>/benitoite-o-work-dry.log",
+      "exit_code": 0,
+      "elapsed_outer_seconds": null,
+      "timing_note": "全経過時間は未採取。終了0と選択内容を記録。",
+      "bytes": 759,
+      "sha256": "9c85fde33bce83673ce349f523dd9e95d40b6e1992b324e88600f522ba4229d1"
+    }
+  ]
+}

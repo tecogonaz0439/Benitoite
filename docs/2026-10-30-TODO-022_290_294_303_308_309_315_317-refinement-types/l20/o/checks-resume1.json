@@ -1,0 +1,100 @@
+[
+  {
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-11-02T16:33:59.126396+00:00",
+    "elapsed_outer_seconds": 0.153869,
+    "exit_code": 0,
+    "log": "<tmp>/benitoite-o-resume1-build-final.log",
+    "bytes": 42716,
+    "sha256": "243c86826b48c8a4916c841d7ae4b2519883057adfc8b46bbe6c742731e5df2c"
+  },
+  {
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/o/signatures-o.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-11-02T16:33:59.280577+00:00",
+    "elapsed_outer_seconds": 0.669959,
+    "exit_code": 0,
+    "log": "<tmp>/benitoite-o-resume1-signatures-o-final.log",
+    "bytes": 29482,
+    "sha256": "318bc41ac5ca6b72fe74ba26ae003a70137802a322f0eb79ed57849e5a1efe70"
+  },
+  {
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/o/signatures-p.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-11-02T16:33:59.950779+00:00",
+    "elapsed_outer_seconds": 0.671165,
+    "exit_code": 0,
+    "log": "<tmp>/benitoite-o-resume1-signatures-p-final.log",
+    "bytes": 57645,
+    "sha256": "cca4bb5c7d036b935933213868dcf58a29b494387d999a4458f59acb3d385e54"
+  },
+  {
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/o/axioms.lean"
+    ],
+    "cwd": "formal",
+    "started_utc": "2026-11-02T16:34:00.622215+00:00",
+    "elapsed_outer_seconds": 2.080163,
+    "exit_code": 0,
+    "log": "<tmp>/benitoite-o-resume1-axioms-final.log",
+    "bytes": 68763,
+    "sha256": "0840b9224c7e06a75156007748c040fabbe183f4bedac3b738d4db811f00853f"
+  },
+  {
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "428ed95f768f41d63cbc3353e2b21fca0bb88e42"
+    ],
+    "cwd": ".",
+    "started_utc": "2026-11-02T16:36:11.301949+00:00",
+    "ended_utc": "2026-11-02T16:36:15.026095+00:00",
+    "elapsed_outer_seconds": 3.724085,
+    "exit_code": 0,
+    "log": "<tmp>/benitoite-o-resume1-work-final.log",
+    "bytes": 5757,
+    "sha256": "d1c38454bd3575f2954aca922d2136d42b279156c3b4d51ddb43cd37905a20b1"
+  },
+  {
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "428ed95f768f41d63cbc3353e2b21fca0bb88e42",
+      "--dry-run"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "elapsed_outer_seconds": null,
+    "timing_note": "終了0と選択を確認。全経過時間は未採取。",
+    "log": "<tmp>/benitoite-o-resume1-work-dry.log",
+    "bytes": 759,
+    "sha256": "12f6d21136d2c55f2ef1d024014c1601e27f1f70a9e7f675dd0c2980fe085313"
+  }
+]

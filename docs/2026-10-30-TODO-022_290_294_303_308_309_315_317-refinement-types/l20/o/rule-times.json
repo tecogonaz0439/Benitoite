@@ -1,0 +1,144 @@
+{
+  "date": "2026-11-03",
+  "timezone": "Asia/Tokyo",
+  "clock": "clock.curr_time",
+  "kind": "outer_wall_time",
+  "separable_wait_seconds": null,
+  "active_seconds": null,
+  "total_seconds": 1830,
+  "rules": [
+    {
+      "rule": "V_Var",
+      "start": "00:17:50",
+      "end": "00:18:26",
+      "outer_seconds": 36,
+      "declaration": "Benitoite.Release.Refinement.LegacyValueCases.var_case"
+    },
+    {
+      "rule": "V_Const",
+      "start": "00:18:26",
+      "end": "00:18:38",
+      "outer_seconds": 12,
+      "declaration": "Benitoite.Release.Refinement.LegacyValueCases.const_case"
+    },
+    {
+      "rule": "V_Bytes",
+      "start": "00:18:38",
+      "end": "00:18:44",
+      "outer_seconds": 6,
+      "declaration": "Benitoite.Release.Refinement.LegacyValueCases.bytes_case"
+    },
+    {
+      "rule": "V_Fun",
+      "start": "00:18:44",
+      "end": "00:27:23",
+      "outer_seconds": 519,
+      "declaration": "Benitoite.Release.Refinement.LegacyValueCases.fun_case"
+    },
+    {
+      "rule": "V_Prim",
+      "start": "00:27:23",
+      "end": "00:40:39",
+      "outer_seconds": 796,
+      "declaration": "Benitoite.Release.Refinement.LegacyValueCases.prim_case"
+    },
+    {
+      "rule": "V_Op",
+      "start": "00:40:39",
+      "end": "00:43:05",
+      "outer_seconds": 146,
+      "declaration": "Benitoite.Release.Refinement.LegacyValueCases.op_case"
+    },
+    {
+      "rule": "V_Lam",
+      "start": "00:43:05",
+      "end": "00:44:34",
+      "outer_seconds": 89,
+      "declaration": "Benitoite.Release.Refinement.LegacyValueCases.lam_case"
+    },
+    {
+      "rule": "V_Con",
+      "start": "00:44:34",
+      "end": "00:45:16",
+      "outer_seconds": 42,
+      "declaration": "Benitoite.Release.Refinement.LegacyValueCases.con_case"
+    },
+    {
+      "rule": "V_List",
+      "start": "00:45:16",
+      "end": "00:45:24",
+      "outer_seconds": 8,
+      "declaration": "Benitoite.Release.Refinement.LegacyValueCases.list_case"
+    },
+    {
+      "rule": "V_Map",
+      "start": "00:45:24",
+      "end": "00:45:32",
+      "outer_seconds": 8,
+      "declaration": "Benitoite.Release.Refinement.LegacyValueCases.map_case"
+    },
+    {
+      "rule": "V_Set",
+      "start": "00:45:32",
+      "end": "00:45:46",
+      "outer_seconds": 14,
+      "declaration": "Benitoite.Release.Refinement.LegacyValueCases.set_case"
+    },
+    {
+      "rule": "V_Dict",
+      "start": "00:45:46",
+      "end": "00:46:11",
+      "outer_seconds": 25,
+      "declaration": "Benitoite.Release.Refinement.LegacyValueCases.dict_case"
+    },
+    {
+      "rule": "V_LocRef",
+      "start": "00:46:11",
+      "end": "00:46:47",
+      "outer_seconds": 36,
+      "declaration": "Benitoite.Release.Refinement.LegacyValueCases.locRef_case"
+    },
+    {
+      "rule": "V_LocLazy",
+      "start": "00:46:47",
+      "end": "00:46:56",
+      "outer_seconds": 9,
+      "declaration": "Benitoite.Release.Refinement.LegacyValueCases.locLazy_case"
+    },
+    {
+      "rule": "V_Checked",
+      "start": "00:46:56",
+      "end": "00:47:02",
+      "outer_seconds": 6,
+      "declaration": "Benitoite.Release.Refinement.LegacyValueCases.checked_case"
+    },
+    {
+      "rule": "V_CheckedRequest",
+      "start": "00:47:02",
+      "end": "00:47:10",
+      "outer_seconds": 8,
+      "declaration": "Benitoite.Release.Refinement.LegacyValueCases.checkedRequest_case"
+    },
+    {
+      "rule": "V_Raise",
+      "start": "00:47:10",
+      "end": "00:47:58",
+      "outer_seconds": 48,
+      "declaration": "Benitoite.Release.Refinement.LegacyValueCases.raise_case"
+    },
+    {
+      "rule": "V_Super",
+      "start": "00:47:58",
+      "end": "00:48:13",
+      "outer_seconds": 15,
+      "declaration": "Benitoite.Release.Refinement.LegacyValueCases.super_case"
+    },
+    {
+      "rule": "V_Sub",
+      "start": "00:48:13",
+      "end": "00:48:20",
+      "outer_seconds": 7,
+      "declaration": "Benitoite.Release.Refinement.LegacyValueCases.sub_case"
+    }
+  ]
+}

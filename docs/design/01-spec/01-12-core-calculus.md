@@ -3331,7 +3331,21 @@ structure PrimSig.Scoped (P : Program) (s : PrimSig) : Prop where
 
 最上位の対象の位置の `instTarget` は、同じ長さの範囲の列どうしで `WF` を保つ。`LegacyClausesInput.signature_wf` は、Top の `opSig` に対する元の署名の入力から、実際に選ばれた節の範囲 S の `opSigAt` の埋め込み型の `WF` を導く。
 
-旧構文から新判断へ直接示している値の葉は、表現可能な定数、バイト列、検査済み対象、内容の新しい型付けと解析成功・端点一致を持つ検査済み要求である。後二者は `scoped_forget` で同じ旧 opaque の型へも移せる。正規化の等号については `(embedTy a).norm = (embedTy b).norm` と `a.norm = b.norm` の同値を示す。旧型の `WF` は値の深さに依存せず、`Sorted` と `Declared` も値文脈を読む述語を持たない。この性質を旧型の構文への相互再帰で示し、構文入力の注釈を任意の値文脈と正規化後の型へ移す。これらは全型付けの埋め込みや旧新の一段遷移の可換性を主張しない。
+定数とバイト列の埋め込みは、表現可能性を前提とする。検査済み対象と検査済み要求の基本の葉の補題は、同じ対象と範囲の所属を要求し、検査済み要求では内容の新しい型付けと解析成功・端点一致も要求する。後二者は `scoped_forget` で同じ旧 opaque の型へも移せる。正規化の等号については `(embedTy a).norm = (embedTy b).norm` と `a.norm = b.norm` の同値を示す。旧型の `WF` は値の深さに依存せず、`Sorted` と `Declared` も値文脈を読む述語を持たない。この性質を旧型の構文への相互再帰で示し、構文入力の注釈を任意の値文脈と正規化後の型へ移す。これらは全型付けの埋め込みや旧新の一段遷移の可換性を主張しない。
+
+`LegacyJudgment.Embedded` は、七判断の結論を任意の経路条件 `Φ` で量化する。型文脈は `legacyTypeCtx C κ` とし、旧の値文脈・ストア・戻り先・局所文脈の像を使う。`LegacyOutputInput.induct_regular` は、親の規則と形成、全ての子の入力、および各子の帰納仮説を渡す。`LegacyRule.embed_value` は、`DeclarationKinds.WF`、`LegacyTables`、値の親の `LegacyNodeRegular`、その規則の全ての子についての `Embedded` から、親の `Embedded` を構成する。値の全19規則を扱う。lambda の本体では子の帰納仮説を `liftMany` で移した `Φ` に、保持要求の内容では空の `Φ` に特殊化する。これらの子の結論は相互帰納の帰納仮説であり、旧入力へ追加する独立の信頼条件ではない。
+
+関数・組み込み・操作の参照では、非依存の旧署名と新しい依存列の具体化を正規化した型の等号で対応させ、`V_Sub` の `convert` で旧型の像へ移す。組み込みの型の対応 `legacy_primitive_type` は、具体化した旧結果型の `LegacyTypeInput`、範囲の深さ0、同じ型引数の `LegacyTypesInput`、行引数の `LegacyRowsInput` を使う。最上位だけの範囲の具体化に全体の具体化を適用すると全体の具体化と一致することと、結果型・型引数・行引数の閉じた範囲を使って等号を示す。範囲のない署名に限定しない。旧 `Eff.instR` は最上位の Fail 列の並びを保つため、新しい効果の具体化との等号は正規化後に示す。値の型付けを意味の包含で代用しない。
+
+`legacy_local_zero` は、旧 `LocalCtx.extend n L` を写した局所文脈での計算の型付けを、新しい `localExtend n` で拡張した局所文脈へ移す。`L` は空でも非空でもよい。空の旧局所文脈で省略される末尾の `none` と、非空の局所文脈の先頭の `none` と参照位置を対応させる。`ValueAssumptions` を要求しない。`LegacyNodeContext.bindings` は、`binds δ ++ Γ` を持つ子の文脈から、任意の値の深さでの `LegacyNodeTypes δ` を取り出す。旧型の像が値参照を持たない性質を使い、型の適格性を独立に仮定しない。
+
+`embedPatTy`・`embedPatTys`・`embedAltsTy` は、`LegacyTables` と旧判断から、同じパターン・入力型の像・束縛型列の像を持つ新判断を構成する。構成子の欄の形成は表から供給する。これらの補題は、追加の `DeclarationKinds.WF` 又は `LegacyNodeTypes` を要求しない。
+
+網羅性の対応には、実行の値の写し `embedVal` と別に、照合が読む構造を保持する旧値 `legacyPatternVal` を使う。構成子と List の子を再帰的に写し、`checkedAt` と保持要求は同じ対象の旧 `checked` に、`atError` は標準の At 構成子と同じ七文字列に対応させる。パターンがビット値を比較しない Float64 は旧の `.float 0` に写し、Float32 のビット列は保持する。構造を読まない値の内部は復元しない。`legacy_matchVal` と `legacy_matchList` は、全てのパターンについて照合結果と束縛列の対応を証明する。この関数が型付け又は実行を保存するとは主張しない。
+
+`legacy_inhabits` は、`LegacyTables`、新しい `Inhabits P (embedTy a) v`、旧 `a.WF 0 nt` から、対応する旧値の旧 `Inhabits` を構成する。構成子の欄と List の要素にも下降する。`embedExhaustive` は、この対応と照合結果の対応を使い、`LegacyTables`、旧型の `a.WF 0 nt`、旧 `Exhaustive P0 a ps` から、同じ `ps` の新 `Exhaustive` を証明する。範囲の変数を持つ `opaque o (rvar 0)` には旧の所属値がなく、旧の空パターン列は網羅的だが、新しい `checkedAt` が属するため新しい空パターン列は網羅的でない。この型は旧型の範囲の深さ0の `WF` で拒否する。C_Match の照合値の子の `LegacyNodeRegular` からは、型入力の `WF` を `legacy_wf` で旧型へ移して供給する。
+
+`LegacyOutputInput.embed_constants` は、定数の構文を持つ旧導出について、部分型の枝を含め、任意の `Φ` での新しい型付けを証明する。この定理の入力は `LegacyOutputInput` だけである。値19規則の各枝の再構成は、計算・腕・節の子を含む七判断の全導出の埋め込み、状態の埋め込み、一段遷移の可換性とは区別する。
 
 `LegacyDeclarationInputs` は LegacyDeclarationsInput、関数・メソッド・上位辞書の declarationBodyInputs、および写した各本体の SourceScoped を持つ。三つの本体入力は旧の全導出の LegacyOutputInput を読み、新しい WellTyped を入力の欄にしない。メソッドの Q は、代入前の Qsig ms.params ms.ret ms.eff である。操作の辞書の先頭と実装の辞書型の kind は、LegacyDeclarationsInput.op_dictionaryInputs と impl_dictionaryKinds から供給する。
 
