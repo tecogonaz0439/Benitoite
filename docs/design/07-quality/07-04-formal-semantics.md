@@ -93,7 +93,11 @@
 
 `MeaningTransportObstruction.ordinary_supply_counterexample` は、検証済みの共変な data、型引数の部分型と data の部分型、文脈の事実の真、元の data の意味を満たしながら、両側の具体的な型引数の `Ordinary` が偽であることを証明する。これは `variance_field_mono` への入力の供給に対する反例であり、任意の部分型に対する意味の移送の否定の証明ではない。
 
-パターン型付けには、篩へ同じ束縛を移す `P_Refined` と、正規形の等号で入力型を移す `P_Convert` を含む。型付けの値29・計算24を含む76構成子と、値移動・型移動・値置換・narrowing の主な署名は維持する。閉じた型付けの全導出から `ValueMeaning` を構成する証明と、任意の捕捉と腕への全接続は、任意の部分型に対する意味の移送の証明からは結論しない。意味を主な定理へ独立の仮定として追加していない。
+`TypedMeaning` は値29・値列2・同じ型を持つ値の列2の全33場合を一つの相互帰納で扱い、閉じた型付けから `ValueMeaning`、正規形と元の型への `Inhabits` を導く。変数は空の文脈から排除する。lambda の本体の意味を帰納の仮定にせず、data・List の子の意味、部分型の意味の移送、正規化不変性、閉じた観測項と自己モデルの解釈の一致を使う。`TypedCoverage` は任意の closeVal の閉じた型付けを入力に取り、`Capture.meaning_coverage` と `CaptureOk.variable_coverage` へ意味を供給する。閉じた型付けから意味と所属を導く段は CoreAssumptions を要求せず、進行の定理を使わない。任意の開いた型付き値から閉じた型付けを供給する close_value_typed は、Program.WellFormed・Program.WellTyped・CoreAssumptions、ストアの型の WF・Sorted・Declared と CaptureOk を要求する。変数の閉じた型付けを供給する variable_coverage は、SubstitutionAssumptions とストアの型の WF、CaptureOk を要求する。`TypedMeaningExamples` は Month、空篩の型付き値の不存在、任意の正の長さの非空 List、unknown の閉じた述語への型付けから意味と所属への三つの入口の適用を持つ。unknown の例は、未観測の鍵を含む Map の大きさの項の自己等号を有限の含意から導き、三値評価が none であることも証明する。self を読む selfUnknownType の例は元の Map の型付けに必要な鍵の B.sat を受け、同じ値への三つの入口の適用から、空のパターン列で除けないことを示す。reject_top と reject_list は整数13の Month と List[Month] の型付けを否定する。cap_month は具体の Capture.empty.extend 5 へ捕捉の意味と網羅性の二つの入口を適用し、dependent_capture_entries は値依存の型の閉じた型付けも構成する。nonempty_capture_coverage は非空 List を保持する具体の捕捉に網羅性を適用する。
+
+`PatternBindingSupport` は `a.HasSort s` を持つ型と篩を持つ型の形成、全述語の一部を残す正規形の形成、正規化した篩の除去、型付き構成子の欄の移送を証明する。移送先の Ordinary は元の型引数と TypeArgsLe から供給する。`PatternBindings` は P_Refined・P_Convert を含む PatTy の9場合と PatTys の2場合を相互に証明し、a.norm の型付き値の照合から δ.map norm の型付き束縛を得る。List の前半・残りの list・後半、構成子の全欄、標準エラーの七欄を含む。firstAlt・selectSlots による代替パターンの束縛も同じ正規形で得る。前提は VarianceValid と各入口の型付け・照合であり、型付けの規則と CoreAssumptions は変更しない。
+
+`PatternBindingsGround` は照合と代替の成功で入力の Ground を束縛列へ移す。`PatternBindingExamples` は先頭と残りの list の型付けと同じ列の長さを合わせ、任意の closeVal の閉じた型付けから同じ閉じた先頭・残りの list の型付けと観測・長さを導く。二要素の成功と空 List の失敗、空の捕捉から CaptureOk.extend で整数5を加えて構成する Month の変数への網羅性も証明する。任意の腕の実行状態の保存と進行の合成は、この値と束縛の補題だけからは結論しない。意味を主な定理へ独立の仮定として追加していない。
 
 型付けの型文脈は `TypeCtx = List TParamDecl` であり、kind と組み込みの制約を同じ宣言の位置から射影する。`TypeArgsKinded P C` は `TypeCtx.kinds C` を使い、その別名 `TypeArgsKindedAt` とともに value kind の型引数に Ordinary を要求する。`Ty.Declared` の tapp は、head の宣言の kind が引数の個数と一致する constructor であることを検査する。`SatAll` と admits へ渡す文脈は `TypeCtx.constraints C` であり、組み込みの表の生の制約の型は保つ。constructor kind は型の形から Ordinary を満たす。`V_Raise` は結果型とエラー型の Ordinary を別に検査し、結果型の value kind も同じ C で検査する。Fail 節の新しい型束縛は `TypeCtx.valueParam` である。`TypeArgumentRegularity` は SignatureInstance、操作の型付け、辞書の型付け、メソッド呼出しから、実際に置換する型列の WF と Ordinary を取り出し、Ty.substAt_wf と Ty.LeQ.substAt へ渡す。操作とメソッドの変数を返す本体について、型置換後の型付けも証明する。HasTypeVQ と HasTypeCQ の値移動・型移動・値置換・None の下の値置換・narrowing の前提と結論は保つ。
 
@@ -844,6 +848,8 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 | TypeFormation・ValueFacts | 同節の検証済みの欄の型代入の形成、`Declared`・`HasData` の型置換、構成子の反転と欄の型付け |
 | RefinementObservation・ObservationOrder・ObservationSubstitution・ObservationInterpretation・ValueMeaning・ValueMeaningInhabits・PatternNormalForm・Patterns・PatternTransport・PatternSemantics・PatternTypeShift・CoverageRefinement | 「篩を読む網羅性と値の意味」 |
 | MeaningOrder・MeaningTransport・MeaningTransportObstruction | 同節の構造による欄の比較、任意の部分型に対する意味の移送と辞書式の帰納、型引数の Ordinary の供給に対する反例 |
+| TypedMeaning・TypedCoverage・TypedMeaningExamples | 同節の閉じた型付け全33場合から意味と所属、捕捉の意味と網羅性、Month・空篩・非空 List・unknown への適用 |
+| PatternBindingSupport・PatternBindings・PatternBindingsGround・PatternBindingExamples | 同節の正規形での束縛の型保存、代替の選択、Ground と同じ先頭・残りの list の観測・長さ |
 | Observation・ClosedEvaluation・Logic・LogicSound・Context/Capture・CapturedFacts・CaptureRegularity | 「閉じた述語の評価と捕捉」。開いた全結果形成と、元の注釈・包含・場所からの捕捉後の効果形成を含む |
 | PathFacts・PathConditions・MatchPaths・MatchFacts・Typing・StateTyping | 「条件とパターンからの事実」 |
 | Typing・HandlerContracts・RuntimeSyntax・AtPrepare・AtTyping・BuiltinResponse・ConstraintAssumptions・BuiltinEffects・Semantics・Step・ExternalCheck・ExternalResponse・ExternalConnection | 「保持要求と組み込みの遷移」 |

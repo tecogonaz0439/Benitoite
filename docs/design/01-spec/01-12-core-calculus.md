@@ -702,7 +702,7 @@ record 更新と try の内部照合の checker は、宣言表の view によ�
 - `zero` がtrueなら幅があり、寄せは省略されている。
 - `alternate` がtrueなら種類がb・o・x・Xのいずれかである。
 
-`Compatible(T, spec)` は、Tが次の14基本型のいずれかであり、種類と数の指定が型に適合する条件である。種類の省略と幅・寄せは14型すべてに許す。d・b・o・x・Xは八つの整数型（`Integer8`・`Integer16`・`Integer32`・`Integer`・`Byte`・`UnsignedInteger16`・`UnsignedInteger32`・`UnsignedInteger64`）、fは`Float`・`Float32`・`Decimal`に限る。sは`String`、cは`Character`に限る。符号+とゼロ埋めは八つの整数型とfが使える三型に限る。`Boolean`にも幅・寄せを許すが、bは許さない。`Unit`、型パラメータ、コレクション、利用者の型は受理しない。`Valid(T, spec)` は `SyntaxValid(spec) ∧ Compatible(T, spec)` である。`Surface.CheckTools` の `formatSyntaxValid`・`formatCompatible`・`formatValid` はこれらをBoolで判定し、それぞれの `_spec` 定理が判定の成功と命題の同値を示す。
+`Compatible(T, spec)` は、Tが次の14基本型のいずれかであり、種類と数の指定が型に適合する条件である。種類の省略と幅・寄せは14型すべてに許す。d・b・o・x・Xは八つの整数型（`Integer8`・`Integer16`・`Integer32`・`Integer`・`Byte`・`UnsignedInteger16`・`UnsignedInteger32`・`UnsignedInteger64`）、fは `Float`・`Float32`・`Decimal`に限る。sは `String`、cは `Character`に限る。符号+とゼロ埋めは八つの整数型とfが使える三型に限る。`Boolean`にも幅・寄せを許すが、bは許さない。`Unit`、型パラメータ、コレクション、利用者の型は受理しない。`Valid(T, spec)` は `SyntaxValid(spec) ∧ Compatible(T, spec)` である。`Surface.CheckTools` の `formatSyntaxValid`・`formatCompatible`・`formatValid` はこれらをBoolで判定し、それぞれの `_spec` 定理が判定の成功と命題の同値を示す。
 
 書式化の内部頭の補助定義 `FormatSpec.headName(T)` は、14型にそれぞれ `%Format.<基本型名>` を一つ割り当て、そのほかの型には頭を割り当てない。`String`にも `%Format.String` を割り当てる。固定シグネチャ `converterType(T)` は、次の契約名・引数型と、結果型`String`・空エフェクトを持つ。
 
@@ -3350,6 +3350,14 @@ structure PrimSig.Scoped (P : Program) (s : PrimSig) : Prop where
 意味の移送には補助関係 `MeaningLe` と型引数列の `MeaningArgs` を使う。これらは型付けの部分型判断を置き換えない。関数・依存関数・lazy・map の比較は、意味が内部を読まない値の形に従う。篩の比較は述語の含意を保持する。`LeQ` と `TypeArgsLe` の導出はこの補助関係へ写せる。検証済みの欄の `VarianceOK` と型引数列の比較から、具体化した欄の比較を構成する。この構成は型の構造を読み、型像の `Ordinary` を要求しない。篩では基底の比較と同じ述語を保ち、入れ子の data では各引数の変性に従う。
 
 意味の移送の証明は、外側で値の大きさ、内側で補助関係の導出に帰納する。data の欄について新しく構成した比較には、より小さい子値に対する外側の帰納仮定を使う。推移は同じ値に対する二つの内側の帰納仮定を合成する。篩は基底の意味と自己述語の真を分け、文脈の事実と経路条件を自己を加えたモデルへ移し、含意の健全性を適用する。この証明から、`VarianceValid`・`LeQ`・文脈の事実と経路条件の真・元の意味だけを前提とする `valueMeaning_sub` を導く。
+
+`typed_value_meaning_closed` は、`VarianceValid` と空の型・値の文脈と経路条件の下での値の型付けから、空の外側モデルに対する `ValueMeaning` を導く。値29規則・値列2規則・同じ型を持つ値の列2規則を一つの相互帰納で扱う。閉じた変数は空の値の文脈から排除し、lambda の計算本体には意味の帰納を降ろさない。`V_Con` と `V_List` は子の意味、`V_Sub` は任意の部分型に対する意味の移送、`V_Normal` は意味の正規化不変性を使う。`V_Refine` は閉じた観測項の開いた述語と自己モデルの解釈を合わせ、有限の含意の健全性を適用する。`inhabits_of_typed` は同じ導出から正規形の型への所属を、`inhabits_of_typed_raw` は元の型への所属を導く。いずれも `CoreAssumptions` を前提に持たない。
+
+`Capture.typed_meaning` は、任意の `closeVal cap v` の閉じた型付けから、その値の意味と捕捉元の型への所属を得る。閉じた型付けから意味と所属を導く段は `CoreAssumptions` を要求しない。任意の開いた型付き値からこの入力を供給する `close_value_typed` は、`P.WellFormed`・`P.WellTyped B`・`B.CoreAssumptions P`、ストアの型の WF・Sorted・Declared、`CaptureOk` と元の型付けを要求する。`Capture.typed_coverage` は閉じた型の意味を `meaning_coverage` へ渡し、元の型の網羅性から照合の成功を得る。`CaptureOk.typed_variable_coverage` は `Builtins.SubstitutionAssumptions P B` とストアの型の WF を使う `variable_coverage` の閉じた型付けに意味を供給する。進行の定理をこれらの証明に用いない。Month・空篩・非空 List・unknown に型付けから意味と所属への三つの入口を適用する。整数5を保持する具体の捕捉には、Month に対する `Capture.typed_meaning` と `Capture.typed_coverage`、空の捕捉から `CaptureOk.extend` で構成する変数の網羅性、値依存の型 `integer{self = x}` の意味を適用する。非空 List の具体の捕捉にも `Capture.typed_coverage` を適用する。整数13の Month での型付けと、13を要素に持つ List[Month] の型付けは、それぞれ意味と所属から否定する。self の Map の大きさの自己等号は、鍵が未観測なら三値評価が unknown でも、有限の含意の自己等号から型付けできる。この Map の例は、元の Map の型付けが要求する鍵の `B.sat` を入力に持つ。意味と所属の三つの入口を適用した同じ値を使い、空のパターン列が網羅的でないことも示す。
+
+`pattern_bindings_typed` は、`VarianceValid`、`PatTy P p a δ`、閉じた値の `a.norm` での型付け、同じ値とパターンの照合成功から、束縛列の `δ.map Ty.norm` での型付けを導く。`PatTy` の9場合と `PatTys` の2場合を相互に証明する。篩の除去では正規形の全述語のうち基底の述語を残し、変換では束縛列の正規化の冪等性を使う。List の前半・後半・残りの list は同じ元の要素列から取り出す。data の欄の移送先の型引数の Ordinary は、元の型付き構成子の型引数とその比較から導く。標準エラーの七欄も実際の照合と同じ値列で型付けする。`alternatives_bindings_typed` は `firstAlt` が選んだ代替の束縛と、同じ `selectSlots` による型列の選択を対応させる。これらの型付けの保存も `CoreAssumptions` を要求しない。
+
+`pattern_bindings_ground`・`patterns_bindings_ground`・`alternatives_bindings_ground` は、入力が Ground なら照合成功の束縛も Ground であることを示す。`pattern_length_relation` は、先頭と残りの listを束縛する List の照合から、元の列が同じ先頭と残りの list の連結であり、長さが残りの list より1大きいことを結論する。`head_rest_close_typed` は、任意の捕捉で閉じた型付けに束縛保存を適用し、閉じた同じ先頭と残りの list の観測が値置換による観測と一致すること、および長さの関係を示す。
 
 information order に当たる `Observation.InfoLE` は、scalar と対象の snapshot を等号で保ち、List・Map・Set・data の内部の未観測 slot に情報を加える。slot の位置・数と構成子名は保つ。反射性・推移性・反対称性、および鍵コード・大きさ・項の観測の単調性を示す。`Pred.evalWith_mono` は一度確定した真偽が情報の追加で変わらないことを示す。全域の解釈の既定値について、無条件の不変性は要求しない。
 
