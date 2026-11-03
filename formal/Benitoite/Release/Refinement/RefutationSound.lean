@@ -207,5 +207,46 @@ theorem discard_fact_sound_at {keys todo facts next i} (h : discardFact next tod
     · exact hm a (List.mem_append_right _ (List.mem_of_mem_eraseIdx ha))
   · cases h
 
+theorem builtin_sound_at {keys todo facts} {l : PreparedLeaf}
+    {next : List NNF → List NNF → Bool}
+    (h : (l.checkRaw (facts.map (NNF.toPred keys)) &&
+      match normalize keys l.predicate false with
+      | some q => next (q::todo) facts | none => false) = true)
+    (ν : ObservationEnv) (η : ObservationEnvModel)
+    (child : ∀ ts fs, next ts fs = true → BranchRefutedAt keys ts fs ν η) :
+    BranchRefutedAt keys todo facts ν η := by
+  intro hm
+  simp only [Bool.and_eq_true] at h
+  have hl := PreparedLeaf.raw_sound_at h.1 ν η (by
+    intro p hp
+    obtain ⟨q,hq,rfl⟩ := List.mem_map.mp hp
+    exact hm q (List.mem_append_right _ hq))
+  cases hn : normalize keys l.predicate false with
+  | none => simp [hn] at h
+  | some q =>
+    apply child _ _ (by simpa only [hn] using h.2)
+    intro a ha
+    rcases List.mem_cons.mp ha with rfl | ha
+    · exact (normalize_holds_at hn ν η).mpr hl
+    · exact hm a ha
+
+/-- 探索の完全性を要求せず、検査の成功だけから同じ置換像で矛盾を導く。 -/
+theorem refute_sound_at {keys : KeyTable} {todo facts : List NNF} {c : Refutation}
+    (h : refute keys todo facts c = true) (ν : ObservationEnv) (η : ObservationEnvModel) :
+    (∀ q ∈ todo ++ facts, (predBind ν (q.toPred keys)).interpret η = true) → False := by
+  induction c generalizing todo facts with
+  | consume c ih => exact consume_sound_at h ν η (fun _ _ => ih)
+  | cases l r ihl ihr => exact cases_sound_at h ν η (fun _ _ => ihl) (fun _ _ => ihr)
+  | derive step c ih =>
+    exact derive_sound_at (step := step) (next := fun ts fs => refute keys ts fs c)
+      h ν η (fun _ _ => ih)
+  | closeLinear i => exact close_linear_sound_at h ν η
+  | closeAtom p n => exact close_atom_sound_at h ν η
+  | split key cut l r ihl ihr => exact split_sound_at h ν η (fun _ _ => ihl) (fun _ _ => ihr)
+  | discardTodo c ih => exact discard_todo_sound_at h ν η (fun _ _ => ih)
+  | discardFact i c ih => exact discard_fact_sound_at h ν η (fun _ _ => ih)
+  | builtin l c ih =>
+    exact builtin_sound_at (next := fun ts fs => refute keys ts fs c) h ν η (fun _ _ => ih)
+
 end CertificateKernel
 end Benitoite.Release.Refinement

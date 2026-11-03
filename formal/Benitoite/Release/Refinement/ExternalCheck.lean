@@ -19,9 +19,6 @@ def Outcome.Typed (P : Program) (B : Builtins) (Ψ : StoreTy) (out : Outcome) (a
   | .err _ | .exit _ => True
 
 
-/-- some trueだけを成功とし、失敗と偽をともに拒否する。 -/
-def Pred.closedTrue (p : Pred) : Bool := p.evalClosed == some true
-
 theorem Pred.closedTrue_entails {p : Pred} (h : p.closedTrue = true) :
     p.WF 0 ∧ p.Sorted [] none ∧ Entails [] p := by
   have he : p.evalClosed = some true := by simpa [Pred.closedTrue] using h

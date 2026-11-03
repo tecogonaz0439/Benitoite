@@ -1,0 +1,70 @@
+{
+  "initial_default_build": {
+    "command": [
+      "lake",
+      "build"
+    ],
+    "exit": 0,
+    "start_epoch": 1793666081.126621,
+    "seconds": 115.30635404586792,
+    "bytes": 60322,
+    "sha256": "df518b8a1071741e31275bb12e923ffcd0ce21a94d1a5af00ec44e079628a2ac"
+  },
+  "final_default_build": {
+    "command": [
+      "lake",
+      "build"
+    ],
+    "exit": 0,
+    "start_epoch": 1793666275.642459,
+    "seconds": 136.49644804000854,
+    "bytes": 64431,
+    "sha256": "5e2e206e6ab28734025960daba378e5838fcc44745c9afd69f2c7a1890bb19c3"
+  },
+  "raw_execution": {
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "--run",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l30/f/run-kernel.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.38405279200000003,
+    "bytes": 145,
+    "sha256": "86da914142f59cca8dd82378ce22fecf9066141365b7d70c1ba5d626982d78b7"
+  },
+  "local_checks": [
+    {
+      "target": "ScalarLogic.lean",
+      "command": "lake env lean -M 12288 Benitoite/Release/Refinement/ScalarLogic.lean",
+      "exit": 0,
+      "seconds": null,
+      "timing": "not separately captured"
+    },
+    {
+      "target": "CertificateKernelExamples.lean",
+      "command": "lake env lean -M 12288 Benitoite/Release/Refinement/CertificateKernelExamples.lean",
+      "exit": 1,
+      "seconds": 0.382780459,
+      "diagnostic": "legacySix example: predBind truth and closedTrue not simplified; one unused simp argument"
+    },
+    {
+      "target": "CertificateKernelExamples.lean",
+      "command": "lake env lean -M 12288 Benitoite/Release/Refinement/CertificateKernelExamples.lean",
+      "exit": 0,
+      "seconds": 0.356808125,
+      "diagnostic": "after adding predBind and a proved closedTrue fact; warnings 0"
+    }
+  ],
+  "raw_checks": 8,
+  "raw_passed": 8,
+  "kernel_proofs": "registry_100/comparisons_30/classes_12/registered_samples/twice_checked/bad_twice_rejected/negative_length_checked and examples in default imports",
+  "formal_max_rss": {
+    "value": null,
+    "reason": "not scheduled for this work; final stage coordinator collects it"
+  },
+  "later_source_changes": 0
+}

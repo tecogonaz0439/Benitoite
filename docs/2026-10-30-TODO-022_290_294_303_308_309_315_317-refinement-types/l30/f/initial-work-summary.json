@@ -1,0 +1,29 @@
+{
+  "dry-run": {
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "9905c37924a87f93f78bdc1b87ea2272ea4b3090",
+      "--dry-run"
+    ],
+    "exit": 0,
+    "seconds": 0.11728191700000001,
+    "bytes": 759,
+    "sha256": "9d6dc8d7a704712dd090275ddcde65233212114a6df37f0794f27992e11e1bc7"
+  },
+  "work": {
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "9905c37924a87f93f78bdc1b87ea2272ea4b3090"
+    ],
+    "exit": 0,
+    "seconds": 7.905438042,
+    "bytes": 5757,
+    "sha256": "afc8d0b3e9a8212461433979f3964d1a03218645a6b246eacd7291b6bde9fa6b"
+  }
+}

@@ -1,4 +1,4 @@
-import Benitoite.Release.Refinement.ClosedEvaluation
+import Benitoite.Release.Refinement.CertificateKernel
 
 namespace Benitoite.Release.Refinement
 
@@ -23,6 +23,15 @@ inductive Entails : List Pred → Pred → Prop where
   | integer_le {Ξ n m} : n ≤ m → Entails Ξ (.le (.integer n) (.integer m))
   | integer_lt {Ξ n m} : n < m → Entails Ξ (.lt (.integer n) (.integer m))
   | closed {Ξ p} : p.WF 0 → p.Sorted [] none → p.evalClosed = some true → Entails Ξ p
+
+  | checkedAt {Ξ p q c} (ν : ObservationEnv) :
+      CertificateKernel.check p q c = true → Entails Ξ (predBind ν p) → Entails Ξ (predBind ν q)
+
+/-- 恒等置換で検査済みの含意を適用する。 -/
+theorem Entails.checked {Ξ p q c} (hc : CertificateKernel.check p q c = true)
+    (hp : Entails Ξ p) : Entails Ξ q := by
+  simpa only [predBind_id] using
+    (Entails.checkedAt (fun i => some (.var i)) hc (by simpa only [predBind_id] using hp))
 
 /-- 閉じた計算の成功から、仮定を使わず導く。 -/
 theorem Entails.ground {p : Pred} (hw : p.WF 0) (hs : p.Sorted [] none)
@@ -58,6 +67,7 @@ theorem Entails.weaken {Ξ p} (h : Entails Ξ p) {Δ} (hm : ∀ q ∈ Ξ, q ∈ 
   | integer_le h => exact .integer_le h
   | integer_lt h => exact .integer_lt h
   | closed hw hs he => exact .closed hw hs he
+  | checkedAt ν hc _ ih => exact .checkedAt ν hc (ih hm)
 
 private theorem consTransport {Ξ Δ : List Pred} (hm : ∀ q ∈ Ξ, Entails Δ q) (p : Pred) :
     ∀ q ∈ p::Ξ, Entails (p::Δ) q := by
@@ -89,5 +99,6 @@ theorem Entails.cut {Ξ p} (h : Entails Ξ p) {Δ} (hm : ∀ q ∈ Ξ, Entails �
   | integer_le h => exact .integer_le h
   | integer_lt h => exact .integer_lt h
   | closed hw hs he => exact .closed hw hs he
+  | checkedAt ν hc _ ih => exact .checkedAt ν hc (ih hm)
 
 end Benitoite.Release.Refinement

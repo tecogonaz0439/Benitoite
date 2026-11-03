@@ -459,3 +459,6 @@ import Benitoite.Release.Refinement.LogicNormalizationExamples
 
 import Benitoite.Release.Refinement.RefutationExamples
 import Benitoite.Release.Refinement.EqCertificateExamples
+
+import Benitoite.Release.Refinement.BuiltinLogicExamples
+import Benitoite.Release.Refinement.CertificateKernelExamples

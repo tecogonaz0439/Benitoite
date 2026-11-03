@@ -1,25 +1,11 @@
-import Benitoite.Release.Refinement.EqProofSyntax
-import Benitoite.Release.Refinement.PreparedLeafSyntax
+import Benitoite.Release.Refinement.CertificateEntails
+import Benitoite.Release.Refinement.EqCertificateTyping
 import Benitoite.Release.Refinement.ExternalCheck
 import Benitoite.Release.Refinement.LogicSound
-import Benitoite.Release.Refinement.TypedFacts
-import Benitoite.Release.Refinement.MeasureNonnegative
 
-/-!
-# 有限な証明書の葉と枝内の参照
-
-証明書は正規化の履歴や未検査の導出を含まない。閉じた葉は評価を再実行する。
-substituteはEqProof.checkによる構造の一致を使う。
-整数射影の等号と置換位置の照合はEqCertificateの入口で扱う。
--/
+/-! # 型と宣言を照合する証明書の上層の入口 -/
 namespace Benitoite.Release.Refinement
 noncomputable section
-
-def PreparedLeaf.check (l : PreparedLeaf) : Bool :=
-  l.predicate.closedTrue && match l.lemma, l.predicate with
-    | .closed, _ => true
-    | .lengthNonnegative, .le (.integer 0) (.measure .listLength _) => true
-    | _,_ => false
 
 theorem PreparedLeaf.entails {l : PreparedLeaf} (h : l.check = true) : Entails Φ l.predicate := by
   have hc : l.predicate.closedTrue = true := by
@@ -36,68 +22,6 @@ theorem PreparedLeaf.stable {l : PreparedLeaf} (h : l.check = true) (ν : Observ
   have hc : l.predicate.closedTrue = true := by
     simp only [PreparedLeaf.check, Bool.and_eq_true] at h; exact h.1
   exact Pred.bind_closed (Pred.closedTrue_entails hc).1 ν
-
-inductive Certificate where
-  | use (index : Nat)
-  | leaf (value : PreparedLeaf)
-  | substitute (predicate : Pred) (left right : Term) (eq : EqProof) (proof : Certificate)
-  | consume (next : Certificate)
-  | cases (left right : Certificate)
-  | discard (next : Certificate)
-
-def Certificate.check (Φ : List Pred) (goal : Pred) : Certificate → Bool
-  | .use i => Φ[i]? == some goal
-  | .leaf l => decide (l.predicate = goal) && l.check
-  | .substitute p t u eq c => decide (goal = p.open u) && eq.check t u && c.check Φ (p.open t)
-  | .consume c => match Φ with
-    | .and p q :: rest => c.check (p::q::rest) goal
-    | _ => false
-  | .cases l r => match Φ with
-    | .or p q :: rest => l.check (p::rest) goal && r.check (q::rest) goal
-    | _ => false
-  | .discard c => match Φ with
-    | _::rest => c.check rest goal
-    | [] => false
-
-theorem Certificate.sound {Φ goal c} (h : Certificate.check Φ goal c = true) : Entails Φ goal := by
-  induction c generalizing Φ goal with
-  | use i =>
-    have hh : Φ[i]? = some goal := by simpa [check] using h
-    exact .hyp (List.mem_of_getElem? hh)
-  | leaf l =>
-    simp only [check,Bool.and_eq_true,decide_eq_true_eq] at h
-    rw [←h.1]; exact l.entails h.2
-  | substitute p t u eq c ih =>
-    simp only [check,Bool.and_eq_true,decide_eq_true_eq] at h
-    have he := EqProof.sound h.1.2
-    rw [h.1.1,←he]; exact ih h.2
-  | consume c ih =>
-    cases Φ with
-    | nil => simp [check] at h
-    | cons p rest =>
-      cases p <;> simp only [check,Bool.false_eq_true] at h
-      rename_i p q
-      apply (ih h).cut
-      intro r hr
-      rcases List.mem_cons.mp hr with rfl | hr
-      · exact .and_left (q := q) (.hyp List.mem_cons_self)
-      rcases List.mem_cons.mp hr with rfl | hr
-      · exact .and_right (p := p) (.hyp List.mem_cons_self)
-      · exact .hyp (List.mem_cons_of_mem _ hr)
-  | cases l r ihl ihr =>
-    cases Φ with
-    | nil => simp [check] at h
-    | cons p rest =>
-      cases p <;> simp only [check,Bool.false_eq_true] at h
-      rename_i p q
-      simp only [Bool.and_eq_true] at h
-      apply Entails.or_elim (p := p) (q := q) (.hyp (List.mem_cons_self))
-      · exact (ihl h.1).weaken (by intro t ht; rcases List.mem_cons.mp ht with rfl | ht; exact List.mem_cons_self; exact List.mem_cons_of_mem _ (List.mem_cons_of_mem _ ht))
-      · exact (ihr h.2).weaken (by intro t ht; rcases List.mem_cons.mp ht with rfl | ht; exact List.mem_cons_self; exact List.mem_cons_of_mem _ (List.mem_cons_of_mem _ ht))
-  | discard c ih =>
-    cases Φ with
-    | nil => simp [check] at h
-    | cons p rest => exact (ih h).weaken (fun _ ht => List.mem_cons_of_mem _ ht)
 
 /-- 宣言側が選んだ文脈とsortを検査し、等号の証拠と分離しない。 -/
 def EqProof.checkSorted (Γ : Ctx) (s : «Sort») (t u : Term) (c : EqProof) : Bool :=
@@ -116,6 +40,47 @@ theorem Certificate.checkSorted_sound {Γ Φ goal c} (h : Certificate.checkSorte
     goal.Sorted Γ none ∧ (∀ p ∈ Φ, p.Sorted Γ none) ∧ Entails Φ goal := by
   simp only [checkSorted,Bool.and_eq_true,decide_eq_true_eq] at h
   exact ⟨h.1.1,h.1.2,Certificate.sound h.2⟩
+
+
+def Refutation.AdmissibleIn (P : Program) (C : TypeCtx) (Γ : Ctx) : Refutation → Prop
+  | .consume c | .derive _ c | .discardTodo c | .discardFact _ c => c.AdmissibleIn P C Γ
+  | .cases l r | .split _ _ l r => l.AdmissibleIn P C Γ ∧ r.AdmissibleIn P C Γ
+  | .builtin l c => l.predicate.Sorted Γ none ∧ l.predicate.Declared P C Γ none ∧ c.AdmissibleIn P C Γ
+  | .closeLinear _ | .closeAtom _ _ => True
+
+def Certificate.AdmissibleIn (P : Program) (C : TypeCtx) (Γ : Ctx)
+    (Φ : List Pred) (goal : Pred) : Certificate → Prop
+  | .use _ => True
+  | .leaf l => l.predicate.Sorted Γ none ∧ l.predicate.Declared P C Γ none
+  | .substitute p t u eq c mode =>
+      (∃ s, EqProof.substituteIn P C Γ Φ s mode p t u eq = true) ∧
+        c.AdmissibleIn P C Γ Φ (p.open t)
+  | .consume c => match Φ with
+    | .and p q :: rest => c.AdmissibleIn P C Γ (p::q::rest) goal | _ => False
+  | .cases l r => match Φ with
+    | .or p q :: rest => l.AdmissibleIn P C Γ (p::rest) goal ∧ r.AdmissibleIn P C Γ (q::rest) goal
+    | _ => False
+  | .discard c => match Φ with
+    | _::rest => c.AdmissibleIn P C Γ rest goal | [] => False
+  | .refute r => r.AdmissibleIn P C Γ
+
+/-- rawの成功と、全鍵の整数sort・宣言、途中の等号の適格性を分離しない。 -/
+def Certificate.checkIn (P : Program) (C : TypeCtx) (Γ : Ctx)
+    (Φ : List Pred) (goal : Pred) (c : Certificate) : Bool := by
+  classical
+  exact c.check Φ goal && KeyTable.checkIn P C Γ (c.keys (Pred.ofConjuncts Φ) goal) &&
+    decide (goal.Sorted Γ none ∧ goal.Declared P C Γ none ∧
+      (∀ p ∈ Φ, p.Sorted Γ none ∧ p.Declared P C Γ none) ∧ c.AdmissibleIn P C Γ Φ goal)
+
+theorem Certificate.checkIn_sound {P C Γ Φ goal c}
+    (h : Certificate.checkIn P C Γ Φ goal c = true) :
+    KeyTable.checkIn P C Γ (c.keys (Pred.ofConjuncts Φ) goal) = true ∧
+      goal.Sorted Γ none ∧ goal.Declared P C Γ none ∧
+      (∀ p ∈ Φ, p.Sorted Γ none ∧ p.Declared P C Γ none) ∧
+      c.AdmissibleIn P C Γ Φ goal ∧ Entails Φ goal := by
+  classical
+  simp only [Certificate.checkIn, Bool.and_eq_true, decide_eq_true_eq] at h
+  exact ⟨h.1.2,h.2.1,h.2.2.1,h.2.2.2.1,h.2.2.2.2,Certificate.sound h.1.1⟩
 
 end
 end Benitoite.Release.Refinement
