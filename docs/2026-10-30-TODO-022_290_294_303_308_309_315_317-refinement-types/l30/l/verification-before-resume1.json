@@ -1,0 +1,105 @@
+{
+  "checks": {
+    "replay": {
+      "command": "(cd formal && lake env lean -M 12288 --run ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l30/l/replay.lean)",
+      "exit": 0,
+      "seconds": 0.33199000358581543,
+      "output": {
+        "bytes": 293,
+        "sha256": "b96efbd4909de6efca54a34cb3d99195fe0c088612599810e6453b92a349e638"
+      }
+    },
+    "signatures": {
+      "exit": 0,
+      "seconds": 0.6947929859161377,
+      "command": "(cd formal && lake env lean -M 12288 ../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l30/l/signature-check.lean)",
+      "output": {
+        "bytes": 18346,
+        "sha256": "b45393bf92551c3e225ac5dd39d9d0b642039ba1b9366d1e8dd065d30d8a1da7"
+      }
+    },
+    "dry-run": {
+      "exit": 0,
+      "seconds": 0.11338376998901367,
+      "command": "scripts/check.sh --level work --base c30b5b3424f6d98295b26cac96fe9a8b35a2eb27 --dry-run",
+      "output": {
+        "bytes": 759,
+        "sha256": "cfd6acc4c6554453671bd0bc9e684dbfafef3ba1e5e63b1cfab5dca16fa94420"
+      }
+    },
+    "work": {
+      "exit": 0,
+      "seconds": 7.66845703125,
+      "command": "scripts/check.sh --level work --base c30b5b3424f6d98295b26cac96fe9a8b35a2eb27",
+      "output": {
+        "bytes": 5802,
+        "sha256": "09cae81f86004d7114456abbeee778a18a822d8aba6c82508f0f60443f417389"
+      }
+    },
+    "default-build": {
+      "exit": 0,
+      "seconds": 2.005783796310425,
+      "command": "(cd formal && lake build)",
+      "jobs": 949,
+      "seconds_source": "実行時のsubprocessの戻り値で採取",
+      "output": {
+        "bytes": 43387,
+        "sha256": "d0cfe7ffac53fe1bf0b9a77fce176b4a08ca667cb85d073558ed874d16d6d242"
+      }
+    },
+    "axioms": {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l30/axioms.lean"
+      ],
+      "exit": 0,
+      "seconds": 38.114395042,
+      "raw": {
+        "bytes": 11839332,
+        "sha256": "02b8f047e1bf00b382aff45615429c75cf803b95271bf0973aed2a8aae6317ee"
+      },
+      "targets": 67881,
+      "target_list": {
+        "bytes": 4098180,
+        "sha256": "4ea79ab2e74200c2f43086a07710226fb6748e5bbc66f082e3760dcfd2301e5a"
+      },
+      "module_count": 688,
+      "axiom_sets": {
+        "none": 30538,
+        "Classical.choice": 1,
+        "Classical.choice + Quot.sound + propext": 17943,
+        "Classical.choice + propext": 2,
+        "Quot.sound": 9,
+        "Quot.sound + propext": 3555,
+        "propext": 15833
+      },
+      "new_modules": {
+        "AccountingWork": 89,
+        "CoefficientModel": 47,
+        "ProofContract": 53,
+        "ProofContractExamples": 16,
+        "ProofReplayExamples": 9,
+        "StepAccounting": 285
+      },
+      "new_axioms": 0
+    }
+  },
+  "work_entry_executions": 1,
+  "work_selected": [
+    "spec_tally",
+    "spec_examples",
+    "formal_build"
+  ],
+  "rust_lean_full_comparison": "未実施（L70/R50の担当）",
+  "official_max_rss": "未取得（取りまとめが段末の同じworkで採取）",
+  "formal_manifest_after_work": {
+    "bytes": 114054,
+    "sha256": "6762e77b63b7329d00e677c80bd0c5932078ec9c5478e61262dc3150fd05e0f8"
+  },
+  "later_changes": "本番Lean・01-12・07-04・lakefile・既定importはwork後に変更なし。記録のみ更新",
+  "judgment": "担当Codexの自己点検、2026-11-03。独立レビュー・受け入れは未実施"
+}
