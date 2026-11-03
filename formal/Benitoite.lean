@@ -493,3 +493,9 @@ import Benitoite.Release.Refinement.CanonicalCells
 import Benitoite.Release.Refinement.ComputationInputs
 import Benitoite.Release.Refinement.LambdaApplicationExamples
 import Benitoite.Release.Refinement.LeafInputs
+
+import Benitoite.Release.Refinement.StandardInteger
+import Benitoite.Release.Refinement.StandardByteCharacter
+import Benitoite.Release.Refinement.StandardFloat
+import Benitoite.Release.Refinement.StandardDecimal
+import Benitoite.Release.Refinement.StandardFactExamples
