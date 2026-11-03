@@ -1,0 +1,65 @@
+[
+  {
+    "name": "resume1-build",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal",
+    "start": 1793675687.119711,
+    "seconds": 2.3204989433288574,
+    "exit": 0,
+    "bytes": 44167,
+    "sha256": "5796e3e171ee22c201e1ce78ad39a39f279ab96ce2a47597bd5db93f96b2f38b",
+    "raw": "<tmp>/l30-j/resume1-build.log"
+  },
+  {
+    "name": "resume1-final-build",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal",
+    "start": 1793675734.040597,
+    "seconds": 1.470634937286377,
+    "exit": 0,
+    "bytes": 43382,
+    "sha256": "655225dfd384167abce11b385f30078be9578668912fd5e5c3c7794e1675f411",
+    "raw": "<tmp>/l30-j/resume1-final-build.log"
+  },
+  {
+    "name": "resume1-work-dry-run",
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "65677215c04e632a397126f97fbb442ec6b0108c",
+      "--dry-run"
+    ],
+    "cwd": ".",
+    "start": 1793675842.159542,
+    "seconds": 0.11812591552734375,
+    "exit": 0,
+    "bytes": 759,
+    "sha256": "6c6ed58685d52f711d5118d3ed54aa81b8a8c43b124bc3c36b3b5ccfdcdb3df1",
+    "raw": "<tmp>/l30-j/resume1-work-dry-run.log"
+  },
+  {
+    "name": "resume1-work",
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "65677215c04e632a397126f97fbb442ec6b0108c"
+    ],
+    "cwd": ".",
+    "start": 1793675894.7724218,
+    "seconds": 3.7600462436676025,
+    "exit": 0,
+    "bytes": 5757,
+    "sha256": "18213ad2fbd3e257d2791fd6dce309e16f42c54bab2beed69e632c0960f98965",
+    "raw": "<tmp>/l30-j/resume1-work.log"
+  }
+]

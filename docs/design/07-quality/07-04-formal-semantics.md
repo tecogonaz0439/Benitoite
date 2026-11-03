@@ -932,6 +932,10 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 | CertificateData・ConjunctionMeaning・CertificateKernel・CertificateEntails・CertificateLegacy・EqProofTransport・Certificate | 同節のCertificate7構成子。substituteはgoalと`p.open u`の構造一致、mode別の等号検査、書換え位置、および`p.open t`を結論とする子を検査する。元の式と証明書からの鍵・NNFの再計算、同じν上の仮定から結論への健全性。恒等置換のcheck_sound/implication_sound、仮定の連言への対応、整数等号の先行参照の移送、構文のEntailsへの接続、旧6場合の成功の保存。上層checkInは最上位の鍵列の整数sort・宣言、述語のsort・宣言と途中の等号の適格性を要求する |
 | Logic・LogicSound・Basic・CertificateKernelExamples | 同節のEntails19構成子と導出checked。checkedAtは元の検査成功と任意のνを持つ。weaken/cut/sound/bindの各一場合、predBind_compによる合成。開いた線形・Boolean・measureのbuiltin、整数の限定書換え、有限な両端点からfiniteを導く具体読者、誤った結合と上層の非整数鍵・述語の拒否、四種の置換像。型付け・意味・捕捉の既存の規則の形を保つ |
 | MeasureNonnegative・MeasureContracts・LogicKernelExamples | 同節の正常なmeasureからの非負と意味の一致、OptionInfoLEに沿う置換後の同じ観測。型域の定数、snapshotの危険な書換えの拒否、同じ具体の宣言表と組み込み表における捕捉・不変欄・measure、正常算術とあふれへの適用 |
+| NumericContracts・NormalResultLeaves・ObservationContractsExamples | 「閉じた述語の評価と捕捉」。七幅の正常な加減算・乗算と符号付き負号から数の一致・表現可能性・toTerm?を構成する。正常応答から有限の閉じた葉と置換像の導出を作る。255以下のByteと同じ数のUnsignedInteger16の表現可能性（変換演算との一致は含めない）、DecimalのConstOKと型域、本番の比較・分類への接続。抽象δの型保存だけから演算との一致は結論しない |
+| KeyContracts | 同節の十一の鍵の有限構造の相互帰納、閉じた項の鍵コードの成功とKey.equalへの接続、Decimalの正準化の数の保存と衝突時の数の等値。閉じた鍵と縮約の成功からMap・Setの大きさを同定する。Mapの大きさには値の観測を要求せず、Map自体の鍵化には値も要求する |
+| PreparedLeaf・PreparedLeafExamples・PreparedSortExamples・FieldObservationExamples | 同節の葉の上層checkInとentailsIn/bind_entails、既存Ty.LeQ.refineへのchecked_refinement、全十六sortの値からの観測成功、本番measureの三条件、非空Listの同じ長さの証明書と既存の網羅性の入口、Booleanの偽側と不変欄連鎖。四つの名前空間の既存Transportを使い、型域の像と開いたΓでの型域の真を供給する。sameObservationの規則は論理を強めないままとする |
+| CertificateKeys | 同節のAllKeysCheckedとkeys_checked_all/checkIn_all_keys。最上位で検査した鍵が入れ子のconsume/cases/discard/substituteの鍵を含むことと、refute_keys_sameによる平坦化前後の鍵列の等号を用い、refuteが実際に使う鍵列を含む全位置の整数sortと宣言の検査を導く |
 | VarianceSyntax・VarianceValidation | 「篩の正規形と制約の読み方」の data の変性、metadata と総称の欄の検証。提供された表の構造検査に限る |
 | 原ソースの辞書制約・公開境界の収集 | Lean の外。上の表の構造検査は、収集の完全性と原ソースとの一致を保証しない |
 | VarianceFormation・VarianceTransport | 同節の `Sorted` の移送、型引数の比較と欄の単調性。中間の型引数の注釈を要求しない |
