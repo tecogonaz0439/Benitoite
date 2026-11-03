@@ -1,0 +1,39 @@
+{
+  "failures": [
+    {
+      "unit": "06",
+      "cause": "署名の生成時にbinder末尾の閉じ括弧を落とした。元のbinderを保持して修正。",
+      "exit": 1,
+      "time_seconds": 1.182476708
+    },
+    {
+      "unit": "08",
+      "cause": "dependentFnのfoldFnの二分岐をcasesで消去できなかった。foldFnを展開して両分岐を消去。",
+      "exit": 1,
+      "time_seconds": 0.384502333
+    },
+    {
+      "unit": "08",
+      "cause": "全cases後の不要なタクティクと置換範囲の誤り。firstの分岐へ限定して修正。",
+      "exit": 1,
+      "time_seconds": 0.364434708
+    },
+    {
+      "unit": "audit",
+      "cause": "既定ビルドの完了前に監査を開始し、依存oleanがなかった。ビルド終了後に再実行する。",
+      "exit": 1,
+      "time_seconds": 0.385270667,
+      "raw_bytes": 297,
+      "sha256": "e0aba90d0eafa5461bf23bb3d309e2556e5e9e97b158e104fdf7b5c29b982bc2"
+    },
+    {
+      "unit": "audit-after-wrong-build",
+      "cause": "根から起動したlake -dによる別版のumbrella oleanを、固定版の単独Leanが拒否。formal/で既定lake buildを再実行して修正。",
+      "exit": 1,
+      "time_seconds": 0.467408375,
+      "raw_bytes": 221,
+      "sha256": "354768f6b9ca545d8dcb636bf625dc669ce72f4e77950786a70c713d7ae306a9"
+    }
+  ],
+  "raw_early_local_output": "初期の3失敗はツール応答だけで、生ログの独立保存を開始していなかった。後続の最終成功はchecks.jsonで識別する。"
+}

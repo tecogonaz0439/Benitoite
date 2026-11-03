@@ -86,6 +86,17 @@ termination_by structural h
 private theorem done_inv {Γ Φ a e u} (h : TelClosure P Γ Φ (.done a e) u) :
     ∃ b f, u = .done b f ∧ Ty.LeQ P Γ Φ a b ∧ Eff.Covers Γ Φ f e := done_inv_aux h a e rfl
 
+/-- 依存列の推移閉包から、同じ先頭名と反変入力・後続の関係を取り出す。 -/
+theorem TelClosure.param_inputs {P Γ Φ n a t u}
+    (h : TelClosure P Γ Φ (.param n a t) u) :
+    ∃ b v, u = .param n b v ∧ Ty.LeQ P Γ Φ b a ∧
+      TelClosure P (Γ.extend b) (Φ.map Pred.lift) t v := param_inv h
+
+/-- 終端までの推移閉包は、結果の部分型と同じ向きの効果被覆を保つ。 -/
+theorem TelClosure.done_outputs {P Γ Φ a e u}
+    (h : TelClosure P Γ Φ (.done a e) u) :
+    ∃ b f, u = .done b f ∧ Ty.LeQ P Γ Φ a b ∧ Eff.Covers Γ Φ f e := done_inv h
+
 theorem HasTypeTelArgsQ.pullback {P B Ψ ws t u a e}
     (ht : Ty.Annotation P [] [] (.dependentFn t))
     (hr : TelClosure P [] [] t u)

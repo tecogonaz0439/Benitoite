@@ -481,3 +481,8 @@ import Benitoite.Release.Refinement.StandardScalar
 import Benitoite.Release.Refinement.StandardBodies
 import Benitoite.Release.Refinement.IntervalFailure
 import Benitoite.Release.Refinement.ValueInversion
+import Benitoite.Release.Refinement.CollectionInversion
+import Benitoite.Release.Refinement.ComputationInversion
+import Benitoite.Release.Refinement.ApplicationFormationExamples
+import Benitoite.Release.Refinement.StandardVariance
+import Benitoite.Release.Refinement.ApplicationInputs
