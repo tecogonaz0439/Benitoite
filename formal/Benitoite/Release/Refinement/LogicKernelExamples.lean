@@ -13,7 +13,8 @@ noncomputable section
 theorem integer8_facts :
     (Ty.base .integer8).assumeWithCarrier =
       [.le (.integer (-128)) (.var 0), .le (.var 0) (.integer 127)] := by
-  rw [Ty.assumeWithCarrier_eq_carrier_append (by intro b t e h; cases h)]
+  change (Ty.base .integer8).assume = _
+  rw [Ty.assume_eq_carrier_append (by intro b t e h; cases h)]
   rfl
 
 theorem decimal_facts (η : ObservationEnvModel) :

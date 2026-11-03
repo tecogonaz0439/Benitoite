@@ -72,13 +72,31 @@ theorem Ty.predicates_rawBind (a : Ty) (θ : SubstEnv) :
       exact List.mem_append_right _ (List.mem_map.mpr ⟨q, hq, rfl⟩)
   | _ => intro p hp; cases hp
 
-theorem Ty.assume_bind (a : Ty) (θ : SubstEnv) (ht : ∀ i, Ordinary (θ.types i)) :
-    ∀ p ∈ a.assume, predBind (upValues θ.values) p ∈ (a.bind θ).assume := by
-  intro q hq
-  have ho := Ty.assume_ordinary hq
-  rw [Ty.assume_eq_predicates ho] at hq
-  rw [Ty.assume_eq_predicates (Ty.ordinary_bind ho θ ht)]
-  simpa only [Ty.bind, Ty.predicates_norm] using Ty.predicates_rawBind a θ q hq
+theorem Ty.carrierFacts_rawBind (a : Ty) (θ : SubstEnv) :
+    ∀ p ∈ a.carrierFacts, predBind (upValues θ.values) p ∈ (a.rawBind θ).carrierFacts := by
+  cases a <;> try (intro p hp; cases hp)
+  case base b =>
+    cases b <;> simp [Ty.carrierFacts, Ty.core, integerBounds, Ty.rawBind,
+      predBind, termBind_var, termBind_integer, upValues]
+  case refined a p => exact Ty.carrierFacts_rawBind a θ
+
+theorem Ty.carrierFacts_bind (a : Ty) (θ : SubstEnv) :
+    ∀ p ∈ a.carrierFacts, predBind (upValues θ.values) p ∈ (a.bind θ).carrierFacts := by
+  simpa only [Ty.bind, Ty.carrierFacts_norm] using Ty.carrierFacts_rawBind a θ
+
+theorem Ty.assume_bind (a : Ty) (θ : SubstEnv)
+    (ht : ∀ i, Ordinary (θ.types i)) :
+    ∀ p ∈ a.assume,
+      predBind (upValues θ.values) p ∈ (a.bind θ).assume := by
+  intro p hp
+  have ho := Ty.assume_ordinary hp
+  rw [Ty.assume_eq_carrier_append ho] at hp
+  rw [Ty.assume_eq_carrier_append (Ty.ordinary_bind ho θ ht)]
+  rcases List.mem_append.mp hp with hp | hp
+  · exact List.mem_append_left _ (Ty.carrierFacts_bind a θ p hp)
+  · exact List.mem_append_right _ (by
+      simpa only [Ty.bind, Ty.predicates_norm] using Ty.predicates_rawBind a θ p hp)
+
 
 /-- 元の整数の観測を、行き先で型のある整数項へ写す構文の条件。 -/
 structure Transport (θ : SubstEnv) (Γ : Ctx) (Φ : List Pred) (Δ : Ctx) (Ψ : List Pred) : Prop where

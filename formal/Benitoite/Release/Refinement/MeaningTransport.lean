@@ -103,7 +103,7 @@ theorem list_shape_meaning {n P Γ Φ η a b v} (ih : Below n) (valid : P.Varian
     .checked | .checkedRequest | .checkedAtOpaque => cases he
 
 theorem dependentFn_meaning {P η t v} : ValueMeaning P η (.dependentFn t) v := by
-  refine .mk ?_ ?_
+  refine .mk ?_ ?_ (by intro p hp; cases hp)
   · simp only [Ty.norm, Ty.core_foldFn]
     unfold Ty.foldFn
     split
@@ -116,13 +116,7 @@ theorem assumptions_meaning {P Γ Φ η a v} (source : ValueMeaning P η a v)
     ∀ p ∈ assumptions Γ Φ a, p.interpret (selfModel η v) = true := by
   intro p hp
   rcases List.mem_append.mp hp with hp | hp
-  · cases source with
-    | mk _ hs =>
-      apply hs p
-      rw [Ty.predicates_norm]
-      by_cases ho : a.Ordinary
-      · simpa only [Ty.assume_eq_predicates ho] using hp
-      · simp [Ty.assume_eq_nil ho] at hp
+  · exact source.assume p hp
   · obtain ⟨q,hq,rfl⟩ := List.mem_map.mp hp
     rw [Pred.interpret_lift_self]
     exact facts q hq
@@ -146,8 +140,8 @@ theorem order_data {n v P Γ Φ d as bs} (ih : Below n) (small : sizeOf v = n)
     MOrder v (.data args) := by
   intro η facts source
   cases source with
-  | mk hs _ =>
-    refine .mk (data_shape_meaning ih valid facts ?_ small hs) (by intro p hp; cases hp)
+  | mk hs _ hc =>
+    refine .mk (data_shape_meaning ih valid facts ?_ small hs) (by intro p hp; cases hp) (by intro p hp; cases hp)
     simpa only [Ty.normTys_eq_map, List.length_map] using args.norm
 
 theorem order_step {n v P Γ Φ a b} (ih : Below n) (small : sizeOf v = n)
@@ -162,11 +156,11 @@ theorem order_step {n v P Γ Φ a b} (ih : Below n) (small : sizeOf v = n)
   | list h _ =>
     intro η facts source
     cases source with
-    | mk hs _ =>
-      exact .mk (list_shape_meaning ih valid facts h.norm small hs) (by intro p hp; cases hp)
-  | lazy => intro η facts source; exact .mk .lazy (by intro p hp; cases hp)
-  | map => intro η facts source; exact .mk .map (by intro p hp; cases hp)
-  | fn => intro η facts source; exact .mk .fn (by intro p hp; cases hp)
+    | mk hs _ hc =>
+      exact .mk (list_shape_meaning ih valid facts h.norm small hs) (by intro p hp; cases hp) (by intro p hp; cases hp)
+  | lazy => intro η facts source; exact .mk .lazy (by intro p hp; cases hp) (by intro p hp; cases hp)
+  | map => intro η facts source; exact .mk .map (by intro p hp; cases hp) (by intro p hp; cases hp)
+  | fn => intro η facts source; exact .mk .fn (by intro p hp; cases hp) (by intro p hp; cases hp)
   | dependentFn => intro η facts source; exact dependentFn_meaning
   | forget => intro η facts source; exact (ValueMeaning.refined_iff.mp source).1
   | introduce he =>

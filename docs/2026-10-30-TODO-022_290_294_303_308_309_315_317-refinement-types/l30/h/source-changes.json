@@ -1,0 +1,78 @@
+{
+  "changed": [
+    "formal/Benitoite/Release/Refinement/CarrierFacts.lean",
+    "formal/Benitoite/Release/Refinement/CarrierFactsExamples.lean",
+    "formal/Benitoite/Release/Refinement/CarrierFactsMeaning.lean",
+    "formal/Benitoite/Release/Refinement/Context/Facts.lean",
+    "formal/Benitoite/Release/Refinement/Context.lean",
+    "formal/Benitoite/Release/Refinement/ContextFacts.lean",
+    "formal/Benitoite/Release/Refinement/ContextNormEq.lean",
+    "formal/Benitoite/Release/Refinement/CoverageRefinement.lean",
+    "formal/Benitoite/Release/Refinement/ExternalObservation.lean",
+    "formal/Benitoite/Release/Refinement/Le.lean",
+    "formal/Benitoite/Release/Refinement/LogicKernelExamples.lean",
+    "formal/Benitoite/Release/Refinement/MeaningTransport.lean",
+    "formal/Benitoite/Release/Refinement/MeaningTransportObstruction.lean",
+    "formal/Benitoite/Release/Refinement/NormalWellFormed.lean",
+    "formal/Benitoite/Release/Refinement/NormalizationLogic.lean",
+    "formal/Benitoite/Release/Refinement/NumericRepresented.lean",
+    "formal/Benitoite/Release/Refinement/OpenSubstitution.lean",
+    "formal/Benitoite/Release/Refinement/RangeSubst.lean",
+    "formal/Benitoite/Release/Refinement/SubstTypingObstruction.lean",
+    "formal/Benitoite/Release/Refinement/Transport.lean",
+    "formal/Benitoite/Release/Refinement/TypeShiftContracts.lean",
+    "formal/Benitoite/Release/Refinement/TypedFacts.lean",
+    "formal/Benitoite/Release/Refinement/TypedMeaning.lean",
+    "formal/Benitoite/Release/Refinement/ValueMeaning.lean",
+    "formal/Benitoite/Release/Refinement/ValueMeaningInhabits.lean",
+    "formal/Benitoite.lean"
+  ],
+  "new_or_changed_headers": 44,
+  "removed": [
+    {
+      "file": "formal/Benitoite/Release/Refinement/CarrierFacts.lean",
+      "name": "integerBounds",
+      "old_header": "def integerBounds (lo hi : Int) : List Pred"
+    },
+    {
+      "file": "formal/Benitoite/Release/Refinement/CarrierFacts.lean",
+      "name": "Ty.carrierFacts",
+      "old_header": "def Ty.carrierFacts (a : Ty) : List Pred"
+    },
+    {
+      "file": "formal/Benitoite/Release/Refinement/CarrierFacts.lean",
+      "name": "Ty.assumeWithCarrier",
+      "old_header": "def Ty.assumeWithCarrier (a : Ty) : List Pred"
+    },
+    {
+      "file": "formal/Benitoite/Release/Refinement/CarrierFacts.lean",
+      "name": "Ty.assumeWithCarrier_eq_carrier_append",
+      "old_header": "theorem Ty.assumeWithCarrier_eq_carrier_append {a : Ty} (h : a.Ordinary) :\n    a.assumeWithCarrier = a.carrierFacts ++ a.refinementPredicates"
+    },
+    {
+      "file": "formal/Benitoite/Release/Refinement/CarrierFacts.lean",
+      "name": "Ctx.factsWithCarrier",
+      "old_header": "def Ctx.factsWithCarrier (Γ : Ctx) : List Pred"
+    },
+    {
+      "file": "formal/Benitoite/Release/Refinement/Context.lean",
+      "name": "Ty.assume_eq_predicates",
+      "old_header": "theorem Ty.assume_eq_predicates {a : Ty} (ho : a.Ordinary) : a.assume = a.refinementPredicates"
+    },
+    {
+      "file": "formal/Benitoite/Release/Refinement/ExternalObservation.lean",
+      "name": "ConstOK.represented",
+      "old_header": "theorem ConstOK.represented {B c} (h : ConstOK B c) : c.NumericRepresented"
+    },
+    {
+      "file": "formal/Benitoite/Release/Refinement/ExternalObservation.lean",
+      "name": "Const.NumericRepresented",
+      "old_header": "def Const.NumericRepresented : Const → Prop\n  | .integer8 n => -128 ≤ n ∧ n ≤ 127\n  | .integer16 n => -32768 ≤ n ∧ n ≤ 32767\n  | .integer32 n => -2147483648 ≤ n ∧ n ≤ 2147483647\n  | .unsignedInteger16 n => 0 ≤ n ∧ n ≤ 65535\n  | .unsignedInteger32 n => 0 ≤ n ∧ n ≤ 4294967295\n  | .unsignedInteger64 n => 0 ≤ n ∧ n ≤ 18446744073709551615\n  | .byte n => n ≤ 255\n  | .decimal n scale => -79228162514264337593543950335 ≤ n ∧\n      n ≤ 79228162514264337593543950335 ∧ scale ≤ 28\n  | _ => True"
+    },
+    {
+      "file": "formal/Benitoite/Release/Refinement/NormalizationLogic.lean",
+      "name": "Ty.entails_assume_iff_predicates",
+      "old_header": "theorem Ty.entails_assume_iff_predicates (Ξ : List Pred) (a : Ty) (ho : a.Ordinary) :\n    (∀ p ∈ a.assume, Entails Ξ p) ↔ (∀ p ∈ a.refinementPredicates, Entails Ξ p)"
+    }
+  ]
+}

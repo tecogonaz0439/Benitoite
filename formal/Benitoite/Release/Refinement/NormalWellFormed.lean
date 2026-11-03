@@ -4,9 +4,9 @@ namespace Benitoite.Release.Refinement
 
 /-- 適格な型では継続の芯に付いた不適格な篩を除く枝は使われない。 -/
 theorem Ty.assume_of_wf {nr nt nv : Nat} {a : Ty} (hw : a.WF nr nt nv) :
-    a.assume = a.refinementPredicates := by
+    a.assume = a.carrierFacts ++ a.refinementPredicates := by
   cases a <;> try rfl
-  case refined a p => exact Ty.assume_eq_predicates hw.2.2
+  case refined a p => exact Ty.assume_eq_carrier_append hw.2.2
 
 
 mutual

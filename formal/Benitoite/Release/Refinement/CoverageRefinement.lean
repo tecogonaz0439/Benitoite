@@ -11,16 +11,16 @@ theorem ValueMeaning.refined_iff {P η a p v} :
   constructor
   · intro h
     cases h with
-    | mk hs hp =>
+    | mk hs hp hc =>
       have hh : ∀ q ∈ a.refinementPredicates ++ p.conjuncts, q.interpret (selfModel η v) = true := by
         simpa only [Ty.predicates_norm,Ty.refinementPredicates] using hp
       exact ⟨.mk (by simpa only [Ty.norm,Ty.core_refineNorm] using hs)
-        (by intro q hq; exact hh q (List.mem_append_left _ (by simpa only [Ty.predicates_norm] using hq))),
+        (by intro q hq; exact hh q (List.mem_append_left _ (by simpa only [Ty.predicates_norm] using hq))) hc,
         (p.interpret_conjuncts _).mpr (fun q hq => hh q (List.mem_append_right _ hq))⟩
   · rintro ⟨h,hp⟩
     cases h with
-    | mk hs ha =>
-      refine .mk (by simpa only [Ty.norm,Ty.core_refineNorm] using hs) ?_
+    | mk hs ha hc =>
+      refine .mk (by simpa only [Ty.norm,Ty.core_refineNorm] using hs) ?_ hc
       simp only [Ty.predicates_norm,Ty.refinementPredicates]
       intro q hq
       rcases List.mem_append.mp hq with hq | hq
@@ -39,12 +39,7 @@ theorem valueMeaning_refine {P : Program} {Γ : Ctx} {Φ : List Pred}
     rcases List.mem_cons.mp hr with rfl | hr
     · exact hp
     · rcases List.mem_append.mp hr with hr | hr
-      · cases ha with
-        | mk _ hs => exact hs r (by
-            rw [Ty.predicates_norm]
-            by_cases ho : a.Ordinary
-            · simpa only [Ty.assume_eq_predicates ho] using hr
-            · simp [Ty.assume_eq_nil ho] at hr)
+      · exact ha.assume r hr
       · obtain ⟨s,hs,rfl⟩ := List.mem_map.mp hr
         rw [Pred.interpret_lift_self]
         exact facts s hs)

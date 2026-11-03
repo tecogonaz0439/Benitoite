@@ -1,3 +1,4 @@
+import Benitoite.Release.Refinement.CertificateEntails
 import Benitoite.Release.Refinement.RangeExchange
 
 /-!
@@ -41,14 +42,38 @@ noncomputable def outer : Eff := .mk (fun (a : Atom) => by
 
 def source (e : Eff) : Ty := .fn ["x", "y"] [.tvar 0, .tvar 1] (.opaque "Box" (.rvar 1)) e
 
-theorem context_facts : Γ.facts = [path] ∧
-    Δ.facts = [predBind σ path] := ⟨rfl, rfl⟩
+theorem context_facts :
+    Γ.facts = integerBounds (-9223372036854775808) 9223372036854775807 ++ [path] ∧
+    Δ.facts = integerBounds (-9223372036854775808) 9223372036854775807 ++
+      [predBind σ path, .le (.integer (-9223372036854775808)) (.var 2),
+        .le (.var 2) (.integer 9223372036854775807)] := ⟨rfl, rfl⟩
 
 theorem context_none : Γ[1]? = some none ∧ Δ[1]? = some none := ⟨rfl, rfl⟩
 
 /-- truth を除いた有限の事実列から、必要な等式を取り出す。 -/
 theorem target_path_from_facts : Entails Δ.facts (predBind σ path) :=
-  .hyp (by rw [context_facts.2]; exact List.mem_cons_self)
+  .hyp (by rw [context_facts.2]; simp [integerBounds])
+
+private theorem target_carrier_from_path :
+    ∀ p ∈ integerBounds (-9223372036854775808) 9223372036854775807,
+      Entails Δ.facts (predBind σ p) := by
+  intro p hp
+  simp only [integerBounds, List.mem_cons, List.not_mem_nil, or_false] at hp
+  have he : EqProof.checkRaw [.eq (.add (.var 2) (.integer 1)) (.integer 7)]
+      .integer (.integer 7) (.add (.var 2) (.integer 1)) (.symm (.hyp 0)) = true := by decide
+  rcases hp with rfl | rfl
+  · have hs := EqProof.substitute_entails (p := (.le (.integer (-9223372036854775808)) (.var 0))) he (by decide)
+        (Entails.integer_le (by decide))
+    apply hs.cut
+    intro q hq
+    cases List.mem_singleton.mp hq
+    exact target_path_from_facts
+  · have hs := EqProof.substitute_entails (p := (.le (.var 0) (.integer 9223372036854775807))) he (by decide)
+        (Entails.integer_le (by decide))
+    apply hs.cut
+    intro q hq
+    cases List.mem_singleton.mp hq
+    exact target_path_from_facts
 
 theorem target_conditions_from_facts : ∀ p ∈ Ψ, Entails Δ.facts p := by
   intro p hp
@@ -77,10 +102,11 @@ theorem transport : Transport θ Γ [path] Δ Ψ := by
   · intro i
     by_cases hi : i = 0 <;> simp [hi, θ, dependentType, Ty.rawSubstV, Ordinary]
   · intro p hp
-    have hp : p = path := by simpa [termBind?, Γ, Ctx.facts, Ty.assume,
-      Ty.refinementPredicates, Pred.conjuncts, Pred.open, predBind, termBind, path] using hp
-    subst p
-    exact target_path_from_facts.weaken (fun _ h => List.mem_append_left Ψ h)
+    have hm : p ∈ integerBounds (-9223372036854775808) 9223372036854775807 ∨ p = path := by
+      simpa only [context_facts.1, List.mem_append, List.mem_cons, List.not_mem_nil, or_false, or_self_right] using hp
+    rcases hm with hp | rfl
+    · exact (target_carrier_from_path p hp).weaken (fun _ h => List.mem_append_left _ h)
+    · exact target_path_from_facts.weaken (fun _ h => List.mem_append_left Ψ h)
 
 theorem source_covers : Eff.Covers Γ [path] outer inner := by
   classical
@@ -109,7 +135,7 @@ theorem source_introduce (Φ : List Pred) : Ty.LeQ P Γ Φ (.tvar 0) (.refined (
   apply Ty.LeQ.introduce
   · simp [termBind?, Term.HasSort, Term.Shape, Term.References, Ctx.Readable, Term.VarsIn, Ty.HasSort, Ty.sort?, path, Pred.lift, predBind, termBind, Pred.Sorted, Γ]
   · exact .hyp (List.mem_append_right _ (List.mem_map.mpr
-      ⟨path, List.mem_append_left _ (by rw [context_facts.1]; exact List.mem_cons_self), rfl⟩))
+      ⟨path, List.mem_append_left _ (by rw [context_facts.1]; simp [integerBounds]), rfl⟩))
 
 /-- 篩の導入の枝で facts を移送し、篩付きで値に依存する型像を受け取る。 -/
 theorem introduce_bind :

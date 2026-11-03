@@ -19,7 +19,7 @@ mutual
   theorem valueMeaning_inhabits_normal {P : Program} {η : ObservationEnvModel} {a : Ty} {v : Val}
       (h : ValueMeaning P η a v) : Inhabits P a.norm v := by
     match h with
-    | .mk hs hp =>
+    | .mk hs hp hc =>
       exact Inhabits.of_core_possible (valueShapeMeaning_inhabits hs)
         (fun p hm => RefinementPossible.of_meaning (hp p hm))
   theorem valueShapeMeaning_inhabits {P : Program} {η : ObservationEnvModel} {a : Ty} {v : Val}

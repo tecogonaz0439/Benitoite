@@ -7,37 +7,20 @@ import Benitoite.Release.Refinement.Context
 -/
 namespace Benitoite.Release.Refinement
 
-def integerBounds (lo hi : Int) : List Pred :=
-  [.le (.integer lo) (.var 0), .le (.var 0) (.integer hi)]
+theorem Ty.carrierFacts_subset_assume (a : Ty) :
+    ∀ p ∈ a.carrierFacts, p ∈ a.assume := by
+  unfold Ty.assume
+  cases hc : a.core <;> intro p hp
+  all_goals first
+    | exact List.mem_append_left _ hp
+    | (simp only [Ty.carrierFacts, hc] at hp; cases hp)
 
-def Ty.carrierFacts (a : Ty) : List Pred :=
-  match a.core with
-  | .base .integer => integerBounds (-9223372036854775808) 9223372036854775807
-  | .base .integer8 => integerBounds (-128) 127
-  | .base .integer16 => integerBounds (-32768) 32767
-  | .base .integer32 => integerBounds (-2147483648) 2147483647
-  | .base .unsignedInteger16 => integerBounds 0 65535
-  | .base .unsignedInteger32 => integerBounds 0 4294967295
-  | .base .unsignedInteger64 => integerBounds 0 18446744073709551615
-  | .base .byte => integerBounds 0 255
-  | .base .decimal => [.decimalRepresented (.var 0)]
-  | _ => []
-
-def Ty.assumeWithCarrier (a : Ty) : List Pred :=
-  match a.core with
-  | .cont _ _ _ => []
-  | _ => a.carrierFacts ++ a.refinementPredicates
-
-def Ctx.factsWithCarrier (Γ : Ctx) : List Pred :=
-  (Γ.zipIdx).flatMap fun (a, i) =>
-    match a with
-    | none => []
-    | some a => a.assumeWithCarrier.map (fun p => p.open (.var i))
-
-theorem Ty.assumeWithCarrier_eq_carrier_append {a : Ty} (h : a.Ordinary) :
-    a.assumeWithCarrier = a.carrierFacts ++ a.refinementPredicates := by
-  unfold Ty.assumeWithCarrier
-  cases hc : a.core <;> try rfl
-  exact False.elim (h _ _ _ hc)
+theorem Ty.carrierFacts_hasSort {a : Ty} {p : Pred} (hp : p ∈ a.carrierFacts) :
+    ∃ s, a.HasSort s := by
+  cases a <;> try (cases hp)
+  case refined a q => exact Ty.carrierFacts_hasSort (a := a) hp
+  case base b =>
+    cases b <;> simp only [Ty.carrierFacts, Ty.core] at hp <;> try cases hp
+    all_goals first | exact ⟨.integer, rfl⟩ | exact ⟨.decimal, rfl⟩
 
 end Benitoite.Release.Refinement

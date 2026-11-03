@@ -207,7 +207,12 @@ theorem Ty.assume_shiftTypes (a : Ty) (k c : Nat) :
     (shiftTypes k c a).assume=a.assume := by
   unfold Ty.assume
   rw [Ty.core_shiftTypes, Ty.predicates_shiftTypes]
+  rw [show (shiftTypes k c a).carrierFacts = a.carrierFacts from by
+    simp only [Ty.carrierFacts, Ty.core_shiftTypes]
+    cases a.core <;> rfl]
   cases hc : a.core <;> rfl
+
+
 
 theorem TypeCtxMap.facts {k c Γ Δ} (h : TypeCtxMap k c Γ Δ) {p} (hp : p∈Γ.facts) : p∈Δ.facts := by
   obtain ⟨i,a,q,hi,hq,rfl⟩ := Ctx.mem_facts.mp hp

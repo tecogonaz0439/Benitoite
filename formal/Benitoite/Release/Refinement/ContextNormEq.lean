@@ -98,6 +98,7 @@ theorem Ctx.facts_map_norm (Γ : Ctx) : Ctx.facts (Γ.map (Option.map Ty.norm)) 
 theorem Ctx.NormEq.facts {Γ Δ : Ctx} (h : Γ.NormEq Δ) : Γ.facts = Δ.facts := by
   rw [←Ctx.facts_map_norm Γ,←Ctx.facts_map_norm Δ,h]
 
+
 theorem Ctx.NormEq.shiftV {Γ Δ : Ctx} (h : Γ.NormEq Δ) (k c : Nat) :
     Ctx.NormEq (Γ.map (Option.map (Ty.shiftV k c))) (Δ.map (Option.map (Ty.shiftV k c))) := by
   have hh := congrArg (List.map (Option.map (Ty.shiftV k c))) h

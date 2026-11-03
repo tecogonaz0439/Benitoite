@@ -162,7 +162,12 @@ end
     (a.rawMapRanges ρ).assume = a.assume := by
   unfold Ty.assume
   rw [Ty.core_rawMapRanges, Ty.predicates_rawMapRanges]
+  rw [show (a.rawMapRanges ρ).carrierFacts = a.carrierFacts from by
+    simp only [Ty.carrierFacts, Ty.core_rawMapRanges]
+    cases a.core <;> rfl]
   cases hc : a.core <;> rfl
+
+
 
 @[simp] theorem Ty.hasSort_rawMapRanges (a : Ty) (ρ : Nat → RangeIx) (s : «Sort») :
     (a.rawMapRanges ρ).HasSort s ↔ a.HasSort s := by

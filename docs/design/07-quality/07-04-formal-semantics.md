@@ -85,7 +85,7 @@
 
 `TypeRows` は既存のRowsIn四族を支持へ接続し、単調性と正規化保存を証明する。`TypeVariables` はWF・RowsIn・RangesScopedを束ねたVarsInと、有限上限でのSourceScopedとの一致を示し、四名前空間の条件を正規化が保つことを示す。`TypeShiftFacts` は既存の生の比較・正規化・移動の代数を使い、Canonicalとzero、公開する移動の比較と整列の可換性を証明する。`EffectFacts` はsingleFail、Canonicalな効果の両包含からの等号、固定したσでのAllowsとTopAtomsの正規化不変性、空の行置換と名前の保存を証明する。構造等号の証明にCoversをSubの代わりとして使わない。
 
-網羅性は正規形を入口とし、`ValueMeaning` は全子値の意味と最外の全篩述語の真を持つ。範囲付き型の形は添字と成功値を結ぶ `ScopedValue` に絞り、範囲の拡大と `scoped_forget` による意味の移送を証明する。`ObservationOrder`・`ObservationSubstitution` は内部 slot の情報の順序、鍵コードと大きさ、観測と三値評価の単調性、自己を保つ値置換の確定値の保存を証明する。`PatternNormalForm`・`PatternSemantics` は正規化と全型の値置換反映を証明し、無条件の `Inhabits.of_core` は置かない。`ValueMeaningInhabits` は意味から正規形への所属を導く。`CoverageRefinement` の `valueMeaning_refine` は任意の部分型に対する意味の移送の refine の枝に使う。同モジュールは Month・空篩・非空 List・観測不能な要素の代表、任意の閉じた長さからの `V_Refine` と網羅性、開いた型への反映も持つ。
+網羅性は正規形を入口とし、`ValueMeaning` は全子値の意味、最外の全篩述語の真、芯の数値型の型域の事実の真を持つ。範囲付き型の形は添字と成功値を結ぶ `ScopedValue` に絞り、範囲の拡大と `scoped_forget` による意味の移送を証明する。`ObservationOrder`・`ObservationSubstitution` は内部 slot の情報の順序、鍵コードと大きさ、観測と三値評価の単調性、自己を保つ値置換の確定値の保存を証明する。`PatternNormalForm`・`PatternSemantics` は正規化と全型の値置換反映を証明し、無条件の `Inhabits.of_core` は置かない。`ValueMeaningInhabits` は意味から正規形への所属を導く。`CoverageRefinement` の `valueMeaning_refine` は任意の部分型に対する意味の移送の refine の枝に使う。同モジュールは Month・空篩・非空 List・観測不能な要素の代表、任意の閉じた長さからの `V_Refine` と網羅性、開いた型への反映も持つ。
 
 `MeaningOrder` は意味の移送に使う補助関係 `MeaningLe`・`MeaningArgs`、`LeQ`・`TypeArgsLe` からの写し、検証済みの欄の構造から具体化した欄の比較を作る `field_order` を証明する。型像の `Ordinary` を要求しない。型付けの部分型判断には用いず、関数・依存関数・lazy・map の内部を読まない規則は `ValueShapeMeaning` の形に一致する。`variance_meaning` は refined の基底へ下り同じ述語を保つ。入れ子の data は `variance_meaning_args` とともに各引数の変性を読む。
 
@@ -922,7 +922,7 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 | Types・TermSyntax・Context・Declared | 「篩を含むコア計算の形式化」 |
 | ApproxAdapter（共有層の `Shared/Approximation`、旧解析の `Interval/ApproxAdapter`・`Interval/BudgetAnalyze` と接続） | 同節の正常・明示 return・失敗を分ける共有近似。空の三表現の判定と所属の同値、証拠付き区間からの WF、型一致の下での旧正常域の所属の同値、実 Report の正常値の写し、七整数の適格な定数の写し。実 Report の非整数・非Boolean の位置は other と nonIntegerOther の両フラグを読み、正常値なしを保つ。returned の範囲は明示引数であり、returned の推論、失敗の意味の健全性、Release の実行との意味の一致は含まない |
 | Conjunction・RefinementNormalForm・FunctionNormalForm・Normalize・Le・Admissible・Typing | 「篩の正規形と制約の読み方」 |
-| CarrierFacts・CarrierFactsMeaning | 同節の型域の有限列、自己を開く文脈の列、NumericRepresentedを満たす定数からの意味の供給。型付き定数ではConstOK.representedで前提を供給する。型付け・捕捉は明示した篩を読むTy.assume/Ctx.factsを使い、Ty.assumeWithCarrier/Ctx.factsWithCarrierを読まない。ValueMeaningは芯の形と明示した篩の真の二条件を持つ |
+| CarrierFacts・CarrierFactsMeaning | 同節の型域の有限列、自己を開く文脈の列、NumericRepresentedを満たす定数からの意味の供給。型付き定数ではConstOK.representedで前提を供給する。型付け・捕捉は型域と明示した篩を合わせたTy.assume/Ctx.factsを使う。Ty.assumeWithCarrier/Ctx.factsWithCarrierは同じ定義の略記である。ValueMeaningは芯の形・明示した篩の真・型域の事実の真の三条件を持ち、定数の意味の供給はNumericRepresentedを前提とする |
 | LinearSyntax・LinearSound・CertificateKernelBind・EqualityMode・EqCertificate | 「閉じた述語の評価と捕捉」の数学Intの線形式、鍵と係数の列長の一致を要求しない符号化の意味、任意の置換像の上の算術・正負原子・閉じた葉の意味、正除数と全係数の整除を要求する床丸め、両枝を要する整数分枝、構造と整数の置換位置。Entailsの規則の追加や、全証明書の健全性の証明は含まない |
 | TermStructuralEq・CertificateSyntax・Linearization | 同節の構成的な構造比較、相異性を要求しない有限の鍵と最初の位置、係数列と定数項への線形化。成功した出力の列長と、任意のνの像の整数射影での意味の一致。既存Term.HasSortで13形は整数sortを満たさない。線形化は鍵のsort・宣言を検査しない |
 | LogicNormalization・LinearizationExamples・LogicNormalizationExamples | 同節のNNF6形、Pred14構成子×2極性の構造再帰と意味保存。整数の厳密境界と非整数原子の符号を保持し、traceは入力にしない。Term20形・NNF28場合、重複鍵・未知鍵・七measure・宣言した整数欄・NaN・観測不能な対象・四つの置換像への一般の健全性の適用。整数比較を子に持つDe Morgan、正規化の線形の葉からHoldsと非負結合への具体読者。Entailsや全証明書の規則の追加は含まない |

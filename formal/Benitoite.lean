@@ -462,3 +462,5 @@ import Benitoite.Release.Refinement.EqCertificateExamples
 
 import Benitoite.Release.Refinement.BuiltinLogicExamples
 import Benitoite.Release.Refinement.CertificateKernelExamples
+
+import Benitoite.Release.Refinement.CarrierFactsExamples

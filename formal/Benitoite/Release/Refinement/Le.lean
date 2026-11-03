@@ -149,8 +149,10 @@ theorem Ty.LeQ.assume {P : Program} {Γ Φ a b} (h : Ty.LeQ P Γ Φ a b) :
     by_cases ho : a.Ordinary
     · have hob : b.Ordinary := hv.notContCore.mp ho
       have ih := Ty.LeQ.assume hv
-      have hsa := Ty.assume_refined ho p
-      have hsb := Ty.assume_refined hob q
+      have hsa : (Ty.refined a p).assume = a.assume ++ p.conjuncts :=
+        Ty.assume_refined ho p
+      have hsb : (Ty.refined b q).assume = b.assume ++ q.conjuncts :=
+        Ty.assume_refined hob q
       have liftOld : ∀ r ∈ assumptions Γ Φ a,
           Entails (assumptions Γ Φ (.refined a p)) r := by
         intro r hr

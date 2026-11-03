@@ -149,11 +149,39 @@ theorem Pred.references_wf {Γ : Ctx} {a : Ty} {p : Pred}
     (h : p.References Γ (some a)) : p.WF (Γ.length+1) :=
   Pred.varsIn_mono h (fun _ ⟨_, hi, _⟩ => (List.getElem?_eq_some_iff.mp hi).1)
 
+def integerBounds (lo hi : Int) : List Pred :=
+  [.le (.integer lo) (.var 0), .le (.var 0) (.integer hi)]
+
+def Ty.carrierFacts (a : Ty) : List Pred :=
+  match a.core with
+  | .base .integer => integerBounds (-9223372036854775808) 9223372036854775807
+  | .base .integer8 => integerBounds (-128) 127
+  | .base .integer16 => integerBounds (-32768) 32767
+  | .base .integer32 => integerBounds (-2147483648) 2147483647
+  | .base .unsignedInteger16 => integerBounds 0 65535
+  | .base .unsignedInteger32 => integerBounds 0 4294967295
+  | .base .unsignedInteger64 => integerBounds 0 18446744073709551615
+  | .base .byte => integerBounds 0 255
+  | .base .decimal => [.decimalRepresented (.var 0)]
+  | _ => []
+
+@[simp] theorem Ty.carrierFacts_norm (a : Ty) : a.norm.carrierFacts = a.carrierFacts := by
+  cases a <;> try rfl
+  case refined a p =>
+    simp only [Ty.carrierFacts, Ty.norm, Ty.core_refineNorm]
+    exact Ty.carrierFacts_norm a
+  case dependentFn t =>
+    change (Ty.foldFn (Tel.norm t)).carrierFacts = []
+    unfold Ty.foldFn
+    split <;> rfl
+
 def Ty.assume (a : Ty) : List Pred := match a.core with
   | .cont _ _ _ => []
-  | _ => a.refinementPredicates
+  | _ => a.carrierFacts ++ a.refinementPredicates
 
- theorem Ty.assume_eq_predicates {a : Ty} (ho : a.Ordinary) : a.assume = a.refinementPredicates := by
+abbrev Ty.assumeWithCarrier := Ty.assume
+
+ theorem Ty.assume_eq_carrier_append {a : Ty} (ho : a.Ordinary) : a.assume = a.carrierFacts ++ a.refinementPredicates := by
   unfold Ty.assume
   cases hc : a.core <;> try rfl
   exact False.elim (ho _ _ _ hc)
@@ -177,20 +205,23 @@ theorem Ty.assume_eq_nil {a : Ty} (ho : ¬ a.Ordinary) : a.assume = [] := by
 @[simp] theorem Ty.assume_norm (a : Ty) : a.norm.assume = a.assume := by
   have hh : a.norm.Ordinary ↔ a.Ordinary := Ty.notContCore_norm a
   by_cases ho : a.Ordinary
-  · rw [Ty.assume_eq_predicates (hh.mpr ho), Ty.assume_eq_predicates ho, Ty.predicates_norm]
+  · rw [Ty.assume_eq_carrier_append (hh.mpr ho), Ty.assume_eq_carrier_append ho, Ty.carrierFacts_norm, Ty.predicates_norm]
   · rw [Ty.assume_eq_nil ho, Ty.assume_eq_nil (fun h => ho (hh.mp h))]
 
  theorem Ty.assume_refined {a : Ty} (ho : a.Ordinary) (p : Pred) :
     (Ty.refined a p).assume = a.assume ++ p.conjuncts := by
-  rw [Ty.assume_eq_predicates (a := .refined a p) ho, Ty.assume_eq_predicates ho]
-  rfl
+  rw [Ty.assume_eq_carrier_append (a := .refined a p) ho, Ty.assume_eq_carrier_append ho]
+  simp only [Ty.carrierFacts, Ty.core, Ty.refinementPredicates, List.append_assoc]
 
-/-- 文脈の番号を保ち、各変数の最外の篩だけを事実とする。 -/
+/-- 文脈の番号を保ち、各変数の型域と最外の篩を事実とする。 -/
 def Ctx.facts (Γ : Ctx) : List Pred :=
   (Γ.zipIdx).flatMap fun (a, i) =>
     match a with
     | none => []
     | some a => a.assume.map (fun p => p.open (.var i))
+
+
+abbrev Ctx.factsWithCarrier := Ctx.facts
 
 
 def Ctx.extend (Γ : Ctx) (a : Ty) : Ctx :=
