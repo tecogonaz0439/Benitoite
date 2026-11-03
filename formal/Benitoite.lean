@@ -464,3 +464,10 @@ import Benitoite.Release.Refinement.BuiltinLogicExamples
 import Benitoite.Release.Refinement.CertificateKernelExamples
 
 import Benitoite.Release.Refinement.CarrierFactsExamples
+
+import Benitoite.Release.Refinement.ObservationContractsExamples
+import Benitoite.Release.Refinement.PreparedLeaf
+import Benitoite.Release.Refinement.PreparedLeafExamples
+import Benitoite.Release.Refinement.FieldObservationExamples
+import Benitoite.Release.Refinement.PreparedSortExamples
+import Benitoite.Release.Refinement.NormalResultLeaves
