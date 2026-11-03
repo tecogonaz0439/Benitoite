@@ -935,8 +935,13 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 | NumericContracts・NormalResultLeaves・ObservationContractsExamples | 「閉じた述語の評価と捕捉」。七幅の正常な加減算・乗算と符号付き負号から数の一致・表現可能性・toTerm?を構成する。正常応答から有限の閉じた葉と置換像の導出を作る。255以下のByteと同じ数のUnsignedInteger16の表現可能性（変換演算との一致は含めない）、DecimalのConstOKと型域、本番の比較・分類への接続。抽象δの型保存だけから演算との一致は結論しない |
 | KeyContracts | 同節の十一の鍵の有限構造の相互帰納、閉じた項の鍵コードの成功とKey.equalへの接続、Decimalの正準化の数の保存と衝突時の数の等値。閉じた鍵と縮約の成功からMap・Setの大きさを同定する。Mapの大きさには値の観測を要求せず、Map自体の鍵化には値も要求する |
 | PreparedLeaf・PreparedLeafExamples・PreparedSortExamples・FieldObservationExamples | 同節の葉の上層checkInとentailsIn/bind_entails、既存Ty.LeQ.refineへのchecked_refinement、全十六sortの値からの観測成功、本番measureの三条件、非空Listの同じ長さの証明書と既存の網羅性の入口、Booleanの偽側と不変欄連鎖。四つの名前空間の既存Transportを使い、型域の像と開いたΓでの型域の真を供給する。sameObservationの規則は論理を強めないままとする |
-| ValueInversion | 「篩の正規形と制約の読み方」の変数の元のlookup型と芯の到達関係、Listの要素の導出・注釈・部分型と到達芯の等号。最外の篩の事実は同じ値のfactsで読み、値5の篩からInteger全体の部分型関係を導かない対照を含む |
-| TelApplication | 「篩の正規形と制約の読み方」の反変入力のnarrowing、一引数の同じ実値を束縛するTransport、結果のLeQと潜在効果のCovers、二段のtail、fnのviewと正規化の代表。open_done/open_tail/open_twoは元文脈のWFを前提とし、二引数の代表では後続の型が最初の値に依存する |
+| ValueInversion | 「篩の正規形と制約の読み方」の変数の元のlookup型と芯の到達関係、Listの要素の導出・注釈・部分型と到達芯の等号。fnRef・prim・op・lam・dependentLam・raiseの逆転は元の直接前提と到達型のfnCore・TelClosureを返し、inv_lam_wfは元のlambdaの形成を取り出す。dict・superの逆転は元の実装・辞書・宣言と辞書の芯の等号を保持する。最外の篩の事実は同じ値のfactsで読む |
+| CollectionInversion | 同節のMap・Set・Bytesの芯の射影と構文の逆転。Mapは元の鍵列・値列、同長・sat・注釈、鍵の正規形の等号と値のLeQを返す。Setは元列・sat・注釈と要素の正規形の等号、Bytesは全要素が255以下であることとBytesの芯の等号を返す |
+| TelApplication | 「篩の正規形と制約の読み方」の反変入力のnarrowing、一引数の同じ実値を束縛するTransport、結果のLeQと潜在効果のCovers、二段のtail、fnのviewと正規化の代表。open_done/open_tail/open_twoは元文脈のWFを前提とし、二引数の代表では後続の型が最初の値に依存する。applyはCtx.WF・元列のAnnotation・TelClosure・実引数列を前提に、一般の列で同じ実引数の型付けと結果/効果の到達関係を返す |
+| ComputationInversion | 同節のappの二つの直接規則の無条件の選言、let/escapeの元前提と到達結果/効果。app_telはStoreのWF・Sorted・DeclaredとCaptureContextRegularを前提に依存列へ共通化する |
+| ApplicationFormationExamples | 同節の形成を持たない開いたappの反例と、Unitに替えた同形の形成を持つ対照。無条件の直接逆転と形成付きの共通化を区別する |
+| ApplicationInputs | 同節の実runのStoreOk/ClosureTyから閉じたappの形成を供給し、primitiveの元の依存列へ実引数を戻す。Program.WellFormed・WellTyped・CoreAssumptionsは閉じた呼出しを取り出す前提 |
+| StandardVariance | 同節の標準五宣言と相互再帰/未使用引数の具体の三宣言、全14構成子のVarianceValid。八共変位置・九極性の組・不変位置の受理拒否と、既存field_order/valueMeaning_subへの読者 |
 | StandardKeyTyping | 同節の同じ有限宣言とP.consの等号、要約の収束、B.satとsatBの等号を持つTable。KeyObservationは閉じた型付き値の観測とKeyShapeを結論する命題であり、Tableの欄ではない。codeはその証拠から閉じた鍵の符号を得る。Unitの証拠と鍵の五代表を既定ビルドで検査する |
 | StandardContracts・StandardBodies | 「標準契約と数値の正常応答」の有限な標準契約行、同じtelを持つDefの再構成と既存Def.WellTyped。normal_reply_factsは既存CoreAssumptionsと同じ実応答の等号を使い、具体δの充足証明とは区別する。safeGet/head/equalLengthは同じ有限列の要素と型を保持し、公開の新APIの選択を定めない |
 | StandardScalar | 「標準契約と数値の正常応答」のDecimalの五モード、数学上の係数の一回の丸め、不正placesと仮数の表現外の区別、同率の正負の具体例。実δ・Rustとの一般の一致はこの有限例の保証に含めない |

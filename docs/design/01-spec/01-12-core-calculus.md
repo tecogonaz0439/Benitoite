@@ -3250,13 +3250,29 @@ structure SignatureInstance (P : Program) (C : TypeCtx) (Γ : Ctx)
 
 `TelApplication` の一引数の入口は、元の型と渡し先の型の Annotation、反変の LeQ、渡し先の型付き実値を使う。`TelBodyTy.narrow_input` は後続の本体を Γ.extend b へ狭める。`TelLe.open_done` は元文脈のWFと両依存列のAnnotationを加え、同じ実値を開く置換の Transport を構成する。両方の HasTypeTelArgsQ と、結果の LeQ・潜在効果の Covers を同時に返す。`TelClosure.two_steps` は二段のtail、`from_function_norm` は通常の関数のviewと正規化した依存列を扱う。 `TelLe.open_tail` は同じ実値を後続の列へ束縛した `TelLe` を返し、`open_two` は二番目の引数の型が一番目に依存する二実引数について、両列への型付けと結果・効果の到達関係を返す。両入口は元文脈の `Ctx.WF 0 C.length Γ` を前提とする。
 
+`TelClosure.apply` は、元文脈の `Ctx.WF 0 C.length Γ`、元列 t の `Annotation`、`TelClosure P Γ Φ t u`、同じ ws の u に対する `HasTypeTelArgsQ` から、t に対する同じ ws の型付け、結果の `LeQ`、潜在効果の `Covers` を返す。列の長さを制限しない。先頭の反変入力と後続の関係は `param_inputs`、終端の結果と効果は `done_outputs` で取り出し、後続には同じ実値を束縛する。
+
+`HasTypeCQ.inv_app` は、任意の Γ と Φ の下で、`C_App` の直接前提と `C_DependentApp` の直接前提の選言を返す。各枝に、元の結果から到達する結果への `LeQ` と外側の効果から元の効果への `Covers` を付ける。`inv_let` は束縛下の Γ・Φ・R と局所文脈を、`inv_escape` は元の戻り先と同じ値を保持する。
+
+`HasTypeCQ.app_tel` は、Store の `WF`・`Sorted`・`Declared` と元文脈の `CaptureContextRegular` を前提に、app の両枝を共通の依存列へ移す。これらの条件から `open_value_annotation` で関数の `Annotation` を得る。通常の関数の値列は、同じ Γ・Φ のまま `toTel_in_context` で正規化した依存列・結果・効果へ写す。元の型付けの規則そのものには形成条件を追加しない。
+
+`StateTyE.app_inputs` は、`Program.WellFormed`・`Program.WellTyped`・`CoreAssumptions` と、同じ run の `StateTyE`・app への view の等号を前提とする。実ストアの `StoreOk` の三条件と `ClosureTy.app_view_typed` を使い、空の Γ・Φ で共通の依存列の入力を返す。`primitive_contract_inputs` は同じ入力を元の primitive 署名へ戻す。開いた捕捉元の Γ の `CaptureWF` を、完全な `Ctx.WF` と同一視しない。
+
 `HasTypeVQ.inv_var` は元の変数のlookup型aとOrdinary、到達型Tの芯bとの等号、`Ty.LeQ P Γ Φ a.norm.core b`を返す。最外の篩をこの部分型関係へ加えない。`inv_list_core`は元の要素型aの型付けとAnnotation、`T.norm.core = list b`、要素の`Ty.LeQ P Γ Φ a b`を返す。変数や列そのものの篩の事実は、同じ値の観測項を使う`HasTypeVQ.facts`から読む。値に固有の篩があるときに、元の型全体からTへのLeQを逆転の結論とはしない。
+
+`inv_fnRef`・`inv_prim`・`inv_op`・`inv_lam`・`inv_dependentLam`・`inv_raise` は、元の直接規則の前提と、到達型の `fnCore = some u`、元の依存列から u への `TelClosure` を返す。宣言・型実引数・名前・本体契約・元の注釈を各規則どおりに保持し、`inv_raise` は同じ Fail の型を保持する。`inv_lam_wf` は元の lambda の名前と注釈の形成を取り出す。
+
+`inv_dict`・`inv_super` は、元の実装・辞書・宣言を各規則どおりに保持し、到達型の正規形の芯が同じ辞書型であることを返す。
+
+`inv_mapV` は元の鍵列と値列、同長、sat、注釈を保持し、到達型の Map の芯、鍵の正規形の等号、値の `LeQ` を返す。`inv_setV` は元の要素列、sat、注釈と、到達型の Set の芯および要素の正規形の等号を返す。`inv_bytesV` は全要素が255以下であることと、到達型の正規形の芯が Bytes であることを返す。これらの芯の射影は `Ty.LeQ.map_core`・`set_core`・`bytes_core` による。
 
 同じ名目の data の型引数は、宣言表 P の `varianceFor` が返す変性（variance）の列に従って `TypeArgsLe P Γ Φ` で比較する。共変の位置は元から先への部分型、反変の位置は逆向きの部分型、不変の位置は正規化後の等号を要求する。`Ty.LeQ`・`TelLe`・`TelClosure`・`TypeArgsLe` は同じ P を用いる。metadata がない場合と引数数が合わない場合は、全位置を不変として読む。欄に現れない型パラメータにも不変を要求し、unused の変性は設けない。
 
 効果の正規化は名前と行の所属、Failの正規化後の型の所属を保つ。`Eff.eq_of_sub_of_sub` は、両辺のCanonicalと双方向のSubから構造等号を導く。双方向のCoversだけでは、冗長な原子を加えた二つの効果を区別できない。`Eff.Allows σ κ e l t` は、κ l が返す対象の種類と、eに属する同じ名前の固定したRangeExprへの `Mem σ` を要求する。κ l がnoneの場合と、範囲変数の原子からは対象の許可を導かない。この関係は正規化で不変である。`TopAtoms` は最上位の原子がTopの名前か行である条件で、Fail内部の型を制限せず、正規化で保存される。行だけを置換する `substRho` は空の効果を保ち、名前の原子を消さない。
 
 `Program.VarianceValid` は、metadata の arity、欄の総称の注釈と value kind、および正負の出現を検査する。関数の引数は極性を反転し、Reference・Set・Map の鍵・辞書の対象・継続・Fail の型・外部型の引数・型構成子の適用は不変の位置として検査する。要件の型は不変、公開境界の型は指定された極性で検査する。欄の単調性は、総称の欄の `WF`・`Sorted []`、出現の検査、および両側の通常値の型引数（`Ordinary`）から導く。推移の中間の型引数に `Annotation` は要求しない。
+
+`StandardVariance.program` は、Option・Result・Pair、Test.Property の Shrinker・ShrinkStep、相互再帰の A・B と未使用引数を持つ Phantom の有限な構成子表を持つ。標準の五宣言は同じ型引数の順と欄型を写し、A・B・Phantom は具体の検証入力である。`StandardVariance.valid` は同じ表の全14構成子について `Program.VarianceValid` を証明する。Shrinker の型引数は関数の引数と結果の両方に現れるため不変、ShrinkStep の型引数は共変である。この表の共変位置に対する構文上の部分型を既存の `field_order` と `valueMeaning_sub` の読者へ渡す。
 
 `Term.HasData.widen` は `DataObservationLe` によって観測用の型引数を読み替える。観測の射影は List などの子の型と篩の事実を捨てるため、読み替えた引数を受け手の実の型引数と同一視しない。欄の sort を元の引数へ反映するときは `VarianceValid` による欄の出現の検査を用いる。検証済みの総称の欄と、個数が一致する `Annotation`・`Ordinary` を満たす型引数から、具体化した欄の `Annotation` を導く。構成子の反転 `inv_con` は、元の `V_Con` の kind と data の注釈も保持する。
 

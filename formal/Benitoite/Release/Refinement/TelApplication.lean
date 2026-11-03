@@ -2,6 +2,7 @@ import Benitoite.Release.Refinement.TelTyping
 import Benitoite.Release.Refinement.Narrowing
 import Benitoite.Release.Refinement.Context.Declarations
 import Benitoite.Release.Refinement.DependentBeta
+import Benitoite.Release.Refinement.ReferenceCalls
 
 /-! # 反変の入力と同じ実引数による後続の具体化 -/
 namespace Benitoite.Release.Refinement
@@ -92,6 +93,41 @@ theorem TelClosure.from_function_norm {P Γ Φ ns ps r e u}
     (same : (Ty.toTel ns ps r e).norm = u.norm) :
     TelClosure P Γ Φ (Ty.toTel ns ps r e) u := .tail .refl (.of_norm_eq same)
 
+/-- 同じ開いた文脈で、反変入力・依存結果・潜在効果を全実引数へ移す。 -/
+theorem TelClosure.apply {P B Ψ Q C Γ Φ t u ws a e}
+    (hΓ : Ctx.WF 0 C.length Γ)
+    (ht : Ty.Annotation P C Γ (.dependentFn t))
+    (h : TelClosure P Γ Φ t u)
+    (args : HasTypeTelArgsQ P B Ψ Q C Γ Φ ws u a e) :
+    ∃ b f, HasTypeTelArgsQ P B Ψ Q C Γ Φ ws t b f ∧
+      Ty.LeQ P Γ Φ b a ∧ Eff.Covers Γ Φ e f := by
+  induction ws generalizing t u a e with
+  | nil =>
+    cases t with
+    | param n x t => obtain ⟨_,_,rfl,_,_⟩ := h.param_inputs; cases args
+    | done r f =>
+      obtain ⟨_,_,rfl,le,cov⟩ := h.done_outputs
+      cases args
+      exact ⟨r,f,.done ht,le,cov⟩
+  | cons v vs ih =>
+    cases t with
+    | done r f => obtain ⟨_,_,rfl,_,_⟩ := h.done_outputs; cases args
+    | param n x t =>
+      obtain ⟨y,u,rfl,hyx,tail⟩ := h.param_inputs
+      cases args with
+      | param hy hv rest =>
+        have hx : Ty.Annotation P C Γ x := ⟨ht.wf.1,ht.sorted.1,ht.declared.1⟩
+        have hvx := hv.V_Sub hyx hx.wf hx.sorted hx.declared
+        have ht' := Tel.annotation_open hΓ ht hvx
+        have transport := (SubstOk.openValue (R := none) hv hy hΓ).transport (by
+          intro p hp
+          obtain ⟨q,hq,rfl⟩ := List.mem_map.mp hp
+          simpa only [Pred.openValue_lift] using Entails.hyp (List.mem_append_right Γ.facts hq))
+        have h' := tail.bind (valEnv (openValue v)) transport
+        rw [valEnv_openValue] at h'
+        obtain ⟨b,f,hb,le,cov⟩ := ih ht' h' rest
+        exact ⟨b,f,.param hx hvx hb,le,cov⟩
+
 namespace TelApplicationExamples
 private def argument (strong : Bool) : Ty :=
   if strong then .refined (.base .integer) .truth else .base .integer
@@ -180,9 +216,14 @@ example (P : Program) (B : Builtins) (Ψ : StoreTy) (Q : NoFailCtx) :
     · exact ⟨⟨⟨_,rfl,by intro b t e h; cases h⟩,⟨_,rfl,rfl⟩⟩,⟨trivial,rfl⟩⟩
     · simp [Pred.WF,Pred.VarsIn,Term.VarsIn]
     · exact ⟨⟨_,rfl,by intro b t e h; cases h⟩,trivial⟩
-  exact TelLe.open_two (by intro i a h; cases h) (two_annotation P false)
+  obtain ⟨r,s,e,f,_,target,_,_⟩ := TelLe.open_two (by intro i a h; cases h) (two_annotation P false)
     (two_annotation P true) (input_le P)
     (.param .refl (.done .refl (Eff.Covers.refl _ _ _))) hv hw
+  have relation : TelClosure P [] [] (twoContract false) (twoContract true) :=
+    .tail .refl (.param (input_le P) (.param .refl (.done .refl (Eff.Covers.refl _ _ _))))
+  obtain ⟨r',e',source,le,cov⟩ := relation.apply (by intro i a h; cases h)
+    (two_annotation P false) target
+  exact ⟨r',s,e',f,source,target,le,cov⟩
 
 /-- 通常の関数のviewと正規化した依存列を対応させる。 -/
 example (P : Program) :

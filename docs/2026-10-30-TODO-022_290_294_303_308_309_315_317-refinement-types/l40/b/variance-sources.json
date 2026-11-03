@@ -1,0 +1,58 @@
+[
+  {
+    "source": "crates/benitoite/src/prelude/stdlib/Option.bnt",
+    "declaration": "Option[T]",
+    "fields": "Some(T) None",
+    "bytes": 2021,
+    "sha256": "970752808d5382cf7cc3d647dc097ab78cd87025dd2a31aa43213c61af643374"
+  },
+  {
+    "source": "crates/benitoite/src/prelude/stdlib/Result.bnt",
+    "declaration": "Result[T, E]",
+    "fields": "Ok(T) Error(E)",
+    "bytes": 2375,
+    "sha256": "0b2321577ca1c3a68ce9c7c5d126f4c59c91fbddfa0b61d2aa62265a6f42ced4"
+  },
+  {
+    "source": "crates/benitoite/src/prelude/stdlib/Pair.bnt",
+    "declaration": "Pair[A, B]",
+    "fields": "Pair(A, B)",
+    "bytes": 371,
+    "sha256": "ff8616613de2c2c3b9cea6fae3f3f1fba383817dbdb6209384019480b598fff7"
+  },
+  {
+    "source": "crates/benitoite/src/prelude/stdlib/Test/Property.bnt",
+    "declaration": "Shrinker[T]",
+    "fields": "candidates: function(value: T) -> ShrinkStep[T]",
+    "bytes": 25098,
+    "sha256": "3cefbdc5f8b45131b62571c315e762b41332b5d23c51d3c570ad81978200003f"
+  },
+  {
+    "source": "crates/benitoite/src/prelude/stdlib/Test/Property.bnt",
+    "declaration": "ShrinkStep[T]",
+    "fields": "Done Yield(T, function() -> ShrinkStep[T]) Skip(function() -> ShrinkStep[T])",
+    "bytes": 25098,
+    "sha256": "3cefbdc5f8b45131b62571c315e762b41332b5d23c51d3c570ad81978200003f"
+  },
+  {
+    "source": "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/a/keys/recursive.bnt",
+    "declaration": "A[T]",
+    "fields": "End Next(B[T])",
+    "bytes": 255,
+    "sha256": "a8eb30e8e1a4f288be7773317df49c317c24c5cb1358228f3a64b2377d8cbb3a"
+  },
+  {
+    "source": "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/a/keys/recursive.bnt",
+    "declaration": "B[T]",
+    "fields": "End(T) Next(A[T])",
+    "bytes": 255,
+    "sha256": "a8eb30e8e1a4f288be7773317df49c317c24c5cb1358228f3a64b2377d8cbb3a"
+  },
+  {
+    "source": "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/a/keys/recursive.bnt",
+    "declaration": "Phantom[T]",
+    "fields": "Make(Unit)",
+    "bytes": 255,
+    "sha256": "a8eb30e8e1a4f288be7773317df49c317c24c5cb1358228f3a64b2377d8cbb3a"
+  }
+]

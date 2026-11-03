@@ -1,0 +1,19 @@
+{
+  "renamed": {
+    "TelClosure.apply_in_context": "TelClosure.apply"
+  },
+  "named_net": 0,
+  "generated_net": 0,
+  "anonymous_examples_added": 1,
+  "compatibility_example": "formal/Benitoite/Release/Refinement/ApplicationInputs.lean",
+  "compatibility_assumptions": [
+    "P.WellFormed",
+    "B.CoreAssumptions P",
+    "Ψ.WF",
+    "Ctx.WF 0 C.length Γ",
+    "Ty.Annotation P C Γ (.dependentFn t)",
+    "Ty.Annotation P C Γ (.dependentFn u)",
+    "TelClosure P Γ Φ t u",
+    "HasTypeTelArgsQ P B Ψ Q C Γ Φ ws u a e"
+  ]
+}

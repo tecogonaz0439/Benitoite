@@ -1,0 +1,1043 @@
+[
+  {
+    "label": "collection",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/CollectionInversion.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T08:14:21.401696+00:00",
+    "end": "2026-11-03T08:14:22.884929+00:00",
+    "exit": 0,
+    "seconds": 1.4824239160000001,
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "raw": "<tmp>/l40-b-collection.log"
+  },
+  {
+    "label": "value",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/ValueInversion.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T08:14:41.486576+00:00",
+    "end": "2026-11-03T08:14:44.239827+00:00",
+    "exit": 0,
+    "seconds": 2.7524682499999997,
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "raw": "<tmp>/l40-b-value.log"
+  },
+  {
+    "label": "obstruction",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/b/obstruction.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T08:17:06.607177+00:00",
+    "end": "2026-11-03T08:17:07.307666+00:00",
+    "exit": 1,
+    "seconds": 0.6996817909999999,
+    "bytes": 1121,
+    "sha256": "13c707db04fd5f3b8aa95b442ff32189846119668c74acc57c674cfb9bc876dd",
+    "raw": "<tmp>/l40-b-obstruction.log"
+  },
+  {
+    "label": "obstruction-fixed",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/b/obstruction.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T08:17:15.730412+00:00",
+    "end": "2026-11-03T08:17:16.500482+00:00",
+    "exit": 0,
+    "seconds": 0.769225875,
+    "bytes": 388,
+    "sha256": "4940ca240e0d2a1c11d22af3d06a6f2f41d82d99ae699b6a34effcf9e9bc818b",
+    "raw": "<tmp>/l40-b-obstruction-fixed.log"
+  },
+  {
+    "label": "obstruction-audit",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/b/obstruction.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T08:18:40.689942+00:00",
+    "end": "2026-11-03T08:18:41.146592+00:00",
+    "exit": 1,
+    "seconds": 0.45574337500000006,
+    "bytes": 302,
+    "sha256": "0fbff18d23e5142de546e67787397ded6c7376b3b78a11a316ecf3a720fb74ab",
+    "raw": "<tmp>/l40-b-obstruction-audit.log"
+  },
+  {
+    "label": "value-readability",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/ValueInversion.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T08:21:25.762716+00:00",
+    "end": "2026-11-03T08:21:26.028828+00:00",
+    "exit": 1,
+    "seconds": 0.2649775,
+    "bytes": 209,
+    "sha256": "d05c976dcb48f58d69fd50d62a9dde72368e39693c8d9b73bcd891eea629ff0f",
+    "raw": "<tmp>/l40-b-value-readability.log"
+  },
+  {
+    "label": "collection-readability",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/CollectionInversion.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T08:21:26.198084+00:00",
+    "end": "2026-11-03T08:21:26.409447+00:00",
+    "exit": 1,
+    "seconds": 0.210071334,
+    "bytes": 218,
+    "sha256": "3df4a3d6d8bebb25930da2006c80667d63d9360eb054061344284e79ea4ccf9f",
+    "raw": "<tmp>/l40-b-collection-readability.log"
+  },
+  {
+    "label": "build",
+    "command": [
+      "lake",
+      "-d",
+      "formal",
+      "build"
+    ],
+    "cwd": ".",
+    "start": "2026-11-03T08:18:03.146093+00:00",
+    "end": "2026-11-03T08:22:09.178727+00:00",
+    "exit": 0,
+    "seconds": 246.030909708,
+    "bytes": 105420,
+    "sha256": "84c5b78cc8f28e165ca3c16bfa6fea75867d043bab41f029c55cbef810419265",
+    "raw": "<tmp>/l40-b-build.log"
+  },
+  {
+    "label": "dry-run",
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "7f99d0787078f0a4e9669de819a025654266f585",
+      "--dry-run"
+    ],
+    "cwd": ".",
+    "start": "2026-11-03T08:22:18.472889+00:00",
+    "end": "2026-11-03T08:22:18.595098+00:00",
+    "exit": 0,
+    "seconds": 0.12170187499999999,
+    "bytes": 359,
+    "sha256": "c541e1502e6c8f437abbb2d8cbd63801b79ea613aa713bada23f66d290531d5f",
+    "raw": "<tmp>/l40-b-dry-run.log"
+  },
+  {
+    "label": "obstruction-complete",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/b/obstruction.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T08:22:18.473103+00:00",
+    "end": "2026-11-03T08:22:18.937401+00:00",
+    "exit": 1,
+    "seconds": 0.46346666599999997,
+    "bytes": 226,
+    "sha256": "d984711b3173cf0a05620ba36e146efb145ebc7df6788af6b42a54c0ab141e8c",
+    "raw": "<tmp>/l40-b-obstruction-complete.log"
+  },
+  {
+    "label": "build-fixed",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T08:22:44.370465+00:00",
+    "end": "2026-11-03T08:27:05.901917+00:00",
+    "exit": 0,
+    "seconds": 261.529394833,
+    "bytes": 103697,
+    "sha256": "d6e61fd0f62f6cd12bf86b3107cdd071b6fac11a58fd5f275cb2df4fb9a96166",
+    "raw": "<tmp>/l40-b-build-fixed.log"
+  },
+  {
+    "label": "signatures-final",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/b/signature-check.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T08:27:30.575230+00:00",
+    "end": "2026-11-03T08:27:31.412335+00:00",
+    "exit": 0,
+    "seconds": 0.836280917,
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "raw": "<tmp>/l40-b-signatures-final.log"
+  },
+  {
+    "label": "obstruction-final",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/b/obstruction.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T08:27:30.575230+00:00",
+    "end": "2026-11-03T08:27:31.804223+00:00",
+    "exit": 1,
+    "seconds": 1.228086625,
+    "bytes": 2687,
+    "sha256": "6e0eea3778cd6713b411222736720083bf1ea06575a2a9b382dc7fa52d9e7c2e",
+    "raw": "<tmp>/l40-b-obstruction-final.log"
+  },
+  {
+    "label": "obstruction-verified",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/b/obstruction.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T08:27:59.582607+00:00",
+    "end": "2026-11-03T08:28:00.721998+00:00",
+    "exit": 1,
+    "seconds": 1.13848925,
+    "bytes": 2872,
+    "sha256": "6b82d7e71c16d246d33bccb7769091812ec187976a2543c3d944a8e81de631c5",
+    "raw": "<tmp>/l40-b-obstruction-verified.log"
+  },
+  {
+    "label": "obstruction-success",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/b/obstruction.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T08:28:06.351201+00:00",
+    "end": "2026-11-03T08:28:07.460216+00:00",
+    "exit": 0,
+    "seconds": 1.10811075,
+    "bytes": 2029,
+    "sha256": "f0b2a514cd08df1e15b1c42fe808d1e83baf6f875a63e0c1479c05d109501bdd",
+    "raw": "<tmp>/l40-b-obstruction-success.log"
+  },
+  {
+    "label": "work",
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "7f99d0787078f0a4e9669de819a025654266f585"
+    ],
+    "cwd": ".",
+    "start": "2026-11-03T08:28:50.325993+00:00",
+    "end": "2026-11-03T08:28:50.595907+00:00",
+    "exit": 0,
+    "seconds": 0.26916575000000004,
+    "bytes": 398,
+    "sha256": "af5240b97772e1e8c56ee46d3a14e569f39bd510da5687e579e442d73f0849db",
+    "raw": "<tmp>/l40-b-work.log"
+  },
+  {
+    "label": "resume1-direct",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/ComputationInversion.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T08:35:23.521892+00:00",
+    "end": "2026-11-03T08:35:25.297868+00:00",
+    "exit": 0,
+    "seconds": 1.775189125,
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "raw": "<tmp>/l40-b-resume1-direct.log"
+  },
+  {
+    "label": "resume1-common",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/ComputationInversion.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T08:35:58.777280+00:00",
+    "end": "2026-11-03T08:36:00.627386+00:00",
+    "exit": 1,
+    "seconds": 1.849692375,
+    "bytes": 1888,
+    "sha256": "02ce86f676250b91af738588dd401a9985e588883dc0119c2071f06d1c040848",
+    "raw": "<tmp>/l40-b-resume1-common.log"
+  },
+  {
+    "label": "resume1-common-fixed",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/ComputationInversion.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T08:36:08.258618+00:00",
+    "end": "2026-11-03T08:36:10.126030+00:00",
+    "exit": 1,
+    "seconds": 1.8668152919999998,
+    "bytes": 274,
+    "sha256": "b47b145cfb50b19bf5d58a1bb38486a9e83aeba55fe8d438cbe941738ff6bf19",
+    "raw": "<tmp>/l40-b-resume1-common-fixed.log"
+  },
+  {
+    "label": "resume1-common-pass",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/ComputationInversion.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T08:36:14.318454+00:00",
+    "end": "2026-11-03T08:36:16.121946+00:00",
+    "exit": 0,
+    "seconds": 1.802837375,
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "raw": "<tmp>/l40-b-resume1-common-pass.log"
+  },
+  {
+    "label": "resume1-build09",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T08:37:42.873861+00:00",
+    "end": "2026-11-03T08:37:45.397118+00:00",
+    "exit": 1,
+    "seconds": 2.522207042,
+    "bytes": 45160,
+    "sha256": "b2fd186ce4cd8d6774ce1b7641908df5cf8e838ee3cab0a5c1b2123375db8388",
+    "raw": "<tmp>/l40-b-resume1-build09.log"
+  },
+  {
+    "label": "resume1-formation",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/ApplicationFormationExamples.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T08:37:59.795219+00:00",
+    "end": "2026-11-03T08:38:00.237948+00:00",
+    "exit": 0,
+    "seconds": 0.441935959,
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "raw": "<tmp>/l40-b-resume1-formation.log"
+  },
+  {
+    "label": "resume1-variance-table",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/StandardVariance.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T08:40:26.726123+00:00",
+    "end": "2026-11-03T08:40:26.800562+00:00",
+    "exit": 1,
+    "seconds": 0.073714416,
+    "bytes": 101,
+    "sha256": "8cd95a3ea5b56f5f96ebd7f84a4698dba19d385e09b49c882af9e1fd07651339",
+    "raw": "<tmp>/l40-b-resume1-variance-table.log"
+  },
+  {
+    "label": "resume1-variance-arities",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/StandardVariance.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T08:40:56.226672+00:00",
+    "end": "2026-11-03T08:41:03.156675+00:00",
+    "exit": 1,
+    "seconds": 6.929142666000001,
+    "bytes": 6058,
+    "sha256": "58b44213a8a65af854f7209e6629e8fcdeadfba34c0ac31cf8101b6bbcd21dbb",
+    "raw": "<tmp>/l40-b-resume1-variance-arities.log"
+  },
+  {
+    "label": "resume1-variance-mem",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/StandardVariance.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T08:41:58.190721+00:00",
+    "end": "2026-11-03T08:41:58.628609+00:00",
+    "exit": 1,
+    "seconds": 0.4370285,
+    "bytes": 5758,
+    "sha256": "88747f5ed7c1a8e13dfe5cf14a6d9ca7489167bd2b371d48e02860fce1891740",
+    "raw": "<tmp>/l40-b-resume1-variance-mem.log"
+  },
+  {
+    "label": "resume1-variance-lookup",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/StandardVariance.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T08:42:33.977080+00:00",
+    "end": "2026-11-03T08:42:34.668765+00:00",
+    "exit": 1,
+    "seconds": 0.6908687920000001,
+    "bytes": 3271,
+    "sha256": "8bad5be12e556b47e84020deb491dce04e6b4f2fcf3fe9d649b76b4147b95bb2",
+    "raw": "<tmp>/l40-b-resume1-variance-lookup.log"
+  },
+  {
+    "label": "resume1-variance-lookup2",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/StandardVariance.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T08:42:51.008843+00:00",
+    "end": "2026-11-03T08:42:51.690711+00:00",
+    "exit": 1,
+    "seconds": 0.6810546249999999,
+    "bytes": 3628,
+    "sha256": "524af68319e587b8baeefcc7ebce1adf486beb33ea9aa08a7cc8702ad7e29087",
+    "raw": "<tmp>/l40-b-resume1-variance-lookup2.log"
+  },
+  {
+    "label": "resume1-variance-lookup3",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/StandardVariance.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T08:43:02.028406+00:00",
+    "end": "2026-11-03T08:43:02.714705+00:00",
+    "exit": 0,
+    "seconds": 0.685534167,
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "raw": "<tmp>/l40-b-resume1-variance-lookup3.log"
+  },
+  {
+    "label": "resume1-variance-finite",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/StandardVariance.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T08:43:32.170324+00:00",
+    "end": "2026-11-03T08:43:32.718285+00:00",
+    "exit": 0,
+    "seconds": 0.5471944169999999,
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "raw": "<tmp>/l40-b-resume1-variance-finite.log"
+  },
+  {
+    "label": "resume1-variance-valid",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/StandardVariance.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T08:44:38.195391+00:00",
+    "end": "2026-11-03T08:44:39.221773+00:00",
+    "exit": 1,
+    "seconds": 1.02556475,
+    "bytes": 38930,
+    "sha256": "212a638033580e69cdbc93a41b92ae0244c1af4397ffc424e7a269910cadfc56",
+    "raw": "<tmp>/l40-b-resume1-variance-valid.log"
+  },
+  {
+    "label": "resume1-variance-valid2",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/StandardVariance.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T08:45:20.360229+00:00",
+    "end": "2026-11-03T08:45:21.337668+00:00",
+    "exit": 1,
+    "seconds": 0.976599167,
+    "bytes": 6578,
+    "sha256": "057c61532487711630063f89968661f153aed4b114f91b81ec45575171860c2f",
+    "raw": "<tmp>/l40-b-resume1-variance-valid2.log"
+  },
+  {
+    "label": "resume1-variance-valid-pass",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/StandardVariance.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T08:46:11.631142+00:00",
+    "end": "2026-11-03T08:46:12.578452+00:00",
+    "exit": 0,
+    "seconds": 0.946526583,
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "raw": "<tmp>/l40-b-resume1-variance-valid-pass.log"
+  },
+  {
+    "label": "resume1-variance-readers",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/StandardVariance.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T08:48:08.057362+00:00",
+    "end": "2026-11-03T08:48:09.043823+00:00",
+    "exit": 0,
+    "seconds": 0.985626583,
+    "bytes": 742,
+    "sha256": "1431cdb78158c9ae7ff02ca977516e475be7968f75958b45612ac950f13e0316",
+    "raw": "<tmp>/l40-b-resume1-variance-readers.log"
+  },
+  {
+    "label": "resume1-variance-final",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/StandardVariance.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T08:48:49.940532+00:00",
+    "end": "2026-11-03T08:48:50.940248+00:00",
+    "exit": 1,
+    "seconds": 0.9988970420000001,
+    "bytes": 8914,
+    "sha256": "781206b7817ff04a5222903157a7e13e587f70216a8f9aecd02a0be379c7a0c9",
+    "raw": "<tmp>/l40-b-resume1-variance-final.log"
+  },
+  {
+    "label": "resume1-variance-complete",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/StandardVariance.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T08:49:11.755049+00:00",
+    "end": "2026-11-03T08:49:12.744342+00:00",
+    "exit": 0,
+    "seconds": 0.988501417,
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "raw": "<tmp>/l40-b-resume1-variance-complete.log"
+  },
+  {
+    "label": "resume1-build10",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T08:49:48.112216+00:00",
+    "end": "2026-11-03T08:51:02.689741+00:00",
+    "exit": 0,
+    "seconds": 74.576372458,
+    "bytes": 52732,
+    "sha256": "39c1f4443b5260b284e9ad2f2a7b786e750c56665af553d079ed248f154290b4",
+    "raw": "<tmp>/l40-b-resume1-build10.log"
+  },
+  {
+    "label": "resume1-tel-general",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/TelApplication.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T08:51:56.954428+00:00",
+    "end": "2026-11-03T08:51:57.437866+00:00",
+    "exit": 1,
+    "seconds": 0.48260808299999997,
+    "bytes": 1852,
+    "sha256": "15597d57a6448f6ad27e390f4d2eb22ccacc0d2f8759f448cd87432f96a8950d",
+    "raw": "<tmp>/l40-b-resume1-tel-general.log"
+  },
+  {
+    "label": "resume1-tel-general2",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/TelApplication.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T08:52:02.766584+00:00",
+    "end": "2026-11-03T08:52:03.245558+00:00",
+    "exit": 0,
+    "seconds": 0.47821675,
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "raw": "<tmp>/l40-b-resume1-tel-general2.log"
+  },
+  {
+    "label": "resume1-tel-reader",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/TelApplication.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T08:53:37.693580+00:00",
+    "end": "2026-11-03T08:53:38.177136+00:00",
+    "exit": 0,
+    "seconds": 0.48277141700000004,
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "raw": "<tmp>/l40-b-resume1-tel-reader.log"
+  },
+  {
+    "label": "resume1-build11",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T08:55:06.564290+00:00",
+    "end": "2026-11-03T08:55:07.478880+00:00",
+    "exit": 1,
+    "seconds": 0.91359225,
+    "bytes": 44436,
+    "sha256": "6b33accf618c6925b023f89de352a9009d4593c191feb3b64f1148dcb5251a0b",
+    "raw": "<tmp>/l40-b-resume1-build11.log"
+  },
+  {
+    "label": "resume1-inputs",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/ApplicationInputs.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T08:55:15.351034+00:00",
+    "end": "2026-11-03T08:55:15.689539+00:00",
+    "exit": 0,
+    "seconds": 0.33774887499999995,
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "raw": "<tmp>/l40-b-resume1-inputs.log"
+  },
+  {
+    "label": "resume1-regular-inputs",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/ApplicationInputs.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T08:58:08.439993+00:00",
+    "end": "2026-11-03T08:58:08.782983+00:00",
+    "exit": 0,
+    "seconds": 0.342246167,
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "raw": "<tmp>/l40-b-resume1-regular-inputs.log"
+  },
+  {
+    "label": "resume1-build-inputs",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T09:00:21.760800+00:00",
+    "end": "2026-11-03T09:00:22.885536+00:00",
+    "exit": 0,
+    "seconds": 1.123830375,
+    "bytes": 43306,
+    "sha256": "fa726c1fafc500b1f2926d6d23a4c949355120a2669b3cb25040f8a956fe34da",
+    "raw": "<tmp>/l40-b-resume1-build-inputs.log"
+  },
+  {
+    "label": "resume1-variance-names",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/StandardVariance.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T09:03:26.123776+00:00",
+    "end": "2026-11-03T09:03:27.105473+00:00",
+    "exit": 0,
+    "seconds": 0.9808965000000001,
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "raw": "<tmp>/l40-b-resume1-variance-names.log"
+  },
+  {
+    "label": "resume1-final-build",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T09:07:47.995180+00:00",
+    "end": "2026-11-03T09:07:49.786409+00:00",
+    "exit": 0,
+    "seconds": 1.790268166,
+    "bytes": 43304,
+    "sha256": "a3a0332d1a950702010c9b05a94ca6ae3fbb827d51498391845aab4dfd6ab393",
+    "raw": "<tmp>/l40-b-resume1-final-build.log"
+  },
+  {
+    "label": "resume1-dry-run",
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "7f99d0787078f0a4e9669de819a025654266f585",
+      "--dry-run"
+    ],
+    "cwd": ".",
+    "start": "2026-11-03T09:08:27.332669+00:00",
+    "end": "2026-11-03T09:08:27.460839+00:00",
+    "exit": 0,
+    "seconds": 0.12759620800000002,
+    "bytes": 759,
+    "sha256": "5876f9968dcbe90f207b70436d8e2a74ffce6a9be42403fe396ebe2dd419d13e",
+    "raw": "<tmp>/l40-b-resume1-dry-run.log"
+  },
+  {
+    "label": "resume1-f02-signature",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/b/f02-signature.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T09:08:27.332640+00:00",
+    "end": "2026-11-03T09:08:28.150489+00:00",
+    "exit": 0,
+    "seconds": 0.817109875,
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "raw": "<tmp>/l40-b-resume1-f02-signature.log"
+  },
+  {
+    "label": "resume1-signatures",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/b/signature-check.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T09:08:27.332677+00:00",
+    "end": "2026-11-03T09:08:28.175447+00:00",
+    "exit": 0,
+    "seconds": 0.842086709,
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "raw": "<tmp>/l40-b-resume1-signatures.log"
+  },
+  {
+    "label": "resume1-work",
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "7f99d0787078f0a4e9669de819a025654266f585"
+    ],
+    "cwd": ".",
+    "start": "2026-11-03T09:09:45.763615+00:00",
+    "end": "2026-11-03T09:09:53.703912+00:00",
+    "exit": 0,
+    "seconds": 7.939427208,
+    "bytes": 5847,
+    "sha256": "2d2ab01cae326b4cbafce95dacbb1fd76bf11b08cd4f5cea1383d91441201909",
+    "raw": "<tmp>/l40-b-resume1-work.log"
+  },
+  {
+    "label": "resume2-build",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T09:18:41.955733+00:00",
+    "end": "2026-11-03T09:18:42.549541+00:00",
+    "exit": 1,
+    "seconds": 0.5929378329999999,
+    "bytes": 44300,
+    "sha256": "cc86587a2bc80a2436348840dcdbf069ce8bb7f16fade4050393bb9d7b6b9fb8",
+    "raw": "<tmp>/l40-b-resume2-build.log"
+  },
+  {
+    "label": "resume2-final-build",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T09:18:56.039041+00:00",
+    "end": "2026-11-03T09:18:57.503282+00:00",
+    "exit": 0,
+    "seconds": 1.4637287920000002,
+    "bytes": 43378,
+    "sha256": "c0cb7ed6ac0faea5f539e5c24778d542028a1715f9774100f3fff75d0bad47b7",
+    "raw": "<tmp>/l40-b-resume2-final-build.log"
+  },
+  {
+    "label": "resume2-dry-run",
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "7f99d0787078f0a4e9669de819a025654266f585",
+      "--dry-run"
+    ],
+    "cwd": ".",
+    "start": "2026-11-03T09:19:08.568021+00:00",
+    "end": "2026-11-03T09:19:08.693199+00:00",
+    "exit": 0,
+    "seconds": 0.12458987499999999,
+    "bytes": 759,
+    "sha256": "38fd649b29a68fa8a2777859f66384d869703463e3d593e5e540f0ace33db3b3",
+    "raw": "<tmp>/l40-b-resume2-dry-run.log"
+  },
+  {
+    "label": "resume2-signatures",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/b/signature-check.lean"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T09:19:08.568026+00:00",
+    "end": "2026-11-03T09:19:09.310850+00:00",
+    "exit": 0,
+    "seconds": 0.742015917,
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "raw": "<tmp>/l40-b-resume2-signatures.log"
+  },
+  {
+    "label": "resume2-work",
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "7f99d0787078f0a4e9669de819a025654266f585"
+    ],
+    "cwd": ".",
+    "start": "2026-11-03T09:19:38.688287+00:00",
+    "end": "2026-11-03T09:19:42.670326+00:00",
+    "exit": 0,
+    "seconds": 3.9812347079999997,
+    "bytes": 5847,
+    "sha256": "874d8787057f1e3804a90ac27bc0d2223bc13d97f67e91a229893966331af1fd",
+    "raw": "<tmp>/l40-b-resume2-work.log"
+  },
+  {
+    "label": "resume3-build",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal",
+    "start": "2026-11-03T09:34:25.568779+00:00",
+    "end": "2026-11-03T09:34:28.772792+00:00",
+    "exit": 0,
+    "seconds": 3.202844583,
+    "bytes": 43469,
+    "sha256": "58778be3a579ba678e9d9e766e8f52bbf2a1dcd2f3ba902ad7efb6585e6b4743",
+    "raw": "<tmp>/l40-b-resume3-build.log"
+  },
+  {
+    "label": "resume3-dry-run",
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "7f99d0787078f0a4e9669de819a025654266f585",
+      "--dry-run"
+    ],
+    "cwd": ".",
+    "start": "2026-11-03T09:34:39.742743+00:00",
+    "end": "2026-11-03T09:34:39.858372+00:00",
+    "exit": 0,
+    "seconds": 0.11515162499999998,
+    "bytes": 759,
+    "sha256": "b522b7ad4f14faae628cee24f535886f1a79bf6a4b55abf63105a3d1c70f5946",
+    "raw": "<tmp>/l40-b-resume3-dry-run.log"
+  },
+  {
+    "label": "resume3-work",
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "7f99d0787078f0a4e9669de819a025654266f585"
+    ],
+    "cwd": ".",
+    "start": "2026-11-03T09:34:52.912128+00:00",
+    "end": "2026-11-03T09:34:56.630011+00:00",
+    "exit": 0,
+    "seconds": 3.717065375,
+    "bytes": 5847,
+    "sha256": "46c52b69c9d686b2bc6a47b6c5e4d43a3a3404a30344792414b99dc88612001b",
+    "raw": "<tmp>/l40-b-resume3-work.log"
+  }
+]

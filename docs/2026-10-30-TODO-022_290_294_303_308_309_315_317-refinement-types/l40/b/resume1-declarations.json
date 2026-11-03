@@ -1,0 +1,89 @@
+[
+  {
+    "module": "ComputationInversion",
+    "named_source_declarations": [
+      "HasTypeCQ.inv_let",
+      "HasTypeCQ.inv_escape",
+      "HasTypeCQ.inv_app",
+      "bind_shift_ty",
+      "bind_shift_eff",
+      "vs_normal",
+      "vs_toTel",
+      "HasTypeVsQ.toTel_in_context",
+      "HasTypeCQ.app_tel"
+    ],
+    "anonymous_source_examples": 2
+  },
+  {
+    "module": "ApplicationFormationExamples",
+    "named_source_declarations": [
+      "tvar_source",
+      "context",
+      "source",
+      "no_telescope",
+      "common_application_false",
+      "context_not_wf",
+      "formed_contrast",
+      "context_not_regular",
+      "common_formed"
+    ],
+    "anonymous_source_examples": 2
+  },
+  {
+    "module": "StandardVariance",
+    "named_source_declarations": [
+      "constructors",
+      "metadata",
+      "program",
+      "cons_mem",
+      "info_mem",
+      "option_arity",
+      "result_arity",
+      "pair_arity",
+      "shrinker_arity",
+      "shrink_step_arity",
+      "shrink_step_arity_iff",
+      "recursive_a_arity",
+      "recursive_a_arity_iff",
+      "recursive_b_arity",
+      "recursive_b_arity_iff",
+      "phantom_arity",
+      "recursive_a_metadata",
+      "recursive_b_metadata",
+      "option_metadata",
+      "result_metadata",
+      "pair_metadata",
+      "shrinker_metadata",
+      "shrink_step_metadata",
+      "phantom_metadata",
+      "fields_checked",
+      "constructor_arity",
+      "valid",
+      "covariant_positions"
+    ],
+    "anonymous_source_examples": 6
+  },
+  {
+    "module": "ApplicationInputs",
+    "named_source_declarations": [
+      "empty_regular",
+      "Ctx.Regular.capture_context",
+      "StateTyE.app_inputs",
+      "StateTyE.primitive_contract_inputs"
+    ],
+    "anonymous_source_examples": 2
+  },
+  {
+    "module": "TelApplication",
+    "added_named_source_declarations": [
+      "TelClosure.apply_in_context"
+    ]
+  },
+  {
+    "module": "ReferenceCalls",
+    "added_named_source_declarations": [
+      "TelClosure.param_inputs",
+      "TelClosure.done_outputs"
+    ]
+  }
+]
