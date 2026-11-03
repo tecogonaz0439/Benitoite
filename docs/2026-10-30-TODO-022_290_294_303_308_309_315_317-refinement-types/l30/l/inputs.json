@@ -1,0 +1,221 @@
+{
+  "B_WORK": "c30b5b3424f6d98295b26cac96fe9a8b35a2eb27",
+  "branch": "m014/l30.l",
+  "basis": "起動依頼で受領。担当はgitコマンドを実行していない",
+  "configuration": "既定8target、増分build、Lean -M12288",
+  "formal_source_count": 699,
+  "formal_manifest": {
+    "bytes": 114055,
+    "sha256": "9d0e05d989f59570d999704dacdbd9f93f07adb695ce48ad399eaa9368edc58f"
+  },
+  "inputs": {
+    "formal/Benitoite/Release/Refinement/CoefficientModel.lean": {
+      "bytes": 3316,
+      "sha256": "f137d15df9b652c97f7d7ac05fe742d495aaf6000ec56298d76d60ba86637b7e"
+    },
+    "formal/Benitoite/Release/Refinement/StepAccounting.lean": {
+      "bytes": 6711,
+      "sha256": "7332e724d51e22d19cfb598ce256760c57632b42e20c6ea25784f921a48937fd"
+    },
+    "formal/Benitoite/Release/Refinement/AccountingWork.lean": {
+      "bytes": 8260,
+      "sha256": "fe2ac1e58637d4ba1124821d987678f7647c8288b07b44bce8e827d7e59e0ab3"
+    },
+    "formal/Benitoite/Release/Refinement/ProofContract.lean": {
+      "bytes": 4782,
+      "sha256": "cd162217acbf004f023ae7bc614545cebaaf2a1db0cb7240720dac91a9f54884"
+    },
+    "formal/Benitoite/Release/Refinement/ProofContractExamples.lean": {
+      "bytes": 11510,
+      "sha256": "3abf57ab6f18dade5326cc9f889c49c7067f214843c0e1418ded3da8ece74c4d"
+    },
+    "formal/Benitoite/Release/Refinement/ProofReplayExamples.lean": {
+      "bytes": 2908,
+      "sha256": "5cdbf9d234624955eb28fea435436d58f66394d2b8585b155b07f8c05da2c424"
+    },
+    "formal/Benitoite.lean": {
+      "bytes": 21210,
+      "sha256": "de5e177561d63a6c9860c8e5337205a1af9f49e50199b3767224f80a4468f6b5"
+    },
+    "formal/lakefile.toml": {
+      "bytes": 872,
+      "sha256": "10f2661bff8fce95a9253d976427d0ca44038ec12350c955badbc1cf1efa6e3a"
+    },
+    "formal/lean-toolchain": {
+      "bytes": 25,
+      "sha256": "d5edba4e4b8faad9c1baeadb265716d20d03be4d1a2647dc5e35b0c0325bea7b"
+    },
+    "docs/design/01-spec/01-12-core-calculus.md": {
+      "bytes": 807074,
+      "sha256": "750f2539281e93965e3f0c88fd7ff48ce0722a018808dbf0135eec2a71c182cd"
+    },
+    "docs/design/07-quality/07-04-formal-semantics.md": {
+      "bytes": 530266,
+      "sha256": "a134e3b027f06c9dd7b019b1befb105396f14e2e1e23ed7b2a30eedd13cc7add"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/implementation-request.md": {
+      "bytes": 24593,
+      "sha256": "c192998a08649ee22b155d53806636d3571d83fd25f4b084dec9e3bc0458a1ca"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/plan.md": {
+      "bytes": 248389,
+      "sha256": "a9d33561876c59bdefe98986c1d319bf516c90f0b23061e41a7eb56199b24337"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/README.md": {
+      "bytes": 16484,
+      "sha256": "0d7a12d7739a1a3319d89a56ae1fe846fd94f15fd7e892162eecf6a67a767576"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l30/detail.md": {
+      "bytes": 97390,
+      "sha256": "45a9b3c8a3549f4e9f638fd92ba3c8f289ec26cbfc2ada0d7d95fe5fe3c4047e"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l30/axioms.lean": {
+      "bytes": 2429,
+      "sha256": "9d2905fb01b6644c1cf5a25db5e81e39c6e79358a64d055d02b05524af24f59a"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l30/audit.py": {
+      "bytes": 3780,
+      "sha256": "581ee18edf1d5412502afa3d08507cae9b3166b6ec4814cda3bc95ebdc52fdee"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l30/l/records.py": {
+      "bytes": 12536,
+      "sha256": "8d083795586062a131fe4ca40b9f88d66a2d34d7049b73eb0a4dbbff152bdda1"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l30/l/finalize.py": {
+      "bytes": 10272,
+      "sha256": "3873804c3b6dd30a64b6ffb263a198b5e145a30059ca0d16c73bf6d8322c76a6"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l30/l/resume1.py": {
+      "bytes": 9316,
+      "sha256": "aeed3a3bb6463dafd174adb19c0b6d4a2972e899b4eab5fa803c82c0f78e574c"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l30/l/signature-check.lean": {
+      "bytes": 3573,
+      "sha256": "973b60333c11e35f0cd578590a37d27fb70f7606da27f03ef8cb0e49a3b869cf"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l30/l/replay.lean": {
+      "bytes": 371,
+      "sha256": "ecbb76dfb1e506d7f6ae00fccb11e3f60167e795242570fa65f6b02c8697afda"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l30/l/case-completion.md": {
+      "bytes": 8979,
+      "sha256": "dba0aad1150acb1d09e806b5fd9b4a7e521ddf206457505e257b3a5b97ed5b47"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l30/l/r20-contract.md": {
+      "bytes": 10457,
+      "sha256": "bae1e2293e1ff31ec44f0fabae7fff551ca0f11419a656b6d57ba5cca1e561bf"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l30/l/review-handoffs.md": {
+      "bytes": 11024,
+      "sha256": "bf56881e4a028ea6fa834a574d0ba637de318dfd55868c41f33e6e5cbbc8ae01"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l30/l/review-response.md": {
+      "bytes": 3414,
+      "sha256": "4613db4243ab76bc32c1dff90d59af861996566fa75ff3ae6303c1aee886cce2"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l30/l/signatures.md": {
+      "bytes": 23465,
+      "sha256": "d2ace08e750fa06571d6e0cb1b2e1c0848503c1388c7f8313e2361d3b31c9340"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l30/a/results.md": {
+      "bytes": 43479,
+      "sha256": "bf71a4687488f23c3334685cdd782fa0c4fe8cacef3f5af7199014d5f9f84024"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l30/a/signatures.md": {
+      "bytes": 29269,
+      "sha256": "310c3de54df831b58ad3b674c9320d7e48f5bb6c8fa739150bef9a4e36234931"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/reviews/RV-L30.a.md": {
+      "bytes": 27948,
+      "sha256": "48f7877169d7092808c7f6d98f09771c51df1b8f5c627f77be5193a6dbe8d134"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l30/b/results.md": {
+      "bytes": 32326,
+      "sha256": "55af30314207f8dbc287815deb67d76db587e966e704a5d9474f67eb16db4118"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l30/b/signatures.md": {
+      "bytes": 5666,
+      "sha256": "2bbe3fe65465b513001630688c7e4f8e75b6615d91f4525a06c260038ef1877b"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/reviews/RV-L30.b.md": {
+      "bytes": 19963,
+      "sha256": "505de32f19c1e7ba2710d730e7a0aa74c4a349b9513db2631cf2d1b411435080"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l30/d/results.md": {
+      "bytes": 35826,
+      "sha256": "0fcd05b75464b0e1ae90dee17d40866bf11693cf2ca0c23f6cfd7c456cab8db6"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l30/d/signatures.md": {
+      "bytes": 11632,
+      "sha256": "8a995301d7ae1ddf9fea3238d6977ed88e12e0ebd4718bf78ae58ac0b7cad129"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/reviews/RV-L30.d.md": {
+      "bytes": 19552,
+      "sha256": "870b1b94cf8d40aba38ce0378d66868a1fca7fa57297c0591a3a982a73526483"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l30/f/results.md": {
+      "bytes": 35140,
+      "sha256": "1a63575ef324d74580c4be7184b3729f51312d2cf0a39f7b46edeb5afca254af"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l30/f/signatures.md": {
+      "bytes": 31561,
+      "sha256": "a8c096015aa86ab47d6152c3b459425e7dc2e20518039f8909ade70ebbde8951"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/reviews/RV-L30.f.md": {
+      "bytes": 20424,
+      "sha256": "494b89bcf5102fd1eafc49ef8df0f1965d8666baeb9c5478a60a4af4f22bc5b1"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l30/h/results.md": {
+      "bytes": 27161,
+      "sha256": "d929c6007f98b84f35769cbf19e7f4883b67ec0ebe47dc156019be76b0fd29c2"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l30/h/signatures.md": {
+      "bytes": 12504,
+      "sha256": "7fb8edabdc0f828d9aafdd73812076abd19b0fe524fb90a049adff97e616f40e"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/reviews/RV-L30.h.md": {
+      "bytes": 20538,
+      "sha256": "349b82eae810df04e720445a57475a2e46a18aa242ce77871dceaef7b9a13e73"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l30/j/results.md": {
+      "bytes": 44256,
+      "sha256": "80cb2b609674ef983ecfbe0e3245101f3c0e2f40a4af7c204e8013a368cee78a"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l30/j/signatures.md": {
+      "bytes": 20425,
+      "sha256": "48eaad66a7a41bae9167ecb6b235444261dab7aba31dd6973bd9efb9c5dfd11c"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/reviews/RV-L30.j.md": {
+      "bytes": 23850,
+      "sha256": "42f557b0c458493bedb9eb373c51fe9461245c3362ac292c166c7afdb8f0011f"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l30/a/comparison.md": {
+      "bytes": 12761,
+      "sha256": "7a902a66d99f31554b8da027f0c6afa2feeab0545ed73437b4b18c72a1a7efbf"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/stage-results.md": {
+      "bytes": 44416,
+      "sha256": "ec1b2b9d86c16d716245aeb60db70cd90c87bf0e202e38e92eca2300a57e7187"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/axioms.lean": {
+      "bytes": 1631,
+      "sha256": "ed048930d0447472199d993ca9b4dd1ed851005f645787c52f73a2e65eca64af"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/audit-inventory.lean": {
+      "bytes": 1940,
+      "sha256": "34fbded7dc7f4f4576af29cab54bf429d2423dab4ad8b06d27f6a24a7b152733"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/effort-ledger.md": {
+      "bytes": 49654,
+      "sha256": "0482429ad59063626683068b7cd7ca86a6fbfeb088011930b00d88060e41db2f"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/reviews/RV-L30.l.md": {
+      "bytes": 23820,
+      "sha256": "d568a969611b57bbc239495486cee633c57ee1a0aebc88715ecd1f8d3f980003"
+    }
+  },
+  "tools": {
+    "lean": "Lean (version 4.34.1, arm64-apple-darwin24.6.0, commit 5045d0056413266e57c625dcd7c365b10e377c52, Release)",
+    "lake": "Lake version 5.0.0-src+5045d00 (Lean version 4.34.1)"
+  }
+}

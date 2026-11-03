@@ -1,0 +1,161 @@
+{
+  "resume": 1,
+  "checks": {
+    "default-build": {
+      "command": "(cd formal && lake build)",
+      "exit": 0,
+      "seconds": 1.6805529594421387,
+      "output": {
+        "bytes": 43308,
+        "sha256": "d906d5f5433410c9bc0c81d0dd55dd07023db362cbdbf7a266891f8871f89775"
+      }
+    },
+    "replay": {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "--run",
+        "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l30/l/replay.lean"
+      ],
+      "cwd": "formal",
+      "exit": 0,
+      "seconds": 0.362713098526001,
+      "output": {
+        "bytes": 411,
+        "sha256": "25a79f13ead7bbdb43753514b1dbd82f19db3a7c24dd4799dbe6ffffbfc7f74b"
+      }
+    },
+    "signatures": {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l30/l/signature-check.lean"
+      ],
+      "cwd": "formal",
+      "exit": 0,
+      "seconds": 0.6731910705566406,
+      "output": {
+        "bytes": 19515,
+        "sha256": "b98f567a366df095d3b5c80f3c3fdbdaf3fc9a3ee5930b1fc16a1c5777db4cd3"
+      }
+    },
+    "dry-run": {
+      "command": [
+        "scripts/check.sh",
+        "--level",
+        "work",
+        "--base",
+        "c30b5b3424f6d98295b26cac96fe9a8b35a2eb27",
+        "--dry-run"
+      ],
+      "exit": 0,
+      "seconds": 0.11594700813293457,
+      "output": {
+        "bytes": 759,
+        "sha256": "7dc4b1fc0f8b4593e1ded75ce22dd988fdc719cbe66b07d03dfe8c6b46ca9b42"
+      }
+    },
+    "work": {
+      "command": [
+        "scripts/check.sh",
+        "--level",
+        "work",
+        "--base",
+        "c30b5b3424f6d98295b26cac96fe9a8b35a2eb27"
+      ],
+      "exit": 0,
+      "seconds": 3.7244229316711426,
+      "output": {
+        "bytes": 5802,
+        "sha256": "f5ba6d3c94f30bf1b2e5ec2068d6acba5a1f2e534537b96296bc7b43644308b1"
+      }
+    },
+    "axioms": {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l30/axioms.lean"
+      ],
+      "exit": 0,
+      "seconds": 38.014753084,
+      "raw": {
+        "bytes": 11845117,
+        "sha256": "409704dbdc5b3d3d2dc8d0eaa6b3553f4fb7861a7e6a8728e716d584c4fad8ea"
+      },
+      "targets": 67907,
+      "target_list": {
+        "bytes": 4100402,
+        "sha256": "fd6e993934582195154ed0166efc34924a106c0975d931ab16af91e6747a9209"
+      },
+      "module_count": 688,
+      "private_and_generated_included": true,
+      "inventory_only": false,
+      "new_modules": {
+        "AccountingWork": 98,
+        "CoefficientModel": 47,
+        "ProofContract": 68,
+        "ProofContractExamples": 18,
+        "ProofReplayExamples": 9,
+        "StepAccounting": 285
+      },
+      "axiom_sets": {
+        "none": 30549,
+        "Classical.choice": 1,
+        "Classical.choice + Quot.sound + propext": 17949,
+        "Classical.choice + propext": 2,
+        "Quot.sound": 9,
+        "Quot.sound + propext": 3555,
+        "propext": 15842
+      },
+      "new_axioms": 0
+    }
+  },
+  "work_entry_executions_this_resume": 1,
+  "work_selected": [
+    "spec_tally",
+    "spec_examples",
+    "formal_build"
+  ],
+  "formal_changed_since_resume_start": [
+    "formal/Benitoite/Release/Refinement/AccountingWork.lean",
+    "formal/Benitoite/Release/Refinement/CoefficientModel.lean",
+    "formal/Benitoite/Release/Refinement/ProofContract.lean",
+    "formal/Benitoite/Release/Refinement/ProofContractExamples.lean",
+    "formal/Benitoite/Release/Refinement/ProofReplayExamples.lean",
+    "formal/Benitoite/Release/Refinement/StepAccounting.lean"
+  ],
+  "formal_manifest_after_work": {
+    "bytes": 114055,
+    "sha256": "9d0e05d989f59570d999704dacdbd9f93f07adb695ce48ad399eaa9368edc58f"
+  },
+  "before_source_manifest": {
+    "bytes": 85089,
+    "sha256": "2134b0fb1f0aa153c8922952e9521541c1d6d5c20de4b75179b97fb15d4e0057"
+  },
+  "retired_names_absent_from_environment": [
+    "State",
+    "State.reserved",
+    "State.remaining",
+    "State.Valid",
+    "step",
+    "run",
+    "step_used",
+    "step_limit",
+    "step_valid",
+    "run_used",
+    "run_valid"
+  ],
+  "official_max_rss": "未取得（取りまとめの同じ段末workでの採取待ち）",
+  "later_changes": "本番Lean・01-12・07-04・lakefile・既定importはwork後に変更なし。結果の記録のみ更新",
+  "initial_verification": "verification-before-resume1.json",
+  "judgment": "担当Codexの自己点検。RV-L30.l処置の取りまとめの再確認・設計者の受け入れは未実施"
+}

@@ -1,0 +1,660 @@
+[
+  {
+    "namespace": "Benitoite.Release.Refinement",
+    "kind": "def",
+    "line": 6,
+    "signature": "def CoefficientRepresented (bits : Nat) (n : Int) : Prop",
+    "source": "formal/Benitoite/Release/Refinement/CoefficientModel.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement",
+    "kind": "instance",
+    "line": 9,
+    "signature": "instance (bits : Nat) (n : Int) : Decidable (CoefficientRepresented bits n)",
+    "source": "formal/Benitoite/Release/Refinement/CoefficientModel.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.CoefficientModel",
+    "kind": "def",
+    "line": 14,
+    "signature": "def storageBits : Nat",
+    "source": "formal/Benitoite/Release/Refinement/CoefficientModel.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.CoefficientModel",
+    "kind": "def",
+    "line": 16,
+    "signature": "def save (bits : Nat) (n : Int) : Option Int",
+    "source": "formal/Benitoite/Release/Refinement/CoefficientModel.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.CoefficientModel",
+    "kind": "theorem",
+    "line": 19,
+    "signature": "theorem save_some {bits : Nat} {n result : Int} :\n    save bits n = some result ↔ result = n ∧ CoefficientRepresented bits n",
+    "source": "formal/Benitoite/Release/Refinement/CoefficientModel.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.CoefficientModel",
+    "kind": "inductive",
+    "line": 24,
+    "signature": "inductive Binary where\n  | add | sub | mul | divide\n  deriving DecidableEq, Repr",
+    "source": "formal/Benitoite/Release/Refinement/CoefficientModel.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.CoefficientModel",
+    "kind": "def",
+    "line": 28,
+    "signature": "def Binary.eval (op : Binary) (a b : Int) : Int",
+    "source": "formal/Benitoite/Release/Refinement/CoefficientModel.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.CoefficientModel",
+    "kind": "def",
+    "line": 32,
+    "signature": "def binary (bits : Nat) (op : Binary) (a b : Int) : Option Int",
+    "source": "formal/Benitoite/Release/Refinement/CoefficientModel.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.CoefficientModel",
+    "kind": "theorem",
+    "line": 36,
+    "signature": "theorem binary_some {bits : Nat} {op : Binary} {a b result : Int}\n    (h : binary bits op a b = some result) :\n    result = op.eval a b ∧ CoefficientRepresented bits result ∧\n      CoefficientRepresented bits a ∧ CoefficientRepresented bits b ∧\n      ¬ (op = .divide ∧ b = 0)",
+    "source": "formal/Benitoite/Release/Refinement/CoefficientModel.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.CoefficientModel",
+    "kind": "def",
+    "line": 48,
+    "signature": "def neg (bits : Nat) (a : Int) : Option Int",
+    "source": "formal/Benitoite/Release/Refinement/CoefficientModel.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.CoefficientModel",
+    "kind": "theorem",
+    "line": 51,
+    "signature": "theorem neg_some {bits : Nat} {a result : Int} (h : neg bits a = some result) :\n    result = -a ∧ CoefficientRepresented bits result ∧ CoefficientRepresented bits a",
+    "source": "formal/Benitoite/Release/Refinement/CoefficientModel.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.CoefficientModel",
+    "kind": "def",
+    "line": 61,
+    "signature": "def temporaryProduct (a b : Int) : Int",
+    "source": "formal/Benitoite/Release/Refinement/CoefficientModel.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.CoefficientModel",
+    "kind": "theorem",
+    "line": 64,
+    "signature": "theorem product_then_save {bits temporaryBits : Nat} {a b result : Int}\n    (ht : CoefficientRepresented temporaryBits (temporaryProduct a b))\n    (hs : save bits (temporaryProduct a b) = some result) :\n    result = a*b ∧ CoefficientRepresented bits result ∧\n      CoefficientRepresented temporaryBits result",
+    "source": "formal/Benitoite/Release/Refinement/CoefficientModel.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.CoefficientModel",
+    "kind": "def",
+    "line": 73,
+    "signature": "def decimalAligned (c : Int) (s : Nat) (d : Int) (t : Nat) : Int × Int",
+    "source": "formal/Benitoite/Release/Refinement/CoefficientModel.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.CoefficientModel",
+    "kind": "theorem",
+    "line": 76,
+    "signature": "theorem decimal_compare (c d : Int) (s t : Nat) (op : Comparison) :\n    (Observation.decimal c s).compare op (.decimal d t) =\n      op.fromEqLt (decide ((decimalAligned c s d t).1 = (decimalAligned c s d t).2))\n        (decide ((decimalAligned c s d t).1 < (decimalAligned c s d t).2))\n        (decide ((decimalAligned c s d t).2 < (decimalAligned c s d t).1))",
+    "source": "formal/Benitoite/Release/Refinement/CoefficientModel.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement",
+    "kind": "inductive",
+    "line": 6,
+    "signature": "inductive ProofStop where\n  | malformed | coefficientRepresentation | stepsExhausted\n  deriving DecidableEq, Repr",
+    "source": "formal/Benitoite/Release/Refinement/StepAccounting.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting",
+    "kind": "def",
+    "line": 12,
+    "signature": "def version : String",
+    "source": "formal/Benitoite/Release/Refinement/StepAccounting.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting",
+    "kind": "inductive",
+    "line": 14,
+    "signature": "inductive Phase where\n  | input | normalize | search | realize | writeCertificate | checkCertificate | cleanup\n  deriving DecidableEq, Repr",
+    "source": "formal/Benitoite/Release/Refinement/StepAccounting.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting",
+    "kind": "inductive",
+    "line": 19,
+    "signature": "inductive Operation where\n  | readByte | compareByte | node | edge | element\n  | add | sub | mul | divide | negate | compareWord\n  deriving DecidableEq, Repr",
+    "source": "formal/Benitoite/Release/Refinement/StepAccounting.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting",
+    "kind": "inductive",
+    "line": 24,
+    "signature": "inductive Cleanup where\n  | handle | body | rollbackEntry | stackEntry\n  deriving DecidableEq, Repr",
+    "source": "formal/Benitoite/Release/Refinement/StepAccounting.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting",
+    "kind": "abbrev",
+    "line": 28,
+    "signature": "abbrev Ticket",
+    "source": "formal/Benitoite/Release/Refinement/StepAccounting.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting",
+    "kind": "structure",
+    "line": 30,
+    "signature": "structure StepState where\n  limit : Nat\n  used : Nat\n  pending : List Ticket\n  next : Nat\n  deriving DecidableEq, Repr",
+    "source": "formal/Benitoite/Release/Refinement/StepAccounting.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting",
+    "kind": "def",
+    "line": 37,
+    "signature": "def StepState.reserved (s : StepState) : Nat",
+    "source": "formal/Benitoite/Release/Refinement/StepAccounting.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting",
+    "kind": "def",
+    "line": 38,
+    "signature": "def StepState.remaining (s : StepState) : Nat",
+    "source": "formal/Benitoite/Release/Refinement/StepAccounting.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting",
+    "kind": "def",
+    "line": 39,
+    "signature": "def StepState.Valid (s : StepState) : Prop",
+    "source": "formal/Benitoite/Release/Refinement/StepAccounting.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting",
+    "kind": "def",
+    "line": 42,
+    "signature": "def initial (limit : Nat) : StepState",
+    "source": "formal/Benitoite/Release/Refinement/StepAccounting.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting",
+    "kind": "theorem",
+    "line": 44,
+    "signature": "theorem initial_valid (limit : Nat) : (initial limit).Valid",
+    "source": "formal/Benitoite/Release/Refinement/StepAccounting.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting",
+    "kind": "theorem",
+    "line": 47,
+    "signature": "theorem remaining_exact {s : StepState} (h : s.Valid) :\n    s.used+s.reserved+s.remaining = s.limit",
+    "source": "formal/Benitoite/Release/Refinement/StepAccounting.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting",
+    "kind": "inductive",
+    "line": 53,
+    "signature": "inductive Action where\n  | work (phase : Phase) (op : Operation)\n  | create (cleanup : Cleanup)\n  | destroy (ticket : Ticket)\n  deriving DecidableEq, Repr",
+    "source": "formal/Benitoite/Release/Refinement/StepAccounting.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting",
+    "kind": "def",
+    "line": 60,
+    "signature": "def stepAction (s : StepState) : Action → Except ProofStop StepState\n  | .work _ _ =>\n    if s.used+s.reserved+1 ≤ s.limit then .ok {s with used",
+    "source": "formal/Benitoite/Release/Refinement/StepAccounting.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting",
+    "kind": "theorem",
+    "line": 72,
+    "signature": "theorem stepAction_used {s s' : StepState} {a : Action} (h : stepAction s a = .ok s') :\n    s'.used = s.used+1",
+    "source": "formal/Benitoite/Release/Refinement/StepAccounting.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting",
+    "kind": "theorem",
+    "line": 76,
+    "signature": "theorem stepAction_limit {s s' : StepState} {a : Action} (h : stepAction s a = .ok s') :\n    s'.limit = s.limit",
+    "source": "formal/Benitoite/Release/Refinement/StepAccounting.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting",
+    "kind": "theorem",
+    "line": 80,
+    "signature": "theorem stepAction_valid {s s' : StepState} {a : Action} (hs : s.Valid)\n    (h : stepAction s a = .ok s') : s'.Valid",
+    "source": "formal/Benitoite/Release/Refinement/StepAccounting.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting",
+    "kind": "theorem",
+    "line": 118,
+    "signature": "theorem destroy_reserved {s s' : StepState} {t : Ticket}\n    (h : stepAction s (.destroy t) = .ok s') :\n    s'.reserved+1 = s.reserved ∧ s'.used = s.used+1",
+    "source": "formal/Benitoite/Release/Refinement/StepAccounting.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting",
+    "kind": "theorem",
+    "line": 131,
+    "signature": "theorem destroy_once {s s' : StepState} {t : Ticket} (hs : s.Valid)\n    (h : stepAction s (.destroy t) = .ok s') : stepAction s' (.destroy t) = .error .malformed",
+    "source": "formal/Benitoite/Release/Refinement/StepAccounting.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting",
+    "kind": "def",
+    "line": 142,
+    "signature": "def runActions : StepState → List Action → Except ProofStop StepState\n  | s, [] => .ok s\n  | s, a::as => match stepAction s a with\n    | .ok s' => runActions s' as\n    | .error reason => .error reason\n\ntheorem runActions_used {as : List Action} {s s' : StepState} (h : runActions s as = .ok s') :\n    s'.used = s.used+as.length",
+    "source": "formal/Benitoite/Release/Refinement/StepAccounting.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting",
+    "kind": "theorem",
+    "line": 148,
+    "signature": "theorem runActions_used {as : List Action} {s s' : StepState} (h : runActions s as = .ok s') :\n    s'.used = s.used+as.length",
+    "source": "formal/Benitoite/Release/Refinement/StepAccounting.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting",
+    "kind": "theorem",
+    "line": 162,
+    "signature": "theorem runActions_valid {as : List Action} {s s' : StepState} (hs : s.Valid)\n    (h : runActions s as = .ok s') : s'.Valid",
+    "source": "formal/Benitoite/Release/Refinement/StepAccounting.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting",
+    "kind": "def",
+    "line": 174,
+    "signature": "def execute : StepState → List Action → StepState × Option ProofStop\n  | s, [] => (s,none)\n  | s, a::as => match stepAction s a with\n    | .ok s' => execute s' as\n    | .error reason => (s,some reason)\n\ntheorem execute_valid (s : StepState) (as : List Action) (hs : s.Valid) :\n    (execute s as).1.Valid",
+    "source": "formal/Benitoite/Release/Refinement/StepAccounting.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting",
+    "kind": "theorem",
+    "line": 180,
+    "signature": "theorem execute_valid (s : StepState) (as : List Action) (hs : s.Valid) :\n    (execute s as).1.Valid",
+    "source": "formal/Benitoite/Release/Refinement/StepAccounting.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting",
+    "kind": "theorem",
+    "line": 191,
+    "signature": "theorem execute_success {s s' : StepState} {as : List Action}\n    (h : execute s as = (s',none)) : runActions s as = .ok s'",
+    "source": "formal/Benitoite/Release/Refinement/StepAccounting.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting",
+    "kind": "structure",
+    "line": 7,
+    "signature": "structure Work (α : Type) where\n  value : α\n  actions : List Action",
+    "source": "formal/Benitoite/Release/Refinement/AccountingWork.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting",
+    "kind": "def",
+    "line": 12,
+    "signature": "def compareBytes (phase : Phase) : List UInt8 → List UInt8 → Work Bool\n  | [], [] => ⟨true,[.work phase .node]⟩\n  | a::as, b::bs =>\n    let head",
+    "source": "formal/Benitoite/Release/Refinement/AccountingWork.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting",
+    "kind": "theorem",
+    "line": 23,
+    "signature": "theorem compareBytes_eq (phase : Phase) (as bs : List UInt8) :\n    (compareBytes phase as bs).value = true ↔ as = bs",
+    "source": "formal/Benitoite/Release/Refinement/AccountingWork.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting",
+    "kind": "def",
+    "line": 39,
+    "signature": "def lookup (phase : Phase) {α : Type} : List α → Nat → Work (Option α)\n  | [], _ => ⟨none,[.work phase .node]⟩\n  | x::_, 0 => ⟨some x,[.work phase .node,.work phase .element]⟩\n  | _::xs, i+1 =>\n    let rest",
+    "source": "formal/Benitoite/Release/Refinement/AccountingWork.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting",
+    "kind": "theorem",
+    "line": 46,
+    "signature": "theorem lookup_eq (phase : Phase) {α : Type} (xs : List α) (i : Nat) :\n    (lookup phase xs i).value = xs[i]?",
+    "source": "formal/Benitoite/Release/Refinement/AccountingWork.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting",
+    "kind": "def",
+    "line": 53,
+    "signature": "def currentId (bound index : Nat) : Option (Fin bound)",
+    "source": "formal/Benitoite/Release/Refinement/AccountingWork.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting",
+    "kind": "theorem",
+    "line": 56,
+    "signature": "theorem currentId_sound {bound index : Nat} {i : Fin bound}\n    (h : currentId bound index = some i) : i.val = index ∧ index < bound",
+    "source": "formal/Benitoite/Release/Refinement/AccountingWork.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting",
+    "kind": "def",
+    "line": 64,
+    "signature": "def readCoefficient (bits : Nat) (n : Int) : Work (Option Int)",
+    "source": "formal/Benitoite/Release/Refinement/AccountingWork.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting",
+    "kind": "theorem",
+    "line": 73,
+    "signature": "theorem readCoefficient_eq (bits : Nat) (n : Int) :\n    (readCoefficient bits n).value = CoefficientModel.save bits n",
+    "source": "formal/Benitoite/Release/Refinement/AccountingWork.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting",
+    "kind": "def",
+    "line": 81,
+    "signature": "def addCoefficients (bits : Nat) (a b : Int) : Work (Option Int)",
+    "source": "formal/Benitoite/Release/Refinement/AccountingWork.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting",
+    "kind": "theorem",
+    "line": 93,
+    "signature": "theorem addCoefficients_eq (bits : Nat) (a b : Int) :\n    (addCoefficients bits a b).value = CoefficientModel.binary bits .add a b",
+    "source": "formal/Benitoite/Release/Refinement/AccountingWork.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting",
+    "kind": "def",
+    "line": 113,
+    "signature": "def merge (bits : Nat) : List Int → List Int → Work (Except ProofStop (List Int))\n  | [], [] => ⟨.ok [],[.work .normalize .node]⟩\n  | a::as, b::bs =>\n    let addition",
+    "source": "formal/Benitoite/Release/Refinement/AccountingWork.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting",
+    "kind": "theorem",
+    "line": 126,
+    "signature": "theorem merge_eq {bits : Nat} {as bs cs : List Int}\n    (h : (merge bits as bs).value = .ok cs) :\n    as.length = bs.length ∧ cs = List.zipWith (·+·) as bs ∧\n      ∀ c ∈ cs, CoefficientRepresented bits c",
+    "source": "formal/Benitoite/Release/Refinement/AccountingWork.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting",
+    "kind": "def",
+    "line": 159,
+    "signature": "def cloneElements (phase : Phase) (count : Nat) : List Action",
+    "source": "formal/Benitoite/Release/Refinement/AccountingWork.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting",
+    "kind": "def",
+    "line": 165,
+    "signature": "def rollback (tickets : List Ticket) : List Action",
+    "source": "formal/Benitoite/Release/Refinement/AccountingWork.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting",
+    "kind": "theorem",
+    "line": 167,
+    "signature": "theorem rollback_all (s : StepState) :\n    runActions s (rollback s.pending) =\n      .ok {s with used",
+    "source": "formal/Benitoite/Release/Refinement/AccountingWork.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting",
+    "kind": "theorem",
+    "line": 179,
+    "signature": "theorem rollback_within_limit {s : StepState} (hs : s.Valid) :\n    ∃ final, runActions s (rollback s.pending) = .ok final ∧ final.Valid ∧\n      final.reserved = 0 ∧ final.used = s.used+s.reserved",
+    "source": "formal/Benitoite/Release/Refinement/AccountingWork.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting",
+    "kind": "theorem",
+    "line": 184,
+    "signature": "theorem work_used {α : Type} {w : Work α} {s s' : StepState}\n    (h : runActions s w.actions = .ok s') : s'.used = s.used+w.actions.length",
+    "source": "formal/Benitoite/Release/Refinement/AccountingWork.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting",
+    "kind": "theorem",
+    "line": 10,
+    "signature": "theorem input_certificate_expansion {s s' : StepState} (input certificate expansion : List Action)\n    (h : runActions s (input ++ certificate ++ expansion) = .ok s') :\n    s'.used = s.used + input.length + certificate.length + expansion.length",
+    "source": "formal/Benitoite/Release/Refinement/ProofContract.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting",
+    "kind": "theorem",
+    "line": 17,
+    "signature": "theorem within_limit {s s' : StepState} {actions : List Action} (hs : s.Valid)\n    (h : runActions s actions = .ok s') : s'.used+s'.reserved ≤ s'.limit ∧\n      s'.used+s'.reserved+s'.remaining = s'.limit",
+    "source": "formal/Benitoite/Release/Refinement/ProofContract.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement",
+    "kind": "inductive",
+    "line": 24,
+    "signature": "inductive ProofResult where\n  | proved (certificate : Certificate)\n  | unproved\n  | stopped (reason : ProofStop)",
+    "source": "formal/Benitoite/Release/Refinement/ProofContract.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement",
+    "kind": "def",
+    "line": 29,
+    "signature": "def ProofResult.isProved : ProofResult → Bool\n  | .proved _ => true | _ => false\n\ndef storeCoefficient (bits : Nat) (n : Int) : Except ProofStop Int",
+    "source": "formal/Benitoite/Release/Refinement/ProofContract.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement",
+    "kind": "def",
+    "line": 32,
+    "signature": "def storeCoefficient (bits : Nat) (n : Int) : Except ProofStop Int",
+    "source": "formal/Benitoite/Release/Refinement/ProofContract.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement",
+    "kind": "theorem",
+    "line": 37,
+    "signature": "theorem storeCoefficient_sound {bits : Nat} {n result : Int}\n    (h : storeCoefficient bits n = .ok result) :\n    result = n ∧ CoefficientRepresented bits result",
+    "source": "formal/Benitoite/Release/Refinement/ProofContract.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement",
+    "kind": "def",
+    "line": 49,
+    "signature": "def replayProof (premise goal : Pred) (certificate : Certificate) : ProofResult",
+    "source": "formal/Benitoite/Release/Refinement/ProofContract.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement",
+    "kind": "theorem",
+    "line": 53,
+    "signature": "theorem replay_checked {p q : Pred} {c : Certificate} :\n    (replayProof p q c).isProved = true ↔ CertificateKernel.check p q c = true",
+    "source": "formal/Benitoite/Release/Refinement/ProofContract.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement",
+    "kind": "theorem",
+    "line": 57,
+    "signature": "theorem replay_proved {p q : Pred} {c : Certificate}\n    (h : (replayProof p q c).isProved = true) : Entails [p] q",
+    "source": "formal/Benitoite/Release/Refinement/ProofContract.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement",
+    "kind": "theorem",
+    "line": 62,
+    "signature": "theorem stopped_not_proved (reason : ProofStop) :\n    (ProofResult.stopped reason).isProved = false",
+    "source": "formal/Benitoite/Release/Refinement/ProofContract.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.ProofContract",
+    "kind": "def",
+    "line": 67,
+    "signature": "def stepsVersion : String",
+    "source": "formal/Benitoite/Release/Refinement/ProofContract.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.ProofContract",
+    "kind": "def",
+    "line": 68,
+    "signature": "def coefficientBits : Nat",
+    "source": "formal/Benitoite/Release/Refinement/ProofContract.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.ProofContract",
+    "kind": "structure",
+    "line": 71,
+    "signature": "structure Accepted (p q : Pred) (c : Certificate)\n    (limit : Nat) (actions : List StepAccounting.Action) (final : StepAccounting.StepState) : Prop where\n  accounted : StepAccounting.runActions (StepAccounting.initial limit) actions = .ok final\n  checked : CertificateKernel.check p q c = true",
+    "source": "formal/Benitoite/Release/Refinement/ProofContract.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.ProofContract",
+    "kind": "theorem",
+    "line": 76,
+    "signature": "theorem Accepted.sound {p q : Pred} {c : Certificate} {limit actions final}\n    (h : Accepted p q c limit actions final) :\n    Entails [p] q ∧ final.used = actions.length ∧ final.Valid",
+    "source": "formal/Benitoite/Release/Refinement/ProofContract.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement",
+    "kind": "def",
+    "line": 87,
+    "signature": "def checkAccounted (limit : Nat) (actions : List StepAccounting.Action)\n    (premise goal : Pred) (certificate : Certificate) : ProofResult",
+    "source": "formal/Benitoite/Release/Refinement/ProofContract.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement",
+    "kind": "theorem",
+    "line": 93,
+    "signature": "theorem checkAccounted_stopped {limit actions p q c reason}\n    (h : StepAccounting.runActions (StepAccounting.initial limit) actions = .error reason) :\n    checkAccounted limit actions p q c = .stopped reason",
+    "source": "formal/Benitoite/Release/Refinement/ProofContract.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement",
+    "kind": "theorem",
+    "line": 98,
+    "signature": "theorem checkAccounted_proved {limit actions p q c}\n    (h : (checkAccounted limit actions p q c).isProved = true) :\n    ∃ final, ProofContract.Accepted p q c limit actions final",
+    "source": "formal/Benitoite/Release/Refinement/ProofContract.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting.Examples",
+    "kind": "theorem",
+    "line": 10,
+    "signature": "theorem coefficient_endpoints :\n    save storageBits (-170141183460469231731687303715884105728) =\n      some (-170141183460469231731687303715884105728) ∧\n    save storageBits 170141183460469231731687303715884105727 =\n      some 170141183460469231731687303715884105727 ∧\n    save storageBits (-170141183460469231731687303715884105729) = none ∧\n    save storageBits 170141183460469231731687303715884105728 = none ∧\n    save 0 0 = none",
+    "source": "formal/Benitoite/Release/Refinement/ProofContractExamples.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting.Examples",
+    "kind": "theorem",
+    "line": 19,
+    "signature": "theorem coefficient_operations :\n    binary storageBits .add 2 3 = some 5 ∧\n    binary storageBits .sub 2 3 = some (-1) ∧\n    binary storageBits .mul (-2) 3 = some (-6) ∧\n    binary storageBits .divide (-3) 2 = some (-2) ∧\n    binary storageBits .divide 3 (-2) = some (-1) ∧\n    binary storageBits .divide (-3) (-2) = some 2 ∧\n    binary storageBits .divide 1 0 = none ∧\n    binary storageBits .divide (-170141183460469231731687303715884105728) (-1) = none ∧\n    neg storageBits (-170141183460469231731687303715884105728) = none ∧\n    binary storageBits .add 170141183460469231731687303715884105727 1 = none",
+    "source": "formal/Benitoite/Release/Refinement/ProofContractExamples.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting.Examples",
+    "kind": "def",
+    "line": 39,
+    "signature": "def u64max : Int",
+    "source": "formal/Benitoite/Release/Refinement/ProofContractExamples.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting.Examples",
+    "kind": "theorem",
+    "line": 41,
+    "signature": "theorem u64_temporary :\n    temporaryProduct u64max u64max = 340282366920938463426481119284349108225 ∧\n    CoefficientRepresented 129 (temporaryProduct u64max u64max) ∧\n    save storageBits (temporaryProduct u64max u64max) = none ∧\n    Benitoite.Interval.IntKind.checkedMul .unsignedInteger64\n      ⟨18446744073709551615,by decide⟩ ⟨18446744073709551615,by decide⟩ =\n      .rejected .overflow",
+    "source": "formal/Benitoite/Release/Refinement/ProofContractExamples.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting.Examples",
+    "kind": "def",
+    "line": 55,
+    "signature": "def decimalMax : Int",
+    "source": "formal/Benitoite/Release/Refinement/ProofContractExamples.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting.Examples",
+    "kind": "theorem",
+    "line": 57,
+    "signature": "theorem decimal_exact :\n    (decimalAligned decimalMax 0 decimalMax 28).1 =\n      792281625142643375935439503350000000000000000000000000000 ∧\n    save storageBits (decimalAligned decimalMax 0 decimalMax 28).1 = none ∧\n    CoefficientRepresented 192 (decimalAligned decimalMax 0 decimalMax 28).1 ∧\n    (Observation.decimal decimalMax 0).compare .gt (.decimal decimalMax 28) = true",
+    "source": "formal/Benitoite/Release/Refinement/ProofContractExamples.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting.Examples",
+    "kind": "def",
+    "line": 71,
+    "signature": "def created : StepState",
+    "source": "formal/Benitoite/Release/Refinement/ProofContractExamples.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting.Examples",
+    "kind": "def",
+    "line": 72,
+    "signature": "def exhausted : StepState",
+    "source": "formal/Benitoite/Release/Refinement/ProofContractExamples.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting.Examples",
+    "kind": "theorem",
+    "line": 74,
+    "signature": "theorem reservations :\n    runActions (initial 5) [.create .handle,.create .body] = .ok created ∧\n    created.reserved = 2 ∧ created.remaining = 1 ∧\n    stepAction created (.work .input .readByte) = .ok exhausted ∧\n    exhausted.remaining = 0 ∧\n    execute exhausted [.work .input .readByte] = (exhausted,some .stepsExhausted) ∧\n    runActions exhausted (rollback exhausted.pending) = .ok ⟨5,5,[],2⟩ ∧\n    stepAction (⟨5,5,[],2⟩ : StepState) (.destroy (1,.body)) = .error .malformed ∧\n    stepAction (initial 1) (.create .body) = .error .stepsExhausted",
+    "source": "formal/Benitoite/Release/Refinement/ProofContractExamples.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting.Examples",
+    "kind": "theorem",
+    "line": 84,
+    "signature": "theorem exhausted_valid : exhausted.Valid",
+    "source": "formal/Benitoite/Release/Refinement/ProofContractExamples.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting.Examples",
+    "kind": "theorem",
+    "line": 104,
+    "signature": "theorem byte_comparison :\n    (compareBytes .input [65,66] [65,66]).value = true ∧\n    (compareBytes .input [65,66] [65,66]).actions.length = 13 ∧\n    (compareBytes .input [65,66] [65,67]).value = false ∧\n    (compareBytes .input [65,66] [65,67]).actions.length = 10 ∧\n    (compareBytes .input [] [65]).value = false",
+    "source": "formal/Benitoite/Release/Refinement/ProofContractExamples.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting.Examples",
+    "kind": "def",
+    "line": 119,
+    "signature": "def merged : Work (Except ProofStop (List Int))",
+    "source": "formal/Benitoite/Release/Refinement/ProofContractExamples.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting.Examples",
+    "kind": "theorem",
+    "line": 120,
+    "signature": "theorem coefficient_merge : merged.value = .ok [4,6] ∧ merged.actions.length = 33 ∧\n    runActions (initial 35) merged.actions = .ok ⟨35,33,[(1,.body),(0,.body)],2⟩ ∧\n    (merge storageBits [1] []).value = .error .malformed ∧\n    (merge storageBits [170141183460469231731687303715884105727] [1]).value =\n      .error .coefficientRepresentation",
+    "source": "formal/Benitoite/Release/Refinement/ProofContractExamples.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting.Examples",
+    "kind": "theorem",
+    "line": 141,
+    "signature": "theorem stops : storeCoefficient storageBits (temporaryProduct u64max u64max) =\n      .error .coefficientRepresentation ∧\n    runActions (initial 0) [.work .input .readByte] = .error .stepsExhausted ∧\n    (replayProof CertificateKernelExamples.premise CertificateKernelExamples.goal\n      CertificateKernelExamples.badTwice).isProved = false ∧\n    ProofContract.coefficientBits = 128 ∧ ProofContract.stepsVersion = \"proof-steps-v1\"",
+    "source": "formal/Benitoite/Release/Refinement/ProofContractExamples.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting.Examples",
+    "kind": "theorem",
+    "line": 161,
+    "signature": "theorem accounting_prefixes :\n    (compareBytes .input [65] [66]).actions =\n      [.work .input .node,.work .input .readByte,.work .input .readByte,.work .input .compareByte] ∧\n    (merge storageBits [170141183460469231731687303715884105728] [0]).actions =\n      [.work .normalize .node,.work .normalize .element,.work .normalize .element,\n       .work .normalize .compareWord,.work .normalize .compareWord,.work .normalize .compareWord] ∧\n    (merge storageBits [-170141183460469231731687303715884105729] [0]).actions.length = 5 ∧\n    (merge storageBits [0] [170141183460469231731687303715884105728]).actions.length = 9 ∧\n    (merge storageBits [170141183460469231731687303715884105727] [1]).actions.length = 13",
+    "source": "formal/Benitoite/Release/Refinement/ProofContractExamples.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.StepAccounting.Examples",
+    "kind": "theorem",
+    "line": 171,
+    "signature": "theorem counted_stops :\n    (checkAccounted 0 [.work .input .readByte] CertificateKernelExamples.premise\n      CertificateKernelExamples.goal CertificateKernelExamples.twice).isProved = false ∧\n    (checkAccounted 10 [.destroy (0,.body)] CertificateKernelExamples.premise\n      CertificateKernelExamples.goal CertificateKernelExamples.twice).isProved = false ∧\n    (checkAccounted 1 [.work .input .readByte] CertificateKernelExamples.premise\n      CertificateKernelExamples.goal CertificateKernelExamples.twice).isProved = true",
+    "source": "formal/Benitoite/Release/Refinement/ProofContractExamples.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.ProofReplayExamples",
+    "kind": "def",
+    "line": 9,
+    "signature": "def rows : List (String × Bool)",
+    "source": "formal/Benitoite/Release/Refinement/ProofReplayExamples.lean"
+  },
+  {
+    "namespace": "Benitoite.Release.Refinement.ProofReplayExamples",
+    "kind": "theorem",
+    "line": 44,
+    "signature": "theorem rows_checked : rows.length = 22 ∧ rows.all Prod.snd = true",
+    "source": "formal/Benitoite/Release/Refinement/ProofReplayExamples.lean"
+  }
+]

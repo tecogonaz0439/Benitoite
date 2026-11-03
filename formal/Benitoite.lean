@@ -471,3 +471,6 @@ import Benitoite.Release.Refinement.PreparedLeafExamples
 import Benitoite.Release.Refinement.FieldObservationExamples
 import Benitoite.Release.Refinement.PreparedSortExamples
 import Benitoite.Release.Refinement.NormalResultLeaves
+import Benitoite.Release.Refinement.AccountingWork
+import Benitoite.Release.Refinement.ProofContractExamples
+import Benitoite.Release.Refinement.ProofReplayExamples
