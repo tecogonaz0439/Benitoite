@@ -21,10 +21,23 @@ theorem Closure.ClosedAt.apply {q : Closure} {vs : List Val}
     simpa only [Closure.apply,Closure.capture,Closure.code,Capture.extendMany_values,
       List.length_append,List.length_map,List.length_reverse,Nat.add_zero,Nat.zero_add,Nat.add_comm] using hq.2
 
-theorem StateTyE.dependent_beta_all {P B σ Eb q k μ runtime body vs}
+/-- 閉じた型付き値を空捕捉で閉じても、同じ型で利用できる。 -/
+theorem HasTypeVQ.close_empty_typed {P B Ψ v T}
+    (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)
+    (hw : Ψ.WF) (hs : Ψ.Sorted) (hd : StoreTy.Declared P Ψ)
+    (hv : HasTypeVQ P B Ψ Qempty [] [] [] v T) :
+    HasTypeVQ P B Ψ Qempty [] [] [] (closeVal Capture.empty v) T := by
+  have ha := open_value_annotation hw hs hd (CaptureContextRegular.empty P []) hv
+  have hc := close_value_typed hP hPB hB hw hs hd (CaptureOk.empty P B Ψ none) hv
+  have he : Capture.empty.closeTy T = T.norm := Ty.subst_values_of_wf_zero ha.wf _
+  rw [he] at hc
+  exact hc.convert (Ty.norm_idem T) ha
+
+/-- 空捕捉で閉じて得た実行時の閉包を、元状態の同じ契約で適用する。 -/
+theorem StateTyE.lambda_beta_all {P B σ Eb q k μ f runtime body vs}
     (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)
     (h : StateTyE P B σ Eb (.run q k μ))
-    (hv : q.view = .app (.closure runtime body) vs)
+    (hv : q.view = .app f vs) (hc : closeVal Capture.empty f = .closure runtime body)
     (hlen : vs.length = runtime.arity) :
     Step P B σ (.run q k μ) none (.run (body.apply vs) (markPush k) μ) ∧
       StateTyE P B σ Eb (.run (body.apply vs) (markPush k) μ) := by
@@ -35,22 +48,44 @@ theorem StateTyE.dependent_beta_all {P B σ Eb q k μ runtime body vs}
     apply hread
     rw [hv]
     exact List.mem_cons_of_mem _ hm
-  have hfg : (Val.closure runtime body).Ground := by
+  have hfg : f.Ground := by
     apply hread
     rw [hv]
     exact List.mem_cons_self
   have hcode := hq.app_view_typed hP hPB hB hs.wf hs.sorted hs.declared hv
-  obtain ⟨t,r,g,hr,hbody,hargs,hle,hcov⟩ := hcode.closure_inputs hs.wf hs.sorted hs.declared rfl
+  obtain ⟨t,r,g,⟨hr,hbody⟩,hargs,hle,hcov⟩ :=
+    hcode.call_inputs hs.wf hs.sorted hs.declared rfl rfl rfl rfl rfl
+      (fun t => Tel.RuntimeShape runtime t ∧ DependentClosureTy P B Ψ body t) (by
+        intro T hf
+        have hf' := hf.close_empty_typed hP hPB hB hs.wf hs.sorted hs.declared
+        obtain ⟨t,u,ha,hr,hb,hu,rel⟩ := hf'.inv_closure hc
+        exact ⟨t,u,ha,hu,rel,hr,hb⟩)
   have hdst := hbody.apply_all hP hPB hB hs hargs hg
   obtain ⟨hdst,hsub⟩ := hdst.widen_atoms (he.covers.trans hcov)
   have hcont := (ContTy.K_Sub hk hle).markPush hargs.resultAnnotation
   have had' := Closure.view_adequate had
   rw [hv] at had'
+  have hfc := hcode.read_values f (by simp [Comp.readValues])
+  obtain ⟨ft,hft⟩ := hfc
+  have hclosedf := hft.close_ground (CaptureOk.empty P B Ψ none) rfl
+    (by trivial) (by exact hfg)
+  rw [hc] at hclosedf
+  have hadeq := closeVal_adequate (cap := Capture.empty) (v := f) (by trivial) had'.1
+  rw [hc] at hadeq
   have hcl : body.ClosedAt vs.length := by
-    simpa only [telBinders_arity,←hlen] using hfg.2
-  refine ⟨.E_Lam hv hlen,⟨Ψ,some r,r,b,ε,_,hs,hdst,hsub,hcont,?_,?_,hkc.markPush,hμc⟩⟩
-  · exact Closure.Adequate.apply had'.1 had'.2
+    simpa only [telBinders_arity,←hlen] using hclosedf.2
+  refine ⟨.E_Lam hv hc hlen,⟨Ψ,some r,r,b,ε,_,hs,hdst,hsub,hcont,?_,?_,hkc.markPush,hμc⟩⟩
+  · exact Closure.Adequate.apply hadeq had'.2
   · exact Closure.ClosedAt.apply hcl hg
+
+theorem StateTyE.dependent_beta_all {P B σ Eb q k μ runtime body vs}
+    (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)
+    (h : StateTyE P B σ Eb (.run q k μ))
+    (hv : q.view = .app (.closure runtime body) vs)
+    (hlen : vs.length = runtime.arity) :
+    Step P B σ (.run q k μ) none (.run (body.apply vs) (markPush k) μ) ∧
+      StateTyE P B σ Eb (.run (body.apply vs) (markPush k) μ) :=
+  h.lambda_beta_all hP hPB hB hv rfl hlen
 
 theorem StateTy.dependent_beta_all {P B σ q k μ runtime body vs}
     (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)

@@ -486,3 +486,10 @@ import Benitoite.Release.Refinement.ComputationInversion
 import Benitoite.Release.Refinement.ApplicationFormationExamples
 import Benitoite.Release.Refinement.StandardVariance
 import Benitoite.Release.Refinement.ApplicationInputs
+
+import Benitoite.Release.Refinement.CanonicalValues
+import Benitoite.Release.Refinement.CanonicalCells
+
+import Benitoite.Release.Refinement.ComputationInputs
+import Benitoite.Release.Refinement.LambdaApplicationExamples
+import Benitoite.Release.Refinement.LeafInputs

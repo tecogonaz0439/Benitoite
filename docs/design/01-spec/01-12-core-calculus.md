@@ -3258,11 +3258,26 @@ structure SignatureInstance (P : Program) (C : TypeCtx) (Γ : Ctx)
 
 `StateTyE.app_inputs` は、`Program.WellFormed`・`Program.WellTyped`・`CoreAssumptions` と、同じ run の `StateTyE`・app への view の等号を前提とする。実ストアの `StoreOk` の三条件と `ClosureTy.app_view_typed` を使い、空の Γ・Φ で共通の依存列の入力を返す。`primitive_contract_inputs` は同じ入力を元の primitive 署名へ戻す。開いた捕捉元の Γ の `CaptureWF` を、完全な `Ctx.WF` と同一視しない。
 
+`ComputationInputs` の `Comp.Inputs` は、計算の全16構文の入力を表す。ret は到達型での値の型付け、if は各 Boolean の経路条件の下で到達型・外効果による両枝の本体の型付けを保持する。他の14構文は元の直接規則の前提と到達結果の `LeQ`・外効果の `Covers` を保持する。`HasTypeCQ.inputs` は同じ計算の導出からこの入力を返す。handle は通常節と失敗節、resume は変数又は場所と生の型又は正規形の各直接規則の選言を保つ。match は同じ照合値、obs が some の場合の観測項と sort、元の腕、`Exhaustive` を返す。
+
+`LeafInputs` の `Closure.Inputs` は元のコードと捕捉・局所参照の解決を保持し、`State.Inputs` は全四状態の同じ実ストア・継続・適格性・閉性を保持する。`ClosureTy.inputs`・`StateTyE.inputs` はこれらを元の導出から取り出す。`Def.WellTyped.inputs` と `ImplDecl.WellTyped.method_inputs` は元の本体の文脈と直接入力を返す。fnRef・op・lam・dependentLam・closure・raise・externalRef の各 `StateTyE.*_contract_inputs` は、同じ実開始から元の依存列へ同じ実引数を戻す。primitive は `ApplicationInputs.primitive_contract_inputs` を使う。選択後の本体・戻り値・節・thunk・継続についても、保存の葉の行先に `StateTyE.inputs` と閉じた app の形成を適用する読者を置く。`match_inputs` は元の obs・sort・腕・網羅性を、`if_inputs` は実際の Boolean と選択した枝を返す。`guard_op_inputs` は guard 枠が先頭のとき、元の操作の実引数列と、その効果を空行が被覆することを返す。
+
+Lean の捕捉を持つ実行関係の `Step.E_Lam` は、`q.view = .app f ws`、`closeVal Capture.empty f = .closure signature body`、`ws.length = signature.arity` を前提に、`run q k μ` から `run (body.apply ws) (markPush k) μ` へ無事象で進む。f が closure の値なら空捕捉で閉じても同じ値になり、通常・依存 lambda なら空捕捉の closure になる。捕捉変数が返した生の lambda もこの前提で扱う。実行関数 `step` はこの三構文を同じ閉じ方で処理し、`step_lambda` が同じ計算結果と実行関係を返す。`ClosureStateLeaves.lambda_beta_all` は元状態からこの行先の型付けを構成し、`LeafInputs.lambda_inputs` は元の型付き実引数列から個数の一致も導く。閉じた値を空捕捉で閉じる型保存は `close_value_typed` と `CaptureOk.empty` を使う。ここでの捕捉の表現は Lean の写しであり、規範の E-Lam の λ への適用は前掲のとおりである。
+
 `HasTypeVQ.inv_var` は元の変数のlookup型aとOrdinary、到達型Tの芯bとの等号、`Ty.LeQ P Γ Φ a.norm.core b`を返す。最外の篩をこの部分型関係へ加えない。`inv_list_core`は元の要素型aの型付けとAnnotation、`T.norm.core = list b`、要素の`Ty.LeQ P Γ Φ a b`を返す。変数や列そのものの篩の事実は、同じ値の観測項を使う`HasTypeVQ.facts`から読む。値に固有の篩があるときに、元の型全体からTへのLeQを逆転の結論とはしない。
 
 `inv_fnRef`・`inv_prim`・`inv_op`・`inv_lam`・`inv_dependentLam`・`inv_raise` は、元の直接規則の前提と、到達型の `fnCore = some u`、元の依存列から u への `TelClosure` を返す。宣言・型実引数・名前・本体契約・元の注釈を各規則どおりに保持し、`inv_raise` は同じ Fail の型を保持する。`inv_lam_wf` は元の lambda の名前と注釈の形成を取り出す。
 
 `inv_dict`・`inv_super` は、元の実装・辞書・宣言を各規則どおりに保持し、到達型の正規形の芯が同じ辞書型であることを返す。
+
+`CanonicalValues` の閉じた値の構文逆転は、`HasTypeVQ P B Ψ Q C [] Φ v T` を前提とする。`canonical_scalar` は `T.norm.core = base tag` から同じ tag の定数・`ConstOK` を、`canonical_boolean` は Boolean 定数を返す。`canonical_list` は `T.listCore = some a` から List の構文・元要素型の導出・到達要素型への `LeQ` を返す。`canonical_data` は data の芯から通常の構成子又は `atError` を返す。`inv_atError` は同じ `ResultShape.Declared` と errorType の芯の等号を返し、通常の構成子の逆転を使わない。七つの文字列欄の宣言と型付けは `AtContracts`・`AtTyping` の規則を用いる。最外の篩の事実は `facts` から別に読む。`Inhabits.not_falsity` は `Inhabits P (refined a falsity) v` を排除する。この排除の入力は値の所属であり、任意の経路条件の下の raw な型付けではない。
+
+`canonical_function` は `fnCore = some t` から fnRef・prim・op・lam・dependentLam・closure・raise・externalRef の八構文を返す。関数の元契約の注釈と到達列への `TelClosure` は各構文の逆転で取り出す。Map・Set・Bytes・Dict・external・PathBases・ScopePattern は対応する芯の等号から各値の構文を返す。scoped 又は opaque の芯を表す `Holds` からは、不透明型の定数又は checked・checkedRequest・checkedAt を返す。変数型・型適用・型構成子・継続の芯は、閉じた通常値の導出から排除する。これらの形は値の型付けの導出から取り出し、意味上の所属だけから推測しない。
+
+`inv_externalRef` は元の外部宣言・宣言の WF・`ExternalCallAdmissible`・`SignatureInstance` と到達型の `fnCore`・`TelClosure` を返す。`inv_externalHandle` は同じ名目 ID の宣言・component・resource・型引数の個数・注釈と元の型からの `LeQ` を返す。`inv_pathBases` は同じ snapshot の Valid と PathBases からの `LeQ` を、`inv_scopePattern` は同じ範囲の WF・Canonical・FitsKind と ScopePattern からの `LeQ` を返す。保持値三形は既存の `HeldValues` の逆転を用い、同じ要求・groundVal・reqTarget・CheckedWitness を保持する。
+
+`CanonicalCells` の `inv_loc` は、任意の Γ・Φ の下で、同じ場所の ref 又は lazy の lookup、内容型の Declared、元の参照型又は Lazy 型からの `LeQ` を返す。`StoreOk.ref_cell`・`lazy_cell`・`cont_cell`・`builder_cell` は、同じ `StoreOk P B σ Ψ μ` と Ψ の場所の型を前提にする。ref は実際の val セル・内容型の正規形での型付け・Adequate を返す。lazy は thunk の `ClosureTy P B (hideBuilders Ψ) [] none q a Eff.empty` と Adequate、又は done の型付けと Adequate を返す。cont は保存した `EndsWithHandle`・`ContTy`、又は used を返す。builder は同じ種類の `BuilderCellOk` とセルの Adequate を返す。`reference_cell_inputs` は `canonical_ref` の内容型の正規形の等号を使い、同じ実セルの内容を到達型の正規形へ合わせる。Lazy の内容の移送は等号へ強めず `LeQ` のまま保持する。
+
 
 `inv_mapV` は元の鍵列と値列、同長、sat、注釈を保持し、到達型の Map の芯、鍵の正規形の等号、値の `LeQ` を返す。`inv_setV` は元の要素列、sat、注釈と、到達型の Set の芯および要素の正規形の等号を返す。`inv_bytesV` は全要素が255以下であることと、到達型の正規形の芯が Bytes であることを返す。これらの芯の射影は `Ty.LeQ.map_core`・`set_core`・`bytes_core` による。
 

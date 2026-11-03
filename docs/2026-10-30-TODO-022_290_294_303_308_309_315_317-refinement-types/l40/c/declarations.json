@@ -1,0 +1,220 @@
+{
+  "CanonicalValues": {
+    "environment": 111,
+    "public": [
+      "HasTypeVQ.canonical_scalar",
+      "HasTypeVQ.canonical_boolean",
+      "HasTypeVQ.canonical_list",
+      "HasTypeVQ.canonical_data",
+      "Inhabits.not_falsity",
+      "HasTypeVQ.inv_atError",
+      "HasTypeVQ.inv_externalRef",
+      "HasTypeVQ.inv_externalHandle",
+      "HasTypeVQ.inv_pathBases",
+      "HasTypeVQ.inv_scopePattern",
+      "HasTypeVQ.canonical_function",
+      "HasTypeVQ.canonical_map",
+      "HasTypeVQ.canonical_set",
+      "HasTypeVQ.canonical_bytes",
+      "HasTypeVQ.canonical_dict",
+      "HasTypeVQ.canonical_external",
+      "HasTypeVQ.canonical_pathBases",
+      "HasTypeVQ.canonical_scopePattern",
+      "HasTypeVQ.canonical_held"
+    ],
+    "named_private": 12,
+    "anonymous_examples": 17,
+    "other_environment_declarations": 80
+  },
+  "CanonicalCells": {
+    "environment": 22,
+    "public": [
+      "StoreOk.ref_cell",
+      "StoreOk.lazy_cell",
+      "StoreOk.cont_cell",
+      "StoreOk.builder_cell",
+      "HasTypeVQ.inv_loc",
+      "HasTypeVQ.reference_cell_inputs"
+    ],
+    "named_private": 1,
+    "anonymous_examples": 6,
+    "other_environment_declarations": 15
+  },
+  "ComputationInputs": {
+    "environment": 43,
+    "public": [
+      "HasTypeCQ.inv_builderLet",
+      "HasTypeCQ.inv_builderOp",
+      "HasTypeCQ.inv_match",
+      "HasTypeCQ.inv_lazy",
+      "HasTypeCQ.inv_use",
+      "HasTypeCQ.inv_handle",
+      "HasTypeCQ.inv_resumeVar",
+      "HasTypeCQ.inv_resumeL",
+      "HasTypeCQ.inv_meth",
+      "HasTypeCQ.inv_external",
+      "HasTypeCQ.inv_issuePathBases",
+      "HasTypeCQ.inv_checkAt",
+      "Comp.Inputs",
+      "HasTypeCQ.inputs"
+    ],
+    "named_private": 1,
+    "anonymous_examples": 0,
+    "other_environment_declarations": 28
+  },
+  "LeafInputs": {
+    "environment": 44,
+    "public": [
+      "StateTyE.fnRef_contract_inputs",
+      "StateTyE.op_contract_inputs",
+      "StateTyE.lam_contract_inputs",
+      "StateTyE.dependentLam_contract_inputs",
+      "StateTyE.closure_contract_inputs",
+      "StateTyE.raise_contract_inputs",
+      "StateTyE.externalRef_contract_inputs",
+      "TelBodyTy.inputs",
+      "Def.WellTyped.inputs",
+      "ImplDecl.WellTyped.method_inputs",
+      "Closure.Inputs",
+      "ClosureTy.inputs",
+      "State.Inputs",
+      "StateTyE.inputs",
+      "StateTyE.match_inputs",
+      "StateTyE.if_inputs",
+      "StateTyE.lambda_inputs",
+      "StateTyE.guard_op_inputs"
+    ],
+    "named_private": 4,
+    "anonymous_examples": 78,
+    "other_environment_declarations": 22
+  },
+  "LambdaApplicationExamples": {
+    "environment": 47,
+    "public": [
+      "captured_and_direct",
+      "two_steps",
+      "delta_return_path"
+    ],
+    "named_private": 22,
+    "anonymous_examples": 6,
+    "other_environment_declarations": 22
+  },
+  "ExternalStateLeaves": {
+    "environment": 35,
+    "public": [
+      "ClosureTy.external_view_typed",
+      "ClosureTy.external_view_inputs",
+      "StateTyE.external_value_all",
+      "StateTyE.external_error_all",
+      "StateTyE.external_apply_all"
+    ],
+    "named_private": 5,
+    "anonymous_examples": 0,
+    "other_environment_declarations": 25
+  },
+  "Semantics": {
+    "environment": 124,
+    "public": [
+      "Event.Covered",
+      "Event.covered_pathBases",
+      "markPush",
+      "releases",
+      "findClause",
+      "NoHandler",
+      "UnhandledOp",
+      "SplitAt",
+      "Val.superStep",
+      "rResume",
+      "MatchPrefix"
+    ],
+    "named_private": 0,
+    "anonymous_examples": 0,
+    "other_environment_declarations": 113
+  },
+  "Step": {
+    "environment": 257,
+    "public": [
+      "splitHandler",
+      "NoHandler.splitHandler_none",
+      "releaseStep",
+      "step",
+      "step_prim_val",
+      "step_prim_err",
+      "step_io_val",
+      "step_io_err",
+      "step_io_exit",
+      "step_lambda"
+    ],
+    "named_private": 2,
+    "anonymous_examples": 1,
+    "other_environment_declarations": 245
+  },
+  "DependentBeta": {
+    "environment": 28,
+    "public": [
+      "HasTypeCQ.open_one",
+      "Capture.empty_closeTel",
+      "Capture.instantiate_one",
+      "HasTypeTelArgsQ.one",
+      "ClosureTy.dependent_one",
+      "ContTy.mark_inv",
+      "markPush.eq_cons_or_merge",
+      "ContTy.markPush",
+      "Cont.Closed.markPush",
+      "CaptureOk.hideConts_any",
+      "HasTypeCQ.store_extend",
+      "StoreTy.hide_extends",
+      "ClosureTy.closure_one",
+      "StateTyE.dependent_beta_one",
+      "StateTy.dependent_beta_one",
+      "HasTypeCQ.ret_value",
+      "Builtins.ExternalAssumptions.received_facts"
+    ],
+    "named_private": 1,
+    "anonymous_examples": 0,
+    "other_environment_declarations": 10
+  },
+  "CapturedFacts": {
+    "environment": 7,
+    "public": [
+      "CaptureOk.evaluated_fact",
+      "CaptureOk.addEntailed",
+      "CaptureOk.addEvaluated",
+      "CaptureOk.close_entails",
+      "HasTypeTelArgsQ.captured_one",
+      "StateTyE.captured_beta_one",
+      "StateTy.captured_beta_one"
+    ],
+    "named_private": 0,
+    "anonymous_examples": 0,
+    "other_environment_declarations": 0
+  },
+  "ClosureStateLeaves": {
+    "environment": 24,
+    "public": [
+      "Closure.Adequate.apply",
+      "Closure.ClosedAt.apply",
+      "HasTypeVQ.close_empty_typed",
+      "StateTyE.lambda_beta_all",
+      "StateTyE.dependent_beta_all",
+      "StateTy.dependent_beta_all",
+      "ContTy.let_inv",
+      "StateTyE.let_step",
+      "ContTy.apply_let",
+      "StateTyE.return_step",
+      "StateTyE.mark_step",
+      "StateTyE.fun_step",
+      "StateTyE.method_step",
+      "StateTyE.super_step",
+      "StateTy.let_step",
+      "StateTy.return_step",
+      "StateTy.mark_step",
+      "StateTy.fun_step",
+      "StateTy.method_step",
+      "StateTy.super_step"
+    ],
+    "named_private": 0,
+    "anonymous_examples": 0,
+    "other_environment_declarations": 4
+  }
+}

@@ -1,4 +1,5 @@
 import Benitoite.Release.Refinement.ReplyState
+import Benitoite.Release.Refinement.CanonicalValues
 
 /-! # 外部呼出しの元の導出と受信契約 -/
 namespace Benitoite.Release.Refinement
@@ -136,32 +137,6 @@ theorem StateTyE.external_error_all {P B σ Eb q f ts vs k μ d out obs r}
     Step P B σ (.run q k μ) none (.error [r] k μ) ∧ StateTyE P B σ Eb (.error [r] k μ) :=
   ⟨.E_ExternalErr hv hd hr hrec,h.error_from_run⟩
 
-private theorem external_inv {P B Ψ Q C Γ Φ v T f ts}
-    (h : HasTypeVQ P B Ψ Q C Γ Φ v T) (hv : v = .externalRef f ts) :
-    ∃ d u, P.externalFunction f = some d ∧ d.WF P ∧ ExternalCallAdmissible P B C d ts ∧
-      SignatureInstance P C Γ d.parameters d.kinds ts [] ∧
-      T.fnCore = some u ∧ TelClosure P Γ Φ (instantiatedTel d.parameters ts []) u := by
-  match h with
-  | .V_ExternalRef hd hw ha hi => cases hv; exact ⟨_,_,hd,hw,ha,hi,rfl,.refl⟩
-  | .V_Normal (a := T0) hh =>
-    obtain ⟨d,u,hd,hw,ha,hi,hu,ht⟩ := external_inv hh hv
-    have hl : Ty.LeQ P Γ Φ T0 T0.norm := .convert (Ty.norm_idem T0).symm
-    obtain ⟨w,hw',ht'⟩ := hl.fnCore hu
-    exact ⟨d,w,hd,hw,ha,hi,hw',ht.trans ht'⟩
-  | .V_Sub hh hl _ _ _ =>
-    obtain ⟨d,u,hd,hw,ha,hi,hu,ht⟩ := external_inv hh hv
-    obtain ⟨w,hw',ht'⟩ := hl.fnCore hu
-    exact ⟨d,w,hd,hw,ha,hi,hw',ht.trans ht'⟩
-  | .V_Refine hh .. =>
-    obtain ⟨d,u,hd,hw,ha,hi,hu,ht⟩ := external_inv hh hv
-    exact ⟨d,u,hd,hw,ha,hi,hu,ht⟩
-  | .V_Var .. | .V_Const .. | .V_Lam .. | .V_DependentLam .. | .V_Closure .. |
-    .V_Fun .. | .V_Op .. | .V_Prim .. | .V_ExternalHandle .. | .V_PathBases .. |
-    .V_ScopePattern .. | .V_Checked .. | .V_CheckedRequest .. | .V_CheckedAt .. | .V_AtError .. |
-    .V_List .. | .V_Con .. | .V_Map .. | .V_Set .. | .V_Dict .. | .V_Super .. | .V_Raise .. |
-    .V_LocRef .. | .V_LocLazy .. | .V_Bytes .. => cases hv
-termination_by structural h
-
 private theorem external_annotation {P B Ψ Q C Γ Φ v T f ts}
     (h : HasTypeVQ P B Ψ Q C Γ Φ v T) (hv : v = .externalRef f ts) : Ty.Annotation P C Γ T := by
   match h with
@@ -187,7 +162,7 @@ private theorem external_apply {P B Ψ Q C Γ Φ R m a e L f ts vs}
   | .C_DependentApp hv ha =>
     subst Q C Γ Φ
     cases hm
-    obtain ⟨d,u,hd,hw,had,hi,hu,ht⟩ := external_inv hv rfl
+    obtain ⟨d,u,hd,hw,had,hi,hu,ht⟩ := hv.inv_externalRef rfl
     cases Option.some.inj hu
     obtain ⟨r,ef,ha',hle,hcov⟩ := ha.pullback hi.result ht
     have he : instantiatedTel d.parameters ts [] = Tel.bind (typeEnv ts) d.parameters := rfl
@@ -196,7 +171,7 @@ private theorem external_apply {P B Ψ Q C Γ Φ R m a e L f ts vs}
   | .C_App hv ha =>
     subst Q C Γ Φ
     cases hm
-    obtain ⟨d,u,hd,hw,had,hi,hu,ht⟩ := external_inv hv rfl
+    obtain ⟨d,u,hd,hw,had,hi,hu,ht⟩ := hv.inv_externalRef rfl
     cases Option.some.inj hu
     have hann := external_annotation hv rfl
     have hs := ha.toTel_normal hann

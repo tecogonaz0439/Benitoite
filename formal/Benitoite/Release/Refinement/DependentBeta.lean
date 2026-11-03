@@ -258,6 +258,7 @@ theorem StateTyE.dependent_beta_one
       rw [Capture.empty_closeTel ht.wf hn]
       rw [hcv]
     · rfl
+    · rfl
   refine ⟨⟨Ψ,R,av,b,ε,ev,hs,hsrc,he,hk,?_,?_,hck,hcμ⟩,hstep,
     ⟨Ψ,some av,av,b,ε,ev,hs,hdst,he,hk.markPush hca,?_,?_,?_,hcμ⟩⟩
   · exact ⟨trivial,hbody,hval,trivial⟩
