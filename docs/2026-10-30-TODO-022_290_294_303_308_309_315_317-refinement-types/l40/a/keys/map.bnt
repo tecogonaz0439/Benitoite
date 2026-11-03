@@ -1,0 +1,17 @@
+data A[T]
+  End
+  Next(B[T])
+end data
+data B[T]
+  End(T)
+  Next(A[T])
+end data
+data FunctionField
+  Make(function(x: Unit) -> Unit)
+end data
+data Phantom[T]
+  Make(Unit)
+end data
+function probe() -> Map[Map[Integer8, List[Decimal]], Unit]
+  return Map.empty()
+end function

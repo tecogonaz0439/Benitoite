@@ -1,0 +1,38 @@
+[
+  {
+    "check": "signature-check",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/a/signature-check.lean"
+    ],
+    "exit": 0,
+    "start_utc": "2026-11-03T07:00:08.706459+00:00",
+    "seconds": 0.7790643340000001,
+    "raw": {
+      "bytes": 23208,
+      "sha256": "af2051b356cb36e500064f5daf781da0c9505e162ee69f102700c106e11ae677"
+    }
+  },
+  {
+    "check": "signature-extra",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/a/signature-extra.lean"
+    ],
+    "exit": 0,
+    "start_utc": "2026-11-03T07:00:09.485720+00:00",
+    "seconds": 0.6638105409999999,
+    "raw": {
+      "bytes": 3491,
+      "sha256": "22f31fe04091aa757c217a74fa10d85e3dd458cdf62004f374c1d0a12b124f91"
+    }
+  }
+]

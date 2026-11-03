@@ -2356,6 +2356,10 @@ analyze_normal_sound : NormalSoundness Models analyze
 
 この中心定理は任意の Parameters を量化し、Models と正常評価を前提とする。解析の完走・予算内・事前の警告健全性の前提を加えない。mayFail が真であることを具体評価の失敗から導く定理ではない。
 
+`Release.Refinement.IntervalFailure` は、同じ予算付き解析の失敗成分を扱う。`FailureCovered approx outcome` は、任意の理由 r に対し、`outcome = failed r` かつ `r ≠ unknown` なら `approx.mayFail = true` とする命題である。既存の Success・SuccessAt の事後条件にこの命題を渡す。内部の expr_failure・block_failure・引数列と三種類の腕の補題は、Models と補助の RangeState.Models を前提とし、解析の開始キーを同じ評価のキーに合わせる。成功した子には既存の正常値の所属を使い、失敗した子の mayFail は baseThen・baseMerge・baseJoin・abrupt の外へ保持する。Range の InvalidBounds・OutOfRange は finish が正常な Result.Error へ包むため、failed の理由として扱わない。
+
+`report_failure` は成功時の FailureCovered を出力へ写し、停止時は baseUnknown.mayFail が真であることを使う。`analyzeExpr_failure` は任意の limits・state・fuel を量化し、公開入口が resetRanges で作る空の補助記録から内部の前提を構成する。`tracked_failure_sound` の前提は、同じ abstract・concrete・input・Parameters・reason・trace に対する Models、EvalPartial の failed、`TrackedFailure reason trace` である。TrackedFailure は reason が unknown でないことと、同じ trace にその理由の rejected があることを表す。結論は実際の analyze の mayFail が真であることである。内部の FailureCovered は trace の存在より強く、unknown でない理由だけを使う。失敗成分の所属と、実行が最初に失敗する位置や δ の拒否理由との一致は別の命題である。
+
 `Interval/BudgetLocated.lean` は、同じ入口の警告の位置と対象演算の一致を証明する。Silent work は、任意の limits・ctx について、成功・停止のどちらでも警告列が入力のままであることを表す。skip_silent は全 skip 群にこの性質を示す。識別対応の追加や途中停止を妨げず、値を解析しない部分から警告を作らないことを保証する。
 
 LocatedIn key sources warning は、numberFrom key sources に `(warning.key, node)` があり、`arithmeticOperationAt node = some warning.operation` となる node が存在する命題である。Located work sources extra は、任意の limits・ctx において、保存列の追加警告だけが `extra warning ∨ LocatedIn ctx.next sources warning` を満たすことを Spec で表す。成功値と識別対応の追加分には True を使う。extra は、子の解析中に親自身の警告を位置へ結び付けるための証明用の述語である。RootWarning key source warning は、警告のキーが key と等しく、arithmeticOperationAt が source から認定した対象演算に一致することを表す。
@@ -3244,6 +3248,10 @@ structure SignatureInstance (P : Program) (C : TypeCtx) (Γ : Ctx)
 
 部分型 `Ty.LeQ P Γ Φ a b` は有限の導出である。篩の除去、導入、篩どうしの含意は `Entails` を使い、仮定には型の自己の事実と `Γ.facts ++ Φ` の移動した列を用いる。List と Lazy の要素・結果は共変、Map の値は共変で鍵は同じ型、Reference の内容と Fail の型は正規化後の等号で照合する。関数の比較は `TelLe` とその反射推移閉包 `TelClosure` を用いる。引数を反変に比較し、後続は渡し先の引数を加えた文脈で比較し、終端の結果と潜在効果を共変に比較する。`Eff.Covers Γ Φ outer inner` は内側の各原子を外側の一原子で覆い、Fail は不変に含める。`Eff.Sub inner outer` は構造上の包含であり、引数の順も異なる。
 
+`TelApplication` の一引数の入口は、元の型と渡し先の型の Annotation、反変の LeQ、渡し先の型付き実値を使う。`TelBodyTy.narrow_input` は後続の本体を Γ.extend b へ狭める。`TelLe.open_done` は元文脈のWFと両依存列のAnnotationを加え、同じ実値を開く置換の Transport を構成する。両方の HasTypeTelArgsQ と、結果の LeQ・潜在効果の Covers を同時に返す。`TelClosure.two_steps` は二段のtail、`from_function_norm` は通常の関数のviewと正規化した依存列を扱う。 `TelLe.open_tail` は同じ実値を後続の列へ束縛した `TelLe` を返し、`open_two` は二番目の引数の型が一番目に依存する二実引数について、両列への型付けと結果・効果の到達関係を返す。両入口は元文脈の `Ctx.WF 0 C.length Γ` を前提とする。
+
+`HasTypeVQ.inv_var` は元の変数のlookup型aとOrdinary、到達型Tの芯bとの等号、`Ty.LeQ P Γ Φ a.norm.core b`を返す。最外の篩をこの部分型関係へ加えない。`inv_list_core`は元の要素型aの型付けとAnnotation、`T.norm.core = list b`、要素の`Ty.LeQ P Γ Φ a b`を返す。変数や列そのものの篩の事実は、同じ値の観測項を使う`HasTypeVQ.facts`から読む。値に固有の篩があるときに、元の型全体からTへのLeQを逆転の結論とはしない。
+
 同じ名目の data の型引数は、宣言表 P の `varianceFor` が返す変性（variance）の列に従って `TypeArgsLe P Γ Φ` で比較する。共変の位置は元から先への部分型、反変の位置は逆向きの部分型、不変の位置は正規化後の等号を要求する。`Ty.LeQ`・`TelLe`・`TelClosure`・`TypeArgsLe` は同じ P を用いる。metadata がない場合と引数数が合わない場合は、全位置を不変として読む。欄に現れない型パラメータにも不変を要求し、unused の変性は設けない。
 
 効果の正規化は名前と行の所属、Failの正規化後の型の所属を保つ。`Eff.eq_of_sub_of_sub` は、両辺のCanonicalと双方向のSubから構造等号を導く。双方向のCoversだけでは、冗長な原子を加えた二つの効果を区別できない。`Eff.Allows σ κ e l t` は、κ l が返す対象の種類と、eに属する同じ名前の固定したRangeExprへの `Mem σ` を要求する。κ l がnoneの場合と、範囲変数の原子からは対象の許可を導かない。この関係は正規化で不変である。`TopAtoms` は最上位の原子がTopの名前か行である条件で、Fail内部の型を制限せず、正規化で保存される。行だけを置換する `substRho` は空の効果を保ち、名前の原子を消さない。
@@ -3396,6 +3404,14 @@ information order に当たる `Observation.InfoLE` は、scalar と対象の sn
 
 `PatternTypeSubst` は、PatTy の9場合と PatTys・AltsTy の型置換を証明する。構成子の欄は Program.WellFormed.cons の行支持と宣言の WF を使い、像の kind や追加の行支持を前提にしない。Inhabits.of_substAt は、型置換した型に所属する同じ値が元の型の正規形にも所属することを示す。data と List の子には値の大きさの帰納を使い、篩は refineNorm_iff から基底と全述語の RefinementPossible を取り出す。checkedAt と atError も同じ反映に含む。Exhaustive.substAt は、この反映から元と同じパターン列の網羅性を保存する。`unguardedPats_substTy` は、腕の型置換前後で unguardedPats が返すパターン列の一致を証明する。
 
+### 標準契約と数値の正常応答
+
+`StandardContracts.Row` は名前・型引数・行引数数・依存列・本体・pure δ又はcoreの選択・有限な関係の分類を持つ。任意の命題を登録する欄は持たない。`Row.definition` はcoreの行の注釈から同じ Def を組み立て、`signatureTel_rebuild` と `definition_tel` は元の依存列との等号を示す。`Row.BodyTyped P B` は、その Def が既存の Def.WellTyped を満たすことである。`normal_reply_facts` は CoreAssumptions.delta_typed、同じ署名のpureの分類、同じ BuiltinArgs、同じ δ 応答と正常値・toTerm? の等号から、結果型の各最外の事実を Entails [] として返す。`normal_reply_facts_at` はその導出を任意の値置換で写す。具体の δ の演算との一致は、これらの前提から推測しない。
+
+`StandardScalar.DecimalRounding` は HalfToEven・HalfAwayFromZero・TowardZero・TowardNegativeInfinity・TowardPositiveInfinity の五形である。`decimalRound` は数学上の係数・scale・placesを受け、不正なplacesを先に区別する。placesが0〜28なら、scaleを増やす場合は0を補い、減らす場合は絶対値の商と余りから一度だけ丸める。余り0では増やさず、同率では偶数又は絶対値の増加をモードに従って選ぶ。符号を戻し、仮数の絶対値が79228162514264337593543950335以下ならnormal、超えればoverflowとする。`rounding_table` は同じ五モードの名前と、±2.5を整数へ丸めた出力を照合する。これは係数の算術定義とその有限例の保証である。
+
+`StandardBodies.safeGet` は、任意の P・B・Ψ・Q・C・Γ・Φ、同じ有限列 xs の HasTypeEachQ、Natの添字 i と i<xs.length から、同じ位置の値 v、その getElem? の等号、vの元の要素型を返す。`safeHead` は同じ列の非空の証拠から先頭そのものを返す。`safeGet_equalLength` は二列それぞれの要素の型付け、同長、元の添字の範囲から、それぞれの列の同じ位置の値を別々に返す。二列の要素型も返す値も同一とは要求しない。
+
 ### 閉じた述語の評価と捕捉
 
 【決定】`Pred.evalClosed` は、最初に `WF 0` と `Sorted [] none` を検査し、成功したときだけ空の観測環境で `evalWith` を評価する。原子は、必要な観測、種類、比較の許容、対象の所属を解決できることを `atomReady` で確認してから真偽を求める。観測や範囲の解決に失敗した原子の結果は `none` である。
@@ -3482,6 +3498,8 @@ compare/floatClass/decimalRepresented/charactersIn/member/constructorIsの6原�
 `NumericContracts.integer_result` は、七整数の証拠付きの値を `IntegerValue.toConst` と `embedConst` で写した定数の `NumericRepresented` と、同じ数学整数への `toTerm?` を示す。`binary_normal` は加算・減算・乗算の正常応答、`neg_normal` は既存の signed 条件を持つ負号の正常応答から、数の一致とこの二条件を導く。定数倍は同じ乗算の特殊化である。`NormalResultLeaves.binary_leaf` は、同じ正常応答と検証済みの `P.VarianceValid` から、結果と演算の数の一致を述べる閉じた有限の葉の上層検査の成功を構成する。あふれの応答から正常応答を構成しない。`byte_and_u16_represented` は、255以下の Byte と同じ数の UnsignedInteger16 がともに表現可能であり、Byte の `toTerm?` が同じ整数であることを示す。変換の演算との一致は結論しない。`decimal_result` は `ConstOK` の係数・scale の条件から実定数の観測と型域を供給し、`compare_exact` と `float_class_exact` は正常な観測を本番の比較・分類へ結ぶ。Decimal や Float の算術・丸めの保証を、これらの補題に含めない。
 
 `Observation.KeyShape`・`KeySlots`・`KeyPairs` は、鍵コードを得られる有限の観測の構造を相互に表す。scalar 六形と Bytes、List、Map、Set、data の十一形を持ち、Bytes の要素は255以下とし、再帰するスロットは全て成功した子の観測を持つ。Float・Float32・対象は鍵の構造に含めない。Map の鍵化は鍵と値の両方の構造を要求する。Map の大きさの観測は、鍵の構造と鍵列・値列の長さの一致だけを必要とし、値の観測を要求しない。`Key.code_of_shape` は閉じた項の実観測とこの有限構造から鍵コードの成功を構成し、`Key.equal_of_shapes` は同じ閉じた二鍵を既存の `Key.equal` へ結ぶ。`decimalNormal_value` は Decimal の正準化前後の数の一致を示し、`decimal_key_compare` は鍵コードが同じ二つの Decimal の数の比較が等値になることを示す。`Key.map_measure`・`set_measure` は、閉じた鍵のスロットと `normalizeMap`・`normalizeSet` の成功から、実観測の重複縮約後の大きさを導く。`B.sat` の真だけから鍵コードの成功を結論しない。
+
+`StandardKeyTyping.DataDecl` は data名・型引数数・名前付き構成子と欄の有限列を持つ。`carrier` は base・bytes・tvar・data・List・Map・Set を保存し、篩を取り除き、鍵にできない型を関数の骨格へ写す。`Table P B` は data名と構成子名の重複なし、同じ構成子列と P.cons の等号、計算した dataSummaries の収束、全 C・a・p に対する B.sat と satB の等号を持つ。値の鍵構造はこの表の前提にしない。`KeyObservation P B a` は閉じた a 型の値について、任意の観測環境で項・閉性・観測成功・KeyShape を返す命題である。`KeyObservation.code` はその証拠を既存の Key.code_of_shape へ渡す。Unit には型付きの表現と観測からこの証拠を構成する。具体の有限表は、Decimal の List、Integer8 からその List への Map、相互再帰 data、関数欄の拒否、未使用の関数型引数を持つ data の受理を区別する。
 
 `PreparedLeaf.checkIn P C Γ Φ l` は、仮定列を `Γ.facts ++ Φ` とした `Certificate.leaf l` の上層検査と、引数列の全項についてある sort での `AdmissibleIn` を要求する。`entailsIn` は同じ仮定列から葉の述語の導出を返し、`bind_entails` は元の導出と同じ値置換による仮定列・結論の像を返す。`checked_refinement` は、`a ≤ b`、自己を持つ前後の述語 p・q の sort、および `Pred.ofConjuncts (p :: assumptions Γ Φ a)` から q への有限検査の成功を、既存の `Ty.LeQ.refine` へ渡す。型・行・範囲・値の像は既存の `Ty.LeQ.bind` と `Transport` で扱う。開いた Γ の `valueMeaning_sub` の事実の前提には型域の真も含み、`Transport.facts` は型域の像の導出も要求する。型付きの値の像では既存の型付き事実を使い、算術項の像では元の経路の等式などから型域の像を導く。
 

@@ -474,3 +474,10 @@ import Benitoite.Release.Refinement.NormalResultLeaves
 import Benitoite.Release.Refinement.AccountingWork
 import Benitoite.Release.Refinement.ProofContractExamples
 import Benitoite.Release.Refinement.ProofReplayExamples
+import Benitoite.Release.Refinement.TelApplication
+import Benitoite.Release.Refinement.StandardKeyTyping
+import Benitoite.Release.Refinement.StandardContracts
+import Benitoite.Release.Refinement.StandardScalar
+import Benitoite.Release.Refinement.StandardBodies
+import Benitoite.Release.Refinement.IntervalFailure
+import Benitoite.Release.Refinement.ValueInversion
