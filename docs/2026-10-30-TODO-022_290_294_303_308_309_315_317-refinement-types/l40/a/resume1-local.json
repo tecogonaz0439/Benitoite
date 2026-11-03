@@ -1,0 +1,134 @@
+[
+  {
+    "check": "value1",
+    "command": "lake env lean -M 12288 <input>",
+    "exit": 1,
+    "purpose": "芯の正規化・依存するmatchの証明の初回の誤り",
+    "seconds": null,
+    "time_note": "この局所実行の外側時間は別採取なし。再開全体の時計の区間と最終検査を別記する。",
+    "raw": {
+      "bytes": 5711,
+      "sha256": "9a3b95745d41983cb08ade71b02efd7dfa16324da81515b69d341579e1c1b25d"
+    }
+  },
+  {
+    "check": "value2",
+    "command": "lake env lean -M 12288 <input>",
+    "exit": 1,
+    "purpose": "Listの残りの構文の場合の除去",
+    "seconds": null,
+    "time_note": "この局所実行の外側時間は別採取なし。再開全体の時計の区間と最終検査を別記する。",
+    "raw": {
+      "bytes": 142,
+      "sha256": "018bf20dd6385adb06a98efb7036525c3fbe178f01965657bf556fbea7d10bff"
+    }
+  },
+  {
+    "check": "value3",
+    "command": "lake env lean -M 12288 <input>",
+    "exit": 0,
+    "purpose": "var/listの一般の証明",
+    "seconds": null,
+    "time_note": "この局所実行の外側時間は別採取なし。再開全体の時計の区間と最終検査を別記する。",
+    "raw": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  {
+    "check": "value4",
+    "command": "lake env lean -M 12288 <input>",
+    "exit": 0,
+    "purpose": "V_Refineと旧定数反例を含む具体の読者",
+    "seconds": null,
+    "time_note": "この局所実行の外側時間は別採取なし。再開全体の時計の区間と最終検査を別記する。",
+    "raw": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  {
+    "check": "tel1",
+    "command": "lake env lean -M 12288 <input>",
+    "exit": 0,
+    "purpose": "二つ目の型まで開く一般の証明",
+    "seconds": null,
+    "time_note": "この局所実行の外側時間は別採取なし。再開全体の時計の区間と最終検査を別記する。",
+    "raw": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  {
+    "check": "tel2",
+    "command": "lake env lean -M 12288 <input>",
+    "exit": 0,
+    "purpose": "実値7/7の具体の依存する二引数",
+    "seconds": null,
+    "time_note": "この局所実行の外側時間は別採取なし。再開全体の時計の区間と最終検査を別記する。",
+    "raw": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  {
+    "check": "safe1",
+    "command": "lake env lean -M 12288 <input>",
+    "exit": 1,
+    "purpose": "Namesの構造体の複数欄の宣言の構文",
+    "seconds": null,
+    "time_note": "この局所実行の外側時間は別採取なし。再開全体の時計の区間と最終検査を別記する。",
+    "raw": {
+      "bytes": 5489,
+      "sha256": "a4f92de7b739c3dd0d2e8854e0bb192cce7e10b0d35876d0d318b3a1e3d2a263"
+    }
+  },
+  {
+    "check": "safe2",
+    "command": "lake env lean -M 12288 <input>",
+    "exit": 0,
+    "purpose": "19行の内部契約の依存列の型検査",
+    "seconds": null,
+    "time_note": "この局所実行の外側時間は別採取なし。再開全体の時計の区間と最終検査を別記する。",
+    "raw": {
+      "bytes": 189,
+      "sha256": "ffd2d1f2039ac96541f1bfef565acbf237dd153729eb7e64d465451e9ec8232a"
+    }
+  },
+  {
+    "check": "flow1",
+    "command": "lake env lean -M 12288 <input>",
+    "exit": 0,
+    "purpose": "五つの具体の定義と局所規則の型検査",
+    "seconds": null,
+    "time_note": "この局所実行の外側時間は別採取なし。再開全体の時計の区間と最終検査を別記する。",
+    "raw": {
+      "bytes": 2859,
+      "sha256": "2e031413677898ca941b56cbc5377cb283ff872b7da8d44ec9c441569a34d7fc"
+    }
+  },
+  {
+    "check": "without-wf2",
+    "command": "lake env lean -M 12288 <input>",
+    "exit": 1,
+    "purpose": "他の公開前提も含めたがCtx.WFの供給が未証明",
+    "seconds": null,
+    "time_note": "この局所実行の外側時間は別採取なし。再開全体の時計の区間と最終検査を別記する。",
+    "raw": {
+      "bytes": 1048,
+      "sha256": "24dc8180c7731a9cf77589468ecc0448b1477787f10a60446678a8c9e76073d9"
+    }
+  },
+  {
+    "check": "build",
+    "command": "lake build",
+    "exit": 0,
+    "purpose": "対象指定なしの既定ビルド、956 jobs",
+    "seconds": null,
+    "time_note": "この局所実行の外側時間は別採取なし。再開全体の時計の区間と最終検査を別記する。",
+    "raw": {
+      "bytes": 43521,
+      "sha256": "5a0fb539475058e0cc91fdb18a0c4096419f4e11abb25b41d19d427e9836e9ab"
+    }
+  }
+]

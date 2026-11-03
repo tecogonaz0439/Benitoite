@@ -1,0 +1,119 @@
+[
+  {
+    "check": "signature-check",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/a/signature-check.lean"
+    ],
+    "cwd": "formal",
+    "start_utc": "2026-11-03T07:44:55.159324+00:00",
+    "end_utc": "2026-11-03T07:44:55.880827+00:00",
+    "seconds": 0.7214510000000001,
+    "exit": 0,
+    "raw": {
+      "bytes": 30142,
+      "sha256": "4576f69fe78984d31e9e36944cb261adcfb51d90e8b08aba31123b859fcb1dd3"
+    }
+  },
+  {
+    "check": "signature-extra",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/a/signature-extra.lean"
+    ],
+    "cwd": "formal",
+    "start_utc": "2026-11-03T07:44:55.881169+00:00",
+    "end_utc": "2026-11-03T07:44:56.549796+00:00",
+    "seconds": 0.6686340410000001,
+    "exit": 0,
+    "raw": {
+      "bytes": 3464,
+      "sha256": "aaefe6a9b4ad6cf4864532fd63d26a08eb627c35449e8452651051f192cf3ea2"
+    }
+  },
+  {
+    "check": "safe-contracts",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/a/safe-contracts.lean"
+    ],
+    "cwd": "formal",
+    "start_utc": "2026-11-03T07:44:56.550167+00:00",
+    "end_utc": "2026-11-03T07:44:57.190263+00:00",
+    "seconds": 0.640102916,
+    "exit": 0,
+    "raw": {
+      "bytes": 189,
+      "sha256": "ffd2d1f2039ac96541f1bfef565acbf237dd153729eb7e64d465451e9ec8232a"
+    }
+  },
+  {
+    "check": "audit",
+    "command": [
+      "python3",
+      "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/a/audit.py",
+      "--tmp",
+      "<tmp>"
+    ],
+    "cwd": ".",
+    "start_utc": "2026-11-03T07:44:57.190651+00:00",
+    "end_utc": "2026-11-03T07:45:35.761413+00:00",
+    "seconds": 38.570595209,
+    "exit": 0,
+    "raw": {
+      "bytes": 900,
+      "sha256": "b4baa9e54930dc2ea0ae1c036f984cf5f25f5c9d95ce8f364ad26f89dddc2d05"
+    }
+  },
+  {
+    "check": "dry-run",
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "2a2453825e956404fbe82d0a586d8776f323150a",
+      "--dry-run"
+    ],
+    "cwd": ".",
+    "start_utc": "2026-11-03T07:45:35.761753+00:00",
+    "end_utc": "2026-11-03T07:45:35.877788+00:00",
+    "seconds": 0.11604074999999625,
+    "exit": 0,
+    "raw": {
+      "bytes": 759,
+      "sha256": "037555115f8bb42ced3405a79cd4ce1babccf0371d35566a43c82dfcb34c56b0"
+    }
+  },
+  {
+    "check": "work",
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "2a2453825e956404fbe82d0a586d8776f323150a"
+    ],
+    "cwd": ".",
+    "start_utc": "2026-11-03T07:45:35.878058+00:00",
+    "end_utc": "2026-11-03T07:45:39.690845+00:00",
+    "seconds": 3.8127767499999976,
+    "exit": 0,
+    "raw": {
+      "bytes": 5847,
+      "sha256": "f83056b4342c8277f444097d01f595c5c6d260edd872249a25da1af092aa553d"
+    }
+  }
+]

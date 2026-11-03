@@ -1,0 +1,59 @@
+[
+  {
+    "check": "safe-contracts",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/a/safe-contracts.lean"
+    ],
+    "cwd": "formal",
+    "start_utc": "2026-11-03T08:03:17.189565+00:00",
+    "end_utc": "2026-11-03T08:03:17.859375+00:00",
+    "seconds": 0.669760125,
+    "exit": 0,
+    "raw": {
+      "bytes": 189,
+      "sha256": "ffd2d1f2039ac96541f1bfef565acbf237dd153729eb7e64d465451e9ec8232a"
+    }
+  },
+  {
+    "check": "dry-run",
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "2a2453825e956404fbe82d0a586d8776f323150a",
+      "--dry-run"
+    ],
+    "exit": 0,
+    "start_utc": "2026-11-03T08:03:28.270553+00:00",
+    "end_utc": "2026-11-03T08:03:28.384620+00:00",
+    "seconds": 0.11402604100000001,
+    "raw": {
+      "bytes": 759,
+      "sha256": "f3fb0ac55a2556d50bc6fa14db7efe965258ca1e0353d54505119766d12c2f65"
+    }
+  },
+  {
+    "check": "work",
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "2a2453825e956404fbe82d0a586d8776f323150a"
+    ],
+    "exit": 0,
+    "start_utc": "2026-11-03T08:03:28.384929+00:00",
+    "end_utc": "2026-11-03T08:03:32.100797+00:00",
+    "seconds": 3.7158633329999997,
+    "raw": {
+      "bytes": 5847,
+      "sha256": "256769f10892be4978d0142ff1b5d0ecde4523353eec3edd94a39d60390cd1f6"
+    }
+  }
+]

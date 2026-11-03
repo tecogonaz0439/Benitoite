@@ -1,0 +1,41 @@
+[
+  {
+    "check": "dry-run",
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "2a2453825e956404fbe82d0a586d8776f323150a",
+      "--dry-run"
+    ],
+    "cwd": ".",
+    "start_utc": "2026-11-03T07:45:35.761753+00:00",
+    "end_utc": "2026-11-03T07:45:35.877788+00:00",
+    "seconds": 0.11604074999999625,
+    "exit": 0,
+    "raw": {
+      "bytes": 759,
+      "sha256": "037555115f8bb42ced3405a79cd4ce1babccf0371d35566a43c82dfcb34c56b0"
+    }
+  },
+  {
+    "check": "work",
+    "command": [
+      "scripts/check.sh",
+      "--level",
+      "work",
+      "--base",
+      "2a2453825e956404fbe82d0a586d8776f323150a"
+    ],
+    "cwd": ".",
+    "start_utc": "2026-11-03T07:45:35.878058+00:00",
+    "end_utc": "2026-11-03T07:45:39.690845+00:00",
+    "seconds": 3.8127767499999976,
+    "exit": 0,
+    "raw": {
+      "bytes": 5847,
+      "sha256": "f83056b4342c8277f444097d01f595c5c6d260edd872249a25da1af092aa553d"
+    }
+  }
+]

@@ -1,0 +1,51 @@
+{
+  "start_utc": "2026-11-03T06:59:01.295808+00:00",
+  "seconds": 1.345359416,
+  "compile_exit": 0,
+  "probe_exit": 0,
+  "compiler": "rustc 1.98.1 (48a229cea 2026-09-01)",
+  "command": "rustc --edition=2024 keys/key_probe.rs --extern benitoite=<library> -L dependency=target/debug/deps -o <tmp>/key_probe; <tmp>/key_probe keys",
+  "library": {
+    "path": "target/debug/deps/libbenitoite-b21e50c2c25f16f2.rlib",
+    "bytes": 471380864,
+    "sha256": "557cb03db0540b3d83956cd54dfc89082f35d8c4f173a466e0266463abdccb9c"
+  },
+  "binary": {
+    "bytes": 74771256,
+    "sha256": "837e5f56241bb9c777ac1e97d13d5d16ccf7f3c8669904e370031a59f3cb1075"
+  },
+  "raw": {
+    "bytes": 2142,
+    "sha256": "d5fee19c1b92e3aab5cf4b1ff4ffd6edde36cab5c1d88283b04db2a1aa93e290"
+  },
+  "inputs": {
+    "function.bnt": {
+      "bytes": 258,
+      "sha256": "68ec3ad6fbf8000299e4996ddcb2e29c5214d8cca21d31b9399436b12ff84a95"
+    },
+    "key_probe.rs": {
+      "bytes": 2095,
+      "sha256": "c351d706d70a56291aa4d53cfbabea85b38b2257814a82bb128d06dd31c7ba98"
+    },
+    "list.bnt": {
+      "bytes": 258,
+      "sha256": "6530d62dc54bb482494dfc5bc8292962958fffcae37596897bcb16d4caf5c854"
+    },
+    "map.bnt": {
+      "bytes": 273,
+      "sha256": "c3d4b249f9147970847611816ea2d81566867b2e4d83c920d04abf16a8718e59"
+    },
+    "phantom.bnt": {
+      "bytes": 279,
+      "sha256": "0423588b3c96561d1ee37ffebbfeb8fdd6f682ce305bdc980d8cf736fd01731a"
+    },
+    "recursive.bnt": {
+      "bytes": 255,
+      "sha256": "a8eb30e8e1a4f288be7773317df49c317c24c5cb1358228f3a64b2377d8cbb3a"
+    },
+    "run_probe.py": {
+      "bytes": 2532,
+      "sha256": "1771fffafe7eb542cac05c8c1d5108a54321a995440e2ee75a75acbd1820d877"
+    }
+  }
+}

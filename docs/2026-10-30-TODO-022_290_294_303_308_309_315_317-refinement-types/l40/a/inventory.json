@@ -1,0 +1,866 @@
+{
+  "B_WORK": "2a2453825e956404fbe82d0a586d8776f323150a",
+  "branch": "m014/l40.a",
+  "basis": "起動依頼の指定を採用。gitコマンドは担当から実行していない。未コミット差分と新規ファイルは入力ハッシュで識別する",
+  "configuration": "既定8対象、Lean -M12288、増分ビルド",
+  "formal_manifest": {
+    "bytes": 115240,
+    "sha256": "a4b008b5961c38e1e64da7b14566a12c89c4235fe283ddb970c9ae897722cd45"
+  },
+  "formal_sources": 706,
+  "constructors": {
+    "Val": 25,
+    "Comp": 16,
+    "State": 4,
+    "Frame": 7,
+    "Cell": 6,
+    "Ty": 21,
+    "HasTypeVQ": 29,
+    "HasTypeVsQ": 2,
+    "HasTypeEachQ": 2,
+    "HasTypeCQ": 24,
+    "Ty.LeQ": 14,
+    "TelLe": 2,
+    "TelClosure": 2,
+    "TypeArgsLe": 4,
+    "ContTy": 10,
+    "Observation.KeyShape": 11,
+    "Observation.KeySlots": 2,
+    "Observation.KeyPairs": 2,
+    "Step": 76,
+    "EvalPartial": 69,
+    "EvalArguments": 4,
+    "EvalTypedArguments": 4,
+    "EvalArms": 6,
+    "EvalWidthArms": 6,
+    "EvalResultArms": 6,
+    "EvalBlock": 14,
+    "EvalStandard": 7
+  },
+  "h04_count": 109,
+  "standard_count": 7,
+  "legacy_classes": {
+    "最初の旧14移植": 14,
+    "既済み継承": 7,
+    "同種の残り10": 10
+  },
+  "N_V": 1,
+  "N_C": 9,
+  "preproved_legacy_inversion": [
+    "HasTypeVQ.inv_var"
+  ],
+  "remaining_legacy_before_B": 23,
+  "remaining_legacy_B": 13,
+  "plan_obligations": 56,
+  "stage_obligations": {
+    "l20": 37,
+    "l30": 21
+  },
+  "union_obligations": 60,
+  "all_obligations": 64,
+  "api": [
+    {
+      "module": "Byte",
+      "count": 9,
+      "source": {
+        "bytes": 1684,
+        "sha256": "c11863da8bcf0dc0d7d092b23ca6e74955a5e77e29155fa25886d4e4e5262ccb"
+      }
+    },
+    {
+      "module": "Character",
+      "count": 12,
+      "source": {
+        "bytes": 1888,
+        "sha256": "c4172aed97147e5175e1c7dc84d472f9836c3e53a9ae696691fc987267e500fb"
+      }
+    },
+    {
+      "module": "Float",
+      "count": 9,
+      "source": {
+        "bytes": 1254,
+        "sha256": "69a86babe620bfec68cfbfeb9ab325d9d6f8c8e19b8a8902a73f034a7a6f0df6"
+      }
+    },
+    {
+      "module": "Float32",
+      "count": 12,
+      "source": {
+        "bytes": 2073,
+        "sha256": "ac396a9705bd2bb6bdf328bd0a8260820369c4d8874705305ff7562fc96e6e70"
+      }
+    },
+    {
+      "module": "Decimal",
+      "count": 8,
+      "source": {
+        "bytes": 1333,
+        "sha256": "1dbb086d6510b77a07549d22be3f48bd1af7d4be3ac0b9fcfb66928fcf239839"
+      }
+    },
+    {
+      "module": "String",
+      "count": 28,
+      "source": {
+        "bytes": 5534,
+        "sha256": "3dfdab351d18a85636d568fb2628af0129ee139fe5cc47c1acf75aeaa49fc2a0"
+      }
+    },
+    {
+      "module": "Bytes",
+      "count": 16,
+      "source": {
+        "bytes": 2679,
+        "sha256": "04e6a2b04b7a6d17e3ef13281d136a0a275a1f5c67b47bbcc6c02160f130e8ee"
+      }
+    },
+    {
+      "module": "List",
+      "count": 21,
+      "source": {
+        "bytes": 6240,
+        "sha256": "940ec3e00387a468b6392d3b8caace0f840d0d0d13caa23327acc76eb02ba3df"
+      }
+    },
+    {
+      "module": "Map",
+      "count": 14,
+      "source": {
+        "bytes": 2951,
+        "sha256": "bf99714990eb36d988e1de12b579bf7da9648f058e8357141e94de454ee41788"
+      }
+    },
+    {
+      "module": "Set",
+      "count": 14,
+      "source": {
+        "bytes": 2396,
+        "sha256": "6ccd252a7d3ba9f66be75bcf204cd0ed15c0b9a30e68919c9ee2c1305ddf6db7"
+      }
+    },
+    {
+      "module": "Range",
+      "count": 13,
+      "source": {
+        "bytes": 9759,
+        "sha256": "3aa344e1c98b494a05eeb45e4a35e0d4f77ffe90d2b51f7f97d01c97d3b6b43f"
+      }
+    },
+    {
+      "module": "NonEmptyList",
+      "count": 5,
+      "source": {
+        "bytes": 3270,
+        "sha256": "05679444789bf49f7c86f5b830290e6026822601c40902c950c5b7671117aa54"
+      }
+    },
+    {
+      "module": "Integer",
+      "count": 15,
+      "source": {
+        "bytes": 3055,
+        "sha256": "b008591962e4362c087cb69eb705a62319d487575ba81d3e3a2b39c90a3eea1f"
+      }
+    },
+    {
+      "module": "Integer8",
+      "count": 17,
+      "source": {
+        "bytes": 3433,
+        "sha256": "70f77f53070473c595c914973afa8548b691b05de722a3c8e9ebd402a0db465b"
+      }
+    },
+    {
+      "module": "Integer16",
+      "count": 17,
+      "source": {
+        "bytes": 3495,
+        "sha256": "50ba7e31d21b65e5f94497be553705d0420ef9be815f31124ab5944468a9152d"
+      }
+    },
+    {
+      "module": "Integer32",
+      "count": 17,
+      "source": {
+        "bytes": 3505,
+        "sha256": "ea22ed90bce1365cd9d85f92041a27ad473c508d6582611a5a1909ed2dd263b9"
+      }
+    },
+    {
+      "module": "Integer64",
+      "count": 15,
+      "source": {
+        "bytes": 3424,
+        "sha256": "84a22709f560640f7dac36fbe672c87d136d98983e8c6f982503fe9729b15f43"
+      }
+    },
+    {
+      "module": "UnsignedInteger",
+      "count": 18,
+      "source": {
+        "bytes": 4322,
+        "sha256": "ba3be54832378768c48232fca317b4544d3a82e871074112c6792445dc9bedef"
+      }
+    },
+    {
+      "module": "UnsignedInteger8",
+      "count": 9,
+      "source": {
+        "bytes": 2351,
+        "sha256": "be95efd7b72936fa19c67adcb25a647156e7762549794a41fc18367237fa4cfb"
+      }
+    },
+    {
+      "module": "UnsignedInteger16",
+      "count": 16,
+      "source": {
+        "bytes": 3551,
+        "sha256": "2db5a336c8226af4cdd26b0f2b377d27d9b04d99388d2c85b141042ea9ca5324"
+      }
+    },
+    {
+      "module": "UnsignedInteger32",
+      "count": 16,
+      "source": {
+        "bytes": 3556,
+        "sha256": "38402f3c6f3d82743d9b9b4bd1edb563a278ac0e21d59f27151edf03244f4d79"
+      }
+    },
+    {
+      "module": "UnsignedInteger64",
+      "count": 18,
+      "source": {
+        "bytes": 3995,
+        "sha256": "00a9a54e9cb6d831dd9ede3c198abc8e248ab0ee0b16f2017036aa04fb9d9981"
+      }
+    },
+    {
+      "module": "Float64",
+      "count": 9,
+      "source": {
+        "bytes": 1534,
+        "sha256": "aaf16d4a95a2ec88a79ecbc16cd17b5ff4d1b5e14e89f9004a849231ae857e8e"
+      }
+    }
+  ],
+  "signature_bytes": 86041,
+  "inputs": {
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/README.md": {
+      "bytes": 16940,
+      "sha256": "35eea02e411283996f26e10e36bcfbbaaf7237f2882bef105e4e15576ffef0ac"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/implementation-request.md": {
+      "bytes": 24593,
+      "sha256": "c192998a08649ee22b155d53806636d3571d83fd25f4b084dec9e3bc0458a1ca"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/n/h04-handoff.lean": {
+      "bytes": 2962,
+      "sha256": "48e15d8255254a0a1a9b5807db24f274dd4261c91597e1fce3b2a5e44a09b293"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l20/n/h04-handoff.md": {
+      "bytes": 6030,
+      "sha256": "6611d83a9a6b902f1e3beb01833b9b00ceaa8d7fe3803969f99ea994240fb949"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l30/l/review-handoffs.md": {
+      "bytes": 11024,
+      "sha256": "bf56881e4a028ea6fa834a574d0ba637de318dfd55868c41f33e6e5cbbc8ae01"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/a/audit-summary-before-resume1.json": {
+      "bytes": 35925,
+      "sha256": "7c066c0b1fdbe791aee9f8db85d63cf2cc6fb36dbb9468b26024b6f60708ff05"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/a/audit.py": {
+      "bytes": 3792,
+      "sha256": "fd6ed31b979312798ff0ff2b0b88cbc4e7a15e02ac79ea31dcacc4280c4eb4d2"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/a/axioms.lean": {
+      "bytes": 2429,
+      "sha256": "cad2ed95b8eecd77784acdb75a5e426303b49fc203c514099d1fcd9f3ae9ea0a"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/a/checks-before-resume1.json": {
+      "bytes": 916,
+      "sha256": "b26b2beed44bc1ca17a210a69652c8cf5972713f38cc66d8651144d336a42335"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/a/checks-before-resume2.json": {
+      "bytes": 963,
+      "sha256": "c3afad236498f5be7e798a493fd6c29fc906f7bd80440b8799f4a52945a7c869"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/a/checks-initial.json": {
+      "bytes": 917,
+      "sha256": "bc2c73f6daf5dcbea09e1f7eaa05d9d6a6719465d6bef4c7f182d69e6c1793f0"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/a/completion-history.json": {
+      "bytes": 333,
+      "sha256": "9d8a92076aa96ae22e4ac096254f76d2bef474994b5c2ff39f3ed83680d8aa30"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/a/declarations.json": {
+      "bytes": 15032,
+      "sha256": "974fcab9ff824727b24364b5817a2d6ad823ec000aa20463395ec24777f44a35"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/a/key-probe.json": {
+      "bytes": 1697,
+      "sha256": "93b5abae448542d006f7e5fb122759e8bd8b99c4f2e1b5915f0faee44f95ea2a"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/a/keys/function.bnt": {
+      "bytes": 258,
+      "sha256": "68ec3ad6fbf8000299e4996ddcb2e29c5214d8cca21d31b9399436b12ff84a95"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/a/keys/key_probe.rs": {
+      "bytes": 2095,
+      "sha256": "c351d706d70a56291aa4d53cfbabea85b38b2257814a82bb128d06dd31c7ba98"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/a/keys/list.bnt": {
+      "bytes": 258,
+      "sha256": "6530d62dc54bb482494dfc5bc8292962958fffcae37596897bcb16d4caf5c854"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/a/keys/map.bnt": {
+      "bytes": 273,
+      "sha256": "c3d4b249f9147970847611816ea2d81566867b2e4d83c920d04abf16a8718e59"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/a/keys/phantom.bnt": {
+      "bytes": 279,
+      "sha256": "0423588b3c96561d1ee37ffebbfeb8fdd6f682ce305bdc980d8cf736fd01731a"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/a/keys/recursive.bnt": {
+      "bytes": 255,
+      "sha256": "a8eb30e8e1a4f288be7773317df49c317c24c5cb1358228f3a64b2377d8cbb3a"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/a/keys/run_probe.py": {
+      "bytes": 2532,
+      "sha256": "1771fffafe7eb542cac05c8c1d5108a54321a995440e2ee75a75acbd1820d877"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/a/local-checks.json": {
+      "bytes": 762,
+      "sha256": "6e13950a64787fd02d97e41fdd9cf9c1f39db054bc3c06cde37a4db902833cc8"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/a/obligations.md": {
+      "bytes": 12863,
+      "sha256": "11aa384ec78546de64b0bd5fbe67f119689777c7cf8f15bb06dcd630aec1ed83"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/a/records.py": {
+      "bytes": 13347,
+      "sha256": "097c559936ba5cdf359099c61f53a317ac1744c773ecc05792837ea6cc545e0b"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/a/resume1-checks.json": {
+      "bytes": 3052,
+      "sha256": "bf57d64cd6108d0e9431556b18f0175b04f4ad10b858fe9919888ab4f517f339"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/a/resume1-local.json": {
+      "bytes": 4845,
+      "sha256": "0452bf94a303a3b4212a82df7fc1ab8883cb261998b3776f78348ec6e1476cb9"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/a/resume1-time.json": {
+      "bytes": 409,
+      "sha256": "f580d01b41c79d0cebdbf1189b72cbed486e522ae3d167f31678fbc999644551"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/a/resume1_checks.py": {
+      "bytes": 2032,
+      "sha256": "ed1348b7ab18dc66ecab4190349e031d1c91a41647c14db64b5800e3369d2283"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/a/resume2-checks.json": {
+      "bytes": 1460,
+      "sha256": "4c0dd05025826fc0c8526cbb258a70f81cc9d38c81af17a61651ed265a4497ec"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/a/resume2-time.json": {
+      "bytes": 320,
+      "sha256": "ba86247237bf1aeb947b313260e8ce89180755ef0653c1f1a4c633c603124afc"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/a/run_checks.py": {
+      "bytes": 1361,
+      "sha256": "b2e80b1bf0a17d0b91c90cbcf22fdf8d1dbcb146adfc6c96a4a4a14ff52c9a82"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/a/safe-contracts.lean": {
+      "bytes": 6201,
+      "sha256": "b8bc4b877992e4f43560b46cad38151f3825882b2b49f0e1c91d4e28005e9172"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/a/safe-contracts.md": {
+      "bytes": 4247,
+      "sha256": "fa0543658d54565409a87c3ada9870b61cfafb7b41cb7da559d4c7753eb86d9b"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/a/signature-check.lean": {
+      "bytes": 23840,
+      "sha256": "75ba6a8819c58fca22f297e4e2924147ce90665279a613ca7fa379283a0a8c47"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/a/signature-checks-before-resume1.json": {
+      "bytes": 938,
+      "sha256": "47c0a44f208fb268fde8ea17203c9b526e6a83b140d82457b7f216399d9f4dc2"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/a/signature-checks-before-resume2.json": {
+      "bytes": 1611,
+      "sha256": "be5c8f38fcedde497faf14624ed0b67da67ba6c7b4064f8702f46cfe2a63bae9"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/a/signature-checks.json": {
+      "bytes": 1611,
+      "sha256": "4cf443b407651226c13ffcda927298a72f1d3e292cf9c63b1f831ab311c0cd2d"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/a/signature-extra.lean": {
+      "bytes": 3768,
+      "sha256": "1d4866ff7159f304c20199c784865b7a7e7da43ee9defd27b4412f90e04dea7c"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/a/signatures.md": {
+      "bytes": 86041,
+      "sha256": "e75d0792cbb5171114e0bce62b7a4211b2ea70679d34bc2a5cbd2d4d7be61031"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/a/signatures.py": {
+      "bytes": 7994,
+      "sha256": "68937527f460ddb2f4b8d050731c83c62cc920e49c5936d242a666e652551485"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/a/verify_records.py": {
+      "bytes": 4562,
+      "sha256": "28bdb87f217e95c9fffa4c26829199e5d6cdc4c66bd492b8c5b55429b3c4d5f8"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/detail.md": {
+      "bytes": 100003,
+      "sha256": "2da328b8f86f847b8506a04fc93465265f3c4fa1cda33432b730333e11954243"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/results.md": {
+      "bytes": 46959,
+      "sha256": "a8157b46a5266b93664faee59a3f6a06f6616931bdd1fbeda51e53d6237a98cd"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/plan.md": {
+      "bytes": 259459,
+      "sha256": "1df1bf44f6e35ea609d4f317e2daf44dc7271b8e755392842e00ad4c827e0361"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/reviews/RV-L40-plan.md": {
+      "bytes": 32674,
+      "sha256": "ad6774f2ca5da177a38ae7b518bf434a2bda5ee42f66e8c6573a71c6fb7046e7"
+    },
+    "docs/design/01-spec/01-12-core-calculus.md": {
+      "bytes": 813452,
+      "sha256": "ad38f8fa669151656984b1068fb76248131016084f90a4a74d268960c10e2b60"
+    },
+    "docs/design/07-quality/07-04-formal-semantics.md": {
+      "bytes": 532519,
+      "sha256": "26cd7c7005f5877ea474fe1233e9a6e71e4098cc33b177866fd23301d149879b"
+    },
+    "formal/Benitoite/Release/Refinement/IntervalFailure.lean": {
+      "bytes": 63132,
+      "sha256": "ad4c8c5c8e9ee722f1b61c4a327095f989615411214eb2bec303c9d615e5aa5f"
+    },
+    "formal/Benitoite/Release/Refinement/StandardBodies.lean": {
+      "bytes": 3654,
+      "sha256": "dc58f5e9d2c3b0d7b3372cf5729cf6e5695319e39613247c4bec4ee59a2c1409"
+    },
+    "formal/Benitoite/Release/Refinement/StandardContracts.lean": {
+      "bytes": 4231,
+      "sha256": "ec7af826bd894dcf0b1a3b6f4bbf3cdf2fa332731a9f24a236b0a28f17a3061a"
+    },
+    "formal/Benitoite/Release/Refinement/StandardKeyTyping.lean": {
+      "bytes": 6516,
+      "sha256": "244b0b414afdcbee458b023e56be76cc3da4fe644f1fa51c5900fc927522c967"
+    },
+    "formal/Benitoite/Release/Refinement/StandardScalar.lean": {
+      "bytes": 2854,
+      "sha256": "9228a438b2ca94c61f9037c5c664d37c52e70165a3ff340daa84441b22cde2e6"
+    },
+    "formal/Benitoite/Release/Refinement/TelApplication.lean": {
+      "bytes": 11293,
+      "sha256": "41305e7bda3de391f50c07695934634a0a28d83b3983a286db0304c7c325a16c"
+    },
+    "formal/Benitoite/Release/Refinement/ValueInversion.lean": {
+      "bytes": 6990,
+      "sha256": "481ca79192d734acefa92fb164c164abd6d635d7f51f47cb122be7a59c0a5e41"
+    },
+    "formal/Benitoite.lean": {
+      "bytes": 21574,
+      "sha256": "1df400a1f25103ec503a87fbaabbf7e3f5b9ab3a43a6be6a69e018f7218a3e6c"
+    },
+    "formal/lakefile.toml": {
+      "bytes": 872,
+      "sha256": "10f2661bff8fce95a9253d976427d0ca44038ec12350c955badbc1cf1efa6e3a"
+    },
+    "formal/lean-toolchain": {
+      "bytes": 25,
+      "sha256": "d5edba4e4b8faad9c1baeadb265716d20d03be4d1a2647dc5e35b0c0325bea7b"
+    }
+  },
+  "rust_inputs": {
+    "Cargo.toml": {
+      "bytes": 1633,
+      "sha256": "a5eaf5d181e3bfc169e2c8e632b56bd71b943c08366bb4e2bbc858ce40269dec"
+    },
+    "Cargo.lock": {
+      "bytes": 50695,
+      "sha256": "075ddfa31b648a04030efcbfb30365910dff6d8de62b0e903b57d28dc5e6324d"
+    },
+    "rust-toolchain.toml": {
+      "bytes": 66,
+      "sha256": "4d7d5425fe623392e565a964fc135c563c316ce125058199eb40b2953ba6ecbb"
+    },
+    "crates/benitoite/Cargo.toml": {
+      "bytes": 2415,
+      "sha256": "5df2c0436b2b6862ff4a581820ef875717021ad93492bb62c2be11189bb11376"
+    },
+    "crates/benitoite/src/lib.rs": {
+      "bytes": 653,
+      "sha256": "c392976fcb6f33ce503df4c2ab5eba56b719ccdd733d47ef9e1c7b11f5b978e8"
+    },
+    "crates/benitoite/src/pipeline.rs": {
+      "bytes": 46533,
+      "sha256": "835143b851f3c00131441da4346c776b240f4993da44f1ae83a58012425c5314"
+    },
+    "crates/benitoite/src/typeck/decls.rs": {
+      "bytes": 62571,
+      "sha256": "14e416fdd98b85b98a712915d4d260f87290f655fa85c5445746c0377e25ae2f"
+    },
+    "crates/benitoite/src/typeck/solve.rs": {
+      "bytes": 119238,
+      "sha256": "db6932e4c72dbde10664109faaeede7d120a9ac655f9435e8a00d43ceda5383b"
+    },
+    "crates/benitoite/src/ir/check.rs": {
+      "bytes": 160389,
+      "sha256": "98abfd22a6cfdbb21fe1185f89590d938790a31da1c824b5bfe310dbf07d21b2"
+    },
+    "crates/benitoite/src/ir/core_ir.rs": {
+      "bytes": 21506,
+      "sha256": "cee91ee9087a51d9a602a641a1e45db83e98b7fc594c517ab0e2716d482b26b2"
+    },
+    "crates/benitoite/src/base/decimal.rs": {
+      "bytes": 20780,
+      "sha256": "3ea54de93d07ecbb50cc4cdcb17224b875d154d675692031edaf3aa5f5fb594e"
+    },
+    "crates/benitoite/src/builtins/funcs/decimal.rs": {
+      "bytes": 13866,
+      "sha256": "c0789f2dfc3ccaf97761ea0eb356e58c5eaf0a8fd481af5f01d3f1cf3e2e0d36"
+    },
+    "crates/benitoite/src/types/builtin.rs": {
+      "bytes": 23052,
+      "sha256": "87f3290be3ffaa4a531624195e6241de6e10469199a4fcd53d56e9c88411754b"
+    }
+  },
+  "deductions": {
+    "C01": {
+      "Ty.LeQ": [
+        "Benitoite.Release.Refinement.Ty.LeQ"
+      ],
+      "TelLe": [
+        "Benitoite.Release.Refinement.TelLe"
+      ],
+      "TelClosure": [
+        "Benitoite.Release.Refinement.TelClosure"
+      ],
+      "TypeArgsLe": [
+        "Benitoite.Release.Refinement.TypeArgsLe"
+      ]
+    },
+    "C02": {
+      "Ty.LeQ.listCore": [
+        "Benitoite.Release.Refinement.Ty.LeQ.listCore"
+      ],
+      "Ty.LeQ.listCore_right": [
+        "Benitoite.Release.Refinement.Ty.LeQ.listCore_right"
+      ],
+      "Ty.LeQ.fnCore": [
+        "Benitoite.Release.Refinement.Ty.LeQ.fnCore"
+      ],
+      "Ty.LeQ.fnCore_right": [
+        "Benitoite.Release.Refinement.Ty.LeQ.fnCore_right"
+      ],
+      "Ty.LeQ.names_eq": [
+        "Benitoite.Release.Refinement.Ty.LeQ.names_eq"
+      ],
+      "Ty.LeQ.refCore": [
+        "Benitoite.Release.Refinement.Ty.LeQ.refCore"
+      ],
+      "Ty.LeQ.refCore_right": [
+        "Benitoite.Release.Refinement.Ty.LeQ.refCore_right"
+      ]
+    },
+    "C03": {
+      "Ty.listCore_norm": [
+        "Benitoite.Release.Refinement.Ty.listCore_norm"
+      ],
+      "Ty.fnCore_norm": [
+        "Benitoite.Release.Refinement.Ty.fnCore_norm"
+      ],
+      "Ty.refCore_norm": [
+        "Benitoite.Release.Refinement.Ty.refCore_norm"
+      ],
+      "TelClosure.trans": [
+        "Benitoite.Release.Refinement.TelClosure.trans"
+      ],
+      "TelLe.of_norm_eq": [
+        "Benitoite.Release.Refinement.TelLe.of_norm_eq"
+      ]
+    },
+    "C04": {
+      "HasTypeVQ.inv_list": [
+        "Benitoite.Release.Refinement.HasTypeVQ.inv_list"
+      ],
+      "HasTypeVQ.inv_closure": [
+        "Benitoite.Release.Refinement.HasTypeVQ.inv_closure"
+      ],
+      "canonical_ref": [
+        "Benitoite.Release.Refinement.HasTypeVQ.canonical_ref"
+      ],
+      "canonical_lazy": [
+        "Benitoite.Release.Refinement.HasTypeVQ.canonical_lazy"
+      ],
+      "Ty.LeQ.lazyCore_right": [
+        "Benitoite.Release.Refinement.Ty.LeQ.lazyCore_right"
+      ]
+    },
+    "C05": {
+      "HasTypeVQ.inv_const": [
+        "Benitoite.Release.Refinement.HasTypeVQ.inv_const"
+      ],
+      "HasTypeVQ.facts": [
+        "Benitoite.Release.Refinement.HasTypeVQ.facts"
+      ],
+      "HasTypeVQ.subtype_facts": [
+        "Benitoite.Release.Refinement.HasTypeVQ.subtype_facts"
+      ],
+      "HasTypeVQ.list_element_facts": [
+        "Benitoite.Release.Refinement.HasTypeVQ.list_element_facts"
+      ],
+      "HasTypeVQ.field_facts_by_type": [
+        "Benitoite.Release.Refinement.HasTypeVQ.field_facts_by_type"
+      ],
+      "HasTypeVQ.constructor_field_inputs": [
+        "Benitoite.Release.Refinement.HasTypeVQ.constructor_field_inputs"
+      ]
+    },
+    "C06": {
+      "Ty.LeQ.holds": [
+        "Benitoite.Release.Refinement.Ty.LeQ.holds"
+      ],
+      "HasTypeVQ.inv_checked": [
+        "Benitoite.Release.Refinement.HasTypeVQ.inv_checked"
+      ],
+      "HasTypeVQ.inv_checkedRequest": [
+        "Benitoite.Release.Refinement.HasTypeVQ.inv_checkedRequest"
+      ],
+      "HasTypeVQ.inv_checkedAt": [
+        "Benitoite.Release.Refinement.HasTypeVQ.inv_checkedAt"
+      ],
+      "HasTypeVQ.checkedRequest_content": [
+        "Benitoite.Release.Refinement.HasTypeVQ.checkedRequest_content"
+      ]
+    },
+    "C07": {
+      "ModelHttp.valueRun_typed": [
+        "Benitoite.Release.Refinement.ModelHttp.valueRun_typed"
+      ],
+      "ModelHttp.valueRun_request": [
+        "Benitoite.Release.Refinement.ModelHttp.valueRun_request"
+      ],
+      "ModelHttp.valueRun_checkedAt_request": [
+        "Benitoite.Release.Refinement.ModelHttp.valueRun_checkedAt_request"
+      ],
+      "ModelHttp.valueRun_embed": [
+        "Benitoite.Release.Refinement.ModelHttp.valueRun_embed"
+      ]
+    },
+    "C08": {
+      "AtPrepared.request": [
+        "Benitoite.Release.Refinement.AtPrepared.request"
+      ],
+      "CheckedWitness.of_prepared_request": [
+        "Benitoite.Release.Refinement.CheckedWitness.of_prepared_request"
+      ],
+      "checkAt.sound": [
+        "Benitoite.Release.Refinement.checkAt.sound"
+      ],
+      "checkAt.absolute": [
+        "Benitoite.Release.Refinement.checkAt.absolute"
+      ]
+    },
+    "C09": {
+      "Ty.VarianceOK": [
+        "Benitoite.Release.Refinement.Ty.VarianceOK"
+      ],
+      "Program.VarianceValid": [
+        "Benitoite.Release.Refinement.Program.VarianceValid"
+      ],
+      "Program.ParamOccursInFields": [
+        "Benitoite.Release.Refinement.Program.ParamOccursInFields"
+      ],
+      "variance_field_mono": [
+        "Benitoite.Release.Refinement.variance_field_mono"
+      ]
+    },
+    "C10": {
+      "MeaningTransport.variance_meaning": [
+        "Benitoite.Release.Refinement.MeaningTransport.variance_meaning"
+      ],
+      "MeaningTransport.variance_meaning_args": [
+        "Benitoite.Release.Refinement.MeaningTransport.variance_meaning_args"
+      ],
+      "MeaningTransport.field_order": [
+        "Benitoite.Release.Refinement.MeaningTransport.field_order"
+      ],
+      "valueMeaning_sub": [
+        "Benitoite.Release.Refinement.valueMeaning_sub"
+      ]
+    },
+    "C11": {
+      "typed_value_meaning_closed": [
+        "Benitoite.Release.Refinement.typed_value_meaning_closed"
+      ],
+      "inhabits_of_typed": [
+        "Benitoite.Release.Refinement.inhabits_of_typed"
+      ],
+      "ValueMeaning.assume": [
+        "Benitoite.Release.Refinement.ValueMeaning.assume"
+      ]
+    },
+    "C12": {
+      "type_subst_all": [
+        "Benitoite.Release.Refinement.type_subst_all"
+      ],
+      "close_value_typed": [
+        "Benitoite.Release.Refinement.close_value_typed"
+      ],
+      "StateTyE.store_reply": [
+        "Benitoite.Release.Refinement.StateTyE.store_reply"
+      ],
+      "HasTypeVQ.narrow": [
+        "Benitoite.Release.Refinement.HasTypeVQ.narrow"
+      ]
+    },
+    "C13": {
+      "HasTypeCQ.ite_branch": [
+        "Benitoite.Release.Refinement.HasTypeCQ.ite_branch"
+      ],
+      "ClosureTy.ite_selected": [
+        "Benitoite.Release.Refinement.ClosureTy.ite_selected"
+      ],
+      "StateTyE.if_true": [
+        "Benitoite.Release.Refinement.StateTyE.if_true"
+      ],
+      "StateTyE.if_false": [
+        "Benitoite.Release.Refinement.StateTyE.if_false"
+      ]
+    },
+    "C14": {
+      "selectOracle_response": [
+        "Benitoite.Release.Refinement.Builtins.selectOracle_response"
+      ],
+      "selectRelease_response": [
+        "Benitoite.Release.Refinement.Builtins.selectRelease_response"
+      ],
+      "selectFresh_empty": [
+        "Benitoite.Release.Refinement.StoreOk.selectFresh_empty"
+      ],
+      "StateTyE.control_leaf": [
+        "Benitoite.Release.Refinement.StateTyE.control_leaf"
+      ]
+    },
+    "C16": {
+      "Ty.carrierFacts": [
+        "Benitoite.Release.Refinement.Ty.carrierFacts"
+      ],
+      "Const.NumericRepresented.carrierFacts": [
+        "Benitoite.Release.Refinement.Const.NumericRepresented.carrierFacts"
+      ]
+    },
+    "C17": {
+      "typed_observation": [
+        "Benitoite.Release.Refinement.PreparedSortExamples.typed_observation"
+      ],
+      "observations_16": [
+        "Benitoite.Release.Refinement.PreparedSortExamples.observations_16"
+      ],
+      "HasTypeVQ.represented": [
+        "Benitoite.Release.Refinement.HasTypeVQ.represented"
+      ]
+    },
+    "C18": {
+      "measure_machine_exact": [
+        "Benitoite.Release.Refinement.measure_machine_exact"
+      ],
+      "measure_stable": [
+        "Benitoite.Release.Refinement.measure_stable"
+      ],
+      "field_measure_stable": [
+        "Benitoite.Release.Refinement.field_measure_stable"
+      ],
+      "NumericContracts.binary_normal": [
+        "Benitoite.Release.Refinement.NumericContracts.binary_normal"
+      ],
+      "NumericContracts.neg_normal": [
+        "Benitoite.Release.Refinement.NumericContracts.neg_normal"
+      ],
+      "NumericContracts.decimal_result": [
+        "Benitoite.Release.Refinement.NumericContracts.decimal_result"
+      ],
+      "NormalResultLeaves.binary_leaf": [
+        "Benitoite.Release.Refinement.NormalResultLeaves.binary_leaf"
+      ],
+      "NormalResultLeaves.binary_entails_at": [
+        "Benitoite.Release.Refinement.NormalResultLeaves.binary_entails_at"
+      ]
+    },
+    "C19": {
+      "Observation.KeyShape.code": [
+        "Benitoite.Release.Refinement.Observation.KeyShape.code"
+      ],
+      "Key.code_of_shape": [
+        "Benitoite.Release.Refinement.Key.code_of_shape"
+      ],
+      "Key.equal_of_shapes": [
+        "Benitoite.Release.Refinement.Key.equal_of_shapes"
+      ],
+      "decimal_key_compare": [
+        "Benitoite.Release.Refinement.decimal_key_compare"
+      ],
+      "Key.map_measure": [
+        "Benitoite.Release.Refinement.Key.map_measure"
+      ],
+      "Key.set_measure": [
+        "Benitoite.Release.Refinement.Key.set_measure"
+      ],
+      "Key.normalizeMap": [
+        "Benitoite.Release.Refinement.Key.normalizeMap"
+      ],
+      "Key.normalizeSet": [
+        "Benitoite.Release.Refinement.Key.normalizeSet"
+      ]
+    },
+    "C20": {
+      "PreparedLeaf.checkIn": [
+        "Benitoite.Release.Refinement.PreparedLeaf.checkIn"
+      ],
+      "PreparedLeaf.entailsIn": [
+        "Benitoite.Release.Refinement.PreparedLeaf.entailsIn"
+      ],
+      "PreparedLeaf.bind_entails": [
+        "Benitoite.Release.Refinement.PreparedLeaf.bind_entails"
+      ],
+      "checked_refinement": [
+        "Benitoite.Release.Refinement.checked_refinement"
+      ],
+      "ValueRel.toApprox_eq": [
+        "Benitoite.Release.Refinement.IntervalConnection.ValueRel.toApprox_eq"
+      ],
+      "normal_shared_iff": [
+        "Benitoite.Release.Refinement.IntervalConnection.normal_shared_iff"
+      ],
+      "typed_returned_mark": [
+        "Benitoite.Release.Refinement.IntervalConnection.typed_returned_mark"
+      ],
+      "connect_bind": [
+        "Benitoite.Release.Refinement.IntervalConnection.connect_bind"
+      ],
+      "connect_return": [
+        "Benitoite.Release.Refinement.IntervalConnection.connect_return"
+      ]
+    },
+    "C15": {
+      "general_leaves": 76,
+      "step_conclusions": 60,
+      "target_state_only": 16
+    }
+  },
+  "handwritten_declarations": 106,
+  "handwritten_by_module": {
+    "TelApplication": 14,
+    "StandardKeyTyping": 17,
+    "StandardContracts": 9,
+    "StandardScalar": 7,
+    "StandardBodies": 5,
+    "IntervalFailure": 49,
+    "ValueInversion": 5
+  }
+}
