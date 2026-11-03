@@ -59,8 +59,13 @@ private def stepRun (P : Program) (B : Builtins) (σ : PathEnv) (oracle : Oracle
       some (none, .matchRun v cap arms next k μ)
   | (.ret _), (.guardF _ _ _ _ _ :: _), _ => none
   | (.ret _), [], _ => none
-  | (.app (.closure signature body) ws), k, μ =>
-      if ws.length = signature.arity then some (none, .run (body.apply ws) (markPush k) μ) else none
+  | (.app f@(.closure ..) ws), k, μ
+  | (.app f@(.lam ..) ws), k, μ
+  | (.app f@(.dependentLam ..) ws), k, μ =>
+      match closeVal Capture.empty f with
+      | .closure signature body =>
+          if ws.length = signature.arity then some (none, .run (body.apply ws) (markPush k) μ) else none
+      | _ => none
   | (.app (.externalRef f ts) ws), k, μ =>
       some (none, .run (Closure.pure (.externalCall f ts ws)) k μ)
   | (.externalCall f ts ws), k, μ =>
@@ -309,6 +314,28 @@ theorem step_io_exit {P B σ oracle externalOracle rel fresh q b ts es rs ws k �
   constructor
   · simp [step,hq,stepRun,hs,hk,hn.splitHandler_none,ho]
   · exact .E_Exit hq hs hk hn hr
+
+/-- 関数を空捕捉で閉じてから適用し、計算した一歩と同じ実行規則を返す。 -/
+theorem step_lambda {P B σ oracle externalOracle rel fresh q k μ f runtime body ws}
+    (hv : q.view = .app f ws) (hc : closeVal Capture.empty f = .closure runtime body)
+    (hlen : ws.length = runtime.arity) :
+    step P B σ oracle externalOracle rel fresh (.run q k μ) =
+      some (none,.run (body.apply ws) (markPush k) μ) ∧
+    Step P B σ (.run q k μ) none (.run (body.apply ws) (markPush k) μ) := by
+  have rule := Step.E_Lam (P := P) (B := B) (σ := σ) (k := k) (μ := μ) hv hc hlen
+  refine ⟨?_,rule⟩
+  cases f <;> simp [closeVal,Capture.env,Capture.empty,Capture.values] at hc
+  all_goals
+    obtain ⟨rfl,rfl⟩ := hc
+    simp [step,hv,stepRun,closeVal,hlen,Capture.empty]
+
+/-- closureの値を空捕捉で閉じ、引数数の一致を条件に同じ本体を適用する。 -/
+example {P B σ oracle externalOracle rel fresh q k μ runtime body ws}
+    (hv : q.view = .app (.closure runtime body) ws)
+    (hlen : ws.length = runtime.arity) :
+    step P B σ oracle externalOracle rel fresh (.run q k μ) =
+      some (none,.run (body.apply ws) (markPush k) μ) :=
+  (step_lambda hv rfl hlen).1
 
 end
 end Benitoite.Release.Refinement

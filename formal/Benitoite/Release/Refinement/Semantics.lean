@@ -77,8 +77,9 @@ inductive Step (P : Program) (B : Builtins) (σ : PathEnv) : State → Option Ev
   | E_Return {v n k μ} {q : Closure} :
       q.view = (.ret v) →
       Step P B σ (.run q (.letF n :: k) μ) none (.run (n.apply [v]) k μ)
-  | E_Lam {q : Closure} {signature body ws k μ} :
-      q.view = .app (.closure signature body) ws → ws.length = signature.arity →
+  | E_Lam {q : Closure} {f signature body ws k μ} :
+      q.view = .app f ws → closeVal Capture.empty f = .closure signature body →
+      ws.length = signature.arity →
       Step P B σ (.run q k μ) none (.run (body.apply ws) (markPush k) μ)
   | E_ExternalApply {q : Closure} {f ts ws k μ} :
       q.view = .app (.externalRef f ts) ws →

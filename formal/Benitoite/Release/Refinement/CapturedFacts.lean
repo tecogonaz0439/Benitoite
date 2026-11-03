@@ -131,7 +131,7 @@ theorem StateTyE.captured_beta_one
     apply Step.E_Lam (signature := cap.closeTel (.param name x (.done a e))) (body := .mk cap body) (ws := [v])
     · change Comp.app _ [closeVal Capture.empty v] = _
       rw [hcv]
-      rfl
+    · rfl
     · simp [Capture.closeTel,Tel.arity,Tel.names_bind,Tel.names]
   refine ⟨⟨Ψ,R,_,b,ε,_,hs,hsrc,he,hk,?_,?_,hck,hcμ⟩,hstep,
     ⟨Ψ,some ((cap.extend v).closeTy a),_,b,ε,_,hs,hdst,he,hk.markPush hca,?_,?_,hck.markPush,hcμ⟩⟩

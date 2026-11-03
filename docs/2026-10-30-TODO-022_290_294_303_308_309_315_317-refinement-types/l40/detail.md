@@ -241,7 +241,7 @@ theorem HasTypeVQ.canonical_boolean {P B Ψ Q C Φ v T}
     ∃ b, v = .const (.boolean b)
 ```
 
-Scalar は `T.norm.core = .base tag` を入力に、同じ tag の Const と ConstOK を返す。List は既存 inv_list と閉文脈の構文排除から `∃vs, v=.list vs`、data は con 又は標準 atError、関数は fnRef/prim/op/raise/lam/dependentLam/closure/externalRef の8構文を返す。最後の8形のうち、実際の q.view で生の lam/dependentLam が closure へ変わる点は closeVal の定義を使って15で接続する。δ が closure の内部の場所番号を読める既存の境界を狭めない。
+Scalar は `T.norm.core = .base tag` を入力に、同じ tag の Const と ConstOK を返す。List は既存 inv_list と閉文脈の構文排除から `∃vs, v=.list vs`、data は con 又は標準 atError、関数は fnRef/prim/op/raise/lam/dependentLam/closure/externalRef の8構文を返す。最後の8形のうち、実際の q.view で生の lam/dependentLam が closure へ変わる点は closeVal の定義を使って15で接続する。（注: 捕捉から読む生の lam は closeVal で closure に変わらない。15 では、広げた E_Lam の前提 `closeVal Capture.empty f = .closure …` で供給する。plan.md の 2026-11-03 の L40.15 の停止の項。）δ が closure の内部の場所番号を読める既存の境界を狭めない。
 
 Map/Set/Bytes/Dict、scoped/opaque、external、PathBases/ScopePattern の canonical forms は第2節の各行の構文と元規則の前提を返す。tvar/tapp/ctor は閉じた値 kind の Annotation の下で排除し、cont は値の一般の HasTypeVQ ではなく ImageOk/ContTy の場所の証拠から読む。量化を閉じた規則に限るだけで、実行全状態を空ストアへ限らない。
 
