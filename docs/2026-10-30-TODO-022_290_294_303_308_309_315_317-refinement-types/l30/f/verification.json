@@ -1,0 +1,94 @@
+{
+  "local_checks": [
+    {
+      "name": "builtin-examples",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "Benitoite/Release/Refinement/BuiltinLogicExamples.lean"
+      ],
+      "exit": 0,
+      "seconds": 0.9330838749999999,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "certificate-examples",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "Benitoite/Release/Refinement/CertificateKernelExamples.lean"
+      ],
+      "exit": 0,
+      "seconds": 0.623118625,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "same-observation",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l30/f/same-observation.lean"
+      ],
+      "exit": 0,
+      "seconds": 0.550162292,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "default_build": {
+    "command": [
+      "lake",
+      "build"
+    ],
+    "exit": 0,
+    "seconds": 130.56695883400002,
+    "bytes": 64072,
+    "sha256": "a091e021f29a2a84741d6d9b7eec4dd7acb19c5c6469e27be8fcfde770739f36"
+  },
+  "raw_execution": {
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "--run",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l30/f/run-kernel.lean"
+    ],
+    "exit": 0,
+    "seconds": 0.3608667089999926,
+    "bytes": 195,
+    "sha256": "5a9c4480473cf8f9537e93183dae4d6dfcc1ce92b784d51ae78959ef560cd2cd"
+  },
+  "raw_checks": 10,
+  "raw_passed": 10,
+  "comparison_forms": 30,
+  "closed_comparison_inputs": 78,
+  "additional_boundary_inputs": 48,
+  "near_alterations": 6,
+  "named_source_declarations": 150,
+  "formal_max_rss": {
+    "value": null,
+    "reason": "not scheduled for this work"
+  },
+  "later_source_changes": 0,
+  "same-observation.lean": {
+    "bytes": 777,
+    "sha256": "0c65db808aa4326e7b84ab4b237bdaebcd4d5846561e671f09393db8c8893268"
+  },
+  "run-kernel.lean": {
+    "bytes": 1506,
+    "sha256": "1482c863d4131e4f736e9359437042850138ddb59d5482f75376f13febae859a"
+  }
+}

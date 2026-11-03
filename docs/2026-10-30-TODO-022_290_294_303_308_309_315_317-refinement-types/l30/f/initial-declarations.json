@@ -1,0 +1,872 @@
+[
+  {
+    "module": "BuiltinFacts",
+    "name": "Benitoite.Release.Refinement.Pred.closedTrue_sound_at",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "BuiltinFacts",
+    "name": "Benitoite.Release.Refinement.measure_nonnegative_at",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "BuiltinFacts",
+    "name": "Benitoite.Release.Refinement.observeAs_sort",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "BuiltinFacts",
+    "name": "Benitoite.Release.Refinement.boolean_apart_at",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "BuiltinFacts",
+    "name": "Benitoite.Release.Refinement.characterCode_projection",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "BuiltinFacts",
+    "name": "Benitoite.Release.Refinement.characters_subset_at",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "BuiltinFacts",
+    "name": "Benitoite.Release.Refinement.constructor_apart_at",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "BuiltinFacts",
+    "name": "Benitoite.Release.Refinement.character_code_range_at",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "ScalarLogic",
+    "name": "Benitoite.Release.Refinement.zero_mod_iff",
+    "kind": "theorem",
+    "private": true
+  },
+  {
+    "module": "ScalarLogic",
+    "name": "Benitoite.Release.Refinement.ieeeRank",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "ScalarLogic",
+    "name": "Benitoite.Release.Refinement.ieeeRank_compare",
+    "kind": "theorem",
+    "private": true
+  },
+  {
+    "module": "ScalarLogic",
+    "name": "Benitoite.Release.Refinement.ieeeCompare_rank",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "ScalarLogic",
+    "name": "Benitoite.Release.Refinement.cross_le_trans",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "ScalarLogic",
+    "name": "Benitoite.Release.Refinement.cross_lt_le_trans",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "ScalarLogic",
+    "name": "Benitoite.Release.Refinement.cross_le_lt_trans",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "ScalarLogic",
+    "name": "Benitoite.Release.Refinement.ScalarRule",
+    "kind": "inductive",
+    "private": false
+  },
+  {
+    "module": "ScalarLogic",
+    "name": "Benitoite.Release.Refinement.ScalarRule.test",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "ScalarLogic",
+    "name": "Benitoite.Release.Refinement.int_order_test",
+    "kind": "theorem",
+    "private": true
+  },
+  {
+    "module": "ScalarLogic",
+    "name": "Benitoite.Release.Refinement.ieee_order_test",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "ScalarLogic",
+    "name": "Benitoite.Release.Refinement.decimalCompare",
+    "kind": "def",
+    "private": true
+  },
+  {
+    "module": "ScalarLogic",
+    "name": "Benitoite.Release.Refinement.decimal_order_test",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "ScalarLogic",
+    "name": "Benitoite.Release.Refinement.orderedScalarSorts",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "ScalarLogic",
+    "name": "Benitoite.Release.Refinement.equalityScalarSorts",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "ScalarLogic",
+    "name": "Benitoite.Release.Refinement.scalarSorts",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "ScalarLogic",
+    "name": "Benitoite.Release.Refinement.observation_order_test",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "ScalarLogic",
+    "name": "Benitoite.Release.Refinement.observation_equality_test",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "ScalarLogic",
+    "name": "Benitoite.Release.Refinement.observation_eq_ne",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "ScalarLogic",
+    "name": "Benitoite.Release.Refinement.ieee_finite_parts",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "ScalarLogic",
+    "name": "Benitoite.Release.Refinement.ieee_nan_parts",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "ScalarLogic",
+    "name": "Benitoite.Release.Refinement.ieee_class_parts",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "ScalarLogic",
+    "name": "Benitoite.Release.Refinement.ieeePartition",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "ScalarLogic",
+    "name": "Benitoite.Release.Refinement.ieeeClassTest",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "ScalarLogic",
+    "name": "Benitoite.Release.Refinement.ieee_partition",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "ScalarLogic",
+    "name": "Benitoite.Release.Refinement.ieee_class_test",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "ScalarLogic",
+    "name": "Benitoite.Release.Refinement.observation_order_complement",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "BuiltinSchema",
+    "name": "Benitoite.Release.Refinement.BuiltinSchema.implies",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "BuiltinSchema",
+    "name": "Benitoite.Release.Refinement.BuiltinSchema.scalarOrder",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "BuiltinSchema",
+    "name": "Benitoite.Release.Refinement.BuiltinSchema.scalarRules",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "BuiltinSchema",
+    "name": "Benitoite.Release.Refinement.BuiltinSchema.equalityRules",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "BuiltinSchema",
+    "name": "Benitoite.Release.Refinement.BuiltinSchema.measures",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "BuiltinSchema",
+    "name": "Benitoite.Release.Refinement.BuiltinSchema.sorts",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "BuiltinSchema",
+    "name": "Benitoite.Release.Refinement.BuiltinSchema.classes",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "BuiltinSchema",
+    "name": "Benitoite.Release.Refinement.BuiltinSchema.comparisons",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "BuiltinSchema",
+    "name": "Benitoite.Release.Refinement.BuiltinSchema.observationAtom",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "BuiltinSchema",
+    "name": "Benitoite.Release.Refinement.BuiltinSchema.comparisonInteger",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "BuiltinSchema",
+    "name": "Benitoite.Release.Refinement.BuiltinSchema.characterCompare",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "BuiltinSchema",
+    "name": "Benitoite.Release.Refinement.BuiltinSchema.floatSort",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "BuiltinSchema",
+    "name": "Benitoite.Release.Refinement.BuiltinSchema.floatZero",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "BuiltinSchema",
+    "name": "Benitoite.Release.Refinement.BuiltinSchema.floatPartition",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "BuiltinSchema",
+    "name": "Benitoite.Release.Refinement.BuiltinSchema.floatClass",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "BuiltinSchema",
+    "name": "Benitoite.Release.Refinement.BuiltinSchema.candidates",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "BuiltinLogic",
+    "name": "Benitoite.Release.Refinement.BuiltinSchema.scalarOrder_sound_at",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "BuiltinLogic",
+    "name": "Benitoite.Release.Refinement.BuiltinSchema.characterCompare_sound_at",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "BuiltinLogic",
+    "name": "Benitoite.Release.Refinement.BuiltinSchema.floatClass_sound_at",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "BuiltinLogic",
+    "name": "Benitoite.Release.Refinement.BuiltinSchema.implies_sound_at",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "BuiltinLogic",
+    "name": "Benitoite.Release.Refinement.BuiltinSchema.eqComplement_sound_at",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "BuiltinLogic",
+    "name": "Benitoite.Release.Refinement.BuiltinSchema.orderComplement_sound_at",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "BuiltinLogic",
+    "name": "Benitoite.Release.Refinement.BuiltinSchema.candidates_sound_at",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "BuiltinLogic",
+    "name": "Benitoite.Release.Refinement.PreparedLeaf.checkRaw",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "BuiltinLogic",
+    "name": "Benitoite.Release.Refinement.PreparedLeaf.raw_sound_at",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "BuiltinLogic",
+    "name": "Benitoite.Release.Refinement.PreparedLeaf.check",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "BuiltinLogicExamples",
+    "name": "Benitoite.Release.Refinement.BuiltinLogicExamples.closedComparisons",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "BuiltinLogicExamples",
+    "name": "Benitoite.Release.Refinement.BuiltinLogicExamples.closedClasses",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "BuiltinLogicExamples",
+    "name": "Benitoite.Release.Refinement.BuiltinLogicExamples.comparisons_30",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "BuiltinLogicExamples",
+    "name": "Benitoite.Release.Refinement.BuiltinLogicExamples.classes_12",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "BuiltinLogicExamples",
+    "name": "Benitoite.Release.Refinement.BuiltinLogicExamples.samples",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "BuiltinLogicExamples",
+    "name": "Benitoite.Release.Refinement.BuiltinLogicExamples.registered_samples",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "BuiltinLogicExamples",
+    "name": "Benitoite.Release.Refinement.BuiltinLogicExamples.registry",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "BuiltinLogicExamples",
+    "name": "Benitoite.Release.Refinement.BuiltinLogicExamples.registry_100",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "CertificateData",
+    "name": "Benitoite.Release.Refinement.Certificate",
+    "kind": "inductive",
+    "private": false
+  },
+  {
+    "module": "CertificateData",
+    "name": "Benitoite.Release.Refinement.Term.linearKeys",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "CertificateData",
+    "name": "Benitoite.Release.Refinement.Pred.linearKeys",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "CertificateData",
+    "name": "Benitoite.Release.Refinement.Refutation.keys",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "CertificateData",
+    "name": "Benitoite.Release.Refinement.Certificate.extraKeys",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "CertificateData",
+    "name": "Benitoite.Release.Refinement.Certificate.keys",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "ConjunctionMeaning",
+    "name": "Benitoite.Release.Refinement.Pred.interpret_conjuncts",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "ConjunctionMeaning",
+    "name": "Benitoite.Release.Refinement.Pred.interpret_conjuncts_at",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "ConjunctionMeaning",
+    "name": "Benitoite.Release.Refinement.Pred.interpret_ofConjuncts_at",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "ConjunctionMeaning",
+    "name": "Benitoite.Release.Refinement.Pred.conjuncts_ofConjuncts_flat",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "ConjunctionMeaning",
+    "name": "Benitoite.Release.Refinement.Pred.conjuncts_flat_idem",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "CertificateKernel",
+    "name": "Benitoite.Release.Refinement.Certificate.check",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "CertificateKernel",
+    "name": "Benitoite.Release.Refinement.Certificate.sound_at",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "CertificateKernel",
+    "name": "Benitoite.Release.Refinement.CertificateKernel.check",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "CertificateKernel",
+    "name": "Benitoite.Release.Refinement.CertificateKernel.implication_sound_at",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "CertificateKernel",
+    "name": "Benitoite.Release.Refinement.CertificateKernel.implication_sound",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "CertificateKernel",
+    "name": "Benitoite.Release.Refinement.CertificateKernel.check_sound",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "CertificateEntails",
+    "name": "Benitoite.Release.Refinement.premise_entails",
+    "kind": "theorem",
+    "private": true
+  },
+  {
+    "module": "CertificateEntails",
+    "name": "Benitoite.Release.Refinement.substitute_atomic",
+    "kind": "theorem",
+    "private": true
+  },
+  {
+    "module": "CertificateEntails",
+    "name": "Benitoite.Release.Refinement.EqProof.substitute_entails",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "CertificateEntails",
+    "name": "Benitoite.Release.Refinement.PreparedLeaf.raw_entails",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "CertificateEntails",
+    "name": "Benitoite.Release.Refinement.Certificate.refutation_entails",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "CertificateEntails",
+    "name": "Benitoite.Release.Refinement.Certificate.sound",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "CertificateLegacy",
+    "name": "Benitoite.Release.Refinement.Certificate.Legacy",
+    "kind": "inductive",
+    "private": false
+  },
+  {
+    "module": "CertificateLegacy",
+    "name": "Benitoite.Release.Refinement.Certificate.Legacy.check",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "CertificateLegacy",
+    "name": "Benitoite.Release.Refinement.Certificate.Legacy.embed",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "CertificateLegacy",
+    "name": "Benitoite.Release.Refinement.PreparedLeaf.raw_of_check",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "CertificateLegacy",
+    "name": "Benitoite.Release.Refinement.Certificate.Legacy.success_preserved",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "EqProofTransport",
+    "name": "Benitoite.Release.Refinement.EqProof.recontextualize",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "EqProofTransport",
+    "name": "Benitoite.Release.Refinement.EqProof.structural_check_context",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "CertificateKernelExamples",
+    "name": "Benitoite.Release.Refinement.CertificateKernelExamples.premise",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "CertificateKernelExamples",
+    "name": "Benitoite.Release.Refinement.CertificateKernelExamples.goal",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "CertificateKernelExamples",
+    "name": "Benitoite.Release.Refinement.CertificateKernelExamples.twice",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "CertificateKernelExamples",
+    "name": "Benitoite.Release.Refinement.CertificateKernelExamples.twice_checked",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "CertificateKernelExamples",
+    "name": "Benitoite.Release.Refinement.CertificateKernelExamples.twice_entails",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "CertificateKernelExamples",
+    "name": "Benitoite.Release.Refinement.CertificateKernelExamples.twice_entails_at",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "CertificateKernelExamples",
+    "name": "Benitoite.Release.Refinement.CertificateKernelExamples.images",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "CertificateKernelExamples",
+    "name": "Benitoite.Release.Refinement.CertificateKernelExamples.badTwice",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "CertificateKernelExamples",
+    "name": "Benitoite.Release.Refinement.CertificateKernelExamples.bad_twice_rejected",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "CertificateKernelExamples",
+    "name": "Benitoite.Release.Refinement.CertificateKernelExamples.nonnegative",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "CertificateKernelExamples",
+    "name": "Benitoite.Release.Refinement.CertificateKernelExamples.negativeLength",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "CertificateKernelExamples",
+    "name": "Benitoite.Release.Refinement.CertificateKernelExamples.negative_length_checked",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "CertificateKernelExamples",
+    "name": "Benitoite.Release.Refinement.CertificateKernelExamples.booleanApart",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "CertificateKernelExamples",
+    "name": "Benitoite.Release.Refinement.CertificateKernelExamples.booleanLeaf",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "CertificateKernelExamples",
+    "name": "Benitoite.Release.Refinement.CertificateKernelExamples.source",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "CertificateKernelExamples",
+    "name": "Benitoite.Release.Refinement.CertificateKernelExamples.target",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "CertificateKernelExamples",
+    "name": "Benitoite.Release.Refinement.CertificateKernelExamples.replacing",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "CertificateKernelExamples",
+    "name": "Benitoite.Release.Refinement.CertificateKernelExamples.legacySix",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "CertificateKernelExamples",
+    "name": "Benitoite.Release.Refinement.CertificateKernelExamples.P",
+    "kind": "def",
+    "private": true
+  },
+  {
+    "module": "CertificateKernelExamples",
+    "name": "Benitoite.Release.Refinement.CertificateKernelExamples.valid",
+    "kind": "theorem",
+    "private": true
+  },
+  {
+    "module": "CertificateKernelExamples",
+    "name": "Benitoite.Release.Refinement.CertificateKernelExamples.Γ",
+    "kind": "def",
+    "private": true
+  },
+  {
+    "module": "CertificateKernelExamples",
+    "name": "Benitoite.Release.Refinement.CertificateKernelExamples.typed_twice",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "CertificateKernelExamples",
+    "name": "Benitoite.Release.Refinement.CertificateKernelExamples.implication_elim",
+    "kind": "theorem",
+    "private": true
+  },
+  {
+    "module": "CertificateKernelExamples",
+    "name": "Benitoite.Release.Refinement.CertificateKernelExamples.float_clause",
+    "kind": "theorem",
+    "private": true
+  },
+  {
+    "module": "CertificateKernelExamples",
+    "name": "Benitoite.Release.Refinement.CertificateKernelExamples.float_between",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "Certificate",
+    "name": "Benitoite.Release.Refinement.PreparedLeaf.entails",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "Certificate",
+    "name": "Benitoite.Release.Refinement.PreparedLeaf.machine_exact",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "Certificate",
+    "name": "Benitoite.Release.Refinement.PreparedLeaf.stable",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "Certificate",
+    "name": "Benitoite.Release.Refinement.EqProof.checkSorted",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "Certificate",
+    "name": "Benitoite.Release.Refinement.EqProof.checkSorted_sound",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "Certificate",
+    "name": "Benitoite.Release.Refinement.Certificate.checkSorted",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "Certificate",
+    "name": "Benitoite.Release.Refinement.Certificate.checkSorted_sound",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "Certificate",
+    "name": "Benitoite.Release.Refinement.Refutation.AdmissibleIn",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "Certificate",
+    "name": "Benitoite.Release.Refinement.Certificate.AdmissibleIn",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "Certificate",
+    "name": "Benitoite.Release.Refinement.Certificate.checkIn",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "Certificate",
+    "name": "Benitoite.Release.Refinement.Certificate.checkIn_sound",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "ClosedEvaluation",
+    "name": "Benitoite.Release.Refinement.Pred.closedTrue",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "RefutationSyntax",
+    "name": "Benitoite.Release.Refinement.CertificateKernel.refute",
+    "kind": "def",
+    "private": false
+  },
+  {
+    "module": "RefutationSound",
+    "name": "Benitoite.Release.Refinement.CertificateKernel.builtin_sound_at",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "RefutationSound",
+    "name": "Benitoite.Release.Refinement.CertificateKernel.refute_sound_at",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "Logic",
+    "name": "Benitoite.Release.Refinement.Entails",
+    "kind": "inductive",
+    "private": false
+  },
+  {
+    "module": "Logic",
+    "name": "Benitoite.Release.Refinement.Entails.checked",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "Logic",
+    "name": "Benitoite.Release.Refinement.Entails.weaken",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "Logic",
+    "name": "Benitoite.Release.Refinement.Entails.cut",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "LogicSound",
+    "name": "Benitoite.Release.Refinement.Entails.sound",
+    "kind": "theorem",
+    "private": false
+  },
+  {
+    "module": "Basic",
+    "name": "Benitoite.Release.Refinement.Entails.bind",
+    "kind": "theorem",
+    "private": false
+  }
+]

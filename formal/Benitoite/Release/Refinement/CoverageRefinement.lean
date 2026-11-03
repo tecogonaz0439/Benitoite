@@ -6,14 +6,6 @@ import Benitoite.Release.Refinement.LogicSound
 namespace Benitoite.Release.Refinement
 noncomputable section
 
-theorem Pred.interpret_conjuncts (p : Pred) (η : ObservationEnvModel) :
-    p.interpret η = true ↔ ∀ q ∈ p.conjuncts, q.interpret η = true := by
-  induction p with
-  | truth => simp [Pred.interpret,Pred.atomValue,Pred.conjuncts]
-  | and p q ihp ihq => simp only [Pred.interpret,Bool.and_eq_true,Pred.conjuncts,
-      List.mem_append,or_imp,forall_and,←ihp,←ihq]
-  | _ => simp only [Pred.conjuncts,List.mem_singleton,forall_eq]
-
 theorem ValueMeaning.refined_iff {P η a p v} :
     ValueMeaning P η (.refined a p) v ↔ ValueMeaning P η a v ∧ p.interpret (selfModel η v) = true := by
   constructor

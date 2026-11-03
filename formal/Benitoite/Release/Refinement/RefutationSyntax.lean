@@ -1,5 +1,5 @@
 import Benitoite.Release.Refinement.LinearCombination
-import Benitoite.Release.Refinement.PreparedLeafSyntax
+import Benitoite.Release.Refinement.BuiltinLogic
 
 /-! # 枝内の先行参照を持つ有限の反証 -/
 namespace Benitoite.Release.Refinement
@@ -61,7 +61,7 @@ def discardTodo (next : List NNF → List NNF → Bool) (todo facts : List NNF) 
 def discardFact (next : List NNF → List NNF → Bool) (todo facts : List NNF) (i : Nat) : Bool :=
   if i < facts.length then next todo (facts.eraseIdx i) else false
 
-/-- 組込みの葉は登録表の検査を接続するまで受けない。 -/
+/-- 組込みの葉を再検査し、再計算したNNFを同じ枝へ追加する。 -/
 def refute (keys : KeyTable) (todo facts : List NNF) : Refutation → Bool
   | .consume c => consume (fun todo facts => refute keys todo facts c) todo facts
   | .cases l r => cases (fun todo facts => refute keys todo facts l)
@@ -74,7 +74,11 @@ def refute (keys : KeyTable) (todo facts : List NNF) : Refutation → Bool
   | .closeAtom p n => closeAtom facts p n
   | .discardTodo c => discardTodo (fun todo facts => refute keys todo facts c) todo facts
   | .discardFact i c => discardFact (fun todo facts => refute keys todo facts c) todo facts i
-  | .builtin _ _ => false
+  | .builtin l c =>
+      l.checkRaw (facts.map (NNF.toPred keys)) &&
+        match normalize keys l.predicate false with
+        | some q => refute keys (q::todo) facts c
+        | none => false
 
 end CertificateKernel
 end Benitoite.Release.Refinement

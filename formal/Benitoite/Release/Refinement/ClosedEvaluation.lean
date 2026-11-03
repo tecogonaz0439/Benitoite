@@ -130,6 +130,9 @@ def Pred.evalWith (η : ObservationEnvModel) : Pred → Option Bool
 def Pred.evalClosed (p : Pred) : Option Bool :=
   if p.WF 0 ∧ p.Sorted [] none then p.evalWith (fun _ => none) else none
 
+/-- some trueだけを成功とし、失敗と偽をともに拒否する。 -/
+def Pred.closedTrue (p : Pred) : Bool := p.evalClosed == some true
+
 def Pred.Atomic : Pred → Prop
   | .and _ _ | .or _ _ | .not _ => False
   | _ => True

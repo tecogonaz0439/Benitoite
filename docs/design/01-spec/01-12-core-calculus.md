@@ -3416,7 +3416,7 @@ information order に当たる `Observation.InfoLE` は、scalar と対象の sn
 
 Not は T/F を反転し、U を保つ。`evalWith` は左右の部分述語の結果の組でこの表を定め、左の失敗だけで全体を打ち切る順序を規則にしない。通常の計算の短絡 `or` は左を先に実行し、左の計算が実行時エラーなら右を実行せず止まる。述語の評価では、左が U でも右が T なら Or は T となる。両者は異なる評価である。
 
-成功の健全性は `Pred.evalWith_sound`・`evalClosed_sound` が二値の `Pred.interpret` との一致として述べる。閉じた述語のすべてが評価できるとはしない。`ClosedObservable` を満たすときの完全性は `evalClosed_complete` にある。`Entails.closed`・`Entails.ground` は、閉じて種類も適合する述語の評価が T のときだけ導出を作る。`Entails` は仮定、真、偽の除去、And/Or/Not、等号・整数の比較、閉じた評価の有限規則を持つ。意味上の任意の含意を前提として導出を代用しない。
+成功の健全性は `Pred.evalWith_sound`・`evalClosed_sound` が二値の `Pred.interpret` との一致として述べる。閉じた述語のすべてが評価できるとはしない。`ClosedObservable` を満たすときの完全性は `evalClosed_complete` にある。`Entails.closed`・`Entails.ground` は、閉じて種類も適合する述語の評価が T のときだけ導出を作る。`Entails` は仮定、真、偽の除去、And/Or/Not、等号・整数の比較、閉じた評価と、証明書の検査を使う `checkedAt` の19構成子を持つ。`checkedAt ν hc hp` は、元の述語pからqへの証明書の検査成功hcと、`predBind ν p`の導出hpから、`predBind ν q`を導く。`checked`は恒等置換による導出である。意味上の任意の含意を前提として導出を代用しない。
 
 `Linear` は数学Intの係数列とboundを持ち、`Holds` は係数と整数環境の内積がbound以下であることを表す。`Linear.toPred keys` は、鍵の各項に係数を掛けて加算する整数述語を作る。意味との対応は、鍵と係数の列長の一致を要求しない。係数に対応する鍵がない位置では、`keyEnv`が整数0を返す。鍵が余る場合は、係数列の末尾で加算を終える。`Linear.toPred_sound_at` は、任意の構文の値置換νを受けた述語の真と、置換された各鍵の整数射影における `Holds` を対応させる。鍵の相異性を要求しない。`Pred.scaled_le_at` と `eq_positive_at` は、同じνの像の上で非負の定数倍と等号を介した正値の含意を示す。閉じた葉と同一原子の正負も、その像の上で扱う。これらは意味の補題であり、`Entails` の追加の構成子ではない。
 
@@ -3434,9 +3434,9 @@ compare/floatClass/decimalRepresented/charactersIn/member/constructorIsの6原�
 
 `LinearStep` は非負結合と丸めの2構成子を持つ。非負結合は現在のfactsの先行位置を参照し、各参照先が線形不等式であること、乗数が非負であること、全係数列が鍵列と同じ長さであることを検査する。空和は同じ長さの零係数列と上限0とする。係数と上限を再計算し、expectedの全体と照合する。丸めは正除数・全係数の整除・床の上限・出力列長を検査する。`LinearStep.sound`は、検査成功と、現在のfactsのすべての線形の葉の`Holds`から出力の`Holds`を導く。係数と上限は数学Intであり、機械整数の幅を仮定しない。
 
-`Refutation`はconsume・cases・derive・closeLinear・closeAtom・split・discardTodo・discardFact・builtinの9構成子を持つ。`CertificateKernel.refute`は固定した鍵列、todo、factsを受け取る。consumeはtruthを捨て、falsityで閉じ、linearとliteralをfactsの末尾へ移し、Andをtodoへ分解する。Orはcasesだけで読む。casesは同じ元のfactsから左右の枝を検査する。deriveは検査した線形の結果をfactsの末尾へ加える。splitは存在する鍵番号について、単位係数の`x≤cut`と負の単位係数の`cut+1≤x`を別々のfactsへ加え、両枝を要求する。closeLinearは全係数0かつ負の上限、closeAtomは構造が同じ原子の正負を検査する。discardTodoは先頭を捨て、discardFactは存在する位置を削除して、その後の列を子へ渡す。組込みの葉を指定するbuiltinは拒否する。
+`Refutation`はconsume・cases・derive・closeLinear・closeAtom・split・discardTodo・discardFact・builtinの9構成子を持つ。`CertificateKernel.refute`は固定した鍵列、todo、factsを受け取る。consumeはtruthを捨て、falsityで閉じ、linearとliteralをfactsの末尾へ移し、Andをtodoへ分解する。Orはcasesだけで読む。casesは同じ元のfactsから左右の枝を検査する。deriveは検査した線形の結果をfactsの末尾へ加える。splitは存在する鍵番号について、単位係数の`x≤cut`と負の単位係数の`cut+1≤x`を別々のfactsへ加え、両枝を要求する。closeLinearは全係数0かつ負の上限、closeAtomは構造が同じ原子の正負を検査する。discardTodoは先頭を捨て、discardFactは存在する位置を削除して、その後の列を子へ渡す。builtinは現在のfactsに対して登録済みの葉を再検査し、葉の述語から再計算したNNFをtodoの先頭へ加える。
 
-枝内の意味は`BranchHoldsAt`で、todoとfactsの各`toPred`を同じνとηの上で真とする条件である。各規則の`consume_sound_at`・`cases_sound_at`・`derive_sound_at`・`split_sound_at`・`close_linear_sound_at`・`close_atom_sound_at`・`discard_todo_sound_at`・`discard_fact_sound_at`は、子の枝がこの条件から矛盾することと、当該の検査成功から、親の枝も矛盾することを示す。正規化との接続は`normalize_holds_at`・`normalize_linear_at`で行う。線形化と正規化の二つの構造再帰を繰り返さず、同じ鍵列とνに対する意味保存を合成する。これらは個々の規則の健全性であり、反証全体から`Entails`を作る規則ではない。
+枝内の意味は`BranchHoldsAt`で、todoとfactsの各`toPred`を同じνとηの上で真とする条件である。各規則の`consume_sound_at`・`cases_sound_at`・`derive_sound_at`・`split_sound_at`・`close_linear_sound_at`・`close_atom_sound_at`・`discard_todo_sound_at`・`discard_fact_sound_at`は、子の枝がこの条件から矛盾することと、当該の検査成功から、親の枝も矛盾することを示す。正規化との接続は`normalize_holds_at`・`normalize_linear_at`で行う。線形化と正規化の二つの構造再帰を繰り返さず、同じ鍵列とνに対する意味保存を合成する。`builtin_sound_at`は、現在のfactsの真と葉のraw検査成功から葉の述語を真とし、そのNNFを加えた子へ渡す。`refute_sound_at`は9構成子の一回の帰納で、検査成功と、同じνとηの上でのtodo・factsの真が矛盾することを示す。探索が証明書を返すことは前提にしない。
 
 `EqualityMode` は構造の一致と整数射影の等値を区別する。`RewritePosition p integer` は、自己を変える位置をeq/le/ltの両辺とadd/neg/scaleの下、および論理結合子の下に限る。他の項・原子では自己を含まないことを要求する。`RewritePosition.integer_sound` は、二つの値置換の自己位置の整数射影が等しく、他の位置の像が等しいとき、その述語の二値の意味が一致することを示す。構造の一致はsnapshot内にも使える。未観測の変数と整数0は整数射影で等しくても、Setの鍵としての観測を区別するので、整数射影の等値だけをsnapshot内の書換えに使わない。
 
@@ -3444,7 +3444,36 @@ compare/floatClass/decimalRepresented/charactersIn/member/constructorIsの6原�
 
 上層の`EqProof.checkIn`は、rawの検査に加え、両端点と全中間の`Term.HasSort`・`Term.Declared`、integer modeの整数sort、同じPの`VarianceValid`、Φの全述語の`Sorted`・`Declared`を検査する。fieldの子のsortはdata、measureの子のsortはその入力sortである。`FieldRef.Declared`は同じ宣言表のconstructor・名目型・型引数の数・欄位置・具体化した結果sortを照合する。`KeyTable.checkIn`は、同じPの`VarianceValid`と、全鍵の整数sort・宣言照合を検査する。線形化のrawな整数射影とは別の入口である。宣言の判断を含むこの上層のBoolは非計算的な決定可能性を用い、rawの検査と構造比較は構成的な計算である。
 
-`rewritePosition`の計算が真であることは、`RewritePosition`と同値である。`EqProof.substitute_sound_at`は、rawな等号検査と置換位置の検査の成功、および同じνとηでのΦの真から、`p.open t`と`p.open u`の同じνの像の意味の一致を導く。`substituteIn`は等号の`checkIn`、置換位置、開いた前後の述語のsortと宣言を一緒に検査する。その健全性はこの前後の適格性と、同じ像の上の意味の一致を返す。`Certificate.check`のsubstituteは`EqProof.check`による構造一致を使う。
+`rewritePosition`の計算が真であることは、`RewritePosition`と同値である。`EqProof.substitute_sound_at`は、rawな等号検査と置換位置の検査の成功、および同じνとηでのΦの真から、`p.open t`と`p.open u`の同じνの像の意味の一致を導く。`substituteIn`は等号の`checkIn`、置換位置、開いた前後の述語のsortと宣言を一緒に検査する。その健全性はこの前後の適格性と、同じ像の上の意味の一致を返す。`Certificate.check`のsubstituteは、goalと`p.open u`の構造一致、明示したmodeの`EqProof.checkRaw`、`rewritePosition`、および`p.open t`を結論とする子の証明書を検査する。
+
+`PreparedLeaf`は、述語・登録種類・実際の項の引数列・現在の仮定列への参照列を持つ。`checkRaw`は次の有限の表を再検査する。closedとlengthNonnegativeは、旧の成功を保つため引数列・参照列を使わない。開いた規則の参照列は空とし、sameObservationだけは現在の仮定列の一位置を指定できる。この場合は、引数二項の構造一致、参照先と葉の述語の構造一致、参照先が論理結合子でないことを検査する。参照形は先行する原子の仮定のuseと同じであり、引数二項と原子の対応は要求しない。将来・兄弟の枝の事実を読む番号は受理しない。
+
+| 登録種類 | 分岐 | 検査する規則と意味の根拠 |
+|---|---:|---|
+| closed | 1 | `closedTrue`。閉性・sort・`evalClosed = some true`を要求する |
+| lengthNonnegative | 1 | 閉じたList長の非負。述語の形と`closedTrue`を要求する |
+| measureNonnegative | 7 | 各measureの非負。正常結果には`Observation.measure_nonnegative`、失敗には整数射影の既定値0を使う |
+| booleanApart | 2 | 同じ項のBoolean比較がtrueとfalseに同時に等しくならない二つの向き |
+| compareComplement | 22 | scalar七sortのeq/neの両向き14と、Character・Decimalの`¬lt ↔ ge`・`¬le ↔ gt`の両向き8。Floatの順序の否定は含めない |
+| charactersSubset | 1 | 同じStringの各文字の範囲包含。下限・上限の包含を検査する |
+| constructorApart | 1 | 同じdata観測の異なる構成子名の相異。二名の不一致を検査する |
+| sameObservation | 16 | 項の構造一致から得る、sortごとに固定した代表の原子qについての`q → q`。論理を強めない。参照形は先行する原子の仮定のuseと同じ。構造の等号による原子の一致はEqProofのsubstitute（`substitute_sound_at`）が受け持つ |
+| scalarOrder | 30 | Character・Decimal・Float32/64のeq対称・eq推移・lt推移・le推移・lt-le・le-ltの24と、Boolean・String・Unitのeq対称・推移の6 |
+| characterCodeRange | 1 | 文字コードの0以上0x10ffff以下とサロゲート範囲外。`Char.valid`と実際のmeasureを使う |
+| characterCompare | 6 | Characterのeq/ne/lt/le/gt/geと文字コードの整数比較の双方向の対応 |
+| floatCompareClass | 12 | 二幅と六分類。実際のbitsの指数部・仮数部・符号から分類と比較の有限の節を導く |
+
+表の合計は12種類100分岐である。Floatのfinite・NaN・正負のInfinityは排他的に全体を覆う。正負のゼロはfiniteの部分であり、互いに排他的で、数としては等しい。NaNの節はeqと四つの順序比較の不成立を返す。正のInfinityは有限項より大きく、その項以下にはならず、負のInfinityは有限項より小さく、その項以上にはならない。この節と分類の全被覆から、有限な両端点の間の項がfiniteであることを導ける。比較の対称性・推移性は、成功する比較を前提とする含意であり、NaNへの反射則を含まない。Decimalは正の10の冪の交差積を使い、IEEEの共通補題は仮数部・指数部の幅を引数にして二幅へ適用する。閉じた比較30形と分類12形は、実際の`evalClosed`の結果に照合する。比較は数の4sortの`a < b`の組に加え、等しい端点と逆向きの端点の48件も照合する。
+
+`PreparedLeaf.raw_sound_at`は、raw検査成功と、渡された仮定列の各述語が同じνとηで真であることから、葉の述語の同じ像が真であることを示す。証明書を置換後に作り直すことや、開いた葉の構文が置換で不変であることは要求しない。旧の`PreparedLeaf.check`・`entails`・`machine_exact`・`stable`は、閉じた二種類を受ける入口である。
+
+`Certificate`はuse・leaf・substitute・consume・cases・discard・refuteの7構成子を持つ。`check Φ goal`は、生の仮定列Φを受け、useは存在する位置の述語との構造一致、leafは葉の述語との構造一致とraw検査、consume/casesは先頭のAnd/Or、discardは先頭の削除を検査する。refuteはΦの各連言を平坦化してpremiseを作り、premise・goal・証明書中の述語から鍵列を再計算する。その同じ鍵列で`premise ∧ ¬goal`をNNFへ再計算し、反証を検査する。`Certificate.sound_at`は7構成子の一回の帰納で、同じνとηの上でのΦの真からgoalの真を導く。
+
+`CertificateKernel.check premise goal c`は`Certificate.check premise.conjuncts goal c`である。`implication_sound_at`は元の検査成功から任意のνの像の含意を、`implication_sound`は恒等置換の含意を示す。`check_sound`はpremiseとgoalの否定が同時に真でないことを示す。`Certificate.refutation_entails`は`Pred.ofConjuncts Φ`をpremiseにした検査成功から`Entails Φ goal`を作る。`Certificate.sound`は生のΦの検査成功を同じ導出へ移す。構造一致を使う旧6場合は`Certificate.Legacy.success_preserved`で成功を保存する。
+
+上層の`Certificate.checkIn`は、rawの検査成功、最上位の`c.keys (Pred.ofConjuncts Φ) goal`に対する`KeyTable.checkIn`、goalと全仮定のsort・宣言、途中の各証明書の適格性を同時に要求する。substituteの適格性は`EqProof.substituteIn`と子の適格性であり、refuteの適格性は全builtinの述語のsort・宣言と子の適格性である。`checkSorted`はsortとraw検査をまとめる別の入口である。鍵・宣言・途中の適格性を照合した結果と、raw検査器の実行可能性を区別する。
+
+`Entails`のweaken・cut・sound・bindは19構成子を扱う。checkedAtの場合、weakenとcutは子の帰納仮定、soundは`implication_sound_at`を使う。bindは、元のνと外側のτを`fun i => (ν i).bind (termBind? τ)`へ合成し、`predBind_comp`で両述語の像を対応させる。公開の`Entails.bind`は、元の導出と任意の値置換から、仮定列と結論を同じ置換で写した導出を返す。型・行・範囲・値の移送や型付けに、証明書の健全性という独立の仮定を加えない。
 
 `measure_machine_exact` は、本番の `Observation.measure` の正常結果と受け手の部分観測の成功から、measure項の部分観測と二値の解釈が同じ非負整数になることを導く。`measure_stable` は、元の各変数の観測から置換像の部分観測への `OptionInfoLE` と、元のmeasureの正常結果を前提に、置換後も同じ結果を得ることを示す。失敗した観測の存在や、開いた述語そのものの不変は結論しない。
 

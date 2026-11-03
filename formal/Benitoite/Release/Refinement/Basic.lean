@@ -40,6 +40,9 @@ theorem Entails.bind {Ξ p} (h : Entails Ξ p) (σ : ObservationEnv) :
   | closed hw hs he =>
     rw [Pred.bind_closed hw σ]
     exact .closed hw hs he
+  | checkedAt ν hc _ ih =>
+    simp only [predBind_comp] at ih ⊢
+    exact .checkedAt (fun i => (ν i).bind (termBind? σ)) hc ih
 
 
 

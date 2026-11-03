@@ -48,5 +48,8 @@ theorem Entails.sound {Φ : List Pred} {p : Pred} (h : Entails Φ p) :
     intro η _
     rw [Pred.interpret_closed hw η]
     exact Pred.evalClosed_sound hw hs he
+  | checkedAt ν hc _ ih =>
+    intro η hm
+    exact CertificateKernel.implication_sound_at hc ν η (ih η hm)
 
 end Benitoite.Release.Refinement
