@@ -14,11 +14,19 @@ namespace Benitoite.Release.Refinement
     Ordinary (a.shiftV k c) ↔ Ordinary a := by
   exact Ty.notContCore_shiftV a k c
 
+theorem Ty.carrierFacts_shiftV (a : Ty) (k c : Nat) :
+    (a.shiftV k c).carrierFacts = a.carrierFacts.map (Pred.shiftV k (c+1)) := by
+  simp only [Ty.carrierFacts, Ty.core_shiftV]
+  cases hc : a.core <;> try rfl
+  case base b => cases b <;> simp [Ty.shiftV, integerBounds, Pred.shiftV,
+    predBind, termBind_var, termBind_integer, shiftIndex]
+
 theorem Ty.assume_shiftV (a : Ty) (k c : Nat) :
     (a.shiftV k c).assume = a.assume.map (Pred.shiftV k (c+1)) := by
   unfold Ty.assume
-  rw [Ty.core_shiftV, Ty.predicates_shiftV]
-  cases hc : a.core <;> rfl
+  rw [Ty.core_shiftV, Ty.predicates_shiftV, Ty.carrierFacts_shiftV]
+  cases hc : a.core <;> simp only [List.map_append] <;> rfl
+
 
 /-- 文脈の事実の所属を、lookup と self の開きに分ける。 -/
 theorem Ctx.mem_facts {Γ : Ctx} {q : Pred} : q ∈ Γ.facts ↔
@@ -87,6 +95,7 @@ theorem Ctx.mem_facts_extend {Γ : Ctx} {a : Ty} {q : Pred} :
         by rw [Ty.assume_shiftV]; exact List.mem_map.mpr ⟨r, hr, rfl⟩,
         Pred.open_shiftV_outer r i⟩
 
+
 theorem Term.references_map_shiftV {Γ : Ctx} {t : Term} (h : t.References Γ) (k c : Nat) :
     t.References (Γ.map (Option.map (Ty.shiftV k c))) := by
   apply Term.varsIn_mono h
@@ -113,9 +122,9 @@ theorem Ctx.mem_facts_extendNone {Γ : Ctx} {q : Pred} :
     q ∈ Γ.extendNone.facts ↔ ∃ p ∈ Γ.facts, p.lift = q := by
   have he : Γ.extendNone.facts = (Γ.extend (.base .unit)).facts := by
     simp only [Ctx.extendNone, Ctx.extend, Ctx.facts, List.zipIdx_cons,
-      List.flatMap_cons, Ty.shiftV, Ty.assume, Ty.core, Ty.refinementPredicates, List.map_nil, List.nil_append]
+      List.flatMap_cons, Ty.shiftV, Ty.assume, Ty.carrierFacts, Ty.core, Ty.refinementPredicates, List.map_nil, List.nil_append]
   rw [he, Ctx.mem_facts_extend]
-  simp only [Ty.assume, Ty.core, Ty.refinementPredicates, List.not_mem_nil, false_or]
+  simp only [Ty.assume, Ty.carrierFacts, Ty.core, Ty.refinementPredicates, List.nil_append, List.not_mem_nil, false_or]
 
 
 end Benitoite.Release.Refinement

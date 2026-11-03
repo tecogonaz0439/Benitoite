@@ -64,7 +64,7 @@ theorem data_sub : Ty.LeQ boxProgram [] [] (.data "MeaningBox" [sourceArgument])
 
 theorem continuation_meaning (η : ObservationEnvModel) :
     ValueMeaning boxProgram η continuation (.const .unit) :=
-  .mk .cont (by intro p hp; cases hp)
+  .mk .cont (by intro p hp; cases hp) (by intro p hp; cases hp)
 
 theorem source_argument_meaning (η : ObservationEnvModel) :
     ValueMeaning boxProgram η sourceArgument (.const .unit) := by
@@ -75,7 +75,7 @@ theorem source_meaning (η : ObservationEnvModel) :
     ValueMeaning boxProgram η (.data "MeaningBox" [sourceArgument])
       (.con "MeaningBox.mk" [] [.const .unit]) := by
   refine .mk (.con (ts := [sourceArgument.norm]) (cd := boxCon)
-    (by simp [boxProgram]) rfl ?_ ?_) (by intro p hp; cases hp)
+    (by simp [boxProgram]) rfl ?_ ?_) (by intro p hp; cases hp) (by intro p hp; cases hp)
   · intro a ha
     have he : a = .tvar 0 := by simpa [boxCon] using ha
     subst a

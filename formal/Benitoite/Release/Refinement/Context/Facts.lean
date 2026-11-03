@@ -66,6 +66,19 @@ private theorem self_images (Γ : Ctx) (a : Ty) (p : Pred) :
 theorem Ty.assume_wellFormed {P C Γ a} (ha : Ty.Annotation P C Γ a) :
     ∀ p ∈ a.assume, Pred.WellFormed P C (Γ.extend a) p := by
   cases a <;> try (simp only [Ty.assume,Ty.core,Ty.refinementPredicates]; exact fun _ hp => False.elim (List.not_mem_nil hp))
+  case base b =>
+    intro p hp
+    cases b <;> simp only [Ty.assume, Ty.carrierFacts, Ty.core, Ty.refinementPredicates,
+      List.append_nil, integerBounds, List.mem_cons, List.not_mem_nil, or_false] at hp <;>
+      try contradiction
+    all_goals first | (rcases hp with rfl | rfl) | subst p
+    all_goals
+      constructor
+      · simp [Pred.WF, Pred.VarsIn, Term.VarsIn, Ctx.extend]
+      · simp [Pred.Sorted, Term.HasSort, Term.Shape, Term.References, Term.VarsIn,
+          Ctx.Readable, Ctx.extend, Ty.shiftV, Ty.HasSort, Ty.sort?, Ty.core]
+      · simp [Pred.Declared, Term.Declared, Ctx.declarationSelf, Ctx.Readable,
+          Ctx.extend, Ty.shiftV, Ty.core]
   case refined a q =>
     rw [Ty.assume_refined ha.wf.2.2]
     intro p hp

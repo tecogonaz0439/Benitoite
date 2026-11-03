@@ -1,3 +1,4 @@
+import Benitoite.Release.Refinement.CarrierFacts
 import Benitoite.Release.Refinement.Patterns
 
 /-! # 正規形の値の意味と子値の意味 -/
@@ -18,7 +19,8 @@ theorem ScopedValue.covers {outer inner v} (hc : RangeIx.Covers outer inner)
 mutual
   inductive ValueMeaning (P : Program) (η : ObservationEnvModel) : Ty → Val → Prop where
     | mk {a v} : ValueShapeMeaning P η a.norm.core v →
-        (∀ p ∈ a.norm.refinementPredicates, p.interpret (selfModel η v) = true) → ValueMeaning P η a v
+        (∀ p ∈ a.norm.refinementPredicates, p.interpret (selfModel η v) = true) →
+        (∀ p ∈ a.carrierFacts, p.interpret (selfModel η v) = true) → ValueMeaning P η a v
   inductive ValueShapeMeaning (P : Program) (η : ObservationEnvModel) : Ty → Val → Prop where
     | const {c} : ValueShapeMeaning P η c.type (.const c)
     | con {c ts tys args cd} : P.cons c = some cd → cd.ntys = ts.length →
@@ -62,9 +64,21 @@ noncomputable section
 theorem ValueMeaning.norm_iff (P : Program) (η : ObservationEnvModel) (a : Ty) (v : Val) :
     ValueMeaning P η a.norm v ↔ ValueMeaning P η a v := by
   constructor <;> intro h <;> cases h with
-  | mk hs hp =>
+  | mk hs hp hc =>
     exact .mk (by simpa only [Ty.norm_idem] using hs)
       (by simpa only [Ty.norm_idem] using hp)
+      (by simpa only [Ty.carrierFacts_norm] using hc)
+
+theorem ValueMeaning.assume {P η a v} (h : ValueMeaning P η a v) :
+    ∀ p ∈ a.assume, p.interpret (selfModel η v) = true := by
+  intro p hp
+  have ho := Ty.assume_ordinary hp
+  rw [Ty.assume_eq_carrier_append ho] at hp
+  cases h with
+  | mk hs hr hc =>
+    rcases List.mem_append.mp hp with hp | hp
+    · exact hc p hp
+    · exact hr p (by simpa only [Ty.predicates_norm] using hp)
 
 theorem ScopedValue.forget {ix v} (P : Program) (η : ObservationEnvModel) (o : OpaqueName)
     (h : ScopedValue ix v) : ValueShapeMeaning P η (.opaque o ix) v := by
@@ -80,12 +94,12 @@ theorem ValueShapeMeaning.scoped_inv {P η a v} (h : ValueShapeMeaning P η a v)
     .checked | .checkedRequest | .checkedAtOpaque => intro o k ix he; cases he
 
 theorem ValueMeaning.of_scoped {P η o k ix v} (h : ScopedValue ix v) :
-    ValueMeaning P η (.scoped o k ix) v := .mk (.scoped h) (by intro p hp; cases hp)
+    ValueMeaning P η (.scoped o k ix) v := .mk (.scoped h) (by intro p hp; cases hp) (by intro p hp; cases hp)
 
 theorem ValueMeaning.scoped_inv {P η o k ix v} (h : ValueMeaning P η (.scoped o k ix) v) :
     ScopedValue ix v := by
   cases h with
-  | mk hs _ => exact hs.scoped_inv o k ix rfl
+  | mk hs _ _ => exact hs.scoped_inv o k ix rfl
 
 /-- 範囲を広げる部分型は、成功値の形を保つ。 -/
 theorem ValueMeaning.scoped_covers {P η o k inner outer v}
@@ -95,7 +109,7 @@ theorem ValueMeaning.scoped_covers {P η o k inner outer v}
 /-- scoped から opaque への部分型は、同じ添字の成功値の意味を持つ。 -/
 theorem ValueMeaning.scoped_forget {P η o k ix v}
     (h : ValueMeaning P η (.scoped o k ix) v) : ValueMeaning P η (.opaque o ix) v :=
-  .mk (h.scoped_inv.forget P η o) (by intro p hp; cases hp)
+  .mk (h.scoped_inv.forget P η o) (by intro p hp; cases hp) (by intro p hp; cases hp)
 
 end
 end Benitoite.Release.Refinement

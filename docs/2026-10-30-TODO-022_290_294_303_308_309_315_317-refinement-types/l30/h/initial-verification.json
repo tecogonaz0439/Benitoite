@@ -1,0 +1,44 @@
+{
+  "parallel_build": {
+    "label": "parallel-build",
+    "command": "lake build",
+    "start": 1793668614.62398,
+    "end": 1793668615.765436,
+    "exit": 0,
+    "bytes": 43387,
+    "sha256": "e824e0ec4e251b72fe8c40aebd45d1e0cb3ca41b33e1505768822af1f275895e"
+  },
+  "switch_build": {
+    "exit": 0,
+    "bytes": 58004,
+    "sha256": "b92b3520b7eb7ed72c23dee687807479ad5df5952541f974083269d20f782808",
+    "time_note": "開始・終了の個別計時は未採取。switch_startからswitch_build_successの観測区間内。"
+  },
+  "final_build": {
+    "label": "final-build",
+    "command": "lake build",
+    "start": 1793669453.945466,
+    "end": 1793669584.206157,
+    "exit": 0,
+    "bytes": 63199,
+    "sha256": "166a34b2d8d27617fa17e2bbb0aee0826191de318e2e60d6028dab0dfb2ef913"
+  },
+  "work": {
+    "label": "work",
+    "command": "scripts/check.sh --level work --base 82a7f626e38b6e861f896ec5033e08e6acdfa435",
+    "start": 1793669890.352621,
+    "end": 1793669898.314681,
+    "exit": 0,
+    "bytes": 5757,
+    "sha256": "a744a36c4f4b3381eb0782e907a5f3bc821ee983284e68fbb0ec2aec101a96bb"
+  },
+  "work_dry_run": {
+    "label": "work-dry-run",
+    "command": "scripts/check.sh --level work --base 82a7f626e38b6e861f896ec5033e08e6acdfa435 --dry-run",
+    "start": 1793669890.229274,
+    "end": 1793669890.3524458,
+    "exit": 0,
+    "bytes": 759,
+    "sha256": "64d55dda28a186f407da219e643dd463fa441643dcb6bfebbe3da7f0ffc20dcf"
+  }
+}

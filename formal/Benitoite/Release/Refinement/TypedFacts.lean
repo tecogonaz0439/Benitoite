@@ -1,3 +1,4 @@
+import Benitoite.Release.Refinement.NumericRepresented
 import Benitoite.Release.Refinement.AdmissibleMap
 import Benitoite.Release.Refinement.VarianceTransport
 
@@ -205,6 +206,46 @@ theorem HasTypeVQ.toTerm_of_integerCarrier {P B store Q C Γ Φ v a}
   simp only [Pred.open, Pred.lift, predBind_comp]
   exact predBind_id p
 
+theorem Const.NumericRepresented.assume {c : Const} (hc : c.NumericRepresented)
+    (Ξ : List Pred) : ∀ p ∈ c.type.assume,
+    Entails Ξ (p.openOptional (Val.const c).toTerm?) := by
+  intro p hp
+  cases c <;> simp only [Const.type, Ty.assume, Ty.carrierFacts, Ty.core,
+    Ty.refinementPredicates, List.append_nil, integerBounds, List.mem_cons,
+    List.not_mem_nil, or_false] at hp <;> try contradiction
+  all_goals first
+    | (rcases hp with rfl | rfl
+       all_goals
+         simp only [Val.toTerm?, Pred.openOptional, predBind, termBind_var,
+           termBind_integer, Option.getD_some]
+         apply Entails.integer_le
+         first | exact hc.1 | exact hc.2 | omega)
+    | skip
+  case integer n =>
+    rcases hp with rfl | rfl
+    · exact Entails.integer_le n.property.1
+    · exact Entails.integer_le n.property.2
+  case byte n =>
+    rcases hp with rfl | rfl
+    · apply Entails.integer_le
+      change (0 : Int) ≤ (n : Int)
+      omega
+    · apply Entails.integer_le
+      change (n : Int) ≤ 255
+      change n ≤ 255 at hc
+      omega
+  case decimal n scale =>
+    subst p
+    apply Entails.closed
+    · trivial
+    · exact ⟨by trivial, rfl⟩
+    · simp [Pred.evalClosed, Pred.evalWith, Pred.atomReady, Pred.atomValue,
+        termReady, Pred.openOptional, Val.toTerm?, predBind, termBind_var,
+        observeAs, Term.interpret, Observation.sort, Const.NumericRepresented,
+        Pred.WF, Pred.VarsIn, Term.VarsIn, Pred.Sorted, Term.HasSort,
+        Term.Shape, Term.References, Term.observe] at hc ⊢
+      omega
+
 theorem HasTypeVQ.assume {P B store Q C Γ Φ v a}
     (h : HasTypeVQ P B store Q C Γ Φ v a) :
     ∀ p ∈ a.assume, Entails (Γ.facts ++ Φ) (p.open (v.toTerm?.getD (.integer 0))) := by
@@ -212,8 +253,9 @@ theorem HasTypeVQ.assume {P B store Q C Γ Φ v a}
   | .V_Var hg _ =>
     intro p hp
     exact .hyp (List.mem_append_left _ (Ctx.mem_facts.mpr ⟨_, _, p, hg, hp, rfl⟩))
-  | .V_Const (c := c) _ =>
-    cases c <;> simp [Const.type, Ty.assume, Ty.refinementPredicates]
+  | .V_Const (c := c) hc =>
+    cases c <;> try (simpa only [Val.toTerm?, Pred.openOptional_some, Option.getD_some] using hc.represented.assume (Γ.facts ++ Φ))
+    all_goals intro p hp; cases hp
   | .V_DependentLam .. | .V_Closure .. | .V_Lam _ _ _ _ _ | .V_List _ _ _ _ => intro p hp; cases hp
   | .V_Con _ _ _ _ _ _ | .V_Super _ _ _ _ | .V_Raise .. | .V_LocRef _ _ | .V_LocLazy _ _ | .V_Bytes _ => intro p hp; cases hp
   | .V_Fun _ _ _ _ | .V_Prim _ _ _ _ _ | .V_Op _ _ _ _ | .V_Dict _ _ _ _ _ _ _ _
@@ -253,8 +295,8 @@ theorem HasTypeVQ.assume_optional {P B store Q C Γ Φ v a}
   | .V_Var hg _ =>
     intro p hp
     exact .hyp (List.mem_append_left _ (Ctx.mem_facts.mpr ⟨_, _, p, hg, hp, rfl⟩))
-  | .V_Const (c := c) _ =>
-    cases c <;> simp [Const.type, Ty.assume, Ty.refinementPredicates]
+  | .V_Const hc =>
+    exact hc.represented.assume _
   | .V_DependentLam .. | .V_Closure .. | .V_Lam _ _ _ _ _ | .V_List _ _ _ _ => intro p hp; cases hp
   | .V_Con _ _ _ _ _ _ | .V_Super _ _ _ _ | .V_Raise .. | .V_LocRef _ _ | .V_LocLazy _ _ | .V_Bytes _ => intro p hp; cases hp
   | .V_Fun _ _ _ _ | .V_Prim _ _ _ _ _ | .V_Op _ _ _ _ | .V_Dict _ _ _ _ _ _ _ _
@@ -288,5 +330,12 @@ theorem HasTypeVQ.assume_optional {P B store Q C Γ Φ v a}
       apply Entails.conjuncts he
       rw [Pred.open, Pred.conjuncts_bind]
       exact List.mem_map.mpr ⟨p, hp, rfl⟩
+
+theorem HasTypeVQ.carrierFacts {P B store Q C Γ Φ v a}
+    (h : HasTypeVQ P B store Q C Γ Φ v a) :
+    ∀ p ∈ a.carrierFacts,
+      Entails (Γ.facts ++ Φ) (p.open (v.toTerm?.getD (.integer 0))) := by
+  intro p hp
+  exact h.assume p (Ty.carrierFacts_subset_assume a p hp)
 
 end Benitoite.Release.Refinement

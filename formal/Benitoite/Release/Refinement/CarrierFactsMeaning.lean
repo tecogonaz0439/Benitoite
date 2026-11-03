@@ -1,6 +1,6 @@
 import Benitoite.Release.Refinement.CarrierFacts
 import Benitoite.Release.Refinement.RefinementObservation
-import Benitoite.Release.Refinement.ExternalObservation
+import Benitoite.Release.Refinement.NumericRepresented
 
 /-! # 型付き定数から型域の事実を供給する入口 -/
 namespace Benitoite.Release.Refinement

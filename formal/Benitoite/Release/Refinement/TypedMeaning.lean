@@ -1,3 +1,4 @@
+import Benitoite.Release.Refinement.CarrierFactsMeaning
 import Benitoite.Release.Refinement.MeaningTransport
 import Benitoite.Release.Refinement.ValueFacts
 
@@ -12,7 +13,7 @@ theorem constructor_meaning {P η c cd ts tys vs}
     (wf : ∀ t ∈ cd.args, t.WF 0 cd.ntys 0)
     (fields : ValueMeanings P η (cd.args.map (Ty.subst ts [])) vs) :
     ValueMeaning P η (.data cd.data ts) (.con c tys vs) := by
-  refine .mk ?_ (by intro p hp; cases hp)
+  refine .mk ?_ (by intro p hp; cases hp) (by intro p hp; cases hp)
   refine .con lookup (by simp [Ty.normTys_eq_map, n]) wf ?_
   have he : Ty.subst (Ty.normTys ts) [] = Ty.subst ts [] := funext (fun a => Ty.subst_norm_images a ts)
   rw [he]; exact fields
@@ -89,13 +90,28 @@ theorem refine_bridge {v t η} {p : Pred} (ht : v.toTerm? = some t) (hc : t.Clos
 
 
 theorem const_norm (c : Const) : (Const.type c).norm = Const.type c := by cases c <;> rfl
-theorem const_meaning (P η) (c : Const) : ValueMeaning P η (Const.type c) (.const c) := by
-  refine .mk ?_ ?_
+theorem const_meaning (P η) (c : Const) (hc : c.NumericRepresented) : ValueMeaning P η (Const.type c) (.const c) := by
+  refine .mk ?_ ?_ ?_
   · rw [const_norm]; cases c <;> exact .const
   · rw [const_norm]; cases c <;> (intro p hp; cases hp)
+  · exact hc.carrierFacts η
 
 theorem closed_of_refs {t : Term} (h : t.References []) : t.Closed :=
   Term.varsIn_mono h (fun i hi => by obtain ⟨a,ha,_⟩ := hi; simp at ha)
+
+/-- 閉じた型付き値の観測から、自己モデルで型域を読む。 -/
+theorem carrierFacts_meaning_closed {P B Ψ Q C v a}
+    (h : HasTypeVQ P B Ψ Q C [] [] v a) (η : ObservationEnvModel) :
+    ∀ p ∈ a.carrierFacts, p.interpret (selfModel η v) = true := by
+  intro p hp
+  obtain ⟨s,hs⟩ := Ty.carrierFacts_hasSort hp
+  obtain ⟨t,ht,hr⟩ := h.observation hs
+  have he := h.carrierFacts p hp
+  simp only [ht, Option.getD_some] at he
+  have hw := closed_of_refs hr.references
+  exact refine_bridge ht hw (by
+    apply he.sound η
+    simp [Ctx.facts])
 
 mutual
   theorem typed_meaning_aux {P : Program} {B Ψ Q C Γ Φ v a} (valid : P.VarianceValid)
@@ -103,31 +119,31 @@ mutual
       ValueMeaning P (fun _ => none) a v := by
     match h with
     | .V_Var hg _ => subst hΓ; simp at hg
-    | .V_Const _ => exact const_meaning P _ _
-    | .V_Lam .. => exact .mk .fn (by intro p hp; cases hp)
+    | .V_Const hc => exact const_meaning P _ _ hc.represented
+    | .V_Lam .. => exact .mk .fn (by intro p hp; cases hp) (by intro p hp; cases hp)
     | .V_DependentLam .. | .V_Closure .. | .V_Fun .. | .V_Prim .. | .V_Op .. | .V_ExternalRef .. =>
       exact MeaningTransport.dependentFn_meaning
-    | .V_ExternalHandle .. => exact .mk .external (by intro p hp; cases hp)
-    | .V_PathBases .. => exact .mk .pathBases (by intro p hp; cases hp)
-    | .V_ScopePattern .. => exact .mk .scopePattern (by intro p hp; cases hp)
+    | .V_ExternalHandle .. => exact .mk .external (by intro p hp; cases hp) (by intro p hp; cases hp)
+    | .V_PathBases .. => exact .mk .pathBases (by intro p hp; cases hp) (by intro p hp; cases hp)
+    | .V_ScopePattern .. => exact .mk .scopePattern (by intro p hp; cases hp) (by intro p hp; cases hp)
     | .V_Checked .. => exact .of_scoped .checked
     | .V_CheckedRequest .. => exact .of_scoped .checkedRequest
     | .V_CheckedAt .. => exact .of_scoped .checkedAt
     | .V_AtError hs =>
       rw [hs.errorType_eq]
-      exact .mk (.atError ⟨rfl,hs.standard.2⟩) (by intro p hp; cases hp)
-    | .V_Map .. => exact .mk .map (by intro p hp; cases hp)
-    | .V_Set .. => exact .mk .set (by intro p hp; cases hp)
-    | .V_Dict .. => exact .mk .dict (by intro p hp; cases hp)
-    | .V_Raise .. => exact .mk .fn (by intro p hp; cases hp)
-    | .V_LocRef .. => exact .mk .reference (by intro p hp; cases hp)
-    | .V_LocLazy .. => exact .mk .lazy (by intro p hp; cases hp)
-    | .V_Bytes .. => exact .mk .bytes (by intro p hp; cases hp)
+      exact .mk (.atError ⟨rfl,hs.standard.2⟩) (by intro p hp; cases hp) (by intro p hp; cases hp)
+    | .V_Map .. => exact .mk .map (by intro p hp; cases hp) (by intro p hp; cases hp)
+    | .V_Set .. => exact .mk .set (by intro p hp; cases hp) (by intro p hp; cases hp)
+    | .V_Dict .. => exact .mk .dict (by intro p hp; cases hp) (by intro p hp; cases hp)
+    | .V_Raise .. => exact .mk .fn (by intro p hp; cases hp) (by intro p hp; cases hp)
+    | .V_LocRef .. => exact .mk .reference (by intro p hp; cases hp) (by intro p hp; cases hp)
+    | .V_LocLazy .. => exact .mk .lazy (by intro p hp; cases hp) (by intro p hp; cases hp)
+    | .V_Bytes .. => exact .mk .bytes (by intro p hp; cases hp) (by intro p hp; cases hp)
     | .V_Con lookup n _ wf hs _ =>
       exact constructor_meaning lookup n wf (typed_meaning_auxs valid hs hΓ hΦ)
-    | .V_Super .. => exact .mk .dict (by intro p hp; cases hp)
+    | .V_Super .. => exact .mk .dict (by intro p hp; cases hp) (by intro p hp; cases hp)
     | .V_List hs .. =>
-      exact .mk (.list (typed_each_norm valid hs hΓ hΦ)) (by intro p hp; cases hp)
+      exact .mk (.list (typed_each_norm valid hs hΓ hΦ)) (by intro p hp; cases hp) (by intro p hp; cases hp)
     | .V_Sub hv sub .. =>
       have m := typed_meaning_aux valid hv hΓ hΦ
       subst hΓ hΦ

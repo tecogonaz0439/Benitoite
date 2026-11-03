@@ -106,8 +106,11 @@ theorem images_typed_bind {P B store Q C i a} (hi : Γ[i]? = some (some a)) :
   subst a
   exact .V_Var rfl (by intro b t e h; cases h)
 
-theorem context_facts : Γ.facts = [path, .eq (.var 1) (.integer 7)] ∧
-    Δ.facts = [path] := ⟨rfl, rfl⟩
+theorem context_facts :
+    Γ.facts = integerBounds (-9223372036854775808) 9223372036854775807 ++
+      [path, .le (.integer (-9223372036854775808)) (.var 1),
+        .le (.var 1) (.integer 9223372036854775807), .eq (.var 1) (.integer 7)] ∧
+    Δ.facts = integerBounds (-9223372036854775808) 9223372036854775807 ++ [path] := ⟨rfl, rfl⟩
 
 theorem transport : Transport (valEnv σ) Γ Φ Δ Φ := by
   constructor
@@ -123,15 +126,13 @@ theorem transport : Transport (valEnv σ) Γ Φ Δ Φ := by
     exact ⟨refinedInt, rfl, by simp [refinedInt]⟩
   · intro i; simp [valEnv]
   · intro p hp
-    have hp : p = path ∨ p = .eq (.var 1) (.integer 7) := by
-      simp only [context_facts.1, Φ, List.mem_append, List.mem_cons,
-        List.not_mem_nil, or_false] at hp
-      rcases hp with (h | h) | h
-      · exact Or.inl h
-      · exact Or.inr h
-      · exact Or.inl h
-    rcases hp with rfl | rfl
-    all_goals exact .hyp (List.mem_append_left _ (by rw [context_facts.2]; exact List.mem_cons_self))
+    simp only [context_facts.1, integerBounds, Φ, List.mem_append, List.mem_cons,
+      List.not_mem_nil, or_false] at hp
+    rcases hp with ((rfl | rfl) | (rfl | rfl | rfl | rfl)) | rfl
+    all_goals
+      apply Entails.hyp
+      simp [context_facts.2, integerBounds, valEnv, σ, predBind, termBind_var,
+        termBind_integer, Val.toTerm?, path]
 
 theorem latent_image : Eff.rawBind (valEnv σ) latent =
     .mk (fun _ => false) [failure 0, failure 0] := by
@@ -172,7 +173,7 @@ theorem path_lift_wf : path.lift.WF (Γ.length+1) := by
 theorem source_le : Ty.LeQ P Γ Φ valueTy resultTy := by
   apply Ty.LeQ.introduce path_lift_sorted
   exact .hyp (List.mem_append_right _ (List.mem_map.mpr
-    ⟨path, List.mem_append_left _ (by rw [context_facts.1]; exact List.mem_cons_self), rfl⟩))
+    ⟨path, List.mem_append_left _ (by rw [context_facts.1]; simp [integerBounds]), rfl⟩))
 
 theorem lambda_typed {P B store Q} :
     HasTypeVQ P B store Q [] Γ Φ sourceVal valueTy := by
@@ -326,7 +327,9 @@ theorem source_le : Ty.LeQ P source (Φ.map Pred.lift) refinedInt result := by
       Ctx.extend, refinedInt]
   · exact .hyp (List.mem_append_right _ (List.mem_map.mpr
       ⟨path, List.mem_append_left _ (Ctx.mem_facts_extend.mpr
-        (Or.inl (show path ∈ refinedInt.assume from List.mem_cons_self))), rfl⟩))
+        (Or.inl (show path ∈ refinedInt.assume from by
+          simp [refinedInt, path, Ty.assume, Ty.carrierFacts, Ty.core,
+            Ty.refinementPredicates, Pred.conjuncts, integerBounds]))), rfl⟩))
 
 theorem result_wf : result.WF 0 0 source.length := by
   simp [Ty.shiftV, termBind?, Term.VarsIn, Pred.VarsIn, result, refinedInt, path, Pred.lift, predBind, termBind, Ty.WF, Pred.WF,
