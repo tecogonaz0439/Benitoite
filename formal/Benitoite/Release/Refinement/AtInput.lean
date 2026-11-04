@@ -170,6 +170,12 @@ def Val.reqTarget : Val → Option Target
   | .con "Http.ClientRequest" _ [_, .const (.string url), _, _, _] => parseUrlTarget url
   | _ => none
 
+/-- HTTPS のループバック URL は、同じ IP と既定のポートを返す。 -/
+theorem parseUrlTarget_https_loopback : parseUrlTarget "https://127.0.0.1/" =
+    some (.endpoint ⟨.ip (.v4 2130706433 (by decide)),⟨443,by decide⟩⟩) := by
+  simp +decide [parseUrlTarget,urlAlphabet,parseAuthority,parseHost,
+    parseIPv4,splitText,splitChars,parseNatDec,urlPort,numericHost]
+
 private theorem parseAuthority_kind {s port t} (h : parseAuthority s port = some t) :
     t.kind = .endpoint := by
   unfold parseAuthority at h

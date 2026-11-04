@@ -1,0 +1,51 @@
+{
+  "exit": 0,
+  "base": "eb289e60a63a0cb238ad4e2a43aaa5ac1a84676e",
+  "date_utc": "2026-11-04T10:02:15.767246+00:00",
+  "seconds": 0.146136209,
+  "record_prefix": "resume1-",
+  "inputs": 1021,
+  "baseline": {
+    "bytes": 131826,
+    "sha256": "61b1a64691c2f8dd9eff614be6e0933fb6e67543b46ed7c7d632b3798c89fb55"
+  },
+  "final_inputs": {
+    "bytes": 132090,
+    "sha256": "298dc96b5f9257da9038b725a77eca5ec2479762a9fb6b76a8cad01e6a7fa170"
+  },
+  "added_modules": [
+    "formal/Benitoite/Release/Refinement/MembershipWiden.lean",
+    "formal/Benitoite/Release/Refinement/ScopedCallContracts.lean"
+  ],
+  "changed": [
+    "docs/design/01-spec/01-12-core-calculus.md",
+    "docs/design/07-quality/07-04-formal-semantics.md",
+    "formal/Benitoite.lean",
+    "formal/Benitoite/Release/Refinement/AtInput.lean",
+    "formal/Benitoite/Release/Refinement/MembershipTargets.lean",
+    "formal/Benitoite/Release/Refinement/ShapeTargets.lean"
+  ],
+  "removed": [],
+  "default_import_modules": 1008,
+  "affected_modules_in_default_import": [
+    "Benitoite.Release.Refinement.AtInput",
+    "Benitoite.Release.Refinement.MembershipTargets",
+    "Benitoite.Release.Refinement.MembershipWiden",
+    "Benitoite.Release.Refinement.ScopedCallContracts",
+    "Benitoite.Release.Refinement.ShapeTargets"
+  ],
+  "audited": 219,
+  "added_declarations": 102,
+  "obligations": 33,
+  "handoffs": 31,
+  "value_syntax": 25,
+  "typing_rules": 29,
+  "closed_inventory": 9,
+  "remaining_inventory": 1,
+  "relative_links": 22,
+  "group_bytes": 147182,
+  "script": {
+    "bytes": 8690,
+    "sha256": "381802b03fea3a9a8b63ceb4cb69418724ac8543a11547f10bda301fb8f5a9ec"
+  }
+}

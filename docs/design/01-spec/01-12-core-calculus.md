@@ -3282,9 +3282,17 @@ Lean の捕捉を持つ実行関係の `Step.E_Lam` は、`q.view = .app f ws`�
 
 `MembershipTargets` の `HasTypeVQ.target_member` は、空の型・値・経路条件の文脈での `HasTypeVQ P B Ψ Q [] [] [] v T`、`T.Holds o k (fixed r)`、`B.valKind o = some k`、`v.Adequate σ` から、同じ対象 `t` の射影と `r.Mem σ k t` を返す。ストア `Ψ` と `σ` は任意である。`canonical_held` が残す不透明型の定数は `ConstOK` と `valKind` の矛盾で排除し、保持値三形は範囲の被覆と snapshot の現在の所属で扱う。
 
+`HasTypeVQ.canonical_target` は、同じ前提から値が checked・checkedRequest・checkedAt のいずれかであることも返す。`target_member_interpret` は、これらの前提に `σ.Valid` と、同じ対象を持つ `targetValue (some σ) t` の観測の等号を加えて、パス・ホスト・端点の所属述語の二値の解釈を返す。有効性はこの観測の読者の前提であり、`target_member` の前提ではない。`request_form` は、空の型・値・経路条件の文脈での型付け、固定範囲を持つ端点の `Holds`、端点の `valKind`、`valContent o = some A`、同じ環境への適格性から、値が `checkedRequest target req` または `checkedAt s snapshot target (some req)` であることを返す。`request_target` は同じ前提から保持する端点と要求を存在量化し、その保持形、同じ要求の射影・内容の型・groundVal・reqTarget と、同じ環境での対象所属を返す。
+
+`MembershipWiden` の `HasTypeVQ.canonical_opaque` は、空の値文脈で型付いた不透明型の値を、Top の不透明型の定数と、同じ値の scoped の導出に分ける。型文脈・経路条件・ストアは任意である。`widen_opaque` は、定数では Top の自己被覆を使い、保持値では既存の逆転から scoped の導出を再構成し、scoped の共変と scoped_forget を合成する。`widen_instTarget_covers` と `HasTypeVsQ.widen_covers` は、元の範囲列の長さ、対象位置の形成、列の各範囲に対する被覆を前提に、型・行の像と同じ値列を保ったまま節の上限へ移す。不透明型どうしの共変の部分型規則は用いない。
+
 `Pred.member_mono` は、path・host・endpoint の全種類で、同じ観測の所属の解釈が真なら、被覆する範囲での解釈も真であることを示す。`Pred.member_inst_mono` は、同時に具体化した添字へこの性質を渡す。いずれも二値の解釈の命題であり、部分評価の成功は主張しない。部分評価で snapshot のない based の所属は評価不能のままである。
 
 `ShapeTargets` の `Builtins.ShapeOk.single_target` は、`ShapeOk`、`sg.shape = single k p`、`NamesWF sg.names sg.params`、同じ呼出しの `BuiltinArgs`、全実引数の同じ `σ` への適格性を前提とする。結論は `rs = [r]`、`(ws[p]?).bind Val.target? = some t`、`r.Mem σ k t`、`sg.shapeAt ws = single k p` である。位置 `p` は任意であり、依存列の範囲具体化・型と行の代入・先行する値の代入を通して同じ対象位置を読む。`PrimSig.Scoped.namesWF` は宣言の形成の names 欄から前提を供給する。理由: `signatureTel` は名前と引数型を同時に読むので、元の型列との対応には名前と型の同数が必要である。
+
+`Builtins.ShapeOk.common`・`eff_eq`・`inst_eff_mem` は、三つの形に共通する操作表の所属と効果原子を、任意の範囲列への具体化を通して返す。`single`・`single_inst` は原署名の opaque の対象位置と効果原子が同じ範囲を指すことを示す。`single_request` は、endpoint の single 呼出しに対し、対象位置の内容型の一致を前提に加え、同じ実値が保持する端点と要求を存在量化し、その保持形、要求の型・groundVal・端点と範囲所属を返す。
+
+`ScopedCallContracts.single_inputs` は、具体化の許容、範囲列の許容、署名の具体化、元の具体化済み署名から関数値の列への `TelClosure`、その列での実引数の型付け、実引数の Ground を受け取る。`TelClosure.apply` に渡す元列の注釈は署名の具体化から供給し、空の文脈の整形式と合わせて同じ `ws` を元列へ戻す。返された導出から `BuiltinArgs.normalized` を構成する。さらに ShapeOk・single の形・NamesWF・同じ環境への全実引数の適格性を使い、同じ範囲列と対象を返す。`request_inputs` は内容型の一致も受け取り、同じ実値が保持する端点と要求を存在量化し、その保持形と同じ要求の射影・型・groundVal・端点・範囲所属を返す。結果の部分型と効果の被覆は、元列へ戻す適用の結論である。
 
 `EffectTargets` の `Builtins.TargetAgreement.obs_allowed` は、同じ呼出しの `ShapeOk`、`TargetAgreement`、署名の lookup、IO 又は exit の分類、`NamesWF`、`BuiltinArgs`、全実引数の同じ `σ` への適格性、実際の IO 応答を前提とする。結論は、その署名の `opEff` にある同じ名前について、応答の全観測が具体化した実引数列の効果 `e` に許されることである。対象なしの形は観測が空であり、Top の形は同じ種類を保つ。単一の対象の形は、任意位置の保持対象の所属と同じ対象一つの観測から導く。`CoreAssumptions` は前提にしない。
 
