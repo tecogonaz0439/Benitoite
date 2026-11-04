@@ -154,6 +154,10 @@
 
 `ScopeValueDelta` と `RequestValueDelta` はパス・要求の射影と拡大を定める。パスは保持した絶対対象から同じ String を作り、要求は既存の valueRun から同じ req と端点を保つ。二つの保持形の型付けは default の枝を排除する。拡大の δ は同じ値を返し、許容表の被覆と既存の不透明型への互換拡大で結果を型付けする。`ScopeResponse` はチェック・射影・拡大の六項目を同じ lookup と δ へ集約する。任意の P・B の元の全 BuiltinArgs と、同じ宣言・対象の分類・許容した被覆から応答を構成し、共通表ではこれらの表の条件を定義から供給する。全純粋行の応答存在、実際の全応答の型・全有効環境への適格性・非 exit、正常値の Ground と同じ項観測の facts を証明する。Outcome.err も残す。externalRef・externalHandle・scopePattern の適格性は既定の True の枝を使い、項観測とパターンの束縛列から生入力を取り出せないことを別に照合する。
 
+`ScopedIOResponse` は共通表の七つの IO の具体の応答関係を定め、任意の P・B・Ψ と元の全 BuiltinArgs から、全応答の型・全有効環境への適格性・非 exit・同じ保持対象の観測と応答存在を証明する。関係は Result の具体の Ok/Error と実行時エラーから作り、型付け自体を定義に含めない。成功の型は String・Bytes・Unit・不透明な Http.Response、失敗の型は不透明な IOError・NetworkError である。二引数の行は保持パスと内容の両方を逆転し、送信は要求全体・groundVal・固定 reqTarget と保持 endpoint を照合する。型付き応答の前提は HasFile P、実表の lookup、既存の分類の欄と BuiltinArgs であり、新しい外部状態や正常成功の存在を仮定しない。共通表では分類の前提を定義から供給する。responseAssumptions は HasHttp P の下で六純粋項目と七 IO 項目の四つの応答条件を構成し、targetAgreement は同じ関係の対象一致を独立に構成する。
+
+同モジュールの target_member・obs_allowed は、実表の ShapeOk と HasHttp P からの NamesWF、同じ σ への実引数の適格性を、単一対象と観測の許容の一般定理へ渡す。全七行について、同じ範囲・保持対象・観測対象・効果の許容が一致し、CoreAssumptions は要らない。ScopedIOExamples は実表と有限の同じ P で、File.readTextIn の行について非 Top と Top の全前提を具体に供給し、ほかの行は全称の適用例として、任意 Ψ・全適格 σ の応答存在、同じ要求の受理と端点不一致・要求なしの拒否を検査する。応答中の不透明な内容、外部 IO の成否と副次的な通信の隔離は、この対象一致と区別する。
+
 `ModelConstraints` は、任意の型・型引数列と非空制約を含め、値の改名・値の代入・型パラメータの改名・閉じた型像による型の代入について sat と admits の八条件を証明する。TypeParamRenaming の制約の包含と SatAll の各型像の制約から、同じ arity・依存位置・コレクションの構造を保存する。値依存の篩と行像を除かず、Fail の個数を観測しない。`ScopeConstraintInstances` は同じ共通表の SubstitutionAssumptions と sat_unconstrained・admits_sat を構成する。宣言の arity・kind・行支持は HasHttp P と同じ lookup の形成から独立に供給する。`Eff.allows_bind_comp` は、二段の代入による許容を元の原子・最初の行像・残る行変数の三経路との同値で示す。
 
 二つの response は全 BuiltinArgs について同じ具体 δ の応答存在・Outcome.Typed・Ground・AdequateResult・非 exit を証明する。P の有限宣言、valKind と valContent の等号は表から供給し、CoreAssumptions を未検査の前提として要求しない。要求の成功値の適格性は同じ実引数 req から得る。失敗の payload も、Scope の六構成子、RequestCheckError の二構成子、Result の Ok/Error の型引数位置を同じ P で型付けする。
@@ -1050,6 +1054,7 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 | StoreTransport・Typing・StateTyping・ConstraintAssumptions・ReferenceStore・LazyStore・HandlerStore・ReferencePreservation・LazyPreservation・HandlerEffects・HandlerPreservation・HandlerOperation・HandlerGeneral・RuntimeTypeSubst・OperationStateExamples・RuntimeBuilderScope・StoreGeneral・BuilderValueTyping・BuilderStateLeaves・ContinuationGeneral・HandlerStoreExamples・HiddenCaptureBoundary・CaptureReadBoundary・ReadLocalRefs・LocalInvariant・ClosedRename・StateLeaves・ReplyState・ExternalStateLeaves・AtStateInputs・AtStateLeaves・PathBasesLeaves・SourcePreparation・StoreReplyLeaves | 「篩を含む状態の型付け」 |
 | PreparationTargets・PathBasesTargets・AtTargets・ScopeLegacyContracts | 「篩を含む状態の型付け」 |
 | ScopeDelta・RequestDelta・ScopeValueDelta・RequestValueDelta・ScopeResponse | 「篩を含む状態の型付け」。固定の解析を使うチェック、保持する絶対パス・同じ要求の射影、同じ値の拡大。AtInput の splitChars の全入力の帰納による文字列の往復と、受理した絶対パスの射影が元の文字列を返すこと。純粋六項目の全 BuiltinArgs と実応答の型・Ground・全有効環境への適格性・非 exit・同じ正常値の facts |
+| ScopedIOResponse・ScopedIOExamples | 同節。七 IO の全応答の型・適格性・存在・非 exit、同じ要求と endpoint、実表の対象一致と全環境の効果許容、非 Top・Top の全前提を供給する具体例 |
 
 以下の既存の表は Release などの対応である。
 

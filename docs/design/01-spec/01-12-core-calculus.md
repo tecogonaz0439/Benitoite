@@ -4031,6 +4031,12 @@ CaptureOk は None の位置に任意の Ground な値を保存できる。そ�
 
 `ScopeResponse.adequate_externalRef`・`adequate_externalHandle`・`adequate_scopePattern` は、各構文の全引数と任意の入力列について全有効環境の AdequateResult を供給する。これらの構文の `Val.Adequate` は既定の True の枝であり、保存した入力の再帰的な適格性を証明するものではない。`leaves_unobserved` は三つの構文の項観測が none であり、任意のパターンの束縛列の項観測も区別しないことを示す。これらの値に生の元入力を取り出す観測はない。外部呼出しの応答の型と存在は、この適格性とは別の条件である。
 
+`ScopedIOResponse.ioResponse` は File の読取り・書込み・追記の6項目と Http.sendIn を実名に対応させる。応答の関係は型付けの判断を含めず、String・各要素が0〜255の Bytes・Unit・Http.Response の成功値、IOError 又は NetworkError の Result.Error、実行時エラーの三つの形から構成する。Http.Response と二つの Error の内容は不透明な定数として表す。観測は最初の引数が保持する対象一つである。送信は checkedRequest 又は要求を持つ checkedAt から同じ要求全体を射影し、groundVal と固定の reqTarget が同じ endpoint を返すことを確かめる。起点を再解決せず、要求を持たない値や端点の不一致は送信関係に含めない。
+
+`ScopedIOResponse.response` は任意の P・B・Ψ と全 BuiltinArgs を扱う。前提は Result の同じ有限宣言（HasFile P）、共通表の lookup と IO の種類、B の対象・内容の分類、不透明な応答定数の分類である。readTextIn・readBytesIn・writeTextIn・writeBytesIn・appendTextIn・appendBytesIn・sendIn の各入口は同じ実署名の全入力を受け、同じ関係の全応答の Outcome.Typed・AdequateResult・非 exit・ShapeTargets と応答存在を返す。二引数の行では保持パスと String 又は Bytes の両方の型付けを元の依存列から取り出す。存在の証人は Result.Error であり、正常成功の存在や外部状態の精密な記述を前提にしない。共通表の分類は定義から供給でき、io_typed・io_kind・io_exists と、六純粋項目を合わせた responseAssumptions が、HasHttp P の下で同じ表の応答条件を構成する。
+
+`ScopedIOResponse.targetAgreement` は宣言の種類や型付き入力によらず、同じ表の全 IO 応答で対象一致を供給する。`target_member` は共通表の ShapeOk、宣言の形成からの NamesWF、元の BuiltinArgs と同じ σ への全実引数の適格性から、範囲列が一要素であること、同じ保持対象を一つ観測すること、同じ範囲への所属と効果の許容を同時に返す。obs_allowed は ShapeOk.single_target と Builtins.TargetAgreement.obs_allowed を使い、CoreAssumptions を要求しない。範囲は Top を含み、σ と Ψ を固定した代表へ限定しない。ScopedIOExamples は実際の共通表と有限プログラムで、File.readTextIn の行について非 Top・Top の両方の全前提を具体に供給する。ほかの六行は、BuiltinArgs を仮定する全称の適用例と応答の例である。観測対象の保証は静的な上限であり、副次的な通信や実体・情報フローの隔離を含まない。
+
 `InitialPrepared.source_state` は、同じ固定した初期状態の InitialPrepared、Program.ExternalWF、空の捕捉・ストア・継続で型付くソース計算、終端の注釈、閉性・適格性・BuiltinOnly を受け、その初期状態の StateTy を構成する。StateTy の σ.Valid は InitialPrepared.ready の入力から取り出し、PathEnv.Ready と ExternalWF は入力をそのまま返す。表層からこれらの入力を作る合成と外部応答の存在は結論に含めない。`prepared_unit_source` は空の外部宣言を持つ前述の具体表で、任意の有効な σ の下の return Unit について準備と元の型付けを同時に構成する。
 
 `StateLeaves.escape_let`・`escape_handler`・`escape_mark` は、任意の元状態と実際の escape の view、WellFormed・WellTyped・CoreAssumptions を受ける。escape の実値の型は元の戻り先 R から取り出す。let と handler を外すときの通常の結果注釈は元の継続枠から得ており、行先の型付けを仮定しない。let・mark の error/exit の pop は、元状態だけから残継続と同じストアを保持する。`ControlLeafInputs` はこの七遷移の実際のソース条件であり、`StateTyE.control_leaf` が Step・同じ σ/Eb の StateTyE・LocalStateInvariant を構成する。
