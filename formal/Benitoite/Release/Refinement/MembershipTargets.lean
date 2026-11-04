@@ -1,5 +1,6 @@
 import Benitoite.Release.Refinement.ScopeCoverage
 import Benitoite.Release.Refinement.CanonicalValues
+import Benitoite.Release.Refinement.ClosedEvaluation
 
 /-! # 型付きの保持値の対象と範囲への所属 -/
 namespace Benitoite.Release.Refinement
@@ -45,4 +46,45 @@ theorem HasTypeVQ.target_member {P B Ψ Q v T o k r σ}
     | request hk' _ _ _ _ hm =>
       cases Option.some.inj (hk'.symm.trans hk)
       exact ⟨t,rfl,hc.mem σ (hm.current ha.1)⟩
+
+/-- 対象の所属の解釈は、同じ snapshot のまま被覆で広げられる。 -/
+theorem Pred.member_mono {η : ObservationEnvModel} {k : Kind} {a : Term}
+    {r s : RangeExpr} (hc : s.Covers r)
+    (hm : (Pred.member k a r).interpret η = true) :
+    (Pred.member k a s).interpret η = true := by
+  change (Pred.member k a r).atomValue η = true at hm
+  change (Pred.member k a s).atomValue η = true
+  unfold Pred.atomValue at hm ⊢
+  cases ho : observeAs η (.target k) a <;> simp only [ho] at hm ⊢ <;> try cases hm
+  exact of_decide_eq_true hm |>.mono hc |> decide_eq_true
+
+example {η : ObservationEnvModel} {a : Term} {r s : RangeExpr} (hc : s.Covers r) :
+    ((Pred.member .path a r).interpret η = true → (Pred.member .path a s).interpret η = true) ∧
+    ((Pred.member .host a r).interpret η = true → (Pred.member .host a s).interpret η = true) ∧
+    ((Pred.member .endpoint a r).interpret η = true → (Pred.member .endpoint a s).interpret η = true) :=
+  ⟨Pred.member_mono hc, Pred.member_mono hc, Pred.member_mono hc⟩
+
+/-- 範囲の具体化で固定範囲を得た所属を、同時に具体化した被覆側へ渡す。 -/
+theorem Pred.member_inst_mono {η : ObservationEnvModel} {k : Kind} {a : Term}
+    {outer inner : RangeIx} (hc : outer.Covers inner) (rs : List RangeExpr)
+    {r : RangeExpr} (hi : inner.inst rs = .fixed r)
+    (hm : (Pred.member k a r).interpret η = true) :
+    ∃ s, outer.inst rs = .fixed s ∧ (Pred.member k a s).interpret η = true := by
+  have hh := hc.inst rs
+  rw [hi] at hh
+  cases ho : outer.inst rs with
+  | rvar i => rw [ho] at hh; cases hh
+  | fixed s => rw [ho] at hh; exact ⟨s, rfl, Pred.member_mono hh hm⟩
+
+example {η : ObservationEnvModel} (k : Kind) (a : Term) (rs : List RangeExpr)
+    (i : Nat) {r : RangeExpr} (hi : rs[i]? = some r)
+    (hm : (Pred.member k a r).interpret η = true) :
+    ∃ s, (RangeIx.rvar i).inst rs = .fixed s ∧ (Pred.member k a s).interpret η = true :=
+  Pred.member_inst_mono (outer := .rvar i) (inner := .rvar i) rfl rs
+    (by simp [RangeIx.inst, hi]) hm
+
+example (η : ObservationEnvModel) (k : Kind) (a : Term) (b : PathBase) (p : PathPattern)
+    (t : Target) (ho : a.observe η = some (.targetValue none t)) :
+    (Pred.member k a (.based b p)).evalWith η = none := by
+  simp [Pred.evalWith, Pred.atomReady, memberReady, ho, resolveSnapshot]
 end Benitoite.Release.Refinement
