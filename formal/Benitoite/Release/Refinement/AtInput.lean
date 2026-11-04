@@ -292,4 +292,62 @@ def parseAtPattern (k : Kind) : Val → Option RangeExpr
   | .scopePattern r => if r.FitsKind k ∧ r.WF ∧ r.Canonical then some r else none
   | _ => none
 
+private theorem splitChars_ne_nil (sep : Char) (cs : List Char) : splitChars sep cs ≠ [] := by
+  induction cs with
+  | nil => simp [splitChars]
+  | cons c cs ih =>
+    simp only [splitChars]
+    split
+    · simp
+    · cases h : splitChars sep cs with
+      | nil => simp
+      | cons part parts => simp
+
+private theorem intercalate_splitChars (sep : Char) (cs : List Char) :
+    List.intercalate [sep] (splitChars sep cs) = cs := by
+  induction cs with
+  | nil => simp [splitChars]
+  | cons c cs ih =>
+    obtain ⟨part,parts,h⟩ := List.exists_cons_of_ne_nil (splitChars_ne_nil sep cs)
+    simp only [splitChars, h]
+    split <;> rename_i hc
+    · subst c
+      simpa [List.intercalate_cons_of_ne_nil, h] using congrArg (sep :: ·) ih
+    · simpa [List.intercalate_cons_cons_left, h] using congrArg (c :: ·) ih
+
+private theorem intercalate_splitText (s : String) (sep : Char) :
+    String.intercalate (String.singleton sep) (splitText s sep) = s := by
+  apply String.toList_inj.mp
+  simpa [splitText, String.toList_intercalate, List.map_map] using intercalate_splitChars sep s.toList
+
+/-- 絶対形として受理したパスは、成分の結合から元の文字列へ戻る。 -/
+theorem parseAtInput_path_text {s : String} {w : Word}
+    (h : parseAtInput .path (.const (.string s)) = some (.absolute (.path w))) :
+    "/" ++ String.intercalate "/" w = s := by
+  simp only [parseAtInput] at h
+  split at h
+  · rename_i hs
+    subst s
+    cases h
+    rfl
+  · split at h
+    · cases h
+    · split at h
+      · cases h
+      · split at h
+        · cases h
+        · by_cases ha : s.startsWith "/" = true
+          · simp only [ha, ↓reduceIte] at h
+            split at h
+            · cases Option.some.inj h
+              rw [show "/" = String.singleton '/' from rfl, intercalate_splitText]
+              apply String.toList_inj.mp
+              obtain ⟨tail,ht⟩ := String.startsWith_string_iff.mp ha
+              simp [String.toList_append, ← ht]
+            · cases h
+          · have hf : s.startsWith "/" = false := Bool.eq_false_iff.mpr ha
+            simp only [hf, Bool.false_eq_true, ↓reduceIte] at h
+            repeat' split at h
+            all_goals cases h
+
 end Benitoite.Release.Refinement

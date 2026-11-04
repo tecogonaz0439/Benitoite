@@ -801,3 +801,7 @@ import Benitoite.Release.Refinement.ScopeSignatures
 import Benitoite.Release.Refinement.ScopeSignatureFormation
 import Benitoite.Release.Refinement.ScopeDelta
 import Benitoite.Release.Refinement.RequestDelta
+import Benitoite.Release.Refinement.ScopeValueDelta
+import Benitoite.Release.Refinement.RequestValueDelta
+import Benitoite.Release.Refinement.ScopeResponse
+import Benitoite.Release.Refinement.ScopeConstraintInstances

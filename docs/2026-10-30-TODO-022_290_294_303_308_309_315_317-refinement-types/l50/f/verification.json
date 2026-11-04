@@ -1,0 +1,62 @@
+{
+  "exit": 0,
+  "date_utc": "2026-11-04T14:07:30.105401+00:00",
+  "base": "57d27892e00cfa4f95c6351f4b35567614e763aa",
+  "seconds": 0.13488604099999998,
+  "baseline_inputs": 1075,
+  "inputs": 1079,
+  "added": [
+    "formal/Benitoite/Release/Refinement/RequestValueDelta.lean",
+    "formal/Benitoite/Release/Refinement/ScopeConstraintInstances.lean",
+    "formal/Benitoite/Release/Refinement/ScopeResponse.lean",
+    "formal/Benitoite/Release/Refinement/ScopeValueDelta.lean"
+  ],
+  "changed": [
+    "docs/design/01-spec/01-12-core-calculus.md",
+    "docs/design/07-quality/07-04-formal-semantics.md",
+    "formal/Benitoite.lean",
+    "formal/Benitoite/Release/Refinement/AtInput.lean",
+    "formal/Benitoite/Release/Refinement/EffectTargets.lean",
+    "formal/Benitoite/Release/Refinement/ModelConstraints.lean"
+  ],
+  "removed": [],
+  "default_import_modules": 1020,
+  "affected_modules_in_default_import": [
+    "Benitoite.Release.Refinement.AtInput",
+    "Benitoite.Release.Refinement.EffectTargets",
+    "Benitoite.Release.Refinement.ModelConstraints",
+    "Benitoite.Release.Refinement.RequestValueDelta",
+    "Benitoite.Release.Refinement.ScopeConstraintInstances",
+    "Benitoite.Release.Refinement.ScopeResponse",
+    "Benitoite.Release.Refinement.ScopeValueDelta"
+  ],
+  "all_new_modules_in_default_import": true,
+  "audited": 354,
+  "signatures": 35,
+  "obligations": 33,
+  "handoffs": 31,
+  "records": {
+    "build": {
+      "exit": 0,
+      "seconds": 397.051836917
+    },
+    "dry-run": {
+      "exit": 0,
+      "seconds": 0.33787645899999996
+    },
+    "work": {
+      "exit": 0,
+      "seconds": 4.353440624999999
+    }
+  },
+  "relative_links": 12,
+  "group_bytes": 306626,
+  "current_input_hash": {
+    "bytes": 136791,
+    "sha256": "abc08e3aa1dc38fac6ab9cafcb4f93b9856894e5bb28e1df89bc45e947a1b7d6"
+  },
+  "script": {
+    "bytes": 8316,
+    "sha256": "24763129751d1240138cb1b874282a7fa2d87a9c15bae38b94e46c2f8edd8e72"
+  }
+}
