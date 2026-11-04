@@ -1,0 +1,81 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-M",
+    "12288",
+    "<tmp>/audit.lean"
+  ],
+  "cwd": "formal",
+  "exit": 0,
+  "start_utc": "2026-11-04T13:00:14.617289+00:00",
+  "end_utc": "2026-11-04T13:00:26.312035+00:00",
+  "seconds": 11.694656,
+  "raw": {
+    "bytes": 233403,
+    "sha256": "9b268f9218e7b6a4bc3db78dbcb1c98054c8d236efb3fa87fa1b8e57bdada843"
+  },
+  "input": {
+    "bytes": 6996,
+    "sha256": "f5367a3a2bb154add386b88d6493a9fef99bd4314fc3af77ebda1d5f34554433"
+  },
+  "targets": 572,
+  "target_list": {
+    "bytes": 47044,
+    "sha256": "2158196068afb20118cf4b63e46b70fa8ac9ad2a4f46faf3b6da231d1ece775b"
+  },
+  "rounds": 2,
+  "private_and_generated_included": true,
+  "new_axioms": 0,
+  "module_counts": {
+    "Benitoite.Release.Refinement.RequestDelta": 102,
+    "Benitoite.Release.Refinement.ScopeDeclarations": 89,
+    "Benitoite.Release.Refinement.ScopeDelta": 100,
+    "Benitoite.Release.Refinement.ScopeSignatures": 71,
+    "Benitoite.Release.Refinement.ScopeSignatureFormation": 27,
+    "Benitoite.Release.Refinement.TargetTable": 11,
+    "Benitoite.Release.Refinement.AtInput": 170,
+    "local_records": 2
+  },
+  "new_module_declarations": 300,
+  "new_module_counts": {
+    "Benitoite.Release.Refinement.RequestDelta": 102,
+    "Benitoite.Release.Refinement.ScopeDelta": 100,
+    "Benitoite.Release.Refinement.ScopeSignatures": 71,
+    "Benitoite.Release.Refinement.ScopeSignatureFormation": 27
+  },
+  "new_module_targets": {
+    "bytes": 23821,
+    "sha256": "882d4340ffcf9866a2e811445114ab9ec250d8551685ecda6e78168f72894da3"
+  },
+  "declarations": {
+    "declarations-part-01.json": {
+      "bytes": 75535,
+      "sha256": "692f183d074762b39f0422e6a719e2e90b1cc3cae42220bb00d7f79188c7044b"
+    },
+    "declarations-part-02.json": {
+      "bytes": 37438,
+      "sha256": "3632f7569c7f5328c76f1df50845f6da455aa97e68126c36f436aea462240685"
+    }
+  },
+  "new_modules": {
+    "bytes": 203,
+    "sha256": "d00c8b18c87c3c4e927d4d67f6563c270ac5fed68f27f5dc640836ee225850e0"
+  },
+  "record_updated_utc": "2026-11-04T13:00:26.322842+00:00",
+  "reused_output": false,
+  "modules": {
+    "bytes": 343,
+    "sha256": "31571b213523d761e19b109d36e0963794e015aa2e86feaf54c95948dbddc85a"
+  },
+  "script": {
+    "bytes": 7197,
+    "sha256": "67d22790e0456344c413ab2493c2fac57704dbd2db3d42ea4b33b8bd9b72525f"
+  },
+  "signatures": 24,
+  "signatures_file": {
+    "bytes": 24668,
+    "sha256": "9b3f45a2fe88e7e151b86a4d36378f9117f8b64689d21c74268967773d4f87b3"
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "exit": 0,
+  "base": "7ece2393f5585203556d07d4851b6b946abb0e92",
+  "date_utc": "2026-11-04T13:01:42.613889+00:00",
+  "seconds": 0.137661792,
+  "record_prefix": "resume1-",
+  "baseline": {
+    "bytes": 132613,
+    "sha256": "a9fc97a84c8bee1977c4e3abb1cb69a3f85b7fc78faff60174d1bdc397a547a4"
+  },
+  "final_inputs": {
+    "bytes": 133133,
+    "sha256": "ceefbcdc2e31a003a3abe1b9b4deaf18295c841ce6fb0dab905e217d1ec2cc99"
+  },
+  "added": [
+    "formal/Benitoite/Release/Refinement/RequestDelta.lean",
+    "formal/Benitoite/Release/Refinement/ScopeDelta.lean",
+    "formal/Benitoite/Release/Refinement/ScopeSignatureFormation.lean",
+    "formal/Benitoite/Release/Refinement/ScopeSignatures.lean"
+  ],
+  "changed": [
+    "docs/design/01-spec/01-12-core-calculus.md",
+    "docs/design/07-quality/07-04-formal-semantics.md",
+    "formal/Benitoite.lean",
+    "formal/Benitoite/Release/Refinement/AtInput.lean",
+    "formal/Benitoite/Release/Refinement/ScopeDeclarations.lean",
+    "formal/Benitoite/Release/Refinement/TargetTable.lean"
+  ],
+  "removed": [],
+  "resume_changed": [
+    "docs/design/01-spec/01-12-core-calculus.md",
+    "docs/design/07-quality/07-04-formal-semantics.md",
+    "formal/Benitoite/Release/Refinement/AtInput.lean",
+    "formal/Benitoite/Release/Refinement/RequestDelta.lean",
+    "formal/Benitoite/Release/Refinement/ScopeDelta.lean"
+  ],
+  "resume_baseline": {
+    "bytes": 133133,
+    "sha256": "1399f0631e8e6db0a59d7bf1114d022e53fdcff9e672166b8741c43646c3fbce"
+  },
+  "default_import_modules": 1016,
+  "affected_in_default_import": [
+    "Benitoite.Release.Refinement.AtInput",
+    "Benitoite.Release.Refinement.RequestDelta",
+    "Benitoite.Release.Refinement.ScopeDeclarations",
+    "Benitoite.Release.Refinement.ScopeDelta",
+    "Benitoite.Release.Refinement.ScopeSignatureFormation",
+    "Benitoite.Release.Refinement.ScopeSignatures",
+    "Benitoite.Release.Refinement.TargetTable"
+  ],
+  "declarations": 572,
+  "new_module_declarations": 300,
+  "obligations": 33,
+  "handoffs": 31,
+  "signature_rows": 16,
+  "relative_links": 26,
+  "group_bytes": 216510,
+  "script": {
+    "bytes": 8249,
+    "sha256": "01aa27958d7b9085059d649080a2b51a383ccadc834194268b5c1e4d65b540c1"
+  }
+}
