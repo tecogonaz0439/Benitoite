@@ -160,6 +160,10 @@
 
 `ModelConstraints` は、任意の型・型引数列と非空制約を含め、値の改名・値の代入・型パラメータの改名・閉じた型像による型の代入について sat と admits の八条件を証明する。TypeParamRenaming の制約の包含と SatAll の各型像の制約から、同じ arity・依存位置・コレクションの構造を保存する。値依存の篩と行像を除かず、Fail の個数を観測しない。`ScopeConstraintInstances` は同じ共通表の SubstitutionAssumptions と sat_unconstrained・admits_sat を構成する。宣言の arity・kind・行支持は HasHttp P と同じ lookup の形成から独立に供給する。`Eff.allows_bind_comp` は、二段の代入による許容を元の原子・最初の行像・残る行変数の三経路との同値で示す。
 
+`Model` は参照二行と起点発行一行の実表から、任意の P について ModelScopeConditions の二十五欄を構成する。sat は有限宣言の骨格と型パラメータの制約を使い、八保存則は共通の証明を同じ部分表へ適用する。全三署名の形成・StoreShape・発行の八欄と同じ効果表の所属を証明する。pure・io・exit の不在は lookup で排除し、IO 応答の関係を空とし（io_kind はこの空から従う）、未定義の δ を応答存在の根拠にしない。scopeConditions の出力は外部応答と資源解放の条件を含まず、Core 全体の無条件の充足とは区別する。
+
+`ModelTargetsExamples` は空引数の全 BuiltinArgs と呼出しの型付けを構成し、専用の発行二遷移・同じ σ の事象の被覆・let から At の bases への受け渡しを証明する。AtPrepared.of_path_bases は分類・解析・閉じた bases・有効な σ・固定上限の形成から準備成功を構成する。issued_current は同じ snapshot の一致、issued_at は任意の At 入力の三場合の実 Step を返す。Ready の必要な起点は required_base の有限の到達から取り出し、全必要束縛を満たす環境と、必要な work が未束縛の状態を区別する。この実行列から計算全体の状態保存を推測しない。
+
 二つの response は全 BuiltinArgs について同じ具体 δ の応答存在・Outcome.Typed・Ground・AdequateResult・非 exit を証明する。P の有限宣言、valKind と valContent の等号は表から供給し、CoreAssumptions を未検査の前提として要求しない。要求の成功値の適格性は同じ実引数 req から得る。失敗の payload も、Scope の六構成子、RequestCheckError の二構成子、Result の Ok/Error の型引数位置を同じ P で型付けする。
 
 `InitialPrepared.source_state` は、同じ固定した初期状態の InitialPrepared、Program.ExternalWF、空の捕捉・ストア・継続で型付くソース計算、終端の注釈、閉性・適格性・BuiltinOnly を受け、その初期状態の StateTy を構成する。StateTy の σ.Valid は InitialPrepared.ready の入力から取り出し、PathEnv.Ready と ExternalWF は入力をそのまま返す。表層からこれらの入力を作る合成と外部応答の存在は結論に含めない。`prepared_unit_source` は空の外部宣言を持つ前述の具体表で、任意の有効な σ の下の return Unit について準備と元の型付けを同時に構成する。
@@ -1055,6 +1059,7 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 | PreparationTargets・PathBasesTargets・AtTargets・ScopeLegacyContracts | 「篩を含む状態の型付け」 |
 | ScopeDelta・RequestDelta・ScopeValueDelta・RequestValueDelta・ScopeResponse | 「篩を含む状態の型付け」。固定の解析を使うチェック、保持する絶対パス・同じ要求の射影、同じ値の拡大。AtInput の splitChars の全入力の帰納による文字列の往復と、受理した絶対パスの射影が元の文字列を返すこと。純粋六項目の全 BuiltinArgs と実応答の型・Ground・全有効環境への適格性・非 exit・同じ正常値の facts |
 | ScopedIOResponse・ScopedIOExamples | 同節。七 IO の全応答の型・適格性・存在・非 exit、同じ要求と endpoint、実表の対象一致と全環境の効果許容、非 Top・Top の全前提を供給する具体例 |
+| Model・ModelTargetsExamples | 同節。参照二行と起点発行一行から任意の P について構成する二十五条件、同じ制約による八保存則。空引数の型付き呼出し、専用発行二遷移と同じ σ の事象、At の全入力の三場合、必要束縛と Ready の受理・拒否。AtPrepared.of_path_bases による準備成功 |
 
 以下の既存の表は Release などの対応である。
 

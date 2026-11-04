@@ -159,6 +159,17 @@ def AtPrepared (B : Builtins) (cap : Capture) (kind : Kind) (name : OpaqueName)
     (snapshot : Option PathEnv) (pat : RangeExpr) (target : TargetInput) (bound : RangeExpr) : Prop :=
   AtPrepare B cap kind name bases pattern input index = .ok (snapshot, pat, target, bound)
 
+/-- 解析に成功した入力と同じ有効な起点値を、固定上限の準備へ渡す。 -/
+theorem AtPrepared.of_path_bases {B cap kind name bases pattern input pat target bound σ}
+    (hk : B.valKind name = some kind) (hc : B.valContent name = none)
+    (hp : parseAtPattern kind (closeVal cap pattern) = some pat)
+    (hi : parseAtInput kind (closeVal cap input) = some target)
+    (hb : closeVal cap bases = .pathBases σ) (hσ : σ.Valid)
+    (hbound : bound.FitsKind kind ∧ bound.WF ∧ bound.Canonical) :
+    AtPrepared B cap kind name (some bases) pattern input (.fixed bound)
+      (some σ) pat target bound := by
+  simp [AtPrepared,AtPrepare,prepareCore,hp,hi,hb,hσ,hc,finishPreparation,hk,hbound,Except.bind]
+
 theorem AtPrepared.fixed_index {B cap kind name bases pattern input index snapshot pat target bound}
     (h : AtPrepared B cap kind name bases pattern input index snapshot pat target bound) :
     index = .fixed bound := by

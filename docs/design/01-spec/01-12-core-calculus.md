@@ -3335,6 +3335,8 @@ Lean の捕捉を持つ実行関係の `Step.E_Lam` は、`q.view = .app f ws`�
 
 `TargetModelConditions` の `ModelScopeConditions P B` は、同じ P/B の既存の置換8条件、応答4条件、対象一致1条件、表12条件をまとめた証明の出力である。`ModelScopeConditions.core` は、この出力と既存の `ExternalAssumptions P B`、同じ表の `release_exists` から `CoreAssumptions P B` を構成する。対象一致の条件は別に取り出せる。この出力自体を主定理の新しい信頼条件にはしない。
 
+`Model.builtins` は Reference.get・Reference.set・内部名 Example.pathBases の三署名だけを持つ。参照の型パラメータは値 kind の空制約一つ、発行は型・行・範囲・値の引数を持たない。sat は共通の有限宣言から作る ModelConstraints.sat を使い、開いた型の非空制約も検査する。効果表は State の空列と Process.Environment の発行一行である。`Model.substitutionAssumptions` は同じ表について八つの保存則を構成する。`Model.scopeConditions P` は任意の P について二十五条件を証明し、sig_scoped にデータ宣言の条件を要求しない。pure・io・exit の署名は lookup の全三場合で排除する。IO 応答の関係は空であり、io_kind はこの空から従う。δ は未定義であるが、その未定義から応答の存在を導かない。外部応答の三条件と資源の解放条件は、この出力に含めない。
+
 `CanonicalCells` の `inv_loc` は、任意の Γ・Φ の下で、同じ場所の ref 又は lazy の lookup、内容型の Declared、元の参照型又は Lazy 型からの `LeQ` を返す。`StoreOk.ref_cell`・`lazy_cell`・`cont_cell`・`builder_cell` は、同じ `StoreOk P B σ Ψ μ` と Ψ の場所の型を前提にする。ref は実際の val セル・内容型の正規形での型付け・Adequate を返す。lazy は thunk の `ClosureTy P B (hideBuilders Ψ) [] none q a Eff.empty` と Adequate、又は done の型付けと Adequate を返す。cont は保存した `EndsWithHandle`・`ContTy`、又は used を返す。builder は同じ種類の `BuilderCellOk` とセルの Adequate を返す。`reference_cell_inputs` は `canonical_ref` の内容型の正規形の等号を使い、同じ実セルの内容を到達型の正規形へ合わせる。Lazy の内容の移送は等号へ強めず `LeQ` のまま保持する。
 
 
@@ -4012,6 +4014,8 @@ CaptureOk は None の位置に任意の Ground な値を保存できる。そ�
 `PreparationTargets` の `PathEnv.Ready.resolve_required` は、同じ状態から range への有限の Reachable と Ready を受け、任意の到達可能な範囲の解決成功を返す。based は Required.base の束縛の証人、secrets は Required.secrets の isSome を使う。必須の root/cwd/home と任意の work/tmp、secrets の未指定と空を区別する。`Val.Source.adequate` と `Comp.Source.adequate` は全ソース構文と任意の σ で適格性を導く。`InitialPrepared.source_state_of_source` は Source からの適格性を、同じ初期状態・ExternalWF・元の型付け・終端注釈・閉性・BuiltinOnly とともに source_state へ渡す。Ready を実行中の全状態に課す条件にはしない。
 
 `PathBasesTargets` の `AtPrepared.current` は、捕捉環境と元の bases 値の適格性、同じ準備成功を受ける。snapshot の出どころを閉じた pathBases に限定し、closeVal_adequate から snapshot と実行 σ の一致を得る。CaptureOk はこの補題の前提ではない。`StateTyE.at_current` は同じ状態の適格な閉包からこの前提を供給する。発行の membership は、同じ CoreAssumptions の PathBasesShape.operation/membership から得る。
+
+`AtPrepared.of_path_bases` は、対象と内容の分類、同じ捕捉での条件と対象の解析成功、bases が閉じて同じ有効な pathBases σ になること、固定上限の形成から、snapshot が some σ である準備を構成する。`ModelTargetsExamples` は参照モデルの空引数の全 BuiltinArgs とその呼出しの型付けを供給する。発行の専用二遷移は同じ σ の事象を Process.Environment で覆い、let の結果としてその値を At の bases に束縛する。issued_current は準備が成功した任意の入力で snapshot の一致を返し、issued_at は任意の At 入力を準備失敗・検査成功・検査失敗の三場合で実際の Step へ渡す。任意の有効な σ で cwd の相対入力の準備と検査が成功する例を持つ。required_base は固定上限の起点への Reachable と Required を構成し、Ready から同じ起点の束縛と解決成功を取り出す。全必要束縛を供給した環境の受理と、必要な work が未束縛の状態の拒否を別に確かめる。これらは実行列と入力の接続であり、At を含む計算全体の状態保存を結論しない。
 
 `AtTargets` の `StateTyE.at_step` は WellFormed・WellTyped・CoreAssumptions・σ.Valid、同じ StateTyE と At の raw code を受け、実際の Step と同じ σ/Eb の StateTyE を持つ次状態の存在を返す。準備成功は入力の二経路と bases の二経路へ分け、同じ checkAt の ok/error を既存の保存葉へ渡す。準備失敗は同じエラーを返す。`AtPrepared.resolution` は対象の解決成功と、snapshot なしの両範囲の解決成功を返す。`AtPrepared.formed` と `checkAt.no_invalidPattern` は準備成功後の形式不正を排除する。型付き index の未具体化は StateTyE.at_index で排除し、検査時の静的上限への不所属とは区別する。
 
