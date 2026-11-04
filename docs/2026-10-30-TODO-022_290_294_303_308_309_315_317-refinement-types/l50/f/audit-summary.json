@@ -1,0 +1,76 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-M",
+    "12288",
+    "<tmp>/audit.lean"
+  ],
+  "cwd": "formal",
+  "exit": 0,
+  "start_utc": "2026-11-04T14:04:58.660072+00:00",
+  "end_utc": "2026-11-04T14:05:10.663893+00:00",
+  "seconds": 12.003743917,
+  "raw": {
+    "bytes": 161610,
+    "sha256": "ad15c954c65e050a1b9a424428e768d740ff522dbb92d0afad2d63437d7784c0"
+  },
+  "input": {
+    "bytes": 6278,
+    "sha256": "55b141a9f184b5a968fa83a0027723bb1536c4a281db0bc1f0f77799054a8a59"
+  },
+  "targets": 354,
+  "target_list": {
+    "bytes": 29148,
+    "sha256": "b102c8c8fa6c936f915822eeeda6381eda89462b6ee8b74de039f474f111b3e6"
+  },
+  "rounds": 2,
+  "private_and_generated_included": true,
+  "new_axioms": 0,
+  "module_counts": {
+    "Benitoite.Release.Refinement.EffectTargets": 37,
+    "Benitoite.Release.Refinement.ModelConstraints": 52,
+    "Benitoite.Release.Refinement.RequestValueDelta": 21,
+    "Benitoite.Release.Refinement.ScopeValueDelta": 47,
+    "Benitoite.Release.Refinement.ScopeResponse": 14,
+    "Benitoite.Release.Refinement.ScopeConstraintInstances": 9,
+    "Benitoite.Release.Refinement.AtInput": 174
+  },
+  "new_module_declarations": 91,
+  "new_module_counts": {
+    "Benitoite.Release.Refinement.RequestValueDelta": 21,
+    "Benitoite.Release.Refinement.ScopeValueDelta": 47,
+    "Benitoite.Release.Refinement.ScopeResponse": 14,
+    "Benitoite.Release.Refinement.ScopeConstraintInstances": 9
+  },
+  "new_module_targets": {
+    "bytes": 7014,
+    "sha256": "5626f0559b9da98b68d0d615040edf276351bf1c45740b2c8042b1ab3334a509"
+  },
+  "declarations": {
+    "declarations-part-01.json": {
+      "bytes": 71728,
+      "sha256": "645e19bec2b0dcdf740b24e90987f1fd463e6d58cf8e40802d771e7174eed299"
+    }
+  },
+  "new_modules": {
+    "bytes": 212,
+    "sha256": "7c5d791f148a7a022040a2b4c7afe10f51b3c6caf39bba3761314b26f041c8b8"
+  },
+  "record_updated_utc": "2026-11-04T14:05:10.672033+00:00",
+  "reused_output": false,
+  "modules": {
+    "bytes": 353,
+    "sha256": "f8442130c866a811e109aad27f5170beb0159c1a644307569ea30a4b1e6bf1ae"
+  },
+  "script": {
+    "bytes": 7197,
+    "sha256": "ba1e7461782294df3fd046b7a64c671de74e7581befc5341a4a43810e74333ba"
+  },
+  "signatures": 35,
+  "signatures_file": {
+    "bytes": 29888,
+    "sha256": "3596354077557884b4183d2d9d1f28ca172e3a5545cd17a7bc2af9ed77fc818d"
+  }
+}

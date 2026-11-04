@@ -3319,6 +3319,12 @@ Lean の捕捉を持つ実行関係の `Step.E_Lam` は、`q.view = .app f ws`�
 
 `ModelConstraints.sat` は `StandardKeyTyping.carrier` と有限宣言の `Release.satB` を使う。`admits` は型引数列の個数と各位置の制約を検査する。`sat_bind_values` と `admits_bind_values` は、型変数の像を変えない全ての置換で、型・列の制約の充足が同値であることを示す。篩の述語と値の番号、行の Fail の順序や長さを骨格の判定に使わない。
 
+値変数の改名と値の代入は、任意の型・列・制約に対して `sat_rename`・`sat_values`・`admits_rename`・`admits_values` が保存する。`sat_renameTypes` と `admits_renameTypes` は `TypeParamRenaming C C' ρ` が各位置の kind と制約の包含を保つことから、型パラメータの改名を保存する。`sat_subst` と `admits_subst` は、文脈 `C1 ++ C0` の末尾を閉じた型列へ代入する。型像の個数は `C0` の長さと一致し、各型像は同じ判定の `sat` で `C0` の制約を満たす。行像と篩の述語は骨格の判定に使わない。証明は型と型引数列の構造に従い、型変数の制約、データ型の同じ arity と依存位置、List・Map・Set の要素を保存する。Fail の列の個数や重複は観測しない。
+
+`ScopeConstraintInstances` の `ScopeSignatures.substitutionAssumptions` は、任意の `P` と同じ共通表の純粋・IO 応答に対して八つの置換条件を構成する。この表の `sat` は有限宣言から計算した骨格の制約であり、`admits` は型パラメータの個数を検査する。`sat_unconstrained` は任意の型に空制約を供給し、`admits_sat` は許容した型引数列を同じ表の `SatAll` へ渡す。宣言の arity・kind と依存列の行支持は、これらの置換条件に仮定せず、`HasHttp P` と同じ lookup に対する `ScopeSignatureFormation` の形成の証拠から供給する。
+
+`EffectTargets` の `Eff.allows_bind_comp` は、任意の二つの置換環境について、正規化した二段の `Eff.bind` の許容を三経路へ分解する。元の名前付き原子には二つの範囲像を順に適用する。最初の行像には二段目の置換を適用する。最初の置換で残る行変数は二段目の行像を読む。三経路の選言との同値は、任意の環境・効果名・対象で成り立つ。型像・値像や Fail の正規化は対象の許容を増やさない。
+
 `ScopeDeclarations.HasDeclarations` は有限一覧の構成子の lookup と、同じデータ名を持つ全構成子の `DataArity` を検査する。`HasFile` は Result と Scope.ScopeError、`HasHttp` はさらに Pair・Http.ClientRequest・Http.RequestCheckError の宣言を読む。Result と Pair は arity 2、残りは arity 0 である。要求の五欄と Result.Ok/Error の欄の型も同じ宣言と照合する。At は既存の内部の七 String 観測の宣言を読む。
 
 `ScopeDeclarations.program` は、Result・Scope.ScopeError・Pair・Http.ClientRequest・Http.RequestCheckError の有限な宣言から構成子を引く具体のプログラムである。関数・操作・型クラス・実装・外部宣言を持たない。`program_hasHttp` は同じ lookup の全構成子と全 arity を照合し、`program_wellFormed` は全構成子の欄の形成も満たす。Pair の構成子名は `Pair.Pair` である。
@@ -4016,6 +4022,14 @@ CaptureOk は None の位置に任意の Ground な値を保存できる。そ�
 `RequestDelta` は Http.checkRequestIn の具体の δ を定める。groundVal の検査後、固定の `parseUrlShape` で URL の形を検査し、ホストの綴りと実効ポートを取り出す。URL の形が不正なら、固定の説明 `RequestDelta.text.INVALID_URL` を持つ InvalidUrl を返す。形が正しく固定の `Val.reqTarget` で端点を得られない場合は、角括弧を除いた元のホストを持つ Scope(InvalidTarget) とする。理由は、IPv4 射影形の IPv6 なら `ScopeDelta.text.MAPPED_TARGET`、それ以外なら `RequestDelta.text.INVALID_HOST` である。`parseUrlTarget` は対象の入口で射影形を拒否し、同じ入口を使う要求の対象と At の endpoint 入力にもこの拒否を適用する。IP のパターンの代数は変えない。ホスト条件の解析は既存のホスト対象の解析に固定し、完全一致・一段又は多段の名前・CIDR の条件を作る。CIDR の prefix の前置の 0（長さ2以上）と長さ4以上は拒否する。ホスト条件の解析失敗は `ScopeDelta.text.ENDPOINT_PATTERN` を理由とする。続く `Checked.Scope.makeEndpoint` は、パターン形式、ホスト形式、ポート範囲、ポート形式、ホスト所属、ポート所属の順序を保つ。OutsideScope の第2欄は角括弧を除いた元のホストの綴りである。六つの Scope の失敗は元の文字列と元の言語整数の payload とともに RequestCheckError.Scope で包む。動的検査の成功後に絶対形の静的上限を検査し、成功値は同じ req とその端点を持つ checkedRequest である。静的な拒否の内部エラーには、元のホスト条件と二つのポート、同じ要求、解析済みの条件・対象、解決結果を保持する。
 
 二つの `response` は任意の Ψ、型・行・範囲・値引数、結果型と効果を量化した `BuiltinArgs` から、同じ δ の応答、Outcome.Typed、Ground、AdequateResult、exit の排除を供給する。`ScopeDelta.run_safe` は任意の範囲と値列を、`RequestDelta.run_safe` は同じ要求型を持つ型付きの全値列と任意の範囲を扱う。Result.Ok と Result.Error は同じ P の宣言を使い、成功は型引数0、失敗は型引数1に対応する。これらは純粋なチェックの応答契約であり、外部 IO の成功を結論しない。
+
+`ScopeValueDelta` の `ScopeDelta.pathValueRun` は、保持値の `target?` がパスなら、保持した絶対パスの成分を `/` で結び、先頭に `/` を付けた String を返す。`checked` と `checkedAt` は同じ絶対対象から同じ文字列を返し、snapshot の起点を再解決しない。`AtInput` の `parseAtInput_path_text` は `splitChars` の全入力の帰納から、絶対形として受理した文字列と成分の結合の往復を示し、`ScopeDelta.pathValueRun_parseAtInput` はその元の文字列を射影が返すことを示す。処理系のパス射影は検査した入力の String をそのまま返すため、この往復により絶対形の値が一致する。`checkedAt` の解決後のパスは処理系にまだ実装されていない。`widenRun` は単一の入力値をそのまま返す。`pathInValue_response` は全 `BuiltinArgs` と対象の分類からパス射影を型付けする。`widenPathIn_response` は、表が許容する二範囲の被覆から同じ値を結果の不透明型へ広げる。全 Top による許容も被覆を満たす。
+
+`RequestValueDelta` の `RequestDelta.retained_request` は、型付きの RequestIn と同じ内容型の分類から、保持する target・req と、checkedRequest 又は checkedAt の request が some の形を返す。既存の `ModelHttp.valueRun` はその同じ req を返し、req は閉じて型付けされ、groundVal が真で、reqTarget が保持した端点に一致する。default を返す枝は型付けから排除する。`requestInValue_response` は同じ要求の型・閉性・適格性を供給する。`widenRequestIn_response` は許容した被覆から同じ保持値の型を広げ、req と端点を変更しない。
+
+`ScopeResponse.delta` は二つのチェック・二つの射影・二つの拡大の六項目を、実名で同じ具体の δ へ対応させる。`response` は任意の `P`・`B`・`Ψ` と全ての具体化・実引数・結果型・効果を扱う。前提は同じ六項目を含む署名 lookup、純粋の分類、`HasHttp P`、B の対象・内容の分類、許容した拡大範囲の被覆、元の `BuiltinArgs` である。結論は同じ δ の応答の存在、非 exit、Outcome.Typed、AdequateResult と正常値の Ground である。共通表では対象・内容・被覆の前提を定義から供給し、`delta_typed` が全純粋行へ適用する。δ の決定性から `outcome_typed` は実際の全応答に同じ契約を与える。`ground` は同じ実応答の正常値の閉性、`normal_facts` は同じ値の項観測から結果型の事実を得る。既存の `normal_reply_facts` にも同じ lookup・BuiltinArgs・正常応答・項観測を渡せる。malformed な列の Outcome.err は δ に残す。
+
+`ScopeResponse.adequate_externalRef`・`adequate_externalHandle`・`adequate_scopePattern` は、各構文の全引数と任意の入力列について全有効環境の AdequateResult を供給する。これらの構文の `Val.Adequate` は既定の True の枝であり、保存した入力の再帰的な適格性を証明するものではない。`leaves_unobserved` は三つの構文の項観測が none であり、任意のパターンの束縛列の項観測も区別しないことを示す。これらの値に生の元入力を取り出す観測はない。外部呼出しの応答の型と存在は、この適格性とは別の条件である。
 
 `InitialPrepared.source_state` は、同じ固定した初期状態の InitialPrepared、Program.ExternalWF、空の捕捉・ストア・継続で型付くソース計算、終端の注釈、閉性・適格性・BuiltinOnly を受け、その初期状態の StateTy を構成する。StateTy の σ.Valid は InitialPrepared.ready の入力から取り出し、PathEnv.Ready と ExternalWF は入力をそのまま返す。表層からこれらの入力を作る合成と外部応答の存在は結論に含めない。`prepared_unit_source` は空の外部宣言を持つ前述の具体表で、任意の有効な σ の下の return Unit について準備と元の型付けを同時に構成する。
 

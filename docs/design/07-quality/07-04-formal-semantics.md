@@ -152,6 +152,10 @@
 
 `ScopeDelta` の純粋な絶対パスのチェックは parseAtInput と Checked.Scope.makePath、`RequestDelta` の要求のチェックは固定の Val.reqTarget と Checked.Scope.makeEndpoint を使う。要求の groundVal の検査後、固定の parseUrlShape で URL の形と、角括弧を除いたホストの綴り・実効ポートを得る。形の不正は固定の説明 INVALID_URL を持つ InvalidUrl、ホストの不正は元のホストと INVALID_HOST を持つ Scope(InvalidTarget) とする。parseUrlTarget は IPv4 射影形の IPv6 を対象の入口で拒否し、その場合の Scope(InvalidTarget) の理由は MAPPED_TARGET である。同じ入口を使う要求と At の endpoint 入力にもこの拒否を適用する。host・port の既存の検査順を保ち、OutsideScope の第2欄には元のホストの綴りを使う。動的な条件と絶対形の静的上限の両方に所属した成功だけが、同じ対象又は同じ req と端点を保持する。パスの相対形・home 形と解析失敗は同じ理由 PATH の InvalidTarget、パスのパターンの解析失敗は理由 PATH_PATTERN の InvalidPattern、要求のホスト条件の解析失敗は理由 ENDPOINT_PATTERN の Scope(InvalidPattern)、動的不所属は既存の ScopeError、静的不所属・記号付き上限の拒否は内部の staticIndex に写す。パスの木の字句 //** と、CIDR の prefix の前置の 0（長さ2以上）・長さ4以上は拒否する。内部の静的な拒否は元入力と解析済み入力を保存する。
 
+`ScopeValueDelta` と `RequestValueDelta` はパス・要求の射影と拡大を定める。パスは保持した絶対対象から同じ String を作り、要求は既存の valueRun から同じ req と端点を保つ。二つの保持形の型付けは default の枝を排除する。拡大の δ は同じ値を返し、許容表の被覆と既存の不透明型への互換拡大で結果を型付けする。`ScopeResponse` はチェック・射影・拡大の六項目を同じ lookup と δ へ集約する。任意の P・B の元の全 BuiltinArgs と、同じ宣言・対象の分類・許容した被覆から応答を構成し、共通表ではこれらの表の条件を定義から供給する。全純粋行の応答存在、実際の全応答の型・全有効環境への適格性・非 exit、正常値の Ground と同じ項観測の facts を証明する。Outcome.err も残す。externalRef・externalHandle・scopePattern の適格性は既定の True の枝を使い、項観測とパターンの束縛列から生入力を取り出せないことを別に照合する。
+
+`ModelConstraints` は、任意の型・型引数列と非空制約を含め、値の改名・値の代入・型パラメータの改名・閉じた型像による型の代入について sat と admits の八条件を証明する。TypeParamRenaming の制約の包含と SatAll の各型像の制約から、同じ arity・依存位置・コレクションの構造を保存する。値依存の篩と行像を除かず、Fail の個数を観測しない。`ScopeConstraintInstances` は同じ共通表の SubstitutionAssumptions と sat_unconstrained・admits_sat を構成する。宣言の arity・kind・行支持は HasHttp P と同じ lookup の形成から独立に供給する。`Eff.allows_bind_comp` は、二段の代入による許容を元の原子・最初の行像・残る行変数の三経路との同値で示す。
+
 二つの response は全 BuiltinArgs について同じ具体 δ の応答存在・Outcome.Typed・Ground・AdequateResult・非 exit を証明する。P の有限宣言、valKind と valContent の等号は表から供給し、CoreAssumptions を未検査の前提として要求しない。要求の成功値の適格性は同じ実引数 req から得る。失敗の payload も、Scope の六構成子、RequestCheckError の二構成子、Result の Ok/Error の型引数位置を同じ P で型付けする。
 
 `InitialPrepared.source_state` は、同じ固定した初期状態の InitialPrepared、Program.ExternalWF、空の捕捉・ストア・継続で型付くソース計算、終端の注釈、閉性・適格性・BuiltinOnly を受け、その初期状態の StateTy を構成する。StateTy の σ.Valid は InitialPrepared.ready の入力から取り出し、PathEnv.Ready と ExternalWF は入力をそのまま返す。表層からこれらの入力を作る合成と外部応答の存在は結論に含めない。`prepared_unit_source` は空の外部宣言を持つ前述の具体表で、任意の有効な σ の下の return Unit について準備と元の型付けを同時に構成する。
@@ -966,7 +970,7 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 | MembershipWiden | 同節。任意の型文脈・経路条件・ストアの、空の値文脈で型付いた不透明型の値を逆転し、定数と同じ値のscopedの導出を区別する。範囲の被覆・scopedの共変・忘却による互換拡大、対象位置の形成と範囲列の長さによる全引数列の節への移送。同じ型・行の像と値列を保つ |
 | ScopedCallContracts | 同節。具体化の許容・範囲列の許容・署名の具体化・元署名から関数値の列へのTelClosure・同じ実引数列の型付けとGroundから、TelClosure.applyへ元列の注釈と空文脈の整形式を供給する。同じwsを元列へ戻し、正規化したBuiltinArgs、結果の部分型と効果の被覆を返す。ShapeOk・single・NamesWF・全実引数の同じσへのAdequateから対象を返し、端点の対象位置の内容型が一致するときは、同じ実値が保持する端点と要求を存在量化して、その保持形と同じreq/endpointの性質を返す |
 | EffectTargets | 同節。一原子の被覆から同じσ・名前・対象の許容を保存する。和・空・行・Topと全bindを扱い、範囲像は元の原子だけに適用し、行の像を再具体化しない。行像なしでも範囲の具体化を保ち、Failは対象を許さない。ShapeOk・TargetAgreement・NamesWF・同じ型付き呼出し・全実引数の適格性・実際の応答から全観測の許容を得て、被覆する効果へ渡す読者を含む。CoreAssumptionsを要求せず、Scopedから名前の形成を供給する |
-| ModelConstraints | 同節。carrierとsatBによる非空制約、同じ列長と各位置のadmits。型変数の像を変えない全置換でsatとadmitsの同値を証明し、値の改名・値置換・非空制約・型像の衝突・値依存の型/行像・Fail縮約の対照を含む |
+| ModelConstraints・ScopeConstraintInstances | 同節。carrier と satB による非空制約、列長と各位置の admits。sat_bind_values・admits_bind_values は型変数の像を変えない全置換での sat と admits の同値を示す。値の改名・値の置換・非空の制約・型像の衝突の対照の例を含む。値と型の改名・代入の八条件、無制約と SatAll の供給、同じ表の SubstitutionAssumptions。値依存の型・行像と Fail の縮約を扱う |
 | ScopeDeclarations | 同節。有限構成子一覧のlookupと、同じデータ名の全構成子のarity。Result/Pairのarity 2とClientRequest等のarity 0、要求の五欄、Ok/Errorの型引数の位置を同じPで読む |
 | ScopeSignatures・ScopeSignatureFormation | 同節。共通16署名と同じ P の Scoped・行支持、効果の全登録、ShapeOk の三形と発行の八欄 |
 | TargetModelConditions | 同節。同じP/Bの既存25条件をまとめた証明の出力。既存のExternalAssumptionsとrelease_existsだけからCoreAssumptionsを構成し、TargetAgreementを別に保持する |
@@ -1045,7 +1049,7 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 | Typing・HandlerContracts・RuntimeSyntax・AtPrepare・AtTyping・BuiltinResponse・ConstraintAssumptions・BuiltinEffects・Semantics・Step・ExternalCheck・ExternalResponse・ExternalConnection | 「保持要求と組み込みの遷移」 |
 | StoreTransport・Typing・StateTyping・ConstraintAssumptions・ReferenceStore・LazyStore・HandlerStore・ReferencePreservation・LazyPreservation・HandlerEffects・HandlerPreservation・HandlerOperation・HandlerGeneral・RuntimeTypeSubst・OperationStateExamples・RuntimeBuilderScope・StoreGeneral・BuilderValueTyping・BuilderStateLeaves・ContinuationGeneral・HandlerStoreExamples・HiddenCaptureBoundary・CaptureReadBoundary・ReadLocalRefs・LocalInvariant・ClosedRename・StateLeaves・ReplyState・ExternalStateLeaves・AtStateInputs・AtStateLeaves・PathBasesLeaves・SourcePreparation・StoreReplyLeaves | 「篩を含む状態の型付け」 |
 | PreparationTargets・PathBasesTargets・AtTargets・ScopeLegacyContracts | 「篩を含む状態の型付け」 |
-| ScopeDelta・RequestDelta | 「篩を含む状態の型付け」。固定の解析と既存の検査順を使う二つのチェック δ、全 BuiltinArgs の応答契約 |
+| ScopeDelta・RequestDelta・ScopeValueDelta・RequestValueDelta・ScopeResponse | 「篩を含む状態の型付け」。固定の解析を使うチェック、保持する絶対パス・同じ要求の射影、同じ値の拡大。AtInput の splitChars の全入力の帰納による文字列の往復と、受理した絶対パスの射影が元の文字列を返すこと。純粋六項目の全 BuiltinArgs と実応答の型・Ground・全有効環境への適格性・非 exit・同じ正常値の facts |
 
 以下の既存の表は Release などの対応である。
 

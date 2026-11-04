@@ -321,4 +321,49 @@ example {P B Ψ b sg ts es rs ws a e out obs σ Γ Φ upper}
   obtain ⟨l, hl, allowed⟩ := Builtins.TargetAgreement.obs_allowed sh ht hs hk sc.namesWF ha had hr
   exact ⟨l, hl, fun t hm => hc.allows (allowed t hm)⟩
 
+/-- 二段の代入を、元の原子・最初の行像・残った行変数の三経路へ分解する。 -/
+theorem Eff.allows_bind_comp (θ φ : SubstEnv) (e : Eff) {σ κ l t} :
+    Eff.Allows σ κ (Eff.bind φ (Eff.bind θ e)) l t ↔
+      (∃ k ix r, κ l = some k ∧ e.mem (.name l ix) ∧
+        (ix.inst θ.ranges).inst φ.ranges = .fixed r ∧ r.Mem σ k t) ∨
+      (∃ i f, θ.rows[i]? = some f ∧ e.mem (.rho i) ∧ Eff.Allows σ κ (Eff.bind φ f) l t) ∨
+      (∃ i f, θ.rows.length ≤ i ∧ e.mem (.rho i) ∧ φ.rows[i]? = some f ∧ Eff.Allows σ κ f l t) := by
+  rw [Eff.allows_bind]
+  constructor
+  · rintro (⟨k,ix,r,hk,hm,hi,ht⟩ | ⟨j,g,hg,hm,ha⟩)
+    · have raw : (Eff.rawBind θ e).mem (.name l ix) := (Eff.mem_norm _ _).mp hm
+      rcases (Eff.mem_rawBind θ e _).mp raw with ⟨a,he,eq,_⟩ | ⟨i,f,hf,he,hh⟩
+      · cases a with
+        | rho i => cases eq
+        | name m jx =>
+          change Atom.name m (jx.inst θ.ranges) = .name l ix at eq
+          cases eq
+          exact Or.inl ⟨k,jx,r,hk,he,hi,ht⟩
+      · exact Or.inr (Or.inl ⟨i,f,hf,he,(Eff.allows_bind φ f).mpr
+          (Or.inl ⟨k,ix,r,hk,hh,hi,ht⟩)⟩)
+    · have raw : (Eff.rawBind θ e).mem (.rho j) := (Eff.mem_norm _ _).mp hm
+      rcases (Eff.mem_rawBind θ e _).mp raw with ⟨a,he,eq,hleft⟩ | ⟨i,f,hf,he,hh⟩
+      · cases a with
+        | name m ix => cases eq
+        | rho i => cases eq; exact Or.inr (Or.inr ⟨j,g,hleft,he,hg,ha⟩)
+      · exact Or.inr (Or.inl ⟨i,f,hf,he,(Eff.allows_bind φ f).mpr (Or.inr ⟨j,g,hg,hh,ha⟩)⟩)
+  · rintro (⟨k,ix,r,hk,he,hi,ht⟩ | ⟨i,f,hf,he,ha⟩ | ⟨i,f,hl,he,hf,ha⟩)
+    · refine Or.inl ⟨k,ix.inst θ.ranges,r,hk,?_,hi,ht⟩
+      exact (Eff.mem_norm _ _).mpr ((Eff.mem_rawBind θ e _).mpr
+        (Or.inl ⟨.name l ix,he,rfl,trivial⟩))
+    · rcases (Eff.allows_bind φ f).mp ha with ⟨k,ix,r,hk,hh,hi,ht⟩ | ⟨j,g,hg,hh,hgA⟩
+      · exact Or.inl ⟨k,ix,r,hk,(Eff.mem_norm _ _).mpr ((Eff.mem_rawBind θ e _).mpr
+          (Or.inr ⟨i,f,hf,he,hh⟩)),hi,ht⟩
+      · exact Or.inr ⟨j,g,hg,(Eff.mem_norm _ _).mpr ((Eff.mem_rawBind θ e _).mpr
+          (Or.inr ⟨i,f,hf,he,hh⟩)),hgA⟩
+    · exact Or.inr ⟨i,f,hf,(Eff.mem_norm _ _).mpr ((Eff.mem_rawBind θ e _).mpr
+        (Or.inl ⟨.rho i,he,rfl,hl⟩)),ha⟩
+
+/-- 行像と範囲像のどちらの経路も、任意の二段の代入で同じ対象を許す。 -/
+example (θ φ : SubstEnv) (e : Eff) {σ κ l t i f}
+    (hf : θ.rows[i]? = some f) (he : e.mem (.rho i))
+    (ha : Eff.Allows σ κ (Eff.bind φ f) l t) :
+    Eff.Allows σ κ (Eff.bind φ (Eff.bind θ e)) l t :=
+  (Eff.allows_bind_comp θ φ e).mpr (Or.inr (Or.inl ⟨i,f,hf,he,ha⟩))
+
 end Benitoite.Release.Refinement
