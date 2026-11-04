@@ -4211,6 +4211,10 @@ inductive ContTy (P : Program) (B : Builtins) (σ : PathEnv) (Ψ : StoreTy) :
 
 `ScopedTargetInputs.at_prepare` は準備失敗の同じ生入力を、`at_error` は同じ準備の元入力と検査失敗の観測を、`at_ok` は同じ保持対象・要求を既存の三保存葉へ渡す。snapshot の一致は元の StateTyE から供給する。`at_steps` は `StateTyE.inputs` と既存の `StateTyE.at_step` を並べて返す。`path_bases_apply` は同じ空引数から専用の発行状態へ、`issue` は同じ σ の値と事象へ進め、同じ効果表の所属も返す。各葉は同じ σ/Eb を保ち、応答と At・発行は元のストアへ戻る。ハンドラの捕捉だけは、新しい継続セルを元のストアに追加する。
 
+`Val.Source` は pathBases・checkedAt・atError・externalHandle・実行時閉包・checked・checkedRequest・場所を直接含む値を拒み、`Comp.Source` は issuePathBases の直接構築を拒む。入れ子の値と本体にも同じ条件を適用する。これはソースの構文から実行時の保持値を直接作れないという境界であり、任意の型付き Val がこれらの構成子を持たないという主張ではない。
+
+範囲の被覆 `RangeExpr.Covers` と、値・計算・腕・節の型付けの判断（`HasTypeVQ`・`HasTypeCQ`・`HasTypeArmsQ`・`HasTypeClausesQ` など）は σ を引数に取らない。継続・ストア・状態の型付け（`ContTy`・`StoreOk`・`StateTyE`）は、実行と同じ σ を引数に取り、保持する値・閉包・枠の `Val.Adequate σ`・`Closure.Adequate σ`・`Frame.Adequate σ` を読む。`RangeExpr.Covers.mem` は被覆から任意の σ での所属保存を導き、`Eff.Allows σ` は同じ σ で解釈した対象の上限を読む。実行の `Step P B σ` は σ を固定し、保存した snapshot がある At の遷移では同じ σ との一致を要求する。これらの規則から、check 時の観測値と run 時の値の一致、実体や副次的な通信の隔離、情報フロー制御は結論しない。
+
 ### 確かめる性質
 
 【方針】次の性質が成り立つように、本章と[型システム](01-06-type-system.md)を定める。形式検証の段階 1（[ロードマップ](../00-overview/00-03-roadmap.md)）で、ランダムに生成したプログラムを使って反例を探す。反例が見つかれば、仕様の誤りとして直す。以下で性質 1〜3 の証明に使う型付けと遷移は `Benitoite.Release` のものである。篩を含む `Benitoite.Release.Refinement` の定義への全状態の定理の適用は、この記述に含めない。性質 2 と性質 3 は、形式検証の段階 2 で、規則を Lean 4 で定義し、組み込みの関数についての仮定のもとで証明した。性質 1 は、前述の「表層からの脱糖」の全体（形式化の段階 C1・C2。`match` のパターンの拡張は段階 C7）と、初回リリース版の拡張の脱糖のうち段階 C4・C5・C6 で形式化したものについて、表層の型付けを満たす型の情報を付けた表層のプログラムを脱糖すると、すべての定義に型が付き、定義が範囲の条件を満たすことを証明した。この性質 1 と性質 3 を組み合わせ、表層の `main` のエフェクトが空なら、脱糖したプログラムの実行は IO の事象を伴う遷移をせず、どの `handle` の枠も処理しない操作を呼ばないことも証明した（[形式意味論と検証](../07-quality/07-04-formal-semantics.md)）。形式化した規則は Lean の定義を正とする（前述の「本章の位置付け」）。

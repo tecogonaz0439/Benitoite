@@ -9,7 +9,7 @@ noncomputable section
 namespace ScopeLegacyContracts
 open Scope.Domain
 
-/-- 旧純粋 API に渡すパスは、解析後の絶対形だけを受け入れる。 -/
+/-- Scope.checkPath・Scope.checkPathIn に渡すパスは、解析後の絶対形だけを受け入れる。 -/
 def pathInput (v : Val) : Option Word :=
   match parseAtInput .path v with
   | some (.absolute (.path w)) => some w

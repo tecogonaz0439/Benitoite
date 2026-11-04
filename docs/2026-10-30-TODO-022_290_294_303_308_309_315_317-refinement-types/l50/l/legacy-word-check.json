@@ -1,0 +1,23 @@
+{
+  "scope": [
+    "01-12のScopeLegacyContractsの段落",
+    "07-04のScopeLegacyContractsの段落",
+    "ScopeLegacyContracts.leanのpathInputのコメント"
+  ],
+  "method": "再開2で軽1の処置を指摘の三箇所へ限定した。範囲外の置換は再開1開始時へ完全復元し、既存の「旧」の用法を再分類しない。復元と保持の全文ハッシュ照合はresume2-restorationとresume2-source-checkを参照する。",
+  "verified_names": [
+    "Scope.checkPath",
+    "Scope.checkPathIn",
+    "Benitoite.Release.Refinement.ScopeLegacyContracts.checkPath",
+    "Benitoite.Release.Refinement.ScopeLegacyContracts.checkPathIn",
+    "Benitoite.Release.TargetTable.checkPathIn"
+  ],
+  "evidence": [
+    "formal/Benitoite/Release/Refinement/ScopeLegacyContracts.lean",
+    "formal/Benitoite/Release/TargetTable.lean",
+    "formal/Benitoite/Release/Refinement/ScopeDelta.lean",
+    "crates/benitoite/src/builtins/funcs/scope.rs"
+  ],
+  "restoration": "resume2-restoration.json",
+  "source_comparison": "resume2-source-check.json"
+}

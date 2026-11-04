@@ -1,0 +1,145 @@
+[
+  {
+    "name": "Scope.checkPathIn",
+    "kind": "pure",
+    "proof": "Benitoite.Release.Refinement.ScopeDelta.response",
+    "delta": "Benitoite.Release.Refinement.ScopeDelta.delta",
+    "all_responses": "Benitoite.Release.Refinement.ScopeResponse.outcome_typed",
+    "exists": "Benitoite.Release.Refinement.ScopeResponse.delta_typed",
+    "reader": "Benitoite.Release.Refinement.ScopedTargetInputs.pure_steps",
+    "status": "全入力の型・適格性・非exitと応答存在を別に照合",
+    "normal_success_exists": "要求しない"
+  },
+  {
+    "name": "Http.checkRequestIn",
+    "kind": "pure",
+    "proof": "Benitoite.Release.Refinement.RequestDelta.response",
+    "delta": "Benitoite.Release.Refinement.RequestDelta.delta",
+    "all_responses": "Benitoite.Release.Refinement.ScopeResponse.outcome_typed",
+    "exists": "Benitoite.Release.Refinement.ScopeResponse.delta_typed",
+    "reader": "Benitoite.Release.Refinement.ScopedTargetInputs.pure_steps",
+    "status": "全入力の型・適格性・非exitと応答存在を別に照合",
+    "normal_success_exists": "要求しない"
+  },
+  {
+    "name": "Scope.pathInValue",
+    "kind": "pure",
+    "proof": "Benitoite.Release.Refinement.ScopeDelta.pathInValue_response",
+    "delta": "Benitoite.Release.Refinement.ScopeDelta.valueDelta",
+    "all_responses": "Benitoite.Release.Refinement.ScopeResponse.outcome_typed",
+    "exists": "Benitoite.Release.Refinement.ScopeResponse.delta_typed",
+    "reader": "Benitoite.Release.Refinement.ScopedTargetInputs.pure_steps",
+    "status": "全入力の型・適格性・非exitと応答存在を別に照合",
+    "normal_success_exists": "要求しない"
+  },
+  {
+    "name": "Http.requestInValue",
+    "kind": "pure",
+    "proof": "Benitoite.Release.Refinement.RequestDelta.requestInValue_response",
+    "delta": "Benitoite.Release.Refinement.RequestDelta.valueDelta",
+    "all_responses": "Benitoite.Release.Refinement.ScopeResponse.outcome_typed",
+    "exists": "Benitoite.Release.Refinement.ScopeResponse.delta_typed",
+    "reader": "Benitoite.Release.Refinement.ScopedTargetInputs.pure_steps",
+    "status": "全入力の型・適格性・非exitと応答存在を別に照合",
+    "normal_success_exists": "要求しない"
+  },
+  {
+    "name": "Scope.widenPathIn",
+    "kind": "pure",
+    "proof": "Benitoite.Release.Refinement.ScopeDelta.widenPathIn_response",
+    "delta": "Benitoite.Release.Refinement.ScopeDelta.valueDelta",
+    "all_responses": "Benitoite.Release.Refinement.ScopeResponse.outcome_typed",
+    "exists": "Benitoite.Release.Refinement.ScopeResponse.delta_typed",
+    "reader": "Benitoite.Release.Refinement.ScopedTargetInputs.pure_steps",
+    "status": "全入力の型・適格性・非exitと応答存在を別に照合",
+    "normal_success_exists": "要求しない"
+  },
+  {
+    "name": "Http.widenRequestIn",
+    "kind": "pure",
+    "proof": "Benitoite.Release.Refinement.RequestDelta.widenRequestIn_response",
+    "delta": "Benitoite.Release.Refinement.RequestDelta.valueDelta",
+    "all_responses": "Benitoite.Release.Refinement.ScopeResponse.outcome_typed",
+    "exists": "Benitoite.Release.Refinement.ScopeResponse.delta_typed",
+    "reader": "Benitoite.Release.Refinement.ScopedTargetInputs.pure_steps",
+    "status": "全入力の型・適格性・非exitと応答存在を別に照合",
+    "normal_success_exists": "要求しない"
+  },
+  {
+    "name": "File.readTextIn",
+    "kind": "io",
+    "proof": "Benitoite.Release.Refinement.ScopedIOResponse.readTextIn",
+    "delta": "Benitoite.Release.Refinement.ScopedIOResponse.ioResponse",
+    "all_responses": "Benitoite.Release.Refinement.ScopedIOResponse.io_typed",
+    "exists": "Benitoite.Release.Refinement.ScopedIOResponse.io_exists",
+    "reader": "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps",
+    "status": "全入力の型・適格性・非exitと応答存在を別に照合",
+    "normal_success_exists": "要求しない"
+  },
+  {
+    "name": "File.readBytesIn",
+    "kind": "io",
+    "proof": "Benitoite.Release.Refinement.ScopedIOResponse.readBytesIn",
+    "delta": "Benitoite.Release.Refinement.ScopedIOResponse.ioResponse",
+    "all_responses": "Benitoite.Release.Refinement.ScopedIOResponse.io_typed",
+    "exists": "Benitoite.Release.Refinement.ScopedIOResponse.io_exists",
+    "reader": "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps",
+    "status": "全入力の型・適格性・非exitと応答存在を別に照合",
+    "normal_success_exists": "要求しない"
+  },
+  {
+    "name": "File.writeTextIn",
+    "kind": "io",
+    "proof": "Benitoite.Release.Refinement.ScopedIOResponse.writeTextIn",
+    "delta": "Benitoite.Release.Refinement.ScopedIOResponse.ioResponse",
+    "all_responses": "Benitoite.Release.Refinement.ScopedIOResponse.io_typed",
+    "exists": "Benitoite.Release.Refinement.ScopedIOResponse.io_exists",
+    "reader": "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps",
+    "status": "全入力の型・適格性・非exitと応答存在を別に照合",
+    "normal_success_exists": "要求しない"
+  },
+  {
+    "name": "File.writeBytesIn",
+    "kind": "io",
+    "proof": "Benitoite.Release.Refinement.ScopedIOResponse.writeBytesIn",
+    "delta": "Benitoite.Release.Refinement.ScopedIOResponse.ioResponse",
+    "all_responses": "Benitoite.Release.Refinement.ScopedIOResponse.io_typed",
+    "exists": "Benitoite.Release.Refinement.ScopedIOResponse.io_exists",
+    "reader": "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps",
+    "status": "全入力の型・適格性・非exitと応答存在を別に照合",
+    "normal_success_exists": "要求しない"
+  },
+  {
+    "name": "File.appendTextIn",
+    "kind": "io",
+    "proof": "Benitoite.Release.Refinement.ScopedIOResponse.appendTextIn",
+    "delta": "Benitoite.Release.Refinement.ScopedIOResponse.ioResponse",
+    "all_responses": "Benitoite.Release.Refinement.ScopedIOResponse.io_typed",
+    "exists": "Benitoite.Release.Refinement.ScopedIOResponse.io_exists",
+    "reader": "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps",
+    "status": "全入力の型・適格性・非exitと応答存在を別に照合",
+    "normal_success_exists": "要求しない"
+  },
+  {
+    "name": "File.appendBytesIn",
+    "kind": "io",
+    "proof": "Benitoite.Release.Refinement.ScopedIOResponse.appendBytesIn",
+    "delta": "Benitoite.Release.Refinement.ScopedIOResponse.ioResponse",
+    "all_responses": "Benitoite.Release.Refinement.ScopedIOResponse.io_typed",
+    "exists": "Benitoite.Release.Refinement.ScopedIOResponse.io_exists",
+    "reader": "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps",
+    "status": "全入力の型・適格性・非exitと応答存在を別に照合",
+    "normal_success_exists": "要求しない"
+  },
+  {
+    "name": "Http.sendIn",
+    "kind": "io",
+    "proof": "Benitoite.Release.Refinement.ScopedIOResponse.sendIn",
+    "delta": "Benitoite.Release.Refinement.ScopedIOResponse.ioResponse",
+    "all_responses": "Benitoite.Release.Refinement.ScopedIOResponse.io_typed",
+    "exists": "Benitoite.Release.Refinement.ScopedIOResponse.io_exists",
+    "reader": "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps",
+    "status": "全入力の型・適格性・非exitと応答存在を別に照合",
+    "normal_success_exists": "要求しない"
+  }
+]

@@ -1,0 +1,66 @@
+{
+  "obligations": 33,
+  "handoffs": 31,
+  "obligation_classes": {
+    "技術": 26,
+    "共通": 4,
+    "記録": 2,
+    "他段": 1
+  },
+  "handoff_classes": {
+    "継承": 5,
+    "技術": 24,
+    "他段": 2
+  },
+  "relations": {
+    "依存する読者あり": 49,
+    "記録・監査の関係": 3,
+    "証拠そのものが入口": 8,
+    "同じ前提を共有するだけ": 4
+  },
+  "partially_read_rows": 33,
+  "reader_graph": {
+    "nodes": 80672,
+    "raw": {
+      "bytes": 79796938,
+      "sha256": "3e280c53bc1df4d1464356a10dad25b0630ec600cb126bf020bfc6be34eff15d"
+    }
+  },
+  "trace_parts": [
+    {
+      "file": "trace-part-01.json",
+      "bytes": 84555,
+      "sha256": "3857168cb9922debf480bdd7d02032b6e9b011349828e391e9ab511e2f3fe847"
+    },
+    {
+      "file": "trace-part-02.json",
+      "bytes": 84698,
+      "sha256": "35e688370cec88e96884851abf5cd423d53e1140dbcefa32cd8cacef3f6acbb5"
+    },
+    {
+      "file": "trace-part-03.json",
+      "bytes": 55793,
+      "sha256": "53e4a385150dc51000831a5875fed169a2bc7b21e399d8f84fd5827574d34323"
+    }
+  ],
+  "conditions": 75,
+  "l60_remaining_fields": 12,
+  "apis": 13,
+  "technical_independent_unresolved": {
+    "count": 0,
+    "basis": "各群末の独立レビューと群Kのtraceの判断の集計。機械照合による量化の判定ではない",
+    "source": {
+      "file": "coverage-judgments.json",
+      "bytes": 60445,
+      "sha256": "1b8f04ea9fd1604278dcb1b76afba501b951295a541244d142aef0a6d208aacb"
+    }
+  },
+  "mechanical_scope": [
+    "名前の実在・所在",
+    "実型のSHA-256",
+    "読者の型と値の依存の一致"
+  ],
+  "whole_obligations_closed": 0,
+  "stage_review": "RV-L50.l再確認を受け、再開2で軽1を指摘の三箇所へ限定。取りまとめの再確認待ち",
+  "stage_acceptance": "設計者が判定する"
+}

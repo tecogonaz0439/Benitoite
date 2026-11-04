@@ -1,0 +1,76 @@
+{
+  "b_work": "70d726b70b6cb4cbf5abace21d377f6ae155b512",
+  "baseline_manifest": {
+    "bytes": 1336821,
+    "sha256": "60314c46d01e9930a370a3191f3d649ab2fb80cdf653d502521054963427ac47"
+  },
+  "resume1_initial_manifest": {
+    "bytes": 544847,
+    "sha256": "b7069cd9c4d6cd57f11fc6da918bf29d4e21a7922f1fd71362c50c029462563a"
+  },
+  "resume2_initial_manifest": {
+    "bytes": 551362,
+    "sha256": "533ff20e2ff34dfb9b545ea7fcd6011c9ec87cf3a7e95480693bff9ce4d247f7"
+  },
+  "formal_inputs_compared": 1045,
+  "b_work_differences": [
+    {
+      "file": "formal/Benitoite/Release/Refinement/ModelTargetsApplications.lean",
+      "b_work": {
+        "bytes": 17551,
+        "sha256": "905b4ce92502df89cf8b9a2f75a27d6fc44d29a9e018e8ad45b3f46335a00f4f"
+      },
+      "current": {
+        "bytes": 17587,
+        "sha256": "4bcaa85f7762cb293fe9aae8f51e271c456eca4521627f4bbfe37dbdc1871934"
+      },
+      "noncomment_sha256": "aa01d99ee36b29a1766cf0ec1b1e498bbfa4b96a2f82219f2f502b094b806ee6"
+    },
+    {
+      "file": "formal/Benitoite/Release/Refinement/ScopeLegacyContracts.lean",
+      "b_work": {
+        "bytes": 4141,
+        "sha256": "926fd2c580f4d2b3f7d714d1008f8214b5bddc3fed33454b4a5d4ad8e2bf0cda"
+      },
+      "current": {
+        "bytes": 4163,
+        "sha256": "f09bd09e7ad71ff122c09e8dc885574bbbf92d42e82cbfc6e706502a54ddfcf6"
+      },
+      "noncomment_sha256": "cf0e5cef9ab21df09933ba14cbecb81a9c4e1c60793ab0b5eac8c75332e43c00"
+    },
+    {
+      "file": "formal/Benitoite/Release/Refinement/ScopedTargetInputs.lean",
+      "b_work": {
+        "bytes": 20557,
+        "sha256": "000afd93e8a1c74555281eb82cbe5d2c8818eba270f6ad92688077d7486a4faf"
+      },
+      "current": {
+        "bytes": 20571,
+        "sha256": "f4166c84d66492940068f8c7060cfa3220b590fb0142979b1e5556ac4e552e48"
+      },
+      "noncomment_sha256": "db1a7d4f90619366dd3db65194bad29cdd298962977f4afbb87ca3126cd11e1a"
+    },
+    {
+      "file": "formal/Benitoite/Release/Refinement/TargetTable.lean",
+      "b_work": {
+        "bytes": 1416,
+        "sha256": "fdaa11af0383a2cf8f094926d9a39020d8d0111a11ebc58a2e6145b0de4a7422"
+      },
+      "current": {
+        "bytes": 1430,
+        "sha256": "bdfa31331548d8d590103899967fe2553ab9b658a46e5c786c632f3750c206c1"
+      },
+      "noncomment_sha256": "d18a57fc2a4d1fe42637564e3b33f5c401d4ea345717cae007565f4168baad79"
+    }
+  ],
+  "definition_statement_proof_changes": 0,
+  "restored_occurrences": 97,
+  "audit_reuse": "再開1の監査入力との不一致7ファイルはコメントの復元だけ。逆変換の全文ハッシュとコメント外の一致で接続する",
+  "new_error_patterns_absent": [
+    "Certificate.Entails",
+    "入力rho",
+    "変更前の",
+    "採用済みの定数警告",
+    "閉じた二種類は、閉じた二種類の成功"
+  ]
+}

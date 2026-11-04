@@ -151,7 +151,7 @@ private theorem legacy_annotation (op : LegacyOp) (Γ : Ctx) :
     Ty.WF,Tel.WF,Ty.WFList,RangeIx.WF,Eff.WF,Eff.single,Eff.Canonical,Eff.norm,
     Ty.Sorted,Tel.Sorted,sortedTys,sortedEff,Ty.Declared,Tel.Declared,declaredTys,declaredEff,ar]
 
-/-- 各旧操作に、実表の単一の定数引数から全 BuiltinArgs を供給する。 -/
+/-- File.readText・print・exit に、実表の単一の定数引数から全 BuiltinArgs を供給する。 -/
 private theorem legacy_arguments (op : LegacyOp) (raw : String) (code : Integer64Value) (Ψ : StoreTy) :
     BuiltinArgs program B Ψ op.name op.signature [] [] [] [op.input raw code]
       op.signature.ret op.signature.eff := by
@@ -201,7 +201,7 @@ private theorem legacy_arguments (op : LegacyOp) (raw : String) (code : Integer6
       by simp [LegacyOp.signature,ModelTargets.printSig,ModelTargets.exitSig,
         ModelTargets.readTextSig,unscopedIO,Eff.Canonical,Eff.norm,Eff.single]⟩
 
-/-- 旧三操作の実引数から、存在・型・適格性・種類・同じ環境での許容を読む。 -/
+/-- File.readText・print・exit の実引数から、存在・型・適格性・種類・同じ環境での許容を読む。 -/
 example (raw : String) (code : Integer64Value) (Ψ : StoreTy) (σ : PathEnv) :
     ∀ op : LegacyOp, ∃ out obs,
       BuiltinArgs program B Ψ op.name op.signature [] [] [] [op.input raw code]
@@ -223,7 +223,7 @@ example (raw : String) (code : Integer64Value) (Ψ : StoreTy) (σ : PathEnv) :
   exact ⟨out,obs,args,hr,ht,ha,ModelTargets.io_kind (legacy_lookup op) args hr,
     ModelTargets.obs_allowed program_hasHttp.file (legacy_lookup op) kind args had hr⟩
 
-/-- 旧読取りは裸の String と Top の効果を保ち、観測は空でない場合がある。 -/
+/-- File.readText は裸の String と Top の効果を保ち、観測は空でない場合がある。 -/
 example (text : String) :
     ModelTargets.readTextSig.shape = .topTargeted .path ∧
     ModelTargets.readTextSig.rkinds = [] ∧
