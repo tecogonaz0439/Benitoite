@@ -3278,11 +3278,17 @@ Lean の捕捉を持つ実行関係の `Step.E_Lam` は、`q.view = .app f ws`�
 
 `ScopeCoverage` の `PathPattern.covers_atBase` は、任意の同じ起点の付加でパスパターンの被覆が保たれることを示す。`RangeExpr.Covers.mem` は、任意の同じ `σ` で内側の範囲の所属から外側の範囲の所属を導く。`SnapshotMem.mono` は、同じ snapshot の所属を被覆で拡大する。いずれも `σ.Valid` を前提にしない。
 
+`PathPattern.Covers.mem_atBase` は、付加した起点を記号の列のまま保持し、被覆から同じ対象の所属を導く。異なる起点の解決先が一致しても、起点を跨ぐ被覆は成立しない。`RangeIx.Covers.inst_mem` は、被覆される添字が具体化後に固定範囲となり、その範囲に対象が属するとき、被覆側も固定範囲となって同じ対象が属することを示す。具体化列の範囲外の変数は変数のまま残る。
+
 `MembershipTargets` の `HasTypeVQ.target_member` は、空の型・値・経路条件の文脈での `HasTypeVQ P B Ψ Q [] [] [] v T`、`T.Holds o k (fixed r)`、`B.valKind o = some k`、`v.Adequate σ` から、同じ対象 `t` の射影と `r.Mem σ k t` を返す。ストア `Ψ` と `σ` は任意である。`canonical_held` が残す不透明型の定数は `ConstOK` と `valKind` の矛盾で排除し、保持値三形は範囲の被覆と snapshot の現在の所属で扱う。
+
+`Pred.member_mono` は、path・host・endpoint の全種類で、同じ観測の所属の解釈が真なら、被覆する範囲での解釈も真であることを示す。`Pred.member_inst_mono` は、同時に具体化した添字へこの性質を渡す。いずれも二値の解釈の命題であり、部分評価の成功は主張しない。部分評価で snapshot のない based の所属は評価不能のままである。
 
 `ShapeTargets` の `Builtins.ShapeOk.single_target` は、`ShapeOk`、`sg.shape = single k p`、`NamesWF sg.names sg.params`、同じ呼出しの `BuiltinArgs`、全実引数の同じ `σ` への適格性を前提とする。結論は `rs = [r]`、`(ws[p]?).bind Val.target? = some t`、`r.Mem σ k t`、`sg.shapeAt ws = single k p` である。位置 `p` は任意であり、依存列の範囲具体化・型と行の代入・先行する値の代入を通して同じ対象位置を読む。`PrimSig.Scoped.namesWF` は宣言の形成の names 欄から前提を供給する。理由: `signatureTel` は名前と引数型を同時に読むので、元の型列との対応には名前と型の同数が必要である。
 
 `EffectTargets` の `Builtins.TargetAgreement.obs_allowed` は、同じ呼出しの `ShapeOk`、`TargetAgreement`、署名の lookup、IO 又は exit の分類、`NamesWF`、`BuiltinArgs`、全実引数の同じ `σ` への適格性、実際の IO 応答を前提とする。結論は、その署名の `opEff` にある同じ名前について、応答の全観測が具体化した実引数列の効果 `e` に許されることである。対象なしの形は観測が空であり、Top の形は同じ種類を保つ。単一の対象の形は、任意位置の保持対象の所属と同じ対象一つの観測から導く。`CoreAssumptions` は前提にしない。
+
+`Eff.Covers.allows` は、任意の文脈と経路条件での被覆から、同じ `σ`・名前・対象の許容の保存を導く。`Atom.covers_fixed_iff` で被覆側の同名の固定原子を取り出し、範囲の所属保存を使う。和の許容は各辺の許容の選言に分解し、空効果と未具体化の行だけでは対象を許さない。`Eff.allows_bind` は、元の名前付き原子の範囲を具体化する場合と、行の像から得る場合に分ける。行の像を範囲像で再具体化しない。`Eff.allows_bind_of_rows_nil` は行像なしでも範囲の具体化を保ち、行像と範囲像がともに空の場合は元の許容と同値となる。型だけの `substAt c ts []` も許容を変えない。置換後の効果は `bind` で正規化し、Fail の型は対象の許容に使わない。
 
 `ModelConstraints.sat` は `StandardKeyTyping.carrier` と有限宣言の `Release.satB` を使う。`admits` は型引数列の個数と各位置の制約を検査する。`sat_bind_values` と `admits_bind_values` は、型変数の像を変えない全ての置換で、型・列の制約の充足が同値であることを示す。篩の述語と値の番号、行の Fail の順序や長さを骨格の判定に使わない。
 

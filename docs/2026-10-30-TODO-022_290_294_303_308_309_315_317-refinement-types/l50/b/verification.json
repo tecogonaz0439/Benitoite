@@ -1,0 +1,43 @@
+{
+  "exit": 0,
+  "date_utc": "2026-11-04T08:51:51.811252+00:00",
+  "seconds": 0.14441037499999998,
+  "base": "6c8ec4247893fa0013ec74ffabe8e33bc55a0678",
+  "inputs": 1019,
+  "baseline": {
+    "bytes": 131826,
+    "sha256": "977cfcfa56491bb63f47d613ccb19f27f12d4c6ef7d5973b3322d5e48e73af78"
+  },
+  "final_inputs": {
+    "bytes": 131826,
+    "sha256": "61b1a64691c2f8dd9eff614be6e0933fb6e67543b46ed7c7d632b3798c89fb55"
+  },
+  "added_modules": [],
+  "removed": [],
+  "changed": [
+    "docs/design/01-spec/01-12-core-calculus.md",
+    "docs/design/07-quality/07-04-formal-semantics.md",
+    "formal/Benitoite/Release/Refinement/EffectTargets.lean",
+    "formal/Benitoite/Release/Refinement/MembershipTargets.lean",
+    "formal/Benitoite/Release/Refinement/ScopeCoverage.lean"
+  ],
+  "default_import_modules": 1006,
+  "affected_modules_in_default_import": [
+    "Benitoite.Release.Refinement.EffectTargets",
+    "Benitoite.Release.Refinement.MembershipTargets",
+    "Benitoite.Release.Refinement.ScopeCoverage"
+  ],
+  "audited": 56,
+  "new_declarations": 22,
+  "new_public_theorems": 20,
+  "new_generated_theorems": 2,
+  "obligations": 33,
+  "handoffs": 31,
+  "transplants": 14,
+  "relative_links": 19,
+  "group_bytes": 72314,
+  "script": {
+    "bytes": 7575,
+    "sha256": "5e68f8254db0027d822bcba8982b2cd5d263bbafe62512961b9dfcf62e73952b"
+  }
+}

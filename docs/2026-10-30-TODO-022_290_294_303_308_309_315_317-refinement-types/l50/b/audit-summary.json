@@ -1,0 +1,50 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-M",
+    "12288",
+    "<tmp>/obstruction-audit.lean"
+  ],
+  "cwd": "formal",
+  "start_utc": "2026-11-04T08:50:27.053537+00:00",
+  "end_utc": "2026-11-04T08:50:38.893305+00:00",
+  "seconds": 11.83783425,
+  "exit": 0,
+  "raw": {
+    "bytes": 25992,
+    "sha256": "15fbd90a259c13f1063f19cb19dfe6e6785540c5f752c3b5ccf99fdf8a51ae33"
+  },
+  "input": {
+    "bytes": 3376,
+    "sha256": "3282b272654c3797829f5c05fab4f8e4a9e5b10b5aaefe8f3ad462efa91fc323"
+  },
+  "targets": 56,
+  "target_list": {
+    "bytes": 4220,
+    "sha256": "3864467891adef8fcadec031a32c96e0c03c4b868dda462b6dabd2d4413620e2"
+  },
+  "rounds": 2,
+  "private_and_generated_included": true,
+  "new_axioms": 0,
+  "audited_production_declarations": 56,
+  "module_counts": {
+    "Benitoite.Release.Refinement.EffectTargets": 40,
+    "Benitoite.Release.Refinement.MembershipTargets": 4,
+    "Benitoite.Release.Refinement.ScopeCoverage": 12
+  },
+  "signatures": 9,
+  "signatures_file": {
+    "bytes": 6028,
+    "sha256": "d24bae5aeb6e2da83c662f3424c422cad0881ef1ed636f7d87c26d9765ed0bcc"
+  },
+  "script": {
+    "bytes": 4077,
+    "sha256": "4c986c19d5d4ce86fad3f64aa32ca1eca938843e7439485f16bb1a8e366de77c"
+  },
+  "declarations": {
+    "bytes": 11068,
+    "sha256": "e17523c44b8be285f4ad677c1161ea45bc549c1d920a0e189ce0a357f7af77cd"
+  }
+}
