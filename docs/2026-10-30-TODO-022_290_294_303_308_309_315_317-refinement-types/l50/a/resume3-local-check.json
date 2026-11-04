@@ -1,0 +1,26 @@
+{
+  "source_change": "適用例を更新し、pairの構成子名だけを修正前へ戻した一時入力",
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-M",
+    "12288",
+    "<tmp>/pair-before-check.lean"
+  ],
+  "cwd": "formal",
+  "exit": 1,
+  "expected_failure": true,
+  "runs": 1,
+  "seconds": null,
+  "reason": "Pair.Pairのlookupを読む適用例で、構成子の所属がFalseとなり未解決",
+  "input": {
+    "bytes": 3191,
+    "sha256": "c96cb2ce9e9a059013619200a45416261f19f2f07ee899bbbf1c214a5248bf08"
+  },
+  "raw": {
+    "bytes": 551,
+    "sha256": "d8af90086395ecb6b0c20f49f0afbf55f6eae1f5868d8ff1dfc5ed0daa9f7ce8"
+  },
+  "wrapper_correction": "出力の名前がsimpで消えたため、最初の記録処理の文字列照合は失敗。同じログの未解決位置を確認し記録。Leanは再実行していない。"
+}

@@ -948,6 +948,11 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 | ValueInversion | 「篩の正規形と制約の読み方」の変数の元のlookup型と芯の到達関係、Listの要素の導出・注釈・部分型と到達芯の等号。fnRef・prim・op・lam・dependentLam・raiseの逆転は元の直接前提と到達型のfnCore・TelClosureを返し、inv_lam_wfは元のlambdaの形成を取り出す。dict・superの逆転は元の実装・辞書・宣言と辞書の芯の等号を保持する。最外の篩の事実は同じ値のfactsで読む |
 | CollectionInversion | 同節のMap・Set・Bytesの芯の射影と構文の逆転。Mapは元の鍵列・値列、同長・sat・注釈、鍵の正規形の等号と値のLeQを返す。Setは元列・sat・注釈と要素の正規形の等号、Bytesは全要素が255以下であることとBytesの芯の等号を返す |
 | CanonicalValues | 「篩の正規形と制約の読み方」。閉じたΓのscalar・Boolean・List・data・関数八構文・Map・Set・Bytes・Dict・保持値・外部・対象の構文逆転。型付けの導出から形を得て、元の直接前提は各逆転で読む。atErrorはResultShape.DeclaredとerrorTypeの芯を返す専用の逆転。空篩はInhabitsから排除する。外部宣言・名目ID・同じsnapshotと範囲の形成を保持し、外部応答の存在や全σの被覆を結論しない |
+| ScopeCoverage・MembershipTargets・ShapeTargets | 同節。任意の同じσでの範囲被覆による所属保存とsnapshotの単調性、空の型・値・経路条件の文脈で型付いた適格な保持値の対象所属、NamesWFを前提とするsingle呼出しの任意位置の対象射影。ShapeOk・同じBuiltinArgs・全実引数のAdequateを使い、型・行・先行する値の代入を通して同じ対象を読む。宣言の形成からNamesWFを供給する接続と、snapshotの拡大後の所属・single呼出しの適用例を既定importに含む |
+| EffectTargets | 同節。ShapeOk・TargetAgreement・NamesWF・同じ型付き呼出しと全実引数の適格性・実際の応答から、同じσで全観測を具体化した効果の同じ名前が許すことを証明する。CoreAssumptionsを要求せず、実表のScopedから名前の形成を供給する適用例を持つ |
+| ModelConstraints | 同節。carrierとsatBによる非空制約、同じ列長と各位置のadmits。型変数の像を変えない全置換でsatとadmitsの同値を証明し、値の改名・値置換・非空制約・型像の衝突・値依存の型/行像・Fail縮約の対照を含む |
+| ScopeDeclarations | 同節。有限構成子一覧のlookupと、同じデータ名の全構成子のarity。Result/Pairのarity 2とClientRequest等のarity 0、要求の五欄、Ok/Errorの型引数の位置を同じPで読む |
+| TargetModelConditions | 同節。同じP/Bの既存25条件をまとめた証明の出力。既存のExternalAssumptionsとrelease_existsだけからCoreAssumptionsを構成し、TargetAgreementを別に保持する |
 | CanonicalCells | 同節の場所のref/lazyの直接二枝と、StoreOkからのval/thunk/done/cont/used/builderの実セル。固定σと同じΨを保ち、ref内容は正規形の等号、Lazy内容はLeQ、継続はEndsWithHandle/ContTyで読む。入力のStoreOkの存在とCellOkを逆転し、捕捉の全位置の不変条件を追加しない |
 | TelApplication | 「篩の正規形と制約の読み方」の反変入力のnarrowing、一引数の同じ実値を束縛するTransport、結果のLeQと潜在効果のCovers、二段のtail、fnのviewと正規化の代表。open_done/open_tail/open_twoは元文脈のWFを前提とし、二引数の代表では後続の型が最初の値に依存する。applyはCtx.WF・元列のAnnotation・TelClosure・実引数列を前提に、一般の列で同じ実引数の型付けと結果/効果の到達関係を返す |
 | ComputationInversion | 同節のappの二つの直接規則の無条件の選言、let/escapeの元前提と到達結果/効果。app_telはStoreのWF・Sorted・DeclaredとCaptureContextRegularを前提に依存列へ共通化する |

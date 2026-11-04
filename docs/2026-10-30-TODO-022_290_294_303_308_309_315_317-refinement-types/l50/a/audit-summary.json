@@ -1,0 +1,56 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-M",
+    "12288",
+    "<tmp>/obstruction-audit.lean"
+  ],
+  "cwd": "formal",
+  "start_utc": "2026-11-04T08:11:39.319532+00:00",
+  "end_utc": "2026-11-04T08:11:54.743559+00:00",
+  "seconds": 15.418307708,
+  "exit": 0,
+  "raw": {
+    "bytes": 111112,
+    "sha256": "2885b948d15872af122f8290d45fd8f726124aad0934dbdae6dd9576d6aa7b59"
+  },
+  "input": {
+    "bytes": 25165,
+    "sha256": "415f26aef513562eb71cb2109b75f2823119ca79a47996fd26c704b5f2e79eac"
+  },
+  "targets": 240,
+  "target_list": {
+    "bytes": 13915,
+    "sha256": "0ae48287cfc35e77b296fc8d21be200355517985a0bf2e9c1d11b38f8ec65b52"
+  },
+  "rounds": 2,
+  "private_and_generated_included": true,
+  "new_axioms": 0,
+  "production_added_declarations": 100,
+  "module_counts": {
+    "Benitoite.Release.Refinement.ShapeTargets": 21,
+    "Benitoite.Release.Refinement.EffectTargets": 22,
+    "Benitoite.Release.Refinement.MembershipTargets": 2,
+    "Benitoite.Release.Refinement.ModelConstraints": 12,
+    "Benitoite.Release.Refinement.TargetModelConditions": 22,
+    "Benitoite.Release.Refinement.ScopeCoverage": 10,
+    "Benitoite.Release.Refinement.ScopeDeclarations": 11,
+    "local_records": 140
+  },
+  "signatures": 11,
+  "contracts": 24,
+  "signatures_file": {
+    "bytes": 42244,
+    "sha256": "d9c640c3c7ba46226f5fbc1960e0a9e6ccb3138fdf5e238a3bf3c6fd80dd6f6d"
+  },
+  "script": {
+    "bytes": 4752,
+    "sha256": "d0503e11ad15ed99a17e1c0c81bb0fdcc8448b7d62c64d0e8215463d09271156"
+  },
+  "declarations": {
+    "bytes": 38785,
+    "sha256": "eb9f22506eb699de66b3ad44a6da0a7b082d71817c9cbb205adcd7d0c669b10c"
+  }
+}
