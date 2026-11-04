@@ -1,0 +1,298 @@
+[
+  {
+    "id": "DET-R01",
+    "requirement": "相対範囲の起点は入口 root。祖先探索なし",
+    "status": "後段の所有",
+    "proofs": [
+      "Benitoite.Release.Refinement.AtPrepare",
+      "Benitoite.Release.Refinement.RangeExpr",
+      "Benitoite.Release.Refinement.TargetInput"
+    ],
+    "finding": "解析済みの内側の型を根拠とし、未実装の字句/CLIの拒否を完了としない。",
+    "remaining": "R30/R70の字句・CLI・起動/設定の実入力"
+  },
+  {
+    "id": "DET-R02",
+    "requirement": "パターンの .. を正規化せず拒否する",
+    "status": "後段の所有",
+    "proofs": [
+      "Benitoite.Release.Refinement.AtPrepare",
+      "Benitoite.Release.Refinement.RangeExpr",
+      "Benitoite.Release.Refinement.TargetInput"
+    ],
+    "finding": "解析済みの内側の型を根拠とし、未実装の字句/CLIの拒否を完了としない。",
+    "remaining": "R30/R70の字句・CLI・起動/設定の実入力"
+  },
+  {
+    "id": "DET-R03",
+    "requirement": "パターンの dot/空要素/余分な末尾/を拒否し、. と先頭 ./ の特例を保つ",
+    "status": "後段の所有",
+    "proofs": [
+      "Benitoite.Release.Refinement.AtPrepare",
+      "Benitoite.Release.Refinement.RangeExpr",
+      "Benitoite.Release.Refinement.TargetInput"
+    ],
+    "finding": "解析済みの内側の型を根拠とし、未実装の字句/CLIの拒否を完了としない。",
+    "remaining": "R30/R70の字句・CLI・起動/設定の実入力"
+  },
+  {
+    "id": "DET-R04",
+    "requirement": "wildcard は末尾 /** だけ",
+    "status": "後段の所有",
+    "proofs": [
+      "Benitoite.Release.Refinement.AtPrepare",
+      "Benitoite.Release.Refinement.RangeExpr",
+      "Benitoite.Release.Refinement.TargetInput"
+    ],
+    "finding": "解析済みの内側の型を根拠とし、未実装の字句/CLIの拒否を完了としない。",
+    "remaining": "R30/R70の字句・CLI・起動/設定の実入力"
+  },
+  {
+    "id": "DET-R05",
+    "requirement": "~user を拒否する",
+    "status": "後段の所有",
+    "proofs": [
+      "Benitoite.Release.Refinement.AtPrepare",
+      "Benitoite.Release.Refinement.RangeExpr",
+      "Benitoite.Release.Refinement.TargetInput"
+    ],
+    "finding": "解析済みの内側の型を根拠とし、未実装の字句/CLIの拒否を完了としない。",
+    "remaining": "R30/R70の字句・CLI・起動/設定の実入力"
+  },
+  {
+    "id": "DET-R06",
+    "requirement": "任意の環境変数/独自の {name} を展開しない",
+    "status": "後段の所有",
+    "proofs": [
+      "Benitoite.Release.Refinement.AtPrepare",
+      "Benitoite.Release.Refinement.RangeExpr",
+      "Benitoite.Release.Refinement.TargetInput"
+    ],
+    "finding": "解析済みの内側の型を根拠とし、未実装の字句/CLIの拒否を完了としない。",
+    "remaining": "R30/R70の字句・CLI・起動/設定の実入力"
+  },
+  {
+    "id": "DET-R07",
+    "requirement": "NUL/逆斜線/非UTF-8 をこの表記の受理領域に足さない",
+    "status": "後段の所有",
+    "proofs": [
+      "Benitoite.Release.Refinement.AtPrepare",
+      "Benitoite.Release.Refinement.RangeExpr",
+      "Benitoite.Release.Refinement.TargetInput"
+    ],
+    "finding": "解析済みの内側の型を根拠とし、未実装の字句/CLIの拒否を完了としない。",
+    "remaining": "R30/R70の字句・CLI・起動/設定の実入力"
+  },
+  {
+    "id": "DET-R08",
+    "requirement": "異なる起点をまたぐ静的被覆を認めない",
+    "status": "内側完了・実装の照合は後段",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.equal_resolution_distinct_base"
+    ],
+    "finding": "起点差の静的拒否を全σで完了",
+    "remaining": "R10b/R30/R50/R70/V10の同じ独立期待の実入力"
+  },
+  {
+    "id": "DET-R09",
+    "requirement": "一原子を複数原子の和で覆う判定を追加しない",
+    "status": "内側完了・実装の照合は後段",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.split_endpoint"
+    ],
+    "finding": "意味上の和と一原子の静的被覆を区別",
+    "remaining": "R10b/R30/R50/R70/V10の同じ独立期待の実入力"
+  },
+  {
+    "id": "DET-R10",
+    "requirement": "secrets は単独範囲で、接尾辞/単一対象としての自動選択を認めない",
+    "status": "後段の所有",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.secrets_members",
+      "Benitoite.Release.Refinement.PathEnv.Ready.resolve_required"
+    ],
+    "finding": "任意一覧・未指定・空の内側の意味は証明済み。CLIの単独名/接尾辞/混在・登録値の解析は未実装。",
+    "remaining": "R30/R70の字句・CLI・起動/設定の実入力"
+  },
+  {
+    "id": "DET-R11",
+    "requirement": "必要な基準の未束縛は拒否又は明示 Error。cwd/temp で代用しない",
+    "status": "内側完了・実装の照合は後段",
+    "proofs": [
+      "Benitoite.Release.Refinement.PathEnv.Ready.resolve_required",
+      "Benitoite.Release.Refinement.AtPrepare.error_saved"
+    ],
+    "finding": "既知契約の必要束縛と動的Errorを分離",
+    "remaining": "R10b/R30/R50/R70/V10の同じ独立期待の実入力"
+  },
+  {
+    "id": "DET-R12",
+    "requirement": "PathBases を record/JSON/外部型から偽造できない",
+    "status": "内側完了・実装の照合は後段",
+    "proofs": [
+      "Benitoite.Release.Refinement.Val.Source",
+      "Benitoite.Release.Refinement.Val.SourceScoped"
+    ],
+    "finding": "ソースからpathBasesの直接生成を拒否する内側の定義",
+    "remaining": "R10b/R30/R50/R70/V10の同じ独立期待の実入力"
+  },
+  {
+    "id": "DET-R13",
+    "requirement": "旧 checkPath/checkPathIn は絶対形だけ。相対形には bases を渡す At を使う",
+    "status": "内側完了・実装の照合は後段",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopeLegacyContracts.relative_rejected",
+      "Benitoite.Release.Refinement.ScopeDelta.input_errors"
+    ],
+    "finding": "旧純粋APIは絶対形だけ。実δでは相対/home形を明示Errorへ",
+    "remaining": "R10b/R30/R50/R70/V10の同じ独立期待の実入力"
+  },
+  {
+    "id": "DET-R14",
+    "requirement": "任意の実行時基準表/秘密一覧を型/効果へ直接埋め込まない",
+    "status": "内側完了・実装の照合は後段",
+    "proofs": [
+      "Benitoite.Release.Refinement.RangeExpr",
+      "Benitoite.Release.Refinement.RangeExpr.Mem"
+    ],
+    "finding": "実行時の一覧はσに保持。静的な構文の範囲へ任意一覧を埋め込まない",
+    "remaining": "R10b/R30/R50/R70/V10の同じ独立期待の実入力"
+  },
+  {
+    "id": "DET-R15",
+    "requirement": "external 交換でも内部構築/表現パターン/JSON 偽造を認めない",
+    "status": "後段の所有",
+    "proofs": [
+      "Benitoite.Release.Refinement.Builtins.ExternalAssumptions.external_exists",
+      "Benitoite.Release.Refinement.Val.Source"
+    ],
+    "finding": "外部の型付き応答条件の供給は未実装。空の外部関係から存在を導かない。",
+    "remaining": "L60の外部の名目性、R50の交換、R30の偽造拒否"
+  },
+  {
+    "id": "DET-R16",
+    "requirement": "W0405 は通常受理し、deny-warnings だけ不合格とする",
+    "status": "後段の所有",
+    "proofs": [
+      "Benitoite.Release.Refinement.AtPrepare",
+      "Benitoite.Release.Refinement.RangeExpr",
+      "Benitoite.Release.Refinement.TargetInput"
+    ],
+    "finding": "解析済みの内側の型を根拠とし、未実装の字句/CLIの拒否を完了としない。",
+    "remaining": "R30/R70の字句・CLI・起動/設定の実入力"
+  },
+  {
+    "id": "DET-R17",
+    "requirement": "動的な対象の相対形はその実行の cwd から解く",
+    "status": "内側完了・実装の照合は後段",
+    "proofs": [
+      "Benitoite.Release.Refinement.TargetInput.resolve"
+    ],
+    "finding": "動的な相対対象は同じσのcwd、home形はhome",
+    "remaining": "R10b/R30/R50/R70/V10の同じ独立期待の実入力"
+  },
+  {
+    "id": "DET-R18",
+    "requirement": "root の上書き引数を追加しない",
+    "status": "後段の所有",
+    "proofs": [
+      "Benitoite.Release.Refinement.AtPrepare",
+      "Benitoite.Release.Refinement.RangeExpr",
+      "Benitoite.Release.Refinement.TargetInput"
+    ],
+    "finding": "解析済みの内側の型を根拠とし、未実装の字句/CLIの拒否を完了としない。",
+    "remaining": "R30/R70の字句・CLI・起動/設定の実入力"
+  },
+  {
+    "id": "DET-R19",
+    "requirement": "secrets の空一覧と非空指定を混在できない",
+    "status": "後段の所有",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.secrets_members",
+      "Benitoite.Release.Refinement.PathEnv.Ready.resolve_required"
+    ],
+    "finding": "任意一覧・未指定・空の内側の意味は証明済み。CLIの単独名/接尾辞/混在・登録値の解析は未実装。",
+    "remaining": "R30/R70の字句・CLI・起動/設定の実入力"
+  },
+  {
+    "id": "DET-R20",
+    "requirement": "成功値の射影は解決済み絶対パスを返す",
+    "status": "内側完了・実装の照合は後段",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.absolute_projection"
+    ],
+    "finding": "同じ保持絶対対象の射影を完了",
+    "remaining": "R10b/R30/R50/R70/V10の同じ独立期待の実入力"
+  },
+  {
+    "id": "DET-R21",
+    "requirement": "CLI の `work`・`tmp`・`secrets` 登録値は絶対形又は ~。裸の相対形/自己参照を拒否",
+    "status": "後段の所有",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.secrets_members",
+      "Benitoite.Release.Refinement.PathEnv.Ready.resolve_required"
+    ],
+    "finding": "任意一覧・未指定・空の内側の意味は証明済み。CLIの単独名/接尾辞/混在・登録値の解析は未実装。",
+    "remaining": "R30/R70の字句・CLI・起動/設定の実入力"
+  },
+  {
+    "id": "DET-R22",
+    "requirement": "ScopeError に At 用の公開構成子を追加する",
+    "status": "後段の所有",
+    "proofs": [
+      "Benitoite.Release.Refinement.AtErrorReaders.check_reader",
+      "Benitoite.Release.Refinement.ResultShape.Declared",
+      "Benitoite.Release.Refinement.Program.StandardErrorComplete"
+    ],
+    "finding": "内部九欄の保存と七Stringの暫定観測を根拠にし、公開形は選択していない。",
+    "remaining": "U02確定後・L70前の公開写し、R60の公開構成子/診断"
+  },
+  {
+    "id": "DET-R23",
+    "requirement": "動的対象の ..・途中dot・空要素・余分な末尾/を拒否する",
+    "status": "後段の所有",
+    "proofs": [
+      "Benitoite.Release.Refinement.AtPrepare",
+      "Benitoite.Release.Refinement.RangeExpr",
+      "Benitoite.Release.Refinement.TargetInput"
+    ],
+    "finding": "解析済みの内側の型を根拠とし、未実装の字句/CLIの拒否を完了としない。",
+    "remaining": "R30/R70の字句・CLI・起動/設定の実入力"
+  },
+  {
+    "id": "DET-R24",
+    "requirement": "ファイル指定では設定を読まず dependency を使えない",
+    "status": "後段の所有",
+    "proofs": [
+      "Benitoite.Release.Refinement.AtPrepare",
+      "Benitoite.Release.Refinement.RangeExpr",
+      "Benitoite.Release.Refinement.TargetInput"
+    ],
+    "finding": "解析済みの内側の型を根拠とし、未実装の字句/CLIの拒否を完了としない。",
+    "remaining": "R30/R70の字句・CLI・起動/設定の実入力"
+  },
+  {
+    "id": "DET-R25",
+    "requirement": "隣の設定へ警告せず、root は元の入口指定で決める",
+    "status": "後段の所有",
+    "proofs": [
+      "Benitoite.Release.Refinement.AtPrepare",
+      "Benitoite.Release.Refinement.RangeExpr",
+      "Benitoite.Release.Refinement.TargetInput"
+    ],
+    "finding": "解析済みの内側の型を根拠とし、未実装の字句/CLIの拒否を完了としない。",
+    "remaining": "R30/R70の字句・CLI・起動/設定の実入力"
+  },
+  {
+    "id": "DET-R26",
+    "requirement": "project の入口先頭にも language/dependency を許し、二か所は E0911",
+    "status": "後段の所有",
+    "proofs": [
+      "Benitoite.Release.Refinement.AtPrepare",
+      "Benitoite.Release.Refinement.RangeExpr",
+      "Benitoite.Release.Refinement.TargetInput"
+    ],
+    "finding": "解析済みの内側の型を根拠とし、未実装の字句/CLIの拒否を完了としない。",
+    "remaining": "R30/R70の字句・CLI・起動/設定の実入力"
+  }
+]

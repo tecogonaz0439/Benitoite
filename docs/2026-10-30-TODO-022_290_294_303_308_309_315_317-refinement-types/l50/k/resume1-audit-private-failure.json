@@ -1,0 +1,23 @@
+{
+  "exit": 1,
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-M",
+    "12288",
+    "<tmp>/audit.lean"
+  ],
+  "raw": {
+    "bytes": 279550,
+    "sha256": "e9720e13542b329cf02dd81f19ea59ae35483107b105eadda444d5f22b4ac7ac"
+  },
+  "input": {
+    "bytes": 15981,
+    "sha256": "fd7d85cadfcb07ad3ebbff89efa6d0017cf8aa3dd80f0746fc91d33a7dc2c31f"
+  },
+  "start_utc": "2026-11-04T17:52:59.771548+00:00",
+  "end_utc": "2026-11-04T17:53:10.761265+00:00",
+  "reason": "追加したprivate読者の完全名は数値成分を含み、その文字列を#checkで直接解析できなかった。",
+  "handling": "環境からtoStringの一致で正確なNameを取り出してmkIdentで#checkする。成功とは数えず最終入力を再実行する。"
+}

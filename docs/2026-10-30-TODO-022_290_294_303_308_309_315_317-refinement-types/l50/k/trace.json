@@ -1,0 +1,1444 @@
+[
+  {
+    "kind": "obligations",
+    "id": "O013",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.HasTypeVQ.target_member",
+      "Benitoite.Release.Refinement.Builtins.ShapeOk.single_target",
+      "Benitoite.Release.Refinement.ScopeModels.conditions"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps"
+    ],
+    "finding": "対象の裸 opaque を除き、型付き single と実75欄を構成する。",
+    "remaining": "L60が全Coreを組立。対象の葉の未完を移管しない",
+    "remaining_entry": "L60：同じP/BのExternalAssumptions三欄とCoreAssumptions.release_existsをModelScopeConditions.coreへ供給する。三モデル12欄はl60-fields.md。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "obligations",
+    "id": "O015",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.RangeExpr.Covers.mem",
+      "Benitoite.Release.Refinement.Pred.member_inst_mono",
+      "Benitoite.Release.Refinement.HasTypeVQ.target_member_interpret"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ScopedIOResponse.target_member"
+    ],
+    "finding": "対象の全3種類と範囲具体化を全σの所属へ接続する。",
+    "remaining": "L60の実表合成、R50",
+    "remaining_entry": "L60：各実表のCoreAssumptionsとTargetAgreementの合成。R50：対象path/host/endpointの所属・範囲具体化のRust/Lean比較。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedIOResponse.target_member"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "obligations",
+    "id": "O016",
+    "classification": "共通",
+    "status": "群K担当分完了・残る所有を分離",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopeModels.conditions",
+      "Benitoite.Release.Refinement.ModelScopeConditions.core"
+    ],
+    "readers": [],
+    "finding": "今回の全宣言を監査する。全既定環境の監査・独立レビューは群Lが所有する。",
+    "remaining": "L60/L70レビューとRust開始条件",
+    "remaining_entry": "群L：既定環境の公理監査と定義・言明・仮定の独立レビュー。L60/L70：各段のレビュー結果をRust開始条件へ渡す。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs"
+    ],
+    "relation_kind": "記録・監査の関係",
+    "relation": "読者なし。証拠は監査対象の入口を示す。履行の証拠はaudit-summary.json・work-check.jsonと群Lの独立レビュー/限定採取の記録である。受け口は右欄。"
+  },
+  {
+    "kind": "obligations",
+    "id": "O022",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopeResponse.normal_facts",
+      "Benitoite.Release.Refinement.HasTypeVQ.target_member_interpret",
+      "Benitoite.Release.Refinement.ScopedIOResponse.target_member"
+    ],
+    "readers": [],
+    "finding": "同じ実結果の篩の観測と所属を使う。",
+    "remaining": "L60の外部/全実モデル、R50",
+    "remaining_entry": "L60：同じ実δ/IOの正常値についてScopeResponse.normal_factsと対象所属を各実表へ合成。R50：同じ値の観測と所属の比較。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.pure_steps",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps"
+    ],
+    "relation_kind": "証拠そのものが入口",
+    "relation": "読者なし。証拠そのものが入口で、合成の読者は後段に残る。受け口は右欄。"
+  },
+  {
+    "kind": "obligations",
+    "id": "O027",
+    "classification": "共通",
+    "status": "群K担当分完了・残る所有を分離",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopeModels.conditions"
+    ],
+    "readers": [],
+    "finding": "固定Leanと -M 12288 を維持する。正式RSSは計画上の非採取である。",
+    "remaining": "各後段の限定採取",
+    "remaining_entry": "群Lと各後段の限定採取：同じ最終workの本体と計測器の終了、正式RSSと機械・原単位を記録する。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs"
+    ],
+    "relation_kind": "記録・監査の関係",
+    "relation": "読者なし。証拠は監査対象の入口を示す。履行の証拠はaudit-summary.json・work-check.jsonと群Lの独立レビュー/限定採取の記録である。受け口は右欄。"
+  },
+  {
+    "kind": "obligations",
+    "id": "O034",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopeResponse.outcome_typed",
+      "Benitoite.Release.Refinement.ScopedIOResponse.io_typed",
+      "Benitoite.Release.Refinement.HasTypeVQ.target_member_interpret"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ScopeResponse.normal_facts",
+      "Benitoite.Release.Refinement.ScopedIOResponse.responseAssumptions"
+    ],
+    "finding": "実応答のGroundと全有効σの適格性から対象観測へ接続する。",
+    "remaining": "L60、R50",
+    "remaining_entry": "L60：対象所属のmachine_exact/stable/representedとOutcome.Typed/AdequateResultを各実表へ合成。R50：同じ対象の表現・観測の比較。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.pure_steps",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "obligations",
+    "id": "O035",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.RequestDelta.response",
+      "Benitoite.Release.Refinement.RequestDelta.widenRequestIn_response",
+      "Benitoite.Release.Refinement.ScopedTargetExamples.request_io",
+      "Benitoite.Release.Refinement.ScopedTargetExamples.selected_request"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ModelHttp.pure_response"
+    ],
+    "finding": "要求の二保持形と同じ内容型・reqTarget・endpointを全位置の実応答へ渡す。",
+    "remaining": "L60全モデル、L70合成、R30/R50",
+    "remaining_entry": "L60：要求の実δ/IOを全Coreへ。L70：関数・節の同じ要求を全到達へ合成。R30/R50：保持req・reqTarget・endpointの実装と比較。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.handled_step"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "obligations",
+    "id": "O036",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.Builtins.ShapeOk.single_target",
+      "Benitoite.Release.Refinement.Builtins.ShapeOk.single_request"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ScopedCallContracts.request_inputs",
+      "Benitoite.Release.Refinement.ScopedTargetExamples.single_io",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps"
+    ],
+    "finding": "全型付き single の任意位置と同じwsを保つ。NamesWFは同じ実表から供給する。",
+    "remaining": "L70の実行/表層への合成",
+    "remaining_entry": "L70：全single入力のtarget?とshapeAtを実行のStepと表層の開始へ合成する。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.single_io",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "obligations",
+    "id": "O038",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.pure_steps",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.handled_step"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.path_bases_apply"
+    ],
+    "finding": "元状態から同じσ/Ebを保つ11葉へ接続する。ハンドラだけは継続セルを追加する。",
+    "remaining": "L60外部/解放、L70全保存",
+    "remaining_entry": "L60：外部応答三条件と通常資源のrelease_exists。L70：StateTyEとStepの同じσ/Eb/μの全保存へ合成する。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.at_steps",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.issue"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "obligations",
+    "id": "O044",
+    "classification": "記録",
+    "status": "群K担当分完了・残る所有を分離",
+    "proofs": [
+      "Benitoite.Release.Refinement.HasTypeVQ.request_target",
+      "Benitoite.Release.Refinement.Detail.originals_unobserved",
+      "Benitoite.Release.Refinement.AtErrorReaders.check_reader"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.Builtins.ShapeOk.single_request",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.at_error"
+    ],
+    "finding": "対象保持とgroundValを新判断で明示する。旧Syntaxの型全体の同値は要求しない。旧主定理の欠陥とはしない。",
+    "remaining": "D10公開文書、L70の規範切替",
+    "remaining_entry": "D10：対象保持・groundValと旧Syntaxとの対照を公開文書へ。L70：新判断の規範と主定理の切替。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.at_error"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "obligations",
+    "id": "O048",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.RangeExpr.Covers.mem",
+      "Benitoite.Release.Refinement.HasTypeVQ.widen_opaque",
+      "Benitoite.Release.Refinement.RequestDelta.widenRequestIn_response"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ModelHttp.pure_response",
+      "Benitoite.Release.Refinement.ScopedTargetExamples.selected_request",
+      "Benitoite.Release.Refinement.ScopedTargetExamples.widened_input"
+    ],
+    "finding": "同じ値をscopedの共変と忘却で拡大する。旧型の等号を使わない。",
+    "remaining": "L60表の組立、L70/R30/R50合成",
+    "remaining_entry": "L60：同じ値の範囲拡大を実表へ。L70：関数・節へ合成。R30/R50：widenPathIn/widenRequestInの同じ保持値を実装・比較。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.widened_input",
+      "Benitoite.Release.Refinement.ScopedTargetExamples.selected_request"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "obligations",
+    "id": "O049",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.RequestDelta.response",
+      "Benitoite.Release.Refinement.RequestDelta.requestInValue_response",
+      "Benitoite.Release.Refinement.ModelHttp.sent_request"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ModelHttp.pure_response",
+      "Benitoite.Release.Refinement.ModelHttp.send_mismatch"
+    ],
+    "finding": "固定reqTarget・groundVal・同じ内容型をチェック・射影・送信へ渡す。",
+    "remaining": "L60全Core、R30/R50",
+    "remaining_entry": "L60：固定reqTarget/groundVal/valContentを全Coreへ。R30/R50：checkRequestIn→requestInValue→Http.sendInの同じ要求を実装・比較。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.request_io",
+      "Benitoite.Release.Refinement.ScopedTargetExamples.selected_request"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "obligations",
+    "id": "O057",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.pure_steps",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.at_steps"
+    ],
+    "readers": [],
+    "finding": "全開始の応答存在とAt三分岐・発行を接続する。正常応答の存在を仮定しない。",
+    "remaining": "L60外部/解放、L70 progress",
+    "remaining_entry": "L60：external_exists/release_exists。L70：At三分岐・発行・実IOの存在をprogressの全開始へ合成する。正常応答の存在を要求しない。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.path_bases_apply",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.issue"
+    ],
+    "relation_kind": "証拠そのものが入口",
+    "relation": "読者なし。証拠そのものが入口で、合成の読者は後段に残る。受け口は右欄。"
+  },
+  {
+    "kind": "obligations",
+    "id": "O058",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopedCallContracts.single_inputs",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ScopedCallContracts.request_inputs",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.handled_step",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.pure_steps"
+    ],
+    "finding": "同じ実引数と具体化済み範囲の依存結果・効果を保存葉へ渡す。",
+    "remaining": "L60、L70 preservation",
+    "remaining_entry": "L60：各実表の応答条件。L70：同じBuiltinArgsの依存結果/効果と全応答をpreservationへ合成する。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.pure_steps",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.handled_step"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "obligations",
+    "id": "O059",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs",
+      "Benitoite.Release.Refinement.StateTyE.selected_primitive_step"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.NormalReplyExamples.concrete_step_selections",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.pure_steps"
+    ],
+    "finding": "選んだoracleも同じ実応答関係を使う。逆方向の完全性は結論しない。",
+    "remaining": "L60、L70 step_sound",
+    "remaining_entry": "L60：実表の応答存在と選択。L70：selected_primitive_stepとAt全分岐をstep_soundへ合成する。逆方向の完全性は要求しない。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.pure_steps",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.at_steps"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "obligations",
+    "id": "O060",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.Builtins.CoreAssumptions.io_event_covered",
+      "Benitoite.Release.Refinement.Builtins.CoreAssumptions.pathBases_event_covered",
+      "Benitoite.Release.Refinement.Eff.Covers.allows",
+      "Benitoite.Release.Refinement.Builtins.TargetAgreement.obs_allowed"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.Builtins.CoreAssumptions.io_transition_covered",
+      "Benitoite.Release.Refinement.Builtins.CoreAssumptions.pathBases_transition_covered",
+      "Benitoite.Release.Refinement.ScopedTargetExamples.single_io",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps"
+    ],
+    "finding": "宣言事象の被覆を継承し、同じ呼出し効果の許容を供給する。末尾Ebへの全伝播はL70である。",
+    "remaining": "L60、L70 effect_soundness/noLamNames",
+    "remaining_entry": "L60：同じeffects表の事象被覆を全Coreへ。L70：呼出し効果から末尾Ebへの伝播をeffect_soundness/noLamNamesへ合成する。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.issue"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "obligations",
+    "id": "O061",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.Builtins.TargetAgreement.obs_allowed",
+      "Benitoite.Release.Refinement.ScopedIOResponse.target_member"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps"
+    ],
+    "finding": "同じσの一回の実観測と静的上限。副通信・実体・IFCへの保証は含めない。",
+    "remaining": "L60 external_no_targets、L70一段/到達/表層",
+    "remaining_entry": "L60：ExternalAssumptions.external_no_targets。L70：同じσ/対象の一段のEff.Allowsを全到達と表層へ合成する。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "obligations",
+    "id": "O062",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopeResponse.delta_typed",
+      "Benitoite.Release.Refinement.ModelTargets.pure_response",
+      "Benitoite.Release.Refinement.ModelHttp.pure_response"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ModelHttp.delta_typed",
+      "Benitoite.Release.Refinement.ModelTargets.delta_typed",
+      "Benitoite.Release.Refinement.ScopeResponse.outcome_typed"
+    ],
+    "finding": "純粋6行の全BuiltinArgsと同じ実δ・非exit・型・適格性を保存へ渡す。",
+    "remaining": "L60外部/全実表",
+    "remaining_entry": "L60：純粋6範囲APIの全BuiltinArgsについて、同じδのOutcome.Typed/AdequateResult/非exitを全実表のResponseAssumptionsへ組み込む。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.pure_steps"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "obligations",
+    "id": "O063",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopedIOResponse.response",
+      "Benitoite.Release.Refinement.ModelTargets.io_exists",
+      "Benitoite.Release.Refinement.ModelHttp.io_exists"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ModelHttp.responseAssumptions",
+      "Benitoite.Release.Refinement.ModelTargets.io_typed",
+      "Benitoite.Release.Refinement.ModelTargets.responseAssumptions"
+    ],
+    "finding": "7IOと各モデルの全IO/exitの応答存在・型・種類を継承する。δの未定義を証拠にしない。",
+    "remaining": "L60の外部条件との区別・全Core",
+    "remaining_entry": "L60：IO7本と各モデルのio_typed/io_kind/io_existsをCoreAssumptionsへ組み込む。externalの三条件と分ける。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "obligations",
+    "id": "O065",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopeSignatures.sig_scoped",
+      "Benitoite.Release.Refinement.ModelConstraints.sat_subst",
+      "Benitoite.Release.Refinement.ModelConstraints.admits_subst",
+      "Benitoite.Release.Refinement.ScopeModels.conditions"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ModelHttp.sig_scoped",
+      "Benitoite.Release.Refinement.ScopeSignatures.substitutionAssumptions"
+    ],
+    "finding": "同じPの有限宣言・全16署名・八保存則・三モデル75欄を維持する。",
+    "remaining": "L60の実表全欄、L70切替。全面的な旧仮定同値は要求しない",
+    "remaining_entry": "L60：同じPのarity/sourceTelRows/sig_scoped/八保存則を標準全表へ。L70：この実表で新判断へ切り替える。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "obligations",
+    "id": "O074",
+    "classification": "他段",
+    "status": "群K担当分完了・残る所有を分離",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopedCallContracts.single_inputs",
+      "Benitoite.Release.Refinement.ScopedTargetExamples.single_io",
+      "Benitoite.Release.Refinement.ScopedTargetExamples.incomparable"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ScopedCallContracts.request_inputs",
+      "Benitoite.Release.Refinement.ScopedTargetExamples.request_io"
+    ],
+    "finding": "一度選んだrsから原署名へ渡す。直接・明示拡大・関数値・Top・比較不能を照合し、入力推論を実装したとはしない。",
+    "remaining": "R10b/R30の直接/明示拡大/関数値/Top/比較不能の実受理と一度の具体化",
+    "remaining_entry": "R10b/R30：PrimitiveAdmissible/RangeAdmissible/SignatureInstanceへ直接・明示拡大・関数値・Top・比較不能の実入力を渡し、一度だけ範囲を具体化する。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "obligations",
+    "id": "O082",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.TargetInput.resolve",
+      "Benitoite.Release.Refinement.RangeExpr.resolve",
+      "Benitoite.Release.Refinement.ScopedTargetExamples.equal_resolution_distinct_base"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.absolute_projection"
+    ],
+    "finding": "rootとcwd/homeの解決を分け、root=cwdでも異なる起点の被覆は認めない。",
+    "remaining": "R30/R70/D10のscripts下/別cwd/run .と起動形",
+    "remaining_entry": "R30/R70：scripts下・別cwd・run .の起動時rootと動的cwdの設定/CLI照合（src/cli/）。D10：起動形の公開文書。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.absolute_projection"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "obligations",
+    "id": "O084",
+    "classification": "共通",
+    "status": "群K担当分完了・残る所有を分離",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopeModels.conditions",
+      "Benitoite.Release.Refinement.ModelScopeConditions.core"
+    ],
+    "readers": [],
+    "finding": "L50の技術的独立未完を後段へ付け替えない。全体閉鎖・独立レビュー・受け入れとは区別する。",
+    "remaining": "L60/L70/R/K/Vの合成/受け入れ",
+    "remaining_entry": "群L：L50独立未完と他段所有を分けて段末レビュー。L60/L70/R/K/V：各合成・比較・受け入れ記録へ渡す。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs"
+    ],
+    "relation_kind": "記録・監査の関係",
+    "relation": "読者なし。証拠は監査対象の入口を示す。履行の証拠はaudit-summary.json・work-check.jsonと群Lの独立レビュー/限定採取の記録である。受け口は右欄。"
+  },
+  {
+    "kind": "obligations",
+    "id": "O092",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.secrets_members",
+      "Benitoite.Release.Refinement.RangeExpr.Covers.mem"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.Eff.Covers.allows"
+    ],
+    "finding": "未指定none・解決済み空some []・任意有限非空一覧を区別する。自己被覆とTop拡大を扱う。",
+    "remaining": "R30/R70のCLI単独名/接尾辞/混在拒否と起動側管理",
+    "remaining_entry": "R30/R70：src/cli/のsecrets単独名・接尾辞・空/非空混在の拒否と起動側の一覧管理。所属成功を許可/分類解除に使わない。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.AtPrepare.error_saved"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "obligations",
+    "id": "O096",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.PathEnv.Ready.resolve_required",
+      "Benitoite.Release.Refinement.InitialPrepared.source_state_of_source",
+      "Benitoite.Release.Refinement.AtPrepared.current"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.at_steps"
+    ],
+    "finding": "Sourceの偽造排除と必要束縛を継承し、発行・At成功から同じ保持絶対対象へ接続する。",
+    "remaining": "R30の供給・heap/stress・work/tmpの実在と管理",
+    "remaining_entry": "R30：Source由来の必要束縛・PathBases発行・AtとFile6本/Httpへ同じ固定σを供給する。work/tmpの実在・管理、heap/stress構成で照合する。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.at_steps",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.issue"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "obligations",
+    "id": "O097",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.AtError.save_exact",
+      "Benitoite.Release.Refinement.AtPrepare.error_saved",
+      "Benitoite.Release.Refinement.AtErrorReaders.check_reader",
+      "Benitoite.Release.Refinement.Detail.originals_unobserved"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.at_error",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.at_prepare"
+    ],
+    "finding": "20等号と全失敗・内部観測・適格性を照合する。公開写しはU02後である。",
+    "remaining": "U02確定後・L70前の公開宣言/観測/照合の写し、R30/R60の構成/文言/Show",
+    "remaining_entry": "U02確定後・L70前：Detail九欄からResultShape.Declared/Program.StandardErrorCompleteと公開宣言・観測・照合・網羅性へ写す。生Valを取り出すならVal.AdequateのatError枝を再点検。R30/R60：構成子・文言・Show。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.at_prepare",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.at_error"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "obligations",
+    "id": "O118",
+    "classification": "共通",
+    "status": "群K担当分完了・残る所有を分離",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopeModels.conditions",
+      "Benitoite.Release.Refinement.AtErrorReaders.observed"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.AtErrorReaders.check_reader"
+    ],
+    "finding": "実定義と前提を01-12/07-04へ写し、追加全モジュールを既定importへ含める。",
+    "remaining": "L70/R50/R60/D10/V10の全読者",
+    "remaining_entry": "L70：01-12/07-04と全開始・主定理の写し。R50/R60：交換/診断、D10：公開文書、V10：実CLIまで同じ契約を照合する。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "obligations",
+    "id": "O141",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.single_io",
+      "Benitoite.Release.Refinement.ScopedTargetExamples.request_io",
+      "Benitoite.Release.Refinement.ScopedTargetExamples.selected_request"
+    ],
+    "readers": [],
+    "finding": "U1全7位置と同じ対象・要求・σ、一度決めたIO添字を保つ。",
+    "remaining": "L70、R10b/R30/R50/R60/V10",
+    "remaining_entry": "L70：U1全7位置の値の流れと保存の合成。R10b/R30：一度の添字具体化、R50：比較、R60/V10：公開入力と実CLI。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.handled_step",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps"
+    ],
+    "relation_kind": "証拠そのものが入口",
+    "relation": "読者なし。証拠そのものが入口で、合成の読者は後段に残る。受け口は右欄。"
+  },
+  {
+    "kind": "obligations",
+    "id": "O144",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.Pred.member_inst_mono",
+      "Benitoite.Release.Refinement.ScopeResponse.normal_facts",
+      "Benitoite.Release.Refinement.ScopedIOResponse.target_member"
+    ],
+    "readers": [],
+    "finding": "既存の論理・true/空篩と対象の全σの意味を同じ実応答へ接続する。",
+    "remaining": "R20/R10b/R40/R50/V10",
+    "remaining_entry": "R20/R10b/R40：対象3sortと論理/true/空篩の検査・推論・診断。R50/V10：同じ値の対象所属の全比較と実CLI。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.pure_steps",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps"
+    ],
+    "relation_kind": "証拠そのものが入口",
+    "relation": "読者なし。証拠そのものが入口で、合成の読者は後段に残る。受け口は右欄。"
+  },
+  {
+    "kind": "obligations",
+    "id": "O156",
+    "classification": "記録",
+    "status": "群K担当分完了・残る所有を分離",
+    "proofs": [
+      "Benitoite.Release.Refinement.Builtins.TargetAgreement.obs_allowed",
+      "Benitoite.Release.Refinement.ScopedTargetExamples.equal_resolution_distinct_base"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps"
+    ],
+    "finding": "σを引数とする静的上限である。checkの観測値とrunの固定値の区別、IFC未実装をD10へ渡す。",
+    "remaining": "D10の二文書、V10の実CLI。利用者向け文書の所有による分離",
+    "remaining_entry": "D10：00-01とAGENTS公開要約の静的上限・check/run・IFCの二文書。V10：実CLIでcheckの観測値とrunの固定値の区別を照合する。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "obligations",
+    "id": "O165",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.RangeExpr.Covers.mem",
+      "Benitoite.Release.Refinement.ScopedTargetExamples.equal_resolution_distinct_base"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.Eff.Covers.allows"
+    ],
+    "finding": "同一起点の所属保存と、解決先が同じでも異なる起点の被覆を拒否する対照を保つ。",
+    "remaining": "R10b/R30/R50/V10",
+    "remaining_entry": "R10b/R30：src/typeck/scoped_calls.rs等の被覆判定で異なる起点を同じ解決先から同一視しない。R50/V10：同一起点の受理と起点差の拒否を比較・実CLI照合。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.split_endpoint"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "obligations",
+    "id": "O166",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopeLegacyContracts.relative_rejected",
+      "Benitoite.Release.Refinement.ScopeLegacyContracts.absolute_input",
+      "Benitoite.Release.Refinement.ScopeDelta.input_errors"
+    ],
+    "readers": [],
+    "finding": "旧純粋チェックの相対/home形は明示Error。Atのbasesありの解決と同じ絶対射影を区別する。",
+    "remaining": "R30/R40/D10/V10",
+    "remaining_entry": "R30：src/builtins/funcs/scope.rsの旧純粋チェックとbases明示At。R40：拒否診断、D10：移行説明、V10：相対/home形の明示Errorと絶対射影のCLI照合。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.absolute_projection"
+    ],
+    "relation_kind": "証拠そのものが入口",
+    "relation": "読者なし。証拠そのものが入口で、合成の読者は後段に残る。受け口は右欄。"
+  },
+  {
+    "kind": "obligations",
+    "id": "O168",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.equal_resolution_distinct_base",
+      "Benitoite.Release.Refinement.ScopedTargetExamples.split_endpoint",
+      "Benitoite.Release.Refinement.PathEnv.Ready.resolve_required",
+      "Benitoite.Release.Refinement.AtPrepare.error_saved"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.AtErrorReaders.prepare_reader"
+    ],
+    "finding": "DET-R全26行を別表で分類し、起点差・分割被覆・未束縛・偽造の内側を照合する。",
+    "remaining": "L60のexternal名目性、R30/R50/R60/R70/D10/V10の否定例",
+    "remaining_entry": "L60：externalの名目性。R30/R50/R60/R70/D10/V10：denials.mdのDET-R01〜26の字句・CLI・交換・公開診断・文書・実CLIを各所有で照合する。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.at_steps"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "handoffs",
+    "id": "H01",
+    "classification": "継承",
+    "status": "継承完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.HasTypeVQ.canonical_held",
+      "Benitoite.Release.Refinement.StateTyE.app_inputs"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.HasTypeVQ.canonical_opaque",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs"
+    ],
+    "finding": "芯の対応とfacts、appの二規則と形成付きの元列を継承する。",
+    "remaining": "L70全開始の合成",
+    "remaining_entry": "L70：HasTypeVQの芯の対応・factsと形成付きapp_telを全開始へ合成する。撤回した元型全体のLeQを再採用しない。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "handoffs",
+    "id": "H02",
+    "classification": "継承",
+    "status": "継承完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.TelClosure.apply",
+      "Benitoite.Release.Refinement.StateTyE.primitive_contract_inputs"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.single_io",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs"
+    ],
+    "finding": "Ctx.WFと元列のAnnotationは既存の供給元を使い、除去済みの四前提を戻さない。",
+    "remaining": "L60/L70が同じ実署名を使用",
+    "remaining_entry": "L60/L70：TelClosure.applyの同じ実署名にCtx.WFと元列Annotationを実開始から供給する。除去済み四前提を戻さない。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.single_io",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "handoffs",
+    "id": "H03",
+    "classification": "継承",
+    "status": "継承完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopeResponse.normal_facts",
+      "Benitoite.Release.Refinement.ModelHttp.normal_facts",
+      "Benitoite.Release.Refinement.ModelTargets.normal_facts"
+    ],
+    "readers": [],
+    "finding": "同じδ・正常値・toTerm?からのfactsを継承する。",
+    "remaining": "L60の応答、L70合成",
+    "remaining_entry": "L60：同じ実δの正常応答とtoTerm?の等号からnormal_factsへ。L70：全実行へ合成する。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.pure_steps"
+    ],
+    "relation_kind": "証拠そのものが入口",
+    "relation": "読者なし。証拠そのものが入口で、合成の読者は後段に残る。受け口は右欄。"
+  },
+  {
+    "kind": "handoffs",
+    "id": "H04",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.RequestDelta.response",
+      "Benitoite.Release.Refinement.RequestDelta.widenRequestIn_response",
+      "Benitoite.Release.Refinement.ScopedTargetExamples.request_io",
+      "Benitoite.Release.Refinement.ScopedTargetExamples.selected_request"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ModelHttp.pure_response"
+    ],
+    "finding": "要求の二保持形と同じ内容型・reqTarget・endpointを全位置の実応答へ渡す。",
+    "remaining": "L60/L70/R30/R50",
+    "remaining_entry": "L60/L70：同じ保持対象・req・endpointと全σの所属を実表・全実行へ。R30/R50：拡大・関数・節・全IOの同じ値を実装・比較。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.handled_step"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "handoffs",
+    "id": "H05",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.HasTypeVQ.request_target",
+      "Benitoite.Release.Refinement.RequestDelta.response",
+      "Benitoite.Release.Refinement.ModelHttp.sent_request"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ModelHttp.pure_response",
+      "Benitoite.Release.Refinement.ModelHttp.send_mismatch",
+      "Benitoite.Release.Refinement.ScopedTargetExamples.request_io"
+    ],
+    "finding": "篩付きPairを含む五欄要求の二保持形と同じ端点を継承する。根の射影形拒否は群E再開1を維持する。",
+    "remaining": "R30/R50の同じ入力を比較",
+    "remaining_entry": "R30/R50：Pair[String{true},String]等の同じ型付き要求をAt→射影→Http.sendInへ通す実入力と比較。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.request_io",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "handoffs",
+    "id": "H06",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopeSignatures.sourceTelRows",
+      "Benitoite.Release.Refinement.ModelTargets.sourceTelRows",
+      "Benitoite.Release.Refinement.ModelHttp.sourceTelRows",
+      "Benitoite.Release.Refinement.TargetTable.content_rows"
+    ],
+    "readers": [
+      "_private.Benitoite.Release.Refinement.ModelTargetsApplications.0.Benitoite.Release.Refinement.ModelTargetsApplications.legacy_arguments"
+    ],
+    "finding": "同じPの全署名のSourceScoped/RowsInを使う。",
+    "remaining": "L60残りの実表、L70/R10bソース生成",
+    "remaining_entry": "L60：残りの実表にSourceScoped/RowsIn/sourceTelRowsを供給。L70/R10b：同じ閉じた内容型の行支持をソース生成へ渡す。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "handoffs",
+    "id": "H07",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopeModels.conditions",
+      "Benitoite.Release.Refinement.Model.scopeConditions",
+      "Benitoite.Release.Refinement.ModelTargets.scopeConditions",
+      "Benitoite.Release.Refinement.ModelHttp.scopeConditions"
+    ],
+    "readers": [],
+    "finding": "sat=Trueへ戻さず、任意Ψ/非Topを含む実75欄を読む。",
+    "remaining": "L60全Coreと通常資源",
+    "remaining_entry": "L60：三モデル75欄をModelScopeConditions.coreへ渡し、外部三欄と通常資源release_existsを組み合わせて全Coreを構成する。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.single_io"
+    ],
+    "relation_kind": "同じ前提を共有するだけ",
+    "relation": "読者なし。候補の実行葉は同じ契約を前提に受けるだけで、この行の証拠を使わない。受け口は右欄。"
+  },
+  {
+    "kind": "handoffs",
+    "id": "H08",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.PathEnv.Ready.resolve_required",
+      "Benitoite.Release.Refinement.InitialPrepared.source_state_of_source"
+    ],
+    "readers": [],
+    "finding": "必要束縛と初期準備、動的未束縛Errorを分離する。Readyを全状態へ追加しない。",
+    "remaining": "L70初期表層と全到達",
+    "remaining_entry": "L70：Ready/InitialPrepared.source_stateを初期表層と全到達へ接続する。Readyを全状態の新不変条件にしない。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.at_steps"
+    ],
+    "relation_kind": "証拠そのものが入口",
+    "relation": "読者なし。証拠そのものが入口で、合成の読者は後段に残る。受け口は右欄。"
+  },
+  {
+    "kind": "handoffs",
+    "id": "H09",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.ModelConstraints.sat_rename",
+      "Benitoite.Release.Refinement.ModelConstraints.admits_rename",
+      "Benitoite.Release.Refinement.ModelConstraints.sat_values",
+      "Benitoite.Release.Refinement.ModelConstraints.admits_values"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ScopeModels.conditions"
+    ],
+    "finding": "値の四保存則はFailの順序・長さ・重複を読まない骨格から得る。",
+    "remaining": "L60で証拠を再利用",
+    "remaining_entry": "L60：ValueAssumptionsのsat_rename/admits_rename/sat_values/admits_valuesを各実表の全Coreへ再利用する。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopeModels.conditions"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "handoffs",
+    "id": "H10",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.ModelConstraints.sat_renameTypes",
+      "Benitoite.Release.Refinement.ModelConstraints.admits_renameTypes",
+      "Benitoite.Release.Refinement.ModelConstraints.sat_subst",
+      "Benitoite.Release.Refinement.ModelConstraints.admits_subst"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ScopeModels.conditions"
+    ],
+    "finding": "一般のTypeParamRenamingとSatAllを継承し、独立のsat_localを加えない。",
+    "remaining": "L60の全Core",
+    "remaining_entry": "L60：TypeParamRenamingと型像・行像を含むTypeAssumptions四保存則を全Coreへ再利用する。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopeModels.conditions"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "handoffs",
+    "id": "H11",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopeSignatures.pathBases_shape",
+      "Benitoite.Release.Refinement.Builtins.CoreAssumptions.pathBases_membership"
+    ],
+    "readers": [],
+    "finding": "発行八欄と同じProcess.Environment所属を使う。",
+    "remaining": "L70のeffect_soundness、R30発行",
+    "remaining_entry": "L70：PathBasesShapeと同じeffectsのmembershipをeffect_soundnessへ。R30：Process.Environment事象を伴う実発行へ。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.path_bases_apply",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.issue"
+    ],
+    "relation_kind": "同じ前提を共有するだけ",
+    "relation": "読者なし。候補の実行葉は同じ契約を前提に受けるだけで、この行の証拠を使わない。受け口は右欄。"
+  },
+  {
+    "kind": "handoffs",
+    "id": "H12",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.Builtins.ShapeOk.single_target",
+      "Benitoite.Release.Refinement.ScopeSignatures.io_op"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ScopedIOResponse.obs_allowed",
+      "Benitoite.Release.Refinement.ScopedTargetExamples.single_io"
+    ],
+    "finding": "opaque署名とscoped_forgetを維持する。",
+    "remaining": "L60実表合成",
+    "remaining_entry": "L60：ShapeOk.singleのopaque (rvar 0)署名へscoped_forgetした同じ値を供給し、実表を合成する。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.single_io"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "handoffs",
+    "id": "H13",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopeDeclarations.program_hasHttp",
+      "Benitoite.Release.Refinement.ScopeDeclarations.program_wellFormed",
+      "Benitoite.Release.Refinement.ScopeSignatures.sig_scoped"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ScopeModels.conditions",
+      "_private.Benitoite.Release.Refinement.ModelHttpApplications.0.Benitoite.Release.Refinement.ModelHttpApplications.result_annotation"
+    ],
+    "finding": "同じ有限PのResult/Pairのarity2と全lookupを継承する。",
+    "remaining": "L60の標準全表",
+    "remaining_entry": "L60：標準全表で同じPの有限宣言からResult/Pair/Request/Errorのarity・kind・PrimSig.Scopedを供給する。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopeModels.conditions"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "handoffs",
+    "id": "H14",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopeResponse.delta_typed",
+      "Benitoite.Release.Refinement.ScopedIOResponse.response",
+      "Benitoite.Release.Refinement.AtTargets.adequate_atError"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.AtErrorReaders.observed",
+      "Benitoite.Release.Refinement.ModelTargets.io_typed",
+      "Benitoite.Release.Refinement.ScopeResponse.outcome_typed"
+    ],
+    "finding": "全有効σのAdequateResultを同じ応答から読む。外部条件と分離する。",
+    "remaining": "L60のexternalCheckedOutcome",
+    "remaining_entry": "L60：externalCheckedOutcomeと外部応答の三条件から適格性を得る。δ/IOのAdequateResultの証拠で代用しない。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.pure_steps",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "handoffs",
+    "id": "H15",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.HasTypeVQ.widen_opaque",
+      "Benitoite.Release.Refinement.ScopedTargetExamples.widened_input",
+      "Benitoite.Release.Refinement.HasTypeVQ.target_member"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.Builtins.ShapeOk.single_target",
+      "Benitoite.Release.Refinement.HasTypeVQ.widen_instTarget_covers"
+    ],
+    "finding": "非Top→Top→opaqueと同じ値の逆転を継承。別範囲の拒否と要求なしRequestの拒否を分ける。",
+    "remaining": "R30/R50の入力表",
+    "remaining_entry": "R30/R50：非Top→Top→opaqueのPathIn保持値の受理と、要求なしRequestInの拒否を同じ入力表で比較する。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.absolute_projection"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "handoffs",
+    "id": "H16",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.TargetTable.valKind",
+      "Benitoite.Release.Refinement.TargetTable.request_content"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ModelHttp.sent_request",
+      "Benitoite.Release.Refinement.ScopeSignatures.io_op"
+    ],
+    "finding": "PathIn/pathとRequestIn/endpoint、内容型の同じ分類を使う。",
+    "remaining": "L60/R30の実表",
+    "remaining_entry": "L60/R30：TargetTable.valKindのPathIn/path・RequestIn/endpointとvalContentを同じ実表で照合する。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopeSignatures.io_op",
+      "Benitoite.Release.Refinement.ModelHttp.sent_request"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "handoffs",
+    "id": "H17",
+    "classification": "継承",
+    "status": "継承完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.AtPrepared.request",
+      "Benitoite.Release.Refinement.Val.reqTarget_kind",
+      "Benitoite.Release.Refinement.checkAt.absolute"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.at_ok"
+    ],
+    "finding": "既済み三接続を継承し、新規補題数へ加えない。",
+    "remaining": "追加の未完なし",
+    "remaining_entry": "追加の未完なし。AtPrepared.request/Val.reqTarget_kind/checkAt.absoluteの既存入口を継承し、At成功値を重複実装しない。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.at_ok"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "handoffs",
+    "id": "H18",
+    "classification": "継承",
+    "status": "継承完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.HasTypeVQ.data_observation",
+      "Benitoite.Release.Refinement.Detail.match_pattern_typed"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.Ctx.NormEq.declaration"
+    ],
+    "finding": "全幅facts・List要素factsの既済み処置を継承し、内部エラーの読者を照合する。",
+    "remaining": "公開形の対応以外の再実装なし",
+    "remaining_entry": "公開形の対応以外の再実装なし。U02後の公開写しでAtErrorの専用逆転と観測・照合を同じPへ対応させる。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.AtErrorReaders.observed"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "handoffs",
+    "id": "H19",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.HasTypeVQ.target_member_interpret",
+      "Benitoite.Release.Refinement.Pred.member_inst_mono",
+      "Benitoite.Release.Refinement.ScopeResponse.normal_facts"
+    ],
+    "readers": [],
+    "finding": "同じ値の対象3sortを観測・所属・具体応答へ渡す。",
+    "remaining": "L60/R50。非対象13sortは既済み",
+    "remaining_entry": "L60：対象3sortの観測・所属・具体化を同じ実δへ。R50：同じ値の二つのlength観測と実δを比較する。非対象13sortは既済み。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedIOResponse.target_member"
+    ],
+    "relation_kind": "証拠そのものが入口",
+    "relation": "読者なし。証拠そのものが入口で、合成の読者は後段に残る。受け口は右欄。"
+  },
+  {
+    "kind": "handoffs",
+    "id": "H20",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.AtError.save_exact",
+      "Benitoite.Release.Refinement.AtPrepare.error_saved",
+      "Benitoite.Release.Refinement.AtErrorReaders.check_reader",
+      "Benitoite.Release.Refinement.Detail.originals_unobserved"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.at_error",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.at_prepare"
+    ],
+    "finding": "20等号と全失敗・内部観測・適格性を照合する。公開写しはU02後である。",
+    "remaining": "R30/R60/L70の公開shape/reader",
+    "remaining_entry": "R30/R60/L70：Detail九欄から公開shape/readerへ写す。未解析の元入力は保持し、Show・reprStrと保存値を分ける。U02の選択は本群で行わない。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.at_prepare",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.at_error"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "handoffs",
+    "id": "H21",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.Detail.match_pattern_typed",
+      "Benitoite.Release.Refinement.Exhaustive.atError",
+      "Benitoite.Release.Refinement.AtErrorReaders.observed"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.at_error"
+    ],
+    "finding": "同じP.cons/Term/照合/網羅性を保ち、公開表への一致はU02後へ渡す。",
+    "remaining": "U02確定後・L70前の公開写し、R60の全表層",
+    "remaining_entry": "U02確定後・L70前：ResultShape.Declared/Program.StandardErrorCompleteと同じP.cons/Term/RuntimeMatch/Exhaustiveの公開写し。R60：全表層の観測・照合。生Valを返すならatError適格性を再点検する。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.at_error"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "handoffs",
+    "id": "H22",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.Eff.allows_bind_comp",
+      "Benitoite.Release.Refinement.ScopedCallContracts.single_inputs",
+      "Benitoite.Release.Refinement.HasTypeVsQ.widen_covers"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ScopedCallContracts.request_inputs"
+    ],
+    "finding": "型/行像・範囲具体化・値のbindの正規化を維持する。",
+    "remaining": "L70主定理の閉鎖",
+    "remaining_entry": "L70：主定理の閉鎖に範囲具体化・型/行像・継続Rの同じ正規化済みbindを使う。L20の一般交換を継承する。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.handled_step"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "handoffs",
+    "id": "H23",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.Val.Source",
+      "Benitoite.Release.Refinement.Val.SourceScoped",
+      "Benitoite.Release.Refinement.InitialPrepared.source_state_of_source",
+      "Benitoite.Release.Refinement.ModelTargetsExamples.issue_to_at"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.Comp.Source.adequate",
+      "Benitoite.Release.Refinement.Comp.SourceScoped.runtime_inst"
+    ],
+    "finding": "Sourceからの直接生成の排除と、発行した同じσをAtへ渡す経路を継承する。",
+    "remaining": "R30/R50のrecord/JSON/外部からの偽造拒否",
+    "remaining_entry": "R30/R50：record/JSON/外部からPathBasesを偽造する入力の拒否と、正規の発行→同じσのAtの比較。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.issue",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.at_steps"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "handoffs",
+    "id": "H24",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopeModels.conditions",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.pure_steps"
+    ],
+    "finding": "局所証拠を主定理や全Coreの閉鎖へ繰り上げない。L40の演算子/decoderを再移管しない。",
+    "remaining": "L60/L70/R50の既存所有",
+    "remaining_entry": "L60/L70/R50：O022/O034/O062/O065/O144の対象と実表を合成・比較する。L40の局所証拠を全体閉鎖へ繰り上げない。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.pure_steps",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "handoffs",
+    "id": "H25",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopeDeclarations.program_hasHttp",
+      "Benitoite.Release.Refinement.ModelConstraints.sat_subst",
+      "Benitoite.Release.Refinement.ScopeModels.conditions"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ModelConstraints.admits_subst",
+      "_private.Benitoite.Release.Refinement.ModelHttpApplications.0.Benitoite.Release.Refinement.ModelHttpApplications.result_annotation"
+    ],
+    "finding": "同じ有限宣言とcarrier/satBの骨格を継承する。",
+    "remaining": "L60/L70/R10b/R50の全表収集",
+    "remaining_entry": "L60/L70/R10b/R50：同じPとsummary/satB/KeyObservationで標準全表を収集し、ソース生成・全比較へ接続する。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "handoffs",
+    "id": "H26",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.CaptureReadBoundary.primitive_reads_hidden_capture",
+      "Benitoite.Release.Refinement.CaptureReadBoundary.hidden_capture_reply_states"
+    ],
+    "readers": [],
+    "finding": "捕捉内部の場所番号を観測できる既存契約を維持し、精密外部状態や新しい不変条件を足さない。",
+    "remaining": "Rustが閉包内部を観測しない差の比較はR50",
+    "remaining_entry": "R50：CaptureReadBoundaryでδが読まない捕捉の場所番号と、Rustが閉包内部を観測しない差を比較する。新しい不変条件は足さない。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs"
+    ],
+    "relation_kind": "同じ前提を共有するだけ",
+    "relation": "読者なし。候補の実行葉は同じ契約を前提に受けるだけで、この行の証拠を使わない。受け口は右欄。"
+  },
+  {
+    "kind": "handoffs",
+    "id": "H27",
+    "classification": "他段",
+    "status": "群K担当分完了・残る所有を分離",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopeModels.conditions",
+      "Benitoite.Release.Refinement.ModelScopeConditions.core",
+      "Benitoite.Release.Refinement.Builtins.ExternalAssumptions.external_exists"
+    ],
+    "readers": [],
+    "finding": "外部3欄＋release1欄を各モデルへ残す。空疎・noneの証人・空の外部関係の注意を12欄表に保持する。",
+    "remaining": "L60。通常資源は範囲IOの新葉ではないため",
+    "remaining_entry": "L60：通常資源の任意の型付き値からCoreAssumptions.release_existsを供給し、外部三条件と全Coreへ束ねる。範囲IOの新葉とは分ける。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs"
+    ],
+    "relation_kind": "同じ前提を共有するだけ",
+    "relation": "読者なし。候補の実行葉は同じ契約を前提に受けるだけで、この行の証拠を使わない。受け口は右欄。"
+  },
+  {
+    "kind": "handoffs",
+    "id": "H28",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.HasTypeVQ.target_member",
+      "Benitoite.Release.Refinement.Builtins.ShapeOk.single_target",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.single_io",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps"
+    ],
+    "finding": "任意Ψ・全適格σ・全入力を保ち、Top/空ストアへの縮小をしない。",
+    "remaining": "L70/R50の全接続",
+    "remaining_entry": "L70/R50：任意Ψ・全適格σと新F3受理を保ち、全開始・全応答の合成とRust/Lean比較へ接続する。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.single_io",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "handoffs",
+    "id": "H29",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopedIOResponse.response",
+      "Benitoite.Release.Refinement.ModelHttp.send_response",
+      "Benitoite.Release.Refinement.ModelTargets.io_exists"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ModelHttp.io_exists",
+      "Benitoite.Release.Refinement.ModelTargets.io_typed",
+      "Benitoite.Release.Refinement.ModelTargets.responseAssumptions"
+    ],
+    "finding": "File6本とsendを外部応答から分離し、同じ関係の応答存在を保存へ渡す。",
+    "remaining": "L60のborrow/own/State、R30の固定σ実装",
+    "remaining_entry": "L60：borrow/own/Stateの通常資源とexternalResponse。R30：File6本/Http.sendInの実IO・Atへ同じ固定σを供給する。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.issue"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "handoffs",
+    "id": "H30",
+    "classification": "他段",
+    "status": "群K担当分完了・残る所有を分離",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopeModels.conditions",
+      "Benitoite.Release.Refinement.StateTyE.selected_primitive_step"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.NormalReplyExamples.concrete_step_selections"
+    ],
+    "finding": "局所Leanの成功をRust/Lean全比較や全表一致と呼ばない。",
+    "remaining": "R50/F-CONN、L70/F-REGの既存コーパス",
+    "remaining_entry": "R50/F-CONN：有限交換表と上層の証明の照合。L70/F-REG：既存コーパスの全比較。局所Lean/raw再生から全表一致としない。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "handoffs",
+    "id": "H31",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.RangeExpr.Covers.mem",
+      "Benitoite.Release.Refinement.HasTypeVQ.target_member",
+      "Benitoite.Release.Refinement.ScopeResponse.adequate_externalRef",
+      "Benitoite.Release.Refinement.ScopeResponse.adequate_externalHandle",
+      "Benitoite.Release.Refinement.ScopeResponse.adequate_scopePattern",
+      "Benitoite.Release.Refinement.AtTargets.adequate_atError"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.AtErrorReaders.observed",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps"
+    ],
+    "finding": "前段の9行を全有効σの証拠へ対応し、外部応答の充足と分離する。",
+    "remaining": "L60の外部応答全条件、L70主定理/公開写し",
+    "remaining_entry": "L60：externalRef/externalHandle等の外部応答全条件。L70：全有効σのAdequateResultを主定理と公開写しへ。元入力を公開するならatErrorの適格性を再点検する。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.at_steps",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps",
+      "Benitoite.Release.Refinement.AtErrorReaders.observed"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  }
+]
