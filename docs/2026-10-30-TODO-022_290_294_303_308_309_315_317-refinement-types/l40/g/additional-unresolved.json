@@ -1,0 +1,1010 @@
+{
+  "basis": "群Eの旧独立未完の記録と、後続結果・現行の宣言を照合。全328公開APIとは別の母集団",
+  "source_record": {
+    "file": "l40/e/operators-r1-u28.json",
+    "bytes": 66250,
+    "sha256": "4963b694d5bf02a42c88ebfe16734d94fb16a90df7d64d07ab2fd601e461f31c"
+  },
+  "operators": [
+    {
+      "name": "%Integer.div",
+      "rust_operand": "INTEGER",
+      "operator": "IntDiv",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "integer",
+        "integer"
+      ],
+      "result": "integer",
+      "effect": [],
+      "ordinary": "local-proof",
+      "additional_S": [
+        "S02"
+      ],
+      "evidence": [
+        "Benitoite.Release.Refinement.StandardIntegerOperatorResponse.response",
+        "Benitoite.Release.Refinement.StandardOperatorResponse.table_response"
+      ],
+      "unproved": [],
+      "response": "Benitoite.Release.Refinement.StandardIntegerOperatorResponse.response",
+      "instantiation": ".integer64 false"
+    },
+    {
+      "name": "%Integer.mod",
+      "rust_operand": "INTEGER",
+      "operator": "Mod",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "integer",
+        "integer"
+      ],
+      "result": "integer",
+      "effect": [],
+      "ordinary": "local-proof",
+      "additional_S": [
+        "S02"
+      ],
+      "evidence": [
+        "Benitoite.Release.Refinement.StandardIntegerOperatorResponse.response",
+        "Benitoite.Release.Refinement.StandardOperatorResponse.table_response"
+      ],
+      "unproved": [],
+      "response": "Benitoite.Release.Refinement.StandardIntegerOperatorResponse.response",
+      "instantiation": ".integer64 true"
+    },
+    {
+      "name": "%Float.add",
+      "rust_operand": "FLOAT",
+      "operator": "Add",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "float",
+        "float"
+      ],
+      "result": "float",
+      "effect": [],
+      "ordinary": "local-proof",
+      "additional_S": [],
+      "evidence": [
+        "Benitoite.Release.Refinement.StandardFloatOperatorResponse.response",
+        "Benitoite.Release.Refinement.StandardOperatorResponse.table_response"
+      ],
+      "unproved": [],
+      "response": "Benitoite.Release.Refinement.StandardFloatOperatorResponse.response",
+      "instantiation": "false .add"
+    },
+    {
+      "name": "%Float.subtract",
+      "rust_operand": "FLOAT",
+      "operator": "Sub",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "float",
+        "float"
+      ],
+      "result": "float",
+      "effect": [],
+      "ordinary": "local-proof",
+      "additional_S": [],
+      "evidence": [
+        "Benitoite.Release.Refinement.StandardFloatOperatorResponse.response",
+        "Benitoite.Release.Refinement.StandardOperatorResponse.table_response"
+      ],
+      "unproved": [],
+      "response": "Benitoite.Release.Refinement.StandardFloatOperatorResponse.response",
+      "instantiation": "false .subtract"
+    },
+    {
+      "name": "%Float.multiply",
+      "rust_operand": "FLOAT",
+      "operator": "Mul",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "float",
+        "float"
+      ],
+      "result": "float",
+      "effect": [],
+      "ordinary": "local-proof",
+      "additional_S": [],
+      "evidence": [
+        "Benitoite.Release.Refinement.StandardFloatOperatorResponse.response",
+        "Benitoite.Release.Refinement.StandardOperatorResponse.table_response"
+      ],
+      "unproved": [],
+      "response": "Benitoite.Release.Refinement.StandardFloatOperatorResponse.response",
+      "instantiation": "false .multiply"
+    },
+    {
+      "name": "%Float.divide",
+      "rust_operand": "FLOAT",
+      "operator": "Div",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "float",
+        "float"
+      ],
+      "result": "float",
+      "effect": [],
+      "ordinary": "local-proof",
+      "additional_S": [],
+      "evidence": [
+        "Benitoite.Release.Refinement.StandardFloatOperatorResponse.response",
+        "Benitoite.Release.Refinement.StandardOperatorResponse.table_response"
+      ],
+      "unproved": [],
+      "response": "Benitoite.Release.Refinement.StandardFloatOperatorResponse.response",
+      "instantiation": "false .divide"
+    },
+    {
+      "name": "%Float.negate",
+      "rust_operand": "FLOAT",
+      "operator": "Neg",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "value"
+      ],
+      "params": [
+        "float"
+      ],
+      "result": "float",
+      "effect": [],
+      "ordinary": "local-proof",
+      "additional_S": [],
+      "evidence": [
+        "Benitoite.Release.Refinement.StandardFloatOperatorResponse.response",
+        "Benitoite.Release.Refinement.StandardOperatorResponse.table_response"
+      ],
+      "unproved": [],
+      "response": "Benitoite.Release.Refinement.StandardFloatOperatorResponse.response",
+      "instantiation": "false .negate"
+    },
+    {
+      "name": "%Decimal.add",
+      "rust_operand": "DECIMAL",
+      "operator": "Add",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "decimal",
+        "decimal"
+      ],
+      "result": "decimal",
+      "effect": [],
+      "ordinary": "local-proof",
+      "additional_S": [],
+      "evidence": [
+        "Benitoite.Release.Refinement.StandardDecimalOperatorResponse.response",
+        "Benitoite.Release.Refinement.StandardOperatorResponse.table_response"
+      ],
+      "unproved": [],
+      "response": "Benitoite.Release.Refinement.StandardDecimalOperatorResponse.response",
+      "instantiation": ".add"
+    },
+    {
+      "name": "%Decimal.subtract",
+      "rust_operand": "DECIMAL",
+      "operator": "Sub",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "decimal",
+        "decimal"
+      ],
+      "result": "decimal",
+      "effect": [],
+      "ordinary": "local-proof",
+      "additional_S": [],
+      "evidence": [
+        "Benitoite.Release.Refinement.StandardDecimalOperatorResponse.response",
+        "Benitoite.Release.Refinement.StandardOperatorResponse.table_response"
+      ],
+      "unproved": [],
+      "response": "Benitoite.Release.Refinement.StandardDecimalOperatorResponse.response",
+      "instantiation": ".subtract"
+    },
+    {
+      "name": "%Decimal.multiply",
+      "rust_operand": "DECIMAL",
+      "operator": "Mul",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "decimal",
+        "decimal"
+      ],
+      "result": "decimal",
+      "effect": [],
+      "ordinary": "local-proof",
+      "additional_S": [],
+      "evidence": [
+        "Benitoite.Release.Refinement.StandardDecimalOperatorResponse.response",
+        "Benitoite.Release.Refinement.StandardOperatorResponse.table_response"
+      ],
+      "unproved": [],
+      "response": "Benitoite.Release.Refinement.StandardDecimalOperatorResponse.response",
+      "instantiation": ".multiply"
+    },
+    {
+      "name": "%Decimal.divide",
+      "rust_operand": "DECIMAL",
+      "operator": "Div",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "decimal",
+        "decimal"
+      ],
+      "result": "decimal",
+      "effect": [],
+      "ordinary": "local-proof",
+      "additional_S": [],
+      "evidence": [
+        "Benitoite.Release.Refinement.StandardDecimalOperatorResponse.response",
+        "Benitoite.Release.Refinement.StandardOperatorResponse.table_response"
+      ],
+      "unproved": [],
+      "response": "Benitoite.Release.Refinement.StandardDecimalOperatorResponse.response",
+      "instantiation": ".divide"
+    },
+    {
+      "name": "%Decimal.negate",
+      "rust_operand": "DECIMAL",
+      "operator": "Neg",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "value"
+      ],
+      "params": [
+        "decimal"
+      ],
+      "result": "decimal",
+      "effect": [],
+      "ordinary": "local-proof",
+      "additional_S": [],
+      "evidence": [
+        "Benitoite.Release.Refinement.StandardDecimalOperatorResponse.response",
+        "Benitoite.Release.Refinement.StandardOperatorResponse.table_response"
+      ],
+      "unproved": [],
+      "response": "Benitoite.Release.Refinement.StandardDecimalOperatorResponse.response",
+      "instantiation": ".negate"
+    },
+    {
+      "name": "%String.add",
+      "rust_operand": "STRING",
+      "operator": "Add",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "string",
+        "string"
+      ],
+      "result": "string",
+      "effect": [],
+      "ordinary": "local-proof",
+      "additional_S": [],
+      "evidence": [
+        "Benitoite.Release.Refinement.StandardStringOperatorResponse.response",
+        "Benitoite.Release.Refinement.StandardOperatorResponse.table_response"
+      ],
+      "unproved": [],
+      "response": "Benitoite.Release.Refinement.StandardStringOperatorResponse.response",
+      "instantiation": ".add"
+    },
+    {
+      "name": "%String.less",
+      "rust_operand": "STRING",
+      "operator": "Lt",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "string",
+        "string"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "local-proof",
+      "additional_S": [],
+      "evidence": [
+        "Benitoite.Release.Refinement.StandardStringOperatorResponse.response",
+        "Benitoite.Release.Refinement.StandardOperatorResponse.table_response"
+      ],
+      "unproved": [],
+      "response": "Benitoite.Release.Refinement.StandardStringOperatorResponse.response",
+      "instantiation": ".less"
+    },
+    {
+      "name": "%String.lessOrEqual",
+      "rust_operand": "STRING",
+      "operator": "Le",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "string",
+        "string"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "local-proof",
+      "additional_S": [],
+      "evidence": [
+        "Benitoite.Release.Refinement.StandardStringOperatorResponse.response",
+        "Benitoite.Release.Refinement.StandardOperatorResponse.table_response"
+      ],
+      "unproved": [],
+      "response": "Benitoite.Release.Refinement.StandardStringOperatorResponse.response",
+      "instantiation": ".lessOrEqual"
+    },
+    {
+      "name": "%String.greater",
+      "rust_operand": "STRING",
+      "operator": "Gt",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "string",
+        "string"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "local-proof",
+      "additional_S": [],
+      "evidence": [
+        "Benitoite.Release.Refinement.StandardStringOperatorResponse.response",
+        "Benitoite.Release.Refinement.StandardOperatorResponse.table_response"
+      ],
+      "unproved": [],
+      "response": "Benitoite.Release.Refinement.StandardStringOperatorResponse.response",
+      "instantiation": ".greater"
+    },
+    {
+      "name": "%String.greaterOrEqual",
+      "rust_operand": "STRING",
+      "operator": "Ge",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "string",
+        "string"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "local-proof",
+      "additional_S": [],
+      "evidence": [
+        "Benitoite.Release.Refinement.StandardStringOperatorResponse.response",
+        "Benitoite.Release.Refinement.StandardOperatorResponse.table_response"
+      ],
+      "unproved": [],
+      "response": "Benitoite.Release.Refinement.StandardStringOperatorResponse.response",
+      "instantiation": ".greaterOrEqual"
+    },
+    {
+      "name": "%Integer8.div",
+      "rust_operand": "INTEGER8",
+      "operator": "IntDiv",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "integer8",
+        "integer8"
+      ],
+      "result": "integer8",
+      "effect": [],
+      "ordinary": "local-proof",
+      "additional_S": [
+        "S02"
+      ],
+      "evidence": [
+        "Benitoite.Release.Refinement.StandardIntegerOperatorResponse.response",
+        "Benitoite.Release.Refinement.StandardOperatorResponse.table_response"
+      ],
+      "unproved": [],
+      "response": "Benitoite.Release.Refinement.StandardIntegerOperatorResponse.response",
+      "instantiation": ".integer8 false"
+    },
+    {
+      "name": "%Integer8.mod",
+      "rust_operand": "INTEGER8",
+      "operator": "Mod",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "integer8",
+        "integer8"
+      ],
+      "result": "integer8",
+      "effect": [],
+      "ordinary": "local-proof",
+      "additional_S": [
+        "S02"
+      ],
+      "evidence": [
+        "Benitoite.Release.Refinement.StandardIntegerOperatorResponse.response",
+        "Benitoite.Release.Refinement.StandardOperatorResponse.table_response"
+      ],
+      "unproved": [],
+      "response": "Benitoite.Release.Refinement.StandardIntegerOperatorResponse.response",
+      "instantiation": ".integer8 true"
+    },
+    {
+      "name": "%Integer16.div",
+      "rust_operand": "INTEGER16",
+      "operator": "IntDiv",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "integer16",
+        "integer16"
+      ],
+      "result": "integer16",
+      "effect": [],
+      "ordinary": "local-proof",
+      "additional_S": [
+        "S02"
+      ],
+      "evidence": [
+        "Benitoite.Release.Refinement.StandardIntegerOperatorResponse.response",
+        "Benitoite.Release.Refinement.StandardOperatorResponse.table_response"
+      ],
+      "unproved": [],
+      "response": "Benitoite.Release.Refinement.StandardIntegerOperatorResponse.response",
+      "instantiation": ".integer16 false"
+    },
+    {
+      "name": "%Integer16.mod",
+      "rust_operand": "INTEGER16",
+      "operator": "Mod",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "integer16",
+        "integer16"
+      ],
+      "result": "integer16",
+      "effect": [],
+      "ordinary": "local-proof",
+      "additional_S": [
+        "S02"
+      ],
+      "evidence": [
+        "Benitoite.Release.Refinement.StandardIntegerOperatorResponse.response",
+        "Benitoite.Release.Refinement.StandardOperatorResponse.table_response"
+      ],
+      "unproved": [],
+      "response": "Benitoite.Release.Refinement.StandardIntegerOperatorResponse.response",
+      "instantiation": ".integer16 true"
+    },
+    {
+      "name": "%Integer32.div",
+      "rust_operand": "INTEGER32",
+      "operator": "IntDiv",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "integer32",
+        "integer32"
+      ],
+      "result": "integer32",
+      "effect": [],
+      "ordinary": "local-proof",
+      "additional_S": [
+        "S02"
+      ],
+      "evidence": [
+        "Benitoite.Release.Refinement.StandardIntegerOperatorResponse.response",
+        "Benitoite.Release.Refinement.StandardOperatorResponse.table_response"
+      ],
+      "unproved": [],
+      "response": "Benitoite.Release.Refinement.StandardIntegerOperatorResponse.response",
+      "instantiation": ".integer32 false"
+    },
+    {
+      "name": "%Integer32.mod",
+      "rust_operand": "INTEGER32",
+      "operator": "Mod",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "integer32",
+        "integer32"
+      ],
+      "result": "integer32",
+      "effect": [],
+      "ordinary": "local-proof",
+      "additional_S": [
+        "S02"
+      ],
+      "evidence": [
+        "Benitoite.Release.Refinement.StandardIntegerOperatorResponse.response",
+        "Benitoite.Release.Refinement.StandardOperatorResponse.table_response"
+      ],
+      "unproved": [],
+      "response": "Benitoite.Release.Refinement.StandardIntegerOperatorResponse.response",
+      "instantiation": ".integer32 true"
+    },
+    {
+      "name": "%UnsignedInteger16.div",
+      "rust_operand": "UNSIGNED_INTEGER16",
+      "operator": "IntDiv",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "unsignedInteger16",
+        "unsignedInteger16"
+      ],
+      "result": "unsignedInteger16",
+      "effect": [],
+      "ordinary": "local-proof",
+      "additional_S": [
+        "S02"
+      ],
+      "evidence": [
+        "Benitoite.Release.Refinement.StandardIntegerOperatorResponse.response",
+        "Benitoite.Release.Refinement.StandardOperatorResponse.table_response"
+      ],
+      "unproved": [],
+      "response": "Benitoite.Release.Refinement.StandardIntegerOperatorResponse.response",
+      "instantiation": ".unsignedInteger16 false"
+    },
+    {
+      "name": "%UnsignedInteger16.mod",
+      "rust_operand": "UNSIGNED_INTEGER16",
+      "operator": "Mod",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "unsignedInteger16",
+        "unsignedInteger16"
+      ],
+      "result": "unsignedInteger16",
+      "effect": [],
+      "ordinary": "local-proof",
+      "additional_S": [
+        "S02"
+      ],
+      "evidence": [
+        "Benitoite.Release.Refinement.StandardIntegerOperatorResponse.response",
+        "Benitoite.Release.Refinement.StandardOperatorResponse.table_response"
+      ],
+      "unproved": [],
+      "response": "Benitoite.Release.Refinement.StandardIntegerOperatorResponse.response",
+      "instantiation": ".unsignedInteger16 true"
+    },
+    {
+      "name": "%UnsignedInteger32.div",
+      "rust_operand": "UNSIGNED_INTEGER32",
+      "operator": "IntDiv",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "unsignedInteger32",
+        "unsignedInteger32"
+      ],
+      "result": "unsignedInteger32",
+      "effect": [],
+      "ordinary": "local-proof",
+      "additional_S": [
+        "S02"
+      ],
+      "evidence": [
+        "Benitoite.Release.Refinement.StandardIntegerOperatorResponse.response",
+        "Benitoite.Release.Refinement.StandardOperatorResponse.table_response"
+      ],
+      "unproved": [],
+      "response": "Benitoite.Release.Refinement.StandardIntegerOperatorResponse.response",
+      "instantiation": ".unsignedInteger32 false"
+    },
+    {
+      "name": "%UnsignedInteger32.mod",
+      "rust_operand": "UNSIGNED_INTEGER32",
+      "operator": "Mod",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "unsignedInteger32",
+        "unsignedInteger32"
+      ],
+      "result": "unsignedInteger32",
+      "effect": [],
+      "ordinary": "local-proof",
+      "additional_S": [
+        "S02"
+      ],
+      "evidence": [
+        "Benitoite.Release.Refinement.StandardIntegerOperatorResponse.response",
+        "Benitoite.Release.Refinement.StandardOperatorResponse.table_response"
+      ],
+      "unproved": [],
+      "response": "Benitoite.Release.Refinement.StandardIntegerOperatorResponse.response",
+      "instantiation": ".unsignedInteger32 true"
+    },
+    {
+      "name": "%UnsignedInteger64.div",
+      "rust_operand": "UNSIGNED_INTEGER64",
+      "operator": "IntDiv",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "unsignedInteger64",
+        "unsignedInteger64"
+      ],
+      "result": "unsignedInteger64",
+      "effect": [],
+      "ordinary": "local-proof",
+      "additional_S": [
+        "S02"
+      ],
+      "evidence": [
+        "Benitoite.Release.Refinement.StandardIntegerOperatorResponse.response",
+        "Benitoite.Release.Refinement.StandardOperatorResponse.table_response"
+      ],
+      "unproved": [],
+      "response": "Benitoite.Release.Refinement.StandardIntegerOperatorResponse.response",
+      "instantiation": ".unsignedInteger64 false"
+    },
+    {
+      "name": "%UnsignedInteger64.mod",
+      "rust_operand": "UNSIGNED_INTEGER64",
+      "operator": "Mod",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "unsignedInteger64",
+        "unsignedInteger64"
+      ],
+      "result": "unsignedInteger64",
+      "effect": [],
+      "ordinary": "local-proof",
+      "additional_S": [
+        "S02"
+      ],
+      "evidence": [
+        "Benitoite.Release.Refinement.StandardIntegerOperatorResponse.response",
+        "Benitoite.Release.Refinement.StandardOperatorResponse.table_response"
+      ],
+      "unproved": [],
+      "response": "Benitoite.Release.Refinement.StandardIntegerOperatorResponse.response",
+      "instantiation": ".unsignedInteger64 true"
+    },
+    {
+      "name": "%Float32.add",
+      "rust_operand": "FLOAT32",
+      "operator": "Add",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "float32",
+        "float32"
+      ],
+      "result": "float32",
+      "effect": [],
+      "ordinary": "local-proof",
+      "additional_S": [],
+      "evidence": [
+        "Benitoite.Release.Refinement.StandardFloatOperatorResponse.response",
+        "Benitoite.Release.Refinement.StandardOperatorResponse.table_response"
+      ],
+      "unproved": [],
+      "response": "Benitoite.Release.Refinement.StandardFloatOperatorResponse.response",
+      "instantiation": "true .add"
+    },
+    {
+      "name": "%Float32.subtract",
+      "rust_operand": "FLOAT32",
+      "operator": "Sub",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "float32",
+        "float32"
+      ],
+      "result": "float32",
+      "effect": [],
+      "ordinary": "local-proof",
+      "additional_S": [],
+      "evidence": [
+        "Benitoite.Release.Refinement.StandardFloatOperatorResponse.response",
+        "Benitoite.Release.Refinement.StandardOperatorResponse.table_response"
+      ],
+      "unproved": [],
+      "response": "Benitoite.Release.Refinement.StandardFloatOperatorResponse.response",
+      "instantiation": "true .subtract"
+    },
+    {
+      "name": "%Float32.multiply",
+      "rust_operand": "FLOAT32",
+      "operator": "Mul",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "float32",
+        "float32"
+      ],
+      "result": "float32",
+      "effect": [],
+      "ordinary": "local-proof",
+      "additional_S": [],
+      "evidence": [
+        "Benitoite.Release.Refinement.StandardFloatOperatorResponse.response",
+        "Benitoite.Release.Refinement.StandardOperatorResponse.table_response"
+      ],
+      "unproved": [],
+      "response": "Benitoite.Release.Refinement.StandardFloatOperatorResponse.response",
+      "instantiation": "true .multiply"
+    },
+    {
+      "name": "%Float32.divide",
+      "rust_operand": "FLOAT32",
+      "operator": "Div",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "float32",
+        "float32"
+      ],
+      "result": "float32",
+      "effect": [],
+      "ordinary": "local-proof",
+      "additional_S": [],
+      "evidence": [
+        "Benitoite.Release.Refinement.StandardFloatOperatorResponse.response",
+        "Benitoite.Release.Refinement.StandardOperatorResponse.table_response"
+      ],
+      "unproved": [],
+      "response": "Benitoite.Release.Refinement.StandardFloatOperatorResponse.response",
+      "instantiation": "true .divide"
+    },
+    {
+      "name": "%Float32.negate",
+      "rust_operand": "FLOAT32",
+      "operator": "Neg",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "value"
+      ],
+      "params": [
+        "float32"
+      ],
+      "result": "float32",
+      "effect": [],
+      "ordinary": "local-proof",
+      "additional_S": [],
+      "evidence": [
+        "Benitoite.Release.Refinement.StandardFloatOperatorResponse.response",
+        "Benitoite.Release.Refinement.StandardOperatorResponse.table_response"
+      ],
+      "unproved": [],
+      "response": "Benitoite.Release.Refinement.StandardFloatOperatorResponse.response",
+      "instantiation": "true .negate"
+    }
+  ],
+  "full_equality": {
+    "names": [
+      "%eq",
+      "%ne"
+    ],
+    "tparams": [
+      {
+        "kind": "value",
+        "constraints": {
+          "equality": true,
+          "key": false
+        }
+      }
+    ],
+    "params": [
+      "T",
+      "T"
+    ],
+    "parameter_names": [
+      "left",
+      "right"
+    ],
+    "result": "Boolean",
+    "row_count": 0,
+    "range_count": 0,
+    "status": "StandardStructuralEqualityResponse.table_responseで全入力を接続",
+    "evidence": [
+      "StandardStructuralEqualityResponse.table_response",
+      "StandardStructuralEqualityResponse.reply_normal"
+    ],
+    "retained": "元の篩付きT・Equality sat・Ordinary・Annotationを全BuiltinArgsから回収し、同じTで既存δを呼ぶ。",
+    "unproved_statement": "正常の枝だけBoolean。型の付いたEqualityの値でstructuralEqualがnoneにならないこと（処理系ではStop::Internal）はR50、全CoreAssumptionsはL60に残す"
+  },
+  "status": "再開2で独立未完三件を閉鎖。独立レビューと義務全体の閉鎖は未了",
+  "local_integer_failure": "L40.29のStandardIntegerFailureは同じ整数δの局所の正常値とStopを証明する。全BuiltinArgsの応答契約とは区別する。",
+  "resume1": {
+    "status": "停止。三件を未完のまま保持",
+    "evidence": "resume2-contrast.lean",
+    "check": "resume1-obstruction-check.json",
+    "proved_missing_response": [
+      "%Float.add",
+      "%Decimal.add"
+    ],
+    "new_production_modules": 0,
+    "closed": 0,
+    "reason": "指定された既存の部分δでは原署名BuiltinArgsを持つゼロ入力の応答が存在しない。別δの指定又は既存算法のLeanへの写しとnamedδ追加の判断を要する",
+    "evidence_note": "再開2で対照に置換、再開3で改名。旧反例はresults.mdのbytes/SHA-256で識別する。"
+  },
+  "resume2": {
+    "closed": 3,
+    "operators": 34,
+    "full_equality": true,
+    "decoder_connection": [
+      "StandardDecode.decodeThen_normal",
+      "StandardDecode.decodeThen_firstReturn",
+      "StandardDecode.postprocess_all"
+    ],
+    "record": "results.md",
+    "review": "RV-L40.gを受領。所見ごとの応答はreview-response.md"
+  }
+}

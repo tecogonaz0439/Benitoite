@@ -71,6 +71,14 @@ private theorem arguments {P B Ψ ts es rs ws a e} (equal : Bool)
   exact ⟨T,rfl,rfl,rfl,ha,na,args.admissible.typeScope T (by simp) |>.2,sat,
     ni ▸ values,args.result.2.symm.trans ar,args.effect.2.symm.trans ee⟩
 
+/-- Full署名の全引数。構造値の応答も同じ入口を用いる。 -/
+theorem full_arguments {P B Ψ ts es rs ws a e} (equal : Bool)
+    (args : BuiltinArgs P B Ψ (if equal then "%eq" else "%ne") (fullSignature B.sat) ts es rs ws a e) :
+    ∃ T, ts = [T] ∧ es = [] ∧ rs = [] ∧ Ty.Annotation P [] [] T ∧ T.norm = T ∧ Ordinary T ∧
+      B.sat [] T.norm {equality := true} ∧
+      HasTypeVsQ P B Ψ Qempty [] [] [] ws [T,T] ∧ a = .base .boolean ∧ e = Eff.empty :=
+  arguments equal args
+
 private theorem type_delta (kind : StandardOrderResponse.Kind) (T : Ty) (equal : Bool) (ws : List Val)
     (h : scalarTypeCore T = some kind.base) :
     kind.delta (if equal then "%eq" else "%ne") [T] [] [] ws =

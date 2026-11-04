@@ -1,0 +1,1217 @@
+[
+  {
+    "table": "部分型、依存列、変性",
+    "row": "Ty.LeQ",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.Le",
+        "source": "formal/Benitoite/Release/Refinement/Le.lean",
+        "line": 26,
+        "name_as_written": "Ty.LeQ",
+        "full_name": "Benitoite.Release.Refinement.Ty.LeQ"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.ValueInversion",
+        "source": "formal/Benitoite/Release/Refinement/ValueInversion.lean",
+        "line": 20,
+        "name_as_written": "HasTypeVQ.inv_var",
+        "full_name": "Benitoite.Release.Refinement.HasTypeVQ.inv_var"
+      }
+    ]
+  },
+  {
+    "table": "部分型、依存列、変性",
+    "row": "TelLe",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.Le",
+        "source": "formal/Benitoite/Release/Refinement/Le.lean",
+        "line": 49,
+        "name_as_written": "TelLe",
+        "full_name": "Benitoite.Release.Refinement.TelLe"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.TelApplication",
+        "source": "formal/Benitoite/Release/Refinement/TelApplication.lean",
+        "line": 21,
+        "name_as_written": "TelLe.open_done",
+        "full_name": "Benitoite.Release.Refinement.TelLe.open_done"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.TelApplication",
+        "source": "formal/Benitoite/Release/Refinement/TelApplication.lean",
+        "line": 47,
+        "name_as_written": "TelLe.open_tail",
+        "full_name": "Benitoite.Release.Refinement.TelLe.open_tail"
+      }
+    ]
+  },
+  {
+    "table": "部分型、依存列、変性",
+    "row": "TelClosure",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.Le",
+        "source": "formal/Benitoite/Release/Refinement/Le.lean",
+        "line": 56,
+        "name_as_written": "TelClosure",
+        "full_name": "Benitoite.Release.Refinement.TelClosure"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.TelApplication",
+        "source": "formal/Benitoite/Release/Refinement/TelApplication.lean",
+        "line": 97,
+        "name_as_written": "TelClosure.apply",
+        "full_name": "Benitoite.Release.Refinement.TelClosure.apply"
+      }
+    ]
+  },
+  {
+    "table": "部分型、依存列、変性",
+    "row": "TypeArgsLe",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.Le",
+        "source": "formal/Benitoite/Release/Refinement/Le.lean",
+        "line": 60,
+        "name_as_written": "TypeArgsLe",
+        "full_name": "Benitoite.Release.Refinement.TypeArgsLe"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.StandardVariance",
+        "source": "formal/Benitoite/Release/Refinement/StandardVariance.lean",
+        "line": 223,
+        "name_as_written": "valid",
+        "full_name": "Benitoite.Release.Refinement.StandardVariance.valid"
+      }
+    ]
+  },
+  {
+    "table": "部分型、依存列、変性",
+    "row": "Polarity.compose と位置",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.VarianceSyntax",
+        "source": "formal/Benitoite/Release/Refinement/VarianceSyntax.lean",
+        "line": 19,
+        "name_as_written": "Polarity.compose",
+        "full_name": "Benitoite.Release.Refinement.Polarity.compose"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.StandardVariance",
+        "source": "formal/Benitoite/Release/Refinement/StandardVariance.lean",
+        "line": 223,
+        "name_as_written": "valid",
+        "full_name": "Benitoite.Release.Refinement.StandardVariance.valid"
+      }
+    ]
+  },
+  {
+    "table": "部分型、依存列、変性",
+    "row": "変性の構造再帰",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.VarianceValidation",
+        "source": "formal/Benitoite/Release/Refinement/VarianceValidation.lean",
+        "line": 7,
+        "name_as_written": "Ty.VarianceOK",
+        "full_name": "Benitoite.Release.Refinement.Ty.VarianceOK"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.StandardVariance",
+        "source": "formal/Benitoite/Release/Refinement/StandardVariance.lean",
+        "line": 223,
+        "name_as_written": "valid",
+        "full_name": "Benitoite.Release.Refinement.StandardVariance.valid"
+      }
+    ]
+  },
+  {
+    "table": "部分型、依存列、変性",
+    "row": "組込みの共変位置",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.StandardVariance",
+        "source": "formal/Benitoite/Release/Refinement/StandardVariance.lean",
+        "line": 301,
+        "name_as_written": "covariant_positions",
+        "full_name": "Benitoite.Release.Refinement.StandardVariance.covariant_positions"
+      }
+    ]
+  },
+  {
+    "table": "部分型、依存列、変性",
+    "row": "範囲添字",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.HeldValues",
+        "source": "formal/Benitoite/Release/Refinement/HeldValues.lean",
+        "line": 38,
+        "name_as_written": "Ty.LeQ.holds",
+        "full_name": "Benitoite.Release.Refinement.Ty.LeQ.holds"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.CanonicalValues",
+        "source": "formal/Benitoite/Release/Refinement/CanonicalValues.lean",
+        "line": 435,
+        "name_as_written": "HasTypeVQ.canonical_held",
+        "full_name": "Benitoite.Release.Refinement.HasTypeVQ.canonical_held"
+      }
+    ]
+  },
+  {
+    "table": "値、計算、状態の開始逆転",
+    "row": "var",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.ValueInversion",
+        "source": "formal/Benitoite/Release/Refinement/ValueInversion.lean",
+        "line": 20,
+        "name_as_written": "HasTypeVQ.inv_var",
+        "full_name": "Benitoite.Release.Refinement.HasTypeVQ.inv_var"
+      }
+    ]
+  },
+  {
+    "table": "値、計算、状態の開始逆転",
+    "row": "const",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.ValueFacts",
+        "source": "formal/Benitoite/Release/Refinement/ValueFacts.lean",
+        "line": 53,
+        "name_as_written": "HasTypeVQ.inv_const",
+        "full_name": "Benitoite.Release.Refinement.HasTypeVQ.inv_const"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.ValueFacts",
+        "source": "formal/Benitoite/Release/Refinement/ValueFacts.lean",
+        "line": 15,
+        "name_as_written": "HasTypeVQ.facts",
+        "full_name": "Benitoite.Release.Refinement.HasTypeVQ.facts"
+      }
+    ]
+  },
+  {
+    "table": "値、計算、状態の開始逆転",
+    "row": "fnRef",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.ValueInversion",
+        "source": "formal/Benitoite/Release/Refinement/ValueInversion.lean",
+        "line": 20,
+        "name_as_written": "HasTypeVQ.inv_var",
+        "full_name": "Benitoite.Release.Refinement.HasTypeVQ.inv_var"
+      }
+    ]
+  },
+  {
+    "table": "値、計算、状態の開始逆転",
+    "row": "prim",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.ValueInversion",
+        "source": "formal/Benitoite/Release/Refinement/ValueInversion.lean",
+        "line": 20,
+        "name_as_written": "HasTypeVQ.inv_var",
+        "full_name": "Benitoite.Release.Refinement.HasTypeVQ.inv_var"
+      }
+    ]
+  },
+  {
+    "table": "値、計算、状態の開始逆転",
+    "row": "op",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.ValueInversion",
+        "source": "formal/Benitoite/Release/Refinement/ValueInversion.lean",
+        "line": 122,
+        "name_as_written": "HasTypeVQ.inv_op",
+        "full_name": "Benitoite.Release.Refinement.HasTypeVQ.inv_op"
+      }
+    ]
+  },
+  {
+    "table": "値、計算、状態の開始逆転",
+    "row": "lam / dependentLam",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.ValueInversion",
+        "source": "formal/Benitoite/Release/Refinement/ValueInversion.lean",
+        "line": 152,
+        "name_as_written": "HasTypeVQ.inv_lam",
+        "full_name": "Benitoite.Release.Refinement.HasTypeVQ.inv_lam"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.ValueInversion",
+        "source": "formal/Benitoite/Release/Refinement/ValueInversion.lean",
+        "line": 184,
+        "name_as_written": "HasTypeVQ.inv_dependentLam",
+        "full_name": "Benitoite.Release.Refinement.HasTypeVQ.inv_dependentLam"
+      }
+    ]
+  },
+  {
+    "table": "値、計算、状態の開始逆転",
+    "row": "closure",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.Canonical",
+        "source": "formal/Benitoite/Release/Refinement/Canonical.lean",
+        "line": 40,
+        "name_as_written": "HasTypeVQ.inv_closure",
+        "full_name": "Benitoite.Release.Refinement.HasTypeVQ.inv_closure"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.LeafInputs",
+        "source": "formal/Benitoite/Release/Refinement/LeafInputs.lean",
+        "line": 138,
+        "name_as_written": "StateTyE.closure_contract_inputs",
+        "full_name": "Benitoite.Release.Refinement.StateTyE.closure_contract_inputs"
+      }
+    ]
+  },
+  {
+    "table": "値、計算、状態の開始逆転",
+    "row": "raise",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.ValueInversion",
+        "source": "formal/Benitoite/Release/Refinement/ValueInversion.lean",
+        "line": 212,
+        "name_as_written": "HasTypeVQ.inv_raise",
+        "full_name": "Benitoite.Release.Refinement.HasTypeVQ.inv_raise"
+      }
+    ]
+  },
+  {
+    "table": "値、計算、状態の開始逆転",
+    "row": "con",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.ValueFacts",
+        "source": "formal/Benitoite/Release/Refinement/ValueFacts.lean",
+        "line": 183,
+        "name_as_written": "HasTypeVQ.constructor_field_inputs",
+        "full_name": "Benitoite.Release.Refinement.HasTypeVQ.constructor_field_inputs"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.CanonicalValues",
+        "source": "formal/Benitoite/Release/Refinement/CanonicalValues.lean",
+        "line": 95,
+        "name_as_written": "HasTypeVQ.canonical_data",
+        "full_name": "Benitoite.Release.Refinement.HasTypeVQ.canonical_data"
+      }
+    ]
+  },
+  {
+    "table": "値、計算、状態の開始逆転",
+    "row": "list",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.ValueInversion",
+        "source": "formal/Benitoite/Release/Refinement/ValueInversion.lean",
+        "line": 377,
+        "name_as_written": "HasTypeVQ.inv_list_core",
+        "full_name": "Benitoite.Release.Refinement.HasTypeVQ.inv_list_core"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.ValueFacts",
+        "source": "formal/Benitoite/Release/Refinement/ValueFacts.lean",
+        "line": 160,
+        "name_as_written": "HasTypeVQ.list_element_facts",
+        "full_name": "Benitoite.Release.Refinement.HasTypeVQ.list_element_facts"
+      }
+    ]
+  },
+  {
+    "table": "値、計算、状態の開始逆転",
+    "row": "loc",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.CanonicalCells",
+        "source": "formal/Benitoite/Release/Refinement/CanonicalCells.lean",
+        "line": 53,
+        "name_as_written": "HasTypeVQ.inv_loc",
+        "full_name": "Benitoite.Release.Refinement.HasTypeVQ.inv_loc"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.CanonicalCells",
+        "source": "formal/Benitoite/Release/Refinement/CanonicalCells.lean",
+        "line": 17,
+        "name_as_written": "StoreOk.ref_cell",
+        "full_name": "Benitoite.Release.Refinement.StoreOk.ref_cell"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.CanonicalCells",
+        "source": "formal/Benitoite/Release/Refinement/CanonicalCells.lean",
+        "line": 24,
+        "name_as_written": "StoreOk.lazy_cell",
+        "full_name": "Benitoite.Release.Refinement.StoreOk.lazy_cell"
+      }
+    ]
+  },
+  {
+    "table": "値、計算、状態の開始逆転",
+    "row": "mapV",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.CollectionInversion",
+        "source": "formal/Benitoite/Release/Refinement/CollectionInversion.lean",
+        "line": 63,
+        "name_as_written": "HasTypeVQ.inv_mapV",
+        "full_name": "Benitoite.Release.Refinement.HasTypeVQ.inv_mapV"
+      }
+    ]
+  },
+  {
+    "table": "値、計算、状態の開始逆転",
+    "row": "setV",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.CollectionInversion",
+        "source": "formal/Benitoite/Release/Refinement/CollectionInversion.lean",
+        "line": 95,
+        "name_as_written": "HasTypeVQ.inv_setV",
+        "full_name": "Benitoite.Release.Refinement.HasTypeVQ.inv_setV"
+      }
+    ]
+  },
+  {
+    "table": "値、計算、状態の開始逆転",
+    "row": "bytesV",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.CollectionInversion",
+        "source": "formal/Benitoite/Release/Refinement/CollectionInversion.lean",
+        "line": 123,
+        "name_as_written": "HasTypeVQ.inv_bytesV",
+        "full_name": "Benitoite.Release.Refinement.HasTypeVQ.inv_bytesV"
+      }
+    ]
+  },
+  {
+    "table": "値、計算、状態の開始逆転",
+    "row": "dict / super",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.ValueInversion",
+        "source": "formal/Benitoite/Release/Refinement/ValueInversion.lean",
+        "line": 294,
+        "name_as_written": "HasTypeVQ.inv_dict",
+        "full_name": "Benitoite.Release.Refinement.HasTypeVQ.inv_dict"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.ValueInversion",
+        "source": "formal/Benitoite/Release/Refinement/ValueInversion.lean",
+        "line": 325,
+        "name_as_written": "HasTypeVQ.inv_super",
+        "full_name": "Benitoite.Release.Refinement.HasTypeVQ.inv_super"
+      }
+    ]
+  },
+  {
+    "table": "値、計算、状態の開始逆転",
+    "row": "externalRef",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.CanonicalValues",
+        "source": "formal/Benitoite/Release/Refinement/CanonicalValues.lean",
+        "line": 157,
+        "name_as_written": "HasTypeVQ.inv_externalRef",
+        "full_name": "Benitoite.Release.Refinement.HasTypeVQ.inv_externalRef"
+      }
+    ]
+  },
+  {
+    "table": "値、計算、状態の開始逆転",
+    "row": "externalHandle",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.CanonicalValues",
+        "source": "formal/Benitoite/Release/Refinement/CanonicalValues.lean",
+        "line": 184,
+        "name_as_written": "HasTypeVQ.inv_externalHandle",
+        "full_name": "Benitoite.Release.Refinement.HasTypeVQ.inv_externalHandle"
+      }
+    ]
+  },
+  {
+    "table": "値、計算、状態の開始逆転",
+    "row": "pathBases / scopePattern",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.CanonicalValues",
+        "source": "formal/Benitoite/Release/Refinement/CanonicalValues.lean",
+        "line": 201,
+        "name_as_written": "HasTypeVQ.inv_pathBases",
+        "full_name": "Benitoite.Release.Refinement.HasTypeVQ.inv_pathBases"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.CanonicalValues",
+        "source": "formal/Benitoite/Release/Refinement/CanonicalValues.lean",
+        "line": 215,
+        "name_as_written": "HasTypeVQ.inv_scopePattern",
+        "full_name": "Benitoite.Release.Refinement.HasTypeVQ.inv_scopePattern"
+      }
+    ]
+  },
+  {
+    "table": "値、計算、状態の開始逆転",
+    "row": "checked / checkedRequest / checkedAt",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.HeldValues",
+        "source": "formal/Benitoite/Release/Refinement/HeldValues.lean",
+        "line": 69,
+        "name_as_written": "HasTypeVQ.inv_checked",
+        "full_name": "Benitoite.Release.Refinement.HasTypeVQ.inv_checked"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.HeldValues",
+        "source": "formal/Benitoite/Release/Refinement/HeldValues.lean",
+        "line": 92,
+        "name_as_written": "HasTypeVQ.inv_checkedRequest",
+        "full_name": "Benitoite.Release.Refinement.HasTypeVQ.inv_checkedRequest"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.HeldValues",
+        "source": "formal/Benitoite/Release/Refinement/HeldValues.lean",
+        "line": 166,
+        "name_as_written": "HasTypeVQ.inv_checkedAt",
+        "full_name": "Benitoite.Release.Refinement.HasTypeVQ.inv_checkedAt"
+      }
+    ]
+  },
+  {
+    "table": "値、計算、状態の開始逆転",
+    "row": "atError",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.CanonicalValues",
+        "source": "formal/Benitoite/Release/Refinement/CanonicalValues.lean",
+        "line": 105,
+        "name_as_written": "HasTypeVQ.inv_atError",
+        "full_name": "Benitoite.Release.Refinement.HasTypeVQ.inv_atError"
+      }
+    ]
+  },
+  {
+    "table": "値、計算、状態の開始逆転",
+    "row": "app",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.ComputationInversion",
+        "source": "formal/Benitoite/Release/Refinement/ComputationInversion.lean",
+        "line": 59,
+        "name_as_written": "HasTypeCQ.inv_app",
+        "full_name": "Benitoite.Release.Refinement.HasTypeCQ.inv_app"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.ComputationInversion",
+        "source": "formal/Benitoite/Release/Refinement/ComputationInversion.lean",
+        "line": 138,
+        "name_as_written": "HasTypeCQ.app_tel",
+        "full_name": "Benitoite.Release.Refinement.HasTypeCQ.app_tel"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.ApplicationInputs",
+        "source": "formal/Benitoite/Release/Refinement/ApplicationInputs.lean",
+        "line": 44,
+        "name_as_written": "StateTyE.app_inputs",
+        "full_name": "Benitoite.Release.Refinement.StateTyE.app_inputs"
+      }
+    ]
+  },
+  {
+    "table": "値、計算、状態の開始逆転",
+    "row": "ret / escape",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.DependentBeta",
+        "source": "formal/Benitoite/Release/Refinement/DependentBeta.lean",
+        "line": 297,
+        "name_as_written": "HasTypeCQ.ret_value",
+        "full_name": "Benitoite.Release.Refinement.HasTypeCQ.ret_value"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.ComputationInversion",
+        "source": "formal/Benitoite/Release/Refinement/ComputationInversion.lean",
+        "line": 34,
+        "name_as_written": "HasTypeCQ.inv_escape",
+        "full_name": "Benitoite.Release.Refinement.HasTypeCQ.inv_escape"
+      }
+    ]
+  },
+  {
+    "table": "値、計算、状態の開始逆転",
+    "row": "letIn / meth",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.ComputationInversion",
+        "source": "formal/Benitoite/Release/Refinement/ComputationInversion.lean",
+        "line": 9,
+        "name_as_written": "HasTypeCQ.inv_let",
+        "full_name": "Benitoite.Release.Refinement.HasTypeCQ.inv_let"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.ComputationInputs",
+        "source": "formal/Benitoite/Release/Refinement/ComputationInputs.lean",
+        "line": 431,
+        "name_as_written": "HasTypeCQ.inputs",
+        "full_name": "Benitoite.Release.Refinement.HasTypeCQ.inputs"
+      }
+    ]
+  },
+  {
+    "table": "値、計算、状態の開始逆転",
+    "row": "ite",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.StandardFactExamples",
+        "source": "formal/Benitoite/Release/Refinement/StandardFactExamples.lean",
+        "line": 91,
+        "name_as_written": "false_if_typing",
+        "full_name": "Benitoite.Release.Refinement.StandardFactExamples.false_if_typing"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.LeafInputs",
+        "source": "formal/Benitoite/Release/Refinement/LeafInputs.lean",
+        "line": 379,
+        "name_as_written": "StateTyE.if_inputs",
+        "full_name": "Benitoite.Release.Refinement.StateTyE.if_inputs"
+      }
+    ]
+  },
+  {
+    "table": "値、計算、状態の開始逆転",
+    "row": "match",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.ComputationInputs",
+        "source": "formal/Benitoite/Release/Refinement/ComputationInputs.lean",
+        "line": 51,
+        "name_as_written": "HasTypeCQ.inv_match",
+        "full_name": "Benitoite.Release.Refinement.HasTypeCQ.inv_match"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.LeafInputs",
+        "source": "formal/Benitoite/Release/Refinement/LeafInputs.lean",
+        "line": 334,
+        "name_as_written": "StateTyE.match_inputs",
+        "full_name": "Benitoite.Release.Refinement.StateTyE.match_inputs"
+      }
+    ]
+  },
+  {
+    "table": "値、計算、状態の開始逆転",
+    "row": "handle / use / resume",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.ComputationInputs",
+        "source": "formal/Benitoite/Release/Refinement/ComputationInputs.lean",
+        "line": 431,
+        "name_as_written": "HasTypeCQ.inputs",
+        "full_name": "Benitoite.Release.Refinement.HasTypeCQ.inputs"
+      }
+    ]
+  },
+  {
+    "table": "値、計算、状態の開始逆転",
+    "row": "builderLet / builderOp / lazyC",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.CanonicalCells",
+        "source": "formal/Benitoite/Release/Refinement/CanonicalCells.lean",
+        "line": 44,
+        "name_as_written": "StoreOk.builder_cell",
+        "full_name": "Benitoite.Release.Refinement.StoreOk.builder_cell"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.CanonicalCells",
+        "source": "formal/Benitoite/Release/Refinement/CanonicalCells.lean",
+        "line": 24,
+        "name_as_written": "StoreOk.lazy_cell",
+        "full_name": "Benitoite.Release.Refinement.StoreOk.lazy_cell"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.ComputationInputs",
+        "source": "formal/Benitoite/Release/Refinement/ComputationInputs.lean",
+        "line": 431,
+        "name_as_written": "HasTypeCQ.inputs",
+        "full_name": "Benitoite.Release.Refinement.HasTypeCQ.inputs"
+      }
+    ]
+  },
+  {
+    "table": "値、計算、状態の開始逆転",
+    "row": "externalCall / issuePathBases / checkAt",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.ComputationInputs",
+        "source": "formal/Benitoite/Release/Refinement/ComputationInputs.lean",
+        "line": 431,
+        "name_as_written": "HasTypeCQ.inputs",
+        "full_name": "Benitoite.Release.Refinement.HasTypeCQ.inputs"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.CanonicalValues",
+        "source": "formal/Benitoite/Release/Refinement/CanonicalValues.lean",
+        "line": 105,
+        "name_as_written": "HasTypeVQ.inv_atError",
+        "full_name": "Benitoite.Release.Refinement.HasTypeVQ.inv_atError"
+      }
+    ]
+  },
+  {
+    "table": "全 sort と measure の本番からの導出",
+    "row": "integer",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.StandardInteger",
+        "source": "formal/Benitoite/Release/Refinement/StandardInteger.lean",
+        "line": 37,
+        "name_as_written": "integerConvert_result",
+        "full_name": "Benitoite.Release.Refinement.StandardScalar.integerConvert_result"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.StandardInteger",
+        "source": "formal/Benitoite/Release/Refinement/StandardInteger.lean",
+        "line": 437,
+        "name_as_written": "integerDelta_binary_facts",
+        "full_name": "Benitoite.Release.Refinement.StandardScalar.integerDelta_binary_facts"
+      }
+    ]
+  },
+  {
+    "table": "全 sort と measure の本番からの導出",
+    "row": "character",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.StandardByteCharacter",
+        "source": "formal/Benitoite/Release/Refinement/StandardByteCharacter.lean",
+        "line": 93,
+        "name_as_written": "character_scalar",
+        "full_name": "Benitoite.Release.Refinement.StandardScalar.character_scalar"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.StandardByteCharacter",
+        "source": "formal/Benitoite/Release/Refinement/StandardByteCharacter.lean",
+        "line": 159,
+        "name_as_written": "character_code",
+        "full_name": "Benitoite.Release.Refinement.StandardScalar.character_code"
+      }
+    ]
+  },
+  {
+    "table": "全 sort と measure の本番からの導出",
+    "row": "float64 / float32（2）",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.StandardFloat",
+        "source": "formal/Benitoite/Release/Refinement/StandardFloat.lean",
+        "line": 41,
+        "name_as_written": "float32_class_reply",
+        "full_name": "Benitoite.Release.Refinement.StandardScalar.float32_class_reply"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.StandardFloat",
+        "source": "formal/Benitoite/Release/Refinement/StandardFloat.lean",
+        "line": 118,
+        "name_as_written": "float64_class_reply",
+        "full_name": "Benitoite.Release.Refinement.StandardScalar.float64_class_reply"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.StandardFloat",
+        "source": "formal/Benitoite/Release/Refinement/StandardFloat.lean",
+        "line": 49,
+        "name_as_written": "float32_compare_reply",
+        "full_name": "Benitoite.Release.Refinement.StandardScalar.float32_compare_reply"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.StandardFloat",
+        "source": "formal/Benitoite/Release/Refinement/StandardFloat.lean",
+        "line": 126,
+        "name_as_written": "float64_compare_reply",
+        "full_name": "Benitoite.Release.Refinement.StandardScalar.float64_compare_reply"
+      }
+    ]
+  },
+  {
+    "table": "全 sort と measure の本番からの導出",
+    "row": "decimal",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.StandardDecimal",
+        "source": "formal/Benitoite/Release/Refinement/StandardDecimal.lean",
+        "line": 38,
+        "name_as_written": "decimalRound_represented",
+        "full_name": "Benitoite.Release.Refinement.StandardScalar.decimalRound_represented"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.StandardDecimal",
+        "source": "formal/Benitoite/Release/Refinement/StandardDecimal.lean",
+        "line": 162,
+        "name_as_written": "decimal_compare_reply",
+        "full_name": "Benitoite.Release.Refinement.StandardScalar.decimal_compare_reply"
+      }
+    ]
+  },
+  {
+    "table": "全 sort と measure の本番からの導出",
+    "row": "boolean",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.CanonicalValues",
+        "source": "formal/Benitoite/Release/Refinement/CanonicalValues.lean",
+        "line": 78,
+        "name_as_written": "HasTypeVQ.canonical_boolean",
+        "full_name": "Benitoite.Release.Refinement.HasTypeVQ.canonical_boolean"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.StandardFactExamples",
+        "source": "formal/Benitoite/Release/Refinement/StandardFactExamples.lean",
+        "line": 91,
+        "name_as_written": "false_if_typing",
+        "full_name": "Benitoite.Release.Refinement.StandardFactExamples.false_if_typing"
+      }
+    ]
+  },
+  {
+    "table": "全 sort と measure の本番からの導出",
+    "row": "unit",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.CanonicalValues",
+        "source": "formal/Benitoite/Release/Refinement/CanonicalValues.lean",
+        "line": 73,
+        "name_as_written": "HasTypeVQ.canonical_scalar",
+        "full_name": "Benitoite.Release.Refinement.HasTypeVQ.canonical_scalar"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.TypedMeaning",
+        "source": "formal/Benitoite/Release/Refinement/TypedMeaning.lean",
+        "line": 176,
+        "name_as_written": "typed_value_meaning_closed",
+        "full_name": "Benitoite.Release.Refinement.typed_value_meaning_closed"
+      }
+    ]
+  },
+  {
+    "table": "全 sort と measure の本番からの導出",
+    "row": "string",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.StandardCollections",
+        "source": "formal/Benitoite/Release/Refinement/StandardCollections.lean",
+        "line": 205,
+        "name_as_written": "string_lengths",
+        "full_name": "Benitoite.Release.Refinement.StandardCollections.string_lengths"
+      }
+    ]
+  },
+  {
+    "table": "全 sort と measure の本番からの導出",
+    "row": "list",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.ValueInversion",
+        "source": "formal/Benitoite/Release/Refinement/ValueInversion.lean",
+        "line": 377,
+        "name_as_written": "HasTypeVQ.inv_list_core",
+        "full_name": "Benitoite.Release.Refinement.HasTypeVQ.inv_list_core"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.ValueFacts",
+        "source": "formal/Benitoite/Release/Refinement/ValueFacts.lean",
+        "line": 160,
+        "name_as_written": "HasTypeVQ.list_element_facts",
+        "full_name": "Benitoite.Release.Refinement.HasTypeVQ.list_element_facts"
+      }
+    ]
+  },
+  {
+    "table": "全 sort と measure の本番からの導出",
+    "row": "bytes",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.StandardCollections",
+        "source": "formal/Benitoite/Release/Refinement/StandardCollections.lean",
+        "line": 198,
+        "name_as_written": "bytes_length",
+        "full_name": "Benitoite.Release.Refinement.StandardCollections.bytes_length"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.CollectionInversion",
+        "source": "formal/Benitoite/Release/Refinement/CollectionInversion.lean",
+        "line": 123,
+        "name_as_written": "HasTypeVQ.inv_bytesV",
+        "full_name": "Benitoite.Release.Refinement.HasTypeVQ.inv_bytesV"
+      }
+    ]
+  },
+  {
+    "table": "全 sort と measure の本番からの導出",
+    "row": "map",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.StandardKeySound",
+        "source": "formal/Benitoite/Release/Refinement/StandardKeySound.lean",
+        "line": 265,
+        "name_as_written": "key_map_normal",
+        "full_name": "Benitoite.Release.Refinement.StandardKeyTyping.key_map_normal"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.CollectionInversion",
+        "source": "formal/Benitoite/Release/Refinement/CollectionInversion.lean",
+        "line": 63,
+        "name_as_written": "HasTypeVQ.inv_mapV",
+        "full_name": "Benitoite.Release.Refinement.HasTypeVQ.inv_mapV"
+      }
+    ]
+  },
+  {
+    "table": "全 sort と measure の本番からの導出",
+    "row": "set",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.StandardKeySound",
+        "source": "formal/Benitoite/Release/Refinement/StandardKeySound.lean",
+        "line": 282,
+        "name_as_written": "key_set_normal",
+        "full_name": "Benitoite.Release.Refinement.StandardKeyTyping.key_set_normal"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.CollectionInversion",
+        "source": "formal/Benitoite/Release/Refinement/CollectionInversion.lean",
+        "line": 95,
+        "name_as_written": "HasTypeVQ.inv_setV",
+        "full_name": "Benitoite.Release.Refinement.HasTypeVQ.inv_setV"
+      }
+    ]
+  },
+  {
+    "table": "全 sort と measure の本番からの導出",
+    "row": "data",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.CanonicalValues",
+        "source": "formal/Benitoite/Release/Refinement/CanonicalValues.lean",
+        "line": 95,
+        "name_as_written": "HasTypeVQ.canonical_data",
+        "full_name": "Benitoite.Release.Refinement.HasTypeVQ.canonical_data"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.StandardRecordFields",
+        "source": "formal/Benitoite/Release/Refinement/StandardRecordFields.lean",
+        "line": 71,
+        "name_as_written": "record_valid",
+        "full_name": "Benitoite.Release.Refinement.StandardDecode.record_valid"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.StandardRecordFields",
+        "source": "formal/Benitoite/Release/Refinement/StandardRecordFields.lean",
+        "line": 230,
+        "name_as_written": "record_chain",
+        "full_name": "Benitoite.Release.Refinement.StandardDecode.record_chain"
+      }
+    ]
+  },
+  {
+    "table": "全 sort と measure の本番からの導出",
+    "row": "target path/host/endpoint（3）",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.CanonicalValues",
+        "source": "formal/Benitoite/Release/Refinement/CanonicalValues.lean",
+        "line": 435,
+        "name_as_written": "HasTypeVQ.canonical_held",
+        "full_name": "Benitoite.Release.Refinement.HasTypeVQ.canonical_held"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.ExternalObservation",
+        "source": "formal/Benitoite/Release/Refinement/ExternalObservation.lean",
+        "line": 29,
+        "name_as_written": "HasTypeVQ.represented",
+        "full_name": "Benitoite.Release.Refinement.HasTypeVQ.represented"
+      }
+    ]
+  },
+  {
+    "table": "数値の正常結果と Stop",
+    "row": "幅",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.StandardInteger",
+        "source": "formal/Benitoite/Release/Refinement/StandardInteger.lean",
+        "line": 37,
+        "name_as_written": "integerConvert_result",
+        "full_name": "Benitoite.Release.Refinement.StandardScalar.integerConvert_result"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.CanonicalValues",
+        "source": "formal/Benitoite/Release/Refinement/CanonicalValues.lean",
+        "line": 73,
+        "name_as_written": "HasTypeVQ.canonical_scalar",
+        "full_name": "Benitoite.Release.Refinement.HasTypeVQ.canonical_scalar"
+      }
+    ]
+  },
+  {
+    "table": "数値の正常結果と Stop",
+    "row": "線形に使う算術",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.StandardInteger",
+        "source": "formal/Benitoite/Release/Refinement/StandardInteger.lean",
+        "line": 437,
+        "name_as_written": "integerDelta_binary_facts",
+        "full_name": "Benitoite.Release.Refinement.StandardScalar.integerDelta_binary_facts"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.StandardInteger",
+        "source": "formal/Benitoite/Release/Refinement/StandardInteger.lean",
+        "line": 730,
+        "name_as_written": "integerDelta_negate",
+        "full_name": "Benitoite.Release.Refinement.StandardScalar.integerDelta_negate"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.StandardIntegerFailure",
+        "source": "formal/Benitoite/Release/Refinement/StandardIntegerFailure.lean",
+        "line": 76,
+        "name_as_written": "binary_delta_split",
+        "full_name": "Benitoite.Release.Refinement.StandardScalar.binary_delta_split"
+      }
+    ]
+  },
+  {
+    "table": "数値の正常結果と Stop",
+    "row": "除算・剰余",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.StandardIntegerFailure",
+        "source": "formal/Benitoite/Release/Refinement/StandardIntegerFailure.lean",
+        "line": 235,
+        "name_as_written": "divMod_delta_split",
+        "full_name": "Benitoite.Release.Refinement.StandardScalar.divMod_delta_split"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.StandardIntegerFailure",
+        "source": "formal/Benitoite/Release/Refinement/StandardIntegerFailure.lean",
+        "line": 319,
+        "name_as_written": "division_overflow_iff",
+        "full_name": "Benitoite.Release.Refinement.StandardScalar.division_overflow_iff"
+      }
+    ]
+  },
+  {
+    "table": "数値の正常結果と Stop",
+    "row": "整数比較",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.StandardInteger",
+        "source": "formal/Benitoite/Release/Refinement/StandardInteger.lean",
+        "line": 568,
+        "name_as_written": "integerDelta_equality",
+        "full_name": "Benitoite.Release.Refinement.StandardScalar.integerDelta_equality"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.StandardInteger",
+        "source": "formal/Benitoite/Release/Refinement/StandardInteger.lean",
+        "line": 602,
+        "name_as_written": "integerDelta_order",
+        "full_name": "Benitoite.Release.Refinement.StandardScalar.integerDelta_order"
+      }
+    ]
+  },
+  {
+    "table": "数値の正常結果と Stop",
+    "row": "Byte",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.StandardByteCharacter",
+        "source": "formal/Benitoite/Release/Refinement/StandardByteCharacter.lean",
+        "line": 12,
+        "name_as_written": "byteConvert_some",
+        "full_name": "Benitoite.Release.Refinement.StandardScalar.byteConvert_some"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.StandardByteCharacter",
+        "source": "formal/Benitoite/Release/Refinement/StandardByteCharacter.lean",
+        "line": 29,
+        "name_as_written": "byteConvert_none",
+        "full_name": "Benitoite.Release.Refinement.StandardScalar.byteConvert_none"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.StandardByteCharacter",
+        "source": "formal/Benitoite/Release/Refinement/StandardByteCharacter.lean",
+        "line": 251,
+        "name_as_written": "byte_compare",
+        "full_name": "Benitoite.Release.Refinement.StandardScalar.byte_compare"
+      }
+    ]
+  },
+  {
+    "table": "数値の正常結果と Stop",
+    "row": "Character",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.StandardByteCharacter",
+        "source": "formal/Benitoite/Release/Refinement/StandardByteCharacter.lean",
+        "line": 93,
+        "name_as_written": "character_scalar",
+        "full_name": "Benitoite.Release.Refinement.StandardScalar.character_scalar"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.StandardByteCharacter",
+        "source": "formal/Benitoite/Release/Refinement/StandardByteCharacter.lean",
+        "line": 108,
+        "name_as_written": "characterConvert_some",
+        "full_name": "Benitoite.Release.Refinement.StandardScalar.characterConvert_some"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.StandardByteCharacter",
+        "source": "formal/Benitoite/Release/Refinement/StandardByteCharacter.lean",
+        "line": 159,
+        "name_as_written": "character_code",
+        "full_name": "Benitoite.Release.Refinement.StandardScalar.character_code"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.StandardByteCharacter",
+        "source": "formal/Benitoite/Release/Refinement/StandardByteCharacter.lean",
+        "line": 167,
+        "name_as_written": "character_compare",
+        "full_name": "Benitoite.Release.Refinement.StandardScalar.character_compare"
+      }
+    ]
+  },
+  {
+    "table": "数値の正常結果と Stop",
+    "row": "Float",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.StandardFloat",
+        "source": "formal/Benitoite/Release/Refinement/StandardFloat.lean",
+        "line": 41,
+        "name_as_written": "float32_class_reply",
+        "full_name": "Benitoite.Release.Refinement.StandardScalar.float32_class_reply"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.StandardFloat",
+        "source": "formal/Benitoite/Release/Refinement/StandardFloat.lean",
+        "line": 118,
+        "name_as_written": "float64_class_reply",
+        "full_name": "Benitoite.Release.Refinement.StandardScalar.float64_class_reply"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.StandardFloat",
+        "source": "formal/Benitoite/Release/Refinement/StandardFloat.lean",
+        "line": 49,
+        "name_as_written": "float32_compare_reply",
+        "full_name": "Benitoite.Release.Refinement.StandardScalar.float32_compare_reply"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.StandardFloat",
+        "source": "formal/Benitoite/Release/Refinement/StandardFloat.lean",
+        "line": 126,
+        "name_as_written": "float64_compare_reply",
+        "full_name": "Benitoite.Release.Refinement.StandardScalar.float64_compare_reply"
+      }
+    ]
+  },
+  {
+    "table": "数値の正常結果と Stop",
+    "row": "Decimal",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.StandardDecimal",
+        "source": "formal/Benitoite/Release/Refinement/StandardDecimal.lean",
+        "line": 38,
+        "name_as_written": "decimalRound_represented",
+        "full_name": "Benitoite.Release.Refinement.StandardScalar.decimalRound_represented"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.StandardDecimal",
+        "source": "formal/Benitoite/Release/Refinement/StandardDecimal.lean",
+        "line": 64,
+        "name_as_written": "decimalRound_typed",
+        "full_name": "Benitoite.Release.Refinement.StandardScalar.decimalRound_typed"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.StandardDecimal",
+        "source": "formal/Benitoite/Release/Refinement/StandardDecimal.lean",
+        "line": 173,
+        "name_as_written": "decimalDelta_round",
+        "full_name": "Benitoite.Release.Refinement.StandardScalar.decimalDelta_round"
+      }
+    ]
+  },
+  {
+    "table": "数値の正常結果と Stop",
+    "row": "応答",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.StandardArithmeticResponse",
+        "source": "formal/Benitoite/Release/Refinement/StandardArithmeticResponse.lean",
+        "line": 168,
+        "name_as_written": "response_math",
+        "full_name": "Benitoite.Release.Refinement.StandardArithmeticResponse.response_math"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.StandardListResponse",
+        "source": "formal/Benitoite/Release/Refinement/StandardListResponse.lean",
+        "line": 138,
+        "name_as_written": "response",
+        "full_name": "Benitoite.Release.Refinement.StandardListResponse.response"
+      }
+    ]
+  },
+  {
+    "table": "数値の正常結果と Stop",
+    "row": "区間の失敗理由",
+    "evidence": [
+      {
+        "module": "Benitoite.Release.Refinement.StandardIntegerFailure",
+        "source": "formal/Benitoite/Release/Refinement/StandardIntegerFailure.lean",
+        "line": 76,
+        "name_as_written": "binary_delta_split",
+        "full_name": "Benitoite.Release.Refinement.StandardScalar.binary_delta_split"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.StandardIntegerFailure",
+        "source": "formal/Benitoite/Release/Refinement/StandardIntegerFailure.lean",
+        "line": 235,
+        "name_as_written": "divMod_delta_split",
+        "full_name": "Benitoite.Release.Refinement.StandardScalar.divMod_delta_split"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.StandardIntegerFailure",
+        "source": "formal/Benitoite/Release/Refinement/StandardIntegerFailure.lean",
+        "line": 119,
+        "name_as_written": "floor_delta_split",
+        "full_name": "Benitoite.Release.Refinement.StandardScalar.floor_delta_split"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.StandardIntegerFailure",
+        "source": "formal/Benitoite/Release/Refinement/StandardIntegerFailure.lean",
+        "line": 207,
+        "name_as_written": "absolute_split",
+        "full_name": "Benitoite.Release.Refinement.StandardScalar.absolute_split"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.StandardIntegerFailure",
+        "source": "formal/Benitoite/Release/Refinement/StandardIntegerFailure.lean",
+        "line": 219,
+        "name_as_written": "shift_outside",
+        "full_name": "Benitoite.Release.Refinement.StandardScalar.shift_outside"
+      },
+      {
+        "module": "Benitoite.Release.Refinement.IntervalFailure",
+        "source": "formal/Benitoite/Release/Refinement/IntervalFailure.lean",
+        "line": 1068,
+        "name_as_written": "tracked_failure_sound",
+        "full_name": "Benitoite.Release.Refinement.tracked_failure_sound"
+      }
+    ]
+  }
+]

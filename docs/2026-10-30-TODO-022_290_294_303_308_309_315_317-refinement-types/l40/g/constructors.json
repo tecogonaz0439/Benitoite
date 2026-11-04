@@ -1,0 +1,512 @@
+{
+  "Val": {
+    "file": "formal/Benitoite/Release/Refinement/Syntax.lean",
+    "constructors": [
+      "var",
+      "const",
+      "fnRef",
+      "prim",
+      "lam",
+      "dependentLam",
+      "closure",
+      "con",
+      "list",
+      "op",
+      "raise",
+      "loc",
+      "mapV",
+      "setV",
+      "bytesV",
+      "dict",
+      "super",
+      "externalRef",
+      "externalHandle",
+      "pathBases",
+      "scopePattern",
+      "checkedAt",
+      "atError",
+      "checked",
+      "checkedRequest"
+    ]
+  },
+  "Comp": {
+    "file": "formal/Benitoite/Release/Refinement/Syntax.lean",
+    "constructors": [
+      "builderLet",
+      "builderOp",
+      "ret",
+      "letIn",
+      "app",
+      "ite",
+      "match",
+      "lazyC",
+      "escape",
+      "use",
+      "handle",
+      "resume",
+      "externalCall",
+      "issuePathBases",
+      "checkAt",
+      "meth"
+    ]
+  },
+  "State": {
+    "file": "formal/Benitoite/Release/Refinement/RuntimeSyntax.lean",
+    "constructors": [
+      "run",
+      "matchRun",
+      "error",
+      "exit"
+    ]
+  },
+  "Frame": {
+    "file": "formal/Benitoite/Release/Refinement/RuntimeSyntax.lean",
+    "constructors": [
+      "letF",
+      "mark",
+      "update",
+      "release",
+      "handleF",
+      "drop",
+      "guardF"
+    ]
+  },
+  "Cell": {
+    "file": "formal/Benitoite/Release/Refinement/RuntimeSyntax.lean",
+    "constructors": [
+      "builder",
+      "val",
+      "thunk",
+      "done",
+      "cont",
+      "used"
+    ]
+  },
+  "Ty": {
+    "file": "formal/Benitoite/Release/Refinement/Types.lean",
+    "constructors": [
+      "base",
+      "opaque",
+      "data",
+      "list",
+      "fn",
+      "tvar",
+      "reference",
+      "lazy",
+      "cont",
+      "map",
+      "set",
+      "bytes",
+      "dict",
+      "tapp",
+      "ctor",
+      "refined",
+      "dependentFn",
+      "external",
+      "scoped",
+      "pathBases",
+      "scopePattern"
+    ]
+  },
+  "HasTypeVQ": {
+    "file": "formal/Benitoite/Release/Refinement/Typing.lean",
+    "constructors": [
+      "V_Var",
+      "V_Const",
+      "V_Lam",
+      "V_DependentLam",
+      "V_Closure",
+      "V_Fun",
+      "V_Prim",
+      "V_Op",
+      "V_ExternalRef",
+      "V_ExternalHandle",
+      "V_PathBases",
+      "V_ScopePattern",
+      "V_Checked",
+      "V_CheckedRequest",
+      "V_CheckedAt",
+      "V_AtError",
+      "V_Map",
+      "V_Set",
+      "V_Dict",
+      "V_Raise",
+      "V_LocRef",
+      "V_LocLazy",
+      "V_Bytes",
+      "V_Con",
+      "V_Super",
+      "V_List",
+      "V_Sub",
+      "V_Normal",
+      "V_Refine"
+    ]
+  },
+  "HasTypeVsQ": {
+    "file": "formal/Benitoite/Release/Refinement/Typing.lean",
+    "constructors": [
+      "nil",
+      "cons"
+    ]
+  },
+  "HasTypeEachQ": {
+    "file": "formal/Benitoite/Release/Refinement/Typing.lean",
+    "constructors": [
+      "nil",
+      "cons"
+    ]
+  },
+  "HasTypeCQ": {
+    "file": "formal/Benitoite/Release/Refinement/Typing.lean",
+    "constructors": [
+      "C_BuilderLet",
+      "C_BuilderOp",
+      "C_Return",
+      "C_Let",
+      "C_App",
+      "C_DependentApp",
+      "C_If",
+      "C_Match",
+      "C_Lazy",
+      "C_Escape",
+      "C_Use",
+      "C_Handle",
+      "C_Handle_Fail",
+      "C_Resume",
+      "C_ResumeL",
+      "C_ResumeNorm",
+      "C_ResumeLNorm",
+      "C_Normal",
+      "C_Meth",
+      "C_External",
+      "C_IssuePathBases",
+      "C_CheckAt",
+      "C_Sub",
+      "C_Eff"
+    ]
+  },
+  "Ty.LeQ": {
+    "file": "formal/Benitoite/Release/Refinement/Le.lean",
+    "constructors": [
+      "refl",
+      "convert",
+      "trans",
+      "fn_effect",
+      "list",
+      "lazy",
+      "map_value",
+      "forget",
+      "introduce",
+      "refine",
+      "dependentFn",
+      "scoped",
+      "scoped_forget",
+      "data"
+    ]
+  },
+  "TelLe": {
+    "file": "formal/Benitoite/Release/Refinement/Le.lean",
+    "constructors": [
+      "done",
+      "param"
+    ]
+  },
+  "TelClosure": {
+    "file": "formal/Benitoite/Release/Refinement/Le.lean",
+    "constructors": [
+      "refl",
+      "tail"
+    ]
+  },
+  "TypeArgsLe": {
+    "file": "formal/Benitoite/Release/Refinement/Le.lean",
+    "constructors": [
+      "nil",
+      "covariant_cons",
+      "contravariant_cons",
+      "invariant_cons"
+    ]
+  },
+  "ContTy": {
+    "file": "formal/Benitoite/Release/Refinement/StateTyping.lean",
+    "constructors": [
+      "K_Empty",
+      "K_Let",
+      "K_Mark",
+      "K_Update",
+      "K_Release",
+      "K_Handle",
+      "K_Handle_Fail",
+      "K_Drop",
+      "K_Guard",
+      "K_Sub"
+    ]
+  },
+  "Observation.KeyShape": {
+    "file": "formal/Benitoite/Release/Refinement/KeyContracts.lean",
+    "constructors": [
+      "integer",
+      "character",
+      "decimal",
+      "boolean",
+      "unit",
+      "string",
+      "bytes",
+      "list",
+      "map",
+      "set",
+      "data"
+    ]
+  },
+  "Observation.KeySlots": {
+    "file": "formal/Benitoite/Release/Refinement/KeyContracts.lean",
+    "constructors": [
+      "nil",
+      "cons"
+    ]
+  },
+  "Observation.KeyPairs": {
+    "file": "formal/Benitoite/Release/Refinement/KeyContracts.lean",
+    "constructors": [
+      "nil",
+      "cons"
+    ]
+  },
+  "Step": {
+    "file": "formal/Benitoite/Release/Refinement/Semantics.lean",
+    "constructors": [
+      "E_BuilderNew",
+      "E_BuilderOp",
+      "E_BuilderErr",
+      "E_Let",
+      "E_Return",
+      "E_Lam",
+      "E_ExternalApply",
+      "E_External",
+      "E_ExternalErr",
+      "E_PathBasesApply",
+      "E_IssuePathBases",
+      "E_AtOk",
+      "E_AtError",
+      "E_AtPrepareError",
+      "E_Fun",
+      "E_Meth",
+      "E_Super",
+      "E_IfT",
+      "E_IfF",
+      "E_Match",
+      "E_MatchSkip",
+      "E_MatchBody",
+      "E_MatchGuard",
+      "E_GuardT",
+      "E_GuardF",
+      "E_ErrPopGuard",
+      "E_ExitPopGuard",
+      "E_Prim",
+      "E_Err",
+      "E_IO",
+      "E_IOErr",
+      "E_Exit",
+      "E_RefNew",
+      "E_RefGet",
+      "E_RefSet",
+      "E_RefUpdate",
+      "E_Lazy",
+      "E_ForceDone",
+      "E_Force",
+      "E_Update",
+      "E_Mark",
+      "E_EscLet",
+      "E_EscHandle",
+      "E_EscMark",
+      "E_Use",
+      "E_Release",
+      "E_RelErr",
+      "E_EscRel",
+      "E_EscRelErr",
+      "E_ErrPopLet",
+      "E_ErrPopMark",
+      "E_ErrPopUpdate",
+      "E_ErrPopHandle",
+      "E_ErrRel",
+      "E_ErrRelErr",
+      "E_ExitPopLet",
+      "E_ExitPopMark",
+      "E_ExitPopUpdate",
+      "E_ExitPopHandle",
+      "E_ExitRel",
+      "E_ExitRelErr",
+      "E_Handle",
+      "E_HRet",
+      "E_Op",
+      "E_OpFail",
+      "E_OpPrim",
+      "E_Resume",
+      "E_ResumeErr",
+      "E_Drop",
+      "E_DropRel",
+      "E_EscDrop",
+      "E_EscDropRel",
+      "E_ErrDrop",
+      "E_ErrDropRel",
+      "E_ExitDrop",
+      "E_ExitDropRel"
+    ]
+  },
+  "EvalPartial": {
+    "file": "formal/Benitoite/Interval/Eval.lean",
+    "constructors": [
+      "standardCall",
+      "standardCallAbrupt",
+      "fixedCallFailed",
+      "fixedCallAbrupt",
+      "unknownNormal",
+      "unknownFailed",
+      "integer",
+      "negInt",
+      "integer8",
+      "integer16",
+      "integer32",
+      "unsignedInteger16",
+      "unsignedInteger32",
+      "unsignedInteger64",
+      "negInteger8",
+      "negInteger16",
+      "negInteger32",
+      "boolean",
+      "unit",
+      "local",
+      "paren",
+      "constE",
+      "returnE",
+      "neg",
+      "negAbrupt",
+      "add",
+      "addLeftAbrupt",
+      "addRightAbrupt",
+      "sub",
+      "subLeftAbrupt",
+      "subRightAbrupt",
+      "mul",
+      "mulLeftAbrupt",
+      "mulRightAbrupt",
+      "divMod",
+      "divModLeftAbrupt",
+      "divModRightAbrupt",
+      "compare",
+      "compareLeftAbrupt",
+      "compareRightAbrupt",
+      "widthBinary",
+      "widthBinaryLeftAbrupt",
+      "widthBinaryRightAbrupt",
+      "widthNeg",
+      "widthNegAbrupt",
+      "not",
+      "notAbrupt",
+      "andShort",
+      "andRight",
+      "andAbrupt",
+      "orShort",
+      "orRight",
+      "orAbrupt",
+      "block",
+      "iteTrue",
+      "iteFalse",
+      "iteAbrupt",
+      "elseIfTrue",
+      "elseIfFalse",
+      "elseIfAbrupt",
+      "ifOnlyTrue",
+      "ifOnlyFalse",
+      "ifOnlyAbrupt",
+      "matchInteger",
+      "matchWidth",
+      "matchResult",
+      "matchAbrupt",
+      "matchOtherNormal",
+      "matchOtherFailed"
+    ]
+  },
+  "EvalArguments": {
+    "file": "formal/Benitoite/Interval/Eval.lean",
+    "constructors": [
+      "nil",
+      "cons",
+      "headAbrupt",
+      "tailAbrupt"
+    ]
+  },
+  "EvalTypedArguments": {
+    "file": "formal/Benitoite/Interval/Eval.lean",
+    "constructors": [
+      "nil",
+      "cons",
+      "headAbrupt",
+      "tailAbrupt"
+    ]
+  },
+  "EvalArms": {
+    "file": "formal/Benitoite/Interval/Eval.lean",
+    "constructors": [
+      "nil",
+      "skip",
+      "body",
+      "guardTrue",
+      "guardFalse",
+      "guardAbrupt"
+    ]
+  },
+  "EvalWidthArms": {
+    "file": "formal/Benitoite/Interval/Eval.lean",
+    "constructors": [
+      "nil",
+      "skip",
+      "body",
+      "guardTrue",
+      "guardFalse",
+      "guardAbrupt"
+    ]
+  },
+  "EvalResultArms": {
+    "file": "formal/Benitoite/Interval/Eval.lean",
+    "constructors": [
+      "nil",
+      "skip",
+      "body",
+      "guardTrue",
+      "guardFalse",
+      "guardAbrupt"
+    ]
+  },
+  "EvalBlock": {
+    "file": "formal/Benitoite/Interval/Eval.lean",
+    "constructors": [
+      "empty",
+      "builderBind",
+      "last",
+      "lastBind",
+      "lastDiscard",
+      "lastPat",
+      "bind",
+      "bindAbrupt",
+      "discard",
+      "discardAbrupt",
+      "seq",
+      "seqAbrupt",
+      "bindPat",
+      "bindPatAbrupt"
+    ]
+  },
+  "EvalStandard": {
+    "file": "formal/Benitoite/Interval/Eval.lean",
+    "constructors": [
+      "rangeCheck",
+      "rangeValue",
+      "rangeValueUnknown",
+      "rangeValueUnknownFailed",
+      "domainNormal",
+      "domainOtherFailure",
+      "domainRejected"
+    ]
+  }
+}
