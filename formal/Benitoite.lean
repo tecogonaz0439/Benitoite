@@ -776,3 +776,8 @@ import Benitoite.Release.Refinement.StandardMapHigherPrecisionGap
 import Benitoite.Release.Refinement.StandardCollectionPrecision
 import Benitoite.Release.Refinement.StandardMapReplaceValues
 import Benitoite.Release.Refinement.StandardCollectionRefinedBodies
+
+import Benitoite.Release.Refinement.StandardIntegerFailure
+import Benitoite.Release.Refinement.IntervalFlowLeaves
+import Benitoite.Release.Refinement.FirstFailure
+import Benitoite.Release.Refinement.IntervalControlLeaves
