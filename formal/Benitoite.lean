@@ -805,3 +805,5 @@ import Benitoite.Release.Refinement.ScopeValueDelta
 import Benitoite.Release.Refinement.RequestValueDelta
 import Benitoite.Release.Refinement.ScopeResponse
 import Benitoite.Release.Refinement.ScopeConstraintInstances
+import Benitoite.Release.Refinement.ScopedIOResponse
+import Benitoite.Release.Refinement.ScopedIOExamples
