@@ -120,9 +120,9 @@ theorem StateTyE.at_error_all {P B σ Eb q kind name shape bases pattern input i
     (hcurrent : ∀ ρ, snapshot = some ρ → ρ = σ)
     (hat : checkAt snapshot kind pat target bound = .error detail) :
     Step P B σ (.run q k μ) none (.run (Closure.pure (.ret (.con shape.error [.scoped name kind (.fixed bound),q.capture.closeTy shape.errorType]
-        [.atError detail]))) k μ) ∧
+        [.atError (AtError.fromCheck (closeVal q.capture pattern) (closeVal q.capture input) snapshot pat target detail)]))) k μ) ∧
     StateTyE P B σ Eb (.run (Closure.pure (.ret (.con shape.error [.scoped name kind (.fixed bound),q.capture.closeTy shape.errorType]
-        [.atError detail]))) k μ) := by
+        [.atError (AtError.fromCheck (closeVal q.capture pattern) (closeVal q.capture input) snapshot pat target detail)]))) k μ) := by
   refine ⟨.E_AtError hv hp hcurrent hat,?_⟩
   obtain ⟨Ψ,R,a,b,e,e1,hs,hq,_,hk,_,_,hkc,hμ⟩ := h
   obtain ⟨Γ,Φ,hcap,hsrc,hle⟩ := hq.at_inputs hv
@@ -130,7 +130,7 @@ theorem StateTyE.at_error_all {P B σ Eb q kind name shape bases pattern input i
   rw [himage] at hle
   rw [hp.fixed_index] at hann hn hle
   obtain ⟨hshape,_⟩ := shape_of_at hsrc
-  have ht := result_error (B := B) (Ψ := Ψ) (detail := detail) hshape hann
+  have ht := result_error (B := B) (Ψ := Ψ) (detail := AtError.fromCheck (closeVal q.capture pattern) (closeVal q.capture input) snapshot pat target detail) hshape hann
   rw [herror]
   apply reply_value_state hs hk hann hn hle ht
   · exact ⟨Ty.wfList_iff.mp hann.wf,trivial,trivial⟩

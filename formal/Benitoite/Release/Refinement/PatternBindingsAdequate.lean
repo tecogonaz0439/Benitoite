@@ -27,7 +27,7 @@ mutual
       case atError detail =>
         split at hm
         · apply patterns_bindings_adequate (vs := detail.values) _ hm
-          simp [AtError.values,AtError.textFields,Val.Adequate]
+          simp [Detail.values,Detail.textFields,Val.Adequate]
         · cases hm
     | list before rest after =>
       cases v <;> simp only [matchVal] at hm

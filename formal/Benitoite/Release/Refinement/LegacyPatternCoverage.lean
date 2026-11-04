@@ -111,7 +111,7 @@ mutual
       apply Benitoite.Release.Inhabits.con (ts := []) ho hz
       simpa only [legacyPatternVal,hfields,List.map_replicate,
         Benitoite.Release.Ty.subst,Benitoite.Release.Ty.substAt,
-        show (detail.textFields.length) = 7 from by simp [AtError.textFields]] using
+        show (detail.textFields.length) = 7 from by simp [Detail.textFields]] using
         legacy_strings P0 detail.textFields
   termination_by structural h
 

@@ -792,3 +792,7 @@ import Benitoite.Release.Refinement.TargetModelConditions
 
 import Benitoite.Release.Refinement.MembershipWiden
 import Benitoite.Release.Refinement.ScopedCallContracts
+import Benitoite.Release.Refinement.PreparationTargets
+import Benitoite.Release.Refinement.PathBasesTargets
+import Benitoite.Release.Refinement.AtTargets
+import Benitoite.Release.Refinement.ScopeLegacyContracts

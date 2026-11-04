@@ -169,7 +169,7 @@ mutual
     | scopePattern (range : RangeExpr)
     | checkedAt (range : RangeExpr) (snapshot : Option PathEnv)
         (target : Scope.Domain.Target) (request : Option Val)
-    | atError (detail : AtError)
+    | atError (detail : Detail Val)
     | checked (t : Scope.Domain.Target)
     /-- 要求と検査済みの endpoint を保持する。型付けの葉では閉じた要求の型付けに加え、
     groundVal と reqTarget による端点一致を検査する。葉の規則は構文と別に追加する。 -/
@@ -217,6 +217,26 @@ mutual
   inductive Closure where
     | mk (capture : Capture) (code : Comp)
 end
+
+abbrev AtError := Detail Val
+
+def AtError.save (p t : Val) (snapshot : Option PathEnv)
+    (pp : Option RangeExpr) (pt : Option TargetInput) (f : AtFailure) : AtError where
+  failure := f
+  originalPattern := p
+  originalTarget := t
+  parsedPattern := pp
+  parsedTarget := pt
+  resolvedPatterns := pp.bind (resolveSnapshot snapshot)
+  resolvedTarget := pt.bind (resolveTargetSnapshot snapshot)
+  patternBase := pp.bind RangeExpr.base?
+  targetBase := pt.bind TargetInput.base?
+
+/-- 解析済みの検査の失敗へ、同じ準備が読んだ元入力を付ける。 -/
+def AtError.fromCheck (p t : Val) (snapshot : Option PathEnv)
+    (pat : RangeExpr) (target : TargetInput) (d : AtCheckError) : AtError :=
+  AtError.save p t snapshot (some pat) (some target) d.failure
+
 
 def Capture.values : Capture → List (Option Val)
   | .mk vs => vs
@@ -475,7 +495,7 @@ def ConstOK (B : Builtins) : Const → Prop
   | .opaque o _ => B.valKind o = none ∧ B.valContent o = none
   | _ => True
 
-def AtError.values (d : AtError) : List Val := d.textFields.map (fun s => .const (.string s))
+def Detail.values (d : AtError) : List Val := d.textFields.map (fun s => .const (.string s))
 
 mutual
   /-- 観測できる部分だけを有限のsnapshotに写す。スロットの欠落を保つ。 -/

@@ -395,7 +395,7 @@ private theorem rootShape_of_typing_aux {P B Ψ Q C Γ Φ v a}
   | .V_AtError (detail := detail) hs =>
     rw [hs.errorType_eq]
     obtain ⟨cd,hc,_,_,ha⟩ := hs.standard.2.2
-    exact .inr ⟨detail,cd,rfl,hc,by simp [ha,atErrorFields,AtError.values,AtError.textFields]⟩
+    exact .inr ⟨detail,cd,rfl,hc,by simp [ha,atErrorFields,Detail.values,Detail.textFields]⟩
   | .V_List .. => exact ⟨_,rfl⟩
   | .V_Sub h hl .. => exact RootShape.subtype hl (rootShape_of_typing_aux h hΓ)
   | .V_Normal h => exact RootShape.norm.mpr (rootShape_of_typing_aux h hΓ)
@@ -863,7 +863,7 @@ private theorem readPath_observe {v w : Val} {route : List FieldRef} {t : Term} 
       case con c' ts args => obtain ⟨rfl,rfl⟩ := hcv; rfl
       case atError d =>
         obtain ⟨rfl,rfl⟩ := hcv
-        simp [Val.toTerm?,AtError.values,AtError.textFields,Val.toTermSlots_eq_map,List.map_map,Term.observe]
+        simp [Val.toTerm?,Detail.values,Detail.textFields,Val.toTermSlots_eq_map,List.map_map,Term.observe]
     have hfield : (Term.field r t).observe η = u.toTerm?.bind (Term.observe η) := by
       simp only [Term.observe,htFields,hindex]
       dsimp only [Bind.bind,Option.bind]

@@ -140,6 +140,14 @@
 
 `NormalReplyExamples.concrete_normal_replies` は、同じ具体のプログラム・組み込みの表・有効な σ について、WellFormed・WellTyped・CoreAssumptions と、δ・IO・外部の正常応答・At の成功の四つの store_reply の適用を同時に構成する。δ と IO は Unit を返し、IO は対象のない一つの事象を返す。外部宣言は引数なし・結果 Unit の関数一つであり、受信検査後の Unit を返す。At は snapshot なしで絶対パス `/` が Top に属することを検査し、結果の成功の構成子に checkedAt を返す。各例は元の計算の型付けから実際の Step と行先の StateTyE・LocalStateInvariant を得る。表の条件を独立の仮定にしていない。これは具体のモデルの充足であり、処理系の全実表の充足の証明とは区別する。
 
+`PreparationTargets` は Ready と Reachable から全到達範囲の解決成功を導き、Source の全構文から任意 σ の Adequate を供給する。source_state_of_source は同じ初期状態・ExternalWF・元の型付け・終端注釈・閉性・BuiltinOnly を受ける。`PathBasesTargets` の AtPrepared.current は捕捉と元の bases の Adequate と準備成功だけを受け、CaptureOk を要求しない。StateTyE.at_current は同じ状態からこれらを供給する。発行の operation と membership は同じ PathBasesShape を使う。
+
+`AtTargets` の `StateTyE.at_step` は WellFormed・WellTyped・CoreAssumptions・σ.Valid と元の StateTyE・At の raw code から、次の Step と同じ σ/Eb の StateTyE の存在を構成する。入力と bases の各二経路を分け、既存の三保存葉へ同じ準備と snapshot の一致を渡す。対象の未解決、snapshot なしの両範囲の未解決、準備成功後の invalidPattern は実定理で排除する。型付き添字の準備時 staticIndex と検査時の bound 不所属は区別する。
+
+内部エラーの型は Detail Val である。元入力二つは不活性な Val、解析済み二欄は Option であり、解決結果・両起点・失敗と合わせて九欄を持つ。準備失敗は閉じた元入力を保存し、検査失敗は AtCheckError に同じ準備の元入力を添えて AtError.fromCheck で構成する。内部の観測は、失敗の種別・解析済み入力・解決結果・両起点を七つの String に写し、元入力を取り出さない。型付け・Term・照合・網羅性の読者は Detail.textFields/values に対応する。観測へ元の Val を返す入口は持たず、適格性と閉性は元入力へ再帰しない。AtPrepare.error_saved と AtError.save_exact が全準備失敗の保存を示す。Detail.originals_unobserved は、元入力二欄の変更に対して、項観測と任意パターンの束縛列の項観測の不変性を示す。変数パターンはエラー全体を束縛するため、束縛列の構造等号とは区別する。
+
+`ScopeLegacyContracts` は旧純粋 API の絶対パスの入口と、相対/home 入力・記号付き上限の拒否を定める。At はパターンの root と対象の cwd/home を別に解決し、同じ保持絶対対象を射影する。At と旧純粋チェックの空の効果を照合する。
+
 `InitialPrepared.source_state` は、同じ固定した初期状態の InitialPrepared、Program.ExternalWF、空の捕捉・ストア・継続で型付くソース計算、終端の注釈、閉性・適格性・BuiltinOnly を受け、その初期状態の StateTy を構成する。StateTy の σ.Valid は InitialPrepared.ready の入力から取り出し、PathEnv.Ready と ExternalWF は入力をそのまま返す。表層からこれらの入力を作る合成と外部応答の存在は結論に含めない。`prepared_unit_source` は空の外部宣言を持つ前述の具体表で、任意の有効な σ の下の return Unit について準備と元の型付けを同時に構成する。
 
 `StateLeaves.escape_let`・`escape_handler`・`escape_mark` は、任意の元状態と実際の escape の view、WellFormed・WellTyped・CoreAssumptions を受ける。escape の実値の型は元の戻り先 R から取り出す。let と handler を外すときの通常の結果注釈は元の継続枠から得ており、行先の型付けを仮定しない。let・mark の error/exit の pop は、元状態だけから残継続と同じストアを保持する。`ControlLeafInputs` はこの七遷移の実際のソース条件であり、`StateTyE.control_leaf` が Step・同じ σ/Eb の StateTyE・LocalStateInvariant を構成する。
@@ -1029,6 +1037,7 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 | PathFacts・PathConditions・MatchPaths・MatchFacts・MatchStateLeaves・MatchStateExamples・Typing・StateTyping | 「条件とパターンからの事実」 |
 | Typing・HandlerContracts・RuntimeSyntax・AtPrepare・AtTyping・BuiltinResponse・ConstraintAssumptions・BuiltinEffects・Semantics・Step・ExternalCheck・ExternalResponse・ExternalConnection | 「保持要求と組み込みの遷移」 |
 | StoreTransport・Typing・StateTyping・ConstraintAssumptions・ReferenceStore・LazyStore・HandlerStore・ReferencePreservation・LazyPreservation・HandlerEffects・HandlerPreservation・HandlerOperation・HandlerGeneral・RuntimeTypeSubst・OperationStateExamples・RuntimeBuilderScope・StoreGeneral・BuilderValueTyping・BuilderStateLeaves・ContinuationGeneral・HandlerStoreExamples・HiddenCaptureBoundary・CaptureReadBoundary・ReadLocalRefs・LocalInvariant・ClosedRename・StateLeaves・ReplyState・ExternalStateLeaves・AtStateInputs・AtStateLeaves・PathBasesLeaves・SourcePreparation・StoreReplyLeaves | 「篩を含む状態の型付け」 |
+| PreparationTargets・PathBasesTargets・AtTargets・ScopeLegacyContracts | 「篩を含む状態の型付け」 |
 
 以下の既存の表は Release などの対応である。
 

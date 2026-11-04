@@ -115,7 +115,7 @@ inductive Step (P : Program) (B : Builtins) (σ : PathEnv) : State → Option Ev
       (∀ ρ, snapshot = some ρ → ρ = σ) → checkAt snapshot kind pat target bound = .error detail →
       Step P B σ (.run q k μ) none
         (.run (Closure.pure (.ret (.con shape.error
-          [.scoped name kind (.fixed bound), q.capture.closeTy shape.errorType] [.atError detail]))) k μ)
+          [.scoped name kind (.fixed bound), q.capture.closeTy shape.errorType] [.atError (AtError.fromCheck (closeVal q.capture pattern) (closeVal q.capture input) snapshot pat target detail)]))) k μ)
   | E_AtPrepareError {q : Closure} {kind name shape bases pattern input index detail k μ} :
       q.code = .checkAt kind name shape bases pattern input index →
       AtPrepare B q.capture kind name bases pattern input index = .error detail →
