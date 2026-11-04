@@ -488,6 +488,7 @@ import Benitoite.Release.Refinement.StandardVariance
 import Benitoite.Release.Refinement.ApplicationInputs
 
 import Benitoite.Release.Refinement.CanonicalValues
+import Benitoite.Release.Refinement.ShapeTargets
 import Benitoite.Release.Refinement.CanonicalCells
 
 import Benitoite.Release.Refinement.ComputationInputs
@@ -784,3 +785,7 @@ import Benitoite.Release.Refinement.StandardIntegerFailure
 import Benitoite.Release.Refinement.IntervalFlowLeaves
 import Benitoite.Release.Refinement.FirstFailure
 import Benitoite.Release.Refinement.IntervalControlLeaves
+import Benitoite.Release.Refinement.EffectTargets
+import Benitoite.Release.Refinement.ModelConstraints
+import Benitoite.Release.Refinement.ScopeDeclarations
+import Benitoite.Release.Refinement.TargetModelConditions

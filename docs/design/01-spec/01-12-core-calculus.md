@@ -3276,6 +3276,20 @@ Lean の捕捉を持つ実行関係の `Step.E_Lam` は、`q.view = .app f ws`�
 
 `inv_externalRef` は元の外部宣言・宣言の WF・`ExternalCallAdmissible`・`SignatureInstance` と到達型の `fnCore`・`TelClosure` を返す。`inv_externalHandle` は同じ名目 ID の宣言・component・resource・型引数の個数・注釈と元の型からの `LeQ` を返す。`inv_pathBases` は同じ snapshot の Valid と PathBases からの `LeQ` を、`inv_scopePattern` は同じ範囲の WF・Canonical・FitsKind と ScopePattern からの `LeQ` を返す。保持値三形は既存の `HeldValues` の逆転を用い、同じ要求・groundVal・reqTarget・CheckedWitness を保持する。
 
+`ScopeCoverage` の `PathPattern.covers_atBase` は、任意の同じ起点の付加でパスパターンの被覆が保たれることを示す。`RangeExpr.Covers.mem` は、任意の同じ `σ` で内側の範囲の所属から外側の範囲の所属を導く。`SnapshotMem.mono` は、同じ snapshot の所属を被覆で拡大する。いずれも `σ.Valid` を前提にしない。
+
+`MembershipTargets` の `HasTypeVQ.target_member` は、空の型・値・経路条件の文脈での `HasTypeVQ P B Ψ Q [] [] [] v T`、`T.Holds o k (fixed r)`、`B.valKind o = some k`、`v.Adequate σ` から、同じ対象 `t` の射影と `r.Mem σ k t` を返す。ストア `Ψ` と `σ` は任意である。`canonical_held` が残す不透明型の定数は `ConstOK` と `valKind` の矛盾で排除し、保持値三形は範囲の被覆と snapshot の現在の所属で扱う。
+
+`ShapeTargets` の `Builtins.ShapeOk.single_target` は、`ShapeOk`、`sg.shape = single k p`、`NamesWF sg.names sg.params`、同じ呼出しの `BuiltinArgs`、全実引数の同じ `σ` への適格性を前提とする。結論は `rs = [r]`、`(ws[p]?).bind Val.target? = some t`、`r.Mem σ k t`、`sg.shapeAt ws = single k p` である。位置 `p` は任意であり、依存列の範囲具体化・型と行の代入・先行する値の代入を通して同じ対象位置を読む。`PrimSig.Scoped.namesWF` は宣言の形成の names 欄から前提を供給する。理由: `signatureTel` は名前と引数型を同時に読むので、元の型列との対応には名前と型の同数が必要である。
+
+`EffectTargets` の `Builtins.TargetAgreement.obs_allowed` は、同じ呼出しの `ShapeOk`、`TargetAgreement`、署名の lookup、IO 又は exit の分類、`NamesWF`、`BuiltinArgs`、全実引数の同じ `σ` への適格性、実際の IO 応答を前提とする。結論は、その署名の `opEff` にある同じ名前について、応答の全観測が具体化した実引数列の効果 `e` に許されることである。対象なしの形は観測が空であり、Top の形は同じ種類を保つ。単一の対象の形は、任意位置の保持対象の所属と同じ対象一つの観測から導く。`CoreAssumptions` は前提にしない。
+
+`ModelConstraints.sat` は `StandardKeyTyping.carrier` と有限宣言の `Release.satB` を使う。`admits` は型引数列の個数と各位置の制約を検査する。`sat_bind_values` と `admits_bind_values` は、型変数の像を変えない全ての置換で、型・列の制約の充足が同値であることを示す。篩の述語と値の番号、行の Fail の順序や長さを骨格の判定に使わない。
+
+`ScopeDeclarations.HasDeclarations` は有限一覧の構成子の lookup と、同じデータ名を持つ全構成子の `DataArity` を検査する。`HasFile` は Result と Scope.ScopeError、`HasHttp` はさらに Pair・Http.ClientRequest・Http.RequestCheckError の宣言を読む。Result と Pair は arity 2、残りは arity 0 である。要求の五欄と Result.Ok/Error の欄の型も同じ宣言と照合する。At は既存の内部の七 String 観測の宣言を読む。
+
+`TargetModelConditions` の `ModelScopeConditions P B` は、同じ P/B の既存の置換8条件、応答4条件、対象一致1条件、表12条件をまとめた証明の出力である。`ModelScopeConditions.core` は、この出力と既存の `ExternalAssumptions P B`、同じ表の `release_exists` から `CoreAssumptions P B` を構成する。対象一致の条件は別に取り出せる。この出力自体を主定理の新しい信頼条件にはしない。
+
 `CanonicalCells` の `inv_loc` は、任意の Γ・Φ の下で、同じ場所の ref 又は lazy の lookup、内容型の Declared、元の参照型又は Lazy 型からの `LeQ` を返す。`StoreOk.ref_cell`・`lazy_cell`・`cont_cell`・`builder_cell` は、同じ `StoreOk P B σ Ψ μ` と Ψ の場所の型を前提にする。ref は実際の val セル・内容型の正規形での型付け・Adequate を返す。lazy は thunk の `ClosureTy P B (hideBuilders Ψ) [] none q a Eff.empty` と Adequate、又は done の型付けと Adequate を返す。cont は保存した `EndsWithHandle`・`ContTy`、又は used を返す。builder は同じ種類の `BuilderCellOk` とセルの Adequate を返す。`reference_cell_inputs` は `canonical_ref` の内容型の正規形の等号を使い、同じ実セルの内容を到達型の正規形へ合わせる。Lazy の内容の移送は等号へ強めず `LeQ` のまま保持する。
 
 
