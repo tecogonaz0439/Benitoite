@@ -31,6 +31,7 @@
 - 2026-11-03: L20 の段末を受け入れる（[l20/stage-results.md](l20/stage-results.md)、[RV-L20.s](reviews/RV-L20.s.md)）。群 S の保持値の像（`closeVal Capture.empty (embedVal v)`）と、L20 の詳細化で見直しの対象とした判断を含む。義務の全体の閉鎖は、受け持つ後段がすべて閉じたときに判定する。
 - 2026-11-03: L30 の段末を受け入れる（[l30/stage-results.md](l30/stage-results.md)、[RV-L30.l](reviews/RV-L30.l.md)）。J30-2（型域の事実を型付けの判断と値の意味に入れる）、steps の規範を U03 の数え方と `StepAccounting` の契約とし `AccountingWork` を例示とする判断、L30 の見込みの増加を含む。義務の全体の閉鎖は、受け持つ後段がすべて閉じたときに判定する。
 - 2026-11-04: L40 の段末を受け入れる（[l40/stage-results.md](l40/stage-results.md)、[RV-L40.g](reviews/RV-L40.g.md)）。同表の「設計者の見直しの対象」（安全な入口19行の内部契約、E_Lam の前提の拡張、core の正常関係の精密な tel による検査、`%Map.replaceValues` の追加、演算子34行の算術 δ の追加、群 F2 の計画との差）と、L40 の見込みと実績を含む。安全な入口19行の公開名と字面は U02 で別に決める。義務の全体の閉鎖は、受け持つ後段がすべて閉じたときに判定する。
+- 2026-11-05: L50 の段末を受け入れる（[l50/stage-results.md](l50/stage-results.md)、[RV-L50.l](reviews/RV-L50.l.md)）。[l50/l/review-points.md](l50/l/review-points.md) の「設計者の見直しの対象」（`Step.E_AtError` の行先の値と `Val.atError` の引数の型を D61 の内部保存へ追随させたこと、δ を処理系に揃えて IPv4 射影形の IPv6 の URL を拒否したこと、F04・F05 の `NamesWF` の追加ほか、各群の計画との差）と、L50 の見込みと実績を含む。公開の PathBases・At・ScopeError の形は U02 で別に決める。義務の全体の閉鎖は、受け持つ後段がすべて閉じたときに判定する。
 
 ## 進め方
 
