@@ -164,6 +164,12 @@
 
 `ModelTargetsExamples` は空引数の全 BuiltinArgs と呼出しの型付けを構成し、専用の発行二遷移・同じ σ の事象の被覆・let から At の bases への受け渡しを証明する。AtPrepared.of_path_bases は分類・解析・閉じた bases・有効な σ・固定上限の形成から準備成功を構成する。issued_current は同じ snapshot の一致、issued_at は任意の At 入力の三場合の実 Step を返す。Ready の必要な起点は required_base の有限の到達から取り出し、全必要束縛を満たす環境と、必要な work が未束縛の状態を区別する。この実行列から計算全体の状態保存を推測しない。
 
+`ModelTargets.scopeConditions P hp` は HasFile P の下で、参照二行、純粋三行、範囲付き IO 六行、File.readText・print・exit、起点発行の十五署名の二十五条件を構成する。sig_scoped と sourceTelRows は全署名の形成と行支持を同じ宣言から供給し、sat は有限宣言と carrier による非空制約の判定を保つ。pure_response は全 BuiltinArgs から同じ実 δ の存在・型・Ground・AdequateResult・非 exit を返し、pure_outcome と normal_facts は同じ実結果と篩の事実へ接続する。
+
+同モデルの io_typed・io_kind・io_exists は九行の全応答と存在を構成する。ShapeOk は対象なし・topTargeted path・single path 0 の三形を扱う。File.readText は String 入力と Top の効果を持ち、引数を絶対形として解析できたときだけそのパス一つを観測し、相対形・home 形・解析の失敗では観測は空である。exit は val を返さない。targetAgreement と obs_allowed は、実表の ShapeOk と NamesWF、全実引数の同じ σ への適格性から全観測を同じ効果の上限へ結ぶ。PathBases の発行は同じ Environment の効果リストに登録し、IO 応答には含めない。File.Handle の通常資源の分類を保ち、external 三条件と release_exists は全 Core を構成する別の入力として残す。
+
+`ModelTargetsApplications` は、実表の File.readTextIn に非 Top と Top の全前提を供給する。File.readText・print・exit にも任意のストアと環境で全 BuiltinArgs を構成し、応答の存在・型・適格性・種類・観測の許容を同時に読む。File.readText の空でない Top の観測、exit の val の不在、絶対形のチェックの成功・相対形と home 形の Error、保持対象の射影と同じ値の拡大も照合する。全入力の充足は scopeConditions の定理が担い、これらの適用例から全体を推測しない。
+
 二つの response は全 BuiltinArgs について同じ具体 δ の応答存在・Outcome.Typed・Ground・AdequateResult・非 exit を証明する。P の有限宣言、valKind と valContent の等号は表から供給し、CoreAssumptions を未検査の前提として要求しない。要求の成功値の適格性は同じ実引数 req から得る。失敗の payload も、Scope の六構成子、RequestCheckError の二構成子、Result の Ok/Error の型引数位置を同じ P で型付けする。
 
 `InitialPrepared.source_state` は、同じ固定した初期状態の InitialPrepared、Program.ExternalWF、空の捕捉・ストア・継続で型付くソース計算、終端の注釈、閉性・適格性・BuiltinOnly を受け、その初期状態の StateTy を構成する。StateTy の σ.Valid は InitialPrepared.ready の入力から取り出し、PathEnv.Ready と ExternalWF は入力をそのまま返す。表層からこれらの入力を作る合成と外部応答の存在は結論に含めない。`prepared_unit_source` は空の外部宣言を持つ前述の具体表で、任意の有効な σ の下の return Unit について準備と元の型付けを同時に構成する。
@@ -1060,6 +1066,7 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 | ScopeDelta・RequestDelta・ScopeValueDelta・RequestValueDelta・ScopeResponse | 「篩を含む状態の型付け」。固定の解析を使うチェック、保持する絶対パス・同じ要求の射影、同じ値の拡大。AtInput の splitChars の全入力の帰納による文字列の往復と、受理した絶対パスの射影が元の文字列を返すこと。純粋六項目の全 BuiltinArgs と実応答の型・Ground・全有効環境への適格性・非 exit・同じ正常値の facts |
 | ScopedIOResponse・ScopedIOExamples | 同節。七 IO の全応答の型・適格性・存在・非 exit、同じ要求と endpoint、実表の対象一致と全環境の効果許容、非 Top・Top の全前提を供給する具体例 |
 | Model・ModelTargetsExamples | 同節。参照二行と起点発行一行から任意の P について構成する二十五条件、同じ制約による八保存則。空引数の型付き呼出し、専用発行二遷移と同じ σ の事象、At の全入力の三場合、必要束縛と Ready の受理・拒否。AtPrepared.of_path_bases による準備成功 |
+| ModelTargets・ModelTargetsApplications | 同節。十五署名の八保存則・宣言の形成・三形の ShapeOk・純粋三行・IO と exit の九行・同じ環境の対象条件と二十五条件。Top の読取りと通常資源の分類、実引数からの適用 |
 
 以下の既存の表は Release などの対応である。
 
