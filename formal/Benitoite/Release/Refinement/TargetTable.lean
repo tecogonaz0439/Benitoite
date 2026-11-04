@@ -24,4 +24,14 @@ theorem content_rows {name a} (h : valContent name = some a) : a.RowsIn (· < 0)
     trivial
   · cases h
 
+/-- 範囲を持つ標準の値型だけに対象の種類を登録する。 -/
+def valKind : OpaqueName → Option Scope.Domain.Kind
+  | "Scope.PathIn" => some .path
+  | "Http.RequestIn" => some .endpoint
+  | _ => none
+
+example : valKind "Scope.PathIn" = some .path ∧ valContent "Scope.PathIn" = none ∧
+    valKind "Http.RequestIn" = some .endpoint ∧
+    valContent "Http.RequestIn" = some clientRequestTy := ⟨rfl,rfl,rfl,rfl⟩
+
 end Benitoite.Release.Refinement.TargetTable

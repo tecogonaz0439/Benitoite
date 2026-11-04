@@ -148,6 +148,12 @@
 
 `ScopeLegacyContracts` は旧純粋 API の絶対パスの入口と、相対/home 入力・記号付き上限の拒否を定める。At はパターンの root と対象の cwd/home を別に解決し、同じ保持絶対対象を射影する。At と旧純粋チェックの空の効果を照合する。
 
+`ScopeDeclarations.program` は Result・Pair・要求・両 Error の同じ有限構成子表を持ち、`program_hasHttp` と `program_wellFormed` が全 lookup・arity・欄の形成を供給する。`ScopeSignatures` は13範囲 API と参照2行・発行1行の共通表、対象の分類・内容型・範囲の許容・効果リストを定める。`ScopeSignatureFormation` は HasHttp P から全16行の Scoped と依存列の行支持を構成する。IO の対象引数は opaque とし、ShapeOk の範囲変数・効果原子・対象位置を同じ表で照合する。発行の PathBasesShape の八欄も同じ Process.Environment の登録を使う。IO 応答は同じ lookup の io/exit の種類に限り、発行を含めない。
+
+`ScopeDelta` の純粋な絶対パスのチェックは parseAtInput と Checked.Scope.makePath、`RequestDelta` の要求のチェックは固定の Val.reqTarget と Checked.Scope.makeEndpoint を使う。要求の groundVal の検査後、固定の parseUrlShape で URL の形と、角括弧を除いたホストの綴り・実効ポートを得る。形の不正は固定の説明 INVALID_URL を持つ InvalidUrl、ホストの不正は元のホストと INVALID_HOST を持つ Scope(InvalidTarget) とする。parseUrlTarget は IPv4 射影形の IPv6 を対象の入口で拒否し、その場合の Scope(InvalidTarget) の理由は MAPPED_TARGET である。同じ入口を使う要求と At の endpoint 入力にもこの拒否を適用する。host・port の既存の検査順を保ち、OutsideScope の第2欄には元のホストの綴りを使う。動的な条件と絶対形の静的上限の両方に所属した成功だけが、同じ対象又は同じ req と端点を保持する。パスの相対形・home 形と解析失敗は同じ理由 PATH の InvalidTarget、パスのパターンの解析失敗は理由 PATH_PATTERN の InvalidPattern、要求のホスト条件の解析失敗は理由 ENDPOINT_PATTERN の Scope(InvalidPattern)、動的不所属は既存の ScopeError、静的不所属・記号付き上限の拒否は内部の staticIndex に写す。パスの木の字句 //** と、CIDR の prefix の前置の 0（長さ2以上）・長さ4以上は拒否する。内部の静的な拒否は元入力と解析済み入力を保存する。
+
+二つの response は全 BuiltinArgs について同じ具体 δ の応答存在・Outcome.Typed・Ground・AdequateResult・非 exit を証明する。P の有限宣言、valKind と valContent の等号は表から供給し、CoreAssumptions を未検査の前提として要求しない。要求の成功値の適格性は同じ実引数 req から得る。失敗の payload も、Scope の六構成子、RequestCheckError の二構成子、Result の Ok/Error の型引数位置を同じ P で型付けする。
+
 `InitialPrepared.source_state` は、同じ固定した初期状態の InitialPrepared、Program.ExternalWF、空の捕捉・ストア・継続で型付くソース計算、終端の注釈、閉性・適格性・BuiltinOnly を受け、その初期状態の StateTy を構成する。StateTy の σ.Valid は InitialPrepared.ready の入力から取り出し、PathEnv.Ready と ExternalWF は入力をそのまま返す。表層からこれらの入力を作る合成と外部応答の存在は結論に含めない。`prepared_unit_source` は空の外部宣言を持つ前述の具体表で、任意の有効な σ の下の return Unit について準備と元の型付けを同時に構成する。
 
 `StateLeaves.escape_let`・`escape_handler`・`escape_mark` は、任意の元状態と実際の escape の view、WellFormed・WellTyped・CoreAssumptions を受ける。escape の実値の型は元の戻り先 R から取り出す。let と handler を外すときの通常の結果注釈は元の継続枠から得ており、行先の型付けを仮定しない。let・mark の error/exit の pop は、元状態だけから残継続と同じストアを保持する。`ControlLeafInputs` はこの七遷移の実際のソース条件であり、`StateTyE.control_leaf` が Step・同じ σ/Eb の StateTyE・LocalStateInvariant を構成する。
@@ -962,6 +968,7 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 | EffectTargets | 同節。一原子の被覆から同じσ・名前・対象の許容を保存する。和・空・行・Topと全bindを扱い、範囲像は元の原子だけに適用し、行の像を再具体化しない。行像なしでも範囲の具体化を保ち、Failは対象を許さない。ShapeOk・TargetAgreement・NamesWF・同じ型付き呼出し・全実引数の適格性・実際の応答から全観測の許容を得て、被覆する効果へ渡す読者を含む。CoreAssumptionsを要求せず、Scopedから名前の形成を供給する |
 | ModelConstraints | 同節。carrierとsatBによる非空制約、同じ列長と各位置のadmits。型変数の像を変えない全置換でsatとadmitsの同値を証明し、値の改名・値置換・非空制約・型像の衝突・値依存の型/行像・Fail縮約の対照を含む |
 | ScopeDeclarations | 同節。有限構成子一覧のlookupと、同じデータ名の全構成子のarity。Result/Pairのarity 2とClientRequest等のarity 0、要求の五欄、Ok/Errorの型引数の位置を同じPで読む |
+| ScopeSignatures・ScopeSignatureFormation | 同節。共通16署名と同じ P の Scoped・行支持、効果の全登録、ShapeOk の三形と発行の八欄 |
 | TargetModelConditions | 同節。同じP/Bの既存25条件をまとめた証明の出力。既存のExternalAssumptionsとrelease_existsだけからCoreAssumptionsを構成し、TargetAgreementを別に保持する |
 | CanonicalCells | 同節の場所のref/lazyの直接二枝と、StoreOkからのval/thunk/done/cont/used/builderの実セル。固定σと同じΨを保ち、ref内容は正規形の等号、Lazy内容はLeQ、継続はEndsWithHandle/ContTyで読む。入力のStoreOkの存在とCellOkを逆転し、捕捉の全位置の不変条件を追加しない |
 | TelApplication | 「篩の正規形と制約の読み方」の反変入力のnarrowing、一引数の同じ実値を束縛するTransport、結果のLeQと潜在効果のCovers、二段のtail、fnのviewと正規化の代表。open_done/open_tail/open_twoは元文脈のWFを前提とし、二引数の代表では後続の型が最初の値に依存する。applyはCtx.WF・元列のAnnotation・TelClosure・実引数列を前提に、一般の列で同じ実引数の型付けと結果/効果の到達関係を返す |
@@ -1038,6 +1045,7 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 | Typing・HandlerContracts・RuntimeSyntax・AtPrepare・AtTyping・BuiltinResponse・ConstraintAssumptions・BuiltinEffects・Semantics・Step・ExternalCheck・ExternalResponse・ExternalConnection | 「保持要求と組み込みの遷移」 |
 | StoreTransport・Typing・StateTyping・ConstraintAssumptions・ReferenceStore・LazyStore・HandlerStore・ReferencePreservation・LazyPreservation・HandlerEffects・HandlerPreservation・HandlerOperation・HandlerGeneral・RuntimeTypeSubst・OperationStateExamples・RuntimeBuilderScope・StoreGeneral・BuilderValueTyping・BuilderStateLeaves・ContinuationGeneral・HandlerStoreExamples・HiddenCaptureBoundary・CaptureReadBoundary・ReadLocalRefs・LocalInvariant・ClosedRename・StateLeaves・ReplyState・ExternalStateLeaves・AtStateInputs・AtStateLeaves・PathBasesLeaves・SourcePreparation・StoreReplyLeaves | 「篩を含む状態の型付け」 |
 | PreparationTargets・PathBasesTargets・AtTargets・ScopeLegacyContracts | 「篩を含む状態の型付け」 |
+| ScopeDelta・RequestDelta | 「篩を含む状態の型付け」。固定の解析と既存の検査順を使う二つのチェック δ、全 BuiltinArgs の応答契約 |
 
 以下の既存の表は Release などの対応である。
 

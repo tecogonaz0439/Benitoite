@@ -156,15 +156,49 @@ private def parseAuthority (text : String) (defaultPort : Nat) : Option Target :
       match host with | .name _ => none | .ip _ => some (.endpoint ⟨host,port⟩)
     else some (.endpoint ⟨host,port⟩)
 
-def parseUrlTarget (s : String) : Option Target := do
+/-- URL の文字・scheme・authority を読み、ホストの妥当性とは分ける。 -/
+private def urlAuthority (s : String) : Option (String × Nat) := do
   if ¬ s.toList.all urlAlphabet ∨ ¬ validPercent s.toList then none
   else
     let (rest, port) ←
-      if s.startsWith "http://" then some (String.ofList (s.toList.drop 7), 80)
-      else if s.startsWith "https://" then some (String.ofList (s.toList.drop 8), 443)
+      if s.toLower.startsWith "http://" then some (String.ofList (s.toList.drop 7), 80)
+      else if s.toLower.startsWith "https://" then some (String.ofList (s.toList.drop 8), 443)
       else none
     let authority := String.ofList (rest.toList.takeWhile (fun c => c != '/' && c != '?' && c != '#'))
-    parseAuthority authority port
+    some (authority, port)
+
+/-- URL の形だけを検査し、角括弧を除いたホストの綴りと実効ポートを返す。 -/
+def parseUrlShape (s : String) : Option (String × Port) := do
+  let (authority, defaultPort) ← urlAuthority s
+  if authority.contains '@' then none else do
+    let (host, suffix) ←
+      if authority.startsWith "[" then
+        match splitText authority ']' with
+        | [h, suffix] => some (String.ofList (h.toList.drop 1), suffix)
+        | _ => none
+      else match splitText authority ':' with
+        | [h] => some (h, "")
+        | [h, p] => some (h, ":" ++ p)
+        | _ => none
+    if host.isEmpty then none else do
+      let port ← urlPort suffix defaultPort
+      some (host, port)
+
+/-- 射影形はパターンの数値代数を保ち、URL の対象の入口で拒否する。 -/
+def isIPv4MappedHost : HostTarget → Bool
+  | .ip ⟨.v6, bits⟩ => bits.val / 2^32 == 65535
+  | _ => false
+
+/-- 角括弧を除いた URL のホストが射影形かを、同じ IPv6 解析で判定する。 -/
+def urlHostMapped (host : String) : Bool :=
+  ((parseIPv6 host).map (fun ip => isIPv4MappedHost (.ip ip))).getD false
+
+def parseUrlTarget (s : String) : Option Target := do
+  let (authority, port) ← urlAuthority s
+  let target ← parseAuthority authority port
+  match target with
+  | .endpoint e => if isIPv4MappedHost e.host then none else some target
+  | _ => none
 
 def Val.reqTarget : Val → Option Target
   | .con "Http.ClientRequest" _ [_, .const (.string url), _, _, _] => parseUrlTarget url
@@ -173,46 +207,34 @@ def Val.reqTarget : Val → Option Target
 /-- HTTPS のループバック URL は、同じ IP と既定のポートを返す。 -/
 theorem parseUrlTarget_https_loopback : parseUrlTarget "https://127.0.0.1/" =
     some (.endpoint ⟨.ip (.v4 2130706433 (by decide)),⟨443,by decide⟩⟩) := by
-  simp +decide [parseUrlTarget,urlAlphabet,parseAuthority,parseHost,
+  have lower : "https://127.0.0.1/".toLower = "https://127.0.0.1/" := by decide +kernel
+  simp +decide [parseUrlTarget,urlAuthority,lower,urlAlphabet,parseAuthority,parseHost,isIPv4MappedHost,
     parseIPv4,splitText,splitChars,parseNatDec,urlPort,numericHost]
 
-private theorem parseAuthority_kind {s port t} (h : parseAuthority s port = some t) :
-    t.kind = .endpoint := by
-  unfold parseAuthority at h
-  split at h
-  · cases h
-  · split at h
-    · split at h
-      · obtain ⟨ip,_,hr⟩ := Option.bind_eq_some_iff.mp h
-        obtain ⟨port,_,he⟩ := Option.bind_eq_some_iff.mp hr
-        cases he
-        rfl
-      · cases h
-    · split at h
-      · obtain ⟨⟨hostText,suffix⟩,_,hr⟩ := Option.bind_eq_some_iff.mp h
-        obtain ⟨host,_,hr⟩ := Option.bind_eq_some_iff.mp hr
-        obtain ⟨port,_,hr⟩ := Option.bind_eq_some_iff.mp hr
-        split at hr
-        · cases host <;> cases hr <;> rfl
-        · cases hr; rfl
-      · obtain ⟨⟨hostText,suffix⟩,_,hr⟩ := Option.bind_eq_some_iff.mp h
-        obtain ⟨host,_,hr⟩ := Option.bind_eq_some_iff.mp hr
-        obtain ⟨port,_,hr⟩ := Option.bind_eq_some_iff.mp hr
-        split at hr
-        · cases host <;> cases hr <;> rfl
-        · cases hr; rfl
-      · cases h
+/-- 末尾の空ラベルを持つホストは URL の対象にならない。 -/
+theorem parseUrlTarget_trailing_dot : parseUrlTarget "https://example.com./" = none := by
+  have lower : "https://example.com./".toLower = "https://example.com./" := by decide +kernel
+  have hostLower : "example.com.".toLower = "example.com." := by decide +kernel
+  simp +decide [parseUrlTarget,urlAuthority,lower,urlAlphabet,parseAuthority,parseHost,
+    parseIPv4,splitText,splitChars,parseNatDec,urlPort,numericHost,hostLower,NameWordWF]
+
+/-- DNS 名の URL は元の名前を正規化した端点を返す。 -/
+theorem parseUrlTarget_example (secure : Bool) :
+    parseUrlTarget (if secure then "https://example.com/" else "http://example.com/") =
+      some (.endpoint ⟨.name ["example","com"],⟨if secure then 443 else 80,by cases secure <;> decide⟩⟩) := by
+  have lower₁ : "https://example.com/".toLower = "https://example.com/" := by decide +kernel
+  have lower₂ : "http://example.com/".toLower = "http://example.com/" := by decide +kernel
+  have hostLower : "example.com".toLower = "example.com" := by decide +kernel
+  cases secure <;>
+    simp +decide [parseUrlTarget,urlAuthority,lower₁,lower₂,urlAlphabet,parseAuthority,parseHost,
+      parseIPv4,splitText,splitChars,parseNatDec,urlPort,numericHost,hostLower,
+      NameWordWF,NameLabelWF,FourDigitLabels,isIPv4MappedHost]
 
 theorem parseUrlTarget_kind {s t} (h : parseUrlTarget s = some t) : t.kind = .endpoint := by
-  unfold parseUrlTarget at h
-  split at h
-  · cases h
-  · simp only [bind,Option.bind] at h
-    split at h
-    · exact parseAuthority_kind h
-    · split at h
-      · exact parseAuthority_kind h
-      · cases h
+  obtain ⟨⟨authority,port⟩,_,ht⟩ := Option.bind_eq_some_iff.mp h
+  obtain ⟨target,_,ht⟩ := Option.bind_eq_some_iff.mp ht
+  cases target <;> simp only at ht
+  all_goals first | cases ht | split at ht <;> cases ht <;> rfl
 
 theorem Val.reqTarget_kind {v : Val} {t : Target} (h : v.reqTarget = some t) : t.kind = .endpoint := by
   unfold Val.reqTarget at h
@@ -246,6 +268,25 @@ def parseAtInput (k : Kind) (v : Val) : Option TargetInput :=
     | .host => (parseHost s).map (fun h => .absolute (.host h))
     | .endpoint => (parseUrlTarget s).map TargetInput.absolute
   | _ => v.reqTarget.map TargetInput.absolute
+
+/-- ホストのループバック字句を、パターンの解析にも同じ対象として渡す。 -/
+theorem parseAtInput_host_loopback : parseAtInput .host (.const (.string "127.0.0.1")) =
+    some (.absolute (.host (.ip (.v4 2130706433 (by decide))))) := by
+  simp +decide [parseAtInput,parseHost,parseIPv4,splitText,splitChars,parseNatDec]
+
+/-- 空ラベルを持つホスト条件は対象の解析でも拒否する。 -/
+theorem parseAtInput_host_bad_pattern :
+    parseAtInput .host (.const (.string "bad..pattern")) = none := by
+  have lower : "bad..pattern".toLower = "bad..pattern" := by decide +kernel
+  simp +decide [parseAtInput,parseHost,parseIPv4,splitText,splitChars,lower,NameWordWF]
+
+/-- 完全一致のホスト条件に使う DNS 名を同じ解析で得る。 -/
+theorem parseAtInput_host_other_example :
+    parseAtInput .host (.const (.string "other.example")) =
+      some (.absolute (.host (.name ["other","example"]))) := by
+  have lower : "other.example".toLower = "other.example" := by decide +kernel
+  simp +decide [parseAtInput,parseHost,parseIPv4,splitText,splitChars,lower,
+    NameWordWF,NameLabelWF,FourDigitLabels]
 
 def parseAtPattern (k : Kind) : Val → Option RangeExpr
   | .scopePattern r => if r.FitsKind k ∧ r.WF ∧ r.Canonical then some r else none
