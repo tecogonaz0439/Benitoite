@@ -293,6 +293,8 @@ pure の行は既存の BuiltinArgs/Outcome.Typed/AdequateResult を全 ts/es/rs
 
 23の mapFrom の不変条件は `i + remaining.length = xs.length`、`acc.length=i`、acc の各値がU型、残りが元列の suffix、順序を保持することである。filterFrom は `acc.length≤i` と同じ suffix/要素型を使う。i は数学上の添字であり、現行の幅付き Integer の加算の正常性は、次へ進む実入力の条件と合わせて示す。有限列の数学的長さ全域を Integer64 に収める新しい仮定は足さない。length の正常返却はその返却値が表現可能な場合であり、表現外の実応答は Stop の枝である（D21/D23）。
 
+注（2026-11-04、L40.23 の停止の後の判断）: core の行の正常時の関係は、`Steps` 上の返却の関係ではなく、tel の結果と補助の引数の篩で表し、`Def.WellTyped` で検査する。上の不変条件のうち長さ・要素型は篩に置き、順序は L40 の Lean の義務から外して R40 の実行の検査で確かめる（plan.md「計画の変更と取りまとめへの確認点」の 2026-11-04 の項）。
+
 ### F07: H04 の二候補と所属
 
 解析の第一候補の署名は [L20 の受渡し](../l20/n/h04-handoff.lean)の先頭をそのまま使う。

@@ -1,0 +1,72 @@
+{
+  "start_utc": "2026-11-03T17:25:19+00:00",
+  "finish_utc": "2026-11-03T17:52:06.137035+00:00",
+  "seconds": 1607.137035,
+  "active_time": "外側時間。能動と待ちは分離していない",
+  "modules": [
+    "StandardSafeContracts",
+    "StandardSafeAnnotations",
+    "StandardSafeAccess",
+    "StandardSafeBodies",
+    "StandardSafeFieldGap",
+    "StandardSafeSlice"
+  ],
+  "sources": {
+    "formal/Benitoite/Release/Refinement/StandardSafeContracts.lean": {
+      "bytes": 6344,
+      "sha256": "69d561881e3f8cb5688fd71cc9730ccde8dcda0607a938014672deb4ec6f0d55"
+    },
+    "formal/Benitoite/Release/Refinement/StandardSafeAnnotations.lean": {
+      "bytes": 48983,
+      "sha256": "035d94ba856dee379f5bf0515a09101b630042967f04aa0236b5b0865c5d892d"
+    },
+    "formal/Benitoite/Release/Refinement/StandardSafeAccess.lean": {
+      "bytes": 8922,
+      "sha256": "a9ebb5eba6967c33b622b850519ae32136f7ec1c4a49a862439bc06a8c425104"
+    },
+    "formal/Benitoite/Release/Refinement/StandardSafeBodies.lean": {
+      "bytes": 32939,
+      "sha256": "e592d496b1a381f862bf6f89123d1268191c76a7ad9dff062492691c3b69b787"
+    },
+    "formal/Benitoite/Release/Refinement/StandardSafeFieldGap.lean": {
+      "bytes": 6054,
+      "sha256": "e51a5b3e8c000c9ca572d72b87f00673373d854c1460095bdc514c8c643aac21"
+    },
+    "formal/Benitoite/Release/Refinement/StandardSafeSlice.lean": {
+      "bytes": 22466,
+      "sha256": "3d97dca7b5379e59acfc940f6c09d73008970431e740c5e6f9b50572621592a6"
+    }
+  },
+  "default_build": "r1-u26-default03",
+  "local_verification": "r1-u26-sourceverify-final",
+  "procedure_deviations": 23,
+  "later_deviations": 0,
+  "safe_body_rows": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    15,
+    16,
+    17,
+    18
+  ],
+  "static_unproved_rows": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14
+  ],
+  "boundary_wait_rows": [
+    19
+  ],
+  "complete_whole_unit": false,
+  "whole_axiom_audit": "取りまとめ担当",
+  "writer_stopped": true
+}

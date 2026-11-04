@@ -1,5 +1,5 @@
 import Benitoite.Release.Refinement.Subst
-import Benitoite.Release.Refinement.PathFacts
+import Benitoite.Release.Refinement.FieldFacts
 import Benitoite.Release.Refinement.LocalResolve
 import Benitoite.Release.Refinement.Le
 import Benitoite.Release.Refinement.StoreTransport
@@ -436,22 +436,26 @@ mutual
       List Arm → Ty → Ty → Eff → (Δ : LocalCtx := []) → Prop where
     | nil {Ψ Q C Γ Φ Δ R obs a b ε} : Ty.Annotation P C Γ b →
         HasTypeArmsQ P B Ψ Q C Γ Φ R obs [] a b ε Δ
-    | plain {Ψ Q C Γ Φ Δ R obs alts body arms a b ε δ} : AltsTy P alts a δ →
+    | plain {Ψ Q C Γ Φ Δ R obs alts body arms a b ε δ links} : AltsTy P alts a δ →
+        LinksValid alts δ.length links →
+        FactsWF P C (bindParams Γ δ) (fieldFacts δ.length obs links) →
         FactsWF P C Γ (pathFacts obs (matchedTests alts ++ excludedTests alts)) →
         HasTypeCQ P B Ψ Q C (bindParams Γ δ)
-          (liftMany δ.length (pathFacts obs (matchedTests alts) ++ Φ))
+          (fieldFacts δ.length obs links ++ liftMany δ.length (pathFacts obs (matchedTests alts) ++ Φ))
           (R.map (Ty.shiftV δ.length 0)) body (b.shiftV δ.length 0) (ε.shiftV δ.length 0)
           (localExtend δ.length Δ) →
         HasTypeArmsQ P B Ψ Q C Γ (pathFacts obs (excludedTests alts) ++ Φ) R obs arms a b ε Δ →
         HasTypeArmsQ P B Ψ Q C Γ Φ R obs (.mk alts none body :: arms) a b ε Δ
-    | guarded {Ψ Q C Γ Φ Δ R obs alts guard body arms a b ε δ p} : AltsTy P alts a δ →
+    | guarded {Ψ Q C Γ Φ Δ R obs alts guard body arms a b ε δ p links} : AltsTy P alts a δ →
+        LinksValid alts δ.length links →
+        FactsWF P C (bindParams Γ δ) (fieldFacts δ.length obs links) →
         FactsWF P C Γ (pathFacts obs (matchedTests alts ++ excludedTests alts)) →
         Ty.Annotation P C (hideConts (bindParams Γ δ)) (.refined (.base .boolean) p) →
         HasTypeCQ P B Ψ Q C (hideConts (bindParams Γ δ))
-          (liftMany δ.length (pathFacts obs (matchedTests alts) ++ Φ))
+          (fieldFacts δ.length obs links ++ liftMany δ.length (pathFacts obs (matchedTests alts) ++ Φ))
           none guard (.refined (.base .boolean) p) Eff.empty (localExtend δ.length Δ) →
         HasTypeCQ P B Ψ Q C (bindParams Γ δ)
-          (p.open (.boolean true) :: liftMany δ.length (pathFacts obs (matchedTests alts) ++ Φ))
+          (p.open (.boolean true) :: (fieldFacts δ.length obs links ++ liftMany δ.length (pathFacts obs (matchedTests alts) ++ Φ)))
           (R.map (Ty.shiftV δ.length 0)) body (b.shiftV δ.length 0) (ε.shiftV δ.length 0)
           (localExtend δ.length Δ) →
         HasTypeArmsQ P B Ψ Q C Γ Φ R obs arms a b ε Δ →
@@ -545,6 +549,39 @@ theorem CaptureOk.empty (P : Program) (B : Builtins) (Ψ : StoreTy) (R : Option 
   · intro p hp; cases hp
 
 abbrev HasTypeTelArgs (P : Program) (B : Builtins) (Ψ : StoreTy) := HasTypeTelArgsQ P B Ψ Qempty
+
+/-- 欄の事実を使わない腕は空の経路列で導出できる。 -/
+theorem HasTypeArmsQ.plainEmpty {P B Ψ Q C Γ Φ Δ R obs alts body arms a b ε δ}
+    (hp : AltsTy P alts a δ)
+    (hw : FactsWF P C Γ (pathFacts obs (matchedTests alts ++ excludedTests alts)))
+    (hb : HasTypeCQ P B Ψ Q C (bindParams Γ δ)
+      (liftMany δ.length (pathFacts obs (matchedTests alts) ++ Φ))
+      (R.map (Ty.shiftV δ.length 0)) body (b.shiftV δ.length 0) (ε.shiftV δ.length 0)
+      (localExtend δ.length Δ))
+    (hs : HasTypeArmsQ P B Ψ Q C Γ (pathFacts obs (excludedTests alts) ++ Φ) R obs arms a b ε Δ) :
+    HasTypeArmsQ P B Ψ Q C Γ Φ R obs (.mk alts none body :: arms) a b ε Δ := by
+  apply HasTypeArmsQ.plain (links := []) hp (by intro l hl; cases hl) _ hw _ hs
+  · cases obs <;> intro p hp <;> cases hp
+  · cases obs <;> exact hb
+
+/-- guard と本体の双方で欄の事実を使わない腕。 -/
+theorem HasTypeArmsQ.guardedEmpty {P B Ψ Q C Γ Φ Δ R obs alts guard body arms a b ε δ p}
+    (hp : AltsTy P alts a δ)
+    (hw : FactsWF P C Γ (pathFacts obs (matchedTests alts ++ excludedTests alts)))
+    (ha : Ty.Annotation P C (hideConts (bindParams Γ δ)) (.refined (.base .boolean) p))
+    (hg : HasTypeCQ P B Ψ Q C (hideConts (bindParams Γ δ))
+      (liftMany δ.length (pathFacts obs (matchedTests alts) ++ Φ))
+      none guard (.refined (.base .boolean) p) Eff.empty (localExtend δ.length Δ))
+    (hb : HasTypeCQ P B Ψ Q C (bindParams Γ δ)
+      (p.open (.boolean true) :: liftMany δ.length (pathFacts obs (matchedTests alts) ++ Φ))
+      (R.map (Ty.shiftV δ.length 0)) body (b.shiftV δ.length 0) (ε.shiftV δ.length 0)
+      (localExtend δ.length Δ))
+    (hs : HasTypeArmsQ P B Ψ Q C Γ Φ R obs arms a b ε Δ) :
+    HasTypeArmsQ P B Ψ Q C Γ Φ R obs (.mk alts (some guard) body :: arms) a b ε Δ := by
+  apply HasTypeArmsQ.guarded (links := []) hp (by intro l hl; cases hl) _ hw ha _ _ hs
+  · cases obs <;> intro p hp <;> cases hp
+  · cases obs <;> exact hg
+  · cases obs <;> exact hb
 
 abbrev HasTypeV (P : Program) (B : Builtins) (Ψ : StoreTy) := HasTypeVQ P B Ψ Qempty
 abbrev HasTypeVs (P : Program) (B : Builtins) (Ψ : StoreTy) := HasTypeVsQ P B Ψ Qempty

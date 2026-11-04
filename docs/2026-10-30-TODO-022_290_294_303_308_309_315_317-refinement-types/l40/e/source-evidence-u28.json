@@ -1,0 +1,149 @@
+{
+  "captured_utc": "2026-11-03T19:19:52.837640+00:00",
+  "source_schema": "Declaredの型はstdlibの原宣言。既存api-numeric/api-collectionsに全328署名/制約/引数/効果/core呼先と本体を保持。",
+  "original_records": {
+    "sources.json": {
+      "bytes": 47868,
+      "sha256": "69ee574846c89345b2824bd34f42a8fc9d32385d1879162c1bad0474634550c1"
+    },
+    "api-numeric.json": {
+      "bytes": 71395,
+      "sha256": "80679f32d28b7725505257e9250db7bdc1431b3e70b9e2a920d8481f4f2e4416"
+    },
+    "api-collections.json": {
+      "bytes": 40145,
+      "sha256": "1bf7f1c9df23d9af0fc31b7f8d26b6dab2e64a534ae4a980995bf4e6aa204e05"
+    },
+    "api-connections-r1-u28.json": {
+      "bytes": 88310,
+      "sha256": "b7114a486136e5f8ac7fbbfe83b2975cdaf86925bbb2bec4813f9f68ed603a36"
+    },
+    "sources-r1-u28.json": {
+      "bytes": 93051,
+      "sha256": "0fa2e0653970712a490e5c8877dd52c735646afda2831994551c6357eca77494"
+    },
+    "relations-r1-u28.json": {
+      "bytes": 27654,
+      "sha256": "09571779fa0579c8290a8266f9552d35c90d024246a50c0ce27dd5e42fd9477f"
+    }
+  },
+  "new_modules": {
+    "StandardIntegerResponse": {
+      "bytes": 7918,
+      "sha256": "975a0b01895e3d1a038c710e3ccfdaef5c40eeb2a9f0c16eba5b53e63893231c"
+    },
+    "StandardIntegerAPI": {
+      "bytes": 38757,
+      "sha256": "f509826e7afe0dc564c9ae506323a972868746c741381d88ffd1d4484ac0f821"
+    },
+    "StandardConversionResponse": {
+      "bytes": 13305,
+      "sha256": "8815cc80cfba8085c55f838a9b35a3c16b4ff6276d12ad994c3caff7750f26f7"
+    },
+    "StandardScalarResponse": {
+      "bytes": 33104,
+      "sha256": "fdb5d8c1e1123a4489c18fc73b324acc0c6b9021726ce6f0ade857f78eaa71ef"
+    },
+    "StandardDecimalResponse": {
+      "bytes": 28128,
+      "sha256": "78be8a751ad918b8b29cce23812b59beebbbf67ccb7cf8e4dada0d8ac9a6701f"
+    },
+    "StandardListResponse": {
+      "bytes": 14716,
+      "sha256": "399093408e40385375a0c8efaeced93e9d0d7ecaa62c9738944edf9dc20009b3"
+    },
+    "StandardBytesResponse": {
+      "bytes": 15010,
+      "sha256": "b0657c1d7aca7f98d73fcd9adc1842fce687bb129a968cdb479bf386429f9430"
+    },
+    "StandardActualListBodies": {
+      "bytes": 25636,
+      "sha256": "b9441b3194c6e1d56c7a33f94c79a61368499f556ea1a6fb888abe6387f55a7d"
+    },
+    "StandardSignatureExamples": {
+      "bytes": 61743,
+      "sha256": "c6bde352a2d6a9c0ebd2d044c564a9b5c8bc9f97c82cb891fd5b885508353269"
+    },
+    "StandardArithmeticResponse": {
+      "bytes": 24849,
+      "sha256": "8db658b499b7d1d9d9012c91604ab0f6bb0e014b9caca5dac903e4b7e7ded148"
+    },
+    "StandardOrderResponse": {
+      "bytes": 39153,
+      "sha256": "4bf2729a8cd8a18d0072a7b1c8fc6771e94f1f80a75ea95b7412754f1fc6e4cb"
+    },
+    "StandardEqualityResponse": {
+      "bytes": 21850,
+      "sha256": "053ca3765e377445085e2a5e32585be41b24ea9c0c7e8678339cf6cd12b7b70c"
+    }
+  },
+  "actual_source_excerpts": [
+    {
+      "path": "crates/benitoite/src/builtins/table.rs",
+      "bytes": 57107,
+      "sha256": "4752f8d5c124f2abfbc2f00c9df728c4a6f007ce48184a5e0f12ebfc2568c8d0",
+      "excerpts": [
+        {
+          "start": 146,
+          "end": 151,
+          "text": "    /// `RoundingMode` の構成子（01-05「prelude が定める型」の順）\n    pub const ROUNDING_MODE_HALF_TO_EVEN: u32 = 0;\n    pub const ROUNDING_MODE_HALF_AWAY_FROM_ZERO: u32 = 1;\n    pub const ROUNDING_MODE_TOWARD_ZERO: u32 = 2;\n    pub const ROUNDING_MODE_TOWARD_NEGATIVE_INFINITY: u32 = 3;\n    pub const ROUNDING_MODE_TOWARD_POSITIVE_INFINITY: u32 = 4;"
+        },
+        {
+          "start": 190,
+          "end": 207,
+          "text": "/// 組み込みの表の項目の種類（設計書 02-06「コア IR」）。\n#[derive(Clone, Copy, PartialEq, Eq, Debug)]\npub enum EntryKind {\n    /// 標準ライブラリのソースで `@builtin` を付けて宣言した関数。型はソースの宣言が与える\n    Declared,\n    /// 組み込みのエフェクトの操作（権限は `Io`）。型はソースの操作の宣言が与える\n    EffectOp,\n    /// 演算子 `⊕_T`・`neg_T`（01-12）。`=` と `<>` は `Equality`\n    Operator {\n        op: OperatorKind,\n        operand: BuiltinTypeId,\n    },\n    /// `eq[T]`（`negated` が偽）と `ne[T]`（真）\n    Equality { negated: bool },\n    /// リストのパターンの内部の項目（02-06「判定の木への変換」）\n    ListPattern(ListPatternOp),\n    /// ソースに名前を持たない文字列補間の `str_T`\n    Interpolation { operand: BuiltinTypeId },"
+        },
+        {
+          "start": 975,
+          "end": 1055,
+          "text": "    );\n    let mut type_params = Vec::new();\n    let (params, ret) = match builtin_kind(id)? {\n        EntryKind::Declared | EntryKind::EffectOp => return None,\n        EntryKind::Operator { op, operand } => {\n            let ty = basic(operand);\n            let params = if op == OperatorKind::Neg {\n                vec![ty.clone()]\n            } else {\n                vec![ty.clone(), ty.clone()]\n            };\n            let ret = if matches!(\n                op,\n                OperatorKind::Lt | OperatorKind::Le | OperatorKind::Gt | OperatorKind::Ge\n            ) {\n                boolean\n            } else {\n                ty\n            };\n            (params, ret)\n        }\n        kind @ (EntryKind::Equality { .. } | EntryKind::ListPattern(_)) => {\n            type_params.push(TypeParamInfo {\n                name: \"T\".into(),\n                kind: ParamKind::Value,\n                builtin: if matches!(kind, EntryKind::Equality { .. }) {\n                    Some(BuiltinConstraint::Equality)\n                } else {\n                    None\n                },\n            });\n            match kind {\n                EntryKind::Equality { .. } => (vec![Ty::Param(0), Ty::Param(0)], boolean),\n                EntryKind::ListPattern(ListPatternOp::Length) => (vec![list], integer),\n                EntryKind::ListPattern(ListPatternOp::Get(_)) => {\n                    (vec![list, integer], Ty::Param(0))\n                }\n                EntryKind::ListPattern(ListPatternOp::Slice) => {\n                    (vec![list.clone(), integer.clone(), integer], list)\n                }\n                EntryKind::Declared\n                | EntryKind::EffectOp\n                | EntryKind::Operator { .. }\n                | EntryKind::Interpolation { .. }\n                | EntryKind::Format { .. } => return None,\n            }\n        }\n        EntryKind::Interpolation { operand } => (vec![basic(operand)], string),\n        EntryKind::Format { operand } => (\n            vec![\n                basic(operand),\n                integer.clone(),\n                integer.clone(),\n                integer.clone(),\n                boolean.clone(),\n                boolean,\n                integer.clone(),\n                integer,\n            ],\n            string,\n        ),\n    };\n    let param_names = match builtin_kind(id)? {\n        EntryKind::Operator {\n            op: OperatorKind::Neg,\n            ..\n        }\n        | EntryKind::Interpolation { .. } => vec![parameter_names::VALUE],\n        EntryKind::Operator { .. } | EntryKind::Equality { .. } => {\n            vec![parameter_names::LEFT, parameter_names::RIGHT]\n        }\n        EntryKind::ListPattern(ListPatternOp::Length) => vec![parameter_names::XS],\n        EntryKind::ListPattern(ListPatternOp::Get(_)) => {\n            vec![parameter_names::XS, parameter_names::INDEX]\n        }\n        EntryKind::ListPattern(ListPatternOp::Slice) => vec![\n            parameter_names::XS,\n            parameter_names::FRONT,\n            parameter_names::BACK,\n        ],\n        EntryKind::Format { .. } => vec!["
+        }
+      ]
+    },
+    {
+      "path": "crates/benitoite/src/base/parameter_names.rs",
+      "bytes": 752,
+      "sha256": "7636b3da5d9c740e60e6023a2dafa0bbbf68e7ae439c8f02f5c05bfdc54c56ac",
+      "excerpts": [
+        {
+          "start": 1,
+          "end": 10,
+          "text": "//! 処理系が補う関数の引数名（設計書 02-05「型とエフェクトの表現」「出力」）。\n\npub(crate) const VALUE: &str = \"value\";\npub(crate) const LEFT: &str = \"left\";\npub(crate) const RIGHT: &str = \"right\";\npub(crate) const XS: &str = \"xs\";\npub(crate) const INDEX: &str = \"index\";\npub(crate) const FRONT: &str = \"front\";\npub(crate) const BACK: &str = \"back\";\n"
+        }
+      ]
+    },
+    {
+      "path": "crates/benitoite/src/prelude/stdlib/Option.bnt",
+      "bytes": 2021,
+      "sha256": "970752808d5382cf7cc3d647dc097ab78cd87025dd2a31aa43213c61af643374",
+      "excerpts": [
+        {
+          "start": 10,
+          "end": 17,
+          "text": "\n/// A value that may be absent: `Option.Some(x)` holds `x`, and `Option.None` holds nothing.\npublic data Option[T]\n  Some(T)\n  None\nend data\n\n/// Applies `f` to the value inside `Option.Some`."
+        }
+      ]
+    },
+    {
+      "path": "crates/benitoite/src/prelude/stdlib/RoundingMode.bnt",
+      "bytes": 427,
+      "sha256": "bb694b26d4f66720c88898c18f674c43414f11d3b893f9ef37c8beb331127950",
+      "excerpts": [
+        {
+          "start": 1,
+          "end": 15,
+          "text": "//! Rounding directions for `Decimal.round`.\n\n/// How `Decimal.round` chooses the result.\npublic data RoundingMode\n  /// The nearest value; halves go to the value whose last digit is even.\n  HalfToEven\n  /// The nearest value; halves go away from zero.\n  HalfAwayFromZero\n  /// Toward zero.\n  TowardZero\n  /// Toward negative infinity.\n  TowardNegativeInfinity\n  /// Toward positive infinity.\n  TowardPositiveInfinity\nend data"
+        }
+      ]
+    }
+  ],
+  "outer_boundaries": [
+    "Decimal.fromFloatは同bits由来parsedの実供給が未接続。fromFloat_exitは任意parsedの再検査出口だけ。",
+    "Float全bit丸め/parseformat/Unicode全分類の元の外側境界を保持。",
+    "100行の全入力F06収集は独立未完。List.getの局所model内の実δの存在だけでは全入力契約を得ない。"
+  ],
+  "limits": [
+    "Rust登録スキーマ/ABI/鍵の実行全比較は未実施。必要範囲の原文読取りだけ。",
+    "全モデルCoreAssumptions/全API閉鎖/独立レビュー/受け入れは未完。"
+  ]
+}

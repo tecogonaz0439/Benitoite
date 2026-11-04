@@ -1,0 +1,16 @@
+[
+  {
+    "kind": "verification_retry",
+    "instruction": "群末のverify.pyを一度実行する",
+    "first": "r3-final-verify",
+    "first_exit": 1,
+    "reason": "今回の台本がmtimeだけで既存のLakeキャッシュを拒否した。既存ソースは開始時と同じSHA-256であり、既定ビルドと公理監査は成功している。",
+    "correction": "既存ソースのSHA-256の一致とoleanの存在、既定ビルドの成功を確認する。新モジュールだけmtimeも確認する。Leanや公開契約を変更しない。",
+    "retry": "r3-final-verify-retry",
+    "retry_exit": 0,
+    "build_repeated": false,
+    "axiom_audit_repeated": false,
+    "work_repeated": false,
+    "lean_command_deviations": 0
+  }
+]

@@ -1,0 +1,126 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-M",
+    "12288",
+    "<tmp>/audit-input-r6.lean"
+  ],
+  "start_utc": "2026-11-04T01:54:28.607119+00:00",
+  "end_utc": "2026-11-04T01:54:54.674631+00:00",
+  "seconds": 26.067512273788452,
+  "timing_source": "台本の書出しと最終出力のmtime（近似）",
+  "exit": 0,
+  "raw": {
+    "bytes": 16185330,
+    "sha256": "8dba8141cd97276b03fa488673ab0f18621f48bcd94d1717d0978f168c5e7188"
+  },
+  "audit_input": {
+    "bytes": 23949,
+    "sha256": "2d8decb7b9b67419018bbc7cb55c519c54e74e57f9e2b8906c33bcd6007be9bd"
+  },
+  "audit_script_at_execution": {
+    "bytes": 5465,
+    "sha256": "3f813d783c6b07dd17df4d1fd57a7665d1a0d7d0a85c2e56de87950ab832e09c"
+  },
+  "targets": 78534,
+  "target_list": {
+    "bytes": 5119695,
+    "sha256": "dbacc4afa7ebcc18e2ad6acadaa14932f7d53f1c36e68eaec21f6343c11f40b1"
+  },
+  "module_count": 987,
+  "module_parts": [
+    {
+      "file": "audit-modules-r6-part-01.json",
+      "bytes": 13776,
+      "sha256": "131db9d21f4d370c3998b0655a16c72fd4d40b3b2eb994e2d87b25348e7ab81d"
+    },
+    {
+      "file": "audit-modules-r6-part-02.json",
+      "bytes": 17597,
+      "sha256": "cd9c54eab5651bbee7237992686539b9ea6bb64340619f417a58c358bacee4e6"
+    },
+    {
+      "file": "audit-modules-r6-part-03.json",
+      "bytes": 17648,
+      "sha256": "adcd3427cb77dfd05441db2a51e5fe8779d61c6590a968356bb42f0bcc6b7ccb"
+    },
+    {
+      "file": "audit-modules-r6-part-04.json",
+      "bytes": 3779,
+      "sha256": "a497153cf4d66d0ddf3067db97b98571d66bd9c5d11f32cfb6f01efe7aadc858"
+    }
+  ],
+  "closure_rounds": 2,
+  "private_and_generated_included": true,
+  "new_axioms": 0,
+  "axiom_sets": {
+    "none": 36577,
+    "Classical.choice": 1,
+    "Classical.choice + Quot.sound + propext": 19608,
+    "Classical.choice + propext": 2,
+    "Quot.sound": 9,
+    "Quot.sound + propext": 3819,
+    "propext": 18518
+  },
+  "new_modules": {
+    "FieldFacts": 114,
+    "StandardCollectionPrecision": 58,
+    "StandardCollectionRefinedBodies": 247,
+    "StandardHeadTailBodies": 215,
+    "StandardHeadTailContracts": 47,
+    "StandardHeadTailResponse": 33,
+    "StandardMapHigherPrecisionGap": 219,
+    "StandardMapReplaceValues": 79
+  },
+  "requested_module_declarations": 11103,
+  "requested_module_parts": [
+    {
+      "file": "audit-requested-r6-part-01.json",
+      "bytes": 23137,
+      "sha256": "d23b495a12f2be4d41b2eff0a8ad7961f043b5fa65aa705e0cd671a8a6d72455"
+    },
+    {
+      "file": "audit-requested-r6-part-02.json",
+      "bytes": 24278,
+      "sha256": "fd7b945320682e863ae5cd9104182d10f8d379e8734c658903e373695b3ec982"
+    },
+    {
+      "file": "audit-requested-r6-part-03.json",
+      "bytes": 24332,
+      "sha256": "46ca021d6976933c3b62ee4f74b7d6368ca96f3ca9495ab97878fa9c26080985"
+    },
+    {
+      "file": "audit-requested-r6-part-04.json",
+      "bytes": 22733,
+      "sha256": "6adc1760c98fb11cba4ba046a2731b506493ec6980b459debc840cda9d6c7ad6"
+    }
+  ],
+  "source_input_parts": [
+    {
+      "file": "audit-source-inputs-r6-part-01.json",
+      "bytes": 17768,
+      "sha256": "d40b912607b53d7c9c8d9576c83691502c496def92024827c92a5e9912f2ecb5"
+    },
+    {
+      "file": "audit-source-inputs-r6-part-02.json",
+      "bytes": 18333,
+      "sha256": "5e3aaf89bffa1f228171cbee24e088f63fbe60b2af5572126a803f4bd060addd"
+    },
+    {
+      "file": "audit-source-inputs-r6-part-03.json",
+      "bytes": 17612,
+      "sha256": "15b1d749b2cfc028a7dc5158a169a65efb6aa05644ad9cdc04d1ebb7d4cd8eaf"
+    }
+  ],
+  "collection_from_completed_execution": true,
+  "audit_script": {
+    "bytes": 6451,
+    "sha256": "38e1c13ece2473f0803f1646dc316282e4a6866ce976c0b8403e7dbbb5449618"
+  },
+  "audit_template": {
+    "bytes": 6190,
+    "sha256": "9e4f42b041f225bca25d747cde5a364669e7870c63a09b47fc93d1c4bc396d0a"
+  }
+}

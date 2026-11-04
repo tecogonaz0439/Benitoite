@@ -1,0 +1,470 @@
+{
+  "count": 93,
+  "rows": [
+    {
+      "api": "Byte.toString",
+      "source_signature": "public function toString(b: Byte) -> String",
+      "lean_signature": "StandardByteStringResponse.signature"
+    },
+    {
+      "api": "Character.toString",
+      "source_signature": "public function toString(c: Character) -> String",
+      "lean_signature": "StandardCharacterResponse.API.signature .toString"
+    },
+    {
+      "api": "Character.isASCIIDigit",
+      "source_signature": "public function isASCIIDigit(c: Character) -> Boolean",
+      "lean_signature": "StandardCharacterResponse.API.signature .isASCIIDigit"
+    },
+    {
+      "api": "Character.isASCIIWhitespace",
+      "source_signature": "public function isASCIIWhitespace(c: Character) -> Boolean",
+      "lean_signature": "StandardCharacterResponse.API.signature .isASCIIWhitespace"
+    },
+    {
+      "api": "Character.isAlphabetic",
+      "source_signature": "public function isAlphabetic(c: Character) -> Boolean",
+      "lean_signature": "StandardCharacterResponse.API.signature .isAlphabetic"
+    },
+    {
+      "api": "Character.isNumeric",
+      "source_signature": "public function isNumeric(c: Character) -> Boolean",
+      "lean_signature": "StandardCharacterResponse.API.signature .isNumeric"
+    },
+    {
+      "api": "Character.isWhitespace",
+      "source_signature": "public function isWhitespace(c: Character) -> Boolean",
+      "lean_signature": "StandardCharacterResponse.API.signature .isWhitespace"
+    },
+    {
+      "api": "Character.isUppercase",
+      "source_signature": "public function isUppercase(c: Character) -> Boolean",
+      "lean_signature": "StandardCharacterResponse.API.signature .isUppercase"
+    },
+    {
+      "api": "Character.isLowercase",
+      "source_signature": "public function isLowercase(c: Character) -> Boolean",
+      "lean_signature": "StandardCharacterResponse.API.signature .isLowercase"
+    },
+    {
+      "api": "Character.toUppercase",
+      "source_signature": "public function toUppercase(c: Character) -> String",
+      "lean_signature": "StandardCharacterResponse.API.signature .toUppercase"
+    },
+    {
+      "api": "Character.toLowercase",
+      "source_signature": "public function toLowercase(c: Character) -> String",
+      "lean_signature": "StandardCharacterResponse.API.signature .toLowercase"
+    },
+    {
+      "api": "Float.toString",
+      "source_signature": "public function toString(x: Float) -> String",
+      "lean_signature": "StandardNumericRemainingResponse.API.signature .Float_toString"
+    },
+    {
+      "api": "Float.parse",
+      "source_signature": "public function parse(s: String) -> Option[Float]",
+      "lean_signature": "StandardNumericRemainingResponse.API.signature .Float_parse"
+    },
+    {
+      "api": "Float.truncate",
+      "source_signature": "public function truncate(x: Float) -> Option[Integer]",
+      "lean_signature": "StandardFloatMathResponse.signature false .truncate"
+    },
+    {
+      "api": "Float.absolute",
+      "source_signature": "public function absolute(x: Float) -> Float",
+      "lean_signature": "StandardFloatMathResponse.signature false .absolute"
+    },
+    {
+      "api": "Float.floor",
+      "source_signature": "public function floor(x: Float) -> Float",
+      "lean_signature": "StandardFloatMathResponse.signature false .floor"
+    },
+    {
+      "api": "Float.ceiling",
+      "source_signature": "public function ceiling(x: Float) -> Float",
+      "lean_signature": "StandardFloatMathResponse.signature false .ceiling"
+    },
+    {
+      "api": "Float.round",
+      "source_signature": "public function round(x: Float) -> Float",
+      "lean_signature": "StandardFloatMathResponse.signature false .round"
+    },
+    {
+      "api": "Float.squareRoot",
+      "source_signature": "public function squareRoot(x: Float) -> Float",
+      "lean_signature": "StandardFloatMathResponse.signature false .squareRoot"
+    },
+    {
+      "api": "Float32.fromFloat",
+      "source_signature": "public function fromFloat(n: Float) -> Option[Float32]",
+      "lean_signature": "StandardNumericRemainingResponse.API.signature .Float32_fromFloat"
+    },
+    {
+      "api": "Float32.toFloat",
+      "source_signature": "public function toFloat(n: Float32) -> Float",
+      "lean_signature": "StandardNumericRemainingResponse.API.signature .Float32_toFloat"
+    },
+    {
+      "api": "Float32.parse",
+      "source_signature": "public function parse(s: String) -> Option[Float32]",
+      "lean_signature": "StandardNumericRemainingResponse.API.signature .Float32_parse"
+    },
+    {
+      "api": "Float32.toString",
+      "source_signature": "public function toString(n: Float32) -> String",
+      "lean_signature": "StandardNumericRemainingResponse.API.signature .Float32_toString"
+    },
+    {
+      "api": "Float32.truncate",
+      "source_signature": "public function truncate(n: Float32) -> Option[Integer]",
+      "lean_signature": "StandardFloatMathResponse.signature true .truncate"
+    },
+    {
+      "api": "Float32.absolute",
+      "source_signature": "public function absolute(n: Float32) -> Float32",
+      "lean_signature": "StandardFloatMathResponse.signature true .absolute"
+    },
+    {
+      "api": "Float32.floor",
+      "source_signature": "public function floor(n: Float32) -> Float32",
+      "lean_signature": "StandardFloatMathResponse.signature true .floor"
+    },
+    {
+      "api": "Float32.ceiling",
+      "source_signature": "public function ceiling(n: Float32) -> Float32",
+      "lean_signature": "StandardFloatMathResponse.signature true .ceiling"
+    },
+    {
+      "api": "Float32.round",
+      "source_signature": "public function round(n: Float32) -> Float32",
+      "lean_signature": "StandardFloatMathResponse.signature true .round"
+    },
+    {
+      "api": "Float32.squareRoot",
+      "source_signature": "public function squareRoot(n: Float32) -> Float32",
+      "lean_signature": "StandardFloatMathResponse.signature true .squareRoot"
+    },
+    {
+      "api": "Decimal.toFloat",
+      "source_signature": "public function toFloat(x: Decimal) -> Float",
+      "lean_signature": "StandardNumericRemainingResponse.API.signature .Decimal_toFloat"
+    },
+    {
+      "api": "Decimal.fromFloat",
+      "source_signature": "public function fromFloat(x: Float) -> Option[Decimal]",
+      "lean_signature": "StandardNumericRemainingResponse.API.signature .Decimal_fromFloat"
+    },
+    {
+      "api": "Decimal.toString",
+      "source_signature": "public function toString(x: Decimal) -> String",
+      "lean_signature": "StandardNumericRemainingResponse.API.signature .Decimal_toString"
+    },
+    {
+      "api": "Decimal.parse",
+      "source_signature": "public function parse(s: String) -> Option[Decimal]",
+      "lean_signature": "StandardNumericRemainingResponse.API.signature .Decimal_parse"
+    },
+    {
+      "api": "Integer.toString",
+      "source_signature": "public function toString(n: Integer) -> String",
+      "lean_signature": "StandardIntegerTextResponse.signature .integer64 .toString"
+    },
+    {
+      "api": "Integer.parse",
+      "source_signature": "public function parse(s: String) -> Option[Integer]",
+      "lean_signature": "StandardIntegerTextResponse.signature .integer64 .parse"
+    },
+    {
+      "api": "Integer.toFloat",
+      "source_signature": "public function toFloat(n: Integer) -> Float",
+      "lean_signature": "StandardIntegerTextResponse.signature .integer64 .toFloat"
+    },
+    {
+      "api": "Integer8.parse",
+      "source_signature": "public function parse(s: String) -> Option[Integer8]",
+      "lean_signature": "StandardIntegerTextResponse.signature .integer8 .parse"
+    },
+    {
+      "api": "Integer8.toString",
+      "source_signature": "public function toString(n: Integer8) -> String",
+      "lean_signature": "StandardIntegerTextResponse.signature .integer8 .toString"
+    },
+    {
+      "api": "Integer8.toFloat",
+      "source_signature": "public function toFloat(n: Integer8) -> Float",
+      "lean_signature": "StandardIntegerTextResponse.signature .integer8 .toFloat"
+    },
+    {
+      "api": "Integer16.parse",
+      "source_signature": "public function parse(s: String) -> Option[Integer16]",
+      "lean_signature": "StandardIntegerTextResponse.signature .integer16 .parse"
+    },
+    {
+      "api": "Integer16.toString",
+      "source_signature": "public function toString(n: Integer16) -> String",
+      "lean_signature": "StandardIntegerTextResponse.signature .integer16 .toString"
+    },
+    {
+      "api": "Integer16.toFloat",
+      "source_signature": "public function toFloat(n: Integer16) -> Float",
+      "lean_signature": "StandardIntegerTextResponse.signature .integer16 .toFloat"
+    },
+    {
+      "api": "Integer32.parse",
+      "source_signature": "public function parse(s: String) -> Option[Integer32]",
+      "lean_signature": "StandardIntegerTextResponse.signature .integer32 .parse"
+    },
+    {
+      "api": "Integer32.toString",
+      "source_signature": "public function toString(n: Integer32) -> String",
+      "lean_signature": "StandardIntegerTextResponse.signature .integer32 .toString"
+    },
+    {
+      "api": "Integer32.toFloat",
+      "source_signature": "public function toFloat(n: Integer32) -> Float",
+      "lean_signature": "StandardIntegerTextResponse.signature .integer32 .toFloat"
+    },
+    {
+      "api": "UnsignedInteger16.parse",
+      "source_signature": "public function parse(s: String) -> Option[UnsignedInteger16]",
+      "lean_signature": "StandardIntegerTextResponse.signature .unsignedInteger16 .parse"
+    },
+    {
+      "api": "UnsignedInteger16.toString",
+      "source_signature": "public function toString(n: UnsignedInteger16) -> String",
+      "lean_signature": "StandardIntegerTextResponse.signature .unsignedInteger16 .toString"
+    },
+    {
+      "api": "UnsignedInteger16.toFloat",
+      "source_signature": "public function toFloat(n: UnsignedInteger16) -> Float",
+      "lean_signature": "StandardIntegerTextResponse.signature .unsignedInteger16 .toFloat"
+    },
+    {
+      "api": "UnsignedInteger32.parse",
+      "source_signature": "public function parse(s: String) -> Option[UnsignedInteger32]",
+      "lean_signature": "StandardIntegerTextResponse.signature .unsignedInteger32 .parse"
+    },
+    {
+      "api": "UnsignedInteger32.toString",
+      "source_signature": "public function toString(n: UnsignedInteger32) -> String",
+      "lean_signature": "StandardIntegerTextResponse.signature .unsignedInteger32 .toString"
+    },
+    {
+      "api": "UnsignedInteger32.toFloat",
+      "source_signature": "public function toFloat(n: UnsignedInteger32) -> Float",
+      "lean_signature": "StandardIntegerTextResponse.signature .unsignedInteger32 .toFloat"
+    },
+    {
+      "api": "UnsignedInteger64.parse",
+      "source_signature": "public function parse(s: String) -> Option[UnsignedInteger64]",
+      "lean_signature": "StandardIntegerTextResponse.signature .unsignedInteger64 .parse"
+    },
+    {
+      "api": "UnsignedInteger64.toString",
+      "source_signature": "public function toString(n: UnsignedInteger64) -> String",
+      "lean_signature": "StandardIntegerTextResponse.signature .unsignedInteger64 .toString"
+    },
+    {
+      "api": "UnsignedInteger64.toFloat",
+      "source_signature": "public function toFloat(n: UnsignedInteger64) -> Float",
+      "lean_signature": "StandardIntegerTextResponse.signature .unsignedInteger64 .toFloat"
+    },
+    {
+      "api": "String.byteSlice",
+      "source_signature": "public function byteSlice(s: String, start: Integer, stop: Integer) -> Option[String]",
+      "lean_signature": "StandardStringOrdinaryResponse.API.signature .byteSlice"
+    },
+    {
+      "api": "String.characterAt",
+      "source_signature": "public function characterAt(s: String, i: Integer) -> Option[Character]",
+      "lean_signature": "StandardStringOrdinaryResponse.API.signature .characterAt"
+    },
+    {
+      "api": "String.characterSlice",
+      "source_signature": "public function characterSlice(s: String, start: Integer, stop: Integer) -> Option[String]",
+      "lean_signature": "StandardStringOrdinaryResponse.API.signature .characterSlice"
+    },
+    {
+      "api": "String.isEmpty",
+      "source_signature": "public function isEmpty(s: String) -> Boolean",
+      "lean_signature": "StandardStringOrdinaryResponse.API.signature .isEmpty"
+    },
+    {
+      "api": "String.contains",
+      "source_signature": "public function contains(s: String, part: String) -> Boolean",
+      "lean_signature": "StandardStringOrdinaryResponse.API.signature .contains"
+    },
+    {
+      "api": "String.startsWith",
+      "source_signature": "public function startsWith(s: String, prefix: String) -> Boolean",
+      "lean_signature": "StandardStringOrdinaryResponse.API.signature .startsWith"
+    },
+    {
+      "api": "String.endsWith",
+      "source_signature": "public function endsWith(s: String, suffix: String) -> Boolean",
+      "lean_signature": "StandardStringOrdinaryResponse.API.signature .endsWith"
+    },
+    {
+      "api": "String.byteIndexOf",
+      "source_signature": "public function byteIndexOf(s: String, part: String) -> Option[Integer]",
+      "lean_signature": "StandardStringOrdinaryResponse.API.signature .byteIndexOf"
+    },
+    {
+      "api": "String.split",
+      "source_signature": "public function split(s: String, separator: String) -> List[String]",
+      "lean_signature": "StandardStringOrdinaryResponse.API.signature .split"
+    },
+    {
+      "api": "String.lines",
+      "source_signature": "public function lines(s: String) -> List[String]",
+      "lean_signature": "StandardStringOrdinaryResponse.API.signature .lines"
+    },
+    {
+      "api": "String.join",
+      "source_signature": "public function join(xs: List[String], separator: String) -> String",
+      "lean_signature": "StandardStringOrdinaryResponse.API.signature .join"
+    },
+    {
+      "api": "String.trim",
+      "source_signature": "public function trim(s: String) -> String",
+      "lean_signature": "StandardStringOrdinaryResponse.API.signature .trim"
+    },
+    {
+      "api": "String.replace",
+      "source_signature": "public function replace(s: String, old: String, new: String) -> String",
+      "lean_signature": "StandardStringOrdinaryResponse.API.signature .replace"
+    },
+    {
+      "api": "String.repeat",
+      "source_signature": "public function repeat(s: String, n: Integer) -> String",
+      "lean_signature": "StandardStringOrdinaryResponse.API.signature .repeat"
+    },
+    {
+      "api": "String.characters",
+      "source_signature": "public function characters(s: String) -> List[Character]",
+      "lean_signature": "StandardStringOrdinaryResponse.API.signature .characters"
+    },
+    {
+      "api": "String.fromCharacters",
+      "source_signature": "public function fromCharacters(cs: List[Character]) -> String",
+      "lean_signature": "StandardStringOrdinaryResponse.API.signature .fromCharacters"
+    },
+    {
+      "api": "String.toUppercase",
+      "source_signature": "public function toUppercase(s: String) -> String",
+      "lean_signature": "StandardStringOrdinaryResponse.API.signature .toUppercase"
+    },
+    {
+      "api": "String.toLowercase",
+      "source_signature": "public function toLowercase(s: String) -> String",
+      "lean_signature": "StandardStringOrdinaryResponse.API.signature .toLowercase"
+    },
+    {
+      "api": "String.toUTF8",
+      "source_signature": "public function toUTF8(s: String) -> Bytes",
+      "lean_signature": "StandardStringOrdinaryResponse.API.signature .toUTF8"
+    },
+    {
+      "api": "String.fromUTF8",
+      "source_signature": "public function fromUTF8(b: Bytes) -> Option[String]",
+      "lean_signature": "StandardStringOrdinaryResponse.API.signature .fromUTF8"
+    },
+    {
+      "api": "String.displayWidth",
+      "source_signature": "public function displayWidth(s: String) -> Integer",
+      "lean_signature": "StandardStringOrdinaryResponse.API.signature .displayWidth"
+    },
+    {
+      "api": "String.displayWidthCJK",
+      "source_signature": "public function displayWidthCJK(s: String) -> Integer",
+      "lean_signature": "StandardStringOrdinaryResponse.API.signature .displayWidthCJK"
+    },
+    {
+      "api": "String.displayWidthPadStart",
+      "source_signature": "public function displayWidthPadStart(s: String, width: Integer) -> String",
+      "lean_signature": "StandardStringOrdinaryResponse.API.signature .displayWidthPadStart"
+    },
+    {
+      "api": "String.displayWidthPadEnd",
+      "source_signature": "public function displayWidthPadEnd(s: String, width: Integer) -> String",
+      "lean_signature": "StandardStringOrdinaryResponse.API.signature .displayWidthPadEnd"
+    },
+    {
+      "api": "String.displayWidthPadStartCJK",
+      "source_signature": "public function displayWidthPadStartCJK(s: String, width: Integer) -> String",
+      "lean_signature": "StandardStringOrdinaryResponse.API.signature .displayWidthPadStartCJK"
+    },
+    {
+      "api": "String.displayWidthPadEndCJK",
+      "source_signature": "public function displayWidthPadEndCJK(s: String, width: Integer) -> String",
+      "lean_signature": "StandardStringOrdinaryResponse.API.signature .displayWidthPadEndCJK"
+    },
+    {
+      "api": "Bytes.empty",
+      "source_signature": "public function empty() -> Bytes",
+      "lean_signature": "StandardBytesOrdinaryResponse.API.signature .empty"
+    },
+    {
+      "api": "Bytes.fromIntegers",
+      "source_signature": "public function fromIntegers(ns: List[Integer]) -> Option[Bytes]",
+      "lean_signature": "StandardBytesOrdinaryResponse.API.signature .fromIntegers"
+    },
+    {
+      "api": "Bytes.fromHex",
+      "source_signature": "public function fromHex(s: String) -> Option[Bytes]",
+      "lean_signature": "StandardBytesOrdinaryResponse.API.signature .fromHex"
+    },
+    {
+      "api": "Bytes.fromBinary",
+      "source_signature": "public function fromBinary(s: String) -> Option[Bytes]",
+      "lean_signature": "StandardBytesOrdinaryResponse.API.signature .fromBinary"
+    },
+    {
+      "api": "Bytes.toHex",
+      "source_signature": "public function toHex(b: Bytes) -> String",
+      "lean_signature": "StandardBytesOrdinaryResponse.API.signature .toHex"
+    },
+    {
+      "api": "Bytes.toBinary",
+      "source_signature": "public function toBinary(b: Bytes) -> String",
+      "lean_signature": "StandardBytesOrdinaryResponse.API.signature .toBinary"
+    },
+    {
+      "api": "Bytes.get",
+      "source_signature": "public function get(b: Bytes, i: Integer) -> Option[Byte]",
+      "lean_signature": "StandardBytesOrdinaryResponse.API.signature .get"
+    },
+    {
+      "api": "Bytes.slice",
+      "source_signature": "public function slice(b: Bytes, start: Integer, stop: Integer) -> Option[Bytes]",
+      "lean_signature": "StandardBytesOrdinaryResponse.API.signature .slice"
+    },
+    {
+      "api": "Bytes.concatenate",
+      "source_signature": "public function concatenate(a: Bytes, b: Bytes) -> Bytes",
+      "lean_signature": "StandardBytesOrdinaryResponse.API.signature .concatenate"
+    },
+    {
+      "api": "Bytes.readUnsigned",
+      "source_signature": "public function readUnsigned(b: Bytes, offset: Integer, count: Integer, order: ByteOrder) -> Option[Integer]",
+      "lean_signature": "StandardBytesOrdinaryResponse.API.signature .readUnsigned"
+    },
+    {
+      "api": "Bytes.readSigned",
+      "source_signature": "public function readSigned(b: Bytes, offset: Integer, count: Integer, order: ByteOrder) -> Option[Integer]",
+      "lean_signature": "StandardBytesOrdinaryResponse.API.signature .readSigned"
+    },
+    {
+      "api": "Bytes.fromUnsigned",
+      "source_signature": "public function fromUnsigned(n: Integer, count: Integer, order: ByteOrder) -> Option[Bytes]",
+      "lean_signature": "StandardBytesOrdinaryResponse.API.signature .fromUnsigned"
+    },
+    {
+      "api": "Bytes.fromSigned",
+      "source_signature": "public function fromSigned(n: Integer, count: Integer, order: ByteOrder) -> Option[Bytes]",
+      "lean_signature": "StandardBytesOrdinaryResponse.API.signature .fromSigned"
+    }
+  ]
+}

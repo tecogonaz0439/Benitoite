@@ -1,0 +1,17 @@
+{
+  "observed_utc": "2026-11-03T22:06:47.953370+00:00",
+  "start_free_display": "49 GiB（df -hの丸め表示）",
+  "end_free_bytes": 52428800000,
+  "formal_lake_display": "2.7G（du -shの表示）",
+  "target_display": "9.6G（du -shの表示）",
+  "swap_query": {
+    "command": [
+      "sysctl",
+      "vm.swapusage"
+    ],
+    "exit": 1,
+    "result": "Operation not permitted"
+  },
+  "possible_cause": "再開3の巨大な列の式を直接扱った試行に伴うメモリ消費とswapの増大が候補。終了137と当時の165 MiBという報告だけでは因果を確定できない",
+  "large_value_evaluation_in_r4": false
+}

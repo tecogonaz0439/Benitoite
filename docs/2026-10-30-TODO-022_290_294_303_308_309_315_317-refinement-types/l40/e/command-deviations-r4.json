@@ -1,0 +1,22 @@
+{
+  "count": 3,
+  "recorded_utc": "2026-11-03T22:03:49.482609+00:00",
+  "failed_check": "r4-final-verify",
+  "exit": 1,
+  "reason": "名前の列だけを出力する一時Leanの生成で、余分な閉じ括弧とprivate宣言名の数値成分の引用不足があった",
+  "correction": "括弧を修正。privateの列挙は監査した宣言の存在を確認したうえでソースの限定されたList式をそのまま読み、公開の名前関数をLeanで評価する。private名の文字列からの再構成を行わない",
+  "repeated": "verifyの修正確認を三度再実行する。単独Lean・既定build・公理監査は重ねない",
+  "statements_changed": 0,
+  "work_executed": false,
+  "second_failed_check": {
+    "label": "r4-final-verify-retry",
+    "exit": 1,
+    "reason": "private宣言名の数値成分を引用すると文字列成分となり、実際のLean.Name.numの宣言を参照できなかった"
+  },
+  "third_failed_check": {
+    "label": "r4-final-verify-final",
+    "exit": 1,
+    "reason": "private列挙の抽出で直後の行コメントまでList式と扱い、限定構文の照合が拒否した",
+    "correction": "元の行コメントを除いてからList式を照合。12件のprivate列挙の抽出を局所確認"
+  }
+}

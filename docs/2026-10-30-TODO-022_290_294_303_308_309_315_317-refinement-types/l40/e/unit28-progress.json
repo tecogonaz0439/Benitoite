@@ -1,0 +1,62 @@
+{
+  "start_utc": "2026-11-03T18:13:45.036614+00:00",
+  "observed_utc": "2026-11-03T19:11:08.745789+00:00",
+  "seconds": 3443.709175,
+  "state": "in progress; writer active; not a completed unit",
+  "modules": [
+    "StandardIntegerResponse",
+    "StandardIntegerAPI",
+    "StandardConversionResponse",
+    "StandardScalarResponse",
+    "StandardDecimalResponse",
+    "StandardListResponse",
+    "StandardBytesResponse",
+    "StandardActualListBodies",
+    "StandardSignatureExamples",
+    "StandardArithmeticResponse",
+    "StandardOrderResponse",
+    "StandardEqualityResponse"
+  ],
+  "ordinary_counts": {
+    "modules": 23,
+    "apis": 328,
+    "builtin": 244,
+    "core": 84,
+    "aliases": 51,
+    "pure-local": 143,
+    "open": 179,
+    "core-local": 6
+  },
+  "relation_counts": {
+    "same-input-local": 109,
+    "none": 111,
+    "local-partial": 25,
+    "boundary-wait": 7,
+    "core-static-open": 9,
+    "core-open": 53,
+    "same-input-leaf": 14
+  },
+  "operators": {
+    "proved_named": 73,
+    "unimplemented": 34,
+    "equality_scalar_domains": 12,
+    "full_equality_names": 2,
+    "full_equality_complete": false
+  },
+  "latest_default": "r1-u28-operator-schema-build01",
+  "sources": {
+    "StandardIntegerResponse": "975a0b01895e3d1a038c710e3ccfdaef5c40eeb2a9f0c16eba5b53e63893231c",
+    "StandardIntegerAPI": "f509826e7afe0dc564c9ae506323a972868746c741381d88ffd1d4484ac0f821",
+    "StandardConversionResponse": "8815cc80cfba8085c55f838a9b35a3c16b4ff6276d12ad994c3caff7750f26f7",
+    "StandardScalarResponse": "fdb5d8c1e1123a4489c18fc73b324acc0c6b9021726ce6f0ade857f78eaa71ef",
+    "StandardDecimalResponse": "78be8a751ad918b8b29cce23812b59beebbbf67ccb7cf8e4dada0d8ac9a6701f",
+    "StandardListResponse": "399093408e40385375a0c8efaeced93e9d0d7ecaa62c9738944edf9dc20009b3",
+    "StandardBytesResponse": "b0657c1d7aca7f98d73fcd9adc1842fce687bb129a968cdb479bf386429f9430",
+    "StandardActualListBodies": "b9441b3194c6e1d56c7a33f94c79a61368499f556ea1a6fb888abe6387f55a7d",
+    "StandardSignatureExamples": "c6bde352a2d6a9c0ebd2d044c564a9b5c8bc9f97c82cb891fd5b885508353269",
+    "StandardArithmeticResponse": "8db658b499b7d1d9d9012c91604ab0f6bb0e014b9caca5dac903e4b7e7ded148",
+    "StandardOrderResponse": "4bf2729a8cd8a18d0072a7b1c8fc6771e94f1f80a75ea95b7412754f1fc6e4cb",
+    "StandardEqualityResponse": "053ca3765e377445085e2a5e32585be41b24ea9c0c7e8678339cf6cd12b7b70c"
+  },
+  "remaining": "metadata/64 obligations/full source and declaration verification/default build; whole axioms and global verification after writer stop by parent; independent missing APIs and normal boundary remain"
+}

@@ -1,0 +1,674 @@
+{
+  "rows": [
+    {
+      "id": "S01",
+      "detail": [
+        "七幅の加減乗/負号。正常値は同じ算術値、同じ幅に表現可能",
+        "checkedAdd/Sub/Mul/Neg→NumericContracts→StandardScalar の δ 等号→受信値の facts",
+        "16/29"
+      ],
+      "apis": [],
+      "status": "328外の加減乗/負号25実名を実left/right/value・全BuiltinArgs・同δ・数学値/幅/overflowへ接続。区間/第一失敗は元.29〜35。",
+      "receiver": "L60へ証明済みδ/本体契約だけを供給。各独立未完と境界待ちはL40内に保持。"
+    },
+    {
+      "id": "S02",
+      "detail": [
+        "七幅の intDiv/mod。正常と0除算/overflowを区別",
+        "checked 演算と OperationResult の場合分け→局所の δ 応答",
+        "29"
+      ],
+      "apis": [],
+      "status": "328外のintDiv/mod。integerDeltaAtの未接続名をfloor二演算で代替しない。独立未完。",
+      "receiver": "L60へ証明済みδ/本体契約だけを供給。各独立未完と境界待ちはL40内に保持。"
+    },
+    {
+      "id": "S03",
+      "detail": [
+        "整数/Character/Float/Decimal の比較。正常応答の Boolean が原子と一致",
+        "Observation.compare と本番比較の対応→B04/枝",
+        "16〜20"
+      ],
+      "apis": [],
+      "status": "328外の四比較48実名を全BuiltinArgs・同δ・同二値の述語へ接続。%eq/%neは全Equality署名/元の篩付きTを維持し12scalar域の条件付きpartial。構造Equalityは独立未完。",
+      "receiver": "L60へ証明済みδ/本体契約だけを供給。各独立未完と境界待ちはL40内に保持。"
+    },
+    {
+      "id": "S04",
+      "detail": [
+        "Byte の導入/射影/明示変換と表現可能性。Option の None は正常な値",
+        "Byte.bnt・実変換→ConstOK→同じ数の項。UInt16の表現可能性との区別",
+        "17"
+      ],
+      "apis": [
+        "Byte.fromInteger",
+        "Byte.toInteger",
+        "UnsignedInteger8.fromInteger",
+        "UnsignedInteger8.toInteger"
+      ],
+      "status": "Byteの全八応答と同変換のSome同値/0〜255・None域外・同Integer射影、実bitwise/shift/count域外を全BuiltinArgs・同δへ接続。UnsignedInteger8のalias本体は独立未完。",
+      "receiver": "L60へ証明済みδ/本体契約だけを供給。各独立未完と境界待ちはL40内に保持。"
+    },
+    {
+      "id": "S05",
+      "detail": [
+        "Character の code と有効 scalar、String の文字範囲",
+        "characterCode/charactersIn と実 `Char`/`String` 観測",
+        "17/21"
+      ],
+      "apis": [
+        "Character.toInteger",
+        "Character.fromInteger",
+        "String.characters",
+        "String.fromCharacters"
+      ],
+      "status": "Character二応答とcode/scalarを保持。Characterの同code/Some/None/scalarを全引数から接続。String.characters/fromCharactersとUnicode全分類の具体接続は独立未完。",
+      "receiver": "L60へ証明済みδ/本体契約だけを供給。各独立未完と境界待ちはL40内に保持。"
+    },
+    {
+      "id": "S06",
+      "detail": [
+        "Float二幅の所属・分類・比較",
+        "bits/ieeeClass/compare、有限分類の葉→型付き正常応答",
+        "18"
+      ],
+      "apis": [
+        "Float.isNaN",
+        "Float32.isNaN",
+        "Float32.isInfinite",
+        "Float64.isNaN"
+      ],
+      "status": "三つの公開分類のnamedδを全引数・同bitsのNaN/二∞or述語へ接続。四比較の実演算子はOrderResponseの48行へ接続。全bit丸め/表記は元の外側。",
+      "receiver": "L60へ証明済みδ/本体契約だけを供給。各独立未完と境界待ちはL40内に保持。"
+    },
+    {
+      "id": "S07",
+      "detail": [
+        "Decimal の仮数/scale、比較・round 正常結果と表現外",
+        "NumericRepresented・ScalarLogic の比較→同じ丸め定義と再検査。外側の文字列パースを証明済みにしない",
+        "19"
+      ],
+      "apis": [
+        "Decimal.round",
+        "Decimal.absolute",
+        "Decimal.fromInteger",
+        "Decimal.truncate",
+        "Decimal.fromFloat",
+        "UnsignedInteger.toDecimal",
+        "UnsignedInteger.fromDecimal",
+        "UnsignedInteger64.toDecimal",
+        "UnsignedInteger64.fromDecimal"
+      ],
+      "status": "Decimal六実名を五モード/Optionの同Pへ接続。fromFloatは再検査出口のみ、同bits由来のparsed供給は独立未完。",
+      "receiver": "L60へ証明済みδ/本体契約だけを供給。各独立未完と境界待ちはL40内に保持。"
+    },
+    {
+      "id": "S08",
+      "detail": [
+        "String.byteLength / characterCount の正確な二長",
+        "Observation.measure の stringBytes/stringCharacters、実「é」の2対1",
+        "21"
+      ],
+      "apis": [
+        "String.byteLength",
+        "String.characterCount"
+      ],
+      "status": "String二長の同ws/outの関係をrelated_responseで保持。表現外errを正常値の関係に混ぜない。",
+      "receiver": "L60へ証明済みδ/本体契約だけを供給。各独立未完と境界待ちはL40内に保持。"
+    },
+    {
+      "id": "S09",
+      "detail": [
+        "Bytes.fromList/toList/length の byte の範囲と同長",
+        "V_Bytes、bytesLength、有限列の長さ",
+        "17/21"
+      ],
+      "apis": [
+        "Bytes.fromList",
+        "Bytes.toList",
+        "Bytes.length"
+      ],
+      "status": "Bytes.fromList/toList/lengthの同じbyte列と同長をrelated_responseで保持。",
+      "receiver": "L60へ証明済みδ/本体契約だけを供給。各独立未完と境界待ちはL40内に保持。"
+    },
+    {
+      "id": "S10",
+      "detail": [
+        "List.length/isEmpty、構築 [] / cons の長さと非空",
+        "listLength、inv_list、空/cons の2場合",
+        "21/23"
+      ],
+      "apis": [
+        "List.length",
+        "List.isEmpty"
+      ],
+      "status": "List.length/isEmptyの同じ列と正常値の関係を保持。consの既存観測と区別する。",
+      "receiver": "L60へ証明済みδ/本体契約だけを供給。各独立未完と境界待ちはL40内に保持。"
+    },
+    {
+      "id": "S11",
+      "detail": [
+        "List.prepend/append は n+1",
+        "xsの前/後へ一要素。現行 append は List 同士の連結ではない",
+        "21/23"
+      ],
+      "apis": [
+        "List.prepend",
+        "List.append"
+      ],
+      "status": "prepend/appendの同じ要素と列、n+1をrelated_responseで保持。",
+      "receiver": "L60へ証明済みδ/本体契約だけを供給。各独立未完と境界待ちはL40内に保持。"
+    },
+    {
+      "id": "S12",
+      "detail": [
+        "List.concatenate は n+m",
+        "実連結の列と二引数の順",
+        "23"
+      ],
+      "apis": [
+        "List.concatenate"
+      ],
+      "status": "concatenateの同じ二列と順序、n+mをrelated_responseで保持。",
+      "receiver": "L60へ証明済みδ/本体契約だけを供給。各独立未完と境界待ちはL40内に保持。"
+    },
+    {
+      "id": "S13",
+      "detail": [
+        "List.reverse は n",
+        "有限列の reverse と要素の型付け",
+        "23"
+      ],
+      "apis": [
+        "List.reverse"
+      ],
+      "status": "reverseの同じ列と長さnをrelated_responseで保持。",
+      "receiver": "L60へ証明済みδ/本体契約だけを供給。各独立未完と境界待ちはL40内に保持。"
+    },
+    {
+      "id": "S14",
+      "detail": [
+        "List.map は n、各正常 callback 結果は U、潜在効果 E",
+        "mapFrom の i/acc/残りの不変条件と実 core 本体。callback の正常応答の存在を要求しない",
+        "23"
+      ],
+      "apis": [
+        "List.map"
+      ],
+      "status": "実left/rightで元の同じComp/Rowの静的BodyTypedを供給。正常返却の関係と使用部分は境界の決定待ち。",
+      "receiver": "L60へ証明済みδ/本体契約だけを供給。各独立未完と境界待ちはL40内に保持。"
+    },
+    {
+      "id": "S15",
+      "detail": [
+        "List.filter は 0≤m≤n、保持した要素の型は T",
+        "filterFrom の真/偽の2枝、順番・失敗/効果の伝播",
+        "23"
+      ],
+      "apis": [
+        "List.filter"
+      ],
+      "status": "実left/rightで元の同じComp/Rowの静的BodyTypedを供給。正常返却の関係と使用部分は境界の決定待ち。",
+      "receiver": "L60へ証明済みδ/本体契約だけを供給。各独立未完と境界待ちはL40内に保持。"
+    },
+    {
+      "id": "S16",
+      "detail": [
+        "List.head/tail/get の旧 Option と安全な T の入口を区別",
+        "既存 Option API はそのまま。証明済み非空/0≤i<n から内部 safeHead/safeGet",
+        "26"
+      ],
+      "apis": [
+        "List.head",
+        "List.tail",
+        "List.get"
+      ],
+      "status": "旧Option APIのhead/tail/getの全入力F06は独立未完。内部safe9本と公開旧APIを同一視しない。",
+      "receiver": "L60へ証明済みδ/本体契約だけを供給。各独立未完と境界待ちはL40内に保持。"
+    },
+    {
+      "id": "S17",
+      "detail": [
+        "Map.empty/fromList/size/toList、正規化後の大きさ",
+        "元の鍵と後の値を保つ normalizeMap、KeyShape/ClosedSlots",
+        "22/24"
+      ],
+      "apis": [
+        "Map.empty",
+        "Map.fromList",
+        "Map.toList",
+        "Map.size"
+      ],
+      "status": "既存Map純粋十実名の全BuiltinArgs契約と縮約/sizeの局所証拠を収集。全S収集を完了へ繰り上げない。",
+      "receiver": "L60へ証明済みδ/本体契約だけを供給。各独立未完と境界待ちはL40内に保持。"
+    },
+    {
+      "id": "S18",
+      "detail": [
+        "Map.keys/values は size と同長",
+        "normalizeMap の同じ entries の射影",
+        "24"
+      ],
+      "apis": [
+        "Map.keys",
+        "Map.values"
+      ],
+      "status": "既存Map keys/valuesの全引数応答と同entriesの射影を収集。",
+      "receiver": "L60へ証明済みδ/本体契約だけを供給。各独立未完と境界待ちはL40内に保持。"
+    },
+    {
+      "id": "S19",
+      "detail": [
+        "Map.set は n 又は n+1、remove は n 又は n−1",
+        "同じ鍵コードの一致/不一致の2枝。get/containsの旧Option/Booleanを保つ",
+        "24"
+      ],
+      "apis": [
+        "Map.get",
+        "Map.set",
+        "Map.remove",
+        "Map.contains"
+      ],
+      "status": "既存Map get/set/remove/containsの全応答と更新/削除の両枝を保持。",
+      "receiver": "L60へ証明済みδ/本体契約だけを供給。各独立未完と境界待ちはL40内に保持。"
+    },
+    {
+      "id": "S20",
+      "detail": [
+        "Map.map は n、filter は m≤n、値共変/鍵不変",
+        "現行 Map.bnt の Map.toList→List.map/filter→Map.fromList、同じ鍵の保持",
+        "24"
+      ],
+      "apis": [
+        "Map.map",
+        "Map.filter"
+      ],
+      "status": "四高階本体の既存BodyTypedを保持。Mapの正常関係は境界の決定待ち。",
+      "receiver": "L60へ証明済みδ/本体契約だけを供給。各独立未完と境界待ちはL40内に保持。"
+    },
+    {
+      "id": "S21",
+      "detail": [
+        "Set.empty/fromList/toList/size の縮約後の大きさ",
+        "normalizeSet と鍵の不変位置",
+        "22/24"
+      ],
+      "apis": [
+        "Set.empty",
+        "Set.fromList",
+        "Set.toList",
+        "Set.size"
+      ],
+      "status": "既存Set純粋十実名の全BuiltinArgs契約と縮約の局所証拠を収集。",
+      "receiver": "L60へ証明済みδ/本体契約だけを供給。各独立未完と境界待ちはL40内に保持。"
+    },
+    {
+      "id": "S22",
+      "detail": [
+        "Set.add/remove は一致/不一致の二枝、map/filter は m≤n",
+        "map は異なる元要素を同じ鍵へ写しうる。n と等しいとはしない",
+        "24"
+      ],
+      "apis": [
+        "Set.add",
+        "Set.remove",
+        "Set.map",
+        "Set.filter"
+      ],
+      "status": "Set add/removeと高階の静的BodyTypedを保持。map/filterの正常関係は境界の決定待ち。",
+      "receiver": "L60へ証明済みδ/本体契約だけを供給。各独立未完と境界待ちはL40内に保持。"
+    },
+    {
+      "id": "S23",
+      "detail": [
+        "Set.union/intersection/difference の上下限",
+        "正規化済みコード集合の包含、0≤m、union≤n+k、intersection≤min、difference≤n",
+        "24"
+      ],
+      "apis": [
+        "Set.union",
+        "Set.intersection",
+        "Set.difference"
+      ],
+      "status": "既存集合演算の全引数応答と上下限を保持。新実装を重ねない。",
+      "receiver": "L60へ証明済みδ/本体契約だけを供給。各独立未完と境界待ちはL40内に保持。"
+    },
+    {
+      "id": "S24",
+      "detail": [
+        "record の不変な欄・欄の連鎖・全体条件",
+        "同じ P の field_facts_by_type/FieldRef.Declared/VarianceValid。構築時に全体述語を証明",
+        "25"
+      ],
+      "apis": [],
+      "status": "328外のrecord不変欄と連鎖、同じPの構築条件を既存証拠から供給。",
+      "receiver": "L60へ証明済みδ/本体契約だけを供給。各独立未完と境界待ちはL40内に保持。"
+    },
+    {
+      "id": "S25",
+      "detail": [
+        "decode は通常decode→各欄→全体条件の順、失敗は Error",
+        "通常 core の検査列。検査成功の事実を値の型へ導入し、順と payload を保持。JSON の字句処理の一般証明はしない",
+        "25"
+      ],
+      "apis": [],
+      "status": "328外のdecode済みResultの後処理本体/順序を保持。通常decodeへの全接続は境界の決定待ち。",
+      "receiver": "L60へ証明済みδ/本体契約だけを供給。各独立未完と境界待ちはL40内に保持。"
+    },
+    {
+      "id": "S26",
+      "detail": [
+        "Range.CheckedInteger の minimum/maximum/value と旧 RangeError",
+        "checkInteger の条件、invalidBounds/outOfRange、射影が同じ保持値",
+        "26/30"
+      ],
+      "apis": [
+        "Range.checkInteger",
+        "Range.minimum",
+        "Range.maximum",
+        "Range.value"
+      ],
+      "status": "現行nominal APIの原署名を保持。内部safe19の注釈とbody9本、getter9本の静的未証明を区別する。",
+      "receiver": "L60へ証明済みδ/本体契約だけを供給。各独立未完と境界待ちはL40内に保持。"
+    },
+    {
+      "id": "S27",
+      "detail": [
+        "Range.CheckedLength の上下限・checkedLength/lengthValues",
+        "元 List を保持し、n=length values と lo≤n≤hi",
+        "26"
+      ],
+      "apis": [
+        "Range.checkLength",
+        "Range.lengthMinimum",
+        "Range.lengthMaximum",
+        "Range.checkedLength",
+        "Range.lengthValues"
+      ],
+      "status": "現行CheckedLengthの原署名と内部精密契約を区別。getter静的未証明は独立未完。",
+      "receiver": "L60へ証明済みδ/本体契約だけを供給。各独立未完と境界待ちはL40内に保持。"
+    },
+    {
+      "id": "S28",
+      "detail": [
+        "Range.CheckedIndex の indexValue/indexValues/get",
+        "元 List と保持 element の同一性。get が任意の別 List の要素を返すとはしない",
+        "26"
+      ],
+      "apis": [
+        "Range.checkIndex",
+        "Range.indexValue",
+        "Range.indexValues",
+        "Range.get"
+      ],
+      "status": "元List/elementを保つ内部getFront/slice応答とsafe本体を保持。公開原署名の全収集は独立未完。",
+      "receiver": "L60へ証明済みδ/本体契約だけを供給。各独立未完と境界待ちはL40内に保持。"
+    },
+    {
+      "id": "S29",
+      "detail": [
+        "同長の別 List の safeGet",
+        "length xs=length ys=n と0≤i<nから ys の要素T。元の CheckedIndex の保持 element と区別",
+        "26"
+      ],
+      "apis": [],
+      "status": "328外の同長別Listへの内部safeGet。同じ保持Listと別Listを区別する既存証拠を供給。",
+      "receiver": "L60へ証明済みδ/本体契約だけを供給。各独立未完と境界待ちはL40内に保持。"
+    },
+    {
+      "id": "S30",
+      "detail": [
+        "NonEmptyList は nonemptyType T の別名、fromList/toList/head/tail/map",
+        "現行の nominal record から移す core 契約。head:T、tail長n−1、map正常時非空。公開表示/名目性はR40/D10",
+        "26"
+      ],
+      "apis": [
+        "NonEmptyList.fromList",
+        "NonEmptyList.toList",
+        "NonEmptyList.head",
+        "NonEmptyList.tail",
+        "NonEmptyList.map"
+      ],
+      "status": "現行nominal NonEmptyList五行と内部NE別名/safe19を区別。R40表現変換、getter静的未完、map正常の境界待ちを混ぜない。",
+      "receiver": "L60へ証明済みδ/本体契約だけを供給。各独立未完と境界待ちはL40内に保持。"
+    },
+    {
+      "id": "S31",
+      "detail": [
+        "関数/高階の入力反変、結果/潜在効果共変、名前/個数不変",
+        "TelClosure.apply、型付き callback と依存結果/効果の同時代入",
+        "11/27"
+      ],
+      "apis": [
+        "List.map",
+        "List.filter",
+        "List.fold",
+        "List.forEach",
+        "List.any",
+        "List.all",
+        "List.find",
+        "Map.map",
+        "Map.filter",
+        "Map.fold",
+        "Map.forEach",
+        "Set.map",
+        "Set.filter",
+        "Set.fold",
+        "Set.forEach",
+        "NonEmptyList.map"
+      ],
+      "status": "全位置の静的受理拒否/依存結果効果/四像を保持。S31だけのfold等9行の実本体への静的適用は独立未完。正常関係待ちは明示した7公開行だけ。",
+      "receiver": "L60へ証明済みδ/本体契約だけを供給。各独立未完と境界待ちはL40内に保持。"
+    },
+    {
+      "id": "S32",
+      "detail": [
+        "範囲付き値の標準契約への受渡し",
+        "HeldValues と ModelHttp.valueRun、同じ要求/対象。File 6本と Http.sendIn はL50へ",
+        "13/28"
+      ],
+      "apis": [],
+      "status": "対象付きFile六本/Http.sendInは328外。L50へ元の保持値/要求/対象を供給し、L40未完を移管しない。",
+      "receiver": "L60へ証明済みδ/本体契約だけを供給。各独立未完と境界待ちはL40内に保持。"
+    },
+    {
+      "id": "S33",
+      "detail": [
+        "正常/returned/failed の近似所属と Stop の区分",
+        "ValueRel→toApprox_eq、EvalPartial/Block/Arms、実際の最初の失敗。proof-steps の unknown と混同しない",
+        "29〜35"
+      ],
+      "apis": [],
+      "status": "正常/returned/failed所属の全合成は元の.29〜35担当。pureのerr/exit排除をStop全意味関係の証明としない。",
+      "receiver": "L60へ証明済みδ/本体契約だけを供給。各独立未完と境界待ちはL40内に保持。"
+    },
+    {
+      "id": "S34",
+      "detail": [
+        "七整数型・Byte の明示変換、Decimal との変換。fromInteger/fromDecimal の Some は同じ数学値かつ対象幅内、None は通常値。toInteger は小幅で全域、u64 では Option",
+        "実変換と対象幅の ConstOK/NumericRepresented→同じ値の項。Decimal.fromInteger/truncate/fromFloat は S07 と併用し整数性/切捨て/失敗を区別",
+        "16/17/19/28"
+      ],
+      "apis": [
+        "Byte.fromInteger",
+        "Byte.toInteger",
+        "Character.toInteger",
+        "Character.fromInteger",
+        "Decimal.fromInteger",
+        "Decimal.truncate",
+        "Decimal.fromFloat",
+        "Integer8.fromInteger",
+        "Integer8.toInteger",
+        "Integer16.fromInteger",
+        "Integer16.toInteger",
+        "Integer32.fromInteger",
+        "Integer32.toInteger",
+        "UnsignedInteger.fromInteger",
+        "UnsignedInteger.toInteger",
+        "UnsignedInteger.toDecimal",
+        "UnsignedInteger.fromDecimal",
+        "UnsignedInteger8.fromInteger",
+        "UnsignedInteger8.toInteger",
+        "UnsignedInteger16.fromInteger",
+        "UnsignedInteger16.toInteger",
+        "UnsignedInteger32.fromInteger",
+        "UnsignedInteger32.toInteger",
+        "UnsignedInteger64.fromInteger",
+        "UnsignedInteger64.toInteger",
+        "UnsignedInteger64.toDecimal",
+        "UnsignedInteger64.fromDecimal"
+      ],
+      "status": "整数十二行・Byte/Character四行・Decimalの変換を同ws/outのSome/None/数学値/幅/整数性へ接続。fromFloatは任意parsed出口のみ。alias本体と実bits由来parsed供給は独立未完。",
+      "receiver": "L60へ証明済みδ/本体契約だけを供給。各独立未完と境界待ちはL40内に保持。"
+    },
+    {
+      "id": "S35",
+      "detail": [
+        "七幅の floorDivide/floorModulo。床方向の商と剰余の関係、0除算、符号付き最小値÷−1の商の表現外",
+        "実 intDiv/mod と符号補正を同じ δ へ接続。floorModulo を商の overflow だけで拒否しない。名前付き18 API は別名を除き七幅×2演算の14組",
+        "16/29"
+      ],
+      "apis": [
+        "Integer.floorDivide",
+        "Integer.floorModulo",
+        "Integer8.floorDivide",
+        "Integer8.floorModulo",
+        "Integer16.floorDivide",
+        "Integer16.floorModulo",
+        "Integer32.floorDivide",
+        "Integer32.floorModulo",
+        "Integer64.floorDivide",
+        "Integer64.floorModulo",
+        "UnsignedInteger.floorDivide",
+        "UnsignedInteger.floorModulo",
+        "UnsignedInteger16.floorDivide",
+        "UnsignedInteger16.floorModulo",
+        "UnsignedInteger32.floorDivide",
+        "UnsignedInteger32.floorModulo",
+        "UnsignedInteger64.floorDivide",
+        "UnsignedInteger64.floorModulo"
+      ],
+      "status": "七幅十四実名の全BuiltinArgsを同符号補正数学値・q*b+r・zero/補正結果幅外へ接続。modの商overflow由来の拒否は排除。quotient overflowをsignedmin/-1へ整理する一般化と区間/returned/第一失敗は元.29〜35。",
+      "receiver": "L60へ証明済みδ/本体契約だけを供給。各独立未完と境界待ちはL40内に保持。"
+    },
+    {
+      "id": "S36",
+      "detail": [
+        "七幅の absolute/minimum/maximum、各幅と Byte の bitwise/shift。正常値の表現可能性、符号付き最小値 absolute の Stop、shift count の域外",
+        "実 checked_abs/比較選択/幅内ビットと count 検査→型付き応答。正常 abs は非負、unsigned abs は同値。ビット演算を線形整数の一般推論へ加えない",
+        "16/17/29"
+      ],
+      "apis": [
+        "Byte.bitwiseAnd",
+        "Byte.bitwiseOr",
+        "Byte.bitwiseExclusiveOr",
+        "Byte.bitwiseNot",
+        "Byte.shiftLeft",
+        "Byte.shiftRight",
+        "Integer.absolute",
+        "Integer.minimum",
+        "Integer.maximum",
+        "Integer.bitwiseAnd",
+        "Integer.bitwiseOr",
+        "Integer.bitwiseExclusiveOr",
+        "Integer.bitwiseNot",
+        "Integer.shiftLeft",
+        "Integer.shiftRight",
+        "Integer.shiftRightUnsigned",
+        "Integer8.absolute",
+        "Integer8.minimum",
+        "Integer8.maximum",
+        "Integer8.bitwiseAnd",
+        "Integer8.bitwiseOr",
+        "Integer8.bitwiseExclusiveOr",
+        "Integer8.bitwiseNot",
+        "Integer8.shiftLeft",
+        "Integer8.shiftRight",
+        "Integer8.shiftRightUnsigned",
+        "Integer16.absolute",
+        "Integer16.minimum",
+        "Integer16.maximum",
+        "Integer16.bitwiseAnd",
+        "Integer16.bitwiseOr",
+        "Integer16.bitwiseExclusiveOr",
+        "Integer16.bitwiseNot",
+        "Integer16.shiftLeft",
+        "Integer16.shiftRight",
+        "Integer16.shiftRightUnsigned",
+        "Integer32.absolute",
+        "Integer32.minimum",
+        "Integer32.maximum",
+        "Integer32.bitwiseAnd",
+        "Integer32.bitwiseOr",
+        "Integer32.bitwiseExclusiveOr",
+        "Integer32.bitwiseNot",
+        "Integer32.shiftLeft",
+        "Integer32.shiftRight",
+        "Integer32.shiftRightUnsigned",
+        "Integer64.absolute",
+        "Integer64.minimum",
+        "Integer64.maximum",
+        "Integer64.bitwiseAnd",
+        "Integer64.bitwiseOr",
+        "Integer64.bitwiseExclusiveOr",
+        "Integer64.bitwiseNot",
+        "Integer64.shiftLeft",
+        "Integer64.shiftRight",
+        "Integer64.shiftRightUnsigned",
+        "UnsignedInteger.absolute",
+        "UnsignedInteger.minimum",
+        "UnsignedInteger.maximum",
+        "UnsignedInteger.bitwiseAnd",
+        "UnsignedInteger.bitwiseOr",
+        "UnsignedInteger.bitwiseExclusiveOr",
+        "UnsignedInteger.bitwiseNot",
+        "UnsignedInteger.shiftLeft",
+        "UnsignedInteger.shiftRight",
+        "UnsignedInteger8.bitwiseAnd",
+        "UnsignedInteger8.bitwiseOr",
+        "UnsignedInteger8.bitwiseExclusiveOr",
+        "UnsignedInteger8.bitwiseNot",
+        "UnsignedInteger8.shiftLeft",
+        "UnsignedInteger8.shiftRight",
+        "UnsignedInteger16.absolute",
+        "UnsignedInteger16.minimum",
+        "UnsignedInteger16.maximum",
+        "UnsignedInteger16.bitwiseAnd",
+        "UnsignedInteger16.bitwiseOr",
+        "UnsignedInteger16.bitwiseExclusiveOr",
+        "UnsignedInteger16.bitwiseNot",
+        "UnsignedInteger16.shiftLeft",
+        "UnsignedInteger16.shiftRight",
+        "UnsignedInteger32.absolute",
+        "UnsignedInteger32.minimum",
+        "UnsignedInteger32.maximum",
+        "UnsignedInteger32.bitwiseAnd",
+        "UnsignedInteger32.bitwiseOr",
+        "UnsignedInteger32.bitwiseExclusiveOr",
+        "UnsignedInteger32.bitwiseNot",
+        "UnsignedInteger32.shiftLeft",
+        "UnsignedInteger32.shiftRight",
+        "UnsignedInteger64.absolute",
+        "UnsignedInteger64.minimum",
+        "UnsignedInteger64.maximum",
+        "UnsignedInteger64.bitwiseAnd",
+        "UnsignedInteger64.bitwiseOr",
+        "UnsignedInteger64.bitwiseExclusiveOr",
+        "UnsignedInteger64.bitwiseNot",
+        "UnsignedInteger64.shiftLeft",
+        "UnsignedInteger64.shiftRight"
+      ],
+      "status": "min/max十四行の同ws/out数学値、absolute七行の正常非負/幅/unsigned同値とoverflow iff signedmin、整数46+Byte6の同bit演算/wrap/count域外errを接続。区間/returned/第一失敗は元.29〜35。",
+      "receiver": "L60へ証明済みδ/本体契約だけを供給。各独立未完と境界待ちはL40内に保持。"
+    }
+  ],
+  "count": 36,
+  "outside_API": {
+    "operators": "S01/S02/S03。実left/rightと負号valueを保持。全Equalityは未完。",
+    "record_decode": "S24/S25。既存同Pの欄/順序。正常decodeの全接続は境界待ち。",
+    "internal_safe19": "S16/S26〜30。全19Annotation/body9/getter9未証明/map境界待ち。原公開署名と分ける。",
+    "scoped_File_Http": "S32。対象付きFile6/Http.sendInはL50の元担当。",
+    "generators": "R40の生成器/NE別名変換とR50の実ID/ABI/鍵収集は元の境界。L40不足を移管しない。"
+  },
+  "whole_S_closed": 0
+}

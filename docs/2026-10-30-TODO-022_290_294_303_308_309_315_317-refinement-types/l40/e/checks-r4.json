@@ -1,0 +1,145 @@
+[
+  {
+    "label": "r4-floatmath-docstring",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/StandardFloatMathResponse.lean"
+    ],
+    "cwd": "formal/",
+    "start": "2026-11-03T22:00:18.321554+00:00",
+    "end": "2026-11-03T22:00:19.173687+00:00",
+    "seconds": 0.852094416,
+    "exit": 0,
+    "raw": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r4-final-build",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal/",
+    "start": "2026-11-03T22:01:18.277668+00:00",
+    "end": "2026-11-03T22:01:24.483155+00:00",
+    "seconds": 6.205427334,
+    "exit": 0,
+    "raw": {
+      "bytes": 45164,
+      "sha256": "7175c4252ddddec0db3e6880d76d820424231f89be2f8ca33d2d6e565537f6cd"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r4-final-axioms",
+    "command": [
+      "python3",
+      "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/e/audit-r3.py",
+      "--tmp",
+      "<tmp>/audit",
+      "--tag",
+      "r4-final"
+    ],
+    "cwd": ".",
+    "start": "2026-11-03T22:01:44.769611+00:00",
+    "end": "2026-11-03T22:02:43.318921+00:00",
+    "seconds": 58.549059457999995,
+    "exit": 0,
+    "raw": {
+      "bytes": 227,
+      "sha256": "6b9c80a498e7187a69edac79d62fee1181ea765c8322d8ed25105f8251198abd"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r4-final-verify",
+    "command": [
+      "python3",
+      "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/e/verify.py",
+      "--tmp",
+      "<tmp>/verify",
+      "--tag",
+      "r4-final"
+    ],
+    "cwd": ".",
+    "start": "2026-11-03T22:03:14.741897+00:00",
+    "end": "2026-11-03T22:03:15.764526+00:00",
+    "seconds": 1.022583042,
+    "exit": 1,
+    "raw": {
+      "bytes": 7566,
+      "sha256": "af5259b1b9b3d8f42e4929beefe7fc8ada3d3e36657a301c40ae40c1990649a0"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r4-final-verify-retry",
+    "command": [
+      "python3",
+      "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/e/verify.py",
+      "--tmp",
+      "<tmp>/verify-retry",
+      "--tag",
+      "r4-final"
+    ],
+    "cwd": ".",
+    "start": "2026-11-03T22:03:49.584774+00:00",
+    "end": "2026-11-03T22:03:50.762543+00:00",
+    "seconds": 1.177724958,
+    "exit": 1,
+    "raw": {
+      "bytes": 7592,
+      "sha256": "19ffcb06e096464a82c7f357fb3aed8b253e5e25d39941135a315d08b43f77cb"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r4-final-verify-final",
+    "command": [
+      "python3",
+      "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/e/verify.py",
+      "--tmp",
+      "<tmp>/verify-final",
+      "--tag",
+      "r4-final"
+    ],
+    "cwd": ".",
+    "start": "2026-11-03T22:04:50.898129+00:00",
+    "end": "2026-11-03T22:04:51.143011+00:00",
+    "seconds": 0.244834208,
+    "exit": 1,
+    "raw": {
+      "bytes": 1957,
+      "sha256": "7a804a43aad777ad785b47b3ef07acce03638c9cbb1cb4f33484bfe1c8ab0979"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r4-final-verify-confirmed",
+    "command": [
+      "python3",
+      "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/e/verify.py",
+      "--tmp",
+      "<tmp>/verify-confirmed",
+      "--tag",
+      "r4-final"
+    ],
+    "cwd": ".",
+    "start": "2026-11-03T22:05:18.517826+00:00",
+    "end": "2026-11-03T22:05:19.670041+00:00",
+    "seconds": 1.152163792,
+    "exit": 0,
+    "raw": {
+      "bytes": 1374,
+      "sha256": "edb6291679c27c4cd93155ca6a182a1e8274dfb0e051e01712eab25b671c3e1e"
+    },
+    "rss": "未取得（計画上の非採取）"
+  }
+]

@@ -28,7 +28,7 @@ theorem HasTypeArmsQ.plain_legacy {P B Ψ Q C Γ Φ R alts body arms a b e δ L}
       (localExtend δ.length L))
     (hs : HasTypeArmsQ P B Ψ Q C Γ Φ R none arms a b e L) :
     HasTypeArmsQ P B Ψ Q C Γ Φ R none (.mk alts none body :: arms) a b e L :=
-  .plain hp (by intro p hp; cases hp) hb hs
+  .plainEmpty hp (by intro p hp; cases hp) hb hs
 
 theorem HasTypeArmsQ.guarded_legacy {P B Ψ Q C Γ Φ R alts guard body arms a b e δ L}
     (hA : Builtins.ValueAssumptions P B) (hw : Ψ.WF)
@@ -43,7 +43,7 @@ theorem HasTypeArmsQ.guarded_legacy {P B Ψ Q C Γ Φ R alts guard body arms a b
   have ha : Ty.Annotation P C (hideConts (bindParams Γ δ)) (.refined BooleanTy .truth) := by
     refine ⟨⟨trivial,trivial,?_⟩,⟨trivial,trivial⟩,⟨trivial,trivial⟩⟩
     simp [BooleanTy,Ty.NotContCore,Ty.core]
-  refine .guarded (p := .truth) hp (by intro p hp; cases hp) ha ?_ ?_ hs
+  refine .guardedEmpty (p := .truth) hp (by intro p hp; cases hp) ha ?_ ?_ hs
   · exact .C_Sub hg (.introduce trivial .truth) (Eff.Covers.refl _ _ _)
       ha.wf ha.sorted ha.declared
   · exact hb.weaken_conditions hA hw
@@ -290,22 +290,25 @@ theorem HasTypeArmsQ.sub_result {P B Ψ Q C Γ Φ R obs arms a b e L b' e'}
     HasTypeArmsQ P B Ψ Q C Γ Φ R obs arms a b' e' L := by
   match h with
   | .nil _ => exact .nil ha
-  | .plain (δ := δ) (alts := alts) hp hw hb hs =>
+  | .plain (δ := δ) (alts := alts) (links := links) hp hvf hfw hw hb hs =>
     have hlem := hle.weaken_conditions (Ξ := pathFacts obs (matchedTests alts) ++ Φ)
       (by intro p hp; exact .hyp (List.mem_append_right _ (List.mem_append_right _ hp)))
     have hlee := hle.weaken_conditions (Ξ := pathFacts obs (excludedTests alts) ++ Φ)
       (by intro p hp; exact .hyp (List.mem_append_right _ (List.mem_append_right _ hp)))
     have ha' := (ShiftMap.outer Γ δ).annotation ha
-    exact .plain hp hw (.C_Sub hb (hlem.under_params δ) (he.shiftV _ _)
+    have hbody := (hlem.under_params δ).weaken_conditions
+      (Ξ := fieldFacts δ.length obs links ++ liftMany δ.length (pathFacts obs (matchedTests alts) ++ Φ))
+      (by intro p hp; exact .hyp (List.mem_append_right _ (List.mem_append_right _ hp)))
+    exact .plain hp hvf hfw hw (.C_Sub hb hbody (he.shiftV _ _)
       ha'.wf ha'.sorted ha'.declared) (hs.sub_result hlee he ha)
-  | .guarded (δ := δ) (alts := alts) (p := p) hp hw hgp hg hb hs =>
+  | .guarded (δ := δ) (alts := alts) (p := p) (links := links) hp hvf hfw hw hgp hg hb hs =>
     have hlem := hle.weaken_conditions (Ξ := pathFacts obs (matchedTests alts) ++ Φ)
       (by intro p hp; exact .hyp (List.mem_append_right _ (List.mem_append_right _ hp)))
     have hbody := (hlem.under_params δ).weaken_conditions
-      (Ξ := p.open (.boolean true) :: liftMany δ.length (pathFacts obs (matchedTests alts) ++ Φ))
-      (by intro p hp; exact .hyp (List.mem_append_right _ (List.mem_cons_of_mem _ hp)))
+      (Ξ := p.open (.boolean true) :: (fieldFacts δ.length obs links ++ liftMany δ.length (pathFacts obs (matchedTests alts) ++ Φ)))
+      (by intro p hp; exact .hyp (List.mem_append_right _ (List.mem_cons_of_mem _ (List.mem_append_right _ hp))))
     have ha' := (ShiftMap.outer Γ δ).annotation ha
-    exact .guarded hp hw hgp hg (.C_Sub hb hbody (he.shiftV _ _) ha'.wf ha'.sorted ha'.declared)
+    exact .guarded hp hvf hfw hw hgp hg (.C_Sub hb hbody (he.shiftV _ _) ha'.wf ha'.sorted ha'.declared)
       (hs.sub_result hle he ha)
 termination_by structural h
 
@@ -314,10 +317,10 @@ theorem HasTypeArmsQ.normal_result {P B Ψ Q C Γ Φ R obs arms a b e L}
     HasTypeArmsQ P B Ψ Q C Γ Φ R obs arms a b.norm e L := by
   match h with
   | .nil ha => exact .nil ha.norm
-  | .plain hp hw hb hs =>
-    exact .plain hp hw (by simpa only [Ty.norm_shiftV] using hb.C_Normal) hs.normal_result
-  | .guarded hp hw hgp hg hb hs =>
-    exact .guarded hp hw hgp hg (by simpa only [Ty.norm_shiftV] using hb.C_Normal) hs.normal_result
+  | .plain hp hvf hfw hw hb hs =>
+    exact .plain hp hvf hfw hw (by simpa only [Ty.norm_shiftV] using hb.C_Normal) hs.normal_result
+  | .guarded hp hvf hfw hw hgp hg hb hs =>
+    exact .guarded hp hvf hfw hw hgp hg (by simpa only [Ty.norm_shiftV] using hb.C_Normal) hs.normal_result
 termination_by structural h
 
 theorem HasTypeArmsQ.eff_result {P B Ψ Q C Γ Φ R obs arms a b e e' L}
@@ -325,8 +328,8 @@ theorem HasTypeArmsQ.eff_result {P B Ψ Q C Γ Φ R obs arms a b e e' L}
     HasTypeArmsQ P B Ψ Q C Γ Φ R obs arms a b e' L := by
   match h with
   | .nil ha => exact .nil ha
-  | .plain hp hw hb hs => exact .plain hp hw (.C_Eff hb (he.shiftV _ _)) (hs.eff_result he)
-  | .guarded hp hw hgp hg hb hs => exact .guarded hp hw hgp hg (.C_Eff hb (he.shiftV _ _)) (hs.eff_result he)
+  | .plain hp hvf hfw hw hb hs => exact .plain hp hvf hfw hw (.C_Eff hb (he.shiftV _ _)) (hs.eff_result he)
+  | .guarded hp hvf hfw hw hgp hg hb hs => exact .guarded hp hvf hfw hw hgp hg (.C_Eff hb (he.shiftV _ _)) (hs.eff_result he)
 termination_by structural h
 
 /-- match の変換規則の連鎖を、全腕の期待型へ戻す。 -/
@@ -500,6 +503,7 @@ theorem HasTypeArmsQ.capture_plain {P B Ψ Γ Φ R Rs obs arms a b e L cap vs v 
     (ho : ∀ t, obs = some t → vs.toTerm? = some t ∧ ∃ sort, t.HasSort Γ sort)
     (hv : v = closeVal cap vs)
     (hi : arms[n]? = some (.mk alts none body))
+    (hz : Arm.bindersOf alts = 0)
     (he : MatchPathsEvaluated v arms n) :
     ∃ δ Ξ, AltsTy P alts a δ ∧ CaptureOk P B Ψ R Γ Ξ cap ∧
       HasTypeCQ P B Ψ Qempty [] (bindParams Γ δ) (liftMany δ.length Ξ)
@@ -507,23 +511,26 @@ theorem HasTypeArmsQ.capture_plain {P B Ψ Γ Φ R Rs obs arms a b e L cap vs v 
         (localExtend δ.length L) := by
   match h with
   | .nil _ => simp at hi
-  | .plain (δ := δ) hp hw hb hs =>
+  | .plain (δ := δ) (links := links) hp hvf hfw hw hb hs =>
     cases n with
     | zero =>
       cases Option.some.inj hi
       have hc' := hc.addEvaluatedFacts (FactsWF.left (by simpa only [pathFacts_append] using hw))
         (hc.paths_evaluate ho hv (he.2 _ _ _ rfl))
+      have hlinks := hvf
+      rw [hp.2.1,hz] at hlinks
+      rw [hlinks.zero_eq_nil,fieldFacts_empty,List.nil_append] at hb
       exact ⟨δ,_,hp,hc',hb⟩
     | succ n =>
       have hc' := hc.addEvaluatedFacts (FactsWF.right (by simpa only [pathFacts_append] using hw))
         (hc.paths_evaluate ho hv (he.1 0 _ _ _ rfl (by omega) rfl))
-      exact hs.capture_plain hc' ho hv hi ⟨
+      exact hs.capture_plain hc' ho hv hi hz ⟨
         (by intro i as g m hh hn hg; exact he.1 (i+1) as g m hh (by omega) hg),
         (by intro as g m hh; exact he.2 as g m hh)⟩
-  | .guarded hp hw hgp hg hb hs =>
+  | .guarded hp hvf hfw hw hgp hg hb hs =>
     cases n with
     | zero => cases Option.some.inj hi
-    | succ n => exact hs.capture_plain hc ho hv hi ⟨
+    | succ n => exact hs.capture_plain hc ho hv hi hz ⟨
         (by intro i as g m hh hn hg; exact he.1 (i+1) as g m hh (by omega) hg),
         (by intro as g m hh; exact he.2 as g m hh)⟩
 termination_by n
@@ -630,7 +637,7 @@ theorem StateTyE.match_body_zero {P B σ Eb v cap arms n alts body k μ}
   subst g0
   cases healts
   have hbodyeq : body = body0.resolveLocals ρ := by simpa only [hz,upLocalSubst_zero] using hebody
-  obtain ⟨δ,Ξ,hpat,hcap',hb⟩ := hars.capture_plain hcap ho hv hi0 (hea ▸ heval).unresolve
+  obtain ⟨δ,Ξ,hpat,hcap',hb⟩ := hars.capture_plain hcap ho hv hi0 hz (hea ▸ heval).unresolve
   have hd : δ = [] := List.eq_nil_of_length_eq_zero (hpat.2.1.trans hz)
   subst δ
   simp only [List.length_nil,bindParams,List.reverse_nil,List.map_nil,List.nil_append,

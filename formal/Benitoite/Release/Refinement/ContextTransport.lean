@@ -212,10 +212,10 @@ mutual
     match h with
     | @HasTypeArmsQ.nil _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 =>
       exact .nil x11
-    | @HasTypeArmsQ.plain _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 =>
-      exact .plain x15 x16 (HasTypeCQ.q_mono x17 hq) (HasTypeArmsQ.q_mono x18 hq)
-    | @HasTypeArmsQ.guarded _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 =>
-      exact .guarded x17 x18 x19 (HasTypeCQ.q_mono x20 hq) (HasTypeCQ.q_mono x21 hq) (HasTypeArmsQ.q_mono x22 hq)
+    | @HasTypeArmsQ.plain _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18  x19 x20 x21 =>
+      exact .plain x16 x17 x18 x19 (HasTypeCQ.q_mono x20 hq) (HasTypeArmsQ.q_mono x21 hq)
+    | @HasTypeArmsQ.guarded _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22  x23 x24 x25 =>
+      exact .guarded x18 x19 x20 x21 x22 (HasTypeCQ.q_mono x23 hq) (HasTypeCQ.q_mono x24 hq) (HasTypeArmsQ.q_mono x25 hq)
   termination_by structural h
 
   theorem HasTypeClausesQ.q_mono {P : Program} {B : Builtins} {Ψ : StoreTy} {Q : Benitoite.Release.NoFailCtx} {C : TypeCtx} {Γ : Ctx} {Φ : List Pred} {R : Option Ty} {eb : Eff} {cs : List Clause} {t : Ty} {e : Eff} {L : LocalCtx} (h : HasTypeClausesQ P B Ψ Q C Γ Φ R eb cs t e L) {Q' : NoFailCtx} (hq : ∀ i, Q i → Q' i) :

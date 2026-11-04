@@ -1,0 +1,60 @@
+{
+  "checked_at_utc": "2026-11-03T23:26:10.323125+00:00",
+  "trial": {
+    "path": "formal/Trial/L40E5.lean",
+    "bytes": 51035,
+    "sha256": "0e0c4d2aca730c51edd53086bac911a3ec583c4fc47ddf5defd22722c4d5ce46"
+  },
+  "verification_script": {
+    "bytes": 4567,
+    "sha256": "30e2175408bb294b16cd203e930f49489b6dec2646d7a6a8de01b8630cbea091"
+  },
+  "commands": [
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "Trial/L40E5.lean"
+      ],
+      "exit": 0,
+      "seconds": 3.573,
+      "raw": {
+        "bytes": 89815,
+        "sha256": "ba142406f690d1d650a96b8193c33d59b1c8106fe258babe653f99788297baf2"
+      }
+    },
+    {
+      "command": [
+        "lake",
+        "build"
+      ],
+      "exit": 0,
+      "seconds": 0.271,
+      "raw": {
+        "bytes": 44511,
+        "sha256": "aeedce4c8376ad2aadb55ba3bdb4f53d918dc55b6952dd98f7dd8de520eade26"
+      },
+      "reused": true,
+      "reason": "既定入力993件が同じSHA-256であり、変更は隔離した試行と照合台本だけ"
+    }
+  ],
+  "local_declarations": 441,
+  "private_and_generated_included": true,
+  "new_axioms": 0,
+  "axiom_sets": {
+    "propext": 50,
+    "Quot.sound + propext": 6,
+    "Classical.choice + Quot.sound + propext": 288,
+    "none": 97
+  },
+  "declaration_list_sha256": "a6a371d645b89e367e96ae69fec880699667bbd297d2f45816d4e54429ed08b7",
+  "protected_input_count": 993,
+  "protected_inputs_unchanged": true,
+  "protected_manifest_sha256": "15f7f9cffecfacbea804b6224ddf955befeea2f97743e2b51cc5111e956bd2d8",
+  "default_import_unchanged": true,
+  "rust_and_work_checks": "未実行。隔離したLean試行であり、本番作業の群末ではない",
+  "rss": "未取得（計画上の非採取）"
+}

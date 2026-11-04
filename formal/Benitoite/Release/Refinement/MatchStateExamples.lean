@@ -54,17 +54,17 @@ private theorem root_typed (P : Program) (B : Builtins) :
 private theorem plain_code (P : Program) (B : Builtins) :
     HasTypeCQ P B StoreTy.empty Qempty [] [] [] none (.match root plainArms) (.base .unit) Eff.empty [] := by
   refine .C_Match (root_typed P B) (obs := none) (by intro t h; cases h)
-    (.plain (pair_alts P _) (by intro p hp; cases hp) (ret_unit _)
-      (.plain (wild_alts P _) (by intro p hp; cases hp) (ret_unit _) (.nil unit_annotation))) ?_
+    (.plainEmpty (pair_alts P _) (by intro p hp; cases hp) (ret_unit _)
+      (.plainEmpty (wild_alts P _) (by intro p hp; cases hp) (ret_unit _) (.nil unit_annotation))) ?_
   intro v hv
   exact ⟨.wild,by simp [unguardedPats,plainArms,pairs,wild],by simp [matchVal]⟩
 
 private theorem guard_code (P : Program) (B : Builtins) (b : Bool) :
     HasTypeCQ P B StoreTy.empty Qempty [] [] [] none (.match root (guardArms b)) (.base .unit) Eff.empty [] := by
   refine .C_Match (root_typed P B) (obs := none) (by intro t h; cases h)
-    (.guarded (pair_alts P _) (by intro p hp; cases hp) boolean_annotation
+    (.guardedEmpty (pair_alts P _) (by intro p hp; cases hp) boolean_annotation
       (.C_Return (boolean_typed b)) (ret_unit _)
-      (.plain (wild_alts P _) (by intro p hp; cases hp) (ret_unit _) (.nil unit_annotation))) ?_
+      (.plainEmpty (wild_alts P _) (by intro p hp; cases hp) (ret_unit _) (.nil unit_annotation))) ?_
   intro v hv
   exact ⟨.wild,by simp [unguardedPats,guardArms,wild],by simp [matchVal]⟩
 
@@ -182,14 +182,14 @@ theorem reject_false_fact_to_tail {P B Ψ} (valid : P.VarianceValid) :
         ⟨⟨_,rfl,by intro b t e h; cases h⟩,trivial⟩⟩
   intro h
   cases h with
-  | guarded _ _ _ _ _ tail =>
+  | guarded _ _ _ _ _ _ _ tail =>
     match tail with
-    | .plain (δ := δ) hp _ hb _ =>
+    | .plain (δ := δ) hp _ _ _ hb _ =>
       have hd : δ = [] := List.eq_nil_of_length_eq_zero hp.2.1
       subst δ
       have hv := hb.ret_value rfl
       apply TypedMeaningExamples.reject_top valid
-      simpa only [Refinement.bindParams,liftMany_eq,pathFacts,List.length_nil,List.reverse_nil,List.map_nil,List.nil_append,Ty.shiftV_zero] using hv
+      simpa only [Refinement.bindParams,liftMany_eq,pathFacts,fieldFacts,List.length_nil,List.reverse_nil,List.map_nil,List.nil_append,Ty.shiftV_zero] using hv
 
 example {P B σ} (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P) :
     StateTyE P B σ Eff.empty (.run (.mk (Capture.empty.extendMany [unit,.list [unit]]) result) [] Store.empty) :=

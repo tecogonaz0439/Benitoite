@@ -576,7 +576,7 @@ mutual
       HasTypeArmsQ P B store Q C Δ Ξ R obs arms a b e L := by
     match h with
     | .nil ha => exact .nil (hm.annotation ha)
-    | .plain (δ := δ) (alts := alts) hp hw hb hs =>
+    | .plain (δ := δ) (alts := alts) (links := links) hp hvf hfw hw hb hs =>
       have hw' : FactsWF P C Δ (pathFacts obs (matchedTests alts ++ excludedTests alts)) := by
         intro p hp
         simpa only [predBind_id] using (hw p hp).map hm.values hm.references hm.declaration
@@ -584,22 +584,31 @@ mutual
       have hef := Entails.extend_conditions hf (added := pathFacts obs (excludedTests alts)) (added' := pathFacts obs (excludedTests alts)) (by simp)
       have hmm := hm.add_conditions (pathFacts obs (matchedTests alts)) hA hstore
       have hme := hm.add_conditions (pathFacts obs (excludedTests alts)) hA hstore
-      exact .plain hp hw' (context_comp hb hA hstore (hmm.params hA hstore δ)
-        (hmm.conditions_params hmf δ)) (context_arms hs hA hstore hme hef)
-    | .guarded (δ := δ) (alts := alts) (p := p) hp hw hgp hg hb hs =>
+      have hparams := hmm.params hA hstore δ
+      have hfw' : FactsWF P C (bindParams Δ δ) (fieldFacts δ.length obs links) := by
+        intro p hp
+        simpa only [predBind_id] using (hfw p hp).map hparams.values hparams.references hparams.declaration
+      have hparamsF := hparams.add_conditions (fieldFacts δ.length obs links) hA hstore
+      have hconds := Entails.extend_conditions (hmm.conditions_params hmf δ) (added := fieldFacts δ.length obs links) (added' := fieldFacts δ.length obs links) (by simp)
+      exact .plain hp hvf hfw' hw' (context_comp hb hA hstore hparamsF hconds) (context_arms hs hA hstore hme hef)
+    | .guarded (δ := δ) (alts := alts) (p := p) (links := links) hp hvf hfw hw hgp hg hb hs =>
       have hw' : FactsWF P C Δ (pathFacts obs (matchedTests alts ++ excludedTests alts)) := by
         intro p hp
         simpa only [predBind_id] using (hw p hp).map hm.values hm.references hm.declaration
       have hmf := Entails.extend_conditions hf (added := pathFacts obs (matchedTests alts)) (added' := pathFacts obs (matchedTests alts)) (by simp)
       have hmm := hm.add_conditions (pathFacts obs (matchedTests alts)) hA hstore
       have hparams := hmm.params hA hstore δ
-      have hguard := hparams.hideConts hA hstore
-      have hconds := hmm.conditions_params hmf δ
-      refine .guarded hp hw' (hguard.annotation hgp)
+      have hfw' : FactsWF P C (bindParams Δ δ) (fieldFacts δ.length obs links) := by
+        intro p hp
+        simpa only [predBind_id] using (hfw p hp).map hparams.values hparams.references hparams.declaration
+      have hparamsF := hparams.add_conditions (fieldFacts δ.length obs links) hA hstore
+      have hguard := hparamsF.hideConts hA hstore
+      have hconds := Entails.extend_conditions (hmm.conditions_params hmf δ) (added := fieldFacts δ.length obs links) (added' := fieldFacts δ.length obs links) (by simp)
+      refine .guarded hp hvf hfw' hw' (hguard.annotation hgp)
         (context_comp hg hA hstore hguard (fun p hp => (hconds p hp).hideConts)) ?_
         (context_arms hs hA hstore hm hf)
       exact context_comp hb hA hstore
-        (hparams.add_conditions [p.open (.boolean true)] hA hstore)
+        (hparamsF.add_conditions [p.open (.boolean true)] hA hstore)
         (Entails.conditions_cons hconds (.hyp (List.mem_append_right _ List.mem_cons_self)))
   private theorem context_clauses {P B store Q C Γ Φ R eb cs t e L}
       (h : HasTypeClausesQ P B store Q C Γ Φ R eb cs t e L)

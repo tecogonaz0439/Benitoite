@@ -1,0 +1,21 @@
+{
+  "compiler": "rustc 1.98.1 (48a229cea 2026-09-01)",
+  "scope": "固定機械のNaN6例と最短表記1例。全bit/全機械の交換ではない",
+  "cases": [
+    "narrow fff8000000000000 ffc00000",
+    "narrow 7ff0000000000001 7fc00000",
+    "narrow fff123456789abcd ffc91a2b",
+    "widen ffc00001 fff8000020000000",
+    "widen 7f800001 7ff8000020000000",
+    "widen ff812345 fff82468a0000000"
+  ],
+  "source": {
+    "bytes": 276,
+    "sha256": "133f833979b8a7e51bdd043fc32d9caf0557e82f35912e2917eb2beb1c0aa139"
+  },
+  "raw": {
+    "bytes": 195,
+    "sha256": "96e36c607d8c7721fc99c50a9d66dcd60617888a9b628fc7d1ea1e0766f72ebe"
+  },
+  "lean_check": "r2-numeric-nan04"
+}

@@ -1,0 +1,68 @@
+{
+  "unit": "L40.25",
+  "start_utc": "2026-11-03T16:44:43.923973+00:00",
+  "interruption_utc": "2026-11-03T17:04:54+00:00",
+  "end_utc": "2026-11-03T17:19:25.384002+00:00",
+  "outer_seconds_including_interruption": 2135.870539,
+  "status": "境界に依存しない担当分を完了。L40.25全体は境界の決定待ち",
+  "modules": [
+    "StandardRecordFields",
+    "StandardDecodeComparison",
+    "StandardDecodeBodies"
+  ],
+  "files": {
+    "formal/Benitoite/Release/Refinement/StandardRecordFields.lean": {
+      "bytes": 17124,
+      "sha256": "371738cfd20526134945eeaa50903a398ac0e9ce643be5a2fdb25be767cf3d57"
+    },
+    "formal/Benitoite/Release/Refinement/StandardDecodeComparison.lean": {
+      "bytes": 15548,
+      "sha256": "0419e18742b1bc56d286ea7743b1359592f73286705d6cf0f599d9cb7d2aef9f"
+    },
+    "formal/Benitoite/Release/Refinement/StandardDecodeBodies.lean": {
+      "bytes": 35591,
+      "sha256": "5e93cd767cc626c8bd3ebb5f80bef1b4086aa7f49e382c60ff6d249eee8c3ae6"
+    }
+  },
+  "default_build": {
+    "label": "r1-u25-default02",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal/",
+    "start": "2026-11-03T17:15:42.190875+00:00",
+    "end": "2026-11-03T17:15:45.628345+00:00",
+    "seconds": 3.4374206660000004,
+    "exit": 0,
+    "raw": {
+      "bytes": 43389,
+      "sha256": "31aa068a9a75361ab4e856a3686b3d8d3cf5d797d1225199a0a4578240e55499"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  "source_verify": {
+    "label": "r1-u25-sourceverify05",
+    "command": [
+      "python3",
+      "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/e/verify-u25.py"
+    ],
+    "cwd": ".",
+    "start": "2026-11-03T17:20:03.963439+00:00",
+    "end": "2026-11-03T17:20:04.041299+00:00",
+    "seconds": 0.077820709,
+    "exit": 0,
+    "raw": {
+      "bytes": 376,
+      "sha256": "c8a88a055f1e591120220d4d0a642a6de2618e3b26b9ce06a4ec4868efbb61cf"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  "checks_record": "checks-r1-u25.json",
+  "all_axioms": "取りまとめが全private/生成宣言を含めて実施する。今回の局所検査では未実施",
+  "global_verify": "取りまとめ担当",
+  "work_and_dry_run": "今回の再開では未実施",
+  "git": "全操作なし",
+  "rss": "未取得（計画上の非採取）",
+  "last_end_utc": "2026-11-03T17:20:19.794512+00:00"
+}

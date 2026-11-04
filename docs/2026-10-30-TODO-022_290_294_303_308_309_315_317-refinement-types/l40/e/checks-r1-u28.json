@@ -1,0 +1,1009 @@
+[
+  {
+    "label": "r1-u28-minmax01",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal/",
+    "start": "2026-11-03T18:14:35.143183+00:00",
+    "end": "2026-11-03T18:14:36.513908+00:00",
+    "seconds": 1.3706732080000001,
+    "exit": 0,
+    "raw": {
+      "bytes": 43713,
+      "sha256": "25aa99376638ad9cef6c8593064df1b9845da66ce5aa91eebf29ea9147926887"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-retained-baselines01",
+    "command": [
+      "python3",
+      "-c",
+      "import pathlib,json,hashlib; r=pathlib.Path(\"docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/e\"); exec(\"for n in [26,27]:\\n d=json.loads((r/f\\\"baseline-r1-u{n}.json\\\").read_text()); captured={}\\n for p in d[\\\"files_parts\\\"]:\\n  raw=(r/p[\\\"file\\\"]).read_bytes(); assert len(raw)==p[\\\"bytes\\\"] and hashlib.sha256(raw).hexdigest()==p[\\\"sha256\\\"]; captured.update(json.loads(raw))\\n assert len(captured)==d[\\\"lean_sources\\\"]\\n for name,expected in captured.items():\\n  data=pathlib.Path(name).read_bytes(); data=data[:expected[\\\"bytes\\\"]] if name==\\\"formal/Benitoite.lean\\\" else data; assert len(data)==expected[\\\"bytes\\\"] and hashlib.sha256(data).hexdigest()==expected[\\\"sha256\\\"], name\\n print(n,len(captured),\\\"retained\\\")\")"
+    ],
+    "cwd": ".",
+    "start": "2026-11-03T18:15:43.890830+00:00",
+    "end": "2026-11-03T18:15:43.921241+00:00",
+    "seconds": 0.030363541999999993,
+    "exit": 1,
+    "raw": {
+      "bytes": 884,
+      "sha256": "313e96f05d685e7220c59e1e16a6279d3a46387ec75cbf35681816f4a9473857"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-retained-baselines02",
+    "command": [
+      "python3",
+      "-c",
+      "import pathlib,json,hashlib; r=pathlib.Path(\"docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/e\"); exec(\"for n in [26,27]:\\n d=json.loads((r/f\\\"baseline-r1-u{n}.json\\\").read_text()); captured={}\\n for p in d[\\\"files_parts\\\"]:\\n  raw=(r/p[\\\"file\\\"]).read_bytes(); assert len(raw)==p[\\\"bytes\\\"] and hashlib.sha256(raw).hexdigest()==p[\\\"sha256\\\"]; captured.update(json.loads(raw))\\n assert sum(name.startswith(\\\"formal/\\\") and name.endswith(\\\".lean\\\") for name in captured)==d[\\\"lean_sources\\\"]\\n for name,expected in captured.items():\\n  data=pathlib.Path(name).read_bytes(); data=data[:expected[\\\"bytes\\\"]] if name==\\\"formal/Benitoite.lean\\\" else data; assert len(data)==expected[\\\"bytes\\\"] and hashlib.sha256(data).hexdigest()==expected[\\\"sha256\\\"], name\\n print(n,len(captured),\\\"retained\\\")\")"
+    ],
+    "cwd": ".",
+    "start": "2026-11-03T18:16:05.092854+00:00",
+    "end": "2026-11-03T18:16:05.165724+00:00",
+    "seconds": 0.07282941700000001,
+    "exit": 0,
+    "raw": {
+      "bytes": 32,
+      "sha256": "3cc25b56ae72ebe5d01925b59105c3d7314b4682f1223b8446009a463b0a7418"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-integerargs01",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/StandardIntegerAPI.lean"
+    ],
+    "cwd": "formal/",
+    "start": "2026-11-03T18:16:59.521580+00:00",
+    "end": "2026-11-03T18:17:00.224809+00:00",
+    "seconds": 0.7031875,
+    "exit": 0,
+    "raw": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-integer67-01",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/StandardIntegerAPI.lean"
+    ],
+    "cwd": "formal/",
+    "start": "2026-11-03T18:17:31.814123+00:00",
+    "end": "2026-11-03T18:17:38.428131+00:00",
+    "seconds": 6.613942292,
+    "exit": 1,
+    "raw": {
+      "bytes": 734,
+      "sha256": "f4a8cec899da8e36a69124e1f8fc92547c0ee4760efafbc4c5f8db96998f101f"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-integer67-02",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/StandardIntegerAPI.lean"
+    ],
+    "cwd": "formal/",
+    "start": "2026-11-03T18:17:47.471910+00:00",
+    "end": "2026-11-03T18:18:00.509860+00:00",
+    "seconds": 13.037862041,
+    "exit": 0,
+    "raw": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-catalog01",
+    "command": [
+      "python3",
+      "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/e/catalog-u28.py"
+    ],
+    "cwd": ".",
+    "start": "2026-11-03T18:18:13.580442+00:00",
+    "end": "2026-11-03T18:18:13.619896+00:00",
+    "seconds": 0.03941520799999999,
+    "exit": 0,
+    "raw": {
+      "bytes": 153,
+      "sha256": "7991eda76ec526751659656b61e7c9e0fee002ca167d0403e1beddef7b8d8e1f"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-integer-default01",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal/",
+    "start": "2026-11-03T18:18:24.980427+00:00",
+    "end": "2026-11-03T18:18:38.973395+00:00",
+    "seconds": 13.992875666,
+    "exit": 0,
+    "raw": {
+      "bytes": 43706,
+      "sha256": "062c9a4f1267925541980f7089a37581aa43a3d3a766da631ab6e230527cd777"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-conversion01",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/StandardConversionResponse.lean"
+    ],
+    "cwd": "formal/",
+    "start": "2026-11-03T18:19:26.131495+00:00",
+    "end": "2026-11-03T18:19:27.111224+00:00",
+    "seconds": 0.9796830830000001,
+    "exit": 1,
+    "raw": {
+      "bytes": 5847,
+      "sha256": "f1a22ea10a3885b5e2c396a462201f76307c79204e0bd72f48ea973469a62736"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-conversion02",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/StandardConversionResponse.lean"
+    ],
+    "cwd": "formal/",
+    "start": "2026-11-03T18:19:38.368015+00:00",
+    "end": "2026-11-03T18:19:39.348854+00:00",
+    "seconds": 0.9808007500000001,
+    "exit": 1,
+    "raw": {
+      "bytes": 1808,
+      "sha256": "2b57835f91390a1e792f323f8d74eb2d258a06a5dd75a57a88815eea87c83b3e"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-conversion03",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/StandardConversionResponse.lean"
+    ],
+    "cwd": "formal/",
+    "start": "2026-11-03T18:19:43.530983+00:00",
+    "end": "2026-11-03T18:19:44.455892+00:00",
+    "seconds": 0.9248707920000001,
+    "exit": 0,
+    "raw": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-conversion-default01",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal/",
+    "start": "2026-11-03T18:19:57.192286+00:00",
+    "end": "2026-11-03T18:19:58.986549+00:00",
+    "seconds": 1.7942219160000001,
+    "exit": 0,
+    "raw": {
+      "bytes": 43717,
+      "sha256": "95de671637722f5771373946ce2bbec709405d1bb15edc21cec7f7436ed84306"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-scalar13-01",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/StandardScalarResponse.lean"
+    ],
+    "cwd": "formal/",
+    "start": "2026-11-03T18:21:12.376072+00:00",
+    "end": "2026-11-03T18:21:13.706086+00:00",
+    "seconds": 1.329969416,
+    "exit": 1,
+    "raw": {
+      "bytes": 14143,
+      "sha256": "ef98d1a4b33fac6e54347555b63ed03ad16cedd7026f80c7b058d83047680984"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-scalar13-02",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/StandardScalarResponse.lean"
+    ],
+    "cwd": "formal/",
+    "start": "2026-11-03T18:21:38.669042+00:00",
+    "end": "2026-11-03T18:21:39.942087+00:00",
+    "seconds": 1.2729934580000002,
+    "exit": 1,
+    "raw": {
+      "bytes": 8235,
+      "sha256": "4d11be3d9ddc05dcee504299d86d9a4b80147aaf6fdd08bd403ead485317f323"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-scalar13-03",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/StandardScalarResponse.lean"
+    ],
+    "cwd": "formal/",
+    "start": "2026-11-03T18:21:55.536247+00:00",
+    "end": "2026-11-03T18:21:57.039808+00:00",
+    "seconds": 1.5035159169999999,
+    "exit": 1,
+    "raw": {
+      "bytes": 5652,
+      "sha256": "a00312b3967e8145183b0c1ad1bdc8e5be4fbee61df92203c7b9f9b55613f4d7"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-scalar13-04",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/StandardScalarResponse.lean"
+    ],
+    "cwd": "formal/",
+    "start": "2026-11-03T18:22:06.996137+00:00",
+    "end": "2026-11-03T18:22:08.659528+00:00",
+    "seconds": 1.6633434999999999,
+    "exit": 1,
+    "raw": {
+      "bytes": 9190,
+      "sha256": "0769c3be9ae9af9303814d07596e235f54332f8a184e5d8307cba90213a0cf59"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-scalar13-05",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/StandardScalarResponse.lean"
+    ],
+    "cwd": "formal/",
+    "start": "2026-11-03T18:22:13.504366+00:00",
+    "end": "2026-11-03T18:22:15.013849+00:00",
+    "seconds": 1.509441542,
+    "exit": 1,
+    "raw": {
+      "bytes": 3538,
+      "sha256": "0fe096367dd1514ab39d33e741968914e1f1f43503561ffb96ebc8438446bf6a"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-scalar13-default01",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal/",
+    "start": "2026-11-03T18:22:37.590553+00:00",
+    "end": "2026-11-03T18:22:41.003132+00:00",
+    "seconds": 3.412541166,
+    "exit": 0,
+    "raw": {
+      "bytes": 43795,
+      "sha256": "e0ed774fda45565c31d6e1ef7f6e2d1ee31177357a96a8e6d434a79611989739"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-decimalmode01",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/StandardDecimalResponse.lean"
+    ],
+    "cwd": "formal/",
+    "start": "2026-11-03T18:23:42.318939+00:00",
+    "end": "2026-11-03T18:23:43.058193+00:00",
+    "seconds": 0.739218375,
+    "exit": 1,
+    "raw": {
+      "bytes": 5584,
+      "sha256": "5a8cbc7ac576471402ad57171c014efcebc2b6552c93fd862f39149ae2627e70"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-decimalmode02",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/StandardDecimalResponse.lean"
+    ],
+    "cwd": "formal/",
+    "start": "2026-11-03T18:23:56.013011+00:00",
+    "end": "2026-11-03T18:23:56.925379+00:00",
+    "seconds": 0.912327708,
+    "exit": 0,
+    "raw": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-decimal6-01",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/StandardDecimalResponse.lean"
+    ],
+    "cwd": "formal/",
+    "start": "2026-11-03T18:24:25.061158+00:00",
+    "end": "2026-11-03T18:24:26.243259+00:00",
+    "seconds": 1.182060417,
+    "exit": 1,
+    "raw": {
+      "bytes": 2671,
+      "sha256": "3219d4fbb72fdd933ce6d103e55db018b4bc0ecfd69f839e5c2aa9618ddcf0e3"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-decimal6-02",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/StandardDecimalResponse.lean"
+    ],
+    "cwd": "formal/",
+    "start": "2026-11-03T18:24:50.948542+00:00",
+    "end": "2026-11-03T18:24:52.093762+00:00",
+    "seconds": 1.145178541,
+    "exit": 0,
+    "raw": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-decimal-default01",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal/",
+    "start": "2026-11-03T18:25:19.008897+00:00",
+    "end": "2026-11-03T18:25:20.917565+00:00",
+    "seconds": 1.908625542,
+    "exit": 0,
+    "raw": {
+      "bytes": 43712,
+      "sha256": "6e84223e409b94b8c0212a2e61f51b58559bcb6c5489f98db118f6c332dcd9c8"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-list6-01",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/StandardListResponse.lean"
+    ],
+    "cwd": "formal/",
+    "start": "2026-11-03T18:26:10.205280+00:00",
+    "end": "2026-11-03T18:26:11.020984+00:00",
+    "seconds": 0.815664041,
+    "exit": 1,
+    "raw": {
+      "bytes": 991,
+      "sha256": "d04cb9717a2f697da67bee8d17a0abd049b3313cdf7f17baa2a993e43d4b7bd0"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-list6-02",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/StandardListResponse.lean"
+    ],
+    "cwd": "formal/",
+    "start": "2026-11-03T18:26:21.743373+00:00",
+    "end": "2026-11-03T18:26:22.543495+00:00",
+    "seconds": 0.800076083,
+    "exit": 0,
+    "raw": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-list6-default01",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal/",
+    "start": "2026-11-03T18:27:11.531096+00:00",
+    "end": "2026-11-03T18:27:13.112772+00:00",
+    "seconds": 1.581631792,
+    "exit": 0,
+    "raw": {
+      "bytes": 43710,
+      "sha256": "bd5f8338b623eca07fcad731b3f309bb59b2f16b4422be0878a55d2dccaf5fe2"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-bytes5-01",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/StandardBytesResponse.lean"
+    ],
+    "cwd": "formal/",
+    "start": "2026-11-03T18:27:50.613725+00:00",
+    "end": "2026-11-03T18:27:51.439569+00:00",
+    "seconds": 0.825807834,
+    "exit": 1,
+    "raw": {
+      "bytes": 245,
+      "sha256": "8a8f3faa37434c1edaca367a3fffa3841d7113a6dcc950de8aeec320de4e04eb"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-bytes5-02",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/StandardBytesResponse.lean"
+    ],
+    "cwd": "formal/",
+    "start": "2026-11-03T18:27:56.850771+00:00",
+    "end": "2026-11-03T18:27:57.636240+00:00",
+    "seconds": 0.7854276250000001,
+    "exit": 0,
+    "raw": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-bytes5-default01",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal/",
+    "start": "2026-11-03T18:28:25.434134+00:00",
+    "end": "2026-11-03T18:28:27.108219+00:00",
+    "seconds": 1.674047417,
+    "exit": 0,
+    "raw": {
+      "bytes": 43711,
+      "sha256": "57eed78f83e658d94a705d21c0e73744c2408ff38ca9d394fd52d30c76eb43e9"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-fromfloat-exit01",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/StandardDecimalResponse.lean"
+    ],
+    "cwd": "formal/",
+    "start": "2026-11-03T18:28:47.617459+00:00",
+    "end": "2026-11-03T18:28:48.795066+00:00",
+    "seconds": 1.177566084,
+    "exit": 1,
+    "raw": {
+      "bytes": 799,
+      "sha256": "e77f38028be33ae979b6638c03980e81f882aefd915f564ed69d6a5e8e4144f1"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-catalog02",
+    "command": [
+      "python3",
+      "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/e/catalog-u28.py"
+    ],
+    "cwd": ".",
+    "start": "2026-11-03T18:29:23.333839+00:00",
+    "end": "2026-11-03T18:29:23.373567+00:00",
+    "seconds": 0.03968441599999999,
+    "exit": 0,
+    "raw": {
+      "bytes": 154,
+      "sha256": "f6b6bfde5b53caf77b70ca9585a1979e91390d2312dcec8d9c1657fdac0ee256"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-fromfloat-exit02",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/StandardDecimalResponse.lean"
+    ],
+    "cwd": "formal/",
+    "start": "2026-11-03T18:29:31.766513+00:00",
+    "end": "2026-11-03T18:29:32.950206+00:00",
+    "seconds": 1.183651542,
+    "exit": 1,
+    "raw": {
+      "bytes": 823,
+      "sha256": "1038165455301b2d9e46e97cae10e7318c8e68835b373a867386d6d9121534cf"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-fromfloat-exit03",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/StandardDecimalResponse.lean"
+    ],
+    "cwd": "formal/",
+    "start": "2026-11-03T18:29:57.476002+00:00",
+    "end": "2026-11-03T18:29:58.678987+00:00",
+    "seconds": 1.202942542,
+    "exit": 1,
+    "raw": {
+      "bytes": 1178,
+      "sha256": "cf605e678779a63d9e846ac59c9768f328c6aeeca9baf4a446781d693a9b94af"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-actual-list01",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/StandardActualListBodies.lean"
+    ],
+    "cwd": "formal/",
+    "start": "2026-11-03T18:30:37.934295+00:00",
+    "end": "2026-11-03T18:30:44.508256+00:00",
+    "seconds": 6.5739012500000005,
+    "exit": 0,
+    "raw": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-fromfloat-exit04",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/StandardDecimalResponse.lean"
+    ],
+    "cwd": "formal/",
+    "start": "2026-11-03T18:30:45.312318+00:00",
+    "end": "2026-11-03T18:30:46.498567+00:00",
+    "seconds": 1.186202375,
+    "exit": 0,
+    "raw": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-actual-list-default01",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal/",
+    "start": "2026-11-03T18:31:00.631867+00:00",
+    "end": "2026-11-03T18:31:11.586781+00:00",
+    "seconds": 10.954838833,
+    "exit": 0,
+    "raw": {
+      "bytes": 43950,
+      "sha256": "001712a955da119cb3bcbbb4b471f5f9dfd216d70448946494e1ee68ee2e7e6e"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-conversion-math01",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/StandardConversionResponse.lean"
+    ],
+    "cwd": "formal/",
+    "start": "2026-11-03T18:31:21.414082+00:00",
+    "end": "2026-11-03T18:31:22.406904+00:00",
+    "seconds": 0.9927745410000001,
+    "exit": 0,
+    "raw": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-absolute-math01",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/StandardIntegerAPI.lean"
+    ],
+    "cwd": "formal/",
+    "start": "2026-11-03T18:31:50.385918+00:00",
+    "end": "2026-11-03T18:32:03.511937+00:00",
+    "seconds": 13.125930042,
+    "exit": 1,
+    "raw": {
+      "bytes": 404,
+      "sha256": "a814d9519d399730a3498d25a455afd19f9d338c2b7511983d2d77b148acfa48"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-absolute-math02",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/StandardIntegerAPI.lean"
+    ],
+    "cwd": "formal/",
+    "start": "2026-11-03T18:32:21.032228+00:00",
+    "end": "2026-11-03T18:32:34.165699+00:00",
+    "seconds": 13.133381542,
+    "exit": 1,
+    "raw": {
+      "bytes": 284,
+      "sha256": "655f981bd1089842dc75f25d4968c6cb08fd9152733cc0ad4e08892c8dcee8aa"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-list-relation01",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/StandardListResponse.lean"
+    ],
+    "cwd": "formal/",
+    "start": "2026-11-03T18:32:52.193457+00:00",
+    "end": "2026-11-03T18:32:53.252307+00:00",
+    "seconds": 1.058808167,
+    "exit": 1,
+    "raw": {
+      "bytes": 515,
+      "sha256": "369ec8bb1744b37ea2f60afc02072a3b46183af32e53739eb681092a0bf64c2c"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-absolute-math03",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/StandardIntegerAPI.lean"
+    ],
+    "cwd": "formal/",
+    "start": "2026-11-03T18:33:07.086404+00:00",
+    "end": "2026-11-03T18:33:20.302949+00:00",
+    "seconds": 13.216460708000001,
+    "exit": 0,
+    "raw": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-catalog03",
+    "command": [
+      "python3",
+      "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/e/catalog-u28.py"
+    ],
+    "cwd": ".",
+    "start": "2026-11-03T18:35:14.958774+00:00",
+    "end": "2026-11-03T18:35:14.998696+00:00",
+    "seconds": 0.039881625,
+    "exit": 0,
+    "raw": {
+      "bytes": 121,
+      "sha256": "767d4fdd9205ed16d9d78ef8edd767425e403595a6a089459ff96140c5284738"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-evidence01",
+    "command": [
+      "python3",
+      "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/e/collect-u28.py"
+    ],
+    "cwd": ".",
+    "start": "2026-11-03T18:38:13.273662+00:00",
+    "end": "2026-11-03T18:38:13.312437+00:00",
+    "seconds": 0.038730707999999996,
+    "exit": 0,
+    "raw": {
+      "bytes": 517,
+      "sha256": "b4babb09bff10850b5d9bf75edfda4248426d6df8ccaf7f3eceecda5cfcf3b82"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-catalog04",
+    "command": [
+      "python3",
+      "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/e/catalog-u28.py"
+    ],
+    "cwd": ".",
+    "start": "2026-11-03T19:07:46.448131+00:00",
+    "end": "2026-11-03T19:07:46.488918+00:00",
+    "seconds": 0.040742334,
+    "exit": 0,
+    "raw": {
+      "bytes": 121,
+      "sha256": "767d4fdd9205ed16d9d78ef8edd767425e403595a6a089459ff96140c5284738"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-evidence02",
+    "command": [
+      "python3",
+      "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/e/collect-u28.py"
+    ],
+    "cwd": ".",
+    "start": "2026-11-03T19:11:08.632761+00:00",
+    "end": "2026-11-03T19:11:08.672130+00:00",
+    "seconds": 0.039326708,
+    "exit": 0,
+    "raw": {
+      "bytes": 646,
+      "sha256": "767c9e0828f2585d592362a950b707146d9fd9e1a8dd46bb18d901f85e977d8e"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-evidence-prepare01",
+    "command": [
+      "python3",
+      "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/e/verify-u28.py",
+      "--prepare"
+    ],
+    "cwd": ".",
+    "start": "2026-11-03T19:18:46.798100+00:00",
+    "end": "2026-11-03T19:18:46.867023+00:00",
+    "seconds": 0.068885375,
+    "exit": 0,
+    "raw": {
+      "bytes": 30,
+      "sha256": "07959556e692b5cca485539076f19ab437257828087f530303f01b781054b760"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-evidence-names01",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/e/evidence-check-u28.lean"
+    ],
+    "cwd": "formal/",
+    "start": "2026-11-03T19:18:51.519414+00:00",
+    "end": "2026-11-03T19:18:52.258696+00:00",
+    "seconds": 0.739245625,
+    "exit": 0,
+    "raw": {
+      "bytes": 81341,
+      "sha256": "343e044e60670bb996076275ad6f35cfa1eae245bdd8638b77fc0f7af037b3bd"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-localverify01",
+    "command": [
+      "python3",
+      "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/e/verify-u28.py"
+    ],
+    "cwd": ".",
+    "start": "2026-11-03T19:18:54.699097+00:00",
+    "end": "2026-11-03T19:18:54.809658+00:00",
+    "seconds": 0.110518708,
+    "exit": 1,
+    "raw": {
+      "bytes": 437,
+      "sha256": "0027e6404f3b97ee746a34650cf72d8bb380a4dd51e305f709d087b5c82afedf"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-localverify02",
+    "command": [
+      "python3",
+      "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/e/verify-u28.py"
+    ],
+    "cwd": ".",
+    "start": "2026-11-03T19:19:09.577580+00:00",
+    "end": "2026-11-03T19:19:09.728658+00:00",
+    "seconds": 0.15103866700000002,
+    "exit": 1,
+    "raw": {
+      "bytes": 474,
+      "sha256": "5511c1f7e53740b8d425ac046e69b968912cf09bf6b2f07e014d1c93303d8ff1"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-localverify03",
+    "command": [
+      "python3",
+      "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/e/verify-u28.py"
+    ],
+    "cwd": ".",
+    "start": "2026-11-03T19:19:26.402150+00:00",
+    "end": "2026-11-03T19:19:26.595910+00:00",
+    "seconds": 0.193722834,
+    "exit": 0,
+    "raw": {
+      "bytes": 1437,
+      "sha256": "4042c529c3b613bd006eda5475779ec037a73e199cfbffa7046a783325791d07"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-catalog-final01",
+    "command": [
+      "python3",
+      "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/e/catalog-u28.py"
+    ],
+    "cwd": ".",
+    "start": "2026-11-03T19:19:52.664248+00:00",
+    "end": "2026-11-03T19:19:52.703940+00:00",
+    "seconds": 0.039652708,
+    "exit": 0,
+    "raw": {
+      "bytes": 121,
+      "sha256": "767d4fdd9205ed16d9d78ef8edd767425e403595a6a089459ff96140c5284738"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  {
+    "label": "r1-u28-evidence-final01",
+    "command": [
+      "python3",
+      "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/e/collect-u28.py"
+    ],
+    "cwd": ".",
+    "start": "2026-11-03T19:19:52.802083+00:00",
+    "end": "2026-11-03T19:19:52.840209+00:00",
+    "seconds": 0.038078625000000005,
+    "exit": 0,
+    "raw": {
+      "bytes": 646,
+      "sha256": "767c9e0828f2585d592362a950b707146d9fd9e1a8dd46bb18d901f85e977d8e"
+    },
+    "rss": "未取得（計画上の非採取）"
+  }
+]

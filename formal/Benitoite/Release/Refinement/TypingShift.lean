@@ -576,6 +576,16 @@ theorem Tel.shiftV_zero (t : Tel) (c : Nat) : Tel.shiftV 0 c t = t := by
   exact Tel.rawBind_id t
 
 
+@[simp] theorem fieldFacts_shiftV {n obs alts links k c}
+    (valid : LinksValid alts n links) :
+    (fieldFacts n obs links).map (Pred.shiftV k (c+n)) =
+      fieldFacts n (obs.map (termBind (fun i => some (.var (shiftIndex k c i))))) links := by
+  have he : Pred.shiftV k (c+n) = predBind (fun i => some (.var (upRen n (shiftIndex k c) i))) := by
+    funext p
+    simp only [Pred.shiftV,upRen_shiftIndex,shiftIndex]
+  rw [he]
+  exact fieldFacts_rename valid (shiftIndex k c)
+
 mutual
   theorem HasTypeVQ.shift_values {P B store Q C Γ Φ v a}
       (h : HasTypeVQ P B store Q C Γ Φ v a) {k c Δ Ξ store'}
@@ -935,28 +945,39 @@ mutual
         (obs.map (termBind (fun i => some (.var (shiftIndex k c i))))) (Arm.renameList (shiftIndex k c) arms) (a.shiftV k c) (b.shiftV k c) (e.shiftV k c) L' := by
     match h with
     | .nil ha => exact .nil (hm.values.annotation ha)
-    | .plain (δ := δ) (alts := alts) hp hw hb hs =>
+    | .plain (δ := δ) (alts := alts) (links := links) hp hvf hfw hw hb hs =>
       have hw' := hw.rename_paths hm.values.values hm.values.references hm.values.declarationRenaming.images
+      have hfw' := FactsWF.rename_fields (ξ := shiftIndex k c) hvf hfw
+        (by simpa only [upRen_shiftIndex,renEnv_values] using (hm.underParams δ).values.values)
+        (by simpa only [upRen_shiftIndex,renEnv_values] using (hm.underParams δ).values.references)
+        (by simpa only [upRen_shiftIndex,renEnv_values] using (hm.underParams δ).values.declarationRenaming.images)
       have hmF := Entails.extend_conditions hf (pathFacts_rename obs (matchedTests alts) (shiftIndex k c))
       have heF := Entails.extend_conditions hf (pathFacts_rename obs (excludedTests alts) (shiftIndex k c))
-      refine .plain (hp.shift_values k c) hw' ?_ (HasTypeArmsQ.shift_values hs hA hstore hext hm hL heF)
+      have hconds := Entails.extend_conditions (hm.values.conditions_params hmF δ) (fieldFacts_shiftV (obs := obs) hvf)
+      refine .plain (hp.shift_values k c) (by simpa only [List.length_map] using hvf)
+        (by simpa only [List.length_map] using hfw') hw' ?_ (HasTypeArmsQ.shift_values hs hA hstore hext hm hL heF)
       have hh := HasTypeCQ.shift_values hb hA hstore hext (hm.underParams δ)
-        (hL.localExtend δ.length) (hm.values.conditions_params hmF δ)
+        (hL.localExtend δ.length) hconds
       simpa only [List.length_map,Option.map_map,Function.comp_def,
         Ty.shiftV_comm,Eff.shiftV_comm,hp.2.1,upRen_shiftIndex,
           List.cons_append,List.nil_append,Pred.shiftV,shiftIndex] using hh
-    | .guarded (δ := δ) (alts := alts) (p := p) hp hw hgp hg hb hs =>
+    | .guarded (δ := δ) (alts := alts) (p := p) (links := links) hp hvf hfw hw hgp hg hb hs =>
       have hw' := hw.rename_paths hm.values.values hm.values.references hm.values.declarationRenaming.images
+      have hfw' := FactsWF.rename_fields (ξ := shiftIndex k c) hvf hfw
+        (by simpa only [upRen_shiftIndex,renEnv_values] using (hm.underParams δ).values.values)
+        (by simpa only [upRen_shiftIndex,renEnv_values] using (hm.underParams δ).values.references)
+        (by simpa only [upRen_shiftIndex,renEnv_values] using (hm.underParams δ).values.declarationRenaming.images)
       have hmF := Entails.extend_conditions hf (pathFacts_rename obs (matchedTests alts) (shiftIndex k c))
+      have hconds := Entails.extend_conditions (hm.values.conditions_params hmF δ) (fieldFacts_shiftV (obs := obs) hvf)
       have hgAnn := (hm.underParams δ).hide.values.annotation hgp
-      refine .guarded (hp.shift_values k c) hw' (by simpa only [Ty.shiftV,List.length_map] using hgAnn) ?_ ?_
+      refine .guarded (hp.shift_values k c) (by simpa only [List.length_map] using hvf)
+        (by simpa only [List.length_map] using hfw') hw' (by simpa only [Ty.shiftV,List.length_map] using hgAnn) ?_ ?_
         (HasTypeArmsQ.shift_values hs hA hstore hext hm hL hf)
       · have hh := HasTypeCQ.shift_values hg hA hstore hext (hm.underParams δ).hide
-          (hL.localExtend δ.length) (fun p hp => ((hm.values.conditions_params hmF δ) p hp).hideConts)
+          (hL.localExtend δ.length) (fun p hp => (hconds p hp).hideConts)
         simpa only [List.length_map,Option.map_none,Ty.shiftV,Eff.shiftV,Eff.empty,shiftVTys,
           hp.2.1,upRen_shiftIndex] using hh
-      · have hconds := hm.values.conditions_params hmF δ
-        have hconds' := Entails.extend_conditions hconds
+      · have hconds' := Entails.extend_conditions hconds
           (added := [p.open (.boolean true)])
           (added' := [(p.shiftV k (c+δ.length+1)).open (.boolean true)])
           (by

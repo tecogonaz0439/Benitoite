@@ -1,0 +1,873 @@
+{
+  "observed_utc": "2026-11-03T17:51:41.958677+00:00",
+  "exit": 0,
+  "scope": "局所照合。全公理監査・独立レビュー・実Rust/Lean交換は含まない",
+  "retained_lean_sources": 734,
+  "current_lean_sources": 740,
+  "modules": [
+    "StandardSafeContracts",
+    "StandardSafeAnnotations",
+    "StandardSafeAccess",
+    "StandardSafeBodies",
+    "StandardSafeFieldGap",
+    "StandardSafeSlice"
+  ],
+  "fixed_19": {
+    "bytes": 6201,
+    "sha256": "b8bc4b877992e4f43560b46cad38151f3825882b2b49f0e1c91d4e28005e9172"
+  },
+  "copied_body_equal": true,
+  "obligations": 64,
+  "procedure_deviations": 23,
+  "later_deviations": 0,
+  "records_under_100KB": true,
+  "source_evidence": {
+    "formal/Benitoite/Release/Refinement/StandardSafeContracts.lean": {
+      "input": {
+        "bytes": 6344,
+        "sha256": "69d561881e3f8cb5688fd71cc9730ccde8dcda0607a938014672deb4ec6f0d55"
+      }
+    },
+    "formal/Benitoite/Release/Refinement/StandardSafeAnnotations.lean": {
+      "input": {
+        "bytes": 48983,
+        "sha256": "035d94ba856dee379f5bf0515a09101b630042967f04aa0236b5b0865c5d892d"
+      }
+    },
+    "formal/Benitoite/Release/Refinement/StandardSafeAccess.lean": {
+      "input": {
+        "bytes": 8922,
+        "sha256": "a9ebb5eba6967c33b622b850519ae32136f7ec1c4a49a862439bc06a8c425104"
+      }
+    },
+    "formal/Benitoite/Release/Refinement/StandardSafeBodies.lean": {
+      "input": {
+        "bytes": 32939,
+        "sha256": "e592d496b1a381f862bf6f89123d1268191c76a7ad9dff062492691c3b69b787"
+      }
+    },
+    "formal/Benitoite/Release/Refinement/StandardSafeFieldGap.lean": {
+      "input": {
+        "bytes": 6054,
+        "sha256": "e51a5b3e8c000c9ca572d72b87f00673373d854c1460095bdc514c8c643aac21"
+      }
+    },
+    "formal/Benitoite/Release/Refinement/StandardSafeSlice.lean": {
+      "input": {
+        "bytes": 22466,
+        "sha256": "3d97dca7b5379e59acfc940f6c09d73008970431e740c5e6f9b50572621592a6"
+      }
+    },
+    "crates/benitoite/src/prelude/stdlib/Range.bnt": {
+      "input": {
+        "bytes": 9759,
+        "sha256": "3aa344e1c98b494a05eeb45e4a35e0d4f77ffe90d2b51f7f97d01c97d3b6b43f"
+      },
+      "excerpts": [
+        {
+          "first": 100,
+          "last": 142,
+          "text": "\n/// Returns the checked Integer. Call checkInteger again to check it against different bounds.\npublic function value(value: CheckedInteger) -> Integer\n  return CheckedInteger.value(value)\nend function\n\nimplement Trait.Show[RangeError]\n  function show(x: RangeError) -> String\n    return match x with\n      case RangeError.InvalidBounds(minimum, maximum) -> \"InvalidBounds(${minimum}, ${maximum})\"\n      case RangeError.OutOfRange(minimum, maximum, value) -> \"OutOfRange(${minimum}, ${maximum}, ${value})\"\n    end match\n  end function\nend implement\n\n/// A list and its checked inclusive length bounds. This wrapper retains the original list, including references in its elements.\n@opaque\npublic record CheckedLength[T]\n  minimum: Integer\n  maximum: Integer\n  length: Integer\n  values: List[T]\nend record\n\n/// InvalidBounds takes priority over OutOfRange. Failures retain only bounds and the actual length, never the list.\npublic data LengthError\n  InvalidBounds(Integer, Integer)\n  OutOfRange(Integer, Integer, Integer)\nend data\n\n/// Checks the element count. A negative minimum or reversed bounds is rejected before comparing the length. Constant invalid inputs still return Result.Error.\npublic function checkLength[T](minimum: Integer, maximum: Integer, values: List[T]) -> Result[CheckedLength[T], LengthError]\n  if minimum < 0 or maximum < minimum then\n    return Result.Error(LengthError.InvalidBounds(minimum, maximum))\n  end if\n  bind length <- List.length(values)\n  return if length < minimum or maximum < length then Result.Error(LengthError.OutOfRange(minimum, maximum, length))\n  else Result.Ok(CheckedLength(minimum: minimum, maximum: maximum, length: length, values: values)) end if\nend function\n\n/// Returns the inclusive minimum length retained by the check.\npublic function lengthMinimum[T](value: CheckedLength[T]) -> Integer\n  return CheckedLength.minimum(value)\n"
+        },
+        {
+          "first": 158,
+          "last": 266,
+          "text": "end function\n\n/// A list, its checked zero-based index and the element found there. This wrapper retains the original list.\n@opaque\npublic record CheckedIndex[T]\n  values: List[T]\n  index: Integer\n  element: T\nend record\n\n/// The rejected index and the element count. The original list is not retained.\npublic data IndexError\n  OutOfBounds(Integer, Integer)\nend data\n\n/// Checks the zero-based index and retains its successful element. Both negative and too-large indices return OutOfBounds, including constant inputs.\npublic function checkIndex[T](index: Integer, values: List[T]) -> Result[CheckedIndex[T], IndexError]\n  return match List.get(xs: values, i: index) with\n    case Option.None -> Result.Error(IndexError.OutOfBounds(index, List.length(values)))\n    case Option.Some(element) -> Result.Ok(CheckedIndex(values: values, index: index, element: element))\n  end match\nend function\n\n/// Returns the zero-based index retained by the check.\npublic function indexValue[T](value: CheckedIndex[T]) -> Integer\n  return CheckedIndex.index(value)\nend function\n\n/// Returns the original immutable list retained by the check.\npublic function indexValues[T](value: CheckedIndex[T]) -> List[T]\n  return CheckedIndex.values(value)\nend function\n\n/// Returns the element found during construction. A different list requires a new checkIndex call.\npublic function get[T](value: CheckedIndex[T]) -> T\n  return CheckedIndex.element(value)\nend function\n\nimplement Trait.Show[LengthError]\n  function show(x: LengthError) -> String\n    return match x with\n      case LengthError.InvalidBounds(minimum, maximum) -> \"InvalidBounds(${minimum}, ${maximum})\"\n      case LengthError.OutOfRange(minimum, maximum, length) -> \"OutOfRange(${minimum}, ${maximum}, ${length})\"\n    end match\n  end function\nend implement\n\nimplement Trait.Show[IndexError]\n  function show(x: IndexError) -> String\n    return match x with\n      case IndexError.OutOfBounds(index, length) -> \"OutOfBounds(${index}, ${length})\"\n    end match\n  end function\nend implement\n"
+        }
+      ]
+    },
+    "crates/benitoite/src/prelude/stdlib/NonEmptyList.bnt": {
+      "input": {
+        "bytes": 3270,
+        "sha256": "05679444789bf49f7c86f5b830290e6026822601c40902c950c5b7671117aa54"
+      },
+      "excerpts": [
+        {
+          "first": 25,
+          "last": 74,
+          "text": "public record NonEmptyList[T]\n  first: T\n  rest: List[T]\nend record\n\n/// Construction failed because the input list was empty. The input list is not retained.\npublic data EmptyListError\n  EmptyList\nend data\n\n/// Checks whether the list is nonempty. Even a constant empty input returns Result.Error.\npublic function fromList[T](values: List[T]) -> Result[NonEmptyList[T], EmptyListError]\n  return match values with\n    case [] -> Result.Error(EmptyListError.EmptyList)\n    case [head, ..tail] -> Result.Ok(NonEmptyList(first: head, rest: tail))\n  end match\nend function\n\n/// Returns all elements in the original order, preserving shared Reference elements.\npublic function toList[T](value: NonEmptyList[T]) -> List[T]\n  return List.prepend(xs: NonEmptyList.rest(value), x: NonEmptyList.first(value))\nend function\n\n/// Returns the first element, without a second check or an Option wrapper.\npublic function head[T](value: NonEmptyList[T]) -> T\n  return NonEmptyList.first(value)\nend function\n\n/// Returns the remaining elements, which may be empty.\npublic function tail[T](value: NonEmptyList[T]) -> List[T]\n  return NonEmptyList.rest(value)\nend function\n\n/// Applies f once to each element, from first to last. Effects and failures propagate; a successful result remains nonempty.\npublic function map[T, U, effect E](value: NonEmptyList[T], f: function(value: T) -> U uses E) -> NonEmptyList[U] uses E\n  bind head <- f(NonEmptyList.first(value))\n  bind tail <- List.map(xs: NonEmptyList.rest(value), f: f)\n  return NonEmptyList(first: head, rest: tail)\nend function\n\nimplement Trait.Show[EmptyListError]\n  function show(x: EmptyListError) -> String\n    return match x with\n      case EmptyListError.EmptyList -> \"EmptyList\"\n    end match\n  end function\nend implement\n"
+        }
+      ]
+    },
+    "crates/benitoite/src/prelude/stdlib/Result.bnt": {
+      "input": {
+        "bytes": 2375,
+        "sha256": "0b2321577ca1c3a68ce9c7c5d126f4c59c91fbddfa0b61d2aa62265a6f42ced4"
+      },
+      "excerpts": [
+        {
+          "first": 1,
+          "last": 22,
+          "text": "//! Results of operations that may fail.\n//!\n//! ```benitoite test\n//! @test\n//! function resultExample() -> Unit uses Assert.Check\n//!   bind start: Result[Integer, String] <- Result.Ok(3)\n//!   bind result <- Result.andThen(r: start, f: lambda(value) return Result.Ok(value + 1))\n//!   Assert.equal(actual: result, expected: Result.Ok(4))\n//! end function\n//! ```\n\n/// The result of an operation: `Result.Ok(x)` on success, `Result.Error(e)` on failure.\npublic data Result[T, E]\n  Ok(T)\n  Error(E)\nend data\n\n/// Applies `f` to the value inside `Result.Ok`.\npublic function map[T, U, X, effect E](r: Result[T, X], f: function(value: T) -> U uses E) -> Result[U, X] uses E\n  return match r with\n    case Result.Ok(x) -> Result.Ok(f(x))\n    case Result.Error(e) -> Result.Error(e)\n"
+        }
+      ]
+    },
+    "crates/benitoite/src/prelude/stdlib/List.bnt": {
+      "input": {
+        "bytes": 6240,
+        "sha256": "940ec3e00387a468b6392d3b8caace0f840d0d0d13caa23327acc76eb02ba3df"
+      },
+      "excerpts": [
+        {
+          "first": 16,
+          "last": 32,
+          "text": "public function isEmpty[T](xs: List[T]) -> Boolean\n\n/// Returns the first element, or `Option.None` when the list is empty.\n@builtin(\"List.head\")\npublic function head[T](xs: List[T]) -> Option[T]\n\n/// Returns the list without its first element, or `Option.None` when the list is empty.\n@builtin(\"List.tail\")\npublic function tail[T](xs: List[T]) -> Option[List[T]]\n\n/// Returns the element at position `i`, counting from 0, or `Option.None` when `i` is out of range.\n@builtin(\"List.get\")\npublic function get[T](xs: List[T], i: Integer) -> Option[T]\n\n/// Returns the list with `x` added at the front.\n@builtin(\"List.prepend\")\npublic function prepend[T](xs: List[T], x: T) -> List[T]\n"
+        }
+      ]
+    },
+    "crates/benitoite/src/builtins/funcs/list.rs": {
+      "input": {
+        "bytes": 9625,
+        "sha256": "b71e2545162af9600c0743fc2f3536ee87fbb71cb19c97ca1888d2d04c771365"
+      },
+      "excerpts": [
+        {
+          "first": 171,
+          "last": 220,
+          "text": "    name = \"%List.length\",\n    pure fn pattern_length(ctx, xs: Value<'e>) -> i64 {\n        length(ctx, xs)\n    }\n}\n\nbuiltin! {\n    /// `%List.getFront` の本体。\n    name = \"%List.getFront\",\n    pure fn get_front(ctx, xs: Value<'e>, i: i64) -> Value<'e> {\n        let i =\n            u32::try_from(i).map_err(|_| Stop::Internal(\"invalid list pattern front index\".into()))?;\n        crate::runtime::list::get(&ctx, xs, i)?\n            .ok_or_else(|| Stop::Internal(\"list pattern front index out of bounds\".into()))\n    }\n}\n\nbuiltin! {\n    /// `%List.getBack` の本体。\n    name = \"%List.getBack\",\n    pure fn get_back(ctx, xs: Value<'e>, i: i64) -> Value<'e> {\n        let n = crate::runtime::list::len(&ctx, xs)?;\n        let i = u32::try_from(i)\n            .ok()\n            .and_then(|i| n.checked_sub(i))\n            .and_then(|i| i.checked_sub(1))\n            .ok_or_else(|| Stop::Internal(\"invalid list pattern back index\".into()))?;\n        crate::runtime::list::get(&ctx, xs, i)?\n            .ok_or_else(|| Stop::Internal(\"list pattern back index out of bounds\".into()))\n    }\n}\n\nbuiltin! {\n    /// `%List.slice` の本体。\n    name = \"%List.slice\",\n    pure fn slice(ctx, xs: Value<'e>, front: i64, back: i64) -> Value<'e> {\n        let n = crate::runtime::list::len(&ctx, xs)?;\n        let (Ok(front), Ok(back)) = (u32::try_from(front), u32::try_from(back)) else {\n            return Err(Stop::Internal(\"invalid list pattern slice bounds\".into()));\n        };\n        let end = n\n            .checked_sub(back)\n            .filter(|end| *end >= front)\n            .ok_or_else(|| Stop::Internal(\"list pattern slice out of bounds\".into()))?;\n        crate::runtime::list::slice(&ctx, xs, front, end)\n    }\n}\n\nfn compare<'e>(\n    ctx: &crate::runtime::heap::ValueCtx<'e>,\n"
+        }
+      ]
+    },
+    "crates/benitoite/src/builtins/table.rs": {
+      "input": {
+        "bytes": 57107,
+        "sha256": "4752f8d5c124f2abfbc2f00c9df728c4a6f007ce48184a5e0f12ebfc2568c8d0"
+      },
+      "excerpts": [
+        {
+          "first": 216,
+          "last": 226,
+          "text": "pub enum ListPatternOp {\n    /// `%List.length`: `function[T](List[T]) -> Integer`\n    Length,\n    /// `%List.getFront`・`%List.getBack`: `function[T](List[T], Integer) -> T`。端から 0 で数えた位置の要素\n    Get(ListEnd),\n    /// `%List.slice`: `function[T](List[T], Integer, Integer) -> List[T]`。前の n 個と後の m 個を除いた部分\n    Slice,\n}\n\n/// 演算子の項目（設計書 01-06「演算子の型付け」、02-07「演算子の移し方」）。\npub const OPERATORS: &[(OperatorKind, BuiltinTypeId, &str)] = &[\n"
+        },
+        {
+          "first": 665,
+          "last": 670,
+          "text": "pub const LIST_PATTERN: &[(ListPatternOp, &str)] = &[\n    (ListPatternOp::Length, \"%List.length\"),\n    (ListPatternOp::Get(ListEnd::Front), \"%List.getFront\"),\n    (ListPatternOp::Get(ListEnd::Back), \"%List.getBack\"),\n    (ListPatternOp::Slice, \"%List.slice\"),\n];\n"
+        },
+        {
+          "first": 1000,
+          "last": 1020,
+          "text": "                builtin: if matches!(kind, EntryKind::Equality { .. }) {\n                    Some(BuiltinConstraint::Equality)\n                } else {\n                    None\n                },\n            });\n            match kind {\n                EntryKind::Equality { .. } => (vec![Ty::Param(0), Ty::Param(0)], boolean),\n                EntryKind::ListPattern(ListPatternOp::Length) => (vec![list], integer),\n                EntryKind::ListPattern(ListPatternOp::Get(_)) => {\n                    (vec![list, integer], Ty::Param(0))\n                }\n                EntryKind::ListPattern(ListPatternOp::Slice) => {\n                    (vec![list.clone(), integer.clone(), integer], list)\n                }\n                EntryKind::Declared\n                | EntryKind::EffectOp\n                | EntryKind::Operator { .. }\n                | EntryKind::Interpolation { .. }\n                | EntryKind::Format { .. } => return None,\n            }\n"
+        },
+        {
+          "first": 1044,
+          "last": 1056,
+          "text": "            vec![parameter_names::LEFT, parameter_names::RIGHT]\n        }\n        EntryKind::ListPattern(ListPatternOp::Length) => vec![parameter_names::XS],\n        EntryKind::ListPattern(ListPatternOp::Get(_)) => {\n            vec![parameter_names::XS, parameter_names::INDEX]\n        }\n        EntryKind::ListPattern(ListPatternOp::Slice) => vec![\n            parameter_names::XS,\n            parameter_names::FRONT,\n            parameter_names::BACK,\n        ],\n        EntryKind::Format { .. } => vec![\n            \"value\",\n"
+        },
+        {
+          "first": 1501,
+          "last": 1521,
+          "text": "                vec![TypeParamInfo {\n                    name: \"T\".into(),\n                    kind: ParamKind::Value,\n                    builtin: None\n                }]\n            );\n            let (params, ret) = match op {\n                ListPatternOp::Length => (vec![list.clone()], integer.clone()),\n                ListPatternOp::Get(_) => (vec![list.clone(), integer.clone()], Ty::Param(0)),\n                ListPatternOp::Slice => (\n                    vec![list.clone(), integer.clone(), integer.clone()],\n                    list.clone(),\n                ),\n            };\n            assert_eq!(\n                (scheme.params, scheme.ret, scheme.effects),\n                (params, ret, EffectSet::empty())\n            );\n        }\n        for &(name, intrinsic) in INTRINSIC_FUNCTIONS {\n            let id = lookup_builtin(name).unwrap();\n"
+        }
+      ]
+    },
+    "crates/benitoite/src/base/parameter_names.rs": {
+      "input": {
+        "bytes": 752,
+        "sha256": "7636b3da5d9c740e60e6023a2dafa0bbbf68e7ae439c8f02f5c05bfdc54c56ac"
+      },
+      "excerpts": [
+        {
+          "first": 1,
+          "last": 35,
+          "text": "//! 処理系が補う関数の引数名（設計書 02-05「型とエフェクトの表現」「出力」）。\n\npub(crate) const VALUE: &str = \"value\";\npub(crate) const LEFT: &str = \"left\";\npub(crate) const RIGHT: &str = \"right\";\npub(crate) const XS: &str = \"xs\";\npub(crate) const INDEX: &str = \"index\";\npub(crate) const FRONT: &str = \"front\";\npub(crate) const BACK: &str = \"back\";\n\n/// 位置は 1 から数える。構成子と旧関数型・旧部分適用で同じ綴りを使う。\npub(crate) fn positional(position: usize) -> String {\n    format!(\"arg{position}\")\n}\n\n/// 指定した引数数に対し、宣言順の補完名を作る。\npub(crate) fn positional_names(arity: usize) -> Vec<String> {\n    (1..=arity).map(positional).collect()\n}\n"
+        }
+      ]
+    },
+    "crates/benitoite/src/runtime/list.rs": {
+      "input": {
+        "bytes": 41884,
+        "sha256": "56b1951dd8f8ebf08b072b1f7c56b10b995ae4344efaf159db8515226586cf42"
+      },
+      "excerpts": [
+        {
+          "first": 242,
+          "last": 279,
+          "text": "pub fn slice<'e>(\n    ctx: &ValueCtx<'e>,\n    list: Value<'e>,\n    start: u32,\n    end: u32,\n) -> Result<Value<'e>, Stop> {\n    let length = len(ctx, list)?;\n    let start = start.min(length);\n    let end = end.min(length);\n    if start >= end {\n        return Ok(Value::EmptyList);\n    }\n    if start == 0 && end == length {\n        return Ok(list);\n    }\n    let count = end.checked_sub(start).ok_or_else(invalid_list)?;\n    let (root, tail) = parts(ctx, list, length)?;\n    let tree_len = length.checked_sub(tail.size).ok_or_else(invalid_list)?;\n    // 元の末尾を含む切り出しでは、その葉を押し込み直す必要がない。\n    if end == length && start < tree_len {\n        let root = rrb::cut(ctx, root.ok_or_else(invalid_list)?, start, tree_len)?;\n        return head(ctx, count, Some(root), tail);\n    }\n    if start >= tree_len {\n        let sliced = rrb::cut(\n            ctx,\n            tail,\n            start.checked_sub(tree_len).ok_or_else(invalid_list)?,\n            end.checked_sub(tree_len).ok_or_else(invalid_list)?,\n        )?;\n        return head(ctx, count, None, sliced);\n    }\n    let tree = if end <= tree_len {\n        root.ok_or_else(invalid_list)?\n    } else {\n        rrb::push_leaf(ctx, root, tail)?\n    };\n    let cut = rrb::cut(ctx, tree, start, end)?;\n"
+        }
+      ]
+    },
+    "crates/benitoite/src/ir/desugar/decls.rs": {
+      "input": {
+        "bytes": 16528,
+        "sha256": "7c0f3bbf7f055d6bab8d2b01dfae1129d11ba3ae431369a5c248c55078564635"
+      },
+      "excerpts": [
+        {
+          "first": 254,
+          "last": 341,
+          "text": "/// 01-12「レコード」のフィールドを取り出す関数の行。\nfn getters(\n    module: &ModuleInfo,\n    record: &ast::RecordDecl,\n    resolved: &ResolveOutput,\n    types: &TypeckOutput,\n    out: &mut CoreProgram,\n) -> Result<(), InternalError> {\n    let adt = resolved\n        .decls\n        .get(record.id)\n        .copied()\n        .ok_or_else(|| error(format!(\"missing record decls for {:?}\", record.id)))?;\n    for (i, field) in record.fields.iter().enumerate() {\n        let binding = resolved\n            .decls\n            .get(field.id)\n            .copied()\n            .ok_or_else(|| error(format!(\"missing field decls for {:?}\", field.id)))?;\n        let scheme = types\n            .decl_types\n            .get(binding)\n            .cloned()\n            .ok_or_else(|| error(format!(\"missing field scheme for {binding:?}\")))?;\n        let mut state = State::new(resolved, types, &mut out.body_count, scheme.clone());\n        let r = state.var(\n            None,\n            scheme\n                .params\n                .first()\n                .cloned()\n                .ok_or_else(|| error(\"getter has no parameter\"))?,\n        )?;\n        let z = state.var(None, scheme.ret.clone())?;\n        let pattern = CorePat::Ctor {\n            adt,\n            tag: 0,\n            args: record\n                .fields\n                .iter()\n                .enumerate()\n                .map(|(j, _)| {\n                    if i == j {\n                        CorePat::Var(z.id)\n                    } else {\n                        CorePat::Wild\n                    }\n                })\n                .collect(),\n        };\n        let body = Comp {\n            kind: CompKind::Match {\n                scrutinee: variable(&r, field.span),\n                rows: vec![MatchRow { pattern, arm: 0 }],\n                arms: vec![MatchArm {\n                    vars: vec![z.clone()],\n                    guard: None,\n                    body: returned(variable(&z, field.span)),\n                }],\n            },\n            ty: scheme.ret.clone(),\n            eff: EffectSet::empty(),\n            origin: field.span,\n        };\n        let public = state.binding(binding)?.public;\n        out.defs.push(Def {\n            param_names: scheme.param_names.clone(),\n            binding,\n            name: name(\n                module,\n                public,\n                &format!(\"{}.{}\", record.name.text, field.name.text),\n            )?,\n            origin: origin(module, public),\n            kind: DefKind::FieldGetter {\n                record: adt,\n                index: number(i)?,\n            },\n            type_params: scheme.type_params.iter().map(|p| p.name.clone()).collect(),\n            effect_params: scheme.effect_params,\n            dict_params: vec![],\n            params: vec![r],\n            ret: scheme.ret,\n            eff: scheme.effects,\n            body,\n            span: field.span,\n            var_count: state.vars,\n        });\n"
+        }
+      ]
+    },
+    "crates/benitoite/tests/desugar_export/exchange.rs": {
+      "input": {
+        "bytes": 134348,
+        "sha256": "f34229dc6b925c42f305747c609e6f69ce447e1bc638a4e4314b89b5fdb6acd8"
+      },
+      "excerpts": [
+        {
+          "first": 2462,
+          "last": 2496,
+          "text": "fn getter_definition(\n    p: &CheckedProgram,\n    core: &c::CoreProgram,\n    d: &c::CoreDef,\n    record: BindingId,\n    index: u32,\n) -> Value {\n    let mut s = Surface::new(p, Some(d.ret.clone()), Vec::new());\n    let adt = p.types.adts.get(record).unwrap();\n    let constructor = adt.ctors.first().unwrap();\n    assert_eq!(constructor.tag, 0);\n    let fields = adt.record.as_ref().unwrap();\n    assert_eq!(fields[usize::try_from(index).unwrap()].binding, d.binding);\n    assert!(d.dict_params.is_empty());\n    let args: Vec<_> = constructor.fields.iter().map(|t| s.ty(t)).collect();\n    let mut decl = json!({\"data\":data_name(record),\"ntys\":adt.type_params.len(),\"args\":args});\n    decl[\"fields\"] = json!(fields.iter().map(|f| &f.name).collect::<Vec<_>>());\n    let name = format!(\"{} ({})\", d.name, fun_name(d.binding));\n    if !s.outside.is_empty() {\n        return json!({\"name\":name,\"annotations\":s.annotations,\"scope\":tagged(\"outOfScope\",json!({\"elements\":s.outside}))});\n    }\n    let annotations = json!(s.annotations);\n    let (actual, core_outside) = core_definition(s, core, d, 0);\n    assert!(\n        core_outside.is_empty(),\n        \"constant reference in generated accessor\"\n    );\n    json!({\"name\":name,\"annotations\":annotations,\"scope\":tagged(\"accessor\",json!({\n        \"name\":fun_name(d.binding),\"con\":con_name(p, record,0),\"k\":index,\"decl\":decl,\"core\":actual}))})\n}\n\n// 表層の本体は名前だけを保持する。依存先の範囲判定は使用時に伝播する。\nfn constant_table_recorded(\n    p: &CheckedProgram,\n    core: &c::CoreProgram,\n"
+        }
+      ]
+    }
+  },
+  "checked_records": [
+    {
+      "data": "Benitoite.Range.CheckedInteger",
+      "constructor": "Benitoite.Range.CheckedInteger",
+      "type_parameters": 0,
+      "fields": [
+        "minimum: Integer",
+        "maximum: Integer",
+        "value: Integer"
+      ]
+    },
+    {
+      "data": "Benitoite.Range.CheckedLength",
+      "constructor": "Benitoite.Range.CheckedLength",
+      "type_parameters": 1,
+      "fields": [
+        "minimum: Integer",
+        "maximum: Integer",
+        "length: Integer",
+        "values: List[T]"
+      ]
+    },
+    {
+      "data": "Benitoite.Range.CheckedIndex",
+      "constructor": "Benitoite.Range.CheckedIndex",
+      "type_parameters": 1,
+      "fields": [
+        "values: List[T]",
+        "index: Integer",
+        "element: T"
+      ]
+    }
+  ],
+  "public_wrapper_differences": [
+    {
+      "name": "minimum",
+      "parameter": "value",
+      "getter_call": "CheckedInteger.minimum(value)",
+      "source": "public function minimum(value: CheckedInteger) -> Integer\n  return CheckedInteger.minimum(value)\nend function"
+    },
+    {
+      "name": "maximum",
+      "parameter": "value",
+      "getter_call": "CheckedInteger.maximum(value)",
+      "source": "public function maximum(value: CheckedInteger) -> Integer\n  return CheckedInteger.maximum(value)\nend function"
+    },
+    {
+      "name": "value",
+      "parameter": "value",
+      "getter_call": "CheckedInteger.value(value)",
+      "source": "public function value(value: CheckedInteger) -> Integer\n  return CheckedInteger.value(value)\nend function"
+    },
+    {
+      "name": "lengthMinimum",
+      "parameter": "value",
+      "getter_call": "CheckedLength.minimum(value)",
+      "source": "public function lengthMinimum[T](value: CheckedLength[T]) -> Integer\n  return CheckedLength.minimum(value)\nend function"
+    },
+    {
+      "name": "lengthMaximum",
+      "parameter": "value",
+      "getter_call": "CheckedLength.maximum(value)",
+      "source": "public function lengthMaximum[T](value: CheckedLength[T]) -> Integer\n  return CheckedLength.maximum(value)\nend function"
+    },
+    {
+      "name": "checkedLength",
+      "parameter": "value",
+      "getter_call": "CheckedLength.length(value)",
+      "source": "public function checkedLength[T](value: CheckedLength[T]) -> Integer\n  return CheckedLength.length(value)\nend function"
+    },
+    {
+      "name": "lengthValues",
+      "parameter": "value",
+      "getter_call": "CheckedLength.values(value)",
+      "source": "public function lengthValues[T](value: CheckedLength[T]) -> List[T]\n  return CheckedLength.values(value)\nend function"
+    },
+    {
+      "name": "indexValue",
+      "parameter": "value",
+      "getter_call": "CheckedIndex.index(value)",
+      "source": "public function indexValue[T](value: CheckedIndex[T]) -> Integer\n  return CheckedIndex.index(value)\nend function"
+    },
+    {
+      "name": "indexValues",
+      "parameter": "value",
+      "getter_call": "CheckedIndex.values(value)",
+      "source": "public function indexValues[T](value: CheckedIndex[T]) -> List[T]\n  return CheckedIndex.values(value)\nend function"
+    },
+    {
+      "name": "get",
+      "parameter": "value",
+      "getter_call": "CheckedIndex.element(value)",
+      "source": "public function get[T](value: CheckedIndex[T]) -> T\n  return CheckedIndex.element(value)\nend function"
+    }
+  ],
+  "nonempty_difference": "現行nominal first/restとvalue/values。内部NE別名/xsへの変換はR40未完",
+  "public_readers": [
+    {
+      "module": "StandardSafeContracts",
+      "name": "Names",
+      "line": 8,
+      "textual_occurrences": 21
+    },
+    {
+      "module": "StandardSafeContracts",
+      "name": "length",
+      "line": 18,
+      "textual_occurrences": 141
+    },
+    {
+      "module": "StandardSafeContracts",
+      "name": "getField",
+      "line": 19,
+      "textual_occurrences": 72
+    },
+    {
+      "module": "StandardSafeContracts",
+      "name": "integerField",
+      "line": 22,
+      "textual_occurrences": 77
+    },
+    {
+      "module": "StandardSafeContracts",
+      "name": "lengthField",
+      "line": 23,
+      "textual_occurrences": 76
+    },
+    {
+      "module": "StandardSafeContracts",
+      "name": "lengthValues",
+      "line": 24,
+      "textual_occurrences": 67
+    },
+    {
+      "module": "StandardSafeContracts",
+      "name": "indexValue",
+      "line": 25,
+      "textual_occurrences": 75
+    },
+    {
+      "module": "StandardSafeContracts",
+      "name": "indexValues",
+      "line": 26,
+      "textual_occurrences": 74
+    },
+    {
+      "module": "StandardSafeContracts",
+      "name": "nonnegativeIndex",
+      "line": 28,
+      "textual_occurrences": 66
+    },
+    {
+      "module": "StandardSafeContracts",
+      "name": "nonempty",
+      "line": 30,
+      "textual_occurrences": 98
+    },
+    {
+      "module": "StandardSafeContracts",
+      "name": "checkedIntegerType",
+      "line": 32,
+      "textual_occurrences": 66
+    },
+    {
+      "module": "StandardSafeContracts",
+      "name": "checkedLengthType",
+      "line": 35,
+      "textual_occurrences": 67
+    },
+    {
+      "module": "StandardSafeContracts",
+      "name": "checkedIndexType",
+      "line": 39,
+      "textual_occurrences": 71
+    },
+    {
+      "module": "StandardSafeContracts",
+      "name": "safeHead",
+      "line": 43,
+      "textual_occurrences": 87
+    },
+    {
+      "module": "StandardSafeContracts",
+      "name": "safeGet",
+      "line": 44,
+      "textual_occurrences": 78
+    },
+    {
+      "module": "StandardSafeContracts",
+      "name": "safeTail",
+      "line": 46,
+      "textual_occurrences": 81
+    },
+    {
+      "module": "StandardSafeContracts",
+      "name": "checkedGet",
+      "line": 49,
+      "textual_occurrences": 74
+    },
+    {
+      "module": "StandardSafeContracts",
+      "name": "sameLengthGet",
+      "line": 51,
+      "textual_occurrences": 77
+    },
+    {
+      "module": "StandardSafeContracts",
+      "name": "checkedIntegerProjection",
+      "line": 57,
+      "textual_occurrences": 72
+    },
+    {
+      "module": "StandardSafeContracts",
+      "name": "checkedLengthProjection",
+      "line": 60,
+      "textual_occurrences": 68
+    },
+    {
+      "module": "StandardSafeContracts",
+      "name": "checkedLength",
+      "line": 63,
+      "textual_occurrences": 74
+    },
+    {
+      "module": "StandardSafeContracts",
+      "name": "checkedLengthValues",
+      "line": 70,
+      "textual_occurrences": 66
+    },
+    {
+      "module": "StandardSafeContracts",
+      "name": "checkedIndexProjection",
+      "line": 76,
+      "textual_occurrences": 66
+    },
+    {
+      "module": "StandardSafeContracts",
+      "name": "checkedIndexValues",
+      "line": 82,
+      "textual_occurrences": 66
+    },
+    {
+      "module": "StandardSafeContracts",
+      "name": "nonemptyFromList",
+      "line": 87,
+      "textual_occurrences": 74
+    },
+    {
+      "module": "StandardSafeContracts",
+      "name": "nonemptyToList",
+      "line": 90,
+      "textual_occurrences": 76
+    },
+    {
+      "module": "StandardSafeContracts",
+      "name": "nonemptyMap",
+      "line": 93,
+      "textual_occurrences": 68
+    },
+    {
+      "module": "StandardSafeContracts",
+      "name": "all",
+      "line": 101,
+      "textual_occurrences": 14
+    },
+    {
+      "module": "StandardSafeAnnotations",
+      "name": "names",
+      "line": 11,
+      "textual_occurrences": 132
+    },
+    {
+      "module": "StandardSafeAnnotations",
+      "name": "constructors",
+      "line": 12,
+      "textual_occurrences": 10
+    },
+    {
+      "module": "StandardSafeAnnotations",
+      "name": "program",
+      "line": 19,
+      "textual_occurrences": 58
+    },
+    {
+      "module": "StandardSafeAnnotations",
+      "name": "checkedInteger_arity",
+      "line": 32,
+      "textual_occurrences": 2
+    },
+    {
+      "module": "StandardSafeAnnotations",
+      "name": "checkedLength_arity",
+      "line": 40,
+      "textual_occurrences": 2
+    },
+    {
+      "module": "StandardSafeAnnotations",
+      "name": "checkedIndex_arity",
+      "line": 48,
+      "textual_occurrences": 3
+    },
+    {
+      "module": "StandardSafeAnnotations",
+      "name": "result_arity",
+      "line": 56,
+      "textual_occurrences": 3
+    },
+    {
+      "module": "StandardSafeAnnotations",
+      "name": "emptyListError_arity",
+      "line": 64,
+      "textual_occurrences": 4
+    },
+    {
+      "module": "StandardSafeAnnotations",
+      "name": "C",
+      "line": 74,
+      "textual_occurrences": 99
+    },
+    {
+      "module": "StandardSafeAnnotations",
+      "name": "D2",
+      "line": 75,
+      "textual_occurrences": 33
+    },
+    {
+      "module": "StandardSafeAnnotations",
+      "name": "declarationRows",
+      "line": 287,
+      "textual_occurrences": 10
+    },
+    {
+      "module": "StandardSafeAnnotations",
+      "name": "declarations_annotation",
+      "line": 293,
+      "textual_occurrences": 8
+    },
+    {
+      "module": "StandardSafeAccess",
+      "name": "frontSig",
+      "line": 13,
+      "textual_occurrences": 14
+    },
+    {
+      "module": "StandardSafeAccess",
+      "name": "frontReply",
+      "line": 17,
+      "textual_occurrences": 13
+    },
+    {
+      "module": "StandardSafeAccess",
+      "name": "frontReply_selected",
+      "line": 50,
+      "textual_occurrences": 4
+    },
+    {
+      "module": "StandardSafeAccess",
+      "name": "frontDelta",
+      "line": 57,
+      "textual_occurrences": 3
+    },
+    {
+      "module": "StandardSafeAccess",
+      "name": "front_response",
+      "line": 94,
+      "textual_occurrences": 2
+    },
+    {
+      "module": "StandardSafeAccess",
+      "name": "builtins",
+      "line": 124,
+      "textual_occurrences": 43
+    },
+    {
+      "module": "StandardSafeAccess",
+      "name": "front_safeGet",
+      "line": 145,
+      "textual_occurrences": 2
+    },
+    {
+      "module": "StandardSafeAccess",
+      "name": "front_sameLength",
+      "line": 155,
+      "textual_occurrences": 2
+    },
+    {
+      "module": "StandardSafeBodies",
+      "name": "a",
+      "line": 15,
+      "textual_occurrences": 258
+    },
+    {
+      "module": "StandardSafeBodies",
+      "name": "headAlts",
+      "line": 16,
+      "textual_occurrences": 11
+    },
+    {
+      "module": "StandardSafeBodies",
+      "name": "headBody",
+      "line": 17,
+      "textual_occurrences": 5
+    },
+    {
+      "module": "StandardSafeBodies",
+      "name": "headRow",
+      "line": 18,
+      "textual_occurrences": 12
+    },
+    {
+      "module": "StandardSafeBodies",
+      "name": "head_row_typed",
+      "line": 56,
+      "textual_occurrences": 3
+    },
+    {
+      "module": "StandardSafeBodies",
+      "name": "toListBody",
+      "line": 64,
+      "textual_occurrences": 3
+    },
+    {
+      "module": "StandardSafeBodies",
+      "name": "toListRow",
+      "line": 65,
+      "textual_occurrences": 6
+    },
+    {
+      "module": "StandardSafeBodies",
+      "name": "toList_row_typed",
+      "line": 106,
+      "textual_occurrences": 2
+    },
+    {
+      "module": "StandardSafeBodies",
+      "name": "safeGetBody",
+      "line": 116,
+      "textual_occurrences": 3
+    },
+    {
+      "module": "StandardSafeBodies",
+      "name": "sameLengthBody",
+      "line": 117,
+      "textual_occurrences": 4
+    },
+    {
+      "module": "StandardSafeBodies",
+      "name": "checkedGetBody",
+      "line": 120,
+      "textual_occurrences": 4
+    },
+    {
+      "module": "StandardSafeBodies",
+      "name": "fromListBody",
+      "line": 122,
+      "textual_occurrences": 4
+    },
+    {
+      "module": "StandardSafeBodies",
+      "name": "getRow",
+      "line": 128,
+      "textual_occurrences": 4
+    },
+    {
+      "module": "StandardSafeBodies",
+      "name": "checkedRow",
+      "line": 130,
+      "textual_occurrences": 4
+    },
+    {
+      "module": "StandardSafeBodies",
+      "name": "sameRow",
+      "line": 132,
+      "textual_occurrences": 4
+    },
+    {
+      "module": "StandardSafeBodies",
+      "name": "fromListRow",
+      "line": 134,
+      "textual_occurrences": 4
+    },
+    {
+      "module": "StandardSafeBodies",
+      "name": "nonemptyHeadRow",
+      "line": 136,
+      "textual_occurrences": 4
+    },
+    {
+      "module": "StandardSafeBodies",
+      "name": "bodyRows",
+      "line": 139,
+      "textual_occurrences": 8
+    },
+    {
+      "module": "StandardSafeBodies",
+      "name": "definitions",
+      "line": 140,
+      "textual_occurrences": 6
+    },
+    {
+      "module": "StandardSafeBodies",
+      "name": "safeProgram",
+      "line": 141,
+      "textual_occurrences": 48
+    },
+    {
+      "module": "StandardSafeBodies",
+      "name": "get_row_typed",
+      "line": 217,
+      "textual_occurrences": 2
+    },
+    {
+      "module": "StandardSafeBodies",
+      "name": "checked_row_typed",
+      "line": 315,
+      "textual_occurrences": 2
+    },
+    {
+      "module": "StandardSafeBodies",
+      "name": "same_row_typed",
+      "line": 318,
+      "textual_occurrences": 2
+    },
+    {
+      "module": "StandardSafeBodies",
+      "name": "fromList_row_typed",
+      "line": 418,
+      "textual_occurrences": 2
+    },
+    {
+      "module": "StandardSafeBodies",
+      "name": "nonempty_head_row_typed",
+      "line": 424,
+      "textual_occurrences": 2
+    },
+    {
+      "module": "StandardSafeBodies",
+      "name": "registered_bodies",
+      "line": 428,
+      "textual_occurrences": 3
+    },
+    {
+      "module": "StandardSafeBodies",
+      "name": "fixed_body_contracts",
+      "line": 458,
+      "textual_occurrences": 2
+    },
+    {
+      "module": "StandardSafeBodies",
+      "name": "head_reference_body",
+      "line": 522,
+      "textual_occurrences": 2
+    },
+    {
+      "module": "StandardSafeFieldGap",
+      "name": "missing_field_equality",
+      "line": 104,
+      "textual_occurrences": 2
+    },
+    {
+      "module": "StandardSafeSlice",
+      "name": "sliceReply",
+      "line": 12,
+      "textual_occurrences": 10
+    },
+    {
+      "module": "StandardSafeSlice",
+      "name": "slicePredicate",
+      "line": 19,
+      "textual_occurrences": 10
+    },
+    {
+      "module": "StandardSafeSlice",
+      "name": "sliceType",
+      "line": 21,
+      "textual_occurrences": 13
+    },
+    {
+      "module": "StandardSafeSlice",
+      "name": "sliceSignature",
+      "line": 24,
+      "textual_occurrences": 16
+    },
+    {
+      "module": "StandardSafeSlice",
+      "name": "sliceDelta",
+      "line": 29,
+      "textual_occurrences": 4
+    },
+    {
+      "module": "StandardSafeSlice",
+      "name": "slice_selected",
+      "line": 63,
+      "textual_occurrences": 3
+    },
+    {
+      "module": "StandardSafeSlice",
+      "name": "slice_reply",
+      "line": 112,
+      "textual_occurrences": 2
+    },
+    {
+      "module": "StandardSafeSlice",
+      "name": "slice_response",
+      "line": 177,
+      "textual_occurrences": 2
+    },
+    {
+      "module": "StandardSafeSlice",
+      "name": "builtins",
+      "line": 224,
+      "textual_occurrences": 43
+    },
+    {
+      "module": "StandardSafeSlice",
+      "name": "tailBody",
+      "line": 235,
+      "textual_occurrences": 3
+    },
+    {
+      "module": "StandardSafeSlice",
+      "name": "tailRow",
+      "line": 237,
+      "textual_occurrences": 9
+    },
+    {
+      "module": "StandardSafeSlice",
+      "name": "nonemptyTailRow",
+      "line": 239,
+      "textual_occurrences": 6
+    },
+    {
+      "module": "StandardSafeSlice",
+      "name": "definitions",
+      "line": 240,
+      "textual_occurrences": 6
+    },
+    {
+      "module": "StandardSafeSlice",
+      "name": "program",
+      "line": 241,
+      "textual_occurrences": 58
+    },
+    {
+      "module": "StandardSafeSlice",
+      "name": "tail_row_typed",
+      "line": 337,
+      "textual_occurrences": 3
+    },
+    {
+      "module": "StandardSafeSlice",
+      "name": "registered_tails",
+      "line": 355,
+      "textual_occurrences": 2
+    }
+  ]
+}

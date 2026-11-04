@@ -271,21 +271,35 @@ mutual
         (shiftTypes k c a) (shiftTypes k c b) (shiftRowsTypes k c e) (L.shiftEAt k c) := by
     match h with
     | .nil ha => exact .nil ((hm.annotation hn ha hC))
-    | .plain (δ := δ) (alts := alts) hp hw hb hs =>
+    | .plain (δ := δ) (alts := alts) (links := links) hp hvf hfw hw hb hs =>
       have hw' : FactsWF P C' Δ (pathFacts obs (matchedTests alts ++ excludedTests alts)) := by
         intro p hp
         have h := hw p hp
         exact ⟨by simpa only [hm.length] using h.wf,(by simpa only [predBind_id] using h.sorted.map (Δ := Δ) (other := none) hm.images hm.references),h.declared.shiftTypes hm⟩
-      refine .plain (hp.shift_types k c) hw' ?_ (HasTypeArmsQ.shift_types hs hA hstore hC hn hm)
+      have hfw' : FactsWF P C' (bindParams Δ (δ.map (shiftTypes k c))) (fieldFacts δ.length obs links) := by
+        intro p hp
+        have h := hfw p hp
+        exact ⟨by simpa only [(hm.params δ).length] using h.wf,
+          (by simpa only [predBind_id,bindParams,List.length_map] using h.sorted.map (Δ := bindParams Δ (δ.map (shiftTypes k c))) (other := none) (hm.params δ).images (hm.params δ).references),
+          h.declared.shiftTypes (hm.params δ)⟩
+      refine .plain (hp.shift_types k c) (by simpa only [List.length_map] using hvf)
+        (by simpa only [List.length_map] using hfw') hw' ?_ (HasTypeArmsQ.shift_types hs hA hstore hC hn hm)
       have hh := HasTypeCQ.shift_types hb hA hstore hC hn (hm.params δ)
       simpa only [shiftTypes_shiftV,shiftRowsTypes_shiftV,Option.map_map,Function.comp_def,
         List.length_map,LocalCtx.shiftEAt_localExtend] using hh
-    | .guarded (δ := δ) (alts := alts) hp hw hgp hg hb hs =>
+    | .guarded (δ := δ) (alts := alts) (links := links) hp hvf hfw hw hgp hg hb hs =>
       have hw' : FactsWF P C' Δ (pathFacts obs (matchedTests alts ++ excludedTests alts)) := by
         intro p hp
         have h := hw p hp
         exact ⟨by simpa only [hm.length] using h.wf,(by simpa only [predBind_id] using h.sorted.map (Δ := Δ) (other := none) hm.images hm.references),h.declared.shiftTypes hm⟩
-      refine .guarded (hp.shift_types k c) hw' (by simpa only [shiftTypes] using (hm.params δ).hide.annotation hn hgp hC)
+      have hfw' : FactsWF P C' (bindParams Δ (δ.map (shiftTypes k c))) (fieldFacts δ.length obs links) := by
+        intro p hp
+        have h := hfw p hp
+        exact ⟨by simpa only [(hm.params δ).length] using h.wf,
+          (by simpa only [predBind_id,bindParams,List.length_map] using h.sorted.map (Δ := bindParams Δ (δ.map (shiftTypes k c))) (other := none) (hm.params δ).images (hm.params δ).references),
+          h.declared.shiftTypes (hm.params δ)⟩
+      refine .guarded (hp.shift_types k c) (by simpa only [List.length_map] using hvf)
+        (by simpa only [List.length_map] using hfw') hw' (by simpa only [shiftTypes] using (hm.params δ).hide.annotation hn hgp hC)
         ?_ ?_ (HasTypeArmsQ.shift_types hs hA hstore hC hn hm)
       · simpa only [Option.map_none,shiftTypes,shiftRowsTypes,shiftTypesList,Eff.empty,
           LocalCtx.shiftEAt_localExtend,List.length_map] using

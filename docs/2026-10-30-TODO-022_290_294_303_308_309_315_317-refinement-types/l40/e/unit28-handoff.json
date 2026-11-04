@@ -1,0 +1,286 @@
+{
+  "status": "partial-handoff-writer-stopped",
+  "unit_start_utc": "2026-11-03T18:13:45.036614+00:00",
+  "interruption_observed_utc": "2026-11-03T19:20:30+00:00",
+  "resume_first_observed_utc": "2026-11-03T19:22:07+00:00",
+  "unit_end_utc": "2026-11-03T19:25:45.097752+00:00",
+  "outer_seconds_including_interruption": 4320.061138,
+  "resume_observed_outer_seconds": 218.097752,
+  "active_and_wait_times_separated": false,
+  "baseline": "548d3fd94a5f1a171c9bc749b3408f8a9f3c08f8",
+  "scope": "境界非依存の局所成果と最終記録のみ。全E/F06/全モデル/全義務又は単位全体の完了ではない。",
+  "retained_lean_sources": 741,
+  "current_lean_sources": 753,
+  "cumulative_E_modules": 32,
+  "modules": [
+    "StandardIntegerResponse",
+    "StandardIntegerAPI",
+    "StandardConversionResponse",
+    "StandardScalarResponse",
+    "StandardDecimalResponse",
+    "StandardListResponse",
+    "StandardBytesResponse",
+    "StandardActualListBodies",
+    "StandardSignatureExamples",
+    "StandardArithmeticResponse",
+    "StandardOrderResponse",
+    "StandardEqualityResponse"
+  ],
+  "module_sources": {
+    "StandardIntegerResponse": {
+      "bytes": 7918,
+      "sha256": "975a0b01895e3d1a038c710e3ccfdaef5c40eeb2a9f0c16eba5b53e63893231c"
+    },
+    "StandardIntegerAPI": {
+      "bytes": 38757,
+      "sha256": "f509826e7afe0dc564c9ae506323a972868746c741381d88ffd1d4484ac0f821"
+    },
+    "StandardConversionResponse": {
+      "bytes": 13305,
+      "sha256": "8815cc80cfba8085c55f838a9b35a3c16b4ff6276d12ad994c3caff7750f26f7"
+    },
+    "StandardScalarResponse": {
+      "bytes": 33104,
+      "sha256": "fdb5d8c1e1123a4489c18fc73b324acc0c6b9021726ce6f0ade857f78eaa71ef"
+    },
+    "StandardDecimalResponse": {
+      "bytes": 28128,
+      "sha256": "78be8a751ad918b8b29cce23812b59beebbbf67ccb7cf8e4dada0d8ac9a6701f"
+    },
+    "StandardListResponse": {
+      "bytes": 14716,
+      "sha256": "399093408e40385375a0c8efaeced93e9d0d7ecaa62c9738944edf9dc20009b3"
+    },
+    "StandardBytesResponse": {
+      "bytes": 15010,
+      "sha256": "b0657c1d7aca7f98d73fcd9adc1842fce687bb129a968cdb479bf386429f9430"
+    },
+    "StandardActualListBodies": {
+      "bytes": 25636,
+      "sha256": "b9441b3194c6e1d56c7a33f94c79a61368499f556ea1a6fb888abe6387f55a7d"
+    },
+    "StandardSignatureExamples": {
+      "bytes": 61743,
+      "sha256": "c6bde352a2d6a9c0ebd2d044c564a9b5c8bc9f97c82cb891fd5b885508353269"
+    },
+    "StandardArithmeticResponse": {
+      "bytes": 24849,
+      "sha256": "8db658b499b7d1d9d9012c91604ab0f6bb0e014b9caca5dac903e4b7e7ded148"
+    },
+    "StandardOrderResponse": {
+      "bytes": 39153,
+      "sha256": "4bf2729a8cd8a18d0072a7b1c8fc6771e94f1f80a75ea95b7412754f1fc6e4cb"
+    },
+    "StandardEqualityResponse": {
+      "bytes": 21850,
+      "sha256": "053ca3765e377445085e2a5e32585be41b24ea9c0c7e8678339cf6cd12b7b70c"
+    }
+  },
+  "root": {
+    "bytes": 24252,
+    "sha256": "ed7092aaea885b52299870969498fdfbc183ebe90cd68995980df9d53fa3ecac"
+  },
+  "old_root_prefix": {
+    "bytes": 23535,
+    "sha256": "a3a6c1f8268adb89961151f9836af5f85b83bc0d332bddc9d929a14488ac99b3"
+  },
+  "ordinary_counts": {
+    "modules": 23,
+    "apis": 328,
+    "builtin": 244,
+    "core": 84,
+    "aliases": 51,
+    "pure-local": 143,
+    "core-local": 6,
+    "open": 179
+  },
+  "relation_counts": {
+    "same-input-local": 109,
+    "none": 111,
+    "local-partial": 25,
+    "boundary-wait": 7,
+    "core-static-open": 9,
+    "core-open": 53,
+    "same-input-leaf": 14
+  },
+  "operators": {
+    "operators": 107,
+    "pure_leaf": 73,
+    "independent_open": 34,
+    "equality_names": 2,
+    "equality_scalar_domains": 12
+  },
+  "source_signature_proofs": 143,
+  "operator_signature_proofs": 73,
+  "S_rows": 36,
+  "obligations": 64,
+  "whole_API_closed": 0,
+  "whole_S_closed": 0,
+  "whole_O_closed": 0,
+  "source_record": {
+    "bytes": 93051,
+    "sha256": "0fa2e0653970712a490e5c8877dd52c735646afda2831994551c6357eca77494"
+  },
+  "default_build": {
+    "label": "r1-u28-final-default01",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "formal/",
+    "start": "2026-11-03T19:18:48.940417+00:00",
+    "end": "2026-11-03T19:18:49.093995+00:00",
+    "seconds": 0.153537333,
+    "exit": 0,
+    "raw": {
+      "bytes": 43628,
+      "sha256": "466ff1f4408adfbef6917ce76bb52d340bb5c413633ec5aabae308f228aada80"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  "default_build_jobs": 1003,
+  "evidence_names_check": {
+    "label": "r1-u28-evidence-names01",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/e/evidence-check-u28.lean"
+    ],
+    "cwd": "formal/",
+    "start": "2026-11-03T19:18:51.519414+00:00",
+    "end": "2026-11-03T19:18:52.258696+00:00",
+    "seconds": 0.739245625,
+    "exit": 0,
+    "raw": {
+      "bytes": 81341,
+      "sha256": "343e044e60670bb996076275ad6f35cfa1eae245bdd8638b77fc0f7af037b3bd"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  "source_collection": {
+    "label": "r1-u28-evidence-final01",
+    "command": [
+      "python3",
+      "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/e/collect-u28.py"
+    ],
+    "cwd": ".",
+    "start": "2026-11-03T19:19:52.802083+00:00",
+    "end": "2026-11-03T19:19:52.840209+00:00",
+    "seconds": 0.038078625000000005,
+    "exit": 0,
+    "raw": {
+      "bytes": 646,
+      "sha256": "767c9e0828f2585d592362a950b707146d9fd9e1a8dd46bb18d901f85e977d8e"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  "final_local_verification": {
+    "label": "r1-u28-sourceverify-final01",
+    "command": [
+      "python3",
+      "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/e/verify-u28.py"
+    ],
+    "cwd": ".",
+    "start": "2026-11-03T19:25:11.665197+00:00",
+    "end": "2026-11-03T19:25:11.860322+00:00",
+    "seconds": 0.195080458,
+    "exit": 0,
+    "raw": {
+      "bytes": 1437,
+      "sha256": "73eeb4f0e647e4396ff7e06ad898ae04cdb5909ca18f5f137eeaeaab47dfc83d"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  "checks_total": 96,
+  "checks_nonzero_retained": 34,
+  "earlier_targeted_build_deviations": 23,
+  "additional_targeted_build_deviations": 0,
+  "source_verification": "原23モジュール328 APIの型引数制約・引数名・結果・効果・呼先/本体の保存原文とSHA、実Rust全107演算子、143 PrimSig全欄/73演算子スキーマ、Option/RoundingMode/内部List/Equality原スキーマ。Rust/Lean実行全比較は未実施。",
+  "code_unchanged_after_interruption": true,
+  "work_runs": 0,
+  "dry_runs": 0,
+  "git_operations": 0,
+  "remaining": [
+    "公開map/filter系7行、内部mapFrom/filterFrom、通常decode接続、safe19強い本体の正常境界は設計者の判断待ち。",
+    "通常契約179=100 builtin+fromFloat実供給1+51 alias+その他core27、構造Equality、演算子34、getter9、S31静的本体9、NE他4等はL40独立未完。後段へ移して閉鎖しない。",
+    "区間/警告/returned/failed/第一失敗と床商overflow全整理は元.29〜35。",
+    "L50対象/σ、L60全モデル、R40生成器/NE別名、R50実ID/ABI/鍵・値の元担当と境界を保持。",
+    "全private/生成宣言の公理監査・全体verify-r1は取りまとめが書込み停止後に実施。独立レビューと設計者受け入れは未実施。"
+  ],
+  "baseline_index_reconstruction": "u26/u27は保持した元分割入力のSHA・件数とhandoff開始から別名baselineへ再構成。元index完全本文/SHA/追加欄は不明。元global出力とpartsは保持。元indexを完全復元したとはしない。",
+  "records": {
+    "baseline-r1-u28.json": {
+      "bytes": 1386,
+      "sha256": "ae73be8d71c4e27beb643973321b8211ab16ce6b2d7d01fa03d57a7ebc4933a5"
+    },
+    "modules-r1.json": {
+      "bytes": 866,
+      "sha256": "fffa1729e988a28934735bab3321b7ac41d680bcc7edad407ff21c130e7f3479"
+    },
+    "sources-u28.md": {
+      "bytes": 10362,
+      "sha256": "425fdf28fb9621d6f0d3d879ccfe0d67fbe98cbd447f9097eb7785b6113a5a6e"
+    },
+    "sources-r1-u28.json": {
+      "bytes": 93051,
+      "sha256": "0fa2e0653970712a490e5c8877dd52c735646afda2831994551c6357eca77494"
+    },
+    "relations-r1-u28.json": {
+      "bytes": 27654,
+      "sha256": "09571779fa0579c8290a8266f9552d35c90d024246a50c0ce27dd5e42fd9477f"
+    },
+    "operators-r1-u28.json": {
+      "bytes": 66250,
+      "sha256": "4963b694d5bf02a42c88ebfe16734d94fb16a90df7d64d07ab2fd601e461f31c"
+    },
+    "source-evidence-u28.json": {
+      "bytes": 10341,
+      "sha256": "a67b47628a1285a1c1c9f0fa9eec96758520cec7afa4dac9029874cf0d98bb8f"
+    },
+    "local-verification-u28.json": {
+      "bytes": 18826,
+      "sha256": "3566d35f6efa32dd599e63b06272613d30a8433a05d5c6dd1205f71fbf854302"
+    },
+    "verify-u28.py": {
+      "bytes": 13249,
+      "sha256": "1651f9b5a710f96b63435c34759a09c54f0ebdf6ba1c1f4547e57fc1b128052a"
+    },
+    "evidence-check-u28.lean": {
+      "bytes": 3370,
+      "sha256": "7b078545fe5c8456f044216c9f3df42a475c166d0f22ce61fd015ae761834f7f"
+    },
+    "results.md": {
+      "bytes": 88093,
+      "sha256": "719cdc27cac79657c9b51901379a556b5b235eba5a487f0fb13d15a7cd40ce5c"
+    },
+    "obligations.md": {
+      "bytes": 19998,
+      "sha256": "387e25918cda01eed89811ca35508275e69152a3e680919d163f86410c4e498b"
+    },
+    "unit28-interruption.json": {
+      "bytes": 3626,
+      "sha256": "47d716ed027112b0f76d88ff35b8519faa327f78954def244870ee16587fd1e9"
+    },
+    "checks-r1-u28.json": {
+      "bytes": 28522,
+      "sha256": "e25c4e020233fb481a547d51ef4558da6021c90611710dba506f2ce0e42a9366"
+    },
+    "checks-r1-u28-relation.json": {
+      "bytes": 12156,
+      "sha256": "8b355e02eb6fecf429a6367ba34f1fed995e1bcc0c37bf7e6b94b81140dbae69"
+    },
+    "checks-r1-u28-operators.json": {
+      "bytes": 10225,
+      "sha256": "2209ff50b7b268bbc24459e6e2e0e259b29510b06834525f1bf4958042c98f7b"
+    },
+    "checks-r1-u28-final.json": {
+      "bytes": 524,
+      "sha256": "1c341f657b54d7a30d134d037c42057c1aee86de141cb08f6520fadbc480f38a"
+    }
+  },
+  "records_under_100KB": true,
+  "main_tree_writes_stopped": true
+}
