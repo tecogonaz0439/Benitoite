@@ -1,0 +1,366 @@
+[
+  {
+    "kind": "position",
+    "id": "直接",
+    "finding": "同じBuiltinArgsの元列へTelClosure.reflを使う。入力rsは変更しない。",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.single_io",
+      "Benitoite.Release.Refinement.ScopedTargetExamples.selected_request"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.request_io"
+    ],
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "position",
+    "id": "明示拡大",
+    "finding": "同じvのscoped導出を再構成し、明示された被覆で広げて忘却する。",
+    "proofs": [
+      "Benitoite.Release.Refinement.HasTypeVQ.widen_opaque",
+      "Benitoite.Release.Refinement.ScopedTargetExamples.widened_input"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.HasTypeVQ.widen_instTarget_covers"
+    ],
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.selected_io",
+      "Benitoite.Release.Refinement.ScopedTargetExamples.selected_request"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "position",
+    "id": "関数値",
+    "finding": "任意uへのTelClosureから同じwsを元列へ戻す。結果と効果は適用の出力である。",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopedCallContracts.single_inputs",
+      "Benitoite.Release.Refinement.ScopedTargetExamples.request_io"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.single_io"
+    ],
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.single_io",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "position",
+    "id": "callback",
+    "finding": "実際のC_DependentAppで同じf/wsのappを型付けし、元列へ戻して全応答へ進む。",
+    "proofs": [
+      "Benitoite.Release.Refinement.TelClosure.apply",
+      "Benitoite.Release.Refinement.ScopedTargetExamples.single_io"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.request_io",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps"
+    ],
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.request_io",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "position",
+    "id": "ADT/List格納",
+    "finding": "Listの任意要素とADTの任意欄を同じΨで読む。ws[p]?=some vで元の同じ値と実対象位置を接続する。",
+    "proofs": [
+      "Benitoite.Release.Refinement.HasTypeVsQ.get",
+      "Benitoite.Release.Refinement.HasTypeEachQ.member",
+      "Benitoite.Release.Refinement.ScopedTargetExamples.selected_io"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.HasTypeVQ.con_field",
+      "Benitoite.Release.Refinement.HasTypeVQ.list_element_facts",
+      "Benitoite.Release.Refinement.ScopedTargetExamples.selected_request"
+    ],
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.selected_request"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "position",
+    "id": "Reference/Lazy",
+    "finding": "StoreOk.ref_cell/lazy_cellから実セルを読む。Lazyの未評価thunkは値とせず、doneの同じvだけを対象位置へ渡す。",
+    "proofs": [
+      "Benitoite.Release.Refinement.StoreOk.ref_cell",
+      "Benitoite.Release.Refinement.StoreOk.lazy_cell",
+      "Benitoite.Release.Refinement.ScopedTargetExamples.selected_io"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.HasTypeVQ.reference_cell_inputs",
+      "Benitoite.Release.Refinement.ScopedTargetExamples.selected_request"
+    ],
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.selected_request",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "position",
+    "id": "節/resume",
+    "finding": "HasTypeVsQ.widen_coversが同じ列を節へ移す。resumeの直接/正規化入力と実引数位置を接続する。ハンドラは実wsと新継続セルを保存する。",
+    "proofs": [
+      "Benitoite.Release.Refinement.HasTypeVsQ.widen_covers",
+      "Benitoite.Release.Refinement.HasTypeCQ.inv_resumeL",
+      "Benitoite.Release.Refinement.ScopedTargetExamples.selected_request"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.handled_step"
+    ],
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.handled_step"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "instantiation",
+    "id": "直接",
+    "finding": "具体化済みrsをBuiltinArgsの入力として一度だけ使う。",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.single_io"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.request_io"
+    ],
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "instantiation",
+    "id": "明示拡大",
+    "finding": "与えたrと明示先s、s.Covers rを使い同じ値を渡す。",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.widened_input",
+      "Benitoite.Release.Refinement.ScopedTargetExamples.selected_io"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.selected_request"
+    ],
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。"
+  },
+  {
+    "kind": "instantiation",
+    "id": "関数値",
+    "finding": "任意TelClosureの同じwsを元署名へ戻し、同じrsを使う。",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.request_io"
+    ],
+    "readers": [],
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs"
+    ],
+    "relation_kind": "証拠そのものが入口",
+    "relation": "読者なし。証拠そのものが入口で、合成の読者は後段に残る。受け口：R10b/R30のPrimitiveAdmissible/RangeAdmissible/SignatureInstanceへの具体化入力、L70の同じ実引数の全開始への合成。"
+  },
+  {
+    "kind": "instantiation",
+    "id": "無制約Top",
+    "finding": "明示されたTopへ同じ値を拡大し、元の保持対象を返す。",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.widened_input",
+      "Benitoite.Release.Refinement.ScopedTargetExamples.absolute_projection"
+    ],
+    "readers": [],
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs"
+    ],
+    "relation_kind": "証拠そのものが入口",
+    "relation": "読者なし。証拠そのものが入口で、合成の読者は後段に残る。受け口：R10b/R30のPrimitiveAdmissible/RangeAdmissible/SignatureInstanceへの具体化入力、L70の同じ実引数の全開始への合成。"
+  },
+  {
+    "kind": "instantiation",
+    "id": "比較不能",
+    "finding": "被覆の否定からscoped共変を拒否する。異なる起点は解決先が等しくても比較できない。",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.incomparable",
+      "Benitoite.Release.Refinement.ScopedTargetExamples.equal_resolution_distinct_base"
+    ],
+    "readers": [],
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs"
+    ],
+    "relation_kind": "証拠そのものが入口",
+    "relation": "読者なし。証拠そのものが入口で、合成の読者は後段に残る。受け口：R10b/R30のPrimitiveAdmissible/RangeAdmissible/SignatureInstanceへの具体化入力、L70の同じ実引数の全開始への合成。"
+  },
+  {
+    "kind": "leaf",
+    "id": "E_Prim",
+    "finding": "元状態→元依存列→正規化→実δのval→同じ継続/ストア",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.pure_steps",
+      "Benitoite.Release.Refinement.StateTyE.primitive_value_all"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ScopeResponse.delta",
+      "Benitoite.Release.Refinement.ModelTargets.builtins",
+      "Benitoite.Release.Refinement.ModelHttp.builtins"
+    ]
+  },
+  {
+    "kind": "leaf",
+    "id": "E_Err",
+    "finding": "同じ実δのerrを同じ継続/ストアのerrorへ渡す",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.pure_steps",
+      "Benitoite.Release.Refinement.StateTyE.primitive_error_all"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ScopeResponse.delta",
+      "Benitoite.Release.Refinement.ModelTargets.builtins",
+      "Benitoite.Release.Refinement.ModelHttp.builtins"
+    ]
+  },
+  {
+    "kind": "leaf",
+    "id": "E_IO",
+    "finding": "全実ioResponseのvalを同じσ/Eb/k/μで保存する",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps",
+      "Benitoite.Release.Refinement.StateTyE.io_value_all"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ScopedIOResponse.ioResponse",
+      "Benitoite.Release.Refinement.ModelTargets.ioResponse",
+      "Benitoite.Release.Refinement.ModelHttp.ioResponse"
+    ]
+  },
+  {
+    "kind": "leaf",
+    "id": "E_IOErr",
+    "finding": "全実ioResponseのerr。元のkindのio/exit両側を保つ",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps",
+      "Benitoite.Release.Refinement.StateTyE.io_error_all"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ModelTargets.ioResponse",
+      "Benitoite.Release.Refinement.ModelHttp.ioResponse"
+    ]
+  },
+  {
+    "kind": "leaf",
+    "id": "E_Exit",
+    "finding": "io_kindでexit側を得て同じ終了応答と継続/ストアへ渡す。範囲IO7行の非exitとは区別する",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps",
+      "Benitoite.Release.Refinement.StateTyE.io_exit_all"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ModelTargets.io_kind",
+      "Benitoite.Release.Refinement.ModelTargets.ioResponse"
+    ]
+  },
+  {
+    "kind": "leaf",
+    "id": "E_OpPrim",
+    "finding": "実IOを実行せず同じwsを節へ渡す。μ.setでfreshな継続セルを追加する。保存には既存EffectsOkも用いる",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.handled_step",
+      "Benitoite.Release.Refinement.StateTyE.operation_primitive"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ScopeSignatures.io_op"
+    ]
+  },
+  {
+    "kind": "leaf",
+    "id": "E_AtOk",
+    "finding": "元状態→ClosureTy.at_inputs→準備→同じsnapshot=σ→checkAt成功→同じ対象/要求の保持",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.at_ok",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.at_steps",
+      "Benitoite.Release.Refinement.StateTyE.at_ok_all"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.AtPrepare",
+      "Benitoite.Release.Refinement.checkAt"
+    ]
+  },
+  {
+    "kind": "leaf",
+    "id": "E_AtError",
+    "finding": "元状態の同じsnapshot、同じ準備の生入力、同じcheckAt失敗、九欄と内部観測",
+    "proofs": [
+      "Benitoite.Release.Refinement.AtErrorReaders.check_reader",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.at_error",
+      "Benitoite.Release.Refinement.StateTyE.at_error_all"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.AtPrepare",
+      "Benitoite.Release.Refinement.checkAt",
+      "Benitoite.Release.Refinement.AtError.fromCheck"
+    ]
+  },
+  {
+    "kind": "leaf",
+    "id": "E_AtPrepareError",
+    "finding": "同じAtPrepareの全失敗と元の生入力。型付きindexのstaticIndexを除く",
+    "proofs": [
+      "Benitoite.Release.Refinement.AtErrorReaders.prepare_reader",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.at_prepare",
+      "Benitoite.Release.Refinement.StateTyE.at_prepare_error_all"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.AtPrepare",
+      "Benitoite.Release.Refinement.AtPrepare.error_saved"
+    ]
+  },
+  {
+    "kind": "leaf",
+    "id": "E_PathBasesApply",
+    "finding": "空の実引数の正規化したBuiltinArgs→専用issue状態。IOの応答存在を使わない",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.path_bases_apply",
+      "Benitoite.Release.Refinement.StateTyE.path_bases_apply_all"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ScopeSignatures.pathBases",
+      "Benitoite.Release.Refinement.Model.builtins"
+    ]
+  },
+  {
+    "kind": "leaf",
+    "id": "E_IssuePathBases",
+    "finding": "同じσの値・同じEnvironment事象・同じ効果表membership・同じμ",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.issue",
+      "Benitoite.Release.Refinement.StateTyE.issue_path_bases_all"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.Model.builtins",
+      "Benitoite.Release.Refinement.ScopeSignatures.pathBases"
+    ]
+  }
+]

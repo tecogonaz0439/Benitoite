@@ -1,0 +1,23 @@
+{
+  "exit": 1,
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-M",
+    "12288",
+    "<tmp>/audit.lean"
+  ],
+  "raw": {
+    "bytes": 278829,
+    "sha256": "6caf914dd4842439151d9b160f0d525611a1665695783cc76b1722213c6facbd"
+  },
+  "input": {
+    "bytes": 15735,
+    "sha256": "db430cc1b9fdf84518038fc9bfe8e9b104016881dacd8d97775c77c5c9b291d1"
+  },
+  "start_utc": "2026-11-04T17:48:11.101943+00:00",
+  "end_utc": "2026-11-04T17:48:22.247988+00:00",
+  "reason": "参照名の抽出が説明中の名前空間Benitoite.Release.Refinement自体を宣言名に含めた。#checkでunknownIdentifier。公理の列挙は36宣言・2巡。",
+  "handling": "抽出をRefinement配下の宣言名に限定する。成功として数えず、修正した監査入力で再実行する。"
+}

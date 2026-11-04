@@ -321,6 +321,12 @@ metadata が none の項目、requirements/publicBoundary の空列、対応す�
 
 【決定】Rust との接続済みの範囲を述べる本章の既存の表は、Release・Surface・既存の交換器と区間・Scope の入口についてのものである。篩を含む形式化の成功を、その範囲へ追加したものとはしない。Lean の閉じた評価は強い Kleene の三値であり、型や値に篩が書けること、同じ分岐の事実を Rust が作ること、Rust の外部受信が同じ検査を行うこと、篩を含む交換の全比較が成功したことは、この段階の証拠に含めない。
 
+`ScopedTargetExamples` は ModelScopeConditions と同じ具体化済みの元列から、全 IO 応答・存在・対象所属・呼出し効果の許容へ接続する。内容型が一致する要求には同じ保持形・要求・端点を返す。callback、List/ADT の任意欄、Reference、Lazy、resume の読者は同じ実引数位置と環境を使う。起点の解決先の一致と静的被覆を区別する。`split_endpoint` はポート区間 0..4 と 5..9 の和が 0..9 を意味上は含んでも一原子の静的被覆にはならないことを示し、`no_collective_cover` は各原子による被覆がない場合の一般の否定を示す。secrets の未指定・空・任意の有限一覧、同じ保持値の Top 拡大と絶対対象の射影を照合する。
+
+`AtErrorReaders` は ResultShape.Declared と全診断の保存値を、既存の型付き観測・照合と全有効環境の適格性へ渡す。準備失敗と検査失敗の保存欄は、それぞれ同じ元入力と解析・解決結果を保つ。元入力を観測から取り出さない性質は Detail.originals_unobserved を使う。完全な構成子一覧による網羅性は、同じ P の StandardErrorComplete を別に要求する。
+
+`ScopedTargetInputs.response_inputs` は元の StateTyE から State.Inputs を結論に並べ、同じ状態から primitive_contract_inputs で元署名の実引数列を得て BuiltinArgs.normalized へ渡す。State.Inputs は primitive_contract_inputs の前提には使わない。正規化した入力を同じ δ/IO 応答と既存保存葉へ渡す。純粋な val/err、IO の val/err/exit、ハンドラで捕捉する葉と、At 三葉・発行二葉を扱う。入力の適格性と snapshot の一致は同じ状態から供給する。CoreAssumptions・WellFormed・WellTyped の既存の前提を使い、IO の観測には TargetAgreement、ハンドラには EffectsOk と分割・節・新しい場所を使う。同じ σ/Eb を保ち、ハンドラ以外の葉は元のストアへ戻る。全到達・表層の主定理の合成を結論に含めない。
+
 ### 篩を含む形式化の信頼条件
 
 【決定】`Refinement.Builtins.CoreAssumptions P B` は、`SubstitutionAssumptions`・`ExternalAssumptions`・`ResponseAssumptions` を含み、宣言の形成、PathBases とストアの項目、組み込みの操作表に関する欄を持つ。いずれも定理の引数とする条件であり、Lean の公理ではない。対象一致の `TargetAgreement` は別の構造体である。
@@ -1074,6 +1080,8 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 | Model・ModelTargetsExamples | 同節。参照二行と起点発行一行から任意の P について構成する二十五条件、同じ制約による八保存則。空引数の型付き呼出し、専用発行二遷移と同じ σ の事象、At の全入力の三場合、必要束縛と Ready の受理・拒否。AtPrepared.of_path_bases による準備成功 |
 | ModelTargets・ModelTargetsApplications | 同節。十五署名の八保存則・宣言の形成・三形の ShapeOk・純粋三行・IO と exit の九行・同じ環境の対象条件と二十五条件。Top の読取りと通常資源の分類、実引数からの適用 |
 | ModelHttpConditions・ModelHttpApplications・ScopeModels | 同節。七署名の全 lookup、八保存則、HasHttp P の有限宣言と全 arity、純粋三行と送信の全入力・全応答、同じ要求・端点と拒否の対照、非 Top/Top の実引数、型付き発行。三モデル七十五条件と各 Core への別入力を照合する |
+| ScopedTargetExamples | 「篩の正規形と制約の読み方」。同じ実引数の全応答・同じ要求と環境、起点差・分割被覆・secrets・絶対射影を照合する |
+| AtErrorReaders・ScopedTargetInputs | 「篩を含む状態の型付け」。内部診断の保存と既存観測、元状態の入力から実応答・At・発行・ハンドラの保存葉への接続を扱う |
 
 以下の既存の表は Release などの対応である。
 

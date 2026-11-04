@@ -1,0 +1,78 @@
+{
+  "exit": 0,
+  "date_utc": "2026-11-04T17:54:49.636098+00:00",
+  "base": "73da91fd8f3c9c3420b67c9ce21c0a4a013ea49e",
+  "seconds": 16.363158959,
+  "baseline_inputs": 1042,
+  "inputs": 1045,
+  "added": [
+    "formal/Benitoite/Release/Refinement/AtErrorReaders.lean",
+    "formal/Benitoite/Release/Refinement/ScopedTargetExamples.lean",
+    "formal/Benitoite/Release/Refinement/ScopedTargetInputs.lean"
+  ],
+  "changed": [
+    "docs/design/01-spec/01-12-core-calculus.md",
+    "docs/design/07-quality/07-04-formal-semantics.md",
+    "formal/Benitoite.lean"
+  ],
+  "removed": [],
+  "default_import_modules": 1032,
+  "affected_modules_in_default_import": [
+    "Benitoite.Release.Refinement.AtErrorReaders",
+    "Benitoite.Release.Refinement.ScopedTargetExamples",
+    "Benitoite.Release.Refinement.ScopedTargetInputs"
+  ],
+  "all_new_modules_in_default_import": true,
+  "audited": 36,
+  "added_declarations": 36,
+  "positions": 7,
+  "instantiations": 5,
+  "execution_leaves": 11,
+  "error_equalities": 20,
+  "failure_shapes": 11,
+  "denials": 26,
+  "l60_fields": 12,
+  "signatures": 36,
+  "obligations": 33,
+  "handoffs": 31,
+  "records": {
+    "build": {
+      "exit": 0,
+      "seconds": 0.256429875
+    },
+    "dry-run": {
+      "exit": 0,
+      "seconds": 0.326013333
+    },
+    "work": {
+      "exit": 0,
+      "seconds": 3.9816844170000003
+    }
+  },
+  "relative_links": 40,
+  "group_bytes": 703226,
+  "group_bytes_excludes": [
+    "verification.json"
+  ],
+  "reader_dependencies": {
+    "rows": 76,
+    "with_readers": 58,
+    "nodes": 80672
+  },
+  "reader_relations": {
+    "依存する読者あり": 49,
+    "記録・監査の関係": 3,
+    "証拠そのものが入口": 8,
+    "同じ前提を共有するだけ": 4
+  },
+  "references_including_markdown": 173,
+  "finished_resume1": "2026-11-05T02:54:49.635464+09:00",
+  "current_input_hash": {
+    "bytes": 133145,
+    "sha256": "0d2b3eaa52e30f7b91efcd528687ad43c7f44fc7904abae479f85e0cf026d83d"
+  },
+  "script": {
+    "bytes": 13466,
+    "sha256": "ef3c8855728f9e7c2a173990a4410d3805560ad21315eb21763e9bee26fecbe4"
+  }
+}

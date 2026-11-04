@@ -3380,6 +3380,10 @@ Lean の捕捉を持つ実行関係の `Step.E_Lam` は、`q.view = .app f ws`�
   | scoped_forget {Γ Φ o k ix} : Ty.LeQ P Γ Φ (.scoped o k ix) (.opaque o ix)
 ```
 
+`ScopedTargetExamples.single_io` は、同じ P/B の `ModelScopeConditions`、同じ署名の lookup と IO の種類、single の位置、元の範囲列の許容と署名の具体化、元列から関数値の列への TelClosure、実引数の型付け・Ground・同じ σ への適格性から、元列の正規化した BuiltinArgs を構成する。同じ対象の所属と全応答の型・適格性・観測対象・呼出し効果での許容を返し、応答の存在も構成する。`request_io` は対象位置の内容型の一致を加え、同じ要求の保持形・射影・型・groundVal・reqTarget を返す。`selected_io` と `selected_request` は同じ実引数の位置を使う。callback の app、List と ADT の任意欄、Reference の実セル、Lazy の thunk/done、resume の直接入力と正規化した入力にも、同じ値と環境を保って適用する。範囲列は具体化済みの入力である。
+
+`ScopedTargetExamples.equal_resolution_distinct_base` は、異なる起点の lookup が一致するときの同じパターンの所属の同値と、異なる起点間の静的被覆の不成立を分けて示す。`split_endpoint` は全対象について、ポート区間 0..4 と 5..9 の和が意味上は 0..9 を含んでも、一原子の静的被覆にはならないことを示す。`secrets_members` は未指定の none と解決済みの空列 some [] を区別し、任意の有限一覧の所属を各要素への所属で表す。`widened_input` は同じ保持値の型と対象所属を被覆する範囲へ移し、`absolute_projection` は拡大後も同じ保持絶対対象からパスの文字列を返す。
+
 ### 篩を含む定義とプログラムの適格性
 
 【決定】`Def.WellTyped P B d` は、契約名の `NamesWF`、宣言した kind の列での `dependentFn d.tel` の value kind、同じ宣言列と空の値文脈での同じ型の `Annotation`、および空のストアでの `TelBodyTy` を要求する。本体の NoFail の文脈は `QTel d.tel`、型文脈は宣言の `d.tparams`、初期の値文脈と Φ は空である。`TelBodyTy.param` は引数の注釈で値文脈を拡張し、Φ を移す。`done a e` は、本体を結果型 a、効果 e、return の契約 `some a`、空の局所文脈で検査する。
@@ -4200,6 +4204,12 @@ inductive ContTy (P : Program) (B : Builtins) (σ : PathEnv) (Ψ : StoreTy) :
   | K_Sub {R ε k a a' b Eb Re} : ContTy P B σ Ψ R ε k a' b Eb Re → Ty.LeQ P [] [] a a' →
       ContTy P B σ Ψ R ε k a b Eb Re
 ```
+
+`AtErrorReaders.observed` は ResultShape.Declared と内部診断から、同じ七つの String の型付き列、項観測の宣言、パターン照合と全有効 σ への AdequateResult を得る。`prepare_reader` は AtPrepare の全失敗に元入力二欄と解析段階・解決結果・両起点の一致を対応させる。`check_reader` は検査失敗に添える元入力と九欄を同じ観測へ接続する。元入力は不活性な保存値であり、現在の項観測とパターン照合は元入力を取り出さない。網羅性は同じ P の StandardErrorComplete を別に受け取る。
+
+`ScopedTargetInputs.response_inputs` は WellFormed・WellTyped・CoreAssumptions と元の StateTyE、primitive の view から、State.Inputs を結論に並べ、同じ StateTyE から primitive_contract_inputs で元署名の同じ実引数列を取り出す。State.Inputs は後者の前提には使わない。BuiltinArgs.normalized に Ground を供給し、同じ σ への全実引数の適格性、結果の部分型と効果の被覆を返す。`pure_steps` は同じ δ の応答存在・非 exit・型・適格性を val/err の保存葉へ渡す。`io_steps` は TargetAgreement と σ.Valid、NoHandler を加え、同じ関係の応答存在と全 val/err/exit 応答の保存・観測上限を得る。`handled_step` は EffectsOk、ハンドラの分割・節の lookup・未使用の場所を使い、同じ実引数と新しい継続セルを節へ渡す。応答は全入力と同じ B の実関係であり、外部応答の条件とは区別する。
+
+`ScopedTargetInputs.at_prepare` は準備失敗の同じ生入力を、`at_error` は同じ準備の元入力と検査失敗の観測を、`at_ok` は同じ保持対象・要求を既存の三保存葉へ渡す。snapshot の一致は元の StateTyE から供給する。`at_steps` は `StateTyE.inputs` と既存の `StateTyE.at_step` を並べて返す。`path_bases_apply` は同じ空引数から専用の発行状態へ、`issue` は同じ σ の値と事象へ進め、同じ効果表の所属も返す。各葉は同じ σ/Eb を保ち、応答と At・発行は元のストアへ戻る。ハンドラの捕捉だけは、新しい継続セルを元のストアに追加する。
 
 ### 確かめる性質
 

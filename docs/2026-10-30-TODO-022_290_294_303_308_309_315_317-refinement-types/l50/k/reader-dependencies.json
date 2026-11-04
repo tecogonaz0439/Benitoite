@@ -1,0 +1,1196 @@
+{
+  "source": {
+    "nodes": 80672,
+    "raw": {
+      "bytes": 79796938,
+      "sha256": "3e280c53bc1df4d1464356a10dad25b0630ec600cb126bf020bfc6be34eff15d"
+    }
+  },
+  "rows": [
+    {
+      "kind": "obligations",
+      "id": "O013",
+      "dependencies": {
+        "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps": {
+          "Benitoite.Release.Refinement.Builtins.ShapeOk.single_target": [
+            "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps",
+            "Benitoite.Release.Refinement.Builtins.TargetAgreement.obs_allowed",
+            "Benitoite.Release.Refinement.Builtins.ShapeOk.single_target"
+          ],
+          "Benitoite.Release.Refinement.HasTypeVQ.target_member": [
+            "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps",
+            "Benitoite.Release.Refinement.Builtins.TargetAgreement.obs_allowed",
+            "Benitoite.Release.Refinement.Builtins.ShapeOk.single_target",
+            "Benitoite.Release.Refinement.HasTypeVQ.target_member"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "obligations",
+      "id": "O015",
+      "dependencies": {
+        "Benitoite.Release.Refinement.ScopedIOResponse.target_member": {
+          "Benitoite.Release.Refinement.RangeExpr.Covers.mem": [
+            "Benitoite.Release.Refinement.ScopedIOResponse.target_member",
+            "Benitoite.Release.Refinement.Builtins.ShapeOk.single_target",
+            "Benitoite.Release.Refinement.HasTypeVQ.target_member",
+            "Benitoite.Release.Refinement.RangeExpr.Covers.mem"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "obligations",
+      "id": "O016",
+      "dependencies": {}
+    },
+    {
+      "kind": "obligations",
+      "id": "O022",
+      "dependencies": {}
+    },
+    {
+      "kind": "obligations",
+      "id": "O027",
+      "dependencies": {}
+    },
+    {
+      "kind": "obligations",
+      "id": "O034",
+      "dependencies": {
+        "Benitoite.Release.Refinement.ScopeResponse.normal_facts": {
+          "Benitoite.Release.Refinement.ScopeResponse.outcome_typed": [
+            "Benitoite.Release.Refinement.ScopeResponse.normal_facts",
+            "Benitoite.Release.Refinement.ScopeResponse.outcome_typed"
+          ]
+        },
+        "Benitoite.Release.Refinement.ScopedIOResponse.responseAssumptions": {
+          "Benitoite.Release.Refinement.ScopedIOResponse.io_typed": [
+            "Benitoite.Release.Refinement.ScopedIOResponse.responseAssumptions",
+            "Benitoite.Release.Refinement.ScopedIOResponse.io_typed"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "obligations",
+      "id": "O035",
+      "dependencies": {
+        "Benitoite.Release.Refinement.ModelHttp.pure_response": {
+          "Benitoite.Release.Refinement.RequestDelta.response": [
+            "Benitoite.Release.Refinement.ModelHttp.pure_response",
+            "Benitoite.Release.Refinement.RequestDelta.response"
+          ],
+          "Benitoite.Release.Refinement.RequestDelta.widenRequestIn_response": [
+            "Benitoite.Release.Refinement.ModelHttp.pure_response",
+            "Benitoite.Release.Refinement.RequestDelta.widenRequestIn_response"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "obligations",
+      "id": "O036",
+      "dependencies": {
+        "Benitoite.Release.Refinement.ScopedCallContracts.request_inputs": {
+          "Benitoite.Release.Refinement.Builtins.ShapeOk.single_request": [
+            "Benitoite.Release.Refinement.ScopedCallContracts.request_inputs",
+            "Benitoite.Release.Refinement.Builtins.ShapeOk.single_request"
+          ]
+        },
+        "Benitoite.Release.Refinement.ScopedTargetExamples.single_io": {
+          "Benitoite.Release.Refinement.Builtins.ShapeOk.single_target": [
+            "Benitoite.Release.Refinement.ScopedTargetExamples.single_io",
+            "Benitoite.Release.Refinement.Builtins.TargetAgreement.obs_allowed",
+            "Benitoite.Release.Refinement.Builtins.ShapeOk.single_target"
+          ]
+        },
+        "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps": {
+          "Benitoite.Release.Refinement.Builtins.ShapeOk.single_target": [
+            "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps",
+            "Benitoite.Release.Refinement.Builtins.TargetAgreement.obs_allowed",
+            "Benitoite.Release.Refinement.Builtins.ShapeOk.single_target"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "obligations",
+      "id": "O038",
+      "dependencies": {
+        "Benitoite.Release.Refinement.ScopedTargetInputs.path_bases_apply": {
+          "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs": [
+            "Benitoite.Release.Refinement.ScopedTargetInputs.path_bases_apply",
+            "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "obligations",
+      "id": "O044",
+      "dependencies": {
+        "Benitoite.Release.Refinement.Builtins.ShapeOk.single_request": {
+          "Benitoite.Release.Refinement.HasTypeVQ.request_target": [
+            "Benitoite.Release.Refinement.Builtins.ShapeOk.single_request",
+            "Benitoite.Release.Refinement.HasTypeVQ.request_target"
+          ]
+        },
+        "Benitoite.Release.Refinement.ScopedTargetInputs.at_error": {
+          "Benitoite.Release.Refinement.AtErrorReaders.check_reader": [
+            "Benitoite.Release.Refinement.ScopedTargetInputs.at_error",
+            "Benitoite.Release.Refinement.AtErrorReaders.check_reader"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "obligations",
+      "id": "O048",
+      "dependencies": {
+        "Benitoite.Release.Refinement.ModelHttp.pure_response": {
+          "Benitoite.Release.Refinement.RequestDelta.widenRequestIn_response": [
+            "Benitoite.Release.Refinement.ModelHttp.pure_response",
+            "Benitoite.Release.Refinement.RequestDelta.widenRequestIn_response"
+          ]
+        },
+        "Benitoite.Release.Refinement.ScopedTargetExamples.selected_request": {
+          "Benitoite.Release.Refinement.RangeExpr.Covers.mem": [
+            "Benitoite.Release.Refinement.ScopedTargetExamples.selected_request",
+            "Benitoite.Release.Refinement.Builtins.ShapeOk.single_request",
+            "Benitoite.Release.Refinement.Builtins.ShapeOk.single_target",
+            "Benitoite.Release.Refinement.HasTypeVQ.target_member",
+            "Benitoite.Release.Refinement.RangeExpr.Covers.mem"
+          ]
+        },
+        "Benitoite.Release.Refinement.ScopedTargetExamples.widened_input": {
+          "Benitoite.Release.Refinement.HasTypeVQ.widen_opaque": [
+            "Benitoite.Release.Refinement.ScopedTargetExamples.widened_input",
+            "Benitoite.Release.Refinement.HasTypeVQ.widen_opaque"
+          ],
+          "Benitoite.Release.Refinement.RangeExpr.Covers.mem": [
+            "Benitoite.Release.Refinement.ScopedTargetExamples.widened_input",
+            "Benitoite.Release.Refinement.RangeExpr.Covers.mem"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "obligations",
+      "id": "O049",
+      "dependencies": {
+        "Benitoite.Release.Refinement.ModelHttp.pure_response": {
+          "Benitoite.Release.Refinement.RequestDelta.requestInValue_response": [
+            "Benitoite.Release.Refinement.ModelHttp.pure_response",
+            "Benitoite.Release.Refinement.RequestDelta.requestInValue_response"
+          ],
+          "Benitoite.Release.Refinement.RequestDelta.response": [
+            "Benitoite.Release.Refinement.ModelHttp.pure_response",
+            "Benitoite.Release.Refinement.RequestDelta.response"
+          ]
+        },
+        "Benitoite.Release.Refinement.ModelHttp.send_mismatch": {
+          "Benitoite.Release.Refinement.ModelHttp.sent_request": [
+            "Benitoite.Release.Refinement.ModelHttp.send_mismatch",
+            "Benitoite.Release.Refinement.ModelHttp.sent_request"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "obligations",
+      "id": "O057",
+      "dependencies": {}
+    },
+    {
+      "kind": "obligations",
+      "id": "O058",
+      "dependencies": {
+        "Benitoite.Release.Refinement.ScopedCallContracts.request_inputs": {
+          "Benitoite.Release.Refinement.ScopedCallContracts.single_inputs": [
+            "Benitoite.Release.Refinement.ScopedCallContracts.request_inputs",
+            "Benitoite.Release.Refinement.ScopedCallContracts.single_inputs"
+          ]
+        },
+        "Benitoite.Release.Refinement.ScopedTargetInputs.handled_step": {
+          "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs": [
+            "Benitoite.Release.Refinement.ScopedTargetInputs.handled_step",
+            "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs"
+          ]
+        },
+        "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps": {
+          "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs": [
+            "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps",
+            "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs"
+          ]
+        },
+        "Benitoite.Release.Refinement.ScopedTargetInputs.pure_steps": {
+          "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs": [
+            "Benitoite.Release.Refinement.ScopedTargetInputs.pure_steps",
+            "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "obligations",
+      "id": "O059",
+      "dependencies": {
+        "Benitoite.Release.Refinement.NormalReplyExamples.concrete_step_selections": {
+          "Benitoite.Release.Refinement.StateTyE.selected_primitive_step": [
+            "Benitoite.Release.Refinement.NormalReplyExamples.concrete_step_selections",
+            "Benitoite.Release.Refinement.StateTyE.selected_primitive_step"
+          ]
+        },
+        "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps": {
+          "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs": [
+            "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps",
+            "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs"
+          ]
+        },
+        "Benitoite.Release.Refinement.ScopedTargetInputs.pure_steps": {
+          "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs": [
+            "Benitoite.Release.Refinement.ScopedTargetInputs.pure_steps",
+            "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "obligations",
+      "id": "O060",
+      "dependencies": {
+        "Benitoite.Release.Refinement.Builtins.CoreAssumptions.io_transition_covered": {
+          "Benitoite.Release.Refinement.Builtins.CoreAssumptions.io_event_covered": [
+            "Benitoite.Release.Refinement.Builtins.CoreAssumptions.io_transition_covered",
+            "Benitoite.Release.Refinement.Builtins.CoreAssumptions.io_event_covered"
+          ]
+        },
+        "Benitoite.Release.Refinement.Builtins.CoreAssumptions.pathBases_transition_covered": {
+          "Benitoite.Release.Refinement.Builtins.CoreAssumptions.pathBases_event_covered": [
+            "Benitoite.Release.Refinement.Builtins.CoreAssumptions.pathBases_transition_covered",
+            "Benitoite.Release.Refinement.Builtins.CoreAssumptions.pathBases_event_covered"
+          ]
+        },
+        "Benitoite.Release.Refinement.ScopedTargetExamples.single_io": {
+          "Benitoite.Release.Refinement.Eff.Covers.allows": [
+            "Benitoite.Release.Refinement.ScopedTargetExamples.single_io",
+            "Benitoite.Release.Refinement.Eff.Covers.allows"
+          ]
+        },
+        "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps": {
+          "Benitoite.Release.Refinement.Builtins.TargetAgreement.obs_allowed": [
+            "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps",
+            "Benitoite.Release.Refinement.Builtins.TargetAgreement.obs_allowed"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "obligations",
+      "id": "O061",
+      "dependencies": {
+        "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps": {
+          "Benitoite.Release.Refinement.Builtins.TargetAgreement.obs_allowed": [
+            "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps",
+            "Benitoite.Release.Refinement.Builtins.TargetAgreement.obs_allowed"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "obligations",
+      "id": "O062",
+      "dependencies": {
+        "Benitoite.Release.Refinement.ModelHttp.delta_typed": {
+          "Benitoite.Release.Refinement.ModelHttp.pure_response": [
+            "Benitoite.Release.Refinement.ModelHttp.delta_typed",
+            "Benitoite.Release.Refinement.ModelHttp.pure_response"
+          ]
+        },
+        "Benitoite.Release.Refinement.ModelTargets.delta_typed": {
+          "Benitoite.Release.Refinement.ModelTargets.pure_response": [
+            "Benitoite.Release.Refinement.ModelTargets.delta_typed",
+            "Benitoite.Release.Refinement.ModelTargets.pure_response"
+          ]
+        },
+        "Benitoite.Release.Refinement.ScopeResponse.outcome_typed": {
+          "Benitoite.Release.Refinement.ScopeResponse.delta_typed": [
+            "Benitoite.Release.Refinement.ScopeResponse.outcome_typed",
+            "Benitoite.Release.Refinement.ScopeResponse.delta_typed"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "obligations",
+      "id": "O063",
+      "dependencies": {
+        "Benitoite.Release.Refinement.ModelHttp.responseAssumptions": {
+          "Benitoite.Release.Refinement.ModelHttp.io_exists": [
+            "Benitoite.Release.Refinement.ModelHttp.responseAssumptions",
+            "Benitoite.Release.Refinement.ModelHttp.io_exists"
+          ]
+        },
+        "Benitoite.Release.Refinement.ModelTargets.io_typed": {
+          "Benitoite.Release.Refinement.ScopedIOResponse.response": [
+            "Benitoite.Release.Refinement.ModelTargets.io_typed",
+            "Benitoite.Release.Refinement.ScopedIOResponse.response"
+          ]
+        },
+        "Benitoite.Release.Refinement.ModelTargets.responseAssumptions": {
+          "Benitoite.Release.Refinement.ModelTargets.io_exists": [
+            "Benitoite.Release.Refinement.ModelTargets.responseAssumptions",
+            "Benitoite.Release.Refinement.ModelTargets.io_exists"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "obligations",
+      "id": "O065",
+      "dependencies": {
+        "Benitoite.Release.Refinement.ModelHttp.sig_scoped": {
+          "Benitoite.Release.Refinement.ScopeSignatures.sig_scoped": [
+            "Benitoite.Release.Refinement.ModelHttp.sig_scoped",
+            "Benitoite.Release.Refinement.ScopeSignatures.sig_scoped"
+          ]
+        },
+        "Benitoite.Release.Refinement.ScopeSignatures.substitutionAssumptions": {
+          "Benitoite.Release.Refinement.ModelConstraints.sat_subst": [
+            "Benitoite.Release.Refinement.ScopeSignatures.substitutionAssumptions",
+            "Benitoite.Release.Refinement.ModelConstraints.sat_subst"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "obligations",
+      "id": "O074",
+      "dependencies": {
+        "Benitoite.Release.Refinement.ScopedCallContracts.request_inputs": {
+          "Benitoite.Release.Refinement.ScopedCallContracts.single_inputs": [
+            "Benitoite.Release.Refinement.ScopedCallContracts.request_inputs",
+            "Benitoite.Release.Refinement.ScopedCallContracts.single_inputs"
+          ]
+        },
+        "Benitoite.Release.Refinement.ScopedTargetExamples.request_io": {
+          "Benitoite.Release.Refinement.ScopedTargetExamples.single_io": [
+            "Benitoite.Release.Refinement.ScopedTargetExamples.request_io",
+            "Benitoite.Release.Refinement.ScopedTargetExamples.single_io"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "obligations",
+      "id": "O082",
+      "dependencies": {
+        "Benitoite.Release.Refinement.ScopedTargetExamples.absolute_projection": {
+          "Benitoite.Release.Refinement.RangeExpr.resolve": [
+            "Benitoite.Release.Refinement.ScopedTargetExamples.absolute_projection",
+            "Benitoite.Release.Refinement.ScopeDelta.delta",
+            "Benitoite.Release.Refinement.ScopeDelta.run",
+            "Benitoite.Release.Refinement.ScopeDelta.staticError",
+            "Benitoite.Release.Refinement.AtError.save",
+            "Benitoite.Release.Refinement.resolveSnapshot",
+            "Benitoite.Release.Refinement.RangeExpr.resolve"
+          ],
+          "Benitoite.Release.Refinement.TargetInput.resolve": [
+            "Benitoite.Release.Refinement.ScopedTargetExamples.absolute_projection",
+            "Benitoite.Release.Refinement.ScopeDelta.delta",
+            "Benitoite.Release.Refinement.ScopeDelta.run",
+            "Benitoite.Release.Refinement.ScopeDelta.staticError",
+            "Benitoite.Release.Refinement.AtError.save",
+            "Benitoite.Release.Refinement.resolveTargetSnapshot",
+            "Benitoite.Release.Refinement.TargetInput.resolve"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "obligations",
+      "id": "O084",
+      "dependencies": {}
+    },
+    {
+      "kind": "obligations",
+      "id": "O092",
+      "dependencies": {
+        "Benitoite.Release.Refinement.Eff.Covers.allows": {
+          "Benitoite.Release.Refinement.RangeExpr.Covers.mem": [
+            "Benitoite.Release.Refinement.Eff.Covers.allows",
+            "Benitoite.Release.Refinement.RangeExpr.Covers.mem"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "obligations",
+      "id": "O096",
+      "dependencies": {
+        "Benitoite.Release.Refinement.ScopedTargetInputs.at_steps": {
+          "Benitoite.Release.Refinement.AtPrepared.current": [
+            "Benitoite.Release.Refinement.ScopedTargetInputs.at_steps",
+            "Benitoite.Release.Refinement.StateTyE.at_step",
+            "Benitoite.Release.Refinement.StateTyE.at_current",
+            "Benitoite.Release.Refinement.AtPrepared.current"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "obligations",
+      "id": "O097",
+      "dependencies": {
+        "Benitoite.Release.Refinement.ScopedTargetInputs.at_error": {
+          "Benitoite.Release.Refinement.AtErrorReaders.check_reader": [
+            "Benitoite.Release.Refinement.ScopedTargetInputs.at_error",
+            "Benitoite.Release.Refinement.AtErrorReaders.check_reader"
+          ]
+        },
+        "Benitoite.Release.Refinement.ScopedTargetInputs.at_prepare": {
+          "Benitoite.Release.Refinement.AtPrepare.error_saved": [
+            "Benitoite.Release.Refinement.ScopedTargetInputs.at_prepare",
+            "Benitoite.Release.Refinement.AtErrorReaders.prepare_reader",
+            "Benitoite.Release.Refinement.AtPrepare.error_saved"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "obligations",
+      "id": "O118",
+      "dependencies": {
+        "Benitoite.Release.Refinement.AtErrorReaders.check_reader": {
+          "Benitoite.Release.Refinement.AtErrorReaders.observed": [
+            "Benitoite.Release.Refinement.AtErrorReaders.check_reader",
+            "Benitoite.Release.Refinement.AtErrorReaders.observed"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "obligations",
+      "id": "O141",
+      "dependencies": {}
+    },
+    {
+      "kind": "obligations",
+      "id": "O144",
+      "dependencies": {}
+    },
+    {
+      "kind": "obligations",
+      "id": "O156",
+      "dependencies": {
+        "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps": {
+          "Benitoite.Release.Refinement.Builtins.TargetAgreement.obs_allowed": [
+            "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps",
+            "Benitoite.Release.Refinement.Builtins.TargetAgreement.obs_allowed"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "obligations",
+      "id": "O165",
+      "dependencies": {
+        "Benitoite.Release.Refinement.Eff.Covers.allows": {
+          "Benitoite.Release.Refinement.RangeExpr.Covers.mem": [
+            "Benitoite.Release.Refinement.Eff.Covers.allows",
+            "Benitoite.Release.Refinement.RangeExpr.Covers.mem"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "obligations",
+      "id": "O166",
+      "dependencies": {}
+    },
+    {
+      "kind": "obligations",
+      "id": "O168",
+      "dependencies": {
+        "Benitoite.Release.Refinement.AtErrorReaders.prepare_reader": {
+          "Benitoite.Release.Refinement.AtPrepare.error_saved": [
+            "Benitoite.Release.Refinement.AtErrorReaders.prepare_reader",
+            "Benitoite.Release.Refinement.AtPrepare.error_saved"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "handoffs",
+      "id": "H01",
+      "dependencies": {
+        "Benitoite.Release.Refinement.HasTypeVQ.canonical_opaque": {
+          "Benitoite.Release.Refinement.HasTypeVQ.canonical_held": [
+            "Benitoite.Release.Refinement.HasTypeVQ.canonical_opaque",
+            "Benitoite.Release.Refinement.HasTypeVQ.canonical_held"
+          ]
+        },
+        "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs": {
+          "Benitoite.Release.Refinement.StateTyE.app_inputs": [
+            "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs",
+            "Benitoite.Release.Refinement.StateTyE.primitive_contract_inputs",
+            "Benitoite.Release.Refinement.StateTyE.app_inputs"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "handoffs",
+      "id": "H02",
+      "dependencies": {
+        "Benitoite.Release.Refinement.ScopedTargetExamples.single_io": {
+          "Benitoite.Release.Refinement.TelClosure.apply": [
+            "Benitoite.Release.Refinement.ScopedTargetExamples.single_io",
+            "Benitoite.Release.Refinement.ScopedCallContracts.single_inputs",
+            "Benitoite.Release.Refinement.TelClosure.apply"
+          ]
+        },
+        "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs": {
+          "Benitoite.Release.Refinement.StateTyE.primitive_contract_inputs": [
+            "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs",
+            "Benitoite.Release.Refinement.StateTyE.primitive_contract_inputs"
+          ],
+          "Benitoite.Release.Refinement.TelClosure.apply": [
+            "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs",
+            "Benitoite.Release.Refinement.StateTyE.primitive_contract_inputs",
+            "Benitoite.Release.Refinement.TelClosure.apply"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "handoffs",
+      "id": "H03",
+      "dependencies": {}
+    },
+    {
+      "kind": "handoffs",
+      "id": "H04",
+      "dependencies": {
+        "Benitoite.Release.Refinement.ModelHttp.pure_response": {
+          "Benitoite.Release.Refinement.RequestDelta.response": [
+            "Benitoite.Release.Refinement.ModelHttp.pure_response",
+            "Benitoite.Release.Refinement.RequestDelta.response"
+          ],
+          "Benitoite.Release.Refinement.RequestDelta.widenRequestIn_response": [
+            "Benitoite.Release.Refinement.ModelHttp.pure_response",
+            "Benitoite.Release.Refinement.RequestDelta.widenRequestIn_response"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "handoffs",
+      "id": "H05",
+      "dependencies": {
+        "Benitoite.Release.Refinement.ModelHttp.pure_response": {
+          "Benitoite.Release.Refinement.RequestDelta.response": [
+            "Benitoite.Release.Refinement.ModelHttp.pure_response",
+            "Benitoite.Release.Refinement.RequestDelta.response"
+          ]
+        },
+        "Benitoite.Release.Refinement.ModelHttp.send_mismatch": {
+          "Benitoite.Release.Refinement.ModelHttp.sent_request": [
+            "Benitoite.Release.Refinement.ModelHttp.send_mismatch",
+            "Benitoite.Release.Refinement.ModelHttp.sent_request"
+          ]
+        },
+        "Benitoite.Release.Refinement.ScopedTargetExamples.request_io": {
+          "Benitoite.Release.Refinement.HasTypeVQ.request_target": [
+            "Benitoite.Release.Refinement.ScopedTargetExamples.request_io",
+            "Benitoite.Release.Refinement.ScopedCallContracts.request_inputs",
+            "Benitoite.Release.Refinement.Builtins.ShapeOk.single_request",
+            "Benitoite.Release.Refinement.HasTypeVQ.request_target"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "handoffs",
+      "id": "H06",
+      "dependencies": {
+        "_private.Benitoite.Release.Refinement.ModelTargetsApplications.0.Benitoite.Release.Refinement.ModelTargetsApplications.legacy_arguments": {
+          "Benitoite.Release.Refinement.ModelTargets.sourceTelRows": [
+            "_private.Benitoite.Release.Refinement.ModelTargetsApplications.0.Benitoite.Release.Refinement.ModelTargetsApplications.legacy_arguments",
+            "Benitoite.Release.Refinement.ModelTargets.sourceTelRows"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "handoffs",
+      "id": "H07",
+      "dependencies": {}
+    },
+    {
+      "kind": "handoffs",
+      "id": "H08",
+      "dependencies": {}
+    },
+    {
+      "kind": "handoffs",
+      "id": "H09",
+      "dependencies": {
+        "Benitoite.Release.Refinement.ScopeModels.conditions": {
+          "Benitoite.Release.Refinement.ModelConstraints.sat_rename": [
+            "Benitoite.Release.Refinement.ScopeModels.conditions",
+            "Benitoite.Release.Refinement.Model.scopeConditions",
+            "Benitoite.Release.Refinement.Model.substitutionAssumptions",
+            "Benitoite.Release.Refinement.ScopeSignatures.substitutionAssumptions",
+            "Benitoite.Release.Refinement.ModelConstraints.sat_rename"
+          ],
+          "Benitoite.Release.Refinement.ModelConstraints.sat_values": [
+            "Benitoite.Release.Refinement.ScopeModels.conditions",
+            "Benitoite.Release.Refinement.Model.scopeConditions",
+            "Benitoite.Release.Refinement.Model.substitutionAssumptions",
+            "Benitoite.Release.Refinement.ModelConstraints.sat_values"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "handoffs",
+      "id": "H10",
+      "dependencies": {
+        "Benitoite.Release.Refinement.ScopeModels.conditions": {
+          "Benitoite.Release.Refinement.ModelConstraints.sat_renameTypes": [
+            "Benitoite.Release.Refinement.ScopeModels.conditions",
+            "Benitoite.Release.Refinement.Model.scopeConditions",
+            "Benitoite.Release.Refinement.Model.substitutionAssumptions",
+            "Benitoite.Release.Refinement.ScopeSignatures.substitutionAssumptions",
+            "Benitoite.Release.Refinement.ModelConstraints.sat_renameTypes"
+          ],
+          "Benitoite.Release.Refinement.ModelConstraints.sat_subst": [
+            "Benitoite.Release.Refinement.ScopeModels.conditions",
+            "Benitoite.Release.Refinement.Model.scopeConditions",
+            "Benitoite.Release.Refinement.Model.substitutionAssumptions",
+            "Benitoite.Release.Refinement.ScopeSignatures.substitutionAssumptions",
+            "Benitoite.Release.Refinement.ModelConstraints.sat_subst"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "handoffs",
+      "id": "H11",
+      "dependencies": {}
+    },
+    {
+      "kind": "handoffs",
+      "id": "H12",
+      "dependencies": {
+        "Benitoite.Release.Refinement.ScopedIOResponse.obs_allowed": {
+          "Benitoite.Release.Refinement.ScopeSignatures.io_op": [
+            "Benitoite.Release.Refinement.ScopedIOResponse.obs_allowed",
+            "Benitoite.Release.Refinement.ScopeSignatures.io_op"
+          ]
+        },
+        "Benitoite.Release.Refinement.ScopedTargetExamples.single_io": {
+          "Benitoite.Release.Refinement.Builtins.ShapeOk.single_target": [
+            "Benitoite.Release.Refinement.ScopedTargetExamples.single_io",
+            "Benitoite.Release.Refinement.Builtins.TargetAgreement.obs_allowed",
+            "Benitoite.Release.Refinement.Builtins.ShapeOk.single_target"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "handoffs",
+      "id": "H13",
+      "dependencies": {
+        "Benitoite.Release.Refinement.ScopeModels.conditions": {
+          "Benitoite.Release.Refinement.ScopeSignatures.sig_scoped": [
+            "Benitoite.Release.Refinement.ScopeModels.conditions",
+            "Benitoite.Release.Refinement.ModelHttp.scopeConditions",
+            "Benitoite.Release.Refinement.ModelHttp.sig_scoped",
+            "Benitoite.Release.Refinement.ScopeSignatures.sig_scoped"
+          ]
+        },
+        "_private.Benitoite.Release.Refinement.ModelHttpApplications.0.Benitoite.Release.Refinement.ModelHttpApplications.result_annotation": {
+          "Benitoite.Release.Refinement.ScopeDeclarations.program_hasHttp": [
+            "_private.Benitoite.Release.Refinement.ModelHttpApplications.0.Benitoite.Release.Refinement.ModelHttpApplications.result_annotation",
+            "Benitoite.Release.Refinement.ScopeDeclarations.program_hasHttp"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "handoffs",
+      "id": "H14",
+      "dependencies": {
+        "Benitoite.Release.Refinement.AtErrorReaders.observed": {
+          "Benitoite.Release.Refinement.AtTargets.adequate_atError": [
+            "Benitoite.Release.Refinement.AtErrorReaders.observed",
+            "Benitoite.Release.Refinement.AtTargets.adequate_atError"
+          ]
+        },
+        "Benitoite.Release.Refinement.ModelTargets.io_typed": {
+          "Benitoite.Release.Refinement.ScopedIOResponse.response": [
+            "Benitoite.Release.Refinement.ModelTargets.io_typed",
+            "Benitoite.Release.Refinement.ScopedIOResponse.response"
+          ]
+        },
+        "Benitoite.Release.Refinement.ScopeResponse.outcome_typed": {
+          "Benitoite.Release.Refinement.ScopeResponse.delta_typed": [
+            "Benitoite.Release.Refinement.ScopeResponse.outcome_typed",
+            "Benitoite.Release.Refinement.ScopeResponse.delta_typed"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "handoffs",
+      "id": "H15",
+      "dependencies": {
+        "Benitoite.Release.Refinement.Builtins.ShapeOk.single_target": {
+          "Benitoite.Release.Refinement.HasTypeVQ.target_member": [
+            "Benitoite.Release.Refinement.Builtins.ShapeOk.single_target",
+            "Benitoite.Release.Refinement.HasTypeVQ.target_member"
+          ]
+        },
+        "Benitoite.Release.Refinement.HasTypeVQ.widen_instTarget_covers": {
+          "Benitoite.Release.Refinement.HasTypeVQ.widen_opaque": [
+            "Benitoite.Release.Refinement.HasTypeVQ.widen_instTarget_covers",
+            "Benitoite.Release.Refinement.HasTypeVQ.widen_opaque"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "handoffs",
+      "id": "H16",
+      "dependencies": {
+        "Benitoite.Release.Refinement.ModelHttp.sent_request": {
+          "Benitoite.Release.Refinement.TargetTable.valKind": [
+            "Benitoite.Release.Refinement.ModelHttp.sent_request",
+            "Benitoite.Release.Refinement.ModelHttp.builtins",
+            "Benitoite.Release.Refinement.ScopeSignatures.builtins",
+            "Benitoite.Release.Refinement.TargetTable.valKind"
+          ]
+        },
+        "Benitoite.Release.Refinement.ScopeSignatures.io_op": {
+          "Benitoite.Release.Refinement.TargetTable.valKind": [
+            "Benitoite.Release.Refinement.ScopeSignatures.io_op",
+            "Benitoite.Release.Refinement.ScopeSignatures.builtins",
+            "Benitoite.Release.Refinement.TargetTable.valKind"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "handoffs",
+      "id": "H17",
+      "dependencies": {
+        "Benitoite.Release.Refinement.ScopedTargetInputs.at_ok": {
+          "Benitoite.Release.Refinement.AtPrepared.request": [
+            "Benitoite.Release.Refinement.ScopedTargetInputs.at_ok",
+            "Benitoite.Release.Refinement.StateTyE.at_ok_all",
+            "Benitoite.Release.Refinement.AtPrepared.request"
+          ],
+          "Benitoite.Release.Refinement.Val.reqTarget_kind": [
+            "Benitoite.Release.Refinement.ScopedTargetInputs.at_ok",
+            "Benitoite.Release.Refinement.StateTyE.at_ok_all",
+            "Benitoite.Release.Refinement.CheckedWitness.of_prepared_request",
+            "Benitoite.Release.Refinement.Val.reqTarget_kind"
+          ],
+          "Benitoite.Release.Refinement.checkAt.absolute": [
+            "Benitoite.Release.Refinement.ScopedTargetInputs.at_ok",
+            "Benitoite.Release.Refinement.StateTyE.at_ok_all",
+            "Benitoite.Release.Refinement.CheckedWitness.of_prepared_request",
+            "Benitoite.Release.Refinement.checkAt.absolute"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "handoffs",
+      "id": "H18",
+      "dependencies": {
+        "Benitoite.Release.Refinement.Ctx.NormEq.declaration": {
+          "Benitoite.Release.Refinement.HasTypeVQ.data_observation": [
+            "Benitoite.Release.Refinement.Ctx.NormEq.declaration",
+            "Benitoite.Release.Refinement.HasTypeVQ.data_observation"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "handoffs",
+      "id": "H19",
+      "dependencies": {}
+    },
+    {
+      "kind": "handoffs",
+      "id": "H20",
+      "dependencies": {
+        "Benitoite.Release.Refinement.ScopedTargetInputs.at_error": {
+          "Benitoite.Release.Refinement.AtErrorReaders.check_reader": [
+            "Benitoite.Release.Refinement.ScopedTargetInputs.at_error",
+            "Benitoite.Release.Refinement.AtErrorReaders.check_reader"
+          ]
+        },
+        "Benitoite.Release.Refinement.ScopedTargetInputs.at_prepare": {
+          "Benitoite.Release.Refinement.AtPrepare.error_saved": [
+            "Benitoite.Release.Refinement.ScopedTargetInputs.at_prepare",
+            "Benitoite.Release.Refinement.AtErrorReaders.prepare_reader",
+            "Benitoite.Release.Refinement.AtPrepare.error_saved"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "handoffs",
+      "id": "H21",
+      "dependencies": {
+        "Benitoite.Release.Refinement.ScopedTargetInputs.at_error": {
+          "Benitoite.Release.Refinement.AtErrorReaders.observed": [
+            "Benitoite.Release.Refinement.ScopedTargetInputs.at_error",
+            "Benitoite.Release.Refinement.AtErrorReaders.check_reader",
+            "Benitoite.Release.Refinement.AtErrorReaders.observed"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "handoffs",
+      "id": "H22",
+      "dependencies": {
+        "Benitoite.Release.Refinement.ScopedCallContracts.request_inputs": {
+          "Benitoite.Release.Refinement.ScopedCallContracts.single_inputs": [
+            "Benitoite.Release.Refinement.ScopedCallContracts.request_inputs",
+            "Benitoite.Release.Refinement.ScopedCallContracts.single_inputs"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "handoffs",
+      "id": "H23",
+      "dependencies": {
+        "Benitoite.Release.Refinement.Comp.Source.adequate": {
+          "Benitoite.Release.Refinement.Val.Source": [
+            "Benitoite.Release.Refinement.Comp.Source.adequate",
+            "Benitoite.Release.Refinement.Val.Source"
+          ]
+        },
+        "Benitoite.Release.Refinement.Comp.SourceScoped.runtime_inst": {
+          "Benitoite.Release.Refinement.Val.SourceScoped": [
+            "Benitoite.Release.Refinement.Comp.SourceScoped.runtime_inst",
+            "Benitoite.Release.Refinement.Val.SourceScoped"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "handoffs",
+      "id": "H24",
+      "dependencies": {
+        "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps": {
+          "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs": [
+            "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps",
+            "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs"
+          ]
+        },
+        "Benitoite.Release.Refinement.ScopedTargetInputs.pure_steps": {
+          "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs": [
+            "Benitoite.Release.Refinement.ScopedTargetInputs.pure_steps",
+            "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "handoffs",
+      "id": "H25",
+      "dependencies": {
+        "Benitoite.Release.Refinement.ModelConstraints.admits_subst": {
+          "Benitoite.Release.Refinement.ModelConstraints.sat_subst": [
+            "Benitoite.Release.Refinement.ModelConstraints.admits_subst",
+            "Benitoite.Release.Refinement.ModelConstraints.sat_subst"
+          ]
+        },
+        "_private.Benitoite.Release.Refinement.ModelHttpApplications.0.Benitoite.Release.Refinement.ModelHttpApplications.result_annotation": {
+          "Benitoite.Release.Refinement.ScopeDeclarations.program_hasHttp": [
+            "_private.Benitoite.Release.Refinement.ModelHttpApplications.0.Benitoite.Release.Refinement.ModelHttpApplications.result_annotation",
+            "Benitoite.Release.Refinement.ScopeDeclarations.program_hasHttp"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "handoffs",
+      "id": "H26",
+      "dependencies": {}
+    },
+    {
+      "kind": "handoffs",
+      "id": "H27",
+      "dependencies": {}
+    },
+    {
+      "kind": "handoffs",
+      "id": "H28",
+      "dependencies": {
+        "Benitoite.Release.Refinement.ScopedTargetExamples.single_io": {
+          "Benitoite.Release.Refinement.Builtins.ShapeOk.single_target": [
+            "Benitoite.Release.Refinement.ScopedTargetExamples.single_io",
+            "Benitoite.Release.Refinement.Builtins.TargetAgreement.obs_allowed",
+            "Benitoite.Release.Refinement.Builtins.ShapeOk.single_target"
+          ],
+          "Benitoite.Release.Refinement.HasTypeVQ.target_member": [
+            "Benitoite.Release.Refinement.ScopedTargetExamples.single_io",
+            "Benitoite.Release.Refinement.Builtins.TargetAgreement.obs_allowed",
+            "Benitoite.Release.Refinement.Builtins.ShapeOk.single_target",
+            "Benitoite.Release.Refinement.HasTypeVQ.target_member"
+          ]
+        },
+        "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps": {
+          "Benitoite.Release.Refinement.Builtins.ShapeOk.single_target": [
+            "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps",
+            "Benitoite.Release.Refinement.Builtins.TargetAgreement.obs_allowed",
+            "Benitoite.Release.Refinement.Builtins.ShapeOk.single_target"
+          ],
+          "Benitoite.Release.Refinement.HasTypeVQ.target_member": [
+            "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps",
+            "Benitoite.Release.Refinement.Builtins.TargetAgreement.obs_allowed",
+            "Benitoite.Release.Refinement.Builtins.ShapeOk.single_target",
+            "Benitoite.Release.Refinement.HasTypeVQ.target_member"
+          ],
+          "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs": [
+            "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps",
+            "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "handoffs",
+      "id": "H29",
+      "dependencies": {
+        "Benitoite.Release.Refinement.ModelHttp.io_exists": {
+          "Benitoite.Release.Refinement.ModelHttp.send_response": [
+            "Benitoite.Release.Refinement.ModelHttp.io_exists",
+            "Benitoite.Release.Refinement.ModelHttp.send_response"
+          ]
+        },
+        "Benitoite.Release.Refinement.ModelTargets.io_typed": {
+          "Benitoite.Release.Refinement.ScopedIOResponse.response": [
+            "Benitoite.Release.Refinement.ModelTargets.io_typed",
+            "Benitoite.Release.Refinement.ScopedIOResponse.response"
+          ]
+        },
+        "Benitoite.Release.Refinement.ModelTargets.responseAssumptions": {
+          "Benitoite.Release.Refinement.ModelTargets.io_exists": [
+            "Benitoite.Release.Refinement.ModelTargets.responseAssumptions",
+            "Benitoite.Release.Refinement.ModelTargets.io_exists"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "handoffs",
+      "id": "H30",
+      "dependencies": {
+        "Benitoite.Release.Refinement.NormalReplyExamples.concrete_step_selections": {
+          "Benitoite.Release.Refinement.StateTyE.selected_primitive_step": [
+            "Benitoite.Release.Refinement.NormalReplyExamples.concrete_step_selections",
+            "Benitoite.Release.Refinement.StateTyE.selected_primitive_step"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "handoffs",
+      "id": "H31",
+      "dependencies": {
+        "Benitoite.Release.Refinement.AtErrorReaders.observed": {
+          "Benitoite.Release.Refinement.AtTargets.adequate_atError": [
+            "Benitoite.Release.Refinement.AtErrorReaders.observed",
+            "Benitoite.Release.Refinement.AtTargets.adequate_atError"
+          ]
+        },
+        "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps": {
+          "Benitoite.Release.Refinement.HasTypeVQ.target_member": [
+            "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps",
+            "Benitoite.Release.Refinement.Builtins.TargetAgreement.obs_allowed",
+            "Benitoite.Release.Refinement.Builtins.ShapeOk.single_target",
+            "Benitoite.Release.Refinement.HasTypeVQ.target_member"
+          ],
+          "Benitoite.Release.Refinement.RangeExpr.Covers.mem": [
+            "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps",
+            "Benitoite.Release.Refinement.Builtins.TargetAgreement.obs_allowed",
+            "Benitoite.Release.Refinement.Builtins.ShapeOk.single_target",
+            "Benitoite.Release.Refinement.HasTypeVQ.target_member",
+            "Benitoite.Release.Refinement.RangeExpr.Covers.mem"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "position",
+      "id": "直接",
+      "dependencies": {
+        "Benitoite.Release.Refinement.ScopedTargetExamples.request_io": {
+          "Benitoite.Release.Refinement.ScopedTargetExamples.single_io": [
+            "Benitoite.Release.Refinement.ScopedTargetExamples.request_io",
+            "Benitoite.Release.Refinement.ScopedTargetExamples.single_io"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "position",
+      "id": "明示拡大",
+      "dependencies": {
+        "Benitoite.Release.Refinement.HasTypeVQ.widen_instTarget_covers": {
+          "Benitoite.Release.Refinement.HasTypeVQ.widen_opaque": [
+            "Benitoite.Release.Refinement.HasTypeVQ.widen_instTarget_covers",
+            "Benitoite.Release.Refinement.HasTypeVQ.widen_opaque"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "position",
+      "id": "関数値",
+      "dependencies": {
+        "Benitoite.Release.Refinement.ScopedTargetExamples.single_io": {
+          "Benitoite.Release.Refinement.ScopedCallContracts.single_inputs": [
+            "Benitoite.Release.Refinement.ScopedTargetExamples.single_io",
+            "Benitoite.Release.Refinement.ScopedCallContracts.single_inputs"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "position",
+      "id": "callback",
+      "dependencies": {
+        "Benitoite.Release.Refinement.ScopedTargetExamples.request_io": {
+          "Benitoite.Release.Refinement.ScopedTargetExamples.single_io": [
+            "Benitoite.Release.Refinement.ScopedTargetExamples.request_io",
+            "Benitoite.Release.Refinement.ScopedTargetExamples.single_io"
+          ],
+          "Benitoite.Release.Refinement.TelClosure.apply": [
+            "Benitoite.Release.Refinement.ScopedTargetExamples.request_io",
+            "Benitoite.Release.Refinement.ScopedCallContracts.request_inputs",
+            "Benitoite.Release.Refinement.ScopedCallContracts.single_inputs",
+            "Benitoite.Release.Refinement.TelClosure.apply"
+          ]
+        },
+        "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps": {
+          "Benitoite.Release.Refinement.TelClosure.apply": [
+            "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps",
+            "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs",
+            "Benitoite.Release.Refinement.StateTyE.primitive_contract_inputs",
+            "Benitoite.Release.Refinement.TelClosure.apply"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "position",
+      "id": "ADT/List格納",
+      "dependencies": {
+        "Benitoite.Release.Refinement.HasTypeVQ.con_field": {
+          "Benitoite.Release.Refinement.HasTypeVsQ.get": [
+            "Benitoite.Release.Refinement.HasTypeVQ.con_field",
+            "Benitoite.Release.Refinement.HasTypeVsQ.get"
+          ]
+        },
+        "Benitoite.Release.Refinement.HasTypeVQ.list_element_facts": {
+          "Benitoite.Release.Refinement.HasTypeEachQ.member": [
+            "Benitoite.Release.Refinement.HasTypeVQ.list_element_facts",
+            "Benitoite.Release.Refinement.HasTypeEachQ.member"
+          ]
+        },
+        "Benitoite.Release.Refinement.ScopedTargetExamples.selected_request": {
+          "Benitoite.Release.Refinement.ScopedTargetExamples.selected_io": [
+            "Benitoite.Release.Refinement.ScopedTargetExamples.selected_request",
+            "Benitoite.Release.Refinement.ScopedTargetExamples.selected_io"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "position",
+      "id": "Reference/Lazy",
+      "dependencies": {
+        "Benitoite.Release.Refinement.HasTypeVQ.reference_cell_inputs": {
+          "Benitoite.Release.Refinement.StoreOk.ref_cell": [
+            "Benitoite.Release.Refinement.HasTypeVQ.reference_cell_inputs",
+            "Benitoite.Release.Refinement.StoreOk.ref_cell"
+          ]
+        },
+        "Benitoite.Release.Refinement.ScopedTargetExamples.selected_request": {
+          "Benitoite.Release.Refinement.ScopedTargetExamples.selected_io": [
+            "Benitoite.Release.Refinement.ScopedTargetExamples.selected_request",
+            "Benitoite.Release.Refinement.ScopedTargetExamples.selected_io"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "position",
+      "id": "節/resume",
+      "dependencies": {
+        "Benitoite.Release.Refinement.ScopedTargetInputs.handled_step": {
+          "Benitoite.Release.Refinement.HasTypeCQ.inv_resumeL": [
+            "Benitoite.Release.Refinement.ScopedTargetInputs.handled_step",
+            "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs",
+            "Benitoite.Release.Refinement.StateTyE.inputs",
+            "Benitoite.Release.Refinement.ClosureTy.inputs",
+            "Benitoite.Release.Refinement.HasTypeCQ.inputs",
+            "Benitoite.Release.Refinement.HasTypeCQ.inv_resumeL"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "instantiation",
+      "id": "直接",
+      "dependencies": {
+        "Benitoite.Release.Refinement.ScopedTargetExamples.request_io": {
+          "Benitoite.Release.Refinement.ScopedTargetExamples.single_io": [
+            "Benitoite.Release.Refinement.ScopedTargetExamples.request_io",
+            "Benitoite.Release.Refinement.ScopedTargetExamples.single_io"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "instantiation",
+      "id": "明示拡大",
+      "dependencies": {
+        "Benitoite.Release.Refinement.ScopedTargetExamples.selected_request": {
+          "Benitoite.Release.Refinement.ScopedTargetExamples.selected_io": [
+            "Benitoite.Release.Refinement.ScopedTargetExamples.selected_request",
+            "Benitoite.Release.Refinement.ScopedTargetExamples.selected_io"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "instantiation",
+      "id": "関数値",
+      "dependencies": {}
+    },
+    {
+      "kind": "instantiation",
+      "id": "無制約Top",
+      "dependencies": {}
+    },
+    {
+      "kind": "instantiation",
+      "id": "比較不能",
+      "dependencies": {}
+    }
+  ]
+}
