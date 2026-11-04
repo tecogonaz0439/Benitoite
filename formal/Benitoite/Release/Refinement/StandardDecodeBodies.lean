@@ -1,4 +1,5 @@
 import Benitoite.Release.Refinement.StandardDecodeComparison
+import Benitoite.Release.Refinement.LocalTyping
 
 /-! # decode 済みの Result に対する宣言順の検査本体 -/
 namespace Benitoite.Release.Refinement.StandardDecode
@@ -573,6 +574,206 @@ example {σ} (k : Cont) (μ : Store) :
 example (Ψ : StoreTy) :
     HasTypeCQ recordProgram recordBuiltins Ψ Qempty [] rawContext [] (some outputType)
       checksBody outputType Eff.empty [] := checks_typed Ψ
+
+/-- 通常decodeの同じ二整数から、宣言順の最初の違反又は構築値を選ぶ。 -/
+def checkedRawResult (lo hi : Integer64Value) : Val :=
+  if 0≤lo.toInt then
+    if 0≤hi.toInt then
+      if lo.toInt≤hi.toInt then .con "Result.Ok" [wholeType,errorType]
+        [.con "Envelope.Make" [] [.con "Checked.Make" [] [.const (.integer lo),.const (.integer hi)]]]
+      else .con "Result.Error" [wholeType,errorType] [constraintError 2]
+    else .con "Result.Error" [wholeType,errorType] [constraintError 1]
+  else .con "Result.Error" [wholeType,errorType] [constraintError 0]
+
+/-- 入力Resultのpayloadと二欄の同一性。型注釈の表現には依存しない。 -/
+inductive DecodeResult : Val → Val → Prop where
+  | error (ts : List Ty) (payload : Val) :
+      DecodeResult (.con "Result.Error" ts [payload]) (.con "Result.Error" [wholeType,errorType] [payload])
+  | raw (ts us : List Ty) (lo hi : Integer64Value) :
+      DecodeResult (.con "Result.Ok" ts [.con "Raw.Make" us [.const (.integer lo),.const (.integer hi)]])
+        (checkedRawResult lo hi)
+
+private theorem comparison_boolean (left right : Integer64Value) :
+    recordBuiltins.delta "%Integer.lessOrEqual" [] [] [] [.const (.integer left),.const (.integer right)]=
+      some (.val (.const (.boolean (decide (left.toInt≤right.toInt))))) := by
+  have h := StandardScalar.integerDelta_order .integer64 .le left right (.inr (.inl rfl))
+  have booleans : Comparison.le.fromEqLt (left.toInt == right.toInt)
+      (decide (left.toInt<right.toInt)) (decide (right.toInt<left.toInt)) =
+      decide (left.toInt<=right.toInt) := by
+    apply Bool.eq_iff_iff.mpr
+    simp only [Comparison.fromEqLt,Bool.or_eq_true,decide_eq_true_eq,beq_iff_eq]
+    omega
+  exact h.trans (congrArg some (congrArg (fun b => Outcome.val (.const (.boolean b))) booleans))
+
+private theorem checkedRawResult_typed (Ψ : StoreTy) (lo hi : Integer64Value) :
+    HasTypeVQ recordProgram recordBuiltins Ψ Qempty [] [] [] (checkedRawResult lo hi) outputType := by
+  unfold checkedRawResult
+  split
+  · rename_i hlo
+    split
+    · rename_i hhi
+      split
+      · rename_i whole
+        apply result_ok
+        apply whole_construct (lo := .const (.integer lo)) (hi := .const (.integer hi))
+          (.V_Const trivial) (.V_Const trivial) rfl rfl
+          (Entails.integer_le hlo) (Entails.integer_le hhi)
+        apply Entails.closed
+        all_goals simp [constructedComparison,envelopeTerm,pairField,loField,hiField,
+          Pred.WF,Pred.VarsIn,Pred.Sorted,Pred.evalClosed,Pred.evalWith,Pred.atomReady,Pred.atomValue,
+          Term.HasSort,Term.Shape,Term.References,Term.VarsIn,varsInSlot,varsInSlots,
+          termReady,Term.observe,observeSlots,integerAs,observeAs,
+          Term.interpret,Observation.sort,whole]
+      · exact result_error (constraint_error_typed 2)
+    · exact result_error (constraint_error_typed 1)
+  · exact result_error (constraint_error_typed 0)
+
+/-- 任意の型注釈を持つ同じRawの二欄で、既存の四具体例の実行を一般化する。 -/
+theorem postprocess_raw_general_steps {σ} (ts us : List Ty) (lo hi : Integer64Value) (k : Cont) (μ : Store) :
+    ∃ q, Steps recordProgram recordBuiltins σ
+      (.run (.mk (Capture.empty.extend (.con "Result.Ok" ts
+        [.con "Raw.Make" us [.const (.integer lo),.const (.integer hi)]])) postprocessBody) k μ) []
+      (.run q k μ) ∧ q.view=.ret (checkedRawResult lo hi) := by
+  have enter : Steps recordProgram recordBuiltins σ
+      (.run (.mk (Capture.empty.extend (.con "Result.Ok" ts
+        [.con "Raw.Make" us [.const (.integer lo),.const (.integer hi)]])) postprocessBody) k μ) []
+      (.run (.mk (((Capture.empty.extend (.con "Result.Ok" ts
+        [.con "Raw.Make" us [.const (.integer lo),.const (.integer hi)]])).extend
+          (.con "Raw.Make" us [.const (.integer lo),.const (.integer hi)])).extendMany
+            [.const (.integer lo),.const (.integer hi)]) checksBody) k μ) :=
+    .cons (.E_Match rfl) (.cons (.E_MatchSkip rfl rfl)
+      (.cons (.E_MatchBody rfl rfl) (.cons (.E_Match rfl) (.cons (.E_MatchBody rfl rfl) .nil))))
+  have loReply : recordBuiltins.delta "%Integer.lessOrEqual" [] [] []
+      [.const (.integer ⟨0,by decide⟩),.const (.integer lo)] =
+      some (.val (.const (.boolean (decide (0<=lo.toInt))))) := comparison_boolean ⟨0,by decide⟩ lo
+  have hiReply : recordBuiltins.delta "%Integer.lessOrEqual" [] [] []
+      [.const (.integer ⟨0,by decide⟩),.const (.integer hi)] =
+      some (.val (.const (.boolean (decide (0<=hi.toInt))))) := comparison_boolean ⟨0,by decide⟩ hi
+  have wholeReply := comparison_boolean lo hi
+  by_cases hlo : 0<=lo.toInt
+  · simp only [hlo,decide_true] at loReply
+    by_cases hhi : 0<=hi.toInt
+    · simp only [hhi,decide_true] at hiReply
+      by_cases whole : lo.toInt<=hi.toInt
+      · simp [whole] at wholeReply
+        refine ⟨_,steps_follow enter (by
+          apply Steps.cons (.E_Let rfl)
+          apply Steps.cons (.E_Prim rfl rfl rfl loReply)
+          apply Steps.cons (.E_Return rfl)
+          apply Steps.cons (.E_IfT rfl)
+          apply Steps.cons (.E_Let rfl)
+          apply Steps.cons (.E_Prim rfl rfl rfl hiReply)
+          apply Steps.cons (.E_Return rfl)
+          apply Steps.cons (.E_IfT rfl)
+          apply Steps.cons (.E_Let rfl)
+          apply Steps.cons (.E_Prim rfl rfl rfl wholeReply)
+          apply Steps.cons (.E_Return rfl)
+          apply Steps.cons (.E_IfT rfl)
+          exact .nil),?_⟩
+        simp only [checkedRawResult,ite_eq_left hlo,ite_eq_left hhi,ite_eq_left whole]; rfl
+      · simp [whole] at wholeReply
+        refine ⟨_,steps_follow enter (by
+          apply Steps.cons (.E_Let rfl)
+          apply Steps.cons (.E_Prim rfl rfl rfl loReply)
+          apply Steps.cons (.E_Return rfl)
+          apply Steps.cons (.E_IfT rfl)
+          apply Steps.cons (.E_Let rfl)
+          apply Steps.cons (.E_Prim rfl rfl rfl hiReply)
+          apply Steps.cons (.E_Return rfl)
+          apply Steps.cons (.E_IfT rfl)
+          apply Steps.cons (.E_Let rfl)
+          apply Steps.cons (.E_Prim rfl rfl rfl wholeReply)
+          apply Steps.cons (.E_Return rfl)
+          apply Steps.cons (.E_IfF rfl)
+          exact .nil),?_⟩
+        simp only [checkedRawResult,ite_eq_left hlo,ite_eq_left hhi,ite_eq_right whole]; rfl
+    · simp only [hhi,decide_false] at hiReply
+      refine ⟨_,steps_follow enter (by
+          apply Steps.cons (.E_Let rfl)
+          apply Steps.cons (.E_Prim rfl rfl rfl loReply)
+          apply Steps.cons (.E_Return rfl)
+          apply Steps.cons (.E_IfT rfl)
+          apply Steps.cons (.E_Let rfl)
+          apply Steps.cons (.E_Prim rfl rfl rfl hiReply)
+          apply Steps.cons (.E_Return rfl)
+          apply Steps.cons (.E_IfF rfl)
+          exact .nil),?_⟩
+      simp only [checkedRawResult,ite_eq_left hlo,ite_eq_right hhi]; rfl
+  · simp only [hlo,decide_false] at loReply
+    refine ⟨_,steps_follow enter (by
+          apply Steps.cons (.E_Let rfl)
+          apply Steps.cons (.E_Prim rfl rfl rfl loReply)
+          apply Steps.cons (.E_Return rfl)
+          apply Steps.cons (.E_IfF rfl)
+          exact .nil),?_⟩
+    simp only [checkedRawResult,ite_eq_right hlo]; rfl
+
+/-- 全型付きResultの同じ実値から、同じError又は検査した構築値への実行を得る。 -/
+theorem postprocess_all {σ Ψ decoded}
+    (typed : HasTypeVQ recordProgram recordBuiltins Ψ Qempty [] [] [] decoded
+      (.data "Result" [.data "Raw" [],.data "ConversionError" []])) (k : Cont) (μ : Store) :
+    ∃ result q, Steps recordProgram recordBuiltins σ
+      (.run (.mk (Capture.empty.extend decoded) postprocessBody) k μ) [] (.run q k μ) ∧
+      q.view=.ret result ∧ DecodeResult decoded result ∧
+      HasTypeVQ recordProgram recordBuiltins Ψ Qempty [] [] [] result
+        (.data "Result" [wholeType,.data "ConversionError" []]) := by
+  have inhabitant := inhabits_of_typed_raw record_valid typed
+  rcases inhabitant.data_inv "Result" [rawType,errorType] rfl with
+    ⟨c,ts,vs,cd,rfl,lookup,owner,_,_,fields⟩ | bad
+  · rcases result_only lookup owner with rfl | rfl
+    · have same := Option.some.inj (lookup.symm.trans
+        (show recordProgram.cons "Result.Error"=some ⟨"Result",2,[.tvar 1]⟩ from rfl))
+      subst cd
+      cases fields with | cons payload rest =>
+        cases rest
+        obtain ⟨v,hv,vt⟩ := typed.con_field_by_type
+          (cd := ⟨"Result",2,[.tvar 1]⟩) rfl rfl (i := 0) rfl record_valid
+          (input_annotation []).data_args (by intro a h; change a ∈ [rawType,errorType] at h; simp only [List.mem_cons,List.not_mem_nil,or_false] at h; rcases h with rfl | rfl <;> trivial)
+        cases Option.some.inj hv
+        rename_i payloadValue
+        have payloadTyped : HasTypeVQ recordProgram recordBuiltins Ψ Qempty [] [] [] payloadValue errorType := by
+          simpa [errorType,Ty.subst,Ty.substAt,substTypeAt,Ty.bind,Ty.rawBind,typeEnvAt,Ty.norm,Ty.normTys,rawBindTys] using vt
+        exact ⟨.con "Result.Error" [wholeType,errorType] [payloadValue],_,
+          .cons (.E_Match rfl) (.cons (.E_MatchBody rfl rfl) .nil),rfl,.error ts payloadValue,result_error payloadTyped⟩
+    · have same := Option.some.inj (lookup.symm.trans
+        (show recordProgram.cons "Result.Ok"=some ⟨"Result",2,[.tvar 0]⟩ from rfl))
+      subst cd
+      cases fields with | cons raw rest =>
+        cases rest
+        rcases raw.data_inv "Raw" [] rfl with ⟨c,us,vs,cd,rfl,lookup,owner,_,_,fields⟩ | bad
+        · have hc := raw_only lookup owner
+          subst c
+          have same := Option.some.inj (lookup.symm.trans
+            (show recordProgram.cons "Raw.Make"=some ⟨"Raw",0,[.base .integer,.base .integer]⟩ from rfl))
+          subst cd
+          cases fields with | cons lo rest => cases rest with | cons hi rest =>
+            cases rest
+            obtain ⟨c,rfl,tag⟩ := lo.base_inv .integer rfl
+            clear lo
+            cases c <;> cases tag
+            rename_i lo
+            obtain ⟨c,rfl,tag⟩ := hi.base_inv .integer rfl
+            clear hi
+            cases c <;> cases tag
+            rename_i hi
+            obtain ⟨q,steps,normal⟩ := postprocess_raw_general_steps ts us lo hi k μ
+            exact ⟨checkedRawResult lo hi,q,steps,normal,.raw ts us lo hi,checkedRawResult_typed Ψ lo hi⟩
+        · simp at bad
+  · simp at bad
+
+/-- 通常decoderの型付けから、同じpostprocessBodyとのletの型付けを構成する。 -/
+theorem decode_let_typed {Ψ decoder}
+    (typed : HasTypeCQ recordProgram recordBuiltins Ψ Qempty [] [] [] (some outputType)
+      decoder inputType Eff.empty []) :
+    HasTypeCQ recordProgram recordBuiltins Ψ Qempty [] [] [] (some outputType)
+      (.letIn decoder postprocessBody) outputType Eff.empty [] := by
+  apply HasTypeCQ.C_Let typed
+  · have body := (postprocess_typed Ψ).local_zero (L' := [none]) (by
+      intro i b h; simp at h)
+    simpa [Ctx.extend,localExtend,LocalCtx.extend,Ty.shiftV,shiftVTys,predBind,termBind,termBind?,outputType,inputType,
+      rawType,errorType,wholeType,wholePredicate,pairField,loField,hiField,Eff.shiftV,
+      Eff.empty] using body
+  · exact (output_annotation []).declared
 
 end
 end Benitoite.Release.Refinement.StandardDecode

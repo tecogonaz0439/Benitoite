@@ -1,0 +1,148 @@
+{
+  "ten_statements_unchanged": 10,
+  "lean_blocks": [
+    {
+      "block": 1,
+      "first_line": "structure TypeSubstInput (P : Program) (B : Builtins)",
+      "exact": true,
+      "component_match": true,
+      "interpretation": "本番の字面又は抜粋"
+    },
+    {
+      "block": 2,
+      "first_line": "structure SignatureInstance (P : Program) (C : TypeCtx) (Γ : Ctx)",
+      "exact": true,
+      "component_match": true,
+      "interpretation": "本番の字面又は抜粋"
+    },
+    {
+      "block": 3,
+      "first_line": "  | scoped {Γ Φ o k inner outer} : RangeIx.Covers outer inner →",
+      "exact": true,
+      "component_match": true,
+      "interpretation": "本番の字面又は抜粋"
+    },
+    {
+      "block": 4,
+      "first_line": "/-- 範囲変数は操作の対象の最上位にあり、他の注釈は閉じた範囲を持つ。 -/",
+      "exact": false,
+      "component_match": true,
+      "interpretation": "本番の字面又は抜粋"
+    },
+    {
+      "block": 5,
+      "first_line": "def FieldLink.predicate (n : Nat) (t : Term) (link : FieldLink) : Pred :=",
+      "exact": true,
+      "component_match": true,
+      "interpretation": "本番の字面又は抜粋"
+    },
+    {
+      "block": 6,
+      "first_line": "    | plain {Ψ Q C Γ Φ Δ R obs alts body arms a b ε δ links} : AltsTy P alts a δ →",
+      "exact": true,
+      "component_match": true,
+      "interpretation": "本番の字面又は抜粋"
+    },
+    {
+      "block": 7,
+      "first_line": "    | C_Use {Ψ Q C Γ Φ Δ R v o m a ε} :",
+      "exact": false,
+      "component_match": true,
+      "interpretation": "本番の字面又は抜粋"
+    },
+    {
+      "block": 8,
+      "first_line": "  inductive AtCallAdmissible (P : Program) (B : Builtins) :",
+      "exact": false,
+      "component_match": true,
+      "interpretation": "本番の字面又は抜粋"
+    },
+    {
+      "block": 9,
+      "first_line": "def Eff.ClauseRangeIs (e : Eff) (l : EffName) (r : RangeExpr) : Prop :=",
+      "exact": false,
+      "component_match": true,
+      "interpretation": "本番の字面又は抜粋"
+    },
+    {
+      "block": 10,
+      "first_line": "  | E_PathBasesApply {q : Closure} {b sg k μ} :",
+      "exact": false,
+      "component_match": true,
+      "interpretation": "本番の字面又は抜粋"
+    },
+    {
+      "block": 11,
+      "first_line": "inductive Event where",
+      "exact": true,
+      "component_match": true,
+      "interpretation": "本番の字面又は抜粋"
+    },
+    {
+      "block": 12,
+      "first_line": "def Event.Covered (B : Builtins) (Γ : Ctx) (Φ : List Pred) (ε : Eff) : Event → Prop",
+      "exact": true,
+      "component_match": true,
+      "interpretation": "本番の字面又は抜粋"
+    },
+    {
+      "block": 13,
+      "first_line": "structure PrimSig.PathBasesShape (s : PrimSig) (B : Builtins) (b : PrimName) : Prop where",
+      "exact": true,
+      "component_match": true,
+      "interpretation": "本番の字面又は抜粋"
+    },
+    {
+      "block": 14,
+      "first_line": "ClosureTy P B Ψ ss R q a e →",
+      "exact": false,
+      "component_match": false,
+      "interpretation": "本文で定める像 ν を省略した close_value_typed の説明"
+    },
+    {
+      "block": 15,
+      "first_line": "  /-- 制約のない型パラメータは、閉じた整形式の型の正規形で具体化できる。 -/",
+      "exact": true,
+      "component_match": true,
+      "interpretation": "本番の字面又は抜粋"
+    },
+    {
+      "block": 16,
+      "first_line": "def joinV : ValueApprox → ValueApprox → ValueApprox",
+      "exact": true,
+      "component_match": true,
+      "interpretation": "本番の字面又は抜粋"
+    },
+    {
+      "block": 17,
+      "first_line": "def BeforeError : State → Prop",
+      "exact": true,
+      "component_match": true,
+      "interpretation": "本番の字面又は抜粋"
+    },
+    {
+      "block": 18,
+      "first_line": "inductive ContTy (P : Program) (B : Builtins) (σ : PathEnv) (Ψ : StoreTy) :",
+      "exact": true,
+      "component_match": true,
+      "interpretation": "本番の字面又は抜粋"
+    }
+  ],
+  "inputs": {
+    "docs/design/01-spec/01-12-core-calculus.md": {
+      "bytes": 876109,
+      "sha256": "f0aa7211d5b42f4f5297f88800a204aadce7cc589220007cfa6c059dd36690de"
+    },
+    "docs/design/07-quality/07-04-formal-semantics.md": {
+      "bytes": 566563,
+      "sha256": "ae1647fa14b8223e8752fd88838d45e08b8bcabf6815587fe12202c23437e1b5"
+    }
+  },
+  "changed_sources_checked": 329,
+  "workflow_labels_or_local_paths": 0,
+  "new_axiom_commands": 0,
+  "script": {
+    "bytes": 3156,
+    "sha256": "325e3c1d37d561d78c4c8899a991cd65dc2e126a0ae4a3c11eb9a97931d85231"
+  }
+}

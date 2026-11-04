@@ -969,7 +969,9 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 | StandardCollectionExamples | 同節のOption/Pairの有限宣言、計算した要約とsatB、全20署名のlookup、同じ実δへの全BuiltinArgsの読者、四本BodyTypedの具体P/B適用。Decimalの同鍵表現、数値順、観測できない関数値の保持、集合の代表保持、空枝・不一致枝を検査する |
 | StandardRecordFields | 同節のRaw/Checked/Envelopeを含む同じ有限Pの全構成子のVarianceValid、非負の二欄の構築、型付き二段欄連鎖、返すEnvelope自身の全体条件の導入。Person.addressの位置1からAddress.cityの位置0への有限表の宣言も検査する。有限表の構成子名とRustの解決済みIDの一致は主張しない |
 | StandardDecodeComparison | 同節の実%Integer.lessOrEqual・引数名left/rightと内部の依存Boolean結果契約。全BuiltinArgsから実integerDeltaのOutcome.Typed（Groundを含む）/AdequateResult/非exitを構成し、同じ二整数と構築するEnvelopeの欄比較を真側の事実へ渡す。Rustの通常Boolean契約と区別する |
-| StandardDecodeBodies | 同節のdecode済みResultを受ける後処理core。Error同payload又はRawの二欄捕捉から、lo非負→hi非負→全体条件の三つのC_Let/C_Ifを型付け、同じDef.WellTyped/Row.BodyTypedへ適用する。四つの具体入力の実δ/Step列とError四欄を検査する。任意の通常decoderの実行との接続と生成器全体の証明は含まない |
+| StandardDecodeBodies・StandardDecodeConnection | 同節のdecode後のcore。全型付きResultの同じpayload又は二整数を取り出し、lo→hi→全体の順の実δ/Step列と検査済み結果の型付けを構成する。decodeThenは通常decoderの実Steps/FirstReturnが返す同じResultをletで渡し、同じ事象列と更新後のストアを保持する。通常decoderの型付けから合成本体も型付け、Stopは同じ理由列で伝播する。同じ有限なrecord宣言での接続であり、生成器全体と全プログラムの宣言収集の証明は含まない |
+| StandardOperatorArguments・StandardIntegerOperatorResponse・StandardFloatOperatorResponse・StandardDecimalOperatorResponse・StandardStringOperatorResponse・StandardOperatorResponse | 単相の原署名の全引数、34演算子実名と具体δの応答契約。正常値の型・Ground・AdequateResult・非exit。Floatは標準Model、Decimalは係数の保存・表現可能性・丸めと除算の拒否、Stringは長さ上限とUTF-8順序を使う |
+| StandardStructuralEqualityResponse | Full署名の全引数と構造δ。scalar-domainを前提にしない。正常値はBoolean、構造の失敗はInternalComparison。元のT・Equality sat・注釈を保持し、応答の型・Ground・AdequateResult・非exitを結論する。Boolean を結論するのは正常の枝だけであり、型の付いた Equality の入力で `structuralEqual` が `none` を返す失敗の枝が起きないことは結論しない。 |
 | FiniteStepPreservation | 同節の既存76保存葉への一段の分配と、同じ有限 Steps に沿う StateTyE の保存。PのWellFormed・WellTyped・EffectsOk、BのCoreAssumptions、σ.Validを受ける。EffectsOkは既存の宣言の対応であり、意味の新しい仮定欄を設けない。具体の表でEffectsOkを計算しmarkの実遷移へ適用する |
 | FirstReturn | 同節の指定した継続での最初のretまでの有限な導出。各途中状態がその返却境界でないという構文上の証拠と実Stepを持ち、元のStepsと正常終点・有限保存へ射影する。一般のCont等号のBool計算を主張しない。外側Fail handlerによる中断・別helperへの再呼出しも最初の同じkでのretとなる20歩の例を持ち、この関係を同じ呼出しの識別とはしない |
 | StandardListBodies | 同節の List.map/filter と mapFrom/filterFrom の通常 core 本体。Option の具体宣言と網羅性、同じ再帰定義の lookup、get/append/整数加算の具体署名、型変数の空制約の成功から、四本の Row.BodyTyped と同じ Def.WellTyped を構成する。callback は一度束縛し、潜在効果へ無失敗の条件を加えない。具体の有限宣言と satB の ListModel に四本を適用する。None の五歩・Some の七歩、同じ子Stepsの正常束縛と失敗の事象/理由/ストアの保持、有限保存を使う実append直前のU.norm型の取得も持つ。末端の同じ継続への再到達と最初の呼出しの返却を区別する実15歩の例を含む |
@@ -1220,13 +1222,17 @@ Rust との予算の照合では、対象とする操作数・保持数・停止
 
 `StandardConversionResponse` のfromInteger_math/toInteger_mathは、同じ全型付き入力とδ応答にSomeの同値・幅内、Noneの域外、小幅の全域拡大とu64のOptionの差を保持する。`StandardIntegerAPI.absolute_normal_math` は同じabsoluteの正常応答から非負性・数学上の絶対値・幅とunsignedの同値を読む。Stop全枝の意味関係を正常応答だけから結論しない。`StandardListResponse` と `StandardBytesResponse` のrelated_responseは、同じδ応答と元の列について、Listの挿入・連結・逆順、二種類のString長、Bytesの要素と同長の関係を返す。errへ正常値の長さは要求しない。
 
-`StandardSignatureExamples` は純粋応答を接続した143実名について、原標準ソースの署名から書き出したPrimSigと具体の有限表の署名全欄、及び実名との等号を既定ビルドで検査する。型パラメータ・key制約を含むadmits・引数名/型・結果・効果・範囲・kindを保ち、Map/Setの制約を型引数の個数だけへ置き換えない。原ソースと署名表の対応の検査であり、残るAPIのF06又はRust/Leanの実行全比較を代替しない。
+`StandardSignatureExamples` は純粋応答を接続した143実名について、原標準ソースの署名から書き出したPrimSigと具体の有限表の署名全欄、及び実名との等号を既定ビルドで検査する。型パラメータ・key制約を含むadmits・引数名/型・結果・効果・範囲・kindを保ち、Map/Setの制約を型引数の個数だけへ置き換えない。原ソースと署名表の対応の検査であり、他のAPIの応答契約又はRust/Leanの実行全比較を代替しない。
 
 `StandardArithmeticResponse` は七幅の加減乗と符号付き四幅の負号、計25演算子実名を、実left/right又はvalueの署名と全 `BuiltinArgs` から同じ `integerDelta` へ接続する。同じ算術値を検査した応答の型・Ground・AdequateResult・exit排除、正常値と幅、overflowと算術結果の幅外を保つ。これらは328公開関数の外にある実演算子のleafであり、区間・警告・returned/failed・第一失敗の接続を含めない。
 
 `StandardOrderResponse` は整数七幅・Byte・Character・Float二幅・Decimalの四比較、計48演算子実名の実left/right署名と全 `BuiltinArgs` を、同じ既存部分δと比較述語へ接続する。実入力のConstOK、同じ型/行/範囲/値引数、Booleanの結果型・空効果、Ground・AdequateResult・exit排除と、同じ二値の観測の真偽を保持する。整数とByteの整数比較述語、Character/Float/Decimalの各観測の比較を区別する。一般構造等値の充足はこの表に含めない。
 
-`StandardEqualityResponse` は `%eq`/`%ne` の全Equality型を許す元の型引数・制約・left/rightの署名を保ち、scalar-domain条件の下で既存の数値部分δへ接続する。型引数T自身の注釈・Ordinary・Equalityのsatと、同じ篩付きTを使う二値を保持し、型引数を基本型へ置き換えず元のTで同じδを呼ぶ。整数七幅・Byte・Character・Float二幅・Decimalの12領域×二名の型・Ground・AdequateResult・exit排除と同じ二値の比較述語を供給する。partialScalarDeltaの有限表はscalar部分の収集であり、List/data等を含む全構造EqualityのF06又はCoreAssumptionsの充足は結論しない。
+`StandardEqualityResponse` は `%eq`/`%ne` の全Equality型を許す元の型引数・制約・left/rightの署名を保ち、scalar-domain条件の下で既存の数値部分δへ接続する。型引数T自身の注釈・Ordinary・Equalityのsatと、同じ篩付きTを使う二値を保持し、型引数を基本型へ置き換えず元のTで同じδを呼ぶ。整数七幅・Byte・Character・Float二幅・Decimalの12領域×二名の型・Ground・AdequateResult・exit排除と同じ二値の比較述語を供給する。partialScalarDeltaの有限表はscalar部分の収集であり、その表だけから全構造Equalityの応答契約を結論しない。
+
+`StandardOperatorArguments` は単相の単項・二項の原署名から全引数の型付けを取り出す。`StandardIntegerOperatorResponse` は七整数幅の div/mod の14実名を `StandardIntegerFailure` の同じ計算本体へ接続する。`StandardFloatOperatorResponse` は Float と Float32 の五算術を、Lean 標準の `Float.Model`・`Float32.Model` の演算後のビット列で定める。NaN の扱いは平方根と同じ模型に従う。`StandardDecimalOperatorResponse` は、係数の128 bit保存と96 bitの表現可能性・scale≤28を検査し、候補ごとに元の係数から丸め直す計算と桁ごとの除算を定める。0除算と DecimalOverflow を区別する。`StandardStringOperatorResponse` は、連結前の合計UTF-8バイト長の上限1 GiBとUTF-8バイト列の辞書順の比較を定める。`StandardOperatorResponse` はこれら34実名を重複なく収集し、全 `BuiltinArgs` から同じ表のδの応答存在・型・Ground・AdequateResult・非exitを結論する。
+
+`StandardStructuralEqualityResponse` は元の Full Equality 署名を保ち、scalar-domainの前提を要求せず、List・data・Bytes・Map・Setを含む既存の `structuralEqual` を実名の `%eq`/`%ne` へ接続する。正常な応答はBooleanであり、構造走査の失敗はInternalComparisonのStopとなる。失敗をfalseへ置き換えない。Boolean を結論するのは正常の枝だけであり、型の付いた Equality の入力で `structuralEqual` が `none` を返す失敗の枝が起きないことは結論しない。元のT・Equality sat・注釈を保持し、全型付き入力から同じδの応答存在・型・Ground・AdequateResult・非exitを結論する。これらの応答契約は、Floatの模型とRustのf64/f32、Decimalの一時計算とRustのWide、構造等号の走査とRustの共有走査の一般の同値、又はCoreAssumptions全体の充足を結論しない。
 
 `StandardIntegerAPI` のfloor_math/floor_equationは、同じ七幅の床商/床剰余の実引数からtdiv/tmodの符号補正とq*b+rの分解、0除算と補正結果の幅外を読む。modulo_no_overflowは商の表現外だけでは床剰余を拒否しないことを同じδへ接続する。absolute_response_mathはsigned最小値のoverflowとunsignedの元値の正常応答を保持し、bits_mathは実ビットのwrapする数学値とシフト量域外のerrを読む。これらのleafから区間計算・警告・returned/failed・第一失敗の対応を結論しない。
 

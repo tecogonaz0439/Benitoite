@@ -512,6 +512,7 @@ import Benitoite.Release.Refinement.StandardCollectionExamples
 import Benitoite.Release.Refinement.StandardDecodeComparison
 import Benitoite.Release.Refinement.StandardRecordFields
 import Benitoite.Release.Refinement.StandardDecodeBodies
+import Benitoite.Release.Refinement.StandardDecodeConnection
 import Benitoite.Release.Refinement.StandardSafeContracts
 import Benitoite.Release.Refinement.StandardSafeAnnotations
 import Benitoite.Release.Refinement.StandardSafeAccess
@@ -531,6 +532,8 @@ import Benitoite.Release.Refinement.StandardSignatureExamples
 import Benitoite.Release.Refinement.StandardArithmeticResponse
 import Benitoite.Release.Refinement.StandardOrderResponse
 import Benitoite.Release.Refinement.StandardEqualityResponse
+import Benitoite.Release.Refinement.StandardOperatorResponse
+import Benitoite.Release.Refinement.StandardStructuralEqualityResponse
 import Benitoite.Release.Refinement.StandardMapRefinementGap
 import Benitoite.Release.Refinement.StandardByteStringResponse
 import Benitoite.Release.Refinement.StandardAliasBodies

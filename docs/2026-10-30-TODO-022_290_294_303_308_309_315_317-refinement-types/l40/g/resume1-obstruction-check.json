@@ -1,0 +1,43 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-M",
+    "12288",
+    "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/g/resume2-contrast.lean"
+  ],
+  "start_utc": "2026-11-04T04:28:17.361339+00:00",
+  "end_utc": "2026-11-04T04:28:18.361633+00:00",
+  "seconds": 1.0002375000000001,
+  "exit": 0,
+  "source": {
+    "bytes": 5044,
+    "sha256": "de21aa11bb2812f30f619610a41ea6b5347b95eef37f0d387d10edfbf2390f6c"
+  },
+  "raw": {
+    "bytes": 960,
+    "sha256": "ad5f94390d537aa2bec856af226a6f3ab14994673f851dc5d20467f1d2644ee6"
+  },
+  "print_axioms_count": 7,
+  "new_production_modules": 0,
+  "scope": "停止理由の反例7宣言だけ。段末の全環境監査の再実行ではない",
+  "prior_failures": [
+    "ConstOKの未簡約のBを含むdecideを修正",
+    "修正用Pythonの相対パス誤りを訂正"
+  ],
+  "maximum_resident_memory": "未取得（取りまとめの限定採取）",
+  "historical_command": [
+    "lake",
+    "env",
+    "lean",
+    "-M",
+    "12288",
+    "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/g/resume1-obstruction.lean"
+  ],
+  "historical_source": {
+    "bytes": 5044,
+    "sha256": "de21aa11bb2812f30f619610a41ea6b5347b95eef37f0d387d10edfbf2390f6c"
+  },
+  "path_note": "再開3で現行ファイル名へ参照を変更。実行日時・source・raw・7宣言は再開1の旧反例の記録であり、現行の対照の検査ではない。旧コマンドはhistorical_commandに保存。"
+}

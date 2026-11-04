@@ -1,0 +1,70 @@
+{
+  "obligations": 64,
+  "plan": 56,
+  "l20": 37,
+  "l30": 21,
+  "union": 60,
+  "difference": 4,
+  "common": 4,
+  "handoffs": 33,
+  "handoff_classes": {
+    "今回": 25,
+    "継承": 3,
+    "他段": 5
+  },
+  "constructors": {
+    "Val": 25,
+    "Comp": 16,
+    "State": 4,
+    "Frame": 7,
+    "Cell": 6,
+    "Ty": 21,
+    "HasTypeVQ": 29,
+    "HasTypeVsQ": 2,
+    "HasTypeEachQ": 2,
+    "HasTypeCQ": 24,
+    "Ty.LeQ": 14,
+    "TelLe": 2,
+    "TelClosure": 2,
+    "TypeArgsLe": 4,
+    "ContTy": 10,
+    "Observation.KeyShape": 11,
+    "Observation.KeySlots": 2,
+    "Observation.KeyPairs": 2,
+    "Step": 76,
+    "EvalPartial": 69,
+    "EvalArguments": 4,
+    "EvalTypedArguments": 4,
+    "EvalArms": 6,
+    "EvalWidthArms": 6,
+    "EvalResultArms": 6,
+    "EvalBlock": 14,
+    "EvalStandard": 7
+  },
+  "leaves": 76,
+  "h04_cases": 109,
+  "h04_proof_readers": {
+    "EvalPartial": "expr_failure",
+    "EvalArms": "armList_failure",
+    "EvalWidthArms": "armListKind_failure",
+    "EvalResultArms": "resultArmList_failure",
+    "EvalBlock": "block_failure"
+  },
+  "unknown_failed_sources": [
+    "formal/Benitoite/Interval/Sound.lean",
+    "formal/Benitoite/Interval/Eval.lean",
+    "formal/Benitoite/Interval/Arithmetic.lean",
+    "formal/Benitoite/Interval/DomainExamples.lean",
+    "formal/Benitoite/Interval/BudgetNormal.lean",
+    "formal/Benitoite/Interval/Range.lean",
+    "formal/Benitoite/Interval/Analyze.lean",
+    "formal/Benitoite/Interval/BudgetSound.lean",
+    "formal/Benitoite/Release/Refinement/IntervalFailure.lean",
+    "formal/Benitoite/Release/Refinement/IntervalConnectionExamples.lean"
+  ],
+  "default_project_modules": 1009,
+  "script": {
+    "bytes": 9717,
+    "sha256": "764aad866310b71980440127c728cf788122cc4f76582de744aed104a1f277d6"
+  }
+}
