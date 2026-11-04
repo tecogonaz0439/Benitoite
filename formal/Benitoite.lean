@@ -811,3 +811,6 @@ import Benitoite.Release.Refinement.Model
 import Benitoite.Release.Refinement.ModelTargetsExamples
 import Benitoite.Release.Refinement.ModelTargets
 import Benitoite.Release.Refinement.ModelTargetsApplications
+import Benitoite.Release.Refinement.ModelHttpConditions
+import Benitoite.Release.Refinement.ModelHttpApplications
+import Benitoite.Release.Refinement.ScopeModels

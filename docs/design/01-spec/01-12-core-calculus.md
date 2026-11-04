@@ -3347,6 +3347,16 @@ Lean の捕捉を持つ実行関係の `Step.E_Lam` は、`q.view = .app f ws`�
 
 `ModelTargetsApplications` は、同じ有限プログラムと任意のストア・環境で、File.readTextIn の非 Top と Top の呼出しの全前提を供給する。File.readText・print・exit にも実引数から全 BuiltinArgs を構成し、同じ応答の存在・型・適格性・種類・観測の許容を結ぶ。File.readText の Top の形と空でない観測、exit の val の不在、純粋操作の絶対形の成功・相対形の Error・同じ値の拡大と射影を確かめる。
 
+`ModelHttpConditions` は `ModelHttp` 名前空間で、Reference.get/set、Http.checkRequestIn/requestInValue/sendIn/widenRequestIn、内部の起点発行の七署名を登録する。`sig_cases` は全ての成功する lookup を名前と署名の等号へ戻す。`sig_scoped` と `sourceTelRows` は `HasHttp P` の同じ Result・Pair・Http.ClientRequest・Http.RequestCheckError・ScopeError の有限宣言から全署名の形成と行支持を得る。ClientRequest の五欄は String 二つ、List[Pair[String,String]]、Bytes、Integer の順であり、Pair と Result の arity は2である。八保存則は同じ有限宣言の骨格と型パラメータの制約を読む sat に対して成立する。
+
+`ModelHttp.pure_response` は、全 BuiltinArgs から要求の純粋三行の同じ実 δ、応答存在、結果型、Ground、AdequateResult、非 exit を構成する。`pure_outcome` は同じ決定的 δ の全実結果へ契約を渡す。チェックは固定の Val.reqTarget を使い、射影は保持した同じ要求を返し、拡大は同じ保持値を返す。`normal_facts` は同じ正常値の項観測から篩の事実を返す。
+
+`ModelHttp.send_response` は全型付き入力の全送信応答について、Http.Response と NetworkError の Result 又は実行時エラーの型・適格性・非 exit・対象一致を証明し、同じ関係の応答を少なくとも一つ構成する。`sent_request` は checkedRequest と要求を持つ checkedAt の同じ req、groundVal、固定 reqTarget、保持対象、観測一つの一致を返す。`send_without_request` は要求を持たない両形を、`send_mismatch` は要求の端点と保持対象が異なる両形を、全型・行引数と全応答で排除する。`targetAgreement` と `obs_allowed` は同じ表の ShapeOk と NamesWF、同じ σ への全引数の適格性から観測を実効果の上限へ結ぶ。発行は同じ Process.Environment の表の所属を持ち、IO 関係に含まれない。
+
+`ModelHttpApplications` は、篩付き Pair のヘッダーを含む五欄の要求を同じ有限プログラムで型付けし、任意のストアと環境、非 Top と Top、両保持形について送信の全 BuiltinArgs と空でない観測の許容を供給する。Pair の篩の述語は WF 1 のとき groundTy が受理する。要求の受理と端点不一致・要求なしの拒否、同じ要求の射影、同じ値の拡大、空引数の型付き発行から同じ σ を At の bases に束縛する実行列を照合する。
+
+`ScopeModels.conditions P hp` は、同じ HasHttp P から Model・ModelTargets・ModelHttp の二十五条件ずつ、計七十五条件を構成する。Model の入口は任意 P、ModelTargets は HasFile P、ModelHttp は HasHttp P を使う。各 Core の構成には同じ P/B の ExternalAssumptions 三欄と release_exists を別に渡す。三表の外部応答関係は空なので、外部呼出しの入力を持つ任意の P の応答存在をこの出力から導かない。Model と ModelHttp は資源を分類せず、ModelTargets は File.Handle を資源に分類する。解放応答は三表とも返却値が none の関係である。
+
 `CanonicalCells` の `inv_loc` は、任意の Γ・Φ の下で、同じ場所の ref 又は lazy の lookup、内容型の Declared、元の参照型又は Lazy 型からの `LeQ` を返す。`StoreOk.ref_cell`・`lazy_cell`・`cont_cell`・`builder_cell` は、同じ `StoreOk P B σ Ψ μ` と Ψ の場所の型を前提にする。ref は実際の val セル・内容型の正規形での型付け・Adequate を返す。lazy は thunk の `ClosureTy P B (hideBuilders Ψ) [] none q a Eff.empty` と Adequate、又は done の型付けと Adequate を返す。cont は保存した `EndsWithHandle`・`ContTy`、又は used を返す。builder は同じ種類の `BuilderCellOk` とセルの Adequate を返す。`reference_cell_inputs` は `canonical_ref` の内容型の正規形の等号を使い、同じ実セルの内容を到達型の正規形へ合わせる。Lazy の内容の移送は等号へ強めず `LeQ` のまま保持する。
 
 

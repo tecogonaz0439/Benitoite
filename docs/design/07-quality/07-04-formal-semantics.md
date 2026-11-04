@@ -170,6 +170,12 @@
 
 `ModelTargetsApplications` は、実表の File.readTextIn に非 Top と Top の全前提を供給する。File.readText・print・exit にも任意のストアと環境で全 BuiltinArgs を構成し、応答の存在・型・適格性・種類・観測の許容を同時に読む。File.readText の空でない Top の観測、exit の val の不在、絶対形のチェックの成功・相対形と home 形の Error、保持対象の射影と同じ値の拡大も照合する。全入力の充足は scopeConditions の定理が担い、これらの適用例から全体を推測しない。
 
+`ModelHttpConditions` は同じ ModelHttp 名前空間の七署名と二十五条件を構成する。八保存則は共通の有限宣言の骨格と非空の型パラメータ制約を保つ。HasHttp P の下で全署名の形成・sourceTelRows、Result と Pair の arity 2、ClientRequest の五欄、RequestCheckError の二構成子を同じ P で読む。純粋三行の全 BuiltinArgs は固定 reqTarget を使う実 δ の存在・型・Ground・全有効環境の AdequateResult・非 exit に接続し、同じ実結果の篩の事実も供給する。
+
+同モデルの send_response は、全型付き入力と全応答で Http.Response/NetworkError の Result 又は実行時エラーの型・適格性・非 exit・対象一致と応答存在を証明する。sent_request は両保持形について同じ要求全体と固定 reqTarget・保持端点・観測を照合する。send_held は全応答について両保持形の受理を示し、send_without_request と send_mismatch は要求なし・端点不一致を全入力と全応答で排除する。obs_allowed は実表の ShapeOk・NamesWF と同じ σ の適格性から Builtins.TargetAgreement.obs_allowed に接続し、Core を要求しない。ModelHttpApplications は、篩付き Pair を含む要求を任意 Ψ と σ、非 Top と Top、両保持形で実表へ渡し、受理と拒否、射影と拡大、空引数の型付き発行から同じ σ の At の束縛までを照合する。一般の Pair の篩の groundTy の受理には述語の WF 1 を使う。
+
+`ScopeModels.conditions` は同じ HasHttp P で三モデルの七十五条件を構成する。Model の任意 P、ModelTargets の HasFile P、ModelHttp の HasHttp P を区別し、各 Core の構成には同じ P/B の外部三条件と release_exists を別々に受ける。外部応答関係は空であり、外部宣言と型付きの呼出し入力を持つ P の external_exists を満たしたとは扱わない。Model と ModelHttp の解放条件は isResource=false の前提で空疎になり、File.Handle を資源とする ModelTargets の解放応答も r=none の証人を持つ。この構成は三つの実表の担当条件の証明であり、全 Core の無条件の充足や計算全体の保存を結論しない。
+
 二つの response は全 BuiltinArgs について同じ具体 δ の応答存在・Outcome.Typed・Ground・AdequateResult・非 exit を証明する。P の有限宣言、valKind と valContent の等号は表から供給し、CoreAssumptions を未検査の前提として要求しない。要求の成功値の適格性は同じ実引数 req から得る。失敗の payload も、Scope の六構成子、RequestCheckError の二構成子、Result の Ok/Error の型引数位置を同じ P で型付けする。
 
 `InitialPrepared.source_state` は、同じ固定した初期状態の InitialPrepared、Program.ExternalWF、空の捕捉・ストア・継続で型付くソース計算、終端の注釈、閉性・適格性・BuiltinOnly を受け、その初期状態の StateTy を構成する。StateTy の σ.Valid は InitialPrepared.ready の入力から取り出し、PathEnv.Ready と ExternalWF は入力をそのまま返す。表層からこれらの入力を作る合成と外部応答の存在は結論に含めない。`prepared_unit_source` は空の外部宣言を持つ前述の具体表で、任意の有効な σ の下の return Unit について準備と元の型付けを同時に構成する。
@@ -1067,6 +1073,7 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 | ScopedIOResponse・ScopedIOExamples | 同節。七 IO の全応答の型・適格性・存在・非 exit、同じ要求と endpoint、実表の対象一致と全環境の効果許容、非 Top・Top の全前提を供給する具体例 |
 | Model・ModelTargetsExamples | 同節。参照二行と起点発行一行から任意の P について構成する二十五条件、同じ制約による八保存則。空引数の型付き呼出し、専用発行二遷移と同じ σ の事象、At の全入力の三場合、必要束縛と Ready の受理・拒否。AtPrepared.of_path_bases による準備成功 |
 | ModelTargets・ModelTargetsApplications | 同節。十五署名の八保存則・宣言の形成・三形の ShapeOk・純粋三行・IO と exit の九行・同じ環境の対象条件と二十五条件。Top の読取りと通常資源の分類、実引数からの適用 |
+| ModelHttpConditions・ModelHttpApplications・ScopeModels | 同節。七署名の全 lookup、八保存則、HasHttp P の有限宣言と全 arity、純粋三行と送信の全入力・全応答、同じ要求・端点と拒否の対照、非 Top/Top の実引数、型付き発行。三モデル七十五条件と各 Core への別入力を照合する |
 
 以下の既存の表は Release などの対応である。
 
