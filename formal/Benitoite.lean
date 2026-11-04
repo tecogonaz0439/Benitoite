@@ -789,3 +789,6 @@ import Benitoite.Release.Refinement.EffectTargets
 import Benitoite.Release.Refinement.ModelConstraints
 import Benitoite.Release.Refinement.ScopeDeclarations
 import Benitoite.Release.Refinement.TargetModelConditions
+
+import Benitoite.Release.Refinement.MembershipWiden
+import Benitoite.Release.Refinement.ScopedCallContracts
