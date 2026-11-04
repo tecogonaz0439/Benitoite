@@ -1,0 +1,1847 @@
+[
+  {
+    "kind": "obligations",
+    "id": "O092",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.secrets_members",
+      "Benitoite.Release.Refinement.RangeExpr.Covers.mem"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.Eff.Covers.allows"
+    ],
+    "finding": "未指定none・解決済み空some []・任意有限非空一覧を区別する。自己被覆とTop拡大を扱う。",
+    "remaining": "R30/R70のCLI単独名/接尾辞/混在拒否と起動側管理",
+    "remaining_entry": "R30/R70：src/cli/のsecrets単独名・接尾辞・空/非空混在の拒否と起動側の一覧管理。所属成功を許可/分類解除に使わない。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.AtPrepare.error_saved"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。",
+    "actual_evidence": {
+      "Benitoite.Release.Refinement.ScopedTargetExamples.secrets_members": {
+        "source": "formal/Benitoite/Release/Refinement/ScopedTargetExamples.lean",
+        "line": 361,
+        "type_sha256": "a169dc5b21aa18980adac03ff5e330e103855a4d400f9213fc311ed6b938346e"
+      },
+      "Benitoite.Release.Refinement.RangeExpr.Covers.mem": {
+        "source": "formal/Benitoite/Release/Refinement/ScopeCoverage.lean",
+        "line": 41,
+        "type_sha256": "6acf53f95316b809bfe394d7cce58987514a73f12ca31da19153240135e6adb9"
+      },
+      "Benitoite.Release.Refinement.Eff.Covers.allows": {
+        "source": "formal/Benitoite/Release/Refinement/EffectTargets.lean",
+        "line": 75,
+        "type_sha256": "b1e632541f83c413ee981ca5965e181a4b0c17c6310237249ad5a1cc1af34a22"
+      }
+    },
+    "quantification_judgment": {
+      "kind": "obligations",
+      "id": "O092",
+      "trace_status": "L50担当分完了",
+      "finding": "未指定none・解決済み空some []・任意有限非空一覧を区別する。自己被覆とTop拡大を扱う。",
+      "quantification_source": {
+        "file": "../k/trace.json",
+        "id": "O092"
+      },
+      "independent_review": {
+        "file": "../../reviews/RV-L50.k.md",
+        "section": "観点ごとの根拠 5. 33義務・31申し送り／情報7、再開1の再レビュー"
+      },
+      "l50_independent_unresolved": [],
+      "group_review_sources": [
+        {
+          "file": "../../reviews/RV-L50.a.md",
+          "section": "観点ごとの根拠と取りまとめの追記（群Eは再レビューを含む）"
+        }
+      ]
+    },
+    "mechanical_checks": [
+      "名前の実在・所在",
+      "実型のSHA-256",
+      "読者の型と値の依存の一致"
+    ],
+    "stage_status": "機械照合済み。量化範囲と担当分の判断はcoverage-judgmentsの出典。全体は未閉鎖"
+  },
+  {
+    "kind": "obligations",
+    "id": "O096",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.PathEnv.Ready.resolve_required",
+      "Benitoite.Release.Refinement.InitialPrepared.source_state_of_source",
+      "Benitoite.Release.Refinement.AtPrepared.current"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.at_steps"
+    ],
+    "finding": "Sourceの偽造排除と必要束縛を継承し、発行・At成功から同じ保持絶対対象へ接続する。",
+    "remaining": "R30の供給・heap/stress・work/tmpの実在と管理",
+    "remaining_entry": "R30：Source由来の必要束縛・PathBases発行・AtとFile6本/Httpへ同じ固定σを供給する。work/tmpの実在・管理、heap/stress構成で照合する。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.at_steps",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.issue"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。",
+    "actual_evidence": {
+      "Benitoite.Release.Refinement.PathEnv.Ready.resolve_required": {
+        "source": "formal/Benitoite/Release/Refinement/PreparationTargets.lean",
+        "line": 7,
+        "type_sha256": "c7554feb87c712e5191b53eb22500fa941534c1b9ee948f7fbdf0091d79cf2db"
+      },
+      "Benitoite.Release.Refinement.InitialPrepared.source_state_of_source": {
+        "source": "formal/Benitoite/Release/Refinement/PreparationTargets.lean",
+        "line": 89,
+        "type_sha256": "e585d1cf7b42102d1c738345ab82ac097ac4553b8c4d8d4c296789825b269291"
+      },
+      "Benitoite.Release.Refinement.AtPrepared.current": {
+        "source": "formal/Benitoite/Release/Refinement/PathBasesTargets.lean",
+        "line": 7,
+        "type_sha256": "0a6537f68e0b64de76ddfb16dbc4b00b7d5c554d57b582726b1b825f1b2e3d90"
+      },
+      "Benitoite.Release.Refinement.ScopedTargetInputs.at_steps": {
+        "source": "formal/Benitoite/Release/Refinement/ScopedTargetInputs.lean",
+        "line": 197,
+        "type_sha256": "9cf08f188bc28fc267fe5c67fff282807abee1e794a91127d2f633b0b4004390"
+      }
+    },
+    "quantification_judgment": {
+      "kind": "obligations",
+      "id": "O096",
+      "trace_status": "L50担当分完了",
+      "finding": "Sourceの偽造排除と必要束縛を継承し、発行・At成功から同じ保持絶対対象へ接続する。",
+      "quantification_source": {
+        "file": "../k/trace.json",
+        "id": "O096"
+      },
+      "independent_review": {
+        "file": "../../reviews/RV-L50.k.md",
+        "section": "観点ごとの根拠 5. 33義務・31申し送り／情報7、再開1の再レビュー"
+      },
+      "l50_independent_unresolved": [],
+      "group_review_sources": [
+        {
+          "file": "../../reviews/RV-L50.d.md",
+          "section": "観点ごとの根拠と取りまとめの追記（群Eは再レビューを含む）"
+        }
+      ]
+    },
+    "mechanical_checks": [
+      "名前の実在・所在",
+      "実型のSHA-256",
+      "読者の型と値の依存の一致"
+    ],
+    "stage_status": "機械照合済み。量化範囲と担当分の判断はcoverage-judgmentsの出典。全体は未閉鎖"
+  },
+  {
+    "kind": "obligations",
+    "id": "O097",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.AtError.save_exact",
+      "Benitoite.Release.Refinement.AtPrepare.error_saved",
+      "Benitoite.Release.Refinement.AtErrorReaders.check_reader",
+      "Benitoite.Release.Refinement.Detail.originals_unobserved"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.at_error",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.at_prepare"
+    ],
+    "finding": "20等号と全失敗・内部観測・適格性を照合する。公開写しはU02後である。",
+    "remaining": "U02確定後・L70前の公開宣言/観測/照合の写し、R30/R60の構成/文言/Show",
+    "remaining_entry": "U02確定後・L70前：Detail九欄からResultShape.Declared/Program.StandardErrorCompleteと公開宣言・観測・照合・網羅性へ写す。生Valを取り出すならVal.AdequateのatError枝を再点検。R30/R60：構成子・文言・Show。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.at_prepare",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.at_error"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。",
+    "actual_evidence": {
+      "Benitoite.Release.Refinement.AtError.save_exact": {
+        "source": "formal/Benitoite/Release/Refinement/AtPrepare.lean",
+        "line": 361,
+        "type_sha256": "5b36ca8defa95272f43668b4b61abdedfe1aa90ec1ade40f866e6548355ffa4b"
+      },
+      "Benitoite.Release.Refinement.AtPrepare.error_saved": {
+        "source": "formal/Benitoite/Release/Refinement/AtPrepare.lean",
+        "line": 424,
+        "type_sha256": "9351469e26bea71f6f9490728d14d0f338f60d2502c7c022b7288ef6f89a3cbc"
+      },
+      "Benitoite.Release.Refinement.AtErrorReaders.check_reader": {
+        "source": "formal/Benitoite/Release/Refinement/AtErrorReaders.lean",
+        "line": 42,
+        "type_sha256": "3326e9fcacb13bb7070deba04f393634ab115b735872ac0ab7c01b3e47535e29"
+      },
+      "Benitoite.Release.Refinement.Detail.originals_unobserved": {
+        "source": "formal/Benitoite/Release/Refinement/AtTargets.lean",
+        "line": 79,
+        "type_sha256": "e8aa9b5495de62ad7fe5f95906d010c801b9ca06d7410fa71ec471b1e9506be5"
+      },
+      "Benitoite.Release.Refinement.ScopedTargetInputs.at_error": {
+        "source": "formal/Benitoite/Release/Refinement/ScopedTargetInputs.lean",
+        "line": 161,
+        "type_sha256": "edfdfe71f1f76d77835ce22be302a834c38fb233084e05a1f49d70e3f24ffc7b"
+      },
+      "Benitoite.Release.Refinement.ScopedTargetInputs.at_prepare": {
+        "source": "formal/Benitoite/Release/Refinement/ScopedTargetInputs.lean",
+        "line": 145,
+        "type_sha256": "04dda0cb09effefcc6eb674b2a9301a36170be3dba80aabe9f4cda8dedd99611"
+      }
+    },
+    "quantification_judgment": {
+      "kind": "obligations",
+      "id": "O097",
+      "trace_status": "L50担当分完了",
+      "finding": "20等号と全失敗・内部観測・適格性を照合する。公開写しはU02後である。",
+      "quantification_source": {
+        "file": "../k/trace.json",
+        "id": "O097"
+      },
+      "independent_review": {
+        "file": "../../reviews/RV-L50.k.md",
+        "section": "観点ごとの根拠 5. 33義務・31申し送り／情報7、再開1の再レビュー"
+      },
+      "l50_independent_unresolved": [],
+      "group_review_sources": [
+        {
+          "file": "../../reviews/RV-L50.d.md",
+          "section": "観点ごとの根拠と取りまとめの追記（群Eは再レビューを含む）"
+        }
+      ]
+    },
+    "mechanical_checks": [
+      "名前の実在・所在",
+      "実型のSHA-256",
+      "読者の型と値の依存の一致"
+    ],
+    "stage_status": "機械照合済み。量化範囲と担当分の判断はcoverage-judgmentsの出典。全体は未閉鎖"
+  },
+  {
+    "kind": "obligations",
+    "id": "O118",
+    "classification": "共通",
+    "status": "群K担当分完了・残る所有を分離",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopeModels.conditions",
+      "Benitoite.Release.Refinement.AtErrorReaders.observed"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.AtErrorReaders.check_reader"
+    ],
+    "finding": "実定義と前提を01-12/07-04へ写し、追加全モジュールを既定importへ含める。",
+    "remaining": "L70/R50/R60/D10/V10の全読者",
+    "remaining_entry": "L70：01-12/07-04と全開始・主定理の写し。R50/R60：交換/診断、D10：公開文書、V10：実CLIまで同じ契約を照合する。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。",
+    "actual_evidence": {
+      "Benitoite.Release.Refinement.ScopeModels.conditions": {
+        "source": "formal/Benitoite/Release/Refinement/ScopeModels.lean",
+        "line": 9,
+        "type_sha256": "b2b30a6ebce8276a43131c31450b6841f58c5a011cc6713d96fd12632a5906c1"
+      },
+      "Benitoite.Release.Refinement.AtErrorReaders.observed": {
+        "source": "formal/Benitoite/Release/Refinement/AtErrorReaders.lean",
+        "line": 9,
+        "type_sha256": "078b5c1102d9aa91039fbd33394b1183bc2a6d792530d73c68f7be6a497b5f83"
+      },
+      "Benitoite.Release.Refinement.AtErrorReaders.check_reader": {
+        "source": "formal/Benitoite/Release/Refinement/AtErrorReaders.lean",
+        "line": 42,
+        "type_sha256": "3326e9fcacb13bb7070deba04f393634ab115b735872ac0ab7c01b3e47535e29"
+      }
+    },
+    "quantification_judgment": {
+      "kind": "obligations",
+      "id": "O118",
+      "trace_status": "群K担当分完了・残る所有を分離",
+      "finding": "実定義と前提を01-12/07-04へ写し、追加全モジュールを既定importへ含める。",
+      "quantification_source": {
+        "file": "../k/trace.json",
+        "id": "O118"
+      },
+      "independent_review": {
+        "file": "../../reviews/RV-L50.k.md",
+        "section": "観点ごとの根拠 5. 33義務・31申し送り／情報7、再開1の再レビュー"
+      },
+      "l50_independent_unresolved": [],
+      "group_review_sources": [
+        {
+          "file": "../../reviews/RV-L50.j.md",
+          "section": "観点ごとの根拠と取りまとめの追記（群Eは再レビューを含む）"
+        }
+      ]
+    },
+    "mechanical_checks": [
+      "名前の実在・所在",
+      "実型のSHA-256",
+      "読者の型と値の依存の一致"
+    ],
+    "stage_status": "写し・コメント・全既定importを照合。後段の全読者は未実施"
+  },
+  {
+    "kind": "obligations",
+    "id": "O141",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.single_io",
+      "Benitoite.Release.Refinement.ScopedTargetExamples.request_io",
+      "Benitoite.Release.Refinement.ScopedTargetExamples.selected_request"
+    ],
+    "readers": [],
+    "finding": "U1全7位置と同じ対象・要求・σ、一度決めたIO添字を保つ。",
+    "remaining": "L70、R10b/R30/R50/R60/V10",
+    "remaining_entry": "L70：U1全7位置の値の流れと保存の合成。R10b/R30：一度の添字具体化、R50：比較、R60/V10：公開入力と実CLI。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.handled_step",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps"
+    ],
+    "relation_kind": "証拠そのものが入口",
+    "relation": "読者なし。証拠そのものが入口で、合成の読者は後段に残る。受け口は右欄。",
+    "actual_evidence": {
+      "Benitoite.Release.Refinement.ScopedTargetExamples.single_io": {
+        "source": "formal/Benitoite/Release/Refinement/ScopedTargetExamples.lean",
+        "line": 11,
+        "type_sha256": "1bf1152c74fae1406d3e2fb441c2417739e179dddee95a5a8dd1151528f1b892"
+      },
+      "Benitoite.Release.Refinement.ScopedTargetExamples.request_io": {
+        "source": "formal/Benitoite/Release/Refinement/ScopedTargetExamples.lean",
+        "line": 46,
+        "type_sha256": "3faf999033714e3b26d9297b5fbf1e708efccf4b08586ac928bcbc6ed7563812"
+      },
+      "Benitoite.Release.Refinement.ScopedTargetExamples.selected_request": {
+        "source": "formal/Benitoite/Release/Refinement/ScopedTargetExamples.lean",
+        "line": 105,
+        "type_sha256": "5cc331363c1f61fa44570b9240af9bc39a073630c798ecdadcf299483ca1b3eb"
+      }
+    },
+    "quantification_judgment": {
+      "kind": "obligations",
+      "id": "O141",
+      "trace_status": "L50担当分完了",
+      "finding": "U1全7位置と同じ対象・要求・σ、一度決めたIO添字を保つ。",
+      "quantification_source": {
+        "file": "../k/trace.json",
+        "id": "O141"
+      },
+      "independent_review": {
+        "file": "../../reviews/RV-L50.k.md",
+        "section": "観点ごとの根拠 5. 33義務・31申し送り／情報7、再開1の再レビュー"
+      },
+      "l50_independent_unresolved": [],
+      "group_review_sources": []
+    },
+    "mechanical_checks": [
+      "名前の実在・所在",
+      "実型のSHA-256",
+      "読者の型と値の依存の一致"
+    ],
+    "stage_status": "機械照合済み。量化範囲と担当分の判断はcoverage-judgmentsの出典。全体は未閉鎖"
+  },
+  {
+    "kind": "obligations",
+    "id": "O144",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.Pred.member_inst_mono",
+      "Benitoite.Release.Refinement.ScopeResponse.normal_facts",
+      "Benitoite.Release.Refinement.ScopedIOResponse.target_member"
+    ],
+    "readers": [],
+    "finding": "既存の論理・true/空篩と対象の全σの意味を同じ実応答へ接続する。",
+    "remaining": "R20/R10b/R40/R50/V10",
+    "remaining_entry": "R20/R10b/R40：対象3sortと論理/true/空篩の検査・推論・診断。R50/V10：同じ値の対象所属の全比較と実CLI。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.pure_steps",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps"
+    ],
+    "relation_kind": "証拠そのものが入口",
+    "relation": "読者なし。証拠そのものが入口で、合成の読者は後段に残る。受け口は右欄。",
+    "actual_evidence": {
+      "Benitoite.Release.Refinement.Pred.member_inst_mono": {
+        "source": "formal/Benitoite/Release/Refinement/MembershipTargets.lean",
+        "line": 69,
+        "type_sha256": "96e271ca6a99b312bd0ac71e9ab08c5f207e182a318982aa068bb52adb0b97a7"
+      },
+      "Benitoite.Release.Refinement.ScopeResponse.normal_facts": {
+        "source": "formal/Benitoite/Release/Refinement/ScopeResponse.lean",
+        "line": 115,
+        "type_sha256": "3c33b770ab9136d36663e9d6817e66fca504c767a74ed24309bba4caef5d7e8a"
+      },
+      "Benitoite.Release.Refinement.ScopedIOResponse.target_member": {
+        "source": "formal/Benitoite/Release/Refinement/ScopedIOResponse.lean",
+        "line": 403,
+        "type_sha256": "f3d534a65ca072e858aa039ffa02c2c42e270952373b34094264cdc6b0b39555"
+      }
+    },
+    "quantification_judgment": {
+      "kind": "obligations",
+      "id": "O144",
+      "trace_status": "L50担当分完了",
+      "finding": "既存の論理・true/空篩と対象の全σの意味を同じ実応答へ接続する。",
+      "quantification_source": {
+        "file": "../k/trace.json",
+        "id": "O144"
+      },
+      "independent_review": {
+        "file": "../../reviews/RV-L50.k.md",
+        "section": "観点ごとの根拠 5. 33義務・31申し送り／情報7、再開1の再レビュー"
+      },
+      "l50_independent_unresolved": [],
+      "group_review_sources": [
+        {
+          "file": "../../reviews/RV-L50.b.md",
+          "section": "観点ごとの根拠と取りまとめの追記（群Eは再レビューを含む）"
+        },
+        {
+          "file": "../../reviews/RV-L50.f.md",
+          "section": "観点ごとの根拠と取りまとめの追記（群Eは再レビューを含む）"
+        },
+        {
+          "file": "../../reviews/RV-L50.g.md",
+          "section": "観点ごとの根拠と取りまとめの追記（群Eは再レビューを含む）"
+        }
+      ]
+    },
+    "mechanical_checks": [
+      "名前の実在・所在",
+      "実型のSHA-256",
+      "読者の型と値の依存の一致"
+    ],
+    "stage_status": "機械照合済み。量化範囲と担当分の判断はcoverage-judgmentsの出典。全体は未閉鎖"
+  },
+  {
+    "kind": "obligations",
+    "id": "O156",
+    "classification": "記録",
+    "status": "群K担当分完了・残る所有を分離",
+    "proofs": [
+      "Benitoite.Release.Refinement.Builtins.TargetAgreement.obs_allowed",
+      "Benitoite.Release.Refinement.ScopedTargetExamples.equal_resolution_distinct_base"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps"
+    ],
+    "finding": "σを引数とする静的上限である。checkの観測値とrunの固定値の区別、IFC未実装をD10へ渡す。",
+    "remaining": "D10の二文書、V10の実CLI。利用者向け文書の所有による分離",
+    "remaining_entry": "D10：00-01とAGENTS公開要約の静的上限・check/run・IFCの二文書。V10：実CLIでcheckの観測値とrunの固定値の区別を照合する。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。",
+    "actual_evidence": {
+      "Benitoite.Release.Refinement.Builtins.TargetAgreement.obs_allowed": {
+        "source": "formal/Benitoite/Release/Refinement/EffectTargets.lean",
+        "line": 265,
+        "type_sha256": "79caea7c71ef001833f25820e77c1ee7e59679ce66ac5e2fcfc1a66142e30625"
+      },
+      "Benitoite.Release.Refinement.ScopedTargetExamples.equal_resolution_distinct_base": {
+        "source": "formal/Benitoite/Release/Refinement/ScopedTargetExamples.lean",
+        "line": 294,
+        "type_sha256": "71f4a8970b47477071bf7949e51d929cea2fb2dcfa9c77b5ef8b3f02931f899c"
+      },
+      "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps": {
+        "source": "formal/Benitoite/Release/Refinement/ScopedTargetInputs.lean",
+        "line": 69,
+        "type_sha256": "d008e809d16416dc5907566ccbde263a000fe988aef639346c2e3b6b52a613d1"
+      }
+    },
+    "quantification_judgment": {
+      "kind": "obligations",
+      "id": "O156",
+      "trace_status": "群K担当分完了・残る所有を分離",
+      "finding": "σを引数とする静的上限である。checkの観測値とrunの固定値の区別、IFC未実装をD10へ渡す。",
+      "quantification_source": {
+        "file": "../k/trace.json",
+        "id": "O156"
+      },
+      "independent_review": {
+        "file": "../../reviews/RV-L50.k.md",
+        "section": "観点ごとの根拠 5. 33義務・31申し送り／情報7、再開1の再レビュー"
+      },
+      "l50_independent_unresolved": [],
+      "group_review_sources": [
+        {
+          "file": "../../reviews/RV-L50.a.md",
+          "section": "観点ごとの根拠と取りまとめの追記（群Eは再レビューを含む）"
+        },
+        {
+          "file": "../../reviews/RV-L50.c.md",
+          "section": "観点ごとの根拠と取りまとめの追記（群Eは再レビューを含む）"
+        }
+      ]
+    },
+    "mechanical_checks": [
+      "名前の実在・所在",
+      "実型のSHA-256",
+      "読者の型と値の依存の一致"
+    ],
+    "stage_status": "機械照合済み。量化範囲と担当分の判断はcoverage-judgmentsの出典。全体は未閉鎖"
+  },
+  {
+    "kind": "obligations",
+    "id": "O165",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.RangeExpr.Covers.mem",
+      "Benitoite.Release.Refinement.ScopedTargetExamples.equal_resolution_distinct_base"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.Eff.Covers.allows"
+    ],
+    "finding": "同一起点の所属保存と、解決先が同じでも異なる起点の被覆を拒否する対照を保つ。",
+    "remaining": "R10b/R30/R50/V10",
+    "remaining_entry": "R10b/R30：src/typeck/scoped_calls.rs等の被覆判定で異なる起点を同じ解決先から同一視しない。R50/V10：同一起点の受理と起点差の拒否を比較・実CLI照合。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.split_endpoint"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。",
+    "actual_evidence": {
+      "Benitoite.Release.Refinement.RangeExpr.Covers.mem": {
+        "source": "formal/Benitoite/Release/Refinement/ScopeCoverage.lean",
+        "line": 41,
+        "type_sha256": "6acf53f95316b809bfe394d7cce58987514a73f12ca31da19153240135e6adb9"
+      },
+      "Benitoite.Release.Refinement.ScopedTargetExamples.equal_resolution_distinct_base": {
+        "source": "formal/Benitoite/Release/Refinement/ScopedTargetExamples.lean",
+        "line": 294,
+        "type_sha256": "71f4a8970b47477071bf7949e51d929cea2fb2dcfa9c77b5ef8b3f02931f899c"
+      },
+      "Benitoite.Release.Refinement.Eff.Covers.allows": {
+        "source": "formal/Benitoite/Release/Refinement/EffectTargets.lean",
+        "line": 75,
+        "type_sha256": "b1e632541f83c413ee981ca5965e181a4b0c17c6310237249ad5a1cc1af34a22"
+      }
+    },
+    "quantification_judgment": {
+      "kind": "obligations",
+      "id": "O165",
+      "trace_status": "L50担当分完了",
+      "finding": "同一起点の所属保存と、解決先が同じでも異なる起点の被覆を拒否する対照を保つ。",
+      "quantification_source": {
+        "file": "../k/trace.json",
+        "id": "O165"
+      },
+      "independent_review": {
+        "file": "../../reviews/RV-L50.k.md",
+        "section": "観点ごとの根拠 5. 33義務・31申し送り／情報7、再開1の再レビュー"
+      },
+      "l50_independent_unresolved": [],
+      "group_review_sources": [
+        {
+          "file": "../../reviews/RV-L50.a.md",
+          "section": "観点ごとの根拠と取りまとめの追記（群Eは再レビューを含む）"
+        }
+      ]
+    },
+    "mechanical_checks": [
+      "名前の実在・所在",
+      "実型のSHA-256",
+      "読者の型と値の依存の一致"
+    ],
+    "stage_status": "機械照合済み。量化範囲と担当分の判断はcoverage-judgmentsの出典。全体は未閉鎖"
+  },
+  {
+    "kind": "obligations",
+    "id": "O166",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopeLegacyContracts.relative_rejected",
+      "Benitoite.Release.Refinement.ScopeLegacyContracts.absolute_input",
+      "Benitoite.Release.Refinement.ScopeDelta.input_errors"
+    ],
+    "readers": [],
+    "finding": "旧純粋チェックの相対/home形は明示Error。Atのbasesありの解決と同じ絶対射影を区別する。",
+    "remaining": "R30/R40/D10/V10",
+    "remaining_entry": "R30：src/builtins/funcs/scope.rsの旧純粋チェックとbases明示At。R40：拒否診断、D10：移行説明、V10：相対/home形の明示Errorと絶対射影のCLI照合。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.absolute_projection"
+    ],
+    "relation_kind": "証拠そのものが入口",
+    "relation": "読者なし。証拠そのものが入口で、合成の読者は後段に残る。受け口は右欄。",
+    "actual_evidence": {
+      "Benitoite.Release.Refinement.ScopeLegacyContracts.relative_rejected": {
+        "source": "formal/Benitoite/Release/Refinement/ScopeLegacyContracts.lean",
+        "line": 27,
+        "type_sha256": "d183b1bdcec958e7c1af15f9e38d11af9fb9e741ae5861b1a839d36130ef8ece"
+      },
+      "Benitoite.Release.Refinement.ScopeLegacyContracts.absolute_input": {
+        "source": "formal/Benitoite/Release/Refinement/ScopeLegacyContracts.lean",
+        "line": 35,
+        "type_sha256": "c4e371946b71b87647031c6419b754c76f676f1c2d80b472bf359d27cbcd76e4"
+      },
+      "Benitoite.Release.Refinement.ScopeDelta.input_errors": {
+        "source": "formal/Benitoite/Release/Refinement/ScopeDelta.lean",
+        "line": 347,
+        "type_sha256": "fd420325fd9fd02c5de9d0f0690ffe88bbe488d30c5ff439f3780fa998b5c131"
+      }
+    },
+    "quantification_judgment": {
+      "kind": "obligations",
+      "id": "O166",
+      "trace_status": "L50担当分完了",
+      "finding": "旧純粋チェックの相対/home形は明示Error。Atのbasesありの解決と同じ絶対射影を区別する。",
+      "quantification_source": {
+        "file": "../k/trace.json",
+        "id": "O166"
+      },
+      "independent_review": {
+        "file": "../../reviews/RV-L50.k.md",
+        "section": "観点ごとの根拠 5. 33義務・31申し送り／情報7、再開1の再レビュー"
+      },
+      "l50_independent_unresolved": [],
+      "group_review_sources": [
+        {
+          "file": "../../reviews/RV-L50.d.md",
+          "section": "観点ごとの根拠と取りまとめの追記（群Eは再レビューを含む）"
+        },
+        {
+          "file": "../../reviews/RV-L50.e.md",
+          "section": "観点ごとの根拠と取りまとめの追記（群Eは再レビューを含む）"
+        }
+      ]
+    },
+    "mechanical_checks": [
+      "名前の実在・所在",
+      "実型のSHA-256",
+      "読者の型と値の依存の一致"
+    ],
+    "stage_status": "機械照合済み。量化範囲と担当分の判断はcoverage-judgmentsの出典。全体は未閉鎖"
+  },
+  {
+    "kind": "obligations",
+    "id": "O168",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.equal_resolution_distinct_base",
+      "Benitoite.Release.Refinement.ScopedTargetExamples.split_endpoint",
+      "Benitoite.Release.Refinement.PathEnv.Ready.resolve_required",
+      "Benitoite.Release.Refinement.AtPrepare.error_saved"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.AtErrorReaders.prepare_reader"
+    ],
+    "finding": "DET-R全26行を別表で分類し、起点差・分割被覆・未束縛・偽造の内側を照合する。",
+    "remaining": "L60のexternal名目性、R30/R50/R60/R70/D10/V10の否定例",
+    "remaining_entry": "L60：externalの名目性。R30/R50/R60/R70/D10/V10：denials.mdのDET-R01〜26の字句・CLI・交換・公開診断・文書・実CLIを各所有で照合する。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.at_steps"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。",
+    "actual_evidence": {
+      "Benitoite.Release.Refinement.ScopedTargetExamples.equal_resolution_distinct_base": {
+        "source": "formal/Benitoite/Release/Refinement/ScopedTargetExamples.lean",
+        "line": 294,
+        "type_sha256": "71f4a8970b47477071bf7949e51d929cea2fb2dcfa9c77b5ef8b3f02931f899c"
+      },
+      "Benitoite.Release.Refinement.ScopedTargetExamples.split_endpoint": {
+        "source": "formal/Benitoite/Release/Refinement/ScopedTargetExamples.lean",
+        "line": 323,
+        "type_sha256": "db34dd1e3b31e0bcd0dbdd14937dc22c97d78e17ca95d8ea7ae94f353433fff5"
+      },
+      "Benitoite.Release.Refinement.PathEnv.Ready.resolve_required": {
+        "source": "formal/Benitoite/Release/Refinement/PreparationTargets.lean",
+        "line": 7,
+        "type_sha256": "c7554feb87c712e5191b53eb22500fa941534c1b9ee948f7fbdf0091d79cf2db"
+      },
+      "Benitoite.Release.Refinement.AtPrepare.error_saved": {
+        "source": "formal/Benitoite/Release/Refinement/AtPrepare.lean",
+        "line": 424,
+        "type_sha256": "9351469e26bea71f6f9490728d14d0f338f60d2502c7c022b7288ef6f89a3cbc"
+      },
+      "Benitoite.Release.Refinement.AtErrorReaders.prepare_reader": {
+        "source": "formal/Benitoite/Release/Refinement/AtErrorReaders.lean",
+        "line": 21,
+        "type_sha256": "a183c0272de39cb18ff4878f10614dda28d2316933cacd6fcfd84c6e48dd8db2"
+      }
+    },
+    "quantification_judgment": {
+      "kind": "obligations",
+      "id": "O168",
+      "trace_status": "L50担当分完了",
+      "finding": "DET-R全26行を別表で分類し、起点差・分割被覆・未束縛・偽造の内側を照合する。",
+      "quantification_source": {
+        "file": "../k/trace.json",
+        "id": "O168"
+      },
+      "independent_review": {
+        "file": "../../reviews/RV-L50.k.md",
+        "section": "観点ごとの根拠 5. 33義務・31申し送り／情報7、再開1の再レビュー"
+      },
+      "l50_independent_unresolved": [],
+      "group_review_sources": [
+        {
+          "file": "../../reviews/RV-L50.d.md",
+          "section": "観点ごとの根拠と取りまとめの追記（群Eは再レビューを含む）"
+        }
+      ]
+    },
+    "mechanical_checks": [
+      "名前の実在・所在",
+      "実型のSHA-256",
+      "読者の型と値の依存の一致"
+    ],
+    "stage_status": "機械照合済み。量化範囲と担当分の判断はcoverage-judgmentsの出典。全体は未閉鎖"
+  },
+  {
+    "kind": "handoffs",
+    "id": "H01",
+    "classification": "継承",
+    "status": "継承完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.HasTypeVQ.canonical_held",
+      "Benitoite.Release.Refinement.StateTyE.app_inputs"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.HasTypeVQ.canonical_opaque",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs"
+    ],
+    "finding": "芯の対応とfacts、appの二規則と形成付きの元列を継承する。",
+    "remaining": "L70全開始の合成",
+    "remaining_entry": "L70：HasTypeVQの芯の対応・factsと形成付きapp_telを全開始へ合成する。撤回した元型全体のLeQを再採用しない。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。",
+    "actual_evidence": {
+      "Benitoite.Release.Refinement.HasTypeVQ.canonical_held": {
+        "source": "formal/Benitoite/Release/Refinement/CanonicalValues.lean",
+        "line": 435,
+        "type_sha256": "593af385ec80a6cda583c38ceddbff655beb19607d2f9c4b725f996478897fc9"
+      },
+      "Benitoite.Release.Refinement.StateTyE.app_inputs": {
+        "source": "formal/Benitoite/Release/Refinement/ApplicationInputs.lean",
+        "line": 43,
+        "type_sha256": "0a8c568a10c32f2328b859f38866a3ba6640e61f4423e023c026dfedf487e342"
+      },
+      "Benitoite.Release.Refinement.HasTypeVQ.canonical_opaque": {
+        "source": "formal/Benitoite/Release/Refinement/MembershipWiden.lean",
+        "line": 19,
+        "type_sha256": "96aa5ad854f0c33dac4f16a97642638022a71138d12984de936328e014f51141"
+      },
+      "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs": {
+        "source": "formal/Benitoite/Release/Refinement/ScopedTargetInputs.lean",
+        "line": 19,
+        "type_sha256": "adadd22b042e642140c8f587df574647584d975354b0bf0091ba63fdfb985925"
+      }
+    },
+    "quantification_judgment": {
+      "kind": "handoffs",
+      "id": "H01",
+      "trace_status": "継承完了",
+      "finding": "芯の対応とfacts、appの二規則と形成付きの元列を継承する。",
+      "quantification_source": {
+        "file": "../k/trace.json",
+        "id": "H01"
+      },
+      "independent_review": {
+        "file": "../../reviews/RV-L50.k.md",
+        "section": "観点ごとの根拠 5. 33義務・31申し送り／情報7、再開1の再レビュー"
+      },
+      "l50_independent_unresolved": [],
+      "group_review_sources": []
+    },
+    "mechanical_checks": [
+      "名前の実在・所在",
+      "実型のSHA-256",
+      "読者の型と値の依存の一致"
+    ],
+    "stage_status": "機械照合済み。量化範囲と担当分の判断はcoverage-judgmentsの出典。全体は未閉鎖"
+  },
+  {
+    "kind": "handoffs",
+    "id": "H02",
+    "classification": "継承",
+    "status": "継承完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.TelClosure.apply",
+      "Benitoite.Release.Refinement.StateTyE.primitive_contract_inputs"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.single_io",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs"
+    ],
+    "finding": "Ctx.WFと元列のAnnotationは既存の供給元を使い、除去済みの四前提を戻さない。",
+    "remaining": "L60/L70が同じ実署名を使用",
+    "remaining_entry": "L60/L70：TelClosure.applyの同じ実署名にCtx.WFと元列Annotationを実開始から供給する。除去済み四前提を戻さない。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.single_io",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。",
+    "actual_evidence": {
+      "Benitoite.Release.Refinement.TelClosure.apply": {
+        "source": "formal/Benitoite/Release/Refinement/TelApplication.lean",
+        "line": 96,
+        "type_sha256": "511b7e7324c50ca7a8aa9f8d039a2b28bcec5cb28e93839c785ed1cd47b13f35"
+      },
+      "Benitoite.Release.Refinement.StateTyE.primitive_contract_inputs": {
+        "source": "formal/Benitoite/Release/Refinement/ApplicationInputs.lean",
+        "line": 61,
+        "type_sha256": "6998ec2a236741b0b51a0d5da12eb6ef53afeb440392e18fcdb00d953275fcf2"
+      },
+      "Benitoite.Release.Refinement.ScopedTargetExamples.single_io": {
+        "source": "formal/Benitoite/Release/Refinement/ScopedTargetExamples.lean",
+        "line": 11,
+        "type_sha256": "1bf1152c74fae1406d3e2fb441c2417739e179dddee95a5a8dd1151528f1b892"
+      },
+      "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs": {
+        "source": "formal/Benitoite/Release/Refinement/ScopedTargetInputs.lean",
+        "line": 19,
+        "type_sha256": "adadd22b042e642140c8f587df574647584d975354b0bf0091ba63fdfb985925"
+      }
+    },
+    "quantification_judgment": {
+      "kind": "handoffs",
+      "id": "H02",
+      "trace_status": "継承完了",
+      "finding": "Ctx.WFと元列のAnnotationは既存の供給元を使い、除去済みの四前提を戻さない。",
+      "quantification_source": {
+        "file": "../k/trace.json",
+        "id": "H02"
+      },
+      "independent_review": {
+        "file": "../../reviews/RV-L50.k.md",
+        "section": "観点ごとの根拠 5. 33義務・31申し送り／情報7、再開1の再レビュー"
+      },
+      "l50_independent_unresolved": [],
+      "group_review_sources": [
+        {
+          "file": "../../reviews/RV-L50.c.md",
+          "section": "観点ごとの根拠と取りまとめの追記（群Eは再レビューを含む）"
+        }
+      ]
+    },
+    "mechanical_checks": [
+      "名前の実在・所在",
+      "実型のSHA-256",
+      "読者の型と値の依存の一致"
+    ],
+    "stage_status": "機械照合済み。量化範囲と担当分の判断はcoverage-judgmentsの出典。全体は未閉鎖"
+  },
+  {
+    "kind": "handoffs",
+    "id": "H03",
+    "classification": "継承",
+    "status": "継承完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopeResponse.normal_facts",
+      "Benitoite.Release.Refinement.ModelHttp.normal_facts",
+      "Benitoite.Release.Refinement.ModelTargets.normal_facts"
+    ],
+    "readers": [],
+    "finding": "同じδ・正常値・toTerm?からのfactsを継承する。",
+    "remaining": "L60の応答、L70合成",
+    "remaining_entry": "L60：同じ実δの正常応答とtoTerm?の等号からnormal_factsへ。L70：全実行へ合成する。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.pure_steps"
+    ],
+    "relation_kind": "証拠そのものが入口",
+    "relation": "読者なし。証拠そのものが入口で、合成の読者は後段に残る。受け口は右欄。",
+    "actual_evidence": {
+      "Benitoite.Release.Refinement.ScopeResponse.normal_facts": {
+        "source": "formal/Benitoite/Release/Refinement/ScopeResponse.lean",
+        "line": 115,
+        "type_sha256": "3c33b770ab9136d36663e9d6817e66fca504c767a74ed24309bba4caef5d7e8a"
+      },
+      "Benitoite.Release.Refinement.ModelHttp.normal_facts": {
+        "source": "formal/Benitoite/Release/Refinement/ModelHttpConditions.lean",
+        "line": 181,
+        "type_sha256": "d7ffdbc030f68554d63c6ebbcf1b41130009bbf6188e72fde22a8bf1a172e945"
+      },
+      "Benitoite.Release.Refinement.ModelTargets.normal_facts": {
+        "source": "formal/Benitoite/Release/Refinement/ModelTargets.lean",
+        "line": 252,
+        "type_sha256": "2a3666fb3e0d3711ba95cfc494cdcdd0887a496b7f70efb7b28775501ed68f46"
+      }
+    },
+    "quantification_judgment": {
+      "kind": "handoffs",
+      "id": "H03",
+      "trace_status": "継承完了",
+      "finding": "同じδ・正常値・toTerm?からのfactsを継承する。",
+      "quantification_source": {
+        "file": "../k/trace.json",
+        "id": "H03"
+      },
+      "independent_review": {
+        "file": "../../reviews/RV-L50.k.md",
+        "section": "観点ごとの根拠 5. 33義務・31申し送り／情報7、再開1の再レビュー"
+      },
+      "l50_independent_unresolved": [],
+      "group_review_sources": [
+        {
+          "file": "../../reviews/RV-L50.f.md",
+          "section": "観点ごとの根拠と取りまとめの追記（群Eは再レビューを含む）"
+        },
+        {
+          "file": "../../reviews/RV-L50.i.md",
+          "section": "観点ごとの根拠と取りまとめの追記（群Eは再レビューを含む）"
+        },
+        {
+          "file": "../../reviews/RV-L50.j.md",
+          "section": "観点ごとの根拠と取りまとめの追記（群Eは再レビューを含む）"
+        }
+      ]
+    },
+    "mechanical_checks": [
+      "名前の実在・所在",
+      "実型のSHA-256",
+      "読者の型と値の依存の一致"
+    ],
+    "stage_status": "機械照合済み。量化範囲と担当分の判断はcoverage-judgmentsの出典。全体は未閉鎖"
+  },
+  {
+    "kind": "handoffs",
+    "id": "H04",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.RequestDelta.response",
+      "Benitoite.Release.Refinement.RequestDelta.widenRequestIn_response",
+      "Benitoite.Release.Refinement.ScopedTargetExamples.request_io",
+      "Benitoite.Release.Refinement.ScopedTargetExamples.selected_request"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ModelHttp.pure_response"
+    ],
+    "finding": "要求の二保持形と同じ内容型・reqTarget・endpointを全位置の実応答へ渡す。",
+    "remaining": "L60/L70/R30/R50",
+    "remaining_entry": "L60/L70：同じ保持対象・req・endpointと全σの所属を実表・全実行へ。R30/R50：拡大・関数・節・全IOの同じ値を実装・比較。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.handled_step"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。",
+    "actual_evidence": {
+      "Benitoite.Release.Refinement.RequestDelta.response": {
+        "source": "formal/Benitoite/Release/Refinement/RequestDelta.lean",
+        "line": 217,
+        "type_sha256": "8c11e171e2eed36024c38bdedd8a26beaba62e7a59e0f9e22fa28ba28e547863"
+      },
+      "Benitoite.Release.Refinement.RequestDelta.widenRequestIn_response": {
+        "source": "formal/Benitoite/Release/Refinement/RequestValueDelta.lean",
+        "line": 106,
+        "type_sha256": "b2cfeb32994fa2e1a4d0ce89ee6ab371026ef3ef80c8146c6ed811f99e0a22a7"
+      },
+      "Benitoite.Release.Refinement.ScopedTargetExamples.request_io": {
+        "source": "formal/Benitoite/Release/Refinement/ScopedTargetExamples.lean",
+        "line": 46,
+        "type_sha256": "3faf999033714e3b26d9297b5fbf1e708efccf4b08586ac928bcbc6ed7563812"
+      },
+      "Benitoite.Release.Refinement.ScopedTargetExamples.selected_request": {
+        "source": "formal/Benitoite/Release/Refinement/ScopedTargetExamples.lean",
+        "line": 105,
+        "type_sha256": "5cc331363c1f61fa44570b9240af9bc39a073630c798ecdadcf299483ca1b3eb"
+      },
+      "Benitoite.Release.Refinement.ModelHttp.pure_response": {
+        "source": "formal/Benitoite/Release/Refinement/ModelHttpConditions.lean",
+        "line": 145,
+        "type_sha256": "7445d1971eb813648124034fd5ab603acc80cba2f2c172b4e12faa4c1eb2858a"
+      }
+    },
+    "quantification_judgment": {
+      "kind": "handoffs",
+      "id": "H04",
+      "trace_status": "L50担当分完了",
+      "finding": "要求の二保持形と同じ内容型・reqTarget・endpointを全位置の実応答へ渡す。",
+      "quantification_source": {
+        "file": "../k/trace.json",
+        "id": "H04"
+      },
+      "independent_review": {
+        "file": "../../reviews/RV-L50.k.md",
+        "section": "観点ごとの根拠 5. 33義務・31申し送り／情報7、再開1の再レビュー"
+      },
+      "l50_independent_unresolved": [],
+      "group_review_sources": [
+        {
+          "file": "../../reviews/RV-L50.e.md",
+          "section": "観点ごとの根拠と取りまとめの追記（群Eは再レビューを含む）"
+        },
+        {
+          "file": "../../reviews/RV-L50.f.md",
+          "section": "観点ごとの根拠と取りまとめの追記（群Eは再レビューを含む）"
+        }
+      ]
+    },
+    "mechanical_checks": [
+      "名前の実在・所在",
+      "実型のSHA-256",
+      "読者の型と値の依存の一致"
+    ],
+    "stage_status": "機械照合済み。量化範囲と担当分の判断はcoverage-judgmentsの出典。全体は未閉鎖"
+  },
+  {
+    "kind": "handoffs",
+    "id": "H05",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.HasTypeVQ.request_target",
+      "Benitoite.Release.Refinement.RequestDelta.response",
+      "Benitoite.Release.Refinement.ModelHttp.sent_request"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ModelHttp.pure_response",
+      "Benitoite.Release.Refinement.ModelHttp.send_mismatch",
+      "Benitoite.Release.Refinement.ScopedTargetExamples.request_io"
+    ],
+    "finding": "篩付きPairを含む五欄要求の二保持形と同じ端点を継承する。根の射影形拒否は群E再開1を維持する。",
+    "remaining": "R30/R50の同じ入力を比較",
+    "remaining_entry": "R30/R50：Pair[String{true},String]等の同じ型付き要求をAt→射影→Http.sendInへ通す実入力と比較。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.request_io",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。",
+    "actual_evidence": {
+      "Benitoite.Release.Refinement.HasTypeVQ.request_target": {
+        "source": "formal/Benitoite/Release/Refinement/MembershipTargets.lean",
+        "line": 152,
+        "type_sha256": "c3091c6e9b3ff7643bc91e52ffc44fc33a1001d66d88dc8d6519447b8eba9072"
+      },
+      "Benitoite.Release.Refinement.RequestDelta.response": {
+        "source": "formal/Benitoite/Release/Refinement/RequestDelta.lean",
+        "line": 217,
+        "type_sha256": "8c11e171e2eed36024c38bdedd8a26beaba62e7a59e0f9e22fa28ba28e547863"
+      },
+      "Benitoite.Release.Refinement.ModelHttp.sent_request": {
+        "source": "formal/Benitoite/Release/Refinement/ModelHttpConditions.lean",
+        "line": 243,
+        "type_sha256": "3b6ff39e85d190fe9829e78f3f4bb3c6ea91d5b0ddaa7a085fbaaa1e33a5ff37"
+      },
+      "Benitoite.Release.Refinement.ModelHttp.pure_response": {
+        "source": "formal/Benitoite/Release/Refinement/ModelHttpConditions.lean",
+        "line": 145,
+        "type_sha256": "7445d1971eb813648124034fd5ab603acc80cba2f2c172b4e12faa4c1eb2858a"
+      },
+      "Benitoite.Release.Refinement.ModelHttp.send_mismatch": {
+        "source": "formal/Benitoite/Release/Refinement/ModelHttpConditions.lean",
+        "line": 300,
+        "type_sha256": "1e4655f02bfde9ffff0bd6ae14b28bec82f5bfce0402e8c7f1a129a9d9fec397"
+      },
+      "Benitoite.Release.Refinement.ScopedTargetExamples.request_io": {
+        "source": "formal/Benitoite/Release/Refinement/ScopedTargetExamples.lean",
+        "line": 46,
+        "type_sha256": "3faf999033714e3b26d9297b5fbf1e708efccf4b08586ac928bcbc6ed7563812"
+      }
+    },
+    "quantification_judgment": {
+      "kind": "handoffs",
+      "id": "H05",
+      "trace_status": "L50担当分完了",
+      "finding": "篩付きPairを含む五欄要求の二保持形と同じ端点を継承する。根の射影形拒否は群E再開1を維持する。",
+      "quantification_source": {
+        "file": "../k/trace.json",
+        "id": "H05"
+      },
+      "independent_review": {
+        "file": "../../reviews/RV-L50.k.md",
+        "section": "観点ごとの根拠 5. 33義務・31申し送り／情報7、再開1の再レビュー"
+      },
+      "l50_independent_unresolved": [],
+      "group_review_sources": [
+        {
+          "file": "../../reviews/RV-L50.c.md",
+          "section": "観点ごとの根拠と取りまとめの追記（群Eは再レビューを含む）"
+        },
+        {
+          "file": "../../reviews/RV-L50.e.md",
+          "section": "観点ごとの根拠と取りまとめの追記（群Eは再レビューを含む）"
+        },
+        {
+          "file": "../../reviews/RV-L50.j.md",
+          "section": "観点ごとの根拠と取りまとめの追記（群Eは再レビューを含む）"
+        }
+      ]
+    },
+    "mechanical_checks": [
+      "名前の実在・所在",
+      "実型のSHA-256",
+      "読者の型と値の依存の一致"
+    ],
+    "stage_status": "機械照合済み。量化範囲と担当分の判断はcoverage-judgmentsの出典。全体は未閉鎖"
+  },
+  {
+    "kind": "handoffs",
+    "id": "H06",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopeSignatures.sourceTelRows",
+      "Benitoite.Release.Refinement.ModelTargets.sourceTelRows",
+      "Benitoite.Release.Refinement.ModelHttp.sourceTelRows",
+      "Benitoite.Release.Refinement.TargetTable.content_rows"
+    ],
+    "readers": [
+      "_private.Benitoite.Release.Refinement.ModelTargetsApplications.0.Benitoite.Release.Refinement.ModelTargetsApplications.legacy_arguments"
+    ],
+    "finding": "同じPの全署名のSourceScoped/RowsInを使う。",
+    "remaining": "L60残りの実表、L70/R10bソース生成",
+    "remaining_entry": "L60：残りの実表にSourceScoped/RowsIn/sourceTelRowsを供給。L70/R10b：同じ閉じた内容型の行支持をソース生成へ渡す。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.response_inputs"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。",
+    "actual_evidence": {
+      "Benitoite.Release.Refinement.ScopeSignatures.sourceTelRows": {
+        "source": "formal/Benitoite/Release/Refinement/ScopeSignatureFormation.lean",
+        "line": 49,
+        "type_sha256": "59b7445287ccecd6997629baa5e38ec0c069f3ebfdecae4ad46961f1a91885e8"
+      },
+      "Benitoite.Release.Refinement.ModelTargets.sourceTelRows": {
+        "source": "formal/Benitoite/Release/Refinement/ModelTargets.lean",
+        "line": 133,
+        "type_sha256": "f6b318bb104fd7f58e1a67fee7ae4c334693476c769ace8dbb721961ea63e546"
+      },
+      "Benitoite.Release.Refinement.ModelHttp.sourceTelRows": {
+        "source": "formal/Benitoite/Release/Refinement/ModelHttpConditions.lean",
+        "line": 80,
+        "type_sha256": "1f52b93ed3122f2b09b0f89099ca060e8c5fe8f5da5d06cb994b9784a80abcc0"
+      },
+      "Benitoite.Release.Refinement.TargetTable.content_rows": {
+        "source": "formal/Benitoite/Release/Refinement/TargetTable.lean",
+        "line": 20,
+        "type_sha256": "b611a18912b6553ee97aa67c1ba0953899dc9580837b904438bd37127ea9d6c1"
+      },
+      "_private.Benitoite.Release.Refinement.ModelTargetsApplications.0.Benitoite.Release.Refinement.ModelTargetsApplications.legacy_arguments": {
+        "source": "formal/Benitoite/Release/Refinement/ModelTargetsApplications.lean",
+        "line": 154,
+        "type_sha256": "5c999a38f7c15c8369caa5dc2dc48bd54e09b7228025e920c5191a7fcdc8a698"
+      }
+    },
+    "quantification_judgment": {
+      "kind": "handoffs",
+      "id": "H06",
+      "trace_status": "L50担当分完了",
+      "finding": "同じPの全署名のSourceScoped/RowsInを使う。",
+      "quantification_source": {
+        "file": "../k/trace.json",
+        "id": "H06"
+      },
+      "independent_review": {
+        "file": "../../reviews/RV-L50.k.md",
+        "section": "観点ごとの根拠 5. 33義務・31申し送り／情報7、再開1の再レビュー"
+      },
+      "l50_independent_unresolved": [],
+      "group_review_sources": [
+        {
+          "file": "../../reviews/RV-L50.e.md",
+          "section": "観点ごとの根拠と取りまとめの追記（群Eは再レビューを含む）"
+        },
+        {
+          "file": "../../reviews/RV-L50.i.md",
+          "section": "観点ごとの根拠と取りまとめの追記（群Eは再レビューを含む）"
+        },
+        {
+          "file": "../../reviews/RV-L50.j.md",
+          "section": "観点ごとの根拠と取りまとめの追記（群Eは再レビューを含む）"
+        }
+      ]
+    },
+    "mechanical_checks": [
+      "名前の実在・所在",
+      "実型のSHA-256",
+      "読者の型と値の依存の一致"
+    ],
+    "stage_status": "機械照合済み。量化範囲と担当分の判断はcoverage-judgmentsの出典。全体は未閉鎖"
+  },
+  {
+    "kind": "handoffs",
+    "id": "H07",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopeModels.conditions",
+      "Benitoite.Release.Refinement.Model.scopeConditions",
+      "Benitoite.Release.Refinement.ModelTargets.scopeConditions",
+      "Benitoite.Release.Refinement.ModelHttp.scopeConditions"
+    ],
+    "readers": [],
+    "finding": "sat=Trueへ戻さず、任意Ψ/非Topを含む実75欄を読む。",
+    "remaining": "L60全Coreと通常資源",
+    "remaining_entry": "L60：三モデル75欄をModelScopeConditions.coreへ渡し、外部三欄と通常資源release_existsを組み合わせて全Coreを構成する。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.single_io"
+    ],
+    "relation_kind": "同じ前提を共有するだけ",
+    "relation": "読者なし。候補の実行葉は同じ契約を前提に受けるだけで、この行の証拠を使わない。受け口は右欄。",
+    "actual_evidence": {
+      "Benitoite.Release.Refinement.ScopeModels.conditions": {
+        "source": "formal/Benitoite/Release/Refinement/ScopeModels.lean",
+        "line": 9,
+        "type_sha256": "b2b30a6ebce8276a43131c31450b6841f58c5a011cc6713d96fd12632a5906c1"
+      },
+      "Benitoite.Release.Refinement.Model.scopeConditions": {
+        "source": "formal/Benitoite/Release/Refinement/Model.lean",
+        "line": 181,
+        "type_sha256": "6f18171e14ea9fb75562271c158e30fc126b6d67159d975cbae84f8c08aa83a4"
+      },
+      "Benitoite.Release.Refinement.ModelTargets.scopeConditions": {
+        "source": "formal/Benitoite/Release/Refinement/ModelTargets.lean",
+        "line": 442,
+        "type_sha256": "4eae730d65f2662b7632cb7e06c98bee138cdc2bd02f74d6e31719f47e9ef1d5"
+      },
+      "Benitoite.Release.Refinement.ModelHttp.scopeConditions": {
+        "source": "formal/Benitoite/Release/Refinement/ModelHttpConditions.lean",
+        "line": 327,
+        "type_sha256": "a2947140a5f93b1498948e217ebc495a362c5a4e1c491ba56dcedbc83eea2f36"
+      }
+    },
+    "quantification_judgment": {
+      "kind": "handoffs",
+      "id": "H07",
+      "trace_status": "L50担当分完了",
+      "finding": "sat=Trueへ戻さず、任意Ψ/非Topを含む実75欄を読む。",
+      "quantification_source": {
+        "file": "../k/trace.json",
+        "id": "H07"
+      },
+      "independent_review": {
+        "file": "../../reviews/RV-L50.k.md",
+        "section": "観点ごとの根拠 5. 33義務・31申し送り／情報7、再開1の再レビュー"
+      },
+      "l50_independent_unresolved": [],
+      "group_review_sources": [
+        {
+          "file": "../../reviews/RV-L50.h.md",
+          "section": "観点ごとの根拠と取りまとめの追記（群Eは再レビューを含む）"
+        },
+        {
+          "file": "../../reviews/RV-L50.i.md",
+          "section": "観点ごとの根拠と取りまとめの追記（群Eは再レビューを含む）"
+        },
+        {
+          "file": "../../reviews/RV-L50.j.md",
+          "section": "観点ごとの根拠と取りまとめの追記（群Eは再レビューを含む）"
+        }
+      ]
+    },
+    "mechanical_checks": [
+      "名前の実在・所在",
+      "実型のSHA-256",
+      "読者の型と値の依存の一致"
+    ],
+    "stage_status": "機械照合済み。量化範囲と担当分の判断はcoverage-judgmentsの出典。全体は未閉鎖"
+  },
+  {
+    "kind": "handoffs",
+    "id": "H08",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.PathEnv.Ready.resolve_required",
+      "Benitoite.Release.Refinement.InitialPrepared.source_state_of_source"
+    ],
+    "readers": [],
+    "finding": "必要束縛と初期準備、動的未束縛Errorを分離する。Readyを全状態へ追加しない。",
+    "remaining": "L70初期表層と全到達",
+    "remaining_entry": "L70：Ready/InitialPrepared.source_stateを初期表層と全到達へ接続する。Readyを全状態の新不変条件にしない。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.at_steps"
+    ],
+    "relation_kind": "証拠そのものが入口",
+    "relation": "読者なし。証拠そのものが入口で、合成の読者は後段に残る。受け口は右欄。",
+    "actual_evidence": {
+      "Benitoite.Release.Refinement.PathEnv.Ready.resolve_required": {
+        "source": "formal/Benitoite/Release/Refinement/PreparationTargets.lean",
+        "line": 7,
+        "type_sha256": "c7554feb87c712e5191b53eb22500fa941534c1b9ee948f7fbdf0091d79cf2db"
+      },
+      "Benitoite.Release.Refinement.InitialPrepared.source_state_of_source": {
+        "source": "formal/Benitoite/Release/Refinement/PreparationTargets.lean",
+        "line": 89,
+        "type_sha256": "e585d1cf7b42102d1c738345ab82ac097ac4553b8c4d8d4c296789825b269291"
+      }
+    },
+    "quantification_judgment": {
+      "kind": "handoffs",
+      "id": "H08",
+      "trace_status": "L50担当分完了",
+      "finding": "必要束縛と初期準備、動的未束縛Errorを分離する。Readyを全状態へ追加しない。",
+      "quantification_source": {
+        "file": "../k/trace.json",
+        "id": "H08"
+      },
+      "independent_review": {
+        "file": "../../reviews/RV-L50.k.md",
+        "section": "観点ごとの根拠 5. 33義務・31申し送り／情報7、再開1の再レビュー"
+      },
+      "l50_independent_unresolved": [],
+      "group_review_sources": [
+        {
+          "file": "../../reviews/RV-L50.d.md",
+          "section": "観点ごとの根拠と取りまとめの追記（群Eは再レビューを含む）"
+        }
+      ]
+    },
+    "mechanical_checks": [
+      "名前の実在・所在",
+      "実型のSHA-256",
+      "読者の型と値の依存の一致"
+    ],
+    "stage_status": "機械照合済み。量化範囲と担当分の判断はcoverage-judgmentsの出典。全体は未閉鎖"
+  },
+  {
+    "kind": "handoffs",
+    "id": "H09",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.ModelConstraints.sat_rename",
+      "Benitoite.Release.Refinement.ModelConstraints.admits_rename",
+      "Benitoite.Release.Refinement.ModelConstraints.sat_values",
+      "Benitoite.Release.Refinement.ModelConstraints.admits_values"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ScopeModels.conditions"
+    ],
+    "finding": "値の四保存則はFailの順序・長さ・重複を読まない骨格から得る。",
+    "remaining": "L60で証拠を再利用",
+    "remaining_entry": "L60：ValueAssumptionsのsat_rename/admits_rename/sat_values/admits_valuesを各実表の全Coreへ再利用する。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopeModels.conditions"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。",
+    "actual_evidence": {
+      "Benitoite.Release.Refinement.ModelConstraints.sat_rename": {
+        "source": "formal/Benitoite/Release/Refinement/ModelConstraints.lean",
+        "line": 57,
+        "type_sha256": "6291f9127eb270cb009a71cf1fb991c2eb5afcb1d87900c6d7c2f5196224efb7"
+      },
+      "Benitoite.Release.Refinement.ModelConstraints.admits_rename": {
+        "source": "formal/Benitoite/Release/Refinement/ModelConstraints.lean",
+        "line": 79,
+        "type_sha256": "4548128e701a57ecf0d6b3cae077c875568fdf9095b57bb70c4bc7c583cd08b4"
+      },
+      "Benitoite.Release.Refinement.ModelConstraints.sat_values": {
+        "source": "formal/Benitoite/Release/Refinement/ModelConstraints.lean",
+        "line": 63,
+        "type_sha256": "ae547fee78909a1f1de83428cbe54b2b05ca8ac67624ed0257ed59e93d49a3ab"
+      },
+      "Benitoite.Release.Refinement.ModelConstraints.admits_values": {
+        "source": "formal/Benitoite/Release/Refinement/ModelConstraints.lean",
+        "line": 84,
+        "type_sha256": "6e0d4fd07f654b5f3c9909d73c94a7a35157f83b1c17c07fd9e3f029b2ad15f5"
+      },
+      "Benitoite.Release.Refinement.ScopeModels.conditions": {
+        "source": "formal/Benitoite/Release/Refinement/ScopeModels.lean",
+        "line": 9,
+        "type_sha256": "b2b30a6ebce8276a43131c31450b6841f58c5a011cc6713d96fd12632a5906c1"
+      }
+    },
+    "quantification_judgment": {
+      "kind": "handoffs",
+      "id": "H09",
+      "trace_status": "L50担当分完了",
+      "finding": "値の四保存則はFailの順序・長さ・重複を読まない骨格から得る。",
+      "quantification_source": {
+        "file": "../k/trace.json",
+        "id": "H09"
+      },
+      "independent_review": {
+        "file": "../../reviews/RV-L50.k.md",
+        "section": "観点ごとの根拠 5. 33義務・31申し送り／情報7、再開1の再レビュー"
+      },
+      "l50_independent_unresolved": [],
+      "group_review_sources": [
+        {
+          "file": "../../reviews/RV-L50.f.md",
+          "section": "観点ごとの根拠と取りまとめの追記（群Eは再レビューを含む）"
+        }
+      ]
+    },
+    "mechanical_checks": [
+      "名前の実在・所在",
+      "実型のSHA-256",
+      "読者の型と値の依存の一致"
+    ],
+    "stage_status": "機械照合済み。量化範囲と担当分の判断はcoverage-judgmentsの出典。全体は未閉鎖"
+  },
+  {
+    "kind": "handoffs",
+    "id": "H10",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.ModelConstraints.sat_renameTypes",
+      "Benitoite.Release.Refinement.ModelConstraints.admits_renameTypes",
+      "Benitoite.Release.Refinement.ModelConstraints.sat_subst",
+      "Benitoite.Release.Refinement.ModelConstraints.admits_subst"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ScopeModels.conditions"
+    ],
+    "finding": "一般のTypeParamRenamingとSatAllを継承し、独立のsat_localを加えない。",
+    "remaining": "L60の全Core",
+    "remaining_entry": "L60：TypeParamRenamingと型像・行像を含むTypeAssumptions四保存則を全Coreへ再利用する。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopeModels.conditions"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。",
+    "actual_evidence": {
+      "Benitoite.Release.Refinement.ModelConstraints.sat_renameTypes": {
+        "source": "formal/Benitoite/Release/Refinement/ModelConstraints.lean",
+        "line": 211,
+        "type_sha256": "756a2750756917731cea5fa77a7957d11e35fb68ac50d9da1766b666150cd958"
+      },
+      "Benitoite.Release.Refinement.ModelConstraints.admits_renameTypes": {
+        "source": "formal/Benitoite/Release/Refinement/ModelConstraints.lean",
+        "line": 232,
+        "type_sha256": "8453f46a9650303389dbfa7f28f1cde7c467302a9999b5e1feb62530e4c9a48f"
+      },
+      "Benitoite.Release.Refinement.ModelConstraints.sat_subst": {
+        "source": "formal/Benitoite/Release/Refinement/ModelConstraints.lean",
+        "line": 241,
+        "type_sha256": "dad6eb4c8eb409554f854a4034ac05d8d3ae0d00a310fd3a6a70473393c65017"
+      },
+      "Benitoite.Release.Refinement.ModelConstraints.admits_subst": {
+        "source": "formal/Benitoite/Release/Refinement/ModelConstraints.lean",
+        "line": 279,
+        "type_sha256": "4c9ff210ae0c06a6788f759aca3857490fcb9cbb299c9510ecf313473904717f"
+      },
+      "Benitoite.Release.Refinement.ScopeModels.conditions": {
+        "source": "formal/Benitoite/Release/Refinement/ScopeModels.lean",
+        "line": 9,
+        "type_sha256": "b2b30a6ebce8276a43131c31450b6841f58c5a011cc6713d96fd12632a5906c1"
+      }
+    },
+    "quantification_judgment": {
+      "kind": "handoffs",
+      "id": "H10",
+      "trace_status": "L50担当分完了",
+      "finding": "一般のTypeParamRenamingとSatAllを継承し、独立のsat_localを加えない。",
+      "quantification_source": {
+        "file": "../k/trace.json",
+        "id": "H10"
+      },
+      "independent_review": {
+        "file": "../../reviews/RV-L50.k.md",
+        "section": "観点ごとの根拠 5. 33義務・31申し送り／情報7、再開1の再レビュー"
+      },
+      "l50_independent_unresolved": [],
+      "group_review_sources": [
+        {
+          "file": "../../reviews/RV-L50.f.md",
+          "section": "観点ごとの根拠と取りまとめの追記（群Eは再レビューを含む）"
+        }
+      ]
+    },
+    "mechanical_checks": [
+      "名前の実在・所在",
+      "実型のSHA-256",
+      "読者の型と値の依存の一致"
+    ],
+    "stage_status": "機械照合済み。量化範囲と担当分の判断はcoverage-judgmentsの出典。全体は未閉鎖"
+  },
+  {
+    "kind": "handoffs",
+    "id": "H11",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopeSignatures.pathBases_shape",
+      "Benitoite.Release.Refinement.Builtins.CoreAssumptions.pathBases_membership"
+    ],
+    "readers": [],
+    "finding": "発行八欄と同じProcess.Environment所属を使う。",
+    "remaining": "L70のeffect_soundness、R30発行",
+    "remaining_entry": "L70：PathBasesShapeと同じeffectsのmembershipをeffect_soundnessへ。R30：Process.Environment事象を伴う実発行へ。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.path_bases_apply",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.issue"
+    ],
+    "relation_kind": "同じ前提を共有するだけ",
+    "relation": "読者なし。候補の実行葉は同じ契約を前提に受けるだけで、この行の証拠を使わない。受け口は右欄。",
+    "actual_evidence": {
+      "Benitoite.Release.Refinement.ScopeSignatures.pathBases_shape": {
+        "source": "formal/Benitoite/Release/Refinement/ScopeSignatures.lean",
+        "line": 144,
+        "type_sha256": "ce16d6f3e4b4e2a210d6bac169326eb9942d71e546b98456ab2eecf5665f03e2"
+      },
+      "Benitoite.Release.Refinement.Builtins.CoreAssumptions.pathBases_membership": {
+        "source": "formal/Benitoite/Release/Refinement/PathBasesTargets.lean",
+        "line": 33,
+        "type_sha256": "8616a1eb2257da6e27c2ec4b67bef4ef0d832f4cef0de30493424fe890b76aef"
+      }
+    },
+    "quantification_judgment": {
+      "kind": "handoffs",
+      "id": "H11",
+      "trace_status": "L50担当分完了",
+      "finding": "発行八欄と同じProcess.Environment所属を使う。",
+      "quantification_source": {
+        "file": "../k/trace.json",
+        "id": "H11"
+      },
+      "independent_review": {
+        "file": "../../reviews/RV-L50.k.md",
+        "section": "観点ごとの根拠 5. 33義務・31申し送り／情報7、再開1の再レビュー"
+      },
+      "l50_independent_unresolved": [],
+      "group_review_sources": [
+        {
+          "file": "../../reviews/RV-L50.e.md",
+          "section": "観点ごとの根拠と取りまとめの追記（群Eは再レビューを含む）"
+        }
+      ]
+    },
+    "mechanical_checks": [
+      "名前の実在・所在",
+      "実型のSHA-256",
+      "読者の型と値の依存の一致"
+    ],
+    "stage_status": "機械照合済み。量化範囲と担当分の判断はcoverage-judgmentsの出典。全体は未閉鎖"
+  },
+  {
+    "kind": "handoffs",
+    "id": "H12",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.Builtins.ShapeOk.single_target",
+      "Benitoite.Release.Refinement.ScopeSignatures.io_op"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ScopedIOResponse.obs_allowed",
+      "Benitoite.Release.Refinement.ScopedTargetExamples.single_io"
+    ],
+    "finding": "opaque署名とscoped_forgetを維持する。",
+    "remaining": "L60実表合成",
+    "remaining_entry": "L60：ShapeOk.singleのopaque (rvar 0)署名へscoped_forgetした同じ値を供給し、実表を合成する。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.single_io"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。",
+    "actual_evidence": {
+      "Benitoite.Release.Refinement.Builtins.ShapeOk.single_target": {
+        "source": "formal/Benitoite/Release/Refinement/ShapeTargets.lean",
+        "line": 145,
+        "type_sha256": "56a8dd2dd23e7dd6e4500bcf758344de3e8f2c0c6ac39b0e679734821d8ecf4b"
+      },
+      "Benitoite.Release.Refinement.ScopeSignatures.io_op": {
+        "source": "formal/Benitoite/Release/Refinement/ScopeSignatures.lean",
+        "line": 126,
+        "type_sha256": "eac6241781de4d669f2b2c2bb226516ac7d42518df6d4fcd75a8ec2b72a17ed1"
+      },
+      "Benitoite.Release.Refinement.ScopedIOResponse.obs_allowed": {
+        "source": "formal/Benitoite/Release/Refinement/ScopedIOResponse.lean",
+        "line": 392,
+        "type_sha256": "d99559ea5762194442fa20d87e6212ebb0cf00d78876baff6df473b297b44829"
+      },
+      "Benitoite.Release.Refinement.ScopedTargetExamples.single_io": {
+        "source": "formal/Benitoite/Release/Refinement/ScopedTargetExamples.lean",
+        "line": 11,
+        "type_sha256": "1bf1152c74fae1406d3e2fb441c2417739e179dddee95a5a8dd1151528f1b892"
+      }
+    },
+    "quantification_judgment": {
+      "kind": "handoffs",
+      "id": "H12",
+      "trace_status": "L50担当分完了",
+      "finding": "opaque署名とscoped_forgetを維持する。",
+      "quantification_source": {
+        "file": "../k/trace.json",
+        "id": "H12"
+      },
+      "independent_review": {
+        "file": "../../reviews/RV-L50.k.md",
+        "section": "観点ごとの根拠 5. 33義務・31申し送り／情報7、再開1の再レビュー"
+      },
+      "l50_independent_unresolved": [],
+      "group_review_sources": [
+        {
+          "file": "../../reviews/RV-L50.a.md",
+          "section": "観点ごとの根拠と取りまとめの追記（群Eは再レビューを含む）"
+        },
+        {
+          "file": "../../reviews/RV-L50.c.md",
+          "section": "観点ごとの根拠と取りまとめの追記（群Eは再レビューを含む）"
+        },
+        {
+          "file": "../../reviews/RV-L50.e.md",
+          "section": "観点ごとの根拠と取りまとめの追記（群Eは再レビューを含む）"
+        }
+      ]
+    },
+    "mechanical_checks": [
+      "名前の実在・所在",
+      "実型のSHA-256",
+      "読者の型と値の依存の一致"
+    ],
+    "stage_status": "機械照合済み。量化範囲と担当分の判断はcoverage-judgmentsの出典。全体は未閉鎖"
+  },
+  {
+    "kind": "handoffs",
+    "id": "H13",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopeDeclarations.program_hasHttp",
+      "Benitoite.Release.Refinement.ScopeDeclarations.program_wellFormed",
+      "Benitoite.Release.Refinement.ScopeSignatures.sig_scoped"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.ScopeModels.conditions",
+      "_private.Benitoite.Release.Refinement.ModelHttpApplications.0.Benitoite.Release.Refinement.ModelHttpApplications.result_annotation"
+    ],
+    "finding": "同じ有限PのResult/Pairのarity2と全lookupを継承する。",
+    "remaining": "L60の標準全表",
+    "remaining_entry": "L60：標準全表で同じPの有限宣言からResult/Pair/Request/Errorのarity・kind・PrimSig.Scopedを供給する。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopeModels.conditions"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。",
+    "actual_evidence": {
+      "Benitoite.Release.Refinement.ScopeDeclarations.program_hasHttp": {
+        "source": "formal/Benitoite/Release/Refinement/ScopeDeclarations.lean",
+        "line": 110,
+        "type_sha256": "cf1f550f30e2023e5b5c0afeae24872af15cacb53a7f677bfbc77051e484bd3d"
+      },
+      "Benitoite.Release.Refinement.ScopeDeclarations.program_wellFormed": {
+        "source": "formal/Benitoite/Release/Refinement/ScopeDeclarations.lean",
+        "line": 122,
+        "type_sha256": "e359a0b566abdf48b698b94aea17f471e76c9760bc7f3e2249c9e6860e845bb4"
+      },
+      "Benitoite.Release.Refinement.ScopeSignatures.sig_scoped": {
+        "source": "formal/Benitoite/Release/Refinement/ScopeSignatureFormation.lean",
+        "line": 44,
+        "type_sha256": "9dfe8b5cd8a2b7751bd6e80390fd19899e8a1ddd615537371cb5f041d607e627"
+      },
+      "Benitoite.Release.Refinement.ScopeModels.conditions": {
+        "source": "formal/Benitoite/Release/Refinement/ScopeModels.lean",
+        "line": 9,
+        "type_sha256": "b2b30a6ebce8276a43131c31450b6841f58c5a011cc6713d96fd12632a5906c1"
+      },
+      "_private.Benitoite.Release.Refinement.ModelHttpApplications.0.Benitoite.Release.Refinement.ModelHttpApplications.result_annotation": {
+        "source": "formal/Benitoite/Release/Refinement/ModelHttpApplications.lean",
+        "line": 96,
+        "type_sha256": "36cbf78b9b2203e06bce606ebb72ecba0428a0bb3b67f506c038ad13bf59b8f3"
+      }
+    },
+    "quantification_judgment": {
+      "kind": "handoffs",
+      "id": "H13",
+      "trace_status": "L50担当分完了",
+      "finding": "同じ有限PのResult/Pairのarity2と全lookupを継承する。",
+      "quantification_source": {
+        "file": "../k/trace.json",
+        "id": "H13"
+      },
+      "independent_review": {
+        "file": "../../reviews/RV-L50.k.md",
+        "section": "観点ごとの根拠 5. 33義務・31申し送り／情報7、再開1の再レビュー"
+      },
+      "l50_independent_unresolved": [],
+      "group_review_sources": [
+        {
+          "file": "../../reviews/RV-L50.e.md",
+          "section": "観点ごとの根拠と取りまとめの追記（群Eは再レビューを含む）"
+        }
+      ]
+    },
+    "mechanical_checks": [
+      "名前の実在・所在",
+      "実型のSHA-256",
+      "読者の型と値の依存の一致"
+    ],
+    "stage_status": "機械照合済み。量化範囲と担当分の判断はcoverage-judgmentsの出典。全体は未閉鎖"
+  },
+  {
+    "kind": "handoffs",
+    "id": "H14",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.ScopeResponse.delta_typed",
+      "Benitoite.Release.Refinement.ScopedIOResponse.response",
+      "Benitoite.Release.Refinement.AtTargets.adequate_atError"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.AtErrorReaders.observed",
+      "Benitoite.Release.Refinement.ModelTargets.io_typed",
+      "Benitoite.Release.Refinement.ScopeResponse.outcome_typed"
+    ],
+    "finding": "全有効σのAdequateResultを同じ応答から読む。外部条件と分離する。",
+    "remaining": "L60のexternalCheckedOutcome",
+    "remaining_entry": "L60：externalCheckedOutcomeと外部応答の三条件から適格性を得る。δ/IOのAdequateResultの証拠で代用しない。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetInputs.pure_steps",
+      "Benitoite.Release.Refinement.ScopedTargetInputs.io_steps"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。",
+    "actual_evidence": {
+      "Benitoite.Release.Refinement.ScopeResponse.delta_typed": {
+        "source": "formal/Benitoite/Release/Refinement/ScopeResponse.lean",
+        "line": 47,
+        "type_sha256": "505757ab17b98be3b023fa9328c6c1038e397d1bedbce1f5de532e4cf20dd777"
+      },
+      "Benitoite.Release.Refinement.ScopedIOResponse.response": {
+        "source": "formal/Benitoite/Release/Refinement/ScopedIOResponse.lean",
+        "line": 348,
+        "type_sha256": "e63e9d9a26cdb0665a378132c53ebe5ac2f4baf4090b4b0a3d467876fdac6706"
+      },
+      "Benitoite.Release.Refinement.AtTargets.adequate_atError": {
+        "source": "formal/Benitoite/Release/Refinement/AtTargets.lean",
+        "line": 71,
+        "type_sha256": "a912b996e62a60da4bf96e1cb45f5f73accc2b9b062cdb08467eedfd28507de4"
+      },
+      "Benitoite.Release.Refinement.AtErrorReaders.observed": {
+        "source": "formal/Benitoite/Release/Refinement/AtErrorReaders.lean",
+        "line": 9,
+        "type_sha256": "078b5c1102d9aa91039fbd33394b1183bc2a6d792530d73c68f7be6a497b5f83"
+      },
+      "Benitoite.Release.Refinement.ModelTargets.io_typed": {
+        "source": "formal/Benitoite/Release/Refinement/ModelTargets.lean",
+        "line": 326,
+        "type_sha256": "8f3e1574883fd7e473dac9f9bc8929383ea033f44529ef2d4a02f33e480c2bbf"
+      },
+      "Benitoite.Release.Refinement.ScopeResponse.outcome_typed": {
+        "source": "formal/Benitoite/Release/Refinement/ScopeResponse.lean",
+        "line": 69,
+        "type_sha256": "3ba289ba551ae4e03ccad5f407e4d7a5f259f0149cdc798e2199e1aeb23c46f0"
+      }
+    },
+    "quantification_judgment": {
+      "kind": "handoffs",
+      "id": "H14",
+      "trace_status": "L50担当分完了",
+      "finding": "全有効σのAdequateResultを同じ応答から読む。外部条件と分離する。",
+      "quantification_source": {
+        "file": "../k/trace.json",
+        "id": "H14"
+      },
+      "independent_review": {
+        "file": "../../reviews/RV-L50.k.md",
+        "section": "観点ごとの根拠 5. 33義務・31申し送り／情報7、再開1の再レビュー"
+      },
+      "l50_independent_unresolved": [],
+      "group_review_sources": [
+        {
+          "file": "../../reviews/RV-L50.d.md",
+          "section": "観点ごとの根拠と取りまとめの追記（群Eは再レビューを含む）"
+        },
+        {
+          "file": "../../reviews/RV-L50.f.md",
+          "section": "観点ごとの根拠と取りまとめの追記（群Eは再レビューを含む）"
+        },
+        {
+          "file": "../../reviews/RV-L50.g.md",
+          "section": "観点ごとの根拠と取りまとめの追記（群Eは再レビューを含む）"
+        }
+      ]
+    },
+    "mechanical_checks": [
+      "名前の実在・所在",
+      "実型のSHA-256",
+      "読者の型と値の依存の一致"
+    ],
+    "stage_status": "機械照合済み。量化範囲と担当分の判断はcoverage-judgmentsの出典。全体は未閉鎖"
+  },
+  {
+    "kind": "handoffs",
+    "id": "H15",
+    "classification": "技術",
+    "status": "L50担当分完了",
+    "proofs": [
+      "Benitoite.Release.Refinement.HasTypeVQ.widen_opaque",
+      "Benitoite.Release.Refinement.ScopedTargetExamples.widened_input",
+      "Benitoite.Release.Refinement.HasTypeVQ.target_member"
+    ],
+    "readers": [
+      "Benitoite.Release.Refinement.Builtins.ShapeOk.single_target",
+      "Benitoite.Release.Refinement.HasTypeVQ.widen_instTarget_covers"
+    ],
+    "finding": "非Top→Top→opaqueと同じ値の逆転を継承。別範囲の拒否と要求なしRequestの拒否を分ける。",
+    "remaining": "R30/R50の入力表",
+    "remaining_entry": "R30/R50：非Top→Top→opaqueのPathIn保持値の受理と、要求なしRequestInの拒否を同じ入力表で比較する。",
+    "reader_candidates": [
+      "Benitoite.Release.Refinement.ScopedTargetExamples.absolute_projection"
+    ],
+    "relation_kind": "依存する読者あり",
+    "relation": "型又は値の依存の閉包で同じ行の証拠を使う。各読者が使う証拠と経路はreader-dependencies.json。",
+    "actual_evidence": {
+      "Benitoite.Release.Refinement.HasTypeVQ.widen_opaque": {
+        "source": "formal/Benitoite/Release/Refinement/MembershipWiden.lean",
+        "line": 43,
+        "type_sha256": "ccdc166e79fa17a5fbf48524f7d2eb0a6475a47fa07ec50c0f2b23033455a27a"
+      },
+      "Benitoite.Release.Refinement.ScopedTargetExamples.widened_input": {
+        "source": "formal/Benitoite/Release/Refinement/ScopedTargetExamples.lean",
+        "line": 247,
+        "type_sha256": "06ceb115ba6af9327279ce0a68945e030e6eaf3788bb614342fee3bb649d5989"
+      },
+      "Benitoite.Release.Refinement.HasTypeVQ.target_member": {
+        "source": "formal/Benitoite/Release/Refinement/MembershipTargets.lean",
+        "line": 18,
+        "type_sha256": "17e7c118c091c96db9c17e5a8aa1c3acdc6f6cf5a737907e8d6547d9628d0142"
+      },
+      "Benitoite.Release.Refinement.Builtins.ShapeOk.single_target": {
+        "source": "formal/Benitoite/Release/Refinement/ShapeTargets.lean",
+        "line": 145,
+        "type_sha256": "56a8dd2dd23e7dd6e4500bcf758344de3e8f2c0c6ac39b0e679734821d8ecf4b"
+      },
+      "Benitoite.Release.Refinement.HasTypeVQ.widen_instTarget_covers": {
+        "source": "formal/Benitoite/Release/Refinement/MembershipWiden.lean",
+        "line": 65,
+        "type_sha256": "4d1f0dd912b1ad8ac8c5a0e8709f33a19a972c70175c3b117618bcd75caeb6d2"
+      }
+    },
+    "quantification_judgment": {
+      "kind": "handoffs",
+      "id": "H15",
+      "trace_status": "L50担当分完了",
+      "finding": "非Top→Top→opaqueと同じ値の逆転を継承。別範囲の拒否と要求なしRequestの拒否を分ける。",
+      "quantification_source": {
+        "file": "../k/trace.json",
+        "id": "H15"
+      },
+      "independent_review": {
+        "file": "../../reviews/RV-L50.k.md",
+        "section": "観点ごとの根拠 5. 33義務・31申し送り／情報7、再開1の再レビュー"
+      },
+      "l50_independent_unresolved": [],
+      "group_review_sources": [
+        {
+          "file": "../../reviews/RV-L50.a.md",
+          "section": "観点ごとの根拠と取りまとめの追記（群Eは再レビューを含む）"
+        },
+        {
+          "file": "../../reviews/RV-L50.c.md",
+          "section": "観点ごとの根拠と取りまとめの追記（群Eは再レビューを含む）"
+        }
+      ]
+    },
+    "mechanical_checks": [
+      "名前の実在・所在",
+      "実型のSHA-256",
+      "読者の型と値の依存の一致"
+    ],
+    "stage_status": "機械照合済み。量化範囲と担当分の判断はcoverage-judgmentsの出典。全体は未閉鎖"
+  }
+]

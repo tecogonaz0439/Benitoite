@@ -69,6 +69,8 @@
 
 【決定】`Benitoite.Release.Refinement` は、篩型、依存する引数列、有限の論理、捕捉環境と実行時の閉包、固定した PathEnv、外部の宣言と受信検査を持つ。定義・規則の写しは 01-12 の「篩を含むコア計算の形式化」から「篩を含む状態の型付け」までである。これらは既定の `Benitoite` の import に含まれ、旧 Release の定義・主定理・モデルと並置している。
 
+`Val.Source` と `Comp.Source` は、ソースから保持値や PathBases の発行状態を直接構築する形を拒む。一般の型付き Val に対する偽造不能性とは区別する。Source の値と本体から任意の σ への Adequate を導き、必要束縛を持つ初期状態へ供給する。範囲の被覆 `RangeExpr.Covers` と、値・計算・腕・節の型付け（`HasTypeVQ`・`HasTypeCQ`・`HasTypeArmsQ`・`HasTypeClausesQ` など）は σ を引数に取らない。継続・ストア・状態の型付け（`ContTy`・`StoreOk`・`StateTyE`）は実行と同じ σ を引数に取り、保持する値・閉包・枠の `Val.Adequate σ`・`Closure.Adequate σ`・`Frame.Adequate σ` を読む。所属と効果の上限の意味も同じ σ の下で読む。実行の Step は同じ σ を固定し、At の snapshot の一致を検査する。check と run の環境の一致、実体・副次的な通信の隔離、情報フロー制御は、この証明の保証に含まれない。
+
 `Refinement.Syntax.ConstOK` は `V_Const` の新しい前提である。Integer64 の証拠付きの値に加え、他の六整数幅の上下限、Byte の255以下、Decimal の係数の両端と scale≤28を検査する。`V_Bytes` の全要素の255以下は別の前提である。七整数と Byte の述語の観測は共通の integer sort を保つ。この型付けの条件と、数の演算の暗黙変換の禁止は区別する。
 
 裸の不透明値は、Top の範囲でも `valKind = none` と `valContent = none` の名前に限る。対象を持つ標準型は `V_Checked`、要求の内容を持つ標準型は `V_CheckedRequest` で同じ対象・要求を保持する。後者は空の型・値・事実・NoFail 文脈の内容の型付けに加え、groundVal と reqTarget の保持端点との一致を要求する。`ModelHttp.valueRun_request` は同じ要求を射影する局所定理であり、旧三モデルの全条件の新体系での充足を示す定理ではない。
@@ -146,7 +148,7 @@
 
 内部エラーの型は Detail Val である。元入力二つは不活性な Val、解析済み二欄は Option であり、解決結果・両起点・失敗と合わせて九欄を持つ。準備失敗は閉じた元入力を保存し、検査失敗は AtCheckError に同じ準備の元入力を添えて AtError.fromCheck で構成する。内部の観測は、失敗の種別・解析済み入力・解決結果・両起点を七つの String に写し、元入力を取り出さない。型付け・Term・照合・網羅性の読者は Detail.textFields/values に対応する。観測へ元の Val を返す入口は持たず、適格性と閉性は元入力へ再帰しない。AtPrepare.error_saved と AtError.save_exact が全準備失敗の保存を示す。Detail.originals_unobserved は、元入力二欄の変更に対して、項観測と任意パターンの束縛列の項観測の不変性を示す。変数パターンはエラー全体を束縛するため、束縛列の構造等号とは区別する。
 
-`ScopeLegacyContracts` は旧純粋 API の絶対パスの入口と、相対/home 入力・記号付き上限の拒否を定める。At はパターンの root と対象の cwd/home を別に解決し、同じ保持絶対対象を射影する。At と旧純粋チェックの空の効果を照合する。
+`ScopeLegacyContracts` はAt を使わない純粋な検査の API（`Scope.checkPath`・`Scope.checkPathIn`） の絶対パスの入口と、相対/home 入力・記号付き上限の拒否を定める。At はパターンの root と対象の cwd/home を別に解決し、同じ保持絶対対象を射影する。At と、At を使わない純粋な検査（`Scope.checkPath`・`Scope.checkPathIn`）の空の効果を照合する。
 
 `ScopeDeclarations.program` は Result・Pair・要求・両 Error の同じ有限構成子表を持ち、`program_hasHttp` と `program_wellFormed` が全 lookup・arity・欄の形成を供給する。`ScopeSignatures` は13範囲 API と参照2行・発行1行の共通表、対象の分類・内容型・範囲の許容・効果リストを定める。`ScopeSignatureFormation` は HasHttp P から全16行の Scoped と依存列の行支持を構成する。IO の対象引数は opaque とし、ShapeOk の範囲変数・効果原子・対象位置を同じ表で照合する。発行の PathBasesShape の八欄も同じ Process.Environment の登録を使う。IO 応答は同じ lookup の io/exit の種類に限り、発行を含めない。
 

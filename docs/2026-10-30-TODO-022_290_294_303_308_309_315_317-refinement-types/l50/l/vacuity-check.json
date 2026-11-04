@@ -1,0 +1,38 @@
+{
+  "exit": 0,
+  "seconds": 2.015083125,
+  "rows": 75,
+  "counts": {
+    "Model.builtins": {
+      "実質": 19,
+      "前提の否定で空疎": 6
+    },
+    "ModelTargets.builtins": {
+      "実質": 25
+    },
+    "ModelHttp.builtins": {
+      "実質": 25
+    }
+  },
+  "input": {
+    "bytes": 60124,
+    "sha256": "9629ff22b6dd3d8c72be13f9449cb7b458d99a078dd36d11a104c718d7434221"
+  },
+  "probe": {
+    "bytes": 2687,
+    "sha256": "e178df4b266ab7a636557a7ac3d85c6294f39716c00f629625fe665d95a217de"
+  },
+  "generated_source": {
+    "bytes": 65305,
+    "sha256": "9ec8dafdc90d1480fae381ae1684a5e4ca82147f778da28875b50f8d2030471b"
+  },
+  "raw": {
+    "bytes": 4673,
+    "sha256": "d70e29a1ac6ce4cdd92d894c2bb18a85b5e64dbdd729643050c799efea8e4a4e"
+  },
+  "judgments": {
+    "bytes": 41417,
+    "sha256": "5ae76c5dbc58acad0648a7edb17113426aab5f9ecc78fc49a69102cf3f23b30d"
+  },
+  "limitation": "戦術の失敗だけから非空疎とは判定しない。実質の69欄は本番の到達枝と群H/I/Jの独立レビューに照らした判断"
+}

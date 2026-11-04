@@ -1,0 +1,99 @@
+{
+  "status": "担当分の自己照合成功",
+  "b_work": "70d726b70b6cb4cbf5abace21d377f6ae155b512",
+  "initial_input_manifest": {
+    "bytes": 544847,
+    "sha256": "b7069cd9c4d6cd57f11fc6da918bf29d4e21a7922f1fd71362c50c029462563a"
+  },
+  "scripts": {
+    "audit.py": {
+      "bytes": 7595,
+      "sha256": "bbcfc7aabbcfab62333e2ee73354fb69dfb6d4c0dafaf7ec8734ee351483367b"
+    },
+    "inventory.py": {
+      "bytes": 6043,
+      "sha256": "c13ffb5198c1851b6491d8f3f38ac4db7d150d54415e752e364ca85de810ac1a"
+    },
+    "reconcile.py": {
+      "bytes": 10413,
+      "sha256": "1f82239529b002e10d7b7501b0be6a1462cf10bb7868af537c5e03ef30828853"
+    },
+    "resume2_check.py": {
+      "bytes": 5508,
+      "sha256": "9284ef628e301ad560d028ecfa4d7d4f51fa552af068beb5800d937cc35cb399"
+    },
+    "run.py": {
+      "bytes": 1734,
+      "sha256": "866792e84bd6bd89891e117c270d3875d53f623de6b04c2d679368fa5f165f7e"
+    },
+    "stage.py": {
+      "bytes": 25011,
+      "sha256": "ea20ed44cedd51c49390be28ca0297a379ccb36393c92a6558d5154f14b40920"
+    },
+    "units.py": {
+      "bytes": 1023,
+      "sha256": "ceda1d86a07411b98bf641f91dab27a53bc0d5e407fe455244e7340a90125d2f"
+    },
+    "vacuity.py": {
+      "bytes": 3351,
+      "sha256": "82d9ae15c348ac61f11128f75adf0bd60efa35f2e17de40ff680dd72b42fd84e"
+    },
+    "verify.py": {
+      "bytes": 8738,
+      "sha256": "d3fc465aab55baf3e0f03f88adf8d8371770863f0a0b237d707c17a4fb7c885c"
+    }
+  },
+  "changed_inputs_from_resume1": [
+    "formal/Benitoite/Release/Refinement/ScopeLegacyContracts.lean",
+    "docs/design/07-quality/07-04-formal-semantics.md",
+    "docs/design/01-spec/01-12-core-calculus.md",
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/reviews/RV-L50.l.md"
+  ],
+  "restored_inputs_this_resume": [
+    "docs/design/01-spec/01-12-core-calculus.md",
+    "docs/design/07-quality/07-04-formal-semantics.md",
+    "formal/Benitoite/Release/Refinement/BuiltinLogic.lean",
+    "formal/Benitoite/Release/Refinement/BuiltinLogicExamples.lean",
+    "formal/Benitoite/Release/Refinement/CertificateKernelExamples.lean",
+    "formal/Benitoite/Release/Refinement/CertificateLegacy.lean",
+    "formal/Benitoite/Release/Refinement/FiniteCompare.lean",
+    "formal/Benitoite/Release/Refinement/IntervalRelationBoundary.lean",
+    "formal/Benitoite/Release/Refinement/RefutationExamples.lean"
+  ],
+  "protected_initial_inputs": 3247,
+  "source_comparison": {
+    "bytes": 2803,
+    "sha256": "4cbb630c3f073b4ca7d3dbae65269f605efe8f14ca93872f7e8dadf80288e37b"
+  },
+  "audit_reused_with_comment_equivalence": true,
+  "default_closure": 1032,
+  "audit_targets": 80672,
+  "new_modules": 33,
+  "signatures": 1856,
+  "obligations": 33,
+  "handoffs": 31,
+  "conditions": 75,
+  "remaining_l60_fields": 12,
+  "apis": 13,
+  "technical_independent_unresolved": {
+    "count": 0,
+    "basis": "各群末の独立レビューと群Kのtraceの判断の集計。機械照合による量化の判定ではない",
+    "source": {
+      "file": "coverage-judgments.json",
+      "bytes": 60445,
+      "sha256": "1b8f04ea9fd1604278dcb1b76afba501b951295a541244d142aef0a6d208aacb"
+    }
+  },
+  "whole_obligations_closed": 0,
+  "work_executions_this_resume": 0,
+  "historical_work_executions": 1,
+  "links_checked": 135,
+  "record_bytes_excluding_this_summary": 3461185,
+  "stage_results": {
+    "bytes": 96960,
+    "sha256": "2ba0fae1b8dcba9ee8c00f2bdb12cb189967ef4b3c15fac7245edeb5baacafa5"
+  },
+  "final_rss": "未取得・取りまとめの正式採取を待つ",
+  "independent_review": "RV-L50.l再確認を受け、再開2で軽1の処置を指摘の三箇所へ限定。再確認・受け入れは取りまとめへ",
+  "acceptance": "設計者が判定する"
+}

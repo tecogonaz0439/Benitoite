@@ -1,0 +1,184 @@
+{
+  "documents": [
+    {
+      "file": "docs/design/01-spec/01-12-core-calculus.md",
+      "restored_lines": 17,
+      "restored_occurrences": 21,
+      "initial_hash_verified": true,
+      "patch_parts": [
+        "resume2-restoration-01-12-core-calculus-part-1.json"
+      ],
+      "resume1_initial_sha256": "90829c3a8d879ae6124b68adf57b4546103e9bb5567d4b40b8896638475e5244",
+      "resume1_initial_reconstruction_verified": true
+    },
+    {
+      "file": "docs/design/07-quality/07-04-formal-semantics.md",
+      "restored_lines": 48,
+      "restored_occurrences": 68,
+      "initial_hash_verified": true,
+      "patch_parts": [
+        "resume2-restoration-07-04-formal-semantics-part-1.json",
+        "resume2-restoration-07-04-formal-semantics-part-2.json",
+        "resume2-restoration-07-04-formal-semantics-part-3.json"
+      ],
+      "resume1_initial_sha256": "643f6e2ee987bd07fca85ee30f57bfd3c6937535031bf87996808e265fbfb120",
+      "resume1_initial_reconstruction_verified": true
+    }
+  ],
+  "comments": [
+    {
+      "file": "formal/Benitoite/Release/Refinement/FiniteCompare.lean",
+      "restored_occurrences": 1,
+      "restored_lines": 1,
+      "replacements": {
+        "旧rhoの符号順": "入力rhoの符号順"
+      },
+      "resume1_initial_sha256": "e1b130ca8c7f1b5a8b723bd09bb653f0b00ecf5da354e839d1005681ec7ca9e4",
+      "b_work_sha256": "e1b130ca8c7f1b5a8b723bd09bb653f0b00ecf5da354e839d1005681ec7ca9e4"
+    },
+    {
+      "file": "formal/Benitoite/Release/Refinement/RefutationExamples.lean",
+      "restored_occurrences": 1,
+      "restored_lines": 1,
+      "replacements": {
+        "旧index 1": "削除前のindex 1"
+      },
+      "resume1_initial_sha256": "e899bd35d48d6df5351347514bcdadd4d9d2bc722275c8a932ecccf9a0545e22",
+      "b_work_sha256": "e899bd35d48d6df5351347514bcdadd4d9d2bc722275c8a932ecccf9a0545e22"
+    },
+    {
+      "file": "formal/Benitoite/Release/Refinement/BuiltinLogic.lean",
+      "restored_occurrences": 1,
+      "restored_lines": 1,
+      "replacements": {
+        "旧の成功": "閉じた二種類の成功"
+      },
+      "resume1_initial_sha256": "08ed60e4dbf54db8e6348dd67e1d0aa2be8164556401e9825bea517c0ba761ce",
+      "b_work_sha256": "08ed60e4dbf54db8e6348dd67e1d0aa2be8164556401e9825bea517c0ba761ce"
+    },
+    {
+      "file": "formal/Benitoite/Release/Refinement/CertificateLegacy.lean",
+      "restored_occurrences": 1,
+      "restored_lines": 1,
+      "replacements": {
+        "旧六場合": "Certificate.Entails の六場合"
+      },
+      "resume1_initial_sha256": "6da6d24074ce81fb737dbaabed6c5377dece51787583cf1149dd7c2acb5ed4d6",
+      "b_work_sha256": "6da6d24074ce81fb737dbaabed6c5377dece51787583cf1149dd7c2acb5ed4d6"
+    },
+    {
+      "file": "formal/Benitoite/Release/Refinement/CertificateKernelExamples.lean",
+      "restored_occurrences": 2,
+      "restored_lines": 2,
+      "replacements": {
+        "旧の各分岐": "Certificate.Entails の各分岐",
+        "旧証明書": "Certificate.Entails の証明書"
+      },
+      "resume1_initial_sha256": "b357cb4ec51e4dc1263a2e284dc9ee3dceca88996bca897be26fd36c5e483f7b",
+      "b_work_sha256": "b357cb4ec51e4dc1263a2e284dc9ee3dceca88996bca897be26fd36c5e483f7b"
+    },
+    {
+      "file": "formal/Benitoite/Release/Refinement/BuiltinLogicExamples.lean",
+      "restored_occurrences": 1,
+      "restored_lines": 1,
+      "replacements": {
+        "旧二形": "閉じた二形"
+      },
+      "resume1_initial_sha256": "56b8bc1479f7c5fa1837fa3bb8f8eb9ee0bf0b7520a34d0485611c481db54bc8",
+      "b_work_sha256": "56b8bc1479f7c5fa1837fa3bb8f8eb9ee0bf0b7520a34d0485611c481db54bc8"
+    },
+    {
+      "file": "formal/Benitoite/Release/Refinement/IntervalRelationBoundary.lean",
+      "restored_occurrences": 1,
+      "restored_lines": 1,
+      "replacements": {
+        "二つの旧署名": "二つの比較対象の署名"
+      },
+      "resume1_initial_sha256": "d380190c3fde56c3100949d6711a664e17df8b1fd8cbc711407a11975c5d4e80",
+      "b_work_sha256": "d380190c3fde56c3100949d6711a664e17df8b1fd8cbc711407a11975c5d4e80"
+    }
+  ],
+  "retained": [
+    {
+      "file": "docs/design/01-spec/01-12-core-calculus.md",
+      "initial_sha256": "90829c3a8d879ae6124b68adf57b4546103e9bb5567d4b40b8896638475e5244",
+      "retained_patches": [
+        {
+          "before": "静的な `RangeExpr.Covers` と型付けの判断は σ を引数に取らない。`RangeExpr.Covers.mem` は被覆から任意の σ での所属保存を導き、`Eff.Allows σ` は同じ σ で解釈した対象の上限を読む。実行の `Step P B σ` は σ を固定し、保存した snapshot がある At の遷移では同じ σ との一致を要求する。これらの規則から、check 時の観測値と run 時の値の一致、実体や副次的な通信の隔離、情報フロー制御は結論しない。\n",
+          "after": "範囲の被覆 `RangeExpr.Covers` と、値・計算・腕・節の型付けの判断（`HasTypeVQ`・`HasTypeCQ`・`HasTypeArmsQ`・`HasTypeClausesQ` など）は σ を引数に取らない。継続・ストア・状態の型付け（`ContTy`・`StoreOk`・`StateTyE`）は、実行と同じ σ を引数に取り、保持する値・閉包・枠の `Val.Adequate σ`・`Closure.Adequate σ`・`Frame.Adequate σ` を読む。`RangeExpr.Covers.mem` は被覆から任意の σ での所属保存を導き、`Eff.Allows σ` は同じ σ で解釈した対象の上限を読む。実行の `Step P B σ` は σ を固定し、保存した snapshot がある At の遷移では同じ σ との一致を要求する。これらの規則から、check 時の観測値と run 時の値の一致、実体や副次的な通信の隔離、情報フロー制御は結論しない。\n"
+        }
+      ]
+    },
+    {
+      "file": "docs/design/07-quality/07-04-formal-semantics.md",
+      "initial_sha256": "643f6e2ee987bd07fca85ee30f57bfd3c6937535031bf87996808e265fbfb120",
+      "retained_patches": [
+        {
+          "before": "`Val.Source` と `Comp.Source` は、ソースから保持値や PathBases の発行状態を直接構築する形を拒む。一般の型付き Val に対する偽造不能性とは区別する。Source の値と本体から任意の σ への Adequate を導き、必要束縛を持つ初期状態へ供給する。静的な被覆と型付けは σ を引数に取らず、所属と効果の上限の意味を σ の下で読む。実行の Step は同じ σ を固定し、At の snapshot の一致を検査する。check と run の環境の一致、実体・副次的な通信の隔離、情報フロー制御は、この証明の保証に含まれない。\n",
+          "after": "`Val.Source` と `Comp.Source` は、ソースから保持値や PathBases の発行状態を直接構築する形を拒む。一般の型付き Val に対する偽造不能性とは区別する。Source の値と本体から任意の σ への Adequate を導き、必要束縛を持つ初期状態へ供給する。範囲の被覆 `RangeExpr.Covers` と、値・計算・腕・節の型付け（`HasTypeVQ`・`HasTypeCQ`・`HasTypeArmsQ`・`HasTypeClausesQ` など）は σ を引数に取らない。継続・ストア・状態の型付け（`ContTy`・`StoreOk`・`StateTyE`）は実行と同じ σ を引数に取り、保持する値・閉包・枠の `Val.Adequate σ`・`Closure.Adequate σ`・`Frame.Adequate σ` を読む。所属と効果の上限の意味も同じ σ の下で読む。実行の Step は同じ σ を固定し、At の snapshot の一致を検査する。check と run の環境の一致、実体・副次的な通信の隔離、情報フロー制御は、この証明の保証に含まれない。\n"
+        },
+        {
+          "before": "`ScopeLegacyContracts` は旧純粋 API の絶対パスの入口と、相対/home 入力・記号付き上限の拒否を定める。At はパターンの root と対象の cwd/home を別に解決し、同じ保持絶対対象を射影する。At と旧純粋チェックの空の効果を照合する。\n",
+          "after": "`ScopeLegacyContracts` はAt を使わない純粋な検査の API（`Scope.checkPath`・`Scope.checkPathIn`） の絶対パスの入口と、相対/home 入力・記号付き上限の拒否を定める。At はパターンの root と対象の cwd/home を別に解決し、同じ保持絶対対象を射影する。At と、At を使わない純粋な検査（`Scope.checkPath`・`Scope.checkPathIn`）の空の効果を照合する。\n"
+        }
+      ]
+    },
+    {
+      "file": "formal/Benitoite/Release/Refinement/ScopeLegacyContracts.lean",
+      "initial_sha256": "926fd2c580f4d2b3f7d714d1008f8214b5bddc3fed33454b4a5d4ad8e2bf0cda",
+      "retained_patches": [
+        {
+          "before": "旧純粋 API",
+          "after": "Scope.checkPath・Scope.checkPathIn"
+        }
+      ]
+    }
+  ],
+  "b_work_comment_edits": [
+    {
+      "file": "formal/Benitoite/Release/Refinement/ScopeLegacyContracts.lean",
+      "initial_sha256": "926fd2c580f4d2b3f7d714d1008f8214b5bddc3fed33454b4a5d4ad8e2bf0cda",
+      "retained_patches": [
+        {
+          "before": "旧純粋 API",
+          "after": "Scope.checkPath・Scope.checkPathIn"
+        }
+      ]
+    },
+    {
+      "file": "formal/Benitoite/Release/Refinement/ModelTargetsApplications.lean",
+      "retained_patches": [
+        {
+          "before": "各旧操作に",
+          "after": "File.readText・print・exit に"
+        },
+        {
+          "before": "旧三操作の実引数",
+          "after": "File.readText・print・exit の実引数"
+        },
+        {
+          "before": "旧読取りは裸の",
+          "after": "File.readText は裸の"
+        }
+      ]
+    },
+    {
+      "file": "formal/Benitoite/Release/Refinement/ScopedTargetInputs.lean",
+      "retained_patches": [
+        {
+          "before": "暫定観測",
+          "after": "内部の七 String 観測"
+        }
+      ]
+    },
+    {
+      "file": "formal/Benitoite/Release/Refinement/TargetTable.lean",
+      "retained_patches": [
+        {
+          "before": "旧表の型",
+          "after": "Release.TargetTable の型"
+        }
+      ]
+    }
+  ]
+}

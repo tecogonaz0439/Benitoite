@@ -1,0 +1,87 @@
+[
+  {
+    "line": 100,
+    "before": "- 形式化した組み込みの署名 `PrimSig` は、IO を行う項目の形 `shape`（`Scope.Signature.IOShape`。対象なし `untargeted`、Top の対象あり `topTargeted k`、単一の対象 `single k p`。既定は対象なし）を持つ。単一の対象の形の項目は、範囲の変数を種類 k の一つだけ持ち、効果は `{L[rvar 0]}`、引数の位置 p の型は範囲付きの値型 `O[rvar 0]` である。形は IO の項目の形の検査と観測の条件だけが読み（[07-04「形式化で仮定するもの」](../07-quality/07-04-formal-semantics.md#形式化で仮定するもの)）、型付けと実行の規則は読まない。\n",
+    "after": "- 形式化した組み込みの署名 `PrimSig` は、IO を行う項目の形 `shape`（`Scope.Signature.IOShape`。対象なし `untargeted`、旧 Top の対象あり `topTargeted k`、単一の対象 `single k p`。既定は対象なし）を持つ。単一の対象の形の項目は、範囲の変数を種類 k の一つだけ持ち、効果は `{L[rvar 0]}`、引数の位置 p の型は範囲付きの値型 `O[rvar 0]` である。形は IO の項目の形の検査と観測の条件だけが読み（[07-04「形式化で仮定するもの」](../07-quality/07-04-formal-semantics.md#形式化で仮定するもの)）、型付けと実行の規則は読まない。\n"
+  },
+  {
+    "line": 251,
+    "before": "【決定】Release の `usefulFuelWithView`・`usefulWithView`・`checkMatchWithView`・`irrefutableWithView` は、入れ子を含む全再帰で同じ view を使う。覆っている選択肢の説明と重なりの判定も同じ view を渡す。任意の view について補題 U、現在の値に対する網羅性・必ず照合するパターン・選ばれない選択肢の健全性を証明し、`SlotsOk` のもとで実行時の非選択へ結び付けている。`CtorsComplete` の前提と健全性の結論は維持する。燃料切れと内部の不整合では従来どおり有用と答える。view を引数に取らない入口は閉じた view を渡すラッパーであり、結果全体の一致を示している。表層の宣言表とソース照合への接続は、後述の「型の情報を付けた表層の構文と型付け」に記す。理由: 現在の値についての健全性を維持したまま、追加する形の判定を検査するためである（[型検査器](../02-impl/02-05-typechecker.md)の「本体の後の検査」）。\n",
+    "after": "【決定】Release の `usefulFuelWithView`・`usefulWithView`・`checkMatchWithView`・`irrefutableWithView` は、入れ子を含む全再帰で同じ view を使う。覆っている選択肢の説明と重なりの判定も同じ view を渡す。任意の view について補題 U、現在の値に対する網羅性・必ず照合するパターン・選ばれない選択肢の健全性を証明し、`SlotsOk` のもとで実行時の非選択へ結び付けている。`CtorsComplete` の前提と健全性の結論は維持する。燃料切れと内部の不整合では従来どおり有用と答える。旧入口は閉じた view を渡すラッパーであり、結果全体の一致を示している。表層の宣言表とソース照合への接続は、後述の「型の情報を付けた表層の構文と型付け」に記す。理由: 現在の値についての健全性を維持したまま、追加する形の判定を検査するためである（[型検査器](../02-impl/02-05-typechecker.md)の「本体の後の検査」）。\n"
+  },
+  {
+    "line": 344,
+    "before": "- 【決定】形式化した Release では、IO の事象は観測を持ち（`Event.io b ws o obs`）、IO の応答の関係は応答とともに観測を与え（`B.ioResponse b ts es ws o obs`）、応答を選ぶ関数 `Oracle` は応答と観測の組を返す。観測は、その応答で作用した対象（`Scope.Domain.Target`）の有限列であり、順と重複は意味を持たない。E-IO・E-IOErr・E-Exit は、応答の関係が許す応答と観測の組で遷移し、事象に観測を記録する。観測は状態に入らないので、遷移の先の状態は応答だけで決まる。理由: リダイレクトを追従するHttp.send の操作のように、一つの応答で最初の引数の対象と異なる対象へ作用する操作を、事象が作用した対象とともに表せるようにするためである。応答の関係と仮定の欄は、観測が引数の対象や範囲と一致することを求めない。仮定の欄 `io_kind`・`io_typed`・`io_exists` は観測を量化し、観測を捨てた関係で読むと以前の欄と同値である（[07-04「形式化で仮定するもの」](../07-quality/07-04-formal-semantics.md#形式化で仮定するもの)）。\n",
+    "after": "- 【決定】形式化した Release では、IO の事象は観測を持ち（`Event.io b ws o obs`）、IO の応答の関係は応答とともに観測を与え（`B.ioResponse b ts es ws o obs`）、応答を選ぶ関数 `Oracle` は応答と観測の組を返す。観測は、その応答で作用した対象（`Scope.Domain.Target`）の有限列であり、順と重複は意味を持たない。E-IO・E-IOErr・E-Exit は、応答の関係が許す応答と観測の組で遷移し、事象に観測を記録する。観測は状態に入らないので、遷移の先の状態は応答だけで決まる。理由: リダイレクトを追従する旧の HTTP の操作のように、一つの応答で最初の引数の対象と異なる対象へ作用する操作を、事象が作用した対象とともに表せるようにするためである。応答の関係と仮定の欄は、観測が引数の対象や範囲と一致することを求めない。仮定の欄 `io_kind`・`io_typed`・`io_exists` は観測を量化し、観測を捨てた関係で読むと以前の欄と同値である（[07-04「形式化で仮定するもの」](../07-quality/07-04-formal-semantics.md#形式化で仮定するもの)）。\n"
+  },
+  {
+    "line": 482,
+    "before": "交換の表層タグは `{\"block\":{\"body\":…}}` とし、corpus 13だけで受理する。以前の corpusとsidecarでは、深い位置のblockも拒否する。Rustの解析・型検査・脱糖との接続と、到達不能文E0439の検査は、このLeanの規則の保証に含めない。 Rustの本番経路も既存Blockへ接続し、同じ表層タグを書き出す。最後の値・return・構築器のガードを含む2入力10定義を六入口で局所比較し、そのうち3定義は手書きの表層と期待コアにも一致する。到達不能文・捕捉拒否・通常ReferenceのState・ガードと説明の評価順はRustの公開の検査と実行で別に照合する。\n",
+    "after": "交換の表層タグは `{\"block\":{\"body\":…}}` とし、corpus 13だけで受理する。旧corpusとsidecarでは、深い位置のblockも拒否する。Rustの解析・型検査・脱糖との接続と、到達不能文E0439の検査は、このLeanの規則の保証に含めない。 Rustの本番経路も既存Blockへ接続し、同じ表層タグを書き出す。最後の値・return・構築器のガードを含む2入力10定義を六入口で局所比較し、そのうち3定義は手書きの表層と期待コアにも一致する。到達不能文・捕捉拒否・通常ReferenceのState・ガードと説明の評価順はRustの公開の検査と実行で別に照合する。\n"
+  },
+  {
+    "line": 527,
+    "before": "record 更新と try の内部照合の checker は、宣言表の view によらず明示的に `closedView` を使う。getter はコアの照合を直接生成するため、view 付きのソース条件を通さず、現在の単一構成子についての `Exhaustive` を証明する。`Surface.Program` は `functionViews : FunName → CoverageView` と `methodViews : ImplName → MethName → CoverageView` を持ち、どちらも既定は閉じた view である。`declarationsFor view` は共有する宣言表の view だけを替える。関数の型付けと checker は関数名で、実装メソッドは実装名とメソッド名で指定を選ぶ。ラムダ・ガードを含む内側の検査にも同じ指定を渡す。`declarations` は閉じた互換入口として保つ。型保存の補題は任意の view に対して成り立つ。`desugar_typed` のシグネチャの外形と、脱糖後のコアの整形式・型付け・エフェクトの整合という結論は変わらない。ただし、前提の `p.WellTyped` は、ソース照合について従来の `Exhaustive` に代えて `ViewExhaustive` を要求する。Release の表層の型付け関係との同値性は主張しない。理由: 外部のソース照合への追加条件と、現在の値を扱う内部照合の条件を区別し、型保存の結論を維持するためである。\n",
+    "after": "record 更新と try の内部照合の checker は、宣言表の view によらず明示的に `closedView` を使う。getter はコアの照合を直接生成するため、view 付きのソース条件を通さず、現在の単一構成子についての `Exhaustive` を証明する。`Surface.Program` は `functionViews : FunName → CoverageView` と `methodViews : ImplName → MethName → CoverageView` を持ち、どちらも既定は閉じた view である。`declarationsFor view` は共有する宣言表の view だけを替える。関数の型付けと checker は関数名で、実装メソッドは実装名とメソッド名で指定を選ぶ。ラムダ・ガードを含む内側の検査にも同じ指定を渡す。`declarations` は閉じた互換入口として保つ。型保存の補題は任意の view に対して成り立つ。`desugar_typed` のシグネチャの外形と、脱糖後のコアの整形式・型付け・エフェクトの整合という結論は変わらない。ただし、前提の `p.WellTyped` は、ソース照合について従来の `Exhaustive` に代えて `ViewExhaustive` を要求する。旧い表層の型付け関係との同値性は主張しない。理由: 外部のソース照合への追加条件と、現在の値を扱う内部照合の条件を区別し、型保存の結論を維持するためである。\n"
+  },
+  {
+    "line": 729,
+    "before": "交換用の表層はcorpus 14とsidecar 6で `formatted: {ty, spec}` を持つ。specの七欄 `kind`・`align`・`sign`・`alternate`・`zero`・`width`・`precision` はすべて必須であり、幅と精度のnullが省略を表す。種類の文字列はdefault/d/b/o/x/X/f/s/c、寄せはdefault/left/right/center、符号はdefault/plusである。読み込みでは妥当性と型との適合、式と変換頭の個数、頭の直接性を検査し、頭の型と純粋性は既存の表層検査で検査する。書式なしの `stringExpr`・`converted` は従来の形を保つ。以前の版の深い位置へ新構成を混ぜた場合も再生成を求めて拒否する。JSONの変換と内部頭の宣言照合は、主定理の対象に含めない。\n",
+    "after": "交換用の表層はcorpus 14とsidecar 6で `formatted: {ty, spec}` を持つ。specの七欄 `kind`・`align`・`sign`・`alternate`・`zero`・`width`・`precision` はすべて必須であり、幅と精度のnullが省略を表す。種類の文字列はdefault/d/b/o/x/X/f/s/c、寄せはdefault/left/right/center、符号はdefault/plusである。読み込みでは妥当性と型との適合、式と変換頭の個数、頭の直接性を検査し、頭の型と純粋性は既存の表層検査で検査する。書式なしの `stringExpr`・`converted` は従来の形を保つ。旧版の深い位置へ新構成を混ぜた場合も再生成を求めて拒否する。JSONの変換と内部頭の宣言照合は、主定理の対象に含めない。\n"
+  },
+  {
+    "line": 2152,
+    "before": "| `reserve limits s item lifetime` | lifetime が指す現本体の保持数を一項増やす候補を作る。本体・全体の peak を、それぞれ更新前の peak と更新前の同時保持数 + 1 の最大値にする。どちらかの保持上限を超えれば s のまま停止し、両方が上限以下なら候補を採用する |\n",
+    "after": "| `reserve limits s item lifetime` | lifetime が指す現本体の保持数を一項増やす候補を作る。本体・全体の peak を、それぞれ旧 peak と旧同時保持数 + 1 の最大値にする。どちらかの保持上限を超えれば s のまま停止し、両方が上限以下なら候補を採用する |\n"
+  },
+  {
+    "line": 2164,
+    "before": "| `charge_accepted`・`reserve_accepted` | 成功時だけ両範囲の操作数が一回、または同時保持数が一項増える。確保時の peak は更新前の peak と追加後の同時保持数の最大値となる |\n",
+    "after": "| `charge_accepted`・`reserve_accepted` | 成功時だけ両範囲の操作数が一回、または同時保持数が一項増える。確保時の peak は旧 peak と追加後の同時保持数の最大値となる |\n"
+  },
+  {
+    "line": 2349,
+    "before": "`SuccessAt key work post` は `∀ limits ctx, ctx.next = key → ∀ value, (work limits ctx).1 = .ok value → post value` とし、内部の正常値の保存の契約に使う。解決済みの標準呼び出しの同定表を評価と解析で同じキーから読むため、開始キーの一致が必要である。公開入口は入力のキーから解析を開始し、空または忘却済みの Range の記録を用いるので、この二つの内部条件を構成できる。公開の正常値の定理の言明は変えない。帰納法は予算付きの定義を直接辿り、同じ深さの変更前の区間解析との等式を用いない。開始キーの対応は番号走査の完走を仮定するものではない。警告の位置の証明では前述の Traversal を別に使う。\n",
+    "after": "`SuccessAt key work post` は `∀ limits ctx, ctx.next = key → ∀ value, (work limits ctx).1 = .ok value → post value` とし、内部の正常値の保存の契約に使う。解決済みの標準呼び出しの同定表を評価と解析で同じキーから読むため、開始キーの一致が必要である。公開入口は入力のキーから解析を開始し、空または忘却済みの Range の記録を用いるので、この二つの内部条件を構成できる。公開の正常値の定理の言明は変えない。帰納法は予算付きの定義を直接辿り、同じ深さの旧解析との等式を用いない。開始キーの対応は番号走査の完走を仮定するものではない。警告の位置の証明では前述の Traversal を別に使う。\n"
+  },
+  {
+    "line": 2618,
+    "before": "`Scope` の入力は、解析を済ませた対象とパターンである。その型・所属・整形式性の述語は、「操作の対象の範囲の領域と被覆」の `Benitoite.Scope.Domain` の定義をそのまま使い、`Checked.Scope` では定義し直さない。ホストの対象はホスト名か IP アドレスであり、ホストのパターンはホスト名のパターン（exact・one・many）か IP のパターン（完全一致・CIDR）である。ホスト名は小文字化と区切りの解析を済ませた通常のラベル順の `Word = List String`、パスは根からの要素順の `Word` とする。理由: Checked.Scope と範囲付きの型が同じ対象の領域を使い、同じ条件を二つの定義で保たないためである。妥当性は次のように定める。\n",
+    "after": "`Scope` の入力は、解析を済ませた対象とパターンである。その型・所属・整形式性の述語は、「操作の対象の範囲の領域と被覆」の `Benitoite.Scope.Domain` の定義をそのまま使い、`Checked.Scope` では定義し直さない。ホストの対象はホスト名か IP アドレスであり、ホストのパターンはホスト名のパターン（exact・one・many）か IP のパターン（完全一致・CIDR）である。ホスト名は小文字化と区切りの解析を済ませた通常のラベル順の `Word = List String`、パスは根からの要素順の `Word` とする。理由: 旧の Scope と範囲付きの型が同じ対象の領域を使い、同じ条件を二つの定義で保たないためである。妥当性は次のように定める。\n"
+  },
+  {
+    "line": 2904,
+    "before": "| `CheckedPath.hasTypeV`・`CheckedEndpoint.hasTypeV`（と被覆の形）・`makePath_checkRun`・`makeEndpoint_checkRun` | Checked.Scope の小モデル（「検査済みの値の独立した小モデル」）との対応。Checked.Scope の検査済みの値の対象は、新しい値の形の検査済みの対象の値として、パターンの範囲（とそれを覆う範囲）を添字に持つ `Scope.PathIn[R]`・`Http.RequestIn[R]` を持つ。Checked.Scope の検査が成功する入力（IP アドレスと CIDR を含む）では、Release の実例の表の検査の δ は、具体化した範囲 r が対象を含むときだけ同じ対象の `Ok` を返す |\n",
+    "after": "| `CheckedPath.hasTypeV`・`CheckedEndpoint.hasTypeV`（と被覆の形）・`makePath_checkRun`・`makeEndpoint_checkRun` | 旧 Scope の小モデル（「検査済みの値の独立した小モデル」）との対応。旧の検査済みの値の対象は、新しい値の形の検査済みの対象の値として、パターンの範囲（とそれを覆う範囲）を添字に持つ `Scope.PathIn[R]`・`Http.RequestIn[R]` を持つ。旧の検査が成功する入力（IP アドレスと CIDR を含む）では、Release の実例の表の検査の δ は、具体化した範囲 r が対象を含むときだけ同じ対象の `Ok` を返す |\n"
+  },
+  {
+    "line": 2906,
+    "before": "`Surface.ScopeSoundExamples` の独立例は、本番の実例の表の δ を規則にした表で次を確かめる。`/data/**` のリテラルによる検査・`case Result.Ok`・`Scope.pathInValue` の本体が受理され、接続定理の前提（出現・記録の添字・規則）が満たせること。検査の成功値と射影の引数が `/data/**` に属し、射影の引数がコアの入力の型 `Scope.PathIn[/data/**]` を持つこと。検査の呼び出しがコアで同じ範囲の列の E-Prim の値へ進むこと。CIDR `10.0.0.0/8` の中と外の IPv4 アドレスで、Checked.Scope の検査の成否と、本番の実例の表の要求の検査の δ の成否が一致すること。局所の文字列のパターン（由来の未知）と上限 0 の解析（予算の超過）では狭い範囲の列を拒否して Top だけを受理し、上限 0 では記録の必須の判定が全て Top になること。必須の判定が区間解析の成分と予算を読まないこと（`Analyses.required_range_independent`）。例の解析器・ホストのパターンの解析・要求の対象・出現の解決は例のためのものであり、処理系の解析器・名前解決との一致の証拠ではない。\n",
+    "after": "`Surface.ScopeSoundExamples` の独立例は、本番の実例の表の δ を規則にした表で次を確かめる。`/data/**` のリテラルによる検査・`case Result.Ok`・`Scope.pathInValue` の本体が受理され、接続定理の前提（出現・記録の添字・規則）が満たせること。検査の成功値と射影の引数が `/data/**` に属し、射影の引数がコアの入力の型 `Scope.PathIn[/data/**]` を持つこと。検査の呼び出しがコアで同じ範囲の列の E-Prim の値へ進むこと。CIDR `10.0.0.0/8` の中と外の IPv4 アドレスで、旧 Scope の検査の成否と、本番の実例の表の要求の検査の δ の成否が一致すること。局所の文字列のパターン（由来の未知）と上限 0 の解析（予算の超過）では狭い範囲の列を拒否して Top だけを受理し、上限 0 では記録の必須の判定が全て Top になること。必須の判定が区間解析の成分と予算を読まないこと（`Analyses.required_range_independent`）。例の解析器・ホストのパターンの解析・要求の対象・出現の解決は例のためのものであり、処理系の解析器・名前解決との一致の証拠ではない。\n"
+  },
+  {
+    "line": 3096,
+    "before": "構築器の交換はcorpus 13で、表層builderBindのkind・restとbuilderOpのop・index・args・kindを明示する。indexはΓと同じ位置を表し、Δは宣言を辿って検査する際に作る。コアのbuilderLetはkind・body、builderOpはkind・op・ref・argsを持ち、refは専用のboundまたはlocである。旧refs/newRef/getRef/setRefの欄を新版に持ち込めない。corpus 12の構築器は版13での再生成を求めて拒否し、構築器を含まない以前の版は既存の範囲検査後に受理する。sidecarの対応は13→5、11/12→4、9/10→3、8→2である。\n",
+    "after": "構築器の交換はcorpus 13で、表層builderBindのkind・restとbuilderOpのop・index・args・kindを明示する。indexはΓと同じ位置を表し、Δは宣言を辿って検査する際に作る。コアのbuilderLetはkind・body、builderOpはkind・op・ref・argsを持ち、refは専用のboundまたはlocである。旧refs/newRef/getRef/setRefの欄を新版に持ち込めない。corpus 12の構築器は版13での再生成を求めて拒否し、構築器を含まない旧版は既存の範囲検査後に受理する。sidecarの対応は13→5、11/12→4、9/10→3、8→2である。\n"
+  },
+  {
+    "line": 3230,
+    "before": "共有する正常値と明示 return の近似は `Shared/Approximation.lean` にある。`ValueApprox` は bottom/幅を持つ整数の区間/Boolean の二フラグ/unknown、`ApproxValue` は証拠付き整数/Boolean/other である。`FlowApprox` は normal/returned/mayFail の三成分を持ち、`EvalResult` は normal/returned/failed を区別する。`NormalMem` と `ReturnedMem` は別々の成分の所属を読み、`ResultMem.failed` は mayFail=true を要求する。これらは共有層の定義であり、変更前の区間解析の正常値の定理を returned/failed の定理へ拡張するものではない。\n",
+    "after": "共有する正常値と明示 return の近似は `Shared/Approximation.lean` にある。`ValueApprox` は bottom/幅を持つ整数の区間/Boolean の二フラグ/unknown、`ApproxValue` は証拠付き整数/Boolean/other である。`FlowApprox` は normal/returned/mayFail の三成分を持ち、`EvalResult` は normal/returned/failed を区別する。`NormalMem` と `ReturnedMem` は別々の成分の所属を読み、`ResultMem.failed` は mayFail=true を要求する。これらは共有層の定義であり、旧解析の正常値の定理を returned/failed の定理へ拡張するものではない。\n"
+  },
+  {
+    "line": 3234,
+    "before": "`Interval.normalToShared_iff` は、具体値の型がInterval の正常域の型に一致するとき、共有表現への所属と`Interval.NormalMem` の同値を示す。`Interval.baseToShared` は、実解析の `BaseApprox` から、七整数では同じ幅の `rangeKind`、Boolean では二フラグを読む。それ以外は `other && nonIntegerOther` が true のとき unknown、false のとき bottom とし、正常値なしを保つ。`baseToShared_mem` は `BaseApprox.Contains` からの所属保存を示す。`BudgetAnalysis.Report.sharedFlow` は、この写しを実際の `Report.approx` へ適用して normal とし、明示引数の returned と `approx.mayFail` を保持する。`Report.shared_normal` は、同じ Report の `toAnalysisResult` の正常値を共有層へ移す。任意の命題から範囲を計算で取り出さず、警告・キー・停止・追跡は Report 側に残す。returned の推論と失敗の意味の健全性はこの写しの結論に含めない。\n",
+    "after": "`Interval.normalToShared_iff` は、具体値の型が旧正常域の型に一致するとき、共有表現への所属と旧 `NormalMem` の同値を示す。`Interval.baseToShared` は、実解析の `BaseApprox` から、七整数では同じ幅の `rangeKind`、Boolean では二フラグを読む。それ以外は `other && nonIntegerOther` が true のとき unknown、false のとき bottom とし、正常値なしを保つ。`baseToShared_mem` は `BaseApprox.Contains` からの所属保存を示す。`BudgetAnalysis.Report.sharedFlow` は、この写しを実際の `Report.approx` へ適用して normal とし、明示引数の returned と `approx.mayFail` を保持する。`Report.shared_normal` は、同じ Report の `toAnalysisResult` の正常値を共有層へ移す。任意の命題から範囲を計算で取り出さず、警告・キー・停止・追跡は Report 側に残す。returned の推論と失敗の意味の健全性はこの写しの結論に含めない。\n"
+  },
+  {
+    "line": 3645,
+    "before": "`CertificateKernel.check premise goal c`は`Certificate.check premise.conjuncts goal c`である。`implication_sound_at`は元の検査成功から任意のνの像の含意を、`implication_sound`は恒等置換の含意を示す。`check_sound`はpremiseとgoalの否定が同時に真でないことを示す。`Certificate.refutation_entails`は`Pred.ofConjuncts Φ`をpremiseにした検査成功から`Entails Φ goal`を作る。`Certificate.sound`は生のΦの検査成功を同じ導出へ移す。構造一致を使うCertificate.Entails の六場合は`Certificate.Legacy.success_preserved`で成功を保存する。\n",
+    "after": "`CertificateKernel.check premise goal c`は`Certificate.check premise.conjuncts goal c`である。`implication_sound_at`は元の検査成功から任意のνの像の含意を、`implication_sound`は恒等置換の含意を示す。`check_sound`はpremiseとgoalの否定が同時に真でないことを示す。`Certificate.refutation_entails`は`Pred.ofConjuncts Φ`をpremiseにした検査成功から`Entails Φ goal`を作る。`Certificate.sound`は生のΦの検査成功を同じ導出へ移す。構造一致を使う旧6場合は`Certificate.Legacy.success_preserved`で成功を保存する。\n"
+  },
+  {
+    "line": 4046,
+    "before": "`ScopeLegacyContracts.pathInput` は解析後の絶対パスだけを受け入れる。checkPath はその値を既存の makePath へ渡し、checkPathIn は静的上限も絶対形の場合だけ snapshot なしの checkAt へ渡す。relative/home の入力と based/secrets の上限は拒否する。At のパターンの root と対象の cwd/home は別の解決関数を使う。成功値は保持した同じ絶対対象を射影し、起点を再解決しない。At の C_CheckAt と`Scope.checkPathIn` の署名はいずれも純粋な効果を持つ。\n",
+    "after": "`ScopeLegacyContracts.pathInput` は解析後の絶対パスだけを受け入れる。checkPath はその値を既存の makePath へ渡し、checkPathIn は静的上限も絶対形の場合だけ snapshot なしの checkAt へ渡す。relative/home の入力と based/secrets の上限は拒否する。At のパターンの root と対象の cwd/home は別の解決関数を使う。成功値は保持した同じ絶対対象を射影し、起点を再解決しない。At の C_CheckAt と旧 checkPathIn の署名はいずれも純粋な効果を持つ。\n"
+  }
+]

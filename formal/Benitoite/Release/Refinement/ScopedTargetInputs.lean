@@ -158,7 +158,7 @@ theorem at_prepare {P B σ Eb q k μ kind name shape bases pattern input index d
     (C := []) (Γ := []) (Φ := []) (at_declared state code) failure
   exact ⟨reader.1,reader.2.1,(state.at_prepare_failure code failure).2⟩
 
-/-- 検査失敗には同じ生入力を添え、同じ σ の snapshot と暫定観測を保つ。 -/
+/-- 検査失敗には同じ生入力を添え、同じ σ の snapshot と内部の七 String 観測を保つ。 -/
 theorem at_error {P B σ Eb q k μ kind name shape bases pattern input index snapshot pat target bound d}
     (state : StateTyE P B σ Eb (.run q k μ))
     (code : q.code = .checkAt kind name shape bases pattern input index)
