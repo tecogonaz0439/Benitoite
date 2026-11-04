@@ -1,0 +1,60 @@
+{
+  "exit": 0,
+  "start_utc": "2026-11-04T15:19:29.895941+00:00",
+  "end_utc": "2026-11-04T15:19:31.107393+00:00",
+  "seconds": 1.211383042,
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-M",
+    "12288",
+    "--root",
+    "<tmp>/baseline",
+    "<tmp>/baseline/Benitoite/Release/Refinement/AtPrepare.lean"
+  ],
+  "original_source": {
+    "bytes": 22303,
+    "sha256": "816058a2afd191dcd51fa9b6812a042f276c3b7c7e149da09e0ef76d1612b772"
+  },
+  "restored_input": {
+    "bytes": 22611,
+    "sha256": "884c7e1933e58dc765adbb8fec56c331744ce5f6833f61a723ececef47673348"
+  },
+  "raw": {
+    "bytes": 16192,
+    "sha256": "843c8676643c7ad447ca7ab2ed9c68e0994722802f81048789fe98985d17fed1"
+  },
+  "baseline_declarations": 168,
+  "module_declarations": 183,
+  "added_in_existing_module": [
+    "Benitoite.Release.Refinement.AtPrepare.eq_1",
+    "Benitoite.Release.Refinement.AtPrepare.eq_2",
+    "Benitoite.Release.Refinement.AtPrepared.eq_1",
+    "Benitoite.Release.Refinement.AtPrepared.of_path_bases",
+    "_private.Benitoite.Release.Refinement.AtPrepare.0.Benitoite.Release.Refinement.AtPrepare.match_3.eq_1",
+    "_private.Benitoite.Release.Refinement.AtPrepare.0.Benitoite.Release.Refinement.AtPrepare.match_3.eq_2",
+    "_private.Benitoite.Release.Refinement.AtPrepare.0.Benitoite.Release.Refinement.AtPrepare.match_3.splitter",
+    "_private.Benitoite.Release.Refinement.AtPrepare.0.Benitoite.Release.Refinement.finishPreparation.eq_1",
+    "_private.Benitoite.Release.Refinement.AtPrepare.0.Benitoite.Release.Refinement.finishPreparation.eq_2",
+    "_private.Benitoite.Release.Refinement.AtPrepare.0.Benitoite.Release.Refinement.finishPreparation.eq_3",
+    "_private.Benitoite.Release.Refinement.AtPrepare.0.Benitoite.Release.Refinement.finishPreparation.eq_4",
+    "_private.Benitoite.Release.Refinement.AtPrepare.0.Benitoite.Release.Refinement.finishPreparation.eq_5",
+    "_private.Benitoite.Release.Refinement.AtPrepare.0.Benitoite.Release.Refinement.finishPreparation.eq_6",
+    "_private.Benitoite.Release.Refinement.AtPrepare.0.Benitoite.Release.Refinement.finishPreparation.eq_7",
+    "_private.Benitoite.Release.Refinement.AtPrepare.0.Benitoite.Release.Refinement.prepareCore.eq_1"
+  ],
+  "added_declarations": 57,
+  "baseline_targets": {
+    "bytes": 13504,
+    "sha256": "0dca168351ef225b662fc42fd1fc14086a637be0eef66ca2a242427957f5ceb2"
+  },
+  "added_targets": {
+    "bytes": 3815,
+    "sha256": "f8dc01f057bdd1b9c384abfb01554a0264070ba9464175b9f5f24994a3bd39b7"
+  },
+  "script": {
+    "bytes": 3783,
+    "sha256": "6cd2d5172f5ae35fb8887fdb4901c5be3b2a02dda28a1682a072e83a3ef77ee6"
+  }
+}

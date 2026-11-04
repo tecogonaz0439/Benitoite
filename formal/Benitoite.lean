@@ -807,3 +807,5 @@ import Benitoite.Release.Refinement.ScopeResponse
 import Benitoite.Release.Refinement.ScopeConstraintInstances
 import Benitoite.Release.Refinement.ScopedIOResponse
 import Benitoite.Release.Refinement.ScopedIOExamples
+import Benitoite.Release.Refinement.Model
+import Benitoite.Release.Refinement.ModelTargetsExamples
