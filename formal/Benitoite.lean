@@ -809,3 +809,5 @@ import Benitoite.Release.Refinement.ScopedIOResponse
 import Benitoite.Release.Refinement.ScopedIOExamples
 import Benitoite.Release.Refinement.Model
 import Benitoite.Release.Refinement.ModelTargetsExamples
+import Benitoite.Release.Refinement.ModelTargets
+import Benitoite.Release.Refinement.ModelTargetsApplications

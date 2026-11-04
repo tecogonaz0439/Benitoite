@@ -3337,6 +3337,16 @@ Lean の捕捉を持つ実行関係の `Step.E_Lam` は、`q.view = .app f ws`�
 
 `Model.builtins` は Reference.get・Reference.set・内部名 Example.pathBases の三署名だけを持つ。参照の型パラメータは値 kind の空制約一つ、発行は型・行・範囲・値の引数を持たない。sat は共通の有限宣言から作る ModelConstraints.sat を使い、開いた型の非空制約も検査する。効果表は State の空列と Process.Environment の発行一行である。`Model.substitutionAssumptions` は同じ表について八つの保存則を構成する。`Model.scopeConditions P` は任意の P について二十五条件を証明し、sig_scoped にデータ宣言の条件を要求しない。pure・io・exit の署名は lookup の全三場合で排除する。IO 応答の関係は空であり、io_kind はこの空から従う。δ は未定義であるが、その未定義から応答の存在を導かない。外部応答の三条件と資源の解放条件は、この出力に含めない。
 
+`ModelTargets.builtins` は、Reference.get/set、print、exit、File.readText、Scope.checkPathIn/pathInValue/widenPathIn、File.readTextIn/readBytesIn/writeTextIn/writeBytesIn/appendTextIn/appendBytesIn、内部の起点発行の十五署名を持つ。`sig_cases` は成功する全 lookup を名前と署名の等号へ戻す。`sig_scoped` と `sourceTelRows` は、同じ P の `HasFile P` から全十五署名の形成と依存列の行支持を供給する。`substitutionAssumptions` は共通の有限宣言と骨格による sat、各署名の型引数の個数による admits を使い、型・行・値の元の量化を保った八保存則を構成する。
+
+`ModelTargets.pure_response` は、HasFile P と同じ表の全 BuiltinArgs から、三つの純粋操作の実 δ、非 exit、結果の型、Ground、全有効な環境での AdequateResult を構成する。`pure_outcome` は決定的な同じ δ の全実結果にこの契約を渡し、`normal_facts` は同じ正常値の項観測から結果型の篩の事実を返す。絶対形のチェックは動的条件と静的上限を検査する。相対形・home 形と解析失敗は明示の Result.Error であり、Top の上限でも暗黙に起点を解決しない。射影は保持した絶対対象を返し、拡大は同じ値を返す。
+
+`ModelTargets.io_typed`・`io_kind`・`io_exists` は、範囲付きの六 IO と File.readText・print・exit の全入力と同じ関係の全応答を扱う。範囲付き IO は保持パス一つを観測し、同じ Result の Ok・Error と実行時エラーを持つ。File.readText は String 入力、範囲引数なし、Top の File.Read と topTargeted path の形を持ち、引数を絶対形として解析できたときだけそのパス一つを観測する。相対形・home 形・解析の失敗では観測は空である。print と exit は対象なしであり、exit は終了応答を持ち val を返さない。発行は IO 応答に含めず、同じ Process.Environment のリストへの所属を `pathBases_shape` から供給する。
+
+`ModelTargets.targetAgreement` は全応答について三形の対象条件を証明する。`obs_allowed` は実表の ShapeOk と sig_scoped の NamesWF、元の BuiltinArgs、全実引数の同じ σ への適格性から、全観測が同じ σ の実効果の上限に属することを示す。`scopeConditions P hp` は HasFile P の下で二十五条件を出力する。File.Handle は型付きの値を持つ通常資源であり、Scope.PathIn は資源に分類しない。外部応答の三条件と通常資源の release_exists は出力に含めず、Core の構成では別の入力とする。
+
+`ModelTargetsApplications` は、同じ有限プログラムと任意のストア・環境で、File.readTextIn の非 Top と Top の呼出しの全前提を供給する。File.readText・print・exit にも実引数から全 BuiltinArgs を構成し、同じ応答の存在・型・適格性・種類・観測の許容を結ぶ。File.readText の Top の形と空でない観測、exit の val の不在、純粋操作の絶対形の成功・相対形の Error・同じ値の拡大と射影を確かめる。
+
 `CanonicalCells` の `inv_loc` は、任意の Γ・Φ の下で、同じ場所の ref 又は lazy の lookup、内容型の Declared、元の参照型又は Lazy 型からの `LeQ` を返す。`StoreOk.ref_cell`・`lazy_cell`・`cont_cell`・`builder_cell` は、同じ `StoreOk P B σ Ψ μ` と Ψ の場所の型を前提にする。ref は実際の val セル・内容型の正規形での型付け・Adequate を返す。lazy は thunk の `ClosureTy P B (hideBuilders Ψ) [] none q a Eff.empty` と Adequate、又は done の型付けと Adequate を返す。cont は保存した `EndsWithHandle`・`ContTy`、又は used を返す。builder は同じ種類の `BuilderCellOk` とセルの Adequate を返す。`reference_cell_inputs` は `canonical_ref` の内容型の正規形の等号を使い、同じ実セルの内容を到達型の正規形へ合わせる。Lazy の内容の移送は等号へ強めず `LeQ` のまま保持する。
 
 
