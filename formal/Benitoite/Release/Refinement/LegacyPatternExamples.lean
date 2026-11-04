@@ -109,13 +109,13 @@ def atPattern : Pat := .con "Scope.ScopeError.At" (List.replicate 7 .var)
 
 theorem at_seven_bindings (detail : AtError) :
     matchVal atPattern (.atError detail) = some detail.values := by
-  simp [atPattern,AtError.values,AtError.textFields,matchVal,matchList]
+  simp [atPattern,Detail.values,Detail.textFields,matchVal,matchList]
 
 theorem at_old_correspondence (detail : AtError) :
     Benitoite.Release.Pat.matchVal atPattern (legacyPatternVal (.atError detail)) =
       some (detail.textFields.map (fun s => Benitoite.Release.Val.const (.string s))) := by
   rw [legacy_matchVal,at_seven_bindings,Option.map_some]
-  simp [AtError.values,legacyPatternVals_eq_map,List.map_map,Function.comp_def,
+  simp [Detail.values,legacyPatternVals_eq_map,List.map_map,Function.comp_def,
     legacyPatternVal,legacyPatternConst]
 
 theorem at_wrong_name (detail : AtError) :
@@ -124,7 +124,7 @@ theorem at_wrong_name (detail : AtError) :
 
 theorem at_wrong_arity (detail : AtError) :
     matchVal (.con "Scope.ScopeError.At" (List.replicate 6 .var)) (.atError detail) = none := by
-  simp [AtError.values,AtError.textFields,matchVal,matchList]
+  simp [Detail.values,Detail.textFields,matchVal,matchList]
 
 def rangeOpaque : Benitoite.Release.Ty := .opaque "o" (.rvar 0)
 

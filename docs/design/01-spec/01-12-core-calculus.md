@@ -3208,6 +3208,25 @@ structure SignatureInstance (P : Program) (C : TypeCtx) (Γ : Ctx)
 
 `RangeExpr` は閉じた絶対範囲、`based base pattern`、secrets の三構成子を持つ。基準名は root/cwd/home/work/tmp である。`PathEnv` は root/cwd/home と任意の work/tmp、未指定と空を区別する任意の秘密パターン列を保持する。被覆は、絶対範囲どうし、同じ基準名の範囲どうし、secrets どうしをそれぞれ比較し、RangeExpr の Top は RangeExpr のすべての式を覆う。異なる種類の記号付き範囲を実行の σ で具体化してから静的に比較する規則はない。`RangeIx` は fixed/rvar を区別する。固定範囲の Top は rvar を覆わず、範囲変数どうしは同じ番号のときだけ覆う。短い具体化の列は未解決の変数を残す。
 
+`Detail Raw` は元の二入力を Raw として保存し、解析済みの二入力を Option で区別する。解決後の原子列と対象、両起点、失敗種別を同じ記録に持つ。`Val.atError` の引数は `Detail Val`、`AtError` はその略記である。保存した元入力は不活性であり、値の閉じる操作・改名・型置換は記録を保持する。`Val.Adequate` と閉性は記録の元入力へ再帰しない。内部の観測は、失敗の種別・解析済み入力・解決結果・両起点を七つの String に写し、元入力を取り出さない。
+
+```lean
+structure Detail (Raw : Type) where
+  failure : AtFailure
+  originalPattern : Raw
+  originalTarget : Raw
+  parsedPattern : Option RangeExpr
+  parsedTarget : Option TargetInput
+  resolvedPatterns : Option (List Scope.Domain.Range)
+  resolvedTarget : Option Scope.Domain.Target
+  patternBase : Option PathBase
+  targetBase : Option PathBase
+
+abbrev AtError := Detail Val
+```
+
+`AtError.save` は、閉じた元入力二つ、snapshot、解析済み入力二つと失敗種別から九欄を構成する。解決結果は解析済み欄の Option.bind で求め、解析前の none と解決済み空列 some [] を区別する。`AtPrepare` はどの準備失敗でも同じ `closeVal cap pattern/input` を保持する。`checkAt` の解析済みの失敗は `AtCheckError` に表し、`AtError.fromCheck` が同じ準備の元入力と解析値を添えて実行時のエラーを構成する。元入力を仮の Top・空パスや reprStr に置き換えず、解決した原子列を切り詰めない。`AtPrepare.error_saved` は全準備失敗でこの保存形を返し、`AtError.save_exact` は九欄の等号を示す。`Detail.originals_unobserved` は元入力を任意の二値へ置き換えても、七欄、値列、項観測と任意パターンの束縛列の項観測が変わらないことを示す。変数パターンがエラー全体を束縛した場合の、保存した元入力を含む構造等号は結論しない。
+
 共有する正常値と明示 return の近似は `Shared/Approximation.lean` にある。`ValueApprox` は bottom/幅を持つ整数の区間/Boolean の二フラグ/unknown、`ApproxValue` は証拠付き整数/Boolean/other である。`FlowApprox` は normal/returned/mayFail の三成分を持ち、`EvalResult` は normal/returned/failed を区別する。`NormalMem` と `ReturnedMem` は別々の成分の所属を読み、`ResultMem.failed` は mayFail=true を要求する。これらは共有層の定義であり、旧解析の正常値の定理を returned/failed の定理へ拡張するものではない。
 
 `ValueApprox.possible` は、bottom、整数の bottom、Boolean の両フラグが false の三表現で false を返し、それ以外では true を返す。`possible_iff` は true と所属する値の存在の同値、`not_possible_iff` は false と全値の非所属の同値を示す。`ValueApprox.WF` は、整数の非空閉区間の端点について、その幅の値域と端点の順序を要求する。他の形と整数の bottom は整形式である。区間が保持する証拠からすべての近似の WF が成り立ち（`ValueApprox.wf`）、normal と returned の WF を束ねる `FlowApprox.WF` もすべてのフローで成り立つ。空の三表現を一つへそろえる条件は課さない。normal が空でも returned や mayFail は残りうる。
@@ -3827,7 +3846,7 @@ PathBases と At の追加の遷移は次の五規則である。AtPrepared の�
       (∀ ρ, snapshot = some ρ → ρ = σ) → checkAt snapshot kind pat target bound = .error detail →
       Step P B σ (.run q k μ) none
         (.run (Closure.pure (.ret (.con shape.error
-          [.scoped name kind (.fixed bound), q.capture.closeTy shape.errorType] [.atError detail]))) k μ)
+          [.scoped name kind (.fixed bound), q.capture.closeTy shape.errorType] [.atError (AtError.fromCheck (closeVal q.capture pattern) (closeVal q.capture input) snapshot pat target detail)]))) k μ)
   | E_AtPrepareError {q : Closure} {kind name shape bases pattern input index detail k μ} :
       q.code = .checkAt kind name shape bases pattern input index →
       AtPrepare B q.capture kind name bases pattern input index = .error detail →
@@ -3977,6 +3996,14 @@ CaptureOk は None の位置に任意の Ground な値を保存できる。そ�
 `StoreReplyInputs` は Reference の4、Lazy の6、δ/IO の5、external・At・PathBases の8構成子に対応するソース入力の和である。`StateTyE.store_reply` はこれら23件について実際の Step・同じ σ/Eb の StateTyE と LocalStateInvariant を作る。全76遷移の保存の定理ではない。`CaptureReadBoundary.hidden_capture_reply_states` は、前述の同じ具体の適格な表と番号7/8の呼出しにこの入口を適用する。
 
 `NormalReplyExamples.concrete_normal_replies` は、同じ具体のプログラム・組み込みの表・有効な σ について、WellFormed・WellTyped・CoreAssumptions と、δ・IO・外部の正常応答・At の成功の四つの store_reply の適用を同時に構成する。δ と IO は Unit を返し、IO は対象のない一つの事象を返す。外部宣言は引数なし・結果 Unit の関数一つであり、受信検査後の Unit を返す。At は snapshot なしで絶対パス `/` が Top に属することを検査し、結果の成功の構成子に checkedAt を返す。各例は元の計算の型付けから実際の Step と行先の StateTyE・LocalStateInvariant を得る。表の条件を独立の仮定にしていない。これは具体のモデルの充足であり、処理系の全実表の充足の証明とは区別する。
+
+`PreparationTargets` の `PathEnv.Ready.resolve_required` は、同じ状態から range への有限の Reachable と Ready を受け、任意の到達可能な範囲の解決成功を返す。based は Required.base の束縛の証人、secrets は Required.secrets の isSome を使う。必須の root/cwd/home と任意の work/tmp、secrets の未指定と空を区別する。`Val.Source.adequate` と `Comp.Source.adequate` は全ソース構文と任意の σ で適格性を導く。`InitialPrepared.source_state_of_source` は Source からの適格性を、同じ初期状態・ExternalWF・元の型付け・終端注釈・閉性・BuiltinOnly とともに source_state へ渡す。Ready を実行中の全状態に課す条件にはしない。
+
+`PathBasesTargets` の `AtPrepared.current` は、捕捉環境と元の bases 値の適格性、同じ準備成功を受ける。snapshot の出どころを閉じた pathBases に限定し、closeVal_adequate から snapshot と実行 σ の一致を得る。CaptureOk はこの補題の前提ではない。`StateTyE.at_current` は同じ状態の適格な閉包からこの前提を供給する。発行の membership は、同じ CoreAssumptions の PathBasesShape.operation/membership から得る。
+
+`AtTargets` の `StateTyE.at_step` は WellFormed・WellTyped・CoreAssumptions・σ.Valid、同じ StateTyE と At の raw code を受け、実際の Step と同じ σ/Eb の StateTyE を持つ次状態の存在を返す。準備成功は入力の二経路と bases の二経路へ分け、同じ checkAt の ok/error を既存の保存葉へ渡す。準備失敗は同じエラーを返す。`AtPrepared.resolution` は対象の解決成功と、snapshot なしの両範囲の解決成功を返す。`AtPrepared.formed` と `checkAt.no_invalidPattern` は準備成功後の形式不正を排除する。型付き index の未具体化は StateTyE.at_index で排除し、検査時の静的上限への不所属とは区別する。
+
+`ScopeLegacyContracts.pathInput` は解析後の絶対パスだけを受け入れる。checkPath はその値を既存の makePath へ渡し、checkPathIn は静的上限も絶対形の場合だけ snapshot なしの checkAt へ渡す。relative/home の入力と based/secrets の上限は拒否する。At のパターンの root と対象の cwd/home は別の解決関数を使う。成功値は保持した同じ絶対対象を射影し、起点を再解決しない。At の C_CheckAt と旧 checkPathIn の署名はいずれも純粋な効果を持つ。
 
 `InitialPrepared.source_state` は、同じ固定した初期状態の InitialPrepared、Program.ExternalWF、空の捕捉・ストア・継続で型付くソース計算、終端の注釈、閉性・適格性・BuiltinOnly を受け、その初期状態の StateTy を構成する。StateTy の σ.Valid は InitialPrepared.ready の入力から取り出し、PathEnv.Ready と ExternalWF は入力をそのまま返す。表層からこれらの入力を作る合成と外部応答の存在は結論に含めない。`prepared_unit_source` は空の外部宣言を持つ前述の具体表で、任意の有効な σ の下の return Unit について準備と元の型付けを同時に構成する。
 

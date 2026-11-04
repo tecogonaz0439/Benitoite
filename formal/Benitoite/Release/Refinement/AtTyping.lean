@@ -6,7 +6,7 @@ import Benitoite.Release.Refinement.AtSound
 /-! # 保持対象の静的な証拠と固定したσへの接続 -/
 namespace Benitoite.Release.Refinement
 
-theorem AtError.values_typed (P B Ψ Q C Γ Φ) (detail : AtError) :
+theorem Detail.values_typed (P B Ψ Q C Γ Φ) (detail : AtError) :
     HasTypeVsQ P B Ψ Q C Γ Φ detail.values atErrorFields := by
   exact .cons (.V_Const trivial) (.cons (.V_Const trivial) (.cons (.V_Const trivial)
     (.cons (.V_Const trivial) (.cons (.V_Const trivial) (.cons (.V_Const trivial)

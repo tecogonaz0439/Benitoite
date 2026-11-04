@@ -149,20 +149,36 @@ inductive AtFailure where
   | staticIndex
   deriving DecidableEq, Repr
 
-structure AtError where
+/-- 解析済みの検査の失敗。実行の入口が同じ準備の元入力を添える。 -/
+structure AtCheckError where
   failure : AtFailure
-  originalPattern : RangeExpr
-  originalTarget : TargetInput
+  parsedPattern : RangeExpr
+  parsedTarget : TargetInput
   resolvedPatterns : Option (List Scope.Domain.Range)
   resolvedTarget : Option Scope.Domain.Target
   patternBase : Option PathBase
   targetBase : Option PathBase
   deriving DecidableEq
 
-/-- 診断の全データを切り詰めずに保持する内部の七欄。利用者向けShowとは分ける。 -/
-def AtError.textFields (d : AtError) : List String :=
-  [reprStr d.failure, reprStr d.originalPattern, reprStr d.originalTarget,
+
+/-- 元の入力を不活性な値として保持し、解析前・解析後・解決後を区別する。 -/
+structure Detail (Raw : Type) where
+  failure : AtFailure
+  originalPattern : Raw
+  originalTarget : Raw
+  parsedPattern : Option RangeExpr
+  parsedTarget : Option TargetInput
+  resolvedPatterns : Option (List Scope.Domain.Range)
+  resolvedTarget : Option Scope.Domain.Target
+  patternBase : Option PathBase
+  targetBase : Option PathBase
+
+
+/-- 内部の観測は、失敗の種別・解析済み入力・解決結果・両起点を文字列に写し、元入力を取り出さない。 -/
+def Detail.textFields {Raw : Type} (d : Detail Raw) : List String :=
+  [reprStr d.failure, reprStr d.parsedPattern, reprStr d.parsedTarget,
    reprStr d.resolvedPatterns, reprStr d.resolvedTarget, reprStr d.patternBase, reprStr d.targetBase]
+
 
 inductive ExternalId where
   | mk (declaration : Nat)

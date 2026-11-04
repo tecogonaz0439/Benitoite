@@ -32,13 +32,13 @@ theorem ResultShape.Declared.error_data {P : Program} {shape : ResultShape} {Γ 
     (h : shape.Declared P) : Term.HasData P Γ
       (.dataValue "Scope.ScopeError.At" (detail.textFields.map (fun s => some (.string s)))) "Scope.ScopeError" [] := by
   obtain ⟨cd, hc, hd, hn, ha⟩ := h.standard.2.2
-  exact .value hc hd hn (by simp [ha, atErrorFields, AtError.textFields])
+  exact .value hc hd hn (by simp [ha, atErrorFields, Detail.textFields])
 
 theorem ResultShape.Declared.error_observation_declared {P : Program} {shape : ResultShape} {C Γ} {detail : AtError}
     (h : shape.Declared P) : Term.Declared P C Γ
       (.dataValue "Scope.ScopeError.At" (detail.textFields.map (fun s => some (.string s)))) := by
   obtain ⟨cd, hc, _, _, ha⟩ := h.standard.2.2
-  exact ⟨by simp [AtError.textFields, declaredSlots, declaredSlot, Term.Declared], cd, hc, by simp [ha, atErrorFields, AtError.textFields]⟩
+  exact ⟨by simp [Detail.textFields, declaredSlots, declaredSlot, Term.Declared], cd, hc, by simp [ha, atErrorFields, Detail.textFields]⟩
 
 
 end Benitoite.Release.Refinement

@@ -46,13 +46,13 @@ theorem atErrorPattern_typed {P shape} (hs : ResultShape.StandardError P shape) 
     (by rw [hargs]; exact PatTys.variables P atErrorFields)
   simpa only [atErrorPattern,atErrorType,hd,atErrorFields,List.length_replicate] using hh
 
-theorem AtError.match_pattern (detail : AtError) :
+theorem Detail.match_pattern (detail : AtError) :
     matchVal atErrorPattern (.atError detail)=some detail.values := by
   simp only [atErrorPattern,matchVal,↓reduceIte]
-  exact matchList_variables (by simp [AtError.values,AtError.textFields])
+  exact matchList_variables (by simp [Detail.values,Detail.textFields])
 
 /-- 腕へ渡す七欄は、実行時の照合と同じvaluesの型付きの列である。 -/
-theorem AtError.match_pattern_typed (P B Ψ Q C Γ Φ) (detail : AtError) :
+theorem Detail.match_pattern_typed (P B Ψ Q C Γ Φ) (detail : AtError) :
     ∃ vs, matchVal atErrorPattern (.atError detail)=some vs ∧ HasTypeVsQ P B Ψ Q C Γ Φ vs atErrorFields :=
   ⟨detail.values,detail.match_pattern,detail.values_typed P B Ψ Q C Γ Φ⟩
 
@@ -69,7 +69,7 @@ private theorem atError_match_all {P a v cs}
       simp only [matchVal,↓reduceIte,matchList_variables hlen,Option.isSome_some]
   | .atError _ =>
     intro _
-    exact ⟨atErrorPattern,List.mem_cons_self,by simp only [AtError.match_pattern,Option.isSome_some]⟩
+    exact ⟨atErrorPattern,List.mem_cons_self,by simp only [Detail.match_pattern,Option.isSome_some]⟩
   | .const (c := c) => intro he; cases c <;> cases he
   | .list _ | .fn | .dependentFn | .tvar | .reference | .lazy | .cont | .map | .set | .bytes |
     .dict | .tapp | .ctor | .external | .scoped | .pathBases | .scopePattern | .refined _ _ |

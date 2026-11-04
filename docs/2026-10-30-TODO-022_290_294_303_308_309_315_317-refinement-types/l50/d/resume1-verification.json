@@ -1,0 +1,83 @@
+{
+  "exit": 0,
+  "base": "50253e88eeb4573a5184c441e051d05590d0a3ac",
+  "date_utc": "2026-11-04T11:30:56.060542+00:00",
+  "seconds": 0.493751,
+  "baseline": {
+    "bytes": 132089,
+    "sha256": "eca6f0b6e2377dea9c4d294b3297574c7fd4e47b11a5ccea9703476e48b57c41"
+  },
+  "final_inputs": {
+    "bytes": 132613,
+    "sha256": "a9fc97a84c8bee1977c4e3abb1cb69a3f85b7fc78faff60174d1bdc397a547a4"
+  },
+  "added": [
+    "formal/Benitoite/Release/Refinement/AtTargets.lean",
+    "formal/Benitoite/Release/Refinement/PathBasesTargets.lean",
+    "formal/Benitoite/Release/Refinement/PreparationTargets.lean",
+    "formal/Benitoite/Release/Refinement/ScopeLegacyContracts.lean"
+  ],
+  "changed": [
+    "docs/design/01-spec/01-12-core-calculus.md",
+    "docs/design/07-quality/07-04-formal-semantics.md",
+    "formal/Benitoite.lean",
+    "formal/Benitoite/Release/Refinement/AtContracts.lean",
+    "formal/Benitoite/Release/Refinement/AtPatterns.lean",
+    "formal/Benitoite/Release/Refinement/AtPrepare.lean",
+    "formal/Benitoite/Release/Refinement/AtStateLeaves.lean",
+    "formal/Benitoite/Release/Refinement/AtTyping.lean",
+    "formal/Benitoite/Release/Refinement/LegacyPatternCoverage.lean",
+    "formal/Benitoite/Release/Refinement/LegacyPatternExamples.lean",
+    "formal/Benitoite/Release/Refinement/LegacyPatternMatch.lean",
+    "formal/Benitoite/Release/Refinement/MatchFacts.lean",
+    "formal/Benitoite/Release/Refinement/PathResolution.lean",
+    "formal/Benitoite/Release/Refinement/PatternBindingsAdequate.lean",
+    "formal/Benitoite/Release/Refinement/PatternBindingsGround.lean",
+    "formal/Benitoite/Release/Refinement/ScopeSyntax.lean",
+    "formal/Benitoite/Release/Refinement/Semantics.lean",
+    "formal/Benitoite/Release/Refinement/Step.lean",
+    "formal/Benitoite/Release/Refinement/StoreReplyLeaves.lean",
+    "formal/Benitoite/Release/Refinement/Syntax.lean",
+    "formal/Benitoite/Release/Refinement/TypedFacts.lean"
+  ],
+  "removed": [],
+  "default_import_modules": 1012,
+  "affected_in_default_import": [
+    "Benitoite.Release.Refinement.AtContracts",
+    "Benitoite.Release.Refinement.AtPatterns",
+    "Benitoite.Release.Refinement.AtPrepare",
+    "Benitoite.Release.Refinement.AtStateLeaves",
+    "Benitoite.Release.Refinement.AtTargets",
+    "Benitoite.Release.Refinement.AtTyping",
+    "Benitoite.Release.Refinement.LegacyPatternCoverage",
+    "Benitoite.Release.Refinement.LegacyPatternExamples",
+    "Benitoite.Release.Refinement.LegacyPatternMatch",
+    "Benitoite.Release.Refinement.MatchFacts",
+    "Benitoite.Release.Refinement.PathBasesTargets",
+    "Benitoite.Release.Refinement.PathResolution",
+    "Benitoite.Release.Refinement.PatternBindingsAdequate",
+    "Benitoite.Release.Refinement.PatternBindingsGround",
+    "Benitoite.Release.Refinement.PreparationTargets",
+    "Benitoite.Release.Refinement.ScopeLegacyContracts",
+    "Benitoite.Release.Refinement.ScopeSyntax",
+    "Benitoite.Release.Refinement.Semantics",
+    "Benitoite.Release.Refinement.Step",
+    "Benitoite.Release.Refinement.StoreReplyLeaves",
+    "Benitoite.Release.Refinement.Syntax",
+    "Benitoite.Release.Refinement.TypedFacts"
+  ],
+  "declarations": 3549,
+  "new_module_declarations": 80,
+  "obligations": 33,
+  "handoffs": 31,
+  "prepare_failures": 15,
+  "success_paths": 4,
+  "connections": 35,
+  "closed_index_connections": 34,
+  "relative_links": 14,
+  "group_bytes": 719814,
+  "script": {
+    "bytes": 7264,
+    "sha256": "4f625922ff717b6ce1be8e356b6d7e10127a2c7bfde83fc21039756fff6824af"
+  }
+}

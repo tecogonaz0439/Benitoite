@@ -168,7 +168,7 @@ private def stepRun (P : Program) (B : Builtins) (σ : PathEnv) (oracle : Oracle
                 (.con shape.ok [.scoped name kind (.fixed bound), errorTy]
                   [.checkedAt bound snapshot t (AtRequest B name (closeVal q.capture input))]))) k μ)
             | .error detail => some (none, .run (Closure.pure (.ret
-                (.con shape.error [.scoped name kind (.fixed bound), errorTy] [.atError detail]))) k μ)
+                (.con shape.error [.scoped name kind (.fixed bound), errorTy] [.atError (AtError.fromCheck (closeVal q.capture pattern) (closeVal q.capture input) snapshot pat target detail)]))) k μ)
           else none
       | _ => none
   | (.app _ _), _, _ => none

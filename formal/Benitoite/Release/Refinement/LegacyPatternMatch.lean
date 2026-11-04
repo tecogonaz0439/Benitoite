@@ -52,7 +52,7 @@ private theorem legacy_patternRange (lo hi : Benitoite.Release.Const) (c : Const
 
 private theorem legacy_atError_values (d : AtError) :
     legacyPatternVals d.values = d.textFields.map (fun s => Benitoite.Release.Val.const (.string s)) := by
-  simp [AtError.values,legacyPatternVals_eq_map,List.map_map,Function.comp_def,legacyPatternVal,legacyPatternConst]
+  simp [Detail.values,legacyPatternVals_eq_map,List.map_map,Function.comp_def,legacyPatternVal,legacyPatternConst]
 
 mutual
   theorem legacy_matchVal (p : Pat) (v : Val) :

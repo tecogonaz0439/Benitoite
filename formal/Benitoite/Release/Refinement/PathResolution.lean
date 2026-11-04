@@ -70,7 +70,7 @@ instance (snapshot k r t) : Decidable (SnapshotMem snapshot k r t) := by
 
 inductive AtResult where
   | ok (target : Target)
-  | error (detail : AtError)
+  | error (detail : AtCheckError)
   deriving DecidableEq
 
 def RangeExpr.base? : RangeExpr → Option PathBase
@@ -91,7 +91,7 @@ def resolveTargetSnapshot (σ : Option PathEnv) (t : TargetInput) : Option Targe
   | some σ, t => t.resolve σ
   | none, _ => none
 
-def atDetail (σ : Option PathEnv) (p : RangeExpr) (t : TargetInput) (f : AtFailure) : AtError :=
+def atDetail (σ : Option PathEnv) (p : RangeExpr) (t : TargetInput) (f : AtFailure) : AtCheckError :=
   ⟨f, p, t, resolveSnapshot σ p, resolveTargetSnapshot σ t, p.base?, t.base?⟩
 
 private def missingRange (p : RangeExpr) : AtFailure := match p with
@@ -110,5 +110,25 @@ def checkAt (σ : Option PathEnv) (k : Kind) (p : RangeExpr) (input : TargetInpu
     else if ¬ (∃ r ∈ ps, r.Mem t) then .error (atDetail σ p input .dynamicCondition)
     else if ¬ (∃ r ∈ bs, r.Mem t) then .error (atDetail σ p input .staticIndex)
     else .ok t
+
+/-- 形成された条件と上限の検査は、形式不正を返さない。 -/
+theorem checkAt.no_invalidPattern {σ k p input bound detail}
+    (hp : p.WF ∧ p.FitsKind k) (hb : bound.WF ∧ bound.FitsKind k)
+    (h : checkAt σ k p input bound = .error detail) :
+    detail.failure ≠ .invalidPattern := by
+  unfold checkAt at h
+  split at h
+  · cases p <;> simp_all [resolveSnapshot,RangeExpr.resolve,atDetail,missingRange] <;> cases h <;> simp
+  · cases h; simp [atDetail]
+  · cases bound <;> simp_all [resolveSnapshot,RangeExpr.resolve,atDetail,missingRange] <;> cases h <;> simp
+  · split at h
+    · cases h; simp [atDetail]
+    · split at h
+      · simp_all
+      · split at h
+        · cases h; simp [atDetail]
+        · split at h
+          · cases h; simp [atDetail]
+          · cases h
 
 end Benitoite.Release.Refinement
