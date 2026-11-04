@@ -75,6 +75,87 @@ theorem CaptureOk.excluded_facts {P B Ψ R Γ Φ cap vs obs alts a δ v}
       (fun p hp => ⟨(hw' p hp).wf,(hw' p hp).sorted⟩)
     exact hc.paths_evaluate ho hv heval
 
+
+private theorem capture_slot (cap : Capture) {ws : List Val} {i : Nat} {w : Val}
+    (hw : ws[i]? = some w) : (cap.extendMany ws).env (ws.length-1-i) = w := by
+  induction ws generalizing cap i with
+  | nil => cases hw
+  | cons x xs ih =>
+    cases i with
+    | zero =>
+      cases Option.some.inj hw
+      change ((cap.extend w).extendMany xs).env (xs.length+1-1-0) = w
+      rw [show xs.length+1-1-0 = xs.length by omega,
+        Capture.extendMany_env_outer _ _ _ (by omega)]
+      simp only [Nat.sub_self,Capture.extend_env_zero]
+    | succ i =>
+      have hi := (List.getElem?_eq_some_iff.mp hw).1
+      simpa only [Capture.extendMany,List.foldl_cons,List.length_cons,
+        show xs.length+1-1-(i+1) = xs.length-1-i by omega] using ih (cap.extend x) hw
+
+private theorem capture_lift_term (cap : Capture) (ws : List Val) (t : Term) :
+    termBind (valEnv (cap.extendMany ws).env).values
+      (termBind (fun i => some (.var (ws.length+i))) t) =
+      termBind (valEnv cap.env).values t := by
+  rw [termBind_comp]
+  congr 1
+  funext i
+  simp only [Option.bind_some,termBind?,valEnv]
+  rw [Capture.extendMany_env_outer _ _ _ (by omega)]
+  simp only [Nat.add_sub_cancel_left]
+
+/-- 実際の束縛で捕捉を延長した後、欄の事実を評価して文脈に追加する。 -/
+theorem CaptureOk.field_facts {P B Ψ R Γ Φ cap alts δ obs vs v ws links}
+    (hc : CaptureOk P B Ψ R Γ Φ cap)
+    (hb : CaptureOk P B Ψ R (Refinement.bindParams Γ δ) (liftMany δ.length Φ) (cap.extendMany ws))
+    (ho : ∀ t, obs = some t → vs.toTerm? = some t ∧ ∃ sort, t.HasSort Γ sort)
+    (hv : v = closeVal cap vs) (hm : firstAlt v alts = some ws)
+    (hlen : ws.length = δ.length) (valid : LinksValid alts δ.length links)
+    (hw : FactsWF P [] (Refinement.bindParams Γ δ) (fieldFacts δ.length obs links)) :
+    CaptureOk P B Ψ R (Refinement.bindParams Γ δ)
+      (fieldFacts δ.length obs links ++ liftMany δ.length Φ) (cap.extendMany ws) := by
+  apply hb.addEvaluatedFacts hw
+  cases obs with
+  | none => intro p hp; cases hp
+  | some t =>
+    obtain ⟨ht,sort,hs⟩ := ho t rfl
+    obtain ⟨u,hu,_⟩ := Term.hasSort_bind hs (valEnv cap.env).values
+      hc.substOk.observations hc.substOk.references
+    have root : v.toTerm? = some (termBind (valEnv cap.env).values t) := by
+      rw [hv,closeVal_observation,Val.toTerm_subst_optional,ht,Option.bind_some,hu]
+      simp only [termBind,hu,Option.getD_some]
+    intro p hp
+    obtain ⟨link,hl,rfl⟩ := List.mem_map.mp hp
+    obtain ⟨w,hslot,hread⟩ := MatchFacts.FieldLink.matched (valid link hl) hm
+    have envslot : (cap.extendMany ws).env (δ.length-1-link.slot) = w := by
+      rw [←hlen]
+      exact capture_slot cap hslot
+    have hfield := hw _ (List.mem_map.mpr ⟨link,hl,rfl⟩)
+    have hvar : ∃ s, (Term.var (δ.length-1-link.slot)).HasSort (Refinement.bindParams Γ δ) s := by
+      have hleft := hfield.sorted.1
+      cases hm : link.measure with
+      | none => rw [hm] at hleft; exact ⟨.integer,hleft⟩
+      | some m => rw [hm] at hleft; exact ⟨m.input,hleft.1,hleft.2.1⟩
+    obtain ⟨s,hvar⟩ := hvar
+    obtain ⟨a,ha,has⟩ := hvar.2
+    obtain ⟨tw,htw,_⟩ := hb.substOk.observations _ a s ha has
+    change ((cap.extendMany ws).env (δ.length-1-link.slot)).toTerm? = some tw at htw
+    rw [envslot] at htw
+    have heq : predBind (valEnv (cap.extendMany ws).env).values (link.predicate δ.length t) =
+        .eq (viewTerm link.measure tw)
+          (viewTerm link.measure (routeTerm (termBind (valEnv cap.env).values t) link.route)) := by
+      simp only [FieldLink.predicate,predBind,viewTerm_bind,routeTerm_bind]
+      rw [←hlen,capture_lift_term]
+      simp only [termBind_var,valEnv,hlen,envslot,htw,Option.getD_some]
+    have hwc := hfield.map hb.substOk.observations hb.substOk.references hb.substOk.declaration
+    rw [heq] at hwc ⊢
+    unfold Pred.evalClosed
+    rw [if_pos ⟨hwc.wf,hwc.sorted⟩]
+    obtain ⟨_,_,_,_,_,_,_,allowed⟩ := valid link hl
+    exact MatchFacts.field_equality_true hread (by rw [root]; rfl) htw
+      allowed hwc.sorted.1.2 hwc.sorted.2.2
+
+
 private theorem prefix_tail {v arms n arm} (h : MatchPrefix v (arm :: arms) (n+1)) :
     MatchPrefix v arms n := by
   intro a ha hg
@@ -88,24 +169,25 @@ theorem HasTypeArmsQ.capture_plain_success {P B Ψ Γ Φ R Rs obs arms a b e L c
     (ht : HasTypeVQ P B Ψ Qempty [] [] [] v (cap.closeTy a))
     (hi : arms[n]? = some (.mk alts none body))
     (hpref : MatchPrefix v arms n) (hm : firstAlt v alts = some ws) :
-    ∃ δ Ξ, AltsTy P alts a δ ∧ CaptureOk P B Ψ R Γ Ξ cap ∧
-      HasTypeCQ P B Ψ Qempty [] (Refinement.bindParams Γ δ) (liftMany δ.length Ξ)
+    ∃ δ Ξ links, AltsTy P alts a δ ∧ CaptureOk P B Ψ R Γ Ξ cap ∧
+      LinksValid alts δ.length links ∧ FactsWF P [] (bindParams Γ δ) (fieldFacts δ.length obs links) ∧
+      HasTypeCQ P B Ψ Qempty [] (Refinement.bindParams Γ δ) (fieldFacts δ.length obs links ++ liftMany δ.length Ξ)
         (Rs.map (Ty.shiftV δ.length 0)) body (b.shiftV δ.length 0) (e.shiftV δ.length 0)
         (localExtend δ.length L) := by
   match h with
   | .nil _ => simp at hi
-  | .plain hp hw hb hs =>
+  | .plain hp hvf hfw hw hb hs =>
     cases n with
     | zero =>
       cases Option.some.inj hi
-      exact ⟨_,_,hp,hc.matched_facts ho hv
-        (FactsWF.left (by simpa only [pathFacts_append] using hw)) hm,hb⟩
+      exact ⟨_,_,_,hp,hc.matched_facts ho hv
+        (FactsWF.left (by simpa only [pathFacts_append] using hw)) hm,hvf,hfw,hb⟩
     | succ n =>
       have hfail := hpref _ (List.mem_cons_self) rfl
       have hc' := hc.excluded_facts ho hv hp ht
         (FactsWF.right (by simpa only [pathFacts_append] using hw)) hfail
       exact hs.capture_plain_success hc' ho hv ht hi (prefix_tail hpref) hm
-  | .guarded _ _ _ _ _ hs =>
+  | .guarded _ _ _ _ _ _ _ hs =>
     cases n with
     | zero => cases Option.some.inj hi
     | succ n => exact hs.capture_plain_success hc ho hv ht hi (prefix_tail hpref) hm
@@ -164,13 +246,14 @@ theorem StateTyE.match_body {P B σ Eb v cap arms n alts body ws k μ}
   have hvt : HasTypeVQ P B Ψ Qempty [] [] [] v (cap.closeTy input) := by
     rw [hv]
     exact close_value_typed hP hPB hB hs.wf hs.sorted hs.declared hcap ht
-  obtain ⟨δ,Ξ,hpat,hcap',hb⟩ := hars.capture_plain_success hcap ho hv hvt hi0
+  obtain ⟨δ,Ξ,links,hpat,hcap',hlinks,hfields,hb⟩ := hars.capture_plain_success hcap ho hv hvt hi0
     ((hea ▸ hprefix).unresolve) hm
   have hinput := open_value_annotation hs.wf hs.sorted hs.declared hcap.contextRegular ht
   have hδ := hpat.bindings_annotation hPB.variance hcap hinput hvt hm
   have hbound := hcap'.match_extend hPB.variance hpat hδ hvt hvg hm
   have hws := alternatives_bindings_typed hPB.variance (hpat.subst_values cap.env) hvt.V_Normal hm
   have hlen : ws.length = δ.length := by simpa only [List.length_map] using hws.length
+  have hbound := hcap'.field_facts hbound ho hv hm hlen hlinks hfields
   have hlocal := CaptureLocals.extendMany hs.wf ws hL
   rw [hlen] at hlocal
   have hbEq : body = body0.resolveLocals (upLocalSubst δ.length ρ) := by
@@ -219,17 +302,18 @@ theorem HasTypeArmsQ.capture_guard_success {P B Ψ Γ Φ R Rs obs arms a b e L c
     (ht : HasTypeVQ P B Ψ Qempty [] [] [] v (cap.closeTy a))
     (hi : arms[n]? = some (.mk alts (some guard) body))
     (hpref : MatchPrefix v arms n) (hm : firstAlt v alts = some ws) :
-    ∃ δ Ξ p, AltsTy P alts a δ ∧ CaptureOk P B Ψ R Γ Ξ cap ∧
+    ∃ δ Ξ p links, AltsTy P alts a δ ∧ CaptureOk P B Ψ R Γ Ξ cap ∧
+      LinksValid alts δ.length links ∧ FactsWF P [] (bindParams Γ δ) (fieldFacts δ.length obs links) ∧
       Ty.Annotation P [] (hideConts (Refinement.bindParams Γ δ)) (.refined (.base .boolean) p) ∧
-      HasTypeCQ P B Ψ Qempty [] (hideConts (Refinement.bindParams Γ δ)) (liftMany δ.length Ξ)
+      HasTypeCQ P B Ψ Qempty [] (hideConts (Refinement.bindParams Γ δ)) (fieldFacts δ.length obs links ++ liftMany δ.length Ξ)
         none guard (.refined (.base .boolean) p) Eff.empty (localExtend δ.length L) ∧
       HasTypeCQ P B Ψ Qempty [] (Refinement.bindParams Γ δ)
-        (p.open (.boolean true) :: liftMany δ.length Ξ)
+        (p.open (.boolean true) :: (fieldFacts δ.length obs links ++ liftMany δ.length Ξ))
         (Rs.map (Ty.shiftV δ.length 0)) body (b.shiftV δ.length 0) (e.shiftV δ.length 0)
         (localExtend δ.length L) := by
   match h with
   | .nil _ => simp at hi
-  | .plain hp hw _ hs =>
+  | .plain hp hvf hfw hw _ hs =>
     cases n with
     | zero => cases Option.some.inj hi
     | succ n =>
@@ -237,12 +321,12 @@ theorem HasTypeArmsQ.capture_guard_success {P B Ψ Γ Φ R Rs obs arms a b e L c
       have hc' := hc.excluded_facts ho hv hp ht
         (FactsWF.right (by simpa only [pathFacts_append] using hw)) hfail
       exact hs.capture_guard_success hc' ho hv ht hi (prefix_tail hpref) hm
-  | .guarded hp hw hgp hg hb hs =>
+  | .guarded hp hvf hfw hw hgp hg hb hs =>
     cases n with
     | zero =>
       cases Option.some.inj hi
-      exact ⟨_,_,_,hp,hc.matched_facts ho hv
-        (FactsWF.left (by simpa only [pathFacts_append] using hw)) hm,hgp,hg,hb⟩
+      exact ⟨_,_,_,_,hp,hc.matched_facts ho hv
+        (FactsWF.left (by simpa only [pathFacts_append] using hw)) hm,hvf,hfw,hgp,hg,hb⟩
     | succ n => exact hs.capture_guard_success hc ho hv ht hi (prefix_tail hpref) hm
 termination_by n
 
@@ -337,13 +421,14 @@ theorem StateTyE.match_guard {P B σ Eb v cap arms n alts guard body ws k μ}
     have hvt : HasTypeVQ P B Ψ Qempty [] [] [] v (cap.closeTy input) := by
       rw [hv]
       exact close_value_typed hP hPB hB hs.wf hs.sorted hs.declared hcap ht
-    obtain ⟨δ,Ξ,p,hpat,hcap',hgp,hg,hb⟩ := hars.capture_guard_success hcap ho hv hvt hi0
+    obtain ⟨δ,Ξ,p,links,hpat,hcap',hlinks,hfields,hgp,hg,hb⟩ := hars.capture_guard_success hcap ho hv hvt hi0
       ((hea ▸ hprefix).unresolve) hm
     have hinput := open_value_annotation hs.wf hs.sorted hs.declared hcap.contextRegular ht
     have hδ := hpat.bindings_annotation hPB.variance hcap hinput hvt hm
     have hbound := hcap'.match_extend hPB.variance hpat hδ hvt hvg hm
     have hws := alternatives_bindings_typed hPB.variance (hpat.subst_values cap.env) hvt.V_Normal hm
     have hlen : ws.length = δ.length := by simpa only [List.length_map] using hws.length
+    have hbound := hcap'.field_facts hbound ho hv hm hlen hlinks hfields
     have hlocal := CaptureLocals.extendMany hs.wf ws hL
     rw [hlen] at hlocal
     have hbEq : body = body0.resolveLocals (upLocalSubst δ.length ρ) := by

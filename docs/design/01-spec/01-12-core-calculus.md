@@ -3437,6 +3437,31 @@ information order に当たる `Observation.InfoLE` は、scalar と対象の sn
 
 ### 標準契約と数値の正常応答
 
+`StandardKeySummary` は、同じ有限宣言の収束した要約から各欄の依存位置を読む。等値と鍵の要約が両方とも無条件の拒否を含まない場合、依存位置が一致する性質は、空の要約からの本番の有限反復について証明する。`Table.key_field` は、同じ P の VarianceValid、構成子宣言、その data の鍵制約の成功から、具体化した各欄の鍵制約を返す。`StandardKeySound.key_table_sound` は、同じ具体表・VarianceValid・型の鍵制約の成功から、任意の型付きの閉じた有限値の項・閉性・観測・KeyShape を返す。帰納の測度は有限な値の構文の大きさであり、再帰 data の型の展開の大きさではない。値の列と同じ要素型の列の入口は KeySlots を返す。閉じたスロットと鍵コード、Map と Set の縮約の存在へも接続する。Map の縮約の存在には値側の型付けや鍵化を要求せず、鍵の列と同じ長さの値の列を受ける。
+
+`StandardCollections.countReply` は数学上の個数を Integer に変換し、表現外を停止の応答として保持する。`countReply_normal` は正常値が元の個数と等しいことを、`countReply_stop` は上限を越すことをそれぞれ同値で表す。`lengthDelta` は String の byteLength と characterCount、List と Bytes の length、List の isEmpty を名前・型引数の個数・空の行と範囲引数で選ぶ。List だけが一つの型引数を持つ。正常応答から結果の非負の篩と同じ measure の観測を構成し、List の観測できない要素も長さに数える。Bytes は各要素が 0〜255 に収まることを検査する。有限列全体に Integer の上限を課さない。`insertDelta` は List の prepend と append を一要素の挿入として表し、同じ型付き列・要素・要素型の Annotation から結果の型付けと長さ n+1 を返す。`sequenceDelta` は concatenate と reverse を実際の有限列の連結と逆順で定め、同じ要素型の導出から結果の型付けと長さ n+m・n を返す。
+
+
+`StandardMapSet` の `mapDelta` と `setDelta` は、それぞれ十本の純粋な標準関数について、名前と型・行・範囲・値の全引数を受ける。元の鍵の `Val`、等値判定のコード、元の値の `Val` を同じ entry に保持し、同鍵の更新では最初の鍵の表現と最後の値を選ぶ。Set では最初の元要素を保つ。縮約の後に比較木の辞書順で整列し、keys と values は同じ整列済み entries の射影とする。Decimal の比較木は係数と scale の同じ有理数を使い、構成子の順位は同じ有限宣言の位置を使う。挿入順の `Key.normalizeMap`・`Key.normalizeSet` との長さの対応から、射影の順序の等号を推論しない。
+
+`normalized_map_coherent` は保存したコードと元の鍵から再計算したコードの一致を、`normalized_map_distinct` はコードの重複なしを示す。`normalized_map_value` はこの二条件から出力列の再正規化を計算し、`map_value_measure` と `set_value_measure` は返した値の実 measure とその列長を接続する。更新の n 又は n+1、削除の n 又は n−1 は、同じ鍵コードの所属の二枝からこの measure へ渡す。集合演算のコードは和・共通部分・差の所属条件と一致し、和集合の個数は二入力の最大以上かつ和以下、共通部分は二入力の最小以下、差は第一入力以下である。元の値を観測できない Map も、鍵と値の列の長さが同じなら縮約と射影の対象とする。
+
+`StandardCollectionResponse.map_api_response` と `set_api_response` は、各十本について全ての StoreTy、型・行・範囲・値引数、結果型、効果を量化した `BuiltinArgs` から、同じ具体 δ の応答の存在、`Outcome.Typed`、`AdequateResult`、exit の排除を返す。`Outcome.Typed` は正常値の型付けと Ground を含み、`AdequateResult` は任意の有効な対象環境で元の保持値の適格性から出力の適格性を導く。同じ `StandardKeyTyping.Table` と `P.VarianceValid` からキーのコードと正規化の存在を証明し、Map の値側の鍵化や観測を要求しない。構成子と型引数数の入力は同じ Pair と Option の宣言である。`StandardCollectionModel` は Option・Pair の同じ有限宣言から要約と satB を計算し、全20署名の lookup と同じ δ にこれらを適用する。
+
+`StandardCollectionBodies` は Map と Set の map/filter 四本を、toList、既存の List.map/filter、fromList の順の通常 core 本体として定める。`collectionHigher_body_typed` は同じ宣言と署名から四本の `Row.BodyTyped` を構成する。Map.map は外側の鍵を読む Pair.first、callback の鍵を読む二回目の Pair.first、Pair.second、callback 一回の順を保つ。Map.filter は二射影と callback 一回である。callback の引数名は Map では key/value、Set では value とし、元の結果型と潜在効果行 E を保つ。Set の入力 T と map の出力 U はともに key 制約を持つ。同じ有限表へ四本を適用し、List 側の定義との等号も検査する。
+
+`StandardRecordFields` は、Raw・Checked・Envelope の内部代表と Result・ConversionError・PathPart・Person・Address・Option の有限な宣言を同じ P に置く。`record_valid` は全構成子の `VarianceValid` を証明する。Checked の二欄はそれぞれ非負の Integer であり、`checked_construct` は同じ二欄の型付けと非負の事実を要求する。`record_chain` は、型付きの Envelope の欄0から Checked の欄0・欄1へ進み、同じ値の篩付き欄型を得る。`whole_construct` は、実際に構築する Envelope 自身の二段の欄比較を前提に、その全体条件を持つ型を構成する。有限表の Person.address の位置1から Address.city の位置0への宣言の読取りも検査する。これらの構成子名は有限表の代表であり、処理系が解決した構成子 ID との一致を結論しない。
+
+`StandardDecodeComparison` は、同じ `%Integer.lessOrEqual` と引数名 left/right に内部の依存 Boolean 結果型を与える。結果型には、同じ二整数の大小と真偽の関係、およびその二整数から構築する Envelope の欄比較を含める。`comparison_response` は全 StoreTy・型・行・範囲・値引数について、同じ `BuiltinArgs` から実 `integerDelta` の応答、`Outcome.Typed`、`AdequateResult`、exit の排除を証明する。この結果型は内部の追加契約であり、Rust の通常 Boolean 結果型と区別する。構成子の射影を簡約する型規則は追加しない。
+
+`StandardDecodeBodies` の `postprocessBody` は、通常decode済みの `Result[Raw, ConversionError]` を一引数として受ける。Error は同じ payload の Error を返す。Ok は同じ Raw の二欄を捕捉し、lo の非負、hi の非負、全体の lo≤hi の順で同じ比較 δ を呼ぶ。三つの `C_Let` と `C_If` が比較結果の事実を読み、真側で同じ二欄を Checked・Envelope へ格納して、その Envelope 自身の全体条件を持つ Ok を返す。`postprocess_typed` から同じ `TelBodyTy`・`Def.WellTyped`・`Row.BodyTyped` を構成する。既に値となった Result からの後処理の型付けであり、任意の通常decoderの実行と後処理の接続は含めない。Error の同じ四欄の保持と Field/Key の区別、lo失敗・hi失敗・全体失敗・成功の四入力について、実際の比較 δ と `Step` の列を検査する。内部代表を、現行の生成decodeに篩検査が実装済みである証拠として扱わない。
+
+`FiniteStepPreservation.StateTyE.step_preserved` は、同じ P の WellFormed・WellTyped・EffectsOk、B の CoreAssumptions、固定した起点 σ の Valid、元の StateTyE と同じ Step から、行先の StateTyE を構成する。実行の76構成子を既存の保存葉へ分配し、`steps_preserved` は同じ有限な Steps の帰納で全中間状態へ適用する。EffectsOk は操作と効果の相互登録・組込み名との分離を表す既存の宣言の条件である。具体の表でこの条件を計算し、mark の実遷移に適用する。
+
+`FirstReturn` は、指定した継続と同じ継続で初めて ret に至るまでの有限な導出である。各中間状態がその返却境界でないことと、同じ実 Step を保持する。長さ・出力の型・callback の全域性を欄に持たない。`steps` は元の Steps と正常な終点への射影、`typed` は同じ初期 StateTyE からの有限保存である。継続の一般の等号の Bool 決定器は含まない。`StandardListBodies` の有限例では、外側の Fail handler が元の呼出しを再開せずに終了し、外側の再帰が同じ継続を構成して別の helper を起動する。その20歩も指定した継続での最初の ret までの FirstReturn を持つ。この関係は同じ呼出しの識別を表すものではない。
+
+`StandardListBodies` は、List の map・filter と内部の mapFrom・filterFrom を通常の core 本体として定める。内部の本体は List.get の Option を照合し、Some の値を callback に一度渡し、Integer の加算と List.append を順に束縛して同じ helper を呼ぶ。filter は callback の Boolean を一度束縛して分岐する。`listFrom_body_typed` は、同じ P の Option の二構成子とその網羅性、同じ再帰定義の lookup、List.get・List.append・整数加算の具体署名の lookup、型変数の空制約の成功から Row.BodyTyped を構成する。`listHigher_body_typed` は、同じ helper を添字0と空の acc で呼ぶ二本の公開本体を型付ける。潜在効果の行変数に無失敗の条件を加えない。具体の有限宣言と satB を持つ ListModel で四本とも適用する。これらは同じ Def.WellTyped による静的な結果型と潜在効果の証明である。`listFrom_none_steps` は実際の None 応答から同じ acc への五歩を、`listFrom_some_steps` は Some 応答から同じ callback の呼出しへの七歩を構成する。callback の正常な実値は一度だけ後続へ束縛し、失敗は同じ事象列・理由・更新後のストアで伝播する。受信値は実際の E_Return に従って空捕捉で閉じるため、生の lambda と受信後の closure の構文の等号を仮定しない。`list_append_reached_typed` は、同じ実 Steps の始状態の型付けから一般の有限保存を使い、append[U](acc,y) に到達した時点で y と acc の各値の U.norm 型を元の組込み契約から得る。callback の結果の型付けを別の前提にしない。
+
 `StandardContracts.Row` は名前・型引数・行引数数・依存列・本体・pure δ又はcoreの選択・有限な関係の分類を持つ。任意の命題を登録する欄は持たない。`Row.definition` はcoreの行の注釈から同じ Def を組み立て、`signatureTel_rebuild` と `definition_tel` は元の依存列との等号を示す。`Row.BodyTyped P B` は、その Def が既存の Def.WellTyped を満たすことである。`normal_reply_facts` は CoreAssumptions.delta_typed、同じ署名のpureの分類、同じ BuiltinArgs、同じ δ 応答と正常値・toTerm? の等号から、結果型の各最外の事実を Entails [] として返す。`normal_reply_facts_at` はその導出を任意の値置換で写す。具体の δ の演算との一致は、これらの前提から推測しない。
 
 `StandardScalar.DecimalRounding` は HalfToEven・HalfAwayFromZero・TowardZero・TowardNegativeInfinity・TowardPositiveInfinity の五形である。`decimalRound` は数学上の係数・scale・placesを受け、不正なplacesを先に区別する。placesが0〜28なら、scaleを増やす場合は0を補い、減らす場合は絶対値の商と余りから一度だけ丸める。余り0では増やさず、同率では偶数又は絶対値の増加をモードに従って選ぶ。符号を戻し、仮数の絶対値が79228162514264337593543950335以下ならnormal、超えればoverflowとする。`rounding_table` は同じ五モードの名前と、±2.5を整数へ丸めた出力を照合する。これは係数の算術定義とその有限例の保証である。
@@ -3593,7 +3618,53 @@ let の到達先の型付けでは、前半と後半の計算を外側の効果�
 
 入れ子の欄の照合に失敗しうる構成子から、根の構成子の除外を作らない。成功時の根の構成子の事実に欄の成功を追加で要求しない。`matchedTests` は共通の test がなければ `alternativesTest` で Or を作り、test を作れない選択肢があるなら成功時の事実を作らない。観測と除外の健全性は、実際の `firstAlt` の成否、`AltsTy`、値の根と欄数の条件 `RootShape` から述べる。`rootShape_of_typing` は閉じた値の型付けからその条件を返す。これは `Exhaustive` が読む `Inhabits` とは別の判断である。`PatternMatchAnnotations` は PatTy・PatTys の全場合で、実際の照合成功と閉じた入力の型付けから束縛元の δ の注釈を導く。`CaptureOk.match_extend` は任意の δ と捕捉に対し、束縛列を加えた捕捉を構成する。`StateTyE.match_body` は元の matchRun 状態、前の非 guard 腕の失敗を保持する prefix、選んだ腕の成功から行先の全状態を構成する。成功と安全な除外の事実の評価は同じ照合から供給し、`MatchPathsEvaluated` を追加の入力にしない。obs が none のときは事実を追加しない。代表の `StateTyE.match_body_zero`・`StateTy.match_body_zero` と、その入力である `MatchPathsEvaluated` も残る。一般の `match_body` はこの追加の入力を要求しない。
 
-`HasTypeArmsQ.plain` は、成功の事実を Φ に加えて束縛数だけ移し、本体を検査する。残りの腕は除外の事実を Φ に加えて検査する。両列の事実には `FactsWF` を要求する。`guarded` は、成功の事実の下で、`hideConts` した文脈・R=none・空の効果で guard を検査する。ストア Ψ と広げた局所文脈は保つ。guard の結果型を `Boolean{p}` とし、本体は `p.open (boolean true)` を加えた文脈で検査する。**guarded の後続の腕は元の Φ で検査する。** guard が偽であった事実も、パターンの除外も後続へ渡さない。
+`HasTypeArmsQ.plain` は、成功の経路条件を Φ に加えて束縛数だけ移し、束縛と欄の等号を先頭に加えて本体を検査する。`δ` を腕が束縛する型の列、`n = δ.length` とすると、本体の条件は `fieldFacts n obs links ++ liftMany n (pathFacts obs (matchedTests alts) ++ Φ)` である。残りの腕は従来どおり除外の事実だけを Φ に加えて検査する。欄の等号には束縛後の `bindParams Γ δ` での `FactsWF`、経路条件には元の Γ での `FactsWF` を要求する。
+
+`FieldLink` は、並べ替え後の束縛位置 `slot`、左から数えた元の束縛位置 `raw`、構成子の欄の経路 `route`、観測する `measure` を持つ。`LinksValid alts n links` は各要素について、選択肢が一つの構成子パターンであること、`slot < n`、`alt.slots[slot]? = some raw`、その元の束縛へ至る `BinderPath`、空でない経路、`measure` が `none` 又は `some listLength` であることを検査する。経路の各段では、`BinderPath.con` が構成子名と欄番号を照合し、左の欄にある束縛数を加えて巣の束縛番号を定める。欄が整数の sort であること、所有元・型引数・結果の sort は、生成した等号の `FactsWF`（`Pred.Sorted`・`FieldRef.Declared`）が検査する。or パターンには欄の等号を生成しない。
+
+```lean
+def FieldLink.predicate (n : Nat) (t : Term) (link : FieldLink) : Pred :=
+  .eq (viewTerm link.measure (.var (n-1-link.slot)))
+    (viewTerm link.measure (routeTerm (termBind (fun i => some (.var (n+i))) t) link.route))
+
+def fieldFacts (n : Nat) (obs : Option Term) (links : List FieldLink) : List Pred :=
+  match obs with | none => [] | some t => links.map (FieldLink.predicate n t)
+```
+
+腕の二規則は次の形である。
+
+```lean
+    | plain {Ψ Q C Γ Φ Δ R obs alts body arms a b ε δ links} : AltsTy P alts a δ →
+        LinksValid alts δ.length links →
+        FactsWF P C (bindParams Γ δ) (fieldFacts δ.length obs links) →
+        FactsWF P C Γ (pathFacts obs (matchedTests alts ++ excludedTests alts)) →
+        HasTypeCQ P B Ψ Q C (bindParams Γ δ)
+          (fieldFacts δ.length obs links ++ liftMany δ.length (pathFacts obs (matchedTests alts) ++ Φ))
+          (R.map (Ty.shiftV δ.length 0)) body (b.shiftV δ.length 0) (ε.shiftV δ.length 0)
+          (localExtend δ.length Δ) →
+        HasTypeArmsQ P B Ψ Q C Γ (pathFacts obs (excludedTests alts) ++ Φ) R obs arms a b ε Δ →
+        HasTypeArmsQ P B Ψ Q C Γ Φ R obs (.mk alts none body :: arms) a b ε Δ
+    | guarded {Ψ Q C Γ Φ Δ R obs alts guard body arms a b ε δ p links} : AltsTy P alts a δ →
+        LinksValid alts δ.length links →
+        FactsWF P C (bindParams Γ δ) (fieldFacts δ.length obs links) →
+        FactsWF P C Γ (pathFacts obs (matchedTests alts ++ excludedTests alts)) →
+        Ty.Annotation P C (hideConts (bindParams Γ δ)) (.refined (.base .boolean) p) →
+        HasTypeCQ P B Ψ Q C (hideConts (bindParams Γ δ))
+          (fieldFacts δ.length obs links ++ liftMany δ.length (pathFacts obs (matchedTests alts) ++ Φ))
+          none guard (.refined (.base .boolean) p) Eff.empty (localExtend δ.length Δ) →
+        HasTypeCQ P B Ψ Q C (bindParams Γ δ)
+          (p.open (.boolean true) :: (fieldFacts δ.length obs links ++ liftMany δ.length (pathFacts obs (matchedTests alts) ++ Φ)))
+          (R.map (Ty.shiftV δ.length 0)) body (b.shiftV δ.length 0) (ε.shiftV δ.length 0)
+          (localExtend δ.length Δ) →
+        HasTypeArmsQ P B Ψ Q C Γ Φ R obs arms a b ε Δ →
+        HasTypeArmsQ P B Ψ Q C Γ Φ R obs (.mk alts (some guard) body :: arms) a b ε Δ
+```
+
+`routeTerm` は観測項へ経路の欄を順に適用する。`viewTerm none` はその項、`viewTerm (some listLength)` はその List の長さである。新しい束縛の de Bruijn 番号は `n-1-slot`、照合対象の外側の番号は `n+i` とする。理由: 実際の `slots` の並べ替えと捕捉の延長に従って、束縛した整数値又は List の長さを元の欄と結ぶためである。篩型の照合の規則では、構成子の腕の文脈へ、照合で明らかになる対象と束縛の関係を加える方式が知られている（Jhala と Vazou のチュートリアルの規則 Chk-Alt は、構成子の結果の型を対象の型へ meet で結ぶ）。本書はこの関係を、measure の代わりに欄の射影の等号で表す。出典: Ranjit Jhala, Niki Vazou. “Refinement Types: A Tutorial”. arXiv:2010.07763v1, 2020, §7.3.3. [arXiv:2010.07763](https://arxiv.org/abs/2010.07763)。
+
+`MatchFacts.FieldLink.matched` は任意の巣の経路と実際の照合成功から、選ばれた欄と束縛値の一致を示す。`CaptureOk.field_facts` は任意の捕捉の延長と、その同じ観測から生成した等号の真を示す。値置換では `fieldFacts_bind` が、型の付いた観測と整形式から部分的な `termBind?` の成功を導く。置換の失敗を既定の観測値へ置き換えて真とする前提を加えない。主な十言明の字面と量化は保つ。
+
+`guarded` は、欄の等号と成功の経路条件の下で、`hideConts` した文脈・R=none・空の効果で guard を検査する。ストア Ψ と広げた局所文脈は保つ。guard の結果型を `Boolean{p}` とし、本体は `p.open (boolean true)` を加えた文脈で検査する。**guarded の後続の腕は元の Φ で検査する。** guard が偽であった事実も、パターンの除外も後続へ渡さない。
 
 `MatchStateExamples.reject_guard_unknown_elimination` は、任意の guard 付きの腕を網羅性に数えないことと、同じパターンの guard なしの腕の網羅性を対照にする。unknown の型を持つ guard が真を返す場合もこの拒否に含む。`reject_false_fact_to_tail` は、元の Φ での後続の return 13 の Month 型付けを拒否し、偽の事実下で同じ本体を受理する。
 
@@ -4046,3 +4117,73 @@ inductive ContTy (P : Program) (B : Builtins) (σ : PathEnv) (Ψ : StoreTy) :
 - 状態 `⟨M, K, σ⟩` に型が付くとは、σ が Ψ のもとで型が付き、`·; R ⊢c M : A ! ε1`、`ε1 ⊆ ε`、`R; ε ⊢k K : A ⇒ B ! Eb` が成り立つ Ψ、R、A、B、ε、ε1 があることである。Eb は組み込みのエフェクトの名前の集合であり、未捕捉の Fail を含まない（`Eb.fails = []`）。`sel(V, ā, i, K, σ)` に型が付くとは、σ が Ψ のもとで型が付き、`·; R ⊢c match V { ā } : A ! ε1`、`ε1 ⊆ ε`、`R; ε ⊢k K : A ⇒ B ! Eb` が成り立つ Ψ、R、A、B、ε、ε1 があり、ā の 1 番目から i−1 番目までのガードのない分岐がどれも V に照合しないことである。`error(r̄, K, σ)` と `exit(n, r̄, K, σ)` に型が付くとは、σ が Ψ のもとで型が付き、`R; ε ⊢k K : A ⇒ B ! Eb` が成り立つ Ψ、R、A、B、ε があることである。 いずれの状態の型付けでも、継続の判断は、末尾の K-Empty を `R = none` で使う導出で満たす。実行は `⟨main[;](), [], ∅⟩` から始まり、関数の本体の `escape` は関数の呼び出しが積んだ `mark` の枠で止まるので、実際に到達する状態はこの条件を満たす。この条件がないと、`⟨escape V, [], σ⟩` に型が付き、進行が成り立たない。
 - 継続の末尾で許すエフェクトを Eb とするので、型が付いた状態で呼ぶ組み込みでない操作 op のエフェクト L は、継続のどこかの `handle` の枠が K-Handle で許している。その枠の H は、L のすべての操作の節を持つので、op の節を持つ。したがって、E-Op の条件を満たす `handle` の枠がある。
 - 並行処理のタスク（[並行処理](01-11-concurrency.md)）と、タスクが引き継いだハンドラは、本章の状態の型付けに含めない。
+
+
+`StandardSafeContracts` はChecked系と非空の内部の依存列19行を保持し、`StandardSafeAnnotations` は具体的な構成子名・欄順・DataArityに対するWF・Sorted・Declaredを、各宣言の型パラメータ数で検査する。NonEmptyList.mapの注釈は型パラメータ2個と潜在行1個を用いる。`StandardSafeAccess` は既存の内部List.getFrontの全型付き引数に対し、同じ有限列から選ぶ応答の型・Ground・AdequateResultと停止枝を保つ。`StandardSafeBodies` は固定した内部契約の通常core本体を検査する。 `PreciseGetter` の06〜14に対応する9本は、構成子の欄の等号から固定した依存列の `Row.BodyTyped` を導く。整数の欄の射影では同じ整数値、List の欄の射影では同じ長さを使い、保存された上下限・長さ・添字の条件を既存の証明書検査で移す。公開ソースの引数ラベルや旧nominal NonEmptyListと同一の宣言ではなく、公開名・別名化・実IDとの対応は別に扱う。
+
+
+`StandardSafeSlice` は通常のxs/front/backを受ける同じsliceの内部精密契約を、全BuiltinArgsから直接検査する。負値・u32変換失敗・範囲外の停止を残し、正常な同じdrop/take列の長さをn−front−backとする。この契約を読むslice(xs,1,0)の内部本体は、既存の型規則と有限証明書で固定safeTailの長さn−1を満たす。`StandardSafeFieldGap` は開いたminimum getter腕の具体Γ/Φから必要なsingleton等号を導くEntailsの反モデルを置く。全型付けの不可能性又は固定契約の偽を結論しない。全19注釈のうち本体まで接続した内部入口は9本であり、精密な欄射影9本の静的接続とmapの強い本体の接続は含めない。
+
+
+`StandardHigherPositions` は高階の具体的な型位置を、元型を持つ同じ変数のHasTypeVQとその拒否で検査する。関数入力の反変、結果と潜在効果の共変、List内の関数、検証済みの共変Optionと反変Consumer、ReferenceとFailの正規形による不変性、関数の名前と個数を対象とする。受理と拒否の型注釈は、元の変数文脈でWF・Sorted・Declaredを満たす。ReferenceとFailでは、通常関数と依存関数の同じ正規形を受理する一方、エラー型又は参照先型の篩を忘れる変換を拒否する。
+
+同モジュールの二引数列は、入力の反変関係に同じ実引数2と5を適用し、依存結果と非空の潜在Failを同時に得る。結果の篩は10*2+5の算術構文を保持し、引数の位置を交換した10*5+2と区別する。長さの正数条件を読む既存の導出には、値・型・行・範囲の四種の像を持つ既存の置換とTransportを適用する。移送先の文脈が供給する等式から正数条件を導き、正数条件がない元文脈での拒否と区別する。これは具体的な静的型位置の模型であり、実標準ソースの全宣言、本体、プログラム全体の整形式性又は全モデルの組み込み仮定の充足を表さない。
+
+`StandardIntegerResponse` は七整数型の minimum/maximum 十四実名の有限署名表と、同じ `integerDelta` を収集する。全 `BuiltinArgs` の型・行・範囲引数の個数と依存引数列を逆転し、同じ幅の実定数、同じ結果型と空の効果を得る。同じδの応答の型付け・Ground・AdequateResult・exitの排除を示し、選択された入力が数学上の min/max と一致することを保つ。一般の CoreAssumptions 又は型付け済み返却値の供給を前提としない。十四実名の収集は全328 API又は別名の通常core本体の充足を意味しない。
+
+`StandardIntegerAPI` は残る整数六十七実名の全 `BuiltinArgs` を、単項・同幅二項・Integer のシフト量付きの実引数へ逆転する。floorDivide/floorModulo、absolute、bitwise 四種とshiftを既存の同じ `integerDelta` に接続し、型・行・範囲・値引数と結果型・効果の同一性を保持する。全応答の型付け・Ground・AdequateResult・exit排除を供給し、0除算・overflow・シフト量域外のerrを残す。論理右シフトの四署名だけは符号付き幅に限る。最小値absolute等の正常/Stopの全意味関係とは別の、同じ具体δの通常応答契約である。
+
+`StandardConversionResponse` は六整数型の fromInteger/toInteger 十二実名の全 `BuiltinArgs` を同じ `integerDelta` へ接続する。同じPのOption.Some/Noneとarity 1を使い、SomeとNoneの双方の型・Ground・Adequateを保つ。小幅のtoIntegerは全域の同値拡大、u64のtoIntegerはOptionである。既定内の読者は同じ有限構成子表から必要な宣言とarityを供給する。通常変換の応答契約は、全標準表のモデル充足とは分ける。
+
+`StandardScalarResponse` はByte八行・Character二行・Float分類三行の実署名を有限表へ収集する。全 `BuiltinArgs` の型・行・範囲引数と終端の結果型・効果を逆転し、実定数のConstOKからByteの範囲とCharacter/Floatのタグを回収する。Byteのbitwise・shiftと変換、Characterのcode/変換、Float二幅のisNaNとFloat32.isInfiniteの二つの無限大のorを、同じ名前付きδへ接続する。OptionのSome/None、shift量域外のerr、全応答のGround・AdequateResult・exit排除を保持する。Unicode全分類、Float丸め・表記の全ビット解析を含めたとはしない。
+
+`StandardDecimalResponse` はOptionとRoundingModeの同じ有限構成子表を使い、Decimal四行と整数へ返す二変換の六実名を全 `BuiltinArgs` から同じ `decimalDelta` へ接続する。型付きRoundingModeは全五構成子と空引数へ逆転し、atErrorの別経路も排除する。丸めの正常/places域外/overflow、truncateの正常なSome/None、fromDecimalの整数性検査を保持し、型・Ground・AdequateResult・exit排除を供給する。fromFloatの外側の解析結果を実ビットから供給する接続は、この有限表に含めない。
+
+`StandardListResponse` はListのlength/isEmpty/prepend/append/concatenate/reverseの六実名を、一型引数・空行/範囲・同じ終端結果/効果まで逆転する。元の要素型の部分型関係とOrdinary・kind・注釈を保持し、既存の同じ有限列δと要素の型付けを読む。応答のGroundとAdequateは、返す要素が元の引数自身又は引数Listの要素であることから得る。lengthのInteger表現外のerrを残し、有限列へ一律の長さ上限を要求しない。
+
+`StandardBytesResponse` はStringの二長・Bytes.lengthとBytes.fromList/toListの五実名を全 `BuiltinArgs` から接続する。Bytesの二変換は、既存の導入・射影のhelperへ同じbyte列を渡す名前付きの部分δを持ち、型付きListの各定数とConstOKからUInt8列を構成する。型・行・範囲・値引数、同じ結果型と効果、Ground・AdequateResult・exit排除を保持し、lengthのInteger表現外のerrを残す。
+
+`StandardActualListBodies` は既存の同じList.mapFrom/filterFromとList.map/filterのComp・Rowを、実演算子 `%Integer.add` のleft/rightの署名で直接型付ける。Comp.appの値列を変えず、V_PrimとC_Appの関数型の名前を実署名へ合わせる。a/bの関数型との変換や二つの異なるlookupの同時仮定は使わない。同じ有限P/Bの四本のBodyTypedを読む既定内の読者を置く。正常返却の関係とその使用部分はこの静的な証拠に含めない。
+
+`StandardHeadTailBodies` の精密な List.mapFrom・filterFrom は、元の列・callback・残りの列・累積の四引数を持つ。map の累積の型は `length acc + length rest = length xs`、filter は `length acc + length rest ≤ length xs` を要求する。head の Some で callback を一度呼び、tail の Some で残りの列へ進む。公開の List.map・filter は元の二引数を保ち、元の列と空の累積で helper を呼ぶ。結果の長さは、map では入力と等しく、filter では入力以下である。`StandardHeadTailResponse` は head・tail・append の結果の篩を、全ての型付き引数に対する実 δ の応答・Ground・保持値の適格性から構成する。List.get と整数の加算の精密な署名を使わない。
+
+`StandardCollectionPrecision` の Map/Set の toList は縮約済みの大きさとの長さの等号、fromList は入力長に対する大きさの上限を持つ。`StandardMapReplaceValues` の非公開の `%Map.replaceValues` は、元の Map と、その大きさと同長の値の List を受ける。元の縮約済みのキーと同じ位置の値から作る Pair 列へ、Map.fromList の同じ δ を適用する。`delta_aligned` はこの列の一致、`response` は全ての型付き引数から結果の大きさの等号・型・Ground・保持値の適格性を示す。理由: 汎用の fromList の大きさの上限だけでは、Map.map の同じキーの保持を本体の型付けへ渡せないためである。
+
+`StandardCollectionRefinedBodies` は、同じ有限の宣言表へ List.map/filter、Map.map/filter、Set.map/filter、非空 List の map を集め、精密な結果の依存列で本体を検査する。Map.map は元の大きさと等しく、Map.filter・Set.map・Set.filter は元の大きさ以下である。非空 List の map は、長さが正で元の列と等しい。固定19行の内部の非空 map の引数名 xs は保ち、公開側の引数名 value による同じ本体の型付けも持つ。`program_typed` は参照先の二つの List の helper と Pair の二つの射影を含む全十一の lookup を `Program.WellTyped` へ集める。`response_assumptions` は同じ表の八つの精密な純粋署名を全引数の実 δ へ接続する。
+
+
+`StandardDecimalResponse.fromFloat_exit` は、原署名の全型付き引数から同じFloatビット列とOption[Decimal]の結果型・空効果を得て、任意の解析結果を再検査する既存の出口の型・Ground・AdequateResult・exit排除を示す。解析結果は原署名の引数に追加せず、この言明から実ビット列由来の解析結果の供給又は実標準B.deltaの充足を結論しない。
+
+`StandardConversionResponse` のfromInteger_math/toInteger_mathは、同じ全型付き入力とδ応答にSomeの同値・幅内、Noneの域外、小幅の全域拡大とu64のOptionの差を保持する。`StandardIntegerAPI.absolute_normal_math` は同じabsoluteの正常応答から非負性・数学上の絶対値・幅とunsignedの同値を読む。Stop全枝の意味関係を正常応答だけから結論しない。`StandardListResponse` と `StandardBytesResponse` のrelated_responseは、同じδ応答と元の列について、Listの挿入・連結・逆順、二種類のString長、Bytesの要素と同長の関係を返す。errへ正常値の長さは要求しない。
+
+`StandardSignatureExamples` は純粋応答を接続した143実名について、原標準ソースの署名から書き出したPrimSigと具体の有限表の署名全欄、及び実名との等号を既定ビルドで検査する。型パラメータ・key制約を含むadmits・引数名/型・結果・効果・範囲・kindを保ち、Map/Setの制約を型引数の個数だけへ置き換えない。原ソースと署名表の対応の検査であり、残るAPIのF06又はRust/Leanの実行全比較を代替しない。
+
+`StandardArithmeticResponse` は七幅の加減乗と符号付き四幅の負号、計25演算子実名を、実left/right又はvalueの署名と全 `BuiltinArgs` から同じ `integerDelta` へ接続する。同じ算術値を検査した応答の型・Ground・AdequateResult・exit排除、正常値と幅、overflowと算術結果の幅外を保つ。これらは328公開関数の外にある実演算子のleafであり、区間・警告・returned/failed・第一失敗の接続を含めない。
+
+`StandardOrderResponse` は整数七幅・Byte・Character・Float二幅・Decimalの四比較、計48演算子実名の実left/right署名と全 `BuiltinArgs` を、同じ既存部分δと比較述語へ接続する。実入力のConstOK、同じ型/行/範囲/値引数、Booleanの結果型・空効果、Ground・AdequateResult・exit排除と、同じ二値の観測の真偽を保持する。整数とByteの整数比較述語、Character/Float/Decimalの各観測の比較を区別する。一般構造等値の充足はこの表に含めない。
+
+`StandardEqualityResponse` は `%eq`/`%ne` の全Equality型を許す元の型引数・制約・left/rightの署名を保ち、scalar-domain条件の下で既存の数値部分δへ接続する。型引数T自身の注釈・Ordinary・Equalityのsatと、同じ篩付きTを使う二値を保持し、型引数を基本型へ置き換えず元のTで同じδを呼ぶ。整数七幅・Byte・Character・Float二幅・Decimalの12領域×二名の型・Ground・AdequateResult・exit排除と同じ二値の比較述語を供給する。partialScalarDeltaの有限表はscalar部分の収集であり、List/data等を含む全構造EqualityのF06又はCoreAssumptionsの充足は結論しない。
+
+`StandardIntegerAPI` のfloor_math/floor_equationは、同じ七幅の床商/床剰余の実引数からtdiv/tmodの符号補正とq*b+rの分解、0除算と補正結果の幅外を読む。modulo_no_overflowは商の表現外だけでは床剰余を拒否しないことを同じδへ接続する。absolute_response_mathはsigned最小値のoverflowとunsignedの元値の正常応答を保持し、bits_mathは実ビットのwrapする数学値とシフト量域外のerrを読む。これらのleafから区間計算・警告・returned/failed・第一失敗の対応を結論しない。
+
+`StandardScalarResponse` はByte/CharacterのSome/Noneと同じ数学値・scalar範囲・code射影、Byteの実bitwise/shiftとcount域外、Float公開分類三行のNaNと二つの無限大のorを同じ全引数・同じ応答から読む。`StandardDecimalResponse` の六数学値の読者は同じ五モードの丸め、places域外と係数overflow、正常値の再検査・同scale、TowardZero、整数性とSome/Noneを保持する。いずれも通常の呼出しの正常返却関係を前提にしない。
+
+`StandardMapRefinementGap` は、List の添字・累積長・結果長を持つ依存列の注釈を検査する。通常の `List.get` の結果型と None の経路だけでは、累積長と元の列長の等号を含意できないことを示す。これは開いた含意の反モデルであり、実 get の到達例ではない。`StandardByteStringResponse` は Byte の範囲を入力の型付けから取り出し、同じ値の十進文字列を返す具体の応答を全引数について型付ける。`StandardAliasBodies` は公開の四つの型別名の51本について、元の引数名・引数順・呼出し先を持つ本体を `Def.WellTyped` で検査する。呼出し先の署名の lookup を前提とし、その純粋応答の充足とは区別する。
+
+`StandardListGetPrecisionGap` は、公開 `List.get` の負の添字とu32への変換失敗で、実際の `StandardListRemainingResponse.delta` が None を返すことを示す。同じ Option 宣言を持つ `StandardPureResults.program` について、任意の組込み表と StoreTy のもとで通常の `BuiltinArgs` を構成する。添字4,294,967,296と、それより一要素長い型付き有限列は、非負かつ列内であっても None を返す。この例の有限列は長さについての帰納で型付けし、巨大な列を計算で展開しない。変換失敗を含むgetの述語、`0≤i≤length xs`、`length acc=i`、Noneの経路を同時に満たしても、`length acc=length xs`を満たさないモデルを与える。公開署名や型付け規則は変更しない。
+
+`StandardCharacterData` は、固定Rustの全Unicode scalarについて生成した五分類の有限区間と二つの大小変換表である。`StandardCharacterResponse` はこの表と同じ入力文字から十本の具体応答を作り、全型・行・範囲・値引数について通常結果型・閉値・対象適合・非exitを証明する。`StandardIntegerTextResponse` は七整数幅の十進表記・十進解析・Float変換を具体化する。解析では符号と数字の列を検査して同じ幅へ変換する。
+
+`StandardFloatMathResponse` は二幅のtruncate・absolute・floor・ceiling・round・squareRootを同じbitsから具体化する。特殊値と符号付き零を分け、整数部と剰余から丸める。平方根は固定Leanのkernel定義を使う。十二本の全BuiltinArgsから通常の結果型・閉値・対象適合・非exitを構成する。
+
+`StandardOrdinaryCoreBodies` は、CheckedInteger・CheckedLength・CheckedIndex・NonEmptyListの自動getter十二本と、そのgetterを呼ぶ公開射影十二本を同じ有限宣言表で検査する。自動getterは元のvalueラベル、一欄だけを束縛する構成子パターン、一腕のmatchを持つ。通常のnominal入力と通常結果に対する `Def.WellTyped` を供給する。安全な入口の篩付き契約と、その結果の欄等値を含む精密契約は別に検査する。
+
+`StandardOrdinaryListBodies` はListのfold・forEach・any・all・findと五つの非公開helperを元の通常署名・引数ラベル・実本体で検査する。callbackの結果を一度束縛し、foldの累積値、any/allの短絡、findの返す元要素、添字の加算と再帰呼出しの順序を保つ。同じ有限宣言表から公開関数とhelperのlookup及び `Def.WellTyped` を供給する。
+
+`StandardOrdinaryCoreProgram` は、Listのfold・forEach・any・all・find、Map/Setのfold・forEach、Rangeの十三本、NonEmptyListの五本を、元の通常公開署名と実本体を持つ同じ有限P/Bへ登録する。公開二十七本、非公開の走査helper五本、自動getter十二本、Pairの二射影、List.map/mapFromの計四十八定義について、全lookupから `Def.WellTyped` を得る。型引数のkey制約、元の引数ラベル、callbackの潜在効果と一度の評価、短絡、CheckedLengthの早期return、NonEmptyListのfirst/restのnominal表現を保つ。正常時の長さや欄等値の精密契約は、この通常型付けの結論に含めない。
+
+`StandardPureResults` は具体的な文字列・Boolean・整数・文字・Byte・Bytes・Float二幅のbits・表現可能なDecimalと、それらのList/Optionから値を構成し、同じ構成子宣言のもとで型・Ground・Adequate・非exitを示す。`StandardBytesOrdinaryResponse` は区切り付き二進/十六進の解析・表記、切出し、結合、ByteOrderを読む整数の読み書きを具体計算し、全BuiltinArgsを同じ応答へ接続する。`StandardNumericRemainingResponse` はFloat二幅の最短十進表記・解析・幅の変換とDecimalの表記・解析・Float変換を具体計算し、同じbitsからDecimal.fromFloatのparsedを供給する。最短表記の桁生成は誤差幅が増えると減少する尺度で終了する。出力型や独立のsemantic providerを前提にしない。
+
+`StandardStringTables` とその幅の状態ごとのモジュールは、固定unicode-widthの通常132状態・CJK87状態の文字からの遷移と、Σの小文字変換の文脈分類を有限表として持つ。`StandardStringOrdinaryResponse` は元のUTF-8境界を読むbyteSlice、文字列の分割・結合・空白の除去・置換・反復、Unicodeの大小変換、UTF-8変換、文字列全体の表示幅と空白追加を具体計算する。制御文字の境界では幅の状態を初期化し、文字ごとの幅の和へ置き換えない。`StandardListRemainingResponse` はhead/tail/get/take/drop/contains/sort/rangeの同じ型引数と実引数を保つ。返却列の元要素への所属と整列の置換から、篩を含む元要素型・Ground・Adequateを保つ。
+
+Float二幅の変換のNaNはraw bitsの符号と上位payloadを読み、変換先のquiet bitを立てて構成する。有限値・符号付き零・Infinityは固定Lean Modelで丸める。型引数を持たない新たな93純粋署名の全欄は、`StandardOrdinarySignatureChecks` の具体例で元ソースから抽出した名前・型と照合する。List.sortのorderedは閉じた型を読むadmissionで表し、篩付きの元型をそのまま使う。

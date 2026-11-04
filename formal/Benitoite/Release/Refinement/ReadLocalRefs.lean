@@ -304,11 +304,11 @@ mutual
       Arm.LocalRefsList P B Ψ depth places (Arm.resolveLocalsList ρ arms) := by
     match h with
     | .nil _ => exact .nil
-    | .plain hp _ hb hs =>
+    | .plain hp _ _ _ hb hs =>
       apply Arm.LocalRefsList.plain
       · simpa only [hp.2.1] using HasTypeCQ.localRefs hb (hL.many _) hΨ
       · exact HasTypeArmsQ.localRefs hs hL hΨ
-    | .guarded hp _ _ hg hb hs =>
+    | .guarded hp _ _ _ _ hg hb hs =>
       apply Arm.LocalRefsList.guarded
       · simpa only [hp.2.1] using HasTypeCQ.localRefs hg (hL.many _) hΨ
       · simpa only [hp.2.1] using HasTypeCQ.localRefs hb (hL.many _) hΨ

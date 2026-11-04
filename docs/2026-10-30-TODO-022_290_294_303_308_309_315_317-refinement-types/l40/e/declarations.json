@@ -1,0 +1,106 @@
+{
+  "StandardCollections": {
+    "environment": 52,
+    "public": [
+      "countReply",
+      "countReply_normal",
+      "countReply_stop",
+      "lengthDelta",
+      "insertDelta",
+      "insert_reply",
+      "sequenceDelta",
+      "concatenate_reply",
+      "reverse_reply",
+      "isEmpty_reply",
+      "countReply_typed",
+      "length_reply",
+      "list_length",
+      "bytes_length",
+      "string_lengths",
+      "string_length_reply",
+      "list_length_reply",
+      "bytes_length_reply"
+    ],
+    "named_private": 1,
+    "anonymous_examples": 13
+  },
+  "StandardKeySummary": {
+    "environment": 200,
+    "public": [
+      "carrier_core",
+      "SummaryHolds",
+      "Table.summary_rows",
+      "summary_field",
+      "Table.key_field"
+    ],
+    "named_private": 30,
+    "anonymous_examples": 0
+  },
+  "StandardKeySound": {
+    "environment": 28,
+    "public": [
+      "key_table_sound",
+      "key_values_sound",
+      "key_each_sound",
+      "key_closed_slots",
+      "key_map_normal",
+      "key_set_normal"
+    ],
+    "named_private": 13,
+    "anonymous_examples": 5
+  },
+  "StandardListBodies": {
+    "environment": 157,
+    "public": [
+      "listFromBody",
+      "listFromRow",
+      "listHigherRow",
+      "listGetSig",
+      "listAppendSig",
+      "listIndexAddSig",
+      "listFromDefinition",
+      "ListOptionDeclarations",
+      "listFrom_body_typed",
+      "listHigher_body_typed",
+      "listFrom_none_steps",
+      "listFrom_some_steps",
+      "listFrom_callback_failed",
+      "listFrom_callback_normal",
+      "list_append_reached_typed",
+      "program",
+      "builtins",
+      "typed",
+      "later_return_same_continuation",
+      "endpoint_length_not_contract",
+      "first_return_after_handler_abort",
+      "first_return_length_not_contract"
+    ],
+    "named_private": 55,
+    "anonymous_examples": 23
+  },
+  "FiniteStepPreservation": {
+    "environment": 4,
+    "public": [
+      "StateTyE.step_preserved",
+      "StateTyE.steps_preserved",
+      "concrete_finite_preservation"
+    ],
+    "named_private": 1,
+    "anonymous_examples": 0
+  },
+  "FirstReturn": {
+    "environment": 19,
+    "public": [
+      "ReturnAt",
+      "FirstReturn",
+      "FirstReturn.steps",
+      "FirstReturn.typed",
+      "ReturnAt.not_let",
+      "ReturnAt.not_view",
+      "ReturnAt.not_match",
+      "ReturnAt.not_length"
+    ],
+    "named_private": 0,
+    "anonymous_examples": 0
+  }
+}

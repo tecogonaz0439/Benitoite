@@ -98,10 +98,10 @@ mutual
     match h with
     | @HasTypeArmsQ.nil _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 =>
       exact .nil x11
-    | @HasTypeArmsQ.plain _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 =>
-      exact .plain x15 x16 (HasTypeCQ.local_zero x17 (hL.zero_localExtend _)) (HasTypeArmsQ.local_zero x18 hL)
-    | @HasTypeArmsQ.guarded _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 =>
-      exact .guarded x17 x18 x19 (HasTypeCQ.local_zero x20 (hL.zero_localExtend _)) (HasTypeCQ.local_zero x21 (hL.zero_localExtend _)) (HasTypeArmsQ.local_zero x22 hL)
+    | @HasTypeArmsQ.plain _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18  x19 x20 x21 =>
+      exact .plain x16 x17 x18 x19 (HasTypeCQ.local_zero x20 (hL.zero_localExtend _)) (HasTypeArmsQ.local_zero x21 hL)
+    | @HasTypeArmsQ.guarded _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22  x23 x24 x25 =>
+      exact .guarded x18 x19 x20 x21 x22 (HasTypeCQ.local_zero x23 (hL.zero_localExtend _)) (HasTypeCQ.local_zero x24 (hL.zero_localExtend _)) (HasTypeArmsQ.local_zero x25 hL)
   termination_by structural h
 
   theorem HasTypeClausesQ.local_zero {P : Program} {B : Builtins} {Ψ : StoreTy} {Q : Benitoite.Release.NoFailCtx} {C : TypeCtx} {Γ : Ctx} {Φ : List Pred} {R : Option Ty} {eb : Eff} {cs : List Clause} {t : Ty} {e : Eff} {L : LocalCtx} (h : HasTypeClausesQ P B Ψ Q C Γ Φ R eb cs t e L) {L' : LocalCtx} (hL : LocalCtx.Shift 0 0 L L') :
@@ -182,10 +182,10 @@ mutual
     match h with
     | @HasTypeArmsQ.nil _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 =>
       exact .nil x11
-    | @HasTypeArmsQ.plain _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 =>
-      exact .plain x15 x16 (HasTypeCQ.withReturn x17 (by rw [hΨ] <;> rfl) (by simp [hR]) _) (HasTypeArmsQ.withReturn x18 (by rw [hΨ] <;> rfl) (by simp [hR]) _)
-    | @HasTypeArmsQ.guarded _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 =>
-      exact .guarded x17 x18 x19 x20 (HasTypeCQ.withReturn x21 (by rw [hΨ] <;> rfl) (by simp [hR]) _) (HasTypeArmsQ.withReturn x22 (by rw [hΨ] <;> rfl) (by simp [hR]) _)
+    | @HasTypeArmsQ.plain _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18  x19 x20 x21 =>
+      exact .plain x16 x17 x18 x19 (HasTypeCQ.withReturn x20 (by rw [hΨ] <;> rfl) (by simp [hR]) _) (HasTypeArmsQ.withReturn x21 (by rw [hΨ] <;> rfl) (by simp [hR]) _)
+    | @HasTypeArmsQ.guarded _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22  x23 x24 x25 =>
+      exact .guarded x18 x19 x20 x21 x22 x23 (HasTypeCQ.withReturn x24 (by rw [hΨ] <;> rfl) (by simp [hR]) _) (HasTypeArmsQ.withReturn x25 (by rw [hΨ] <;> rfl) (by simp [hR]) _)
   termination_by structural h
 
   theorem HasTypeClausesQ.withReturn {P : Program} {B : Builtins} {Ψ : StoreTy} {Q : Benitoite.Release.NoFailCtx} {C : TypeCtx} {Γ : Ctx} {Φ : List Pred} {R : Option Ty} {eb : Eff} {cs : List Clause} {t : Ty} {e : Eff} {L : LocalCtx} (h : HasTypeClausesQ P B Ψ Q C Γ Φ R eb cs t e L) (hΨ : Ψ = StoreTy.empty) (hR : R = none) (R' : Option Ty) :

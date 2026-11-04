@@ -699,5 +699,250 @@ theorem excluded_paths_true_of_typing {P B Ψ Q C Φ alts a δ v}
     PathsEvaluated v (excludedTests alts) :=
   excluded_paths_true ha (rootShape_of_typing hv) hm hw
 
-end
+end/-- 実行時に構成子の欄だけをたどる。ScopeErrorも通常の欄列として読む。 -/
+def conFields? : Val → Option (ConName × List Val)
+  | .con c _ vs => some (c,vs)
+  | .atError detail => some ("Scope.ScopeError.At",detail.values)
+  | _ => none
+
+def readPath (v : Val) : List FieldRef → Option Val
+  | [] => some v
+  | r :: rs => do
+    let (c,vs) ← conFields? v
+    if c = r.constructor then readPath (←vs[r.position]?) rs else none
+
+/-- matchListの中の一つのパターンの束縛位置を、連結後の位置へ対応させる。 -/
+theorem matchList_selected {ps vs ws j p}
+    (hm : matchList ps vs = some ws) (hp : ps[j]? = some p) :
+    ∃ v zs, vs[j]? = some v ∧ matchVal p v = some zs ∧
+      ∀ i w, zs[i]? = some w → ws[Pat.bindersList (ps.take j)+i]? = some w := by
+  induction ps generalizing vs ws j with
+  | nil => simp at hp
+  | cons head ps ih =>
+    cases vs with
+    | nil => cases hm
+    | cons v vs =>
+      simp only [matchList] at hm
+      cases hhead : matchVal head v with
+      | none => simp [hhead] at hm
+      | some front =>
+        cases htail : matchList ps vs with
+        | none => simp [hhead,htail] at hm
+        | some back =>
+          simp [hhead,htail] at hm
+          subst ws
+          cases j with
+          | zero =>
+            cases Option.some.inj hp
+            refine ⟨v,front,rfl,hhead,?_⟩
+            intro i w hw
+            have hi : i < front.length := (List.getElem?_eq_some_iff.mp hw).1
+            simpa [Pat.bindersList,List.getElem?_append,hi] using hw
+          | succ j =>
+            obtain ⟨w,zs,hw,hz,hindex⟩ := ih htail hp
+            refine ⟨w,zs,hw,hz,?_⟩
+            intro i x hx
+            have hb := hindex i x hx
+            have count := matchVal_binders hhead
+            simp only [List.take_succ_cons,Pat.bindersList]
+            rw [←count]
+            simp only [List.getElem?_append]
+            rw [ite_eq_right (by omega)]
+            simpa [Nat.add_assoc] using hb
+
+/-- 巣の構成子を含め、生成に使う生の束縛が実際の欄の値である。 -/
+theorem BinderPath.matched {pat i rs} (hp : BinderPath pat i rs) {v ws}
+    (hm : matchVal pat v = some ws) :
+    ∃ w, ws[i]? = some w ∧ readPath v rs = some w := by
+  induction hp generalizing v ws with
+  | var =>
+    cases Option.some.inj hm
+    exact ⟨v,rfl,rfl⟩
+  | @con c ps j p i route ref hat constructor position child ih =>
+    cases v <;> simp only [matchVal] at hm
+    all_goals first | (cases hm; done) | skip
+    case con c' ts vs =>
+      split at hm
+      · rename_i he; subst c'
+        obtain ⟨w,zs,hw,hz,hindex⟩ := matchList_selected hm hat
+        obtain ⟨x,hx,hr⟩ := ih hz
+        refine ⟨x,hindex i x hx,?_⟩
+        simp [readPath,conFields?,constructor,position,hw,hr]
+      · cases hm
+    case atError detail =>
+      split at hm
+      · rename_i he
+        obtain ⟨w,zs,hw,hz,hindex⟩ := matchList_selected hm hat
+        obtain ⟨x,hx,hr⟩ := ih hz
+        refine ⟨x,hindex i x hx,?_⟩
+        simp [readPath,conFields?,constructor,position,he,hw,hr]
+      · cases hm
+
+
+
+private theorem value_observe_shape {v : Val} {t : Term} {s : «Sort»}
+    (ht : v.toTerm? = some t) (hs : t.Shape [] s) (η : ObservationEnvModel) :
+    ∃ o, t.observe η = some o ∧ o.sort = s := by
+  cases v
+  case var i => cases Option.some.inj ht; obtain ⟨a,ha,_⟩ := hs; cases ha
+  case const c =>
+    cases c <;> simp only [Val.toTerm?,reduceCtorEq] at ht <;> cases Option.some.inj ht <;> exact ⟨_,rfl,hs.symm⟩
+  all_goals simp only [Val.toTerm?,reduceCtorEq] at ht
+  all_goals cases Option.some.inj ht
+  all_goals exact ⟨_,rfl,hs.symm⟩
+
+private def routeInputSort (route : List FieldRef) (s : «Sort») : «Sort» :=
+  match route with | [] => s | _ :: _ => .data
+
+private theorem routeTerm_input_shape {Γ t route s}
+    (hs : (routeTerm t route).Shape Γ s) : t.Shape Γ (routeInputSort route s) := by
+  induction route generalizing t with
+  | nil => exact hs
+  | cons r rs ih =>
+    have hh := ih (t := .field r t) hs
+    exact hh.1
+
+private theorem readPath_data {v route w} (hne : route ≠ []) (h : readPath v route = some w) :
+    ∃ c slots, v.toTerm? = some (.dataValue c slots) := by
+  cases route with
+  | nil => contradiction
+  | cons r rs =>
+    cases v <;> simp only [readPath,conFields?] at h <;> try cases h
+    all_goals exact ⟨_,_,rfl⟩
+
+private theorem observeSlots_at {vs : List Val} {i : Nat} {v : Val} (hv : vs[i]? = some v)
+    (η : ObservationEnvModel) :
+    (observeSlots η (Val.toTermSlots vs))[i]? = some (v.toTerm?.bind (Term.observe η)) := by
+  induction vs generalizing i with
+  | nil => cases hv
+  | cons x xs ih =>
+    cases i with
+    | zero => cases Option.some.inj hv; cases h : v.toTerm? <;> simp [Val.toTermSlots,observeSlots,h]
+    | succ i => cases h : x.toTerm? <;> simpa [Val.toTermSlots,observeSlots,h] using ih hv
+
+/-- 欄のsortと実際の欄の値を使い、巣の経路の部分観測が成功することを示す。 -/
+private theorem readPath_observe {v w : Val} {route : List FieldRef} {t : Term} {s : «Sort»}
+    {η : ObservationEnvModel} {o : Observation}
+    (hr : readPath v route = some w)
+    (ht : t.observe η = v.toTerm?.bind (Term.observe η))
+    (hs : (routeTerm t route).Shape [] s)
+    (ho : w.toTerm?.bind (Term.observe η) = some o) (hos : o.sort = s) :
+    (routeTerm t route).observe η = some o := by
+  induction route generalizing v t with
+  | nil => cases Option.some.inj hr; exact ht.trans ho
+  | cons r rs ih =>
+    have hstep := routeTerm_input_shape (t := .field r t) hs
+    obtain ⟨c,vs,hcv,hindex,hread⟩ : ∃ c vs, conFields? v = some (c,vs) ∧
+        c = r.constructor ∧ ∃ u, vs[r.position]? = some u ∧ readPath u rs = some w := by
+      cases hc : conFields? v with
+      | none => simp [readPath,hc] at hr
+      | some pair =>
+        rcases pair with ⟨c,vs⟩
+        simp only [readPath,hc] at hr
+        dsimp only [Bind.bind,Option.bind] at hr
+        split at hr
+        · rename_i he
+          cases hu : vs[r.position]? with
+          | none => simp [hu] at hr
+          | some u => exact ⟨c,vs,rfl,he,u,hu,by simpa only [hu] using hr⟩
+        · cases hr
+    obtain ⟨u,hu,hur⟩ := hread
+    have huSort : ∃ ou, u.toTerm?.bind (Term.observe η) = some ou ∧ ou.sort = r.result := by
+      cases rs with
+      | nil =>
+        cases Option.some.inj hur
+        exact ⟨o,ho,hos.trans hstep.2⟩
+      | cons a rest =>
+        obtain ⟨d,slots,hud⟩ := readPath_data (by simp) hur
+        exact ⟨.dataValue d (observeSlots η slots),by rw [hud]; rfl,hstep.2⟩
+    obtain ⟨ou,hou,hous⟩ := huSort
+    have htFields : t.observe η = some (.dataValue c (observeSlots η (Val.toTermSlots vs))) := by
+      rw [ht]
+      cases v <;> simp only [conFields?,Option.some.injEq,Prod.mk.injEq] at hcv
+      all_goals first | (cases hcv; done) | skip
+      case con c' ts args => obtain ⟨rfl,rfl⟩ := hcv; rfl
+      case atError d =>
+        obtain ⟨rfl,rfl⟩ := hcv
+        simp [Val.toTerm?,AtError.values,AtError.textFields,Val.toTermSlots_eq_map,List.map_map,Term.observe]
+    have hfield : (Term.field r t).observe η = u.toTerm?.bind (Term.observe η) := by
+      simp only [Term.observe,htFields,hindex]
+      dsimp only [Bind.bind,Option.bind]
+      simp only [bne_self_eq_false,Bool.false_eq_true,ite_false]
+      rw [observeSlots_at hu η]
+      dsimp only [Bind.bind,Option.bind]
+      cases hut : u.toTerm? with
+      | none => simp [hut] at hou
+      | some ut =>
+        have huo : ut.observe η = some ou := by simpa [hut] using hou
+        simp [hut,huo,hous]
+    exact ih hur hfield hs
+
+
+
+private theorem selectSlots_at {xs : List Val} {slots : List Nat} {ys : List Val} {i raw : Nat} {w : Val}
+    (hs : selectSlots xs slots = some ys) (hi : slots[i]? = some raw)
+    (hw : xs[raw]? = some w) : ys[i]? = some w := by
+  induction slots generalizing ys i with
+  | nil => cases hi
+  | cons j slots ih =>
+    cases hj : xs[j]? with
+    | none => simp [selectSlots,hj] at hs
+    | some x =>
+      cases ht : selectSlots xs slots with
+      | none => simp [selectSlots,hj,ht] at hs
+      | some zs =>
+        have he : ys = x :: zs := by simpa [selectSlots,hj,ht] using hs.symm
+        subst ys
+        cases i with
+        | zero => cases Option.some.inj hi; simpa only [List.getElem?_cons_zero,hj] using hw
+        | succ i => simpa only [List.getElem?_cons_succ] using ih (ys := zs) (i := i) ht hi
+
+/-- slotsによる並べ替え後の束縛と、実行時の欄の経路は同じ値を選ぶ。 -/
+theorem FieldLink.matched {alts n link v ws}
+    (valid : FieldLink.Valid alts n link) (hm : firstAlt v alts = some ws) :
+    ∃ w, ws[link.slot]? = some w ∧ readPath v link.route = some w := by
+  obtain ⟨alt,ha,_,_,hslot,hpath,_⟩ := valid
+  subst alts
+  cases hr : matchVal alt.pat v with
+  | none => simp [firstAlt,hr] at hm
+  | some raw =>
+    have hs : selectSlots raw alt.slots = some ws := by simpa [firstAlt,hr] using hm
+    obtain ⟨w,hw,hread⟩ := BinderPath.matched hpath hr
+    exact ⟨w,selectSlots_at hs hslot hw,hread⟩
+
+private theorem integer_equality_eval {a b : Term} {z : Int}
+    (ha : a.observe (fun _ => none) = some (.integer z))
+    (hb : b.observe (fun _ => none) = some (.integer z)) :
+    (Pred.eq a b).evalWith (fun _ => none) = some true := by
+  have hai := Term.observe_sound ha
+  have hbi := Term.observe_sound hb
+  simp [Pred.evalWith,Pred.atomReady,termReady,ha,hb,Observation.sort,
+    Pred.atomValue,integerAs,observeAs,hai,hbi]
+
+/-- 整数欄の値又はList欄の長さの等号は、実際の部分観測で真である。 -/
+theorem field_equality_true {v w : Val} {route : List FieldRef} {t tw : Term}
+    {m : Option Measure}
+    (hr : readPath v route = some w)
+    (ht : t.observe (fun _ => none) = v.toTerm?.bind (Term.observe (fun _ => none)))
+    (hw : w.toTerm? = some tw)
+    (allowed : m = none ∨ m = some .listLength)
+    (sl : (viewTerm m tw).Shape [] .integer)
+    (sr : (viewTerm m (routeTerm t route)).Shape [] .integer) :
+    (Pred.eq (viewTerm m tw) (viewTerm m (routeTerm t route))).evalWith (fun _ => none) = some true := by
+  rcases allowed with rfl | rfl
+  · obtain ⟨o,ho,hos⟩ := value_observe_shape hw sl (fun _ => none)
+    have ho' : w.toTerm?.bind (Term.observe (fun _ => none)) = some o := by rw [hw]; exact ho
+    have hright := readPath_observe hr ht sr ho' hos
+    cases o <;> simp only [Observation.sort,reduceCtorEq] at hos
+    exact integer_equality_eval ho hright
+  · obtain ⟨o,ho,hos⟩ := value_observe_shape hw sl.1 (fun _ => none)
+    have ho' : w.toTerm?.bind (Term.observe (fun _ => none)) = some o := by rw [hw]; exact ho
+    have hright := readPath_observe hr ht sr.1 ho' hos
+    cases o <;> simp only [Observation.sort,Measure.input,reduceCtorEq] at hos
+    rename_i elements
+    apply integer_equality_eval (z := Int.ofNat elements.length)
+    · simp [viewTerm,Term.observe,ho,Observation.measure,Option.bind,Option.map]
+    · simp [viewTerm,Term.observe,hright,Observation.measure,Option.bind,Option.map]
+
+
 end Benitoite.Release.Refinement.MatchFacts

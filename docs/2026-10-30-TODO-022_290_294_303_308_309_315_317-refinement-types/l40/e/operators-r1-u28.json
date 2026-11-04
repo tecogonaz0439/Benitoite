@@ -1,0 +1,2898 @@
+{
+  "updated_utc": "2026-11-03T19:10:16.868808+00:00",
+  "source": {
+    "path": "crates/benitoite/src/builtins/table.rs",
+    "bytes": 57107,
+    "sha256": "4752f8d5c124f2abfbc2f00c9df728c4a6f007ce48184a5e0f12ebfc2568c8d0"
+  },
+  "source_scheme": "builtin_scheme Operator branch; builtin parameter_names VALUE/LEFT/RIGHT。Rust/Leanの実行全比較ではない。",
+  "counts": {
+    "operators": 107,
+    "pure_leaf": 73,
+    "independent_open": 34,
+    "equality_names": 2,
+    "equality_scalar_domains": 12
+  },
+  "rows": [
+    {
+      "name": "%Integer.add",
+      "rust_operand": "INTEGER",
+      "operator": "Add",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "integer",
+        "integer"
+      ],
+      "result": "integer",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S01"
+      ],
+      "evidence": [
+        "StandardArithmeticResponse.table_response",
+        "StandardArithmeticResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Integer.subtract",
+      "rust_operand": "INTEGER",
+      "operator": "Sub",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "integer",
+        "integer"
+      ],
+      "result": "integer",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S01"
+      ],
+      "evidence": [
+        "StandardArithmeticResponse.table_response",
+        "StandardArithmeticResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Integer.multiply",
+      "rust_operand": "INTEGER",
+      "operator": "Mul",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "integer",
+        "integer"
+      ],
+      "result": "integer",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S01"
+      ],
+      "evidence": [
+        "StandardArithmeticResponse.table_response",
+        "StandardArithmeticResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Integer.div",
+      "rust_operand": "INTEGER",
+      "operator": "IntDiv",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "integer",
+        "integer"
+      ],
+      "result": "integer",
+      "effect": [],
+      "ordinary": "open",
+      "additional_S": [
+        "S02"
+      ],
+      "evidence": [
+        "Benitoite.Interval.IntKind.checkedDivMod"
+      ],
+      "unproved": [
+        "この実名・原署名の全BuiltinArgs→同namedδ→型/Ground/Adequate/非exitはL40独立未完。新しい演算算法は追加しない。"
+      ]
+    },
+    {
+      "name": "%Integer.mod",
+      "rust_operand": "INTEGER",
+      "operator": "Mod",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "integer",
+        "integer"
+      ],
+      "result": "integer",
+      "effect": [],
+      "ordinary": "open",
+      "additional_S": [
+        "S02"
+      ],
+      "evidence": [
+        "Benitoite.Interval.IntKind.checkedDivMod"
+      ],
+      "unproved": [
+        "この実名・原署名の全BuiltinArgs→同namedδ→型/Ground/Adequate/非exitはL40独立未完。新しい演算算法は追加しない。"
+      ]
+    },
+    {
+      "name": "%Integer.negate",
+      "rust_operand": "INTEGER",
+      "operator": "Neg",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "value"
+      ],
+      "params": [
+        "integer"
+      ],
+      "result": "integer",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S01"
+      ],
+      "evidence": [
+        "StandardArithmeticResponse.table_response",
+        "StandardArithmeticResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Integer.less",
+      "rust_operand": "INTEGER",
+      "operator": "Lt",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "integer",
+        "integer"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Integer.lessOrEqual",
+      "rust_operand": "INTEGER",
+      "operator": "Le",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "integer",
+        "integer"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Integer.greater",
+      "rust_operand": "INTEGER",
+      "operator": "Gt",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "integer",
+        "integer"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Integer.greaterOrEqual",
+      "rust_operand": "INTEGER",
+      "operator": "Ge",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "integer",
+        "integer"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Float.add",
+      "rust_operand": "FLOAT",
+      "operator": "Add",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "float",
+        "float"
+      ],
+      "result": "float",
+      "effect": [],
+      "ordinary": "open",
+      "additional_S": [],
+      "evidence": [],
+      "unproved": [
+        "この実名・原署名の全BuiltinArgs→同namedδ→型/Ground/Adequate/非exitはL40独立未完。新しい演算算法は追加しない。"
+      ]
+    },
+    {
+      "name": "%Float.subtract",
+      "rust_operand": "FLOAT",
+      "operator": "Sub",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "float",
+        "float"
+      ],
+      "result": "float",
+      "effect": [],
+      "ordinary": "open",
+      "additional_S": [],
+      "evidence": [],
+      "unproved": [
+        "この実名・原署名の全BuiltinArgs→同namedδ→型/Ground/Adequate/非exitはL40独立未完。新しい演算算法は追加しない。"
+      ]
+    },
+    {
+      "name": "%Float.multiply",
+      "rust_operand": "FLOAT",
+      "operator": "Mul",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "float",
+        "float"
+      ],
+      "result": "float",
+      "effect": [],
+      "ordinary": "open",
+      "additional_S": [],
+      "evidence": [],
+      "unproved": [
+        "この実名・原署名の全BuiltinArgs→同namedδ→型/Ground/Adequate/非exitはL40独立未完。新しい演算算法は追加しない。"
+      ]
+    },
+    {
+      "name": "%Float.divide",
+      "rust_operand": "FLOAT",
+      "operator": "Div",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "float",
+        "float"
+      ],
+      "result": "float",
+      "effect": [],
+      "ordinary": "open",
+      "additional_S": [],
+      "evidence": [],
+      "unproved": [
+        "この実名・原署名の全BuiltinArgs→同namedδ→型/Ground/Adequate/非exitはL40独立未完。新しい演算算法は追加しない。"
+      ]
+    },
+    {
+      "name": "%Float.negate",
+      "rust_operand": "FLOAT",
+      "operator": "Neg",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "value"
+      ],
+      "params": [
+        "float"
+      ],
+      "result": "float",
+      "effect": [],
+      "ordinary": "open",
+      "additional_S": [],
+      "evidence": [],
+      "unproved": [
+        "この実名・原署名の全BuiltinArgs→同namedδ→型/Ground/Adequate/非exitはL40独立未完。新しい演算算法は追加しない。"
+      ]
+    },
+    {
+      "name": "%Float.less",
+      "rust_operand": "FLOAT",
+      "operator": "Lt",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "float",
+        "float"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Float.lessOrEqual",
+      "rust_operand": "FLOAT",
+      "operator": "Le",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "float",
+        "float"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Float.greater",
+      "rust_operand": "FLOAT",
+      "operator": "Gt",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "float",
+        "float"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Float.greaterOrEqual",
+      "rust_operand": "FLOAT",
+      "operator": "Ge",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "float",
+        "float"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Decimal.add",
+      "rust_operand": "DECIMAL",
+      "operator": "Add",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "decimal",
+        "decimal"
+      ],
+      "result": "decimal",
+      "effect": [],
+      "ordinary": "open",
+      "additional_S": [],
+      "evidence": [],
+      "unproved": [
+        "この実名・原署名の全BuiltinArgs→同namedδ→型/Ground/Adequate/非exitはL40独立未完。新しい演算算法は追加しない。"
+      ]
+    },
+    {
+      "name": "%Decimal.subtract",
+      "rust_operand": "DECIMAL",
+      "operator": "Sub",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "decimal",
+        "decimal"
+      ],
+      "result": "decimal",
+      "effect": [],
+      "ordinary": "open",
+      "additional_S": [],
+      "evidence": [],
+      "unproved": [
+        "この実名・原署名の全BuiltinArgs→同namedδ→型/Ground/Adequate/非exitはL40独立未完。新しい演算算法は追加しない。"
+      ]
+    },
+    {
+      "name": "%Decimal.multiply",
+      "rust_operand": "DECIMAL",
+      "operator": "Mul",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "decimal",
+        "decimal"
+      ],
+      "result": "decimal",
+      "effect": [],
+      "ordinary": "open",
+      "additional_S": [],
+      "evidence": [],
+      "unproved": [
+        "この実名・原署名の全BuiltinArgs→同namedδ→型/Ground/Adequate/非exitはL40独立未完。新しい演算算法は追加しない。"
+      ]
+    },
+    {
+      "name": "%Decimal.divide",
+      "rust_operand": "DECIMAL",
+      "operator": "Div",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "decimal",
+        "decimal"
+      ],
+      "result": "decimal",
+      "effect": [],
+      "ordinary": "open",
+      "additional_S": [],
+      "evidence": [],
+      "unproved": [
+        "この実名・原署名の全BuiltinArgs→同namedδ→型/Ground/Adequate/非exitはL40独立未完。新しい演算算法は追加しない。"
+      ]
+    },
+    {
+      "name": "%Decimal.negate",
+      "rust_operand": "DECIMAL",
+      "operator": "Neg",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "value"
+      ],
+      "params": [
+        "decimal"
+      ],
+      "result": "decimal",
+      "effect": [],
+      "ordinary": "open",
+      "additional_S": [],
+      "evidence": [],
+      "unproved": [
+        "この実名・原署名の全BuiltinArgs→同namedδ→型/Ground/Adequate/非exitはL40独立未完。新しい演算算法は追加しない。"
+      ]
+    },
+    {
+      "name": "%Decimal.less",
+      "rust_operand": "DECIMAL",
+      "operator": "Lt",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "decimal",
+        "decimal"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Decimal.lessOrEqual",
+      "rust_operand": "DECIMAL",
+      "operator": "Le",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "decimal",
+        "decimal"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Decimal.greater",
+      "rust_operand": "DECIMAL",
+      "operator": "Gt",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "decimal",
+        "decimal"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Decimal.greaterOrEqual",
+      "rust_operand": "DECIMAL",
+      "operator": "Ge",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "decimal",
+        "decimal"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%String.add",
+      "rust_operand": "STRING",
+      "operator": "Add",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "string",
+        "string"
+      ],
+      "result": "string",
+      "effect": [],
+      "ordinary": "open",
+      "additional_S": [],
+      "evidence": [],
+      "unproved": [
+        "この実名・原署名の全BuiltinArgs→同namedδ→型/Ground/Adequate/非exitはL40独立未完。新しい演算算法は追加しない。"
+      ]
+    },
+    {
+      "name": "%String.less",
+      "rust_operand": "STRING",
+      "operator": "Lt",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "string",
+        "string"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "open",
+      "additional_S": [],
+      "evidence": [],
+      "unproved": [
+        "この実名・原署名の全BuiltinArgs→同namedδ→型/Ground/Adequate/非exitはL40独立未完。新しい演算算法は追加しない。"
+      ]
+    },
+    {
+      "name": "%String.lessOrEqual",
+      "rust_operand": "STRING",
+      "operator": "Le",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "string",
+        "string"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "open",
+      "additional_S": [],
+      "evidence": [],
+      "unproved": [
+        "この実名・原署名の全BuiltinArgs→同namedδ→型/Ground/Adequate/非exitはL40独立未完。新しい演算算法は追加しない。"
+      ]
+    },
+    {
+      "name": "%String.greater",
+      "rust_operand": "STRING",
+      "operator": "Gt",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "string",
+        "string"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "open",
+      "additional_S": [],
+      "evidence": [],
+      "unproved": [
+        "この実名・原署名の全BuiltinArgs→同namedδ→型/Ground/Adequate/非exitはL40独立未完。新しい演算算法は追加しない。"
+      ]
+    },
+    {
+      "name": "%String.greaterOrEqual",
+      "rust_operand": "STRING",
+      "operator": "Ge",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "string",
+        "string"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "open",
+      "additional_S": [],
+      "evidence": [],
+      "unproved": [
+        "この実名・原署名の全BuiltinArgs→同namedδ→型/Ground/Adequate/非exitはL40独立未完。新しい演算算法は追加しない。"
+      ]
+    },
+    {
+      "name": "%Character.less",
+      "rust_operand": "CHARACTER",
+      "operator": "Lt",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "character",
+        "character"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Character.lessOrEqual",
+      "rust_operand": "CHARACTER",
+      "operator": "Le",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "character",
+        "character"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Character.greater",
+      "rust_operand": "CHARACTER",
+      "operator": "Gt",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "character",
+        "character"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Character.greaterOrEqual",
+      "rust_operand": "CHARACTER",
+      "operator": "Ge",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "character",
+        "character"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Byte.less",
+      "rust_operand": "BYTE",
+      "operator": "Lt",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "byte",
+        "byte"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Byte.lessOrEqual",
+      "rust_operand": "BYTE",
+      "operator": "Le",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "byte",
+        "byte"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Byte.greater",
+      "rust_operand": "BYTE",
+      "operator": "Gt",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "byte",
+        "byte"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Byte.greaterOrEqual",
+      "rust_operand": "BYTE",
+      "operator": "Ge",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "byte",
+        "byte"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Integer8.add",
+      "rust_operand": "INTEGER8",
+      "operator": "Add",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "integer8",
+        "integer8"
+      ],
+      "result": "integer8",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S01"
+      ],
+      "evidence": [
+        "StandardArithmeticResponse.table_response",
+        "StandardArithmeticResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Integer8.subtract",
+      "rust_operand": "INTEGER8",
+      "operator": "Sub",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "integer8",
+        "integer8"
+      ],
+      "result": "integer8",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S01"
+      ],
+      "evidence": [
+        "StandardArithmeticResponse.table_response",
+        "StandardArithmeticResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Integer8.multiply",
+      "rust_operand": "INTEGER8",
+      "operator": "Mul",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "integer8",
+        "integer8"
+      ],
+      "result": "integer8",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S01"
+      ],
+      "evidence": [
+        "StandardArithmeticResponse.table_response",
+        "StandardArithmeticResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Integer8.div",
+      "rust_operand": "INTEGER8",
+      "operator": "IntDiv",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "integer8",
+        "integer8"
+      ],
+      "result": "integer8",
+      "effect": [],
+      "ordinary": "open",
+      "additional_S": [
+        "S02"
+      ],
+      "evidence": [
+        "Benitoite.Interval.IntKind.checkedDivMod"
+      ],
+      "unproved": [
+        "この実名・原署名の全BuiltinArgs→同namedδ→型/Ground/Adequate/非exitはL40独立未完。新しい演算算法は追加しない。"
+      ]
+    },
+    {
+      "name": "%Integer8.mod",
+      "rust_operand": "INTEGER8",
+      "operator": "Mod",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "integer8",
+        "integer8"
+      ],
+      "result": "integer8",
+      "effect": [],
+      "ordinary": "open",
+      "additional_S": [
+        "S02"
+      ],
+      "evidence": [
+        "Benitoite.Interval.IntKind.checkedDivMod"
+      ],
+      "unproved": [
+        "この実名・原署名の全BuiltinArgs→同namedδ→型/Ground/Adequate/非exitはL40独立未完。新しい演算算法は追加しない。"
+      ]
+    },
+    {
+      "name": "%Integer8.negate",
+      "rust_operand": "INTEGER8",
+      "operator": "Neg",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "value"
+      ],
+      "params": [
+        "integer8"
+      ],
+      "result": "integer8",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S01"
+      ],
+      "evidence": [
+        "StandardArithmeticResponse.table_response",
+        "StandardArithmeticResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Integer16.add",
+      "rust_operand": "INTEGER16",
+      "operator": "Add",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "integer16",
+        "integer16"
+      ],
+      "result": "integer16",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S01"
+      ],
+      "evidence": [
+        "StandardArithmeticResponse.table_response",
+        "StandardArithmeticResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Integer16.subtract",
+      "rust_operand": "INTEGER16",
+      "operator": "Sub",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "integer16",
+        "integer16"
+      ],
+      "result": "integer16",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S01"
+      ],
+      "evidence": [
+        "StandardArithmeticResponse.table_response",
+        "StandardArithmeticResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Integer16.multiply",
+      "rust_operand": "INTEGER16",
+      "operator": "Mul",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "integer16",
+        "integer16"
+      ],
+      "result": "integer16",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S01"
+      ],
+      "evidence": [
+        "StandardArithmeticResponse.table_response",
+        "StandardArithmeticResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Integer16.div",
+      "rust_operand": "INTEGER16",
+      "operator": "IntDiv",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "integer16",
+        "integer16"
+      ],
+      "result": "integer16",
+      "effect": [],
+      "ordinary": "open",
+      "additional_S": [
+        "S02"
+      ],
+      "evidence": [
+        "Benitoite.Interval.IntKind.checkedDivMod"
+      ],
+      "unproved": [
+        "この実名・原署名の全BuiltinArgs→同namedδ→型/Ground/Adequate/非exitはL40独立未完。新しい演算算法は追加しない。"
+      ]
+    },
+    {
+      "name": "%Integer16.mod",
+      "rust_operand": "INTEGER16",
+      "operator": "Mod",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "integer16",
+        "integer16"
+      ],
+      "result": "integer16",
+      "effect": [],
+      "ordinary": "open",
+      "additional_S": [
+        "S02"
+      ],
+      "evidence": [
+        "Benitoite.Interval.IntKind.checkedDivMod"
+      ],
+      "unproved": [
+        "この実名・原署名の全BuiltinArgs→同namedδ→型/Ground/Adequate/非exitはL40独立未完。新しい演算算法は追加しない。"
+      ]
+    },
+    {
+      "name": "%Integer16.negate",
+      "rust_operand": "INTEGER16",
+      "operator": "Neg",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "value"
+      ],
+      "params": [
+        "integer16"
+      ],
+      "result": "integer16",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S01"
+      ],
+      "evidence": [
+        "StandardArithmeticResponse.table_response",
+        "StandardArithmeticResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Integer32.add",
+      "rust_operand": "INTEGER32",
+      "operator": "Add",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "integer32",
+        "integer32"
+      ],
+      "result": "integer32",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S01"
+      ],
+      "evidence": [
+        "StandardArithmeticResponse.table_response",
+        "StandardArithmeticResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Integer32.subtract",
+      "rust_operand": "INTEGER32",
+      "operator": "Sub",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "integer32",
+        "integer32"
+      ],
+      "result": "integer32",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S01"
+      ],
+      "evidence": [
+        "StandardArithmeticResponse.table_response",
+        "StandardArithmeticResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Integer32.multiply",
+      "rust_operand": "INTEGER32",
+      "operator": "Mul",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "integer32",
+        "integer32"
+      ],
+      "result": "integer32",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S01"
+      ],
+      "evidence": [
+        "StandardArithmeticResponse.table_response",
+        "StandardArithmeticResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Integer32.div",
+      "rust_operand": "INTEGER32",
+      "operator": "IntDiv",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "integer32",
+        "integer32"
+      ],
+      "result": "integer32",
+      "effect": [],
+      "ordinary": "open",
+      "additional_S": [
+        "S02"
+      ],
+      "evidence": [
+        "Benitoite.Interval.IntKind.checkedDivMod"
+      ],
+      "unproved": [
+        "この実名・原署名の全BuiltinArgs→同namedδ→型/Ground/Adequate/非exitはL40独立未完。新しい演算算法は追加しない。"
+      ]
+    },
+    {
+      "name": "%Integer32.mod",
+      "rust_operand": "INTEGER32",
+      "operator": "Mod",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "integer32",
+        "integer32"
+      ],
+      "result": "integer32",
+      "effect": [],
+      "ordinary": "open",
+      "additional_S": [
+        "S02"
+      ],
+      "evidence": [
+        "Benitoite.Interval.IntKind.checkedDivMod"
+      ],
+      "unproved": [
+        "この実名・原署名の全BuiltinArgs→同namedδ→型/Ground/Adequate/非exitはL40独立未完。新しい演算算法は追加しない。"
+      ]
+    },
+    {
+      "name": "%Integer32.negate",
+      "rust_operand": "INTEGER32",
+      "operator": "Neg",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "value"
+      ],
+      "params": [
+        "integer32"
+      ],
+      "result": "integer32",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S01"
+      ],
+      "evidence": [
+        "StandardArithmeticResponse.table_response",
+        "StandardArithmeticResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%UnsignedInteger16.add",
+      "rust_operand": "UNSIGNED_INTEGER16",
+      "operator": "Add",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "unsignedInteger16",
+        "unsignedInteger16"
+      ],
+      "result": "unsignedInteger16",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S01"
+      ],
+      "evidence": [
+        "StandardArithmeticResponse.table_response",
+        "StandardArithmeticResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%UnsignedInteger16.subtract",
+      "rust_operand": "UNSIGNED_INTEGER16",
+      "operator": "Sub",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "unsignedInteger16",
+        "unsignedInteger16"
+      ],
+      "result": "unsignedInteger16",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S01"
+      ],
+      "evidence": [
+        "StandardArithmeticResponse.table_response",
+        "StandardArithmeticResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%UnsignedInteger16.multiply",
+      "rust_operand": "UNSIGNED_INTEGER16",
+      "operator": "Mul",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "unsignedInteger16",
+        "unsignedInteger16"
+      ],
+      "result": "unsignedInteger16",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S01"
+      ],
+      "evidence": [
+        "StandardArithmeticResponse.table_response",
+        "StandardArithmeticResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%UnsignedInteger16.div",
+      "rust_operand": "UNSIGNED_INTEGER16",
+      "operator": "IntDiv",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "unsignedInteger16",
+        "unsignedInteger16"
+      ],
+      "result": "unsignedInteger16",
+      "effect": [],
+      "ordinary": "open",
+      "additional_S": [
+        "S02"
+      ],
+      "evidence": [
+        "Benitoite.Interval.IntKind.checkedDivMod"
+      ],
+      "unproved": [
+        "この実名・原署名の全BuiltinArgs→同namedδ→型/Ground/Adequate/非exitはL40独立未完。新しい演算算法は追加しない。"
+      ]
+    },
+    {
+      "name": "%UnsignedInteger16.mod",
+      "rust_operand": "UNSIGNED_INTEGER16",
+      "operator": "Mod",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "unsignedInteger16",
+        "unsignedInteger16"
+      ],
+      "result": "unsignedInteger16",
+      "effect": [],
+      "ordinary": "open",
+      "additional_S": [
+        "S02"
+      ],
+      "evidence": [
+        "Benitoite.Interval.IntKind.checkedDivMod"
+      ],
+      "unproved": [
+        "この実名・原署名の全BuiltinArgs→同namedδ→型/Ground/Adequate/非exitはL40独立未完。新しい演算算法は追加しない。"
+      ]
+    },
+    {
+      "name": "%UnsignedInteger32.add",
+      "rust_operand": "UNSIGNED_INTEGER32",
+      "operator": "Add",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "unsignedInteger32",
+        "unsignedInteger32"
+      ],
+      "result": "unsignedInteger32",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S01"
+      ],
+      "evidence": [
+        "StandardArithmeticResponse.table_response",
+        "StandardArithmeticResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%UnsignedInteger32.subtract",
+      "rust_operand": "UNSIGNED_INTEGER32",
+      "operator": "Sub",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "unsignedInteger32",
+        "unsignedInteger32"
+      ],
+      "result": "unsignedInteger32",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S01"
+      ],
+      "evidence": [
+        "StandardArithmeticResponse.table_response",
+        "StandardArithmeticResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%UnsignedInteger32.multiply",
+      "rust_operand": "UNSIGNED_INTEGER32",
+      "operator": "Mul",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "unsignedInteger32",
+        "unsignedInteger32"
+      ],
+      "result": "unsignedInteger32",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S01"
+      ],
+      "evidence": [
+        "StandardArithmeticResponse.table_response",
+        "StandardArithmeticResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%UnsignedInteger32.div",
+      "rust_operand": "UNSIGNED_INTEGER32",
+      "operator": "IntDiv",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "unsignedInteger32",
+        "unsignedInteger32"
+      ],
+      "result": "unsignedInteger32",
+      "effect": [],
+      "ordinary": "open",
+      "additional_S": [
+        "S02"
+      ],
+      "evidence": [
+        "Benitoite.Interval.IntKind.checkedDivMod"
+      ],
+      "unproved": [
+        "この実名・原署名の全BuiltinArgs→同namedδ→型/Ground/Adequate/非exitはL40独立未完。新しい演算算法は追加しない。"
+      ]
+    },
+    {
+      "name": "%UnsignedInteger32.mod",
+      "rust_operand": "UNSIGNED_INTEGER32",
+      "operator": "Mod",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "unsignedInteger32",
+        "unsignedInteger32"
+      ],
+      "result": "unsignedInteger32",
+      "effect": [],
+      "ordinary": "open",
+      "additional_S": [
+        "S02"
+      ],
+      "evidence": [
+        "Benitoite.Interval.IntKind.checkedDivMod"
+      ],
+      "unproved": [
+        "この実名・原署名の全BuiltinArgs→同namedδ→型/Ground/Adequate/非exitはL40独立未完。新しい演算算法は追加しない。"
+      ]
+    },
+    {
+      "name": "%UnsignedInteger64.add",
+      "rust_operand": "UNSIGNED_INTEGER64",
+      "operator": "Add",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "unsignedInteger64",
+        "unsignedInteger64"
+      ],
+      "result": "unsignedInteger64",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S01"
+      ],
+      "evidence": [
+        "StandardArithmeticResponse.table_response",
+        "StandardArithmeticResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%UnsignedInteger64.subtract",
+      "rust_operand": "UNSIGNED_INTEGER64",
+      "operator": "Sub",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "unsignedInteger64",
+        "unsignedInteger64"
+      ],
+      "result": "unsignedInteger64",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S01"
+      ],
+      "evidence": [
+        "StandardArithmeticResponse.table_response",
+        "StandardArithmeticResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%UnsignedInteger64.multiply",
+      "rust_operand": "UNSIGNED_INTEGER64",
+      "operator": "Mul",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "unsignedInteger64",
+        "unsignedInteger64"
+      ],
+      "result": "unsignedInteger64",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S01"
+      ],
+      "evidence": [
+        "StandardArithmeticResponse.table_response",
+        "StandardArithmeticResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%UnsignedInteger64.div",
+      "rust_operand": "UNSIGNED_INTEGER64",
+      "operator": "IntDiv",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "unsignedInteger64",
+        "unsignedInteger64"
+      ],
+      "result": "unsignedInteger64",
+      "effect": [],
+      "ordinary": "open",
+      "additional_S": [
+        "S02"
+      ],
+      "evidence": [
+        "Benitoite.Interval.IntKind.checkedDivMod"
+      ],
+      "unproved": [
+        "この実名・原署名の全BuiltinArgs→同namedδ→型/Ground/Adequate/非exitはL40独立未完。新しい演算算法は追加しない。"
+      ]
+    },
+    {
+      "name": "%UnsignedInteger64.mod",
+      "rust_operand": "UNSIGNED_INTEGER64",
+      "operator": "Mod",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "unsignedInteger64",
+        "unsignedInteger64"
+      ],
+      "result": "unsignedInteger64",
+      "effect": [],
+      "ordinary": "open",
+      "additional_S": [
+        "S02"
+      ],
+      "evidence": [
+        "Benitoite.Interval.IntKind.checkedDivMod"
+      ],
+      "unproved": [
+        "この実名・原署名の全BuiltinArgs→同namedδ→型/Ground/Adequate/非exitはL40独立未完。新しい演算算法は追加しない。"
+      ]
+    },
+    {
+      "name": "%Float32.add",
+      "rust_operand": "FLOAT32",
+      "operator": "Add",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "float32",
+        "float32"
+      ],
+      "result": "float32",
+      "effect": [],
+      "ordinary": "open",
+      "additional_S": [],
+      "evidence": [],
+      "unproved": [
+        "この実名・原署名の全BuiltinArgs→同namedδ→型/Ground/Adequate/非exitはL40独立未完。新しい演算算法は追加しない。"
+      ]
+    },
+    {
+      "name": "%Float32.subtract",
+      "rust_operand": "FLOAT32",
+      "operator": "Sub",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "float32",
+        "float32"
+      ],
+      "result": "float32",
+      "effect": [],
+      "ordinary": "open",
+      "additional_S": [],
+      "evidence": [],
+      "unproved": [
+        "この実名・原署名の全BuiltinArgs→同namedδ→型/Ground/Adequate/非exitはL40独立未完。新しい演算算法は追加しない。"
+      ]
+    },
+    {
+      "name": "%Float32.multiply",
+      "rust_operand": "FLOAT32",
+      "operator": "Mul",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "float32",
+        "float32"
+      ],
+      "result": "float32",
+      "effect": [],
+      "ordinary": "open",
+      "additional_S": [],
+      "evidence": [],
+      "unproved": [
+        "この実名・原署名の全BuiltinArgs→同namedδ→型/Ground/Adequate/非exitはL40独立未完。新しい演算算法は追加しない。"
+      ]
+    },
+    {
+      "name": "%Float32.divide",
+      "rust_operand": "FLOAT32",
+      "operator": "Div",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "float32",
+        "float32"
+      ],
+      "result": "float32",
+      "effect": [],
+      "ordinary": "open",
+      "additional_S": [],
+      "evidence": [],
+      "unproved": [
+        "この実名・原署名の全BuiltinArgs→同namedδ→型/Ground/Adequate/非exitはL40独立未完。新しい演算算法は追加しない。"
+      ]
+    },
+    {
+      "name": "%Float32.negate",
+      "rust_operand": "FLOAT32",
+      "operator": "Neg",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "value"
+      ],
+      "params": [
+        "float32"
+      ],
+      "result": "float32",
+      "effect": [],
+      "ordinary": "open",
+      "additional_S": [],
+      "evidence": [],
+      "unproved": [
+        "この実名・原署名の全BuiltinArgs→同namedδ→型/Ground/Adequate/非exitはL40独立未完。新しい演算算法は追加しない。"
+      ]
+    },
+    {
+      "name": "%Integer8.less",
+      "rust_operand": "INTEGER8",
+      "operator": "Lt",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "integer8",
+        "integer8"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Integer8.lessOrEqual",
+      "rust_operand": "INTEGER8",
+      "operator": "Le",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "integer8",
+        "integer8"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Integer8.greater",
+      "rust_operand": "INTEGER8",
+      "operator": "Gt",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "integer8",
+        "integer8"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Integer8.greaterOrEqual",
+      "rust_operand": "INTEGER8",
+      "operator": "Ge",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "integer8",
+        "integer8"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Integer16.less",
+      "rust_operand": "INTEGER16",
+      "operator": "Lt",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "integer16",
+        "integer16"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Integer16.lessOrEqual",
+      "rust_operand": "INTEGER16",
+      "operator": "Le",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "integer16",
+        "integer16"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Integer16.greater",
+      "rust_operand": "INTEGER16",
+      "operator": "Gt",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "integer16",
+        "integer16"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Integer16.greaterOrEqual",
+      "rust_operand": "INTEGER16",
+      "operator": "Ge",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "integer16",
+        "integer16"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Integer32.less",
+      "rust_operand": "INTEGER32",
+      "operator": "Lt",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "integer32",
+        "integer32"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Integer32.lessOrEqual",
+      "rust_operand": "INTEGER32",
+      "operator": "Le",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "integer32",
+        "integer32"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Integer32.greater",
+      "rust_operand": "INTEGER32",
+      "operator": "Gt",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "integer32",
+        "integer32"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Integer32.greaterOrEqual",
+      "rust_operand": "INTEGER32",
+      "operator": "Ge",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "integer32",
+        "integer32"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%UnsignedInteger16.less",
+      "rust_operand": "UNSIGNED_INTEGER16",
+      "operator": "Lt",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "unsignedInteger16",
+        "unsignedInteger16"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%UnsignedInteger16.lessOrEqual",
+      "rust_operand": "UNSIGNED_INTEGER16",
+      "operator": "Le",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "unsignedInteger16",
+        "unsignedInteger16"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%UnsignedInteger16.greater",
+      "rust_operand": "UNSIGNED_INTEGER16",
+      "operator": "Gt",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "unsignedInteger16",
+        "unsignedInteger16"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%UnsignedInteger16.greaterOrEqual",
+      "rust_operand": "UNSIGNED_INTEGER16",
+      "operator": "Ge",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "unsignedInteger16",
+        "unsignedInteger16"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%UnsignedInteger32.less",
+      "rust_operand": "UNSIGNED_INTEGER32",
+      "operator": "Lt",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "unsignedInteger32",
+        "unsignedInteger32"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%UnsignedInteger32.lessOrEqual",
+      "rust_operand": "UNSIGNED_INTEGER32",
+      "operator": "Le",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "unsignedInteger32",
+        "unsignedInteger32"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%UnsignedInteger32.greater",
+      "rust_operand": "UNSIGNED_INTEGER32",
+      "operator": "Gt",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "unsignedInteger32",
+        "unsignedInteger32"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%UnsignedInteger32.greaterOrEqual",
+      "rust_operand": "UNSIGNED_INTEGER32",
+      "operator": "Ge",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "unsignedInteger32",
+        "unsignedInteger32"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%UnsignedInteger64.less",
+      "rust_operand": "UNSIGNED_INTEGER64",
+      "operator": "Lt",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "unsignedInteger64",
+        "unsignedInteger64"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%UnsignedInteger64.lessOrEqual",
+      "rust_operand": "UNSIGNED_INTEGER64",
+      "operator": "Le",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "unsignedInteger64",
+        "unsignedInteger64"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%UnsignedInteger64.greater",
+      "rust_operand": "UNSIGNED_INTEGER64",
+      "operator": "Gt",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "unsignedInteger64",
+        "unsignedInteger64"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%UnsignedInteger64.greaterOrEqual",
+      "rust_operand": "UNSIGNED_INTEGER64",
+      "operator": "Ge",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "unsignedInteger64",
+        "unsignedInteger64"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Float32.less",
+      "rust_operand": "FLOAT32",
+      "operator": "Lt",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "float32",
+        "float32"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Float32.lessOrEqual",
+      "rust_operand": "FLOAT32",
+      "operator": "Le",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "float32",
+        "float32"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Float32.greater",
+      "rust_operand": "FLOAT32",
+      "operator": "Gt",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "float32",
+        "float32"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    },
+    {
+      "name": "%Float32.greaterOrEqual",
+      "rust_operand": "FLOAT32",
+      "operator": "Ge",
+      "tparams": [],
+      "row_count": 0,
+      "range_count": 0,
+      "names": [
+        "left",
+        "right"
+      ],
+      "params": [
+        "float32",
+        "float32"
+      ],
+      "result": "boolean",
+      "effect": [],
+      "ordinary": "pure-leaf",
+      "additional_S": [
+        "S03"
+      ],
+      "evidence": [
+        "StandardOrderResponse.table_response",
+        "StandardOrderResponse.response_math"
+      ],
+      "unproved": []
+    }
+  ],
+  "full_equality": {
+    "names": [
+      "%eq",
+      "%ne"
+    ],
+    "tparams": [
+      {
+        "kind": "value",
+        "constraints": {
+          "equality": true,
+          "key": false
+        }
+      }
+    ],
+    "params": [
+      "T",
+      "T"
+    ],
+    "parameter_names": [
+      "left",
+      "right"
+    ],
+    "result": "Boolean",
+    "row_count": 0,
+    "range_count": 0,
+    "status": "Full署名を維持したscalar-domain条件付きpartial。構造EqualityはL40独立未完。",
+    "evidence": [
+      "StandardEqualityResponse.table_response",
+      "StandardEqualityResponse.response_math"
+    ],
+    "retained": "元の篩付きT・Equality sat・Ordinary・Annotationを全BuiltinArgsから回収し、同じTで既存δを呼ぶ。",
+    "unproved_statement": "scalar-domain条件を除いた全Equality適格T（List/data/Bytes/Map/Set等）の具体δ/構造走査と型/Ground/Adequate/非exit。狭い署名又はTyped providerで補わない。"
+  },
+  "internal_list_patterns": {
+    "names": [
+      "%List.length",
+      "%List.getFront",
+      "%List.getBack",
+      "%List.slice"
+    ],
+    "schema": "一value型引数T、空row/range。xs、xs/index、xs/front/back。結果Integer/T/List[T]。",
+    "evidence": [
+      "StandardSafe.front_response",
+      "StandardSafeSlice.slice_response"
+    ],
+    "limits": "安全な内部契約の実証範囲は既存の.26記録を正とする。元の全内部署名を一括閉鎖しない。"
+  },
+  "limits": [
+    "通常資源/外部の実モデル充足はL60。L40の未完を移管しない。",
+    "区間計算/警告/returned/failed/第一失敗の接続は元.29〜35。今回の数値leafの成功と区別する。"
+  ]
+}

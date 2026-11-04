@@ -1,0 +1,126 @@
+{
+  "start_utc": "2026-11-04T02:32:11.163295+00:00",
+  "end_utc": "2026-11-04T02:32:11.451318+00:00",
+  "seconds": 0.287975291,
+  "exit": 0,
+  "baseline_inputs": 994,
+  "modified": 34,
+  "new_modules": 8,
+  "deleted": [
+    "formal/Trial/L40E5.lean"
+  ],
+  "ten_statements_unchanged": 10,
+  "safe19_contract_unchanged": true,
+  "explicit_root_imports": [
+    "FieldFacts",
+    "StandardHeadTailContracts",
+    "StandardHeadTailResponse",
+    "StandardHeadTailBodies",
+    "StandardMapHigherPrecisionGap",
+    "StandardCollectionPrecision",
+    "StandardMapReplaceValues",
+    "StandardCollectionRefinedBodies"
+  ],
+  "audited_declarations": 78534,
+  "audited_modules": 987,
+  "new_module_declarations": 1012,
+  "new_axioms": 0,
+  "certificate_families": {
+    "StandardHeadTailBodies": 7,
+    "StandardCollectionRefinedBodies": 3
+  },
+  "rules_copy_exact": true,
+  "text_fences_unchanged": true,
+  "records_under_100000_bytes": 342,
+  "largest_record": 89922,
+  "lean_reexecuted": false,
+  "rust_reexecuted": false,
+  "review": "RV-L40.e6",
+  "preserved_reason_unchanged": true,
+  "protected_sources_unchanged": {
+    ".lean": {
+      "files": 1597,
+      "sha256": "d70e7be9f94e20e95aaaeb4464da856cb075568a277094819eed6fa4486e44c6"
+    },
+    ".rs": {
+      "files": 571,
+      "sha256": "0e195b74c6d97ba1bca8e18d7133c488d39440bd830e33483d2e20181526986e"
+    },
+    ".bnt": {
+      "files": 2120,
+      "sha256": "b04bea1d8f679a5ae29e3606e5b144aa6f15dc7ca2a5a36ae2cb76b964a0db44"
+    }
+  },
+  "design_input_transitions": [
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "r6_recorded": {
+        "bytes": 865754,
+        "sha256": "c652cf4ac2c392ee08382d437b0a321eb5ba22eb7c86fd9f3683eab24ac9da6a"
+      },
+      "r7_start": {
+        "bytes": 866280,
+        "sha256": "b506e53d17216a23e819737e03e087dc3b6800e82770619c6e6e0837e731f0ad"
+      },
+      "r7_after": {
+        "bytes": 866406,
+        "sha256": "21412486b0b3ee6d69b040b56c75aa85b1c9d0e26b746027f97901fb99987d71"
+      },
+      "changes_since_r6": "取りまとめによる規則の理由への Jhala と Vazou、Chk-Alt の出典追記。再開7で LinksValid と FactsWF の説明を修正。"
+    },
+    {
+      "path": "docs/design/07-quality/07-04-formal-semantics.md",
+      "r6_recorded": {
+        "bytes": 563470,
+        "sha256": "0e9405964ea7f82081590bc78bc9d412a2fdf9c506503276e40f45db8ad0ef96"
+      },
+      "r7_start": {
+        "bytes": 563470,
+        "sha256": "0e9405964ea7f82081590bc78bc9d412a2fdf9c506503276e40f45db8ad0ef96"
+      },
+      "r7_after": {
+        "bytes": 563136,
+        "sha256": "4bd178de4a2be619d969801f379f77b18aa3819453f103ea0cd6c136270b47c8"
+      },
+      "changes_since_r6": "再開7で段名・未実装の列挙を申し送りへ移し、ResponseAssumptions を証明する旨に修正。"
+    }
+  ],
+  "evidence": {
+    "changes-r7.json": {
+      "bytes": 14083,
+      "sha256": "0a3d30d192203885bd1196f085686af1eb4d6967ae7e3528bb3d98e212ba7965"
+    },
+    "inputs-r7.json": {
+      "bytes": 2428,
+      "sha256": "e3f9537c83cf34372d306bcd160de460d603c6c6052981acd2ce2a063d005452"
+    },
+    "verify-r6.py": {
+      "bytes": 7820,
+      "sha256": "d3bf3a966d8fd440003ca0774b40b86c8d5aa768dae9aed984a3b44053fba5dd"
+    },
+    "verify-r7.py": {
+      "bytes": 9505,
+      "sha256": "da9e9a03db1c35e78c113f48b963fe38047945de1583e2f54a3a195204d45fa6"
+    },
+    "ten-statements-r6.json": {
+      "bytes": 1947,
+      "sha256": "85e73d508e1f902fe240f16cfb076b165d1e249986e22db6c6520233d4d8b9e5"
+    },
+    "audit-summary-r6.json": {
+      "bytes": 3792,
+      "sha256": "d6671ff9325842b0e90a7550400d2dc6aea5e2184754c78078ee3cd6c7fa217e"
+    },
+    "default-build-r6.json": {
+      "bytes": 464,
+      "sha256": "af7357c4c7005d24689397f9fd9ecaf89644ba5eb4060fb2310a9be55880d886"
+    },
+    "work-r6.json": {
+      "bytes": 445,
+      "sha256": "6af75373bc645a2dd42a024c4c67911183fd71a582f1f968f13fda5806b5c240"
+    },
+    "spec-text-fences-r6.json": {
+      "bytes": 429,
+      "sha256": "c0e8193134c7cc39e741b7c974e66099883fa4ab3fe4f318068fd39d3158ffbb"
+    }
+  }
+}

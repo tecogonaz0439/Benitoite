@@ -1,0 +1,50 @@
+[
+  {
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "<tmp>/audit-input-r6.lean"
+    ],
+    "start_utc": "2026-11-04T01:52:40.099565+00:00",
+    "end_utc": "2026-11-04T01:52:40.840241+00:00",
+    "seconds": 0.740616625,
+    "exit": 1,
+    "raw": {
+      "bytes": 108,
+      "sha256": "06ebc343cb5e893a44638c33e87bb16b357ad2f34a65424e828e3cb44bde57db"
+    },
+    "audit_input": {
+      "bytes": 23943,
+      "sha256": "8ca845c3038d6a6c29d830061abba66ea65c890b7e868c001840f4376b22e3ad"
+    },
+    "reason": "可変変数orderedのshadowing",
+    "targets_processed": 0
+  },
+  {
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "<tmp>/audit-input-r6.lean"
+    ],
+    "start_utc": "2026-11-04T01:53:37.590007+00:00",
+    "end_utc": "2026-11-04T01:53:38.334674+00:00",
+    "seconds": 0.7446066250000001,
+    "exit": 1,
+    "raw": {
+      "bytes": 1457,
+      "sha256": "1be2eebacf8bcd6280ee64765ab9d2a5c049270db87ed160d4bb026abdeb52b5"
+    },
+    "audit_input": {
+      "bytes": 23943,
+      "sha256": "cc51dae69053b4d07c7f152cde9e13c18efc552c6735473d305ae301a4ae7ba4"
+    },
+    "reason": "周回数roundsのNat注釈の不足",
+    "targets_processed": 0
+  }
+]

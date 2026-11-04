@@ -1365,29 +1365,57 @@ mutual
         (substTyValues σ a) (substTyValues σ b) (substEffValues σ e) L' := by
     match h with
     | .nil ha => exact .nil (ht.images.annotation ha)
-    | .plain (δ := δ) (alts := alts) hp hw hb hs =>
+    | .plain (δ := δ) (alts := alts) (links := links) hp hvf hfw hw hb hs =>
       have hw' := hw.bind_paths ht.images.values ht.images.references ht.images.declaration
+      have heq := fieldFacts_bind hvf hw ht.images.values ht.images.references
+      have heq' : (fieldFacts δ.length obs links).map (predBind (valEnv (upSubst δ.length σ)).values) =
+          fieldFacts δ.length (obs.bind (termBind? (valEnv σ).values)) links := by
+        rw [valEnv_upSubst]
+        exact heq
       rw [pathFacts_append] at hw
       have hmf := Entails.extend_conditions hf (pathFacts_bind hw.left ht.images.values ht.images.references)
       have hef := Entails.extend_conditions hf (pathFacts_bind hw.right ht.images.values ht.images.references)
       have htm := ht.add_conditions (pathFacts (obs.bind (termBind? (valEnv σ).values)) (matchedTests alts)) hA hstore
       have hte := ht.add_conditions (pathFacts (obs.bind (termBind? (valEnv σ).values)) (excludedTests alts)) hA hstore
-      refine .plain (hp.subst_values σ) hw' ?_ (subst_arms hs hA hT hstore ρ hte hL hef)
+      have hparams := htm.params hA hstore δ
+      have hfw' : FactsWF P C (bindParams Δ (δ.map (substTyValues σ)))
+          (fieldFacts δ.length (obs.bind (termBind? (valEnv σ).values)) links) := by
+        rw [←heq']
+        intro p hp
+        obtain ⟨q,hq,rfl⟩ := List.mem_map.mp hp
+        exact (hfw q hq).map hparams.images.values hparams.images.references hparams.images.declaration
+      have hparamsF := hparams.add_conditions (fieldFacts δ.length (obs.bind (termBind? (valEnv σ).values)) links) hA hstore
+      have hconds := Entails.extend_conditions (htm.images.conditions_params hmf δ) heq'
+      refine .plain (hp.subst_values σ) (by simpa only [List.length_map] using hvf)
+        (by simpa only [List.length_map] using hfw') hw' ?_ (subst_arms hs hA hT hstore ρ hte hL hef)
       have hh := subst_comp hb hA hT hstore (upLocalSubst δ.length ρ)
-        (by simpa only [SubstOk,Option.map_map,Function.comp_def,Ty.bind_shiftV_values] using htm.params hA hstore δ)
-        (hL.localExtend hstore δ.length) (htm.images.conditions_params hmf δ)
+        (by simpa only [SubstOk,Option.map_map,Function.comp_def,Ty.bind_shiftV_values] using hparamsF)
+        (hL.localExtend hstore δ.length) hconds
       simpa only [List.length_map,Option.map_map,Function.comp_def,
         Ty.bind_shiftV_values,Eff.bind_shiftV_values,hp.2.1,List.cons_append,List.nil_append] using hh
-    | .guarded (δ := δ) (alts := alts) (p := p) hp hw hgp hg hb hs =>
+    | .guarded (δ := δ) (alts := alts) (p := p) (links := links) hp hvf hfw hw hgp hg hb hs =>
       have hw' := hw.bind_paths ht.images.values ht.images.references ht.images.declaration
+      have heq := fieldFacts_bind hvf hw ht.images.values ht.images.references
+      have heq' : (fieldFacts δ.length obs links).map (predBind (valEnv (upSubst δ.length σ)).values) =
+          fieldFacts δ.length (obs.bind (termBind? (valEnv σ).values)) links := by
+        rw [valEnv_upSubst]
+        exact heq
       rw [pathFacts_append] at hw
       have hmf := Entails.extend_conditions hf (pathFacts_bind hw.left ht.images.values ht.images.references)
       have htm := ht.add_conditions (pathFacts (obs.bind (termBind? (valEnv σ).values)) (matchedTests alts)) hA hstore
       have hparams := htm.params hA hstore δ
-      have hguard := hparams.hide hA hstore (.refl _) none
+      have hfw' : FactsWF P C (bindParams Δ (δ.map (substTyValues σ)))
+          (fieldFacts δ.length (obs.bind (termBind? (valEnv σ).values)) links) := by
+        rw [←heq']
+        intro p hp
+        obtain ⟨q,hq,rfl⟩ := List.mem_map.mp hp
+        exact (hfw q hq).map hparams.images.values hparams.images.references hparams.images.declaration
+      have hparamsF := hparams.add_conditions (fieldFacts δ.length (obs.bind (termBind? (valEnv σ).values)) links) hA hstore
+      have hguard := hparamsF.hide hA hstore (.refl _) none
       have hgAnn := hguard.images.raw_bool_annotation hgp
-      have hconds := htm.images.conditions_params hmf δ
-      refine .guarded (hp.subst_values σ) hw' hgAnn ?_ ?_ (subst_arms hs hA hT hstore ρ ht hL hf)
+      have hconds := Entails.extend_conditions (htm.images.conditions_params hmf δ) heq'
+      refine .guarded (hp.subst_values σ) (by simpa only [List.length_map] using hvf)
+        (by simpa only [List.length_map] using hfw') hw' hgAnn ?_ ?_ (subst_arms hs hA hT hstore ρ ht hL hf)
       · have hh := subst_comp hg hA hT hstore (upLocalSubst δ.length ρ) hguard
           (hL.localExtend hstore δ.length) (fun p hp => (hconds p hp).hideConts)
         have he : substTyValues (upSubst δ.length σ) (.refined (.base .boolean) p) =
@@ -1405,7 +1433,7 @@ mutual
             exact predBind_open_of_some _ p (.boolean true) (.boolean true) rfl)
         have hh := subst_comp hb hA hT hstore (upLocalSubst δ.length ρ)
           (by simpa only [SubstOk,Option.map_map,Function.comp_def,Ty.bind_shiftV_values] using
-            hparams.add_conditions [(predBind (upValues (valEnv (upSubst δ.length σ)).values) p).open (.boolean true)] hA hstore)
+            hparamsF.add_conditions [(predBind (upValues (valEnv (upSubst δ.length σ)).values) p).open (.boolean true)] hA hstore)
           (hL.localExtend hstore δ.length) hconds'
         simpa only [List.length_map,Option.map_map,Function.comp_def,
           Ty.bind_shiftV_values,Eff.bind_shiftV_values,hp.2.1,List.cons_append,List.nil_append] using hh

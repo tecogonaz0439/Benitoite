@@ -1053,23 +1053,28 @@ theorem case_Arms_nil :
 theorem case_Arms_plain :
 ∀ {Ψ : StoreTy} {Q : Benitoite.Release.NoFailCtx} {C : TypeCtx} {Γ : Ctx} {Φ : List Pred} {Δ : LocalCtx} {R : Option Ty}
   {obs : Option Benitoite.Release.Refinement.Term} {alts : List Benitoite.Release.Alt} {body : Comp} {arms : List Arm}
-  {a b : Ty} {ε : Eff} {δ : List Ty},
+  {a b : Ty} {ε : Eff} {δ : List Ty} {links : List FieldLink},
   AltsTy P alts a δ →
+    LinksValid alts δ.length links →
+    FactsWF P C (bindParams Γ δ) (fieldFacts δ.length obs links) →
     FactsWF P C Γ (pathFacts obs (matchedTests alts ++ excludedTests alts)) →
-      HasTypeCQ P B Ψ Q C (bindParams Γ δ) (liftMany δ.length (pathFacts obs (matchedTests alts) ++ Φ))
+      HasTypeCQ P B Ψ Q C (bindParams Γ δ) (fieldFacts δ.length obs links ++ liftMany δ.length (pathFacts obs (matchedTests alts) ++ Φ))
           (Option.map (Ty.shiftV δ.length 0) R) body (Ty.shiftV δ.length 0 b) (Eff.shiftV δ.length 0 ε)
           (localExtend δ.length Δ) →
         HasTypeArmsQ P B Ψ Q C Γ (pathFacts obs (excludedTests alts) ++ Φ) R obs arms a b ε Δ →
-          CGoal P B Ψ Q C (bindParams Γ δ) (liftMany δ.length (pathFacts obs (matchedTests alts) ++ Φ))
+          CGoal P B Ψ Q C (bindParams Γ δ) (fieldFacts δ.length obs links ++ liftMany δ.length (pathFacts obs (matchedTests alts) ++ Φ))
               (Option.map (Ty.shiftV δ.length 0) R) body (Ty.shiftV δ.length 0 b) (Eff.shiftV δ.length 0 ε)
               (localExtend δ.length Δ) →
             ArmsGoal P B Ψ Q C Γ (pathFacts obs (excludedTests alts) ++ Φ) R obs arms a b ε Δ →
               ArmsGoal P B Ψ Q C Γ Φ R obs (Arm.mk alts none body :: arms) a b ε Δ := by
-  intro Ψ Q C Γ Φ Δ R obs alts body arms a b e δ hp hw hb hs ib is' C0 C1 us fs Q' hC hf hi hc hq
+  intro Ψ Q C Γ Φ Δ R obs alts body arms a b e δ links hp hvf hfw hw hb hs ib is' C0 C1 us fs Q' hC hf hi hc hq
   subst C
   have hb' := ib rfl hf hi (hc.binders 0 δ.length (fun _ _ _ _ h => by
     simpa only [←hp.2.1,Nat.add_zero] using h.2.1)) hq
-  have out := HasTypeArmsQ.plain (hp.substAt hf.1 C1.length us fs) (hw.typeSubst hf hi)
+  have out := HasTypeArmsQ.plain (hp.substAt hf.1 C1.length us fs)
+    (by simpa only [List.length_map] using hvf)
+    (by simpa only [Ctx.bindTypes_params hi.typeWF hi.rowWF,List.length_map] using hfw.typeSubst hf hi)
+    (hw.typeSubst hf hi)
     (by simpa only [Ctx.bindTypes_params hi.typeWF hi.rowWF,List.length_map,
       return_typeSubst_shiftV hi,substAt_shiftV_closed hi.typeWF hi.rowWF,
       eff_substAt_shiftV_closed hi.typeWF hi.rowWF,LocalCtx.typeSubst_localExtend hi] using hb')
@@ -1080,26 +1085,28 @@ theorem case_Arms_plain :
 theorem case_Arms_guarded :
 ∀ {Ψ : StoreTy} {Q : Benitoite.Release.NoFailCtx} {C : TypeCtx} {Γ : Ctx} {Φ : List Pred} {Δ : LocalCtx} {R : Option Ty}
   {obs : Option Benitoite.Release.Refinement.Term} {alts : List Benitoite.Release.Alt} {guard body : Comp}
-  {arms : List Arm} {a b : Ty} {ε : Eff} {δ : List Ty} {p : Pred},
+  {arms : List Arm} {a b : Ty} {ε : Eff} {δ : List Ty} {p : Pred} {links : List FieldLink},
   AltsTy P alts a δ →
+    LinksValid alts δ.length links →
+    FactsWF P C (bindParams Γ δ) (fieldFacts δ.length obs links) →
     FactsWF P C Γ (pathFacts obs (matchedTests alts ++ excludedTests alts)) →
       Ty.Annotation P C (hideConts (bindParams Γ δ)) ((Ty.base Benitoite.Release.BaseTy.boolean).refined p) →
-        HasTypeCQ P B Ψ Q C (hideConts (bindParams Γ δ)) (liftMany δ.length (pathFacts obs (matchedTests alts) ++ Φ))
+        HasTypeCQ P B Ψ Q C (hideConts (bindParams Γ δ)) (fieldFacts δ.length obs links ++ liftMany δ.length (pathFacts obs (matchedTests alts) ++ Φ))
             none guard ((Ty.base Benitoite.Release.BaseTy.boolean).refined p) Eff.empty (localExtend δ.length Δ) →
           HasTypeCQ P B Ψ Q C (bindParams Γ δ)
-              (p.open (Term.boolean true) :: liftMany δ.length (pathFacts obs (matchedTests alts) ++ Φ))
+              (p.open (Term.boolean true) :: (fieldFacts δ.length obs links ++ liftMany δ.length (pathFacts obs (matchedTests alts) ++ Φ)))
               (Option.map (Ty.shiftV δ.length 0) R) body (Ty.shiftV δ.length 0 b) (Eff.shiftV δ.length 0 ε)
               (localExtend δ.length Δ) →
             HasTypeArmsQ P B Ψ Q C Γ Φ R obs arms a b ε Δ →
-              CGoal P B Ψ Q C (hideConts (bindParams Γ δ)) (liftMany δ.length (pathFacts obs (matchedTests alts) ++ Φ))
+              CGoal P B Ψ Q C (hideConts (bindParams Γ δ)) (fieldFacts δ.length obs links ++ liftMany δ.length (pathFacts obs (matchedTests alts) ++ Φ))
                   none guard ((Ty.base Benitoite.Release.BaseTy.boolean).refined p) Eff.empty (localExtend δ.length Δ) →
                 CGoal P B Ψ Q C (bindParams Γ δ)
-                    (p.open (Term.boolean true) :: liftMany δ.length (pathFacts obs (matchedTests alts) ++ Φ))
+                    (p.open (Term.boolean true) :: (fieldFacts δ.length obs links ++ liftMany δ.length (pathFacts obs (matchedTests alts) ++ Φ)))
                     (Option.map (Ty.shiftV δ.length 0) R) body (Ty.shiftV δ.length 0 b) (Eff.shiftV δ.length 0 ε)
                     (localExtend δ.length Δ) →
                   ArmsGoal P B Ψ Q C Γ Φ R obs arms a b ε Δ →
                     ArmsGoal P B Ψ Q C Γ Φ R obs (Arm.mk alts (some guard) body :: arms) a b ε Δ := by
-  intro Ψ Q C Γ Φ Δ R obs alts guard body arms a b e δ p hp hw hgp hg hb hs ig ib is' C0 C1 us fs Q' hC hf hi hc hq
+  intro Ψ Q C Γ Φ Δ R obs alts guard body arms a b e δ p links hp hvf hfw hw hgp hg hb hs ig ib is' C0 C1 us fs Q' hC hf hi hc hq
   subst C
   have hg' := ig rfl hf hi (hc.binders 0 δ.length (fun _ _ _ _ h => by
     simpa only [←hp.2.1,Nat.add_zero] using h.1)) hq
@@ -1113,7 +1120,10 @@ theorem case_Arms_guarded :
     (Eff.Covers.refl _ _ _) ha.wf ha.sorted ha.declared
   have hb' := ib rfl hf hi (hc.binders 0 δ.length (fun _ _ _ _ h => by
     simpa only [←hp.2.1,Nat.add_zero] using h.2.1)) hq
-  have out := HasTypeArmsQ.guarded (hp.substAt hf.1 C1.length us fs) (hw.typeSubst hf hi)
+  have out := HasTypeArmsQ.guarded (hp.substAt hf.1 C1.length us fs)
+    (by simpa only [List.length_map] using hvf)
+    (by simpa only [Ctx.bindTypes_params hi.typeWF hi.rowWF,List.length_map] using hfw.typeSubst hf hi)
+    (hw.typeSubst hf hi)
     (by simpa only [Ctx.bindTypes_hideConts _ _ (typeEnvAt_ordinary _ _ _ hi.typeKinds.ordinary),
       Ctx.bindTypes_params hi.typeWF hi.rowWF] using ha)
     (by simpa only [Ctx.bindTypes_hideConts _ _ (typeEnvAt_ordinary _ _ _ hi.typeKinds.ordinary),
@@ -1423,10 +1433,10 @@ ArmsGoal P B z0 z1 z2 z3 z4 z5 z6 z7 z8 z9 z10 z11 := by
     match h with
     | @HasTypeArmsQ.nil _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 =>
       exact @case_Arms_nil P B _ _ _ _ _ _ _ _ _ _ _ x11
-    | @HasTypeArmsQ.plain _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 =>
-      exact @case_Arms_plain P B _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ x15 x16 x17 x18 (@deriveC _ _ _ _ _ _ _ _ _ _ _ _ (x17)) (@deriveArms _ _ _ _ _ _ _ _ _ _ _ _ _ _ (x18))
-    | @HasTypeArmsQ.guarded _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 =>
-      exact @case_Arms_guarded P B _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ x17 x18 x19 x20 x21 x22 (@deriveC _ _ _ _ _ _ _ _ _ _ _ _ (x20)) (@deriveC _ _ _ _ _ _ _ _ _ _ _ _ (x21)) (@deriveArms _ _ _ _ _ _ _ _ _ _ _ _ _ _ (x22))
+    | @HasTypeArmsQ.plain _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 =>
+      exact @case_Arms_plain P B _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ x16 x17 x18 x19 x20 x21 (@deriveC _ _ _ _ _ _ _ _ _ _ _ _ (x20)) (@deriveArms _ _ _ _ _ _ _ _ _ _ _ _ _ _ (x21))
+    | @HasTypeArmsQ.guarded _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 =>
+      exact @case_Arms_guarded P B _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ x18 x19 x20 x21 x22 x23 x24 x25 (@deriveC _ _ _ _ _ _ _ _ _ _ _ _ (x23)) (@deriveC _ _ _ _ _ _ _ _ _ _ _ _ (x24)) (@deriveArms _ _ _ _ _ _ _ _ _ _ _ _ _ _ (x25))
   termination_by structural h
 
   theorem deriveClauses (P : Program) (B : Builtins) (z0 : StoreTy) (z1 : Benitoite.Release.NoFailCtx) (z2 : TypeCtx) (z3 : Ctx) (z4 : List Pred) (z5 : Option Ty) (z6 : Eff) (z7 : List Clause) (z8 : Ty) (z9 : Eff) (z10 : optParam LocalCtx []) (h : HasTypeClausesQ P B z0 z1 z2 z3 z4 z5 z6 z7 z8 z9 z10) :

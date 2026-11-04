@@ -1,0 +1,71 @@
+{
+  "start_utc": "2026-11-04T02:28:04+00:00",
+  "base": "548d3fd94a5f1a171c9bc749b3408f8a9f3c08f8",
+  "branch_as_instructed": "m014/l40.e",
+  "git_invoked": false,
+  "design_inputs": [
+    {
+      "path": "docs/design/01-spec/01-12-core-calculus.md",
+      "r6_recorded": {
+        "bytes": 865754,
+        "sha256": "c652cf4ac2c392ee08382d437b0a321eb5ba22eb7c86fd9f3683eab24ac9da6a"
+      },
+      "r7_start": {
+        "bytes": 866280,
+        "sha256": "b506e53d17216a23e819737e03e087dc3b6800e82770619c6e6e0837e731f0ad"
+      },
+      "r7_after": {
+        "bytes": 866406,
+        "sha256": "21412486b0b3ee6d69b040b56c75aa85b1c9d0e26b746027f97901fb99987d71"
+      },
+      "changes_since_r6": "取りまとめによる規則の理由への Jhala と Vazou、Chk-Alt の出典追記。再開7で LinksValid と FactsWF の説明を修正。"
+    },
+    {
+      "path": "docs/design/07-quality/07-04-formal-semantics.md",
+      "r6_recorded": {
+        "bytes": 563470,
+        "sha256": "0e9405964ea7f82081590bc78bc9d412a2fdf9c506503276e40f45db8ad0ef96"
+      },
+      "r7_start": {
+        "bytes": 563470,
+        "sha256": "0e9405964ea7f82081590bc78bc9d412a2fdf9c506503276e40f45db8ad0ef96"
+      },
+      "r7_after": {
+        "bytes": 563136,
+        "sha256": "4bd178de4a2be619d969801f379f77b18aa3819453f103ea0cd6c136270b47c8"
+      },
+      "changes_since_r6": "再開7で段名・未実装の列挙を申し送りへ移し、ResponseAssumptions を証明する旨に修正。"
+    }
+  ],
+  "protected_sources": {
+    ".lean": {
+      "files": 1597,
+      "sha256": "d70e7be9f94e20e95aaaeb4464da856cb075568a277094819eed6fa4486e44c6"
+    },
+    ".rs": {
+      "files": 571,
+      "sha256": "0e195b74c6d97ba1bca8e18d7133c488d39440bd830e33483d2e20181526986e"
+    },
+    ".bnt": {
+      "files": 2120,
+      "sha256": "b04bea1d8f679a5ae29e3606e5b144aa6f15dc7ca2a5a36ae2cb76b964a0db44"
+    }
+  },
+  "preserved_reason": {
+    "bytes": 944,
+    "sha256": "ed73c8aba95e57ca0d7688a0b5e8fa2d95bdbd4178adb17e9e39846c15a47017"
+  },
+  "text_fences": {
+    "unchanged": true,
+    "blocks": 24,
+    "sha256": "ef5e00e679e26252c393b902baa8b81864dd47c9b7d3b4dce93c6a96b0d779b2"
+  },
+  "r6_verifier": {
+    "bytes": 7820,
+    "sha256": "d3bf3a966d8fd440003ca0774b40b86c8d5aa768dae9aed984a3b44053fba5dd"
+  },
+  "r6_verification": {
+    "bytes": 1848,
+    "sha256": "9620db74a5b2c41c8b14d8a910c1cddcb091924b7775bb40cb29baa9490e341c"
+  }
+}

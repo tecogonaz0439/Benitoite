@@ -292,10 +292,10 @@ mutual
       Arm.resolveLocalsList ρ arms = arms := by
     match h with
     | .nil _ => rfl
-    | .plain hp _ hb hs =>
+    | .plain hp _ _ _ hb hs =>
       have hl := hp.2.1
       simp only [Arm.resolveLocalsList,←hl,HasTypeCQ.resolve_id hb _ (hf.many _),HasTypeArmsQ.resolve_id hs _ hf]
-    | .guarded hp _ _ hg hb hs =>
+    | .guarded hp _ _ _ _ hg hb hs =>
       have hl := hp.2.1
       simp only [Arm.resolveLocalsList,←hl,HasTypeCQ.resolve_id hg _ (hf.many _),
         HasTypeCQ.resolve_id hb _ (hf.many _),HasTypeArmsQ.resolve_id hs _ hf]

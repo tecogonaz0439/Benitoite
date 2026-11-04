@@ -99,7 +99,7 @@ private theorem unit_alts : Benitoite.Release.AltsTy oldProgram [⟨.var,[0]⟩]
 theorem local_arm : HasTypeArmsQ (embedProgramWithKinds kinds oldProgram) builtins StoreTy.empty
     Benitoite.Release.Qempty [] [] [] none none
     [.mk [⟨.var,[0]⟩] none (.ret (.var 0))] (.base .unit) (.base .unit) Eff.empty [] := by
-  apply HasTypeArmsQ.plain (embedAltsTy tables unit_alts) (by simp [FactsWF,pathFacts]) _
+  apply HasTypeArmsQ.plainEmpty (embedAltsTy tables unit_alts) (by simp [FactsWF,pathFacts]) _
     (.nil (C := []) (Γ := []) (b := .base .unit) ⟨trivial,trivial,trivial⟩)
   exact legacy_local_zero (n := 1) (L := []) (.C_Return (.V_Var rfl (by intro b t e h; cases h)))
 

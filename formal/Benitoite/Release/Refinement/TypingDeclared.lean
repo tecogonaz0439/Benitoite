@@ -61,7 +61,7 @@ theorem HasTypeArmsQ.declared {P B store Q C Γ Φ R obs arms a b e L}
     (h : HasTypeArmsQ P B store Q C Γ Φ R obs arms a b e L) : Ty.Declared P C Γ b := by
   match h with
   | .nil ha => exact ha.declared
-  | .plain _ _ _ hs | .guarded _ _ _ _ _ hs => exact hs.declared
+  | .plain _ _ _ _ _ hs | .guarded _ _ _ _ _ _ _ hs => exact hs.declared
 
 theorem HasTypeCQ.declared {P B store Q C Γ Φ R m a e L}
     (h : HasTypeCQ P B store Q C Γ Φ R m a e L) (hΓ : Ctx.Declared P C Γ) :

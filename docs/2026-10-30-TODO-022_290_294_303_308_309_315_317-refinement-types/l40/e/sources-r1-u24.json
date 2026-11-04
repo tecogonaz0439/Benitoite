@@ -1,0 +1,1217 @@
+{
+  "checked_utc": "2026-11-03T16:26:51.020651+00:00",
+  "sources": {
+    "crates/benitoite/src/prelude/stdlib/Map.bnt": {
+      "bytes": 2951,
+      "sha256": "bf99714990eb36d988e1de12b579bf7da9648f058e8357141e94de454ee41788"
+    },
+    "crates/benitoite/src/prelude/stdlib/Set.bnt": {
+      "bytes": 2396,
+      "sha256": "6ccd252a7d3ba9f66be75bcf204cd0ed15c0b9a30e68919c9ee2c1305ddf6db7"
+    },
+    "crates/benitoite/src/prelude/stdlib/Pair.bnt": {
+      "bytes": 371,
+      "sha256": "ff8616613de2c2c3b9cea6fae3f3f1fba383817dbdb6209384019480b598fff7"
+    },
+    "crates/benitoite/src/prelude/stdlib/List.bnt": {
+      "bytes": 6240,
+      "sha256": "940ec3e00387a468b6392d3b8caace0f840d0d0d13caa23327acc76eb02ba3df"
+    },
+    "crates/benitoite/src/builtins/funcs/map.rs": {
+      "bytes": 18977,
+      "sha256": "b5d9e5c34cac0b2c83dae365fb1e685ab99e36da8098a76a40823f43e6d232fa"
+    },
+    "crates/benitoite/src/builtins/funcs/set.rs": {
+      "bytes": 16139,
+      "sha256": "300b1a25f28cc0350ee62ce343191e24ac7c24dc7a0afb3e0c292666149fe1c1"
+    },
+    "crates/benitoite/src/runtime/map.rs": {
+      "bytes": 5496,
+      "sha256": "6a0f760323667a7067e81d7a4059331e3df89cac79472585776c7a46e9bf891f"
+    },
+    "crates/benitoite/src/runtime/map/keys.rs": {
+      "bytes": 6105,
+      "sha256": "50acb4bf01da4f11ddaa8bfe6ab28fdb1ecc6e4df2602cd0416beb4d9c4afa38"
+    },
+    "crates/benitoite/src/runtime/map/tree.rs": {
+      "bytes": 17999,
+      "sha256": "4bd3cd270dfd154306c4a5eeb700593b3fcfb052e0138ebe722472abc8ab6529"
+    },
+    "crates/benitoite/src/base/prim.rs": {
+      "bytes": 9278,
+      "sha256": "06e6229fb61d7377b34d66319eeeee54ef5e4aec0d34618751077bcffc818472"
+    }
+  },
+  "rows": [
+    {
+      "name": "Map.empty",
+      "kind": "pure",
+      "source": "crates/benitoite/src/prelude/stdlib/Map.bnt",
+      "line": 5,
+      "signature": "public function empty[K: key, V]() -> Map[K, V]",
+      "delta": "mapDelta",
+      "typed_response": "map_api_response",
+      "default_reader": "StandardCollectionModel.map_reply"
+    },
+    {
+      "name": "Map.fromList",
+      "kind": "pure",
+      "source": "crates/benitoite/src/prelude/stdlib/Map.bnt",
+      "line": 9,
+      "signature": "public function fromList[K: key, V](pairs: List[Pair[K, V]]) -> Map[K, V]",
+      "delta": "mapDelta",
+      "typed_response": "map_api_response",
+      "default_reader": "StandardCollectionModel.map_reply"
+    },
+    {
+      "name": "Map.toList",
+      "kind": "pure",
+      "source": "crates/benitoite/src/prelude/stdlib/Map.bnt",
+      "line": 13,
+      "signature": "public function toList[K: key, V](m: Map[K, V]) -> List[Pair[K, V]]",
+      "delta": "mapDelta",
+      "typed_response": "map_api_response",
+      "default_reader": "StandardCollectionModel.map_reply"
+    },
+    {
+      "name": "Map.get",
+      "kind": "pure",
+      "source": "crates/benitoite/src/prelude/stdlib/Map.bnt",
+      "line": 17,
+      "signature": "public function get[K: key, V](m: Map[K, V], k: K) -> Option[V]",
+      "delta": "mapDelta",
+      "typed_response": "map_api_response",
+      "default_reader": "StandardCollectionModel.map_reply"
+    },
+    {
+      "name": "Map.set",
+      "kind": "pure",
+      "source": "crates/benitoite/src/prelude/stdlib/Map.bnt",
+      "line": 21,
+      "signature": "public function set[K: key, V](m: Map[K, V], k: K, value: V) -> Map[K, V]",
+      "delta": "mapDelta",
+      "typed_response": "map_api_response",
+      "default_reader": "StandardCollectionModel.map_reply"
+    },
+    {
+      "name": "Map.remove",
+      "kind": "pure",
+      "source": "crates/benitoite/src/prelude/stdlib/Map.bnt",
+      "line": 25,
+      "signature": "public function remove[K: key, V](m: Map[K, V], k: K) -> Map[K, V]",
+      "delta": "mapDelta",
+      "typed_response": "map_api_response",
+      "default_reader": "StandardCollectionModel.map_reply"
+    },
+    {
+      "name": "Map.contains",
+      "kind": "pure",
+      "source": "crates/benitoite/src/prelude/stdlib/Map.bnt",
+      "line": 29,
+      "signature": "public function contains[K: key, V](m: Map[K, V], k: K) -> Boolean",
+      "delta": "mapDelta",
+      "typed_response": "map_api_response",
+      "default_reader": "StandardCollectionModel.map_reply"
+    },
+    {
+      "name": "Map.size",
+      "kind": "pure",
+      "source": "crates/benitoite/src/prelude/stdlib/Map.bnt",
+      "line": 33,
+      "signature": "public function size[K: key, V](m: Map[K, V]) -> Integer",
+      "delta": "mapDelta",
+      "typed_response": "map_api_response",
+      "default_reader": "StandardCollectionModel.map_reply"
+    },
+    {
+      "name": "Map.keys",
+      "kind": "pure",
+      "source": "crates/benitoite/src/prelude/stdlib/Map.bnt",
+      "line": 37,
+      "signature": "public function keys[K: key, V](m: Map[K, V]) -> List[K]",
+      "delta": "mapDelta",
+      "typed_response": "map_api_response",
+      "default_reader": "StandardCollectionModel.map_reply"
+    },
+    {
+      "name": "Map.values",
+      "kind": "pure",
+      "source": "crates/benitoite/src/prelude/stdlib/Map.bnt",
+      "line": 41,
+      "signature": "public function values[K: key, V](m: Map[K, V]) -> List[V]",
+      "delta": "mapDelta",
+      "typed_response": "map_api_response",
+      "default_reader": "StandardCollectionModel.map_reply"
+    },
+    {
+      "name": "Map.map",
+      "kind": "core",
+      "source": "crates/benitoite/src/prelude/stdlib/Map.bnt",
+      "line": 44,
+      "signature": "public function map[K: key, V, U, effect E](m: Map[K, V], f: function(key: K, value: V) -> U uses E) -> Map[K, U] uses E",
+      "body": "collectionHigherBody",
+      "typed": "collectionHigher_body_typed",
+      "default_reader": "StandardCollectionModel.typed",
+      "normal_relation": "境界の決定待ち"
+    },
+    {
+      "name": "Map.filter",
+      "kind": "core",
+      "source": "crates/benitoite/src/prelude/stdlib/Map.bnt",
+      "line": 49,
+      "signature": "public function filter[K: key, V, effect E](m: Map[K, V], p: function(key: K, value: V) -> Boolean uses E) -> Map[K, V] uses E",
+      "body": "collectionHigherBody",
+      "typed": "collectionHigher_body_typed",
+      "default_reader": "StandardCollectionModel.typed",
+      "normal_relation": "境界の決定待ち"
+    },
+    {
+      "name": "Set.empty",
+      "kind": "pure",
+      "source": "crates/benitoite/src/prelude/stdlib/Set.bnt",
+      "line": 5,
+      "signature": "public function empty[T: key]() -> Set[T]",
+      "delta": "setDelta",
+      "typed_response": "set_api_response",
+      "default_reader": "StandardCollectionModel.set_reply"
+    },
+    {
+      "name": "Set.fromList",
+      "kind": "pure",
+      "source": "crates/benitoite/src/prelude/stdlib/Set.bnt",
+      "line": 9,
+      "signature": "public function fromList[T: key](xs: List[T]) -> Set[T]",
+      "delta": "setDelta",
+      "typed_response": "set_api_response",
+      "default_reader": "StandardCollectionModel.set_reply"
+    },
+    {
+      "name": "Set.toList",
+      "kind": "pure",
+      "source": "crates/benitoite/src/prelude/stdlib/Set.bnt",
+      "line": 13,
+      "signature": "public function toList[T: key](s: Set[T]) -> List[T]",
+      "delta": "setDelta",
+      "typed_response": "set_api_response",
+      "default_reader": "StandardCollectionModel.set_reply"
+    },
+    {
+      "name": "Set.contains",
+      "kind": "pure",
+      "source": "crates/benitoite/src/prelude/stdlib/Set.bnt",
+      "line": 17,
+      "signature": "public function contains[T: key](s: Set[T], x: T) -> Boolean",
+      "delta": "setDelta",
+      "typed_response": "set_api_response",
+      "default_reader": "StandardCollectionModel.set_reply"
+    },
+    {
+      "name": "Set.add",
+      "kind": "pure",
+      "source": "crates/benitoite/src/prelude/stdlib/Set.bnt",
+      "line": 21,
+      "signature": "public function add[T: key](s: Set[T], x: T) -> Set[T]",
+      "delta": "setDelta",
+      "typed_response": "set_api_response",
+      "default_reader": "StandardCollectionModel.set_reply"
+    },
+    {
+      "name": "Set.remove",
+      "kind": "pure",
+      "source": "crates/benitoite/src/prelude/stdlib/Set.bnt",
+      "line": 25,
+      "signature": "public function remove[T: key](s: Set[T], x: T) -> Set[T]",
+      "delta": "setDelta",
+      "typed_response": "set_api_response",
+      "default_reader": "StandardCollectionModel.set_reply"
+    },
+    {
+      "name": "Set.size",
+      "kind": "pure",
+      "source": "crates/benitoite/src/prelude/stdlib/Set.bnt",
+      "line": 29,
+      "signature": "public function size[T: key](s: Set[T]) -> Integer",
+      "delta": "setDelta",
+      "typed_response": "set_api_response",
+      "default_reader": "StandardCollectionModel.set_reply"
+    },
+    {
+      "name": "Set.union",
+      "kind": "pure",
+      "source": "crates/benitoite/src/prelude/stdlib/Set.bnt",
+      "line": 33,
+      "signature": "public function union[T: key](a: Set[T], b: Set[T]) -> Set[T]",
+      "delta": "setDelta",
+      "typed_response": "set_api_response",
+      "default_reader": "StandardCollectionModel.set_reply"
+    },
+    {
+      "name": "Set.intersection",
+      "kind": "pure",
+      "source": "crates/benitoite/src/prelude/stdlib/Set.bnt",
+      "line": 37,
+      "signature": "public function intersection[T: key](a: Set[T], b: Set[T]) -> Set[T]",
+      "delta": "setDelta",
+      "typed_response": "set_api_response",
+      "default_reader": "StandardCollectionModel.set_reply"
+    },
+    {
+      "name": "Set.difference",
+      "kind": "pure",
+      "source": "crates/benitoite/src/prelude/stdlib/Set.bnt",
+      "line": 41,
+      "signature": "public function difference[T: key](a: Set[T], b: Set[T]) -> Set[T]",
+      "delta": "setDelta",
+      "typed_response": "set_api_response",
+      "default_reader": "StandardCollectionModel.set_reply"
+    },
+    {
+      "name": "Set.map",
+      "kind": "core",
+      "source": "crates/benitoite/src/prelude/stdlib/Set.bnt",
+      "line": 44,
+      "signature": "public function map[T: key, U: key, effect E](s: Set[T], f: function(value: T) -> U uses E) -> Set[U] uses E",
+      "body": "collectionHigherBody",
+      "typed": "collectionHigher_body_typed",
+      "default_reader": "StandardCollectionModel.typed",
+      "normal_relation": "境界の決定待ち"
+    },
+    {
+      "name": "Set.filter",
+      "kind": "core",
+      "source": "crates/benitoite/src/prelude/stdlib/Set.bnt",
+      "line": 49,
+      "signature": "public function filter[T: key, effect E](s: Set[T], p: function(value: T) -> Boolean uses E) -> Set[T] uses E",
+      "body": "collectionHigherBody",
+      "typed": "collectionHigher_body_typed",
+      "default_reader": "StandardCollectionModel.typed",
+      "normal_relation": "境界の決定待ち"
+    }
+  ],
+  "other_existing_core": [
+    {
+      "name": "Map.fold",
+      "signature": "public function fold[K: key, V, A, effect E](m: Map[K, V], initial: A, f: function(acc: A, key: K, value: V) -> A uses E) -> A uses E",
+      "status": "今回のmap/filter四本とは異なる既存core行。全328行の合成で別途照合"
+    },
+    {
+      "name": "Map.forEach",
+      "signature": "public function forEach[K: key, V, effect E](m: Map[K, V], f: function(key: K, value: V) -> Unit uses E) -> Unit uses E",
+      "status": "今回のmap/filter四本とは異なる既存core行。全328行の合成で別途照合"
+    },
+    {
+      "name": "Set.fold",
+      "signature": "public function fold[T: key, A, effect E](s: Set[T], initial: A, f: function(acc: A, value: T) -> A uses E) -> A uses E",
+      "status": "今回のmap/filter四本とは異なる既存core行。全328行の合成で別途照合"
+    },
+    {
+      "name": "Set.forEach",
+      "signature": "public function forEach[T: key, effect E](s: Set[T], f: function(value: T) -> Unit uses E) -> Unit uses E",
+      "status": "今回のmap/filter四本とは異なる既存core行。全328行の合成で別途照合"
+    }
+  ],
+  "counts": {
+    "pure": 20,
+    "map_filter_core": 4
+  },
+  "lean": {
+    "StandardMapSet": {
+      "path": "formal/Benitoite/Release/Refinement/StandardMapSet.lean",
+      "bytes": 90519,
+      "sha256": "83ff96208b5b79b1a2fbe5e79a8f21d8a8a2a1fd1fd8b7d5c3e18059ac7c4808",
+      "public_named": [
+        {
+          "name": "KeyOrder",
+          "kind": "inductive",
+          "line": 13,
+          "textual_readers": 15,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "keyOrderCompare",
+          "kind": "def",
+          "line": 19,
+          "textual_readers": 2,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "keyOrdersCompare",
+          "kind": "def",
+          "line": 30,
+          "textual_readers": 2,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "Observation.orderKey",
+          "kind": "def",
+          "line": 48,
+          "textual_readers": 4,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "orderKeys",
+          "kind": "def",
+          "line": 66,
+          "textual_readers": 4,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "orderPairs",
+          "kind": "def",
+          "line": 71,
+          "textual_readers": 2,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "MapEntry",
+          "kind": "structure",
+          "line": 79,
+          "textual_readers": 201,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "valKeyCode",
+          "kind": "def",
+          "line": 84,
+          "textual_readers": 38,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "mapInsert",
+          "kind": "def",
+          "line": 90,
+          "textual_readers": 57,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "mapEntries",
+          "kind": "def",
+          "line": 94,
+          "textual_readers": 44,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "normalizedMap",
+          "kind": "def",
+          "line": 99,
+          "textual_readers": 39,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "normalizedSet",
+          "kind": "def",
+          "line": 102,
+          "textual_readers": 44,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "mapValue",
+          "kind": "def",
+          "line": 105,
+          "textual_readers": 33,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "setValue",
+          "kind": "def",
+          "line": 106,
+          "textual_readers": 44,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "hasCode",
+          "kind": "def",
+          "line": 107,
+          "textual_readers": 19,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "removeCode",
+          "kind": "def",
+          "line": 108,
+          "textual_readers": 22,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "optionValue",
+          "kind": "def",
+          "line": 117,
+          "textual_readers": 8,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "mapDelta",
+          "kind": "def",
+          "line": 122,
+          "textual_readers": 44,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "setDelta",
+          "kind": "def",
+          "line": 154,
+          "textual_readers": 48,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "normalized_map_typed",
+          "kind": "theorem",
+          "line": 244,
+          "textual_readers": 2,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "normalized_map_exists",
+          "kind": "theorem",
+          "line": 269,
+          "textual_readers": 18,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "map_insert_length",
+          "kind": "theorem",
+          "line": 304,
+          "textual_readers": 6,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "normalized_map_distinct",
+          "kind": "theorem",
+          "line": 329,
+          "textual_readers": 10,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "map_remove_length",
+          "kind": "theorem",
+          "line": 340,
+          "textual_readers": 2,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "normalized_map_measure",
+          "kind": "theorem",
+          "line": 432,
+          "textual_readers": 2,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "normalized_set_measure",
+          "kind": "theorem",
+          "line": 482,
+          "textual_readers": 2,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "set_algebra_bounds",
+          "kind": "theorem",
+          "line": 506,
+          "textual_readers": 2,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "normalized_set_typed",
+          "kind": "theorem",
+          "line": 553,
+          "textual_readers": 1,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "normalized_map_adequate",
+          "kind": "theorem",
+          "line": 573,
+          "textual_readers": 1,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "normalized_map_ground",
+          "kind": "theorem",
+          "line": 584,
+          "textual_readers": 1,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "map_set_reply",
+          "kind": "theorem",
+          "line": 610,
+          "textual_readers": 1,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "map_remove_reply",
+          "kind": "theorem",
+          "line": 625,
+          "textual_readers": 2,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "map_projections_reply",
+          "kind": "theorem",
+          "line": 638,
+          "textual_readers": 1,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "map_size_reply",
+          "kind": "theorem",
+          "line": 652,
+          "textual_readers": 1,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "set_size_reply",
+          "kind": "theorem",
+          "line": 662,
+          "textual_readers": 1,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "set_algebra_reply",
+          "kind": "theorem",
+          "line": 672,
+          "textual_readers": 1,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "map_empty_reply",
+          "kind": "theorem",
+          "line": 692,
+          "textual_readers": 2,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "set_empty_reply",
+          "kind": "theorem",
+          "line": 699,
+          "textual_readers": 1,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "set_fromList_reply",
+          "kind": "theorem",
+          "line": 705,
+          "textual_readers": 1,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "set_toList_reply",
+          "kind": "theorem",
+          "line": 713,
+          "textual_readers": 1,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "set_add_reply",
+          "kind": "theorem",
+          "line": 723,
+          "textual_readers": 1,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "set_remove_reply",
+          "kind": "theorem",
+          "line": 737,
+          "textual_readers": 2,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "map_contains_reply",
+          "kind": "theorem",
+          "line": 750,
+          "textual_readers": 1,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "set_contains_reply",
+          "kind": "theorem",
+          "line": 758,
+          "textual_readers": 1,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "MapSetDeclarations",
+          "kind": "structure",
+          "line": 768,
+          "textual_readers": 10,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "map_toList_reply",
+          "kind": "theorem",
+          "line": 789,
+          "textual_readers": 1,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "map_get_reply",
+          "kind": "theorem",
+          "line": 819,
+          "textual_readers": 1,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "map_fromList_reply",
+          "kind": "theorem",
+          "line": 889,
+          "textual_readers": 1,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "typed_map_components",
+          "kind": "theorem",
+          "line": 902,
+          "textual_readers": 8,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "typed_set_components",
+          "kind": "theorem",
+          "line": 917,
+          "textual_readers": 8,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "map_size_from_typed",
+          "kind": "theorem",
+          "line": 928,
+          "textual_readers": 1,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "set_size_from_typed",
+          "kind": "theorem",
+          "line": 937,
+          "textual_readers": 1,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "normalized_map_length_le",
+          "kind": "theorem",
+          "line": 962,
+          "textual_readers": 1,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "normalized_map_members",
+          "kind": "theorem",
+          "line": 972,
+          "textual_readers": 6,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "normalized_set_members",
+          "kind": "theorem",
+          "line": 976,
+          "textual_readers": 4,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "map_insert_original",
+          "kind": "theorem",
+          "line": 981,
+          "textual_readers": 1,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "map_update_ready",
+          "kind": "theorem",
+          "line": 1019,
+          "textual_readers": 2,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "set_update_ready",
+          "kind": "theorem",
+          "line": 1056,
+          "textual_readers": 2,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "set_algebra_ready",
+          "kind": "theorem",
+          "line": 1073,
+          "textual_readers": 1,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "map_fromList_full",
+          "kind": "theorem",
+          "line": 1147,
+          "textual_readers": 1,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "map_update_ground",
+          "kind": "theorem",
+          "line": 1179,
+          "textual_readers": 2,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "set_update_ground",
+          "kind": "theorem",
+          "line": 1204,
+          "textual_readers": 2,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "set_algebra_ground",
+          "kind": "theorem",
+          "line": 1222,
+          "textual_readers": 1,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "set_algebra_codes",
+          "kind": "theorem",
+          "line": 1266,
+          "textual_readers": 5,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "set_union_bounds",
+          "kind": "theorem",
+          "line": 1283,
+          "textual_readers": 1,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "set_algebra_reply_codes",
+          "kind": "theorem",
+          "line": 1297,
+          "textual_readers": 1,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "set_union_reply_bounds",
+          "kind": "theorem",
+          "line": 1317,
+          "textual_readers": 1,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "Coherent",
+          "kind": "def",
+          "line": 1327,
+          "textual_readers": 21,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "map_insert_coherent",
+          "kind": "theorem",
+          "line": 1329,
+          "textual_readers": 4,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "normalized_map_coherent",
+          "kind": "theorem",
+          "line": 1358,
+          "textual_readers": 6,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "normalized_map_value",
+          "kind": "theorem",
+          "line": 1395,
+          "textual_readers": 2,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "map_value_measure",
+          "kind": "theorem",
+          "line": 1402,
+          "textual_readers": 2,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "set_value_measure",
+          "kind": "theorem",
+          "line": 1409,
+          "textual_readers": 3,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "map_set_measure",
+          "kind": "theorem",
+          "line": 1481,
+          "textual_readers": 1,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "map_remove_measure",
+          "kind": "theorem",
+          "line": 1502,
+          "textual_readers": 1,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "set_add_measure",
+          "kind": "theorem",
+          "line": 1518,
+          "textual_readers": 1,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "set_remove_measure",
+          "kind": "theorem",
+          "line": 1539,
+          "textual_readers": 1,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "set_algebra_measure",
+          "kind": "theorem",
+          "line": 1555,
+          "textual_readers": 1,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        }
+      ],
+      "anonymous_examples": 0
+    },
+    "StandardCollectionBodies": {
+      "path": "formal/Benitoite/Release/Refinement/StandardCollectionBodies.lean",
+      "bytes": 24774,
+      "sha256": "6bfa574df1dc6fde0287bb187da6b230cf4f6528bb49d581907eb01d8336878b",
+      "public_named": [
+        {
+          "name": "mapCallbackBody",
+          "kind": "def",
+          "line": 29,
+          "textual_readers": 3,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "collectionHigherBody",
+          "kind": "def",
+          "line": 38,
+          "textual_readers": 2,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "collectionHigherRow",
+          "kind": "def",
+          "line": 48,
+          "textual_readers": 12,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "collectionPrimitiveSig",
+          "kind": "def",
+          "line": 54,
+          "textual_readers": 9,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "collectionPairProjection",
+          "kind": "def",
+          "line": 65,
+          "textual_readers": 15,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "collectionListDefinition",
+          "kind": "def",
+          "line": 168,
+          "textual_readers": 15,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "collectionListDefinition_eq",
+          "kind": "theorem",
+          "line": 174,
+          "textual_readers": 2,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "collectionHigher_body_typed",
+          "kind": "theorem",
+          "line": 352,
+          "textual_readers": 1,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        }
+      ],
+      "anonymous_examples": 0
+    },
+    "StandardCollectionResponse": {
+      "path": "formal/Benitoite/Release/Refinement/StandardCollectionResponse.lean",
+      "bytes": 28046,
+      "sha256": "6296b8ad37d33ce44b3bc6f44e788b4e7ce0f220257593437065c44527a68959",
+      "public_named": [
+        {
+          "name": "MapAPI",
+          "kind": "inductive",
+          "line": 17,
+          "textual_readers": 28,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "MapAPI.name",
+          "kind": "def",
+          "line": 21,
+          "textual_readers": 3,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "MapAPI.names",
+          "kind": "def",
+          "line": 26,
+          "textual_readers": 2,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "MapAPI.inputs",
+          "kind": "def",
+          "line": 30,
+          "textual_readers": 3,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "MapAPI.result",
+          "kind": "def",
+          "line": 35,
+          "textual_readers": 4,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "MapAPI.signature",
+          "kind": "def",
+          "line": 40,
+          "textual_readers": 1,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "map_api_response",
+          "kind": "theorem",
+          "line": 171,
+          "textual_readers": 1,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "SetAPI",
+          "kind": "inductive",
+          "line": 317,
+          "textual_readers": 24,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "SetAPI.name",
+          "kind": "def",
+          "line": 321,
+          "textual_readers": 1,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "SetAPI.names",
+          "kind": "def",
+          "line": 326,
+          "textual_readers": 2,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "SetAPI.inputs",
+          "kind": "def",
+          "line": 330,
+          "textual_readers": 3,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "SetAPI.result",
+          "kind": "def",
+          "line": 334,
+          "textual_readers": 2,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "SetAPI.signature",
+          "kind": "def",
+          "line": 337,
+          "textual_readers": 1,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        },
+        {
+          "name": "set_api_response",
+          "kind": "theorem",
+          "line": 407,
+          "textual_readers": 1,
+          "role": "既定の具体読者又は応答/個数の導出で使用"
+        }
+      ],
+      "anonymous_examples": 0
+    },
+    "StandardCollectionExamples": {
+      "path": "formal/Benitoite/Release/Refinement/StandardCollectionExamples.lean",
+      "bytes": 18650,
+      "sha256": "ce572d3597a7178119c0ebd0a36a4c8b7c46af3c815954dd79e2199113f950fb",
+      "public_named": [
+        {
+          "name": "declarations",
+          "kind": "def",
+          "line": 9,
+          "textual_readers": 9,
+          "role": "具体P/Bの公開読者"
+        },
+        {
+          "name": "constructors",
+          "kind": "def",
+          "line": 13,
+          "textual_readers": 66,
+          "role": "具体P/Bの公開読者"
+        },
+        {
+          "name": "summaries",
+          "kind": "def",
+          "line": 15,
+          "textual_readers": 3,
+          "role": "具体P/Bの公開読者"
+        },
+        {
+          "name": "program",
+          "kind": "def",
+          "line": 17,
+          "textual_readers": 38,
+          "role": "具体P/Bの公開読者"
+        },
+        {
+          "name": "mapAPIs",
+          "kind": "def",
+          "line": 34,
+          "textual_readers": 1,
+          "role": "具体P/Bの公開読者"
+        },
+        {
+          "name": "setAPIs",
+          "kind": "def",
+          "line": 35,
+          "textual_readers": 1,
+          "role": "具体P/Bの公開読者"
+        },
+        {
+          "name": "builtins",
+          "kind": "def",
+          "line": 37,
+          "textual_readers": 62,
+          "role": "具体P/Bの公開読者"
+        },
+        {
+          "name": "table",
+          "kind": "def",
+          "line": 53,
+          "textual_readers": 85,
+          "role": "具体P/Bの公開読者"
+        },
+        {
+          "name": "pair_arity",
+          "kind": "theorem",
+          "line": 62,
+          "textual_readers": 2,
+          "role": "具体P/Bの公開読者"
+        },
+        {
+          "name": "valid",
+          "kind": "theorem",
+          "line": 70,
+          "textual_readers": 71,
+          "role": "具体P/Bの公開読者"
+        },
+        {
+          "name": "typed",
+          "kind": "theorem",
+          "line": 89,
+          "textual_readers": 100,
+          "role": "具体P/Bの公開読者"
+        },
+        {
+          "name": "map_reply",
+          "kind": "theorem",
+          "line": 117,
+          "textual_readers": 0,
+          "role": "具体P/Bの公開読者"
+        },
+        {
+          "name": "set_reply",
+          "kind": "theorem",
+          "line": 129,
+          "textual_readers": 0,
+          "role": "具体P/Bの公開読者"
+        },
+        {
+          "name": "map_update_measures",
+          "kind": "theorem",
+          "line": 143,
+          "textual_readers": 0,
+          "role": "具体P/Bの公開読者"
+        },
+        {
+          "name": "set_update_measures",
+          "kind": "theorem",
+          "line": 163,
+          "textual_readers": 0,
+          "role": "具体P/Bの公開読者"
+        },
+        {
+          "name": "from_list_bound",
+          "kind": "theorem",
+          "line": 180,
+          "textual_readers": 0,
+          "role": "具体P/Bの公開読者"
+        }
+      ],
+      "anonymous_examples": 30
+    }
+  },
+  "six_frozen_modules": {
+    "formal/Benitoite/Release/Refinement/FiniteStepPreservation.lean": {
+      "bytes": 10107,
+      "sha256": "dce7e6ebdf824e47f15e3495cf6222d3bb836385f77f51b137290a869c7fae55"
+    },
+    "formal/Benitoite/Release/Refinement/FirstReturn.lean": {
+      "bytes": 3018,
+      "sha256": "c5522fabd825d4b0a142423db250843a4bb56f23ac7eb1c2e824fb448ace3d36"
+    },
+    "formal/Benitoite/Release/Refinement/StandardCollections.lean": {
+      "bytes": 16176,
+      "sha256": "2eac6bea845dc8b8d5c6feefae2b97df93acbf140b4e9d2f9fd3f940b5be7d8f"
+    },
+    "formal/Benitoite/Release/Refinement/StandardKeySound.lean": {
+      "bytes": 17714,
+      "sha256": "52819394f30d14763a4737ec07596329040009fc6b14b99233685865e3408d95"
+    },
+    "formal/Benitoite/Release/Refinement/StandardKeySummary.lean": {
+      "bytes": 31928,
+      "sha256": "e5d127547e474919683b028eb46b8309c40b7e7b2f785bcf9720af7a89f8d567"
+    },
+    "formal/Benitoite/Release/Refinement/StandardListBodies.lean": {
+      "bytes": 53886,
+      "sha256": "44bbe60808c89715789b14918a21efd2ecf6ffb8dbb25951d0c61d040be90800"
+    }
+  },
+  "quantification": {
+    "pure": "全P/B/StoreTy/ts/es/rs/ws/結果型/効果のBuiltinArgsから同じ具体deltaの応答存在、Outcome.Typed/Ground、AdequateResult、非exit",
+    "inputs": [
+      "同じStandardKeyTyping.Table",
+      "P.VarianceValid",
+      "Mapは同じPair/Optionの構成子とarity"
+    ],
+    "no_new_semantic_input": "callbackの全域性、正常値の型、意味上の保存を新しい前提やProp欄へ追加しない",
+    "body": "四本のRow.BodyTyped。元の型引数、引数名、効果E、Mapの二回のPair.firstと一回のcallbackを保持"
+  },
+  "order": {
+    "key_equal": "Key.code?と同じ数値的Decimal等値。元Valを保持し、Map値の観測noneも保持",
+    "normalization": "Key.normalizeMap/Setは挿入順。normalizedMap/Setは元表現を縮約して比較木で整列。長さの対応から順序の等号を推測しない",
+    "rust_leaves": "base/prim.rs cmp_key_atom: 同じ型内の数値順、Decimal.cmp_num、String.chars辞書順、Bytes辞書順",
+    "rust_composites": "runtime/map/keys.rs: constructorはtag、同tagの欄、欄数。Listは要素列、Mapは鍵/値列、Setは要素列の辞書順",
+    "rust_representatives": "runtime/map.rs map_insert/set_insertとtree::combineは最初のMap鍵/第一Setの元表現を保持",
+    "lean_constructors": "同じtable.declarations.flatMap DataDecl.entriesの名前の位置。任意csの型/個数証明と、現実のRust tag順の収集は別",
+    "typed_boundary": "比較は同じKの値内で行う。不正な混合型入力はBuiltinArgsの型付けで排除する",
+    "pending": "R50の実ID/tag収集とRust比較木全体との一般の対応。これを仮定欄へ追加せず未完として残す"
+  },
+  "pending": [
+    "Map/Set.map/filter四本の正常関係は境界の決定待ち",
+    "List側の正常関係を前提にしない",
+    "全328行の合成",
+    "全モデルCoreAssumptions",
+    "R50のID/tag/順序収集"
+  ],
+  "exclusions": "本記録はソース照合と局所検査。work/dry-run、Rust変更、全公理監査を実行しない"
+}

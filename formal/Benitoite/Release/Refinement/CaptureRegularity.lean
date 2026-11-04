@@ -153,7 +153,7 @@ private theorem arms_annotation {P B Ψ Q C Γ Φ R obs arms a b e L}
     (h : HasTypeArmsQ P B Ψ Q C Γ Φ R obs arms a b e L) : Ty.Annotation P C Γ b := by
   match h with
   | .nil ha => exact ha
-  | .plain _ _ _ hs | .guarded _ _ _ _ _ hs => exact arms_annotation hs
+  | .plain _ _ _ _ _ hs | .guarded _ _ _ _ _ _ _ hs => exact arms_annotation hs
 
 mutual
   private theorem value_annotation {P B Ψ Q C Γ Φ v a}

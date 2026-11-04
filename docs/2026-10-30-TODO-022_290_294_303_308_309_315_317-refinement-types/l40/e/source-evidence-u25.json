@@ -1,0 +1,160 @@
+{
+  "observed_utc": "2026-11-03T17:20:04.038976+00:00",
+  "exit": 0,
+  "scope": "局所のSource対応と不変入力。全公理監査・独立レビューは含まない",
+  "frozen_baseline_sources": 727,
+  "current_lean_sources": 734,
+  "previous_sources": 731,
+  "retained_previous_sources": 731,
+  "modules": [
+    "StandardRecordFields",
+    "StandardDecodeComparison",
+    "StandardDecodeBodies"
+  ],
+  "source_evidence": {
+    "crates/benitoite/src/prelude/stdlib/Json/Codec.bnt": {
+      "input": {
+        "bytes": 10665,
+        "sha256": "2483f9f9603d849bdb70845d5906c16795c64cdb4557bec7c3423f2d61157fd1"
+      },
+      "excerpts": [
+        {
+          "first": 6,
+          "last": 20,
+          "text": "/// One step from the root of a converted value.\npublic data PathPart\n  Field(String)\n  Index(Integer)\n  Key(String)\nend data\n\n/// A conversion failure. `path` runs from the outermost container to the failure.\n@extensible\npublic record ConversionError\n  path: List[PathPart]\n  expected: String\n  found: String\n  reason: String\nend record\n"
+        },
+        {
+          "first": 34,
+          "last": 85,
+          "text": "\n/// Builds a relative conversion failure without copying input payloads.\npublic function error(expected: String, found: String, reason: String) -> ConversionError\n  return ConversionError(path: [], expected: expected, found: found, reason: reason)\nend function\n\n/// Adds an outer path component to a relative failure.\npublic function prepend(part: PathPart, error: ConversionError) -> ConversionError\n  return ConversionError(..error, path: List.prepend(xs: ConversionError.path(error), x: part))\nend function\n\n/// Requires an object before decoding any record fields.\npublic function decodeObject(value: Json.Value) -> Result[Map[String, Json.Value], ConversionError]\n  return match value with\n    case Json.Value.Object(members) -> Result.Ok(members)\n    case _ -> Result.Error(error(expected: \"object\", found: kind(value), reason: \"wrong JSON kind\"))\n  end match\nend function\n\n/// Decodes a present field or uses an explicit missing-field conversion, adding its field path.\npublic function decodeField[T](members: Map[String, Json.Value], key: String, decode: function(value: Json.Value) -> Result[T, ConversionError], decodeMissing: function() -> Result[T, ConversionError]) -> Result[T, ConversionError]\n  bind result <- match Map.get(m: members, k: key) with\n    case Option.Some(value) -> decode(value)\n    case Option.None -> decodeMissing()\n  end match\n  return Result.mapError(r: result, f: lambda(error) return prepend(part: PathPart.Field(key), error: error) end lambda)\nend function\n\n/// Fails for a required missing field; the caller adds its field path.\npublic function missing[T]() -> Result[T, ConversionError]\n  return Result.Error(error(expected: \"present field\", found: \"missing\", reason: \"required field is missing\"))\nend function\n\n/// Rejects the first unexpected object key in key order, after all fields succeeded.\n/// Uses a Key path so Show quotes and escapes the input key.\npublic function rejectExtra(members: Map[String, Json.Value], keys: List[String]) -> Result[Unit, ConversionError]\n  return rejectExtraFrom(remaining: Map.keys(members), keys: keys, i: 0)\nend function\n\nfunction rejectExtraFrom(remaining: List[String], keys: List[String], i: Integer) -> Result[Unit, ConversionError]\n  return match List.get(xs: remaining, i: i) with\n    case Option.None -> Result.Ok(())\n    case Option.Some(key) ->\n      if List.contains(xs: keys, x: key) then\n        rejectExtraFrom(remaining: remaining, keys: keys, i: i + 1)\n      else\n        Result.Error(prepend(part: PathPart.Key(key), error: error(expected: \"known field\", found: \"extra key\", reason: \"unexpected object key\")))\n      end if\n  end match\nend function\n\n/// Encodes a String without implicit numeric conversion.\n"
+        },
+        {
+          "first": 120,
+          "last": 140,
+          "text": "    case _ -> Result.Error(error(expected: \"integer\", found: kind(value), reason: \"wrong JSON kind\"))\n  end match\nend function\n\n/// Encodes a finite Float without implicit numeric conversion.\npublic function encodeFloat(value: Float) -> Result[Json.Value, ConversionError]\n  if not finite(value) then\n    return Result.Error(error(expected: \"finite float\", found: \"non-finite float\", reason: \"JSON cannot represent NaN or infinity\"))\n  end if\n  return Result.Ok(Json.Value.Float(value))\nend function\n\n/// Decodes only the JSON float kind; rejects NaN and infinity.\npublic function decodeFloat(value: Json.Value) -> Result[Float, ConversionError]\n  return match value with\n    case Json.Value.Float(x) ->\n      if finite(x) then\n        Result.Ok(x)\n      else\n        Result.Error(error(expected: \"finite float\", found: \"non-finite float\", reason: \"JSON cannot represent NaN or infinity\"))\n      end if\n"
+        }
+      ]
+    },
+    "crates/benitoite/src/prelude/stdlib/Json.bnt": {
+      "input": {
+        "bytes": 3208,
+        "sha256": "13089cbf9d19302693d4d92e73a9c6fecb798564c9c2ecc0cea405c329c93572"
+      },
+      "excerpts": [
+        {
+          "first": 1,
+          "last": 35,
+          "text": "//! JSON values, parsing, and writing.\n\nimport Benitoite.Trait\n\n/// A JSON value. Object members are kept in the order of their keys.\npublic data Value\n  Null\n  Boolean(Boolean)\n  Integer(Integer)\n  Float(Float)\n  String(String)\n  Array(List[Value])\n  Object(Map[String, Value])\nend data\n\n/// Where and why parsing failed. `line` and `column` count from 1; `column` counts characters.\n@extensible\npublic record ParseError\n  line: Integer\n  column: Integer\n  message: String\nend record\n\n/// Reads `text` as JSON. Spaces before and after the value are allowed.\n@builtin(\"Json.parse\")\npublic function parse(text: String) -> Result[Value, ParseError]\n\n/// Writes the value without spaces. Members are written in the order of their keys.\n@builtin(\"Json.stringify\")\npublic function stringify(value: Value) -> String\n\n/// Writes the value with line breaks and two spaces of indentation per level.\n@builtin(\"Json.stringifyPretty\")\npublic function stringifyPretty(value: Value) -> String\n\n"
+        }
+      ]
+    },
+    "tools/derive/examples/People.bnt": {
+      "input": {
+        "bytes": 12232,
+        "sha256": "88aa1cf97c4e2a12da4c3206af49e8e39ae99c08c1cc7dc338c06f194b74fb90"
+      },
+      "excerpts": [
+        {
+          "first": 11,
+          "last": 18,
+          "text": "public record Person\n  displayName: String\n  address: Address.Address\n  nickname: Option[String]\n  scores: List[Map[String, Float]]\n  active: Boolean\n  count: Integer\nend record\n"
+        },
+        {
+          "first": 83,
+          "last": 95,
+          "text": "/// Decodes Person in declaration order, then rejects the first extra key.\npublic function decodePerson(value: Json.Value) -> Result[Person, Codec.ConversionError]\n  bind deriveMembers <- try Codec.decodeObject(value)\n  bind deriveField0 <- try Codec.decodeField(members: deriveMembers, key: \"display_name\", decode: Codec.decodeString, decodeMissing: Codec.missing)\n  bind deriveField1 <- try Codec.decodeField(members: deriveMembers, key: \"address\", decode: Address.decodeAddress, decodeMissing: Codec.missing)\n  bind deriveField2 <- try Codec.decodeField(members: deriveMembers, key: \"nickname\", decode: Codec.decodeOption(value: _, decode: Codec.decodeString), decodeMissing: lambda() return Result.Ok(Option.None) end lambda)\n  bind deriveField3 <- try Codec.decodeField(members: deriveMembers, key: \"scores\", decode: Codec.decodeList(value: _, decode: Codec.decodeMap(value: _, decode: Codec.decodeFloat)), decodeMissing: Codec.missing)\n  bind deriveField4 <- try Codec.decodeField(members: deriveMembers, key: \"active\", decode: Codec.decodeBoolean, decodeMissing: Codec.missing)\n  bind deriveField5 <- try Codec.decodeField(members: deriveMembers, key: \"count\", decode: Codec.decodeInteger, decodeMissing: Codec.missing)\n  bind _ <- try Codec.rejectExtra(members: deriveMembers, keys: [\"display_name\", \"address\", \"nickname\", \"scores\", \"active\", \"count\"])\n  return Result.Ok(Person(displayName: deriveField0, address: deriveField1, nickname: deriveField2, scores: deriveField3, active: deriveField4, count: deriveField5))\nend function\n\n"
+        }
+      ]
+    },
+    "tools/derive/examples/Address.bnt": {
+      "input": {
+        "bytes": 3223,
+        "sha256": "b003b5e8c5a4855a1dbe4a91f3d22d64e4365fd67bfc8a7b206ea8ca3a4837ed"
+      },
+      "excerpts": [
+        {
+          "first": 30,
+          "last": 38,
+          "text": "end function\n\n/// Decodes Address in declaration order, then rejects the first extra key.\npublic function decodeAddress(value: Json.Value) -> Result[Address, Codec.ConversionError]\n  bind deriveMembers <- try Codec.decodeObject(value)\n  bind deriveField0 <- try Codec.decodeField(members: deriveMembers, key: \"city\", decode: Codec.decodeString, decodeMissing: Codec.missing)\n  bind _ <- try Codec.rejectExtra(members: deriveMembers, keys: [\"city\"])\n  return Result.Ok(Address(city: deriveField0))\nend function\n"
+        },
+        {
+          "first": 68,
+          "last": 71,
+          "text": "public record Address\n  city: String\nend record\n"
+        }
+      ]
+    },
+    "tools/derive/derive.py": {
+      "input": {
+        "bytes": 77810,
+        "sha256": "6a80e745146f10d82d708dae89cca920eb76d2f390b8e1d662f0c0864c815ed9"
+      },
+      "excerpts": [
+        {
+          "first": 895,
+          "last": 905,
+          "text": "def generate_json(target, inventory, imports):\n    \"\"\"Generate ordinary Result-based JSON conversions from resolved types.\"\"\"\n    codec = imports.require('Benitoite.Json.Codec', 'Codec')\n    js = imports.require('Benitoite.Json', 'Json')\n    template = Template(target, inventory, imports)\n    fail, reference = template.fail, template.reference\n    resolved, custom, type_name = template.resolved, template.custom, template.type_name\n    result_type = lambda value: f'Result[{value}, {codec}.ConversionError]'\n\n    def converter(ty, operation, field):\n        tag = ty['tag']\n"
+        },
+        {
+          "first": 930,
+          "last": 970,
+          "text": "        error_type = 'Benitoite.Json.Codec.ConversionError'\n        json_type = 'Benitoite.Json.Value'\n        enc = custom(field, 'encode', ty, f'Benitoite.Result.Result[{json_type}, {error_type}]')\n        dec = custom(field, 'decode', json_type, f'Benitoite.Result.Result[{ty}, {error_type}]')\n        missing = custom(field, 'decodeMissing', None, f'Benitoite.Result.Result[{ty}, {error_type}]')\n        if enc is None:\n            enc = converter(field['type'], 'encode', field)\n            dec = converter(field['type'], 'decode', field)\n            if field['type']['tag'] == 'option':\n                missing = 'lambda() return Result.Ok(Option.None) end lambda'\n        if dec is not None and target['config'].get('fields', {}).get(field['name'], {}).get('decode'):\n            configured = target['config']['fields'][field['name']]['decode']\n            if target['customFunctions'][configured]['signature']['params'][0]['name'] != 'value':\n                adapter = f'derive_{decode_name}_{index}'\n                adapters.append(f'function {adapter}(value: {js}.Value) -> {result_type(type_name(field[\"type\"]))}\\n'\n                                f'  return {dec}(value)\\nend function\\n\\n')\n                adapter_names.append(adapter)\n                dec = adapter\n        missing = missing or f'{codec}.missing'\n        # All local names are generated, independent of user field spellings.\n        local = f'deriveField{index}'\n        encodes.append(f'  bind {local} <- try Result.mapError(r: ({enc})({name}.{field[\"name\"]}(value)), '\n                       f'f: lambda(error) return {codec}.prepend(part: {codec}.PathPart.Field({literal}), error: error) end lambda)\\n')\n        decodes.append(f'  bind {local} <- try {codec}.decodeField(members: deriveMembers, key: {literal}, decode: {dec}, decodeMissing: {missing})\\n')\n        members.append(f'Pair({literal}, {local})')\n        fields.append(f'{field[\"name\"]}: {local}')\n    body = (''.join(adapters) + f'/// Encodes {name} in declaration order, returning the first relative conversion failure.\\n'\n            f'{prefix}function {encode_name}(value: {name}) -> {result_type(js + \".Value\")}\\n'\n            + ''.join(encodes)\n            + f'  return Result.Ok({js}.Value.Object(Map.fromList([{\", \".join(members)}])))\\nend function\\n\\n'\n            + f'/// Decodes {name} in declaration order, then rejects the first extra key.\\n'\n            + f'{prefix}function {decode_name}(value: {js}.Value) -> {result_type(name)}\\n'\n            + f'  bind deriveMembers <- try {codec}.decodeObject(value)\\n'\n            + ''.join(decodes)\n            + f'  bind _ <- try {codec}.rejectExtra(members: deriveMembers, keys: ['\n            + ', '.join(string_literal(keys.get(f['name'], f['name'])) for f in target['fields'])\n            + '])\\n'\n            + f'  return Result.Ok({name}({\", \".join(fields)}))\\nend function\\n')\n    return Generated(body, (encode_name, decode_name, *adapter_names))\n\n\n"
+        }
+      ]
+    },
+    "crates/benitoite/src/builtins/table.rs": {
+      "input": {
+        "bytes": 57107,
+        "sha256": "4752f8d5c124f2abfbc2f00c9df728c4a6f007ce48184a5e0f12ebfc2568c8d0"
+      },
+      "excerpts": [
+        {
+          "first": 235,
+          "last": 249,
+          "text": "        BuiltinTypeId::INTEGER,\n        \"%Integer.multiply\",\n    ),\n    (OperatorKind::IntDiv, BuiltinTypeId::INTEGER, \"%Integer.div\"),\n    (OperatorKind::Mod, BuiltinTypeId::INTEGER, \"%Integer.mod\"),\n    (OperatorKind::Neg, BuiltinTypeId::INTEGER, \"%Integer.negate\"),\n    (OperatorKind::Lt, BuiltinTypeId::INTEGER, \"%Integer.less\"),\n    (\n        OperatorKind::Le,\n        BuiltinTypeId::INTEGER,\n        \"%Integer.lessOrEqual\",\n    ),\n    (OperatorKind::Gt, BuiltinTypeId::INTEGER, \"%Integer.greater\"),\n    (\n        OperatorKind::Ge,\n"
+        },
+        {
+          "first": 974,
+          "last": 996,
+          "text": "        crate::types::builtin::RangeIndex::TOP,\n    );\n    let mut type_params = Vec::new();\n    let (params, ret) = match builtin_kind(id)? {\n        EntryKind::Declared | EntryKind::EffectOp => return None,\n        EntryKind::Operator { op, operand } => {\n            let ty = basic(operand);\n            let params = if op == OperatorKind::Neg {\n                vec![ty.clone()]\n            } else {\n                vec![ty.clone(), ty.clone()]\n            };\n            let ret = if matches!(\n                op,\n                OperatorKind::Lt | OperatorKind::Le | OperatorKind::Gt | OperatorKind::Ge\n            ) {\n                boolean\n            } else {\n                ty\n            };\n            (params, ret)\n        }\n        kind @ (EntryKind::Equality { .. } | EntryKind::ListPattern(_)) => {\n"
+        },
+        {
+          "first": 1032,
+          "last": 1048,
+          "text": "                integer,\n            ],\n            string,\n        ),\n    };\n    let param_names = match builtin_kind(id)? {\n        EntryKind::Operator {\n            op: OperatorKind::Neg,\n            ..\n        }\n        | EntryKind::Interpolation { .. } => vec![parameter_names::VALUE],\n        EntryKind::Operator { .. } | EntryKind::Equality { .. } => {\n            vec![parameter_names::LEFT, parameter_names::RIGHT]\n        }\n        EntryKind::ListPattern(ListPatternOp::Length) => vec![parameter_names::XS],\n        EntryKind::ListPattern(ListPatternOp::Get(_)) => {\n            vec![parameter_names::XS, parameter_names::INDEX]\n"
+        }
+      ]
+    },
+    "crates/benitoite/src/base/parameter_names.rs": {
+      "input": {
+        "bytes": 752,
+        "sha256": "7636b3da5d9c740e60e6023a2dafa0bbbf68e7ae439c8f02f5c05bfdc54c56ac"
+      },
+      "excerpts": [
+        {
+          "first": 1,
+          "last": 25,
+          "text": "//! 処理系が補う関数の引数名（設計書 02-05「型とエフェクトの表現」「出力」）。\n\npub(crate) const VALUE: &str = \"value\";\npub(crate) const LEFT: &str = \"left\";\npub(crate) const RIGHT: &str = \"right\";\npub(crate) const XS: &str = \"xs\";\npub(crate) const INDEX: &str = \"index\";\npub(crate) const FRONT: &str = \"front\";\npub(crate) const BACK: &str = \"back\";\n\n/// 位置は 1 から数える。構成子と旧関数型・旧部分適用で同じ綴りを使う。\npub(crate) fn positional(position: usize) -> String {\n    format!(\"arg{position}\")\n}\n\n/// 指定した引数数に対し、宣言順の補完名を作る。\npub(crate) fn positional_names(arity: usize) -> Vec<String> {\n    (1..=arity).map(positional).collect()\n}\n"
+        }
+      ]
+    },
+    "formal/Benitoite/Release/Refinement/StandardRecordFields.lean": {
+      "input": {
+        "bytes": 17124,
+        "sha256": "371738cfd20526134945eeaa50903a398ac0e9ce643be5a2fdb25be767cf3d57"
+      }
+    },
+    "formal/Benitoite/Release/Refinement/StandardDecodeComparison.lean": {
+      "input": {
+        "bytes": 15548,
+        "sha256": "0419e18742b1bc56d286ea7743b1359592f73286705d6cf0f599d9cb7d2aef9f"
+      }
+    },
+    "formal/Benitoite/Release/Refinement/StandardDecodeBodies.lean": {
+      "input": {
+        "bytes": 35591,
+        "sha256": "5e93cd767cc626c8bd3ebb5f80bef1b4086aa7f49e382c60ff6d249eee8c3ae6"
+      }
+    }
+  }
+}

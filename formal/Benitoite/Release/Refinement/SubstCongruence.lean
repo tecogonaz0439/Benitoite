@@ -173,10 +173,10 @@ mutual
       (hL : LocalSubstAgree L ρ η) : Arm.substList σ arms ρ = Arm.substList τ arms η := by
     match h with
     | .nil ha => rfl
-    | .plain hp hf hb ht =>
+    | .plain hp hvf hfw hf hb ht =>
       simp only [Arm.substList,←hp.2.1]
       rw [HasTypeCQ.subst_congr hb (hs.params _) (hL.localExtend _),HasTypeArmsQ.subst_congr ht hs hL]
-    | .guarded hp hf ha hg hb ht =>
+    | .guarded hp hvf hfw hf ha hg hb ht =>
       simp only [Arm.substList,←hp.2.1]
       rw [HasTypeCQ.subst_congr hg (hs.params _).hide (hL.localExtend _),
         HasTypeCQ.subst_congr hb (hs.params _) (hL.localExtend _),HasTypeArmsQ.subst_congr ht hs hL]

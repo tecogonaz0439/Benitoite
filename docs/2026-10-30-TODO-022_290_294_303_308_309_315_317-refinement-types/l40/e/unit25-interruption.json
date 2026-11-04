@@ -1,0 +1,54 @@
+{
+  "observed_utc": "2026-11-03T17:05:12.011191+00:00",
+  "agent": "unit25",
+  "status": "interrupted",
+  "reason": "Selected model is at capacity",
+  "last_check": {
+    "label": "r1-u25-checks02",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "Benitoite/Release/Refinement/StandardDecodeBodies.lean"
+    ],
+    "cwd": "formal/",
+    "start": "2026-11-03T17:03:15.620599+00:00",
+    "end": "2026-11-03T17:03:16.418964+00:00",
+    "seconds": 0.7983213339999999,
+    "exit": 0,
+    "raw": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  "default_build_and_all_axioms": "pending",
+  "files": {
+    "formal/Benitoite.lean": {
+      "bytes": 23136,
+      "sha256": "4db29bd0f106098abd4ee8ed447e2e879ba44ba61bcab32a7397c3cd629db526"
+    },
+    "formal/Benitoite/Release/Refinement/StandardRecordFields.lean": {
+      "bytes": 16387,
+      "sha256": "3e655f13146f461693f2b5aa3a53e7cbeaf841bf436d55e40abf4eac988bec11"
+    },
+    "formal/Benitoite/Release/Refinement/StandardDecodeComparison.lean": {
+      "bytes": 15614,
+      "sha256": "1d4768bd9409f70173fca751078d5e686c4295d752f68eaf9a729d22fc5687ce"
+    },
+    "formal/Benitoite/Release/Refinement/StandardDecodeBodies.lean": {
+      "bytes": 15709,
+      "sha256": "6bb3796bf2c74834ea77c22372f054587f299763574601bc756d7a9fcf255edd"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/e/checks-r1-u25.json": {
+      "bytes": 19974,
+      "sha256": "4eb6fcc437a5b8d40b094b6ca925ff5b077ff5b3742f50167078baa3ad82ebf2"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l40/e/results.md": {
+      "bytes": 38002,
+      "sha256": "2afa3b736071ea1721d98d48a5e163e3dbfea3e544716551520823cf3d4051a0"
+    }
+  }
+}

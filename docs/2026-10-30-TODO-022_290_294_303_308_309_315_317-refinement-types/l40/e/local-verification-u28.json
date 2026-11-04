@@ -1,0 +1,751 @@
+{
+  "observed_utc": "2026-11-03T19:25:11.856644+00:00",
+  "exit": 0,
+  "scope": "局所照合。全公理監査・全モデル充足・Rust/Lean実行全比較・独立レビュー・受け入れは含まない。",
+  "retained_lean_sources": 741,
+  "current_lean_sources": 753,
+  "modules": [
+    "StandardIntegerResponse",
+    "StandardIntegerAPI",
+    "StandardConversionResponse",
+    "StandardScalarResponse",
+    "StandardDecimalResponse",
+    "StandardListResponse",
+    "StandardBytesResponse",
+    "StandardActualListBodies",
+    "StandardSignatureExamples",
+    "StandardArithmeticResponse",
+    "StandardOrderResponse",
+    "StandardEqualityResponse"
+  ],
+  "module_sources": {
+    "StandardIntegerResponse": {
+      "bytes": 7918,
+      "sha256": "975a0b01895e3d1a038c710e3ccfdaef5c40eeb2a9f0c16eba5b53e63893231c"
+    },
+    "StandardIntegerAPI": {
+      "bytes": 38757,
+      "sha256": "f509826e7afe0dc564c9ae506323a972868746c741381d88ffd1d4484ac0f821"
+    },
+    "StandardConversionResponse": {
+      "bytes": 13305,
+      "sha256": "8815cc80cfba8085c55f838a9b35a3c16b4ff6276d12ad994c3caff7750f26f7"
+    },
+    "StandardScalarResponse": {
+      "bytes": 33104,
+      "sha256": "fdb5d8c1e1123a4489c18fc73b324acc0c6b9021726ce6f0ade857f78eaa71ef"
+    },
+    "StandardDecimalResponse": {
+      "bytes": 28128,
+      "sha256": "78be8a751ad918b8b29cce23812b59beebbbf67ccb7cf8e4dada0d8ac9a6701f"
+    },
+    "StandardListResponse": {
+      "bytes": 14716,
+      "sha256": "399093408e40385375a0c8efaeced93e9d0d7ecaa62c9738944edf9dc20009b3"
+    },
+    "StandardBytesResponse": {
+      "bytes": 15010,
+      "sha256": "b0657c1d7aca7f98d73fcd9adc1842fce687bb129a968cdb479bf386429f9430"
+    },
+    "StandardActualListBodies": {
+      "bytes": 25636,
+      "sha256": "b9441b3194c6e1d56c7a33f94c79a61368499f556ea1a6fb888abe6387f55a7d"
+    },
+    "StandardSignatureExamples": {
+      "bytes": 61743,
+      "sha256": "c6bde352a2d6a9c0ebd2d044c564a9b5c8bc9f97c82cb891fd5b885508353269"
+    },
+    "StandardArithmeticResponse": {
+      "bytes": 24849,
+      "sha256": "8db658b499b7d1d9d9012c91604ab0f6bb0e014b9caca5dac903e4b7e7ded148"
+    },
+    "StandardOrderResponse": {
+      "bytes": 39153,
+      "sha256": "4bf2729a8cd8a18d0072a7b1c8fc6771e94f1f80a75ea95b7412754f1fc6e4cb"
+    },
+    "StandardEqualityResponse": {
+      "bytes": 21850,
+      "sha256": "053ca3765e377445085e2a5e32585be41b24ea9c0c7e8678339cf6cd12b7b70c"
+    }
+  },
+  "public_entries": {
+    "StandardIntegerResponse": [
+      {
+        "name": "minMaxName",
+        "textual_occurrences": 14
+      },
+      {
+        "name": "minMaxSig",
+        "textual_occurrences": 11
+      },
+      {
+        "name": "minMax_math",
+        "textual_occurrences": 2
+      },
+      {
+        "name": "minMax_response",
+        "textual_occurrences": 2
+      },
+      {
+        "name": "minMaxLookup",
+        "textual_occurrences": 4
+      },
+      {
+        "name": "minMax_lookup",
+        "textual_occurrences": 2
+      },
+      {
+        "name": "minMaxTable",
+        "textual_occurrences": 9
+      },
+      {
+        "name": "minMax_model_response",
+        "textual_occurrences": 2
+      }
+    ],
+    "StandardIntegerAPI": [
+      {
+        "name": "API.name",
+        "textual_occurrences": 61
+      },
+      {
+        "name": "API.signature",
+        "textual_occurrences": 25
+      },
+      {
+        "name": "API.available",
+        "textual_occurrences": 29
+      },
+      {
+        "name": "response",
+        "textual_occurrences": 3
+      },
+      {
+        "name": "lookup",
+        "textual_occurrences": 4
+      },
+      {
+        "name": "lookup_name",
+        "textual_occurrences": 2
+      },
+      {
+        "name": "table",
+        "textual_occurrences": 16
+      },
+      {
+        "name": "table_response",
+        "textual_occurrences": 2
+      },
+      {
+        "name": "absolute_normal_math",
+        "textual_occurrences": 2
+      },
+      {
+        "name": "floorNumber",
+        "textual_occurrences": 22
+      },
+      {
+        "name": "floor_math",
+        "textual_occurrences": 4
+      },
+      {
+        "name": "modulo_no_overflow",
+        "textual_occurrences": 2
+      },
+      {
+        "name": "absolute_response_math",
+        "textual_occurrences": 2
+      },
+      {
+        "name": "floor_equation",
+        "textual_occurrences": 2
+      },
+      {
+        "name": "API.isBits",
+        "textual_occurrences": 5
+      },
+      {
+        "name": "API.bitOperation",
+        "textual_occurrences": 21
+      },
+      {
+        "name": "bitInputs",
+        "textual_occurrences": 11
+      },
+      {
+        "name": "bitNumber",
+        "textual_occurrences": 2
+      },
+      {
+        "name": "bits_math",
+        "textual_occurrences": 2
+      }
+    ],
+    "StandardConversionResponse": [
+      {
+        "name": "name",
+        "textual_occurrences": 21
+      },
+      {
+        "name": "result",
+        "textual_occurrences": 12
+      },
+      {
+        "name": "signature",
+        "textual_occurrences": 16
+      },
+      {
+        "name": "response",
+        "textual_occurrences": 4
+      },
+      {
+        "name": "lookup",
+        "textual_occurrences": 4
+      },
+      {
+        "name": "lookup_name",
+        "textual_occurrences": 2
+      },
+      {
+        "name": "table",
+        "textual_occurrences": 11
+      },
+      {
+        "name": "option_arity",
+        "textual_occurrences": 4
+      },
+      {
+        "name": "table_response",
+        "textual_occurrences": 2
+      },
+      {
+        "name": "fromInteger_math",
+        "textual_occurrences": 2
+      },
+      {
+        "name": "toInteger_math",
+        "textual_occurrences": 2
+      }
+    ],
+    "StandardScalarResponse": [
+      {
+        "name": "API.name",
+        "textual_occurrences": 37
+      },
+      {
+        "name": "API.names",
+        "textual_occurrences": 8
+      },
+      {
+        "name": "API.inputs",
+        "textual_occurrences": 9
+      },
+      {
+        "name": "API.result",
+        "textual_occurrences": 8
+      },
+      {
+        "name": "API.signature",
+        "textual_occurrences": 25
+      },
+      {
+        "name": "API.delta",
+        "textual_occurrences": 66
+      },
+      {
+        "name": "response",
+        "textual_occurrences": 8
+      },
+      {
+        "name": "lookup",
+        "textual_occurrences": 4
+      },
+      {
+        "name": "lookup_name",
+        "textual_occurrences": 2
+      },
+      {
+        "name": "table",
+        "textual_occurrences": 16
+      },
+      {
+        "name": "table_response",
+        "textual_occurrences": 2
+      },
+      {
+        "name": "byteFrom_math",
+        "textual_occurrences": 2
+      },
+      {
+        "name": "characterFrom_math",
+        "textual_occurrences": 2
+      },
+      {
+        "name": "byteTo_math",
+        "textual_occurrences": 2
+      },
+      {
+        "name": "characterTo_math",
+        "textual_occurrences": 2
+      },
+      {
+        "name": "API.isByteBits",
+        "textual_occurrences": 4
+      },
+      {
+        "name": "ByteBitsRelation",
+        "textual_occurrences": 3
+      },
+      {
+        "name": "byte_bits_relation",
+        "textual_occurrences": 2
+      },
+      {
+        "name": "byte_bits_math",
+        "textual_occurrences": 2
+      },
+      {
+        "name": "API.isFloatClass",
+        "textual_occurrences": 4
+      },
+      {
+        "name": "FloatClassRelation",
+        "textual_occurrences": 3
+      },
+      {
+        "name": "float_class_relation",
+        "textual_occurrences": 2
+      },
+      {
+        "name": "float_class_math",
+        "textual_occurrences": 2
+      }
+    ],
+    "StandardDecimalResponse": [
+      {
+        "name": "program",
+        "textual_occurrences": 42
+      },
+      {
+        "name": "API.name",
+        "textual_occurrences": 35
+      },
+      {
+        "name": "API.names",
+        "textual_occurrences": 8
+      },
+      {
+        "name": "API.inputs",
+        "textual_occurrences": 9
+      },
+      {
+        "name": "API.result",
+        "textual_occurrences": 8
+      },
+      {
+        "name": "API.signature",
+        "textual_occurrences": 23
+      },
+      {
+        "name": "response",
+        "textual_occurrences": 8
+      },
+      {
+        "name": "lookup",
+        "textual_occurrences": 5
+      },
+      {
+        "name": "lookup_name",
+        "textual_occurrences": 2
+      },
+      {
+        "name": "table",
+        "textual_occurrences": 15
+      },
+      {
+        "name": "table_response",
+        "textual_occurrences": 2
+      },
+      {
+        "name": "fromFloatSignature",
+        "textual_occurrences": 5
+      },
+      {
+        "name": "fromFloat_exit",
+        "textual_occurrences": 2
+      },
+      {
+        "name": "round_math",
+        "textual_occurrences": 2
+      },
+      {
+        "name": "truncate_math",
+        "textual_occurrences": 2
+      },
+      {
+        "name": "fromDecimal_math",
+        "textual_occurrences": 2
+      },
+      {
+        "name": "absolute_math",
+        "textual_occurrences": 2
+      },
+      {
+        "name": "fromInteger_math",
+        "textual_occurrences": 2
+      },
+      {
+        "name": "toDecimal_math",
+        "textual_occurrences": 2
+      }
+    ],
+    "StandardListResponse": [
+      {
+        "name": "API.name",
+        "textual_occurrences": 19
+      },
+      {
+        "name": "API.names",
+        "textual_occurrences": 8
+      },
+      {
+        "name": "API.inputs",
+        "textual_occurrences": 13
+      },
+      {
+        "name": "API.result",
+        "textual_occurrences": 11
+      },
+      {
+        "name": "API.signature",
+        "textual_occurrences": 15
+      },
+      {
+        "name": "API.delta",
+        "textual_occurrences": 24
+      },
+      {
+        "name": "response",
+        "textual_occurrences": 3
+      },
+      {
+        "name": "lookup",
+        "textual_occurrences": 4
+      },
+      {
+        "name": "lookup_name",
+        "textual_occurrences": 2
+      },
+      {
+        "name": "table",
+        "textual_occurrences": 10
+      },
+      {
+        "name": "table_response",
+        "textual_occurrences": 2
+      },
+      {
+        "name": "Relation",
+        "textual_occurrences": 5
+      },
+      {
+        "name": "relation",
+        "textual_occurrences": 2
+      },
+      {
+        "name": "related_response",
+        "textual_occurrences": 2
+      }
+    ],
+    "StandardBytesResponse": [
+      {
+        "name": "API.name",
+        "textual_occurrences": 19
+      },
+      {
+        "name": "API.names",
+        "textual_occurrences": 8
+      },
+      {
+        "name": "API.inputs",
+        "textual_occurrences": 9
+      },
+      {
+        "name": "API.result",
+        "textual_occurrences": 8
+      },
+      {
+        "name": "API.signature",
+        "textual_occurrences": 14
+      },
+      {
+        "name": "bytesListDelta",
+        "textual_occurrences": 3
+      },
+      {
+        "name": "API.delta",
+        "textual_occurrences": 25
+      },
+      {
+        "name": "response",
+        "textual_occurrences": 3
+      },
+      {
+        "name": "lookup",
+        "textual_occurrences": 4
+      },
+      {
+        "name": "lookup_name",
+        "textual_occurrences": 2
+      },
+      {
+        "name": "table",
+        "textual_occurrences": 10
+      },
+      {
+        "name": "table_response",
+        "textual_occurrences": 2
+      },
+      {
+        "name": "Relation",
+        "textual_occurrences": 6
+      },
+      {
+        "name": "relation",
+        "textual_occurrences": 2
+      },
+      {
+        "name": "related_response",
+        "textual_occurrences": 2
+      }
+    ],
+    "StandardActualListBodies": [
+      {
+        "name": "additionSignature",
+        "textual_occurrences": 7
+      },
+      {
+        "name": "ListOptionDeclarations",
+        "textual_occurrences": 7
+      },
+      {
+        "name": "from_typed",
+        "textual_occurrences": 2
+      },
+      {
+        "name": "higher_typed",
+        "textual_occurrences": 2
+      },
+      {
+        "name": "program",
+        "textual_occurrences": 11
+      },
+      {
+        "name": "builtins",
+        "textual_occurrences": 9
+      },
+      {
+        "name": "model_typed",
+        "textual_occurrences": 5
+      }
+    ],
+    "StandardSignatureExamples": [],
+    "StandardArithmeticResponse": [
+      {
+        "name": "API.name",
+        "textual_occurrences": 46
+      },
+      {
+        "name": "API.signature",
+        "textual_occurrences": 33
+      },
+      {
+        "name": "API.available",
+        "textual_occurrences": 18
+      },
+      {
+        "name": "API.number",
+        "textual_occurrences": 7
+      },
+      {
+        "name": "response_math",
+        "textual_occurrences": 3
+      },
+      {
+        "name": "lookup",
+        "textual_occurrences": 4
+      },
+      {
+        "name": "lookup_name",
+        "textual_occurrences": 2
+      },
+      {
+        "name": "table",
+        "textual_occurrences": 7
+      },
+      {
+        "name": "table_response",
+        "textual_occurrences": 2
+      }
+    ],
+    "StandardOrderResponse": [
+      {
+        "name": "Kind.base",
+        "textual_occurrences": 175
+      },
+      {
+        "name": "Kind.module",
+        "textual_occurrences": 4
+      },
+      {
+        "name": "name",
+        "textual_occurrences": 72
+      },
+      {
+        "name": "Ordered",
+        "textual_occurrences": 5
+      },
+      {
+        "name": "signature",
+        "textual_occurrences": 58
+      },
+      {
+        "name": "Kind.delta",
+        "textual_occurrences": 17
+      },
+      {
+        "name": "predicate",
+        "textual_occurrences": 2
+      },
+      {
+        "name": "Relation",
+        "textual_occurrences": 3
+      },
+      {
+        "name": "response_math",
+        "textual_occurrences": 2
+      },
+      {
+        "name": "lookup",
+        "textual_occurrences": 4
+      },
+      {
+        "name": "lookup_name",
+        "textual_occurrences": 2
+      },
+      {
+        "name": "table",
+        "textual_occurrences": 7
+      },
+      {
+        "name": "table_response",
+        "textual_occurrences": 2
+      }
+    ],
+    "StandardEqualityResponse": [
+      {
+        "name": "fullSignature",
+        "textual_occurrences": 9
+      },
+      {
+        "name": "response_math",
+        "textual_occurrences": 2
+      },
+      {
+        "name": "partialScalarDelta",
+        "textual_occurrences": 3
+      },
+      {
+        "name": "table",
+        "textual_occurrences": 11
+      },
+      {
+        "name": "table_response",
+        "textual_occurrences": 2
+      }
+    ]
+  },
+  "source_record": {
+    "bytes": 93051,
+    "sha256": "0fa2e0653970712a490e5c8877dd52c735646afda2831994551c6357eca77494"
+  },
+  "ordinary_counts": {
+    "modules": 23,
+    "apis": 328,
+    "builtin": 244,
+    "core": 84,
+    "aliases": 51,
+    "pure-local": 143,
+    "core-local": 6,
+    "open": 179
+  },
+  "relation_counts": {
+    "same-input-local": 109,
+    "none": 111,
+    "local-partial": 25,
+    "boundary-wait": 7,
+    "core-static-open": 9,
+    "core-open": 53,
+    "same-input-leaf": 14
+  },
+  "source_signature_proofs": 143,
+  "operator_signature_proofs": 73,
+  "evidence_declarations": [
+    "Benitoite.Interval.IntKind.checkedDivMod",
+    "Benitoite.Release.Refinement.StandardActualListBodies.model_typed",
+    "Benitoite.Release.Refinement.StandardArithmeticResponse.response_math",
+    "Benitoite.Release.Refinement.StandardArithmeticResponse.table_response",
+    "Benitoite.Release.Refinement.StandardBytesResponse.related_response",
+    "Benitoite.Release.Refinement.StandardBytesResponse.table_response",
+    "Benitoite.Release.Refinement.StandardCollectionModel.map_reply",
+    "Benitoite.Release.Refinement.StandardCollectionModel.set_reply",
+    "Benitoite.Release.Refinement.StandardCollectionModel.typed",
+    "Benitoite.Release.Refinement.StandardCollections.map_api_response",
+    "Benitoite.Release.Refinement.StandardCollections.set_api_response",
+    "Benitoite.Release.Refinement.StandardConversionResponse.fromInteger_math",
+    "Benitoite.Release.Refinement.StandardConversionResponse.table_response",
+    "Benitoite.Release.Refinement.StandardConversionResponse.toInteger_math",
+    "Benitoite.Release.Refinement.StandardDecimalResponse.absolute_math",
+    "Benitoite.Release.Refinement.StandardDecimalResponse.fromDecimal_math",
+    "Benitoite.Release.Refinement.StandardDecimalResponse.fromFloat_exit",
+    "Benitoite.Release.Refinement.StandardDecimalResponse.fromInteger_math",
+    "Benitoite.Release.Refinement.StandardDecimalResponse.round_math",
+    "Benitoite.Release.Refinement.StandardDecimalResponse.table_response",
+    "Benitoite.Release.Refinement.StandardDecimalResponse.toDecimal_math",
+    "Benitoite.Release.Refinement.StandardDecimalResponse.truncate_math",
+    "Benitoite.Release.Refinement.StandardEqualityResponse.response_math",
+    "Benitoite.Release.Refinement.StandardEqualityResponse.table_response",
+    "Benitoite.Release.Refinement.StandardIntegerAPI.absolute_response_math",
+    "Benitoite.Release.Refinement.StandardIntegerAPI.bits_math",
+    "Benitoite.Release.Refinement.StandardIntegerAPI.floor_equation",
+    "Benitoite.Release.Refinement.StandardIntegerAPI.floor_math",
+    "Benitoite.Release.Refinement.StandardIntegerAPI.modulo_no_overflow",
+    "Benitoite.Release.Refinement.StandardIntegerAPI.table_response",
+    "Benitoite.Release.Refinement.StandardIntegerResponse.minMax_model_response",
+    "Benitoite.Release.Refinement.StandardIntegerResponse.minMax_response",
+    "Benitoite.Release.Refinement.StandardListResponse.related_response",
+    "Benitoite.Release.Refinement.StandardListResponse.table_response",
+    "Benitoite.Release.Refinement.StandardOrderResponse.response_math",
+    "Benitoite.Release.Refinement.StandardOrderResponse.table_response",
+    "Benitoite.Release.Refinement.StandardSafe.front_response",
+    "Benitoite.Release.Refinement.StandardSafeSlice.slice_response",
+    "Benitoite.Release.Refinement.StandardScalarResponse.byteFrom_math",
+    "Benitoite.Release.Refinement.StandardScalarResponse.byteTo_math",
+    "Benitoite.Release.Refinement.StandardScalarResponse.byte_bits_math",
+    "Benitoite.Release.Refinement.StandardScalarResponse.characterFrom_math",
+    "Benitoite.Release.Refinement.StandardScalarResponse.characterTo_math",
+    "Benitoite.Release.Refinement.StandardScalarResponse.float_class_math",
+    "Benitoite.Release.Refinement.StandardScalarResponse.table_response"
+  ],
+  "obligations": 64,
+  "S_rows": 36,
+  "old_root_prefix": {
+    "bytes": 23535,
+    "sha256": "a3a6c1f8268adb89961151f9836af5f85b83bc0d332bddc9d929a14488ac99b3"
+  },
+  "default_build": "r1-u28-final-default01",
+  "declarations_check": "r1-u28-evidence-names01",
+  "earlier_targeted_build_deviations": 23,
+  "additional_targeted_build_deviations": 0,
+  "records_under_100KB": true
+}

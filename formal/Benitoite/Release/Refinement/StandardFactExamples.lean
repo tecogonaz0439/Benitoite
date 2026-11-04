@@ -187,12 +187,12 @@ private theorem wild_alts (P : Program) : AltsTy P wildAlts (.base .boolean) [] 
 theorem guard_arms_typing (P : Program) (B : Builtins) (Ψ : StoreTy) :
     HasTypeArmsQ P B Ψ Qempty [] booleanContext [] none none guardArms
       (.base .boolean) falseType Eff.empty [] := by
-  refine .guarded (p := guardPredicate) (wild_alts P) ?_ ?_ ?_ ?_ ?_
+  refine .guardedEmpty (p := guardPredicate) (wild_alts P) ?_ ?_ ?_ ?_ ?_
   · intro p hp; cases hp
   · simpa [guardType,bindParams,booleanContext,hideConts,Ty.shiftV_zero,Ty.core] using guard_annotation P
   · simpa [guardType,bindParams,booleanContext,hideConts,liftMany_eq,pathFacts,localExtend,Ty.shiftV_zero,Ty.core] using guard_typing P B Ψ
   · simpa [bindParams,booleanContext,liftMany_eq,pathFacts,localExtend,Ty.shiftV_zero,Eff.shiftV_zero] using guard_body_typing P B Ψ
-  · refine .plain (wild_alts P) ?_ ?_ ?_
+  · refine .plainEmpty (wild_alts P) ?_ ?_ ?_
     · intro p hp; cases hp
     · simpa [bindParams,booleanContext,liftMany_eq,pathFacts,localExtend,Ty.shiftV_zero,Eff.shiftV_zero] using false_constant P B Ψ []
     · exact .nil (false_annotation P _)
