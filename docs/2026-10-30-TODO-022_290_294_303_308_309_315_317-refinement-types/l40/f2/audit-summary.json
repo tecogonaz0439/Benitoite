@@ -1,0 +1,92 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-M",
+    "12288",
+    "<tmp>/audit-input.lean"
+  ],
+  "start_utc": "2026-11-04T03:35:10.054620+00:00",
+  "end_utc": "2026-11-04T03:35:34.634063+00:00",
+  "seconds": 24.579303709,
+  "exit": 0,
+  "raw": {
+    "bytes": 14541750,
+    "sha256": "550ff17a0cac74fa335b57dc2b583739e02bc129b68388fd49328abc678a97b2"
+  },
+  "audit_input": {
+    "bytes": 6379,
+    "sha256": "fc918cc6072a31cd55bd2094dd82fd7ed24d22a3fb6737e3a3aa9f015cf304e0"
+  },
+  "targets": 78801,
+  "target_list": {
+    "bytes": 5144266,
+    "sha256": "3155dd9dcb642cc1ce1b2ba377ac9586e44c1c95bebf14f69e0639f6874f0014"
+  },
+  "module_count": 991,
+  "module_parts": [
+    {
+      "file": "audit-modules-part-01.json",
+      "bytes": 13776,
+      "sha256": "131db9d21f4d370c3998b0655a16c72fd4d40b3b2eb994e2d87b25348e7ab81d"
+    },
+    {
+      "file": "audit-modules-part-02.json",
+      "bytes": 17555,
+      "sha256": "4ebdd6518e88964c19218b6a31c1d06e8e79bf955e178b15b3372db53ae9d08b"
+    },
+    {
+      "file": "audit-modules-part-03.json",
+      "bytes": 17763,
+      "sha256": "d07abaa4f845d352fd83285e7d418305415245d9620035a2cb23f237e7f717f0"
+    },
+    {
+      "file": "audit-modules-part-04.json",
+      "bytes": 3936,
+      "sha256": "7c9d4cd9a1359a602065f7d46a50c4f107f2fd043ba749734ee8e11ada4580fa"
+    }
+  ],
+  "closure_rounds": 2,
+  "private_and_generated_included": true,
+  "new_axioms": 0,
+  "axiom_sets": {
+    "none": 36607,
+    "Classical.choice": 1,
+    "Classical.choice + Quot.sound + propext": 19734,
+    "Classical.choice + propext": 2,
+    "Quot.sound": 9,
+    "Quot.sound + propext": 3848,
+    "propext": 18600
+  },
+  "new_modules": {
+    "FirstFailure": 70,
+    "IntervalControlLeaves": 11,
+    "IntervalFlowLeaves": 113,
+    "StandardIntegerFailure": 73
+  },
+  "requested_module_declarations": 267,
+  "requested_module_parts": [
+    {
+      "file": "audit-requested-part-01.json",
+      "bytes": 1205,
+      "sha256": "11b8a6cd43d9459d3c6d933b1e1e6f4707bd284992a66cc9d94e07704221f8bd"
+    }
+  ],
+  "source_input_parts": [
+    {
+      "file": "audit-source-inputs-part-01.json",
+      "bytes": 831,
+      "sha256": "3028350a3b3c2e91210f639e281d6f7844783fcc145981c70358cfe3d37f4b24"
+    }
+  ],
+  "collection_from_completed_execution": false,
+  "audit_script": {
+    "bytes": 6403,
+    "sha256": "92e3f8a99d660c59e7837136b579341080e8e194ba5d0c5afd9a202c16f56923"
+  },
+  "audit_template": {
+    "bytes": 6190,
+    "sha256": "9e4f42b041f225bca25d747cde5a364669e7870c63a09b47fc93d1c4bc396d0a"
+  }
+}

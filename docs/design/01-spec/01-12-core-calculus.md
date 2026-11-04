@@ -3437,6 +3437,8 @@ information order に当たる `Observation.InfoLE` は、scalar と対象の sn
 
 ### 標準契約と数値の正常応答
 
+`StandardIntegerFailure` は、七整数型の実 `OperationResult` と `integerOutcome` を、同じ幅の同じ定数への `ValueRel` 又はその位置の拒否へ分ける。加減乗は数学上の和・差・積、符号付き負号は負にした値を、`integerChecked` の表現可能性の検査へ接続する。商・剰余の 0 除算は zeroDivisor、表現外の商は overflow とし、非零の除数の剰余は商の表現可能性に依存せず正常値となる。`binary_delta_split` の overflow は数学上の和・差・積が値域外である条件を返す。`divMod_delta_split` は剰余を0除算又は正常値、商を0除算・値域外の overflow・正常値へ分ける。`division_overflow_iff` は非零除数の通常の商の overflow が符号付き最小値÷−1に限られることを示す。床演算の値は `StandardIntegerAPI.floorNumber` の符号補正と同じであり、`floorModulo` は全七幅で非零の除数なら表現可能である。符号付き四幅の最小値の absolute と最小値÷−1の商は IntegerOverflow、同じ入力の床剰余は正常な 0 である。符号なしの absolute は元の同じ値を返す。shift は count が負又は幅以上ならビット値を計算する前に ArgumentOutOfDomain を返す。これらは同じ名前付き δ の等号へ接続し、後続の演算を使わない。`integerFailure` は overflow を IntegerOverflow、zeroDivisor を DivisionByZero、残る四理由を ArgumentOutOfDomain へ写す。`integerFailure` は整数の応答の写像であり、Range の Result.Error を扱わない。
+
 `StandardKeySummary` は、同じ有限宣言の収束した要約から各欄の依存位置を読む。等値と鍵の要約が両方とも無条件の拒否を含まない場合、依存位置が一致する性質は、空の要約からの本番の有限反復について証明する。`Table.key_field` は、同じ P の VarianceValid、構成子宣言、その data の鍵制約の成功から、具体化した各欄の鍵制約を返す。`StandardKeySound.key_table_sound` は、同じ具体表・VarianceValid・型の鍵制約の成功から、任意の型付きの閉じた有限値の項・閉性・観測・KeyShape を返す。帰納の測度は有限な値の構文の大きさであり、再帰 data の型の展開の大きさではない。値の列と同じ要素型の列の入口は KeySlots を返す。閉じたスロットと鍵コード、Map と Set の縮約の存在へも接続する。Map の縮約の存在には値側の型付けや鍵化を要求せず、鍵の列と同じ長さの値の列を受ける。
 
 `StandardCollections.countReply` は数学上の個数を Integer に変換し、表現外を停止の応答として保持する。`countReply_normal` は正常値が元の個数と等しいことを、`countReply_stop` は上限を越すことをそれぞれ同値で表す。`lengthDelta` は String の byteLength と characterCount、List と Bytes の length、List の isEmpty を名前・型引数の個数・空の行と範囲引数で選ぶ。List だけが一つの型引数を持つ。正常応答から結果の非負の篩と同じ measure の観測を構成し、List の観測できない要素も長さに数える。Bytes は各要素が 0〜255 に収まることを検査する。有限列全体に Integer の上限を課さない。`insertDelta` は List の prepend と append を一要素の挿入として表し、同じ型付き列・要素・要素型の Annotation から結果の型付けと長さ n+1 を返す。`sequenceDelta` は concatenate と reverse を実際の有限列の連結と逆順で定め、同じ要素型の導出から結果の型付けと長さ n+m・n を返す。
@@ -3963,6 +3965,65 @@ EnvRel は通常の局所値と捕捉を同じ位置で対応付け、None の�
 Runs は具体の有限な Steps と EndState の関係である。開始の継続と結果の継続を別に指定でき、既定では同じ継続とする。EndState は normal の ret、returned の escape、failed の error を区別する。failed の理由列は同じ独立評価の Failure との関係を明示する引数であり、応答契約や主定理の新しい前提ではない。具体の算術・δとその理由列の対応は、この局所的な合成の結論に含めない。独立評価の後続の拒否と、実行が最初に失敗する位置を同一視しない。
 
 return と let の接続は、子の独立評価・実際の有限な実行・元のコードと環境の関係を入力にする。let の normal だけが capture.extend で実値を束縛し、returned/failed は後続を実行せず同じ理由で外へ進む。非末尾 return の normal は escape に変わり、mark を外すと normal に戻る。typed_returned_mark は元状態と実際の escape、および同じ値の強い関係から、既存の一般の葉で行先の型付けと通常結果の関係を構成する。Integer/Width の本体の接続は、独立評価の選択、同じ値と束縛列の関係、実照合、本体のコード・子の実行を入力にする。Result の本体の接続は、具体の一引数の構成子と既存の rangeResultPattern を満たすパターンについて、強い関係と ResultSelection から実際の firstAlt と束縛列の関係を導く。その列に対する子の実行から E_MatchBody を構成する。other の Result では、実行の tag に合う選択の存在と、その payload と実値の payload の関係を別に要する。ValueRel.other の観測と非変数性だけからは得られない。ArmInput は既存の三種類の EvalArms/EvalWidthArms/EvalResultArms を区別し、connect_arm_skip・connect_arm_guard_true・connect_arm_guard_false が各独立評価の構成子と実際の有限実行をともに構成する。これらの共通入口には独立評価の選択と実照合の双方を供給する。guard の真は本体、偽は元の環境と捕捉の次の腕、failed は同じ理由列へ戻る。normalToShared の同値は、具体値の型の一致を前提に同じ実値の観測へ移す。全表層や全独立評価を一括で実行へ写す定理はこれらの局所入口の結論ではない。
+
+`IntervalFlowLeaves` は正常値と return の局所的な二成分を定める。`joinV` は bottom を単位とし、同幅の整数は閉区間の包、Boolean は各フラグの論理和、異種は unknown とする。`normalF a` は `⟨a,bottom,false⟩`、`returnF f` は `⟨bottom,joinV f.normal f.returned,f.mayFail⟩`、`joinF f g` は `⟨joinV f.normal g.normal,joinV f.returned g.returned,f.mayFail || g.mayFail⟩`、`seqF f g` は `⟨g.normal,joinV f.returned g.returned,f.mayFail || g.mayFail⟩` である。`joinV_left/right` は左右それぞれの `Mem` を保つ。
+
+return は子の normal を returned へ移し、returned と failed を伝播する。順次は head が正常に終わった同じ値を束縛した tail の結果を使い、head の returned 又は failed では tail の評価を要求しない。`iteTrue/iteFalse` と `elseIfTrue/elseIfFalse` は選択した枝の結果を `joinF f g` の対応する成分へ入れ、`seq_tail` で条件のフロー `h` に続く `seqF h (joinF f g)` の所属を得る。`ifOnlyTrue` は本体の結果を、`ifOnlyFalse` は通常の Unit を `joinF f (normalF .unknown)` へ入れ、同じく `seq_tail` で `seqF h (joinF f (normalF .unknown))` の所属を得る。`iteAbrupt/elseIfAbrupt/ifOnlyAbrupt` は条件の同じ異常終了を `seq_abrupt` で伝播し、それぞれ真偽の入口と同じフローの所属を返す。式の `block` は同じ Block の導出と所属を使う。`matchInteger/matchWidth/matchResult` は同じ照合値の通常評価と選んだ腕の導出から、腕の所属を `seqF` で式の結果の所属へ上げる。`matchAbrupt` は照合値の同じ異常終了を伝播する。三種類の腕の各6構成子では、skip と偽の guard は元の環境の残りへ進み、真の guard は選択した同じ本体へ進む。guard の異常終了は順次の異常終了として伝播する。Block の14構成子には、empty の Unit、builderBind、last、末尾の bind/discard/pattern、正常な bind/discard/seq/pattern、各異常終了を一対一で対応させる。各入口は子の `EvalPartial`・`EvalBlock`・腕の導出とその観測結果の `ResultMem` から、親の同じ評価の導出と局所のフローの所属を返す。`boolean_branches` は return を返す真の枝と通常値を返す偽の枝を構成し、両成分の誤った値の所属を否定する。`wildcard_return_arm` は選択した同じ腕の return から returned を作る。`boolean_else_if`・`unit_if_only`・`abrupt_conditions` は分岐と条件の異常終了、`bound_boolean_return` は正常な束縛の tail と式の block、`guarded_boolean_branches` は guard の真偽、`integer_match_return`・`width_match_return`・`result_match_return` は三種類の腕から式の match への接続を具体化する。各例は、実際の結果の所属に加えて、通常成分と returned 成分又は異なる Boolean の誤った所属を否定する。
+
+`normal_mem_of_related` と `returned_mem_of_related` は、同じ `ValueRel c v` と成分の所属から `toApprox_eq` によって実値の所属を得る。`IntervalControlLeaves.normal_state_member` は元の `StateTyE`・ret の view・WellFormed・WellTyped・CoreAssumptions から、元のストアと ClosureTy、および到達結果型での同じ値の型付けを取り出す。`escape_mark_member` は `typed_returned_mark` で同じ σ と外効果 Eb の到達型を構成し、returned の値を通常成分へ移す。let と handler を飛ばす escape は returned の同じ値を保つ。`error_let_typed`・`error_mark_typed` は元の `StateTyE` だけから、同じ理由列の遷移と到達状態の型付けを得る。所属をその根拠にしない。exit は元の状態だけから同じ終了値と理由列を保つ。exit に正常値の所属を付けない。`boolean_mark` は同じ Boolean の独立した return と型付き mark に適用する。
+
+```lean
+def joinV : ValueApprox → ValueApprox → ValueApprox
+  | .bottom, b => b
+  | a, .bottom => a
+  | .integer k a, .integer l b =>
+      if same : l = k then .integer k (Benitoite.Interval.join a (same ▸ b)) else .unknown
+  | .boolean f t, .boolean g u => .boolean (f || g) (t || u)
+  | _, _ => .unknown
+
+def normalF (a : ValueApprox) : FlowApprox := ⟨a,.bottom,false⟩
+def returnF (f : FlowApprox) : FlowApprox := ⟨.bottom,joinV f.normal f.returned,f.mayFail⟩
+def joinF (f g : FlowApprox) : FlowApprox :=
+  ⟨joinV f.normal g.normal,joinV f.returned g.returned,f.mayFail || g.mayFail⟩
+def seqF (f g : FlowApprox) : FlowApprox :=
+  ⟨g.normal,joinV f.returned g.returned,f.mayFail || g.mayFail⟩
+
+```
+
+```lean
+def BeforeError : State → Prop
+  | .error .. => False
+  | _ => True
+
+inductive BeforeErrorSteps (P : Program) (B : Builtins) (σ : PathEnv) :
+    State → List Event → State → Prop where
+  | nil {s} : BeforeError s → BeforeErrorSteps P B σ s [] s
+  | cons {s t u event events} : BeforeError s → Step P B σ s event t →
+      BeforeErrorSteps P B σ t events u →
+      BeforeErrorSteps P B σ s (event.toList ++ events) u
+
+/-- 最初の失敗の位置と、その位置で実際に拒否した pure の δ だけを観測する。 -/
+def FirstFailureHandoff : Prop :=
+  ∀ (P : Program) (B : Builtins) (σ : PathEnv) (q : Closure) (k : Cont) (μ : Store)
+    (events : List Event) (errors : List ErrKind) (lastK : Cont) (lastStore : Store),
+    Steps P B σ (.run q k μ) events (.error errors lastK lastStore) →
+    ∃ (preEvents : List Event) (before : State) (event : Option Event)
+      (firstErrors : List ErrKind) (firstK : Cont) (firstStore : Store) (suffix : List Event),
+      BeforeErrorSteps P B σ (.run q k μ) preEvents before ∧
+      Step P B σ before event (.error firstErrors firstK firstStore) ∧
+      Steps P B σ (.error firstErrors firstK firstStore) suffix (.error errors lastK lastStore) ∧
+      events = preEvents ++ event.toList ++ suffix ∧
+      ∀ (focus : Closure) (atK : Cont) (atStore : Store) (b : PrimName)
+        (ts : List Ty) (es : List Eff) (ranges : List RangeExpr) (ws : List Val) (sg : PrimSig),
+        before = .run focus atK atStore → focus.view = .app (.prim b ts es ranges) ws →
+        B.sig b = some sg → sg.kind = .pure →
+        event = none ∧ ∃ r, firstErrors = [r] ∧ B.delta b (Ty.normTys ts) (es.map Eff.norm) ranges ws = some (.err r)
+
+```
+
+`FirstFailure` の `BeforeError` は error の状態では偽、他の三状態では真である。`BeforeErrorSteps` は、開始が `BeforeError` を満たす空列と、`BeforeError` を満たす状態からの一歩に同じ関係の後続をつないだ列である。`FirstFailureHandoff` は、任意のプログラム・組み込みの表・固定した σ・run の開始・有限の `Steps` と error の到達先を量化する。結論は、error に入る前の `BeforeErrorSteps`、最初に error へ入る一歩、最初の error から元の到達先までの `Steps`、および全事象列がこの三列の連結であることとする。さらに、最初の位置の view が pure の呼出しで同じ署名を持つなら、その一歩の事象は none、最初の理由列は `[r]`、同じ型・行の正規化と範囲・実引数の δ の結果は `some (err r)` とする。
+
+`first_error` はこの実行の分解を、`pure_failure` は最初の位置の pure の δ の観測を証明する。`first_failure_handoff` は両者から上の全称命題を証明する。型付き入力に限定する前提、δ の算術一致、解析の所属はこの定理の前提に含めない。`typed_first_failure` は、元の `StateTyE` から得た開始の入力とこの受渡しをともに返す。`old_candidate_false` は、同じ環境と脱糖でも独立評価の後続の neg の overflow と実行の先の neg の拒否が異なり得ることを示し、`revised_counterexample_accepted` はその先の位置を受け取る。
 
 `IntervalRelationBoundary.ValueShape` は Unit と構造値の必要条件であり、ValueRel.shape が強い関係からこの必要条件を取り出す。ground_signature_obstruction は Unit と構成子の近似が一致しても強い関係は成立せず、近似と Ground からこの必要条件を導けないことを証明する。marked_signature_obstruction は、同じ具体の適格な表と Unit を escape する型付きの元状態でも、近似の一致だけから返却値を Result.Ok の構成子へ対応付けられないことを証明する。
 
