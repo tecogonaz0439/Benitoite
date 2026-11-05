@@ -1,0 +1,782 @@
+{
+  "paths": [
+    [
+      "Benitoite.Release.Refinement.ExternalNominal.bind",
+      "Benitoite.Release.Refinement.Ty.bind_external"
+    ],
+    [
+      "Benitoite.Release.Refinement.ExternalNominal.closeTy",
+      "Benitoite.Release.Refinement.ExternalNominal.substTyValues"
+    ],
+    [
+      "Benitoite.Release.Refinement.ExternalNominal.closeTyAt",
+      "Benitoite.Release.Refinement.ExternalNominal.substTyValues"
+    ],
+    [
+      "Benitoite.Release.Refinement.ExternalSignatureLeaves.handle_call_typed",
+      "Benitoite.Release.Refinement.ExternalSurface.call_typed"
+    ],
+    [
+      "Benitoite.Release.Refinement.ExternalSignatureLeaves.non_binding_pattern_rejected",
+      "_private.Benitoite.Release.Refinement.ExternalSignatureLeaves.0.Benitoite.Release.Refinement.ExternalSignatureLeaves.pattern_observation_not_external"
+    ],
+    [
+      "Benitoite.Release.Refinement.ExternalNominal.handle_declaration",
+      "Benitoite.Release.Refinement.HasTypeVQ.inv_externalHandle"
+    ],
+    [
+      "Benitoite.Release.Refinement.ExternalSignatureLeaves.declared_use",
+      "Benitoite.Release.Refinement.ExternalUseAt.mode"
+    ],
+    [
+      "Benitoite.Release.Refinement.ExternalSignatureLeaves.declared_use",
+      "Benitoite.Release.Refinement.ExternalSignature.WF.shape"
+    ],
+    [
+      "Benitoite.Release.Refinement.ExternalSignatureLeaves.collected_contract",
+      "Benitoite.Release.Refinement.Program.ExternalWF.function_lookup"
+    ],
+    [
+      "Benitoite.Release.Refinement.ExternalSignatureLeaves.handle_arguments",
+      "Benitoite.Release.Refinement.ExternalSignatureLeaves.handle_typed_iff"
+    ],
+    [
+      "Benitoite.Release.Refinement.ExternalSignatureLeaves.constructor_value_rejected",
+      "Benitoite.Release.Refinement.HasTypeVQ.canonical_external"
+    ]
+  ],
+  "readers": [
+    {
+      "name": "Benitoite.Release.Refinement.ExternalNominal.Preserves",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalNominal.bind",
+        "Benitoite.Release.Refinement.ExternalNominal.carrier",
+        "Benitoite.Release.Refinement.ExternalNominal.closeTy",
+        "Benitoite.Release.Refinement.ExternalNominal.closeTyAt",
+        "Benitoite.Release.Refinement.ExternalNominal.instR",
+        "Benitoite.Release.Refinement.ExternalNominal.mapRanges",
+        "Benitoite.Release.Refinement.ExternalNominal.norm",
+        "Benitoite.Release.Refinement.ExternalNominal.normWith",
+        "Benitoite.Release.Refinement.ExternalNominal.observationType",
+        "Benitoite.Release.Refinement.ExternalNominal.packRefinements",
+        "Benitoite.Release.Refinement.ExternalNominal.rawBind",
+        "Benitoite.Release.Refinement.ExternalNominal.rawMapRanges",
+        "Benitoite.Release.Refinement.ExternalNominal.rawRenameTypes",
+        "Benitoite.Release.Refinement.ExternalNominal.rawSubstV",
+        "Benitoite.Release.Refinement.ExternalNominal.refineNorm",
+        "Benitoite.Release.Refinement.ExternalNominal.renameTy",
+        "Benitoite.Release.Refinement.ExternalNominal.renameTypes",
+        "Benitoite.Release.Refinement.ExternalNominal.renameValues",
+        "Benitoite.Release.Refinement.ExternalNominal.shift",
+        "Benitoite.Release.Refinement.ExternalNominal.shiftR",
+        "Benitoite.Release.Refinement.ExternalNominal.shiftTypes",
+        "Benitoite.Release.Refinement.ExternalNominal.shiftV",
+        "Benitoite.Release.Refinement.ExternalNominal.subst",
+        "Benitoite.Release.Refinement.ExternalNominal.substAt",
+        "Benitoite.Release.Refinement.ExternalNominal.substRAt",
+        "Benitoite.Release.Refinement.ExternalNominal.substTyValues",
+        "Benitoite.Release.Refinement.ExternalNominal.substTypeAt",
+        "Benitoite.Release.Refinement.ExternalNominal.substV",
+        "Benitoite.Release.Refinement.ExternalNominal.substVAt",
+        "Benitoite.Release.Refinement.ExternalNominal.transformations",
+        "Benitoite.Release.Refinement.ExternalNominal.transformed_distinct"
+      ],
+      "default_examples": [
+        7
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalNominal.bind",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalNominal.shift",
+        "Benitoite.Release.Refinement.ExternalNominal.substAt",
+        "Benitoite.Release.Refinement.ExternalNominal.substTyValues",
+        "Benitoite.Release.Refinement.ExternalNominal.substTypeAt",
+        "Benitoite.Release.Refinement.ExternalNominal.substV",
+        "Benitoite.Release.Refinement.ExternalNominal.transformations"
+      ],
+      "default_examples": [
+        9
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalNominal.carrier",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalNominal.transformations"
+      ],
+      "default_examples": [
+        9
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalNominal.closeTy",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalNominal.transformations"
+      ],
+      "default_examples": [
+        9
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalNominal.closeTyAt",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalNominal.transformations"
+      ],
+      "default_examples": [
+        9
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalNominal.declared_arity",
+      "named_readers": [],
+      "default_examples": [
+        10
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalNominal.distinct",
+      "named_readers": [],
+      "default_examples": [
+        12
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalNominal.duplicate",
+      "named_readers": [],
+      "default_examples": [
+        5
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalNominal.function_entry",
+      "named_readers": [],
+      "default_examples": [
+        1
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalNominal.handle_declaration",
+      "named_readers": [],
+      "default_examples": [
+        13
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalNominal.instR",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalNominal.transformations"
+      ],
+      "default_examples": [
+        9
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalNominal.mapRanges",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalNominal.shiftR",
+        "Benitoite.Release.Refinement.ExternalNominal.substRAt",
+        "Benitoite.Release.Refinement.ExternalNominal.transformations"
+      ],
+      "default_examples": [
+        9
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalNominal.map_fn_declarations",
+      "named_readers": [],
+      "default_examples": [
+        8
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalNominal.norm",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalNominal.transformations"
+      ],
+      "default_examples": [
+        9,
+        12
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalNominal.normWith",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalNominal.transformations"
+      ],
+      "default_examples": [
+        9
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalNominal.observationType",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalNominal.transformations"
+      ],
+      "default_examples": [
+        9
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalNominal.packRefinements",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalNominal.transformations"
+      ],
+      "default_examples": [
+        9
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalNominal.program",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalNominal.singleton_function",
+        "Benitoite.Release.Refinement.ExternalNominal.singleton_type",
+        "Benitoite.Release.Refinement.ExternalSignatureLeaves.boxProgram",
+        "Benitoite.Release.Refinement.ExternalSignatureLeaves.declarations"
+      ],
+      "default_examples": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        14,
+        17,
+        27,
+        32,
+        33
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalNominal.rawBind",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalNominal.renameTy",
+        "Benitoite.Release.Refinement.ExternalNominal.transformations"
+      ],
+      "default_examples": [
+        9
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalNominal.rawMapRanges",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalNominal.transformations"
+      ],
+      "default_examples": [
+        9
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalNominal.rawRenameTypes",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalNominal.transformations"
+      ],
+      "default_examples": [
+        9
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalNominal.rawSubstV",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalNominal.transformations"
+      ],
+      "default_examples": [
+        9
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalNominal.refineNorm",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalNominal.transformations"
+      ],
+      "default_examples": [
+        9
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalNominal.renameTy",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalNominal.transformations"
+      ],
+      "default_examples": [
+        9
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalNominal.renameTypes",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalNominal.transformations"
+      ],
+      "default_examples": [
+        9
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalNominal.renameValues",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalNominal.transformations"
+      ],
+      "default_examples": [
+        9
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalNominal.shift",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalNominal.transformations"
+      ],
+      "default_examples": [
+        9
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalNominal.shiftR",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalNominal.transformations"
+      ],
+      "default_examples": [
+        9
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalNominal.shiftTypes",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalNominal.transformations"
+      ],
+      "default_examples": [
+        9
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalNominal.shiftV",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalNominal.transformations"
+      ],
+      "default_examples": [
+        9
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalNominal.singleton_function",
+      "named_readers": [],
+      "default_examples": [
+        17
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalNominal.singleton_type",
+      "named_readers": [],
+      "default_examples": [
+        2
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalNominal.subst",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalNominal.transformations"
+      ],
+      "default_examples": [
+        9
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalNominal.substAt",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalNominal.subst",
+        "Benitoite.Release.Refinement.ExternalNominal.transformations"
+      ],
+      "default_examples": [
+        9
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalNominal.substRAt",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalNominal.instR",
+        "Benitoite.Release.Refinement.ExternalNominal.transformations"
+      ],
+      "default_examples": [
+        9
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalNominal.substTyValues",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalNominal.closeTy",
+        "Benitoite.Release.Refinement.ExternalNominal.closeTyAt",
+        "Benitoite.Release.Refinement.ExternalNominal.transformations"
+      ],
+      "default_examples": [
+        9
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalNominal.substTypeAt",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalNominal.transformations"
+      ],
+      "default_examples": [
+        9
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalNominal.substV",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalNominal.substVAt",
+        "Benitoite.Release.Refinement.ExternalNominal.transformations"
+      ],
+      "default_examples": [
+        9
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalNominal.substVAt",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalNominal.transformations"
+      ],
+      "default_examples": [
+        9
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalNominal.table_wf_iff",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalNominal.function_entry",
+        "Benitoite.Release.Refinement.ExternalNominal.type_entry"
+      ],
+      "default_examples": [
+        3,
+        4
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalNominal.transformations",
+      "named_readers": [],
+      "default_examples": [
+        9
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalNominal.transformed_distinct",
+      "named_readers": [],
+      "default_examples": [
+        9
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalNominal.type_entry",
+      "named_readers": [],
+      "default_examples": [
+        6
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalNominal.unknown",
+      "named_readers": [],
+      "default_examples": [
+        7
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalNominal.unknown_handle",
+      "named_readers": [],
+      "default_examples": [
+        14
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalSignatureLeaves.boxProgram",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalSignatureLeaves.box_value_type"
+      ],
+      "default_examples": [
+        17,
+        18
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalSignatureLeaves.box_value_type",
+      "named_readers": [],
+      "default_examples": [
+        18
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalSignatureLeaves.collected_contract",
+      "named_readers": [],
+      "default_examples": [
+        16
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalSignatureLeaves.constructor_value_rejected",
+      "named_readers": [],
+      "default_examples": [
+        31
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalSignatureLeaves.declarations",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalSignatureLeaves.declarations_wf"
+      ],
+      "default_examples": [
+        16,
+        32,
+        33
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalSignatureLeaves.declarations_wf",
+      "named_readers": [],
+      "default_examples": [
+        16,
+        33
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalSignatureLeaves.declared_use",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalSignatureLeaves.collected_contract"
+      ],
+      "default_examples": [
+        15,
+        22,
+        23
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalSignatureLeaves.handleSignature",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalSignatureLeaves.declarations",
+        "Benitoite.Release.Refinement.ExternalSignatureLeaves.declarations_wf",
+        "Benitoite.Release.Refinement.ExternalSignatureLeaves.handle_arguments",
+        "Benitoite.Release.Refinement.ExternalSignatureLeaves.handle_call_typed",
+        "Benitoite.Release.Refinement.ExternalSignatureLeaves.handle_wf"
+      ],
+      "default_examples": [
+        15,
+        21,
+        24,
+        25,
+        33
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalSignatureLeaves.handle_arguments",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalSignatureLeaves.handle_call_typed"
+      ],
+      "default_examples": [
+        33
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalSignatureLeaves.handle_call_typed",
+      "named_readers": [],
+      "default_examples": [
+        32
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalSignatureLeaves.handle_not_release",
+      "named_readers": [],
+      "default_examples": [
+        27
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalSignatureLeaves.handle_not_source",
+      "named_readers": [],
+      "default_examples": [
+        27
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalSignatureLeaves.handle_typed_iff",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalSignatureLeaves.handle_arguments"
+      ],
+      "default_examples": [
+        27
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalSignatureLeaves.handle_uses",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalSignatureLeaves.handle_wf"
+      ],
+      "default_examples": [],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalSignatureLeaves.handle_wf",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalSignatureLeaves.declarations_wf",
+        "Benitoite.Release.Refinement.ExternalSignatureLeaves.handle_call_typed"
+      ],
+      "default_examples": [
+        15
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalSignatureLeaves.key_no_occurrence",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalSignatureLeaves.occurrence_declaration"
+      ],
+      "default_examples": [
+        19
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalSignatureLeaves.mismatched_handle",
+      "named_readers": [],
+      "default_examples": [
+        28,
+        29
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalSignatureLeaves.non_binding_pattern_rejected",
+      "named_readers": [],
+      "default_examples": [
+        30
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalSignatureLeaves.occurrence_declaration",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalSignatureLeaves.use_declaration"
+      ],
+      "default_examples": [
+        18
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalSignatureLeaves.pureSignature",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalSignatureLeaves.declarations",
+        "Benitoite.Release.Refinement.ExternalSignatureLeaves.declarations_wf",
+        "Benitoite.Release.Refinement.ExternalSignatureLeaves.pure_wf"
+      ],
+      "default_examples": [
+        15,
+        17,
+        20
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalSignatureLeaves.pure_wf",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalSignatureLeaves.declarations_wf"
+      ],
+      "default_examples": [
+        15,
+        17
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalSignatureLeaves.stateEffect",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalSignatureLeaves.handleSignature",
+        "Benitoite.Release.Refinement.ExternalSignatureLeaves.handle_arguments",
+        "Benitoite.Release.Refinement.ExternalSignatureLeaves.handle_call_typed",
+        "Benitoite.Release.Refinement.ExternalSignatureLeaves.handle_uses",
+        "Benitoite.Release.Refinement.ExternalSignatureLeaves.handle_wf"
+      ],
+      "default_examples": [
+        15,
+        20,
+        32,
+        33
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalSignatureLeaves.use_declaration",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalSignatureLeaves.declared_use"
+      ],
+      "default_examples": [],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.ExternalUseAt.mode",
+      "named_readers": [
+        "Benitoite.Release.Refinement.ExternalSignatureLeaves.declared_use"
+      ],
+      "default_examples": [
+        15,
+        22,
+        23
+      ],
+      "future_readers": "L70/R50はhandoffs.md参照"
+    }
+  ]
+}

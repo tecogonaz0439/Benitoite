@@ -822,3 +822,5 @@ import Benitoite.Release.Refinement.ExternalSurfaceLeaves
 import Benitoite.Release.Refinement.ExternalModelResponse
 import Benitoite.Release.Refinement.ResourceReleaseModel
 import Benitoite.Release.Refinement.StandardModelResponse
+import Benitoite.Release.Refinement.ExternalNominal
+import Benitoite.Release.Refinement.ExternalSignatureLeaves

@@ -3799,6 +3799,12 @@ def fieldFacts (n : Nat) (obs : Option Term) (links : List FieldLink) : List Pre
 
 外部宣言は `Program.externals` の有限な表に置き、型と関数の名目ID、コンポーネント、resource の対応を照合する。`Program.ExternalWF` はキーの一意性と宣言の整合を要求する。`ExternalSignature.WF` は型パラメータと kind の列が空の単相宣言、依存列の注釈、受け渡せる型、外部型の全出現と uses の過不足・重複、署名全体の行支持の空性を検査する。外部型の入力は borrow、結果は own として位置と入れ子の道筋を保持する。uses が空なら潜在効果は空、外部型の出現があるなら State とする。外部状態の精密なヒープは表さない。
 
+`ExternalNominal.table_wf_iff` は、任意の有限表について、鍵の一意性と型・関数の鍵と宣言の四対を分ける。同種の対はIDと型引数数又は署名の形成を要求し、異種の二対は拒む。表示名はIDの等号に用いない。未知IDは `Ty.Declared` とハンドルの型付けの前提を満たさず、整形式の表では外部型の引数列は空である。`ExternalNominal.Preserves` は、外部型に変換を適用した後も芯に同じIDがあることを表す。`transformations` は正規化・有限支持での正規化・型と値の改名・型と行と範囲と値の置換・carrier・`Ty.observationType`・捕捉した値による型の置換・篩をまとめる二十九変換を扱う。`Ty.observationType` は外部型の引数を空にする。external全体を恒等の枝でそのまま返す `Ty.instTarget`・`normContTy`・`rawApply`・`Ty.core` は、この変換数に含めない。Map内のdata引数、関数のList引数と結果は同じ宣言表で読み、ハンドルの型付けから同じcomponent・resourceを取り出す。
+
+`ExternalUseAt.mode` は、任意の依存列・開始番号・使用位置について、引数ならborrow、結果ならownを返す。`ExternalSignatureLeaves.occurrence_declaration` は、任意の有限の `ExternalValueType` と `ExternalOccurrence` の導出から、同じcomponentの単相の型宣言を得る。Mapの鍵の出現は構文にあるが、`ExternalMapKey` を満たす鍵では排除される。`collected_contract` は同じ表の関数lookupから署名の八欄を読み、`uses_exact` の両方向と一意性、単相性、空のkind列、行支持を保つ。`pureSignature` と `handleSignature` は、それぞれ空効果とStateを持ち、`declarations_wf` は両関数と型宣言を持つ同じ有限表の整形式性を示す。`handle_arguments` は任意の組込みの表・ストアと、同じ型宣言のlookup・arityから、実ハンドル引数と外部型の結果・Stateを持つ `ExternalArgs` を構成する。
+
+`ExternalSignatureLeaves.handle_typed_iff` は、同じ名目IDのlookup、arityが0であること、同じ外部型の注釈の下で、ハンドルの型付けとcomponent・resourceの一致を結ぶ。異種のcomponent又はresourceは任意の到達型で拒否する。`handle_not_source` は、全ハンドル・型引数・四名前空間の深さについて、SourceとSourceScopedによる直接構築を拒否する。`constructor_pattern_rejected` はwildcard・変数以外の全パターンと全束縛列について外部型での型付けを拒む。定数・整数と文字の範囲・リスト・構成子のパターンを含み、変換と篩を包む導出も辿る。wildcardと変数の束縛は認める。`constructor_value_rejected` は空の値文脈で全構成子・全欄・全型引数の構成子値が外部型に型付かないことを示す。外部ハンドルは `ResourceRelease.response` のopaque資源値へ加えない。
+
 外部の応答は `externalReceive` が宣言と同じ型引数・実引数から結果型を具体化し、`externalCheck` で全入れ子の篩を検査する。data の欄は元の宣言を具体化して検査する。受信の信頼条件は篩の真を含まない `Outcome.Carrier` までであり、閉じた評価が T の篩だけを受け付ける。偽と評価不能は `ExternalRefinement` の実行時エラーになる。外部の生の err はそのまま返し、exit は外部の信頼条件で除く。外部の遷移は IO の事象を出さない。
 
 以下は、名指した Refinement の規則・定義の前提と結論の写しである。計算の全24規則と Step の全76遷移は Lean を正とし、以下はそのうち名指した規則だけを写す。旧 Release の同名の規則とは名前空間を区別する。

@@ -1,0 +1,62 @@
+{
+  "protected": 7234,
+  "changed_existing": [
+    "docs/design/01-spec/01-12-core-calculus.md",
+    "docs/design/07-quality/07-04-formal-semantics.md",
+    "formal/Benitoite.lean"
+  ],
+  "excluded_from_protection": [
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/effort-ledger.md",
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/plan.md"
+  ],
+  "new_formal": [
+    "formal/Benitoite/Release/Refinement/ExternalNominal.lean",
+    "formal/Benitoite/Release/Refinement/ExternalSignatureLeaves.lean"
+  ],
+  "imports": 1045,
+  "declarations": 106,
+  "dependency_paths": 11,
+  "public_readers": 69,
+  "ty": 21,
+  "transforms": 29,
+  "public_ty_transform_candidates": 49,
+  "private_ty_transform_candidates": 4,
+  "rules": [
+    6,
+    3,
+    2
+  ],
+  "wf_fields": 8,
+  "obligations": 27,
+  "files": 40,
+  "bytes": 501846,
+  "largest": 84996,
+  "input_hashes": [
+    {
+      "file": "formal/Benitoite/Release/Refinement/ExternalNominal.lean",
+      "bytes": 17069,
+      "sha256": "fac1acb15cd6706235f82150e9492e6b1d809297541b29af9f47d82ac4627b36"
+    },
+    {
+      "file": "formal/Benitoite/Release/Refinement/ExternalSignatureLeaves.lean",
+      "bytes": 26463,
+      "sha256": "f79d67e5ff0ada1bff90fe0877962b3044dd413b56eac11ccf13246a860a84b7"
+    },
+    {
+      "file": "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/b/axioms.lean",
+      "bytes": 4844,
+      "sha256": "c359e19081dd63ddba3bd8ab55e6254c7901f2497ec27ebdde2bfc03a607aab4"
+    },
+    {
+      "file": "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/b/inventory.py",
+      "bytes": 14633,
+      "sha256": "8dc199146d1d1e8a204caefce779e74d1514b5604e3e2f1bc3bde686fc370868"
+    },
+    {
+      "file": "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/b/verify.py",
+      "bytes": 10569,
+      "sha256": "f7ff5be511ab49aa572012266453d95711f5ff195fb7b4c65be580dcefd88084"
+    }
+  ],
+  "verified_at": "2026-11-05T12:51:35+09:00"
+}

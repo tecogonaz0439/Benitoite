@@ -1,0 +1,58 @@
+{
+  "targets": 83482,
+  "target_list": {
+    "bytes": 5513709,
+    "sha256": "d9aaf275ec93a5691c3be969ca8a5cd41aa73aae8c4b38d9df0a0347d443dfae"
+  },
+  "raw": {
+    "bytes": 16071766,
+    "sha256": "7669b42e3866dc6974ea3783d41ac8592eb82b17c3ba6db50838dd0c2725f609"
+  },
+  "modules": 1045,
+  "new_modules": {
+    "Benitoite.Release.Refinement.ExternalNominal": 49,
+    "Benitoite.Release.Refinement.ExternalSignatureLeaves": 57
+  },
+  "declarations": 106,
+  "private": 12,
+  "without_source_position": 36,
+  "closure_rounds": 2,
+  "axiom_sets": {
+    "none": 39132,
+    "Classical.choice": 2,
+    "Classical.choice + Quot.sound + propext": 21127,
+    "Classical.choice + propext": 2,
+    "Quot.sound": 9,
+    "Quot.sound + propext": 3871,
+    "propext": 19339
+  },
+  "sorryAx": 0,
+  "new_axioms": 0,
+  "parts": [
+    {
+      "file": "declarations-01.json",
+      "bytes": 84566,
+      "sha256": "985b8ba587965d39946d4fe3d47b5f32cec6e3faa27a163362a8806d7c53213b"
+    },
+    {
+      "file": "declarations-02.json",
+      "bytes": 84996,
+      "sha256": "5dfc6b5f55eaf81166e3f4e6dd71318a3ae6d114651ba32d8b2839ec29587f92"
+    },
+    {
+      "file": "declarations-03.json",
+      "bytes": 40811,
+      "sha256": "3e6b92345f0ee0235be383e7baf1758028476368594a9fafe1fb9d9180fbac43"
+    }
+  ],
+  "inputs": {
+    "axioms.lean": {
+      "bytes": 4844,
+      "sha256": "c359e19081dd63ddba3bd8ab55e6254c7901f2497ec27ebdde2bfc03a607aab4"
+    },
+    "audit.py": {
+      "bytes": 3832,
+      "sha256": "2519a39bdae62d340701e6bb0bcd93a83bf1af3d3adcc9b87036b36c91a97956"
+    }
+  }
+}
