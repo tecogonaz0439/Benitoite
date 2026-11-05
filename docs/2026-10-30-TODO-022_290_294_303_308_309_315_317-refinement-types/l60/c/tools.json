@@ -1,0 +1,71 @@
+{
+  "platform": {
+    "system": "Darwin",
+    "machine": "arm64",
+    "release": "27.2.0"
+  },
+  "versions": {
+    "lean": "Lean (version 4.34.1, arm64-apple-darwin24.6.0, commit 5045d0056413266e57c625dcd7c365b10e377c52, Release)",
+    "lake": "Lake version 5.0.0-src+5045d00 (Lean version 4.34.1)"
+  },
+  "memory_mib": 12288,
+  "configuration": "既定ターゲット・既定import・固定Lean。単独Leanも-M 12288。RSSは計画上の非採取",
+  "inputs": {
+    "formal/lean-toolchain": {
+      "bytes": 25,
+      "sha256": "d5edba4e4b8faad9c1baeadb265716d20d03be4d1a2647dc5e35b0c0325bea7b"
+    },
+    "formal/lakefile.toml": {
+      "bytes": 872,
+      "sha256": "10f2661bff8fce95a9253d976427d0ca44038ec12350c955badbc1cf1efa6e3a"
+    },
+    "formal/lake-manifest.json": {
+      "bytes": 152,
+      "sha256": "f4a9b127f95cf577c7da1c2269f85ffd5754f76afccace5dc310d56ef8f41a32"
+    },
+    "formal/Benitoite.lean": {
+      "bytes": 42970,
+      "sha256": "6d2ab7e0db537b896b53a1525c9382027f703ca4bf4a7cbd3c7bc62d407f2b8d"
+    },
+    "formal/Benitoite/Release/Refinement/ExternalModelTransport.lean": {
+      "bytes": 7771,
+      "sha256": "2c075c356010aeac84fe0add49b881f51a52a8029e8e823ff9b6bdb80dddf870"
+    },
+    "formal/Benitoite/Release/Refinement/ExternalModelExamples.lean": {
+      "bytes": 38525,
+      "sha256": "d8e1036297aa492eab3c71dc6b199d9b2e3bce3c0ebebfb118ab256181c77baa"
+    },
+    "formal/Benitoite/Release/Refinement/ExternalModels.lean": {
+      "bytes": 7900,
+      "sha256": "a527af2b9de3bdd4ac98ebde2230c0f645c770781841e24b04fc0820e5c1d6c1"
+    },
+    "docs/design/01-spec/01-12-core-calculus.md": {
+      "bytes": 929001,
+      "sha256": "33a2bb7a098653599ddb1df870eaf2563b11a621984dc9d76a1bb0e1d6bc5252"
+    },
+    "docs/design/07-quality/07-04-formal-semantics.md": {
+      "bytes": 601725,
+      "sha256": "f7d7d6061ba97ac73c7b735a51220a3a47572df04b35e6ffba606334d6d9d01b"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/c/run.py": {
+      "bytes": 1418,
+      "sha256": "38091f8f748b51bdefab716c290c0f99aa3280b22aa95b34ba2acb73ee5747b9"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/c/support.py": {
+      "bytes": 1093,
+      "sha256": "c6df6691355967caadacd3ca2537ca63d7988b1e0bf4187bb5550892dea15943"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/c/audit.py": {
+      "bytes": 4189,
+      "sha256": "00fba9a8e587046b69cdb8e476c225ca8804789a367874e171ac690c4ec99ff5"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/c/verify.py": {
+      "bytes": 9903,
+      "sha256": "d80edb8fe3044614f1bf711d03411af7fcf345ba147540713f82a0b182c1f121"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/c/inventory.py": {
+      "bytes": 1688,
+      "sha256": "a8b7acdbcd16a068f53c773f58038c9dba8bac714cb3da56db101bfcf83502a9"
+    }
+  }
+}

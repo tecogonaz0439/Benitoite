@@ -73,6 +73,10 @@
 
 `ExternalModelResponse` は、全宣言・全型付き入力についてcarrierと非exitを満たし、観測対象を報告しない抽象の外部応答関係を定義する。任意errの所属と全入力での存在を証明する。篩の真を応答前の信頼へ加えず、外部応答と解放以外の七射影を保つ。`ResourceReleaseModel` は、表が資源へ分類するopaque定数だけに解放の成功・失敗を許す。型付き値のcanonicalと実表の分類から同じ値の解放応答を得る。これらは抽象関係の定義と局所の接続であり、ゲストの実装、OS資源の開閉状態、全標準表の充足の証明ではない。
 
+`ExternalModelTransport` は、全ストアのcarrierと同じ署名の具体化の一致から生の正常応答を構成し、検査成功・篩拒否・err・exitの四場合を受信へ接続する。正常値の型付けと閉性は `received_value` を、任意のσでの適格性は既存のcarrierの値構造と `external_adequate` を使う。受信前の篩の真を独立の信頼条件へ加えない。`ExternalModelExamples` は、Unit・整数・List・data・Mapの鍵・外部ハンドルについて、整形式な有限の外部宣言と任意のストアの型付き入力から、正常応答と篩拒否の証人を構成する。`receive_pair`・`handle_receive_pair` は恒真・恒偽の定数の篩を用いる証人であり、`positive_receive_pair` は同じ宣言 `positiveProgram` の篩 `0 < self` が整数1を通し整数0を断る証人である。Listと同名のdataは任意の深さを帰納で扱い、ハンドルはborrowの引数・ownの結果・Stateを保つ。
+
+`ExternalModels.conditions` は、Modelの任意P、Targetsの `HasFile P`、Httpの `HasHttp P` と同じP/Bで、既存の二十五条件と外部三条件を読む。`shape_inputs`・`handle_inputs`・`responses` が三表の正常値の前提の充足と受信の読者である。外部三条件のうち型・非exitと無対象の条件は型付き入力と応答の証拠から示し、存在の条件は任意のerrで示す。Modelのpure・IO・exit署名を要する条件は `model_no_response_kind` により、`io_kind` の応答の前提は空のIO応答関係により矛盾する。ゲストの変換・所有権の実装や、Rustとの応答の一致はこの証人に含めない。
+
 `ExternalNominal` は、全有限表の鍵と宣言の四対、重複・未知ID・ID又はarityの差し替えを照合し、表示名と名目IDを区別する。二十九変換（捕捉した値による型の置換と篩のまとめを含む）で外部型の芯に同じIDを保つ。external全体を恒等の枝で返すだけの `Ty.instTarget`・`normContTy`・`rawApply`・`Ty.core` は件数から除く。既存の `Ty.bind_external` と置換の証明を使う。Map内のdata引数、関数のList引数と結果を同じ表で読み、ハンドルの逆転から同じcomponent・resourceを得る。`ExternalSignatureLeaves` は、任意の受け渡せる型（`ExternalValueType`）の出現と使用位置を同じcomponentの宣言へ戻し、八欄の整形式な署名からborrow/own・使用列の過不足と一意性・単相性・行支持を取り出す。空効果とStateの実宣言、実ハンドルを引数に持つ `ExternalArgs` と直接呼出しへの適用例を持つ。
 
 外部の偽造に対する内側の境界は、SourceとSourceScopedによる直接構築の拒否、wildcard・変数以外の全パターン（定数・範囲・リスト・構成子）に対する外部型の型付けの拒否、空の値文脈での全構成子値に対する外部型の型付けの拒否である。変数とwildcardのパターンは型を保つ。Rustの `json.rs` の `convert` は全結果を `Json.Value` の構成子値として作る。この対応は同ソースを読んだ記録であり、Leanの拒否の補題の前提には含まない。変換器の健全性と交換入力の照合は別に確かめる。異種のcomponent又はresourceのハンドルは型付かず、同じ宣言のハンドルも通常資源の解放関係へ入らない。
@@ -1008,6 +1012,8 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 | CanonicalValues | 「篩の正規形と制約の読み方」。閉じたΓのscalar・Boolean・List・data・関数八構文・Map・Set・Bytes・Dict・保持値・外部・対象の構文逆転。型付けの導出から形を得て、元の直接前提は各逆転で読む。atErrorはResultShape.DeclaredとerrorTypeの芯を返す専用の逆転。空篩はInhabitsから排除する。外部宣言・名目ID・同じsnapshotと範囲の形成を保持し、外部応答の存在や全σの被覆を結論しない |
 | BuiltinTypingTransport・ExternalSurfaceLeaves・ExternalModelResponse・ResourceReleaseModel | 「篩を含むコア計算の形式化」。同じPでの七射影による十四判断の移送、外部参照・直接呼出しの入力、carrierと非exitと無対象の抽象外部応答とerr存在、分類されたopaque資源値のcanonicalと解放の成功・失敗 |
 | BuiltinResponseTransport・ExternalModelTransport | 「篩を含むコア計算の形式化」。同じ七射影によるcarrier・Args・Outcomeと二十五条件の移送、三モデルの同じP/BでのCoreと対象条件、存在を前提とする外部応答の選択 |
+| ExternalModelExamples | 同節。六種類の正常応答と篩拒否、全ストアの型付き外部入力、Listと同名dataの任意深さ、borrow/own/Stateと四場合の受信 |
+| ExternalModels | 同節。三モデルの同じP/Bの二十五条件と外部三条件、正常値の全前提の充足、任意σの適格性、Modelのpure・IOの六条件が署名の不在と空のIO応答関係から前提の否定で成り立つこと |
 | ExternalNominal | 「保持要求と組み込みの遷移」の外部宣言。任意の有限表の四対・一意性・未知ID・差し替えの境界、二十九変換の名目ID保持、入れ子の宣言とハンドルのcomponent・resourceの照合 |
 | ExternalSignatureLeaves | 同節の外部署名。全出現・使用位置から同じcomponentの宣言への接続、borrow/ownとState、八欄の読者、実ハンドル引数のExternalArgs、Source・wildcardと変数以外のパターン・構成子値の拒否と通常資源との区別 |
 | FunctionNameMap・StandardModelDeclarations・StandardModelSignatures・StandardModelPrimitiveLookup・StandardModelResponse | 「篩を含むコア計算の形式化」。元Defとhelperの閉包、単射による関数参照名の写像、telの保存、有限の本体表（`Body.all`）と組込みの表（`Primitive.all`）に対する全lookupの双方向の対応 |

@@ -1,0 +1,823 @@
+--- a/formal/Benitoite.lean
++++ b/formal/Benitoite.lean
+@@ -824,3 +824,5 @@
+ import Benitoite.Release.Refinement.StandardModelResponse
+ import Benitoite.Release.Refinement.ExternalNominal
+ import Benitoite.Release.Refinement.ExternalSignatureLeaves
++import Benitoite.Release.Refinement.ExternalModelExamples
++import Benitoite.Release.Refinement.ExternalModels
+--- a/formal/Benitoite/Release/Refinement/ExternalModelTransport.lean
++++ b/formal/Benitoite/Release/Refinement/ExternalModelTransport.lean
+@@ -1,6 +1,7 @@
+ import Benitoite.Release.Refinement.BuiltinResponseTransport
+ import Benitoite.Release.Refinement.ExternalModelResponse
+ import Benitoite.Release.Refinement.ResourceReleaseModel
++import Benitoite.Release.Refinement.ExternalConnection
+ 
+ /-! # 外部応答と解放を差し替える三つのモデル -/
+ namespace Benitoite.Release.Refinement
+@@ -26,6 +27,61 @@
+ theorem scope_conditions {P base} (release : Val → Option Benitoite.Release.ErrKind → Prop)
+     (h : ModelScopeConditions P base) : ModelScopeConditions P (builtins P base release) :=
+   h.of_responses (typing_fields P base release) rfl rfl rfl rfl rfl
++
++/-- 同じ宣言の具体化を照合し、全ストアのcarrierから正常な生応答を構成する。 -/
++theorem response_value {P base f d ts vs a e v}
++    (lookup : P.externalFunction f = some d)
++    (inst : d.instantiate ts vs = some (a,e))
++    (carrier : ∀ Ψ, ExternalCarrier P base Ψ v a) (ground : v.Ground) :
++    response P base f ts vs (.val v) [] := by
++  refine ⟨rfl, ?_⟩
++  intro Ψ other result effect found args
++  have same := Option.some.inj (lookup.symm.trans found)
++  subst other
++  have equal := Option.some.inj (inst.symm.trans args.instantiate)
++  cases equal
++  exact ⟨⟨carrier Ψ,ground⟩,by intro n; simp⟩
++
++/-- 正常な受信は元の結果型・閉性と、任意のσでの適格性を保つ。 -/
++theorem receive_value {P base release Ψ f d ts vs a e v obs}
++    (wf : P.ExternalWF) (lookup : P.externalFunction f = some d)
++    (args : ExternalArgs P (builtins P base release) Ψ d ts vs a e)
++    (raw : response P base f ts vs (.val v) obs)
++    (check : externalCheck P v a = true) (σ : PathEnv) :
++    externalReceive P d ts vs (.val v) = some (.val v) ∧
++    HasTypeV P (builtins P base release) Ψ [] [] [] v a ∧ v.Ground ∧
++    v.Adequate σ := by
++  have received : externalReceive P d ts vs (.val v) = some (.val v) := by
++    rw [externalReceive_of_args args]
++    simp [externalCheckedOutcome,check]
++  exact ⟨received,(external_assumptions P base release).received_value wf lookup args raw received σ⟩
++
++/-- carrierを満たす篩違反は、生応答の関係を保ったまま受信時に拒否する。 -/
++theorem receive_reject {P base release Ψ f d ts vs a e v obs}
++    (wf : P.ExternalWF) (lookup : P.externalFunction f = some d)
++    (args : ExternalArgs P (builtins P base release) Ψ d ts vs a e)
++    (raw : response P base f ts vs (.val v) obs)
++    (check : externalCheck P v a = false) :
++    externalReceive P d ts vs (.val v) = some (.err "ExternalRefinement") ∧
++    (∀ σ, v.Adequate σ) ∧ obs = [] := by
++  refine ⟨?_,?_,?_⟩
++  · rw [externalReceive_of_args args,externalCheckedOutcome_reject check]
++  · exact fun σ => (external_assumptions P base release).external_adequate wf lookup args raw σ
++  · exact (external_assumptions P base release).external_no_targets _ _ _ _ _ _ _ _ _ wf lookup args raw
++
++/-- errは受信後も同じerrであり、任意のexitは型付き入力の生応答から除外する。 -/
++theorem receive_error_no_exit {P base release Ψ f d ts vs a e}
++    (args : ExternalArgs P (builtins P base release) Ψ d ts vs a e)
++    (lookup : P.externalFunction f = some d) (r : Benitoite.Release.ErrKind) :
++    response P base f ts vs (.err r) [] ∧
++    externalReceive P d ts vs (.err r) = some (.err r) ∧
++    ∀ n obs, ¬ response P base f ts vs (.exit n) obs := by
++  refine ⟨response_err P base f ts vs r,?_,?_⟩
++  · rw [externalReceive_of_args args]; rfl
++  · intro n obs raw
++    have result := raw.2 Ψ d a e lookup (args.of_fields (typing_fields P base release).symm)
++    exact result.2 n rfl
++
+ end ExternalModel
+ 
+ /-- 応答の証人があるときはその対を選ぶ。 -/
+--- a/formal/Benitoite/Release/Refinement/ExternalModelExamples.lean
++++ b/formal/Benitoite/Release/Refinement/ExternalModelExamples.lean
+@@ -0,0 +1,552 @@
++import Benitoite.Release.Refinement.ExternalModelTransport
++import Benitoite.Release.Refinement.ExternalSignatureLeaves
++
++/-! # 有限の外部署名における正常受信と篩拒否 -/
++namespace Benitoite.Release.Refinement.ExternalModelExamples
++noncomputable section
++
++/-- 五つの非ハンドル形。Listと同名のdataの深さは記号のまま扱う。 -/
++inductive Shape where
++  | unit | integer | list (depth : Nat) | data (depth : Nat) | mapKey
++
++def filtered (a : Ty) (accept : Bool) : Ty :=
++  if accept then .refined a (.not .falsity) else .refined a .falsity
++
++def nestedType (data : Bool) : Nat → Ty → Ty
++  | 0, a => a
++  | n+1, a => if data then .data "ExternalBox" [nestedType data n a]
++    else .list (nestedType data n a)
++
++def nestedValue (data : Bool) (a : Ty) : Nat → Val
++  | 0 => .const (.integer ⟨0,by decide⟩)
++  | n+1 => if data then .con "ExternalBox.Box" [nestedType data n a] [nestedValue data a n]
++    else .list [nestedValue data a n]
++
++def Shape.type : Shape → Bool → Ty
++  | .unit, b => filtered (.base .unit) b
++  | .integer, b => filtered (.base .integer) b
++  | .list n, b => nestedType false (n+1) (filtered (.base .integer) b)
++  | .data n, b => nestedType true (n+1) (filtered (.base .integer) b)
++  | .mapKey, b => .map (filtered (.base .integer) b) (.base .integer)
++
++def Shape.raw : Shape → Bool → Val
++  | .unit, _ => .const .unit
++  | .integer, _ => .const (.integer ⟨0,by decide⟩)
++  | .list n, b => nestedValue false (filtered (.base .integer) b) (n+1)
++  | .data n, b => nestedValue true (filtered (.base .integer) b) (n+1)
++  | .mapKey, _ => .mapV [.const (.integer ⟨0,by decide⟩)] [.const (.integer ⟨0,by decide⟩)]
++
++def signature (s : Shape) (accept : Bool) : ExternalSignature :=
++  ⟨⟨0⟩,"result",[],[],.done (s.type accept) Eff.empty,[]⟩
++
++def program (s : Shape) (accept : Bool) : Program :=
++  { ScopeDeclarations.program with
++    cons := fun c => if c = "ExternalBox.Box" then some ⟨"ExternalBox",1,[.tvar 0]⟩
++      else ScopeDeclarations.program.cons c
++    externals := [(.function ⟨0⟩,.function ⟨0⟩ (signature s accept))] }
++
++private theorem box_lookup {s b c cd} (lookup : (program s b).cons c = some cd)
++    (owner : cd.data = "ExternalBox") :
++    c = "ExternalBox.Box" ∧ cd = ⟨"ExternalBox",1,[.tvar 0]⟩ := by
++  dsimp [program] at lookup
++  split at lookup
++  · cases lookup; exact ⟨by assumption,rfl⟩
++  · have mem := List.lookup_eq_some_iff.mp lookup
++    obtain ⟨pre,post,equal,_⟩ := mem
++    have member : (c,cd) ∈ (ScopeDeclarations.http.flatMap StandardKeyTyping.DataDecl.entries) := by
++      rw [equal]; simp
++    simp only [ScopeDeclarations.http,ScopeDeclarations.file,List.flatMap_append,
++      List.flatMap_cons,List.flatMap_nil,ScopeDeclarations.result,ScopeDeclarations.scopeError,
++      ScopeDeclarations.pair,ScopeDeclarations.clientRequest,ScopeDeclarations.requestCheckError,
++      StandardKeyTyping.DataDecl.entries,List.map,List.mem_append,List.mem_cons,List.not_mem_nil,
++      or_false,Prod.mk.injEq,or_assoc] at member
++    rcases member with ⟨rfl,rfl⟩ | ⟨rfl,rfl⟩ | ⟨rfl,rfl⟩ | ⟨rfl,rfl⟩ | ⟨rfl,rfl⟩ | ⟨rfl,rfl⟩ | ⟨rfl,rfl⟩ | ⟨rfl,rfl⟩ | ⟨rfl,rfl⟩ | ⟨rfl,rfl⟩ | ⟨rfl,rfl⟩ | ⟨rfl,rfl⟩ | ⟨rfl,rfl⟩
++    all_goals simp at owner
++
++private theorem box_arity (s : Shape) (b : Bool) : (program s b).DataArity "ExternalBox" 1 := by
++  constructor
++  · exact ⟨"ExternalBox.Box",⟨"ExternalBox",1,[.tvar 0]⟩,by simp [program],rfl⟩
++  · intro c cd lookup owner
++    obtain ⟨_,rfl⟩ := box_lookup lookup owner
++    rfl
++
++private theorem filtered_properties (base : BaseTy) (b : Bool) (P : Program) :
++    Ty.Annotation P [] [] (filtered (.base base) b) ∧
++    (filtered (.base base) b).Canonical ∧
++    (filtered (.base base) b).HasKind P [] .value ∧
++    (filtered (.base base) b).RowsIn (· < 0) := by
++  cases b <;> refine ⟨?_,rfl,?_,?_⟩
++  all_goals first
++    | (constructor <;> simp [filtered,Ty.WF,Ty.Sorted,Ty.Declared,Pred.WF,Pred.Sorted,Pred.Declared,Pred.VarsIn,Ty.NotContCore])
++    | (simp [filtered,Ty.HasKind,Ty.NotContCore])
++    | trivial
++
++private theorem nested_properties (isData : Bool) (n : Nat) (a : Ty) (s : Shape) (b : Bool)
++    (ann : Ty.Annotation (program s b) [] [] a) (normal : a.Canonical)
++    (kind : a.HasKind (program s b) [] .value) (rows : a.RowsIn (· < 0))
++    (value : ∀ unit, ExternalValueType (program s b) ⟨0⟩ unit a)
++    (absent : ∀ path id, ¬ ExternalOccurrence (program s b) a path id) :
++    Ty.Annotation (program s b) [] [] (nestedType isData n a) ∧
++    (nestedType isData n a).Canonical ∧
++    (nestedType isData n a).HasKind (program s b) [] .value ∧
++    (nestedType isData n a).RowsIn (· < 0) ∧
++    (∀ unit, ExternalValueType (program s b) ⟨0⟩ unit (nestedType isData n a)) ∧
++    (∀ path id, ¬ ExternalOccurrence (program s b) (nestedType isData n a) path id) := by
++  induction n with
++  | zero => exact ⟨ann,normal,kind,rows,value,absent⟩
++  | succ n ih =>
++    cases isData with
++    | false =>
++      refine ⟨⟨ih.1.wf,ih.1.sorted,ih.1.declared⟩,?_,ih.2.2.1,ih.2.2.2.1,(fun _ => .list (ih.2.2.2.2.1 false)),?_⟩
++      · change Ty.list _ = Ty.list _
++        exact congrArg Ty.list ih.2.1
++      · intro path id h
++        cases h with | element h => exact ih.2.2.2.2.2 _ _ h
++    | true =>
++      let t := nestedType true n a
++      have sub : (Ty.tvar 0).subst [t] [] = t := by
++        simpa only [Ty.Canonical,Ty.subst,Ty.substAt,substTypeAt,Ty.bind,Ty.rawBind,typeEnvAt,
++          List.length_singleton,Nat.lt_irrefl,Nat.sub_zero,Nat.zero_lt_one,↓reduceIte,
++          List.getElem?_cons_zero,Option.getD_some,shiftTypes_zero] using ih.2.1
++      refine ⟨?_,?_,?_,?_,?_,?_⟩
++      · exact ⟨⟨ih.1.wf,trivial⟩,⟨ih.1.sorted,trivial⟩,
++          ⟨⟨1,box_arity s b,rfl⟩,ih.1.declared,trivial⟩⟩
++      · change Ty.data _ [t.norm] = Ty.data _ [t]
++        rw [ih.2.1]
++      · exact ⟨TyCon.arity_data (box_arity s b),ih.2.2.1,trivial⟩
++      · exact ⟨ih.2.2.2.1,trivial⟩
++      · intro unit
++        apply ExternalValueType.data ["ExternalBox.Box"]
++        · simp
++        · simp
++        · intro c; constructor
++          · intro mem; simp only [List.mem_singleton] at mem; subst c
++            exact ⟨⟨"ExternalBox",1,[.tvar 0]⟩,by simp [program],rfl⟩
++          · rintro ⟨cd,lookup,owner⟩
++            exact List.mem_singleton.mpr (box_lookup lookup owner).1
++        · exact box_arity s b
++        · intro c cd lookup owner field member
++          obtain ⟨_,rfl⟩ := box_lookup lookup owner
++          simp only [List.mem_singleton] at member
++          subst field
++          rw [sub]
++          exact ih.2.2.2.2.1 true
++      · intro path id h
++        cases h with
++        | field lookup owner count slot occ =>
++          obtain ⟨_,rfl⟩ := box_lookup lookup owner
++          have member := List.mem_of_getElem? slot
++          simp only [List.mem_singleton] at member
++          subst_vars
++          rw [sub] at occ
++          exact ih.2.2.2.2.2 _ _ occ
++
++private theorem shape_properties (s : Shape) (b : Bool) (root : Shape) (flag : Bool) :
++    Ty.Annotation (program root flag) [] [] (s.type b) ∧
++    (s.type b).Canonical ∧ (s.type b).HasKind (program root flag) [] .value ∧
++    (s.type b).RowsIn (· < 0) ∧
++    ExternalValueType (program root flag) ⟨0⟩ true (s.type b) ∧
++    (∀ path id, ¬ ExternalOccurrence (program root flag) (s.type b) path id) := by
++  cases s with
++  | unit =>
++    have prop := filtered_properties .unit b (program root flag)
++    refine ⟨prop.1,prop.2.1,prop.2.2.1,prop.2.2.2,?_,?_⟩
++    · cases b <;> first | exact .refined .unit | exact .refined .unit
++    · cases b <;> intro path id h
++      · cases h with | refined h => cases h
++      · cases h with | refined h => cases h
++  | integer =>
++    have prop := filtered_properties .integer b (program root flag)
++    refine ⟨prop.1,prop.2.1,prop.2.2.1,prop.2.2.2,?_,?_⟩
++    · cases b <;> first | exact .refined (.scalar trivial) | exact .refined (.scalar trivial)
++    · cases b <;> intro path id h
++      · cases h with | refined h => cases h
++      · cases h with | refined h => cases h
++  | list n =>
++    have prop := filtered_properties .integer b (program root flag)
++    have value : ∀ unit, ExternalValueType (program root flag) ⟨0⟩ unit (filtered (.base .integer) b) := by
++      cases b <;> intro unit
++      · exact .refined (.scalar trivial)
++      · exact .refined (.scalar trivial)
++    have absent : ∀ path id, ¬ ExternalOccurrence (program root flag) (filtered (.base .integer) b) path id := by
++      cases b <;> intro path id h
++      · cases h with | refined h => cases h
++      · cases h with | refined h => cases h
++    have out := nested_properties false (n+1) _ root flag prop.1 prop.2.1 prop.2.2.1 prop.2.2.2 value absent
++    exact ⟨out.1,out.2.1,out.2.2.1,out.2.2.2.1,out.2.2.2.2.1 true,out.2.2.2.2.2⟩
++  | data n =>
++    have prop := filtered_properties .integer b (program root flag)
++    have value : ∀ unit, ExternalValueType (program root flag) ⟨0⟩ unit (filtered (.base .integer) b) := by
++      cases b <;> intro unit
++      · exact .refined (.scalar trivial)
++      · exact .refined (.scalar trivial)
++    have absent : ∀ path id, ¬ ExternalOccurrence (program root flag) (filtered (.base .integer) b) path id := by
++      cases b <;> intro path id h
++      · cases h with | refined h => cases h
++      · cases h with | refined h => cases h
++    have out := nested_properties true (n+1) _ root flag prop.1 prop.2.1 prop.2.2.1 prop.2.2.2 value absent
++    exact ⟨out.1,out.2.1,out.2.2.1,out.2.2.2.1,out.2.2.2.2.1 true,out.2.2.2.2.2⟩
++  | mapKey =>
++    have prop := filtered_properties .integer b (program root flag)
++    refine ⟨⟨⟨prop.1.wf,trivial⟩,⟨prop.1.sorted,trivial⟩,⟨prop.1.declared,trivial⟩⟩,?_,
++      ⟨prop.2.2.1,trivial⟩,⟨prop.2.2.2,trivial⟩,?_,?_⟩
++    · cases b <;> rfl
++    · exact .map (by cases b <;> exact ⟨trivial,by decide,by decide⟩) (.scalar trivial)
++    · intro path id h
++      cases h with
++      | key h => exact (ExternalSignatureLeaves.key_no_occurrence
++            (a := filtered (.base .integer) b)
++            (by cases b <;> exact ⟨trivial,by decide,by decide⟩)) h
++      | value h => cases h
++
++/-- 全ての深さで、有限の外部署名は八欄の整形式条件を満たす。 -/
++theorem program_externalWF (s : Shape) (b : Bool) : (program s b).ExternalWF := by
++  have prop := shape_properties s b s b
++  have wf : (signature s b).WF (program s b) := by
++    refine ⟨rfl,rfl,?_,⟨prop.2.2.1,by simp [kindsEff,kindsList,Eff.empty]⟩,?_,by simp [signature],.done prop.2.2.2.2.1 rfl,?_⟩
++    · exact ⟨⟨prop.1.wf,trivial,rfl⟩,⟨prop.1.sorted,trivial⟩,⟨prop.1.declared,trivial⟩⟩
++    · intro use
++      simp only [signature,List.not_mem_nil,false_iff]
++      intro site
++      cases site with | result occurrence => exact prop.2.2.2.2.2 _ _ occurrence
++    · exact ⟨prop.2.2.2.1,by simp [Eff.RowsIn,Ty.RowsInList,Eff.empty]⟩
++  exact ⟨by simp [program],by
++    intro key decl member
++    simp only [program,List.mem_singleton,Prod.mk.injEq] at member
++    rcases member with ⟨rfl,rfl⟩
++    exact ⟨rfl,wf⟩⟩
++
++/-- ストアを制限せず、同じ表と宣言の型付き入力を供給する。 -/
++theorem arguments (s : Shape) (b : Bool) (B : Builtins) (Ψ : StoreTy) :
++    ExternalArgs (program s b) B Ψ (signature s b) [] [] (s.type b) Eff.empty := by
++  have prop := shape_properties s b s b
++  have bind : Tel.bind (typeEnv []) (signature s b).parameters = .done (s.type b) Eff.empty := by
++    have h := Tel.substAt_nil_of_wf (c := 0) [] (signature s b).parameters
++      ⟨prop.1.wf,trivial,rfl⟩
++    change Tel.bind (typeEnv []) (signature s b).parameters = _ at h
++    simpa only [signature,Tel.norm,show (s.type b).norm = s.type b from prop.2.1,
++      show Eff.norm Eff.empty = Eff.empty from rfl] using h
++  refine ⟨⟨rfl,⟨rfl,by intros i t k hi; cases hi⟩,
++    ⟨rfl,by intros i t p hi; cases hi⟩,by simp [TypeAnnotations]⟩,?_,by simp,by simp,
++    ⟨prop.1.wf,prop.2.1⟩,⟨trivial,rfl⟩⟩
++  rw [bind]
++  exact .done ⟨⟨prop.1.wf,trivial,rfl⟩,⟨prop.1.sorted,trivial⟩,⟨prop.1.declared,trivial⟩⟩
++
++private theorem nested_carrier (isData : Bool) (n : Nat) (b : Bool) (s : Shape)
++    (flag : Bool) (B : Builtins) (Ψ : StoreTy) :
++    ExternalCarrier (program s flag) B Ψ
++      (nestedValue isData (filtered (.base .integer) b) n)
++      (nestedType isData n (filtered (.base .integer) b)) := by
++  have prop := filtered_properties .integer b (program s flag)
++  have value : ∀ unit, ExternalValueType (program s flag) ⟨0⟩ unit (filtered (.base .integer) b) := by
++    cases b <;> intro unit
++    · exact .refined (.scalar trivial)
++    · exact .refined (.scalar trivial)
++  have absent : ∀ path id, ¬ ExternalOccurrence (program s flag)
++      (filtered (.base .integer) b) path id := by
++    cases b <;> intro path id h
++    · cases h with | refined h => cases h
++    · cases h with | refined h => cases h
++  have props := fun n => nested_properties isData n _ s flag prop.1 prop.2.1
++    prop.2.2.1 prop.2.2.2 value absent
++  induction n with
++  | zero =>
++    cases b with
++    | false => exact .refined (.scalar (.V_Const trivial)) prop.1
++    | true => exact .refined (.scalar (.V_Const trivial)) prop.1
++  | succ n ih =>
++    cases isData with
++    | false => exact .list (.cons ih .nil) (props n).1
++    | true =>
++      let t := nestedType true n (filtered (.base .integer) b)
++      have sub : (Ty.tvar 0).subst [t] [] = t := by
++        simpa only [Ty.Canonical,Ty.subst,Ty.substAt,substTypeAt,Ty.bind,Ty.rawBind,typeEnvAt,
++          List.length_singleton,Nat.lt_irrefl,Nat.sub_zero,Nat.zero_lt_one,↓reduceIte,
++          List.getElem?_cons_zero,Option.getD_some,shiftTypes_zero] using (props n).2.1
++      apply ExternalCarrier.data (cd := ⟨"ExternalBox",1,[.tvar 0]⟩)
++      · simp [program]
++      · rfl
++      · refine ⟨rfl,?_⟩
++        intro i arg k ht hk
++        have member :=  List.mem_of_getElem? ht
++        have kt := List.mem_of_getElem? hk
++        simp only [List.mem_singleton] at member
++        have keq : k = .value := by simpa using kt
++        subst arg; subst k
++        exact ⟨(props n).2.2.1,by
++          cases n <;> cases b <;> simp [nestedType,filtered]⟩
++      · intro a mem; simp only [List.mem_singleton] at mem; subst a; exact Nat.zero_lt_one
++      · change ExternalCarrierFields _ _ _ [_] [Ty.subst [t] [] (.tvar 0)]
++        rw [sub]
++        exact .cons ih .nil
++      · exact (props (n+1)).1
++
++private theorem shape_carrier (s : Shape) (b : Bool) (B : Builtins)
++    (keys : B.sat [] (filtered (.base .integer) b).norm TParam.keyC) (Ψ : StoreTy) :
++    ExternalCarrier (program s b) B Ψ (s.raw b) (s.type b) := by
++  cases s with
++  | unit =>
++    cases b with
++    | false => exact .refined (.scalar (.V_Const trivial)) (filtered_properties .unit false _).1
++    | true => exact .refined (.scalar (.V_Const trivial)) (filtered_properties .unit true _).1
++  | integer => exact nested_carrier false 0 b .integer b B Ψ
++  | list n => exact nested_carrier false (n+1) b (.list n) b B Ψ
++  | data n => exact nested_carrier true (n+1) b (.data n) b B Ψ
++  | mapKey =>
++    have scalar : ExternalCarrier (program .mapKey b) B Ψ
++        (.const (.integer ⟨0,by decide⟩)) (filtered (.base .integer) b) :=
++      nested_carrier false 0 b .mapKey b B Ψ
++    exact .map (.cons scalar .nil) (.cons (.scalar (.V_Const trivial)) .nil) rfl keys
++      (filtered_properties .integer b _).1 ⟨trivial,trivial,trivial⟩
++
++private theorem nested_normal (isData : Bool) (n : Nat) (b : Bool) :
++    (nestedType isData n (filtered (.base .integer) b)).norm =
++      nestedType isData n (filtered (.base .integer) b) := by
++  induction n with
++  | zero => cases b <;> rfl
++  | succ n ih =>
++    cases isData with
++    | false => exact congrArg Ty.list ih
++    | true => exact congrArg (fun a => Ty.data "ExternalBox" [a]) ih
++
++
++private theorem nested_ground (isData : Bool) (n : Nat) (b : Bool) :
++    (nestedValue isData (filtered (.base .integer) b) n).Ground := by
++  have hw : ∀ n, (nestedType isData n (filtered (.base .integer) b)).WF 0 0 0 := by
++    intro n
++    induction n with
++    | zero => exact (filtered_properties .integer b ScopeDeclarations.program).1.wf
++    | succ n ih => cases isData <;> simp_all [nestedType,Ty.WF,Ty.WFList]
++  induction n with
++  | zero => trivial
++  | succ n ih =>
++    cases isData with
++    | false => exact ⟨ih,trivial⟩
++    | true => exact ⟨by intro a mem; simp only [List.mem_singleton] at mem; subst a; exact hw n,
++        ih,trivial⟩
++
++private theorem nested_check (isData : Bool) (n : Nat) (b : Bool) (s : Shape) (flag : Bool) :
++    externalCheck (program s flag) (nestedValue isData (filtered (.base .integer) b) n)
++      (nestedType isData n (filtered (.base .integer) b)) = b := by
++  induction n with
++  | zero => cases b <;> simp [nestedType,nestedValue,filtered,externalCheck,Const.type,Val.toTerm?,Ty.sort?,Pred.open,predBind,Pred.closedTrue,Pred.evalClosed,Pred.WF,Pred.VarsIn,Pred.Sorted,Pred.evalWith,Pred.atomValue,Pred.atomReady]
++  | succ n ih =>
++    cases isData with
++    | false => simpa [nestedType,nestedValue,externalCheck,externalCheckEach] using ih
++    | true =>
++      have sub : Ty.subst [nestedType true n (filtered (.base .integer) b)] [] (.tvar 0) =
++          nestedType true n (filtered (.base .integer) b) := by
++        simpa only [Ty.subst,Ty.substAt,substTypeAt,Ty.bind,Ty.rawBind,typeEnvAt,
++          List.length_singleton,Nat.lt_irrefl,Nat.sub_zero,Nat.zero_lt_one,↓reduceIte,
++          List.getElem?_cons_zero,Option.getD_some,shiftTypes_zero] using nested_normal true n b
++      simpa [nestedType,nestedValue,externalCheck,program,externalCheckFields,sub] using ih
++
++private theorem shape_ground (s : Shape) (b : Bool) : (s.raw b).Ground := by
++  cases s with
++  | unit | integer | mapKey => trivial
++  | list n => exact nested_ground false (n+1) b
++  | data n => exact nested_ground true (n+1) b
++
++private theorem shape_check (s : Shape) (b : Bool) :
++    externalCheck (program s b) (s.raw b) (s.type b) = b := by
++  cases s with
++  | unit | integer | mapKey => cases b <;> simp [Shape.type,Shape.raw,filtered,externalCheck,externalCheckEach,Const.type,Val.toTerm?,Ty.sort?,Pred.open,predBind,Pred.closedTrue,Pred.evalClosed,Pred.WF,Pred.VarsIn,Pred.Sorted,Pred.evalWith,Pred.atomValue,Pred.atomReady]
++  | list n => exact nested_check false (n+1) b _ b
++  | data n => exact nested_check true (n+1) b _ b
++
++/-- 同じ有限宣言の型付き入力に、正常な生の値又は篩違反の生の値を供給する。 -/
++theorem raw_response (s : Shape) (b : Bool) (base : Builtins)
++    (keys : base.sat [] (filtered (.base .integer) b).norm TParam.keyC)
++    (release : Val → Option Benitoite.Release.ErrKind → Prop) (Ψ : StoreTy) :
++    (program s b).ExternalWF ∧
++    ExternalArgs (program s b) (ExternalModel.builtins (program s b) base release) Ψ
++      (signature s b) [] [] (s.type b) Eff.empty ∧
++    (ExternalModel.builtins (program s b) base release).externalResponse ⟨0⟩ [] []
++      (.val (s.raw b)) [] ∧ externalCheck (program s b) (s.raw b) (s.type b) = b := by
++  have args := arguments s b base Ψ
++  exact ⟨program_externalWF s b, arguments s b _ Ψ,
++    ExternalModel.response_value (by simp [program,Program.externalFunction]) args.instantiate
++      (shape_carrier s b base keys) (shape_ground s b),shape_check s b⟩
++
++/-- 正常側は受信値の型・閉性・全σの適格性を、拒否側は篩エラーと全σの適格性を示す。 -/
++theorem receive_pair (s : Shape) (base : Builtins)
++    (keys : ∀ b, base.sat [] (filtered (.base .integer) b).norm TParam.keyC)
++    (release : Val → Option Benitoite.Release.ErrKind → Prop) (Ψ : StoreTy) (σ : PathEnv) :
++    (externalReceive (program s true) (signature s true) [] [] (.val (s.raw true)) =
++      some (.val (s.raw true)) ∧
++      HasTypeV (program s true) (ExternalModel.builtins (program s true) base release) Ψ [] [] []
++        (s.raw true) (s.type true) ∧ (s.raw true).Ground ∧ (s.raw true).Adequate σ) ∧
++    (externalReceive (program s false) (signature s false) [] [] (.val (s.raw false)) =
++      some (.err "ExternalRefinement") ∧ (s.raw false).Adequate σ) := by
++  have good := raw_response s true base (keys true) release Ψ
++  have bad := raw_response s false base (keys false) release Ψ
++  have lookup : ∀ b, (program s b).externalFunction ⟨0⟩ = some (signature s b) := by
++    intro b; simp [program,Program.externalFunction]
++  exact ⟨ExternalModel.receive_value good.1 (lookup true) good.2.1 good.2.2.1 good.2.2.2 σ,
++    (ExternalModel.receive_reject bad.1 (lookup false) bad.2.1 bad.2.2.1 bad.2.2.2).1,
++    (ExternalModel.receive_reject bad.1 (lookup false) bad.2.1 bad.2.2.1 bad.2.2.2).2.1 σ⟩
++
++def handleDeclaration : ExternalTypeDecl := ⟨⟨0⟩,⟨0⟩,"Handle",0,0⟩
++def handle (identity : Nat) : Val := .externalHandle ⟨⟨0⟩,⟨0⟩,0,identity⟩ []
++def handleType (b : Bool) : Ty := if b then .external ⟨0⟩ [] else filtered (.external ⟨0⟩ []) false
++
++def handleSignature (b : Bool) : ExternalSignature :=
++  { ExternalSignatureLeaves.handleSignature ⟨0⟩ "state" ⟨0⟩ with
++    parameters := .param "handle" (.external ⟨0⟩ [])
++      (.done (handleType b) ExternalSignatureLeaves.stateEffect) }
++
++def handleProgram (b : Bool) : Program :=
++  { ScopeDeclarations.program with externals := [(.type ⟨0⟩,.type handleDeclaration),
++    (.function ⟨0⟩,.function ⟨0⟩ (handleSignature b))] }
++
++private theorem handle_annotation (b flag : Bool) (Γ : Ctx) :
++    Ty.Annotation (handleProgram flag) [] Γ (handleType b) := by
++  cases b <;> constructor
++  all_goals simp [handleType,filtered,Ty.WF,Ty.WFList,Ty.Sorted,sortedTys,Ty.Declared,declaredTys,
++    Pred.WF,Pred.VarsIn,Pred.Sorted,Pred.Declared,Ty.NotContCore,handleProgram,
++    Program.externalType,handleDeclaration]
++
++private theorem handle_signature_wf (b : Bool) : (handleSignature b).WF (handleProgram b) := by
++  have original := ExternalSignatureLeaves.handle_wf (P := handleProgram b) handleDeclaration
++    (by simp [handleProgram,handleDeclaration,Program.externalType]) rfl "state"
++  cases b with
++  | true => exact original
++  | false =>
++    refine {original with annotation := ?_,kinded := ?_,uses_exact := ?_,shape := ?_}
++    · constructor
++      · exact ⟨trivial,⟨(handle_annotation false false [some (.external ⟨0⟩ [])]).wf,trivial,rfl⟩⟩
++      · exact ⟨trivial,(handle_annotation false false [some (.external ⟨0⟩ [])]).sorted,trivial⟩
++      · exact ⟨(handle_annotation true false []).declared,(handle_annotation false false [some (.external ⟨0⟩ [])]).declared,trivial⟩
++    · exact ⟨trivial,⟨trivial,by intros a t e h; cases h⟩,by simp [kindsEff,kindsList,ExternalSignatureLeaves.stateEffect]⟩
++    · intro use
++      change use ∈ (ExternalSignatureLeaves.handleSignature handleDeclaration.component "state" handleDeclaration.id).uses ↔ _
++      rw [original.uses_exact use]
++      constructor
++      · intro h; cases h with
++        | argument h => exact .argument h
++        | next h => cases h with | result h => exact .next (.result (.refined h))
++      · intro h; cases h with
++        | argument h => exact .argument h
++        | next h => cases h with | result h => cases h with | refined h => exact .next (.result h)
++    · exact .param (.handle (td := handleDeclaration) (by simp [handleProgram,handleDeclaration,Program.externalType]) rfl rfl rfl rfl)
++        (.done (.refined (.handle (td := handleDeclaration) (by simp [handleProgram,handleDeclaration,Program.externalType]) rfl rfl rfl rfl)) rfl)
++
++/-- borrowの実ハンドル引数とownの篩付き結果を持つ、同じ有限宣言の整形式性。 -/
++theorem handle_program_externalWF (b : Bool) : (handleProgram b).ExternalWF := by
++  refine ⟨by simp [handleProgram],?_⟩
++  intro key decl mem
++  simp only [handleProgram,List.mem_cons,List.not_mem_nil,or_false,Prod.mk.injEq] at mem
++  rcases mem with ⟨rfl,rfl⟩ | ⟨rfl,rfl⟩
++  · exact ⟨rfl,rfl⟩
++  · exact ⟨rfl,handle_signature_wf b⟩
++
++/-- 同じ宣言表で、実際のborrow引数とStateを持つ全ストアの入力を構成する。 -/
++theorem handle_arguments (b : Bool) (B : Builtins) (Ψ : StoreTy) (identity : Nat) :
++    ExternalArgs (handleProgram b) B Ψ (handleSignature b) [] [handle identity]
++      (handleType b) ExternalSignatureLeaves.stateEffect := by
++  have original := ExternalSignatureLeaves.handle_arguments (P := handleProgram b) B Ψ handleDeclaration
++    (by simp [handleProgram,Program.externalType,handleDeclaration]) rfl identity
++  cases b with
++  | true => exact original
++  | false =>
++    refine ⟨⟨rfl,⟨rfl,by intros i t k hi; cases hi⟩,
++      ⟨rfl,by intros i t p hi; cases hi⟩,by simp [TypeAnnotations]⟩,?_,original.ground,
++      original.types,⟨(handle_annotation false false []).wf,rfl⟩,original.effect⟩
++    have doneArgs := HasTypeTelArgsQ.done (P := handleProgram false) (B := B) (Ψ := Ψ)
++      (Q := Qempty) (Φ := [])
++      (show Ty.Annotation (handleProgram false) [] []
++        (.dependentFn (.done (handleType false) ExternalSignatureLeaves.stateEffect)) from
++        ⟨⟨(handle_annotation false false []).wf,trivial,rfl⟩,
++          ⟨(handle_annotation false false []).sorted,trivial⟩,
++          ⟨(handle_annotation false false []).declared,trivial⟩⟩)
++    have typed := (ExternalSignatureLeaves.handle_typed_iff (P := handleProgram false)
++      (B := B) (Ψ := Ψ) (Q := Qempty) (Φ := []) ⟨⟨0⟩,⟨0⟩,0,identity⟩ handleDeclaration
++      (by simp [handleProgram,Program.externalType]) rfl (handle_annotation true false [])).mpr ⟨rfl,rfl⟩
++    have tail : HasTypeTelArgsQ (handleProgram false) B Ψ Qempty [] [] [] []
++        (Tel.bind (Tel.argumentsEnv (handle identity)) (.done (handleType false) ExternalSignatureLeaves.stateEffect))
++        (handleType false) ExternalSignatureLeaves.stateEffect := by
++      simpa only [handleType,filtered,Bool.false_eq_true,↓reduceIte,handle,Tel.bind,Tel.rawBind,Ty.rawBind,rawBindTys,Tel.norm,
++        Ty.norm,Ty.normTys,ExternalSignatureLeaves.stateEffect,Eff.rawBind,Tel.argumentsEnv,valEnv,
++        instAtoms_nil,substAtoms_nil,rowFails,List.length_nil,List.range_zero,List.filter_nil,
++        List.flatMap_nil,List.append_nil,Eff.norm,Order.sortUnique,predBind,Ty.refineNorm,Ty.core,Ty.refinementPredicates,Pred.conjuncts,Ty.packRefinements,Pred.ofConjuncts,List.nil_append] using doneArgs
++    have args := HasTypeTelArgsQ.param (name := "handle") (handle_annotation true false []) typed tail
++    simpa only [handleSignature,ExternalSignatureLeaves.handleSignature,handleType,filtered,Bool.false_eq_true,↓reduceIte,handle,
++      Tel.bind,Tel.rawBind,Ty.rawBind,rawBindTys,Tel.norm,Ty.norm,Ty.normTys,
++      ExternalSignatureLeaves.stateEffect,Eff.rawBind,typeEnv,typeEnvAt,SubstEnv.up,
++      instAtoms_nil,substAtoms_nil,List.map_nil,rowFails,List.length_nil,List.range_zero,
++      List.filter_nil,List.flatMap_nil,List.append_nil,Eff.norm,Order.sortUnique,predBind,Ty.refineNorm,Ty.core,Ty.refinementPredicates,Pred.conjuncts,Ty.packRefinements,Pred.ofConjuncts,List.nil_append] using args
++
++/-- 同じ型ID/component/resourceの正常値も篩違反値も、生応答の関係に入る。 -/
++theorem handle_raw_response (b : Bool) (base : Builtins)
++    (release : Val → Option Benitoite.Release.ErrKind → Prop) (Ψ : StoreTy) (identity : Nat) :
++    (handleProgram b).ExternalWF ∧
++    ExternalArgs (handleProgram b) (ExternalModel.builtins (handleProgram b) base release) Ψ
++      (handleSignature b) [] [handle identity] (handleType b) ExternalSignatureLeaves.stateEffect ∧
++    (ExternalModel.builtins (handleProgram b) base release).externalResponse ⟨0⟩ [] [handle identity]
++      (.val (handle identity)) [] ∧ externalCheck (handleProgram b) (handle identity) (handleType b) = b := by
++  have carrier : ∀ Ψ, ExternalCarrier (handleProgram b) base Ψ (handle identity) (handleType b) := by
++    intro store
++    have typed := (ExternalSignatureLeaves.handle_typed_iff (P := handleProgram b)
++      (B := base) (Ψ := store) (Q := Qempty) (Φ := []) ⟨⟨0⟩,⟨0⟩,0,identity⟩ handleDeclaration
++      (by simp [handleProgram,Program.externalType]) rfl (handle_annotation true b [])).mpr ⟨rfl,rfl⟩
++    cases b with
++    | true => exact .handle typed
++    | false => exact .refined (.handle typed) (handle_annotation false false [])
++  exact ⟨handle_program_externalWF b,handle_arguments b _ Ψ identity,
++    ExternalModel.response_value (by rfl)
++      (handle_arguments b base Ψ identity).instantiate carrier (by simp [handle,Val.Ground,Val.ClosedAt]),
++    by cases b <;> simp [handle,handleType,filtered,externalCheck,Ty.sort?,Pred.closedTrue,
++      Pred.evalClosed,Pred.WF,Pred.VarsIn,Pred.Sorted,Pred.evalWith,Pred.atomValue,Pred.atomReady]⟩
++
++/-- 実ハンドルの受信でも、正常・篩拒否・err・exitの四葉を同じ宣言へ接続する。 -/
++theorem handle_receive_pair (base : Builtins)
++    (release : Val → Option Benitoite.Release.ErrKind → Prop)
++    (Ψ : StoreTy) (σ : PathEnv) (identity : Nat) :
++    (externalReceive (handleProgram true) (handleSignature true) [] [handle identity]
++      (.val (handle identity)) = some (.val (handle identity)) ∧
++      HasTypeV (handleProgram true) (ExternalModel.builtins (handleProgram true) base release) Ψ [] [] []
++        (handle identity) (handleType true) ∧ (handle identity).Ground ∧ (handle identity).Adequate σ) ∧
++    (externalReceive (handleProgram false) (handleSignature false) [] [handle identity]
++      (.val (handle identity)) = some (.err "ExternalRefinement") ∧ (handle identity).Adequate σ) ∧
++    (∀ b r, (ExternalModel.builtins (handleProgram b) base release).externalResponse ⟨0⟩ [] [handle identity] (.err r) [] ∧
++      externalReceive (handleProgram b) (handleSignature b) [] [handle identity] (.err r) = some (.err r) ∧
++      ∀ n obs, ¬ (ExternalModel.builtins (handleProgram b) base release).externalResponse ⟨0⟩ [] [handle identity] (.exit n) obs) := by
++  have good := handle_raw_response true base release Ψ identity
++  have bad := handle_raw_response false base release Ψ identity
++  have lookup : ∀ b, (handleProgram b).externalFunction ⟨0⟩ = some (handleSignature b) := by intro b; rfl
++  exact ⟨ExternalModel.receive_value good.1 (lookup true) good.2.1 good.2.2.1 good.2.2.2 σ,
++    ⟨(ExternalModel.receive_reject bad.1 (lookup false) bad.2.1 bad.2.2.1 bad.2.2.2).1,
++     (ExternalModel.receive_reject bad.1 (lookup false) bad.2.1 bad.2.2.1 bad.2.2.2).2.1 σ⟩,
++    fun b r => ExternalModel.receive_error_no_exit (release := release) (handle_arguments b _ Ψ identity) (lookup b) r⟩
++
++/-- 外部宣言と同名のdataを加えても、範囲IOが読む元の全HTTP宣言は同じ欄とarityを持つ。 -/
++theorem program_hasHttp (s : Shape) (b : Bool) : ScopeDeclarations.HasHttp (program s b) := by
++  intro d hd
++  have old := ScopeDeclarations.program_hasHttp d hd
++  have different : d.name ≠ "ExternalBox" := by
++    simp only [ScopeDeclarations.http,ScopeDeclarations.file,List.mem_append,List.mem_cons,
++      List.not_mem_nil,or_false] at hd
++    rcases hd with (rfl | rfl) | rfl | rfl | rfl
++    all_goals decide
++  have preserve : ∀ c cd, ScopeDeclarations.program.cons c = some cd → (program s b).cons c = some cd := by
++    intro c cd lookup
++    have diff : c ≠ "ExternalBox.Box" := by intro eq; subst c; cases lookup
++    simpa only [program,ite_eq_right diff] using lookup
++  refine ⟨⟨?_,?_⟩,?_⟩
++  · obtain ⟨c,cd,lookup,owner⟩ := old.1.1
++    exact ⟨c,cd,preserve c cd lookup,owner⟩
++  · intro c cd lookup owner
++    dsimp [program] at lookup
++    split at lookup
++    · cases lookup
++      exact (different owner.symm).elim
++    · exact old.1.2 c cd lookup owner
++  · intro c member
++    exact preserve _ _ (old.2 c member)
++
++/-- ハンドルの専用表は通常の構成子宣言を変更しない。 -/
++theorem handle_program_hasHttp (b : Bool) : ScopeDeclarations.HasHttp (handleProgram b) :=
++  ScopeDeclarations.program_hasHttp
++
++end
++end Benitoite.Release.Refinement.ExternalModelExamples
+--- a/formal/Benitoite/Release/Refinement/ExternalModels.lean
++++ b/formal/Benitoite/Release/Refinement/ExternalModels.lean
+@@ -0,0 +1,146 @@
++import Benitoite.Release.Refinement.ExternalModelExamples
++
++/-! # 同じ拡張表での外部入力と三モデルの条件 -/
++namespace Benitoite.Release.Refinement.ExternalModels
++open ExternalModelExamples
++noncomputable section
++
++/-- 正常値と篩違反値の双方について、Modelの外部三条件の全前提を満たす。 -/
++theorem model_inputs (s : Shape) (b : Bool) (Ψ : StoreTy) :
++    (program s b).ExternalWF ∧
++    ExternalArgs (program s b) (model (program s b)) Ψ (signature s b) [] [] (s.type b) Eff.empty ∧
++    (model (program s b)).externalResponse ⟨0⟩ [] [] (.val (s.raw b)) [] ∧
++    externalCheck (program s b) (s.raw b) (s.type b) = b := by
++  exact raw_response s b Model.builtins (by cases b <;> rfl) _ Ψ
++
++/-- 外部応答を拡張したModelにもpure/IO/exit署名は登録されない。 -/
++theorem model_no_response_kind {P b s} (lookup : (model P).sig b = some s) :
++    s.kind ≠ .pure ∧ s.kind ≠ .io ∧ s.kind ≠ .exit := by
++  rcases Model.sig_cases lookup with ⟨_,rfl⟩ | ⟨_,rfl⟩ | ⟨_,rfl⟩
++  all_goals simp [ScopeSignatures.refGet,ScopeSignatures.refSet,ScopeSignatures.pathBases]
++
++/-- 各表の分類と応答を選び、範囲APIの別表と混同しない。 -/
++inductive ModelCase where
++  | model | targets | http
++
++def ModelCase.base : ModelCase → Builtins
++  | .model => Model.builtins
++  | .targets => ModelTargets.builtins
++  | .http => ModelHttp.builtins
++
++def ModelCase.table (m : ModelCase) (P : Program) : Builtins :=
++  match m with
++  | .model => ExternalModels.model P
++  | .targets => ExternalModels.targets P
++  | .http => ExternalModels.http P
++
++def ModelCase.Declarations : ModelCase → Program → Prop
++  | .model, _ => True
++  | .targets, P => ScopeDeclarations.HasFile P
++  | .http, P => ScopeDeclarations.HasHttp P
++
++private theorem table_eq (m : ModelCase) (P : Program) : m.table P =
++    ExternalModel.builtins P m.base (ResourceRelease.response m.base.isResource) := by
++  cases m <;> rfl
++
++private theorem keys (m : ModelCase) (b : Bool) :
++    m.base.sat [] (filtered (.base .integer) b).norm TParam.keyC := by
++  cases m <;> cases b <;> rfl
++
++/-- 任意Pの同じ表で二十五条件と外部三条件を読む。宣言条件は元の三モデルと同じ。 -/
++theorem conditions (m : ModelCase) (P : Program) (decls : m.Declarations P) :
++    ModelScopeConditions P (m.table P) ∧ Builtins.ExternalAssumptions P (m.table P) := by
++  cases m with
++  | model => exact ⟨model_scope P,(model_core P).toExternalAssumptions⟩
++  | targets => exact ⟨targets_scope P decls,(targets_core P decls).toExternalAssumptions⟩
++  | http => exact ⟨http_scope P decls,(http_core P decls).toExternalAssumptions⟩
++
++/-- 全三表で、正常値と篩違反値は同じP/Bの外部三条件の前提を満たす。 -/
++theorem shape_inputs (m : ModelCase) (s : Shape) (b : Bool) (Ψ : StoreTy) :
++    m.Declarations (program s b) ∧
++    (program s b).ExternalWF ∧
++    ExternalArgs (program s b) (m.table (program s b)) Ψ (signature s b) [] [] (s.type b) Eff.empty ∧
++    (m.table (program s b)).externalResponse ⟨0⟩ [] [] (.val (s.raw b)) [] ∧
++    externalCheck (program s b) (s.raw b) (s.type b) = b := by
++  have declarations : m.Declarations (program s b) := by
++    cases m with
++    | model => trivial
++    | targets => exact (program_hasHttp s b).file
++    | http => exact program_hasHttp s b
++  refine ⟨declarations,?_⟩
++  cases m with
++  | model => exact model_inputs s b Ψ
++  | targets => exact raw_response s b ModelTargets.builtins (keys .targets b) _ Ψ
++  | http => exact raw_response s b ModelHttp.builtins (keys .http b) _ Ψ
++
++/-- 同じ三表でborrow/own/Stateの実入力と、正常・拒否の両生応答を構成する。 -/
++theorem handle_inputs (m : ModelCase) (b : Bool) (Ψ : StoreTy) (identity : Nat) :
++    m.Declarations (handleProgram b) ∧
++    (handleProgram b).ExternalWF ∧
++    ExternalArgs (handleProgram b) (m.table (handleProgram b)) Ψ (handleSignature b) [] [handle identity]
++      (handleType b) ExternalSignatureLeaves.stateEffect ∧
++    (m.table (handleProgram b)).externalResponse ⟨0⟩ [] [handle identity] (.val (handle identity)) [] ∧
++    externalCheck (handleProgram b) (handle identity) (handleType b) = b := by
++  have declarations : m.Declarations (handleProgram b) := by
++    cases m with
++    | model => trivial
++    | targets => exact (handle_program_hasHttp b).file
++    | http => exact handle_program_hasHttp b
++  refine ⟨declarations,?_⟩
++  rw [table_eq]
++  exact handle_raw_response b m.base _ Ψ identity
++
++/-- 六正常形と篩拒否を三表の受信へ渡し、全入力・全σでの二十五条件と三条件を併せて読む。 -/
++theorem responses (m : ModelCase) (Ψ : StoreTy) (σ : PathEnv) (identity : Nat) :
++    (∀ s : Shape,
++      (∀ b, ModelScopeConditions (program s b) (m.table (program s b)) ∧
++        Builtins.ExternalAssumptions (program s b) (m.table (program s b))) ∧
++      (externalReceive (program s true) (signature s true) [] [] (.val (s.raw true)) = some (.val (s.raw true)) ∧
++        HasTypeV (program s true) (m.table (program s true)) Ψ [] [] [] (s.raw true) (s.type true) ∧
++        (s.raw true).Ground ∧ (s.raw true).Adequate σ) ∧
++      externalReceive (program s false) (signature s false) [] [] (.val (s.raw false)) = some (.err "ExternalRefinement") ∧
++      (s.raw false).Adequate σ) ∧
++    (∀ b, ModelScopeConditions (handleProgram b) (m.table (handleProgram b)) ∧
++      Builtins.ExternalAssumptions (handleProgram b) (m.table (handleProgram b))) ∧
++    (externalReceive (handleProgram true) (handleSignature true) [] [handle identity] (.val (handle identity)) = some (.val (handle identity)) ∧
++      HasTypeV (handleProgram true) (m.table (handleProgram true)) Ψ [] [] [] (handle identity) (handleType true) ∧
++      (handle identity).Ground ∧ (handle identity).Adequate σ) ∧
++    (externalReceive (handleProgram false) (handleSignature false) [] [handle identity] (.val (handle identity)) = some (.err "ExternalRefinement") ∧
++      (handle identity).Adequate σ) ∧
++    (∀ b r, (m.table (handleProgram b)).externalResponse ⟨0⟩ [] [handle identity] (.err r) [] ∧
++      externalReceive (handleProgram b) (handleSignature b) [] [handle identity] (.err r) = some (.err r) ∧
++      ∀ n obs, ¬ (m.table (handleProgram b)).externalResponse ⟨0⟩ [] [handle identity] (.exit n) obs) := by
++  refine ⟨?_,?_,?_⟩
++  · intro s
++    refine ⟨fun b => conditions m _ (shape_inputs m s b Ψ).1,?_⟩
++    simpa only [table_eq] using receive_pair s m.base (keys m) _ Ψ σ
++  · intro b
++    exact conditions m _ (handle_inputs m b Ψ identity).1
++  · simpa only [table_eq] using handle_receive_pair m.base _ Ψ σ identity
++
++/-- 正常値を持つ全前提から、外部の型と対象条件の両欄を実際に適用する。 -/
++example (m : ModelCase) (s : Shape) (b : Bool) (Ψ : StoreTy) :
++    Outcome.Carrier (program s b) (m.table (program s b)) Ψ (.val (s.raw b)) (s.type b) ∧
++    (∀ n : Int, Outcome.val (s.raw b) ≠ .exit n) ∧
++    (∀ obs, (m.table (program s b)).externalResponse ⟨0⟩ [] [] (.val (s.raw b)) obs → obs = []) := by
++  have input := shape_inputs m s b Ψ
++  have h := (conditions m _ input.1).2
++  refine ⟨(h.external_typed _ _ _ _ _ _ _ _ _ input.2.1 rfl input.2.2.1 input.2.2.2.1).1,
++    (h.external_typed _ _ _ _ _ _ _ _ _ input.2.1 rfl input.2.2.1 input.2.2.2.1).2,?_⟩
++  intro obs raw
++  exact h.external_no_targets _ _ _ _ _ _ _ _ _ input.2.1 rfl input.2.2.1 raw
++
++/-- 外部宣言を含む三モデルで同時に受信を検査し、Modelのpure/IO/exit不在も保持する。 -/
++example (Ψ : StoreTy) (σ : PathEnv) (identity depth : Nat) :
++    (∀ m : ModelCase, externalReceive (program (.data depth) false) (signature (.data depth) false) [] []
++      (.val ((Shape.data depth).raw false)) = some (.err "ExternalRefinement") ∧
++      HasTypeV (handleProgram true) (m.table (handleProgram true)) Ψ [] [] []
++        (handle identity) (handleType true)) ∧
++    (∀ P name sig, (model P).sig name = some sig → sig.kind ≠ .pure ∧ sig.kind ≠ .io ∧ sig.kind ≠ .exit) := by
++  refine ⟨?_,fun _ _ _ lookup => model_no_response_kind lookup⟩
++  intro m
++  have result := responses m Ψ σ identity
++  exact ⟨(result.1 (.data depth)).2.2.1,result.2.2.1.2.1⟩
++
++end
++end Benitoite.Release.Refinement.ExternalModels
+--- a/docs/design/01-spec/01-12-core-calculus.md
++++ b/docs/design/01-spec/01-12-core-calculus.md
+@@ -3108,6 +3108,13 @@
+ `ExternalModel.response P base f ts vs out obs` は、obsが空であり、任意のΨ・宣言d・結果型a・効果eについて、同じ関数のlookupと `ExternalArgs P base Ψ d ts vs a e` から `Outcome.Carrier P base Ψ out a` と非exitが成り立つ関係である。任意のerrがこの関係に属する。`ExternalModel.builtins P base release` は外部応答と解放関係だけを選び、型付けの七射影を保つ。
+ 
+ `ExternalModel.external_assumptions` は、拡張した表の型付き入力を元の表へ戻し、元の応答のcarrierを拡張した表へ移して、外部応答の三条件を構成する。`Builtins.selectExternal` は応答の証人があればその対を選び、なければerrと空の観測を返す。`selectExternal_response` の関係所属の結論には、同じ関係の証人の存在を要求する。
++
++`ExternalModel.response_value` は、同じ外部署名の具体化結果と、任意のストアにおける正常値のcarrier・閉性から、生の正常応答の所属を構成する。別の型付き入力が同じ署名・実引数を持つとき、`ExternalArgs.instantiate` により結果型を一致させる。`receive_value` は検査成功から元の結果型・閉性・任意のσでの適格性を返す。`receive_reject` は検査失敗を `ExternalRefinement` へ結び、検査前のcarrierの値構造から任意のσでの適格性を得る。`receive_error_no_exit` は同じerrの受信と、型付き入力の生応答からのexitの排除を示す。
++
++`ExternalModelExamples` は、Unit・整数・List・data・Mapの鍵・外部ハンドルについて、正常受信と篩拒否の非空性を同じ有限宣言と拡張表で示す。Listと同名のdataの深さは帰納で量化する。正常側のUnit・整数・Listの要素・dataの欄・Mapの鍵には真になる篩を置き、拒否側には偽になる篩を置く。ハンドルはborrowの実引数とownの結果、Stateを持つ。各入力は任意のストアで型付きであり、受信後の正常値は元の結果型で型付き、閉じていて、任意のσで適格である。これはこれらの形の証人であり、全ての外部宣言に正常応答があることを要求しない。
++
++`ExternalModels.conditions` は、任意のPについて、Modelには追加の宣言条件を要求せず、Targetsには `HasFile P`、Httpには `HasHttp P` を用いて、同じ拡張表の二十五条件と外部三条件を返す。`shape_inputs` と `handle_inputs` は、各表で正常値による全前提の充足を示す。`responses` は同じ表の受信へこれらの入力を接続する。外部三条件のうち型・非exitと無対象の六欄は応答の証拠を使い、存在の三欄は定数errによる自明な証人を保つ。Modelのpure・IO・exit署名を要する欄は `model_no_response_kind` により、`io_kind` の応答の前提は空のIO応答関係により矛盾する。
++
+ 
+ `FunctionNames.rename` は、元の名前と内部名の交換を合成した単射である。`FunctionNames.definition` は関数参照名だけを写し、元Defの型注釈・引数列・結果型・効果と本体の構成子を保つ。`StandardModel.program externals` は、既存の出典と参照先のhelperの閉包から作る有限の本体表（`StandardModel.Body.all`）と構成子表を持ち、外部宣言を引数に取る。元Defを別に保持し、関数参照名を写したDef（`Body.definition`）との対応・telの保存・任意のlookupと `Body.all`・`Primitive.all` の双方向の対応を示す。`StandardModel.builtins P` の署名と応答は既存の表を参照する。これらのlookupの定理の結論は、元定義と合成表との対応である。同じ名前に異なる元Defを持つ18名（`FunctionNames.collisionNames`）の公開名は合成表のキーに現れない。
+ 
+--- a/docs/design/07-quality/07-04-formal-semantics.md
++++ b/docs/design/07-quality/07-04-formal-semantics.md
+@@ -72,6 +72,11 @@
+ `BuiltinTypingTransport` は同じPの下で、型付けが読む七つの射影（`Builtins.TypingFieldsEq` の七欄）であるsig・sat・admitsR・isResource・valKind・valContent・effectsの等号から十四判断・七十六枝の型付けを移す。`ExternalSurfaceLeaves` は外部宣言の適格な入力を参照・直接呼出しへ渡し、応答関係の差替え後も同じ添字で型付くことを示す。プログラムPそのものの拡張の単調性はこの補題の結論に含めない。
+ 
+ `ExternalModelResponse` は、全宣言・全型付き入力についてcarrierと非exitを満たし、観測対象を報告しない抽象の外部応答関係を定義する。任意errの所属と全入力での存在を証明する。篩の真を応答前の信頼へ加えず、外部応答と解放以外の七射影を保つ。`ResourceReleaseModel` は、表が資源へ分類するopaque定数だけに解放の成功・失敗を許す。型付き値のcanonicalと実表の分類から同じ値の解放応答を得る。これらは抽象関係の定義と局所の接続であり、ゲストの実装、OS資源の開閉状態、全標準表の充足の証明ではない。
++
++`ExternalModelTransport` は、全ストアのcarrierと同じ署名の具体化の一致から生の正常応答を構成し、検査成功・篩拒否・err・exitの四場合を受信へ接続する。正常値の型付けと閉性は `received_value` を、任意のσでの適格性は既存のcarrierの値構造と `external_adequate` を使う。受信前の篩の真を独立の信頼条件へ加えない。`ExternalModelExamples` は、Unit・整数・List・data・Mapの鍵・外部ハンドルについて、整形式な有限の外部宣言と任意のストアの型付き入力から、正常応答と篩拒否の証人を構成する。正常側と拒否側は実際に篩を検査する。Listと同名のdataは任意の深さを帰納で扱い、ハンドルはborrowの引数・ownの結果・Stateを保つ。
++
++`ExternalModels.conditions` は、Modelの任意P、Targetsの `HasFile P`、Httpの `HasHttp P` と同じP/Bで、既存の二十五条件と外部三条件を読む。`shape_inputs`・`handle_inputs`・`responses` が三表の正常値の前提の充足と受信の読者である。外部九欄は実質六・自明三である。既存七十五欄の実質六十九・空疎六と、通常資源の解放の実質一・空疎二を合わせた八十七欄は、実質七十六・自明三・空疎八となる。外部の存在三欄の定数errと、Modelのpure/IO/exit不在による六空疎を実質に数えない。ゲストの変換・所有権の実装や、Rustとの応答の一致はこの証人に含めない。
++
+ 
+ `ExternalNominal` は、全有限表の鍵と宣言の四対、重複・未知ID・ID又はarityの差し替えを照合し、表示名と名目IDを区別する。二十九変換（捕捉した値による型の置換と篩のまとめを含む）で外部型の芯に同じIDを保つ。external全体を恒等の枝で返すだけの `Ty.instTarget`・`normContTy`・`rawApply`・`Ty.core` は件数から除く。既存の `Ty.bind_external` と置換の証明を使う。Map内のdata引数、関数のList引数と結果を同じ表で読み、ハンドルの逆転から同じcomponent・resourceを得る。`ExternalSignatureLeaves` は、任意の受け渡せる型（`ExternalValueType`）の出現と使用位置を同じcomponentの宣言へ戻し、八欄の整形式な署名からborrow/own・使用列の過不足と一意性・単相性・行支持を取り出す。空効果とStateの実宣言、実ハンドルを引数に持つ `ExternalArgs` と直接呼出しへの適用例を持つ。
+ 
+@@ -1008,6 +1013,8 @@
+ | CanonicalValues | 「篩の正規形と制約の読み方」。閉じたΓのscalar・Boolean・List・data・関数八構文・Map・Set・Bytes・Dict・保持値・外部・対象の構文逆転。型付けの導出から形を得て、元の直接前提は各逆転で読む。atErrorはResultShape.DeclaredとerrorTypeの芯を返す専用の逆転。空篩はInhabitsから排除する。外部宣言・名目ID・同じsnapshotと範囲の形成を保持し、外部応答の存在や全σの被覆を結論しない |
+ | BuiltinTypingTransport・ExternalSurfaceLeaves・ExternalModelResponse・ResourceReleaseModel | 「篩を含むコア計算の形式化」。同じPでの七射影による十四判断の移送、外部参照・直接呼出しの入力、carrierと非exitと無対象の抽象外部応答とerr存在、分類されたopaque資源値のcanonicalと解放の成功・失敗 |
+ | BuiltinResponseTransport・ExternalModelTransport | 「篩を含むコア計算の形式化」。同じ七射影によるcarrier・Args・Outcomeと二十五条件の移送、三モデルの同じP/BでのCoreと対象条件、存在を前提とする外部応答の選択 |
++| ExternalModelExamples | 同節。六種類の正常応答と篩拒否、全ストアの型付き外部入力、Listと同名dataの任意深さ、borrow/own/Stateと四場合の受信 |
++| ExternalModels | 同節。三モデルの同じP/Bの二十五条件と外部三条件、正常値の全前提の充足、任意σの適格性、Modelの六空疎の維持 |
+ | ExternalNominal | 「保持要求と組み込みの遷移」の外部宣言。任意の有限表の四対・一意性・未知ID・差し替えの境界、二十九変換の名目ID保持、入れ子の宣言とハンドルのcomponent・resourceの照合 |
+ | ExternalSignatureLeaves | 同節の外部署名。全出現・使用位置から同じcomponentの宣言への接続、borrow/ownとState、八欄の読者、実ハンドル引数のExternalArgs、Source・wildcardと変数以外のパターン・構成子値の拒否と通常資源との区別 |
+ | FunctionNameMap・StandardModelDeclarations・StandardModelSignatures・StandardModelPrimitiveLookup・StandardModelResponse | 「篩を含むコア計算の形式化」。元Defとhelperの閉包、単射による関数参照名の写像、telの保存、有限の本体表（`Body.all`）と組込みの表（`Primitive.all`）に対する全lookupの双方向の対応 |

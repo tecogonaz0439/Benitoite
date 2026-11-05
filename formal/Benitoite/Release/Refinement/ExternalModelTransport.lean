@@ -1,6 +1,7 @@
 import Benitoite.Release.Refinement.BuiltinResponseTransport
 import Benitoite.Release.Refinement.ExternalModelResponse
 import Benitoite.Release.Refinement.ResourceReleaseModel
+import Benitoite.Release.Refinement.ExternalConnection
 
 /-! # 外部応答と解放を差し替える三つのモデル -/
 namespace Benitoite.Release.Refinement
@@ -26,6 +27,61 @@ theorem external_assumptions (P : Program) (base : Builtins)
 theorem scope_conditions {P base} (release : Val → Option Benitoite.Release.ErrKind → Prop)
     (h : ModelScopeConditions P base) : ModelScopeConditions P (builtins P base release) :=
   h.of_responses (typing_fields P base release) rfl rfl rfl rfl rfl
+
+/-- 同じ宣言の具体化を照合し、全ストアのcarrierから正常な生応答を構成する。 -/
+theorem response_value {P base f d ts vs a e v}
+    (lookup : P.externalFunction f = some d)
+    (inst : d.instantiate ts vs = some (a,e))
+    (carrier : ∀ Ψ, ExternalCarrier P base Ψ v a) (ground : v.Ground) :
+    response P base f ts vs (.val v) [] := by
+  refine ⟨rfl, ?_⟩
+  intro Ψ other result effect found args
+  have same := Option.some.inj (lookup.symm.trans found)
+  subst other
+  have equal := Option.some.inj (inst.symm.trans args.instantiate)
+  cases equal
+  exact ⟨⟨carrier Ψ,ground⟩,by intro n; simp⟩
+
+/-- 正常な受信は元の結果型・閉性と、任意のσでの適格性を保つ。 -/
+theorem receive_value {P base release Ψ f d ts vs a e v obs}
+    (wf : P.ExternalWF) (lookup : P.externalFunction f = some d)
+    (args : ExternalArgs P (builtins P base release) Ψ d ts vs a e)
+    (raw : response P base f ts vs (.val v) obs)
+    (check : externalCheck P v a = true) (σ : PathEnv) :
+    externalReceive P d ts vs (.val v) = some (.val v) ∧
+    HasTypeV P (builtins P base release) Ψ [] [] [] v a ∧ v.Ground ∧
+    v.Adequate σ := by
+  have received : externalReceive P d ts vs (.val v) = some (.val v) := by
+    rw [externalReceive_of_args args]
+    simp [externalCheckedOutcome,check]
+  exact ⟨received,(external_assumptions P base release).received_value wf lookup args raw received σ⟩
+
+/-- carrierを満たす篩違反は、生応答の関係を保ったまま受信時に拒否する。 -/
+theorem receive_reject {P base release Ψ f d ts vs a e v obs}
+    (wf : P.ExternalWF) (lookup : P.externalFunction f = some d)
+    (args : ExternalArgs P (builtins P base release) Ψ d ts vs a e)
+    (raw : response P base f ts vs (.val v) obs)
+    (check : externalCheck P v a = false) :
+    externalReceive P d ts vs (.val v) = some (.err "ExternalRefinement") ∧
+    (∀ σ, v.Adequate σ) ∧ obs = [] := by
+  refine ⟨?_,?_,?_⟩
+  · rw [externalReceive_of_args args,externalCheckedOutcome_reject check]
+  · exact fun σ => (external_assumptions P base release).external_adequate wf lookup args raw σ
+  · exact (external_assumptions P base release).external_no_targets _ _ _ _ _ _ _ _ _ wf lookup args raw
+
+/-- errは受信後も同じerrであり、任意のexitは型付き入力の生応答から除外する。 -/
+theorem receive_error_no_exit {P base release Ψ f d ts vs a e}
+    (args : ExternalArgs P (builtins P base release) Ψ d ts vs a e)
+    (lookup : P.externalFunction f = some d) (r : Benitoite.Release.ErrKind) :
+    response P base f ts vs (.err r) [] ∧
+    externalReceive P d ts vs (.err r) = some (.err r) ∧
+    ∀ n obs, ¬ response P base f ts vs (.exit n) obs := by
+  refine ⟨response_err P base f ts vs r,?_,?_⟩
+  · rw [externalReceive_of_args args]; rfl
+  · intro n obs raw
+    have result := raw.2 Ψ d a e lookup (args.of_fields (typing_fields P base release).symm)
+    exact result.2 n rfl
+
 end ExternalModel
 
 /-- 応答の証人があるときはその対を選ぶ。 -/

@@ -1,0 +1,184 @@
+--- a/docs/design/01-spec/01-12-core-calculus.md
++++ b/docs/design/01-spec/01-12-core-calculus.md
+@@ -3111,10 +3111,9 @@
+ 
+ `ExternalModel.response_value` は、同じ外部署名の具体化結果と、任意のストアにおける正常値のcarrier・閉性から、生の正常応答の所属を構成する。別の型付き入力が同じ署名・実引数を持つとき、`ExternalArgs.instantiate` により結果型を一致させる。`receive_value` は検査成功から元の結果型・閉性・任意のσでの適格性を返す。`receive_reject` は検査失敗を `ExternalRefinement` へ結び、検査前のcarrierの値構造から任意のσでの適格性を得る。`receive_error_no_exit` は同じerrの受信と、型付き入力の生応答からのexitの排除を示す。
+ 
+-`ExternalModelExamples` は、Unit・整数・List・data・Mapの鍵・外部ハンドルについて、正常受信と篩拒否の非空性を同じ有限宣言と拡張表で示す。Listと同名のdataの深さは帰納で量化する。正常側のUnit・整数・Listの要素・dataの欄・Mapの鍵には真になる篩を置き、拒否側には偽になる篩を置く。ハンドルはborrowの実引数とownの結果、Stateを持つ。各入力は任意のストアで型付きであり、受信後の正常値は元の結果型で型付き、閉じていて、任意のσで適格である。これはこれらの形の証人であり、全ての外部宣言に正常応答があることを要求しない。
+-
+-`ExternalModels.conditions` は、任意のPについて、Modelには追加の宣言条件を要求せず、Targetsには `HasFile P`、Httpには `HasHttp P` を用いて、同じ拡張表の二十五条件と外部三条件を返す。`shape_inputs` と `handle_inputs` は、各表で正常値による全前提の充足を示す。`responses` は同じ表の受信へこれらの入力を接続する。外部三条件のうち型・非exitと無対象の六欄は応答の証拠を使い、存在の三欄は定数errによる自明な証人を保つ。Modelのpure・IO・exit署名を要する欄は `model_no_response_kind` により、`io_kind` の応答の前提は空のIO応答関係により矛盾する。
+-
++`ExternalModelExamples` は、Unit・整数・List・data・Mapの鍵・外部ハンドルについて、正常受信と篩拒否の非空性を有限宣言と拡張表で示す。Listと同名のdataの深さは帰納で量化する。`receive_pair`・`handle_receive_pair` は恒真・恒偽の定数の篩を用いる証人である。`positive_receive_pair` は、一つの宣言 `positiveProgram` の結果型 `positiveType` に値に依存する篩 `0 < self` を置き、整数1の正常受信と整数0の篩拒否を同じ拡張表で示す。ハンドルはborrowの実引数とownの結果、Stateを持つ。各入力は任意のストアで型付きであり、受信後の正常値は元の結果型で型付き、閉じていて、任意のσで適格である。これはこれらの形の証人であり、全ての外部宣言に正常応答があることを要求しない。
++
++`ExternalModels.conditions` は、任意のPについて、Modelには追加の宣言条件を要求せず、Targetsには `HasFile P`、Httpには `HasHttp P` を用いて、同じ拡張表の二十五条件と外部三条件を返す。`shape_inputs` と `handle_inputs` は、各表で正常値による全前提の充足を示す。`responses` は同じ表の受信へこれらの入力を接続する。外部三条件のうち型・非exitと無対象の条件は型付き入力と応答の証拠を使い、存在の条件は任意のerrで示す。Modelのpure・IO・exit署名を要する条件は `model_no_response_kind` により、`io_kind` の応答の前提は空のIO応答関係により矛盾する。
+ 
+ `FunctionNames.rename` は、元の名前と内部名の交換を合成した単射である。`FunctionNames.definition` は関数参照名だけを写し、元Defの型注釈・引数列・結果型・効果と本体の構成子を保つ。`StandardModel.program externals` は、既存の出典と参照先のhelperの閉包から作る有限の本体表（`StandardModel.Body.all`）と構成子表を持ち、外部宣言を引数に取る。元Defを別に保持し、関数参照名を写したDef（`Body.definition`）との対応・telの保存・任意のlookupと `Body.all`・`Primitive.all` の双方向の対応を示す。`StandardModel.builtins P` の署名と応答は既存の表を参照する。これらのlookupの定理の結論は、元定義と合成表との対応である。同じ名前に異なる元Defを持つ18名（`FunctionNames.collisionNames`）の公開名は合成表のキーに現れない。
+ 
+--- a/docs/design/07-quality/07-04-formal-semantics.md
++++ b/docs/design/07-quality/07-04-formal-semantics.md
+@@ -73,10 +73,9 @@
+ 
+ `ExternalModelResponse` は、全宣言・全型付き入力についてcarrierと非exitを満たし、観測対象を報告しない抽象の外部応答関係を定義する。任意errの所属と全入力での存在を証明する。篩の真を応答前の信頼へ加えず、外部応答と解放以外の七射影を保つ。`ResourceReleaseModel` は、表が資源へ分類するopaque定数だけに解放の成功・失敗を許す。型付き値のcanonicalと実表の分類から同じ値の解放応答を得る。これらは抽象関係の定義と局所の接続であり、ゲストの実装、OS資源の開閉状態、全標準表の充足の証明ではない。
+ 
+-`ExternalModelTransport` は、全ストアのcarrierと同じ署名の具体化の一致から生の正常応答を構成し、検査成功・篩拒否・err・exitの四場合を受信へ接続する。正常値の型付けと閉性は `received_value` を、任意のσでの適格性は既存のcarrierの値構造と `external_adequate` を使う。受信前の篩の真を独立の信頼条件へ加えない。`ExternalModelExamples` は、Unit・整数・List・data・Mapの鍵・外部ハンドルについて、整形式な有限の外部宣言と任意のストアの型付き入力から、正常応答と篩拒否の証人を構成する。正常側と拒否側は実際に篩を検査する。Listと同名のdataは任意の深さを帰納で扱い、ハンドルはborrowの引数・ownの結果・Stateを保つ。
+-
+-`ExternalModels.conditions` は、Modelの任意P、Targetsの `HasFile P`、Httpの `HasHttp P` と同じP/Bで、既存の二十五条件と外部三条件を読む。`shape_inputs`・`handle_inputs`・`responses` が三表の正常値の前提の充足と受信の読者である。外部九欄は実質六・自明三である。既存七十五欄の実質六十九・空疎六と、通常資源の解放の実質一・空疎二を合わせた八十七欄は、実質七十六・自明三・空疎八となる。外部の存在三欄の定数errと、Modelのpure/IO/exit不在による六空疎を実質に数えない。ゲストの変換・所有権の実装や、Rustとの応答の一致はこの証人に含めない。
+-
++`ExternalModelTransport` は、全ストアのcarrierと同じ署名の具体化の一致から生の正常応答を構成し、検査成功・篩拒否・err・exitの四場合を受信へ接続する。正常値の型付けと閉性は `received_value` を、任意のσでの適格性は既存のcarrierの値構造と `external_adequate` を使う。受信前の篩の真を独立の信頼条件へ加えない。`ExternalModelExamples` は、Unit・整数・List・data・Mapの鍵・外部ハンドルについて、整形式な有限の外部宣言と任意のストアの型付き入力から、正常応答と篩拒否の証人を構成する。`receive_pair`・`handle_receive_pair` は恒真・恒偽の定数の篩を用いる証人であり、`positive_receive_pair` は同じ宣言 `positiveProgram` の篩 `0 < self` が整数1を通し整数0を断る証人である。Listと同名のdataは任意の深さを帰納で扱い、ハンドルはborrowの引数・ownの結果・Stateを保つ。
++
++`ExternalModels.conditions` は、Modelの任意P、Targetsの `HasFile P`、Httpの `HasHttp P` と同じP/Bで、既存の二十五条件と外部三条件を読む。`shape_inputs`・`handle_inputs`・`responses` が三表の正常値の前提の充足と受信の読者である。外部三条件のうち型・非exitと無対象の条件は型付き入力と応答の証拠から示し、存在の条件は任意のerrで示す。Modelのpure・IO・exit署名を要する条件は `model_no_response_kind` により、`io_kind` の応答の前提は空のIO応答関係により矛盾する。ゲストの変換・所有権の実装や、Rustとの応答の一致はこの証人に含めない。
+ 
+ `ExternalNominal` は、全有限表の鍵と宣言の四対、重複・未知ID・ID又はarityの差し替えを照合し、表示名と名目IDを区別する。二十九変換（捕捉した値による型の置換と篩のまとめを含む）で外部型の芯に同じIDを保つ。external全体を恒等の枝で返すだけの `Ty.instTarget`・`normContTy`・`rawApply`・`Ty.core` は件数から除く。既存の `Ty.bind_external` と置換の証明を使う。Map内のdata引数、関数のList引数と結果を同じ表で読み、ハンドルの逆転から同じcomponent・resourceを得る。`ExternalSignatureLeaves` は、任意の受け渡せる型（`ExternalValueType`）の出現と使用位置を同じcomponentの宣言へ戻し、八欄の整形式な署名からborrow/own・使用列の過不足と一意性・単相性・行支持を取り出す。空効果とStateの実宣言、実ハンドルを引数に持つ `ExternalArgs` と直接呼出しへの適用例を持つ。
+ 
+--- a/formal/Benitoite/Release/Refinement/ExternalModelExamples.lean
++++ b/formal/Benitoite/Release/Refinement/ExternalModelExamples.lean
+@@ -386,6 +386,97 @@
+     (ExternalModel.receive_reject bad.1 (lookup false) bad.2.1 bad.2.2.1 bad.2.2.2).1,
+     (ExternalModel.receive_reject bad.1 (lookup false) bad.2.1 bad.2.2.1 bad.2.2.2).2.1 σ⟩
+ 
++/-- 整数の値を読む篩 `0 < self`。 -/
++def positiveType : Ty := .refined (.base .integer) (.lt (.integer 0) (.var 0))
++
++def positiveSignature : ExternalSignature :=
++  ⟨⟨0⟩,"positive",[],[],.done positiveType Eff.empty,[]⟩
++
++def positiveProgram : Program :=
++  { ScopeDeclarations.program with
++    externals := [(.function ⟨0⟩,.function ⟨0⟩ positiveSignature)] }
++
++/-- 一つの宣言と表で、`0 < self` が1を正常受信し0を篩拒否する。 -/
++theorem positive_receive_pair (base : Builtins)
++    (release : Val → Option Benitoite.Release.ErrKind → Prop) (Ψ : StoreTy) (σ : PathEnv) :
++    positiveProgram.ExternalWF ∧
++    ExternalArgs positiveProgram (ExternalModel.builtins positiveProgram base release) Ψ
++      positiveSignature [] [] positiveType Eff.empty ∧
++    (ExternalModel.builtins positiveProgram base release).externalResponse ⟨0⟩ [] []
++      (.val (.const (.integer ⟨1,by decide⟩))) [] ∧
++    (ExternalModel.builtins positiveProgram base release).externalResponse ⟨0⟩ [] []
++      (.val (.const (.integer ⟨0,by decide⟩))) [] ∧
++    (externalReceive positiveProgram positiveSignature [] [] (.val (.const (.integer ⟨1,by decide⟩))) =
++      some (.val (.const (.integer ⟨1,by decide⟩))) ∧
++      HasTypeV positiveProgram (ExternalModel.builtins positiveProgram base release) Ψ [] [] []
++        (.const (.integer ⟨1,by decide⟩)) positiveType ∧
++      (Val.const (.integer ⟨1,by decide⟩)).Ground ∧
++      (Val.const (.integer ⟨1,by decide⟩)).Adequate σ) ∧
++    (externalReceive positiveProgram positiveSignature [] [] (.val (.const (.integer ⟨0,by decide⟩))) =
++      some (.err "ExternalRefinement") ∧ (Val.const (.integer ⟨0,by decide⟩)).Adequate σ) := by
++  have ann : Ty.Annotation positiveProgram [] [] positiveType := by
++    constructor <;> simp [positiveType,Ty.WF,Ty.Sorted,Ty.Declared,Pred.WF,Pred.VarsIn,
++      Pred.Sorted,Pred.Declared,Ty.NotContCore,Term.VarsIn,Term.HasSort,Term.References,
++      Term.Shape,Ctx.Readable,Ty.HasSort,Ty.sort?,Ordinary,Term.Declared,Ctx.declarationSelf,Ctx.extend,Ty.shiftV,Ty.core]
++  have wf : positiveProgram.ExternalWF := by
++    have signatureWF : positiveSignature.WF positiveProgram := by
++      refine ⟨rfl,rfl,?_,⟨by simp [positiveType,Ty.HasKind,Ty.NotContCore],by simp [kindsEff,kindsList,Eff.empty]⟩,?_,
++        by simp [positiveSignature],.done (.refined (.scalar trivial)) rfl,?_⟩
++      · exact ⟨⟨ann.wf,trivial,rfl⟩,⟨ann.sorted,trivial⟩,⟨ann.declared,trivial⟩⟩
++      · intro use
++        simp only [positiveSignature,List.not_mem_nil,false_iff]
++        intro site
++        cases site with | result occurrence => cases occurrence with | refined h => cases h
++      · exact ⟨trivial,by simp [Eff.RowsIn,Ty.RowsInList,Eff.empty]⟩
++    refine ⟨by simp [positiveProgram],?_⟩
++    intro key decl member
++    simp only [positiveProgram,List.mem_singleton,Prod.mk.injEq] at member
++    rcases member with ⟨rfl,rfl⟩
++    exact ⟨rfl,signatureWF⟩
++  have args : ∀ B, ExternalArgs positiveProgram B Ψ positiveSignature [] [] positiveType Eff.empty := by
++    intro B
++    refine ⟨⟨rfl,⟨rfl,by intros i t k hi; cases hi⟩,
++      ⟨rfl,by intros i t p hi; cases hi⟩,by simp [TypeAnnotations]⟩,?_,by simp,by simp,
++      ⟨ann.wf,rfl⟩,⟨trivial,rfl⟩⟩
++    have bind : Tel.bind (typeEnv []) positiveSignature.parameters = .done positiveType Eff.empty := by
++      have h := Tel.substAt_nil_of_wf (c := 0) [] positiveSignature.parameters ⟨ann.wf,trivial,rfl⟩
++      change Tel.bind (typeEnv []) positiveSignature.parameters = _ at h
++      simpa only [positiveSignature,Tel.norm,show positiveType.norm = positiveType from rfl,
++        show Eff.norm Eff.empty = Eff.empty from rfl] using h
++    rw [bind]
++    exact .done ⟨⟨ann.wf,trivial,rfl⟩,⟨ann.sorted,trivial⟩,⟨ann.declared,trivial⟩⟩
++  have lookup : positiveProgram.externalFunction ⟨0⟩ = some positiveSignature := rfl
++  have raw : ∀ (i : Integer64Value),
++      (ExternalModel.builtins positiveProgram base release).externalResponse ⟨0⟩ [] []
++        (.val (.const (.integer i))) [] := by
++    intro i
++    exact ExternalModel.response_value lookup (args base).instantiate
++      (fun _ => .refined (.scalar (.V_Const trivial)) ann) (by trivial)
++  have good : externalCheck positiveProgram (.const (.integer ⟨1,by decide⟩)) positiveType = true := by
++    simp [positiveType,externalCheck,Const.type,Val.toTerm?,Ty.sort?,Pred.open,predBind,
++      Pred.closedTrue,Pred.evalClosed,Pred.WF,Pred.VarsIn,Pred.Sorted,Pred.evalWith,
++      Pred.atomValue,Pred.atomReady,Term.VarsIn,Term.HasSort,Term.References,Term.Shape,
++      termReady,integerAs,Integer64Value.toInt,Term.observe,Observation.sort,observeAs,Term.interpret]
++  have bad : externalCheck positiveProgram (.const (.integer ⟨0,by decide⟩)) positiveType = false := by
++    simp [positiveType,externalCheck,Const.type,Val.toTerm?,Ty.sort?,Pred.open,predBind,
++      Pred.closedTrue,Pred.evalClosed,Pred.WF,Pred.VarsIn,Pred.Sorted,Pred.evalWith,
++      Pred.atomValue,Pred.atomReady,Term.VarsIn,Term.HasSort,Term.References,Term.Shape,
++      termReady,integerAs,Integer64Value.toInt,Term.observe,Observation.sort,observeAs,Term.interpret]
++  exact ⟨wf,args _,raw ⟨1,by decide⟩,raw ⟨0,by decide⟩,
++    ExternalModel.receive_value wf lookup (args _) (raw ⟨1,by decide⟩) good σ,
++    (ExternalModel.receive_reject (release := release) wf lookup (args _) (raw ⟨0,by decide⟩) bad).1,
++    (ExternalModel.receive_reject (release := release) wf lookup (args _) (raw ⟨0,by decide⟩) bad).2.1 σ⟩
++
++/-- 同じ宣言の二つの生応答から、値に依存する受理と拒否を読む。 -/
++example (base : Builtins) (release : Val → Option Benitoite.Release.ErrKind → Prop)
++    (Ψ : StoreTy) (σ : PathEnv) :
++    externalReceive positiveProgram positiveSignature [] [] (.val (.const (.integer ⟨1,by decide⟩))) =
++      some (.val (.const (.integer ⟨1,by decide⟩))) ∧
++    externalReceive positiveProgram positiveSignature [] [] (.val (.const (.integer ⟨0,by decide⟩))) =
++      some (.err "ExternalRefinement") := by
++  have pair := positive_receive_pair base release Ψ σ
++  exact ⟨pair.2.2.2.2.1.1,pair.2.2.2.2.2.1⟩
++
+ def handleDeclaration : ExternalTypeDecl := ⟨⟨0⟩,⟨0⟩,"Handle",0,0⟩
+ def handle (identity : Nat) : Val := .externalHandle ⟨⟨0⟩,⟨0⟩,0,identity⟩ []
+ def handleType (b : Bool) : Ty := if b then .external ⟨0⟩ [] else filtered (.external ⟨0⟩ []) false
+@@ -519,7 +610,7 @@
+      (ExternalModel.receive_reject bad.1 (lookup false) bad.2.1 bad.2.2.1 bad.2.2.2).2.1 σ⟩,
+     fun b r => ExternalModel.receive_error_no_exit (release := release) (handle_arguments b _ Ψ identity) (lookup b) r⟩
+ 
+-/-- 外部宣言と同名のdataを加えても、範囲IOが読む元の全HTTP宣言は同じ欄とarityを持つ。 -/
++/-- 入れ子のdata `ExternalBox` と外部関数の宣言を加えても、範囲IOが読むHTTP宣言の欄とarityは変わらない。 -/
+ theorem program_hasHttp (s : Shape) (b : Bool) : ScopeDeclarations.HasHttp (program s b) := by
+   intro d hd
+   have old := ScopeDeclarations.program_hasHttp d hd
+--- a/formal/Benitoite/Release/Refinement/ExternalModels.lean
++++ b/formal/Benitoite/Release/Refinement/ExternalModels.lean
+@@ -5,21 +5,13 @@
+ open ExternalModelExamples
+ noncomputable section
+ 
+-/-- 正常値と篩違反値の双方について、Modelの外部三条件の全前提を満たす。 -/
+-theorem model_inputs (s : Shape) (b : Bool) (Ψ : StoreTy) :
+-    (program s b).ExternalWF ∧
+-    ExternalArgs (program s b) (model (program s b)) Ψ (signature s b) [] [] (s.type b) Eff.empty ∧
+-    (model (program s b)).externalResponse ⟨0⟩ [] [] (.val (s.raw b)) [] ∧
+-    externalCheck (program s b) (s.raw b) (s.type b) = b := by
+-  exact raw_response s b Model.builtins (by cases b <;> rfl) _ Ψ
+-
+ /-- 外部応答を拡張したModelにもpure/IO/exit署名は登録されない。 -/
+ theorem model_no_response_kind {P b s} (lookup : (model P).sig b = some s) :
+     s.kind ≠ .pure ∧ s.kind ≠ .io ∧ s.kind ≠ .exit := by
+   rcases Model.sig_cases lookup with ⟨_,rfl⟩ | ⟨_,rfl⟩ | ⟨_,rfl⟩
+   all_goals simp [ScopeSignatures.refGet,ScopeSignatures.refSet,ScopeSignatures.pathBases]
+ 
+-/-- 各表の分類と応答を選び、範囲APIの別表と混同しない。 -/
++/-- 三モデルの区別。各場合の表は `ExternalModels.model/targets/http`。 -/
+ inductive ModelCase where
+   | model | targets | http
+ 
+@@ -69,7 +61,7 @@
+     | http => exact program_hasHttp s b
+   refine ⟨declarations,?_⟩
+   cases m with
+-  | model => exact model_inputs s b Ψ
++  | model => exact raw_response s b Model.builtins (keys .model b) _ Ψ
+   | targets => exact raw_response s b ModelTargets.builtins (keys .targets b) _ Ψ
+   | http => exact raw_response s b ModelHttp.builtins (keys .http b) _ Ψ
+ 
+@@ -90,7 +82,7 @@
+   rw [table_eq]
+   exact handle_raw_response b m.base _ Ψ identity
+ 
+-/-- 六正常形と篩拒否を三表の受信へ渡し、全入力・全σでの二十五条件と三条件を併せて読む。 -/
++/-- 六形の証人の宣言で、全Shape・Ψ・σ・identityの受信と同じ表の二十五条件・外部三条件を読む。 -/
+ theorem responses (m : ModelCase) (Ψ : StoreTy) (σ : PathEnv) (identity : Nat) :
+     (∀ s : Shape,
+       (∀ b, ModelScopeConditions (program s b) (m.table (program s b)) ∧
