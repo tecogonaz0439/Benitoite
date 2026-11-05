@@ -1,6 +1,7 @@
 import Benitoite.Release.Refinement.StepLeafSelection
 import Benitoite.Release.Refinement.StoreReplyLeaves
 import Benitoite.Release.Refinement.ContinuationGeneral
+import Benitoite.Release.Refinement.ScopePublicTyping
 
 /-! # 同じ具体表における正常な組み込み応答 -/
 namespace Benitoite.Release.Refinement.NormalReplyExamples
@@ -9,7 +10,6 @@ private def unitExternal : ExternalSignature :=
   ⟨.mk 0,"Example.unitExternal",[],[],.done (.base .unit) Eff.empty,[]⟩
 private def resultOk : ConDecl := ⟨"Example.Result",2,[.tvar 0]⟩
 private def resultError : ConDecl := ⟨"Example.Result",2,[.tvar 1]⟩
-private def scopeError : ConDecl := ⟨"Scope.ScopeError",0,atErrorFields⟩
 private def resultShape : ResultShape :=
   ⟨"Example.Result","Example.Ok","Example.Error",atErrorType⟩
 
@@ -17,7 +17,7 @@ private def modelProgram : Program where
   defs := fun _ => none
   cons := fun c => if c = "Example.Ok" then some resultOk
     else if c = "Example.Error" then some resultError
-    else if c = "Scope.ScopeError.At" then some scopeError else none
+    else ScopePublic.program.cons c
   ops := fun _ => none
   effects := fun _ => none
   classes := fun _ => none
@@ -128,44 +128,63 @@ private theorem model_external : modelProgram.ExternalWF := by
     exact ⟨rfl,external_declaration⟩
 
 private theorem cons_cases {c cd} (hc : modelProgram.cons c = some cd) :
-    cd = resultOk ∨ cd = resultError ∨ cd = scopeError := by
+    cd = resultOk ∨ cd = resultError ∨ ScopePublic.program.cons c = some cd := by
   simp only [modelProgram] at hc
   split at hc
   · cases hc; exact Or.inl rfl
   · split at hc
     · cases hc; exact Or.inr (Or.inl rfl)
-    · split at hc
-      · cases hc; exact Or.inr (Or.inr rfl)
-      · cases hc
+    · exact Or.inr (Or.inr hc)
+
+private theorem result_not_public : "Example.Result" ∉ ScopePublic.all.map ScopePublic.PublicData.name := by
+  decide
+
+private theorem model_public : modelProgram.HasScopePublic := by
+  apply ScopePublic.program_extend
+  · intro c cd h
+    have okNone : ScopePublic.program.cons "Example.Ok" = none := rfl
+    have errNone : ScopePublic.program.cons "Example.Error" = none := rfl
+    have ok : c ≠ "Example.Ok" := by intro e; subst e; rw [okNone] at h; cases h
+    have err : c ≠ "Example.Error" := by intro e; subst e; rw [errNone] at h; cases h
+    simp [modelProgram, ok, err, h]
+  · intro c cd h
+    rcases cons_cases h with rfl | rfl | h
+    · exact .inr ⟨result_not_public, by decide⟩
+    · exact .inr ⟨result_not_public, by decide⟩
+    · exact .inl h
 
 private theorem result_arity : modelProgram.DataArity "Example.Result" 2 := by
   refine ⟨⟨"Example.Ok",resultOk,by simp [modelProgram],rfl⟩,?_⟩
   intro c cd hc hd
-  rcases cons_cases hc with rfl | rfl | rfl
+  rcases cons_cases hc with rfl | rfl | hp
   · rfl
   · rfl
-  · simp [scopeError] at hd
+  · rcases ScopePublic.program_data hp with hn | hn
+    · rw [hd] at hn; exact absurd hn result_not_public
+    · exact absurd (hd.symm.trans hn) (by decide)
 
-private theorem scope_arity : modelProgram.DataArity "Scope.ScopeError" 0 := by
-  refine ⟨⟨"Scope.ScopeError.At",scopeError,by simp [modelProgram],rfl⟩,?_⟩
-  intro c cd hc hd
-  rcases cons_cases hc with rfl | rfl | rfl
-  · simp [resultOk] at hd
-  · simp [resultError] at hd
-  · rfl
+private theorem scope_arity : modelProgram.DataArity "Scope.ScopeError" 0 :=
+  model_public.arity ScopePublic.scopeErrorDecl (by simp [ScopePublic.all])
 
 private theorem cons_scoped {c cd} (hc : modelProgram.cons c = some cd) : cd.Scoped modelProgram := by
-  rcases cons_cases hc with rfl | rfl | rfl
-  all_goals
-    intro a ha
-    simp only [resultOk,resultError,scopeError,atErrorFields,List.mem_singleton,List.mem_replicate] at ha
-    first | subst a | obtain ⟨_,rfl⟩ := ha
+  rcases cons_cases hc with rfl | rfl | hp
+  · intro a ha
+    simp only [resultOk,List.mem_singleton] at ha
+    subst a
     refine ⟨?_,⟨?_,?_,?_⟩,?_⟩
     all_goals simp [Ty.SourceScoped,Ty.WF,Ty.RowsIn,Ty.RangesScoped,Ty.Declared,
-      Ty.Sorted,Ty.HasKind,TypeCtx.valueParam,resultOk,resultError]
+      Ty.Sorted,Ty.HasKind,TypeCtx.valueParam,resultOk]
+  · intro a ha
+    simp only [resultError,List.mem_singleton] at ha
+    subst a
+    refine ⟨?_,⟨?_,?_,?_⟩,?_⟩
+    all_goals simp [Ty.SourceScoped,Ty.WF,Ty.RowsIn,Ty.RangesScoped,Ty.Declared,
+      Ty.Sorted,Ty.HasKind,TypeCtx.valueParam,resultError]
+  · exact ScopePublic.program_scoped model_public hp
 
 private theorem shape_declared : resultShape.Declared modelProgram := by
-  refine ⟨⟨rfl,scope_arity,scopeError,by simp [modelProgram],rfl,rfl,rfl⟩,
+  refine ⟨⟨rfl,scope_arity,⟨_,model_public.cons "Scope.ScopeError.At" "Scope.ScopeError"
+      [.data "Scope.AtDetail"] (by decide),rfl,rfl,rfl⟩,model_public⟩,
     result_arity,by decide,⟨resultOk,by simp [modelProgram,resultShape],rfl,rfl,rfl⟩,
     ⟨resultError,by simp [modelProgram,resultShape],rfl,rfl,rfl⟩⟩
 
@@ -174,10 +193,21 @@ private theorem model_wellFormed : modelProgram.WellFormed where
   cons := by
     intro c cd h
     have hs := cons_scoped h
-    rcases cons_cases h with rfl | rfl | rfl
+    rcases cons_cases h with rfl | rfl | hp
     · exact ⟨result_arity,hs⟩
     · exact ⟨result_arity,hs⟩
-    · exact ⟨scope_arity,hs⟩
+    · refine ⟨?_,hs⟩
+      have hz := ScopePublic.program_arity hp
+      rcases ScopePublic.program_data hp with hn | hn
+      · obtain ⟨D, hD, he⟩ := List.mem_map.mp hn
+        rw [← he] at hz
+        have e := (ScopePublic.program_public.1.arity D hD).unique hz
+        rw [← he, ← e]
+        exact model_public.arity D hD
+      · rw [hn] at hz
+        have e := ScopePublic.program_public.1.optionArity.unique hz
+        rw [hn, ← e]
+        exact model_public.optionArity
   ops := by intro o od h; cases h
   classes := by intro cl cd h; cases h
   impls := by intro i id h; cases h
@@ -192,10 +222,14 @@ private theorem model_wellTyped : modelProgram.WellTyped modelBuiltins where
     intro a ha
     have hs := cons_scoped hc a ha
     refine ⟨hs.2.1,hs.2.2,?_⟩
-    rcases cons_cases hc with rfl | rfl | rfl
-    all_goals simp only [resultOk,resultError,scopeError,atErrorFields,List.mem_singleton,List.mem_replicate] at ha
-    all_goals first | subst a | obtain ⟨_,rfl⟩ := ha
-    all_goals simp [Ty.VarianceOK,Program.varianceFor,modelProgram,resultOk,resultError,scopeError,Variance.accepts]
+    rcases cons_cases hc with rfl | rfl | hp
+    · simp only [resultOk,List.mem_singleton] at ha
+      subst a
+      simp [Ty.VarianceOK,Program.varianceFor,modelProgram,resultOk,resultError,Variance.accepts]
+    · simp only [resultError,List.mem_singleton] at ha
+      subst a
+      simp [Ty.VarianceOK,Program.varianceFor,modelProgram,resultOk,resultError,Variance.accepts]
+    · exact ScopePublic.program_variance modelProgram rfl hp a ha
   external := model_external
   defs := by intro f d h; cases h
   impls := by intro i id h; cases h

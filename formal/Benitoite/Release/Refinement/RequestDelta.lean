@@ -87,16 +87,19 @@ def ok (r : RangeExpr) (v : Val) : Outcome :=
 def error (r : RangeExpr) (v : Val) : Outcome :=
   .val (ScopeDelta.resultValue false (.opaque "Http.RequestIn" (.fixed r)) requestCheckErrorTy v)
 
-private def checkedPattern (c : Checked.Scope.CheckedEndpoint) : EndpointPattern :=
-  ⟨c.hostPattern,
-    ⟨⟨c.minimumPort.toNat,by have h := c.bounds; unfold Checked.Scope.PortBounds at h; omega⟩,
-     ⟨c.maximumPort.toNat,by have h := c.bounds; unfold Checked.Scope.PortBounds at h; omega⟩⟩⟩
-
+/-- 結果の型の静的な範囲に入らない端点の拒否。旧 API は旧構成子で返す。上限が端点の条件でホストが合えば、
+上限のポート範囲と端点のポートを持つ PortOutsideScope、それ以外は元のホスト条件とホストの綴りを持つ
+OutsideScope とする。 -/
 private def staticError (pattern : String) (lo hi : Integer64Value) (req : Val)
-    (checked : Checked.Scope.CheckedEndpoint) : Val :=
-  .atError (AtError.save (.list [.const (.string pattern),.const (.integer lo),.const (.integer hi)]) req
-    none (some (.absolute (.endpoint (checkedPattern checked))))
-    (req.reqTarget.map TargetInput.absolute) .staticIndex)
+    (checked : Checked.Scope.CheckedEndpoint) (endpoint : Endpoint) : RangeExpr → Val
+  | .absolute (.endpoint bound) =>
+    if bound.host.Matches endpoint.host then
+      ScopeDelta.errorValue pattern (hostText req) (portValue bound.ports.lo) (portValue bound.ports.hi)
+        (portValue endpoint.port) (.portOutsideScope bound.ports.lo.val bound.ports.hi.val endpoint.port.val)
+    else ScopeDelta.errorValue pattern (hostText req) lo hi (portValue endpoint.port)
+      (.outsideScope (.host checked.hostPattern) (.endpoint endpoint))
+  | _ => ScopeDelta.errorValue pattern (hostText req) lo hi (portValue endpoint.port)
+      (.outsideScope (.host checked.hostPattern) (.endpoint endpoint))
 
 /-- URL の取得後、既存の host・port の順で検査し、成功時に同じ要求を保持する。 -/
 def run (r : RangeExpr) : List Val → Outcome
@@ -115,8 +118,8 @@ def run (r : RangeExpr) : List Val → Outcome
             | .ok checked => match r with
               | .absolute bound =>
                 if Range.MemK .endpoint bound (.endpoint endpoint) then ok r (.checkedRequest (.endpoint endpoint) req)
-                else error r (scopeError (staticError pattern lo hi req checked))
-              | .based _ _ | .secrets => error r (scopeError (staticError pattern lo hi req checked))
+                else error r (scopeError (staticError pattern lo hi req checked endpoint r))
+              | .based _ _ | .secrets => error r (scopeError (staticError pattern lo hi req checked endpoint r))
         | _ => error r (scopeError (ScopeDelta.invalidTarget host
             (if urlHostMapped host then ScopeDelta.text.MAPPED_TARGET else text.INVALID_HOST)))
     else error r invalidUrl
@@ -148,6 +151,18 @@ private theorem scope_reply {P B Ψ r ws v} (hp : HasHttp P)
       (∀ w, error r (scopeError v) = .val w → w.Ground) ∧ ∀ n, error r (scopeError v) ≠ .exit n := by
   have h := scopeError_safe hp safe.1 safe.2.1
   exact error_reply hp ⟨h.1,h.2.1,fun σ => h.2.2 σ (safe.2.2 σ)⟩
+
+private theorem static_safe {P B Ψ} (hp : HasHttp P) (pattern : String) (lo hi : Integer64Value) (req : Val)
+    (checked : Checked.Scope.CheckedEndpoint) (endpoint : Endpoint) (r : RangeExpr) :
+    HasTypeVQ P B Ψ Qempty [] [] [] (staticError pattern lo hi req checked endpoint r) atErrorType ∧
+      (staticError pattern lo hi req checked endpoint r).Ground ∧
+      ∀ σ, (staticError pattern lo hi req checked endpoint r).Adequate σ := by
+  unfold staticError
+  split
+  · split
+    · exact ScopeDelta.error_safe hp.file _ _ _ _ _ _
+    · exact ScopeDelta.error_safe hp.file _ _ _ _ _ _
+  · exact ScopeDelta.error_safe hp.file _ _ _ _ _ _
 
 /-- 全型付き入力と全範囲で、同じ要求の応答契約を満たす。 -/
 theorem run_safe {P B Ψ} (hp : HasHttp P)
@@ -192,9 +207,9 @@ theorem run_safe {P B Ψ} (hp : HasHttp P)
                       (by change req.Ground; exact groundVal_ground hg)
                       (by intro σ _ had; exact had req (by simp))
                     exact ⟨h.1,h.2.1,by intro v hv; cases hv; exact h.2.2.1,h.2.2.2⟩
-                  · exact scope_reply hp ⟨.V_AtError (ScopeDelta.result_declared hp.file),trivial,fun _ => trivial⟩
+                  · exact scope_reply hp (static_safe hp _ _ _ _ _ _ _)
                 | based _ _ | secrets =>
-                  exact scope_reply hp ⟨.V_AtError (ScopeDelta.result_declared hp.file),trivial,fun _ => trivial⟩
+                  exact scope_reply hp (static_safe hp _ _ _ _ _ _ _)
           · exact scope_reply hp (ScopeDelta.invalidTarget_safe hp.file _ _)
       · exact error_reply hp (invalidUrl_safe hp)
   · exact error_reply hp (invalidUrl_safe hp)
@@ -277,8 +292,8 @@ theorem run_endpoint {req pattern endpoint p}
       | .ok checked => match r with
         | .absolute bound => if Range.MemK .endpoint bound (.endpoint endpoint) then
             ok r (.checkedRequest (.endpoint endpoint) req)
-          else error r (scopeError (staticError pattern lo hi req checked))
-        | .based _ _ | .secrets => error r (scopeError (staticError pattern lo hi req checked)) := by
+          else error r (scopeError (staticError pattern lo hi req checked endpoint r))
+        | .based _ _ | .secrets => error r (scopeError (staticError pattern lo hi req checked endpoint r)) := by
   cases he : parseUrlShape (urlText req) with
   | none => simp [he] at hs
   | some shape => rcases shape with ⟨host,port⟩; simp only [run,hg,he,ht,hp,↓reduceIte]
@@ -327,6 +342,38 @@ example :
   · rw [run_endpoint hg hs ht hp]
     simp +decide [Checked.Scope.makeEndpoint,sampleEndpoint,portValue,Integer64Value.toInt,
       sampleIP,ScopeDelta.errorValue]
+
+private def otherPortBound : Range := .endpoint ⟨.ip (.exact sampleIP),⟨⟨8443,by decide⟩,⟨8443,by decide⟩⟩⟩
+private def otherHostBound : Range := .endpoint ⟨.name (.exact ["example","com"]),⟨⟨443,by decide⟩,⟨443,by decide⟩⟩⟩
+
+/-- 動的な条件に入り静的な上限に入らない端点は、旧構成子で拒否する。ホストが上限に合えば上限のポート範囲の
+PortOutsideScope、合わなければ OutsideScope である。 -/
+example :
+    run (.absolute otherPortBound)
+      [.const (.string "127.0.0.1"),.const (.integer samplePort),.const (.integer samplePort),sampleRequest] =
+        error (.absolute otherPortBound) (scopeError (.con "Scope.ScopeError.PortOutsideScope" []
+          [.const (.integer ⟨8443,by decide⟩),.const (.integer ⟨8443,by decide⟩),.const (.integer samplePort)])) ∧
+    run (.absolute otherHostBound)
+      [.const (.string "127.0.0.1"),.const (.integer samplePort),.const (.integer samplePort),sampleRequest] =
+        error (.absolute otherHostBound) (scopeError (.con "Scope.ScopeError.OutsideScope" []
+          [.const (.string "127.0.0.1"),.const (.string (hostText sampleRequest))])) := by
+  have hg : groundVal sampleRequest = true := by decide
+  have hs : (parseUrlShape (urlText sampleRequest)).isSome = true := by cbv
+  have ht : sampleRequest.reqTarget = some (.endpoint sampleEndpoint) := parseUrlTarget_https_loopback
+  have hp : parseHostPattern "127.0.0.1" = some (.ip (.exact sampleIP)) := by
+    have star : "127.0.0.1".startsWith "*." = false := by simp
+    have many : "127.0.0.1".startsWith "**." = false := by simp
+    have parts : ("127.0.0.1".toList.splitOn '/').map String.ofList = ["127.0.0.1"] := by decide +kernel
+    simp only [parseHostPattern,star,many,Bool.false_eq_true,↓reduceIte,parts,parseAtInput_host_loopback]
+    simp [HostPattern.WF,IPPattern.WF,HostPattern.normalize,IPPattern.normalize,sampleIP]
+  constructor
+  · rw [run_endpoint hg hs ht hp]
+    simp +decide [Checked.Scope.makeEndpoint,sampleEndpoint,samplePort,portValue,Integer64Value.toInt,
+      sampleIP,otherPortBound,staticError,ScopeDelta.errorValue]
+    rfl
+  · rw [run_endpoint hg hs ht hp]
+    simp +decide [Checked.Scope.makeEndpoint,sampleEndpoint,samplePort,portValue,Integer64Value.toInt,
+      sampleIP,otherHostBound,staticError,ScopeDelta.errorValue]
 
 /-- 関門入力は URL 全体でなく、元のホスト綴りを payload に保存する。 -/
 private def gateRequest (url : String) : Val := .con "Http.ClientRequest" []

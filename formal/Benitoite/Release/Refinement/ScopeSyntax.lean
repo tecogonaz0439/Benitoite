@@ -174,11 +174,6 @@ structure Detail (Raw : Type) where
   targetBase : Option PathBase
 
 
-/-- 内部の観測は、失敗の種別・解析済み入力・解決結果・両起点を文字列に写し、元入力を取り出さない。 -/
-def Detail.textFields {Raw : Type} (d : Detail Raw) : List String :=
-  [reprStr d.failure, reprStr d.parsedPattern, reprStr d.parsedTarget,
-   reprStr d.resolvedPatterns, reprStr d.resolvedTarget, reprStr d.patternBase, reprStr d.targetBase]
-
 
 inductive ExternalId where
   | mk (declaration : Nat)

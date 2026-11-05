@@ -421,6 +421,61 @@ private theorem prepareCore_saved {B cap kind name bases pattern input bound e}
       · intro snapshot e he
         exact finishPreparation_saved he
 
+private theorem finishPreparation_public {B kind name rawPattern rawTarget snapshot pat target bound e}
+    (h : finishPreparation B kind name rawPattern rawTarget snapshot pat target bound = .error e) :
+    e.detail.failure ≠ .outsideScope := by
+  unfold finishPreparation at h
+  split at h
+  · cases h; simp [prepareError, AtError.save]
+  · split at h
+    · cases h; simp [prepareError, AtError.save]
+    · split at h <;> cases h <;> simp [prepareError, AtError.save]
+
+private theorem prepareCore_public {B cap kind name bases pattern input bound e}
+    (h : prepareCore B cap kind name bases pattern input bound = .error e) :
+    e.detail.failure ≠ .outsideScope := by
+  unfold prepareCore at h
+  apply error_bind_property (property := fun e : PreparationError => e.detail.failure ≠ .outsideScope) (he := h)
+  · intro e he
+    split at he <;> cases he
+    simp [prepareError, AtError.save]
+  · intro pat e he
+    apply error_bind_property (property := fun e : PreparationError => e.detail.failure ≠ .outsideScope) (he := he)
+    · intro e he
+      split at he
+      · split at he <;> cases he
+        simp [prepareError, AtError.save]
+      · split at he
+        · split at he <;> cases he
+          simp [prepareError, AtError.save]
+        · cases he; simp [prepareError, AtError.save]
+    · intro target e he
+      apply error_bind_property (property := fun e : PreparationError => e.detail.failure ≠ .outsideScope) (he := he)
+      · intro e he
+        split at he
+        · cases he
+        · split at he
+          · split at he <;> cases he
+            simp [prepareError, AtError.save]
+          · cases he; simp [prepareError, AtError.save]
+      · intro snapshot e he
+        exact finishPreparation_public he
+
+/-- 準備の失敗は、返す枝のない `outsideScope` を種別に持たない。 -/
+theorem AtPrepare.no_outsideScope {B cap kind name bases pattern input index detail}
+    (h : AtPrepare B cap kind name bases pattern input index = .error detail) :
+    detail.failure ≠ .outsideScope := by
+  cases index with
+  | rvar i => cases h; simp [AtError.save]
+  | fixed r =>
+    unfold AtPrepare at h
+    cases he : prepareCore B cap kind name bases pattern input r with
+    | error e =>
+      simp only [he, Except.error.injEq] at h
+      cases h
+      exact prepareCore_public he
+    | ok value => rcases value with ⟨σ,p,t⟩; simp [he] at h
+
 /-- 準備のどの失敗でも、閉じた元入力と解析・解決の区別を同じ記録に保つ。 -/
 theorem AtPrepare.error_saved {B cap kind name bases pattern input index detail}
     (h : AtPrepare B cap kind name bases pattern input index = .error detail) :

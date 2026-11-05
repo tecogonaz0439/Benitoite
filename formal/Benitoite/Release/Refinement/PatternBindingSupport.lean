@@ -180,11 +180,12 @@ theorem constructor_values {P B Ψ Q C Γ Φ c tys vs cd ts}
 
 theorem atError_declaration {P B Ψ Q C Γ Φ detail a v}
     (h : HasTypeVQ P B Ψ Q C Γ Φ v a) (hval : v = .atError detail) :
-    ∃ cd, P.cons "Scope.ScopeError.At" = some cd ∧ cd.ntys = 0 ∧ cd.args = atErrorFields := by
+    ∃ cd, P.cons "Scope.ScopeError.At" = some cd ∧ cd.ntys = 0 ∧ cd.args = atErrorFields ∧
+      P.HasScopePublic := by
   match h with
   | .V_AtError hs =>
-    obtain ⟨cd,hc,_,hn,ha⟩ := hs.standard.2.2
-    exact ⟨cd,hc,hn,ha⟩
+    obtain ⟨cd,hc,_,hn,ha⟩ := hs.standard.2.2.1
+    exact ⟨cd,hc,hn,ha,hs.standard.2.2.2⟩
   | .V_Sub hv .. | .V_Normal hv | .V_Refine hv .. => exact atError_declaration hv hval
   | .V_Var .. | .V_Const .. | .V_Lam .. | .V_DependentLam .. | .V_Closure .. |
     .V_Fun .. | .V_Prim .. | .V_Op .. | .V_ExternalRef .. | .V_ExternalHandle .. |

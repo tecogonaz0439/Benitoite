@@ -137,25 +137,25 @@ theorem captured_snapshot :
       (termBind (valEnv cap.env).values (.var 1)) :=
   RewritePosition.structural_sound _ captured_integer8.2.1
 
-private def textSlots : List (Option Term) := List.replicate 7 (some (.string "x"))
-private def field : FieldRef := ⟨"Scope.ScopeError", "Scope.ScopeError.At", 0, .string⟩
+private def textSlots : List (Option Term) := List.replicate 2 (some (.string "x"))
+private def field : FieldRef := ⟨"Scope.ScopeError", "Scope.ScopeError.InvalidPattern", 0, .string⟩
 private def dataCapture : Capture :=
-  ⟨[some (.con "Scope.ScopeError.At" [] (List.replicate 7 (.const (.string "x"))))]⟩
+  ⟨[some (.con "Scope.ScopeError.InvalidPattern" [] (List.replicate 2 (.const (.string "x"))))]⟩
 
 theorem declared_field :
-    FieldRef.Declared P [] [] (.dataValue "Scope.ScopeError.At" textSlots) field := by
+    FieldRef.Declared P [] [] (.dataValue "Scope.ScopeError.InvalidPattern" textSlots) field := by
   refine ⟨[], _, .base .string, Term.HasData.value (by rfl) rfl rfl rfl, rfl, rfl, rfl, rfl, trivial, rfl⟩
 
 theorem captured_field :
     termBind (valEnv dataCapture.env).values (.field field (.var 0)) =
-      .field field (.dataValue "Scope.ScopeError.At" textSlots) ∧
+      .field field (.dataValue "Scope.ScopeError.InvalidPattern" textSlots) ∧
     (termBind (valEnv dataCapture.env).values (.field field (.var 0))).observe (fun _ => none) =
       some (.string "x") := by
   constructor <;> rfl
 
 theorem captured_measure :
     termBind (valEnv dataCapture.env).values (.measure .stringCharacters (.field field (.var 0))) =
-      .measure .stringCharacters (.field field (.dataValue "Scope.ScopeError.At" textSlots)) ∧
+      .measure .stringCharacters (.field field (.dataValue "Scope.ScopeError.InvalidPattern" textSlots)) ∧
     (termBind (valEnv dataCapture.env).values
       (.measure .stringCharacters (.field field (.var 0)))).observe (fun _ => none) = some (.integer 1) := by
   constructor <;> rfl

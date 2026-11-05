@@ -37,12 +37,21 @@ theorem variance_valid (externals : List (ExternalKey × ExternalDecl)) :
     (http ScopeDeclarations.scopeError (by simp [ScopeDeclarations.http, ScopeDeclarations.file])).1
   have pairK := TyCon.arity_data pair
   have scopeK := TyCon.arity_data scope
+  have pub := http.scopePublic
   constructor
   · intro d info h; cases h
   · intro c cd h
-    have mem := cons_mem h
-    simp only [constructors, declarations, byteOrder, roundingMode, StandardOrdinaryCoreBodies.declarations,
-      ScopeDeclarations.http, ScopeDeclarations.file, ScopeDeclarations.result, ScopeDeclarations.scopeError,
+    rcases (constructors_split (cons_mem h)).symm with mem | mem
+    · obtain ⟨hn, _, as, hargs, hk⟩ := ScopeDeclarations.public_entry mem
+      constructor
+      · intro info h; cases h
+      · intro a ha
+        rw [hargs] at ha
+        obtain ⟨b, hb, rfl⟩ := List.mem_map.mp ha
+        rw [hn]
+        exact ⟨b.annotation pub _ _ (hk b hb), b.kind pub _ (hk b hb), b.varianceOK _ _ _⟩
+    simp only [baseDeclarations, byteOrder, roundingMode, StandardOrdinaryCoreBodies.declarations,
+      ScopeDeclarations.base, ScopeDeclarations.file, ScopeDeclarations.result, ScopeDeclarations.scopeError,
       ScopeDeclarations.pair, ScopeDeclarations.clientRequest, ScopeDeclarations.requestCheckError,
       StandardOrdinaryCoreBodies.Record.owner, StandardOrdinaryCoreBodies.Record.fields,
       StandardSafe.names] at mem
@@ -55,8 +64,13 @@ theorem variance_valid (externals : List (ExternalKey × ExternalDecl)) :
       · intro info h; cases h
       · intro a ha
         try (simp at ha; done)
-        try simp only [atErrorFields, List.replicate, List.mem_cons, List.not_mem_nil, or_false] at ha
+        try simp only [atErrorFields, List.mem_cons, List.not_mem_nil, or_false] at ha
         repeat' (rcases ha with rfl | ha)
+        all_goals first
+          | exact ⟨ScopePublic.PublicTy.annotation pub _ _ (a := .data "Scope.AtDetail") (by decide),
+              ScopePublic.PublicTy.kind pub _ (.data "Scope.AtDetail") (by decide),
+              ScopePublic.PublicTy.varianceOK _ _ (.data "Scope.AtDetail") _⟩
+          | skip
         all_goals
           refine ⟨⟨?_, ?_, ?_⟩, ?_, ?_⟩ <;>
             try simp [Ty.WF, Ty.Sorted, Ty.Declared, Ty.HasKind, TypeCtx.valueParam, Ty.VarianceOK,
@@ -72,9 +86,11 @@ theorem map_set_declarations (externals : List (ExternalKey × ExternalDecl)) :
     (http ScopeDeclarations.pair (by simp [ScopeDeclarations.http])).1
   refine ⟨rfl, pair, ?_, options.some_decl, options.none_decl, options.arity⟩
   intro c cd h owner
-  have mem := cons_mem h
-  simp only [constructors, declarations, byteOrder, roundingMode, StandardOrdinaryCoreBodies.declarations,
-    ScopeDeclarations.http, ScopeDeclarations.file, ScopeDeclarations.result, ScopeDeclarations.scopeError,
+  rcases (constructors_split (cons_mem h)).symm with mem | mem
+  · obtain ⟨_, hd, _⟩ := ScopeDeclarations.public_entry mem
+    exact absurd owner (ScopeDeclarations.public_not_option _ hd).2.1
+  simp only [baseDeclarations, byteOrder, roundingMode, StandardOrdinaryCoreBodies.declarations,
+    ScopeDeclarations.base, ScopeDeclarations.file, ScopeDeclarations.result, ScopeDeclarations.scopeError,
     ScopeDeclarations.pair, ScopeDeclarations.clientRequest, ScopeDeclarations.requestCheckError,
     StandardOrdinaryCoreBodies.Record.owner, StandardOrdinaryCoreBodies.Record.fields,
     StandardSafe.names] at mem

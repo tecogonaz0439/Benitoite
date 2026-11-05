@@ -2,15 +2,15 @@ import Benitoite.Release.Refinement.TypingDeclared
 import Benitoite.Release.Refinement.Adequate
 import Benitoite.Release.Refinement.AtPrepare
 import Benitoite.Release.Refinement.AtSound
+import Benitoite.Release.Refinement.ScopePublicValues
 
 /-! # 保持対象の静的な証拠と固定したσへの接続 -/
 namespace Benitoite.Release.Refinement
 
-theorem Detail.values_typed (P B Ψ Q C Γ Φ) (detail : AtError) :
-    HasTypeVsQ P B Ψ Q C Γ Φ detail.values atErrorFields := by
-  exact .cons (.V_Const trivial) (.cons (.V_Const trivial) (.cons (.V_Const trivial)
-    (.cons (.V_Const trivial) (.cons (.V_Const trivial) (.cons (.V_Const trivial)
-      (.cons (.V_Const trivial) .nil))))))
+/-- 照合が束縛する九欄の公開形の値は、公開の宣言を持つ同じ P で AtDetail の型を持つ。 -/
+theorem Detail.values_typed (P B Ψ Q C Γ Φ) (hp : P.HasScopePublic) (detail : AtError) :
+    HasTypeVsQ P B Ψ Q C Γ Φ detail.values atErrorFields :=
+  .cons (detail.publicTree_typed.val hp) .nil
 
 theorem CheckedWitness.kind {P B Ψ o k r snapshot target req}
     (h : CheckedWitness P B Ψ o k r snapshot target req) : target.kind = k := by

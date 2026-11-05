@@ -45,12 +45,12 @@ mutual
         split at hm
         · rename_i he
           subst he
-          obtain ⟨cd',hc',hzero,hargs⟩ := atError_declaration hv rfl
+          obtain ⟨cd',hc',hzero,hargs,hpub⟩ := atError_declaration hv rfl
           have heq := Option.some.inj (hc.symm.trans hc')
           subst cd'
           have hts : ts = [] := List.eq_nil_iff_length_eq_zero.mpr (hn.trans hzero)
           subst ts
-          have hvals := detail.values_typed P B Ψ Qempty [] [] []
+          have hvals := detail.values_typed P B Ψ Qempty [] [] [] hpub
           have heq : (cd.args.map (Ty.subst [] [])).map Ty.norm = atErrorFields := by rw [hargs]; rfl
           rw [←heq] at hvals
           exact ih _ _ hvals hm

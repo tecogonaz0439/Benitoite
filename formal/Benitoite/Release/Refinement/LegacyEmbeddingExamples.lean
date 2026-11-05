@@ -127,9 +127,9 @@ theorem bindings_from_child : LegacyNodeTypes kinds oldProgram [] [] 0 [.base .i
 
 theorem at_shape : ResultShape.StandardError (embedProgramWithKinds kinds oldProgram)
     ⟨"Result","Ok","Error",atErrorType⟩ := by
-  have lookup : oldProgram.cons "Scope.ScopeError.At" = some atDecl := by simp [oldProgram]
-  exact ⟨rfl,tables.dataArity lookup,embedConDecl atDecl,
-    by simp only [embedProgramWithKinds_cons,lookup,Option.map_some],rfl,rfl,rfl⟩
+  have lookup : oldProgram.cons "Scope.ScopeError.At" = some atDecl := rfl
+  exact ⟨rfl,tables.dataArity lookup,⟨embedConDecl atDecl,
+    by simp only [embedProgramWithKinds_cons,lookup,Option.map_some],rfl,rfl,rfl⟩,embedded_public⟩
 
 theorem at_legacy_inhabits (detail : AtError) : Benitoite.Release.Inhabits oldProgram
     (.data "Scope.ScopeError" []) (legacyPatternVal (.atError detail)) :=
@@ -143,11 +143,11 @@ private theorem var_patterns (P0 : Benitoite.Release.Program) (a : Benitoite.Rel
       Benitoite.Release.PatTys.cons (.P_Var (a := a)) ih
 
 theorem at_pattern_typed : PatTy (embedProgramWithKinds kinds oldProgram) atPattern atErrorType
-    (embedTys (List.replicate 7 (.base .string))) := by
+    (embedTys [.data "Scope.AtDetail" []]) := by
   change PatTy _ atPattern (embedTy (.data "Scope.ScopeError" [])) _
   apply embedPatTy tables
   exact .P_Con (c := "Scope.ScopeError.At") (cd := atDecl) (ts := [])
-    (by simp [oldProgram]) rfl (var_patterns oldProgram (.base .string) 7)
+    rfl rfl (var_patterns oldProgram (.data "Scope.AtDetail" []) 1)
 
 theorem at_type_argument_rejected : ¬ LegacyNodeTypes kinds oldProgram [] [] 0
     [.data "Scope.ScopeError" [.base .unit]] := by

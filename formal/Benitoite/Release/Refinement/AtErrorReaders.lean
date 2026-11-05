@@ -6,7 +6,7 @@ import Benitoite.Release.Refinement.AtPatterns
 namespace Benitoite.Release.Refinement.AtErrorReaders
 noncomputable section
 
-/-- 全診断の同じ七欄を、型付け・項観測・照合の既存の読者へ渡す。 -/
+/-- 全診断の九欄の公開形を、型付け・項観測・照合の既存の読者へ渡す。 -/
 theorem observed {P B Ψ Q C Γ Φ shape} (declared : ResultShape.Declared P shape) (d : AtError) :
     HasTypeVQ P B Ψ Q C Γ Φ (.atError d) atErrorType ∧
     (∀ t, (Val.atError d).toTerm? = some t → Term.Declared P C Γ t) ∧
@@ -16,7 +16,7 @@ theorem observed {P B Ψ Q C Γ Φ shape} (declared : ResultShape.Declared P sha
   have typed : HasTypeVQ P B Ψ Q C Γ Φ (.atError d) atErrorType := by
     rw [← declared.errorType_eq]; exact .V_AtError declared
   exact ⟨typed,fun _ ht => typed.observation_declared ht,d.match_pattern,
-    d.values_typed P B Ψ Q C Γ Φ,AtTargets.adequate_atError d⟩
+    d.values_typed P B Ψ Q C Γ Φ declared.standard.2.2.2,AtTargets.adequate_atError d⟩
 
 /-- 準備の全失敗で、保存した元入力・解析段階・解決結果と同じ観測を読む。 -/
 theorem prepare_reader {P B Ψ Q C Γ Φ shape cap kind name bases pattern input index d}
@@ -76,20 +76,22 @@ example {P B σ Eb q k μ kind name shape bases pattern input index d}
   obtain ⟨notStatic,step,preserved⟩ := state.at_prepare_failure code failure
   exact ⟨rawPattern,rawTarget,notStatic,adequate,step,preserved⟩
 
-/-- 全失敗種別・全起点で、元入力の置換は内部の照合の項観測を変えない。 -/
+/-- 全失敗種別・全起点で、公開形が同じ元入力への置換は照合の束縛列の項観測を変えない。 -/
 example {P B Ψ Q C Γ Φ shape} (declared : ResultShape.Declared P shape)
     (p t : Val) (snapshot : Option PathEnv) (pat : RangeExpr) (target : TargetInput)
-    (d : AtCheckError) (p' t' : Val) :
+    (d : AtCheckError) (p' t' : Val)
+    (hp : ScopePublic.inputOfVal p' = ScopePublic.inputOfVal p)
+    (ht : ScopePublic.inputOfVal t' = ScopePublic.inputOfVal t) :
     let saved := AtError.fromCheck p t snapshot pat target d
     let changed : AtError := {saved with originalPattern := p', originalTarget := t'}
     HasTypeVQ P B Ψ Q C Γ Φ (.atError saved) atErrorType ∧
-    saved.textFields = changed.textFields ∧
-    (∀ pattern, (matchVal pattern (.atError saved)).map (List.map Val.toTerm?) =
-      (matchVal pattern (.atError changed)).map (List.map Val.toTerm?)) := by
+    changed.publicTree = saved.publicTree ∧
+    (∀ pattern, (matchVal pattern (.atError changed)).map (List.map Val.toTerm?) =
+      (matchVal pattern (.atError saved)).map (List.map Val.toTerm?)) := by
   have reader := check_reader (B := B) (Ψ := Ψ) (Q := Q) (C := C) (Γ := Γ) (Φ := Φ)
     declared p t snapshot pat target d
-  exact ⟨reader.2.2.2.2.2.2.2.2.2.1,rfl,
-    fun pattern => ((AtError.fromCheck p t snapshot pat target d).originals_unobserved p' t').2.2.2 pattern |>.symm⟩
+  have same := (AtError.fromCheck p t snapshot pat target d).originals_observed p' t' hp ht
+  exact ⟨reader.2.2.2.2.2.2.2.2.2.1,same.1,same.2.2.2⟩
 
 /-- 内部の完全な構成子一覧は、保存値の九欄とは別に網羅性へ渡す。 -/
 example {P shape cs} (declared : ResultShape.Declared P shape)

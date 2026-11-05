@@ -54,17 +54,47 @@ theorem PureRow.of_response {P : Program} (row : Primitive) {name : PrimName} {s
 同じ構成子とarityで宣言する。 -/
 theorem http_declarations (externals : List (ExternalKey × ExternalDecl)) :
     ScopeDeclarations.HasHttp (program externals) := by
+  have keys : (constructors.map Prod.fst).Nodup := by decide
+  have lookup_of_mem : ∀ {c cd}, (c, cd) ∈ constructors → (program externals).cons c = some cd := by
+    intro c cd h
+    change constructors.lookup c = some cd
+    revert h keys
+    generalize constructors = xs
+    intro keys h
+    induction xs with
+    | nil => cases h
+    | cons x xs ih =>
+      rcases x with ⟨k', v'⟩
+      simp only [List.map_cons, List.nodup_cons] at keys
+      simp only [List.lookup]
+      rcases List.mem_cons.mp h with eq | mem
+      · cases eq; simp
+      · have ne : c ≠ k' := by
+          intro eq; subst eq
+          exact keys.1 (List.mem_map.mpr ⟨(c, cd), mem, rfl⟩)
+        have hb : (c == k') = false := by simpa using ne
+        rw [hb]
+        exact ih keys.2 mem
   have arity : ∀ d ∈ ScopeDeclarations.http, (program externals).DataArity d.name d.ntys := by
     intro d hd
     refine ⟨?_, ?_⟩
-    · simp only [ScopeDeclarations.http, ScopeDeclarations.file, List.cons_append, List.nil_append,
-        List.mem_cons, List.not_mem_nil, or_false] at hd
-      rcases hd with rfl | rfl | rfl | rfl | rfl
-      · exact ⟨"Result.Ok", _, rfl, rfl⟩
-      · exact ⟨"Scope.ScopeError.InvalidPattern", _, rfl, rfl⟩
-      · exact ⟨"Pair.Pair", _, rfl, rfl⟩
-      · exact ⟨"Http.ClientRequest", _, rfl, rfl⟩
-      · exact ⟨"Http.RequestCheckError.InvalidUrl", _, rfl, rfl⟩
+    · rcases ScopeDeclarations.mem_http hd with hd | rfl | hd
+      · simp only [ScopeDeclarations.base, ScopeDeclarations.file, List.cons_append, List.nil_append,
+          List.mem_cons, List.not_mem_nil, or_false] at hd
+        rcases hd with rfl | rfl | rfl | rfl | rfl
+        · exact ⟨"Result.Ok", _, rfl, rfl⟩
+        · exact ⟨"Scope.ScopeError.InvalidPattern", _, rfl, rfl⟩
+        · exact ⟨"Pair.Pair", _, rfl, rfl⟩
+        · exact ⟨"Http.ClientRequest", _, rfl, rfl⟩
+        · exact ⟨"Http.RequestCheckError.InvalidUrl", _, rfl, rfl⟩
+      · exact ⟨"Option.Some", _, rfl, rfl⟩
+      · obtain ⟨D, hD, rfl⟩ := List.mem_map.mp hd
+        have ne : D.constructors.length ≠ 0 :=
+          (show ∀ D ∈ ScopePublic.declarations, D.constructors.length ≠ 0 by decide) D hD
+        obtain ⟨e, rest, he⟩ := List.exists_cons_of_ne_nil (List.ne_nil_of_length_pos (Nat.pos_of_ne_zero ne))
+        refine ⟨e.1, _, lookup_of_mem (List.mem_flatMap.mpr ⟨ScopeDeclarations.publicDecl D,
+          List.mem_append_right _ (List.mem_map_of_mem hD), List.mem_map.mpr ⟨(e.1, e.2.map ScopePublic.PublicTy.ty),
+            by simp [ScopeDeclarations.publicDecl, he], rfl⟩⟩), rfl⟩
     · intro c cd lookup owner
       change constructors.lookup c = some cd at lookup
       obtain ⟨before, after, eq, _⟩ := List.lookup_eq_some_iff.mp lookup
@@ -77,16 +107,23 @@ theorem http_declarations (externals : List (ExternalKey × ExternalDecl)) :
       exact all d hd decl member owner
   intro d hd
   refine ⟨arity d hd, ?_⟩
-  simp only [ScopeDeclarations.http, ScopeDeclarations.file, List.cons_append, List.nil_append,
-    List.mem_cons, List.not_mem_nil, or_false] at hd
-  rcases hd with rfl | rfl | rfl | rfl | rfl
-  all_goals
-    intro c hc
-    simp only [StandardKeyTyping.DataDecl.entries, ScopeDeclarations.result, ScopeDeclarations.scopeError,
-      ScopeDeclarations.pair, ScopeDeclarations.clientRequest, ScopeDeclarations.requestCheckError,
-      List.map_cons, List.map_nil, List.mem_cons, List.not_mem_nil, or_false] at hc
-    repeat' (rcases hc with rfl | hc)
-    all_goals first | rfl | (subst hc; rfl)
+  rcases ScopeDeclarations.mem_http hd with hd | rfl | hd
+  · simp only [ScopeDeclarations.base, ScopeDeclarations.file, List.cons_append, List.nil_append,
+      List.mem_cons, List.not_mem_nil, or_false] at hd
+    rcases hd with rfl | rfl | rfl | rfl | rfl
+    all_goals
+      intro c hc
+      simp only [StandardKeyTyping.DataDecl.entries, ScopeDeclarations.result, ScopeDeclarations.scopeError,
+        ScopeDeclarations.pair, ScopeDeclarations.clientRequest, ScopeDeclarations.requestCheckError,
+        List.map_cons, List.map_nil, List.mem_cons, List.not_mem_nil, or_false] at hc
+      repeat' (rcases hc with rfl | hc)
+      all_goals first | rfl | (subst hc; rfl)
+  · intro c hc
+    simp only [ScopeDeclarations.option, StandardKeyTyping.DataDecl.entries, List.map_cons, List.map_nil,
+      List.mem_cons, List.not_mem_nil, or_false] at hc
+    rcases hc with rfl | rfl <;> rfl
+  · intro c hc
+    exact lookup_of_mem (List.mem_flatMap.mpr ⟨d, List.mem_append_right _ hd, hc⟩)
 
 /-- 合成プログラムはDecimalの応答が読むOptionと丸めの五方式を宣言し、丸め方式のデータ名を持つ
 構成子は五つの方式に限る。 -/
@@ -101,9 +138,12 @@ theorem rounding_declarations (externals : List (ExternalKey × ExternalDecl)) :
   obtain ⟨decl, member, entry⟩ := List.mem_flatMap.mp mem
   obtain ⟨field, inside, same⟩ := List.mem_map.mp entry
   cases same
-  unfold declarations at member
+  unfold declarations baseDeclarations at member
+  rcases (List.mem_append.mp member).symm with pub | member
+  · have other : ∀ d ∈ ScopeDeclarations.publicDecls, d.name ≠ "RoundingMode" := by decide
+    exact absurd owner (other decl pub)
   rcases List.mem_append.mp member with old | last
-  · have other : ∀ d ∈ StandardOrdinaryCoreBodies.declarations ++ ScopeDeclarations.http.filter
+  · have other : ∀ d ∈ StandardOrdinaryCoreBodies.declarations ++ ScopeDeclarations.base.filter
         (fun d => !(StandardOrdinaryCoreBodies.declarations.any (fun old => old.name == d.name))) ++ [byteOrder],
         d.name ≠ "RoundingMode" := by decide
     exact absurd owner (other decl old)

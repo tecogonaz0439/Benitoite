@@ -8,7 +8,7 @@ def Program.StandardErrorComplete (P : Program) (cs : List (ConName × ConDecl))
   (∀ c cd, (c,cd)∈cs → P.cons c=some cd ∧ cd.data="Scope.ScopeError" ∧ cd.ntys=0) ∧
   (∀ c cd, P.cons c=some cd → cd.data="Scope.ScopeError" → (c,cd)∈cs)
 
-def atErrorPattern : Pat := .con "Scope.ScopeError.At" (List.replicate 7 .var)
+def atErrorPattern : Pat := .con "Scope.ScopeError.At" [.var]
 
 def atErrorConstructors (cs : List (ConName × ConDecl)) : List Pat :=
   cs.map fun (c,cd) => .con c (List.replicate cd.args.length .var)
@@ -39,22 +39,22 @@ theorem matchList_variables {vs : List Val} {n : Nat} (hn : vs.length=n) :
 
 theorem atErrorPattern_typed {P shape} (hs : ResultShape.StandardError P shape) :
     PatTy P atErrorPattern atErrorType atErrorFields := by
-  obtain ⟨_,_,cd,hc,hd,hn,ha⟩ := hs
+  obtain ⟨_,_,⟨cd,hc,hd,hn,ha⟩,_⟩ := hs
   have hargs : cd.args.map (Ty.subst [] [])=atErrorFields := by rw [ha]; rfl
   have hh := PatTy.P_Con (ts := []) hc (by simp [hn])
-    (by intro a hm; rw [ha] at hm; simp only [atErrorFields,List.mem_replicate] at hm; rcases hm with ⟨_,rfl⟩; trivial)
+    (by intro a hm; rw [ha] at hm; simp only [atErrorFields,List.mem_singleton] at hm; subst hm; trivial)
     (by rw [hargs]; exact PatTys.variables P atErrorFields)
-  simpa only [atErrorPattern,atErrorType,hd,atErrorFields,List.length_replicate] using hh
+  simpa only [atErrorPattern,atErrorType,hd,atErrorFields,List.length_singleton,List.replicate] using hh
 
 theorem Detail.match_pattern (detail : AtError) :
     matchVal atErrorPattern (.atError detail)=some detail.values := by
   simp only [atErrorPattern,matchVal,↓reduceIte]
-  exact matchList_variables (by simp [Detail.values,Detail.textFields])
+  exact matchList_variables (n := 1) (by simp [Detail.values])
 
-/-- 腕へ渡す七欄は、実行時の照合と同じvaluesの型付きの列である。 -/
-theorem Detail.match_pattern_typed (P B Ψ Q C Γ Φ) (detail : AtError) :
+/-- 腕へ渡す九欄の公開形は、実行時の照合と同じvaluesの型付きの列である。 -/
+theorem Detail.match_pattern_typed (P B Ψ Q C Γ Φ) (hp : P.HasScopePublic) (detail : AtError) :
     ∃ vs, matchVal atErrorPattern (.atError detail)=some vs ∧ HasTypeVsQ P B Ψ Q C Γ Φ vs atErrorFields :=
-  ⟨detail.values,detail.match_pattern,detail.values_typed P B Ψ Q C Γ Φ⟩
+  ⟨detail.values,detail.match_pattern,detail.values_typed P B Ψ Q C Γ Φ hp⟩
 
 private theorem atError_match_all {P a v cs}
     (hc : P.StandardErrorComplete cs) (hv : Inhabits P a v) :
