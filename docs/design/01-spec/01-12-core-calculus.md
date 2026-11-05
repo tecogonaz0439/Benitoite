@@ -3858,7 +3858,7 @@ C_Use/C_Handle/C_Handle_Fail と C_IssuePathBases/C_CheckAt は次のとおり�
           (.data shape.owner [.scoped name kind index, shape.errorType]) Eff.empty Δ
 ```
 
-At の呼出しの許容条件は、次の判断の全定義である。結果の構成子の形、valKind/valContent、bases と pattern と input の型、固定の範囲の添字を検査する。
+At の呼出しの許容条件は、次の判断の全定義である。結果の構成子の形、valKind/valContent、bases と pattern と input の型、固定の範囲の添字を検査する。pattern は解析済みの範囲の値（`mk`。型 `ScopePattern(kind)`）か文字列（`text`。型 `String`）であり、二つの構成子は pattern の型だけが異なる。
 
 ```lean
   inductive AtCallAdmissible (P : Program) (B : Builtins) :
@@ -3873,7 +3873,18 @@ At の呼出しの許容条件は、次の判断の全定義である。結果�
         HasTypeVQ P B Ψ Q C Γ Φ input inputTy.norm → index.WF 0 →
         (∀ r, index = .fixed r → r.WF ∧ r.Canonical ∧ r.FitsKind kind) →
         AtCallAdmissible P B Ψ Q C Γ Φ kind name shape bases pattern input index
+    | text {Ψ Q C Γ Φ kind name shape bases pattern input index inputTy} :
+        shape.Declared P → B.valKind name = some kind →
+        (∀ v, bases = some v → HasTypeVQ P B Ψ Q C Γ Φ v .pathBases) →
+        HasTypeVQ P B Ψ Q C Γ Φ pattern (.base .string) →
+        (inputTy = .base .string ∧ B.valContent name = none ∨
+          B.valContent name = some inputTy ∧ inputTy.WF 0 0 0 ∧ inputTy.RowsIn (· < 0)) →
+        HasTypeVQ P B Ψ Q C Γ Φ input inputTy.norm → index.WF 0 →
+        (∀ r, index = .fixed r → r.WF ∧ r.Canonical ∧ r.FitsKind kind) →
+        AtCallAdmissible P B Ψ Q C Γ Φ kind name shape bases pattern input index
 ```
+
+At の準備は pattern の値を `parseAtPattern` で範囲の式へ読む。解析済みの範囲の値はそのまま、文字列は `parsePatternText` で読み、どちらも名前の種類・整形式・正規形を確かめる。パスの文字列は、絶対形（`/a/b` の exact と `/a/b/**` の tree。根の木は `/**`）、明示した基準（`{root}`・`{cwd}`・`{home}`・`~`・`{work}`・`{tmp}`）からの形（`{cwd}/data/**` など）、`{secrets}`、裸の相対形（`data/a`・`./data/a`・`.`・`./**`。root からの形）を読み、`..`・途中の `.`・空の要素・余分な末尾の `/`・`~user`・未知の基準の名前を拒否する。ホストの文字列は旧 API の `Http.checkRequestIn` と同じホスト条件の解析（exact・`*.`・`**.`・CIDR）で読み、端点の種類は文字列の書き方を持たない。解析できない文字列は準備の形式不正、基準からの条件で起点の値を渡さない At は準備の未束縛、渡した起点の値が基準を束縛しない At は検査の未束縛の誤りになる。絶対形のパス条件とホスト条件の解析は、旧 API の純粋チェックの解析と同じ定義である。
 
 節の署名は、次の範囲の条件と opSigAt を合わせて決める。組み込みの節は、署名全体の行変数が宣言した行数未満であることも要求する。この構造条件は呼出しの許容条件と同じ上限を読み、節だけを持つコードにも適用する。操作の引数の後に継続を束縛する文脈と、失敗の型変数・値・使用できない継続の位置を持つ文脈を区別する。以下は ClauseRangeIs/ClauseIxOk/ClauseSig/OpSig.continuation/OpSig.context/failureContext の写しである。
 

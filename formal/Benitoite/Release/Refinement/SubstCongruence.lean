@@ -130,7 +130,7 @@ mutual
     | .C_IssuePathBases .. => rfl
     | .C_CheckAt (shape := shape) (bases := bases) ha =>
       obtain ⟨hb,hp,hv⟩ := ha.subst_congr hs (ρ := ρ) (η := η)
-      have hd : shape.Declared P := by cases ha; assumption
+      have hd : shape.Declared P := by cases ha <;> assumption
       have he : substTyValues σ shape.errorType = substTyValues τ shape.errorType := by
         rw [hd.errorType_eq]
         rfl
@@ -163,6 +163,9 @@ mutual
       pattern.subst σ ρ = pattern.subst τ η ∧ input.subst σ ρ = input.subst τ η := by
     match h with
     | .mk hd hk hb hp hi hv hw hr =>
+      refine ⟨?_,HasTypeVQ.subst_congr (ρ := ρ) (η := η) hp hs,HasTypeVQ.subst_congr (ρ := ρ) (η := η) hv hs⟩
+      exact option_map_congr bases (fun v hv => HasTypeVQ.subst_congr (ρ := ρ) (η := η) (hb v hv) hs)
+    | .text hd hk hb hp hi hv hw hr =>
       refine ⟨?_,HasTypeVQ.subst_congr (ρ := ρ) (η := η) hp hs,HasTypeVQ.subst_congr (ρ := ρ) (η := η) hv hs⟩
       exact option_map_congr bases (fun v hv => HasTypeVQ.subst_congr (ρ := ρ) (η := η) (hb v hv) hs)
 

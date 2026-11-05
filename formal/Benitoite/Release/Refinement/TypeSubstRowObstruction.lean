@@ -53,6 +53,11 @@ theorem at_rejects_row {P B Ψ Q C Γ Φ kind name shape bases pattern input ind
     · simp [hc] at hn
     · cases Option.some.inj (hs.symm.trans hc)
       exact input_not_rowfree hr
+  | text _ _ _ _ ht _ _ _ =>
+    rcases ht with ⟨_, hn⟩ | ⟨hs, _, hr⟩
+    · simp [hc] at hn
+    · cases Option.some.inj (hs.symm.trans hc)
+      exact input_not_rowfree hr
 
 def tokenCon : ConDecl := ⟨"Token", 1, []⟩
 def externalProgram : Program := {

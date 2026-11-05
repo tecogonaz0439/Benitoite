@@ -32,7 +32,7 @@ theorem StateTyE.at_index {P B σ Eb q k μ kind name shape bases pattern input 
     (hv : q.code = .checkAt kind name shape bases pattern input index) : index.WF 0 := by
   obtain ⟨_,_,_,_,_,_,_,hq,_⟩ := h
   obtain ⟨_,_,_,hs,_⟩ := hq.at_inputs hv
-  cases hs with | mk _ _ _ _ _ _ hw _ => exact hw
+  cases hs with | mk _ _ _ _ _ _ hw _ => exact hw | text _ _ _ _ _ _ hw _ => exact hw
 
 /-- すべての準備失敗を、同じ Error と既存の保存の葉へ渡す。 -/
 theorem StateTyE.at_prepare_failure {P B σ Eb q k μ kind name shape bases pattern input index detail}

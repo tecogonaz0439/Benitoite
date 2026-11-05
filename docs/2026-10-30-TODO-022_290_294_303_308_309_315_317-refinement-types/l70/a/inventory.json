@@ -1,0 +1,3327 @@
+{
+ "graph": {
+  "bytes": 115387755,
+  "sha256": "0ff5d444161b479edfeaa5e7913d2e4f2b782b7e94aa89a7579282a3383d8500",
+  "declarations": 86150
+ },
+ "modules": {
+  "all": 1092,
+  "default_closure": 1081,
+  "outside_default": [
+   "Benitoite.Release.LegacyCheck"
+  ],
+  "by_group": {
+   "Checked": 6,
+   "Core": 16,
+   "Exchange": 13,
+   "Interval": 66,
+   "Library": 1,
+   "Refinement": 757,
+   "Release": 109,
+   "Scope": 12,
+   "Shared": 3,
+   "Surface": 97,
+   "root": 1
+  }
+ },
+ "table": [
+  {
+   "old": "Benitoite.Release.Ty.Le",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.Ty.LeQ"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.Eff.Covers",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.Eff.Covers"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.HasTypeVQ",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.HasTypeVQ"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.HasTypeVsQ",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.HasTypeVsQ"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.HasTypeEachQ",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.HasTypeEachQ"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.HasTypeCQ",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.HasTypeCQ"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.HasTypeArmsQ",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.HasTypeArmsQ"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.HasTypeClausesQ",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.HasTypeClausesQ"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.HasFailureClause",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.HasFailureClause"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.HasTypeCL",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.HasTypeCL"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.HasTypeV",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.HasTypeV"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.HasTypeVs",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.HasTypeVs"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.HasTypeEach",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.HasTypeEach"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.HasTypeC",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.HasTypeC"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.HasTypeArms",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.HasTypeArms"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.HasTypeClauses",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.HasTypeClauses"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.CellOk",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.CellOk"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.StoreOk",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.StoreOk"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.Ty.lazy",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.Ty.lazy",
+    "Benitoite.Release.Refinement.LocTy.lazy",
+    "Benitoite.Release.Refinement.HasTypeVQ.V_LocLazy",
+    "Benitoite.Release.Refinement.HasTypeCQ.C_Lazy",
+    "Benitoite.Release.Refinement.CellOk"
+   ],
+   "new_present": [
+    true,
+    true,
+    true,
+    true,
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.ContTy",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.ContTy"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.StateTyE",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.StateTyE"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.StateTy",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.StateTy"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.Def.WellTyped",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.Def.WellTyped"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.ImplDecl.WellTyped",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.ImplDecl.WellTyped"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.Program.WellTyped",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.Program.WellTyped"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.Step",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.Step"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.Steps",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.Steps"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.step",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.step"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.Const",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.Const"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.Const.type",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.Const.type"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.Program",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.Program"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.Builtins",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.Builtins"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.NamesWF",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.NamesWF"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.Ty.WF",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.Ty.WF"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.Ty.WFList",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.Ty.WFList"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.Eff.WF",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.Eff.WF"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.Ty.norm",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.Ty.norm"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.Ty.normTys",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.Ty.normTys"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.Eff.norm",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.Eff.norm"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.Ty.Canonical",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.Ty.Canonical"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.Eff.Canonical",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.Eff.Canonical"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.Eff.memFail",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.Eff.memFail"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.tyCompare",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.tyCompare"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.Eff.Sub",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.Eff.Sub"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.SubstEnv",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.SubstEnv"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.Ty.bind",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.Ty.bind"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.Eff.bind",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.Eff.bind"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.PatTy",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.PatTy"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.PatTys",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.PatTys"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.AltsTy",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.AltsTy"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.Inhabits",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.Inhabits"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.InhabitsAll",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.InhabitsAll"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.InhabitsEach",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.InhabitsEach"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.Exhaustive",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.Exhaustive"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.Admissible",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.Admissible"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.PrimitiveAdmissible",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.PrimitiveAdmissible"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.MethodRowsAdmissible",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.MethodRowsAdmissible"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.LocalRef.HasKind",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.LocalRef.HasKind"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.LocalSubstOk",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.LocalSubstOk"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.SubstOk",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.SubstOk"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.ClosedTy",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.ClosedTy"
+   ],
+   "new_present": [
+    true
+   ]
+  },
+  {
+   "old": "Benitoite.Release.BuiltinOnly",
+   "old_present": true,
+   "new": [
+    "Benitoite.Release.Refinement.BuiltinOnly"
+   ],
+   "new_present": [
+    true
+   ]
+  }
+ ],
+ "judgments": [
+  "Benitoite.Release.Admissible",
+  "Benitoite.Release.AltsTy",
+  "Benitoite.Release.BuiltinOnly",
+  "Benitoite.Release.Builtins",
+  "Benitoite.Release.CellOk",
+  "Benitoite.Release.ClosedTy",
+  "Benitoite.Release.Const",
+  "Benitoite.Release.Const.type",
+  "Benitoite.Release.ContTy",
+  "Benitoite.Release.Def.WellTyped",
+  "Benitoite.Release.Eff.Canonical",
+  "Benitoite.Release.Eff.Covers",
+  "Benitoite.Release.Eff.Sub",
+  "Benitoite.Release.Eff.WF",
+  "Benitoite.Release.Eff.bind",
+  "Benitoite.Release.Eff.memFail",
+  "Benitoite.Release.Eff.norm",
+  "Benitoite.Release.Exhaustive",
+  "Benitoite.Release.HasFailureClause",
+  "Benitoite.Release.HasTypeArms",
+  "Benitoite.Release.HasTypeArmsQ",
+  "Benitoite.Release.HasTypeC",
+  "Benitoite.Release.HasTypeCL",
+  "Benitoite.Release.HasTypeCQ",
+  "Benitoite.Release.HasTypeClauses",
+  "Benitoite.Release.HasTypeClausesQ",
+  "Benitoite.Release.HasTypeEach",
+  "Benitoite.Release.HasTypeEachQ",
+  "Benitoite.Release.HasTypeV",
+  "Benitoite.Release.HasTypeVQ",
+  "Benitoite.Release.HasTypeVs",
+  "Benitoite.Release.HasTypeVsQ",
+  "Benitoite.Release.ImplDecl.WellTyped",
+  "Benitoite.Release.Inhabits",
+  "Benitoite.Release.InhabitsAll",
+  "Benitoite.Release.InhabitsEach",
+  "Benitoite.Release.LocalRef.HasKind",
+  "Benitoite.Release.LocalSubstOk",
+  "Benitoite.Release.MethodRowsAdmissible",
+  "Benitoite.Release.NamesWF",
+  "Benitoite.Release.PatTy",
+  "Benitoite.Release.PatTys",
+  "Benitoite.Release.PrimitiveAdmissible",
+  "Benitoite.Release.Program",
+  "Benitoite.Release.Program.WellTyped",
+  "Benitoite.Release.StateTy",
+  "Benitoite.Release.StateTyE",
+  "Benitoite.Release.Step",
+  "Benitoite.Release.Steps",
+  "Benitoite.Release.StoreOk",
+  "Benitoite.Release.SubstEnv",
+  "Benitoite.Release.SubstOk",
+  "Benitoite.Release.Ty.Canonical",
+  "Benitoite.Release.Ty.Le",
+  "Benitoite.Release.Ty.WF",
+  "Benitoite.Release.Ty.WFList",
+  "Benitoite.Release.Ty.bind",
+  "Benitoite.Release.Ty.lazy",
+  "Benitoite.Release.Ty.norm",
+  "Benitoite.Release.Ty.normTys",
+  "Benitoite.Release.step",
+  "Benitoite.Release.tyCompare"
+ ],
+ "old_main": [
+  "Benitoite.Release.effect_soundness",
+  "Benitoite.Release.effect_soundness_noLamNames",
+  "Benitoite.Release.preservation",
+  "Benitoite.Release.progress",
+  "Benitoite.Release.reachable_target_sound",
+  "Benitoite.Release.reachable_target_sound_event",
+  "Benitoite.Release.reachable_target_sound_of_assumptions",
+  "Benitoite.Release.step_sound",
+  "Benitoite.Release.Model.assumptions",
+  "Benitoite.Release.ModelTargets.assumptions",
+  "Benitoite.Release.ModelHttp.assumptions",
+  "Benitoite.Release.step_target_sound"
+ ],
+ "surface_theorems": [
+  "Benitoite.Surface.CheckTables.checkNamed_key_sound",
+  "Benitoite.Surface.CheckTables.checkNamed_sound",
+  "Benitoite.Surface.CheckTables.checkProgram_contracts",
+  "Benitoite.Surface.CheckTables.checkProgram_empty",
+  "Benitoite.Surface.CheckTables.checkProgram_empty_contracts",
+  "Benitoite.Surface.CheckTables.checkProgram_sound",
+  "Benitoite.Surface.CheckTables.checkProgram_sound_contracts",
+  "Benitoite.Surface.CheckTables.checkProgram_under",
+  "Benitoite.Surface.CheckTables.declarations_extend",
+  "Benitoite.Surface.CheckTables.names_complete",
+  "Benitoite.Surface.CheckTables.program_impl_input",
+  "Benitoite.Surface.desugar_typed",
+  "Benitoite.Surface.surface_effect_soundness",
+  "Benitoite.Surface.surface_target_sound"
+ ],
+ "judgment_readers_outside_old": {
+  "Benitoite.Exchange.Builtins": 1,
+  "Benitoite.Exchange.CheckInput": 1,
+  "Benitoite.Exchange.Convert": 3,
+  "Benitoite.Exchange.IntegerExamples": 1,
+  "Benitoite.Interval.ApproxAdapter": 1,
+  "Benitoite.Interval.BudgetAnalysisExamples": 1,
+  "Benitoite.Interval.BudgetAnalyze": 1,
+  "Benitoite.Interval.BudgetChildrenExamples": 1,
+  "Benitoite.Interval.BudgetEnvironment": 1,
+  "Benitoite.Interval.BudgetLocated": 1,
+  "Benitoite.Interval.BudgetNormal": 1,
+  "Benitoite.Interval.BudgetPatterns": 2,
+  "Benitoite.Interval.BudgetRange": 2,
+  "Benitoite.Interval.Environment": 2,
+  "Benitoite.Interval.Eval": 2,
+  "Benitoite.Interval.EvalClosed": 2,
+  "Benitoite.Interval.Examples": 1,
+  "Benitoite.Interval.Exchange": 1,
+  "Benitoite.Interval.Flow": 2,
+  "Benitoite.Interval.Range": 2,
+  "Benitoite.Interval.RangeBorrowed": 1,
+  "Benitoite.Interval.Sound": 2,
+  "Benitoite.Interval.SyntacticReachExamples": 1,
+  "Benitoite.Interval.TablePreservation": 2,
+  "Benitoite.Interval.TypeAdapter": 1,
+  "Benitoite.Release.Refinement.ApproxAdapter": 2,
+  "Benitoite.Release.Refinement.AtPatterns": 1,
+  "Benitoite.Release.Refinement.AtTargets": 1,
+  "Benitoite.Release.Refinement.Context": 6,
+  "Benitoite.Release.Refinement.CurrentSignatureRows": 10,
+  "Benitoite.Release.Refinement.Embedding": 2,
+  "Benitoite.Release.Refinement.ExternalSignatureLeaves": 1,
+  "Benitoite.Release.Refinement.FieldFacts": 1,
+  "Benitoite.Release.Refinement.IntervalConnection": 1,
+  "Benitoite.Release.Refinement.Le": 4,
+  "Benitoite.Release.Refinement.LegacyAdequate": 1,
+  "Benitoite.Release.Refinement.LegacyArmEmbedding": 3,
+  "Benitoite.Release.Refinement.LegacyBuilderEmbedding": 3,
+  "Benitoite.Release.Refinement.LegacyCallInputs": 6,
+  "Benitoite.Release.Refinement.LegacyClauseContexts": 1,
+  "Benitoite.Release.Refinement.LegacyClauseEmbedding": 3,
+  "Benitoite.Release.Refinement.LegacyClauseTables": 3,
+  "Benitoite.Release.Refinement.LegacyCollectionCases": 3,
+  "Benitoite.Release.Refinement.LegacyCompCases": 3,
+  "Benitoite.Release.Refinement.LegacyControlEmbedding": 8,
+  "Benitoite.Release.Refinement.LegacyDeclarationInputs": 2,
+  "Benitoite.Release.Refinement.LegacyDeclarations": 1,
+  "Benitoite.Release.Refinement.LegacyEmbedding": 17,
+  "Benitoite.Release.Refinement.LegacyEmbeddingExamples": 8,
+  "Benitoite.Release.Refinement.LegacyFullEmbeddingExamples": 11,
+  "Benitoite.Release.Refinement.LegacyHandlerEmbedding": 7,
+  "Benitoite.Release.Refinement.LegacyHeldCases": 5,
+  "Benitoite.Release.Refinement.LegacyHeldTyping": 18,
+  "Benitoite.Release.Refinement.LegacyImplementationEmbeddingExamples": 7,
+  "Benitoite.Release.Refinement.LegacyInput": 4,
+  "Benitoite.Release.Refinement.LegacyKinds": 1,
+  "Benitoite.Release.Refinement.LegacyLambdaCase": 4,
+  "Benitoite.Release.Refinement.LegacyMethodEmbedding": 6,
+  "Benitoite.Release.Refinement.LegacyOperationCase": 3,
+  "Benitoite.Release.Refinement.LegacyPatternCoverage": 11,
+  "Benitoite.Release.Refinement.LegacyPatternExamples": 11,
+  "Benitoite.Release.Refinement.LegacyPatternMatch": 2,
+  "Benitoite.Release.Refinement.LegacyPatterns": 7,
+  "Benitoite.Release.Refinement.LegacyPrimitiveCase": 6,
+  "Benitoite.Release.Refinement.LegacyProgramEmbeddingExamples": 6,
+  "Benitoite.Release.Refinement.LegacyProgramTyping": 9,
+  "Benitoite.Release.Refinement.LegacyRangeAlgebra": 7,
+  "Benitoite.Release.Refinement.LegacyRegularity": 24,
+  "Benitoite.Release.Refinement.LegacySequenceEmbedding": 17,
+  "Benitoite.Release.Refinement.LegacyShiftAlgebra": 3,
+  "Benitoite.Release.Refinement.LegacyStateEmbeddingExamples": 17,
+  "Benitoite.Release.Refinement.LegacyStateInputs": 13,
+  "Benitoite.Release.Refinement.LegacyStateTyping": 16,
+  "Benitoite.Release.Refinement.LegacySubCases": 3,
+  "Benitoite.Release.Refinement.LegacyTableFacts": 3,
+  "Benitoite.Release.Refinement.LegacyTables": 3,
+  "Benitoite.Release.Refinement.LegacyTypeAlgebra": 9,
+  "Benitoite.Release.Refinement.LegacyTyping": 2,
+  "Benitoite.Release.Refinement.LegacyValueCases": 3,
+  "Benitoite.Release.Refinement.LegacyValueEmbedding": 17,
+  "Benitoite.Release.Refinement.LegacyValues": 6,
+  "Benitoite.Release.Refinement.MatchFacts": 1,
+  "Benitoite.Release.Refinement.ModelHttp": 2,
+  "Benitoite.Release.Refinement.Normalize": 7,
+  "Benitoite.Release.Refinement.NumericContracts": 1,
+  "Benitoite.Release.Refinement.Order": 2,
+  "Benitoite.Release.Refinement.PathFacts": 1,
+  "Benitoite.Release.Refinement.PatternBindings": 1,
+  "Benitoite.Release.Refinement.PatternBindingsAdequate": 1,
+  "Benitoite.Release.Refinement.PatternBindingsGround": 1,
+  "Benitoite.Release.Refinement.PatternMatchAnnotations": 1,
+  "Benitoite.Release.Refinement.PatternTransport": 1,
+  "Benitoite.Release.Refinement.PatternTypeShift": 1,
+  "Benitoite.Release.Refinement.PatternTypeSubst": 1,
+  "Benitoite.Release.Refinement.Patterns": 1,
+  "Benitoite.Release.Refinement.RuntimeMatch": 1,
+  "Benitoite.Release.Refinement.ScopeResponse": 1,
+  "Benitoite.Release.Refinement.StandardKeySummary": 1,
+  "Benitoite.Release.Refinement.StandardListGetPrecisionGap": 1,
+  "Benitoite.Release.Refinement.StandardModelSafeBodies": 1,
+  "Benitoite.Release.Refinement.StandardSafeBodies": 1,
+  "Benitoite.Release.Refinement.Syntax": 2,
+  "Benitoite.Release.Refinement.TypeArgumentRegularity": 3,
+  "Benitoite.Release.Refinement.Types": 1,
+  "Benitoite.Release.Refinement.ValueBinding": 3,
+  "Benitoite.Scope.CompatExamples": 4,
+  "Benitoite.Scope.TopCompat": 7
+ },
+ "main_readers_outside_old": {
+  "Benitoite.Release.Refinement.CurrentSignatureRows": [
+   "Benitoite.Release.Model.assumptions",
+   "Benitoite.Release.ModelHttp.assumptions",
+   "Benitoite.Release.ModelTargets.assumptions"
+  ]
+ },
+ "c05": {
+  "names": [
+   "Benitoite.Release.Refinement.embedDefWellTyped",
+   "Benitoite.Release.Refinement.embedImplWellTyped",
+   "Benitoite.Release.Refinement.embedProgramWellTyped",
+   "Benitoite.Release.Refinement.embedProgramWellFormed",
+   "Benitoite.Release.Refinement.embedStateTyE",
+   "Benitoite.Release.Refinement.embedContTy",
+   "Benitoite.Release.Refinement.embedStoreOk"
+  ],
+  "modules": [
+   "Benitoite.Release.Refinement.LegacyProgramTyping",
+   "Benitoite.Release.Refinement.LegacyStateTyping"
+  ],
+  "old_release_modules": [
+   "Benitoite.Release.Atom",
+   "Benitoite.Release.BuilderContents",
+   "Benitoite.Release.Effect",
+   "Benitoite.Release.EffectCoverDef",
+   "Benitoite.Release.Lemmas.Canonical",
+   "Benitoite.Release.Lemmas.Inversion",
+   "Benitoite.Release.LocalRef",
+   "Benitoite.Release.NoFail",
+   "Benitoite.Release.Normalize",
+   "Benitoite.Release.Order.Atoms",
+   "Benitoite.Release.Order.Labels",
+   "Benitoite.Release.Order.Range",
+   "Benitoite.Release.Order.SortUnique",
+   "Benitoite.Release.Order.Tree",
+   "Benitoite.Release.Order.Types",
+   "Benitoite.Release.RangeInst",
+   "Benitoite.Release.RangeInstDef",
+   "Benitoite.Release.RangeWF",
+   "Benitoite.Release.Semantics",
+   "Benitoite.Release.Subst",
+   "Benitoite.Release.Syntax",
+   "Benitoite.Release.TypeBounds",
+   "Benitoite.Release.TypeRegularity",
+   "Benitoite.Release.TypeRows",
+   "Benitoite.Release.TypeShift",
+   "Benitoite.Release.TypeSubst",
+   "Benitoite.Release.TypeSubstLemmas",
+   "Benitoite.Release.TypeVariables",
+   "Benitoite.Release.Types",
+   "Benitoite.Release.Typing",
+   "Benitoite.Release.WellFormed"
+  ]
+ },
+ "entries": {
+  "desugarDiff": {
+   "root": "DesugarDiff.Main",
+   "modules": 183,
+   "by_group": {
+    "Checked": 1,
+    "Exchange": 5,
+    "Interval": 5,
+    "Release": 89,
+    "Scope": 6,
+    "Shared": 2,
+    "Surface": 74,
+    "entry": 1
+   },
+   "direct_imports": [
+    "Benitoite.Exchange.Convert"
+   ],
+   "layers": [
+    "Benitoite.Exchange.Convert",
+    "Benitoite.Exchange.Observe",
+    "Benitoite.Exchange.Range",
+    "Benitoite.Exchange.Syntax",
+    "Benitoite.Exchange.Version",
+    "Benitoite.Interval.BindingScope",
+    "Benitoite.Interval.Budget",
+    "Benitoite.Interval.Domain",
+    "Benitoite.Interval.Identity",
+    "Benitoite.Interval.TypeAdapter",
+    "Benitoite.Release.Coverage",
+    "Benitoite.Surface.Check",
+    "Benitoite.Surface.CheckAccept",
+    "Benitoite.Surface.CheckTables",
+    "Benitoite.Surface.CheckTablesSound"
+   ]
+  },
+  "builtinCheck": {
+   "root": "BuiltinCheck.Main",
+   "modules": 184,
+   "by_group": {
+    "Checked": 1,
+    "Exchange": 6,
+    "Interval": 5,
+    "Release": 89,
+    "Scope": 6,
+    "Shared": 2,
+    "Surface": 74,
+    "entry": 1
+   },
+   "direct_imports": [
+    "Benitoite.Exchange.Builtins"
+   ],
+   "layers": [
+    "Benitoite.Exchange.Builtins",
+    "Benitoite.Exchange.Convert",
+    "Benitoite.Exchange.Observe",
+    "Benitoite.Exchange.Range",
+    "Benitoite.Exchange.Syntax",
+    "Benitoite.Exchange.Version",
+    "Benitoite.Interval.BindingScope",
+    "Benitoite.Interval.Budget",
+    "Benitoite.Interval.Domain",
+    "Benitoite.Interval.Identity",
+    "Benitoite.Interval.TypeAdapter",
+    "Benitoite.Release.Coverage",
+    "Benitoite.Surface.Check",
+    "Benitoite.Surface.CheckAccept",
+    "Benitoite.Surface.CheckTables",
+    "Benitoite.Surface.CheckTablesSound"
+   ]
+  },
+  "coverageDiff": {
+   "root": "CoverageDiff.Main",
+   "modules": 184,
+   "by_group": {
+    "Checked": 1,
+    "Exchange": 5,
+    "Interval": 5,
+    "Release": 90,
+    "Scope": 6,
+    "Shared": 2,
+    "Surface": 74,
+    "entry": 1
+   },
+   "direct_imports": [
+    "Benitoite.Release.CoverageShow",
+    "Benitoite.Exchange.Convert",
+    "Lean"
+   ],
+   "layers": [
+    "Benitoite.Exchange.Convert",
+    "Benitoite.Exchange.Observe",
+    "Benitoite.Exchange.Range",
+    "Benitoite.Exchange.Syntax",
+    "Benitoite.Exchange.Version",
+    "Benitoite.Interval.BindingScope",
+    "Benitoite.Interval.Budget",
+    "Benitoite.Interval.Domain",
+    "Benitoite.Interval.Identity",
+    "Benitoite.Interval.TypeAdapter",
+    "Benitoite.Release.Coverage",
+    "Benitoite.Release.CoverageShow",
+    "Benitoite.Surface.Check",
+    "Benitoite.Surface.CheckAccept",
+    "Benitoite.Surface.CheckTables",
+    "Benitoite.Surface.CheckTablesSound"
+   ]
+  },
+  "coverageProgramDiff": {
+   "root": "CoverageProgramDiff.Main",
+   "modules": 185,
+   "by_group": {
+    "Checked": 1,
+    "Exchange": 6,
+    "Interval": 5,
+    "Release": 90,
+    "Scope": 6,
+    "Shared": 2,
+    "Surface": 74,
+    "entry": 1
+   },
+   "direct_imports": [
+    "Benitoite.Exchange.Builtins",
+    "Benitoite.Release.CoverageShow",
+    "Lean"
+   ],
+   "layers": [
+    "Benitoite.Exchange.Builtins",
+    "Benitoite.Exchange.Convert",
+    "Benitoite.Exchange.Observe",
+    "Benitoite.Exchange.Range",
+    "Benitoite.Exchange.Syntax",
+    "Benitoite.Exchange.Version",
+    "Benitoite.Interval.BindingScope",
+    "Benitoite.Interval.Budget",
+    "Benitoite.Interval.Domain",
+    "Benitoite.Interval.Identity",
+    "Benitoite.Interval.TypeAdapter",
+    "Benitoite.Release.Coverage",
+    "Benitoite.Release.CoverageShow",
+    "Benitoite.Surface.Check",
+    "Benitoite.Surface.CheckAccept",
+    "Benitoite.Surface.CheckTables",
+    "Benitoite.Surface.CheckTablesSound"
+   ]
+  },
+  "surfaceCheck": {
+   "root": "SurfaceCheck.Main",
+   "modules": 185,
+   "by_group": {
+    "Checked": 1,
+    "Exchange": 7,
+    "Interval": 5,
+    "Release": 89,
+    "Scope": 6,
+    "Shared": 2,
+    "Surface": 74,
+    "entry": 1
+   },
+   "direct_imports": [
+    "Benitoite.Exchange.CheckInput"
+   ],
+   "layers": [
+    "Benitoite.Exchange.Builtins",
+    "Benitoite.Exchange.CheckInput",
+    "Benitoite.Exchange.Convert",
+    "Benitoite.Exchange.Observe",
+    "Benitoite.Exchange.Range",
+    "Benitoite.Exchange.Syntax",
+    "Benitoite.Exchange.Version",
+    "Benitoite.Interval.BindingScope",
+    "Benitoite.Interval.Budget",
+    "Benitoite.Interval.Domain",
+    "Benitoite.Interval.Identity",
+    "Benitoite.Interval.TypeAdapter",
+    "Benitoite.Release.Coverage",
+    "Benitoite.Surface.Check",
+    "Benitoite.Surface.CheckAccept",
+    "Benitoite.Surface.CheckTables",
+    "Benitoite.Surface.CheckTablesSound"
+   ]
+  },
+  "surfaceCheckAll": {
+   "root": "SurfaceCheck.All",
+   "modules": 188,
+   "by_group": {
+    "Checked": 1,
+    "Exchange": 7,
+    "Interval": 5,
+    "Release": 89,
+    "Scope": 6,
+    "Shared": 2,
+    "Surface": 74,
+    "entry": 4
+   },
+   "direct_imports": [
+    "SurfaceCheck.Validation"
+   ],
+   "layers": [
+    "Benitoite.Exchange.Builtins",
+    "Benitoite.Exchange.CheckInput",
+    "Benitoite.Exchange.Convert",
+    "Benitoite.Exchange.Observe",
+    "Benitoite.Exchange.Range",
+    "Benitoite.Exchange.Syntax",
+    "Benitoite.Exchange.Version",
+    "Benitoite.Interval.BindingScope",
+    "Benitoite.Interval.Budget",
+    "Benitoite.Interval.Domain",
+    "Benitoite.Interval.Identity",
+    "Benitoite.Interval.TypeAdapter",
+    "Benitoite.Release.Coverage",
+    "Benitoite.Surface.Check",
+    "Benitoite.Surface.CheckAccept",
+    "Benitoite.Surface.CheckTables",
+    "Benitoite.Surface.CheckTablesSound"
+   ]
+  },
+  "intervalDiff": {
+   "root": "IntervalDiff.Main",
+   "modules": 230,
+   "by_group": {
+    "Checked": 2,
+    "Exchange": 5,
+    "Interval": 50,
+    "Release": 89,
+    "Scope": 6,
+    "Shared": 3,
+    "Surface": 74,
+    "entry": 1
+   },
+   "direct_imports": [
+    "Benitoite.Interval.Exchange"
+   ],
+   "layers": [
+    "Benitoite.Exchange.Convert",
+    "Benitoite.Exchange.Observe",
+    "Benitoite.Exchange.Range",
+    "Benitoite.Exchange.Syntax",
+    "Benitoite.Exchange.Version",
+    "Benitoite.Interval.Analyze",
+    "Benitoite.Interval.ApproxAdapter",
+    "Benitoite.Interval.Arithmetic",
+    "Benitoite.Interval.BindingScope",
+    "Benitoite.Interval.Budget",
+    "Benitoite.Interval.BudgetAnalyze",
+    "Benitoite.Interval.BudgetBody",
+    "Benitoite.Interval.BudgetCallReach",
+    "Benitoite.Interval.BudgetCause",
+    "Benitoite.Interval.BudgetChildren",
+    "Benitoite.Interval.BudgetCount",
+    "Benitoite.Interval.BudgetDiscover",
+    "Benitoite.Interval.BudgetDiscoverProof",
+    "Benitoite.Interval.BudgetDomainScan",
+    "Benitoite.Interval.BudgetEnvironment",
+    "Benitoite.Interval.BudgetIndependent",
+    "Benitoite.Interval.BudgetIndependentPosition",
+    "Benitoite.Interval.BudgetIndependentRun",
+    "Benitoite.Interval.BudgetIndependentSound",
+    "Benitoite.Interval.BudgetLocated",
+    "Benitoite.Interval.BudgetNormal",
+    "Benitoite.Interval.BudgetPatterns",
+    "Benitoite.Interval.BudgetProof",
+    "Benitoite.Interval.BudgetRange",
+    "Benitoite.Interval.BudgetRangeBorrow",
+    "Benitoite.Interval.BudgetReach",
+    "Benitoite.Interval.BudgetScan",
+    "Benitoite.Interval.BudgetSelect",
+    "Benitoite.Interval.BudgetSound",
+    "Benitoite.Interval.BudgetTraversal",
+    "Benitoite.Interval.BudgetWalk",
+    "Benitoite.Interval.BudgetWhole",
+    "Benitoite.Interval.CallReach",
+    "Benitoite.Interval.CallReachSound",
+    "Benitoite.Interval.CallTables",
+    "Benitoite.Interval.Domain",
+    "Benitoite.Interval.Environment",
+    "Benitoite.Interval.Eval",
+    "Benitoite.Interval.EvalClosed",
+    "Benitoite.Interval.Exchange",
+    "Benitoite.Interval.FixedDomain",
+    "Benitoite.Interval.Flow",
+    "Benitoite.Interval.Identity",
+    "Benitoite.Interval.Range",
+    "Benitoite.Interval.RangeBorrowed",
+    "Benitoite.Interval.RangeState",
+    "Benitoite.Interval.Sound",
+    "Benitoite.Interval.SyntacticReach",
+    "Benitoite.Interval.TablePreservation",
+    "Benitoite.Interval.TypeAdapter",
+    "Benitoite.Release.Coverage",
+    "Benitoite.Surface.Check",
+    "Benitoite.Surface.CheckAccept",
+    "Benitoite.Surface.CheckTables",
+    "Benitoite.Surface.CheckTablesSound"
+   ]
+  }
+ },
+ "entry_refs": {
+  "BuiltinCheck.Main": [
+   "Benitoite.Exchange.Builtins",
+   "Benitoite.Release.BoundSummary",
+   "Benitoite.Release.dataSummaries",
+   "Benitoite.Release.summariesConverged"
+  ],
+  "CoverageDiff.Main": [
+   "Benitoite.Exchange.BuiltinData",
+   "Benitoite.Exchange.Convert",
+   "Benitoite.Exchange.DataTypeInfo",
+   "Benitoite.Exchange.Eff",
+   "Benitoite.Exchange.checkNames",
+   "Benitoite.Exchange.coverageView",
+   "Benitoite.Exchange.exchangeJson",
+   "Benitoite.Exchange.validateBuiltinShape",
+   "Benitoite.Exchange.validateDataTypes",
+   "Benitoite.Release.CoverageShow"
+  ],
+  "CoverageProgramDiff.Main": [
+   "Benitoite.Exchange.Builtins",
+   "Benitoite.Exchange.Ty",
+   "Benitoite.Release.Arm",
+   "Benitoite.Release.CoverageShow"
+  ],
+  "DesugarDiff.Main": [
+   "Benitoite.Exchange.Convert",
+   "Benitoite.Exchange.Expr"
+  ],
+  "IntervalDiff.Main": [
+   "Benitoite.Interval.Exchange"
+  ],
+  "SurfaceCheck.All": [],
+  "SurfaceCheck.Batch": [
+   "Benitoite.Exchange.BuiltinInput",
+   "Benitoite.Exchange.CheckInput",
+   "Benitoite.Exchange.Input",
+   "Benitoite.Exchange.OperatorEntry",
+   "Benitoite.Exchange.countNonTopRanges",
+   "Benitoite.Exchange.encodeCoverFailure",
+   "Benitoite.Exchange.sidecarVersion",
+   "Benitoite.Surface.Check.Error",
+   "Benitoite.Surface.Check.Input",
+   "Benitoite.Surface.Check.Result",
+   "Benitoite.Surface.Check.checkBlock",
+   "Benitoite.Surface.Check.checkDef",
+   "Benitoite.Surface.Check.checkImpl",
+   "Benitoite.Surface.CheckAccept.acceptDef",
+   "Benitoite.Surface.CheckAccept.acceptMethod",
+   "Benitoite.Surface.CheckTables",
+   "Benitoite.Surface.CheckTables.lookup",
+   "Benitoite.Surface.CheckTools",
+   "Benitoite.Surface.Expr",
+   "Benitoite.Surface.ScopeAccept.allOk"
+  ],
+  "SurfaceCheck.Main": [
+   "Benitoite.Exchange.CheckInput",
+   "Benitoite.Surface.Check.Error",
+   "Benitoite.Surface.Check.Input",
+   "Benitoite.Surface.Check.checkDef",
+   "Benitoite.Surface.CheckAccept.AcceptInput",
+   "Benitoite.Surface.CheckAccept.EntryError",
+   "Benitoite.Surface.CheckAccept.acceptDef",
+   "Benitoite.Surface.CheckAccept.checkProgramAccepted",
+   "Benitoite.Surface.CheckTables"
+  ],
+  "SurfaceCheck.Validation": [
+   "Benitoite.Exchange.CheckInput",
+   "Benitoite.Exchange.filterMap_toRelease_fromAtom",
+   "Benitoite.Exchange.fromAtom",
+   "Benitoite.Surface.Check",
+   "Benitoite.Surface.CheckAccept.AcceptInput.noRules",
+   "Benitoite.Surface.CheckTables",
+   "Benitoite.Surface.CheckTools"
+  ],
+  "SurfaceCheck.Walk": [
+   "Benitoite.Exchange.CheckInput",
+   "Benitoite.Surface.Check",
+   "Benitoite.Surface.CheckTools"
+  ]
+ },
+ "layers": {
+  "Benitoite.Exchange.BuilderExamples": {
+   "kind": "移植（旧の判断・旧表層の検査を読む）",
+   "unit": "L70.40a・.40b（例）",
+   "lines": 52,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 4,
+    "Benitoite.Release.Types": 2,
+    "Benitoite.Surface.Desugar": 1,
+    "Benitoite.Release.Syntax": 1
+   }
+  },
+  "Benitoite.Exchange.Builtins": {
+   "kind": "移植（旧の判断・旧表層の検査を読む）",
+   "unit": "L70.40b",
+   "lines": 305,
+   "old_modules": {
+    "Benitoite.Release.Typing": 33,
+    "Benitoite.Release.Types": 22,
+    "Benitoite.Surface.CheckTables": 11,
+    "Benitoite.Release.BuiltinTable": 8,
+    "Benitoite.Release.Syntax": 5,
+    "Benitoite.Surface.FormatSpec": 2,
+    "Benitoite.Release.Atom": 2,
+    "Benitoite.Surface.CheckTools": 1,
+    "Benitoite.Surface.CheckRanges": 1
+   }
+  },
+  "Benitoite.Exchange.CheckInput": {
+   "kind": "移植（旧の判断・旧表層の検査を読む）",
+   "unit": "L70.40b",
+   "lines": 236,
+   "old_modules": {
+    "Benitoite.Surface.CheckTables": 34,
+    "Benitoite.Surface.Check": 13,
+    "Benitoite.Surface.Syntax": 10,
+    "Benitoite.Release.Types": 9,
+    "Benitoite.Release.Syntax": 8,
+    "Benitoite.Surface.CheckAccept": 7,
+    "Benitoite.Release.BuiltinTable": 2,
+    "Benitoite.Release.Coverage": 2,
+    "Benitoite.Release.Atom": 2,
+    "Benitoite.Surface.CheckTools": 1,
+    "Benitoite.Release.Typing": 1
+   }
+  },
+  "Benitoite.Exchange.Convert": {
+   "kind": "移植（旧の判断・旧表層の検査を読む）",
+   "unit": "L70.40a",
+   "lines": 1031,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 175,
+    "Benitoite.Release.Syntax": 140,
+    "Benitoite.Release.Types": 59,
+    "Benitoite.Surface.FormatSpec": 25,
+    "Benitoite.Release.Atom": 8,
+    "Benitoite.Surface.Desugar": 5,
+    "Benitoite.Surface.CheckTools": 3,
+    "Benitoite.Surface.AdmissibleCheck": 3,
+    "Benitoite.Release.Coverage": 2,
+    "Benitoite.Release.Finite": 2,
+    "Benitoite.Release.TypeSupport": 2,
+    "Benitoite.Release.Effect": 1,
+    "Benitoite.Release.Order.Atoms": 1,
+    "Benitoite.Surface.CheckTables": 1,
+    "Benitoite.Surface.NoFailCheck": 1
+   }
+  },
+  "Benitoite.Exchange.FormatExamples": {
+   "kind": "移植（旧表層の構文を読む。判断は読まない）",
+   "unit": "L70.40a・.40b（例）",
+   "lines": 20,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 1
+   }
+  },
+  "Benitoite.Exchange.IntegerExamples": {
+   "kind": "移植（旧の判断・旧表層の検査を読む）",
+   "unit": "L70.40a・.40b（例）",
+   "lines": 61,
+   "old_modules": {
+    "Benitoite.Release.Syntax": 72,
+    "Benitoite.Release.Types": 10,
+    "Benitoite.Surface.Syntax": 5,
+    "Benitoite.Surface.Desugar": 1
+   }
+  },
+  "Benitoite.Exchange.Observe": {
+   "kind": "移植（旧の判断・旧表層の検査を読む）",
+   "unit": "L70.40b",
+   "lines": 291,
+   "old_modules": {
+    "Benitoite.Surface.ScopeState": 14,
+    "Benitoite.Surface.CheckAccept": 9,
+    "Benitoite.Release.Atom": 7,
+    "Benitoite.Surface.ScopeAccept": 6,
+    "Benitoite.Surface.Check": 3,
+    "Benitoite.Release.Types": 2,
+    "Benitoite.Surface.ScopeSound": 2,
+    "Benitoite.Release.Syntax": 1,
+    "Benitoite.Release.EffectCover": 1
+   }
+  },
+  "Benitoite.Exchange.ObserveExamples": {
+   "kind": "移植（旧の判断・旧表層の検査を読む）",
+   "unit": "L70.40a・.40b（例）",
+   "lines": 109,
+   "old_modules": {
+    "Benitoite.Surface.ScopeState": 2,
+    "Benitoite.Release.Atom": 2
+   }
+  },
+  "Benitoite.Exchange.Range": {
+   "kind": "継承（旧を読まない）",
+   "unit": "L70.40a",
+   "lines": 506,
+   "old_modules": {}
+  },
+  "Benitoite.Exchange.RangeExamples": {
+   "kind": "継承（旧 Release の共有の定義だけを読む）",
+   "unit": "L70.40a・.40b（例）",
+   "lines": 119,
+   "old_modules": {
+    "Benitoite.Release.Types": 3,
+    "Benitoite.Release.Atom": 3
+   }
+  },
+  "Benitoite.Exchange.Refined": {
+   "kind": "継承（旧を読まない）",
+   "unit": "L70.40b",
+   "lines": 121,
+   "old_modules": {}
+  },
+  "Benitoite.Exchange.Syntax": {
+   "kind": "継承（旧を読まない）",
+   "unit": "L70.40a",
+   "lines": 854,
+   "old_modules": {}
+  },
+  "Benitoite.Exchange.Version": {
+   "kind": "継承（旧 Release の共有の定義だけを読む）",
+   "unit": "L70.42・.44（旧版の読み分けを除く）",
+   "lines": 354,
+   "old_modules": {
+    "Benitoite.Release.Coverage": 1,
+    "Benitoite.Release.Types": 1
+   }
+  },
+  "Benitoite.Interval.Analyze": {
+   "kind": "移植（旧表層の構文を読む。判断は読まない）",
+   "unit": "L70.43",
+   "lines": 340,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 107,
+    "Benitoite.Release.Types": 14,
+    "Benitoite.Release.Syntax": 3
+   }
+  },
+  "Benitoite.Interval.ApproxAdapter": {
+   "kind": "移植（旧の判断・旧表層の検査を読む）",
+   "unit": "L70.43",
+   "lines": 154,
+   "old_modules": {
+    "Benitoite.Release.Types": 46,
+    "Benitoite.Release.Atom": 1
+   }
+  },
+  "Benitoite.Interval.Arithmetic": {
+   "kind": "移植（旧表層の構文を読む。判断は読まない）",
+   "unit": "L70.43",
+   "lines": 1045,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 3
+   }
+  },
+  "Benitoite.Interval.BindingScope": {
+   "kind": "継承（旧を読まない）",
+   "unit": "L70.43",
+   "lines": 50,
+   "old_modules": {}
+  },
+  "Benitoite.Interval.Budget": {
+   "kind": "継承（旧を読まない）",
+   "unit": "L70.43",
+   "lines": 391,
+   "old_modules": {}
+  },
+  "Benitoite.Interval.BudgetAnalysisExamples": {
+   "kind": "移植（旧の判断・旧表層の検査を読む）",
+   "unit": "L70.43",
+   "lines": 275,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 87,
+    "Benitoite.Release.Types": 47,
+    "Benitoite.Release.Syntax": 3,
+    "Benitoite.Release.Atom": 1
+   }
+  },
+  "Benitoite.Interval.BudgetAnalyze": {
+   "kind": "移植（旧の判断・旧表層の検査を読む）",
+   "unit": "L70.43",
+   "lines": 455,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 108,
+    "Benitoite.Release.Types": 51,
+    "Benitoite.Release.Syntax": 3,
+    "Benitoite.Release.Atom": 1
+   }
+  },
+  "Benitoite.Interval.BudgetBody": {
+   "kind": "移植（旧表層の構文を読む。判断は読まない）",
+   "unit": "L70.43",
+   "lines": 105,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 3,
+    "Benitoite.Release.Types": 1
+   }
+  },
+  "Benitoite.Interval.BudgetCallReach": {
+   "kind": "移植（旧表層の構文を読む。判断は読まない）",
+   "unit": "L70.43",
+   "lines": 745,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 107,
+    "Benitoite.Release.Types": 11,
+    "Benitoite.Release.Syntax": 3
+   }
+  },
+  "Benitoite.Interval.BudgetCause": {
+   "kind": "移植（旧表層の構文を読む。判断は読まない）",
+   "unit": "L70.43",
+   "lines": 572,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 12,
+    "Benitoite.Release.Types": 7
+   }
+  },
+  "Benitoite.Interval.BudgetChildren": {
+   "kind": "移植（旧表層の構文を読む。判断は読まない）",
+   "unit": "L70.43",
+   "lines": 164,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 71,
+    "Benitoite.Release.Types": 9,
+    "Benitoite.Release.Syntax": 2
+   }
+  },
+  "Benitoite.Interval.BudgetChildrenExamples": {
+   "kind": "移植（旧の判断・旧表層の検査を読む）",
+   "unit": "L70.43",
+   "lines": 147,
+   "old_modules": {
+    "Benitoite.Release.Types": 25,
+    "Benitoite.Surface.Syntax": 10,
+    "Benitoite.Release.Syntax": 1,
+    "Benitoite.Release.Atom": 1
+   }
+  },
+  "Benitoite.Interval.BudgetCount": {
+   "kind": "移植（旧表層の構文を読む。判断は読まない）",
+   "unit": "L70.43",
+   "lines": 188,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 124,
+    "Benitoite.Release.Types": 8,
+    "Benitoite.Release.Syntax": 3
+   }
+  },
+  "Benitoite.Interval.BudgetDiscover": {
+   "kind": "移植（旧表層の構文を読む。判断は読まない）",
+   "unit": "L70.43",
+   "lines": 273,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 100,
+    "Benitoite.Release.Types": 9,
+    "Benitoite.Release.Syntax": 3
+   }
+  },
+  "Benitoite.Interval.BudgetDiscoverProof": {
+   "kind": "移植（旧表層の構文を読む。判断は読まない）",
+   "unit": "L70.43",
+   "lines": 426,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 107,
+    "Benitoite.Release.Types": 9,
+    "Benitoite.Release.Syntax": 3
+   }
+  },
+  "Benitoite.Interval.BudgetDiscoveryExamples": {
+   "kind": "移植（旧表層の構文を読む。判断は読まない）",
+   "unit": "L70.43",
+   "lines": 56,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 12,
+    "Benitoite.Release.Types": 5,
+    "Benitoite.Release.Syntax": 3,
+    "Benitoite.Release.Effect": 1
+   }
+  },
+  "Benitoite.Interval.BudgetDomainScan": {
+   "kind": "移植（旧表層の構文を読む。判断は読まない）",
+   "unit": "L70.43",
+   "lines": 149,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 28,
+    "Benitoite.Release.Types": 8,
+    "Benitoite.Release.Syntax": 3
+   }
+  },
+  "Benitoite.Interval.BudgetEnvironment": {
+   "kind": "移植（旧の判断・旧表層の検査を読む）",
+   "unit": "L70.43",
+   "lines": 596,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 99,
+    "Benitoite.Release.Types": 50,
+    "Benitoite.Release.Syntax": 3,
+    "Benitoite.Release.Atom": 1
+   }
+  },
+  "Benitoite.Interval.BudgetExamples": {
+   "kind": "継承（旧を読まない）",
+   "unit": "L70.43",
+   "lines": 84,
+   "old_modules": {}
+  },
+  "Benitoite.Interval.BudgetIndependent": {
+   "kind": "移植（旧表層の構文を読む。判断は読まない）",
+   "unit": "L70.43",
+   "lines": 315,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 91,
+    "Benitoite.Release.Types": 8,
+    "Benitoite.Release.Syntax": 3
+   }
+  },
+  "Benitoite.Interval.BudgetIndependentExamples": {
+   "kind": "移植（旧表層の構文を読む。判断は読まない）",
+   "unit": "L70.43",
+   "lines": 102,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 7,
+    "Benitoite.Release.Types": 2
+   }
+  },
+  "Benitoite.Interval.BudgetIndependentPosition": {
+   "kind": "移植（旧表層の構文を読む。判断は読まない）",
+   "unit": "L70.43",
+   "lines": 597,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 111,
+    "Benitoite.Release.Types": 12,
+    "Benitoite.Release.Syntax": 2
+   }
+  },
+  "Benitoite.Interval.BudgetIndependentRun": {
+   "kind": "継承（旧を読まない）",
+   "unit": "L70.43",
+   "lines": 40,
+   "old_modules": {}
+  },
+  "Benitoite.Interval.BudgetIndependentSound": {
+   "kind": "移植（旧表層の構文を読む。判断は読まない）",
+   "unit": "L70.43",
+   "lines": 599,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 112,
+    "Benitoite.Release.Types": 11,
+    "Benitoite.Release.Syntax": 3
+   }
+  },
+  "Benitoite.Interval.BudgetLocated": {
+   "kind": "移植（旧の判断・旧表層の検査を読む）",
+   "unit": "L70.43",
+   "lines": 782,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 121,
+    "Benitoite.Release.Types": 45,
+    "Benitoite.Release.Syntax": 3
+   }
+  },
+  "Benitoite.Interval.BudgetNormal": {
+   "kind": "移植（旧の判断・旧表層の検査を読む）",
+   "unit": "L70.43",
+   "lines": 1468,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 123,
+    "Benitoite.Release.Types": 45,
+    "Benitoite.Release.Syntax": 6,
+    "Benitoite.Surface.Lemmas.ScopedSupport": 1,
+    "Benitoite.Release.Subst": 1
+   }
+  },
+  "Benitoite.Interval.BudgetPatterns": {
+   "kind": "移植（旧の判断・旧表層の検査を読む）",
+   "unit": "L70.43",
+   "lines": 660,
+   "old_modules": {
+    "Benitoite.Release.Types": 45,
+    "Benitoite.Surface.Syntax": 36,
+    "Benitoite.Release.Syntax": 7,
+    "Benitoite.Release.Subst": 3,
+    "Benitoite.Release.Lemmas.Rename": 2,
+    "Benitoite.Surface.Lemmas.ScopedSupport": 1,
+    "Benitoite.Release.Atom": 1
+   }
+  },
+  "Benitoite.Interval.BudgetProof": {
+   "kind": "移植（旧表層の構文を読む。判断は読まない）",
+   "unit": "L70.43",
+   "lines": 300,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 1
+   }
+  },
+  "Benitoite.Interval.BudgetRange": {
+   "kind": "移植（旧の判断・旧表層の検査を読む）",
+   "unit": "L70.43",
+   "lines": 701,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 107,
+    "Benitoite.Release.Types": 51,
+    "Benitoite.Release.Syntax": 5,
+    "Benitoite.Release.Atom": 1
+   }
+  },
+  "Benitoite.Interval.BudgetRangeBorrow": {
+   "kind": "移植（旧表層の構文を読む。判断は読まない）",
+   "unit": "L70.43",
+   "lines": 281,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 19,
+    "Benitoite.Release.Types": 8,
+    "Benitoite.Release.Syntax": 3
+   }
+  },
+  "Benitoite.Interval.BudgetReach": {
+   "kind": "移植（旧表層の構文を読む。判断は読まない）",
+   "unit": "L70.43",
+   "lines": 387,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 9,
+    "Benitoite.Release.Types": 3
+   }
+  },
+  "Benitoite.Interval.BudgetScan": {
+   "kind": "継承（旧を読まない）",
+   "unit": "L70.43",
+   "lines": 310,
+   "old_modules": {}
+  },
+  "Benitoite.Interval.BudgetScanExamples": {
+   "kind": "移植（旧表層の構文を読む。判断は読まない）",
+   "unit": "L70.43",
+   "lines": 143,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 7,
+    "Benitoite.Release.Types": 2
+   }
+  },
+  "Benitoite.Interval.BudgetSelect": {
+   "kind": "移植（旧表層の構文を読む。判断は読まない）",
+   "unit": "L70.43",
+   "lines": 37,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 17,
+    "Benitoite.Release.Types": 1
+   }
+  },
+  "Benitoite.Interval.BudgetSound": {
+   "kind": "移植（旧表層の構文を読む。判断は読まない）",
+   "unit": "L70.43",
+   "lines": 2106,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 83,
+    "Benitoite.Release.Types": 12,
+    "Benitoite.Release.Syntax": 4,
+    "Benitoite.Release.Subst": 1
+   }
+  },
+  "Benitoite.Interval.BudgetTraversal": {
+   "kind": "移植（旧表層の構文を読む。判断は読まない）",
+   "unit": "L70.43",
+   "lines": 828,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 122,
+    "Benitoite.Release.Types": 12,
+    "Benitoite.Release.Syntax": 3
+   }
+  },
+  "Benitoite.Interval.BudgetWalk": {
+   "kind": "移植（旧表層の構文を読む。判断は読まない）",
+   "unit": "L70.43",
+   "lines": 191,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 93,
+    "Benitoite.Release.Types": 8,
+    "Benitoite.Release.Syntax": 3
+   }
+  },
+  "Benitoite.Interval.BudgetWhole": {
+   "kind": "移植（旧表層の構文を読む。判断は読まない）",
+   "unit": "L70.43",
+   "lines": 324,
+   "old_modules": {
+    "Benitoite.Release.Types": 3,
+    "Benitoite.Surface.Syntax": 3
+   }
+  },
+  "Benitoite.Interval.BudgetWholeExamples": {
+   "kind": "移植（旧表層の構文を読む。判断は読まない）",
+   "unit": "L70.43",
+   "lines": 96,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 9,
+    "Benitoite.Release.Types": 3
+   }
+  },
+  "Benitoite.Interval.CallReach": {
+   "kind": "移植（旧表層の構文を読む。判断は読まない）",
+   "unit": "L70.43",
+   "lines": 365,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 174,
+    "Benitoite.Release.Types": 12,
+    "Benitoite.Release.Syntax": 5
+   }
+  },
+  "Benitoite.Interval.CallReachIndependent": {
+   "kind": "移植（旧表層の構文を読む。判断は読まない）",
+   "unit": "L70.43",
+   "lines": 508,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 112,
+    "Benitoite.Release.Types": 11,
+    "Benitoite.Release.Syntax": 3
+   }
+  },
+  "Benitoite.Interval.CallReachSound": {
+   "kind": "移植（旧表層の構文を読む。判断は読まない）",
+   "unit": "L70.43",
+   "lines": 124,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 5,
+    "Benitoite.Release.Types": 2
+   }
+  },
+  "Benitoite.Interval.CallReachWhole": {
+   "kind": "移植（旧表層の構文を読む。判断は読まない）",
+   "unit": "L70.43",
+   "lines": 118,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 1
+   }
+  },
+  "Benitoite.Interval.CallTables": {
+   "kind": "移植（旧表層の構文を読む。判断は読まない）",
+   "unit": "L70.43",
+   "lines": 24,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 4
+   }
+  },
+  "Benitoite.Interval.Domain": {
+   "kind": "継承（旧を読まない）",
+   "unit": "L70.43",
+   "lines": 49,
+   "old_modules": {}
+  },
+  "Benitoite.Interval.DomainExamples": {
+   "kind": "移植（旧表層の構文を読む。判断は読まない）",
+   "unit": "L70.43",
+   "lines": 231,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 14,
+    "Benitoite.Release.Types": 14
+   }
+  },
+  "Benitoite.Interval.Environment": {
+   "kind": "移植（旧の判断・旧表層の検査を読む）",
+   "unit": "L70.43",
+   "lines": 720,
+   "old_modules": {
+    "Benitoite.Release.Types": 47,
+    "Benitoite.Surface.Syntax": 20,
+    "Benitoite.Release.Syntax": 12,
+    "Benitoite.Release.Lemmas.Rename": 6,
+    "Benitoite.Release.Subst": 3,
+    "Benitoite.Release.Atom": 1
+   }
+  },
+  "Benitoite.Interval.Eval": {
+   "kind": "移植（旧の判断・旧表層の検査を読む）",
+   "unit": "L70.43",
+   "lines": 2666,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 149,
+    "Benitoite.Release.Types": 49,
+    "Benitoite.Release.Syntax": 21,
+    "Benitoite.Release.Lemmas.Rename": 6,
+    "Benitoite.Release.Subst": 3,
+    "Benitoite.Surface.Lemmas.ScopedSupport": 2,
+    "Benitoite.Release.Atom": 1
+   }
+  },
+  "Benitoite.Interval.EvalClosed": {
+   "kind": "移植（旧の判断・旧表層の検査を読む）",
+   "unit": "L70.43",
+   "lines": 1046,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 154,
+    "Benitoite.Release.Types": 56,
+    "Benitoite.Release.Syntax": 17,
+    "Benitoite.Release.Lemmas.Rename": 5,
+    "Benitoite.Release.Subst": 4,
+    "Benitoite.Release.Atom": 1
+   }
+  },
+  "Benitoite.Interval.Examples": {
+   "kind": "移植（旧の判断・旧表層の検査を読む）",
+   "unit": "L70.43",
+   "lines": 1448,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 55,
+    "Benitoite.Release.Types": 45,
+    "Benitoite.Release.Subst": 1,
+    "Benitoite.Release.Atom": 1
+   }
+  },
+  "Benitoite.Interval.Exchange": {
+   "kind": "移植（旧の判断・旧表層の検査を読む）",
+   "unit": "L70.43",
+   "lines": 1079,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 88,
+    "Benitoite.Release.Types": 48,
+    "Benitoite.Release.Syntax": 3,
+    "Benitoite.Release.Atom": 1
+   }
+  },
+  "Benitoite.Interval.ExchangeExamples": {
+   "kind": "移植（旧表層の構文を読む。判断は読まない）",
+   "unit": "L70.43",
+   "lines": 309,
+   "old_modules": {
+    "Benitoite.Release.Types": 1,
+    "Benitoite.Surface.Syntax": 1
+   }
+  },
+  "Benitoite.Interval.FixedDomain": {
+   "kind": "継承（旧 Release の共有の定義だけを読む）",
+   "unit": "L70.43",
+   "lines": 174,
+   "old_modules": {
+    "Benitoite.Release.Types": 5
+   }
+  },
+  "Benitoite.Interval.FixedDomainExamples": {
+   "kind": "移植（旧表層の構文を読む。判断は読まない）",
+   "unit": "L70.43",
+   "lines": 91,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 9,
+    "Benitoite.Release.Types": 6
+   }
+  },
+  "Benitoite.Interval.Flow": {
+   "kind": "移植（旧の判断・旧表層の検査を読む）",
+   "unit": "L70.43",
+   "lines": 1654,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 124,
+    "Benitoite.Release.Types": 51,
+    "Benitoite.Release.Syntax": 41,
+    "Benitoite.Release.Lemmas.Canonical": 5,
+    "Benitoite.Release.Subst": 4,
+    "Benitoite.Release.Lemmas.Rename": 2,
+    "Benitoite.Release.Atom": 1
+   }
+  },
+  "Benitoite.Interval.FlowExamples": {
+   "kind": "移植（旧表層の構文を読む。判断は読まない）",
+   "unit": "L70.43",
+   "lines": 226,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 17,
+    "Benitoite.Release.Types": 3
+   }
+  },
+  "Benitoite.Interval.Identity": {
+   "kind": "移植（旧表層の構文を読む。判断は読まない）",
+   "unit": "L70.43",
+   "lines": 387,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 125,
+    "Benitoite.Release.Types": 8,
+    "Benitoite.Release.Syntax": 3
+   }
+  },
+  "Benitoite.Interval.IdentityExamples": {
+   "kind": "移植（旧表層の構文を読む。判断は読まない）",
+   "unit": "L70.43",
+   "lines": 160,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 27,
+    "Benitoite.Release.Types": 5,
+    "Benitoite.Release.Effect": 1,
+    "Benitoite.Release.Syntax": 1
+   }
+  },
+  "Benitoite.Interval.Range": {
+   "kind": "移植（旧の判断・旧表層の検査を読む）",
+   "unit": "L70.43",
+   "lines": 1700,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 128,
+    "Benitoite.Release.Types": 52,
+    "Benitoite.Release.Syntax": 5,
+    "Benitoite.Release.Subst": 1,
+    "Benitoite.Release.Atom": 1
+   }
+  },
+  "Benitoite.Interval.RangeBorrowed": {
+   "kind": "移植（旧の判断・旧表層の検査を読む）",
+   "unit": "L70.43",
+   "lines": 276,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 77,
+    "Benitoite.Release.Types": 49,
+    "Benitoite.Release.Syntax": 3,
+    "Benitoite.Surface.Lemmas.ScopedSupport": 1,
+    "Benitoite.Release.Atom": 1
+   }
+  },
+  "Benitoite.Interval.RangeState": {
+   "kind": "継承（旧を読まない）",
+   "unit": "L70.43",
+   "lines": 142,
+   "old_modules": {}
+  },
+  "Benitoite.Interval.Sound": {
+   "kind": "移植（旧の判断・旧表層の検査を読む）",
+   "unit": "L70.43",
+   "lines": 4101,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 159,
+    "Benitoite.Release.Types": 50,
+    "Benitoite.Release.Syntax": 8,
+    "Benitoite.Release.Subst": 2,
+    "Benitoite.Release.Atom": 1
+   }
+  },
+  "Benitoite.Interval.SyntacticReach": {
+   "kind": "移植（旧表層の構文を読む。判断は読まない）",
+   "unit": "L70.43",
+   "lines": 283,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 152,
+    "Benitoite.Release.Types": 9,
+    "Benitoite.Release.Syntax": 4
+   }
+  },
+  "Benitoite.Interval.SyntacticReachExamples": {
+   "kind": "移植（旧の判断・旧表層の検査を読む）",
+   "unit": "L70.43",
+   "lines": 116,
+   "old_modules": {
+    "Benitoite.Release.Types": 43,
+    "Benitoite.Surface.Syntax": 10,
+    "Benitoite.Release.Atom": 1
+   }
+  },
+  "Benitoite.Interval.TablePreservation": {
+   "kind": "移植（旧の判断・旧表層の検査を読む）",
+   "unit": "L70.43",
+   "lines": 159,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 100,
+    "Benitoite.Release.Types": 48,
+    "Benitoite.Release.Syntax": 4,
+    "Benitoite.Release.Atom": 1,
+    "Benitoite.Release.Subst": 1
+   }
+  },
+  "Benitoite.Interval.TypeAdapter": {
+   "kind": "移植（旧の判断・旧表層の検査を読む）",
+   "unit": "L70.43",
+   "lines": 31,
+   "old_modules": {
+    "Benitoite.Release.Types": 41,
+    "Benitoite.Release.Atom": 1
+   }
+  },
+  "Benitoite.Surface.CheckTables": {
+   "kind": "削除（旧表層・Core そのもの）",
+   "unit": "L70.40b",
+   "lines": 231,
+   "old_modules": {
+    "Benitoite.Surface.CheckTables": 148,
+    "Benitoite.Surface.Syntax": 30,
+    "Benitoite.Surface.Check": 22,
+    "Benitoite.Release.Syntax": 14,
+    "Benitoite.Release.Types": 13,
+    "Benitoite.Release.Typing": 10,
+    "Benitoite.Release.BuiltinTable": 7,
+    "Benitoite.Surface.CheckTools": 3,
+    "Benitoite.Release.Coverage": 2,
+    "Benitoite.Release.Atom": 2
+   }
+  },
+  "Benitoite.Surface.CheckTablesSound": {
+   "kind": "削除（旧表層・Core そのもの）",
+   "unit": "L70.40b",
+   "lines": 110,
+   "old_modules": {
+    "Benitoite.Surface.CheckTables": 45,
+    "Benitoite.Release.Syntax": 11,
+    "Benitoite.Surface.CheckTablesSound": 10,
+    "Benitoite.Surface.Check": 10,
+    "Benitoite.Surface.Syntax": 9,
+    "Benitoite.Release.Types": 7,
+    "Benitoite.Surface.CheckTools": 7,
+    "Benitoite.Release.Typing": 5,
+    "Benitoite.Release.BuiltinTable": 4,
+    "Benitoite.Surface.CheckSupport": 3,
+    "Benitoite.Surface.CheckLemmas": 2,
+    "Benitoite.Release.Coverage": 2,
+    "Benitoite.Release.Atom": 1,
+    "Benitoite.Surface.CheckSoundDicts": 1
+   }
+  },
+  "Benitoite.Surface.CheckAccept": {
+   "kind": "削除（旧表層・Core そのもの）",
+   "unit": "L70.31b",
+   "lines": 291,
+   "old_modules": {
+    "Benitoite.Surface.Syntax": 82,
+    "Benitoite.Surface.CheckAccept": 72,
+    "Benitoite.Surface.ScopeState": 38,
+    "Benitoite.Surface.CheckTables": 28,
+    "Benitoite.Surface.ScopeAccept": 23,
+    "Benitoite.Surface.Check": 11,
+    "Benitoite.Release.Types": 9,
+    "Benitoite.Surface.ScopeLower": 7,
+    "Benitoite.Surface.CheckProgramSound": 6,
+    "Benitoite.Surface.CheckSupport": 5,
+    "Benitoite.Release.Syntax": 4,
+    "Benitoite.Surface.ScopeOccurrence": 3,
+    "Benitoite.Release.BuiltinTable": 2,
+    "Benitoite.Release.Atom": 2,
+    "Benitoite.Release.Typing": 1,
+    "Benitoite.Surface.CheckLemmas": 1,
+    "Benitoite.Surface.Typing": 1,
+    "Benitoite.Surface.ScopeSound": 1,
+    "Benitoite.Surface.CheckSoundDicts": 1
+   }
+  },
+  "Benitoite.Release.CoverageShow": {
+   "kind": "継承（旧 Release の共有の定義だけを読む）",
+   "unit": "L70.40b",
+   "lines": 149,
+   "old_modules": {
+    "Benitoite.Release.CoverageShow": 42,
+    "Benitoite.Release.Coverage": 17,
+    "Benitoite.Release.Types": 2
+   }
+  }
+ },
+ "refinement_reads_surface": {
+  "Benitoite.Release.Refinement.ExternalLeafSelection": [
+   "Benitoite.Surface.recordFields"
+  ],
+  "Benitoite.Release.Refinement.ExternalSurfaceLeaves": [
+   "Benitoite.Surface.fieldAt",
+   "Benitoite.Surface.recordFields",
+   "Benitoite.Surface.recordFields_getElem"
+  ],
+  "Benitoite.Release.Refinement.FirstFailure": [
+   "Benitoite.Surface.BinOp",
+   "Benitoite.Surface.BinOp.add",
+   "Benitoite.Surface.BinOp.ctorIdx",
+   "Benitoite.Surface.BinOp.div",
+   "Benitoite.Surface.BinOp.eq",
+   "Benitoite.Surface.BinOp.ge",
+   "Benitoite.Surface.BinOp.gt",
+   "Benitoite.Surface.BinOp.intDiv",
+   "Benitoite.Surface.BinOp.le",
+   "Benitoite.Surface.BinOp.lt",
+   "Benitoite.Surface.BinOp.mod",
+   "Benitoite.Surface.BinOp.mul",
+   "Benitoite.Surface.BinOp.ne",
+   "Benitoite.Surface.BinOp.rec",
+   "Benitoite.Surface.BinOp.sub",
+   "Benitoite.Surface.Expr",
+   "Benitoite.Surface.Expr.binary",
+   "Benitoite.Surface.Expr.local",
+   "Benitoite.Surface.Expr.neg",
+   "Benitoite.Surface.OpPrim",
+   "Benitoite.Surface.Operator",
+   "Benitoite.Surface.Operator.binary",
+   "Benitoite.Surface.Operator.casesOn",
+   "Benitoite.Surface.Operator.neg",
+   "Benitoite.Surface.Position.other",
+   "Benitoite.Surface.boundVars",
+   "Benitoite.Surface.desugarExpr",
+   "Benitoite.Surface.letChain"
+  ],
+  "Benitoite.Release.Refinement.IntervalConnection": [
+   "Benitoite.Surface.Alternative",
+   "Benitoite.Surface.Alternative.pat",
+   "Benitoite.Surface.Alternative.slots",
+   "Benitoite.Surface.Alternative.toCore",
+   "Benitoite.Surface.Alternative.toCoreList",
+   "Benitoite.Surface.Arms",
+   "Benitoite.Surface.Arms.cons",
+   "Benitoite.Surface.BindKind",
+   "Benitoite.Surface.Block",
+   "Benitoite.Surface.Block.bind",
+   "Benitoite.Surface.Expr",
+   "Benitoite.Surface.Expr.returnE",
+   "Benitoite.Surface.OpPrim",
+   "Benitoite.Surface.Pattern",
+   "Benitoite.Surface.Pattern.boolean",
+   "Benitoite.Surface.Pattern.casesOn",
+   "Benitoite.Surface.Pattern.character",
+   "Benitoite.Surface.Pattern.con",
+   "Benitoite.Surface.Pattern.con.noConfusion",
+   "Benitoite.Surface.Pattern.ctorIdx",
+   "Benitoite.Surface.Pattern.integer",
+   "Benitoite.Surface.Pattern.list",
+   "Benitoite.Surface.Pattern.negInt",
+   "Benitoite.Surface.Pattern.range",
+   "Benitoite.Surface.Pattern.rec",
+   "Benitoite.Surface.Pattern.record",
+   "Benitoite.Surface.Pattern.string",
+   "Benitoite.Surface.Pattern.toCore",
+   "Benitoite.Surface.Pattern.unit",
+   "Benitoite.Surface.Pattern.var",
+   "Benitoite.Surface.Pattern.wild",
+   "Benitoite.Surface.Position",
+   "Benitoite.Surface.Position.other",
+   "Benitoite.Surface.desugarArms",
+   "Benitoite.Surface.desugarBlock",
+   "Benitoite.Surface.desugarExpr"
+  ],
+  "Benitoite.Release.Refinement.IntervalConnectionExamples": [
+   "Benitoite.Surface.Alternative",
+   "Benitoite.Surface.Alternative.mk",
+   "Benitoite.Surface.Alternative.pat",
+   "Benitoite.Surface.Alternative.slots",
+   "Benitoite.Surface.Alternative.toCore",
+   "Benitoite.Surface.Alternative.toCoreList",
+   "Benitoite.Surface.Arms",
+   "Benitoite.Surface.Arms.cons",
+   "Benitoite.Surface.Arms.nil",
+   "Benitoite.Surface.BindKind.bind",
+   "Benitoite.Surface.Block",
+   "Benitoite.Surface.Block.bind",
+   "Benitoite.Surface.Block.last",
+   "Benitoite.Surface.Expr",
+   "Benitoite.Surface.Expr.literal",
+   "Benitoite.Surface.Expr.local",
+   "Benitoite.Surface.Expr.neg",
+   "Benitoite.Surface.Expr.resume",
+   "Benitoite.Surface.Expr.returnE",
+   "Benitoite.Surface.Expr.unit",
+   "Benitoite.Surface.Exprs",
+   "Benitoite.Surface.Literal.boolean",
+   "Benitoite.Surface.OpPrim",
+   "Benitoite.Surface.Operator",
+   "Benitoite.Surface.Pattern",
+   "Benitoite.Surface.Pattern.con",
+   "Benitoite.Surface.Pattern.toCore",
+   "Benitoite.Surface.Pattern.var",
+   "Benitoite.Surface.Pattern.wild",
+   "Benitoite.Surface.Position.other",
+   "Benitoite.Surface.desugarArms",
+   "Benitoite.Surface.desugarBlock"
+  ],
+  "Benitoite.Release.Refinement.IntervalControlLeaves": [
+   "Benitoite.Surface.Expr.literal",
+   "Benitoite.Surface.Expr.returnE",
+   "Benitoite.Surface.Literal.boolean"
+  ],
+  "Benitoite.Release.Refinement.IntervalFailure": [
+   "Benitoite.Surface.Alternative",
+   "Benitoite.Surface.Alternative.pat",
+   "Benitoite.Surface.Arms",
+   "Benitoite.Surface.Arms.cons",
+   "Benitoite.Surface.Arms.nil",
+   "Benitoite.Surface.BinOp",
+   "Benitoite.Surface.BinOp.add",
+   "Benitoite.Surface.BinOp.ctorIdx",
+   "Benitoite.Surface.BinOp.intDiv",
+   "Benitoite.Surface.BinOp.mod",
+   "Benitoite.Surface.BinOp.mul",
+   "Benitoite.Surface.BinOp.sub",
+   "Benitoite.Surface.BindKind",
+   "Benitoite.Surface.Block",
+   "Benitoite.Surface.Block.bind",
+   "Benitoite.Surface.Block.bindPat",
+   "Benitoite.Surface.Block.builderBind",
+   "Benitoite.Surface.Block.discard",
+   "Benitoite.Surface.Block.empty",
+   "Benitoite.Surface.Block.last",
+   "Benitoite.Surface.Block.lastBind",
+   "Benitoite.Surface.Block.lastDiscard",
+   "Benitoite.Surface.Block.lastPat",
+   "Benitoite.Surface.Block.seq",
+   "Benitoite.Surface.Clauses",
+   "Benitoite.Surface.DictEv",
+   "Benitoite.Surface.Expr",
+   "Benitoite.Surface.Expr._sizeOf_inst",
+   "Benitoite.Surface.Expr.and",
+   "Benitoite.Surface.Expr.binary",
+   "Benitoite.Surface.Expr.block",
+   "Benitoite.Surface.Expr.builderOp",
+   "Benitoite.Surface.Expr.call",
+   "Benitoite.Surface.Expr.conCall",
+   "Benitoite.Surface.Expr.conValue",
+   "Benitoite.Surface.Expr.constE",
+   "Benitoite.Surface.Expr.ctorIdx",
+   "Benitoite.Surface.Expr.elseIf",
+   "Benitoite.Surface.Expr.funDicts",
+   "Benitoite.Surface.Expr.funName",
+   "Benitoite.Surface.Expr.handleE",
+   "Benitoite.Surface.Expr.handleFail",
+   "Benitoite.Surface.Expr.ifOnly",
+   "Benitoite.Surface.Expr.interpolation",
+   "Benitoite.Surface.Expr.ite",
+   "Benitoite.Surface.Expr.lam",
+   "Benitoite.Surface.Expr.lazyE",
+   "Benitoite.Surface.Expr.list",
+   "Benitoite.Surface.Expr.listSpread",
+   "Benitoite.Surface.Expr.literal",
+   "Benitoite.Surface.Expr.literal.noConfusion",
+   "Benitoite.Surface.Expr.local",
+   "Benitoite.Surface.Expr.matchE",
+   "Benitoite.Surface.Expr.methName",
+   "Benitoite.Surface.Expr.neg",
+   "Benitoite.Surface.Expr.negDecimal",
+   "Benitoite.Surface.Expr.negFloat",
+   "Benitoite.Surface.Expr.negFloat32",
+   "Benitoite.Surface.Expr.negInt",
+   "Benitoite.Surface.Expr.negInteger16",
+   "Benitoite.Surface.Expr.negInteger32",
+   "Benitoite.Surface.Expr.negInteger8",
+   "Benitoite.Surface.Expr.not",
+   "Benitoite.Surface.Expr.nullCon",
+   "Benitoite.Surface.Expr.opDicts",
+   "Benitoite.Surface.Expr.opName",
+   "Benitoite.Surface.Expr.or",
+   "Benitoite.Surface.Expr.paren",
+   "Benitoite.Surface.Expr.partialCall",
+   "Benitoite.Surface.Expr.partialCon",
+   "Benitoite.Surface.Expr.pipe",
+   "Benitoite.Surface.Expr.primName",
+   "Benitoite.Surface.Expr.raise",
+   "Benitoite.Surface.Expr.rec",
+   "Benitoite.Surface.Expr.record",
+   "Benitoite.Surface.Expr.recordUpdate",
+   "Benitoite.Surface.Expr.resume",
+   "Benitoite.Surface.Expr.returnE",
+   "Benitoite.Surface.Expr.tryOption",
+   "Benitoite.Surface.Expr.tryOptionDie",
+   "Benitoite.Surface.Expr.tryResult",
+   "Benitoite.Surface.Expr.tryResultDie",
+   "Benitoite.Surface.Expr.unit",
+   "Benitoite.Surface.Expr.withE",
+   "Benitoite.Surface.Exprs",
+   "Benitoite.Surface.Exprs._sizeOf_inst",
+   "Benitoite.Surface.Exprs.casesOn",
+   "Benitoite.Surface.Exprs.cons",
+   "Benitoite.Surface.Exprs.cons.sizeOf_spec",
+   "Benitoite.Surface.Exprs.nil",
+   "Benitoite.Surface.HoleArgs",
+   "Benitoite.Surface.InterpPart",
+   "Benitoite.Surface.Literal",
+   "Benitoite.Surface.Literal.boolean",
+   "Benitoite.Surface.Literal.byte",
+   "Benitoite.Surface.Literal.character",
+   "Benitoite.Surface.Literal.ctorIdx",
+   "Benitoite.Surface.Literal.decimal",
+   "Benitoite.Surface.Literal.float",
+   "Benitoite.Surface.Literal.float32",
+   "Benitoite.Surface.Literal.integer",
+   "Benitoite.Surface.Literal.integer16",
+   "Benitoite.Surface.Literal.integer32",
+   "Benitoite.Surface.Literal.integer8",
+   "Benitoite.Surface.Literal.rec",
+   "Benitoite.Surface.Literal.string",
+   "Benitoite.Surface.Literal.unsignedInteger16",
+   "Benitoite.Surface.Literal.unsignedInteger32",
+   "Benitoite.Surface.Literal.unsignedInteger64",
+   "Benitoite.Surface.Pattern",
+   "Benitoite.Surface.Pattern.toCore",
+   "Benitoite.Surface.fieldAt",
+   "Benitoite.Surface.instDecidableEqBinOp"
+  ],
+  "Benitoite.Release.Refinement.IntervalFlowLeaves": [
+   "Benitoite.Surface.Alternative",
+   "Benitoite.Surface.Alternative.mk",
+   "Benitoite.Surface.Alternative.pat",
+   "Benitoite.Surface.Alternative.slots",
+   "Benitoite.Surface.Arms",
+   "Benitoite.Surface.Arms.cons",
+   "Benitoite.Surface.Arms.nil",
+   "Benitoite.Surface.BindKind",
+   "Benitoite.Surface.BindKind.bind",
+   "Benitoite.Surface.Block",
+   "Benitoite.Surface.Block.bind",
+   "Benitoite.Surface.Block.bindPat",
+   "Benitoite.Surface.Block.builderBind",
+   "Benitoite.Surface.Block.discard",
+   "Benitoite.Surface.Block.empty",
+   "Benitoite.Surface.Block.last",
+   "Benitoite.Surface.Block.lastBind",
+   "Benitoite.Surface.Block.lastDiscard",
+   "Benitoite.Surface.Block.lastPat",
+   "Benitoite.Surface.Block.seq",
+   "Benitoite.Surface.Expr",
+   "Benitoite.Surface.Expr.block",
+   "Benitoite.Surface.Expr.elseIf",
+   "Benitoite.Surface.Expr.ifOnly",
+   "Benitoite.Surface.Expr.ite",
+   "Benitoite.Surface.Expr.literal",
+   "Benitoite.Surface.Expr.local",
+   "Benitoite.Surface.Expr.matchE",
+   "Benitoite.Surface.Expr.returnE",
+   "Benitoite.Surface.Expr.unit",
+   "Benitoite.Surface.Literal.boolean",
+   "Benitoite.Surface.Literal.integer",
+   "Benitoite.Surface.Literal.integer8",
+   "Benitoite.Surface.Pattern",
+   "Benitoite.Surface.Pattern.toCore",
+   "Benitoite.Surface.Pattern.wild"
+  ],
+  "Benitoite.Release.Refinement.StandardIntegerFailure": [
+   "Benitoite.Surface.BinOp",
+   "Benitoite.Surface.BinOp.ctorIdx",
+   "Benitoite.Surface.BinOp.intDiv",
+   "Benitoite.Surface.BinOp.mod",
+   "Benitoite.Surface.instDecidableEqBinOp"
+  ]
+ },
+ "refinement_reads_old_models": {
+  "Benitoite.Release.Refinement.CurrentSignatureRows": [
+   "Benitoite.Release.Examples",
+   "Benitoite.Release.Model",
+   "Benitoite.Release.ModelHttp",
+   "Benitoite.Release.ModelTargets"
+  ],
+  "Benitoite.Release.Refinement.ModelHttp": [
+   "Benitoite.Release.ModelHttp"
+  ]
+ },
+ "needed_surface_by_kept": [
+  "Benitoite.Surface.AdmissibleCheck",
+  "Benitoite.Surface.Check",
+  "Benitoite.Surface.CheckAccept",
+  "Benitoite.Surface.CheckRanges",
+  "Benitoite.Surface.CheckTables",
+  "Benitoite.Surface.CheckTools",
+  "Benitoite.Surface.Desugar",
+  "Benitoite.Surface.FormatSpec",
+  "Benitoite.Surface.Lemmas.Calls",
+  "Benitoite.Surface.Lemmas.ScopedSupport",
+  "Benitoite.Surface.NoFailCheck",
+  "Benitoite.Surface.ScopeAccept",
+  "Benitoite.Surface.ScopeSound",
+  "Benitoite.Surface.ScopeState",
+  "Benitoite.Surface.Syntax"
+ ],
+ "keep_release": {
+  "Benitoite.Release.ApproxAdapter": [
+   "直接の読者: Refinement"
+  ],
+  "Benitoite.Release.Assumptions": [
+   "閉包の内側（旧 Release どうしの依存）"
+  ],
+  "Benitoite.Release.Atom": [
+   "埋め込みの定義域（C05 の閉包）",
+   "直接の読者: Exchange・Interval・Refinement・Scope"
+  ],
+  "Benitoite.Release.BuilderContents": [
+   "埋め込みの定義域（C05 の閉包）",
+   "直接の読者: Refinement"
+  ],
+  "Benitoite.Release.BuilderExec": [
+   "直接の読者: Refinement"
+  ],
+  "Benitoite.Release.BuiltinTable": [
+   "直接の読者: Exchange・Refinement"
+  ],
+  "Benitoite.Release.Coverage": [
+   "直接の読者: Exchange・Refinement"
+  ],
+  "Benitoite.Release.Effect": [
+   "埋め込みの定義域（C05 の閉包）",
+   "直接の読者: Exchange・Interval・Refinement・Scope"
+  ],
+  "Benitoite.Release.EffectCover": [
+   "直接の読者: Exchange"
+  ],
+  "Benitoite.Release.EffectCoverDef": [
+   "埋め込みの定義域（C05 の閉包）",
+   "直接の読者: Refinement"
+  ],
+  "Benitoite.Release.Examples": [
+   "直接の読者: Refinement"
+  ],
+  "Benitoite.Release.Finite": [
+   "直接の読者: Exchange"
+  ],
+  "Benitoite.Release.Lemmas.Basic": [
+   "直接の読者: Refinement"
+  ],
+  "Benitoite.Release.Lemmas.Canonical": [
+   "埋め込みの定義域（C05 の閉包）",
+   "直接の読者: Interval・Refinement"
+  ],
+  "Benitoite.Release.Lemmas.Closed": [
+   "直接の読者: Refinement"
+  ],
+  "Benitoite.Release.Lemmas.Inversion": [
+   "埋め込みの定義域（C05 の閉包）",
+   "直接の読者: Refinement"
+  ],
+  "Benitoite.Release.Lemmas.PresHelpers": [
+   "直接の読者: Refinement"
+  ],
+  "Benitoite.Release.Lemmas.Rename": [
+   "直接の読者: Interval・Refinement"
+  ],
+  "Benitoite.Release.Lemmas.TySubst": [
+   "直接の読者: Refinement"
+  ],
+  "Benitoite.Release.LocalRef": [
+   "埋め込みの定義域（C05 の閉包）",
+   "直接の読者: Refinement"
+  ],
+  "Benitoite.Release.Model": [
+   "閉包の内側（旧 Release どうしの依存）"
+  ],
+  "Benitoite.Release.ModelHttp": [
+   "直接の読者: Refinement"
+  ],
+  "Benitoite.Release.NoFail": [
+   "埋め込みの定義域（C05 の閉包）",
+   "直接の読者: Refinement"
+  ],
+  "Benitoite.Release.Normalize": [
+   "埋め込みの定義域（C05 の閉包）",
+   "直接の読者: Refinement・Scope"
+  ],
+  "Benitoite.Release.Order.Atoms": [
+   "埋め込みの定義域（C05 の閉包）",
+   "直接の読者: Exchange・Refinement・Scope"
+  ],
+  "Benitoite.Release.Order.FiniteAtoms": [
+   "直接の読者: Refinement"
+  ],
+  "Benitoite.Release.Order.Labels": [
+   "埋め込みの定義域（C05 の閉包）",
+   "直接の読者: Refinement"
+  ],
+  "Benitoite.Release.Order.Range": [
+   "埋め込みの定義域（C05 の閉包）",
+   "直接の読者: Refinement"
+  ],
+  "Benitoite.Release.Order.SortUnique": [
+   "埋め込みの定義域（C05 の閉包）",
+   "直接の読者: Refinement・Scope"
+  ],
+  "Benitoite.Release.Order.Tree": [
+   "埋め込みの定義域（C05 の閉包）",
+   "直接の読者: Refinement"
+  ],
+  "Benitoite.Release.Order.Types": [
+   "埋め込みの定義域（C05 の閉包）",
+   "直接の読者: Refinement・Scope"
+  ],
+  "Benitoite.Release.RangeInst": [
+   "埋め込みの定義域（C05 の閉包）",
+   "直接の読者: Refinement"
+  ],
+  "Benitoite.Release.RangeInstDef": [
+   "埋め込みの定義域（C05 の閉包）",
+   "直接の読者: Refinement"
+  ],
+  "Benitoite.Release.RangeWF": [
+   "埋め込みの定義域（C05 の閉包）",
+   "直接の読者: Refinement"
+  ],
+  "Benitoite.Release.Semantics": [
+   "埋め込みの定義域（C05 の閉包）",
+   "直接の読者: Refinement"
+  ],
+  "Benitoite.Release.Subst": [
+   "埋め込みの定義域（C05 の閉包）",
+   "直接の読者: Interval・Refinement"
+  ],
+  "Benitoite.Release.Syntax": [
+   "埋め込みの定義域（C05 の閉包）",
+   "直接の読者: Exchange・Interval・Refinement"
+  ],
+  "Benitoite.Release.TargetTable": [
+   "直接の読者: Refinement"
+  ],
+  "Benitoite.Release.TypeBounds": [
+   "埋め込みの定義域（C05 の閉包）",
+   "直接の読者: Refinement"
+  ],
+  "Benitoite.Release.TypeComposition": [
+   "閉包の内側（旧 Release どうしの依存）"
+  ],
+  "Benitoite.Release.TypeRegularity": [
+   "埋め込みの定義域（C05 の閉包）",
+   "直接の読者: Refinement"
+  ],
+  "Benitoite.Release.TypeRows": [
+   "埋め込みの定義域（C05 の閉包）",
+   "直接の読者: Refinement"
+  ],
+  "Benitoite.Release.TypeShift": [
+   "埋め込みの定義域（C05 の閉包）",
+   "直接の読者: Refinement"
+  ],
+  "Benitoite.Release.TypeSubst": [
+   "埋め込みの定義域（C05 の閉包）",
+   "直接の読者: Refinement"
+  ],
+  "Benitoite.Release.TypeSubstLemmas": [
+   "埋め込みの定義域（C05 の閉包）",
+   "直接の読者: Refinement"
+  ],
+  "Benitoite.Release.TypeSupport": [
+   "直接の読者: Exchange"
+  ],
+  "Benitoite.Release.TypeVariables": [
+   "埋め込みの定義域（C05 の閉包）",
+   "直接の読者: Refinement"
+  ],
+  "Benitoite.Release.Types": [
+   "埋め込みの定義域（C05 の閉包）",
+   "直接の読者: Exchange・Interval・Refinement・Scope"
+  ],
+  "Benitoite.Release.Typing": [
+   "埋め込みの定義域（C05 の閉包）",
+   "直接の読者: Exchange・Refinement"
+  ],
+  "Benitoite.Release.WellFormed": [
+   "埋め込みの定義域（C05 の閉包）",
+   "直接の読者: Refinement"
+  ]
+ },
+ "delete": {
+  "Core": [
+   "Benitoite.Core.Assumptions",
+   "Benitoite.Core.Examples",
+   "Benitoite.Core.Lemmas.Basic",
+   "Benitoite.Core.Lemmas.Canonical",
+   "Benitoite.Core.Lemmas.Compose",
+   "Benitoite.Core.Lemmas.Inversion",
+   "Benitoite.Core.Lemmas.Preservation",
+   "Benitoite.Core.Lemmas.Rename",
+   "Benitoite.Core.Lemmas.SubstTyping",
+   "Benitoite.Core.Lemmas.TySubst",
+   "Benitoite.Core.Semantics",
+   "Benitoite.Core.Subst",
+   "Benitoite.Core.Syntax",
+   "Benitoite.Core.Theorems",
+   "Benitoite.Core.Typing",
+   "Benitoite.Core.WellFormed"
+  ],
+  "Surface": [
+   "Benitoite.Surface.AdmissibleCheck",
+   "Benitoite.Surface.BuilderCheck",
+   "Benitoite.Surface.BuilderExamples",
+   "Benitoite.Surface.BuilderFree",
+   "Benitoite.Surface.BuilderLower",
+   "Benitoite.Surface.BuilderSyntax",
+   "Benitoite.Surface.Builders",
+   "Benitoite.Surface.Check",
+   "Benitoite.Surface.CheckAccept",
+   "Benitoite.Surface.CheckAcceptExamples",
+   "Benitoite.Surface.CheckComputeAtoms",
+   "Benitoite.Surface.CheckComputeCalls",
+   "Benitoite.Surface.CheckComputeCases",
+   "Benitoite.Surface.CheckComputeControl",
+   "Benitoite.Surface.CheckComputePipe",
+   "Benitoite.Surface.CheckComputeSound",
+   "Benitoite.Surface.CheckCounterexamples",
+   "Benitoite.Surface.CheckDictSupport",
+   "Benitoite.Surface.CheckExamples",
+   "Benitoite.Surface.CheckInduction",
+   "Benitoite.Surface.CheckLemmas",
+   "Benitoite.Surface.CheckPatterns",
+   "Benitoite.Surface.CheckPredicates",
+   "Benitoite.Surface.CheckProgramSound",
+   "Benitoite.Surface.CheckRanges",
+   "Benitoite.Surface.CheckSound",
+   "Benitoite.Surface.CheckSoundBasicExpr",
+   "Benitoite.Surface.CheckSoundCalls",
+   "Benitoite.Surface.CheckSoundCollections",
+   "Benitoite.Surface.CheckSoundControl",
+   "Benitoite.Surface.CheckSoundDicts",
+   "Benitoite.Surface.CheckSoundDie",
+   "Benitoite.Surface.CheckSoundSequence",
+   "Benitoite.Surface.CheckSupport",
+   "Benitoite.Surface.CheckTables",
+   "Benitoite.Surface.CheckTablesSound",
+   "Benitoite.Surface.CheckTools",
+   "Benitoite.Surface.CheckToolsExamples",
+   "Benitoite.Surface.ClauseIxExamples",
+   "Benitoite.Surface.ClauseIxRule",
+   "Benitoite.Surface.CoverExamples",
+   "Benitoite.Surface.Desugar",
+   "Benitoite.Surface.DesugarRange",
+   "Benitoite.Surface.Examples",
+   "Benitoite.Surface.FailureExamples",
+   "Benitoite.Surface.FiniteExamples",
+   "Benitoite.Surface.FinitePredicates",
+   "Benitoite.Surface.FiniteTools",
+   "Benitoite.Surface.FormatSpec",
+   "Benitoite.Surface.Lemmas.BlockSequence",
+   "Benitoite.Surface.Lemmas.BuilderCapture",
+   "Benitoite.Surface.Lemmas.BuilderCaptureAll",
+   "Benitoite.Surface.Lemmas.BuilderCaptureCompose",
+   "Benitoite.Surface.Lemmas.BuilderLower",
+   "Benitoite.Surface.Lemmas.BuilderNoCapture",
+   "Benitoite.Surface.Lemmas.Builders",
+   "Benitoite.Surface.Lemmas.CallHead",
+   "Benitoite.Surface.Lemmas.Calls",
+   "Benitoite.Surface.Lemmas.Dict",
+   "Benitoite.Surface.Lemmas.DictSupport",
+   "Benitoite.Surface.Lemmas.Extensions",
+   "Benitoite.Surface.Lemmas.ExtensionsScoped",
+   "Benitoite.Surface.Lemmas.Invariants",
+   "Benitoite.Surface.Lemmas.NoFailSignature",
+   "Benitoite.Surface.Lemmas.PatternSupport",
+   "Benitoite.Surface.Lemmas.Patterns",
+   "Benitoite.Surface.Lemmas.Program",
+   "Benitoite.Surface.Lemmas.Records",
+   "Benitoite.Surface.Lemmas.ReturnTry",
+   "Benitoite.Surface.Lemmas.Scoped",
+   "Benitoite.Surface.Lemmas.ScopedRename",
+   "Benitoite.Surface.Lemmas.ScopedSupport",
+   "Benitoite.Surface.Lemmas.Sequence",
+   "Benitoite.Surface.Lemmas.ShiftClean",
+   "Benitoite.Surface.Lemmas.SubstClean",
+   "Benitoite.Surface.Lemmas.Typing",
+   "Benitoite.Surface.LogExamples",
+   "Benitoite.Surface.Monad2Examples",
+   "Benitoite.Surface.NoFailCheck",
+   "Benitoite.Surface.NoFailCheckExamples",
+   "Benitoite.Surface.PrimRange",
+   "Benitoite.Surface.RangeFree",
+   "Benitoite.Surface.ScopeAccept",
+   "Benitoite.Surface.ScopeAcceptExamples",
+   "Benitoite.Surface.ScopeLower",
+   "Benitoite.Surface.ScopeLowerExamples",
+   "Benitoite.Surface.ScopeOccurrence",
+   "Benitoite.Surface.ScopeSound",
+   "Benitoite.Surface.ScopeSoundExamples",
+   "Benitoite.Surface.ScopeState",
+   "Benitoite.Surface.ScopeStateExamples",
+   "Benitoite.Surface.SingleFail",
+   "Benitoite.Surface.SingleFailCheck",
+   "Benitoite.Surface.Syntax",
+   "Benitoite.Surface.Theorems",
+   "Benitoite.Surface.Typing",
+   "Benitoite.Surface.WellFormed"
+  ],
+  "Release": [
+   "Benitoite.Release.Admissible",
+   "Benitoite.Release.BuilderExamples",
+   "Benitoite.Release.CoverCompat",
+   "Benitoite.Release.CoverExamples",
+   "Benitoite.Release.CoverageExtension",
+   "Benitoite.Release.CoverageIntegerExamples",
+   "Benitoite.Release.CoverageShow",
+   "Benitoite.Release.CoverageTypes",
+   "Benitoite.Release.FailureEffects",
+   "Benitoite.Release.FailureExamples",
+   "Benitoite.Release.FiniteSupport",
+   "Benitoite.Release.HandlerTargetExamples",
+   "Benitoite.Release.Lemmas.BuilderStore",
+   "Benitoite.Release.Lemmas.BuilderTyping",
+   "Benitoite.Release.Lemmas.ClauseIx",
+   "Benitoite.Release.Lemmas.ContLemmas",
+   "Benitoite.Release.Lemmas.CoverageRuntime",
+   "Benitoite.Release.Lemmas.Dict",
+   "Benitoite.Release.Lemmas.EffectSound",
+   "Benitoite.Release.Lemmas.FailureBase",
+   "Benitoite.Release.Lemmas.FailureCont",
+   "Benitoite.Release.Lemmas.Irrelevant",
+   "Benitoite.Release.Lemmas.LocalInvariant",
+   "Benitoite.Release.Lemmas.Membership",
+   "Benitoite.Release.Lemmas.MembershipBase",
+   "Benitoite.Release.Lemmas.Names",
+   "Benitoite.Release.Lemmas.NoFailContext",
+   "Benitoite.Release.Lemmas.Observation",
+   "Benitoite.Release.Lemmas.OuterC",
+   "Benitoite.Release.Lemmas.PresBase",
+   "Benitoite.Release.Lemmas.PresFailure",
+   "Benitoite.Release.Lemmas.PresMain",
+   "Benitoite.Release.Lemmas.Preservation",
+   "Benitoite.Release.Lemmas.PrimRanges",
+   "Benitoite.Release.Lemmas.Progress",
+   "Benitoite.Release.Lemmas.Regularity",
+   "Benitoite.Release.Lemmas.StepSound",
+   "Benitoite.Release.Lemmas.StoreLemmas",
+   "Benitoite.Release.Lemmas.SubstTyping",
+   "Benitoite.Release.Lemmas.TargetPropagation",
+   "Benitoite.Release.Lemmas.TargetSound",
+   "Benitoite.Release.Lemmas.TargetStep",
+   "Benitoite.Release.Lemmas.TyLemmas",
+   "Benitoite.Release.Lemmas.TySubstMain",
+   "Benitoite.Release.Lemmas.VariableBind",
+   "Benitoite.Release.LocalScope",
+   "Benitoite.Release.LocalTyping",
+   "Benitoite.Release.ModelTargets",
+   "Benitoite.Release.Order.Shift",
+   "Benitoite.Release.RangeIxExamples",
+   "Benitoite.Release.RangeNormalize",
+   "Benitoite.Release.ShapeOk",
+   "Benitoite.Release.SubstEnv",
+   "Benitoite.Release.SubstExamples",
+   "Benitoite.Release.TargetReachExamples",
+   "Benitoite.Release.TargetStepExamples",
+   "Benitoite.Release.Theorems",
+   "Benitoite.Release.TypeCongruence",
+   "Benitoite.Release.TypeScopedSubst"
+  ]
+ },
+ "import_cuts": [
+  "Benitoite.Exchange.CheckInput -> Benitoite.Surface.CheckTables",
+  "Benitoite.Exchange.Convert -> Benitoite.Surface.CheckTables",
+  "Benitoite.Exchange.Observe -> Benitoite.Surface.CheckAccept",
+  "Benitoite.Exchange.Syntax -> Benitoite.Surface.Desugar",
+  "Benitoite.Interval.Identity -> Benitoite.Surface.Syntax",
+  "Benitoite.Release.Coverage -> Benitoite.Release.CoverageTypes",
+  "Benitoite.Release.EffectCover -> Benitoite.Release.TypeScopedSubst",
+  "Benitoite.Release.Lemmas.Canonical -> Benitoite.Release.Lemmas.FailureCont",
+  "Benitoite.Release.Lemmas.Canonical -> Benitoite.Release.Lemmas.TySubstMain",
+  "Benitoite.Release.Lemmas.Closed -> Benitoite.Release.Lemmas.TyLemmas",
+  "Benitoite.Release.Lemmas.PresHelpers -> Benitoite.Release.Lemmas.StoreLemmas",
+  "Benitoite.Release.Lemmas.PresHelpers -> Benitoite.Release.Lemmas.SubstTyping",
+  "Benitoite.Release.Lemmas.Rename -> Benitoite.Release.LocalTyping",
+  "Benitoite.Release.Lemmas.TySubst -> Benitoite.Release.Lemmas.SubstTyping",
+  "Benitoite.Release.Model -> Benitoite.Release.Theorems",
+  "Benitoite.Release.ModelHttp -> Benitoite.Release.Lemmas.Membership",
+  "Benitoite.Release.ModelHttp -> Benitoite.Release.Lemmas.PrimRanges",
+  "Benitoite.Release.ModelHttp -> Benitoite.Release.Lemmas.TargetSound",
+  "Benitoite.Release.ModelHttp -> Benitoite.Release.ModelTargets",
+  "Benitoite.Release.ModelHttp -> Benitoite.Release.Theorems",
+  "Benitoite.Release.RangeInst -> Benitoite.Release.SubstEnv",
+  "Benitoite.Release.Refinement.CurrentSignatureRows -> Benitoite.Release.ModelTargets",
+  "Benitoite.Release.Refinement.ExternalSurfaceLeaves -> Benitoite.Surface.Lemmas.Calls",
+  "Benitoite.Release.Refinement.IntervalConnection -> Benitoite.Surface.Desugar",
+  "Benitoite.Release.TargetTable -> Benitoite.Release.ShapeOk",
+  "Benitoite.Scope.CompatExamples -> Benitoite.Surface.Lemmas.Sequence"
+ ],
+ "conservative": {
+  "keep": 88,
+  "delete": [
+   "Benitoite.Release.BuilderExamples",
+   "Benitoite.Release.CoverCompat",
+   "Benitoite.Release.CoverExamples",
+   "Benitoite.Release.CoverageExtension",
+   "Benitoite.Release.CoverageIntegerExamples",
+   "Benitoite.Release.CoverageShow",
+   "Benitoite.Release.FailureExamples",
+   "Benitoite.Release.FiniteSupport",
+   "Benitoite.Release.HandlerTargetExamples",
+   "Benitoite.Release.Lemmas.ClauseIx",
+   "Benitoite.Release.Lemmas.CoverageRuntime",
+   "Benitoite.Release.Lemmas.LocalInvariant",
+   "Benitoite.Release.Lemmas.Observation",
+   "Benitoite.Release.Lemmas.VariableBind",
+   "Benitoite.Release.LocalScope",
+   "Benitoite.Release.Order.Shift",
+   "Benitoite.Release.RangeIxExamples",
+   "Benitoite.Release.RangeNormalize",
+   "Benitoite.Release.SubstExamples",
+   "Benitoite.Release.TargetReachExamples",
+   "Benitoite.Release.TargetStepExamples"
+  ],
+  "extra_keep": [
+   "Benitoite.Release.Admissible",
+   "Benitoite.Release.CoverageTypes",
+   "Benitoite.Release.FailureEffects",
+   "Benitoite.Release.Lemmas.BuilderStore",
+   "Benitoite.Release.Lemmas.BuilderTyping",
+   "Benitoite.Release.Lemmas.ContLemmas",
+   "Benitoite.Release.Lemmas.Dict",
+   "Benitoite.Release.Lemmas.EffectSound",
+   "Benitoite.Release.Lemmas.FailureBase",
+   "Benitoite.Release.Lemmas.FailureCont",
+   "Benitoite.Release.Lemmas.Irrelevant",
+   "Benitoite.Release.Lemmas.Membership",
+   "Benitoite.Release.Lemmas.MembershipBase",
+   "Benitoite.Release.Lemmas.Names",
+   "Benitoite.Release.Lemmas.NoFailContext",
+   "Benitoite.Release.Lemmas.OuterC",
+   "Benitoite.Release.Lemmas.PresBase",
+   "Benitoite.Release.Lemmas.PresFailure",
+   "Benitoite.Release.Lemmas.PresMain",
+   "Benitoite.Release.Lemmas.Preservation",
+   "Benitoite.Release.Lemmas.PrimRanges",
+   "Benitoite.Release.Lemmas.Progress",
+   "Benitoite.Release.Lemmas.Regularity",
+   "Benitoite.Release.Lemmas.StepSound",
+   "Benitoite.Release.Lemmas.StoreLemmas",
+   "Benitoite.Release.Lemmas.SubstTyping",
+   "Benitoite.Release.Lemmas.TargetPropagation",
+   "Benitoite.Release.Lemmas.TargetSound",
+   "Benitoite.Release.Lemmas.TargetStep",
+   "Benitoite.Release.Lemmas.TyLemmas",
+   "Benitoite.Release.Lemmas.TySubstMain",
+   "Benitoite.Release.LocalTyping",
+   "Benitoite.Release.ModelTargets",
+   "Benitoite.Release.ShapeOk",
+   "Benitoite.Release.SubstEnv",
+   "Benitoite.Release.Theorems",
+   "Benitoite.Release.TypeCongruence",
+   "Benitoite.Release.TypeScopedSubst"
+  ]
+ },
+ "old_name_readers": {
+  "Benitoite.Release.Model.assumptions": [
+   "Benitoite.Release.Refinement.CurrentSignatureRows"
+  ],
+  "Benitoite.Release.ModelTargets.assumptions": [
+   "Benitoite.Release.Refinement.CurrentSignatureRows"
+  ],
+  "Benitoite.Release.ModelHttp.assumptions": [
+   "Benitoite.Release.Refinement.CurrentSignatureRows"
+  ]
+ },
+ "proper_judgments": [
+  "Benitoite.Release.Admissible",
+  "Benitoite.Release.AltsTy",
+  "Benitoite.Release.BuiltinOnly",
+  "Benitoite.Release.CellOk",
+  "Benitoite.Release.ClosedTy",
+  "Benitoite.Release.ContTy",
+  "Benitoite.Release.Def.WellTyped",
+  "Benitoite.Release.Eff.Covers",
+  "Benitoite.Release.Eff.Sub",
+  "Benitoite.Release.Exhaustive",
+  "Benitoite.Release.HasFailureClause",
+  "Benitoite.Release.HasTypeArms",
+  "Benitoite.Release.HasTypeArmsQ",
+  "Benitoite.Release.HasTypeC",
+  "Benitoite.Release.HasTypeCL",
+  "Benitoite.Release.HasTypeCQ",
+  "Benitoite.Release.HasTypeClauses",
+  "Benitoite.Release.HasTypeClausesQ",
+  "Benitoite.Release.HasTypeEach",
+  "Benitoite.Release.HasTypeEachQ",
+  "Benitoite.Release.HasTypeV",
+  "Benitoite.Release.HasTypeVQ",
+  "Benitoite.Release.HasTypeVs",
+  "Benitoite.Release.HasTypeVsQ",
+  "Benitoite.Release.ImplDecl.WellTyped",
+  "Benitoite.Release.Inhabits",
+  "Benitoite.Release.InhabitsAll",
+  "Benitoite.Release.InhabitsEach",
+  "Benitoite.Release.LocalRef.HasKind",
+  "Benitoite.Release.LocalSubstOk",
+  "Benitoite.Release.MethodRowsAdmissible",
+  "Benitoite.Release.PrimitiveAdmissible",
+  "Benitoite.Release.Program.WellTyped",
+  "Benitoite.Release.StateTy",
+  "Benitoite.Release.StateTyE",
+  "Benitoite.Release.Step",
+  "Benitoite.Release.Steps",
+  "Benitoite.Release.StoreOk",
+  "Benitoite.Release.SubstOk",
+  "Benitoite.Release.Ty.Le",
+  "Benitoite.Release.step"
+ ],
+ "delete_lines": {
+  "Core": 2505,
+  "Surface": 28034,
+  "Release": 14037
+ },
+ "interval_lines": 34669,
+ "backflow": {},
+ "fixpoint": {
+  "rounds": 5,
+  "surface_syntax_kept": [
+   "Benitoite.Surface.BuilderSyntax",
+   "Benitoite.Surface.FormatSpec",
+   "Benitoite.Surface.Syntax"
+  ],
+  "keep_release": [
+   "Benitoite.Release.Admissible",
+   "Benitoite.Release.ApproxAdapter",
+   "Benitoite.Release.Assumptions",
+   "Benitoite.Release.Atom",
+   "Benitoite.Release.BuilderContents",
+   "Benitoite.Release.BuilderExec",
+   "Benitoite.Release.BuiltinTable",
+   "Benitoite.Release.Coverage",
+   "Benitoite.Release.CoverageTypes",
+   "Benitoite.Release.Effect",
+   "Benitoite.Release.EffectCover",
+   "Benitoite.Release.EffectCoverDef",
+   "Benitoite.Release.Examples",
+   "Benitoite.Release.FailureEffects",
+   "Benitoite.Release.Finite",
+   "Benitoite.Release.Lemmas.Basic",
+   "Benitoite.Release.Lemmas.Canonical",
+   "Benitoite.Release.Lemmas.Closed",
+   "Benitoite.Release.Lemmas.ContLemmas",
+   "Benitoite.Release.Lemmas.FailureBase",
+   "Benitoite.Release.Lemmas.FailureCont",
+   "Benitoite.Release.Lemmas.Inversion",
+   "Benitoite.Release.Lemmas.Irrelevant",
+   "Benitoite.Release.Lemmas.Membership",
+   "Benitoite.Release.Lemmas.MembershipBase",
+   "Benitoite.Release.Lemmas.Names",
+   "Benitoite.Release.Lemmas.NoFailContext",
+   "Benitoite.Release.Lemmas.OuterC",
+   "Benitoite.Release.Lemmas.PresHelpers",
+   "Benitoite.Release.Lemmas.Regularity",
+   "Benitoite.Release.Lemmas.Rename",
+   "Benitoite.Release.Lemmas.StoreLemmas",
+   "Benitoite.Release.Lemmas.SubstTyping",
+   "Benitoite.Release.Lemmas.TargetSound",
+   "Benitoite.Release.Lemmas.TyLemmas",
+   "Benitoite.Release.Lemmas.TySubst",
+   "Benitoite.Release.Lemmas.TySubstMain",
+   "Benitoite.Release.LocalRef",
+   "Benitoite.Release.LocalTyping",
+   "Benitoite.Release.Model",
+   "Benitoite.Release.ModelHttp",
+   "Benitoite.Release.ModelTargets",
+   "Benitoite.Release.NoFail",
+   "Benitoite.Release.Normalize",
+   "Benitoite.Release.Order.Atoms",
+   "Benitoite.Release.Order.FiniteAtoms",
+   "Benitoite.Release.Order.Labels",
+   "Benitoite.Release.Order.Range",
+   "Benitoite.Release.Order.SortUnique",
+   "Benitoite.Release.Order.Tree",
+   "Benitoite.Release.Order.Types",
+   "Benitoite.Release.RangeInst",
+   "Benitoite.Release.RangeInstDef",
+   "Benitoite.Release.RangeWF",
+   "Benitoite.Release.Semantics",
+   "Benitoite.Release.ShapeOk",
+   "Benitoite.Release.Subst",
+   "Benitoite.Release.SubstEnv",
+   "Benitoite.Release.Syntax",
+   "Benitoite.Release.TargetTable",
+   "Benitoite.Release.TypeBounds",
+   "Benitoite.Release.TypeComposition",
+   "Benitoite.Release.TypeCongruence",
+   "Benitoite.Release.TypeRegularity",
+   "Benitoite.Release.TypeRows",
+   "Benitoite.Release.TypeScopedSubst",
+   "Benitoite.Release.TypeShift",
+   "Benitoite.Release.TypeSubst",
+   "Benitoite.Release.TypeSubstLemmas",
+   "Benitoite.Release.TypeSupport",
+   "Benitoite.Release.TypeVariables",
+   "Benitoite.Release.Types",
+   "Benitoite.Release.Typing",
+   "Benitoite.Release.WellFormed"
+  ],
+  "delete_release": [
+   "Benitoite.Release.BuilderExamples",
+   "Benitoite.Release.CoverCompat",
+   "Benitoite.Release.CoverExamples",
+   "Benitoite.Release.CoverageExtension",
+   "Benitoite.Release.CoverageIntegerExamples",
+   "Benitoite.Release.CoverageShow",
+   "Benitoite.Release.FailureExamples",
+   "Benitoite.Release.FiniteSupport",
+   "Benitoite.Release.HandlerTargetExamples",
+   "Benitoite.Release.Lemmas.BuilderStore",
+   "Benitoite.Release.Lemmas.BuilderTyping",
+   "Benitoite.Release.Lemmas.ClauseIx",
+   "Benitoite.Release.Lemmas.CoverageRuntime",
+   "Benitoite.Release.Lemmas.Dict",
+   "Benitoite.Release.Lemmas.EffectSound",
+   "Benitoite.Release.Lemmas.LocalInvariant",
+   "Benitoite.Release.Lemmas.Observation",
+   "Benitoite.Release.Lemmas.PresBase",
+   "Benitoite.Release.Lemmas.PresFailure",
+   "Benitoite.Release.Lemmas.PresMain",
+   "Benitoite.Release.Lemmas.Preservation",
+   "Benitoite.Release.Lemmas.PrimRanges",
+   "Benitoite.Release.Lemmas.Progress",
+   "Benitoite.Release.Lemmas.StepSound",
+   "Benitoite.Release.Lemmas.TargetPropagation",
+   "Benitoite.Release.Lemmas.TargetStep",
+   "Benitoite.Release.Lemmas.VariableBind",
+   "Benitoite.Release.LocalScope",
+   "Benitoite.Release.Order.Shift",
+   "Benitoite.Release.RangeIxExamples",
+   "Benitoite.Release.RangeNormalize",
+   "Benitoite.Release.SubstExamples",
+   "Benitoite.Release.TargetReachExamples",
+   "Benitoite.Release.TargetStepExamples",
+   "Benitoite.Release.Theorems"
+  ],
+  "delete_release_lines": 7882,
+  "forbidden_in_kept_modules": [
+   "Benitoite.Release.Model.assumptions",
+   "Benitoite.Release.ModelHttp.assumptions",
+   "Benitoite.Release.ModelTargets.assumptions"
+  ],
+  "change_release_declarations": [
+   "Benitoite.Release.ModelHttp.Examples.httpProg_assumptions",
+   "Benitoite.Release.ModelHttp.Examples.sendCall_typed",
+   "Benitoite.Release.ModelHttp.Examples.sendState_reachable_target_sound",
+   "Benitoite.Release.ModelHttp.Examples.sendState_target_sound",
+   "Benitoite.Release.ModelHttp.Examples.sendState_typedE",
+   "Benitoite.Release.ModelHttp.Examples.send_io_target",
+   "Benitoite.Release.ModelHttp.Examples.send_prim_admissible",
+   "Benitoite.Release.ModelHttp.check_scoped",
+   "Benitoite.Release.ModelHttp.send_scoped",
+   "Benitoite.Release.ModelHttp.value_scoped",
+   "Benitoite.Release.ModelTargets.Examples.handle_release",
+   "Benitoite.Release.ModelTargets.Examples.ioCall_typed",
+   "Benitoite.Release.ModelTargets.Examples.ioState_obs_allowed",
+   "Benitoite.Release.ModelTargets.Examples.ioState_progress",
+   "Benitoite.Release.ModelTargets.Examples.ioState_stateTy",
+   "Benitoite.Release.ModelTargets.Examples.progOf_assumptions",
+   "Benitoite.Release.ModelTargets.Examples.read_io_target",
+   "Benitoite.Release.ModelTargets.Examples.read_obs_allowed",
+   "Benitoite.Release.ModelTargets.Examples.read_shapeOk",
+   "Benitoite.Release.ModelTargets.Examples.s0_preservation",
+   "Benitoite.Release.ModelTargets.Examples.s0_progress",
+   "Benitoite.Release.ModelTargets.Examples.s0_stateTy",
+   "Benitoite.Release.ModelTargets.Examples.steps_stateTy",
+   "Benitoite.Release.ModelTargets.Examples.write_prim_admissible",
+   "Benitoite.Release.ModelTargets.check_scoped",
+   "Benitoite.Release.ModelTargets.ref_scoped_get",
+   "Benitoite.Release.ModelTargets.ref_scoped_set",
+   "Benitoite.Release.ModelTargets.write_scoped",
+   "Benitoite.Release.TargetTable.entries_scoped",
+   "Benitoite.Release.TargetTable.sig_scoped"
+  ],
+  "change_other_declarations": [
+   "Benitoite.Release.Refinement.CurrentSignatureRows.model_http_rows",
+   "Benitoite.Release.Refinement.CurrentSignatureRows.model_rows",
+   "Benitoite.Release.Refinement.CurrentSignatureRows.model_targets_rows",
+   "Benitoite.Release.Refinement.CurrentSignatureRows.target_entries_rows"
+  ],
+  "port_edges": {
+   "Benitoite.Exchange.BuilderExamples": [
+    "Benitoite.Surface.Desugar"
+   ],
+   "Benitoite.Exchange.Builtins": [
+    "Benitoite.Surface.CheckRanges",
+    "Benitoite.Surface.CheckTables",
+    "Benitoite.Surface.CheckTools"
+   ],
+   "Benitoite.Exchange.CheckInput": [
+    "Benitoite.Surface.Check",
+    "Benitoite.Surface.CheckAccept",
+    "Benitoite.Surface.CheckTables",
+    "Benitoite.Surface.CheckTools"
+   ],
+   "Benitoite.Exchange.Convert": [
+    "Benitoite.Surface.AdmissibleCheck",
+    "Benitoite.Surface.CheckTables",
+    "Benitoite.Surface.CheckTools",
+    "Benitoite.Surface.Desugar",
+    "Benitoite.Surface.NoFailCheck"
+   ],
+   "Benitoite.Exchange.IntegerExamples": [
+    "Benitoite.Surface.Desugar"
+   ],
+   "Benitoite.Exchange.Observe": [
+    "Benitoite.Surface.Check",
+    "Benitoite.Surface.CheckAccept",
+    "Benitoite.Surface.ScopeAccept",
+    "Benitoite.Surface.ScopeSound",
+    "Benitoite.Surface.ScopeState"
+   ],
+   "Benitoite.Exchange.ObserveExamples": [
+    "Benitoite.Surface.ScopeState"
+   ],
+   "Benitoite.Interval.BudgetNormal": [
+    "Benitoite.Surface.Lemmas.ScopedSupport"
+   ],
+   "Benitoite.Interval.BudgetPatterns": [
+    "Benitoite.Surface.Lemmas.ScopedSupport"
+   ],
+   "Benitoite.Interval.Eval": [
+    "Benitoite.Surface.Lemmas.ScopedSupport"
+   ],
+   "Benitoite.Interval.RangeBorrowed": [
+    "Benitoite.Surface.Lemmas.ScopedSupport"
+   ],
+   "Benitoite.Release.Refinement.ExternalSurfaceLeaves": [
+    "Benitoite.Surface.Lemmas.Calls"
+   ],
+   "Benitoite.Release.Refinement.FirstFailure": [
+    "Benitoite.Surface.Desugar"
+   ],
+   "Benitoite.Release.Refinement.IntervalConnection": [
+    "Benitoite.Surface.Desugar"
+   ],
+   "Benitoite.Release.Refinement.IntervalConnectionExamples": [
+    "Benitoite.Surface.Desugar"
+   ]
+  },
+  "import_cuts": [
+   "Benitoite.Exchange.CheckInput -> Benitoite.Surface.CheckTables",
+   "Benitoite.Exchange.Convert -> Benitoite.Surface.CheckTables",
+   "Benitoite.Exchange.Observe -> Benitoite.Surface.CheckAccept",
+   "Benitoite.Exchange.Syntax -> Benitoite.Surface.Desugar",
+   "Benitoite.Release.Model -> Benitoite.Release.Theorems",
+   "Benitoite.Release.ModelHttp -> Benitoite.Release.Lemmas.PrimRanges",
+   "Benitoite.Release.ModelHttp -> Benitoite.Release.Theorems",
+   "Benitoite.Release.ModelTargets -> Benitoite.Release.Lemmas.PrimRanges",
+   "Benitoite.Release.Refinement.ExternalSurfaceLeaves -> Benitoite.Surface.Lemmas.Calls",
+   "Benitoite.Release.Refinement.IntervalConnection -> Benitoite.Surface.Desugar",
+   "Benitoite.Scope.CompatExamples -> Benitoite.Surface.Lemmas.Sequence"
+  ],
+  "kept_only_for_surface_syntax": []
+ },
+ "backflow_transitive": {
+  "Benitoite.Release.Refinement.CurrentSignatureRows.model_http_rows": [
+   "Benitoite.Release.Refinement.CurrentSignatureRows.model_http_rows",
+   "Benitoite.Release.ModelHttp.assumptions",
+   "Benitoite.Release.HasTypeV"
+  ],
+  "Benitoite.Release.Refinement.CurrentSignatureRows.model_rows": [
+   "Benitoite.Release.Refinement.CurrentSignatureRows.model_rows",
+   "Benitoite.Release.Model.assumptions",
+   "Benitoite.Release.HasTypeV"
+  ],
+  "Benitoite.Release.Refinement.CurrentSignatureRows.model_targets_rows": [
+   "Benitoite.Release.Refinement.CurrentSignatureRows.model_targets_rows",
+   "Benitoite.Release.ModelTargets.assumptions",
+   "Benitoite.Release.HasTypeV"
+  ],
+  "Benitoite.Release.Refinement.CurrentSignatureRows.target_entries_rows": [
+   "Benitoite.Release.Refinement.CurrentSignatureRows.target_entries_rows",
+   "Benitoite.Release.TargetTable.entries_scoped",
+   "Benitoite.Release.Model.assumptions",
+   "Benitoite.Release.HasTypeV"
+  ]
+ },
+ "source_scan": {
+  "kept_modules_scanned": 935,
+  "counts": {
+   "example": 4,
+   "open": 4,
+   "export": 0,
+   "attribute": 0,
+   "command": 0,
+   "proof": 0
+  },
+  "sites": {
+   "example": [
+    {
+     "module": "Benitoite.Release.Model",
+     "line": 150,
+     "references": [
+      "Benitoite.Release.Model.assumptions",
+      "Benitoite.Release.effect_soundness"
+     ]
+    },
+    {
+     "module": "Benitoite.Release.Model",
+     "line": 310,
+     "references": [
+      "Benitoite.Release.Model.assumptions",
+      "Benitoite.Release.effect_soundness"
+     ]
+    },
+    {
+     "module": "Benitoite.Release.Model",
+     "line": 350,
+     "references": [
+      "Benitoite.Release.Model.assumptions"
+     ]
+    },
+    {
+     "module": "Benitoite.Release.Model",
+     "line": 439,
+     "references": [
+      "Benitoite.Release.Ty.Le.fn_fn'"
+     ]
+    }
+   ],
+   "open": [
+    {
+     "module": "Benitoite.Exchange.CheckInput",
+     "line": 8,
+     "references": [
+      "Benitoite.Surface.CheckTables"
+     ]
+    },
+    {
+     "module": "Benitoite.Exchange.Observe",
+     "line": 23,
+     "references": [
+      "Benitoite.Surface.ScopeAccept.CoverFailure"
+     ]
+    },
+    {
+     "module": "Benitoite.Exchange.ObserveExamples",
+     "line": 12,
+     "references": [
+      "Benitoite.Surface.ScopeAccept.CoverFailure"
+     ]
+    },
+    {
+     "module": "Benitoite.Release.ModelHttp",
+     "line": 44,
+     "references": [
+      "Benitoite.Release.ModelTargets.ref_scoped_get",
+      "Benitoite.Release.ModelTargets.ref_scoped_set"
+     ]
+    }
+   ]
+  }
+ },
+ "admit": {
+  "declarations": [],
+  "source_lines": [],
+  "design_lines": []
+ }
+}

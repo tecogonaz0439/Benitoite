@@ -205,6 +205,8 @@ mutual
     match h with
     | @AtCallAdmissible.mk _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 =>
       exact .mk x13 x14 (fun v hv => HasTypeVQ.q_mono (x15 v hv) hq) (HasTypeVQ.q_mono x16 hq) x17 (HasTypeVQ.q_mono x18 hq) x19 x20
+    | @AtCallAdmissible.text _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 =>
+      exact .text x13 x14 (fun v hv => HasTypeVQ.q_mono (x15 v hv) hq) (HasTypeVQ.q_mono x16 hq) x17 (HasTypeVQ.q_mono x18 hq) x19 x20
   termination_by structural h
 
   theorem HasTypeArmsQ.q_mono {P : Program} {B : Builtins} {Ψ : StoreTy} {Q : Benitoite.Release.NoFailCtx} {C : TypeCtx} {Γ : Ctx} {Φ : List Pred} {R : Option Ty} {obs : Option Benitoite.Release.Refinement.Term} {arms : List Arm} {a : Ty} {b : Ty} {e : Eff} {L : LocalCtx} (h : HasTypeArmsQ P B Ψ Q C Γ Φ R obs arms a b e L) {Q' : NoFailCtx} (hq : ∀ i, Q i → Q' i) :

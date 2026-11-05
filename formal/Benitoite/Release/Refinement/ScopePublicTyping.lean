@@ -362,6 +362,15 @@ theorem _root_.Benitoite.Release.Refinement.StateTyE.at_public_inputs {P B σ Eb
       refine ⟨by rw [hr]; rfl, ?_⟩
       rw [hcv]
       cases c <;> simp_all [Const.type, Ty.norm, Ty.core, inputOfVal]
+    | text _ _ _ hp _ _ _ _ =>
+      have hpc := close_value_typed hP hPB hB hs.wf hs.sorted hs.declared hcap hp
+      obtain ⟨c, hcv, _, hct⟩ := hpc.canonical_scalar (tag := .string)
+        (by simp [Capture.closeTy, substTyValues, Ty.bind, Ty.rawBind, Ty.norm, Ty.core])
+      obtain ⟨d, hdv, _, hdt⟩ := hi.canonical_scalar (tag := .string) (by simp [Ty.norm, Ty.core])
+      rw [hcv, hdv]
+      constructor
+      · cases c <;> simp_all [Const.type, Ty.norm, Ty.core, inputOfVal]
+      · cases d <;> simp_all [Const.type, Ty.norm, Ty.core, inputOfVal]
   · rw [hn] at hc; cases hc
 
 /-- 内容型を持たない名前の At の準備の失敗の観測は、固定の値でなく九欄の公開形である。 -/

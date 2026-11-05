@@ -1539,6 +1539,22 @@ mutual
         rcases hty with ⟨rfl, hy⟩ | hy
         · exact hv'
         · simpa only [substTyValues_norm_source, Ty.subst_values_of_wf_zero hy.2.1] using hv'
+    | .text (inputTy := inputTy) hs hk hb hp hty hv hw hi =>
+      have hb' := fun b (he : bases = some b) => subst_value (hb b he) hA hT hstore ρ ht hf
+      have he : {shape with errorType := substTyValues σ shape.errorType} = shape := by
+        have hx : substTyValues σ shape.errorType = shape.errorType := by
+          rw [hs.errorType_eq]; rfl
+        simp only [hx]
+      rw [he]
+      refine AtCallAdmissible.text (inputTy := inputTy) hs hk ?_ (subst_value hp hA hT hstore ρ ht hf) hty ?_ hw hi
+      · intro v he
+        cases bases with
+        | none => cases he
+        | some b => cases he; exact hb' b rfl
+      · have hv' := subst_value hv hA hT hstore ρ ht hf
+        rcases hty with ⟨rfl, hy⟩ | hy
+        · exact hv'
+        · simpa only [substTyValues_norm_source, Ty.subst_values_of_wf_zero hy.2.1] using hv'
 
 
 end

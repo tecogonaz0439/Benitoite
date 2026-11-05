@@ -286,6 +286,8 @@ mutual
     match h with
     | .mk (bases := bases) _ _ hb hp _ hi _ _ =>
       exact ⟨fun v hv => HasTypeVQ.resolve_id (hb v hv) ρ,HasTypeVQ.resolve_id hp ρ,HasTypeVQ.resolve_id hi ρ⟩
+    | .text (bases := bases) _ _ hb hp _ hi _ _ =>
+      exact ⟨fun v hv => HasTypeVQ.resolve_id (hb v hv) ρ,HasTypeVQ.resolve_id hp ρ,HasTypeVQ.resolve_id hi ρ⟩
 
   theorem HasTypeArmsQ.resolve_id {P B Ψ Q C Γ Φ R obs arms a b e Δ}
       (h : HasTypeArmsQ P B Ψ Q C Γ Φ R obs arms a b e Δ) (ρ) (hf : LocalsFixed Δ ρ) :
