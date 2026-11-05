@@ -3101,6 +3101,18 @@ builders_no_captureとbuilders_block_no_captureは、Aligned Γ ΔからEnvReads
 
 【決定】本節から「篩を含む状態の型付け」までは、`Benitoite.Release.Refinement` の定義と規則の写しである。ここでの `Ty`・`HasTypeVQ`・`HasTypeCQ`・`Step` などは、すべてこの名前空間のものを指す。表層の文法を追加する節ではない。
 
+`BuiltinTypingTransport` の `Builtins.TypingFieldsEq B B'` は、同じプログラムPについて `sig`・`sat`・`admitsR`・`isResource`・`valKind`・`valContent`・`effects` の一致を要求する。これらを型付けが読む七つの射影（`Builtins.TypingFieldsEq` の七欄）と呼ぶ。十四の型付け判断は、全添字を保ちBだけをB'へ移せる。`C_Handle` の `handled` は `effOps` を通じてeffectsを読み、`C_Use`はisResource、`ConstOK`はvalKindとvalContentを読む。`ExternalSurface.ref_typed/call_typed` は外部宣言のlookup・整形式・適格な型引数と、依存列に沿う実引数から、参照と直接呼出しの型付けを構成する。これは既存の型付け規則の読者である。
+
+`BuiltinResponseTransport` は、同じ七射影の等号から、`ExternalCarrier`・`ExternalCarrierEach`・`ExternalCarrierFields` の全十二構成子、`BuiltinArgs`、`ExternalArgs`、`Outcome.Typed`、`Outcome.Carrier` を移す。`ModelScopeConditions.of_responses` は、これらの等号にδ・IO応答・refGet・refSet・effKindの一致を合わせ、同じPで全二十五条件を移す。
+
+`ExternalModel.response P base f ts vs out obs` は、obsが空であり、任意のΨ・宣言d・結果型a・効果eについて、同じ関数のlookupと `ExternalArgs P base Ψ d ts vs a e` から `Outcome.Carrier P base Ψ out a` と非exitが成り立つ関係である。任意のerrがこの関係に属する。`ExternalModel.builtins P base release` は外部応答と解放関係だけを選び、型付けの七射影を保つ。
+
+`ExternalModel.external_assumptions` は、拡張した表の型付き入力を元の表へ戻し、元の応答のcarrierを拡張した表へ移して、外部応答の三条件を構成する。`Builtins.selectExternal` は応答の証人があればその対を選び、なければerrと空の観測を返す。`selectExternal_response` の関係所属の結論には、同じ関係の証人の存在を要求する。
+
+`FunctionNames.rename` は、元の名前と内部名の交換を合成した単射である。`FunctionNames.definition` は関数参照名だけを写し、元Defの型注釈・引数列・結果型・効果と本体の構成子を保つ。`StandardModel.program externals` は、既存の出典と参照先のhelperの閉包から作る有限の本体表（`StandardModel.Body.all`）と構成子表を持ち、外部宣言を引数に取る。元Defを別に保持し、関数参照名を写したDef（`Body.definition`）との対応・telの保存・任意のlookupと `Body.all`・`Primitive.all` の双方向の対応を示す。`StandardModel.builtins P` の署名と応答は既存の表を参照する。これらのlookupの定理の結論は、元定義と合成表との対応である。同じ名前に異なる元Defを持つ18名（`FunctionNames.collisionNames`）の公開名は合成表のキーに現れない。
+
+`ResourceRelease.response isResource v r` は、ある名前oとpayload iについて、vが `.const (.opaque o i)` であり `isResource o = true` であることを表す。rは成功none又は失敗someであり、どちらも同じ資源値について許す。`ResourceRelease.canonical` は、空の値文脈で `.opaque o Top` に型付く値と `B.valKind o = none` から、同じ名前のopaque定数の形を得る。`typed_response`は、資源名を対象の値型へ分類しない表について、任意の型付き資源値に任意の解放結果を供給する。Targetsの分類は全名前を量化して実表から証明する。外部ハンドルや対象を保持する値はこの関係へ加えない。
+
 篩型は `Ty.refined a p` で表す。`a` は篩を付ける型、`p` は有限構文の述語である。依存する関数型は `Ty.dependentFn t` で表し、引数列 `Tel` は、終端の `Tel.done result effect` と、引数を加える `Tel.param name argument rest` の二構成子を持つ。
 
 `param` の後続は、その引数を先頭に加えた値の文脈で読む。結果の型と潜在効果も全引数の下で読む。`Tel.arguments`・`Tel.instantiate` は、宣言順に実引数を一つずつ代入する。非依存の関数型 `fn` から作る `Ty.toTel` は、外側の参照を束縛数に応じて移す。依存する宣言の列を包む `signatureTel` と区別する。

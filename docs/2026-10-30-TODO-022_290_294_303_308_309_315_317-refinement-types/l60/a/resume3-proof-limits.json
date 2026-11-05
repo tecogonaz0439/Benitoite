@@ -1,0 +1,11 @@
+{
+  "default_heartbeats": 200000,
+  "default_trial_failure": {
+    "bytes": 58995,
+    "sha256": "1e2eacb0b83bb7f77ce820067949af54e8f281d4d03b5c3d9690bbbcb1726b18"
+  },
+  "ordinary_copy": "既定値で成功。追加の上限を削除",
+  "precise_copy": "from_bodyだけ既定値で時間切れ。証明に限って800000を指定",
+  "max_rec_depth": "元の5000を削除。既定値を使用",
+  "production": "Bodyの全lookupとPrimitive.signatureの生成だけ、既定値での時間切れに基づく局所の上限を置く。373lookupは個別証明へ分けて既定値を使用"
+}

@@ -1,0 +1,2235 @@
+[
+  {
+    "id": "E01.001",
+    "group": 1,
+    "lean_name": "Byte.fromInteger",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardScalarResponse.table_response",
+      "Benitoite.Release.Refinement.StandardScalarResponse.byteFrom_math"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Byte.fromInteger",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Byte.fromInteger",
+    "internal_name": "Byte.fromInteger",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L127",
+    "rust_names": [
+      "Byte.fromInteger"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p115"
+  },
+  {
+    "id": "E01.002",
+    "group": 1,
+    "lean_name": "Byte.toInteger",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardScalarResponse.table_response",
+      "Benitoite.Release.Refinement.StandardScalarResponse.byteTo_math"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Byte.toInteger",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Byte.toInteger",
+    "internal_name": "Byte.toInteger",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L130",
+    "rust_names": [
+      "Byte.toInteger"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p118"
+  },
+  {
+    "id": "E01.003",
+    "group": 1,
+    "lean_name": "Byte.toString",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardByteStringResponse.table_response",
+      "Benitoite.Release.Refinement.StandardByteStringResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Byte.toString",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Byte.toString",
+    "internal_name": "Byte.toString",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L131",
+    "rust_names": [
+      "Byte.toString"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p119"
+  },
+  {
+    "id": "E01.004",
+    "group": 1,
+    "lean_name": "Byte.bitwiseAnd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardScalarResponse.table_response",
+      "Benitoite.Release.Refinement.StandardScalarResponse.byte_bits_math"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Byte.bitwiseAnd",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Byte.bitwiseAnd",
+    "internal_name": "Byte.bitwiseAnd",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L123",
+    "rust_names": [
+      "Byte.bitwiseAnd"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p111"
+  },
+  {
+    "id": "E01.005",
+    "group": 1,
+    "lean_name": "Byte.bitwiseOr",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardScalarResponse.table_response",
+      "Benitoite.Release.Refinement.StandardScalarResponse.byte_bits_math"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Byte.bitwiseOr",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Byte.bitwiseOr",
+    "internal_name": "Byte.bitwiseOr",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L126",
+    "rust_names": [
+      "Byte.bitwiseOr"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p114"
+  },
+  {
+    "id": "E01.006",
+    "group": 1,
+    "lean_name": "Byte.bitwiseExclusiveOr",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardScalarResponse.table_response",
+      "Benitoite.Release.Refinement.StandardScalarResponse.byte_bits_math"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Byte.bitwiseExclusiveOr",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Byte.bitwiseExclusiveOr",
+    "internal_name": "Byte.bitwiseExclusiveOr",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L124",
+    "rust_names": [
+      "Byte.bitwiseExclusiveOr"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p112"
+  },
+  {
+    "id": "E01.007",
+    "group": 1,
+    "lean_name": "Byte.bitwiseNot",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardScalarResponse.table_response",
+      "Benitoite.Release.Refinement.StandardScalarResponse.byte_bits_math"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Byte.bitwiseNot",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Byte.bitwiseNot",
+    "internal_name": "Byte.bitwiseNot",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L125",
+    "rust_names": [
+      "Byte.bitwiseNot"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p113"
+  },
+  {
+    "id": "E01.008",
+    "group": 1,
+    "lean_name": "Byte.shiftLeft",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardScalarResponse.table_response",
+      "Benitoite.Release.Refinement.StandardScalarResponse.byte_bits_math"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Byte.shiftLeft",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Byte.shiftLeft",
+    "internal_name": "Byte.shiftLeft",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L128",
+    "rust_names": [
+      "Byte.shiftLeft"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p116"
+  },
+  {
+    "id": "E01.009",
+    "group": 1,
+    "lean_name": "Byte.shiftRight",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardScalarResponse.table_response",
+      "Benitoite.Release.Refinement.StandardScalarResponse.byte_bits_math"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Byte.shiftRight",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Byte.shiftRight",
+    "internal_name": "Byte.shiftRight",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L129",
+    "rust_names": [
+      "Byte.shiftRight"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p117"
+  },
+  {
+    "id": "E01.010",
+    "group": 1,
+    "lean_name": "Character.toInteger",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardScalarResponse.table_response",
+      "Benitoite.Release.Refinement.StandardScalarResponse.characterTo_math"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Character.toInteger",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Character.toInteger",
+    "internal_name": "Character.toInteger",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L156",
+    "rust_names": [
+      "Character.toInteger"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p144"
+  },
+  {
+    "id": "E01.011",
+    "group": 1,
+    "lean_name": "Character.fromInteger",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardScalarResponse.table_response",
+      "Benitoite.Release.Refinement.StandardScalarResponse.characterFrom_math"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Character.fromInteger",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Character.fromInteger",
+    "internal_name": "Character.fromInteger",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L148",
+    "rust_names": [
+      "Character.fromInteger"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p136"
+  },
+  {
+    "id": "E01.012",
+    "group": 1,
+    "lean_name": "Character.toString",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCharacterResponse.table_response",
+      "Benitoite.Release.Refinement.StandardCharacterResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Character.toString",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Character.toString",
+    "internal_name": "Character.toString",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L158",
+    "rust_names": [
+      "Character.toString"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p146"
+  },
+  {
+    "id": "E01.013",
+    "group": 1,
+    "lean_name": "Character.isASCIIDigit",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCharacterResponse.table_response",
+      "Benitoite.Release.Refinement.StandardCharacterResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Character.isASCIIDigit",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Character.isASCIIDigit",
+    "internal_name": "Character.isASCIIDigit",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L149",
+    "rust_names": [
+      "Character.isASCIIDigit"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p137"
+  },
+  {
+    "id": "E01.014",
+    "group": 1,
+    "lean_name": "Character.isASCIIWhitespace",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCharacterResponse.table_response",
+      "Benitoite.Release.Refinement.StandardCharacterResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Character.isASCIIWhitespace",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Character.isASCIIWhitespace",
+    "internal_name": "Character.isASCIIWhitespace",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L150",
+    "rust_names": [
+      "Character.isASCIIWhitespace"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p138"
+  },
+  {
+    "id": "E01.015",
+    "group": 1,
+    "lean_name": "Character.isAlphabetic",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCharacterResponse.table_response",
+      "Benitoite.Release.Refinement.StandardCharacterResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Character.isAlphabetic",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Character.isAlphabetic",
+    "internal_name": "Character.isAlphabetic",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L151",
+    "rust_names": [
+      "Character.isAlphabetic"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p139"
+  },
+  {
+    "id": "E01.016",
+    "group": 1,
+    "lean_name": "Character.isNumeric",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCharacterResponse.table_response",
+      "Benitoite.Release.Refinement.StandardCharacterResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Character.isNumeric",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Character.isNumeric",
+    "internal_name": "Character.isNumeric",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L153",
+    "rust_names": [
+      "Character.isNumeric"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p141"
+  },
+  {
+    "id": "E01.017",
+    "group": 1,
+    "lean_name": "Character.isWhitespace",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCharacterResponse.table_response",
+      "Benitoite.Release.Refinement.StandardCharacterResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Character.isWhitespace",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Character.isWhitespace",
+    "internal_name": "Character.isWhitespace",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L155",
+    "rust_names": [
+      "Character.isWhitespace"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p143"
+  },
+  {
+    "id": "E01.018",
+    "group": 1,
+    "lean_name": "Character.isUppercase",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCharacterResponse.table_response",
+      "Benitoite.Release.Refinement.StandardCharacterResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Character.isUppercase",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Character.isUppercase",
+    "internal_name": "Character.isUppercase",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L154",
+    "rust_names": [
+      "Character.isUppercase"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p142"
+  },
+  {
+    "id": "E01.019",
+    "group": 1,
+    "lean_name": "Character.isLowercase",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCharacterResponse.table_response",
+      "Benitoite.Release.Refinement.StandardCharacterResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Character.isLowercase",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Character.isLowercase",
+    "internal_name": "Character.isLowercase",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L152",
+    "rust_names": [
+      "Character.isLowercase"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p140"
+  },
+  {
+    "id": "E01.020",
+    "group": 1,
+    "lean_name": "Character.toUppercase",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCharacterResponse.table_response",
+      "Benitoite.Release.Refinement.StandardCharacterResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Character.toUppercase",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Character.toUppercase",
+    "internal_name": "Character.toUppercase",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L159",
+    "rust_names": [
+      "Character.toUppercase"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p147"
+  },
+  {
+    "id": "E01.021",
+    "group": 1,
+    "lean_name": "Character.toLowercase",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCharacterResponse.table_response",
+      "Benitoite.Release.Refinement.StandardCharacterResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Character.toLowercase",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Character.toLowercase",
+    "internal_name": "Character.toLowercase",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L157",
+    "rust_names": [
+      "Character.toLowercase"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p145"
+  },
+  {
+    "id": "E01.022",
+    "group": 1,
+    "lean_name": "Float.toString",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardNumericRemainingResponse.table_response",
+      "Benitoite.Release.Refinement.StandardNumericRemainingResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Float.toString",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Float.toString",
+    "internal_name": "Float.toString",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L184",
+    "rust_names": [
+      "Float.toString"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p171"
+  },
+  {
+    "id": "E01.023",
+    "group": 1,
+    "lean_name": "Float.parse",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardNumericRemainingResponse.table_response",
+      "Benitoite.Release.Refinement.StandardNumericRemainingResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Float.parse",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Float.parse",
+    "internal_name": "Float.parse",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L181",
+    "rust_names": [
+      "Float.parse"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p168"
+  },
+  {
+    "id": "E01.024",
+    "group": 1,
+    "lean_name": "Float.truncate",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardFloatMathResponse.table_response",
+      "Benitoite.Release.Refinement.StandardFloatMathResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Float.truncate",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Float.truncate",
+    "internal_name": "Float.truncate",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L185",
+    "rust_names": [
+      "Float.truncate"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p172"
+  },
+  {
+    "id": "E01.025",
+    "group": 1,
+    "lean_name": "Float.isNaN",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardScalarResponse.table_response",
+      "Benitoite.Release.Refinement.StandardScalarResponse.float_class_math"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Float.isNaN",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Float.isNaN",
+    "internal_name": "Float.isNaN",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L180",
+    "rust_names": [
+      "Float.isNaN"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p167"
+  },
+  {
+    "id": "E01.026",
+    "group": 1,
+    "lean_name": "Float.absolute",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardFloatMathResponse.table_response",
+      "Benitoite.Release.Refinement.StandardFloatMathResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Float.absolute",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Float.absolute",
+    "internal_name": "Float.absolute",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L177",
+    "rust_names": [
+      "Float.absolute"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p164"
+  },
+  {
+    "id": "E01.027",
+    "group": 1,
+    "lean_name": "Float.floor",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardFloatMathResponse.table_response",
+      "Benitoite.Release.Refinement.StandardFloatMathResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Float.floor",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Float.floor",
+    "internal_name": "Float.floor",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L179",
+    "rust_names": [
+      "Float.floor"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p166"
+  },
+  {
+    "id": "E01.028",
+    "group": 1,
+    "lean_name": "Float.ceiling",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardFloatMathResponse.table_response",
+      "Benitoite.Release.Refinement.StandardFloatMathResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Float.ceiling",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Float.ceiling",
+    "internal_name": "Float.ceiling",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L178",
+    "rust_names": [
+      "Float.ceiling"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p165"
+  },
+  {
+    "id": "E01.029",
+    "group": 1,
+    "lean_name": "Float.round",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardFloatMathResponse.table_response",
+      "Benitoite.Release.Refinement.StandardFloatMathResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Float.round",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Float.round",
+    "internal_name": "Float.round",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L182",
+    "rust_names": [
+      "Float.round"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p169"
+  },
+  {
+    "id": "E01.030",
+    "group": 1,
+    "lean_name": "Float.squareRoot",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardFloatMathResponse.table_response",
+      "Benitoite.Release.Refinement.StandardFloatMathResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Float.squareRoot",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Float.squareRoot",
+    "internal_name": "Float.squareRoot",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L183",
+    "rust_names": [
+      "Float.squareRoot"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p170"
+  },
+  {
+    "id": "E01.031",
+    "group": 1,
+    "lean_name": "Float32.fromFloat",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardNumericRemainingResponse.table_response",
+      "Benitoite.Release.Refinement.StandardNumericRemainingResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Float32.fromFloat",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Float32.fromFloat",
+    "internal_name": "Float32.fromFloat",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L189",
+    "rust_names": [
+      "Float32.fromFloat"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p176"
+  },
+  {
+    "id": "E01.032",
+    "group": 1,
+    "lean_name": "Float32.toFloat",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardNumericRemainingResponse.table_response",
+      "Benitoite.Release.Refinement.StandardNumericRemainingResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Float32.toFloat",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Float32.toFloat",
+    "internal_name": "Float32.toFloat",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L195",
+    "rust_names": [
+      "Float32.toFloat"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p182"
+  },
+  {
+    "id": "E01.033",
+    "group": 1,
+    "lean_name": "Float32.parse",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardNumericRemainingResponse.table_response",
+      "Benitoite.Release.Refinement.StandardNumericRemainingResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Float32.parse",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Float32.parse",
+    "internal_name": "Float32.parse",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L192",
+    "rust_names": [
+      "Float32.parse"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p179"
+  },
+  {
+    "id": "E01.034",
+    "group": 1,
+    "lean_name": "Float32.toString",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardNumericRemainingResponse.table_response",
+      "Benitoite.Release.Refinement.StandardNumericRemainingResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Float32.toString",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Float32.toString",
+    "internal_name": "Float32.toString",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L196",
+    "rust_names": [
+      "Float32.toString"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p183"
+  },
+  {
+    "id": "E01.035",
+    "group": 1,
+    "lean_name": "Float32.truncate",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardFloatMathResponse.table_response",
+      "Benitoite.Release.Refinement.StandardFloatMathResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Float32.truncate",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Float32.truncate",
+    "internal_name": "Float32.truncate",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L197",
+    "rust_names": [
+      "Float32.truncate"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p184"
+  },
+  {
+    "id": "E01.036",
+    "group": 1,
+    "lean_name": "Float32.isNaN",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardScalarResponse.table_response",
+      "Benitoite.Release.Refinement.StandardScalarResponse.float_class_math"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Float32.isNaN",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Float32.isNaN",
+    "internal_name": "Float32.isNaN",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L191",
+    "rust_names": [
+      "Float32.isNaN"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p178"
+  },
+  {
+    "id": "E01.037",
+    "group": 1,
+    "lean_name": "Float32.isInfinite",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardScalarResponse.table_response",
+      "Benitoite.Release.Refinement.StandardScalarResponse.float_class_math"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Float32.isInfinite",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Float32.isInfinite",
+    "internal_name": "Float32.isInfinite",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L190",
+    "rust_names": [
+      "Float32.isInfinite"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p177"
+  },
+  {
+    "id": "E01.038",
+    "group": 1,
+    "lean_name": "Float32.absolute",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardFloatMathResponse.table_response",
+      "Benitoite.Release.Refinement.StandardFloatMathResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Float32.absolute",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Float32.absolute",
+    "internal_name": "Float32.absolute",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L186",
+    "rust_names": [
+      "Float32.absolute"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p173"
+  },
+  {
+    "id": "E01.039",
+    "group": 1,
+    "lean_name": "Float32.floor",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardFloatMathResponse.table_response",
+      "Benitoite.Release.Refinement.StandardFloatMathResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Float32.floor",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Float32.floor",
+    "internal_name": "Float32.floor",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L188",
+    "rust_names": [
+      "Float32.floor"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p175"
+  },
+  {
+    "id": "E01.040",
+    "group": 1,
+    "lean_name": "Float32.ceiling",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardFloatMathResponse.table_response",
+      "Benitoite.Release.Refinement.StandardFloatMathResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Float32.ceiling",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Float32.ceiling",
+    "internal_name": "Float32.ceiling",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L187",
+    "rust_names": [
+      "Float32.ceiling"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p174"
+  },
+  {
+    "id": "E01.041",
+    "group": 1,
+    "lean_name": "Float32.round",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardFloatMathResponse.table_response",
+      "Benitoite.Release.Refinement.StandardFloatMathResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Float32.round",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Float32.round",
+    "internal_name": "Float32.round",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L193",
+    "rust_names": [
+      "Float32.round"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p180"
+  },
+  {
+    "id": "E01.042",
+    "group": 1,
+    "lean_name": "Float32.squareRoot",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardFloatMathResponse.table_response",
+      "Benitoite.Release.Refinement.StandardFloatMathResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Float32.squareRoot",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Float32.squareRoot",
+    "internal_name": "Float32.squareRoot",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L194",
+    "rust_names": [
+      "Float32.squareRoot"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p181"
+  },
+  {
+    "id": "E01.043",
+    "group": 1,
+    "lean_name": "Decimal.round",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardDecimalResponse.table_response",
+      "Benitoite.Release.Refinement.StandardDecimalResponse.round_math"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Decimal.round",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Decimal.round",
+    "internal_name": "Decimal.round",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L164",
+    "rust_names": [
+      "Decimal.round"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p152"
+  },
+  {
+    "id": "E01.044",
+    "group": 1,
+    "lean_name": "Decimal.absolute",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardDecimalResponse.table_response",
+      "Benitoite.Release.Refinement.StandardDecimalResponse.absolute_math"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Decimal.absolute",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Decimal.absolute",
+    "internal_name": "Decimal.absolute",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L160",
+    "rust_names": [
+      "Decimal.absolute"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p148"
+  },
+  {
+    "id": "E01.045",
+    "group": 1,
+    "lean_name": "Decimal.fromInteger",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardDecimalResponse.table_response",
+      "Benitoite.Release.Refinement.StandardDecimalResponse.fromInteger_math"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Decimal.fromInteger",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Decimal.fromInteger",
+    "internal_name": "Decimal.fromInteger",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L162",
+    "rust_names": [
+      "Decimal.fromInteger"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p150"
+  },
+  {
+    "id": "E01.046",
+    "group": 1,
+    "lean_name": "Decimal.truncate",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardDecimalResponse.table_response",
+      "Benitoite.Release.Refinement.StandardDecimalResponse.truncate_math"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Decimal.truncate",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Decimal.truncate",
+    "internal_name": "Decimal.truncate",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L167",
+    "rust_names": [
+      "Decimal.truncate"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p155"
+  },
+  {
+    "id": "E01.047",
+    "group": 1,
+    "lean_name": "Decimal.toFloat",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardNumericRemainingResponse.table_response",
+      "Benitoite.Release.Refinement.StandardNumericRemainingResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Decimal.toFloat",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Decimal.toFloat",
+    "internal_name": "Decimal.toFloat",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L165",
+    "rust_names": [
+      "Decimal.toFloat"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p153"
+  },
+  {
+    "id": "E01.048",
+    "group": 1,
+    "lean_name": "Decimal.fromFloat",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardDecimalResponse.fromFloat_exit",
+      "Benitoite.Release.Refinement.StandardNumericRemainingResponse.table_response",
+      "Benitoite.Release.Refinement.StandardNumericRemainingResponse.fromFloat_parsed",
+      "Benitoite.Release.Refinement.StandardNumericRemainingResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Decimal.fromFloat",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Decimal.fromFloat",
+    "internal_name": "Decimal.fromFloat",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L161",
+    "rust_names": [
+      "Decimal.fromFloat"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p149"
+  },
+  {
+    "id": "E01.049",
+    "group": 1,
+    "lean_name": "Decimal.toString",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardNumericRemainingResponse.table_response",
+      "Benitoite.Release.Refinement.StandardNumericRemainingResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Decimal.toString",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Decimal.toString",
+    "internal_name": "Decimal.toString",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L166",
+    "rust_names": [
+      "Decimal.toString"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p154"
+  },
+  {
+    "id": "E01.050",
+    "group": 1,
+    "lean_name": "Decimal.parse",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardNumericRemainingResponse.table_response",
+      "Benitoite.Release.Refinement.StandardNumericRemainingResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Decimal.parse",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Decimal.parse",
+    "internal_name": "Decimal.parse",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L163",
+    "rust_names": [
+      "Decimal.parse"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p151"
+  },
+  {
+    "id": "E01.051",
+    "group": 1,
+    "lean_name": "String.byteLength",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardBytesResponse.table_response",
+      "Benitoite.Release.Refinement.StandardBytesResponse.related_response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "String.byteLength",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "String.byteLength",
+    "internal_name": "String.byteLength",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L381",
+    "rust_names": [
+      "String.byteLength"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p295"
+  },
+  {
+    "id": "E01.052",
+    "group": 1,
+    "lean_name": "String.byteSlice",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.table_response",
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "String.byteSlice",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "String.byteSlice",
+    "internal_name": "String.byteSlice",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L382",
+    "rust_names": [
+      "String.byteSlice"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p296"
+  },
+  {
+    "id": "E01.053",
+    "group": 1,
+    "lean_name": "String.characterCount",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardBytesResponse.table_response",
+      "Benitoite.Release.Refinement.StandardBytesResponse.related_response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "String.characterCount",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "String.characterCount",
+    "internal_name": "String.characterCount",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L384",
+    "rust_names": [
+      "String.characterCount"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p298"
+  },
+  {
+    "id": "E01.054",
+    "group": 1,
+    "lean_name": "String.characterAt",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.table_response",
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "String.characterAt",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "String.characterAt",
+    "internal_name": "String.characterAt",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L383",
+    "rust_names": [
+      "String.characterAt"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p297"
+  },
+  {
+    "id": "E01.055",
+    "group": 1,
+    "lean_name": "String.characterSlice",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.table_response",
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "String.characterSlice",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "String.characterSlice",
+    "internal_name": "String.characterSlice",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L385",
+    "rust_names": [
+      "String.characterSlice"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p299"
+  },
+  {
+    "id": "E01.056",
+    "group": 1,
+    "lean_name": "String.isEmpty",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.table_response",
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "String.isEmpty",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "String.isEmpty",
+    "internal_name": "String.isEmpty",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L397",
+    "rust_names": [
+      "String.isEmpty"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p311"
+  },
+  {
+    "id": "E01.057",
+    "group": 1,
+    "lean_name": "String.contains",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.table_response",
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "String.contains",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "String.contains",
+    "internal_name": "String.contains",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L387",
+    "rust_names": [
+      "String.contains"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p301"
+  },
+  {
+    "id": "E01.058",
+    "group": 1,
+    "lean_name": "String.startsWith",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.table_response",
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "String.startsWith",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "String.startsWith",
+    "internal_name": "String.startsWith",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L403",
+    "rust_names": [
+      "String.startsWith"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p317"
+  },
+  {
+    "id": "E01.059",
+    "group": 1,
+    "lean_name": "String.endsWith",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.table_response",
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "String.endsWith",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "String.endsWith",
+    "internal_name": "String.endsWith",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L394",
+    "rust_names": [
+      "String.endsWith"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p308"
+  },
+  {
+    "id": "E01.060",
+    "group": 1,
+    "lean_name": "String.byteIndexOf",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.table_response",
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "String.byteIndexOf",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "String.byteIndexOf",
+    "internal_name": "String.byteIndexOf",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L380",
+    "rust_names": [
+      "String.byteIndexOf"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p294"
+  },
+  {
+    "id": "E01.061",
+    "group": 1,
+    "lean_name": "String.split",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.table_response",
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "String.split",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "String.split",
+    "internal_name": "String.split",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L402",
+    "rust_names": [
+      "String.split"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p316"
+  },
+  {
+    "id": "E01.062",
+    "group": 1,
+    "lean_name": "String.lines",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.table_response",
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "String.lines",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "String.lines",
+    "internal_name": "String.lines",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L399",
+    "rust_names": [
+      "String.lines"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p313"
+  },
+  {
+    "id": "E01.063",
+    "group": 1,
+    "lean_name": "String.join",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.table_response",
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "String.join",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "String.join",
+    "internal_name": "String.join",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L398",
+    "rust_names": [
+      "String.join"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p312"
+  },
+  {
+    "id": "E01.064",
+    "group": 1,
+    "lean_name": "String.trim",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.table_response",
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "String.trim",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "String.trim",
+    "internal_name": "String.trim",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L407",
+    "rust_names": [
+      "String.trim"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p321"
+  },
+  {
+    "id": "E01.065",
+    "group": 1,
+    "lean_name": "String.replace",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.table_response",
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "String.replace",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "String.replace",
+    "internal_name": "String.replace",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L401",
+    "rust_names": [
+      "String.replace"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p315"
+  },
+  {
+    "id": "E01.066",
+    "group": 1,
+    "lean_name": "String.repeat",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.table_response",
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "String.repeat",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "String.repeat",
+    "internal_name": "String.repeat",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L400",
+    "rust_names": [
+      "String.repeat"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p314"
+  },
+  {
+    "id": "E01.067",
+    "group": 1,
+    "lean_name": "String.characters",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.table_response",
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "String.characters",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "String.characters",
+    "internal_name": "String.characters",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L386",
+    "rust_names": [
+      "String.characters"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p300"
+  },
+  {
+    "id": "E01.068",
+    "group": 1,
+    "lean_name": "String.fromCharacters",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.table_response",
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "String.fromCharacters",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "String.fromCharacters",
+    "internal_name": "String.fromCharacters",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L395",
+    "rust_names": [
+      "String.fromCharacters"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p309"
+  },
+  {
+    "id": "E01.069",
+    "group": 1,
+    "lean_name": "String.toUppercase",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.table_response",
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "String.toUppercase",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "String.toUppercase",
+    "internal_name": "String.toUppercase",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L406",
+    "rust_names": [
+      "String.toUppercase"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p320"
+  },
+  {
+    "id": "E01.070",
+    "group": 1,
+    "lean_name": "String.toLowercase",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.table_response",
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "String.toLowercase",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "String.toLowercase",
+    "internal_name": "String.toLowercase",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L404",
+    "rust_names": [
+      "String.toLowercase"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p318"
+  },
+  {
+    "id": "E01.071",
+    "group": 1,
+    "lean_name": "String.toUTF8",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.table_response",
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "String.toUTF8",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "String.toUTF8",
+    "internal_name": "String.toUTF8",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L405",
+    "rust_names": [
+      "String.toUTF8"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p319"
+  },
+  {
+    "id": "E01.072",
+    "group": 1,
+    "lean_name": "String.fromUTF8",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.table_response",
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "String.fromUTF8",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "String.fromUTF8",
+    "internal_name": "String.fromUTF8",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L396",
+    "rust_names": [
+      "String.fromUTF8"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p310"
+  },
+  {
+    "id": "E01.073",
+    "group": 1,
+    "lean_name": "String.displayWidth",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.table_response",
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "String.displayWidth",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "String.displayWidth",
+    "internal_name": "String.displayWidth",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L388",
+    "rust_names": [
+      "String.displayWidth"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p302"
+  },
+  {
+    "id": "E01.074",
+    "group": 1,
+    "lean_name": "String.displayWidthCJK",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.table_response",
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "String.displayWidthCJK",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "String.displayWidthCJK",
+    "internal_name": "String.displayWidthCJK",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L389",
+    "rust_names": [
+      "String.displayWidthCJK"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p303"
+  },
+  {
+    "id": "E01.075",
+    "group": 1,
+    "lean_name": "String.displayWidthPadStart",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.table_response",
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "String.displayWidthPadStart",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "String.displayWidthPadStart",
+    "internal_name": "String.displayWidthPadStart",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L392",
+    "rust_names": [
+      "String.displayWidthPadStart"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p306"
+  },
+  {
+    "id": "E01.076",
+    "group": 1,
+    "lean_name": "String.displayWidthPadEnd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.table_response",
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "String.displayWidthPadEnd",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "String.displayWidthPadEnd",
+    "internal_name": "String.displayWidthPadEnd",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L390",
+    "rust_names": [
+      "String.displayWidthPadEnd"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p304"
+  },
+  {
+    "id": "E01.077",
+    "group": 1,
+    "lean_name": "String.displayWidthPadStartCJK",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.table_response",
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "String.displayWidthPadStartCJK",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "String.displayWidthPadStartCJK",
+    "internal_name": "String.displayWidthPadStartCJK",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L393",
+    "rust_names": [
+      "String.displayWidthPadStartCJK"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p307"
+  },
+  {
+    "id": "E01.078",
+    "group": 1,
+    "lean_name": "String.displayWidthPadEndCJK",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.table_response",
+      "Benitoite.Release.Refinement.StandardStringOrdinaryResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "String.displayWidthPadEndCJK",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "String.displayWidthPadEndCJK",
+    "internal_name": "String.displayWidthPadEndCJK",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L391",
+    "rust_names": [
+      "String.displayWidthPadEndCJK"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p305"
+  },
+  {
+    "id": "E01.079",
+    "group": 1,
+    "lean_name": "Bytes.empty",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardBytesOrdinaryResponse.table_response",
+      "Benitoite.Release.Refinement.StandardBytesOrdinaryResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Bytes.empty",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Bytes.empty",
+    "internal_name": "Bytes.empty",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L133",
+    "rust_names": [
+      "Bytes.empty"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p121"
+  },
+  {
+    "id": "E01.080",
+    "group": 1,
+    "lean_name": "Bytes.fromList",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardBytesResponse.table_response",
+      "Benitoite.Release.Refinement.StandardBytesResponse.related_response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Bytes.fromList",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Bytes.fromList",
+    "internal_name": "Bytes.fromList",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L137",
+    "rust_names": [
+      "Bytes.fromList"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p125"
+  },
+  {
+    "id": "E01.081",
+    "group": 1,
+    "lean_name": "Bytes.fromIntegers",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardBytesOrdinaryResponse.table_response",
+      "Benitoite.Release.Refinement.StandardBytesOrdinaryResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Bytes.fromIntegers",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Bytes.fromIntegers",
+    "internal_name": "Bytes.fromIntegers",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L136",
+    "rust_names": [
+      "Bytes.fromIntegers"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p124"
+  },
+  {
+    "id": "E01.082",
+    "group": 1,
+    "lean_name": "Bytes.fromHex",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardBytesOrdinaryResponse.table_response",
+      "Benitoite.Release.Refinement.StandardBytesOrdinaryResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Bytes.fromHex",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Bytes.fromHex",
+    "internal_name": "Bytes.fromHex",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L135",
+    "rust_names": [
+      "Bytes.fromHex"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p123"
+  },
+  {
+    "id": "E01.083",
+    "group": 1,
+    "lean_name": "Bytes.fromBinary",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardBytesOrdinaryResponse.table_response",
+      "Benitoite.Release.Refinement.StandardBytesOrdinaryResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Bytes.fromBinary",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Bytes.fromBinary",
+    "internal_name": "Bytes.fromBinary",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L134",
+    "rust_names": [
+      "Bytes.fromBinary"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p122"
+  },
+  {
+    "id": "E01.084",
+    "group": 1,
+    "lean_name": "Bytes.toList",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardBytesResponse.table_response",
+      "Benitoite.Release.Refinement.StandardBytesResponse.related_response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Bytes.toList",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Bytes.toList",
+    "internal_name": "Bytes.toList",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L147",
+    "rust_names": [
+      "Bytes.toList"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p135"
+  },
+  {
+    "id": "E01.085",
+    "group": 1,
+    "lean_name": "Bytes.toHex",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardBytesOrdinaryResponse.table_response",
+      "Benitoite.Release.Refinement.StandardBytesOrdinaryResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Bytes.toHex",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Bytes.toHex",
+    "internal_name": "Bytes.toHex",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L146",
+    "rust_names": [
+      "Bytes.toHex"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p134"
+  },
+  {
+    "id": "E01.086",
+    "group": 1,
+    "lean_name": "Bytes.toBinary",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardBytesOrdinaryResponse.table_response",
+      "Benitoite.Release.Refinement.StandardBytesOrdinaryResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Bytes.toBinary",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Bytes.toBinary",
+    "internal_name": "Bytes.toBinary",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L145",
+    "rust_names": [
+      "Bytes.toBinary"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p133"
+  },
+  {
+    "id": "E01.087",
+    "group": 1,
+    "lean_name": "Bytes.length",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardBytesResponse.table_response",
+      "Benitoite.Release.Refinement.StandardBytesResponse.related_response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Bytes.length",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Bytes.length",
+    "internal_name": "Bytes.length",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L141",
+    "rust_names": [
+      "Bytes.length"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p129"
+  },
+  {
+    "id": "E01.088",
+    "group": 1,
+    "lean_name": "Bytes.get",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardBytesOrdinaryResponse.table_response",
+      "Benitoite.Release.Refinement.StandardBytesOrdinaryResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Bytes.get",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Bytes.get",
+    "internal_name": "Bytes.get",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L140",
+    "rust_names": [
+      "Bytes.get"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p128"
+  },
+  {
+    "id": "E01.089",
+    "group": 1,
+    "lean_name": "Bytes.slice",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardBytesOrdinaryResponse.table_response",
+      "Benitoite.Release.Refinement.StandardBytesOrdinaryResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Bytes.slice",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Bytes.slice",
+    "internal_name": "Bytes.slice",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L144",
+    "rust_names": [
+      "Bytes.slice"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p132"
+  },
+  {
+    "id": "E01.090",
+    "group": 1,
+    "lean_name": "Bytes.concatenate",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardBytesOrdinaryResponse.table_response",
+      "Benitoite.Release.Refinement.StandardBytesOrdinaryResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Bytes.concatenate",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Bytes.concatenate",
+    "internal_name": "Bytes.concatenate",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L132",
+    "rust_names": [
+      "Bytes.concatenate"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p120"
+  },
+  {
+    "id": "E01.091",
+    "group": 1,
+    "lean_name": "Bytes.readUnsigned",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardBytesOrdinaryResponse.table_response",
+      "Benitoite.Release.Refinement.StandardBytesOrdinaryResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Bytes.readUnsigned",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Bytes.readUnsigned",
+    "internal_name": "Bytes.readUnsigned",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L143",
+    "rust_names": [
+      "Bytes.readUnsigned"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p131"
+  },
+  {
+    "id": "E01.092",
+    "group": 1,
+    "lean_name": "Bytes.readSigned",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardBytesOrdinaryResponse.table_response",
+      "Benitoite.Release.Refinement.StandardBytesOrdinaryResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Bytes.readSigned",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Bytes.readSigned",
+    "internal_name": "Bytes.readSigned",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L142",
+    "rust_names": [
+      "Bytes.readSigned"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p130"
+  },
+  {
+    "id": "E01.093",
+    "group": 1,
+    "lean_name": "Bytes.fromUnsigned",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardBytesOrdinaryResponse.table_response",
+      "Benitoite.Release.Refinement.StandardBytesOrdinaryResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Bytes.fromUnsigned",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Bytes.fromUnsigned",
+    "internal_name": "Bytes.fromUnsigned",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L139",
+    "rust_names": [
+      "Bytes.fromUnsigned"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p127"
+  },
+  {
+    "id": "E01.094",
+    "group": 1,
+    "lean_name": "Bytes.fromSigned",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardBytesOrdinaryResponse.table_response",
+      "Benitoite.Release.Refinement.StandardBytesOrdinaryResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "Bytes.fromSigned",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "Bytes.fromSigned",
+    "internal_name": "Bytes.fromSigned",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L138",
+    "rust_names": [
+      "Bytes.fromSigned"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p126"
+  },
+  {
+    "id": "E01.095",
+    "group": 1,
+    "lean_name": "List.length",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardListResponse.table_response",
+      "Benitoite.Release.Refinement.StandardListResponse.related_response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "List.length",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "List.length",
+    "internal_name": "List.length",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L318",
+    "rust_names": [
+      "List.length"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p262"
+  },
+  {
+    "id": "E01.096",
+    "group": 1,
+    "lean_name": "List.isEmpty",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardListResponse.table_response",
+      "Benitoite.Release.Refinement.StandardListResponse.related_response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "List.isEmpty",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "List.isEmpty",
+    "internal_name": "List.isEmpty",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L317",
+    "rust_names": [
+      "List.isEmpty"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p261"
+  },
+  {
+    "id": "E01.097",
+    "group": 1,
+    "lean_name": "List.head",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardListRemainingResponse.table_response",
+      "Benitoite.Release.Refinement.StandardListRemainingResponse.response"
+    ],
+    "source": "l40/e/sources-r4-u28.json",
+    "expression": "List.head",
+    "contract": "通常公開署名・同じ実δ/本体",
+    "category": "pure",
+    "receiver": "L60.24〜.26",
+    "original_def": null,
+    "public_name": "List.head",
+    "internal_name": "List.head",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L316",
+    "rust_names": [
+      "List.head"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p260"
+  }
+]

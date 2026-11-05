@@ -1,0 +1,97 @@
+{
+  "counts": {
+    "lookupなどの副条件付き": 51,
+    "固定のP/B": 77
+  },
+  "source_bodies": 130,
+  "source_reference_occurrences": 63,
+  "internal_source_references": 0,
+  "mismatches": 0,
+  "lookup_comparisons": 114,
+  "comparisons_by_kind": {
+    "lookupなどの副条件付き": 101,
+    "固定のP/B": 13
+  },
+  "no_lookup_by_kind": {
+    "lookupなどの副条件付き": 12,
+    "固定のP/B": 71
+  },
+  "rows": [
+    {
+      "file": "resume4-evidence-context-01.json",
+      "bytes": 70687,
+      "sha256": "34c8b6029475805e5ea878994e19f7f8a92b2bd8ac8b431a34165ba9146054f3"
+    }
+  ],
+  "references": [
+    {
+      "file": "resume4-source-references-01.json",
+      "bytes": 8459,
+      "sha256": "3b48b0392ab012965418499bdd0acbabf6ec1f65cf51f2140fc1aa2649d0da4b"
+    }
+  ],
+  "inputs": {
+    "evidence-context.lean": {
+      "bytes": 9026,
+      "sha256": "31b13e2c1a6fb07b6f35211ba47913e99fefaa0b2ef87f5b1bc57fb6d5062eb5"
+    },
+    "resume3-body-sources.json": {
+      "bytes": 46265,
+      "sha256": "d4d7e2a6bc88f4aa84ce836eb1cad18dd187de4718c88b032c94573c2371de53"
+    },
+    "resume3-body-classification.json": {
+      "bytes": 50273,
+      "sha256": "db46f74d50978b07e3cf190b13475cc846c5e0f1a68861c023417f7bb12c8320"
+    }
+  },
+  "raw": {
+    "bytes": 69190,
+    "sha256": "267e78377225b1198987d8ed5ef4e96229a71e165273ba3aa075daed486ef2e9"
+  },
+  "execution": {
+    "label": "resume4-context",
+    "cwd": "formal",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/a/evidence-context.lean"
+    ],
+    "start": "2026-11-05T11:08:51+09:00",
+    "end": "2026-11-05T11:08:56+09:00",
+    "exit": 0,
+    "wall_seconds": 4.6522,
+    "raw": {
+      "bytes": 69190,
+      "sha256": "267e78377225b1198987d8ed5ef4e96229a71e165273ba3aa075daed486ef2e9"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  "local_audit": {
+    "declarations": 18,
+    "names": [
+      "_private._stdin.0.lookups.match_1",
+      "_private._stdin.0.lookups",
+      "_private._stdin.0.specialize.match_1",
+      "_private._stdin.0.alternatives",
+      "_private._stdin.0.specialize.match_3",
+      "_private._stdin.0.alternatives._sparseCasesOn_5",
+      "_private._stdin.0.lookups._unsafe_rec",
+      "_private._stdin.0.alternatives.match_8",
+      "_private._stdin.0.specialize._unsafe_rec",
+      "_private._stdin.0.ordinaryContext",
+      "_private._stdin.0.alternatives.match_5",
+      "_private._stdin.0.specialize",
+      "_private._stdin.0.alternatives.match_1",
+      "_private._stdin.0.alternatives._sparseCasesOn_2",
+      "_private._stdin.0.alternatives._sparseCasesOn_1",
+      "_private._stdin.0.alternatives._sparseCasesOn_8",
+      "_private._stdin.0.functionReferences",
+      "_private._stdin.0.term"
+    ],
+    "new_axioms": 0,
+    "sorryAx": 0
+  }
+}

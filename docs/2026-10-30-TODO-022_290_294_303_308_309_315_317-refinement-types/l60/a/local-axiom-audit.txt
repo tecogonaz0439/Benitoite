@@ -1,0 +1,14 @@
+
+/- private・生成宣言も含む、この再現入力の全宣言の公理依存。 -/
+open Lean Elab Command in
+run_cmd do
+  let mut seen : Std.HashSet Name := {}
+  repeat
+    let env ← getEnv
+    let localNames := env.constants.toList.filterMap fun (n, _) =>
+      if (env.getModuleIdxFor? n).isNone && !seen.contains n then some n else none
+    if localNames.isEmpty then break
+    for n in localNames do
+      seen := seen.insert n
+      logInfo m!"LOCAL_AUDIT {n}"
+      elabCommand (← `(#print axioms $(mkIdent n)))

@@ -1,0 +1,125 @@
+{
+  "status": "新軽1・新軽2の処置と自己照合を完了",
+  "b_work": "80230d96305756057a63a07dc2b0d8aa1ebf3a75",
+  "source_rows": 552,
+  "body_sources": 159,
+  "distinct_body_defs": 130,
+  "extra_helper_defs": 1,
+  "primitive_names": 373,
+  "resource_names": 1,
+  "composition_keys": 504,
+  "ledger_composition_rows": 486,
+  "assumption_rows": 154,
+  "rust_references": 523,
+  "model_conditions": 75,
+  "renamed_names": 18,
+  "ledger_to_lookup_missing": 0,
+  "lookup_to_ledger_missing": 0,
+  "evidence_on_assumption_rows": 0,
+  "lookup_composition_complete": true,
+  "semantic_composition_complete": false,
+  "assumption_categories": {
+    "δ": 81,
+    "専用の遷移": 4,
+    "形式化の外": 7,
+    "IO 応答": 46,
+    "通常資源の状態": 16
+  },
+  "outside_names": [
+    "Task.all",
+    "Task.allOk",
+    "Task.await",
+    "Task.race",
+    "Task.withTimeout",
+    "TaskGroup.open",
+    "TaskGroup.spawn"
+  ],
+  "outside_scope_basis": {
+    "file": "docs/design/07-quality/07-04-formal-semantics.md",
+    "heading": "証明する性質",
+    "statement": "- 並行処理のタスクと、タスクが引き継いだハンドラ（[並行処理](../01-spec/01-11-concurrency.md)。01-12 も状態の型付けに含めない）。"
+  },
+  "dedicated_names": [
+    "Lazy.force",
+    "Process.exit",
+    "Reference.new",
+    "Reference.update"
+  ],
+  "collision_names": [
+    "List.filter",
+    "List.filterFrom",
+    "List.map",
+    "List.mapFrom",
+    "Map.filter",
+    "Map.map",
+    "NonEmptyList.map",
+    "Range.checkedLength",
+    "Range.indexValue",
+    "Range.indexValues",
+    "Range.lengthMaximum",
+    "Range.lengthMinimum",
+    "Range.lengthValues",
+    "Range.maximum",
+    "Range.minimum",
+    "Range.value",
+    "Set.filter",
+    "Set.map"
+  ],
+  "default_import_modules": 1043,
+  "group_a_default_modules": 11,
+  "protected_files": 28604,
+  "changed_existing_files": [
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/a/assumption_inventory.py",
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/a/ledger-09.json",
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/a/ledger-10.json",
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/a/ledger-11.json",
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/a/ledger-summary.json",
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/a/results.md",
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/a/verify.py",
+    "docs/design/01-spec/01-12-core-calculus.md",
+    "docs/design/07-quality/07-04-formal-semantics.md"
+  ],
+  "current_changed_inputs": {
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/a/assumption_inventory.py": {
+      "bytes": 7338,
+      "sha256": "e8023ecf0461c030d15219651c3c28aa2336f4ae64fb036c92a6a2f676a5cf4d"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/a/ledger-09.json": {
+      "bytes": 79826,
+      "sha256": "d2ec12bb10cdf47495e3035659c8403100a6218072591677e16b6965039fa685"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/a/ledger-10.json": {
+      "bytes": 79664,
+      "sha256": "feb96856d008c69f2643ef75771983775aa04c84c4ced98beb5c15504f3ae13d"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/a/ledger-11.json": {
+      "bytes": 52344,
+      "sha256": "ea4746ad5e6f5913da689933da1a9324f84b848bbfe6e56e3b810d312c80c198"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/a/ledger-summary.json": {
+      "bytes": 8247,
+      "sha256": "acf8d8b6b3c3df70340f36fc3e8842917407e66500b6adf0eb07555dd979b32a"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/a/results.md": {
+      "bytes": 81046,
+      "sha256": "c75df7f5f9e1131549397f9cb6d06ad581e7b5dc3b2885c017174f1832b4b54a"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/a/verify.py": {
+      "bytes": 6900,
+      "sha256": "38bf2d7c4538c3ca3ad6db96bd07ba38bc1411b69706dc757b5b9a53eded1a51"
+    },
+    "docs/design/01-spec/01-12-core-calculus.md": {
+      "bytes": 923632,
+      "sha256": "e202c6f708f3996540f9209a35e105ad3d0066a1f1e88caccea59fc1a2d86b34"
+    },
+    "docs/design/07-quality/07-04-formal-semantics.md": {
+      "bytes": 597287,
+      "sha256": "15ff1b8eba4b068c909fa72e35fc7cfff2e760d333f670daa69236774cfbd64d"
+    }
+  },
+  "lean_source_changes": 0,
+  "axiom_audit_executions_in_resume5": 0,
+  "default_build_executions_in_resume5": 1,
+  "verify_executions_in_resume5": 1,
+  "check_sh_executions_in_resume5": 0
+}

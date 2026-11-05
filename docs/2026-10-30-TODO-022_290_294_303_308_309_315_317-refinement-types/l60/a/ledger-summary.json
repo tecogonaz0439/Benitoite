@@ -1,0 +1,401 @@
+{
+  "source_counts": {
+    "E01": 328,
+    "E02": 73,
+    "E03": 34,
+    "E04": 2,
+    "E05": 6,
+    "E06": 7,
+    "E07": 3,
+    "E08": 15,
+    "E09": 7,
+    "E10": 1,
+    "E11": 7,
+    "E12": 9,
+    "E13": 11,
+    "E14": 1,
+    "E15": 48
+  },
+  "evidence_rows": 552,
+  "distinct_lean_names": 486,
+  "model_conditions": 75,
+  "rust_references": 523,
+  "rust_names": 523,
+  "ledger_rows": 640,
+  "classification": {
+    "合成": 486,
+    "仮定": 154
+  },
+  "composition_complete": false,
+  "verified_lookup_collisions": [
+    "List.map",
+    "List.filter",
+    "Map.map",
+    "Map.filter",
+    "Set.map",
+    "Set.filter",
+    "Range.minimum",
+    "Range.maximum",
+    "Range.value",
+    "Range.lengthMinimum",
+    "Range.lengthMaximum",
+    "Range.checkedLength",
+    "Range.lengthValues",
+    "Range.indexValue",
+    "Range.indexValues",
+    "NonEmptyList.map",
+    "List.mapFrom"
+  ],
+  "rust_classification": {
+    "合成": 369,
+    "仮定": 154
+  },
+  "overlapping_names": {
+    "List.map": [
+      "E01.109",
+      "E13.003",
+      "E15.047"
+    ],
+    "List.filter": [
+      "E01.110",
+      "E13.004"
+    ],
+    "List.fold": [
+      "E01.111",
+      "E15.011"
+    ],
+    "List.forEach": [
+      "E01.112",
+      "E15.013"
+    ],
+    "List.any": [
+      "E01.113",
+      "E15.015"
+    ],
+    "List.all": [
+      "E01.114",
+      "E15.017"
+    ],
+    "List.find": [
+      "E01.115",
+      "E15.019"
+    ],
+    "Map.map": [
+      "E01.126",
+      "E13.008"
+    ],
+    "Map.filter": [
+      "E01.127",
+      "E13.009"
+    ],
+    "Map.fold": [
+      "E01.128",
+      "E15.001"
+    ],
+    "Map.forEach": [
+      "E01.129",
+      "E15.002"
+    ],
+    "Set.map": [
+      "E01.140",
+      "E13.010"
+    ],
+    "Set.filter": [
+      "E01.141",
+      "E13.011"
+    ],
+    "Set.fold": [
+      "E01.142",
+      "E15.003"
+    ],
+    "Set.forEach": [
+      "E01.143",
+      "E15.004"
+    ],
+    "Range.checkInteger": [
+      "E01.144",
+      "E15.005"
+    ],
+    "Range.minimum": [
+      "E01.145",
+      "E12.001",
+      "E15.022"
+    ],
+    "Range.maximum": [
+      "E01.146",
+      "E12.002",
+      "E15.024"
+    ],
+    "Range.value": [
+      "E01.147",
+      "E12.003",
+      "E15.026"
+    ],
+    "Range.checkLength": [
+      "E01.148",
+      "E15.006"
+    ],
+    "Range.lengthMinimum": [
+      "E01.149",
+      "E12.004",
+      "E15.028"
+    ],
+    "Range.lengthMaximum": [
+      "E01.150",
+      "E12.005",
+      "E15.030"
+    ],
+    "Range.checkedLength": [
+      "E01.151",
+      "E12.006",
+      "E15.032"
+    ],
+    "Range.lengthValues": [
+      "E01.152",
+      "E12.007",
+      "E15.034"
+    ],
+    "Range.checkIndex": [
+      "E01.153",
+      "E15.007"
+    ],
+    "Range.indexValue": [
+      "E01.154",
+      "E12.008",
+      "E15.038"
+    ],
+    "Range.indexValues": [
+      "E01.155",
+      "E12.009",
+      "E15.036"
+    ],
+    "Range.get": [
+      "E01.156",
+      "E15.040"
+    ],
+    "NonEmptyList.fromList": [
+      "E01.157",
+      "E15.008"
+    ],
+    "NonEmptyList.toList": [
+      "E01.158",
+      "E15.009"
+    ],
+    "NonEmptyList.head": [
+      "E01.159",
+      "E15.042"
+    ],
+    "NonEmptyList.tail": [
+      "E01.160",
+      "E15.044"
+    ],
+    "NonEmptyList.map": [
+      "E01.161",
+      "E13.005",
+      "E15.010"
+    ],
+    "Scope.checkPathIn": [
+      "E05.001",
+      "E08.007"
+    ],
+    "Scope.pathInValue": [
+      "E05.002",
+      "E08.008"
+    ],
+    "Scope.widenPathIn": [
+      "E05.003",
+      "E08.009"
+    ],
+    "Http.checkRequestIn": [
+      "E05.004",
+      "E09.004"
+    ],
+    "Http.requestInValue": [
+      "E05.005",
+      "E09.005"
+    ],
+    "Http.widenRequestIn": [
+      "E05.006",
+      "E09.006"
+    ],
+    "File.readTextIn": [
+      "E06.001",
+      "E08.010"
+    ],
+    "File.readBytesIn": [
+      "E06.002",
+      "E08.011"
+    ],
+    "File.writeTextIn": [
+      "E06.003",
+      "E08.012"
+    ],
+    "File.writeBytesIn": [
+      "E06.004",
+      "E08.013"
+    ],
+    "File.appendTextIn": [
+      "E06.005",
+      "E08.014"
+    ],
+    "File.appendBytesIn": [
+      "E06.006",
+      "E08.015"
+    ],
+    "Http.sendIn": [
+      "E06.007",
+      "E09.007"
+    ],
+    "Reference.get": [
+      "E07.001",
+      "E08.001",
+      "E09.001"
+    ],
+    "Reference.set": [
+      "E07.002",
+      "E08.002",
+      "E09.002"
+    ],
+    "Example.pathBases": [
+      "E07.003",
+      "E08.003",
+      "E09.003"
+    ],
+    "List.mapFrom": [
+      "E13.001",
+      "E15.048"
+    ],
+    "Pair.first": [
+      "E13.006",
+      "E15.045"
+    ],
+    "Pair.second": [
+      "E13.007",
+      "E15.046"
+    ]
+  },
+  "evidence_pages": [
+    {
+      "file": "evidence-01.json",
+      "bytes": 79263,
+      "sha256": "5087b5063c72b15e53e27ad39fbe72522baaa92d8f1217595d48999e73d927c1"
+    },
+    {
+      "file": "evidence-02.json",
+      "bytes": 79805,
+      "sha256": "5500554e2f5596757bd1febcd4a6c3be51de1d4e6882edc2e778b6ed0aff1051"
+    },
+    {
+      "file": "evidence-03.json",
+      "bytes": 79707,
+      "sha256": "ee8d692d20b8c13b31a80da4f51a2e58541c8ba2905d0f35261305f8b40d0dbb"
+    },
+    {
+      "file": "evidence-04.json",
+      "bytes": 79436,
+      "sha256": "f931aa2ae9ff5397d493ea22d8497d7013650deb5f470e899a308ea8e16d8c83"
+    },
+    {
+      "file": "evidence-05.json",
+      "bytes": 79503,
+      "sha256": "cfeec0bdede52676c1d5de6e76bd7681cd7f61cd3c5c78a1f11ecf9dfb1ab6c6"
+    },
+    {
+      "file": "evidence-06.json",
+      "bytes": 79630,
+      "sha256": "f62943df78c301319e5924a14a34ed94e6e050ecf59b559ffe1cc1bcb633a92b"
+    },
+    {
+      "file": "evidence-07.json",
+      "bytes": 1753,
+      "sha256": "f76e9ca0b7fc9f0582e54477c63b23af07f05993de6cbf00b3a4f2af57ab8d34"
+    }
+  ],
+  "ledger_pages": [
+    {
+      "file": "ledger-01.json",
+      "bytes": 78735,
+      "sha256": "aaef733f2a23198dc64e76d4385fa6c31c120466c427ed1701d48bf1659e8126"
+    },
+    {
+      "file": "ledger-02.json",
+      "bytes": 79997,
+      "sha256": "1207418c35c969df6a29d08b3ffc742dfdd7acab8be9f8ccd6c85bf813371fce"
+    },
+    {
+      "file": "ledger-03.json",
+      "bytes": 77958,
+      "sha256": "170e8de137a0396947208e1d9550917a406422d046fdefbed95a22597330a3d5"
+    },
+    {
+      "file": "ledger-04.json",
+      "bytes": 79749,
+      "sha256": "6fb2f89094555a7143a0e3322a6769d041b7386e3ca19098b04eb222255b0663"
+    },
+    {
+      "file": "ledger-05.json",
+      "bytes": 78734,
+      "sha256": "7a3ff1e6ebb6044a8dcc1cd679db1955452a1c55b06945ac117403bc43d9600a"
+    },
+    {
+      "file": "ledger-06.json",
+      "bytes": 79901,
+      "sha256": "026b7db3fd0fdf124366b02e795bd940c58df49c9eb266d6db413dbb50fcab67"
+    },
+    {
+      "file": "ledger-07.json",
+      "bytes": 79862,
+      "sha256": "eb9d7e4438459aa0fe2caee7550f5bb469d205951d2984ade8352fb3cef4ec7c"
+    },
+    {
+      "file": "ledger-08.json",
+      "bytes": 79606,
+      "sha256": "0ecc9709ff172e0f142e9692d94187fff8a49b49e6b70f2678f108180acfb28f"
+    },
+    {
+      "file": "ledger-09.json",
+      "bytes": 79826,
+      "sha256": "d2ec12bb10cdf47495e3035659c8403100a6218072591677e16b6965039fa685"
+    },
+    {
+      "file": "ledger-10.json",
+      "bytes": 79664,
+      "sha256": "feb96856d008c69f2643ef75771983775aa04c84c4ced98beb5c15504f3ae13d"
+    },
+    {
+      "file": "ledger-11.json",
+      "bytes": 52344,
+      "sha256": "ea4746ad5e6f5913da689933da1a9324f84b848bbfe6e56e3b810d312c80c198"
+    }
+  ],
+  "rust_pages": [
+    {
+      "file": "rust-01.json",
+      "bytes": 79991,
+      "sha256": "b54b905ce4b255cef994191e99bb9c62344efbbcdcc217341f31c5667d03f034"
+    },
+    {
+      "file": "rust-02.json",
+      "bytes": 67933,
+      "sha256": "57da4402c005632814609728f71e7ef6fa845491e77cf8bc11744464316edc43"
+    }
+  ],
+  "condition_pages": [
+    {
+      "file": "conditions-01.json",
+      "bytes": 44380,
+      "sha256": "6bc4ecd039e2356966529531354f9e267b34fc17a1d3ae522fead95f1c7f3fe7"
+    }
+  ],
+  "planned_composition_keys": 503,
+  "name_correspondence_rows": 552,
+  "name_correspondence_complete": true,
+  "lookup_composition_complete": true,
+  "body_definitions": 130,
+  "primitive_definitions": 373,
+  "resource_names": 1,
+  "composition_keys": 504,
+  "reference_closure_names": 18,
+  "composition_scope": "全lookupの双方向対応。Def.WellTyped全件と28+1条件は.27/.29で供給する",
+  "helper_definitions": 1
+}

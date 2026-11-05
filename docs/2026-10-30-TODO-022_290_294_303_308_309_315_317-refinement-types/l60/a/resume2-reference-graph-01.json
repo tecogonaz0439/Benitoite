@@ -1,0 +1,1275 @@
+[
+  {
+    "source": "E01.109",
+    "name": "List.map",
+    "internal_name": "%List.map.ordinary",
+    "original_def": "(StandardBodies.listHigherRow false).definition",
+    "references": [
+      "List.mapFrom"
+    ]
+  },
+  {
+    "source": "E01.110",
+    "name": "List.filter",
+    "internal_name": "%List.filter.ordinary",
+    "original_def": "(StandardBodies.listHigherRow true).definition",
+    "references": [
+      "List.filterFrom"
+    ]
+  },
+  {
+    "source": "E01.111",
+    "name": "List.fold",
+    "internal_name": "List.fold",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"List.fold\"",
+    "references": [
+      "List.foldFrom"
+    ]
+  },
+  {
+    "source": "E01.112",
+    "name": "List.forEach",
+    "internal_name": "List.forEach",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"List.forEach\"",
+    "references": [
+      "List.forEachFrom"
+    ]
+  },
+  {
+    "source": "E01.113",
+    "name": "List.any",
+    "internal_name": "List.any",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"List.any\"",
+    "references": [
+      "List.anyFrom"
+    ]
+  },
+  {
+    "source": "E01.114",
+    "name": "List.all",
+    "internal_name": "List.all",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"List.all\"",
+    "references": [
+      "List.allFrom"
+    ]
+  },
+  {
+    "source": "E01.115",
+    "name": "List.find",
+    "internal_name": "List.find",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"List.find\"",
+    "references": [
+      "List.findFrom"
+    ]
+  },
+  {
+    "source": "E01.126",
+    "name": "Map.map",
+    "internal_name": "%Map.map.ordinary",
+    "original_def": "(StandardBodies.collectionHigherRow true false).definition",
+    "references": [
+      "List.map",
+      "Pair.first",
+      "Pair.first",
+      "Pair.second"
+    ]
+  },
+  {
+    "source": "E01.127",
+    "name": "Map.filter",
+    "internal_name": "%Map.filter.ordinary",
+    "original_def": "(StandardBodies.collectionHigherRow true true).definition",
+    "references": [
+      "List.filter",
+      "Pair.first",
+      "Pair.second"
+    ]
+  },
+  {
+    "source": "E01.128",
+    "name": "Map.fold",
+    "internal_name": "Map.fold",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"Map.fold\"",
+    "references": [
+      "List.fold",
+      "Pair.first",
+      "Pair.second"
+    ]
+  },
+  {
+    "source": "E01.129",
+    "name": "Map.forEach",
+    "internal_name": "Map.forEach",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"Map.forEach\"",
+    "references": [
+      "List.forEach",
+      "Pair.first",
+      "Pair.second"
+    ]
+  },
+  {
+    "source": "E01.140",
+    "name": "Set.map",
+    "internal_name": "%Set.map.ordinary",
+    "original_def": "(StandardBodies.collectionHigherRow false false).definition",
+    "references": [
+      "List.map"
+    ]
+  },
+  {
+    "source": "E01.141",
+    "name": "Set.filter",
+    "internal_name": "%Set.filter.ordinary",
+    "original_def": "(StandardBodies.collectionHigherRow false true).definition",
+    "references": [
+      "List.filter"
+    ]
+  },
+  {
+    "source": "E01.142",
+    "name": "Set.fold",
+    "internal_name": "Set.fold",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"Set.fold\"",
+    "references": [
+      "List.fold"
+    ]
+  },
+  {
+    "source": "E01.143",
+    "name": "Set.forEach",
+    "internal_name": "Set.forEach",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"Set.forEach\"",
+    "references": [
+      "List.forEach"
+    ]
+  },
+  {
+    "source": "E01.144",
+    "name": "Range.checkInteger",
+    "internal_name": "Range.checkInteger",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"Range.checkInteger\"",
+    "references": []
+  },
+  {
+    "source": "E01.145",
+    "name": "Range.minimum",
+    "internal_name": "%Range.minimum.ordinary",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"Range.minimum\"",
+    "references": [
+      "Benitoite.Range.CheckedInteger.minimum"
+    ]
+  },
+  {
+    "source": "E01.146",
+    "name": "Range.maximum",
+    "internal_name": "%Range.maximum.ordinary",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"Range.maximum\"",
+    "references": [
+      "Benitoite.Range.CheckedInteger.maximum"
+    ]
+  },
+  {
+    "source": "E01.147",
+    "name": "Range.value",
+    "internal_name": "%Range.value.ordinary",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"Range.value\"",
+    "references": [
+      "Benitoite.Range.CheckedInteger.value"
+    ]
+  },
+  {
+    "source": "E01.148",
+    "name": "Range.checkLength",
+    "internal_name": "Range.checkLength",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"Range.checkLength\"",
+    "references": []
+  },
+  {
+    "source": "E01.149",
+    "name": "Range.lengthMinimum",
+    "internal_name": "%Range.lengthMinimum.ordinary",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"Range.lengthMinimum\"",
+    "references": [
+      "Benitoite.Range.CheckedLength.minimum"
+    ]
+  },
+  {
+    "source": "E01.150",
+    "name": "Range.lengthMaximum",
+    "internal_name": "%Range.lengthMaximum.ordinary",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"Range.lengthMaximum\"",
+    "references": [
+      "Benitoite.Range.CheckedLength.maximum"
+    ]
+  },
+  {
+    "source": "E01.151",
+    "name": "Range.checkedLength",
+    "internal_name": "%Range.checkedLength.ordinary",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"Range.checkedLength\"",
+    "references": [
+      "Benitoite.Range.CheckedLength.length"
+    ]
+  },
+  {
+    "source": "E01.152",
+    "name": "Range.lengthValues",
+    "internal_name": "%Range.lengthValues.ordinary",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"Range.lengthValues\"",
+    "references": [
+      "Benitoite.Range.CheckedLength.values"
+    ]
+  },
+  {
+    "source": "E01.153",
+    "name": "Range.checkIndex",
+    "internal_name": "Range.checkIndex",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"Range.checkIndex\"",
+    "references": []
+  },
+  {
+    "source": "E01.154",
+    "name": "Range.indexValue",
+    "internal_name": "%Range.indexValue.ordinary",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"Range.indexValue\"",
+    "references": [
+      "Benitoite.Range.CheckedIndex.index"
+    ]
+  },
+  {
+    "source": "E01.155",
+    "name": "Range.indexValues",
+    "internal_name": "%Range.indexValues.ordinary",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"Range.indexValues\"",
+    "references": [
+      "Benitoite.Range.CheckedIndex.values"
+    ]
+  },
+  {
+    "source": "E01.156",
+    "name": "Range.get",
+    "internal_name": "Range.get",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"Range.get\"",
+    "references": [
+      "Benitoite.Range.CheckedIndex.element"
+    ]
+  },
+  {
+    "source": "E01.157",
+    "name": "NonEmptyList.fromList",
+    "internal_name": "NonEmptyList.fromList",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"NonEmptyList.fromList\"",
+    "references": []
+  },
+  {
+    "source": "E01.158",
+    "name": "NonEmptyList.toList",
+    "internal_name": "NonEmptyList.toList",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"NonEmptyList.toList\"",
+    "references": [
+      "Benitoite.NonEmptyList.NonEmptyList.rest",
+      "Benitoite.NonEmptyList.NonEmptyList.first"
+    ]
+  },
+  {
+    "source": "E01.159",
+    "name": "NonEmptyList.head",
+    "internal_name": "NonEmptyList.head",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"NonEmptyList.head\"",
+    "references": [
+      "Benitoite.NonEmptyList.NonEmptyList.first"
+    ]
+  },
+  {
+    "source": "E01.160",
+    "name": "NonEmptyList.tail",
+    "internal_name": "NonEmptyList.tail",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"NonEmptyList.tail\"",
+    "references": [
+      "Benitoite.NonEmptyList.NonEmptyList.rest"
+    ]
+  },
+  {
+    "source": "E01.161",
+    "name": "NonEmptyList.map",
+    "internal_name": "%NonEmptyList.map.ordinary",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"NonEmptyList.map\"",
+    "references": [
+      "Benitoite.NonEmptyList.NonEmptyList.first",
+      "Benitoite.NonEmptyList.NonEmptyList.rest",
+      "List.map"
+    ]
+  },
+  {
+    "source": "E01.228",
+    "name": "Integer64.toString",
+    "internal_name": "Integer64.toString",
+    "original_def": "(StandardAliasBodies.API.Integer64_toString.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.229",
+    "name": "Integer64.parse",
+    "internal_name": "Integer64.parse",
+    "original_def": "(StandardAliasBodies.API.Integer64_parse.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.230",
+    "name": "Integer64.toFloat",
+    "internal_name": "Integer64.toFloat",
+    "original_def": "(StandardAliasBodies.API.Integer64_toFloat.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.231",
+    "name": "Integer64.floorDivide",
+    "internal_name": "Integer64.floorDivide",
+    "original_def": "(StandardAliasBodies.API.Integer64_floorDivide.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.232",
+    "name": "Integer64.floorModulo",
+    "internal_name": "Integer64.floorModulo",
+    "original_def": "(StandardAliasBodies.API.Integer64_floorModulo.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.233",
+    "name": "Integer64.absolute",
+    "internal_name": "Integer64.absolute",
+    "original_def": "(StandardAliasBodies.API.Integer64_absolute.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.234",
+    "name": "Integer64.minimum",
+    "internal_name": "Integer64.minimum",
+    "original_def": "(StandardAliasBodies.API.Integer64_minimum.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.235",
+    "name": "Integer64.maximum",
+    "internal_name": "Integer64.maximum",
+    "original_def": "(StandardAliasBodies.API.Integer64_maximum.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.236",
+    "name": "Integer64.bitwiseAnd",
+    "internal_name": "Integer64.bitwiseAnd",
+    "original_def": "(StandardAliasBodies.API.Integer64_bitwiseAnd.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.237",
+    "name": "Integer64.bitwiseOr",
+    "internal_name": "Integer64.bitwiseOr",
+    "original_def": "(StandardAliasBodies.API.Integer64_bitwiseOr.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.238",
+    "name": "Integer64.bitwiseExclusiveOr",
+    "internal_name": "Integer64.bitwiseExclusiveOr",
+    "original_def": "(StandardAliasBodies.API.Integer64_bitwiseExclusiveOr.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.239",
+    "name": "Integer64.bitwiseNot",
+    "internal_name": "Integer64.bitwiseNot",
+    "original_def": "(StandardAliasBodies.API.Integer64_bitwiseNot.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.240",
+    "name": "Integer64.shiftLeft",
+    "internal_name": "Integer64.shiftLeft",
+    "original_def": "(StandardAliasBodies.API.Integer64_shiftLeft.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.241",
+    "name": "Integer64.shiftRight",
+    "internal_name": "Integer64.shiftRight",
+    "original_def": "(StandardAliasBodies.API.Integer64_shiftRight.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.242",
+    "name": "Integer64.shiftRightUnsigned",
+    "internal_name": "Integer64.shiftRightUnsigned",
+    "original_def": "(StandardAliasBodies.API.Integer64_shiftRightUnsigned.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.243",
+    "name": "UnsignedInteger.fromInteger",
+    "internal_name": "UnsignedInteger.fromInteger",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger_fromInteger.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.244",
+    "name": "UnsignedInteger.toInteger",
+    "internal_name": "UnsignedInteger.toInteger",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger_toInteger.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.245",
+    "name": "UnsignedInteger.parse",
+    "internal_name": "UnsignedInteger.parse",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger_parse.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.246",
+    "name": "UnsignedInteger.toString",
+    "internal_name": "UnsignedInteger.toString",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger_toString.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.247",
+    "name": "UnsignedInteger.toFloat",
+    "internal_name": "UnsignedInteger.toFloat",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger_toFloat.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.248",
+    "name": "UnsignedInteger.toDecimal",
+    "internal_name": "UnsignedInteger.toDecimal",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger_toDecimal.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.249",
+    "name": "UnsignedInteger.fromDecimal",
+    "internal_name": "UnsignedInteger.fromDecimal",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger_fromDecimal.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.250",
+    "name": "UnsignedInteger.absolute",
+    "internal_name": "UnsignedInteger.absolute",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger_absolute.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.251",
+    "name": "UnsignedInteger.minimum",
+    "internal_name": "UnsignedInteger.minimum",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger_minimum.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.252",
+    "name": "UnsignedInteger.maximum",
+    "internal_name": "UnsignedInteger.maximum",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger_maximum.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.253",
+    "name": "UnsignedInteger.floorDivide",
+    "internal_name": "UnsignedInteger.floorDivide",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger_floorDivide.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.254",
+    "name": "UnsignedInteger.floorModulo",
+    "internal_name": "UnsignedInteger.floorModulo",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger_floorModulo.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.255",
+    "name": "UnsignedInteger.bitwiseAnd",
+    "internal_name": "UnsignedInteger.bitwiseAnd",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger_bitwiseAnd.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.256",
+    "name": "UnsignedInteger.bitwiseOr",
+    "internal_name": "UnsignedInteger.bitwiseOr",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger_bitwiseOr.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.257",
+    "name": "UnsignedInteger.bitwiseExclusiveOr",
+    "internal_name": "UnsignedInteger.bitwiseExclusiveOr",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger_bitwiseExclusiveOr.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.258",
+    "name": "UnsignedInteger.bitwiseNot",
+    "internal_name": "UnsignedInteger.bitwiseNot",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger_bitwiseNot.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.259",
+    "name": "UnsignedInteger.shiftLeft",
+    "internal_name": "UnsignedInteger.shiftLeft",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger_shiftLeft.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.260",
+    "name": "UnsignedInteger.shiftRight",
+    "internal_name": "UnsignedInteger.shiftRight",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger_shiftRight.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.261",
+    "name": "UnsignedInteger8.fromInteger",
+    "internal_name": "UnsignedInteger8.fromInteger",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger8_fromInteger.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.262",
+    "name": "UnsignedInteger8.toInteger",
+    "internal_name": "UnsignedInteger8.toInteger",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger8_toInteger.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.263",
+    "name": "UnsignedInteger8.toString",
+    "internal_name": "UnsignedInteger8.toString",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger8_toString.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.264",
+    "name": "UnsignedInteger8.bitwiseAnd",
+    "internal_name": "UnsignedInteger8.bitwiseAnd",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger8_bitwiseAnd.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.265",
+    "name": "UnsignedInteger8.bitwiseOr",
+    "internal_name": "UnsignedInteger8.bitwiseOr",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger8_bitwiseOr.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.266",
+    "name": "UnsignedInteger8.bitwiseExclusiveOr",
+    "internal_name": "UnsignedInteger8.bitwiseExclusiveOr",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger8_bitwiseExclusiveOr.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.267",
+    "name": "UnsignedInteger8.bitwiseNot",
+    "internal_name": "UnsignedInteger8.bitwiseNot",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger8_bitwiseNot.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.268",
+    "name": "UnsignedInteger8.shiftLeft",
+    "internal_name": "UnsignedInteger8.shiftLeft",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger8_shiftLeft.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.269",
+    "name": "UnsignedInteger8.shiftRight",
+    "internal_name": "UnsignedInteger8.shiftRight",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger8_shiftRight.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.320",
+    "name": "Float64.toString",
+    "internal_name": "Float64.toString",
+    "original_def": "(StandardAliasBodies.API.Float64_toString.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.321",
+    "name": "Float64.parse",
+    "internal_name": "Float64.parse",
+    "original_def": "(StandardAliasBodies.API.Float64_parse.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.322",
+    "name": "Float64.truncate",
+    "internal_name": "Float64.truncate",
+    "original_def": "(StandardAliasBodies.API.Float64_truncate.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.323",
+    "name": "Float64.isNaN",
+    "internal_name": "Float64.isNaN",
+    "original_def": "(StandardAliasBodies.API.Float64_isNaN.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.324",
+    "name": "Float64.absolute",
+    "internal_name": "Float64.absolute",
+    "original_def": "(StandardAliasBodies.API.Float64_absolute.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.325",
+    "name": "Float64.floor",
+    "internal_name": "Float64.floor",
+    "original_def": "(StandardAliasBodies.API.Float64_floor.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.326",
+    "name": "Float64.ceiling",
+    "internal_name": "Float64.ceiling",
+    "original_def": "(StandardAliasBodies.API.Float64_ceiling.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.327",
+    "name": "Float64.round",
+    "internal_name": "Float64.round",
+    "original_def": "(StandardAliasBodies.API.Float64_round.row).definition",
+    "references": []
+  },
+  {
+    "source": "E01.328",
+    "name": "Float64.squareRoot",
+    "internal_name": "Float64.squareRoot",
+    "original_def": "(StandardAliasBodies.API.Float64_squareRoot.row).definition",
+    "references": []
+  },
+  {
+    "source": "E11.001",
+    "name": "Internal.safeHead",
+    "internal_name": "Internal.safeHead",
+    "original_def": "StandardSafe.headRow.definition",
+    "references": []
+  },
+  {
+    "source": "E11.002",
+    "name": "Internal.safeGet",
+    "internal_name": "Internal.safeGet",
+    "original_def": "StandardSafe.getRow.definition",
+    "references": []
+  },
+  {
+    "source": "E11.003",
+    "name": "Internal.CheckedIndex.get",
+    "internal_name": "Internal.CheckedIndex.get",
+    "original_def": "StandardSafe.checkedRow.definition",
+    "references": []
+  },
+  {
+    "source": "E11.004",
+    "name": "Internal.sameLengthGet",
+    "internal_name": "Internal.sameLengthGet",
+    "original_def": "StandardSafe.sameRow.definition",
+    "references": []
+  },
+  {
+    "source": "E11.005",
+    "name": "Internal.NonEmptyList.fromList",
+    "internal_name": "Internal.NonEmptyList.fromList",
+    "original_def": "StandardSafe.fromListRow.definition",
+    "references": []
+  },
+  {
+    "source": "E11.006",
+    "name": "Internal.NonEmptyList.toList",
+    "internal_name": "Internal.NonEmptyList.toList",
+    "original_def": "StandardSafe.toListRow.definition",
+    "references": []
+  },
+  {
+    "source": "E11.007",
+    "name": "Internal.NonEmptyList.head",
+    "internal_name": "Internal.NonEmptyList.head",
+    "original_def": "StandardSafe.nonemptyHeadRow.definition",
+    "references": []
+  },
+  {
+    "source": "E12.001",
+    "name": "Range.minimum",
+    "internal_name": "%Range.minimum.refined",
+    "original_def": "StandardSafe.PreciseGetter.minimum.row.definition",
+    "references": []
+  },
+  {
+    "source": "E12.002",
+    "name": "Range.maximum",
+    "internal_name": "%Range.maximum.refined",
+    "original_def": "StandardSafe.PreciseGetter.maximum.row.definition",
+    "references": []
+  },
+  {
+    "source": "E12.003",
+    "name": "Range.value",
+    "internal_name": "%Range.value.refined",
+    "original_def": "StandardSafe.PreciseGetter.value.row.definition",
+    "references": []
+  },
+  {
+    "source": "E12.004",
+    "name": "Range.lengthMinimum",
+    "internal_name": "%Range.lengthMinimum.refined",
+    "original_def": "StandardSafe.PreciseGetter.lengthMinimum.row.definition",
+    "references": []
+  },
+  {
+    "source": "E12.005",
+    "name": "Range.lengthMaximum",
+    "internal_name": "%Range.lengthMaximum.refined",
+    "original_def": "StandardSafe.PreciseGetter.lengthMaximum.row.definition",
+    "references": []
+  },
+  {
+    "source": "E12.006",
+    "name": "Range.checkedLength",
+    "internal_name": "%Range.checkedLength.refined",
+    "original_def": "StandardSafe.PreciseGetter.checkedLength.row.definition",
+    "references": []
+  },
+  {
+    "source": "E12.007",
+    "name": "Range.lengthValues",
+    "internal_name": "%Range.lengthValues.refined",
+    "original_def": "StandardSafe.PreciseGetter.lengthValues.row.definition",
+    "references": []
+  },
+  {
+    "source": "E12.008",
+    "name": "Range.indexValue",
+    "internal_name": "%Range.indexValue.refined",
+    "original_def": "StandardSafe.PreciseGetter.indexValue.row.definition",
+    "references": []
+  },
+  {
+    "source": "E12.009",
+    "name": "Range.indexValues",
+    "internal_name": "%Range.indexValues.refined",
+    "original_def": "StandardSafe.PreciseGetter.indexValues.row.definition",
+    "references": []
+  },
+  {
+    "source": "E13.001",
+    "name": "List.mapFrom",
+    "internal_name": "%List.mapFrom.refined",
+    "original_def": "StandardCollectionRefinedBodies.program.defs \"List.mapFrom\"",
+    "references": [
+      "List.mapFrom"
+    ]
+  },
+  {
+    "source": "E13.002",
+    "name": "List.filterFrom",
+    "internal_name": "List.filterFrom",
+    "original_def": "StandardCollectionRefinedBodies.program.defs \"List.filterFrom\"",
+    "references": [
+      "List.filterFrom",
+      "List.filterFrom"
+    ]
+  },
+  {
+    "source": "E13.003",
+    "name": "List.map",
+    "internal_name": "%List.map.refined",
+    "original_def": "StandardCollectionRefinedBodies.program.defs \"List.map\"",
+    "references": [
+      "List.mapFrom"
+    ]
+  },
+  {
+    "source": "E13.004",
+    "name": "List.filter",
+    "internal_name": "%List.filter.refined",
+    "original_def": "StandardCollectionRefinedBodies.program.defs \"List.filter\"",
+    "references": [
+      "List.filterFrom"
+    ]
+  },
+  {
+    "source": "E13.005",
+    "name": "NonEmptyList.map",
+    "internal_name": "%NonEmptyList.map.refined",
+    "original_def": "StandardCollectionRefinedBodies.program.defs \"NonEmptyList.map\"",
+    "references": [
+      "List.map"
+    ]
+  },
+  {
+    "source": "E13.006",
+    "name": "Pair.first",
+    "internal_name": "Pair.first",
+    "original_def": "StandardCollectionRefinedBodies.program.defs \"Pair.first\"",
+    "references": []
+  },
+  {
+    "source": "E13.007",
+    "name": "Pair.second",
+    "internal_name": "Pair.second",
+    "original_def": "StandardCollectionRefinedBodies.program.defs \"Pair.second\"",
+    "references": []
+  },
+  {
+    "source": "E13.008",
+    "name": "Map.map",
+    "internal_name": "%Map.map.refined",
+    "original_def": "StandardCollectionRefinedBodies.program.defs \"Map.map\"",
+    "references": [
+      "List.map",
+      "Pair.first",
+      "Pair.second"
+    ]
+  },
+  {
+    "source": "E13.009",
+    "name": "Map.filter",
+    "internal_name": "%Map.filter.refined",
+    "original_def": "StandardCollectionRefinedBodies.program.defs \"Map.filter\"",
+    "references": [
+      "List.filter",
+      "Pair.first",
+      "Pair.second"
+    ]
+  },
+  {
+    "source": "E13.010",
+    "name": "Set.map",
+    "internal_name": "%Set.map.refined",
+    "original_def": "StandardCollectionRefinedBodies.program.defs \"Set.map\"",
+    "references": [
+      "List.map"
+    ]
+  },
+  {
+    "source": "E13.011",
+    "name": "Set.filter",
+    "internal_name": "%Set.filter.refined",
+    "original_def": "StandardCollectionRefinedBodies.program.defs \"Set.filter\"",
+    "references": [
+      "List.filter"
+    ]
+  },
+  {
+    "source": "E15.001",
+    "name": "Map.fold",
+    "internal_name": "Map.fold",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[0]?).map Prod.snd",
+    "references": [
+      "List.fold",
+      "Pair.first",
+      "Pair.second"
+    ]
+  },
+  {
+    "source": "E15.002",
+    "name": "Map.forEach",
+    "internal_name": "Map.forEach",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[1]?).map Prod.snd",
+    "references": [
+      "List.forEach",
+      "Pair.first",
+      "Pair.second"
+    ]
+  },
+  {
+    "source": "E15.003",
+    "name": "Set.fold",
+    "internal_name": "Set.fold",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[2]?).map Prod.snd",
+    "references": [
+      "List.fold"
+    ]
+  },
+  {
+    "source": "E15.004",
+    "name": "Set.forEach",
+    "internal_name": "Set.forEach",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[3]?).map Prod.snd",
+    "references": [
+      "List.forEach"
+    ]
+  },
+  {
+    "source": "E15.005",
+    "name": "Range.checkInteger",
+    "internal_name": "Range.checkInteger",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[4]?).map Prod.snd",
+    "references": []
+  },
+  {
+    "source": "E15.006",
+    "name": "Range.checkLength",
+    "internal_name": "Range.checkLength",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[5]?).map Prod.snd",
+    "references": []
+  },
+  {
+    "source": "E15.007",
+    "name": "Range.checkIndex",
+    "internal_name": "Range.checkIndex",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[6]?).map Prod.snd",
+    "references": []
+  },
+  {
+    "source": "E15.008",
+    "name": "NonEmptyList.fromList",
+    "internal_name": "NonEmptyList.fromList",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[7]?).map Prod.snd",
+    "references": []
+  },
+  {
+    "source": "E15.009",
+    "name": "NonEmptyList.toList",
+    "internal_name": "NonEmptyList.toList",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[8]?).map Prod.snd",
+    "references": [
+      "Benitoite.NonEmptyList.NonEmptyList.rest",
+      "Benitoite.NonEmptyList.NonEmptyList.first"
+    ]
+  },
+  {
+    "source": "E15.010",
+    "name": "NonEmptyList.map",
+    "internal_name": "%NonEmptyList.map.ordinary",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[9]?).map Prod.snd",
+    "references": [
+      "Benitoite.NonEmptyList.NonEmptyList.first",
+      "Benitoite.NonEmptyList.NonEmptyList.rest",
+      "List.map"
+    ]
+  },
+  {
+    "source": "E15.011",
+    "name": "List.fold",
+    "internal_name": "List.fold",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[10]?).map Prod.snd",
+    "references": [
+      "List.foldFrom"
+    ]
+  },
+  {
+    "source": "E15.012",
+    "name": "List.foldFrom",
+    "internal_name": "List.foldFrom",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[11]?).map Prod.snd",
+    "references": [
+      "List.foldFrom"
+    ]
+  },
+  {
+    "source": "E15.013",
+    "name": "List.forEach",
+    "internal_name": "List.forEach",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[12]?).map Prod.snd",
+    "references": [
+      "List.forEachFrom"
+    ]
+  },
+  {
+    "source": "E15.014",
+    "name": "List.forEachFrom",
+    "internal_name": "List.forEachFrom",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[13]?).map Prod.snd",
+    "references": [
+      "List.forEachFrom"
+    ]
+  },
+  {
+    "source": "E15.015",
+    "name": "List.any",
+    "internal_name": "List.any",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[14]?).map Prod.snd",
+    "references": [
+      "List.anyFrom"
+    ]
+  },
+  {
+    "source": "E15.016",
+    "name": "List.anyFrom",
+    "internal_name": "List.anyFrom",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[15]?).map Prod.snd",
+    "references": [
+      "List.anyFrom"
+    ]
+  },
+  {
+    "source": "E15.017",
+    "name": "List.all",
+    "internal_name": "List.all",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[16]?).map Prod.snd",
+    "references": [
+      "List.allFrom"
+    ]
+  },
+  {
+    "source": "E15.018",
+    "name": "List.allFrom",
+    "internal_name": "List.allFrom",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[17]?).map Prod.snd",
+    "references": [
+      "List.allFrom"
+    ]
+  },
+  {
+    "source": "E15.019",
+    "name": "List.find",
+    "internal_name": "List.find",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[18]?).map Prod.snd",
+    "references": [
+      "List.findFrom"
+    ]
+  },
+  {
+    "source": "E15.020",
+    "name": "List.findFrom",
+    "internal_name": "List.findFrom",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[19]?).map Prod.snd",
+    "references": [
+      "List.findFrom"
+    ]
+  },
+  {
+    "source": "E15.021",
+    "name": "Benitoite.Range.CheckedInteger.minimum",
+    "internal_name": "Benitoite.Range.CheckedInteger.minimum",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[20]?).map Prod.snd",
+    "references": []
+  },
+  {
+    "source": "E15.022",
+    "name": "Range.minimum",
+    "internal_name": "%Range.minimum.ordinary",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[21]?).map Prod.snd",
+    "references": [
+      "Benitoite.Range.CheckedInteger.minimum"
+    ]
+  },
+  {
+    "source": "E15.023",
+    "name": "Benitoite.Range.CheckedInteger.maximum",
+    "internal_name": "Benitoite.Range.CheckedInteger.maximum",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[22]?).map Prod.snd",
+    "references": []
+  },
+  {
+    "source": "E15.024",
+    "name": "Range.maximum",
+    "internal_name": "%Range.maximum.ordinary",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[23]?).map Prod.snd",
+    "references": [
+      "Benitoite.Range.CheckedInteger.maximum"
+    ]
+  },
+  {
+    "source": "E15.025",
+    "name": "Benitoite.Range.CheckedInteger.value",
+    "internal_name": "Benitoite.Range.CheckedInteger.value",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[24]?).map Prod.snd",
+    "references": []
+  },
+  {
+    "source": "E15.026",
+    "name": "Range.value",
+    "internal_name": "%Range.value.ordinary",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[25]?).map Prod.snd",
+    "references": [
+      "Benitoite.Range.CheckedInteger.value"
+    ]
+  },
+  {
+    "source": "E15.027",
+    "name": "Benitoite.Range.CheckedLength.minimum",
+    "internal_name": "Benitoite.Range.CheckedLength.minimum",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[26]?).map Prod.snd",
+    "references": []
+  },
+  {
+    "source": "E15.028",
+    "name": "Range.lengthMinimum",
+    "internal_name": "%Range.lengthMinimum.ordinary",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[27]?).map Prod.snd",
+    "references": [
+      "Benitoite.Range.CheckedLength.minimum"
+    ]
+  },
+  {
+    "source": "E15.029",
+    "name": "Benitoite.Range.CheckedLength.maximum",
+    "internal_name": "Benitoite.Range.CheckedLength.maximum",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[28]?).map Prod.snd",
+    "references": []
+  },
+  {
+    "source": "E15.030",
+    "name": "Range.lengthMaximum",
+    "internal_name": "%Range.lengthMaximum.ordinary",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[29]?).map Prod.snd",
+    "references": [
+      "Benitoite.Range.CheckedLength.maximum"
+    ]
+  },
+  {
+    "source": "E15.031",
+    "name": "Benitoite.Range.CheckedLength.length",
+    "internal_name": "Benitoite.Range.CheckedLength.length",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[30]?).map Prod.snd",
+    "references": []
+  },
+  {
+    "source": "E15.032",
+    "name": "Range.checkedLength",
+    "internal_name": "%Range.checkedLength.ordinary",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[31]?).map Prod.snd",
+    "references": [
+      "Benitoite.Range.CheckedLength.length"
+    ]
+  },
+  {
+    "source": "E15.033",
+    "name": "Benitoite.Range.CheckedLength.values",
+    "internal_name": "Benitoite.Range.CheckedLength.values",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[32]?).map Prod.snd",
+    "references": []
+  },
+  {
+    "source": "E15.034",
+    "name": "Range.lengthValues",
+    "internal_name": "%Range.lengthValues.ordinary",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[33]?).map Prod.snd",
+    "references": [
+      "Benitoite.Range.CheckedLength.values"
+    ]
+  },
+  {
+    "source": "E15.035",
+    "name": "Benitoite.Range.CheckedIndex.values",
+    "internal_name": "Benitoite.Range.CheckedIndex.values",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[34]?).map Prod.snd",
+    "references": []
+  },
+  {
+    "source": "E15.036",
+    "name": "Range.indexValues",
+    "internal_name": "%Range.indexValues.ordinary",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[35]?).map Prod.snd",
+    "references": [
+      "Benitoite.Range.CheckedIndex.values"
+    ]
+  },
+  {
+    "source": "E15.037",
+    "name": "Benitoite.Range.CheckedIndex.index",
+    "internal_name": "Benitoite.Range.CheckedIndex.index",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[36]?).map Prod.snd",
+    "references": []
+  },
+  {
+    "source": "E15.038",
+    "name": "Range.indexValue",
+    "internal_name": "%Range.indexValue.ordinary",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[37]?).map Prod.snd",
+    "references": [
+      "Benitoite.Range.CheckedIndex.index"
+    ]
+  },
+  {
+    "source": "E15.039",
+    "name": "Benitoite.Range.CheckedIndex.element",
+    "internal_name": "Benitoite.Range.CheckedIndex.element",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[38]?).map Prod.snd",
+    "references": []
+  },
+  {
+    "source": "E15.040",
+    "name": "Range.get",
+    "internal_name": "Range.get",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[39]?).map Prod.snd",
+    "references": [
+      "Benitoite.Range.CheckedIndex.element"
+    ]
+  },
+  {
+    "source": "E15.041",
+    "name": "Benitoite.NonEmptyList.NonEmptyList.first",
+    "internal_name": "Benitoite.NonEmptyList.NonEmptyList.first",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[40]?).map Prod.snd",
+    "references": []
+  },
+  {
+    "source": "E15.042",
+    "name": "NonEmptyList.head",
+    "internal_name": "NonEmptyList.head",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[41]?).map Prod.snd",
+    "references": [
+      "Benitoite.NonEmptyList.NonEmptyList.first"
+    ]
+  },
+  {
+    "source": "E15.043",
+    "name": "Benitoite.NonEmptyList.NonEmptyList.rest",
+    "internal_name": "Benitoite.NonEmptyList.NonEmptyList.rest",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[42]?).map Prod.snd",
+    "references": []
+  },
+  {
+    "source": "E15.044",
+    "name": "NonEmptyList.tail",
+    "internal_name": "NonEmptyList.tail",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[43]?).map Prod.snd",
+    "references": [
+      "Benitoite.NonEmptyList.NonEmptyList.rest"
+    ]
+  },
+  {
+    "source": "E15.045",
+    "name": "Pair.first",
+    "internal_name": "Pair.first",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[44]?).map Prod.snd",
+    "references": []
+  },
+  {
+    "source": "E15.046",
+    "name": "Pair.second",
+    "internal_name": "Pair.second",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[45]?).map Prod.snd",
+    "references": []
+  },
+  {
+    "source": "E15.047",
+    "name": "List.map",
+    "internal_name": "%List.map.ordinary",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[46]?).map Prod.snd",
+    "references": [
+      "List.mapFrom"
+    ]
+  },
+  {
+    "source": "E15.048",
+    "name": "List.mapFrom",
+    "internal_name": "%List.mapFrom.ordinary",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[47]?).map Prod.snd",
+    "references": [
+      "List.mapFrom"
+    ]
+  }
+]
