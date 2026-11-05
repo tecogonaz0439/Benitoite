@@ -1,0 +1,664 @@
+{
+ "targets": 85411,
+ "target_list": {
+  "bytes": 5718395,
+  "sha256": "6e2243f273ee2a73ab25bd52c4cb907c5fd38f86db796150e777e52083298acc"
+ },
+ "raw": {
+  "bytes": 47995327,
+  "sha256": "9f13db1f61136c1c4fbb195b57b44ca17d62a9529c0a103cbcf42927e447cf81"
+ },
+ "modules": 1069,
+ "stage_modules": {
+  "BuiltinResponseTransport": 24,
+  "BuiltinTypingTransport": 95,
+  "ExternalLeafSelection": 84,
+  "ExternalModelComposition": 4,
+  "ExternalModelExamples": 175,
+  "ExternalModelResponse": 5,
+  "ExternalModelTransport": 19,
+  "ExternalModels": 32,
+  "ExternalNominal": 49,
+  "ExternalSignatureLeaves": 57,
+  "ExternalSurfaceLeaves": 50,
+  "FunctionNameMap": 39,
+  "ResourceReleaseLeaves": 43,
+  "ResourceReleaseModel": 4,
+  "StandardModelCollectionBodies": 162,
+  "StandardModelCollectionInputs": 114,
+  "StandardModelCollectionRows": 65,
+  "StandardModelConditionInputs": 18,
+  "StandardModelCore": 7,
+  "StandardModelCoreBodies": 59,
+  "StandardModelCoreRows": 13,
+  "StandardModelDeclarations": 554,
+  "StandardModelIOInputs": 73,
+  "StandardModelIORows": 40,
+  "StandardModelListBodies": 274,
+  "StandardModelNumericRows": 40,
+  "StandardModelOperatorRows": 8,
+  "StandardModelPrimitiveLookup": 380,
+  "StandardModelProgram": 5,
+  "StandardModelPureInputs": 62,
+  "StandardModelPureRows": 14,
+  "StandardModelResponse": 13,
+  "StandardModelSafeBodies": 144,
+  "StandardModelScoped": 29,
+  "StandardModelSignatures": 1597,
+  "StandardModelSubstitution": 30,
+  "StandardModelWellFormed": 321,
+  "StandardAliasBodies": 513,
+  "StandardDecimalResponse": 136,
+  "StandardOrdinaryCoreBodies": 263,
+  "StandardOrdinaryCoreProgram": 1041,
+  "StandardOrdinaryListBodies": 184
+ },
+ "declarations": 6839,
+ "stage_declarations": 4793,
+ "states": [
+  "既存のモジュールで段に型が変わった宣言",
+  "既存のモジュールに段で足した宣言",
+  "群Aの名前の記録",
+  "群の記録と一致",
+  "記録の後の群が変えた宣言",
+  "記録の後の群が足した宣言"
+ ],
+ "row_fields": [
+  "名前",
+  "種類",
+  "行番号",
+  "型のSHA-256",
+  "生成",
+  "private",
+  "記録した群",
+  "照合の状態（statesの番号）"
+ ],
+ "new_module_declarations": 4702,
+ "edited_module_declarations": 2137,
+ "edited_comparison": {
+  "record": {
+   "bytes": 50070,
+   "sha256": "7949b4e7fd137638b07679f02e72bf31ed73a9a4c789a17a28341db21a2e1c1a"
+  },
+  "counts": {
+   "StandardAliasBodies": {
+    "継承": 508,
+    "削除": 4,
+    "変更": 4,
+    "新規": 1
+   },
+   "StandardDecimalResponse": {
+    "継承": 121,
+    "新規": 14,
+    "変更": 1,
+    "削除": 2
+   },
+   "StandardOrdinaryCoreBodies": {
+    "継承": 246,
+    "削除": 6,
+    "新規": 14,
+    "変更": 3
+   },
+   "StandardOrdinaryListBodies": {
+    "継承": 178,
+    "変更": 5,
+    "削除": 1,
+    "新規": 1
+   },
+   "StandardOrdinaryCoreProgram": {
+    "継承": 993,
+    "新規": 23,
+    "変更": 25,
+    "削除": 4
+   }
+  },
+  "removed": [
+   "StandardAliasBodies:private StandardAliasBodies.P",
+   "StandardAliasBodies:StandardAliasBodies.body_typed._simp_1_211",
+   "StandardAliasBodies:private StandardAliasBodies.primitive._simp_1_211",
+   "StandardAliasBodies:private StandardAliasBodies.signature_formed._simp_1_211",
+   "StandardDecimalResponse:private StandardDecimalResponse.mode_shape._simp_1_1",
+   "StandardDecimalResponse:private StandardDecimalResponse.mode_shape._simp_1_2",
+   "StandardOrdinaryCoreBodies:StandardKeyTyping.DataDecl.entries.eq_1",
+   "StandardOrdinaryCoreBodies:StandardOrdinaryCoreBodies.getter_reference",
+   "StandardOrdinaryCoreBodies:private StandardOrdinaryCoreBodies.record_decl",
+   "StandardOrdinaryCoreBodies:private StandardOrdinaryCoreBodies.record_only",
+   "StandardOrdinaryCoreBodies:private StandardOrdinaryCoreBodies.record_only._simp_1_4",
+   "StandardOrdinaryCoreBodies:private StandardOrdinaryCoreBodies.record_only._simp_1_5",
+   "StandardOrdinaryCoreProgram:private StandardOrdinaryCoreProgram.keyParam",
+   "StandardOrdinaryCoreProgram:private StandardOrdinaryCoreProgram.keyParam.eq_1",
+   "StandardOrdinaryCoreProgram:private StandardOrdinaryCoreProgram.pair",
+   "StandardOrdinaryCoreProgram:private StandardOrdinaryCoreProgram.pair.eq_1",
+   "StandardOrdinaryListBodies:StandardOrdinaryListBodies.Inputs.constructors"
+  ]
+ },
+ "by_kind": {
+  "constructor": 671,
+  "definition": 1753,
+  "inductive": 24,
+  "recursor": 24,
+  "theorem": 4367
+ },
+ "private": 2048,
+ "generated": 1972,
+ "without_source_position": 3623,
+ "record_status": {
+  "既存のモジュールで段に型が変わった宣言": 38,
+  "既存のモジュールに段で足した宣言": 53,
+  "既存のモジュールの宣言（段の前から）": 2046,
+  "群Aの名前の記録": 1566,
+  "群の記録と一致": 3108,
+  "記録の後の群が変えた宣言": 3,
+  "記録の後の群が足した宣言": 25
+ },
+ "changed_after_record": [
+  "StandardModel.Primitive.casesOn",
+  "StandardModel.Primitive.rec",
+  "StandardModel.Primitive.recOn"
+ ],
+ "touched_by_groups": {
+  "BuiltinResponseTransport": [
+   "a"
+  ],
+  "BuiltinTypingTransport": [
+   "a"
+  ],
+  "ExternalLeafSelection": [
+   "d"
+  ],
+  "ExternalModelComposition": [
+   "e"
+  ],
+  "ExternalModelExamples": [
+   "c"
+  ],
+  "ExternalModelResponse": [
+   "a"
+  ],
+  "ExternalModelTransport": [
+   "a",
+   "c"
+  ],
+  "ExternalModels": [
+   "c"
+  ],
+  "ExternalNominal": [
+   "b"
+  ],
+  "ExternalSignatureLeaves": [
+   "b"
+  ],
+  "ExternalSurfaceLeaves": [
+   "a",
+   "d"
+  ],
+  "FunctionNameMap": [
+   "a"
+  ],
+  "ResourceReleaseLeaves": [
+   "e",
+   "f1"
+  ],
+  "ResourceReleaseModel": [
+   "a"
+  ],
+  "StandardModelCollectionBodies": [
+   "f2"
+  ],
+  "StandardModelCollectionInputs": [
+   "g"
+  ],
+  "StandardModelCollectionRows": [
+   "f2"
+  ],
+  "StandardModelConditionInputs": [
+   "g"
+  ],
+  "StandardModelCore": [
+   "f2"
+  ],
+  "StandardModelCoreBodies": [
+   "f2"
+  ],
+  "StandardModelCoreRows": [
+   "f2"
+  ],
+  "StandardModelDeclarations": [
+   "a",
+   "f1",
+   "f2"
+  ],
+  "StandardModelIOInputs": [
+   "g"
+  ],
+  "StandardModelIORows": [
+   "f2"
+  ],
+  "StandardModelListBodies": [
+   "f2"
+  ],
+  "StandardModelNumericRows": [
+   "f1"
+  ],
+  "StandardModelOperatorRows": [
+   "f1"
+  ],
+  "StandardModelPrimitiveLookup": [
+   "a",
+   "f1",
+   "f2"
+  ],
+  "StandardModelProgram": [
+   "f2"
+  ],
+  "StandardModelPureInputs": [
+   "f1"
+  ],
+  "StandardModelPureRows": [
+   "f1",
+   "f2"
+  ],
+  "StandardModelResponse": [
+   "a"
+  ],
+  "StandardModelSafeBodies": [
+   "f2"
+  ],
+  "StandardModelScoped": [
+   "f2"
+  ],
+  "StandardModelSignatures": [
+   "a",
+   "f1",
+   "f2"
+  ],
+  "StandardModelSubstitution": [
+   "f2"
+  ],
+  "StandardModelWellFormed": [
+   "f2"
+  ],
+  "StandardAliasBodies": [
+   "f2"
+  ],
+  "StandardDecimalResponse": [
+   "f1"
+  ],
+  "StandardOrdinaryCoreBodies": [
+   "f2"
+  ],
+  "StandardOrdinaryCoreProgram": [
+   "f2"
+  ],
+  "StandardOrdinaryListBodies": [
+   "f2"
+  ]
+ },
+ "closure_rounds": 2,
+ "axiom_sets": {
+  "none": 39973,
+  "Classical.choice": 2,
+  "Classical.choice + Quot.sound + propext": 21735,
+  "Classical.choice + propext": 2,
+  "Quot.sound": 9,
+  "Quot.sound + propext": 3900,
+  "propext": 19790
+ },
+ "stage_by_kind": {
+  "constructor": 527,
+  "definition": 1235,
+  "inductive": 12,
+  "recursor": 13,
+  "theorem": 3006
+ },
+ "stage_private": 1605,
+ "stage_generated": 946,
+ "stage_named": 2242,
+ "stage_axiom_sets": {
+  "none": 2506,
+  "Classical.choice": 1,
+  "Classical.choice + Quot.sound + propext": 1565,
+  "Quot.sound + propext": 34,
+  "propext": 687
+ },
+ "required": 456,
+ "sorryAx": 0,
+ "new_axioms": 0,
+ "parts": [
+  {
+   "file": "declarations-01.json",
+   "bytes": 95486,
+   "sha256": "66153f3294c26254a4753b271c88f6e10abdd14689a5b6af5da8db4157ebbe9c"
+  },
+  {
+   "file": "declarations-02.json",
+   "bytes": 95179,
+   "sha256": "5e46d328dc0ecd2c6b1f4977f6418b0bf7e1aed8d52dff0ba45eff2bdba06731"
+  },
+  {
+   "file": "declarations-03.json",
+   "bytes": 94972,
+   "sha256": "8e6f7e1e780122b4a57067158146d70fb9fd96ac346f687f94d6c9fc7b481144"
+  },
+  {
+   "file": "declarations-04.json",
+   "bytes": 95022,
+   "sha256": "2b7d5ce6962ad6770ffc56014734327519e0daf732165cc5d019d0d9cc19ac06"
+  },
+  {
+   "file": "declarations-05.json",
+   "bytes": 95915,
+   "sha256": "6e7b5576bac5ee8548b16453b014eec3d3b187e5ca3908030ed17e7137a4e4fc"
+  },
+  {
+   "file": "declarations-06.json",
+   "bytes": 95331,
+   "sha256": "bf687dd1ba68c1eb87f2580f124164ad85ed2144cf6ec54b717c64e29c1a3d9b"
+  },
+  {
+   "file": "declarations-07.json",
+   "bytes": 94996,
+   "sha256": "052249941433b5e0b388afa7af34eff104583e88095eee7f5b4d6f92de7bc577"
+  },
+  {
+   "file": "declarations-08.json",
+   "bytes": 94951,
+   "sha256": "a3266df7740418c566cbb6aaa3bef0a8b4263cda9fda3b80c54bcdb1e8e46350"
+  },
+  {
+   "file": "declarations-09.json",
+   "bytes": 95111,
+   "sha256": "89bc62a152aa53768ab6e160b4defbe0dfd195132d07755c4fa3c897ad3c06d8"
+  },
+  {
+   "file": "declarations-10.json",
+   "bytes": 13871,
+   "sha256": "403c86e8a5af5514818965b1f54f3dc68d188f1038984f1c620c94e9671606c8"
+  }
+ ],
+ "signatures": [
+  {
+   "file": "signatures-01.md",
+   "bytes": 90087,
+   "sha256": "12a4ce3c865889869fe54e7198819d3e98d616bbb7e70d078caab4dce5246b7c"
+  },
+  {
+   "file": "signatures-02.md",
+   "bytes": 90173,
+   "sha256": "93f2ad14c536a026e7224f3e1bd8c6294c988347f3e20bff205629e4585c2942"
+  },
+  {
+   "file": "signatures-03.md",
+   "bytes": 14735,
+   "sha256": "e2089e49384a512c62738ceeb9a4a89235de5f6d5555b55427226cbba7148be5"
+  }
+ ],
+ "definitions": {
+  "bytes": 10918,
+  "sha256": "b2ff46e6a3357732d877bcb889771ed9881992cfe7ef299b36fcd1c6576eb2af"
+ },
+ "signature_index": {
+  "Builtins.TypingFieldsEq": "signatures-01.md",
+  "HasTypeVQ.of_fields": "signatures-01.md",
+  "HasTypeVsQ.of_fields": "signatures-01.md",
+  "HasTypeEachQ.of_fields": "signatures-01.md",
+  "HasTypeCQ.of_fields": "signatures-01.md",
+  "HasTypeTelArgsQ.of_fields": "signatures-01.md",
+  "TelBodyTy.of_fields": "signatures-01.md",
+  "CaptureOk.of_fields": "signatures-01.md",
+  "DependentClosureTy.of_fields": "signatures-01.md",
+  "CheckedWitness.of_fields": "signatures-01.md",
+  "AtCallAdmissible.of_fields": "signatures-01.md",
+  "HasTypeArmsQ.of_fields": "signatures-01.md",
+  "HasTypeClausesQ.of_fields": "signatures-01.md",
+  "HasFailureClause.of_fields": "signatures-01.md",
+  "ImageOk.of_fields": "signatures-01.md",
+  "ExternalArgs.of_fields": "signatures-01.md",
+  "BuiltinArgs.of_fields": "signatures-01.md",
+  "ExternalCarrier.of_fields": "signatures-01.md",
+  "ExternalCarrierEach.of_fields": "signatures-01.md",
+  "ExternalCarrierFields.of_fields": "signatures-01.md",
+  "Outcome.Typed.of_fields": "signatures-01.md",
+  "Outcome.Carrier.of_fields": "signatures-01.md",
+  "ModelScopeConditions.of_responses": "signatures-01.md",
+  "ExternalNominal.Preserves": "signatures-01.md",
+  "ExternalNominal.transformations": "signatures-01.md",
+  "ExternalNominal.transformed_distinct": "signatures-01.md",
+  "ExternalNominal.table_wf_iff": "signatures-01.md",
+  "ExternalNominal.declared_arity": "signatures-01.md",
+  "ExternalNominal.unknown": "signatures-01.md",
+  "ExternalNominal.unknown_handle": "signatures-01.md",
+  "ExternalNominal.type_entry": "signatures-01.md",
+  "ExternalNominal.function_entry": "signatures-01.md",
+  "ExternalNominal.handle_declaration": "signatures-01.md",
+  "ExternalNominal.duplicate": "signatures-01.md",
+  "ExternalNominal.distinct": "signatures-01.md",
+  "ExternalUseAt.mode": "signatures-01.md",
+  "ExternalSignatureLeaves.occurrence_declaration": "signatures-01.md",
+  "ExternalSignatureLeaves.use_declaration": "signatures-01.md",
+  "ExternalSignatureLeaves.declared_use": "signatures-01.md",
+  "ExternalSignatureLeaves.collected_contract": "signatures-01.md",
+  "ExternalSignatureLeaves.handle_arguments": "signatures-01.md",
+  "ExternalSignatureLeaves.handle_call_typed": "signatures-01.md",
+  "ExternalSignatureLeaves.handle_typed_iff": "signatures-01.md",
+  "ExternalSignatureLeaves.mismatched_handle": "signatures-01.md",
+  "ExternalSignatureLeaves.handle_not_source": "signatures-01.md",
+  "ExternalSignatureLeaves.non_binding_pattern_rejected": "signatures-01.md",
+  "ExternalSignatureLeaves.constructor_value_rejected": "signatures-01.md",
+  "ExternalSignatureLeaves.handle_not_release": "signatures-01.md",
+  "ExternalSignatureLeaves.key_no_occurrence": "signatures-01.md",
+  "ExternalSignatureLeaves.declarations_wf": "signatures-01.md",
+  "ExternalModel.response": "signatures-01.md",
+  "ExternalModel.builtins": "signatures-01.md",
+  "ExternalModel.response_err": "signatures-01.md",
+  "ExternalModel.response_exists": "signatures-01.md",
+  "ExternalModel.typing_fields": "signatures-01.md",
+  "ExternalModel.external_assumptions": "signatures-01.md",
+  "Builtins.selectExternal": "signatures-01.md",
+  "Builtins.selectExternal_response": "signatures-01.md",
+  "ExternalModel.response_value": "signatures-01.md",
+  "ExternalModel.receive_value": "signatures-01.md",
+  "ExternalModel.receive_reject": "signatures-01.md",
+  "ExternalModel.receive_error_no_exit": "signatures-01.md",
+  "ExternalModels.model": "signatures-01.md",
+  "ExternalModels.targets": "signatures-01.md",
+  "ExternalModels.http": "signatures-01.md",
+  "ExternalModels.model_core": "signatures-01.md",
+  "ExternalModels.targets_core": "signatures-01.md",
+  "ExternalModels.http_core": "signatures-01.md",
+  "ExternalModels.conditions": "signatures-01.md",
+  "ExternalModels.shape_inputs": "signatures-01.md",
+  "ExternalModels.handle_inputs": "signatures-01.md",
+  "ExternalModels.responses": "signatures-01.md",
+  "ExternalModels.model_no_response_kind": "signatures-01.md",
+  "ExternalModelExamples.receive_pair": "signatures-01.md",
+  "ExternalModelExamples.handle_receive_pair": "signatures-01.md",
+  "ExternalModelExamples.positive_receive_pair": "signatures-01.md",
+  "StateTyE.external_args": "signatures-01.md",
+  "StateTyE.external_receive": "signatures-01.md",
+  "StateTyE.external_step_of_response": "signatures-01.md",
+  "StateTyE.external_response_step": "signatures-01.md",
+  "step_external_selected": "signatures-01.md",
+  "step_external_apply": "signatures-01.md",
+  "ResourceRelease.response": "signatures-01.md",
+  "ResourceRelease.canonical": "signatures-01.md",
+  "ResourceRelease.typed_response": "signatures-01.md",
+  "ResourceRelease.targets_classification": "signatures-01.md",
+  "ResourceRelease.Table": "signatures-01.md",
+  "ResourceRelease.Table.release_all": "signatures-01.md",
+  "ResourceRelease.Table.release_value": "signatures-01.md",
+  "ContTy.release_resource": "signatures-01.md",
+  "ContTy.release_not_external": "signatures-01.md",
+  "StateTyE.release_return_all": "signatures-01.md",
+  "StateTyE.release_escape_all": "signatures-01.md",
+  "StateTyE.release_error_all": "signatures-01.md",
+  "StateTyE.release_exit_all": "signatures-01.md",
+  "StateTyE.use_release_all": "signatures-01.md",
+  "StateTyE.release_selected_run": "signatures-01.md",
+  "StateTyE.release_selected_error": "signatures-01.md",
+  "StateTyE.release_selected_exit": "signatures-01.md",
+  "ExternalModels.ModelCase.release_all": "signatures-01.md",
+  "ExternalModels.ModelCase.resource_table": "signatures-01.md",
+  "ExternalModels.ModelCase.release_premise_false": "signatures-02.md",
+  "ExternalModels.targets_resource_input": "signatures-02.md",
+  "FunctionNames.rename": "signatures-02.md",
+  "FunctionNames.collisionNames": "signatures-02.md",
+  "StandardModel.Body.all": "signatures-02.md",
+  "StandardModel.Body.definition": "signatures-02.md",
+  "StandardModel.Primitive.all": "signatures-02.md",
+  "StandardModel.program": "signatures-02.md",
+  "StandardModel.builtins": "signatures-02.md",
+  "StandardModel.body_lookup": "signatures-02.md",
+  "StandardModel.lookup_body": "signatures-02.md",
+  "StandardModel.definitions_iff": "signatures-02.md",
+  "StandardModel.builtins_lookup_iff": "signatures-02.md",
+  "StandardModel.row_lookup": "signatures-02.md",
+  "StandardModel.PureRow": "signatures-02.md",
+  "StandardModel.PureRow.Satisfiable": "signatures-02.md",
+  "StandardModel.IORow.Satisfiable": "signatures-02.md",
+  "StandardModel.first_sixteen": "signatures-02.md",
+  "StandardModel.numeric_rows": "signatures-02.md",
+  "StandardModel.operator_rows": "signatures-02.md",
+  "StandardModel.collection_rows": "signatures-02.md",
+  "StandardModel.scope_rows": "signatures-02.md",
+  "StandardModel.pure_rows": "signatures-02.md",
+  "StandardModel.io_rows": "signatures-02.md",
+  "StandardModel.body_typed": "signatures-02.md",
+  "StandardModel.definition_typed": "signatures-02.md",
+  "StandardModel.program_typed": "signatures-02.md",
+  "StandardModel.body_scoped": "signatures-02.md",
+  "StandardModel.cons_scoped": "signatures-02.md",
+  "StandardModel.program_wellFormed": "signatures-02.md",
+  "StandardModel.sig_scoped": "signatures-02.md",
+  "StandardModel.substitution_assumptions": "signatures-02.md",
+  "StandardModel.external_assumptions": "signatures-02.md",
+  "StandardModel.response_assumptions": "signatures-02.md",
+  "StandardModel.release_exists": "signatures-02.md",
+  "StandardModel.resource_table": "signatures-02.md",
+  "StandardModel.store_shape": "signatures-02.md",
+  "StandardModel.ref_get": "signatures-02.md",
+  "StandardModel.ref_set": "signatures-02.md",
+  "StandardModel.reference_rows": "signatures-02.md",
+  "StandardModel.store_transitions": "signatures-02.md",
+  "StandardModel.core": "signatures-02.md",
+  "StandardModel.targets": "signatures-02.md",
+  "StandardModel.numeric_inputs": "signatures-02.md",
+  "StandardModel.operator_inputs": "signatures-02.md",
+  "StandardModel.collection_inputs": "signatures-02.md",
+  "StandardModel.scope_inputs": "signatures-02.md",
+  "StandardModel.io_inputs": "signatures-02.md",
+  "StandardModel.substitution_inputs": "signatures-02.md",
+  "StandardModel.admits_sat_input": "signatures-02.md",
+  "StandardModel.positive_inputs": "signatures-02.md",
+  "StandardModel.io_field_inputs": "signatures-02.md",
+  "StandardModel.normal_facts": "signatures-02.md",
+  "ExternalSurface.ref_typed": "signatures-02.md",
+  "ExternalSurface.call_typed": "signatures-02.md",
+  "ExternalSurface.type_declared_iff": "signatures-02.md",
+  "ExternalSurface.ref_of_lookup": "signatures-02.md",
+  "ExternalSurface.ref_inputs": "signatures-02.md",
+  "ExternalSurface.ref_arguments": "signatures-02.md",
+  "ExternalSurface.call_of_lookup": "signatures-02.md",
+  "ExternalSurface.apply_typed": "signatures-02.md",
+  "ExternalSurface.named_call": "signatures-02.md",
+  "ExternalSurface.partial_call": "signatures-02.md",
+  "ExternalSurface.callEffect": "signatures-02.md",
+  "ExternalSurface.args_effect": "signatures-02.md",
+  "ExternalModels.ModelCase.composition": "signatures-02.md",
+  "ExternalModels.ModelCase.external_constant": "signatures-02.md",
+  "ExternalModels.ModelCase.new_field_inputs": "signatures-02.md",
+  "ExternalModels.model_vacuous_premises": "signatures-02.md",
+  "Benitoite.Release.progress": "signatures-02.md",
+  "Benitoite.Release.preservation": "signatures-02.md",
+  "Benitoite.Release.step_sound": "signatures-02.md",
+  "Benitoite.Release.effect_soundness": "signatures-02.md",
+  "Benitoite.Release.effect_soundness_noLamNames": "signatures-02.md",
+  "Benitoite.Release.reachable_target_sound": "signatures-02.md",
+  "Benitoite.Release.reachable_target_sound_event": "signatures-02.md",
+  "Benitoite.Release.reachable_target_sound_of_assumptions": "signatures-02.md",
+  "Benitoite.Release.step_target_sound": "signatures-02.md",
+  "Benitoite.Release.Model.assumptions": "signatures-02.md",
+  "Benitoite.Release.ModelTargets.assumptions": "signatures-02.md",
+  "Benitoite.Release.ModelHttp.assumptions": "signatures-02.md",
+  "ExternalId": "signatures-02.md",
+  "ComponentId": "signatures-02.md",
+  "ExternalFunctionId": "signatures-02.md",
+  "Ty.external": "signatures-02.md",
+  "ExternalKey": "signatures-02.md",
+  "ExternalDecl": "signatures-02.md",
+  "ExternalTypeDecl": "signatures-02.md",
+  "ExternalHandle": "signatures-02.md",
+  "Program.externalType": "signatures-02.md",
+  "Program.externalFunction": "signatures-02.md",
+  "Program.ExternalWF": "signatures-02.md",
+  "Program.ExternalWF.type_lookup": "signatures-02.md",
+  "Program.ExternalWF.function_lookup": "signatures-02.md",
+  "ExternalValueType": "signatures-02.md",
+  "ExternalOccurrence": "signatures-02.md",
+  "ExternalUseAt": "signatures-02.md",
+  "ExternalTelWF": "signatures-02.md",
+  "ExternalSignature.WF": "signatures-02.md",
+  "ExternalCallAdmissible.types_nil": "signatures-02.md",
+  "ExternalCallAdmissible.map": "signatures-02.md",
+  "HasTypeVQ.V_ExternalRef": "signatures-02.md",
+  "HasTypeVQ.V_ExternalHandle": "signatures-02.md",
+  "HasTypeCQ.C_External": "signatures-02.md",
+  "HasTypeCQ.C_Use": "signatures-02.md",
+  "Ty.bind_external": "signatures-02.md",
+  "HasTypeVQ.inv_externalRef": "signatures-02.md",
+  "HasTypeVQ.inv_externalHandle": "signatures-02.md",
+  "HasTypeVQ.canonical_external": "signatures-02.md",
+  "ExternalCarrier": "signatures-02.md",
+  "ExternalPredicates": "signatures-02.md",
+  "ExternalCarrier.accepted": "signatures-02.md",
+  "ExternalCarrier.checked_typed": "signatures-02.md",
+  "ExternalArgs": "signatures-02.md",
+  "Builtins.ExternalAssumptions": "signatures-02.md",
+  "externalReceive": "signatures-02.md",
+  "Builtins.ExternalAssumptions.receive": "signatures-02.md",
+  "Builtins.ExternalAssumptions.external_adequate": "signatures-02.md",
+  "Builtins.ExternalAssumptions.received_value": "signatures-02.md",
+  "Builtins.ExternalAssumptions.receive_no_exit": "signatures-02.md",
+  "Step.external_accept": "signatures-02.md",
+  "Step.external_reject": "signatures-02.md",
+  "Step.E_ExternalApply": "signatures-02.md",
+  "Step.E_External": "signatures-02.md",
+  "Step.E_ExternalErr": "signatures-02.md",
+  "ClosureTy.external_view_typed": "signatures-02.md",
+  "ClosureTy.external_view_inputs": "signatures-02.md",
+  "StateTyE.external_apply_all": "signatures-02.md",
+  "StateTyE.external_value_all": "signatures-02.md",
+  "StateTyE.external_error_all": "signatures-02.md",
+  "StateTyE.externalRef_contract_inputs": "signatures-02.md",
+  "TelClosure.apply": "signatures-02.md",
+  "ContTy.release_response_exists": "signatures-03.md",
+  "ContTy.selected_release": "signatures-03.md",
+  "step_release_selected": "signatures-03.md",
+  "ScopeResponse.response": "signatures-03.md",
+  "ScopedIOResponse.response": "signatures-03.md",
+  "Model.scopeConditions": "signatures-03.md",
+  "ModelTargets.scopeConditions": "signatures-03.md",
+  "ModelHttp.scopeConditions": "signatures-03.md",
+  "ScopeModels.conditions": "signatures-03.md",
+  "ModelScopeConditions.core": "signatures-03.md",
+  "Builtins.CoreAssumptions": "signatures-03.md",
+  "Builtins.TargetAgreement": "signatures-03.md",
+  "StandardOperatorResponse.response": "signatures-03.md",
+  "StandardStructuralEqualityResponse.response": "signatures-03.md",
+  "StandardCollectionRefinedBodies.program_typed": "signatures-03.md",
+  "TargetTable.content_rows": "signatures-03.md",
+  "AtPrepared.request": "signatures-03.md",
+  "Val.reqTarget_kind": "signatures-03.md",
+  "checkAt.absolute": "signatures-03.md"
+ },
+ "inputs": {
+  "axioms.lean": {
+   "bytes": 5751,
+   "sha256": "e8ba1fe6e8f340c033eda7e11629048fb94a3c662c400c48a2d29730666bd31b"
+  },
+  "audit.py": {
+   "bytes": 12855,
+   "sha256": "f20577e70f70ed4ddf8c191193089cf9731cba50d4fad22453b9def7ffe57527"
+  }
+ }
+}

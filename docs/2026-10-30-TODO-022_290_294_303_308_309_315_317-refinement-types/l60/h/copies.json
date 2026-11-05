@@ -1,0 +1,3351 @@
+{
+ "base": "80230d96305756057a63a07dc2b0d8aa1ebf3a75",
+ "files": [
+  "docs/design/01-spec/01-12-core-calculus.md",
+  "docs/design/07-quality/07-04-formal-semantics.md"
+ ],
+ "tokens": 324,
+ "by_class": {
+  "Leanの既定環境の外": 8,
+  "モジュール": 40,
+  "名前空間": 2,
+  "変数の欄": 10,
+  "宣言": 85,
+  "宣言（名前空間の内）": 143,
+  "式": 36
+ },
+ "unresolved": [],
+ "new_modules_in_table": 37,
+ "removed_declarations": [
+  "Benitoite.Release.Refinement.StandardAliasBodies.P",
+  "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.getter_reference",
+  "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.record_decl",
+  "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.record_only"
+ ],
+ "removed_cited": [],
+ "counts": {
+  "十四判断・七十六枝": [
+   14,
+   76
+  ],
+  "of_fields（十四判断）": 14,
+  "carrierの十二構成子": 12,
+  "Tyの21構成子": 21,
+  "二十九変換": 29,
+  "合成表の組込みの行377": 377,
+  "合成表の本体130": 130,
+  "入力の定理（79・7・10）": [
+   79,
+   7,
+   10
+  ]
+ },
+ "rows": [
+  {
+   "file": "01-12-core-calculus.md",
+   "token": ".absolute .top",
+   "count": 1,
+   "class": "式",
+   "resolved": [],
+   "candidates": 0
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": ".const (.opaque o i)",
+   "count": 1,
+   "class": "式",
+   "resolved": [],
+   "candidates": 0
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": ".external id args",
+   "count": 1,
+   "class": "式",
+   "resolved": [],
+   "candidates": 0
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": ".opaque o Top",
+   "count": 2,
+   "class": "式",
+   "resolved": [],
+   "candidates": 0
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": ".release v",
+   "count": 1,
+   "class": "式",
+   "resolved": [],
+   "candidates": 0
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "0 < self",
+   "count": 3,
+   "class": "式",
+   "resolved": [],
+   "candidates": 0
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "B.CoreAssumptions P",
+   "count": 1,
+   "class": "式",
+   "resolved": [
+    "Benitoite.Release.Builtins.CoreAssumptions"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "B.isResource o = true",
+   "count": 1,
+   "class": "式",
+   "resolved": [
+    "Benitoite.Exchange.BuiltinInput.isResource"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "B.releaseResponse",
+   "count": 1,
+   "class": "変数の欄",
+   "resolved": [
+    "Benitoite.Release.Builtins.releaseResponse"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "B.releaseResponse v r",
+   "count": 1,
+   "class": "式",
+   "resolved": [
+    "Benitoite.Release.Builtins.releaseResponse"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "B.selectRelease",
+   "count": 1,
+   "class": "変数の欄",
+   "resolved": [
+    "Benitoite.Release.Refinement.Builtins.selectRelease"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "B.valKind o = none",
+   "count": 2,
+   "class": "式",
+   "resolved": [
+    "Benitoite.Release.Builtins.valKind"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "Body.all",
+   "count": 2,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.Body.all"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "Body.definition",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.Body.definition"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "BuiltinArgs",
+   "count": 7,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.BuiltinArgs"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "BuiltinResponseTransport",
+   "count": 1,
+   "class": "モジュール",
+   "resolved": [
+    "BuiltinResponseTransport"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "BuiltinTypingTransport",
+   "count": 1,
+   "class": "モジュール",
+   "resolved": [
+    "BuiltinTypingTransport"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "Builtins.CoreAssumptions",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.Builtins.CoreAssumptions"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "Builtins.TypingFieldsEq",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.Builtins.TypingFieldsEq"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "Builtins.TypingFieldsEq B B'",
+   "count": 1,
+   "class": "式",
+   "resolved": [
+    "Benitoite.Release.Refinement.Builtins.TypingFieldsEq"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "Builtins.selectExternal",
+   "count": 2,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.Builtins.selectExternal"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "C_Handle",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.HasTypeCQ.C_Handle",
+    "Benitoite.Release.Refinement.HasTypeCQ.below.C_Handle",
+    "Benitoite.Release.Refinement.LegacyRule.C_Handle"
+   ],
+   "candidates": 5
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "C_Use",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.HasTypeCQ.C_Use",
+    "Benitoite.Release.Refinement.HasTypeCQ.below.C_Use",
+    "Benitoite.Release.Refinement.LegacyRule.C_Use"
+   ],
+   "candidates": 5
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ConstOK",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.ConstOK"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ContTy.release_not_external",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.ContTy.release_not_external"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ContTy.release_resource",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.ContTy.release_resource"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "Ctx.WF",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.Ctx.WF"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "E_External",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.Step.E_External",
+    "Benitoite.Release.Refinement.StoreReplyInputs.E_External"
+   ],
+   "candidates": 2
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "E_ExternalApply",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.Step.E_ExternalApply",
+    "Benitoite.Release.Refinement.StoreReplyInputs.E_ExternalApply"
+   ],
+   "candidates": 2
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "E_ExternalErr",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.Step.E_ExternalErr",
+    "Benitoite.Release.Refinement.StoreReplyInputs.E_ExternalErr"
+   ],
+   "candidates": 2
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "E_Force",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.Step.E_Force",
+    "Benitoite.Release.Refinement.StoreReplyInputs.E_Force",
+    "Benitoite.Release.Step.E_Force"
+   ],
+   "candidates": 3
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "E_ForceDone",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.Step.E_ForceDone",
+    "Benitoite.Release.Refinement.StoreReplyInputs.E_ForceDone",
+    "Benitoite.Release.Step.E_ForceDone"
+   ],
+   "candidates": 3
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "E_RefNew",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.Step.E_RefNew",
+    "Benitoite.Release.Refinement.StoreReplyInputs.E_RefNew",
+    "Benitoite.Release.Step.E_RefNew"
+   ],
+   "candidates": 3
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "E_RefUpdate",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.Step.E_RefUpdate",
+    "Benitoite.Release.Refinement.StoreReplyInputs.E_RefUpdate",
+    "Benitoite.Release.Step.E_RefUpdate"
+   ],
+   "candidates": 3
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ExternalArgs",
+   "count": 3,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalArgs"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ExternalArgs P base Ψ d ts vs a e",
+   "count": 1,
+   "class": "式",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalArgs"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ExternalArgs.instantiate",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalArgs.instantiate"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ExternalCarrier",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalCarrier"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ExternalCarrierEach",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalCarrierEach"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ExternalCarrierFields",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalCarrierFields"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ExternalLeafExamples",
+   "count": 1,
+   "class": "名前空間",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalLeafExamples"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ExternalLeafSelection",
+   "count": 1,
+   "class": "モジュール",
+   "resolved": [
+    "ExternalLeafSelection"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ExternalMapKey",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalMapKey"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ExternalModel.builtins P base release",
+   "count": 1,
+   "class": "式",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalModel.builtins"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ExternalModel.external_assumptions",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalModel.external_assumptions"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ExternalModel.response P base f ts vs out obs",
+   "count": 1,
+   "class": "式",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalModel.response"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ExternalModel.response_value",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalModel.response_value"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ExternalModelExamples",
+   "count": 1,
+   "class": "モジュール",
+   "resolved": [
+    "ExternalModelExamples"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ExternalModels.ModelCase.composition",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalModels.ModelCase.composition"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ExternalModels.ModelCase.resource_table",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalModels.ModelCase.resource_table"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ExternalModels.conditions",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalModels.conditions"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ExternalNominal.Preserves",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalNominal.Preserves"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ExternalNominal.table_wf_iff",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalNominal.table_wf_iff"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ExternalOccurrence",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalOccurrence"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ExternalRefinement",
+   "count": 1,
+   "class": "Leanの既定環境の外",
+   "resolved": [
+    "実行時の誤りの理由の文字列（Step.external_reject の行先の error の列）"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ExternalSignatureLeaves.handle_typed_iff",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalSignatureLeaves.handle_typed_iff"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ExternalSignatureLeaves.occurrence_declaration",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalSignatureLeaves.occurrence_declaration"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ExternalSurface",
+   "count": 1,
+   "class": "名前空間",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalSurface"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ExternalSurface.call_typed",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalSurface.call_typed"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ExternalSurface.ref_typed",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalSurface.ref_typed"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ExternalUseAt.mode",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalUseAt.mode"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ExternalValueType",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalValueType"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ExternalWF",
+   "count": 3,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.Program.ExternalWF"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "FunctionNames.collisionNames",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.FunctionNames.collisionNames"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "FunctionNames.definition",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.FunctionNames.definition"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "FunctionNames.rename",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.FunctionNames.rename"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "HasFile P",
+   "count": 2,
+   "class": "式",
+   "resolved": [
+    "Benitoite.Release.Refinement.ScopeDeclarations.HasFile"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "HasHttp P",
+   "count": 2,
+   "class": "式",
+   "resolved": [
+    "Benitoite.Release.Refinement.ScopeDeclarations.HasHttp"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "IORow.Satisfiable",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.IORow.Satisfiable"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ModelCase.external_constant",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalModels.ModelCase.external_constant"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ModelCase.new_field_inputs",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalModels.ModelCase.new_field_inputs"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ModelCase.release_premise_false",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalModels.ModelCase.release_premise_false"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ModelCase.resource_iff",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalModels.ModelCase.resource_iff"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ModelScopeConditions.of_responses",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.ModelScopeConditions.of_responses"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "Outcome.Carrier",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.Outcome.Carrier"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "Outcome.Carrier P base Ψ out a",
+   "count": 1,
+   "class": "式",
+   "resolved": [
+    "Benitoite.Release.Refinement.Outcome.Carrier"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "Outcome.Typed",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.Outcome.Typed"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "P.WellFormed",
+   "count": 1,
+   "class": "変数の欄",
+   "resolved": [
+    "Benitoite.Core.Program.WellFormed"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "P.WellTyped B",
+   "count": 1,
+   "class": "式",
+   "resolved": [
+    "Benitoite.Core.Def.WellTyped"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "Primitive.all",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.Primitive.all"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "Program.WellFormed",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.Program.WellFormed"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "Program.WellTyped",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.Program.WellTyped"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "PureRow",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.PureRow"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "PureRow.Satisfiable",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.PureRow.Satisfiable"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "PureRow.Satisfiable P b",
+   "count": 1,
+   "class": "式",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.PureRow.Satisfiable"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "PureRow.of_row",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.PureRow.of_row"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ResourceRelease.Table B",
+   "count": 2,
+   "class": "式",
+   "resolved": [
+    "Benitoite.Release.Refinement.ResourceRelease.Table"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ResourceRelease.canonical",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.ResourceRelease.canonical"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ResourceRelease.response",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.ResourceRelease.response"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ResourceRelease.response B.isResource",
+   "count": 1,
+   "class": "式",
+   "resolved": [
+    "Benitoite.Release.Refinement.ResourceRelease.response"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ResourceRelease.response isResource v r",
+   "count": 1,
+   "class": "式",
+   "resolved": [
+    "Benitoite.Release.Refinement.ResourceRelease.response"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "SignatureInstance",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.SignatureInstance"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "StandardDecimalResponse.Declarations P",
+   "count": 1,
+   "class": "式",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardDecimalResponse.Declarations"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "StandardDecimalResponse.response_of",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardDecimalResponse.response_of"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "StandardModel.Body.all",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.Body.all"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "StandardModel.Primitive",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.Primitive"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "StandardModel.Primitive.store_rows",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.Primitive.store_rows"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "StandardModel.PureRow P b",
+   "count": 1,
+   "class": "式",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.PureRow"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "StandardModel.body_typed",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.body_typed"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "StandardModel.builtins P",
+   "count": 1,
+   "class": "式",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.builtins"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "StandardModel.byteOrder",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.byteOrder"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "StandardModel.constructorNames",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.constructorNames"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "StandardModel.core externals",
+   "count": 1,
+   "class": "式",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.core"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "StandardModel.program externals",
+   "count": 2,
+   "class": "式",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.program"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "StandardModel.resource_iff",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.resource_iff"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "StandardModel.resource_input",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.resource_input"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "StandardModel.resource_table",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.resource_table"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "StandardModel.roundingMode",
+   "count": 2,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.roundingMode"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "StandardModel.store_lookup",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.store_lookup"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "StandardModel.store_shape",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.store_shape"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "StandardOperatorResponse.response",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardOperatorResponse.response"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "StandardSafe.frontDelta",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardSafe.frontDelta"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "StandardSafe.frontSig",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardSafe.frontSig"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "StateTyE.external_args",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.StateTyE.external_args"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "StateTyE.release_return_all",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.StateTyE.release_return_all"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "StateTyE.use_release_all",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.StateTyE.use_release_all"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "Table.release_all",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ResourceRelease.Table.release_all"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "Table.release_value",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ResourceRelease.Table.release_value"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "TargetAgreement",
+   "count": 2,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.Builtins.TargetAgreement",
+    "Benitoite.Release.Builtins.TargetAgreement",
+    "Benitoite.Scope.SignatureExamples.TargetAgreement"
+   ],
+   "candidates": 3
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "Tel.norm d.parameters",
+   "count": 1,
+   "class": "式",
+   "resolved": [
+    "Benitoite.Release.Refinement.Tel.norm"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "TelClosure",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.TelClosure"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "TelClosure.apply",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.TelClosure.apply"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "Ty.Declared",
+   "count": 1,
+   "class": "変数の欄",
+   "resolved": [
+    "Benitoite.Release.Refinement.Ctx.Declared"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "Ty.core",
+   "count": 1,
+   "class": "変数の欄",
+   "resolved": [
+    "Benitoite.Release.Builtins.Assumptions.core"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "Ty.instTarget",
+   "count": 1,
+   "class": "変数の欄",
+   "resolved": [
+    "Benitoite.Release.Refinement.BinderTypes.LocalWF.instTarget"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "Ty.observationType",
+   "count": 2,
+   "class": "変数の欄",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalNominal.observationType"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "Val.Source",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.Val.Source"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "[value]",
+   "count": 1,
+   "class": "式",
+   "resolved": [],
+   "candidates": 0
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "admitsR",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.Builtins.admitsR",
+    "Benitoite.Release.Refinement.ScopeSignatures.admitsR",
+    "Benitoite.Exchange.AdmitsEntry.admitsR"
+   ],
+   "candidates": 8
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "admits_sat_input",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.admits_sat_input"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "apply_typed",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalSurface.apply_typed"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "args",
+   "count": 1,
+   "class": "Leanの既定環境の外",
+   "resolved": [
+    "写しの式の変数（`.external id args` の引数列）"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "args_effect",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalSurface.args_effect"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "body_scoped",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.body_scoped"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "callEffect d",
+   "count": 3,
+   "class": "式",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalSurface.callEffect"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "call_of_lookup",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalSurface.call_of_lookup"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "collected_contract",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalSignatureLeaves.collected_contract"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "collection_inputs",
+   "count": 2,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.collection_inputs"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "collection_rows",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.collection_rows"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "cons_scoped",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.cons_scoped"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "constructor_value_rejected",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalSignatureLeaves.constructor_value_rejected"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "decimalDelta",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardScalar.decimalDelta"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "declarations_wf",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalSignatureLeaves.declarations_wf"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "definition_typed",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.definition_typed",
+    "Benitoite.Release.Refinement.StandardHeadTail.definition_typed",
+    "Benitoite.Release.Refinement.StandardModel.definition_typed"
+   ],
+   "candidates": 3
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "delta_typed",
+   "count": 3,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.Builtins.ResponseAssumptions.delta_typed",
+    "Benitoite.Release.Refinement.Model.delta_typed",
+    "Benitoite.Release.Refinement.ModelHttp.delta_typed"
+   ],
+   "candidates": 8
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "effOps",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.effOps"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "effects",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.Builtins.TypingFieldsEq.effects",
+    "Benitoite.Release.Refinement.Builtins.effects",
+    "Benitoite.Release.Refinement.LegacyTables.effects"
+   ],
+   "candidates": 19
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "external_receive",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StateTyE.external_receive"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "external_response_step",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StateTyE.external_response_step"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "external_step_of_response",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StateTyE.external_step_of_response"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "first_sixteen",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.first_sixteen"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "forceSig",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.forceSig"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "handleSignature",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalModelExamples.handleSignature",
+    "Benitoite.Release.Refinement.ExternalSignatureLeaves.handleSignature"
+   ],
+   "candidates": 2
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "handle_arguments",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalModelExamples.handle_arguments",
+    "Benitoite.Release.Refinement.ExternalSignatureLeaves.handle_arguments"
+   ],
+   "candidates": 2
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "handle_inputs",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalModels.handle_inputs"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "handle_not_source",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalSignatureLeaves.handle_not_source"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "handle_receive_pair",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalModelExamples.handle_receive_pair"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "handled",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.handled"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "http_declarations",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.http_declarations"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "io_exists",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.Builtins.ResponseAssumptions.io_exists",
+    "Benitoite.Release.Refinement.Model.io_exists",
+    "Benitoite.Release.Refinement.ModelHttp.io_exists"
+   ],
+   "candidates": 8
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "io_field_inputs",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.io_field_inputs"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "io_inputs",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.io_inputs"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "io_kind",
+   "count": 2,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.Builtins.ResponseAssumptions.io_kind",
+    "Benitoite.Release.Refinement.Model.io_kind",
+    "Benitoite.Release.Refinement.ModelHttp.io_kind"
+   ],
+   "candidates": 6
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "io_op",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.Builtins.CoreAssumptions.io_op",
+    "Benitoite.Release.Refinement.Model.io_op",
+    "Benitoite.Release.Refinement.ModelHttp.io_op"
+   ],
+   "candidates": 10
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "io_rows",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.io_rows"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "io_target",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.Builtins.TargetAgreement.io_target",
+    "Benitoite.Release.Builtins.TargetAgreement.io_target",
+    "Benitoite.Scope.SignatureExamples.TargetAgreement.io_target"
+   ],
+   "candidates": 3
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "io_typed",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.Builtins.ResponseAssumptions.io_typed",
+    "Benitoite.Release.Refinement.Model.io_typed",
+    "Benitoite.Release.Refinement.ModelHttp.io_typed"
+   ],
+   "candidates": 8
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "isResource",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.Builtins.isResource",
+    "Benitoite.Exchange.BuiltinInput.isResource",
+    "Benitoite.Release.Builtins.isResource"
+   ],
+   "candidates": 5
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "isResource o = true",
+   "count": 1,
+   "class": "式",
+   "resolved": [
+    "Benitoite.Release.Refinement.Builtins.isResource"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "model_no_response_kind",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalModels.model_no_response_kind"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "model_vacuous_premises",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalModels.model_vacuous_premises"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "named_call",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalSurface.named_call"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "non_binding_pattern_rejected",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalSignatureLeaves.non_binding_pattern_rejected"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "normContTy",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.normContTy"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "normal_facts",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ModelHttp.normal_facts",
+    "Benitoite.Release.Refinement.ModelTargets.normal_facts",
+    "Benitoite.Release.Refinement.ScopeResponse.normal_facts"
+   ],
+   "candidates": 4
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "numeric_inputs",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.numeric_inputs"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "numeric_rows",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.numeric_rows"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "operator_inputs",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.operator_inputs"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "operator_rows",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.operator_rows"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "partial_call",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalSurface.partial_call"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "positiveExternals",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.positiveExternals"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "positiveProgram",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalModelExamples.positiveProgram"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "positiveType",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalModelExamples.positiveType"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "positive_inputs",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.positive_inputs"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "positive_receive_pair",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalModelExamples.positive_receive_pair"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "program_typed",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.program_typed",
+    "Benitoite.Release.Refinement.StandardModel.program_typed",
+    "Benitoite.Surface.Monad2Examples.program_typed"
+   ],
+   "candidates": 3
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "program_wellFormed",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ScopeDeclarations.program_wellFormed",
+    "Benitoite.Release.Refinement.StandardModel.program_wellFormed",
+    "Benitoite.Surface.CoverExamples.program_wellFormed"
+   ],
+   "candidates": 4
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "pureSignature",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalSignatureLeaves.pureSignature"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "pure_rows",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.pure_rows"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "rawApply",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.rawApply"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "receive_error_no_exit",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalModel.receive_error_no_exit"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "receive_pair",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalModelExamples.receive_pair"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "receive_reject",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalModel.receive_reject"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "receive_value",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalModel.receive_value"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "recordFields",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Surface.recordFields"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "refNewSig",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.refNewSig"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "refUpdateSig",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.refUpdateSig"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ref_arguments",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalSurface.ref_arguments"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ref_get",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.Builtins.CoreAssumptions.ref_get",
+    "Benitoite.Release.Refinement.Model.ref_get",
+    "Benitoite.Release.Refinement.ModelHttp.ref_get"
+   ],
+   "candidates": 7
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ref_inputs",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalSurface.ref_inputs"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ref_of_lookup",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalSurface.ref_of_lookup"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "ref_set",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.Builtins.CoreAssumptions.ref_set",
+    "Benitoite.Release.Refinement.Model.ref_set",
+    "Benitoite.Release.Refinement.ModelHttp.ref_set"
+   ],
+   "candidates": 7
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "reference_rows",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.reference_rows"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "release_error_all",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StateTyE.release_error_all"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "release_escape_all",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StateTyE.release_escape_all"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "release_exit_all",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StateTyE.release_exit_all"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "release_selected_error",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StateTyE.release_selected_error"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "release_selected_exit",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StateTyE.release_selected_exit"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "release_selected_run",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StateTyE.release_selected_run"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "response",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalModel.response",
+    "Benitoite.Release.Refinement.RequestDelta.response",
+    "Benitoite.Release.Refinement.ResourceRelease.response"
+   ],
+   "candidates": 30
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "responses",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.Builtins.CoreAssumptions.responses",
+    "Benitoite.Release.Refinement.ExternalModels.responses"
+   ],
+   "candidates": 2
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "rounding_declarations",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.rounding_declarations"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "sat",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.Builtins.TypingFieldsEq.sat",
+    "Benitoite.Release.Refinement.Builtins.sat",
+    "Benitoite.Release.Refinement.LegacyTables.sat"
+   ],
+   "candidates": 9
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "scope_inputs",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.scope_inputs"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "scope_rows",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.scope_rows"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "selectExternal_response",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.Builtins.selectExternal_response"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "shape_inputs",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalModels.shape_inputs"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "sig",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.Builtins.TypingFieldsEq.sig",
+    "Benitoite.Release.Refinement.Builtins.sig",
+    "Benitoite.Core.Builtins.sig"
+   ],
+   "candidates": 6
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "sig_scoped",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.Builtins.CoreAssumptions.sig_scoped",
+    "Benitoite.Release.Refinement.Model.sig_scoped",
+    "Benitoite.Release.Refinement.ModelHttp.sig_scoped"
+   ],
+   "candidates": 10
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "step_external_apply",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.step_external_apply"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "step_external_selected",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.step_external_selected"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "store_transitions",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.store_transitions"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "substitution_inputs",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.substitution_inputs"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "table_response",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardArithmeticResponse.table_response",
+    "Benitoite.Release.Refinement.StandardByteStringResponse.table_response",
+    "Benitoite.Release.Refinement.StandardBytesOrdinaryResponse.table_response"
+   ],
+   "candidates": 19
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "targets",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalModels.ModelCase.targets",
+    "Benitoite.Release.Refinement.ExternalModels.targets",
+    "Benitoite.Release.Refinement.ScopedIOResponse.targets"
+   ],
+   "candidates": 4
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "targets_resource_input",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalModels.targets_resource_input"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "transformations",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalNominal.transformations"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "type_declared_iff",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalSurface.type_declared_iff"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "typed_response",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ResourceRelease.typed_response"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "uses_exact",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalSignature.WF.uses_exact"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "valContent",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.Builtins.valContent",
+    "Benitoite.Release.Refinement.LegacyTables.valContent",
+    "Benitoite.Release.Refinement.TargetTable.valContent"
+   ],
+   "candidates": 5
+  },
+  {
+   "file": "01-12-core-calculus.md",
+   "token": "valKind",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.Builtins.valKind",
+    "Benitoite.Release.Refinement.LegacyTables.valKind",
+    "Benitoite.Release.Refinement.TargetTable.valKind"
+   ],
+   "candidates": 6
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "0 < self",
+   "count": 1,
+   "class": "式",
+   "resolved": [],
+   "candidates": 0
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "@external",
+   "count": 1,
+   "class": "Leanの既定環境の外",
+   "resolved": [
+    "表層の構文（外部宣言の注釈）"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "Body.all",
+   "count": 2,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.Body.all"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "Body.definition",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.Body.definition"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "BuiltinArgs",
+   "count": 2,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.BuiltinArgs"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "BuiltinResponseTransport",
+   "count": 1,
+   "class": "モジュール",
+   "resolved": [
+    "BuiltinResponseTransport"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "BuiltinTypingTransport",
+   "count": 1,
+   "class": "モジュール",
+   "resolved": [
+    "BuiltinTypingTransport"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "Builtins.TypingFieldsEq",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.Builtins.TypingFieldsEq"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "Builtins.selectExternal",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.Builtins.selectExternal"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "CoreAssumptions",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.Builtins.CoreAssumptions",
+    "Benitoite.Release.Builtins.CoreAssumptions",
+    "Benitoite.Scope.SignatureExamples.CoreAssumptions"
+   ],
+   "candidates": 3
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "ExternalArgs",
+   "count": 2,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalArgs"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "ExternalLeafSelection",
+   "count": 2,
+   "class": "モジュール",
+   "resolved": [
+    "ExternalLeafSelection"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "ExternalModelComposition",
+   "count": 1,
+   "class": "モジュール",
+   "resolved": [
+    "ExternalModelComposition"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "ExternalModelExamples",
+   "count": 1,
+   "class": "モジュール",
+   "resolved": [
+    "ExternalModelExamples"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "ExternalModelResponse",
+   "count": 1,
+   "class": "モジュール",
+   "resolved": [
+    "ExternalModelResponse"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "ExternalModelTransport",
+   "count": 2,
+   "class": "モジュール",
+   "resolved": [
+    "ExternalModelTransport"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "ExternalModels.conditions",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalModels.conditions"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "ExternalModels.http",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalModels.http"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "ExternalModels.model",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalModels.model"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "ExternalModels.targets",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalModels.targets"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "ExternalNominal",
+   "count": 1,
+   "class": "モジュール",
+   "resolved": [
+    "ExternalNominal"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "ExternalSignatureLeaves",
+   "count": 1,
+   "class": "モジュール",
+   "resolved": [
+    "ExternalSignatureLeaves"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "ExternalSurfaceLeaves",
+   "count": 2,
+   "class": "モジュール",
+   "resolved": [
+    "ExternalSurfaceLeaves"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "ExternalValueType",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalValueType"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "FunctionNameMap",
+   "count": 1,
+   "class": "モジュール",
+   "resolved": [
+    "FunctionNameMap"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "FunctionNames.collisionNames",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.FunctionNames.collisionNames"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "HasFile P",
+   "count": 1,
+   "class": "式",
+   "resolved": [
+    "Benitoite.Release.Refinement.ScopeDeclarations.HasFile"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "HasHttp P",
+   "count": 1,
+   "class": "式",
+   "resolved": [
+    "Benitoite.Release.Refinement.ScopeDeclarations.HasHttp"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "Json.Value",
+   "count": 1,
+   "class": "Leanの既定環境の外",
+   "resolved": [
+    "標準ライブラリの公開型（処理系の値）"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "Primitive.all",
+   "count": 2,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.Primitive.all"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "ResourceRelease.Table",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.ResourceRelease.Table"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "ResourceRelease.response",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.ResourceRelease.response"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "ResourceReleaseLeaves",
+   "count": 1,
+   "class": "モジュール",
+   "resolved": [
+    "ResourceReleaseLeaves"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "ResourceReleaseModel",
+   "count": 1,
+   "class": "モジュール",
+   "resolved": [
+    "ResourceReleaseModel"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "StandardDecimalResponse.Declarations P",
+   "count": 1,
+   "class": "式",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardDecimalResponse.Declarations"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "StandardDecimalResponse.response_of",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardDecimalResponse.response_of"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "StandardModel.PureRow",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.PureRow"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "StandardModel.roundingMode",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardModel.roundingMode"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "StandardModelCollectionBodies",
+   "count": 1,
+   "class": "モジュール",
+   "resolved": [
+    "StandardModelCollectionBodies"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "StandardModelCollectionInputs",
+   "count": 1,
+   "class": "モジュール",
+   "resolved": [
+    "StandardModelCollectionInputs"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "StandardModelCollectionRows",
+   "count": 1,
+   "class": "モジュール",
+   "resolved": [
+    "StandardModelCollectionRows"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "StandardModelConditionInputs",
+   "count": 1,
+   "class": "モジュール",
+   "resolved": [
+    "StandardModelConditionInputs"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "StandardModelCore",
+   "count": 1,
+   "class": "モジュール",
+   "resolved": [
+    "StandardModelCore"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "StandardModelCoreBodies",
+   "count": 1,
+   "class": "モジュール",
+   "resolved": [
+    "StandardModelCoreBodies"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "StandardModelCoreRows",
+   "count": 1,
+   "class": "モジュール",
+   "resolved": [
+    "StandardModelCoreRows"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "StandardModelDeclarations",
+   "count": 1,
+   "class": "モジュール",
+   "resolved": [
+    "StandardModelDeclarations"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "StandardModelIOInputs",
+   "count": 1,
+   "class": "モジュール",
+   "resolved": [
+    "StandardModelIOInputs"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "StandardModelIORows",
+   "count": 1,
+   "class": "モジュール",
+   "resolved": [
+    "StandardModelIORows"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "StandardModelListBodies",
+   "count": 1,
+   "class": "モジュール",
+   "resolved": [
+    "StandardModelListBodies"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "StandardModelNumericRows",
+   "count": 1,
+   "class": "モジュール",
+   "resolved": [
+    "StandardModelNumericRows"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "StandardModelOperatorRows",
+   "count": 1,
+   "class": "モジュール",
+   "resolved": [
+    "StandardModelOperatorRows"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "StandardModelPrimitiveLookup",
+   "count": 1,
+   "class": "モジュール",
+   "resolved": [
+    "StandardModelPrimitiveLookup"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "StandardModelProgram",
+   "count": 1,
+   "class": "モジュール",
+   "resolved": [
+    "StandardModelProgram"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "StandardModelPureInputs",
+   "count": 1,
+   "class": "モジュール",
+   "resolved": [
+    "StandardModelPureInputs"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "StandardModelPureRows",
+   "count": 1,
+   "class": "モジュール",
+   "resolved": [
+    "StandardModelPureRows"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "StandardModelResponse",
+   "count": 1,
+   "class": "モジュール",
+   "resolved": [
+    "StandardModelResponse"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "StandardModelSafeBodies",
+   "count": 1,
+   "class": "モジュール",
+   "resolved": [
+    "StandardModelSafeBodies"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "StandardModelScoped",
+   "count": 1,
+   "class": "モジュール",
+   "resolved": [
+    "StandardModelScoped"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "StandardModelSignatures",
+   "count": 1,
+   "class": "モジュール",
+   "resolved": [
+    "StandardModelSignatures"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "StandardModelSubstitution",
+   "count": 1,
+   "class": "モジュール",
+   "resolved": [
+    "StandardModelSubstitution"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "StandardModelWellFormed",
+   "count": 1,
+   "class": "モジュール",
+   "resolved": [
+    "StandardModelWellFormed"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "State",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.State"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "TargetAgreement",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.Builtins.TargetAgreement",
+    "Benitoite.Release.Builtins.TargetAgreement",
+    "Benitoite.Scope.SignatureExamples.TargetAgreement"
+   ],
+   "candidates": 3
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "Ty.bind_external",
+   "count": 1,
+   "class": "変数の欄",
+   "resolved": [
+    "Benitoite.Release.Refinement.Ty.bind_external"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "Ty.core",
+   "count": 1,
+   "class": "変数の欄",
+   "resolved": [
+    "Benitoite.Release.Builtins.Assumptions.core"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "Ty.instTarget",
+   "count": 1,
+   "class": "変数の欄",
+   "resolved": [
+    "Benitoite.Release.Refinement.BinderTypes.LocalWF.instTarget"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "borrow",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalMode.borrow"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "convert",
+   "count": 1,
+   "class": "Leanの既定環境の外",
+   "resolved": [
+    "処理系のソース（json.rs の関数）"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "decimalDelta",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardScalar.decimalDelta"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "delta_typed",
+   "count": 2,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.Builtins.ResponseAssumptions.delta_typed",
+    "Benitoite.Release.Refinement.Model.delta_typed",
+    "Benitoite.Release.Refinement.ModelHttp.delta_typed"
+   ],
+   "candidates": 8
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "excluded: [\"external function\"]",
+   "count": 1,
+   "class": "式",
+   "resolved": [
+    "Benitoite.Release.Refinement.PathTest.excluded"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "externalType",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.Program.externalType"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "external_adequate",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.Builtins.ExternalAssumptions.external_adequate"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "handle_inputs",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalModels.handle_inputs"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "handle_receive_pair",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalModelExamples.handle_receive_pair"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "io_kind",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.Builtins.ResponseAssumptions.io_kind",
+    "Benitoite.Release.Refinement.Model.io_kind",
+    "Benitoite.Release.Refinement.ModelHttp.io_kind"
+   ],
+   "candidates": 6
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "json.rs",
+   "count": 1,
+   "class": "Leanの既定環境の外",
+   "resolved": [
+    "処理系のソース（src/builtins の JSON 変換）"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "model_no_response_kind",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalModels.model_no_response_kind"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "normContTy",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.normContTy"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "own",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalMode.own",
+    "Benitoite.Interval.BudgetAnalysis.own"
+   ],
+   "candidates": 2
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "positiveProgram",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalModelExamples.positiveProgram"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "positive_receive_pair",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalModelExamples.positive_receive_pair"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "program_typed",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.program_typed",
+    "Benitoite.Release.Refinement.StandardModel.program_typed",
+    "Benitoite.Surface.Monad2Examples.program_typed"
+   ],
+   "candidates": 3
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "program_wellFormed",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ScopeDeclarations.program_wellFormed",
+    "Benitoite.Release.Refinement.StandardModel.program_wellFormed",
+    "Benitoite.Surface.CoverExamples.program_wellFormed"
+   ],
+   "candidates": 4
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "rawApply",
+   "count": 1,
+   "class": "宣言",
+   "resolved": [
+    "Benitoite.Release.Refinement.rawApply"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "receive_pair",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalModelExamples.receive_pair"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "received_value",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.Builtins.ExternalAssumptions.received_value"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "response",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalModel.response",
+    "Benitoite.Release.Refinement.RequestDelta.response",
+    "Benitoite.Release.Refinement.ResourceRelease.response"
+   ],
+   "candidates": 30
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "responses",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.Builtins.CoreAssumptions.responses",
+    "Benitoite.Release.Refinement.ExternalModels.responses"
+   ],
+   "candidates": 2
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "shape_inputs",
+   "count": 1,
+   "class": "宣言（名前空間の内）",
+   "resolved": [
+    "Benitoite.Release.Refinement.ExternalModels.shape_inputs"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "surfaceCheckAll",
+   "count": 1,
+   "class": "Leanの既定環境の外",
+   "resolved": [
+    "formal/SurfaceCheck（既定importの外の検査の道具）"
+   ],
+   "candidates": 1
+  },
+  {
+   "file": "07-04-formal-semantics.md",
+   "token": "type",
+   "count": 1,
+   "class": "Leanの既定環境の外",
+   "resolved": [
+    "表層の構文（右辺のない型の宣言）"
+   ],
+   "candidates": 1
+  }
+ ]
+}
