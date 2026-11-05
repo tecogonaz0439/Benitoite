@@ -1,0 +1,277 @@
+{
+ "rows": [
+  {
+   "row": "p076",
+   "family": "scoped_replaceValues",
+   "args": "",
+   "name": "%Map.replaceValues",
+   "category": "値を保存・射影する行",
+   "treatment": "値を同じ長さの列の値へ置き換える",
+   "result_refinement_observes_terms": true
+  },
+  {
+   "row": "p255",
+   "family": "scoped_append",
+   "args": "",
+   "name": "List.append",
+   "category": "値を保存・射影する行",
+   "treatment": "要素を末尾へ置く",
+   "result_refinement_observes_terms": true
+  },
+  {
+   "row": "p256",
+   "family": "scoped_list",
+   "args": ".concatenate",
+   "name": "List.concatenate",
+   "category": "値を保存・射影する行",
+   "treatment": "二つの列の要素を順に並べる",
+   "result_refinement_observes_terms": false
+  },
+  {
+   "row": "p258",
+   "family": "scoped_listRemaining",
+   "args": ".drop",
+   "name": "List.drop",
+   "category": "値を保存・射影する行",
+   "treatment": "先頭から整数個を除いた残りの要素",
+   "result_refinement_observes_terms": false
+  },
+  {
+   "row": "p259",
+   "family": "scoped_listRemaining",
+   "args": ".get",
+   "name": "List.get",
+   "category": "値を保存・射影する行",
+   "treatment": "添字の位置の要素をOptionで返す",
+   "result_refinement_observes_terms": false
+  },
+  {
+   "row": "p260",
+   "family": "scoped_headTail",
+   "args": "false",
+   "name": "List.head",
+   "category": "値を保存・射影する行",
+   "treatment": "先頭の要素をOptionで返す",
+   "result_refinement_observes_terms": true
+  },
+  {
+   "row": "p261",
+   "family": "scoped_list",
+   "args": ".isEmpty",
+   "name": "List.isEmpty",
+   "category": "値の形（個数・構造）を調べる行",
+   "treatment": "要素の有無",
+   "result_refinement_observes_terms": false
+  },
+  {
+   "row": "p262",
+   "family": "scoped_list",
+   "args": ".length",
+   "name": "List.length",
+   "category": "値の形（個数・構造）を調べる行",
+   "treatment": "要素の個数",
+   "result_refinement_observes_terms": false
+  },
+  {
+   "row": "p263",
+   "family": "scoped_list",
+   "args": ".prepend",
+   "name": "List.prepend",
+   "category": "値を保存・射影する行",
+   "treatment": "要素を先頭へ置く",
+   "result_refinement_observes_terms": false
+  },
+  {
+   "row": "p265",
+   "family": "scoped_list",
+   "args": ".reverse",
+   "name": "List.reverse",
+   "category": "値を保存・射影する行",
+   "treatment": "要素の順を逆にする",
+   "result_refinement_observes_terms": false
+  },
+  {
+   "row": "p267",
+   "family": "scoped_headTail",
+   "args": "true",
+   "name": "List.tail",
+   "category": "値を保存・射影する行",
+   "treatment": "先頭を除いた列をOptionで返す",
+   "result_refinement_observes_terms": true
+  },
+  {
+   "row": "p268",
+   "family": "scoped_listRemaining",
+   "args": ".take",
+   "name": "List.take",
+   "category": "値を保存・射影する行",
+   "treatment": "先頭から整数個の要素",
+   "result_refinement_observes_terms": false
+  },
+  {
+   "row": "p269",
+   "family": "scoped_map",
+   "args": ".contains",
+   "name": "Map.contains",
+   "category": "値の形（個数・構造）を調べる行",
+   "treatment": "鍵の所属（値は読まない）",
+   "result_refinement_observes_terms": false
+  },
+  {
+   "row": "p271",
+   "family": "scoped_precision",
+   "args": "true true",
+   "name": "Map.fromList",
+   "category": "値を保存・射影する行",
+   "treatment": "対の列から写像を作る（鍵を正規化し、値をそのまま置く）",
+   "result_refinement_observes_terms": true
+  },
+  {
+   "row": "p272",
+   "family": "scoped_map",
+   "args": ".get",
+   "name": "Map.get",
+   "category": "値を保存・射影する行",
+   "treatment": "鍵の値をOptionで返す",
+   "result_refinement_observes_terms": false
+  },
+  {
+   "row": "p273",
+   "family": "scoped_map",
+   "args": ".keys",
+   "name": "Map.keys",
+   "category": "値の形（個数・構造）を調べる行",
+   "treatment": "鍵の列（値は読まない）",
+   "result_refinement_observes_terms": false
+  },
+  {
+   "row": "p274",
+   "family": "scoped_map",
+   "args": ".remove",
+   "name": "Map.remove",
+   "category": "値を保存・射影する行",
+   "treatment": "鍵の項目を除いた残りの値",
+   "result_refinement_observes_terms": false
+  },
+  {
+   "row": "p275",
+   "family": "scoped_map",
+   "args": ".set",
+   "name": "Map.set",
+   "category": "値を保存・射影する行",
+   "treatment": "鍵の値を置き換える",
+   "result_refinement_observes_terms": false
+  },
+  {
+   "row": "p276",
+   "family": "scoped_map",
+   "args": ".size",
+   "name": "Map.size",
+   "category": "値の形（個数・構造）を調べる行",
+   "treatment": "項目の個数",
+   "result_refinement_observes_terms": false
+  },
+  {
+   "row": "p277",
+   "family": "scoped_precision",
+   "args": "true false",
+   "name": "Map.toList",
+   "category": "値を保存・射影する行",
+   "treatment": "写像を対の列にする",
+   "result_refinement_observes_terms": true
+  },
+  {
+   "row": "p278",
+   "family": "scoped_map",
+   "args": ".values",
+   "name": "Map.values",
+   "category": "値を保存・射影する行",
+   "treatment": "値の列",
+   "result_refinement_observes_terms": false
+  },
+  {
+   "row": "p279",
+   "family": "targets_scoped",
+   "args": "(b := \"Reference.get\") rfl",
+   "name": "Reference.get",
+   "category": "値を保存・射影する行",
+   "treatment": "専用の遷移がセルの値を返す",
+   "result_refinement_observes_terms": false
+  },
+  {
+   "row": "p280",
+   "family": "targets_scoped",
+   "args": "(b := \"Reference.set\") rfl",
+   "name": "Reference.set",
+   "category": "値を保存・射影する行",
+   "treatment": "専用の遷移がセルの値を置き換える",
+   "result_refinement_observes_terms": false
+  },
+  {
+   "row": "p374",
+   "family": "store.2.2.1",
+   "args": "",
+   "name": "Lazy.force",
+   "category": "値を保存・射影する行",
+   "treatment": "専用の遷移が完了済みの値を返すか評価する",
+   "result_refinement_observes_terms": false
+  },
+  {
+   "row": "p375",
+   "family": "store.1",
+   "args": "",
+   "name": "Reference.new",
+   "category": "値を保存・射影する行",
+   "treatment": "専用の遷移が値をセルへ置く",
+   "result_refinement_observes_terms": false
+  },
+  {
+   "row": "p376",
+   "family": "store.2.1",
+   "args": "",
+   "name": "Reference.update",
+   "category": "値を保存・射影する行",
+   "treatment": "専用の遷移が取得・関数の呼出し・設定へ展開する",
+   "result_refinement_observes_terms": false
+  },
+  {
+   "row": "p377",
+   "family": "store.2.2.2",
+   "args": "",
+   "name": "%List.getFront",
+   "category": "値を保存・射影する行",
+   "treatment": "添字の位置の要素を返す（安全な入口の内部）",
+   "result_refinement_observes_terms": false
+  }
+ ],
+ "counts": {
+  "値を保存・射影する行": 22,
+  "値の形（個数・構造）を調べる行": 5
+ },
+ "families": {
+  "scoped_binary": 172,
+  "scoped_unary": 75,
+  "scoped_replaceValues": 1,
+  "scoped_structural": 2,
+  "scoped_option": 25,
+  "scoped_bytesOrdinary": 13,
+  "scoped_bytes": 5,
+  "scoped_decimal": 1,
+  "scoped_append": 1,
+  "scoped_list": 5,
+  "scoped_listRemaining": 5,
+  "scoped_headTail": 2,
+  "scoped_range": 1,
+  "scoped_map": 8,
+  "scoped_precision": 4,
+  "scoped_set": 8,
+  "scoped_string": 26,
+  "store.2.2.1": 1,
+  "store.1": 1,
+  "store.2.1": 1,
+  "store.2.2.2": 1,
+  "http_scoped": 4,
+  "targets_scoped": 15
+ },
+ "unreachable": 350
+}

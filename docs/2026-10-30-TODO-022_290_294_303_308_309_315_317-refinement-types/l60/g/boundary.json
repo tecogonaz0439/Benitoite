@@ -1,0 +1,143 @@
+{
+ "reasons": [
+  {
+   "reason": "externalType",
+   "comparison": "区間の比較（全10系統の全比較と manifest 系統）",
+   "producer": [
+    "crates/benitoite/tests/desugar_export/exchange.rs: TyCon::External(_) => self.outside(\"external type\")",
+    "crates/benitoite/tests/desugar_export/interval/manifest.rs: \"definition\":name,\"reason\":\"externalType\",\"bodies\":bodies"
+   ],
+   "readers": [
+    "scripts/check/formal_interval.py: externalType exemption has excluded definitions",
+    "formal/Benitoite/Interval/Exchange.lean: readEvaluationExpected"
+   ],
+   "unit": "元定義とそれに属する全別本体（manifest の definition・bodies）。独立入力の正常値は比較済みに数えない",
+   "design": "docs/design/07-quality/07-04-formal-semantics.md: 理由 `externalType` として全定義の manifest と比較報告へ残す",
+   "l60_leaves": [
+    "ExternalNominal.transformations",
+    "ExternalNominal.table_wf_iff",
+    "ExternalNominal.unknown_handle",
+    "ExternalSurface.type_declared_iff",
+    "ExternalSurface.ref_typed",
+    "ExternalSignatureLeaves.collected_contract"
+   ],
+   "l70": "外部型を表せる全表層と区間の解析の読者への切替。外部型の型ID・入れ子・宣言表を元定義の型から読む",
+   "r50": "未実施（両理由の実の件数は数えていない）。0件を確かめた記録はない"
+  },
+  {
+   "reason": "external function",
+   "comparison": "脱糖の差分・型検査の出力の検査（surfaceCheckAll）・網羅性の比較",
+   "producer": [
+    "crates/benitoite/tests/desugar_export.rs: \"excluded\":[\"external function\"]"
+   ],
+   "readers": [
+    "formal/DesugarDiff/Main.lean: excluded input has definitions",
+    "formal/SurfaceCheck/Batch.lean: excluded := r.excluded + 1",
+    "formal/SurfaceCheck/Main.lean: Rust check excluded input"
+   ],
+   "unit": "外部の宣言（関数と型）の表が空でないプログラム全体（入力単位）",
+   "design": "docs/design/07-quality/07-04-formal-semantics.md: `excluded: [\"external function\"]` として除く",
+   "l60_leaves": [
+    "ExternalSurface.ref_typed",
+    "ExternalSurface.call_typed",
+    "ExternalSurface.named_call",
+    "ExternalSurface.partial_call",
+    "StateTyE.external_response_step",
+    "step_external_selected",
+    "StandardModel.positive_inputs",
+    "StandardModel.core"
+   ],
+   "l70": "外部の宣言表を持つ利用者Pの収集、全表層の検査器・脱糖・網羅性への組込み、交換の版の切替",
+   "r50": "未実施（両理由の実の件数は数えていない）。0件を確かめた記録はない"
+  }
+ ],
+ "opacity": [
+  "ExternalSignatureLeaves.handle_not_source",
+  "ExternalSignatureLeaves.non_binding_pattern_rejected",
+  "ExternalSignatureLeaves.constructor_value_rejected",
+  "ExternalSignatureLeaves.mismatched_handle",
+  "ExternalSignatureLeaves.handle_typed_iff",
+  "ExternalNominal.transformed_distinct"
+ ],
+ "contracts": [
+  {
+   "receiver": "L70",
+   "names": [
+    "StandardModel.collection_inputs",
+    "StandardModel.scope_inputs",
+    "StandardModel.io_inputs"
+   ],
+   "contract": "合成表の96行の契約の前提を満たす入力。利用者Pへの収集の後も同じ署名の形で読む"
+  },
+  {
+   "receiver": "L70",
+   "names": [
+    "StandardModel.substitution_inputs",
+    "StandardModel.admits_sat_input",
+    "StandardModel.io_field_inputs",
+    "StandardModel.positive_inputs"
+   ],
+   "contract": "28+1欄の前提を満たす正常な入力"
+  },
+  {
+   "receiver": "L70",
+   "names": [
+    "StandardModel.normal_facts"
+   ],
+   "contract": "純粋な正常応答の結果型の篩の事実"
+  },
+  {
+   "receiver": "R50",
+   "names": [
+    "StandardModel.collection_rows",
+    "StandardModel.pure_rows",
+    "StandardModel.io_rows"
+   ],
+   "contract": "合成表のδ・IO応答の行と、仮定側150名の台帳（群F2の assumptions.json）"
+  },
+  {
+   "receiver": "R50",
+   "names": [
+    "StandardModel.collection_rows",
+    "StandardModel.store_transitions",
+    "StandardModel.store_lookup"
+   ],
+   "contract": "関数値が到達しうる27行（function-values.json）。生lambdaとclosureの二表現について、値を保存・射影する22行は同じ値を返すか、値の形を調べる5行は同じ結果を返すかを、処理系の応答と比較する入力に含める"
+  }
+ ],
+ "function_values": {
+  "rows": [
+   "%Map.replaceValues",
+   "List.append",
+   "List.concatenate",
+   "List.drop",
+   "List.get",
+   "List.head",
+   "List.isEmpty",
+   "List.length",
+   "List.prepend",
+   "List.reverse",
+   "List.tail",
+   "List.take",
+   "Map.contains",
+   "Map.fromList",
+   "Map.get",
+   "Map.keys",
+   "Map.remove",
+   "Map.set",
+   "Map.size",
+   "Map.toList",
+   "Map.values",
+   "Reference.get",
+   "Reference.set",
+   "Lazy.force",
+   "Reference.new",
+   "Reference.update",
+   "%List.getFront"
+  ],
+  "counts": {
+   "値を保存・射影する行": 22,
+   "値の形（個数・構造）を調べる行": 5
+  }
+ }
+}

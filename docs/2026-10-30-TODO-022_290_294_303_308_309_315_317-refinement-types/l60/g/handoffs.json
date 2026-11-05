@@ -1,0 +1,1205 @@
+{
+ "source": {
+  "nodes": 85412,
+  "bytes": 114693759,
+  "sha256": "307612365a96cd2326453fc4313aa1c1e5697c1f656c5a28bf5f2e3f3182c22d",
+  "composed_declarations": 4023,
+  "table_response_readers": 0
+ },
+ "rows": [
+  {
+   "id": "H01",
+   "class": "他段受持",
+   "unit": "",
+   "evidence": [],
+   "readers": [],
+   "dependencies": {},
+   "unread_evidence": [],
+   "status": "他段（L60の読者なし）",
+   "note": "L70の全開始の合成。C06/C12を継承"
+  },
+  {
+   "id": "H02",
+   "class": "L60受持",
+   "unit": ".14/.17",
+   "evidence": [
+    "StateTyE.externalRef_contract_inputs"
+   ],
+   "readers": [],
+   "dependencies": {},
+   "unread_evidence": [],
+   "status": "未使用（後段の読者）",
+   "note": "名前付きの読者はなく、既定ビルドの適用例が読む。L70は全合成"
+  },
+  {
+   "id": "H03",
+   "class": "L60受持",
+   "unit": ".24〜.29",
+   "evidence": [
+    "ScopeResponse.response"
+   ],
+   "readers": [
+    "StandardModel.scope_rows",
+    "StandardModel.normal_facts"
+   ],
+   "dependencies": {
+    "StandardModel.scope_rows": {
+     "ScopeResponse.response": [
+      "StandardModel.scope_rows",
+      "StandardModel.PureRow.scope",
+      "ScopeResponse.response"
+     ]
+    },
+    "StandardModel.normal_facts": {
+     "ScopeResponse.response": [
+      "StandardModel.normal_facts",
+      "StandardModel.core",
+      "StandardModel.response_assumptions",
+      "StandardModel.pure_rows",
+      "StandardModel.scope_rows",
+      "StandardModel.PureRow.scope",
+      "ScopeResponse.response"
+     ]
+    }
+   },
+   "unread_evidence": [],
+   "status": "読者あり",
+   "note": "L70へ全実行"
+  },
+  {
+   "id": "H04",
+   "class": "L60受持",
+   "unit": ".28/.29",
+   "evidence": [
+    "ScopedIOResponse.response"
+   ],
+   "readers": [
+    "StandardModel.io_rows"
+   ],
+   "dependencies": {
+    "StandardModel.io_rows": {
+     "ScopedIOResponse.response": [
+      "StandardModel.io_rows",
+      "StandardModel.IORow.scoped",
+      "ScopedIOResponse.response"
+     ]
+    }
+   },
+   "unread_evidence": [],
+   "status": "読者あり",
+   "note": "全位置の到達はL70、実装はR30/R50"
+  },
+  {
+   "id": "H05",
+   "class": "他段受持",
+   "unit": "",
+   "evidence": [],
+   "readers": [],
+   "dependencies": {},
+   "unread_evidence": [],
+   "status": "他段（L60の読者なし）",
+   "note": "R30/R50の同じ要求の比較"
+  },
+  {
+   "id": "H06",
+   "class": "L60受持",
+   "unit": ".21/.23/.29",
+   "evidence": [
+    "StandardModel.sig_scoped",
+    "StandardModel.body_scoped"
+   ],
+   "readers": [
+    "StandardModel.core",
+    "StandardModel.program_wellFormed"
+   ],
+   "dependencies": {
+    "StandardModel.core": {
+     "StandardModel.sig_scoped": [
+      "StandardModel.core",
+      "StandardModel.sig_scoped"
+     ]
+    },
+    "StandardModel.program_wellFormed": {
+     "StandardModel.body_scoped": [
+      "StandardModel.program_wellFormed",
+      "StandardModel.definition_scoped",
+      "StandardModel.body_scoped"
+     ]
+    }
+   },
+   "unread_evidence": [],
+   "status": "読者あり",
+   "note": "ソース生成はL70/R10b"
+  },
+  {
+   "id": "H07",
+   "class": "L60受持",
+   "unit": ".12/.13/.22",
+   "evidence": [
+    "ExternalModels.conditions"
+   ],
+   "readers": [
+    "ExternalModels.ModelCase.composition"
+   ],
+   "dependencies": {
+    "ExternalModels.ModelCase.composition": {
+     "ExternalModels.conditions": [
+      "ExternalModels.ModelCase.composition",
+      "ExternalModels.conditions"
+     ]
+    }
+   },
+   "unread_evidence": [],
+   "status": "読者あり",
+   "note": ""
+  },
+  {
+   "id": "H08",
+   "class": "他段受持",
+   "unit": "",
+   "evidence": [],
+   "readers": [],
+   "dependencies": {},
+   "unread_evidence": [],
+   "status": "他段（L60の読者なし）",
+   "note": "L70の初期表層・全到達"
+  },
+  {
+   "id": "H09",
+   "class": "L60受持",
+   "unit": ".22/.29",
+   "evidence": [
+    "ModelConstraints.sat_values",
+    "ModelConstraints.sat_subst"
+   ],
+   "readers": [
+    "StandardModel.substitution_assumptions"
+   ],
+   "dependencies": {
+    "StandardModel.substitution_assumptions": {
+     "ModelConstraints.sat_values": [
+      "StandardModel.substitution_assumptions",
+      "ModelConstraints.sat_values"
+     ],
+     "ModelConstraints.sat_subst": [
+      "StandardModel.substitution_assumptions",
+      "ModelConstraints.sat_subst"
+     ]
+    }
+   },
+   "unread_evidence": [],
+   "status": "読者あり",
+   "note": ""
+  },
+  {
+   "id": "H10",
+   "class": "L60受持",
+   "unit": ".22/.29",
+   "evidence": [
+    "ModelConstraints.sat_rename",
+    "ModelConstraints.sat_renameTypes",
+    "ModelConstraints.admits_renameTypes"
+   ],
+   "readers": [
+    "StandardModel.substitution_assumptions"
+   ],
+   "dependencies": {
+    "StandardModel.substitution_assumptions": {
+     "ModelConstraints.sat_rename": [
+      "StandardModel.substitution_assumptions",
+      "ModelConstraints.sat_rename"
+     ],
+     "ModelConstraints.sat_renameTypes": [
+      "StandardModel.substitution_assumptions",
+      "ModelConstraints.sat_renameTypes"
+     ],
+     "ModelConstraints.admits_renameTypes": [
+      "StandardModel.substitution_assumptions",
+      "ModelConstraints.admits_renameTypes"
+     ]
+    }
+   },
+   "unread_evidence": [],
+   "status": "読者あり",
+   "note": ""
+  },
+  {
+   "id": "H11",
+   "class": "他段受持",
+   "unit": "",
+   "evidence": [],
+   "readers": [],
+   "dependencies": {},
+   "unread_evidence": [],
+   "status": "他段（L60の読者なし）",
+   "note": "L70の全効果、R30の実発行"
+  },
+  {
+   "id": "H12",
+   "class": "L60受持",
+   "unit": ".28/.29",
+   "evidence": [
+    "StandardModel.io_op"
+   ],
+   "readers": [
+    "StandardModel.core"
+   ],
+   "dependencies": {
+    "StandardModel.core": {
+     "StandardModel.io_op": [
+      "StandardModel.core",
+      "StandardModel.io_op"
+     ]
+    }
+   },
+   "unread_evidence": [],
+   "status": "読者あり",
+   "note": ""
+  },
+  {
+   "id": "H13",
+   "class": "L60受持",
+   "unit": ".23/.27/.29",
+   "evidence": [
+    "StandardModel.http_declarations",
+    "StandardModel.core_arity"
+   ],
+   "readers": [
+    "StandardModel.program_typed",
+    "StandardModel.cons_scoped"
+   ],
+   "dependencies": {
+    "StandardModel.program_typed": {
+     "StandardModel.http_declarations": [
+      "StandardModel.program_typed",
+      "StandardModel.variance_valid",
+      "StandardModel.http_declarations"
+     ],
+     "StandardModel.core_arity": [
+      "StandardModel.program_typed",
+      "StandardModel.definition_typed",
+      "StandardModel.body_typed",
+      "StandardModel.aliases_typed",
+      "StandardModel.core_arity"
+     ]
+    },
+    "StandardModel.cons_scoped": {
+     "StandardModel.http_declarations": [
+      "StandardModel.cons_scoped",
+      "StandardModel.variance_valid",
+      "StandardModel.http_declarations"
+     ]
+    }
+   },
+   "unread_evidence": [],
+   "status": "読者あり",
+   "note": ""
+  },
+  {
+   "id": "H14",
+   "class": "L60受持",
+   "unit": ".10/.11/.14",
+   "evidence": [
+    "Builtins.ExternalAssumptions.external_adequate",
+    "Builtins.ExternalAssumptions.received_value"
+   ],
+   "readers": [
+    "ExternalModel.receive_value",
+    "step_external_selected"
+   ],
+   "dependencies": {
+    "ExternalModel.receive_value": {
+     "Builtins.ExternalAssumptions.external_adequate": [
+      "ExternalModel.receive_value",
+      "Builtins.ExternalAssumptions.received_value",
+      "Builtins.ExternalAssumptions.external_adequate"
+     ],
+     "Builtins.ExternalAssumptions.received_value": [
+      "ExternalModel.receive_value",
+      "Builtins.ExternalAssumptions.received_value"
+     ]
+    },
+    "step_external_selected": {
+     "Builtins.ExternalAssumptions.external_adequate": [
+      "step_external_selected",
+      "StateTyE.external_step_of_response",
+      "StateTyE.external_value_all",
+      "Builtins.ExternalAssumptions.received_value",
+      "Builtins.ExternalAssumptions.external_adequate"
+     ],
+     "Builtins.ExternalAssumptions.received_value": [
+      "step_external_selected",
+      "StateTyE.external_step_of_response",
+      "StateTyE.external_value_all",
+      "Builtins.ExternalAssumptions.received_value"
+     ]
+    }
+   },
+   "unread_evidence": [],
+   "status": "読者あり",
+   "note": ""
+  },
+  {
+   "id": "H15",
+   "class": "他段受持",
+   "unit": "",
+   "evidence": [],
+   "readers": [],
+   "dependencies": {},
+   "unread_evidence": [],
+   "status": "他段（L60の読者なし）",
+   "note": "R30/R50の同じ保持値の受理・拒否"
+  },
+  {
+   "id": "H16",
+   "class": "L60受持",
+   "unit": ".21/.28/.29",
+   "evidence": [
+    "StandardModel.resource_table"
+   ],
+   "readers": [
+    "StandardModel.release_all"
+   ],
+   "dependencies": {
+    "StandardModel.release_all": {
+     "StandardModel.resource_table": [
+      "StandardModel.release_all",
+      "StandardModel.resource_table"
+     ]
+    }
+   },
+   "unread_evidence": [],
+   "status": "読者あり",
+   "note": "R30は実装側"
+  },
+  {
+   "id": "H17",
+   "class": "既済み継承",
+   "unit": "C18",
+   "evidence": [
+    "AtPrepared.request",
+    "Val.reqTarget_kind",
+    "checkAt.absolute"
+   ],
+   "readers": [],
+   "dependencies": {},
+   "unread_evidence": [],
+   "status": "既済み継承（L60で再実装・再読者なし）",
+   "note": "再証明しない"
+  },
+  {
+   "id": "H18",
+   "class": "既済み継承",
+   "unit": "C18",
+   "evidence": [
+    "HasTypeVQ.data_observation",
+    "Detail.match_pattern_typed"
+   ],
+   "readers": [],
+   "dependencies": {},
+   "unread_evidence": [],
+   "status": "既済み継承（L60で再実装・再読者なし）",
+   "note": "公開形はU02後の別作業"
+  },
+  {
+   "id": "H19",
+   "class": "L60受持",
+   "unit": ".28/.29",
+   "evidence": [
+    "ScopeResponse.response"
+   ],
+   "readers": [
+    "StandardModel.scope_rows"
+   ],
+   "dependencies": {
+    "StandardModel.scope_rows": {
+     "ScopeResponse.response": [
+      "StandardModel.scope_rows",
+      "StandardModel.PureRow.scope",
+      "ScopeResponse.response"
+     ]
+    }
+   },
+   "unread_evidence": [],
+   "status": "読者あり",
+   "note": "R50へ二つのlength観測を渡す（L60.33）"
+  },
+  {
+   "id": "H20",
+   "class": "他段受持",
+   "unit": "",
+   "evidence": [],
+   "readers": [],
+   "dependencies": {},
+   "unread_evidence": [],
+   "status": "他段（L60の読者なし）",
+   "note": "U02後の公開写し/L70/R30/R60"
+  },
+  {
+   "id": "H21",
+   "class": "他段受持",
+   "unit": "",
+   "evidence": [],
+   "readers": [],
+   "dependencies": {},
+   "unread_evidence": [],
+   "status": "他段（L60の読者なし）",
+   "note": "U02確定後・L70前の別作業"
+  },
+  {
+   "id": "H22",
+   "class": "他段受持",
+   "unit": "",
+   "evidence": [],
+   "readers": [],
+   "dependencies": {},
+   "unread_evidence": [],
+   "status": "他段（L60の読者なし）",
+   "note": "L70の全主定理"
+  },
+  {
+   "id": "H23",
+   "class": "他段受持",
+   "unit": "",
+   "evidence": [],
+   "readers": [],
+   "dependencies": {},
+   "unread_evidence": [],
+   "status": "他段（L60の読者なし）",
+   "note": "R30/R50のPathBases偽造拒否"
+  },
+  {
+   "id": "H24",
+   "class": "L60受持",
+   "unit": ".29/.30",
+   "evidence": [
+    "StandardModel.pure_rows",
+    "StandardModel.io_rows"
+   ],
+   "readers": [
+    "StandardModel.core"
+   ],
+   "dependencies": {
+    "StandardModel.core": {
+     "StandardModel.pure_rows": [
+      "StandardModel.core",
+      "StandardModel.response_assumptions",
+      "StandardModel.pure_rows"
+     ],
+     "StandardModel.io_rows": [
+      "StandardModel.core",
+      "StandardModel.response_assumptions",
+      "StandardModel.io_rows"
+     ]
+    }
+   },
+   "unread_evidence": [],
+   "status": "読者あり",
+   "note": "O144は他段（obligations）"
+  },
+  {
+   "id": "H25",
+   "class": "L60受持",
+   "unit": ".23/.26/.27/.29",
+   "evidence": [
+    "StandardModel.table"
+   ],
+   "readers": [
+    "StandardModel.collection_rows"
+   ],
+   "dependencies": {
+    "StandardModel.collection_rows": {
+     "StandardModel.table": [
+      "StandardModel.collection_rows",
+      "StandardModel.PureRow.map",
+      "StandardModel.table"
+     ]
+    }
+   },
+   "unread_evidence": [],
+   "status": "読者あり",
+   "note": "ソース合成と全比較はL70/R10b/R50"
+  },
+  {
+   "id": "H26",
+   "class": "他段受持",
+   "unit": "",
+   "evidence": [],
+   "readers": [],
+   "dependencies": {},
+   "unread_evidence": [],
+   "status": "他段（L60の読者なし）",
+   "note": "R50のRustとの比較と設計者の登録判断"
+  },
+  {
+   "id": "H27",
+   "class": "L60受持",
+   "unit": ".10〜.13/.19〜.22",
+   "evidence": [
+    "ExternalModels.conditions",
+    "ExternalModels.ModelCase.release_all"
+   ],
+   "readers": [
+    "ExternalModels.ModelCase.composition"
+   ],
+   "dependencies": {
+    "ExternalModels.ModelCase.composition": {
+     "ExternalModels.conditions": [
+      "ExternalModels.ModelCase.composition",
+      "ExternalModels.conditions"
+     ],
+     "ExternalModels.ModelCase.release_all": [
+      "ExternalModels.ModelCase.composition",
+      "ExternalModels.ModelCase.release_all"
+     ]
+    }
+   },
+   "unread_evidence": [],
+   "status": "読者あり",
+   "note": ""
+  },
+  {
+   "id": "H28",
+   "class": "他段受持",
+   "unit": "",
+   "evidence": [],
+   "readers": [],
+   "dependencies": {},
+   "unread_evidence": [],
+   "status": "他段（L60の読者なし）",
+   "note": "L70/R50の全開始・全応答"
+  },
+  {
+   "id": "H29",
+   "class": "L60受持",
+   "unit": ".10/.19/.28",
+   "evidence": [
+    "StandardModel.io_rows",
+    "StandardModel.external_assumptions"
+   ],
+   "readers": [
+    "StandardModel.core"
+   ],
+   "dependencies": {
+    "StandardModel.core": {
+     "StandardModel.io_rows": [
+      "StandardModel.core",
+      "StandardModel.response_assumptions",
+      "StandardModel.io_rows"
+     ],
+     "StandardModel.external_assumptions": [
+      "StandardModel.core",
+      "StandardModel.external_assumptions"
+     ]
+    }
+   },
+   "unread_evidence": [],
+   "status": "読者あり",
+   "note": "実IOの固定σはR30"
+  },
+  {
+   "id": "H30",
+   "class": "他段受持",
+   "unit": "",
+   "evidence": [],
+   "readers": [],
+   "dependencies": {},
+   "unread_evidence": [],
+   "status": "他段（L60の読者なし）",
+   "note": "L70/F-REG、R50/F-CONN"
+  },
+  {
+   "id": "H31",
+   "class": "L60受持",
+   "unit": ".10/.11/.14",
+   "evidence": [
+    "Builtins.ExternalAssumptions.external_adequate"
+   ],
+   "readers": [
+    "step_external_selected"
+   ],
+   "dependencies": {
+    "step_external_selected": {
+     "Builtins.ExternalAssumptions.external_adequate": [
+      "step_external_selected",
+      "StateTyE.external_step_of_response",
+      "StateTyE.external_value_all",
+      "Builtins.ExternalAssumptions.received_value",
+      "Builtins.ExternalAssumptions.external_adequate"
+     ]
+    }
+   },
+   "unread_evidence": [],
+   "status": "読者あり",
+   "note": "公開元入力の再点検はU02後"
+  },
+  {
+   "id": "S01",
+   "class": "L60受持",
+   "unit": ".21/.29",
+   "evidence": [
+    "StandardModel.sig_scoped"
+   ],
+   "readers": [
+    "StandardModel.core"
+   ],
+   "dependencies": {
+    "StandardModel.core": {
+     "StandardModel.sig_scoped": [
+      "StandardModel.core",
+      "StandardModel.sig_scoped"
+     ]
+    }
+   },
+   "unread_evidence": [],
+   "status": "読者あり",
+   "note": "H06へ合流"
+  },
+  {
+   "id": "S02",
+   "class": "L60受持",
+   "unit": ".22/.29",
+   "evidence": [
+    "ModelConstraints.sat",
+    "ModelConstraints.admits"
+   ],
+   "readers": [
+    "StandardModel.substitution_assumptions"
+   ],
+   "dependencies": {
+    "StandardModel.substitution_assumptions": {
+     "ModelConstraints.sat": [
+      "StandardModel.substitution_assumptions",
+      "ModelConstraints.sat"
+     ],
+     "ModelConstraints.admits": [
+      "StandardModel.substitution_assumptions",
+      "ModelConstraints.admits"
+     ]
+    }
+   },
+   "unread_evidence": [],
+   "status": "読者あり",
+   "note": ""
+  },
+  {
+   "id": "S03",
+   "class": "L60受持",
+   "unit": ".24〜.29",
+   "evidence": [
+    "ScopeResponse.response"
+   ],
+   "readers": [
+    "StandardModel.scope_rows"
+   ],
+   "dependencies": {
+    "StandardModel.scope_rows": {
+     "ScopeResponse.response": [
+      "StandardModel.scope_rows",
+      "StandardModel.PureRow.scope",
+      "ScopeResponse.response"
+     ]
+    }
+   },
+   "unread_evidence": [],
+   "status": "読者あり",
+   "note": "PreparedLeafの再定義なし"
+  },
+  {
+   "id": "S04",
+   "class": "L60受持",
+   "unit": ".29/.30",
+   "evidence": [
+    "PreparedLeaf.machine_exact"
+   ],
+   "readers": [],
+   "dependencies": {},
+   "unread_evidence": [],
+   "status": "未使用（後段の読者）",
+   "note": "算法一致は型付けから推測しない。R50の算法比較"
+  },
+  {
+   "id": "S05",
+   "class": "L60受持",
+   "unit": ".19/.22/.29",
+   "evidence": [
+    "StandardModel.core",
+    "StandardModel.targets"
+   ],
+   "readers": [],
+   "dependencies": {},
+   "unread_evidence": [],
+   "status": "未使用（後段の読者）",
+   "note": "L70が読む"
+  },
+  {
+   "id": "S06",
+   "class": "L60受持",
+   "unit": ".21/.29",
+   "evidence": [
+    "StandardModel.reference_rows",
+    "StandardModel.store_shape"
+   ],
+   "readers": [
+    "StandardModel.core"
+   ],
+   "dependencies": {
+    "StandardModel.core": {
+     "StandardModel.store_shape": [
+      "StandardModel.core",
+      "StandardModel.store_shape"
+     ]
+    }
+   },
+   "unread_evidence": [
+    "StandardModel.reference_rows"
+   ],
+   "status": "読者あり",
+   "note": ""
+  },
+  {
+   "id": "S07",
+   "class": "L60受持",
+   "unit": ".34",
+   "evidence": [],
+   "readers": [],
+   "dependencies": {},
+   "unread_evidence": [],
+   "status": "群Hの単位へ（群Gの分なし）",
+   "note": "群Hの単位（01-12の写し）"
+  },
+  {
+   "id": "S08",
+   "class": "L60受持",
+   "unit": ".10/.11",
+   "evidence": [
+    "ExternalModel.receive_value",
+    "ExternalModel.receive_reject"
+   ],
+   "readers": [
+    "ExternalModels.responses"
+   ],
+   "dependencies": {
+    "ExternalModels.responses": {
+     "ExternalModel.receive_value": [
+      "ExternalModels.responses",
+      "ExternalModelExamples.handle_receive_pair",
+      "ExternalModel.receive_value"
+     ],
+     "ExternalModel.receive_reject": [
+      "ExternalModels.responses",
+      "ExternalModelExamples.handle_receive_pair",
+      "ExternalModel.receive_reject"
+     ]
+    }
+   },
+   "unread_evidence": [],
+   "status": "読者あり",
+   "note": ""
+  },
+  {
+   "id": "S09",
+   "class": "他段受持",
+   "unit": "",
+   "evidence": [],
+   "readers": [],
+   "dependencies": {},
+   "unread_evidence": [],
+   "status": "他段（L60の読者なし）",
+   "note": "L70/R50はRust受理→ExternalSignature.WFの一方向"
+  },
+  {
+   "id": "S10",
+   "class": "既済み継承",
+   "unit": "C03",
+   "evidence": [
+    "ExternalCallAdmissible.types_nil"
+   ],
+   "readers": [],
+   "dependencies": {},
+   "unread_evidence": [],
+   "status": "既済み継承（L60で再実装・再読者なし）",
+   "note": "多相外部を追加しない"
+  },
+  {
+   "id": "S11",
+   "class": "既済み継承",
+   "unit": "C11/C12",
+   "evidence": [
+    "StateTyE.external_apply_all"
+   ],
+   "readers": [
+    "step_external_apply"
+   ],
+   "dependencies": {
+    "step_external_apply": {
+     "StateTyE.external_apply_all": [
+      "step_external_apply",
+      "StateTyE.external_apply_all"
+     ]
+    }
+   },
+   "unread_evidence": [],
+   "status": "既済み継承（L60の読者あり）",
+   "note": ""
+  },
+  {
+   "id": "S12",
+   "class": "L60受持",
+   "unit": ".08/.11",
+   "evidence": [
+    "ExternalSignatureLeaves.handle_arguments"
+   ],
+   "readers": [
+    "ExternalModels.handle_inputs"
+   ],
+   "dependencies": {
+    "ExternalModels.handle_inputs": {
+     "ExternalSignatureLeaves.handle_arguments": [
+      "ExternalModels.handle_inputs",
+      "ExternalModelExamples.handle_raw_response",
+      "ExternalModelExamples.handle_arguments",
+      "ExternalSignatureLeaves.handle_arguments"
+     ]
+    }
+   },
+   "unread_evidence": [],
+   "status": "読者あり",
+   "note": ""
+  },
+  {
+   "id": "S13",
+   "class": "L60受持",
+   "unit": ".11",
+   "evidence": [
+    "ExternalModelExamples.receive_pair",
+    "ExternalCarrier.accepted"
+   ],
+   "readers": [
+    "ExternalModels.responses"
+   ],
+   "dependencies": {
+    "ExternalModels.responses": {
+     "ExternalModelExamples.receive_pair": [
+      "ExternalModels.responses",
+      "ExternalModelExamples.receive_pair"
+     ]
+    }
+   },
+   "unread_evidence": [
+    "ExternalCarrier.accepted"
+   ],
+   "status": "読者あり",
+   "note": "任意深さは記号の深さの帰納"
+  },
+  {
+   "id": "S14",
+   "class": "他段受持",
+   "unit": "",
+   "evidence": [],
+   "readers": [],
+   "dependencies": {},
+   "unread_evidence": [],
+   "status": "他段（L60の読者なし）",
+   "note": "R50/L70の既定所有"
+  },
+  {
+   "id": "S15",
+   "class": "L60受持",
+   "unit": ".21/.29",
+   "evidence": [
+    "BuiltinArgs",
+    "BuiltinArgs.normalized"
+   ],
+   "readers": [
+    "StandardModel.pure_rows"
+   ],
+   "dependencies": {
+    "StandardModel.pure_rows": {
+     "BuiltinArgs": [
+      "StandardModel.pure_rows",
+      "StandardModel.PureRow",
+      "BuiltinArgs"
+     ]
+    }
+   },
+   "unread_evidence": [
+    "BuiltinArgs.normalized"
+   ],
+   "status": "読者あり",
+   "note": "Canonicalを外していない"
+  },
+  {
+   "id": "S16",
+   "class": "L60受持",
+   "unit": ".21/.29",
+   "evidence": [
+    "StandardModel.opEff_io",
+    "StandardModel.effect_ops"
+   ],
+   "readers": [
+    "StandardModel.core"
+   ],
+   "dependencies": {
+    "StandardModel.core": {
+     "StandardModel.opEff_io": [
+      "StandardModel.core",
+      "StandardModel.opEff_io"
+     ],
+     "StandardModel.effect_ops": [
+      "StandardModel.core",
+      "StandardModel.effect_ops"
+     ]
+    }
+   },
+   "unread_evidence": [],
+   "status": "読者あり",
+   "note": ""
+  },
+  {
+   "id": "S17",
+   "class": "L60受持",
+   "unit": ".21/.29",
+   "evidence": [
+    "StandardModel.sig_scoped"
+   ],
+   "readers": [
+    "StandardModel.core"
+   ],
+   "dependencies": {
+    "StandardModel.core": {
+     "StandardModel.sig_scoped": [
+      "StandardModel.core",
+      "StandardModel.sig_scoped"
+     ]
+    }
+   },
+   "unread_evidence": [],
+   "status": "読者あり",
+   "note": ""
+  },
+  {
+   "id": "S18",
+   "class": "L60受持",
+   "unit": ".23/.27/.29",
+   "evidence": [
+    "StandardModel.core_arity",
+    "StandardModel.http_declarations"
+   ],
+   "readers": [
+    "StandardModel.body_typed",
+    "StandardModel.program_typed"
+   ],
+   "dependencies": {
+    "StandardModel.body_typed": {
+     "StandardModel.core_arity": [
+      "StandardModel.body_typed",
+      "StandardModel.aliases_typed",
+      "StandardModel.core_arity"
+     ]
+    },
+    "StandardModel.program_typed": {
+     "StandardModel.core_arity": [
+      "StandardModel.program_typed",
+      "StandardModel.definition_typed",
+      "StandardModel.body_typed",
+      "StandardModel.aliases_typed",
+      "StandardModel.core_arity"
+     ],
+     "StandardModel.http_declarations": [
+      "StandardModel.program_typed",
+      "StandardModel.variance_valid",
+      "StandardModel.http_declarations"
+     ]
+    }
+   },
+   "unread_evidence": [],
+   "status": "読者あり",
+   "note": ""
+  },
+  {
+   "id": "S19",
+   "class": "L60受持",
+   "unit": ".04/.25/.26/.33",
+   "evidence": [],
+   "readers": [],
+   "dependencies": {},
+   "unread_evidence": [],
+   "status": "記録で照合（function-values.json）",
+   "note": "関数値が到達しうる27行を族ごとに照合し、二表現の比較の入力としてR50へ（L60.33）"
+  },
+  {
+   "id": "S20",
+   "class": "L60受持",
+   "unit": ".24",
+   "evidence": [
+    "StandardNumericRemainingResponse.response"
+   ],
+   "readers": [
+    "StandardModel.numeric_rows"
+   ],
+   "dependencies": {
+    "StandardModel.numeric_rows": {
+     "StandardNumericRemainingResponse.response": [
+      "StandardModel.numeric_rows",
+      "StandardModel.PureRow.numericRemaining",
+      "StandardNumericRemainingResponse.response"
+     ]
+    }
+   },
+   "unread_evidence": [],
+   "status": "読者あり",
+   "note": ""
+  },
+  {
+   "id": "S21",
+   "class": "L60受持",
+   "unit": ".23〜.29",
+   "evidence": [],
+   "readers": [],
+   "dependencies": {},
+   "unread_evidence": [],
+   "status": "記録で照合（本記録のtable_responseの閉包）",
+   "note": "合成表の宣言は table_response に依存しない（閉包で照合）"
+  },
+  {
+   "id": "S22",
+   "class": "L60受持",
+   "unit": ".25/.29/.30",
+   "evidence": [
+    "StandardOperatorResponse.response",
+    "StandardStructuralEqualityResponse.response"
+   ],
+   "readers": [
+    "StandardModel.operator_rows"
+   ],
+   "dependencies": {
+    "StandardModel.operator_rows": {
+     "StandardOperatorResponse.response": [
+      "StandardModel.operator_rows",
+      "StandardModel.PureRow.operator",
+      "StandardOperatorResponse.response"
+     ],
+     "StandardStructuralEqualityResponse.response": [
+      "StandardModel.operator_rows",
+      "StandardModel.PureRow.structural",
+      "StandardStructuralEqualityResponse.response"
+     ]
+    }
+   },
+   "unread_evidence": [],
+   "status": "読者あり",
+   "note": ""
+  },
+  {
+   "id": "S23",
+   "class": "L60受持",
+   "unit": ".12/.19/.22",
+   "evidence": [
+    "ExternalModels.ModelCase.release_all"
+   ],
+   "readers": [
+    "ExternalModels.ModelCase.composition"
+   ],
+   "dependencies": {
+    "ExternalModels.ModelCase.composition": {
+     "ExternalModels.ModelCase.release_all": [
+      "ExternalModels.ModelCase.composition",
+      "ExternalModels.ModelCase.release_all"
+     ]
+    }
+   },
+   "unread_evidence": [],
+   "status": "読者あり",
+   "note": ""
+  },
+  {
+   "id": "S24",
+   "class": "L60受持",
+   "unit": ".13/.19/.22",
+   "evidence": [
+    "ExternalModels.ModelCase.release_all"
+   ],
+   "readers": [
+    "ExternalModels.ModelCase.composition"
+   ],
+   "dependencies": {
+    "ExternalModels.ModelCase.composition": {
+     "ExternalModels.ModelCase.release_all": [
+      "ExternalModels.ModelCase.composition",
+      "ExternalModels.ModelCase.release_all"
+     ]
+    }
+   },
+   "unread_evidence": [],
+   "status": "読者あり",
+   "note": ""
+  },
+  {
+   "id": "S25",
+   "class": "L60受持",
+   "unit": ".13/.22",
+   "evidence": [
+    "ExternalModels.conditions"
+   ],
+   "readers": [
+    "ExternalModels.ModelCase.composition"
+   ],
+   "dependencies": {
+    "ExternalModels.ModelCase.composition": {
+     "ExternalModels.conditions": [
+      "ExternalModels.ModelCase.composition",
+      "ExternalModels.conditions"
+     ]
+    }
+   },
+   "unread_evidence": [],
+   "status": "読者あり",
+   "note": ""
+  },
+  {
+   "id": "S26",
+   "class": "L60受持",
+   "unit": ".31",
+   "evidence": [],
+   "readers": [],
+   "dependencies": {},
+   "unread_evidence": [],
+   "status": "記録で照合（本記録）",
+   "note": "本記録の型と値の閉包の照合"
+  },
+  {
+   "id": "S27",
+   "class": "L60受持",
+   "unit": ".32",
+   "evidence": [],
+   "readers": [],
+   "dependencies": {},
+   "unread_evidence": [],
+   "status": "記録で照合（conditions.json）",
+   "note": "conditions.json の別集計"
+  },
+  {
+   "id": "S28",
+   "class": "L60受持",
+   "unit": ".19/.32",
+   "evidence": [
+    "ExternalModels.ModelCase.release_all"
+   ],
+   "readers": [
+    "ExternalModels.ModelCase.composition"
+   ],
+   "dependencies": {
+    "ExternalModels.ModelCase.composition": {
+     "ExternalModels.ModelCase.release_all": [
+      "ExternalModels.ModelCase.composition",
+      "ExternalModels.ModelCase.release_all"
+     ]
+    }
+   },
+   "unread_evidence": [],
+   "status": "読者あり",
+   "note": ""
+  }
+ ]
+}

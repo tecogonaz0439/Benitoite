@@ -845,3 +845,6 @@ import Benitoite.Release.Refinement.StandardModelCoreRows
 import Benitoite.Release.Refinement.StandardModelScoped
 import Benitoite.Release.Refinement.StandardModelCore
 import Benitoite.Release.Refinement.StandardModelWellFormed
+import Benitoite.Release.Refinement.StandardModelCollectionInputs
+import Benitoite.Release.Refinement.StandardModelIOInputs
+import Benitoite.Release.Refinement.StandardModelConditionInputs
