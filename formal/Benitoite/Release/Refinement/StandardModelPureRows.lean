@@ -104,7 +104,7 @@ theorem rounding_declarations (externals : List (ExternalKey × ExternalDecl)) :
   unfold declarations at member
   rcases List.mem_append.mp member with old | last
   · have other : ∀ d ∈ StandardOrdinaryCoreBodies.declarations ++ ScopeDeclarations.http.filter
-        (fun d => !(StandardOrdinaryCoreBodies.declarations.any (fun old => old.name == d.name))),
+        (fun d => !(StandardOrdinaryCoreBodies.declarations.any (fun old => old.name == d.name))) ++ [byteOrder],
         d.name ≠ "RoundingMode" := by decide
     exact absurd owner (other decl old)
   cases List.mem_singleton.mp last

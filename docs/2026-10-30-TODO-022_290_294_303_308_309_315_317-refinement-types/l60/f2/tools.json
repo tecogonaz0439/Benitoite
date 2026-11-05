@@ -1,0 +1,165 @@
+{
+  "platform": {
+    "system": "Darwin",
+    "machine": "arm64",
+    "release": "27.2.0"
+  },
+  "lean": "Lean (version 4.34.1, arm64-apple-darwin24.6.0, commit 5045d0056413266e57c625dcd7c365b10e377c52, Release)",
+  "memory_mib": 12288,
+  "configuration": "既定ターゲット・既定import・固定Lean。単独Leanも-M 12288。RSSは計画上の非採取",
+  "base": "25ea27a0f15bd9010e302bde340c7f1cd767319b",
+  "inputs": {
+    "formal/lean-toolchain": {
+      "bytes": 25,
+      "sha256": "d5edba4e4b8faad9c1baeadb265716d20d03be4d1a2647dc5e35b0c0325bea7b"
+    },
+    "formal/lakefile.toml": {
+      "bytes": 872,
+      "sha256": "10f2661bff8fce95a9253d976427d0ca44038ec12350c955badbc1cf1efa6e3a"
+    },
+    "formal/lake-manifest.json": {
+      "bytes": 152,
+      "sha256": "f4a9b127f95cf577c7da1c2269f85ffd5754f76afccace5dc310d56ef8f41a32"
+    },
+    "formal/Benitoite.lean": {
+      "bytes": 44101,
+      "sha256": "4cdbc3528f1ea6de168518556a9a0c9e510c22b804f72028f433a78a22e326b2"
+    },
+    "docs/design/01-spec/01-12-core-calculus.md": {
+      "bytes": 941433,
+      "sha256": "05fba92a96ef4c9eb88196dfaa7e7124f16647aa1f1a8370a598568598490130"
+    },
+    "docs/design/07-quality/07-04-formal-semantics.md": {
+      "bytes": 609226,
+      "sha256": "d1856ea2eaea2b55a6ced767f9b7801adafff43b084787899e4612fa5987f9c5"
+    },
+    "formal/Benitoite/Release/Refinement/StandardModelCollectionBodies.lean": {
+      "bytes": 49905,
+      "sha256": "a2c26f29a48fc5091c6a16632a61b6dccce435c9f38217b930ecd07bad36e1e6"
+    },
+    "formal/Benitoite/Release/Refinement/StandardModelCollectionRows.lean": {
+      "bytes": 21873,
+      "sha256": "339d08c332d3969a3250f09d70c308966883946642175b6bf7e5c262c17f301f"
+    },
+    "formal/Benitoite/Release/Refinement/StandardModelCore.lean": {
+      "bytes": 6242,
+      "sha256": "f48ea49c95abcc4bda72c41d7454a4556c209538a22cabb3112ca31e7c0e0678"
+    },
+    "formal/Benitoite/Release/Refinement/StandardModelCoreBodies.lean": {
+      "bytes": 16563,
+      "sha256": "c81c9118f29c2b39a273bc546d101bc9aa1fc9b1dd9354004f5825ab5b1a552e"
+    },
+    "formal/Benitoite/Release/Refinement/StandardModelCoreRows.lean": {
+      "bytes": 7295,
+      "sha256": "29e40e3557779a7bed7d29fc332248554823fd6403b5ab0c657593909bf72d04"
+    },
+    "formal/Benitoite/Release/Refinement/StandardModelIORows.lean": {
+      "bytes": 13854,
+      "sha256": "b94def92a20f1013ef225be69098b6e2d9f304a9af7e7d0abbc86f92544a69d6"
+    },
+    "formal/Benitoite/Release/Refinement/StandardModelListBodies.lean": {
+      "bytes": 72707,
+      "sha256": "6825bed6b5abd2aac41e0ed1ad39c58e02743a8b0913b32ef5e1bea43f3a7c6f"
+    },
+    "formal/Benitoite/Release/Refinement/StandardModelProgram.lean": {
+      "bytes": 12123,
+      "sha256": "3f142aca9725db8d9495923de44ea23e69a827786f8d926a5989503f96d216b0"
+    },
+    "formal/Benitoite/Release/Refinement/StandardModelSafeBodies.lean": {
+      "bytes": 91812,
+      "sha256": "cb4fe7c2352ec03b8eb029514735d444a2132d020dcb9b1b00c989bf5a1f0efc"
+    },
+    "formal/Benitoite/Release/Refinement/StandardModelScoped.lean": {
+      "bytes": 65071,
+      "sha256": "a69d14f97a92b7c4f0e9d0552380df696f06d73680ed9e82c4b7d19ba534116d"
+    },
+    "formal/Benitoite/Release/Refinement/StandardModelSubstitution.lean": {
+      "bytes": 11985,
+      "sha256": "c970a7633bdcf07f01c983a4b92ec006409a7b517c6fe00876d0d4cbbb3ddf36"
+    },
+    "formal/Benitoite/Release/Refinement/StandardModelWellFormed.lean": {
+      "bytes": 29154,
+      "sha256": "02b8478ece9697b30b17b07f7909f91ca13e3945a021128077d0c654ee09155e"
+    },
+    "formal/Benitoite/Release/Refinement/StandardAliasBodies.lean": {
+      "bytes": 22297,
+      "sha256": "4d9b087e94e1229dcd4ac283bf1598e3280df6bfcaf530af4e6fc2bf10e04b98"
+    },
+    "formal/Benitoite/Release/Refinement/StandardModelDeclarations.lean": {
+      "bytes": 32901,
+      "sha256": "310d614e2106730a0886d32fa4b1a6e8d5c64668f2895cd041f7b4c89604888b"
+    },
+    "formal/Benitoite/Release/Refinement/StandardModelPrimitiveLookup.lean": {
+      "bytes": 46059,
+      "sha256": "08b69e2bc8f78dcd918a55f13cc5e97f471ed7d9678be5a53df7f932595fd9d4"
+    },
+    "formal/Benitoite/Release/Refinement/StandardModelPureRows.lean": {
+      "bytes": 11523,
+      "sha256": "e8540e2bd42650dbac1228919acd789b391b3b95a31a07cb707f0701c5ab2f93"
+    },
+    "formal/Benitoite/Release/Refinement/StandardModelSignatures.lean": {
+      "bytes": 74201,
+      "sha256": "a2feb9ff90e4f6c41f581deae06fc37ca55b806e8eccad7c915db49e61ae4799"
+    },
+    "formal/Benitoite/Release/Refinement/StandardOrdinaryCoreBodies.lean": {
+      "bytes": 21842,
+      "sha256": "a8359f0d6b3713be4269537c0dcd06686f99e4e8f915d28fe97023e7ad3610e6"
+    },
+    "formal/Benitoite/Release/Refinement/StandardOrdinaryCoreProgram.lean": {
+      "bytes": 76100,
+      "sha256": "24a0aa2cce47d920f9318e0c43b8454e16eb7862449e3532156f52896b7451fe"
+    },
+    "formal/Benitoite/Release/Refinement/StandardOrdinaryListBodies.lean": {
+      "bytes": 28166,
+      "sha256": "c541d576a8c97b662d3efe8450e71d10b19755ca5f9839b566997b35666495de"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/f2/audit.py": {
+      "bytes": 6040,
+      "sha256": "381b3552c9070d93386a3b88e91fa12b011868f98bb29cedbac76c3030ab2bc7"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/f2/body_methods.py": {
+      "bytes": 2528,
+      "sha256": "b230b3085250dc358e6b916fe22c7f1d1a52438ecaa447bc7ea9a98e442d1c79"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/f2/conditions.py": {
+      "bytes": 6697,
+      "sha256": "2c376b75e0fd3bc6d00e9942412ccadaa0133ce15040e27c03a20fe0f2d9d63e"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/f2/design_copies.py": {
+      "bytes": 5094,
+      "sha256": "87b9fd6740c46aa4cac79e4d5b676c8f351f94f9ac1a53e6b9eb57c589699c40"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/f2/front_row.py": {
+      "bytes": 3109,
+      "sha256": "3b7332fb61653d356fba02c84e3bfc9473d4daf5aa5bf75fc7f96fd75cd36321"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/f2/inventory.py": {
+      "bytes": 2888,
+      "sha256": "a4d5724685d9b48d6ddc20be4708ef6869651be1005cbd6e73e944bc2bcb499a"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/f2/ledger_diff.py": {
+      "bytes": 7590,
+      "sha256": "185a31b31e4af89926b77db59627b94785fea77df64a0d91da6358e4fd3e037d"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/f2/run.py": {
+      "bytes": 1694,
+      "sha256": "31f3b641ecb00f8b83920aa4fbc72baa2f2e4dff10da043d39e54c58b4a90821"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/f2/support.py": {
+      "bytes": 2660,
+      "sha256": "c087d3fc7657b1663d7e44b21403afee502ca4f24ed6633eed24c477566b927d"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/f2/tables_check.py": {
+      "bytes": 9152,
+      "sha256": "61c3df13eb761a8902a78fd311789bf1ee3127f60cfcf7642ebf4a606118e38f"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/f2/verify.py": {
+      "bytes": 11743,
+      "sha256": "276c8822f79bf2f2e0fc6fc6530b06faddcf6f7efc801b477431e3cb38914dd8"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/f2/axioms.lean": {
+      "bytes": 5116,
+      "sha256": "d8e463b29cc7b6e7e5bdf8b203e6cbdd6a44ee8077e99463d1c333092188ffde"
+    }
+  }
+}

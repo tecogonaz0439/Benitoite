@@ -1,0 +1,1287 @@
+[
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelWellFormed",
+    "kind": "theorem",
+    "line": 182,
+    "name": "Benitoite.Release.Refinement.StandardModel.collectionHigher_scoped",
+    "type_sha256": "80576da52c93dcb236e4b8d9303fb53d38d268b1de4a2534ed03d61869ba7811",
+    "generated": false,
+    "type": "∀ (ρ : String → String) (map filter : Bool) {d : Benitoite.Release.Refinement.Def},\n  (Benitoite.Release.Refinement.StandardBodies.collectionHigherRow map filter).definition = Option.some d →\n    Benitoite.Release.Refinement.StandardModel.BodyScoped (Benitoite.Release.Refinement.FunctionNames.definition ρ d)",
+    "dependency_count": 195,
+    "dependency_sha256": "06ccdb4599d7a0cba122f7a31f278a1aa50a2147bb31bafb2aecd8c99fd3760e",
+    "dependencies": [
+      "Benitoite.Release.Refinement.FunctionNames.value.eq_1",
+      "Benitoite.Release.Refinement.FunctionNames.value.eq_5",
+      "Benitoite.Release.Refinement.StandardModel.BodyScoped"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelCollectionRows",
+    "kind": "theorem",
+    "line": null,
+    "name": "Benitoite.Release.Refinement.StandardModel.collectionProvider.eq_1",
+    "type_sha256": "e64a7b910eac248ff86d2bb55f4e0cda05d3798112aca98fea3170c961488130",
+    "generated": true,
+    "type": null,
+    "type_bytes": 2224,
+    "dependency_count": 53,
+    "dependency_sha256": "a9a9c003e6290abd3d15bdb94b570b4ca4546876bfa1426c192febb22bf34938",
+    "dependencies": null
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelCollectionRows",
+    "kind": "theorem",
+    "line": 261,
+    "name": "Benitoite.Release.Refinement.StandardModel.collection_rows",
+    "type_sha256": "bf70909d9c2a29347c10ad0c5b5a4a42b939ece689bc77b07062f29a27d0927f",
+    "generated": false,
+    "type": "∀ (externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl))\n  (row : Benitoite.Release.Refinement.StandardModel.Primitive),\n  row.collection = Bool.true →\n    Benitoite.Release.Refinement.StandardModel.PureRow (Benitoite.Release.Refinement.StandardModel.program externals)\n      row.name",
+    "dependency_count": 495,
+    "dependency_sha256": "c7f585951e30959c717e7e69efd923eb1c0ea341c3779042bb5d31988648ce8e",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.Primitive.collection",
+      "Benitoite.Release.Refinement.StandardModel.PureRow.append",
+      "Benitoite.Release.Refinement.StandardModel.PureRow.bytes",
+      "Benitoite.Release.Refinement.StandardModel.PureRow.bytesOrdinary",
+      "Benitoite.Release.Refinement.StandardModel.PureRow.headTail",
+      "Benitoite.Release.Refinement.StandardModel.PureRow.list",
+      "Benitoite.Release.Refinement.StandardModel.PureRow.listRemaining",
+      "Benitoite.Release.Refinement.StandardModel.PureRow.map",
+      "Benitoite.Release.Refinement.StandardModel.PureRow.precision",
+      "Benitoite.Release.Refinement.StandardModel.PureRow.range",
+      "Benitoite.Release.Refinement.StandardModel.PureRow.replaceValues",
+      "Benitoite.Release.Refinement.StandardModel.PureRow.set",
+      "Benitoite.Release.Refinement.StandardModel.PureRow.string"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelCollectionRows",
+    "kind": "theorem",
+    "line": 18,
+    "name": "Benitoite.Release.Refinement.StandardModel.cons_mem",
+    "type_sha256": "a24f480b9535805569fdb16b52c533cbe9d2ec3ac87d56c80149a49f727435ff",
+    "generated": false,
+    "type": "∀ {externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl)}\n  {c : Benitoite.Release.ConName} {cd : Benitoite.Release.Refinement.ConDecl},\n  (Benitoite.Release.Refinement.StandardModel.program externals).cons c = Option.some cd →\n    (c, cd) ∈ Benitoite.Release.Refinement.StandardModel.constructors",
+    "dependency_count": 39,
+    "dependency_sha256": "bfb4f0967ab0502281548a6ce0360cefb891140bcf04082fb589f67757ca7107",
+    "dependencies": []
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelWellFormed",
+    "kind": "theorem",
+    "line": 350,
+    "name": "Benitoite.Release.Refinement.StandardModel.cons_scoped",
+    "type_sha256": "3d95bb7cdb4b917f51ddb5f690535bf9bf7f33c76020d495241705f794573a29",
+    "generated": false,
+    "type": "∀ (externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl))\n  (c : Benitoite.Release.ConName) (cd : Benitoite.Release.Refinement.ConDecl),\n  (Benitoite.Release.Refinement.StandardModel.program externals).cons c = Option.some cd →\n    (Benitoite.Release.Refinement.StandardModel.program externals).DataArity cd.data cd.ntys ∧\n      Benitoite.Release.Refinement.ConDecl.Scoped (Benitoite.Release.Refinement.StandardModel.program externals) cd",
+    "dependency_count": 103,
+    "dependency_sha256": "e1d1d7fde2b6d82ee6579af27a35251a663671e841a0b60226898c6f4eac193e",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.cons_mem",
+      "Benitoite.Release.Refinement.StandardModel.field_rows",
+      "Benitoite.Release.Refinement.StandardModel.variance_valid"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelCore",
+    "kind": "theorem",
+    "line": 89,
+    "name": "Benitoite.Release.Refinement.StandardModel.core",
+    "type_sha256": "4818636dc64452a2af5734d1d0e6db2a49ccb28932497e57dc9fb7728750f609",
+    "generated": false,
+    "type": "∀ (externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl)),\n  Benitoite.Release.Refinement.Builtins.CoreAssumptions (Benitoite.Release.Refinement.StandardModel.program externals)\n    (Benitoite.Release.Refinement.StandardModel.builtins (Benitoite.Release.Refinement.StandardModel.program externals))",
+    "dependency_count": 41,
+    "dependency_sha256": "7a261ef1f0a31ea2ea1d77916e25bf868a86b9e32fecfd8d46d52198ab9a5e72",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.admits_sat",
+      "Benitoite.Release.Refinement.StandardModel.effect_ops",
+      "Benitoite.Release.Refinement.StandardModel.io_op",
+      "Benitoite.Release.Refinement.StandardModel.opEff_io",
+      "Benitoite.Release.Refinement.StandardModel.pathBases_shape",
+      "Benitoite.Release.Refinement.StandardModel.release_exists",
+      "Benitoite.Release.Refinement.StandardModel.response_assumptions",
+      "Benitoite.Release.Refinement.StandardModel.sig_scoped",
+      "Benitoite.Release.Refinement.StandardModel.state_effect",
+      "Benitoite.Release.Refinement.StandardModel.store_admits",
+      "Benitoite.Release.Refinement.StandardModel.substitution_assumptions"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelCoreBodies",
+    "kind": "theorem",
+    "line": 40,
+    "name": "Benitoite.Release.Refinement.StandardModel.core_arity",
+    "type_sha256": "328e1c282da4748af0376898a37a7d52facac06f6f7fac3dfc0b235758e3e801",
+    "generated": false,
+    "type": "∀ (externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl))\n  (d : Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.DataId),\n  (Benitoite.Release.Refinement.StandardModel.program externals).DataArity d.owner d.count",
+    "dependency_count": 73,
+    "dependency_sha256": "bf3df5cbb0bfa340c7937de4dd08574b13249a55fcb945bd5f0c6cbcc4bd6c1b",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.data_arity"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelCoreBodies",
+    "kind": "theorem",
+    "line": 234,
+    "name": "Benitoite.Release.Refinement.StandardModel.core_bodies_typed",
+    "type_sha256": "1c3fa7b49f9e5fc357855f1f6c604d72d6547c9df1a406ea3cddf125aaccd109",
+    "generated": false,
+    "type": "∀ (externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl))\n  (a : Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.API),\n  Benitoite.Release.Refinement.Def.WellTyped (Benitoite.Release.Refinement.StandardModel.program externals)\n    (Benitoite.Release.Refinement.StandardModel.builtins (Benitoite.Release.Refinement.StandardModel.program externals))\n    (Benitoite.Release.Refinement.FunctionNames.definition\n      (Benitoite.Release.Refinement.FunctionNames.rename Bool.false) a.definition)",
+    "dependency_count": 14,
+    "dependency_sha256": "62317687040de3075e4f446f745aa277cab106d992c8ee256607d13e55018575",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.core_context"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelCoreBodies",
+    "kind": "theorem",
+    "line": 227,
+    "name": "Benitoite.Release.Refinement.StandardModel.core_context",
+    "type_sha256": "fd315c96153d81133e07e46b6a43abe10ff46aa87557e829ba3272c53b800853",
+    "generated": false,
+    "type": "∀ (externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl)),\n  Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.Context\n    (Benitoite.Release.Refinement.StandardModel.program externals)\n    (Benitoite.Release.Refinement.StandardModel.builtins (Benitoite.Release.Refinement.StandardModel.program externals))\n    (Benitoite.Release.Refinement.FunctionNames.rename Bool.false)",
+    "dependency_count": 45,
+    "dependency_sha256": "fcf4f24f19d3c9a45c606ed7be5c1f967060fc2bed6226ee5d3cec1d2be18ce2",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.core_arity",
+      "_private.Benitoite.Release.Refinement.StandardModelCoreBodies.0.Benitoite.Release.Refinement.StandardModel.core_prim",
+      "_private.Benitoite.Release.Refinement.StandardModelCoreBodies.0.Benitoite.Release.Refinement.StandardModel.core_ref"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelWellFormed",
+    "kind": "theorem",
+    "line": 126,
+    "name": "Benitoite.Release.Refinement.StandardModel.core_scoped",
+    "type_sha256": "923f129cb2cdaa374ffd6f646a482dda85eca9ca9d121110a3fee33f7b9518b0",
+    "generated": false,
+    "type": "∀ (ρ : String → String) (a : Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.API),\n  Benitoite.Release.Refinement.StandardModel.BodyScoped\n    (Benitoite.Release.Refinement.FunctionNames.definition ρ a.definition)",
+    "dependency_count": 241,
+    "dependency_sha256": "20e7e676faae6892823c23a09ad78065c6763f1e5a0816a6fc52c0c741923675",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.BodyScoped"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelCollectionRows",
+    "kind": "theorem",
+    "line": 26,
+    "name": "Benitoite.Release.Refinement.StandardModel.dataInfo_none",
+    "type_sha256": "7cac11056fdb3b240e33873e0ee3478541be80e9267b4274a1aa3adb365b2f01",
+    "generated": false,
+    "type": "∀ (externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl))\n  (d : String), (Benitoite.Release.Refinement.StandardModel.program externals).dataInfo d = Option.none",
+    "dependency_count": 12,
+    "dependency_sha256": "57b5e89dac82bf3837791b0a52e2921f0c433220d289c497a3f87e882a1107ff",
+    "dependencies": []
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelCoreBodies",
+    "kind": "theorem",
+    "line": 15,
+    "name": "Benitoite.Release.Refinement.StandardModel.data_arity",
+    "type_sha256": "1482421e2a193e7db2d8e70d709783cf14215eec3077be6305fed9585cf720d5",
+    "generated": false,
+    "type": "∀ {externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl)} {c : String}\n  {cd : Benitoite.Release.Refinement.ConDecl} (d : String) (n : Nat),\n  (Benitoite.Release.Refinement.StandardModel.program externals).cons c = Option.some cd →\n    cd.data = d →\n      (Benitoite.Release.Refinement.StandardModel.constructors.all fun e => e.snd.data != d || e.snd.ntys == n) =\n          Bool.true →\n        (Benitoite.Release.Refinement.StandardModel.program externals).DataArity d n",
+    "dependency_count": 51,
+    "dependency_sha256": "294f74189d9c775bbe9034ef6f3a8a7ca191b6ee097af997addf0514fb06703b",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.cons_mem",
+      "Benitoite.Release.Refinement.StandardModel.data_arity._simp_1_1",
+      "Benitoite.Release.Refinement.StandardModel.data_arity._simp_1_2"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelCoreBodies",
+    "kind": "theorem",
+    "line": null,
+    "name": "Benitoite.Release.Refinement.StandardModel.data_arity._simp_1_1",
+    "type_sha256": "cd4177205a76f7c1c850a8cd9cd38f5c2792584a37679e9014b67f4bbb176950",
+    "generated": false,
+    "type": "∀ {α : Type u_1} [inst : BEq α] [LawfulBEq α] {a b : α}, ((a != b) = Bool.true) = (a ≠ b)",
+    "dependency_count": 9,
+    "dependency_sha256": "bbe70563e90f8921769639451be4746b2b9567374ebcba4ca4cbc133fde98579",
+    "dependencies": []
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelCoreBodies",
+    "kind": "theorem",
+    "line": null,
+    "name": "Benitoite.Release.Refinement.StandardModel.data_arity._simp_1_2",
+    "type_sha256": "48a3c9196c7c32760592ab9f3ee1d130e7cfce0e104e36d804e0660d731525a7",
+    "generated": false,
+    "type": "∀ {α : Type u_1} [inst : BEq α] [LawfulBEq α] {a b : α}, ((a == b) = Bool.true) = (a = b)",
+    "dependency_count": 8,
+    "dependency_sha256": "fc7890cdffd81dab91424749972d25b86457ad19bb0bf359ccf459b2c68e2341",
+    "dependencies": []
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelCoreBodies",
+    "kind": "theorem",
+    "line": 29,
+    "name": "Benitoite.Release.Refinement.StandardModel.data_only",
+    "type_sha256": "f596afaf89bc74bec015eae28d44f236f38850f824052e54ddb5f5776c8c70ec",
+    "generated": false,
+    "type": "∀ {externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl)} (d : String)\n  (allowed : List String),\n  (Benitoite.Release.Refinement.StandardModel.constructors.all fun e => e.snd.data != d || allowed.contains e.fst) =\n      Bool.true →\n    ∀ {c : String} {cd : Benitoite.Release.Refinement.ConDecl},\n      (Benitoite.Release.Refinement.StandardModel.program externals).cons c = Option.some cd → cd.data = d → c ∈ allowed",
+    "dependency_count": 43,
+    "dependency_sha256": "65cc569a3abfab53ef9184fc2209c873e244009ff03aa908a63a2158c24f9d80",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.cons_mem",
+      "Benitoite.Release.Refinement.StandardModel.data_only._simp_1_1",
+      "Benitoite.Release.Refinement.StandardModel.data_only._simp_1_2"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelCoreBodies",
+    "kind": "theorem",
+    "line": null,
+    "name": "Benitoite.Release.Refinement.StandardModel.data_only._simp_1_1",
+    "type_sha256": "cd4177205a76f7c1c850a8cd9cd38f5c2792584a37679e9014b67f4bbb176950",
+    "generated": false,
+    "type": "∀ {α : Type u_1} [inst : BEq α] [LawfulBEq α] {a b : α}, ((a != b) = Bool.true) = (a ≠ b)",
+    "dependency_count": 9,
+    "dependency_sha256": "bbe70563e90f8921769639451be4746b2b9567374ebcba4ca4cbc133fde98579",
+    "dependencies": []
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelCoreBodies",
+    "kind": "theorem",
+    "line": null,
+    "name": "Benitoite.Release.Refinement.StandardModel.data_only._simp_1_2",
+    "type_sha256": "d458d129889155ff934e546f780d92036e1d16ce4829e1a53b2605ca08b5ab1f",
+    "generated": false,
+    "type": "∀ {α : Type u_1} [inst : BEq α] [LawfulBEq α] {a : α} {as : List α}, (as.contains a = Bool.true) = (a ∈ as)",
+    "dependency_count": 11,
+    "dependency_sha256": "10a3c304767e01e7483f057bf8b83a2978717d4983379927910093a3693062e6",
+    "dependencies": []
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelWellFormed",
+    "kind": "theorem",
+    "line": 370,
+    "name": "Benitoite.Release.Refinement.StandardModel.definition_scoped",
+    "type_sha256": "d869aaf3c8e867e2489215ae32db4ba00a12240aeb5f82c1cf6b59e9c8d2c5ea",
+    "generated": false,
+    "type": "∀ (externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl))\n  (f : Benitoite.Release.FunName) (d : Benitoite.Release.Refinement.Def),\n  (Benitoite.Release.Refinement.StandardModel.program externals).defs f = Option.some d →\n    Benitoite.Release.Refinement.Def.Scoped (Benitoite.Release.Refinement.StandardModel.program externals) d",
+    "dependency_count": 29,
+    "dependency_sha256": "a325fc8bbcf1488bd3ffa341c53393b9dfa5ef398bd5216b6c9e9e4c8c626d9c",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.Def.scoped_of_typed",
+      "Benitoite.Release.Refinement.StandardModel.body_scoped",
+      "Benitoite.Release.Refinement.StandardModel.body_typed"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelProgram",
+    "kind": "theorem",
+    "line": 160,
+    "name": "Benitoite.Release.Refinement.StandardModel.definition_typed",
+    "type_sha256": "50b032fce287b3fe1ec09cdbc3795b1b7fa83c0d83e8b63c8645e845f740b3e3",
+    "generated": false,
+    "type": "∀ (externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl))\n  (f : Benitoite.Release.FunName) (d : Benitoite.Release.Refinement.Def),\n  (Benitoite.Release.Refinement.StandardModel.program externals).defs f = Option.some d →\n    Benitoite.Release.Refinement.Def.WellTyped (Benitoite.Release.Refinement.StandardModel.program externals)\n      (Benitoite.Release.Refinement.StandardModel.builtins\n        (Benitoite.Release.Refinement.StandardModel.program externals))\n      d",
+    "dependency_count": 27,
+    "dependency_sha256": "f7cee5c3663bb239ee17f7a6c976d7a87edbac84c994c8c284d5589bb3e7f6c0",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.body_typed"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelCoreRows",
+    "kind": "theorem",
+    "line": 92,
+    "name": "Benitoite.Release.Refinement.StandardModel.effect_ops",
+    "type_sha256": "f5d82704ba7483417bd5263c72a72af693e251158234ac55b52ac895108bab09",
+    "generated": false,
+    "type": "∀ (P : Benitoite.Release.Refinement.Program) (l : Benitoite.Release.EffName) (bs : List Benitoite.Release.PrimName)\n  (b : Benitoite.Release.PrimName),\n  (Benitoite.Release.Refinement.StandardModel.builtins P).effects l = Option.some bs →\n    b ∈ bs →\n      ∃ s,\n        (Benitoite.Release.Refinement.StandardModel.builtins P).sig b = Option.some s ∧\n          (s.kind = Benitoite.Release.Refinement.PrimKind.io ∨\n              s.kind = Benitoite.Release.Refinement.PrimKind.exit ∨\n                s.kind = Benitoite.Release.Refinement.PrimKind.pathBases) ∧\n            s.opEff = Option.some l",
+    "dependency_count": 87,
+    "dependency_sha256": "6da820cc1d3d24b216df6ef9d74c521ce4a20cfb454aa9373a0205f49eb187c0",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.opEff_classes"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelCoreRows",
+    "kind": "theorem",
+    "line": null,
+    "name": "Benitoite.Release.Refinement.StandardModel.effects.eq_1",
+    "type_sha256": "cf9c37d6c24871dee210be75e1af7df697c3d50e6f5ac023a31516a1d2a8594b",
+    "generated": true,
+    "type": null,
+    "type_bytes": 481,
+    "dependency_count": 27,
+    "dependency_sha256": "2d7de19e50c9a1200b0cd54b811f29810d544041b174c41436e80c8705208182",
+    "dependencies": null
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelCoreRows",
+    "kind": "theorem",
+    "line": 79,
+    "name": "Benitoite.Release.Refinement.StandardModel.effects_member",
+    "type_sha256": "e56642c8cfcca2770d65c04c5a6986869c40e01831f4b382cba2304461eb582f",
+    "generated": false,
+    "type": "∀ (row : Benitoite.Release.Refinement.StandardModel.Primitive) {l : Benitoite.Release.EffName},\n  row.signature.opEff = Option.some l →\n    l ≠ Benitoite.Release.stateEff →\n      ∃ bs, Benitoite.Release.Refinement.StandardModel.effects l = Option.some bs ∧ row.name ∈ bs",
+    "dependency_count": 76,
+    "dependency_sha256": "ca5dde00a535574f831b27c9789919e779e04c689c2a52070453843b3dfd169f",
+    "dependencies": [
+      "_private.Benitoite.Release.Refinement.StandardModelCoreRows.0.Benitoite.Release.Refinement.StandardModel.all_member"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelWellFormed",
+    "kind": "theorem",
+    "line": 329,
+    "name": "Benitoite.Release.Refinement.StandardModel.field_rows",
+    "type_sha256": "f9fe97c0217ac36f9ab7a1b1559ebf421aac47d9ba789d70d600d48d6629b31c",
+    "generated": false,
+    "type": "∀ (externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl))\n  (c : Benitoite.Release.ConName) (cd : Benitoite.Release.Refinement.ConDecl),\n  (Benitoite.Release.Refinement.StandardModel.program externals).cons c = Option.some cd →\n    ∀ (a : Benitoite.Release.Refinement.Ty),\n      a ∈ cd.args →\n        Benitoite.Release.Refinement.Ty.RowsIn (fun x => x < 0) a ∧ Benitoite.Release.Refinement.Ty.RangesScoped 0 a",
+    "dependency_count": 118,
+    "dependency_sha256": "7af19f386f7c3eb8e43d6e14ed381a18654f18722879c6e51d815b8e2d290a35",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.cons_mem",
+      "Benitoite.Release.Refinement.StandardModel.field_rows._simp_1_1",
+      "Benitoite.Release.Refinement.StandardModel.field_rows._simp_1_2"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelWellFormed",
+    "kind": "theorem",
+    "line": null,
+    "name": "Benitoite.Release.Refinement.StandardModel.field_rows._simp_1_1",
+    "type_sha256": "7fd78ba5e44578fe3f5232ef17dc428b0e88eba9e3c17bf884a4024ee5b65a9d",
+    "generated": false,
+    "type": "∀ {α : Type u_1} {b : α} {l : List α} {a : α}, (a ∈ b :: l) = (a = b ∨ a ∈ l)",
+    "dependency_count": 8,
+    "dependency_sha256": "743ebe7014da68674f1c9bc694e6c858f1e5e3d61356928a57f1b043eead9b01",
+    "dependencies": []
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelWellFormed",
+    "kind": "theorem",
+    "line": null,
+    "name": "Benitoite.Release.Refinement.StandardModel.field_rows._simp_1_2",
+    "type_sha256": "554ee107b1ae31247100ac3b7ced14557e86b37c3929fcbcbecb13e9b28026fe",
+    "generated": false,
+    "type": "∀ {α : Type u_1} {a : α}, (a ∈ []) = False",
+    "dependency_count": 8,
+    "dependency_sha256": "b5e507c897494198c00a3fc51ae657c450dca36a06d2e97dd0a426f37150e50c",
+    "dependencies": []
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelScoped",
+    "kind": "theorem",
+    "line": null,
+    "name": "Benitoite.Release.Refinement.StandardModel.forceSig.eq_1",
+    "type_sha256": "3d670da07ba3f02b61cd95fe13b68f2900d044bbef8aee0270378d913470cd53",
+    "generated": true,
+    "type": null,
+    "type_bytes": 429,
+    "dependency_count": 25,
+    "dependency_sha256": "9671555843c1ab33c6e09beabaed5ddc203927b2ee0f528188ea8a57ee8f8c1d",
+    "dependencies": null
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelWellFormed",
+    "kind": "theorem",
+    "line": 114,
+    "name": "Benitoite.Release.Refinement.StandardModel.getter_scoped",
+    "type_sha256": "31fd6989ade368125d40d4ec04d72097e80450e6359824b63fcd7ad082b8a479",
+    "generated": false,
+    "type": "∀ (ρ : String → String) (g : Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.Getter),\n  Benitoite.Release.Refinement.StandardModel.BodyScoped\n    (Benitoite.Release.Refinement.FunctionNames.definition ρ g.definition)",
+    "dependency_count": 167,
+    "dependency_sha256": "50cfb99e24748edf8a14275109e55724ef951d5c5cc7a0da0e626a8cf15c71b0",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.BodyScoped"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelCoreBodies",
+    "kind": "theorem",
+    "line": 253,
+    "name": "Benitoite.Release.Refinement.StandardModel.getters_typed",
+    "type_sha256": "ad40121303e7703a8e7c34e72a50b6dc3f7d13c8ce944d3483519eb0fadb29fb",
+    "generated": false,
+    "type": "∀ (externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl))\n  (g : Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.Getter),\n  Benitoite.Release.Refinement.Def.WellTyped (Benitoite.Release.Refinement.StandardModel.program externals)\n      (Benitoite.Release.Refinement.StandardModel.builtins\n        (Benitoite.Release.Refinement.StandardModel.program externals))\n      g.definition ∧\n    Benitoite.Release.Refinement.Def.WellTyped (Benitoite.Release.Refinement.StandardModel.program externals)\n      (Benitoite.Release.Refinement.StandardModel.builtins\n        (Benitoite.Release.Refinement.StandardModel.program externals))\n      g.publicDefinition",
+    "dependency_count": 38,
+    "dependency_sha256": "bb58b6d6c2dc557bb7453bad4d0bb016ca3eb84099d730f6deca5c0b6f309f41",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.records",
+      "Benitoite.Release.Refinement.StandardModel.sat_empty"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelWellFormed",
+    "kind": "theorem",
+    "line": 167,
+    "name": "Benitoite.Release.Refinement.StandardModel.headTailFrom_scoped",
+    "type_sha256": "63616e750216a556143a19b791182f4aed910face9e1eed49d063440fe05b1f0",
+    "generated": false,
+    "type": "∀ (ρ : String → String) (filter : Bool),\n  Benitoite.Release.Refinement.StandardModel.BodyScoped\n    (Benitoite.Release.Refinement.FunctionNames.definition ρ\n      (Benitoite.Release.Refinement.StandardHeadTail.fromDefinition filter))",
+    "dependency_count": 196,
+    "dependency_sha256": "64070d359332969ddb2a9823bf6266ea5140cecb12ed4169d9819010ddc6be1d",
+    "dependencies": [
+      "Benitoite.Release.Refinement.FunctionNames.computation.eq_4",
+      "Benitoite.Release.Refinement.FunctionNames.computation.eq_6",
+      "Benitoite.Release.Refinement.StandardModel.BodyScoped",
+      "Benitoite.Release.Refinement.scopedArms.eq_2"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelWellFormed",
+    "kind": "theorem",
+    "line": 172,
+    "name": "Benitoite.Release.Refinement.StandardModel.headTailPublic_scoped",
+    "type_sha256": "e51d397abd67865d63426fd96af02e0662dce80008c9228f84f8366fbe9ef905",
+    "generated": false,
+    "type": "∀ (ρ : String → String) (filter : Bool),\n  Benitoite.Release.Refinement.StandardModel.BodyScoped\n    (Benitoite.Release.Refinement.FunctionNames.definition ρ\n      (Benitoite.Release.Refinement.StandardHeadTail.publicDefinition filter))",
+    "dependency_count": 170,
+    "dependency_sha256": "c7c25a8b8bdafe50462409850da241362f1661a08086dc17602aa00bf34863b8",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.BodyScoped"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelCoreRows",
+    "kind": "theorem",
+    "line": 34,
+    "name": "Benitoite.Release.Refinement.StandardModel.io_classes",
+    "type_sha256": "f86a6afa68bed99a0cbf498266e28dd856be6e134db4178b37c7a55902188312",
+    "generated": false,
+    "type": "∀ (row : Benitoite.Release.Refinement.StandardModel.Primitive),\n  row.signature.kind = Benitoite.Release.Refinement.PrimKind.io ∨\n      row.signature.kind = Benitoite.Release.Refinement.PrimKind.exit →\n    row.io = Bool.true",
+    "dependency_count": 401,
+    "dependency_sha256": "ebacc3e4c23fa6d908931b897e69ad6db9c572b2fa58b83c92af80f10e94a29c",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.Primitive.io"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelCore",
+    "kind": "theorem",
+    "line": 11,
+    "name": "Benitoite.Release.Refinement.StandardModel.io_op",
+    "type_sha256": "507c5ea757ed5ff86a2296fe650713a15ae60858e24c2409ccb870b2f26f3ff2",
+    "generated": false,
+    "type": "∀ (P : Benitoite.Release.Refinement.Program) (b : Benitoite.Release.PrimName)\n  (s : Benitoite.Release.Refinement.PrimSig),\n  (Benitoite.Release.Refinement.StandardModel.builtins P).sig b = Option.some s →\n    s.kind = Benitoite.Release.Refinement.PrimKind.io ∨ s.kind = Benitoite.Release.Refinement.PrimKind.exit →\n      (Benitoite.Release.Refinement.StandardModel.builtins P).ShapeOk b s",
+    "dependency_count": 469,
+    "dependency_sha256": "5c793840ebdafdf1426afc4af628a9101729561548fe2cb32b461869f6cd37cf",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.Primitive.io",
+      "Benitoite.Release.Refinement.StandardModel.effects_member",
+      "Benitoite.Release.Refinement.StandardModel.io_classes"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelIORows",
+    "kind": "theorem",
+    "line": 181,
+    "name": "Benitoite.Release.Refinement.StandardModel.io_rows",
+    "type_sha256": "490b5035fbd75b64474c28d2fb9c8e95960e6783180ee67b080dfa0ccb39dc17",
+    "generated": false,
+    "type": "∀ (externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl))\n  (row : Benitoite.Release.Refinement.StandardModel.Primitive),\n  row.io = Bool.true →\n    Benitoite.Release.Refinement.StandardModel.IORow (Benitoite.Release.Refinement.StandardModel.program externals)\n      row.name",
+    "dependency_count": 424,
+    "dependency_sha256": "fffd00c83d03928f935f50a0612d1cd7739aff863f43543dc3731f2e704f6139",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.IORow",
+      "Benitoite.Release.Refinement.StandardModel.IORow.exit",
+      "Benitoite.Release.Refinement.StandardModel.IORow.print",
+      "Benitoite.Release.Refinement.StandardModel.IORow.readText",
+      "Benitoite.Release.Refinement.StandardModel.IORow.scoped",
+      "Benitoite.Release.Refinement.StandardModel.Primitive.io",
+      "_private.Benitoite.Release.Refinement.StandardModelIORows.0.Benitoite.Release.Refinement.StandardModel.http_scoped",
+      "_private.Benitoite.Release.Refinement.StandardModelIORows.0.Benitoite.Release.Refinement.StandardModel.targets_scoped"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelWellFormed",
+    "kind": "theorem",
+    "line": 163,
+    "name": "Benitoite.Release.Refinement.StandardModel.listFrom_scoped",
+    "type_sha256": "2e7a1d3cfaf03b1b0b3f5964578f185d943b2923c25a8b418b4a9aebbf953718",
+    "generated": false,
+    "type": "∀ (ρ : String → String) (filter : Bool),\n  Benitoite.Release.Refinement.StandardModel.BodyScoped\n    (Benitoite.Release.Refinement.FunctionNames.definition ρ\n      (Benitoite.Release.Refinement.StandardBodies.listFromDefinition filter))",
+    "dependency_count": 175,
+    "dependency_sha256": "1ed110303c73b06a9ed50da6a90ebf98f3cf5a4a9a5b62d7c31eec48bd2b750b",
+    "dependencies": [
+      "Benitoite.Release.Refinement.FunctionNames.computation.eq_4",
+      "Benitoite.Release.Refinement.FunctionNames.computation.eq_6",
+      "Benitoite.Release.Refinement.StandardModel.BodyScoped",
+      "Benitoite.Release.Refinement.scopedArms.eq_2"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelWellFormed",
+    "kind": "theorem",
+    "line": 106,
+    "name": "Benitoite.Release.Refinement.StandardModel.listHelper_scoped",
+    "type_sha256": "a6fb62e9333a410054f33a6e01a09ebbcf6576cc5d3b8bdd51fc940c426b3e25",
+    "generated": false,
+    "type": "∀ (ρ : String → String) (o : Benitoite.Release.Refinement.StandardOrdinaryListBodies.Op),\n  Benitoite.Release.Refinement.StandardModel.BodyScoped\n    (Benitoite.Release.Refinement.FunctionNames.definition ρ o.definition)",
+    "dependency_count": 194,
+    "dependency_sha256": "55ab9d065634e8989e4ca580ca91cc362eb7121a615f5cc1621ee28f6850f182",
+    "dependencies": [
+      "Benitoite.Release.Refinement.FunctionNames.values.eq_2",
+      "Benitoite.Release.Refinement.StandardModel.BodyScoped"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelWellFormed",
+    "kind": "theorem",
+    "line": 158,
+    "name": "Benitoite.Release.Refinement.StandardModel.listHigher_scoped",
+    "type_sha256": "cc6a3537c853c248aebdc7aadd7264c06d34613cfbf8694001528455f806aece",
+    "generated": false,
+    "type": "∀ (ρ : String → String) (filter : Bool) {d : Benitoite.Release.Refinement.Def},\n  (Benitoite.Release.Refinement.StandardBodies.listHigherRow filter).definition = Option.some d →\n    Benitoite.Release.Refinement.StandardModel.BodyScoped (Benitoite.Release.Refinement.FunctionNames.definition ρ d)",
+    "dependency_count": 195,
+    "dependency_sha256": "fb62555a8da5d52f538adfd7940ec7b5a52866e898d0c562ee844052cb1f1033",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.BodyScoped"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelWellFormed",
+    "kind": "theorem",
+    "line": 110,
+    "name": "Benitoite.Release.Refinement.StandardModel.listPublic_scoped",
+    "type_sha256": "5c178f17906f9fdba34cbd4bc8ee65b6bb4868b43ffbdd1541dccf2a27edd364",
+    "generated": false,
+    "type": "∀ (ρ : String → String) (o : Benitoite.Release.Refinement.StandardOrdinaryListBodies.Op),\n  Benitoite.Release.Refinement.StandardModel.BodyScoped\n    (Benitoite.Release.Refinement.FunctionNames.definition ρ o.publicDefinition)",
+    "dependency_count": 168,
+    "dependency_sha256": "913d3ccaa3c995a621f17fc51a88e520dc7bf4c5378d6588d7da8076a0496c0e",
+    "dependencies": [
+      "Benitoite.Release.Refinement.FunctionNames.values.eq_2",
+      "Benitoite.Release.Refinement.StandardModel.BodyScoped"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelListBodies",
+    "kind": "theorem",
+    "line": 1229,
+    "name": "Benitoite.Release.Refinement.StandardModel.list_bodies_typed",
+    "type_sha256": "cb95827ab6a8ce105883446aba0168ece048c349bcf06d0e15b818dfc0b2ac57",
+    "generated": false,
+    "type": "∀ (externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl))\n  (filter : Bool),\n  Benitoite.Release.Refinement.Def.WellTyped (Benitoite.Release.Refinement.StandardModel.program externals)\n      (Benitoite.Release.Refinement.StandardModel.builtins\n        (Benitoite.Release.Refinement.StandardModel.program externals))\n      (if filter = Bool.true then Benitoite.Release.Refinement.StandardModel.Body.b130\n        else Benitoite.Release.Refinement.StandardModel.Body.b129).definition ∧\n    Benitoite.Release.Refinement.Def.WellTyped (Benitoite.Release.Refinement.StandardModel.program externals)\n        (Benitoite.Release.Refinement.StandardModel.builtins\n          (Benitoite.Release.Refinement.StandardModel.program externals))\n        (if filter = Bool.true then Benitoite.Release.Refinement.StandardModel.Body.b002\n          else Benitoite.Release.Refinement.StandardModel.Body.b001).definition ∧\n      Benitoite.Release.Refinement.Def.WellTyped (Benitoite.Release.Refinement.StandardModel.program externals)\n          (Benitoite.Release.Refinement.StandardModel.builtins\n            (Benitoite.Release.Refinement.StandardModel.program externals))\n          (if filter = Bool.true then Benitoite.Release.Refinement.StandardModel.Body.b102\n            else Benitoite.Release.Refinement.StandardModel.Body.b101).definition ∧\n        Benitoite.Release.Refinement.Def.WellTyped (Benitoite.Release.Refinement.StandardModel.program externals)\n          (Benitoite.Release.Refinement.StandardModel.builtins\n            (Benitoite.Release.Refinement.StandardModel.program externals))\n          (if filter = Bool.true then Benitoite.Release.Refinement.StandardModel.Body.b104\n            else Benitoite.Release.Refinement.StandardModel.Body.b103).definition",
+    "dependency_count": 113,
+    "dependency_sha256": "8caf691cce7e5799413739d95fe0cdd9e97bd871881004f60cbf834291f2a200",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModelOrdinaryList.from_typed",
+      "Benitoite.Release.Refinement.StandardModelOrdinaryList.higher_typed",
+      "Benitoite.Release.Refinement.StandardModelPreciseList.Inputs",
+      "Benitoite.Release.Refinement.StandardModelPreciseList.append_ordinary",
+      "Benitoite.Release.Refinement.StandardModelPreciseList.fromBody",
+      "Benitoite.Release.Refinement.StandardModelPreciseList.fromDefinition",
+      "Benitoite.Release.Refinement.StandardModelPreciseList.fromRow",
+      "Benitoite.Release.Refinement.StandardModelPreciseList.from_typed",
+      "Benitoite.Release.Refinement.StandardModelPreciseList.publicBody",
+      "Benitoite.Release.Refinement.StandardModelPreciseList.publicDefinition",
+      "Benitoite.Release.Refinement.StandardModelPreciseList.publicRow",
+      "Benitoite.Release.Refinement.StandardModelPreciseList.public_typed",
+      "_private.Benitoite.Release.Refinement.StandardModelListBodies.0.Benitoite.Release.Refinement.StandardModel.ordinary_from",
+      "_private.Benitoite.Release.Refinement.StandardModelListBodies.0.Benitoite.Release.Refinement.StandardModel.ordinary_public",
+      "_private.Benitoite.Release.Refinement.StandardModelListBodies.0.Benitoite.Release.Refinement.StandardModel.precise_from",
+      "_private.Benitoite.Release.Refinement.StandardModelListBodies.0.Benitoite.Release.Refinement.StandardModel.precise_inputs",
+      "_private.Benitoite.Release.Refinement.StandardModelListBodies.0.Benitoite.Release.Refinement.StandardModel.precise_public",
+      "_private.Benitoite.Release.Refinement.StandardModelListBodies.0.Benitoite.Release.Refinement.StandardModelOrdinaryList.fromName",
+      "_private.Benitoite.Release.Refinement.StandardModelListBodies.0.Benitoite.Release.Refinement.StandardModelOrdinaryList.listFromDefinition",
+      "_private.Benitoite.Release.Refinement.StandardModelListBodies.0.Benitoite.Release.Refinement.StandardModelOrdinaryList.listFromRow",
+      "_private.Benitoite.Release.Refinement.StandardModelListBodies.0.Benitoite.Release.Refinement.StandardModelOrdinaryList.listHigherRow",
+      "_private.Benitoite.Release.Refinement.StandardModelListBodies.0.Benitoite.Release.Refinement.StandardModelOrdinaryList.typeArgs",
+      "_private.Benitoite.Release.Refinement.StandardModelListBodies.0.Benitoite.Release.Refinement.StandardModelOrdinaryList.zero"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelCoreBodies",
+    "kind": "theorem",
+    "line": 247,
+    "name": "Benitoite.Release.Refinement.StandardModel.list_helpers_typed",
+    "type_sha256": "a31c8ab6558c0e644043dc060a1c388f98deecf9da696f9accc77091e95cf335",
+    "generated": false,
+    "type": "∀ (externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl))\n  (o : Benitoite.Release.Refinement.StandardOrdinaryListBodies.Op),\n  Benitoite.Release.Refinement.Def.WellTyped (Benitoite.Release.Refinement.StandardModel.program externals)\n      (Benitoite.Release.Refinement.StandardModel.builtins\n        (Benitoite.Release.Refinement.StandardModel.program externals))\n      o.definition ∧\n    Benitoite.Release.Refinement.Def.WellTyped (Benitoite.Release.Refinement.StandardModel.program externals)\n      (Benitoite.Release.Refinement.StandardModel.builtins\n        (Benitoite.Release.Refinement.StandardModel.program externals))\n      o.publicDefinition",
+    "dependency_count": 15,
+    "dependency_sha256": "3ecb2b84d88c1d2cc3c392893b14a64423b219f30ed1dce0d53a10c7177cbc7c",
+    "dependencies": [
+      "_private.Benitoite.Release.Refinement.StandardModelCoreBodies.0.Benitoite.Release.Refinement.StandardModel.list_inputs"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelCollectionRows",
+    "kind": "theorem",
+    "line": 66,
+    "name": "Benitoite.Release.Refinement.StandardModel.map_set_declarations",
+    "type_sha256": "ac06fc452f2c794f2cbadd28ee85ae8fae41a885f25644c121c606d14a7fefe9",
+    "generated": false,
+    "type": "∀ (externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl)),\n  Benitoite.Release.Refinement.StandardCollections.MapSetDeclarations\n    (Benitoite.Release.Refinement.StandardModel.program externals)",
+    "dependency_count": 136,
+    "dependency_sha256": "ef3b334348458f593f7f4c91bc054d50b1010b37884ad56a452dd2937e1372bb",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.cons_mem"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelListBodies",
+    "kind": "theorem",
+    "line": 1257,
+    "name": "Benitoite.Release.Refinement.StandardModel.nonempty_map_typed",
+    "type_sha256": "8276839342c39d269a9f515b9bc45cec9aac4351353e38452a6081c4b9a6ff8d",
+    "generated": false,
+    "type": "∀ (externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl)),\n  Benitoite.Release.Refinement.Def.WellTyped (Benitoite.Release.Refinement.StandardModel.program externals)\n    (Benitoite.Release.Refinement.StandardModel.builtins (Benitoite.Release.Refinement.StandardModel.program externals))\n    Benitoite.Release.Refinement.StandardModel.Body.b105.definition",
+    "dependency_count": 40,
+    "dependency_sha256": "015acf312252fc496649e150c99184c61daf860799da933853ee0b8d9c31420c",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModelPreciseList.nonempty_public_typed",
+      "_private.Benitoite.Release.Refinement.StandardModelListBodies.0.Benitoite.Release.Refinement.StandardModel.precise_inputs",
+      "_private.Benitoite.Release.Refinement.StandardModelListBodies.0.Benitoite.Release.Refinement.StandardModelPreciseList.nonemptyBody",
+      "_private.Benitoite.Release.Refinement.StandardModelListBodies.0.Benitoite.Release.Refinement.StandardModelPreciseList.nonemptyPublicRow"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelWellFormed",
+    "kind": "theorem",
+    "line": 177,
+    "name": "Benitoite.Release.Refinement.StandardModel.nonempty_scoped",
+    "type_sha256": "8540d47a7dc4f6793a5d3d1f76fd0674ac6f647c39f0ae41e458ac25c91add97",
+    "generated": false,
+    "type": "∀ (ρ : String → String),\n  Benitoite.Release.Refinement.StandardModel.BodyScoped\n    (Benitoite.Release.Refinement.FunctionNames.definition ρ\n      Benitoite.Release.Refinement.StandardHeadTail.nonemptyPublicDefinition)",
+    "dependency_count": 155,
+    "dependency_sha256": "c2a7ccc35e8081180024cd707a80aacdb3c5c394612dbe088b366423b80bead0",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.BodyScoped"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelCoreRows",
+    "kind": "theorem",
+    "line": 57,
+    "name": "Benitoite.Release.Refinement.StandardModel.opEff_classes",
+    "type_sha256": "4539077ff465b895865a2f05e674d7fee4e3b980e82c4925d18e2dc534e9e75b",
+    "generated": false,
+    "type": "∀ (row : Benitoite.Release.Refinement.StandardModel.Primitive),\n  row.signature.opEff ≠ Option.none →\n    row.signature.kind = Benitoite.Release.Refinement.PrimKind.io ∨\n      row.signature.kind = Benitoite.Release.Refinement.PrimKind.exit ∨\n        row.signature.kind = Benitoite.Release.Refinement.PrimKind.pathBases",
+    "dependency_count": 399,
+    "dependency_sha256": "e21c9c92d83b6d08a7430f9296f4561659de9a7908a20d3688980d5f2dd332b2",
+    "dependencies": []
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelCore",
+    "kind": "theorem",
+    "line": 61,
+    "name": "Benitoite.Release.Refinement.StandardModel.opEff_io",
+    "type_sha256": "203273e8998f0de65ece671a2448e1a8fd3e2a70821fd4d4b65bfb2d8fa80ce8",
+    "generated": false,
+    "type": "∀ (P : Benitoite.Release.Refinement.Program) (b : Benitoite.Release.PrimName) (s : Benitoite.Release.Refinement.PrimSig)\n  (l : Benitoite.Release.EffName),\n  (Benitoite.Release.Refinement.StandardModel.builtins P).sig b = Option.some s →\n    s.opEff = Option.some l →\n      s.kind = Benitoite.Release.Refinement.PrimKind.io ∨\n        s.kind = Benitoite.Release.Refinement.PrimKind.exit ∨ s.kind = Benitoite.Release.Refinement.PrimKind.pathBases",
+    "dependency_count": 47,
+    "dependency_sha256": "4d1a016d5d19611a15dff178de6382313725f86cd126b133f796a27b0f6560b9",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.opEff_classes"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelCollectionBodies",
+    "kind": "theorem",
+    "line": 736,
+    "name": "Benitoite.Release.Refinement.StandardModel.ordinary_collection_typed",
+    "type_sha256": "fb1f48983f18a8e3638936f7a99cdadd0ad99e3585b4c4efa6cea6065ca3e6f5",
+    "generated": false,
+    "type": "∀ (externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl))\n  (map filter : Bool),\n  Benitoite.Release.Refinement.Def.WellTyped (Benitoite.Release.Refinement.StandardModel.program externals)\n    (Benitoite.Release.Refinement.StandardModel.builtins (Benitoite.Release.Refinement.StandardModel.program externals))\n    (if map = Bool.true then\n        if filter = Bool.true then Benitoite.Release.Refinement.StandardModel.Body.b009\n        else Benitoite.Release.Refinement.StandardModel.Body.b008\n      else\n        if filter = Bool.true then Benitoite.Release.Refinement.StandardModel.Body.b013\n        else Benitoite.Release.Refinement.StandardModel.Body.b012).definition",
+    "dependency_count": 71,
+    "dependency_sha256": "c3bba86eafdf2aadae7bd12da8ac3446e607242712c85be619e0fa0f2d59d3a8",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.core_arity",
+      "Benitoite.Release.Refinement.StandardModel.table",
+      "Benitoite.Release.Refinement.StandardModelOrdinaryCollection.higher_typed",
+      "_private.Benitoite.Release.Refinement.StandardModelCollectionBodies.0.Benitoite.Release.Refinement.StandardModel.pair_projection",
+      "_private.Benitoite.Release.Refinement.StandardModelCollectionBodies.0.Benitoite.Release.Refinement.StandardModelOrdinaryCollection.collectionHigherBody",
+      "_private.Benitoite.Release.Refinement.StandardModelCollectionBodies.0.Benitoite.Release.Refinement.StandardModelOrdinaryCollection.collectionHigherRow",
+      "_private.Benitoite.Release.Refinement.StandardModelCollectionBodies.0.Benitoite.Release.Refinement.StandardModelOrdinaryCollection.primitiveName"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelProgram",
+    "kind": "theorem",
+    "line": 18,
+    "name": "Benitoite.Release.Refinement.StandardModel.pair_body",
+    "type_sha256": "5573c6d34baee376b23e4b9c8efafd0adaa4b35a25666e9b50b87ec0f1f1aa56",
+    "generated": false,
+    "type": "∀ (externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl))\n  (second : Bool),\n  (if second = Bool.true then Benitoite.Release.Refinement.StandardModel.Body.b107\n      else Benitoite.Release.Refinement.StandardModel.Body.b106).definition =\n    Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.pairDefinition second",
+    "dependency_count": 30,
+    "dependency_sha256": "7125e883261b23aac7890ebb6e7ca56516de46728a106416695dddc2e1fdd3cc",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.pair_lookup"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelCoreBodies",
+    "kind": "theorem",
+    "line": 200,
+    "name": "Benitoite.Release.Refinement.StandardModel.pair_lookup",
+    "type_sha256": "c8ac1712cbe70596c97da75aab9d529ca3438d491db099ed8ba5df3c69bff993",
+    "generated": false,
+    "type": "∀ (externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl))\n  (second : Bool),\n  (Benitoite.Release.Refinement.StandardModel.program externals).defs\n      (if second = Bool.true then \"Pair.second\" else \"Pair.first\") =\n    Option.some (Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.pairDefinition second)",
+    "dependency_count": 33,
+    "dependency_sha256": "8d001a501c52d0fe28419720a73998ca39d645ec25929d010bedcc11691d861c",
+    "dependencies": [
+      "_private.Benitoite.Release.Refinement.StandardModelCoreBodies.0.Benitoite.Release.Refinement.StandardModel.pair_definition"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelWellFormed",
+    "kind": "theorem",
+    "line": 122,
+    "name": "Benitoite.Release.Refinement.StandardModel.pair_scoped",
+    "type_sha256": "981cc8ef57011862407dc0b52e4664366dd7bf49e4a58102922f1cb976f6be6e",
+    "generated": false,
+    "type": "∀ (ρ : String → String) (second : Bool),\n  Benitoite.Release.Refinement.StandardModel.BodyScoped\n    (Benitoite.Release.Refinement.FunctionNames.definition ρ\n      (Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.pairDefinition second))",
+    "dependency_count": 122,
+    "dependency_sha256": "ac9b1e3312d66dce7ca952730ed045126033b59bcb5d76261871a95d310c21a9",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.BodyScoped"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelCoreBodies",
+    "kind": "theorem",
+    "line": 263,
+    "name": "Benitoite.Release.Refinement.StandardModel.pairs_typed",
+    "type_sha256": "3d15b3223c97f0738bbf2aceb9d3dc039c9c10e1b6a54441efd6f838b07a7140",
+    "generated": false,
+    "type": "∀ (externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl))\n  (second : Bool),\n  Benitoite.Release.Refinement.Def.WellTyped (Benitoite.Release.Refinement.StandardModel.program externals)\n    (Benitoite.Release.Refinement.StandardModel.builtins (Benitoite.Release.Refinement.StandardModel.program externals))\n    (Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.pairDefinition second)",
+    "dependency_count": 43,
+    "dependency_sha256": "e2774df50f9310d1c23cbac1146fb80949b52aaebf7cc877e2101be0e4fbf08f",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.core_arity",
+      "Benitoite.Release.Refinement.StandardModel.data_only"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelCore",
+    "kind": "theorem",
+    "line": 50,
+    "name": "Benitoite.Release.Refinement.StandardModel.pathBases_shape",
+    "type_sha256": "6c555863abecc6a6f3fddd8301bbfed744ec8079be375af3102c8969a6c6c700",
+    "generated": false,
+    "type": "∀ (P : Benitoite.Release.Refinement.Program) (b : Benitoite.Release.PrimName)\n  (s : Benitoite.Release.Refinement.PrimSig),\n  (Benitoite.Release.Refinement.StandardModel.builtins P).sig b = Option.some s →\n    s.kind = Benitoite.Release.Refinement.PrimKind.pathBases →\n      s.PathBasesShape (Benitoite.Release.Refinement.StandardModel.builtins P) b",
+    "dependency_count": 442,
+    "dependency_sha256": "ccbf44f22cb2ffddf4d8e0306e3a3948c25b7d5d145e0ddc945b5baf39286432",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.effects_member"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelWellFormed",
+    "kind": "theorem",
+    "line": 150,
+    "name": "Benitoite.Release.Refinement.StandardModel.precise_scoped",
+    "type_sha256": "31cccef71e475a9a3ec1d54eb3c7043ad26b364f43a0369f7e2b9f4d68d3bd02",
+    "generated": false,
+    "type": "∀ (ρ : String → String) (g : Benitoite.Release.Refinement.StandardSafe.PreciseGetter)\n  {d : Benitoite.Release.Refinement.Def},\n  g.row.definition = Option.some d →\n    Benitoite.Release.Refinement.StandardModel.BodyScoped (Benitoite.Release.Refinement.FunctionNames.definition ρ d)",
+    "dependency_count": 195,
+    "dependency_sha256": "ec5eb38477242c8ed84605297d4ec1f1273dbc092969cc5fa6bd475105a75127",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.BodyScoped"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelCollectionRows",
+    "kind": "theorem",
+    "line": null,
+    "name": "Benitoite.Release.Refinement.StandardModel.precisionProvider.eq_1",
+    "type_sha256": "b2006c1bc1300928f8d086d72f02b5c55c0bbd6946468716b0bbc8dcc472a299",
+    "generated": true,
+    "type": null,
+    "type_bytes": 3215,
+    "dependency_count": 43,
+    "dependency_sha256": "9203e81cb1906f5471d37ff1655ed8f843dfd7e455dae8a6505e3f9b3d601545",
+    "dependencies": null
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelProgram",
+    "kind": "theorem",
+    "line": 167,
+    "name": "Benitoite.Release.Refinement.StandardModel.program_typed",
+    "type_sha256": "8677ad3b903e2829e55ce436d4642e73fa7d95060dc337fb58b39a627b4da4e2",
+    "generated": false,
+    "type": "∀ (externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl)),\n  (Benitoite.Release.Refinement.StandardModel.program externals).ExternalWF →\n    (Benitoite.Release.Refinement.StandardModel.program externals).WellTyped\n      (Benitoite.Release.Refinement.StandardModel.builtins\n        (Benitoite.Release.Refinement.StandardModel.program externals))",
+    "dependency_count": 26,
+    "dependency_sha256": "caef32781d8398a2cb85590a7c77cf3fc9911eff94f1d8359545e41631f2ac48",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.definition_typed",
+      "Benitoite.Release.Refinement.StandardModel.variance_valid"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelWellFormed",
+    "kind": "theorem",
+    "line": 377,
+    "name": "Benitoite.Release.Refinement.StandardModel.program_wellFormed",
+    "type_sha256": "4c05935b507b7a2f2e4afdaae9dc50270191eb5f1a74844c6cd58c935db2faaf",
+    "generated": false,
+    "type": "∀ (externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl)),\n  (Benitoite.Release.Refinement.StandardModel.program externals).ExternalWF →\n    (Benitoite.Release.Refinement.StandardModel.program externals).WellFormed",
+    "dependency_count": 72,
+    "dependency_sha256": "965275f1e27e05fdd3b1ad02317ecb2c5cf231463b35042d9f054051f9682f73",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.cons_scoped",
+      "Benitoite.Release.Refinement.StandardModel.dataInfo_none",
+      "Benitoite.Release.Refinement.StandardModel.definition_scoped"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelWellFormed",
+    "kind": "theorem",
+    "line": 118,
+    "name": "Benitoite.Release.Refinement.StandardModel.projection_scoped",
+    "type_sha256": "a937d6a7aa8613679a3a8ab2b7f670d9fdec8c3111810f7e2b660932f7f671d9",
+    "generated": false,
+    "type": "∀ (ρ : String → String) (g : Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.Getter),\n  Benitoite.Release.Refinement.StandardModel.BodyScoped\n    (Benitoite.Release.Refinement.FunctionNames.definition ρ g.publicDefinition)",
+    "dependency_count": 153,
+    "dependency_sha256": "7412f964f0e93654413be34a429335c2b459a03b07a885b35a12870e26f46543",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.BodyScoped"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelCoreRows",
+    "kind": "theorem",
+    "line": 13,
+    "name": "Benitoite.Release.Refinement.StandardModel.pure_classes",
+    "type_sha256": "372f3d603f56c3013f32b8fa001b3c2ec90a69335e9c2b31905af9b56aea61a9",
+    "generated": false,
+    "type": "∀ (row : Benitoite.Release.Refinement.StandardModel.Primitive),\n  row.signature.kind = Benitoite.Release.Refinement.PrimKind.pure →\n    row.numeric = Bool.true ∨ row.operator = Bool.true ∨ row.collection = Bool.true ∨ row.scopePure = Bool.true",
+    "dependency_count": 405,
+    "dependency_sha256": "1df011cc88bc7f9f9518f1909df6a11cf1a7f98db02c34d203c52eb8315298ef",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.Primitive.collection",
+      "Benitoite.Release.Refinement.StandardModel.Primitive.scopePure"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelCoreRows",
+    "kind": "theorem",
+    "line": 24,
+    "name": "Benitoite.Release.Refinement.StandardModel.pure_rows",
+    "type_sha256": "dd2a2974e2e2be64c39486799a7851039d82777c4f38ea355b763f1a46fedabc",
+    "generated": false,
+    "type": "∀ (externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl))\n  (row : Benitoite.Release.Refinement.StandardModel.Primitive),\n  row.signature.kind = Benitoite.Release.Refinement.PrimKind.pure →\n    Benitoite.Release.Refinement.StandardModel.PureRow (Benitoite.Release.Refinement.StandardModel.program externals)\n      row.name",
+    "dependency_count": 26,
+    "dependency_sha256": "dedd00d038db5d5fdb9f50d4618c4ffa32fb2d0dff3eb1c983d2e6bd51d4318b",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.Primitive.collection",
+      "Benitoite.Release.Refinement.StandardModel.Primitive.scopePure",
+      "Benitoite.Release.Refinement.StandardModel.collection_rows",
+      "Benitoite.Release.Refinement.StandardModel.pure_classes",
+      "Benitoite.Release.Refinement.StandardModel.scope_rows"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelCoreBodies",
+    "kind": "theorem",
+    "line": 57,
+    "name": "Benitoite.Release.Refinement.StandardModel.records",
+    "type_sha256": "fb2b76b0a9e51667fc1df2b2409533e54f55bf5299faca5c4a1a5922e0c32818",
+    "generated": false,
+    "type": "∀ (externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl)),\n  Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.Records\n    (Benitoite.Release.Refinement.StandardModel.program externals)",
+    "dependency_count": 51,
+    "dependency_sha256": "4af7a37f6e76dafcd277dca4c4c96d9e2221334c53dd73aa3e35ddbbafe2894e",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.data_only"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelScoped",
+    "kind": "theorem",
+    "line": null,
+    "name": "Benitoite.Release.Refinement.StandardModel.refNewSig.eq_1",
+    "type_sha256": "19c9cab17ff06d981632cf69c8418e1f59ca0ff4d65b11e12bf9e213f290ee37",
+    "generated": true,
+    "type": null,
+    "type_bytes": 464,
+    "dependency_count": 26,
+    "dependency_sha256": "4ee7cfde36a34c0f06bbdac668671f95972914be0c883229a4aae6a93384c093",
+    "dependencies": null
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelScoped",
+    "kind": "theorem",
+    "line": null,
+    "name": "Benitoite.Release.Refinement.StandardModel.refUpdateSig.eq_1",
+    "type_sha256": "0a307fb976625ebcef6ecb9bf8a705cb2de2aba6016909cf0aba9addbbc58fd2",
+    "generated": true,
+    "type": null,
+    "type_bytes": 702,
+    "dependency_count": 30,
+    "dependency_sha256": "38eced62882d53f9f0bc5141a320b4e7870e088b0e9a650412f852e532e9630c",
+    "dependencies": null
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelWellFormed",
+    "kind": "theorem",
+    "line": 189,
+    "name": "Benitoite.Release.Refinement.StandardModel.refinedCollection_scoped",
+    "type_sha256": "41c45f7ddd7e8fb8db85fceb3500ce57855e3810dba20fdc1b3c5e0e32a03e27",
+    "generated": false,
+    "type": "∀ (ρ : String → String) (api : Benitoite.Release.Refinement.StandardCollectionRefinedBodies.API)\n  {d : Benitoite.Release.Refinement.Def},\n  api.row.definition = Option.some d →\n    Benitoite.Release.Refinement.StandardModel.BodyScoped (Benitoite.Release.Refinement.FunctionNames.definition ρ d)",
+    "dependency_count": 199,
+    "dependency_sha256": "df5cf9e7a379435a5c1dfdf057658a101f69ef7ec5d0bec158dc765f00a9c801",
+    "dependencies": [
+      "Benitoite.Release.Refinement.FunctionNames.computation.eq_5",
+      "Benitoite.Release.Refinement.FunctionNames.value.eq_1",
+      "Benitoite.Release.Refinement.FunctionNames.value.eq_5",
+      "Benitoite.Release.Refinement.StandardModel.BodyScoped"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelCollectionBodies",
+    "kind": "theorem",
+    "line": 727,
+    "name": "Benitoite.Release.Refinement.StandardModel.refined_collection_typed",
+    "type_sha256": "a38fb81ab67d0a9d4fb40a22c4b0eec1b89f810f2f176dcc9e1002d439aab601",
+    "generated": false,
+    "type": "∀ (externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl))\n  (map filter : Bool),\n  Benitoite.Release.Refinement.Def.WellTyped (Benitoite.Release.Refinement.StandardModel.program externals)\n    (Benitoite.Release.Refinement.StandardModel.builtins (Benitoite.Release.Refinement.StandardModel.program externals))\n    (if map = Bool.true then\n        if filter = Bool.true then Benitoite.Release.Refinement.StandardModel.Body.b109\n        else Benitoite.Release.Refinement.StandardModel.Body.b108\n      else\n        if filter = Bool.true then Benitoite.Release.Refinement.StandardModel.Body.b111\n        else Benitoite.Release.Refinement.StandardModel.Body.b110).definition",
+    "dependency_count": 62,
+    "dependency_sha256": "57746bd6d81936581edd6148922477e2cb739f35e0c76bd14b3a110830d87c86",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.core_arity",
+      "Benitoite.Release.Refinement.StandardModel.table",
+      "Benitoite.Release.Refinement.StandardModelRefinedCollection.higher_typed",
+      "_private.Benitoite.Release.Refinement.StandardModelCollectionBodies.0.Benitoite.Release.Refinement.StandardModel.pair_projection",
+      "_private.Benitoite.Release.Refinement.StandardModelCollectionBodies.0.Benitoite.Release.Refinement.StandardModelRefinedCollection.collectionListDefinition",
+      "_private.Benitoite.Release.Refinement.StandardModelCollectionBodies.0.Benitoite.Release.Refinement.StandardModelRefinedCollection.collectionPrimitiveSig",
+      "_private.Benitoite.Release.Refinement.StandardModelCollectionBodies.0.Benitoite.Release.Refinement.StandardModelRefinedCollection.higherBody",
+      "_private.Benitoite.Release.Refinement.StandardModelCollectionBodies.0.Benitoite.Release.Refinement.StandardModelRefinedCollection.higherRow",
+      "_private.Benitoite.Release.Refinement.StandardModelCollectionBodies.0.Benitoite.Release.Refinement.StandardModelRefinedCollection.primitiveName"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelCore",
+    "kind": "theorem",
+    "line": 83,
+    "name": "Benitoite.Release.Refinement.StandardModel.release_exists",
+    "type_sha256": "00f061dea2b1c6a297fe5bae207de4b3e61f6faeebbfed5821c7607be63a03c2",
+    "generated": false,
+    "type": "∀ (P : Benitoite.Release.Refinement.Program) (Ψ : Benitoite.Release.Refinement.StoreTy)\n  (v : Benitoite.Release.Refinement.Val) (o : Benitoite.Release.OpaqueName),\n  Benitoite.Release.Refinement.HasTypeV P (Benitoite.Release.Refinement.StandardModel.builtins P) Ψ [] [] [] v\n      (Benitoite.Release.Refinement.Ty.opaque o\n        (Benitoite.Release.Refinement.RangeIx.fixed Benitoite.Release.Refinement.RangeExpr.top)) →\n    (Benitoite.Release.Refinement.StandardModel.builtins P).isResource o = Bool.true →\n      ∃ r, (Benitoite.Release.Refinement.StandardModel.builtins P).releaseResponse v r",
+    "dependency_count": 24,
+    "dependency_sha256": "031e0c7c353a85fffabe19297134e9c67916b1b824a62960ff890e4d4ca94e4d",
+    "dependencies": []
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelCoreRows",
+    "kind": "theorem",
+    "line": 114,
+    "name": "Benitoite.Release.Refinement.StandardModel.response_assumptions",
+    "type_sha256": "78bbe3afa0c84214725ff17168300c38df5f57d9391b124b83c1e38b142adc79",
+    "generated": false,
+    "type": "∀ (externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl)),\n  Benitoite.Release.Refinement.Builtins.ResponseAssumptions\n    (Benitoite.Release.Refinement.StandardModel.program externals)\n    (Benitoite.Release.Refinement.StandardModel.builtins (Benitoite.Release.Refinement.StandardModel.program externals))",
+    "dependency_count": 68,
+    "dependency_sha256": "d5e13530f2ca2658393a03e4a3f82252494788416f7d5532953cb510d6e22ec6",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.Primitive.io",
+      "Benitoite.Release.Refinement.StandardModel.io_classes",
+      "Benitoite.Release.Refinement.StandardModel.io_rows",
+      "Benitoite.Release.Refinement.StandardModel.pure_rows",
+      "Benitoite.Release.Refinement.StandardModel.response_classes",
+      "_private.Benitoite.Release.Refinement.StandardModelCoreRows.0.Benitoite.Release.Refinement.StandardModel.lookup_row"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelCoreRows",
+    "kind": "theorem",
+    "line": 42,
+    "name": "Benitoite.Release.Refinement.StandardModel.response_classes",
+    "type_sha256": "29dae70ea296f841c65401a2f40aea2d633071426dd08326519f945457098f88",
+    "generated": false,
+    "type": "∀ {row : Benitoite.Release.Refinement.StandardModel.Primitive} {ts : List Benitoite.Release.Refinement.Ty}\n  {es : List Benitoite.Release.Refinement.Eff} {ws : List Benitoite.Release.Refinement.Val}\n  {out : Benitoite.Release.Refinement.Outcome} {obs : List Benitoite.Scope.Domain.Target},\n  row.provider.ioResponse row.name ts es ws out obs → row.io = Bool.true",
+    "dependency_count": 432,
+    "dependency_sha256": "b5f56b52e9a8c796de2d0ac9fa77b03457850c7f3aafb9197e5d831cc6e12402",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.Primitive.io"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelWellFormed",
+    "kind": "theorem",
+    "line": 133,
+    "name": "Benitoite.Release.Refinement.StandardModel.safe_scoped",
+    "type_sha256": "d789ed5d77955bfec2126de4221b8588066e332edc31153112f05d0fa3e3f2fd",
+    "generated": false,
+    "type": "∀ (ρ : String → String) {d : Benitoite.Release.Refinement.Def},\n  Benitoite.Release.Refinement.StandardSafe.headRow.definition = Option.some d ∨\n      Benitoite.Release.Refinement.StandardSafe.getRow.definition = Option.some d ∨\n        Benitoite.Release.Refinement.StandardSafe.checkedRow.definition = Option.some d ∨\n          Benitoite.Release.Refinement.StandardSafe.sameRow.definition = Option.some d ∨\n            Benitoite.Release.Refinement.StandardSafe.fromListRow.definition = Option.some d ∨\n              Benitoite.Release.Refinement.StandardSafe.toListRow.definition = Option.some d ∨\n                Benitoite.Release.Refinement.StandardSafe.nonemptyHeadRow.definition = Option.some d →\n    Benitoite.Release.Refinement.StandardModel.BodyScoped (Benitoite.Release.Refinement.FunctionNames.definition ρ d)",
+    "dependency_count": 208,
+    "dependency_sha256": "724f0c3dee5375044448806e0c32d52660e43d72894172ad61a1b0596a90f093",
+    "dependencies": [
+      "Benitoite.Release.Refinement.FunctionNames.computation.eq_3",
+      "Benitoite.Release.Refinement.FunctionNames.computation.eq_5",
+      "Benitoite.Release.Refinement.FunctionNames.computation.eq_7",
+      "Benitoite.Release.Refinement.StandardModel.BodyScoped"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelCoreBodies",
+    "kind": "theorem",
+    "line": 64,
+    "name": "Benitoite.Release.Refinement.StandardModel.sat_empty",
+    "type_sha256": "0024a2402628a1176665803ceea31b63987ec9b6145d93f68223375d86312aad",
+    "generated": false,
+    "type": "∀ (externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl))\n  (C : List Benitoite.Release.TParam) (a : Benitoite.Release.Refinement.Ty),\n  (Benitoite.Release.Refinement.StandardModel.builtins\n        (Benitoite.Release.Refinement.StandardModel.program externals)).sat\n    C a { }",
+    "dependency_count": 18,
+    "dependency_sha256": "f6d9443697613d5f7581baf42cf7e6af1a2c7e63a5bb04b4982b0a1346a0aa11",
+    "dependencies": []
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelIORows",
+    "kind": "theorem",
+    "line": 225,
+    "name": "Benitoite.Release.Refinement.StandardModel.scope_rows",
+    "type_sha256": "3a003fdab42eaf428d8725b86c776da1e230856568f13ed3a3a167c9b97cb8fb",
+    "generated": false,
+    "type": "∀ (externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl))\n  (row : Benitoite.Release.Refinement.StandardModel.Primitive),\n  row.scopePure = Bool.true →\n    Benitoite.Release.Refinement.StandardModel.PureRow (Benitoite.Release.Refinement.StandardModel.program externals)\n      row.name",
+    "dependency_count": 427,
+    "dependency_sha256": "b4ba5c5e9ad6031bdaeb04206dde0b75a8cc824797eeeb7da719242f2aea3445",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.Primitive.scopePure",
+      "Benitoite.Release.Refinement.StandardModel.PureRow.front",
+      "Benitoite.Release.Refinement.StandardModel.PureRow.scope"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelScoped",
+    "kind": "theorem",
+    "line": 129,
+    "name": "Benitoite.Release.Refinement.StandardModel.scoped_append",
+    "type_sha256": "88eec6d54469fb1406d7b215344f2f4422ec03bc9cc32db965a50b4a5b25b0a7",
+    "generated": false,
+    "type": "∀ (externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl)),\n  Benitoite.Release.Refinement.PrimSig.Scoped (Benitoite.Release.Refinement.StandardModel.program externals)\n    Benitoite.Release.Refinement.StandardHeadTail.appendSignature",
+    "dependency_count": 208,
+    "dependency_sha256": "beb2c1b62930f97e54dfc2c0c41787aaeeeeafe675aff269db8564d9015725da",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.arities"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelScoped",
+    "kind": "theorem",
+    "line": 304,
+    "name": "Benitoite.Release.Refinement.StandardModel.scoped_binary",
+    "type_sha256": "e0fb438ca4d3d6e4971097760c6e751f8779f26dc7eda1ec781e7f0b3a9c142b",
+    "generated": false,
+    "type": "∀ (externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl))\n  (n m : String) (i j o : Benitoite.Release.BaseTy),\n  n ≠ m →\n    Benitoite.Release.Refinement.PrimSig.Scoped (Benitoite.Release.Refinement.StandardModel.program externals)\n      (Benitoite.Release.Refinement.StandardModel.binarySig n m i j o)",
+    "dependency_count": 155,
+    "dependency_sha256": "9565f62822552bc7129680d53714ea62a870f5e9968da0ad11564f8a367be930",
+    "dependencies": []
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelScoped",
+    "kind": "theorem",
+    "line": 112,
+    "name": "Benitoite.Release.Refinement.StandardModel.scoped_bytes",
+    "type_sha256": "420212a5898c9a7b89da68d6fba661a057868cb15c78c48ec0a55931f0c47ec2",
+    "generated": false,
+    "type": "∀ (externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl))\n  (api : Benitoite.Release.Refinement.StandardBytesResponse.API),\n  Benitoite.Release.Refinement.PrimSig.Scoped (Benitoite.Release.Refinement.StandardModel.program externals)\n    api.signature",
+    "dependency_count": 166,
+    "dependency_sha256": "64a8c8fe5589583d65f8c71c156cbd8a9a246632989122176e4fc6186d287a60",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.arities"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelScoped",
+    "kind": "theorem",
+    "line": 95,
+    "name": "Benitoite.Release.Refinement.StandardModel.scoped_bytesOrdinary",
+    "type_sha256": "366e9cdfee4a4be2381c76375583bda71f595154891705e8dca27fcead7cd7a2",
+    "generated": false,
+    "type": "∀ (externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl))\n  (api : Benitoite.Release.Refinement.StandardBytesOrdinaryResponse.API),\n  Benitoite.Release.Refinement.PrimSig.Scoped (Benitoite.Release.Refinement.StandardModel.program externals)\n    api.signature",
+    "dependency_count": 226,
+    "dependency_sha256": "e7dcd3954bc243f412474bc10a031a0bfbdd6a4952d78fcdd1db3b596b475700",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.arities"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelScoped",
+    "kind": "theorem",
+    "line": 61,
+    "name": "Benitoite.Release.Refinement.StandardModel.scoped_decimal",
+    "type_sha256": "3c79a09e02b3b846bf1fb47b3d2181528cf1504f510bb8ad731289e8c54a6223",
+    "generated": false,
+    "type": "∀ (externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl))\n  (api : Benitoite.Release.Refinement.StandardDecimalResponse.API),\n  Benitoite.Release.Refinement.PrimSig.Scoped (Benitoite.Release.Refinement.StandardModel.program externals)\n    api.signature",
+    "dependency_count": 181,
+    "dependency_sha256": "0f9ea2676f6bcee1e30f2c8c45d2997ac2317fade6063eb5f0c70eb02c8bbd22",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.arities"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelScoped",
+    "kind": "theorem",
+    "line": 180,
+    "name": "Benitoite.Release.Refinement.StandardModel.scoped_headTail",
+    "type_sha256": "92a1ea77e17ca2f7be609a92454e4cc10b1d6f32f492ac02de91ab4a085faf33",
+    "generated": false,
+    "type": "∀ (externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl))\n  (tail : Bool),\n  Benitoite.Release.Refinement.PrimSig.Scoped (Benitoite.Release.Refinement.StandardModel.program externals)\n    (if tail = Bool.true then Benitoite.Release.Refinement.StandardHeadTail.tailSignature\n    else Benitoite.Release.Refinement.StandardHeadTail.headSignature)",
+    "dependency_count": 262,
+    "dependency_sha256": "44594a5d97d96ae66f5e59f8aaa876b5d0df8fdcb19c3213ab144eaf0e26b3cd",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.arities"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelScoped",
+    "kind": "theorem",
+    "line": 146,
+    "name": "Benitoite.Release.Refinement.StandardModel.scoped_list",
+    "type_sha256": "d9bc068ed7894b17edb2e78379c6e572f47ba5ab6137b1b47f117eb745307b51",
+    "generated": false,
+    "type": "∀ (externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl))\n  (api : Benitoite.Release.Refinement.StandardListResponse.API),\n  Benitoite.Release.Refinement.PrimSig.Scoped (Benitoite.Release.Refinement.StandardModel.program externals)\n    api.signature",
+    "dependency_count": 187,
+    "dependency_sha256": "15f1ec9bb999ec76fc21d1a4302d21843f682c7b5e3f64af008ec335b62d8daf",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.arities"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelScoped",
+    "kind": "theorem",
+    "line": 163,
+    "name": "Benitoite.Release.Refinement.StandardModel.scoped_listRemaining",
+    "type_sha256": "bee96616b27c0a881b470314c764ede05b717cc5917574cf693d762fb90fa3ed",
+    "generated": false,
+    "type": "∀ (externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl))\n  (api : Benitoite.Release.Refinement.StandardListRemainingResponse.API),\n  Benitoite.Release.Refinement.PrimSig.Scoped (Benitoite.Release.Refinement.StandardModel.program externals)\n    (Benitoite.Release.Refinement.StandardListRemainingResponse.API.signature\n      Benitoite.Release.Refinement.StandardModel.signatureBase.sat api)",
+    "dependency_count": 225,
+    "dependency_sha256": "ced0d8329fdfc76cf45cf82f4b4fdacc6dea28916b0e3580c7b1123cb8db3973",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.arities"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelScoped",
+    "kind": "theorem",
+    "line": 221,
+    "name": "Benitoite.Release.Refinement.StandardModel.scoped_map",
+    "type_sha256": "a2553b52b1a2248168b8fc9631c03bd6aa7f5fc93b00b9ba20cce28e396ac1d2",
+    "generated": false,
+    "type": "∀ (externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl))\n  (api : Benitoite.Release.Refinement.StandardCollections.MapAPI),\n  Benitoite.Release.Refinement.PrimSig.Scoped (Benitoite.Release.Refinement.StandardModel.program externals)\n    (Benitoite.Release.Refinement.StandardCollections.MapAPI.signature\n      Benitoite.Release.Refinement.StandardModel.signatureBase.sat api)",
+    "dependency_count": 216,
+    "dependency_sha256": "dad180108da8a72ba44e1da07df03b65e0d95260544f78add2f7d39188501c30",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.arities"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelScoped",
+    "kind": "theorem",
+    "line": 319,
+    "name": "Benitoite.Release.Refinement.StandardModel.scoped_option",
+    "type_sha256": "be3ae7442515836d9b830fc66ec9789169089c0f0f89cc21ed0bd42cf4956373",
+    "generated": false,
+    "type": "∀ (externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl)) (n : String)\n  (i o : Benitoite.Release.BaseTy),\n  Benitoite.Release.Refinement.PrimSig.Scoped (Benitoite.Release.Refinement.StandardModel.program externals)\n    (Benitoite.Release.Refinement.StandardModel.optionSig n i o)",
+    "dependency_count": 154,
+    "dependency_sha256": "597618071a9debcc7cc62c36a6f0edc0f1679fbc8075e96058213e17dcc0a68b",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.arities"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelScoped",
+    "kind": "theorem",
+    "line": 238,
+    "name": "Benitoite.Release.Refinement.StandardModel.scoped_precision",
+    "type_sha256": "dc8b810c525aa445c30f0c5ff8fc4402f9fa32e87403dcbd7008cbed31e2e396",
+    "generated": false,
+    "type": "∀ (externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl))\n  (map build : Bool),\n  Benitoite.Release.Refinement.PrimSig.Scoped (Benitoite.Release.Refinement.StandardModel.program externals)\n    (Benitoite.Release.Refinement.StandardCollectionPrecision.signature\n      Benitoite.Release.Refinement.StandardModel.signatureBase.sat map build)",
+    "dependency_count": 246,
+    "dependency_sha256": "828806d775d7843095c089ec6d59626af30665beb5c5c1b2867053f08f9870ad",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.arities"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelScoped",
+    "kind": "theorem",
+    "line": 204,
+    "name": "Benitoite.Release.Refinement.StandardModel.scoped_range",
+    "type_sha256": "8907f99fd619401db46ed05872946d9deaa8b425ef4f9306ffbd8c9b2ccfe63d",
+    "generated": false,
+    "type": "∀ (externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl)),\n  Benitoite.Release.Refinement.PrimSig.Scoped (Benitoite.Release.Refinement.StandardModel.program externals)\n    Benitoite.Release.Refinement.StandardListRemainingResponse.rangeSignature",
+    "dependency_count": 160,
+    "dependency_sha256": "220c4a2226d2afe8f1119c66c06b99e1b974389205a309eedf6148312f6d3719",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.arities"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelScoped",
+    "kind": "theorem",
+    "line": 78,
+    "name": "Benitoite.Release.Refinement.StandardModel.scoped_replaceValues",
+    "type_sha256": "849a639ead7e7848386c56ce98a12803dd8da1bf43922685201dcfe64ed0eff8",
+    "generated": false,
+    "type": "∀ (externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl)),\n  Benitoite.Release.Refinement.PrimSig.Scoped (Benitoite.Release.Refinement.StandardModel.program externals)\n    (Benitoite.Release.Refinement.StandardMapReplaceValues.signature\n      Benitoite.Release.Refinement.StandardModel.signatureBase.sat)",
+    "dependency_count": 218,
+    "dependency_sha256": "810d9bbaa3abd9fb62d32ebaf961d2882f731a9dccae52bbddacc8fa304ce705",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.arities"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelScoped",
+    "kind": "theorem",
+    "line": 255,
+    "name": "Benitoite.Release.Refinement.StandardModel.scoped_set",
+    "type_sha256": "589b093c05366aa921b862f31151fc90ce1e6858b877f66fb6555d2966f13d42",
+    "generated": false,
+    "type": "∀ (externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl))\n  (api : Benitoite.Release.Refinement.StandardCollections.SetAPI),\n  Benitoite.Release.Refinement.PrimSig.Scoped (Benitoite.Release.Refinement.StandardModel.program externals)\n    (Benitoite.Release.Refinement.StandardCollections.SetAPI.signature\n      Benitoite.Release.Refinement.StandardModel.signatureBase.sat api)",
+    "dependency_count": 205,
+    "dependency_sha256": "14366b2cc99aa4cd603e3cdbc25ee861e0b819048ddb1a93e60a77fe71d74c0a",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.arities"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelScoped",
+    "kind": "theorem",
+    "line": 343,
+    "name": "Benitoite.Release.Refinement.StandardModel.scoped_store",
+    "type_sha256": "371ae2f45ba63a0e92a42d51a9ff8aa00eacd3fadd3a040b81e96088b62f9eaa",
+    "generated": false,
+    "type": "∀ (externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl)),\n  Benitoite.Release.Refinement.PrimSig.Scoped (Benitoite.Release.Refinement.StandardModel.program externals)\n      Benitoite.Release.Refinement.StandardModel.refNewSig ∧\n    Benitoite.Release.Refinement.PrimSig.Scoped (Benitoite.Release.Refinement.StandardModel.program externals)\n        Benitoite.Release.Refinement.StandardModel.refUpdateSig ∧\n      Benitoite.Release.Refinement.PrimSig.Scoped (Benitoite.Release.Refinement.StandardModel.program externals)\n          Benitoite.Release.Refinement.StandardModel.forceSig ∧\n        Benitoite.Release.Refinement.PrimSig.Scoped (Benitoite.Release.Refinement.StandardModel.program externals)\n          Benitoite.Release.Refinement.StandardSafe.frontSig",
+    "dependency_count": 202,
+    "dependency_sha256": "ef95396392537c7571d93be8c81689bc71b39e1bff29c805bbd004a12d745c0a",
+    "dependencies": []
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelScoped",
+    "kind": "theorem",
+    "line": 272,
+    "name": "Benitoite.Release.Refinement.StandardModel.scoped_string",
+    "type_sha256": "41c68318ff9671eade7f4157f553212255928591f4ec1e392bf17781a8cb1d28",
+    "generated": false,
+    "type": "∀ (externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl))\n  (api : Benitoite.Release.Refinement.StandardStringOrdinaryResponse.API),\n  Benitoite.Release.Refinement.PrimSig.Scoped (Benitoite.Release.Refinement.StandardModel.program externals)\n    api.signature",
+    "dependency_count": 236,
+    "dependency_sha256": "05463717647d1d3ea9d0f8432de40957fbb4f2794ce7b28b3f2d1cb137ab4474",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.arities"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelScoped",
+    "kind": "theorem",
+    "line": 44,
+    "name": "Benitoite.Release.Refinement.StandardModel.scoped_structural",
+    "type_sha256": "fdc74482e06d1c8487dd86fe015e3776975fcf7ac7a66f03632094920b69353b",
+    "generated": false,
+    "type": "∀ (externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl)),\n  Benitoite.Release.Refinement.PrimSig.Scoped (Benitoite.Release.Refinement.StandardModel.program externals)\n    (Benitoite.Release.Refinement.StandardEqualityResponse.fullSignature\n      Benitoite.Release.Refinement.StandardModel.signatureBase.sat)",
+    "dependency_count": 174,
+    "dependency_sha256": "aeba8220d0c126639c35d93041c866ccfb1555ff64f0a388c12a71e404625e90",
+    "dependencies": [
+      "Benitoite.Release.Refinement.StandardModel.arities"
+    ]
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelScoped",
+    "kind": "theorem",
+    "line": 289,
+    "name": "Benitoite.Release.Refinement.StandardModel.scoped_unary",
+    "type_sha256": "cd204c30411a7928bf926056e16c1938c0dcfc5d787644ed4f8ae838ca413a0d",
+    "generated": false,
+    "type": "∀ (externals : List (Benitoite.Release.Refinement.ExternalKey × Benitoite.Release.Refinement.ExternalDecl)) (n : String)\n  (i o : Benitoite.Release.BaseTy),\n  Benitoite.Release.Refinement.PrimSig.Scoped (Benitoite.Release.Refinement.StandardModel.program externals)\n    (Benitoite.Release.Refinement.StandardModel.unarySig n i o)",
+    "dependency_count": 151,
+    "dependency_sha256": "6f50b4d7115435c18c2feabe40aeff629fb49ffb4b4fdb2c45ea421c5c2c4cdd",
+    "dependencies": []
+  }
+]

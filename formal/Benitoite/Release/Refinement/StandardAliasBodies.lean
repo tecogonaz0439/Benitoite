@@ -343,9 +343,7 @@ def program : Program :=
  {StandardCollectionModel.program with defs := (fun name =>
    API.all.findSome? (fun api => if name=api.name then some api.definition else none))}
 
-private def P : Program := program
-
-private theorem option_arity : P.DataArity "Option" 1 := StandardConversionResponse.option_arity
+private theorem option_arity : program.DataArity "Option" 1 := StandardConversionResponse.option_arity
 
 private theorem empty_range : mapRangeAtoms (rangeAt 0 []) (fun _ => false) = (fun _ => false) := by
  funext a; cases a <;> simp [mapRangeAtoms]
@@ -364,18 +362,19 @@ local macro "alias_simp" : tactic => `(tactic|
   SubstEnv.rangesOnly,Eff.rawBind,rowFails,substAtoms_nil,instAtoms_nil,
   Qsig,QTel,QTy,QTys,QEff,Qempty,Eff.RowsIn,Tel.RowsIn,Ty.RowsIn,Ty.RowsInList,
   TypeArgsKinded,RowAnnotations,empty_range,RowTransport,NoFail,Eff.test,Eff.atoms,Eff.fails,Eff.shiftV,Ty.shiftV,shiftVTys,Tel.shiftV,
-  Ctx.extend,bindParams,localExtend,Pred.lift,liftMany,
-  TyCon.arity_data option_arity,option_arity])
+  Ctx.extend,bindParams,localExtend,Pred.lift,liftMany])
 
-private theorem signature_formed (api : API) (Γ : Ctx) :
+private theorem signature_formed {P : Program} (arity : P.DataArity "Option" 1) (api : API) (Γ : Ctx) :
  Ty.Annotation P [] Γ (.fn api.names api.inputs api.result Eff.empty) := by
+ have kind := TyCon.arity_data arity
  cases api <;> constructor <;> alias_simp
 
-private theorem primitive {B Ψ Q Γ Φ} (api : API)
+private theorem primitive {P B Ψ Q Γ Φ} (arity : P.DataArity "Option" 1) (api : API)
  (lookup : B.sig api.target=some api.signature) :
  HasTypeVQ P B Ψ Q [] Γ Φ (.prim api.target [] [] [])
   (.fn api.names api.inputs api.result Eff.empty) := by
- apply (HasTypeVQ.V_Prim lookup ?_ ?_ ?_ ?_).convert ?_ (signature_formed api Γ)
+ have kind := TyCon.arity_data arity
+ apply (HasTypeVQ.V_Prim lookup ?_ ?_ ?_ ?_).convert ?_ (signature_formed arity api Γ)
  · cases api <;> alias_simp
  · cases api <;> alias_simp
  · cases api <;> constructor <;> alias_simp
@@ -386,21 +385,28 @@ private theorem primitive {B Ψ Q Γ Φ} (api : API)
    cases api <;> alias_simp
    all_goals simpa [API.names,API.inputs,API.result,FnView.toTel,Ty.toTel,shiftVTys,Ty.shiftV,Eff.shiftV,Eff.empty] using fold
 
-/-- 実署名の同じ組込みを一度呼ぶ通常本体を、固定の型付け規則で検査する。 -/
-theorem body_typed {B} (api : API) (lookup : B.sig api.target=some api.signature) :
- api.row.BodyTyped P B := by
+/-- 実署名の同じ組込みを一度呼ぶ通常本体は、Optionのarityを持つ任意のPと、同じ署名を引く任意のBで
+型付く。 -/
+theorem body_typed_of {P B} (arity : P.DataArity "Option" 1) (api : API)
+ (lookup : B.sig api.target=some api.signature) : api.row.BodyTyped P B := by
+ have kind := TyCon.arity_data arity
  refine ⟨⟨[],0,api.names,api.inputs,api.result,Eff.empty,api.body⟩,?_,?_,?_,?_,?_⟩
  · cases api <;> rfl
  · cases api <;> alias_simp
  · cases api <;> alias_simp
  · cases api <;> constructor <;> alias_simp
- · have fn := fun Γ Φ => primitive (Ψ := StoreTy.empty) (Q := QTel api.signature.tel) (Γ := Γ) (Φ := Φ) api lookup
+ · have fn := fun Γ Φ => primitive (Ψ := StoreTy.empty) (Q := QTel api.signature.tel) (Γ := Γ) (Φ := Φ) arity api lookup
    cases api
    all_goals apply TelBodyTy.param
    all_goals first
     | (apply TelBodyTy.done; apply HasTypeCQ.C_App (fn _ _); exact .cons (.V_Var rfl (by intro b t e h; cases h)) .nil)
     | (apply TelBodyTy.param; apply TelBodyTy.done; apply HasTypeCQ.C_App (fn _ _)
        exact .cons (.V_Var rfl (by intro b t e h; cases h)) (.cons (.V_Var rfl (by intro b t e h; cases h)) .nil))
+
+/-- 実署名の同じ組込みを一度呼ぶ通常本体を、固定の型付け規則で検査する。 -/
+theorem body_typed {B} (api : API) (lookup : B.sig api.target=some api.signature) :
+ api.row.BodyTyped program B :=
+ body_typed_of option_arity api lookup
 
 def table (base : Builtins) : Builtins :=
  {base with sig := fun name =>
