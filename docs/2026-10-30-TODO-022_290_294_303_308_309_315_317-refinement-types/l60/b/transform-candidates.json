@@ -1,0 +1,941 @@
+{
+  "definitions": [
+    {
+      "name": "Capture.closeTy",
+      "module": "Capture",
+      "private": false,
+      "signature": "(cap : Capture) : Ty → Ty",
+      "included": true,
+      "reader": "ExternalNominal.closeTy",
+      "reason": "全自由パラメータでexternalの芯のIDを保つ公開変換。Preservesの読者へ渡す。",
+      "source": {
+        "bytes": 6259,
+        "sha256": "e9a371890b39fa8cf7c421797684f6efd454490bd25e6a7549423946f9001bc0"
+      }
+    },
+    {
+      "name": "Capture.closeTyAt",
+      "module": "Capture",
+      "private": false,
+      "signature": "(cap : Capture) (n : Nat) : Ty → Ty",
+      "included": true,
+      "reader": "ExternalNominal.closeTyAt",
+      "reason": "全自由パラメータでexternalの芯のIDを保つ公開変換。Preservesの読者へ渡す。",
+      "source": {
+        "bytes": 6259,
+        "sha256": "e9a371890b39fa8cf7c421797684f6efd454490bd25e6a7549423946f9001bc0"
+      }
+    },
+    {
+      "name": "normContTy",
+      "module": "CaptureTransport",
+      "private": false,
+      "signature": ": Ty → Ty",
+      "included": false,
+      "reader": null,
+      "reason": "externalはwildcardの恒等枝で全体をそのまま返す。IDを保つが入口に数えない。",
+      "source": {
+        "bytes": 8002,
+        "sha256": "3c0c84bb0fbaed1e737d07ccc2e7efbbd6d1a86d975b3d8bf661ff1c08fe45cd"
+      }
+    },
+    {
+      "name": "Ty.carrier",
+      "module": "Carrier",
+      "private": false,
+      "signature": ": Ty → Ty",
+      "included": true,
+      "reader": "ExternalNominal.carrier",
+      "reason": "全自由パラメータでexternalの芯のIDを保つ公開変換。Preservesの読者へ渡す。",
+      "source": {
+        "bytes": 3868,
+        "sha256": "cf924f655b0d7b06401498a92c25258321cc0c77589b2850708ea9243d8ab9a4"
+      }
+    },
+    {
+      "name": "rawApply",
+      "module": "Context",
+      "private": false,
+      "signature": "(t : Ty) (as : List Ty) : Ty",
+      "included": false,
+      "reader": null,
+      "reason": "externalはwildcardの恒等枝で全体をそのまま返す。型構成子の適用だけを変える。",
+      "source": {
+        "bytes": 19789,
+        "sha256": "bc50746c370e2ce551b9fb8a4c88b0dbc61768fdbb15022026f6969291c314b6"
+      }
+    },
+    {
+      "name": "Ty.rawBind",
+      "module": "Context",
+      "private": false,
+      "signature": "(θ : SubstEnv) : Ty → Ty",
+      "included": true,
+      "reader": "ExternalNominal.rawBind",
+      "reason": "全自由パラメータでexternalの芯のIDを保つ公開変換。Preservesの読者へ渡す。",
+      "source": {
+        "bytes": 19789,
+        "sha256": "bc50746c370e2ce551b9fb8a4c88b0dbc61768fdbb15022026f6969291c314b6"
+      }
+    },
+    {
+      "name": "Ty.bind",
+      "module": "Context",
+      "private": false,
+      "signature": "(θ : SubstEnv) (t : Ty) : Ty",
+      "included": true,
+      "reader": "ExternalNominal.bind",
+      "reason": "全自由パラメータでexternalの芯のIDを保つ公開変換。Preservesの読者へ渡す。",
+      "source": {
+        "bytes": 19789,
+        "sha256": "bc50746c370e2ce551b9fb8a4c88b0dbc61768fdbb15022026f6969291c314b6"
+      }
+    },
+    {
+      "name": "nonemptyType",
+      "module": "CoverageRefinement",
+      "private": false,
+      "signature": "(a : Ty) : Ty",
+      "included": false,
+      "reader": null,
+      "reason": "要素型をrefined Listで包む型生成で、externalの芯を保つ変換でない。",
+      "source": {
+        "bytes": 13946,
+        "sha256": "1fd69e95685266939f725f0486d13e65112bc31c094fbd5fe1090118bd36812b"
+      }
+    },
+    {
+      "name": "Ty.normWith",
+      "module": "Finite",
+      "private": false,
+      "signature": "(s : List Atom) : Ty → Ty",
+      "included": true,
+      "reader": "ExternalNominal.normWith",
+      "reason": "全自由パラメータでexternalの芯のIDを保つ公開変換。Preservesの読者へ渡す。",
+      "source": {
+        "bytes": 7236,
+        "sha256": "77733357cd0e6cb56430e3e7db8cb75c8612737c80b1102e1c0ba7fafefb938b"
+      }
+    },
+    {
+      "name": "Ty.instTarget",
+      "module": "HandlerContracts",
+      "private": false,
+      "signature": "(rs : List RangeExpr) : Ty → Ty",
+      "included": false,
+      "reader": null,
+      "reason": "externalはwildcardの恒等枝で全体をそのまま返す。IDを保つが入口に数えない。",
+      "source": {
+        "bytes": 3589,
+        "sha256": "2c9e705e2aeeaa60e363a8009941e632d84740f887c6244f36791900cf63e514"
+      }
+    },
+    {
+      "name": "OpSig.continuation",
+      "module": "HandlerContracts",
+      "private": false,
+      "signature": "(sg : OpSig) (t : Ty) (e : Eff) : Ty",
+      "included": false,
+      "reader": null,
+      "reason": "結果はcont。渡した型は継続の内部へ置かれ、externalの芯を保たない。",
+      "source": {
+        "bytes": 3589,
+        "sha256": "2c9e705e2aeeaa60e363a8009941e632d84740f887c6244f36791900cf63e514"
+      }
+    },
+    {
+      "name": "Ty.norm",
+      "module": "Normalize",
+      "private": false,
+      "signature": ": Ty → Ty",
+      "included": true,
+      "reader": "ExternalNominal.norm",
+      "reason": "全自由パラメータでexternalの芯のIDを保つ公開変換。Preservesの読者へ渡す。",
+      "source": {
+        "bytes": 11114,
+        "sha256": "f9c606b3646554a25ddf0bb5f970cd2c6c54e93e390b18f06c455f5780c03414"
+      }
+    },
+    {
+      "name": "Ty.observationType",
+      "module": "ObservationType",
+      "private": false,
+      "signature": ": Ty → Ty",
+      "included": true,
+      "reader": "ExternalNominal.observationType",
+      "reason": "全自由パラメータでexternalの芯のIDを保つ公開変換。Preservesの読者へ渡す。",
+      "source": {
+        "bytes": 7196,
+        "sha256": "ec5c7d9975179c230251677b200153624eb7fa4597b785386de97cb952d8cf0a"
+      }
+    },
+    {
+      "name": "annotationType",
+      "module": "PatternMatchAnnotations",
+      "private": true,
+      "signature": "(normal : Bool) (a : Ty) : Ty",
+      "included": false,
+      "reader": null,
+      "reason": "privateの補助で公開入口でない。falseは恒等、trueは既存のTy.normでIDを保つ。",
+      "source": {
+        "bytes": 12305,
+        "sha256": "e70aa81a02411abc93a757800005b2c63d834a64f25a1e0e517af370828efca8"
+      }
+    },
+    {
+      "name": "Ty.rawMapRanges",
+      "module": "RangeSubst",
+      "private": false,
+      "signature": "(ρ : Nat → RangeIx) : Ty → Ty",
+      "included": true,
+      "reader": "ExternalNominal.rawMapRanges",
+      "reason": "全自由パラメータでexternalの芯のIDを保つ公開変換。Preservesの読者へ渡す。",
+      "source": {
+        "bytes": 20631,
+        "sha256": "98cbd81eb34a758ba40f0af6d27ec9a67896a94f243e6af3625f5f644b2d237c"
+      }
+    },
+    {
+      "name": "Ty.mapRanges",
+      "module": "RangeSubst",
+      "private": false,
+      "signature": "(ρ : Nat → RangeIx) (a : Ty) : Ty",
+      "included": true,
+      "reader": "ExternalNominal.mapRanges",
+      "reason": "全自由パラメータでexternalの芯のIDを保つ公開変換。Preservesの読者へ渡す。",
+      "source": {
+        "bytes": 20631,
+        "sha256": "98cbd81eb34a758ba40f0af6d27ec9a67896a94f243e6af3625f5f644b2d237c"
+      }
+    },
+    {
+      "name": "Ty.substRAt",
+      "module": "RangeSubst",
+      "private": false,
+      "signature": "(c : Nat) (rs : List RangeExpr) (a : Ty) : Ty",
+      "included": true,
+      "reader": "ExternalNominal.substRAt",
+      "reason": "全自由パラメータでexternalの芯のIDを保つ公開変換。Preservesの読者へ渡す。",
+      "source": {
+        "bytes": 20631,
+        "sha256": "98cbd81eb34a758ba40f0af6d27ec9a67896a94f243e6af3625f5f644b2d237c"
+      }
+    },
+    {
+      "name": "Ty.instR",
+      "module": "RangeSubst",
+      "private": false,
+      "signature": "(rs : List RangeExpr) (a : Ty) : Ty",
+      "included": true,
+      "reader": "ExternalNominal.instR",
+      "reason": "全自由パラメータでexternalの芯のIDを保つ公開変換。Preservesの読者へ渡す。",
+      "source": {
+        "bytes": 20631,
+        "sha256": "98cbd81eb34a758ba40f0af6d27ec9a67896a94f243e6af3625f5f644b2d237c"
+      }
+    },
+    {
+      "name": "Ty.shiftR",
+      "module": "RangeSubst",
+      "private": false,
+      "signature": "(k c : Nat) (a : Ty) : Ty",
+      "included": true,
+      "reader": "ExternalNominal.shiftR",
+      "reason": "全自由パラメータでexternalの芯のIDを保つ公開変換。Preservesの読者へ渡す。",
+      "source": {
+        "bytes": 20631,
+        "sha256": "98cbd81eb34a758ba40f0af6d27ec9a67896a94f243e6af3625f5f644b2d237c"
+      }
+    },
+    {
+      "name": "Ty.core",
+      "module": "RefinementNormalForm",
+      "private": false,
+      "signature": ": Ty → Ty",
+      "included": false,
+      "reader": null,
+      "reason": "externalはwildcardの恒等枝で全体をそのまま返す。外側の篩だけを除く。",
+      "source": {
+        "bytes": 4484,
+        "sha256": "bb030662d5e514552423227e45d0afe9d404c2188b6b09c8b4dd155de775f3c7"
+      }
+    },
+    {
+      "name": "Ty.packRefinements",
+      "module": "RefinementNormalForm",
+      "private": false,
+      "signature": "(a : Ty) : List Pred → Ty",
+      "included": true,
+      "reader": "ExternalNominal.packRefinements",
+      "reason": "全自由パラメータでexternalの芯のIDを保つ公開変換。Preservesの読者へ渡す。",
+      "source": {
+        "bytes": 4484,
+        "sha256": "bb030662d5e514552423227e45d0afe9d404c2188b6b09c8b4dd155de775f3c7"
+      }
+    },
+    {
+      "name": "Ty.refineNorm",
+      "module": "RefinementNormalForm",
+      "private": false,
+      "signature": "(a : Ty) (p : Pred) : Ty",
+      "included": true,
+      "reader": "ExternalNominal.refineNorm",
+      "reason": "全自由パラメータでexternalの芯のIDを保つ公開変換。Preservesの読者へ渡す。",
+      "source": {
+        "bytes": 4484,
+        "sha256": "bb030662d5e514552423227e45d0afe9d404c2188b6b09c8b4dd155de775f3c7"
+      }
+    },
+    {
+      "name": "ScopeSignatures.resultTy",
+      "module": "ScopeSignatures",
+      "private": false,
+      "signature": "(a e : Ty) : Ty",
+      "included": false,
+      "reader": null,
+      "reason": "結果はdata Result。externalの芯を保たない型生成である。",
+      "source": {
+        "bytes": 14944,
+        "sha256": "90549bbfbc6fc030feca6a155a7c77b78812d697a58aee00ba73297992634b9b"
+      }
+    },
+    {
+      "name": "StandardCollectionPrecision.collection",
+      "module": "StandardCollectionPrecision",
+      "private": false,
+      "signature": "(map : Bool) (a b : Ty) : Ty",
+      "included": false,
+      "reader": null,
+      "reason": "結果はMap又はSet。externalの芯を保たない型生成である。",
+      "source": {
+        "bytes": 15513,
+        "sha256": "d26229b65ca8e97a830d5db76062594afa7eb46a9687605ae518526a72d2dbb2"
+      }
+    },
+    {
+      "name": "StandardCollectionPrecision.element",
+      "module": "StandardCollectionPrecision",
+      "private": false,
+      "signature": "(map : Bool) (a b : Ty) : Ty",
+      "included": false,
+      "reader": null,
+      "reason": "map=trueではdata Pairとなり、全パラメータでexternalの芯を保たない。",
+      "source": {
+        "bytes": 15513,
+        "sha256": "d26229b65ca8e97a830d5db76062594afa7eb46a9687605ae518526a72d2dbb2"
+      }
+    },
+    {
+      "name": "StandardCollectionPrecision.input",
+      "module": "StandardCollectionPrecision",
+      "private": false,
+      "signature": "(map build : Bool) (a b : Ty) : Ty",
+      "included": false,
+      "reader": null,
+      "reason": "結果はList/Map/Set。externalの芯を保たない型生成である。",
+      "source": {
+        "bytes": 15513,
+        "sha256": "d26229b65ca8e97a830d5db76062594afa7eb46a9687605ae518526a72d2dbb2"
+      }
+    },
+    {
+      "name": "StandardCollectionPrecision.result",
+      "module": "StandardCollectionPrecision",
+      "private": false,
+      "signature": "(map build : Bool) (a b : Ty) : Ty",
+      "included": false,
+      "reader": null,
+      "reason": "結果はList/Map/Set。externalの芯を保たない型生成である。",
+      "source": {
+        "bytes": 15513,
+        "sha256": "d26229b65ca8e97a830d5db76062594afa7eb46a9687605ae518526a72d2dbb2"
+      }
+    },
+    {
+      "name": "StandardCollections.MapAPI.result",
+      "module": "StandardCollectionResponse",
+      "private": false,
+      "signature": "(a b : Ty) : MapAPI → Ty",
+      "included": false,
+      "reader": null,
+      "reason": "APIごとにMap/List/Option/基底型を作り、externalの芯を保たない。",
+      "source": {
+        "bytes": 32577,
+        "sha256": "c8b8d3546be04e0232186d1a5efbb133c3ef131e31a2423d6ed90131b3810d53"
+      }
+    },
+    {
+      "name": "StandardCollections.SetAPI.result",
+      "module": "StandardCollectionResponse",
+      "private": false,
+      "signature": "(a : Ty) : SetAPI → Ty",
+      "included": false,
+      "reader": null,
+      "reason": "APIごとにSet/List/基底型を作り、externalの芯を保たない。",
+      "source": {
+        "bytes": 32577,
+        "sha256": "c8b8d3546be04e0232186d1a5efbb133c3ef131e31a2423d6ed90131b3810d53"
+      }
+    },
+    {
+      "name": "StandardHeadTail.optionType",
+      "module": "StandardHeadTailResponse",
+      "private": true,
+      "signature": "(tail : Bool) (a : Ty) : Ty",
+      "included": false,
+      "reader": null,
+      "reason": "privateの型生成。結果はdata Optionで、externalの芯を保たない。",
+      "source": {
+        "bytes": 14842,
+        "sha256": "c8fb76a1b14c17b6173a475633642a747c8c9cd79760ccde230d1715637d7b92"
+      }
+    },
+    {
+      "name": "StandardHigherPositions.F",
+      "module": "StandardHigherPositions",
+      "private": false,
+      "signature": "(a b : Ty) (e : Eff := Eff.empty) : Ty",
+      "included": false,
+      "reader": null,
+      "reason": "結果はfn。externalの芯を保たない型生成である。",
+      "source": {
+        "bytes": 36034,
+        "sha256": "4b2e6695c4390e3e9e83883b6df9b4c0a19d1e011419abbff2cb31d33ebb832a"
+      }
+    },
+    {
+      "name": "StandardListRemainingResponse.API.result",
+      "module": "StandardListRemainingResponse",
+      "private": false,
+      "signature": "(a : Ty) : API → Ty",
+      "included": false,
+      "reader": null,
+      "reason": "結果はOption/List/基底型。externalの芯を保たない型生成である。",
+      "source": {
+        "bytes": 29291,
+        "sha256": "e303b8b13d2c8068651bbed17d27589faec4a2efe7974ca00f02ff1a813066c3"
+      }
+    },
+    {
+      "name": "StandardListResponse.API.result",
+      "module": "StandardListResponse",
+      "private": false,
+      "signature": "(a : Ty) : API → Ty",
+      "included": false,
+      "reader": null,
+      "reason": "結果はList/基底型。externalの芯を保たない型生成である。",
+      "source": {
+        "bytes": 14716,
+        "sha256": "399093408e40385375a0c8efaeced93e9d0d7ecaa62c9738944edf9dc20009b3"
+      }
+    },
+    {
+      "name": "StandardOrdinaryCoreProgram.ne",
+      "module": "StandardOrdinaryCoreProgram",
+      "private": true,
+      "signature": "(a : Ty) : Ty",
+      "included": false,
+      "reader": null,
+      "reason": "privateの型生成。結果はdataで、externalの芯を保たない。",
+      "source": {
+        "bytes": 72498,
+        "sha256": "c93e5ad5bd6d41337ec6613dfb6ef8012452e6ea02078ccc5516fe16673d9bc6"
+      }
+    },
+    {
+      "name": "StandardOrdinaryCoreProgram.result",
+      "module": "StandardOrdinaryCoreProgram",
+      "private": true,
+      "signature": "(a : Ty) (err : String) : Ty",
+      "included": false,
+      "reader": null,
+      "reason": "privateの型生成。結果はdata Resultで、externalの芯を保たない。",
+      "source": {
+        "bytes": 72498,
+        "sha256": "c93e5ad5bd6d41337ec6613dfb6ef8012452e6ea02078ccc5516fe16673d9bc6"
+      }
+    },
+    {
+      "name": "InternalContracts.nonempty",
+      "module": "StandardSafeContracts",
+      "private": false,
+      "signature": "(a : Ty) : Ty",
+      "included": false,
+      "reader": null,
+      "reason": "nonemptyTypeで要素型をrefined Listへ包み、externalの芯を保たない。",
+      "source": {
+        "bytes": 6344,
+        "sha256": "69d561881e3f8cb5688fd71cc9730ccde8dcda0607a938014672deb4ec6f0d55"
+      }
+    },
+    {
+      "name": "InternalContracts.checkedLengthType",
+      "module": "StandardSafeContracts",
+      "private": false,
+      "signature": "(n : Names) (a : Ty) : Ty",
+      "included": false,
+      "reader": null,
+      "reason": "refined dataを作る型生成で、externalの芯を保たない。",
+      "source": {
+        "bytes": 6344,
+        "sha256": "69d561881e3f8cb5688fd71cc9730ccde8dcda0607a938014672deb4ec6f0d55"
+      }
+    },
+    {
+      "name": "InternalContracts.checkedIndexType",
+      "module": "StandardSafeContracts",
+      "private": false,
+      "signature": "(n : Names) (a : Ty) : Ty",
+      "included": false,
+      "reader": null,
+      "reason": "refined dataを作る型生成で、externalの芯を保たない。",
+      "source": {
+        "bytes": 6344,
+        "sha256": "69d561881e3f8cb5688fd71cc9730ccde8dcda0607a938014672deb4ec6f0d55"
+      }
+    },
+    {
+      "name": "StandardSafeSlice.sliceType",
+      "module": "StandardSafeSlice",
+      "private": false,
+      "signature": "(a : Ty) (xs front back : Term) : Ty",
+      "included": false,
+      "reader": null,
+      "reason": "refined Listを作る型生成で、externalの芯を保たない。",
+      "source": {
+        "bytes": 22466,
+        "sha256": "3d97dca7b5379e59acfc940f6c09d73008970431e740c5e6f9b50572621592a6"
+      }
+    },
+    {
+      "name": "renameTy",
+      "module": "Subst",
+      "private": false,
+      "signature": "(ξ : Nat → Nat) (a : Ty) : Ty",
+      "included": true,
+      "reader": "ExternalNominal.renameTy",
+      "reason": "全自由パラメータでexternalの芯のIDを保つ公開変換。Preservesの読者へ渡す。",
+      "source": {
+        "bytes": 20900,
+        "sha256": "b43d9d7b2f58f2e21a16a4d4a9c3545955465c8081f8b1c5d4c3107808c2b052"
+      }
+    },
+    {
+      "name": "substTyValues",
+      "module": "Subst",
+      "private": false,
+      "signature": "(σ : Nat → Val) (a : Ty) : Ty",
+      "included": true,
+      "reader": "ExternalNominal.substTyValues",
+      "reason": "全自由パラメータでexternalの芯のIDを保つ公開変換。Preservesの読者へ渡す。",
+      "source": {
+        "bytes": 20900,
+        "sha256": "b43d9d7b2f58f2e21a16a4d4a9c3545955465c8081f8b1c5d4c3107808c2b052"
+      }
+    },
+    {
+      "name": "shiftTypes",
+      "module": "Subst",
+      "private": false,
+      "signature": "(k c : Nat) : Ty → Ty",
+      "included": true,
+      "reader": "ExternalNominal.shiftTypes",
+      "reason": "全自由パラメータでexternalの芯のIDを保つ公開変換。Preservesの読者へ渡す。",
+      "source": {
+        "bytes": 20900,
+        "sha256": "b43d9d7b2f58f2e21a16a4d4a9c3545955465c8081f8b1c5d4c3107808c2b052"
+      }
+    },
+    {
+      "name": "substTypeAt",
+      "module": "Subst",
+      "private": false,
+      "signature": "(c : Nat) (ts : List Ty) (es : List Eff) (t : Ty) : Ty",
+      "included": true,
+      "reader": "ExternalNominal.substTypeAt",
+      "reason": "全自由パラメータでexternalの芯のIDを保つ公開変換。Preservesの読者へ渡す。",
+      "source": {
+        "bytes": 20900,
+        "sha256": "b43d9d7b2f58f2e21a16a4d4a9c3545955465c8081f8b1c5d4c3107808c2b052"
+      }
+    },
+    {
+      "name": "Ty.rawRenameTypes",
+      "module": "TypeRenaming",
+      "private": false,
+      "signature": "(ρ : Nat → Nat) : Ty → Ty",
+      "included": true,
+      "reader": "ExternalNominal.rawRenameTypes",
+      "reason": "全自由パラメータでexternalの芯のIDを保つ公開変換。Preservesの読者へ渡す。",
+      "source": {
+        "bytes": 6994,
+        "sha256": "00f3f4b1eb3a9966eca32072289f70e8a6df38d6925f516bc65c71facd32ddc3"
+      }
+    },
+    {
+      "name": "Ty.renameTypes",
+      "module": "TypeRenaming",
+      "private": false,
+      "signature": "(a : Ty) (ρ : Nat → Nat) : Ty",
+      "included": true,
+      "reader": "ExternalNominal.renameTypes",
+      "reason": "全自由パラメータでexternalの芯のIDを保つ公開変換。Preservesの読者へ渡す。",
+      "source": {
+        "bytes": 6994,
+        "sha256": "00f3f4b1eb3a9966eca32072289f70e8a6df38d6925f516bc65c71facd32ddc3"
+      }
+    },
+    {
+      "name": "Ty.substAt",
+      "module": "TypeSubst",
+      "private": false,
+      "signature": "(c : Nat) (ts : List Ty) (es : List Eff) (a : Ty) : Ty",
+      "included": true,
+      "reader": "ExternalNominal.substAt",
+      "reason": "全自由パラメータでexternalの芯のIDを保つ公開変換。Preservesの読者へ渡す。",
+      "source": {
+        "bytes": 13420,
+        "sha256": "40eb1273a3284c7e45be62383481d51eaf6145329a838a20473dad0cc9ff94c8"
+      }
+    },
+    {
+      "name": "Ty.subst",
+      "module": "TypeSubst",
+      "private": false,
+      "signature": "(ts : List Ty) (es : List Eff) (a : Ty) : Ty",
+      "included": true,
+      "reader": "ExternalNominal.subst",
+      "reason": "全自由パラメータでexternalの芯のIDを保つ公開変換。Preservesの読者へ渡す。",
+      "source": {
+        "bytes": 13420,
+        "sha256": "40eb1273a3284c7e45be62383481d51eaf6145329a838a20473dad0cc9ff94c8"
+      }
+    },
+    {
+      "name": "Ty.shift",
+      "module": "TypeSubst",
+      "private": false,
+      "signature": "(k c : Nat) (a : Ty) : Ty",
+      "included": true,
+      "reader": "ExternalNominal.shift",
+      "reason": "全自由パラメータでexternalの芯のIDを保つ公開変換。Preservesの読者へ渡す。",
+      "source": {
+        "bytes": 13420,
+        "sha256": "40eb1273a3284c7e45be62383481d51eaf6145329a838a20473dad0cc9ff94c8"
+      }
+    },
+    {
+      "name": "Ty.rawSubstV",
+      "module": "ValueExchange",
+      "private": false,
+      "signature": "(σ : ObservationEnv) : Ty → Ty",
+      "included": true,
+      "reader": "ExternalNominal.rawSubstV",
+      "reason": "全自由パラメータでexternalの芯のIDを保つ公開変換。Preservesの読者へ渡す。",
+      "source": {
+        "bytes": 11538,
+        "sha256": "b6426c95e20b29b6d29febe3f9105c803649e597e5f8605af785e5b6761b732b"
+      }
+    },
+    {
+      "name": "Ty.renameValues",
+      "module": "ValueRenamingSyntax",
+      "private": false,
+      "signature": "(ξ : Nat → Nat) : Ty → Ty",
+      "included": true,
+      "reader": "ExternalNominal.renameValues",
+      "reason": "全自由パラメータでexternalの芯のIDを保つ公開変換。Preservesの読者へ渡す。",
+      "source": {
+        "bytes": 7896,
+        "sha256": "0c29ff03377f73c87f2f7875002c450ff15410d42cea4d9788207a3cb6f63fcb"
+      }
+    },
+    {
+      "name": "Ty.shiftV",
+      "module": "ValueShiftSyntax",
+      "private": false,
+      "signature": "(k c : Nat) : Ty → Ty",
+      "included": true,
+      "reader": "ExternalNominal.shiftV",
+      "reason": "全自由パラメータでexternalの芯のIDを保つ公開変換。Preservesの読者へ渡す。",
+      "source": {
+        "bytes": 1990,
+        "sha256": "07c867802b8cb036605c8de0fa7fdc8e918017d6a62db4507c4e317af13b024f"
+      }
+    },
+    {
+      "name": "Ty.substV",
+      "module": "ValueSubst",
+      "private": false,
+      "signature": "(σ : ObservationEnv) (a : Ty) : Ty",
+      "included": true,
+      "reader": "ExternalNominal.substV",
+      "reason": "全自由パラメータでexternalの芯のIDを保つ公開変換。Preservesの読者へ渡す。",
+      "source": {
+        "bytes": 2238,
+        "sha256": "bdd22ba724b7eff85afa2ca4bf5f15240a1cc906b1690c4a4b0f710ee20813bb"
+      }
+    },
+    {
+      "name": "Ty.substVAt",
+      "module": "ValueSubst",
+      "private": false,
+      "signature": "(c : Nat) (σ : ObservationEnv) (a : Ty) : Ty",
+      "included": true,
+      "reader": "ExternalNominal.substVAt",
+      "reason": "全自由パラメータでexternalの芯のIDを保つ公開変換。Preservesの読者へ渡す。",
+      "source": {
+        "bytes": 2238,
+        "sha256": "bdd22ba724b7eff85afa2ca4bf5f15240a1cc906b1690c4a4b0f710ee20813bb"
+      }
+    }
+  ],
+  "inferred_non_candidates": [
+    {
+      "name": "KeyTable",
+      "module": "CertificateSyntax",
+      "private": false,
+      "signature": ""
+    },
+    {
+      "name": "Ctx",
+      "module": "Context",
+      "private": false,
+      "signature": ""
+    },
+    {
+      "name": "Ty.assumeWithCarrier",
+      "module": "Context",
+      "private": false,
+      "signature": ""
+    },
+    {
+      "name": "Ctx.factsWithCarrier",
+      "module": "Context",
+      "private": false,
+      "signature": ""
+    },
+    {
+      "name": "TypeArgsKindedAt",
+      "module": "Context.Declarations",
+      "private": false,
+      "signature": ""
+    },
+    {
+      "name": "IntervalFailure.Representatives.env",
+      "module": "IntervalFailure",
+      "private": true,
+      "signature": ""
+    },
+    {
+      "name": "IntervalFlowLeaves.trueReturnFlow",
+      "module": "IntervalFlowLeaves",
+      "private": true,
+      "signature": ""
+    },
+    {
+      "name": "ObservationEnvModel",
+      "module": "Observation",
+      "private": false,
+      "signature": ""
+    },
+    {
+      "name": "Cont",
+      "module": "RuntimeSyntax",
+      "private": false,
+      "signature": ""
+    },
+    {
+      "name": "Store",
+      "module": "RuntimeSyntax",
+      "private": false,
+      "signature": ""
+    },
+    {
+      "name": "StandardCollectionModel.summaries",
+      "module": "StandardCollectionExamples",
+      "private": false,
+      "signature": ""
+    },
+    {
+      "name": "StandardCollectionRefinedBodies.collectionPrimitiveSig",
+      "module": "StandardCollectionRefinedBodies",
+      "private": true,
+      "signature": ""
+    },
+    {
+      "name": "StandardCollectionRefinedBodies.collectionPairProjection",
+      "module": "StandardCollectionRefinedBodies",
+      "private": true,
+      "signature": ""
+    },
+    {
+      "name": "StandardCollectionRefinedBodies.collectionListDefinition",
+      "module": "StandardCollectionRefinedBodies",
+      "private": true,
+      "signature": ""
+    },
+    {
+      "name": "StandardDecimalOperatorResponse.DecimalValue",
+      "module": "StandardDecimalOperatorResponse",
+      "private": false,
+      "signature": ""
+    },
+    {
+      "name": "StandardKeyTyping.Representatives.summaries",
+      "module": "StandardKeyTyping",
+      "private": false,
+      "signature": ""
+    },
+    {
+      "name": "StandardOrdinaryCoreBodies.constructorTable",
+      "module": "StandardOrdinaryCoreBodies",
+      "private": false,
+      "signature": ""
+    },
+    {
+      "name": "InternalContracts.integerField",
+      "module": "StandardSafeContracts",
+      "private": false,
+      "signature": "(n : Names) (i : Nat)"
+    },
+    {
+      "name": "InternalContracts.lengthField",
+      "module": "StandardSafeContracts",
+      "private": false,
+      "signature": "(n : Names) (i : Nat)"
+    },
+    {
+      "name": "InternalContracts.lengthValues",
+      "module": "StandardSafeContracts",
+      "private": false,
+      "signature": "(n : Names)"
+    },
+    {
+      "name": "InternalContracts.indexValue",
+      "module": "StandardSafeContracts",
+      "private": false,
+      "signature": "(n : Names)"
+    },
+    {
+      "name": "InternalContracts.indexValues",
+      "module": "StandardSafeContracts",
+      "private": false,
+      "signature": "(n : Names)"
+    },
+    {
+      "name": "Oracle",
+      "module": "Step",
+      "private": false,
+      "signature": ""
+    },
+    {
+      "name": "ExternalOracle",
+      "module": "Step",
+      "private": false,
+      "signature": ""
+    },
+    {
+      "name": "StepAccounting.Ticket",
+      "module": "StepAccounting",
+      "private": false,
+      "signature": ""
+    },
+    {
+      "name": "BuilderOp",
+      "module": "Syntax",
+      "private": false,
+      "signature": ""
+    },
+    {
+      "name": "AtError",
+      "module": "Syntax",
+      "private": false,
+      "signature": ""
+    },
+    {
+      "name": "StoreTy",
+      "module": "Syntax",
+      "private": false,
+      "signature": ""
+    },
+    {
+      "name": "LocalCtx",
+      "module": "Syntax",
+      "private": false,
+      "signature": ""
+    },
+    {
+      "name": "ObservationEnv",
+      "module": "TermSyntax",
+      "private": false,
+      "signature": ""
+    },
+    {
+      "name": "KindCtx",
+      "module": "Types",
+      "private": false,
+      "signature": ""
+    },
+    {
+      "name": "TypeCtx",
+      "module": "Types",
+      "private": false,
+      "signature": ""
+    },
+    {
+      "name": "Eff",
+      "module": "Types",
+      "private": false,
+      "signature": ""
+    },
+    {
+      "name": "HasTypeTelArgs",
+      "module": "Typing",
+      "private": false,
+      "signature": "(P : Program) (B : Builtins) (Ψ : StoreTy)"
+    },
+    {
+      "name": "HasTypeV",
+      "module": "Typing",
+      "private": false,
+      "signature": "(P : Program) (B : Builtins) (Ψ : StoreTy)"
+    },
+    {
+      "name": "HasTypeVs",
+      "module": "Typing",
+      "private": false,
+      "signature": "(P : Program) (B : Builtins) (Ψ : StoreTy)"
+    },
+    {
+      "name": "HasTypeEach",
+      "module": "Typing",
+      "private": false,
+      "signature": "(P : Program) (B : Builtins) (Ψ : StoreTy)"
+    },
+    {
+      "name": "HasTypeC",
+      "module": "Typing",
+      "private": false,
+      "signature": "(P : Program) (B : Builtins) (Ψ : StoreTy)"
+    },
+    {
+      "name": "HasTypeArms",
+      "module": "Typing",
+      "private": false,
+      "signature": "(P : Program) (B : Builtins) (Ψ : StoreTy)"
+    },
+    {
+      "name": "HasTypeClauses",
+      "module": "Typing",
+      "private": false,
+      "signature": "(P : Program) (B : Builtins) (Ψ : StoreTy)"
+    },
+    {
+      "name": "HasTypeCL",
+      "module": "Typing",
+      "private": false,
+      "signature": "(P : Program) (B : Builtins) (Ψ : StoreTy) (C : TypeCtx)\n    (Δ : LocalCtx) (Γ : Ctx) (Φ : List Pred) (R : Option Ty) (m : Comp) (a : Ty) (ε : Eff)"
+    }
+  ]
+}

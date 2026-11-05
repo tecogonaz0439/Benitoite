@@ -73,6 +73,10 @@
 
 `ExternalModelResponse` は、全宣言・全型付き入力についてcarrierと非exitを満たし、観測対象を報告しない抽象の外部応答関係を定義する。任意errの所属と全入力での存在を証明する。篩の真を応答前の信頼へ加えず、外部応答と解放以外の七射影を保つ。`ResourceReleaseModel` は、表が資源へ分類するopaque定数だけに解放の成功・失敗を許す。型付き値のcanonicalと実表の分類から同じ値の解放応答を得る。これらは抽象関係の定義と局所の接続であり、ゲストの実装、OS資源の開閉状態、全標準表の充足の証明ではない。
 
+`ExternalNominal` は、全有限表の鍵と宣言の四対、重複・未知ID・ID又はarityの差し替えを照合し、表示名と名目IDを区別する。二十九変換（捕捉した値による型の置換と篩のまとめを含む）で外部型の芯に同じIDを保つ。external全体を恒等の枝で返すだけの `Ty.instTarget`・`normContTy`・`rawApply`・`Ty.core` は件数から除く。既存の `Ty.bind_external` と置換の証明を使う。Map内のdata引数、関数のList引数と結果を同じ表で読み、ハンドルの逆転から同じcomponent・resourceを得る。`ExternalSignatureLeaves` は、任意の受け渡せる型（`ExternalValueType`）の出現と使用位置を同じcomponentの宣言へ戻し、八欄の整形式な署名からborrow/own・使用列の過不足と一意性・単相性・行支持を取り出す。空効果とStateの実宣言、実ハンドルを引数に持つ `ExternalArgs` と直接呼出しへの適用例を持つ。
+
+外部の偽造に対する内側の境界は、SourceとSourceScopedによる直接構築の拒否、wildcard・変数以外の全パターン（定数・範囲・リスト・構成子）に対する外部型の型付けの拒否、空の値文脈での全構成子値に対する外部型の型付けの拒否である。変数とwildcardのパターンは型を保つ。Rustの `json.rs` の `convert` は全結果を `Json.Value` の構成子値として作る。この対応は同ソースを読んだ記録であり、Leanの拒否の補題の前提には含まない。変換器の健全性と交換入力の照合は別に確かめる。異種のcomponent又はresourceのハンドルは型付かず、同じ宣言のハンドルも通常資源の解放関係へ入らない。
+
 `BuiltinResponseTransport` は、同じ七射影から外部carrierの全十二構成子・両Args・両Outcomeを移し、δ・IO応答・refGet・refSet・effKindの一致を合わせて全二十五条件を移す。`ExternalModelTransport` は外部応答の三条件と応答の選択を構成する。`ExternalModels.model/targets/http` は、元の三モデルの七射影を保ち、外部応答と通常資源の解放を選ぶ。それぞれのCoreと対象条件を同じP/Bで構成し、TargetsとHttpには元と同じHasFile・HasHttpを要求する。外部宣言が空であるという制限はない。
 
 `FunctionNameMap` と `StandardModelDeclarations/Signatures/PrimitiveLookup/Response` は、元Defと参照先のhelperの閉包、単射による関数参照名の付け替え（`Body.definition`）、元のtelの保存と、有限の本体表（`Body.all`）と組込みの表（`Primitive.all`）に対する全lookupの双方向の対応を実装する。署名とδ・IO応答は既存の定義を参照する。これらのlookupの対応は、合成した全標準本体の型付けと全応答条件の充足の証明とは区別する。同じ名前に異なる元Defを持つ18名（`FunctionNames.collisionNames`）の公開名は合成表のキーに現れない。
@@ -1004,6 +1008,8 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 | CanonicalValues | 「篩の正規形と制約の読み方」。閉じたΓのscalar・Boolean・List・data・関数八構文・Map・Set・Bytes・Dict・保持値・外部・対象の構文逆転。型付けの導出から形を得て、元の直接前提は各逆転で読む。atErrorはResultShape.DeclaredとerrorTypeの芯を返す専用の逆転。空篩はInhabitsから排除する。外部宣言・名目ID・同じsnapshotと範囲の形成を保持し、外部応答の存在や全σの被覆を結論しない |
 | BuiltinTypingTransport・ExternalSurfaceLeaves・ExternalModelResponse・ResourceReleaseModel | 「篩を含むコア計算の形式化」。同じPでの七射影による十四判断の移送、外部参照・直接呼出しの入力、carrierと非exitと無対象の抽象外部応答とerr存在、分類されたopaque資源値のcanonicalと解放の成功・失敗 |
 | BuiltinResponseTransport・ExternalModelTransport | 「篩を含むコア計算の形式化」。同じ七射影によるcarrier・Args・Outcomeと二十五条件の移送、三モデルの同じP/BでのCoreと対象条件、存在を前提とする外部応答の選択 |
+| ExternalNominal | 「保持要求と組み込みの遷移」の外部宣言。任意の有限表の四対・一意性・未知ID・差し替えの境界、二十九変換の名目ID保持、入れ子の宣言とハンドルのcomponent・resourceの照合 |
+| ExternalSignatureLeaves | 同節の外部署名。全出現・使用位置から同じcomponentの宣言への接続、borrow/ownとState、八欄の読者、実ハンドル引数のExternalArgs、Source・wildcardと変数以外のパターン・構成子値の拒否と通常資源との区別 |
 | FunctionNameMap・StandardModelDeclarations・StandardModelSignatures・StandardModelPrimitiveLookup・StandardModelResponse | 「篩を含むコア計算の形式化」。元Defとhelperの閉包、単射による関数参照名の写像、telの保存、有限の本体表（`Body.all`）と組込みの表（`Primitive.all`）に対する全lookupの双方向の対応 |
 | ScopeCoverage・MembershipTargets・ShapeTargets | 同節。任意の記号列の起点付加、範囲被覆9対と同じσでの所属保存、snapshotの単調性とnone/someの読者、範囲具体化後の所属、対象3種類の述語解釈の単調性を含む。短い具体化列は変数を残し、snapshotなしのbasedの部分評価は評価不能を保つ。異なる起点は解決先が同じでも静的に覆えない。空の型・値・経路条件の文脈で型付いた適格な保持値の対象所属、NamesWF・ShapeOk・同じBuiltinArgs・全実引数のAdequateによる任意位置の対象射影も含む。端点のHolds・valKindと内容型の一致から要求の二保持構文を導き、保持する端点と要求を存在量化して射影・内容の型・groundVal・reqTarget・範囲所属を返す。型・行・先行する値の代入を通して同じ対象を読み、宣言の形成からNamesWFを供給する |
 | MembershipWiden | 同節。任意の型文脈・経路条件・ストアの、空の値文脈で型付いた不透明型の値を逆転し、定数と同じ値のscopedの導出を区別する。範囲の被覆・scopedの共変・忘却による互換拡大、対象位置の形成と範囲列の長さによる全引数列の節への移送。同じ型・行の像と値列を保つ |
