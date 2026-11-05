@@ -1,0 +1,110 @@
+{
+ "changed_from_base": [
+  "docs/design/01-spec/01-12-core-calculus.md",
+  "formal/Benitoite.lean",
+  "formal/Benitoite/Release/Refinement/StandardModelDeclarations.lean"
+ ],
+ "stage_new_modules": 37,
+ "stage_edited_modules": 5,
+ "modules": 1069,
+ "axiom_targets": 85411,
+ "stage_declarations": 4793,
+ "public_entries": 559,
+ "limit_options": [
+  {
+   "module": "StandardModelCollectionBodies",
+   "line": 11,
+   "option": "set_option maxHeartbeats 4000000"
+  },
+  {
+   "module": "StandardModelCollectionBodies",
+   "line": 608,
+   "option": "set_option maxHeartbeats 2000000"
+  },
+  {
+   "module": "StandardModelCoreBodies",
+   "line": 100,
+   "option": "set_option maxHeartbeats 4000000"
+  },
+  {
+   "module": "StandardModelCoreRows",
+   "line": 33,
+   "option": "set_option maxHeartbeats 4000000"
+  },
+  {
+   "module": "StandardModelDeclarations",
+   "line": 708,
+   "option": "set_option maxHeartbeats 800000"
+  },
+  {
+   "module": "StandardModelListBodies",
+   "line": 918,
+   "option": "set_option maxHeartbeats 800000"
+  },
+  {
+   "module": "StandardModelSignatures",
+   "line": 1262,
+   "option": "set_option maxHeartbeats 1600000"
+  },
+  {
+   "module": "StandardAliasBodies",
+   "line": 6,
+   "option": "set_option maxRecDepth 5000"
+  },
+  {
+   "module": "StandardAliasBodies",
+   "line": 7,
+   "option": "set_option maxHeartbeats 2000000"
+  },
+  {
+   "module": "StandardOrdinaryCoreBodies",
+   "line": 9,
+   "option": "set_option maxRecDepth 5000"
+  },
+  {
+   "module": "StandardOrdinaryCoreBodies",
+   "line": 10,
+   "option": "set_option maxHeartbeats 4000000"
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "line": 8,
+   "option": "set_option maxRecDepth 6000"
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "line": 9,
+   "option": "set_option maxHeartbeats 6000000"
+  },
+  {
+   "module": "StandardOrdinaryListBodies",
+   "line": 6,
+   "option": "set_option maxRecDepth 5000"
+  },
+  {
+   "module": "StandardOrdinaryListBodies",
+   "line": 7,
+   "option": "set_option maxHeartbeats 4000000"
+  }
+ ],
+ "group_records_gone": [
+  "StandardModel.definitions",
+  "StandardModel.no_store_transitions"
+ ],
+ "graphs": {
+  "group_g": "307612365a96cd2326453fc4313aa1c1e5697c1f656c5a28bf5f2e3f3182c22d",
+  "stage": "6e125c8aba106eebf061c52184196dd736e6127dc580c9369b2b3ef8c7df120b"
+ },
+ "reruns": {
+  "records.py": "{\"verified\": true, \"nodes\": 85411}",
+  "conditions.py": "{\"verified\": true, \"実質\": 24, \"自明\": 5}",
+  "boundary.py": "{\"verified\": true}",
+  "function_values.py": "{\"verified\": true, \"値を保存・射影する行\": 22, \"値の形（個数・構造）を調べる行\": 5}",
+  "edited.py": "{\"verified\": true, \"base_declarations\": 2101}",
+  "copies.py": "{\"verified\": true, \"tokens\": 324}",
+  "stage.py": "{\"verified\": true, \"bytes\": 59853}"
+ },
+ "files": 38,
+ "record_bytes": 1520041,
+ "largest_bytes": 95915
+}

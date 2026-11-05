@@ -1,0 +1,2802 @@
+{
+ "entries": 559,
+ "named_readers": 486,
+ "examples_only": 73,
+ "rows": [
+  {
+   "name": "Builtins.TypingFieldsEq.symm",
+   "named_readers": 5,
+   "compiled_example": true
+  },
+  {
+   "name": "Outcome.Typed.of_fields",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "Outcome.Carrier.of_fields",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalArgs.of_fields",
+   "named_readers": 2,
+   "compiled_example": true
+  },
+  {
+   "name": "BuiltinArgs.of_fields",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "Builtins.SubstitutionAssumptions.of_fields",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "ModelScopeConditions.of_responses",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "Builtins.TypingFieldsEq",
+   "named_readers": 34,
+   "compiled_example": true
+  },
+  {
+   "name": "ConstOK.of_fields",
+   "named_readers": 14,
+   "compiled_example": true
+  },
+  {
+   "name": "SatAll.of_fields",
+   "named_readers": 16,
+   "compiled_example": true
+  },
+  {
+   "name": "Admissible.of_fields",
+   "named_readers": 14,
+   "compiled_example": true
+  },
+  {
+   "name": "Builtins.RangeAdmissible.of_fields",
+   "named_readers": 15,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalCallAdmissible.of_fields",
+   "named_readers": 15,
+   "compiled_example": true
+  },
+  {
+   "name": "handled_of_fields",
+   "named_readers": 14,
+   "compiled_example": false
+  },
+  {
+   "name": "ClauseSig.of_fields",
+   "named_readers": 14,
+   "compiled_example": true
+  },
+  {
+   "name": "StateTyE.external_args",
+   "named_readers": 3,
+   "compiled_example": false
+  },
+  {
+   "name": "StateTyE.external_receive",
+   "named_readers": 3,
+   "compiled_example": false
+  },
+  {
+   "name": "StateTyE.external_step_of_response",
+   "named_readers": 2,
+   "compiled_example": false
+  },
+  {
+   "name": "StateTyE.external_response_step",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "step_external_selected",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "step_external_apply",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalLeafExamples.pairSignature",
+   "named_readers": 10,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalLeafExamples.program",
+   "named_readers": 27,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalLeafExamples.builtins",
+   "named_readers": 8,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalLeafExamples.lookup",
+   "named_readers": 3,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalLeafExamples.annotation",
+   "named_readers": 6,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalLeafExamples.signature_wf",
+   "named_readers": 3,
+   "compiled_example": false
+  },
+  {
+   "name": "ExternalLeafExamples.pair_wf",
+   "named_readers": 3,
+   "compiled_example": false
+  },
+  {
+   "name": "ExternalLeafExamples.externalWF",
+   "named_readers": 2,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalLeafExamples.wellFormed",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalLeafExamples.wellTyped",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalLeafExamples.core",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalLeafExamples.bind_parameters",
+   "named_readers": 2,
+   "compiled_example": false
+  },
+  {
+   "name": "ExternalLeafExamples.end_annotation",
+   "named_readers": 3,
+   "compiled_example": false
+  },
+  {
+   "name": "ExternalLeafExamples.admissible",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalLeafExamples.arguments",
+   "named_readers": 5,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalLeafExamples.start",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalLeafExamples.applyStart",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalLeafExamples.start_typed",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalLeafExamples.applyStart_typed",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalLeafExamples.start_view",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalLeafExamples.apply_view",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalLeafExamples.integer_response",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalLeafExamples.accept",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalLeafExamples.reject",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalLeafExamples.pair_lookup",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalLeafExamples.pair_admissible",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalLeafExamples.pair_arguments",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalModels.ModelCase.composition",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalModels.model_vacuous_premises",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalModels.ModelCase.external_constant",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalModels.ModelCase.new_field_inputs",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalModelExamples.Shape",
+   "named_readers": 27,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalModelExamples.filtered",
+   "named_readers": 25,
+   "compiled_example": false
+  },
+  {
+   "name": "ExternalModelExamples.nestedType",
+   "named_readers": 14,
+   "compiled_example": false
+  },
+  {
+   "name": "ExternalModelExamples.nestedValue",
+   "named_readers": 6,
+   "compiled_example": false
+  },
+  {
+   "name": "ExternalModelExamples.Shape.type",
+   "named_readers": 12,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalModelExamples.Shape.raw",
+   "named_readers": 8,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalModelExamples.signature",
+   "named_readers": 10,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalModelExamples.program",
+   "named_readers": 16,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalModelExamples.program_externalWF",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "ExternalModelExamples.arguments",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalModelExamples.raw_response",
+   "named_readers": 2,
+   "compiled_example": false
+  },
+  {
+   "name": "ExternalModelExamples.receive_pair",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "ExternalModelExamples.positiveType",
+   "named_readers": 18,
+   "compiled_example": false
+  },
+  {
+   "name": "ExternalModelExamples.positiveSignature",
+   "named_readers": 21,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalModelExamples.positiveProgram",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalModelExamples.positive_receive_pair",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalModelExamples.handleDeclaration",
+   "named_readers": 9,
+   "compiled_example": false
+  },
+  {
+   "name": "ExternalModelExamples.handle",
+   "named_readers": 5,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalModelExamples.handleType",
+   "named_readers": 9,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalModelExamples.handleSignature",
+   "named_readers": 10,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalModelExamples.handleProgram",
+   "named_readers": 9,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalModelExamples.handle_program_externalWF",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "ExternalModelExamples.handle_arguments",
+   "named_readers": 2,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalModelExamples.handle_raw_response",
+   "named_readers": 2,
+   "compiled_example": false
+  },
+  {
+   "name": "ExternalModelExamples.handle_receive_pair",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "ExternalModelExamples.program_hasHttp",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "ExternalModelExamples.handle_program_hasHttp",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "ExternalModel.response",
+   "named_readers": 7,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalModel.builtins",
+   "named_readers": 18,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalModel.typing_fields",
+   "named_readers": 3,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalModel.response_err",
+   "named_readers": 5,
+   "compiled_example": false
+  },
+  {
+   "name": "ExternalModel.response_exists",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalModel.external_assumptions",
+   "named_readers": 6,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalModel.scope_conditions",
+   "named_readers": 3,
+   "compiled_example": false
+  },
+  {
+   "name": "ExternalModel.response_value",
+   "named_readers": 5,
+   "compiled_example": false
+  },
+  {
+   "name": "ExternalModel.receive_value",
+   "named_readers": 3,
+   "compiled_example": false
+  },
+  {
+   "name": "ExternalModel.receive_reject",
+   "named_readers": 3,
+   "compiled_example": false
+  },
+  {
+   "name": "ExternalModel.receive_error_no_exit",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "Builtins.selectExternal",
+   "named_readers": 2,
+   "compiled_example": true
+  },
+  {
+   "name": "Builtins.selectExternal_response",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalModels.model",
+   "named_readers": 7,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalModels.targets",
+   "named_readers": 5,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalModels.http",
+   "named_readers": 4,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalModels.model_scope",
+   "named_readers": 2,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalModels.targets_scope",
+   "named_readers": 2,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalModels.http_scope",
+   "named_readers": 2,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalModels.model_core",
+   "named_readers": 3,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalModels.targets_core",
+   "named_readers": 2,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalModels.http_core",
+   "named_readers": 2,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalModels.model_no_response_kind",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalModels.ModelCase",
+   "named_readers": 6,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalModels.ModelCase.base",
+   "named_readers": 4,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalModels.ModelCase.table",
+   "named_readers": 12,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalModels.ModelCase.Declarations",
+   "named_readers": 6,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalModels.conditions",
+   "named_readers": 2,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalModels.shape_inputs",
+   "named_readers": 2,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalModels.handle_inputs",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "ExternalModels.responses",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalNominal.program",
+   "named_readers": 8,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalNominal.table_wf_iff",
+   "named_readers": 2,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalNominal.duplicate",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalNominal.unknown",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalNominal.type_entry",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalNominal.singleton_type",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalNominal.singleton_function",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalNominal.function_entry",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalNominal.Preserves",
+   "named_readers": 31,
+   "compiled_example": false
+  },
+  {
+   "name": "ExternalNominal.norm",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalNominal.normWith",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalNominal.shiftV",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalNominal.rawMapRanges",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalNominal.rawRenameTypes",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalNominal.rawBind",
+   "named_readers": 2,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalNominal.shiftTypes",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalNominal.rawSubstV",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalNominal.renameValues",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalNominal.carrier",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalNominal.observationType",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalNominal.bind",
+   "named_readers": 6,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalNominal.renameTypes",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalNominal.mapRanges",
+   "named_readers": 3,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalNominal.substRAt",
+   "named_readers": 2,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalNominal.instR",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalNominal.shiftR",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalNominal.substAt",
+   "named_readers": 2,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalNominal.subst",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalNominal.shift",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalNominal.substV",
+   "named_readers": 2,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalNominal.substVAt",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalNominal.renameTy",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalNominal.substTyValues",
+   "named_readers": 3,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalNominal.substTypeAt",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalNominal.closeTy",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalNominal.closeTyAt",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalNominal.packRefinements",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalNominal.refineNorm",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalNominal.transformations",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalNominal.distinct",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalNominal.transformed_distinct",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalNominal.map_fn_declarations",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalNominal.handle_declaration",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalNominal.unknown_handle",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalNominal.declared_arity",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalUseAt.mode",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalSignatureLeaves.key_no_occurrence",
+   "named_readers": 2,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalSignatureLeaves.occurrence_declaration",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalSignatureLeaves.use_declaration",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "ExternalSignatureLeaves.declared_use",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalSignatureLeaves.stateEffect",
+   "named_readers": 14,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalSignatureLeaves.pureSignature",
+   "named_readers": 4,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalSignatureLeaves.handleSignature",
+   "named_readers": 10,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalSignatureLeaves.pure_wf",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalSignatureLeaves.handle_uses",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "ExternalSignatureLeaves.handle_wf",
+   "named_readers": 3,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalSignatureLeaves.declarations",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalSignatureLeaves.declarations_wf",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalSignatureLeaves.collected_contract",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalSignatureLeaves.boxProgram",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalSignatureLeaves.box_value_type",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalSignatureLeaves.handle_typed_iff",
+   "named_readers": 3,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalSignatureLeaves.handle_arguments",
+   "named_readers": 2,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalSignatureLeaves.handle_call_typed",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalSignatureLeaves.mismatched_handle",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalSignatureLeaves.handle_not_source",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalSignatureLeaves.non_binding_pattern_rejected",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalSignatureLeaves.constructor_value_rejected",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalSignatureLeaves.handle_not_release",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalSurface.ref_typed",
+   "named_readers": 2,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalSurface.call_typed",
+   "named_readers": 2,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalSurface.args_effect",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "ExternalSurface.callEffect",
+   "named_readers": 5,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalSurface.type_declared_iff",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalSurface.ref_of_lookup",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalSurface.ref_inputs",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalSurface.call_of_lookup",
+   "named_readers": 2,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalSurface.apply_typed",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "ExternalSurface.ref_arguments",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalSurface.named_call",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalSurface.partial_call",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "FunctionNames.swap",
+   "named_readers": 3,
+   "compiled_example": false
+  },
+  {
+   "name": "FunctionNames.swap_injective",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "FunctionNames.collisionNames",
+   "named_readers": 2,
+   "compiled_example": false
+  },
+  {
+   "name": "FunctionNames.rename",
+   "named_readers": 14,
+   "compiled_example": true
+  },
+  {
+   "name": "FunctionNames.rename_injective",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "FunctionNames.definition",
+   "named_readers": 32,
+   "compiled_example": true
+  },
+  {
+   "name": "FunctionNames.definition_tel",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "ResourceRelease.Table",
+   "named_readers": 15,
+   "compiled_example": false
+  },
+  {
+   "name": "ResourceRelease.Table.release_all",
+   "named_readers": 4,
+   "compiled_example": true
+  },
+  {
+   "name": "ResourceRelease.Table.release_exists",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ResourceRelease.Table.release_value",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalModels.ModelCase.resource_iff",
+   "named_readers": 2,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalModels.ModelCase.resource_table",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalModels.ModelCase.release_all",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalModels.ModelCase.release_premise_false",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "ExternalModels.targets_resource_input",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.resource_table",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.resource_input",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.release_all",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.Primitive.store_rows",
+   "named_readers": 2,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.store_lookup",
+   "named_readers": 2,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.store_transitions",
+   "named_readers": 2,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.store_shape",
+   "named_readers": 2,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.row_lookup",
+   "named_readers": 20,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.ref_get",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.ref_set",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.reference_rows",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ContTy.release_resource",
+   "named_readers": 2,
+   "compiled_example": false
+  },
+  {
+   "name": "ContTy.release_all",
+   "named_readers": 3,
+   "compiled_example": true
+  },
+  {
+   "name": "ContTy.release_not_external",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "StateTyE.use_release_all",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "StateTyE.release_return_all",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StateTyE.release_escape_all",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StateTyE.release_error_all",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StateTyE.release_exit_all",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StateTyE.release_selected_run",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "StateTyE.release_selected_error",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "StateTyE.release_selected_exit",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "ResourceRelease.response",
+   "named_readers": 26,
+   "compiled_example": true
+  },
+  {
+   "name": "ResourceRelease.canonical",
+   "named_readers": 2,
+   "compiled_example": false
+  },
+  {
+   "name": "ResourceRelease.typed_response",
+   "named_readers": 2,
+   "compiled_example": true
+  },
+  {
+   "name": "ResourceRelease.targets_classification",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModelRefinedCollection.primitive_ordinary",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModelRefinedCollection.higher_typed",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModelOrdinaryCollection.higher_typed",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.refined_collection_typed",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.ordinary_collection_typed",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.arguments_of_toTel",
+   "named_readers": 2,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.inhabitant",
+   "named_readers": 18,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.Inhabitable",
+   "named_readers": 12,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.base_annotation",
+   "named_readers": 41,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.inhabitant_typed",
+   "named_readers": 10,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.inhabitants_typed",
+   "named_readers": 7,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.inhabitants_ground",
+   "named_readers": 8,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.Satisfiable.of_inputs",
+   "named_readers": 9,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.integer_kinds",
+   "named_readers": 7,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.Satisfiable.string",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.bytesOrdinaryInputs",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.Satisfiable.bytesOrdinary",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.Satisfiable.bytes",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.Satisfiable.list",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.integer_sat",
+   "named_readers": 6,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.integers_sat",
+   "named_readers": 7,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.Satisfiable.listRemaining",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.Satisfiable.range",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.pair_annotation",
+   "named_readers": 2,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.Satisfiable.map",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.PureRow.Satisfiable.set",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.Satisfiable.front",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.instance_annotation",
+   "named_readers": 2,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.Satisfiable.of_arguments",
+   "named_readers": 2,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.one_argument",
+   "named_readers": 2,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.Satisfiable.of_one",
+   "named_readers": 2,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.Satisfiable.headTail",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.Satisfiable.precision",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.two_arguments",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.Satisfiable.of_two",
+   "named_readers": 2,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.Satisfiable.append",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.Satisfiable.replaceValues",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.collection_inputs",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.table",
+   "named_readers": 6,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.cons_mem",
+   "named_readers": 6,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.dataInfo_none",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.variance_valid",
+   "named_readers": 6,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.map_set_declarations",
+   "named_readers": 3,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.string",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.PureRow.bytesOrdinary",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.bytes",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.listRemaining",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.range",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.list",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.PureRow.headTail",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.append",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.map",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.PureRow.set",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.precision",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.replaceValues",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.Primitive.collection",
+   "named_readers": 4,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.collection_rows",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.map_get_lookup",
+   "named_readers": 2,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.keyContext",
+   "named_readers": 3,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.key_variable_annotation",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.key_renaming",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.substitution_inputs",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.admits_sat_input",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.positiveExternals",
+   "named_readers": 4,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.positive_annotation",
+   "named_readers": 3,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.positive_wf",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.positive_arguments",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.positive_inputs",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.io_field_inputs",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.normal_facts",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.io_op",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.pathBases_shape",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.opEff_io",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.store_admits",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.release_exists",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.core",
+   "named_readers": 4,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.targets",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.data_arity",
+   "named_readers": 7,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.data_only",
+   "named_readers": 4,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.core_arity",
+   "named_readers": 8,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.records",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.sat_empty",
+   "named_readers": 4,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.pair_lookup",
+   "named_readers": 2,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.core_context",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.core_bodies_typed",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.list_helpers_typed",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.getters_typed",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.aliases_typed",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.pairs_typed",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.pure_classes",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.pure_rows",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.io_classes",
+   "named_readers": 3,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.response_classes",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.opEff_classes",
+   "named_readers": 2,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.effects_member",
+   "named_readers": 2,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.effect_ops",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.state_effect",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.response_assumptions",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.target_agreement",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.Body",
+   "named_readers": 21,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.Body.name",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.Body.refined",
+   "named_readers": 6,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.Body.original",
+   "named_readers": 6,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.Body.key",
+   "named_readers": 12,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.Body.key_correspondence",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.Body.definition",
+   "named_readers": 26,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.Body.correspondence",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.Body.tel",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.Body.all",
+   "named_readers": 6,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.roundingMode",
+   "named_readers": 5,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.byteOrder",
+   "named_readers": 5,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.declarations",
+   "named_readers": 24,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.constructors",
+   "named_readers": 23,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.program",
+   "named_readers": 211,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.body_lookup",
+   "named_readers": 4,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.lookup_body",
+   "named_readers": 3,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.definitions_iff",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.option_declarations",
+   "named_readers": 21,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.IORow.Satisfiable",
+   "named_readers": 2,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.arguments_of_ranges",
+   "named_readers": 16,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.top_range",
+   "named_readers": 11,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.top_ranges",
+   "named_readers": 2,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.heldPath",
+   "named_readers": 9,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.held_path_typed",
+   "named_readers": 8,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.Satisfiable.pathInValue",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.rangedEffect",
+   "named_readers": 8,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.ranged_effect_form",
+   "named_readers": 7,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.Satisfiable.widenPathIn",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.Satisfiable.checkPathIn",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.IORow.Satisfiable.readTextIn",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.IORow.Satisfiable.readBytesIn",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.IORow.Satisfiable.writeTextIn",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.IORow.Satisfiable.writeBytesIn",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.IORow.Satisfiable.appendTextIn",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.IORow.Satisfiable.appendBytesIn",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.clientRequest",
+   "named_readers": 5,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.loopback",
+   "named_readers": 2,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.client_request_typed",
+   "named_readers": 2,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.heldRequest",
+   "named_readers": 5,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.held_request_typed",
+   "named_readers": 3,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.held_request_ground",
+   "named_readers": 3,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.Satisfiable.requestInValue",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.Satisfiable.widenRequestIn",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.Satisfiable.checkRequestIn",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.IORow.Satisfiable.sendIn",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.IORow.Satisfiable.print",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.IORow.Satisfiable.exit",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.IORow.Satisfiable.readText",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.scope_inputs",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.io_inputs",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.IORow",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.IORow.scoped",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.IORow.print",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.IORow.exit",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.IORow.readText",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.Primitive.io",
+   "named_readers": 7,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.io_rows",
+   "named_readers": 2,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.PureRow.scope",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.front",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.Primitive.scopePure",
+   "named_readers": 4,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.scope_rows",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModelOrdinaryList.additionSignature",
+   "named_readers": 4,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModelOrdinaryList.ListOptionDeclarations",
+   "named_readers": 5,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModelOrdinaryList.from_typed",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModelOrdinaryList.higher_typed",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModelPreciseList.fromName",
+   "named_readers": 14,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModelPreciseList.invariant",
+   "named_readers": 12,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModelPreciseList.fromTel",
+   "named_readers": 10,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModelPreciseList.publicTel",
+   "named_readers": 8,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModelPreciseList.fromBody",
+   "named_readers": 9,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModelPreciseList.publicBody",
+   "named_readers": 10,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModelPreciseList.fromRow",
+   "named_readers": 2,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModelPreciseList.publicRow",
+   "named_readers": 2,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModelPreciseList.fromDefinition",
+   "named_readers": 12,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModelPreciseList.publicDefinition",
+   "named_readers": 8,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModelPreciseList.Inputs",
+   "named_readers": 15,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModelPreciseList.variable_refinement",
+   "named_readers": 2,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModelPreciseList.from_typed",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModelPreciseList.public_typed",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModelPreciseList.append_ordinary",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModelPreciseList.nonempty_public_typed",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.list_bodies_typed",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.nonempty_map_typed",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.scalar",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.byteString",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.character",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.numericRemaining",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.integerAPI",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.integerText",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.conversion",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.decimal",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.floatMath",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.minMax",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.Primitive.numeric",
+   "named_readers": 4,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.numeric_rows",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.PureRow.arithmetic",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.order",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.structural",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.Primitive.operator",
+   "named_readers": 4,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.operator_rows",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.primitive_lookup",
+   "named_readers": 7,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.signatures_iff",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.pair_body",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.body_typed",
+   "named_readers": 2,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.definition_typed",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.program_typed",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.PureRow.Satisfiable",
+   "named_readers": 4,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.sample",
+   "named_readers": 29,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.sample_typed",
+   "named_readers": 17,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.unarySig",
+   "named_readers": 4,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.binarySig",
+   "named_readers": 4,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.optionSig",
+   "named_readers": 4,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.unary_arguments",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.binary_arguments",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.option_arguments",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.rounding_arity",
+   "named_readers": 2,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.mode_typed",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.round_arguments",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.equality_arguments",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.Satisfiable.unary",
+   "named_readers": 2,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.Satisfiable.binary",
+   "named_readers": 2,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.Satisfiable.option",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.operator_inputs",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.numeric_inputs",
+   "named_readers": 0,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.PureRow",
+   "named_readers": 6,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.PureRow.of_row",
+   "named_readers": 4,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.of_response",
+   "named_readers": 25,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.http_declarations",
+   "named_readers": 8,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.rounding_declarations",
+   "named_readers": 2,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.PureRow.operator",
+   "named_readers": 2,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.first_sixteen_entries",
+   "named_readers": 2,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.first_sixteen",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.delta",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.ioResponse",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.effects",
+   "named_readers": 6,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.baseBuiltins",
+   "named_readers": 3,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.builtins",
+   "named_readers": 164,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.builtins_lookup_iff",
+   "named_readers": 11,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.resource_iff",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.get_signature",
+   "named_readers": 3,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.external_assumptions",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardSafe.Composed.declarations_annotation",
+   "named_readers": 5,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardSafe.Composed.get_row_typed",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardSafe.Composed.checked_row_typed",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardSafe.Composed.same_row_typed",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardSafe.Composed.fromList_row_typed",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardSafe.Composed.precise_row_typed",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.arities",
+   "named_readers": 30,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.scoped_structural",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.scoped_decimal",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.scoped_replaceValues",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.scoped_bytesOrdinary",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.scoped_bytes",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.scoped_append",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.scoped_list",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.scoped_listRemaining",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.scoped_headTail",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.scoped_range",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.scoped_map",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.scoped_precision",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.scoped_set",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.scoped_string",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.scoped_unary",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.scoped_binary",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.scoped_option",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.scoped_store",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.sig_scoped",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.signatureBase",
+   "named_readers": 75,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.constructorNames",
+   "named_readers": 7,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.precisionProvider",
+   "named_readers": 3,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.collectionProvider",
+   "named_readers": 3,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.refNewSig",
+   "named_readers": 6,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.refUpdateSig",
+   "named_readers": 6,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.forceSig",
+   "named_readers": 6,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.Primitive",
+   "named_readers": 526,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.Primitive.name",
+   "named_readers": 143,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.Primitive.provider",
+   "named_readers": 45,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.Primitive.signature",
+   "named_readers": 118,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.Primitive.all",
+   "named_readers": 19,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.primitive",
+   "named_readers": 390,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.signature",
+   "named_readers": 4,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.lookup_primitive",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.summaries",
+   "named_readers": 8,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.AdmitsSat",
+   "named_readers": 8,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.admits_form",
+   "named_readers": 2,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.substitution_assumptions",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.admits_sat",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardModel.BodyScoped",
+   "named_readers": 18,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.Def.scoped_of_typed",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.alias_scoped",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.listHelper_scoped",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.listPublic_scoped",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.getter_scoped",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.projection_scoped",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.pair_scoped",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.core_scoped",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.safe_scoped",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.precise_scoped",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.listHigher_scoped",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.listFrom_scoped",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.headTailFrom_scoped",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.headTailPublic_scoped",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.nonempty_scoped",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.collectionHigher_scoped",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.refinedCollection_scoped",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.body_scoped",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.field_rows",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.cons_scoped",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.definition_scoped",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardModel.program_wellFormed",
+   "named_readers": 1,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardAliasBodies.body_typed_of",
+   "named_readers": 2,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardDecimalResponse.Declarations",
+   "named_readers": 4,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardDecimalResponse.program_declarations",
+   "named_readers": 2,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardDecimalResponse.response_of",
+   "named_readers": 2,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardOrdinaryCoreBodies.Records",
+   "named_readers": 7,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardOrdinaryCoreBodies.Records.of_table",
+   "named_readers": 2,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardOrdinaryCoreBodies.getter_typed_of",
+   "named_readers": 2,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardOrdinaryCoreBodies.getter_reference_of",
+   "named_readers": 1,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardOrdinaryCoreBodies.projection_typed_of",
+   "named_readers": 2,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardOrdinaryCoreProgram.keyParam",
+   "named_readers": 8,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardOrdinaryCoreProgram.pair",
+   "named_readers": 26,
+   "compiled_example": true
+  },
+  {
+   "name": "StandardOrdinaryCoreProgram.reference_of",
+   "named_readers": 2,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardOrdinaryCoreProgram.primitive_of",
+   "named_readers": 2,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardOrdinaryCoreProgram.Context",
+   "named_readers": 3,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardOrdinaryCoreProgram.body_typed_of",
+   "named_readers": 2,
+   "compiled_example": false
+  },
+  {
+   "name": "StandardOrdinaryCoreProgram.pair_typed_of",
+   "named_readers": 2,
+   "compiled_example": false
+  }
+ ]
+}

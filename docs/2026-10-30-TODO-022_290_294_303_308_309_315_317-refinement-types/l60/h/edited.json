@@ -1,0 +1,1198 @@
+{
+ "base": "80230d96305756057a63a07dc2b0d8aa1ebf3a75",
+ "order": [
+  "StandardAliasBodies",
+  "StandardDecimalResponse",
+  "StandardOrdinaryCoreBodies",
+  "StandardOrdinaryListBodies",
+  "StandardOrdinaryCoreProgram"
+ ],
+ "inputs": {
+  "StandardAliasBodies": {
+   "bytes": 21820,
+   "sha256": "e39c980d1039ccd2d7606aaa25275ea883b6ee65768c1aaef67719e0e526acdb"
+  },
+  "StandardDecimalResponse": {
+   "bytes": 28128,
+   "sha256": "78be8a751ad918b8b29cce23812b59beebbbf67ccb7cf8e4dada0d8ac9a6701f"
+  },
+  "StandardOrdinaryCoreBodies": {
+   "bytes": 21017,
+   "sha256": "eb735e16f2e765bc36fdacae0e0ab661855abe01fbfb53b3f0e9356692605be2"
+  },
+  "StandardOrdinaryListBodies": {
+   "bytes": 28521,
+   "sha256": "60e2072eaf2772b88569fc0bbf1f63aef5fca6efad9603780867c353e383c415"
+  },
+  "StandardOrdinaryCoreProgram": {
+   "bytes": 72498,
+   "sha256": "c93e5ad5bd6d41337ec6613dfb6ef8012452e6ea02078ccc5516fe16673d9bc6"
+  }
+ },
+ "dump": {
+  "bytes": 1562,
+  "sha256": "aabad9e51cefdc6b5627d7672ae7fe613c7091c202d1669b091d3e4a92029427"
+ },
+ "output": {
+  "bytes": 1979467,
+  "sha256": "6a62387d0fc8dd5d4fbdc233e7f7d50db4b32d499ca210470a979bbae7d3f795"
+ },
+ "base_declarations": 2101,
+ "final_declarations": 2137,
+ "counts": {
+  "StandardAliasBodies": {
+   "継承": 508,
+   "削除": 4,
+   "変更": 4,
+   "新規": 1
+  },
+  "StandardDecimalResponse": {
+   "継承": 121,
+   "新規": 14,
+   "変更": 1,
+   "削除": 2
+  },
+  "StandardOrdinaryCoreBodies": {
+   "継承": 246,
+   "削除": 6,
+   "新規": 14,
+   "変更": 3
+  },
+  "StandardOrdinaryListBodies": {
+   "継承": 178,
+   "変更": 5,
+   "削除": 1,
+   "新規": 1
+  },
+  "StandardOrdinaryCoreProgram": {
+   "継承": 993,
+   "新規": 23,
+   "変更": 25,
+   "削除": 4
+  }
+ },
+ "changes": [
+  {
+   "module": "StandardAliasBodies",
+   "name": "Benitoite.Release.Refinement.StandardAliasBodies.P",
+   "private": true,
+   "kind": "definition",
+   "state": "削除",
+   "final_name": null,
+   "type_sha256": "450330f727085e67a410bf2be4c386dd1cf913dbc4643def32968fe8f3a6386e",
+   "base_type_sha256": "450330f727085e67a410bf2be4c386dd1cf913dbc4643def32968fe8f3a6386e"
+  },
+  {
+   "module": "StandardAliasBodies",
+   "name": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+   "private": false,
+   "kind": "theorem",
+   "state": "変更",
+   "final_name": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+   "type_sha256": "0389ea5b18c63ebba785a260c284aa96fb5fd88903977266aa4b49ca2d344be1",
+   "base_type_sha256": "03be75650cca7e66423128b8343391d5265cab2aeb610636c5aca6aa86a559c8"
+  },
+  {
+   "module": "StandardAliasBodies",
+   "name": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed._simp_1_211",
+   "private": false,
+   "kind": "theorem",
+   "state": "削除",
+   "final_name": null,
+   "type_sha256": "c1a2303350cfa2aab1680e0df067b90c35ce04409e2ca787f3885e0fa32c7164",
+   "base_type_sha256": "c1a2303350cfa2aab1680e0df067b90c35ce04409e2ca787f3885e0fa32c7164"
+  },
+  {
+   "module": "StandardAliasBodies",
+   "name": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed_of",
+   "private": false,
+   "kind": "theorem",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed_of",
+   "type_sha256": "bc9b57f2593c0a8b9984406439821463a5a757465dcdd682341d7ba3f82b79ab",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardAliasBodies",
+   "name": "Benitoite.Release.Refinement.StandardAliasBodies.option_arity",
+   "private": true,
+   "kind": "theorem",
+   "state": "変更",
+   "final_name": "_private.Benitoite.Release.Refinement.StandardAliasBodies.0.Benitoite.Release.Refinement.StandardAliasBodies.option_arity",
+   "type_sha256": "01c638a6e5ca8bd4a0ef2ec9e44708afb1c0cffac1dd1d323b1b829339b0c927",
+   "base_type_sha256": "95ef432b03f3ce3c80513b26cd4802aa54b4ab6f4156e3417ff1e3291154484c"
+  },
+  {
+   "module": "StandardAliasBodies",
+   "name": "Benitoite.Release.Refinement.StandardAliasBodies.primitive",
+   "private": true,
+   "kind": "theorem",
+   "state": "変更",
+   "final_name": "_private.Benitoite.Release.Refinement.StandardAliasBodies.0.Benitoite.Release.Refinement.StandardAliasBodies.primitive",
+   "type_sha256": "82068be605573b5f97a60bffc516e863ca128ab3103777a441dd93c9d70b885e",
+   "base_type_sha256": "2f53006aecf2037c6de806679d0cb3e81ff381340a19e9008ee1ddfe398c974f"
+  },
+  {
+   "module": "StandardAliasBodies",
+   "name": "Benitoite.Release.Refinement.StandardAliasBodies.primitive._simp_1_211",
+   "private": true,
+   "kind": "theorem",
+   "state": "削除",
+   "final_name": null,
+   "type_sha256": "c1a2303350cfa2aab1680e0df067b90c35ce04409e2ca787f3885e0fa32c7164",
+   "base_type_sha256": "c1a2303350cfa2aab1680e0df067b90c35ce04409e2ca787f3885e0fa32c7164"
+  },
+  {
+   "module": "StandardAliasBodies",
+   "name": "Benitoite.Release.Refinement.StandardAliasBodies.signature_formed",
+   "private": true,
+   "kind": "theorem",
+   "state": "変更",
+   "final_name": "_private.Benitoite.Release.Refinement.StandardAliasBodies.0.Benitoite.Release.Refinement.StandardAliasBodies.signature_formed",
+   "type_sha256": "66393e575d6d167928fad04e261498d4e537aa8609c37cf8362888f43bfad75d",
+   "base_type_sha256": "6d21d05a79dac5e487c95a7ada2376c37ae03366217ac561ab2ed869d76bc8a8"
+  },
+  {
+   "module": "StandardAliasBodies",
+   "name": "Benitoite.Release.Refinement.StandardAliasBodies.signature_formed._simp_1_211",
+   "private": true,
+   "kind": "theorem",
+   "state": "削除",
+   "final_name": null,
+   "type_sha256": "c1a2303350cfa2aab1680e0df067b90c35ce04409e2ca787f3885e0fa32c7164",
+   "base_type_sha256": "c1a2303350cfa2aab1680e0df067b90c35ce04409e2ca787f3885e0fa32c7164"
+  },
+  {
+   "module": "StandardDecimalResponse",
+   "name": "Benitoite.Release.Refinement.StandardDecimalResponse.Declarations",
+   "private": false,
+   "kind": "inductive",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardDecimalResponse.Declarations",
+   "type_sha256": "5532673baece9fca4ad14f02b08ce50233adfeb4383a262801dd615d6b083f42",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardDecimalResponse",
+   "name": "Benitoite.Release.Refinement.StandardDecimalResponse.Declarations.arity",
+   "private": false,
+   "kind": "theorem",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardDecimalResponse.Declarations.arity",
+   "type_sha256": "0613e1e6dad5555395f4ac38f1a1ac3dafd6539f88e206009c65c366e1ce1ec6",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardDecimalResponse",
+   "name": "Benitoite.Release.Refinement.StandardDecimalResponse.Declarations.casesOn",
+   "private": false,
+   "kind": "definition",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardDecimalResponse.Declarations.casesOn",
+   "type_sha256": "cfcf9b142304179702b3ece71b00500bcbed97cda59ccf470867561b923fa7e8",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardDecimalResponse",
+   "name": "Benitoite.Release.Refinement.StandardDecimalResponse.Declarations.mk",
+   "private": false,
+   "kind": "constructor",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardDecimalResponse.Declarations.mk",
+   "type_sha256": "baa1704f0a9105bfeb74392736eed9c7611f6ea3c161b78b250387b0ce7c4609",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardDecimalResponse",
+   "name": "Benitoite.Release.Refinement.StandardDecimalResponse.Declarations.mk._flat_ctor",
+   "private": false,
+   "kind": "definition",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardDecimalResponse.Declarations.mk._flat_ctor",
+   "type_sha256": "baa1704f0a9105bfeb74392736eed9c7611f6ea3c161b78b250387b0ce7c4609",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardDecimalResponse",
+   "name": "Benitoite.Release.Refinement.StandardDecimalResponse.Declarations.modes",
+   "private": false,
+   "kind": "theorem",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardDecimalResponse.Declarations.modes",
+   "type_sha256": "445c0d0ed5d1c7119365f0188b5cd119428b85e662164d8cb1ede201a1c53295",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardDecimalResponse",
+   "name": "Benitoite.Release.Refinement.StandardDecimalResponse.Declarations.none_decl",
+   "private": false,
+   "kind": "theorem",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardDecimalResponse.Declarations.none_decl",
+   "type_sha256": "c7375fe5bf8b99df2fd5470547c9ccebc3bcfdb58af2755699adfb9a19b41684",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardDecimalResponse",
+   "name": "Benitoite.Release.Refinement.StandardDecimalResponse.Declarations.rec",
+   "private": false,
+   "kind": "recursor",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardDecimalResponse.Declarations.rec",
+   "type_sha256": "e11b850ffa56b775339c445a3071854b003ea21f1cae9a21ff57cdac35991ec3",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardDecimalResponse",
+   "name": "Benitoite.Release.Refinement.StandardDecimalResponse.Declarations.recOn",
+   "private": false,
+   "kind": "definition",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardDecimalResponse.Declarations.recOn",
+   "type_sha256": "cfcf9b142304179702b3ece71b00500bcbed97cda59ccf470867561b923fa7e8",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardDecimalResponse",
+   "name": "Benitoite.Release.Refinement.StandardDecimalResponse.Declarations.some_decl",
+   "private": false,
+   "kind": "theorem",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardDecimalResponse.Declarations.some_decl",
+   "type_sha256": "bc97db21cfa4c13bf6048c785490b1ad83891861a25662445cdbf6cb91dc7527",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardDecimalResponse",
+   "name": "Benitoite.Release.Refinement.StandardDecimalResponse.mode_shape",
+   "private": true,
+   "kind": "theorem",
+   "state": "変更",
+   "final_name": "_private.Benitoite.Release.Refinement.StandardDecimalResponse.0.Benitoite.Release.Refinement.StandardDecimalResponse.mode_shape",
+   "type_sha256": "975737b90c2886ef22dd6f7e361bc3611849b44633c5dbd311ce68bea13ff8f0",
+   "base_type_sha256": "405241b92b34c5d856941bdd6e154c46cb5c346005a17f0ef3a18778cdf58beb"
+  },
+  {
+   "module": "StandardDecimalResponse",
+   "name": "Benitoite.Release.Refinement.StandardDecimalResponse.mode_shape._simp_1_1",
+   "private": true,
+   "kind": "theorem",
+   "state": "削除",
+   "final_name": null,
+   "type_sha256": "7fd78ba5e44578fe3f5232ef17dc428b0e88eba9e3c17bf884a4024ee5b65a9d",
+   "base_type_sha256": "7fd78ba5e44578fe3f5232ef17dc428b0e88eba9e3c17bf884a4024ee5b65a9d"
+  },
+  {
+   "module": "StandardDecimalResponse",
+   "name": "Benitoite.Release.Refinement.StandardDecimalResponse.mode_shape._simp_1_2",
+   "private": true,
+   "kind": "theorem",
+   "state": "削除",
+   "final_name": null,
+   "type_sha256": "554ee107b1ae31247100ac3b7ced14557e86b37c3929fcbcbecb13e9b28026fe",
+   "base_type_sha256": "554ee107b1ae31247100ac3b7ced14557e86b37c3929fcbcbecb13e9b28026fe"
+  },
+  {
+   "module": "StandardDecimalResponse",
+   "name": "Benitoite.Release.Refinement.StandardDecimalResponse.program_declarations",
+   "private": false,
+   "kind": "theorem",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardDecimalResponse.program_declarations",
+   "type_sha256": "9ca29d5541bb9d107a307ac6625df4b82ed073bfdd992bede923e4e794671ab7",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardDecimalResponse",
+   "name": "Benitoite.Release.Refinement.StandardDecimalResponse.program_declarations._simp_1_1",
+   "private": false,
+   "kind": "theorem",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardDecimalResponse.program_declarations._simp_1_1",
+   "type_sha256": "7fd78ba5e44578fe3f5232ef17dc428b0e88eba9e3c17bf884a4024ee5b65a9d",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardDecimalResponse",
+   "name": "Benitoite.Release.Refinement.StandardDecimalResponse.program_declarations._simp_1_2",
+   "private": false,
+   "kind": "theorem",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardDecimalResponse.program_declarations._simp_1_2",
+   "type_sha256": "554ee107b1ae31247100ac3b7ced14557e86b37c3929fcbcbecb13e9b28026fe",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardDecimalResponse",
+   "name": "Benitoite.Release.Refinement.StandardDecimalResponse.response_of",
+   "private": false,
+   "kind": "theorem",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardDecimalResponse.response_of",
+   "type_sha256": "ad64b78bf6decc76735ea146b485c304aa8c4dc3ebac3b08d18218548aaf6a37",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardOrdinaryCoreBodies",
+   "name": "Benitoite.Release.Refinement.StandardKeyTyping.DataDecl.entries.eq_1",
+   "private": false,
+   "kind": "theorem",
+   "state": "削除",
+   "final_name": null,
+   "type_sha256": "90444eb4ece2effc723dbcf7a3eb445fb5cb52d885a7d39da039fda7a32f4d9d",
+   "base_type_sha256": "90444eb4ece2effc723dbcf7a3eb445fb5cb52d885a7d39da039fda7a32f4d9d"
+  },
+  {
+   "module": "StandardOrdinaryCoreBodies",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.Records",
+   "private": false,
+   "kind": "inductive",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.Records",
+   "type_sha256": "5532673baece9fca4ad14f02b08ce50233adfeb4383a262801dd615d6b083f42",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardOrdinaryCoreBodies",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.Records.casesOn",
+   "private": false,
+   "kind": "definition",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.Records.casesOn",
+   "type_sha256": "31bb149057d255cbea35e108bde2a4fa4227b6dd7eadd09f6f3002765088f862",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardOrdinaryCoreBodies",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.Records.decl",
+   "private": false,
+   "kind": "theorem",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.Records.decl",
+   "type_sha256": "b2259fa071fb9260788b1e1c1cd34be3b1af8bedb7d632bcac52b132512878a1",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardOrdinaryCoreBodies",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.Records.mk",
+   "private": false,
+   "kind": "constructor",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.Records.mk",
+   "type_sha256": "efa19aaa3e3088353010fc8720fda01925fff892f19f07a048eba1827b464157",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardOrdinaryCoreBodies",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.Records.mk._flat_ctor",
+   "private": false,
+   "kind": "definition",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.Records.mk._flat_ctor",
+   "type_sha256": "efa19aaa3e3088353010fc8720fda01925fff892f19f07a048eba1827b464157",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardOrdinaryCoreBodies",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.Records.of_table",
+   "private": false,
+   "kind": "theorem",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.Records.of_table",
+   "type_sha256": "3b763b950770f9378d267d8343f29ac925216a136f3badb8a1c2de3c60625d25",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardOrdinaryCoreBodies",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.Records.of_table._simp_1_4",
+   "private": false,
+   "kind": "theorem",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.Records.of_table._simp_1_4",
+   "type_sha256": "7fd78ba5e44578fe3f5232ef17dc428b0e88eba9e3c17bf884a4024ee5b65a9d",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardOrdinaryCoreBodies",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.Records.of_table._simp_1_5",
+   "private": false,
+   "kind": "theorem",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.Records.of_table._simp_1_5",
+   "type_sha256": "554ee107b1ae31247100ac3b7ced14557e86b37c3929fcbcbecb13e9b28026fe",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardOrdinaryCoreBodies",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.Records.only",
+   "private": false,
+   "kind": "theorem",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.Records.only",
+   "type_sha256": "947200054891362f5bee5559a0000b0e26ad2bfd1495812d5ac525b43008f60d",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardOrdinaryCoreBodies",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.Records.rec",
+   "private": false,
+   "kind": "recursor",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.Records.rec",
+   "type_sha256": "70094a04a18452a872564c96d2328e21cdde834b0b88aaf5ff6529dfda5c0bac",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardOrdinaryCoreBodies",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.Records.recOn",
+   "private": false,
+   "kind": "definition",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.Records.recOn",
+   "type_sha256": "31bb149057d255cbea35e108bde2a4fa4227b6dd7eadd09f6f3002765088f862",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardOrdinaryCoreBodies",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.getter_alts",
+   "private": true,
+   "kind": "theorem",
+   "state": "変更",
+   "final_name": "_private.Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.0.Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.getter_alts",
+   "type_sha256": "2ea6ee9fee81d21618de2ff3c5057c6d1331240174079758d98de77ca12f3bd0",
+   "base_type_sha256": "4ff2637b16e1940e04c30c9c9a8b6b04e9aa426af1a148e35be48784b109d5d3"
+  },
+  {
+   "module": "StandardOrdinaryCoreBodies",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.getter_exhaustive",
+   "private": true,
+   "kind": "theorem",
+   "state": "変更",
+   "final_name": "_private.Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.0.Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.getter_exhaustive",
+   "type_sha256": "8b01251d95b41512c6692e3a654499da4351f96ef5663081e754b14821a10c59",
+   "base_type_sha256": "cca8bd6e13a59044047de508c51e1b21fecc2fecc6d601ec27247c8f198f22ec"
+  },
+  {
+   "module": "StandardOrdinaryCoreBodies",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.getter_reference",
+   "private": false,
+   "kind": "theorem",
+   "state": "削除",
+   "final_name": null,
+   "type_sha256": "db8909143a60a02b3d035c0de0a11aeb8414b9023b310415c22587a649c1a2b1",
+   "base_type_sha256": "db8909143a60a02b3d035c0de0a11aeb8414b9023b310415c22587a649c1a2b1"
+  },
+  {
+   "module": "StandardOrdinaryCoreBodies",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.getter_reference_of",
+   "private": false,
+   "kind": "theorem",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.getter_reference_of",
+   "type_sha256": "74721ab0fe7f10b8b19051f8c6ff68d900800fcff11a579e87c95f0a5a71c0e9",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardOrdinaryCoreBodies",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.getter_typed_of",
+   "private": false,
+   "kind": "theorem",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.getter_typed_of",
+   "type_sha256": "b88300931dfe05c9a572115b25ee923b981ba879ea504dcac8bd924506c906dc",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardOrdinaryCoreBodies",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.projection_typed_of",
+   "private": false,
+   "kind": "theorem",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.projection_typed_of",
+   "type_sha256": "5640518006f6369dec0057fb9e9457ccdb99ccb2048b6530f90295fc7c4973ed",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardOrdinaryCoreBodies",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.record_arity",
+   "private": true,
+   "kind": "theorem",
+   "state": "変更",
+   "final_name": "_private.Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.0.Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.record_arity",
+   "type_sha256": "2915d1d95cf72be404126269943e63469a7adc18793980ab42dc75249422ab21",
+   "base_type_sha256": "65f087cfbadd42b8c416f5d7232d0dd96c5315272caccbbbb0f32aef37e3c8e8"
+  },
+  {
+   "module": "StandardOrdinaryCoreBodies",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.record_decl",
+   "private": true,
+   "kind": "theorem",
+   "state": "削除",
+   "final_name": null,
+   "type_sha256": "1c1ccd461133cd82cd9eb1ba8c9b4a053eaf36f6eb34f98556df4dc1fd288da9",
+   "base_type_sha256": "1c1ccd461133cd82cd9eb1ba8c9b4a053eaf36f6eb34f98556df4dc1fd288da9"
+  },
+  {
+   "module": "StandardOrdinaryCoreBodies",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.record_only",
+   "private": true,
+   "kind": "theorem",
+   "state": "削除",
+   "final_name": null,
+   "type_sha256": "b69175e548dfe8bd6010eba86bb2e5dcd61f49f5f6c95d01cee84c1f1c112c64",
+   "base_type_sha256": "b69175e548dfe8bd6010eba86bb2e5dcd61f49f5f6c95d01cee84c1f1c112c64"
+  },
+  {
+   "module": "StandardOrdinaryCoreBodies",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.record_only._simp_1_4",
+   "private": true,
+   "kind": "theorem",
+   "state": "削除",
+   "final_name": null,
+   "type_sha256": "7fd78ba5e44578fe3f5232ef17dc428b0e88eba9e3c17bf884a4024ee5b65a9d",
+   "base_type_sha256": "7fd78ba5e44578fe3f5232ef17dc428b0e88eba9e3c17bf884a4024ee5b65a9d"
+  },
+  {
+   "module": "StandardOrdinaryCoreBodies",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.record_only._simp_1_5",
+   "private": true,
+   "kind": "theorem",
+   "state": "削除",
+   "final_name": null,
+   "type_sha256": "554ee107b1ae31247100ac3b7ced14557e86b37c3929fcbcbecb13e9b28026fe",
+   "base_type_sha256": "554ee107b1ae31247100ac3b7ced14557e86b37c3929fcbcbecb13e9b28026fe"
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.FunctionNames.definition.eq_1",
+   "private": false,
+   "kind": "theorem",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.FunctionNames.definition.eq_1",
+   "type_sha256": "cb288768d868712d79d6bb384b91104f388388a3e50cb08c765d506696c87a3f",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.API.context.eq_1",
+   "private": false,
+   "kind": "theorem",
+   "state": "変更",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.API.context.eq_1",
+   "type_sha256": "4f6a54e4435fea44e7aefabfe3112daaf8d8ce3ef3968abc9f74849b7cf0368a",
+   "base_type_sha256": "919764ec163db139eaafcafad839807d41bc05ac9b1ba6568eb564bdd711c75d"
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.API.context.eq_2",
+   "private": false,
+   "kind": "theorem",
+   "state": "変更",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.API.context.eq_2",
+   "type_sha256": "02883733f19d196c8c6d3671ec642a5b94a25505bc8b87af11fe868fbbd1d6c5",
+   "base_type_sha256": "fbc7a12703f6c2c10edd061c42a21b441ca5738b79ceb965d7addb7deb653327"
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.API.context.eq_3",
+   "private": false,
+   "kind": "theorem",
+   "state": "変更",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.API.context.eq_3",
+   "type_sha256": "be0fe0d32ba6b6a4d110a45a1d050eedad89ca228d47433081550fa75d601ece",
+   "base_type_sha256": "b819cc6b735a7d97db378eda2afdcab4a66b061d0dd09fa5eb000fe28eaca1b9"
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.API.context.eq_4",
+   "private": false,
+   "kind": "theorem",
+   "state": "変更",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.API.context.eq_4",
+   "type_sha256": "be0f60a634ac4264a3f1c21fd770ebea1d27b6b4b1b076045a59a6c3add7ec9e",
+   "base_type_sha256": "8f014486b83e45d5b1c1a2293bb6208e52f2da80836fcf92a7d7b9f2ea85c4c2"
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.Context",
+   "private": false,
+   "kind": "inductive",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.Context",
+   "type_sha256": "a38124ea27992523271fcd595cf693e84b8e95bff8ca47ad3deda74c1cfc8553",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.Context.arity",
+   "private": false,
+   "kind": "theorem",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.Context.arity",
+   "type_sha256": "745eb6d65fd4cb828c7475b6d27d46cf2152daa7d727e9575456f9e09dc6ff31",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.Context.casesOn",
+   "private": false,
+   "kind": "definition",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.Context.casesOn",
+   "type_sha256": "37a9e25ac6ef1103983ee217fbc4531ef70969e29a949f6c428114083f244413",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.Context.cons",
+   "private": false,
+   "kind": "theorem",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.Context.cons",
+   "type_sha256": "3b9b008251734dd3761551ff95d3c651c9670a6f88b12b7c55fa8a733cc87d6b",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.Context.mk",
+   "private": false,
+   "kind": "constructor",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.Context.mk",
+   "type_sha256": "de0f18ed51c66720f2791b63ff06ffa46de96efcf4c66a6c94b143e42e5e046d",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.Context.mk._flat_ctor",
+   "private": false,
+   "kind": "definition",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.Context.mk._flat_ctor",
+   "type_sha256": "de0f18ed51c66720f2791b63ff06ffa46de96efcf4c66a6c94b143e42e5e046d",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.Context.options",
+   "private": false,
+   "kind": "theorem",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.Context.options",
+   "type_sha256": "5b4b178e3bc0c7d549f66c081909854b2298d6d0ef2898df314d4997a56e5c59",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.Context.prim",
+   "private": false,
+   "kind": "theorem",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.Context.prim",
+   "type_sha256": "d332573dff7bd8f11a85d5664e95bc732118b12bf306f3c325a00bcbc3d42876",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.Context.rec",
+   "private": false,
+   "kind": "recursor",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.Context.rec",
+   "type_sha256": "d28f830e8688cdb8fc8cd5dbafde7622e75699b65a2564fe6894b90d017d4a09",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.Context.recOn",
+   "private": false,
+   "kind": "definition",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.Context.recOn",
+   "type_sha256": "37a9e25ac6ef1103983ee217fbc4531ef70969e29a949f6c428114083f244413",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.Context.ref",
+   "private": false,
+   "kind": "theorem",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.Context.ref",
+   "type_sha256": "68d54de98d462bf4dd2fbed76bace071356e6bb930b8c56d289ddfe7c72037a3",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.Prim.result.eq_1",
+   "private": false,
+   "kind": "theorem",
+   "state": "変更",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.Prim.result.eq_1",
+   "type_sha256": "fe60eccc800d5d256eb26f8e0aba1a5e8e4fcb95bebe7b08132639ce5289e5ba",
+   "base_type_sha256": "4de011ab1e009f6056541fb348b885a6258162de943cbecc5583521ef04557c9"
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.Prim.result.eq_2",
+   "private": false,
+   "kind": "theorem",
+   "state": "変更",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.Prim.result.eq_2",
+   "type_sha256": "c97c1725b4ce1a32acc0490cd337bc751115d38b58ea9eb723b5754a1f8003a7",
+   "base_type_sha256": "e61e2d282346b6961be30b703a74d513f8ad0bb4bf14a13a9dfcbbfd1138b454"
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.Ref.args.eq_1",
+   "private": false,
+   "kind": "theorem",
+   "state": "変更",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.Ref.args.eq_1",
+   "type_sha256": "e406da026a21ff61aa9050d1254dcf1c115881fc63fce0d9e17c2530a09e2a40",
+   "base_type_sha256": "5fc84ff7a525d1819710bfa898ebccde333b2ee9b234c3992b9bfb7683ff7f6e"
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.Ref.args.eq_3",
+   "private": false,
+   "kind": "theorem",
+   "state": "変更",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.Ref.args.eq_3",
+   "type_sha256": "2af82a61e89db73b17cb1ce97a7dd200ce4dcdec67b6c2f033984a93e018f022",
+   "base_type_sha256": "39467eba1f253f595fed2004232079ee4ab859fec71c29160290bd8002d09b04"
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.Ref.inputs.eq_1",
+   "private": false,
+   "kind": "theorem",
+   "state": "変更",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.Ref.inputs.eq_1",
+   "type_sha256": "bd04fb9c128019230f5511ab5537c5c81b8f5ed32d8352cc57b8cabee65bb154",
+   "base_type_sha256": "40599db49c0900bb31a508db2338dff6a881225f4ad1de6bc19147e6599637c0"
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.Ref.inputs.eq_3",
+   "private": false,
+   "kind": "theorem",
+   "state": "変更",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.Ref.inputs.eq_3",
+   "type_sha256": "a2b0f82064aa9561238a05d6f50d159c53a2262eae077e2778ec944297815aa7",
+   "base_type_sha256": "2d1183913843ceea2fd7eb8090905f64a757d8212e861feaa96a7338e32abbeb"
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.Ref.inputs.eq_5",
+   "private": false,
+   "kind": "theorem",
+   "state": "変更",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.Ref.inputs.eq_5",
+   "type_sha256": "18656f81afc3f7e0796b00d17eb03173b6852385fd2cfe83cc16ca1d7432d74c",
+   "base_type_sha256": "2555f8179d1f3d7e608eda0f25a2724541aa6ee02188cf7080459d8231733391"
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.Ref.inputs.eq_6",
+   "private": false,
+   "kind": "theorem",
+   "state": "変更",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.Ref.inputs.eq_6",
+   "type_sha256": "6bd2e0e0b11af270f730bc666da4306cfce3b5b54c45701734d3e2a7563fdc50",
+   "base_type_sha256": "bf5efd1cab5d4a701e4178ac0159953b55d2bc3d8cf90aec0a9237d25ee2e74c"
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.Ref.inputs.eq_7",
+   "private": false,
+   "kind": "theorem",
+   "state": "変更",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.Ref.inputs.eq_7",
+   "type_sha256": "4655cac35c66632fb5e01f1eed529777a5f98093cd3260d633aa1aac2fa5b1e2",
+   "base_type_sha256": "73444a86246e393c6da987821b36f136841e582f424d420a8fc16fde8fa25d8f"
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.Ref.inputs.eq_8",
+   "private": false,
+   "kind": "theorem",
+   "state": "変更",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.Ref.inputs.eq_8",
+   "type_sha256": "9482b34d21994eed0ee66fc833f333cfaafe988bbe7f44c2229214eb0ae318bb",
+   "base_type_sha256": "be1e36131953cfc2b07da8ffc1a80684bb82cb0abc2b7baee5d838c5baccf6ce"
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.api_identity",
+   "private": true,
+   "kind": "theorem",
+   "state": "新規",
+   "final_name": "_private.Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.0.Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.api_identity",
+   "type_sha256": "c0a88ce9b073a74ddb35bb83a34f88fd0a0b4e3710aeadaac21132e85c585fbb",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.body_typed_of",
+   "private": false,
+   "kind": "theorem",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.body_typed_of",
+   "type_sha256": "29a4b09bc1a1876d31e88bd5fb604a24e2526f0303b93bbc180b15d0d2b0d75c",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.con_kinds",
+   "private": true,
+   "kind": "theorem",
+   "state": "変更",
+   "final_name": "_private.Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.0.Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.con_kinds",
+   "type_sha256": "e512830248e260b501d03ced200dda06e1b576749f734ba9692c0d5a4630a5d2",
+   "base_type_sha256": "d225ad3d59d2090d6033d8805b09d278eaf2c509b39e98dc65b968809ce2a878"
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.constructor_typed",
+   "private": true,
+   "kind": "theorem",
+   "state": "変更",
+   "final_name": "_private.Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.0.Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.constructor_typed",
+   "type_sha256": "4b5c3d1d23f40373d2018df8ede55ce6ac3d5de990b84b309faca8bdc9ccdadc",
+   "base_type_sha256": "846ed9489f498197fad7fe5adb40f50bd9aa50bef493b436a0469f83dff279c8"
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.context",
+   "private": true,
+   "kind": "theorem",
+   "state": "新規",
+   "final_name": "_private.Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.0.Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.context",
+   "type_sha256": "72eb3a46f1f301274559c476f18ca32a5bd9bdc367163335912cfd4e848146ee",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.keyParam",
+   "private": false,
+   "kind": "definition",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.keyParam",
+   "type_sha256": "502f30639127f237f970a47712277e54ab3bbde822e9ee79efaf54d206a1f6e0",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.keyParam",
+   "private": true,
+   "kind": "definition",
+   "state": "削除",
+   "final_name": null,
+   "type_sha256": "502f30639127f237f970a47712277e54ab3bbde822e9ee79efaf54d206a1f6e0",
+   "base_type_sha256": "502f30639127f237f970a47712277e54ab3bbde822e9ee79efaf54d206a1f6e0"
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.keyParam.eq_1",
+   "private": false,
+   "kind": "theorem",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.keyParam.eq_1",
+   "type_sha256": "3c85e55ba318f192ec0cff38cd6d1de2efda353a41861fbed43ccbddc67e9a0d",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.keyParam.eq_1",
+   "private": true,
+   "kind": "theorem",
+   "state": "削除",
+   "final_name": null,
+   "type_sha256": "d6aab4391ab4d713beeb57de4a90acc4d85f239df8c78d8f1ac3219133dadc68",
+   "base_type_sha256": "d6aab4391ab4d713beeb57de4a90acc4d85f239df8c78d8f1ac3219133dadc68"
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.list_alternatives",
+   "private": true,
+   "kind": "theorem",
+   "state": "変更",
+   "final_name": "_private.Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.0.Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.list_alternatives",
+   "type_sha256": "3756cc2a9aee2753d58fb634ff299416b4a943964ffc3c354dee668f08b39684",
+   "base_type_sha256": "c7b4cd600c681c8c83aa1801b46cfd257323ca8ccace21cd62ee908e43bbbdc5"
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.list_exhaustive",
+   "private": true,
+   "kind": "theorem",
+   "state": "変更",
+   "final_name": "_private.Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.0.Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.list_exhaustive",
+   "type_sha256": "6384218e967d2f58b05b65f4ec5994ff481f611673342c75aa23773a0b28fc2a",
+   "base_type_sha256": "2e5867765e9477b02bea33020f85e6d00ffee1f89eb10d851a6a2604545cde47"
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.option_alternatives",
+   "private": true,
+   "kind": "theorem",
+   "state": "変更",
+   "final_name": "_private.Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.0.Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.option_alternatives",
+   "type_sha256": "06ff533a81f6db040d3ecfb6d6fc5ed1190a098aac8b7310ba4bdbf0b3674dc7",
+   "base_type_sha256": "4b8b40399854bf183ec48550f0b31e9ef78990eed7fddfb9f446acc7c57cf37f"
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.option_exhaustive",
+   "private": true,
+   "kind": "theorem",
+   "state": "変更",
+   "final_name": "_private.Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.0.Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.option_exhaustive",
+   "type_sha256": "b46f8f68bef4f4454c5a68a0bfbffd53a59a1d06b5f2ca281fbdab78545c7f6d",
+   "base_type_sha256": "008649f1abb3007e456ea22a7162676f9d630d77cf36cedddfdab66b1fde4084"
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.pair",
+   "private": false,
+   "kind": "definition",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.pair",
+   "type_sha256": "bb417e41b7c8af6d3785c86ad07ee2784f4b379ff1436f8684f95f90715223e0",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.pair",
+   "private": true,
+   "kind": "definition",
+   "state": "削除",
+   "final_name": null,
+   "type_sha256": "bb417e41b7c8af6d3785c86ad07ee2784f4b379ff1436f8684f95f90715223e0",
+   "base_type_sha256": "bb417e41b7c8af6d3785c86ad07ee2784f4b379ff1436f8684f95f90715223e0"
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.pair.eq_1",
+   "private": false,
+   "kind": "theorem",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.pair.eq_1",
+   "type_sha256": "049744e333d579fe54eba184440adf3d9a1a1827fa12e88abaa7492f2a804521",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.pair.eq_1",
+   "private": true,
+   "kind": "theorem",
+   "state": "削除",
+   "final_name": null,
+   "type_sha256": "4aaeaf7085e748ae4a74438a4e6eef32b9eee01d6a7e5b8c5eb33ff4930948cb",
+   "base_type_sha256": "4aaeaf7085e748ae4a74438a4e6eef32b9eee01d6a7e5b8c5eb33ff4930948cb"
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.pairDefinition.eq_1",
+   "private": false,
+   "kind": "theorem",
+   "state": "変更",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.pairDefinition.eq_1",
+   "type_sha256": "4f9a8dd107a19a65217f5e5cf12d39d196794a8905de89b8476efe5e6a599fe9",
+   "base_type_sha256": "da63812b111fbff047b34ab28ccbbda35fc88033cdbc3a574e1dea57d8cfc65d"
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.pair_alts",
+   "private": true,
+   "kind": "theorem",
+   "state": "変更",
+   "final_name": "_private.Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.0.Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.pair_alts",
+   "type_sha256": "70d112d48715cd0fc036c9335c698289d2d16e1f29853d2bf03bf02e2d3ffee2",
+   "base_type_sha256": "8a1a289298bbb1a80c96a73c19c40c9c66ed0e334c6ff977a7a6ed153b934434"
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.pair_exhaustive",
+   "private": true,
+   "kind": "theorem",
+   "state": "変更",
+   "final_name": "_private.Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.0.Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.pair_exhaustive",
+   "type_sha256": "9357f6abff40e3d2b84d043be3f8a847c1a41a3738d004f966ab49898f786334",
+   "base_type_sha256": "5a91113950a4c8ad5cf1b96854dfa88e9a1a0c7faf7faf3d676bebd53867c44e"
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.pair_typed_of",
+   "private": false,
+   "kind": "theorem",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.pair_typed_of",
+   "type_sha256": "afa642b2252c9384a45d6b82a78d0bb3b419511112235f7f3cd603836c747ed6",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.prim_kinds",
+   "private": true,
+   "kind": "theorem",
+   "state": "変更",
+   "final_name": "_private.Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.0.Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.prim_kinds",
+   "type_sha256": "fa4e0f6641322a9a03a2764d837cdf9f776eb11d95bdf8d7e049e03233923765",
+   "base_type_sha256": "66bd8a448a68b38e587c16ff8daaf3cd53cad8b73a8b42807ab2c2644aba2a37"
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.primitive_of",
+   "private": false,
+   "kind": "theorem",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.primitive_of",
+   "type_sha256": "f8eaff7f156347e0055272b6623c9a1f8d3d89561a7b9edc05fba84aa9ae993a",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.ref_identity",
+   "private": true,
+   "kind": "theorem",
+   "state": "新規",
+   "final_name": "_private.Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.0.Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.ref_identity",
+   "type_sha256": "0c92e728110bcc5ca86ddd0289e1721ac3346a9e37f9afcdb17ccb9e258b2651",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.ref_kinds",
+   "private": true,
+   "kind": "theorem",
+   "state": "変更",
+   "final_name": "_private.Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.0.Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.ref_kinds",
+   "type_sha256": "14053b0a772731d537ebad3c91b6b9e64e92199c1eafa9ca5f3edb1ff8f12c76",
+   "base_type_sha256": "585299b6afb37561ef56bcd36d20b70f174ed132cc0d21b8bc424b8dd30c9666"
+  },
+  {
+   "module": "StandardOrdinaryCoreProgram",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.reference_of",
+   "private": false,
+   "kind": "theorem",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.reference_of",
+   "type_sha256": "cb7fb41a44fc76f02c27101513121ab21f0e4c23f0dfbf270e30d3bd6b8557dd",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardOrdinaryListBodies",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryListBodies.Inputs.casesOn",
+   "private": false,
+   "kind": "definition",
+   "state": "変更",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryListBodies.Inputs.casesOn",
+   "type_sha256": "23b404cd9e17638a28476eab5a4d6fe33ecd5a7ede722ae93023561a5fc03b78",
+   "base_type_sha256": "5300c124fe998deee73200e27c4d13ad0242a6ed19c9e4f9c8021fd7fefa7cb9"
+  },
+  {
+   "module": "StandardOrdinaryListBodies",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryListBodies.Inputs.constructors",
+   "private": false,
+   "kind": "theorem",
+   "state": "削除",
+   "final_name": null,
+   "type_sha256": "5ddaded3e14c81e841828b981222c0dab7937adbf17dc5c3080e36a7485cb080",
+   "base_type_sha256": "5ddaded3e14c81e841828b981222c0dab7937adbf17dc5c3080e36a7485cb080"
+  },
+  {
+   "module": "StandardOrdinaryListBodies",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryListBodies.Inputs.mk",
+   "private": false,
+   "kind": "constructor",
+   "state": "変更",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryListBodies.Inputs.mk",
+   "type_sha256": "4cb9b574bf0bf91568f8855715b24b4bce999dc602b1ec3022b1f60176de79ee",
+   "base_type_sha256": "0060c3c38410d0ebe887c875abee10753a2b8a52c437ca38f6b2c9b5329d204d"
+  },
+  {
+   "module": "StandardOrdinaryListBodies",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryListBodies.Inputs.mk._flat_ctor",
+   "private": false,
+   "kind": "definition",
+   "state": "変更",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryListBodies.Inputs.mk._flat_ctor",
+   "type_sha256": "4cb9b574bf0bf91568f8855715b24b4bce999dc602b1ec3022b1f60176de79ee",
+   "base_type_sha256": "0060c3c38410d0ebe887c875abee10753a2b8a52c437ca38f6b2c9b5329d204d"
+  },
+  {
+   "module": "StandardOrdinaryListBodies",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryListBodies.Inputs.options",
+   "private": false,
+   "kind": "theorem",
+   "state": "新規",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryListBodies.Inputs.options",
+   "type_sha256": "6dcb4dcae697418288f57b641129f9aed35d5f8bd00591f30a5aaa345861b595",
+   "base_type_sha256": null
+  },
+  {
+   "module": "StandardOrdinaryListBodies",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryListBodies.Inputs.rec",
+   "private": false,
+   "kind": "recursor",
+   "state": "変更",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryListBodies.Inputs.rec",
+   "type_sha256": "fdc883227491ce6b5b141ebf11a8268ea0beb4434645e9bc6d16be685e4d3270",
+   "base_type_sha256": "b6e745c7077d62a898a95dccde13ba9597a06ee97955f1864887994592481dcc"
+  },
+  {
+   "module": "StandardOrdinaryListBodies",
+   "name": "Benitoite.Release.Refinement.StandardOrdinaryListBodies.Inputs.recOn",
+   "private": false,
+   "kind": "definition",
+   "state": "変更",
+   "final_name": "Benitoite.Release.Refinement.StandardOrdinaryListBodies.Inputs.recOn",
+   "type_sha256": "23b404cd9e17638a28476eab5a4d6fe33ecd5a7ede722ae93023561a5fc03b78",
+   "base_type_sha256": "5300c124fe998deee73200e27c4d13ad0242a6ed19c9e4f9c8021fd7fefa7cb9"
+  }
+ ],
+ "inherited": {
+  "StandardAliasBodies": 508,
+  "StandardDecimalResponse": 121,
+  "StandardOrdinaryCoreBodies": 246,
+  "StandardOrdinaryListBodies": 178,
+  "StandardOrdinaryCoreProgram": 993
+ },
+ "run": {
+  "steps": [
+   {
+    "module": "StandardAliasBodies",
+    "exit": 0,
+    "wall_seconds": 23.77
+   },
+   {
+    "module": "StandardDecimalResponse",
+    "exit": 0,
+    "wall_seconds": 1.54
+   },
+   {
+    "module": "StandardOrdinaryCoreBodies",
+    "exit": 0,
+    "wall_seconds": 15.75
+   },
+   {
+    "module": "StandardOrdinaryListBodies",
+    "exit": 0,
+    "wall_seconds": 18.53
+   },
+   {
+    "module": "StandardOrdinaryCoreProgram",
+    "exit": 0,
+    "wall_seconds": 112.49
+   },
+   {
+    "module": "dump",
+    "exit": 0,
+    "wall_seconds": 8.39
+   }
+  ],
+  "wall_seconds": 180.46
+ }
+}
