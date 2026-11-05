@@ -12,6 +12,11 @@ mutual
       (v.rename ξ).toTerm? = v.toTerm?.map (termBind (fun i => some (.var (ξ i)))) := by
     cases v <;> try rfl
     case const c => cases c <;> rfl
+    case atError d =>
+      have h := ScopePublic.PublicTree.termBind_toTerm (fun i => some (.var (ξ i)))
+        (.con "Scope.ScopeError.At" [d.publicTree])
+      simp only [ScopePublic.PublicTree.toTerm, ScopePublic.PublicTree.toTermSlots] at h
+      simp [Val.rename, Val.toTerm?, termBind, h]
     all_goals simp only [Val.rename, Val.toTerm?, Val.toTermSlots_rename,
       termBind_listValue, termBind_mapValue, termBind_setValue, termBind_dataValue,
       Option.map_some]
@@ -32,6 +37,11 @@ mutual
       (v.subst ν ρ).toTerm? = v.toTerm?.bind (termBind? (valEnv ν).values) := by
     cases v <;> try rfl
     case const c => cases c <;> rfl
+    case atError d =>
+      have h := ScopePublic.PublicTree.termBind_toTerm (valEnv ν).values
+        (.con "Scope.ScopeError.At" [d.publicTree])
+      simp only [ScopePublic.PublicTree.toTerm, ScopePublic.PublicTree.toTermSlots] at h
+      simp [Val.subst, Val.toTerm?, h]
     all_goals simp only [Val.subst, Val.toTerm?, Val.toTermSlots_subst,
       termBind?, Option.bind_some]
   theorem Val.toTermSlots_subst (vs : List Val) (ν : Nat → Val) (ρ : Nat → LocalRef) :

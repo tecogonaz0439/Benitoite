@@ -27,7 +27,10 @@ mutual
       case atError detail =>
         split at hm
         · apply patterns_bindings_adequate (vs := detail.values) _ hm
-          simp [Detail.values,Detail.textFields,Val.Adequate]
+          intro w hw
+          simp only [Detail.values, List.mem_singleton] at hw
+          subst hw
+          exact detail.publicTree.toVal_adequate σ
         · cases hm
     | list before rest after =>
       cases v <;> simp only [matchVal] at hm

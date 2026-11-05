@@ -104,7 +104,7 @@ mutual
         split at hm
         · rename_i he
           subst he
-          obtain ⟨cd',hl',hz,hargs⟩ := atError_declaration hv rfl
+          obtain ⟨cd',hl',hz,hargs,hpub⟩ := atError_declaration hv rfl
           have he := Option.some.inj (hl.symm.trans hl')
           subst cd'
           have hts : ts = [] := List.eq_nil_iff_length_eq_zero.mpr (hn.trans hz)
@@ -112,7 +112,7 @@ mutual
           have hfield : TypeAnnotations P [] Γ (cd.args.map (Ty.subst [] [])) := by
             intro t ht; obtain ⟨x,hx,rfl⟩ := List.mem_map.mp ht
             exact valid.field_annotation hl hx hz.symm (by intro t ht; cases ht) (by intro t ht; cases ht)
-          have hvals := detail.values_typed P B Ψ Qempty [] [] []
+          have hvals := detail.values_typed P B Ψ Qempty [] [] [] hpub
           have heq : (cd.args.map (Ty.subst [] [])).map cap.closeTy = atErrorFields := by rw [hargs]; rfl
           have hann : TypeAnnotations P [] Γ ((cd.args.map (Ty.subst [] [])).map (annotationType normal)) := by
             cases normal

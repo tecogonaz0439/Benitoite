@@ -330,9 +330,14 @@ theorem body_scoped (body : Body) : BodyScoped body.definition := by
 theorem field_rows (externals : List (ExternalKey × ExternalDecl)) :
     ∀ c cd, (program externals).cons c = some cd → ∀ a ∈ cd.args, a.RowsIn (· < 0) ∧ a.RangesScoped 0 := by
   intro c cd h
-  have mem := cons_mem h
-  simp only [constructors, declarations, byteOrder, roundingMode, StandardOrdinaryCoreBodies.declarations,
-    ScopeDeclarations.http, ScopeDeclarations.file, ScopeDeclarations.result, ScopeDeclarations.scopeError,
+  rcases (constructors_split (cons_mem h)).symm with mem | mem
+  · obtain ⟨_, _, as, hargs, _⟩ := ScopeDeclarations.public_entry mem
+    intro a ha
+    rw [hargs] at ha
+    obtain ⟨b, _, rfl⟩ := List.mem_map.mp ha
+    exact ⟨(b.sourceScoped 0 0 0).2.1, (b.sourceScoped 0 0 0).2.2⟩
+  simp only [baseDeclarations, byteOrder, roundingMode, StandardOrdinaryCoreBodies.declarations,
+    ScopeDeclarations.base, ScopeDeclarations.file, ScopeDeclarations.result, ScopeDeclarations.scopeError,
     ScopeDeclarations.pair, ScopeDeclarations.clientRequest, ScopeDeclarations.requestCheckError,
     StandardOrdinaryCoreBodies.Record.owner, StandardOrdinaryCoreBodies.Record.fields,
     StandardSafe.names] at mem
@@ -345,7 +350,7 @@ theorem field_rows (externals : List (ExternalKey × ExternalDecl)) :
     try (simp at ha; done)
     try simp only [atErrorFields, List.replicate, List.mem_cons, List.not_mem_nil, or_false] at ha
     repeat' (rcases ha with rfl | ha)
-    all_goals try simp [Ty.RowsIn, Ty.RangesScoped, Ty.RowsInList, rangesScopedTypes, atErrorType]
+    all_goals try simp [Ty.RowsIn, Ty.RangesScoped, Ty.RowsInList, rangesScopedTypes, atErrorType, atDetailType]
 
 /-- 合成プログラムの全構成子は、データ名の引数の数を一つに定め、欄が適格である。 -/
 theorem cons_scoped (externals : List (ExternalKey × ExternalDecl)) :

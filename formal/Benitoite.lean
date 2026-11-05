@@ -854,3 +854,7 @@ import Benitoite.Release.Refinement.StandardModelWellFormed
 import Benitoite.Release.Refinement.StandardModelCollectionInputs
 import Benitoite.Release.Refinement.StandardModelIOInputs
 import Benitoite.Release.Refinement.StandardModelConditionInputs
+import Benitoite.Release.Refinement.ScopePublic
+import Benitoite.Release.Refinement.ScopePublicValues
+import Benitoite.Release.Refinement.ScopePublicTyping
+import Benitoite.Release.Refinement.PublicNames

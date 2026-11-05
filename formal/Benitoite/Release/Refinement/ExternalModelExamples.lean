@@ -55,13 +55,11 @@ private theorem box_lookup {s b c cd} (lookup : (program s b).cons c = some cd)
     obtain ⟨pre,post,equal,_⟩ := mem
     have member : (c,cd) ∈ (ScopeDeclarations.http.flatMap StandardKeyTyping.DataDecl.entries) := by
       rw [equal]; simp
-    simp only [ScopeDeclarations.http,ScopeDeclarations.file,List.flatMap_append,
-      List.flatMap_cons,List.flatMap_nil,ScopeDeclarations.result,ScopeDeclarations.scopeError,
-      ScopeDeclarations.pair,ScopeDeclarations.clientRequest,ScopeDeclarations.requestCheckError,
-      StandardKeyTyping.DataDecl.entries,List.map,List.mem_append,List.mem_cons,List.not_mem_nil,
-      or_false,Prod.mk.injEq,or_assoc] at member
-    rcases member with ⟨rfl,rfl⟩ | ⟨rfl,rfl⟩ | ⟨rfl,rfl⟩ | ⟨rfl,rfl⟩ | ⟨rfl,rfl⟩ | ⟨rfl,rfl⟩ | ⟨rfl,rfl⟩ | ⟨rfl,rfl⟩ | ⟨rfl,rfl⟩ | ⟨rfl,rfl⟩ | ⟨rfl,rfl⟩ | ⟨rfl,rfl⟩ | ⟨rfl,rfl⟩
-    all_goals simp at owner
+    obtain ⟨d, hd, he⟩ := List.mem_flatMap.mp member
+    obtain ⟨_, _, eq⟩ := List.mem_map.mp he
+    cases eq
+    have names : ∀ d ∈ ScopeDeclarations.http, d.name ≠ "ExternalBox" := by decide
+    exact absurd owner (names d hd)
 
 private theorem box_arity (s : Shape) (b : Bool) : (program s b).DataArity "ExternalBox" 1 := by
   constructor
@@ -615,10 +613,8 @@ theorem program_hasHttp (s : Shape) (b : Bool) : ScopeDeclarations.HasHttp (prog
   intro d hd
   have old := ScopeDeclarations.program_hasHttp d hd
   have different : d.name ≠ "ExternalBox" := by
-    simp only [ScopeDeclarations.http,ScopeDeclarations.file,List.mem_append,List.mem_cons,
-      List.not_mem_nil,or_false] at hd
-    rcases hd with (rfl | rfl) | rfl | rfl | rfl
-    all_goals decide
+    have names : ∀ d ∈ ScopeDeclarations.http, d.name ≠ "ExternalBox" := by decide
+    exact names d hd
   have preserve : ∀ c cd, ScopeDeclarations.program.cons c = some cd → (program s b).cons c = some cd := by
     intro c cd lookup
     have diff : c ≠ "ExternalBox.Box" := by intro eq; subst c; cases lookup

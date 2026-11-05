@@ -76,24 +76,38 @@ example (detail : AtError) (ws : List Val) (σ : PathEnv) (hv : σ.Valid)
   adequate_atError detail ws σ hv hws
 end AtTargets
 
-/-- 元入力は保存されるが、現在の項観測とパターン照合は元入力を取り出さない。 -/
-theorem Detail.originals_unobserved (d : AtError) (p t : Val) :
+/-- 元入力は公開形の AtInput を通して観測される。公開形が同じ元入力への置換は、九欄の公開形・項観測・
+照合を変えない。 -/
+theorem Detail.originals_observed (d : AtError) (p t : Val)
+    (hp : ScopePublic.inputOfVal p = ScopePublic.inputOfVal d.originalPattern)
+    (ht : ScopePublic.inputOfVal t = ScopePublic.inputOfVal d.originalTarget) :
     let d' : AtError := {d with originalPattern := p, originalTarget := t}
-    d'.textFields = d.textFields ∧ d'.values = d.values ∧
+    d'.publicTree = d.publicTree ∧ d'.values = d.values ∧
     (Val.atError d').toTerm? = (Val.atError d).toTerm? ∧
     ∀ pat, (matchVal pat (.atError d')).map (List.map Val.toTerm?) =
       (matchVal pat (.atError d)).map (List.map Val.toTerm?) := by
-  refine ⟨rfl,rfl,rfl,?_⟩
+  have same : ({d with originalPattern := p, originalTarget := t} : AtError).publicTree = d.publicTree := by
+    simp only [Detail.publicTree, ScopePublic.detailTree?, hp, ht]
+  have term : (Val.atError {d with originalPattern := p, originalTarget := t}).toTerm? =
+      (Val.atError d).toTerm? := by simp only [Val.toTerm?, same]
+  refine ⟨same, by simp only [Detail.values, same], term, ?_⟩
   intro pat
-  cases pat <;> rfl
+  cases pat <;> simp [matchVal, Detail.values, same, term]
 
-example (d : AtError) (p t : Val) (ws : List Val) :
+/-- 文字列の元入力は、そのままの文字列を持つ AtInput.Text として観測される。 -/
+example (d : AtError) (s : String) (h : d.originalPattern = .const (.string s)) :
+    ScopePublic.inputOfVal d.originalPattern = some (ScopePublic.inputText s) := by
+  rw [h]; rfl
+
+example (d : AtError) (p t : Val) (ws : List Val)
+    (hp : ScopePublic.inputOfVal p = ScopePublic.inputOfVal d.originalPattern)
+    (ht : ScopePublic.inputOfVal t = ScopePublic.inputOfVal d.originalTarget) :
     let d' : AtError := {d with originalPattern := p, originalTarget := t}
     AdequateResult ws (.val (.atError d')) ∧
       (Val.atError d').toTerm? = (Val.atError d).toTerm? ∧
       ∀ pat, (matchVal pat (.atError d')).map (List.map Val.toTerm?) =
-      (matchVal pat (.atError d)).map (List.map Val.toTerm?) :=
-  ⟨AtTargets.adequate_atError _ ws,(d.originals_unobserved p t).2.2⟩
+        (matchVal pat (.atError d)).map (List.map Val.toTerm?) :=
+  ⟨AtTargets.adequate_atError _ ws,(d.originals_observed p t hp ht).2.2⟩
 
 example (p t : Val) (snapshot : Option PathEnv) (pat : RangeExpr)
     (target : TargetInput) (d : AtCheckError) :

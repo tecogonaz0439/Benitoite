@@ -693,11 +693,18 @@ def roundingMode : StandardKeyTyping.DataDecl :=
 /-- バイト列の整数の読み書きの二つのバイト順。Bytes.readUnsignedなどの引数の型が読む。 -/
 def byteOrder : StandardKeyTyping.DataDecl :=
   ⟨"ByteOrder",0,[("ByteOrder.BigEndian",[]),("ByteOrder.LittleEndian",[])]⟩
-def declarations : List StandardKeyTyping.DataDecl :=
-  StandardOrdinaryCoreBodies.declarations ++ ScopeDeclarations.http.filter
+def baseDeclarations : List StandardKeyTyping.DataDecl :=
+  StandardOrdinaryCoreBodies.declarations ++ ScopeDeclarations.base.filter
     (fun d => !(StandardOrdinaryCoreBodies.declarations.any (fun old => old.name == d.name))) ++
     [byteOrder] ++ [roundingMode]
+/-- At の診断の公開の宣言は最後に置き、既存の構成子の並びを保つ。Option は標準の宣言を使う。 -/
+def declarations : List StandardKeyTyping.DataDecl := baseDeclarations ++ ScopeDeclarations.publicDecls
 def constructors : List (String × ConDecl) := declarations.flatMap StandardKeyTyping.DataDecl.entries
+
+theorem constructors_split {c : String} {cd : ConDecl} (h : (c, cd) ∈ constructors) :
+    (c, cd) ∈ baseDeclarations.flatMap StandardKeyTyping.DataDecl.entries ∨
+      (c, cd) ∈ ScopeDeclarations.publicDecls.flatMap StandardKeyTyping.DataDecl.entries := by
+  simpa only [constructors, declarations, List.flatMap_append, List.mem_append] using h
 
 def program (externals : List (ExternalKey × ExternalDecl)) : Program :=
   {StandardOrdinaryCoreProgram.program with
@@ -741,8 +748,11 @@ theorem option_declarations (externals : List (ExternalKey × ExternalDecl)) :
       obtain ⟨before,after,eq,_⟩ := List.lookup_eq_some_iff.mp lookup
       rw [eq]
       exact List.mem_append_right _ List.mem_cons_self
-    simp [constructors,declarations,byteOrder,roundingMode,StandardOrdinaryCoreBodies.declarations,
-      ScopeDeclarations.http,ScopeDeclarations.file,ScopeDeclarations.result,ScopeDeclarations.scopeError,
+    rcases (constructors_split mem).symm with mem | mem
+    · obtain ⟨_, hd, _⟩ := ScopeDeclarations.public_entry mem
+      exact absurd owner (ScopeDeclarations.public_not_option _ hd).1
+    simp [baseDeclarations,byteOrder,roundingMode,StandardOrdinaryCoreBodies.declarations,
+      ScopeDeclarations.base,ScopeDeclarations.file,ScopeDeclarations.result,ScopeDeclarations.scopeError,
       ScopeDeclarations.pair,ScopeDeclarations.clientRequest,ScopeDeclarations.requestCheckError,
       StandardKeyTyping.DataDecl.entries,StandardOrdinaryCoreBodies.Record.owner,StandardSafe.names] at mem
     rcases mem with ⟨rfl,rfl⟩ | ⟨rfl,rfl⟩ | rest

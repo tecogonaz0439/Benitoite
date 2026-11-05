@@ -394,8 +394,8 @@ private theorem rootShape_of_typing_aux {P B Ψ Q C Γ Φ v a}
     exact .inl ⟨_,_,_,_,rfl,hc,by simpa only [List.length_map] using typed_values_length hs⟩
   | .V_AtError (detail := detail) hs =>
     rw [hs.errorType_eq]
-    obtain ⟨cd,hc,_,_,ha⟩ := hs.standard.2.2
-    exact .inr ⟨detail,cd,rfl,hc,by simp [ha,atErrorFields,Detail.values,Detail.textFields]⟩
+    obtain ⟨cd,hc,_,_,ha⟩ := hs.standard.2.2.1
+    exact .inr ⟨detail,cd,rfl,hc,by simp [ha,atErrorFields,Detail.values]⟩
   | .V_List .. => exact ⟨_,rfl⟩
   | .V_Sub h hl .. => exact RootShape.subtype hl (rootShape_of_typing_aux h hΓ)
   | .V_Normal h => exact RootShape.norm.mpr (rootShape_of_typing_aux h hΓ)
@@ -554,7 +554,7 @@ theorem constructor_test_false {P c ps cd ts δ v t}
       obtain ⟨ws,hw⟩ := irrefutable_fields_match hfields hlen
       simp [matchVal,hw] at hm
     cases ht
-    simpa [he] using eval_constructor c "Scope.ScopeError.At" (detail.textFields.map (fun x => some (.string x)))
+    simpa [he] using eval_constructor c "Scope.ScopeError.At" [some detail.publicTree.toTerm]
 
 private theorem empty_test_excluded_aux {P pat a δ v t}
     (hp : PatTy P pat a δ) (hr : pat = .list [] none []) (hv : RootShape P a v)
@@ -863,7 +863,7 @@ private theorem readPath_observe {v w : Val} {route : List FieldRef} {t : Term} 
       case con c' ts args => obtain ⟨rfl,rfl⟩ := hcv; rfl
       case atError d =>
         obtain ⟨rfl,rfl⟩ := hcv
-        simp [Val.toTerm?,Detail.values,Detail.textFields,Val.toTermSlots_eq_map,List.map_map,Term.observe]
+        simp [Detail.values_toTerm,Term.observe]
     have hfield : (Term.field r t).observe η = u.toTerm?.bind (Term.observe η) := by
       simp only [Term.observe,htFields,hindex]
       dsimp only [Bind.bind,Option.bind]

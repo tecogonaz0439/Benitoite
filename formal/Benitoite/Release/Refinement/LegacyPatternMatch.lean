@@ -1,7 +1,39 @@
 import Benitoite.Release.Refinement.LegacyPatterns
+import Benitoite.Release.Refinement.ScopePublicValues
 
 namespace Benitoite.Release.Refinement
 noncomputable section
+
+/-- 公開の欄の型の旧 Release の型。埋め込むと同じ核の型になる。 -/
+def ScopePublic.PublicTy.oldTy : ScopePublic.PublicTy → Benitoite.Release.Ty
+  | .string => .base .string
+  | .integer => .base .integer
+  | .bytes => .bytes
+  | .list a => .list a.oldTy
+  | .option a => .data "Option" [a.oldTy]
+  | .data d => .data d []
+
+theorem ScopePublic.PublicTy.embed_oldTy : ∀ a : ScopePublic.PublicTy, embedTy a.oldTy = a.ty
+  | .string | .integer | .bytes | .data _ => rfl
+  | .list a => by simp [ScopePublic.PublicTy.oldTy, ScopePublic.PublicTy.ty, embedTy,
+      ScopePublic.PublicTy.embed_oldTy a]
+  | .option a => by simp [ScopePublic.PublicTy.oldTy, ScopePublic.PublicTy.ty, embedTy, embedTys,
+      ScopePublic.PublicTy.embed_oldTy a]
+
+mutual
+  /-- 公開の値の旧 Release の照合の値。バイト列は照合が中を読まない値に写す。 -/
+  def ScopePublic.PublicTree.legacy : ScopePublic.PublicTree → Benitoite.Release.Val
+    | .text s => .const (.string s)
+    | .integer n => .const (.integer n)
+    | .bytes _ => .fnRef "" [] []
+    | .list _ xs => .list (ScopePublic.PublicTree.legacyList xs)
+    | .none _ => .con "Option.None" [] []
+    | .some _ x => .con "Option.Some" [] [x.legacy]
+    | .con c xs => .con c [] (ScopePublic.PublicTree.legacyList xs)
+  def ScopePublic.PublicTree.legacyList : List ScopePublic.PublicTree → List Benitoite.Release.Val
+    | [] => []
+    | x :: xs => x.legacy :: ScopePublic.PublicTree.legacyList xs
+end
 
 def legacyPatternConst : Const → Benitoite.Release.Const
   | .integer n => .integer n
@@ -27,8 +59,7 @@ mutual
     | .con c _ args => .con c [] (legacyPatternVals args)
     | .list xs => .list (legacyPatternVals xs)
     | .checked t | .checkedRequest t _ | .checkedAt _ _ t _ => .checked t
-    | .atError d => .con "Scope.ScopeError.At" []
-        (d.textFields.map (fun s => Benitoite.Release.Val.const (.string s)))
+    | .atError d => .con "Scope.ScopeError.At" [] [d.publicTree.legacy]
     | _ => .fnRef "" [] []
   noncomputable def legacyPatternVals : List Val → List Benitoite.Release.Val
     | [] => []
@@ -50,9 +81,33 @@ private theorem legacy_patternRange (lo hi : Benitoite.Release.Const) (c : Const
     Benitoite.Release.Const.inRange lo hi (legacyPatternConst c) = patternRange lo hi c := by
   cases lo <;> cases hi <;> cases c <;> rfl
 
+mutual
+  theorem ScopePublic.PublicTree.legacy_toVal :
+      ∀ t : ScopePublic.PublicTree, legacyPatternVal t.toVal = t.legacy
+    | .text _ | .integer _ | .bytes _ => rfl
+    | .none _ => by simp [ScopePublic.PublicTree.toVal, legacyPatternVal, legacyPatternVals,
+        ScopePublic.PublicTree.legacy]
+    | .list _ xs => by
+      simp only [ScopePublic.PublicTree.toVal, legacyPatternVal, ScopePublic.PublicTree.legacy,
+        ScopePublic.PublicTree.legacy_toVals xs]
+    | .some _ x => by
+      simp only [ScopePublic.PublicTree.toVal, legacyPatternVal, legacyPatternVals, ScopePublic.PublicTree.legacy,
+        ScopePublic.PublicTree.legacy_toVal x]
+    | .con _ xs => by
+      simp only [ScopePublic.PublicTree.toVal, legacyPatternVal, ScopePublic.PublicTree.legacy,
+        ScopePublic.PublicTree.legacy_toVals xs]
+  theorem ScopePublic.PublicTree.legacy_toVals :
+      ∀ xs : List ScopePublic.PublicTree,
+        legacyPatternVals (ScopePublic.PublicTree.toVals xs) = ScopePublic.PublicTree.legacyList xs
+    | [] => rfl
+    | x :: xs => by
+      simp only [ScopePublic.PublicTree.toVals, legacyPatternVals, ScopePublic.PublicTree.legacyList,
+        ScopePublic.PublicTree.legacy_toVal x, ScopePublic.PublicTree.legacy_toVals xs]
+end
+
 private theorem legacy_atError_values (d : AtError) :
-    legacyPatternVals d.values = d.textFields.map (fun s => Benitoite.Release.Val.const (.string s)) := by
-  simp [Detail.values,legacyPatternVals_eq_map,List.map_map,Function.comp_def,legacyPatternVal,legacyPatternConst]
+    legacyPatternVals d.values = [d.publicTree.legacy] := by
+  simp [Detail.values, legacyPatternVals, ScopePublic.PublicTree.legacy_toVal]
 
 mutual
   theorem legacy_matchVal (p : Pat) (v : Val) :

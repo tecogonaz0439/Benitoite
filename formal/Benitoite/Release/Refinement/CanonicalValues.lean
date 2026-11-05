@@ -138,18 +138,18 @@ example {P B Ψ Q C Φ v T a} (h : HasTypeVQ P B Ψ Q C [] Φ v T)
   obtain ⟨vs,b,hv,hb,le⟩ := h.canonical_list ht
   exact ⟨vs,hv,fun w hw => ⟨b,hb.member hw,le⟩⟩
 
-/-- data の二つの導入経路を分け、AtError の同じ七欄の宣言を保持する。 -/
+/-- data の二つの導入経路を分け、AtError の同じ一欄の宣言を保持する。 -/
 example {P B Ψ Q C Φ v T d ts} (h : HasTypeVQ P B Ψ Q C [] Φ v T)
     (ht : T.norm.core = .data d ts) :
     (∃ c us vs cd, v = .con c us vs ∧ P.cons c = some cd ∧
       HasTypeVsQ P B Ψ Q C [] Φ vs (cd.args.map (Ty.subst us []))) ∨
     (∃ detail, ∃ shape : ResultShape, v = .atError detail ∧ shape.Declared P ∧
-      T.norm.core = shape.errorType.norm.core ∧ detail.textFields.length = 7) := by
+      T.norm.core = shape.errorType.norm.core ∧ detail.values.length = 1) := by
   rcases h.canonical_data ht with ⟨c,us,vs,hv⟩ | ⟨detail,hv⟩
   · obtain ⟨cd,hc,_,_,_,hs,_⟩ := h.inv_con hv
     exact Or.inl ⟨c,us,vs,cd,hv,hc,hs⟩
   · obtain ⟨sh,hs,he⟩ := h.inv_atError hv
-    exact Or.inr ⟨detail,sh,hv,hs,he,by cases detail <;> rfl⟩
+    exact Or.inr ⟨detail,sh,hv,hs,he,rfl⟩
 
 /-- 空篩の不在を空の網羅性の前提へ供給する。 -/
 example {P a v} : ¬ Inhabits P (.refined a .falsity) v := fun h => h.not_falsity

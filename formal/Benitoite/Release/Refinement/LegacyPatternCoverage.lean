@@ -13,12 +13,68 @@ private theorem legacy_tys_injective : Function.Injective embedTys := by
   cases this
   rfl
 
-private theorem legacy_strings (P0 : Benitoite.Release.Program) (ss : List String) :
-    Benitoite.Release.InhabitsAll P0 (List.replicate ss.length (.base .string))
-      (ss.map (fun s => Benitoite.Release.Val.const (.string s))) := by
-  induction ss with
-  | nil => exact .nil
-  | cons s ss ih => exact .cons (.const (c := .string s)) ih
+private theorem old_decl {K P0 c d n args} (h : (embedProgramWithKinds K P0).cons c = some ⟨d, n, args⟩) :
+    ∃ old : Benitoite.Release.ConDecl, P0.cons c = some old ∧ old.data = d ∧ old.ntys = n ∧
+      embedTys old.args = args := by
+  obtain ⟨old, ho, he⟩ := Option.map_eq_some_iff.mp h
+  simp only [embedConDecl, ConDecl.mk.injEq] at he
+  exact ⟨old, ho, he.1, he.2.1, he.2.2⟩
+
+private theorem old_public_args {old : Benitoite.Release.ConDecl} {as : List ScopePublic.PublicTy}
+    (h : embedTys old.args = as.map ScopePublic.PublicTy.ty) :
+    old.args.map (Benitoite.Release.Ty.subst [] []) = as.map ScopePublic.PublicTy.oldTy := by
+  apply legacy_tys_injective
+  simp only [embedTys_eq_map, List.map_map, Function.comp_def, legacy_subst, List.map_nil] at h ⊢
+  have e : old.args.map (fun x => Ty.subst [] [] (embedTy x)) = (old.args.map embedTy).map (Ty.subst [] []) := by
+    simp [List.map_map, Function.comp_def]
+  rw [e, h]
+  simp [List.map_map, Function.comp_def, ScopePublic.PublicTy.subst_ty, ScopePublic.PublicTy.embed_oldTy]
+
+mutual
+  /-- 公開の値の旧 Release の照合の値は、旧の宣言で同じ型に属する。 -/
+  private theorem legacy_public {K P0} (hp : (embedProgramWithKinds K P0).HasScopePublic)
+      {t : ScopePublic.PublicTree} {a : ScopePublic.PublicTy} (h : t.Typed a) :
+      Benitoite.Release.Inhabits P0 a.oldTy t.legacy := by
+    match h with
+    | .text s => exact .const (c := .string s)
+    | .integer n => exact .const (c := .integer n)
+    | .bytes _ => exact .bytes
+    | .list _ hs => exact .list (legacy_public_each hp hs)
+    | .none (a := a) _ =>
+      obtain ⟨old, ho, hd, hn, hargs⟩ := old_decl hp.optionNone
+      have hz : old.args = [] := legacy_tys_injective hargs
+      have hi := Benitoite.Release.Inhabits.con (ts := [a.oldTy]) (tys' := []) (args := []) ho
+        (by rw [hn]; rfl) (by rw [hz]; exact .nil)
+      rwa [hd] at hi
+    | .some (a := a) _ hx =>
+      obtain ⟨old, ho, hd, hn, hargs⟩ := old_decl hp.optionSome
+      have hz : old.args = [.tvar 0] := legacy_tys_injective hargs
+      have hs : (Benitoite.Release.Ty.tvar 0).subst [a.oldTy] [] = a.oldTy := by
+        apply embedTy_injective
+        rw [legacy_subst]
+        simp [embedTy, embedTys, ScopePublic.PublicTy.embed_oldTy, Ty.subst, Ty.substAt, substTypeAt,
+          Ty.bind, Ty.rawBind, typeEnvAt, ScopePublic.PublicTy.norm_ty]
+      have hi := Benitoite.Release.Inhabits.con (ts := [a.oldTy]) (tys' := []) ho
+        (by rw [hn]; rfl) (by rw [hz]; simpa [hs] using Benitoite.Release.InhabitsAll.cons (legacy_public hp hx) .nil)
+      rwa [hd] at hi
+    | .con (c := c) (d := d) (as := as) hl hs =>
+      obtain ⟨old, ho, hd, hn, hargs⟩ := old_decl (ScopePublic.lookup_cons hp hl)
+      have hi := Benitoite.Release.Inhabits.con (ts := []) (tys' := []) ho (by rw [hn]; rfl)
+        (by rw [old_public_args hargs]; exact legacy_public_all hp hs)
+      rwa [hd] at hi
+  private theorem legacy_public_all {K P0} (hp : (embedProgramWithKinds K P0).HasScopePublic)
+      {ts : List ScopePublic.PublicTree} {as : List ScopePublic.PublicTy} (h : ScopePublic.PublicTree.TypedAll ts as) :
+      Benitoite.Release.InhabitsAll P0 (as.map ScopePublic.PublicTy.oldTy) (ScopePublic.PublicTree.legacyList ts) := by
+    match h with
+    | .nil => exact .nil
+    | .cons hx hs => exact .cons (legacy_public hp hx) (legacy_public_all hp hs)
+  private theorem legacy_public_each {K P0} (hp : (embedProgramWithKinds K P0).HasScopePublic)
+      {ts : List ScopePublic.PublicTree} {a : ScopePublic.PublicTy} (h : ScopePublic.PublicTree.TypedEach ts a) :
+      Benitoite.Release.InhabitsEach P0 a.oldTy (ScopePublic.PublicTree.legacyList ts) := by
+    match h with
+    | .nil => exact .nil
+    | .cons hx hs => exact .cons (legacy_public hp hx) (legacy_public_each hp hs)
+end
 
 mutual
   theorem legacy_inhabits {K P0 B0 B nt t v} (tables : LegacyTables K P0 B0 B)
@@ -100,19 +156,15 @@ mutual
       obtain ⟨rfl,hzero⟩ := he
       have hz := legacy_tys_injective (show embedTys as = embedTys [] from hzero)
       subst as
-      obtain ⟨cd,lookup,data,arity,fields⟩ := standard.2.2
+      obtain ⟨cd,lookup,data,arity,fields⟩ := standard.2.2.1
       obtain ⟨old,ho,rfl⟩ := Option.map_eq_some_iff.mp lookup
-      have hfields : old.args = List.replicate 7 (.base .string) := by
-        apply legacy_tys_injective
-        exact fields
+      have hfields : embedTys old.args = [ScopePublic.PublicTy.ty (.data "Scope.AtDetail")] := fields
       have hz : old.ntys = 0 := arity
       have hd : old.data = "Scope.ScopeError" := data
       rw [←hd]
       apply Benitoite.Release.Inhabits.con (ts := []) ho hz
-      simpa only [legacyPatternVal,hfields,List.map_replicate,
-        Benitoite.Release.Ty.subst,Benitoite.Release.Ty.substAt,
-        show (detail.textFields.length) = 7 from by simp [Detail.textFields]] using
-        legacy_strings P0 detail.textFields
+      rw [old_public_args (as := [.data "Scope.AtDetail"]) hfields]
+      exact .cons (legacy_public standard.2.2.2 detail.publicTree_typed) .nil
   termination_by structural h
 
   theorem legacy_inhabitsAll {K P0 B0 B nt ts vs} (tables : LegacyTables K P0 B0 B)

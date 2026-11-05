@@ -1,6 +1,7 @@
 import Benitoite.Release.Refinement.Context
 import Benitoite.Release.Refinement.PathResolution
 import Benitoite.Release.Refinement.VarianceSyntax
+import Benitoite.Release.Refinement.ScopePublic
 
 namespace Benitoite.Release.Refinement
 
@@ -495,7 +496,33 @@ def ConstOK (B : Builtins) : Const → Prop
   | .opaque o _ => B.valKind o = none ∧ B.valContent o = none
   | _ => True
 
-def Detail.values (d : AtError) : List Val := d.textFields.map (fun s => .const (.string s))
+mutual
+  /-- 公開の値の木の値。Option だけが型引数を持つ。 -/
+  def ScopePublic.PublicTree.toVal : ScopePublic.PublicTree → Val
+    | .text s => .const (.string s)
+    | .integer n => .const (.integer n)
+    | .bytes bs => .bytesV bs
+    | .list _ xs => .list (ScopePublic.PublicTree.toVals xs)
+    | .none a => .con "Option.None" [a.ty] []
+    | .some a x => .con "Option.Some" [a.ty] [x.toVal]
+    | .con c xs => .con c [] (ScopePublic.PublicTree.toVals xs)
+  def ScopePublic.PublicTree.toVals : List ScopePublic.PublicTree → List Val
+    | [] => []
+    | x :: xs => x.toVal :: ScopePublic.PublicTree.toVals xs
+end
+
+/-- 元の入力の値の公開形。文字列は Text、解析済みの pattern は Pattern であり、ほかの値は公開形を持たない。 -/
+def ScopePublic.inputOfVal : Val → Option ScopePublic.PublicTree
+  | .const (.string s) => some (ScopePublic.inputText s)
+  | .scopePattern r => some (ScopePublic.inputPattern r)
+  | _ => none
+
+/-- 保存した九欄の公開形（`Scope.AtDetail` の値）。公開形を持たない診断は固定の値で観測する。 -/
+def Detail.publicTree (d : AtError) : ScopePublic.PublicTree :=
+  (ScopePublic.detailTree? ScopePublic.inputOfVal d).getD ScopePublic.unreachableTree
+
+/-- `Scope.ScopeError.At` の欄の値。九欄の公開形の一つの値である。 -/
+def Detail.values (d : AtError) : List Val := [d.publicTree.toVal]
 
 mutual
   /-- 観測できる部分だけを有限のsnapshotに写す。スロットの欠落を保つ。 -/
@@ -520,7 +547,7 @@ mutual
     | .bytesV bs => some (.bytesValue bs)
     | .checked t | .checkedRequest t _ => some (.targetValue none t)
     | .checkedAt _ snapshot t _ => some (.targetValue snapshot t)
-    | .atError d => some (.dataValue "Scope.ScopeError.At" (d.textFields.map (fun s => some (.string s))))
+    | .atError d => some (.dataValue "Scope.ScopeError.At" [some d.publicTree.toTerm])
     | _ => none
   def Val.toTermSlots : List Val → List (Option Term)
     | [] => []
@@ -530,5 +557,32 @@ end
 @[simp] theorem Val.toTermSlots_eq_map (vs : List Val) :
     Val.toTermSlots vs = vs.map Val.toTerm? := by
   induction vs <;> simp_all [Val.toTermSlots]
+
+mutual
+  theorem ScopePublic.PublicTree.toVal_toTerm :
+      ∀ t : ScopePublic.PublicTree, t.toVal.toTerm? = Option.some t.toTerm
+    | .text _ | .integer _ | .bytes _ | .none _ => rfl
+    | .list _ xs => by
+      simp only [ScopePublic.PublicTree.toVal, Val.toTerm?, ScopePublic.PublicTree.toTerm,
+        ScopePublic.PublicTree.toVals_toTermSlots]
+    | .some _ x => by
+      simp only [ScopePublic.PublicTree.toVal, Val.toTerm?, Val.toTermSlots, ScopePublic.PublicTree.toTerm,
+        ScopePublic.PublicTree.toVal_toTerm x]
+    | .con _ xs => by
+      simp only [ScopePublic.PublicTree.toVal, Val.toTerm?, ScopePublic.PublicTree.toTerm,
+        ScopePublic.PublicTree.toVals_toTermSlots]
+  theorem ScopePublic.PublicTree.toVals_toTermSlots :
+      ∀ xs : List ScopePublic.PublicTree,
+        Val.toTermSlots (ScopePublic.PublicTree.toVals xs) = ScopePublic.PublicTree.toTermSlots xs
+    | [] => rfl
+    | x :: xs => by
+      simp only [ScopePublic.PublicTree.toVals, Val.toTermSlots, ScopePublic.PublicTree.toTermSlots,
+        ScopePublic.PublicTree.toVal_toTerm x, ScopePublic.PublicTree.toVals_toTermSlots xs]
+end
+
+/-- At の診断の観測は、照合が束縛する欄の値の観測と同じである。 -/
+theorem Detail.values_toTerm (d : AtError) :
+    (Val.atError d).toTerm? = Option.some (.dataValue "Scope.ScopeError.At" (Val.toTermSlots d.values)) := by
+  simp only [Val.toTerm?, Detail.values, Val.toTermSlots, ScopePublic.PublicTree.toVal_toTerm]
 
 end Benitoite.Release.Refinement

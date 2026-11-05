@@ -1,4 +1,5 @@
 import Benitoite.Release.Refinement.LegacyPatternCoverage
+import Benitoite.Release.Refinement.ScopePublicTyping
 
 namespace Benitoite.Release.Refinement
 noncomputable section
@@ -6,11 +7,16 @@ noncomputable section
 namespace LegacyPatternExamples
 
 def kinds : DeclarationKinds := ⟨fun _ => .value,fun _ => [],fun _ _ => []⟩
-def atDecl : Benitoite.Release.ConDecl := ⟨"Scope.ScopeError",0,List.replicate 7 (.base .string)⟩
+/-- At の診断の公開の宣言と Option の、旧 Release の構成子。 -/
+def oldConstructors : List (ConName × Benitoite.Release.ConDecl) :=
+  ScopePublic.constructors.map (fun e =>
+      (e.1, (⟨e.2.1, 0, e.2.2.map ScopePublic.PublicTy.oldTy⟩ : Benitoite.Release.ConDecl))) ++
+    [("Option.Some", ⟨"Option",1,[.tvar 0]⟩), ("Option.None", ⟨"Option",1,[]⟩)]
+def atDecl : Benitoite.Release.ConDecl := ⟨"Scope.ScopeError",0,[.data "Scope.AtDetail" []]⟩
 def unitOperation : Benitoite.Release.OpDecl :=
   ⟨"UnitEffect",[],[],[],.base .unit,[]⟩
 def oldProgram : Benitoite.Release.Program :=
-  ⟨fun _ => none,fun c => if c = "Scope.ScopeError.At" then some atDecl else none,
+  ⟨fun _ => none,fun c => oldConstructors.lookup c,
     fun o => if o = "unitOp" then some unitOperation else none,
     fun e => if e = "UnitEffect" then some ["unitOp"] else none,
     fun _ => none,fun _ => none⟩
@@ -25,6 +31,41 @@ def builtins : Builtins :=
     isResource := fun _ => false,effects := fun _ => none,sat := fun _ _ _ => True,
     refGet := "get",refSet := "set" }
 
+private theorem lookup_map {α β : Type} (f : α → β) (xs : List (ConName × α)) (c : ConName) :
+    (xs.map fun e => (e.1, f e.2)).lookup c = (xs.lookup c).map f := by
+  induction xs with
+  | nil => rfl
+  | cons x xs ih =>
+    simp only [List.map_cons, List.lookup]
+    split <;> simp_all
+
+/-- 埋め込んだ旧プログラムの構成子の lookup は、公開の宣言だけを持つプログラムと同じである。 -/
+theorem embedded_cons (c : ConName) :
+    (embedProgramWithKinds kinds oldProgram).cons c = ScopePublic.program.cons c := by
+  change (oldConstructors.lookup c).map embedConDecl = ScopePublic.programConstructors.lookup c
+  rw [← lookup_map]
+  congr 1
+
+theorem embedded_public : (embedProgramWithKinds kinds oldProgram).HasScopePublic :=
+  Program.HasScopePublic.of_cons embedded_cons ScopePublic.program_public.1
+
+private theorem old_lookup {c cd} (hc : oldProgram.cons c = some cd) :
+    (∃ d as, (c, d, as) ∈ ScopePublic.constructors ∧ cd = ⟨d, 0, as.map ScopePublic.PublicTy.oldTy⟩) ∨
+    (cd = ⟨"Option",1,[.tvar 0]⟩) ∨ (cd = ⟨"Option",1,[]⟩) := by
+  change oldConstructors.lookup c = some cd at hc
+  obtain ⟨before, after, eq, _⟩ := List.lookup_eq_some_iff.mp hc
+  have mem : (c, cd) ∈ oldConstructors := by rw [eq]; exact List.mem_append_right _ List.mem_cons_self
+  simp only [oldConstructors, List.mem_append, List.mem_map, List.mem_cons, List.not_mem_nil, or_false,
+    Prod.mk.injEq] at mem
+  rcases mem with ⟨⟨c', d, as⟩, hm, rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩
+  · exact .inl ⟨d, as, hm, rfl⟩
+  · exact .inr (.inl rfl)
+  · exact .inr (.inr rfl)
+
+private theorem old_embedded {c cd} (hc : oldProgram.cons c = some cd) :
+    ScopePublic.program.cons c = some (embedConDecl cd) := by
+  rw [← embedded_cons]; simp [hc]
+
 theorem tables : LegacyTables kinds oldProgram oldBuiltins builtins := by
   constructor
   · intro b s hs; cases hs
@@ -37,23 +78,26 @@ theorem tables : LegacyTables kinds oldProgram oldBuiltins builtins := by
   · rfl
   · intro o; rfl
   · intro b rs h; cases h
-  · intro c cd c' cd' hc hc' _
-    simp only [oldProgram] at hc hc'
-    split at hc <;> try cases hc
-    split at hc' <;> cases hc'
-    rfl
+  · intro c cd c' cd' hc hc' hd
+    have h := ScopePublic.program_arity (old_embedded hc)
+    exact (h.2 c' _ (old_embedded hc') hd.symm).symm
   · intro c cd hc a ha
-    simp only [oldProgram] at hc
-    split at hc <;> cases hc
-    simp only [atDecl,List.mem_replicate] at ha
-    obtain ⟨_,rfl⟩ := ha
-    exact ⟨⟨trivial,trivial,trivial⟩,trivial⟩
+    rcases old_lookup hc with ⟨d, as, hm, rfl⟩ | rfl | rfl
+    · obtain ⟨b, hb, rfl⟩ := List.mem_map.mp ha
+      have hk := (ScopePublic.constructor_fields hm).2 b hb
+      rw [ScopePublic.PublicTy.embed_oldTy]
+      exact ⟨b.annotation embedded_public _ _ hk, b.kind embedded_public _ hk⟩
+    · obtain rfl := List.mem_singleton.mp ha
+      exact ⟨⟨by simp [embedTy, Ty.WF], trivial, trivial⟩, by simp [embedTy, Ty.HasKind]⟩
+    · cases ha
   · intro c cd hc a ha
-    simp only [oldProgram] at hc
-    split at hc <;> cases hc
-    simp only [atDecl,List.mem_replicate] at ha
-    obtain ⟨_,rfl⟩ := ha
-    trivial
+    rcases old_lookup hc with ⟨d, as, hm, rfl⟩ | rfl | rfl
+    · obtain ⟨b, hb, rfl⟩ := List.mem_map.mp ha
+      rw [ScopePublic.PublicTy.embed_oldTy]
+      exact b.sourceScoped _ _ _
+    · obtain rfl := List.mem_singleton.mp ha
+      exact ⟨by simp [embedTy, Ty.WF], by simp [embedTy, Ty.RowsIn], by simp [embedTy, Ty.RangesScoped]⟩
+    · cases ha
 
 theorem kinds_wf : kinds.WF oldProgram := by
   constructor
@@ -105,26 +149,25 @@ theorem nested_alts : AltsTy (embedProgramWithKinds kinds oldProgram)
     obtain rfl := List.mem_singleton.mp h
     exact ⟨_,.P_List (.cons .P_Var .nil) .nil (by simp),.refl _,rfl⟩
 
-def atPattern : Pat := .con "Scope.ScopeError.At" (List.replicate 7 .var)
+def atPattern : Pat := .con "Scope.ScopeError.At" [.var]
 
-theorem at_seven_bindings (detail : AtError) :
+theorem at_detail_binding (detail : AtError) :
     matchVal atPattern (.atError detail) = some detail.values := by
-  simp [atPattern,Detail.values,Detail.textFields,matchVal,matchList]
+  simp [atPattern,Detail.values,matchVal,matchList]
 
 theorem at_old_correspondence (detail : AtError) :
     Benitoite.Release.Pat.matchVal atPattern (legacyPatternVal (.atError detail)) =
-      some (detail.textFields.map (fun s => Benitoite.Release.Val.const (.string s))) := by
-  rw [legacy_matchVal,at_seven_bindings,Option.map_some]
-  simp [Detail.values,legacyPatternVals_eq_map,List.map_map,Function.comp_def,
-    legacyPatternVal,legacyPatternConst]
+      some [detail.publicTree.legacy] := by
+  rw [legacy_matchVal,at_detail_binding,Option.map_some]
+  simp [Detail.values,legacyPatternVals,ScopePublic.PublicTree.legacy_toVal]
 
 theorem at_wrong_name (detail : AtError) :
-    matchVal (.con "Other" (List.replicate 7 .var)) (.atError detail) = none := by
+    matchVal (.con "Other" [.var]) (.atError detail) = none := by
   simp [matchVal]
 
 theorem at_wrong_arity (detail : AtError) :
-    matchVal (.con "Scope.ScopeError.At" (List.replicate 6 .var)) (.atError detail) = none := by
-  simp [Detail.values,Detail.textFields,matchVal,matchList]
+    matchVal (.con "Scope.ScopeError.At" (List.replicate 7 .var)) (.atError detail) = none := by
+  simp [Detail.values,matchVal,matchList]
 
 def rangeOpaque : Benitoite.Release.Ty := .opaque "o" (.rvar 0)
 

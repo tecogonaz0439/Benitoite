@@ -19,9 +19,7 @@ mutual
     case setV vs => cases ht; exact Val.observation_slots_wf hv
     case atError d =>
       cases ht
-      induction d.textFields with
-      | nil => trivial
-      | cons x xs ih => exact ⟨trivial,ih⟩
+      exact ⟨d.publicTree.toTerm_varsIn _, trivial⟩
     all_goals cases ht; trivial
   theorem Val.observation_slots_wf {vs : List Val} {nt nv : Nat}
       (hv : Val.ClosedList nt nv vs) : varsInSlots (· < nv) (Val.toTermSlots vs) := by

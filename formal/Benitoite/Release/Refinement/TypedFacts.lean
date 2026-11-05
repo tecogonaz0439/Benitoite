@@ -127,7 +127,7 @@ mutual
     | .V_Set hv _ _ => cases ht; exact HasTypeEachQ.observation_references hv
     | .V_PathBases _ | .V_ScopePattern _ _ _ => cases ht
     | .V_Checked _ _ _ | .V_CheckedRequest _ _ _ _ _ _ | .V_CheckedAt _ => cases ht; trivial
-    | .V_AtError _ => cases ht; simp [Term.References, Term.VarsIn, varsInSlots, varsInSlot, Detail.textFields, List.map]
+    | .V_AtError (detail := d) _ => cases ht; exact ⟨d.publicTree.toTerm_varsIn _, trivial⟩
     | .V_Normal hv => exact hv.observation_references ht
     | .V_Sub hv _ _ _ _ => exact hv.observation_references ht
     | .V_Refine hv _ _ _ _ _ _ _ => exact hv.observation_references ht
@@ -187,7 +187,7 @@ theorem HasTypeVQ.observation {P B store Q C Γ Φ v a sort}
     exact ⟨_, rfl, trivial, by simpa [Term.Shape, hk] using (Option.some.inj hi).symm⟩
   | .V_AtError hs =>
     rw [hs.errorType_eq] at hi
-    exact ⟨_, rfl, by simp [Term.References, Term.VarsIn, varsInSlots, varsInSlot, Detail.textFields, List.map], (Option.some.inj hi).symm⟩
+    exact ⟨_, rfl, ⟨(Detail.publicTree _).toTerm_varsIn _, trivial⟩, (Option.some.inj hi).symm⟩
   | .V_Normal hv => exact hv.observation ((Ty.hasSort_norm _ _).mp hi)
   | .V_Sub hv hl _ _ _ => exact hv.observation (hl.hasSort_source hi)
   | .V_Refine hv _ _ _ _ _ _ _ => exact hv.observation hi

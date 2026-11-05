@@ -20,11 +20,11 @@ end text
 
 def resultShape : ResultShape := ⟨"Result","Result.Ok","Result.Error",atErrorType⟩
 
-/-- 有限の同じ宣言から、標準 Result と内部の Error の宣言を得る。 -/
-theorem result_declared {P} (hp : HasFile P) : resultShape.Declared P := by
-  have hr := hp result (by simp [file])
-  have hs := hp scopeError (by simp [file])
-  exact ⟨⟨rfl,hs.1,⟨_,hs.2 ("Scope.ScopeError.At",⟨"Scope.ScopeError",0,atErrorFields⟩) (by simp [scopeError,StandardKeyTyping.DataDecl.entries]),rfl,rfl,rfl⟩⟩,
+/-- 有限の同じ宣言から、標準 Result と公開の ScopeError の宣言を得る。 -/
+theorem result_declared {P} (hp : HasHttp P) : resultShape.Declared P := by
+  have hr := hp result (by simp [http,file])
+  have hs := hp scopeError (by simp [http,file])
+  exact ⟨⟨rfl,hs.1,⟨_,hs.2 ("Scope.ScopeError.At",⟨"Scope.ScopeError",0,atErrorFields⟩) (by simp [scopeError,StandardKeyTyping.DataDecl.entries]),rfl,rfl,rfl⟩,hp.scopePublic⟩,
     hr.1,by decide,⟨_,hr.2 ("Result.Ok",⟨"Result",2,[.tvar 0]⟩) (by simp [result,StandardKeyTyping.DataDecl.entries]),rfl,rfl,rfl⟩,
     ⟨_,hr.2 ("Result.Error",⟨"Result",2,[.tvar 1]⟩) (by simp [result,StandardKeyTyping.DataDecl.entries]),rfl,rfl,rfl⟩⟩
 
@@ -187,10 +187,9 @@ def checkTys (r : RangeExpr) : List Ty := [.opaque "Scope.PathIn" (.fixed r),atE
 def ok (r : RangeExpr) (v : Val) : Outcome := .val (resultValue true (.opaque "Scope.PathIn" (.fixed r)) atErrorType v)
 def error (r : RangeExpr) (v : Val) : Outcome := .val (resultValue false (.opaque "Scope.PathIn" (.fixed r)) atErrorType v)
 
-/-- 元入力と解析済み入力を保ち、静的添字の拒否を独立に表す。 -/
-def staticError (rawPattern rawTarget : Val) (p : PathPattern) (t : Word) : Val :=
-  .atError (AtError.save rawPattern rawTarget none (some (.absolute (.path p)))
-    (some (.absolute (.path t))) .staticIndex)
+/-- 結果の型の静的な範囲に入らない対象の拒否。旧 API は動的な不所属と同じ OutsideScope で返す。 -/
+def staticError (pattern target : String) (p : PathPattern) (t : Word) : Val :=
+  errorValue pattern target zero zero zero (.outsideScope (.path p) (.path t))
 
 def run (r : RangeExpr) : List Val → Outcome
   | [.const (.string pattern),.const (.string target)] =>
@@ -204,9 +203,9 @@ def run (r : RangeExpr) : List Val → Outcome
         | .ok _ => match r with
           | .absolute bound =>
             if Range.MemK .path bound (.path t) then ok r (.checked (.path t))
-            else error r (staticError (.const (.string pattern)) (.const (.string target)) p t)
+            else error r (staticError pattern target p t)
           | .based _ _ | .secrets =>
-            error r (staticError (.const (.string pattern)) (.const (.string target)) p t)
+            error r (staticError pattern target p t)
       | some (.relativePath _) | some (.homePath _) => error r (invalidTarget target text.PATH)
       | _ => error r (invalidTarget target text.PATH)
   | _ => error r (invalidTarget "" "invalid arguments")
@@ -229,11 +228,11 @@ private theorem error_reply {P B Ψ r ws v} (hp : HasFile P)
     rfl rfl (by intro b c d h; cases h) (by intro b c d h; cases h)
     hv hg (by intro σ _ _; exact had σ)
 
-private theorem static_safe {P B Ψ} (hp : HasFile P) (rawPattern rawTarget : Val) (p : PathPattern) (t : Word) :
-    HasTypeVQ P B Ψ Qempty [] [] [] (staticError rawPattern rawTarget p t) atErrorType ∧
-      (staticError rawPattern rawTarget p t).Ground ∧
-      ∀ σ, (staticError rawPattern rawTarget p t).Adequate σ :=
-  ⟨.V_AtError (result_declared hp),trivial,fun _ => trivial⟩
+private theorem static_safe {P B Ψ} (hp : HasFile P) (pattern target : String) (p : PathPattern) (t : Word) :
+    HasTypeVQ P B Ψ Qempty [] [] [] (staticError pattern target p t) atErrorType ∧
+      (staticError pattern target p t).Ground ∧
+      ∀ σ, (staticError pattern target p t).Adequate σ :=
+  error_safe hp _ _ _ _ _ _
 
 /-- 全入力・全範囲で、純粋チェックは型付きの同じ Result を返す。 -/
 theorem run_safe {P B Ψ} (hp : HasFile P)
@@ -340,8 +339,8 @@ theorem run_absolute {pattern target p t}
       | .error err => error r (errorValue pattern target zero zero zero err)
       | .ok _ => match r with
         | .absolute bound => if Range.MemK .path bound (.path t) then ok r (.checked (.path t))
-          else error r (staticError (.const (.string pattern)) (.const (.string target)) p t)
-        | .based _ _ | .secrets => error r (staticError (.const (.string pattern)) (.const (.string target)) p t) := by
+          else error r (staticError pattern target p t)
+        | .based _ _ | .secrets => error r (staticError pattern target p t) := by
   simp only [run,hp,ht]
 
 /-- 相対形・home 形と解析失敗は、同じ InvalidTarget の値になる。 -/
@@ -370,12 +369,12 @@ example {pattern target p t checked bound}
     run (.absolute bound) [.const (.string pattern),.const (.string target)] =
       ok (.absolute bound) (.checked (.path t)) ∧
     (∀ b q, run (.based b q) [.const (.string pattern),.const (.string target)] =
-      error (.based b q) (staticError (.const (.string pattern)) (.const (.string target)) p t)) := by
+      error (.based b q) (staticError pattern target p t)) := by
   constructor
   · simp [run_absolute hp ht,hd,hm]
   · intro b q; simp [run_absolute hp ht,hd]
 
-/-- 同じ条件と対象について、動的不所属と静的不所属を混ぜない。 -/
+/-- 旧 API は動的な不所属と静的な不所属を同じ OutsideScope で返す。 -/
 example {pattern target p t bound}
     (hp : parsePattern pattern = some p)
     (ht : parseAtInput .path (.const (.string target)) = some (.absolute (.path t))) :
@@ -384,7 +383,7 @@ example {pattern target p t bound}
         error (.absolute bound) (errorValue pattern target zero zero zero (.outsideScope (.path p) (.path t)))) ∧
     (∀ checked, Checked.Scope.makePath p t = .ok checked → ¬ Range.MemK .path bound (.path t) →
       run (.absolute bound) [.const (.string pattern),.const (.string target)] =
-        error (.absolute bound) (staticError (.const (.string pattern)) (.const (.string target)) p t)) := by
+        error (.absolute bound) (staticError pattern target p t)) := by
   constructor
   · intro hd; simp [run_absolute hp ht,hd]
   · intro checked hd hm; simp [run_absolute hp ht,hd,hm]
@@ -420,12 +419,12 @@ example :
 /-- 根の木の字句は /** であり、幹が / の //** は拒否する。 -/
 example : parsePattern "//**" = none ∧ parsePattern "/**" = some (.tree []) := by cbv
 
-/-- 任意の静的添字への全域性と、動的成功後の静的な不所属を区別する。 -/
+/-- 任意の静的添字への全域性と、動的成功後の静的な不所属の OutsideScope。 -/
 example (r : RangeExpr) :
     run r [] = error r (invalidTarget "" "invalid arguments") ∧
     run (.absolute (.path (.exact []))) [.const (.string "/**"),.const (.string "/data")] =
       error (.absolute (.path (.exact [])))
-        (staticError (.const (.string "/**")) (.const (.string "/data")) (.tree []) ["data"]) := by
+        (staticError "/**" "/data" (.tree []) ["data"]) := by
   have hp : parsePattern "/**" = some (.tree []) := by decide +kernel
   have ht : parseAtInput .path (.const (.string "/data")) = some (.absolute (.path ["data"])) := by decide +kernel
   simp [run,hp,ht,Checked.Scope.makePath,PathPattern.WF,PathWordWF,PathPartWF,

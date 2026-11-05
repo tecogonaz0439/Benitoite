@@ -1,6 +1,7 @@
 import Benitoite.Release.Refinement.StandardKeySummary
 import Benitoite.Release.Refinement.CanonicalValues
 import Benitoite.Release.Refinement.ValueFacts
+import Benitoite.Release.Refinement.ScopePublicTyping
 
 /-! # 型付きの有限値から鍵の構造を得る -/
 namespace Benitoite.Release.Refinement.StandardKeyTyping
@@ -110,11 +111,11 @@ private theorem constant_key (c : Const) (η : ObservationEnvModel) (S : Benitoi
 private theorem core_sort {a t : Ty} {s : «Sort»} (eq : a.norm.core = t) (sort : t.HasSort s) : a.HasSort s :=
   (Ty.hasSort_norm a s).mp ((Ty.hasSort_core a.norm s).mp (eq.symm ▸ sort))
 
-private theorem string_slots_key (ss : List String) (η : ObservationEnvModel) :
-    Observation.KeySlots (observeSlots η (ss.map (fun s => some (.string s)))) := by
-  induction ss with
-  | nil => exact .nil
-  | cons s ss ih => exact .cons (.string s) ih
+/-- At の診断の観測の欄は、九欄の公開形の鍵の観測である。 -/
+private theorem atError_key (detail : AtError) (η : ObservationEnvModel) :
+    Observation.KeySlots (observeSlots η [some detail.publicTree.toTerm]) := by
+  obtain ⟨o, ho, hk⟩ := detail.publicTree_typed.key η
+  simpa [observeSlots, ho] using Observation.KeySlots.cons hk .nil
 
 private theorem value_key {P B Ψ Q a v} (table : Table P B) (valid : P.VarianceValid)
     (typed : HasTypeVQ P B Ψ Q [] [] [] v a) (sat : B.sat [] a.norm TParam.keyC)
@@ -173,7 +174,7 @@ private theorem value_key {P B Ψ Q a v} (table : Table P B) (valid : P.Variance
         exact value_key table valid wt (table.key_field valid hc (List.getElem_mem bi) dsat) η)
       exact ⟨_,_,rfl,closed_observed_term typed rfl (core_sort ht rfl),rfl,.data shape⟩
     · exact ⟨_,_,rfl,closed_observed_term typed rfl (core_sort ht rfl),rfl,
-        .data (string_slots_key detail.textFields η)⟩
+        .data (atError_key detail η)⟩
   | map k b =>
     obtain ⟨ks,vs,rfl⟩ := typed.canonical_map ht
     obtain ⟨k0,b0,k',b',keys,values,lengths,ksat,_,_,hmap,_,le⟩ := typed.inv_mapV rfl
