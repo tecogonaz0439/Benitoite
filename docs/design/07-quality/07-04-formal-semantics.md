@@ -83,6 +83,8 @@
 
 `BuiltinResponseTransport` は、同じ七射影から外部carrierの全十二構成子・両Args・両Outcomeを移し、δ・IO応答・refGet・refSet・effKindの一致を合わせて全二十五条件を移す。`ExternalModelTransport` は外部応答の三条件と応答の選択を構成する。`ExternalModels.model/targets/http` は、元の三モデルの七射影を保ち、外部応答と通常資源の解放を選ぶ。それぞれのCoreと対象条件を同じP/Bで構成し、TargetsとHttpには元と同じHasFile・HasHttpを要求する。外部宣言が空であるという制限はない。
 
+`ResourceReleaseLeaves` は、解放応答が `ResourceRelease.response` であり資源名を対象の値型へ分類しない表（`ResourceRelease.Table`）について、型付きの資源値に成功と全ての失敗の解放を与え、ret・escape・error・exitの四つの開始の成功・失敗の八つの遷移と遷移先の型付け、useで積む枠、実行関数が選ぶ解放の結果を同じ関係へ接続する。型付きの解放の枠は外部ハンドルを持たない。三つのモデルの拡張表と標準の合成表はこの条件を満たし、資源の名前はTargetsと合成表のFile.Handleだけである。合成表の参照と明示遅延の種類の行はReference.getとReference.setだけで、PathBases以外の全署名が参照と明示遅延の形を満たす。Rustの五つの資源の種類（File.Reader・File.Writer・Http.Listener・Http.Exchange・TaskGroup）の解放は、この関係の具体化として証明していない。OS資源の開閉状態と外部ハンドルの解放も含めない。`ExternalModelComposition` は、三つのモデルの同じ拡張表の二十五条件・外部三条件・解放の条件とCore・対象条件、Modelの六条件の前提の否定、存在の条件の定数の証人、新しい条件の前提を満たす入力を読む。
+
 `FunctionNameMap` と `StandardModelDeclarations/Signatures/PrimitiveLookup/Response` は、元Defと参照先のhelperの閉包、単射による関数参照名の付け替え（`Body.definition`）、元のtelの保存と、有限の本体表（`Body.all`）と組込みの表（`Primitive.all`）に対する全lookupの双方向の対応を実装する。署名とδ・IO応答は既存の定義を参照する。これらのlookupの対応は、合成した全標準本体の型付けと全応答条件の充足の証明とは区別する。同じ名前に異なる元Defを持つ18名（`FunctionNames.collisionNames`）の公開名は合成表のキーに現れない。
 
 `Val.Source` と `Comp.Source` は、ソースから保持値や PathBases の発行状態を直接構築する形を拒む。一般の型付き Val に対する偽造不能性とは区別する。Source の値と本体から任意の σ への Adequate を導き、必要束縛を持つ初期状態へ供給する。範囲の被覆 `RangeExpr.Covers` と、値・計算・腕・節の型付け（`HasTypeVQ`・`HasTypeCQ`・`HasTypeArmsQ`・`HasTypeClausesQ` など）は σ を引数に取らない。継続・ストア・状態の型付け（`ContTy`・`StoreOk`・`StateTyE`）は実行と同じ σ を引数に取り、保持する値・閉包・枠の `Val.Adequate σ`・`Closure.Adequate σ`・`Frame.Adequate σ` を読む。所属と効果の上限の意味も同じ σ の下で読む。実行の Step は同じ σ を固定し、At の snapshot の一致を検査する。check と run の環境の一致、実体・副次的な通信の隔離、情報フロー制御は、この証明の保証に含まれない。
@@ -1016,6 +1018,8 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 | BuiltinResponseTransport・ExternalModelTransport | 「篩を含むコア計算の形式化」。同じ七射影によるcarrier・Args・Outcomeと二十五条件の移送、三モデルの同じP/BでのCoreと対象条件、存在を前提とする外部応答の選択 |
 | ExternalModelExamples | 同節。六種類の正常応答と篩拒否、全ストアの型付き外部入力、Listと同名dataの任意深さ、borrow/own/Stateと四場合の受信 |
 | ExternalModels | 同節。三モデルの同じP/Bの二十五条件と外部三条件、正常値の全前提の充足、任意σの適格性、Modelのpure・IOの六条件が署名の不在と空のIO応答関係から前提の否定で成り立つこと |
+| ResourceReleaseLeaves | 同節。通常資源の解放の関係を持つ表の全結果の解放、四つの開始の成功・失敗の八つの遷移と型付け、useで積む枠と実行関数の選択、解放の枠への外部ハンドルの不在、三モデルと合成表の資源の分類、合成表の参照と明示遅延の行の形 |
+| ExternalModelComposition | 同節。三モデルの同じ拡張表の二十五条件・外部三条件・解放の条件とCore・対象条件、Modelの六条件の前提の否定、外部応答の存在の定数の証人、新しい条件の前提を満たす入力 |
 | ExternalNominal | 「保持要求と組み込みの遷移」の外部宣言。任意の有限表の四対・一意性・未知ID・差し替えの境界、二十九変換の名目ID保持、入れ子の宣言とハンドルのcomponent・resourceの照合 |
 | ExternalSignatureLeaves | 同節の外部署名。全出現・使用位置から同じcomponentの宣言への接続、borrow/ownとState、八欄の読者、実ハンドル引数のExternalArgs、Source・wildcardと変数以外のパターン・構成子値の拒否と通常資源との区別 |
 | FunctionNameMap・StandardModelDeclarations・StandardModelSignatures・StandardModelPrimitiveLookup・StandardModelResponse | 「篩を含むコア計算の形式化」。元Defとhelperの閉包、単射による関数参照名の写像、telの保存、有限の本体表（`Body.all`）と組込みの表（`Primitive.all`）に対する全lookupの双方向の対応 |

@@ -1,0 +1,65 @@
+{
+  "modules": 1049,
+  "requested_modules": [
+    "Benitoite.Release.Refinement.ResourceReleaseLeaves",
+    "Benitoite.Release.Refinement.ExternalModelComposition"
+  ],
+  "baseline_files": 28745,
+  "added_files": 29,
+  "modified_existing": [
+    "docs/design/01-spec/01-12-core-calculus.md",
+    "docs/design/07-quality/07-04-formal-semantics.md",
+    "formal/Benitoite.lean"
+  ],
+  "declarations": 47,
+  "public_entries": 35,
+  "named_readers": 17,
+  "compiled_examples": 24,
+  "release_constructors": 8,
+  "drop_release_constructors": [
+    "E_DropRel",
+    "E_ErrDropRel",
+    "E_EscDropRel",
+    "E_ExitDropRel"
+  ],
+  "conditions": {
+    "既存75": {
+      "実質": 69,
+      "空疎": 6
+    },
+    "新12": {
+      "実質": 7,
+      "自明": 3,
+      "空疎": 2
+    },
+    "合計87": {
+      "実質": 76,
+      "空疎": 8,
+      "自明": 3
+    }
+  },
+  "resources": {
+    "rust_resource_kinds": 5,
+    "rust_assumption": 5,
+    "lean_composed_resources": 1,
+    "external_not_resource": 1,
+    "reference_composed": 2,
+    "reference_assumption": 3,
+    "rows": 12
+  },
+  "reference_signatures": {
+    "rust_registrations": 5,
+    "checked": 5,
+    "composed_rows": 2,
+    "remaining_to_23_29": [
+      "Reference.new",
+      "Reference.update",
+      "Lazy.force"
+    ]
+  },
+  "evidence_names": 23,
+  "axiom_targets": 83740,
+  "files": 26,
+  "record_bytes": 328548,
+  "largest_bytes": 83972
+}

@@ -1,0 +1,251 @@
+{
+  "summary": {
+    "rust_registrations": 5,
+    "checked": 5,
+    "composed_rows": 2,
+    "remaining_to_23_29": [
+      "Reference.new",
+      "Reference.update",
+      "Lazy.force"
+    ]
+  },
+  "rows": [
+    {
+      "name": "Reference.new",
+      "kind": "refNew",
+      "rust": {
+        "mode": "state",
+        "arity": 1
+      },
+      "intrinsic": null,
+      "source": {
+        "tparams": [
+          "T"
+        ],
+        "names": [
+          "value"
+        ],
+        "params": [
+          "T"
+        ],
+        "ret": "Reference[T]",
+        "uses": "State"
+      },
+      "store_shape": {
+        "names": [
+          "value"
+        ],
+        "params": ".tvar 0",
+        "ret": ".reference (.tvar 0)",
+        "eff": "Eff.single stateEff"
+      },
+      "checks": {
+        "Rustの登録": true,
+        "引数の個数": true,
+        "名前の列": true,
+        "引数の型": true,
+        "結果の型": true,
+        "効果": true,
+        "Rustの呼出し区分": true,
+        "型引数1個": true
+      },
+      "composed": null,
+      "remaining": "合成表に行がない。L60.23で合成表へ加える行の署名とこの照合を.23/.29で行う"
+    },
+    {
+      "name": "Reference.get",
+      "kind": "refGet",
+      "rust": {
+        "mode": "state",
+        "arity": 1
+      },
+      "intrinsic": null,
+      "source": {
+        "tparams": [
+          "T"
+        ],
+        "names": [
+          "reference"
+        ],
+        "params": [
+          "Reference[T]"
+        ],
+        "ret": "T",
+        "uses": "State"
+      },
+      "store_shape": {
+        "names": [
+          "reference"
+        ],
+        "params": ".reference (.tvar 0)",
+        "ret": ".tvar 0",
+        "eff": "Eff.single stateEff"
+      },
+      "checks": {
+        "Rustの登録": true,
+        "引数の個数": true,
+        "名前の列": true,
+        "引数の型": true,
+        "結果の型": true,
+        "効果": true,
+        "Rustの呼出し区分": true,
+        "型引数1個": true
+      },
+      "composed": {
+        "lean_definition": "ScopeSignatures.refGet",
+        "names": [
+          "reference"
+        ],
+        "kind_matches": true,
+        "params_match": true,
+        "ret_matches": true,
+        "effect_state": true,
+        "names_match": true
+      },
+      "remaining": "なし"
+    },
+    {
+      "name": "Reference.set",
+      "kind": "refSet",
+      "rust": {
+        "mode": "state",
+        "arity": 2
+      },
+      "intrinsic": null,
+      "source": {
+        "tparams": [
+          "T"
+        ],
+        "names": [
+          "reference",
+          "value"
+        ],
+        "params": [
+          "Reference[T]",
+          "T"
+        ],
+        "ret": "Unit",
+        "uses": "State"
+      },
+      "store_shape": {
+        "names": [
+          "reference",
+          "value"
+        ],
+        "params": ".reference (.tvar 0), .tvar 0",
+        "ret": ".base .unit",
+        "eff": "Eff.single stateEff"
+      },
+      "checks": {
+        "Rustの登録": true,
+        "引数の個数": true,
+        "名前の列": true,
+        "引数の型": true,
+        "結果の型": true,
+        "効果": true,
+        "Rustの呼出し区分": true,
+        "型引数1個": true
+      },
+      "composed": {
+        "lean_definition": "ScopeSignatures.refSet",
+        "names": [
+          "reference",
+          "value"
+        ],
+        "kind_matches": true,
+        "params_match": true,
+        "ret_matches": true,
+        "effect_state": true,
+        "names_match": true
+      },
+      "remaining": "なし"
+    },
+    {
+      "name": "Reference.update",
+      "kind": "refUpdate",
+      "rust": {
+        "mode": "state",
+        "arity": 2
+      },
+      "intrinsic": null,
+      "source": {
+        "tparams": [
+          "T"
+        ],
+        "names": [
+          "reference",
+          "f"
+        ],
+        "params": [
+          "Reference[T]",
+          "function(value: T) -> T"
+        ],
+        "ret": "Unit",
+        "uses": "State"
+      },
+      "store_shape": {
+        "names": [
+          "reference",
+          "f"
+        ],
+        "params": ".reference (.tvar 0), .fn [\"value\"] [.tvar 0] (.tvar 0) Eff.empty",
+        "ret": ".base .unit",
+        "eff": "Eff.single stateEff"
+      },
+      "checks": {
+        "Rustの登録": true,
+        "引数の個数": true,
+        "名前の列": true,
+        "引数の型": true,
+        "結果の型": true,
+        "効果": true,
+        "Rustの呼出し区分": true,
+        "型引数1個": true
+      },
+      "composed": null,
+      "remaining": "合成表に行がない。L60.23で合成表へ加える行の署名とこの照合を.23/.29で行う"
+    },
+    {
+      "name": "Lazy.force",
+      "kind": "force",
+      "rust": {
+        "mode": "pure",
+        "arity": 1
+      },
+      "intrinsic": null,
+      "source": {
+        "tparams": [
+          "T"
+        ],
+        "names": [
+          "value"
+        ],
+        "params": [
+          "Lazy[T]"
+        ],
+        "ret": "T",
+        "uses": ""
+      },
+      "store_shape": {
+        "names": [
+          "value"
+        ],
+        "params": ".lazy (.tvar 0)",
+        "ret": ".tvar 0",
+        "eff": "Eff.empty"
+      },
+      "checks": {
+        "Rustの登録": true,
+        "引数の個数": true,
+        "名前の列": true,
+        "引数の型": true,
+        "結果の型": true,
+        "効果": true,
+        "Rustの呼出し区分": true,
+        "型引数1個": true
+      },
+      "composed": null,
+      "remaining": "合成表に行がない。L60.23で合成表へ加える行の署名とこの照合を.23/.29で行う"
+    }
+  ]
+}

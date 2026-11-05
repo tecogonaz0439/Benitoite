@@ -827,3 +827,5 @@ import Benitoite.Release.Refinement.ExternalSignatureLeaves
 import Benitoite.Release.Refinement.ExternalModelExamples
 import Benitoite.Release.Refinement.ExternalModels
 import Benitoite.Release.Refinement.ExternalLeafSelection
+import Benitoite.Release.Refinement.ResourceReleaseLeaves
+import Benitoite.Release.Refinement.ExternalModelComposition

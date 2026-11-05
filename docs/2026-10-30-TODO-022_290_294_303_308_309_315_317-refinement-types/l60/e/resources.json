@@ -1,0 +1,203 @@
+{
+  "summary": {
+    "rust_resource_kinds": 5,
+    "rust_assumption": 5,
+    "lean_composed_resources": 1,
+    "external_not_resource": 1,
+    "reference_composed": 2,
+    "reference_assumption": 3,
+    "rows": 12
+  },
+  "rows": [
+    {
+      "group": "Rustの通常資源",
+      "rust_name": "runtime::ResourceKind::FileReader",
+      "rust_type": "File.Reader",
+      "lean_name": "該当なし",
+      "classification": "仮定",
+      "evidence": [],
+      "reason": "FileReader の実資源の通常解放は、07-04の解放応答の条件として定理の引数で量化する。File.Handleは抽象モデル内の資源名であり、この実資源種の署名や開閉状態を証明するものではない。実解放との対応はR30/R50で確認する。Leanの合成表の資源名に同名の型はなく、開閉状態・中断・失敗理由の算法の証拠もない",
+      "receivers": [
+        "R30",
+        "R50"
+      ]
+    },
+    {
+      "group": "Rustの通常資源",
+      "rust_name": "runtime::ResourceKind::FileWriter",
+      "rust_type": "File.Writer",
+      "lean_name": "該当なし",
+      "classification": "仮定",
+      "evidence": [],
+      "reason": "FileWriter の実資源の通常解放は、07-04の解放応答の条件として定理の引数で量化する。File.Handleは抽象モデル内の資源名であり、この実資源種の署名や開閉状態を証明するものではない。実解放との対応はR30/R50で確認する。Leanの合成表の資源名に同名の型はなく、開閉状態・中断・失敗理由の算法の証拠もない",
+      "receivers": [
+        "R30",
+        "R50"
+      ]
+    },
+    {
+      "group": "Rustの通常資源",
+      "rust_name": "runtime::ResourceKind::HttpListener",
+      "rust_type": "Http.Listener",
+      "lean_name": "該当なし",
+      "classification": "仮定",
+      "evidence": [],
+      "reason": "HttpListener の実資源の通常解放は、07-04の解放応答の条件として定理の引数で量化する。File.Handleは抽象モデル内の資源名であり、この実資源種の署名や開閉状態を証明するものではない。実解放との対応はR30/R50で確認する。Leanの合成表の資源名に同名の型はなく、開閉状態・中断・失敗理由の算法の証拠もない",
+      "receivers": [
+        "R30",
+        "R50"
+      ]
+    },
+    {
+      "group": "Rustの通常資源",
+      "rust_name": "runtime::ResourceKind::HttpExchange",
+      "rust_type": "Http.Exchange",
+      "lean_name": "該当なし",
+      "classification": "仮定",
+      "evidence": [],
+      "reason": "HttpExchange の実資源の通常解放は、07-04の解放応答の条件として定理の引数で量化する。File.Handleは抽象モデル内の資源名であり、この実資源種の署名や開閉状態を証明するものではない。実解放との対応はR30/R50で確認する。Leanの合成表の資源名に同名の型はなく、開閉状態・中断・失敗理由の算法の証拠もない",
+      "receivers": [
+        "R30",
+        "R50"
+      ]
+    },
+    {
+      "group": "Rustの通常資源",
+      "rust_name": "runtime::ResourceKind::TaskGroup",
+      "rust_type": "TaskGroup",
+      "lean_name": "該当なし",
+      "classification": "仮定",
+      "evidence": [],
+      "reason": "TaskGroup の実資源の通常解放は、07-04の解放応答の条件として定理の引数で量化する。File.Handleは抽象モデル内の資源名であり、この実資源種の署名や開閉状態を証明するものではない。実解放との対応はR30/R50で確認する。Leanの合成表の資源名に同名の型はなく、開閉状態・中断・失敗理由の算法の証拠もない",
+      "receivers": [
+        "R30",
+        "R50"
+      ]
+    },
+    {
+      "group": "Leanの通常資源",
+      "rust_name": "該当なし（Rustの組込み登録なし）",
+      "rust_type": "該当なし",
+      "lean_name": "File.Handle",
+      "classification": "合成",
+      "ledger_id": "L169",
+      "evidence": [
+        "Benitoite.Release.Refinement.StandardModel.resource_iff",
+        "Benitoite.Release.Refinement.StandardModel.resource_table",
+        "Benitoite.Release.Refinement.StandardModel.resource_input",
+        "Benitoite.Release.Refinement.StandardModel.release_all",
+        "Benitoite.Release.Refinement.ExternalModels.ModelCase.resource_iff",
+        "Benitoite.Release.Refinement.ExternalModels.ModelCase.resource_table",
+        "Benitoite.Release.Refinement.ExternalModels.targets_resource_input",
+        "Benitoite.Release.Refinement.ResourceRelease.Table.release_all",
+        "Benitoite.Release.Refinement.ResourceRelease.Table.release_value"
+      ],
+      "reason": "既存の型付きopaque値と分類の証拠を持つ抽象モデルの資源名。成功と全ての失敗を許す関係を合成表で読む。Rustの五種のどれの実署名でもない",
+      "receivers": [
+        "L60.29",
+        "L70",
+        "R30",
+        "R50"
+      ]
+    },
+    {
+      "group": "外部型",
+      "rust_name": "外部ハンドル（WIT resource）",
+      "rust_type": "Ty.external",
+      "lean_name": "Val.externalHandle",
+      "classification": "通常資源に含めない",
+      "evidence": [
+        "Benitoite.Release.Refinement.ExternalSignatureLeaves.handle_not_release",
+        "Benitoite.Release.Refinement.ContTy.release_not_external"
+      ],
+      "reason": "解放の関係はopaque定数だけを許し、型付きの解放の枠は外部ハンドルを持たない。受信拒否したownハンドルの解放は既存の担当（L70/R50）に残す",
+      "receivers": [
+        "L70",
+        "R50"
+      ]
+    },
+    {
+      "group": "参照と明示遅延",
+      "rust_name": "Reference.get",
+      "rust_type": "該当なし",
+      "lean_name": "Reference.get",
+      "classification": "合成",
+      "ledger_id": "L361",
+      "evidence": [
+        "Benitoite.Release.Refinement.StandardModel.store_lookup",
+        "Benitoite.Release.Refinement.StandardModel.reference_rows",
+        "Benitoite.Release.Refinement.StandardModel.store_shape",
+        "Benitoite.Release.Refinement.StandardModel.ref_get"
+      ],
+      "reason": "ModelTargetsの同じ署名を合成表へ置く。種類[value]・元の依存列の行・操作の効果なしを示す",
+      "receivers": [
+        "L60.12/.22/.28",
+        "L60.13/.22/.28"
+      ]
+    },
+    {
+      "group": "参照と明示遅延",
+      "rust_name": "Reference.set",
+      "rust_type": "該当なし",
+      "lean_name": "Reference.set",
+      "classification": "合成",
+      "ledger_id": "L362",
+      "evidence": [
+        "Benitoite.Release.Refinement.StandardModel.store_lookup",
+        "Benitoite.Release.Refinement.StandardModel.reference_rows",
+        "Benitoite.Release.Refinement.StandardModel.store_shape",
+        "Benitoite.Release.Refinement.StandardModel.ref_set"
+      ],
+      "reason": "ModelTargetsの同じ署名を合成表へ置く。種類[value]・元の依存列の行・操作の効果なしを示す",
+      "receivers": [
+        "L60.12/.22/.28",
+        "L60.13/.22/.28"
+      ]
+    },
+    {
+      "group": "参照と明示遅延",
+      "rust_name": "Reference.new",
+      "rust_type": "該当なし",
+      "lean_name": "Reference.new",
+      "classification": "仮定",
+      "ledger_id": "L494",
+      "evidence": [
+        "Benitoite.Release.Refinement.StandardModel.no_store_transitions"
+      ],
+      "reason": "Reference.new は「専用の遷移」に分類する。kind=refNew、CoreAssumptions.store_shapeとStep.E_RefNewでセルを作る。δ・IO応答で代用しない。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する。合成表はこの種類の行を持たないことを全lookupで示す",
+      "receivers": [
+        "R50"
+      ]
+    },
+    {
+      "group": "参照と明示遅延",
+      "rust_name": "Reference.update",
+      "rust_type": "該当なし",
+      "lean_name": "Reference.update",
+      "classification": "仮定",
+      "ledger_id": "L495",
+      "evidence": [
+        "Benitoite.Release.Refinement.StandardModel.no_store_transitions"
+      ],
+      "reason": "Reference.update は「専用の遷移」に分類する。kind=refUpdate、store_shape/ref_get/ref_setとStep.E_RefUpdateを読む。RustもUPDATE専用命令で処理する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する。合成表はこの種類の行を持たないことを全lookupで示す",
+      "receivers": [
+        "R50"
+      ]
+    },
+    {
+      "group": "参照と明示遅延",
+      "rust_name": "Lazy.force",
+      "rust_type": "該当なし",
+      "lean_name": "Lazy.force",
+      "classification": "仮定",
+      "ledger_id": "L496",
+      "evidence": [
+        "Benitoite.Release.Refinement.StandardModel.no_store_transitions"
+      ],
+      "reason": "Lazy.force は「専用の遷移」に分類する。kind=force、store_shapeとStep.E_ForceDone/E_Forceを読む。Rustのpure登録はFORCE命令用の印でありδの実算法ではない。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する。合成表はこの種類の行を持たないことを全lookupで示す",
+      "receivers": [
+        "R50"
+      ]
+    }
+  ]
+}

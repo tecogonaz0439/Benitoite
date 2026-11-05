@@ -1,0 +1,235 @@
+[
+  {
+    "name": "Benitoite.Release.Refinement.ResourceRelease.Table",
+    "named_readers": [
+      "Benitoite.Release.Refinement.ContTy.release_all",
+      "Benitoite.Release.Refinement.ContTy.release_not_external",
+      "Benitoite.Release.Refinement.ExternalModels.ModelCase.resource_table",
+      "Benitoite.Release.Refinement.StandardModel.resource_table",
+      "Benitoite.Release.Refinement.StateTyE.release_error_all",
+      "Benitoite.Release.Refinement.StateTyE.release_escape_all",
+      "Benitoite.Release.Refinement.StateTyE.release_exit_all",
+      "Benitoite.Release.Refinement.StateTyE.release_return_all",
+      "Benitoite.Release.Refinement.StateTyE.release_selected_error",
+      "Benitoite.Release.Refinement.StateTyE.release_selected_exit",
+      "Benitoite.Release.Refinement.StateTyE.release_selected_run",
+      "Benitoite.Release.Refinement.StateTyE.use_release_all",
+      "_private.Benitoite.Release.Refinement.ResourceReleaseLeaves.0.Benitoite.Release.Refinement.error_release_all",
+      "_private.Benitoite.Release.Refinement.ResourceReleaseLeaves.0.Benitoite.Release.Refinement.exit_release_all",
+      "_private.Benitoite.Release.Refinement.ResourceReleaseLeaves.0.Benitoite.Release.Refinement.run_release_all"
+    ],
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ResourceRelease.Table.release_all",
+    "named_readers": [
+      "Benitoite.Release.Refinement.ContTy.release_all",
+      "Benitoite.Release.Refinement.ExternalModels.ModelCase.release_all",
+      "Benitoite.Release.Refinement.ResourceRelease.Table.release_exists",
+      "Benitoite.Release.Refinement.StandardModel.release_all"
+    ],
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ResourceRelease.Table.release_exists",
+    "named_readers": [],
+    "compiled_example": true
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ResourceRelease.Table.release_value",
+    "named_readers": [],
+    "compiled_example": true
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModels.ModelCase.resource_iff",
+    "named_readers": [
+      "Benitoite.Release.Refinement.ExternalModels.ModelCase.release_premise_false",
+      "Benitoite.Release.Refinement.ExternalModels.ModelCase.resource_table"
+    ],
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModels.ModelCase.resource_table",
+    "named_readers": [
+      "Benitoite.Release.Refinement.ExternalModels.ModelCase.release_all"
+    ],
+    "compiled_example": true
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModels.ModelCase.release_all",
+    "named_readers": [
+      "Benitoite.Release.Refinement.ExternalModels.ModelCase.composition"
+    ],
+    "compiled_example": true
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModels.ModelCase.release_premise_false",
+    "named_readers": [
+      "Benitoite.Release.Refinement.ExternalModels.ModelCase.new_field_inputs"
+    ],
+    "compiled_example": true
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModels.targets_resource_input",
+    "named_readers": [
+      "Benitoite.Release.Refinement.ExternalModels.ModelCase.new_field_inputs"
+    ],
+    "compiled_example": true
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.resource_table",
+    "named_readers": [
+      "Benitoite.Release.Refinement.StandardModel.release_all"
+    ],
+    "compiled_example": true
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.resource_input",
+    "named_readers": [],
+    "compiled_example": true
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.release_all",
+    "named_readers": [],
+    "compiled_example": true
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.Primitive.store_rows",
+    "named_readers": [
+      "Benitoite.Release.Refinement.StandardModel.store_lookup"
+    ],
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.store_lookup",
+    "named_readers": [
+      "Benitoite.Release.Refinement.StandardModel.no_store_transitions",
+      "Benitoite.Release.Refinement.StandardModel.reference_rows",
+      "Benitoite.Release.Refinement.StandardModel.store_shape"
+    ],
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.no_store_transitions",
+    "named_readers": [],
+    "compiled_example": true
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.store_shape",
+    "named_readers": [],
+    "compiled_example": true
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.row_lookup",
+    "named_readers": [
+      "Benitoite.Release.Refinement.StandardModel.ref_get",
+      "Benitoite.Release.Refinement.StandardModel.ref_set"
+    ],
+    "compiled_example": true
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.ref_get",
+    "named_readers": [],
+    "compiled_example": true
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.ref_set",
+    "named_readers": [],
+    "compiled_example": true
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.reference_rows",
+    "named_readers": [],
+    "compiled_example": true
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ContTy.release_resource",
+    "named_readers": [
+      "Benitoite.Release.Refinement.ContTy.release_all",
+      "Benitoite.Release.Refinement.ContTy.release_not_external"
+    ],
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ContTy.release_all",
+    "named_readers": [
+      "_private.Benitoite.Release.Refinement.ResourceReleaseLeaves.0.Benitoite.Release.Refinement.error_release_all",
+      "_private.Benitoite.Release.Refinement.ResourceReleaseLeaves.0.Benitoite.Release.Refinement.exit_release_all",
+      "_private.Benitoite.Release.Refinement.ResourceReleaseLeaves.0.Benitoite.Release.Refinement.run_release_all"
+    ],
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ContTy.release_not_external",
+    "named_readers": [],
+    "compiled_example": true
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StateTyE.use_release_all",
+    "named_readers": [],
+    "compiled_example": true
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StateTyE.release_return_all",
+    "named_readers": [
+      "Benitoite.Release.Refinement.StateTyE.release_selected_run"
+    ],
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StateTyE.release_escape_all",
+    "named_readers": [
+      "Benitoite.Release.Refinement.StateTyE.release_selected_run"
+    ],
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StateTyE.release_error_all",
+    "named_readers": [
+      "Benitoite.Release.Refinement.StateTyE.release_selected_error"
+    ],
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StateTyE.release_exit_all",
+    "named_readers": [
+      "Benitoite.Release.Refinement.StateTyE.release_selected_exit"
+    ],
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StateTyE.release_selected_run",
+    "named_readers": [],
+    "compiled_example": true
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StateTyE.release_selected_error",
+    "named_readers": [],
+    "compiled_example": true
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StateTyE.release_selected_exit",
+    "named_readers": [],
+    "compiled_example": true
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModels.ModelCase.composition",
+    "named_readers": [],
+    "compiled_example": true
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModels.model_vacuous_premises",
+    "named_readers": [],
+    "compiled_example": true
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModels.ModelCase.external_constant",
+    "named_readers": [],
+    "compiled_example": true
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModels.ModelCase.new_field_inputs",
+    "named_readers": [],
+    "compiled_example": true
+  }
+]
