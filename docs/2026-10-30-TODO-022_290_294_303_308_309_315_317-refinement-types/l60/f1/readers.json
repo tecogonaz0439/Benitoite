@@ -1,0 +1,365 @@
+[
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.PureRow",
+    "named_readers": [
+      "Benitoite.Release.Refinement.StandardModel.first_sixteen",
+      "Benitoite.Release.Refinement.StandardModel.numeric_rows",
+      "Benitoite.Release.Refinement.StandardModel.operator_rows"
+    ],
+    "named_reader_count": 3,
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.PureRow.of_row",
+    "named_readers": [
+      "Benitoite.Release.Refinement.StandardModel.PureRow.of_response"
+    ],
+    "named_reader_count": 1,
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.PureRow.of_response",
+    "named_readers": [
+      "Benitoite.Release.Refinement.StandardModel.PureRow.arithmetic",
+      "Benitoite.Release.Refinement.StandardModel.PureRow.byteString",
+      "Benitoite.Release.Refinement.StandardModel.PureRow.character",
+      "Benitoite.Release.Refinement.StandardModel.PureRow.conversion",
+      "Benitoite.Release.Refinement.StandardModel.PureRow.decimal"
+    ],
+    "named_reader_count": 14,
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.http_declarations",
+    "named_readers": [],
+    "named_reader_count": 0,
+    "compiled_example": true
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.rounding_declarations",
+    "named_readers": [
+      "Benitoite.Release.Refinement.StandardModel.PureRow.decimal",
+      "Benitoite.Release.Refinement.StandardModel.rounding_arity"
+    ],
+    "named_reader_count": 2,
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.PureRow.operator",
+    "named_readers": [
+      "Benitoite.Release.Refinement.StandardModel.first_sixteen",
+      "Benitoite.Release.Refinement.StandardModel.operator_rows"
+    ],
+    "named_reader_count": 2,
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.first_sixteen_entries",
+    "named_readers": [
+      "Benitoite.Release.Refinement.StandardModel.first_sixteen",
+      "Benitoite.Release.Refinement.StandardModel.operator_rows"
+    ],
+    "named_reader_count": 2,
+    "compiled_example": true
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.first_sixteen",
+    "named_readers": [
+      "Benitoite.Release.Refinement.StandardModel.operator_rows"
+    ],
+    "named_reader_count": 1,
+    "compiled_example": true
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.PureRow.Satisfiable",
+    "named_readers": [
+      "Benitoite.Release.Refinement.StandardModel.numeric_inputs",
+      "Benitoite.Release.Refinement.StandardModel.operator_inputs"
+    ],
+    "named_reader_count": 2,
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.sample",
+    "named_readers": [
+      "Benitoite.Release.Refinement.StandardModel.PureRow.Satisfiable.binary",
+      "Benitoite.Release.Refinement.StandardModel.PureRow.Satisfiable.option",
+      "Benitoite.Release.Refinement.StandardModel.PureRow.Satisfiable.unary",
+      "Benitoite.Release.Refinement.StandardModel.binary_arguments",
+      "Benitoite.Release.Refinement.StandardModel.equality_arguments"
+    ],
+    "named_reader_count": 11,
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.sample_typed",
+    "named_readers": [
+      "Benitoite.Release.Refinement.StandardModel.binary_arguments",
+      "Benitoite.Release.Refinement.StandardModel.equality_arguments",
+      "Benitoite.Release.Refinement.StandardModel.option_arguments",
+      "Benitoite.Release.Refinement.StandardModel.round_arguments",
+      "Benitoite.Release.Refinement.StandardModel.unary_arguments"
+    ],
+    "named_reader_count": 5,
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.unarySig",
+    "named_readers": [
+      "Benitoite.Release.Refinement.StandardModel.PureRow.Satisfiable.unary",
+      "Benitoite.Release.Refinement.StandardModel.unary_arguments",
+      "_private.Benitoite.Release.Refinement.StandardModelPureInputs.0.Benitoite.Release.Refinement.StandardModel.unary_instantiated"
+    ],
+    "named_reader_count": 3,
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.binarySig",
+    "named_readers": [
+      "Benitoite.Release.Refinement.StandardModel.PureRow.Satisfiable.binary",
+      "Benitoite.Release.Refinement.StandardModel.binary_arguments",
+      "_private.Benitoite.Release.Refinement.StandardModelPureInputs.0.Benitoite.Release.Refinement.StandardModel.binary_instantiated"
+    ],
+    "named_reader_count": 3,
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.optionSig",
+    "named_readers": [
+      "Benitoite.Release.Refinement.StandardModel.PureRow.Satisfiable.option",
+      "Benitoite.Release.Refinement.StandardModel.option_arguments",
+      "_private.Benitoite.Release.Refinement.StandardModelPureInputs.0.Benitoite.Release.Refinement.StandardModel.option_instantiated"
+    ],
+    "named_reader_count": 3,
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.unary_arguments",
+    "named_readers": [
+      "Benitoite.Release.Refinement.StandardModel.PureRow.Satisfiable.unary"
+    ],
+    "named_reader_count": 1,
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.binary_arguments",
+    "named_readers": [
+      "Benitoite.Release.Refinement.StandardModel.PureRow.Satisfiable.binary"
+    ],
+    "named_reader_count": 1,
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.option_arguments",
+    "named_readers": [
+      "Benitoite.Release.Refinement.StandardModel.PureRow.Satisfiable.option"
+    ],
+    "named_reader_count": 1,
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.rounding_arity",
+    "named_readers": [
+      "Benitoite.Release.Refinement.StandardModel.mode_typed",
+      "Benitoite.Release.Refinement.StandardModel.round_arguments"
+    ],
+    "named_reader_count": 2,
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.mode_typed",
+    "named_readers": [
+      "Benitoite.Release.Refinement.StandardModel.round_arguments"
+    ],
+    "named_reader_count": 1,
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.round_arguments",
+    "named_readers": [
+      "Benitoite.Release.Refinement.StandardModel.numeric_inputs"
+    ],
+    "named_reader_count": 1,
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.equality_arguments",
+    "named_readers": [
+      "Benitoite.Release.Refinement.StandardModel.operator_inputs"
+    ],
+    "named_reader_count": 1,
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.PureRow.Satisfiable.unary",
+    "named_readers": [
+      "Benitoite.Release.Refinement.StandardModel.numeric_inputs",
+      "Benitoite.Release.Refinement.StandardModel.operator_inputs"
+    ],
+    "named_reader_count": 2,
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.PureRow.Satisfiable.binary",
+    "named_readers": [
+      "Benitoite.Release.Refinement.StandardModel.numeric_inputs",
+      "Benitoite.Release.Refinement.StandardModel.operator_inputs"
+    ],
+    "named_reader_count": 2,
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.PureRow.Satisfiable.option",
+    "named_readers": [
+      "Benitoite.Release.Refinement.StandardModel.numeric_inputs"
+    ],
+    "named_reader_count": 1,
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.operator_inputs",
+    "named_readers": [],
+    "named_reader_count": 0,
+    "compiled_example": true
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.numeric_inputs",
+    "named_readers": [],
+    "named_reader_count": 0,
+    "compiled_example": true
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.PureRow.scalar",
+    "named_readers": [
+      "Benitoite.Release.Refinement.StandardModel.numeric_rows"
+    ],
+    "named_reader_count": 1,
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.PureRow.byteString",
+    "named_readers": [
+      "Benitoite.Release.Refinement.StandardModel.numeric_rows"
+    ],
+    "named_reader_count": 1,
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.PureRow.character",
+    "named_readers": [
+      "Benitoite.Release.Refinement.StandardModel.numeric_rows"
+    ],
+    "named_reader_count": 1,
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.PureRow.numericRemaining",
+    "named_readers": [
+      "Benitoite.Release.Refinement.StandardModel.numeric_rows"
+    ],
+    "named_reader_count": 1,
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.PureRow.integerAPI",
+    "named_readers": [
+      "Benitoite.Release.Refinement.StandardModel.numeric_rows"
+    ],
+    "named_reader_count": 1,
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.PureRow.integerText",
+    "named_readers": [
+      "Benitoite.Release.Refinement.StandardModel.numeric_rows"
+    ],
+    "named_reader_count": 1,
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.PureRow.conversion",
+    "named_readers": [
+      "Benitoite.Release.Refinement.StandardModel.numeric_rows"
+    ],
+    "named_reader_count": 1,
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.PureRow.decimal",
+    "named_readers": [
+      "Benitoite.Release.Refinement.StandardModel.numeric_rows"
+    ],
+    "named_reader_count": 1,
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.PureRow.floatMath",
+    "named_readers": [
+      "Benitoite.Release.Refinement.StandardModel.numeric_rows"
+    ],
+    "named_reader_count": 1,
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.PureRow.minMax",
+    "named_readers": [
+      "Benitoite.Release.Refinement.StandardModel.numeric_rows"
+    ],
+    "named_reader_count": 1,
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.Primitive.numeric",
+    "named_readers": [
+      "Benitoite.Release.Refinement.StandardModel.numeric_inputs",
+      "Benitoite.Release.Refinement.StandardModel.numeric_rows"
+    ],
+    "named_reader_count": 2,
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.numeric_rows",
+    "named_readers": [],
+    "named_reader_count": 0,
+    "compiled_example": true
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.PureRow.arithmetic",
+    "named_readers": [
+      "Benitoite.Release.Refinement.StandardModel.operator_rows"
+    ],
+    "named_reader_count": 1,
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.PureRow.order",
+    "named_readers": [
+      "Benitoite.Release.Refinement.StandardModel.operator_rows"
+    ],
+    "named_reader_count": 1,
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.PureRow.structural",
+    "named_readers": [
+      "Benitoite.Release.Refinement.StandardModel.operator_rows"
+    ],
+    "named_reader_count": 1,
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.Primitive.operator",
+    "named_readers": [
+      "Benitoite.Release.Refinement.StandardModel.operator_inputs",
+      "Benitoite.Release.Refinement.StandardModel.operator_rows"
+    ],
+    "named_reader_count": 2,
+    "compiled_example": false
+  },
+  {
+    "name": "Benitoite.Release.Refinement.StandardModel.operator_rows",
+    "named_readers": [],
+    "named_reader_count": 0,
+    "compiled_example": true
+  }
+]

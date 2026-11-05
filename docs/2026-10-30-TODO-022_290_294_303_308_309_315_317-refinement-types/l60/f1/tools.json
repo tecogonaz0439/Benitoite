@@ -1,0 +1,129 @@
+{
+  "platform": {
+    "system": "Darwin",
+    "machine": "arm64",
+    "release": "27.2.0"
+  },
+  "lean": "Lean (version 4.34.1, arm64-apple-darwin24.6.0, commit 5045d0056413266e57c625dcd7c365b10e377c52, Release)",
+  "memory_mib": 12288,
+  "configuration": "既定ターゲット・既定import・固定Lean。単独Leanも-M 12288。RSSは計画上の非採取",
+  "baseline": {
+    "files": 28801,
+    "bytes": 4781902,
+    "sha256": "54bd587621680979ac0f8f8f23951a15098a691de79b66e31a15c23ffb076972"
+  },
+  "inputs": {
+    "formal/lean-toolchain": {
+      "bytes": 25,
+      "sha256": "d5edba4e4b8faad9c1baeadb265716d20d03be4d1a2647dc5e35b0c0325bea7b"
+    },
+    "formal/lakefile.toml": {
+      "bytes": 872,
+      "sha256": "10f2661bff8fce95a9253d976427d0ca44038ec12350c955badbc1cf1efa6e3a"
+    },
+    "formal/lake-manifest.json": {
+      "bytes": 152,
+      "sha256": "f4a9b127f95cf577c7da1c2269f85ffd5754f76afccace5dc310d56ef8f41a32"
+    },
+    "formal/Benitoite.lean": {
+      "bytes": 43388,
+      "sha256": "4346d3ccbfca1251ae5ad0e9b1b37fb2c9c6f7db92185108cd48147ed450eb5c"
+    },
+    "docs/design/01-spec/01-12-core-calculus.md": {
+      "bytes": 939275,
+      "sha256": "ad10e19d31f196842c24772bb59f7f919139e58811e2667e4c9f5af06fe343f7"
+    },
+    "docs/design/07-quality/07-04-formal-semantics.md": {
+      "bytes": 607133,
+      "sha256": "8432a18048281bf44f1ad37154c20606fc52af5e01f7900449f8aa203a9b3907"
+    },
+    "formal/Benitoite/Release/Refinement/StandardModelNumericRows.lean": {
+      "bytes": 28224,
+      "sha256": "2085dc2bf29cc9d7abb55cc7421ee2890895afaaf7c4e325b6423eb44538eee4"
+    },
+    "formal/Benitoite/Release/Refinement/StandardModelOperatorRows.lean": {
+      "bytes": 17839,
+      "sha256": "ca86179cce9fe7a0db9b6aaafe95eb8970918a18fa7c2e99896b1352879286a6"
+    },
+    "formal/Benitoite/Release/Refinement/StandardModelPureInputs.lean": {
+      "bytes": 51023,
+      "sha256": "bfc9c91f21d1fdcdfd994c793296517ab79b53fd2fd2aa748b7445710b1f9223"
+    },
+    "formal/Benitoite/Release/Refinement/StandardModelPureRows.lean": {
+      "bytes": 11508,
+      "sha256": "aec04a16b090c4438eb6d8354e398de18fa84aaa3c3986b29f5e8f1b94b6b578"
+    },
+    "formal/Benitoite/Release/Refinement/ResourceReleaseLeaves.lean": {
+      "bytes": 25957,
+      "sha256": "96d02bd7cd895968cbcc60683b62ebef6f73ef66c228324e480cf0399ffb2676"
+    },
+    "formal/Benitoite/Release/Refinement/StandardDecimalResponse.lean": {
+      "bytes": 29463,
+      "sha256": "a208be26de63bd720eae54f9d5b83453b23a4d8f1a1481dc0f7d7dbc001ac710"
+    },
+    "formal/Benitoite/Release/Refinement/StandardModelDeclarations.lean": {
+      "bytes": 32627,
+      "sha256": "517a791e5441998d337a5152310fd849f30300602f2b461eea613f132ab69c8e"
+    },
+    "formal/Benitoite/Release/Refinement/StandardModelPrimitiveLookup.lean": {
+      "bytes": 45943,
+      "sha256": "a4d0bdf3f50246e1d684c7cafec9df91b57d2776bf70868620e0d722be5baa8c"
+    },
+    "formal/Benitoite/Release/Refinement/StandardModelSignatures.lean": {
+      "bytes": 73104,
+      "sha256": "15b5852fa4a2d668c9d1918720b1911abd05b799060731d8d0935104bd4a6976"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/f1/audit.py": {
+      "bytes": 5295,
+      "sha256": "c4b742550a3dda7642e8c7d905a39c78f715411715e59ba1683b25f325f92078"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/f1/conditions.py": {
+      "bytes": 1978,
+      "sha256": "9569ddaa15a31814fb7be7613021ed1fdc5741147acbe8162dd93c8a6fc3d53e"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/f1/design_copies.py": {
+      "bytes": 8023,
+      "sha256": "2797d43233545f9ab52c2a1dd1b3ac3ae270974ba3c13252e6ce33ded186f9fe"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/f1/inputs.py": {
+      "bytes": 3990,
+      "sha256": "ffb1801c81b64c1ed8b16aec832a420aaaa8b2e3761878cbc8f58f8b0b9949d9"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/f1/inventory.py": {
+      "bytes": 2920,
+      "sha256": "a6e1b76041b020b17e91f187e6b93741f72e39c856a820ed6c31c17a3c657877"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/f1/ledger_diff.py": {
+      "bytes": 5498,
+      "sha256": "5667bac0864397a673a0fc2dfee79a02a287bb0d04835c19f41b4a39babb061a"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/f1/rows.py": {
+      "bytes": 6504,
+      "sha256": "ee1822c5cd3f015cb1958b3d506f187be9d3e5d1061a4f766826f54f0921cb80"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/f1/run.py": {
+      "bytes": 1689,
+      "sha256": "5330b76d1e14aab4ab5f3df359bfd5887714f2cb1abc7c270c605772d7158b53"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/f1/store_rows.py": {
+      "bytes": 3124,
+      "sha256": "63fa9608c2dc0d4ce669fc374332dba28827693f60f8b79cacd1d1333bd22f6c"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/f1/store_signatures.py": {
+      "bytes": 8235,
+      "sha256": "30c42882fa48af9c3d51e1055f66e4a8210e8b82c975a45cf09a08b777a574ff"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/f1/support.py": {
+      "bytes": 1956,
+      "sha256": "07893627b32aebb013bc2abe81ee0e6d2f8cbda0b9866731fbf6f4761104b024"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/f1/verify.py": {
+      "bytes": 13145,
+      "sha256": "94e24cd9789a498a0011734e2b1d5fe51a6b5cddc304fe16c7257439dfa9a8fe"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/f1/axioms.lean": {
+      "bytes": 5045,
+      "sha256": "d9a669f6540d100fc0d2e35ca81c27a6b3c624d15ec54d966cec05c12439b036"
+    }
+  }
+}

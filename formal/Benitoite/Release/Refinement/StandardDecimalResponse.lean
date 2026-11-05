@@ -25,22 +25,40 @@ private theorem option_arity : program.DataArity "Option" 1 := by
   simp only [List.mem_cons,List.not_mem_nil,or_false,Prod.mk.injEq] at mem
   rcases mem with ⟨rfl,rfl⟩ | ⟨rfl,rfl⟩ | ⟨rfl,rfl⟩ | ⟨rfl,rfl⟩ | ⟨rfl,rfl⟩ | ⟨rfl,rfl⟩ | ⟨rfl,rfl⟩ <;> simp_all
 
-private theorem mode_shape {B Ψ v}
-    (h : HasTypeVQ program B Ψ Qempty [] [] [] v (.data "RoundingMode" [])) :
+/-- Optionの二構成子とarityを持ち、丸め方式（RoundingMode）のデータ名を持つ構成子を既知の五方式に限る
+条件。五方式の各構成子の存在は要求しない。 -/
+structure Declarations (P : Program) : Prop where
+  some_decl : P.cons "Option.Some" = some ⟨"Option",1,[.tvar 0]⟩
+  none_decl : P.cons "Option.None" = some ⟨"Option",1,[]⟩
+  arity : P.DataArity "Option" 1
+  modes : ∀ c cd, P.cons c = some cd → cd.data = "RoundingMode" →
+    cd = ⟨"RoundingMode",0,[]⟩ ∧ ∃ mode : DecimalRounding, c = "RoundingMode." ++ mode.name
+
+theorem program_declarations : Declarations program := by
+  refine ⟨rfl,rfl,option_arity,?_⟩
+  intro c cd h owner
+  have mem := cons_member h
+  change (c,cd) ∈ [("Option.Some",⟨"Option",1,[.tvar 0]⟩),("Option.None",⟨"Option",1,[]⟩),("RoundingMode.HalfToEven",⟨"RoundingMode",0,[]⟩),("RoundingMode.HalfAwayFromZero",⟨"RoundingMode",0,[]⟩),("RoundingMode.TowardZero",⟨"RoundingMode",0,[]⟩),("RoundingMode.TowardNegativeInfinity",⟨"RoundingMode",0,[]⟩),("RoundingMode.TowardPositiveInfinity",⟨"RoundingMode",0,[]⟩)] at mem
+  simp only [List.mem_cons,List.not_mem_nil,or_false,Prod.mk.injEq] at mem
+  rcases mem with ⟨rfl,rfl⟩ | ⟨rfl,rfl⟩ | ⟨rfl,rfl⟩ | ⟨rfl,rfl⟩ | ⟨rfl,rfl⟩ | ⟨rfl,rfl⟩ | ⟨rfl,rfl⟩
+  · exact absurd owner (by decide)
+  · exact absurd owner (by decide)
+  · exact ⟨rfl,.halfToEven,rfl⟩
+  · exact ⟨rfl,.halfAwayFromZero,rfl⟩
+  · exact ⟨rfl,.towardZero,rfl⟩
+  · exact ⟨rfl,.towardNegativeInfinity,rfl⟩
+  · exact ⟨rfl,.towardPositiveInfinity,rfl⟩
+
+private theorem mode_shape {P B Ψ v} (decls : Declarations P)
+    (h : HasTypeVQ P B Ψ Qempty [] [] [] v (.data "RoundingMode" [])) :
     ∃ mode : DecimalRounding, v = .con ("RoundingMode." ++ mode.name) [] [] := by
   rcases h.canonical_data rfl with ⟨c,ts,vs,rfl⟩ | ⟨detail,rfl⟩
   · obtain ⟨cd,hc,nt,_,_,values,us,tag,_⟩ := h.inv_con rfl
-    have mem := cons_member hc
-    change (c,cd) ∈ [("Option.Some",⟨"Option",1,[.tvar 0]⟩),("Option.None",⟨"Option",1,[]⟩),("RoundingMode.HalfToEven",⟨"RoundingMode",0,[]⟩),("RoundingMode.HalfAwayFromZero",⟨"RoundingMode",0,[]⟩),("RoundingMode.TowardZero",⟨"RoundingMode",0,[]⟩),("RoundingMode.TowardNegativeInfinity",⟨"RoundingMode",0,[]⟩),("RoundingMode.TowardPositiveInfinity",⟨"RoundingMode",0,[]⟩)] at mem
-    simp only [List.mem_cons,List.not_mem_nil,or_false,Prod.mk.injEq] at mem
-    rcases mem with ⟨rfl,rfl⟩ | ⟨rfl,rfl⟩ | ⟨rfl,rfl⟩ | ⟨rfl,rfl⟩ | ⟨rfl,rfl⟩ | ⟨rfl,rfl⟩ | ⟨rfl,rfl⟩
-    all_goals try { exact False.elim ((by decide : ("RoundingMode" : String) ≠ "Option") (Ty.data.inj tag).1) }
-    all_goals
-      have ts0 : ts = [] := List.length_eq_zero_iff.mp nt
-      subst ts
-      cases values
-      first | exact ⟨.halfToEven,rfl⟩ | exact ⟨.halfAwayFromZero,rfl⟩ |
-        exact ⟨.towardZero,rfl⟩ | exact ⟨.towardNegativeInfinity,rfl⟩ | exact ⟨.towardPositiveInfinity,rfl⟩
+    obtain ⟨rfl,mode,rfl⟩ := decls.modes c cd hc (Ty.data.inj tag).1.symm
+    have ts0 : ts = [] := List.length_eq_zero_iff.mp nt
+    subst ts
+    cases values
+    exact ⟨mode,rfl⟩
   · obtain ⟨shape,declared,tag⟩ := h.inv_atError rfl
     rw [declared.errorType_eq] at tag
     have wrong : ("RoundingMode" : String) = "Scope.ScopeError" := (Ty.data.inj tag).1
@@ -115,11 +133,12 @@ private theorem integer_option_safe (k : IntKind) (v : Option (IntegerValue k)) 
   cases k <;> cases v <;> refine ⟨?_,by intro σ _ _; trivial⟩
   all_goals simp [integerOption,Val.Ground,Val.ClosedAt,Val.ClosedList,embedTy,IntKind.type,Ty.WF]
 
-/-- 五モードを含む同じ宣言表の六実名の全型付き引数を接続する。 -/
-theorem response {B Ψ ts es rs ws a e} (api : API)
-    (args : BuiltinArgs program B Ψ api.name api.signature ts es rs ws a e) :
+/-- Optionの構成子とarityを持ち、丸め方式の構成子を既知の五方式に限る任意のPで、六実名の全型付き引数を
+接続する。 -/
+theorem response_of {P B Ψ ts es rs ws a e} (decls : Declarations P) (api : API)
+    (args : BuiltinArgs P B Ψ api.name api.signature ts es rs ws a e) :
     ∃ out, decimalDelta api.name ts es rs ws = some out ∧
-      Outcome.Typed program B Ψ out a ∧ AdequateResult ws out ∧ (∀ i, out ≠ .exit i) := by
+      Outcome.Typed P B Ψ out a ∧ AdequateResult ws out ∧ (∀ i, out ≠ .exit i) := by
   obtain ⟨rfl,rfl,rfl,rfl,rfl,values⟩ := arguments api args
   cases api with
   | fromInteger =>
@@ -128,7 +147,7 @@ theorem response {B Ψ ts es rs ws a e} (api : API)
       obtain ⟨c,rfl,hc,tag⟩ := scalar_shape .integer typed
       cases c <;> cases tag
       rename_i n
-      have reply := (decimal_integer_conversions program B Ψ n ⟨0,by decide⟩).1
+      have reply := (decimal_integer_conversions P B Ψ n ⟨0,by decide⟩).1
       exact ⟨.val (.const (.decimal n.toInt 0)),reply.1,constant_response _ reply.2⟩
   | toDecimal =>
     cases values with | cons typed rest =>
@@ -137,7 +156,7 @@ theorem response {B Ψ ts es rs ws a e} (api : API)
       cases c <;> cases tag
       rename_i n
       let u : IntegerValue .unsignedInteger64 := ⟨n,hc⟩
-      have reply := (decimal_integer_conversions program B Ψ ⟨0,by decide⟩ u).2
+      have reply := (decimal_integer_conversions P B Ψ ⟨0,by decide⟩ u).2
       exact ⟨.val (.const (.decimal n 0)),reply.1,constant_response _ reply.2⟩
   | absolute =>
     cases values with | cons typed rest =>
@@ -145,7 +164,7 @@ theorem response {B Ψ ts es rs ws a e} (api : API)
       obtain ⟨c,rfl,hc,tag⟩ := scalar_shape .decimal typed
       cases c <;> cases tag
       rename_i c scale
-      have reply := decimalAbsolute_reply program B Ψ c scale hc
+      have reply := decimalAbsolute_reply P B Ψ c scale hc
       exact ⟨.val (.const (.decimal c.natAbs scale)),reply.1,constant_response _ reply.2⟩
   | fromDecimal =>
     cases values with | cons typed rest =>
@@ -157,7 +176,7 @@ theorem response {B Ψ ts es rs ws a e} (api : API)
       refine ⟨.val value,?_,?_,(integer_option_safe .unsignedInteger64 _ _).2,by intro i; simp⟩
       · change (if decimalRepresentable c scale then some _ else none) = some _
         exact ite_eq_left hc
-      · exact ⟨integerOption_typed program B Ψ .unsignedInteger64 _ rfl rfl option_arity,
+      · exact ⟨integerOption_typed P B Ψ .unsignedInteger64 _ decls.some_decl decls.none_decl decls.arity,
           (integer_option_safe .unsignedInteger64 _ []).1⟩
   | truncate =>
     cases values with | cons typed rest =>
@@ -171,7 +190,7 @@ theorem response {B Ψ ts es rs ws a e} (api : API)
       refine ⟨.val value,?_,?_,(integer_option_safe .integer64 _ _).2,by intro i; simp⟩
       · change (if decimalRepresentable c scale then some (decimalTruncateReply c scale) else none) = some _
         rw [ite_eq_left hc,reply]
-      · exact ⟨integerOption_typed program B Ψ .integer64 _ rfl rfl option_arity,
+      · exact ⟨integerOption_typed P B Ψ .integer64 _ decls.some_decl decls.none_decl decls.arity,
           (integer_option_safe .integer64 _ []).1⟩
   | round =>
     cases values with | cons hd rest => cases rest with | cons hp rest => cases rest with | cons hm rest =>
@@ -182,11 +201,11 @@ theorem response {B Ψ ts es rs ws a e} (api : API)
       obtain ⟨p,rfl,placesOK,tag⟩ := scalar_shape .integer hp
       cases p <;> cases tag
       rename_i places
-      obtain ⟨mode,rfl⟩ := mode_shape hm
+      obtain ⟨mode,rfl⟩ := mode_shape decls hm
       refine ⟨decimalRoundReply c scale places.toInt mode,decimalDelta_round c scale hc places mode,?_⟩
       cases normal : decimalRound c scale places.toInt mode with
       | normal d t =>
-        obtain ⟨reply,typed,_⟩ := decimalRound_typed program B Ψ c scale places.toInt mode d t normal
+        obtain ⟨reply,typed,_⟩ := decimalRound_typed P B Ψ c scale places.toInt mode d t normal
         rw [reply]
         exact constant_response _ typed
       | invalidPlaces =>
@@ -195,6 +214,13 @@ theorem response {B Ψ ts es rs ws a e} (api : API)
       | overflow =>
         simp only [decimalRoundReply,normal]
         exact ⟨by trivial,by intro σ _ _; trivial,by intro i; simp⟩
+
+/-- 五モードを含む同じ宣言表の六実名の全型付き引数を接続する。 -/
+theorem response {B Ψ ts es rs ws a e} (api : API)
+    (args : BuiltinArgs program B Ψ api.name api.signature ts es rs ws a e) :
+    ∃ out, decimalDelta api.name ts es rs ws = some out ∧
+      Outcome.Typed program B Ψ out a ∧ AdequateResult ws out ∧ (∀ i, out ≠ .exit i) :=
+  response_of program_declarations api args
 
 private def apis : List API := [.round,.absolute,.fromInteger,.toDecimal,.truncate,.fromDecimal]
 
@@ -323,7 +349,7 @@ theorem round_math {B Ψ ts es rs ws a e}
     obtain ⟨v,rfl,placesOK,tag⟩ := scalar_shape .integer hp
     cases v <;> cases tag
     rename_i places
-    obtain ⟨mode,rfl⟩ := mode_shape hm
+    obtain ⟨mode,rfl⟩ := mode_shape program_declarations hm
     have same : out = decimalRoundReply c scale places.toInt mode :=
       Option.some.inj (delta.symm.trans (decimalDelta_round c scale hc places mode))
     refine ⟨c,scale,places,mode,rfl,hc,out,delta,typed,adequate,nonexit,same,?_,?_,?_⟩

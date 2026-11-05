@@ -1,0 +1,99 @@
+{
+  "modules": 1054,
+  "new_modules": [
+    "Benitoite.Release.Refinement.StandardModelPureRows",
+    "Benitoite.Release.Refinement.StandardModelPureInputs",
+    "Benitoite.Release.Refinement.StandardModelNumericRows",
+    "Benitoite.Release.Refinement.StandardModelOperatorRows"
+  ],
+  "edited_modules": [
+    "Benitoite.Release.Refinement.StandardModelSignatures",
+    "Benitoite.Release.Refinement.StandardModelPrimitiveLookup",
+    "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "Benitoite.Release.Refinement.StandardDecimalResponse",
+    "Benitoite.Release.Refinement.ResourceReleaseLeaves"
+  ],
+  "baseline_files": 28801,
+  "added_files": 41,
+  "modified_existing": [
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/e/resources.json",
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/e/results.md",
+    "docs/design/01-spec/01-12-core-calculus.md",
+    "docs/design/07-quality/07-04-formal-semantics.md",
+    "formal/Benitoite.lean",
+    "formal/Benitoite/Release/Refinement/ResourceReleaseLeaves.lean",
+    "formal/Benitoite/Release/Refinement/StandardDecimalResponse.lean",
+    "formal/Benitoite/Release/Refinement/StandardModelDeclarations.lean",
+    "formal/Benitoite/Release/Refinement/StandardModelPrimitiveLookup.lean",
+    "formal/Benitoite/Release/Refinement/StandardModelSignatures.lean"
+  ],
+  "declarations": 167,
+  "public_entries": 43,
+  "named_readers": 38,
+  "compiled_examples": 7,
+  "rows": {
+    "rows": 376,
+    "operator": 109,
+    "numeric": 166,
+    "families": {
+      "operator": {
+        "order": 48,
+        "operator": 34,
+        "arithmetic": 25,
+        "structural": 2
+      },
+      "other": {
+        "-": 101
+      },
+      "numeric": {
+        "scalar": 13,
+        "byteString": 1,
+        "character": 10,
+        "decimal": 6,
+        "numericRemaining": 10,
+        "floatMath": 12,
+        "integerAPI": 67,
+        "minMax": 14,
+        "integerText": 21,
+        "conversion": 12
+      }
+    }
+  },
+  "inputs": {
+    "numeric/binary": 72,
+    "numeric/option": 25,
+    "numeric/round": 1,
+    "numeric/unary": 68,
+    "operator/binary": 100,
+    "operator/equality": 2,
+    "operator/unary": 7
+  },
+  "ledger": {
+    "moved_to_composition": 3,
+    "assumption_reason_corrected": 1,
+    "connected_rows": 275,
+    "connected_by_unit": {
+      "L60.23": 16,
+      "L60.24": 166,
+      "L60.25": 93
+    },
+    "classification_after": {
+      "合成": 489,
+      "仮定": 151
+    },
+    "ledger_rows": 640,
+    "composition_child_keys": {
+      "before": 504,
+      "after": 507,
+      "bodies": 130,
+      "builtin_signatures": 376,
+      "resource_names": 1,
+      "added": 3
+    }
+  },
+  "evidence_names": 21,
+  "axiom_targets": 84025,
+  "files": 36,
+  "record_bytes": 916746,
+  "largest_bytes": 84155
+}
