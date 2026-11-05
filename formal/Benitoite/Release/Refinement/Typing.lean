@@ -429,6 +429,15 @@ mutual
         HasTypeVQ P B Ψ Q C Γ Φ input inputTy.norm → index.WF 0 →
         (∀ r, index = .fixed r → r.WF ∧ r.Canonical ∧ r.FitsKind kind) →
         AtCallAdmissible P B Ψ Q C Γ Φ kind name shape bases pattern input index
+    /-- pattern に動的な文字列を渡す呼出し。文字列は実行時に `parseAtPattern` が範囲の式へ読む。 -/
+    | text {Ψ Q C Γ Φ kind name shape bases pattern input index inputTy} :
+        shape.Declared P → B.valKind name = some kind →
+        (∀ v, bases = some v → HasTypeVQ P B Ψ Q C Γ Φ v .pathBases) →
+        HasTypeVQ P B Ψ Q C Γ Φ pattern (.base .string) →
+        (inputTy = .base .string ∧ B.valContent name = none ∨ B.valContent name = some inputTy ∧ inputTy.WF 0 0 0 ∧ inputTy.RowsIn (· < 0)) →
+        HasTypeVQ P B Ψ Q C Γ Φ input inputTy.norm → index.WF 0 →
+        (∀ r, index = .fixed r → r.WF ∧ r.Canonical ∧ r.FitsKind kind) →
+        AtCallAdmissible P B Ψ Q C Γ Φ kind name shape bases pattern input index
 
   /-- 被検査値の観測を共有し、各腕で確かめた条件を本体へ渡す。 -/
   inductive HasTypeArmsQ (P : Program) (B : Builtins) :

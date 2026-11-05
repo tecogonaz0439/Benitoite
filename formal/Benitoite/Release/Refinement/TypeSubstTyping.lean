@@ -871,7 +871,7 @@ theorem case_C_CheckAt :
   subst C
   cases bases
   all_goals
-    have hs : shape.Declared P := by cases ha; assumption
+    have hs : shape.Declared P := by cases ha <;> assumption
     have he : substTypeAt C1.length us fs shape.errorType = shape.errorType := by
       rw [hs.errorType_eq]
       rfl
@@ -1037,6 +1037,37 @@ theorem case_At_mk :
     · exact Ty.substAt_local_rowfree us fs inputTy hw hrows (by omega)
   rw [Ty.substAt_norm_source,hfixed] at hv'
   refine .mk hs hk ?_ (ip rfl hf hi (hc.binders 0 0 (fun _ _ _ _ h => h.2.1)) hq) ht hv' hw hr
+  intro v hv
+  obtain ⟨w,hew,rfl⟩ := Option.map_eq_some_iff.mp hv
+  exact ib w hew rfl hf hi (hc.binders 0 0 (fun _ _ _ _ h => by
+    simpa only [hew,Nat.add_zero] using h.1)) hq
+
+theorem case_At_text :
+∀ {Ψ : StoreTy} {Q : Benitoite.Release.NoFailCtx} {C : TypeCtx} {Γ : Ctx} {Φ : List Pred}
+  {kind : Benitoite.Scope.Domain.Kind} {name : Benitoite.Release.OpaqueName} {shape : ResultShape} {bases : Option Val}
+  {pattern input : Val} {index : RangeIx} {inputTy : Ty},
+  ResultShape.Declared P shape →
+    B.valKind name = some kind →
+      (∀ (v : Val), bases = some v → HasTypeVQ P B Ψ Q C Γ Φ v Ty.pathBases) →
+        HasTypeVQ P B Ψ Q C Γ Φ pattern (Ty.base Benitoite.Release.BaseTy.string) →
+          inputTy = Ty.base Benitoite.Release.BaseTy.string ∧ B.valContent name = none ∨
+              B.valContent name = some inputTy ∧ Ty.WF 0 0 0 inputTy ∧ Ty.RowsIn (fun x => x < 0) inputTy →
+            HasTypeVQ P B Ψ Q C Γ Φ input inputTy.norm →
+              RangeIx.WF 0 index →
+                (∀ (r : RangeExpr), index = RangeIx.fixed r → r.WF ∧ r.Canonical ∧ r.FitsKind kind) →
+                  (∀ (v : Val), bases = some v → VGoal P B Ψ Q C Γ Φ v Ty.pathBases) →
+                    VGoal P B Ψ Q C Γ Φ pattern (Ty.base Benitoite.Release.BaseTy.string) →
+                      VGoal P B Ψ Q C Γ Φ input inputTy.norm →
+                        AtGoal P B Ψ Q C Γ Φ kind name shape bases pattern input index := by
+  intro Ψ Q C Γ Φ kind name shape bases pattern input index inputTy hs hk hb hp ht hv hw hr ib ip iv C0 C1 us fs Q' hC hf hi hc hq
+  subst C
+  have hv' := iv rfl hf hi (hc.binders 0 0 (fun _ _ _ _ h => h.2.2)) hq
+  have hfixed : inputTy.substAt C1.length us fs = inputTy.norm := by
+    rcases ht with ⟨rfl,_⟩ | ⟨_,hw,hrows⟩
+    · rfl
+    · exact Ty.substAt_local_rowfree us fs inputTy hw hrows (by omega)
+  rw [Ty.substAt_norm_source,hfixed] at hv'
+  refine .text hs hk ?_ (ip rfl hf hi (hc.binders 0 0 (fun _ _ _ _ h => h.2.1)) hq) ht hv' hw hr
   intro v hv
   obtain ⟨w,hew,rfl⟩ := Option.map_eq_some_iff.mp hv
   exact ib w hew rfl hf hi (hc.binders 0 0 (fun _ _ _ _ h => by
@@ -1426,6 +1457,8 @@ AtGoal P B z0 z1 z2 z3 z4 z5 z6 z7 z8 z9 z10 z11 := by
     match h with
     | @AtCallAdmissible.mk _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 =>
       exact @case_At_mk P B _ _ _ _ _ _ _ _ _ _ _ _ _ x13 x14 x15 x16 x17 x18 x19 x20 (fun u0 u1 => (@deriveV _ _ _ _ _ _ _ _ _ (x15 u0 u1))) (@deriveV _ _ _ _ _ _ _ _ _ (x16)) (@deriveV _ _ _ _ _ _ _ _ _ (x18))
+    | @AtCallAdmissible.text _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 =>
+      exact @case_At_text P B _ _ _ _ _ _ _ _ _ _ _ _ _ x13 x14 x15 x16 x17 x18 x19 x20 (fun u0 u1 => (@deriveV _ _ _ _ _ _ _ _ _ (x15 u0 u1))) (@deriveV _ _ _ _ _ _ _ _ _ (x16)) (@deriveV _ _ _ _ _ _ _ _ _ (x18))
   termination_by structural h
 
   theorem deriveArms (P : Program) (B : Builtins) (z0 : StoreTy) (z1 : Benitoite.Release.NoFailCtx) (z2 : TypeCtx) (z3 : Ctx) (z4 : List Pred) (z5 : Option Ty) (z6 : Option Benitoite.Release.Refinement.Term) (z7 : List Arm) (z8 : Ty) (z9 : Ty) (z10 : Eff) (z11 : optParam LocalCtx []) (h : HasTypeArmsQ P B z0 z1 z2 z3 z4 z5 z6 z7 z8 z9 z10 z11) :

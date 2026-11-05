@@ -73,6 +73,18 @@ theorem HasTypeCQ.read_values {P B Ψ Q C Γ Φ R m a e L}
       · rcases List.mem_cons.mp hh with rfl | hh
         · exact ⟨_,hp⟩
         · cases List.mem_singleton.mp hh; exact ⟨_,hv⟩
+    | text _ _ hb hp _ hv _ _ =>
+      intro v hh
+      rcases List.mem_append.mp hh with hh | hh
+      · cases hbases : bases with
+        | none => simp [Option.toList, hbases] at hh
+        | some w =>
+          have he : v = w := by simpa [Option.toList, hbases] using hh
+          subst v
+          exact ⟨_,hb w hbases⟩
+      · rcases List.mem_cons.mp hh with rfl | hh
+        · exact ⟨_,hp⟩
+        · cases List.mem_singleton.mp hh; exact ⟨_,hv⟩
   | .C_BuilderLet .. | .C_Let .. | .C_Lazy .. | .C_Handle .. |
     .C_Handle_Fail .. | .C_IssuePathBases .. => intro v hv; cases hv
   | .C_Sub h .. | .C_Eff h _ | .C_Normal h => exact h.read_values

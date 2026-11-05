@@ -153,6 +153,7 @@ mutual
       AtCallAdmissible P B' Ψ Q C Γ Φ kind name shape bases pattern input index := by
     match typed with
     | .mk h0 h1 h2 h3 h4 h5 h6 h7 => exact .mk h0 (fields.kinds ▸ h1) (fun v hv => (h2 v hv).of_fields fields) (h3.of_fields fields) (fields.content ▸ h4) (h5.of_fields fields) h6 h7
+    | .text h0 h1 h2 h3 h4 h5 h6 h7 => exact .text h0 (fields.kinds ▸ h1) (fun v hv => (h2 v hv).of_fields fields) (h3.of_fields fields) (fields.content ▸ h4) (h5.of_fields fields) h6 h7
   theorem HasTypeArmsQ.of_fields {P B B' Ψ Q C Γ Φ R obs arms a b e Δ}
       (fields : Builtins.TypingFieldsEq B B') (typed : HasTypeArmsQ P B Ψ Q C Γ Φ R obs arms a b e Δ) :
       HasTypeArmsQ P B' Ψ Q C Γ Φ R obs arms a b e Δ := by

@@ -228,6 +228,10 @@ mutual
         refine ⟨?_, ?_, ⟨⟨2, hshape.arity, rfl⟩, trivial, hshape.errorType_declared, trivial⟩⟩
         · rw [hshape.errorType_eq]; exact ⟨hindex, trivial, trivial⟩
         · rw [hshape.errorType_eq]; trivial
+      | text hshape _ _ _ _ _ hindex _ =>
+        refine ⟨?_, ?_, ⟨⟨2, hshape.arity, rfl⟩, trivial, hshape.errorType_declared, trivial⟩⟩
+        · rw [hshape.errorType_eq]; exact ⟨hindex, trivial, trivial⟩
+        · rw [hshape.errorType_eq]; trivial
     | .C_Sub _ _ _ hwb hsb hdb => exact ⟨hwb, hsb, hdb⟩
 end
 

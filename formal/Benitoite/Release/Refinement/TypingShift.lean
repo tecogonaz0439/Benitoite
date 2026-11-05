@@ -1140,6 +1140,25 @@ mutual
         rcases ht with ⟨rfl, ht⟩ | ht
         · exact hh
         · simpa only [← Ty.norm_shiftV, Ty.shiftV_of_wf_zero ht.2.1] using hh
+    | .text (inputTy := inputTy) hs hk hb hp ht hv hw hi =>
+      have hb' := fun b (he : bases = some b) =>
+        HasTypeVQ.shift_values (hb b he) hA hstore hpres hm hf
+      have he : {shape with errorType := shape.errorType.shiftV k c} = shape := by
+        have hx : shape.errorType.shiftV k c = shape.errorType := by
+          rw [hs.errorType_eq]; rfl
+        simp only [hx]
+      rw [he]
+      refine AtCallAdmissible.text (inputTy := inputTy) hs hk ?_ (HasTypeVQ.shift_values hp hA hstore hpres hm hf) ht ?_ hw hi
+      · intro v he
+        cases bases with
+        | none => cases he
+        | some b =>
+          cases he
+          exact hb' b rfl
+      · have hh := HasTypeVQ.shift_values hv hA hstore hpres hm hf
+        rcases ht with ⟨rfl, ht⟩ | ht
+        · exact hh
+        · simpa only [← Ty.norm_shiftV, Ty.shiftV_of_wf_zero ht.2.1] using hh
 
   termination_by structural h
 end

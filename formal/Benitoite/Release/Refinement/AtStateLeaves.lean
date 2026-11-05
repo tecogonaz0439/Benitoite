@@ -52,7 +52,7 @@ private theorem result_error {P B Ψ shape name kind index detail}
 private theorem shape_of_at {P B Ψ Q C Γ Φ kind name shape bases pattern input index}
     (h : AtCallAdmissible P B Ψ Q C Γ Φ kind name shape bases pattern input index) :
     shape.Declared P ∧ B.valKind name = some kind := by
-  cases h with | mk hs hk _ _ _ _ _ _ => exact ⟨hs,hk⟩
+  cases h with | mk hs hk _ _ _ _ _ _ => exact ⟨hs,hk⟩ | text hs hk _ _ _ _ _ _ => exact ⟨hs,hk⟩
 
 theorem StateTyE.at_ok_all {P B σ Eb q kind name shape bases pattern input index snapshot pat target bound t k μ}
     (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P) (hσ : σ.Valid)

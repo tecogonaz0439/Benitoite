@@ -140,7 +140,7 @@ private theorem at_declared {P B σ Eb q k μ kind name shape bases pattern inpu
     (code : q.code = .checkAt kind name shape bases pattern input index) : shape.Declared P := by
   obtain ⟨_,_,_,_,_,_,_,typed,_⟩ := state
   obtain ⟨_,_,_,admissible,_⟩ := typed.at_inputs code
-  cases admissible with | mk declared _ _ _ _ _ _ _ => exact declared
+  cases admissible with | mk declared _ _ _ _ _ _ _ => exact declared | text declared _ _ _ _ _ _ _ => exact declared
 
 /-- 準備の全失敗から、同じ生入力を保存した Error と既存保存葉へ進む。 -/
 theorem at_prepare {P B σ Eb q k μ kind name shape bases pattern input index d}

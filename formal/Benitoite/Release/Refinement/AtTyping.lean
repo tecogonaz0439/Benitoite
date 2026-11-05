@@ -76,13 +76,13 @@ theorem HasTypeVQ.checkedAt_subst {P B Ψ Q C Γ Φ o k r snapshot t req}
 theorem AtCallAdmissible.fixed_index {P B Ψ Q C Γ Φ kind name shape bases pattern input index}
     (h : AtCallAdmissible P B Ψ Q C Γ Φ kind name shape bases pattern input index) :
     ∃ r, index = .fixed r := by
-  cases h with | mk _ _ _ _ _ _ hw _ => exact AtPrepare.fixed_index hw
+  cases h with | mk _ _ _ _ _ _ hw _ => exact AtPrepare.fixed_index hw | text _ _ _ _ _ _ hw _ => exact AtPrepare.fixed_index hw
 
 theorem AtCallAdmissible.no_staticIndex {P B Ψ Q C Γ Φ kind name shape bases pattern input index cap detail}
     (h : AtCallAdmissible P B Ψ Q C Γ Φ kind name shape bases pattern input index)
     (he : AtPrepare B cap kind name bases pattern input index = .error detail) :
     detail.failure ≠ .staticIndex := by
-  cases h with | mk _ _ _ _ _ _ hw _ => exact AtPrepare.no_staticIndex hw he
+  cases h with | mk _ _ _ _ _ _ hw _ => exact AtPrepare.no_staticIndex hw he | text _ _ _ _ _ _ hw _ => exact AtPrepare.no_staticIndex hw he
 
 theorem Pred.member_bind (ν : ObservationEnv) (kind t r) :
     predBind ν (.member kind t r) = .member kind (termBind ν t) r := rfl

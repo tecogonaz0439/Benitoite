@@ -663,6 +663,9 @@ mutual
     | .mk hs hk hb hp ht hv hw hi =>
       exact .mk hs hk (fun v he => context_value (hb v he) hA hstore hm hf)
         (context_value hp hA hstore hm hf) ht (context_value hv hA hstore hm hf) hw hi
+    | .text hs hk hb hp ht hv hw hi =>
+      exact .text hs hk (fun v he => context_value (hb v he) hA hstore hm hf)
+        (context_value hp hA hstore hm hf) ht (context_value hv hA hstore hm hf) hw hi
 
 end
 

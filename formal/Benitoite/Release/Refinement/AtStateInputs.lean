@@ -76,6 +76,11 @@ theorem AtCallAdmissible.closed_input {P B Ψ R Γ Φ cap kind name shape bases 
     have ht := close_value_typed hP hPB hB hw hs hd hc hi
     rw [closed_input_type (by rcases hty with ⟨rfl,_⟩ | ⟨_,hw,_⟩; trivial; exact hw)] at ht
     exact ht
+  | text _ _ _ _ hty hi _ _ =>
+    refine ⟨_,hty,?_⟩
+    have ht := close_value_typed hP hPB hB hw hs hd hc hi
+    rw [closed_input_type (by rcases hty with ⟨rfl,_⟩ | ⟨_,hw,_⟩; trivial; exact hw)] at ht
+    exact ht
 
 /-- At の結果の型は捕捉の像で変わらない。固定添字の正規性は元の許容条件を使う。 -/
 theorem AtCallAdmissible.result_image {P B Ψ Q C Γ Φ kind name shape bases pattern input index}
@@ -87,6 +92,16 @@ theorem AtCallAdmissible.result_image {P B Ψ Q C Γ Φ kind name shape bases pa
     (.data shape.owner [.scoped name kind index,shape.errorType] : Ty).Normal := by
   cases h with
   | mk hs hk hb hp hty hi hw hix =>
+    obtain ⟨r,rfl⟩ := AtPrepare.fixed_index hw
+    have he := hs.errorType_eq
+    refine ⟨?_,?_,?_,?_⟩
+    · simp [he,atErrorType,Capture.closeTy,substTyValues,Ty.bind,Ty.rawBind,Ty.norm,Ty.normTys,rawBindTys]
+    · simp [he,atErrorType,Capture.closeTy,substTyValues,Ty.bind,Ty.rawBind,Ty.norm,Ty.normTys,rawBindTys,RangeIx.inst]
+    · rw [he]
+      exact ⟨⟨trivial,trivial,trivial⟩,⟨trivial,trivial,trivial⟩,
+        ⟨⟨2,hs.arity,rfl⟩,trivial,by simpa only [he] using hs.errorType_declared (C := []) (Γ := []),trivial⟩⟩
+    · rw [he]; rfl
+  | text hs hk hb hp hty hi hw hix =>
     obtain ⟨r,rfl⟩ := AtPrepare.fixed_index hw
     have he := hs.errorType_eq
     refine ⟨?_,?_,?_,?_⟩

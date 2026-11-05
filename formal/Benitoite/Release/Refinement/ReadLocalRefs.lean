@@ -296,6 +296,8 @@ mutual
     match h with
     | .mk _ _ hb hp _ hi _ _ =>
       exact .checkAt (fun v hv => HasTypeVQ.localRefs (hb v hv)) (HasTypeVQ.localRefs hp) (HasTypeVQ.localRefs hi)
+    | .text _ _ hb hp _ hi _ _ =>
+      exact .checkAt (fun v hv => HasTypeVQ.localRefs (hb v hv)) (HasTypeVQ.localRefs hp) (HasTypeVQ.localRefs hi)
   termination_by structural h
 
   theorem HasTypeArmsQ.localRefs {P B Ψ Q C Γ Φ R obs arms a b e L ρ depth places}

@@ -357,6 +357,16 @@ metadata が none の項目、requirements/publicBoundary の空列、対応す�
 
 `PublicNames` は、安全な入口の内部の19行と公開名（既存15、同じ依存列の行をまとめた2、新しい `List.at`・`Range.getFrom`）、合成表の精密側の本体の鍵、起点の型と発行の入口、パスの At の計算、一般の check の名前・`Refinement.CheckError` の宣言・型引数の許容、述語へ写す関数（Float と Float32 の分類、`String.charactersIn`、`Scope.pathMatches`・`Scope.hostMatches`、構成子の判定）の対応を定める。所属の関数はリテラルの絶対形の pattern だけを述語へ写し、文字の範囲はリテラルの両端だけを写す。一般の check の型引数の許容は `PrimSig.admits` の述語で書き、型付けの規則を足さない。
 
+`MainStatements` は、篩付きの型の判断の上の主な定理の言明を命題として定める（進行・保存・実行の列の保存・実行関数の健全性・開始の状態の型付け・エフェクトの健全性・一段と到達先の対象健全性・事象の種類によらない到達先の対象健全性）。終端の状態は値を返して継続が空の実行と、継続が空の失敗と終了であり、照合の途中の状態は終端でない（`State.Final`）。開始の条件は、閉じた閉包、σ に由来する保持値、開始の状態が要る起点の束縛（`InitialPrepared`）である（`StartCondition`）。抽象の外部呼出しの応答の存在は外部宣言の表の構造検証と型付きの実引数を前提に取るので、進行と実行関数の健全性はプログラムの整形式を前提に読み、実行関数の健全性は型付けも前提に読む。実行関数の選択の条件は、IO・外部呼出し・解放の応答が、関係に応答があるときその一つであり、新しい場所が有限なストアの空の場所であることである（`StepSelection`）。表から選ぶ応答と空の場所はこの条件を満たす（`Builtins.selected_stepSelection`）。旧体系のラムダ名の整形式を持つ形と持たない形のエフェクトの健全性は、一つの言明に当たる。名前の条件は開始の条件の閉じ方（`Closure.ClosedAt` は lam に `NamesWF` を要求する）に含まれ、型付けから名前の整形式を供給して同じ開始の条件へ接続する。このモジュールは言明だけを持ち、証明を持たない。
+
+`ProgramExtension` は、標準の定義を持つプログラムに利用者の宣言を加えたプログラムへ、型付けと整形式を移す形を定める。`Program.Extends P P'` は、P の lookup を P' が同じ値で返し、P が名前を持つ data 型に構成子を足さず（`consClosed`）、その変性の宣言を変えない（`dataInfoOld`）ことである。型付けは同じ data 型の全構成子（`Program.DataArity`・網羅性の `Inhabits`）と変性の宣言（`Program.varianceFor`）を読むので、lookup の保存だけでは網羅性が移らない。既存の data 型へ構成子を足す拡張はこの関係を満たさない（`Program.extensionAdded_not_extends`）。`Program.Additions P P' B` は、P に無く P' にある宣言の型付け・整形式・変性・効果の検査の義務である。移送と全体の合成は言明として定め（`Program.ExtendsTypingStatement`・`ExtendsExhaustiveStatement`・`ExtendsDeclarationStatement`・`ComposeStatement`）、証明を持たない。合成表は外部応答を P の型付けから作るのでプログラムごとに異なるが、型付けが読む七射影は等しい（`StandardModel.builtins_fields`）。
+
+`StandardModelNameLists`・`StandardModelCompletion` は、利用者のプログラムの組込みの表を、合成表の行と証拠を持たない名前の行（δ 80・IO 応答 47・通常資源の状態 16。形式化の外の Task・TaskGroup の7名は署名を持たない）で一つの表に完成させる。仮定側の名前の一覧は台帳から生成し、資源の種類の名前は処理系の実行の報告の資源の名前（TaskGroup を除く）である。信頼条件の29条件は、名前ごとの16欄（`Builtins.RowConditions`。`CoreAssumptions` の15欄と `TargetAgreement` の1欄）、資源の種類ごとの解放の存在（`Builtins.ReleaseOn` の1条件）、表全体の10欄（`Builtins.TableConditions`。外部の欄を3条件へ展開すると12条件）に分かれ、署名を持つ全名前と資源の全種類を覆えば `CoreAssumptions` と `TargetAgreement` が従う（`Builtins.core_of_parts`）。完成した表（`StandardModel.complete`）の各欄は、合成済みの名前・効果のラベル・資源の種類で分け、合成済みの側を仮定側の表で上書きしない（`complete_agree`・`complete_effKind_composed`・`complete_shapeOk_composed`・`complete_state_effect`・`complete_release_composed`）。仮定側の表の契約（`StandardModel.Completion`）は、署名を仮定側の名前だけに置き、区分ごとの種類を持ち、合成済みの効果のラベルに種類を与えないことなどである。合成表の効果のラベルに種類を与える仮定側の表はこの契約を満たさない（`reviewA_not_completion`）。標準の一覧の整形式（`nameLists_wf`）は、合成表の全署名の名前を合成済みに持ち、区分が互いに交わらないことである。合成済みの行の一般化・合成表の資源の解放・表全体の条件は言明として定め（`ComposedRowsStatement`・`ComposedReleaseStatement`・`TableConditionsStatement`）、これらから完成した表の信頼条件が従う（`completion_core_of`）。衝突18名の公開名は精密側の内部名を指す（`FunctionNames.publicTarget`）。
+
+`Surface.Syntax`・`Surface.Typing` は、篩付きの型の情報を付けた表層の構文と、表層の型付けの判断の型を定める。篩の注釈は型の側の `Ty.refined` で表し、式の構成子は旧表層と同じである。関数の宣言は範囲パラメータの種類の列と `@proofSteps` の上限を持ち、宣言の表は型の別名（値引数と範囲パラメータを持つ）、欄どうしの依存を持つ record、生成した構成子の判定の関数を持つ。判断の型は旧表層の判断の引数の並びを保ち、値の文脈の直後に事実の列を置く。このモジュールは判断の型だけを定め、規則を持たない。
+
+`AtPatternText` は、At の pattern の文字列の解析の性質を扱う。文字列の解析の成功は、文字列の解析と名前の種類・整形式・正規形の検査の成功であり（`parseAtPattern_string`）、解析できない文字列は準備の形式不正（`AtPrepare.text_invalid`）、起点の値が基準を束縛しない検査は未束縛の誤り（`checkAt_based_unbound`）になる。絶対形のパス条件とホスト条件の解析は旧 API の純粋チェックの解析と同じ定義である（`ScopeDelta.parsePattern_eq`・`RequestDelta.parseHostPattern_eq`）。
+
 `ScopedTargetInputs.response_inputs` は元の StateTyE から State.Inputs を結論に並べ、同じ状態から primitive_contract_inputs で元署名の実引数列を得て BuiltinArgs.normalized へ渡す。State.Inputs は primitive_contract_inputs の前提には使わない。正規化した入力を同じ δ/IO 応答と既存保存葉へ渡す。純粋な val/err、IO の val/err/exit、ハンドラで捕捉する葉と、At 三葉・発行二葉を扱う。入力の適格性と snapshot の一致は同じ状態から供給する。CoreAssumptions・WellFormed・WellTyped の既存の前提を使い、IO の観測には TargetAgreement、ハンドラには EffectsOk と分割・節・新しい場所を使う。同じ σ/Eb を保ち、ハンドラ以外の葉は元のストアへ戻る。全到達・表層の主定理の合成を結論に含めない。
 
 ### 篩を含む形式化の信頼条件
@@ -716,6 +726,8 @@ Rust の共通の書き出しは、署名の範囲変数・効果の原子・不
 観測の比較は、`Exchange.ObserveExamples` の読み書きと許可の独立例、および実ファイル・制御したループバックの試験を対応させる。六 File は保持した同じ path、`sendIn` は保持した endpoint 一つを観測の対象とし、DNS と TLS の OS の副次的な通信を含めない。既存六入口には観測専用の実行の入口がないので、この対応を新しい観測 API の実行や、旧 Top の完全な外部観測の証明とは説明しない。`AcceptInput.noRules`、旧版の読者、`fromEffNames` の既定候補は旧像の互換と補題に使う。`ModelTargets` の旧 `File.readText` は形式化の実例であり、Rust の全操作の表との完全な対応を示すものではない。
 
 交換の比較で確認するのは、保存した有限の入力について、各入口の型付け・脱糖・拒否などの結果が一致することである。被覆と構造上の包含を使う各規則の位置を一つずつ網羅したことや、Rust の型検査と実行（継続を含む）と形式化の一般の対応は、この比較の成功から結論しない。
+
+`Exchange.Refined` は、篩付きの型を運ぶ交換の版の構文と版の判定を定める。型は篩（核の述語と項）、依存する関数型、外部型、範囲付きの値型、起点の型、範囲の pattern の型を持ち、範囲の位置は基準と secrets を持つ範囲の式である。関数の宣言の頭部は範囲パラメータの種類の列と `@proofSteps` の上限を、宣言の欄は型の別名・欄どうしの依存を持つ record・生成した構成子の判定の関数を持つ。この版の読み手は版の番号が corpus 16・sidecar 8 の入力だけを受け、それより前の版を版の誤りで断る（`readVersion`）。版の番号は仮の値である。既存の入口はこの版を読まない。
 
 ### 区間解析の独立交換の読者
 
@@ -1129,6 +1141,11 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 | AtErrorReaders・ScopedTargetInputs | 「篩を含む状態の型付け」。内部診断の保存と既存観測、元状態の入力から実応答・At・発行・ハンドラの保存葉への接続を扱う |
 | ScopePublic・ScopePublicValues・ScopePublicTyping | 同節。At の診断の公開形の宣言・内部の値からの写し・型付け・観測・鍵・網羅性と、公開形で観測される準備と検査の失敗を扱う |
 | PublicNames | 「篩を含むコア計算の形式化」。公開名と内部の依存列の行・合成表の鍵・組み込み・述語の構成子・型の対応を扱う |
+| MainStatements | 「篩を含むコア計算の形式化」。主な定理の言明・終端・開始の条件・実行関数の選択の条件を扱う |
+| ProgramExtension | 同節。旧宣言の移送の関係・追加宣言の義務・移送と合成の言明を扱う |
+| StandardModelNameLists・StandardModelCompletion | 同節。組込みの表の完成、信頼条件の29欄の組立て、合成済みの側を上書きしない契約、標準の名前の一覧と公開名の写像を扱う |
+| Surface.Syntax・Surface.Typing | 「型の情報を付けた表層の構文と型付け」。篩付きの型の表層の構文・宣言と判断の型を扱う |
+| AtPatternText | 「篩を含む状態の型付け」。At の pattern の文字列の解析と、その誤りの分類を扱う |
 
 以下の既存の表は Release などの対応である。
 

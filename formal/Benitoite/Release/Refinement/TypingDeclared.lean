@@ -72,6 +72,8 @@ theorem HasTypeCQ.declared {P B store Q C Γ Φ R m a e L}
     cases ha with
     | mk hs _ _ _ _ _ _ _ =>
       exact ⟨⟨2, hs.arity, rfl⟩, trivial, hs.errorType_declared, trivial⟩
+    | text hs _ _ _ _ _ _ _ =>
+      exact ⟨⟨2, hs.arity, rfl⟩, trivial, hs.errorType_declared, trivial⟩
   | .C_DependentApp _ ht | .C_External _ _ _ ht => exact ht.declared
   | .C_Return hv => exact hv.declared hΓ
   | .C_Let _ _ hd | .C_BuilderLet _ _ _ hd => exact hd

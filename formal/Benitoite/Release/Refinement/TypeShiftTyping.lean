@@ -393,6 +393,21 @@ mutual
         rcases ht with ⟨rfl, ht⟩ | ht
         · exact hh
         · simpa only [← Ty.norm_shiftTypes, Ty.shiftTypes_of_wf_zero ht.2.1] using hh
+    | .text (inputTy := inputTy) hs hk hb hp ht hv hw hi =>
+      have hb' := fun b he => HasTypeVQ.shift_types (hb b he) hA hstore hC hn hm
+      have he : {shape with errorType := shiftTypes k c shape.errorType}=shape := by
+        have hx : shiftTypes k c shape.errorType=shape.errorType := by rw [hs.errorType_eq]; rfl
+        simp only [hx]
+      rw [he]
+      refine AtCallAdmissible.text (inputTy := inputTy) hs hk ?_ (HasTypeVQ.shift_types hp hA hstore hC hn hm) ht ?_ hw hi
+      · intro v he
+        cases bases with
+        | none => cases he
+        | some b => cases he; exact hb' b rfl
+      · have hh := HasTypeVQ.shift_types hv hA hstore hC hn hm
+        rcases ht with ⟨rfl, ht⟩ | ht
+        · exact hh
+        · simpa only [← Ty.norm_shiftTypes, Ty.shiftTypes_of_wf_zero ht.2.1] using hh
 
   termination_by structural h
 end

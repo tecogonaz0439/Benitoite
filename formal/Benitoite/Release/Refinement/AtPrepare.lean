@@ -170,6 +170,16 @@ theorem AtPrepared.of_path_bases {B cap kind name bases pattern input pat target
       (some σ) pat target bound := by
   simp [AtPrepared,AtPrepare,prepareCore,hp,hi,hb,hσ,hc,finishPreparation,hk,hbound,Except.bind]
 
+/-- 起点の値を渡さず、絶対形の pattern・対象・上限を解析した At の準備は成功する。 -/
+theorem AtPrepared.of_absolute {B cap kind name pattern input p t b}
+    (hk : B.valKind name = some kind) (hc : B.valContent name = none)
+    (hp : parseAtPattern kind (closeVal cap pattern) = some (.absolute p))
+    (hi : parseAtInput kind (closeVal cap input) = some (.absolute t))
+    (hbound : (RangeExpr.absolute b).FitsKind kind ∧ (RangeExpr.absolute b).WF ∧ (RangeExpr.absolute b).Canonical) :
+    AtPrepared B cap kind name none pattern input (.fixed (.absolute b))
+      none (.absolute p) (.absolute t) (.absolute b) := by
+  simp [AtPrepared,AtPrepare,prepareCore,hp,hi,hc,finishPreparation,hk,hbound,Except.bind]
+
 theorem AtPrepared.fixed_index {B cap kind name bases pattern input index snapshot pat target bound}
     (h : AtPrepared B cap kind name bases pattern input index snapshot pat target bound) :
     index = .fixed bound := by
@@ -275,10 +285,7 @@ theorem AtPrepared.formed {B cap kind name bases pattern input index snapshot pa
       have hpw : p.FitsKind kind ∧ p.WF ∧ p.Canonical := by
         have hp' : parseAtPattern kind (closeVal cap pattern) = some p := by
           cases hh : parseAtPattern kind (closeVal cap pattern) <;> simp_all
-        cases hv : closeVal cap pattern <;> simp only [hv,parseAtPattern] at hp' <;> try cases hp'
-        split at hp'
-        · cases hp'; assumption
-        · cases hp' 
+        exact parseAtPattern_formed hp'
       unfold finishPreparation at he
       split at he
       · cases he
@@ -504,11 +511,23 @@ example {B cap kind name bases pattern input index detail}
   rw [hs]
   exact ⟨exactFields.1,exactFields.2.1,snapshot,rfl,rfl,rfl,rfl⟩
 
-example {B cap kind name bases pattern input r}
+/-- 解析できない pattern（形式不良の文字列を含む）は、準備の形式不正の誤りになる。 -/
+theorem AtPrepare.pattern_invalid {B cap kind name bases pattern input r}
     (hp : parseAtPattern kind (closeVal cap pattern) = none) :
     AtPrepare B cap kind name bases pattern input (.fixed r) =
       .error (AtError.save (closeVal cap pattern) (closeVal cap input) none none none .invalidPattern) := by
   simp [AtPrepare,prepareCore,hp,Except.bind,prepareError]
+
+/-- 起点の値を渡さない At で、基準からの pattern を解析したときは、その基準が未束縛の誤りになる。 -/
+theorem AtPrepare.based_unbound {B cap kind name pattern input r b p t}
+    (hp : parseAtPattern kind (closeVal cap pattern) = some (.based b p))
+    (hk : B.valKind name = some kind) (hc : B.valContent name = none)
+    (hi : parseAtInput kind (closeVal cap input) = some t)
+    (hr : r.FitsKind kind ∧ r.WF ∧ r.Canonical) :
+    AtPrepare B cap kind name none pattern input (.fixed r) =
+      .error (AtError.save (closeVal cap pattern) (closeVal cap input) none (some (.based b p)) (some t)
+        (.unbound b)) := by
+  simp [AtPrepare,prepareCore,hp,hc,hi,Except.bind,finishPreparation,hk,hr,prepareError]
 
 example {B cap kind name bases pattern input r pat}
     (hp : parseAtPattern kind (closeVal cap pattern) = some pat)

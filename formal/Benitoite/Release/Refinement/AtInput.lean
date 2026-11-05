@@ -288,9 +288,93 @@ theorem parseAtInput_host_other_example :
   simp +decide [parseAtInput,parseHost,parseIPv4,splitText,splitChars,lower,
     NameWordWF,NameLabelWF,FourDigitLabels]
 
+/-- 絶対形のパス条件 `/a/b`（exact）と `/a/b/**`（tree）。根の木は `/**` である。 -/
+def parseAbsolutePathPattern (raw : String) : Option PathPattern := do
+  let tree := raw.endsWith "/**"
+  let stem := if tree then String.ofList (raw.toList.take (raw.length-3)) else raw
+  let base := if stem = "" && tree then "/" else stem
+  if tree && stem == "/" then none else
+  match parseAtInput .path (.const (.string base)) with
+  | some (.absolute (.path w)) =>
+    let p := if tree then PathPattern.tree w else PathPattern.exact w
+    if p.WF then some p else none
+  | _ => none
+
+/-- ホスト条件の exact・one（`*.`）・many（`**.`）・CIDR。 -/
+def parseHostPatternText (raw : String) : Option HostPattern := do
+  let pattern ←
+    if raw.startsWith "**." then
+      match parseAtInput .host (.const (.string (String.ofList (raw.toList.drop 3)))) with
+      | some (.absolute (.host (.name w))) => some (HostPattern.name (.many w))
+      | _ => none
+    else if raw.startsWith "*." then
+      match parseAtInput .host (.const (.string (String.ofList (raw.toList.drop 2)))) with
+      | some (.absolute (.host (.name w))) => some (HostPattern.name (.one w))
+      | _ => none
+    else match (raw.toList.splitOn '/').map String.ofList with
+      | [address,prefixText] => do
+        if prefixText.length ≥ 4 ∨ (prefixText.length ≥ 2 ∧ prefixText.startsWith "0") then none else do
+        let n ← prefixText.toNat?
+        match parseAtInput .host (.const (.string address)) with
+        | some (.absolute (.host (.ip ip))) => some (HostPattern.ip (.cidr ⟨ip.family,ip.bits,n⟩))
+        | _ => none
+      | [host] => match parseAtInput .host (.const (.string host)) with
+        | some (.absolute (.host (.name w))) => some (HostPattern.name (.exact w))
+        | some (.absolute (.host (.ip ip))) => some (HostPattern.ip (.exact ip))
+        | _ => none
+      | _ => none
+  if pattern.WF then some pattern.normalize else none
+
+/-- 明示した基準の名前の接頭辞。`~` は home の別の綴りである。 -/
+def pathBasePrefixes : List (String × PathBase) :=
+  [("{root}", .root), ("{cwd}", .cwd), ("{home}", .home), ("~", .home), ("{work}", .work), ("{tmp}", .tmp)]
+
+/-- 基準からの残りの部分（空か `/` で始まる部分）を、基準からの条件として読む。 -/
+def parseBasedRest (base : PathBase) (rest : String) : Option RangeExpr :=
+  if rest = "" then (parseAbsolutePathPattern "/").map (.based base)
+  else if rest.startsWith "/" ∧ rest ≠ "/" then (parseAbsolutePathPattern rest).map (.based base)
+  else none
+
+/-- パス条件の文字列（設計書 01-07「範囲」の書き方）。絶対形、明示した基準（`{root}`・`{cwd}`・`{home}`・`~`・
+`{work}`・`{tmp}`）からの形、`{secrets}`、裸の相対形（`data/a`・`./data/a`・`.`・`./**`。root からの形）を読む。
+`..`・途中の `.`・空の要素・余分な末尾の `/`・`~user` は拒否する。 -/
+def parsePathPatternText (s : String) : Option RangeExpr :=
+  if s = "{secrets}" then some .secrets
+  else if s.startsWith "/" then (parseAbsolutePathPattern s).map RangeExpr.path
+  else match pathBasePrefixes.find? (fun e => s.startsWith e.1) with
+    | some (name, base) => parseBasedRest base (String.ofList (s.toList.drop name.length))
+    | none =>
+      if s.startsWith "{" then none
+      else if s = "." then parseBasedRest .root ""
+      else if s.startsWith "./" then parseBasedRest .root (String.ofList (s.toList.drop 1))
+      else parseBasedRest .root ("/" ++ s)
+
+/-- 動的な pattern の文字列を、名前の種類ごとに範囲の式として読む。端点の種類は文字列の書き方を持たない。 -/
+def parsePatternText : Kind → String → Option RangeExpr
+  | .path, s => parsePathPatternText s
+  | .host, s => (parseHostPatternText s).map RangeExpr.host
+  | .endpoint, _ => none
+
+/-- At の pattern の値。解析済みの範囲の値と動的な文字列を受け、どちらも名前の種類・整形式・正規形を確かめる。 -/
 def parseAtPattern (k : Kind) : Val → Option RangeExpr
   | .scopePattern r => if r.FitsKind k ∧ r.WF ∧ r.Canonical then some r else none
+  | .const (.string s) => (parsePatternText k s).bind fun r =>
+      if r.FitsKind k ∧ r.WF ∧ r.Canonical then some r else none
   | _ => none
+
+/-- 解析に成功した pattern は、名前の種類に合い、整形式で正規形である。 -/
+theorem parseAtPattern_formed {k : Kind} {v : Val} {r : RangeExpr} (h : parseAtPattern k v = some r) :
+    r.FitsKind k ∧ r.WF ∧ r.Canonical := by
+  unfold parseAtPattern at h
+  split at h
+  · split at h
+    · cases h; assumption
+    · cases h
+  · obtain ⟨r', _, h⟩ := Option.bind_eq_some_iff.mp h
+    split at h
+    · cases h; assumption
+    · cases h
+  · cases h
 
 private theorem splitChars_ne_nil (sep : Char) (cs : List Char) : splitChars sep cs ≠ [] := by
   induction cs with

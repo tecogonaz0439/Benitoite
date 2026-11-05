@@ -486,6 +486,20 @@ private theorem at_admissible : AtCallAdmissible modelProgram modelBuiltins Stor
   cases hr
   exact ⟨by decide,by decide,by decide⟩
 
+/-- pattern に文字列を渡す At の呼出しも同じ表で許容され、準備は文字列を範囲の式へ読む。 -/
+example : AtCallAdmissible modelProgram modelBuiltins StoreTy.empty Qempty [] [] []
+      .path "Example.path" resultShape none (.const (.string "/**")) (.const (.string "/"))
+      (.fixed (.absolute .top)) ∧
+    AtPrepared modelBuiltins Capture.empty .path "Example.path" none
+      (.const (.string "/**")) (.const (.string "/")) (.fixed (.absolute .top)) none
+      (.absolute (.path (.tree []))) (.absolute (.path [])) (.absolute .top) := by
+  refine ⟨.text shape_declared rfl (by intro v hv; cases hv) (.V_Const trivial) (Or.inl ⟨rfl,rfl⟩)
+    (.V_Const trivial) trivial ?_,
+    AtPrepared.of_absolute rfl rfl (by decide +kernel) (by decide +kernel) ⟨by decide,by decide,by decide⟩⟩
+  intro r hr
+  cases hr
+  exact ⟨by decide,by decide,by decide⟩
+
 private theorem at_reply (σ : PathEnv) (hσ : σ.Valid) : Returned σ Eff.empty atCode none atValue := by
   have hb : HasTypeC modelProgram modelBuiltins StoreTy.empty [] [] [] none atCode
       (.data resultShape.owner [.scoped "Example.path" .path (.fixed (.absolute .top)),resultShape.errorType]) Eff.empty :=
