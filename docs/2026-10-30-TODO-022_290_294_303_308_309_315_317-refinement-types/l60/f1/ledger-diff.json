@@ -1,0 +1,2576 @@
+{
+  "summary": {
+    "moved_to_composition": 3,
+    "assumption_reason_corrected": 1,
+    "connected_rows": 275,
+    "connected_by_unit": {
+      "L60.23": 16,
+      "L60.24": 166,
+      "L60.25": 93
+    },
+    "classification_after": {
+      "合成": 489,
+      "仮定": 151
+    },
+    "ledger_rows": 640,
+    "composition_child_keys": {
+      "before": 504,
+      "after": 507,
+      "bodies": 130,
+      "builtin_signatures": 376,
+      "resource_names": 1,
+      "added": 3
+    }
+  },
+  "moved": [
+    {
+      "id": "L494",
+      "lean_name": "Reference.new",
+      "before": "仮定",
+      "after": "合成",
+      "composition_lookup": "Primitive.p375",
+      "signature": "StandardModel.refNewSig",
+      "evidence": [
+        "Benitoite.Release.Refinement.StandardModel.row_lookup",
+        "Benitoite.Release.Refinement.StandardModel.store_transitions",
+        "Benitoite.Release.Refinement.StandardModel.store_shape",
+        "Benitoite.Release.Refinement.StandardModel.reference_rows"
+      ],
+      "reason": "δ・IO応答を持たず、実行は専用の遷移（E_RefNew）が受け持つ。署名とStoreShapeだけを合成表に置く。Rustの登録・標準ソースの宣言・StoreShapeと照合した（store-signatures.json）",
+      "receivers": [
+        "L60.29",
+        "L70",
+        "R50"
+      ]
+    },
+    {
+      "id": "L495",
+      "lean_name": "Reference.update",
+      "before": "仮定",
+      "after": "合成",
+      "composition_lookup": "Primitive.p376",
+      "signature": "StandardModel.refUpdateSig",
+      "evidence": [
+        "Benitoite.Release.Refinement.StandardModel.row_lookup",
+        "Benitoite.Release.Refinement.StandardModel.store_transitions",
+        "Benitoite.Release.Refinement.StandardModel.store_shape",
+        "Benitoite.Release.Refinement.StandardModel.reference_rows"
+      ],
+      "reason": "δ・IO応答を持たず、実行は専用の遷移（E_RefUpdate）が受け持つ。署名とStoreShapeだけを合成表に置く。Rustの登録・標準ソースの宣言・StoreShapeと照合した（store-signatures.json）",
+      "receivers": [
+        "L60.29",
+        "L70",
+        "R50"
+      ]
+    },
+    {
+      "id": "L496",
+      "lean_name": "Lazy.force",
+      "before": "仮定",
+      "after": "合成",
+      "composition_lookup": "Primitive.p374",
+      "signature": "StandardModel.forceSig",
+      "evidence": [
+        "Benitoite.Release.Refinement.StandardModel.row_lookup",
+        "Benitoite.Release.Refinement.StandardModel.store_transitions",
+        "Benitoite.Release.Refinement.StandardModel.store_shape",
+        "Benitoite.Release.Refinement.StandardModel.reference_rows"
+      ],
+      "reason": "δ・IO応答を持たず、実行は専用の遷移（E_ForceDone・E_Force）が受け持つ。署名とStoreShapeだけを合成表に置く。Rustの登録・標準ソースの宣言・StoreShapeと照合した（store-signatures.json）",
+      "receivers": [
+        "L60.29",
+        "L70",
+        "R50"
+      ]
+    }
+  ],
+  "corrected": [
+    {
+      "id": "L518",
+      "lean_name": "Process.exit",
+      "classification": "仮定",
+      "before_reason": "Benitoite.IO.Process.exit は「専用の遷移」に分類する。kind=exit、ioResponseのexit結果とStep.E_Exit/終了時の解放遷移を読む。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+      "after_reason": "同じ扱いに当たらない。Process.exitの種類exitの実行は、ハンドラのない呼出しではE_Exit・E_IOErrが同じ表のioResponseを読み（ハンドラのある呼出しはE_OpPrimで節へ移る）、δ・IO応答のない専用の遷移ではない。署名だけを合成表へ置くと、io_existsの欄が全ての型付き引数に応答を求めるので、新しいIO応答の意味を定義しない限り閉じない。合成表の既存のexit（ModelTargetsのモデル）は全ての整数を終了コードにし、処理系の範囲外の誤り（0〜255の外）を写さないので、Process.exitの証拠として流用しない。台帳の仮定側の行は残し、理由を「専用の遷移」からIO応答の仮定へ改める",
+      "receivers": [
+        "R50"
+      ]
+    }
+  ],
+  "connected": [
+    {
+      "id": "L001",
+      "lean_name": "%Byte.greater",
+      "row": "Primitive.p001",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L002",
+      "lean_name": "%Byte.greaterOrEqual",
+      "row": "Primitive.p002",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L003",
+      "lean_name": "%Byte.less",
+      "row": "Primitive.p003",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L004",
+      "lean_name": "%Byte.lessOrEqual",
+      "row": "Primitive.p004",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L005",
+      "lean_name": "%Character.greater",
+      "row": "Primitive.p005",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L006",
+      "lean_name": "%Character.greaterOrEqual",
+      "row": "Primitive.p006",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L007",
+      "lean_name": "%Character.less",
+      "row": "Primitive.p007",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L008",
+      "lean_name": "%Character.lessOrEqual",
+      "row": "Primitive.p008",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L009",
+      "lean_name": "%Decimal.add",
+      "row": "Primitive.p009",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.operator",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 3
+    },
+    {
+      "id": "L010",
+      "lean_name": "%Decimal.divide",
+      "row": "Primitive.p010",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.operator",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 3
+    },
+    {
+      "id": "L011",
+      "lean_name": "%Decimal.greater",
+      "row": "Primitive.p011",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L012",
+      "lean_name": "%Decimal.greaterOrEqual",
+      "row": "Primitive.p012",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L013",
+      "lean_name": "%Decimal.less",
+      "row": "Primitive.p013",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L014",
+      "lean_name": "%Decimal.lessOrEqual",
+      "row": "Primitive.p014",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L015",
+      "lean_name": "%Decimal.multiply",
+      "row": "Primitive.p015",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.operator",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 3
+    },
+    {
+      "id": "L016",
+      "lean_name": "%Decimal.negate",
+      "row": "Primitive.p016",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.operator",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 3
+    },
+    {
+      "id": "L017",
+      "lean_name": "%Decimal.subtract",
+      "row": "Primitive.p017",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.operator",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 3
+    },
+    {
+      "id": "L018",
+      "lean_name": "%Float.add",
+      "row": "Primitive.p018",
+      "unit": "L60.23",
+      "family": "StandardModel.PureRow.operator",
+      "cover": "StandardModel.operator_rows・StandardModel.first_sixteen",
+      "evidence_before": 3
+    },
+    {
+      "id": "L019",
+      "lean_name": "%Float.divide",
+      "row": "Primitive.p019",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.operator",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 3
+    },
+    {
+      "id": "L020",
+      "lean_name": "%Float.greater",
+      "row": "Primitive.p020",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L021",
+      "lean_name": "%Float.greaterOrEqual",
+      "row": "Primitive.p021",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L022",
+      "lean_name": "%Float.less",
+      "row": "Primitive.p022",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L023",
+      "lean_name": "%Float.lessOrEqual",
+      "row": "Primitive.p023",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L024",
+      "lean_name": "%Float.multiply",
+      "row": "Primitive.p024",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.operator",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 3
+    },
+    {
+      "id": "L025",
+      "lean_name": "%Float.negate",
+      "row": "Primitive.p025",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.operator",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 3
+    },
+    {
+      "id": "L026",
+      "lean_name": "%Float.subtract",
+      "row": "Primitive.p026",
+      "unit": "L60.23",
+      "family": "StandardModel.PureRow.operator",
+      "cover": "StandardModel.operator_rows・StandardModel.first_sixteen",
+      "evidence_before": 3
+    },
+    {
+      "id": "L027",
+      "lean_name": "%Float32.add",
+      "row": "Primitive.p027",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.operator",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 3
+    },
+    {
+      "id": "L028",
+      "lean_name": "%Float32.divide",
+      "row": "Primitive.p028",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.operator",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 3
+    },
+    {
+      "id": "L029",
+      "lean_name": "%Float32.greater",
+      "row": "Primitive.p029",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L030",
+      "lean_name": "%Float32.greaterOrEqual",
+      "row": "Primitive.p030",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L031",
+      "lean_name": "%Float32.less",
+      "row": "Primitive.p031",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L032",
+      "lean_name": "%Float32.lessOrEqual",
+      "row": "Primitive.p032",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L033",
+      "lean_name": "%Float32.multiply",
+      "row": "Primitive.p033",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.operator",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 3
+    },
+    {
+      "id": "L034",
+      "lean_name": "%Float32.negate",
+      "row": "Primitive.p034",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.operator",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 3
+    },
+    {
+      "id": "L035",
+      "lean_name": "%Float32.subtract",
+      "row": "Primitive.p035",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.operator",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 3
+    },
+    {
+      "id": "L036",
+      "lean_name": "%Integer.add",
+      "row": "Primitive.p036",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.arithmetic",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L037",
+      "lean_name": "%Integer.div",
+      "row": "Primitive.p037",
+      "unit": "L60.23",
+      "family": "StandardModel.PureRow.operator",
+      "cover": "StandardModel.operator_rows・StandardModel.first_sixteen",
+      "evidence_before": 3
+    },
+    {
+      "id": "L038",
+      "lean_name": "%Integer.greater",
+      "row": "Primitive.p038",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L039",
+      "lean_name": "%Integer.greaterOrEqual",
+      "row": "Primitive.p039",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L040",
+      "lean_name": "%Integer.less",
+      "row": "Primitive.p040",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L041",
+      "lean_name": "%Integer.lessOrEqual",
+      "row": "Primitive.p041",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L042",
+      "lean_name": "%Integer.mod",
+      "row": "Primitive.p042",
+      "unit": "L60.23",
+      "family": "StandardModel.PureRow.operator",
+      "cover": "StandardModel.operator_rows・StandardModel.first_sixteen",
+      "evidence_before": 3
+    },
+    {
+      "id": "L043",
+      "lean_name": "%Integer.multiply",
+      "row": "Primitive.p043",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.arithmetic",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L044",
+      "lean_name": "%Integer.negate",
+      "row": "Primitive.p044",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.arithmetic",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L045",
+      "lean_name": "%Integer.subtract",
+      "row": "Primitive.p045",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.arithmetic",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L046",
+      "lean_name": "%Integer16.add",
+      "row": "Primitive.p046",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.arithmetic",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L047",
+      "lean_name": "%Integer16.div",
+      "row": "Primitive.p047",
+      "unit": "L60.23",
+      "family": "StandardModel.PureRow.operator",
+      "cover": "StandardModel.operator_rows・StandardModel.first_sixteen",
+      "evidence_before": 3
+    },
+    {
+      "id": "L048",
+      "lean_name": "%Integer16.greater",
+      "row": "Primitive.p048",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L049",
+      "lean_name": "%Integer16.greaterOrEqual",
+      "row": "Primitive.p049",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L050",
+      "lean_name": "%Integer16.less",
+      "row": "Primitive.p050",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L051",
+      "lean_name": "%Integer16.lessOrEqual",
+      "row": "Primitive.p051",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L052",
+      "lean_name": "%Integer16.mod",
+      "row": "Primitive.p052",
+      "unit": "L60.23",
+      "family": "StandardModel.PureRow.operator",
+      "cover": "StandardModel.operator_rows・StandardModel.first_sixteen",
+      "evidence_before": 3
+    },
+    {
+      "id": "L053",
+      "lean_name": "%Integer16.multiply",
+      "row": "Primitive.p053",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.arithmetic",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L054",
+      "lean_name": "%Integer16.negate",
+      "row": "Primitive.p054",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.arithmetic",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L055",
+      "lean_name": "%Integer16.subtract",
+      "row": "Primitive.p055",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.arithmetic",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L056",
+      "lean_name": "%Integer32.add",
+      "row": "Primitive.p056",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.arithmetic",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L057",
+      "lean_name": "%Integer32.div",
+      "row": "Primitive.p057",
+      "unit": "L60.23",
+      "family": "StandardModel.PureRow.operator",
+      "cover": "StandardModel.operator_rows・StandardModel.first_sixteen",
+      "evidence_before": 3
+    },
+    {
+      "id": "L058",
+      "lean_name": "%Integer32.greater",
+      "row": "Primitive.p058",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L059",
+      "lean_name": "%Integer32.greaterOrEqual",
+      "row": "Primitive.p059",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L060",
+      "lean_name": "%Integer32.less",
+      "row": "Primitive.p060",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L061",
+      "lean_name": "%Integer32.lessOrEqual",
+      "row": "Primitive.p061",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L062",
+      "lean_name": "%Integer32.mod",
+      "row": "Primitive.p062",
+      "unit": "L60.23",
+      "family": "StandardModel.PureRow.operator",
+      "cover": "StandardModel.operator_rows・StandardModel.first_sixteen",
+      "evidence_before": 3
+    },
+    {
+      "id": "L063",
+      "lean_name": "%Integer32.multiply",
+      "row": "Primitive.p063",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.arithmetic",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L064",
+      "lean_name": "%Integer32.negate",
+      "row": "Primitive.p064",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.arithmetic",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L065",
+      "lean_name": "%Integer32.subtract",
+      "row": "Primitive.p065",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.arithmetic",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L066",
+      "lean_name": "%Integer8.add",
+      "row": "Primitive.p066",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.arithmetic",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L067",
+      "lean_name": "%Integer8.div",
+      "row": "Primitive.p067",
+      "unit": "L60.23",
+      "family": "StandardModel.PureRow.operator",
+      "cover": "StandardModel.operator_rows・StandardModel.first_sixteen",
+      "evidence_before": 3
+    },
+    {
+      "id": "L068",
+      "lean_name": "%Integer8.greater",
+      "row": "Primitive.p068",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L069",
+      "lean_name": "%Integer8.greaterOrEqual",
+      "row": "Primitive.p069",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L070",
+      "lean_name": "%Integer8.less",
+      "row": "Primitive.p070",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L071",
+      "lean_name": "%Integer8.lessOrEqual",
+      "row": "Primitive.p071",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L072",
+      "lean_name": "%Integer8.mod",
+      "row": "Primitive.p072",
+      "unit": "L60.23",
+      "family": "StandardModel.PureRow.operator",
+      "cover": "StandardModel.operator_rows・StandardModel.first_sixteen",
+      "evidence_before": 3
+    },
+    {
+      "id": "L073",
+      "lean_name": "%Integer8.multiply",
+      "row": "Primitive.p073",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.arithmetic",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L074",
+      "lean_name": "%Integer8.negate",
+      "row": "Primitive.p074",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.arithmetic",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L075",
+      "lean_name": "%Integer8.subtract",
+      "row": "Primitive.p075",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.arithmetic",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L077",
+      "lean_name": "%String.add",
+      "row": "Primitive.p077",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.operator",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 3
+    },
+    {
+      "id": "L078",
+      "lean_name": "%String.greater",
+      "row": "Primitive.p078",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.operator",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 3
+    },
+    {
+      "id": "L079",
+      "lean_name": "%String.greaterOrEqual",
+      "row": "Primitive.p079",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.operator",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 3
+    },
+    {
+      "id": "L080",
+      "lean_name": "%String.less",
+      "row": "Primitive.p080",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.operator",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 3
+    },
+    {
+      "id": "L081",
+      "lean_name": "%String.lessOrEqual",
+      "row": "Primitive.p081",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.operator",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 3
+    },
+    {
+      "id": "L082",
+      "lean_name": "%UnsignedInteger16.add",
+      "row": "Primitive.p082",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.arithmetic",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L083",
+      "lean_name": "%UnsignedInteger16.div",
+      "row": "Primitive.p083",
+      "unit": "L60.23",
+      "family": "StandardModel.PureRow.operator",
+      "cover": "StandardModel.operator_rows・StandardModel.first_sixteen",
+      "evidence_before": 3
+    },
+    {
+      "id": "L084",
+      "lean_name": "%UnsignedInteger16.greater",
+      "row": "Primitive.p084",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L085",
+      "lean_name": "%UnsignedInteger16.greaterOrEqual",
+      "row": "Primitive.p085",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L086",
+      "lean_name": "%UnsignedInteger16.less",
+      "row": "Primitive.p086",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L087",
+      "lean_name": "%UnsignedInteger16.lessOrEqual",
+      "row": "Primitive.p087",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L088",
+      "lean_name": "%UnsignedInteger16.mod",
+      "row": "Primitive.p088",
+      "unit": "L60.23",
+      "family": "StandardModel.PureRow.operator",
+      "cover": "StandardModel.operator_rows・StandardModel.first_sixteen",
+      "evidence_before": 3
+    },
+    {
+      "id": "L089",
+      "lean_name": "%UnsignedInteger16.multiply",
+      "row": "Primitive.p089",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.arithmetic",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L090",
+      "lean_name": "%UnsignedInteger16.subtract",
+      "row": "Primitive.p090",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.arithmetic",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L091",
+      "lean_name": "%UnsignedInteger32.add",
+      "row": "Primitive.p091",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.arithmetic",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L092",
+      "lean_name": "%UnsignedInteger32.div",
+      "row": "Primitive.p092",
+      "unit": "L60.23",
+      "family": "StandardModel.PureRow.operator",
+      "cover": "StandardModel.operator_rows・StandardModel.first_sixteen",
+      "evidence_before": 3
+    },
+    {
+      "id": "L093",
+      "lean_name": "%UnsignedInteger32.greater",
+      "row": "Primitive.p093",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L094",
+      "lean_name": "%UnsignedInteger32.greaterOrEqual",
+      "row": "Primitive.p094",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L095",
+      "lean_name": "%UnsignedInteger32.less",
+      "row": "Primitive.p095",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L096",
+      "lean_name": "%UnsignedInteger32.lessOrEqual",
+      "row": "Primitive.p096",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L097",
+      "lean_name": "%UnsignedInteger32.mod",
+      "row": "Primitive.p097",
+      "unit": "L60.23",
+      "family": "StandardModel.PureRow.operator",
+      "cover": "StandardModel.operator_rows・StandardModel.first_sixteen",
+      "evidence_before": 3
+    },
+    {
+      "id": "L098",
+      "lean_name": "%UnsignedInteger32.multiply",
+      "row": "Primitive.p098",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.arithmetic",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L099",
+      "lean_name": "%UnsignedInteger32.subtract",
+      "row": "Primitive.p099",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.arithmetic",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L100",
+      "lean_name": "%UnsignedInteger64.add",
+      "row": "Primitive.p100",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.arithmetic",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L101",
+      "lean_name": "%UnsignedInteger64.div",
+      "row": "Primitive.p101",
+      "unit": "L60.23",
+      "family": "StandardModel.PureRow.operator",
+      "cover": "StandardModel.operator_rows・StandardModel.first_sixteen",
+      "evidence_before": 3
+    },
+    {
+      "id": "L102",
+      "lean_name": "%UnsignedInteger64.greater",
+      "row": "Primitive.p102",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L103",
+      "lean_name": "%UnsignedInteger64.greaterOrEqual",
+      "row": "Primitive.p103",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L104",
+      "lean_name": "%UnsignedInteger64.less",
+      "row": "Primitive.p104",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L105",
+      "lean_name": "%UnsignedInteger64.lessOrEqual",
+      "row": "Primitive.p105",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.order",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L106",
+      "lean_name": "%UnsignedInteger64.mod",
+      "row": "Primitive.p106",
+      "unit": "L60.23",
+      "family": "StandardModel.PureRow.operator",
+      "cover": "StandardModel.operator_rows・StandardModel.first_sixteen",
+      "evidence_before": 3
+    },
+    {
+      "id": "L107",
+      "lean_name": "%UnsignedInteger64.multiply",
+      "row": "Primitive.p107",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.arithmetic",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L108",
+      "lean_name": "%UnsignedInteger64.subtract",
+      "row": "Primitive.p108",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.arithmetic",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L109",
+      "lean_name": "%eq",
+      "row": "Primitive.p109",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.structural",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 3
+    },
+    {
+      "id": "L110",
+      "lean_name": "%ne",
+      "row": "Primitive.p110",
+      "unit": "L60.25",
+      "family": "StandardModel.PureRow.structural",
+      "cover": "StandardModel.operator_rows",
+      "evidence_before": 3
+    },
+    {
+      "id": "L123",
+      "lean_name": "Byte.bitwiseAnd",
+      "row": "Primitive.p111",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.scalar",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L124",
+      "lean_name": "Byte.bitwiseExclusiveOr",
+      "row": "Primitive.p112",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.scalar",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L125",
+      "lean_name": "Byte.bitwiseNot",
+      "row": "Primitive.p113",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.scalar",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L126",
+      "lean_name": "Byte.bitwiseOr",
+      "row": "Primitive.p114",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.scalar",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L127",
+      "lean_name": "Byte.fromInteger",
+      "row": "Primitive.p115",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.scalar",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L128",
+      "lean_name": "Byte.shiftLeft",
+      "row": "Primitive.p116",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.scalar",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L129",
+      "lean_name": "Byte.shiftRight",
+      "row": "Primitive.p117",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.scalar",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L130",
+      "lean_name": "Byte.toInteger",
+      "row": "Primitive.p118",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.scalar",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L131",
+      "lean_name": "Byte.toString",
+      "row": "Primitive.p119",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.byteString",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L148",
+      "lean_name": "Character.fromInteger",
+      "row": "Primitive.p136",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.scalar",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L149",
+      "lean_name": "Character.isASCIIDigit",
+      "row": "Primitive.p137",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.character",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L150",
+      "lean_name": "Character.isASCIIWhitespace",
+      "row": "Primitive.p138",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.character",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L151",
+      "lean_name": "Character.isAlphabetic",
+      "row": "Primitive.p139",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.character",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L152",
+      "lean_name": "Character.isLowercase",
+      "row": "Primitive.p140",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.character",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L153",
+      "lean_name": "Character.isNumeric",
+      "row": "Primitive.p141",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.character",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L154",
+      "lean_name": "Character.isUppercase",
+      "row": "Primitive.p142",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.character",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L155",
+      "lean_name": "Character.isWhitespace",
+      "row": "Primitive.p143",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.character",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L156",
+      "lean_name": "Character.toInteger",
+      "row": "Primitive.p144",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.scalar",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L157",
+      "lean_name": "Character.toLowercase",
+      "row": "Primitive.p145",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.character",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L158",
+      "lean_name": "Character.toString",
+      "row": "Primitive.p146",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.character",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L159",
+      "lean_name": "Character.toUppercase",
+      "row": "Primitive.p147",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.character",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L160",
+      "lean_name": "Decimal.absolute",
+      "row": "Primitive.p148",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.decimal",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L161",
+      "lean_name": "Decimal.fromFloat",
+      "row": "Primitive.p149",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.numericRemaining",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 4
+    },
+    {
+      "id": "L162",
+      "lean_name": "Decimal.fromInteger",
+      "row": "Primitive.p150",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.decimal",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L163",
+      "lean_name": "Decimal.parse",
+      "row": "Primitive.p151",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.numericRemaining",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L164",
+      "lean_name": "Decimal.round",
+      "row": "Primitive.p152",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.decimal",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L165",
+      "lean_name": "Decimal.toFloat",
+      "row": "Primitive.p153",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.numericRemaining",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L166",
+      "lean_name": "Decimal.toString",
+      "row": "Primitive.p154",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.numericRemaining",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L167",
+      "lean_name": "Decimal.truncate",
+      "row": "Primitive.p155",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.decimal",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L177",
+      "lean_name": "Float.absolute",
+      "row": "Primitive.p164",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.floatMath",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L178",
+      "lean_name": "Float.ceiling",
+      "row": "Primitive.p165",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.floatMath",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L179",
+      "lean_name": "Float.floor",
+      "row": "Primitive.p166",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.floatMath",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L180",
+      "lean_name": "Float.isNaN",
+      "row": "Primitive.p167",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.scalar",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L181",
+      "lean_name": "Float.parse",
+      "row": "Primitive.p168",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.numericRemaining",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L182",
+      "lean_name": "Float.round",
+      "row": "Primitive.p169",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.floatMath",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L183",
+      "lean_name": "Float.squareRoot",
+      "row": "Primitive.p170",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.floatMath",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L184",
+      "lean_name": "Float.toString",
+      "row": "Primitive.p171",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.numericRemaining",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L185",
+      "lean_name": "Float.truncate",
+      "row": "Primitive.p172",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.floatMath",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L186",
+      "lean_name": "Float32.absolute",
+      "row": "Primitive.p173",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.floatMath",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L187",
+      "lean_name": "Float32.ceiling",
+      "row": "Primitive.p174",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.floatMath",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L188",
+      "lean_name": "Float32.floor",
+      "row": "Primitive.p175",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.floatMath",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L189",
+      "lean_name": "Float32.fromFloat",
+      "row": "Primitive.p176",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.numericRemaining",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L190",
+      "lean_name": "Float32.isInfinite",
+      "row": "Primitive.p177",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.scalar",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L191",
+      "lean_name": "Float32.isNaN",
+      "row": "Primitive.p178",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.scalar",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L192",
+      "lean_name": "Float32.parse",
+      "row": "Primitive.p179",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.numericRemaining",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L193",
+      "lean_name": "Float32.round",
+      "row": "Primitive.p180",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.floatMath",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L194",
+      "lean_name": "Float32.squareRoot",
+      "row": "Primitive.p181",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.floatMath",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L195",
+      "lean_name": "Float32.toFloat",
+      "row": "Primitive.p182",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.numericRemaining",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L196",
+      "lean_name": "Float32.toString",
+      "row": "Primitive.p183",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.numericRemaining",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L197",
+      "lean_name": "Float32.truncate",
+      "row": "Primitive.p184",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.floatMath",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L211",
+      "lean_name": "Integer.absolute",
+      "row": "Primitive.p189",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L212",
+      "lean_name": "Integer.bitwiseAnd",
+      "row": "Primitive.p190",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L213",
+      "lean_name": "Integer.bitwiseExclusiveOr",
+      "row": "Primitive.p191",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L214",
+      "lean_name": "Integer.bitwiseNot",
+      "row": "Primitive.p192",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L215",
+      "lean_name": "Integer.bitwiseOr",
+      "row": "Primitive.p193",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L216",
+      "lean_name": "Integer.floorDivide",
+      "row": "Primitive.p194",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 3
+    },
+    {
+      "id": "L217",
+      "lean_name": "Integer.floorModulo",
+      "row": "Primitive.p195",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 4
+    },
+    {
+      "id": "L218",
+      "lean_name": "Integer.maximum",
+      "row": "Primitive.p196",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.minMax",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L219",
+      "lean_name": "Integer.minimum",
+      "row": "Primitive.p197",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.minMax",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L220",
+      "lean_name": "Integer.parse",
+      "row": "Primitive.p198",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerText",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L221",
+      "lean_name": "Integer.shiftLeft",
+      "row": "Primitive.p199",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L222",
+      "lean_name": "Integer.shiftRight",
+      "row": "Primitive.p200",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L223",
+      "lean_name": "Integer.shiftRightUnsigned",
+      "row": "Primitive.p201",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L224",
+      "lean_name": "Integer.toFloat",
+      "row": "Primitive.p202",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerText",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L225",
+      "lean_name": "Integer.toString",
+      "row": "Primitive.p203",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerText",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L226",
+      "lean_name": "Integer16.absolute",
+      "row": "Primitive.p204",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L227",
+      "lean_name": "Integer16.bitwiseAnd",
+      "row": "Primitive.p205",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L228",
+      "lean_name": "Integer16.bitwiseExclusiveOr",
+      "row": "Primitive.p206",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L229",
+      "lean_name": "Integer16.bitwiseNot",
+      "row": "Primitive.p207",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L230",
+      "lean_name": "Integer16.bitwiseOr",
+      "row": "Primitive.p208",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L231",
+      "lean_name": "Integer16.floorDivide",
+      "row": "Primitive.p209",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 3
+    },
+    {
+      "id": "L232",
+      "lean_name": "Integer16.floorModulo",
+      "row": "Primitive.p210",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 4
+    },
+    {
+      "id": "L233",
+      "lean_name": "Integer16.fromInteger",
+      "row": "Primitive.p211",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.conversion",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 3
+    },
+    {
+      "id": "L234",
+      "lean_name": "Integer16.maximum",
+      "row": "Primitive.p212",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.minMax",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L235",
+      "lean_name": "Integer16.minimum",
+      "row": "Primitive.p213",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.minMax",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L236",
+      "lean_name": "Integer16.parse",
+      "row": "Primitive.p214",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerText",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L237",
+      "lean_name": "Integer16.shiftLeft",
+      "row": "Primitive.p215",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L238",
+      "lean_name": "Integer16.shiftRight",
+      "row": "Primitive.p216",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L239",
+      "lean_name": "Integer16.shiftRightUnsigned",
+      "row": "Primitive.p217",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L240",
+      "lean_name": "Integer16.toFloat",
+      "row": "Primitive.p218",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerText",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L241",
+      "lean_name": "Integer16.toInteger",
+      "row": "Primitive.p219",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.conversion",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 3
+    },
+    {
+      "id": "L242",
+      "lean_name": "Integer16.toString",
+      "row": "Primitive.p220",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerText",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L243",
+      "lean_name": "Integer32.absolute",
+      "row": "Primitive.p221",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L244",
+      "lean_name": "Integer32.bitwiseAnd",
+      "row": "Primitive.p222",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L245",
+      "lean_name": "Integer32.bitwiseExclusiveOr",
+      "row": "Primitive.p223",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L246",
+      "lean_name": "Integer32.bitwiseNot",
+      "row": "Primitive.p224",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L247",
+      "lean_name": "Integer32.bitwiseOr",
+      "row": "Primitive.p225",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L248",
+      "lean_name": "Integer32.floorDivide",
+      "row": "Primitive.p226",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 3
+    },
+    {
+      "id": "L249",
+      "lean_name": "Integer32.floorModulo",
+      "row": "Primitive.p227",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 4
+    },
+    {
+      "id": "L250",
+      "lean_name": "Integer32.fromInteger",
+      "row": "Primitive.p228",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.conversion",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 3
+    },
+    {
+      "id": "L251",
+      "lean_name": "Integer32.maximum",
+      "row": "Primitive.p229",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.minMax",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L252",
+      "lean_name": "Integer32.minimum",
+      "row": "Primitive.p230",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.minMax",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L253",
+      "lean_name": "Integer32.parse",
+      "row": "Primitive.p231",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerText",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L254",
+      "lean_name": "Integer32.shiftLeft",
+      "row": "Primitive.p232",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L255",
+      "lean_name": "Integer32.shiftRight",
+      "row": "Primitive.p233",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L256",
+      "lean_name": "Integer32.shiftRightUnsigned",
+      "row": "Primitive.p234",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L257",
+      "lean_name": "Integer32.toFloat",
+      "row": "Primitive.p235",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerText",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L258",
+      "lean_name": "Integer32.toInteger",
+      "row": "Primitive.p236",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.conversion",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 3
+    },
+    {
+      "id": "L259",
+      "lean_name": "Integer32.toString",
+      "row": "Primitive.p237",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerText",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L275",
+      "lean_name": "Integer8.absolute",
+      "row": "Primitive.p238",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L276",
+      "lean_name": "Integer8.bitwiseAnd",
+      "row": "Primitive.p239",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L277",
+      "lean_name": "Integer8.bitwiseExclusiveOr",
+      "row": "Primitive.p240",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L278",
+      "lean_name": "Integer8.bitwiseNot",
+      "row": "Primitive.p241",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L279",
+      "lean_name": "Integer8.bitwiseOr",
+      "row": "Primitive.p242",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L280",
+      "lean_name": "Integer8.floorDivide",
+      "row": "Primitive.p243",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 3
+    },
+    {
+      "id": "L281",
+      "lean_name": "Integer8.floorModulo",
+      "row": "Primitive.p244",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 4
+    },
+    {
+      "id": "L282",
+      "lean_name": "Integer8.fromInteger",
+      "row": "Primitive.p245",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.conversion",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 3
+    },
+    {
+      "id": "L283",
+      "lean_name": "Integer8.maximum",
+      "row": "Primitive.p246",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.minMax",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L284",
+      "lean_name": "Integer8.minimum",
+      "row": "Primitive.p247",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.minMax",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L285",
+      "lean_name": "Integer8.parse",
+      "row": "Primitive.p248",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerText",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L286",
+      "lean_name": "Integer8.shiftLeft",
+      "row": "Primitive.p249",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L287",
+      "lean_name": "Integer8.shiftRight",
+      "row": "Primitive.p250",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L288",
+      "lean_name": "Integer8.shiftRightUnsigned",
+      "row": "Primitive.p251",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L289",
+      "lean_name": "Integer8.toFloat",
+      "row": "Primitive.p252",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerText",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L290",
+      "lean_name": "Integer8.toInteger",
+      "row": "Primitive.p253",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.conversion",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 3
+    },
+    {
+      "id": "L291",
+      "lean_name": "Integer8.toString",
+      "row": "Primitive.p254",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerText",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L426",
+      "lean_name": "UnsignedInteger16.absolute",
+      "row": "Primitive.p322",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L427",
+      "lean_name": "UnsignedInteger16.bitwiseAnd",
+      "row": "Primitive.p323",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L428",
+      "lean_name": "UnsignedInteger16.bitwiseExclusiveOr",
+      "row": "Primitive.p324",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L429",
+      "lean_name": "UnsignedInteger16.bitwiseNot",
+      "row": "Primitive.p325",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L430",
+      "lean_name": "UnsignedInteger16.bitwiseOr",
+      "row": "Primitive.p326",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L431",
+      "lean_name": "UnsignedInteger16.floorDivide",
+      "row": "Primitive.p327",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 3
+    },
+    {
+      "id": "L432",
+      "lean_name": "UnsignedInteger16.floorModulo",
+      "row": "Primitive.p328",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 4
+    },
+    {
+      "id": "L433",
+      "lean_name": "UnsignedInteger16.fromInteger",
+      "row": "Primitive.p329",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.conversion",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 3
+    },
+    {
+      "id": "L434",
+      "lean_name": "UnsignedInteger16.maximum",
+      "row": "Primitive.p330",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.minMax",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L435",
+      "lean_name": "UnsignedInteger16.minimum",
+      "row": "Primitive.p331",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.minMax",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L436",
+      "lean_name": "UnsignedInteger16.parse",
+      "row": "Primitive.p332",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerText",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L437",
+      "lean_name": "UnsignedInteger16.shiftLeft",
+      "row": "Primitive.p333",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L438",
+      "lean_name": "UnsignedInteger16.shiftRight",
+      "row": "Primitive.p334",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L439",
+      "lean_name": "UnsignedInteger16.toFloat",
+      "row": "Primitive.p335",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerText",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L440",
+      "lean_name": "UnsignedInteger16.toInteger",
+      "row": "Primitive.p336",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.conversion",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 3
+    },
+    {
+      "id": "L441",
+      "lean_name": "UnsignedInteger16.toString",
+      "row": "Primitive.p337",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerText",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L442",
+      "lean_name": "UnsignedInteger32.absolute",
+      "row": "Primitive.p338",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L443",
+      "lean_name": "UnsignedInteger32.bitwiseAnd",
+      "row": "Primitive.p339",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L444",
+      "lean_name": "UnsignedInteger32.bitwiseExclusiveOr",
+      "row": "Primitive.p340",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L445",
+      "lean_name": "UnsignedInteger32.bitwiseNot",
+      "row": "Primitive.p341",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L446",
+      "lean_name": "UnsignedInteger32.bitwiseOr",
+      "row": "Primitive.p342",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L447",
+      "lean_name": "UnsignedInteger32.floorDivide",
+      "row": "Primitive.p343",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 3
+    },
+    {
+      "id": "L448",
+      "lean_name": "UnsignedInteger32.floorModulo",
+      "row": "Primitive.p344",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 4
+    },
+    {
+      "id": "L449",
+      "lean_name": "UnsignedInteger32.fromInteger",
+      "row": "Primitive.p345",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.conversion",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 3
+    },
+    {
+      "id": "L450",
+      "lean_name": "UnsignedInteger32.maximum",
+      "row": "Primitive.p346",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.minMax",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L451",
+      "lean_name": "UnsignedInteger32.minimum",
+      "row": "Primitive.p347",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.minMax",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L452",
+      "lean_name": "UnsignedInteger32.parse",
+      "row": "Primitive.p348",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerText",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L453",
+      "lean_name": "UnsignedInteger32.shiftLeft",
+      "row": "Primitive.p349",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L454",
+      "lean_name": "UnsignedInteger32.shiftRight",
+      "row": "Primitive.p350",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L455",
+      "lean_name": "UnsignedInteger32.toFloat",
+      "row": "Primitive.p351",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerText",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L456",
+      "lean_name": "UnsignedInteger32.toInteger",
+      "row": "Primitive.p352",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.conversion",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 3
+    },
+    {
+      "id": "L457",
+      "lean_name": "UnsignedInteger32.toString",
+      "row": "Primitive.p353",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerText",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L458",
+      "lean_name": "UnsignedInteger64.absolute",
+      "row": "Primitive.p354",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L459",
+      "lean_name": "UnsignedInteger64.bitwiseAnd",
+      "row": "Primitive.p355",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L460",
+      "lean_name": "UnsignedInteger64.bitwiseExclusiveOr",
+      "row": "Primitive.p356",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L461",
+      "lean_name": "UnsignedInteger64.bitwiseNot",
+      "row": "Primitive.p357",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L462",
+      "lean_name": "UnsignedInteger64.bitwiseOr",
+      "row": "Primitive.p358",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L463",
+      "lean_name": "UnsignedInteger64.floorDivide",
+      "row": "Primitive.p359",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 3
+    },
+    {
+      "id": "L464",
+      "lean_name": "UnsignedInteger64.floorModulo",
+      "row": "Primitive.p360",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 4
+    },
+    {
+      "id": "L465",
+      "lean_name": "UnsignedInteger64.fromDecimal",
+      "row": "Primitive.p361",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.decimal",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L466",
+      "lean_name": "UnsignedInteger64.fromInteger",
+      "row": "Primitive.p362",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.conversion",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 3
+    },
+    {
+      "id": "L467",
+      "lean_name": "UnsignedInteger64.maximum",
+      "row": "Primitive.p363",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.minMax",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L468",
+      "lean_name": "UnsignedInteger64.minimum",
+      "row": "Primitive.p364",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.minMax",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L469",
+      "lean_name": "UnsignedInteger64.parse",
+      "row": "Primitive.p365",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerText",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L470",
+      "lean_name": "UnsignedInteger64.shiftLeft",
+      "row": "Primitive.p366",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L471",
+      "lean_name": "UnsignedInteger64.shiftRight",
+      "row": "Primitive.p367",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerAPI",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L472",
+      "lean_name": "UnsignedInteger64.toDecimal",
+      "row": "Primitive.p368",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.decimal",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L473",
+      "lean_name": "UnsignedInteger64.toFloat",
+      "row": "Primitive.p369",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerText",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    },
+    {
+      "id": "L474",
+      "lean_name": "UnsignedInteger64.toInteger",
+      "row": "Primitive.p370",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.conversion",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 3
+    },
+    {
+      "id": "L475",
+      "lean_name": "UnsignedInteger64.toString",
+      "row": "Primitive.p371",
+      "unit": "L60.24",
+      "family": "StandardModel.PureRow.integerText",
+      "cover": "StandardModel.numeric_rows",
+      "evidence_before": 2
+    }
+  ]
+}

@@ -123,39 +123,47 @@ theorem release_all (P : Program) :
       (builtins P).isResource o = true → ∀ r, (builtins P).releaseResponse v r :=
   fun _ _ _ typed resource r => (resource_table P).release_all typed resource r
 
-/-- 参照と明示遅延の種類を持つ合成表の行は、Reference.getとReference.setの二行だけである。 -/
+/-- 参照と明示遅延の種類を持つ合成表の行は、Reference.get・Reference.set・Lazy.force・
+Reference.new・Reference.updateの五行である。 -/
 theorem Primitive.store_rows (row : Primitive)
     (hk : row.signature.kind = .refNew ∨ row.signature.kind = .refGet ∨
       row.signature.kind = .refSet ∨ row.signature.kind = .refUpdate ∨
       row.signature.kind = .force) :
-    row = .p279 ∨ row = .p280 := by
+    row = .p279 ∨ row = .p280 ∨ row = .p374 ∨ row = .p375 ∨ row = .p376 := by
   cases row
   all_goals first
     | exact Or.inl rfl
-    | exact Or.inr rfl
+    | exact Or.inr (Or.inl rfl)
+    | exact Or.inr (Or.inr (Or.inl rfl))
+    | exact Or.inr (Or.inr (Or.inr (Or.inl rfl)))
+    | exact Or.inr (Or.inr (Or.inr (Or.inr rfl)))
     | (exfalso; revert hk; decide)
 
-/-- 参照と明示遅延の種類を持つ合成表の全lookupは、ModelTargetsの同じ署名の行である。 -/
+/-- 取得・設定の種類を持つ合成表の全lookupは、ModelTargetsの同じ署名の行である。 -/
 theorem store_lookup {P b s} (lookup : (builtins P).sig b = some s)
-    (hk : s.kind = .refNew ∨ s.kind = .refGet ∨ s.kind = .refSet ∨ s.kind = .refUpdate ∨
-      s.kind = .force) :
+    (hk : s.kind = .refGet ∨ s.kind = .refSet) :
     (b = "Reference.get" ∨ b = "Reference.set") ∧ ModelTargets.builtins.sig b = some s := by
   obtain ⟨row, _, rfl, rfl⟩ := (builtins_lookup_iff P b s).mp lookup
-  rcases Primitive.store_rows row hk with rfl | rfl
+  rcases Primitive.store_rows row (by rcases hk with hk | hk <;> simp [hk]) with
+    rfl | rfl | rfl | rfl | rfl
   · exact ⟨Or.inl rfl, rfl⟩
   · exact ⟨Or.inr rfl, rfl⟩
+  all_goals rcases hk with hk | hk <;> cases hk
 
-/-- 合成表はReference.newとReference.updateとLazy.forceの種類の行を持たない。 -/
-theorem no_store_transitions {P b s} (lookup : (builtins P).sig b = some s) :
-    s.kind ≠ .refNew ∧ s.kind ≠ .refUpdate ∧ s.kind ≠ .force := by
-  refine ⟨fun hk => ?_, fun hk => ?_, fun hk => ?_⟩
-  all_goals
-    obtain ⟨hb, same⟩ := store_lookup lookup (by simp [hk])
-    rcases hb with rfl | rfl
-    all_goals
-      have := Option.some.inj (same.symm.trans rfl)
-      subst this
-      cases hk
+/-- 作成・更新・明示遅延の評価の種類を持つ合成表の全lookupは、Reference.new・Reference.update・
+Lazy.forceの名前とその署名である。三つの行はδ・IO応答を持たず、専用の遷移が受け持つ。 -/
+theorem store_transitions {P b s} (lookup : (builtins P).sig b = some s)
+    (hk : s.kind = .refNew ∨ s.kind = .refUpdate ∨ s.kind = .force) :
+    (b = "Reference.new" ∧ s = refNewSig) ∨ (b = "Reference.update" ∧ s = refUpdateSig) ∨
+      (b = "Lazy.force" ∧ s = forceSig) := by
+  obtain ⟨row, _, rfl, rfl⟩ := (builtins_lookup_iff P b s).mp lookup
+  rcases Primitive.store_rows row (by rcases hk with hk | hk | hk <;> simp [hk]) with
+    rfl | rfl | rfl | rfl | rfl
+  · rcases hk with hk | hk | hk <;> cases hk
+  · rcases hk with hk | hk | hk <;> cases hk
+  · exact Or.inr (Or.inr ⟨rfl, rfl⟩)
+  · exact Or.inl ⟨rfl, rfl⟩
+  · exact Or.inr (Or.inl ⟨rfl, rfl⟩)
 
 /-- 合成表の全lookupで、PathBases以外の種類の署名は参照と明示遅延の形を満たす。 -/
 theorem store_shape (P : Program) :
@@ -164,8 +172,14 @@ theorem store_shape (P : Program) :
   cases kind : s.kind
   case pathBases => exact (hk kind).elim
   case pure | io | exit => simp only [PrimSig.StoreShape, kind]
-  all_goals
+  case refGet | refSet =>
     exact ModelTargets.store_shape (store_lookup lookup (by simp [kind])).2 hk
+  all_goals
+    rcases store_transitions lookup (by simp [kind]) with ⟨_, rfl⟩ | ⟨_, rfl⟩ | ⟨_, rfl⟩
+    all_goals first
+      | (cases kind; done)
+      | exact ⟨rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl⟩
+      | exact ⟨rfl, rfl, rfl, rfl, rfl, rfl, rfl⟩
 
 /-- 合成表は台帳の各行の名前でその行の署名を返す。 -/
 theorem row_lookup (P : Program) (row : Primitive) :
@@ -183,36 +197,42 @@ theorem ref_set (P : Program) :
     ∃ s, (builtins P).sig (builtins P).refSet = some s ∧ s.kind = .refSet :=
   ⟨_, row_lookup P .p280, rfl⟩
 
-/-- 合成する二つのReferenceの行は、型引数の種類が[value]で、元の依存列が宣言した行に収まり、
-操作の効果を持たない。 -/
+/-- 参照と明示遅延の五つの種類の合成表の行は、型引数の種類が[value]で、元の依存列が宣言した行に
+収まり、操作の効果を持たない。 -/
 theorem reference_rows {P b s} (lookup : (builtins P).sig b = some s)
-    (hk : s.kind = .refGet ∨ s.kind = .refSet) :
+    (hk : s.kind = .refNew ∨ s.kind = .refGet ∨ s.kind = .refSet ∨ s.kind = .refUpdate ∨
+      s.kind = .force) :
     s.StoreShape ∧ s.tparams.map TParamDecl.kind = [.value] ∧ s.tel.RowsIn (· < s.neffs) ∧
       s.opEff = none := by
-  have store : s.kind = .refNew ∨ s.kind = .refGet ∨ s.kind = .refSet ∨ s.kind = .refUpdate ∨
-      s.kind = .force := by
-    rcases hk with hk | hk <;> simp [hk]
-  obtain ⟨hb, same⟩ := store_lookup lookup store
-  have shape := ModelTargets.store_shape same (by rcases hk with hk | hk <;> simp [hk])
-  refine ⟨shape, ?_, shape.sourceTelRows store, ?_⟩
-  · rcases hk with hk | hk <;> simp only [PrimSig.StoreShape, hk] at shape <;> exact shape.2.2.2.2.2.2.2
-  · rcases hb with rfl | rfl <;> cases Option.some.inj (same.symm.trans rfl) <;> rfl
+  have shape := store_shape P b s lookup (by rcases hk with hk | hk | hk | hk | hk <;> simp [hk])
+  refine ⟨shape, ?_, shape.sourceTelRows hk, ?_⟩
+  all_goals
+    rcases hk with hk | hk | hk | hk | hk
+    · rcases store_transitions lookup (Or.inl hk) with ⟨_, rfl⟩ | ⟨_, rfl⟩ | ⟨_, rfl⟩ <;> rfl
+    · obtain ⟨hb, same⟩ := store_lookup lookup (Or.inl hk)
+      rcases hb with rfl | rfl <;> cases Option.some.inj (same.symm.trans rfl) <;> rfl
+    · obtain ⟨hb, same⟩ := store_lookup lookup (Or.inr hk)
+      rcases hb with rfl | rfl <;> cases Option.some.inj (same.symm.trans rfl) <;> rfl
+    · rcases store_transitions lookup (Or.inr (Or.inl hk)) with ⟨_, rfl⟩ | ⟨_, rfl⟩ | ⟨_, rfl⟩ <;> rfl
+    · rcases store_transitions lookup (Or.inr (Or.inr hk)) with ⟨_, rfl⟩ | ⟨_, rfl⟩ | ⟨_, rfl⟩ <;> rfl
 
-/-- 合成表のFile.Handleの解放と、Reference.getの行の形・名前の解決・種類の除外を読む。 -/
+/-- 合成表のFile.Handleの解放と、Reference.getの行の形・名前の解決、Reference.newの行の署名と形を読む。 -/
 example (P : Program) (Ψ : StoreTy) (r : Benitoite.Release.ErrKind) :
     ((builtins P).releaseResponse (.const (.opaque "File.Handle" 0)) none ∧
       (builtins P).releaseResponse (.const (.opaque "File.Handle" 0)) (some r)) ∧
     (Primitive.p279.signature.StoreShape ∧ Primitive.p279.signature.tparams.map TParamDecl.kind = [.value] ∧
       Primitive.p279.signature.kind ≠ .refNew) ∧
+    ((builtins P).sig "Reference.new" = some refNewSig ∧ refNewSig.StoreShape) ∧
     (∃ s, (builtins P).sig (builtins P).refGet = some s ∧ s.kind = .refGet) ∧
     (∃ s, (builtins P).sig (builtins P).refSet = some s ∧ s.kind = .refSet) := by
   have input := resource_input P Ψ 0
   have all := release_all P Ψ _ _ input.1 input.2
   have lookup := row_lookup P .p279
-  have rows := reference_rows lookup (Or.inl rfl)
+  have rows := reference_rows lookup (Or.inr (Or.inl rfl))
+  have created := row_lookup P .p375
   exact ⟨⟨all none, all (some r)⟩,
-    ⟨store_shape P _ _ lookup (by decide), rows.2.1, (no_store_transitions lookup).1⟩,
-    ref_get P, ref_set P⟩
+    ⟨store_shape P _ _ lookup (by decide), rows.2.1, by decide⟩,
+    ⟨created, (reference_rows created (Or.inl rfl)).1⟩, ref_get P, ref_set P⟩
 
 end StandardModel
 

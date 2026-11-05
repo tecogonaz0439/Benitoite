@@ -1,0 +1,2230 @@
+{
+  "summary": {
+    "rows": 275,
+    "classes": {
+      "実質": 275
+    },
+    "pending": 0,
+    "vacuous": 0,
+    "trivial": 0,
+    "by_unit": {
+      "L60.25": 93,
+      "L60.23": 16,
+      "L60.24": 166
+    }
+  },
+  "evidence": {
+    "numeric": {
+      "contract": "Benitoite.Release.Refinement.StandardModel.numeric_rows",
+      "satisfiable_input": "Benitoite.Release.Refinement.StandardModel.numeric_inputs"
+    },
+    "operator": {
+      "contract": "Benitoite.Release.Refinement.StandardModel.operator_rows",
+      "satisfiable_input": "Benitoite.Release.Refinement.StandardModel.operator_inputs",
+      "first_sixteen": "Benitoite.Release.Refinement.StandardModel.first_sixteen"
+    },
+    "conclusion": "既存の応答の補題が、同じ入力の合成表のδの値を型付きの非exitの応答として返す"
+  },
+  "rows": [
+    {
+      "row": "p001",
+      "name": "%Byte.greater",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p002",
+      "name": "%Byte.greaterOrEqual",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p003",
+      "name": "%Byte.less",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p004",
+      "name": "%Byte.lessOrEqual",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p005",
+      "name": "%Character.greater",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p006",
+      "name": "%Character.greaterOrEqual",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p007",
+      "name": "%Character.less",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p008",
+      "name": "%Character.lessOrEqual",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p009",
+      "name": "%Decimal.add",
+      "kind": "operator",
+      "family": "operator",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p010",
+      "name": "%Decimal.divide",
+      "kind": "operator",
+      "family": "operator",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p011",
+      "name": "%Decimal.greater",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p012",
+      "name": "%Decimal.greaterOrEqual",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p013",
+      "name": "%Decimal.less",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p014",
+      "name": "%Decimal.lessOrEqual",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p015",
+      "name": "%Decimal.multiply",
+      "kind": "operator",
+      "family": "operator",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p016",
+      "name": "%Decimal.negate",
+      "kind": "operator",
+      "family": "operator",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p017",
+      "name": "%Decimal.subtract",
+      "kind": "operator",
+      "family": "operator",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p018",
+      "name": "%Float.add",
+      "kind": "operator",
+      "family": "operator",
+      "first_sixteen": true,
+      "class": "実質"
+    },
+    {
+      "row": "p019",
+      "name": "%Float.divide",
+      "kind": "operator",
+      "family": "operator",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p020",
+      "name": "%Float.greater",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p021",
+      "name": "%Float.greaterOrEqual",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p022",
+      "name": "%Float.less",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p023",
+      "name": "%Float.lessOrEqual",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p024",
+      "name": "%Float.multiply",
+      "kind": "operator",
+      "family": "operator",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p025",
+      "name": "%Float.negate",
+      "kind": "operator",
+      "family": "operator",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p026",
+      "name": "%Float.subtract",
+      "kind": "operator",
+      "family": "operator",
+      "first_sixteen": true,
+      "class": "実質"
+    },
+    {
+      "row": "p027",
+      "name": "%Float32.add",
+      "kind": "operator",
+      "family": "operator",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p028",
+      "name": "%Float32.divide",
+      "kind": "operator",
+      "family": "operator",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p029",
+      "name": "%Float32.greater",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p030",
+      "name": "%Float32.greaterOrEqual",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p031",
+      "name": "%Float32.less",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p032",
+      "name": "%Float32.lessOrEqual",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p033",
+      "name": "%Float32.multiply",
+      "kind": "operator",
+      "family": "operator",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p034",
+      "name": "%Float32.negate",
+      "kind": "operator",
+      "family": "operator",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p035",
+      "name": "%Float32.subtract",
+      "kind": "operator",
+      "family": "operator",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p036",
+      "name": "%Integer.add",
+      "kind": "operator",
+      "family": "arithmetic",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p037",
+      "name": "%Integer.div",
+      "kind": "operator",
+      "family": "operator",
+      "first_sixteen": true,
+      "class": "実質"
+    },
+    {
+      "row": "p038",
+      "name": "%Integer.greater",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p039",
+      "name": "%Integer.greaterOrEqual",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p040",
+      "name": "%Integer.less",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p041",
+      "name": "%Integer.lessOrEqual",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p042",
+      "name": "%Integer.mod",
+      "kind": "operator",
+      "family": "operator",
+      "first_sixteen": true,
+      "class": "実質"
+    },
+    {
+      "row": "p043",
+      "name": "%Integer.multiply",
+      "kind": "operator",
+      "family": "arithmetic",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p044",
+      "name": "%Integer.negate",
+      "kind": "operator",
+      "family": "arithmetic",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p045",
+      "name": "%Integer.subtract",
+      "kind": "operator",
+      "family": "arithmetic",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p046",
+      "name": "%Integer16.add",
+      "kind": "operator",
+      "family": "arithmetic",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p047",
+      "name": "%Integer16.div",
+      "kind": "operator",
+      "family": "operator",
+      "first_sixteen": true,
+      "class": "実質"
+    },
+    {
+      "row": "p048",
+      "name": "%Integer16.greater",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p049",
+      "name": "%Integer16.greaterOrEqual",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p050",
+      "name": "%Integer16.less",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p051",
+      "name": "%Integer16.lessOrEqual",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p052",
+      "name": "%Integer16.mod",
+      "kind": "operator",
+      "family": "operator",
+      "first_sixteen": true,
+      "class": "実質"
+    },
+    {
+      "row": "p053",
+      "name": "%Integer16.multiply",
+      "kind": "operator",
+      "family": "arithmetic",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p054",
+      "name": "%Integer16.negate",
+      "kind": "operator",
+      "family": "arithmetic",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p055",
+      "name": "%Integer16.subtract",
+      "kind": "operator",
+      "family": "arithmetic",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p056",
+      "name": "%Integer32.add",
+      "kind": "operator",
+      "family": "arithmetic",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p057",
+      "name": "%Integer32.div",
+      "kind": "operator",
+      "family": "operator",
+      "first_sixteen": true,
+      "class": "実質"
+    },
+    {
+      "row": "p058",
+      "name": "%Integer32.greater",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p059",
+      "name": "%Integer32.greaterOrEqual",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p060",
+      "name": "%Integer32.less",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p061",
+      "name": "%Integer32.lessOrEqual",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p062",
+      "name": "%Integer32.mod",
+      "kind": "operator",
+      "family": "operator",
+      "first_sixteen": true,
+      "class": "実質"
+    },
+    {
+      "row": "p063",
+      "name": "%Integer32.multiply",
+      "kind": "operator",
+      "family": "arithmetic",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p064",
+      "name": "%Integer32.negate",
+      "kind": "operator",
+      "family": "arithmetic",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p065",
+      "name": "%Integer32.subtract",
+      "kind": "operator",
+      "family": "arithmetic",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p066",
+      "name": "%Integer8.add",
+      "kind": "operator",
+      "family": "arithmetic",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p067",
+      "name": "%Integer8.div",
+      "kind": "operator",
+      "family": "operator",
+      "first_sixteen": true,
+      "class": "実質"
+    },
+    {
+      "row": "p068",
+      "name": "%Integer8.greater",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p069",
+      "name": "%Integer8.greaterOrEqual",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p070",
+      "name": "%Integer8.less",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p071",
+      "name": "%Integer8.lessOrEqual",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p072",
+      "name": "%Integer8.mod",
+      "kind": "operator",
+      "family": "operator",
+      "first_sixteen": true,
+      "class": "実質"
+    },
+    {
+      "row": "p073",
+      "name": "%Integer8.multiply",
+      "kind": "operator",
+      "family": "arithmetic",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p074",
+      "name": "%Integer8.negate",
+      "kind": "operator",
+      "family": "arithmetic",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p075",
+      "name": "%Integer8.subtract",
+      "kind": "operator",
+      "family": "arithmetic",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p077",
+      "name": "%String.add",
+      "kind": "operator",
+      "family": "operator",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p078",
+      "name": "%String.greater",
+      "kind": "operator",
+      "family": "operator",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p079",
+      "name": "%String.greaterOrEqual",
+      "kind": "operator",
+      "family": "operator",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p080",
+      "name": "%String.less",
+      "kind": "operator",
+      "family": "operator",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p081",
+      "name": "%String.lessOrEqual",
+      "kind": "operator",
+      "family": "operator",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p082",
+      "name": "%UnsignedInteger16.add",
+      "kind": "operator",
+      "family": "arithmetic",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p083",
+      "name": "%UnsignedInteger16.div",
+      "kind": "operator",
+      "family": "operator",
+      "first_sixteen": true,
+      "class": "実質"
+    },
+    {
+      "row": "p084",
+      "name": "%UnsignedInteger16.greater",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p085",
+      "name": "%UnsignedInteger16.greaterOrEqual",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p086",
+      "name": "%UnsignedInteger16.less",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p087",
+      "name": "%UnsignedInteger16.lessOrEqual",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p088",
+      "name": "%UnsignedInteger16.mod",
+      "kind": "operator",
+      "family": "operator",
+      "first_sixteen": true,
+      "class": "実質"
+    },
+    {
+      "row": "p089",
+      "name": "%UnsignedInteger16.multiply",
+      "kind": "operator",
+      "family": "arithmetic",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p090",
+      "name": "%UnsignedInteger16.subtract",
+      "kind": "operator",
+      "family": "arithmetic",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p091",
+      "name": "%UnsignedInteger32.add",
+      "kind": "operator",
+      "family": "arithmetic",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p092",
+      "name": "%UnsignedInteger32.div",
+      "kind": "operator",
+      "family": "operator",
+      "first_sixteen": true,
+      "class": "実質"
+    },
+    {
+      "row": "p093",
+      "name": "%UnsignedInteger32.greater",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p094",
+      "name": "%UnsignedInteger32.greaterOrEqual",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p095",
+      "name": "%UnsignedInteger32.less",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p096",
+      "name": "%UnsignedInteger32.lessOrEqual",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p097",
+      "name": "%UnsignedInteger32.mod",
+      "kind": "operator",
+      "family": "operator",
+      "first_sixteen": true,
+      "class": "実質"
+    },
+    {
+      "row": "p098",
+      "name": "%UnsignedInteger32.multiply",
+      "kind": "operator",
+      "family": "arithmetic",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p099",
+      "name": "%UnsignedInteger32.subtract",
+      "kind": "operator",
+      "family": "arithmetic",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p100",
+      "name": "%UnsignedInteger64.add",
+      "kind": "operator",
+      "family": "arithmetic",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p101",
+      "name": "%UnsignedInteger64.div",
+      "kind": "operator",
+      "family": "operator",
+      "first_sixteen": true,
+      "class": "実質"
+    },
+    {
+      "row": "p102",
+      "name": "%UnsignedInteger64.greater",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p103",
+      "name": "%UnsignedInteger64.greaterOrEqual",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p104",
+      "name": "%UnsignedInteger64.less",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p105",
+      "name": "%UnsignedInteger64.lessOrEqual",
+      "kind": "operator",
+      "family": "order",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p106",
+      "name": "%UnsignedInteger64.mod",
+      "kind": "operator",
+      "family": "operator",
+      "first_sixteen": true,
+      "class": "実質"
+    },
+    {
+      "row": "p107",
+      "name": "%UnsignedInteger64.multiply",
+      "kind": "operator",
+      "family": "arithmetic",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p108",
+      "name": "%UnsignedInteger64.subtract",
+      "kind": "operator",
+      "family": "arithmetic",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p109",
+      "name": "%eq",
+      "kind": "operator",
+      "family": "structural",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p110",
+      "name": "%ne",
+      "kind": "operator",
+      "family": "structural",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p111",
+      "name": "Byte.bitwiseAnd",
+      "kind": "numeric",
+      "family": "scalar",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p112",
+      "name": "Byte.bitwiseExclusiveOr",
+      "kind": "numeric",
+      "family": "scalar",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p113",
+      "name": "Byte.bitwiseNot",
+      "kind": "numeric",
+      "family": "scalar",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p114",
+      "name": "Byte.bitwiseOr",
+      "kind": "numeric",
+      "family": "scalar",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p115",
+      "name": "Byte.fromInteger",
+      "kind": "numeric",
+      "family": "scalar",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p116",
+      "name": "Byte.shiftLeft",
+      "kind": "numeric",
+      "family": "scalar",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p117",
+      "name": "Byte.shiftRight",
+      "kind": "numeric",
+      "family": "scalar",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p118",
+      "name": "Byte.toInteger",
+      "kind": "numeric",
+      "family": "scalar",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p119",
+      "name": "Byte.toString",
+      "kind": "numeric",
+      "family": "byteString",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p136",
+      "name": "Character.fromInteger",
+      "kind": "numeric",
+      "family": "scalar",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p137",
+      "name": "Character.isASCIIDigit",
+      "kind": "numeric",
+      "family": "character",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p138",
+      "name": "Character.isASCIIWhitespace",
+      "kind": "numeric",
+      "family": "character",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p139",
+      "name": "Character.isAlphabetic",
+      "kind": "numeric",
+      "family": "character",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p140",
+      "name": "Character.isLowercase",
+      "kind": "numeric",
+      "family": "character",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p141",
+      "name": "Character.isNumeric",
+      "kind": "numeric",
+      "family": "character",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p142",
+      "name": "Character.isUppercase",
+      "kind": "numeric",
+      "family": "character",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p143",
+      "name": "Character.isWhitespace",
+      "kind": "numeric",
+      "family": "character",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p144",
+      "name": "Character.toInteger",
+      "kind": "numeric",
+      "family": "scalar",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p145",
+      "name": "Character.toLowercase",
+      "kind": "numeric",
+      "family": "character",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p146",
+      "name": "Character.toString",
+      "kind": "numeric",
+      "family": "character",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p147",
+      "name": "Character.toUppercase",
+      "kind": "numeric",
+      "family": "character",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p148",
+      "name": "Decimal.absolute",
+      "kind": "numeric",
+      "family": "decimal",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p149",
+      "name": "Decimal.fromFloat",
+      "kind": "numeric",
+      "family": "numericRemaining",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p150",
+      "name": "Decimal.fromInteger",
+      "kind": "numeric",
+      "family": "decimal",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p151",
+      "name": "Decimal.parse",
+      "kind": "numeric",
+      "family": "numericRemaining",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p152",
+      "name": "Decimal.round",
+      "kind": "numeric",
+      "family": "decimal",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p153",
+      "name": "Decimal.toFloat",
+      "kind": "numeric",
+      "family": "numericRemaining",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p154",
+      "name": "Decimal.toString",
+      "kind": "numeric",
+      "family": "numericRemaining",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p155",
+      "name": "Decimal.truncate",
+      "kind": "numeric",
+      "family": "decimal",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p164",
+      "name": "Float.absolute",
+      "kind": "numeric",
+      "family": "floatMath",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p165",
+      "name": "Float.ceiling",
+      "kind": "numeric",
+      "family": "floatMath",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p166",
+      "name": "Float.floor",
+      "kind": "numeric",
+      "family": "floatMath",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p167",
+      "name": "Float.isNaN",
+      "kind": "numeric",
+      "family": "scalar",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p168",
+      "name": "Float.parse",
+      "kind": "numeric",
+      "family": "numericRemaining",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p169",
+      "name": "Float.round",
+      "kind": "numeric",
+      "family": "floatMath",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p170",
+      "name": "Float.squareRoot",
+      "kind": "numeric",
+      "family": "floatMath",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p171",
+      "name": "Float.toString",
+      "kind": "numeric",
+      "family": "numericRemaining",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p172",
+      "name": "Float.truncate",
+      "kind": "numeric",
+      "family": "floatMath",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p173",
+      "name": "Float32.absolute",
+      "kind": "numeric",
+      "family": "floatMath",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p174",
+      "name": "Float32.ceiling",
+      "kind": "numeric",
+      "family": "floatMath",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p175",
+      "name": "Float32.floor",
+      "kind": "numeric",
+      "family": "floatMath",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p176",
+      "name": "Float32.fromFloat",
+      "kind": "numeric",
+      "family": "numericRemaining",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p177",
+      "name": "Float32.isInfinite",
+      "kind": "numeric",
+      "family": "scalar",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p178",
+      "name": "Float32.isNaN",
+      "kind": "numeric",
+      "family": "scalar",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p179",
+      "name": "Float32.parse",
+      "kind": "numeric",
+      "family": "numericRemaining",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p180",
+      "name": "Float32.round",
+      "kind": "numeric",
+      "family": "floatMath",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p181",
+      "name": "Float32.squareRoot",
+      "kind": "numeric",
+      "family": "floatMath",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p182",
+      "name": "Float32.toFloat",
+      "kind": "numeric",
+      "family": "numericRemaining",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p183",
+      "name": "Float32.toString",
+      "kind": "numeric",
+      "family": "numericRemaining",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p184",
+      "name": "Float32.truncate",
+      "kind": "numeric",
+      "family": "floatMath",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p189",
+      "name": "Integer.absolute",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p190",
+      "name": "Integer.bitwiseAnd",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p191",
+      "name": "Integer.bitwiseExclusiveOr",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p192",
+      "name": "Integer.bitwiseNot",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p193",
+      "name": "Integer.bitwiseOr",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p194",
+      "name": "Integer.floorDivide",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p195",
+      "name": "Integer.floorModulo",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p196",
+      "name": "Integer.maximum",
+      "kind": "numeric",
+      "family": "minMax",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p197",
+      "name": "Integer.minimum",
+      "kind": "numeric",
+      "family": "minMax",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p198",
+      "name": "Integer.parse",
+      "kind": "numeric",
+      "family": "integerText",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p199",
+      "name": "Integer.shiftLeft",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p200",
+      "name": "Integer.shiftRight",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p201",
+      "name": "Integer.shiftRightUnsigned",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p202",
+      "name": "Integer.toFloat",
+      "kind": "numeric",
+      "family": "integerText",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p203",
+      "name": "Integer.toString",
+      "kind": "numeric",
+      "family": "integerText",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p204",
+      "name": "Integer16.absolute",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p205",
+      "name": "Integer16.bitwiseAnd",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p206",
+      "name": "Integer16.bitwiseExclusiveOr",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p207",
+      "name": "Integer16.bitwiseNot",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p208",
+      "name": "Integer16.bitwiseOr",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p209",
+      "name": "Integer16.floorDivide",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p210",
+      "name": "Integer16.floorModulo",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p211",
+      "name": "Integer16.fromInteger",
+      "kind": "numeric",
+      "family": "conversion",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p212",
+      "name": "Integer16.maximum",
+      "kind": "numeric",
+      "family": "minMax",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p213",
+      "name": "Integer16.minimum",
+      "kind": "numeric",
+      "family": "minMax",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p214",
+      "name": "Integer16.parse",
+      "kind": "numeric",
+      "family": "integerText",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p215",
+      "name": "Integer16.shiftLeft",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p216",
+      "name": "Integer16.shiftRight",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p217",
+      "name": "Integer16.shiftRightUnsigned",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p218",
+      "name": "Integer16.toFloat",
+      "kind": "numeric",
+      "family": "integerText",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p219",
+      "name": "Integer16.toInteger",
+      "kind": "numeric",
+      "family": "conversion",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p220",
+      "name": "Integer16.toString",
+      "kind": "numeric",
+      "family": "integerText",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p221",
+      "name": "Integer32.absolute",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p222",
+      "name": "Integer32.bitwiseAnd",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p223",
+      "name": "Integer32.bitwiseExclusiveOr",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p224",
+      "name": "Integer32.bitwiseNot",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p225",
+      "name": "Integer32.bitwiseOr",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p226",
+      "name": "Integer32.floorDivide",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p227",
+      "name": "Integer32.floorModulo",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p228",
+      "name": "Integer32.fromInteger",
+      "kind": "numeric",
+      "family": "conversion",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p229",
+      "name": "Integer32.maximum",
+      "kind": "numeric",
+      "family": "minMax",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p230",
+      "name": "Integer32.minimum",
+      "kind": "numeric",
+      "family": "minMax",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p231",
+      "name": "Integer32.parse",
+      "kind": "numeric",
+      "family": "integerText",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p232",
+      "name": "Integer32.shiftLeft",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p233",
+      "name": "Integer32.shiftRight",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p234",
+      "name": "Integer32.shiftRightUnsigned",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p235",
+      "name": "Integer32.toFloat",
+      "kind": "numeric",
+      "family": "integerText",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p236",
+      "name": "Integer32.toInteger",
+      "kind": "numeric",
+      "family": "conversion",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p237",
+      "name": "Integer32.toString",
+      "kind": "numeric",
+      "family": "integerText",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p238",
+      "name": "Integer8.absolute",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p239",
+      "name": "Integer8.bitwiseAnd",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p240",
+      "name": "Integer8.bitwiseExclusiveOr",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p241",
+      "name": "Integer8.bitwiseNot",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p242",
+      "name": "Integer8.bitwiseOr",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p243",
+      "name": "Integer8.floorDivide",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p244",
+      "name": "Integer8.floorModulo",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p245",
+      "name": "Integer8.fromInteger",
+      "kind": "numeric",
+      "family": "conversion",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p246",
+      "name": "Integer8.maximum",
+      "kind": "numeric",
+      "family": "minMax",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p247",
+      "name": "Integer8.minimum",
+      "kind": "numeric",
+      "family": "minMax",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p248",
+      "name": "Integer8.parse",
+      "kind": "numeric",
+      "family": "integerText",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p249",
+      "name": "Integer8.shiftLeft",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p250",
+      "name": "Integer8.shiftRight",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p251",
+      "name": "Integer8.shiftRightUnsigned",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p252",
+      "name": "Integer8.toFloat",
+      "kind": "numeric",
+      "family": "integerText",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p253",
+      "name": "Integer8.toInteger",
+      "kind": "numeric",
+      "family": "conversion",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p254",
+      "name": "Integer8.toString",
+      "kind": "numeric",
+      "family": "integerText",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p322",
+      "name": "UnsignedInteger16.absolute",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p323",
+      "name": "UnsignedInteger16.bitwiseAnd",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p324",
+      "name": "UnsignedInteger16.bitwiseExclusiveOr",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p325",
+      "name": "UnsignedInteger16.bitwiseNot",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p326",
+      "name": "UnsignedInteger16.bitwiseOr",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p327",
+      "name": "UnsignedInteger16.floorDivide",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p328",
+      "name": "UnsignedInteger16.floorModulo",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p329",
+      "name": "UnsignedInteger16.fromInteger",
+      "kind": "numeric",
+      "family": "conversion",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p330",
+      "name": "UnsignedInteger16.maximum",
+      "kind": "numeric",
+      "family": "minMax",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p331",
+      "name": "UnsignedInteger16.minimum",
+      "kind": "numeric",
+      "family": "minMax",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p332",
+      "name": "UnsignedInteger16.parse",
+      "kind": "numeric",
+      "family": "integerText",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p333",
+      "name": "UnsignedInteger16.shiftLeft",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p334",
+      "name": "UnsignedInteger16.shiftRight",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p335",
+      "name": "UnsignedInteger16.toFloat",
+      "kind": "numeric",
+      "family": "integerText",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p336",
+      "name": "UnsignedInteger16.toInteger",
+      "kind": "numeric",
+      "family": "conversion",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p337",
+      "name": "UnsignedInteger16.toString",
+      "kind": "numeric",
+      "family": "integerText",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p338",
+      "name": "UnsignedInteger32.absolute",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p339",
+      "name": "UnsignedInteger32.bitwiseAnd",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p340",
+      "name": "UnsignedInteger32.bitwiseExclusiveOr",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p341",
+      "name": "UnsignedInteger32.bitwiseNot",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p342",
+      "name": "UnsignedInteger32.bitwiseOr",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p343",
+      "name": "UnsignedInteger32.floorDivide",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p344",
+      "name": "UnsignedInteger32.floorModulo",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p345",
+      "name": "UnsignedInteger32.fromInteger",
+      "kind": "numeric",
+      "family": "conversion",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p346",
+      "name": "UnsignedInteger32.maximum",
+      "kind": "numeric",
+      "family": "minMax",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p347",
+      "name": "UnsignedInteger32.minimum",
+      "kind": "numeric",
+      "family": "minMax",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p348",
+      "name": "UnsignedInteger32.parse",
+      "kind": "numeric",
+      "family": "integerText",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p349",
+      "name": "UnsignedInteger32.shiftLeft",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p350",
+      "name": "UnsignedInteger32.shiftRight",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p351",
+      "name": "UnsignedInteger32.toFloat",
+      "kind": "numeric",
+      "family": "integerText",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p352",
+      "name": "UnsignedInteger32.toInteger",
+      "kind": "numeric",
+      "family": "conversion",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p353",
+      "name": "UnsignedInteger32.toString",
+      "kind": "numeric",
+      "family": "integerText",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p354",
+      "name": "UnsignedInteger64.absolute",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p355",
+      "name": "UnsignedInteger64.bitwiseAnd",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p356",
+      "name": "UnsignedInteger64.bitwiseExclusiveOr",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p357",
+      "name": "UnsignedInteger64.bitwiseNot",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p358",
+      "name": "UnsignedInteger64.bitwiseOr",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p359",
+      "name": "UnsignedInteger64.floorDivide",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p360",
+      "name": "UnsignedInteger64.floorModulo",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p361",
+      "name": "UnsignedInteger64.fromDecimal",
+      "kind": "numeric",
+      "family": "decimal",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p362",
+      "name": "UnsignedInteger64.fromInteger",
+      "kind": "numeric",
+      "family": "conversion",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p363",
+      "name": "UnsignedInteger64.maximum",
+      "kind": "numeric",
+      "family": "minMax",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p364",
+      "name": "UnsignedInteger64.minimum",
+      "kind": "numeric",
+      "family": "minMax",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p365",
+      "name": "UnsignedInteger64.parse",
+      "kind": "numeric",
+      "family": "integerText",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p366",
+      "name": "UnsignedInteger64.shiftLeft",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p367",
+      "name": "UnsignedInteger64.shiftRight",
+      "kind": "numeric",
+      "family": "integerAPI",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p368",
+      "name": "UnsignedInteger64.toDecimal",
+      "kind": "numeric",
+      "family": "decimal",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p369",
+      "name": "UnsignedInteger64.toFloat",
+      "kind": "numeric",
+      "family": "integerText",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p370",
+      "name": "UnsignedInteger64.toInteger",
+      "kind": "numeric",
+      "family": "conversion",
+      "first_sixteen": false,
+      "class": "実質"
+    },
+    {
+      "row": "p371",
+      "name": "UnsignedInteger64.toString",
+      "kind": "numeric",
+      "family": "integerText",
+      "first_sixteen": false,
+      "class": "実質"
+    }
+  ]
+}

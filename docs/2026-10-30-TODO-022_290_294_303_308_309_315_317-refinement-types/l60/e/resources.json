@@ -162,7 +162,7 @@
       "classification": "仮定",
       "ledger_id": "L494",
       "evidence": [
-        "Benitoite.Release.Refinement.StandardModel.no_store_transitions"
+        "Benitoite.Release.Refinement.StandardModel.store_transitions"
       ],
       "reason": "Reference.new は「専用の遷移」に分類する。kind=refNew、CoreAssumptions.store_shapeとStep.E_RefNewでセルを作る。δ・IO応答で代用しない。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する。合成表はこの種類の行を持たないことを全lookupで示す",
       "receivers": [
@@ -177,7 +177,7 @@
       "classification": "仮定",
       "ledger_id": "L495",
       "evidence": [
-        "Benitoite.Release.Refinement.StandardModel.no_store_transitions"
+        "Benitoite.Release.Refinement.StandardModel.store_transitions"
       ],
       "reason": "Reference.update は「専用の遷移」に分類する。kind=refUpdate、store_shape/ref_get/ref_setとStep.E_RefUpdateを読む。RustもUPDATE専用命令で処理する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する。合成表はこの種類の行を持たないことを全lookupで示す",
       "receivers": [
@@ -192,7 +192,7 @@
       "classification": "仮定",
       "ledger_id": "L496",
       "evidence": [
-        "Benitoite.Release.Refinement.StandardModel.no_store_transitions"
+        "Benitoite.Release.Refinement.StandardModel.store_transitions"
       ],
       "reason": "Lazy.force は「専用の遷移」に分類する。kind=force、store_shapeとStep.E_ForceDone/E_Forceを読む。Rustのpure登録はFORCE命令用の印でありδの実算法ではない。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する。合成表はこの種類の行を持たないことを全lookupで示す",
       "receivers": [

@@ -376,6 +376,9 @@ private theorem lookup_p370 : primitive "UnsignedInteger64.toInteger" = some Pri
 private theorem lookup_p371 : primitive "UnsignedInteger64.toString" = some Primitive.p371 := rfl
 private theorem lookup_p372 : primitive "exit" = some Primitive.p372 := rfl
 private theorem lookup_p373 : primitive "print" = some Primitive.p373 := rfl
+private theorem lookup_p374 : primitive "Lazy.force" = some Primitive.p374 := rfl
+private theorem lookup_p375 : primitive "Reference.new" = some Primitive.p375 := rfl
+private theorem lookup_p376 : primitive "Reference.update" = some Primitive.p376 := rfl
 
 /-- 任意の台帳行を同じ合成表でlookupできる。 -/
 theorem primitive_lookup (row : Primitive) : primitive row.name = some row := by
@@ -753,6 +756,9 @@ theorem primitive_lookup (row : Primitive) : primitive row.name = some row := by
   | p371 => exact lookup_p371
   | p372 => exact lookup_p372
   | p373 => exact lookup_p373
+  | p374 => exact lookup_p374
+  | p375 => exact lookup_p375
+  | p376 => exact lookup_p376
 
 theorem signatures_iff (name : String) (s : PrimSig) : signature name = some s ↔
     ∃ row ∈ Primitive.all, name = row.name ∧ s = row.signature := by

@@ -1,0 +1,176 @@
+{
+  "rows": [
+    {
+      "name": "Reference.new",
+      "row": "StandardModel.Primitive.p375",
+      "lean_definition": "StandardModel.refNewSig",
+      "lean": {
+        "names": [
+          "value"
+        ],
+        "params": ".tvar 0",
+        "ret": ".reference (.tvar 0)",
+        "eff": "Eff.single stateEff",
+        "kind": "refNew"
+      },
+      "rust": {
+        "mode": "state",
+        "arity": 1
+      },
+      "source": {
+        "tparams": [
+          "T"
+        ],
+        "names": [
+          "value"
+        ],
+        "params": [
+          "T"
+        ],
+        "ret": "Reference[T]",
+        "uses": "State"
+      },
+      "checks": {
+        "合成表の行": true,
+        "種類": true,
+        "名前の列とStoreShape": true,
+        "引数の型とStoreShape": true,
+        "結果の型とStoreShape": true,
+        "効果とStoreShape": true,
+        "型引数1個（種類value）": true,
+        "Rustの登録と引数の個数": true,
+        "Rustの呼出し区分": true,
+        "δ・IO応答を定義しない": true
+      }
+    },
+    {
+      "name": "Reference.update",
+      "row": "StandardModel.Primitive.p376",
+      "lean_definition": "StandardModel.refUpdateSig",
+      "lean": {
+        "names": [
+          "reference",
+          "f"
+        ],
+        "params": ".reference (.tvar 0), .fn [\"value\"] [.tvar 0] (.tvar 0) Eff.empty",
+        "ret": ".base .unit",
+        "eff": "Eff.single stateEff",
+        "kind": "refUpdate"
+      },
+      "rust": {
+        "mode": "state",
+        "arity": 2
+      },
+      "source": {
+        "tparams": [
+          "T"
+        ],
+        "names": [
+          "reference",
+          "f"
+        ],
+        "params": [
+          "Reference[T]",
+          "function(value: T) -> T"
+        ],
+        "ret": "Unit",
+        "uses": "State"
+      },
+      "checks": {
+        "合成表の行": true,
+        "種類": true,
+        "名前の列とStoreShape": true,
+        "引数の型とStoreShape": true,
+        "結果の型とStoreShape": true,
+        "効果とStoreShape": true,
+        "型引数1個（種類value）": true,
+        "Rustの登録と引数の個数": true,
+        "Rustの呼出し区分": true,
+        "δ・IO応答を定義しない": true
+      }
+    },
+    {
+      "name": "Lazy.force",
+      "row": "StandardModel.Primitive.p374",
+      "lean_definition": "StandardModel.forceSig",
+      "lean": {
+        "names": [
+          "value"
+        ],
+        "params": ".lazy (.tvar 0)",
+        "ret": ".tvar 0",
+        "eff": "Eff.empty",
+        "kind": "force"
+      },
+      "rust": {
+        "mode": "pure",
+        "arity": 1
+      },
+      "source": {
+        "tparams": [
+          "T"
+        ],
+        "names": [
+          "value"
+        ],
+        "params": [
+          "Lazy[T]"
+        ],
+        "ret": "T",
+        "uses": ""
+      },
+      "checks": {
+        "合成表の行": true,
+        "種類": true,
+        "名前の列とStoreShape": true,
+        "引数の型とStoreShape": true,
+        "結果の型とStoreShape": true,
+        "効果とStoreShape": true,
+        "型引数1個（種類value）": true,
+        "Rustの登録と引数の個数": true,
+        "Rustの呼出し区分": true,
+        "δ・IO応答を定義しない": true
+      }
+    }
+  ],
+  "process_exit": {
+    "rust_io": true,
+    "rust_range_error": true,
+    "rust_exit_reply": true,
+    "lean_exit_rules_read_ioResponse": [
+      "E_Exit",
+      "E_IOErr",
+      "E_OpPrim"
+    ],
+    "unhandled_exit_rules_read_ioResponse": true,
+    "store_rules_without_response": {
+      "refNew": [
+        "E_RefNew"
+      ],
+      "refUpdate": [
+        "E_RefUpdate"
+      ],
+      "force": [
+        "E_ForceDone",
+        "E_Force"
+      ]
+    },
+    "store_rules_read_no_response": true,
+    "model_exit_code_total": true,
+    "ledger_process_exit": {
+      "id": "L518",
+      "classification": "仮定",
+      "rust_names": [
+        "Benitoite.IO.Process.exit"
+      ]
+    },
+    "ledger_model_exit": {
+      "id": "L485",
+      "classification": "合成",
+      "rust_names": [
+        "該当なし（Rustの組込み登録なし）"
+      ]
+    }
+  },
+  "process_exit_judgement": "同じ扱いに当たらない。Process.exitの種類exitの実行は、ハンドラのない呼出しではE_Exit・E_IOErrが同じ表のioResponseを読み（ハンドラのある呼出しはE_OpPrimで節へ移る）、δ・IO応答のない専用の遷移ではない。署名だけを合成表へ置くと、io_existsの欄が全ての型付き引数に応答を求めるので、新しいIO応答の意味を定義しない限り閉じない。合成表の既存のexit（ModelTargetsのモデル）は全ての整数を終了コードにし、処理系の範囲外の誤り（0〜255の外）を写さないので、Process.exitの証拠として流用しない。台帳の仮定側の行は残し、理由を「専用の遷移」からIO応答の仮定へ改める"
+}
