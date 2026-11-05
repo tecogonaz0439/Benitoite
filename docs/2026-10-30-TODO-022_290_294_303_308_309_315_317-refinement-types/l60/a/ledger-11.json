@@ -1,0 +1,1455 @@
+[
+  {
+    "id": "L590",
+    "classification": "仮定",
+    "lean_name": "Csv.parse",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Csv.parse"
+    ],
+    "rust_references": [
+      "R275"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Csv.parse は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L591",
+    "classification": "仮定",
+    "lean_name": "Csv.parseWith",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Csv.parseWith"
+    ],
+    "rust_references": [
+      "R276"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Csv.parseWith は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L592",
+    "classification": "仮定",
+    "lean_name": "Csv.parseWithHeader",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Csv.parseWithHeader"
+    ],
+    "rust_references": [
+      "R277"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Csv.parseWithHeader は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L593",
+    "classification": "仮定",
+    "lean_name": "Csv.format",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Csv.format"
+    ],
+    "rust_references": [
+      "R278"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Csv.format は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L594",
+    "classification": "仮定",
+    "lean_name": "Csv.formatWith",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Csv.formatWith"
+    ],
+    "rust_references": [
+      "R279"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Csv.formatWith は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L595",
+    "classification": "仮定",
+    "lean_name": "Time.fromUnixSeconds",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Time.fromUnixSeconds"
+    ],
+    "rust_references": [
+      "R280"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Time.fromUnixSeconds は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L596",
+    "classification": "仮定",
+    "lean_name": "Time.fromUnixMilliseconds",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Time.fromUnixMilliseconds"
+    ],
+    "rust_references": [
+      "R281"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Time.fromUnixMilliseconds は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L597",
+    "classification": "仮定",
+    "lean_name": "Time.toUnixSeconds",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Time.toUnixSeconds"
+    ],
+    "rust_references": [
+      "R282"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Time.toUnixSeconds は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L598",
+    "classification": "仮定",
+    "lean_name": "Time.toUnixMilliseconds",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Time.toUnixMilliseconds"
+    ],
+    "rust_references": [
+      "R283"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Time.toUnixMilliseconds は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L599",
+    "classification": "仮定",
+    "lean_name": "Time.addMilliseconds",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Time.addMilliseconds"
+    ],
+    "rust_references": [
+      "R284"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Time.addMilliseconds は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L600",
+    "classification": "仮定",
+    "lean_name": "Time.differenceMilliseconds",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Time.differenceMilliseconds"
+    ],
+    "rust_references": [
+      "R285"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Time.differenceMilliseconds は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L601",
+    "classification": "仮定",
+    "lean_name": "Time.toDateTime",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Time.toDateTime"
+    ],
+    "rust_references": [
+      "R286"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Time.toDateTime は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L602",
+    "classification": "仮定",
+    "lean_name": "Time.fromDateTime",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Time.fromDateTime"
+    ],
+    "rust_references": [
+      "R287"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Time.fromDateTime は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L603",
+    "classification": "仮定",
+    "lean_name": "Time.formatISO8601",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Time.formatISO8601"
+    ],
+    "rust_references": [
+      "R288"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Time.formatISO8601 は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L604",
+    "classification": "仮定",
+    "lean_name": "Time.parseISO8601",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Time.parseISO8601"
+    ],
+    "rust_references": [
+      "R289"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Time.parseISO8601 は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L605",
+    "classification": "仮定",
+    "lean_name": "Time.format",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Time.format"
+    ],
+    "rust_references": [
+      "R290"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Time.format は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L606",
+    "classification": "仮定",
+    "lean_name": "Encoding.base64Encode",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Encoding.base64Encode"
+    ],
+    "rust_references": [
+      "R291"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Encoding.base64Encode は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L607",
+    "classification": "仮定",
+    "lean_name": "Encoding.base64Decode",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Encoding.base64Decode"
+    ],
+    "rust_references": [
+      "R292"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Encoding.base64Decode は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L608",
+    "classification": "仮定",
+    "lean_name": "Encoding.base64UrlEncode",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Encoding.base64UrlEncode"
+    ],
+    "rust_references": [
+      "R293"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Encoding.base64UrlEncode は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L609",
+    "classification": "仮定",
+    "lean_name": "Encoding.base64UrlDecode",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Encoding.base64UrlDecode"
+    ],
+    "rust_references": [
+      "R294"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Encoding.base64UrlDecode は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L610",
+    "classification": "仮定",
+    "lean_name": "Hash.sha256",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Hash.sha256"
+    ],
+    "rust_references": [
+      "R295"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Hash.sha256 は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L611",
+    "classification": "仮定",
+    "lean_name": "Http.listen",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.Network.Http.listen"
+    ],
+    "rust_references": [
+      "R296"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.Network.Http.listen は「通常資源の状態」に分類する。通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。この登録のIO結果はioResponseの照合対象である。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "通常資源の状態",
+    "builtins_fields": [
+      "sig",
+      "isResource",
+      "releaseResponse",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。この登録のIO結果はioResponseの照合対象である"
+  },
+  {
+    "id": "L612",
+    "classification": "仮定",
+    "lean_name": "Http.listenerPort",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.Network.Http.listenerPort"
+    ],
+    "rust_references": [
+      "R297"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.Network.Http.listenerPort は「通常資源の状態」に分類する。通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。この登録のIO結果はioResponseの照合対象である。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "通常資源の状態",
+    "builtins_fields": [
+      "sig",
+      "isResource",
+      "releaseResponse",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。この登録のIO結果はioResponseの照合対象である"
+  },
+  {
+    "id": "L613",
+    "classification": "仮定",
+    "lean_name": "Http.accept",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.Network.Http.accept"
+    ],
+    "rust_references": [
+      "R298"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.Network.Http.accept は「通常資源の状態」に分類する。通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。この登録のIO結果はioResponseの照合対象である。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "通常資源の状態",
+    "builtins_fields": [
+      "sig",
+      "isResource",
+      "releaseResponse",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。この登録のIO結果はioResponseの照合対象である"
+  },
+  {
+    "id": "L614",
+    "classification": "仮定",
+    "lean_name": "Http.respond",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.Network.Http.respond"
+    ],
+    "rust_references": [
+      "R299"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.Network.Http.respond は「通常資源の状態」に分類する。通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。この登録のIO結果はioResponseの照合対象である。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "通常資源の状態",
+    "builtins_fields": [
+      "sig",
+      "isResource",
+      "releaseResponse",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。この登録のIO結果はioResponseの照合対象である"
+  },
+  {
+    "id": "L615",
+    "classification": "仮定",
+    "lean_name": "Network.Http.requestOf",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Network.Http.requestOf"
+    ],
+    "rust_references": [
+      "R300"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Network.Http.requestOf は「通常資源の状態」に分類する。通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。state登録の資源操作そのものに対応する専用Builtins欄はなく、IO応答とは数えない。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "通常資源の状態",
+    "builtins_fields": [
+      "sig",
+      "isResource",
+      "releaseResponse"
+    ],
+    "rust_mode": "state",
+    "assumption_detail": "通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。state登録の資源操作そのものに対応する専用Builtins欄はなく、IO応答とは数えない"
+  },
+  {
+    "id": "L616",
+    "classification": "仮定",
+    "lean_name": "Network.Http.closeListener",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Network.Http.closeListener"
+    ],
+    "rust_references": [
+      "R301"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Network.Http.closeListener は「通常資源の状態」に分類する。通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。state登録の資源操作そのものに対応する専用Builtins欄はなく、IO応答とは数えない。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "通常資源の状態",
+    "builtins_fields": [
+      "sig",
+      "isResource",
+      "releaseResponse"
+    ],
+    "rust_mode": "state",
+    "assumption_detail": "通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。state登録の資源操作そのものに対応する専用Builtins欄はなく、IO応答とは数えない"
+  },
+  {
+    "id": "L617",
+    "classification": "仮定",
+    "lean_name": "Network.Http.closeExchange",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Network.Http.closeExchange"
+    ],
+    "rust_references": [
+      "R302"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Network.Http.closeExchange は「通常資源の状態」に分類する。通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。state登録の資源操作そのものに対応する専用Builtins欄はなく、IO応答とは数えない。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "通常資源の状態",
+    "builtins_fields": [
+      "sig",
+      "isResource",
+      "releaseResponse"
+    ],
+    "rust_mode": "state",
+    "assumption_detail": "通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。state登録の資源操作そのものに対応する専用Builtins欄はなく、IO応答とは数えない"
+  },
+  {
+    "id": "L618",
+    "classification": "仮定",
+    "lean_name": "Network.Http.pathSegments",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Network.Http.pathSegments"
+    ],
+    "rust_references": [
+      "R303"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Network.Http.pathSegments は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L619",
+    "classification": "仮定",
+    "lean_name": "Http.send",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.Network.Http.send"
+    ],
+    "rust_references": [
+      "R304"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.Network.Http.send は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "IO 応答",
+    "builtins_fields": [
+      "sig",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する"
+  },
+  {
+    "id": "L620",
+    "classification": "仮定",
+    "lean_name": "Scope.checkHost",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Scope.checkHost"
+    ],
+    "rust_references": [
+      "R484"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Scope.checkHost は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L621",
+    "classification": "仮定",
+    "lean_name": "Scope.checkPath",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Scope.checkPath"
+    ],
+    "rust_references": [
+      "R485"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Scope.checkPath は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L622",
+    "classification": "仮定",
+    "lean_name": "Scope.checkEndpoint",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Scope.checkEndpoint"
+    ],
+    "rust_references": [
+      "R486"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Scope.checkEndpoint は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L623",
+    "classification": "仮定",
+    "lean_name": "Log.emit",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.Log.emit"
+    ],
+    "rust_references": [
+      "R490"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.Log.emit は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "IO 応答",
+    "builtins_fields": [
+      "sig",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する"
+  },
+  {
+    "id": "L624",
+    "classification": "仮定",
+    "lean_name": "Log.enabled",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.Log.enabled"
+    ],
+    "rust_references": [
+      "R491"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.Log.enabled は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "IO 応答",
+    "builtins_fields": [
+      "sig",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する"
+  },
+  {
+    "id": "L625",
+    "classification": "仮定",
+    "lean_name": "SourceLocation.here",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "SourceLocation.here"
+    ],
+    "rust_references": [
+      "R492"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "SourceLocation.here は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L626",
+    "classification": "仮定",
+    "lean_name": "Log.formatRecord",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Log.formatRecord"
+    ],
+    "rust_references": [
+      "R493"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Log.formatRecord は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L627",
+    "classification": "仮定",
+    "lean_name": "%Format.Integer",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "%Format.Integer"
+    ],
+    "rust_references": [
+      "R500"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "%Format.Integer は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L628",
+    "classification": "仮定",
+    "lean_name": "%Format.Integer8",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "%Format.Integer8"
+    ],
+    "rust_references": [
+      "R501"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "%Format.Integer8 は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L629",
+    "classification": "仮定",
+    "lean_name": "%Format.Integer16",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "%Format.Integer16"
+    ],
+    "rust_references": [
+      "R502"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "%Format.Integer16 は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L630",
+    "classification": "仮定",
+    "lean_name": "%Format.Integer32",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "%Format.Integer32"
+    ],
+    "rust_references": [
+      "R503"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "%Format.Integer32 は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L631",
+    "classification": "仮定",
+    "lean_name": "%Format.Byte",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "%Format.Byte"
+    ],
+    "rust_references": [
+      "R504"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "%Format.Byte は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L632",
+    "classification": "仮定",
+    "lean_name": "%Format.UnsignedInteger16",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "%Format.UnsignedInteger16"
+    ],
+    "rust_references": [
+      "R505"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "%Format.UnsignedInteger16 は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L633",
+    "classification": "仮定",
+    "lean_name": "%Format.UnsignedInteger32",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "%Format.UnsignedInteger32"
+    ],
+    "rust_references": [
+      "R506"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "%Format.UnsignedInteger32 は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L634",
+    "classification": "仮定",
+    "lean_name": "%Format.UnsignedInteger64",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "%Format.UnsignedInteger64"
+    ],
+    "rust_references": [
+      "R507"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "%Format.UnsignedInteger64 は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L635",
+    "classification": "仮定",
+    "lean_name": "%Format.Float",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "%Format.Float"
+    ],
+    "rust_references": [
+      "R508"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "%Format.Float は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L636",
+    "classification": "仮定",
+    "lean_name": "%Format.Float32",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "%Format.Float32"
+    ],
+    "rust_references": [
+      "R509"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "%Format.Float32 は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L637",
+    "classification": "仮定",
+    "lean_name": "%Format.Decimal",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "%Format.Decimal"
+    ],
+    "rust_references": [
+      "R510"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "%Format.Decimal は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L638",
+    "classification": "仮定",
+    "lean_name": "%Format.String",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "%Format.String"
+    ],
+    "rust_references": [
+      "R511"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "%Format.String は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L639",
+    "classification": "仮定",
+    "lean_name": "%Format.Character",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "%Format.Character"
+    ],
+    "rust_references": [
+      "R512"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "%Format.Character は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L640",
+    "classification": "仮定",
+    "lean_name": "%Format.Boolean",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "%Format.Boolean"
+    ],
+    "rust_references": [
+      "R513"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "%Format.Boolean は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  }
+]

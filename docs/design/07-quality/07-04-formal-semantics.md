@@ -69,6 +69,14 @@
 
 【決定】`Benitoite.Release.Refinement` は、篩型、依存する引数列、有限の論理、捕捉環境と実行時の閉包、固定した PathEnv、外部の宣言と受信検査を持つ。定義・規則の写しは 01-12 の「篩を含むコア計算の形式化」から「篩を含む状態の型付け」までである。これらは既定の `Benitoite` の import に含まれ、旧 Release の定義・主定理・モデルと並置している。
 
+`BuiltinTypingTransport` は同じPの下で、型付けが読む七つの射影（`Builtins.TypingFieldsEq` の七欄）であるsig・sat・admitsR・isResource・valKind・valContent・effectsの等号から十四判断・七十六枝の型付けを移す。`ExternalSurfaceLeaves` は外部宣言の適格な入力を参照・直接呼出しへ渡し、応答関係の差替え後も同じ添字で型付くことを示す。プログラムPそのものの拡張の単調性はこの補題の結論に含めない。
+
+`ExternalModelResponse` は、全宣言・全型付き入力についてcarrierと非exitを満たし、観測対象を報告しない抽象の外部応答関係を定義する。任意errの所属と全入力での存在を証明する。篩の真を応答前の信頼へ加えず、外部応答と解放以外の七射影を保つ。`ResourceReleaseModel` は、表が資源へ分類するopaque定数だけに解放の成功・失敗を許す。型付き値のcanonicalと実表の分類から同じ値の解放応答を得る。これらは抽象関係の定義と局所の接続であり、ゲストの実装、OS資源の開閉状態、全標準表の充足の証明ではない。
+
+`BuiltinResponseTransport` は、同じ七射影から外部carrierの全十二構成子・両Args・両Outcomeを移し、δ・IO応答・refGet・refSet・effKindの一致を合わせて全二十五条件を移す。`ExternalModelTransport` は外部応答の三条件と応答の選択を構成する。`ExternalModels.model/targets/http` は、元の三モデルの七射影を保ち、外部応答と通常資源の解放を選ぶ。それぞれのCoreと対象条件を同じP/Bで構成し、TargetsとHttpには元と同じHasFile・HasHttpを要求する。外部宣言が空であるという制限はない。
+
+`FunctionNameMap` と `StandardModelDeclarations/Signatures/PrimitiveLookup/Response` は、元Defと参照先のhelperの閉包、単射による関数参照名の付け替え（`Body.definition`）、元のtelの保存と、有限の本体表（`Body.all`）と組込みの表（`Primitive.all`）に対する全lookupの双方向の対応を実装する。署名とδ・IO応答は既存の定義を参照する。これらのlookupの対応は、合成した全標準本体の型付けと全応答条件の充足の証明とは区別する。同じ名前に異なる元Defを持つ18名（`FunctionNames.collisionNames`）の公開名は合成表のキーに現れない。
+
 `Val.Source` と `Comp.Source` は、ソースから保持値や PathBases の発行状態を直接構築する形を拒む。一般の型付き Val に対する偽造不能性とは区別する。Source の値と本体から任意の σ への Adequate を導き、必要束縛を持つ初期状態へ供給する。範囲の被覆 `RangeExpr.Covers` と、値・計算・腕・節の型付け（`HasTypeVQ`・`HasTypeCQ`・`HasTypeArmsQ`・`HasTypeClausesQ` など）は σ を引数に取らない。継続・ストア・状態の型付け（`ContTy`・`StoreOk`・`StateTyE`）は実行と同じ σ を引数に取り、保持する値・閉包・枠の `Val.Adequate σ`・`Closure.Adequate σ`・`Frame.Adequate σ` を読む。所属と効果の上限の意味も同じ σ の下で読む。実行の Step は同じ σ を固定し、At の snapshot の一致を検査する。check と run の環境の一致、実体・副次的な通信の隔離、情報フロー制御は、この証明の保証に含まれない。
 
 `Refinement.Syntax.ConstOK` は `V_Const` の新しい前提である。Integer64 の証拠付きの値に加え、他の六整数幅の上下限、Byte の255以下、Decimal の係数の両端と scale≤28を検査する。`V_Bytes` の全要素の255以下は別の前提である。七整数と Byte の述語の観測は共通の integer sort を保つ。この型付けの条件と、数の演算の暗黙変換の禁止は区別する。
@@ -994,6 +1002,9 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 | ValueInversion | 「篩の正規形と制約の読み方」の変数の元のlookup型と芯の到達関係、Listの要素の導出・注釈・部分型と到達芯の等号。fnRef・prim・op・lam・dependentLam・raiseの逆転は元の直接前提と到達型のfnCore・TelClosureを返し、inv_lam_wfは元のlambdaの形成を取り出す。dict・superの逆転は元の実装・辞書・宣言と辞書の芯の等号を保持する。最外の篩の事実は同じ値のfactsで読む |
 | CollectionInversion | 同節のMap・Set・Bytesの芯の射影と構文の逆転。Mapは元の鍵列・値列、同長・sat・注釈、鍵の正規形の等号と値のLeQを返す。Setは元列・sat・注釈と要素の正規形の等号、Bytesは全要素が255以下であることとBytesの芯の等号を返す |
 | CanonicalValues | 「篩の正規形と制約の読み方」。閉じたΓのscalar・Boolean・List・data・関数八構文・Map・Set・Bytes・Dict・保持値・外部・対象の構文逆転。型付けの導出から形を得て、元の直接前提は各逆転で読む。atErrorはResultShape.DeclaredとerrorTypeの芯を返す専用の逆転。空篩はInhabitsから排除する。外部宣言・名目ID・同じsnapshotと範囲の形成を保持し、外部応答の存在や全σの被覆を結論しない |
+| BuiltinTypingTransport・ExternalSurfaceLeaves・ExternalModelResponse・ResourceReleaseModel | 「篩を含むコア計算の形式化」。同じPでの七射影による十四判断の移送、外部参照・直接呼出しの入力、carrierと非exitと無対象の抽象外部応答とerr存在、分類されたopaque資源値のcanonicalと解放の成功・失敗 |
+| BuiltinResponseTransport・ExternalModelTransport | 「篩を含むコア計算の形式化」。同じ七射影によるcarrier・Args・Outcomeと二十五条件の移送、三モデルの同じP/BでのCoreと対象条件、存在を前提とする外部応答の選択 |
+| FunctionNameMap・StandardModelDeclarations・StandardModelSignatures・StandardModelPrimitiveLookup・StandardModelResponse | 「篩を含むコア計算の形式化」。元Defとhelperの閉包、単射による関数参照名の写像、telの保存、有限の本体表（`Body.all`）と組込みの表（`Primitive.all`）に対する全lookupの双方向の対応 |
 | ScopeCoverage・MembershipTargets・ShapeTargets | 同節。任意の記号列の起点付加、範囲被覆9対と同じσでの所属保存、snapshotの単調性とnone/someの読者、範囲具体化後の所属、対象3種類の述語解釈の単調性を含む。短い具体化列は変数を残し、snapshotなしのbasedの部分評価は評価不能を保つ。異なる起点は解決先が同じでも静的に覆えない。空の型・値・経路条件の文脈で型付いた適格な保持値の対象所属、NamesWF・ShapeOk・同じBuiltinArgs・全実引数のAdequateによる任意位置の対象射影も含む。端点のHolds・valKindと内容型の一致から要求の二保持構文を導き、保持する端点と要求を存在量化して射影・内容の型・groundVal・reqTarget・範囲所属を返す。型・行・先行する値の代入を通して同じ対象を読み、宣言の形成からNamesWFを供給する |
 | MembershipWiden | 同節。任意の型文脈・経路条件・ストアの、空の値文脈で型付いた不透明型の値を逆転し、定数と同じ値のscopedの導出を区別する。範囲の被覆・scopedの共変・忘却による互換拡大、対象位置の形成と範囲列の長さによる全引数列の節への移送。同じ型・行の像と値列を保つ |
 | ScopedCallContracts | 同節。具体化の許容・範囲列の許容・署名の具体化・元署名から関数値の列へのTelClosure・同じ実引数列の型付けとGroundから、TelClosure.applyへ元列の注釈と空文脈の整形式を供給する。同じwsを元列へ戻し、正規化したBuiltinArgs、結果の部分型と効果の被覆を返す。ShapeOk・single・NamesWF・全実引数の同じσへのAdequateから対象を返し、端点の対象位置の内容型が一致するときは、同じ実値が保持する端点と要求を存在量化して、その保持形と同じreq/endpointの性質を返す |

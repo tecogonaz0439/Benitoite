@@ -1,0 +1,1111 @@
+{
+  "Ty": [
+    "base",
+    "opaque",
+    "data",
+    "list",
+    "fn",
+    "tvar",
+    "reference",
+    "lazy",
+    "cont",
+    "map",
+    "set",
+    "bytes",
+    "dict",
+    "tapp",
+    "ctor",
+    "refined",
+    "dependentFn",
+    "external",
+    "scoped",
+    "pathBases",
+    "scopePattern"
+  ],
+  "judgments": {
+    "HasTypeVQ": [
+      "V_Var",
+      "V_Const",
+      "V_Lam",
+      "V_DependentLam",
+      "V_Closure",
+      "V_Fun",
+      "V_Prim",
+      "V_Op",
+      "V_ExternalRef",
+      "V_ExternalHandle",
+      "V_PathBases",
+      "V_ScopePattern",
+      "V_Checked",
+      "V_CheckedRequest",
+      "V_CheckedAt",
+      "V_AtError",
+      "V_Map",
+      "V_Set",
+      "V_Dict",
+      "V_Raise",
+      "V_LocRef",
+      "V_LocLazy",
+      "V_Bytes",
+      "V_Con",
+      "V_Super",
+      "V_List",
+      "V_Sub",
+      "V_Normal",
+      "V_Refine"
+    ],
+    "HasTypeVsQ": [
+      "nil",
+      "cons"
+    ],
+    "HasTypeEachQ": [
+      "nil",
+      "cons"
+    ],
+    "HasTypeCQ": [
+      "C_BuilderLet",
+      "C_BuilderOp",
+      "C_Return",
+      "C_Let",
+      "C_App",
+      "C_DependentApp",
+      "C_If",
+      "C_Match",
+      "C_Lazy",
+      "C_Escape",
+      "C_Use",
+      "C_Handle",
+      "C_Handle_Fail",
+      "C_Resume",
+      "C_ResumeL",
+      "C_ResumeNorm",
+      "C_ResumeLNorm",
+      "C_Normal",
+      "C_Meth",
+      "C_External",
+      "C_IssuePathBases",
+      "C_CheckAt",
+      "C_Sub",
+      "C_Eff"
+    ],
+    "HasTypeTelArgsQ": [
+      "done",
+      "param"
+    ],
+    "TelBodyTy": [
+      "done",
+      "param"
+    ],
+    "CaptureOk": [
+      "mk"
+    ],
+    "DependentClosureTy": [
+      "mk"
+    ],
+    "CheckedWitness": [
+      "plain",
+      "request"
+    ],
+    "AtCallAdmissible": [
+      "mk"
+    ],
+    "HasTypeArmsQ": [
+      "nil",
+      "plain",
+      "guarded"
+    ],
+    "HasTypeClausesQ": [
+      "nil",
+      "cons"
+    ],
+    "HasFailureClause": [
+      "one"
+    ],
+    "ImageOk": [
+      "ordinary",
+      "hidden",
+      "contLoc",
+      "contVar"
+    ]
+  },
+  "judgment_count": 14,
+  "branches": 76,
+  "parts": [
+    {
+      "part": "operators::DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/operators.rs",
+      "count": 43,
+      "references": [
+        "integer_add",
+        "integer_subtract",
+        "integer_multiply",
+        "integer_div",
+        "integer_mod",
+        "integer_negate",
+        "integer_less",
+        "integer_less_or_equal",
+        "integer_greater",
+        "integer_greater_or_equal",
+        "float_add",
+        "float_subtract",
+        "float_multiply",
+        "float_divide",
+        "float_negate",
+        "float_less",
+        "float_less_or_equal",
+        "float_greater",
+        "float_greater_or_equal",
+        "decimal_add",
+        "decimal_subtract",
+        "decimal_multiply",
+        "decimal_divide",
+        "decimal_negate",
+        "decimal_less",
+        "decimal_less_or_equal",
+        "decimal_greater",
+        "decimal_greater_or_equal",
+        "string_add",
+        "string_less",
+        "string_less_or_equal",
+        "string_greater",
+        "string_greater_or_equal",
+        "character_less",
+        "character_less_or_equal",
+        "character_greater",
+        "character_greater_or_equal",
+        "byte_less",
+        "byte_less_or_equal",
+        "byte_greater",
+        "byte_greater_or_equal",
+        "eq",
+        "ne"
+      ]
+    },
+    {
+      "part": "integer::DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/integer.rs",
+      "count": 15,
+      "references": [
+        "to_string",
+        "parse",
+        "to_float",
+        "floor_divide",
+        "floor_modulo",
+        "absolute",
+        "minimum",
+        "maximum",
+        "bitwise_and",
+        "bitwise_or",
+        "bitwise_exclusive_or",
+        "bitwise_not",
+        "shift_left",
+        "shift_right",
+        "shift_right_unsigned"
+      ]
+    },
+    {
+      "part": "float::DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/float.rs",
+      "count": 9,
+      "references": [
+        "to_string",
+        "parse",
+        "truncate",
+        "is_na_n",
+        "absolute",
+        "floor",
+        "ceiling",
+        "round",
+        "square_root"
+      ]
+    },
+    {
+      "part": "character::DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/character.rs",
+      "count": 5,
+      "references": [
+        "to_integer",
+        "from_integer",
+        "to_string",
+        "is_a_s_c_i_i_digit",
+        "is_a_s_c_i_i_whitespace"
+      ]
+    },
+    {
+      "part": "string::DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/string.rs",
+      "count": 18,
+      "references": [
+        "byte_length",
+        "character_count",
+        "byte_slice",
+        "character_slice",
+        "character_at",
+        "is_empty",
+        "contains",
+        "starts_with",
+        "ends_with",
+        "byte_index_of",
+        "split",
+        "lines",
+        "join",
+        "trim",
+        "replace",
+        "repeat",
+        "characters",
+        "from_characters"
+      ]
+    },
+    {
+      "part": "boolean::DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/boolean.rs",
+      "count": 1,
+      "references": [
+        "to_string"
+      ]
+    },
+    {
+      "part": "byte::DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/byte.rs",
+      "count": 9,
+      "references": [
+        "from_integer",
+        "to_integer",
+        "to_string",
+        "bitwise_and",
+        "bitwise_or",
+        "bitwise_exclusive_or",
+        "bitwise_not",
+        "shift_left",
+        "shift_right"
+      ]
+    },
+    {
+      "part": "decimal::DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/decimal.rs",
+      "count": 8,
+      "references": [
+        "round",
+        "absolute",
+        "from_integer",
+        "truncate",
+        "to_float",
+        "from_float",
+        "to_string",
+        "parse"
+      ]
+    },
+    {
+      "part": "list::DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/list.rs",
+      "count": 18,
+      "references": [
+        "length",
+        "is_empty",
+        "head",
+        "tail",
+        "get",
+        "prepend",
+        "append",
+        "concatenate",
+        "reverse",
+        "take",
+        "drop",
+        "range",
+        "contains",
+        "sort",
+        "pattern_length",
+        "get_front",
+        "get_back",
+        "slice"
+      ]
+    },
+    {
+      "part": "map::DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/map.rs",
+      "count": 3,
+      "references": [
+        "empty",
+        "from_list",
+        "to_list"
+      ]
+    },
+    {
+      "part": "set::DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/set.rs",
+      "count": 3,
+      "references": [
+        "empty",
+        "from_list",
+        "to_list"
+      ]
+    },
+    {
+      "part": "io_error::DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/io_error.rs",
+      "count": 2,
+      "references": [
+        "message",
+        "kind"
+      ]
+    },
+    {
+      "part": "reference::DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/reference.rs",
+      "count": 4,
+      "references": [
+        "new",
+        "get",
+        "set",
+        "update"
+      ]
+    },
+    {
+      "part": "lazy::DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/lazy.rs",
+      "count": 1,
+      "references": [
+        "force"
+      ]
+    },
+    {
+      "part": "task::DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/task.rs",
+      "count": 5,
+      "references": [
+        "all",
+        "all_ok",
+        "race",
+        "with_timeout",
+        "await_task"
+      ]
+    },
+    {
+      "part": "task_group::DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/task_group.rs",
+      "count": 2,
+      "references": [
+        "open",
+        "spawn"
+      ]
+    },
+    {
+      "part": "traits::DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/traits.rs",
+      "count": 2,
+      "references": [
+        "show_string",
+        "show_character"
+      ]
+    },
+    {
+      "part": "console::DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/console.rs",
+      "count": 6,
+      "references": [
+        "write",
+        "write_line",
+        "write_error",
+        "write_error_line",
+        "read_line",
+        "read_all"
+      ]
+    },
+    {
+      "part": "file::DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/file.rs",
+      "count": 6,
+      "references": [
+        "read_text",
+        "write_text",
+        "append_text",
+        "open_reader",
+        "read_line",
+        "close_reader"
+      ]
+    },
+    {
+      "part": "process::DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/process.rs",
+      "count": 2,
+      "references": [
+        "arguments",
+        "exit"
+      ]
+    },
+    {
+      "part": "clock::DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/clock.rs",
+      "count": 2,
+      "references": [
+        "sleep",
+        "monotonic_milliseconds"
+      ]
+    },
+    {
+      "part": "assert::DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/assert.rs",
+      "count": 4,
+      "references": [
+        "equal",
+        "not_equal",
+        "is_true",
+        "fail"
+      ]
+    },
+    {
+      "part": "character::UNICODE_DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/character.rs",
+      "count": 7,
+      "references": [
+        "is_alphabetic",
+        "is_numeric",
+        "is_whitespace",
+        "is_uppercase",
+        "is_lowercase",
+        "to_uppercase",
+        "to_lowercase"
+      ]
+    },
+    {
+      "part": "string::UNICODE_DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/string.rs",
+      "count": 2,
+      "references": [
+        "to_uppercase",
+        "to_lowercase"
+      ]
+    },
+    {
+      "part": "map::MORE_DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/map.rs",
+      "count": 7,
+      "references": [
+        "get",
+        "set",
+        "remove",
+        "contains",
+        "size",
+        "keys",
+        "values"
+      ]
+    },
+    {
+      "part": "set::MORE_DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/set.rs",
+      "count": 7,
+      "references": [
+        "contains",
+        "add",
+        "remove",
+        "size",
+        "union",
+        "intersection",
+        "difference"
+      ]
+    },
+    {
+      "part": "string::UTF8_DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/string.rs",
+      "count": 2,
+      "references": [
+        "to_u_t_f8",
+        "from_u_t_f8"
+      ]
+    },
+    {
+      "part": "bytes::DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/bytes.rs",
+      "count": 16,
+      "references": [
+        "empty",
+        "from_list",
+        "from_integers",
+        "from_hex",
+        "from_binary",
+        "to_list",
+        "to_hex",
+        "to_binary",
+        "length",
+        "get",
+        "slice",
+        "concatenate",
+        "read_unsigned",
+        "read_signed",
+        "from_unsigned",
+        "from_signed"
+      ]
+    },
+    {
+      "part": "network_error::DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/network_error.rs",
+      "count": 2,
+      "references": [
+        "kind",
+        "message"
+      ]
+    },
+    {
+      "part": "console::MORE_DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/console.rs",
+      "count": 2,
+      "references": [
+        "read_all_lines",
+        "read_all_bytes"
+      ]
+    },
+    {
+      "part": "process::ENVIRONMENT_DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/process.rs",
+      "count": 3,
+      "references": [
+        "script_directory",
+        "environment_variable",
+        "working_directory"
+      ]
+    },
+    {
+      "part": "clock::MORE_DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/clock.rs",
+      "count": 2,
+      "references": [
+        "now",
+        "local_offset_minutes"
+      ]
+    },
+    {
+      "part": "file::PATH_DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/file.rs",
+      "count": 13,
+      "references": [
+        "read_bytes",
+        "read_lines",
+        "exists",
+        "info",
+        "list_directory",
+        "walk",
+        "canonicalize",
+        "write_bytes",
+        "append_bytes",
+        "create_directory",
+        "remove",
+        "remove_tree",
+        "rename"
+      ]
+    },
+    {
+      "part": "file::RESOURCE_DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/file.rs",
+      "count": 6,
+      "references": [
+        "read_chunk",
+        "open_writer",
+        "write",
+        "write_line",
+        "write_chunk",
+        "close_writer"
+      ]
+    },
+    {
+      "part": "process::RUN_DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/process.rs",
+      "count": 3,
+      "references": [
+        "run",
+        "run_attached",
+        "shell"
+      ]
+    },
+    {
+      "part": "random::DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/random.rs",
+      "count": 9,
+      "references": [
+        "integer",
+        "float",
+        "boolean",
+        "shuffle",
+        "choose",
+        "from_seed",
+        "next_integer",
+        "next_float",
+        "shuffle_with"
+      ]
+    },
+    {
+      "part": "path::DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/path.rs",
+      "count": 10,
+      "references": [
+        "join",
+        "join_all",
+        "parent",
+        "file_name",
+        "stem",
+        "extension",
+        "with_extension",
+        "is_absolute",
+        "components",
+        "normalize"
+      ]
+    },
+    {
+      "part": "json::DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/json.rs",
+      "count": 3,
+      "references": [
+        "parse",
+        "stringify",
+        "stringify_pretty"
+      ]
+    },
+    {
+      "part": "regex::DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/regex.rs",
+      "count": 12,
+      "references": [
+        "compile",
+        "is_match",
+        "find",
+        "match_text",
+        "match_byte_start",
+        "match_byte_end",
+        "group",
+        "named_group",
+        "replace_first",
+        "find_at",
+        "span_at",
+        "max_string_bytes"
+      ]
+    },
+    {
+      "part": "csv::DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/csv.rs",
+      "count": 5,
+      "references": [
+        "parse",
+        "parse_with",
+        "parse_with_header",
+        "format",
+        "format_with"
+      ]
+    },
+    {
+      "part": "time::DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/time.rs",
+      "count": 11,
+      "references": [
+        "from_unix_seconds",
+        "from_unix_milliseconds",
+        "to_unix_seconds",
+        "to_unix_milliseconds",
+        "add_milliseconds",
+        "difference_milliseconds",
+        "to_date_time",
+        "from_date_time",
+        "format_i_s_o8601",
+        "parse_i_s_o8601",
+        "format"
+      ]
+    },
+    {
+      "part": "encoding::DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/encoding.rs",
+      "count": 4,
+      "references": [
+        "base64_encode",
+        "base64_decode",
+        "base64_url_encode",
+        "base64_url_decode"
+      ]
+    },
+    {
+      "part": "hash::DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/hash.rs",
+      "count": 1,
+      "references": [
+        "sha256"
+      ]
+    },
+    {
+      "part": "http_server::DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/http_server.rs",
+      "count": 7,
+      "references": [
+        "listen",
+        "listener_port",
+        "accept",
+        "respond",
+        "request_of",
+        "close_listener",
+        "close_exchange"
+      ]
+    },
+    {
+      "part": "http_util::DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/http_util.rs",
+      "count": 1,
+      "references": [
+        "path_segments"
+      ]
+    },
+    {
+      "part": "http_client::DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/http_client.rs",
+      "count": 1,
+      "references": [
+        "send"
+      ]
+    },
+    {
+      "part": "operators::signed::DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/operators/signed.rs",
+      "count": 18,
+      "references": [
+        "integer8::add",
+        "integer8::subtract",
+        "integer8::multiply",
+        "integer8::divide",
+        "integer8::modulo",
+        "integer8::negate",
+        "integer16::add",
+        "integer16::subtract",
+        "integer16::multiply",
+        "integer16::divide",
+        "integer16::modulo",
+        "integer16::negate",
+        "integer32::add",
+        "integer32::subtract",
+        "integer32::multiply",
+        "integer32::divide",
+        "integer32::modulo",
+        "integer32::negate"
+      ]
+    },
+    {
+      "part": "operators::unsigned::DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/operators/unsigned.rs",
+      "count": 15,
+      "references": [
+        "unsigned_integer16::add",
+        "unsigned_integer16::subtract",
+        "unsigned_integer16::multiply",
+        "unsigned_integer16::divide",
+        "unsigned_integer16::modulo",
+        "unsigned_integer32::add",
+        "unsigned_integer32::subtract",
+        "unsigned_integer32::multiply",
+        "unsigned_integer32::divide",
+        "unsigned_integer32::modulo",
+        "unsigned_integer64::add",
+        "unsigned_integer64::subtract",
+        "unsigned_integer64::multiply",
+        "unsigned_integer64::divide",
+        "unsigned_integer64::modulo"
+      ]
+    },
+    {
+      "part": "operators::float32::DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/operators/float32.rs",
+      "count": 5,
+      "references": [
+        "add",
+        "subtract",
+        "multiply",
+        "divide",
+        "negate"
+      ]
+    },
+    {
+      "part": "width::DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/width.rs",
+      "count": 35,
+      "references": [
+        "integer8::less",
+        "integer8::less_or_equal",
+        "integer8::greater",
+        "integer8::greater_or_equal",
+        "integer8::to_string",
+        "integer16::less",
+        "integer16::less_or_equal",
+        "integer16::greater",
+        "integer16::greater_or_equal",
+        "integer16::to_string",
+        "integer32::less",
+        "integer32::less_or_equal",
+        "integer32::greater",
+        "integer32::greater_or_equal",
+        "integer32::to_string",
+        "unsigned16::less",
+        "unsigned16::less_or_equal",
+        "unsigned16::greater",
+        "unsigned16::greater_or_equal",
+        "unsigned16::to_string",
+        "unsigned32::less",
+        "unsigned32::less_or_equal",
+        "unsigned32::greater",
+        "unsigned32::greater_or_equal",
+        "unsigned32::to_string",
+        "unsigned64::less",
+        "unsigned64::less_or_equal",
+        "unsigned64::greater",
+        "unsigned64::greater_or_equal",
+        "unsigned64::to_string",
+        "float32::less",
+        "float32::less_or_equal",
+        "float32::greater",
+        "float32::greater_or_equal",
+        "float32::to_string"
+      ]
+    },
+    {
+      "part": "narrow_integer::DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/narrow_integer.rs",
+      "count": 45,
+      "references": [
+        "integer8::from_integer",
+        "integer8::to_integer",
+        "integer8::parse",
+        "integer8::to_float",
+        "integer8::absolute",
+        "integer8::minimum",
+        "integer8::maximum",
+        "integer8::floor_divide",
+        "integer8::floor_modulo",
+        "integer16::from_integer",
+        "integer16::to_integer",
+        "integer16::parse",
+        "integer16::to_float",
+        "integer16::absolute",
+        "integer16::minimum",
+        "integer16::maximum",
+        "integer16::floor_divide",
+        "integer16::floor_modulo",
+        "integer32::from_integer",
+        "integer32::to_integer",
+        "integer32::parse",
+        "integer32::to_float",
+        "integer32::absolute",
+        "integer32::minimum",
+        "integer32::maximum",
+        "integer32::floor_divide",
+        "integer32::floor_modulo",
+        "unsigned16::from_integer",
+        "unsigned16::to_integer",
+        "unsigned16::parse",
+        "unsigned16::to_float",
+        "unsigned16::absolute",
+        "unsigned16::minimum",
+        "unsigned16::maximum",
+        "unsigned16::floor_divide",
+        "unsigned16::floor_modulo",
+        "unsigned32::from_integer",
+        "unsigned32::to_integer",
+        "unsigned32::parse",
+        "unsigned32::to_float",
+        "unsigned32::absolute",
+        "unsigned32::minimum",
+        "unsigned32::maximum",
+        "unsigned32::floor_divide",
+        "unsigned32::floor_modulo"
+      ]
+    },
+    {
+      "part": "unsigned_integer64::DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/unsigned_integer64.rs",
+      "count": 11,
+      "references": [
+        "from_integer",
+        "to_integer",
+        "parse",
+        "to_float",
+        "to_decimal",
+        "from_decimal",
+        "absolute",
+        "minimum",
+        "maximum",
+        "floor_divide",
+        "floor_modulo"
+      ]
+    },
+    {
+      "part": "float32::DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/float32.rs",
+      "count": 11,
+      "references": [
+        "from_float",
+        "to_float",
+        "parse",
+        "truncate",
+        "is_na_n",
+        "is_infinite",
+        "absolute",
+        "floor",
+        "ceiling",
+        "round",
+        "square_root"
+      ]
+    },
+    {
+      "part": "width_bits::DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/width_bits.rs",
+      "count": 39,
+      "references": [
+        "integer8::bitwise_and",
+        "integer8::bitwise_or",
+        "integer8::bitwise_exclusive_or",
+        "integer8::bitwise_not",
+        "integer8::shift_left",
+        "integer8::shift_right",
+        "integer8_unsigned::shift_right_unsigned",
+        "integer16::bitwise_and",
+        "integer16::bitwise_or",
+        "integer16::bitwise_exclusive_or",
+        "integer16::bitwise_not",
+        "integer16::shift_left",
+        "integer16::shift_right",
+        "integer16_unsigned::shift_right_unsigned",
+        "integer32::bitwise_and",
+        "integer32::bitwise_or",
+        "integer32::bitwise_exclusive_or",
+        "integer32::bitwise_not",
+        "integer32::shift_left",
+        "integer32::shift_right",
+        "integer32_unsigned::shift_right_unsigned",
+        "unsigned16::bitwise_and",
+        "unsigned16::bitwise_or",
+        "unsigned16::bitwise_exclusive_or",
+        "unsigned16::bitwise_not",
+        "unsigned16::shift_left",
+        "unsigned16::shift_right",
+        "unsigned32::bitwise_and",
+        "unsigned32::bitwise_or",
+        "unsigned32::bitwise_exclusive_or",
+        "unsigned32::bitwise_not",
+        "unsigned32::shift_left",
+        "unsigned32::shift_right",
+        "unsigned64::bitwise_and",
+        "unsigned64::bitwise_or",
+        "unsigned64::bitwise_exclusive_or",
+        "unsigned64::bitwise_not",
+        "unsigned64::shift_left",
+        "unsigned64::shift_right"
+      ]
+    },
+    {
+      "part": "scope::DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/scope.rs",
+      "count": 6,
+      "references": [
+        "check_host",
+        "check_path",
+        "check_endpoint",
+        "check_path_in",
+        "path_in_value",
+        "widen_path_in"
+      ]
+    },
+    {
+      "part": "log::DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/log.rs",
+      "count": 4,
+      "references": [
+        "emit",
+        "enabled",
+        "here",
+        "format"
+      ]
+    },
+    {
+      "part": "string::DISPLAY_WIDTH_DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/string.rs",
+      "count": 6,
+      "references": [
+        "display_width",
+        "display_width_cjk",
+        "display_width_pad_start",
+        "display_width_pad_end",
+        "display_width_pad_start_cjk",
+        "display_width_pad_end_cjk"
+      ]
+    },
+    {
+      "part": "format::DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/format.rs",
+      "count": 14,
+      "references": [
+        "integer::format",
+        "integer8::format",
+        "integer16::format",
+        "integer32::format",
+        "byte::format",
+        "unsigned16::format",
+        "unsigned32::format",
+        "unsigned64::format",
+        "float::format",
+        "float32::format",
+        "decimal::format",
+        "string::format",
+        "character::format",
+        "boolean::format"
+      ]
+    },
+    {
+      "part": "http_client::PURE_DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/http_client.rs",
+      "count": 3,
+      "references": [
+        "check_request_in",
+        "request_in_value",
+        "widen_request_in"
+      ]
+    },
+    {
+      "part": "file::SCOPED_DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/file.rs",
+      "count": 6,
+      "references": [
+        "read_text_in",
+        "read_bytes_in",
+        "write_text_in",
+        "append_text_in",
+        "write_bytes_in",
+        "append_bytes_in"
+      ]
+    },
+    {
+      "part": "http_client::SCOPED_DECLS",
+      "file": "crates/benitoite/src/builtins/funcs/http_client.rs",
+      "count": 1,
+      "references": [
+        "send_in"
+      ]
+    }
+  ],
+  "part_count": 61,
+  "rust_references": 523,
+  "remaining_fields": {
+    "不成立": 3,
+    "空疎": 8,
+    "自明": 1,
+    "実質": 0
+  },
+  "existing_conditions": {
+    "不成立": 0,
+    "空疎": 6,
+    "自明": 0,
+    "実質": 69
+  },
+  "target_remaining_fields": {
+    "不成立": 0,
+    "空疎": 2,
+    "自明": 3,
+    "実質": 7
+  },
+  "accepted": {
+    "L20": "2026-11-03",
+    "L30": "2026-11-03",
+    "L40": "2026-11-04",
+    "L50": "2026-11-05"
+  }
+}

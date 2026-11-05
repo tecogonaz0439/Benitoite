@@ -1,0 +1,2039 @@
+[
+  {
+    "id": "E08.013",
+    "group": 8,
+    "lean_name": "File.writeBytesIn",
+    "evidence": [
+      "Benitoite.Release.Refinement.ModelTargets.sig_cases",
+      "Benitoite.Release.Refinement.ModelTargets.substitutionAssumptions",
+      "Benitoite.Release.Refinement.ModelTargets.scopeConditions",
+      "Benitoite.Release.Refinement.ModelTargets.pure_response",
+      "Benitoite.Release.Refinement.ModelTargets.io_typed",
+      "Benitoite.Release.Refinement.ModelTargets.io_kind",
+      "Benitoite.Release.Refinement.ModelTargets.io_exists",
+      "Benitoite.Release.Refinement.ModelTargets.targetAgreement"
+    ],
+    "source": "ModelTargets.lean",
+    "expression": "ModelTargets.entries",
+    "contract": "三行/十五行/七行の実表。75条件は別表",
+    "category": "model",
+    "receiver": "L60.13/.22/.28",
+    "original_def": null,
+    "public_name": "File.writeBytesIn",
+    "internal_name": "File.writeBytesIn",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L175",
+    "rust_names": [
+      "Benitoite.IO.File.writeBytesIn"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p162"
+  },
+  {
+    "id": "E08.014",
+    "group": 8,
+    "lean_name": "File.appendTextIn",
+    "evidence": [
+      "Benitoite.Release.Refinement.ModelTargets.sig_cases",
+      "Benitoite.Release.Refinement.ModelTargets.substitutionAssumptions",
+      "Benitoite.Release.Refinement.ModelTargets.scopeConditions",
+      "Benitoite.Release.Refinement.ModelTargets.pure_response",
+      "Benitoite.Release.Refinement.ModelTargets.io_typed",
+      "Benitoite.Release.Refinement.ModelTargets.io_kind",
+      "Benitoite.Release.Refinement.ModelTargets.io_exists",
+      "Benitoite.Release.Refinement.ModelTargets.targetAgreement"
+    ],
+    "source": "ModelTargets.lean",
+    "expression": "ModelTargets.entries",
+    "contract": "三行/十五行/七行の実表。75条件は別表",
+    "category": "model",
+    "receiver": "L60.13/.22/.28",
+    "original_def": null,
+    "public_name": "File.appendTextIn",
+    "internal_name": "File.appendTextIn",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L171",
+    "rust_names": [
+      "Benitoite.IO.File.appendTextIn"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p158"
+  },
+  {
+    "id": "E08.015",
+    "group": 8,
+    "lean_name": "File.appendBytesIn",
+    "evidence": [
+      "Benitoite.Release.Refinement.ModelTargets.sig_cases",
+      "Benitoite.Release.Refinement.ModelTargets.substitutionAssumptions",
+      "Benitoite.Release.Refinement.ModelTargets.scopeConditions",
+      "Benitoite.Release.Refinement.ModelTargets.pure_response",
+      "Benitoite.Release.Refinement.ModelTargets.io_typed",
+      "Benitoite.Release.Refinement.ModelTargets.io_kind",
+      "Benitoite.Release.Refinement.ModelTargets.io_exists",
+      "Benitoite.Release.Refinement.ModelTargets.targetAgreement"
+    ],
+    "source": "ModelTargets.lean",
+    "expression": "ModelTargets.entries",
+    "contract": "三行/十五行/七行の実表。75条件は別表",
+    "category": "model",
+    "receiver": "L60.13/.22/.28",
+    "original_def": null,
+    "public_name": "File.appendBytesIn",
+    "internal_name": "File.appendBytesIn",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L170",
+    "rust_names": [
+      "Benitoite.IO.File.appendBytesIn"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p157"
+  },
+  {
+    "id": "E09.001",
+    "group": 9,
+    "lean_name": "Reference.get",
+    "evidence": [
+      "Benitoite.Release.Refinement.ModelHttp.sig_cases",
+      "Benitoite.Release.Refinement.ModelHttp.substitutionAssumptions",
+      "Benitoite.Release.Refinement.ModelHttp.scopeConditions"
+    ],
+    "source": "ModelHttpConditions.lean",
+    "expression": "ModelHttp.entries",
+    "contract": "三行/十五行/七行の実表。75条件は別表",
+    "category": "model",
+    "receiver": "L60.13/.22/.28",
+    "original_def": null,
+    "public_name": "Reference.get",
+    "internal_name": "Reference.get",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L361",
+    "rust_names": [
+      "Reference.get"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p279"
+  },
+  {
+    "id": "E09.002",
+    "group": 9,
+    "lean_name": "Reference.set",
+    "evidence": [
+      "Benitoite.Release.Refinement.ModelHttp.sig_cases",
+      "Benitoite.Release.Refinement.ModelHttp.substitutionAssumptions",
+      "Benitoite.Release.Refinement.ModelHttp.scopeConditions"
+    ],
+    "source": "ModelHttpConditions.lean",
+    "expression": "ModelHttp.entries",
+    "contract": "三行/十五行/七行の実表。75条件は別表",
+    "category": "model",
+    "receiver": "L60.13/.22/.28",
+    "original_def": null,
+    "public_name": "Reference.set",
+    "internal_name": "Reference.set",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L362",
+    "rust_names": [
+      "Reference.set"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p280"
+  },
+  {
+    "id": "E09.003",
+    "group": 9,
+    "lean_name": "Example.pathBases",
+    "evidence": [
+      "Benitoite.Release.Refinement.ModelHttp.sig_cases",
+      "Benitoite.Release.Refinement.ModelHttp.substitutionAssumptions",
+      "Benitoite.Release.Refinement.ModelHttp.scopeConditions"
+    ],
+    "source": "ModelHttpConditions.lean",
+    "expression": "ModelHttp.entries",
+    "contract": "三行/十五行/七行の実表。75条件は別表",
+    "category": "model",
+    "receiver": "L60.13/.22/.28",
+    "original_def": null,
+    "public_name": "Example.pathBases",
+    "internal_name": "Example.pathBases",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L168",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p156"
+  },
+  {
+    "id": "E09.004",
+    "group": 9,
+    "lean_name": "Http.checkRequestIn",
+    "evidence": [
+      "Benitoite.Release.Refinement.ModelHttp.sig_cases",
+      "Benitoite.Release.Refinement.ModelHttp.substitutionAssumptions",
+      "Benitoite.Release.Refinement.ModelHttp.scopeConditions",
+      "Benitoite.Release.Refinement.ModelHttp.pure_response",
+      "Benitoite.Release.Refinement.ModelHttp.io_typed",
+      "Benitoite.Release.Refinement.ModelHttp.io_kind",
+      "Benitoite.Release.Refinement.ModelHttp.io_exists",
+      "Benitoite.Release.Refinement.ModelHttp.targetAgreement"
+    ],
+    "source": "ModelHttpConditions.lean",
+    "expression": "ModelHttp.entries",
+    "contract": "三行/十五行/七行の実表。75条件は別表",
+    "category": "model",
+    "receiver": "L60.13/.22/.28",
+    "original_def": null,
+    "public_name": "Http.checkRequestIn",
+    "internal_name": "Http.checkRequestIn",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L207",
+    "rust_names": [
+      "Http.checkRequestIn"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p185"
+  },
+  {
+    "id": "E09.005",
+    "group": 9,
+    "lean_name": "Http.requestInValue",
+    "evidence": [
+      "Benitoite.Release.Refinement.ModelHttp.sig_cases",
+      "Benitoite.Release.Refinement.ModelHttp.substitutionAssumptions",
+      "Benitoite.Release.Refinement.ModelHttp.scopeConditions",
+      "Benitoite.Release.Refinement.ModelHttp.pure_response",
+      "Benitoite.Release.Refinement.ModelHttp.io_typed",
+      "Benitoite.Release.Refinement.ModelHttp.io_kind",
+      "Benitoite.Release.Refinement.ModelHttp.io_exists",
+      "Benitoite.Release.Refinement.ModelHttp.targetAgreement"
+    ],
+    "source": "ModelHttpConditions.lean",
+    "expression": "ModelHttp.entries",
+    "contract": "三行/十五行/七行の実表。75条件は別表",
+    "category": "model",
+    "receiver": "L60.13/.22/.28",
+    "original_def": null,
+    "public_name": "Http.requestInValue",
+    "internal_name": "Http.requestInValue",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L208",
+    "rust_names": [
+      "Http.requestInValue"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p186"
+  },
+  {
+    "id": "E09.006",
+    "group": 9,
+    "lean_name": "Http.widenRequestIn",
+    "evidence": [
+      "Benitoite.Release.Refinement.ModelHttp.sig_cases",
+      "Benitoite.Release.Refinement.ModelHttp.substitutionAssumptions",
+      "Benitoite.Release.Refinement.ModelHttp.scopeConditions",
+      "Benitoite.Release.Refinement.ModelHttp.pure_response",
+      "Benitoite.Release.Refinement.ModelHttp.io_typed",
+      "Benitoite.Release.Refinement.ModelHttp.io_kind",
+      "Benitoite.Release.Refinement.ModelHttp.io_exists",
+      "Benitoite.Release.Refinement.ModelHttp.targetAgreement"
+    ],
+    "source": "ModelHttpConditions.lean",
+    "expression": "ModelHttp.entries",
+    "contract": "三行/十五行/七行の実表。75条件は別表",
+    "category": "model",
+    "receiver": "L60.13/.22/.28",
+    "original_def": null,
+    "public_name": "Http.widenRequestIn",
+    "internal_name": "Http.widenRequestIn",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L210",
+    "rust_names": [
+      "Http.widenRequestIn"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p188"
+  },
+  {
+    "id": "E09.007",
+    "group": 9,
+    "lean_name": "Http.sendIn",
+    "evidence": [
+      "Benitoite.Release.Refinement.ModelHttp.sig_cases",
+      "Benitoite.Release.Refinement.ModelHttp.substitutionAssumptions",
+      "Benitoite.Release.Refinement.ModelHttp.scopeConditions",
+      "Benitoite.Release.Refinement.ModelHttp.pure_response",
+      "Benitoite.Release.Refinement.ModelHttp.io_typed",
+      "Benitoite.Release.Refinement.ModelHttp.io_kind",
+      "Benitoite.Release.Refinement.ModelHttp.io_exists",
+      "Benitoite.Release.Refinement.ModelHttp.targetAgreement"
+    ],
+    "source": "ModelHttpConditions.lean",
+    "expression": "ModelHttp.entries",
+    "contract": "三行/十五行/七行の実表。75条件は別表",
+    "category": "model",
+    "receiver": "L60.13/.22/.28",
+    "original_def": null,
+    "public_name": "Http.sendIn",
+    "internal_name": "Http.sendIn",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L209",
+    "rust_names": [
+      "Benitoite.Network.Http.sendIn"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p187"
+  },
+  {
+    "id": "E10.001",
+    "group": 10,
+    "lean_name": "File.Handle",
+    "evidence": [
+      "Benitoite.Release.Refinement.ModelTargets.builtins"
+    ],
+    "source": "ModelTargets.lean",
+    "expression": "無名例: HasTypeV P builtins Ψ [] [] [] (.const (.opaque \"File.Handle\" 0)) (.opaque \"File.Handle\" .top) ∧ builtins.isResource \"File.Handle\" = true ∧ builtins.isResource \"Scope.PathIn\" = false",
+    "contract": "分類と型付きopaque値。解放存在の証明とは区別",
+    "category": "resource",
+    "receiver": "L60.19/.21",
+    "original_def": null,
+    "public_name": "File.Handle",
+    "internal_name": "File.Handle",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L169",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.resource_iff"
+  },
+  {
+    "id": "E11.001",
+    "group": 11,
+    "lean_name": "Internal.safeHead",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardSafe.registered_bodies",
+      "Benitoite.Release.Refinement.StandardSafe.head_row_typed"
+    ],
+    "source": "StandardSafeBodies.lean",
+    "expression": "StandardSafe.headRow",
+    "contract": "精密な内部tel・同じComp",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "StandardSafe.headRow.definition",
+    "public_name": "Internal.safeHead",
+    "internal_name": "Internal.safeHead",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L297",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b085",
+    "original_key": "D85"
+  },
+  {
+    "id": "E11.002",
+    "group": 11,
+    "lean_name": "Internal.safeGet",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardSafe.registered_bodies",
+      "Benitoite.Release.Refinement.StandardSafe.get_row_typed"
+    ],
+    "source": "StandardSafeBodies.lean",
+    "expression": "StandardSafe.getRow",
+    "contract": "精密な内部tel・同じComp",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "StandardSafe.getRow.definition",
+    "public_name": "Internal.safeGet",
+    "internal_name": "Internal.safeGet",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L296",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b086",
+    "original_key": "D86"
+  },
+  {
+    "id": "E11.003",
+    "group": 11,
+    "lean_name": "Internal.CheckedIndex.get",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardSafe.registered_bodies",
+      "Benitoite.Release.Refinement.StandardSafe.checked_row_typed"
+    ],
+    "source": "StandardSafeBodies.lean",
+    "expression": "StandardSafe.checkedRow",
+    "contract": "精密な内部tel・同じComp",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "StandardSafe.checkedRow.definition",
+    "public_name": "Internal.CheckedIndex.get",
+    "internal_name": "Internal.CheckedIndex.get",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L292",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b087",
+    "original_key": "D87"
+  },
+  {
+    "id": "E11.004",
+    "group": 11,
+    "lean_name": "Internal.sameLengthGet",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardSafe.registered_bodies",
+      "Benitoite.Release.Refinement.StandardSafe.same_row_typed"
+    ],
+    "source": "StandardSafeBodies.lean",
+    "expression": "StandardSafe.sameRow",
+    "contract": "精密な内部tel・同じComp",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "StandardSafe.sameRow.definition",
+    "public_name": "Internal.sameLengthGet",
+    "internal_name": "Internal.sameLengthGet",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L298",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b088",
+    "original_key": "D88"
+  },
+  {
+    "id": "E11.005",
+    "group": 11,
+    "lean_name": "Internal.NonEmptyList.fromList",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardSafe.registered_bodies",
+      "Benitoite.Release.Refinement.StandardSafe.fromList_row_typed"
+    ],
+    "source": "StandardSafeBodies.lean",
+    "expression": "StandardSafe.fromListRow",
+    "contract": "精密な内部tel・同じComp",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "StandardSafe.fromListRow.definition",
+    "public_name": "Internal.NonEmptyList.fromList",
+    "internal_name": "Internal.NonEmptyList.fromList",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L293",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b089",
+    "original_key": "D89"
+  },
+  {
+    "id": "E11.006",
+    "group": 11,
+    "lean_name": "Internal.NonEmptyList.toList",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardSafe.registered_bodies",
+      "Benitoite.Release.Refinement.StandardSafe.toList_row_typed"
+    ],
+    "source": "StandardSafeBodies.lean",
+    "expression": "StandardSafe.toListRow",
+    "contract": "精密な内部tel・同じComp",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "StandardSafe.toListRow.definition",
+    "public_name": "Internal.NonEmptyList.toList",
+    "internal_name": "Internal.NonEmptyList.toList",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L295",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b090",
+    "original_key": "D90"
+  },
+  {
+    "id": "E11.007",
+    "group": 11,
+    "lean_name": "Internal.NonEmptyList.head",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardSafe.registered_bodies",
+      "Benitoite.Release.Refinement.StandardSafe.nonempty_head_row_typed"
+    ],
+    "source": "StandardSafeBodies.lean",
+    "expression": "StandardSafe.nonemptyHeadRow",
+    "contract": "精密な内部tel・同じComp",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "StandardSafe.nonemptyHeadRow.definition",
+    "public_name": "Internal.NonEmptyList.head",
+    "internal_name": "Internal.NonEmptyList.head",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L294",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b091",
+    "original_key": "D91"
+  },
+  {
+    "id": "E12.001",
+    "group": 12,
+    "lean_name": "Range.minimum",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardSafe.precise_row_typed",
+      "Benitoite.Release.Refinement.StandardSafe.precise_rows_typed"
+    ],
+    "source": "StandardSafeBodies.lean",
+    "expression": "StandardSafe.PreciseGetter.minimum",
+    "contract": "精密なgetterのtel・同じComp",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "StandardSafe.PreciseGetter.minimum.row.definition",
+    "public_name": "Range.minimum",
+    "internal_name": "%Range.minimum.refined",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L359",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b092",
+    "original_key": "D92"
+  },
+  {
+    "id": "E12.002",
+    "group": 12,
+    "lean_name": "Range.maximum",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardSafe.precise_row_typed",
+      "Benitoite.Release.Refinement.StandardSafe.precise_rows_typed"
+    ],
+    "source": "StandardSafeBodies.lean",
+    "expression": "StandardSafe.PreciseGetter.maximum",
+    "contract": "精密なgetterのtel・同じComp",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "StandardSafe.PreciseGetter.maximum.row.definition",
+    "public_name": "Range.maximum",
+    "internal_name": "%Range.maximum.refined",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L358",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b093",
+    "original_key": "D93"
+  },
+  {
+    "id": "E12.003",
+    "group": 12,
+    "lean_name": "Range.value",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardSafe.precise_row_typed",
+      "Benitoite.Release.Refinement.StandardSafe.precise_rows_typed"
+    ],
+    "source": "StandardSafeBodies.lean",
+    "expression": "StandardSafe.PreciseGetter.value",
+    "contract": "精密なgetterのtel・同じComp",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "StandardSafe.PreciseGetter.value.row.definition",
+    "public_name": "Range.value",
+    "internal_name": "%Range.value.refined",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L360",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b094",
+    "original_key": "D94"
+  },
+  {
+    "id": "E12.004",
+    "group": 12,
+    "lean_name": "Range.lengthMinimum",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardSafe.precise_row_typed",
+      "Benitoite.Release.Refinement.StandardSafe.precise_rows_typed"
+    ],
+    "source": "StandardSafeBodies.lean",
+    "expression": "StandardSafe.PreciseGetter.lengthMinimum",
+    "contract": "精密なgetterのtel・同じComp",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "StandardSafe.PreciseGetter.lengthMinimum.row.definition",
+    "public_name": "Range.lengthMinimum",
+    "internal_name": "%Range.lengthMinimum.refined",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L356",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b095",
+    "original_key": "D95"
+  },
+  {
+    "id": "E12.005",
+    "group": 12,
+    "lean_name": "Range.lengthMaximum",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardSafe.precise_row_typed",
+      "Benitoite.Release.Refinement.StandardSafe.precise_rows_typed"
+    ],
+    "source": "StandardSafeBodies.lean",
+    "expression": "StandardSafe.PreciseGetter.lengthMaximum",
+    "contract": "精密なgetterのtel・同じComp",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "StandardSafe.PreciseGetter.lengthMaximum.row.definition",
+    "public_name": "Range.lengthMaximum",
+    "internal_name": "%Range.lengthMaximum.refined",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L355",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b096",
+    "original_key": "D96"
+  },
+  {
+    "id": "E12.006",
+    "group": 12,
+    "lean_name": "Range.checkedLength",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardSafe.precise_row_typed",
+      "Benitoite.Release.Refinement.StandardSafe.precise_rows_typed"
+    ],
+    "source": "StandardSafeBodies.lean",
+    "expression": "StandardSafe.PreciseGetter.checkedLength",
+    "contract": "精密なgetterのtel・同じComp",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "StandardSafe.PreciseGetter.checkedLength.row.definition",
+    "public_name": "Range.checkedLength",
+    "internal_name": "%Range.checkedLength.refined",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L351",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b097",
+    "original_key": "D97"
+  },
+  {
+    "id": "E12.007",
+    "group": 12,
+    "lean_name": "Range.lengthValues",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardSafe.precise_row_typed",
+      "Benitoite.Release.Refinement.StandardSafe.precise_rows_typed"
+    ],
+    "source": "StandardSafeBodies.lean",
+    "expression": "StandardSafe.PreciseGetter.lengthValues",
+    "contract": "精密なgetterのtel・同じComp",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "StandardSafe.PreciseGetter.lengthValues.row.definition",
+    "public_name": "Range.lengthValues",
+    "internal_name": "%Range.lengthValues.refined",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L357",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b098",
+    "original_key": "D98"
+  },
+  {
+    "id": "E12.008",
+    "group": 12,
+    "lean_name": "Range.indexValue",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardSafe.precise_row_typed",
+      "Benitoite.Release.Refinement.StandardSafe.precise_rows_typed"
+    ],
+    "source": "StandardSafeBodies.lean",
+    "expression": "StandardSafe.PreciseGetter.indexValue",
+    "contract": "精密なgetterのtel・同じComp",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "StandardSafe.PreciseGetter.indexValue.row.definition",
+    "public_name": "Range.indexValue",
+    "internal_name": "%Range.indexValue.refined",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L353",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b099",
+    "original_key": "D99"
+  },
+  {
+    "id": "E12.009",
+    "group": 12,
+    "lean_name": "Range.indexValues",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardSafe.precise_row_typed",
+      "Benitoite.Release.Refinement.StandardSafe.precise_rows_typed"
+    ],
+    "source": "StandardSafeBodies.lean",
+    "expression": "StandardSafe.PreciseGetter.indexValues",
+    "contract": "精密なgetterのtel・同じComp",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "StandardSafe.PreciseGetter.indexValues.row.definition",
+    "public_name": "Range.indexValues",
+    "internal_name": "%Range.indexValues.refined",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L354",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b100",
+    "original_key": "D100"
+  },
+  {
+    "id": "E13.001",
+    "group": 13,
+    "lean_name": "List.mapFrom",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.core_rows_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.definition_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.program_typed"
+    ],
+    "source": "StandardCollectionRefinedBodies.lean",
+    "expression": "StandardHeadTail.fromRow false",
+    "contract": "精密なtel・固定P/Bの本体",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "StandardCollectionRefinedBodies.program.defs \"List.mapFrom\"",
+    "public_name": "List.mapFrom",
+    "internal_name": "%List.mapFrom.refined",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L320",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b101",
+    "original_key": "D101"
+  },
+  {
+    "id": "E13.002",
+    "group": 13,
+    "lean_name": "List.filterFrom",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.core_rows_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.definition_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.program_typed"
+    ],
+    "source": "StandardCollectionRefinedBodies.lean",
+    "expression": "StandardHeadTail.fromRow true",
+    "contract": "精密なtel・固定P/Bの本体",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "StandardCollectionRefinedBodies.program.defs \"List.filterFrom\"",
+    "public_name": "List.filterFrom",
+    "internal_name": "%List.filterFrom.refined",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L308",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b102",
+    "original_key": "D102"
+  },
+  {
+    "id": "E13.003",
+    "group": 13,
+    "lean_name": "List.map",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.core_rows_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.definition_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.program_typed"
+    ],
+    "source": "StandardCollectionRefinedBodies.lean",
+    "expression": "StandardHeadTail.publicRow false",
+    "contract": "精密なtel・固定P/Bの本体",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "StandardCollectionRefinedBodies.program.defs \"List.map\"",
+    "public_name": "List.map",
+    "internal_name": "%List.map.refined",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L319",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b103",
+    "original_key": "D103"
+  },
+  {
+    "id": "E13.004",
+    "group": 13,
+    "lean_name": "List.filter",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.core_rows_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.definition_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.program_typed"
+    ],
+    "source": "StandardCollectionRefinedBodies.lean",
+    "expression": "StandardHeadTail.publicRow true",
+    "contract": "精密なtel・固定P/Bの本体",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "StandardCollectionRefinedBodies.program.defs \"List.filter\"",
+    "public_name": "List.filter",
+    "internal_name": "%List.filter.refined",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L307",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b104",
+    "original_key": "D104"
+  },
+  {
+    "id": "E13.005",
+    "group": 13,
+    "lean_name": "NonEmptyList.map",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.core_rows_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.definition_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.program_typed"
+    ],
+    "source": "StandardCollectionRefinedBodies.lean",
+    "expression": "StandardHeadTail.nonemptyPublicRow",
+    "contract": "精密なtel・固定P/Bの本体",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "StandardCollectionRefinedBodies.program.defs \"NonEmptyList.map\"",
+    "public_name": "NonEmptyList.map",
+    "internal_name": "%NonEmptyList.map.refined",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L343",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b105",
+    "original_key": "D105"
+  },
+  {
+    "id": "E13.006",
+    "group": 13,
+    "lean_name": "Pair.first",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.core_rows_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.definition_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.program_typed"
+    ],
+    "source": "StandardCollectionRefinedBodies.lean",
+    "expression": "pairRow false",
+    "contract": "精密なtel・固定P/Bの本体",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "StandardCollectionRefinedBodies.program.defs \"Pair.first\"",
+    "public_name": "Pair.first",
+    "internal_name": "Pair.first",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L346",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b106",
+    "original_key": "D106"
+  },
+  {
+    "id": "E13.007",
+    "group": 13,
+    "lean_name": "Pair.second",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.core_rows_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.definition_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.program_typed"
+    ],
+    "source": "StandardCollectionRefinedBodies.lean",
+    "expression": "pairRow true",
+    "contract": "精密なtel・固定P/Bの本体",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "StandardCollectionRefinedBodies.program.defs \"Pair.second\"",
+    "public_name": "Pair.second",
+    "internal_name": "Pair.second",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L347",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b107",
+    "original_key": "D107"
+  },
+  {
+    "id": "E13.008",
+    "group": 13,
+    "lean_name": "Map.map",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.core_rows_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.definition_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.program_typed"
+    ],
+    "source": "StandardCollectionRefinedBodies.lean",
+    "expression": "API.mapMap",
+    "contract": "精密なtel・固定P/Bの本体",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "StandardCollectionRefinedBodies.program.defs \"Map.map\"",
+    "public_name": "Map.map",
+    "internal_name": "%Map.map.refined",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L335",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b108",
+    "original_key": "D108"
+  },
+  {
+    "id": "E13.009",
+    "group": 13,
+    "lean_name": "Map.filter",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.core_rows_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.definition_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.program_typed"
+    ],
+    "source": "StandardCollectionRefinedBodies.lean",
+    "expression": "API.mapFilter",
+    "contract": "精密なtel・固定P/Bの本体",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "StandardCollectionRefinedBodies.program.defs \"Map.filter\"",
+    "public_name": "Map.filter",
+    "internal_name": "%Map.filter.refined",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L329",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b109",
+    "original_key": "D109"
+  },
+  {
+    "id": "E13.010",
+    "group": 13,
+    "lean_name": "Set.map",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.core_rows_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.definition_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.program_typed"
+    ],
+    "source": "StandardCollectionRefinedBodies.lean",
+    "expression": "API.setMap",
+    "contract": "精密なtel・固定P/Bの本体",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "StandardCollectionRefinedBodies.program.defs \"Set.map\"",
+    "public_name": "Set.map",
+    "internal_name": "%Set.map.refined",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L375",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b110",
+    "original_key": "D110"
+  },
+  {
+    "id": "E13.011",
+    "group": 13,
+    "lean_name": "Set.filter",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.core_rows_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.definition_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.program_typed"
+    ],
+    "source": "StandardCollectionRefinedBodies.lean",
+    "expression": "API.setFilter",
+    "contract": "精密なtel・固定P/Bの本体",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "StandardCollectionRefinedBodies.program.defs \"Set.filter\"",
+    "public_name": "Set.filter",
+    "internal_name": "%Set.filter.refined",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L370",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b111",
+    "original_key": "D111"
+  },
+  {
+    "id": "E14.001",
+    "group": 14,
+    "lean_name": "%Map.replaceValues",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardMapReplaceValues.response",
+      "Benitoite.Release.Refinement.StandardMapReplaceValues.delta_aligned"
+    ],
+    "source": "StandardMapReplaceValues.lean",
+    "expression": "%Map.replaceValues",
+    "contract": "内部pure・同じ実δ",
+    "category": "response",
+    "receiver": "L60.26",
+    "original_def": null,
+    "public_name": "%Map.replaceValues",
+    "internal_name": "%Map.replaceValues",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L076",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Primitive.p076"
+  },
+  {
+    "id": "E15.001",
+    "group": 15,
+    "lean_name": "Map.fold",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[0]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[0]?).map Prod.snd",
+    "public_name": "Map.fold",
+    "internal_name": "Map.fold",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L330",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b010",
+    "original_key": "D10"
+  },
+  {
+    "id": "E15.002",
+    "group": 15,
+    "lean_name": "Map.forEach",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[1]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[1]?).map Prod.snd",
+    "public_name": "Map.forEach",
+    "internal_name": "Map.forEach",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L331",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b011",
+    "original_key": "D11"
+  },
+  {
+    "id": "E15.003",
+    "group": 15,
+    "lean_name": "Set.fold",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[2]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[2]?).map Prod.snd",
+    "public_name": "Set.fold",
+    "internal_name": "Set.fold",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L371",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b014",
+    "original_key": "D14"
+  },
+  {
+    "id": "E15.004",
+    "group": 15,
+    "lean_name": "Set.forEach",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[3]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[3]?).map Prod.snd",
+    "public_name": "Set.forEach",
+    "internal_name": "Set.forEach",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L372",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b015",
+    "original_key": "D15"
+  },
+  {
+    "id": "E15.005",
+    "group": 15,
+    "lean_name": "Range.checkInteger",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[4]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[4]?).map Prod.snd",
+    "public_name": "Range.checkInteger",
+    "internal_name": "Range.checkInteger",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L349",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b016",
+    "original_key": "D16"
+  },
+  {
+    "id": "E15.006",
+    "group": 15,
+    "lean_name": "Range.checkLength",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[5]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[5]?).map Prod.snd",
+    "public_name": "Range.checkLength",
+    "internal_name": "Range.checkLength",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L350",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b020",
+    "original_key": "D20"
+  },
+  {
+    "id": "E15.007",
+    "group": 15,
+    "lean_name": "Range.checkIndex",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[6]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[6]?).map Prod.snd",
+    "public_name": "Range.checkIndex",
+    "internal_name": "Range.checkIndex",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L348",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b025",
+    "original_key": "D25"
+  },
+  {
+    "id": "E15.008",
+    "group": 15,
+    "lean_name": "NonEmptyList.fromList",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[7]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[7]?).map Prod.snd",
+    "public_name": "NonEmptyList.fromList",
+    "internal_name": "NonEmptyList.fromList",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L341",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b029",
+    "original_key": "D29"
+  },
+  {
+    "id": "E15.009",
+    "group": 15,
+    "lean_name": "NonEmptyList.toList",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[8]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[8]?).map Prod.snd",
+    "public_name": "NonEmptyList.toList",
+    "internal_name": "NonEmptyList.toList",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L345",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b030",
+    "original_key": "D30"
+  },
+  {
+    "id": "E15.010",
+    "group": 15,
+    "lean_name": "NonEmptyList.map",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[9]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[9]?).map Prod.snd",
+    "public_name": "NonEmptyList.map",
+    "internal_name": "%NonEmptyList.map.ordinary",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L343",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b033",
+    "original_key": "D33"
+  },
+  {
+    "id": "E15.011",
+    "group": 15,
+    "lean_name": "List.fold",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[10]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[10]?).map Prod.snd",
+    "public_name": "List.fold",
+    "internal_name": "List.fold",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L311",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b003",
+    "original_key": "D3"
+  },
+  {
+    "id": "E15.012",
+    "group": 15,
+    "lean_name": "List.foldFrom",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[11]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[11]?).map Prod.snd",
+    "public_name": "List.foldFrom",
+    "internal_name": "List.foldFrom",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L312",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b112",
+    "original_key": "D112"
+  },
+  {
+    "id": "E15.013",
+    "group": 15,
+    "lean_name": "List.forEach",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[12]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[12]?).map Prod.snd",
+    "public_name": "List.forEach",
+    "internal_name": "List.forEach",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L313",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b004",
+    "original_key": "D4"
+  },
+  {
+    "id": "E15.014",
+    "group": 15,
+    "lean_name": "List.forEachFrom",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[13]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[13]?).map Prod.snd",
+    "public_name": "List.forEachFrom",
+    "internal_name": "List.forEachFrom",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L314",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b113",
+    "original_key": "D113"
+  },
+  {
+    "id": "E15.015",
+    "group": 15,
+    "lean_name": "List.any",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[14]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[14]?).map Prod.snd",
+    "public_name": "List.any",
+    "internal_name": "List.any",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L301",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b005",
+    "original_key": "D5"
+  },
+  {
+    "id": "E15.016",
+    "group": 15,
+    "lean_name": "List.anyFrom",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[15]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[15]?).map Prod.snd",
+    "public_name": "List.anyFrom",
+    "internal_name": "List.anyFrom",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L302",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b114",
+    "original_key": "D114"
+  },
+  {
+    "id": "E15.017",
+    "group": 15,
+    "lean_name": "List.all",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[16]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[16]?).map Prod.snd",
+    "public_name": "List.all",
+    "internal_name": "List.all",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L299",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b006",
+    "original_key": "D6"
+  },
+  {
+    "id": "E15.018",
+    "group": 15,
+    "lean_name": "List.allFrom",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[17]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[17]?).map Prod.snd",
+    "public_name": "List.allFrom",
+    "internal_name": "List.allFrom",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L300",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b115",
+    "original_key": "D115"
+  },
+  {
+    "id": "E15.019",
+    "group": 15,
+    "lean_name": "List.find",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[18]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[18]?).map Prod.snd",
+    "public_name": "List.find",
+    "internal_name": "List.find",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L309",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b007",
+    "original_key": "D7"
+  },
+  {
+    "id": "E15.020",
+    "group": 15,
+    "lean_name": "List.findFrom",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[19]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[19]?).map Prod.snd",
+    "public_name": "List.findFrom",
+    "internal_name": "List.findFrom",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L310",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b116",
+    "original_key": "D116"
+  },
+  {
+    "id": "E15.021",
+    "group": 15,
+    "lean_name": "Benitoite.Range.CheckedInteger.minimum",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[20]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[20]?).map Prod.snd",
+    "public_name": "Benitoite.Range.CheckedInteger.minimum",
+    "internal_name": "Benitoite.Range.CheckedInteger.minimum",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L117",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b117",
+    "original_key": "D117"
+  },
+  {
+    "id": "E15.022",
+    "group": 15,
+    "lean_name": "Range.minimum",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[21]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[21]?).map Prod.snd",
+    "public_name": "Range.minimum",
+    "internal_name": "%Range.minimum.ordinary",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L359",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b017",
+    "original_key": "D17"
+  },
+  {
+    "id": "E15.023",
+    "group": 15,
+    "lean_name": "Benitoite.Range.CheckedInteger.maximum",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[22]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[22]?).map Prod.snd",
+    "public_name": "Benitoite.Range.CheckedInteger.maximum",
+    "internal_name": "Benitoite.Range.CheckedInteger.maximum",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L116",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b118",
+    "original_key": "D118"
+  },
+  {
+    "id": "E15.024",
+    "group": 15,
+    "lean_name": "Range.maximum",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[23]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[23]?).map Prod.snd",
+    "public_name": "Range.maximum",
+    "internal_name": "%Range.maximum.ordinary",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L358",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b018",
+    "original_key": "D18"
+  },
+  {
+    "id": "E15.025",
+    "group": 15,
+    "lean_name": "Benitoite.Range.CheckedInteger.value",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[24]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[24]?).map Prod.snd",
+    "public_name": "Benitoite.Range.CheckedInteger.value",
+    "internal_name": "Benitoite.Range.CheckedInteger.value",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L118",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b119",
+    "original_key": "D119"
+  },
+  {
+    "id": "E15.026",
+    "group": 15,
+    "lean_name": "Range.value",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[25]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[25]?).map Prod.snd",
+    "public_name": "Range.value",
+    "internal_name": "%Range.value.ordinary",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L360",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b019",
+    "original_key": "D19"
+  },
+  {
+    "id": "E15.027",
+    "group": 15,
+    "lean_name": "Benitoite.Range.CheckedLength.minimum",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[26]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[26]?).map Prod.snd",
+    "public_name": "Benitoite.Range.CheckedLength.minimum",
+    "internal_name": "Benitoite.Range.CheckedLength.minimum",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L121",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b120",
+    "original_key": "D120"
+  },
+  {
+    "id": "E15.028",
+    "group": 15,
+    "lean_name": "Range.lengthMinimum",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[27]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[27]?).map Prod.snd",
+    "public_name": "Range.lengthMinimum",
+    "internal_name": "%Range.lengthMinimum.ordinary",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L356",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b021",
+    "original_key": "D21"
+  },
+  {
+    "id": "E15.029",
+    "group": 15,
+    "lean_name": "Benitoite.Range.CheckedLength.maximum",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[28]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[28]?).map Prod.snd",
+    "public_name": "Benitoite.Range.CheckedLength.maximum",
+    "internal_name": "Benitoite.Range.CheckedLength.maximum",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L120",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b121",
+    "original_key": "D121"
+  },
+  {
+    "id": "E15.030",
+    "group": 15,
+    "lean_name": "Range.lengthMaximum",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[29]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[29]?).map Prod.snd",
+    "public_name": "Range.lengthMaximum",
+    "internal_name": "%Range.lengthMaximum.ordinary",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L355",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b022",
+    "original_key": "D22"
+  },
+  {
+    "id": "E15.031",
+    "group": 15,
+    "lean_name": "Benitoite.Range.CheckedLength.length",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[30]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[30]?).map Prod.snd",
+    "public_name": "Benitoite.Range.CheckedLength.length",
+    "internal_name": "Benitoite.Range.CheckedLength.length",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L119",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b122",
+    "original_key": "D122"
+  },
+  {
+    "id": "E15.032",
+    "group": 15,
+    "lean_name": "Range.checkedLength",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[31]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[31]?).map Prod.snd",
+    "public_name": "Range.checkedLength",
+    "internal_name": "%Range.checkedLength.ordinary",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L351",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b023",
+    "original_key": "D23"
+  },
+  {
+    "id": "E15.033",
+    "group": 15,
+    "lean_name": "Benitoite.Range.CheckedLength.values",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[32]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[32]?).map Prod.snd",
+    "public_name": "Benitoite.Range.CheckedLength.values",
+    "internal_name": "Benitoite.Range.CheckedLength.values",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L122",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b123",
+    "original_key": "D123"
+  },
+  {
+    "id": "E15.034",
+    "group": 15,
+    "lean_name": "Range.lengthValues",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[33]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[33]?).map Prod.snd",
+    "public_name": "Range.lengthValues",
+    "internal_name": "%Range.lengthValues.ordinary",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L357",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b024",
+    "original_key": "D24"
+  },
+  {
+    "id": "E15.035",
+    "group": 15,
+    "lean_name": "Benitoite.Range.CheckedIndex.values",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[34]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[34]?).map Prod.snd",
+    "public_name": "Benitoite.Range.CheckedIndex.values",
+    "internal_name": "Benitoite.Range.CheckedIndex.values",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L115",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b124",
+    "original_key": "D124"
+  },
+  {
+    "id": "E15.036",
+    "group": 15,
+    "lean_name": "Range.indexValues",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[35]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[35]?).map Prod.snd",
+    "public_name": "Range.indexValues",
+    "internal_name": "%Range.indexValues.ordinary",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L354",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b027",
+    "original_key": "D27"
+  },
+  {
+    "id": "E15.037",
+    "group": 15,
+    "lean_name": "Benitoite.Range.CheckedIndex.index",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[36]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[36]?).map Prod.snd",
+    "public_name": "Benitoite.Range.CheckedIndex.index",
+    "internal_name": "Benitoite.Range.CheckedIndex.index",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L114",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b125",
+    "original_key": "D125"
+  },
+  {
+    "id": "E15.038",
+    "group": 15,
+    "lean_name": "Range.indexValue",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[37]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[37]?).map Prod.snd",
+    "public_name": "Range.indexValue",
+    "internal_name": "%Range.indexValue.ordinary",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L353",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b026",
+    "original_key": "D26"
+  },
+  {
+    "id": "E15.039",
+    "group": 15,
+    "lean_name": "Benitoite.Range.CheckedIndex.element",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[38]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[38]?).map Prod.snd",
+    "public_name": "Benitoite.Range.CheckedIndex.element",
+    "internal_name": "Benitoite.Range.CheckedIndex.element",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L113",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b126",
+    "original_key": "D126"
+  },
+  {
+    "id": "E15.040",
+    "group": 15,
+    "lean_name": "Range.get",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[39]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[39]?).map Prod.snd",
+    "public_name": "Range.get",
+    "internal_name": "Range.get",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L352",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b028",
+    "original_key": "D28"
+  },
+  {
+    "id": "E15.041",
+    "group": 15,
+    "lean_name": "Benitoite.NonEmptyList.NonEmptyList.first",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[40]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[40]?).map Prod.snd",
+    "public_name": "Benitoite.NonEmptyList.NonEmptyList.first",
+    "internal_name": "Benitoite.NonEmptyList.NonEmptyList.first",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L111",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b127",
+    "original_key": "D127"
+  },
+  {
+    "id": "E15.042",
+    "group": 15,
+    "lean_name": "NonEmptyList.head",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[41]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[41]?).map Prod.snd",
+    "public_name": "NonEmptyList.head",
+    "internal_name": "NonEmptyList.head",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L342",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b031",
+    "original_key": "D31"
+  },
+  {
+    "id": "E15.043",
+    "group": 15,
+    "lean_name": "Benitoite.NonEmptyList.NonEmptyList.rest",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[42]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[42]?).map Prod.snd",
+    "public_name": "Benitoite.NonEmptyList.NonEmptyList.rest",
+    "internal_name": "Benitoite.NonEmptyList.NonEmptyList.rest",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L112",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b128",
+    "original_key": "D128"
+  },
+  {
+    "id": "E15.044",
+    "group": 15,
+    "lean_name": "NonEmptyList.tail",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[43]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[43]?).map Prod.snd",
+    "public_name": "NonEmptyList.tail",
+    "internal_name": "NonEmptyList.tail",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L344",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b032",
+    "original_key": "D32"
+  },
+  {
+    "id": "E15.045",
+    "group": 15,
+    "lean_name": "Pair.first",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[44]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[44]?).map Prod.snd",
+    "public_name": "Pair.first",
+    "internal_name": "Pair.first",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L346",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b106",
+    "original_key": "D106"
+  },
+  {
+    "id": "E15.046",
+    "group": 15,
+    "lean_name": "Pair.second",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[45]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[45]?).map Prod.snd",
+    "public_name": "Pair.second",
+    "internal_name": "Pair.second",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L347",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b107",
+    "original_key": "D107"
+  }
+]

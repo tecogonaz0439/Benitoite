@@ -1,0 +1,93 @@
+{
+  "source_rows": 552,
+  "body_source_rows": 159,
+  "distinct_body_defs": 129,
+  "source_rows_with_references": 68,
+  "distinct_defs_with_references": 44,
+  "reference_occurrences_by_source": 92,
+  "reference_occurrences_by_distinct_def": 61,
+  "renamed_names": [
+    "List.filter",
+    "List.map",
+    "List.mapFrom",
+    "Map.filter",
+    "Map.map",
+    "NonEmptyList.map",
+    "Range.checkedLength",
+    "Range.indexValue",
+    "Range.indexValues",
+    "Range.lengthMaximum",
+    "Range.lengthMinimum",
+    "Range.lengthValues",
+    "Range.maximum",
+    "Range.minimum",
+    "Range.value",
+    "Set.filter",
+    "Set.map"
+  ],
+  "sources_referencing_renamed_names": [
+    "E01.109",
+    "E01.126",
+    "E01.127",
+    "E01.140",
+    "E01.141",
+    "E01.161",
+    "E13.001",
+    "E13.003",
+    "E13.005",
+    "E13.008",
+    "E13.009",
+    "E13.010",
+    "E13.011",
+    "E15.010",
+    "E15.047",
+    "E15.048"
+  ],
+  "distinct_defs_referencing_renamed_names": 14,
+  "filter_helper_readers": [
+    {
+      "source": "E01.110",
+      "name": "List.filter",
+      "internal_name": "%List.filter.ordinary",
+      "original_def": "(StandardBodies.listHigherRow true).definition",
+      "references": [
+        "List.filterFrom"
+      ]
+    },
+    {
+      "source": "E13.002",
+      "name": "List.filterFrom",
+      "internal_name": "List.filterFrom",
+      "original_def": "StandardCollectionRefinedBodies.program.defs \"List.filterFrom\"",
+      "references": [
+        "List.filterFrom",
+        "List.filterFrom"
+      ]
+    },
+    {
+      "source": "E13.004",
+      "name": "List.filter",
+      "internal_name": "%List.filter.refined",
+      "original_def": "StandardCollectionRefinedBodies.program.defs \"List.filter\"",
+      "references": [
+        "List.filterFrom"
+      ]
+    }
+  ],
+  "filter_helper_direct_sources": [
+    "E13.002"
+  ],
+  "missing_ordinary_helper": "StandardBodies.listFromDefinition true",
+  "graph_pages": [
+    {
+      "file": "resume2-reference-graph-01.json",
+      "bytes": 37918,
+      "sha256": "426b44d3ad4a414f642563e86a7fade450bd231c9672fa6c0f22b24b71e4beec"
+    }
+  ],
+  "raw": {
+    "bytes": 5745,
+    "sha256": "a1d974c9c4d0511a0e851d52143495fef6e2c758952a6c103c6fa359f6cb3d85"
+  },
+  "status": "17名だけを変更する写像ではList.filterFromの二契約を分離できない。合成未完"
+}

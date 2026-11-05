@@ -1,0 +1,1558 @@
+[
+  {
+    "body": "b001",
+    "original_key": "D1",
+    "source": "E01.109",
+    "name": "List.map",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardActualListBodies.higher_typed",
+    "conditions": [
+      "同じ通常helperのlookup、Option宣言、get/append/addの署名、sat"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardActualListBodies.higher_typed"
+  },
+  {
+    "body": "b002",
+    "original_key": "D2",
+    "source": "E01.110",
+    "name": "List.filter",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardActualListBodies.higher_typed",
+    "conditions": [
+      "同じ通常helperのlookup、Option宣言、get/append/addの署名、sat"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardActualListBodies.higher_typed"
+  },
+  {
+    "body": "b003",
+    "original_key": "D3",
+    "source": "E01.111",
+    "name": "List.fold",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardOrdinaryListBodies.public_typed",
+    "conditions": [
+      "Inputs（Option宣言、実組込み署名、全helper lookup、sat）"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryListBodies.public_typed"
+  },
+  {
+    "body": "b004",
+    "original_key": "D4",
+    "source": "E01.112",
+    "name": "List.forEach",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardOrdinaryListBodies.public_typed",
+    "conditions": [
+      "Inputs（Option宣言、実組込み署名、全helper lookup、sat）"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryListBodies.public_typed"
+  },
+  {
+    "body": "b005",
+    "original_key": "D5",
+    "source": "E01.113",
+    "name": "List.any",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardOrdinaryListBodies.public_typed",
+    "conditions": [
+      "Inputs（Option宣言、実組込み署名、全helper lookup、sat）"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryListBodies.public_typed"
+  },
+  {
+    "body": "b006",
+    "original_key": "D6",
+    "source": "E01.114",
+    "name": "List.all",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardOrdinaryListBodies.public_typed",
+    "conditions": [
+      "Inputs（Option宣言、実組込み署名、全helper lookup、sat）"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryListBodies.public_typed"
+  },
+  {
+    "body": "b007",
+    "original_key": "D7",
+    "source": "E01.115",
+    "name": "List.find",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardOrdinaryListBodies.public_typed",
+    "conditions": [
+      "Inputs（Option宣言、実組込み署名、全helper lookup、sat）"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryListBodies.public_typed"
+  },
+  {
+    "body": "b008",
+    "original_key": "D8",
+    "source": "E01.126",
+    "name": "Map.map",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardBodies.collectionHigher_body_typed",
+    "conditions": [
+      "Table、Pair投影、Map/SetとListの署名とlookup"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardBodies.collectionHigher_body_typed"
+  },
+  {
+    "body": "b009",
+    "original_key": "D9",
+    "source": "E01.127",
+    "name": "Map.filter",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardBodies.collectionHigher_body_typed",
+    "conditions": [
+      "Table、Pair投影、Map/SetとListの署名とlookup"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardBodies.collectionHigher_body_typed"
+  },
+  {
+    "body": "b010",
+    "original_key": "D10",
+    "source": "E01.128",
+    "name": "Map.fold",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardOrdinaryCoreProgram.body_typed",
+    "conditions": [
+      "P/BはStandardOrdinaryCoreProgramの固定表"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.body_typed"
+  },
+  {
+    "body": "b011",
+    "original_key": "D11",
+    "source": "E01.129",
+    "name": "Map.forEach",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardOrdinaryCoreProgram.body_typed",
+    "conditions": [
+      "P/BはStandardOrdinaryCoreProgramの固定表"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.body_typed"
+  },
+  {
+    "body": "b012",
+    "original_key": "D12",
+    "source": "E01.140",
+    "name": "Set.map",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardBodies.collectionHigher_body_typed",
+    "conditions": [
+      "Table、Pair投影、Map/SetとListの署名とlookup"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardBodies.collectionHigher_body_typed"
+  },
+  {
+    "body": "b013",
+    "original_key": "D13",
+    "source": "E01.141",
+    "name": "Set.filter",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardBodies.collectionHigher_body_typed",
+    "conditions": [
+      "Table、Pair投影、Map/SetとListの署名とlookup"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardBodies.collectionHigher_body_typed"
+  },
+  {
+    "body": "b014",
+    "original_key": "D14",
+    "source": "E01.142",
+    "name": "Set.fold",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardOrdinaryCoreProgram.body_typed",
+    "conditions": [
+      "P/BはStandardOrdinaryCoreProgramの固定表"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.body_typed"
+  },
+  {
+    "body": "b015",
+    "original_key": "D15",
+    "source": "E01.143",
+    "name": "Set.forEach",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardOrdinaryCoreProgram.body_typed",
+    "conditions": [
+      "P/BはStandardOrdinaryCoreProgramの固定表"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.body_typed"
+  },
+  {
+    "body": "b016",
+    "original_key": "D16",
+    "source": "E01.144",
+    "name": "Range.checkInteger",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardOrdinaryCoreProgram.body_typed",
+    "conditions": [
+      "P/BはStandardOrdinaryCoreProgramの固定表"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.body_typed"
+  },
+  {
+    "body": "b017",
+    "original_key": "D17",
+    "source": "E01.145",
+    "name": "Range.minimum",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardOrdinaryCoreBodies.projection_typed",
+    "conditions": [
+      "P.consの等号、sat、参照先getter lookup"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.projection_typed"
+  },
+  {
+    "body": "b018",
+    "original_key": "D18",
+    "source": "E01.146",
+    "name": "Range.maximum",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardOrdinaryCoreBodies.projection_typed",
+    "conditions": [
+      "P.consの等号、sat、参照先getter lookup"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.projection_typed"
+  },
+  {
+    "body": "b019",
+    "original_key": "D19",
+    "source": "E01.147",
+    "name": "Range.value",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardOrdinaryCoreBodies.projection_typed",
+    "conditions": [
+      "P.consの等号、sat、参照先getter lookup"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.projection_typed"
+  },
+  {
+    "body": "b020",
+    "original_key": "D20",
+    "source": "E01.148",
+    "name": "Range.checkLength",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardOrdinaryCoreProgram.body_typed",
+    "conditions": [
+      "P/BはStandardOrdinaryCoreProgramの固定表"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.body_typed"
+  },
+  {
+    "body": "b021",
+    "original_key": "D21",
+    "source": "E01.149",
+    "name": "Range.lengthMinimum",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardOrdinaryCoreBodies.projection_typed",
+    "conditions": [
+      "P.consの等号、sat、参照先getter lookup"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.projection_typed"
+  },
+  {
+    "body": "b022",
+    "original_key": "D22",
+    "source": "E01.150",
+    "name": "Range.lengthMaximum",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardOrdinaryCoreBodies.projection_typed",
+    "conditions": [
+      "P.consの等号、sat、参照先getter lookup"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.projection_typed"
+  },
+  {
+    "body": "b023",
+    "original_key": "D23",
+    "source": "E01.151",
+    "name": "Range.checkedLength",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardOrdinaryCoreBodies.projection_typed",
+    "conditions": [
+      "P.consの等号、sat、参照先getter lookup"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.projection_typed"
+  },
+  {
+    "body": "b024",
+    "original_key": "D24",
+    "source": "E01.152",
+    "name": "Range.lengthValues",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardOrdinaryCoreBodies.projection_typed",
+    "conditions": [
+      "P.consの等号、sat、参照先getter lookup"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.projection_typed"
+  },
+  {
+    "body": "b025",
+    "original_key": "D25",
+    "source": "E01.153",
+    "name": "Range.checkIndex",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardOrdinaryCoreProgram.body_typed",
+    "conditions": [
+      "P/BはStandardOrdinaryCoreProgramの固定表"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.body_typed"
+  },
+  {
+    "body": "b026",
+    "original_key": "D26",
+    "source": "E01.154",
+    "name": "Range.indexValue",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardOrdinaryCoreBodies.projection_typed",
+    "conditions": [
+      "P.consの等号、sat、参照先getter lookup"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.projection_typed"
+  },
+  {
+    "body": "b027",
+    "original_key": "D27",
+    "source": "E01.155",
+    "name": "Range.indexValues",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardOrdinaryCoreBodies.projection_typed",
+    "conditions": [
+      "P.consの等号、sat、参照先getter lookup"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.projection_typed"
+  },
+  {
+    "body": "b028",
+    "original_key": "D28",
+    "source": "E01.156",
+    "name": "Range.get",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardOrdinaryCoreBodies.projection_typed",
+    "conditions": [
+      "P.consの等号、sat、参照先getter lookup"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.projection_typed"
+  },
+  {
+    "body": "b029",
+    "original_key": "D29",
+    "source": "E01.157",
+    "name": "NonEmptyList.fromList",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardOrdinaryCoreProgram.body_typed",
+    "conditions": [
+      "P/BはStandardOrdinaryCoreProgramの固定表"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.body_typed"
+  },
+  {
+    "body": "b030",
+    "original_key": "D30",
+    "source": "E01.158",
+    "name": "NonEmptyList.toList",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardOrdinaryCoreProgram.body_typed",
+    "conditions": [
+      "P/BはStandardOrdinaryCoreProgramの固定表"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.body_typed"
+  },
+  {
+    "body": "b031",
+    "original_key": "D31",
+    "source": "E01.159",
+    "name": "NonEmptyList.head",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardOrdinaryCoreBodies.projection_typed",
+    "conditions": [
+      "P.consの等号、sat、参照先getter lookup"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.projection_typed"
+  },
+  {
+    "body": "b032",
+    "original_key": "D32",
+    "source": "E01.160",
+    "name": "NonEmptyList.tail",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardOrdinaryCoreBodies.projection_typed",
+    "conditions": [
+      "P.consの等号、sat、参照先getter lookup"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.projection_typed"
+  },
+  {
+    "body": "b033",
+    "original_key": "D33",
+    "source": "E01.161",
+    "name": "NonEmptyList.map",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardOrdinaryCoreProgram.body_typed",
+    "conditions": [
+      "P/BはStandardOrdinaryCoreProgramの固定表"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.body_typed"
+  },
+  {
+    "body": "b034",
+    "original_key": "D34",
+    "source": "E01.228",
+    "name": "Integer64.toString",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b035",
+    "original_key": "D35",
+    "source": "E01.229",
+    "name": "Integer64.parse",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b036",
+    "original_key": "D36",
+    "source": "E01.230",
+    "name": "Integer64.toFloat",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b037",
+    "original_key": "D37",
+    "source": "E01.231",
+    "name": "Integer64.floorDivide",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b038",
+    "original_key": "D38",
+    "source": "E01.232",
+    "name": "Integer64.floorModulo",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b039",
+    "original_key": "D39",
+    "source": "E01.233",
+    "name": "Integer64.absolute",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b040",
+    "original_key": "D40",
+    "source": "E01.234",
+    "name": "Integer64.minimum",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b041",
+    "original_key": "D41",
+    "source": "E01.235",
+    "name": "Integer64.maximum",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b042",
+    "original_key": "D42",
+    "source": "E01.236",
+    "name": "Integer64.bitwiseAnd",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b043",
+    "original_key": "D43",
+    "source": "E01.237",
+    "name": "Integer64.bitwiseOr",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b044",
+    "original_key": "D44",
+    "source": "E01.238",
+    "name": "Integer64.bitwiseExclusiveOr",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b045",
+    "original_key": "D45",
+    "source": "E01.239",
+    "name": "Integer64.bitwiseNot",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b046",
+    "original_key": "D46",
+    "source": "E01.240",
+    "name": "Integer64.shiftLeft",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b047",
+    "original_key": "D47",
+    "source": "E01.241",
+    "name": "Integer64.shiftRight",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b048",
+    "original_key": "D48",
+    "source": "E01.242",
+    "name": "Integer64.shiftRightUnsigned",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b049",
+    "original_key": "D49",
+    "source": "E01.243",
+    "name": "UnsignedInteger.fromInteger",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b050",
+    "original_key": "D50",
+    "source": "E01.244",
+    "name": "UnsignedInteger.toInteger",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b051",
+    "original_key": "D51",
+    "source": "E01.245",
+    "name": "UnsignedInteger.parse",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b052",
+    "original_key": "D52",
+    "source": "E01.246",
+    "name": "UnsignedInteger.toString",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b053",
+    "original_key": "D53",
+    "source": "E01.247",
+    "name": "UnsignedInteger.toFloat",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b054",
+    "original_key": "D54",
+    "source": "E01.248",
+    "name": "UnsignedInteger.toDecimal",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b055",
+    "original_key": "D55",
+    "source": "E01.249",
+    "name": "UnsignedInteger.fromDecimal",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b056",
+    "original_key": "D56",
+    "source": "E01.250",
+    "name": "UnsignedInteger.absolute",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b057",
+    "original_key": "D57",
+    "source": "E01.251",
+    "name": "UnsignedInteger.minimum",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b058",
+    "original_key": "D58",
+    "source": "E01.252",
+    "name": "UnsignedInteger.maximum",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b059",
+    "original_key": "D59",
+    "source": "E01.253",
+    "name": "UnsignedInteger.floorDivide",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b060",
+    "original_key": "D60",
+    "source": "E01.254",
+    "name": "UnsignedInteger.floorModulo",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b061",
+    "original_key": "D61",
+    "source": "E01.255",
+    "name": "UnsignedInteger.bitwiseAnd",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b062",
+    "original_key": "D62",
+    "source": "E01.256",
+    "name": "UnsignedInteger.bitwiseOr",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b063",
+    "original_key": "D63",
+    "source": "E01.257",
+    "name": "UnsignedInteger.bitwiseExclusiveOr",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b064",
+    "original_key": "D64",
+    "source": "E01.258",
+    "name": "UnsignedInteger.bitwiseNot",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b065",
+    "original_key": "D65",
+    "source": "E01.259",
+    "name": "UnsignedInteger.shiftLeft",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b066",
+    "original_key": "D66",
+    "source": "E01.260",
+    "name": "UnsignedInteger.shiftRight",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b067",
+    "original_key": "D67",
+    "source": "E01.261",
+    "name": "UnsignedInteger8.fromInteger",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b068",
+    "original_key": "D68",
+    "source": "E01.262",
+    "name": "UnsignedInteger8.toInteger",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b069",
+    "original_key": "D69",
+    "source": "E01.263",
+    "name": "UnsignedInteger8.toString",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b070",
+    "original_key": "D70",
+    "source": "E01.264",
+    "name": "UnsignedInteger8.bitwiseAnd",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b071",
+    "original_key": "D71",
+    "source": "E01.265",
+    "name": "UnsignedInteger8.bitwiseOr",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b072",
+    "original_key": "D72",
+    "source": "E01.266",
+    "name": "UnsignedInteger8.bitwiseExclusiveOr",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b073",
+    "original_key": "D73",
+    "source": "E01.267",
+    "name": "UnsignedInteger8.bitwiseNot",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b074",
+    "original_key": "D74",
+    "source": "E01.268",
+    "name": "UnsignedInteger8.shiftLeft",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b075",
+    "original_key": "D75",
+    "source": "E01.269",
+    "name": "UnsignedInteger8.shiftRight",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b076",
+    "original_key": "D76",
+    "source": "E01.320",
+    "name": "Float64.toString",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b077",
+    "original_key": "D77",
+    "source": "E01.321",
+    "name": "Float64.parse",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b078",
+    "original_key": "D78",
+    "source": "E01.322",
+    "name": "Float64.truncate",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b079",
+    "original_key": "D79",
+    "source": "E01.323",
+    "name": "Float64.isNaN",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b080",
+    "original_key": "D80",
+    "source": "E01.324",
+    "name": "Float64.absolute",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b081",
+    "original_key": "D81",
+    "source": "E01.325",
+    "name": "Float64.floor",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b082",
+    "original_key": "D82",
+    "source": "E01.326",
+    "name": "Float64.ceiling",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b083",
+    "original_key": "D83",
+    "source": "E01.327",
+    "name": "Float64.round",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b084",
+    "original_key": "D84",
+    "source": "E01.328",
+    "name": "Float64.squareRoot",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardAliasBodies.body_typed",
+    "conditions": [
+      "PはStandardAliasBodies.programに固定。B.sigのlookupを要求"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b085",
+    "original_key": "D85",
+    "source": "E11.001",
+    "name": "Internal.safeHead",
+    "kind": "任意のP/B",
+    "proof_suffix": "StandardSafe.head_row_typed",
+    "conditions": [],
+    "proof": "Benitoite.Release.Refinement.StandardSafe.head_row_typed"
+  },
+  {
+    "body": "b086",
+    "original_key": "D86",
+    "source": "E11.002",
+    "name": "Internal.safeGet",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardSafe.get_row_typed",
+    "conditions": [
+      "P=safeProgram、B=StandardSafe.builtins"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardSafe.get_row_typed"
+  },
+  {
+    "body": "b087",
+    "original_key": "D87",
+    "source": "E11.003",
+    "name": "Internal.CheckedIndex.get",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardSafe.checked_row_typed",
+    "conditions": [
+      "P=safeProgram、B=StandardSafe.builtins"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardSafe.checked_row_typed"
+  },
+  {
+    "body": "b088",
+    "original_key": "D88",
+    "source": "E11.004",
+    "name": "Internal.sameLengthGet",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardSafe.same_row_typed",
+    "conditions": [
+      "P=safeProgram、B=StandardSafe.builtins"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardSafe.same_row_typed"
+  },
+  {
+    "body": "b089",
+    "original_key": "D89",
+    "source": "E11.005",
+    "name": "Internal.NonEmptyList.fromList",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardSafe.fromList_row_typed",
+    "conditions": [
+      "P=safeProgram、B=StandardSafe.builtins"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardSafe.fromList_row_typed"
+  },
+  {
+    "body": "b090",
+    "original_key": "D90",
+    "source": "E11.006",
+    "name": "Internal.NonEmptyList.toList",
+    "kind": "任意のP/B",
+    "proof_suffix": "StandardSafe.toList_row_typed",
+    "conditions": [],
+    "proof": "Benitoite.Release.Refinement.StandardSafe.toList_row_typed"
+  },
+  {
+    "body": "b091",
+    "original_key": "D91",
+    "source": "E11.007",
+    "name": "Internal.NonEmptyList.head",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardSafe.nonempty_head_row_typed",
+    "conditions": [
+      "P=safeProgram、B=StandardSafe.builtins"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardSafe.nonempty_head_row_typed"
+  },
+  {
+    "body": "b092",
+    "original_key": "D92",
+    "source": "E12.001",
+    "name": "Range.minimum",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardSafe.precise_row_typed",
+    "conditions": [
+      "P=safeProgram、B=StandardSafe.builtins"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardSafe.precise_row_typed"
+  },
+  {
+    "body": "b093",
+    "original_key": "D93",
+    "source": "E12.002",
+    "name": "Range.maximum",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardSafe.precise_row_typed",
+    "conditions": [
+      "P=safeProgram、B=StandardSafe.builtins"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardSafe.precise_row_typed"
+  },
+  {
+    "body": "b094",
+    "original_key": "D94",
+    "source": "E12.003",
+    "name": "Range.value",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardSafe.precise_row_typed",
+    "conditions": [
+      "P=safeProgram、B=StandardSafe.builtins"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardSafe.precise_row_typed"
+  },
+  {
+    "body": "b095",
+    "original_key": "D95",
+    "source": "E12.004",
+    "name": "Range.lengthMinimum",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardSafe.precise_row_typed",
+    "conditions": [
+      "P=safeProgram、B=StandardSafe.builtins"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardSafe.precise_row_typed"
+  },
+  {
+    "body": "b096",
+    "original_key": "D96",
+    "source": "E12.005",
+    "name": "Range.lengthMaximum",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardSafe.precise_row_typed",
+    "conditions": [
+      "P=safeProgram、B=StandardSafe.builtins"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardSafe.precise_row_typed"
+  },
+  {
+    "body": "b097",
+    "original_key": "D97",
+    "source": "E12.006",
+    "name": "Range.checkedLength",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardSafe.precise_row_typed",
+    "conditions": [
+      "P=safeProgram、B=StandardSafe.builtins"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardSafe.precise_row_typed"
+  },
+  {
+    "body": "b098",
+    "original_key": "D98",
+    "source": "E12.007",
+    "name": "Range.lengthValues",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardSafe.precise_row_typed",
+    "conditions": [
+      "P=safeProgram、B=StandardSafe.builtins"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardSafe.precise_row_typed"
+  },
+  {
+    "body": "b099",
+    "original_key": "D99",
+    "source": "E12.008",
+    "name": "Range.indexValue",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardSafe.precise_row_typed",
+    "conditions": [
+      "P=safeProgram、B=StandardSafe.builtins"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardSafe.precise_row_typed"
+  },
+  {
+    "body": "b100",
+    "original_key": "D100",
+    "source": "E12.009",
+    "name": "Range.indexValues",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardSafe.precise_row_typed",
+    "conditions": [
+      "P=safeProgram、B=StandardSafe.builtins"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardSafe.precise_row_typed"
+  },
+  {
+    "body": "b101",
+    "original_key": "D101",
+    "source": "E13.001",
+    "name": "List.mapFrom",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardHeadTail.from_typed",
+    "conditions": [
+      "Inputs又はTable、data/constructor/arity、sig、参照先lookup、satの副条件"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardHeadTail.from_typed"
+  },
+  {
+    "body": "b102",
+    "original_key": "D102",
+    "source": "E13.002",
+    "name": "List.filterFrom",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardHeadTail.from_typed",
+    "conditions": [
+      "Inputs又はTable、data/constructor/arity、sig、参照先lookup、satの副条件"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardHeadTail.from_typed"
+  },
+  {
+    "body": "b103",
+    "original_key": "D103",
+    "source": "E13.003",
+    "name": "List.map",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardHeadTail.public_typed",
+    "conditions": [
+      "Inputs又はTable、data/constructor/arity、sig、参照先lookup、satの副条件"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardHeadTail.public_typed"
+  },
+  {
+    "body": "b104",
+    "original_key": "D104",
+    "source": "E13.004",
+    "name": "List.filter",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardHeadTail.public_typed",
+    "conditions": [
+      "Inputs又はTable、data/constructor/arity、sig、参照先lookup、satの副条件"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardHeadTail.public_typed"
+  },
+  {
+    "body": "b105",
+    "original_key": "D105",
+    "source": "E13.005",
+    "name": "NonEmptyList.map",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardHeadTail.nonempty_public_typed",
+    "conditions": [
+      "Inputs又はTable、data/constructor/arity、sig、参照先lookup、satの副条件"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardHeadTail.nonempty_public_typed"
+  },
+  {
+    "body": "b106",
+    "original_key": "D106",
+    "source": "E13.006",
+    "name": "Pair.first",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardCollectionRefinedBodies.pair_definition_typed",
+    "conditions": [
+      "P/BはStandardCollectionRefinedBodiesの固定表"
+    ],
+    "proof": "_private.Benitoite.Release.Refinement.StandardCollectionRefinedBodies.0.Benitoite.Release.Refinement.StandardCollectionRefinedBodies.pair_definition_typed"
+  },
+  {
+    "body": "b107",
+    "original_key": "D107",
+    "source": "E13.007",
+    "name": "Pair.second",
+    "kind": "固定のP/B",
+    "proof_suffix": "StandardCollectionRefinedBodies.pair_definition_typed",
+    "conditions": [
+      "P/BはStandardCollectionRefinedBodiesの固定表"
+    ],
+    "proof": "_private.Benitoite.Release.Refinement.StandardCollectionRefinedBodies.0.Benitoite.Release.Refinement.StandardCollectionRefinedBodies.pair_definition_typed"
+  },
+  {
+    "body": "b108",
+    "original_key": "D108",
+    "source": "E13.008",
+    "name": "Map.map",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardCollectionRefinedBodies.higher_typed",
+    "conditions": [
+      "Inputs又はTable、data/constructor/arity、sig、参照先lookup、satの副条件"
+    ],
+    "proof": "_private.Benitoite.Release.Refinement.StandardCollectionRefinedBodies.0.Benitoite.Release.Refinement.StandardCollectionRefinedBodies.higher_typed"
+  },
+  {
+    "body": "b109",
+    "original_key": "D109",
+    "source": "E13.009",
+    "name": "Map.filter",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardCollectionRefinedBodies.higher_typed",
+    "conditions": [
+      "Inputs又はTable、data/constructor/arity、sig、参照先lookup、satの副条件"
+    ],
+    "proof": "_private.Benitoite.Release.Refinement.StandardCollectionRefinedBodies.0.Benitoite.Release.Refinement.StandardCollectionRefinedBodies.higher_typed"
+  },
+  {
+    "body": "b110",
+    "original_key": "D110",
+    "source": "E13.010",
+    "name": "Set.map",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardCollectionRefinedBodies.higher_typed",
+    "conditions": [
+      "Inputs又はTable、data/constructor/arity、sig、参照先lookup、satの副条件"
+    ],
+    "proof": "_private.Benitoite.Release.Refinement.StandardCollectionRefinedBodies.0.Benitoite.Release.Refinement.StandardCollectionRefinedBodies.higher_typed"
+  },
+  {
+    "body": "b111",
+    "original_key": "D111",
+    "source": "E13.011",
+    "name": "Set.filter",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardCollectionRefinedBodies.higher_typed",
+    "conditions": [
+      "Inputs又はTable、data/constructor/arity、sig、参照先lookup、satの副条件"
+    ],
+    "proof": "_private.Benitoite.Release.Refinement.StandardCollectionRefinedBodies.0.Benitoite.Release.Refinement.StandardCollectionRefinedBodies.higher_typed"
+  },
+  {
+    "body": "b112",
+    "original_key": "D112",
+    "source": "E15.012",
+    "name": "List.foldFrom",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardOrdinaryListBodies.helper_typed",
+    "conditions": [
+      "Inputs（Option宣言、実組込み署名、全helper lookup、sat）"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryListBodies.helper_typed"
+  },
+  {
+    "body": "b113",
+    "original_key": "D113",
+    "source": "E15.014",
+    "name": "List.forEachFrom",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardOrdinaryListBodies.helper_typed",
+    "conditions": [
+      "Inputs（Option宣言、実組込み署名、全helper lookup、sat）"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryListBodies.helper_typed"
+  },
+  {
+    "body": "b114",
+    "original_key": "D114",
+    "source": "E15.016",
+    "name": "List.anyFrom",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardOrdinaryListBodies.helper_typed",
+    "conditions": [
+      "Inputs（Option宣言、実組込み署名、全helper lookup、sat）"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryListBodies.helper_typed"
+  },
+  {
+    "body": "b115",
+    "original_key": "D115",
+    "source": "E15.018",
+    "name": "List.allFrom",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardOrdinaryListBodies.helper_typed",
+    "conditions": [
+      "Inputs（Option宣言、実組込み署名、全helper lookup、sat）"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryListBodies.helper_typed"
+  },
+  {
+    "body": "b116",
+    "original_key": "D116",
+    "source": "E15.020",
+    "name": "List.findFrom",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardOrdinaryListBodies.helper_typed",
+    "conditions": [
+      "Inputs（Option宣言、実組込み署名、全helper lookup、sat）"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryListBodies.helper_typed"
+  },
+  {
+    "body": "b117",
+    "original_key": "D117",
+    "source": "E15.021",
+    "name": "Benitoite.Range.CheckedInteger.minimum",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardOrdinaryCoreBodies.getter_typed",
+    "conditions": [
+      "P.consと有限constructorTableの等号"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.getter_typed"
+  },
+  {
+    "body": "b118",
+    "original_key": "D118",
+    "source": "E15.023",
+    "name": "Benitoite.Range.CheckedInteger.maximum",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardOrdinaryCoreBodies.getter_typed",
+    "conditions": [
+      "P.consと有限constructorTableの等号"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.getter_typed"
+  },
+  {
+    "body": "b119",
+    "original_key": "D119",
+    "source": "E15.025",
+    "name": "Benitoite.Range.CheckedInteger.value",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardOrdinaryCoreBodies.getter_typed",
+    "conditions": [
+      "P.consと有限constructorTableの等号"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.getter_typed"
+  },
+  {
+    "body": "b120",
+    "original_key": "D120",
+    "source": "E15.027",
+    "name": "Benitoite.Range.CheckedLength.minimum",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardOrdinaryCoreBodies.getter_typed",
+    "conditions": [
+      "P.consと有限constructorTableの等号"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.getter_typed"
+  },
+  {
+    "body": "b121",
+    "original_key": "D121",
+    "source": "E15.029",
+    "name": "Benitoite.Range.CheckedLength.maximum",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardOrdinaryCoreBodies.getter_typed",
+    "conditions": [
+      "P.consと有限constructorTableの等号"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.getter_typed"
+  },
+  {
+    "body": "b122",
+    "original_key": "D122",
+    "source": "E15.031",
+    "name": "Benitoite.Range.CheckedLength.length",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardOrdinaryCoreBodies.getter_typed",
+    "conditions": [
+      "P.consと有限constructorTableの等号"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.getter_typed"
+  },
+  {
+    "body": "b123",
+    "original_key": "D123",
+    "source": "E15.033",
+    "name": "Benitoite.Range.CheckedLength.values",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardOrdinaryCoreBodies.getter_typed",
+    "conditions": [
+      "P.consと有限constructorTableの等号"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.getter_typed"
+  },
+  {
+    "body": "b124",
+    "original_key": "D124",
+    "source": "E15.035",
+    "name": "Benitoite.Range.CheckedIndex.values",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardOrdinaryCoreBodies.getter_typed",
+    "conditions": [
+      "P.consと有限constructorTableの等号"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.getter_typed"
+  },
+  {
+    "body": "b125",
+    "original_key": "D125",
+    "source": "E15.037",
+    "name": "Benitoite.Range.CheckedIndex.index",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardOrdinaryCoreBodies.getter_typed",
+    "conditions": [
+      "P.consと有限constructorTableの等号"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.getter_typed"
+  },
+  {
+    "body": "b126",
+    "original_key": "D126",
+    "source": "E15.039",
+    "name": "Benitoite.Range.CheckedIndex.element",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardOrdinaryCoreBodies.getter_typed",
+    "conditions": [
+      "P.consと有限constructorTableの等号"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.getter_typed"
+  },
+  {
+    "body": "b127",
+    "original_key": "D127",
+    "source": "E15.041",
+    "name": "Benitoite.NonEmptyList.NonEmptyList.first",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardOrdinaryCoreBodies.getter_typed",
+    "conditions": [
+      "P.consと有限constructorTableの等号"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.getter_typed"
+  },
+  {
+    "body": "b128",
+    "original_key": "D128",
+    "source": "E15.043",
+    "name": "Benitoite.NonEmptyList.NonEmptyList.rest",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardOrdinaryCoreBodies.getter_typed",
+    "conditions": [
+      "P.consと有限constructorTableの等号"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.getter_typed"
+  },
+  {
+    "body": "b129",
+    "original_key": "D129",
+    "source": "E15.048",
+    "name": "List.mapFrom",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardActualListBodies.from_typed",
+    "conditions": [
+      "同じ通常helperのlookup、Option宣言、get/append/addの署名、sat"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardActualListBodies.from_typed"
+  },
+  {
+    "body": "b130",
+    "original_key": "D130",
+    "source": "helper:ordinaryContext:List.filterFrom",
+    "name": "List.filterFrom",
+    "kind": "lookupなどの副条件付き",
+    "proof_suffix": "StandardActualListBodies.from_typed",
+    "conditions": [
+      "同じ通常helperのlookup、Option宣言、get/append/addの署名、sat"
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardActualListBodies.from_typed"
+  }
+]

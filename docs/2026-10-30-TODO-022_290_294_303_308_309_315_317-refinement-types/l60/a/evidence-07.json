@@ -1,0 +1,48 @@
+[
+  {
+    "id": "E15.047",
+    "group": 15,
+    "lean_name": "List.map",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[46]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[46]?).map Prod.snd",
+    "public_name": "List.map",
+    "internal_name": "%List.map.ordinary",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L319",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b001",
+    "original_key": "D1"
+  },
+  {
+    "id": "E15.048",
+    "group": 15,
+    "lean_name": "List.mapFrom",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "source": "StandardOrdinaryCoreProgram.lean",
+    "expression": "allDefinitions[47]",
+    "contract": "通常の本体・固定P/B。精密な候補は別出典に保持",
+    "category": "body",
+    "receiver": "L60.27",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[47]?).map Prod.snd",
+    "public_name": "List.mapFrom",
+    "internal_name": "%List.mapFrom.ordinary",
+    "internal_name_status": "合成表の全lookupに対応。本体・応答の全証明は.27/.29で供給する",
+    "ledger": "L320",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "composition_lookup": "StandardModel.Body.b129",
+    "original_key": "D129"
+  }
+]

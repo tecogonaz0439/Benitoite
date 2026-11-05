@@ -1,0 +1,1498 @@
+[
+  {
+    "id": "E01.109",
+    "lean_name": "List.map",
+    "original_def": "(StandardBodies.listHigherRow false).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardActualListBodies.model_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.110",
+    "lean_name": "List.filter",
+    "original_def": "(StandardBodies.listHigherRow true).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardActualListBodies.model_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.111",
+    "lean_name": "List.fold",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"List.fold\"",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed",
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.112",
+    "lean_name": "List.forEach",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"List.forEach\"",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed",
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.113",
+    "lean_name": "List.any",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"List.any\"",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed",
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.114",
+    "lean_name": "List.all",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"List.all\"",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed",
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.115",
+    "lean_name": "List.find",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"List.find\"",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed",
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.126",
+    "lean_name": "Map.map",
+    "original_def": "(StandardBodies.collectionHigherRow true false).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCollectionModel.typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.127",
+    "lean_name": "Map.filter",
+    "original_def": "(StandardBodies.collectionHigherRow true true).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCollectionModel.typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.128",
+    "lean_name": "Map.fold",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"Map.fold\"",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed",
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.129",
+    "lean_name": "Map.forEach",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"Map.forEach\"",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed",
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.140",
+    "lean_name": "Set.map",
+    "original_def": "(StandardBodies.collectionHigherRow false false).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCollectionModel.typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.141",
+    "lean_name": "Set.filter",
+    "original_def": "(StandardBodies.collectionHigherRow false true).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCollectionModel.typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.142",
+    "lean_name": "Set.fold",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"Set.fold\"",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed",
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.143",
+    "lean_name": "Set.forEach",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"Set.forEach\"",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed",
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.144",
+    "lean_name": "Range.checkInteger",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"Range.checkInteger\"",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed",
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.145",
+    "lean_name": "Range.minimum",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"Range.minimum\"",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed",
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.146",
+    "lean_name": "Range.maximum",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"Range.maximum\"",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed",
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.147",
+    "lean_name": "Range.value",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"Range.value\"",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed",
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.148",
+    "lean_name": "Range.checkLength",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"Range.checkLength\"",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed",
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.149",
+    "lean_name": "Range.lengthMinimum",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"Range.lengthMinimum\"",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed",
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.150",
+    "lean_name": "Range.lengthMaximum",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"Range.lengthMaximum\"",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed",
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.151",
+    "lean_name": "Range.checkedLength",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"Range.checkedLength\"",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed",
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.152",
+    "lean_name": "Range.lengthValues",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"Range.lengthValues\"",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed",
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.153",
+    "lean_name": "Range.checkIndex",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"Range.checkIndex\"",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed",
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.154",
+    "lean_name": "Range.indexValue",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"Range.indexValue\"",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed",
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.155",
+    "lean_name": "Range.indexValues",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"Range.indexValues\"",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed",
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.156",
+    "lean_name": "Range.get",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"Range.get\"",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed",
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.157",
+    "lean_name": "NonEmptyList.fromList",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"NonEmptyList.fromList\"",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed",
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.158",
+    "lean_name": "NonEmptyList.toList",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"NonEmptyList.toList\"",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed",
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.159",
+    "lean_name": "NonEmptyList.head",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"NonEmptyList.head\"",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed",
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.160",
+    "lean_name": "NonEmptyList.tail",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"NonEmptyList.tail\"",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed",
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.161",
+    "lean_name": "NonEmptyList.map",
+    "original_def": "StandardOrdinaryCoreProgram.program.defs \"NonEmptyList.map\"",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed",
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.228",
+    "lean_name": "Integer64.toString",
+    "original_def": "(StandardAliasBodies.API.Integer64_toString.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.229",
+    "lean_name": "Integer64.parse",
+    "original_def": "(StandardAliasBodies.API.Integer64_parse.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.230",
+    "lean_name": "Integer64.toFloat",
+    "original_def": "(StandardAliasBodies.API.Integer64_toFloat.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.231",
+    "lean_name": "Integer64.floorDivide",
+    "original_def": "(StandardAliasBodies.API.Integer64_floorDivide.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.232",
+    "lean_name": "Integer64.floorModulo",
+    "original_def": "(StandardAliasBodies.API.Integer64_floorModulo.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.233",
+    "lean_name": "Integer64.absolute",
+    "original_def": "(StandardAliasBodies.API.Integer64_absolute.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.234",
+    "lean_name": "Integer64.minimum",
+    "original_def": "(StandardAliasBodies.API.Integer64_minimum.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.235",
+    "lean_name": "Integer64.maximum",
+    "original_def": "(StandardAliasBodies.API.Integer64_maximum.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.236",
+    "lean_name": "Integer64.bitwiseAnd",
+    "original_def": "(StandardAliasBodies.API.Integer64_bitwiseAnd.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.237",
+    "lean_name": "Integer64.bitwiseOr",
+    "original_def": "(StandardAliasBodies.API.Integer64_bitwiseOr.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.238",
+    "lean_name": "Integer64.bitwiseExclusiveOr",
+    "original_def": "(StandardAliasBodies.API.Integer64_bitwiseExclusiveOr.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.239",
+    "lean_name": "Integer64.bitwiseNot",
+    "original_def": "(StandardAliasBodies.API.Integer64_bitwiseNot.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.240",
+    "lean_name": "Integer64.shiftLeft",
+    "original_def": "(StandardAliasBodies.API.Integer64_shiftLeft.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.241",
+    "lean_name": "Integer64.shiftRight",
+    "original_def": "(StandardAliasBodies.API.Integer64_shiftRight.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.242",
+    "lean_name": "Integer64.shiftRightUnsigned",
+    "original_def": "(StandardAliasBodies.API.Integer64_shiftRightUnsigned.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.243",
+    "lean_name": "UnsignedInteger.fromInteger",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger_fromInteger.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.244",
+    "lean_name": "UnsignedInteger.toInteger",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger_toInteger.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.245",
+    "lean_name": "UnsignedInteger.parse",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger_parse.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.246",
+    "lean_name": "UnsignedInteger.toString",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger_toString.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.247",
+    "lean_name": "UnsignedInteger.toFloat",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger_toFloat.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.248",
+    "lean_name": "UnsignedInteger.toDecimal",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger_toDecimal.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.249",
+    "lean_name": "UnsignedInteger.fromDecimal",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger_fromDecimal.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.250",
+    "lean_name": "UnsignedInteger.absolute",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger_absolute.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.251",
+    "lean_name": "UnsignedInteger.minimum",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger_minimum.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.252",
+    "lean_name": "UnsignedInteger.maximum",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger_maximum.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.253",
+    "lean_name": "UnsignedInteger.floorDivide",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger_floorDivide.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.254",
+    "lean_name": "UnsignedInteger.floorModulo",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger_floorModulo.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.255",
+    "lean_name": "UnsignedInteger.bitwiseAnd",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger_bitwiseAnd.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.256",
+    "lean_name": "UnsignedInteger.bitwiseOr",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger_bitwiseOr.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.257",
+    "lean_name": "UnsignedInteger.bitwiseExclusiveOr",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger_bitwiseExclusiveOr.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.258",
+    "lean_name": "UnsignedInteger.bitwiseNot",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger_bitwiseNot.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.259",
+    "lean_name": "UnsignedInteger.shiftLeft",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger_shiftLeft.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.260",
+    "lean_name": "UnsignedInteger.shiftRight",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger_shiftRight.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.261",
+    "lean_name": "UnsignedInteger8.fromInteger",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger8_fromInteger.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.262",
+    "lean_name": "UnsignedInteger8.toInteger",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger8_toInteger.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.263",
+    "lean_name": "UnsignedInteger8.toString",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger8_toString.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.264",
+    "lean_name": "UnsignedInteger8.bitwiseAnd",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger8_bitwiseAnd.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.265",
+    "lean_name": "UnsignedInteger8.bitwiseOr",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger8_bitwiseOr.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.266",
+    "lean_name": "UnsignedInteger8.bitwiseExclusiveOr",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger8_bitwiseExclusiveOr.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.267",
+    "lean_name": "UnsignedInteger8.bitwiseNot",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger8_bitwiseNot.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.268",
+    "lean_name": "UnsignedInteger8.shiftLeft",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger8_shiftLeft.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.269",
+    "lean_name": "UnsignedInteger8.shiftRight",
+    "original_def": "(StandardAliasBodies.API.UnsignedInteger8_shiftRight.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.320",
+    "lean_name": "Float64.toString",
+    "original_def": "(StandardAliasBodies.API.Float64_toString.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.321",
+    "lean_name": "Float64.parse",
+    "original_def": "(StandardAliasBodies.API.Float64_parse.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.322",
+    "lean_name": "Float64.truncate",
+    "original_def": "(StandardAliasBodies.API.Float64_truncate.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.323",
+    "lean_name": "Float64.isNaN",
+    "original_def": "(StandardAliasBodies.API.Float64_isNaN.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.324",
+    "lean_name": "Float64.absolute",
+    "original_def": "(StandardAliasBodies.API.Float64_absolute.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.325",
+    "lean_name": "Float64.floor",
+    "original_def": "(StandardAliasBodies.API.Float64_floor.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.326",
+    "lean_name": "Float64.ceiling",
+    "original_def": "(StandardAliasBodies.API.Float64_ceiling.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.327",
+    "lean_name": "Float64.round",
+    "original_def": "(StandardAliasBodies.API.Float64_round.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E01.328",
+    "lean_name": "Float64.squareRoot",
+    "original_def": "(StandardAliasBodies.API.Float64_squareRoot.row).definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardAliasBodies.declarations_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E11.001",
+    "lean_name": "Internal.safeHead",
+    "original_def": "StandardSafe.headRow.definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardSafe.registered_bodies",
+      "Benitoite.Release.Refinement.StandardSafe.head_row_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E11.002",
+    "lean_name": "Internal.safeGet",
+    "original_def": "StandardSafe.getRow.definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardSafe.registered_bodies",
+      "Benitoite.Release.Refinement.StandardSafe.get_row_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E11.003",
+    "lean_name": "Internal.CheckedIndex.get",
+    "original_def": "StandardSafe.checkedRow.definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardSafe.registered_bodies",
+      "Benitoite.Release.Refinement.StandardSafe.checked_row_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E11.004",
+    "lean_name": "Internal.sameLengthGet",
+    "original_def": "StandardSafe.sameRow.definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardSafe.registered_bodies",
+      "Benitoite.Release.Refinement.StandardSafe.same_row_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E11.005",
+    "lean_name": "Internal.NonEmptyList.fromList",
+    "original_def": "StandardSafe.fromListRow.definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardSafe.registered_bodies",
+      "Benitoite.Release.Refinement.StandardSafe.fromList_row_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E11.006",
+    "lean_name": "Internal.NonEmptyList.toList",
+    "original_def": "StandardSafe.toListRow.definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardSafe.registered_bodies",
+      "Benitoite.Release.Refinement.StandardSafe.toList_row_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E11.007",
+    "lean_name": "Internal.NonEmptyList.head",
+    "original_def": "StandardSafe.nonemptyHeadRow.definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardSafe.registered_bodies",
+      "Benitoite.Release.Refinement.StandardSafe.nonempty_head_row_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E12.001",
+    "lean_name": "Range.minimum",
+    "original_def": "StandardSafe.PreciseGetter.minimum.row.definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardSafe.precise_row_typed",
+      "Benitoite.Release.Refinement.StandardSafe.precise_rows_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E12.002",
+    "lean_name": "Range.maximum",
+    "original_def": "StandardSafe.PreciseGetter.maximum.row.definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardSafe.precise_row_typed",
+      "Benitoite.Release.Refinement.StandardSafe.precise_rows_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E12.003",
+    "lean_name": "Range.value",
+    "original_def": "StandardSafe.PreciseGetter.value.row.definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardSafe.precise_row_typed",
+      "Benitoite.Release.Refinement.StandardSafe.precise_rows_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E12.004",
+    "lean_name": "Range.lengthMinimum",
+    "original_def": "StandardSafe.PreciseGetter.lengthMinimum.row.definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardSafe.precise_row_typed",
+      "Benitoite.Release.Refinement.StandardSafe.precise_rows_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E12.005",
+    "lean_name": "Range.lengthMaximum",
+    "original_def": "StandardSafe.PreciseGetter.lengthMaximum.row.definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardSafe.precise_row_typed",
+      "Benitoite.Release.Refinement.StandardSafe.precise_rows_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E12.006",
+    "lean_name": "Range.checkedLength",
+    "original_def": "StandardSafe.PreciseGetter.checkedLength.row.definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardSafe.precise_row_typed",
+      "Benitoite.Release.Refinement.StandardSafe.precise_rows_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E12.007",
+    "lean_name": "Range.lengthValues",
+    "original_def": "StandardSafe.PreciseGetter.lengthValues.row.definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardSafe.precise_row_typed",
+      "Benitoite.Release.Refinement.StandardSafe.precise_rows_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E12.008",
+    "lean_name": "Range.indexValue",
+    "original_def": "StandardSafe.PreciseGetter.indexValue.row.definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardSafe.precise_row_typed",
+      "Benitoite.Release.Refinement.StandardSafe.precise_rows_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E12.009",
+    "lean_name": "Range.indexValues",
+    "original_def": "StandardSafe.PreciseGetter.indexValues.row.definition",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardSafe.precise_row_typed",
+      "Benitoite.Release.Refinement.StandardSafe.precise_rows_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E13.001",
+    "lean_name": "List.mapFrom",
+    "original_def": "StandardCollectionRefinedBodies.program.defs \"List.mapFrom\"",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.core_rows_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.definition_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.program_typed"
+    ],
+    "context": "StandardCollectionRefinedBodies.program"
+  },
+  {
+    "id": "E13.002",
+    "lean_name": "List.filterFrom",
+    "original_def": "StandardCollectionRefinedBodies.program.defs \"List.filterFrom\"",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.core_rows_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.definition_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.program_typed"
+    ],
+    "context": "StandardCollectionRefinedBodies.program"
+  },
+  {
+    "id": "E13.003",
+    "lean_name": "List.map",
+    "original_def": "StandardCollectionRefinedBodies.program.defs \"List.map\"",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.core_rows_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.definition_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.program_typed"
+    ],
+    "context": "StandardCollectionRefinedBodies.program"
+  },
+  {
+    "id": "E13.004",
+    "lean_name": "List.filter",
+    "original_def": "StandardCollectionRefinedBodies.program.defs \"List.filter\"",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.core_rows_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.definition_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.program_typed"
+    ],
+    "context": "StandardCollectionRefinedBodies.program"
+  },
+  {
+    "id": "E13.005",
+    "lean_name": "NonEmptyList.map",
+    "original_def": "StandardCollectionRefinedBodies.program.defs \"NonEmptyList.map\"",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.core_rows_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.definition_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.program_typed"
+    ],
+    "context": "StandardCollectionRefinedBodies.program"
+  },
+  {
+    "id": "E13.006",
+    "lean_name": "Pair.first",
+    "original_def": "StandardCollectionRefinedBodies.program.defs \"Pair.first\"",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.core_rows_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.definition_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.program_typed"
+    ],
+    "context": "StandardCollectionRefinedBodies.program"
+  },
+  {
+    "id": "E13.007",
+    "lean_name": "Pair.second",
+    "original_def": "StandardCollectionRefinedBodies.program.defs \"Pair.second\"",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.core_rows_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.definition_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.program_typed"
+    ],
+    "context": "StandardCollectionRefinedBodies.program"
+  },
+  {
+    "id": "E13.008",
+    "lean_name": "Map.map",
+    "original_def": "StandardCollectionRefinedBodies.program.defs \"Map.map\"",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.core_rows_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.definition_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.program_typed"
+    ],
+    "context": "StandardCollectionRefinedBodies.program"
+  },
+  {
+    "id": "E13.009",
+    "lean_name": "Map.filter",
+    "original_def": "StandardCollectionRefinedBodies.program.defs \"Map.filter\"",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.core_rows_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.definition_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.program_typed"
+    ],
+    "context": "StandardCollectionRefinedBodies.program"
+  },
+  {
+    "id": "E13.010",
+    "lean_name": "Set.map",
+    "original_def": "StandardCollectionRefinedBodies.program.defs \"Set.map\"",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.core_rows_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.definition_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.program_typed"
+    ],
+    "context": "StandardCollectionRefinedBodies.program"
+  },
+  {
+    "id": "E13.011",
+    "lean_name": "Set.filter",
+    "original_def": "StandardCollectionRefinedBodies.program.defs \"Set.filter\"",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.core_rows_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.definition_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.program_typed"
+    ],
+    "context": "StandardCollectionRefinedBodies.program"
+  },
+  {
+    "id": "E15.001",
+    "lean_name": "Map.fold",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[0]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.002",
+    "lean_name": "Map.forEach",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[1]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.003",
+    "lean_name": "Set.fold",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[2]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.004",
+    "lean_name": "Set.forEach",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[3]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.005",
+    "lean_name": "Range.checkInteger",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[4]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.006",
+    "lean_name": "Range.checkLength",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[5]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.007",
+    "lean_name": "Range.checkIndex",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[6]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.008",
+    "lean_name": "NonEmptyList.fromList",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[7]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.009",
+    "lean_name": "NonEmptyList.toList",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[8]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.010",
+    "lean_name": "NonEmptyList.map",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[9]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.011",
+    "lean_name": "List.fold",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[10]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.012",
+    "lean_name": "List.foldFrom",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[11]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.013",
+    "lean_name": "List.forEach",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[12]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.014",
+    "lean_name": "List.forEachFrom",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[13]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.015",
+    "lean_name": "List.any",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[14]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.016",
+    "lean_name": "List.anyFrom",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[15]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.017",
+    "lean_name": "List.all",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[16]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.018",
+    "lean_name": "List.allFrom",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[17]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.019",
+    "lean_name": "List.find",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[18]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.020",
+    "lean_name": "List.findFrom",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[19]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.021",
+    "lean_name": "Benitoite.Range.CheckedInteger.minimum",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[20]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.022",
+    "lean_name": "Range.minimum",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[21]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.023",
+    "lean_name": "Benitoite.Range.CheckedInteger.maximum",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[22]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.024",
+    "lean_name": "Range.maximum",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[23]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.025",
+    "lean_name": "Benitoite.Range.CheckedInteger.value",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[24]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.026",
+    "lean_name": "Range.value",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[25]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.027",
+    "lean_name": "Benitoite.Range.CheckedLength.minimum",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[26]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.028",
+    "lean_name": "Range.lengthMinimum",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[27]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.029",
+    "lean_name": "Benitoite.Range.CheckedLength.maximum",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[28]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.030",
+    "lean_name": "Range.lengthMaximum",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[29]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.031",
+    "lean_name": "Benitoite.Range.CheckedLength.length",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[30]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.032",
+    "lean_name": "Range.checkedLength",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[31]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.033",
+    "lean_name": "Benitoite.Range.CheckedLength.values",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[32]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.034",
+    "lean_name": "Range.lengthValues",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[33]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.035",
+    "lean_name": "Benitoite.Range.CheckedIndex.values",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[34]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.036",
+    "lean_name": "Range.indexValues",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[35]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.037",
+    "lean_name": "Benitoite.Range.CheckedIndex.index",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[36]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.038",
+    "lean_name": "Range.indexValue",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[37]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.039",
+    "lean_name": "Benitoite.Range.CheckedIndex.element",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[38]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.040",
+    "lean_name": "Range.get",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[39]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.041",
+    "lean_name": "Benitoite.NonEmptyList.NonEmptyList.first",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[40]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.042",
+    "lean_name": "NonEmptyList.head",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[41]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.043",
+    "lean_name": "Benitoite.NonEmptyList.NonEmptyList.rest",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[42]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.044",
+    "lean_name": "NonEmptyList.tail",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[43]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.045",
+    "lean_name": "Pair.first",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[44]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.046",
+    "lean_name": "Pair.second",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[45]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.047",
+    "lean_name": "List.map",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[46]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  },
+  {
+    "id": "E15.048",
+    "lean_name": "List.mapFrom",
+    "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[47]?).map Prod.snd",
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "context": "ordinaryContext"
+  }
+]

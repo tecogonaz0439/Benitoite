@@ -1,0 +1,137 @@
+{
+  "targets": 83376,
+  "group_a_declarations": 2704,
+  "private_declarations": 482,
+  "new_modules": {
+    "Benitoite.Release.Refinement.BuiltinTypingTransport": 95,
+    "Benitoite.Release.Refinement.ExternalSurfaceLeaves": 2,
+    "Benitoite.Release.Refinement.ExternalModelResponse": 5,
+    "Benitoite.Release.Refinement.ResourceReleaseModel": 4,
+    "Benitoite.Release.Refinement.FunctionNameMap": 39,
+    "Benitoite.Release.Refinement.StandardModelDeclarations": 551,
+    "Benitoite.Release.Refinement.StandardModelSignatures": 1580,
+    "Benitoite.Release.Refinement.StandardModelPrimitiveLookup": 376,
+    "Benitoite.Release.Refinement.StandardModelResponse": 13,
+    "Benitoite.Release.Refinement.BuiltinResponseTransport": 24,
+    "Benitoite.Release.Refinement.ExternalModelTransport": 15
+  },
+  "new_axioms": 0,
+  "sorryAx": 0,
+  "axiom_sets": [
+    {
+      "axioms": [],
+      "count": 39119
+    },
+    {
+      "axioms": [
+        "Classical.choice"
+      ],
+      "count": 2
+    },
+    {
+      "axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ],
+      "count": 21080
+    },
+    {
+      "axioms": [
+        "Classical.choice",
+        "propext"
+      ],
+      "count": 2
+    },
+    {
+      "axioms": [
+        "Quot.sound"
+      ],
+      "count": 9
+    },
+    {
+      "axioms": [
+        "Quot.sound",
+        "propext"
+      ],
+      "count": 3870
+    },
+    {
+      "axioms": [
+        "propext"
+      ],
+      "count": 19294
+    }
+  ],
+  "retained_snapshot": {
+    "file": "resume3-audit-summary.json",
+    "bytes": 65026,
+    "sha256": "0135e485fcea5d2d1194ae901a23eb2ecfebb01d1cae9ab242f81ec41d2f492f"
+  },
+  "snapshot_note": "宣言と実署名の写しは再開3の一回分を保持し、現在の監査との追加・行番号の差だけをここへ記録する。全署名の断片を復元して現在の生出力と一致させた",
+  "added_declarations": [],
+  "moved_declarations": [
+    {
+      "name": "Benitoite.Release.Refinement.FunctionNames.arms",
+      "line": 91
+    },
+    {
+      "name": "Benitoite.Release.Refinement.FunctionNames.clauses",
+      "line": 95
+    },
+    {
+      "name": "Benitoite.Release.Refinement.FunctionNames.computation",
+      "line": 73
+    },
+    {
+      "name": "Benitoite.Release.Refinement.FunctionNames.definition",
+      "line": 101
+    },
+    {
+      "name": "Benitoite.Release.Refinement.FunctionNames.definition_tel",
+      "line": 103
+    },
+    {
+      "name": "Benitoite.Release.Refinement.FunctionNames.slots",
+      "line": 69
+    },
+    {
+      "name": "Benitoite.Release.Refinement.FunctionNames.value",
+      "line": 39
+    },
+    {
+      "name": "Benitoite.Release.Refinement.FunctionNames.values",
+      "line": 66
+    },
+    {
+      "name": "Benitoite.Release.Refinement.StandardModel.option_declarations",
+      "line": 725
+    }
+  ],
+  "unchanged_signature_declarations": 1136,
+  "input": {
+    "bytes": 4968,
+    "sha256": "f457c00c9c71585105f11dd50075c7342f33e95a16fab92013da48b966070ce3"
+  },
+  "execution": {
+    "label": "resume4-audit-final",
+    "cwd": "formal",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/a/axioms.lean"
+    ],
+    "start": "2026-11-05T11:17:34+09:00",
+    "end": "2026-11-05T11:18:10+09:00",
+    "exit": 0,
+    "wall_seconds": 36.1654,
+    "raw": {
+      "bytes": 17035619,
+      "sha256": "73e2ae063079a0eeff96e79bdd515bec6ae623f227b94667df51694eaff417b5"
+    },
+    "rss": "未取得（計画上の非採取）"
+  }
+}

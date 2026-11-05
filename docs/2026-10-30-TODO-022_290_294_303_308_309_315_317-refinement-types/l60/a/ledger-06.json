@@ -1,0 +1,2460 @@
+[
+  {
+    "id": "L295",
+    "classification": "合成",
+    "lean_name": "Internal.NonEmptyList.toList",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "rust_references": [],
+    "evidence_rows": [
+      "E11.006"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardSafe.registered_bodies",
+      "Benitoite.Release.Refinement.StandardSafe.toList_row_typed"
+    ],
+    "receivers": [
+      "L60.27"
+    ],
+    "contracts": [
+      "精密な内部tel・同じComp"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "Internal.NonEmptyList.toList"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E11.006",
+        "public_name": "Internal.NonEmptyList.toList",
+        "internal_name": "Internal.NonEmptyList.toList",
+        "original_def": "StandardSafe.toListRow.definition",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardSafe.registered_bodies",
+          "Benitoite.Release.Refinement.StandardSafe.toList_row_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b090"
+      }
+    ]
+  },
+  {
+    "id": "L296",
+    "classification": "合成",
+    "lean_name": "Internal.safeGet",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "rust_references": [],
+    "evidence_rows": [
+      "E11.002"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardSafe.get_row_typed",
+      "Benitoite.Release.Refinement.StandardSafe.registered_bodies"
+    ],
+    "receivers": [
+      "L60.27"
+    ],
+    "contracts": [
+      "精密な内部tel・同じComp"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "Internal.safeGet"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E11.002",
+        "public_name": "Internal.safeGet",
+        "internal_name": "Internal.safeGet",
+        "original_def": "StandardSafe.getRow.definition",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardSafe.registered_bodies",
+          "Benitoite.Release.Refinement.StandardSafe.get_row_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b086"
+      }
+    ]
+  },
+  {
+    "id": "L297",
+    "classification": "合成",
+    "lean_name": "Internal.safeHead",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "rust_references": [],
+    "evidence_rows": [
+      "E11.001"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardSafe.head_row_typed",
+      "Benitoite.Release.Refinement.StandardSafe.registered_bodies"
+    ],
+    "receivers": [
+      "L60.27"
+    ],
+    "contracts": [
+      "精密な内部tel・同じComp"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "Internal.safeHead"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E11.001",
+        "public_name": "Internal.safeHead",
+        "internal_name": "Internal.safeHead",
+        "original_def": "StandardSafe.headRow.definition",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardSafe.registered_bodies",
+          "Benitoite.Release.Refinement.StandardSafe.head_row_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b085"
+      }
+    ]
+  },
+  {
+    "id": "L298",
+    "classification": "合成",
+    "lean_name": "Internal.sameLengthGet",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "rust_references": [],
+    "evidence_rows": [
+      "E11.004"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardSafe.registered_bodies",
+      "Benitoite.Release.Refinement.StandardSafe.same_row_typed"
+    ],
+    "receivers": [
+      "L60.27"
+    ],
+    "contracts": [
+      "精密な内部tel・同じComp"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "Internal.sameLengthGet"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E11.004",
+        "public_name": "Internal.sameLengthGet",
+        "internal_name": "Internal.sameLengthGet",
+        "original_def": "StandardSafe.sameRow.definition",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardSafe.registered_bodies",
+          "Benitoite.Release.Refinement.StandardSafe.same_row_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b088"
+      }
+    ]
+  },
+  {
+    "id": "L299",
+    "classification": "合成",
+    "lean_name": "List.all",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "rust_references": [],
+    "evidence_rows": [
+      "E01.114",
+      "E15.017"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed",
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed"
+    ],
+    "receivers": [
+      "L60.27"
+    ],
+    "contracts": [
+      "通常の本体・固定P/B。精密な候補は別出典に保持",
+      "通常公開署名・同じ実δ/本体"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "List.all"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E01.114",
+        "public_name": "List.all",
+        "internal_name": "List.all",
+        "original_def": "StandardOrdinaryCoreProgram.program.defs \"List.all\"",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed",
+          "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b006"
+      },
+      {
+        "source": "E15.017",
+        "public_name": "List.all",
+        "internal_name": "List.all",
+        "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[16]?).map Prod.snd",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b006"
+      }
+    ]
+  },
+  {
+    "id": "L300",
+    "classification": "合成",
+    "lean_name": "List.allFrom",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "rust_references": [],
+    "evidence_rows": [
+      "E15.018"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "receivers": [
+      "L60.27"
+    ],
+    "contracts": [
+      "通常の本体・固定P/B。精密な候補は別出典に保持"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "List.allFrom"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E15.018",
+        "public_name": "List.allFrom",
+        "internal_name": "List.allFrom",
+        "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[17]?).map Prod.snd",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b115"
+      }
+    ]
+  },
+  {
+    "id": "L301",
+    "classification": "合成",
+    "lean_name": "List.any",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "rust_references": [],
+    "evidence_rows": [
+      "E01.113",
+      "E15.015"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed",
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed"
+    ],
+    "receivers": [
+      "L60.27"
+    ],
+    "contracts": [
+      "通常の本体・固定P/B。精密な候補は別出典に保持",
+      "通常公開署名・同じ実δ/本体"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "List.any"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E01.113",
+        "public_name": "List.any",
+        "internal_name": "List.any",
+        "original_def": "StandardOrdinaryCoreProgram.program.defs \"List.any\"",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed",
+          "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b005"
+      },
+      {
+        "source": "E15.015",
+        "public_name": "List.any",
+        "internal_name": "List.any",
+        "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[14]?).map Prod.snd",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b005"
+      }
+    ]
+  },
+  {
+    "id": "L302",
+    "classification": "合成",
+    "lean_name": "List.anyFrom",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "rust_references": [],
+    "evidence_rows": [
+      "E15.016"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "receivers": [
+      "L60.27"
+    ],
+    "contracts": [
+      "通常の本体・固定P/B。精密な候補は別出典に保持"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "List.anyFrom"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E15.016",
+        "public_name": "List.anyFrom",
+        "internal_name": "List.anyFrom",
+        "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[15]?).map Prod.snd",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b114"
+      }
+    ]
+  },
+  {
+    "id": "L303",
+    "classification": "合成",
+    "lean_name": "List.append",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "List.append"
+    ],
+    "rust_references": [
+      "R115"
+    ],
+    "evidence_rows": [
+      "E01.101"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardListResponse.related_response",
+      "Benitoite.Release.Refinement.StandardListResponse.table_response"
+    ],
+    "receivers": [
+      "L60.24〜.26"
+    ],
+    "contracts": [
+      "通常公開署名・同じ実δ/本体"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "List.append"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E01.101",
+        "public_name": "List.append",
+        "internal_name": "List.append",
+        "original_def": null,
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardListResponse.table_response",
+          "Benitoite.Release.Refinement.StandardListResponse.related_response"
+        ],
+        "composition_lookup": "StandardModel.Primitive.p255"
+      }
+    ]
+  },
+  {
+    "id": "L304",
+    "classification": "合成",
+    "lean_name": "List.concatenate",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "List.concatenate"
+    ],
+    "rust_references": [
+      "R116"
+    ],
+    "evidence_rows": [
+      "E01.102"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardListResponse.related_response",
+      "Benitoite.Release.Refinement.StandardListResponse.table_response"
+    ],
+    "receivers": [
+      "L60.24〜.26"
+    ],
+    "contracts": [
+      "通常公開署名・同じ実δ/本体"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "List.concatenate"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E01.102",
+        "public_name": "List.concatenate",
+        "internal_name": "List.concatenate",
+        "original_def": null,
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardListResponse.table_response",
+          "Benitoite.Release.Refinement.StandardListResponse.related_response"
+        ],
+        "composition_lookup": "StandardModel.Primitive.p256"
+      }
+    ]
+  },
+  {
+    "id": "L305",
+    "classification": "合成",
+    "lean_name": "List.contains",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "List.contains"
+    ],
+    "rust_references": [
+      "R121"
+    ],
+    "evidence_rows": [
+      "E01.107"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardListRemainingResponse.response",
+      "Benitoite.Release.Refinement.StandardListRemainingResponse.table_response"
+    ],
+    "receivers": [
+      "L60.24〜.26"
+    ],
+    "contracts": [
+      "通常公開署名・同じ実δ/本体"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "List.contains"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E01.107",
+        "public_name": "List.contains",
+        "internal_name": "List.contains",
+        "original_def": null,
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardListRemainingResponse.table_response",
+          "Benitoite.Release.Refinement.StandardListRemainingResponse.response"
+        ],
+        "composition_lookup": "StandardModel.Primitive.p257"
+      }
+    ]
+  },
+  {
+    "id": "L306",
+    "classification": "合成",
+    "lean_name": "List.drop",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "List.drop"
+    ],
+    "rust_references": [
+      "R119"
+    ],
+    "evidence_rows": [
+      "E01.105"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardListRemainingResponse.response",
+      "Benitoite.Release.Refinement.StandardListRemainingResponse.table_response"
+    ],
+    "receivers": [
+      "L60.24〜.26"
+    ],
+    "contracts": [
+      "通常公開署名・同じ実δ/本体"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "List.drop"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E01.105",
+        "public_name": "List.drop",
+        "internal_name": "List.drop",
+        "original_def": null,
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardListRemainingResponse.table_response",
+          "Benitoite.Release.Refinement.StandardListRemainingResponse.response"
+        ],
+        "composition_lookup": "StandardModel.Primitive.p258"
+      }
+    ]
+  },
+  {
+    "id": "L307",
+    "classification": "合成",
+    "lean_name": "List.filter",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "rust_references": [],
+    "evidence_rows": [
+      "E01.110",
+      "E13.004"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardActualListBodies.model_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.core_rows_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.definition_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.program_typed"
+    ],
+    "receivers": [
+      "L60.27"
+    ],
+    "contracts": [
+      "精密なtel・固定P/Bの本体",
+      "通常公開署名・同じ実δ/本体"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "%List.filter.ordinary",
+      "%List.filter.refined"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E01.110",
+        "public_name": "List.filter",
+        "internal_name": "%List.filter.ordinary",
+        "original_def": "(StandardBodies.listHigherRow true).definition",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardActualListBodies.model_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b002"
+      },
+      {
+        "source": "E13.004",
+        "public_name": "List.filter",
+        "internal_name": "%List.filter.refined",
+        "original_def": "StandardCollectionRefinedBodies.program.defs \"List.filter\"",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.core_rows_typed",
+          "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.definition_typed",
+          "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.program_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b104"
+      }
+    ]
+  },
+  {
+    "id": "L308",
+    "classification": "合成",
+    "lean_name": "List.filterFrom",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "rust_references": [],
+    "evidence_rows": [
+      "E13.002"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.core_rows_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.definition_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.program_typed"
+    ],
+    "receivers": [
+      "L60.27"
+    ],
+    "contracts": [
+      "精密なtel・固定P/Bの本体"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "%List.filterFrom.ordinary",
+      "%List.filterFrom.refined"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E13.002",
+        "public_name": "List.filterFrom",
+        "internal_name": "%List.filterFrom.refined",
+        "original_def": "StandardCollectionRefinedBodies.program.defs \"List.filterFrom\"",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.core_rows_typed",
+          "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.definition_typed",
+          "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.program_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b102"
+      }
+    ],
+    "helper_correspondence": [
+      {
+        "source": "helper:ordinaryContext:List.filterFrom",
+        "public_name": "List.filterFrom",
+        "internal_name": "%List.filterFrom.ordinary",
+        "original_def": "StandardBodies.listFromDefinition true",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardActualListBodies.from_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b130"
+      }
+    ]
+  },
+  {
+    "id": "L309",
+    "classification": "合成",
+    "lean_name": "List.find",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "rust_references": [],
+    "evidence_rows": [
+      "E01.115",
+      "E15.019"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed",
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed"
+    ],
+    "receivers": [
+      "L60.27"
+    ],
+    "contracts": [
+      "通常の本体・固定P/B。精密な候補は別出典に保持",
+      "通常公開署名・同じ実δ/本体"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "List.find"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E01.115",
+        "public_name": "List.find",
+        "internal_name": "List.find",
+        "original_def": "StandardOrdinaryCoreProgram.program.defs \"List.find\"",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed",
+          "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b007"
+      },
+      {
+        "source": "E15.019",
+        "public_name": "List.find",
+        "internal_name": "List.find",
+        "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[18]?).map Prod.snd",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b007"
+      }
+    ]
+  },
+  {
+    "id": "L310",
+    "classification": "合成",
+    "lean_name": "List.findFrom",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "rust_references": [],
+    "evidence_rows": [
+      "E15.020"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "receivers": [
+      "L60.27"
+    ],
+    "contracts": [
+      "通常の本体・固定P/B。精密な候補は別出典に保持"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "List.findFrom"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E15.020",
+        "public_name": "List.findFrom",
+        "internal_name": "List.findFrom",
+        "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[19]?).map Prod.snd",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b116"
+      }
+    ]
+  },
+  {
+    "id": "L311",
+    "classification": "合成",
+    "lean_name": "List.fold",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "rust_references": [],
+    "evidence_rows": [
+      "E01.111",
+      "E15.011"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed",
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed"
+    ],
+    "receivers": [
+      "L60.27"
+    ],
+    "contracts": [
+      "通常の本体・固定P/B。精密な候補は別出典に保持",
+      "通常公開署名・同じ実δ/本体"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "List.fold"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E01.111",
+        "public_name": "List.fold",
+        "internal_name": "List.fold",
+        "original_def": "StandardOrdinaryCoreProgram.program.defs \"List.fold\"",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed",
+          "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b003"
+      },
+      {
+        "source": "E15.011",
+        "public_name": "List.fold",
+        "internal_name": "List.fold",
+        "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[10]?).map Prod.snd",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b003"
+      }
+    ]
+  },
+  {
+    "id": "L312",
+    "classification": "合成",
+    "lean_name": "List.foldFrom",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "rust_references": [],
+    "evidence_rows": [
+      "E15.012"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "receivers": [
+      "L60.27"
+    ],
+    "contracts": [
+      "通常の本体・固定P/B。精密な候補は別出典に保持"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "List.foldFrom"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E15.012",
+        "public_name": "List.foldFrom",
+        "internal_name": "List.foldFrom",
+        "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[11]?).map Prod.snd",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b112"
+      }
+    ]
+  },
+  {
+    "id": "L313",
+    "classification": "合成",
+    "lean_name": "List.forEach",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "rust_references": [],
+    "evidence_rows": [
+      "E01.112",
+      "E15.013"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed",
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed"
+    ],
+    "receivers": [
+      "L60.27"
+    ],
+    "contracts": [
+      "通常の本体・固定P/B。精密な候補は別出典に保持",
+      "通常公開署名・同じ実δ/本体"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "List.forEach"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E01.112",
+        "public_name": "List.forEach",
+        "internal_name": "List.forEach",
+        "original_def": "StandardOrdinaryCoreProgram.program.defs \"List.forEach\"",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed",
+          "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b004"
+      },
+      {
+        "source": "E15.013",
+        "public_name": "List.forEach",
+        "internal_name": "List.forEach",
+        "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[12]?).map Prod.snd",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b004"
+      }
+    ]
+  },
+  {
+    "id": "L314",
+    "classification": "合成",
+    "lean_name": "List.forEachFrom",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "rust_references": [],
+    "evidence_rows": [
+      "E15.014"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "receivers": [
+      "L60.27"
+    ],
+    "contracts": [
+      "通常の本体・固定P/B。精密な候補は別出典に保持"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "List.forEachFrom"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E15.014",
+        "public_name": "List.forEachFrom",
+        "internal_name": "List.forEachFrom",
+        "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[13]?).map Prod.snd",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b113"
+      }
+    ]
+  },
+  {
+    "id": "L315",
+    "classification": "合成",
+    "lean_name": "List.get",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "List.get"
+    ],
+    "rust_references": [
+      "R113"
+    ],
+    "evidence_rows": [
+      "E01.099"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardListRemainingResponse.response",
+      "Benitoite.Release.Refinement.StandardListRemainingResponse.table_response"
+    ],
+    "receivers": [
+      "L60.24〜.26"
+    ],
+    "contracts": [
+      "通常公開署名・同じ実δ/本体"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "List.get"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E01.099",
+        "public_name": "List.get",
+        "internal_name": "List.get",
+        "original_def": null,
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardListRemainingResponse.table_response",
+          "Benitoite.Release.Refinement.StandardListRemainingResponse.response"
+        ],
+        "composition_lookup": "StandardModel.Primitive.p259"
+      }
+    ]
+  },
+  {
+    "id": "L316",
+    "classification": "合成",
+    "lean_name": "List.head",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "List.head"
+    ],
+    "rust_references": [
+      "R111"
+    ],
+    "evidence_rows": [
+      "E01.097"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardListRemainingResponse.response",
+      "Benitoite.Release.Refinement.StandardListRemainingResponse.table_response"
+    ],
+    "receivers": [
+      "L60.24〜.26"
+    ],
+    "contracts": [
+      "通常公開署名・同じ実δ/本体"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "List.head"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E01.097",
+        "public_name": "List.head",
+        "internal_name": "List.head",
+        "original_def": null,
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardListRemainingResponse.table_response",
+          "Benitoite.Release.Refinement.StandardListRemainingResponse.response"
+        ],
+        "composition_lookup": "StandardModel.Primitive.p260"
+      }
+    ]
+  },
+  {
+    "id": "L317",
+    "classification": "合成",
+    "lean_name": "List.isEmpty",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "List.isEmpty"
+    ],
+    "rust_references": [
+      "R110"
+    ],
+    "evidence_rows": [
+      "E01.096"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardListResponse.related_response",
+      "Benitoite.Release.Refinement.StandardListResponse.table_response"
+    ],
+    "receivers": [
+      "L60.24〜.26"
+    ],
+    "contracts": [
+      "通常公開署名・同じ実δ/本体"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "List.isEmpty"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E01.096",
+        "public_name": "List.isEmpty",
+        "internal_name": "List.isEmpty",
+        "original_def": null,
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardListResponse.table_response",
+          "Benitoite.Release.Refinement.StandardListResponse.related_response"
+        ],
+        "composition_lookup": "StandardModel.Primitive.p261"
+      }
+    ]
+  },
+  {
+    "id": "L318",
+    "classification": "合成",
+    "lean_name": "List.length",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "List.length"
+    ],
+    "rust_references": [
+      "R109"
+    ],
+    "evidence_rows": [
+      "E01.095"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardListResponse.related_response",
+      "Benitoite.Release.Refinement.StandardListResponse.table_response"
+    ],
+    "receivers": [
+      "L60.24〜.26"
+    ],
+    "contracts": [
+      "通常公開署名・同じ実δ/本体"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "List.length"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E01.095",
+        "public_name": "List.length",
+        "internal_name": "List.length",
+        "original_def": null,
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardListResponse.table_response",
+          "Benitoite.Release.Refinement.StandardListResponse.related_response"
+        ],
+        "composition_lookup": "StandardModel.Primitive.p262"
+      }
+    ]
+  },
+  {
+    "id": "L319",
+    "classification": "合成",
+    "lean_name": "List.map",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "rust_references": [],
+    "evidence_rows": [
+      "E01.109",
+      "E13.003",
+      "E15.047"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardActualListBodies.model_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.core_rows_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.definition_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.program_typed",
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "receivers": [
+      "L60.27"
+    ],
+    "contracts": [
+      "精密なtel・固定P/Bの本体",
+      "通常の本体・固定P/B。精密な候補は別出典に保持",
+      "通常公開署名・同じ実δ/本体"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "%List.map.ordinary",
+      "%List.map.refined"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E01.109",
+        "public_name": "List.map",
+        "internal_name": "%List.map.ordinary",
+        "original_def": "(StandardBodies.listHigherRow false).definition",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardActualListBodies.model_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b001"
+      },
+      {
+        "source": "E13.003",
+        "public_name": "List.map",
+        "internal_name": "%List.map.refined",
+        "original_def": "StandardCollectionRefinedBodies.program.defs \"List.map\"",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.core_rows_typed",
+          "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.definition_typed",
+          "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.program_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b103"
+      },
+      {
+        "source": "E15.047",
+        "public_name": "List.map",
+        "internal_name": "%List.map.ordinary",
+        "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[46]?).map Prod.snd",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b001"
+      }
+    ]
+  },
+  {
+    "id": "L320",
+    "classification": "合成",
+    "lean_name": "List.mapFrom",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "rust_references": [],
+    "evidence_rows": [
+      "E13.001",
+      "E15.048"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.core_rows_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.definition_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.program_typed",
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "receivers": [
+      "L60.27"
+    ],
+    "contracts": [
+      "精密なtel・固定P/Bの本体",
+      "通常の本体・固定P/B。精密な候補は別出典に保持"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "%List.mapFrom.ordinary",
+      "%List.mapFrom.refined"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E13.001",
+        "public_name": "List.mapFrom",
+        "internal_name": "%List.mapFrom.refined",
+        "original_def": "StandardCollectionRefinedBodies.program.defs \"List.mapFrom\"",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.core_rows_typed",
+          "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.definition_typed",
+          "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.program_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b101"
+      },
+      {
+        "source": "E15.048",
+        "public_name": "List.mapFrom",
+        "internal_name": "%List.mapFrom.ordinary",
+        "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[47]?).map Prod.snd",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b129"
+      }
+    ]
+  },
+  {
+    "id": "L321",
+    "classification": "合成",
+    "lean_name": "List.prepend",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "List.prepend"
+    ],
+    "rust_references": [
+      "R114"
+    ],
+    "evidence_rows": [
+      "E01.100"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardListResponse.related_response",
+      "Benitoite.Release.Refinement.StandardListResponse.table_response"
+    ],
+    "receivers": [
+      "L60.24〜.26"
+    ],
+    "contracts": [
+      "通常公開署名・同じ実δ/本体"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "List.prepend"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E01.100",
+        "public_name": "List.prepend",
+        "internal_name": "List.prepend",
+        "original_def": null,
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardListResponse.table_response",
+          "Benitoite.Release.Refinement.StandardListResponse.related_response"
+        ],
+        "composition_lookup": "StandardModel.Primitive.p263"
+      }
+    ]
+  },
+  {
+    "id": "L322",
+    "classification": "合成",
+    "lean_name": "List.range",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "List.range"
+    ],
+    "rust_references": [
+      "R120"
+    ],
+    "evidence_rows": [
+      "E01.106"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardListRemainingResponse.range_response",
+      "Benitoite.Release.Refinement.StandardListRemainingResponse.table_range_response"
+    ],
+    "receivers": [
+      "L60.24〜.26"
+    ],
+    "contracts": [
+      "通常公開署名・同じ実δ/本体"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "List.range"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E01.106",
+        "public_name": "List.range",
+        "internal_name": "List.range",
+        "original_def": null,
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardListRemainingResponse.table_range_response",
+          "Benitoite.Release.Refinement.StandardListRemainingResponse.range_response"
+        ],
+        "composition_lookup": "StandardModel.Primitive.p264"
+      }
+    ]
+  },
+  {
+    "id": "L323",
+    "classification": "合成",
+    "lean_name": "List.reverse",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "List.reverse"
+    ],
+    "rust_references": [
+      "R117"
+    ],
+    "evidence_rows": [
+      "E01.103"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardListResponse.related_response",
+      "Benitoite.Release.Refinement.StandardListResponse.table_response"
+    ],
+    "receivers": [
+      "L60.24〜.26"
+    ],
+    "contracts": [
+      "通常公開署名・同じ実δ/本体"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "List.reverse"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E01.103",
+        "public_name": "List.reverse",
+        "internal_name": "List.reverse",
+        "original_def": null,
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardListResponse.table_response",
+          "Benitoite.Release.Refinement.StandardListResponse.related_response"
+        ],
+        "composition_lookup": "StandardModel.Primitive.p265"
+      }
+    ]
+  },
+  {
+    "id": "L324",
+    "classification": "合成",
+    "lean_name": "List.sort",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "List.sort"
+    ],
+    "rust_references": [
+      "R122"
+    ],
+    "evidence_rows": [
+      "E01.108"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardListRemainingResponse.response",
+      "Benitoite.Release.Refinement.StandardListRemainingResponse.table_response"
+    ],
+    "receivers": [
+      "L60.24〜.26"
+    ],
+    "contracts": [
+      "通常公開署名・同じ実δ/本体"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "List.sort"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E01.108",
+        "public_name": "List.sort",
+        "internal_name": "List.sort",
+        "original_def": null,
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardListRemainingResponse.table_response",
+          "Benitoite.Release.Refinement.StandardListRemainingResponse.response"
+        ],
+        "composition_lookup": "StandardModel.Primitive.p266"
+      }
+    ]
+  },
+  {
+    "id": "L325",
+    "classification": "合成",
+    "lean_name": "List.tail",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "List.tail"
+    ],
+    "rust_references": [
+      "R112"
+    ],
+    "evidence_rows": [
+      "E01.098"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardListRemainingResponse.response",
+      "Benitoite.Release.Refinement.StandardListRemainingResponse.table_response"
+    ],
+    "receivers": [
+      "L60.24〜.26"
+    ],
+    "contracts": [
+      "通常公開署名・同じ実δ/本体"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "List.tail"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E01.098",
+        "public_name": "List.tail",
+        "internal_name": "List.tail",
+        "original_def": null,
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardListRemainingResponse.table_response",
+          "Benitoite.Release.Refinement.StandardListRemainingResponse.response"
+        ],
+        "composition_lookup": "StandardModel.Primitive.p267"
+      }
+    ]
+  },
+  {
+    "id": "L326",
+    "classification": "合成",
+    "lean_name": "List.take",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "List.take"
+    ],
+    "rust_references": [
+      "R118"
+    ],
+    "evidence_rows": [
+      "E01.104"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardListRemainingResponse.response",
+      "Benitoite.Release.Refinement.StandardListRemainingResponse.table_response"
+    ],
+    "receivers": [
+      "L60.24〜.26"
+    ],
+    "contracts": [
+      "通常公開署名・同じ実δ/本体"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "List.take"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E01.104",
+        "public_name": "List.take",
+        "internal_name": "List.take",
+        "original_def": null,
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardListRemainingResponse.table_response",
+          "Benitoite.Release.Refinement.StandardListRemainingResponse.response"
+        ],
+        "composition_lookup": "StandardModel.Primitive.p268"
+      }
+    ]
+  },
+  {
+    "id": "L327",
+    "classification": "合成",
+    "lean_name": "Map.contains",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "Map.contains"
+    ],
+    "rust_references": [
+      "R181"
+    ],
+    "evidence_rows": [
+      "E01.122"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCollectionModel.map_reply",
+      "Benitoite.Release.Refinement.StandardCollections.map_api_response"
+    ],
+    "receivers": [
+      "L60.24〜.26"
+    ],
+    "contracts": [
+      "通常公開署名・同じ実δ/本体"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "Map.contains"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E01.122",
+        "public_name": "Map.contains",
+        "internal_name": "Map.contains",
+        "original_def": null,
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardCollections.map_api_response",
+          "Benitoite.Release.Refinement.StandardCollectionModel.map_reply"
+        ],
+        "composition_lookup": "StandardModel.Primitive.p269"
+      }
+    ]
+  },
+  {
+    "id": "L328",
+    "classification": "合成",
+    "lean_name": "Map.empty",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "Map.empty"
+    ],
+    "rust_references": [
+      "R127"
+    ],
+    "evidence_rows": [
+      "E01.116"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCollectionModel.map_reply",
+      "Benitoite.Release.Refinement.StandardCollections.map_api_response"
+    ],
+    "receivers": [
+      "L60.24〜.26"
+    ],
+    "contracts": [
+      "通常公開署名・同じ実δ/本体"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "Map.empty"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E01.116",
+        "public_name": "Map.empty",
+        "internal_name": "Map.empty",
+        "original_def": null,
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardCollections.map_api_response",
+          "Benitoite.Release.Refinement.StandardCollectionModel.map_reply"
+        ],
+        "composition_lookup": "StandardModel.Primitive.p270"
+      }
+    ]
+  },
+  {
+    "id": "L329",
+    "classification": "合成",
+    "lean_name": "Map.filter",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "rust_references": [],
+    "evidence_rows": [
+      "E01.127",
+      "E13.009"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCollectionModel.typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.core_rows_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.definition_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.program_typed"
+    ],
+    "receivers": [
+      "L60.27"
+    ],
+    "contracts": [
+      "精密なtel・固定P/Bの本体",
+      "通常公開署名・同じ実δ/本体"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "%Map.filter.ordinary",
+      "%Map.filter.refined"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E01.127",
+        "public_name": "Map.filter",
+        "internal_name": "%Map.filter.ordinary",
+        "original_def": "(StandardBodies.collectionHigherRow true true).definition",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardCollectionModel.typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b009"
+      },
+      {
+        "source": "E13.009",
+        "public_name": "Map.filter",
+        "internal_name": "%Map.filter.refined",
+        "original_def": "StandardCollectionRefinedBodies.program.defs \"Map.filter\"",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.core_rows_typed",
+          "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.definition_typed",
+          "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.program_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b109"
+      }
+    ]
+  },
+  {
+    "id": "L330",
+    "classification": "合成",
+    "lean_name": "Map.fold",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "rust_references": [],
+    "evidence_rows": [
+      "E01.128",
+      "E15.001"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed",
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed"
+    ],
+    "receivers": [
+      "L60.27"
+    ],
+    "contracts": [
+      "通常の本体・固定P/B。精密な候補は別出典に保持",
+      "通常公開署名・同じ実δ/本体"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "Map.fold"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E01.128",
+        "public_name": "Map.fold",
+        "internal_name": "Map.fold",
+        "original_def": "StandardOrdinaryCoreProgram.program.defs \"Map.fold\"",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed",
+          "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b010"
+      },
+      {
+        "source": "E15.001",
+        "public_name": "Map.fold",
+        "internal_name": "Map.fold",
+        "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[0]?).map Prod.snd",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b010"
+      }
+    ]
+  },
+  {
+    "id": "L331",
+    "classification": "合成",
+    "lean_name": "Map.forEach",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "rust_references": [],
+    "evidence_rows": [
+      "E01.129",
+      "E15.002"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed",
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed"
+    ],
+    "receivers": [
+      "L60.27"
+    ],
+    "contracts": [
+      "通常の本体・固定P/B。精密な候補は別出典に保持",
+      "通常公開署名・同じ実δ/本体"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "Map.forEach"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E01.129",
+        "public_name": "Map.forEach",
+        "internal_name": "Map.forEach",
+        "original_def": "StandardOrdinaryCoreProgram.program.defs \"Map.forEach\"",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed",
+          "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b011"
+      },
+      {
+        "source": "E15.002",
+        "public_name": "Map.forEach",
+        "internal_name": "Map.forEach",
+        "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[1]?).map Prod.snd",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b011"
+      }
+    ]
+  },
+  {
+    "id": "L332",
+    "classification": "合成",
+    "lean_name": "Map.fromList",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "Map.fromList"
+    ],
+    "rust_references": [
+      "R128"
+    ],
+    "evidence_rows": [
+      "E01.117"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCollectionModel.map_reply",
+      "Benitoite.Release.Refinement.StandardCollections.map_api_response"
+    ],
+    "receivers": [
+      "L60.24〜.26"
+    ],
+    "contracts": [
+      "通常公開署名・同じ実δ/本体"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "Map.fromList"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E01.117",
+        "public_name": "Map.fromList",
+        "internal_name": "Map.fromList",
+        "original_def": null,
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardCollections.map_api_response",
+          "Benitoite.Release.Refinement.StandardCollectionModel.map_reply"
+        ],
+        "composition_lookup": "StandardModel.Primitive.p271"
+      }
+    ]
+  },
+  {
+    "id": "L333",
+    "classification": "合成",
+    "lean_name": "Map.get",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "Map.get"
+    ],
+    "rust_references": [
+      "R178"
+    ],
+    "evidence_rows": [
+      "E01.119"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCollectionModel.map_reply",
+      "Benitoite.Release.Refinement.StandardCollections.map_api_response"
+    ],
+    "receivers": [
+      "L60.24〜.26"
+    ],
+    "contracts": [
+      "通常公開署名・同じ実δ/本体"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "Map.get"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E01.119",
+        "public_name": "Map.get",
+        "internal_name": "Map.get",
+        "original_def": null,
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardCollections.map_api_response",
+          "Benitoite.Release.Refinement.StandardCollectionModel.map_reply"
+        ],
+        "composition_lookup": "StandardModel.Primitive.p272"
+      }
+    ]
+  },
+  {
+    "id": "L334",
+    "classification": "合成",
+    "lean_name": "Map.keys",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "Map.keys"
+    ],
+    "rust_references": [
+      "R183"
+    ],
+    "evidence_rows": [
+      "E01.124"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCollectionModel.map_reply",
+      "Benitoite.Release.Refinement.StandardCollections.map_api_response"
+    ],
+    "receivers": [
+      "L60.24〜.26"
+    ],
+    "contracts": [
+      "通常公開署名・同じ実δ/本体"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "Map.keys"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E01.124",
+        "public_name": "Map.keys",
+        "internal_name": "Map.keys",
+        "original_def": null,
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardCollections.map_api_response",
+          "Benitoite.Release.Refinement.StandardCollectionModel.map_reply"
+        ],
+        "composition_lookup": "StandardModel.Primitive.p273"
+      }
+    ]
+  },
+  {
+    "id": "L335",
+    "classification": "合成",
+    "lean_name": "Map.map",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "rust_references": [],
+    "evidence_rows": [
+      "E01.126",
+      "E13.008"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCollectionModel.typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.core_rows_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.definition_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.program_typed"
+    ],
+    "receivers": [
+      "L60.27"
+    ],
+    "contracts": [
+      "精密なtel・固定P/Bの本体",
+      "通常公開署名・同じ実δ/本体"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "%Map.map.ordinary",
+      "%Map.map.refined"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E01.126",
+        "public_name": "Map.map",
+        "internal_name": "%Map.map.ordinary",
+        "original_def": "(StandardBodies.collectionHigherRow true false).definition",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardCollectionModel.typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b008"
+      },
+      {
+        "source": "E13.008",
+        "public_name": "Map.map",
+        "internal_name": "%Map.map.refined",
+        "original_def": "StandardCollectionRefinedBodies.program.defs \"Map.map\"",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.core_rows_typed",
+          "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.definition_typed",
+          "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.program_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b108"
+      }
+    ]
+  },
+  {
+    "id": "L336",
+    "classification": "合成",
+    "lean_name": "Map.remove",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "Map.remove"
+    ],
+    "rust_references": [
+      "R180"
+    ],
+    "evidence_rows": [
+      "E01.121"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCollectionModel.map_reply",
+      "Benitoite.Release.Refinement.StandardCollections.map_api_response"
+    ],
+    "receivers": [
+      "L60.24〜.26"
+    ],
+    "contracts": [
+      "通常公開署名・同じ実δ/本体"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "Map.remove"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E01.121",
+        "public_name": "Map.remove",
+        "internal_name": "Map.remove",
+        "original_def": null,
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardCollections.map_api_response",
+          "Benitoite.Release.Refinement.StandardCollectionModel.map_reply"
+        ],
+        "composition_lookup": "StandardModel.Primitive.p274"
+      }
+    ]
+  },
+  {
+    "id": "L337",
+    "classification": "合成",
+    "lean_name": "Map.set",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "Map.set"
+    ],
+    "rust_references": [
+      "R179"
+    ],
+    "evidence_rows": [
+      "E01.120"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCollectionModel.map_reply",
+      "Benitoite.Release.Refinement.StandardCollections.map_api_response"
+    ],
+    "receivers": [
+      "L60.24〜.26"
+    ],
+    "contracts": [
+      "通常公開署名・同じ実δ/本体"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "Map.set"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E01.120",
+        "public_name": "Map.set",
+        "internal_name": "Map.set",
+        "original_def": null,
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardCollections.map_api_response",
+          "Benitoite.Release.Refinement.StandardCollectionModel.map_reply"
+        ],
+        "composition_lookup": "StandardModel.Primitive.p275"
+      }
+    ]
+  },
+  {
+    "id": "L338",
+    "classification": "合成",
+    "lean_name": "Map.size",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "Map.size"
+    ],
+    "rust_references": [
+      "R182"
+    ],
+    "evidence_rows": [
+      "E01.123"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCollectionModel.map_reply",
+      "Benitoite.Release.Refinement.StandardCollections.map_api_response"
+    ],
+    "receivers": [
+      "L60.24〜.26"
+    ],
+    "contracts": [
+      "通常公開署名・同じ実δ/本体"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "Map.size"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E01.123",
+        "public_name": "Map.size",
+        "internal_name": "Map.size",
+        "original_def": null,
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardCollections.map_api_response",
+          "Benitoite.Release.Refinement.StandardCollectionModel.map_reply"
+        ],
+        "composition_lookup": "StandardModel.Primitive.p276"
+      }
+    ]
+  },
+  {
+    "id": "L339",
+    "classification": "合成",
+    "lean_name": "Map.toList",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "Map.toList"
+    ],
+    "rust_references": [
+      "R129"
+    ],
+    "evidence_rows": [
+      "E01.118"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCollectionModel.map_reply",
+      "Benitoite.Release.Refinement.StandardCollections.map_api_response"
+    ],
+    "receivers": [
+      "L60.24〜.26"
+    ],
+    "contracts": [
+      "通常公開署名・同じ実δ/本体"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "Map.toList"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E01.118",
+        "public_name": "Map.toList",
+        "internal_name": "Map.toList",
+        "original_def": null,
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardCollections.map_api_response",
+          "Benitoite.Release.Refinement.StandardCollectionModel.map_reply"
+        ],
+        "composition_lookup": "StandardModel.Primitive.p277"
+      }
+    ]
+  },
+  {
+    "id": "L340",
+    "classification": "合成",
+    "lean_name": "Map.values",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "Map.values"
+    ],
+    "rust_references": [
+      "R184"
+    ],
+    "evidence_rows": [
+      "E01.125"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCollectionModel.map_reply",
+      "Benitoite.Release.Refinement.StandardCollections.map_api_response"
+    ],
+    "receivers": [
+      "L60.24〜.26"
+    ],
+    "contracts": [
+      "通常公開署名・同じ実δ/本体"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "Map.values"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E01.125",
+        "public_name": "Map.values",
+        "internal_name": "Map.values",
+        "original_def": null,
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardCollections.map_api_response",
+          "Benitoite.Release.Refinement.StandardCollectionModel.map_reply"
+        ],
+        "composition_lookup": "StandardModel.Primitive.p278"
+      }
+    ]
+  },
+  {
+    "id": "L341",
+    "classification": "合成",
+    "lean_name": "NonEmptyList.fromList",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "rust_references": [],
+    "evidence_rows": [
+      "E01.157",
+      "E15.008"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed",
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed"
+    ],
+    "receivers": [
+      "L60.27"
+    ],
+    "contracts": [
+      "通常の本体・固定P/B。精密な候補は別出典に保持",
+      "通常公開署名・同じ実δ/本体"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "NonEmptyList.fromList"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E01.157",
+        "public_name": "NonEmptyList.fromList",
+        "internal_name": "NonEmptyList.fromList",
+        "original_def": "StandardOrdinaryCoreProgram.program.defs \"NonEmptyList.fromList\"",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed",
+          "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b029"
+      },
+      {
+        "source": "E15.008",
+        "public_name": "NonEmptyList.fromList",
+        "internal_name": "NonEmptyList.fromList",
+        "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[7]?).map Prod.snd",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b029"
+      }
+    ]
+  },
+  {
+    "id": "L342",
+    "classification": "合成",
+    "lean_name": "NonEmptyList.head",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "rust_references": [],
+    "evidence_rows": [
+      "E01.159",
+      "E15.042"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed",
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed"
+    ],
+    "receivers": [
+      "L60.27"
+    ],
+    "contracts": [
+      "通常の本体・固定P/B。精密な候補は別出典に保持",
+      "通常公開署名・同じ実δ/本体"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "NonEmptyList.head"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E01.159",
+        "public_name": "NonEmptyList.head",
+        "internal_name": "NonEmptyList.head",
+        "original_def": "StandardOrdinaryCoreProgram.program.defs \"NonEmptyList.head\"",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed",
+          "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b031"
+      },
+      {
+        "source": "E15.042",
+        "public_name": "NonEmptyList.head",
+        "internal_name": "NonEmptyList.head",
+        "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[41]?).map Prod.snd",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b031"
+      }
+    ]
+  },
+  {
+    "id": "L343",
+    "classification": "合成",
+    "lean_name": "NonEmptyList.map",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "rust_references": [],
+    "evidence_rows": [
+      "E01.161",
+      "E13.005",
+      "E15.010"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.core_rows_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.definition_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.program_typed",
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed",
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed"
+    ],
+    "receivers": [
+      "L60.27"
+    ],
+    "contracts": [
+      "精密なtel・固定P/Bの本体",
+      "通常の本体・固定P/B。精密な候補は別出典に保持",
+      "通常公開署名・同じ実δ/本体"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "%NonEmptyList.map.ordinary",
+      "%NonEmptyList.map.refined"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E01.161",
+        "public_name": "NonEmptyList.map",
+        "internal_name": "%NonEmptyList.map.ordinary",
+        "original_def": "StandardOrdinaryCoreProgram.program.defs \"NonEmptyList.map\"",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed",
+          "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b033"
+      },
+      {
+        "source": "E13.005",
+        "public_name": "NonEmptyList.map",
+        "internal_name": "%NonEmptyList.map.refined",
+        "original_def": "StandardCollectionRefinedBodies.program.defs \"NonEmptyList.map\"",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.core_rows_typed",
+          "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.definition_typed",
+          "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.program_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b105"
+      },
+      {
+        "source": "E15.010",
+        "public_name": "NonEmptyList.map",
+        "internal_name": "%NonEmptyList.map.ordinary",
+        "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[9]?).map Prod.snd",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b033"
+      }
+    ]
+  },
+  {
+    "id": "L344",
+    "classification": "合成",
+    "lean_name": "NonEmptyList.tail",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "rust_references": [],
+    "evidence_rows": [
+      "E01.160",
+      "E15.044"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed",
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed"
+    ],
+    "receivers": [
+      "L60.27"
+    ],
+    "contracts": [
+      "通常の本体・固定P/B。精密な候補は別出典に保持",
+      "通常公開署名・同じ実δ/本体"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "NonEmptyList.tail"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E01.160",
+        "public_name": "NonEmptyList.tail",
+        "internal_name": "NonEmptyList.tail",
+        "original_def": "StandardOrdinaryCoreProgram.program.defs \"NonEmptyList.tail\"",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed",
+          "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b032"
+      },
+      {
+        "source": "E15.044",
+        "public_name": "NonEmptyList.tail",
+        "internal_name": "NonEmptyList.tail",
+        "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[43]?).map Prod.snd",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b032"
+      }
+    ]
+  },
+  {
+    "id": "L345",
+    "classification": "合成",
+    "lean_name": "NonEmptyList.toList",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "rust_references": [],
+    "evidence_rows": [
+      "E01.158",
+      "E15.009"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed",
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed"
+    ],
+    "receivers": [
+      "L60.27"
+    ],
+    "contracts": [
+      "通常の本体・固定P/B。精密な候補は別出典に保持",
+      "通常公開署名・同じ実δ/本体"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "NonEmptyList.toList"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E01.158",
+        "public_name": "NonEmptyList.toList",
+        "internal_name": "NonEmptyList.toList",
+        "original_def": "StandardOrdinaryCoreProgram.program.defs \"NonEmptyList.toList\"",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.declarations_typed",
+          "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b030"
+      },
+      {
+        "source": "E15.009",
+        "public_name": "NonEmptyList.toList",
+        "internal_name": "NonEmptyList.toList",
+        "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[8]?).map Prod.snd",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b030"
+      }
+    ]
+  },
+  {
+    "id": "L346",
+    "classification": "合成",
+    "lean_name": "Pair.first",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "rust_references": [],
+    "evidence_rows": [
+      "E13.006",
+      "E15.045"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.core_rows_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.definition_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.program_typed",
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "receivers": [
+      "L60.27"
+    ],
+    "contracts": [
+      "精密なtel・固定P/Bの本体",
+      "通常の本体・固定P/B。精密な候補は別出典に保持"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "Pair.first"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E13.006",
+        "public_name": "Pair.first",
+        "internal_name": "Pair.first",
+        "original_def": "StandardCollectionRefinedBodies.program.defs \"Pair.first\"",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.core_rows_typed",
+          "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.definition_typed",
+          "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.program_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b106"
+      },
+      {
+        "source": "E15.045",
+        "public_name": "Pair.first",
+        "internal_name": "Pair.first",
+        "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[44]?).map Prod.snd",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b106"
+      }
+    ]
+  },
+  {
+    "id": "L347",
+    "classification": "合成",
+    "lean_name": "Pair.second",
+    "status": "合成表と台帳の双方向lookupを固定。全28+1条件の充足は後続の担当",
+    "rust_names": [
+      "該当なし（Rustの組込み登録なし）"
+    ],
+    "rust_references": [],
+    "evidence_rows": [
+      "E13.007",
+      "E15.046"
+    ],
+    "evidence": [
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.core_rows_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.definition_typed",
+      "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.program_typed",
+      "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+    ],
+    "receivers": [
+      "L60.27"
+    ],
+    "contracts": [
+      "精密なtel・固定P/Bの本体",
+      "通常の本体・固定P/B。精密な候補は別出典に保持"
+    ],
+    "reason": "閉じた既存証拠の合成対象。異なる署名・本体の出典を残す",
+    "internal_names": [
+      "Pair.second"
+    ],
+    "name_correspondence": [
+      {
+        "source": "E13.007",
+        "public_name": "Pair.second",
+        "internal_name": "Pair.second",
+        "original_def": "StandardCollectionRefinedBodies.program.defs \"Pair.second\"",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.core_rows_typed",
+          "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.definition_typed",
+          "Benitoite.Release.Refinement.StandardCollectionRefinedBodies.program_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b107"
+      },
+      {
+        "source": "E15.046",
+        "public_name": "Pair.second",
+        "internal_name": "Pair.second",
+        "original_def": "(StandardOrdinaryCoreProgram.allDefinitions[45]?).map Prod.snd",
+        "evidence": [
+          "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.all_lookup_typed"
+        ],
+        "composition_lookup": "StandardModel.Body.b107"
+      }
+    ]
+  }
+]

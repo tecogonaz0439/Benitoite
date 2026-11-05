@@ -1,0 +1,452 @@
+[
+  {
+    "name": "List.filter",
+    "file": "crates/benitoite/src/prelude/stdlib/List.bnt",
+    "line": 81,
+    "definition": "public function filter[T, effect E](xs: List[T], p: function(value: T) -> Boolean uses E) -> List[T] uses E\n  return filterFrom(xs: xs, p: p, i: 0, acc: [])\nend function",
+    "source": {
+      "bytes": 6240,
+      "sha256": "940ec3e00387a468b6392d3b8caace0f840d0d0d13caa23327acc76eb02ba3df"
+    },
+    "rust_registration": null,
+    "ordinary_body": "b002",
+    "refined_body": "b104",
+    "ordinary_original": "(StandardBodies.listHigherRow true).definition",
+    "refined_original": "StandardCollectionRefinedBodies.program.defs \"List.filter\"",
+    "ordinary_definition": {
+      "file": "formal/Benitoite/Release/Refinement/StandardListBodies.lean",
+      "line": 56
+    },
+    "refined_definition": {
+      "file": "formal/Benitoite/Release/Refinement/StandardHeadTailBodies.lean",
+      "line": 59
+    },
+    "verdict": "通常側",
+    "reason": "通常のListを返し、同名Fromへi=0・空accを渡す。精密側の長さの篩とhead/tail版helperを持たない"
+  },
+  {
+    "name": "List.filterFrom",
+    "file": "crates/benitoite/src/prelude/stdlib/List.bnt",
+    "line": 85,
+    "definition": "function filterFrom[T, effect E](xs: List[T], p: function(value: T) -> Boolean uses E, i: Integer, acc: List[T]) -> List[T] uses E\n  return match get(xs: xs, i: i) with\n    case Option.None -> acc\n    case Option.Some(x) ->\n      if p(x) then\n        filterFrom(xs: xs, p: p, i: i + 1, acc: append(xs: acc, x: x))\n      else\n        filterFrom(xs: xs, p: p, i: i + 1, acc: acc)\n      end if\n  end match\nend function",
+    "source": {
+      "bytes": 6240,
+      "sha256": "940ec3e00387a468b6392d3b8caace0f840d0d0d13caa23327acc76eb02ba3df"
+    },
+    "rust_registration": null,
+    "ordinary_body": "b130",
+    "refined_body": "b102",
+    "ordinary_original": "some (StandardBodies.listFromDefinition true)",
+    "refined_original": "StandardCollectionRefinedBodies.program.defs \"List.filterFrom\"",
+    "ordinary_definition": {
+      "file": "formal/Benitoite/Release/Refinement/StandardListBodies.lean",
+      "line": 82
+    },
+    "refined_definition": {
+      "file": "formal/Benitoite/Release/Refinement/StandardHeadTailBodies.lean",
+      "line": 57
+    },
+    "verdict": "通常側",
+    "reason": "xs・callback・i・accの四引数。getのOption分岐、i+1、appendによる通常の再帰。精密側のhead/tailによる残り列の再帰とは異なる"
+  },
+  {
+    "name": "List.map",
+    "file": "crates/benitoite/src/prelude/stdlib/List.bnt",
+    "line": 67,
+    "definition": "public function map[T, U, effect E](xs: List[T], f: function(value: T) -> U uses E) -> List[U] uses E\n  return mapFrom(xs: xs, f: f, i: 0, acc: [])\nend function",
+    "source": {
+      "bytes": 6240,
+      "sha256": "940ec3e00387a468b6392d3b8caace0f840d0d0d13caa23327acc76eb02ba3df"
+    },
+    "rust_registration": null,
+    "ordinary_body": "b001",
+    "refined_body": "b103",
+    "ordinary_original": "(StandardBodies.listHigherRow false).definition",
+    "refined_original": "StandardCollectionRefinedBodies.program.defs \"List.map\"",
+    "ordinary_definition": {
+      "file": "formal/Benitoite/Release/Refinement/StandardListBodies.lean",
+      "line": 56
+    },
+    "refined_definition": {
+      "file": "formal/Benitoite/Release/Refinement/StandardHeadTailBodies.lean",
+      "line": 59
+    },
+    "verdict": "通常側",
+    "reason": "通常のListを返し、同名Fromへi=0・空accを渡す。精密側の長さの篩とhead/tail版helperを持たない"
+  },
+  {
+    "name": "List.mapFrom",
+    "file": "crates/benitoite/src/prelude/stdlib/List.bnt",
+    "line": 71,
+    "definition": "function mapFrom[T, U, effect E](xs: List[T], f: function(value: T) -> U uses E, i: Integer, acc: List[U]) -> List[U] uses E\n  return match get(xs: xs, i: i) with\n    case Option.None -> acc\n    case Option.Some(x) ->\n      bind y <- f(x)\n      mapFrom(xs: xs, f: f, i: i + 1, acc: append(xs: acc, x: y))\n  end match\nend function",
+    "source": {
+      "bytes": 6240,
+      "sha256": "940ec3e00387a468b6392d3b8caace0f840d0d0d13caa23327acc76eb02ba3df"
+    },
+    "rust_registration": null,
+    "ordinary_body": "b129",
+    "refined_body": "b101",
+    "ordinary_original": "(StandardOrdinaryCoreProgram.allDefinitions[47]?).map Prod.snd",
+    "refined_original": "StandardCollectionRefinedBodies.program.defs \"List.mapFrom\"",
+    "ordinary_definition": {
+      "file": "formal/Benitoite/Release/Refinement/StandardListBodies.lean",
+      "line": 82
+    },
+    "refined_definition": {
+      "file": "formal/Benitoite/Release/Refinement/StandardHeadTailBodies.lean",
+      "line": 57
+    },
+    "verdict": "通常側",
+    "reason": "xs・callback・i・accの四引数。getのOption分岐、i+1、appendによる通常の再帰。精密側のhead/tailによる残り列の再帰とは異なる"
+  },
+  {
+    "name": "Map.filter",
+    "file": "crates/benitoite/src/prelude/stdlib/Map.bnt",
+    "line": 49,
+    "definition": "public function filter[K: key, V, effect E](m: Map[K, V], p: function(key: K, value: V) -> Boolean uses E) -> Map[K, V] uses E\n  return fromList(List.filter(xs: toList(m), p: lambda(value) return p(key: Pair.first(value), value: Pair.second(value)) end lambda))\nend function",
+    "source": {
+      "bytes": 2951,
+      "sha256": "bf99714990eb36d988e1de12b579bf7da9648f058e8357141e94de454ee41788"
+    },
+    "rust_registration": null,
+    "ordinary_body": "b009",
+    "refined_body": "b109",
+    "ordinary_original": "(StandardBodies.collectionHigherRow true true).definition",
+    "refined_original": "StandardCollectionRefinedBodies.program.defs \"Map.filter\"",
+    "ordinary_definition": {
+      "file": "formal/Benitoite/Release/Refinement/StandardCollectionBodies.lean",
+      "line": 48
+    },
+    "refined_definition": {
+      "file": "formal/Benitoite/Release/Refinement/StandardCollectionRefinedBodies.lean",
+      "line": 46
+    },
+    "verdict": "通常側",
+    "reason": "toList→通常List.filter→fromList。通常のMapを返す。精密側の大きさの篩を返す契約ではない"
+  },
+  {
+    "name": "Map.map",
+    "file": "crates/benitoite/src/prelude/stdlib/Map.bnt",
+    "line": 44,
+    "definition": "public function map[K: key, V, U, effect E](m: Map[K, V], f: function(key: K, value: V) -> U uses E) -> Map[K, U] uses E\n  return fromList(List.map(xs: toList(m), f: lambda(value) return Pair(Pair.first(value), f(key: Pair.first(value), value: Pair.second(value))) end lambda))\nend function",
+    "source": {
+      "bytes": 2951,
+      "sha256": "bf99714990eb36d988e1de12b579bf7da9648f058e8357141e94de454ee41788"
+    },
+    "rust_registration": null,
+    "ordinary_body": "b008",
+    "refined_body": "b108",
+    "ordinary_original": "(StandardBodies.collectionHigherRow true false).definition",
+    "refined_original": "StandardCollectionRefinedBodies.program.defs \"Map.map\"",
+    "ordinary_definition": {
+      "file": "formal/Benitoite/Release/Refinement/StandardCollectionBodies.lean",
+      "line": 48
+    },
+    "refined_definition": {
+      "file": "formal/Benitoite/Release/Refinement/StandardCollectionRefinedBodies.lean",
+      "line": 46
+    },
+    "verdict": "通常側",
+    "reason": "toList→通常List.map→fromList。通常のMapを返す。精密側の大きさの篩を返す契約ではない"
+  },
+  {
+    "name": "NonEmptyList.map",
+    "file": "crates/benitoite/src/prelude/stdlib/NonEmptyList.bnt",
+    "line": 59,
+    "definition": "public function map[T, U, effect E](value: NonEmptyList[T], f: function(value: T) -> U uses E) -> NonEmptyList[U] uses E\n  bind head <- f(NonEmptyList.first(value))\n  bind tail <- List.map(xs: NonEmptyList.rest(value), f: f)\n  return NonEmptyList(first: head, rest: tail)\nend function",
+    "source": {
+      "bytes": 3270,
+      "sha256": "05679444789bf49f7c86f5b830290e6026822601c40902c950c5b7671117aa54"
+    },
+    "rust_registration": null,
+    "ordinary_body": "b033",
+    "refined_body": "b105",
+    "ordinary_original": "StandardOrdinaryCoreProgram.program.defs \"NonEmptyList.map\"",
+    "refined_original": "StandardCollectionRefinedBodies.program.defs \"NonEmptyList.map\"",
+    "ordinary_definition": {
+      "file": "formal/Benitoite/Release/Refinement/StandardOrdinaryCoreProgram.lean",
+      "line": 119
+    },
+    "refined_definition": {
+      "file": "formal/Benitoite/Release/Refinement/StandardHeadTailBodies.lean",
+      "line": 728
+    },
+    "verdict": "通常側",
+    "reason": "firstへfを適用しrestをList.mapしてレコードを再構築する。精密側の正の長さを持つListをList.mapへ渡す本体とは異なる"
+  },
+  {
+    "name": "Range.checkedLength",
+    "file": "crates/benitoite/src/prelude/stdlib/Range.bnt",
+    "line": 151,
+    "definition": "public function checkedLength[T](value: CheckedLength[T]) -> Integer\n  return CheckedLength.length(value)\nend function",
+    "source": {
+      "bytes": 9759,
+      "sha256": "3aa344e1c98b494a05eeb45e4a35e0d4f77ffe90d2b51f7f97d01c97d3b6b43f"
+    },
+    "rust_registration": null,
+    "ordinary_body": "b023",
+    "refined_body": "b097",
+    "ordinary_original": "StandardOrdinaryCoreProgram.program.defs \"Range.checkedLength\"",
+    "refined_original": "StandardSafe.PreciseGetter.checkedLength.row.definition",
+    "ordinary_definition": {
+      "file": "formal/Benitoite/Release/Refinement/StandardOrdinaryCoreBodies.lean",
+      "line": 86
+    },
+    "refined_definition": {
+      "file": "formal/Benitoite/Release/Refinement/StandardSafeBodies.lean",
+      "line": 606
+    },
+    "verdict": "通常側",
+    "reason": "裸のCheckedInteger/CheckedLength/CheckedIndexレコードを入力に、その通常の欄アクセサを呼ぶ公開ラッパー。精密側の篩付き入力と直接のパターン射影とは異なる"
+  },
+  {
+    "name": "Range.indexValue",
+    "file": "crates/benitoite/src/prelude/stdlib/Range.bnt",
+    "line": 182,
+    "definition": "public function indexValue[T](value: CheckedIndex[T]) -> Integer\n  return CheckedIndex.index(value)\nend function",
+    "source": {
+      "bytes": 9759,
+      "sha256": "3aa344e1c98b494a05eeb45e4a35e0d4f77ffe90d2b51f7f97d01c97d3b6b43f"
+    },
+    "rust_registration": null,
+    "ordinary_body": "b026",
+    "refined_body": "b099",
+    "ordinary_original": "StandardOrdinaryCoreProgram.program.defs \"Range.indexValue\"",
+    "refined_original": "StandardSafe.PreciseGetter.indexValue.row.definition",
+    "ordinary_definition": {
+      "file": "formal/Benitoite/Release/Refinement/StandardOrdinaryCoreBodies.lean",
+      "line": 86
+    },
+    "refined_definition": {
+      "file": "formal/Benitoite/Release/Refinement/StandardSafeBodies.lean",
+      "line": 606
+    },
+    "verdict": "通常側",
+    "reason": "裸のCheckedInteger/CheckedLength/CheckedIndexレコードを入力に、その通常の欄アクセサを呼ぶ公開ラッパー。精密側の篩付き入力と直接のパターン射影とは異なる"
+  },
+  {
+    "name": "Range.indexValues",
+    "file": "crates/benitoite/src/prelude/stdlib/Range.bnt",
+    "line": 187,
+    "definition": "public function indexValues[T](value: CheckedIndex[T]) -> List[T]\n  return CheckedIndex.values(value)\nend function",
+    "source": {
+      "bytes": 9759,
+      "sha256": "3aa344e1c98b494a05eeb45e4a35e0d4f77ffe90d2b51f7f97d01c97d3b6b43f"
+    },
+    "rust_registration": null,
+    "ordinary_body": "b027",
+    "refined_body": "b100",
+    "ordinary_original": "StandardOrdinaryCoreProgram.program.defs \"Range.indexValues\"",
+    "refined_original": "StandardSafe.PreciseGetter.indexValues.row.definition",
+    "ordinary_definition": {
+      "file": "formal/Benitoite/Release/Refinement/StandardOrdinaryCoreBodies.lean",
+      "line": 86
+    },
+    "refined_definition": {
+      "file": "formal/Benitoite/Release/Refinement/StandardSafeBodies.lean",
+      "line": 606
+    },
+    "verdict": "通常側",
+    "reason": "裸のCheckedInteger/CheckedLength/CheckedIndexレコードを入力に、その通常の欄アクセサを呼ぶ公開ラッパー。精密側の篩付き入力と直接のパターン射影とは異なる"
+  },
+  {
+    "name": "Range.lengthMaximum",
+    "file": "crates/benitoite/src/prelude/stdlib/Range.bnt",
+    "line": 146,
+    "definition": "public function lengthMaximum[T](value: CheckedLength[T]) -> Integer\n  return CheckedLength.maximum(value)\nend function",
+    "source": {
+      "bytes": 9759,
+      "sha256": "3aa344e1c98b494a05eeb45e4a35e0d4f77ffe90d2b51f7f97d01c97d3b6b43f"
+    },
+    "rust_registration": null,
+    "ordinary_body": "b022",
+    "refined_body": "b096",
+    "ordinary_original": "StandardOrdinaryCoreProgram.program.defs \"Range.lengthMaximum\"",
+    "refined_original": "StandardSafe.PreciseGetter.lengthMaximum.row.definition",
+    "ordinary_definition": {
+      "file": "formal/Benitoite/Release/Refinement/StandardOrdinaryCoreBodies.lean",
+      "line": 86
+    },
+    "refined_definition": {
+      "file": "formal/Benitoite/Release/Refinement/StandardSafeBodies.lean",
+      "line": 606
+    },
+    "verdict": "通常側",
+    "reason": "裸のCheckedInteger/CheckedLength/CheckedIndexレコードを入力に、その通常の欄アクセサを呼ぶ公開ラッパー。精密側の篩付き入力と直接のパターン射影とは異なる"
+  },
+  {
+    "name": "Range.lengthMinimum",
+    "file": "crates/benitoite/src/prelude/stdlib/Range.bnt",
+    "line": 141,
+    "definition": "public function lengthMinimum[T](value: CheckedLength[T]) -> Integer\n  return CheckedLength.minimum(value)\nend function",
+    "source": {
+      "bytes": 9759,
+      "sha256": "3aa344e1c98b494a05eeb45e4a35e0d4f77ffe90d2b51f7f97d01c97d3b6b43f"
+    },
+    "rust_registration": null,
+    "ordinary_body": "b021",
+    "refined_body": "b095",
+    "ordinary_original": "StandardOrdinaryCoreProgram.program.defs \"Range.lengthMinimum\"",
+    "refined_original": "StandardSafe.PreciseGetter.lengthMinimum.row.definition",
+    "ordinary_definition": {
+      "file": "formal/Benitoite/Release/Refinement/StandardOrdinaryCoreBodies.lean",
+      "line": 86
+    },
+    "refined_definition": {
+      "file": "formal/Benitoite/Release/Refinement/StandardSafeBodies.lean",
+      "line": 606
+    },
+    "verdict": "通常側",
+    "reason": "裸のCheckedInteger/CheckedLength/CheckedIndexレコードを入力に、その通常の欄アクセサを呼ぶ公開ラッパー。精密側の篩付き入力と直接のパターン射影とは異なる"
+  },
+  {
+    "name": "Range.lengthValues",
+    "file": "crates/benitoite/src/prelude/stdlib/Range.bnt",
+    "line": 156,
+    "definition": "public function lengthValues[T](value: CheckedLength[T]) -> List[T]\n  return CheckedLength.values(value)\nend function",
+    "source": {
+      "bytes": 9759,
+      "sha256": "3aa344e1c98b494a05eeb45e4a35e0d4f77ffe90d2b51f7f97d01c97d3b6b43f"
+    },
+    "rust_registration": null,
+    "ordinary_body": "b024",
+    "refined_body": "b098",
+    "ordinary_original": "StandardOrdinaryCoreProgram.program.defs \"Range.lengthValues\"",
+    "refined_original": "StandardSafe.PreciseGetter.lengthValues.row.definition",
+    "ordinary_definition": {
+      "file": "formal/Benitoite/Release/Refinement/StandardOrdinaryCoreBodies.lean",
+      "line": 86
+    },
+    "refined_definition": {
+      "file": "formal/Benitoite/Release/Refinement/StandardSafeBodies.lean",
+      "line": 606
+    },
+    "verdict": "通常側",
+    "reason": "裸のCheckedInteger/CheckedLength/CheckedIndexレコードを入力に、その通常の欄アクセサを呼ぶ公開ラッパー。精密側の篩付き入力と直接のパターン射影とは異なる"
+  },
+  {
+    "name": "Range.maximum",
+    "file": "crates/benitoite/src/prelude/stdlib/Range.bnt",
+    "line": 97,
+    "definition": "public function maximum(value: CheckedInteger) -> Integer\n  return CheckedInteger.maximum(value)\nend function",
+    "source": {
+      "bytes": 9759,
+      "sha256": "3aa344e1c98b494a05eeb45e4a35e0d4f77ffe90d2b51f7f97d01c97d3b6b43f"
+    },
+    "rust_registration": null,
+    "ordinary_body": "b018",
+    "refined_body": "b093",
+    "ordinary_original": "StandardOrdinaryCoreProgram.program.defs \"Range.maximum\"",
+    "refined_original": "StandardSafe.PreciseGetter.maximum.row.definition",
+    "ordinary_definition": {
+      "file": "formal/Benitoite/Release/Refinement/StandardOrdinaryCoreBodies.lean",
+      "line": 86
+    },
+    "refined_definition": {
+      "file": "formal/Benitoite/Release/Refinement/StandardSafeBodies.lean",
+      "line": 606
+    },
+    "verdict": "通常側",
+    "reason": "裸のCheckedInteger/CheckedLength/CheckedIndexレコードを入力に、その通常の欄アクセサを呼ぶ公開ラッパー。精密側の篩付き入力と直接のパターン射影とは異なる"
+  },
+  {
+    "name": "Range.minimum",
+    "file": "crates/benitoite/src/prelude/stdlib/Range.bnt",
+    "line": 92,
+    "definition": "public function minimum(value: CheckedInteger) -> Integer\n  return CheckedInteger.minimum(value)\nend function",
+    "source": {
+      "bytes": 9759,
+      "sha256": "3aa344e1c98b494a05eeb45e4a35e0d4f77ffe90d2b51f7f97d01c97d3b6b43f"
+    },
+    "rust_registration": null,
+    "ordinary_body": "b017",
+    "refined_body": "b092",
+    "ordinary_original": "StandardOrdinaryCoreProgram.program.defs \"Range.minimum\"",
+    "refined_original": "StandardSafe.PreciseGetter.minimum.row.definition",
+    "ordinary_definition": {
+      "file": "formal/Benitoite/Release/Refinement/StandardOrdinaryCoreBodies.lean",
+      "line": 86
+    },
+    "refined_definition": {
+      "file": "formal/Benitoite/Release/Refinement/StandardSafeBodies.lean",
+      "line": 606
+    },
+    "verdict": "通常側",
+    "reason": "裸のCheckedInteger/CheckedLength/CheckedIndexレコードを入力に、その通常の欄アクセサを呼ぶ公開ラッパー。精密側の篩付き入力と直接のパターン射影とは異なる"
+  },
+  {
+    "name": "Range.value",
+    "file": "crates/benitoite/src/prelude/stdlib/Range.bnt",
+    "line": 102,
+    "definition": "public function value(value: CheckedInteger) -> Integer\n  return CheckedInteger.value(value)\nend function",
+    "source": {
+      "bytes": 9759,
+      "sha256": "3aa344e1c98b494a05eeb45e4a35e0d4f77ffe90d2b51f7f97d01c97d3b6b43f"
+    },
+    "rust_registration": null,
+    "ordinary_body": "b019",
+    "refined_body": "b094",
+    "ordinary_original": "StandardOrdinaryCoreProgram.program.defs \"Range.value\"",
+    "refined_original": "StandardSafe.PreciseGetter.value.row.definition",
+    "ordinary_definition": {
+      "file": "formal/Benitoite/Release/Refinement/StandardOrdinaryCoreBodies.lean",
+      "line": 86
+    },
+    "refined_definition": {
+      "file": "formal/Benitoite/Release/Refinement/StandardSafeBodies.lean",
+      "line": 606
+    },
+    "verdict": "通常側",
+    "reason": "裸のCheckedInteger/CheckedLength/CheckedIndexレコードを入力に、その通常の欄アクセサを呼ぶ公開ラッパー。精密側の篩付き入力と直接のパターン射影とは異なる"
+  },
+  {
+    "name": "Set.filter",
+    "file": "crates/benitoite/src/prelude/stdlib/Set.bnt",
+    "line": 49,
+    "definition": "public function filter[T: key, effect E](s: Set[T], p: function(value: T) -> Boolean uses E) -> Set[T] uses E\n  return fromList(List.filter(xs: toList(s), p: p))\nend function",
+    "source": {
+      "bytes": 2396,
+      "sha256": "6ccd252a7d3ba9f66be75bcf204cd0ed15c0b9a30e68919c9ee2c1305ddf6db7"
+    },
+    "rust_registration": null,
+    "ordinary_body": "b013",
+    "refined_body": "b111",
+    "ordinary_original": "(StandardBodies.collectionHigherRow false true).definition",
+    "refined_original": "StandardCollectionRefinedBodies.program.defs \"Set.filter\"",
+    "ordinary_definition": {
+      "file": "formal/Benitoite/Release/Refinement/StandardCollectionBodies.lean",
+      "line": 48
+    },
+    "refined_definition": {
+      "file": "formal/Benitoite/Release/Refinement/StandardCollectionRefinedBodies.lean",
+      "line": 46
+    },
+    "verdict": "通常側",
+    "reason": "toList→通常List.filter→fromList。通常のSetを返す。精密側の大きさの篩を返す契約ではない"
+  },
+  {
+    "name": "Set.map",
+    "file": "crates/benitoite/src/prelude/stdlib/Set.bnt",
+    "line": 44,
+    "definition": "public function map[T: key, U: key, effect E](s: Set[T], f: function(value: T) -> U uses E) -> Set[U] uses E\n  return fromList(List.map(xs: toList(s), f: f))\nend function",
+    "source": {
+      "bytes": 2396,
+      "sha256": "6ccd252a7d3ba9f66be75bcf204cd0ed15c0b9a30e68919c9ee2c1305ddf6db7"
+    },
+    "rust_registration": null,
+    "ordinary_body": "b012",
+    "refined_body": "b110",
+    "ordinary_original": "(StandardBodies.collectionHigherRow false false).definition",
+    "refined_original": "StandardCollectionRefinedBodies.program.defs \"Set.map\"",
+    "ordinary_definition": {
+      "file": "formal/Benitoite/Release/Refinement/StandardCollectionBodies.lean",
+      "line": 48
+    },
+    "refined_definition": {
+      "file": "formal/Benitoite/Release/Refinement/StandardCollectionRefinedBodies.lean",
+      "line": 46
+    },
+    "verdict": "通常側",
+    "reason": "toList→通常List.map→fromList。通常のSetを返す。精密側の大きさの篩を返す契約ではない"
+  }
+]

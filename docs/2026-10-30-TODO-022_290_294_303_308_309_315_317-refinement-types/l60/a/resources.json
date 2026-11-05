@@ -1,0 +1,37 @@
+[
+  {
+    "rust_name": "runtime::ResourceKind::FileReader",
+    "lean_name": "該当なし（実資源の状態に対応する証拠なし）",
+    "classification": "仮定",
+    "evidence": [],
+    "reason": "FileReader の実資源の通常解放は、07-04の解放応答の条件として定理の引数で量化する。File.Handleは抽象モデル内の資源名であり、この実資源種の署名や開閉状態を証明するものではない。実解放との対応はR30/R50で確認する"
+  },
+  {
+    "rust_name": "runtime::ResourceKind::FileWriter",
+    "lean_name": "該当なし（実資源の状態に対応する証拠なし）",
+    "classification": "仮定",
+    "evidence": [],
+    "reason": "FileWriter の実資源の通常解放は、07-04の解放応答の条件として定理の引数で量化する。File.Handleは抽象モデル内の資源名であり、この実資源種の署名や開閉状態を証明するものではない。実解放との対応はR30/R50で確認する"
+  },
+  {
+    "rust_name": "runtime::ResourceKind::HttpListener",
+    "lean_name": "該当なし（実資源の状態に対応する証拠なし）",
+    "classification": "仮定",
+    "evidence": [],
+    "reason": "HttpListener の実資源の通常解放は、07-04の解放応答の条件として定理の引数で量化する。File.Handleは抽象モデル内の資源名であり、この実資源種の署名や開閉状態を証明するものではない。実解放との対応はR30/R50で確認する"
+  },
+  {
+    "rust_name": "runtime::ResourceKind::HttpExchange",
+    "lean_name": "該当なし（実資源の状態に対応する証拠なし）",
+    "classification": "仮定",
+    "evidence": [],
+    "reason": "HttpExchange の実資源の通常解放は、07-04の解放応答の条件として定理の引数で量化する。File.Handleは抽象モデル内の資源名であり、この実資源種の署名や開閉状態を証明するものではない。実解放との対応はR30/R50で確認する"
+  },
+  {
+    "rust_name": "runtime::ResourceKind::TaskGroup",
+    "lean_name": "該当なし（実資源の状態に対応する証拠なし）",
+    "classification": "仮定",
+    "evidence": [],
+    "reason": "TaskGroup の実資源の通常解放は、07-04の解放応答の条件として定理の引数で量化する。File.Handleは抽象モデル内の資源名であり、この実資源種の署名や開閉状態を証明するものではない。実解放との対応はR30/R50で確認する"
+  }
+]

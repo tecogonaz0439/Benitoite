@@ -1,0 +1,1843 @@
+[
+  {
+    "body": "b001",
+    "context": "ordinaryContext",
+    "fixed_program": "?m.1",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [
+      {
+        "equal": true,
+        "expected": "some (StandardBodies.listFromDefinition false)",
+        "name": "(StandardBodies.listFromRow false).name",
+        "normalized_name": "\"List.mapFrom\"",
+        "premise": "premise"
+      }
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardActualListBodies.higher_typed"
+  },
+  {
+    "body": "b002",
+    "context": "ordinaryContext",
+    "fixed_program": "?m.1",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [
+      {
+        "equal": true,
+        "expected": "some (StandardBodies.listFromDefinition true)",
+        "name": "(StandardBodies.listFromRow true).name",
+        "normalized_name": "\"List.filterFrom\"",
+        "premise": "premise"
+      }
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardActualListBodies.higher_typed"
+  },
+  {
+    "body": "b003",
+    "context": "ordinaryContext",
+    "fixed_program": "?m.1",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.fold.definition",
+        "name": "StandardOrdinaryListBodies.Op.fold.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.fold.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.fold"
+      },
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.forEach.definition",
+        "name": "StandardOrdinaryListBodies.Op.forEach.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.forEach.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.forEach"
+      },
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.any.definition",
+        "name": "StandardOrdinaryListBodies.Op.any.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.any.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.any"
+      },
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.all.definition",
+        "name": "StandardOrdinaryListBodies.Op.all.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.all.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.all"
+      },
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.find.definition",
+        "name": "StandardOrdinaryListBodies.Op.find.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.find.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.find"
+      }
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryListBodies.public_typed"
+  },
+  {
+    "body": "b004",
+    "context": "ordinaryContext",
+    "fixed_program": "?m.1",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.fold.definition",
+        "name": "StandardOrdinaryListBodies.Op.fold.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.fold.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.fold"
+      },
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.forEach.definition",
+        "name": "StandardOrdinaryListBodies.Op.forEach.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.forEach.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.forEach"
+      },
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.any.definition",
+        "name": "StandardOrdinaryListBodies.Op.any.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.any.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.any"
+      },
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.all.definition",
+        "name": "StandardOrdinaryListBodies.Op.all.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.all.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.all"
+      },
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.find.definition",
+        "name": "StandardOrdinaryListBodies.Op.find.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.find.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.find"
+      }
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryListBodies.public_typed"
+  },
+  {
+    "body": "b005",
+    "context": "ordinaryContext",
+    "fixed_program": "?m.1",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.fold.definition",
+        "name": "StandardOrdinaryListBodies.Op.fold.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.fold.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.fold"
+      },
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.forEach.definition",
+        "name": "StandardOrdinaryListBodies.Op.forEach.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.forEach.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.forEach"
+      },
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.any.definition",
+        "name": "StandardOrdinaryListBodies.Op.any.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.any.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.any"
+      },
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.all.definition",
+        "name": "StandardOrdinaryListBodies.Op.all.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.all.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.all"
+      },
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.find.definition",
+        "name": "StandardOrdinaryListBodies.Op.find.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.find.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.find"
+      }
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryListBodies.public_typed"
+  },
+  {
+    "body": "b006",
+    "context": "ordinaryContext",
+    "fixed_program": "?m.1",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.fold.definition",
+        "name": "StandardOrdinaryListBodies.Op.fold.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.fold.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.fold"
+      },
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.forEach.definition",
+        "name": "StandardOrdinaryListBodies.Op.forEach.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.forEach.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.forEach"
+      },
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.any.definition",
+        "name": "StandardOrdinaryListBodies.Op.any.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.any.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.any"
+      },
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.all.definition",
+        "name": "StandardOrdinaryListBodies.Op.all.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.all.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.all"
+      },
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.find.definition",
+        "name": "StandardOrdinaryListBodies.Op.find.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.find.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.find"
+      }
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryListBodies.public_typed"
+  },
+  {
+    "body": "b007",
+    "context": "ordinaryContext",
+    "fixed_program": "?m.1",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.fold.definition",
+        "name": "StandardOrdinaryListBodies.Op.fold.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.fold.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.fold"
+      },
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.forEach.definition",
+        "name": "StandardOrdinaryListBodies.Op.forEach.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.forEach.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.forEach"
+      },
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.any.definition",
+        "name": "StandardOrdinaryListBodies.Op.any.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.any.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.any"
+      },
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.all.definition",
+        "name": "StandardOrdinaryListBodies.Op.all.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.all.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.all"
+      },
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.find.definition",
+        "name": "StandardOrdinaryListBodies.Op.find.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.find.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.find"
+      }
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryListBodies.public_typed"
+  },
+  {
+    "body": "b008",
+    "context": "ordinaryContext",
+    "fixed_program": "?m.1",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [
+      {
+        "equal": true,
+        "expected": "some (StandardBodies.collectionPairProjection false)",
+        "name": "if false = true then \"Pair.second\" else \"Pair.first\"",
+        "normalized_name": "\"Pair.first\"",
+        "premise": "premise/a._@._internal._hyg.0/false"
+      },
+      {
+        "equal": true,
+        "expected": "some (StandardBodies.collectionPairProjection true)",
+        "name": "if true = true then \"Pair.second\" else \"Pair.first\"",
+        "normalized_name": "\"Pair.second\"",
+        "premise": "premise/a._@._internal._hyg.0/true"
+      },
+      {
+        "equal": true,
+        "expected": "some (StandardBodies.collectionListDefinition false)",
+        "name": "if false = true then \"List.filter\" else \"List.map\"",
+        "normalized_name": "\"List.map\"",
+        "premise": "premise"
+      }
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardBodies.collectionHigher_body_typed"
+  },
+  {
+    "body": "b009",
+    "context": "ordinaryContext",
+    "fixed_program": "?m.1",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [
+      {
+        "equal": true,
+        "expected": "some (StandardBodies.collectionPairProjection false)",
+        "name": "if false = true then \"Pair.second\" else \"Pair.first\"",
+        "normalized_name": "\"Pair.first\"",
+        "premise": "premise/a._@._internal._hyg.0/false"
+      },
+      {
+        "equal": true,
+        "expected": "some (StandardBodies.collectionPairProjection true)",
+        "name": "if true = true then \"Pair.second\" else \"Pair.first\"",
+        "normalized_name": "\"Pair.second\"",
+        "premise": "premise/a._@._internal._hyg.0/true"
+      },
+      {
+        "equal": true,
+        "expected": "some (StandardBodies.collectionListDefinition true)",
+        "name": "if true = true then \"List.filter\" else \"List.map\"",
+        "normalized_name": "\"List.filter\"",
+        "premise": "premise"
+      }
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardBodies.collectionHigher_body_typed"
+  },
+  {
+    "body": "b010",
+    "context": "ordinaryContext",
+    "fixed_program": "StandardOrdinaryCoreProgram.program",
+    "kind": "固定のP/B",
+    "lookups": [
+      {
+        "equal": true,
+        "name": "List.fold",
+        "premise": "fixed P"
+      },
+      {
+        "equal": true,
+        "name": "Pair.first",
+        "premise": "fixed P"
+      },
+      {
+        "equal": true,
+        "name": "Pair.second",
+        "premise": "fixed P"
+      }
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.body_typed"
+  },
+  {
+    "body": "b011",
+    "context": "ordinaryContext",
+    "fixed_program": "StandardOrdinaryCoreProgram.program",
+    "kind": "固定のP/B",
+    "lookups": [
+      {
+        "equal": true,
+        "name": "List.forEach",
+        "premise": "fixed P"
+      },
+      {
+        "equal": true,
+        "name": "Pair.first",
+        "premise": "fixed P"
+      },
+      {
+        "equal": true,
+        "name": "Pair.second",
+        "premise": "fixed P"
+      }
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.body_typed"
+  },
+  {
+    "body": "b012",
+    "context": "ordinaryContext",
+    "fixed_program": "?m.1",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [
+      {
+        "equal": true,
+        "expected": "some (StandardBodies.collectionPairProjection false)",
+        "name": "if false = true then \"Pair.second\" else \"Pair.first\"",
+        "normalized_name": "\"Pair.first\"",
+        "premise": "premise/a._@._internal._hyg.0/false"
+      },
+      {
+        "equal": true,
+        "expected": "some (StandardBodies.collectionPairProjection true)",
+        "name": "if true = true then \"Pair.second\" else \"Pair.first\"",
+        "normalized_name": "\"Pair.second\"",
+        "premise": "premise/a._@._internal._hyg.0/true"
+      },
+      {
+        "equal": true,
+        "expected": "some (StandardBodies.collectionListDefinition false)",
+        "name": "if false = true then \"List.filter\" else \"List.map\"",
+        "normalized_name": "\"List.map\"",
+        "premise": "premise"
+      }
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardBodies.collectionHigher_body_typed"
+  },
+  {
+    "body": "b013",
+    "context": "ordinaryContext",
+    "fixed_program": "?m.1",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [
+      {
+        "equal": true,
+        "expected": "some (StandardBodies.collectionPairProjection false)",
+        "name": "if false = true then \"Pair.second\" else \"Pair.first\"",
+        "normalized_name": "\"Pair.first\"",
+        "premise": "premise/a._@._internal._hyg.0/false"
+      },
+      {
+        "equal": true,
+        "expected": "some (StandardBodies.collectionPairProjection true)",
+        "name": "if true = true then \"Pair.second\" else \"Pair.first\"",
+        "normalized_name": "\"Pair.second\"",
+        "premise": "premise/a._@._internal._hyg.0/true"
+      },
+      {
+        "equal": true,
+        "expected": "some (StandardBodies.collectionListDefinition true)",
+        "name": "if true = true then \"List.filter\" else \"List.map\"",
+        "normalized_name": "\"List.filter\"",
+        "premise": "premise"
+      }
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardBodies.collectionHigher_body_typed"
+  },
+  {
+    "body": "b014",
+    "context": "ordinaryContext",
+    "fixed_program": "StandardOrdinaryCoreProgram.program",
+    "kind": "固定のP/B",
+    "lookups": [
+      {
+        "equal": true,
+        "name": "List.fold",
+        "premise": "fixed P"
+      }
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.body_typed"
+  },
+  {
+    "body": "b015",
+    "context": "ordinaryContext",
+    "fixed_program": "StandardOrdinaryCoreProgram.program",
+    "kind": "固定のP/B",
+    "lookups": [
+      {
+        "equal": true,
+        "name": "List.forEach",
+        "premise": "fixed P"
+      }
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.body_typed"
+  },
+  {
+    "body": "b016",
+    "context": "ordinaryContext",
+    "fixed_program": "StandardOrdinaryCoreProgram.program",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.body_typed"
+  },
+  {
+    "body": "b017",
+    "context": "ordinaryContext",
+    "fixed_program": "?m.1",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryCoreBodies.Getter.minimum.definition",
+        "name": "StandardOrdinaryCoreBodies.Getter.minimum.name",
+        "normalized_name": "{\n  toByteArray :=\n    (StandardOrdinaryCoreBodies.Getter.minimum.record.owner ++ \".\").toByteArray ++\n      StandardOrdinaryCoreBodies.Getter.minimum.field.toByteArray,\n  isValidUTF8 := ⋯ }",
+        "premise": "premise"
+      }
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.projection_typed"
+  },
+  {
+    "body": "b018",
+    "context": "ordinaryContext",
+    "fixed_program": "?m.1",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryCoreBodies.Getter.maximum.definition",
+        "name": "StandardOrdinaryCoreBodies.Getter.maximum.name",
+        "normalized_name": "{\n  toByteArray :=\n    (StandardOrdinaryCoreBodies.Getter.maximum.record.owner ++ \".\").toByteArray ++\n      StandardOrdinaryCoreBodies.Getter.maximum.field.toByteArray,\n  isValidUTF8 := ⋯ }",
+        "premise": "premise"
+      }
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.projection_typed"
+  },
+  {
+    "body": "b019",
+    "context": "ordinaryContext",
+    "fixed_program": "?m.1",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryCoreBodies.Getter.integerValue.definition",
+        "name": "StandardOrdinaryCoreBodies.Getter.integerValue.name",
+        "normalized_name": "{\n  toByteArray :=\n    (StandardOrdinaryCoreBodies.Getter.integerValue.record.owner ++ \".\").toByteArray ++\n      StandardOrdinaryCoreBodies.Getter.integerValue.field.toByteArray,\n  isValidUTF8 := ⋯ }",
+        "premise": "premise"
+      }
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.projection_typed"
+  },
+  {
+    "body": "b020",
+    "context": "ordinaryContext",
+    "fixed_program": "StandardOrdinaryCoreProgram.program",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.body_typed"
+  },
+  {
+    "body": "b021",
+    "context": "ordinaryContext",
+    "fixed_program": "?m.1",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryCoreBodies.Getter.lengthMinimum.definition",
+        "name": "StandardOrdinaryCoreBodies.Getter.lengthMinimum.name",
+        "normalized_name": "{\n  toByteArray :=\n    (StandardOrdinaryCoreBodies.Getter.lengthMinimum.record.owner ++ \".\").toByteArray ++\n      StandardOrdinaryCoreBodies.Getter.lengthMinimum.field.toByteArray,\n  isValidUTF8 := ⋯ }",
+        "premise": "premise"
+      }
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.projection_typed"
+  },
+  {
+    "body": "b022",
+    "context": "ordinaryContext",
+    "fixed_program": "?m.1",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryCoreBodies.Getter.lengthMaximum.definition",
+        "name": "StandardOrdinaryCoreBodies.Getter.lengthMaximum.name",
+        "normalized_name": "{\n  toByteArray :=\n    (StandardOrdinaryCoreBodies.Getter.lengthMaximum.record.owner ++ \".\").toByteArray ++\n      StandardOrdinaryCoreBodies.Getter.lengthMaximum.field.toByteArray,\n  isValidUTF8 := ⋯ }",
+        "premise": "premise"
+      }
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.projection_typed"
+  },
+  {
+    "body": "b023",
+    "context": "ordinaryContext",
+    "fixed_program": "?m.1",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryCoreBodies.Getter.length.definition",
+        "name": "StandardOrdinaryCoreBodies.Getter.length.name",
+        "normalized_name": "{\n  toByteArray :=\n    (StandardOrdinaryCoreBodies.Getter.length.record.owner ++ \".\").toByteArray ++\n      StandardOrdinaryCoreBodies.Getter.length.field.toByteArray,\n  isValidUTF8 := ⋯ }",
+        "premise": "premise"
+      }
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.projection_typed"
+  },
+  {
+    "body": "b024",
+    "context": "ordinaryContext",
+    "fixed_program": "?m.1",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryCoreBodies.Getter.lengthValues.definition",
+        "name": "StandardOrdinaryCoreBodies.Getter.lengthValues.name",
+        "normalized_name": "{\n  toByteArray :=\n    (StandardOrdinaryCoreBodies.Getter.lengthValues.record.owner ++ \".\").toByteArray ++\n      StandardOrdinaryCoreBodies.Getter.lengthValues.field.toByteArray,\n  isValidUTF8 := ⋯ }",
+        "premise": "premise"
+      }
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.projection_typed"
+  },
+  {
+    "body": "b025",
+    "context": "ordinaryContext",
+    "fixed_program": "StandardOrdinaryCoreProgram.program",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.body_typed"
+  },
+  {
+    "body": "b026",
+    "context": "ordinaryContext",
+    "fixed_program": "?m.1",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryCoreBodies.Getter.index.definition",
+        "name": "StandardOrdinaryCoreBodies.Getter.index.name",
+        "normalized_name": "{\n  toByteArray :=\n    (StandardOrdinaryCoreBodies.Getter.index.record.owner ++ \".\").toByteArray ++\n      StandardOrdinaryCoreBodies.Getter.index.field.toByteArray,\n  isValidUTF8 := ⋯ }",
+        "premise": "premise"
+      }
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.projection_typed"
+  },
+  {
+    "body": "b027",
+    "context": "ordinaryContext",
+    "fixed_program": "?m.1",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryCoreBodies.Getter.indexValues.definition",
+        "name": "StandardOrdinaryCoreBodies.Getter.indexValues.name",
+        "normalized_name": "{\n  toByteArray :=\n    (StandardOrdinaryCoreBodies.Getter.indexValues.record.owner ++ \".\").toByteArray ++\n      StandardOrdinaryCoreBodies.Getter.indexValues.field.toByteArray,\n  isValidUTF8 := ⋯ }",
+        "premise": "premise"
+      }
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.projection_typed"
+  },
+  {
+    "body": "b028",
+    "context": "ordinaryContext",
+    "fixed_program": "?m.1",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryCoreBodies.Getter.element.definition",
+        "name": "StandardOrdinaryCoreBodies.Getter.element.name",
+        "normalized_name": "{\n  toByteArray :=\n    (StandardOrdinaryCoreBodies.Getter.element.record.owner ++ \".\").toByteArray ++\n      StandardOrdinaryCoreBodies.Getter.element.field.toByteArray,\n  isValidUTF8 := ⋯ }",
+        "premise": "premise"
+      }
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.projection_typed"
+  },
+  {
+    "body": "b029",
+    "context": "ordinaryContext",
+    "fixed_program": "StandardOrdinaryCoreProgram.program",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.body_typed"
+  },
+  {
+    "body": "b030",
+    "context": "ordinaryContext",
+    "fixed_program": "StandardOrdinaryCoreProgram.program",
+    "kind": "固定のP/B",
+    "lookups": [
+      {
+        "equal": true,
+        "name": "Benitoite.NonEmptyList.NonEmptyList.rest",
+        "premise": "fixed P"
+      },
+      {
+        "equal": true,
+        "name": "Benitoite.NonEmptyList.NonEmptyList.first",
+        "premise": "fixed P"
+      }
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.body_typed"
+  },
+  {
+    "body": "b031",
+    "context": "ordinaryContext",
+    "fixed_program": "?m.1",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryCoreBodies.Getter.first.definition",
+        "name": "StandardOrdinaryCoreBodies.Getter.first.name",
+        "normalized_name": "{\n  toByteArray :=\n    (StandardOrdinaryCoreBodies.Getter.first.record.owner ++ \".\").toByteArray ++\n      StandardOrdinaryCoreBodies.Getter.first.field.toByteArray,\n  isValidUTF8 := ⋯ }",
+        "premise": "premise"
+      }
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.projection_typed"
+  },
+  {
+    "body": "b032",
+    "context": "ordinaryContext",
+    "fixed_program": "?m.1",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryCoreBodies.Getter.rest.definition",
+        "name": "StandardOrdinaryCoreBodies.Getter.rest.name",
+        "normalized_name": "{\n  toByteArray :=\n    (StandardOrdinaryCoreBodies.Getter.rest.record.owner ++ \".\").toByteArray ++\n      StandardOrdinaryCoreBodies.Getter.rest.field.toByteArray,\n  isValidUTF8 := ⋯ }",
+        "premise": "premise"
+      }
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.projection_typed"
+  },
+  {
+    "body": "b033",
+    "context": "ordinaryContext",
+    "fixed_program": "StandardOrdinaryCoreProgram.program",
+    "kind": "固定のP/B",
+    "lookups": [
+      {
+        "equal": true,
+        "name": "Benitoite.NonEmptyList.NonEmptyList.first",
+        "premise": "fixed P"
+      },
+      {
+        "equal": true,
+        "name": "Benitoite.NonEmptyList.NonEmptyList.rest",
+        "premise": "fixed P"
+      },
+      {
+        "equal": true,
+        "name": "List.map",
+        "premise": "fixed P"
+      }
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.body_typed"
+  },
+  {
+    "body": "b034",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b035",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b036",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b037",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b038",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b039",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b040",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b041",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b042",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b043",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b044",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b045",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b046",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b047",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b048",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b049",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b050",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b051",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b052",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b053",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b054",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b055",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b056",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b057",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b058",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b059",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b060",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b061",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b062",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b063",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b064",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b065",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b066",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b067",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b068",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b069",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b070",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b071",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b072",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b073",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b074",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b075",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b076",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b077",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b078",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b079",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b080",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b081",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b082",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b083",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b084",
+    "context": "ordinaryContext",
+    "fixed_program": "Benitoite.Release.Refinement.StandardAliasBodies.P✝",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed"
+  },
+  {
+    "body": "b086",
+    "context": "ordinaryContext",
+    "fixed_program": "StandardSafe.safeProgram",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardSafe.get_row_typed"
+  },
+  {
+    "body": "b087",
+    "context": "ordinaryContext",
+    "fixed_program": "StandardSafe.safeProgram",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardSafe.checked_row_typed"
+  },
+  {
+    "body": "b088",
+    "context": "ordinaryContext",
+    "fixed_program": "StandardSafe.safeProgram",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardSafe.same_row_typed"
+  },
+  {
+    "body": "b089",
+    "context": "ordinaryContext",
+    "fixed_program": "StandardSafe.safeProgram",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardSafe.fromList_row_typed"
+  },
+  {
+    "body": "b091",
+    "context": "ordinaryContext",
+    "fixed_program": "StandardSafe.safeProgram",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardSafe.nonempty_head_row_typed"
+  },
+  {
+    "body": "b092",
+    "context": "ordinaryContext",
+    "fixed_program": "StandardSafe.safeProgram",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardSafe.precise_row_typed"
+  },
+  {
+    "body": "b093",
+    "context": "ordinaryContext",
+    "fixed_program": "StandardSafe.safeProgram",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardSafe.precise_row_typed"
+  },
+  {
+    "body": "b094",
+    "context": "ordinaryContext",
+    "fixed_program": "StandardSafe.safeProgram",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardSafe.precise_row_typed"
+  },
+  {
+    "body": "b095",
+    "context": "ordinaryContext",
+    "fixed_program": "StandardSafe.safeProgram",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardSafe.precise_row_typed"
+  },
+  {
+    "body": "b096",
+    "context": "ordinaryContext",
+    "fixed_program": "StandardSafe.safeProgram",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardSafe.precise_row_typed"
+  },
+  {
+    "body": "b097",
+    "context": "ordinaryContext",
+    "fixed_program": "StandardSafe.safeProgram",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardSafe.precise_row_typed"
+  },
+  {
+    "body": "b098",
+    "context": "ordinaryContext",
+    "fixed_program": "StandardSafe.safeProgram",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardSafe.precise_row_typed"
+  },
+  {
+    "body": "b099",
+    "context": "ordinaryContext",
+    "fixed_program": "StandardSafe.safeProgram",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardSafe.precise_row_typed"
+  },
+  {
+    "body": "b100",
+    "context": "ordinaryContext",
+    "fixed_program": "StandardSafe.safeProgram",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardSafe.precise_row_typed"
+  },
+  {
+    "body": "b101",
+    "context": "StandardCollectionRefinedBodies.program",
+    "fixed_program": "?m.1",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [
+      {
+        "equal": true,
+        "expected": "some (StandardHeadTail.fromDefinition false)",
+        "name": "StandardHeadTail.fromName false",
+        "normalized_name": "\"List.mapFrom\"",
+        "premise": "premise.helpers/false"
+      },
+      {
+        "equal": true,
+        "expected": "some (StandardHeadTail.fromDefinition true)",
+        "name": "StandardHeadTail.fromName true",
+        "normalized_name": "\"List.filterFrom\"",
+        "premise": "premise.helpers/true"
+      }
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardHeadTail.from_typed"
+  },
+  {
+    "body": "b102",
+    "context": "StandardCollectionRefinedBodies.program",
+    "fixed_program": "?m.1",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [
+      {
+        "equal": true,
+        "expected": "some (StandardHeadTail.fromDefinition false)",
+        "name": "StandardHeadTail.fromName false",
+        "normalized_name": "\"List.mapFrom\"",
+        "premise": "premise.helpers/false"
+      },
+      {
+        "equal": true,
+        "expected": "some (StandardHeadTail.fromDefinition true)",
+        "name": "StandardHeadTail.fromName true",
+        "normalized_name": "\"List.filterFrom\"",
+        "premise": "premise.helpers/true"
+      }
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardHeadTail.from_typed"
+  },
+  {
+    "body": "b103",
+    "context": "StandardCollectionRefinedBodies.program",
+    "fixed_program": "?m.1",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [
+      {
+        "equal": true,
+        "expected": "some (StandardHeadTail.fromDefinition false)",
+        "name": "StandardHeadTail.fromName false",
+        "normalized_name": "\"List.mapFrom\"",
+        "premise": "premise.helpers/false"
+      },
+      {
+        "equal": true,
+        "expected": "some (StandardHeadTail.fromDefinition true)",
+        "name": "StandardHeadTail.fromName true",
+        "normalized_name": "\"List.filterFrom\"",
+        "premise": "premise.helpers/true"
+      }
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardHeadTail.public_typed"
+  },
+  {
+    "body": "b104",
+    "context": "StandardCollectionRefinedBodies.program",
+    "fixed_program": "?m.1",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [
+      {
+        "equal": true,
+        "expected": "some (StandardHeadTail.fromDefinition false)",
+        "name": "StandardHeadTail.fromName false",
+        "normalized_name": "\"List.mapFrom\"",
+        "premise": "premise.helpers/false"
+      },
+      {
+        "equal": true,
+        "expected": "some (StandardHeadTail.fromDefinition true)",
+        "name": "StandardHeadTail.fromName true",
+        "normalized_name": "\"List.filterFrom\"",
+        "premise": "premise.helpers/true"
+      }
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardHeadTail.public_typed"
+  },
+  {
+    "body": "b105",
+    "context": "StandardCollectionRefinedBodies.program",
+    "fixed_program": "?m.1",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [
+      {
+        "equal": true,
+        "expected": "some (StandardHeadTail.fromDefinition false)",
+        "name": "StandardHeadTail.fromName false",
+        "normalized_name": "\"List.mapFrom\"",
+        "premise": "premise.helpers/false"
+      },
+      {
+        "equal": true,
+        "expected": "some (StandardHeadTail.fromDefinition true)",
+        "name": "StandardHeadTail.fromName true",
+        "normalized_name": "\"List.filterFrom\"",
+        "premise": "premise.helpers/true"
+      },
+      {
+        "equal": true,
+        "expected": "some (StandardHeadTail.publicDefinition false)",
+        "name": "\"List.map\"",
+        "normalized_name": "\"List.map\"",
+        "premise": "premise"
+      }
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardHeadTail.nonempty_public_typed"
+  },
+  {
+    "body": "b106",
+    "context": "StandardCollectionRefinedBodies.program",
+    "fixed_program": "StandardCollectionRefinedBodies.program",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "_private.Benitoite.Release.Refinement.StandardCollectionRefinedBodies.0.Benitoite.Release.Refinement.StandardCollectionRefinedBodies.pair_definition_typed"
+  },
+  {
+    "body": "b107",
+    "context": "StandardCollectionRefinedBodies.program",
+    "fixed_program": "StandardCollectionRefinedBodies.program",
+    "kind": "固定のP/B",
+    "lookups": [],
+    "proof": "_private.Benitoite.Release.Refinement.StandardCollectionRefinedBodies.0.Benitoite.Release.Refinement.StandardCollectionRefinedBodies.pair_definition_typed"
+  },
+  {
+    "body": "b108",
+    "context": "StandardCollectionRefinedBodies.program",
+    "fixed_program": "?m.1",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [
+      {
+        "equal": true,
+        "expected": "some (Benitoite.Release.Refinement.StandardCollectionRefinedBodies.collectionPairProjection✝ false)",
+        "name": "if false = true then \"Pair.second\" else \"Pair.first\"",
+        "normalized_name": "\"Pair.first\"",
+        "premise": "premise/a._@._internal._hyg.0/false"
+      },
+      {
+        "equal": true,
+        "expected": "some (Benitoite.Release.Refinement.StandardCollectionRefinedBodies.collectionPairProjection✝ true)",
+        "name": "if true = true then \"Pair.second\" else \"Pair.first\"",
+        "normalized_name": "\"Pair.second\"",
+        "premise": "premise/a._@._internal._hyg.0/true"
+      },
+      {
+        "equal": true,
+        "expected": "some (Benitoite.Release.Refinement.StandardCollectionRefinedBodies.collectionListDefinition✝ false)",
+        "name": "if false = true then \"List.filter\" else \"List.map\"",
+        "normalized_name": "\"List.map\"",
+        "premise": "premise"
+      }
+    ],
+    "proof": "_private.Benitoite.Release.Refinement.StandardCollectionRefinedBodies.0.Benitoite.Release.Refinement.StandardCollectionRefinedBodies.higher_typed"
+  },
+  {
+    "body": "b109",
+    "context": "StandardCollectionRefinedBodies.program",
+    "fixed_program": "?m.1",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [
+      {
+        "equal": true,
+        "expected": "some (Benitoite.Release.Refinement.StandardCollectionRefinedBodies.collectionPairProjection✝ false)",
+        "name": "if false = true then \"Pair.second\" else \"Pair.first\"",
+        "normalized_name": "\"Pair.first\"",
+        "premise": "premise/a._@._internal._hyg.0/false"
+      },
+      {
+        "equal": true,
+        "expected": "some (Benitoite.Release.Refinement.StandardCollectionRefinedBodies.collectionPairProjection✝ true)",
+        "name": "if true = true then \"Pair.second\" else \"Pair.first\"",
+        "normalized_name": "\"Pair.second\"",
+        "premise": "premise/a._@._internal._hyg.0/true"
+      },
+      {
+        "equal": true,
+        "expected": "some (Benitoite.Release.Refinement.StandardCollectionRefinedBodies.collectionListDefinition✝ true)",
+        "name": "if true = true then \"List.filter\" else \"List.map\"",
+        "normalized_name": "\"List.filter\"",
+        "premise": "premise"
+      }
+    ],
+    "proof": "_private.Benitoite.Release.Refinement.StandardCollectionRefinedBodies.0.Benitoite.Release.Refinement.StandardCollectionRefinedBodies.higher_typed"
+  },
+  {
+    "body": "b110",
+    "context": "StandardCollectionRefinedBodies.program",
+    "fixed_program": "?m.1",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [
+      {
+        "equal": true,
+        "expected": "some (Benitoite.Release.Refinement.StandardCollectionRefinedBodies.collectionPairProjection✝ false)",
+        "name": "if false = true then \"Pair.second\" else \"Pair.first\"",
+        "normalized_name": "\"Pair.first\"",
+        "premise": "premise/a._@._internal._hyg.0/false"
+      },
+      {
+        "equal": true,
+        "expected": "some (Benitoite.Release.Refinement.StandardCollectionRefinedBodies.collectionPairProjection✝ true)",
+        "name": "if true = true then \"Pair.second\" else \"Pair.first\"",
+        "normalized_name": "\"Pair.second\"",
+        "premise": "premise/a._@._internal._hyg.0/true"
+      },
+      {
+        "equal": true,
+        "expected": "some (Benitoite.Release.Refinement.StandardCollectionRefinedBodies.collectionListDefinition✝ false)",
+        "name": "if false = true then \"List.filter\" else \"List.map\"",
+        "normalized_name": "\"List.map\"",
+        "premise": "premise"
+      }
+    ],
+    "proof": "_private.Benitoite.Release.Refinement.StandardCollectionRefinedBodies.0.Benitoite.Release.Refinement.StandardCollectionRefinedBodies.higher_typed"
+  },
+  {
+    "body": "b111",
+    "context": "StandardCollectionRefinedBodies.program",
+    "fixed_program": "?m.1",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [
+      {
+        "equal": true,
+        "expected": "some (Benitoite.Release.Refinement.StandardCollectionRefinedBodies.collectionPairProjection✝ false)",
+        "name": "if false = true then \"Pair.second\" else \"Pair.first\"",
+        "normalized_name": "\"Pair.first\"",
+        "premise": "premise/a._@._internal._hyg.0/false"
+      },
+      {
+        "equal": true,
+        "expected": "some (Benitoite.Release.Refinement.StandardCollectionRefinedBodies.collectionPairProjection✝ true)",
+        "name": "if true = true then \"Pair.second\" else \"Pair.first\"",
+        "normalized_name": "\"Pair.second\"",
+        "premise": "premise/a._@._internal._hyg.0/true"
+      },
+      {
+        "equal": true,
+        "expected": "some (Benitoite.Release.Refinement.StandardCollectionRefinedBodies.collectionListDefinition✝ true)",
+        "name": "if true = true then \"List.filter\" else \"List.map\"",
+        "normalized_name": "\"List.filter\"",
+        "premise": "premise"
+      }
+    ],
+    "proof": "_private.Benitoite.Release.Refinement.StandardCollectionRefinedBodies.0.Benitoite.Release.Refinement.StandardCollectionRefinedBodies.higher_typed"
+  },
+  {
+    "body": "b112",
+    "context": "ordinaryContext",
+    "fixed_program": "?m.13",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.fold.definition",
+        "name": "StandardOrdinaryListBodies.Op.fold.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.fold.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.fold"
+      },
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.forEach.definition",
+        "name": "StandardOrdinaryListBodies.Op.forEach.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.forEach.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.forEach"
+      },
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.any.definition",
+        "name": "StandardOrdinaryListBodies.Op.any.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.any.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.any"
+      },
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.all.definition",
+        "name": "StandardOrdinaryListBodies.Op.all.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.all.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.all"
+      },
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.find.definition",
+        "name": "StandardOrdinaryListBodies.Op.find.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.find.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.find"
+      }
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryListBodies.helper_typed"
+  },
+  {
+    "body": "b113",
+    "context": "ordinaryContext",
+    "fixed_program": "?m.13",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.fold.definition",
+        "name": "StandardOrdinaryListBodies.Op.fold.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.fold.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.fold"
+      },
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.forEach.definition",
+        "name": "StandardOrdinaryListBodies.Op.forEach.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.forEach.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.forEach"
+      },
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.any.definition",
+        "name": "StandardOrdinaryListBodies.Op.any.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.any.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.any"
+      },
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.all.definition",
+        "name": "StandardOrdinaryListBodies.Op.all.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.all.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.all"
+      },
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.find.definition",
+        "name": "StandardOrdinaryListBodies.Op.find.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.find.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.find"
+      }
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryListBodies.helper_typed"
+  },
+  {
+    "body": "b114",
+    "context": "ordinaryContext",
+    "fixed_program": "?m.13",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.fold.definition",
+        "name": "StandardOrdinaryListBodies.Op.fold.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.fold.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.fold"
+      },
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.forEach.definition",
+        "name": "StandardOrdinaryListBodies.Op.forEach.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.forEach.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.forEach"
+      },
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.any.definition",
+        "name": "StandardOrdinaryListBodies.Op.any.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.any.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.any"
+      },
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.all.definition",
+        "name": "StandardOrdinaryListBodies.Op.all.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.all.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.all"
+      },
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.find.definition",
+        "name": "StandardOrdinaryListBodies.Op.find.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.find.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.find"
+      }
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryListBodies.helper_typed"
+  },
+  {
+    "body": "b115",
+    "context": "ordinaryContext",
+    "fixed_program": "?m.13",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.fold.definition",
+        "name": "StandardOrdinaryListBodies.Op.fold.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.fold.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.fold"
+      },
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.forEach.definition",
+        "name": "StandardOrdinaryListBodies.Op.forEach.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.forEach.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.forEach"
+      },
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.any.definition",
+        "name": "StandardOrdinaryListBodies.Op.any.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.any.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.any"
+      },
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.all.definition",
+        "name": "StandardOrdinaryListBodies.Op.all.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.all.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.all"
+      },
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.find.definition",
+        "name": "StandardOrdinaryListBodies.Op.find.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.find.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.find"
+      }
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryListBodies.helper_typed"
+  },
+  {
+    "body": "b116",
+    "context": "ordinaryContext",
+    "fixed_program": "?m.13",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.fold.definition",
+        "name": "StandardOrdinaryListBodies.Op.fold.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.fold.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.fold"
+      },
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.forEach.definition",
+        "name": "StandardOrdinaryListBodies.Op.forEach.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.forEach.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.forEach"
+      },
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.any.definition",
+        "name": "StandardOrdinaryListBodies.Op.any.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.any.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.any"
+      },
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.all.definition",
+        "name": "StandardOrdinaryListBodies.Op.all.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.all.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.all"
+      },
+      {
+        "equal": true,
+        "expected": "some StandardOrdinaryListBodies.Op.find.definition",
+        "name": "StandardOrdinaryListBodies.Op.find.helperName",
+        "normalized_name": "{ toByteArray := StandardOrdinaryListBodies.Op.find.name.toByteArray ++ \"From\".toByteArray, isValidUTF8 := ⋯ }",
+        "premise": "premise.helpers/StandardOrdinaryListBodies.Op.find"
+      }
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryListBodies.helper_typed"
+  },
+  {
+    "body": "b117",
+    "context": "ordinaryContext",
+    "fixed_program": "?m.13",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.getter_typed"
+  },
+  {
+    "body": "b118",
+    "context": "ordinaryContext",
+    "fixed_program": "?m.13",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.getter_typed"
+  },
+  {
+    "body": "b119",
+    "context": "ordinaryContext",
+    "fixed_program": "?m.13",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.getter_typed"
+  },
+  {
+    "body": "b120",
+    "context": "ordinaryContext",
+    "fixed_program": "?m.13",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.getter_typed"
+  },
+  {
+    "body": "b121",
+    "context": "ordinaryContext",
+    "fixed_program": "?m.13",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.getter_typed"
+  },
+  {
+    "body": "b122",
+    "context": "ordinaryContext",
+    "fixed_program": "?m.13",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.getter_typed"
+  },
+  {
+    "body": "b123",
+    "context": "ordinaryContext",
+    "fixed_program": "?m.13",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.getter_typed"
+  },
+  {
+    "body": "b124",
+    "context": "ordinaryContext",
+    "fixed_program": "?m.13",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.getter_typed"
+  },
+  {
+    "body": "b125",
+    "context": "ordinaryContext",
+    "fixed_program": "?m.13",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.getter_typed"
+  },
+  {
+    "body": "b126",
+    "context": "ordinaryContext",
+    "fixed_program": "?m.13",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.getter_typed"
+  },
+  {
+    "body": "b127",
+    "context": "ordinaryContext",
+    "fixed_program": "?m.13",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.getter_typed"
+  },
+  {
+    "body": "b128",
+    "context": "ordinaryContext",
+    "fixed_program": "?m.13",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [],
+    "proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.getter_typed"
+  },
+  {
+    "body": "b129",
+    "context": "ordinaryContext",
+    "fixed_program": "?m.13",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [
+      {
+        "equal": true,
+        "expected": "some (StandardBodies.listFromDefinition false)",
+        "name": "(StandardBodies.listFromRow false).name",
+        "normalized_name": "\"List.mapFrom\"",
+        "premise": "premise"
+      }
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardActualListBodies.from_typed"
+  },
+  {
+    "body": "b130",
+    "context": "ordinaryContext",
+    "fixed_program": "?m.2",
+    "kind": "lookupなどの副条件付き",
+    "lookups": [
+      {
+        "equal": true,
+        "expected": "some (StandardBodies.listFromDefinition true)",
+        "name": "(StandardBodies.listFromRow true).name",
+        "normalized_name": "\"List.filterFrom\"",
+        "premise": "premise"
+      }
+    ],
+    "proof": "Benitoite.Release.Refinement.StandardActualListBodies.from_typed"
+  }
+]

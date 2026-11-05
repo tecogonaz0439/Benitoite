@@ -1,0 +1,80 @@
+{
+  "status": "群Aの実装・自己照合完了。独立レビューと取り込み・受け入れは取りまとめの担当",
+  "completed_units": [
+    "L60.01",
+    "L60.02",
+    "L60.03",
+    "L60.04",
+    "L60.05"
+  ],
+  "b_work": "80230d96305756057a63a07dc2b0d8aa1ebf3a75",
+  "source_rows": 552,
+  "body_sources": 159,
+  "distinct_body_defs": 130,
+  "extra_helper_defs": 1,
+  "primitive_names": 373,
+  "resource_names": 1,
+  "composition_keys": 504,
+  "ledger_composition_rows": 486,
+  "assumption_rows": 154,
+  "rust_references": 523,
+  "model_conditions": 75,
+  "renamed_names": 18,
+  "ledger_to_lookup_missing": 0,
+  "lookup_to_ledger_missing": 0,
+  "evidence_on_assumption_rows": 0,
+  "lookup_composition_complete": true,
+  "semantic_composition_complete": false,
+  "proof_classification": {
+    "lookupなどの副条件付き": 51,
+    "固定のP/B": 77,
+    "任意のP/B": 2
+  },
+  "default_import_modules": 1043,
+  "protected_files": 10854,
+  "protected_manifest": {
+    "bytes": 1673981,
+    "sha256": "d4001cea80e5a6128583befbd9d77968bf236b380b15191c1314e543a9938f8b"
+  },
+  "allowed_changed_files": [
+    "docs/design/01-spec/01-12-core-calculus.md",
+    "docs/design/07-quality/07-04-formal-semantics.md",
+    "formal/Benitoite.lean"
+  ],
+  "new_production_modules": 7,
+  "new_declarations_in_resume3": 2598,
+  "group_a_declarations": 2704,
+  "audited_default_declarations": 83376,
+  "audited_local_declarations_by_input": 714,
+  "new_axioms": 0,
+  "sorryAx": 0,
+  "default_build_executions_in_resume3": 1,
+  "work_executions_in_resume3": 1,
+  "formal_inputs": [
+    {
+      "file": "formal-inputs-01.json",
+      "bytes": 79764,
+      "sha256": "dfdc7ebdeab8142e755d28085acac5b2895fcf98ad7201bb38e0be5f43bb4561"
+    },
+    {
+      "file": "formal-inputs-02.json",
+      "bytes": 79847,
+      "sha256": "85183972c79872f392b469790a9ede5889f9600e8a9f25dd9eaca27147de3ce3"
+    },
+    {
+      "file": "formal-inputs-03.json",
+      "bytes": 79957,
+      "sha256": "9dea51d4e3c579db09ceadcd81815b17b6086a516b486d9fc199006fc5dbcc00"
+    },
+    {
+      "file": "formal-inputs-04.json",
+      "bytes": 13708,
+      "sha256": "72efd8f95aa58299948842c95afe93a2478b57844a5d1bcf04c5244a59487b17"
+    }
+  ],
+  "record_files": 180,
+  "record_bytes": 5170031,
+  "maximum_record_bytes": 79997,
+  "independent_review": "未実施・取りまとめの担当",
+  "acceptance": "未実施・設計者の担当"
+}

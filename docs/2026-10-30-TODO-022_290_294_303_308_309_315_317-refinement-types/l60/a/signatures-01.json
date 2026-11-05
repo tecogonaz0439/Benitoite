@@ -1,0 +1,1208 @@
+[
+  {
+    "module": "Benitoite.Release.Refinement.BuiltinTypingTransport",
+    "name": "Benitoite.Release.Refinement.Admissible.of_fields",
+    "line": 26,
+    "type": "∀ {B B' : Benitoite.Release.Refinement.Builtins} {C : Benitoite.Release.Refinement.TypeCtx} {nv : Nat}\n  {ps : List Benitoite.Release.TParam} {ne : Nat} {Qs Qt : Benitoite.Release.NoFailCtx}\n  {ts : List Benitoite.Release.Refinement.Ty} {es : List Benitoite.Release.Refinement.Eff}\n  {e : Benitoite.Release.Refinement.Eff},\n  B.TypingFieldsEq B' →\n    Benitoite.Release.Refinement.Admissible B C nv ps ne Qs Qt ts es e →\n      Benitoite.Release.Refinement.Admissible B' C nv ps ne Qs Qt ts es e"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.BuiltinTypingTransport",
+    "name": "Benitoite.Release.Refinement.AtCallAdmissible.of_fields",
+    "line": 151,
+    "type": "∀ {P : Benitoite.Release.Refinement.Program} {B B' : Benitoite.Release.Refinement.Builtins}\n  {Ψ : Benitoite.Release.Refinement.StoreTy} {Q : Benitoite.Release.NoFailCtx}\n  {C : Benitoite.Release.Refinement.TypeCtx} {Γ : Benitoite.Release.Refinement.Ctx}\n  {Φ : List Benitoite.Release.Refinement.Pred} {kind : Benitoite.Scope.Domain.Kind}\n  {name : Benitoite.Release.OpaqueName} {shape : Benitoite.Release.Refinement.ResultShape}\n  {bases : Option Benitoite.Release.Refinement.Val} {pattern input : Benitoite.Release.Refinement.Val}\n  {index : Benitoite.Release.Refinement.RangeIx},\n  B.TypingFieldsEq B' →\n    Benitoite.Release.Refinement.AtCallAdmissible P B Ψ Q C Γ Φ kind name shape bases pattern input index →\n      Benitoite.Release.Refinement.AtCallAdmissible P B' Ψ Q C Γ Φ kind name shape bases pattern input index"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.BuiltinResponseTransport",
+    "name": "Benitoite.Release.Refinement.BuiltinArgs.of_fields",
+    "line": 51,
+    "type": "∀ {P : Benitoite.Release.Refinement.Program} {B B' : Benitoite.Release.Refinement.Builtins}\n  {Ψ : Benitoite.Release.Refinement.StoreTy} {b : Benitoite.Release.PrimName} {s : Benitoite.Release.Refinement.PrimSig}\n  {ts : List Benitoite.Release.Refinement.Ty} {es : List Benitoite.Release.Refinement.Eff}\n  {rs : List Benitoite.Release.Refinement.RangeExpr} {vs : List Benitoite.Release.Refinement.Val}\n  {a : Benitoite.Release.Refinement.Ty} {e : Benitoite.Release.Refinement.Eff},\n  B.TypingFieldsEq B' →\n    Benitoite.Release.Refinement.BuiltinArgs P B Ψ b s ts es rs vs a e →\n      Benitoite.Release.Refinement.BuiltinArgs P B' Ψ b s ts es rs vs a e"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.BuiltinTypingTransport",
+    "name": "Benitoite.Release.Refinement.Builtins.RangeAdmissible.of_fields",
+    "line": 31,
+    "type": "∀ {B B' : Benitoite.Release.Refinement.Builtins} {b : Benitoite.Release.PrimName}\n  {s : Benitoite.Release.Refinement.PrimSig} {rs : List Benitoite.Release.Refinement.RangeExpr},\n  B.TypingFieldsEq B' → B.RangeAdmissible b s rs → B'.RangeAdmissible b s rs"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.BuiltinResponseTransport",
+    "name": "Benitoite.Release.Refinement.Builtins.SubstitutionAssumptions.of_fields",
+    "line": 69,
+    "type": "∀ {P : Benitoite.Release.Refinement.Program} {B B' : Benitoite.Release.Refinement.Builtins},\n  B.TypingFieldsEq B' →\n    Benitoite.Release.Refinement.Builtins.SubstitutionAssumptions P B →\n      Benitoite.Release.Refinement.Builtins.SubstitutionAssumptions P B'"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.BuiltinTypingTransport",
+    "name": "Benitoite.Release.Refinement.Builtins.TypingFieldsEq",
+    "line": 7,
+    "type": "Benitoite.Release.Refinement.Builtins → Benitoite.Release.Refinement.Builtins → Prop"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.BuiltinTypingTransport",
+    "name": "Benitoite.Release.Refinement.Builtins.TypingFieldsEq.casesOn",
+    "line": 7,
+    "type": "{B B' : Benitoite.Release.Refinement.Builtins} →\n  {motive : B.TypingFieldsEq B' → Sort u} →\n    (t : B.TypingFieldsEq B') →\n      ((sig : B.sig = B'.sig) →\n          (sat : B.sat = B'.sat) →\n            (ranges : B.admitsR = B'.admitsR) →\n              (resources : B.isResource = B'.isResource) →\n                (kinds : B.valKind = B'.valKind) →\n                  (content : B.valContent = B'.valContent) →\n                    (effects : B.effects = B'.effects) →\n                      motive\n                        { sig := sig, sat := sat, ranges := ranges, resources := resources, kinds := kinds,\n                          content := content, effects := effects }) →\n        motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.BuiltinTypingTransport",
+    "name": "Benitoite.Release.Refinement.Builtins.TypingFieldsEq.content",
+    "line": 14,
+    "type": "∀ {B B' : Benitoite.Release.Refinement.Builtins}, B.TypingFieldsEq B' → B.valContent = B'.valContent"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.BuiltinTypingTransport",
+    "name": "Benitoite.Release.Refinement.Builtins.TypingFieldsEq.effects",
+    "line": 15,
+    "type": "∀ {B B' : Benitoite.Release.Refinement.Builtins}, B.TypingFieldsEq B' → B.effects = B'.effects"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.BuiltinTypingTransport",
+    "name": "Benitoite.Release.Refinement.Builtins.TypingFieldsEq.kinds",
+    "line": 13,
+    "type": "∀ {B B' : Benitoite.Release.Refinement.Builtins}, B.TypingFieldsEq B' → B.valKind = B'.valKind"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.BuiltinTypingTransport",
+    "name": "Benitoite.Release.Refinement.Builtins.TypingFieldsEq.mk",
+    "line": 8,
+    "type": "∀ {B B' : Benitoite.Release.Refinement.Builtins},\n  B.sig = B'.sig →\n    B.sat = B'.sat →\n      B.admitsR = B'.admitsR →\n        B.isResource = B'.isResource →\n          B.valKind = B'.valKind → B.valContent = B'.valContent → B.effects = B'.effects → B.TypingFieldsEq B'"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.BuiltinTypingTransport",
+    "name": "Benitoite.Release.Refinement.Builtins.TypingFieldsEq.ranges",
+    "line": 11,
+    "type": "∀ {B B' : Benitoite.Release.Refinement.Builtins}, B.TypingFieldsEq B' → B.admitsR = B'.admitsR"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.BuiltinTypingTransport",
+    "name": "Benitoite.Release.Refinement.Builtins.TypingFieldsEq.rec",
+    "line": 7,
+    "type": "{B B' : Benitoite.Release.Refinement.Builtins} →\n  {motive : B.TypingFieldsEq B' → Sort u} →\n    ((sig : B.sig = B'.sig) →\n        (sat : B.sat = B'.sat) →\n          (ranges : B.admitsR = B'.admitsR) →\n            (resources : B.isResource = B'.isResource) →\n              (kinds : B.valKind = B'.valKind) →\n                (content : B.valContent = B'.valContent) →\n                  (effects : B.effects = B'.effects) →\n                    motive\n                      { sig := sig, sat := sat, ranges := ranges, resources := resources, kinds := kinds,\n                        content := content, effects := effects }) →\n      (t : B.TypingFieldsEq B') → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.BuiltinTypingTransport",
+    "name": "Benitoite.Release.Refinement.Builtins.TypingFieldsEq.recOn",
+    "line": 7,
+    "type": "{B B' : Benitoite.Release.Refinement.Builtins} →\n  {motive : B.TypingFieldsEq B' → Sort u} →\n    (t : B.TypingFieldsEq B') →\n      ((sig : B.sig = B'.sig) →\n          (sat : B.sat = B'.sat) →\n            (ranges : B.admitsR = B'.admitsR) →\n              (resources : B.isResource = B'.isResource) →\n                (kinds : B.valKind = B'.valKind) →\n                  (content : B.valContent = B'.valContent) →\n                    (effects : B.effects = B'.effects) →\n                      motive\n                        { sig := sig, sat := sat, ranges := ranges, resources := resources, kinds := kinds,\n                          content := content, effects := effects }) →\n        motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.BuiltinTypingTransport",
+    "name": "Benitoite.Release.Refinement.Builtins.TypingFieldsEq.resources",
+    "line": 12,
+    "type": "∀ {B B' : Benitoite.Release.Refinement.Builtins}, B.TypingFieldsEq B' → B.isResource = B'.isResource"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.BuiltinTypingTransport",
+    "name": "Benitoite.Release.Refinement.Builtins.TypingFieldsEq.sat",
+    "line": 10,
+    "type": "∀ {B B' : Benitoite.Release.Refinement.Builtins}, B.TypingFieldsEq B' → B.sat = B'.sat"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.BuiltinTypingTransport",
+    "name": "Benitoite.Release.Refinement.Builtins.TypingFieldsEq.sig",
+    "line": 9,
+    "type": "∀ {B B' : Benitoite.Release.Refinement.Builtins}, B.TypingFieldsEq B' → B.sig = B'.sig"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.BuiltinResponseTransport",
+    "name": "Benitoite.Release.Refinement.Builtins.TypingFieldsEq.symm",
+    "line": 6,
+    "type": "∀ {B B' : Benitoite.Release.Refinement.Builtins}, B.TypingFieldsEq B' → B'.TypingFieldsEq B"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.ExternalModelTransport",
+    "name": "Benitoite.Release.Refinement.Builtins.selectExternal",
+    "line": 31,
+    "type": "Benitoite.Release.Refinement.Builtins → Benitoite.Release.Refinement.ExternalOracle"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.ExternalModelTransport",
+    "name": "Benitoite.Release.Refinement.Builtins.selectExternal_response",
+    "line": 39,
+    "type": "∀ {B : Benitoite.Release.Refinement.Builtins} {f : Benitoite.Release.Refinement.ExternalFunctionId}\n  {ts : List Benitoite.Release.Refinement.Ty} {vs : List Benitoite.Release.Refinement.Val},\n  (∃ out obs, B.externalResponse f ts vs out obs) →\n    B.externalResponse f ts vs (B.selectExternal f ts vs).fst (B.selectExternal f ts vs).snd"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.BuiltinTypingTransport",
+    "name": "Benitoite.Release.Refinement.CaptureOk.of_fields",
+    "line": 135,
+    "type": "∀ {P : Benitoite.Release.Refinement.Program} {B B' : Benitoite.Release.Refinement.Builtins}\n  {Ψ : Benitoite.Release.Refinement.StoreTy} {R : Option Benitoite.Release.Refinement.Ty}\n  {Γ : Benitoite.Release.Refinement.Ctx} {Φ : List Benitoite.Release.Refinement.Pred}\n  {cap : Benitoite.Release.Refinement.Capture},\n  B.TypingFieldsEq B' →\n    Benitoite.Release.Refinement.CaptureOk P B Ψ R Γ Φ cap → Benitoite.Release.Refinement.CaptureOk P B' Ψ R Γ Φ cap"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.BuiltinTypingTransport",
+    "name": "Benitoite.Release.Refinement.CheckedWitness.of_fields",
+    "line": 145,
+    "type": "∀ {P : Benitoite.Release.Refinement.Program} {B B' : Benitoite.Release.Refinement.Builtins}\n  {Ψ : Benitoite.Release.Refinement.StoreTy} {o : Benitoite.Release.OpaqueName} {k : Benitoite.Scope.Domain.Kind}\n  {range : Benitoite.Release.Refinement.RangeExpr} {snapshot : Option Benitoite.Release.Refinement.PathEnv}\n  {target : Benitoite.Scope.Domain.Target} {request : Option Benitoite.Release.Refinement.Val},\n  B.TypingFieldsEq B' →\n    Benitoite.Release.Refinement.CheckedWitness P B Ψ o k range snapshot target request →\n      Benitoite.Release.Refinement.CheckedWitness P B' Ψ o k range snapshot target request"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.BuiltinTypingTransport",
+    "name": "Benitoite.Release.Refinement.ClauseSig.of_fields",
+    "line": 45,
+    "type": "∀ {P : Benitoite.Release.Refinement.Program} {B B' : Benitoite.Release.Refinement.Builtins}\n  {e : Benitoite.Release.Refinement.Eff} {o : Benitoite.Release.OpRef} {sg : Benitoite.Release.Refinement.OpSig},\n  B.TypingFieldsEq B' →\n    Benitoite.Release.Refinement.ClauseSig P B e o sg → Benitoite.Release.Refinement.ClauseSig P B' e o sg"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.BuiltinTypingTransport",
+    "name": "Benitoite.Release.Refinement.ConstOK.of_fields",
+    "line": 17,
+    "type": "∀ {B B' : Benitoite.Release.Refinement.Builtins} {c : Benitoite.Release.Refinement.Const},\n  B.TypingFieldsEq B' → Benitoite.Release.Refinement.ConstOK B c → Benitoite.Release.Refinement.ConstOK B' c"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.BuiltinTypingTransport",
+    "name": "Benitoite.Release.Refinement.DependentClosureTy.of_fields",
+    "line": 140,
+    "type": "∀ {P : Benitoite.Release.Refinement.Program} {B B' : Benitoite.Release.Refinement.Builtins}\n  {Ψ : Benitoite.Release.Refinement.StoreTy} {body : Benitoite.Release.Refinement.Closure}\n  {t : Benitoite.Release.Refinement.Tel},\n  B.TypingFieldsEq B' →\n    Benitoite.Release.Refinement.DependentClosureTy P B Ψ body t →\n      Benitoite.Release.Refinement.DependentClosureTy P B' Ψ body t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.BuiltinResponseTransport",
+    "name": "Benitoite.Release.Refinement.ExternalArgs.of_fields",
+    "line": 46,
+    "type": "∀ {P : Benitoite.Release.Refinement.Program} {B B' : Benitoite.Release.Refinement.Builtins}\n  {Ψ : Benitoite.Release.Refinement.StoreTy} {d : Benitoite.Release.Refinement.ExternalSignature}\n  {ts : List Benitoite.Release.Refinement.Ty} {vs : List Benitoite.Release.Refinement.Val}\n  {a : Benitoite.Release.Refinement.Ty} {e : Benitoite.Release.Refinement.Eff},\n  B.TypingFieldsEq B' →\n    Benitoite.Release.Refinement.ExternalArgs P B Ψ d ts vs a e →\n      Benitoite.Release.Refinement.ExternalArgs P B' Ψ d ts vs a e"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.BuiltinTypingTransport",
+    "name": "Benitoite.Release.Refinement.ExternalCallAdmissible.of_fields",
+    "line": 36,
+    "type": "∀ {P : Benitoite.Release.Refinement.Program} {B B' : Benitoite.Release.Refinement.Builtins}\n  {C : Benitoite.Release.Refinement.TypeCtx} {d : Benitoite.Release.Refinement.ExternalSignature}\n  {ts : List Benitoite.Release.Refinement.Ty},\n  B.TypingFieldsEq B' →\n    Benitoite.Release.Refinement.ExternalCallAdmissible P B C d ts →\n      Benitoite.Release.Refinement.ExternalCallAdmissible P B' C d ts"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.BuiltinResponseTransport",
+    "name": "Benitoite.Release.Refinement.ExternalCarrier.of_fields",
+    "line": 11,
+    "type": "∀ {P : Benitoite.Release.Refinement.Program} {B B' : Benitoite.Release.Refinement.Builtins}\n  {Ψ : Benitoite.Release.Refinement.StoreTy} {v : Benitoite.Release.Refinement.Val}\n  {a : Benitoite.Release.Refinement.Ty},\n  B.TypingFieldsEq B' →\n    Benitoite.Release.Refinement.ExternalCarrier P B Ψ v a → Benitoite.Release.Refinement.ExternalCarrier P B' Ψ v a"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.BuiltinResponseTransport",
+    "name": "Benitoite.Release.Refinement.ExternalCarrierEach.of_fields",
+    "line": 22,
+    "type": "∀ {P : Benitoite.Release.Refinement.Program} {B B' : Benitoite.Release.Refinement.Builtins}\n  {Ψ : Benitoite.Release.Refinement.StoreTy} {vs : List Benitoite.Release.Refinement.Val}\n  {a : Benitoite.Release.Refinement.Ty},\n  B.TypingFieldsEq B' →\n    Benitoite.Release.Refinement.ExternalCarrierEach P B Ψ vs a →\n      Benitoite.Release.Refinement.ExternalCarrierEach P B' Ψ vs a"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.BuiltinResponseTransport",
+    "name": "Benitoite.Release.Refinement.ExternalCarrierFields.of_fields",
+    "line": 27,
+    "type": "∀ {P : Benitoite.Release.Refinement.Program} {B B' : Benitoite.Release.Refinement.Builtins}\n  {Ψ : Benitoite.Release.Refinement.StoreTy} {vs : List Benitoite.Release.Refinement.Val}\n  {as : List Benitoite.Release.Refinement.Ty},\n  B.TypingFieldsEq B' →\n    Benitoite.Release.Refinement.ExternalCarrierFields P B Ψ vs as →\n      Benitoite.Release.Refinement.ExternalCarrierFields P B' Ψ vs as"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.ExternalModelResponse",
+    "name": "Benitoite.Release.Refinement.ExternalModel.builtins",
+    "line": 15,
+    "type": "Benitoite.Release.Refinement.Program →\n  Benitoite.Release.Refinement.Builtins →\n    (Benitoite.Release.Refinement.Val → Option Benitoite.Release.ErrKind → Prop) → Benitoite.Release.Refinement.Builtins"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.ExternalModelTransport",
+    "name": "Benitoite.Release.Refinement.ExternalModel.external_assumptions",
+    "line": 9,
+    "type": "∀ (P : Benitoite.Release.Refinement.Program) (base : Benitoite.Release.Refinement.Builtins)\n  (release : Benitoite.Release.Refinement.Val → Option Benitoite.Release.ErrKind → Prop),\n  Benitoite.Release.Refinement.Builtins.ExternalAssumptions P\n    (Benitoite.Release.Refinement.ExternalModel.builtins P base release)"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.ExternalModelResponse",
+    "name": "Benitoite.Release.Refinement.ExternalModel.response",
+    "line": 7,
+    "type": "Benitoite.Release.Refinement.Program →\n  Benitoite.Release.Refinement.Builtins →\n    Benitoite.Release.Refinement.ExternalFunctionId →\n      List Benitoite.Release.Refinement.Ty →\n        List Benitoite.Release.Refinement.Val →\n          Benitoite.Release.Refinement.Outcome → List Benitoite.Scope.Domain.Target → Prop"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.ExternalModelResponse",
+    "name": "Benitoite.Release.Refinement.ExternalModel.response_err",
+    "line": 25,
+    "type": "∀ (P : Benitoite.Release.Refinement.Program) (base : Benitoite.Release.Refinement.Builtins)\n  (f : Benitoite.Release.Refinement.ExternalFunctionId) (ts : List Benitoite.Release.Refinement.Ty)\n  (vs : List Benitoite.Release.Refinement.Val) (r : Benitoite.Release.ErrKind),\n  Benitoite.Release.Refinement.ExternalModel.response P base f ts vs (Benitoite.Release.Refinement.Outcome.err r) []"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.ExternalModelResponse",
+    "name": "Benitoite.Release.Refinement.ExternalModel.response_exists",
+    "line": 33,
+    "type": "∀ (P : Benitoite.Release.Refinement.Program) (base : Benitoite.Release.Refinement.Builtins)\n  (f : Benitoite.Release.Refinement.ExternalFunctionId) (ts : List Benitoite.Release.Refinement.Ty)\n  (vs : List Benitoite.Release.Refinement.Val),\n  ∃ out obs, Benitoite.Release.Refinement.ExternalModel.response P base f ts vs out obs"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.ExternalModelTransport",
+    "name": "Benitoite.Release.Refinement.ExternalModel.scope_conditions",
+    "line": 25,
+    "type": "∀ {P : Benitoite.Release.Refinement.Program} {base : Benitoite.Release.Refinement.Builtins}\n  (release : Benitoite.Release.Refinement.Val → Option Benitoite.Release.ErrKind → Prop),\n  Benitoite.Release.Refinement.ModelScopeConditions P base →\n    Benitoite.Release.Refinement.ModelScopeConditions P\n      (Benitoite.Release.Refinement.ExternalModel.builtins P base release)"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.ExternalModelResponse",
+    "name": "Benitoite.Release.Refinement.ExternalModel.typing_fields",
+    "line": 20,
+    "type": "∀ (P : Benitoite.Release.Refinement.Program) (base : Benitoite.Release.Refinement.Builtins)\n  (release : Benitoite.Release.Refinement.Val → Option Benitoite.Release.ErrKind → Prop),\n  base.TypingFieldsEq (Benitoite.Release.Refinement.ExternalModel.builtins P base release)"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.ExternalModelTransport",
+    "name": "Benitoite.Release.Refinement.ExternalModels.http",
+    "line": 51,
+    "type": "Benitoite.Release.Refinement.Program → Benitoite.Release.Refinement.Builtins"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.ExternalModelTransport",
+    "name": "Benitoite.Release.Refinement.ExternalModels.http_core",
+    "line": 74,
+    "type": "∀ (P : Benitoite.Release.Refinement.Program),\n  Benitoite.Release.Refinement.ScopeDeclarations.HasHttp P →\n    Benitoite.Release.Refinement.Builtins.CoreAssumptions P (Benitoite.Release.Refinement.ExternalModels.http P)"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.ExternalModelTransport",
+    "name": "Benitoite.Release.Refinement.ExternalModels.http_scope",
+    "line": 58,
+    "type": "∀ (P : Benitoite.Release.Refinement.Program),\n  Benitoite.Release.Refinement.ScopeDeclarations.HasHttp P →\n    Benitoite.Release.Refinement.ModelScopeConditions P (Benitoite.Release.Refinement.ExternalModels.http P)"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.ExternalModelTransport",
+    "name": "Benitoite.Release.Refinement.ExternalModels.model",
+    "line": 47,
+    "type": "Benitoite.Release.Refinement.Program → Benitoite.Release.Refinement.Builtins"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.ExternalModelTransport",
+    "name": "Benitoite.Release.Refinement.ExternalModels.model_core",
+    "line": 61,
+    "type": "∀ (P : Benitoite.Release.Refinement.Program),\n  Benitoite.Release.Refinement.Builtins.CoreAssumptions P (Benitoite.Release.Refinement.ExternalModels.model P)"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.ExternalModelTransport",
+    "name": "Benitoite.Release.Refinement.ExternalModels.model_scope",
+    "line": 54,
+    "type": "∀ (P : Benitoite.Release.Refinement.Program),\n  Benitoite.Release.Refinement.ModelScopeConditions P (Benitoite.Release.Refinement.ExternalModels.model P)"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.ExternalModelTransport",
+    "name": "Benitoite.Release.Refinement.ExternalModels.targets",
+    "line": 49,
+    "type": "Benitoite.Release.Refinement.Program → Benitoite.Release.Refinement.Builtins"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.ExternalModelTransport",
+    "name": "Benitoite.Release.Refinement.ExternalModels.targets_core",
+    "line": 66,
+    "type": "∀ (P : Benitoite.Release.Refinement.Program),\n  Benitoite.Release.Refinement.ScopeDeclarations.HasFile P →\n    Benitoite.Release.Refinement.Builtins.CoreAssumptions P (Benitoite.Release.Refinement.ExternalModels.targets P)"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.ExternalModelTransport",
+    "name": "Benitoite.Release.Refinement.ExternalModels.targets_scope",
+    "line": 56,
+    "type": "∀ (P : Benitoite.Release.Refinement.Program),\n  Benitoite.Release.Refinement.ScopeDeclarations.HasFile P →\n    Benitoite.Release.Refinement.ModelScopeConditions P (Benitoite.Release.Refinement.ExternalModels.targets P)"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.ExternalSurfaceLeaves",
+    "name": "Benitoite.Release.Refinement.ExternalSurface.call_typed",
+    "line": 15,
+    "type": "∀ {P : Benitoite.Release.Refinement.Program} {B : Benitoite.Release.Refinement.Builtins}\n  {Ψ : Benitoite.Release.Refinement.StoreTy} {Q : Benitoite.Release.NoFailCtx}\n  {C : Benitoite.Release.Refinement.TypeCtx} {Γ : Benitoite.Release.Refinement.Ctx}\n  {Φ : List Benitoite.Release.Refinement.Pred} {R : Option Benitoite.Release.Refinement.Ty}\n  {Δ : Benitoite.Release.Refinement.LocalCtx} {f : Benitoite.Release.Refinement.ExternalFunctionId}\n  {d : Benitoite.Release.Refinement.ExternalSignature} {ts : List Benitoite.Release.Refinement.Ty}\n  {ws : List Benitoite.Release.Refinement.Val} {a : Benitoite.Release.Refinement.Ty}\n  {e : Benitoite.Release.Refinement.Eff},\n  P.externalFunction f = Option.some d →\n    Benitoite.Release.Refinement.ExternalSignature.WF P d →\n      Benitoite.Release.Refinement.ExternalCallAdmissible P B C d ts →\n        Benitoite.Release.Refinement.HasTypeTelArgsQ P B Ψ Q C Γ Φ ws\n            (Benitoite.Release.Refinement.Tel.bind (Benitoite.Release.Refinement.typeEnv ts) d.parameters) a e →\n          Benitoite.Release.Refinement.HasTypeCQ P B Ψ Q C Γ Φ R\n            (Benitoite.Release.Refinement.Comp.externalCall f ts ws) a e Δ"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.ExternalSurfaceLeaves",
+    "name": "Benitoite.Release.Refinement.ExternalSurface.ref_typed",
+    "line": 6,
+    "type": "∀ {P : Benitoite.Release.Refinement.Program} {B : Benitoite.Release.Refinement.Builtins}\n  {Ψ : Benitoite.Release.Refinement.StoreTy} {Q : Benitoite.Release.NoFailCtx}\n  {C : Benitoite.Release.Refinement.TypeCtx} {Γ : Benitoite.Release.Refinement.Ctx}\n  {Φ : List Benitoite.Release.Refinement.Pred} {f : Benitoite.Release.Refinement.ExternalFunctionId}\n  {d : Benitoite.Release.Refinement.ExternalSignature} {ts : List Benitoite.Release.Refinement.Ty},\n  P.externalFunction f = Option.some d →\n    Benitoite.Release.Refinement.ExternalSignature.WF P d →\n      Benitoite.Release.Refinement.ExternalCallAdmissible P B C d ts →\n        Benitoite.Release.Refinement.SignatureInstance P C Γ d.parameters d.kinds ts [] →\n          Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C Γ Φ (Benitoite.Release.Refinement.Val.externalRef f ts)\n            (Benitoite.Release.Refinement.Ty.dependentFn\n              (Benitoite.Release.Refinement.instantiatedTel d.parameters ts []))"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.FunctionNameMap",
+    "name": "Benitoite.Release.Refinement.FunctionNames.arms",
+    "line": 86,
+    "type": "(String → String) → List Benitoite.Release.Refinement.Arm → List Benitoite.Release.Refinement.Arm"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.FunctionNameMap",
+    "name": "Benitoite.Release.Refinement.FunctionNames.clauses",
+    "line": 90,
+    "type": "(String → String) → List Benitoite.Release.Refinement.Clause → List Benitoite.Release.Refinement.Clause"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.FunctionNameMap",
+    "name": "Benitoite.Release.Refinement.FunctionNames.collisionNames",
+    "line": 12,
+    "type": "List String"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.FunctionNameMap",
+    "name": "Benitoite.Release.Refinement.FunctionNames.computation",
+    "line": 68,
+    "type": "(String → String) → Benitoite.Release.Refinement.Comp → Benitoite.Release.Refinement.Comp"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.FunctionNameMap",
+    "name": "Benitoite.Release.Refinement.FunctionNames.definition",
+    "line": 96,
+    "type": "(String → String) → Benitoite.Release.Refinement.Def → Benitoite.Release.Refinement.Def"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.FunctionNameMap",
+    "name": "Benitoite.Release.Refinement.FunctionNames.definition_tel",
+    "line": 98,
+    "type": "∀ (ρ : String → String) (d : Benitoite.Release.Refinement.Def),\n  (Benitoite.Release.Refinement.FunctionNames.definition ρ d).tel = d.tel"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.FunctionNameMap",
+    "name": "Benitoite.Release.Refinement.FunctionNames.rename",
+    "line": 18,
+    "type": "Bool → String → String"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.FunctionNameMap",
+    "name": "Benitoite.Release.Refinement.FunctionNames.rename_injective",
+    "line": 30,
+    "type": "∀ (refined : Bool), Function.Injective (Benitoite.Release.Refinement.FunctionNames.rename refined)"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.FunctionNameMap",
+    "name": "Benitoite.Release.Refinement.FunctionNames.slots",
+    "line": 64,
+    "type": "(String → String) → List (Option Benitoite.Release.Refinement.Val) → List (Option Benitoite.Release.Refinement.Val)"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.FunctionNameMap",
+    "name": "Benitoite.Release.Refinement.FunctionNames.swap",
+    "line": 4,
+    "type": "String → String → String → String"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.FunctionNameMap",
+    "name": "Benitoite.Release.Refinement.FunctionNames.swap_injective",
+    "line": 6,
+    "type": "∀ (a b : String), Function.Injective (Benitoite.Release.Refinement.FunctionNames.swap a b)"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.FunctionNameMap",
+    "name": "Benitoite.Release.Refinement.FunctionNames.value",
+    "line": 34,
+    "type": "(String → String) → Benitoite.Release.Refinement.Val → Benitoite.Release.Refinement.Val"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.FunctionNameMap",
+    "name": "Benitoite.Release.Refinement.FunctionNames.values",
+    "line": 61,
+    "type": "(String → String) → List Benitoite.Release.Refinement.Val → List Benitoite.Release.Refinement.Val"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.BuiltinTypingTransport",
+    "name": "Benitoite.Release.Refinement.HasFailureClause.of_fields",
+    "line": 169,
+    "type": "∀ {P : Benitoite.Release.Refinement.Program} {B B' : Benitoite.Release.Refinement.Builtins}\n  {Ψ : Benitoite.Release.Refinement.StoreTy} {Q : Benitoite.Release.NoFailCtx}\n  {C : Benitoite.Release.Refinement.TypeCtx} {Γ : Benitoite.Release.Refinement.Ctx}\n  {Φ : List Benitoite.Release.Refinement.Pred} {E : Benitoite.Release.Refinement.Ty}\n  {R : Option Benitoite.Release.Refinement.Ty} {cs : List Benitoite.Release.Refinement.Clause}\n  {t : Benitoite.Release.Refinement.Ty} {e : Benitoite.Release.Refinement.Eff}\n  {Δ : Benitoite.Release.Refinement.LocalCtx},\n  B.TypingFieldsEq B' →\n    Benitoite.Release.Refinement.HasFailureClause P B Ψ Q C Γ Φ E R cs t e Δ →\n      Benitoite.Release.Refinement.HasFailureClause P B' Ψ Q C Γ Φ E R cs t e Δ"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.BuiltinTypingTransport",
+    "name": "Benitoite.Release.Refinement.HasTypeArmsQ.of_fields",
+    "line": 156,
+    "type": "∀ {P : Benitoite.Release.Refinement.Program} {B B' : Benitoite.Release.Refinement.Builtins}\n  {Ψ : Benitoite.Release.Refinement.StoreTy} {Q : Benitoite.Release.NoFailCtx}\n  {C : Benitoite.Release.Refinement.TypeCtx} {Γ : Benitoite.Release.Refinement.Ctx}\n  {Φ : List Benitoite.Release.Refinement.Pred} {R : Option Benitoite.Release.Refinement.Ty}\n  {obs : Option Benitoite.Release.Refinement.Term} {arms : List Benitoite.Release.Refinement.Arm}\n  {a b : Benitoite.Release.Refinement.Ty} {e : Benitoite.Release.Refinement.Eff}\n  {Δ : Benitoite.Release.Refinement.LocalCtx},\n  B.TypingFieldsEq B' →\n    Benitoite.Release.Refinement.HasTypeArmsQ P B Ψ Q C Γ Φ R obs arms a b e Δ →\n      Benitoite.Release.Refinement.HasTypeArmsQ P B' Ψ Q C Γ Φ R obs arms a b e Δ"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.BuiltinTypingTransport",
+    "name": "Benitoite.Release.Refinement.HasTypeCQ.of_fields",
+    "line": 95,
+    "type": "∀ {P : Benitoite.Release.Refinement.Program} {B B' : Benitoite.Release.Refinement.Builtins}\n  {Ψ : Benitoite.Release.Refinement.StoreTy} {Q : Benitoite.Release.NoFailCtx}\n  {C : Benitoite.Release.Refinement.TypeCtx} {Γ : Benitoite.Release.Refinement.Ctx}\n  {Φ : List Benitoite.Release.Refinement.Pred} {R : Option Benitoite.Release.Refinement.Ty}\n  {m : Benitoite.Release.Refinement.Comp} {a : Benitoite.Release.Refinement.Ty} {ε : Benitoite.Release.Refinement.Eff}\n  {Δ : Benitoite.Release.Refinement.LocalCtx},\n  B.TypingFieldsEq B' →\n    Benitoite.Release.Refinement.HasTypeCQ P B Ψ Q C Γ Φ R m a ε Δ →\n      Benitoite.Release.Refinement.HasTypeCQ P B' Ψ Q C Γ Φ R m a ε Δ"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.BuiltinTypingTransport",
+    "name": "Benitoite.Release.Refinement.HasTypeClausesQ.of_fields",
+    "line": 163,
+    "type": "∀ {P : Benitoite.Release.Refinement.Program} {B B' : Benitoite.Release.Refinement.Builtins}\n  {Ψ : Benitoite.Release.Refinement.StoreTy} {Q : Benitoite.Release.NoFailCtx}\n  {C : Benitoite.Release.Refinement.TypeCtx} {Γ : Benitoite.Release.Refinement.Ctx}\n  {Φ : List Benitoite.Release.Refinement.Pred} {R : Option Benitoite.Release.Refinement.Ty}\n  {eb : Benitoite.Release.Refinement.Eff} {cs : List Benitoite.Release.Refinement.Clause}\n  {t : Benitoite.Release.Refinement.Ty} {e : Benitoite.Release.Refinement.Eff}\n  {Δ : Benitoite.Release.Refinement.LocalCtx},\n  B.TypingFieldsEq B' →\n    Benitoite.Release.Refinement.HasTypeClausesQ P B Ψ Q C Γ Φ R eb cs t e Δ →\n      Benitoite.Release.Refinement.HasTypeClausesQ P B' Ψ Q C Γ Φ R eb cs t e Δ"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.BuiltinTypingTransport",
+    "name": "Benitoite.Release.Refinement.HasTypeEachQ.of_fields",
+    "line": 89,
+    "type": "∀ {P : Benitoite.Release.Refinement.Program} {B B' : Benitoite.Release.Refinement.Builtins}\n  {Ψ : Benitoite.Release.Refinement.StoreTy} {Q : Benitoite.Release.NoFailCtx}\n  {C : Benitoite.Release.Refinement.TypeCtx} {Γ : Benitoite.Release.Refinement.Ctx}\n  {Φ : List Benitoite.Release.Refinement.Pred} {vs : List Benitoite.Release.Refinement.Val}\n  {a : Benitoite.Release.Refinement.Ty},\n  B.TypingFieldsEq B' →\n    Benitoite.Release.Refinement.HasTypeEachQ P B Ψ Q C Γ Φ vs a →\n      Benitoite.Release.Refinement.HasTypeEachQ P B' Ψ Q C Γ Φ vs a"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.BuiltinTypingTransport",
+    "name": "Benitoite.Release.Refinement.HasTypeTelArgsQ.of_fields",
+    "line": 123,
+    "type": "∀ {P : Benitoite.Release.Refinement.Program} {B B' : Benitoite.Release.Refinement.Builtins}\n  {Ψ : Benitoite.Release.Refinement.StoreTy} {Q : Benitoite.Release.NoFailCtx}\n  {C : Benitoite.Release.Refinement.TypeCtx} {Γ : Benitoite.Release.Refinement.Ctx}\n  {Φ : List Benitoite.Release.Refinement.Pred} {ws : List Benitoite.Release.Refinement.Val}\n  {t : Benitoite.Release.Refinement.Tel} {a : Benitoite.Release.Refinement.Ty} {e : Benitoite.Release.Refinement.Eff},\n  B.TypingFieldsEq B' →\n    Benitoite.Release.Refinement.HasTypeTelArgsQ P B Ψ Q C Γ Φ ws t a e →\n      Benitoite.Release.Refinement.HasTypeTelArgsQ P B' Ψ Q C Γ Φ ws t a e"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.BuiltinTypingTransport",
+    "name": "Benitoite.Release.Refinement.HasTypeVQ.of_fields",
+    "line": 50,
+    "type": "∀ {P : Benitoite.Release.Refinement.Program} {B B' : Benitoite.Release.Refinement.Builtins}\n  {Ψ : Benitoite.Release.Refinement.StoreTy} {Q : Benitoite.Release.NoFailCtx}\n  {C : Benitoite.Release.Refinement.TypeCtx} {Γ : Benitoite.Release.Refinement.Ctx}\n  {Φ : List Benitoite.Release.Refinement.Pred} {v : Benitoite.Release.Refinement.Val}\n  {a : Benitoite.Release.Refinement.Ty},\n  B.TypingFieldsEq B' →\n    Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C Γ Φ v a → Benitoite.Release.Refinement.HasTypeVQ P B' Ψ Q C Γ Φ v a"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.BuiltinTypingTransport",
+    "name": "Benitoite.Release.Refinement.HasTypeVsQ.of_fields",
+    "line": 83,
+    "type": "∀ {P : Benitoite.Release.Refinement.Program} {B B' : Benitoite.Release.Refinement.Builtins}\n  {Ψ : Benitoite.Release.Refinement.StoreTy} {Q : Benitoite.Release.NoFailCtx}\n  {C : Benitoite.Release.Refinement.TypeCtx} {Γ : Benitoite.Release.Refinement.Ctx}\n  {Φ : List Benitoite.Release.Refinement.Pred} {vs : List Benitoite.Release.Refinement.Val}\n  {as : List Benitoite.Release.Refinement.Ty},\n  B.TypingFieldsEq B' →\n    Benitoite.Release.Refinement.HasTypeVsQ P B Ψ Q C Γ Φ vs as →\n      Benitoite.Release.Refinement.HasTypeVsQ P B' Ψ Q C Γ Φ vs as"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.BuiltinTypingTransport",
+    "name": "Benitoite.Release.Refinement.ImageOk.of_fields",
+    "line": 174,
+    "type": "∀ {P : Benitoite.Release.Refinement.Program} {B B' : Benitoite.Release.Refinement.Builtins}\n  {Ψ : Benitoite.Release.Refinement.StoreTy} {Q : Benitoite.Release.NoFailCtx}\n  {C : Benitoite.Release.Refinement.TypeCtx} {Γ : Benitoite.Release.Refinement.Ctx}\n  {Φ : List Benitoite.Release.Refinement.Pred} {R : Option Benitoite.Release.Refinement.Ty}\n  {env : Nat → Benitoite.Release.Refinement.Val} {i : Nat} {a : Benitoite.Release.Refinement.Ty},\n  B.TypingFieldsEq B' →\n    Benitoite.Release.Refinement.ImageOk P B Ψ Q C Γ Φ R env i a →\n      Benitoite.Release.Refinement.ImageOk P B' Ψ Q C Γ Φ R env i a"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.BuiltinResponseTransport",
+    "name": "Benitoite.Release.Refinement.ModelScopeConditions.of_responses",
+    "line": 80,
+    "type": "∀ {P : Benitoite.Release.Refinement.Program} {B B' : Benitoite.Release.Refinement.Builtins},\n  B.TypingFieldsEq B' →\n    B.delta = B'.delta →\n      B.ioResponse = B'.ioResponse →\n        B.refGet = B'.refGet →\n          B.refSet = B'.refSet →\n            B.effKind = B'.effKind →\n              Benitoite.Release.Refinement.ModelScopeConditions P B →\n                Benitoite.Release.Refinement.ModelScopeConditions P B'"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.BuiltinResponseTransport",
+    "name": "Benitoite.Release.Refinement.Outcome.Carrier.of_fields",
+    "line": 40,
+    "type": "∀ {P : Benitoite.Release.Refinement.Program} {B B' : Benitoite.Release.Refinement.Builtins}\n  {Ψ : Benitoite.Release.Refinement.StoreTy} {out : Benitoite.Release.Refinement.Outcome}\n  {a : Benitoite.Release.Refinement.Ty},\n  B.TypingFieldsEq B' →\n    Benitoite.Release.Refinement.Outcome.Carrier P B Ψ out a → Benitoite.Release.Refinement.Outcome.Carrier P B' Ψ out a"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.BuiltinResponseTransport",
+    "name": "Benitoite.Release.Refinement.Outcome.Typed.of_fields",
+    "line": 34,
+    "type": "∀ {P : Benitoite.Release.Refinement.Program} {B B' : Benitoite.Release.Refinement.Builtins}\n  {Ψ : Benitoite.Release.Refinement.StoreTy} {out : Benitoite.Release.Refinement.Outcome}\n  {a : Benitoite.Release.Refinement.Ty},\n  B.TypingFieldsEq B' →\n    Benitoite.Release.Refinement.Outcome.Typed P B Ψ out a → Benitoite.Release.Refinement.Outcome.Typed P B' Ψ out a"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.ResourceReleaseModel",
+    "name": "Benitoite.Release.Refinement.ResourceRelease.canonical",
+    "line": 13,
+    "type": "∀ {P : Benitoite.Release.Refinement.Program} {B : Benitoite.Release.Refinement.Builtins}\n  {Ψ : Benitoite.Release.Refinement.StoreTy} {Q : Benitoite.Release.NoFailCtx}\n  {C : Benitoite.Release.Refinement.TypeCtx} {Φ : List Benitoite.Release.Refinement.Pred}\n  {v : Benitoite.Release.Refinement.Val} {o : Benitoite.Release.OpaqueName},\n  Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C [] Φ v\n      (Benitoite.Release.Refinement.Ty.opaque o\n        (Benitoite.Release.Refinement.RangeIx.fixed Benitoite.Release.Refinement.RangeExpr.top)) →\n    B.valKind o = Option.none →\n      ∃ i, v = Benitoite.Release.Refinement.Val.const (Benitoite.Release.Refinement.Const.opaque o i)"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.ResourceReleaseModel",
+    "name": "Benitoite.Release.Refinement.ResourceRelease.response",
+    "line": 8,
+    "type": "(Benitoite.Release.OpaqueName → Bool) → Benitoite.Release.Refinement.Val → Option Benitoite.Release.ErrKind → Prop"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.ResourceReleaseModel",
+    "name": "Benitoite.Release.Refinement.ResourceRelease.targets_classification",
+    "line": 47,
+    "type": "∀ (o : Benitoite.Release.OpaqueName),\n  Benitoite.Release.Refinement.ModelTargets.builtins.isResource o = Bool.true →\n    Benitoite.Release.Refinement.ModelTargets.builtins.valKind o = Option.none"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.ResourceReleaseModel",
+    "name": "Benitoite.Release.Refinement.ResourceRelease.typed_response",
+    "line": 38,
+    "type": "∀ {P : Benitoite.Release.Refinement.Program} {B : Benitoite.Release.Refinement.Builtins}\n  {Ψ : Benitoite.Release.Refinement.StoreTy} {Q : Benitoite.Release.NoFailCtx}\n  {C : Benitoite.Release.Refinement.TypeCtx} {Φ : List Benitoite.Release.Refinement.Pred}\n  {v : Benitoite.Release.Refinement.Val} {o : Benitoite.Release.OpaqueName},\n  (∀ (name : Benitoite.Release.OpaqueName), B.isResource name = Bool.true → B.valKind name = Option.none) →\n    Benitoite.Release.Refinement.HasTypeVQ P B Ψ Q C [] Φ v\n        (Benitoite.Release.Refinement.Ty.opaque o\n          (Benitoite.Release.Refinement.RangeIx.fixed Benitoite.Release.Refinement.RangeExpr.top)) →\n      B.isResource o = Bool.true →\n        ∀ (r : Option Benitoite.Release.ErrKind), Benitoite.Release.Refinement.ResourceRelease.response B.isResource v r"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.BuiltinTypingTransport",
+    "name": "Benitoite.Release.Refinement.SatAll.of_fields",
+    "line": 22,
+    "type": "∀ {B B' : Benitoite.Release.Refinement.Builtins} {C : Benitoite.Release.Refinement.TypeCtx}\n  {ts : List Benitoite.Release.Refinement.Ty} {ps : List Benitoite.Release.TParam},\n  B.TypingFieldsEq B' → Benitoite.Release.Refinement.SatAll B C ts ps → Benitoite.Release.Refinement.SatAll B' C ts ps"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body",
+    "line": 12,
+    "type": "Type"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.all",
+    "line": 686,
+    "type": "List Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b001",
+    "line": 13,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b001.elim",
+    "line": 13,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 0 → motive Benitoite.Release.Refinement.StandardModel.Body.b001 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b002",
+    "line": 14,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b002.elim",
+    "line": 14,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 1 → motive Benitoite.Release.Refinement.StandardModel.Body.b002 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b003",
+    "line": 15,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b003.elim",
+    "line": 15,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 2 → motive Benitoite.Release.Refinement.StandardModel.Body.b003 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b004",
+    "line": 16,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b004.elim",
+    "line": 16,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 3 → motive Benitoite.Release.Refinement.StandardModel.Body.b004 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b005",
+    "line": 17,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b005.elim",
+    "line": 17,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 4 → motive Benitoite.Release.Refinement.StandardModel.Body.b005 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b006",
+    "line": 18,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b006.elim",
+    "line": 18,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 5 → motive Benitoite.Release.Refinement.StandardModel.Body.b006 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b007",
+    "line": 19,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b007.elim",
+    "line": 19,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 6 → motive Benitoite.Release.Refinement.StandardModel.Body.b007 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b008",
+    "line": 20,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b008.elim",
+    "line": 20,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 7 → motive Benitoite.Release.Refinement.StandardModel.Body.b008 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b009",
+    "line": 21,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b009.elim",
+    "line": 21,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 8 → motive Benitoite.Release.Refinement.StandardModel.Body.b009 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b010",
+    "line": 22,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b010.elim",
+    "line": 22,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 9 → motive Benitoite.Release.Refinement.StandardModel.Body.b010 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b011",
+    "line": 23,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b011.elim",
+    "line": 23,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 10 → motive Benitoite.Release.Refinement.StandardModel.Body.b011 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b012",
+    "line": 24,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b012.elim",
+    "line": 24,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 11 → motive Benitoite.Release.Refinement.StandardModel.Body.b012 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b013",
+    "line": 25,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b013.elim",
+    "line": 25,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 12 → motive Benitoite.Release.Refinement.StandardModel.Body.b013 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b014",
+    "line": 26,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b014.elim",
+    "line": 26,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 13 → motive Benitoite.Release.Refinement.StandardModel.Body.b014 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b015",
+    "line": 27,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b015.elim",
+    "line": 27,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 14 → motive Benitoite.Release.Refinement.StandardModel.Body.b015 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b016",
+    "line": 28,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b016.elim",
+    "line": 28,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 15 → motive Benitoite.Release.Refinement.StandardModel.Body.b016 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b017",
+    "line": 29,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b017.elim",
+    "line": 29,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 16 → motive Benitoite.Release.Refinement.StandardModel.Body.b017 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b018",
+    "line": 30,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b018.elim",
+    "line": 30,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 17 → motive Benitoite.Release.Refinement.StandardModel.Body.b018 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b019",
+    "line": 31,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b019.elim",
+    "line": 31,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 18 → motive Benitoite.Release.Refinement.StandardModel.Body.b019 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b020",
+    "line": 32,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b020.elim",
+    "line": 32,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 19 → motive Benitoite.Release.Refinement.StandardModel.Body.b020 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b021",
+    "line": 33,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b021.elim",
+    "line": 33,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 20 → motive Benitoite.Release.Refinement.StandardModel.Body.b021 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b022",
+    "line": 34,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b022.elim",
+    "line": 34,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 21 → motive Benitoite.Release.Refinement.StandardModel.Body.b022 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b023",
+    "line": 35,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b023.elim",
+    "line": 35,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 22 → motive Benitoite.Release.Refinement.StandardModel.Body.b023 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b024",
+    "line": 36,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b024.elim",
+    "line": 36,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 23 → motive Benitoite.Release.Refinement.StandardModel.Body.b024 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b025",
+    "line": 37,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b025.elim",
+    "line": 37,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 24 → motive Benitoite.Release.Refinement.StandardModel.Body.b025 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b026",
+    "line": 38,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b026.elim",
+    "line": 38,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 25 → motive Benitoite.Release.Refinement.StandardModel.Body.b026 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b027",
+    "line": 39,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b027.elim",
+    "line": 39,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 26 → motive Benitoite.Release.Refinement.StandardModel.Body.b027 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b028",
+    "line": 40,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b028.elim",
+    "line": 40,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 27 → motive Benitoite.Release.Refinement.StandardModel.Body.b028 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b029",
+    "line": 41,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b029.elim",
+    "line": 41,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 28 → motive Benitoite.Release.Refinement.StandardModel.Body.b029 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b030",
+    "line": 42,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b030.elim",
+    "line": 42,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 29 → motive Benitoite.Release.Refinement.StandardModel.Body.b030 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b031",
+    "line": 43,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b031.elim",
+    "line": 43,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 30 → motive Benitoite.Release.Refinement.StandardModel.Body.b031 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b032",
+    "line": 44,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b032.elim",
+    "line": 44,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 31 → motive Benitoite.Release.Refinement.StandardModel.Body.b032 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b033",
+    "line": 45,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b033.elim",
+    "line": 45,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 32 → motive Benitoite.Release.Refinement.StandardModel.Body.b033 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b034",
+    "line": 46,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b034.elim",
+    "line": 46,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 33 → motive Benitoite.Release.Refinement.StandardModel.Body.b034 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b035",
+    "line": 47,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b035.elim",
+    "line": 47,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 34 → motive Benitoite.Release.Refinement.StandardModel.Body.b035 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b036",
+    "line": 48,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b036.elim",
+    "line": 48,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 35 → motive Benitoite.Release.Refinement.StandardModel.Body.b036 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b037",
+    "line": 49,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b037.elim",
+    "line": 49,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 36 → motive Benitoite.Release.Refinement.StandardModel.Body.b037 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b038",
+    "line": 50,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b038.elim",
+    "line": 50,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 37 → motive Benitoite.Release.Refinement.StandardModel.Body.b038 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b039",
+    "line": 51,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b039.elim",
+    "line": 51,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 38 → motive Benitoite.Release.Refinement.StandardModel.Body.b039 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b040",
+    "line": 52,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b040.elim",
+    "line": 52,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 39 → motive Benitoite.Release.Refinement.StandardModel.Body.b040 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b041",
+    "line": 53,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b041.elim",
+    "line": 53,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 40 → motive Benitoite.Release.Refinement.StandardModel.Body.b041 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b042",
+    "line": 54,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b042.elim",
+    "line": 54,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 41 → motive Benitoite.Release.Refinement.StandardModel.Body.b042 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b043",
+    "line": 55,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b043.elim",
+    "line": 55,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 42 → motive Benitoite.Release.Refinement.StandardModel.Body.b043 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b044",
+    "line": 56,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b044.elim",
+    "line": 56,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 43 → motive Benitoite.Release.Refinement.StandardModel.Body.b044 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b045",
+    "line": 57,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b045.elim",
+    "line": 57,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 44 → motive Benitoite.Release.Refinement.StandardModel.Body.b045 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b046",
+    "line": 58,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b046.elim",
+    "line": 58,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 45 → motive Benitoite.Release.Refinement.StandardModel.Body.b046 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b047",
+    "line": 59,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b047.elim",
+    "line": 59,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 46 → motive Benitoite.Release.Refinement.StandardModel.Body.b047 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b048",
+    "line": 60,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b048.elim",
+    "line": 60,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 47 → motive Benitoite.Release.Refinement.StandardModel.Body.b048 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b049",
+    "line": 61,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b049.elim",
+    "line": 61,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 48 → motive Benitoite.Release.Refinement.StandardModel.Body.b049 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b050",
+    "line": 62,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b050.elim",
+    "line": 62,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 49 → motive Benitoite.Release.Refinement.StandardModel.Body.b050 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b051",
+    "line": 63,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b051.elim",
+    "line": 63,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 50 → motive Benitoite.Release.Refinement.StandardModel.Body.b051 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b052",
+    "line": 64,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b052.elim",
+    "line": 64,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 51 → motive Benitoite.Release.Refinement.StandardModel.Body.b052 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b053",
+    "line": 65,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b053.elim",
+    "line": 65,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 52 → motive Benitoite.Release.Refinement.StandardModel.Body.b053 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b054",
+    "line": 66,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b054.elim",
+    "line": 66,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 53 → motive Benitoite.Release.Refinement.StandardModel.Body.b054 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b055",
+    "line": 67,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b055.elim",
+    "line": 67,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 54 → motive Benitoite.Release.Refinement.StandardModel.Body.b055 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b056",
+    "line": 68,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b056.elim",
+    "line": 68,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 55 → motive Benitoite.Release.Refinement.StandardModel.Body.b056 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b057",
+    "line": 69,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b057.elim",
+    "line": 69,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 56 → motive Benitoite.Release.Refinement.StandardModel.Body.b057 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b058",
+    "line": 70,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b058.elim",
+    "line": 70,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 57 → motive Benitoite.Release.Refinement.StandardModel.Body.b058 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b059",
+    "line": 71,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b059.elim",
+    "line": 71,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 58 → motive Benitoite.Release.Refinement.StandardModel.Body.b059 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b060",
+    "line": 72,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b060.elim",
+    "line": 72,
+    "type": "{motive : Benitoite.Release.Refinement.StandardModel.Body → Sort u} →\n  (t : Benitoite.Release.Refinement.StandardModel.Body) →\n    t.ctorIdx = 59 → motive Benitoite.Release.Refinement.StandardModel.Body.b060 → motive t"
+  },
+  {
+    "module": "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "name": "Benitoite.Release.Refinement.StandardModel.Body.b061",
+    "line": 73,
+    "type": "Benitoite.Release.Refinement.StandardModel.Body"
+  }
+]

@@ -1,0 +1,2168 @@
+[
+  {
+    "id": "L516",
+    "classification": "仮定",
+    "lean_name": "File.closeReader",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "IO.File.closeReader"
+    ],
+    "rust_references": [
+      "R160"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "IO.File.closeReader は「通常資源の状態」に分類する。通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。state登録の資源操作そのものに対応する専用Builtins欄はなく、IO応答とは数えない。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "通常資源の状態",
+    "builtins_fields": [
+      "sig",
+      "isResource",
+      "releaseResponse"
+    ],
+    "rust_mode": "state",
+    "assumption_detail": "通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。state登録の資源操作そのものに対応する専用Builtins欄はなく、IO応答とは数えない"
+  },
+  {
+    "id": "L517",
+    "classification": "仮定",
+    "lean_name": "Process.arguments",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.IO.Process.arguments"
+    ],
+    "rust_references": [
+      "R161"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.IO.Process.arguments は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "IO 応答",
+    "builtins_fields": [
+      "sig",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する"
+  },
+  {
+    "id": "L518",
+    "classification": "仮定",
+    "lean_name": "Process.exit",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.IO.Process.exit"
+    ],
+    "rust_references": [
+      "R162"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.IO.Process.exit は「専用の遷移」に分類する。kind=exit、ioResponseのexit結果とStep.E_Exit/終了時の解放遷移を読む。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "専用の遷移",
+    "builtins_fields": [
+      "sig",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "kind=exit、ioResponseのexit結果とStep.E_Exit/終了時の解放遷移を読む"
+  },
+  {
+    "id": "L519",
+    "classification": "仮定",
+    "lean_name": "Clock.sleep",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.IO.Clock.sleep"
+    ],
+    "rust_references": [
+      "R163"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.IO.Clock.sleep は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "IO 応答",
+    "builtins_fields": [
+      "sig",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する"
+  },
+  {
+    "id": "L520",
+    "classification": "仮定",
+    "lean_name": "Clock.monotonicMilliseconds",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.IO.Clock.monotonicMilliseconds"
+    ],
+    "rust_references": [
+      "R164"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.IO.Clock.monotonicMilliseconds は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "IO 応答",
+    "builtins_fields": [
+      "sig",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する"
+  },
+  {
+    "id": "L521",
+    "classification": "仮定",
+    "lean_name": "Assert.equal",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.Assert.equal"
+    ],
+    "rust_references": [
+      "R165"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.Assert.equal は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "IO 応答",
+    "builtins_fields": [
+      "sig",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する"
+  },
+  {
+    "id": "L522",
+    "classification": "仮定",
+    "lean_name": "Assert.notEqual",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.Assert.notEqual"
+    ],
+    "rust_references": [
+      "R166"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.Assert.notEqual は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "IO 応答",
+    "builtins_fields": [
+      "sig",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する"
+  },
+  {
+    "id": "L523",
+    "classification": "仮定",
+    "lean_name": "Assert.isTrue",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.Assert.isTrue"
+    ],
+    "rust_references": [
+      "R167"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.Assert.isTrue は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "IO 応答",
+    "builtins_fields": [
+      "sig",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する"
+  },
+  {
+    "id": "L524",
+    "classification": "仮定",
+    "lean_name": "Assert.fail",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.Assert.fail"
+    ],
+    "rust_references": [
+      "R168"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.Assert.fail は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "IO 応答",
+    "builtins_fields": [
+      "sig",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する"
+  },
+  {
+    "id": "L525",
+    "classification": "仮定",
+    "lean_name": "NetworkError.kind",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "NetworkError.kind"
+    ],
+    "rust_references": [
+      "R210"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "NetworkError.kind は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L526",
+    "classification": "仮定",
+    "lean_name": "NetworkError.message",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "NetworkError.message"
+    ],
+    "rust_references": [
+      "R211"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "NetworkError.message は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L527",
+    "classification": "仮定",
+    "lean_name": "Console.readAllLines",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.IO.Console.readAllLines"
+    ],
+    "rust_references": [
+      "R212"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.IO.Console.readAllLines は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "IO 応答",
+    "builtins_fields": [
+      "sig",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する"
+  },
+  {
+    "id": "L528",
+    "classification": "仮定",
+    "lean_name": "Console.readAllBytes",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.IO.Console.readAllBytes"
+    ],
+    "rust_references": [
+      "R213"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.IO.Console.readAllBytes は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "IO 応答",
+    "builtins_fields": [
+      "sig",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する"
+  },
+  {
+    "id": "L529",
+    "classification": "仮定",
+    "lean_name": "Process.scriptDirectory",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.IO.Process.scriptDirectory"
+    ],
+    "rust_references": [
+      "R214"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.IO.Process.scriptDirectory は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "IO 応答",
+    "builtins_fields": [
+      "sig",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する"
+  },
+  {
+    "id": "L530",
+    "classification": "仮定",
+    "lean_name": "Process.environmentVariable",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.IO.Process.environmentVariable"
+    ],
+    "rust_references": [
+      "R215"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.IO.Process.environmentVariable は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "IO 応答",
+    "builtins_fields": [
+      "sig",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する"
+  },
+  {
+    "id": "L531",
+    "classification": "仮定",
+    "lean_name": "Process.workingDirectory",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.IO.Process.workingDirectory"
+    ],
+    "rust_references": [
+      "R216"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.IO.Process.workingDirectory は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "IO 応答",
+    "builtins_fields": [
+      "sig",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する"
+  },
+  {
+    "id": "L532",
+    "classification": "仮定",
+    "lean_name": "Clock.now",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.IO.Clock.now"
+    ],
+    "rust_references": [
+      "R217"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.IO.Clock.now は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "IO 応答",
+    "builtins_fields": [
+      "sig",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する"
+  },
+  {
+    "id": "L533",
+    "classification": "仮定",
+    "lean_name": "Clock.localOffsetMinutes",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.IO.Clock.localOffsetMinutes"
+    ],
+    "rust_references": [
+      "R218"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.IO.Clock.localOffsetMinutes は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "IO 応答",
+    "builtins_fields": [
+      "sig",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する"
+  },
+  {
+    "id": "L534",
+    "classification": "仮定",
+    "lean_name": "File.readBytes",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.IO.File.readBytes"
+    ],
+    "rust_references": [
+      "R219"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.IO.File.readBytes は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "IO 応答",
+    "builtins_fields": [
+      "sig",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する"
+  },
+  {
+    "id": "L535",
+    "classification": "仮定",
+    "lean_name": "File.readLines",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.IO.File.readLines"
+    ],
+    "rust_references": [
+      "R220"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.IO.File.readLines は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "IO 応答",
+    "builtins_fields": [
+      "sig",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する"
+  },
+  {
+    "id": "L536",
+    "classification": "仮定",
+    "lean_name": "File.exists",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.IO.File.exists"
+    ],
+    "rust_references": [
+      "R221"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.IO.File.exists は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "IO 応答",
+    "builtins_fields": [
+      "sig",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する"
+  },
+  {
+    "id": "L537",
+    "classification": "仮定",
+    "lean_name": "File.info",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.IO.File.info"
+    ],
+    "rust_references": [
+      "R222"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.IO.File.info は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "IO 応答",
+    "builtins_fields": [
+      "sig",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する"
+  },
+  {
+    "id": "L538",
+    "classification": "仮定",
+    "lean_name": "File.listDirectory",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.IO.File.listDirectory"
+    ],
+    "rust_references": [
+      "R223"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.IO.File.listDirectory は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "IO 応答",
+    "builtins_fields": [
+      "sig",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する"
+  },
+  {
+    "id": "L539",
+    "classification": "仮定",
+    "lean_name": "File.walk",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.IO.File.walk"
+    ],
+    "rust_references": [
+      "R224"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.IO.File.walk は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "IO 応答",
+    "builtins_fields": [
+      "sig",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する"
+  },
+  {
+    "id": "L540",
+    "classification": "仮定",
+    "lean_name": "File.canonicalize",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.IO.File.canonicalize"
+    ],
+    "rust_references": [
+      "R225"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.IO.File.canonicalize は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "IO 応答",
+    "builtins_fields": [
+      "sig",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する"
+  },
+  {
+    "id": "L541",
+    "classification": "仮定",
+    "lean_name": "File.writeBytes",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.IO.File.writeBytes"
+    ],
+    "rust_references": [
+      "R226"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.IO.File.writeBytes は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "IO 応答",
+    "builtins_fields": [
+      "sig",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する"
+  },
+  {
+    "id": "L542",
+    "classification": "仮定",
+    "lean_name": "File.appendBytes",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.IO.File.appendBytes"
+    ],
+    "rust_references": [
+      "R227"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.IO.File.appendBytes は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "IO 応答",
+    "builtins_fields": [
+      "sig",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する"
+  },
+  {
+    "id": "L543",
+    "classification": "仮定",
+    "lean_name": "File.createDirectory",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.IO.File.createDirectory"
+    ],
+    "rust_references": [
+      "R228"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.IO.File.createDirectory は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "IO 応答",
+    "builtins_fields": [
+      "sig",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する"
+  },
+  {
+    "id": "L544",
+    "classification": "仮定",
+    "lean_name": "File.remove",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.IO.File.remove"
+    ],
+    "rust_references": [
+      "R229"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.IO.File.remove は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "IO 応答",
+    "builtins_fields": [
+      "sig",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する"
+  },
+  {
+    "id": "L545",
+    "classification": "仮定",
+    "lean_name": "File.removeTree",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.IO.File.removeTree"
+    ],
+    "rust_references": [
+      "R230"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.IO.File.removeTree は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "IO 応答",
+    "builtins_fields": [
+      "sig",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する"
+  },
+  {
+    "id": "L546",
+    "classification": "仮定",
+    "lean_name": "File.rename",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.IO.File.rename"
+    ],
+    "rust_references": [
+      "R231"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.IO.File.rename は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "IO 応答",
+    "builtins_fields": [
+      "sig",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する"
+  },
+  {
+    "id": "L547",
+    "classification": "仮定",
+    "lean_name": "File.readChunk",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.IO.File.readChunk"
+    ],
+    "rust_references": [
+      "R232"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.IO.File.readChunk は「通常資源の状態」に分類する。通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。この登録のIO結果はioResponseの照合対象である。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "通常資源の状態",
+    "builtins_fields": [
+      "sig",
+      "isResource",
+      "releaseResponse",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。この登録のIO結果はioResponseの照合対象である"
+  },
+  {
+    "id": "L548",
+    "classification": "仮定",
+    "lean_name": "File.openWriter",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.IO.File.openWriter"
+    ],
+    "rust_references": [
+      "R233"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.IO.File.openWriter は「通常資源の状態」に分類する。通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。この登録のIO結果はioResponseの照合対象である。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "通常資源の状態",
+    "builtins_fields": [
+      "sig",
+      "isResource",
+      "releaseResponse",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。この登録のIO結果はioResponseの照合対象である"
+  },
+  {
+    "id": "L549",
+    "classification": "仮定",
+    "lean_name": "File.write",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.IO.File.write"
+    ],
+    "rust_references": [
+      "R234"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.IO.File.write は「通常資源の状態」に分類する。通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。この登録のIO結果はioResponseの照合対象である。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "通常資源の状態",
+    "builtins_fields": [
+      "sig",
+      "isResource",
+      "releaseResponse",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。この登録のIO結果はioResponseの照合対象である"
+  },
+  {
+    "id": "L550",
+    "classification": "仮定",
+    "lean_name": "File.writeLine",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.IO.File.writeLine"
+    ],
+    "rust_references": [
+      "R235"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.IO.File.writeLine は「通常資源の状態」に分類する。通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。この登録のIO結果はioResponseの照合対象である。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "通常資源の状態",
+    "builtins_fields": [
+      "sig",
+      "isResource",
+      "releaseResponse",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。この登録のIO結果はioResponseの照合対象である"
+  },
+  {
+    "id": "L551",
+    "classification": "仮定",
+    "lean_name": "File.writeChunk",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.IO.File.writeChunk"
+    ],
+    "rust_references": [
+      "R236"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.IO.File.writeChunk は「通常資源の状態」に分類する。通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。この登録のIO結果はioResponseの照合対象である。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "通常資源の状態",
+    "builtins_fields": [
+      "sig",
+      "isResource",
+      "releaseResponse",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。この登録のIO結果はioResponseの照合対象である"
+  },
+  {
+    "id": "L552",
+    "classification": "仮定",
+    "lean_name": "File.closeWriter",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "IO.File.closeWriter"
+    ],
+    "rust_references": [
+      "R237"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "IO.File.closeWriter は「通常資源の状態」に分類する。通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。state登録の資源操作そのものに対応する専用Builtins欄はなく、IO応答とは数えない。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "通常資源の状態",
+    "builtins_fields": [
+      "sig",
+      "isResource",
+      "releaseResponse"
+    ],
+    "rust_mode": "state",
+    "assumption_detail": "通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。state登録の資源操作そのものに対応する専用Builtins欄はなく、IO応答とは数えない"
+  },
+  {
+    "id": "L553",
+    "classification": "仮定",
+    "lean_name": "Process.run",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.IO.Process.run"
+    ],
+    "rust_references": [
+      "R238"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.IO.Process.run は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "IO 応答",
+    "builtins_fields": [
+      "sig",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する"
+  },
+  {
+    "id": "L554",
+    "classification": "仮定",
+    "lean_name": "Process.runAttached",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.IO.Process.runAttached"
+    ],
+    "rust_references": [
+      "R239"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.IO.Process.runAttached は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "IO 応答",
+    "builtins_fields": [
+      "sig",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する"
+  },
+  {
+    "id": "L555",
+    "classification": "仮定",
+    "lean_name": "Process.shell",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.IO.Process.shell"
+    ],
+    "rust_references": [
+      "R240"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.IO.Process.shell は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "IO 応答",
+    "builtins_fields": [
+      "sig",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する"
+  },
+  {
+    "id": "L556",
+    "classification": "仮定",
+    "lean_name": "Random.integer",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.IO.Random.integer"
+    ],
+    "rust_references": [
+      "R241"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.IO.Random.integer は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "IO 応答",
+    "builtins_fields": [
+      "sig",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する"
+  },
+  {
+    "id": "L557",
+    "classification": "仮定",
+    "lean_name": "Random.float",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.IO.Random.float"
+    ],
+    "rust_references": [
+      "R242"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.IO.Random.float は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "IO 応答",
+    "builtins_fields": [
+      "sig",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する"
+  },
+  {
+    "id": "L558",
+    "classification": "仮定",
+    "lean_name": "Random.boolean",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.IO.Random.boolean"
+    ],
+    "rust_references": [
+      "R243"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.IO.Random.boolean は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "IO 応答",
+    "builtins_fields": [
+      "sig",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する"
+  },
+  {
+    "id": "L559",
+    "classification": "仮定",
+    "lean_name": "Random.shuffle",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.IO.Random.shuffle"
+    ],
+    "rust_references": [
+      "R244"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.IO.Random.shuffle は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "IO 応答",
+    "builtins_fields": [
+      "sig",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する"
+  },
+  {
+    "id": "L560",
+    "classification": "仮定",
+    "lean_name": "Random.choose",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Benitoite.IO.Random.choose"
+    ],
+    "rust_references": [
+      "R245"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Benitoite.IO.Random.choose は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "IO 応答",
+    "builtins_fields": [
+      "sig",
+      "ioResponse",
+      "effects",
+      "effKind"
+    ],
+    "rust_mode": "io",
+    "assumption_detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する"
+  },
+  {
+    "id": "L561",
+    "classification": "仮定",
+    "lean_name": "Random.fromSeed",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "IO.Random.fromSeed"
+    ],
+    "rust_references": [
+      "R246"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "IO.Random.fromSeed は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L562",
+    "classification": "仮定",
+    "lean_name": "Random.nextInteger",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "IO.Random.nextInteger"
+    ],
+    "rust_references": [
+      "R247"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "IO.Random.nextInteger は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L563",
+    "classification": "仮定",
+    "lean_name": "Random.nextFloat",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "IO.Random.nextFloat"
+    ],
+    "rust_references": [
+      "R248"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "IO.Random.nextFloat は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L564",
+    "classification": "仮定",
+    "lean_name": "Random.shuffleWith",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "IO.Random.shuffleWith"
+    ],
+    "rust_references": [
+      "R249"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "IO.Random.shuffleWith は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L565",
+    "classification": "仮定",
+    "lean_name": "Path.join",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Path.join"
+    ],
+    "rust_references": [
+      "R250"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Path.join は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L566",
+    "classification": "仮定",
+    "lean_name": "Path.joinAll",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Path.joinAll"
+    ],
+    "rust_references": [
+      "R251"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Path.joinAll は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L567",
+    "classification": "仮定",
+    "lean_name": "Path.parent",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Path.parent"
+    ],
+    "rust_references": [
+      "R252"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Path.parent は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L568",
+    "classification": "仮定",
+    "lean_name": "Path.fileName",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Path.fileName"
+    ],
+    "rust_references": [
+      "R253"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Path.fileName は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L569",
+    "classification": "仮定",
+    "lean_name": "Path.stem",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Path.stem"
+    ],
+    "rust_references": [
+      "R254"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Path.stem は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L570",
+    "classification": "仮定",
+    "lean_name": "Path.extension",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Path.extension"
+    ],
+    "rust_references": [
+      "R255"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Path.extension は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L571",
+    "classification": "仮定",
+    "lean_name": "Path.withExtension",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Path.withExtension"
+    ],
+    "rust_references": [
+      "R256"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Path.withExtension は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L572",
+    "classification": "仮定",
+    "lean_name": "Path.isAbsolute",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Path.isAbsolute"
+    ],
+    "rust_references": [
+      "R257"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Path.isAbsolute は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L573",
+    "classification": "仮定",
+    "lean_name": "Path.components",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Path.components"
+    ],
+    "rust_references": [
+      "R258"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Path.components は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L574",
+    "classification": "仮定",
+    "lean_name": "Path.normalize",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Path.normalize"
+    ],
+    "rust_references": [
+      "R259"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Path.normalize は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L575",
+    "classification": "仮定",
+    "lean_name": "Json.parse",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Json.parse"
+    ],
+    "rust_references": [
+      "R260"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Json.parse は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L576",
+    "classification": "仮定",
+    "lean_name": "Json.stringify",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Json.stringify"
+    ],
+    "rust_references": [
+      "R261"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Json.stringify は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L577",
+    "classification": "仮定",
+    "lean_name": "Json.stringifyPretty",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Json.stringifyPretty"
+    ],
+    "rust_references": [
+      "R262"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Json.stringifyPretty は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L578",
+    "classification": "仮定",
+    "lean_name": "Regex.compile",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Regex.compile"
+    ],
+    "rust_references": [
+      "R263"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Regex.compile は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L579",
+    "classification": "仮定",
+    "lean_name": "Regex.isMatch",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Regex.isMatch"
+    ],
+    "rust_references": [
+      "R264"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Regex.isMatch は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L580",
+    "classification": "仮定",
+    "lean_name": "Regex.find",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Regex.find"
+    ],
+    "rust_references": [
+      "R265"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Regex.find は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L581",
+    "classification": "仮定",
+    "lean_name": "Regex.matchText",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Regex.matchText"
+    ],
+    "rust_references": [
+      "R266"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Regex.matchText は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L582",
+    "classification": "仮定",
+    "lean_name": "Regex.matchByteStart",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Regex.matchByteStart"
+    ],
+    "rust_references": [
+      "R267"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Regex.matchByteStart は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L583",
+    "classification": "仮定",
+    "lean_name": "Regex.matchByteEnd",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Regex.matchByteEnd"
+    ],
+    "rust_references": [
+      "R268"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Regex.matchByteEnd は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L584",
+    "classification": "仮定",
+    "lean_name": "Regex.group",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Regex.group"
+    ],
+    "rust_references": [
+      "R269"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Regex.group は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L585",
+    "classification": "仮定",
+    "lean_name": "Regex.namedGroup",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Regex.namedGroup"
+    ],
+    "rust_references": [
+      "R270"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Regex.namedGroup は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L586",
+    "classification": "仮定",
+    "lean_name": "Regex.replaceFirst",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Regex.replaceFirst"
+    ],
+    "rust_references": [
+      "R271"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Regex.replaceFirst は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L587",
+    "classification": "仮定",
+    "lean_name": "Regex.findAt",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Regex.findAt"
+    ],
+    "rust_references": [
+      "R272"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Regex.findAt は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L588",
+    "classification": "仮定",
+    "lean_name": "Regex.spanAt",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Regex.spanAt"
+    ],
+    "rust_references": [
+      "R273"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Regex.spanAt は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  },
+  {
+    "id": "L589",
+    "classification": "仮定",
+    "lean_name": "Regex.maxStringBytes",
+    "status": "既存の仮定の境界に分類。意味の新定義なし",
+    "receivers": [
+      "R50"
+    ],
+    "rust_names": [
+      "Regex.maxStringBytes"
+    ],
+    "rust_references": [
+      "R274"
+    ],
+    "evidence_rows": [],
+    "evidence": [],
+    "contracts": [],
+    "reason": "Regex.maxStringBytes は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する",
+    "internal_names": [],
+    "name_correspondence": [],
+    "assumption_kind": "δ",
+    "builtins_fields": [
+      "sig",
+      "delta"
+    ],
+    "rust_mode": "pure",
+    "assumption_detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する"
+  }
+]

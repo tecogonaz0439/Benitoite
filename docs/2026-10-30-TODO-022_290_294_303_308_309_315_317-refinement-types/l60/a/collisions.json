@@ -1,0 +1,370 @@
+[
+  {
+    "public_name": "List.map",
+    "sources": [
+      [
+        "E01.109",
+        "E15.047"
+      ],
+      [
+        "E13.003"
+      ]
+    ],
+    "definitions": [
+      "(StandardBodies.listHigherRow false).definition",
+      "StandardCollectionRefinedBodies.program.defs \"List.map\""
+    ],
+    "internal_names": [
+      "%List.map.ordinary",
+      "%List.map.refined"
+    ],
+    "bodies_differ": true,
+    "inputs_differ": false
+  },
+  {
+    "public_name": "List.filter",
+    "sources": [
+      [
+        "E01.110"
+      ],
+      [
+        "E13.004"
+      ]
+    ],
+    "definitions": [
+      "(StandardBodies.listHigherRow true).definition",
+      "StandardCollectionRefinedBodies.program.defs \"List.filter\""
+    ],
+    "internal_names": [
+      "%List.filter.ordinary",
+      "%List.filter.refined"
+    ],
+    "bodies_differ": true,
+    "inputs_differ": false
+  },
+  {
+    "public_name": "Map.map",
+    "sources": [
+      [
+        "E01.126"
+      ],
+      [
+        "E13.008"
+      ]
+    ],
+    "definitions": [
+      "(StandardBodies.collectionHigherRow true false).definition",
+      "StandardCollectionRefinedBodies.program.defs \"Map.map\""
+    ],
+    "internal_names": [
+      "%Map.map.ordinary",
+      "%Map.map.refined"
+    ],
+    "bodies_differ": true,
+    "inputs_differ": false
+  },
+  {
+    "public_name": "Map.filter",
+    "sources": [
+      [
+        "E01.127"
+      ],
+      [
+        "E13.009"
+      ]
+    ],
+    "definitions": [
+      "(StandardBodies.collectionHigherRow true true).definition",
+      "StandardCollectionRefinedBodies.program.defs \"Map.filter\""
+    ],
+    "internal_names": [
+      "%Map.filter.ordinary",
+      "%Map.filter.refined"
+    ],
+    "bodies_differ": true,
+    "inputs_differ": false
+  },
+  {
+    "public_name": "Set.map",
+    "sources": [
+      [
+        "E01.140"
+      ],
+      [
+        "E13.010"
+      ]
+    ],
+    "definitions": [
+      "(StandardBodies.collectionHigherRow false false).definition",
+      "StandardCollectionRefinedBodies.program.defs \"Set.map\""
+    ],
+    "internal_names": [
+      "%Set.map.ordinary",
+      "%Set.map.refined"
+    ],
+    "bodies_differ": true,
+    "inputs_differ": false
+  },
+  {
+    "public_name": "Set.filter",
+    "sources": [
+      [
+        "E01.141"
+      ],
+      [
+        "E13.011"
+      ]
+    ],
+    "definitions": [
+      "(StandardBodies.collectionHigherRow false true).definition",
+      "StandardCollectionRefinedBodies.program.defs \"Set.filter\""
+    ],
+    "internal_names": [
+      "%Set.filter.ordinary",
+      "%Set.filter.refined"
+    ],
+    "bodies_differ": true,
+    "inputs_differ": false
+  },
+  {
+    "public_name": "Range.minimum",
+    "sources": [
+      [
+        "E01.145",
+        "E15.022"
+      ],
+      [
+        "E12.001"
+      ]
+    ],
+    "definitions": [
+      "StandardOrdinaryCoreProgram.program.defs \"Range.minimum\"",
+      "StandardSafe.PreciseGetter.minimum.row.definition"
+    ],
+    "internal_names": [
+      "%Range.minimum.ordinary",
+      "%Range.minimum.refined"
+    ],
+    "bodies_differ": true,
+    "inputs_differ": true
+  },
+  {
+    "public_name": "Range.maximum",
+    "sources": [
+      [
+        "E01.146",
+        "E15.024"
+      ],
+      [
+        "E12.002"
+      ]
+    ],
+    "definitions": [
+      "StandardOrdinaryCoreProgram.program.defs \"Range.maximum\"",
+      "StandardSafe.PreciseGetter.maximum.row.definition"
+    ],
+    "internal_names": [
+      "%Range.maximum.ordinary",
+      "%Range.maximum.refined"
+    ],
+    "bodies_differ": true,
+    "inputs_differ": true
+  },
+  {
+    "public_name": "Range.value",
+    "sources": [
+      [
+        "E01.147",
+        "E15.026"
+      ],
+      [
+        "E12.003"
+      ]
+    ],
+    "definitions": [
+      "StandardOrdinaryCoreProgram.program.defs \"Range.value\"",
+      "StandardSafe.PreciseGetter.value.row.definition"
+    ],
+    "internal_names": [
+      "%Range.value.ordinary",
+      "%Range.value.refined"
+    ],
+    "bodies_differ": true,
+    "inputs_differ": true
+  },
+  {
+    "public_name": "Range.lengthMinimum",
+    "sources": [
+      [
+        "E01.149",
+        "E15.028"
+      ],
+      [
+        "E12.004"
+      ]
+    ],
+    "definitions": [
+      "StandardOrdinaryCoreProgram.program.defs \"Range.lengthMinimum\"",
+      "StandardSafe.PreciseGetter.lengthMinimum.row.definition"
+    ],
+    "internal_names": [
+      "%Range.lengthMinimum.ordinary",
+      "%Range.lengthMinimum.refined"
+    ],
+    "bodies_differ": true,
+    "inputs_differ": true
+  },
+  {
+    "public_name": "Range.lengthMaximum",
+    "sources": [
+      [
+        "E01.150",
+        "E15.030"
+      ],
+      [
+        "E12.005"
+      ]
+    ],
+    "definitions": [
+      "StandardOrdinaryCoreProgram.program.defs \"Range.lengthMaximum\"",
+      "StandardSafe.PreciseGetter.lengthMaximum.row.definition"
+    ],
+    "internal_names": [
+      "%Range.lengthMaximum.ordinary",
+      "%Range.lengthMaximum.refined"
+    ],
+    "bodies_differ": true,
+    "inputs_differ": true
+  },
+  {
+    "public_name": "Range.checkedLength",
+    "sources": [
+      [
+        "E01.151",
+        "E15.032"
+      ],
+      [
+        "E12.006"
+      ]
+    ],
+    "definitions": [
+      "StandardOrdinaryCoreProgram.program.defs \"Range.checkedLength\"",
+      "StandardSafe.PreciseGetter.checkedLength.row.definition"
+    ],
+    "internal_names": [
+      "%Range.checkedLength.ordinary",
+      "%Range.checkedLength.refined"
+    ],
+    "bodies_differ": true,
+    "inputs_differ": true
+  },
+  {
+    "public_name": "Range.lengthValues",
+    "sources": [
+      [
+        "E01.152",
+        "E15.034"
+      ],
+      [
+        "E12.007"
+      ]
+    ],
+    "definitions": [
+      "StandardOrdinaryCoreProgram.program.defs \"Range.lengthValues\"",
+      "StandardSafe.PreciseGetter.lengthValues.row.definition"
+    ],
+    "internal_names": [
+      "%Range.lengthValues.ordinary",
+      "%Range.lengthValues.refined"
+    ],
+    "bodies_differ": true,
+    "inputs_differ": true
+  },
+  {
+    "public_name": "Range.indexValue",
+    "sources": [
+      [
+        "E01.154",
+        "E15.038"
+      ],
+      [
+        "E12.008"
+      ]
+    ],
+    "definitions": [
+      "StandardOrdinaryCoreProgram.program.defs \"Range.indexValue\"",
+      "StandardSafe.PreciseGetter.indexValue.row.definition"
+    ],
+    "internal_names": [
+      "%Range.indexValue.ordinary",
+      "%Range.indexValue.refined"
+    ],
+    "bodies_differ": true,
+    "inputs_differ": true
+  },
+  {
+    "public_name": "Range.indexValues",
+    "sources": [
+      [
+        "E01.155",
+        "E15.036"
+      ],
+      [
+        "E12.009"
+      ]
+    ],
+    "definitions": [
+      "StandardOrdinaryCoreProgram.program.defs \"Range.indexValues\"",
+      "StandardSafe.PreciseGetter.indexValues.row.definition"
+    ],
+    "internal_names": [
+      "%Range.indexValues.ordinary",
+      "%Range.indexValues.refined"
+    ],
+    "bodies_differ": true,
+    "inputs_differ": true
+  },
+  {
+    "public_name": "NonEmptyList.map",
+    "sources": [
+      [
+        "E01.161",
+        "E15.010"
+      ],
+      [
+        "E13.005"
+      ]
+    ],
+    "definitions": [
+      "StandardOrdinaryCoreProgram.program.defs \"NonEmptyList.map\"",
+      "StandardCollectionRefinedBodies.program.defs \"NonEmptyList.map\""
+    ],
+    "internal_names": [
+      "%NonEmptyList.map.ordinary",
+      "%NonEmptyList.map.refined"
+    ],
+    "bodies_differ": true,
+    "inputs_differ": true
+  },
+  {
+    "public_name": "List.mapFrom",
+    "sources": [
+      [
+        "E15.048"
+      ],
+      [
+        "E13.001"
+      ]
+    ],
+    "definitions": [
+      "(StandardOrdinaryCoreProgram.allDefinitions[47]?).map Prod.snd",
+      "StandardCollectionRefinedBodies.program.defs \"List.mapFrom\""
+    ],
+    "internal_names": [
+      "%List.mapFrom.ordinary",
+      "%List.mapFrom.refined"
+    ],
+    "bodies_differ": true,
+    "inputs_differ": true
+  }
+]

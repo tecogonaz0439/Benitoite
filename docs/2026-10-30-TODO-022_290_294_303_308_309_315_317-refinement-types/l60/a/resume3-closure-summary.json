@@ -1,0 +1,65 @@
+{
+  "body_sources": 159,
+  "visited_rows": 190,
+  "distinct_original_defs": 130,
+  "additional_helper_defs": [
+    {
+      "context": "ordinaryContext",
+      "expression": "ordinaryContext.defs \"List.filterFrom\"",
+      "fresh": true,
+      "key": "D130",
+      "name": "List.filterFrom",
+      "references": [
+        "List.filterFrom",
+        "List.filterFrom"
+      ],
+      "source": "helper:ordinaryContext:List.filterFrom"
+    }
+  ],
+  "renamed_count": 18,
+  "renamed_names": [
+    "List.filter",
+    "List.filterFrom",
+    "List.map",
+    "List.mapFrom",
+    "Map.filter",
+    "Map.map",
+    "NonEmptyList.map",
+    "Range.checkedLength",
+    "Range.indexValue",
+    "Range.indexValues",
+    "Range.lengthMaximum",
+    "Range.lengthMinimum",
+    "Range.lengthValues",
+    "Range.maximum",
+    "Range.minimum",
+    "Range.value",
+    "Set.filter",
+    "Set.map"
+  ],
+  "same_original_reference_conflicts": [],
+  "distinct_edges": 60,
+  "lookup_contexts": [
+    "StandardCollectionRefinedBodies.program",
+    "ordinaryContext"
+  ],
+  "rows": [
+    {
+      "file": "resume3-closure-graph-01.json",
+      "bytes": 51166,
+      "sha256": "205ac20c5dd0ac979495d31dc7cd0ba62d71522df9cbf0b423492aca2bec49c8"
+    }
+  ],
+  "edges": [
+    {
+      "file": "resume3-closure-edges-01.json",
+      "bytes": 5118,
+      "sha256": "896a23060c7264de284b199da9b9621f8d10b2060b3b1a4530aa9973abb54982"
+    }
+  ],
+  "raw": {
+    "bytes": 42782,
+    "sha256": "1869a7998b0644fe4c363214c5a59b22ab2fd433e950cdd3e2695f4b49a09a7e"
+  },
+  "status": "閉包と参照先の一意性を全件照合。型付けは別検査"
+}
