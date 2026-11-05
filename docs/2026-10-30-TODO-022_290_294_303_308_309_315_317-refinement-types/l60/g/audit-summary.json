@@ -1,0 +1,63 @@
+{
+  "targets": 85412,
+  "target_list": {
+    "bytes": 5718450,
+    "sha256": "4c2247f818e2fbbdd1fdecabe635f75d017f7457cf2efefae3e7991df016c7f6"
+  },
+  "raw": {
+    "bytes": 18336575,
+    "sha256": "a38b7e789953a26ac8a11e28ee0f37430177d5edaf0e717a3f431bfd1d2dddc9"
+  },
+  "modules": 1069,
+  "new_modules": {
+    "Benitoite.Release.Refinement.StandardModelCollectionInputs": 114,
+    "Benitoite.Release.Refinement.StandardModelIOInputs": 73,
+    "Benitoite.Release.Refinement.StandardModelConditionInputs": 18
+  },
+  "declarations": 205,
+  "added_declarations": 205,
+  "inherited_declarations": 0,
+  "inherited_type_changed": [],
+  "inherited_removed": [],
+  "private": 66,
+  "without_source_position": 101,
+  "closure_rounds": 2,
+  "axiom_sets": {
+    "none": 39973,
+    "Classical.choice": 2,
+    "Classical.choice + Quot.sound + propext": 21735,
+    "Classical.choice + propext": 2,
+    "Quot.sound": 9,
+    "Quot.sound + propext": 3900,
+    "propext": 19791
+  },
+  "sorryAx": 0,
+  "new_axioms": 0,
+  "parts": [
+    {
+      "file": "declarations-01.json",
+      "bytes": 84290,
+      "sha256": "3eb0862c631963e67a290e4ce3520bc643cf85ca8e27e0de75cf0684c0a76ca5"
+    },
+    {
+      "file": "declarations-02.json",
+      "bytes": 84534,
+      "sha256": "e3d9a2f48f73505765763183992a8e76bc44648d85b4a98a7192a08a6547723b"
+    },
+    {
+      "file": "declarations-03.json",
+      "bytes": 34619,
+      "sha256": "69c106338c535e93016bcd6e0560575914f77a5240a8797d9653585bb1c26c28"
+    }
+  ],
+  "inputs": {
+    "axioms.lean": {
+      "bytes": 5236,
+      "sha256": "95305383699ade23d2bf36f8a01b41b638bc46aa4989cf20556595011cf917eb"
+    },
+    "audit.py": {
+      "bytes": 6042,
+      "sha256": "177a2852e25fe754af65aed09c69dfdea250ae1decbee40338136d964958e5a9"
+    }
+  }
+}

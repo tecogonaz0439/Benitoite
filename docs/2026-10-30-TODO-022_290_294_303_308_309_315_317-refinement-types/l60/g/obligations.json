@@ -1,0 +1,465 @@
+{
+ "source": {
+  "nodes": 85412,
+  "bytes": 114693759,
+  "sha256": "307612365a96cd2326453fc4313aa1c1e5697c1f656c5a28bf5f2e3f3182c22d",
+  "composed_declarations": 4023,
+  "table_response_readers": 0
+ },
+ "rows": [
+  {
+   "id": "O013",
+   "origin": "50",
+   "class": "技術",
+   "criterion": "12欄と同じP/Bの対象条件",
+   "judgment": "L60の分は完了",
+   "evidence": [
+    "StandardModel.targets",
+    "StandardModel.io_op",
+    "ExternalModels.ModelCase.composition"
+   ],
+   "evidence_kinds": {
+    "StandardModel.targets": "theorem",
+    "StandardModel.io_op": "theorem",
+    "ExternalModels.ModelCase.composition": "theorem"
+   },
+   "remaining": "L70/R50/V10の全体照合"
+  },
+  {
+   "id": "O015",
+   "origin": "50",
+   "class": "技術",
+   "criterion": "対象3sortの同じ実応答を全表へ。新論理規則なし",
+   "judgment": "L60の分は完了",
+   "evidence": [
+    "StandardModel.scope_rows",
+    "ScopeResponse.response"
+   ],
+   "evidence_kinds": {
+    "StandardModel.scope_rows": "theorem",
+    "ScopeResponse.response": "theorem"
+   },
+   "remaining": "R50の実装比較"
+  },
+  {
+   "id": "O016",
+   "origin": "共/50",
+   "class": "共通",
+   "criterion": "既定import閉包・旧主定理/新葉の全名、公理・独立レビュー",
+   "judgment": "群Hの単位へ（群Gの分なし）",
+   "evidence": [],
+   "evidence_kinds": {},
+   "remaining": "L60.35/.36、L70と各段レビュー"
+  },
+  {
+   "id": "O022",
+   "origin": "30/40/50",
+   "class": "技術",
+   "criterion": "同じout/toTerm?からのfactsと全表への接続",
+   "judgment": "L60の分は完了",
+   "evidence": [
+    "StandardModel.pure_rows",
+    "StandardModel.scope_rows",
+    "StandardModel.normal_facts"
+   ],
+   "evidence_kinds": {
+    "StandardModel.pure_rows": "theorem",
+    "StandardModel.scope_rows": "theorem",
+    "StandardModel.normal_facts": "theorem"
+   },
+   "remaining": "R50/V10の実装・領域照合"
+  },
+  {
+   "id": "O027",
+   "origin": "共",
+   "class": "共通",
+   "criterion": "最終workの本体/計測器の終了・原単位・機械を分ける",
+   "judgment": "群Hの単位へ（群Gの分なし）",
+   "evidence": [],
+   "evidence_kinds": {},
+   "remaining": "L60.37、L70/R20/R70の限定採取"
+  },
+  {
+   "id": "O034",
+   "origin": "30/40/50",
+   "class": "技術",
+   "criterion": "同じ値の表現・観測・所属を実表へ",
+   "judgment": "L60の分は完了",
+   "evidence": [
+    "StandardModel.scope_rows",
+    "StandardModel.pure_rows"
+   ],
+   "evidence_kinds": {
+    "StandardModel.scope_rows": "theorem",
+    "StandardModel.pure_rows": "theorem"
+   },
+   "remaining": "R50の同じ値の比較"
+  },
+  {
+   "id": "O035",
+   "origin": "40/50",
+   "class": "技術",
+   "criterion": "同じreq/endpoint/groundVal/valContentのまま全表へ",
+   "judgment": "L60の分は完了",
+   "evidence": [
+    "StandardModel.io_rows",
+    "StandardModel.scope_rows",
+    "ScopedIOResponse.response"
+   ],
+   "evidence_kinds": {
+    "StandardModel.io_rows": "theorem",
+    "StandardModel.scope_rows": "theorem",
+    "ScopedIOResponse.response": "theorem"
+   },
+   "remaining": "L70全到達、R30/R50"
+  },
+  {
+   "id": "O038",
+   "origin": "P/20/40/50",
+   "class": "技術",
+   "criterion": "外部応答・通常解放の同じ状態からの葉と実表",
+   "judgment": "L60の分は完了",
+   "evidence": [
+    "StateTyE.external_response_step",
+    "StateTyE.use_release_all",
+    "StandardModel.release_all",
+    "StandardModel.core"
+   ],
+   "evidence_kinds": {
+    "StateTyE.external_response_step": "theorem",
+    "StateTyE.use_release_all": "theorem",
+    "StandardModel.release_all": "theorem",
+    "StandardModel.core": "theorem"
+   },
+   "remaining": "L70全保存"
+  },
+  {
+   "id": "O048",
+   "origin": "50",
+   "class": "技術",
+   "criterion": "同じ値と対象を全表へ。旧eq_of_not_fnへ戻さない",
+   "judgment": "L60の分は完了",
+   "evidence": [
+    "StandardModel.scope_rows"
+   ],
+   "evidence_kinds": {
+    "StandardModel.scope_rows": "theorem"
+   },
+   "remaining": "L70/R30/R50"
+  },
+  {
+   "id": "O049",
+   "origin": "20/50",
+   "class": "技術",
+   "criterion": "同じreqTarget/内容型を全表で供給",
+   "judgment": "L60の分は完了",
+   "evidence": [
+    "StandardModel.io_rows",
+    "ScopedIOResponse.response"
+   ],
+   "evidence_kinds": {
+    "StandardModel.io_rows": "theorem",
+    "ScopedIOResponse.response": "theorem"
+   },
+   "remaining": "R30/R50。既存葉の再証明なし"
+  },
+  {
+   "id": "O057",
+   "origin": "P/40/50",
+   "class": "技術",
+   "criterion": "任意の新型付き入力からexternal/releaseの応答存在",
+   "judgment": "L60の分は完了",
+   "evidence": [
+    "StateTyE.external_response_step",
+    "StandardModel.release_exists",
+    "ExternalModels.ModelCase.release_all"
+   ],
+   "evidence_kinds": {
+    "StateTyE.external_response_step": "theorem",
+    "StandardModel.release_exists": "theorem",
+    "ExternalModels.ModelCase.release_all": "theorem"
+   },
+   "remaining": "L70 progress"
+  },
+  {
+   "id": "O058",
+   "origin": "P/20/40/50",
+   "class": "技術",
+   "criterion": "σ/Eb/μを保持した外部・解放の保存葉と全表",
+   "judgment": "L60の分は完了",
+   "evidence": [
+    "StateTyE.external_response_step",
+    "StateTyE.use_release_all",
+    "StandardModel.substitution_assumptions"
+   ],
+   "evidence_kinds": {
+    "StateTyE.external_response_step": "theorem",
+    "StateTyE.use_release_all": "theorem",
+    "StandardModel.substitution_assumptions": "theorem"
+   },
+   "remaining": "L70 preservation"
+  },
+  {
+   "id": "O059",
+   "origin": "P/40/50",
+   "class": "技術",
+   "criterion": "選んだ外部/解放応答からstep→Stepの局所証拠",
+   "judgment": "L60の分は完了",
+   "evidence": [
+    "step_external_selected",
+    "step_release_selected",
+    "ContTy.selected_release_step"
+   ],
+   "evidence_kinds": {
+    "step_external_selected": "theorem",
+    "step_release_selected": "theorem",
+    "ContTy.selected_release_step": "theorem"
+   },
+   "remaining": "L70 step_sound"
+  },
+  {
+   "id": "O060",
+   "origin": "P/40/50",
+   "class": "技術",
+   "criterion": "Stateの追跡、外部obs=[]と合成表の全effects。IOへ変換しない",
+   "judgment": "L60の分は完了",
+   "evidence": [
+    "ExternalSignatureLeaves.collected_contract",
+    "StandardModel.effect_ops",
+    "StandardModel.state_effect",
+    "ExternalModels.ModelCase.composition"
+   ],
+   "evidence_kinds": {
+    "ExternalSignatureLeaves.collected_contract": "theorem",
+    "StandardModel.effect_ops": "theorem",
+    "StandardModel.state_effect": "theorem",
+    "ExternalModels.ModelCase.composition": "theorem"
+   },
+   "remaining": "L70 effect_soundness/noLamNames"
+  },
+  {
+   "id": "O061",
+   "origin": "P/50",
+   "class": "技術",
+   "criterion": "external_no_targetsを同じP/Bへ。CoreとTargetAgreement別",
+   "judgment": "L60の分は完了",
+   "evidence": [
+    "StandardModel.core",
+    "StandardModel.targets",
+    "step_external_selected",
+    "StandardModel.positive_inputs"
+   ],
+   "evidence_kinds": {
+    "StandardModel.core": "theorem",
+    "StandardModel.targets": "theorem",
+    "step_external_selected": "theorem",
+    "StandardModel.positive_inputs": "theorem"
+   },
+   "remaining": "L70一段/到達/表層"
+  },
+  {
+   "id": "O062",
+   "origin": "P/40/50",
+   "class": "技術",
+   "criterion": "合成対象の同じδの全BuiltinArgsで存在/型/適格性/非exit。仮定側は名前と理由、外部carrierは別",
+   "judgment": "L60の分は完了",
+   "evidence": [
+    "StandardModel.pure_rows",
+    "StandardModel.numeric_inputs",
+    "StandardModel.operator_inputs",
+    "StandardModel.collection_inputs",
+    "StandardModel.scope_inputs"
+   ],
+   "evidence_kinds": {
+    "StandardModel.pure_rows": "theorem",
+    "StandardModel.numeric_inputs": "theorem",
+    "StandardModel.operator_inputs": "theorem",
+    "StandardModel.collection_inputs": "theorem",
+    "StandardModel.scope_inputs": "theorem"
+   },
+   "remaining": "R50の算法比較と最終全体照合"
+  },
+  {
+   "id": "O063",
+   "origin": "P/50",
+   "class": "技術",
+   "criterion": "新受理を含む全入力、外部三条件とIOを区別",
+   "judgment": "L60の分は完了",
+   "evidence": [
+    "StandardModel.io_rows",
+    "StandardModel.io_inputs",
+    "StandardModel.external_assumptions"
+   ],
+   "evidence_kinds": {
+    "StandardModel.io_rows": "theorem",
+    "StandardModel.io_inputs": "theorem",
+    "StandardModel.external_assumptions": "theorem"
+   },
+   "remaining": "R50の実応答比較。正常応答存在は要求しない"
+  },
+  {
+   "id": "O064",
+   "origin": "P/40",
+   "class": "技術",
+   "criterion": "三モデルと証拠のある合成資源の全型付き値で新関係の存在。証拠のない資源は名前と理由",
+   "judgment": "L60の分は完了",
+   "evidence": [
+    "StandardModel.release_exists",
+    "ExternalModels.ModelCase.release_all",
+    "StandardModel.resource_table",
+    "ExternalSignatureLeaves.handle_not_release"
+   ],
+   "evidence_kinds": {
+    "StandardModel.release_exists": "theorem",
+    "ExternalModels.ModelCase.release_all": "theorem",
+    "StandardModel.resource_table": "theorem",
+    "ExternalSignatureLeaves.handle_not_release": "theorem"
+   },
+   "remaining": "R30/R50の実装比較"
+  },
+  {
+   "id": "O065",
+   "origin": "20/40/50",
+   "class": "技術",
+   "criterion": "合成対象の全sourceTelRows/operationKinds/arity/StoreShapeと仮定側の台帳",
+   "judgment": "L60の分は完了",
+   "evidence": [
+    "StandardModel.sig_scoped",
+    "StandardModel.opEff_io",
+    "StandardModel.store_shape",
+    "StandardModel.cons_scoped"
+   ],
+   "evidence_kinds": {
+    "StandardModel.sig_scoped": "theorem",
+    "StandardModel.opEff_io": "theorem",
+    "StandardModel.store_shape": "theorem",
+    "StandardModel.cons_scoped": "theorem"
+   },
+   "remaining": "L70の新判断への切替"
+  },
+  {
+   "id": "O084",
+   "origin": "共/50",
+   "class": "共通",
+   "criterion": "篩/σ/external差を別記し、全関門と停止条件を守る",
+   "judgment": "群Gの分は完了（停止条件に当たる変更0）。.36は群H",
+   "evidence": [],
+   "evidence_kinds": {},
+   "remaining": "L60.36、L70/R/K/Vの合成・比較"
+  },
+  {
+   "id": "O086",
+   "origin": "P",
+   "class": "技術",
+   "criterion": "両除外を外せる外部葉と型の受け口。実0件は未実施と明示",
+   "judgment": "L60の分は完了",
+   "evidence": [
+    "ExternalSurface.ref_typed",
+    "ExternalSurface.call_typed",
+    "ExternalSurface.named_call",
+    "ExternalSurface.partial_call",
+    "ExternalSurface.type_declared_iff"
+   ],
+   "evidence_kinds": {
+    "ExternalSurface.ref_typed": "theorem",
+    "ExternalSurface.call_typed": "theorem",
+    "ExternalSurface.named_call": "theorem",
+    "ExternalSurface.partial_call": "theorem",
+    "ExternalSurface.type_declared_iff": "theorem"
+   },
+   "remaining": "L70全reader、R50両理由0件/F-CONN、K10"
+  },
+  {
+   "id": "O087",
+   "origin": "P/20",
+   "class": "技術",
+   "criterion": "全入れ子・全置換・未知/重複/差替え/偽造の境界",
+   "judgment": "L60の分は完了",
+   "evidence": [
+    "ExternalNominal.transformations",
+    "ExternalNominal.table_wf_iff",
+    "ExternalNominal.unknown_handle",
+    "ExternalNominal.handle_declaration"
+   ],
+   "evidence_kinds": {
+    "ExternalNominal.transformations": "theorem",
+    "ExternalNominal.table_wf_iff": "theorem",
+    "ExternalNominal.unknown_handle": "theorem",
+    "ExternalNominal.handle_declaration": "theorem"
+   },
+   "remaining": "L70表層収集、R50名目ID交換"
+  },
+  {
+   "id": "O088",
+   "origin": "P",
+   "class": "技術",
+   "criterion": "borrow/own/State、三条件9欄と通常資源の区別、表層5接続",
+   "judgment": "L60の分は完了",
+   "evidence": [
+    "ExternalUseAt.mode",
+    "ExternalModels.responses",
+    "ExternalModels.ModelCase.composition",
+    "ExternalSignatureLeaves.handle_not_release",
+    "ExternalSurface.call_typed"
+   ],
+   "evidence_kinds": {
+    "ExternalUseAt.mode": "theorem",
+    "ExternalModels.responses": "theorem",
+    "ExternalModels.ModelCase.composition": "theorem",
+    "ExternalSignatureLeaves.handle_not_release": "theorem",
+    "ExternalSurface.call_typed": "theorem"
+   },
+   "remaining": "L70主定理/全脱糖、R50"
+  },
+  {
+   "id": "O118",
+   "origin": "共",
+   "class": "共通",
+   "criterion": "変更した本番/写しに作業IDを残さず、現行の章節/意味の名前を使う",
+   "judgment": "群Gの分は完了（verify.pyで照合）。.34/.36は群H",
+   "evidence": [],
+   "evidence_kinds": {},
+   "remaining": "L70/R50/R60/D10/V10"
+  },
+  {
+   "id": "O144",
+   "origin": "H24",
+   "class": "他段",
+   "criterion": "L60はその証拠を合成に使用。新しい理論・CLIの所有を追加しない",
+   "judgment": "他段（L60の所有なし）",
+   "evidence": [],
+   "evidence_kinds": {},
+   "remaining": "R20/R10b/R40/R50/V10"
+  },
+  {
+   "id": "O157",
+   "origin": "P",
+   "class": "記録",
+   "criterion": "新しい外部/解放葉と01-12を同じ変更で写し、未実施の全比較を成功にしない",
+   "judgment": "群Gの分は完了（07-04の外部除外の境界）。.34は群H",
+   "evidence": [],
+   "evidence_kinds": {},
+   "remaining": "L70境界改訂、R50除外0、D10/V10最終候補"
+  },
+  {
+   "id": "O168",
+   "origin": "P/50",
+   "class": "技術",
+   "criterion": "externalの名目性・不透明性の内側の葉を受理/拒否の対で示す",
+   "judgment": "L60の分は完了",
+   "evidence": [
+    "ExternalSignatureLeaves.handle_not_source",
+    "ExternalSignatureLeaves.non_binding_pattern_rejected",
+    "ExternalSignatureLeaves.constructor_value_rejected",
+    "ExternalSignatureLeaves.mismatched_handle"
+   ],
+   "evidence_kinds": {
+    "ExternalSignatureLeaves.handle_not_source": "theorem",
+    "ExternalSignatureLeaves.non_binding_pattern_rejected": "theorem",
+    "ExternalSignatureLeaves.constructor_value_rejected": "theorem",
+    "ExternalSignatureLeaves.mismatched_handle": "theorem"
+   },
+   "remaining": "R30/R50/R60/R70/D10/V10のDET-R全実CLI"
+  }
+ ]
+}

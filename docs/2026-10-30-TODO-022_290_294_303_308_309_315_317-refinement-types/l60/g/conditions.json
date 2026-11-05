@@ -1,0 +1,1506 @@
+{
+ "summary": {
+  "composite29": {
+   "実質": 24,
+   "自明": 5
+  },
+  "composite29_previous": {
+   "実質": 27,
+   "自明": 2
+  },
+  "models87": {
+   "既存75": {
+    "実質": 57,
+    "空疎": 6,
+    "自明": 12
+   },
+   "新12": {
+    "実質": 7,
+    "自明": 3,
+    "空疎": 2
+   },
+   "合計87": {
+    "実質": 64,
+    "空疎": 8,
+    "自明": 15
+   }
+  },
+  "models87_previous": {
+   "既存75": {
+    "実質": 69,
+    "空疎": 6
+   },
+   "新12": {
+    "実質": 7,
+    "自明": 3,
+    "空疎": 2
+   },
+   "合計87": {
+    "実質": 76,
+    "空疎": 8,
+    "自明": 3
+   }
+  },
+  "target": {
+   "新12": {
+    "実質": 7,
+    "自明": 3,
+    "空疎": 2
+   },
+   "合計87": {
+    "実質": 76,
+    "自明": 3,
+    "空疎": 8
+   }
+  },
+  "rows96": {
+   "実質": 96
+  },
+  "rows96_by_aggregate": {
+   "StandardModel.collection_inputs": 79,
+   "StandardModel.io_inputs": 10,
+   "StandardModel.scope_inputs": 7
+  },
+  "resolved_fields": [
+   "admits_rename",
+   "admits_renameTypes",
+   "admits_sat",
+   "admits_subst",
+   "admits_values",
+   "external_no_targets",
+   "external_typed",
+   "io_exists",
+   "io_kind",
+   "io_target",
+   "io_typed",
+   "sat_rename",
+   "sat_renameTypes",
+   "sat_subst",
+   "sat_values"
+  ],
+  "no_premise_fields": [
+   "state_effect",
+   "ref_get",
+   "ref_set"
+  ],
+  "difference_from_target": {
+   "実質": -12,
+   "自明": 12,
+   "空疎": 0
+  }
+ },
+ "fields": [
+  {
+   "field": "sat_rename",
+   "group": "置換8",
+   "premises": true,
+   "f2": "保留",
+   "reader": "Benitoite.Release.Refinement.StandardModel.core",
+   "premise_negation": "なし。前提の否定は導出していない",
+   "judgment": "実質",
+   "witness": "StandardModel.substitution_inputs",
+   "normal_input": "Integerと鍵の制約を持つ型変数・恒等の改名・Integerへの具体化・Map.getの行",
+   "contrast": "Floatは鍵の制約を満たさない（StandardModel.admits_sat_input の第二成分）",
+   "conclusion_trivial": "結論は合成プログラムの宣言の要約による制約の判定を読む。入力の型・形又は応答の証拠を使う"
+  },
+  {
+   "field": "admits_rename",
+   "group": "置換8",
+   "premises": true,
+   "f2": "保留",
+   "reader": "Benitoite.Release.Refinement.StandardModel.core",
+   "premise_negation": "なし。前提の否定は導出していない",
+   "judgment": "実質",
+   "witness": "StandardModel.substitution_inputs",
+   "normal_input": "Integerと鍵の制約を持つ型変数・恒等の改名・Integerへの具体化・Map.getの行",
+   "contrast": "Floatは鍵の制約を満たさない（StandardModel.admits_sat_input の第二成分）",
+   "conclusion_trivial": "結論は合成プログラムの宣言の要約による制約の判定を読む。入力の型・形又は応答の証拠を使う"
+  },
+  {
+   "field": "sat_values",
+   "group": "置換8",
+   "premises": true,
+   "f2": "保留",
+   "reader": "Benitoite.Release.Refinement.StandardModel.core",
+   "premise_negation": "なし。前提の否定は導出していない",
+   "judgment": "実質",
+   "witness": "StandardModel.substitution_inputs",
+   "normal_input": "Integerと鍵の制約を持つ型変数・恒等の改名・Integerへの具体化・Map.getの行",
+   "contrast": "Floatは鍵の制約を満たさない（StandardModel.admits_sat_input の第二成分）",
+   "conclusion_trivial": "結論は合成プログラムの宣言の要約による制約の判定を読む。入力の型・形又は応答の証拠を使う"
+  },
+  {
+   "field": "admits_values",
+   "group": "置換8",
+   "premises": true,
+   "f2": "保留",
+   "reader": "Benitoite.Release.Refinement.StandardModel.core",
+   "premise_negation": "なし。前提の否定は導出していない",
+   "judgment": "実質",
+   "witness": "StandardModel.substitution_inputs",
+   "normal_input": "Integerと鍵の制約を持つ型変数・恒等の改名・Integerへの具体化・Map.getの行",
+   "contrast": "Floatは鍵の制約を満たさない（StandardModel.admits_sat_input の第二成分）",
+   "conclusion_trivial": "結論は合成プログラムの宣言の要約による制約の判定を読む。入力の型・形又は応答の証拠を使う"
+  },
+  {
+   "field": "sat_renameTypes",
+   "group": "置換8",
+   "premises": true,
+   "f2": "保留",
+   "reader": "Benitoite.Release.Refinement.StandardModel.core",
+   "premise_negation": "なし。前提の否定は導出していない",
+   "judgment": "実質",
+   "witness": "StandardModel.substitution_inputs",
+   "normal_input": "Integerと鍵の制約を持つ型変数・恒等の改名・Integerへの具体化・Map.getの行",
+   "contrast": "Floatは鍵の制約を満たさない（StandardModel.admits_sat_input の第二成分）",
+   "conclusion_trivial": "結論は合成プログラムの宣言の要約による制約の判定を読む。入力の型・形又は応答の証拠を使う"
+  },
+  {
+   "field": "admits_renameTypes",
+   "group": "置換8",
+   "premises": true,
+   "f2": "保留",
+   "reader": "Benitoite.Release.Refinement.StandardModel.core",
+   "premise_negation": "なし。前提の否定は導出していない",
+   "judgment": "実質",
+   "witness": "StandardModel.substitution_inputs",
+   "normal_input": "Integerと鍵の制約を持つ型変数・恒等の改名・Integerへの具体化・Map.getの行",
+   "contrast": "Floatは鍵の制約を満たさない（StandardModel.admits_sat_input の第二成分）",
+   "conclusion_trivial": "結論は合成プログラムの宣言の要約による制約の判定を読む。入力の型・形又は応答の証拠を使う"
+  },
+  {
+   "field": "sat_subst",
+   "group": "置換8",
+   "premises": true,
+   "f2": "保留",
+   "reader": "Benitoite.Release.Refinement.StandardModel.core",
+   "premise_negation": "なし。前提の否定は導出していない",
+   "judgment": "実質",
+   "witness": "StandardModel.substitution_inputs",
+   "normal_input": "Integerと鍵の制約を持つ型変数・恒等の改名・Integerへの具体化・Map.getの行",
+   "contrast": "Floatは鍵の制約を満たさない（StandardModel.admits_sat_input の第二成分）",
+   "conclusion_trivial": "結論は合成プログラムの宣言の要約による制約の判定を読む。入力の型・形又は応答の証拠を使う"
+  },
+  {
+   "field": "admits_subst",
+   "group": "置換8",
+   "premises": true,
+   "f2": "保留",
+   "reader": "Benitoite.Release.Refinement.StandardModel.core",
+   "premise_negation": "なし。前提の否定は導出していない",
+   "judgment": "実質",
+   "witness": "StandardModel.substitution_inputs",
+   "normal_input": "Integerと鍵の制約を持つ型変数・恒等の改名・Integerへの具体化・Map.getの行",
+   "contrast": "Floatは鍵の制約を満たさない（StandardModel.admits_sat_input の第二成分）",
+   "conclusion_trivial": "結論は合成プログラムの宣言の要約による制約の判定を読む。入力の型・形又は応答の証拠を使う"
+  },
+  {
+   "field": "external_typed",
+   "group": "外部3",
+   "premises": true,
+   "f2": "保留",
+   "reader": "Benitoite.Release.Refinement.StandardModel.core",
+   "premise_negation": "なし。前提の否定は導出していない",
+   "judgment": "実質",
+   "witness": "StandardModel.positive_inputs",
+   "normal_input": "外部関数 `0 < self` を一つ持つ外部宣言の表と、正常値1の生応答",
+   "contrast": "同じ入力にerrの応答も属する（positive_inputs の第二成分）",
+   "conclusion_trivial": "結論は生応答の証拠（carrier・非exit、又は空観測）を読む。入力の型・形又は応答の証拠を使う"
+  },
+  {
+   "field": "external_exists",
+   "group": "外部3",
+   "premises": true,
+   "f2": "自明",
+   "reader": "Benitoite.Release.Refinement.StandardModel.core",
+   "premise_negation": "なし。前提の否定は導出していない",
+   "judgment": "自明",
+   "witness": "前提は満たせるが結論は前提を読まない",
+   "conclusion_trivial": "結論は入力を読まない定数のerrと空の観測で成り立つ（ExternalModel.external_assumptions）"
+  },
+  {
+   "field": "external_no_targets",
+   "group": "外部3",
+   "premises": true,
+   "f2": "保留",
+   "reader": "Benitoite.Release.Refinement.StandardModel.core",
+   "premise_negation": "なし。前提の否定は導出していない",
+   "judgment": "実質",
+   "witness": "StandardModel.positive_inputs",
+   "normal_input": "external_typed と同じ入力。結論の空の観測は同じ関係の証拠から読む",
+   "contrast": "同上",
+   "conclusion_trivial": "結論は生応答の証拠を読む。入力の型・形又は応答の証拠を使う"
+  },
+  {
+   "field": "delta_typed",
+   "group": "応答4",
+   "premises": true,
+   "f2": "実質",
+   "reader": "Benitoite.Release.Refinement.StandardModel.core",
+   "premise_negation": "なし。前提の否定は導出していない",
+   "judgment": "実質",
+   "witness": "Benitoite.Release.Refinement.StandardModel.numeric_inputs・Benitoite.Release.Refinement.StandardModel.operator_inputs（数値166行と演算子109行の基本型の定数の入力）",
+   "conclusion_trivial": "結論は合成表のδの値を型付きの非exitの応答として返す"
+  },
+  {
+   "field": "io_typed",
+   "group": "応答4",
+   "premises": true,
+   "f2": "保留",
+   "reader": "Benitoite.Release.Refinement.StandardModel.core",
+   "premise_negation": "なし。前提の否定は導出していない",
+   "judgment": "実質",
+   "witness": "StandardModel.io_field_inputs",
+   "normal_input": "File.readTextInの行と保持したパス。応答は合成表のIO応答の存在から選ぶ",
+   "contrast": "なし（IO応答の関係は正常応答の存在を要求しない）",
+   "conclusion_trivial": "結論はIO応答の関係と対象の条件を読む。入力の型・形又は応答の証拠を使う"
+  },
+  {
+   "field": "io_kind",
+   "group": "応答4",
+   "premises": true,
+   "f2": "保留",
+   "reader": "Benitoite.Release.Refinement.StandardModel.core",
+   "premise_negation": "なし。前提の否定は導出していない",
+   "judgment": "実質",
+   "witness": "StandardModel.io_field_inputs",
+   "normal_input": "File.readTextInの行と保持したパス。応答は合成表のIO応答の存在から選ぶ",
+   "contrast": "なし（IO応答の関係は正常応答の存在を要求しない）",
+   "conclusion_trivial": "結論はIO応答の関係と対象の条件を読む。入力の型・形又は応答の証拠を使う"
+  },
+  {
+   "field": "io_exists",
+   "group": "応答4",
+   "premises": true,
+   "f2": "保留",
+   "reader": "Benitoite.Release.Refinement.StandardModel.core",
+   "premise_negation": "なし。前提の否定は導出していない",
+   "judgment": "実質",
+   "witness": "StandardModel.io_field_inputs",
+   "normal_input": "File.readTextInの行と保持したパス。応答は合成表のIO応答の存在から選ぶ",
+   "contrast": "なし（IO応答の関係は正常応答の存在を要求しない）",
+   "conclusion_trivial": "結論はIO応答の関係と対象の条件を読む。入力の型・形又は応答の証拠を使う"
+  },
+  {
+   "field": "sig_scoped",
+   "group": "独自13",
+   "premises": true,
+   "f2": "実質",
+   "reader": "Benitoite.Release.Refinement.StandardModel.core",
+   "premise_negation": "なし。前提の否定は導出していない",
+   "judgment": "実質",
+   "witness": "Benitoite.Release.Refinement.StandardModel.row_lookup（全377行のlookup）",
+   "conclusion_trivial": "結論は行の署名の形成（PrimSig.Scoped）を読む"
+  },
+  {
+   "field": "sat_unconstrained",
+   "group": "独自13",
+   "premises": true,
+   "f2": "自明",
+   "reader": "Benitoite.Release.Refinement.StandardModel.core",
+   "premise_negation": "なし。前提の否定は導出していない",
+   "judgment": "自明",
+   "witness": "前提は満たせるが結論は入力を読まない",
+   "conclusion_trivial": "空の制約の判定は定義で真になる（ModelConstraints.sat_unconstrained が rfl）"
+  },
+  {
+   "field": "admits_sat",
+   "group": "独自13",
+   "premises": true,
+   "f2": "保留",
+   "reader": "Benitoite.Release.Refinement.StandardModel.core",
+   "premise_negation": "なし。前提の否定は導出していない",
+   "judgment": "実質",
+   "witness": "StandardModel.admits_sat_input",
+   "normal_input": "Map.getの行とIntegerの二つの型引数",
+   "contrast": "Floatは鍵の制約を満たさない",
+   "conclusion_trivial": "結論は許容の判定から制約の判定を導く。入力の型・形又は応答の証拠を使う"
+  },
+  {
+   "field": "release_exists",
+   "group": "独自13",
+   "premises": true,
+   "f2": "実質",
+   "reader": "Benitoite.Release.Refinement.StandardModel.core",
+   "premise_negation": "なし。前提の否定は導出していない",
+   "judgment": "実質",
+   "witness": "Benitoite.Release.Refinement.StandardModel.resource_input（任意のP・ストア・番号の型付きFile.Handle）",
+   "conclusion_trivial": "全結果の関係所属は型付き値の正準形と資源の分類を読む"
+  },
+  {
+   "field": "pathBases_shape",
+   "group": "独自13",
+   "premises": true,
+   "f2": "実質",
+   "reader": "Benitoite.Release.Refinement.StandardModel.core",
+   "premise_negation": "なし。前提の否定は導出していない",
+   "judgment": "実質",
+   "witness": "Benitoite.Release.Refinement.StandardModel.row_lookup の Primitive.p156（種類 pathBases）",
+   "conclusion_trivial": "結論は発行の八欄とEnvironmentの所属を読む"
+  },
+  {
+   "field": "io_op",
+   "group": "独自13",
+   "premises": true,
+   "f2": "実質",
+   "reader": "Benitoite.Release.Refinement.StandardModel.core",
+   "premise_negation": "なし。前提の否定は導出していない",
+   "judgment": "実質",
+   "witness": "Benitoite.Release.Refinement.StandardModel.row_lookup のIOと終了の10行（Primitive.io）",
+   "conclusion_trivial": "結論は効果の表の所属と範囲の形を読む"
+  },
+  {
+   "field": "opEff_io",
+   "group": "独自13",
+   "premises": true,
+   "f2": "実質",
+   "reader": "Benitoite.Release.Refinement.StandardModel.core",
+   "premise_negation": "なし。前提の否定は導出していない",
+   "judgment": "実質",
+   "witness": "Benitoite.Release.Refinement.StandardModel.row_lookup の Primitive.p373（Console.Write）",
+   "conclusion_trivial": "結論は署名の種類を読む"
+  },
+  {
+   "field": "effect_ops",
+   "group": "独自13",
+   "premises": true,
+   "f2": "実質",
+   "reader": "Benitoite.Release.Refinement.StandardModel.core",
+   "premise_negation": "なし。前提の否定は導出していない",
+   "judgment": "実質",
+   "witness": "Benitoite.Release.Refinement.StandardModel.effects_member",
+   "conclusion_trivial": "結論は効果の表の所属の名前の署名を読む"
+  },
+  {
+   "field": "state_effect",
+   "group": "独自13",
+   "premises": false,
+   "f2": "実質",
+   "reader": "Benitoite.Release.Refinement.StandardModel.core",
+   "premise_negation": "前提を持たない",
+   "judgment": "自明",
+   "previous": "実質",
+   "conclusion_trivial": "前提を持たない。固定の署名又は定義の値（rfl）で閉じる",
+   "note": "第2.4節の定義に従い自明に数える（2026-11-05の設計者の決定）。L50の受け入れの分類は実質"
+  },
+  {
+   "field": "ref_get",
+   "group": "独自13",
+   "premises": false,
+   "f2": "実質",
+   "reader": "Benitoite.Release.Refinement.StandardModel.core",
+   "premise_negation": "前提を持たない",
+   "judgment": "自明",
+   "previous": "実質",
+   "conclusion_trivial": "前提を持たない。固定の署名又は定義の値（rfl）で閉じる",
+   "note": "第2.4節の定義に従い自明に数える（2026-11-05の設計者の決定）。L50の受け入れの分類は実質"
+  },
+  {
+   "field": "ref_set",
+   "group": "独自13",
+   "premises": false,
+   "f2": "実質",
+   "reader": "Benitoite.Release.Refinement.StandardModel.core",
+   "premise_negation": "前提を持たない",
+   "judgment": "自明",
+   "previous": "実質",
+   "conclusion_trivial": "前提を持たない。固定の署名又は定義の値（rfl）で閉じる",
+   "note": "第2.4節の定義に従い自明に数える（2026-11-05の設計者の決定）。L50の受け入れの分類は実質"
+  },
+  {
+   "field": "store_shape",
+   "group": "独自13",
+   "premises": true,
+   "f2": "実質",
+   "reader": "Benitoite.Release.Refinement.StandardModel.core",
+   "premise_negation": "なし。前提の否定は導出していない",
+   "judgment": "実質",
+   "witness": "Benitoite.Release.Refinement.StandardModel.row_lookup（発行以外の376行）",
+   "conclusion_trivial": "結論は参照と明示遅延の形（StoreShape）を読む"
+  },
+  {
+   "field": "store_admits",
+   "group": "独自13",
+   "premises": true,
+   "f2": "実質",
+   "reader": "Benitoite.Release.Refinement.StandardModel.core",
+   "premise_negation": "なし。前提の否定は導出していない",
+   "judgment": "実質",
+   "witness": "Benitoite.Release.Refinement.StandardModel.row_lookup の参照と明示遅延の5行と、型引数の個数の一致する型引数の列",
+   "conclusion_trivial": "結論は許容の定義で型引数の個数の一致に帰着する"
+  },
+  {
+   "field": "io_target",
+   "group": "対象1",
+   "premises": true,
+   "f2": "保留",
+   "reader": "Benitoite.Release.Refinement.StandardModel.targets",
+   "premise_negation": "なし。前提の否定は導出していない",
+   "judgment": "実質",
+   "witness": "StandardModel.io_field_inputs",
+   "normal_input": "File.readTextInの行と保持したパス。応答は合成表のIO応答の存在から選ぶ",
+   "contrast": "なし（IO応答の関係は正常応答の存在を要求しない）",
+   "conclusion_trivial": "結論は署名の形の対象の条件を読む。入力の型・形又は応答の証拠を使う"
+  }
+ ],
+ "model_reclassified": [
+  {
+   "model": "model",
+   "field": "ref_get",
+   "previous": "実質",
+   "judgment": "自明",
+   "reason": "前提を持たない。固定の署名又は定義の値（rfl）で閉じる",
+   "source": "l60/e/conditions.json"
+  },
+  {
+   "model": "model",
+   "field": "ref_set",
+   "previous": "実質",
+   "judgment": "自明",
+   "reason": "前提を持たない。固定の署名又は定義の値（rfl）で閉じる",
+   "source": "l60/e/conditions.json"
+  },
+  {
+   "model": "model",
+   "field": "sat_unconstrained",
+   "previous": "実質",
+   "judgment": "自明",
+   "reason": "任意のP・C・aについて定義で真（ModelConstraints.sat_unconstrained と同じく rfl）",
+   "source": "l60/e/conditions.json"
+  },
+  {
+   "model": "model",
+   "field": "state_effect",
+   "previous": "実質",
+   "judgment": "自明",
+   "reason": "前提を持たない。固定の署名又は定義の値（rfl）で閉じる",
+   "source": "l60/e/conditions.json"
+  },
+  {
+   "model": "targets",
+   "field": "ref_get",
+   "previous": "実質",
+   "judgment": "自明",
+   "reason": "前提を持たない。固定の署名又は定義の値（rfl）で閉じる",
+   "source": "l60/e/conditions.json"
+  },
+  {
+   "model": "targets",
+   "field": "ref_set",
+   "previous": "実質",
+   "judgment": "自明",
+   "reason": "前提を持たない。固定の署名又は定義の値（rfl）で閉じる",
+   "source": "l60/e/conditions.json"
+  },
+  {
+   "model": "targets",
+   "field": "sat_unconstrained",
+   "previous": "実質",
+   "judgment": "自明",
+   "reason": "任意のP・C・aについて定義で真（ModelConstraints.sat_unconstrained と同じく rfl）",
+   "source": "l60/e/conditions.json"
+  },
+  {
+   "model": "targets",
+   "field": "state_effect",
+   "previous": "実質",
+   "judgment": "自明",
+   "reason": "前提を持たない。固定の署名又は定義の値（rfl）で閉じる",
+   "source": "l60/e/conditions.json"
+  },
+  {
+   "model": "http",
+   "field": "ref_get",
+   "previous": "実質",
+   "judgment": "自明",
+   "reason": "前提を持たない。固定の署名又は定義の値（rfl）で閉じる",
+   "source": "l60/e/conditions.json"
+  },
+  {
+   "model": "http",
+   "field": "ref_set",
+   "previous": "実質",
+   "judgment": "自明",
+   "reason": "前提を持たない。固定の署名又は定義の値（rfl）で閉じる",
+   "source": "l60/e/conditions.json"
+  },
+  {
+   "model": "http",
+   "field": "sat_unconstrained",
+   "previous": "実質",
+   "judgment": "自明",
+   "reason": "任意のP・C・aについて定義で真（ModelConstraints.sat_unconstrained と同じく rfl）",
+   "source": "l60/e/conditions.json"
+  },
+  {
+   "model": "http",
+   "field": "state_effect",
+   "previous": "実質",
+   "judgment": "自明",
+   "reason": "前提を持たない。固定の署名又は定義の値（rfl）で閉じる",
+   "source": "l60/e/conditions.json"
+  }
+ ],
+ "rows": [
+  {
+   "row": "Primitive.p076",
+   "name": "%Map.replaceValues",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.replaceValues",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p120",
+   "name": "Bytes.concatenate",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.bytesOrdinary",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p121",
+   "name": "Bytes.empty",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.bytesOrdinary",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p122",
+   "name": "Bytes.fromBinary",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.bytesOrdinary",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p123",
+   "name": "Bytes.fromHex",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.bytesOrdinary",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p124",
+   "name": "Bytes.fromIntegers",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.bytesOrdinary",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p125",
+   "name": "Bytes.fromList",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.bytes",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p126",
+   "name": "Bytes.fromSigned",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.bytesOrdinary",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p127",
+   "name": "Bytes.fromUnsigned",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.bytesOrdinary",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p128",
+   "name": "Bytes.get",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.bytesOrdinary",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p129",
+   "name": "Bytes.length",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.bytes",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p130",
+   "name": "Bytes.readSigned",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.bytesOrdinary",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p131",
+   "name": "Bytes.readUnsigned",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.bytesOrdinary",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p132",
+   "name": "Bytes.slice",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.bytesOrdinary",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p133",
+   "name": "Bytes.toBinary",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.bytesOrdinary",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p134",
+   "name": "Bytes.toHex",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.bytesOrdinary",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p135",
+   "name": "Bytes.toList",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.bytes",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p157",
+   "name": "File.appendBytesIn",
+   "unit": "L60.28",
+   "contract": "StandardModel.IORow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.IORow.Satisfiable.appendBytesIn",
+   "aggregate": "StandardModel.io_inputs"
+  },
+  {
+   "row": "Primitive.p158",
+   "name": "File.appendTextIn",
+   "unit": "L60.28",
+   "contract": "StandardModel.IORow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.IORow.Satisfiable.appendTextIn",
+   "aggregate": "StandardModel.io_inputs"
+  },
+  {
+   "row": "Primitive.p159",
+   "name": "File.readBytesIn",
+   "unit": "L60.28",
+   "contract": "StandardModel.IORow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.IORow.Satisfiable.readBytesIn",
+   "aggregate": "StandardModel.io_inputs"
+  },
+  {
+   "row": "Primitive.p160",
+   "name": "File.readText",
+   "unit": "L60.28",
+   "contract": "StandardModel.IORow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.IORow.Satisfiable.readText",
+   "aggregate": "StandardModel.io_inputs"
+  },
+  {
+   "row": "Primitive.p161",
+   "name": "File.readTextIn",
+   "unit": "L60.28",
+   "contract": "StandardModel.IORow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.IORow.Satisfiable.readTextIn",
+   "aggregate": "StandardModel.io_inputs"
+  },
+  {
+   "row": "Primitive.p162",
+   "name": "File.writeBytesIn",
+   "unit": "L60.28",
+   "contract": "StandardModel.IORow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.IORow.Satisfiable.writeBytesIn",
+   "aggregate": "StandardModel.io_inputs"
+  },
+  {
+   "row": "Primitive.p163",
+   "name": "File.writeTextIn",
+   "unit": "L60.28",
+   "contract": "StandardModel.IORow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.IORow.Satisfiable.writeTextIn",
+   "aggregate": "StandardModel.io_inputs"
+  },
+  {
+   "row": "Primitive.p185",
+   "name": "Http.checkRequestIn",
+   "unit": "L60.28",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.checkRequestIn",
+   "aggregate": "StandardModel.scope_inputs"
+  },
+  {
+   "row": "Primitive.p186",
+   "name": "Http.requestInValue",
+   "unit": "L60.28",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.requestInValue",
+   "aggregate": "StandardModel.scope_inputs"
+  },
+  {
+   "row": "Primitive.p187",
+   "name": "Http.sendIn",
+   "unit": "L60.28",
+   "contract": "StandardModel.IORow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.IORow.Satisfiable.sendIn",
+   "aggregate": "StandardModel.io_inputs"
+  },
+  {
+   "row": "Primitive.p188",
+   "name": "Http.widenRequestIn",
+   "unit": "L60.28",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.widenRequestIn",
+   "aggregate": "StandardModel.scope_inputs"
+  },
+  {
+   "row": "Primitive.p255",
+   "name": "List.append",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.append",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p256",
+   "name": "List.concatenate",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.list",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p257",
+   "name": "List.contains",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.listRemaining",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p258",
+   "name": "List.drop",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.listRemaining",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p259",
+   "name": "List.get",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.listRemaining",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p260",
+   "name": "List.head",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.headTail",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p261",
+   "name": "List.isEmpty",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.list",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p262",
+   "name": "List.length",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.list",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p263",
+   "name": "List.prepend",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.list",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p264",
+   "name": "List.range",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.range",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p265",
+   "name": "List.reverse",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.list",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p266",
+   "name": "List.sort",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.listRemaining",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p267",
+   "name": "List.tail",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.headTail",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p268",
+   "name": "List.take",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.listRemaining",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p269",
+   "name": "Map.contains",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.map",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p270",
+   "name": "Map.empty",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.map",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p271",
+   "name": "Map.fromList",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.precision",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p272",
+   "name": "Map.get",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.map",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p273",
+   "name": "Map.keys",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.map",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p274",
+   "name": "Map.remove",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.map",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p275",
+   "name": "Map.set",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.map",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p276",
+   "name": "Map.size",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.map",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p277",
+   "name": "Map.toList",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.precision",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p278",
+   "name": "Map.values",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.map",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p281",
+   "name": "Scope.checkPathIn",
+   "unit": "L60.28",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.checkPathIn",
+   "aggregate": "StandardModel.scope_inputs"
+  },
+  {
+   "row": "Primitive.p282",
+   "name": "Scope.pathInValue",
+   "unit": "L60.28",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.pathInValue",
+   "aggregate": "StandardModel.scope_inputs"
+  },
+  {
+   "row": "Primitive.p283",
+   "name": "Scope.widenPathIn",
+   "unit": "L60.28",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.widenPathIn",
+   "aggregate": "StandardModel.scope_inputs"
+  },
+  {
+   "row": "Primitive.p284",
+   "name": "Set.add",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.set",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p285",
+   "name": "Set.contains",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.set",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p286",
+   "name": "Set.difference",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.set",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p287",
+   "name": "Set.empty",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.set",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p288",
+   "name": "Set.fromList",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.precision",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p289",
+   "name": "Set.intersection",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.set",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p290",
+   "name": "Set.remove",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.set",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p291",
+   "name": "Set.size",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.set",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p292",
+   "name": "Set.toList",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.precision",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p293",
+   "name": "Set.union",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.set",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p294",
+   "name": "String.byteIndexOf",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.string",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p295",
+   "name": "String.byteLength",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.bytes",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p296",
+   "name": "String.byteSlice",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.string",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p297",
+   "name": "String.characterAt",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.string",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p298",
+   "name": "String.characterCount",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.bytes",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p299",
+   "name": "String.characterSlice",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.string",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p300",
+   "name": "String.characters",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.string",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p301",
+   "name": "String.contains",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.string",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p302",
+   "name": "String.displayWidth",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.string",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p303",
+   "name": "String.displayWidthCJK",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.string",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p304",
+   "name": "String.displayWidthPadEnd",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.string",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p305",
+   "name": "String.displayWidthPadEndCJK",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.string",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p306",
+   "name": "String.displayWidthPadStart",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.string",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p307",
+   "name": "String.displayWidthPadStartCJK",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.string",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p308",
+   "name": "String.endsWith",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.string",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p309",
+   "name": "String.fromCharacters",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.string",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p310",
+   "name": "String.fromUTF8",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.string",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p311",
+   "name": "String.isEmpty",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.string",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p312",
+   "name": "String.join",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.string",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p313",
+   "name": "String.lines",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.string",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p314",
+   "name": "String.repeat",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.string",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p315",
+   "name": "String.replace",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.string",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p316",
+   "name": "String.split",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.string",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p317",
+   "name": "String.startsWith",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.string",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p318",
+   "name": "String.toLowercase",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.string",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p319",
+   "name": "String.toUTF8",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.string",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p320",
+   "name": "String.toUppercase",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.string",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p321",
+   "name": "String.trim",
+   "unit": "L60.26",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.string",
+   "aggregate": "StandardModel.collection_inputs"
+  },
+  {
+   "row": "Primitive.p372",
+   "name": "exit",
+   "unit": "L60.28",
+   "contract": "StandardModel.IORow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.IORow.Satisfiable.exit",
+   "aggregate": "StandardModel.io_inputs"
+  },
+  {
+   "row": "Primitive.p373",
+   "name": "print",
+   "unit": "L60.28",
+   "contract": "StandardModel.IORow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.IORow.Satisfiable.print",
+   "aggregate": "StandardModel.io_inputs"
+  },
+  {
+   "row": "Primitive.p377",
+   "name": "%List.getFront",
+   "unit": "L60.28",
+   "contract": "StandardModel.PureRow",
+   "f2": "保留",
+   "judgment": "実質",
+   "witness": "StandardModel.PureRow.Satisfiable.front",
+   "aggregate": "StandardModel.scope_inputs"
+  }
+ ]
+}

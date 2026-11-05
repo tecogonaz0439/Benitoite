@@ -1,0 +1,101 @@
+{
+  "platform": {
+    "system": "Darwin",
+    "machine": "arm64",
+    "release": "27.2.0"
+  },
+  "lean": "Lean (version 4.34.1, arm64-apple-darwin24.6.0, commit 5045d0056413266e57c625dcd7c365b10e377c52, Release)",
+  "memory_mib": 12288,
+  "configuration": "既定ターゲット・既定import・固定Lean。単独Leanも-M 12288。RSSは計画上の非採取",
+  "base": "d76269707008268af63e0149e638804d448a6c70",
+  "inputs": {
+    "formal/lean-toolchain": {
+      "bytes": 25,
+      "sha256": "d5edba4e4b8faad9c1baeadb265716d20d03be4d1a2647dc5e35b0c0325bea7b"
+    },
+    "formal/lakefile.toml": {
+      "bytes": 872,
+      "sha256": "10f2661bff8fce95a9253d976427d0ca44038ec12350c955badbc1cf1efa6e3a"
+    },
+    "formal/lake-manifest.json": {
+      "bytes": 152,
+      "sha256": "f4a9b127f95cf577c7da1c2269f85ffd5754f76afccace5dc310d56ef8f41a32"
+    },
+    "formal/Benitoite.lean": {
+      "bytes": 44290,
+      "sha256": "a326b3cfb0faf0d52ed048ac53ea280ce9e39c685d0945889a54b31e355eaf10"
+    },
+    "docs/design/01-spec/01-12-core-calculus.md": {
+      "bytes": 943148,
+      "sha256": "7560515837ea6804d3439984305874dca94531b39e81e191852ed211d26a4d3e"
+    },
+    "docs/design/07-quality/07-04-formal-semantics.md": {
+      "bytes": 610552,
+      "sha256": "39bd1ae5901082d9f9be48fafeec30a57d2b7522eed07cc076485ae69d77beb9"
+    },
+    "formal/Benitoite/Release/Refinement/StandardModelCollectionInputs.lean": {
+      "bytes": 47876,
+      "sha256": "3c6a5918d3a67f94c8f9c7a0489e7478079c395d3caac7e773b9681f03893dd4"
+    },
+    "formal/Benitoite/Release/Refinement/StandardModelConditionInputs.lean": {
+      "bytes": 17007,
+      "sha256": "754ad8bfa849d257c1af4a852e67dfc87be7c805dee92a368393336bd22ad3bb"
+    },
+    "formal/Benitoite/Release/Refinement/StandardModelIOInputs.lean": {
+      "bytes": 27890,
+      "sha256": "877010378ead114bab26de0e3cf06b5284f97000bebd26445e3a8546d25e1eca"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/g/audit.py": {
+      "bytes": 6042,
+      "sha256": "177a2852e25fe754af65aed09c69dfdea250ae1decbee40338136d964958e5a9"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/g/boundary.py": {
+      "bytes": 7099,
+      "sha256": "ae131ef1a2f4deb39e97a9cb48c5690a85c06ef068762cb3f9cf4507f9c151dc"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/g/conditions.py": {
+      "bytes": 12764,
+      "sha256": "e6ade0d81247ba367439d21e89d919bd222466a02d8f0dcf9b6cc7d170987d07"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/g/design_copies.py": {
+      "bytes": 4714,
+      "sha256": "768598da95f400b8cb926eac2d63cc55f6516d024ba853360cd19f72f1253176"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/g/function_values.py": {
+      "bytes": 10770,
+      "sha256": "649ceac501c3cdca94f1701ffdab3bb0ff42389cd7148894d258d3592746d834"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/g/inventory.py": {
+      "bytes": 2227,
+      "sha256": "3ad7a84067ece7bddafc9bfbe938f5ba9659ea8fbc28b01ffcb02b75820d9789"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/g/records.py": {
+      "bytes": 21905,
+      "sha256": "5acea816d9fa0c232c370b4ad290ec2b0949ffe8145fb8710390ae528b3b2d93"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/g/run.py": {
+      "bytes": 1694,
+      "sha256": "31f3b641ecb00f8b83920aa4fbc72baa2f2e4dff10da043d39e54c58b4a90821"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/g/support.py": {
+      "bytes": 2082,
+      "sha256": "d0b81480a16be8f7c962e702dd6f10ff2a4e21bd198531c154c5f491dc120640"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/g/verify.py": {
+      "bytes": 11331,
+      "sha256": "de2b8fd7d666d28d1dd8b368321e5346f2202b3a7d15de66fd17d081afd9582b"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/g/axioms.lean": {
+      "bytes": 5236,
+      "sha256": "95305383699ade23d2bf36f8a01b41b638bc46aa4989cf20556595011cf917eb"
+    },
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/g/graph.lean": {
+      "bytes": 1341,
+      "sha256": "b4c6ebfc954475a72d30ed3aad4300e7350d407cd52c7c0ffbd5a70d9501da24"
+    }
+  },
+  "graph": {
+    "bytes": 114693759,
+    "sha256": "307612365a96cd2326453fc4313aa1c1e5697c1f656c5a28bf5f2e3f3182c22d"
+  }
+}
