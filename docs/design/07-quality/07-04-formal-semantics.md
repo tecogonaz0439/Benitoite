@@ -367,6 +367,12 @@ metadata が none の項目、requirements/publicBoundary の空列、対応す�
 
 `AtPatternText` は、At の pattern の文字列の解析の性質を扱う。文字列の解析の成功は、文字列の解析と名前の種類・整形式・正規形の検査の成功であり（`parseAtPattern_string`）、解析できない文字列は準備の形式不正（`AtPrepare.text_invalid`）、起点の値が基準を束縛しない検査は未束縛の誤り（`checkAt_based_unbound`）になる。絶対形のパス条件とホスト条件の解析は旧 API の純粋チェックの解析と同じ定義である（`ScopeDelta.parsePattern_eq`・`RequestDelta.parseHostPattern_eq`）。
 
+`MappedHostPatterns` は、host の条件の全体が IPv4 射影の IPv6 の `::ffff:0.0.0.0/96` に入るかの判定を定める。判定（`IPPattern.MappedOnly`）は、正規な完全一致又は CIDR に所属する全アドレスが射影形であることと同値であり（`IPPattern.mappedOnly_iff`）、完全一致ではアドレスが射影形であること、CIDR では IPv6 で prefix の長さが96以上かつネットワークの上位96ビットが `::ffff` であることである（`IPPattern.mappedOnly_exact_iff`・`IPPattern.mappedOnly_cidr_iff`）。host の範囲と endpoint の範囲の host の条件に同じ判定を使う（`RangeExpr.MappedHostOnly`）。判定の成り立つ範囲は、URL の対象の解析が返す対象と保持した要求の対象を含まない（`RangeExpr.MappedHostOnly.not_url_target`・`not_request_target`）。判定は範囲の所属・型付け・網羅性の定義に現れず、範囲の代数は射影形を IPv6 の値のまま扱う。判定の成り立つ範囲は名前の種類に合う整形式の対象を含み、所属の述語を仮定にしても論理は矛盾を導かず（`not_refuted`）、所属の篩を付けた範囲付きの型は腕のない照合で網羅されず（`not_exhaustive_nil`）、範囲の pattern の値は型付けで受理される（`scopePattern_typed`）。
+
+`PathBaseDifference` は、解析した単一の pattern と At の対象の起点が両方とも確定して違うこと（`PathBasesDiffer`）と、全ての有効な起点の値で対象が pattern に所属しないこと（`OutsideAllEnvs`）を区別する。Top・絶対形・`{secrets}` の pattern と絶対形の対象は起点を持たず、前者の判定の外にある。起点からの pattern と対象では、後者は起点と要素の列で決まる。同じ起点では pattern が要素の列に所属しないこと、違う起点では完全一致の pattern で、幹と要素の列のどちらも他方の接尾辞でないことである（`outsideAllEnvs_based_iff`）。起点が違う木の pattern は全ての有効な起点の値で不所属にならず（`PathBasesDiffer.tree_not_outside`）、起点が違えば対象が所属しない有効な起点の値が必ずある（`PathBasesDiffer.exists_outside`）ので、一つの起点の値で観測した不所属は全ての起点の値での不所属を示さない。全ての有効な起点の値で不所属なら、どの有効な起点の値と上限でも At は成功せず（`OutsideAllEnvs.checkAt_not_ok`）、対象の解決先が正規で不所属が成り立たなければ、ある有効な起点の値で Top を上限にした At が成功する（`checkAt_ok_of_not_outside`）。二つを合わせ、全ての有効な起点の値での不所属は、Top を上限にした At が全ての有効な起点の値で成功しないことと同値である（`outsideAllEnvs_iff_checkAt`）。
+
+`HostRangeParams` は、種類 host の範囲の変数の具体化を扱う。種類 host に置ける範囲の式は Top と host の条件の絶対形だけであり（`RangeExpr.fitsKind_host_iff`）、具体化の許容も種類 host の位置にこの形だけを許す（`Builtins.RangeAdmissible.host_image`・`single_host_iff`）。種類 host の範囲の所属は起点の値を読まず（`RangeExpr.mem_host_env`・`snapshotMem_host`）、被覆は Top を含むどの整形式の内側でも種類 host の所属の包含と同値である（`RangeExpr.covers_host_iff`）。具体化は範囲付きの型の範囲の変数を同じ番号の範囲へ置き換え（`Ty.instR_scoped_rvar`）、具体化した範囲の所属の包含から範囲付きの型の部分型が従う（`Ty.LeQ.scoped_host_of_mem`）。範囲の位置を持たない署名も種類 host の範囲の変数を宣言でき、署名の形成の条件を満たし、具体化は引数と結果の型を変えない。
+
 `ScopedTargetInputs.response_inputs` は元の StateTyE から State.Inputs を結論に並べ、同じ状態から primitive_contract_inputs で元署名の実引数列を得て BuiltinArgs.normalized へ渡す。State.Inputs は primitive_contract_inputs の前提には使わない。正規化した入力を同じ δ/IO 応答と既存保存葉へ渡す。純粋な val/err、IO の val/err/exit、ハンドラで捕捉する葉と、At 三葉・発行二葉を扱う。入力の適格性と snapshot の一致は同じ状態から供給する。CoreAssumptions・WellFormed・WellTyped の既存の前提を使い、IO の観測には TargetAgreement、ハンドラには EffectsOk と分割・節・新しい場所を使う。同じ σ/Eb を保ち、ハンドラ以外の葉は元のストアへ戻る。全到達・表層の主定理の合成を結論に含めない。
 
 ### 篩を含む形式化の信頼条件
@@ -1146,6 +1152,8 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 | StandardModelNameLists・StandardModelCompletion | 同節。組込みの表の完成、信頼条件の29欄の組立て、合成済みの側を上書きしない契約、標準の名前の一覧と公開名の写像を扱う |
 | Surface.Syntax・Surface.Typing | 「型の情報を付けた表層の構文と型付け」。篩付きの型の表層の構文・宣言と判断の型を扱う |
 | AtPatternText | 「篩を含む状態の型付け」。At の pattern の文字列の解析と、その誤りの分類を扱う |
+| MappedHostPatterns・PathBaseDifference | 「操作の対象の範囲の領域と被覆」。IPv4 射影の IPv6 だけを表す host の条件の判定と、At の pattern と対象の起点の違いを、範囲の所属・型付け・網羅性を変えない判定として扱う |
+| HostRangeParams | 同節。種類 host の範囲の変数の具体化の許容・所属・被覆・置換を扱う |
 
 以下の既存の表は Release などの対応である。
 

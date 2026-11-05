@@ -1,0 +1,65 @@
+{
+ "b_work": "49f17471442229baf668e7b1f7b6dac8151c6dcf",
+ "head": "49f17471442229baf668e7b1f7b6dac8151c6dcf",
+ "changed": [
+  "docs/design/07-quality/07-04-formal-semantics.md",
+  "formal/Benitoite.lean"
+ ],
+ "untracked": [
+  "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l70/f1/audit-modules.json",
+  "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l70/f1/audit-summary.json",
+  "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l70/f1/axioms.lean",
+  "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l70/f1/required-names.json",
+  "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l70/f1/results.md",
+  "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l70/f1/signatures.md",
+  "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l70/f1/verify.py",
+  "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/reviews/RV-L70.f1.md",
+  "formal/Benitoite/Release/Refinement/HostRangeParams.lean",
+  "formal/Benitoite/Release/Refinement/MappedHostPatterns.lean",
+  "formal/Benitoite/Release/Refinement/PathBaseDifference.lean"
+ ],
+ "importers_of_new_modules": [],
+ "build": {
+  "jobs": 1345,
+  "bytes": 46189,
+  "sha256": "a67af86fbe28da0214382416cded76a2c1308da042743b2936b3c7f09c4c8557"
+ },
+ "axioms": {
+  "bytes": 102275,
+  "sha256": "3411fa81501eff466846f2105b1943090212ea37f3a47db0aa3bbd992c1767ab",
+  "targets": 205,
+  "private": 90,
+  "sets": {
+   "(none)": 79,
+   "Classical.choice,Quot.sound,propext": 42,
+   "Quot.sound,propext": 11,
+   "propext": 73
+  },
+  "modules": {
+   "Benitoite.Release.Refinement.HostRangeParams": 17,
+   "Benitoite.Release.Refinement.MappedHostPatterns": 84,
+   "Benitoite.Release.Refinement.PathBaseDifference": 104
+  },
+  "kinds": {
+   "Benitoite.Release.Refinement.HostRangeParams definition": 2,
+   "Benitoite.Release.Refinement.HostRangeParams theorem": 15,
+   "Benitoite.Release.Refinement.MappedHostPatterns definition": 23,
+   "Benitoite.Release.Refinement.MappedHostPatterns theorem": 61,
+   "Benitoite.Release.Refinement.PathBaseDifference definition": 25,
+   "Benitoite.Release.Refinement.PathBaseDifference theorem": 79
+  }
+ },
+ "required": 43,
+ "signatures": {
+  "bytes": 15646,
+  "sha256": "3e1da2cf9861309751fb2be60a990a1be6541958e457101b6fed29f020de2ec1"
+ },
+ "sources": {
+  "Benitoite.Release.Refinement.HostRangeParams": "72e2ae520a05669b2ea8e522f924295c628f014722b62d51f887294c6e033780",
+  "Benitoite.Release.Refinement.MappedHostPatterns": "364d950e63853bf7f99f180e53e3c3837a7f8e48cb1838e8c91c1184456d7cd5",
+  "Benitoite.Release.Refinement.PathBaseDifference": "892c997a70117a4de598cf71cdae869d77561a8ce6f50f21b17d42aa374fe673"
+ },
+ "design": {
+  "docs/design/07-quality/07-04-formal-semantics.md": "c4b4b14791c982f72b4de712fc16c8ecb9adfe794eca6b78821b726f5d906b7d"
+ }
+}
