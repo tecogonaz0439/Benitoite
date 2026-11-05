@@ -1,0 +1,2254 @@
+{
+  "summary": {
+    "moved_to_composition": 1,
+    "connected_entries": 233,
+    "connected_by_unit": {
+      "L60.26": 79,
+      "L60.27": 130,
+      "L60.28": 24
+    },
+    "connected_by_group": {
+      "collection": 79,
+      "scope": 7,
+      "io": 10,
+      "store": 5,
+      "issue": 1,
+      "body": 130,
+      "resource": 1
+    },
+    "connected_rows": 215,
+    "classification_after": {
+      "合成": 490,
+      "仮定": 150
+    },
+    "ledger_rows": 640,
+    "composition_child_keys": {
+      "before": 507,
+      "after": 508,
+      "bodies": 130,
+      "builtin_signatures": 377,
+      "resource_names": 1,
+      "added": 1
+    },
+    "declarations_added": [
+      "StandardModel.byteOrder（ByteOrder.BigEndian・ByteOrder.LittleEndian）"
+    ]
+  },
+  "moved": [
+    {
+      "id": "L489",
+      "lean_name": "%List.getFront",
+      "before": "仮定",
+      "after": "合成",
+      "composition_lookup": "StandardModel.Primitive.p377",
+      "signature": "StandardSafe.frontSig",
+      "evidence": [
+        "Benitoite.Release.Refinement.StandardSafe.front_response",
+        "Benitoite.Release.Refinement.StandardModel.PureRow.front",
+        "Benitoite.Release.Refinement.StandardModel.scope_rows",
+        "Benitoite.Release.Refinement.StandardModel.row_lookup"
+      ],
+      "reason": "安全な入口の本体（E11の safeGetBody・sameLengthBody）と精密なgetterの本体が参照する内部の組込み。既存の応答の証拠（StandardSafe.front_response）が全BuiltinArgsで型付きの非exitの応答を返す。群Aの台帳はE01〜E15の出典行に名前がないことから仮定側へ置いた",
+      "receivers": [
+        "L60.29",
+        "L70",
+        "R50"
+      ]
+    }
+  ],
+  "connected": [
+    {
+      "id": "L076",
+      "lean_name": "%Map.replaceValues",
+      "row": "Primitive.p076",
+      "lookup_name": "%Map.replaceValues",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.replaceValues"
+    },
+    {
+      "id": "L111",
+      "lean_name": "Benitoite.NonEmptyList.NonEmptyList.first",
+      "row": "Body.b127",
+      "lookup_name": "Benitoite.NonEmptyList.NonEmptyList.first",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L112",
+      "lean_name": "Benitoite.NonEmptyList.NonEmptyList.rest",
+      "row": "Body.b128",
+      "lookup_name": "Benitoite.NonEmptyList.NonEmptyList.rest",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L113",
+      "lean_name": "Benitoite.Range.CheckedIndex.element",
+      "row": "Body.b126",
+      "lookup_name": "Benitoite.Range.CheckedIndex.element",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L114",
+      "lean_name": "Benitoite.Range.CheckedIndex.index",
+      "row": "Body.b125",
+      "lookup_name": "Benitoite.Range.CheckedIndex.index",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L115",
+      "lean_name": "Benitoite.Range.CheckedIndex.values",
+      "row": "Body.b124",
+      "lookup_name": "Benitoite.Range.CheckedIndex.values",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L116",
+      "lean_name": "Benitoite.Range.CheckedInteger.maximum",
+      "row": "Body.b118",
+      "lookup_name": "Benitoite.Range.CheckedInteger.maximum",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L117",
+      "lean_name": "Benitoite.Range.CheckedInteger.minimum",
+      "row": "Body.b117",
+      "lookup_name": "Benitoite.Range.CheckedInteger.minimum",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L118",
+      "lean_name": "Benitoite.Range.CheckedInteger.value",
+      "row": "Body.b119",
+      "lookup_name": "Benitoite.Range.CheckedInteger.value",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L119",
+      "lean_name": "Benitoite.Range.CheckedLength.length",
+      "row": "Body.b122",
+      "lookup_name": "Benitoite.Range.CheckedLength.length",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L120",
+      "lean_name": "Benitoite.Range.CheckedLength.maximum",
+      "row": "Body.b121",
+      "lookup_name": "Benitoite.Range.CheckedLength.maximum",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L121",
+      "lean_name": "Benitoite.Range.CheckedLength.minimum",
+      "row": "Body.b120",
+      "lookup_name": "Benitoite.Range.CheckedLength.minimum",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L122",
+      "lean_name": "Benitoite.Range.CheckedLength.values",
+      "row": "Body.b123",
+      "lookup_name": "Benitoite.Range.CheckedLength.values",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L132",
+      "lean_name": "Bytes.concatenate",
+      "row": "Primitive.p120",
+      "lookup_name": "Bytes.concatenate",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.bytesOrdinary"
+    },
+    {
+      "id": "L133",
+      "lean_name": "Bytes.empty",
+      "row": "Primitive.p121",
+      "lookup_name": "Bytes.empty",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.bytesOrdinary"
+    },
+    {
+      "id": "L134",
+      "lean_name": "Bytes.fromBinary",
+      "row": "Primitive.p122",
+      "lookup_name": "Bytes.fromBinary",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.bytesOrdinary"
+    },
+    {
+      "id": "L135",
+      "lean_name": "Bytes.fromHex",
+      "row": "Primitive.p123",
+      "lookup_name": "Bytes.fromHex",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.bytesOrdinary"
+    },
+    {
+      "id": "L136",
+      "lean_name": "Bytes.fromIntegers",
+      "row": "Primitive.p124",
+      "lookup_name": "Bytes.fromIntegers",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.bytesOrdinary"
+    },
+    {
+      "id": "L137",
+      "lean_name": "Bytes.fromList",
+      "row": "Primitive.p125",
+      "lookup_name": "Bytes.fromList",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.bytes"
+    },
+    {
+      "id": "L138",
+      "lean_name": "Bytes.fromSigned",
+      "row": "Primitive.p126",
+      "lookup_name": "Bytes.fromSigned",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.bytesOrdinary"
+    },
+    {
+      "id": "L139",
+      "lean_name": "Bytes.fromUnsigned",
+      "row": "Primitive.p127",
+      "lookup_name": "Bytes.fromUnsigned",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.bytesOrdinary"
+    },
+    {
+      "id": "L140",
+      "lean_name": "Bytes.get",
+      "row": "Primitive.p128",
+      "lookup_name": "Bytes.get",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.bytesOrdinary"
+    },
+    {
+      "id": "L141",
+      "lean_name": "Bytes.length",
+      "row": "Primitive.p129",
+      "lookup_name": "Bytes.length",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.bytes"
+    },
+    {
+      "id": "L142",
+      "lean_name": "Bytes.readSigned",
+      "row": "Primitive.p130",
+      "lookup_name": "Bytes.readSigned",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.bytesOrdinary"
+    },
+    {
+      "id": "L143",
+      "lean_name": "Bytes.readUnsigned",
+      "row": "Primitive.p131",
+      "lookup_name": "Bytes.readUnsigned",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.bytesOrdinary"
+    },
+    {
+      "id": "L144",
+      "lean_name": "Bytes.slice",
+      "row": "Primitive.p132",
+      "lookup_name": "Bytes.slice",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.bytesOrdinary"
+    },
+    {
+      "id": "L145",
+      "lean_name": "Bytes.toBinary",
+      "row": "Primitive.p133",
+      "lookup_name": "Bytes.toBinary",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.bytesOrdinary"
+    },
+    {
+      "id": "L146",
+      "lean_name": "Bytes.toHex",
+      "row": "Primitive.p134",
+      "lookup_name": "Bytes.toHex",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.bytesOrdinary"
+    },
+    {
+      "id": "L147",
+      "lean_name": "Bytes.toList",
+      "row": "Primitive.p135",
+      "lookup_name": "Bytes.toList",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.bytes"
+    },
+    {
+      "id": "L168",
+      "lean_name": "Example.pathBases",
+      "row": "Primitive.p156",
+      "lookup_name": "Example.pathBases",
+      "unit": "L60.28",
+      "group": "issue",
+      "cover": "StandardModel.pathBases_shape"
+    },
+    {
+      "id": "L169",
+      "lean_name": "File.Handle",
+      "row": "resource_iff",
+      "lookup_name": "File.Handle",
+      "unit": "L60.28",
+      "group": "resource",
+      "cover": "StandardModel.resource_table・StandardModel.release_exists"
+    },
+    {
+      "id": "L170",
+      "lean_name": "File.appendBytesIn",
+      "row": "Primitive.p157",
+      "lookup_name": "File.appendBytesIn",
+      "unit": "L60.28",
+      "group": "io",
+      "cover": "StandardModel.io_rows",
+      "family": "StandardModel.IORow.scoped"
+    },
+    {
+      "id": "L171",
+      "lean_name": "File.appendTextIn",
+      "row": "Primitive.p158",
+      "lookup_name": "File.appendTextIn",
+      "unit": "L60.28",
+      "group": "io",
+      "cover": "StandardModel.io_rows",
+      "family": "StandardModel.IORow.scoped"
+    },
+    {
+      "id": "L172",
+      "lean_name": "File.readBytesIn",
+      "row": "Primitive.p159",
+      "lookup_name": "File.readBytesIn",
+      "unit": "L60.28",
+      "group": "io",
+      "cover": "StandardModel.io_rows",
+      "family": "StandardModel.IORow.scoped"
+    },
+    {
+      "id": "L173",
+      "lean_name": "File.readText",
+      "row": "Primitive.p160",
+      "lookup_name": "File.readText",
+      "unit": "L60.28",
+      "group": "io",
+      "cover": "StandardModel.io_rows",
+      "family": "StandardModel.IORow.readText"
+    },
+    {
+      "id": "L174",
+      "lean_name": "File.readTextIn",
+      "row": "Primitive.p161",
+      "lookup_name": "File.readTextIn",
+      "unit": "L60.28",
+      "group": "io",
+      "cover": "StandardModel.io_rows",
+      "family": "StandardModel.IORow.scoped"
+    },
+    {
+      "id": "L175",
+      "lean_name": "File.writeBytesIn",
+      "row": "Primitive.p162",
+      "lookup_name": "File.writeBytesIn",
+      "unit": "L60.28",
+      "group": "io",
+      "cover": "StandardModel.io_rows",
+      "family": "StandardModel.IORow.scoped"
+    },
+    {
+      "id": "L176",
+      "lean_name": "File.writeTextIn",
+      "row": "Primitive.p163",
+      "lookup_name": "File.writeTextIn",
+      "unit": "L60.28",
+      "group": "io",
+      "cover": "StandardModel.io_rows",
+      "family": "StandardModel.IORow.scoped"
+    },
+    {
+      "id": "L198",
+      "lean_name": "Float64.absolute",
+      "row": "Body.b080",
+      "lookup_name": "Float64.absolute",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L199",
+      "lean_name": "Float64.ceiling",
+      "row": "Body.b082",
+      "lookup_name": "Float64.ceiling",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L200",
+      "lean_name": "Float64.floor",
+      "row": "Body.b081",
+      "lookup_name": "Float64.floor",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L201",
+      "lean_name": "Float64.isNaN",
+      "row": "Body.b079",
+      "lookup_name": "Float64.isNaN",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L202",
+      "lean_name": "Float64.parse",
+      "row": "Body.b077",
+      "lookup_name": "Float64.parse",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L203",
+      "lean_name": "Float64.round",
+      "row": "Body.b083",
+      "lookup_name": "Float64.round",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L204",
+      "lean_name": "Float64.squareRoot",
+      "row": "Body.b084",
+      "lookup_name": "Float64.squareRoot",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L205",
+      "lean_name": "Float64.toString",
+      "row": "Body.b076",
+      "lookup_name": "Float64.toString",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L206",
+      "lean_name": "Float64.truncate",
+      "row": "Body.b078",
+      "lookup_name": "Float64.truncate",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L207",
+      "lean_name": "Http.checkRequestIn",
+      "row": "Primitive.p185",
+      "lookup_name": "Http.checkRequestIn",
+      "unit": "L60.28",
+      "group": "scope",
+      "cover": "StandardModel.scope_rows",
+      "family": "StandardModel.PureRow.scope"
+    },
+    {
+      "id": "L208",
+      "lean_name": "Http.requestInValue",
+      "row": "Primitive.p186",
+      "lookup_name": "Http.requestInValue",
+      "unit": "L60.28",
+      "group": "scope",
+      "cover": "StandardModel.scope_rows",
+      "family": "StandardModel.PureRow.scope"
+    },
+    {
+      "id": "L209",
+      "lean_name": "Http.sendIn",
+      "row": "Primitive.p187",
+      "lookup_name": "Http.sendIn",
+      "unit": "L60.28",
+      "group": "io",
+      "cover": "StandardModel.io_rows",
+      "family": "StandardModel.IORow.scoped"
+    },
+    {
+      "id": "L210",
+      "lean_name": "Http.widenRequestIn",
+      "row": "Primitive.p188",
+      "lookup_name": "Http.widenRequestIn",
+      "unit": "L60.28",
+      "group": "scope",
+      "cover": "StandardModel.scope_rows",
+      "family": "StandardModel.PureRow.scope"
+    },
+    {
+      "id": "L260",
+      "lean_name": "Integer64.absolute",
+      "row": "Body.b039",
+      "lookup_name": "Integer64.absolute",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L261",
+      "lean_name": "Integer64.bitwiseAnd",
+      "row": "Body.b042",
+      "lookup_name": "Integer64.bitwiseAnd",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L262",
+      "lean_name": "Integer64.bitwiseExclusiveOr",
+      "row": "Body.b044",
+      "lookup_name": "Integer64.bitwiseExclusiveOr",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L263",
+      "lean_name": "Integer64.bitwiseNot",
+      "row": "Body.b045",
+      "lookup_name": "Integer64.bitwiseNot",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L264",
+      "lean_name": "Integer64.bitwiseOr",
+      "row": "Body.b043",
+      "lookup_name": "Integer64.bitwiseOr",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L265",
+      "lean_name": "Integer64.floorDivide",
+      "row": "Body.b037",
+      "lookup_name": "Integer64.floorDivide",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L266",
+      "lean_name": "Integer64.floorModulo",
+      "row": "Body.b038",
+      "lookup_name": "Integer64.floorModulo",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L267",
+      "lean_name": "Integer64.maximum",
+      "row": "Body.b041",
+      "lookup_name": "Integer64.maximum",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L268",
+      "lean_name": "Integer64.minimum",
+      "row": "Body.b040",
+      "lookup_name": "Integer64.minimum",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L269",
+      "lean_name": "Integer64.parse",
+      "row": "Body.b035",
+      "lookup_name": "Integer64.parse",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L270",
+      "lean_name": "Integer64.shiftLeft",
+      "row": "Body.b046",
+      "lookup_name": "Integer64.shiftLeft",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L271",
+      "lean_name": "Integer64.shiftRight",
+      "row": "Body.b047",
+      "lookup_name": "Integer64.shiftRight",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L272",
+      "lean_name": "Integer64.shiftRightUnsigned",
+      "row": "Body.b048",
+      "lookup_name": "Integer64.shiftRightUnsigned",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L273",
+      "lean_name": "Integer64.toFloat",
+      "row": "Body.b036",
+      "lookup_name": "Integer64.toFloat",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L274",
+      "lean_name": "Integer64.toString",
+      "row": "Body.b034",
+      "lookup_name": "Integer64.toString",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L292",
+      "lean_name": "Internal.CheckedIndex.get",
+      "row": "Body.b087",
+      "lookup_name": "Internal.CheckedIndex.get",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L293",
+      "lean_name": "Internal.NonEmptyList.fromList",
+      "row": "Body.b089",
+      "lookup_name": "Internal.NonEmptyList.fromList",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L294",
+      "lean_name": "Internal.NonEmptyList.head",
+      "row": "Body.b091",
+      "lookup_name": "Internal.NonEmptyList.head",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L295",
+      "lean_name": "Internal.NonEmptyList.toList",
+      "row": "Body.b090",
+      "lookup_name": "Internal.NonEmptyList.toList",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L296",
+      "lean_name": "Internal.safeGet",
+      "row": "Body.b086",
+      "lookup_name": "Internal.safeGet",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L297",
+      "lean_name": "Internal.safeHead",
+      "row": "Body.b085",
+      "lookup_name": "Internal.safeHead",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L298",
+      "lean_name": "Internal.sameLengthGet",
+      "row": "Body.b088",
+      "lookup_name": "Internal.sameLengthGet",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L299",
+      "lean_name": "List.all",
+      "row": "Body.b006",
+      "lookup_name": "List.all",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L300",
+      "lean_name": "List.allFrom",
+      "row": "Body.b115",
+      "lookup_name": "List.allFrom",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L301",
+      "lean_name": "List.any",
+      "row": "Body.b005",
+      "lookup_name": "List.any",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L302",
+      "lean_name": "List.anyFrom",
+      "row": "Body.b114",
+      "lookup_name": "List.anyFrom",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L303",
+      "lean_name": "List.append",
+      "row": "Primitive.p255",
+      "lookup_name": "List.append",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.append"
+    },
+    {
+      "id": "L304",
+      "lean_name": "List.concatenate",
+      "row": "Primitive.p256",
+      "lookup_name": "List.concatenate",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.list"
+    },
+    {
+      "id": "L305",
+      "lean_name": "List.contains",
+      "row": "Primitive.p257",
+      "lookup_name": "List.contains",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.listRemaining"
+    },
+    {
+      "id": "L306",
+      "lean_name": "List.drop",
+      "row": "Primitive.p258",
+      "lookup_name": "List.drop",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.listRemaining"
+    },
+    {
+      "id": "L307",
+      "lean_name": "List.filter",
+      "row": "Body.b002",
+      "lookup_name": "%List.filter.ordinary",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L307",
+      "lean_name": "List.filter",
+      "row": "Body.b104",
+      "lookup_name": "%List.filter.refined",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L308",
+      "lean_name": "List.filterFrom",
+      "row": "Body.b102",
+      "lookup_name": "%List.filterFrom.refined",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L308",
+      "lean_name": "List.filterFrom",
+      "row": "Body.b130",
+      "lookup_name": "%List.filterFrom.ordinary",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L309",
+      "lean_name": "List.find",
+      "row": "Body.b007",
+      "lookup_name": "List.find",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L310",
+      "lean_name": "List.findFrom",
+      "row": "Body.b116",
+      "lookup_name": "List.findFrom",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L311",
+      "lean_name": "List.fold",
+      "row": "Body.b003",
+      "lookup_name": "List.fold",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L312",
+      "lean_name": "List.foldFrom",
+      "row": "Body.b112",
+      "lookup_name": "List.foldFrom",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L313",
+      "lean_name": "List.forEach",
+      "row": "Body.b004",
+      "lookup_name": "List.forEach",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L314",
+      "lean_name": "List.forEachFrom",
+      "row": "Body.b113",
+      "lookup_name": "List.forEachFrom",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L315",
+      "lean_name": "List.get",
+      "row": "Primitive.p259",
+      "lookup_name": "List.get",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.listRemaining"
+    },
+    {
+      "id": "L316",
+      "lean_name": "List.head",
+      "row": "Primitive.p260",
+      "lookup_name": "List.head",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.headTail"
+    },
+    {
+      "id": "L317",
+      "lean_name": "List.isEmpty",
+      "row": "Primitive.p261",
+      "lookup_name": "List.isEmpty",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.list"
+    },
+    {
+      "id": "L318",
+      "lean_name": "List.length",
+      "row": "Primitive.p262",
+      "lookup_name": "List.length",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.list"
+    },
+    {
+      "id": "L319",
+      "lean_name": "List.map",
+      "row": "Body.b001",
+      "lookup_name": "%List.map.ordinary",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L319",
+      "lean_name": "List.map",
+      "row": "Body.b103",
+      "lookup_name": "%List.map.refined",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L320",
+      "lean_name": "List.mapFrom",
+      "row": "Body.b101",
+      "lookup_name": "%List.mapFrom.refined",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L320",
+      "lean_name": "List.mapFrom",
+      "row": "Body.b129",
+      "lookup_name": "%List.mapFrom.ordinary",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L321",
+      "lean_name": "List.prepend",
+      "row": "Primitive.p263",
+      "lookup_name": "List.prepend",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.list"
+    },
+    {
+      "id": "L322",
+      "lean_name": "List.range",
+      "row": "Primitive.p264",
+      "lookup_name": "List.range",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.range"
+    },
+    {
+      "id": "L323",
+      "lean_name": "List.reverse",
+      "row": "Primitive.p265",
+      "lookup_name": "List.reverse",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.list"
+    },
+    {
+      "id": "L324",
+      "lean_name": "List.sort",
+      "row": "Primitive.p266",
+      "lookup_name": "List.sort",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.listRemaining"
+    },
+    {
+      "id": "L325",
+      "lean_name": "List.tail",
+      "row": "Primitive.p267",
+      "lookup_name": "List.tail",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.headTail"
+    },
+    {
+      "id": "L326",
+      "lean_name": "List.take",
+      "row": "Primitive.p268",
+      "lookup_name": "List.take",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.listRemaining"
+    },
+    {
+      "id": "L327",
+      "lean_name": "Map.contains",
+      "row": "Primitive.p269",
+      "lookup_name": "Map.contains",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.map"
+    },
+    {
+      "id": "L328",
+      "lean_name": "Map.empty",
+      "row": "Primitive.p270",
+      "lookup_name": "Map.empty",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.map"
+    },
+    {
+      "id": "L329",
+      "lean_name": "Map.filter",
+      "row": "Body.b009",
+      "lookup_name": "%Map.filter.ordinary",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L329",
+      "lean_name": "Map.filter",
+      "row": "Body.b109",
+      "lookup_name": "%Map.filter.refined",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L330",
+      "lean_name": "Map.fold",
+      "row": "Body.b010",
+      "lookup_name": "Map.fold",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L331",
+      "lean_name": "Map.forEach",
+      "row": "Body.b011",
+      "lookup_name": "Map.forEach",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L332",
+      "lean_name": "Map.fromList",
+      "row": "Primitive.p271",
+      "lookup_name": "Map.fromList",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.precision"
+    },
+    {
+      "id": "L333",
+      "lean_name": "Map.get",
+      "row": "Primitive.p272",
+      "lookup_name": "Map.get",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.map"
+    },
+    {
+      "id": "L334",
+      "lean_name": "Map.keys",
+      "row": "Primitive.p273",
+      "lookup_name": "Map.keys",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.map"
+    },
+    {
+      "id": "L335",
+      "lean_name": "Map.map",
+      "row": "Body.b008",
+      "lookup_name": "%Map.map.ordinary",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L335",
+      "lean_name": "Map.map",
+      "row": "Body.b108",
+      "lookup_name": "%Map.map.refined",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L336",
+      "lean_name": "Map.remove",
+      "row": "Primitive.p274",
+      "lookup_name": "Map.remove",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.map"
+    },
+    {
+      "id": "L337",
+      "lean_name": "Map.set",
+      "row": "Primitive.p275",
+      "lookup_name": "Map.set",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.map"
+    },
+    {
+      "id": "L338",
+      "lean_name": "Map.size",
+      "row": "Primitive.p276",
+      "lookup_name": "Map.size",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.map"
+    },
+    {
+      "id": "L339",
+      "lean_name": "Map.toList",
+      "row": "Primitive.p277",
+      "lookup_name": "Map.toList",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.precision"
+    },
+    {
+      "id": "L340",
+      "lean_name": "Map.values",
+      "row": "Primitive.p278",
+      "lookup_name": "Map.values",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.map"
+    },
+    {
+      "id": "L341",
+      "lean_name": "NonEmptyList.fromList",
+      "row": "Body.b029",
+      "lookup_name": "NonEmptyList.fromList",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L342",
+      "lean_name": "NonEmptyList.head",
+      "row": "Body.b031",
+      "lookup_name": "NonEmptyList.head",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L343",
+      "lean_name": "NonEmptyList.map",
+      "row": "Body.b033",
+      "lookup_name": "%NonEmptyList.map.ordinary",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L343",
+      "lean_name": "NonEmptyList.map",
+      "row": "Body.b105",
+      "lookup_name": "%NonEmptyList.map.refined",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L344",
+      "lean_name": "NonEmptyList.tail",
+      "row": "Body.b032",
+      "lookup_name": "NonEmptyList.tail",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L345",
+      "lean_name": "NonEmptyList.toList",
+      "row": "Body.b030",
+      "lookup_name": "NonEmptyList.toList",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L346",
+      "lean_name": "Pair.first",
+      "row": "Body.b106",
+      "lookup_name": "Pair.first",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L347",
+      "lean_name": "Pair.second",
+      "row": "Body.b107",
+      "lookup_name": "Pair.second",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L348",
+      "lean_name": "Range.checkIndex",
+      "row": "Body.b025",
+      "lookup_name": "Range.checkIndex",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L349",
+      "lean_name": "Range.checkInteger",
+      "row": "Body.b016",
+      "lookup_name": "Range.checkInteger",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L350",
+      "lean_name": "Range.checkLength",
+      "row": "Body.b020",
+      "lookup_name": "Range.checkLength",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L351",
+      "lean_name": "Range.checkedLength",
+      "row": "Body.b023",
+      "lookup_name": "%Range.checkedLength.ordinary",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L351",
+      "lean_name": "Range.checkedLength",
+      "row": "Body.b097",
+      "lookup_name": "%Range.checkedLength.refined",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L352",
+      "lean_name": "Range.get",
+      "row": "Body.b028",
+      "lookup_name": "Range.get",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L353",
+      "lean_name": "Range.indexValue",
+      "row": "Body.b026",
+      "lookup_name": "%Range.indexValue.ordinary",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L353",
+      "lean_name": "Range.indexValue",
+      "row": "Body.b099",
+      "lookup_name": "%Range.indexValue.refined",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L354",
+      "lean_name": "Range.indexValues",
+      "row": "Body.b027",
+      "lookup_name": "%Range.indexValues.ordinary",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L354",
+      "lean_name": "Range.indexValues",
+      "row": "Body.b100",
+      "lookup_name": "%Range.indexValues.refined",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L355",
+      "lean_name": "Range.lengthMaximum",
+      "row": "Body.b022",
+      "lookup_name": "%Range.lengthMaximum.ordinary",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L355",
+      "lean_name": "Range.lengthMaximum",
+      "row": "Body.b096",
+      "lookup_name": "%Range.lengthMaximum.refined",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L356",
+      "lean_name": "Range.lengthMinimum",
+      "row": "Body.b021",
+      "lookup_name": "%Range.lengthMinimum.ordinary",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L356",
+      "lean_name": "Range.lengthMinimum",
+      "row": "Body.b095",
+      "lookup_name": "%Range.lengthMinimum.refined",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L357",
+      "lean_name": "Range.lengthValues",
+      "row": "Body.b024",
+      "lookup_name": "%Range.lengthValues.ordinary",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L357",
+      "lean_name": "Range.lengthValues",
+      "row": "Body.b098",
+      "lookup_name": "%Range.lengthValues.refined",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L358",
+      "lean_name": "Range.maximum",
+      "row": "Body.b018",
+      "lookup_name": "%Range.maximum.ordinary",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L358",
+      "lean_name": "Range.maximum",
+      "row": "Body.b093",
+      "lookup_name": "%Range.maximum.refined",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L359",
+      "lean_name": "Range.minimum",
+      "row": "Body.b017",
+      "lookup_name": "%Range.minimum.ordinary",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L359",
+      "lean_name": "Range.minimum",
+      "row": "Body.b092",
+      "lookup_name": "%Range.minimum.refined",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L360",
+      "lean_name": "Range.value",
+      "row": "Body.b019",
+      "lookup_name": "%Range.value.ordinary",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L360",
+      "lean_name": "Range.value",
+      "row": "Body.b094",
+      "lookup_name": "%Range.value.refined",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L361",
+      "lean_name": "Reference.get",
+      "row": "Primitive.p279",
+      "lookup_name": "Reference.get",
+      "unit": "L60.28",
+      "group": "store",
+      "cover": "StandardModel.Primitive.store_rows・StandardModel.store_shape・StandardModel.reference_rows"
+    },
+    {
+      "id": "L362",
+      "lean_name": "Reference.set",
+      "row": "Primitive.p280",
+      "lookup_name": "Reference.set",
+      "unit": "L60.28",
+      "group": "store",
+      "cover": "StandardModel.Primitive.store_rows・StandardModel.store_shape・StandardModel.reference_rows"
+    },
+    {
+      "id": "L363",
+      "lean_name": "Scope.checkPathIn",
+      "row": "Primitive.p281",
+      "lookup_name": "Scope.checkPathIn",
+      "unit": "L60.28",
+      "group": "scope",
+      "cover": "StandardModel.scope_rows",
+      "family": "StandardModel.PureRow.scope"
+    },
+    {
+      "id": "L364",
+      "lean_name": "Scope.pathInValue",
+      "row": "Primitive.p282",
+      "lookup_name": "Scope.pathInValue",
+      "unit": "L60.28",
+      "group": "scope",
+      "cover": "StandardModel.scope_rows",
+      "family": "StandardModel.PureRow.scope"
+    },
+    {
+      "id": "L365",
+      "lean_name": "Scope.widenPathIn",
+      "row": "Primitive.p283",
+      "lookup_name": "Scope.widenPathIn",
+      "unit": "L60.28",
+      "group": "scope",
+      "cover": "StandardModel.scope_rows",
+      "family": "StandardModel.PureRow.scope"
+    },
+    {
+      "id": "L366",
+      "lean_name": "Set.add",
+      "row": "Primitive.p284",
+      "lookup_name": "Set.add",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.set"
+    },
+    {
+      "id": "L367",
+      "lean_name": "Set.contains",
+      "row": "Primitive.p285",
+      "lookup_name": "Set.contains",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.set"
+    },
+    {
+      "id": "L368",
+      "lean_name": "Set.difference",
+      "row": "Primitive.p286",
+      "lookup_name": "Set.difference",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.set"
+    },
+    {
+      "id": "L369",
+      "lean_name": "Set.empty",
+      "row": "Primitive.p287",
+      "lookup_name": "Set.empty",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.set"
+    },
+    {
+      "id": "L370",
+      "lean_name": "Set.filter",
+      "row": "Body.b013",
+      "lookup_name": "%Set.filter.ordinary",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L370",
+      "lean_name": "Set.filter",
+      "row": "Body.b111",
+      "lookup_name": "%Set.filter.refined",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L371",
+      "lean_name": "Set.fold",
+      "row": "Body.b014",
+      "lookup_name": "Set.fold",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L372",
+      "lean_name": "Set.forEach",
+      "row": "Body.b015",
+      "lookup_name": "Set.forEach",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L373",
+      "lean_name": "Set.fromList",
+      "row": "Primitive.p288",
+      "lookup_name": "Set.fromList",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.precision"
+    },
+    {
+      "id": "L374",
+      "lean_name": "Set.intersection",
+      "row": "Primitive.p289",
+      "lookup_name": "Set.intersection",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.set"
+    },
+    {
+      "id": "L375",
+      "lean_name": "Set.map",
+      "row": "Body.b012",
+      "lookup_name": "%Set.map.ordinary",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L375",
+      "lean_name": "Set.map",
+      "row": "Body.b110",
+      "lookup_name": "%Set.map.refined",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L376",
+      "lean_name": "Set.remove",
+      "row": "Primitive.p290",
+      "lookup_name": "Set.remove",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.set"
+    },
+    {
+      "id": "L377",
+      "lean_name": "Set.size",
+      "row": "Primitive.p291",
+      "lookup_name": "Set.size",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.set"
+    },
+    {
+      "id": "L378",
+      "lean_name": "Set.toList",
+      "row": "Primitive.p292",
+      "lookup_name": "Set.toList",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.precision"
+    },
+    {
+      "id": "L379",
+      "lean_name": "Set.union",
+      "row": "Primitive.p293",
+      "lookup_name": "Set.union",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.set"
+    },
+    {
+      "id": "L380",
+      "lean_name": "String.byteIndexOf",
+      "row": "Primitive.p294",
+      "lookup_name": "String.byteIndexOf",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.string"
+    },
+    {
+      "id": "L381",
+      "lean_name": "String.byteLength",
+      "row": "Primitive.p295",
+      "lookup_name": "String.byteLength",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.bytes"
+    },
+    {
+      "id": "L382",
+      "lean_name": "String.byteSlice",
+      "row": "Primitive.p296",
+      "lookup_name": "String.byteSlice",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.string"
+    },
+    {
+      "id": "L383",
+      "lean_name": "String.characterAt",
+      "row": "Primitive.p297",
+      "lookup_name": "String.characterAt",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.string"
+    },
+    {
+      "id": "L384",
+      "lean_name": "String.characterCount",
+      "row": "Primitive.p298",
+      "lookup_name": "String.characterCount",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.bytes"
+    },
+    {
+      "id": "L385",
+      "lean_name": "String.characterSlice",
+      "row": "Primitive.p299",
+      "lookup_name": "String.characterSlice",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.string"
+    },
+    {
+      "id": "L386",
+      "lean_name": "String.characters",
+      "row": "Primitive.p300",
+      "lookup_name": "String.characters",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.string"
+    },
+    {
+      "id": "L387",
+      "lean_name": "String.contains",
+      "row": "Primitive.p301",
+      "lookup_name": "String.contains",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.string"
+    },
+    {
+      "id": "L388",
+      "lean_name": "String.displayWidth",
+      "row": "Primitive.p302",
+      "lookup_name": "String.displayWidth",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.string"
+    },
+    {
+      "id": "L389",
+      "lean_name": "String.displayWidthCJK",
+      "row": "Primitive.p303",
+      "lookup_name": "String.displayWidthCJK",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.string"
+    },
+    {
+      "id": "L390",
+      "lean_name": "String.displayWidthPadEnd",
+      "row": "Primitive.p304",
+      "lookup_name": "String.displayWidthPadEnd",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.string"
+    },
+    {
+      "id": "L391",
+      "lean_name": "String.displayWidthPadEndCJK",
+      "row": "Primitive.p305",
+      "lookup_name": "String.displayWidthPadEndCJK",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.string"
+    },
+    {
+      "id": "L392",
+      "lean_name": "String.displayWidthPadStart",
+      "row": "Primitive.p306",
+      "lookup_name": "String.displayWidthPadStart",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.string"
+    },
+    {
+      "id": "L393",
+      "lean_name": "String.displayWidthPadStartCJK",
+      "row": "Primitive.p307",
+      "lookup_name": "String.displayWidthPadStartCJK",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.string"
+    },
+    {
+      "id": "L394",
+      "lean_name": "String.endsWith",
+      "row": "Primitive.p308",
+      "lookup_name": "String.endsWith",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.string"
+    },
+    {
+      "id": "L395",
+      "lean_name": "String.fromCharacters",
+      "row": "Primitive.p309",
+      "lookup_name": "String.fromCharacters",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.string"
+    },
+    {
+      "id": "L396",
+      "lean_name": "String.fromUTF8",
+      "row": "Primitive.p310",
+      "lookup_name": "String.fromUTF8",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.string"
+    },
+    {
+      "id": "L397",
+      "lean_name": "String.isEmpty",
+      "row": "Primitive.p311",
+      "lookup_name": "String.isEmpty",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.string"
+    },
+    {
+      "id": "L398",
+      "lean_name": "String.join",
+      "row": "Primitive.p312",
+      "lookup_name": "String.join",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.string"
+    },
+    {
+      "id": "L399",
+      "lean_name": "String.lines",
+      "row": "Primitive.p313",
+      "lookup_name": "String.lines",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.string"
+    },
+    {
+      "id": "L400",
+      "lean_name": "String.repeat",
+      "row": "Primitive.p314",
+      "lookup_name": "String.repeat",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.string"
+    },
+    {
+      "id": "L401",
+      "lean_name": "String.replace",
+      "row": "Primitive.p315",
+      "lookup_name": "String.replace",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.string"
+    },
+    {
+      "id": "L402",
+      "lean_name": "String.split",
+      "row": "Primitive.p316",
+      "lookup_name": "String.split",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.string"
+    },
+    {
+      "id": "L403",
+      "lean_name": "String.startsWith",
+      "row": "Primitive.p317",
+      "lookup_name": "String.startsWith",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.string"
+    },
+    {
+      "id": "L404",
+      "lean_name": "String.toLowercase",
+      "row": "Primitive.p318",
+      "lookup_name": "String.toLowercase",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.string"
+    },
+    {
+      "id": "L405",
+      "lean_name": "String.toUTF8",
+      "row": "Primitive.p319",
+      "lookup_name": "String.toUTF8",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.string"
+    },
+    {
+      "id": "L406",
+      "lean_name": "String.toUppercase",
+      "row": "Primitive.p320",
+      "lookup_name": "String.toUppercase",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.string"
+    },
+    {
+      "id": "L407",
+      "lean_name": "String.trim",
+      "row": "Primitive.p321",
+      "lookup_name": "String.trim",
+      "unit": "L60.26",
+      "group": "collection",
+      "cover": "StandardModel.collection_rows",
+      "family": "StandardModel.PureRow.string"
+    },
+    {
+      "id": "L408",
+      "lean_name": "UnsignedInteger.absolute",
+      "row": "Body.b056",
+      "lookup_name": "UnsignedInteger.absolute",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L409",
+      "lean_name": "UnsignedInteger.bitwiseAnd",
+      "row": "Body.b061",
+      "lookup_name": "UnsignedInteger.bitwiseAnd",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L410",
+      "lean_name": "UnsignedInteger.bitwiseExclusiveOr",
+      "row": "Body.b063",
+      "lookup_name": "UnsignedInteger.bitwiseExclusiveOr",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L411",
+      "lean_name": "UnsignedInteger.bitwiseNot",
+      "row": "Body.b064",
+      "lookup_name": "UnsignedInteger.bitwiseNot",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L412",
+      "lean_name": "UnsignedInteger.bitwiseOr",
+      "row": "Body.b062",
+      "lookup_name": "UnsignedInteger.bitwiseOr",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L413",
+      "lean_name": "UnsignedInteger.floorDivide",
+      "row": "Body.b059",
+      "lookup_name": "UnsignedInteger.floorDivide",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L414",
+      "lean_name": "UnsignedInteger.floorModulo",
+      "row": "Body.b060",
+      "lookup_name": "UnsignedInteger.floorModulo",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L415",
+      "lean_name": "UnsignedInteger.fromDecimal",
+      "row": "Body.b055",
+      "lookup_name": "UnsignedInteger.fromDecimal",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L416",
+      "lean_name": "UnsignedInteger.fromInteger",
+      "row": "Body.b049",
+      "lookup_name": "UnsignedInteger.fromInteger",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L417",
+      "lean_name": "UnsignedInteger.maximum",
+      "row": "Body.b058",
+      "lookup_name": "UnsignedInteger.maximum",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L418",
+      "lean_name": "UnsignedInteger.minimum",
+      "row": "Body.b057",
+      "lookup_name": "UnsignedInteger.minimum",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L419",
+      "lean_name": "UnsignedInteger.parse",
+      "row": "Body.b051",
+      "lookup_name": "UnsignedInteger.parse",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L420",
+      "lean_name": "UnsignedInteger.shiftLeft",
+      "row": "Body.b065",
+      "lookup_name": "UnsignedInteger.shiftLeft",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L421",
+      "lean_name": "UnsignedInteger.shiftRight",
+      "row": "Body.b066",
+      "lookup_name": "UnsignedInteger.shiftRight",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L422",
+      "lean_name": "UnsignedInteger.toDecimal",
+      "row": "Body.b054",
+      "lookup_name": "UnsignedInteger.toDecimal",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L423",
+      "lean_name": "UnsignedInteger.toFloat",
+      "row": "Body.b053",
+      "lookup_name": "UnsignedInteger.toFloat",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L424",
+      "lean_name": "UnsignedInteger.toInteger",
+      "row": "Body.b050",
+      "lookup_name": "UnsignedInteger.toInteger",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L425",
+      "lean_name": "UnsignedInteger.toString",
+      "row": "Body.b052",
+      "lookup_name": "UnsignedInteger.toString",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L476",
+      "lean_name": "UnsignedInteger8.bitwiseAnd",
+      "row": "Body.b070",
+      "lookup_name": "UnsignedInteger8.bitwiseAnd",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L477",
+      "lean_name": "UnsignedInteger8.bitwiseExclusiveOr",
+      "row": "Body.b072",
+      "lookup_name": "UnsignedInteger8.bitwiseExclusiveOr",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L478",
+      "lean_name": "UnsignedInteger8.bitwiseNot",
+      "row": "Body.b073",
+      "lookup_name": "UnsignedInteger8.bitwiseNot",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L479",
+      "lean_name": "UnsignedInteger8.bitwiseOr",
+      "row": "Body.b071",
+      "lookup_name": "UnsignedInteger8.bitwiseOr",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L480",
+      "lean_name": "UnsignedInteger8.fromInteger",
+      "row": "Body.b067",
+      "lookup_name": "UnsignedInteger8.fromInteger",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L481",
+      "lean_name": "UnsignedInteger8.shiftLeft",
+      "row": "Body.b074",
+      "lookup_name": "UnsignedInteger8.shiftLeft",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L482",
+      "lean_name": "UnsignedInteger8.shiftRight",
+      "row": "Body.b075",
+      "lookup_name": "UnsignedInteger8.shiftRight",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L483",
+      "lean_name": "UnsignedInteger8.toInteger",
+      "row": "Body.b068",
+      "lookup_name": "UnsignedInteger8.toInteger",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L484",
+      "lean_name": "UnsignedInteger8.toString",
+      "row": "Body.b069",
+      "lookup_name": "UnsignedInteger8.toString",
+      "unit": "L60.27",
+      "group": "body",
+      "cover": "StandardModel.body_typed・StandardModel.body_scoped"
+    },
+    {
+      "id": "L485",
+      "lean_name": "exit",
+      "row": "Primitive.p372",
+      "lookup_name": "exit",
+      "unit": "L60.28",
+      "group": "io",
+      "cover": "StandardModel.io_rows",
+      "family": "StandardModel.IORow.exit"
+    },
+    {
+      "id": "L486",
+      "lean_name": "print",
+      "row": "Primitive.p373",
+      "lookup_name": "print",
+      "unit": "L60.28",
+      "group": "io",
+      "cover": "StandardModel.io_rows",
+      "family": "StandardModel.IORow.print"
+    },
+    {
+      "id": "L489",
+      "lean_name": "%List.getFront",
+      "row": "Primitive.p377",
+      "lookup_name": "%List.getFront",
+      "unit": "L60.28",
+      "group": "scope",
+      "cover": "StandardModel.scope_rows",
+      "family": "StandardModel.PureRow.front"
+    },
+    {
+      "id": "L494",
+      "lean_name": "Reference.new",
+      "row": "Primitive.p375",
+      "lookup_name": "Reference.new",
+      "unit": "L60.28",
+      "group": "store",
+      "cover": "StandardModel.Primitive.store_rows・StandardModel.store_shape・StandardModel.reference_rows"
+    },
+    {
+      "id": "L495",
+      "lean_name": "Reference.update",
+      "row": "Primitive.p376",
+      "lookup_name": "Reference.update",
+      "unit": "L60.28",
+      "group": "store",
+      "cover": "StandardModel.Primitive.store_rows・StandardModel.store_shape・StandardModel.reference_rows"
+    },
+    {
+      "id": "L496",
+      "lean_name": "Lazy.force",
+      "row": "Primitive.p374",
+      "lookup_name": "Lazy.force",
+      "unit": "L60.28",
+      "group": "store",
+      "cover": "StandardModel.Primitive.store_rows・StandardModel.store_shape・StandardModel.reference_rows"
+    }
+  ]
+}

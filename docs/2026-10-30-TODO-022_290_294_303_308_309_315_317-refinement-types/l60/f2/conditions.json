@@ -1,0 +1,1072 @@
+{
+  "summary": {
+    "fields": 29,
+    "classes": {
+      "保留": 15,
+      "自明": 2,
+      "実質": 12
+    },
+    "by_group": {
+      "置換8": {
+        "保留": 8
+      },
+      "外部3": {
+        "保留": 2,
+        "自明": 1
+      },
+      "応答4": {
+        "実質": 1,
+        "保留": 3
+      },
+      "独自13": {
+        "実質": 11,
+        "自明": 1,
+        "保留": 1
+      },
+      "対象1": {
+        "保留": 1
+      }
+    },
+    "row_contracts": 96,
+    "row_classes": {
+      "保留": 96
+    },
+    "row_contracts_by_unit": {
+      "L60.26": 79,
+      "L60.28": 17
+    }
+  },
+  "fields": [
+    {
+      "field": "sat_rename",
+      "group": "置換8",
+      "judgment": "保留",
+      "reader": "Benitoite.Release.Refinement.StandardModel.core",
+      "premise_negation": "なし。前提の否定は導出していない",
+      "conclusion_trivial": "結論は合成プログラムの宣言の要約による制約の判定を読む",
+      "satisfiable_input": "未確認。合成表の上の正常値の入力（改名・値の像・置換）を示していない"
+    },
+    {
+      "field": "admits_rename",
+      "group": "置換8",
+      "judgment": "保留",
+      "reader": "Benitoite.Release.Refinement.StandardModel.core",
+      "premise_negation": "なし。前提の否定は導出していない",
+      "conclusion_trivial": "結論は合成プログラムの宣言の要約による制約の判定を読む",
+      "satisfiable_input": "未確認。合成表の上の正常値の入力（改名・値の像・置換）を示していない"
+    },
+    {
+      "field": "sat_values",
+      "group": "置換8",
+      "judgment": "保留",
+      "reader": "Benitoite.Release.Refinement.StandardModel.core",
+      "premise_negation": "なし。前提の否定は導出していない",
+      "conclusion_trivial": "結論は合成プログラムの宣言の要約による制約の判定を読む",
+      "satisfiable_input": "未確認。合成表の上の正常値の入力（改名・値の像・置換）を示していない"
+    },
+    {
+      "field": "admits_values",
+      "group": "置換8",
+      "judgment": "保留",
+      "reader": "Benitoite.Release.Refinement.StandardModel.core",
+      "premise_negation": "なし。前提の否定は導出していない",
+      "conclusion_trivial": "結論は合成プログラムの宣言の要約による制約の判定を読む",
+      "satisfiable_input": "未確認。合成表の上の正常値の入力（改名・値の像・置換）を示していない"
+    },
+    {
+      "field": "sat_renameTypes",
+      "group": "置換8",
+      "judgment": "保留",
+      "reader": "Benitoite.Release.Refinement.StandardModel.core",
+      "premise_negation": "なし。前提の否定は導出していない",
+      "conclusion_trivial": "結論は合成プログラムの宣言の要約による制約の判定を読む",
+      "satisfiable_input": "未確認。合成表の上の正常値の入力（改名・値の像・置換）を示していない"
+    },
+    {
+      "field": "admits_renameTypes",
+      "group": "置換8",
+      "judgment": "保留",
+      "reader": "Benitoite.Release.Refinement.StandardModel.core",
+      "premise_negation": "なし。前提の否定は導出していない",
+      "conclusion_trivial": "結論は合成プログラムの宣言の要約による制約の判定を読む",
+      "satisfiable_input": "未確認。合成表の上の正常値の入力（改名・値の像・置換）を示していない"
+    },
+    {
+      "field": "sat_subst",
+      "group": "置換8",
+      "judgment": "保留",
+      "reader": "Benitoite.Release.Refinement.StandardModel.core",
+      "premise_negation": "なし。前提の否定は導出していない",
+      "conclusion_trivial": "結論は合成プログラムの宣言の要約による制約の判定を読む",
+      "satisfiable_input": "未確認。合成表の上の正常値の入力（改名・値の像・置換）を示していない"
+    },
+    {
+      "field": "admits_subst",
+      "group": "置換8",
+      "judgment": "保留",
+      "reader": "Benitoite.Release.Refinement.StandardModel.core",
+      "premise_negation": "なし。前提の否定は導出していない",
+      "conclusion_trivial": "結論は合成プログラムの宣言の要約による制約の判定を読む",
+      "satisfiable_input": "未確認。合成表の上の正常値の入力（改名・値の像・置換）を示していない"
+    },
+    {
+      "field": "external_typed",
+      "group": "外部3",
+      "judgment": "保留",
+      "reader": "Benitoite.Release.Refinement.StandardModel.core",
+      "premise_negation": "なし。前提の否定は導出していない",
+      "conclusion_trivial": "結論は生応答の証拠（carrier・非exit、又は空観測）を読む",
+      "satisfiable_input": "未確認。合成プログラムの外部宣言の表での入力を示していない（三モデルの表の入力は群Eの記録）"
+    },
+    {
+      "field": "external_exists",
+      "group": "外部3",
+      "judgment": "自明",
+      "reader": "Benitoite.Release.Refinement.StandardModel.core",
+      "premise_negation": "なし。前提の否定は導出していない",
+      "conclusion_trivial": "結論は入力を読まない定数のerrと空の観測で成り立つ（ExternalModel.external_assumptions）",
+      "satisfiable_input": "前提は満たせるが結論は前提を読まない"
+    },
+    {
+      "field": "external_no_targets",
+      "group": "外部3",
+      "judgment": "保留",
+      "reader": "Benitoite.Release.Refinement.StandardModel.core",
+      "premise_negation": "なし。前提の否定は導出していない",
+      "conclusion_trivial": "結論は生応答の証拠を読む",
+      "satisfiable_input": "未確認（external_typed と同じ）"
+    },
+    {
+      "field": "delta_typed",
+      "group": "応答4",
+      "judgment": "実質",
+      "reader": "Benitoite.Release.Refinement.StandardModel.core",
+      "premise_negation": "なし。前提の否定は導出していない",
+      "conclusion_trivial": "結論は合成表のδの値を型付きの非exitの応答として返す",
+      "satisfiable_input": "Benitoite.Release.Refinement.StandardModel.numeric_inputs・Benitoite.Release.Refinement.StandardModel.operator_inputs（数値166行と演算子109行の基本型の定数の入力）"
+    },
+    {
+      "field": "io_typed",
+      "group": "応答4",
+      "judgment": "保留",
+      "reader": "Benitoite.Release.Refinement.StandardModel.core",
+      "premise_negation": "なし。前提の否定は導出していない",
+      "conclusion_trivial": "結論はIO応答の関係と対象の条件を読む",
+      "satisfiable_input": "未確認。IOと終了の10行の BuiltinArgs を満たす入力を合成表の上で示していない"
+    },
+    {
+      "field": "io_kind",
+      "group": "応答4",
+      "judgment": "保留",
+      "reader": "Benitoite.Release.Refinement.StandardModel.core",
+      "premise_negation": "なし。前提の否定は導出していない",
+      "conclusion_trivial": "結論はIO応答の関係と対象の条件を読む",
+      "satisfiable_input": "未確認。IOと終了の10行の BuiltinArgs を満たす入力を合成表の上で示していない"
+    },
+    {
+      "field": "io_exists",
+      "group": "応答4",
+      "judgment": "保留",
+      "reader": "Benitoite.Release.Refinement.StandardModel.core",
+      "premise_negation": "なし。前提の否定は導出していない",
+      "conclusion_trivial": "結論はIO応答の関係と対象の条件を読む",
+      "satisfiable_input": "未確認。IOと終了の10行の BuiltinArgs を満たす入力を合成表の上で示していない"
+    },
+    {
+      "field": "sig_scoped",
+      "group": "独自13",
+      "judgment": "実質",
+      "reader": "Benitoite.Release.Refinement.StandardModel.core",
+      "premise_negation": "なし。前提の否定は導出していない",
+      "conclusion_trivial": "結論は行の署名の形成（PrimSig.Scoped）を読む",
+      "satisfiable_input": "Benitoite.Release.Refinement.StandardModel.row_lookup（全377行のlookup）"
+    },
+    {
+      "field": "sat_unconstrained",
+      "group": "独自13",
+      "judgment": "自明",
+      "reader": "Benitoite.Release.Refinement.StandardModel.core",
+      "premise_negation": "なし。前提の否定は導出していない",
+      "conclusion_trivial": "空の制約の判定は定義で真になる（ModelConstraints.sat_unconstrained が rfl）",
+      "satisfiable_input": "前提は満たせるが結論は入力を読まない"
+    },
+    {
+      "field": "admits_sat",
+      "group": "独自13",
+      "judgment": "保留",
+      "reader": "Benitoite.Release.Refinement.StandardModel.core",
+      "premise_negation": "なし。前提の否定は導出していない",
+      "conclusion_trivial": "結論は許容の判定から制約の判定を導く",
+      "satisfiable_input": "未確認。許容を満たす型引数の入力を合成表の上で示していない"
+    },
+    {
+      "field": "release_exists",
+      "group": "独自13",
+      "judgment": "実質",
+      "reader": "Benitoite.Release.Refinement.StandardModel.core",
+      "premise_negation": "なし。前提の否定は導出していない",
+      "conclusion_trivial": "全結果の関係所属は型付き値の正準形と資源の分類を読む",
+      "satisfiable_input": "Benitoite.Release.Refinement.StandardModel.resource_input（任意のP・ストア・番号の型付きFile.Handle）"
+    },
+    {
+      "field": "pathBases_shape",
+      "group": "独自13",
+      "judgment": "実質",
+      "reader": "Benitoite.Release.Refinement.StandardModel.core",
+      "premise_negation": "なし。前提の否定は導出していない",
+      "conclusion_trivial": "結論は発行の八欄とEnvironmentの所属を読む",
+      "satisfiable_input": "Benitoite.Release.Refinement.StandardModel.row_lookup の Primitive.p156（種類 pathBases）"
+    },
+    {
+      "field": "io_op",
+      "group": "独自13",
+      "judgment": "実質",
+      "reader": "Benitoite.Release.Refinement.StandardModel.core",
+      "premise_negation": "なし。前提の否定は導出していない",
+      "conclusion_trivial": "結論は効果の表の所属と範囲の形を読む",
+      "satisfiable_input": "Benitoite.Release.Refinement.StandardModel.row_lookup のIOと終了の10行（Primitive.io）"
+    },
+    {
+      "field": "opEff_io",
+      "group": "独自13",
+      "judgment": "実質",
+      "reader": "Benitoite.Release.Refinement.StandardModel.core",
+      "premise_negation": "なし。前提の否定は導出していない",
+      "conclusion_trivial": "結論は署名の種類を読む",
+      "satisfiable_input": "Benitoite.Release.Refinement.StandardModel.row_lookup の Primitive.p373（Console.Write）"
+    },
+    {
+      "field": "effect_ops",
+      "group": "独自13",
+      "judgment": "実質",
+      "reader": "Benitoite.Release.Refinement.StandardModel.core",
+      "premise_negation": "なし。前提の否定は導出していない",
+      "conclusion_trivial": "結論は効果の表の所属の名前の署名を読む",
+      "satisfiable_input": "Benitoite.Release.Refinement.StandardModel.effects_member"
+    },
+    {
+      "field": "state_effect",
+      "group": "独自13",
+      "judgment": "実質",
+      "reader": "Benitoite.Release.Refinement.StandardModel.core",
+      "premise_negation": "前提を持たない",
+      "conclusion_trivial": "前提を持たない閉じた命題。結論は表の効果の内容を読む",
+      "satisfiable_input": "前提なし"
+    },
+    {
+      "field": "ref_get",
+      "group": "独自13",
+      "judgment": "実質",
+      "reader": "Benitoite.Release.Refinement.StandardModel.core",
+      "premise_negation": "前提を持たない",
+      "conclusion_trivial": "前提を持たない閉じた命題。結論は表の署名を読む",
+      "satisfiable_input": "前提なし"
+    },
+    {
+      "field": "ref_set",
+      "group": "独自13",
+      "judgment": "実質",
+      "reader": "Benitoite.Release.Refinement.StandardModel.core",
+      "premise_negation": "前提を持たない",
+      "conclusion_trivial": "前提を持たない閉じた命題。結論は表の署名を読む",
+      "satisfiable_input": "前提なし"
+    },
+    {
+      "field": "store_shape",
+      "group": "独自13",
+      "judgment": "実質",
+      "reader": "Benitoite.Release.Refinement.StandardModel.core",
+      "premise_negation": "なし。前提の否定は導出していない",
+      "conclusion_trivial": "結論は参照と明示遅延の形（StoreShape）を読む",
+      "satisfiable_input": "Benitoite.Release.Refinement.StandardModel.row_lookup（発行以外の376行）"
+    },
+    {
+      "field": "store_admits",
+      "group": "独自13",
+      "judgment": "実質",
+      "reader": "Benitoite.Release.Refinement.StandardModel.core",
+      "premise_negation": "なし。前提の否定は導出していない",
+      "conclusion_trivial": "結論は許容の定義で型引数の個数の一致に帰着する",
+      "satisfiable_input": "Benitoite.Release.Refinement.StandardModel.row_lookup の参照と明示遅延の5行と、型引数の個数の一致する型引数の列"
+    },
+    {
+      "field": "io_target",
+      "group": "対象1",
+      "judgment": "保留",
+      "reader": "Benitoite.Release.Refinement.StandardModel.targets",
+      "premise_negation": "なし。前提の否定は導出していない",
+      "conclusion_trivial": "結論は署名の形の対象の条件を読む",
+      "satisfiable_input": "未確認（io_typed と同じ）"
+    }
+  ],
+  "rows": [
+    {
+      "row": "Primitive.p076",
+      "name": "%Map.replaceValues",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p120",
+      "name": "Bytes.concatenate",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p121",
+      "name": "Bytes.empty",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p122",
+      "name": "Bytes.fromBinary",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p123",
+      "name": "Bytes.fromHex",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p124",
+      "name": "Bytes.fromIntegers",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p125",
+      "name": "Bytes.fromList",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p126",
+      "name": "Bytes.fromSigned",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p127",
+      "name": "Bytes.fromUnsigned",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p128",
+      "name": "Bytes.get",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p129",
+      "name": "Bytes.length",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p130",
+      "name": "Bytes.readSigned",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p131",
+      "name": "Bytes.readUnsigned",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p132",
+      "name": "Bytes.slice",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p133",
+      "name": "Bytes.toBinary",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p134",
+      "name": "Bytes.toHex",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p135",
+      "name": "Bytes.toList",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p157",
+      "name": "File.appendBytesIn",
+      "unit": "L60.28",
+      "contract": "StandardModel.IORow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsと全応答で示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p158",
+      "name": "File.appendTextIn",
+      "unit": "L60.28",
+      "contract": "StandardModel.IORow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsと全応答で示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p159",
+      "name": "File.readBytesIn",
+      "unit": "L60.28",
+      "contract": "StandardModel.IORow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsと全応答で示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p160",
+      "name": "File.readText",
+      "unit": "L60.28",
+      "contract": "StandardModel.IORow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsと全応答で示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p161",
+      "name": "File.readTextIn",
+      "unit": "L60.28",
+      "contract": "StandardModel.IORow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsと全応答で示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p162",
+      "name": "File.writeBytesIn",
+      "unit": "L60.28",
+      "contract": "StandardModel.IORow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsと全応答で示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p163",
+      "name": "File.writeTextIn",
+      "unit": "L60.28",
+      "contract": "StandardModel.IORow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsと全応答で示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p185",
+      "name": "Http.checkRequestIn",
+      "unit": "L60.28",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p186",
+      "name": "Http.requestInValue",
+      "unit": "L60.28",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p187",
+      "name": "Http.sendIn",
+      "unit": "L60.28",
+      "contract": "StandardModel.IORow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsと全応答で示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p188",
+      "name": "Http.widenRequestIn",
+      "unit": "L60.28",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p255",
+      "name": "List.append",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p256",
+      "name": "List.concatenate",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p257",
+      "name": "List.contains",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p258",
+      "name": "List.drop",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p259",
+      "name": "List.get",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p260",
+      "name": "List.head",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p261",
+      "name": "List.isEmpty",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p262",
+      "name": "List.length",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p263",
+      "name": "List.prepend",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p264",
+      "name": "List.range",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p265",
+      "name": "List.reverse",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p266",
+      "name": "List.sort",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p267",
+      "name": "List.tail",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p268",
+      "name": "List.take",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p269",
+      "name": "Map.contains",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p270",
+      "name": "Map.empty",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p271",
+      "name": "Map.fromList",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p272",
+      "name": "Map.get",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p273",
+      "name": "Map.keys",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p274",
+      "name": "Map.remove",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p275",
+      "name": "Map.set",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p276",
+      "name": "Map.size",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p277",
+      "name": "Map.toList",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p278",
+      "name": "Map.values",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p281",
+      "name": "Scope.checkPathIn",
+      "unit": "L60.28",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p282",
+      "name": "Scope.pathInValue",
+      "unit": "L60.28",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p283",
+      "name": "Scope.widenPathIn",
+      "unit": "L60.28",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p284",
+      "name": "Set.add",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p285",
+      "name": "Set.contains",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p286",
+      "name": "Set.difference",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p287",
+      "name": "Set.empty",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p288",
+      "name": "Set.fromList",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p289",
+      "name": "Set.intersection",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p290",
+      "name": "Set.remove",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p291",
+      "name": "Set.size",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p292",
+      "name": "Set.toList",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p293",
+      "name": "Set.union",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p294",
+      "name": "String.byteIndexOf",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p295",
+      "name": "String.byteLength",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p296",
+      "name": "String.byteSlice",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p297",
+      "name": "String.characterAt",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p298",
+      "name": "String.characterCount",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p299",
+      "name": "String.characterSlice",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p300",
+      "name": "String.characters",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p301",
+      "name": "String.contains",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p302",
+      "name": "String.displayWidth",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p303",
+      "name": "String.displayWidthCJK",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p304",
+      "name": "String.displayWidthPadEnd",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p305",
+      "name": "String.displayWidthPadEndCJK",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p306",
+      "name": "String.displayWidthPadStart",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p307",
+      "name": "String.displayWidthPadStartCJK",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p308",
+      "name": "String.endsWith",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p309",
+      "name": "String.fromCharacters",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p310",
+      "name": "String.fromUTF8",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p311",
+      "name": "String.isEmpty",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p312",
+      "name": "String.join",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p313",
+      "name": "String.lines",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p314",
+      "name": "String.repeat",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p315",
+      "name": "String.replace",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p316",
+      "name": "String.split",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p317",
+      "name": "String.startsWith",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p318",
+      "name": "String.toLowercase",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p319",
+      "name": "String.toUTF8",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p320",
+      "name": "String.toUppercase",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p321",
+      "name": "String.trim",
+      "unit": "L60.26",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p372",
+      "name": "exit",
+      "unit": "L60.28",
+      "contract": "StandardModel.IORow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsと全応答で示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p373",
+      "name": "print",
+      "unit": "L60.28",
+      "contract": "StandardModel.IORow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsと全応答で示した。前提を満たす入力の証人は示していない"
+    },
+    {
+      "row": "Primitive.p377",
+      "name": "%List.getFront",
+      "unit": "L60.28",
+      "contract": "StandardModel.PureRow",
+      "class": "保留",
+      "reason": "契約は全BuiltinArgsで示した。前提を満たす入力の証人は示していない"
+    }
+  ]
+}

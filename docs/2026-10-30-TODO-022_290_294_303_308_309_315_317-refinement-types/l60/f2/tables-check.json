@@ -1,0 +1,53 @@
+{
+  "check1_evidence_to_composition": {
+    "source_counts": {
+      "E01": 328,
+      "E02": 73,
+      "E03": 34,
+      "E04": 2,
+      "E05": 6,
+      "E06": 7,
+      "E07": 3,
+      "E08": 15,
+      "E09": 7,
+      "E10": 1,
+      "E11": 7,
+      "E12": 9,
+      "E13": 11,
+      "E14": 1,
+      "E15": 48
+    },
+    "evidence_rows": 552,
+    "unmapped": 0,
+    "to_assumption": 0,
+    "without_covered_lookup": 0,
+    "model_conditions": 75,
+    "model_conditions_unmapped": 0
+  },
+  "check2_assumption_without_evidence": {
+    "assumption_rows": 150,
+    "with_evidence": 0,
+    "names_shared_with_evidence_rows": 0,
+    "names_with_composition_lookup": 0
+  },
+  "check3_composition_lookup": {
+    "composition_rows": 490,
+    "without_lookup": 0,
+    "lookups_not_in_table": 0,
+    "primitive_rows": 377,
+    "bodies": 130,
+    "primitive_rows_without_ledger": 0,
+    "bodies_without_ledger": 0,
+    "resource_names": 1,
+    "lookups": 508
+  },
+  "check4_rust_to_ledger": {
+    "parts": 61,
+    "references": 523,
+    "unmapped": 0,
+    "classification": {
+      "合成": 373,
+      "仮定": 150
+    }
+  }
+}

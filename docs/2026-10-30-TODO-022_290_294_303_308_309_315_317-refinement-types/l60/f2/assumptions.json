@@ -1,0 +1,1511 @@
+{
+  "rows": 150,
+  "by_kind": {
+    "δ": 80,
+    "形式化の外": 7,
+    "IO 応答": 47,
+    "通常資源の状態": 16
+  },
+  "names": [
+    {
+      "id": "L487",
+      "lean_name": "%Boolean.toString",
+      "rust_names": [
+        "%Boolean.toString"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "%Boolean.toString は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L488",
+      "lean_name": "%List.length",
+      "rust_names": [
+        "%List.length"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "%List.length は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L490",
+      "lean_name": "%List.getBack",
+      "rust_names": [
+        "%List.getBack"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "%List.getBack は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L491",
+      "lean_name": "%List.slice",
+      "rust_names": [
+        "%List.slice"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "%List.slice は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L492",
+      "lean_name": "IOError.message",
+      "rust_names": [
+        "IOError.message"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "IOError.message は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L493",
+      "lean_name": "IOError.kind",
+      "rust_names": [
+        "IOError.kind"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "IOError.kind は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L497",
+      "lean_name": "Task.all",
+      "rust_names": [
+        "Task.all"
+      ],
+      "kind": "形式化の外",
+      "detail": "Rustのstate登録による起動・待機。現在のPrimKind/StepにTask専用欄・遷移はなく、sigは対応を調べる入口だけである。並行実行の状態は形式化外",
+      "reason": "Task.all は「形式化の外」に分類する。Rustのstate登録による起動・待機。現在のPrimKind/StepにTask専用欄・遷移はなく、sigは対応を調べる入口だけである。並行実行の状態は形式化外。07-04「証明する性質」は並行処理のタスクと引継ぎハンドラを対象外とする。この起動・待機の操作を仮定として量化する範囲に含めず、R50が実登録と形式化の内外を確認する"
+    },
+    {
+      "id": "L498",
+      "lean_name": "Task.allOk",
+      "rust_names": [
+        "Task.allOk"
+      ],
+      "kind": "形式化の外",
+      "detail": "Rustのstate登録による起動・待機。現在のPrimKind/StepにTask専用欄・遷移はなく、sigは対応を調べる入口だけである。並行実行の状態は形式化外",
+      "reason": "Task.allOk は「形式化の外」に分類する。Rustのstate登録による起動・待機。現在のPrimKind/StepにTask専用欄・遷移はなく、sigは対応を調べる入口だけである。並行実行の状態は形式化外。07-04「証明する性質」は並行処理のタスクと引継ぎハンドラを対象外とする。この起動・待機の操作を仮定として量化する範囲に含めず、R50が実登録と形式化の内外を確認する"
+    },
+    {
+      "id": "L499",
+      "lean_name": "Task.race",
+      "rust_names": [
+        "Task.race"
+      ],
+      "kind": "形式化の外",
+      "detail": "Rustのstate登録による起動・待機。現在のPrimKind/StepにTask専用欄・遷移はなく、sigは対応を調べる入口だけである。並行実行の状態は形式化外",
+      "reason": "Task.race は「形式化の外」に分類する。Rustのstate登録による起動・待機。現在のPrimKind/StepにTask専用欄・遷移はなく、sigは対応を調べる入口だけである。並行実行の状態は形式化外。07-04「証明する性質」は並行処理のタスクと引継ぎハンドラを対象外とする。この起動・待機の操作を仮定として量化する範囲に含めず、R50が実登録と形式化の内外を確認する"
+    },
+    {
+      "id": "L500",
+      "lean_name": "Task.withTimeout",
+      "rust_names": [
+        "Task.withTimeout"
+      ],
+      "kind": "形式化の外",
+      "detail": "Rustのstate登録による起動・待機。現在のPrimKind/StepにTask専用欄・遷移はなく、sigは対応を調べる入口だけである。並行実行の状態は形式化外",
+      "reason": "Task.withTimeout は「形式化の外」に分類する。Rustのstate登録による起動・待機。現在のPrimKind/StepにTask専用欄・遷移はなく、sigは対応を調べる入口だけである。並行実行の状態は形式化外。07-04「証明する性質」は並行処理のタスクと引継ぎハンドラを対象外とする。この起動・待機の操作を仮定として量化する範囲に含めず、R50が実登録と形式化の内外を確認する"
+    },
+    {
+      "id": "L501",
+      "lean_name": "Task.await",
+      "rust_names": [
+        "Task.await"
+      ],
+      "kind": "形式化の外",
+      "detail": "Rustのstate登録による起動・待機。現在のPrimKind/StepにTask専用欄・遷移はなく、sigは対応を調べる入口だけである。並行実行の状態は形式化外",
+      "reason": "Task.await は「形式化の外」に分類する。Rustのstate登録による起動・待機。現在のPrimKind/StepにTask専用欄・遷移はなく、sigは対応を調べる入口だけである。並行実行の状態は形式化外。07-04「証明する性質」は並行処理のタスクと引継ぎハンドラを対象外とする。この起動・待機の操作を仮定として量化する範囲に含めず、R50が実登録と形式化の内外を確認する"
+    },
+    {
+      "id": "L502",
+      "lean_name": "TaskGroup.open",
+      "rust_names": [
+        "TaskGroup.open"
+      ],
+      "kind": "形式化の外",
+      "detail": "Rustのstate登録による起動・待機。現在のPrimKind/StepにTask専用欄・遷移はなく、sigは対応を調べる入口だけである。並行実行の状態は形式化外。TaskGroupの通常解放の境界はisResource/releaseResponse（五実資源の別表）であり、起動・待機を証明するものではない",
+      "reason": "TaskGroup.open は「形式化の外」に分類する。Rustのstate登録による起動・待機。現在のPrimKind/StepにTask専用欄・遷移はなく、sigは対応を調べる入口だけである。並行実行の状態は形式化外。TaskGroupの通常解放の境界はisResource/releaseResponse（五実資源の別表）であり、起動・待機を証明するものではない。07-04「証明する性質」は並行処理のタスクと引継ぎハンドラを対象外とする。この起動・待機の操作を仮定として量化する範囲に含めず、R50が実登録と形式化の内外を確認する"
+    },
+    {
+      "id": "L503",
+      "lean_name": "TaskGroup.spawn",
+      "rust_names": [
+        "TaskGroup.spawn"
+      ],
+      "kind": "形式化の外",
+      "detail": "Rustのstate登録による起動・待機。現在のPrimKind/StepにTask専用欄・遷移はなく、sigは対応を調べる入口だけである。並行実行の状態は形式化外。TaskGroupの通常解放の境界はisResource/releaseResponse（五実資源の別表）であり、起動・待機を証明するものではない",
+      "reason": "TaskGroup.spawn は「形式化の外」に分類する。Rustのstate登録による起動・待機。現在のPrimKind/StepにTask専用欄・遷移はなく、sigは対応を調べる入口だけである。並行実行の状態は形式化外。TaskGroupの通常解放の境界はisResource/releaseResponse（五実資源の別表）であり、起動・待機を証明するものではない。07-04「証明する性質」は並行処理のタスクと引継ぎハンドラを対象外とする。この起動・待機の操作を仮定として量化する範囲に含めず、R50が実登録と形式化の内外を確認する"
+    },
+    {
+      "id": "L504",
+      "lean_name": "Trait.showString",
+      "rust_names": [
+        "Trait.showString"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Trait.showString は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L505",
+      "lean_name": "Trait.showCharacter",
+      "rust_names": [
+        "Trait.showCharacter"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Trait.showCharacter は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L506",
+      "lean_name": "Console.write",
+      "rust_names": [
+        "Benitoite.IO.Console.write"
+      ],
+      "kind": "IO 応答",
+      "detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する",
+      "reason": "Benitoite.IO.Console.write は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L507",
+      "lean_name": "Console.writeLine",
+      "rust_names": [
+        "Benitoite.IO.Console.writeLine"
+      ],
+      "kind": "IO 応答",
+      "detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する",
+      "reason": "Benitoite.IO.Console.writeLine は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L508",
+      "lean_name": "Console.writeError",
+      "rust_names": [
+        "Benitoite.IO.Console.writeError"
+      ],
+      "kind": "IO 応答",
+      "detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する",
+      "reason": "Benitoite.IO.Console.writeError は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L509",
+      "lean_name": "Console.writeErrorLine",
+      "rust_names": [
+        "Benitoite.IO.Console.writeErrorLine"
+      ],
+      "kind": "IO 応答",
+      "detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する",
+      "reason": "Benitoite.IO.Console.writeErrorLine は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L510",
+      "lean_name": "Console.readLine",
+      "rust_names": [
+        "Benitoite.IO.Console.readLine"
+      ],
+      "kind": "IO 応答",
+      "detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する",
+      "reason": "Benitoite.IO.Console.readLine は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L511",
+      "lean_name": "Console.readAll",
+      "rust_names": [
+        "Benitoite.IO.Console.readAll"
+      ],
+      "kind": "IO 応答",
+      "detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する",
+      "reason": "Benitoite.IO.Console.readAll は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L512",
+      "lean_name": "File.writeText",
+      "rust_names": [
+        "Benitoite.IO.File.writeText"
+      ],
+      "kind": "IO 応答",
+      "detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する",
+      "reason": "Benitoite.IO.File.writeText は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L513",
+      "lean_name": "File.appendText",
+      "rust_names": [
+        "Benitoite.IO.File.appendText"
+      ],
+      "kind": "IO 応答",
+      "detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する",
+      "reason": "Benitoite.IO.File.appendText は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L514",
+      "lean_name": "File.openReader",
+      "rust_names": [
+        "Benitoite.IO.File.openReader"
+      ],
+      "kind": "通常資源の状態",
+      "detail": "通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。この登録のIO結果はioResponseの照合対象である",
+      "reason": "Benitoite.IO.File.openReader は「通常資源の状態」に分類する。通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。この登録のIO結果はioResponseの照合対象である。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L515",
+      "lean_name": "File.readLine",
+      "rust_names": [
+        "Benitoite.IO.File.readLine"
+      ],
+      "kind": "通常資源の状態",
+      "detail": "通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。この登録のIO結果はioResponseの照合対象である",
+      "reason": "Benitoite.IO.File.readLine は「通常資源の状態」に分類する。通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。この登録のIO結果はioResponseの照合対象である。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L516",
+      "lean_name": "File.closeReader",
+      "rust_names": [
+        "IO.File.closeReader"
+      ],
+      "kind": "通常資源の状態",
+      "detail": "通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。state登録の資源操作そのものに対応する専用Builtins欄はなく、IO応答とは数えない",
+      "reason": "IO.File.closeReader は「通常資源の状態」に分類する。通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。state登録の資源操作そのものに対応する専用Builtins欄はなく、IO応答とは数えない。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L517",
+      "lean_name": "Process.arguments",
+      "rust_names": [
+        "Benitoite.IO.Process.arguments"
+      ],
+      "kind": "IO 応答",
+      "detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する",
+      "reason": "Benitoite.IO.Process.arguments は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L518",
+      "lean_name": "Process.exit",
+      "rust_names": [
+        "Benitoite.IO.Process.exit"
+      ],
+      "kind": "IO 応答",
+      "detail": "kind=exit。ハンドラのない呼出しはE_Exit・E_IOErrが同じ表のioResponseを読む",
+      "reason": "同じ扱いに当たらない。Process.exitの種類exitの実行は、ハンドラのない呼出しではE_Exit・E_IOErrが同じ表のioResponseを読み（ハンドラのある呼出しはE_OpPrimで節へ移る）、δ・IO応答のない専用の遷移ではない。署名だけを合成表へ置くと、io_existsの欄が全ての型付き引数に応答を求めるので、新しいIO応答の意味を定義しない限り閉じない。合成表の既存のexit（ModelTargetsのモデル）は全ての整数を終了コードにし、処理系の範囲外の誤り（0〜255の外）を写さないので、Process.exitの証拠として流用しない。台帳の仮定側の行は残し、理由を「専用の遷移」からIO応答の仮定へ改める"
+    },
+    {
+      "id": "L519",
+      "lean_name": "Clock.sleep",
+      "rust_names": [
+        "Benitoite.IO.Clock.sleep"
+      ],
+      "kind": "IO 応答",
+      "detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する",
+      "reason": "Benitoite.IO.Clock.sleep は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L520",
+      "lean_name": "Clock.monotonicMilliseconds",
+      "rust_names": [
+        "Benitoite.IO.Clock.monotonicMilliseconds"
+      ],
+      "kind": "IO 応答",
+      "detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する",
+      "reason": "Benitoite.IO.Clock.monotonicMilliseconds は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L521",
+      "lean_name": "Assert.equal",
+      "rust_names": [
+        "Benitoite.Assert.equal"
+      ],
+      "kind": "IO 応答",
+      "detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する",
+      "reason": "Benitoite.Assert.equal は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L522",
+      "lean_name": "Assert.notEqual",
+      "rust_names": [
+        "Benitoite.Assert.notEqual"
+      ],
+      "kind": "IO 応答",
+      "detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する",
+      "reason": "Benitoite.Assert.notEqual は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L523",
+      "lean_name": "Assert.isTrue",
+      "rust_names": [
+        "Benitoite.Assert.isTrue"
+      ],
+      "kind": "IO 応答",
+      "detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する",
+      "reason": "Benitoite.Assert.isTrue は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L524",
+      "lean_name": "Assert.fail",
+      "rust_names": [
+        "Benitoite.Assert.fail"
+      ],
+      "kind": "IO 応答",
+      "detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する",
+      "reason": "Benitoite.Assert.fail は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L525",
+      "lean_name": "NetworkError.kind",
+      "rust_names": [
+        "NetworkError.kind"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "NetworkError.kind は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L526",
+      "lean_name": "NetworkError.message",
+      "rust_names": [
+        "NetworkError.message"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "NetworkError.message は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L527",
+      "lean_name": "Console.readAllLines",
+      "rust_names": [
+        "Benitoite.IO.Console.readAllLines"
+      ],
+      "kind": "IO 応答",
+      "detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する",
+      "reason": "Benitoite.IO.Console.readAllLines は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L528",
+      "lean_name": "Console.readAllBytes",
+      "rust_names": [
+        "Benitoite.IO.Console.readAllBytes"
+      ],
+      "kind": "IO 応答",
+      "detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する",
+      "reason": "Benitoite.IO.Console.readAllBytes は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L529",
+      "lean_name": "Process.scriptDirectory",
+      "rust_names": [
+        "Benitoite.IO.Process.scriptDirectory"
+      ],
+      "kind": "IO 応答",
+      "detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する",
+      "reason": "Benitoite.IO.Process.scriptDirectory は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L530",
+      "lean_name": "Process.environmentVariable",
+      "rust_names": [
+        "Benitoite.IO.Process.environmentVariable"
+      ],
+      "kind": "IO 応答",
+      "detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する",
+      "reason": "Benitoite.IO.Process.environmentVariable は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L531",
+      "lean_name": "Process.workingDirectory",
+      "rust_names": [
+        "Benitoite.IO.Process.workingDirectory"
+      ],
+      "kind": "IO 応答",
+      "detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する",
+      "reason": "Benitoite.IO.Process.workingDirectory は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L532",
+      "lean_name": "Clock.now",
+      "rust_names": [
+        "Benitoite.IO.Clock.now"
+      ],
+      "kind": "IO 応答",
+      "detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する",
+      "reason": "Benitoite.IO.Clock.now は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L533",
+      "lean_name": "Clock.localOffsetMinutes",
+      "rust_names": [
+        "Benitoite.IO.Clock.localOffsetMinutes"
+      ],
+      "kind": "IO 応答",
+      "detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する",
+      "reason": "Benitoite.IO.Clock.localOffsetMinutes は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L534",
+      "lean_name": "File.readBytes",
+      "rust_names": [
+        "Benitoite.IO.File.readBytes"
+      ],
+      "kind": "IO 応答",
+      "detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する",
+      "reason": "Benitoite.IO.File.readBytes は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L535",
+      "lean_name": "File.readLines",
+      "rust_names": [
+        "Benitoite.IO.File.readLines"
+      ],
+      "kind": "IO 応答",
+      "detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する",
+      "reason": "Benitoite.IO.File.readLines は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L536",
+      "lean_name": "File.exists",
+      "rust_names": [
+        "Benitoite.IO.File.exists"
+      ],
+      "kind": "IO 応答",
+      "detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する",
+      "reason": "Benitoite.IO.File.exists は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L537",
+      "lean_name": "File.info",
+      "rust_names": [
+        "Benitoite.IO.File.info"
+      ],
+      "kind": "IO 応答",
+      "detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する",
+      "reason": "Benitoite.IO.File.info は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L538",
+      "lean_name": "File.listDirectory",
+      "rust_names": [
+        "Benitoite.IO.File.listDirectory"
+      ],
+      "kind": "IO 応答",
+      "detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する",
+      "reason": "Benitoite.IO.File.listDirectory は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L539",
+      "lean_name": "File.walk",
+      "rust_names": [
+        "Benitoite.IO.File.walk"
+      ],
+      "kind": "IO 応答",
+      "detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する",
+      "reason": "Benitoite.IO.File.walk は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L540",
+      "lean_name": "File.canonicalize",
+      "rust_names": [
+        "Benitoite.IO.File.canonicalize"
+      ],
+      "kind": "IO 応答",
+      "detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する",
+      "reason": "Benitoite.IO.File.canonicalize は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L541",
+      "lean_name": "File.writeBytes",
+      "rust_names": [
+        "Benitoite.IO.File.writeBytes"
+      ],
+      "kind": "IO 応答",
+      "detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する",
+      "reason": "Benitoite.IO.File.writeBytes は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L542",
+      "lean_name": "File.appendBytes",
+      "rust_names": [
+        "Benitoite.IO.File.appendBytes"
+      ],
+      "kind": "IO 応答",
+      "detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する",
+      "reason": "Benitoite.IO.File.appendBytes は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L543",
+      "lean_name": "File.createDirectory",
+      "rust_names": [
+        "Benitoite.IO.File.createDirectory"
+      ],
+      "kind": "IO 応答",
+      "detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する",
+      "reason": "Benitoite.IO.File.createDirectory は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L544",
+      "lean_name": "File.remove",
+      "rust_names": [
+        "Benitoite.IO.File.remove"
+      ],
+      "kind": "IO 応答",
+      "detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する",
+      "reason": "Benitoite.IO.File.remove は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L545",
+      "lean_name": "File.removeTree",
+      "rust_names": [
+        "Benitoite.IO.File.removeTree"
+      ],
+      "kind": "IO 応答",
+      "detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する",
+      "reason": "Benitoite.IO.File.removeTree は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L546",
+      "lean_name": "File.rename",
+      "rust_names": [
+        "Benitoite.IO.File.rename"
+      ],
+      "kind": "IO 応答",
+      "detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する",
+      "reason": "Benitoite.IO.File.rename は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L547",
+      "lean_name": "File.readChunk",
+      "rust_names": [
+        "Benitoite.IO.File.readChunk"
+      ],
+      "kind": "通常資源の状態",
+      "detail": "通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。この登録のIO結果はioResponseの照合対象である",
+      "reason": "Benitoite.IO.File.readChunk は「通常資源の状態」に分類する。通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。この登録のIO結果はioResponseの照合対象である。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L548",
+      "lean_name": "File.openWriter",
+      "rust_names": [
+        "Benitoite.IO.File.openWriter"
+      ],
+      "kind": "通常資源の状態",
+      "detail": "通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。この登録のIO結果はioResponseの照合対象である",
+      "reason": "Benitoite.IO.File.openWriter は「通常資源の状態」に分類する。通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。この登録のIO結果はioResponseの照合対象である。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L549",
+      "lean_name": "File.write",
+      "rust_names": [
+        "Benitoite.IO.File.write"
+      ],
+      "kind": "通常資源の状態",
+      "detail": "通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。この登録のIO結果はioResponseの照合対象である",
+      "reason": "Benitoite.IO.File.write は「通常資源の状態」に分類する。通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。この登録のIO結果はioResponseの照合対象である。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L550",
+      "lean_name": "File.writeLine",
+      "rust_names": [
+        "Benitoite.IO.File.writeLine"
+      ],
+      "kind": "通常資源の状態",
+      "detail": "通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。この登録のIO結果はioResponseの照合対象である",
+      "reason": "Benitoite.IO.File.writeLine は「通常資源の状態」に分類する。通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。この登録のIO結果はioResponseの照合対象である。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L551",
+      "lean_name": "File.writeChunk",
+      "rust_names": [
+        "Benitoite.IO.File.writeChunk"
+      ],
+      "kind": "通常資源の状態",
+      "detail": "通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。この登録のIO結果はioResponseの照合対象である",
+      "reason": "Benitoite.IO.File.writeChunk は「通常資源の状態」に分類する。通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。この登録のIO結果はioResponseの照合対象である。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L552",
+      "lean_name": "File.closeWriter",
+      "rust_names": [
+        "IO.File.closeWriter"
+      ],
+      "kind": "通常資源の状態",
+      "detail": "通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。state登録の資源操作そのものに対応する専用Builtins欄はなく、IO応答とは数えない",
+      "reason": "IO.File.closeWriter は「通常資源の状態」に分類する。通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。state登録の資源操作そのものに対応する専用Builtins欄はなく、IO応答とは数えない。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L553",
+      "lean_name": "Process.run",
+      "rust_names": [
+        "Benitoite.IO.Process.run"
+      ],
+      "kind": "IO 応答",
+      "detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する",
+      "reason": "Benitoite.IO.Process.run は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L554",
+      "lean_name": "Process.runAttached",
+      "rust_names": [
+        "Benitoite.IO.Process.runAttached"
+      ],
+      "kind": "IO 応答",
+      "detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する",
+      "reason": "Benitoite.IO.Process.runAttached は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L555",
+      "lean_name": "Process.shell",
+      "rust_names": [
+        "Benitoite.IO.Process.shell"
+      ],
+      "kind": "IO 応答",
+      "detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する",
+      "reason": "Benitoite.IO.Process.shell は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L556",
+      "lean_name": "Random.integer",
+      "rust_names": [
+        "Benitoite.IO.Random.integer"
+      ],
+      "kind": "IO 応答",
+      "detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する",
+      "reason": "Benitoite.IO.Random.integer は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L557",
+      "lean_name": "Random.float",
+      "rust_names": [
+        "Benitoite.IO.Random.float"
+      ],
+      "kind": "IO 応答",
+      "detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する",
+      "reason": "Benitoite.IO.Random.float は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L558",
+      "lean_name": "Random.boolean",
+      "rust_names": [
+        "Benitoite.IO.Random.boolean"
+      ],
+      "kind": "IO 応答",
+      "detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する",
+      "reason": "Benitoite.IO.Random.boolean は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L559",
+      "lean_name": "Random.shuffle",
+      "rust_names": [
+        "Benitoite.IO.Random.shuffle"
+      ],
+      "kind": "IO 応答",
+      "detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する",
+      "reason": "Benitoite.IO.Random.shuffle は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L560",
+      "lean_name": "Random.choose",
+      "rust_names": [
+        "Benitoite.IO.Random.choose"
+      ],
+      "kind": "IO 応答",
+      "detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する",
+      "reason": "Benitoite.IO.Random.choose は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L561",
+      "lean_name": "Random.fromSeed",
+      "rust_names": [
+        "IO.Random.fromSeed"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "IO.Random.fromSeed は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L562",
+      "lean_name": "Random.nextInteger",
+      "rust_names": [
+        "IO.Random.nextInteger"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "IO.Random.nextInteger は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L563",
+      "lean_name": "Random.nextFloat",
+      "rust_names": [
+        "IO.Random.nextFloat"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "IO.Random.nextFloat は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L564",
+      "lean_name": "Random.shuffleWith",
+      "rust_names": [
+        "IO.Random.shuffleWith"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "IO.Random.shuffleWith は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L565",
+      "lean_name": "Path.join",
+      "rust_names": [
+        "Path.join"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Path.join は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L566",
+      "lean_name": "Path.joinAll",
+      "rust_names": [
+        "Path.joinAll"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Path.joinAll は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L567",
+      "lean_name": "Path.parent",
+      "rust_names": [
+        "Path.parent"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Path.parent は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L568",
+      "lean_name": "Path.fileName",
+      "rust_names": [
+        "Path.fileName"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Path.fileName は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L569",
+      "lean_name": "Path.stem",
+      "rust_names": [
+        "Path.stem"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Path.stem は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L570",
+      "lean_name": "Path.extension",
+      "rust_names": [
+        "Path.extension"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Path.extension は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L571",
+      "lean_name": "Path.withExtension",
+      "rust_names": [
+        "Path.withExtension"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Path.withExtension は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L572",
+      "lean_name": "Path.isAbsolute",
+      "rust_names": [
+        "Path.isAbsolute"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Path.isAbsolute は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L573",
+      "lean_name": "Path.components",
+      "rust_names": [
+        "Path.components"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Path.components は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L574",
+      "lean_name": "Path.normalize",
+      "rust_names": [
+        "Path.normalize"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Path.normalize は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L575",
+      "lean_name": "Json.parse",
+      "rust_names": [
+        "Json.parse"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Json.parse は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L576",
+      "lean_name": "Json.stringify",
+      "rust_names": [
+        "Json.stringify"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Json.stringify は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L577",
+      "lean_name": "Json.stringifyPretty",
+      "rust_names": [
+        "Json.stringifyPretty"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Json.stringifyPretty は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L578",
+      "lean_name": "Regex.compile",
+      "rust_names": [
+        "Regex.compile"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Regex.compile は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L579",
+      "lean_name": "Regex.isMatch",
+      "rust_names": [
+        "Regex.isMatch"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Regex.isMatch は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L580",
+      "lean_name": "Regex.find",
+      "rust_names": [
+        "Regex.find"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Regex.find は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L581",
+      "lean_name": "Regex.matchText",
+      "rust_names": [
+        "Regex.matchText"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Regex.matchText は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L582",
+      "lean_name": "Regex.matchByteStart",
+      "rust_names": [
+        "Regex.matchByteStart"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Regex.matchByteStart は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L583",
+      "lean_name": "Regex.matchByteEnd",
+      "rust_names": [
+        "Regex.matchByteEnd"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Regex.matchByteEnd は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L584",
+      "lean_name": "Regex.group",
+      "rust_names": [
+        "Regex.group"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Regex.group は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L585",
+      "lean_name": "Regex.namedGroup",
+      "rust_names": [
+        "Regex.namedGroup"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Regex.namedGroup は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L586",
+      "lean_name": "Regex.replaceFirst",
+      "rust_names": [
+        "Regex.replaceFirst"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Regex.replaceFirst は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L587",
+      "lean_name": "Regex.findAt",
+      "rust_names": [
+        "Regex.findAt"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Regex.findAt は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L588",
+      "lean_name": "Regex.spanAt",
+      "rust_names": [
+        "Regex.spanAt"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Regex.spanAt は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L589",
+      "lean_name": "Regex.maxStringBytes",
+      "rust_names": [
+        "Regex.maxStringBytes"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Regex.maxStringBytes は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L590",
+      "lean_name": "Csv.parse",
+      "rust_names": [
+        "Csv.parse"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Csv.parse は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L591",
+      "lean_name": "Csv.parseWith",
+      "rust_names": [
+        "Csv.parseWith"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Csv.parseWith は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L592",
+      "lean_name": "Csv.parseWithHeader",
+      "rust_names": [
+        "Csv.parseWithHeader"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Csv.parseWithHeader は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L593",
+      "lean_name": "Csv.format",
+      "rust_names": [
+        "Csv.format"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Csv.format は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L594",
+      "lean_name": "Csv.formatWith",
+      "rust_names": [
+        "Csv.formatWith"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Csv.formatWith は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L595",
+      "lean_name": "Time.fromUnixSeconds",
+      "rust_names": [
+        "Time.fromUnixSeconds"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Time.fromUnixSeconds は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L596",
+      "lean_name": "Time.fromUnixMilliseconds",
+      "rust_names": [
+        "Time.fromUnixMilliseconds"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Time.fromUnixMilliseconds は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L597",
+      "lean_name": "Time.toUnixSeconds",
+      "rust_names": [
+        "Time.toUnixSeconds"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Time.toUnixSeconds は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L598",
+      "lean_name": "Time.toUnixMilliseconds",
+      "rust_names": [
+        "Time.toUnixMilliseconds"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Time.toUnixMilliseconds は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L599",
+      "lean_name": "Time.addMilliseconds",
+      "rust_names": [
+        "Time.addMilliseconds"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Time.addMilliseconds は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L600",
+      "lean_name": "Time.differenceMilliseconds",
+      "rust_names": [
+        "Time.differenceMilliseconds"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Time.differenceMilliseconds は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L601",
+      "lean_name": "Time.toDateTime",
+      "rust_names": [
+        "Time.toDateTime"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Time.toDateTime は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L602",
+      "lean_name": "Time.fromDateTime",
+      "rust_names": [
+        "Time.fromDateTime"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Time.fromDateTime は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L603",
+      "lean_name": "Time.formatISO8601",
+      "rust_names": [
+        "Time.formatISO8601"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Time.formatISO8601 は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L604",
+      "lean_name": "Time.parseISO8601",
+      "rust_names": [
+        "Time.parseISO8601"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Time.parseISO8601 は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L605",
+      "lean_name": "Time.format",
+      "rust_names": [
+        "Time.format"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Time.format は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L606",
+      "lean_name": "Encoding.base64Encode",
+      "rust_names": [
+        "Encoding.base64Encode"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Encoding.base64Encode は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L607",
+      "lean_name": "Encoding.base64Decode",
+      "rust_names": [
+        "Encoding.base64Decode"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Encoding.base64Decode は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L608",
+      "lean_name": "Encoding.base64UrlEncode",
+      "rust_names": [
+        "Encoding.base64UrlEncode"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Encoding.base64UrlEncode は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L609",
+      "lean_name": "Encoding.base64UrlDecode",
+      "rust_names": [
+        "Encoding.base64UrlDecode"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Encoding.base64UrlDecode は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L610",
+      "lean_name": "Hash.sha256",
+      "rust_names": [
+        "Hash.sha256"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Hash.sha256 は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L611",
+      "lean_name": "Http.listen",
+      "rust_names": [
+        "Benitoite.Network.Http.listen"
+      ],
+      "kind": "通常資源の状態",
+      "detail": "通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。この登録のIO結果はioResponseの照合対象である",
+      "reason": "Benitoite.Network.Http.listen は「通常資源の状態」に分類する。通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。この登録のIO結果はioResponseの照合対象である。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L612",
+      "lean_name": "Http.listenerPort",
+      "rust_names": [
+        "Benitoite.Network.Http.listenerPort"
+      ],
+      "kind": "通常資源の状態",
+      "detail": "通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。この登録のIO結果はioResponseの照合対象である",
+      "reason": "Benitoite.Network.Http.listenerPort は「通常資源の状態」に分類する。通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。この登録のIO結果はioResponseの照合対象である。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L613",
+      "lean_name": "Http.accept",
+      "rust_names": [
+        "Benitoite.Network.Http.accept"
+      ],
+      "kind": "通常資源の状態",
+      "detail": "通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。この登録のIO結果はioResponseの照合対象である",
+      "reason": "Benitoite.Network.Http.accept は「通常資源の状態」に分類する。通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。この登録のIO結果はioResponseの照合対象である。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L614",
+      "lean_name": "Http.respond",
+      "rust_names": [
+        "Benitoite.Network.Http.respond"
+      ],
+      "kind": "通常資源の状態",
+      "detail": "通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。この登録のIO結果はioResponseの照合対象である",
+      "reason": "Benitoite.Network.Http.respond は「通常資源の状態」に分類する。通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。この登録のIO結果はioResponseの照合対象である。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L615",
+      "lean_name": "Network.Http.requestOf",
+      "rust_names": [
+        "Network.Http.requestOf"
+      ],
+      "kind": "通常資源の状態",
+      "detail": "通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。state登録の資源操作そのものに対応する専用Builtins欄はなく、IO応答とは数えない",
+      "reason": "Network.Http.requestOf は「通常資源の状態」に分類する。通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。state登録の資源操作そのものに対応する専用Builtins欄はなく、IO応答とは数えない。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L616",
+      "lean_name": "Network.Http.closeListener",
+      "rust_names": [
+        "Network.Http.closeListener"
+      ],
+      "kind": "通常資源の状態",
+      "detail": "通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。state登録の資源操作そのものに対応する専用Builtins欄はなく、IO応答とは数えない",
+      "reason": "Network.Http.closeListener は「通常資源の状態」に分類する。通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。state登録の資源操作そのものに対応する専用Builtins欄はなく、IO応答とは数えない。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L617",
+      "lean_name": "Network.Http.closeExchange",
+      "rust_names": [
+        "Network.Http.closeExchange"
+      ],
+      "kind": "通常資源の状態",
+      "detail": "通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。state登録の資源操作そのものに対応する専用Builtins欄はなく、IO応答とは数えない",
+      "reason": "Network.Http.closeExchange は「通常資源の状態」に分類する。通常資源の作成・参照・解放の実状態。isResource/releaseResponseは分類と抽象解放の境界であり、実資源の状態の対応証拠はない。state登録の資源操作そのものに対応する専用Builtins欄はなく、IO応答とは数えない。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L618",
+      "lean_name": "Network.Http.pathSegments",
+      "rust_names": [
+        "Network.Http.pathSegments"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Network.Http.pathSegments は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L619",
+      "lean_name": "Http.send",
+      "rust_names": [
+        "Benitoite.Network.Http.send"
+      ],
+      "kind": "IO 応答",
+      "detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する",
+      "reason": "Benitoite.Network.Http.send は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L620",
+      "lean_name": "Scope.checkHost",
+      "rust_names": [
+        "Scope.checkHost"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Scope.checkHost は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L621",
+      "lean_name": "Scope.checkPath",
+      "rust_names": [
+        "Scope.checkPath"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Scope.checkPath は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L622",
+      "lean_name": "Scope.checkEndpoint",
+      "rust_names": [
+        "Scope.checkEndpoint"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Scope.checkEndpoint は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L623",
+      "lean_name": "Log.emit",
+      "rust_names": [
+        "Benitoite.Log.emit"
+      ],
+      "kind": "IO 応答",
+      "detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する",
+      "reason": "Benitoite.Log.emit は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L624",
+      "lean_name": "Log.enabled",
+      "rust_names": [
+        "Benitoite.Log.enabled"
+      ],
+      "kind": "IO 応答",
+      "detail": "Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する",
+      "reason": "Benitoite.Log.enabled は「IO 応答」に分類する。Rustのio登録の結果と観測対象をioResponse、操作の所属と対象の種類をeffects/effKindで照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L625",
+      "lean_name": "SourceLocation.here",
+      "rust_names": [
+        "SourceLocation.here"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "SourceLocation.here は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L626",
+      "lean_name": "Log.formatRecord",
+      "rust_names": [
+        "Log.formatRecord"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "Log.formatRecord は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L627",
+      "lean_name": "%Format.Integer",
+      "rust_names": [
+        "%Format.Integer"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "%Format.Integer は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L628",
+      "lean_name": "%Format.Integer8",
+      "rust_names": [
+        "%Format.Integer8"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "%Format.Integer8 は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L629",
+      "lean_name": "%Format.Integer16",
+      "rust_names": [
+        "%Format.Integer16"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "%Format.Integer16 は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L630",
+      "lean_name": "%Format.Integer32",
+      "rust_names": [
+        "%Format.Integer32"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "%Format.Integer32 は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L631",
+      "lean_name": "%Format.Byte",
+      "rust_names": [
+        "%Format.Byte"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "%Format.Byte は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L632",
+      "lean_name": "%Format.UnsignedInteger16",
+      "rust_names": [
+        "%Format.UnsignedInteger16"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "%Format.UnsignedInteger16 は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L633",
+      "lean_name": "%Format.UnsignedInteger32",
+      "rust_names": [
+        "%Format.UnsignedInteger32"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "%Format.UnsignedInteger32 は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L634",
+      "lean_name": "%Format.UnsignedInteger64",
+      "rust_names": [
+        "%Format.UnsignedInteger64"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "%Format.UnsignedInteger64 は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L635",
+      "lean_name": "%Format.Float",
+      "rust_names": [
+        "%Format.Float"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "%Format.Float は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L636",
+      "lean_name": "%Format.Float32",
+      "rust_names": [
+        "%Format.Float32"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "%Format.Float32 は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L637",
+      "lean_name": "%Format.Decimal",
+      "rust_names": [
+        "%Format.Decimal"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "%Format.Decimal は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L638",
+      "lean_name": "%Format.String",
+      "rust_names": [
+        "%Format.String"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "%Format.String は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L639",
+      "lean_name": "%Format.Character",
+      "rust_names": [
+        "%Format.Character"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "%Format.Character は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    },
+    {
+      "id": "L640",
+      "lean_name": "%Format.Boolean",
+      "rust_names": [
+        "%Format.Boolean"
+      ],
+      "kind": "δ",
+      "detail": "Rustのpure登録の実算法をdeltaの応答条件へ照合する",
+      "reason": "%Format.Boolean は「δ」に分類する。Rustのpure登録の実算法をdeltaの応答条件へ照合する。E01〜E15に同名の実算法・状態の対応証拠はない。新しい意味や定数errで補わず、R50が実登録との対応と形式化の内外を確認する"
+    }
+  ]
+}

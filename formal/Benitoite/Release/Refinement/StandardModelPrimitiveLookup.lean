@@ -379,6 +379,7 @@ private theorem lookup_p373 : primitive "print" = some Primitive.p373 := rfl
 private theorem lookup_p374 : primitive "Lazy.force" = some Primitive.p374 := rfl
 private theorem lookup_p375 : primitive "Reference.new" = some Primitive.p375 := rfl
 private theorem lookup_p376 : primitive "Reference.update" = some Primitive.p376 := rfl
+private theorem lookup_p377 : primitive "%List.getFront" = some Primitive.p377 := rfl
 
 /-- 任意の台帳行を同じ合成表でlookupできる。 -/
 theorem primitive_lookup (row : Primitive) : primitive row.name = some row := by
@@ -759,6 +760,7 @@ theorem primitive_lookup (row : Primitive) : primitive row.name = some row := by
   | p374 => exact lookup_p374
   | p375 => exact lookup_p375
   | p376 => exact lookup_p376
+  | p377 => exact lookup_p377
 
 theorem signatures_iff (name : String) (s : PrimSig) : signature name = some s ↔
     ∃ row ∈ Primitive.all, name = row.name ∧ s = row.signature := by

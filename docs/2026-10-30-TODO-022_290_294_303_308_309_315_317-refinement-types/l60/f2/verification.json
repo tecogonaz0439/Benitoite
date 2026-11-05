@@ -1,0 +1,179 @@
+{
+  "modules": 1066,
+  "new_modules": [
+    "Benitoite.Release.Refinement.StandardModelCollectionRows",
+    "Benitoite.Release.Refinement.StandardModelListBodies",
+    "Benitoite.Release.Refinement.StandardModelCoreBodies",
+    "Benitoite.Release.Refinement.StandardModelSafeBodies",
+    "Benitoite.Release.Refinement.StandardModelCollectionBodies",
+    "Benitoite.Release.Refinement.StandardModelProgram",
+    "Benitoite.Release.Refinement.StandardModelIORows",
+    "Benitoite.Release.Refinement.StandardModelSubstitution",
+    "Benitoite.Release.Refinement.StandardModelCoreRows",
+    "Benitoite.Release.Refinement.StandardModelScoped",
+    "Benitoite.Release.Refinement.StandardModelCore",
+    "Benitoite.Release.Refinement.StandardModelWellFormed"
+  ],
+  "edited_modules": [
+    "Benitoite.Release.Refinement.StandardModelSignatures",
+    "Benitoite.Release.Refinement.StandardModelPrimitiveLookup",
+    "Benitoite.Release.Refinement.StandardModelDeclarations",
+    "Benitoite.Release.Refinement.StandardModelPureRows",
+    "Benitoite.Release.Refinement.StandardAliasBodies",
+    "Benitoite.Release.Refinement.StandardOrdinaryListBodies",
+    "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies",
+    "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram"
+  ],
+  "added_files": 53,
+  "modified_existing": [
+    "docs/design/01-spec/01-12-core-calculus.md",
+    "docs/design/07-quality/07-04-formal-semantics.md",
+    "formal/Benitoite.lean",
+    "formal/Benitoite/Release/Refinement/StandardAliasBodies.lean",
+    "formal/Benitoite/Release/Refinement/StandardModelDeclarations.lean",
+    "formal/Benitoite/Release/Refinement/StandardModelPrimitiveLookup.lean",
+    "formal/Benitoite/Release/Refinement/StandardModelPureRows.lean",
+    "formal/Benitoite/Release/Refinement/StandardModelSignatures.lean",
+    "formal/Benitoite/Release/Refinement/StandardOrdinaryCoreBodies.lean",
+    "formal/Benitoite/Release/Refinement/StandardOrdinaryCoreProgram.lean",
+    "formal/Benitoite/Release/Refinement/StandardOrdinaryListBodies.lean"
+  ],
+  "declarations": 1149,
+  "public_entries": 143,
+  "named_readers": 139,
+  "compiled_examples": 5,
+  "bodies": 130,
+  "collection_rows": 79,
+  "io_rows": 10,
+  "scope_rows": 7,
+  "ledger": {
+    "moved_to_composition": 1,
+    "connected_entries": 233,
+    "connected_by_unit": {
+      "L60.26": 79,
+      "L60.27": 130,
+      "L60.28": 24
+    },
+    "connected_by_group": {
+      "collection": 79,
+      "scope": 7,
+      "io": 10,
+      "store": 5,
+      "issue": 1,
+      "body": 130,
+      "resource": 1
+    },
+    "connected_rows": 215,
+    "classification_after": {
+      "合成": 490,
+      "仮定": 150
+    },
+    "ledger_rows": 640,
+    "composition_child_keys": {
+      "before": 507,
+      "after": 508,
+      "bodies": 130,
+      "builtin_signatures": 377,
+      "resource_names": 1,
+      "added": 1
+    },
+    "declarations_added": [
+      "StandardModel.byteOrder（ByteOrder.BigEndian・ByteOrder.LittleEndian）"
+    ]
+  },
+  "tables": {
+    "check1_evidence_to_composition": {
+      "source_counts": {
+        "E01": 328,
+        "E02": 73,
+        "E03": 34,
+        "E04": 2,
+        "E05": 6,
+        "E06": 7,
+        "E07": 3,
+        "E08": 15,
+        "E09": 7,
+        "E10": 1,
+        "E11": 7,
+        "E12": 9,
+        "E13": 11,
+        "E14": 1,
+        "E15": 48
+      },
+      "evidence_rows": 552,
+      "unmapped": 0,
+      "to_assumption": 0,
+      "without_covered_lookup": 0,
+      "model_conditions": 75,
+      "model_conditions_unmapped": 0
+    },
+    "check2_assumption_without_evidence": {
+      "assumption_rows": 150,
+      "with_evidence": 0,
+      "names_shared_with_evidence_rows": 0,
+      "names_with_composition_lookup": 0
+    },
+    "check3_composition_lookup": {
+      "composition_rows": 490,
+      "without_lookup": 0,
+      "lookups_not_in_table": 0,
+      "primitive_rows": 377,
+      "bodies": 130,
+      "primitive_rows_without_ledger": 0,
+      "bodies_without_ledger": 0,
+      "resource_names": 1,
+      "lookups": 508
+    },
+    "check4_rust_to_ledger": {
+      "parts": 61,
+      "references": 523,
+      "unmapped": 0,
+      "classification": {
+        "合成": 373,
+        "仮定": 150
+      }
+    }
+  },
+  "conditions": {
+    "fields": 29,
+    "classes": {
+      "保留": 15,
+      "自明": 2,
+      "実質": 12
+    },
+    "by_group": {
+      "置換8": {
+        "保留": 8
+      },
+      "外部3": {
+        "保留": 2,
+        "自明": 1
+      },
+      "応答4": {
+        "実質": 1,
+        "保留": 3
+      },
+      "独自13": {
+        "実質": 11,
+        "自明": 1,
+        "保留": 1
+      },
+      "対象1": {
+        "保留": 1
+      }
+    },
+    "row_contracts": 96,
+    "row_classes": {
+      "保留": 96
+    },
+    "row_contracts_by_unit": {
+      "L60.26": 79,
+      "L60.28": 17
+    }
+  },
+  "evidence_names": 33,
+  "axiom_targets": 85207,
+  "files": 40,
+  "record_bytes": 1488310,
+  "largest_bytes": 98362
+}

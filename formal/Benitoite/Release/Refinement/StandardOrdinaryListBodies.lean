@@ -69,7 +69,8 @@ def builtins : Builtins := { StandardOrdinaryCoreBodies.builtins with
 
 /-- 元の構成子・組込み・helperのlookupと制約判定だけを共有する。 -/
 structure Inputs (P : Program) (B : Builtins) : Prop where
- constructors : P.cons = fun n => constructorTable.lookup n
+ /-- 本体が読むOptionの二構成子とarity。 -/
+ options : StandardActualListBodies.ListOptionDeclarations P
  get : B.sig "List.get"=some getSignature
  addition : B.sig "%Integer.add"=some StandardActualListBodies.additionSignature
  helpers : ∀ o : Op, P.defs o.helperName=some o.definition
@@ -187,7 +188,7 @@ private theorem get_function {P B Γ Φ Q} (inputs : Inputs P B) (o : Op) :
  HasTypeVQ P B StoreTy.empty Q o.context Γ Φ
   (.prim "List.get" [.tvar 0] [] [])
   (.fn ["xs","i"] [.list (.tvar 0),.base .integer] (.data "Option" [.tvar 0]) Eff.empty) := by
- have ar : ∃ n, P.DataArity "Option" n ∧ 1=n := ⟨1,(option_declarations inputs.constructors).arity,rfl⟩
+ have ar : ∃ n, P.DataArity "Option" n ∧ 1=n := ⟨1,inputs.options.arity,rfl⟩
  have kind : Ty.HasKind P (TypeCtx.kinds o.context) (.tvar 0) .value := by cases o <;> list_simp
  apply primitive_typed inputs.get
  · cases o <;> list_simp
@@ -235,7 +236,7 @@ private theorem args_kind {P : Program} (o : Op) : TypeArgsKinded P o.context o.
 private theorem helper_function {P B Γ Φ Q} (inputs : Inputs P B) (o : Op) :
  HasTypeVQ P B StoreTy.empty Q o.context Γ Φ
   (.fnRef o.helperName o.args [Eff.row 0]) (.fn o.names o.inputs o.result (Eff.row 0)) := by
- have ar : ∃ n, P.DataArity "Option" n ∧ 1=n := ⟨1,(option_declarations inputs.constructors).arity,rfl⟩
+ have ar : ∃ n, P.DataArity "Option" n ∧ 1=n := ⟨1,inputs.options.arity,rfl⟩
  have selfrow := subst_row_self
  simp only [Eff.row,Eff.atoms] at selfrow
  have sat : ∀ C a, B.sat C a {} := inputs.sat
@@ -265,9 +266,9 @@ private theorem helper_function {P B Γ Φ Q} (inputs : Inputs P B) (o : Op) :
 
 private theorem option_none {P B Γ Φ Q} (inputs : Inputs P B) (o : Op) :
  HasTypeVQ P B StoreTy.empty Q o.context Γ Φ (.con "Option.None" [.tvar 0] []) (.data "Option" [.tvar 0]) := by
- have ar : ∃ n, P.DataArity "Option" n ∧ 1=n := ⟨1,(option_declarations inputs.constructors).arity,rfl⟩
+ have ar : ∃ n, P.DataArity "Option" n ∧ 1=n := ⟨1,inputs.options.arity,rfl⟩
  have kind : Ty.HasKind P (TypeCtx.kinds o.context) (.tvar 0) .value := by cases o <;> list_simp
- apply HasTypeVQ.V_Con (option_declarations inputs.constructors).none_decl rfl
+ apply HasTypeVQ.V_Con inputs.options.none_decl rfl
  · exact singleton_kind kind (by intro b t e h; cases h)
  · intro a ha; cases ha
  · exact .nil
@@ -275,9 +276,9 @@ private theorem option_none {P B Γ Φ Q} (inputs : Inputs P B) (o : Op) :
 private theorem option_some {P B Γ Φ Q v} (inputs : Inputs P B) (o : Op)
  (hv : HasTypeVQ P B StoreTy.empty Q o.context Γ Φ v (.tvar 0)) :
  HasTypeVQ P B StoreTy.empty Q o.context Γ Φ (.con "Option.Some" [.tvar 0] [v]) (.data "Option" [.tvar 0]) := by
- have ar : ∃ n, P.DataArity "Option" n ∧ 1=n := ⟨1,(option_declarations inputs.constructors).arity,rfl⟩
+ have ar : ∃ n, P.DataArity "Option" n ∧ 1=n := ⟨1,inputs.options.arity,rfl⟩
  have kind : Ty.HasKind P (TypeCtx.kinds o.context) (.tvar 0) .value := by cases o <;> list_simp
- apply HasTypeVQ.V_Con (option_declarations inputs.constructors).some_decl rfl
+ apply HasTypeVQ.V_Con inputs.options.some_decl rfl
  · exact singleton_kind kind (by intro b t e h; cases h)
  · intro a ha; cases List.mem_singleton.mp ha; simp [Ty.WF]
  · exact .cons hv .nil
@@ -295,14 +296,14 @@ local macro "list_rec" f:term : tactic => `(tactic|
 
 /-- 五つのhelperは、get・callback・加算・再帰を元の順序で一度ずつ評価する。 -/
 theorem helper_typed {P B} (inputs : Inputs P B) (o : Op) : o.definition.WellTyped P B := by
- have ar : ∃ n, P.DataArity "Option" n ∧ 1=n := ⟨1,(option_declarations inputs.constructors).arity,rfl⟩
- have ak := TyCon.arity_data (option_declarations inputs.constructors).arity
+ have ar : ∃ n, P.DataArity "Option" n ∧ 1=n := ⟨1,inputs.options.arity,rfl⟩
+ have ak := TyCon.arity_data inputs.options.arity
  have getFn := fun Γ Φ => get_function (Γ := Γ) (Φ := Φ) (Q := QTel o.definition.tel) inputs o
  have addFn := fun Γ Φ => add_function (Γ := Γ) (Φ := Φ) (Q := QTel o.definition.tel) inputs o
  have recFn := fun Γ Φ => helper_function (Γ := Γ) (Φ := Φ) (Q := QTel o.definition.tel) inputs o
  have noFn := fun Γ Φ => option_none (Γ := Γ) (Φ := Φ) (Q := QTel o.definition.tel) inputs o
  have someFn := fun Γ Φ v => option_some (Γ := Γ) (Φ := Φ) (Q := QTel o.definition.tel) (v := v) inputs o
- have alts := option_alternatives (option_declarations inputs.constructors)
+ have alts := option_alternatives inputs.options
  cases o
  case fold =>
   refine ⟨by list_simp,by list_simp,?_,?_⟩
@@ -330,7 +331,7 @@ theorem helper_typed {P B} (inputs : Inputs P B) (o : Op) : o.definition.WellTyp
               · list_simp
             · list_simp
           · apply HasTypeArmsQ.nil; constructor <;> list_simp
-      · exact option_exhaustive (option_declarations inputs.constructors) (.tvar 0)
+      · exact option_exhaustive inputs.options (.tvar 0)
     · list_simp
  case forEach =>
   refine ⟨by list_simp,by list_simp,?_,?_⟩
@@ -358,7 +359,7 @@ theorem helper_typed {P B} (inputs : Inputs P B) (o : Op) : o.definition.WellTyp
               · list_simp
             · list_simp
           · apply HasTypeArmsQ.nil; constructor <;> list_simp
-      · exact option_exhaustive (option_declarations inputs.constructors) (.tvar 0)
+      · exact option_exhaustive inputs.options (.tvar 0)
     · list_simp
  case any =>
   refine ⟨by list_simp,by list_simp,?_,?_⟩
@@ -391,7 +392,7 @@ theorem helper_typed {P B} (inputs : Inputs P B) (o : Op) : o.definition.WellTyp
                 · list_simp
             · list_simp
           · apply HasTypeArmsQ.nil; constructor <;> list_simp
-      · exact option_exhaustive (option_declarations inputs.constructors) (.tvar 0)
+      · exact option_exhaustive inputs.options (.tvar 0)
     · list_simp
  case all =>
   refine ⟨by list_simp,by list_simp,?_,?_⟩
@@ -424,7 +425,7 @@ theorem helper_typed {P B} (inputs : Inputs P B) (o : Op) : o.definition.WellTyp
                 exact .C_Return (.V_Const trivial)
             · list_simp
           · apply HasTypeArmsQ.nil; constructor <;> list_simp
-      · exact option_exhaustive (option_declarations inputs.constructors) (.tvar 0)
+      · exact option_exhaustive inputs.options (.tvar 0)
     · list_simp
  case find =>
   refine ⟨by list_simp,by list_simp,?_,?_⟩
@@ -457,13 +458,13 @@ theorem helper_typed {P B} (inputs : Inputs P B) (o : Op) : o.definition.WellTyp
                 · list_simp
             · list_simp
           · apply HasTypeArmsQ.nil; constructor <;> list_simp
-      · exact option_exhaustive (option_declarations inputs.constructors) (.tvar 0)
+      · exact option_exhaustive inputs.options (.tvar 0)
     · list_simp
 
 /-- 公開五本は元のhelperを添字0で呼び、初期accを保持する。 -/
 theorem public_typed {P B} (inputs : Inputs P B) (o : Op) : o.publicDefinition.WellTyped P B := by
- have ar : ∃ n, P.DataArity "Option" n ∧ 1=n := ⟨1,(option_declarations inputs.constructors).arity,rfl⟩
- have ak := TyCon.arity_data (option_declarations inputs.constructors).arity
+ have ar : ∃ n, P.DataArity "Option" n ∧ 1=n := ⟨1,inputs.options.arity,rfl⟩
+ have ak := TyCon.arity_data inputs.options.arity
  have fn := fun Γ Φ => helper_function (Γ := Γ) (Φ := Φ) (Q := QTel o.publicDefinition.tel) inputs o
  cases o
  case fold =>
@@ -498,7 +499,7 @@ theorem public_typed {P B} (inputs : Inputs P B) (o : Op) : o.publicDefinition.W
     exact .cons (by list_var) (.cons (by list_var) (.cons (.V_Const trivial) .nil))
 
 theorem model_inputs : Inputs program builtins :=
- ⟨rfl,rfl,rfl,helper_lookup,fun _ _ => rfl⟩
+ ⟨option_declarations rfl,rfl,rfl,helper_lookup,fun _ _ => rfl⟩
 
 theorem declarations_typed (o : Op) :
  program.defs o.name=some o.publicDefinition ∧ program.defs o.helperName=some o.definition ∧

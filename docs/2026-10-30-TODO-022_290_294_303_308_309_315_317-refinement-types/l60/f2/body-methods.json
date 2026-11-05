@@ -1,0 +1,1067 @@
+{
+  "summary": {
+    "bodies": 130,
+    "by_kind": {
+      "lookupなどの副条件付き": 51,
+      "固定のP/B": 77,
+      "任意のP/B": 2
+    },
+    "by_method": {
+      "写し": 30,
+      "副条件の供給": 10,
+      "一般化": 87,
+      "直接": 3
+    },
+    "by_kind_and_method": {
+      "lookupなどの副条件付き／一般化": 24,
+      "lookupなどの副条件付き／写し": 17,
+      "lookupなどの副条件付き／副条件の供給": 10,
+      "任意のP/B／直接": 2,
+      "固定のP/B／一般化": 63,
+      "固定のP/B／写し": 13,
+      "固定のP/B／直接": 1
+    }
+  },
+  "rows": [
+    {
+      "body": "b001",
+      "name": "List.map",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardActualListBodies.higher_typed",
+      "composed_proof": "(list_bodies_typed externals false).2.1",
+      "method": "写し"
+    },
+    {
+      "body": "b002",
+      "name": "List.filter",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardActualListBodies.higher_typed",
+      "composed_proof": "(list_bodies_typed externals true).2.1",
+      "method": "写し"
+    },
+    {
+      "body": "b003",
+      "name": "List.fold",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardOrdinaryListBodies.public_typed",
+      "composed_proof": "(list_helpers_typed externals .fold).2",
+      "method": "副条件の供給"
+    },
+    {
+      "body": "b004",
+      "name": "List.forEach",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardOrdinaryListBodies.public_typed",
+      "composed_proof": "(list_helpers_typed externals .forEach).2",
+      "method": "副条件の供給"
+    },
+    {
+      "body": "b005",
+      "name": "List.any",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardOrdinaryListBodies.public_typed",
+      "composed_proof": "(list_helpers_typed externals .any).2",
+      "method": "副条件の供給"
+    },
+    {
+      "body": "b006",
+      "name": "List.all",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardOrdinaryListBodies.public_typed",
+      "composed_proof": "(list_helpers_typed externals .all).2",
+      "method": "副条件の供給"
+    },
+    {
+      "body": "b007",
+      "name": "List.find",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardOrdinaryListBodies.public_typed",
+      "composed_proof": "(list_helpers_typed externals .find).2",
+      "method": "副条件の供給"
+    },
+    {
+      "body": "b008",
+      "name": "Map.map",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardBodies.collectionHigher_body_typed",
+      "composed_proof": "ordinary_collection_typed externals true false",
+      "method": "写し"
+    },
+    {
+      "body": "b009",
+      "name": "Map.filter",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardBodies.collectionHigher_body_typed",
+      "composed_proof": "ordinary_collection_typed externals true true",
+      "method": "写し"
+    },
+    {
+      "body": "b010",
+      "name": "Map.fold",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.body_typed",
+      "composed_proof": "core_bodies_typed externals .mapFold",
+      "method": "一般化"
+    },
+    {
+      "body": "b011",
+      "name": "Map.forEach",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.body_typed",
+      "composed_proof": "core_bodies_typed externals .mapForEach",
+      "method": "一般化"
+    },
+    {
+      "body": "b012",
+      "name": "Set.map",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardBodies.collectionHigher_body_typed",
+      "composed_proof": "ordinary_collection_typed externals false false",
+      "method": "写し"
+    },
+    {
+      "body": "b013",
+      "name": "Set.filter",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardBodies.collectionHigher_body_typed",
+      "composed_proof": "ordinary_collection_typed externals false true",
+      "method": "写し"
+    },
+    {
+      "body": "b014",
+      "name": "Set.fold",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.body_typed",
+      "composed_proof": "core_bodies_typed externals .setFold",
+      "method": "一般化"
+    },
+    {
+      "body": "b015",
+      "name": "Set.forEach",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.body_typed",
+      "composed_proof": "core_bodies_typed externals .setForEach",
+      "method": "一般化"
+    },
+    {
+      "body": "b016",
+      "name": "Range.checkInteger",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.body_typed",
+      "composed_proof": "core_bodies_typed externals .checkInteger",
+      "method": "一般化"
+    },
+    {
+      "body": "b017",
+      "name": "Range.minimum",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.projection_typed",
+      "composed_proof": "(getters_typed externals .minimum).2",
+      "method": "一般化"
+    },
+    {
+      "body": "b018",
+      "name": "Range.maximum",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.projection_typed",
+      "composed_proof": "(getters_typed externals .maximum).2",
+      "method": "一般化"
+    },
+    {
+      "body": "b019",
+      "name": "Range.value",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.projection_typed",
+      "composed_proof": "(getters_typed externals .integerValue).2",
+      "method": "一般化"
+    },
+    {
+      "body": "b020",
+      "name": "Range.checkLength",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.body_typed",
+      "composed_proof": "core_bodies_typed externals .checkLength",
+      "method": "一般化"
+    },
+    {
+      "body": "b021",
+      "name": "Range.lengthMinimum",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.projection_typed",
+      "composed_proof": "(getters_typed externals .lengthMinimum).2",
+      "method": "一般化"
+    },
+    {
+      "body": "b022",
+      "name": "Range.lengthMaximum",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.projection_typed",
+      "composed_proof": "(getters_typed externals .lengthMaximum).2",
+      "method": "一般化"
+    },
+    {
+      "body": "b023",
+      "name": "Range.checkedLength",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.projection_typed",
+      "composed_proof": "(getters_typed externals .length).2",
+      "method": "一般化"
+    },
+    {
+      "body": "b024",
+      "name": "Range.lengthValues",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.projection_typed",
+      "composed_proof": "(getters_typed externals .lengthValues).2",
+      "method": "一般化"
+    },
+    {
+      "body": "b025",
+      "name": "Range.checkIndex",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.body_typed",
+      "composed_proof": "core_bodies_typed externals .checkIndex",
+      "method": "一般化"
+    },
+    {
+      "body": "b026",
+      "name": "Range.indexValue",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.projection_typed",
+      "composed_proof": "(getters_typed externals .index).2",
+      "method": "一般化"
+    },
+    {
+      "body": "b027",
+      "name": "Range.indexValues",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.projection_typed",
+      "composed_proof": "(getters_typed externals .indexValues).2",
+      "method": "一般化"
+    },
+    {
+      "body": "b028",
+      "name": "Range.get",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.projection_typed",
+      "composed_proof": "(getters_typed externals .element).2",
+      "method": "一般化"
+    },
+    {
+      "body": "b029",
+      "name": "NonEmptyList.fromList",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.body_typed",
+      "composed_proof": "core_bodies_typed externals .nonemptyFromList",
+      "method": "一般化"
+    },
+    {
+      "body": "b030",
+      "name": "NonEmptyList.toList",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.body_typed",
+      "composed_proof": "core_bodies_typed externals .nonemptyToList",
+      "method": "一般化"
+    },
+    {
+      "body": "b031",
+      "name": "NonEmptyList.head",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.projection_typed",
+      "composed_proof": "(getters_typed externals .first).2",
+      "method": "一般化"
+    },
+    {
+      "body": "b032",
+      "name": "NonEmptyList.tail",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.projection_typed",
+      "composed_proof": "(getters_typed externals .rest).2",
+      "method": "一般化"
+    },
+    {
+      "body": "b033",
+      "name": "NonEmptyList.map",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreProgram.body_typed",
+      "composed_proof": "core_bodies_typed externals .nonemptyMap",
+      "method": "一般化"
+    },
+    {
+      "body": "b034",
+      "name": "Integer64.toString",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .Integer64_toString)",
+      "method": "一般化"
+    },
+    {
+      "body": "b035",
+      "name": "Integer64.parse",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .Integer64_parse)",
+      "method": "一般化"
+    },
+    {
+      "body": "b036",
+      "name": "Integer64.toFloat",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .Integer64_toFloat)",
+      "method": "一般化"
+    },
+    {
+      "body": "b037",
+      "name": "Integer64.floorDivide",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .Integer64_floorDivide)",
+      "method": "一般化"
+    },
+    {
+      "body": "b038",
+      "name": "Integer64.floorModulo",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .Integer64_floorModulo)",
+      "method": "一般化"
+    },
+    {
+      "body": "b039",
+      "name": "Integer64.absolute",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .Integer64_absolute)",
+      "method": "一般化"
+    },
+    {
+      "body": "b040",
+      "name": "Integer64.minimum",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .Integer64_minimum)",
+      "method": "一般化"
+    },
+    {
+      "body": "b041",
+      "name": "Integer64.maximum",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .Integer64_maximum)",
+      "method": "一般化"
+    },
+    {
+      "body": "b042",
+      "name": "Integer64.bitwiseAnd",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .Integer64_bitwiseAnd)",
+      "method": "一般化"
+    },
+    {
+      "body": "b043",
+      "name": "Integer64.bitwiseOr",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .Integer64_bitwiseOr)",
+      "method": "一般化"
+    },
+    {
+      "body": "b044",
+      "name": "Integer64.bitwiseExclusiveOr",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .Integer64_bitwiseExclusiveOr)",
+      "method": "一般化"
+    },
+    {
+      "body": "b045",
+      "name": "Integer64.bitwiseNot",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .Integer64_bitwiseNot)",
+      "method": "一般化"
+    },
+    {
+      "body": "b046",
+      "name": "Integer64.shiftLeft",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .Integer64_shiftLeft)",
+      "method": "一般化"
+    },
+    {
+      "body": "b047",
+      "name": "Integer64.shiftRight",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .Integer64_shiftRight)",
+      "method": "一般化"
+    },
+    {
+      "body": "b048",
+      "name": "Integer64.shiftRightUnsigned",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .Integer64_shiftRightUnsigned)",
+      "method": "一般化"
+    },
+    {
+      "body": "b049",
+      "name": "UnsignedInteger.fromInteger",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .UnsignedInteger_fromInteger)",
+      "method": "一般化"
+    },
+    {
+      "body": "b050",
+      "name": "UnsignedInteger.toInteger",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .UnsignedInteger_toInteger)",
+      "method": "一般化"
+    },
+    {
+      "body": "b051",
+      "name": "UnsignedInteger.parse",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .UnsignedInteger_parse)",
+      "method": "一般化"
+    },
+    {
+      "body": "b052",
+      "name": "UnsignedInteger.toString",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .UnsignedInteger_toString)",
+      "method": "一般化"
+    },
+    {
+      "body": "b053",
+      "name": "UnsignedInteger.toFloat",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .UnsignedInteger_toFloat)",
+      "method": "一般化"
+    },
+    {
+      "body": "b054",
+      "name": "UnsignedInteger.toDecimal",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .UnsignedInteger_toDecimal)",
+      "method": "一般化"
+    },
+    {
+      "body": "b055",
+      "name": "UnsignedInteger.fromDecimal",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .UnsignedInteger_fromDecimal)",
+      "method": "一般化"
+    },
+    {
+      "body": "b056",
+      "name": "UnsignedInteger.absolute",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .UnsignedInteger_absolute)",
+      "method": "一般化"
+    },
+    {
+      "body": "b057",
+      "name": "UnsignedInteger.minimum",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .UnsignedInteger_minimum)",
+      "method": "一般化"
+    },
+    {
+      "body": "b058",
+      "name": "UnsignedInteger.maximum",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .UnsignedInteger_maximum)",
+      "method": "一般化"
+    },
+    {
+      "body": "b059",
+      "name": "UnsignedInteger.floorDivide",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .UnsignedInteger_floorDivide)",
+      "method": "一般化"
+    },
+    {
+      "body": "b060",
+      "name": "UnsignedInteger.floorModulo",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .UnsignedInteger_floorModulo)",
+      "method": "一般化"
+    },
+    {
+      "body": "b061",
+      "name": "UnsignedInteger.bitwiseAnd",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .UnsignedInteger_bitwiseAnd)",
+      "method": "一般化"
+    },
+    {
+      "body": "b062",
+      "name": "UnsignedInteger.bitwiseOr",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .UnsignedInteger_bitwiseOr)",
+      "method": "一般化"
+    },
+    {
+      "body": "b063",
+      "name": "UnsignedInteger.bitwiseExclusiveOr",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .UnsignedInteger_bitwiseExclusiveOr)",
+      "method": "一般化"
+    },
+    {
+      "body": "b064",
+      "name": "UnsignedInteger.bitwiseNot",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .UnsignedInteger_bitwiseNot)",
+      "method": "一般化"
+    },
+    {
+      "body": "b065",
+      "name": "UnsignedInteger.shiftLeft",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .UnsignedInteger_shiftLeft)",
+      "method": "一般化"
+    },
+    {
+      "body": "b066",
+      "name": "UnsignedInteger.shiftRight",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .UnsignedInteger_shiftRight)",
+      "method": "一般化"
+    },
+    {
+      "body": "b067",
+      "name": "UnsignedInteger8.fromInteger",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .UnsignedInteger8_fromInteger)",
+      "method": "一般化"
+    },
+    {
+      "body": "b068",
+      "name": "UnsignedInteger8.toInteger",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .UnsignedInteger8_toInteger)",
+      "method": "一般化"
+    },
+    {
+      "body": "b069",
+      "name": "UnsignedInteger8.toString",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .UnsignedInteger8_toString)",
+      "method": "一般化"
+    },
+    {
+      "body": "b070",
+      "name": "UnsignedInteger8.bitwiseAnd",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .UnsignedInteger8_bitwiseAnd)",
+      "method": "一般化"
+    },
+    {
+      "body": "b071",
+      "name": "UnsignedInteger8.bitwiseOr",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .UnsignedInteger8_bitwiseOr)",
+      "method": "一般化"
+    },
+    {
+      "body": "b072",
+      "name": "UnsignedInteger8.bitwiseExclusiveOr",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .UnsignedInteger8_bitwiseExclusiveOr)",
+      "method": "一般化"
+    },
+    {
+      "body": "b073",
+      "name": "UnsignedInteger8.bitwiseNot",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .UnsignedInteger8_bitwiseNot)",
+      "method": "一般化"
+    },
+    {
+      "body": "b074",
+      "name": "UnsignedInteger8.shiftLeft",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .UnsignedInteger8_shiftLeft)",
+      "method": "一般化"
+    },
+    {
+      "body": "b075",
+      "name": "UnsignedInteger8.shiftRight",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .UnsignedInteger8_shiftRight)",
+      "method": "一般化"
+    },
+    {
+      "body": "b076",
+      "name": "Float64.toString",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .Float64_toString)",
+      "method": "一般化"
+    },
+    {
+      "body": "b077",
+      "name": "Float64.parse",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .Float64_parse)",
+      "method": "一般化"
+    },
+    {
+      "body": "b078",
+      "name": "Float64.truncate",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .Float64_truncate)",
+      "method": "一般化"
+    },
+    {
+      "body": "b079",
+      "name": "Float64.isNaN",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .Float64_isNaN)",
+      "method": "一般化"
+    },
+    {
+      "body": "b080",
+      "name": "Float64.absolute",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .Float64_absolute)",
+      "method": "一般化"
+    },
+    {
+      "body": "b081",
+      "name": "Float64.floor",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .Float64_floor)",
+      "method": "一般化"
+    },
+    {
+      "body": "b082",
+      "name": "Float64.ceiling",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .Float64_ceiling)",
+      "method": "一般化"
+    },
+    {
+      "body": "b083",
+      "name": "Float64.round",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .Float64_round)",
+      "method": "一般化"
+    },
+    {
+      "body": "b084",
+      "name": "Float64.squareRoot",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardAliasBodies.body_typed",
+      "composed_proof": "of_row rfl (aliases_typed externals .Float64_squareRoot)",
+      "method": "一般化"
+    },
+    {
+      "body": "b085",
+      "name": "Internal.safeHead",
+      "kind": "任意のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardSafe.head_row_typed",
+      "composed_proof": "of_row rfl (StandardSafe.head_row_typed _ _)",
+      "method": "直接"
+    },
+    {
+      "body": "b086",
+      "name": "Internal.safeGet",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardSafe.get_row_typed",
+      "composed_proof": "of_row rfl StandardSafe.Composed.get_row_typed",
+      "method": "写し"
+    },
+    {
+      "body": "b087",
+      "name": "Internal.CheckedIndex.get",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardSafe.checked_row_typed",
+      "composed_proof": "of_row rfl StandardSafe.Composed.checked_row_typed",
+      "method": "写し"
+    },
+    {
+      "body": "b088",
+      "name": "Internal.sameLengthGet",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardSafe.same_row_typed",
+      "composed_proof": "of_row rfl StandardSafe.Composed.same_row_typed",
+      "method": "写し"
+    },
+    {
+      "body": "b089",
+      "name": "Internal.NonEmptyList.fromList",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardSafe.fromList_row_typed",
+      "composed_proof": "of_row rfl StandardSafe.Composed.fromList_row_typed",
+      "method": "写し"
+    },
+    {
+      "body": "b090",
+      "name": "Internal.NonEmptyList.toList",
+      "kind": "任意のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardSafe.toList_row_typed",
+      "composed_proof": "of_row rfl (StandardSafe.toList_row_typed _ _)",
+      "method": "直接"
+    },
+    {
+      "body": "b091",
+      "name": "Internal.NonEmptyList.head",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardSafe.nonempty_head_row_typed",
+      "composed_proof": "of_row rfl (StandardSafe.head_row_typed _ _)",
+      "method": "直接"
+    },
+    {
+      "body": "b092",
+      "name": "Range.minimum",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardSafe.precise_row_typed",
+      "composed_proof": "of_row rfl (StandardSafe.Composed.precise_row_typed .minimum)",
+      "method": "写し"
+    },
+    {
+      "body": "b093",
+      "name": "Range.maximum",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardSafe.precise_row_typed",
+      "composed_proof": "of_row rfl (StandardSafe.Composed.precise_row_typed .maximum)",
+      "method": "写し"
+    },
+    {
+      "body": "b094",
+      "name": "Range.value",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardSafe.precise_row_typed",
+      "composed_proof": "of_row rfl (StandardSafe.Composed.precise_row_typed .value)",
+      "method": "写し"
+    },
+    {
+      "body": "b095",
+      "name": "Range.lengthMinimum",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardSafe.precise_row_typed",
+      "composed_proof": "of_row rfl (StandardSafe.Composed.precise_row_typed .lengthMinimum)",
+      "method": "写し"
+    },
+    {
+      "body": "b096",
+      "name": "Range.lengthMaximum",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardSafe.precise_row_typed",
+      "composed_proof": "of_row rfl (StandardSafe.Composed.precise_row_typed .lengthMaximum)",
+      "method": "写し"
+    },
+    {
+      "body": "b097",
+      "name": "Range.checkedLength",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardSafe.precise_row_typed",
+      "composed_proof": "of_row rfl (StandardSafe.Composed.precise_row_typed .checkedLength)",
+      "method": "写し"
+    },
+    {
+      "body": "b098",
+      "name": "Range.lengthValues",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardSafe.precise_row_typed",
+      "composed_proof": "of_row rfl (StandardSafe.Composed.precise_row_typed .lengthValues)",
+      "method": "写し"
+    },
+    {
+      "body": "b099",
+      "name": "Range.indexValue",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardSafe.precise_row_typed",
+      "composed_proof": "of_row rfl (StandardSafe.Composed.precise_row_typed .indexValue)",
+      "method": "写し"
+    },
+    {
+      "body": "b100",
+      "name": "Range.indexValues",
+      "kind": "固定のP/B",
+      "original_proof": "Benitoite.Release.Refinement.StandardSafe.precise_row_typed",
+      "composed_proof": "of_row rfl (StandardSafe.Composed.precise_row_typed .indexValues)",
+      "method": "写し"
+    },
+    {
+      "body": "b101",
+      "name": "List.mapFrom",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardHeadTail.from_typed",
+      "composed_proof": "(list_bodies_typed externals false).2.2.1",
+      "method": "写し"
+    },
+    {
+      "body": "b102",
+      "name": "List.filterFrom",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardHeadTail.from_typed",
+      "composed_proof": "(list_bodies_typed externals true).2.2.1",
+      "method": "写し"
+    },
+    {
+      "body": "b103",
+      "name": "List.map",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardHeadTail.public_typed",
+      "composed_proof": "(list_bodies_typed externals false).2.2.2",
+      "method": "写し"
+    },
+    {
+      "body": "b104",
+      "name": "List.filter",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardHeadTail.public_typed",
+      "composed_proof": "(list_bodies_typed externals true).2.2.2",
+      "method": "写し"
+    },
+    {
+      "body": "b105",
+      "name": "NonEmptyList.map",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardHeadTail.nonempty_public_typed",
+      "composed_proof": "nonempty_map_typed externals",
+      "method": "写し"
+    },
+    {
+      "body": "b106",
+      "name": "Pair.first",
+      "kind": "固定のP/B",
+      "original_proof": "_private.Benitoite.Release.Refinement.StandardCollectionRefinedBodies.0.Benitoite.Release.Refinement.StandardCollectionRefinedBodies.pair_definition_typed",
+      "composed_proof": "(pair_body externals false).symm ▸ pairs_typed externals false",
+      "method": "一般化"
+    },
+    {
+      "body": "b107",
+      "name": "Pair.second",
+      "kind": "固定のP/B",
+      "original_proof": "_private.Benitoite.Release.Refinement.StandardCollectionRefinedBodies.0.Benitoite.Release.Refinement.StandardCollectionRefinedBodies.pair_definition_typed",
+      "composed_proof": "(pair_body externals true).symm ▸ pairs_typed externals true",
+      "method": "一般化"
+    },
+    {
+      "body": "b108",
+      "name": "Map.map",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "_private.Benitoite.Release.Refinement.StandardCollectionRefinedBodies.0.Benitoite.Release.Refinement.StandardCollectionRefinedBodies.higher_typed",
+      "composed_proof": "refined_collection_typed externals true false",
+      "method": "写し"
+    },
+    {
+      "body": "b109",
+      "name": "Map.filter",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "_private.Benitoite.Release.Refinement.StandardCollectionRefinedBodies.0.Benitoite.Release.Refinement.StandardCollectionRefinedBodies.higher_typed",
+      "composed_proof": "refined_collection_typed externals true true",
+      "method": "写し"
+    },
+    {
+      "body": "b110",
+      "name": "Set.map",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "_private.Benitoite.Release.Refinement.StandardCollectionRefinedBodies.0.Benitoite.Release.Refinement.StandardCollectionRefinedBodies.higher_typed",
+      "composed_proof": "refined_collection_typed externals false false",
+      "method": "写し"
+    },
+    {
+      "body": "b111",
+      "name": "Set.filter",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "_private.Benitoite.Release.Refinement.StandardCollectionRefinedBodies.0.Benitoite.Release.Refinement.StandardCollectionRefinedBodies.higher_typed",
+      "composed_proof": "refined_collection_typed externals false true",
+      "method": "写し"
+    },
+    {
+      "body": "b112",
+      "name": "List.foldFrom",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardOrdinaryListBodies.helper_typed",
+      "composed_proof": "(list_helpers_typed externals .fold).1",
+      "method": "副条件の供給"
+    },
+    {
+      "body": "b113",
+      "name": "List.forEachFrom",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardOrdinaryListBodies.helper_typed",
+      "composed_proof": "(list_helpers_typed externals .forEach).1",
+      "method": "副条件の供給"
+    },
+    {
+      "body": "b114",
+      "name": "List.anyFrom",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardOrdinaryListBodies.helper_typed",
+      "composed_proof": "(list_helpers_typed externals .any).1",
+      "method": "副条件の供給"
+    },
+    {
+      "body": "b115",
+      "name": "List.allFrom",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardOrdinaryListBodies.helper_typed",
+      "composed_proof": "(list_helpers_typed externals .all).1",
+      "method": "副条件の供給"
+    },
+    {
+      "body": "b116",
+      "name": "List.findFrom",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardOrdinaryListBodies.helper_typed",
+      "composed_proof": "(list_helpers_typed externals .find).1",
+      "method": "副条件の供給"
+    },
+    {
+      "body": "b117",
+      "name": "Benitoite.Range.CheckedInteger.minimum",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.getter_typed",
+      "composed_proof": "(getters_typed externals .minimum).1",
+      "method": "一般化"
+    },
+    {
+      "body": "b118",
+      "name": "Benitoite.Range.CheckedInteger.maximum",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.getter_typed",
+      "composed_proof": "(getters_typed externals .maximum).1",
+      "method": "一般化"
+    },
+    {
+      "body": "b119",
+      "name": "Benitoite.Range.CheckedInteger.value",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.getter_typed",
+      "composed_proof": "(getters_typed externals .integerValue).1",
+      "method": "一般化"
+    },
+    {
+      "body": "b120",
+      "name": "Benitoite.Range.CheckedLength.minimum",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.getter_typed",
+      "composed_proof": "(getters_typed externals .lengthMinimum).1",
+      "method": "一般化"
+    },
+    {
+      "body": "b121",
+      "name": "Benitoite.Range.CheckedLength.maximum",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.getter_typed",
+      "composed_proof": "(getters_typed externals .lengthMaximum).1",
+      "method": "一般化"
+    },
+    {
+      "body": "b122",
+      "name": "Benitoite.Range.CheckedLength.length",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.getter_typed",
+      "composed_proof": "(getters_typed externals .length).1",
+      "method": "一般化"
+    },
+    {
+      "body": "b123",
+      "name": "Benitoite.Range.CheckedLength.values",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.getter_typed",
+      "composed_proof": "(getters_typed externals .lengthValues).1",
+      "method": "一般化"
+    },
+    {
+      "body": "b124",
+      "name": "Benitoite.Range.CheckedIndex.values",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.getter_typed",
+      "composed_proof": "(getters_typed externals .indexValues).1",
+      "method": "一般化"
+    },
+    {
+      "body": "b125",
+      "name": "Benitoite.Range.CheckedIndex.index",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.getter_typed",
+      "composed_proof": "(getters_typed externals .index).1",
+      "method": "一般化"
+    },
+    {
+      "body": "b126",
+      "name": "Benitoite.Range.CheckedIndex.element",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.getter_typed",
+      "composed_proof": "(getters_typed externals .element).1",
+      "method": "一般化"
+    },
+    {
+      "body": "b127",
+      "name": "Benitoite.NonEmptyList.NonEmptyList.first",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.getter_typed",
+      "composed_proof": "(getters_typed externals .first).1",
+      "method": "一般化"
+    },
+    {
+      "body": "b128",
+      "name": "Benitoite.NonEmptyList.NonEmptyList.rest",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardOrdinaryCoreBodies.getter_typed",
+      "composed_proof": "(getters_typed externals .rest).1",
+      "method": "一般化"
+    },
+    {
+      "body": "b129",
+      "name": "List.mapFrom",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardActualListBodies.from_typed",
+      "composed_proof": "(list_bodies_typed externals false).1",
+      "method": "写し"
+    },
+    {
+      "body": "b130",
+      "name": "List.filterFrom",
+      "kind": "lookupなどの副条件付き",
+      "original_proof": "Benitoite.Release.Refinement.StandardActualListBodies.from_typed",
+      "composed_proof": "(list_bodies_typed externals true).1",
+      "method": "写し"
+    }
+  ]
+}

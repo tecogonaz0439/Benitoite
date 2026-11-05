@@ -691,10 +691,13 @@ def roundingMode : StandardKeyTyping.DataDecl :=
   ⟨"RoundingMode",0,[("RoundingMode.HalfToEven",[]),("RoundingMode.HalfAwayFromZero",[]),
     ("RoundingMode.TowardZero",[]),("RoundingMode.TowardNegativeInfinity",[]),
     ("RoundingMode.TowardPositiveInfinity",[])]⟩
+/-- バイト列の整数の読み書きの二つのバイト順。Bytes.readUnsignedなどの引数の型が読む。 -/
+def byteOrder : StandardKeyTyping.DataDecl :=
+  ⟨"ByteOrder",0,[("ByteOrder.BigEndian",[]),("ByteOrder.LittleEndian",[])]⟩
 def declarations : List StandardKeyTyping.DataDecl :=
   StandardOrdinaryCoreBodies.declarations ++ ScopeDeclarations.http.filter
     (fun d => !(StandardOrdinaryCoreBodies.declarations.any (fun old => old.name == d.name))) ++
-    [roundingMode]
+    [byteOrder] ++ [roundingMode]
 def constructors : List (String × ConDecl) := declarations.flatMap StandardKeyTyping.DataDecl.entries
 
 def program (externals : List (ExternalKey × ExternalDecl)) : Program :=
@@ -739,7 +742,7 @@ theorem option_declarations (externals : List (ExternalKey × ExternalDecl)) :
       obtain ⟨before,after,eq,_⟩ := List.lookup_eq_some_iff.mp lookup
       rw [eq]
       exact List.mem_append_right _ List.mem_cons_self
-    simp [constructors,declarations,roundingMode,StandardOrdinaryCoreBodies.declarations,
+    simp [constructors,declarations,byteOrder,roundingMode,StandardOrdinaryCoreBodies.declarations,
       ScopeDeclarations.http,ScopeDeclarations.file,ScopeDeclarations.result,ScopeDeclarations.scopeError,
       ScopeDeclarations.pair,ScopeDeclarations.clientRequest,ScopeDeclarations.requestCheckError,
       StandardKeyTyping.DataDecl.entries,StandardOrdinaryCoreBodies.Record.owner,StandardSafe.names] at mem
