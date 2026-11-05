@@ -69,7 +69,7 @@
 
 【決定】`Benitoite.Release.Refinement` は、篩型、依存する引数列、有限の論理、捕捉環境と実行時の閉包、固定した PathEnv、外部の宣言と受信検査を持つ。定義・規則の写しは 01-12 の「篩を含むコア計算の形式化」から「篩を含む状態の型付け」までである。これらは既定の `Benitoite` の import に含まれ、旧 Release の定義・主定理・モデルと並置している。
 
-`BuiltinTypingTransport` は同じPの下で、型付けが読む七つの射影（`Builtins.TypingFieldsEq` の七欄）であるsig・sat・admitsR・isResource・valKind・valContent・effectsの等号から十四判断・七十六枝の型付けを移す。`ExternalSurfaceLeaves` は外部宣言の適格な入力を参照・直接呼出しへ渡し、応答関係の差替え後も同じ添字で型付くことを示す。プログラムPそのものの拡張の単調性はこの補題の結論に含めない。
+`BuiltinTypingTransport` は同じPの下で、型付けが読む七つの射影（`Builtins.TypingFieldsEq` の七欄）であるsig・sat・admitsR・isResource・valKind・valContent・effectsの等号から十四判断・七十六枝の型付けを移す。`ExternalSurfaceLeaves` は外部宣言の適格な入力を参照・直接呼出しへ渡し、応答関係の差替え後も同じ添字で型付くことを示す。表層の五つの接点（型IDの参照、外部名の参照、直接の飽和呼出し、名前付き引数の呼出し、穴を持つ部分適用）について、整形式の有限表のlookupから型付けと、空の型引数・宣言の依存列の正規形・Stateの効果・引数の数・一般の並べ替えによる全位置の充足を返す。ソース順の評価と束縛、生成ラムダの型付け、全表層の検査器への組込みはこれらの葉の結論に含めない。プログラムPそのものの拡張の単調性はこの補題の結論に含めない。
 
 `ExternalModelResponse` は、全宣言・全型付き入力についてcarrierと非exitを満たし、観測対象を報告しない抽象の外部応答関係を定義する。任意errの所属と全入力での存在を証明する。篩の真を応答前の信頼へ加えず、外部応答と解放以外の七射影を保つ。`ResourceReleaseModel` は、表が資源へ分類するopaque定数だけに解放の成功・失敗を許す。型付き値のcanonicalと実表の分類から同じ値の解放応答を得る。これらは抽象関係の定義と局所の接続であり、ゲストの実装、OS資源の開閉状態、全標準表の充足の証明ではない。
 
@@ -203,6 +203,8 @@
 一般の葉は Step の全76構成子に対応する。内訳は builder 3、呼出し4、At・PathBases・external 8、分岐・照合10、δ・IO 5、Reference 4、Lazy 6、use・解放9、handler・操作17、let・戻り先・残る pop 10である。この対応は各葉の配分であり、全保存・進行・step_sound の定理ではない。match_body_zero・handler_return_const・drop_used_const・resume_const・drop_rel_const・esc_drop_rel_const は限定された代表の入口として残し、一般の葉には数えない。
 
 `StepLeafSelection` の selectOracle と selectRelease は、応答が存在する入力でその応答を選ぶ関数である。selectFresh は空き場所が存在するストアでその場所を選ぶ。任意の入力で応答や空き場所の存在を結論しない。型付きの pure の入力は delta_typed の存在と exit の除外を使う。IO/exit の入力は io_exists で得た応答と io_kind による値・エラー・終了の区別を使い、NoHandler の下で実行関数の同じ選択と Step を結ぶ。解放は release_exists の全資源値の量化を保持し、Ground/Adequate を存在の新しい前提にしない。空き場所には StoreOk の有限性を使う。元状態からの selected_primitive_step は、捕捉と導出から BuiltinArgs を供給し、pure/IO/exit の全てで selectOracle を使う。builder・Lazy・Reference.new・利用者の操作・fail・節のある IO/exit/PathBases の六枝は、選んだ同じ空き場所について step の式と Step を構成する。FreshStepInputs と step_fresh_selected は後四枝の共通の読者である。step_release_selected は ret/escape の解放枠の step と同じ応答の Step を構成する。全 step_sound と逆方向の完全性はこれらの入口の結論に含めない。
+
+`ExternalLeafSelection` は、型付きの外部呼出しの開始から、同じストア型の `ExternalArgs` と、応答関係に属する任意の応答の受信がnone・exitにならず観測が空であることを返す。受信の結果に従う一歩と、同じσ・Eb・継続・ストアの行先の型付けも返す。外部の三条件の存在による応答と、実行関数が `Builtins.selectExternal` で選ぶ対について、計算した一歩と実行規則の一歩を同じ行先で結ぶ。外部参照の適用は任意の選択で同じ外部呼出しへ進む。具体の有限表で、型付きの開始から三つの外部の遷移の全てへの到達と、表層の五つの接点の型付き正例と、未知の型ID・外部名、非空の型引数、偽造の三境界の拒否を示す。全 progress・preservation・step_sound と逆方向の完全性はこれらの結論に含めない。
 
 `FunctionViewGeneral` は依存列の支持を入力にし、有限な関数 view が元の依存列と同じ名前・個数・名前の一意性を持ち、foldFnWith が同じ関数型を返すことを証明する。支持なしの一般の一致は置かない。捕捉による観測の置換は、同じ CaptureOk の Transport と元の HasSort から termBind? の成功を得る。この成功した値が termBind の値であり、getD の既定値は使われない。captured_observation は同じ通常値の toTerm? と閉じた型付けを結ぶ。
 
@@ -1010,7 +1012,7 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 | ValueInversion | 「篩の正規形と制約の読み方」の変数の元のlookup型と芯の到達関係、Listの要素の導出・注釈・部分型と到達芯の等号。fnRef・prim・op・lam・dependentLam・raiseの逆転は元の直接前提と到達型のfnCore・TelClosureを返し、inv_lam_wfは元のlambdaの形成を取り出す。dict・superの逆転は元の実装・辞書・宣言と辞書の芯の等号を保持する。最外の篩の事実は同じ値のfactsで読む |
 | CollectionInversion | 同節のMap・Set・Bytesの芯の射影と構文の逆転。Mapは元の鍵列・値列、同長・sat・注釈、鍵の正規形の等号と値のLeQを返す。Setは元列・sat・注釈と要素の正規形の等号、Bytesは全要素が255以下であることとBytesの芯の等号を返す |
 | CanonicalValues | 「篩の正規形と制約の読み方」。閉じたΓのscalar・Boolean・List・data・関数八構文・Map・Set・Bytes・Dict・保持値・外部・対象の構文逆転。型付けの導出から形を得て、元の直接前提は各逆転で読む。atErrorはResultShape.DeclaredとerrorTypeの芯を返す専用の逆転。空篩はInhabitsから排除する。外部宣言・名目ID・同じsnapshotと範囲の形成を保持し、外部応答の存在や全σの被覆を結論しない |
-| BuiltinTypingTransport・ExternalSurfaceLeaves・ExternalModelResponse・ResourceReleaseModel | 「篩を含むコア計算の形式化」。同じPでの七射影による十四判断の移送、外部参照・直接呼出しの入力、carrierと非exitと無対象の抽象外部応答とerr存在、分類されたopaque資源値のcanonicalと解放の成功・失敗 |
+| BuiltinTypingTransport・ExternalSurfaceLeaves・ExternalModelResponse・ResourceReleaseModel | 「篩を含むコア計算の形式化」。同じPでの七射影による十四判断の移送、外部参照・直接呼出しの入力と表層の五つの接点の葉、carrierと非exitと無対象の抽象外部応答とerr存在、分類されたopaque資源値のcanonicalと解放の成功・失敗 |
 | BuiltinResponseTransport・ExternalModelTransport | 「篩を含むコア計算の形式化」。同じ七射影によるcarrier・Args・Outcomeと二十五条件の移送、三モデルの同じP/BでのCoreと対象条件、存在を前提とする外部応答の選択 |
 | ExternalModelExamples | 同節。六種類の正常応答と篩拒否、全ストアの型付き外部入力、Listと同名dataの任意深さ、borrow/own/Stateと四場合の受信 |
 | ExternalModels | 同節。三モデルの同じP/Bの二十五条件と外部三条件、正常値の全前提の充足、任意σの適格性、Modelのpure・IOの六条件が署名の不在と空のIO応答関係から前提の否定で成り立つこと |
@@ -1098,7 +1100,7 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 | Observation・ClosedEvaluation・Logic・LogicSound・Context/Capture・CapturedFacts・CaptureRegularity | 「閉じた述語の評価と捕捉」。開いた全結果形成と、元の注釈・包含・場所からの捕捉後の効果形成を含む |
 | PathFacts・PathConditions・MatchPaths・MatchFacts・MatchStateLeaves・MatchStateExamples・Typing・StateTyping | 「条件とパターンからの事実」 |
 | Typing・HandlerContracts・RuntimeSyntax・AtPrepare・AtTyping・BuiltinResponse・ConstraintAssumptions・BuiltinEffects・Semantics・Step・ExternalCheck・ExternalResponse・ExternalConnection | 「保持要求と組み込みの遷移」 |
-| StoreTransport・Typing・StateTyping・ConstraintAssumptions・ReferenceStore・LazyStore・HandlerStore・ReferencePreservation・LazyPreservation・HandlerEffects・HandlerPreservation・HandlerOperation・HandlerGeneral・RuntimeTypeSubst・OperationStateExamples・RuntimeBuilderScope・StoreGeneral・BuilderValueTyping・BuilderStateLeaves・ContinuationGeneral・HandlerStoreExamples・HiddenCaptureBoundary・CaptureReadBoundary・ReadLocalRefs・LocalInvariant・ClosedRename・StateLeaves・ReplyState・ExternalStateLeaves・AtStateInputs・AtStateLeaves・PathBasesLeaves・SourcePreparation・StoreReplyLeaves | 「篩を含む状態の型付け」 |
+| StoreTransport・Typing・StateTyping・ConstraintAssumptions・ReferenceStore・LazyStore・HandlerStore・ReferencePreservation・LazyPreservation・HandlerEffects・HandlerPreservation・HandlerOperation・HandlerGeneral・RuntimeTypeSubst・OperationStateExamples・RuntimeBuilderScope・StoreGeneral・BuilderValueTyping・BuilderStateLeaves・ContinuationGeneral・HandlerStoreExamples・HiddenCaptureBoundary・CaptureReadBoundary・ReadLocalRefs・LocalInvariant・ClosedRename・StateLeaves・ReplyState・ExternalStateLeaves・AtStateInputs・AtStateLeaves・PathBasesLeaves・SourcePreparation・StoreReplyLeaves・ExternalLeafSelection | 「篩を含む状態の型付け」 |
 | PreparationTargets・PathBasesTargets・AtTargets・ScopeLegacyContracts | 「篩を含む状態の型付け」 |
 | ScopeDelta・RequestDelta・ScopeValueDelta・RequestValueDelta・ScopeResponse | 「篩を含む状態の型付け」。固定の解析を使うチェック、保持する絶対パス・同じ要求の射影、同じ値の拡大。AtInput の splitChars の全入力の帰納による文字列の往復と、受理した絶対パスの射影が元の文字列を返すこと。純粋六項目の全 BuiltinArgs と実応答の型・Ground・全有効環境への適格性・非 exit・同じ正常値の facts |
 | ScopedIOResponse・ScopedIOExamples | 同節。七 IO の全応答の型・適格性・存在・非 exit、同じ要求と endpoint、実表の対象一致と全環境の効果許容、非 Top・Top の全前提を供給する具体例 |
