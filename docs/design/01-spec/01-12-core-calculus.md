@@ -3109,6 +3109,12 @@ builders_no_captureとbuilders_block_no_captureは、Aligned Γ ΔからEnvReads
 
 `ExternalModel.external_assumptions` は、拡張した表の型付き入力を元の表へ戻し、元の応答のcarrierを拡張した表へ移して、外部応答の三条件を構成する。`Builtins.selectExternal` は応答の証人があればその対を選び、なければerrと空の観測を返す。`selectExternal_response` の関係所属の結論には、同じ関係の証人の存在を要求する。
 
+`ExternalModel.response_value` は、同じ外部署名の具体化結果と、任意のストアにおける正常値のcarrier・閉性から、生の正常応答の所属を構成する。別の型付き入力が同じ署名・実引数を持つとき、`ExternalArgs.instantiate` により結果型を一致させる。`receive_value` は検査成功から元の結果型・閉性・任意のσでの適格性を返す。`receive_reject` は検査失敗を `ExternalRefinement` へ結び、検査前のcarrierの値構造から任意のσでの適格性を得る。`receive_error_no_exit` は同じerrの受信と、型付き入力の生応答からのexitの排除を示す。
+
+`ExternalModelExamples` は、Unit・整数・List・data・Mapの鍵・外部ハンドルについて、正常受信と篩拒否の非空性を有限宣言と拡張表で示す。Listと同名のdataの深さは帰納で量化する。`receive_pair`・`handle_receive_pair` は恒真・恒偽の定数の篩を用いる証人である。`positive_receive_pair` は、一つの宣言 `positiveProgram` の結果型 `positiveType` に値に依存する篩 `0 < self` を置き、整数1の正常受信と整数0の篩拒否を同じ拡張表で示す。ハンドルはborrowの実引数とownの結果、Stateを持つ。各入力は任意のストアで型付きであり、受信後の正常値は元の結果型で型付き、閉じていて、任意のσで適格である。これはこれらの形の証人であり、全ての外部宣言に正常応答があることを要求しない。
+
+`ExternalModels.conditions` は、任意のPについて、Modelには追加の宣言条件を要求せず、Targetsには `HasFile P`、Httpには `HasHttp P` を用いて、同じ拡張表の二十五条件と外部三条件を返す。`shape_inputs` と `handle_inputs` は、各表で正常値による全前提の充足を示す。`responses` は同じ表の受信へこれらの入力を接続する。外部三条件のうち型・非exitと無対象の条件は型付き入力と応答の証拠を使い、存在の条件は任意のerrで示す。Modelのpure・IO・exit署名を要する条件は `model_no_response_kind` により、`io_kind` の応答の前提は空のIO応答関係により矛盾する。
+
 `FunctionNames.rename` は、元の名前と内部名の交換を合成した単射である。`FunctionNames.definition` は関数参照名だけを写し、元Defの型注釈・引数列・結果型・効果と本体の構成子を保つ。`StandardModel.program externals` は、既存の出典と参照先のhelperの閉包から作る有限の本体表（`StandardModel.Body.all`）と構成子表を持ち、外部宣言を引数に取る。元Defを別に保持し、関数参照名を写したDef（`Body.definition`）との対応・telの保存・任意のlookupと `Body.all`・`Primitive.all` の双方向の対応を示す。`StandardModel.builtins P` の署名と応答は既存の表を参照する。これらのlookupの定理の結論は、元定義と合成表との対応である。同じ名前に異なる元Defを持つ18名（`FunctionNames.collisionNames`）の公開名は合成表のキーに現れない。
 
 `ResourceRelease.response isResource v r` は、ある名前oとpayload iについて、vが `.const (.opaque o i)` であり `isResource o = true` であることを表す。rは成功none又は失敗someであり、どちらも同じ資源値について許す。`ResourceRelease.canonical` は、空の値文脈で `.opaque o Top` に型付く値と `B.valKind o = none` から、同じ名前のopaque定数の形を得る。`typed_response`は、資源名を対象の値型へ分類しない表について、任意の型付き資源値に任意の解放結果を供給する。Targetsの分類は全名前を量化して実表から証明する。外部ハンドルや対象を保持する値はこの関係へ加えない。

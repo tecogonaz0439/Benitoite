@@ -1,0 +1,570 @@
+[
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModel.response_value",
+    "named_readers": [
+      "Benitoite.Release.Refinement.ExternalModelExamples.handle_raw_response",
+      "Benitoite.Release.Refinement.ExternalModelExamples.positive_receive_pair",
+      "Benitoite.Release.Refinement.ExternalModelExamples.raw_response"
+    ],
+    "compiled_example": false,
+    "note": "shape_inputs/handle_inputsをconditionsへ渡す読者は宣言条件の射影を読む。生応答の全前提は既定の適用例とreceive_pair/handle_receive_pairでも照合する"
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModel.receive_value",
+    "named_readers": [
+      "Benitoite.Release.Refinement.ExternalModelExamples.handle_receive_pair",
+      "Benitoite.Release.Refinement.ExternalModelExamples.positive_receive_pair",
+      "Benitoite.Release.Refinement.ExternalModelExamples.receive_pair"
+    ],
+    "compiled_example": false,
+    "note": "shape_inputs/handle_inputsをconditionsへ渡す読者は宣言条件の射影を読む。生応答の全前提は既定の適用例とreceive_pair/handle_receive_pairでも照合する"
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModel.receive_reject",
+    "named_readers": [
+      "Benitoite.Release.Refinement.ExternalModelExamples.handle_receive_pair",
+      "Benitoite.Release.Refinement.ExternalModelExamples.positive_receive_pair",
+      "Benitoite.Release.Refinement.ExternalModelExamples.receive_pair"
+    ],
+    "compiled_example": false,
+    "note": "shape_inputs/handle_inputsをconditionsへ渡す読者は宣言条件の射影を読む。生応答の全前提は既定の適用例とreceive_pair/handle_receive_pairでも照合する"
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModel.receive_error_no_exit",
+    "named_readers": [
+      "Benitoite.Release.Refinement.ExternalModelExamples.handle_receive_pair"
+    ],
+    "compiled_example": false,
+    "note": "shape_inputs/handle_inputsをconditionsへ渡す読者は宣言条件の射影を読む。生応答の全前提は既定の適用例とreceive_pair/handle_receive_pairでも照合する"
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModelExamples.Shape",
+    "named_readers": [
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape._sizeOf_1",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape._sizeOf_inst",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.casesOn",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.ctorElim",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.ctorElimType",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.ctorIdx",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.data",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.data.elim",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.data.inj",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.data.injEq",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.data.noConfusion",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.data.sizeOf_spec",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.integer",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.integer.elim",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.integer.sizeOf_spec",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.list",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.list.elim",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.list.inj",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.list.injEq",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.list.noConfusion",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.list.sizeOf_spec",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.mapKey",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.mapKey.elim",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.mapKey.sizeOf_spec",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.noConfusion",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.noConfusionType",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.raw",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.rec",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.recOn",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.type",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.type.match_1",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.unit",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.unit.elim",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.unit.sizeOf_spec",
+      "Benitoite.Release.Refinement.ExternalModelExamples.arguments",
+      "Benitoite.Release.Refinement.ExternalModelExamples.program",
+      "Benitoite.Release.Refinement.ExternalModelExamples.program.eq_1",
+      "Benitoite.Release.Refinement.ExternalModelExamples.program_externalWF",
+      "Benitoite.Release.Refinement.ExternalModelExamples.program_hasHttp",
+      "Benitoite.Release.Refinement.ExternalModelExamples.raw_response",
+      "Benitoite.Release.Refinement.ExternalModelExamples.receive_pair",
+      "Benitoite.Release.Refinement.ExternalModelExamples.signature",
+      "Benitoite.Release.Refinement.ExternalModelExamples.signature.eq_1",
+      "Benitoite.Release.Refinement.ExternalModels.responses",
+      "Benitoite.Release.Refinement.ExternalModels.shape_inputs",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.Shape.type.match_1.eq_1",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.Shape.type.match_1.eq_2",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.Shape.type.match_1.eq_3",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.Shape.type.match_1.eq_4",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.Shape.type.match_1.eq_5",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.Shape.type.match_1.splitter",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.box_arity",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.box_lookup",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.nested_carrier",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.nested_check",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.nested_properties",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.shape_carrier",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.shape_check",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.shape_ground",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.shape_properties"
+    ],
+    "compiled_example": false,
+    "note": "shape_inputs/handle_inputsをconditionsへ渡す読者は宣言条件の射影を読む。生応答の全前提は既定の適用例とreceive_pair/handle_receive_pairでも照合する"
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModelExamples.filtered",
+    "named_readers": [
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.raw",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.raw.eq_3",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.raw.eq_4",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.type",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.type.eq_1",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.type.eq_2",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.type.eq_3",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.type.eq_4",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.type.eq_5",
+      "Benitoite.Release.Refinement.ExternalModelExamples.filtered.eq_1",
+      "Benitoite.Release.Refinement.ExternalModelExamples.handleType",
+      "Benitoite.Release.Refinement.ExternalModelExamples.handleType.eq_1",
+      "Benitoite.Release.Refinement.ExternalModelExamples.handle_arguments",
+      "Benitoite.Release.Refinement.ExternalModelExamples.handle_raw_response",
+      "Benitoite.Release.Refinement.ExternalModelExamples.raw_response",
+      "Benitoite.Release.Refinement.ExternalModelExamples.receive_pair",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.filtered_properties",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.handle_annotation",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.nested_carrier",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.nested_check",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.nested_ground",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.nested_normal",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.shape_carrier",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.shape_check",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.shape_properties",
+      "_private.Benitoite.Release.Refinement.ExternalModels.0.Benitoite.Release.Refinement.ExternalModels.keys"
+    ],
+    "compiled_example": false,
+    "note": "shape_inputs/handle_inputsをconditionsへ渡す読者は宣言条件の射影を読む。生応答の全前提は既定の適用例とreceive_pair/handle_receive_pairでも照合する"
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModelExamples.nestedType",
+    "named_readers": [
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.type",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.type.eq_3",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.type.eq_4",
+      "Benitoite.Release.Refinement.ExternalModelExamples.nestedType._sunfold",
+      "Benitoite.Release.Refinement.ExternalModelExamples.nestedType.eq_1",
+      "Benitoite.Release.Refinement.ExternalModelExamples.nestedType.eq_2",
+      "Benitoite.Release.Refinement.ExternalModelExamples.nestedType.eq_def",
+      "Benitoite.Release.Refinement.ExternalModelExamples.nestedValue._f",
+      "Benitoite.Release.Refinement.ExternalModelExamples.nestedValue._sunfold",
+      "Benitoite.Release.Refinement.ExternalModelExamples.nestedValue._unsafe_rec",
+      "Benitoite.Release.Refinement.ExternalModelExamples.nestedValue.eq_2",
+      "Benitoite.Release.Refinement.ExternalModelExamples.nestedValue.eq_def",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.nested_carrier",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.nested_check",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.nested_ground",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.nested_normal",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.nested_properties",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.shape_properties"
+    ],
+    "compiled_example": false,
+    "note": "shape_inputs/handle_inputsをconditionsへ渡す読者は宣言条件の射影を読む。生応答の全前提は既定の適用例とreceive_pair/handle_receive_pairでも照合する"
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModelExamples.nestedValue",
+    "named_readers": [
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.raw",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.raw.eq_3",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.raw.eq_4",
+      "Benitoite.Release.Refinement.ExternalModelExamples.nestedValue._sunfold",
+      "Benitoite.Release.Refinement.ExternalModelExamples.nestedValue.eq_1",
+      "Benitoite.Release.Refinement.ExternalModelExamples.nestedValue.eq_2",
+      "Benitoite.Release.Refinement.ExternalModelExamples.nestedValue.eq_def",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.nested_carrier",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.nested_check",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.nested_ground"
+    ],
+    "compiled_example": false,
+    "note": "shape_inputs/handle_inputsをconditionsへ渡す読者は宣言条件の射影を読む。生応答の全前提は既定の適用例とreceive_pair/handle_receive_pairでも照合する"
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModelExamples.Shape.type",
+    "named_readers": [
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.type.eq_1",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.type.eq_2",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.type.eq_3",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.type.eq_4",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.type.eq_5",
+      "Benitoite.Release.Refinement.ExternalModelExamples.arguments",
+      "Benitoite.Release.Refinement.ExternalModelExamples.program_externalWF",
+      "Benitoite.Release.Refinement.ExternalModelExamples.raw_response",
+      "Benitoite.Release.Refinement.ExternalModelExamples.receive_pair",
+      "Benitoite.Release.Refinement.ExternalModelExamples.signature",
+      "Benitoite.Release.Refinement.ExternalModelExamples.signature.eq_1",
+      "Benitoite.Release.Refinement.ExternalModels.responses",
+      "Benitoite.Release.Refinement.ExternalModels.shape_inputs",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.shape_carrier",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.shape_check",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.shape_properties"
+    ],
+    "compiled_example": false,
+    "note": "shape_inputs/handle_inputsをconditionsへ渡す読者は宣言条件の射影を読む。生応答の全前提は既定の適用例とreceive_pair/handle_receive_pairでも照合する"
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModelExamples.Shape.raw",
+    "named_readers": [
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.raw.eq_1",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.raw.eq_2",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.raw.eq_3",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.raw.eq_4",
+      "Benitoite.Release.Refinement.ExternalModelExamples.Shape.raw.eq_5",
+      "Benitoite.Release.Refinement.ExternalModelExamples.raw_response",
+      "Benitoite.Release.Refinement.ExternalModelExamples.receive_pair",
+      "Benitoite.Release.Refinement.ExternalModels.responses",
+      "Benitoite.Release.Refinement.ExternalModels.shape_inputs",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.shape_carrier",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.shape_check",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.shape_ground"
+    ],
+    "compiled_example": false,
+    "note": "shape_inputs/handle_inputsをconditionsへ渡す読者は宣言条件の射影を読む。生応答の全前提は既定の適用例とreceive_pair/handle_receive_pairでも照合する"
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModelExamples.signature",
+    "named_readers": [
+      "Benitoite.Release.Refinement.ExternalModelExamples.arguments",
+      "Benitoite.Release.Refinement.ExternalModelExamples.program",
+      "Benitoite.Release.Refinement.ExternalModelExamples.program.eq_1",
+      "Benitoite.Release.Refinement.ExternalModelExamples.program_externalWF",
+      "Benitoite.Release.Refinement.ExternalModelExamples.raw_response",
+      "Benitoite.Release.Refinement.ExternalModelExamples.receive_pair",
+      "Benitoite.Release.Refinement.ExternalModelExamples.signature.eq_1",
+      "Benitoite.Release.Refinement.ExternalModels.responses",
+      "Benitoite.Release.Refinement.ExternalModels.shape_inputs",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.nested_check"
+    ],
+    "compiled_example": false,
+    "note": "shape_inputs/handle_inputsをconditionsへ渡す読者は宣言条件の射影を読む。生応答の全前提は既定の適用例とreceive_pair/handle_receive_pairでも照合する"
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModelExamples.program",
+    "named_readers": [
+      "Benitoite.Release.Refinement.ExternalModelExamples.arguments",
+      "Benitoite.Release.Refinement.ExternalModelExamples.program.eq_1",
+      "Benitoite.Release.Refinement.ExternalModelExamples.program_externalWF",
+      "Benitoite.Release.Refinement.ExternalModelExamples.program_hasHttp",
+      "Benitoite.Release.Refinement.ExternalModelExamples.raw_response",
+      "Benitoite.Release.Refinement.ExternalModelExamples.receive_pair",
+      "Benitoite.Release.Refinement.ExternalModels.responses",
+      "Benitoite.Release.Refinement.ExternalModels.shape_inputs",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.box_arity",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.box_lookup",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.nested_carrier",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.nested_check",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.nested_properties",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.shape_carrier",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.shape_check",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.shape_properties"
+    ],
+    "compiled_example": false,
+    "note": "shape_inputs/handle_inputsをconditionsへ渡す読者は宣言条件の射影を読む。生応答の全前提は既定の適用例とreceive_pair/handle_receive_pairでも照合する"
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModelExamples.program_externalWF",
+    "named_readers": [
+      "Benitoite.Release.Refinement.ExternalModelExamples.raw_response"
+    ],
+    "compiled_example": false,
+    "note": "shape_inputs/handle_inputsをconditionsへ渡す読者は宣言条件の射影を読む。生応答の全前提は既定の適用例とreceive_pair/handle_receive_pairでも照合する"
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModelExamples.arguments",
+    "named_readers": [
+      "Benitoite.Release.Refinement.ExternalModelExamples.raw_response"
+    ],
+    "compiled_example": false,
+    "note": "shape_inputs/handle_inputsをconditionsへ渡す読者は宣言条件の射影を読む。生応答の全前提は既定の適用例とreceive_pair/handle_receive_pairでも照合する"
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModelExamples.raw_response",
+    "named_readers": [
+      "Benitoite.Release.Refinement.ExternalModelExamples.receive_pair",
+      "Benitoite.Release.Refinement.ExternalModels.shape_inputs"
+    ],
+    "compiled_example": false,
+    "note": "shape_inputs/handle_inputsをconditionsへ渡す読者は宣言条件の射影を読む。生応答の全前提は既定の適用例とreceive_pair/handle_receive_pairでも照合する"
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModelExamples.receive_pair",
+    "named_readers": [
+      "Benitoite.Release.Refinement.ExternalModels.responses"
+    ],
+    "compiled_example": false,
+    "note": "shape_inputs/handle_inputsをconditionsへ渡す読者は宣言条件の射影を読む。生応答の全前提は既定の適用例とreceive_pair/handle_receive_pairでも照合する"
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModelExamples.positiveType",
+    "named_readers": [
+      "Benitoite.Release.Refinement.ExternalModelExamples.positiveSignature",
+      "Benitoite.Release.Refinement.ExternalModelExamples.positiveSignature.eq_1",
+      "Benitoite.Release.Refinement.ExternalModelExamples.positiveType.eq_1",
+      "Benitoite.Release.Refinement.ExternalModelExamples.positive_receive_pair"
+    ],
+    "compiled_example": false,
+    "note": "shape_inputs/handle_inputsをconditionsへ渡す読者は宣言条件の射影を読む。生応答の全前提は既定の適用例とreceive_pair/handle_receive_pairでも照合する"
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModelExamples.positiveSignature",
+    "named_readers": [
+      "Benitoite.Release.Refinement.ExternalModelExamples.positiveProgram",
+      "Benitoite.Release.Refinement.ExternalModelExamples.positiveProgram.eq_1",
+      "Benitoite.Release.Refinement.ExternalModelExamples.positiveSignature.eq_1",
+      "Benitoite.Release.Refinement.ExternalModelExamples.positive_receive_pair"
+    ],
+    "compiled_example": false,
+    "note": "shape_inputs/handle_inputsをconditionsへ渡す読者は宣言条件の射影を読む。生応答の全前提は既定の適用例とreceive_pair/handle_receive_pairでも照合する"
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModelExamples.positiveProgram",
+    "named_readers": [
+      "Benitoite.Release.Refinement.ExternalModelExamples.positiveProgram.eq_1",
+      "Benitoite.Release.Refinement.ExternalModelExamples.positive_receive_pair"
+    ],
+    "compiled_example": false,
+    "note": "shape_inputs/handle_inputsをconditionsへ渡す読者は宣言条件の射影を読む。生応答の全前提は既定の適用例とreceive_pair/handle_receive_pairでも照合する"
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModelExamples.positive_receive_pair",
+    "named_readers": [],
+    "compiled_example": true,
+    "note": "shape_inputs/handle_inputsをconditionsへ渡す読者は宣言条件の射影を読む。生応答の全前提は既定の適用例とreceive_pair/handle_receive_pairでも照合する"
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModelExamples.handleDeclaration",
+    "named_readers": [
+      "Benitoite.Release.Refinement.ExternalModelExamples.handleDeclaration.eq_1",
+      "Benitoite.Release.Refinement.ExternalModelExamples.handleProgram",
+      "Benitoite.Release.Refinement.ExternalModelExamples.handleProgram.eq_1",
+      "Benitoite.Release.Refinement.ExternalModelExamples.handle_arguments",
+      "Benitoite.Release.Refinement.ExternalModelExamples.handle_program_externalWF",
+      "Benitoite.Release.Refinement.ExternalModelExamples.handle_raw_response",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.handle_signature_wf"
+    ],
+    "compiled_example": false,
+    "note": "shape_inputs/handle_inputsをconditionsへ渡す読者は宣言条件の射影を読む。生応答の全前提は既定の適用例とreceive_pair/handle_receive_pairでも照合する"
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModelExamples.handle",
+    "named_readers": [
+      "Benitoite.Release.Refinement.ExternalModelExamples.handle.eq_1",
+      "Benitoite.Release.Refinement.ExternalModelExamples.handle_arguments",
+      "Benitoite.Release.Refinement.ExternalModelExamples.handle_raw_response",
+      "Benitoite.Release.Refinement.ExternalModelExamples.handle_receive_pair",
+      "Benitoite.Release.Refinement.ExternalModels.handle_inputs",
+      "Benitoite.Release.Refinement.ExternalModels.responses"
+    ],
+    "compiled_example": false,
+    "note": "shape_inputs/handle_inputsをconditionsへ渡す読者は宣言条件の射影を読む。生応答の全前提は既定の適用例とreceive_pair/handle_receive_pairでも照合する"
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModelExamples.handleType",
+    "named_readers": [
+      "Benitoite.Release.Refinement.ExternalModelExamples.handleSignature",
+      "Benitoite.Release.Refinement.ExternalModelExamples.handleSignature.eq_1",
+      "Benitoite.Release.Refinement.ExternalModelExamples.handleType.eq_1",
+      "Benitoite.Release.Refinement.ExternalModelExamples.handle_arguments",
+      "Benitoite.Release.Refinement.ExternalModelExamples.handle_raw_response",
+      "Benitoite.Release.Refinement.ExternalModelExamples.handle_receive_pair",
+      "Benitoite.Release.Refinement.ExternalModels.handle_inputs",
+      "Benitoite.Release.Refinement.ExternalModels.responses",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.handle_annotation",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.handle_signature_wf"
+    ],
+    "compiled_example": false,
+    "note": "shape_inputs/handle_inputsをconditionsへ渡す読者は宣言条件の射影を読む。生応答の全前提は既定の適用例とreceive_pair/handle_receive_pairでも照合する"
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModelExamples.handleSignature",
+    "named_readers": [
+      "Benitoite.Release.Refinement.ExternalModelExamples.handleProgram",
+      "Benitoite.Release.Refinement.ExternalModelExamples.handleProgram.eq_1",
+      "Benitoite.Release.Refinement.ExternalModelExamples.handleSignature.eq_1",
+      "Benitoite.Release.Refinement.ExternalModelExamples.handle_arguments",
+      "Benitoite.Release.Refinement.ExternalModelExamples.handle_program_externalWF",
+      "Benitoite.Release.Refinement.ExternalModelExamples.handle_raw_response",
+      "Benitoite.Release.Refinement.ExternalModelExamples.handle_receive_pair",
+      "Benitoite.Release.Refinement.ExternalModels.handle_inputs",
+      "Benitoite.Release.Refinement.ExternalModels.responses",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.handle_annotation",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.handle_signature_wf"
+    ],
+    "compiled_example": false,
+    "note": "shape_inputs/handle_inputsをconditionsへ渡す読者は宣言条件の射影を読む。生応答の全前提は既定の適用例とreceive_pair/handle_receive_pairでも照合する"
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModelExamples.handleProgram",
+    "named_readers": [
+      "Benitoite.Release.Refinement.ExternalModelExamples.handleProgram.eq_1",
+      "Benitoite.Release.Refinement.ExternalModelExamples.handle_arguments",
+      "Benitoite.Release.Refinement.ExternalModelExamples.handle_program_externalWF",
+      "Benitoite.Release.Refinement.ExternalModelExamples.handle_program_hasHttp",
+      "Benitoite.Release.Refinement.ExternalModelExamples.handle_raw_response",
+      "Benitoite.Release.Refinement.ExternalModelExamples.handle_receive_pair",
+      "Benitoite.Release.Refinement.ExternalModels.handle_inputs",
+      "Benitoite.Release.Refinement.ExternalModels.responses",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.handle_annotation",
+      "_private.Benitoite.Release.Refinement.ExternalModelExamples.0.Benitoite.Release.Refinement.ExternalModelExamples.handle_signature_wf"
+    ],
+    "compiled_example": false,
+    "note": "shape_inputs/handle_inputsをconditionsへ渡す読者は宣言条件の射影を読む。生応答の全前提は既定の適用例とreceive_pair/handle_receive_pairでも照合する"
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModelExamples.handle_program_externalWF",
+    "named_readers": [
+      "Benitoite.Release.Refinement.ExternalModelExamples.handle_raw_response"
+    ],
+    "compiled_example": false,
+    "note": "shape_inputs/handle_inputsをconditionsへ渡す読者は宣言条件の射影を読む。生応答の全前提は既定の適用例とreceive_pair/handle_receive_pairでも照合する"
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModelExamples.handle_arguments",
+    "named_readers": [
+      "Benitoite.Release.Refinement.ExternalModelExamples.handle_raw_response",
+      "Benitoite.Release.Refinement.ExternalModelExamples.handle_receive_pair"
+    ],
+    "compiled_example": false,
+    "note": "shape_inputs/handle_inputsをconditionsへ渡す読者は宣言条件の射影を読む。生応答の全前提は既定の適用例とreceive_pair/handle_receive_pairでも照合する"
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModelExamples.handle_raw_response",
+    "named_readers": [
+      "Benitoite.Release.Refinement.ExternalModelExamples.handle_receive_pair",
+      "Benitoite.Release.Refinement.ExternalModels.handle_inputs"
+    ],
+    "compiled_example": false,
+    "note": "shape_inputs/handle_inputsをconditionsへ渡す読者は宣言条件の射影を読む。生応答の全前提は既定の適用例とreceive_pair/handle_receive_pairでも照合する"
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModelExamples.handle_receive_pair",
+    "named_readers": [
+      "Benitoite.Release.Refinement.ExternalModels.responses"
+    ],
+    "compiled_example": false,
+    "note": "shape_inputs/handle_inputsをconditionsへ渡す読者は宣言条件の射影を読む。生応答の全前提は既定の適用例とreceive_pair/handle_receive_pairでも照合する"
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModelExamples.program_hasHttp",
+    "named_readers": [
+      "Benitoite.Release.Refinement.ExternalModels.shape_inputs"
+    ],
+    "compiled_example": false,
+    "note": "shape_inputs/handle_inputsをconditionsへ渡す読者は宣言条件の射影を読む。生応答の全前提は既定の適用例とreceive_pair/handle_receive_pairでも照合する"
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModelExamples.handle_program_hasHttp",
+    "named_readers": [
+      "Benitoite.Release.Refinement.ExternalModels.handle_inputs"
+    ],
+    "compiled_example": false,
+    "note": "shape_inputs/handle_inputsをconditionsへ渡す読者は宣言条件の射影を読む。生応答の全前提は既定の適用例とreceive_pair/handle_receive_pairでも照合する"
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModels.model_no_response_kind",
+    "named_readers": [],
+    "compiled_example": true,
+    "note": "shape_inputs/handle_inputsをconditionsへ渡す読者は宣言条件の射影を読む。生応答の全前提は既定の適用例とreceive_pair/handle_receive_pairでも照合する"
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModels.ModelCase",
+    "named_readers": [
+      "Benitoite.Release.Refinement.ExternalModels.ModelCase.Declarations",
+      "Benitoite.Release.Refinement.ExternalModels.ModelCase.Declarations.match_1",
+      "Benitoite.Release.Refinement.ExternalModels.ModelCase._sizeOf_1",
+      "Benitoite.Release.Refinement.ExternalModels.ModelCase._sizeOf_inst",
+      "Benitoite.Release.Refinement.ExternalModels.ModelCase.base",
+      "Benitoite.Release.Refinement.ExternalModels.ModelCase.base.match_1",
+      "Benitoite.Release.Refinement.ExternalModels.ModelCase.casesOn",
+      "Benitoite.Release.Refinement.ExternalModels.ModelCase.ctorElim",
+      "Benitoite.Release.Refinement.ExternalModels.ModelCase.ctorElimType",
+      "Benitoite.Release.Refinement.ExternalModels.ModelCase.ctorIdx",
+      "Benitoite.Release.Refinement.ExternalModels.ModelCase.http",
+      "Benitoite.Release.Refinement.ExternalModels.ModelCase.http.elim",
+      "Benitoite.Release.Refinement.ExternalModels.ModelCase.http.sizeOf_spec",
+      "Benitoite.Release.Refinement.ExternalModels.ModelCase.model",
+      "Benitoite.Release.Refinement.ExternalModels.ModelCase.model.elim",
+      "Benitoite.Release.Refinement.ExternalModels.ModelCase.model.sizeOf_spec",
+      "Benitoite.Release.Refinement.ExternalModels.ModelCase.noConfusion",
+      "Benitoite.Release.Refinement.ExternalModels.ModelCase.noConfusionType",
+      "Benitoite.Release.Refinement.ExternalModels.ModelCase.rec",
+      "Benitoite.Release.Refinement.ExternalModels.ModelCase.recOn",
+      "Benitoite.Release.Refinement.ExternalModels.ModelCase.table",
+      "Benitoite.Release.Refinement.ExternalModels.ModelCase.targets",
+      "Benitoite.Release.Refinement.ExternalModels.ModelCase.targets.elim",
+      "Benitoite.Release.Refinement.ExternalModels.ModelCase.targets.sizeOf_spec",
+      "Benitoite.Release.Refinement.ExternalModels.conditions",
+      "Benitoite.Release.Refinement.ExternalModels.handle_inputs",
+      "Benitoite.Release.Refinement.ExternalModels.responses",
+      "Benitoite.Release.Refinement.ExternalModels.shape_inputs",
+      "_private.Benitoite.Release.Refinement.ExternalModels.0.Benitoite.Release.Refinement.ExternalModels.keys",
+      "_private.Benitoite.Release.Refinement.ExternalModels.0.Benitoite.Release.Refinement.ExternalModels.table_eq"
+    ],
+    "compiled_example": false,
+    "note": "shape_inputs/handle_inputsをconditionsへ渡す読者は宣言条件の射影を読む。生応答の全前提は既定の適用例とreceive_pair/handle_receive_pairでも照合する"
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModels.ModelCase.base",
+    "named_readers": [
+      "Benitoite.Release.Refinement.ExternalModels.handle_inputs",
+      "Benitoite.Release.Refinement.ExternalModels.responses",
+      "_private.Benitoite.Release.Refinement.ExternalModels.0.Benitoite.Release.Refinement.ExternalModels.keys",
+      "_private.Benitoite.Release.Refinement.ExternalModels.0.Benitoite.Release.Refinement.ExternalModels.table_eq"
+    ],
+    "compiled_example": false,
+    "note": "shape_inputs/handle_inputsをconditionsへ渡す読者は宣言条件の射影を読む。生応答の全前提は既定の適用例とreceive_pair/handle_receive_pairでも照合する"
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModels.ModelCase.table",
+    "named_readers": [
+      "Benitoite.Release.Refinement.ExternalModels.conditions",
+      "Benitoite.Release.Refinement.ExternalModels.handle_inputs",
+      "Benitoite.Release.Refinement.ExternalModels.responses",
+      "Benitoite.Release.Refinement.ExternalModels.shape_inputs",
+      "_private.Benitoite.Release.Refinement.ExternalModels.0.Benitoite.Release.Refinement.ExternalModels.table_eq"
+    ],
+    "compiled_example": false,
+    "note": "shape_inputs/handle_inputsをconditionsへ渡す読者は宣言条件の射影を読む。生応答の全前提は既定の適用例とreceive_pair/handle_receive_pairでも照合する"
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModels.ModelCase.Declarations",
+    "named_readers": [
+      "Benitoite.Release.Refinement.ExternalModels.conditions",
+      "Benitoite.Release.Refinement.ExternalModels.handle_inputs",
+      "Benitoite.Release.Refinement.ExternalModels.responses",
+      "Benitoite.Release.Refinement.ExternalModels.shape_inputs"
+    ],
+    "compiled_example": false,
+    "note": "shape_inputs/handle_inputsをconditionsへ渡す読者は宣言条件の射影を読む。生応答の全前提は既定の適用例とreceive_pair/handle_receive_pairでも照合する"
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModels.conditions",
+    "named_readers": [
+      "Benitoite.Release.Refinement.ExternalModels.responses"
+    ],
+    "compiled_example": false,
+    "note": "shape_inputs/handle_inputsをconditionsへ渡す読者は宣言条件の射影を読む。生応答の全前提は既定の適用例とreceive_pair/handle_receive_pairでも照合する"
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModels.shape_inputs",
+    "named_readers": [
+      "Benitoite.Release.Refinement.ExternalModels.responses"
+    ],
+    "compiled_example": false,
+    "note": "shape_inputs/handle_inputsをconditionsへ渡す読者は宣言条件の射影を読む。生応答の全前提は既定の適用例とreceive_pair/handle_receive_pairでも照合する"
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModels.handle_inputs",
+    "named_readers": [
+      "Benitoite.Release.Refinement.ExternalModels.responses"
+    ],
+    "compiled_example": false,
+    "note": "shape_inputs/handle_inputsをconditionsへ渡す読者は宣言条件の射影を読む。生応答の全前提は既定の適用例とreceive_pair/handle_receive_pairでも照合する"
+  },
+  {
+    "name": "Benitoite.Release.Refinement.ExternalModels.responses",
+    "named_readers": [],
+    "compiled_example": true,
+    "note": "shape_inputs/handle_inputsをconditionsへ渡す読者は宣言条件の射影を読む。生応答の全前提は既定の適用例とreceive_pair/handle_receive_pairでも照合する"
+  }
+]

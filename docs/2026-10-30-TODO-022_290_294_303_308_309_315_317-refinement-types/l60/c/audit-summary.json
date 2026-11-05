@@ -1,0 +1,76 @@
+{
+  "targets": 83693,
+  "target_list": {
+    "bytes": 5532446,
+    "sha256": "db95b5c09d1993f177481e44956e76d59a1bd5fa1f63f48b8ad7602106061152"
+  },
+  "raw": {
+    "bytes": 16669513,
+    "sha256": "c5bd46c92187694930bfde0287cf8f4b5b17b70e8182a2a567b6d4117b595720"
+  },
+  "modules": 1047,
+  "new_modules": {
+    "Benitoite.Release.Refinement.ExternalModelTransport": 19,
+    "Benitoite.Release.Refinement.ExternalModelExamples": 175,
+    "Benitoite.Release.Refinement.ExternalModels": 32
+  },
+  "declarations": 226,
+  "added_declarations": 211,
+  "inherited_declarations": 15,
+  "private": 72,
+  "without_source_position": 129,
+  "closure_rounds": 2,
+  "axiom_sets": {
+    "none": 39269,
+    "Classical.choice": 2,
+    "Classical.choice + Quot.sound + propext": 21166,
+    "Classical.choice + propext": 2,
+    "Quot.sound": 9,
+    "Quot.sound + propext": 3871,
+    "propext": 19374
+  },
+  "sorryAx": 0,
+  "new_axioms": 0,
+  "parts": [
+    {
+      "file": "declarations-01.json",
+      "bytes": 84677,
+      "sha256": "7c6f7b7f8d5a5a7cb90321973eda2422d613f2e1c7e96bc60df1c31f04fb8e21"
+    },
+    {
+      "file": "declarations-02.json",
+      "bytes": 83583,
+      "sha256": "171a0d679198a3ffbc25786f1d2967945fc553acaac01972b107f7f539cf9b7d"
+    },
+    {
+      "file": "declarations-03.json",
+      "bytes": 84855,
+      "sha256": "73dc33901e98fcbd56d9b938d3b36c9e53b6b158c5dca7f4738e418d183737dc"
+    },
+    {
+      "file": "declarations-04.json",
+      "bytes": 84208,
+      "sha256": "b6d5ba9f09a56747fc4913368ccf5ffb29f1788d6116ee4c89f06408d6654ca0"
+    },
+    {
+      "file": "declarations-05.json",
+      "bytes": 80340,
+      "sha256": "24b5a2d78a7e76215ca47168abf01e23346c960ee80259a2055e99fe1fbcf4b4"
+    },
+    {
+      "file": "declarations-06.json",
+      "bytes": 23645,
+      "sha256": "bae2e0a365ab5abaa868aaeff3ab5055854ed2fe4bd3f4e7469d92d51761dbea"
+    }
+  ],
+  "inputs": {
+    "axioms.lean": {
+      "bytes": 5000,
+      "sha256": "11d2a16ed8662f38a02d2afeb7be985f50fabbfa7def579ae078208fd65a7498"
+    },
+    "audit.py": {
+      "bytes": 4189,
+      "sha256": "00fba9a8e587046b69cdb8e476c225ca8804789a367874e171ac690c4ec99ff5"
+    }
+  }
+}

@@ -1,0 +1,267 @@
+{
+  "default-build": {
+    "cwd": "formal",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "start": "2026-11-05T13:24:03+09:00",
+    "end": "2026-11-05T13:24:07+09:00",
+    "exit": 0,
+    "wall_seconds": 3.5844,
+    "raw": {
+      "bytes": 45851,
+      "sha256": "e969a2092a113941494ff1997a02c6e87c1107577b11d4046820ae2c103c4c2f"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  "axioms": {
+    "cwd": "formal",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/c/axioms.lean"
+    ],
+    "start": "2026-11-05T13:24:39+09:00",
+    "end": "2026-11-05T13:25:21+09:00",
+    "exit": 0,
+    "wall_seconds": 42.2567,
+    "raw": {
+      "bytes": 16471152,
+      "sha256": "e2eb9bb2648935d780f03af85161612d923f0e333852473507e5a3a2357251e3"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  "verify": {
+    "cwd": ".",
+    "command": [
+      "python3",
+      "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/c/verify.py",
+      "--tmp",
+      "<tmp>"
+    ],
+    "start": "2026-11-05T13:33:04+09:00",
+    "end": "2026-11-05T13:33:05+09:00",
+    "exit": 0,
+    "wall_seconds": 0.3787,
+    "raw": {
+      "bytes": 724,
+      "sha256": "102f385cd31ee0d06ab45b6e97a1c107fea45a5d743384513e683d112d5bcd6a"
+    },
+    "rss": "未取得（計画上の非採取）"
+  },
+  "verification": {
+    "modules": 1047,
+    "requested_modules": [
+      "Benitoite.Release.Refinement.ExternalModelTransport",
+      "Benitoite.Release.Refinement.ExternalModelExamples",
+      "Benitoite.Release.Refinement.ExternalModels"
+    ],
+    "protected_files": 5888,
+    "modified_existing": [
+      "docs/design/01-spec/01-12-core-calculus.md",
+      "docs/design/07-quality/07-04-formal-semantics.md",
+      "formal/Benitoite.lean",
+      "formal/Benitoite/Release/Refinement/ExternalModelTransport.lean"
+    ],
+    "conditions": 87,
+    "classification": {
+      "実質": 76,
+      "空疎": 8,
+      "自明": 3
+    },
+    "public_entries": 37,
+    "named_readers": 35,
+    "compiled_examples": 2,
+    "files": 44,
+    "record_bytes": 1638633,
+    "largest_bytes": 84731,
+    "axiom_targets": 83667,
+    "added_declarations": 185,
+    "pending": 0,
+    "not_proved": 0
+  },
+  "audit-summary": {
+    "targets": 83667,
+    "target_list": {
+      "bytes": 5529679,
+      "sha256": "be2543312253de748a2cd726c30dc9ee6eb9fa48ca08889589a09743571defa4"
+    },
+    "raw": {
+      "bytes": 16471152,
+      "sha256": "e2eb9bb2648935d780f03af85161612d923f0e333852473507e5a3a2357251e3"
+    },
+    "modules": 1047,
+    "new_modules": {
+      "Benitoite.Release.Refinement.ExternalModelTransport": 19,
+      "Benitoite.Release.Refinement.ExternalModelExamples": 148,
+      "Benitoite.Release.Refinement.ExternalModels": 33
+    },
+    "declarations": 200,
+    "added_declarations": 185,
+    "inherited_declarations": 15,
+    "private": 54,
+    "without_source_position": 106,
+    "closure_rounds": 2,
+    "axiom_sets": {
+      "none": 39245,
+      "Classical.choice": 2,
+      "Classical.choice + Quot.sound + propext": 21166,
+      "Classical.choice + propext": 2,
+      "Quot.sound": 9,
+      "Quot.sound + propext": 3871,
+      "propext": 19372
+    },
+    "sorryAx": 0,
+    "new_axioms": 0,
+    "parts": [
+      {
+        "file": "declarations-01.json",
+        "bytes": 84677,
+        "sha256": "44ba0e3c0848d406451afec1bab31b4b7f68f3d46bc9d2ea8627e2b4bf795a99"
+      },
+      {
+        "file": "declarations-02.json",
+        "bytes": 84731,
+        "sha256": "6b23e1af8b14df96ad583e1ffaffc190188754220f53123246213fac02a22a20"
+      },
+      {
+        "file": "declarations-03.json",
+        "bytes": 81815,
+        "sha256": "92173bf0935fbfe6ed29a0f46f3660d2ed88a4e06be2bfcfdd332c31da7f5cb2"
+      },
+      {
+        "file": "declarations-04.json",
+        "bytes": 84582,
+        "sha256": "97f33a4e5699e622fdc8e2c27bee6e6850eef54d8e8645350f95077699e3b666"
+      },
+      {
+        "file": "declarations-05.json",
+        "bytes": 8114,
+        "sha256": "a85584e5e8afa8239f425c2009df197b84f833dca2cb0ab721572f28f83f74e4"
+      }
+    ],
+    "inputs": {
+      "axioms.lean": {
+        "bytes": 5000,
+        "sha256": "11d2a16ed8662f38a02d2afeb7be985f50fabbfa7def579ae078208fd65a7498"
+      },
+      "audit.py": {
+        "bytes": 4189,
+        "sha256": "00fba9a8e587046b69cdb8e476c225ca8804789a367874e171ac690c4ec99ff5"
+      }
+    }
+  },
+  "tools": {
+    "platform": {
+      "system": "Darwin",
+      "machine": "arm64",
+      "release": "27.2.0"
+    },
+    "versions": {
+      "lean": "Lean (version 4.34.1, arm64-apple-darwin24.6.0, commit 5045d0056413266e57c625dcd7c365b10e377c52, Release)",
+      "lake": "Lake version 5.0.0-src+5045d00 (Lean version 4.34.1)"
+    },
+    "memory_mib": 12288,
+    "configuration": "既定ターゲット・既定import・固定Lean。単独Leanも-M 12288。RSSは計画上の非採取",
+    "inputs": {
+      "formal/lean-toolchain": {
+        "bytes": 25,
+        "sha256": "d5edba4e4b8faad9c1baeadb265716d20d03be4d1a2647dc5e35b0c0325bea7b"
+      },
+      "formal/lakefile.toml": {
+        "bytes": 872,
+        "sha256": "10f2661bff8fce95a9253d976427d0ca44038ec12350c955badbc1cf1efa6e3a"
+      },
+      "formal/lake-manifest.json": {
+        "bytes": 152,
+        "sha256": "f4a9b127f95cf577c7da1c2269f85ffd5754f76afccace5dc310d56ef8f41a32"
+      },
+      "formal/Benitoite.lean": {
+        "bytes": 42970,
+        "sha256": "6d2ab7e0db537b896b53a1525c9382027f703ca4bf4a7cbd3c7bc62d407f2b8d"
+      },
+      "formal/Benitoite/Release/Refinement/ExternalModelTransport.lean": {
+        "bytes": 7771,
+        "sha256": "2c075c356010aeac84fe0add49b881f51a52a8029e8e823ff9b6bdb80dddf870"
+      },
+      "formal/Benitoite/Release/Refinement/ExternalModelExamples.lean": {
+        "bytes": 32232,
+        "sha256": "6bbdbcdcb75de7c2910d4b81b43d92b78830bb38a1f53025287da0dac055efac"
+      },
+      "formal/Benitoite/Release/Refinement/ExternalModels.lean": {
+        "bytes": 8372,
+        "sha256": "56fc47257ba0a0444a299e70f2b0ac162a5df7d968845916a0be9523a33e7e88"
+      },
+      "docs/design/01-spec/01-12-core-calculus.md": {
+        "bytes": 928833,
+        "sha256": "33ba53a9d3dff9b7046f09cf6033060b84ea99302c1c0a79b34c17adbcc4f278"
+      },
+      "docs/design/07-quality/07-04-formal-semantics.md": {
+        "bytes": 601575,
+        "sha256": "1e85ff55b544bbb9d654c028fd69716ce7cac4249d56c7415a4117381e14a799"
+      },
+      "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/c/run.py": {
+        "bytes": 1418,
+        "sha256": "38091f8f748b51bdefab716c290c0f99aa3280b22aa95b34ba2acb73ee5747b9"
+      },
+      "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/c/support.py": {
+        "bytes": 1093,
+        "sha256": "c6df6691355967caadacd3ca2537ca63d7988b1e0bf4187bb5550892dea15943"
+      },
+      "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/c/audit.py": {
+        "bytes": 4189,
+        "sha256": "00fba9a8e587046b69cdb8e476c225ca8804789a367874e171ac690c4ec99ff5"
+      },
+      "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/c/verify.py": {
+        "bytes": 9904,
+        "sha256": "66e7b568f9a94affa2af0462c3a801a114840d43ce3257fd91ff0b025be2a098"
+      },
+      "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l60/c/inventory.py": {
+        "bytes": 1688,
+        "sha256": "a8b7acdbcd16a068f53c773f58038c9dba8bac714cb3da56db101bfcf83502a9"
+      }
+    }
+  },
+  "final-records": {
+    "end": "2026-11-05T13:34:05+09:00",
+    "files": 45,
+    "bytes": 1641546,
+    "largest_bytes": 84731,
+    "results": {
+      "bytes": 18190,
+      "sha256": "10ab38fb81c358f5b396a76b4a22b40203eac26616a8bb94f6c693fe7a498a01"
+    },
+    "units": [
+      {
+        "id": "L60.10",
+        "start": "2026-11-05T13:05:14+09:00",
+        "end": "2026-11-05T13:06:56+09:00",
+        "seconds": 102
+      },
+      {
+        "id": "L60.11",
+        "start": "2026-11-05T13:06:56+09:00",
+        "end": "2026-11-05T13:17:54+09:00",
+        "seconds": 658
+      },
+      {
+        "id": "L60.12",
+        "start": "2026-11-05T13:17:54+09:00",
+        "end": "2026-11-05T13:18:38+09:00",
+        "seconds": 44
+      },
+      {
+        "id": "L60.13",
+        "start": "2026-11-05T13:18:38+09:00",
+        "end": "2026-11-05T13:34:05+09:00",
+        "seconds": 927
+      }
+    ],
+    "total_seconds": 1731,
+    "after_verify": "結果・時刻・サイズの記録のみ。本番・写し・検査入力・台本は不変"
+  }
+}
