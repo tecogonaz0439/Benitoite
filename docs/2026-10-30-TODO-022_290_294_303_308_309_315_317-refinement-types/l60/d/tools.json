@@ -1,0 +1,47 @@
+{
+  "platform": {
+    "system": "Darwin",
+    "machine": "arm64",
+    "release": "27.2.0"
+  },
+  "versions": {
+    "lean": "Lean (version 4.34.1, arm64-apple-darwin24.6.0, commit 5045d0056413266e57c625dcd7c365b10e377c52, Release)",
+    "lake": "Lake version 5.0.0-src+5045d00 (Lean version 4.34.1)"
+  },
+  "memory_mib": 12288,
+  "configuration": "既定ターゲット・既定import・固定Lean。単独Leanも-M 12288。RSSは計画上の非採取",
+  "inputs": {
+    "formal/lean-toolchain": {
+      "bytes": 25,
+      "sha256": "d5edba4e4b8faad9c1baeadb265716d20d03be4d1a2647dc5e35b0c0325bea7b"
+    },
+    "formal/lakefile.toml": {
+      "bytes": 872,
+      "sha256": "10f2661bff8fce95a9253d976427d0ca44038ec12350c955badbc1cf1efa6e3a"
+    },
+    "formal/lake-manifest.json": {
+      "bytes": 152,
+      "sha256": "f4a9b127f95cf577c7da1c2269f85ffd5754f76afccace5dc310d56ef8f41a32"
+    },
+    "formal/Benitoite.lean": {
+      "bytes": 43028,
+      "sha256": "a1d92cc5a8039f91ef2d8d9dee438e988f74ce47110ad261507932f8c47e11e6"
+    },
+    "formal/Benitoite/Release/Refinement/ExternalSurfaceLeaves.lean": {
+      "bytes": 14707,
+      "sha256": "0df47114bf827477ef08392a8f8420fce9f7d70e315d512b64e3d088b4e06bc9"
+    },
+    "formal/Benitoite/Release/Refinement/ExternalLeafSelection.lean": {
+      "bytes": 29174,
+      "sha256": "7f724a5fd0eaff9a9869b7b161549ea6546dc8dedfd762e49e159baccd7c5216"
+    },
+    "docs/design/01-spec/01-12-core-calculus.md": {
+      "bytes": 932786,
+      "sha256": "ceb69ce7ff7fff094fb1efe2949fb8d3dafa1ae6fdaf704e8ce20fb3d6aacb6f"
+    },
+    "docs/design/07-quality/07-04-formal-semantics.md": {
+      "bytes": 603310,
+      "sha256": "f2719ea0e69fa7a98cc8cfba59298519675f4c3ea0aa55a81cdead4fb7aa7f75"
+    }
+  }
+}
