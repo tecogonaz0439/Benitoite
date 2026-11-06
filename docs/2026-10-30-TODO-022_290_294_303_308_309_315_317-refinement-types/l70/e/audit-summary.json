@@ -1,40 +1,66 @@
 {
- "b_work": "aab9025f1f366d6d190298869add18181af7eeb6",
- "baseline_files": 4172,
+ "b_work": "66779f9ca189d0ee780069da2e6146a6b390a220",
+ "baseline_files": 1231,
  "changed": [
   "docs/design/01-spec/01-12-core-calculus.md",
   "docs/design/07-quality/07-04-formal-semantics.md",
-  "formal/Benitoite.lean"
+  "formal/Benitoite.lean",
+  "formal/Benitoite/Release/Refinement/Coverage.lean",
+  "formal/Benitoite/Release/Refinement/CoverageExamples.lean",
+  "formal/Benitoite/Release/Refinement/CoverageInitial.lean",
+  "formal/Benitoite/Release/Refinement/Surface/Check.lean",
+  "formal/Benitoite/Release/Refinement/Surface/CheckAccept.lean",
+  "formal/Benitoite/Release/Refinement/Surface/CheckDeclarationBase.lean",
+  "formal/Benitoite/Release/Refinement/Surface/CheckDeclarationExamples.lean",
+  "formal/Benitoite/Release/Refinement/Surface/CheckDeclarations.lean",
+  "formal/Benitoite/Release/Refinement/Surface/CheckDeclarationsSound.lean",
+  "formal/Benitoite/Release/Refinement/Surface/CheckEntrypoints.lean",
+  "formal/Benitoite/Release/Refinement/Surface/CheckEntrypointsSound.lean",
+  "formal/Benitoite/Release/Refinement/Surface/CheckExamples.lean",
+  "formal/Benitoite/Release/Refinement/Surface/CheckFormation.lean",
+  "formal/Benitoite/Release/Refinement/Surface/CheckFormationBase.lean",
+  "formal/Benitoite/Release/Refinement/Surface/CheckGuide.lean",
+  "formal/Benitoite/Release/Refinement/Surface/CheckInput.lean",
+  "formal/Benitoite/Release/Refinement/Surface/CheckInterpolation.lean",
+  "formal/Benitoite/Release/Refinement/Surface/CheckMaterials.lean",
+  "formal/Benitoite/Release/Refinement/Surface/CheckMaterialsSound.lean",
+  "formal/Benitoite/Release/Refinement/Surface/CheckPatternExamples.lean",
+  "formal/Benitoite/Release/Refinement/Surface/CheckProgramSound.lean",
+  "formal/Benitoite/Release/Refinement/Surface/CheckSound.lean",
+  "formal/Benitoite/Release/Refinement/Surface/CheckSubtyping.lean",
+  "formal/Benitoite/Release/Refinement/Surface/CheckTables.lean",
+  "formal/Benitoite/Release/Refinement/Surface/CheckVariance.lean"
  ],
- "new_modules": 60,
+ "new_modules": 10,
+ "owned_modules": 70,
  "build": {
-  "jobs": 1436,
-  "bytes": 45303,
-  "sha256": "cc8697ae7b8289290faa10a0672180fbd5643ee07fa38ca8682401ada0e9e0ef"
+  "jobs": 1453,
+  "bytes": 191502,
+  "sha256": "05738c07218c110d743ab6db3b0afc77a87c60fdd30008ab95ac74b717965188"
  },
  "audit": {
-  "targets": 99743,
-  "own_declarations": 8100,
-  "private": 2611,
+  "targets": 103744,
+  "own_declarations": 11441,
+  "private": 4465,
   "sets": {
-   "(none)": 46141,
+   "(none)": 47672,
    "Classical.choice": 2,
-   "Classical.choice,Quot.sound,propext": 25078,
+   "Classical.choice,Quot.sound,propext": 25939,
    "Classical.choice,propext": 2,
-   "Quot.sound": 9,
-   "Quot.sound,propext": 4361,
-   "propext": 24150
+   "Quot.sound": 11,
+   "Quot.sound,propext": 4491,
+   "propext": 25627
   },
-  "bytes": 61490049,
-  "sha256": "2aa376d53c3d4614041e05c074ca36ac218bd1dc78dcc3404878808b6ce5b3a9",
-  "environment_modules": 1175,
+  "bytes": 82078351,
+  "sha256": "c3f95bb4ca906fa8bbd5e4d387d82c7af646f84091dff67217ced49ef4799a3c",
+  "environment_modules": 1192,
   "own_modules": {
-   "Benitoite.Release.Refinement.Coverage": 742,
-   "Benitoite.Release.Refinement.CoverageExamples": 63,
+   "Benitoite.Release.Refinement.Coverage": 875,
+   "Benitoite.Release.Refinement.CoverageExamples": 74,
    "Benitoite.Release.Refinement.CoverageExtension": 40,
-   "Benitoite.Release.Refinement.CoverageInitial": 120,
-   "Benitoite.Release.Refinement.Surface.Check": 676,
-   "Benitoite.Release.Refinement.Surface.CheckAccept": 38,
+   "Benitoite.Release.Refinement.CoverageInitial": 46,
+   "Benitoite.Release.Refinement.Surface.Check": 677,
+   "Benitoite.Release.Refinement.Surface.CheckAccept": 39,
    "Benitoite.Release.Refinement.Surface.CheckAcceptBase": 43,
    "Benitoite.Release.Refinement.Surface.CheckAcceptedRanges": 4,
    "Benitoite.Release.Refinement.Surface.CheckAdmissible": 249,
@@ -42,14 +68,17 @@
    "Benitoite.Release.Refinement.Surface.CheckBlockSound": 46,
    "Benitoite.Release.Refinement.Surface.CheckCollectionSound": 74,
    "Benitoite.Release.Refinement.Surface.CheckCompare": 27,
-   "Benitoite.Release.Refinement.Surface.CheckDeclarationBase": 63,
-   "Benitoite.Release.Refinement.Surface.CheckDeclarationExamples": 60,
-   "Benitoite.Release.Refinement.Surface.CheckDeclarations": 5,
-   "Benitoite.Release.Refinement.Surface.CheckDeclarationsSound": 8,
+   "Benitoite.Release.Refinement.Surface.CheckDataHint": 134,
+   "Benitoite.Release.Refinement.Surface.CheckDataHintExamples": 17,
+   "Benitoite.Release.Refinement.Surface.CheckDeclarationBase": 68,
+   "Benitoite.Release.Refinement.Surface.CheckDeclarationExamples": 56,
+   "Benitoite.Release.Refinement.Surface.CheckDeclarations": 61,
+   "Benitoite.Release.Refinement.Surface.CheckDeclarationsSound": 10,
+   "Benitoite.Release.Refinement.Surface.CheckDiagnostics": 85,
    "Benitoite.Release.Refinement.Surface.CheckEffects": 14,
-   "Benitoite.Release.Refinement.Surface.CheckEntrypoints": 16,
+   "Benitoite.Release.Refinement.Surface.CheckEntrypoints": 19,
    "Benitoite.Release.Refinement.Surface.CheckEntrypointsSound": 2,
-   "Benitoite.Release.Refinement.Surface.CheckExamples": 62,
+   "Benitoite.Release.Refinement.Surface.CheckExamples": 59,
    "Benitoite.Release.Refinement.Surface.CheckExprCallSound": 92,
    "Benitoite.Release.Refinement.Surface.CheckExprCollectionSound": 46,
    "Benitoite.Release.Refinement.Surface.CheckExprControlSound": 144,
@@ -58,12 +87,19 @@
    "Benitoite.Release.Refinement.Surface.CheckExprRecordSound": 42,
    "Benitoite.Release.Refinement.Surface.CheckExprSimpleSound": 100,
    "Benitoite.Release.Refinement.Surface.CheckExprSpecialSound": 26,
-   "Benitoite.Release.Refinement.Surface.CheckFormation": 219,
-   "Benitoite.Release.Refinement.Surface.CheckFormationBase": 313,
+   "Benitoite.Release.Refinement.Surface.CheckFinite": 431,
+   "Benitoite.Release.Refinement.Surface.CheckFormation": 227,
+   "Benitoite.Release.Refinement.Surface.CheckFormationBase": 310,
    "Benitoite.Release.Refinement.Surface.CheckFormationData": 131,
-   "Benitoite.Release.Refinement.Surface.CheckGuide": 459,
+   "Benitoite.Release.Refinement.Surface.CheckGuide": 465,
    "Benitoite.Release.Refinement.Surface.CheckHandler": 44,
-   "Benitoite.Release.Refinement.Surface.CheckInput": 136,
+   "Benitoite.Release.Refinement.Surface.CheckInfer": 574,
+   "Benitoite.Release.Refinement.Surface.CheckInferCertificates": 360,
+   "Benitoite.Release.Refinement.Surface.CheckInferExamples": 1402,
+   "Benitoite.Release.Refinement.Surface.CheckInferFailure": 63,
+   "Benitoite.Release.Refinement.Surface.CheckInferRequests": 73,
+   "Benitoite.Release.Refinement.Surface.CheckInferResult": 8,
+   "Benitoite.Release.Refinement.Surface.CheckInput": 132,
    "Benitoite.Release.Refinement.Surface.CheckInterpolation": 180,
    "Benitoite.Release.Refinement.Surface.CheckMaterials": 148,
    "Benitoite.Release.Refinement.Surface.CheckMaterialsSound": 6,
@@ -77,12 +113,12 @@
    "Benitoite.Release.Refinement.Surface.CheckSoundBase": 27,
    "Benitoite.Release.Refinement.Surface.CheckSoundSupport": 15,
    "Benitoite.Release.Refinement.Surface.CheckSource": 40,
-   "Benitoite.Release.Refinement.Surface.CheckSubtyping": 399,
+   "Benitoite.Release.Refinement.Surface.CheckSubtyping": 448,
    "Benitoite.Release.Refinement.Surface.CheckSupport": 333,
-   "Benitoite.Release.Refinement.Surface.CheckTables": 1,
+   "Benitoite.Release.Refinement.Surface.CheckTables": 6,
    "Benitoite.Release.Refinement.Surface.CheckTablesBase": 46,
    "Benitoite.Release.Refinement.Surface.CheckTry": 47,
-   "Benitoite.Release.Refinement.Surface.CheckTrySound": 652,
+   "Benitoite.Release.Refinement.Surface.CheckTrySound": 654,
    "Benitoite.Release.Refinement.Surface.CheckValueSupport": 16,
    "Benitoite.Release.Refinement.Surface.CheckVariance": 260,
    "Benitoite.Release.Refinement.Surface.Identity": 32,
@@ -90,203 +126,334 @@
    "Benitoite.Release.Refinement.Surface.ScopeLower": 159,
    "Benitoite.Release.Refinement.Surface.ScopeState": 361
   },
-  "declarations": [
-   {
-    "file": "declarations-00.json",
-    "bytes": 89907,
-    "sha256": "006233021139dbd282a466784a85325cdd3ea0e7f85d215c039a1a19d2d4ad4a"
-   },
-   {
-    "file": "declarations-01.json",
-    "bytes": 89957,
-    "sha256": "6ce268ba0031f7b99bbccbe7999841cb223a11d30c7bd935eac3305e0c327555"
-   },
-   {
-    "file": "declarations-02.json",
-    "bytes": 89861,
-    "sha256": "78e4951dce65d569de2d218344f320716b228ecd306364fce4adcd9d982f00ea"
-   },
-   {
-    "file": "declarations-03.json",
-    "bytes": 89832,
-    "sha256": "ad9fae4d48c8ffc4fecae270076f1d4caca11f2a77ce661b8208941d0d36a5dc"
-   },
-   {
-    "file": "declarations-04.json",
-    "bytes": 89918,
-    "sha256": "63e9c322f2a1db348a259fb1789f9f94ab17787f10a054e547ec067b4bb31d1c"
-   },
-   {
-    "file": "declarations-05.json",
-    "bytes": 89847,
-    "sha256": "eca7fbaccc8d35a05a57d9645d6d6b783dde546158731c4f42f93f16f70dd076"
-   },
-   {
-    "file": "declarations-06.json",
-    "bytes": 89861,
-    "sha256": "9718edba3436bf377ed76810630663cd2e47a6e17303252ddd5df29027c16d89"
-   },
-   {
-    "file": "declarations-07.json",
-    "bytes": 89899,
-    "sha256": "690a5fde9e7f0cea9bcb62a329549a37aa2e214a1e8ca9d3099a9c981b794e33"
-   },
-   {
-    "file": "declarations-08.json",
-    "bytes": 89930,
-    "sha256": "3d28d47d0b20c56a3d2c00fbe1cd31bb565780a8a5a1a36cf35e2c28573b3f72"
-   },
-   {
-    "file": "declarations-09.json",
-    "bytes": 89850,
-    "sha256": "5b3ca409f811f99721688d274a5a99f518e0a528b43f9a836420222f2fb47725"
-   },
-   {
-    "file": "declarations-10.json",
-    "bytes": 89949,
-    "sha256": "87aad4d31a9bf6332a05314646c2a81cb196357f1489072fd9e1f5a99395e191"
-   },
-   {
-    "file": "declarations-11.json",
-    "bytes": 89966,
-    "sha256": "0d895277394c2854c648ab461a7a04c4d89c3ffd2d8a32e2dd18e4ddebd08026"
-   },
-   {
-    "file": "declarations-12.json",
-    "bytes": 89992,
-    "sha256": "5c3124e3a023c9a70767584f60aeba233fe24aa112a4b7ffd41a1d4eec88b2f3"
-   },
-   {
-    "file": "declarations-13.json",
-    "bytes": 89946,
-    "sha256": "6416e9dc4baef18da4c19aad927814170108eb27f0f8d5530fa77734020b8f03"
-   },
-   {
-    "file": "declarations-14.json",
-    "bytes": 89865,
-    "sha256": "280a014c7163cad40c9c1760d6799cc6a2820cfa258953bd577de0af791a5f41"
-   },
-   {
-    "file": "declarations-15.json",
-    "bytes": 88889,
-    "sha256": "2347af1f7db88072952ecef7a1d838e845fbebbfab83d74d4d0c859b2fba629e"
-   }
-  ]
+  "declarations": {
+   "file": "declarations.json",
+   "count": 11441,
+   "bytes": 2091419,
+   "sha256": "8cec9f319a4a6c9d9a87a6f959dec72f4976335481186fa47b7d7048d89faa75"
+  }
  },
- "sources": {
-  "formal/Benitoite/Release/Refinement/Coverage.lean": "aa15af5e62c52c87363420183e0cb1efc0ce82cea683fcc5241ec94c54838fe8",
-  "formal/Benitoite/Release/Refinement/CoverageExamples.lean": "23ab8b0295a654b9682df6590f74fc7bd6dc78ba68e09b2eed818f97929a4f6c",
-  "formal/Benitoite/Release/Refinement/CoverageExtension.lean": "086ad6b76723373105095487b328f2d7c1377e3a670551c3e77b9dcaa5fb0f92",
-  "formal/Benitoite/Release/Refinement/CoverageInitial.lean": "7095c26a97ddc0caf1651e3df5abaa4f032df2b991fbc9c0a3d93ceeb94f845b",
-  "formal/Benitoite/Release/Refinement/Surface/Check.lean": "839ff188be16a2d245802e30bcb68ff22098c8111535349f6e8c14847c2f7006",
-  "formal/Benitoite/Release/Refinement/Surface/CheckAccept.lean": "42bd683976420b682e05ca961f215c89326d502ece22026452fe2d441f6c2df1",
-  "formal/Benitoite/Release/Refinement/Surface/CheckAcceptBase.lean": "29effa60ece7c9bcd039a2fa2a924be79c111d63f1590f03f33f1902dafca95a",
-  "formal/Benitoite/Release/Refinement/Surface/CheckAcceptedRanges.lean": "eff0691a4c3365f71f962a4abd28a1355061a3afb60e081f4790cadb20ac6a20",
-  "formal/Benitoite/Release/Refinement/Surface/CheckAdmissible.lean": "f8629cf5061e3ddc14406393364edd230dfd4ae43f6068d7bd5f96c30ef30e9a",
-  "formal/Benitoite/Release/Refinement/Surface/CheckArguments.lean": "5cb3475dc772a617e083510a2bf54b954198e691e6d81392f05369004504daca",
-  "formal/Benitoite/Release/Refinement/Surface/CheckBlockSound.lean": "c891e0baa3de7229a11219adde518c490a4b905f333464ad5df788777103abca",
-  "formal/Benitoite/Release/Refinement/Surface/CheckCollectionSound.lean": "a4cd1b038ea426e84260319588b8507b6fa5f5345b15b76916a5ead7297fbeca",
-  "formal/Benitoite/Release/Refinement/Surface/CheckCompare.lean": "03ea519315a378ac1d2e399d190504d29724f67d014de4afc0410fb5207caa6d",
-  "formal/Benitoite/Release/Refinement/Surface/CheckDeclarationBase.lean": "0642ab61be7f301124082b2c4992c7302725e06f68260dca0679f8f230ea703f",
-  "formal/Benitoite/Release/Refinement/Surface/CheckDeclarationExamples.lean": "a4152532c5a3aca498b9eebc8cd50f30d092cbd8873711960a03e2442cc3ea08",
-  "formal/Benitoite/Release/Refinement/Surface/CheckDeclarations.lean": "4c579010d03288c03b8f4cade0e233f3db1bfc1909df6479f7ebfd460e109e5a",
-  "formal/Benitoite/Release/Refinement/Surface/CheckDeclarationsSound.lean": "31bd6dcd2ba20c66419332940935edc2d29259d6df314fed76a9a281cdb4c2de",
-  "formal/Benitoite/Release/Refinement/Surface/CheckEffects.lean": "547eff464c11dd8e6c6596810e8fcb237dc50348d855e422fea2994f94203483",
-  "formal/Benitoite/Release/Refinement/Surface/CheckEntrypoints.lean": "03a2670c618435bbc62ebb807ca4caaaaedf6bb484630b707bbc7da6adfdf7b9",
-  "formal/Benitoite/Release/Refinement/Surface/CheckEntrypointsSound.lean": "8c687a4b4df349e254698368fad738f6645ad0101047d16d0ec7e14645411fcd",
-  "formal/Benitoite/Release/Refinement/Surface/CheckExamples.lean": "208dafc91d40e85a1307837bd9a7434befb4a1774f7152dbcf9e87ef3bc157ab",
-  "formal/Benitoite/Release/Refinement/Surface/CheckExprCallSound.lean": "e7ac6353349aa6c70b179fed08cfca6110f9d5e37da868313013147160c7bb97",
-  "formal/Benitoite/Release/Refinement/Surface/CheckExprCollectionSound.lean": "1c1c9605c1d2b3a880a1412e47a4b85be4b0feed0b27e654f305751df0b6ed64",
-  "formal/Benitoite/Release/Refinement/Surface/CheckExprControlSound.lean": "f3a6b84660582ce050d3b17195a2dfb8ec52c725c568a54217e024087b26abb0",
-  "formal/Benitoite/Release/Refinement/Surface/CheckExprHeadSound.lean": "14366cd51e180f2e61ff2e1cf6fc06255100ceeeb3075bcb1e352b01b2efa95a",
-  "formal/Benitoite/Release/Refinement/Surface/CheckExprPartialSound.lean": "397f89930d365ce4171925b13631da00ac47602057a232b8fbf6cd603a0ac0c6",
-  "formal/Benitoite/Release/Refinement/Surface/CheckExprRecordSound.lean": "7ab239331b6ea74167d72635a099dfc311c667d9488acb3bc059e7f8317c24da",
-  "formal/Benitoite/Release/Refinement/Surface/CheckExprSimpleSound.lean": "4ab3e469073a5b14228878091382a78cc2d8b10ded64fe9da8beaa7df9ed73ad",
-  "formal/Benitoite/Release/Refinement/Surface/CheckExprSpecialSound.lean": "c03a72efff80f712ddf1ffc50941ef7644fb100d7565faba095d764c0fa76348",
-  "formal/Benitoite/Release/Refinement/Surface/CheckFormation.lean": "dc3c22e364339fcec04b62e3524f0abbd0b9e516effc86708a2d20c279c784ac",
-  "formal/Benitoite/Release/Refinement/Surface/CheckFormationBase.lean": "d8f63e2752de0757567a36150ecaa2ef13d46fb4e44b0857ec58be24595bf2e8",
-  "formal/Benitoite/Release/Refinement/Surface/CheckFormationData.lean": "bd8b0a0a5c88a07239d82665b4d56f36210467196eb373b003190ea8aa1cc735",
-  "formal/Benitoite/Release/Refinement/Surface/CheckGuide.lean": "998f3bf42b8d65df733384ff12a0380fab08ac0b41e569cf06975cfeb1caa061",
-  "formal/Benitoite/Release/Refinement/Surface/CheckHandler.lean": "c0e1ce2a3fcce02cb24a2dce2e11911b0194d81bb21540acab18f32963477d28",
-  "formal/Benitoite/Release/Refinement/Surface/CheckInput.lean": "9b4a111f5110b50e5681ec65f3739ba2b2763d3373564b2258fe5c7fe2a250d4",
-  "formal/Benitoite/Release/Refinement/Surface/CheckInterpolation.lean": "8546817d4ca7e8926a885fcbda3afba99a78a7ae7abdbff1211de0add044ccc7",
-  "formal/Benitoite/Release/Refinement/Surface/CheckMaterials.lean": "32ee82158418876618c12b75aecc31d649f2cdfbc90029cd56d8a21553ea25dc",
-  "formal/Benitoite/Release/Refinement/Surface/CheckMaterialsSound.lean": "97840f3149146133bd22c2e53359026da7e5d118e1eda0495b2ecccce4d279b9",
-  "formal/Benitoite/Release/Refinement/Surface/CheckPatternExamples.lean": "8f1e716e9732ab36b9d0aac4b0f2bcf24b8caab08051a993d78e0c61d858c0e9",
-  "formal/Benitoite/Release/Refinement/Surface/CheckPatternFacts.lean": "4ec1570869ab515d293ea334e99ed9ac68b933cefd69e1bed4ea3ebb06dd07dd",
-  "formal/Benitoite/Release/Refinement/Surface/CheckPatterns.lean": "065614d48d8e39bb30c345c1bc244af0fc783aa5984741fe6a96dcb72f9a867e",
-  "formal/Benitoite/Release/Refinement/Surface/CheckProgramSound.lean": "1e24600dc22b8316ac7a41e08b44ad3f94efdb0ada32abda55cfbe047728535d",
-  "formal/Benitoite/Release/Refinement/Surface/CheckResultSound.lean": "316a85abed228b91f57f6670e279dbb051b13988e1ec439b64ecfd4074ada6b2",
-  "formal/Benitoite/Release/Refinement/Surface/CheckSingle.lean": "9d916b84b94dea71d197569fb5186e6e0920799f5b7dda69ba2eec8ee81864c7",
-  "formal/Benitoite/Release/Refinement/Surface/CheckSound.lean": "9775991cc8566c425564a483b5cc26584624c68d1ca22128bb650c738ffd7e71",
-  "formal/Benitoite/Release/Refinement/Surface/CheckSoundBase.lean": "024526cec40fd8bd7a63b633601fc2cecb05679f83dfb893e14edfe118c05090",
-  "formal/Benitoite/Release/Refinement/Surface/CheckSoundSupport.lean": "95c54fb037ad409e42924dce69612d422d5db1700d0395157b2dc04c1dfa4725",
-  "formal/Benitoite/Release/Refinement/Surface/CheckSource.lean": "6adc1b5db0783d9214ce124a5b055e1afe0b35415082b7138d94e9920d96331c",
-  "formal/Benitoite/Release/Refinement/Surface/CheckSubtyping.lean": "9348714d791e895f68812c599c766e3ec28086350d5cb5986dfe077c62396006",
-  "formal/Benitoite/Release/Refinement/Surface/CheckSupport.lean": "2bd08c2e8bb05f4621ef37950e01e231ff1b0e8bfce161903996a40155923174",
-  "formal/Benitoite/Release/Refinement/Surface/CheckTables.lean": "57347b232e19eb8cc8a77717df7e9c629007bcb584a1e6fa4149b385e242dd73",
-  "formal/Benitoite/Release/Refinement/Surface/CheckTablesBase.lean": "d02099c98a0f2ef6899a32a22146e5a672e3d2ffe8ac77962aceee4c6dad3566",
-  "formal/Benitoite/Release/Refinement/Surface/CheckTry.lean": "3d2509f23895495b15de90ec49900227ac9bb7cef1eddef9ffaeec80362791ae",
-  "formal/Benitoite/Release/Refinement/Surface/CheckTrySound.lean": "996ebbeb498a9d1db65c1c0c75aa8eea4593dc0f9752ff305f1879cedb231d36",
-  "formal/Benitoite/Release/Refinement/Surface/CheckValueSupport.lean": "95fa2bc197d5e8cd8df7c91ce843169562b6f7262e40d7566bb7667c457db947",
-  "formal/Benitoite/Release/Refinement/Surface/CheckVariance.lean": "5098fcf13dc63a16cb25e5f87d88d7a890b3a5b600f34dc36cbe316618f96979",
-  "formal/Benitoite/Release/Refinement/Surface/Identity.lean": "6d69b6b5d579132feffecfe067ec4d2b272e92385bf12a4920a2bb4b39814219",
-  "formal/Benitoite/Release/Refinement/Surface/ScopeAccept.lean": "b7f94afc625d664317ebfb539983f04aedb0e6e20fd584a2d49df10e13559eb4",
-  "formal/Benitoite/Release/Refinement/Surface/ScopeLower.lean": "7672e528092b98df444cdb60f4ad31ac9f1d548936076e814ffa3a254b828b2b",
-  "formal/Benitoite/Release/Refinement/Surface/ScopeState.lean": "42cc5d78e559cf4d0c35f095b5b6a35ee37aae84a21658d14b9e471ad6aa6f21"
+ "source_snapshot": {
+  "files": 71,
+  "sha256": "1c7aaab5298396065de153133ae6724f6fd16bc55ce1c1e025bf85c5dfd66fa8"
  },
  "public_entries": {
-  "Benitoite.Release.Refinement.Coverage.coverage": 16,
-  "Benitoite.Release.Refinement.Coverage.overlapsFuel": 1,
-  "Benitoite.Release.Refinement.Coverage.retained": 2,
-  "Benitoite.Release.Refinement.Surface.Check.checkArmsAt": 156,
-  "Benitoite.Release.Refinement.Surface.Check.checkArmsAt_sound": 1,
-  "Benitoite.Release.Refinement.Surface.Check.checkBlock": 5,
-  "Benitoite.Release.Refinement.Surface.Check.checkBlockAt": 174,
-  "Benitoite.Release.Refinement.Surface.Check.checkBlockAt_single": 1,
-  "Benitoite.Release.Refinement.Surface.Check.checkBlockAt_sound": 2,
-  "Benitoite.Release.Refinement.Surface.Check.checkClausesAt": 155,
-  "Benitoite.Release.Refinement.Surface.Check.checkClausesAt_sound": 1,
-  "Benitoite.Release.Refinement.Surface.Check.checkEachAt": 5,
-  "Benitoite.Release.Refinement.Surface.Check.checkEachAt_sound": 1,
-  "Benitoite.Release.Refinement.Surface.Check.checkExpr": 5,
-  "Benitoite.Release.Refinement.Surface.Check.checkExprAt": 257,
-  "Benitoite.Release.Refinement.Surface.Check.checkExprAt_single": 1,
-  "Benitoite.Release.Refinement.Surface.Check.checkExprAt_sound": 1,
-  "Benitoite.Release.Refinement.Surface.Check.checkFixedAt": 159,
-  "Benitoite.Release.Refinement.Surface.Check.checkFixedAt_sound": 1,
-  "Benitoite.Release.Refinement.Surface.Check.checkTypesAt": 170,
-  "Benitoite.Release.Refinement.Surface.Check.checkTypesAt_sound": 1,
-  "Benitoite.Release.Refinement.Surface.CheckAccept.Accepted.def_ranges": 1,
-  "Benitoite.Release.Refinement.Surface.CheckAccept.Accepted.method_ranges": 1,
-  "Benitoite.Release.Refinement.Surface.CheckAccept.acceptDef": 6,
-  "Benitoite.Release.Refinement.Surface.CheckAccept.acceptFn": 2,
-  "Benitoite.Release.Refinement.Surface.CheckAccept.acceptMethod": 6,
-  "Benitoite.Release.Refinement.Surface.CheckAccept.acceptProgram": 5,
-  "Benitoite.Release.Refinement.Surface.CheckAccept.checkProgramAccepted": 10,
-  "Benitoite.Release.Refinement.Surface.CheckArguments.dict_sound": 3,
-  "Benitoite.Release.Refinement.Surface.CheckArguments.dicts_sound": 1,
-  "Benitoite.Release.Refinement.Surface.CheckDeclarations.checkDef": 8,
-  "Benitoite.Release.Refinement.Surface.CheckDeclarations.checkDef_sound": 2,
-  "Benitoite.Release.Refinement.Surface.CheckDeclarations.checkImpl": 8,
-  "Benitoite.Release.Refinement.Surface.CheckDeclarations.checkImpl_sound": 2,
-  "Benitoite.Release.Refinement.Surface.CheckSubtyping.LeCertificate.checkAs": 40,
-  "Benitoite.Release.Refinement.Surface.CheckSubtyping.LogicCertificate.result": 5,
-  "Benitoite.Release.Refinement.Surface.CheckTables.Materials.checkProgramAccepted_empty": 1,
-  "Benitoite.Release.Refinement.Surface.CheckTables.Materials.checkProgramAccepted_sound": 1,
-  "Benitoite.Release.Refinement.Surface.CheckTables.Materials.checkProgram_empty": 1,
-  "Benitoite.Release.Refinement.Surface.CheckTables.Materials.checkProgram_empty_contracts": 1,
-  "Benitoite.Release.Refinement.Surface.CheckTables.Materials.checkProgram_sound": 1,
-  "Benitoite.Release.Refinement.Surface.CheckTables.Materials.checkProgram_sound_contracts": 1,
-  "Benitoite.Release.Refinement.Surface.CheckTables.Materials.input": 33,
-  "Benitoite.Release.Refinement.Surface.CheckTables.checkProgram": 21,
-  "Benitoite.Release.Refinement.Surface.CheckTables.effectsCheck": 5,
-  "Benitoite.Release.Refinement.Surface.CheckVariance.check": 5,
-  "Benitoite.Release.Refinement.Surface.ScopeAccept.acceptBody_some": 1,
-  "Benitoite.Release.Refinement.Surface.ScopeAccept.acceptBody_sound": 1,
-  "Benitoite.Release.Refinement.irrefutable": 2,
-  "Benitoite.Release.Refinement.overlaps": 1,
-  "Benitoite.Release.Refinement.usefulReport": 1
+  "Benitoite.Release.Refinement.Coverage.InitialDomain.target_member": {
+   "environment": 1,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Coverage.coverage": {
+   "environment": 16,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Coverage.domainAlternativeReport_sound": {
+   "environment": 1,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Coverage.overlapsFuel": {
+   "environment": 1,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Coverage.retained": {
+   "environment": 6,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.Check.checkArmsAt": {
+   "environment": 156,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.Check.checkArmsAt_sound": {
+   "environment": 1,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.Check.checkBlock": {
+   "environment": 8,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.Check.checkBlockAt": {
+   "environment": 194,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.Check.checkBlockAt_single": {
+   "environment": 1,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.Check.checkBlockAt_sound": {
+   "environment": 2,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.Check.checkBlock_unknown": {
+   "environment": 0,
+   "examples": 1
+  },
+  "Benitoite.Release.Refinement.Surface.Check.checkClausesAt": {
+   "environment": 160,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.Check.checkClausesAt_sound": {
+   "environment": 1,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.Check.checkEachAt": {
+   "environment": 5,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.Check.checkEachAt_sound": {
+   "environment": 1,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.Check.checkExpr": {
+   "environment": 12,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.Check.checkExprAt": {
+   "environment": 275,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.Check.checkExprAt_single": {
+   "environment": 1,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.Check.checkExprAt_sound": {
+   "environment": 1,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.Check.checkExpr_unknown": {
+   "environment": 0,
+   "examples": 1
+  },
+  "Benitoite.Release.Refinement.Surface.Check.checkFixedAt": {
+   "environment": 159,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.Check.checkFixedAt_sound": {
+   "environment": 1,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.Check.checkTypesAt": {
+   "environment": 177,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.Check.checkTypesAt_sound": {
+   "environment": 1,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.Check.proofFailure_malformed": {
+   "environment": 0,
+   "examples": 1
+  },
+  "Benitoite.Release.Refinement.Surface.Check.proofFailure_unknown": {
+   "environment": 2,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.CheckAccept.Accepted.def_ranges": {
+   "environment": 1,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.CheckAccept.Accepted.method_ranges": {
+   "environment": 1,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.CheckAccept.acceptDef": {
+   "environment": 6,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.CheckAccept.acceptFn": {
+   "environment": 2,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.CheckAccept.acceptMethod": {
+   "environment": 6,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.CheckAccept.acceptProgram": {
+   "environment": 6,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.CheckAccept.checkProgramAccepted": {
+   "environment": 12,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.CheckAccept.checkProgramAccepted_unknown": {
+   "environment": 0,
+   "examples": 1
+  },
+  "Benitoite.Release.Refinement.Surface.CheckArguments.dict_sound": {
+   "environment": 3,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.CheckArguments.dicts_sound": {
+   "environment": 1,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.CheckDataHint.inferConstructorHint": {
+   "environment": 2,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.CheckDataHint.inferFieldHint": {
+   "environment": 2,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.CheckDeclarations.checkDef": {
+   "environment": 19,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.CheckDeclarations.checkDef_sound": {
+   "environment": 3,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.CheckDeclarations.checkDef_unknown": {
+   "environment": 1,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.CheckDeclarations.checkImpl": {
+   "environment": 13,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.CheckDeclarations.checkImpl_sound": {
+   "environment": 2,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.CheckDeclarations.checkImpl_unknown": {
+   "environment": 1,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.CheckDiagnostics.guide_malformed_rejected": {
+   "environment": 1,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.CheckDiagnostics.guide_unknown_stopped": {
+   "environment": 1,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.CheckFinite.guide_eq": {
+   "environment": 0,
+   "examples": 1
+  },
+  "Benitoite.Release.Refinement.Surface.CheckFinite.guide_support": {
+   "environment": 3,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.CheckInfer.Failure.toError_unknown": {
+   "environment": 1,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.CheckInfer.Result.toCheck_ok": {
+   "environment": 3,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.CheckInfer.Result.toCheck_unknown": {
+   "environment": 2,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.CheckInfer.inferBlock": {
+   "environment": 4,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.CheckInfer.inferBlockExpected": {
+   "environment": 11,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.CheckInfer.inferDict": {
+   "environment": 22,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.CheckInfer.inferExpr": {
+   "environment": 7,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.CheckInfer.inferHeadGuide": {
+   "environment": 9,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.CheckInfer.inferLe": {
+   "environment": 102,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.CheckInfer.inferValsTel": {
+   "environment": 11,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.CheckInfer.inferValsTys": {
+   "environment": 2,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.CheckInfer.logicProof": {
+   "environment": 89,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.CheckSubtyping.LeCertificate.checkAs": {
+   "environment": 47,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.CheckSubtyping.LogicCertificate.result": {
+   "environment": 11,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.CheckTables.Materials.checkProgramAccepted_empty": {
+   "environment": 1,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.CheckTables.Materials.checkProgramAccepted_sound": {
+   "environment": 1,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.CheckTables.Materials.checkProgram_empty": {
+   "environment": 1,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.CheckTables.Materials.checkProgram_empty_contracts": {
+   "environment": 1,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.CheckTables.Materials.checkProgram_sound": {
+   "environment": 1,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.CheckTables.Materials.checkProgram_sound_contracts": {
+   "environment": 1,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.CheckTables.Materials.input": {
+   "environment": 32,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.CheckTables.checkProgram": {
+   "environment": 25,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.CheckTables.checkProgram_unknown": {
+   "environment": 1,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.CheckTables.effectsCheck": {
+   "environment": 9,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.CheckVariance.check": {
+   "environment": 9,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.ScopeAccept.acceptBody_some": {
+   "environment": 1,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.Surface.ScopeAccept.acceptBody_sound": {
+   "environment": 1,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.irrefutable": {
+   "environment": 2,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.overlaps": {
+   "environment": 1,
+   "examples": 0
+  },
+  "Benitoite.Release.Refinement.usefulReport": {
+   "environment": 1,
+   "examples": 0
+  }
  },
- "record_bytes": 2186293
+ "record_bytes": 187920
 }

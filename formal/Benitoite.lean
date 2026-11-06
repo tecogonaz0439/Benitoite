@@ -964,3 +964,13 @@ import Benitoite.Release.Refinement.RangeSourceProperties
 import Benitoite.Release.Refinement.RangeFunctionExamples
 import Benitoite.Release.Refinement.MainEffects
 import Benitoite.Release.Refinement.EffectSoundnessExamples
+import Benitoite.Release.Refinement.Surface.CheckFinite
+import Benitoite.Release.Refinement.Surface.CheckInferCertificates
+import Benitoite.Release.Refinement.Surface.CheckInfer
+import Benitoite.Release.Refinement.Surface.CheckInferExamples
+import Benitoite.Release.Refinement.Surface.CheckInferRequests
+import Benitoite.Release.Refinement.Surface.CheckDataHint
+import Benitoite.Release.Refinement.Surface.CheckDataHintExamples
+import Benitoite.Release.Refinement.Surface.CheckInferFailure
+import Benitoite.Release.Refinement.Surface.CheckInferResult
+import Benitoite.Release.Refinement.Surface.CheckDiagnostics

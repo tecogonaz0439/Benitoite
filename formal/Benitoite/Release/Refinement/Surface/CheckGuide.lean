@@ -1,3 +1,4 @@
+import Benitoite.Release.Refinement.Surface.CheckInferFailure
 import Benitoite.Release.Refinement.Surface.CheckSource
 
 /-! 表層の検査へ渡す有限の案内。規則名は型付けの規則と一対一に対応する。 -/
@@ -135,6 +136,8 @@ structure Hints where
 /-- ソースを二重に保存せず、選んだ規則とその子の案内だけを保存する。 -/
 inductive Guide where
   | unknown
+  /-- 内部の候補の生成で得た拒否又は停止。型付けの案内としては成功しない。 -/
+  | failure (failure : CheckInfer.Failure)
   | node (rule : Rule) (hints : Hints) (children : List Guide)
 
 def Hints.ty (h : Hints) (i : Nat) : Ty := (h.types[i]?).getD (.base .unit)
@@ -143,7 +146,7 @@ def Hints.eff (h : Hints) (i : Nat) : Eff := (h.effects[i]?).getD Eff.empty
 def Hints.tel (h : Hints) (i : Nat) : Tel := (h.signatures[i]?).getD (.done (.base .unit) Eff.empty)
 def Hints.pred (h : Hints) (i : Nat) : Pred := (h.predicates[i]?).getD .truth
 def Hints.factsAt (h : Hints) (i : Nat) : List Pred := (h.facts[i]?).getD []
-def Hints.proof (h : Hints) (i : Nat) : LogicCertificate := (h.proofs[i]?).getD ⟨.use 0, []⟩
+def Hints.proof (h : Hints) (i : Nat) : LogicCertificate := (h.proofs[i]?).getD ⟨.use 0, [], none⟩
 def Hints.proofsAt (h : Hints) (i : Nat) : List LogicCertificate := (h.proofLists[i]?).getD []
 def Hints.le (h : Hints) (i : Nat) : LeCertificate := (h.subtypes[i]?).getD (.refl (.base .unit))
 def Hints.args (h : Hints) (i : Nat) : List ElemGuide := (h.arguments[i]?).getD []
@@ -162,7 +165,7 @@ structure Hints.Support (s : List Atom) (h : Hints) : Prop where
 
 mutual
   def Guide.Support (s : List Atom) : Guide → Prop
-    | .unknown => True
+    | .unknown | .failure _ => True
     | .node _ h children => h.Support s ∧ GuidesSupport s children
   def GuidesSupport (s : List Atom) : List Guide → Prop
     | [] => True

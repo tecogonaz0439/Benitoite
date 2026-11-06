@@ -1,4 +1,4 @@
-import Benitoite.Release.Refinement.Surface.CheckFormationData
+import Benitoite.Release.Refinement.Surface.CheckDataHint
 
 /-! 型注釈・kind・具体化した依存列の形成の検査。 -/
 namespace Benitoite.Release.Refinement.Surface.CheckFormation
@@ -28,26 +28,27 @@ theorem CtxSupport.declarationSelf {s Γ self} (hΓ : CtxSupport s Γ)
   | none => exact hΓ
   | some a => exact hΓ.extend (ha a rfl)
 
-def fieldCheck (q : Input) (P : Refinement.Program) (Γ : Ctx) (path : List Nat) (t : Term) (ref : FieldRef) : Bool :=
-  match dataCheck q P Γ t (q.hints path), P.cons ref.constructor with
-  | some (d, ts), some cd => match cd.args[ref.position]? with
-    | some a => decide (d = ref.owner ∧ cd.data = ref.owner ∧ cd.ntys = ts.length) &&
-        (wfTy q 0 cd.ntys 0 a && decide ((substTy q ts [] a).HasSort ref.result))
-    | none => false
-  | _, _ => false
+def fieldCheck (q : Input) (P : Refinement.Program) (Γ : Ctx) (_path : List Nat) (t : Term) (ref : FieldRef) : Bool :=
+  match CheckDataHint.inferFieldHint q P Γ t ref with
+  | some hint => CheckDataHint.fieldValid q P Γ t ref hint.val
+  | none => false
 
 theorem fieldCheck_sound {q P C Γ path t ref} (hq : q.Sound P) (hΓ : CtxSupport q.atoms Γ)
     (h : fieldCheck q P Γ path t ref = true) : ref.Declared P C Γ t := by
   unfold fieldCheck at h
   split at h
-  · rename_i d ts cd ht hc
+  · rename_i hint hh
+    unfold CheckDataHint.fieldValid at h
     split at h
-    · rename_i a ha
-      simp only [Bool.and_eq_true, decide_eq_true_eq] at h
-      obtain ⟨hd, hts⟩ := dataCheck_sound hq hΓ (hq.hints path) ht
-      have hs := Ty.SupportList.iff.mp (hq.fields _ _ hc) a (List.mem_of_getElem? ha)
-      refine ⟨ts, cd, a, h.1.1 ▸ hd, hc, h.1.2.1, h.1.2.2, ha, wfTy_sound hs h.2.1, ?_⟩
-      simpa only [substTy_eq (q := q) (es := []) hs hts (by simp)] using h.2.2
+    · rename_i d ts cd ht hc
+      split at h
+      · rename_i a ha
+        simp only [Bool.and_eq_true, decide_eq_true_eq] at h
+        obtain ⟨hd, hts⟩ := dataCheck_sound hq hΓ hint.property ht
+        have hs := Ty.SupportList.iff.mp (hq.fields _ _ hc) a (List.mem_of_getElem? ha)
+        refine ⟨ts, cd, a, h.1.1 ▸ hd, hc, h.1.2.1, h.1.2.2, ha, wfTy_sound hs h.2.1, ?_⟩
+        simpa only [substTy_eq (q := q) (es := []) hs hts (by simp)] using h.2.2
+      · cases h
     · cases h
   · cases h
 
@@ -102,18 +103,23 @@ mutual
       exact ⟨declaredSlot_sound hq hΓ hh.1, declaredSlots_sound hq hΓ hh.2⟩
 end
 
-def constructorCheck (q : Input) (P : Refinement.Program) (Γ : Ctx) (path : List Nat) (t : Term) (c : ConName) : Bool :=
-  match dataCheck q P Γ t (q.hints path), P.cons c with
-  | some (d, _), some cd => decide (cd.data = d)
-  | _, _ => false
+def constructorCheck (q : Input) (P : Refinement.Program) (Γ : Ctx) (_path : List Nat) (t : Term) (c : ConName) : Bool :=
+  match CheckDataHint.inferConstructorHint q P Γ t c with
+  | some hint => match dataCheck q P Γ t hint.val, P.cons c with
+    | some (d, _), some cd => decide (cd.data = d)
+    | _, _ => false
+  | none => false
 
 theorem constructorCheck_sound {q P Γ path t c} (hq : q.Sound P) (hΓ : CtxSupport q.atoms Γ)
     (h : constructorCheck q P Γ path t c = true) :
     ∃ d ts cd, Term.HasData P Γ t d ts ∧ P.cons c = some cd ∧ cd.data = d := by
   unfold constructorCheck at h
   split at h
-  · rename_i d ts cd ht hc
-    exact ⟨d, ts, cd, (dataCheck_sound hq hΓ (hq.hints path) ht).1, hc, of_decide_eq_true h⟩
+  · rename_i hint hh
+    split at h
+    · rename_i d ts cd ht hc
+      exact ⟨d, ts, cd, (dataCheck_sound hq hΓ hint.property ht).1, hc, of_decide_eq_true h⟩
+    · cases h
   · cases h
 
 def declaredPred (q : Input) (P : Refinement.Program) (C : TypeCtx) (Γ : Ctx) (self : Option Ty)

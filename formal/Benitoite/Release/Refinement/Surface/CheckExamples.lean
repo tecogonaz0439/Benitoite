@@ -71,9 +71,6 @@ private def program (r : Range) : Program where
   classes := fun n => if n = "Example.Required" then some classDeclaration else none
   impls := fun n => if n = "Example.UnitRequired" then some (implementation r) else none
 
-private def guide : Guide :=
-  .node .B_Last {} [.node .E_CallDirect {} [.node .Types_nil {} []]]
-
 private def input (r : Range) : Check.Input where
   D := (program r).declarations
   B := builtins
@@ -82,7 +79,6 @@ private def input (r : Range) : Check.Input where
   admitsDec := fun _ _ _ => true
   admitsRDec := fun _ _ => true
   proofSteps := 1
-  guide := fun _ => guide
   defs := ["Example.main"]
   impls := ["Example.UnitRequired"]
   methods := ["run"]
@@ -100,7 +96,7 @@ private def acceptInput : AcceptInput where
 
 private theorem input_sound (r : Range) : (input r).Sound := by
   refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩
-  · refine ⟨?_, ?_, fun _ => trivial⟩
+  · refine ⟨?_, ?_⟩
     · intro c cd h; cases h
     · intro c cd h; cases h
   · refine ⟨⟨?_⟩, ?_, ?_, ?_, ?_, ?_⟩
@@ -193,10 +189,6 @@ private theorem node_support {atoms : List Atom} (rule : Rule) {children : List 
     (h : GuidesSupport atoms children) : (Guide.node rule {} children).Support atoms :=
   ⟨empty_hints_support atoms, h⟩
 
-private theorem guide_support (r : Range) : CheckDeclarations.GuideTableSupport (input r) := by
-  have hh := empty_hints_support []
-  intro path
-  exact ⟨hh, ⟨⟨hh, ⟨⟨hh, trivial⟩, trivial⟩⟩, trivial⟩⟩
 
 private theorem definition_support (r : Range) : CheckDeclarations.DefSupport (input r) (definition r) :=
   ⟨⟨trivial, empty_effect_support _⟩, body_support r⟩
@@ -253,11 +245,11 @@ private theorem declarations_extend (r : Range) :
 /-- 二つのプログラムは、関数と実装メソッドの型付けの検査にともに成功する。 -/
 theorem required_programs_checked :
     CheckTables.checkProgram (input (.path (.tree ["data"]))) (program (.path (.tree ["data"]))) = .ok () ∧
-    CheckTables.checkProgram (input (.path (.tree ["other"]))) (program (.path (.tree ["other"]))) = .ok () := ⟨rfl, rfl⟩
+    CheckTables.checkProgram (input (.path (.tree ["other"]))) (program (.path (.tree ["other"]))) = .ok () := ⟨(by with_unfolding_all rfl), (by with_unfolding_all rfl)⟩
 
 /-- 非空の規則は、正常値を返す実行を持つ。 -/
 theorem required_rule_value : acceptInput.rules "Example.required" = some requiredRule ∧
-    requiredRule.run [.path (.tree ["data"])] [] = some (.const .unit) := ⟨rfl, rfl⟩
+    requiredRule.run [.path (.tree ["data"])] [] = some (.const .unit) := ⟨(by with_unfolding_all rfl), (by with_unfolding_all rfl)⟩
 
 /-- 範囲の受理とは別に、両方の同じ本体は表層の規則で型付く。 -/
 theorem required_programs_typed :
@@ -265,10 +257,10 @@ theorem required_programs_typed :
     (program (.path (.tree ["other"]))).WellTyped builtins (fun _ _ => none) := by
   constructor
   · exact CheckTables.checkProgram_empty (input_sound _) (names_complete _) (definitions_support _)
-      (implementations_support _) (implementations_names_complete _) (guide_support _) (fun _ _ => trivial)
+      (implementations_support _) (implementations_names_complete _)
       rfl required_programs_checked.1
   · exact CheckTables.checkProgram_empty (input_sound _) (names_complete _) (definitions_support _)
-      (implementations_support _) (implementations_names_complete _) (guide_support _) (fun _ _ => trivial)
+      (implementations_support _) (implementations_names_complete _)
       rfl required_programs_checked.2
 
 /-- 同じ成功結果から、宣言表の下での型付けと全本体の受理を得る。 -/
@@ -276,25 +268,25 @@ theorem required_entry_checked :
     CheckTables.CheckedUnder (program (.path (.tree ["data"]))) (input (.path (.tree ["data"]))) ∧
     CheckAccept.Accepted acceptInput (input (.path (.tree ["data"]))) (program (.path (.tree ["data"]))) :=
   checkProgramAccepted_sound (input_sound _) (names_complete _) (definitions_support _)
-    (implementations_support _) (implementations_names_complete _) (guide_support _) (fun _ _ => trivial)
-    (declarations_extend _) (accept_names_complete _) (by rfl)
+    (implementations_support _) (implementations_names_complete _)
+    (declarations_extend _) (accept_names_complete _) (by with_unfolding_all rfl)
 
 /-- 補完のない実入口が、関数と実装メソッドの型付けと必須の範囲判定の受理を同時に返す。 -/
 theorem required_entry_accepted :
     (program (.path (.tree ["data"]))).WellTyped builtins (fun _ _ => none) ∧
     CheckAccept.Accepted acceptInput (input (.path (.tree ["data"]))) (program (.path (.tree ["data"]))) :=
   checkProgramAccepted_empty (input_sound _) (names_complete _) (definitions_support _)
-    (implementations_support _) (implementations_names_complete _) (guide_support _) (fun _ _ => trivial)
-    rfl (accept_names_complete _) (by rfl)
+    (implementations_support _) (implementations_names_complete _)
+    rfl (accept_names_complete _) (by with_unfolding_all rfl)
 
 /-- 実入口で受理した関数と実装メソッドの、全出現・全記録と未記録時の契約を得る。 -/
 theorem required_entry_ranges :
     BodyRanges acceptInput (bodyKey "Example.main") (entryScope 0) (body (.path (.tree ["data"]))) ∧
     BodyRanges acceptInput (bodyKey (acceptInput.methodKey "Example.UnitRequired" "run"))
       (entryScope 0) (body (.path (.tree ["data"]))) :=
-  ⟨required_entry_accepted.2.def_ranges (n := "Example.main") (d := definition (.path (.tree ["data"]))) (by rfl),
+  ⟨required_entry_accepted.2.def_ranges (n := "Example.main") (d := definition (.path (.tree ["data"]))) (by with_unfolding_all rfl),
     required_entry_accepted.2.method_ranges (i := "Example.UnitRequired") (m := "run")
-      (id := implementation (.path (.tree ["data"]))) (body := body (.path (.tree ["data"]))) (by rfl) (by rfl)⟩
+      (id := implementation (.path (.tree ["data"]))) (body := body (.path (.tree ["data"]))) (by with_unfolding_all rfl) (by with_unfolding_all rfl)⟩
 
 /-- 型付けが同じく成功するもう一方の契約は、実入口で範囲の不一致として拒否する。 -/
 theorem required_entry_rejected :
@@ -302,9 +294,9 @@ theorem required_entry_rejected :
       .error (.cover ⟨"Example.main", 0⟩ .notCovered) ∧
       ¬ CheckAccept.Accepted acceptInput (input (.path (.tree ["other"])))
         (program (.path (.tree ["other"]))) := by
-  refine ⟨rfl, ?_⟩
+  refine ⟨(by with_unfolding_all rfl), ?_⟩
   intro h
-  have hh := h.1 "Example.main" (definition (.path (.tree ["other"]))) (by rfl)
+  have hh := h.1 "Example.main" (definition (.path (.tree ["other"]))) (by with_unfolding_all rfl)
   cases hh
 
 private def materials (r : Range) : CheckTables.Materials where
@@ -335,7 +327,6 @@ private theorem materials_input (r : Range) : (materials r).input (input r) = in
 private theorem materials_input_sound (r : Range) : ((materials r).input (input r)).Sound :=
   (materials r).input_sound (input r)
     (by intro c cd hc; cases hc)
-    (input_sound r).formation.hints
     (by rw [materials_declarations r]; simpa only [input] using (input_sound r).tables)
     (input_sound r).sat (input_sound r).admits (input_sound r).ranges (input_sound r).operators
 
@@ -347,8 +338,6 @@ private theorem materials_implementations_support (r : Range) :
     ∀ i id, (materials r).program.impls i = some id → CheckDeclarations.ImplSupport ((materials r).input (input r)) id := by
   simpa only [materials_input r, materials_program r] using implementations_support r
 
-private theorem materials_guides_support (r : Range) : CheckDeclarations.GuideTableSupport ((materials r).input (input r)) := by
-  simpa only [materials_input r] using guide_support r
 
 /-- 有限材料から作った全定義・全実装の入口も、非空の規則表の下で型付けと受理を返す。 -/
 theorem required_materials_entry_checked :
@@ -357,7 +346,7 @@ theorem required_materials_entry_checked :
     CheckAccept.Accepted acceptInput ((materials (.path (.tree ["data"]))).input (input (.path (.tree ["data"]))))
       (materials (.path (.tree ["data"]))).program :=
   CheckTables.Materials.checkProgramAccepted_sound (materials_input_sound _) (materials_definitions_support _)
-    (materials_implementations_support _) (materials_guides_support _) (fun _ _ => trivial) (by rfl)
+    (materials_implementations_support _) (by with_unfolding_all rfl)
 
 /-- 補完のない同じ有限材料では、自身の宣言表での型付けと全本体の受理を得る。 -/
 theorem required_materials_entry_accepted :
@@ -365,7 +354,7 @@ theorem required_materials_entry_accepted :
     CheckAccept.Accepted acceptInput ((materials (.path (.tree ["data"]))).input (input (.path (.tree ["data"]))))
       (materials (.path (.tree ["data"]))).program :=
   CheckTables.Materials.checkProgramAccepted_empty (materials_input_sound _) (materials_definitions_support _)
-    (materials_implementations_support _) (materials_guides_support _) (fun _ _ => trivial) rfl rfl (by rfl)
+    (materials_implementations_support _) rfl rfl (by with_unfolding_all rfl)
 
 private def auxiliaryInput : Check.Input := input (.path (.tree ["data"]))
 
@@ -379,7 +368,7 @@ theorem auxiliary_types :
     (checkTypesAt_sound (q := auxiliaryInput) (rows := []) (Δ := []) (C := []) (Γ := []) (Φ := []) (R := none) (path := []) (ε := Eff.empty) (es := .cons .unit .nil) (as := [.base .unit]) (g := .node .Types_cons {} [unitGuide, .node .Types_nil {} []])
       (input_sound _) (by intro i kind h; cases i <;> cases h) (CtxSupport.empty _) trivial
       ⟨trivial, trivial⟩ ⟨trivial, trivial⟩ (empty_effect_support _)
-      (node_support _ ⟨node_support _ trivial, node_support _ trivial, trivial⟩) (by rfl))
+      (node_support _ ⟨node_support _ trivial, node_support _ trivial, trivial⟩) (by with_unfolding_all rfl))
 
 /-- 同じ型を持つ非空の式の列を検査する。 -/
 theorem auxiliary_each :
@@ -389,7 +378,7 @@ theorem auxiliary_each :
     (checkEachAt_sound (q := auxiliaryInput) (rows := []) (Δ := []) (C := []) (Γ := []) (Φ := []) (R := none) (path := []) (ε := Eff.empty) (es := .cons .unit .nil) (a := .base .unit) (g := .node .Each_cons {} [unitGuide, .node .Each_nil {} []])
       (input_sound _) (by intro i kind h; cases i <;> cases h) (CtxSupport.empty _) trivial
       ⟨trivial, trivial⟩ trivial (empty_effect_support _)
-      (node_support _ ⟨node_support _ trivial, node_support _ trivial, trivial⟩) (by rfl))
+      (node_support _ ⟨node_support _ trivial, node_support _ trivial, trivial⟩) (by with_unfolding_all rfl))
 
 /-- 固定した式と穴を持つ引数の列で、固定した式の型付けを得る。 -/
 theorem auxiliary_fixed :
@@ -400,7 +389,7 @@ theorem auxiliary_fixed :
       (g := .node .Fixed_expr {} [unitGuide, .node .Fixed_hole {} [.node .Fixed_nil {} []]])
       (input_sound _) (by intro i kind h; cases i <;> cases h) (CtxSupport.empty _) trivial
       ⟨trivial, trivial, trivial⟩ ⟨trivial, trivial⟩ (empty_effect_support _)
-      (node_support _ ⟨node_support _ trivial, node_support _ ⟨node_support _ trivial, trivial⟩, trivial⟩) (by rfl))
+      (node_support _ ⟨node_support _ trivial, node_support _ ⟨node_support _ trivial, trivial⟩, trivial⟩) (by with_unfolding_all rfl))
 
 /-- 正常なUnit値を照合する非空の腕は、scrutineeを束縛した文脈で型付く。 -/
 theorem auxiliary_arms :
@@ -412,7 +401,7 @@ theorem auxiliary_arms :
       (input_sound _) (by intro i kind h; cases i <;> cases h)
       ((CtxSupport.empty _).extend (a := .base .unit) trivial) trivial
       ⟨trivial, trivial, trivial⟩ trivial trivial (empty_effect_support _)
-      (node_support _ ⟨node_support _ ⟨node_support _ trivial, trivial⟩, node_support _ trivial, trivial⟩) (by rfl))
+      (node_support _ ⟨node_support _ ⟨node_support _ trivial, trivial⟩, node_support _ trivial, trivial⟩) (by with_unfolding_all rfl))
 
 /-- 空のハンドラ節に対する適用。空の列の規則だけを使う自明な場合である。 -/
 theorem auxiliary_empty_clauses :
@@ -421,6 +410,6 @@ theorem auxiliary_empty_clauses :
   simpa only [CheckAdmissible.NoFailCtxOf_nil] using
     (checkClausesAt_sound (q := auxiliaryInput) (rows := []) (Δ := []) (C := []) (Γ := []) (Φ := []) (R := none) (path := []) (ε := Eff.empty) (cs := .nil) (εbody := Eff.empty) (a := .base .unit) (g := .node .Clauses_nil {} [])
       (input_sound _) (by intro i kind h; cases i <;> cases h) (CtxSupport.empty _) trivial trivial
-      (empty_effect_support _) trivial (empty_effect_support _) (node_support _ trivial) (by rfl))
+      (empty_effect_support _) trivial (empty_effect_support _) (node_support _ trivial) (by with_unfolding_all rfl))
 
 end Benitoite.Release.Refinement.Surface.CheckExamples

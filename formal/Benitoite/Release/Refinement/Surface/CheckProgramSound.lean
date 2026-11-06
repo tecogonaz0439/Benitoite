@@ -33,14 +33,13 @@ theorem checkProgram_sound {q : Check.Input} {p : Program}
     (hd : ∀ n d, p.defs n = some d → DefSupport q d)
     (hi : ∀ n id, p.impls n = some id → ImplSupport q id)
     (him : ∀ n id, p.impls n = some id → ImplNamesComplete q id)
-    (hg : GuideTableSupport q) (hsg : ∀ i s, (q.superGuides i s).Support q.formation.atoms)
     (hext : Extends q.D p.declarations) (h : checkProgram q p = .ok ()) : CheckedUnder p q := by
   obtain ⟨hv, he, hdefs, himpls⟩ := program_parts h
   refine ⟨CheckVariance.check_sound hq.formation hn.dataNames hn.ctorNames hv, ?_, hext, ?_, ?_⟩
   · intro n d hget
     obtain ⟨path, hp⟩ := checkNamed_sound hdefs n (hn.defs n d hget) d hget
     exact checkDef_sound ((hq.withView _).withProofSteps _)
-      ⟨(hd n d hget).signature, (hd n d hget).body⟩ hg hp
+      ⟨(hd n d hget).signature, (hd n d hget).body⟩ hp
   · apply effectsCheck_sound (ho := hn.operations) (h := he)
     intro l os hget
     have heffects : q.D.effects = p.effects := congrArg Refinement.Program.effects hext.2.2.1
@@ -48,7 +47,7 @@ theorem checkProgram_sound {q : Check.Input} {p : Program}
     exact hn.effects l os hget
   · intro n id hget
     obtain ⟨path, hp⟩ := checkNamed_sound himpls n (hn.impls n id hget) id hget
-    exact checkImpl_sound hq (hi n id hget) (him n id hget) hg (hsg n) hp
+    exact checkImpl_sound hq (hi n id hget) (him n id hget) hp
 
 /-- 宣言の補完が無いとき、成功したプログラムは自身の宣言表で型付く。 -/
 theorem checkProgram_empty {q : Check.Input} {p : Program}
@@ -56,10 +55,9 @@ theorem checkProgram_empty {q : Check.Input} {p : Program}
     (hd : ∀ n d, p.defs n = some d → DefSupport q d)
     (hi : ∀ n id, p.impls n = some id → ImplSupport q id)
     (him : ∀ n id, p.impls n = some id → ImplNamesComplete q id)
-    (hg : GuideTableSupport q) (hsg : ∀ i s, (q.superGuides i s).Support q.formation.atoms)
     (hD : q.D = p.declarations)
     (h : checkProgram q p = .ok ()) : p.WellTyped q.B q.opPrim :=
-  (checkProgram_sound hq hn hd hi him hg hsg (by rw [hD]; exact Extends.refl _) h).wellTyped hD
+  (checkProgram_sound hq hn hd hi him (by rw [hD]; exact Extends.refl _) h).wellTyped hD
 
 /-- 全実装の実際のメソッド名は、クラスの同じメソッドの契約名と一致する。 -/
 theorem checkProgram_contracts {q : Check.Input} {p : Program}
@@ -77,10 +75,9 @@ theorem checkProgram_sound_contracts {q : Check.Input} {p : Program}
     (hd : ∀ n d, p.defs n = some d → DefSupport q d)
     (hi : ∀ n id, p.impls n = some id → ImplSupport q id)
     (him : ∀ n id, p.impls n = some id → ImplNamesComplete q id)
-    (hg : GuideTableSupport q) (hsg : ∀ i s, (q.superGuides i s).Support q.formation.atoms)
     (hext : Extends q.D p.declarations) (h : checkProgram q p = .ok ()) :
     CheckedUnder p q ∧ ∀ i id, p.impls i = some id → ContractsMatch q i id :=
-  ⟨checkProgram_sound hq hn hd hi him hg hsg hext h, checkProgram_contracts hn him h⟩
+  ⟨checkProgram_sound hq hn hd hi him hext h, checkProgram_contracts hn him h⟩
 
 /-- 自身の宣言表での型付けと、実際のメソッド名の一致を同時に得る。 -/
 theorem checkProgram_empty_contracts {q : Check.Input} {p : Program}
@@ -88,10 +85,9 @@ theorem checkProgram_empty_contracts {q : Check.Input} {p : Program}
     (hd : ∀ n d, p.defs n = some d → DefSupport q d)
     (hi : ∀ n id, p.impls n = some id → ImplSupport q id)
     (him : ∀ n id, p.impls n = some id → ImplNamesComplete q id)
-    (hg : GuideTableSupport q) (hsg : ∀ i s, (q.superGuides i s).Support q.formation.atoms)
     (hD : q.D = p.declarations)
     (h : checkProgram q p = .ok ()) :
     p.WellTyped q.B q.opPrim ∧ ∀ i id, p.impls i = some id → ContractsMatch q i id :=
-  ⟨checkProgram_empty hq hn hd hi him hg hsg hD h, checkProgram_contracts hn him h⟩
+  ⟨checkProgram_empty hq hn hd hi him hD h, checkProgram_contracts hn him h⟩
 
 end Benitoite.Release.Refinement.Surface.CheckTables

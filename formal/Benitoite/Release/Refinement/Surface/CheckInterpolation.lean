@@ -224,6 +224,7 @@ theorem checkSpreadAt_sound {q C Γ0 t ds k Γ Φ before spread after result e p
     SpreadTy q.D q.B C Γ0 t ds k Γ Φ before spread after result e := by
   cases guide with
   | unknown => cases h
+  | failure _ => cases h
   | node rule hint children =>
     cases rule <;> try cases h
     case Spread_only =>
@@ -286,6 +287,7 @@ theorem checkJoinAt_sound {q C Γ0 t k Γ Φ depth left rights e path guide}
     JoinTy q.D q.B C Γ0 t k Γ Φ depth left rights e := by
   cases guide with
   | unknown => cases h
+  | failure _ => cases h
   | node rule hint children =>
     cases rule <;> try cases h
     case Join_last =>
@@ -329,6 +331,7 @@ theorem checkJoinPartsAt_sound {q caller C Γ0 k Γ Φ values e path guide}
     JoinPartsTy q.D q.B (CheckAdmissible.NoFailCtxOf caller) C Γ0 q.opPrim k Γ Φ values e := by
   cases guide with
   | unknown => cases h
+  | failure _ => cases h
   | node rule hint children =>
     cases rule <;> try cases h
     case JoinParts_empty =>
@@ -374,6 +377,7 @@ theorem checkInterpAt_sound {q caller C Γ0 k Γ Φ parts values converters acc 
     InterpTy q.D q.B (CheckAdmissible.NoFailCtxOf caller) C Γ0 q.opPrim k Γ Φ parts values converters acc e := by
   cases guide with
   | unknown => cases h
+  | failure _ => cases h
   | node rule hint children =>
     cases rule <;> try cases h
     case Interp_done =>

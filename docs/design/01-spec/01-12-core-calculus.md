@@ -3457,11 +3457,19 @@ Lean の捕捉を持つ実行関係の `Step.E_Lam` は、`q.view = .app f ws`�
 
 ### 篩を含む表層の検査と受理
 
-【決定】篩付きの型の情報を付けた表層の検査は、`Benitoite.Release.Refinement.Surface.Check` の `checkExprAt`・`checkBlockAt`・`checkTypesAt`・`checkEachAt`・`checkFixedAt`・`checkArmsAt`・`checkClausesAt` と、辞書の二つの検査で定める。各位置の案内 `Guide` は、選んだ規則、型・効果・述語などの有限の情報、子の案内、論理と部分型の生の証明書を持つ。ソース又は型付けの証明を二重に格納しない。再帰は子の案内へ進む構造再帰であり、案内が無い場合と、照合に成功しない場合を成功と扱わない。式とブロックの公開入口 `checkExpr`・`checkBlock` は、その位置の型と効果を再検査し、成功した同じ組を返す。
+【決定】篩付きの型の情報を付けた表層の検査は、`Benitoite.Release.Refinement.Surface.Check` の `checkExprAt`・`checkBlockAt`・`checkTypesAt`・`checkEachAt`・`checkFixedAt`・`checkArmsAt`・`checkClausesAt` と、辞書の二つの検査で定める。各位置の案内 `Guide` は、選んだ規則、型・効果・述語などの有限の情報、子の案内、論理と部分型の生の証明書を持つ。ソース又は型付けの証明を二重に格納しない。再帰は子の案内へ進む構造再帰であり、案内が無い場合と、照合に成功しない場合を成功と扱わない。式とブロックの公開入口 `checkExpr`・`checkBlock` は、`CheckInfer.inferExpr`・`inferBlock` により、ソースと宣言の署名から型・効果・案内を計算する。入力は規則の木や位置ごとの中間の型・効果を持たず、論理の証明書だけを検査位置ごとの表から読む。計算した案内を `checkExprAt`・`checkBlockAt` で再検査し、成功した型と効果の組を返す。
+
+`CheckFinite` は、案内に現れる型・効果を有限の原子の一覧に対する表現へ写し、その結果の支持を入力条件によらず示す。支持を満たす案内では写す前後が等しい（`guide_eq`）。実入口の健全性は、計算した案内のこの支持と `guideSound` を合成して得る。案内の支持を外部の前提に足さない。宣言の本体は `inferBlockExpected` が署名の結果型・効果を末尾の式へ渡し、値の篩の導入も同じ規則で再検査する。ハンドラの推論は、継続ごとの再開の引数の効果を集めて反復し、生成した案内で厳密な検査を行う。
+
+`CheckDataHint` は、項・宣言・値文脈から、欄の射影と構成子の判定に必要な型の候補を支持の証明とともに生成する。形成の入力には、構成子の一覧と原子の一覧を置く。位置ごとの型の案内を置かず、生成した候補を `dataCheck` で再検査する。
 
 検査は `Surface.Rules` の式72規則、ブロック11規則、列・リストの要素・固定の式・腕・節の12規則を扱う。`guideSound` は、全ての案内について七つの判断を同時に証明する。各 `check*At_sound` は、宣言と組み込みの表の有限支持、ソースの注釈・案内・文脈・結果型と効果の有限支持、検査成功から、同じソースと文脈での表層の型付けを導く。入力の条件には、構成子の一覧の全件性、型クラスと組み込みの許容判定の Bool と既存の `sat`・`admits`・`admitsR` との対応、演算子が返す型引数の有限支持を含む。型付け又は含意の正しさは入力に要求しない。型・依存列・効果・型の列の全構成子について形成・宣言済み・kind・行の条件を検査し、辞書・値引数・依存列引数・呼出しの頭、パターン、リスト展開と補間の各補助判断へ接続する。
 
-部分型は、有限の `LeCertificate`・依存列の証明書・型引数の証明書を再検査して `Ty.LeQ` などの判断へ接続する。篩の含意は `LogicCertificate.result` が `checkAccounted` を呼んで調べる。結果は成功、打ち切り等による `unknown`、不正な証明書の拒否に分かれ、成功だけが型付けの根拠になる。関数の上限は関数ごとの入力から選び、宣言の `proofSteps` の正の指定があればそれを優先する。0の明示指定は拒否する。基本操作列の計上と実装の全実作業との一致は「篩の係数と基本操作の計上」で定める別の条件であり、生の操作列の検査だけから実作業全体の上限は結論しない。
+部分型は、有限の `LeCertificate`・依存列の証明書・型引数の証明書を再検査して `Ty.LeQ` などの判断へ接続する。篩の含意は `LogicCertificate.result` が `checkAccounted` を呼んで調べる。結果は成功、会計の打ち切りによる `unknown`、不正な証明書の拒否に分かれ、成功だけが型付けの根拠になる。関数の上限は関数ごとの入力から選び、宣言の `proofSteps` の正の指定があればそれを優先する。0の明示指定は拒否する。基本操作列の計上と実装の全実作業との一致は「篩の係数と基本操作の計上」で定める別の条件であり、生の操作列の検査だけから実作業全体の上限は結論しない。
+
+交換から読む `ExchangeCertificate` は、論理の証明と基本操作列だけを持つ。問い合わせの位置・前提・結論は推論が付ける内部の `LogicCertificate` に保持し、型付けの証拠には使わない。内部の推論の結果は拒否と打ち切りを分け、各段の結合でその種類を保つ。再検査に失敗した案内では `CheckDiagnostics.guideDecision` が全ての論理の問い合わせを調べる。実際に不正と判定した証明書があれば拒否し、それがなく会計の打ち切りがあれば `unknown` とする。会計の打ち切り時に未再生の生証明書を不正と断定しない。
+
+`checkExpr_unknown`・`checkBlock_unknown`・`checkDef_unknown`・`checkImpl_unknown`・`checkProgram_unknown`・`checkProgramAccepted_unknown` は、各入口の `unknown` に、同じ入力の推論の打ち切り又は生成した問い合わせの会計の打ち切りがあることを示す。他の型の不整合がないことや、打ち切りだけが不受理の原因であることは結論しない。
 
 `checkExprAt_single`・`checkBlockAt_single` は、成功した結果の型と効果が、全ての子で同じ正規形の Fail 型と署名由来の行の条件を満たすことを示す（`SingleTy`・`SingleEff`）。宣言の入口 `CheckDeclarations.checkDef` は依存列の引数を順に束縛し、署名由来の `QTel` で本体を検査する。`checkImpl` は対象の kind、辞書の注釈、全メソッドと全上位辞書、実際の引数名と宣言の契約名の一致を検査する。`checkDef_sound`・`checkImpl_sound` は同じ定義と実装の `WellTyped` を導き、`checkImpl_contracts` は実際の名前の一致を導く。
 
@@ -3584,6 +3592,8 @@ structure PrimSig.Scoped (P : Program) (s : PrimSig) : Prop where
 `Benitoite.Release.Refinement.Coverage.coverage P ctors view a ps` は、型の初期領域と行列の有用性から `exhaustive`・反例の抽象的な形を持つ `nonExhaustive`・`unknown` のいずれかを返す。初期領域は通常の型、偽の篩による空型、Month、非空 List、自己の長さが閉じた整数に等しい List の五つである。長さは任意の Int を量化し、負の長さの型は値を持たない。観測できない述語は通常の型の判定へ渡す。反例の抽象的な形から、実行時の値の実在は結論しない。
 
 `coverage_sound` は、任意の宣言 P・型 a・パターン列 ps について、構成子の一覧が P の全ての構成子を含むことと、判定が `exhaustive` であることから `Exhaustive P a ps` を導く。`coverage_extension_sound` は、既存の構成子の宣言を保ち、view が許す型にだけ構成子を加える任意の拡張先 Q（`ConstructorExtension P Q view`）について、同じ型とパターン列の `Exhaustive Q a ps` を導く。拡張先の構成子の有限列挙は要求しない。`typed_nonempty_coverage` は、開いた文脈での元の List の型付け、同じ値の項への観測、非空の自己述語の sort と宣言済みの条件、文脈の事実からの含意を受け、同じ値の非空型の型付けと判定したパターン列の網羅性を返す。
+
+照合の報告 `checkMatchWithView` の未被覆・到達しない選択肢・覆っている腕の説明と、束縛の左辺の `irrefutableWithView` は、同じ `initialDomain` を読む。`InitialDomain.target` は領域内の元の候補の照合を失わない候補を既存のパターンで表し、`domainAlternativeReport` が先行するパターンに対する有用性を調べる。Month の整数区間を切り、非空 List の空候補を除き、閉じた長さの List の残りの部分をワイルドカードの列で具体化する。扱わない候補の形は保守的な通常の判定へ渡す。領域内に値を持たない候補には、覆っている腕として先行腕を列挙しない。`checkMatchWithView_exhaustive_sound`・`checkMatchWithView_unreachable_sound`・`irrefutableWithView_sound` は、元の篩付きの型で量化した網羅性と選択不能性を導く。三値の `alternatives` と `retained` も同じ候補の判定を共有する。
 
 腕又は選択肢を除くのは、先行する腕だけで覆われたことを判定が `exhaustive` と答えた場合に限る。`keepAlternative`・`retainedAlternatives`・`retained` は `unknown` を残し、`unknown_keeps_alternative`・`unknown_keeps_arms` は全ての入力の一覧についてこの保守性を示す。燃料切れは反例の有無にかかわらず `unknown` となる。理由: 確認できなかったことを、到達できないことの根拠にしないためである。
 

@@ -1,6 +1,6 @@
 import Benitoite.Release.Refinement.Surface.CheckGuide
 
-/-! 検査器が読む宣言・組み込みの表と、ソース位置ごとの有限な案内。 -/
+/-! 検査器が読む宣言・組み込みの表と、論理の証明書。 -/
 namespace Benitoite.Release.Refinement.Surface.Check
 
 structure Input where
@@ -12,8 +12,8 @@ structure Input where
   admitsDec : CheckArguments.AdmitsDec := fun _ _ _ => false
   admitsRDec : CheckArguments.RangeAdmitsDec := fun _ _ => false
   proofSteps : Nat
-  guide : List Nat → Guide := fun _ => .unknown
-  inferred : List Nat → Ty × Eff := fun _ => (.base .unit, Eff.empty)
+  /-- 各論理の検査位置の証明書。規則の案内と中間の型・効果は含めない。 -/
+  logicCertificates : List Nat → Nat → Option CheckSubtyping.ExchangeCertificate := fun _ _ => none
   defs : List FunName := []
   impls : List ImplName := []
   effects : List EffName := []
@@ -25,7 +25,6 @@ structure Input where
   methodParamNames : ImplName → MethName → List String := fun _ _ => []
   functionSteps : FunName → Nat := fun _ => proofSteps
   methodSteps : ImplName → MethName → Nat := fun _ _ => proofSteps
-  superGuides : ImplName → ClassName → CheckArguments.DictGuide := fun _ _ => .local
 
 /-- 材料の有限支持と既存の型クラス・組み込みの許容判定との対応。型付けや証明書の健全性は仮定しない。 -/
 structure Input.Sound (q : Input) : Prop where

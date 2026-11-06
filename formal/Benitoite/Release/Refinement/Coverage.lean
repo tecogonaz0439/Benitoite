@@ -1,5 +1,7 @@
 import Benitoite.Release.Refinement.CoverageRefinement
 import Benitoite.Release.Refinement.ScopePublicTyping
+import Benitoite.Release.Refinement.ClosedDecidable
+import Benitoite.Release.Refinement.TermStructuralEq
 
 /-!
 # 篩付きの型の網羅性の有限判定
@@ -1600,6 +1602,143 @@ def useful (P : Program) (ctors : DataName → List ConName) (tys : List Ty)
     (rows : List (List Pat)) (q : List Pat) : Option (List CoverageWitness) :=
   usefulWithView P ctors closedView tys rows q
 
+namespace Coverage
+
+/-- 長さが閉じた整数 n に等しいという篩。 -/
+def lengthType (a : Ty) (n : Int) : Ty :=
+  .refined (.list a) (.eq (.measure .listLength (.var 0)) (.integer n))
+
+/-- 要素を制約しない、ちょうど n 個の List のパターン。 -/
+def exactLengthPattern (n : Nat) : Pat := .list (List.replicate n .wild) none []
+
+private theorem length_eq_eval (xs : List Val) (n : Int) :
+    (Pred.eq (.measure .listLength (.var 0)) (.integer n)).evalWith
+      (selfModel (fun _ => none) (.list xs)) = some (decide ((xs.length : Int) = n)) := by
+  simp [Pred.evalWith, Pred.atomReady, Pred.atomValue, termReady, integerAs, observeAs,
+    selfModel, selfObservation, Val.toTerm?, Term.observe, Term.interpret, Observation.sort,
+    Observation.measure, MatchFacts.observeSlots_length, Val.toTermSlots_eq_map]
+
+/-- 閉じた長さは任意であり、要素の観測可能性を要求しない。負の長さの型は空である。 -/
+theorem length_exhaustive (P : Program) (a : Ty) (n : Int) :
+    Exhaustive P (lengthType a n) [exactLengthPattern n.toNat] := by
+  intro v hv
+  obtain ⟨hc, hp⟩ := hv.refined_inv _ _ rfl
+  obtain ⟨xs, rfl, _⟩ := hc.list_inv _ rfl
+  have hn : (xs.length : Int) = n := by
+    change (Pred.eq (.measure .listLength (.var 0)) (.integer n)).evalWith _ ≠ some false at hp
+    rw [length_eq_eval] at hp
+    simpa using hp
+  have hlen : xs.length = n.toNat := by omega
+  refine ⟨exactLengthPattern n.toNat, by simp, ?_⟩
+  have hm : (matchList (List.replicate n.toNat .wild) xs).isSome = true :=
+    matchList_wild (by simp [isWild]) (by simpa using hlen.symm)
+  simp [exactLengthPattern, matchVal, ← hlen, matchList]
+
+/-- 型の篩で制限された初期領域。plain は篩を芯へ忘れた通常の行列判定へ渡す。 -/
+inductive InitialDomain : Ty → Type where
+  | plain (a : Ty) : InitialDomain a
+  | empty (a : Ty) : InitialDomain (.refined a .falsity)
+  | month : InitialDomain monthType
+  | nonempty (a : Ty) : InitialDomain (nonemptyType a)
+  | length (a : Ty) (n : Int) : InitialDomain (lengthType a n)
+
+/-- 初期領域を型の形と有限な述語の構文から選ぶ。 -/
+def initialDomain : (a : Ty) → InitialDomain a
+  | .refined a .falsity => .empty a
+  | .refined (.base .integer) p =>
+      if hp : predEq p monthPredicate = true then ((predEq_spec _ _).mp hp).symm ▸ InitialDomain.month else .plain _
+  | .refined (.list a) p =>
+      if hp : predEq p nonemptyPredicate = true then ((predEq_spec _ _).mp hp).symm ▸ InitialDomain.nonempty a
+      else match p with
+      | .eq (.measure .listLength (.var 0)) (.integer n) => .length a n
+      | _ => .plain _
+  | a => .plain a
+
+def InitialDomain.baseType {a : Ty} : InitialDomain a → Ty
+  | .plain a | .empty a => a
+  | .month => .base .integer
+  | .nonempty a | .length a _ => .list a
+
+def InitialDomain.query {a : Ty} : InitialDomain a → Pat
+  | .plain _ | .empty _ => .wild
+  | .month => monthPattern
+  | .nonempty _ => headRestPattern
+  | .length _ n => exactLengthPattern n.toNat
+
+theorem InitialDomain.member {P : Program} {a : Ty} (d : InitialDomain a) {v : Val}
+    (hv : Inhabits P a.norm v) :
+    Inhabits P d.baseType v ∧ (matchVal d.query v).isSome = true := by
+  cases d with
+  | plain a => exact ⟨(Inhabits.norm_all_iff _ _).mp hv, rfl⟩
+  | empty a =>
+      obtain ⟨p, hp, _⟩ := empty_refinement_exhaustive P a v hv
+      cases hp
+  | month =>
+      obtain ⟨p, hp, hm⟩ := month_exhaustive P v hv
+      cases List.mem_singleton.mp hp
+      exact ⟨(((Inhabits.norm_all_iff _ _).mp hv).refined_inv _ _ rfl).1, hm⟩
+  | nonempty a =>
+      obtain ⟨p, hp, hm⟩ := nonempty_exhaustive P a v hv
+      cases List.mem_singleton.mp hp
+      exact ⟨(((Inhabits.norm_all_iff _ _).mp hv).refined_inv _ _ rfl).1, hm⟩
+  | length a n =>
+      obtain ⟨p, hp, hm⟩ := length_exhaustive P a n v hv
+      cases List.mem_singleton.mp hp
+      exact ⟨(((Inhabits.norm_all_iff _ _).mp hv).refined_inv _ _ rfl).1, hm⟩
+
+/-- 初期領域の問いを行列へ渡す。空型は値を持たないので、空の腕も網羅的である。 -/
+def domainReport (P : Program) (ctors : DataName → List ConName) (view : CoverageView)
+    {a : Ty} (d : InitialDomain a) (ps : List Pat) : UsefulnessResult :=
+  match d with
+  | .empty _ => ⟨none, false⟩
+  | _ => usefulReportWithView P ctors view [d.baseType] (ps.map (fun p => [p])) [d.query]
+
+
+/-- 閉区間の端をMonthの初期領域へ切り詰める。 -/
+def monthTarget (p : Pat) : Option Pat :=
+  if isWild p then some monthPattern else
+  match p with
+  | .const (.integer n) => if 1 ≤ n.toInt ∧ n.toInt ≤ 12 then some p else none
+  | .range (.integer lo) (.integer hi) =>
+      let lo := if lo.toInt < 1 then (⟨1, by decide⟩ : Integer64Value) else lo
+      let hi := if 12 < hi.toInt then (⟨12, by decide⟩ : Integer64Value) else hi
+      if Integer64Value.toInt lo ≤ Integer64Value.toInt hi then some (.range (.integer lo) (.integer hi)) else none
+  | _ => some p
+
+/-- 初期領域内での元の候補の照合を保つ候補。扱う形では領域で制限し、他の形は保守的に残す。 -/
+def InitialDomain.target {a : Ty} (d : InitialDomain a) (p : Pat) : Option Pat :=
+  match d with
+  | .plain _ => some p
+  | .empty _ => none
+  | .month => monthTarget p
+  | .nonempty _ =>
+      if isWild p then some headRestPattern else
+      match p with
+      | .list before none after => if before.length + after.length = 0 then none else some p
+      | .list [] (some _) [] => some headRestPattern
+      | _ => some p
+  | .length _ n =>
+      if n < 0 then none else
+      if isWild p then some (exactLengthPattern n.toNat) else
+      match p with
+      | .list before rest after =>
+          let count := before.length + after.length
+          if (if rest.isSome then count ≤ n.toNat else count = n.toNat) then
+            some (.list (before ++ List.replicate (n.toNat - count) .wild ++ after) none [])
+          else none
+      | _ => some p
+
+/-- 候補が初期領域に値を持たない場合は、先行腕がなくても有用でない。 -/
+def domainAlternativeReport (P : Program) (ctors : DataName → List ConName) (view : CoverageView)
+    {a : Ty} (d : InitialDomain a) (ps : List Pat) (p : Pat) : UsefulnessResult :=
+  match d.target p with
+  | none => ⟨none, false⟩
+  | some target => usefulReportWithView P ctors view [d.baseType]
+      (ps.map (fun p => [p])) [target]
+
+
+end Coverage
+
 /-- 設計書 02-05「本体の後の検査」の行列を位置付きで集める。前の分岐はガードなし、同じ分岐はガードを問わない。 -/
 def precedingAlternatives (arms : List Arm) (i j : Nat) : List ((Nat × Nat) × Pat) :=
   (arms.take i).zipIdx.flatMap (fun (arm, k) =>
@@ -1628,16 +1767,18 @@ def coveringAlternativesWithView (P : Program) (ctors : DataName → List ConNam
   match (arms[i]?).bind (fun arm => (arm.alts[j]?).map Alt.pat) with
   | none => []
   | some target =>
+      if ((Coverage.initialDomain ty).target target).isNone then [] else
       let previous := precedingAlternatives arms i j
-      match previous.find? (fun (_, p) => (usefulWithView P ctors view [ty] [[p]] [target]).isNone) with
+      match previous.find? (fun (_, p) => (Coverage.domainAlternativeReport P ctors view (Coverage.initialDomain ty) [p] target).witness.isNone) with
       | some (pos, _) => [pos]
       | none =>
           match previous.zipIdx.find? (fun (_, k) =>
-            (usefulWithView P ctors view [ty]
-              ((previous.take (k + 1)).map (fun (_, p) => [p])) [target]).isNone) with
+            (Coverage.domainAlternativeReport P ctors view (Coverage.initialDomain ty)
+              ((previous.take (k + 1)).map Prod.snd) target).witness.isNone) with
           | none => []
           | some (_, k) =>
-              ((previous.take (k + 1)).filter (fun (_, p) => overlapsWithView P ctors view ty p target)).map Prod.fst
+              ((previous.take (k + 1)).filter (fun (_, p) => overlapsWithView P ctors view ty p
+                (((Coverage.initialDomain ty).target target).getD target))).map Prod.fst
 
 /-- 覆っている選択肢の説明に閉じた view を使う。 -/
 def coveringAlternatives (P : Program) (ctors : DataName → List ConName) (ty : Ty)
@@ -1659,8 +1800,8 @@ def checkMatchWithView (P : Program) (ctors : DataName → List ConName) (view :
     (a : Ty) (arms : List Arm) : MatchCoverage :=
   let checked := arms.zipIdx.flatMap fun (arm, i) =>
     arm.alts.zipIdx.map fun (alt, j) =>
-      ((i, j), usefulReportWithView P ctors view [a] ((precedingPats arms i j).map (fun p => [p])) [alt.pat])
-  let all := usefulReportWithView P ctors view [a] ((unguardedPats arms).map (fun p => [p])) [.wild]
+      ((i, j), Coverage.domainAlternativeReport P ctors view (Coverage.initialDomain a) (precedingPats arms i j) alt.pat)
+  let all := Coverage.domainReport P ctors view (Coverage.initialDomain a) (unguardedPats arms)
   let unreachable := checked.filterMap (fun (pos, r) => if r.witness.isNone then some pos else none)
   { uncovered := all.witness.map (fun ws => ws.headD .wild)
     unreachable := unreachable
@@ -1677,7 +1818,7 @@ def checkMatch (P : Program) (ctors : DataName → List ConName) (a : Ty)
 /-- 束縛の左辺の網羅性にも、ソースの照合と同じ view を使う。 -/
 def irrefutableWithView (P : Program) (ctors : DataName → List ConName) (view : CoverageView)
     (a : Ty) (p : Pat) : Bool :=
-  (usefulWithView P ctors view [a] [[p]] [.wild]).isNone
+  (Coverage.domainReport P ctors view (Coverage.initialDomain a) [p]).witness.isNone
 
 /-- 閉じた型の束縛の左辺の判定。 -/
 def irrefutable (P : Program) (ctors : DataName → List ConName) (a : Ty) (p : Pat) : Bool :=
@@ -1732,18 +1873,154 @@ theorem useful_singleton_none_sound (P : Program) (ctors : DataName → List Con
   usefulWithView_singleton_none_sound P ctors closedView a ps q hc h v hv hq
 
 
+namespace Coverage
+
+private theorem regionReport_sound (P : Program) (ctors : DataName → List ConName) (view : CoverageView)
+    {a : Ty} (d : InitialDomain a) (ps : List Pat) (hc : CtorsComplete P ctors)
+    (h : usefulWithView P ctors view [d.baseType] (ps.map (fun p => [p])) [d.query] = none) :
+    Exhaustive P a ps := by
+  intro v hv
+  obtain ⟨hb, hq⟩ := InitialDomain.member d hv
+  exact usefulWithView_singleton_none_sound P ctors view _ ps _ hc h v hb hq
+
+/-- 初期領域の選択と行列の成功から、元の篩付きの型の網羅性を得る。 -/
+theorem domainReport_sound (P : Program) (ctors : DataName → List ConName) (view : CoverageView)
+    {a : Ty} (d : InitialDomain a) (ps : List Pat) (hc : CtorsComplete P ctors)
+    (h : (domainReport P ctors view d ps).witness = none) : Exhaustive P a ps := by
+  cases d with
+  | empty a =>
+      intro v hv
+      obtain ⟨p, hp, _⟩ := empty_refinement_exhaustive P a v hv
+      cases hp
+  | plain a => exact regionReport_sound P ctors view (.plain a) ps hc h
+  | month => exact regionReport_sound P ctors view .month ps hc h
+  | nonempty a => exact regionReport_sound P ctors view (.nonempty a) ps hc h
+  | length a n => exact regionReport_sound P ctors view (.length a n) ps hc h
+
+
+private theorem monthTarget_member {p : Pat} {v : Val}
+    (hd : (matchVal monthPattern v).isSome = true)
+    (hm : (matchVal p v).isSome = true) :
+    ∃ target, monthTarget p = some target ∧ (matchVal target v).isSome = true := by
+  by_cases hw : isWild p = true
+  · exact ⟨monthPattern, by simp [monthTarget, hw], hd⟩
+  have hw' : isWild p = false := by cases h : isWild p <;> simp_all
+  cases v <;> simp [monthPattern, matchVal, patternRange] at hd
+  rename_i c
+  cases c <;> simp at hd
+  rename_i n
+  cases p with
+  | const c =>
+      cases c <;> simp_all [monthTarget, isWild, matchVal, patternMatches]
+      exact ⟨_, ⟨by simpa [Integer64Value.toInt] using hd, rfl⟩, by simpa [matchVal, patternMatches] using hm⟩
+  | range lo hi =>
+      cases lo <;> cases hi <;> simp_all [monthTarget, isWild, matchVal, patternRange]
+      rename_i lo hi
+      simp only [Integer64Value.toInt] at *
+      by_cases hl : lo.val < 1 <;> by_cases hh : 12 < hi.val <;>
+        refine ⟨_, ⟨?_, rfl⟩, ?_⟩ <;>
+        simp [hl, hh, Integer64Value.toInt, matchVal, patternRange] <;> omega
+  | _ => exact ⟨_, by simp [monthTarget, hw'], hm⟩
+
+/-- 領域内で候補に照合する値は、共通部分のパターンにも照合する。 -/
+theorem InitialDomain.target_member {P : Program} {a : Ty} (d : InitialDomain a)
+    {p : Pat} {v : Val} (hv : Inhabits P a.norm v)
+    (hm : (matchVal p v).isSome = true) :
+    ∃ target, d.target p = some target ∧ (matchVal target v).isSome = true := by
+  obtain ⟨hb, hd⟩ := d.member hv
+  cases d with
+  | plain a => exact ⟨p, rfl, hm⟩
+  | empty a =>
+      obtain ⟨p, hp, _⟩ := empty_refinement_exhaustive P a v hv
+      cases hp
+  | month => exact monthTarget_member hd hm
+  | nonempty a =>
+      obtain ⟨xs, rfl, _⟩ := hb.list_inv _ rfl
+      by_cases hw : isWild p = true
+      · exact ⟨headRestPattern, by simp [InitialDomain.target, hw], hd⟩
+      have hw' : isWild p = false := by cases h : isWild p <;> simp_all
+      change (matchVal headRestPattern (.list xs)).isSome = true at hd
+      have hn : 1 ≤ xs.length := by
+        simp only [headRestPattern, matchVal_list, Option.isSome_some, ↓reduceIte,
+          List.length_cons, List.length_nil, Nat.add_zero, Bool.and_eq_true,
+          decide_eq_true_eq] at hd
+        exact hd.1.1
+      cases p with
+      | list before rest after =>
+          cases rest with
+          | none =>
+              have hc : before.length + after.length = xs.length := by
+                simp only [matchVal_list, Option.isSome_none, Bool.false_eq_true, ↓reduceIte,
+                  Bool.and_eq_true, decide_eq_true_eq] at hm
+                exact hm.1.1
+              refine ⟨_, ?_, hm⟩
+              simp only [InitialDomain.target, hw', Bool.false_eq_true, ↓reduceIte]
+              simp only [ite_eq_right_iff]; intro h; omega
+          | some rest =>
+              cases before <;> cases after <;>
+                first | exact ⟨headRestPattern, rfl, hd⟩ | exact ⟨_, rfl, hm⟩
+      | _ => exact ⟨_, by simp [InitialDomain.target, hw'], hm⟩
+  | length a n =>
+      obtain ⟨xs, rfl, _⟩ := hb.list_inv _ rfl
+      have he : (xs.length : Int) = n := by
+        obtain ⟨_, hp⟩ := ((Inhabits.norm_all_iff _ _).mp hv).refined_inv _ _ rfl
+        change (Pred.eq (.measure .listLength (.var 0)) (.integer n)).evalWith _ ≠ some false at hp
+        rw [length_eq_eval] at hp
+        simpa using hp
+      have hnon : ¬n < 0 := by omega
+      have hlen : xs.length = n.toNat := by omega
+      by_cases hw : isWild p = true
+      · exact ⟨exactLengthPattern n.toNat, by simp [InitialDomain.target, hnon, hw], hd⟩
+      have hw' : isWild p = false := by cases h : isWild p <;> simp_all
+      cases p with
+      | list before rest after =>
+          have hc : (if rest.isSome then before.length + after.length ≤ xs.length
+              else before.length + after.length = xs.length) := by
+            simp only [matchVal_list, Bool.and_eq_true, decide_eq_true_eq] at hm
+            exact hm.1.1
+          have hle : before.length + after.length ≤ xs.length := by
+            cases rest <;> simp_all
+          refine ⟨.list (before ++ List.replicate (n.toNat - (before.length + after.length)) .wild ++ after) none [], ?_, ?_⟩
+          · simp [InitialDomain.target, hnon, hw', ← hlen, hc]
+          · have hp := padded_match before after xs hle
+            simp only [matchVal_list, Bool.and_eq_true, decide_eq_true_eq] at hm
+            have hp' : (matchList (before ++ List.replicate (n.toNat - (before.length + after.length)) .wild ++ after) xs).isSome = true := by
+              rw [← hlen, hp]
+              simp only [Bool.and_eq_true]; exact ⟨hm.1.2, hm.2⟩
+            have hl : (before ++ List.replicate (n.toNat - (before.length + after.length)) Pat.wild ++ after).length = xs.length := by
+              simp only [List.length_append, List.length_replicate]
+              omega
+            simp only [matchVal_list, Option.isSome_none, Bool.false_eq_true, ↓reduceIte,
+              hl, List.length_nil, Nat.add_zero, decide_true, Bool.true_and,
+              List.take_length, hp', Nat.sub_zero, List.drop_length, matchList, Option.isSome_some]
+
+      | _ => exact ⟨_, by simp [InitialDomain.target, hnon, hw'], hm⟩
+
+/-- 初期領域内で候補を選べる値は、有用でないという報告の先行行に照合する。 -/
+theorem domainAlternativeReport_sound (P : Program) (ctors : DataName → List ConName)
+    (view : CoverageView) {a : Ty} (d : InitialDomain a) (ps : List Pat) (p : Pat)
+    (hc : CtorsComplete P ctors)
+    (h : (domainAlternativeReport P ctors view d ps p).witness = none)
+    (v : Val) (hv : Inhabits P a.norm v) (hm : (matchVal p v).isSome = true) :
+    ∃ prior ∈ ps, (matchVal prior v).isSome = true := by
+  obtain ⟨target, ht, hm⟩ := d.target_member hv hm
+  obtain ⟨hb, _⟩ := d.member hv
+  simp only [domainAlternativeReport, ht] at h
+  exact usefulWithView_singleton_none_sound P ctors view d.baseType ps target hc h v hb hm
+
+
+end Coverage
+
 /-- 系 1: ガードのない選択肢による網羅性。 -/
 theorem checkMatchWithView_exhaustive_sound (P : Program) (ctors : DataName → List ConName)
     (view : CoverageView)
     (a : Ty) (arms : List Arm) (hc : CtorsComplete P ctors)
     (h : (checkMatchWithView P ctors view a arms).exhaustive = true) :
     Exhaustive P a (unguardedPats arms) := by
-  have hu : usefulWithView P ctors view [a] ((unguardedPats arms).map (fun p => [p])) [.wild] = none := by
-    change ((usefulReportWithView P ctors view [a] ((unguardedPats arms).map (fun p => [p])) [.wild]).witness.map
-      (fun ws => ws.headD .wild)).isNone = true at h
-    simpa [usefulWithView] using h
-  intro v hv
-  exact usefulWithView_singleton_none_sound P ctors view a (unguardedPats arms) .wild hc hu v ((Inhabits.norm_all_iff a v).mp hv) rfl
+  apply Coverage.domainReport_sound P ctors view (Coverage.initialDomain a) (unguardedPats arms) hc
+  change ((Coverage.domainReport P ctors view (Coverage.initialDomain a) (unguardedPats arms)).witness.map
+    (fun ws => ws.headD .wild)).isNone = true at h
+  simpa using h
 
 /-- 閉じた view の入口の健全性。 -/
 theorem checkMatch_exhaustive_sound (P : Program) (ctors : DataName → List ConName)
@@ -1758,10 +2035,8 @@ theorem irrefutableWithView_sound (P : Program) (ctors : DataName → List ConNa
     (view : CoverageView)
     (a : Ty) (p : Pat) (hc : CtorsComplete P ctors)
     (h : irrefutableWithView P ctors view a p = true) : Exhaustive P a [p] := by
-  have hu : usefulWithView P ctors view [a] [[p]] [.wild] = none := by
-    simpa [irrefutableWithView] using h
-  intro v hv
-  exact usefulWithView_singleton_none_sound P ctors view a [p] .wild hc hu v ((Inhabits.norm_all_iff a v).mp hv) rfl
+  apply Coverage.domainReport_sound P ctors view (Coverage.initialDomain a) [p] hc
+  simpa [irrefutableWithView] using h
 
 /-- 閉じた view の入口の健全性。 -/
 theorem irrefutable_sound (P : Program) (ctors : DataName → List ConName)
@@ -1812,7 +2087,7 @@ theorem checkMatchWithView_unreachable_lookup {P : Program} {ctors : DataName �
     {view : CoverageView} {a : Ty} {arms : List Arm} {i j : Nat}
     (h : (i, j) ∈ (checkMatchWithView P ctors view a arms).unreachable) :
     ∃ arm alt, arms[i]? = some arm ∧ arm.alts[j]? = some alt ∧
-      usefulWithView P ctors view [a] ((precedingPats arms i j).map (fun p => [p])) [alt.pat] = none := by
+      (Coverage.domainAlternativeReport P ctors view (Coverage.initialDomain a) (precedingPats arms i j) alt.pat).witness = none := by
   change (i,j) ∈ List.filterMap _ (arms.zipIdx.flatMap _) at h
   obtain ⟨⟨pos,r⟩, hm, he⟩ := List.mem_filterMap.mp h
   change (if r.witness.isNone then some pos else none) = some (i,j) at he
@@ -1837,7 +2112,7 @@ theorem checkMatch_unreachable_lookup {P : Program} {ctors : DataName → List C
     {a : Ty} {arms : List Arm} {i j : Nat}
     (h : (i, j) ∈ (checkMatch P ctors a arms).unreachable) :
     ∃ arm alt, arms[i]? = some arm ∧ arm.alts[j]? = some alt ∧
-      useful P ctors [a] ((precedingPats arms i j).map (fun p => [p])) [alt.pat] = none :=
+      (Coverage.domainAlternativeReport P ctors closedView (Coverage.initialDomain a) (precedingPats arms i j) alt.pat).witness = none :=
   checkMatchWithView_unreachable_lookup (view := closedView) h
 
 /-- 系 2: パターンの照合の上で選ばれないこと。この言明はパターン照合に関するものである。 -/
@@ -1853,7 +2128,7 @@ theorem checkMatchWithView_unreachable_sound (P : Program) (ctors : DataName →
   subst arm'
   have healt : alt' = alt := Option.some.inj (hal'.symm.trans hal)
   subst alt'
-  obtain ⟨p, hp, hpm⟩ := usefulWithView_singleton_none_sound P ctors view a (precedingPats arms i j) alt.pat hc hu v hv hm
+  obtain ⟨p, hp, hpm⟩ := Coverage.domainAlternativeReport_sound P ctors view (Coverage.initialDomain a) (precedingPats arms i j) alt.pat hc hu v ((Inhabits.norm_all_iff a v).mpr hv) hm
   rcases precedingPats_mem ha hp with hprevp | ⟨prior, hpri, hpat⟩
   · exact hprev p hprevp hpm
   · apply hprior prior hpri

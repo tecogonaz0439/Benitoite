@@ -11,117 +11,6 @@ import Benitoite.Release.Refinement.TermStructuralEq
 namespace Benitoite.Release.Refinement
 namespace Coverage
 
-/-- 長さが閉じた整数 n に等しいという篩。 -/
-def lengthType (a : Ty) (n : Int) : Ty :=
-  .refined (.list a) (.eq (.measure .listLength (.var 0)) (.integer n))
-
-/-- 要素を制約しない、ちょうど n 個の List のパターン。 -/
-def exactLengthPattern (n : Nat) : Pat := .list (List.replicate n .wild) none []
-
-private theorem length_eq_eval (xs : List Val) (n : Int) :
-    (Pred.eq (.measure .listLength (.var 0)) (.integer n)).evalWith
-      (selfModel (fun _ => none) (.list xs)) = some (decide ((xs.length : Int) = n)) := by
-  simp [Pred.evalWith, Pred.atomReady, Pred.atomValue, termReady, integerAs, observeAs,
-    selfModel, selfObservation, Val.toTerm?, Term.observe, Term.interpret, Observation.sort,
-    Observation.measure, MatchFacts.observeSlots_length, Val.toTermSlots_eq_map]
-
-/-- 閉じた長さは任意であり、要素の観測可能性を要求しない。負の長さの型は空である。 -/
-theorem length_exhaustive (P : Program) (a : Ty) (n : Int) :
-    Exhaustive P (lengthType a n) [exactLengthPattern n.toNat] := by
-  intro v hv
-  obtain ⟨hc, hp⟩ := hv.refined_inv _ _ rfl
-  obtain ⟨xs, rfl, _⟩ := hc.list_inv _ rfl
-  have hn : (xs.length : Int) = n := by
-    change (Pred.eq (.measure .listLength (.var 0)) (.integer n)).evalWith _ ≠ some false at hp
-    rw [length_eq_eval] at hp
-    simpa using hp
-  have hlen : xs.length = n.toNat := by omega
-  refine ⟨exactLengthPattern n.toNat, by simp, ?_⟩
-  have hm : (matchList (List.replicate n.toNat .wild) xs).isSome = true :=
-    matchList_wild (by simp [isWild]) (by simpa using hlen.symm)
-  simp [exactLengthPattern, matchVal, ← hlen, matchList]
-
-/-- 型の篩で制限された初期領域。plain は篩を芯へ忘れた通常の行列判定へ渡す。 -/
-inductive InitialDomain : Ty → Type where
-  | plain (a : Ty) : InitialDomain a
-  | empty (a : Ty) : InitialDomain (.refined a .falsity)
-  | month : InitialDomain monthType
-  | nonempty (a : Ty) : InitialDomain (nonemptyType a)
-  | length (a : Ty) (n : Int) : InitialDomain (lengthType a n)
-
-/-- 初期領域を型の形と有限な述語の構文から選ぶ。 -/
-def initialDomain : (a : Ty) → InitialDomain a
-  | .refined a .falsity => .empty a
-  | .refined (.base .integer) p =>
-      if hp : predEq p monthPredicate = true then ((predEq_spec _ _).mp hp).symm ▸ InitialDomain.month else .plain _
-  | .refined (.list a) p =>
-      if hp : predEq p nonemptyPredicate = true then ((predEq_spec _ _).mp hp).symm ▸ InitialDomain.nonempty a
-      else match p with
-      | .eq (.measure .listLength (.var 0)) (.integer n) => .length a n
-      | _ => .plain _
-  | a => .plain a
-
-def InitialDomain.baseType {a : Ty} : InitialDomain a → Ty
-  | .plain a | .empty a => a
-  | .month => .base .integer
-  | .nonempty a | .length a _ => .list a
-
-def InitialDomain.query {a : Ty} : InitialDomain a → Pat
-  | .plain _ | .empty _ => .wild
-  | .month => monthPattern
-  | .nonempty _ => headRestPattern
-  | .length _ n => exactLengthPattern n.toNat
-
-private theorem InitialDomain.member {P : Program} {a : Ty} (d : InitialDomain a) {v : Val}
-    (hv : Inhabits P a.norm v) :
-    Inhabits P d.baseType v ∧ (matchVal d.query v).isSome = true := by
-  cases d with
-  | plain a => exact ⟨(Inhabits.norm_all_iff _ _).mp hv, rfl⟩
-  | empty a =>
-      obtain ⟨p, hp, _⟩ := empty_refinement_exhaustive P a v hv
-      cases hp
-  | month =>
-      obtain ⟨p, hp, hm⟩ := month_exhaustive P v hv
-      cases List.mem_singleton.mp hp
-      exact ⟨(((Inhabits.norm_all_iff _ _).mp hv).refined_inv _ _ rfl).1, hm⟩
-  | nonempty a =>
-      obtain ⟨p, hp, hm⟩ := nonempty_exhaustive P a v hv
-      cases List.mem_singleton.mp hp
-      exact ⟨(((Inhabits.norm_all_iff _ _).mp hv).refined_inv _ _ rfl).1, hm⟩
-  | length a n =>
-      obtain ⟨p, hp, hm⟩ := length_exhaustive P a n v hv
-      cases List.mem_singleton.mp hp
-      exact ⟨(((Inhabits.norm_all_iff _ _).mp hv).refined_inv _ _ rfl).1, hm⟩
-
-/-- 初期領域の問いを行列へ渡す。空型は値を持たないので、空の腕も網羅的である。 -/
-def domainReport (P : Program) (ctors : DataName → List ConName) (view : CoverageView)
-    {a : Ty} (d : InitialDomain a) (ps : List Pat) : UsefulnessResult :=
-  match d with
-  | .empty _ => ⟨none, false⟩
-  | _ => usefulReportWithView P ctors view [d.baseType] (ps.map (fun p => [p])) [d.query]
-
-private theorem regionReport_sound (P : Program) (ctors : DataName → List ConName) (view : CoverageView)
-    {a : Ty} (d : InitialDomain a) (ps : List Pat) (hc : CtorsComplete P ctors)
-    (h : usefulWithView P ctors view [d.baseType] (ps.map (fun p => [p])) [d.query] = none) :
-    Exhaustive P a ps := by
-  intro v hv
-  obtain ⟨hb, hq⟩ := InitialDomain.member d hv
-  exact usefulWithView_singleton_none_sound P ctors view _ ps _ hc h v hb hq
-
-/-- 初期領域の選択と行列の成功から、元の篩付きの型の網羅性を得る。 -/
-theorem domainReport_sound (P : Program) (ctors : DataName → List ConName) (view : CoverageView)
-    {a : Ty} (d : InitialDomain a) (ps : List Pat) (hc : CtorsComplete P ctors)
-    (h : (domainReport P ctors view d ps).witness = none) : Exhaustive P a ps := by
-  cases d with
-  | empty a =>
-      intro v hv
-      obtain ⟨p, hp, _⟩ := empty_refinement_exhaustive P a v hv
-      cases hp
-  | plain a => exact regionReport_sound P ctors view (.plain a) ps hc h
-  | month => exact regionReport_sound P ctors view .month ps hc h
-  | nonempty a => exact regionReport_sound P ctors view (.nonempty a) ps hc h
-  | length a n => exact regionReport_sound P ctors view (.length a n) ps hc h
-
 private theorem regionReport_extension_sound (P Q : Program)
     (ctors : DataName → List ConName) (view : CoverageView)
     (ext : ConstructorExtension P Q view) (hc : CtorsComplete P ctors)
@@ -218,8 +107,7 @@ theorem unknown_keeps_alternative {reports : List ((Nat × Nat) × Result)} {pos
 def alternatives (P : Program) (ctors : DataName → List ConName) (view : CoverageView)
     (a : Ty) (arms : List Arm) : List ((Nat × Nat) × Result) :=
   arms.zipIdx.flatMap fun (arm, i) => arm.alts.zipIdx.map fun (alt, j) =>
-    ((i, j), classify (usefulReportWithView P ctors view [a]
-      ((precedingPats arms i j).map (fun p => [p])) [alt.pat]))
+    ((i, j), classify (domainAlternativeReport P ctors view (initialDomain a) (precedingPats arms i j) alt.pat))
 
 /-- 網羅性の不明を、腕の除去の根拠にしない入口。 -/
 def retained (P : Program) (ctors : DataName → List ConName) (view : CoverageView)

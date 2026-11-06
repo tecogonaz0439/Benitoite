@@ -1,12 +1,11 @@
 import Benitoite.Release.Refinement.Surface.CheckSupport
+import Benitoite.Release.Refinement.Surface.CheckInferCertificates
+import Benitoite.Release.Refinement.Surface.CheckFinite
 import Benitoite.Release.Refinement.Surface.CheckTablesBase
 
 /-! 依存する引数の束縛と、関数・実装の署名の有限検査。 -/
 namespace Benitoite.Release.Refinement.Surface.CheckDeclarations
 open Check CheckCompare CheckAdmissible
-
-/-- 本体の位置に置かれた案内の有限支持。 -/
-def GuideTableSupport (q : Check.Input) : Prop := ∀ path, (q.guide path).Support q.formation.atoms
 
 structure DefSupport (q : Check.Input) (d : Def) : Prop where
   signature : d.toFunDecl.tel.Support (· ∈ q.formation.atoms)
@@ -33,7 +32,7 @@ abbrev BlockChecker := Check.Input → List Bool → TypeCtx → Ctx → List Pr
 def BlockCheckerSound (check : BlockChecker) : Prop :=
   ∀ {q rows C Γ Φ path body a e}, q.Sound → CheckFormation.CtxSupport q.formation.atoms Γ →
     Check.BlockSupport q body → a.Support (· ∈ q.formation.atoms) → e.Support (· ∈ q.formation.atoms) →
-    (q.guide path).Support q.formation.atoms → check q rows C Γ Φ path body a e = true →
+    check q rows C Γ Φ path body a e = true →
     HasBlockQ q.D q.B q.opPrim (NoFailCtxOf rows) [] C Γ Φ (some a) .tail body a e
 
 /-- 依存列の引数を宣言順に束縛し、結果の位置で本体を検査する。 -/
@@ -44,12 +43,12 @@ def checkBodyTel (check : BlockChecker) (q : Check.Input) (rows : List Bool) (C 
 
 theorem checkBodyTel_sound {check : BlockChecker} (hs : BlockCheckerSound check) {q rows C Γ Φ path t body}
     (hq : q.Sound) (hΓ : CheckFormation.CtxSupport q.formation.atoms Γ)
-    (ht : t.Support (· ∈ q.formation.atoms)) (hb : Check.BlockSupport q body) (hg : GuideTableSupport q)
+    (ht : t.Support (· ∈ q.formation.atoms)) (hb : Check.BlockSupport q body)
     (h : checkBodyTel check q rows C Γ Φ path t body = true) :
     BodyTy q.D q.B q.opPrim (NoFailCtxOf rows) C Γ Φ t body := by
   cases t with
-  | done a e => exact .done (hs hq hΓ hb ht.1 ht.2 (hg path) h)
-  | param name a rest => exact .param (checkBodyTel_sound hs hq (hΓ.extend ht.1) ht.2 hb hg h)
+  | done a e => exact .done (hs hq hΓ hb ht.1 ht.2 h)
+  | param name a rest => exact .param (checkBodyTel_sound hs hq (hΓ.extend ht.1) ht.2 hb h)
 
 private theorem require_ok {path reason ok} (h : Check.require path reason ok = .ok ()) : ok = true := by
   unfold Check.require at h
@@ -67,7 +66,7 @@ def checkDefWith (check : BlockChecker) (q : Check.Input) (path : List Nat) (d :
             checkBodyTel check q (telQ d.neffs d.toFunDecl.tel) d.tparams [] [] (path ++ [1]) d.toFunDecl.tel d.body))))
 
 theorem checkDefWith_sound {check : BlockChecker} (hs : BlockCheckerSound check) {q path d}
-    (hq : q.Sound) (hd : DefSupport q d) (hg : GuideTableSupport q)
+    (hq : q.Sound) (hd : DefSupport q d)
     (h : checkDefWith check q path d = .ok ()) : d.WellTyped q.D q.B q.opPrim := by
   have hh := require_ok h
   simp only [Bool.and_eq_true, decide_eq_true_eq] at hh
@@ -77,7 +76,7 @@ theorem checkDefWith_sound {check : BlockChecker} (hs : BlockCheckerSound check)
   refine ⟨hh.1, CheckFormation.kindTy_sound hq.formation.ctors hh.2.2.1,
     Check.annotation_sound hq (Check.CtxSupport.empty _) hd.signature hh.2.2.2.1, ?_⟩
   rw [← hQ]
-  exact checkBodyTel_sound hs hq (Check.CtxSupport.empty _) hd.signature hd.body hg hh.2.2.2.2
+  exact checkBodyTel_sound hs hq (Check.CtxSupport.empty _) hd.signature hd.body hh.2.2.2.2
 
 /-- 型パラメータの挿入を有限支持で正規化する。 -/
 def shiftType (q : Check.Input) (k : Nat) (a : Ty) : Ty := (shiftTypes k 0 a).normWith q.formation.atoms
@@ -136,14 +135,27 @@ def checkMethods (check : BlockChecker) (q : Check.Input) (i : ImplName) (path :
               (path ++ [q.methods.idxOf m]) (methodTel q id ms) body))
   | _, _ => false
 
+/-- ソースの辞書から案内を計算する。失敗時の既定案内も独立の辞書検査を通らなければ受理しない。 -/
+def superGuide (q : Check.Input) (C : TypeCtx) (Γ : Ctx) (path : List Nat) (d : DictEv) : CheckArguments.DictGuide :=
+  match CheckInfer.inferDict q C Γ path d with
+  | none => .local
+  | some (_, g) => CheckFinite.dictionaryGuide q.formation.atoms g
+
+private theorem superGuide_support (q : Check.Input) (C : TypeCtx) (Γ : Ctx) (path : List Nat) (d : DictEv) :
+    (superGuide q C Γ path d).Support q.formation.atoms := by
+  unfold superGuide
+  split
+  · trivial
+  · exact CheckFinite.dictionaryGuide_support _ _
+
 /-- 上位の辞書の有無と、宣言された全ての辞書の型を検査する。 -/
-def checkSupers (q : Check.Input) (i : ImplName) (path : List Nat) (id : ImplDecl) (cd : ClassDecl) : Bool :=
+def checkSupers (q : Check.Input) (path : List Nat) (id : ImplDecl) (cd : ClassDecl) : Bool :=
   (q.supers.all fun s => decide ((id.supers s).isSome = decide (s ∈ cd.supers))) &&
     (cd.supers.all (fun s => q.supers.contains s) && cd.supers.all (fun s =>
       match id.supers s with
       | none => false
       | some d => CheckArguments.dict q.formation q.D q.B q.satDec (TypeCtx.values id.tparams)
-          (bindParams [] id.dictTys) (path ++ [q.supers.idxOf s]) d (.dict s id.target) (q.superGuides i s)))
+          (bindParams [] id.dictTys) (path ++ [q.supers.idxOf s]) d (.dict s id.target) (superGuide q (TypeCtx.values id.tparams) (bindParams [] id.dictTys) (path ++ [q.supers.idxOf s]) d)))
 
 def checkImplWith (check : BlockChecker) (q : Check.Input) (i : ImplName) (path : List Nat) (id : ImplDecl)
     (views : MethName → CoverageView) : Check.Result Unit :=
@@ -152,10 +164,10 @@ def checkImplWith (check : BlockChecker) (q : Check.Input) (i : ImplName) (path 
   | some cd =>
       CheckFormation.kindTy q.formation q.D.core (TypeCtx.kinds (TypeCtx.values id.tparams)) id.target cd.argumentKind &&
         (CheckFormation.annotations q.formation q.D.core (TypeCtx.values id.tparams) [] (path ++ [0]) id.dictTys &&
-          (checkMethods check q i (path ++ [1]) id cd views && checkSupers q i (path ++ [2]) id cd)))
+          (checkMethods check q i (path ++ [1]) id cd views && checkSupers q (path ++ [2]) id cd)))
 
 private theorem checkMethods_body {check : BlockChecker} (hs : BlockCheckerSound check)
-    {q i path id cd views m ms} (hq : q.Sound) (hi : ImplSupport q id) (hg : GuideTableSupport q)
+    {q i path id cd views m ms} (hq : q.Sound) (hi : ImplSupport q id)
     (hcd : q.D.classes id.cls = some cd) (hm : cd.methods m = some ms) (hn : m ∈ q.methods)
     (h : checkMethods check q i path id cd views = true) :
     ∃ body, id.methods m = some body ∧ NamesWF ms.names ms.params ∧
@@ -176,7 +188,7 @@ private theorem checkMethods_body {check : BlockChecker} (hs : BlockCheckerSound
       (q := ({q with D := q.D.withView (views m), proofSteps := q.methodSteps i m} : Check.Input))
       hs ((hq.withView (views m)).withProofSteps (q.methodSteps i m))
       (Check.CtxSupport.bind (Check.CtxSupport.empty _) (shiftedDicts_support q id ms.tparams.length))
-      ht.2 (hi.methods m body hb) hg hc.2.2.2
+      ht.2 (hi.methods m body hb) hc.2.2.2
     rw [ht.1, shiftedDicts_eq, hQ] at hbody
     exact ⟨body, rfl, hc.2.1, hbody⟩
 
@@ -211,9 +223,9 @@ private theorem checkMethods_contracts {check q i path id cd views}
     simp only [hm, hb, Bool.and_eq_true, decide_eq_true_eq] at hc
     exact hc.1
 
-private theorem checkSupers_checked {q i path id cd} (hq : q.Sound) (hi : ImplSupport q id)
-    (hn : ImplNamesComplete q id) (hg : ∀ s, (q.superGuides i s).Support q.formation.atoms)
-    (h : checkSupers q i path id cd = true) :
+private theorem checkSupers_checked {q path id cd} (hq : q.Sound) (hi : ImplSupport q id)
+    (hn : ImplNamesComplete q id)
+    (h : checkSupers q path id cd = true) :
     (∀ s, (id.supers s).isSome = decide (s ∈ cd.supers)) ∧
     (∀ s ∈ cd.supers, ∃ u, id.supers s = some u ∧
       DictEv.HasType q.D q.B (TypeCtx.values id.tparams) (bindParams [] id.dictTys) u (.dict s id.target)) := by
@@ -237,26 +249,25 @@ private theorem checkSupers_checked {q i path id cd} (hq : q.Sound) (hi : ImplSu
     | some u =>
       refine ⟨u, rfl, CheckArguments.dict_sound (path := path ++ [q.supers.idxOf s]) hq.formation hq.tables.dictionaries hq.sat
         (Check.CtxSupport.bind (Check.CtxSupport.empty _) (implDicts_support q id))
-        (hi.supers s u hu) hi.target (hg s) ?_⟩
+        (hi.supers s u hu) hi.target (superGuide_support q (TypeCtx.values id.tparams) (bindParams [] id.dictTys) (path ++ [q.supers.idxOf s]) u) ?_⟩
       simpa only [hu] using hc
 
 /-- 全てのメソッドと上位の辞書を量化した実装の型付けへ接続する。 -/
 theorem checkImplWith_sound {check : BlockChecker} (hs : BlockCheckerSound check) {q i path id views}
-    (hq : q.Sound) (hi : ImplSupport q id) (hn : ImplNamesComplete q id) (hg : GuideTableSupport q)
-    (hsg : ∀ s, (q.superGuides i s).Support q.formation.atoms)
+    (hq : q.Sound) (hi : ImplSupport q id) (hn : ImplNamesComplete q id)
     (h : checkImplWith check q i path id views = .ok ()) : id.WellTyped q.D q.B q.opPrim views := by
   have hh := require_ok h
   cases hcd : q.D.classes id.cls with
   | none => simp only [hcd, Bool.false_eq_true] at hh
   | some cd =>
     simp only [hcd, Bool.and_eq_true] at hh
-    have hsup := checkSupers_checked hq hi hn hsg hh.2.2.2
+    have hsup := checkSupers_checked hq hi hn hh.2.2.2
     refine ⟨cd, hcd, checkMethods_flags hn hcd hh.2.2.1, hsup.1,
       CheckFormation.kindTy_sound hq.formation.ctors hh.1,
       CheckFormation.annotations_sound hq.formation (Check.CtxSupport.empty _) (implDicts_support q id) hh.2.1,
       ?_, hsup.2⟩
     intro m ms hm
-    exact checkMethods_body hs hq hi hg hcd hm
+    exact checkMethods_body hs hq hi hcd hm
       (hn.methods cd hcd m (Or.inr (by simp [hm]))) hh.2.2.1
 
 /-- 実名の一致は型付けの証明によらず、同じ検査結果から得られる。 -/

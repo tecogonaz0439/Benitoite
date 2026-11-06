@@ -221,4 +221,57 @@ theorem closed_overlap_report :
   constructor; rfl
   constructor <;> rfl
 
+private def monthArm (p : Pat) : Arm := ⟨[⟨p, []⟩], none, .ret (.const .unit)⟩
+private def outsideMonth : Pat := .const (.integer ⟨0, by decide⟩)
+private def wideMonth : Pat := .range (.integer ⟨0, by decide⟩) (.integer ⟨12, by decide⟩)
+private def monthArms : List Arm :=
+  [monthArm shortMonth, monthArm monthPattern, monthArm outsideMonth, monthArm wideMonth]
+
+/-- 初期領域全体とその不足を、位置付き報告と束縛の左辺の両方で区別する。 -/
+theorem month_match_accept_reject :
+    (checkMatchWithView program ctors closedView monthType monthArms).exhaustive = true ∧
+    (checkMatchWithView program ctors closedView monthType [monthArm shortMonth]).uncovered.isSome = true ∧
+    irrefutableWithView program ctors closedView monthType monthPattern = true ∧
+    irrefutableWithView program ctors closedView monthType shortMonth = false ∧
+    irrefutableWithView program ctors closedView (.base .integer) monthPattern = false := by
+  exact ⟨rfl, rfl, rfl, rfl, rfl⟩
+
+/-- 領域外の候補には覆いの腕を付けず、領域内で覆われる候補には実際の先行腕を返す。 -/
+theorem month_alternative_report :
+    (checkMatchWithView program ctors closedView monthType monthArms).unreachable = [(2, 0), (3, 0)] ∧
+    (checkMatchWithView program ctors closedView monthType monthArms).coveredBy =
+      [((2, 0), []), ((3, 0), [1])] ∧
+    retained program ctors closedView monthType monthArms = [(0, 0), (1, 0)] := by
+  exact ⟨rfl, rfl, rfl⟩
+
+/-- 元の篩付きの型で量化する健全性は、同じ網羅性と位置の報告を読む。 -/
+theorem month_match_reader :
+    Exhaustive program monthType (unguardedPats monthArms) ∧
+    (∀ v, Inhabits program monthType v → ¬ AlternativeSelected monthArms 2 0 v) :=
+  ⟨checkMatchWithView_exhaustive_sound _ _ _ _ _ complete month_match_accept_reject.1,
+    checkMatchWithView_unreachable_sound _ _ _ _ _ _ _ complete (by rw [month_alternative_report.1]; simp)⟩
+
+/-- 空のListの候補は非空の初期領域外であり、残りの候補だけを保持する。 -/
+theorem nonempty_match_report :
+    let a := nonemptyType (.base .unit)
+    let arms := [monthArm (.list [] none []), monthArm headRestPattern]
+    (checkMatchWithView program ctors closedView a arms).exhaustive = true ∧
+    (checkMatchWithView program ctors closedView a arms).coveredBy = [((0, 0), [])] ∧
+    retained program ctors closedView a arms = [(1, 0)] ∧
+    irrefutableWithView program ctors closedView a headRestPattern = true ∧
+    irrefutableWithView program ctors closedView a (exactLengthPattern 1) = false := by
+  exact ⟨rfl, rfl, rfl, rfl, rfl⟩
+
+/-- 固定長の初期領域は、残りを持つ候補をその長さへ具体化する。 -/
+theorem length_match_report :
+    let a := lengthType (.base .unit) 2
+    let p := Pat.list [.wild] (some .skip) []
+    let arms := [monthArm (exactLengthPattern 1), monthArm p]
+    (checkMatchWithView program ctors closedView a arms).exhaustive = true ∧
+    (checkMatchWithView program ctors closedView a arms).coveredBy = [((0, 0), [])] ∧
+    retained program ctors closedView a arms = [(1, 0)] ∧
+    irrefutableWithView program ctors closedView a p = true ∧
+    irrefutableWithView program ctors closedView a (exactLengthPattern 1) = false := by
+  exact ⟨rfl, rfl, rfl, rfl, rfl⟩
+
 end Benitoite.Release.Refinement.CoverageExamples

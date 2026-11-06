@@ -12,11 +12,10 @@ inductive DataHint where
   | field (receiver : DataHint)
   | widen (receiver : DataHint) (arguments : List Ty)
 
-/-- 効果の有限候補と、data ごとの構成子の全一覧、ソースの位置ごとの案内。 -/
+/-- 効果の有限候補と、data ごとの構成子の全一覧。欄の観測の案内は項と宣言から計算する。 -/
 structure Input where
   atoms : List Atom
   ctors : DataName → List ConName
-  hints : List Nat → DataHint := fun _ => .var
 
 def CtorsComplete (P : Refinement.Program) (ctors : DataName → List ConName) : Prop :=
   ∀ c cd, P.cons c = some cd → c ∈ ctors cd.data
@@ -31,7 +30,6 @@ def DataHint.Support (s : List Atom) : DataHint → Prop
 structure Input.Sound (q : Input) (P : Refinement.Program) : Prop where
   ctors : CtorsComplete P q.ctors
   fields : ∀ c cd, P.cons c = some cd → Ty.SupportList (· ∈ q.atoms) cd.args
-  hints : ∀ path, (q.hints path).Support q.atoms
 
 def CtxSupport (s : List Atom) (Γ : Ctx) : Prop :=
   ∀ (i : Nat) (a : Ty), Γ[i]? = some (some a) → a.Support (· ∈ s)

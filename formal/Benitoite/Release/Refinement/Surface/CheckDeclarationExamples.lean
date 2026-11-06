@@ -25,9 +25,8 @@ private def input : Check.Input where
   D := declarations
   B := builtins
   opPrim := fun _ _ => none
-  formation := ⟨[], fun _ => [], fun _ => .var⟩
+  formation := ⟨[], fun _ => []⟩
   proofSteps := 1
-  guide := fun _ => .node .B_Empty {} []
   methods := ["run"]
   supers := ["Root"]
   methodParamNames := fun _ _ => ["value"]
@@ -53,10 +52,9 @@ private theorem effect_support : Eff.empty.Support (· ∈ input.formation.atoms
   Check.empty_effect_support _
 
 private theorem input_sound : input.Sound := by
-  refine ⟨⟨?_, ?_, ?_⟩, ⟨⟨?_⟩, ?_, ?_, ?_, ?_, ?_⟩, ?_, ?_, ?_, ?_⟩
+  refine ⟨⟨?_, ?_⟩, ⟨⟨?_⟩, ?_, ?_, ?_, ?_, ?_⟩, ?_, ?_, ?_, ?_⟩
   · intro c cd h; cases h
   · intro c cd h; cases h
-  · intro path; trivial
   · intro i d h; cases h
   · intro f d h; cases h
   · intro f d h; cases h
@@ -84,7 +82,7 @@ theorem dictionaries_accept_reject :
       [some (.dict "Root" (.base .unit))] [] [.local 0] [.dict "Root" (.base .unit)] [.local] = true ∧
     CheckArguments.dicts input.formation input.D input.B input.satDec []
       [some (.dict "Root" (.base .unit))] [] [.local 1] [.dict "Root" (.base .unit)] [.local] = false := by
-  constructor <;> rfl
+  constructor <;> with_unfolding_all rfl
 
 /-- 辞書列の公開された健全性を、正常な辞書を持つ非空の列へ適用する。 -/
 theorem dictionaries_typed :
@@ -133,33 +131,28 @@ private theorem implementation_names : ImplNamesComplete input implementation :=
     · next hs => simp [input, hs]
     · cases h
 
-private theorem guides_support : GuideTableSupport input := by
-  intro path
-  exact ⟨⟨trivial, by simp, by simp, by simp, by simp, by simp, by simp⟩, trivial⟩
 
-private theorem super_guides_support (s : ClassName) :
-    (input.superGuides "implementation" s).Support input.formation.atoms := by trivial
 
 /-- 同じ Unit を返す本体について、引数の契約名の重複を拒否する。 -/
 theorem definition_accept_reject :
     checkDef input [] definition = .ok () ∧
     (match checkDef input [] {definition with names := ["value", "value"], params := [.base .unit, .base .unit]} with
       | .error _ => True | _ => False) := by
-  constructor; rfl; trivial
+  constructor; with_unfolding_all rfl; trivial
 
 /-- メソッドと上位の辞書を持つ実装は、実名が契約に一致するとき受理する。 -/
 theorem implementation_accept_reject :
     checkImpl input "implementation" [] implementation = .ok () ∧
     (match checkImpl {input with methodParamNames := fun _ _ => ["other"]} "implementation" [] implementation with
       | .error _ => True | _ => False) := by
-  constructor; rfl; trivial
+  constructor; with_unfolding_all rfl; trivial
 
 /-- 本体を持つ宣言は、同じ成功から型付けと実名の契約を得る。 -/
 theorem definitions_typed :
     definition.WellTyped input.D input.B input.opPrim ∧
     implementation.WellTyped input.D input.B input.opPrim ∧ ContractsMatch input "implementation" implementation :=
-  ⟨checkDef_sound input_sound definition_support guides_support definition_accept_reject.1,
-    checkImpl_sound input_sound implementation_support implementation_names guides_support super_guides_support implementation_accept_reject.1,
+  ⟨checkDef_sound input_sound definition_support definition_accept_reject.1,
+    checkImpl_sound input_sound implementation_support implementation_names implementation_accept_reject.1,
     checkImpl_contracts implementation_names implementation_accept_reject.1⟩
 
 /-- 関数の明示指定は既定を上書きし、0の指定は拒否する。 -/
@@ -167,27 +160,27 @@ theorem definition_budget :
     (definitionInput {input with proofSteps := 10} {definition with proofSteps := some 1}).proofSteps = 1 ∧
     (match checkDef input [] {definition with proofSteps := some 0} with
       | .error _ => True | _ => False) := by
-  constructor; rfl; trivial
+  constructor; with_unfolding_all rfl; trivial
 
 private def budgetGoal : Pred := .eq (.var 0) (.integer 1)
 
 private def counted : CheckSubtyping.LogicCertificate :=
-  ⟨.use 0, [.work .checkCertificate .node, .work .checkCertificate .node]⟩
+  ⟨.use 0, [.work .checkCertificate .node, .work .checkCertificate .node], none⟩
 
 /-- ソースで選んだ上限1は、同じ含意の証明書の二つ目の操作で打ち切る。 -/
 theorem definition_budget_stops :
     counted.result (definitionInput {input with proofSteps := 10} {definition with proofSteps := some 1}).proofSteps
       [budgetGoal] budgetGoal = .unknown (some .stepsExhausted) ∧
     counted.result 10 [budgetGoal] budgetGoal = .proved := by
-  constructor <;> rfl
+  constructor <;> with_unfolding_all rfl
 
-private def exprInput : Check.Input := {input with guide := fun _ => .node .E_Unit {} []}
+private def exprInput : Check.Input := input
 
 /-- 式とブロックの実入口は、同じ推論結果を再検査する。 -/
 theorem entrypoints_accept :
     Check.checkExpr exprInput [] [] [] none .other [] .unit = .ok (.base .unit, Eff.empty) ∧
     Check.checkBlock input [] [] [] none .other [] .empty = .ok (.base .unit, Eff.empty) := by
-  constructor <;> rfl
+  constructor <;> with_unfolding_all rfl
 
 /-- 実入口は、型付けと型・効果の受理の条件を両方結論に持つ。 -/
 theorem entrypoints_typed :
@@ -197,10 +190,9 @@ theorem entrypoints_typed :
       SingleTy Qempty (.base .unit) ∧ SingleEff Qempty Eff.empty) := by
   constructor
   · exact Check.checkExpr_sound (show exprInput.Sound from ⟨input_sound.formation, input_sound.tables, input_sound.sat, input_sound.admits, input_sound.ranges, input_sound.operators⟩) (Check.CtxSupport.empty _) (by trivial)
-      (by trivial) (by trivial) effect_support (by
-        exact ⟨⟨trivial, by simp, by simp, by simp, by simp, by simp, by simp⟩, trivial⟩) entrypoints_accept.1
+      (by trivial) (by trivial) effect_support entrypoints_accept.1
   · exact Check.checkBlock_sound input_sound (Check.CtxSupport.empty _) (by trivial)
-      (by trivial) (by trivial) effect_support (guides_support []) entrypoints_accept.2
+      (by trivial) (by trivial) effect_support entrypoints_accept.2
 
 private def materials : CheckTables.Materials where
   defs := [("function", definition)]
@@ -212,7 +204,7 @@ theorem finite_materials_checked :
     CheckTables.checkProgram (materials.input input) materials.program = .ok () ∧
     CheckTables.NamesComplete (materials.input input) materials.program ∧
     CheckAccept.NamesComplete (materials.input input) materials.program :=
-  ⟨rfl, materials.names_complete input, materials.accept_names_complete input⟩
+  ⟨(by with_unfolding_all rfl), materials.names_complete input, materials.accept_names_complete input⟩
 
 /-- 材料のメソッドの実名は、本体を射影しても同じ表から取り出せる。 -/
 theorem finite_method_names :
@@ -224,7 +216,6 @@ theorem finite_method_names :
 private theorem material_input_sound : (materials.input input).Sound := by
   apply materials.input_sound input
   · intro c cd h; cases h
-  · intro path; trivial
   · refine ⟨⟨?_⟩, ?_, ?_, ?_, ?_, ?_⟩
     · intro i id h
       change ((CheckTables.lookup (materials.impls.map (fun (n, im) => (n, im.decl))) i).map ImplDecl.toImplSig).or none = some id at h
@@ -293,31 +284,28 @@ private theorem material_implementations_support :
       · cases hu
   · cases h
 
-private theorem material_guides_support : GuideTableSupport (materials.input input) := guides_support
 
-private theorem material_super_guides_support (i s) :
-    ((materials.input input).superGuides i s).Support (materials.input input).formation.atoms := by trivial
 
 /-- 本体を持つ有限材料で、補完した宣言表の下での型付けを得る。 -/
 theorem material_typed : CheckTables.CheckedUnder materials.program (materials.input input) :=
   CheckTables.Materials.checkProgram_sound material_input_sound material_definitions_support
-    material_implementations_support material_guides_support material_super_guides_support finite_materials_checked.1
+    material_implementations_support finite_materials_checked.1
 
 theorem material_typed_contracts :
     CheckTables.CheckedUnder materials.program (materials.input input) ∧
     ∀ i id, materials.program.impls i = some id → ContractsMatch (materials.input input) i id :=
   CheckTables.Materials.checkProgram_sound_contracts material_input_sound material_definitions_support
-    material_implementations_support material_guides_support material_super_guides_support finite_materials_checked.1
+    material_implementations_support finite_materials_checked.1
 
 /-- 信頼する補完のない同じ材料は、自身の表の下でも型付く。 -/
 theorem material_empty : materials.program.WellTyped input.B input.opPrim :=
   CheckTables.Materials.checkProgram_empty material_input_sound material_definitions_support
-    material_implementations_support material_guides_support material_super_guides_support rfl rfl finite_materials_checked.1
+    material_implementations_support rfl rfl finite_materials_checked.1
 
 theorem material_empty_contracts : materials.program.WellTyped input.B input.opPrim ∧
     ∀ i id, materials.program.impls i = some id → ContractsMatch (materials.input input) i id :=
   CheckTables.Materials.checkProgram_empty_contracts material_input_sound material_definitions_support
-    material_implementations_support material_guides_support material_super_guides_support rfl rfl finite_materials_checked.1
+    material_implementations_support rfl rfl finite_materials_checked.1
 
 /-- 射影前に保持した実名は、型付けを得た同じクラスの契約名と一致する。 -/
 theorem material_actual_names : ["value"] = method.names := by

@@ -7,42 +7,30 @@ from pathlib import Path
 import re
 import sys
 sys.dont_write_bytecode = True
-from inventory import HERE, ROOT, DESIGN, baseline, digest, inspect
+from inventory import HERE, ROOT, DESIGN, B_WORK, baseline, digest, inspect, path_of
 from branch_inventory import check as check_branches
 
 
-def write_chunks(stem, rows):
-    chunks, chunk = [], []
-    for row in rows:
-        trial = json.dumps(chunk + [row], ensure_ascii=False, indent=1) + "\n"
-        if len(trial.encode()) > 90_000:
-            chunks.append(chunk)
-            chunk = []
-        chunk.append(row)
-    if chunk:
-        chunks.append(chunk)
-    for old in HERE.glob(stem + "-*.json"):
-        old.unlink()
-    result = []
-    for index, items in enumerate(chunks):
-        path = HERE / f"{stem}-{index:02}.json"
-        path.write_text(json.dumps(items, ensure_ascii=False, indent=1) + "\n")
-        result.append({"file": path.name, "bytes": path.stat().st_size, "sha256": digest(path)})
-    return result
+def write_inventory(tmp, rows):
+    path = tmp / "declarations.json"
+    assert not path.exists(), "群末の宣言一覧を上書きしない"
+    path.write_text(json.dumps(rows, ensure_ascii=False, indent=1) + "\n")
+    return {"file": path.name, "count": len(rows), "bytes": path.stat().st_size, "sha256": digest(path)}
 
 
 def verify(tmp):
     assert check_branches() == 72
-    found = inspect()
+    found = inspect(tmp)
     modules = found["modules"]
     assert json.loads((HERE / "audit-modules.json").read_text()) == modules
-    root_before = (HERE / "baseline-root.txt").read_text()
+    root_before = (tmp / "baseline-root.txt").read_text()
     root_after = (ROOT / "formal/Benitoite.lean").read_text()
     assert root_after.startswith(root_before), "根の既存 import を変えた"
     suffix = root_after[len(root_before):].splitlines()
-    assert sorted(suffix) == sorted("import " + m for m in modules)
+    added_modules = [p.removeprefix("formal/").removesuffix(".lean").replace("/", ".") for p in found["added"]]
+    assert sorted(suffix) == sorted("import " + m for m in added_modules)
     assert all(root_after.splitlines().count("import " + m) == 1 for m in modules)
-    assert digest(HERE / "baseline-root.txt") == baseline()["formal/Benitoite.lean"]
+    assert digest(tmp / "baseline-root.txt") == baseline(tmp)["formal/Benitoite.lean"]
 
     edits = json.loads((HERE / "design-edits.json").read_text())
     assert set(edits) <= DESIGN
@@ -53,10 +41,10 @@ def verify(tmp):
             assert not re.search(r"\bL\d\d\.\d|\bJ\d\d-\d|\bU0\d\b|docs/todo|改造", item["after"])
             text = text.replace(item["after"], item["before"], 1)
         import hashlib
-        assert hashlib.sha256(text.encode()).hexdigest() == baseline()[path], path
+        assert hashlib.sha256(text.encode()).hexdigest() == baseline(tmp)[path], path
 
     forbidden = r"\bsorry\b|#eval|#check|#print|maxRecDepth|maxHeartbeats|\bL\d\d\.\d|\bJ\d\d-\d|\bU0\d\b"
-    for path in found["added"]:
+    for path in [path_of(m) for m in modules]:
         src = (ROOT / path).read_text()
         assert not re.search(forbidden, src), path
     build_path, audit_path = tmp / "build.log", tmp / "axioms.log"
@@ -91,8 +79,39 @@ def verify(tmp):
             readers[target].add(source)
     public_entries = json.loads((HERE / "public-entries.json").read_text())
     assert set(public_entries) <= set(targets)
-    assert all(readers[name] for name in public_entries), [name for name in public_entries if not readers[name]]
-    declarations_files = write_chunks("declarations", declarations)
+    # 匿名exampleは環境に残らないが、同じ既定ビルドがその証明を検査する。
+    example_readers = collections.Counter()
+    for item in json.loads((HERE / "example-readers.json").read_text()):
+        assert item["source"] in {path_of(m) for m in modules}
+        text = (ROOT / item["source"]).read_text()
+        tops = list(re.finditer(r"(?m)^(?:example\b|(?:private )?(?:def|theorem|abbrev)\b|end\b)", text))
+        blocks = [text[m.start():tops[i+1].start() if i+1 < len(tops) else len(text)]
+                  for i, m in enumerate(tops) if m.group().startswith("example")]
+        import hashlib
+        matches = [block for block in blocks if hashlib.sha256(block.encode()).hexdigest() == item["example_sha256"]]
+        assert len(matches) == 1
+        for name, reference in item["entries"].items():
+            assert name in public_entries
+            assert re.search(r"(?<![A-Za-z0-9_.])" + re.escape(reference) + r"\b", matches[0]), name
+            example_readers[name] += 1
+    assert all(readers[name] or example_readers[name] for name in public_entries), [
+        name for name in public_entries if not readers[name] and not example_readers[name]]
+    # 写しの対応表は全所有モジュールを明記する。
+    correspondence = (ROOT / "docs/design/07-quality/07-04-formal-semantics.md").read_text()
+    correspondence = correspondence[correspondence.index("篩を含む形式化の対応は次表"):]
+    correspondence = correspondence[:correspondence.index("以下の既存の表は")]
+    listed = set(re.findall(r"(?<![A-Za-z.])(?:Surface\.[A-Za-z]+|Coverage[A-Za-z]*)", correspondence))
+    assert all(m.removeprefix("Benitoite.Release.Refinement.") in listed for m in modules)
+    # ビルドと監査の間でソースを替えていない。
+    import hashlib
+    source_hashes = {path_of(m): digest(ROOT / path_of(m)) for m in modules}
+    source_hashes["formal/Benitoite.lean"] = digest(ROOT / "formal/Benitoite.lean")
+    source_sha = hashlib.sha256(json.dumps(source_hashes, sort_keys=True).encode()).hexdigest()
+    for phase in ["build", "axioms"]:
+        timing = json.loads((tmp / (phase + "-time.json")).read_text())
+        assert timing["rc"] == 0 and timing["source_sha256"] == source_sha, phase
+    assert not list(HERE.glob("baseline-[0-9]*.json")) and not list(HERE.glob("declarations-*.json"))
+    declarations_file = write_inventory(tmp, declarations)
     cases = json.loads((HERE / "cases.json").read_text())
     assert sum(cases["surface_rules"].values()) == 95
     assert sum(cases["interpolation_rules"].values()) == 14
@@ -106,19 +125,19 @@ def verify(tmp):
             assert "/Us" + "ers/" not in text and "/priv" + "ate/tmp" not in text, path.name
             assert not re.search(r"\]\([^)]*docs/todo", text), path.name
     total = sum(p.stat().st_size for p in HERE.iterdir() if p.is_file())
-    assert total < 5_000_000
+    assert total < 250_000, total
     summary = {
-        "b_work": "aab9025f1f366d6d190298869add18181af7eeb6",
-        "baseline_files": len(baseline()), "changed": found["changed"], "new_modules": len(modules),
+        "b_work": B_WORK,
+        "baseline_files": len(baseline(tmp)), "changed": found["changed"], "new_modules": len(found["added"]), "owned_modules": len(modules),
         "build": {"jobs": jobs, "bytes": build_path.stat().st_size, "sha256": digest(build_path)},
         "audit": {"targets": len(targets), "own_declarations": len(declarations),
                   "private": sum(n.startswith("_private.") for _, _, _, n in declarations),
                   "sets": {','.join(k) or '(none)': v for k, v in sorted(sets.items())},
                   "bytes": audit_path.stat().st_size, "sha256": digest(audit_path),
                   "environment_modules": len(environment), "own_modules": own,
-                  "declarations": declarations_files},
-        "sources": {p: digest(ROOT / p) for p in found["added"]},
-        "public_entries": {n: len(readers[n]) for n in public_entries},
+                  "declarations": declarations_file},
+        "source_snapshot": {"files": len(source_hashes), "sha256": source_sha},
+        "public_entries": {n: {"environment": len(readers[n]), "examples": example_readers[n]} for n in public_entries},
         "record_bytes": total,
     }
     (HERE / "audit-summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=1) + "\n")

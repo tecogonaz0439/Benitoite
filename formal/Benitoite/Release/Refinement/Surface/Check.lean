@@ -44,7 +44,7 @@ mutual
   def checkExprAt (q : Input) (rows : List Bool) (Δ : BuilderCtx) (C : TypeCtx) (Γ : Ctx) (Φ : List Pred)
       (R : Option Ty) (p : Position) (path : List Nat) (e : Expr) (a : Ty) (ε : Eff) (g : Guide) : Bool :=
     resultGuard q rows a ε && match g with
-    | .unknown => false
+    | .unknown | .failure _ => false
     | .node rule h children => match rule with
       | .E_BuilderOp => match e, children with
         | .builderOp op i args kind, [ga] =>
@@ -748,7 +748,7 @@ mutual
         | e, [ge] => match e.valueOf? with
           | some v => match v.toTerm?, (h.ty 0).sort? with
             | some t, some _ => allChecks [rawTyEq q.formation.atoms (.refined (h.ty 0) (h.pred 0)) a,
-                checkExprAt q rows Δ C Γ Φ R p path e (h.ty 0) ε ge,
+                checkExprAt q rows Δ C Γ Φ R p (child path 0) e (h.ty 0) ε ge,
                 decide ((h.pred 0).Sorted Γ (some (h.ty 0)) ∧ (h.pred 0).WF (Γ.length + 1)),
                 (h.proof 0).check q.proofSteps (Γ.facts ++ Φ) ((h.pred 0).open t),
                 annotation q C Γ path (h.ty 0),
@@ -757,7 +757,7 @@ mutual
           | none => false
         | _, _ => false
       | .E_Sub => match e, children with
-        | e, [ge] => allChecks [checkExprAt q rows Δ C Γ Φ R p path e (h.ty 0) (h.eff 0) ge,
+        | e, [ge] => allChecks [checkExprAt q rows Δ C Γ Φ R p (child path 0) e (h.ty 0) (h.eff 0) ge,
             subtype q Γ Φ h 0 (h.ty 0) a, covers q ε (h.eff 0), annotation q C Γ path a]
         | _, _ => false
       | _ => false

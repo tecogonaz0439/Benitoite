@@ -6,10 +6,23 @@ import Benitoite.Release.Refinement.Patterns
 namespace Benitoite.Release.Refinement.Surface.CheckSubtyping
 open CheckCompare
 
-/-- 論理の証明書と、関数ごとに選んだ上限で検査する基本操作の列。 -/
+/-- 交換の入力が持つ論理の証明書と基本操作の列。推論の問い合わせは含めない。 -/
+structure ExchangeCertificate where
+  certificate : Certificate
+  actions : List StepAccounting.Action
+
+/-- 推論がソースから決めた診断用の問い合わせ。証明の検査の前提としては使わない。 -/
+structure LogicQuery where
+  path : List Nat
+  premises : List Pred
+  goal : Pred
+
+/-- 内部の再検査が読む証明書と操作列。交換の入力は ExchangeCertificate を使う。 -/
 structure LogicCertificate where
   certificate : Certificate
   actions : List StepAccounting.Action
+  /-- 推論が必ず上書きする診断用の記録。交換の証明書の欄には含めない。 -/
+  query : Option LogicQuery := none
 
 /-- 不正な証明書の拒否と、予算又は係数の表現による打ち切りを区別する。 -/
 inductive Decision where
@@ -24,7 +37,7 @@ def Decision.isProved : Decision → Bool
 
 private def classify : ProofResult → Decision
   | .proved _ => .proved
-  | .unproved => .unknown none
+  | .unproved => .rejected
   | .stopped .malformed => .rejected
   | .stopped reason => .unknown (some reason)
 
@@ -35,6 +48,36 @@ private theorem classify_proved (r : ProofResult) : (classify r).isProved = r.is
 
 def LogicCertificate.result (limit : Nat) (Φ : List Pred) (goal : Pred) (c : LogicCertificate) : Decision :=
   classify (checkAccounted limit c.actions (Pred.ofConjuncts Φ) goal c.certificate)
+
+/-- unknown は、同じ操作列の steps 又は係数の表現による会計の打ち切りに対応する。 -/
+theorem LogicCertificate.unknown_accounting {limit : Nat} {Φ : List Pred} {goal : Pred}
+    {c : LogicCertificate} {reason : Option ProofStop}
+    (h : c.result limit Φ goal = .unknown reason) :
+    ∃ stop, reason = some stop ∧
+      (stop = .stepsExhausted ∨ stop = .coefficientRepresentation) ∧
+      StepAccounting.runActions (StepAccounting.initial limit) c.actions = .error stop := by
+  cases ha : StepAccounting.runActions (StepAccounting.initial limit) c.actions with
+  | error stop =>
+    cases stop with
+    | malformed => simp only [result, checkAccounted, ha, classify] at h; cases h
+    | coefficientRepresentation =>
+      have hr : reason = some .coefficientRepresentation := by
+        simpa only [result, checkAccounted, ha, classify, Decision.unknown.injEq] using h.symm
+      exact ⟨.coefficientRepresentation, hr, Or.inr rfl, rfl⟩
+    | stepsExhausted =>
+      have hr : reason = some .stepsExhausted := by
+        simpa only [result, checkAccounted, ha, classify, Decision.unknown.injEq] using h.symm
+      exact ⟨.stepsExhausted, hr, Or.inl rfl, rfl⟩
+  | ok final =>
+    simp only [result, checkAccounted, ha, replayProof] at h
+    split at h <;> cases h
+
+/-- 実際に malformed と判定した証明書を、不明の結果に変えない。 -/
+theorem LogicCertificate.malformed_rejected {limit : Nat} {Φ : List Pred} {goal : Pred}
+    {c : LogicCertificate}
+    (h : checkAccounted limit c.actions (Pred.ofConjuncts Φ) goal c.certificate = .stopped .malformed) :
+    c.result limit Φ goal = .rejected := by
+  simp only [result, h, classify]
 
 /-- unknown は成功の証拠に変えない。 -/
 def LogicCertificate.check (limit : Nat) (Φ : List Pred) (goal : Pred) (c : LogicCertificate) : Bool :=
@@ -293,7 +336,8 @@ theorem LeCertificate.checkAs_sound {s : List Atom} {P : Refinement.Program} {Γ
 namespace Examples
 
 private def singletonPredicate : Pred := .eq (.var 0) (.integer 1)
-private def hypothesisCertificate : LogicCertificate := ⟨.use 0, [.work .checkCertificate .node]⟩
+private def hypothesisCertificate : LogicCertificate :=
+  { certificate := .use 0, actions := [.work .checkCertificate .node] }
 
 example : hypothesisCertificate.result 1 [singletonPredicate] singletonPredicate = .proved ∧
     hypothesisCertificate.result 0 [singletonPredicate] singletonPredicate = .unknown (some .stepsExhausted) ∧
@@ -301,7 +345,7 @@ example : hypothesisCertificate.result 1 [singletonPredicate] singletonPredicate
   exact ⟨rfl, rfl, rfl⟩
 private def identityCertificate : LeCertificate :=
   .refine (.refl (.base .integer)) singletonPredicate singletonPredicate
-    ⟨.use 0, [.work .checkCertificate .node]⟩
+    { certificate := .use 0, actions := [.work .checkCertificate .node] }
 
 /-- 同じ含意の証明書でも、関数で選んだ上限を使い切れば成功しない。 -/
 example (P : Refinement.Program) :

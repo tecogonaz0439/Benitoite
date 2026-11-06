@@ -105,7 +105,7 @@ def Materials.methodNames (m : Materials) (i : ImplName) (name : MethName) : Lis
   | none => []
   | some im => ((lookup im.methods name).map MethodMaterial.names).getD []
 
-/-- 予算・案内・組み込みの許容判定は基の入力から受け取り、表と全一覧と実名を有限材料で固定する。 -/
+/-- 予算・論理の証明書・組み込みの許容判定は基の入力から受け取り、表と全一覧と実名を有限材料で固定する。 -/
 def Materials.input (m : Materials) (base : Check.Input) : Check.Input :=
   {base with
     D := m.declarations
@@ -209,14 +209,13 @@ theorem Materials.impl_names_complete {m : Materials} {base i id} (hi : m.progra
 /-- 構成子の全件性は材料から導き、型・効果の支持と既存の許容判定との対応だけを受け取る。 -/
 theorem Materials.input_sound (m : Materials) (base : Check.Input)
     (hf : ∀ c cd, m.declarations.core.cons c = some cd → Ty.SupportList (· ∈ base.formation.atoms) cd.args)
-    (hh : ∀ path, (base.formation.hints path).Support base.formation.atoms)
     (ht : CheckArguments.HeadTableSupport base.formation.atoms m.declarations base.B)
     (hs : CheckArguments.SatSound base.B base.satDec)
     (ha : CheckArguments.AdmitsSound base.B base.admitsDec)
     (hr : CheckArguments.RangeAdmitsSound base.B base.admitsRDec)
     (ho : ∀ o t b ts, base.opPrim o t = some (b, ts) → t.Support (· ∈ base.formation.atoms) →
       Ty.SupportList (· ∈ base.formation.atoms) ts) : (m.input base).Sound :=
-  ⟨⟨m.constructors_complete, hf, hh⟩, ht, hs, ha, hr, ho⟩
+  ⟨⟨m.constructors_complete, hf⟩, ht, hs, ha, hr, ho⟩
 
 /-- 必須の判定が読む本体の名前も、同じ有限の実装とメソッドの材料から得る。 -/
 theorem Materials.accept_names_complete (m : Materials) (base : Check.Input) :

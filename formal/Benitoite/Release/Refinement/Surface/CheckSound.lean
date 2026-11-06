@@ -20,6 +20,10 @@ theorem checkExprAt_step {g : Guide} (ih : SoundBelow g) : ExprSoundAt g := by
     intro q rows Δ C Γ Φ R p path e a ε hq hΔ hΓ hR hs ha he hg hc
     rw [checkExprAt.eq_def] at hc
     simp only [Bool.and_false, Bool.false_eq_true] at hc
+  | failure failure =>
+    intro q rows Δ C Γ Φ R p path e a ε hq hΔ hΓ hR hs ha he hg hc
+    rw [checkExprAt.eq_def] at hc
+    simp only [Bool.and_false, Bool.false_eq_true] at hc
   | node rule h cs =>
     cases rule
     case E_BuilderOp => exact builderOp_step ih

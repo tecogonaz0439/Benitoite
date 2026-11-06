@@ -28,17 +28,32 @@ theorem checkProgramAccepted_ok {q A p} (h : checkProgramAccepted q A p = .ok ()
     · cases h
     · next ha => exact ⟨hc, ha⟩
 
+/-- 受理の入口も、型付けの unknown を本体の実際の打ち切りまで追跡できる。 -/
+theorem checkProgramAccepted_unknown {q A p error}
+    (h : checkProgramAccepted q A p = .error (.typing error)) (hu : error.kind = .unknown) :
+    CheckTables.ProgramStopped q p := by
+  unfold checkProgramAccepted at h
+  cases hc : checkProgram q p with
+  | error err =>
+    simp only [hc, Except.error.injEq, EntryError.typing.injEq] at h
+    exact CheckTables.checkProgram_unknown (h ▸ hc) hu
+  | ok value =>
+    cases value
+    simp only [hc] at h
+    split at h
+    · cases h
+    · cases h
+
 /-- 全プログラムでの型付けと必須の判定の受理を、同じ入口の成功から得る。 -/
 theorem checkProgramAccepted_sound {q : Check.Input} {A : AcceptInput} {p : Program}
     (hq : q.Sound) (hn : CheckTables.NamesComplete q p)
     (hd : ∀ n d, p.defs n = some d → DefSupport q d)
     (hi : ∀ n id, p.impls n = some id → ImplSupport q id)
     (him : ∀ n id, p.impls n = some id → ImplNamesComplete q id)
-    (hg : GuideTableSupport q) (hsg : ∀ i s, (q.superGuides i s).Support q.formation.atoms)
     (hext : Extends q.D p.declarations) (ha : NamesComplete q p)
     (h : checkProgramAccepted q A p = .ok ()) : CheckedUnder p q ∧ Accepted A q p := by
   obtain ⟨hc, haccept⟩ := checkProgramAccepted_ok h
-  exact ⟨checkProgram_sound hq hn hd hi him hg hsg hext hc, acceptProgram_sound ha haccept⟩
+  exact ⟨checkProgram_sound hq hn hd hi him hext hc, acceptProgram_sound ha haccept⟩
 
 /-- 宣言の補完が不要なとき、自身の表の下での型付けと受理を同時に得る。 -/
 theorem checkProgramAccepted_empty {q : Check.Input} {A : AcceptInput} {p : Program}
@@ -46,10 +61,9 @@ theorem checkProgramAccepted_empty {q : Check.Input} {A : AcceptInput} {p : Prog
     (hd : ∀ n d, p.defs n = some d → DefSupport q d)
     (hi : ∀ n id, p.impls n = some id → ImplSupport q id)
     (him : ∀ n id, p.impls n = some id → ImplNamesComplete q id)
-    (hg : GuideTableSupport q) (hsg : ∀ i s, (q.superGuides i s).Support q.formation.atoms)
     (hD : q.D = p.declarations) (ha : NamesComplete q p)
     (h : checkProgramAccepted q A p = .ok ()) : p.WellTyped q.B q.opPrim ∧ Accepted A q p := by
   obtain ⟨hc, haccept⟩ := checkProgramAccepted_ok h
-  exact ⟨checkProgram_empty hq hn hd hi him hg hsg hD hc, acceptProgram_sound ha haccept⟩
+  exact ⟨checkProgram_empty hq hn hd hi him hD hc, acceptProgram_sound ha haccept⟩
 
 end Benitoite.Release.Refinement.Surface.CheckAccept

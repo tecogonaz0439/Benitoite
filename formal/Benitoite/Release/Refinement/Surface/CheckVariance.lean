@@ -264,7 +264,7 @@ private def program (present : Bool) (variance : Variance)
   impls := fun _ => none
   dataInfo := fun d => if d = "Example.Cell" then some (cellInfo variance requirements boundary) else none
 
-private def input : CheckFormation.Input := ⟨[], fun _ => ["Example.Cell.make"], fun _ => .var⟩
+private def input : CheckFormation.Input := ⟨[], fun _ => ["Example.Cell.make"]⟩
 
 private theorem input_sound (present : Bool) (variance : Variance) (requirements : List Ty)
     (boundary : List (Polarity × Ty)) : input.Sound (program present variance requirements boundary) where
@@ -282,7 +282,6 @@ private theorem input_sound (present : Bool) (variance : Variance) (requirements
     · cases hc
       cases present <;> trivial
     · cases hc
-  hints := fun _ => trivial
 
 private theorem data_complete (present : Bool) (variance : Variance) (requirements : List Ty)
     (boundary : List (Polarity × Ty)) : DataComplete (program present variance requirements boundary) ["Example.Cell"] := by

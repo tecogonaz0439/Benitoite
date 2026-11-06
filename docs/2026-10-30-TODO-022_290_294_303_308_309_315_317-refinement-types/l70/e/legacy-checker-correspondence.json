@@ -1,0 +1,27 @@
+{
+ "command": [
+  "lake",
+  "env",
+  "lean",
+  "-M",
+  "12288",
+  "<tmp>/LegacyNumeric.lean"
+ ],
+ "start": "2026-11-06 17:05:26 JST",
+ "end": "2026-11-06 17:05:31 JST",
+ "seconds": 5.08,
+ "rc": 0,
+ "source_sha256": "fc7b66568c4d709e187ce6d926cda82e9cadaf655583ae9689aaf3d8c917d38a",
+ "log_bytes": 0,
+ "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+ "b_work": "66779f9ca189d0ee780069da2e6146a6b390a220",
+ "source": "legacy-checker-correspondence.lean",
+ "source_bytes": 2115,
+ "meaning": "旧checker単独の成功保存は値域外Integer8(128)で不成立。新実入口は127を受理し128を拒否する。Rustで受理された書出し入力の全称保存は別の未証明の義務である。",
+ "rust_evidence": [
+  "crates/benitoite/src/typeck/generate.rs:945",
+  "crates/benitoite/src/typeck/tests.rs:1520",
+  "crates/benitoite/src/typeck/tests.rs:1605"
+ ],
+ "rust_execution": "未実行（本作業の検査はLeanのみ）"
+}

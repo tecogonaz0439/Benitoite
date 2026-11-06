@@ -13,10 +13,9 @@ private def input : CheckFormation.Input where
   ctors := fun _ => []
 
 private theorem input_sound : input.Sound declarations.core := by
-  refine ⟨?_, ?_, ?_⟩
+  refine ⟨?_, ?_⟩
   · intro c cd h; cases h
   · intro c cd h; cases h
-  · intro path; trivial
 
 /-- 同じ正常値を持つ篩の型で、Unit と Boolean のパターンを区別する。 -/
 theorem refined_accept_reject (q : CheckFormation.Input) (P : Refinement.Program) :
