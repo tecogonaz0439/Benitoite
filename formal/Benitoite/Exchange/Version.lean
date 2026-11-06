@@ -1,92 +1,28 @@
 import Benitoite.Exchange.Syntax
 import Benitoite.Exchange.Observe
 
-/-! 設計書 07-04「証明する性質」に対応する版ごとの交換契約。
-旧版の閉じた既定だけを補い、新版の必須情報は補完しない。 -/
-namespace Benitoite.Exchange
-open Lean
+/-! # 交換の版と入力の完全性
 
-/-- 旧版で新しい情報を無視しない。未知の式の内側にも同じ制約を適用する。 -/
+コーパス16と付随の表8だけを読み、欄の欠落と未知の欄を拒否する。型と範囲の位置は新しい判断へ直接写す。
+-/
+namespace Benitoite.Exchange
+open Lean Benitoite.Release.Refinement
+
+/-- 禁止された欄を、未使用の子の中まで検査する。 -/
 partial def rejectFields (keys : List String) : Json → Except String Unit
   | .arr xs => xs.toList.forM (rejectFields keys)
-  | .obj xs => xs.toArray.toList.forM fun (k,v) => do
-      if keys.contains k then throw s!"field requires new exchange version: {k}"
+  | .obj xs => xs.toArray.toList.forM fun (k, v) => do
+      if keys.contains k then throw s!"unsupported exchange field: {k}"
       rejectFields keys v
   | _ => pure ()
 
-def addFields (j : Json) (fields : List (String × Json)) : Json :=
-  match j with
-  | .obj xs => Json.mkObj (xs.toArray.toList ++ fields)
-  | _ => j
-
-/-- 旧版の既知の欄だけを辿る。式の中の同名の欄から種類を推測しない。 -/
-def mapField (j : Json) (key : String) (f : Json → Json) : Json :=
-  match j with
-  | .obj xs => Json.mkObj (xs.toArray.toList.map fun (k,v) => (k, if k == key then f v else v))
-  | _ => j
-
-def mapArray (f : Json → Json) : Json → Json
-  | .arr xs => .arr (xs.map f)
-  | j => j
-
-def legacyBody (j : Json) : Json :=
-  addFields j [("package", toJson "legacy"), ("coverageView", toJson ([] : List String))]
-
-def legacyData (kind : String) (j : Json) : Json :=
-  let cs := ((j.getObjVal? "ctors").bind Json.getArr?).toOption.getD #[]
-  let record := if kind == "coverage" then (j.getObjVal? "fields").toOption.any (· != Json.null)
-    else cs.any fun c => (c.getObjVal? "fields").toOption.any (· != Json.null)
-  addFields j ([("builtin", toJson "ordinary"), ("package", toJson "legacy"), ("extensible", toJson false),
-    ("isRecord", toJson record)] ++
-    if kind == "builtins" then [("typeName", (j.getObjVal? "name").toOption.getD Json.null)] else [])
-
-/-- 互換の変換は形式ごとの既知の経路にだけ適用する。 -/
-def closedDefaults (kind : String) (j : Json) : Json :=
-  if kind == "corpus" then mapField j "inputs" (mapArray fun i =>
-    let i := addFields i [("dataTypes", toJson ([] : List DataTypeInfo))]
-    let i := mapField i "constants" (mapArray fun c => addFields c [("package", toJson "legacy")])
-    mapField i "definitions" (mapArray fun d =>
-      mapField d "scope" (fun scope => mapField scope "inScope" (fun scope =>
-        mapField scope "surface" legacyBody))))
-  else if kind == "builtins" then
-    mapField j "inputs" (mapArray fun i => mapField i "dataDecls" (mapArray (legacyData kind)))
-  else if kind == "coverage" then
-    mapField j "cases" (mapArray fun i => mapField (legacyBody i) "decls" (mapArray (legacyData kind)))
-  else if kind == "coverage-program" then
-    mapField j "inputs" (mapArray fun i =>
-      mapField (mapField i "matches" (mapArray legacyBody)) "bindings" (mapArray legacyBody))
-  else j
-
-/-- 新しい欄の補完は旧版だけに行い、既存の辞書欄とは区別する。 -/
-partial def batch2Defaults : Json → Json
-  | .arr xs => .arr (xs.map batch2Defaults)
-  | .obj xs => Id.run do
-      let mut j := Json.mkObj (xs.toArray.toList.map fun (k,v) => (k,batch2Defaults v))
-      if let .ok ne := j.getObjValAs? Nat "neffs" then
-        j := addFields j [("effParams", toJson (List.replicate ne (EffParam.mk false)))]
-      if (j.getObjVal? "op").isOk && (j.getObjVal? "arity").isOk then
-        j := addFields j [("dictCount", toJson (0 : Nat)), ("failureType", Json.null)]
-      j := mapField j "ops" (mapArray fun o =>
-        if (o.getObjVal? "header").isOk then
-          addFields o [("dictParams", toJson ([] : List (String × Nat))), ("effectKind", toJson "ordinary")]
-        else o)
-      j := mapField j "primOps" (mapArray fun o => addFields o [("effectKind", toJson "ordinary")])
-      return j
-  | j => j
-
-/-- 旧版の操作宣言に辞書を混ぜても、既存の関数の辞書欄とは混同しない。 -/
-partial def rejectBatch2 : Json → Except String Unit
-  | .arr xs => xs.toList.forM rejectBatch2
-  | j@(.obj xs) => do
-      if (j.getObjVal? "kind").toOption == some (toJson "fail") ||
-          (j.getObjVal? "op").toOption == some (toJson "fail") then
-        throw "Fail requires new exchange version"
-      if let .ok os := (j.getObjVal? "ops").bind Json.getArr? then
-        for o in os do
-          if (o.getObjVal? "header").isOk && (o.getObjVal? "dictParams").isOk then
-            throw "operation dictionaries require new exchange version"
-      xs.toArray.toList.forM (fun (_,v) => rejectBatch2 v)
-  | _ => pure ()
+/-- 必須欄が揃い、指定した欄のほかを持たないことを確かめる。 -/
+def exactFields (keys : List String) (j : Json) : Except String Unit := do
+  let obj ← j.getObj?
+  for k in keys do
+    if !obj.contains k then throw s!"missing exchange field: {k}"
+  for (k, _) in obj.toArray do
+    if !keys.contains k then throw s!"unexpected exchange field: {k}"
 
 /-- 行の一覧は宣言した個数と完全に対応し、真偽値以外を参照として解釈しない。 -/
 partial def validateBatch2 : Json → Except String Unit
@@ -121,46 +57,117 @@ partial def validateBatch2 : Json → Except String Unit
       xs.toArray.toList.forM (fun (_,v) => validateBatch2 v)
   | _ => pure ()
 
-/-- 比較専用の期待コアや未使用の定数も、型付けへの変換前に有界にする。
-型の名前や文字列の値を整数と解釈せず、交換の Const.integer のタグだけを読む
-（設計書 07-04「証明する性質」）。 -/
+
+/-- 書き出しの統計は既知の三分類と二つの自然数だけを持つ。 -/
+def validateAnnotations (j : Json) : Except String Unit := do
+  let obj ← j.getObj?
+  for (kind, value) in obj.toArray do
+    if !["resultMatch", "resultReturn", "tailMatch"].contains kind then
+      throw s!"unknown annotation class: {kind}"
+    let pair : List Nat ← fromJson? value
+    if pair.length != 2 then throw "annotation count must have two elements"
+
+/-- 型・効果・表層・期待コアの既知の構成子を、書き戻した形との一致で検査する。 -/
+partial def validateSyntaxFields : Json → Except String Unit
+  | .arr xs => xs.toList.forM validateSyntaxFields
+  | j@(.obj xs) => do
+      if let .ok annotations := j.getObjVal? "annotations" then validateAnnotations annotations
+      if xs.contains "effParams" && xs.contains "tparams" && !xs.contains "rkinds" then
+        exactFields ["tparams", "tparamKinds", "neffs", "effParams", "names", "params", "ret", "eff", "rangeParams", "proofSteps"] j
+        let h : Header ← fromJson? j
+        if h.tparams.length != h.tparamKinds.length then throw "type parameter kind count mismatch"
+        if toJson h != j then throw "unexpected header fields"
+      if xs.contains "definitions" && xs.contains "constants" then
+        exactFields ["dataTypes", "group", "name", "excluded", "definitions", "constants", "candidates", "ops", "effects", "primOps", "classes", "impls", "scopeAcceptance", "aliases", "records", "testers", "externals", "logicCertificates"] j
+        let i : Input ← fromJson? j
+        LogicCertificateEntry.validate i.logicCertificates
+        if toJson i != j then throw "unexpected input syntax fields"
+      if xs.contains "argumentKind" && xs.contains "methods" && xs.contains "supers" then
+        exactFields ["name", "argumentKind", "supers", "methods"] j
+      xs.toArray.toList.forM (fun (_, v) => validateSyntaxFields v)
+  | _ => pure ()
+
+/-- 値とパターンの定数だけを i64 に制限する。論理の項と線形式の係数は数学的な整数である。 -/
+private def validateIntegerConstant (j : Json) : Except String Unit := do
+  if let .ok value := j.getObjVal? "integer" then
+    let n ← value.getObjValAs? Int "value"
+    if !(Benitoite.Release.min64 ≤ n && n ≤ Benitoite.Release.max64) then throw "integer outside i64"
+
 partial def validateIntegerConstants : Json → Except String Unit
   | .arr xs => xs.toList.forM validateIntegerConstants
   | j@(.obj xs) => do
-      if let .ok value := j.getObjVal? "integer" then
-        let n ← value.getObjValAs? Int "value"
-        if !(Benitoite.Release.min64 ≤ n && n ≤ Benitoite.Release.max64) then
-          throw "integer outside i64"
-      xs.toArray.toList.forM (fun (_,v) => validateIntegerConstants v)
+      if xs.toArray.size == 1 then
+        for tag in ["literal", "const"] do
+          if let .ok body := j.getObjVal? tag then validateIntegerConstant (← body.getObjVal? "value")
+        if let .ok body := j.getObjVal? "range" then
+          validateIntegerConstant (← body.getObjVal? "lo")
+          validateIntegerConstant (← body.getObjVal? "hi")
+      xs.toArray.toList.forM (fun (_, v) => validateIntegerConstants v)
   | _ => pure ()
 
-/-- 範囲を表す欄（corpus 15・sidecar 7 で加えた）。旧版の入力には置かせない。 -/
+/-- 範囲の位置・宣言・実引数と、表のデータの欄。 -/
 def rangeFields : List String :=
-  ["ix", "ranges", "rkinds", "shape", "effKinds", "valKinds", "admitsR", "valContents", "scopeAcceptance"]
+  ["ix", "ranges", "rkinds", "rangeParams", "shape", "effKinds", "valKinds", "admitsR", "valContents", "scopeAcceptance"]
 
-/-- 範囲の入力の検査（L50.2）。全ての範囲の位置 `ix` の範囲の変数の番号が上限 bound より小さく、閉じた範囲と範囲の
-列 `ranges` の範囲が整形式で正規形であることを確かめる（一つの節点は `checkIxInput`・`checkRangeInput`）。 -/
+/-- 記号付きの範囲も、実行時の環境を読む前に構文の整形式と正規形を検査する。 -/
+def checkRefinedRangeInput (range : RangeExpr) : Except String Unit :=
+  if range.WF ∧ range.Canonical then .ok () else .error "range is not well-formed and canonical"
+
+def checkRefinedIxInput (depth : Nat) : RangeIx → Except String Unit
+  | .fixed range => checkRefinedRangeInput range
+  | .rvar i => if i < depth then .ok () else .error "range variable outside declaration"
+
+theorem checkRefinedRangeInput_sound {range : RangeExpr}
+    (h : checkRefinedRangeInput range = .ok ()) : range.WF ∧ range.Canonical := by
+  unfold checkRefinedRangeInput at h
+  split at h
+  · assumption
+  · cases h
+
+/-- 成功した位置は宣言の深さに収まり、固定の範囲は同じ構文の検査を通っている。 -/
+theorem checkRefinedIxInput_sound {depth ix} (h : checkRefinedIxInput depth ix = .ok ()) :
+    ix.WF depth ∧ ∀ range, ix = .fixed range → range.WF ∧ range.Canonical := by
+  cases ix with
+  | fixed range =>
+      refine ⟨trivial, ?_⟩
+      intro r hr
+      cases hr
+      exact checkRefinedRangeInput_sound h
+  | rvar i =>
+      simp only [checkRefinedIxInput] at h
+      split at h
+      · exact ⟨‹i < depth›, fun _ h => by cases h⟩
+      · cases h
+
+/-- 宣言した範囲の文脈を本体へ渡し、全ての範囲の位置と実引数を同じ深さで検査する。 -/
 partial def validateRanges (bound : Nat) : Json → Except String Unit
   | .arr xs => xs.toList.forM (validateRanges bound)
-  | .obj xs => xs.toArray.toList.forM fun (k, v) => do
-      if k == "ix" then checkIxInput bound (← decodeIxStrict v)
-      if k == "ranges" then (← decodeRanges v).forM checkRangeInput
-      validateRanges bound v
+  | j@(.obj xs) => do
+      let own := ((j.getObjVal? "rangeParams").bind Json.getArr?).toOption.map (·.size)
+      let own := own.or (((j.getObjVal? "rkinds").bind Json.getArr?).toOption.map (·.size))
+      let own := own.or (((j.getObjVal? "header").bind (fun h => h.getObjVal? "rangeParams") >>= Json.getArr?).toOption.map (·.size))
+      let depth := own.getD bound
+      if let .ok member := j.getObjVal? "member" then
+        checkRefinedRangeInput (← member.getObjValAs? RangeExpr "range")
+      xs.toArray.toList.forM fun (k, v) => do
+        if k == "ix" then checkRefinedIxInput depth (← decodeRefinedIxStrict v)
+        if k == "ranges" then
+          let rs : List RangeIx ← fromJson? v
+          rs.forM (checkRefinedIxInput depth)
+        validateRanges depth v
   | _ => pure ()
 
-/-- Top でない範囲の数（範囲の位置の閉じた範囲と、範囲の列の要素）。比較の報告に書き、全て Top だけの入力の一致を
-範囲の比較の成功に数えないための件数にする（L50.2）。 -/
+/-- Top 以外の固定の範囲と範囲変数の出現数。 -/
 partial def countNonTopRanges : Json → Nat
   | .arr xs => xs.foldl (fun n v => n + countNonTopRanges v) 0
   | .obj xs => xs.toArray.foldl (fun n (k, v) =>
-      let own := if k == "ix" then (match decodeIxStrict v with | .ok (.fixed r) => if r == .top then 0 else 1 | _ => 0)
-        else if k == "ranges" then (match decodeRanges v with | .ok rs => (rs.filter (· != .top)).length | _ => 0)
+      let own := if k == "ix" then (match decodeRefinedIxStrict v with | .ok (.fixed .top) => 0 | .ok _ => 1 | _ => 0)
+        else if k == "ranges" then (match (fromJson? v : Except String (List RangeIx)) with
+          | .ok rs => (rs.filter (fun r => r != .fixed .top)).length | _ => 0)
         else 0
       n + own + countNonTopRanges v) 0
   | _ => 0
 
-/-- 組み込みの表の一つの入力の検査。署名の範囲の変数の番号は、その項目の `rkinds` の個数より小さい。表の `admitsR`
-の規則の番号も、名前の項目の範囲の変数の個数より小さい。項目の外（エフェクトの表など）は範囲の変数を置けない。 -/
 def validateBuiltinRanges (input : Json) : Except String Unit := do
   let prims ← (← input.getObjVal? "prims").getArr?
   let mut counts : List (String × Nat) := []
@@ -176,8 +183,6 @@ def validateBuiltinRanges (input : Json) : Except String Unit := do
   | .obj xs => xs.toArray.toList.forM fun (k, v) => if k == "prims" then pure () else validateRanges 0 v
   | _ => pure ()
 
-/-- corpus の一つの入力の必須の判定の入力の検査。新版は欄を必須とし、パターンの範囲とホストのパターンが整形式で
-正規形であることを確かめる。 -/
 def validateScopeAcceptance (input : Json) : Except String Unit := do
   let raw ← input.getObjVal? "scopeAcceptance"
   if raw == Json.null then throw "missing scopeAcceptance"
@@ -185,99 +190,40 @@ def validateScopeAcceptance (input : Json) : Except String Unit := do
   s.patterns.forM fun p => checkRangeInput p.range
   s.hosts.forM fun h => checkRangeInput (.host h.pattern)
 
-/-- 新版の入力の範囲の検査。形式ごとに範囲の変数の上限を決める（表の署名だけが項目の個数、ほかは 0）。 -/
 def validateRangeInput (kind : String) (j : Json) : Except String Unit := do
-  -- 入力の配列がない形（欄の誤り）は各形式の読者が拒否する。ここでは配列の要素だけを辿る。
   let inputs := ((j.getObjVal? "inputs").bind Json.getArr?).toOption.getD #[]
   if kind == "builtins" then
     for i in inputs do validateBuiltinRanges i
-    match j with
-    | .obj xs => xs.toArray.toList.forM fun (k, v) => if k == "inputs" then pure () else validateRanges 0 v
-    | _ => pure ()
   else
     validateRanges 0 j
     if kind == "corpus" then
       for i in inputs do validateScopeAcceptance i
 
-/-- 旧版の全ての節点に `legacyRangeNode` を当てる（子を先に変える）。名前の原子と不透明型は明示の Top の範囲の位置を、
-組み込みの呼び出しは空の範囲の列を持つ。暗黙に狭い範囲としては読まない（設計書 07-04「交換の形式の版」）。 -/
-partial def legacyRanges : Json → Json
-  | .arr xs => .arr (xs.map legacyRanges)
-  | .obj xs => legacyRangeNode (Json.mkObj (xs.toArray.toList.map fun (k, v) => (k, legacyRanges v)))
-  | j => j
-
-/-- 全ての節点に `legacyRangeNodeMissing` を当てる（子を先に変える）。 -/
-partial def legacyRangesMissing : Json → Json
-  | .arr xs => .arr (xs.map legacyRangesMissing)
-  | .obj xs => legacyRangeNodeMissing (Json.mkObj (xs.toArray.toList.map fun (k, v) => (k, legacyRangesMissing v)))
-  | j => j
-
-/-- 旧版の組み込みの表の項目は範囲の変数を持たず（`rkinds` は空、形は対象なし）、表のデータは空である
-（`Builtins` の既定の値。旧の像）。 -/
-def legacyTableDefaults (kind : String) (j : Json) : Json :=
-  if kind == "builtins" then
-    mapField j "inputs" (mapArray fun i =>
-      let i := addFields i [("effKinds", Json.arr #[]), ("valKinds", Json.arr #[]),
-        ("admitsR", Json.arr #[]), ("valContents", Json.arr #[])]
-      mapField i "prims" (mapArray fun p => addFields p [("rkinds", Json.arr #[]), ("shape", toJson "untargeted")]))
-  else j
-
-/-- 範囲を持たない旧版を新版の形にする。新版はこの変換を通さず、欄を必須とする。 -/
-def legacyRangeDefaults (kind : String) (j : Json) : Json :=
-  let j := legacyTableDefaults kind (legacyRanges j)
-  -- 旧版の入力は必須の判定の入力を持たず、規則のない受理の入力（旧の像）で読む。
-  if kind == "corpus" then mapField j "inputs" (mapArray fun i => addFields i [("scopeAcceptance", Json.null)]) else j
-
-/-- corpus と sidecar の世代を独立に判定し、旧版の深い位置でも新情報を捨てない。 -/
+/-- 入力の種類ごとに同じ新版だけを受ける。旧版と未知の版は変換せず拒否する。 -/
 def exchangeJson (kind : String) (j : Json) : Except String Json := do
   let version ← j.getObjValAs? Nat "version"
-  let corpus := kind == "corpus"
-  if !(if corpus then [8, 9, 10, 11, 12, 13, 14, 15] else [2, 3, 4, 5, 6, 7]).contains version then
-    -- 契約名導入前の入力にも、既存の具体的な拒否理由を保つ。
-    if version == (if corpus then 7 else 1) then
-      rejectFields ["names", "labels", "positions", "fields"] j
-    throw s!"unsupported {kind} exchange version: {version}"
-  if version < (if corpus then 14 else 6) then
-    match rejectFields ["formatted"] j with
-    | .error _ => throw "formatted interpolation requires corpus 14/sidecar 6; regenerate with new version"
-    | .ok _ => pure ()
-  if !corpus || version < 13 then
-    rejectFields ["block"] j
-  if corpus && version == 12 then
-    match rejectFields ["builderBind", "builderOp", "builderLet", "refs", "newRef", "getRef", "setRef"] j with
-    | .error _ => throw "builder syntax requires exchange version 13; regenerate with version 13"
-    | .ok _ => pure ()
-  if !corpus || version < 13 then
-    rejectFields ["builderBind", "builderOp", "builderLet", "localRef", "refs", "newRef", "getRef", "setRef"] j
-  else
-    rejectFields ["refs", "newRef", "getRef", "setRef"] j
+  let expected : Nat := if kind == "corpus" then 16 else 8
+  if version != expected then throw s!"unsupported {kind} exchange version: {version}; regenerate with version {expected}"
+  let fields ← match kind with
+    | "corpus" => pure ["version", "operators", "inputs"]
+    | "builtins" | "stdlib" | "coverage-program" => pure ["version", "inputs"]
+    | "coverage" => pure ["version", "seedXor", "randomCases", "boundaryCases", "kinds", "cases"]
+    | _ => throw s!"unknown exchange kind: {kind}"
+  let optional := if kind == "coverage" then ["budget"] else if kind == "corpus" then ["annotations"] else []
+  let obj ← j.getObj?
+  for k in fields do
+    if !obj.contains k then throw s!"missing exchange field: {k}"
+  for (k, _) in obj.toArray do
+    if !(fields ++ optional).contains k then throw s!"unexpected exchange field: {k}"
+  rejectFields ["refs", "newRef", "getRef", "setRef"] j
+  validateBatch2 j
+  validateSyntaxFields j
   validateIntegerConstants j
-  let ranged := version >= (if corpus then 15 else 7)
-  if !ranged then rejectFields rangeFields j
-  -- 範囲の変数は組み込みの表の署名にだけ置ける。プログラムと他の表の型に置かせない（設計書 01-12「構文」）。
-  if ranged && kind != "builtins" then rejectFields ["rvar"] j
-  -- 新版は範囲の正規形と範囲の変数の番号を確かめる（問3・問4）。
-  if ranged then validateRangeInput kind j
-  -- 旧版は型の読み込み（validateBatch2 など）より前に明示の Top を持たせる。
-  let j := if ranged then j else legacyRangeDefaults kind j
-  if corpus && version < 10 then
-    rejectFields ["tryResultReturn", "tryOptionReturn", "tryResultDie", "tryOptionDie"] j
-  let batch2 := version >= (if corpus then 11 else 4)
-  if !batch2 then
-    rejectFields ["effParams", "noFail", "dictCount", "failureType", "effectKind", "opDicts", "raise", "handleFail", "clause"] j
-    rejectBatch2 j
-  if version == (if corpus then 8 else 2) then
-    rejectFields (["builtin", "package", "coverageView", "extensible", "isRecord", "dataTypes"] ++
-      if kind == "coverage" then [] else ["typeName", "constructorName"]) j
-    return batch2Defaults (closedDefaults kind j)
-  if batch2 then
-    validateBatch2 j
-    return j
-  return batch2Defaults j
+  validateRangeInput kind j
+  return j
 
-/-- corpus 15はsidecar 7、14は6、13は5、11と12は4を使う。 -/
-def sidecarVersion (corpusVersion : Nat) : Nat :=
-  if corpusVersion >= 15 then 7 else if corpusVersion >= 14 then 6 else if corpusVersion >= 13 then 5 else if corpusVersion >= 11 then 4 else if corpusVersion >= 9 then 3 else 2
+/-- コーパス16と付随の表8を一組として用いる。 -/
+def sidecarVersion (_corpusVersion : Nat) : Nat := 8
 
 def validateDataTypes (ds : List DataTypeInfo) : Except String Unit := do
   if (ds.map (·.name)).eraseDups.length != ds.length then throw "duplicate data type metadata"
@@ -344,11 +290,10 @@ partial def referencedData : Json → List String
 def readCorpus (j : Json) : Except String Corpus := do
   let c : Corpus ← fromJson? (← exchangeJson "corpus" j)
   c.inputs.forM Input.validateViews
-  if c.version >= 9 then
-    for i in c.inputs do
-      for constant in i.constants do
-        validateConstantBody (toJson constant.body)
-      for n in referencedData (toJson i) do
-        if !i.dataTypes.any (·.name == n) then throw s!"missing data type metadata: {n}"
+  for i in c.inputs do
+    for constant in i.constants do
+      validateConstantBody (toJson constant.body)
+    for n in referencedData (toJson i) do
+      if !i.dataTypes.any (·.name == n) then throw s!"missing data type metadata: {n}"
   return c
 end Benitoite.Exchange

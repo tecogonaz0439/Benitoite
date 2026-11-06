@@ -4,7 +4,7 @@ import Benitoite.Release.Refinement.Surface.CheckOpenExamples
 namespace Benitoite.Release.Refinement.Surface.CheckOpenStandardExamples
 open Check RangeFunctionExamples
 
-private def input : Check.Input :=
+private noncomputable def input : Check.Input :=
   { CheckOpenExamples.input .endpoint with
     builtinSource := .standard (declarations .endpoint).core
     satDec := fun _ _ _ => false

@@ -46,9 +46,18 @@ private def patternValue (n : Int) : Except String Int := do
 /-- 直接負号から作った最小値を、通常の脱糖で同じ定数にする。 -/
 private def expressionValue (n : Int) : Except String Int := do
   let e ← Expr.toSurface [] (.literal (.integer n))
-  let .ret (.const (.integer v)) := Benitoite.Surface.desugarExpr (fun _ _ => none) .other e
-    | throw "expected integer expression"
-  return v.toInt
+  match e with
+  | .literal (.integer n) => return n.toValue.toInt
+  | .negInt n => return n.negValue.toInt
+  | _ => throw "expected integer expression"
+
+-- 二つの表層の整数の形は、同じ値の核の整数定数へ脱糖する。
+example (n : Integer64Literal) :
+    Benitoite.Release.Refinement.Surface.desugarExpr (fun _ _ => none) .other (.literal (.integer n)) =
+      .ret (.const (.integer n.toValue)) := rfl
+example (n : Integer64Magnitude) :
+    Benitoite.Release.Refinement.Surface.desugarExpr (fun _ _ => none) .other (.negInt n) =
+      .ret (.const (.integer n.negValue)) := rfl
 
 #guard [-9223372036854775808, 0, 9223372036854775807].map (fun n => (expressionValue n).toOption) ==
   [some (-9223372036854775808), some 0, some 9223372036854775807]

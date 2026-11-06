@@ -1,26 +1,29 @@
 import Benitoite.Exchange.Version
-import Benitoite.Surface.CheckTables
+import Benitoite.Release.Refinement.Surface.CheckMaterials
+import Benitoite.Release.Refinement.Surface.CheckAdmissible
+import Benitoite.Release.Refinement.Surface.Desugar
+import Benitoite.Release.Refinement.Surface.SourceRename
 
 namespace Benitoite.Exchange
 open Lean
+open Benitoite.Release.Refinement
 
-/-- Fail は名前の原子と区別し、支持はエラー型の内部まで収集する。範囲の位置はそのまま写す（旧版の入力は読み込みの前に
-明示の Top を持つ。`Exchange/Range.lean` の `legacyRangeNode`）。 -/
-def Atom.toRelease : Atom → Option Benitoite.Release.Atom
+/-- Fail は名前の原子と区別し、支持はエラー型の内部まで収集する。範囲の位置はそのまま写す（固定の範囲と基準からの範囲、範囲変数を区別する）。 -/
+def Atom.toRelease : Atom → Option Benitoite.Release.Refinement.Atom
   | .name s ix => some (.name s ix)
   | .rho i => some (.rho i)
   | .fail _ => none
 
 /-- Release の名前の原子と行の原子を交換の原子にする（`Atom.toRelease` の逆）。 -/
-def fromAtom : Benitoite.Release.Atom → Atom
+def fromAtom : Benitoite.Release.Refinement.Atom → Atom
   | .name s ix => .name s ix
   | .rho i => .rho i
 
-@[simp] theorem Atom.toRelease_fromAtom (a : Benitoite.Release.Atom) : (fromAtom a).toRelease = some a := by
+@[simp] theorem Atom.toRelease_fromAtom (a : Benitoite.Release.Refinement.Atom) : (fromAtom a).toRelease = some a := by
   cases a <;> rfl
 
 /-- Release の原子の列を交換の原子にして読み戻すと元の列になる。 -/
-theorem filterMap_toRelease_fromAtom (l : List Benitoite.Release.Atom) :
+theorem filterMap_toRelease_fromAtom (l : List Benitoite.Release.Refinement.Atom) :
     (l.map fromAtom).filterMap Atom.toRelease = l := by
   induction l with
   | nil => rfl
@@ -28,22 +31,12 @@ theorem filterMap_toRelease_fromAtom (l : List Benitoite.Release.Atom) :
 
 /-- 範囲が Top の名前の原子は、Release の Top の構築関数 `Atom.nameTop` に写る（Top の対応）。 -/
 theorem Atom.toRelease_top (s : String) :
-    (Atom.name s Scope.Signature.Ix.top).toRelease = some (.nameTop s) := rfl
+    (Atom.name s Benitoite.Release.Refinement.RangeIx.top).toRelease = some (.nameTop s) := rfl
 
-/-- 旧版の名前の原子の読み込み（明示の Top を加えてから読む）は、Release の Top の構築関数に写る（旧版の Top の対応）。 -/
-theorem legacy_atom_toRelease (l : String) :
-    (((legacyRangeNode (legacyNameAtomJson l)).getObjVal? "name" >>= decodeNameBody).map
-      (fun p => (Atom.name p.1 p.2).toRelease)) = .ok (some (.nameTop l)) := by
-  rw [legacy_name_atom_top]; rfl
 
 /-- 不透明型の葉の変換。範囲の位置をそのまま写す。 -/
-def opaqueToRelease (n : String) (ix : Scope.Signature.Ix) : Benitoite.Release.Ty := .opaque n ix
+def opaqueToRelease (n : String) (ix : Benitoite.Release.Refinement.RangeIx) : Benitoite.Release.Refinement.Ty := .opaque n ix
 
-/-- 旧版の不透明型の読み込みは、Release の Top の構築関数 `Ty.opaqueTop` に写る（旧版の Top の対応）。 -/
-theorem legacy_opaque_toRelease (n : String) :
-    (((legacyRangeNode (legacyOpaqueJson n)).getObjVal? "opaque" >>= decodeOpaqueBody).map
-      (fun p => opaqueToRelease p.1 p.2)) = .ok (.opaqueTop n) := by
-  rw [legacy_opaque_top]; rfl
 
 partial def collectAtoms : Json → Eff
   | .arr xs => xs.toList.flatMap collectAtoms
@@ -55,21 +48,21 @@ partial def collectAtoms : Json → Eff
 
 /-- JSON の組み込みの呼び出し（`prim`・`primName`）の名前と範囲の列を集める。範囲の列を持たない同名の欄
 （節の操作の参照 `OpRef.prim`）は呼び出しでないので数えない。 -/
-partial def collectPrimRanges : Json → List (String × List Scope.Domain.Range)
+partial def collectPrimRanges : Json → List (String × List Benitoite.Release.Refinement.RangeIx)
   | .arr xs => xs.toList.flatMap collectPrimRanges
   | j@(.obj xs) =>
       let own := ["prim", "primName"].filterMap fun tag => (do
         let o ← j.getObjVal? tag
         let n ← o.getObjValAs? String "name"
-        let rs ← decodeRanges (← o.getObjVal? "ranges")
+        let rs ← o.getObjValAs? (List Benitoite.Release.Refinement.RangeIx) "ranges"
         pure (n, rs) : Except String _).toOption
       own ++ xs.toArray.toList.flatMap (fun (_, v) => collectPrimRanges v)
   | _ => []
 
 /-- 署名の原子の範囲の変数を、呼び出しの範囲の列で具体化した原子（`Ix.inst` と同じ。列の外の番号の変数は作らない）。 -/
-def instAtoms (sig : Eff) (rs : List Scope.Domain.Range) : Eff :=
+def instAtoms (sig : Eff) (rs : List Benitoite.Release.Refinement.RangeIx) : Eff :=
   sig.filterMap fun a => match a with
-    | .name l (.rvar i) => rs[i]?.map fun r => .name l (.fixed r)
+    | .name l (.rvar i) => rs[i]?.map fun r => .name l r
     | _ => none
 
 def baseTy : String → Except String Benitoite.Release.BaseTy
@@ -109,14 +102,14 @@ def checkNames (names : List String) (arity : Nat) : Except String Unit := do
     throw "invalid parameter names"
 
 /-- 交換の効果の名前と行の原子の所属（Fail の原子は含めない）。 -/
-def Eff.readAtoms (e : Eff) : Benitoite.Release.Atom → Bool :=
+def Eff.readAtoms (e : Eff) : Benitoite.Release.Refinement.Atom → Bool :=
   fun a => (e.filterMap Atom.toRelease).contains a
 
 /-- Fail のない交換の効果の読み込み（`Eff.toRelease` が Fail のない効果について返す値）。 -/
-def Eff.namesToRelease (e : Eff) : Benitoite.Release.Eff := .mk (Eff.readAtoms e) []
+def Eff.namesToRelease (e : Eff) : Benitoite.Release.Refinement.Eff := .mk (Eff.readAtoms e) []
 
 mutual
-  partial def Ty.toRelease : Ty → Except String Benitoite.Release.Ty
+  partial def Ty.toRelease : Ty → Except String Benitoite.Release.Refinement.Ty
     | .base n => return .base (← baseTy n)
     | .opaque n ix => return opaqueToRelease n ix
     | .data n ts => return .data n (← ts.mapM Ty.toRelease)
@@ -133,61 +126,70 @@ mutual
     | .dict cl t => return .dict cl (← t.toRelease)
     | .tapp i ts => return .tapp i (← ts.mapM Ty.toRelease)
     | .ctor h => return .ctor h.toRelease
+    | .refined a p => return .refined (← a.toRelease) p
+    | .dependentFn ns ps r e => do
+        checkNames ns ps.length
+        return .dependentFn (signatureTel ns (← ps.mapM Ty.toRelease) (← r.toRelease) (← Eff.toRelease e))
+    | .cont a r e => return .cont (← a.toRelease) (← r.toRelease) (← Eff.toRelease e)
+    | .external i as => return .external (.mk i) (← as.mapM Ty.toRelease)
+    | .scoped n k ix => return .scoped n k ix
+    | .pathBases => return .pathBases
+    | .scopePattern k => return .scopePattern k
 
-  partial def Eff.toRelease (e : Eff) : Except String Benitoite.Release.Eff := do
+  partial def Eff.toRelease (e : Eff) : Except String Benitoite.Release.Refinement.Eff := do
     let atoms := (collectAtoms (toJson e)).filterMap Atom.toRelease
     let fails ← e.filterMap (fun a => match a with | .fail t => some t | _ => none) |>.mapM Ty.toRelease
     -- Fail のない効果は全域の `Eff.namesToRelease` と同じ値になる（`normWith` は空の Fail 列を変えない）。
     if fails.isEmpty then return Eff.namesToRelease e
-    return Benitoite.Release.Eff.normWith atoms
+    return Benitoite.Release.Refinement.Eff.normWith atoms
       ⟨Eff.readAtoms e, fails⟩
 end
 
-/-- 効果 e が持つのに書き出しの一覧 `listed` にない原子を、候補 `univ` の中から探す（RV-L10 中2）。Release の効果は
+/-- 効果 e が持つのに書き出しの一覧 `listed` にない原子を、候補 `univ` の中から探す。Release の効果は
 原子の述語なので、候補の外の原子は調べられない。候補が効果の原子を全て含むとき（`Eff.Support (· ∈ univ) e`）、
 `none` は効果の原子が全て一覧にあることを意味する（`unlistedAtom?_complete`）。 -/
-def unlistedAtom? (univ listed : List Benitoite.Release.Atom) (e : Benitoite.Release.Eff) :
-    Option Benitoite.Release.Atom :=
-  univ.find? fun a => Benitoite.Release.Eff.test e a && !listed.contains a
+def unlistedAtom? (univ listed : List Benitoite.Release.Refinement.Atom) (e : Benitoite.Release.Refinement.Eff) :
+    Option Benitoite.Release.Refinement.Atom :=
+  univ.find? fun a => Benitoite.Release.Refinement.Eff.atoms e a && !listed.contains a
 
-theorem unlistedAtom?_eq_none {univ listed : List Benitoite.Release.Atom} {e : Benitoite.Release.Eff}
+theorem unlistedAtom?_eq_none {univ listed : List Benitoite.Release.Refinement.Atom} {e : Benitoite.Release.Refinement.Eff}
     (h : unlistedAtom? univ listed e = none) :
-    ∀ a ∈ univ, Benitoite.Release.Eff.test e a = true → a ∈ listed := by
+    ∀ a ∈ univ, Benitoite.Release.Refinement.Eff.atoms e a = true → a ∈ listed := by
   intro a ha he
   have := List.find?_eq_none.mp h a ha
   simp only [he, Bool.true_and, Bool.not_eq_true'] at this
   simpa using this
 
 /-- 候補が効果の原子を全て含み、一覧にない原子が見つからなければ、効果の原子は全て一覧にある（黙って落とす原子がない）。 -/
-theorem unlistedAtom?_complete {univ listed : List Benitoite.Release.Atom} {e : Benitoite.Release.Eff}
-    (hs : ∀ a, Benitoite.Release.Eff.test e a = true → a ∈ univ) (h : unlistedAtom? univ listed e = none) :
-    ∀ a, Benitoite.Release.Eff.test e a = true → a ∈ listed :=
+theorem unlistedAtom?_complete {univ listed : List Benitoite.Release.Refinement.Atom} {e : Benitoite.Release.Refinement.Eff}
+    (hs : ∀ a, Benitoite.Release.Refinement.Eff.atoms e a = true → a ∈ univ) (h : unlistedAtom? univ listed e = none) :
+    ∀ a, Benitoite.Release.Refinement.Eff.atoms e a = true → a ∈ listed :=
   fun a he => unlistedAtom?_eq_none h a (hs a he) he
 
 /-- 名前と行の原子の書き出し。一覧 `atoms` の原子のうち所属 `f` が真のものを、原子の符号の順に重複なく並べる
 （Rust に内部の符号順を要求せず、両辺を同じ読者で正規化する `normalizeEff` と同じ順）。 -/
-def writeAtoms (atoms : Eff) (f : Benitoite.Release.Atom → Bool) : Eff :=
+def writeAtoms (atoms : Eff) (f : Benitoite.Release.Refinement.Atom → Bool) : Eff :=
   let listed := (atoms.filterMap Atom.toRelease).filter f
   ((listed.mergeSort fun a b => decide (a.code ≤ b.code)).eraseDups).map fromAtom
 
 /-- 効果の名前と行の原子の書き出し（Fail の列を除く）。候補 `univ` の中に、効果が持つのに一覧にない原子があれば
-誤りにする（RV-L10 中2）。Release の効果は原子の述語なので、候補の外の原子は調べられない。候補が効果の原子を
+誤りにする。Release の効果は原子の述語なので、候補の外の原子は調べられない。候補が効果の原子を
 全て含むとき（`unlistedAtom?_complete` の前提）、成功は効果の原子が全て一覧にあることを意味する。候補を作るのは
 呼び出し側の義務であり、交換の入口は具体化した範囲と署名の表の原子まで含めた一覧を渡す（`exchangeAtoms`）。 -/
-def fromEffNames (atoms : Eff) (e : Benitoite.Release.Eff)
-    (univ : List Benitoite.Release.Atom := atoms.filterMap Atom.toRelease) : Except String Eff := do
+def fromEffNames (atoms : Eff) (e : Benitoite.Release.Refinement.Eff)
+    (univ : List Benitoite.Release.Refinement.Atom := atoms.filterMap Atom.toRelease) : Except String Eff := do
   let listed := atoms.filterMap Atom.toRelease
   if let some a := unlistedAtom? (listed ++ univ) listed e then
-    throw s!"effect atom is not in the exchange atom list: {repr a}"
-  return writeAtoms atoms e.test
+    throw s!"effect atom is not in the exchange atom list: {(toJson (fromAtom a)).compress}"
+  return writeAtoms atoms e.atoms
 
 /-! ### 名前と行の原子の書き出しの性質
 
 Release の効果は原子の述語なので、書き出しは一覧に相対的である。一覧が効果の原子を全て含むとき、書き出した
 効果を読むと元の効果に戻る（`readAtoms_writeAtoms`）。範囲付きの原子も同じである。原子が全て Top の効果を
-読んで書き戻すと、同じ効果を表し、Top の原子だけを持つ（`top_eff_roundtrip`。RV-L10 中2）。 -/
+読んで書き戻すと、同じ効果を表し、Top の原子だけを持つ（`top_eff_roundtrip`）。 -/
 
-theorem mem_writeAtoms_iff (atoms : Eff) (f : Release.Atom → Bool) (a : Release.Atom) :
+theorem mem_writeAtoms_iff (atoms : Eff) (f : Benitoite.Release.Refinement.Atom → Bool) (a : Benitoite.Release.Refinement.Atom) :
     a ∈ (writeAtoms atoms f).filterMap Exchange.Atom.toRelease ↔
       a ∈ atoms.filterMap Exchange.Atom.toRelease ∧ f a = true := by
   simp only [writeAtoms, List.filterMap_map]
@@ -195,7 +197,7 @@ theorem mem_writeAtoms_iff (atoms : Eff) (f : Release.Atom → Bool) (a : Releas
   rw [this, List.filterMap_some, List.mem_eraseDups, List.mem_mergeSort, List.mem_filter]
 
 /-- 一覧が所属 `f` の原子を全て含めば、書き出した原子の列を読むと `f` に戻る。 -/
-theorem readAtoms_writeAtoms (atoms : Eff) (f : Release.Atom → Bool)
+theorem readAtoms_writeAtoms (atoms : Eff) (f : Benitoite.Release.Refinement.Atom → Bool)
     (h : ∀ a, f a = true → a ∈ atoms.filterMap Exchange.Atom.toRelease) :
     Eff.readAtoms (writeAtoms atoms f) = f := by
   funext a
@@ -204,15 +206,15 @@ theorem readAtoms_writeAtoms (atoms : Eff) (f : Release.Atom → Bool)
   exact ⟨fun h' => h'.2, fun h' => ⟨h a h', h'⟩⟩
 
 /-- 書き出した形は、読んで書き戻しても同じ列になる（交換の形の上の往復）。 -/
-theorem writeAtoms_readAtoms_writeAtoms (atoms : Eff) (f : Release.Atom → Bool)
+theorem writeAtoms_readAtoms_writeAtoms (atoms : Eff) (f : Benitoite.Release.Refinement.Atom → Bool)
     (h : ∀ a, f a = true → a ∈ atoms.filterMap Exchange.Atom.toRelease) :
     writeAtoms atoms (Eff.readAtoms (writeAtoms atoms f)) = writeAtoms atoms f := by
   rw [readAtoms_writeAtoms atoms f h]
 
 /-- 一覧が効果の原子を全て含めば、名前と行の原子の書き出しは成功し、黙って落とす原子がない。 -/
-theorem fromEffNames_ok {atoms : Eff} {e : Release.Eff} (univ : List Release.Atom)
-    (h : ∀ a, Release.Eff.test e a = true → a ∈ atoms.filterMap Exchange.Atom.toRelease) :
-    fromEffNames atoms e univ = .ok (writeAtoms atoms e.test) := by
+theorem fromEffNames_ok {atoms : Eff} {e : Benitoite.Release.Refinement.Eff} (univ : List Benitoite.Release.Refinement.Atom)
+    (h : ∀ a, Benitoite.Release.Refinement.Eff.atoms e a = true → a ∈ atoms.filterMap Exchange.Atom.toRelease) :
+    fromEffNames atoms e univ = .ok (writeAtoms atoms e.atoms) := by
   have hn : unlistedAtom? (atoms.filterMap Exchange.Atom.toRelease ++ univ)
       (atoms.filterMap Exchange.Atom.toRelease) e = none := by
     unfold unlistedAtom?
@@ -224,8 +226,8 @@ theorem fromEffNames_ok {atoms : Eff} {e : Release.Eff} (univ : List Release.Ato
   simp only [fromEffNames, hn]; rfl
 
 /-- 候補 `univ` の中に、効果が持つのに一覧にない原子があれば、書き出しは誤りになる（黙って落とさない）。 -/
-theorem fromEffNames_error_of_unlisted {atoms : Eff} {e : Release.Eff} {univ : List Release.Atom} {a : Release.Atom}
-    (ha : a ∈ univ) (he : Release.Eff.test e a = true) (hn : a ∉ atoms.filterMap Exchange.Atom.toRelease) :
+theorem fromEffNames_error_of_unlisted {atoms : Eff} {e : Benitoite.Release.Refinement.Eff} {univ : List Benitoite.Release.Refinement.Atom} {a : Benitoite.Release.Refinement.Atom}
+    (ha : a ∈ univ) (he : Benitoite.Release.Refinement.Eff.atoms e a = true) (hn : a ∉ atoms.filterMap Exchange.Atom.toRelease) :
     ∃ msg, fromEffNames atoms e univ = .error msg := by
   cases hu : unlistedAtom? (atoms.filterMap Exchange.Atom.toRelease ++ univ)
       (atoms.filterMap Exchange.Atom.toRelease) e with
@@ -234,17 +236,17 @@ theorem fromEffNames_error_of_unlisted {atoms : Eff} {e : Release.Eff} {univ : L
     have := unlistedAtom?_eq_none hu a (List.mem_append_right _ ha) he
     exact absurd this hn
 
-/-- 検査器の不変条件の形 `Eff.AtomsIn univ e`（効果の原子が候補 `univ` にある）から、`unlistedAtom?_complete` の
+/-- 検査器の不変条件の形 `Eff.Support (· ∈ univ) e`（効果の原子が候補 `univ` にある）から、`unlistedAtom?_complete` の
 前提が得られる。 -/
-theorem support_of_atomsIn {univ : List Release.Atom} {e : Release.Eff} (he : Release.Eff.AtomsIn univ e) :
-    ∀ a, Release.Eff.test e a = true → a ∈ univ :=
-  ((Release.Eff.support_iff e).mp he).1
+theorem support_of_atomsIn {univ : List Benitoite.Release.Refinement.Atom} {e : Benitoite.Release.Refinement.Eff} (he : Benitoite.Release.Refinement.Eff.Support (· ∈ univ) e) :
+    ∀ a, Benitoite.Release.Refinement.Eff.atoms e a = true → a ∈ univ :=
+  ((Benitoite.Release.Refinement.Eff.support_iff e).mp he).1
 
 /-- 候補 `univ` が効果の原子を全て含むとき（検査器の `AtomsIn univ`）、書き出しが成功すれば、書き出した原子の列を
 読むと元の効果の所属に戻る（黙った欠落がない）。 -/
-theorem fromEffNames_complete_of_atomsIn {atoms : Eff} {e : Release.Eff} {univ : List Release.Atom} {xs : Eff}
-    (he : Release.Eff.AtomsIn univ e) (h : fromEffNames atoms e univ = .ok xs) :
-    Eff.readAtoms xs = e.test := by
+theorem fromEffNames_complete_of_atomsIn {atoms : Eff} {e : Benitoite.Release.Refinement.Eff} {univ : List Benitoite.Release.Refinement.Atom} {xs : Eff}
+    (he : Benitoite.Release.Refinement.Eff.Support (· ∈ univ) e) (h : fromEffNames atoms e univ = .ok xs) :
+    Eff.readAtoms xs = e.atoms := by
   unfold fromEffNames at h
   cases hu : unlistedAtom? (atoms.filterMap Exchange.Atom.toRelease ++ univ)
       (atoms.filterMap Exchange.Atom.toRelease) e with
@@ -255,31 +257,31 @@ theorem fromEffNames_complete_of_atomsIn {atoms : Eff} {e : Release.Eff} {univ :
     apply readAtoms_writeAtoms
     exact unlistedAtom?_complete (fun a ha => List.mem_append_right _ (support_of_atomsIn he a ha)) hu
 
-/-- 原子が Top の名前の原子か行の原子である（旧版の像。Fail は含めない）。 -/
+/-- 原子が Top の名前の原子か行の原子である（Top だけの表。Fail は含めない）。 -/
 def Atom.IsTop : Atom → Prop
-  | .name _ ix => ix = Scope.Signature.Ix.top
+  | .name _ ix => ix = Benitoite.Release.Refinement.RangeIx.top
   | .rho _ => True
   | .fail _ => False
 
-/-- 原子が全て Top の交換の効果（旧版の入力の像）は、一覧にあれば、読んで書き戻すと成功し、書き戻した効果は
-同じ効果を表し（`namesToRelease` が一致する）、Top の原子だけを持つ（RV-L10 中2）。 -/
-theorem top_eff_roundtrip {atoms xs : Eff} (univ : List Release.Atom)
+/-- 原子が全て Top の交換の効果（Top だけの表）は、一覧にあれば、読んで書き戻すと成功し、書き戻した効果は
+同じ効果を表し（`namesToRelease` が一致する）、Top の原子だけを持つ。 -/
+theorem top_eff_roundtrip {atoms xs : Eff} (univ : List Benitoite.Release.Refinement.Atom)
     (htop : ∀ x ∈ xs, Atom.IsTop x) (hin : ∀ x ∈ xs, x ∈ atoms) :
     ∃ ys, fromEffNames atoms (Eff.namesToRelease xs) univ = .ok ys ∧
       Eff.namesToRelease ys = Eff.namesToRelease xs ∧ ∀ y ∈ ys, Atom.IsTop y := by
-  have hsupp : ∀ a, Release.Eff.test (Eff.namesToRelease xs) a = true →
+  have hsupp : ∀ a, Benitoite.Release.Refinement.Eff.atoms (Eff.namesToRelease xs) a = true →
       a ∈ atoms.filterMap Exchange.Atom.toRelease := by
     intro a ha
-    simp only [Eff.namesToRelease, Release.Eff.test, Release.Eff.atoms, Eff.readAtoms,
+    simp only [Eff.namesToRelease, Benitoite.Release.Refinement.Eff.atoms, Benitoite.Release.Refinement.Eff.atoms, Eff.readAtoms,
       List.contains_iff_mem, List.mem_filterMap] at ha ⊢
     obtain ⟨x, hx, hxa⟩ := ha
     exact ⟨x, hin x hx, hxa⟩
   refine ⟨_, fromEffNames_ok univ hsupp, ?_, ?_⟩
-  · exact congrArg (fun f => Release.EffR.mk f []) (readAtoms_writeAtoms atoms _ hsupp)
+  · exact congrArg (fun f => Benitoite.Release.Refinement.EffR.mk f []) (readAtoms_writeAtoms atoms _ hsupp)
   · intro y hy
     simp only [writeAtoms, List.mem_map, List.mem_eraseDups, List.mem_mergeSort, List.mem_filter] at hy
     obtain ⟨a, ⟨_, ha⟩, rfl⟩ := hy
-    simp only [Eff.namesToRelease, Release.Eff.test, Release.Eff.atoms, Eff.readAtoms,
+    simp only [Eff.namesToRelease, Benitoite.Release.Refinement.Eff.atoms, Benitoite.Release.Refinement.Eff.atoms, Eff.readAtoms,
       List.contains_iff_mem, List.mem_filterMap] at ha
     obtain ⟨x, hx, hxa⟩ := ha
     have ht := htop x hx
@@ -289,7 +291,7 @@ theorem top_eff_roundtrip {atoms xs : Eff} (univ : List Release.Atom)
     | fail t => cases ht
 
 mutual
-  partial def fromTy (atoms : Eff) : Benitoite.Release.Ty → Except String Ty
+  partial def fromTy (atoms : Eff) : Benitoite.Release.Refinement.Ty → Except String Ty
     | .base t => return .base (baseName t)
     | .opaque n ix => return .opaque n ix
     | .data n ts => return .data n (← ts.mapM (fromTy atoms))
@@ -304,19 +306,33 @@ mutual
     | .dict cl t => return .dict cl (← fromTy atoms t)
     | .tapp i ts => return .tapp i (← ts.mapM (fromTy atoms))
     | .ctor h => return .ctor (fromTyCon h)
-    | _ => throw "unsupported Release type"
+    | .cont a r e => return .cont (← fromTy atoms a) (← fromTy atoms r) (← fromEff atoms e)
+    | .refined a p => return .refined (← fromTy atoms a) p
+    | .dependentFn t => do
+        let (ns, ps, r, e) ← fromTel atoms t
+        return .dependentFn ns ps r e
+    | .external (.mk i) as => return .external i (← as.mapM (fromTy atoms))
+    | .scoped n k ix => return .scoped n k ix
+    | .pathBases => return .pathBases
+    | .scopePattern k => return .scopePattern k
+
+  partial def fromTel (atoms : Eff) : Tel → Except String (List String × List Ty × Ty × Eff)
+    | .done r e => return ([], [], ← fromTy atoms r, ← fromEff atoms e)
+    | .param n a t => do
+        let (ns, ps, r, e) ← fromTel atoms t
+        return (n :: ns, (← fromTy atoms a) :: ps, r, e)
 
   /-- 効果を交換の原子の一覧 `atoms` で書き出す。名前と行の原子は `fromEffNames`（全域）が書き、一覧にない原子を
-  候補 `univ` の中に持つ効果は黙って落とさず誤りにする（RV-L10 中2）。Fail の列はこの後に書く。 -/
-  partial def fromEff (atoms : Eff) (e : Benitoite.Release.Eff)
-      (univ : List Benitoite.Release.Atom := atoms.filterMap Atom.toRelease) : Except String Eff := do
+  候補 `univ` の中に持つ効果は黙って落とさず誤りにする。Fail の列はこの後に書く。 -/
+  partial def fromEff (atoms : Eff) (e : Benitoite.Release.Refinement.Eff)
+      (univ : List Benitoite.Release.Refinement.Atom := atoms.filterMap Atom.toRelease) : Except String Eff := do
     let names ← fromEffNames atoms e univ
     return names ++ (← e.fails.mapM (fun t => Atom.fail <$> fromTy atoms t))
 end
 
 /-- 両辺を同じ Lean の読者で正規化する。Rust に内部の符号順を要求しない。 -/
 def normalizeEff (e : Eff) : Except String Eff := do
-  fromEff (collectAtoms (toJson e)) (← e.toRelease)
+  fromEff (collectAtoms (toJson e)) (← Eff.toRelease e)
 
 /-- 比較では各エフェクトの列自体を正規化し、支持の一覧で要素を切り捨てない。
 基本型の別名も揃えるが、契約名・引数・節などの並びは保つ。 -/
@@ -352,7 +368,7 @@ private def unsignedValue (n : Int) : Except String Nat := do
   if n < 0 then throw "negative unsigned integer constant"
   return n.toNat
 
-/-- 旧版の入力にも同じ Integer の範囲を要求する。 -/
+/-- 値の整数定数に Integer の範囲を要求する。 -/
 def integer64Value (n : Int) : Except String Benitoite.Release.Integer64Value :=
   if h : Benitoite.Release.min64 ≤ n ∧ n ≤ Benitoite.Release.max64 then
     .ok ⟨n, h⟩
@@ -368,10 +384,10 @@ def integer64Magnitude (n : Nat) : Except String Benitoite.Release.Integer64Magn
   if h : n ≤ 9223372036854775808 then .ok ⟨n, h⟩
   else .error "negative integer magnitude outside i64"
 
-def Const.toRelease : Const → Except String Benitoite.Release.Const
+def Const.toRelease : Const → Except String Benitoite.Release.Refinement.Const
   | .integer n => return .integer (← integer64Value n)
   | .decimal n scale => return .decimal n scale
-  | .float bits => return .float (← floatFromBits bits)
+  | .float bits => return .float64 bits
   | .string s => return .string s
   | .character n => if n ≤ 0x10ffff && !(0xd800 ≤ n && n ≤ 0xdfff)
       then return .character (Char.ofNat n) else throw "invalid Unicode scalar"
@@ -386,10 +402,10 @@ def Const.toRelease : Const → Except String Benitoite.Release.Const
   | .unsignedInteger64 n => return .unsignedInteger64 (Int.ofNat (← unsignedValue n))
   | .float32 bits => return .float32 (← float32Bits bits)
 
-def fromConst : Benitoite.Release.Const → Except String Const
+def fromConst : Benitoite.Release.Refinement.Const → Except String Const
   | .integer n => return .integer n.toInt
   | .decimal n scale => return .decimal n scale
-  | .float x => return .float x.toBits
+  | .float64 bits => return .float bits
   | .string s => return .string s
   | .character c => return .character c.toNat
   | .boolean b => return .boolean b
@@ -410,7 +426,7 @@ def ListRest.toRelease : ListRest → Benitoite.Release.ListRest
 def fromListRest : Benitoite.Release.ListRest → ListRest
   | .skip => .skip | .bind => .bind
 
-partial def Pattern.toSurface : Pattern → Except String Benitoite.Surface.Pattern
+partial def Pattern.toSurface : Pattern → Except String Benitoite.Release.Refinement.Surface.Pattern
   | .wild => return .wild | .var => return .var
   | .con n ps => return .con none n (← ps.mapM Pattern.toSurface)
   | .record n count positions ps => do
@@ -443,32 +459,32 @@ partial def Pattern.toSurface : Pattern → Except String Benitoite.Surface.Patt
 
 partial def fromPattern : Benitoite.Release.Pat → Except String Pattern
   | .wild => return .wild | .var => return .var
-  | .const c => return .const (← fromConst c)
+  | .const c => return .const (← fromConst (embedConst c))
   | .con n ps => return .con n (← ps.mapM fromPattern)
-  | .range lo hi => return .range (← fromConst lo) (← fromConst hi)
+  | .range lo hi => return .range (← fromConst (embedConst lo)) (← fromConst (embedConst hi))
   | .list before rest after => return .list (← before.mapM fromPattern) (rest.map fromListRest) (← after.mapM fromPattern)
 
-def binOp : String → Except String Benitoite.Surface.BinOp
+def binOp : String → Except String Benitoite.Release.Refinement.Surface.BinOp
   | "add" => return .add | "sub" => return .sub | "mul" => return .mul
   | "div" => return .div | "intDiv" => return .intDiv | "mod" => return .mod
   | "eq" => return .eq | "ne" => return .ne | "lt" => return .lt
   | "le" => return .le | "gt" => return .gt | "ge" => return .ge
   | s => throw s!"unknown binary operator: {s}"
 
-def operatorName : Benitoite.Surface.Operator → String
+def operatorName : Benitoite.Release.Refinement.Surface.Operator → String
   | .neg => "neg"
   | .binary b => match b with
       | .add => "add" | .sub => "sub" | .mul => "mul" | .div => "div"
       | .intDiv => "intDiv" | .mod => "mod" | .eq => "eq" | .ne => "ne"
       | .lt => "lt" | .le => "le" | .gt => "gt" | .ge => "ge"
 
-def makeOpPrim (atoms : Eff) (entries : List OperatorEntry) : Benitoite.Surface.OpPrim :=
-  Benitoite.Surface.CheckTables.makeOpPrim (fun op ty => entries.findSome? fun entry =>
+def makeOpPrim (atoms : Eff) (entries : List OperatorEntry) : Benitoite.Release.Refinement.Surface.OpPrim :=
+  fun op ty => (entries.findSome? fun entry =>
     if entry.op != operatorName op then none
     else if entry.operand.isNone || (fromTy atoms ty).toOption ==
         entry.operand.bind (fun t => (t.toRelease >>= fromTy atoms).toOption) then
       some entry.name
-    else none)
+    else none).map (fun name => (name, op.typeArgs ty))
 
 def OpRef.toRelease : OpRef → Benitoite.Release.OpRef
   | .user n => .user n | .prim n => .prim n | .fail => .fail
@@ -477,22 +493,22 @@ def fromOpRef : Benitoite.Release.OpRef → Except String OpRef
   | .user n => pure (.user n) | .prim n => pure (.prim n)
   | .fail => pure .fail
 
-partial def DictEv.toSurface : DictEv → Except String Benitoite.Surface.DictEv
+partial def DictEv.toSurface : DictEv → Except String Benitoite.Release.Refinement.Surface.DictEv
   | .impl n ts ds => return .impl n (← ts.mapM Ty.toRelease) (← ds.mapM DictEv.toSurface)
   | .local i => return .local i
   | .clause outer arity count i depth => return .clause ⟨outer, arity, count⟩ i depth
   | .super d cl => return .super (← d.toSurface) cl
 
-def BuilderKind.toSurface : BuilderKind → Except String Benitoite.Release.BuilderKind
+def BuilderKind.toSurface : BuilderKind → Except String Benitoite.Release.Refinement.BuilderKind
   | .string => return .string
   | .list t => return .list (← t.toRelease)
   | .bytes => return .bytes
 
-def BuilderOp.toSurface : BuilderOp → Benitoite.Release.BuilderOp
+def BuilderOp.toSurface : BuilderOp → Benitoite.Release.Refinement.BuilderOp
   | .append => .append | .appendAll => .appendAll | .copy => .copy | .length => .length
 
 /-- 文字列の列挙値を閉じた表層の指定へ変換する。 -/
-def FormatSpec.toSurface (s : FormatSpec) : Except String Benitoite.Surface.FormatSpec := do
+def FormatSpec.toSurface (s : FormatSpec) : Except String Benitoite.Release.Refinement.Surface.FormatSpec := do
   let kind ← match s.kind with
     | "default" => pure .default | "d" => pure .d | "b" => pure .b
     | "o" => pure .o | "x" => pure .x | "X" => pure .upperX
@@ -507,7 +523,7 @@ def FormatSpec.toSurface (s : FormatSpec) : Except String Benitoite.Surface.Form
     | _ => throw "invalid format sign"
   return ⟨kind, align, sign, s.alternate, s.zero, s.width, s.precision⟩
 
-def InterpPart.toSurface : InterpPart → Except String Benitoite.Surface.InterpPart
+def InterpPart.toSurface : InterpPart → Except String Benitoite.Release.Refinement.Surface.InterpPart
   | .text s => return .text s
   | .stringExpr => return .stringExpr
   | .converted t => do
@@ -524,32 +540,41 @@ def InterpPart.toSurface : InterpPart → Except String Benitoite.Surface.Interp
       return .formatted t spec
 
 /-- 専用種類内の通常の型だけを交換する。 -/
-def fromBuilderKind (atoms : Eff) : Benitoite.Release.BuilderKind → Except String BuilderKind
+def fromBuilderKind (atoms : Eff) : Benitoite.Release.Refinement.BuilderKind → Except String BuilderKind
   | .string => pure .string
   | .list t => return .list (← fromTy atoms t)
   | .bytes => pure .bytes
 
-def fromBuilderOp : Benitoite.Release.BuilderOp → BuilderOp
+def fromBuilderOp : Benitoite.Release.Refinement.BuilderOp → BuilderOp
   | .append => .append
   | .appendAll => .appendAll
   | .copy => .copy
   | .length => .length
 
+private def formatHead : Benitoite.Release.Refinement.Ty → Option String
+  | .base .unit => none
+  | .base b => some ("%Format." ++ baseName b)
+  | _ => none
+
+private def interpolationConverterCount (parts : List Benitoite.Release.Refinement.Surface.InterpPart) : Nat :=
+  (parts.filter fun part => match part with | .converted _ | .formatted _ _ => true | _ => false).length
+
 mutual
-  partial def Expr.toSurface (constants : List (String × Benitoite.Surface.Expr) := []) : Expr → Except String Benitoite.Surface.Expr
+  partial def Expr.toSurface (constants : List (String × Benitoite.Release.Refinement.Surface.Expr) := []) : Expr → Except String Benitoite.Release.Refinement.Surface.Expr
     | .constName name => do
         let some e := (constants.find? (fun p => p.1 == name)).map Prod.snd
           | throw s!"missing expanded constant: {name}"
         return e
     | .builderOp op i args kind => return .builderOp op.toSurface i (← toExprs constants args) (← kind.toSurface)
     | .local i => return .local i
-    | .funDicts n ts es ds names ps _ => return .funDicts n (← ts.mapM Ty.toRelease) (← es.mapM Eff.toRelease) (← ds.mapM DictEv.toSurface) names (← ps.mapM Ty.toRelease)
+    | .funDicts n ts es ds names ps _ rs => return .funDicts n (← ts.mapM Ty.toRelease) (← es.mapM Eff.toRelease) (← ds.mapM DictEv.toSurface) names (← ps.mapM Ty.toRelease) rs
     | .methName d n ts es ds names ps _ => return .methName (← d.toSurface) n (← ts.mapM Ty.toRelease) (← es.mapM Eff.toRelease) (← ds.mapM DictEv.toSurface) names (← ps.mapM Ty.toRelease)
     | .opDicts n ts ds names ps _ => return .opDicts n (← ts.mapM Ty.toRelease) (← ds.mapM DictEv.toSurface) names (← ps.mapM Ty.toRelease)
-    | .raise r e => return .raise (← r.toRelease) (← e.toRelease)
-    | .handleFail e r b c => return .handleFail (← e.toRelease) (← r.toRelease) (← b.toSurface constants) (← c.toSurface constants)
+    | .raise r e => return .raise (← r.toRelease) (← Ty.toRelease e)
+    | .handleFail e r b c => return .handleFail (← Ty.toRelease e) (← r.toRelease) (← b.toSurface constants) (← c.toSurface constants)
+    | .externalName i ts => return .externalName (.mk i) (← ts.mapM Ty.toRelease)
     | .opName n ts => return .opName n (← ts.mapM Ty.toRelease)
-    | .funName n ts es => return .funName n (← ts.mapM Ty.toRelease) (← es.mapM Eff.toRelease)
+    | .funName n ts es rs => return .funName n (← ts.mapM Ty.toRelease) (← es.mapM Eff.toRelease) rs
     | .primName n ts es rs => return .primName n (← ts.mapM Ty.toRelease) (← es.mapM Eff.toRelease) rs
     | .nullCon n ts => return .nullCon n (← ts.mapM Ty.toRelease)
     | .conValue n ts names ps => return .conValue n (← ts.mapM Ty.toRelease) names (← ps.mapM Ty.toRelease)
@@ -598,7 +623,7 @@ mutual
     | .conCall n ts es => return .conCall n (← ts.mapM Ty.toRelease) (← toExprs constants es)
     | .call f labels positions es => return .call (← f.toSurface constants) labels positions (← toExprs constants es)
     | .pipe a b => return .pipe (← a.toSurface constants) (← b.toSurface constants)
-    | .partialCall f names es r e => return .partialCall (← f.toSurface constants) names (← toHoles constants es) (← r.toRelease) (← e.toRelease)
+    | .partialCall f names es r e => return .partialCall (← f.toSurface constants) names (← toHoles constants es) (← r.toRelease) (← Eff.toRelease e)
     | .partialCon n ts es => return .partialCon n (← ts.mapM Ty.toRelease) (← toHoles constants es)
     | .binary op t a b => return .binary (← binOp op) (← t.toRelease) (← a.toSurface constants) (← b.toSurface constants)
     | .neg t e => return .neg (← t.toRelease) (← e.toSurface constants)
@@ -608,15 +633,15 @@ mutual
     | .list t es => return .list (← t.toRelease) (← toExprs constants es)
     | .listSpread t f before e after => do
         let f ← f.toSurface constants
-        if (Benitoite.Surface.directCallee f).isNone then throw "indirect list concat"
+        if (Benitoite.Release.Refinement.Surface.directCallee f).isNone then throw "indirect list concat"
         return .listSpread (← t.toRelease) f (← toExprs constants before) (← e.toSurface constants) (← toExprs constants after)
     | .interpolation ps es fs => do
         let ps ← ps.mapM InterpPart.toSurface
-        if es.length != (Benitoite.Surface.InterpPart.exprTypes ps).length ||
-            fs.length != (Benitoite.Surface.InterpPart.converterTypes ps).length then
+        if es.length != (Benitoite.Release.Refinement.Surface.InterpPart.exprTypes ps).length ||
+            fs.length != interpolationConverterCount ps then
           throw "interpolation part/expression/converter count mismatch"
         let converted ← fs.mapM (Expr.toSurface constants)
-        if converted.any (fun f => (Benitoite.Surface.directCallee f).isNone) then
+        if converted.any (fun f => (Benitoite.Release.Refinement.Surface.directCallee f).isNone) then
           throw "indirect interpolation converter"
         -- 名前の一致は交換の境界で検査する。表層の型検査は署名を検査する。
         let mut heads := converted
@@ -624,7 +649,7 @@ mutual
           match part with
           | .converted _ => heads := heads.drop 1
           | .formatted t _ =>
-              let some name := Benitoite.Surface.FormatSpec.headName t
+              let some name := formatHead t
                 | throw "missing format head name"
               match heads.head? with
               | some (.primName n [] [] _) =>
@@ -633,7 +658,7 @@ mutual
               heads := heads.drop 1
           | _ => pure ()
         return .interpolation ps (← toExprs constants es) (← toExprs constants fs)
-    | .lam names ps r e b => return .lam names (← ps.mapM Ty.toRelease) (← r.toRelease) (← e.toRelease) (← b.toSurface constants)
+    | .lam names ps r e b => return .lam names (← ps.mapM Ty.toRelease) (← r.toRelease) (← Eff.toRelease e) (← b.toSurface constants)
     | .ite c y n => return .ite (← c.toSurface constants) (← y.toSurface constants) (← n.toSurface constants)
     | .elseIf c y n => return .elseIf (← c.toSurface constants) (← y.toSurface constants) (← n.toSurface constants)
     | .ifOnly c y => return .ifOnly (← c.toSurface constants) (← y.toSurface constants)
@@ -653,30 +678,30 @@ mutual
     | .lazyE b => return .lazyE (← b.toSurface constants)
     | .handleE b cs => return .handleE (← b.toSurface constants) (← toClauses constants cs)
     | .resume k e => return .resume k (← e.toSurface constants)
-  partial def toClauses (constants : List (String × Benitoite.Surface.Expr) := []) : List SurfaceClause → Except String Benitoite.Surface.Clauses
+  partial def toClauses (constants : List (String × Benitoite.Release.Refinement.Surface.Expr) := []) : List SurfaceClause → Except String Benitoite.Release.Refinement.Surface.Clauses
     | [] => return .nil
     | .mk op arity ntys b count failure :: cs => do
         if failure.isSome || op == .fail then throw "Fail requires handleFail"
         return .cons op.toRelease arity ntys (← b.toSurface constants) (← toClauses constants cs) count
-  partial def toExprs (constants : List (String × Benitoite.Surface.Expr) := []) : List Expr → Except String Benitoite.Surface.Exprs
+  partial def toExprs (constants : List (String × Benitoite.Release.Refinement.Surface.Expr) := []) : List Expr → Except String Benitoite.Release.Refinement.Surface.Exprs
     | [] => return .nil
     | e :: es => return .cons (← e.toSurface constants) (← toExprs constants es)
-  partial def toHoles (constants : List (String × Benitoite.Surface.Expr) := []) : List HoleArg → Except String Benitoite.Surface.HoleArgs
+  partial def toHoles (constants : List (String × Benitoite.Release.Refinement.Surface.Expr) := []) : List HoleArg → Except String Benitoite.Release.Refinement.Surface.HoleArgs
     | [] => return .nil
     | .expr label position e :: es => return .expr label position (← e.toSurface constants) (← toHoles constants es)
     | .hole label position t :: es => return .hole label position (← t.toRelease) (← toHoles constants es)
-  partial def toArms (constants : List (String × Benitoite.Surface.Expr) := []) : List Arm → Except String Benitoite.Surface.Arms
+  partial def toArms (constants : List (String × Benitoite.Release.Refinement.Surface.Expr) := []) : List Arm → Except String Benitoite.Release.Refinement.Surface.Arms
     | [] => return .nil
     | .mk alts g b :: as => do
         let alts ← alts.mapM fun a => do
           let p ← a.pat.toSurface
           if a.slots.mergeSort (· ≤ ·) != List.range p.binders then throw "invalid alternative slots"
-          pure ({ pat := p, slots := a.slots } : Benitoite.Surface.Alternative)
+          pure ({ pat := p, slots := a.slots } : Benitoite.Release.Refinement.Surface.Alternative)
         let some first := alts.head? | throw "empty alternatives"
         if first.slots != List.range first.pat.binders then throw "nonidentity first alternative"
         if alts.any (fun a => a.slots.length != first.slots.length) then throw "alternative binder counts differ"
-        return .cons alts (← g.mapM (Expr.toSurface constants)) (← b.toSurface constants) (← toArms constants as)
-  partial def Block.toSurface (constants : List (String × Benitoite.Surface.Expr) := []) : Block → Except String Benitoite.Surface.Block
+        return .cons alts ((← g.mapM (Expr.toSurface constants)).map (Surface.SourceRename.expr (Benitoite.Release.upRen first.slots.length (· + 1)))) (Surface.SourceRename.block (Benitoite.Release.upRen first.slots.length (· + 1)) (← b.toSurface constants)) (← toArms constants as)
+  partial def Block.toSurface (constants : List (String × Benitoite.Release.Refinement.Surface.Expr) := []) : Block → Except String Benitoite.Release.Refinement.Surface.Block
     | .builderBind k b => return .builderBind (← k.toSurface) (← b.toSurface constants)
     | .empty => return .empty
     | .last e => return .last (← e.toSurface constants)
@@ -698,7 +723,7 @@ partial def constantNames : Json → List String
   | _ => []
 
 structure ConstantState where
-  cache : List (String × Benitoite.Surface.Expr) := []
+  cache : List (String × Benitoite.Release.Refinement.Surface.Expr) := []
   active : List String := []
 
 /-- 展開中の名前は循環、完成した値は共有する。使用位置の環境を渡さない。 -/
@@ -712,35 +737,39 @@ partial def expandConstant (table : List ConstantEntry) (name : String) :
   for dependency in (constantNames (toJson entry.body)).eraseDups do
     expandConstant table dependency
   let body ← entry.body.toSurface (← get).cache
-  let value := Benitoite.Surface.Expr.constE (← entry.ty.toRelease) body
+  let value := Benitoite.Release.Refinement.Surface.Expr.constE (← entry.ty.toRelease) body
   modify fun s => { s with cache := (name, value) :: s.cache, active := s.active.tail }
 
-def Input.constantCache (input : Input) : Except String (List (String × Benitoite.Surface.Expr)) := do
+def Input.constantCache (input : Input) : Except String (List (String × Benitoite.Release.Refinement.Surface.Expr)) := do
   if (input.constants.map ConstantEntry.name).eraseDups.length != input.constants.length then
     throw "duplicate constant name"
   let (_, state) ← (input.constants.forM (fun e => expandConstant input.constants e.name)).run {}
   return state.cache
 
 mutual
-  partial def fromVal (atoms : Eff) (dictCounts : String → Nat) : Benitoite.Release.Val → Except String Val
+  partial def fromVal (atoms : Eff) (dictCounts : String → Nat) : Benitoite.Release.Refinement.Val → Except String Val
     | .var i => return .var i
     | .raise r e => return .raise (← fromTy atoms r) (← fromTy atoms e)
     | .dict n ts ds => return .dict n (← ts.mapM (fromTy atoms)) (← ds.mapM (fromVal atoms dictCounts))
     | .super d cl => return .super (← fromVal atoms dictCounts d) cl
     | .op n ts => return .op n (← ts.mapM (fromTy atoms))
     | .const c => return .const (← fromConst c)
-    | .fnRef n ts es => return .fnRef n (← ts.mapM (fromTy atoms)) (← es.mapM (fromEff atoms))
-    -- 範囲の列を書き出す（corpus 15。RV-L20 軽5 の誤りを置き換えた）。
+    | .fnRef n ts es rs => return .fnRef n (← ts.mapM (fromTy atoms)) (← es.mapM (fromEff atoms)) rs
+    -- 範囲の位置の列を順序とともに書き出す。
     | .prim n ts es rs => return .prim n (← ts.mapM (fromTy atoms)) (← es.mapM (fromEff atoms)) rs
     | .lam names ps b => return .lam names (← ps.mapM (fromTy atoms)) (← fromComp atoms dictCounts b)
+    | .dependentLam t b => return .dependentLam (← fromTy atoms (.dependentFn t)) (← fromComp atoms dictCounts b)
+    | .externalRef (.mk i) ts => return .externalRef i (← ts.mapM (fromTy atoms))
     | .con n ts vs => return .con n (← ts.mapM (fromTy atoms)) (← vs.mapM (fromVal atoms dictCounts))
     | .list vs => return .list (← vs.mapM (fromVal atoms dictCounts))
-    | _ => return .unsupported "Release.Val"
-  partial def fromComp (atoms : Eff) (dictCounts : String → Nat) : Benitoite.Release.Comp → Except String Comp
+    | _ => return .unsupported "Benitoite.Release.Refinement.Val"
+  partial def fromComp (atoms : Eff) (dictCounts : String → Nat) : Benitoite.Release.Refinement.Comp → Except String Comp
     | .builderLet k b => return .builderLet (← fromBuilderKind atoms k) (← fromComp atoms dictCounts b)
     | .builderOp k op ref vs =>
         return .builderOp (← fromBuilderKind atoms k) (fromBuilderOp op)
           (match ref with | .bound i => .bound i | .loc i => .loc i) (← vs.mapM (fromVal atoms dictCounts))
+    | .externalCall (.mk i) ts vs => return .externalCall i (← ts.mapM (fromTy atoms)) (← vs.mapM (fromVal atoms dictCounts))
+    | .issuePathBases b => return .issuePathBases b
     | .ret v => return .ret (← fromVal atoms dictCounts v)
     | .meth d n ts es vs => return .meth (← fromVal atoms dictCounts d) n (← ts.mapM (fromTy atoms)) (← es.mapM (fromEff atoms)) (← vs.mapM (fromVal atoms dictCounts))
     | .letIn m n => return .letIn (← fromComp atoms dictCounts m) (← fromComp atoms dictCounts n)
@@ -758,8 +787,8 @@ mutual
     | .lazyC b => return .lazyC (← fromComp atoms dictCounts b)
     | .handle b cs => return .handle (← fromComp atoms dictCounts b) (← cs.mapM (fromClause atoms dictCounts))
     | .resume (.var k) v => return .resume k (← fromVal atoms dictCounts v)
-    | _ => return .unsupported "Release.Comp"
-  partial def fromClause (atoms : Eff) (dictCounts : String → Nat) : Benitoite.Release.Clause → Except String CoreClause
+    | _ => return .unsupported "Benitoite.Release.Refinement.Comp"
+  partial def fromClause (atoms : Eff) (dictCounts : String → Nat) : Benitoite.Release.Refinement.Clause → Except String CoreClause
     | .mk op arity ntys b => return .mk (← fromOpRef op) arity ntys (← fromComp atoms dictCounts b) (match op with | .user n => dictCounts n | _ => 0) none
     | .fail e b => return .mk .fail 1 1 (← fromComp atoms dictCounts b) 0 (some (← fromTy atoms e))
 end
@@ -771,7 +800,7 @@ mutual
     | .constName name => ((constants.find? (fun e => e.name == name)).map (fun e => e.body.lambdaEffects constants)).getD []
     | .lam _ _ _ e b => e :: b.lambdaEffects constants
     | .conValue .. => [[]]
-    | .funDicts _ _ _ _ _ _ e | .methName _ _ _ _ _ _ _ e => [e]
+    | .funDicts _ _ _ _ _ _ e _ | .methName _ _ _ _ _ _ _ e => [e]
     | .partialCall f _ es _ e => e :: (f.headLambdaEffects constants ++ holesEffects constants es)
     | .partialCon _ _ es => [] :: holesEffects constants es
     | .call f _ _ es => f.headLambdaEffects constants ++ es.flatMap (Expr.lambdaEffects constants)
@@ -817,37 +846,47 @@ mutual
 end
 
 /-- NoFail は本体から補わず、交換された宣言の型から独立に再計算する。 -/
+def Header.typeContext (h : Header) : Except String TypeCtx := do
+  if h.tparams.length != h.tparamKinds.length then throw "type parameter kind count mismatch"
+  return (h.tparams.zip h.tparamKinds).map (fun ((e, k), kind) => ⟨⟨e, k⟩, kind⟩)
+
 def Header.validateNoFail (h : Header) : Except String Unit := do
+  let _ ← h.typeContext
   let ps ← h.params.mapM Ty.toRelease
   let r ← h.ret.toRelease
   let e ← h.eff.toRelease
   let atoms := (collectAtoms (toJson h)).filterMap Atom.toRelease
-  if !(Benitoite.Surface.CheckTools.rowsTysCheck atoms h.neffs ps &&
-      Benitoite.Surface.CheckTools.rowsTyCheck atoms h.neffs r &&
-      Benitoite.Surface.CheckTools.rowsEffCheck atoms h.neffs e) then
+  if atoms.any (fun a => match a with | .rho i => decide (h.neffs ≤ i) | _ => false) then
     throw "effect row index outside declaration"
-  if h.effParams.map (·.noFail) != Benitoite.Surface.CheckTools.signatureQ h.neffs ps r e then
+  if h.effParams.map (·.noFail) != Benitoite.Release.Refinement.Surface.CheckAdmissible.signatureQ h.neffs ps r e then
     throw "NoFail signature mismatch"
 
-def SurfaceDef.toSurface (d : SurfaceDef) (constants : List (String × Benitoite.Surface.Expr) := []) : Except String Benitoite.Surface.Def := do
+def SurfaceDef.toSurface (d : SurfaceDef) (constants : List (String × Benitoite.Release.Refinement.Surface.Expr) := []) : Except String Benitoite.Release.Refinement.Surface.Def := do
   d.header.validateNoFail
   checkNames d.header.names d.header.params.length
+  if (d.implementation.isSome || d.method.isSome) &&
+      (!d.header.rangeParams.isEmpty || d.header.proofSteps.isSome) then
+    throw "method cannot declare range parameters or proof step limit"
   return {
-    tparams := d.header.tparams.map (fun (e, k) => ⟨e, k⟩)
+    tparams := ← d.header.typeContext
     dictParams := d.dictParams
     neffs := d.header.neffs
     names := d.header.names
     params := ← d.header.params.mapM Ty.toRelease
     ret := ← d.header.ret.toRelease
     eff := ← d.header.eff.toRelease
-    body := ← d.body.toSurface constants }
+    body := ← d.body.toSurface constants
+    rangeParams := d.header.rangeParams, proofSteps := d.header.proofSteps }
 
-def OpEntry.toRelease (o : OpEntry) : Except String Benitoite.Release.OpDecl := do
+def OpEntry.toRelease (o : OpEntry) : Except String Benitoite.Release.Refinement.OpDecl := do
   o.header.validateNoFail
   checkNames o.header.names o.header.params.length
   if o.effectKind != "ordinary" then throw "user operation must be ordinary"
   if o.dictParams.any (fun p => p.2 >= o.header.tparams.length) then throw "operation dictionary type index out of range"
   if o.header.neffs != 0 then throw "operation declares effect parameters"
+  if o.header.tparamKinds.any (fun k => match k with | .value => false | _ => true) then
+    throw "operation type parameter must have value kind"
+  if !o.header.rangeParams.isEmpty || o.header.proofSteps.isSome then throw "unexpected operation declaration fields"
   return {
     eff := o.eff
     dictParams := o.dictParams
@@ -865,27 +904,58 @@ def functionKey (display : String) : Except String String := do
   if display.endsWith s!" (fn:{n})" then return s!"fn:{n}"
   else throw s!"invalid function suffix: {display}"
 
+def AliasEntry.toSurface (a : AliasEntry) : Except String Surface.AliasDecl := do
+  if a.tparams.length != a.tparamKinds.length then throw "alias type parameter kind count mismatch"
+  return {
+    tparams := (a.tparams.zip a.tparamKinds).map (fun ((e, k), kind) => ⟨⟨e, k⟩, kind⟩)
+    valueParams := ← a.valueParams.mapM (fun (n, t) => do return (n, ← t.toRelease))
+    rangeParams := a.rangeParams, body := ← a.body.toRelease }
+
+def RecordEntry.toSurface (r : RecordEntry) : Except String Surface.RecordDecl := do
+  return {
+    data := r.data, ntys := r.ntys
+    fields := ← r.fields.mapM (fun (n, t) => do return (n, ← t.toRelease)) }
+
+def ExternalEntry.toRelease : ExternalEntry → Except String (ExternalKey × ExternalDecl)
+  | .type i c n a r => return (.type (.mk i), .type ⟨.mk i, .mk c, n, a, r⟩)
+  | .function i c n h uses => do
+      h.validateNoFail
+      checkNames h.names h.params.length
+      if h.neffs != 0 || !h.rangeParams.isEmpty || h.proofSteps.isSome then
+        throw "unexpected external declaration fields"
+      let ctx ← h.typeContext
+      return (.function (.mk i), .function (.mk i) {
+        component := .mk c, displayName := n, tparams := ctx.constraints, kinds := ctx.kinds
+        parameters := signatureTel h.names (← h.params.mapM Ty.toRelease) (← h.ret.toRelease) (← h.eff.toRelease)
+        uses })
+
 /-- 表は一度だけ読み、表層のプログラムの表にする。脱糖はこの表をそのまま写す。 -/
-def Input.operationProgram (input : Input) : Except String Benitoite.Surface.Program := do
+def Input.operationProgram (input : Input) : Except String Benitoite.Release.Refinement.Surface.Program := do
+  let aliases ← input.aliases.mapM (fun a => do return (a.name, ← a.toSurface))
+  let records ← input.records.mapM (fun r => do return (r.constructor, ← r.toSurface))
+  let externals ← input.externals.mapM ExternalEntry.toRelease
   let ops ← input.ops.mapM (fun o => do return (o.name, ← o.toRelease))
   let classes ← input.classes.mapM (fun cl => do
     let methods ← cl.methods.mapM (fun m => do
       m.header.validateNoFail
       checkNames m.header.names m.header.params.length
-      let sg : Benitoite.Release.MethSig := {
-        tparams := m.header.tparams.map (fun (e,k) => ⟨e,k⟩)
+      if !m.header.rangeParams.isEmpty || m.header.proofSteps.isSome then
+        throw "method cannot declare range parameters or proof step limit"
+      let sg : Benitoite.Release.Refinement.MethSig := {
+        tparams := ← m.header.typeContext
         neffs := m.header.neffs
         names := m.header.names
         params := ← m.header.params.mapM Ty.toRelease
         ret := ← m.header.ret.toRelease
         eff := ← m.header.eff.toRelease }
       return (m.name, sg))
-    let decl : Benitoite.Release.ClassDecl := {
+    let decl : Benitoite.Release.Refinement.ClassDecl := {
+      argumentKind := cl.argumentKind
       supers := cl.supers
       methods := fun n => (methods.find? (fun m => m.1 == n)).map Prod.snd }
     return (cl.name, decl))
   let impls ← input.impls.mapM (fun i => do
-    let decl : Benitoite.Surface.ImplDecl := {
+    let decl : Benitoite.Release.Refinement.Surface.ImplDecl := {
       tparams := i.tparams.map (fun (e,k) => ⟨e,k⟩)
       dictParams := i.dictParams
       cls := i.cls
@@ -898,7 +968,7 @@ def Input.operationProgram (input : Input) : Except String Benitoite.Surface.Pro
     | _ => none)).mapM (fun (name, con, k, decl) => do
       checkNames decl.fields decl.args.length
       if k >= decl.args.length then throw "accessor index outside record"
-      let cd : Benitoite.Release.ConDecl := {
+      let cd : Benitoite.Release.Refinement.ConDecl := {
         data := decl.data, ntys := decl.ntys, args := ← decl.args.mapM Ty.toRelease }
       return (name, con, k, cd, decl.fields))
   if (accessors.map (fun (n,_,_,_,_) => n)).eraseDups.length != accessors.length then
@@ -917,6 +987,10 @@ def Input.operationProgram (input : Input) : Except String Benitoite.Surface.Pro
       fun (_,_,_,v) => v).getD Benitoite.Release.closedView
     methodViews := fun i n => ((views.find? fun (_,impl,m,_) => impl == some i && m == some n).map
       fun (_,_,_,v) => v).getD Benitoite.Release.closedView
+    aliases := fun n => (aliases.find? (fun a => a.1 == n)).map Prod.snd
+    records := fun n => (records.find? (fun r => r.1 == n)).map Prod.snd
+    testers := fun n => (input.testers.find? (fun t => t.function == n)).map TesterEntry.constructor
+    externals
     defs := fun _ => none
     cons := fun n => (accessors.find? (fun (_,c,_,_,_) => c == n)).map (fun (_,_,_,cd,_) => cd)
     conFields := fun n => (accessors.find? (fun (_,c,_,_,_) => c == n)).map (fun (_,_,_,_,fields) => fields)
@@ -928,7 +1002,7 @@ def Input.operationProgram (input : Input) : Except String Benitoite.Surface.Pro
 
 /-- HasClauses.cons の arity・ntys の前提を交換形式でも検査する。
 JSON の全子を辿るので、プレースホルダ・ラムダ・遅延・入れ子の節も検査する。 -/
-partial def validateClauses (program : Benitoite.Surface.Program)
+partial def validateClauses (program : Benitoite.Release.Refinement.Surface.Program)
     (prims : List PrimOpEntry) : Json → Except String Unit
   | .arr xs => xs.toList.forM (validateClauses program prims)
   | j@(.obj xs) => do
@@ -936,7 +1010,7 @@ partial def validateClauses (program : Benitoite.Surface.Program)
         let name ← o.getObjValAs? String "name"
         let some od := program.ops name | throw s!"missing operation: {name}"
         let e ← o.getObjValAs? Eff "eff"
-        if canonicalJson (toJson e) != toJson ([Atom.name od.eff Scope.Signature.Ix.top]) then
+        if canonicalJson (toJson e) != toJson ([Atom.name od.eff Benitoite.Release.Refinement.RangeIx.top]) then
           throw "operation latent effect mismatch"
       if let .ok h := j.getObjVal? "handleE" then
         let cs ← (← h.getObjVal? "clauses").getArr?
@@ -946,7 +1020,7 @@ partial def validateClauses (program : Benitoite.Surface.Program)
           let (expectedArity, expectedNtys, expectedDicts) ← match op with
             | .user n => do
                 let some od := program.ops n | throw s!"missing operation: {n}"
-                pure (od.valueParams.length, od.tparams.length, od.dictParams.length)
+                pure ((od.params.drop od.dictParams.length).length, od.tparams.length, od.dictParams.length)
             | .prim n => do
                 let some od := prims.find? (fun p => p.name == n) | throw s!"missing primitive operation: {n}"
                 checkNames od.names od.arity
@@ -957,24 +1031,37 @@ partial def validateClauses (program : Benitoite.Surface.Program)
       xs.toArray.toList.forM (fun (_, v) => validateClauses program prims v)
   | _ => pure ()
 
-def fromHeader (atoms : Eff) (ts : List Benitoite.Release.TParam) (neffs : Nat)
-    (names : List String) (ps : List Benitoite.Release.Ty) (r : Benitoite.Release.Ty) (e : Benitoite.Release.Eff) : Except String Header := do
+def fromHeader (atoms : Eff) (ts : TypeCtx) (neffs : Nat)
+    (names : List String) (ps : List Benitoite.Release.Refinement.Ty) (r : Benitoite.Release.Refinement.Ty) (e : Benitoite.Release.Refinement.Eff)
+    (rangeParams : List Benitoite.Scope.Domain.Kind := []) : Except String Header := do
   return {
-    tparams := ts.map (fun p => (p.equality, p.key))
+    tparams := ts.map (fun p => (p.constraints.equality, p.constraints.key))
+    tparamKinds := ts.map (·.kind)
+    rangeParams := rangeParams
     neffs := neffs
-    effParams := (Benitoite.Surface.CheckTools.signatureQ neffs ps r e).map EffParam.mk
+    effParams := (Benitoite.Release.Refinement.Surface.CheckAdmissible.signatureQ neffs ps r e).map EffParam.mk
     names := names
     params := ← ps.mapM (fromTy atoms)
     ret := ← fromTy atoms r
     eff := ← fromEff atoms e }
 
+private def substTyAt (atoms : List Benitoite.Release.Refinement.Atom) (depth : Nat)
+    (ts : List Benitoite.Release.Refinement.Ty) (es : List Benitoite.Release.Refinement.Eff)
+    (t : Benitoite.Release.Refinement.Ty) : Benitoite.Release.Refinement.Ty :=
+  (t.rawBind (typeEnvAt depth ts es)).normWith atoms
+
+private def substEffAt (atoms : List Benitoite.Release.Refinement.Atom) (depth : Nat)
+    (ts : List Benitoite.Release.Refinement.Ty) (es : List Benitoite.Release.Refinement.Eff)
+    (e : Benitoite.Release.Refinement.Eff) : Benitoite.Release.Refinement.Eff :=
+  (e.rawBind (typeEnvAt depth ts es)).normWith atoms
+
 /-- 実装メソッドの頭は型クラス宣言から導く。上位辞書は実装ごとの一単位で比較する。 -/
-def desugar (atoms : Eff) (entries : List OperatorEntry) (program : Benitoite.Surface.Program)
-    (d : SurfaceDef) (constants : List (String × Benitoite.Surface.Expr))
+noncomputable def desugar (atoms : Eff) (entries : List OperatorEntry) (program : Benitoite.Release.Refinement.Surface.Program)
+    (d : SurfaceDef) (constants : List (String × Benitoite.Release.Refinement.Surface.Expr))
     (table : List ConstantEntry) : Except String CoreDef := do
   let opPrim := makeOpPrim atoms entries
   let dictCounts := fun n => ((program.ops n).map (·.dictParams.length)).getD 0
-  let lambdaEffects ← (d.body.lambdaEffects table).mapM (fun e => do fromEff atoms (← e.toRelease))
+  let lambdaEffects ← (d.body.lambdaEffects table).mapM (fun e => do fromEff atoms (← Eff.toRelease e))
   if let some name := d.implementation then
     let some id := program.impls name | throw s!"missing implementation: {name}"
     let some cl := program.classes id.cls | throw s!"missing class: {id.cls}"
@@ -982,11 +1069,11 @@ def desugar (atoms : Eff) (entries : List OperatorEntry) (program : Benitoite.Su
       let some ms := cl.methods m | throw s!"missing implementation method: {m}"
       let body ← d.body.toSurface constants
       let decl := { id with methods := fun n => if n == m then some body else none }
-      let result := Benitoite.Surface.desugarImpl opPrim decl
+      let result := Benitoite.Release.Refinement.Surface.desugarImpl opPrim decl
       let some core := result.methods m | throw "missing desugared method"
-      let methodTy := Benitoite.Surface.CheckTools.substTyAt (atoms.filterMap Atom.toRelease) ms.tparams.length [id.target] []
-      let methodEff := Benitoite.Surface.CheckTools.substEffAt (atoms.filterMap Atom.toRelease) ms.tparams.length [id.target] [] ms.eff
-      let header ← fromHeader atoms (ms.tparams ++ id.tparams) ms.neffs ms.names
+      let methodTy := substTyAt (atoms.filterMap Atom.toRelease) ms.tparams.length [id.target] []
+      let methodEff := substEffAt (atoms.filterMap Atom.toRelease) ms.tparams.length [id.target] [] ms.eff
+      let header ← fromHeader atoms (ms.tparams ++ TypeCtx.values id.tparams) ms.neffs ms.names
         (ms.params.map methodTy) (methodTy ms.ret) methodEff
       let surfaceHeader ← fromHeader atoms (← d.toSurface constants).tparams d.header.neffs (← d.toSurface constants).coreNames
         ((← d.toSurface constants).dictTys ++ (← d.toSurface constants).params) (← d.header.ret.toRelease) (← d.header.eff.toRelease)
@@ -997,22 +1084,22 @@ def desugar (atoms : Eff) (entries : List OperatorEntry) (program : Benitoite.Su
       if d.supers.map Prod.fst != cl.supers then throw "implementation supers do not match class declaration"
       let supers ← d.supers.mapM (fun (n,e) => do return (n, ← e.toSurface))
       let decl := { id with supers := fun n => (supers.find? (fun p => p.1 == n)).map Prod.snd }
-      let result := Benitoite.Surface.desugarImpl opPrim decl
+      let result := Benitoite.Release.Refinement.Surface.desugarImpl opPrim decl
       let converted ← d.supers.mapM (fun (n,_) => do
         let some v := result.supers n | throw "missing desugared superclass"
         return (n, ← fromVal atoms dictCounts v))
-      let header ← fromHeader atoms result.tparams 0 [] [] (.base .unit) Benitoite.Release.Eff.empty
+      let header ← fromHeader atoms (TypeCtx.values result.tparams) 0 [] [] (.base .unit) Benitoite.Release.Refinement.Eff.empty
       return { header := header, body := .ret (.const .unit), lambdaEffects := [], supers := converted }
   else
-    let result := Benitoite.Surface.desugarDef opPrim (← d.toSurface constants)
+    let result := Benitoite.Release.Refinement.Surface.desugarDef opPrim (← d.toSurface constants)
     return {
-      header := ← fromHeader atoms result.tparams result.neffs result.names result.params result.ret result.eff
+      header := ← fromHeader atoms result.tparams result.neffs result.names result.params result.ret result.eff result.rkinds
       body := ← fromComp atoms dictCounts result.body
       lambdaEffects := lambdaEffects
       supers := [] }
 /-- Program.lookupFun と desugarProgram の経路を通して取得関数を比較する。 -/
-def desugarAccessor (atoms : Eff) (entries : List OperatorEntry)
-    (program : Benitoite.Surface.Program) (name con : String) (k : Nat)
+noncomputable def desugarAccessor (atoms : Eff) (entries : List OperatorEntry)
+    (program : Benitoite.Release.Refinement.Surface.Program) (name con : String) (k : Nat)
     (decl : RecordConDecl) : Except String CoreDef := do
   let some (c, index) := program.accessors name | throw "missing accessor table entry"
   if c != con || index != k then throw "accessor table mismatch"
@@ -1021,10 +1108,10 @@ def desugarAccessor (atoms : Eff) (entries : List OperatorEntry)
       canonicalJson (toJson (← cd.args.mapM (fromTy atoms))) !=
         canonicalJson (toJson decl.args) then throw "record constructor table mismatch"
   let dictCounts := fun n => ((program.ops n).map (·.dictParams.length)).getD 0
-  let result := Benitoite.Surface.desugarProgram (makeOpPrim atoms entries) program
+  let result := Benitoite.Release.Refinement.Surface.desugarProgram (makeOpPrim atoms entries) program
   let some d := result.defs name | throw "missing desugared accessor"
   return {
-    header := ← fromHeader atoms d.tparams d.neffs d.names d.params d.ret d.eff
+    header := ← fromHeader atoms d.tparams d.neffs d.names d.params d.ret d.eff d.rkinds
     body := ← fromComp atoms dictCounts d.body
     lambdaEffects := []
     supers := [] }

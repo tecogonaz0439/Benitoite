@@ -1,5 +1,6 @@
 import Benitoite.Exchange.Range
 import Benitoite.Surface.CheckAccept
+import Benitoite.Release.Refinement.Surface.CheckAccept
 
 /-!
 # 交換の形式の観測・拒否の理由・必須の判定の入力と、範囲の入力の検査（L50.2）
@@ -20,7 +21,7 @@ corpus 15・sidecar 7 の交換の形式に、次のものを加える（設計�
 
 namespace Benitoite.Exchange
 open Lean Benitoite.Scope.Domain Benitoite.Scope.Signature
-open Benitoite.Surface.ScopeAccept (CoverFailure)
+open Benitoite.Release.Refinement.Surface.ScopeAccept (CoverFailure)
 
 /-! ## 対象と観測 -/
 
@@ -155,23 +156,23 @@ def encodeKey (k : Benitoite.Interval.OperationKey) : Json :=
   Json.mkObj [("definition", .str k.definition), ("surfacePreorder", encodeNat k.surfacePreorder)]
 
 /-- 入口の拒否の交換の形。 -/
-def encodeEntryError : Benitoite.Surface.CheckAccept.EntryError → Json
+def encodeEntryError : Benitoite.Release.Refinement.Surface.CheckAccept.EntryError → Json
   | .typing e => Json.mkObj [("typing", Json.mkObj [("path", toJson e.path), ("reason", .str e.reason)])]
   | .cover k f => Json.mkObj [("cover", Json.mkObj [("key", encodeKey k), ("reason", encodeCoverFailure f)])]
 
 /-! ## 必須の判定の入力 -/
 
-def encodeCap (c : Benitoite.Surface.ScopeState.Cap) : Json :=
+def encodeCap (c : Benitoite.Release.Refinement.Surface.ScopeState.Cap) : Json :=
   Json.mkObj [("operations", encodeNat c.operations), ("items", encodeNat c.items)]
 
-def decodeCap (j : Json) : Except String Benitoite.Surface.ScopeState.Cap := do
+def decodeCap (j : Json) : Except String Benitoite.Release.Refinement.Surface.ScopeState.Cap := do
   if (← j.getObj?).toArray.size != 2 then throw "unexpected scope limit fields"
   return ⟨← decodeNat (← j.getObjVal? "operations"), ← decodeNat (← j.getObjVal? "items")⟩
 
-def encodeLimits (L : Benitoite.Surface.ScopeState.Limits) : Json :=
+def encodeLimits (L : Benitoite.Release.Refinement.Surface.ScopeState.Limits) : Json :=
   Json.mkObj [("body", encodeCap L.body), ("whole", encodeCap L.whole)]
 
-def decodeLimits (j : Json) : Except String Benitoite.Surface.ScopeState.Limits := do
+def decodeLimits (j : Json) : Except String Benitoite.Release.Refinement.Surface.ScopeState.Limits := do
   if (← j.getObj?).toArray.size != 2 then throw "unexpected scope limit fields"
   return ⟨← decodeCap (← j.getObjVal? "body"), ← decodeCap (← j.getObjVal? "whole")⟩
 
@@ -190,7 +191,7 @@ structure ScopeAcceptanceEntry where
   patterns : List PatternEntry
   /-- `Http.checkRequestIn` のホストのパターンのリテラルと、それを解析したホストのパターン。 -/
   hosts : List HostEntry
-  limits : Benitoite.Surface.ScopeState.Limits
+  limits : Benitoite.Release.Refinement.Surface.ScopeState.Limits
 
 instance : ToJson ScopeAcceptanceEntry := ⟨fun s => Json.mkObj [
   ("patterns", .arr (s.patterns.map fun p => Json.mkObj [("text", .str p.text), ("range", encodeRange p.range)]).toArray),
@@ -225,7 +226,8 @@ def ScopeAcceptanceEntry.acceptInput : Option ScopeAcceptanceEntry → Benitoite
   | none => Benitoite.Surface.CheckAccept.AcceptInput.noRules
   | some s =>
     ⟨"Ok", (Benitoite.Surface.ScopeSound.productionRules s.pattern (fun _ => none) s.host (fun _ => none)).lookup,
-      s.limits, fun i m => i ++ "." ++ m⟩
+      ⟨⟨s.limits.body.operations, s.limits.body.items⟩, ⟨s.limits.whole.operations, s.limits.whole.items⟩⟩,
+      fun i m => i ++ "." ++ m⟩
 
 /-- 交換の入力から作る規則の表は健全である（条件はない）。接続定理（`CheckAccept.accepted_check_connection`）の
 前提の一つである。 -/

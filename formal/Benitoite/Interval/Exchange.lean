@@ -1,11 +1,14 @@
 import Benitoite.Exchange.Convert
+import Benitoite.Exchange.Refined
+import Benitoite.Interval.SurfaceSyntax
 import Benitoite.Interval.BudgetWhole
 import Benitoite.Interval.EvalClosed
+import Benitoite.Release.Refinement.IntervalReport
 
 /-!
-# interval-corpus 初版1の読者
+# 区間の交換の読者
 
-Surface 14の読者と変換を再利用するが、旧corpus・sidecarの入口は変更しない。
+表層の交換の版16を読み、新しい表層の型の篩を消して区間の構文へ写す。
 受理済みprofileはbase/flow/width/range/domain。標準表は明示した宣言と規則を照合する。
 交換の検証は解析予算の外側で行う。番号の全列挙を解析の事前走査には使わない
 （設計書07-04「区間解析の独立交換の読者」）。
@@ -91,10 +94,6 @@ private def fieldsOptional (label : String) (required optional : List String) (j
 
 /-- Surfaceの復号器が読まなかった欄・曖昧な構成子も、深い位置で拒否する。 -/
 private def surface [FromJson α] [ToJson α] (j : Json) : Except String α := do
-  -- 埋め込みの Surface は版14（範囲のない旧版）か版15である。版14は `decodeCorpus` が範囲の欄を全て拒否してあり、
-  -- 欠けた欄に明示の Top と空の範囲の列を加えてから読む。版15は欠けた欄がないことを `decodeCorpus` が確かめてあり、
-  -- この変換は何も変えない（`Exchange.legacyRangesMissing`。設計書 07-04「交換の形式の版」）。
-  let j := Benitoite.Exchange.legacyRangesMissing j
   let value : α ← fromJson? j
   if toJson value != j then throw "noncanonical Surface fields or constructor"
   pure value
@@ -137,7 +136,7 @@ private def unique [BEq α] (label : String) (xs : List α) : Except String Unit
 
 private def readType (j : Json) : Except String Ty := do
   let ty : Benitoite.Exchange.Ty ← surface j
-  ty.toRelease
+  pure (SurfaceSyntax.eraseTy (← ty.toRelease))
 
 private def readCap (j : Json) : Except String Budget.Cap := do
   fields "cap" ["operations", "items"] j
@@ -206,7 +205,7 @@ private def readOperation (standards : List StandardBinding) (j : Json) : Except
     if (IntKind.ofType type).isNone then throw "warning requires integer type"
     return .neg type
   fields "operation" ["binary", "type"] j
-  let op ← Benitoite.Exchange.binOp (← j.getObjValAs? String "binary")
+  let op := SurfaceSyntax.eraseBinOp (← Benitoite.Exchange.binOp (← j.getObjValAs? String "binary"))
   let type ← readType (← j.getObjVal? "type")
   if (IntKind.ofType type).isNone then throw "warning requires integer type"
   return .binary op type
@@ -260,12 +259,12 @@ def coverageJson : BudgetAnalysis.Coverage → Json
   | .stopped reason => Json.mkObj [("stopped", haltJson reason)]
 
 def typeJson (type : Ty) : Json :=
-  match Benitoite.Exchange.fromTy [] type with
+  match Benitoite.Exchange.fromTy [] (Benitoite.Release.Refinement.embedTy type) with
   | .ok value => toJson value
   | .error reason => Json.mkObj [("unavailableType", toJson reason)]
 
 def operationJson : TargetOperation → Json
-  | .binary op type => Json.mkObj [("binary", toJson (Benitoite.Exchange.operatorName (.binary op))), ("type", typeJson type)]
+  | .binary op type => Json.mkObj [("binary", toJson (Benitoite.Exchange.operatorName (.binary (SurfaceSyntax.liftBinOp op)))), ("type", typeJson type)]
   | .neg type => Json.mkObj [("neg", typeJson type)]
   | .standard binding => Json.mkObj [("standard", toJson binding.declaration)]
 
@@ -552,7 +551,7 @@ private def readStandard (profile : String) (j : Json) : Except String StandardB
     if [names.owner, names.checkedConstructor, names.result, names.error, names.ok, names.err,
         names.invalidBounds, names.outOfRange].any String.isEmpty then throw "empty Range identity"
     let record : Benitoite.Exchange.RecordConDecl ← surface (← n.getObjVal? "record")
-    let recordArgs ← record.args.mapM Benitoite.Exchange.Ty.toRelease
+    let recordArgs ← record.args.mapM fun a => SurfaceSyntax.eraseTy <$> a.toRelease
     if record.data != names.owner || record.ntys != 0 ||
         record.fields != ["minimum", "maximum", "value"] || recordArgs.map typeJson != (List.replicate 3 (.base .integer)).map typeJson then
       throw "invalid Range record declaration"
@@ -565,7 +564,7 @@ private def readStandard (profile : String) (j : Json) : Except String StandardB
   let owner ← r.getObjValAs? String "owner"
   let constructor ← r.getObjValAs? String "constructor"
   let record : Benitoite.Exchange.RecordConDecl ← surface (← r.getObjVal? "record")
-  let recordArgs ← record.args.mapM Benitoite.Exchange.Ty.toRelease
+  let recordArgs ← record.args.mapM fun a => SurfaceSyntax.eraseTy <$> a.toRelease
   if owner.isEmpty || constructor.isEmpty || record.data != owner || record.ntys != 0 ||
       record.fields != ["minimum", "maximum", "value"] || recordArgs.map typeJson != (List.replicate 3 (.base .integer)).map typeJson then
     throw "invalid Range record declaration"
@@ -598,7 +597,7 @@ private def validateExpected (env : AbstractEnv) (occurrences : List (OperationK
     if !occurrences.any (·.1 == key) then throw "independent input key outside definition"
     validateWarnings (← (← (← child.getObjVal? "warnings").getArr?).toList.mapM (readWarning env.standards))
 
-private def readDefinition (profile : String) (env : AbstractEnv) (module : String) (constants : List (String × Benitoite.Surface.Expr)) (j : Json) :
+private def readDefinition (profile : String) (env : AbstractEnv) (module : String) (constants : List (String × Benitoite.Release.Refinement.Surface.Expr)) (j : Json) :
     Except String Definition := do
   fieldsOptional "definition" ["name", "kind", "params", "type", "body", "types", "sourceKeys", "expected"] ["evaluation"] j
   let name ← j.getObjValAs? String "name"
@@ -616,7 +615,7 @@ private def readDefinition (profile : String) (env : AbstractEnv) (module : Stri
   let type ← readType (← j.getObjVal? "type")
   let body : Benitoite.Exchange.Block ← surface (← j.getObjVal? "body")
   Benitoite.Exchange.validateIntegerConstants (toJson body)
-  let body ← body.toSurface constants
+  let body := SurfaceSyntax.eraseBlock (← body.toSurface constants)
   let rawTypes ← (← j.getObjVal? "types").getArr?
   let types ← rawTypes.toList.mapM readTypedKey
   unique "type key" (types.map (keyId ∘ Prod.fst))
@@ -637,7 +636,7 @@ private def readDefinition (profile : String) (env : AbstractEnv) (module : Stri
       | .error _ => pure none
       | .ok value => some <$> readEvaluationExpected env.standards value⟩
 
-private def readModule (profile : String) (env : AbstractEnv) (constants : List (String × Benitoite.Surface.Expr))
+private def readModule (profile : String) (env : AbstractEnv) (constants : List (String × Benitoite.Release.Refinement.Surface.Expr))
     (entry : Bool) (j : Json) : Except String Module := do
   fields "module" ["name", "definitions"] j
   let name ← j.getObjValAs? String "name"
@@ -723,15 +722,8 @@ def decodeCorpus (j : Json) : Except String Corpus := do
   if (← j.getObjValAs? String "kind") != "interval-corpus" then throw "unknown corpus kind"
   if (← j.getObjValAs? Nat "version") != 1 then throw "unsupported interval corpus version"
   let surfaceVersion ← j.getObjValAs? Nat "surfaceVersion"
-  if surfaceVersion != 14 && surfaceVersion != 15 then throw "unsupported Surface version"
-  if surfaceVersion == 14 then
-    -- 範囲のない旧版。埋め込みの Surface に範囲の欄を置かせない。
-    Benitoite.Exchange.rejectFields Benitoite.Exchange.rangeFields j
-  else
-    -- 版15は範囲の欄を必須とし、範囲の変数を置かせず、範囲の正規形を確かめる（L50.2）。
-    Benitoite.Exchange.rejectFields ["rvar"] j
-    Benitoite.Exchange.validateRanges 0 j
-    if Benitoite.Exchange.legacyRangesMissing j != j then throw "missing range fields in Surface 15"
+  if surfaceVersion != Benitoite.Exchange.Refined.corpusVersion then
+    throw "unsupported Surface version; regenerate with the current exchange version"
   if (← j.getObjValAs? Nat "traversalVersion") != 1 then throw "unsupported traversal version"
   let profile ← j.getObjValAs? String "profile"
   if !["base", "flow", "width", "range", "domain"].contains profile then throw "unsupported interval profile"
@@ -739,7 +731,7 @@ def decodeCorpus (j : Json) : Except String Corpus := do
   unique "input" (inputs.map (·.name))
   pure ⟨inputs, profile⟩
 
-/-- 生のinterval-corpus初版1を、重複欄を失わずに読む。 -/
+/-- 生の区間の交換を、重複欄を失わずに読む。 -/
 def readCorpus (raw : String) : Except String Corpus := do
   decodeCorpus (← UniqueJson.parse raw)
 
@@ -773,9 +765,40 @@ private def independentJson (extended : Bool) (value : BudgetAnalysis.Independen
     ("warnings", toJson (value.warningsRev.reverse.map warningJson)),
     ("coverage", coverageJson coverage)])
 
-private def actualJson (extended : Bool) (output : BudgetAnalysis.Report) : Json :=
+/-- 別本体の型は元の全型表から読む。評価器の型推測や期待値から補わない。 -/
+private def blockResultType (types : List (OperationKey × Ty)) : OperationKey → Block → Option Ty
+  | key, .last _ => (types.find? (·.1 == key)).map Prod.snd
+  | _, .empty | _, .lastBind .. | _, .lastDiscard .. | _, .lastPat .. => some (.base .unit)
+  | key, .builderBind _ rest => blockResultType types key rest
+  | key, .bind _ _ source rest | key, .bindPat _ _ _ source rest
+  | key, .discard source rest | key, .seq source rest =>
+    blockResultType types (advanceKey key (surfaceSize source)) rest
+
+private def reportedBodyType (input : Input) (name : String) : Option Ty := do
+  let definitions := input.modules.flatMap (·.definitions)
+  if let some root := definitions.find? (·.input.name == name) then return root.type
+  let owner ← definitions.find? fun d => (bodyManifest d.input.name d.input.body).any (·.definition == name)
+  let entry ← (bodyManifest owner.input.name owner.input.body).find? (·.definition == name)
+  blockResultType owner.types ⟨owner.input.name, entry.parentStart⟩ entry.body
+
+private def sharedValueJson : Shared.ValueApprox → Json
+  | .bottom => toJson "bottom"
+  | .unknown => toJson "unknown"
+  | .integer kind range => Json.mkObj [("kind", toJson (kindName kind)), ("interval", intervalJson range)]
+  | .boolean no yes => Json.mkObj [("boolean", toJson [no,yes])]
+
+/-- 型表に記録された本体だけを共有近似へ写す。型のない本体の注釈は補わない。 -/
+private def reportFlowJson (type : Option Ty) (output : BudgetAnalysis.Report) : Json :=
+  match type with
+  | none => Json.null
+  | some type =>
+      let flow := (Benitoite.Release.Refinement.IntervalReport.connect output type).view.flow
+      Json.mkObj [("normal", sharedValueJson flow.normal),
+        ("returned", sharedValueJson flow.returned), ("mayFail", toJson flow.mayFail)]
+
+private def actualJson (extended : Bool) (type : Option Ty) (output : BudgetAnalysis.Report) : Json :=
   Json.mkObj (approximationJson output.approx ++ [
-    ("mayFail", toJson output.approx.mayFail),
+    ("mayFail", toJson output.approx.mayFail), ("flow", reportFlowJson type output),
     ("warnings", toJson (output.context.warningsRev.reverse.map warningJson)),
     ("coverage", coverageJson output.coverage), ("after", stateJson output.after),
     ("independent", toJson (output.context.independentRev.reverse.map (independentJson extended))),
@@ -815,7 +838,8 @@ private def unknownReasons (output : BudgetAnalysis.Report) : List Json :=
 
 private def bodyComparison (input : Input) (body : BudgetWhole.BodyOutput) : Json × Bool :=
   let actual := actualJson ((expectedFor input body.definition).any fun e =>
-    match e with | .analyzed value => value.widths.isSome | .notAnalyzed _ => false) body.output
+    match e with | .analyzed value => value.widths.isSome | .notAnalyzed _ => false)
+    (reportedBodyType input body.definition) body.output
   let eligible := BudgetWhole.comparisonEligible body
   let mismatch := match expectedFor input body.definition with
     | some (.notAnalyzed _) => ["notAnalyzed"]
@@ -825,22 +849,6 @@ private def bodyComparison (input : Input) (body : BudgetWhole.BodyOutput) : Jso
     ("excluded", toJson (if eligible then ([] : List String) else ["depth"])),
     ("actual", actual), ("unknownReasons", toJson (unknownReasons body.output)),
     ("mismatches", toJson mismatch)], mismatch.isEmpty)
-
-/-- 別本体の型は元の全型表から読む。評価器の型推測や期待値から補わない。 -/
-private def blockResultType (types : List (OperationKey × Ty)) : OperationKey → Block → Option Ty
-  | key, .last _ => (types.find? (·.1 == key)).map Prod.snd
-  | _, .empty | _, .lastBind .. | _, .lastDiscard .. | _, .lastPat .. => some (.base .unit)
-  | key, .builderBind _ rest => blockResultType types key rest
-  | key, .bind _ _ source rest | key, .bindPat _ _ _ source rest
-  | key, .discard source rest | key, .seq source rest =>
-    blockResultType types (advanceKey key (surfaceSize source)) rest
-
-private def reportedBodyType (input : Input) (name : String) : Option Ty := do
-  let definitions := input.modules.flatMap (·.definitions)
-  if let some root := definitions.find? (·.input.name == name) then return root.type
-  let owner ← definitions.find? fun d => (bodyManifest d.input.name d.input.body).any (·.definition == name)
-  let entry ← (bodyManifest owner.input.name owner.input.body).find? (·.definition == name)
-  blockResultType owner.types ⟨owner.input.name, entry.parentStart⟩ entry.body
 
 /-- Topかどうかは根の型の正常成分で判定する。BottomはTopに数えない。 -/
 private def informative (input : Input) (body : BudgetWhole.BodyOutput) : Bool :=

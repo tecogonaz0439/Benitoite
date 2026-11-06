@@ -9,7 +9,7 @@ import Benitoite.Exchange.Version
 
 namespace Benitoite.Exchange.ObserveExamples
 open Lean Benitoite.Exchange Benitoite.Scope.Domain Benitoite.Scope.Signature
-open Benitoite.Surface.ScopeAccept (CoverFailure)
+open Benitoite.Release.Refinement.Surface.ScopeAccept (CoverFailure)
 
 def dataA : Target := .path ["data", "a.txt"]
 def apiHost : HostTarget := .name ["api", "example", "com"]
@@ -77,7 +77,7 @@ def invertedEp : Range := .endpoint ⟨.name (.exact ["api", "example", "com"]),
 #guard (checkAdmitsRuleInput 2 (.covers 0 1)).isOk
 
 private def corpusWith (atom : Json) (scope : Json) : Json :=
-  Json.mkObj [("version", toJson 15), ("inputs", Json.arr #[Json.mkObj [("eff", Json.arr #[atom]),
+  Json.mkObj [("version", toJson 16), ("operators", Json.arr #[]), ("inputs", Json.arr #[Json.mkObj [("eff", Json.arr #[atom]),
     ("scopeAcceptance", scope)]])]
 
 private def scopeOf (r : Range) : Json :=
@@ -85,17 +85,13 @@ private def scopeOf (r : Range) : Json :=
     ("hosts", Json.arr #[]), ("limits", encodeLimits ⟨⟨1, 1⟩, ⟨1, 1⟩⟩)]
 
 -- 新版の corpus は、全ての範囲の位置と必須の判定の入力の範囲を検査し、必須の判定の入力を必須とする。
-#guard (exchangeJson "corpus" (corpusWith (toJson (Atom.name "File.Write" (.fixed dataTree))) (scopeOf dataTree))).isOk
-#guard !(exchangeJson "corpus" (corpusWith (toJson (Atom.name "File.Write" (.fixed hostBits))) (scopeOf dataTree))).isOk
-#guard !(exchangeJson "corpus" (corpusWith (toJson (Atom.name "File.Write" (.fixed dataTree))) (scopeOf lan32))).isOk
-#guard !(exchangeJson "corpus" (corpusWith (toJson (Atom.name "File.Write" (.fixed dataTree))) Json.null)).isOk
-#guard !(exchangeJson "corpus" (corpusWith (toJson (Atom.name "Http.Connect" (.fixed invertedEp))) (scopeOf dataTree))).isOk
--- 旧版の corpus は必須の判定の入力を置かせず、null（規則のない受理の入力）で読む。
-#guard match exchangeJson "corpus" (Json.mkObj [("version", toJson 14), ("inputs", Json.arr #[Json.mkObj []])]) with
-  | .ok j => ((j.getObjVal? "inputs").bind (·.getArrVal? 0) |>.bind (·.getObjVal? "scopeAcceptance")).toOption ==
-      some Json.null
-  | .error _ => false
-#guard !(exchangeJson "corpus" (Json.mkObj [("version", toJson 14),
+#guard (exchangeJson "corpus" (corpusWith (toJson (Atom.name "File.Write" (.fixed (.absolute dataTree)))) (scopeOf dataTree))).isOk
+#guard !(exchangeJson "corpus" (corpusWith (toJson (Atom.name "File.Write" (.fixed (.absolute hostBits)))) (scopeOf dataTree))).isOk
+#guard !(exchangeJson "corpus" (corpusWith (toJson (Atom.name "File.Write" (.fixed (.absolute dataTree)))) (scopeOf lan32))).isOk
+#guard !(exchangeJson "corpus" (corpusWith (toJson (Atom.name "File.Write" (.fixed (.absolute dataTree)))) Json.null)).isOk
+#guard !(exchangeJson "corpus" (corpusWith (toJson (Atom.name "Http.Connect" (.fixed (.absolute invertedEp)))) (scopeOf dataTree))).isOk
+-- 旧版の corpus は版の誤りで断る。
+#guard !(exchangeJson "corpus" (Json.mkObj [("version", toJson 15), ("operators", Json.arr #[]),
   ("inputs", Json.arr #[Json.mkObj [("scopeAcceptance", scopeOf dataTree)]])])).isOk
 
 -- 必須の判定の入力の欄の余り・重複した綴りは拒否する。

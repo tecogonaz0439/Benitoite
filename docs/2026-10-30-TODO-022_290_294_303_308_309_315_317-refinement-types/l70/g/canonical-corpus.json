@@ -1,0 +1,46 @@
+{
+  "inputs": 1879,
+  "files": 60,
+  "unpaired": [
+    "independent-program-interval/interval-manifest-corpus.json",
+    "instrumented/interval-manifest-corpus.json",
+    "interval/interval-manifest-corpus.json",
+    "interval-manifest-corpus.json",
+    "manifest-interval/interval-manifest-corpus.json",
+    "named-programs-interval/interval-manifest-corpus.json",
+    "original/interval-manifest-corpus.json",
+    "range/instrumented/interval-manifest-corpus.json",
+    "range/original/interval-manifest-corpus.json",
+    "reader-corpus.json",
+    "shifts/instrumented/interval-manifest-corpus.json",
+    "shifts/original/interval-manifest-corpus.json"
+  ],
+  "accepted": 1879,
+  "failed": [],
+  "mapped_data": 21813,
+  "mapped_constructors": 36354,
+  "effects": [
+    "Assert.Check",
+    "IO.Clock.Time",
+    "IO.Console.Read",
+    "IO.Console.Write",
+    "IO.File.Read",
+    "IO.File.Write",
+    "IO.Process.Environment",
+    "IO.Process.Run",
+    "IO.Random.Generate",
+    "Log.Log",
+    "Network.Http.Connect",
+    "Network.Http.Listen",
+    "Process.Exit",
+    "State"
+  ],
+  "requests": {
+    "bytes": 44305752,
+    "sha256": "e44b1f9d5cb91f6415a6d2db0651e10bf93da71529d7b3a8c012cbb5ec37b351"
+  },
+  "results": {
+    "bytes": 2551411,
+    "sha256": "67c67d5e22e9f63eaa20e6bd8cee9e12e20aa110685d90da2c34ece4740a767f"
+  }
+}

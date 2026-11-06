@@ -95,7 +95,7 @@ def OldH04 : Prop := (∀ (P : Program) (B : Builtins) (σ : PathEnv)
     (reason : Benitoite.Interval.Failure) (trace : Benitoite.Interval.EvalTrace)
     (op : Benitoite.Surface.OpPrim) (ξ : Nat → Nat) (cap : Capture) (code : Comp) (k : Cont) (μ : Store),
     EnvRelAt concrete cap ξ →
-    code = embedComp ((Benitoite.Surface.desugarExpr op .other input.source).rename ξ) →
+    code = ((Benitoite.Interval.SurfaceCode.expr op .other input.source).rename ξ) →
     Benitoite.Interval.EvalPartial concrete input (.failed reason) trace →
     TrackedFailure reason trace →
     Runs P B σ (fun _ _ => True) (.mk cap code) k μ (.failed reason) →
@@ -145,7 +145,21 @@ private def P : Program := ⟨fun _ => none,fun _ => none,fun _ => none,fun _ =>
 private def leftEvent : Benitoite.Interval.EvalEvent := ⟨Benitoite.Interval.childKey key [],.neg (.base .integer),[.integer one],.normal (.integer minusOne)⟩
 private def rightEvent : Benitoite.Interval.EvalEvent := ⟨Benitoite.Interval.childKey key [left],.neg (.base .integer),[.integer minimum],.rejected .overflow⟩
 private def trace : Benitoite.Interval.EvalTrace := [leftEvent,rightEvent]
-private def code : Comp := embedComp ((Benitoite.Surface.desugarExpr op .other input.source).rename id)
+private def code : Comp :=
+  .letIn (.letIn (.ret (.var 0)) (.app (.prim "neg" [] [] []) [.var 0]))
+    (.letIn (.letIn (.ret (.var 2)) (.app (.prim "neg" [] [] []) [.var 0]))
+      (.app (.prim "add" [] [] []) [.var 1,.var 0]))
+
+private theorem code_source :
+    code = (Benitoite.Interval.SurfaceCode.expr op .other input.source).rename id := by
+  simp [code, Benitoite.Interval.SurfaceCode.expr, input, left, right,
+    Benitoite.Interval.SurfaceSyntax.liftExpr, Benitoite.Interval.SurfaceSyntax.liftPosition,
+    Benitoite.Interval.SurfaceSyntax.liftOp, Benitoite.Interval.SurfaceSyntax.eraseOperator,
+    Benitoite.Interval.SurfaceSyntax.eraseBinOp,
+    Benitoite.Interval.SurfaceSyntax.liftBinOp, op, Surface.desugarExpr,
+    Surface.sequence, Surface.letChain, Surface.boundVars, Comp.rename, Val.rename, Val.renameList, upRen,
+    Surface.shiftTs, embedTy, List.range, List.range.loop]
+
 
 private theorem independent : Benitoite.Interval.EvalPartial env input (.failed .overflow) trace := by
   have hl := Benitoite.Interval.EvalPartial.neg env (Benitoite.Interval.childKey key []) (.local 0) one [] (Benitoite.Interval.EvalPartial.local _ _ 0 (.integer one) rfl)
@@ -184,7 +198,7 @@ private theorem no_later_delta (ws : List Val) (h : ValuesRel [.integer minimum]
 theorem old_candidate_false : ¬ OldH04 := by
   intro claim
   obtain ⟨σ,_,_,_,_,_⟩ := NormalReplyExamples.concrete_normal_replies
-  obtain ⟨events,μ,rs,_,h⟩ := claim P B σ env input .overflow trace op id cap code [] Store.empty environment rfl independent tracked (runtime σ)
+  obtain ⟨events,μ,rs,_,h⟩ := claim P B σ env input .overflow trace op id cap code [] Store.empty environment code_source independent tracked (runtime σ)
   -- standard の枝は両事象で生じないため、σ の選び方は結論の否定に影響しない。
   obtain ⟨event,hm,he,hdelta⟩ := h
   simp only [trace,List.mem_cons,List.not_mem_nil,or_false] at hm

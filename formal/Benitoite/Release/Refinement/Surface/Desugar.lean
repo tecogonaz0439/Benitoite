@@ -1,4 +1,5 @@
 import Benitoite.Release.Refinement.Surface.Basic
+import Benitoite.Release.Refinement.ValueRenamingFixed
 
 /-!
 # 表層からの脱糖
@@ -210,6 +211,20 @@ def holeLam (ns : List String) (ps : List Ty) (r : Ty) (e : Eff) (body : Comp) :
   open Classical in
   if ∃ (r0 : Ty) (e0 : Eff), r = r0.shiftV ps.length 0 ∧ e = Eff.shiftV ps.length 0 e0 then .lam ns ps body
   else .dependentLam (holeTel ns ps 0 r e) body
+
+/-- 部分適用のラムダの選択を、移し直しの改名で変わらないことの有限判定で計算する。 -/
+def holeLamDecide (ns : List String) (ps : List Ty) (r : Ty) (e : Eff) (body : Comp) : Val :=
+  if (r.renameFixed (shiftImage ps.length) && Eff.renameFixed (shiftImage ps.length) e) = true then
+    .lam ns ps body
+  else .dependentLam (holeTel ns ps 0 r e) body
+
+/-- 実行する脱糖は、選択の条件と同値な有限判定を使う（設計書 01-12「部分適用」）。 -/
+@[csimp] theorem holeLam_eq_decide : @holeLam = @holeLamDecide := by
+  funext ns ps r e body
+  unfold holeLam holeLamDecide
+  by_cases h : ∃ (r0 : Ty) (e0 : Eff), r = r0.shiftV ps.length 0 ∧ e = Eff.shiftV ps.length 0 e0
+  · rw [ite_eq_left h, ite_eq_left ((shiftImage_pair_iff ps.length r e).mp h)]
+  · rw [ite_eq_right h, ite_eq_right (fun h' => h ((shiftImage_pair_iff ps.length r e).mpr h'))]
 
 mutual
   def desugarExpr (opPrim : OpPrim) (p : Position) : Expr → Comp

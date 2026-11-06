@@ -11,7 +11,7 @@ namespace Benitoite.Interval.Exchange
 open Lean Benitoite.Release
 
 private def sample : String := r#"{
-  "kind":"interval-corpus", "version":1, "surfaceVersion":14,
+  "kind":"interval-corpus", "version":1, "surfaceVersion":16,
   "traversalVersion":1, "profile":"base",
   "inputs":[{
     "name":"division", "fuel":"100",
@@ -125,7 +125,8 @@ private def rejected (path : List String) (value : Json) : Bool :=
   | .ok _ => false
 #guard ([
   (["kind"], toJson "corpus"), (["version"], toJson (2 : Nat)),
-  (["surfaceVersion"], toJson (13 : Nat)), (["traversalVersion"], toJson (2 : Nat)),
+  (["surfaceVersion"], toJson (13 : Nat)), (["surfaceVersion"], toJson (14 : Nat)),
+  (["surfaceVersion"], toJson (15 : Nat)), (["traversalVersion"], toJson (2 : Nat)),
   (inputPath ++ ["standards"], Json.arr #[Json.mkObj [("declaration", toJson "Integer.shiftLeft")]]),
   (inputPath ++ ["apiAt"], Json.arr #[toJson "fake"]),
   (definitionPath ++ ["kind"], toJson "lambda"),
@@ -255,7 +256,7 @@ private def constantSample : Option Json := do
       ("ret", Json.mkObj [("base", Json.mkObj [("name", toJson "Integer")])]), ("eff", Json.arr #[])])]
     (constantSample.bind fun j => replaceAt (definitionPath ++ ["body", "last", "expr"])
       (Json.mkObj [(constructor, Json.mkObj [("name", toJson name),
-        ("tys", Json.arr #[]), ("effs", Json.arr #[])])]) j >>= fun j =>
+        ("tys", Json.arr #[]), ("effs", Json.arr #[]), ("ranges", Json.arr #[])])]) j >>= fun j =>
       replaceAt (definitionPath ++ ["type"]) ty j >>= fun j =>
       replaceAt (definitionPath ++ ["types"]) (Json.arr (([0,1] : List Nat).map fun n =>
         Json.mkObj [("key", toJson ([toJson "Main.divide", toJson (toString n)] : List Json)),

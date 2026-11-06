@@ -1,10 +1,15 @@
 import Benitoite.Exchange.Convert
 import Benitoite.Release.BuiltinTable
+import Benitoite.Release.Refinement.VarianceSyntax
+import Benitoite.Release.Refinement.StandardKeyTyping
+import Benitoite.Release.Refinement.Surface.CheckCompare
 
 /-! 契約名とソース順を保持する独立した交換の入口。
 設計書 07-04「証明する性質」の検査対象と既存形式を区別する。 -/
 namespace Benitoite.Exchange
 open Lean
+
+deriving instance ToJson, FromJson for Benitoite.Release.Refinement.Variance, Benitoite.Release.Refinement.Polarity
 
 structure PrimConstraint where
   equality : Bool
@@ -15,6 +20,7 @@ structure PrimConstraint where
 structure BuiltinEntry where
   name : String
   tparams : List PrimConstraint
+  tparamKinds : List Benitoite.Release.Refinement.TyKind := tparams.map (fun _ => .value)
   neffs : Nat
   effParams : List EffParam
   names : List String
@@ -46,6 +52,9 @@ structure DataEntry where
   name : String
   ntys : Nat
   ctors : List DataCtorEntry
+  variances : List Benitoite.Release.Refinement.Variance := List.replicate ntys .invariant
+  requirements : List Ty := []
+  publicBoundary : List (Benitoite.Release.Refinement.Polarity × Ty) := []
   deriving ToJson, FromJson
 
 /-- always は「等値でない型（鍵では Float）を型引数によらず含む」である。 -/
@@ -61,20 +70,19 @@ structure DataSummary where
   deriving ToJson, FromJson
 
 /-- 名前ごとの保持する要求の型（`valContent` の有限の表）。内容は交換の型（`Exchange.Ty`）であり、`Http.RequestIn` には
-`Http.ClientRequest` のレコードの型（`{"data":{"name":…,"args":[]}}`）を書く（L40.3c。それより前の sidecar 7 の入力は
-型の名前の文字列を書いていたが、型として読めないので拒否する）。 -/
+`Http.ClientRequest` のレコードの型（`{"data":{"name":…,"args":[]}}`）を書く。 -/
 structure ContentEntry where
   name : String
   content : Ty
   deriving ToJson, FromJson
 
 /-- 表の項目の内容の型を Release の型へ変換した有限の表。 -/
-def ContentEntry.table (xs : List ContentEntry) : Except String (List (String × Benitoite.Release.Ty)) :=
+def ContentEntry.table (xs : List ContentEntry) : Except String (List (String × Benitoite.Release.Refinement.Ty)) :=
   xs.mapM fun e => return (e.name, ← e.content.toRelease)
 
 /-- 有限の表の先頭の項目を引く。同じ名前の重複は `readBuiltins` が拒否し、変換できない内容は `readBuiltins` が拒否する
 （変換に失敗した項目は、ここでは項目がないものとして読む）。 -/
-def ContentEntry.lookup (xs : List ContentEntry) (n : String) : Option Benitoite.Release.Ty :=
+def ContentEntry.lookup (xs : List ContentEntry) (n : String) : Option Benitoite.Release.Refinement.Ty :=
   (xs.find? (·.name == n)).bind fun e => e.content.toRelease.toOption
 
 structure BuiltinInput where
@@ -83,6 +91,7 @@ structure BuiltinInput where
   prims : List BuiltinEntry
   effects : List EffectEntry
   resources : List Nat
+  opaqueNames : List (String × String) := []
   dataDecls : List DataEntry
   summaries : List DataSummary
   statePure : List String
@@ -102,31 +111,61 @@ structure BuiltinCorpus where
   inputs : List BuiltinInput
   deriving ToJson, FromJson
 
-def primKind : String → Except String Benitoite.Release.PrimKind
+def primKind : String → Except String Benitoite.Release.Refinement.PrimKind
   | "pure" => pure .pure | "io" => pure .io | "exit" => pure .exit
   | "refNew" => pure .refNew | "refGet" => pure .refGet | "refSet" => pure .refSet
-  | "refUpdate" => pure .refUpdate | "force" => pure .force
+  | "refUpdate" => pure .refUpdate | "force" => pure .force | "pathBases" => pure .pathBases
   | n => throw s!"unknown primitive kind: {n}"
 
 /-- ordered の位置は等値・鍵の制約とともに保持し、admits で検査する。 -/
-abbrev PrimMaterial := Benitoite.Surface.CheckTables.PrimMaterial
-abbrev DataMaterial := Benitoite.Surface.CheckTables.DataMaterial
+structure PrimMaterial where
+  constraints : List Benitoite.Release.BuiltinConstraint
+  tparamKinds : List Benitoite.Release.Refinement.TyKind
+  names : List String
+  neffs : Nat
+  params : List Benitoite.Release.Refinement.Ty
+  ret : Benitoite.Release.Refinement.Ty
+  eff : Benitoite.Release.Refinement.Eff
+  kind : Benitoite.Release.Refinement.PrimKind
+  opEff : Option String
+
+def PrimMaterial.toPrimSig (m : PrimMaterial)
+    (admits : List Benitoite.Release.TParam → List Benitoite.Release.Refinement.Ty → Prop) :
+    Benitoite.Release.Refinement.PrimSig where
+  tparams := m.constraints.zipWith (fun c k => ⟨⟨c.equality,c.key⟩,k⟩) m.tparamKinds
+  neffs := m.neffs
+  names := m.names
+  params := m.params
+  ret := m.ret
+  eff := m.eff
+  admits := admits
+  kind := m.kind
+  opEff := m.opEff
+
+structure DataMaterial where
+  name : String
+  ntys : Nat
+  ctors : List (String × Benitoite.Release.Refinement.ConDecl)
 
 /-- opaque の型引数を文字列に埋め込む旧交換形式は、型の置き換えに対応しない。 -/
 partial def Ty.hasOpaqueArguments : Ty → Except String Bool
   | .opaque n _ => do
+      if !n.contains ':' then return false
       let pieces := n.splitOn ":"
       let some id := pieces.head? | throw s!"invalid opaque name: {n}"
       if id.toNat?.isNone then throw s!"invalid opaque type id: {n}"
       let args ← Json.parse (String.intercalate ":" pieces.tail)
       let ts ← (fromJson? args : Except String (List Ty))
       return !ts.isEmpty
-  | .data _ ts | .tapp _ ts => do
+  | .data _ ts | .tapp _ ts | .external _ ts => do
       return (← ts.mapM Ty.hasOpaqueArguments).any id
-  | .fn _ ps r e => do
+  | .fn _ ps r e | .dependentFn _ ps r e => do
       let fs := e.filterMap fun a => match a with | .fail t => some t | _ => none
       return (← r.hasOpaqueArguments) || (← (ps ++ fs).mapM Ty.hasOpaqueArguments).any id
-  | .list t | .reference t | .lazyT t | .set t | .dict _ t => t.hasOpaqueArguments
+  | .cont a r e => do
+      let fs := e.filterMap fun x => match x with | .fail t => some t | _ => none
+      return (← (a :: r :: fs).mapM Ty.hasOpaqueArguments).any id
+  | .list t | .reference t | .lazyT t | .set t | .dict _ t | .refined t _ => t.hasOpaqueArguments
   | .map k v => do return (← k.hasOpaqueArguments) || (← v.hasOpaqueArguments)
   | _ => pure false
 
@@ -141,27 +180,36 @@ partial def Ty.checkDataNames (ds : List DataEntry) : Ty → Except String Unit
       ts.forM (Ty.checkDataNames ds)
   | .ctor (.data n) =>
       if ds.any (fun d => d.name == n) then pure () else throw s!"missing data constructor type: {n}"
-  | .tapp _ ts => ts.forM (Ty.checkDataNames ds)
-  | .fn _ ps r e => do
+  | .tapp _ ts | .external _ ts => ts.forM (Ty.checkDataNames ds)
+  | .fn _ ps r e | .dependentFn _ ps r e => do
       ps.forM (Ty.checkDataNames ds)
       r.checkDataNames ds
       (e.filterMap fun a => match a with | .fail t => some t | _ => none).forM (Ty.checkDataNames ds)
-  | .list t | .reference t | .lazyT t | .set t | .dict _ t => t.checkDataNames ds
+  | .cont a r e => do
+      a.checkDataNames ds
+      r.checkDataNames ds
+      (e.filterMap fun x => match x with | .fail t => some t | _ => none).forM (Ty.checkDataNames ds)
+  | .list t | .reference t | .lazyT t | .set t | .dict _ t | .refined t _ => t.checkDataNames ds
   | .map k v => do k.checkDataNames ds; v.checkDataNames ds
   | _ => pure ()
 
 /-- 書式化の内部頭は名前で固定署名へ対応付け、δの算法を仮定へ追加しない。 -/
 def BuiltinEntry.validateFormat (b : BuiltinEntry) : Except String Unit := do
   if !b.name.startsWith "%Format." then return
-  let types : List Benitoite.Release.Ty := [
+  let types : List Benitoite.Release.Refinement.Ty := [
     .base .integer, .base .integer8, .base .integer16, .base .integer32,
     .base .byte, .base .unsignedInteger16, .base .unsignedInteger32, .base .unsignedInteger64,
     .base .float, .base .float32, .base .decimal, .base .string, .base .character, .base .boolean]
-  let some t := types.find? (fun t => Benitoite.Surface.FormatSpec.headName t == some b.name)
+  let names := ["Integer", "Integer8", "Integer16", "Integer32", "Byte", "UnsignedInteger16",
+    "UnsignedInteger32", "UnsignedInteger64", "Float", "Float32", "Decimal", "String", "Character", "Boolean"]
+  let some pair := (types.zip names).find? (fun (_, n) => "%Format." ++ n == b.name)
     | throw s!"unknown format builtin: {b.name}"
-  let actual : Benitoite.Release.Ty := .fn b.names (← b.params.mapM Ty.toRelease)
+  let t := pair.1
+  let actual : Benitoite.Release.Refinement.Ty := .fn b.names (← b.params.mapM Ty.toRelease)
     (← b.ret.toRelease) (← b.eff.toRelease)
-  if !Benitoite.Surface.CheckTools.tyEq [] actual (Benitoite.Surface.FormatSpec.converterType t) ||
+  if !Benitoite.Release.Refinement.Surface.CheckCompare.rawTyEq [] actual (.fn ["value", "kind", "align", "sign", "alternate", "zero", "width", "precision"]
+    [t,.base .integer,.base .integer,.base .integer,.base .boolean,.base .boolean,.base .integer,.base .integer]
+    (.base .string) Benitoite.Release.Refinement.Eff.empty) ||
       !b.eff.isEmpty || !b.tparams.isEmpty ||
       b.neffs != 0 || !b.effParams.isEmpty || b.kind != "pure" || b.opEff.isSome ||
       !b.classConstraints.isEmpty || !b.unconvertibleTypes.isEmpty then
@@ -171,12 +219,17 @@ def BuiltinEntry.validateFormat (b : BuiltinEntry) : Except String Unit := do
 def BuiltinEntry.toMaterial (b : BuiltinEntry) : Except String PrimMaterial := do
   b.validateFormat
   checkNames b.names b.params.length
-  let h : Header := ⟨b.tparams.map (fun c => (c.equality,c.key)), b.neffs, b.effParams, b.names, b.params, b.ret, b.eff⟩
+  if b.tparamKinds.length != b.tparams.length then throw s!"type parameter kind count mismatch: {b.name}"
+  let h : Header := {
+    tparams := b.tparams.map (fun c => (c.equality,c.key)), tparamKinds := b.tparamKinds
+    neffs := b.neffs, effParams := b.effParams, names := b.names
+    params := b.params, ret := b.ret, eff := b.eff }
   h.validateNoFail
   if !b.classConstraints.isEmpty then throw s!"typeclass constraints: {b.name}"
   if (← b.hasOpaqueArguments) then throw s!"opaque type arguments: {b.name}"
   return {
     constraints := b.tparams.map (fun c => ⟨c.equality, c.key, c.ordered⟩)
+    tparamKinds := b.tparamKinds
     names := b.names
     neffs := b.neffs
     params := ← b.params.mapM Ty.toRelease
@@ -186,14 +239,17 @@ def BuiltinEntry.toMaterial (b : BuiltinEntry) : Except String PrimMaterial := d
     opEff := b.opEff }
 
 /-- 署名に範囲の変数の種類と IO の形を入れる（材料 `PrimMaterial` は持たないので、署名を作った後に入れる）。 -/
-def BuiltinEntry.withRanges (b : BuiltinEntry) (sg : Benitoite.Release.PrimSig) : Benitoite.Release.PrimSig :=
+def BuiltinEntry.withRanges (b : BuiltinEntry) (sg : Benitoite.Release.Refinement.PrimSig) : Benitoite.Release.Refinement.PrimSig :=
   { sg with rkinds := b.rkinds, shape := b.shape }
 
 def DataEntry.info (d : DataEntry) : DataTypeInfo :=
-  ⟨d.builtin, d.package, d.name, d.typeName, d.isRecord, d.extensible⟩
+  ⟨d.builtin, d.package, d.name, d.typeName, d.isRecord, d.extensible,
+    d.ctors.map (fun c => (c.name, c.constructorName.getD ""))⟩
 
 def readBuiltins (j : Json) : Except String BuiltinCorpus := do
-  let c : BuiltinCorpus ← fromJson? (← exchangeJson "builtins" j)
+  let raw ← exchangeJson "builtins" j
+  let c : BuiltinCorpus ← fromJson? raw
+  if toJson c != raw then throw "unexpected builtin fields"
   for i in c.inputs do
     -- 表のデータは名前ごとに一つ。同じ名前の二つの項目のどちらかを黙って選ばない。
     let unique := fun (ns : List String) => ns.eraseDups.length == ns.length
@@ -202,7 +258,9 @@ def readBuiltins (j : Json) : Except String BuiltinCorpus := do
       throw "duplicate table data entry"
     -- 保持する要求の型は Release の型へ変換できなければならない（変換できない項目を黙って欠かさない）。
     let _ ← ContentEntry.table i.valContents
-    i.prims.forM BuiltinEntry.validateFormat
+    for p in i.prims do
+      if p.tparams.length != p.tparamKinds.length then throw "type parameter kind count mismatch"
+      p.validateFormat
     validateDataTypes (i.dataDecls.map DataEntry.info)
     for d in i.dataDecls do
       validateBuiltinShape d.builtin d.ntys d.isRecord (d.ctors.map fun c =>
@@ -217,32 +275,27 @@ def DataEntry.toMaterial (d : DataEntry) : Except String DataMaterial := do
     return (c.name, { data := d.name, ntys := d.ntys, args := ← c.args.mapM Ty.toRelease })) }
 
 /-- 宣言順を保存し、網羅性の型からの列挙と Program.cons の材料を同じ表から得る。 -/
-def dataConstructors (ds : List DataMaterial) (name : Benitoite.Release.DataName) :
-    List Benitoite.Release.ConName :=
+def dataConstructors (ds : List DataMaterial) (name : String) :
+    List String :=
   ((ds.find? (fun d => d.name == name)).map (fun d => d.ctors.map Prod.fst)).getD []
 
-def constructorDecl (ds : List DataMaterial) (name : Benitoite.Release.ConName) :
-    Option Benitoite.Release.ConDecl :=
+def constructorDecl (ds : List DataMaterial) (name : String) :
+    Option Benitoite.Release.Refinement.ConDecl :=
   ((ds.flatMap (fun d => d.ctors)).find? (fun c => c.1 == name)).map Prod.snd
 
-def BuiltinInput.toBuiltinMaterial (b : BuiltinInput) : Benitoite.Surface.CheckTables.BuiltinMaterial :=
-  ⟨b.effects.map (fun e => (e.name,e.ops)), b.resources,
-    ((b.prims.find? (fun p => p.kind == "refGet")).map BuiltinEntry.name).getD "Reference.get",
-    ((b.prims.find? (fun p => p.kind == "refSet")).map BuiltinEntry.name).getD "Reference.set"⟩
-
-def BuiltinInput.effectOps (b : BuiltinInput) (name : Benitoite.Release.EffName) :
-    Option (List Benitoite.Release.PrimName) :=
+def BuiltinInput.effectOps (b : BuiltinInput) (name : String) :
+    Option (List String) :=
   (b.effects.find? (fun e => e.name == name)).map EffectEntry.ops
 
 /-- リソースの識別子を opaque 名の先頭から読む。Task[T] の引数は判定に使わない。 -/
-def BuiltinInput.isResource (b : BuiltinInput) (name : Benitoite.Release.OpaqueName) : Bool :=
+def BuiltinInput.isResource (b : BuiltinInput) (name : String) : Bool :=
   match (name.splitOn ":").head?.bind String.toNat? with
   | some id => b.resources.contains id
   | none => false
 
 /-- JSON に依存しない要約の宣言へ、同じ入力の名前のままで移す。 -/
 def toBuiltinDataDecl (d : DataMaterial) : Benitoite.Release.BuiltinDataDecl :=
-  ⟨d.name, d.ntys, d.ctors.map (fun c => c.2.args)⟩
+  ⟨d.name, d.ntys, d.ctors.map (fun c => Benitoite.Release.Refinement.StandardKeyTyping.carriers c.2.args)⟩
 
 /-- 書き出した summaries はここでは使わず、宣言の型を変換する。 -/
 def BuiltinInput.summaryDecls (b : BuiltinInput) : Except String (List Benitoite.Release.BuiltinDataDecl) := do
@@ -259,18 +312,18 @@ def PrimConstraint.toBuiltinConstraint (c : PrimConstraint) : Benitoite.Release.
 /-- prim の変換と admits の束縛は、sig を引くたびに繰り返さず一度だけ行う。
 対象外の印のある prim は表から除き、それ以外の変換の失敗は返す。 -/
 def BuiltinInput.primSignatures (b : BuiltinInput) (S : Benitoite.Release.SummaryTable) :
-    Except String (List (Benitoite.Release.PrimName × Benitoite.Release.PrimSig)) := do
+    Except String (List (String × Benitoite.Release.Refinement.PrimSig)) := do
   let mut sigs := []
   for p in b.prims do
     if p.unconvertibleTypes.isEmpty && p.classConstraints.isEmpty then
       let m ← p.toMaterial
       let cs := m.constraints
-      sigs := sigs ++ [(p.name, p.withRanges (m.toPrimSig (fun C ts => Benitoite.Release.admitsB S cs C ts = true)))]
+      sigs := sigs ++ [(p.name, p.withRanges (m.toPrimSig (fun C ts => Benitoite.Release.admitsB S cs C (Benitoite.Release.Refinement.StandardKeyTyping.carriers ts) = true)))]
   return sigs
 
 /-- 入力ごとの具体的な組み込みの表。宣言の検査では実行の欄を使わない。
 Reference.get/set は IO の操作ではないので、使われない入力では sig が none になりうる。 -/
-def mkBuiltins (b : BuiltinInput) : Except String Benitoite.Release.Builtins := do
+def mkBuiltins (b : BuiltinInput) : Except String Benitoite.Release.Refinement.Builtins := do
   let S ← b.summaryTable
   let sigs ← b.primSignatures S
   return {
@@ -280,26 +333,27 @@ def mkBuiltins (b : BuiltinInput) : Except String Benitoite.Release.Builtins := 
     releaseResponse := fun _ _ => False
     isResource := b.isResource
     effects := b.effectOps
-    sat := fun C t p => Benitoite.Release.satB S C t p = true
+    sat := fun C t p => Benitoite.Release.satB S C (Benitoite.Release.Refinement.StandardKeyTyping.carrier t) p = true
     refGet := ((b.prims.find? (fun p => p.kind == "refGet")).map BuiltinEntry.name).getD "Reference.get"
     refSet := ((b.prims.find? (fun p => p.kind == "refSet")).map BuiltinEntry.name).getD "Reference.set"
     effKind := KindEntry.lookup b.effKinds
     valKind := KindEntry.lookup b.valKinds
-    admitsR := AdmitsEntry.admitsR b.admitsR
+    admitsR := fun n rs => ∃ old, rs = old.map Benitoite.Release.Refinement.RangeExpr.absolute ∧ AdmitsEntry.admitsR b.admitsR n old
     valContent := ContentEntry.lookup b.valContents }
 
 /-- 表の組み込みの表に、交換した表のデータを入れる（`CheckTables.builtins` は表のデータを持たない）。 -/
-def BuiltinInput.withTableData (b : BuiltinInput) (B : Benitoite.Release.Builtins) : Benitoite.Release.Builtins :=
+def BuiltinInput.withTableData (b : BuiltinInput) (B : Benitoite.Release.Refinement.Builtins) : Benitoite.Release.Refinement.Builtins :=
   { B with
     effKind := KindEntry.lookup b.effKinds
     valKind := KindEntry.lookup b.valKinds
-    admitsR := AdmitsEntry.admitsR b.admitsR
+    admitsR := fun n rs => ∃ old, rs = old.map Benitoite.Release.Refinement.RangeExpr.absolute ∧ AdmitsEntry.admitsR b.admitsR n old
     valContent := ContentEntry.lookup b.valContents }
 
 /-- 検査の入力の判定 `admitsRDec` は、表のデータを入れた組み込みの表の `admitsR` と合う
 （`Check.Input.Sound` の欄 `admitsR` の内容）。 -/
-theorem BuiltinInput.admitsRDec_sound (b : BuiltinInput) (B : Benitoite.Release.Builtins) :
-    Benitoite.Surface.CheckRanges.AdmitsRDecSound (b.withTableData B) (AdmitsEntry.admitsRDec b.admitsR) :=
-  fun _ _ h => AdmitsEntry.admitsRDec_sound h
+theorem BuiltinInput.admitsRDec_sound (b : BuiltinInput) (B : Benitoite.Release.Refinement.Builtins) :
+    ∀ n rs, AdmitsEntry.admitsRDec b.admitsR n rs = true →
+      (b.withTableData B).admitsR n (rs.map Benitoite.Release.Refinement.RangeExpr.absolute) :=
+  fun _ rs h => ⟨rs, rfl, AdmitsEntry.admitsRDec_sound h⟩
 
 end Benitoite.Exchange

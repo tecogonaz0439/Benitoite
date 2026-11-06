@@ -3,20 +3,11 @@ import Benitoite.Scope.Signature
 import Benitoite.Scope.RangeCover
 
 /-!
-# 交換の形式の範囲・範囲の位置・表のデータ（corpus 15・sidecar 7）
+# 交換の固定範囲・範囲の位置・表のデータ
 
-範囲付きの原子と不透明型、組み込みの呼び出しの範囲の列、署名の範囲の変数の種類と IO の形、表のデータ
-（`effKind`・`valKind`・`admitsR`・`valContent`）を交換の形式で読み書きする（設計書 07-04「交換の形式の版」）。
-範囲の値は採用定義 `Scope.Domain.Range`、範囲の位置は `Scope.Signature.Ix` をそのまま使い、交換のための別の型を
-置かない。
-
-旧版（corpus 14 以前・sidecar 6 以前）の入力には範囲がない。旧版は、名前の原子と不透明型の各々に明示の Top の範囲の
-位置を、組み込みの呼び出しに空の範囲の列を加えてから読む（`legacyRangeNode`）。新版は欄を必須とし、欠けた欄を
-Top で補わない。旧版の名前の原子と不透明型の読み込みが Top の構築関数（`Release.Atom.nameTop`・`Release.Ty.opaqueTop`）
-に対応することは、本モジュールの全域の関数について `legacy_name_atom_top`・`legacy_opaque_top` で示し、
-`Convert.lean` の `legacy_atom_toRelease`・`legacy_opaque_toRelease` で Release の構築関数へつなぐ。JSON の全体を辿る
-部分（`Version.lean` の `legacyRanges`）は `partial` であり、Lean では証明しない（既存の交換の読み込みと同じ扱い。
-Rust との全比較は K10）。
+固定の範囲は採用定義 `Scope.Domain.Range` として読み書きする。記号付きの範囲と新しい判断の範囲の位置は
+`Exchange.RefinedJson` が本モジュールの固定範囲の読者を共用する。範囲の欄は省略せず、未知の欄を拒否する
+（設計書 07-04「交換の形式の版」）。
 -/
 
 namespace Benitoite.Exchange
@@ -258,7 +249,7 @@ theorem decodeRange_encodeRange (r : Range) : decodeRange (encodeRange r) = .ok 
     rw [decodeEndpointPattern_encode]; rfl
 
 /-- 範囲の位置の交換の形。`{"fixed": 範囲}` か `{"rvar": 番号}`。`rvar` は組み込みの表の署名にだけ現れ、
-corpus と表以外の sidecar では `Version.lean` の `exchangeJson` が拒否する。 -/
+範囲変数の番号の上限は、それを読む宣言の範囲パラメータの個数である。 -/
 def encodeIx : Ix → Json
   | .fixed r => Json.mkObj [("fixed", encodeRange r)]
   | .rvar i => Json.mkObj [("rvar", encodeNat i)]
@@ -299,7 +290,7 @@ instance : FromJson Range := ⟨decodeRangeStrict⟩
 instance : ToJson Ix := ⟨encodeIx⟩
 instance : FromJson Ix := ⟨decodeIxStrict⟩
 
-/-! ## 名前の原子・不透明型の本体と旧版の明示の Top -/
+/-! ## 固定範囲を持つ名前の原子と不透明型の本体 -/
 
 /-- 名前の原子の本体 `{"value": 名前, "ix": 範囲の位置}`（新版）。 -/
 def encodeNameBody (l : String) (ix : Ix) : Json :=
@@ -319,71 +310,6 @@ def decodeOpaqueBody (o : Json) : Except String (String × Ix) := do
   let n ← o.getObjValAs? String "name"
   let ix ← decodeIx (← o.getObjVal? "ix")
   return (n, ix)
-
-/-- 旧版の明示の Top の範囲の位置。 -/
-def legacyIx : Json := encodeIx Ix.top
-
-/-- 対象 `inner` の欄の並びに欄 `(k, v)` を加えた対象。 -/
-def withField (inner : Json) (k : String) (v : Json) : Json :=
-  match inner with
-  | .obj kvs => Json.mkObj (kvs.toArray.toList ++ [(k, v)])
-  | j => j
-
-/-- 旧版の一つの節点を新版の形にする。名前の原子 `{"name":{"value":l}}` と不透明型 `{"opaque":{"name":n}}` に明示の
-Top の範囲の位置を、組み込みの呼び出し `{"prim":…}`・`{"primName":…}`（型引数の欄 `tys` を持つもの）に空の範囲の列を
-加える。ほかの節点は変えない。鍵の一つだけの対象に限るので、`Definition` などの `name` の欄（文字列）は対象にならない。
-旧版は先にこれらの欄を拒否してあるので（`exchangeJson`）、既存の欄を上書きしない。 -/
-def legacyRangeNode (j : Json) : Json :=
-  match j with
-  | .obj kvs => match kvs.toArray.toList with
-    | [("name", inner)] =>
-        if (inner.getObjVal? "value").isOk then Json.mkObj [("name", withField inner "ix" legacyIx)] else j
-    | [("opaque", inner)] =>
-        if (inner.getObjVal? "name").isOk then Json.mkObj [("opaque", withField inner "ix" legacyIx)] else j
-    | [("prim", inner)] =>
-        if (inner.getObjVal? "tys").isOk then Json.mkObj [("prim", withField inner "ranges" (.arr #[]))] else j
-    | [("primName", inner)] =>
-        if (inner.getObjVal? "tys").isOk then Json.mkObj [("primName", withField inner "ranges" (.arr #[]))]
-        else j
-    | _ => j
-  | _ => j
-
-/-- `legacyRangeNode` と同じ節点に、欠けている欄だけを加える（既存の欄を上書きしない。L50.2）。区間解析の独立交換の
-埋め込みの Surface は、版 14 では範囲の欄を全て拒否してからこれで明示の Top を加え、版 15 では欠けた欄がないこと
-（この変換で変わらないこと）を確かめる。 -/
-def legacyRangeNodeMissing (j : Json) : Json :=
-  match j with
-  | .obj kvs => match kvs.toArray.toList with
-    | [("name", inner)] =>
-        if (inner.getObjVal? "value").isOk && !(inner.getObjVal? "ix").isOk then
-          Json.mkObj [("name", withField inner "ix" legacyIx)] else j
-    | [("opaque", inner)] =>
-        if (inner.getObjVal? "name").isOk && !(inner.getObjVal? "ix").isOk then
-          Json.mkObj [("opaque", withField inner "ix" legacyIx)] else j
-    | [("prim", inner)] =>
-        if (inner.getObjVal? "tys").isOk && !(inner.getObjVal? "ranges").isOk then
-          Json.mkObj [("prim", withField inner "ranges" (.arr #[]))] else j
-    | [("primName", inner)] =>
-        if (inner.getObjVal? "tys").isOk && !(inner.getObjVal? "ranges").isOk then
-          Json.mkObj [("primName", withField inner "ranges" (.arr #[]))] else j
-    | _ => j
-  | _ => j
-
-/-- 旧版の Rust が書き出す名前の原子。 -/
-def legacyNameAtomJson (l : String) : Json := Json.mkObj [("name", Json.mkObj [("value", .str l)])]
-
-/-- 旧版の Rust が書き出す不透明型。 -/
-def legacyOpaqueJson (n : String) : Json := Json.mkObj [("opaque", Json.mkObj [("name", .str n)])]
-
-/-- 旧版の名前の原子は、明示の Top の範囲の位置を持つ名前の原子として読む（暗黙に狭い範囲として読まない）。 -/
-theorem legacy_name_atom_top (l : String) :
-    ((legacyRangeNode (legacyNameAtomJson l)).getObjVal? "name" >>= decodeNameBody) = .ok (l, Ix.top) := by
-  rfl
-
-/-- 旧版の不透明型は、明示の Top の範囲の位置を持つ不透明型として読む。 -/
-theorem legacy_opaque_top (n : String) :
-    ((legacyRangeNode (legacyOpaqueJson n)).getObjVal? "opaque" >>= decodeOpaqueBody) = .ok (n, Ix.top) := by
-  rfl
 
 /-! ## 署名の IO の形と表のデータ -/
 
