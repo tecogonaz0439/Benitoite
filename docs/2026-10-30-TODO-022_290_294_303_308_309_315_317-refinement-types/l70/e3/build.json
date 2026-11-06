@@ -1,0 +1,31 @@
+{
+  "command": [
+    "/usr/bin/lockf",
+    "-t",
+    "3600",
+    "<shared-lock>",
+    "lake",
+    "build"
+  ],
+  "cwd": "formal",
+  "started": "2026-11-06T22:30:16.104195+09:00",
+  "ended": "2026-11-06T22:30:16.805621+09:00",
+  "exit": 0,
+  "seconds": 0.361523,
+  "inputs_count": 7481,
+  "inputs_sha256": "0347f24f8141e71fbfb012f54d5802eb1b713ffc4fb277a73520bfb5a5e0380d",
+  "inputs_unchanged": true,
+  "output": "<tmp>/build.log",
+  "output_digest": {
+    "bytes": 188621,
+    "sha256": "31e7d4d72d6343592aab5aab6beb674f152654b536124312b388c59b1096827e"
+  },
+  "local_input": {
+    "bytes": 17309,
+    "sha256": "f1d8a97d8655431ffaf09415c9350b379943094de01a7f8c0682968bc33de530"
+  },
+  "audit_tail": {
+    "bytes": 2253,
+    "sha256": "d441527c7d1a4c9c4e0dc8fca9bb1872d86717fb282291378787ef03c57d3537"
+  }
+}

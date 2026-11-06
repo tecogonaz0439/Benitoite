@@ -67,6 +67,14 @@
 
 ### 篩を含む形式化の範囲
 
+`SafeCheckErasure` は、トップレベルの定義の本体と main の計算で、ラムダの外にある計算の位置を消去する。閉じた評価の成功に加え、期待型の閉じた整形式と、捕捉・値置換・型と行の置換・範囲具体化で呼出しと置換先が変わらないことを静的な条件とする。変数の実引数、ラムダと値としての閉包の本体は保持する。`SafeCheckSimulation` と `SafeCheckReflection` はストア内の遅延・継続も含む状態の関係による両方向の模倣を示す。省略する無事象の段の尺度と逆向きの非空性から、`SafeCheckObservations` が有限の事象列と全終端 payload、無限実行の存在、非停止へ至る有限の事象列、同じ効果の被覆を保存する。被覆の保存は、事象だけを読む `Event.Covered` に観測保存を適用した直接の系である。型付けの効果の保存は、`computation_preservation` が同じ効果で結論する。`SafeCheckTyping` と `SafeCheckPreservation` は同じ署名の下の計算とプログラムの型付けを保存し、範囲を持つ本体の全具体化も扱う。表の署名と δ の一致は完成した標準表の行から得る。組込みの応答に閉包の書換えへの不変性を追加しない。
+
+`SurfaceMain`・`SurfaceLibrary` は、表層の性質1と `included_guarantees` を同じ `complete L T A` で合成する。`linkProgram` は標準の核の本体を保持し、利用者の本体を脱糖する。表層の整形式・CheckedUnder・宣言の対応から `link_additions` を供給し、標準の包含・data の一覧・Completion・外部宣言の構造検証を別に受けて `surface_guarantees` を得る。`linked_main` は HasMain と同じ初期状態の σ.Ready から、開始の型付けと効果・対象の健全性を返す。`checkProgramAccepted_main` は実入口の成功から CheckedUnder と Accepted を供給する系である。整形式は checker と独立の前提であり、外部宣言が空であることを要求しない。`SurfaceMainExamples` は標準を含む表層の利用者のプログラムで主定理の前提を満たし、実入口の系には checker の前提を仮定とした適用を置く。この証人の CheckedUnder は導出から作る。
+
+`SurfaceCheckedMainExamples` は標準関数 `Range.checkInteger` を呼ぶ main を持ち、`.custom (complete …)` の入力の Sound、checker と必須の判定の実行の成功、宣言表の実現を証明して、実入口の系の全前提を同時に満たす。
+
+`SurfaceStandardSupport` は仮定側の署名がない完成表の全署名を12原子の有限一覧で支持する。`SurfaceDeclarationAgreement` は有限の宣言表と核の本体の署名を照合し、同じ型の宣言と外部宣言の整形式から Realizes を構成する。Realizes の externalWF 欄は Includes.externalWF と標準側の ExternalWF から供給する。
+
 【決定】`Benitoite.Release.Refinement` は、篩型、依存する引数列、有限の論理、捕捉環境と実行時の閉包、固定した PathEnv、外部の宣言と受信検査を持つ。定義・規則の写しは 01-12 の「篩を含むコア計算の形式化」から「篩を含む状態の型付け」までである。これらは既定の `Benitoite` の import に含まれ、旧 Release の定義・主定理・モデルと並置している。
 
 `BuiltinTypingTransport` は同じPの下で、型付けが読む七つの射影（`Builtins.TypingFieldsEq` の七欄）であるsig・sat・admitsR・isResource・valKind・valContent・effectsの等号から十四判断・七十六枝の型付けを移す。`ExternalSurfaceLeaves` は外部宣言の適格な入力を参照・直接呼出しへ渡し、応答関係の差替え後も同じ添字で型付くことを示す。表層の五つの接点（型IDの参照、外部名の参照、直接の飽和呼出し、名前付き引数の呼出し、穴を持つ部分適用）について、整形式の有限表のlookupから型付けと、空の型引数・宣言の依存列の正規形・Stateの効果・引数の数・一般の並べ替えによる全位置の充足を返す。ソース順の評価と束縛、生成ラムダの型付け、全表層の検査器への組込みはこれらの葉の結論に含めない。プログラムPそのものの拡張の単調性はこの補題の結論に含めない。
@@ -1135,6 +1143,9 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 | BooleanResult・PredicateResponse | 「篩を含むコア計算の形式化」。純粋な所属・文字集合・Float 分類の δ と全入力の応答、公開名から写した閉じた述語との一致、Boolean を篩付き期待型で型付ける入口 |
 | RefinementCheck・CheckAdmissibility・RefinementCheckResponse | 同節。一般の検査の型引数の許容と保存、真だけの成功と偽・評価不能の拒否、同じ値の Result と CheckError の型付け |
 | CheckErasure・CheckErasureExamples | 「閉じた評価で成功が示された検査の消去」。閉じた評価の成功だけを消去する規則、同じ篩付きの結果型と効果、事象なしの一段を除いた有限・無限の実行と終端の保存、合成表と正常な入力の対照 |
+| SafeCheckErasure・SafeCheckSimulation・SafeCheckReflection・SafeCheckObservations・SafeCheckErasureExamples・SafeCheckTyping・SafeCheckPreservation・SafeCheckPreservationExamples | 同節。ラムダの外の計算の消去、状態とストアの両方向の模倣、有限の事象列・終端 payload・無限実行・効果・型付けの保存、完成した標準表での適用 |
+| SurfaceMain・SurfaceLibrary・SurfaceMainExamples | 「確かめる性質」。標準本体を保持する結合、同じ完成表の Additions、表層の主定理と実入口の系、HasMain からの開始と外部宣言を含む証人 |
+| SurfaceStandardSupport・SurfaceDeclarationAgreement・SurfaceCheckedMainExamples | 「確かめる性質」。完成表の有限支持、補完した宣言の署名の照合、標準関数を呼ぶ実入口の成功と主定理への適用 |
 | StandardModelPredicateInputs・StandardModelCheckInputs・MembershipInferenceBoundary | 同節。新しい純粋な行の正常入力・受理と拒否、評価不能の拒否、長さから所属を導くことの排除、保持対象を作らないこと |
 | StandardModelCollectionRows・StandardModelIORows・StandardModelCoreRows・StandardModelSubstitution・StandardModelScoped・StandardModelCore | 「篩を含むコア計算の形式化」。合成表の種類がpureの全行とIO・終了の行の契約、制約と許容の保存則、全署名の形成、任意の外部宣言の全28欄のCoreAssumptionsとTargetAgreement |
 | StandardModelListBodies・StandardModelCoreBodies・StandardModelSafeBodies・StandardModelCollectionBodies・StandardModelProgram・StandardModelWellFormed | 同節。合成表の上の全130本体の型付け、格納された宣言の適格性、外部宣言の表の構造検証の下のWellTypedとWellFormed |

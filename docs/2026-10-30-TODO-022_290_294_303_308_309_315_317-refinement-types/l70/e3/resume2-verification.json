@@ -1,0 +1,92 @@
+{
+  "status": "再開2の既定ビルド・全公理監査・照合が成功",
+  "base": "73585979113c7acf25b38673f9c2c52d1d38dfaf",
+  "started": "2026-11-07T01:13:44.747439+09:00",
+  "ended": "2026-11-07T01:13:47.792525+09:00",
+  "seconds": 3.044868834,
+  "inputs_count": 7496,
+  "inputs_sha256": "f9068c75f382312970ee4312399f67b6ebbe74b56182ff065c2f048e210e15fb",
+  "local_inputs": {
+    "obstruction.lean": {
+      "bytes": 17309,
+      "sha256": "f1d8a97d8655431ffaf09415c9350b379943094de01a7f8c0682968bc33de530"
+    },
+    "pattern-context-obstruction.lean": {
+      "bytes": 5264,
+      "sha256": "86ab73ecb041dff9040ea806ff5f266b98e7b96babe5186966e9165176e43e25"
+    },
+    "audit-tail.lean": {
+      "bytes": 2259,
+      "sha256": "131a8b230c09e442171662b3cc6fc1846f9008060b073f309aad6981b48e9314"
+    },
+    "inventory.py": {
+      "bytes": 2986,
+      "sha256": "e98b9c9dba9cb14f2e4946fc95005444d279102368b3f02ea465eef1d685bbe2"
+    },
+    "inventory_resume2.py": {
+      "bytes": 4356,
+      "sha256": "e03e4923eed160f4a2ab01736a6a0d9ebcd57477b7c83548df5919cf106c6aaf"
+    },
+    "run_checks_resume2.py": {
+      "bytes": 2903,
+      "sha256": "ec2a6826f9de1ce3c8b40d04818e5382d1a158203ab05c6d90392ccb3d15faf0"
+    },
+    "verify_resume2.py": {
+      "bytes": 8628,
+      "sha256": "2fd00a3ccdec8ec6464dff2a16cd5b7433c05a0fb1aa4d1b7ac200cb5244411f"
+    }
+  },
+  "default_modules": 1294,
+  "production_modules_added": 14,
+  "new_module_counts": {
+    "Benitoite.Release.Refinement.SafeCheckErasure": 184,
+    "Benitoite.Release.Refinement.SafeCheckErasureExamples": 36,
+    "Benitoite.Release.Refinement.SafeCheckObservations": 64,
+    "Benitoite.Release.Refinement.SafeCheckPreservation": 60,
+    "Benitoite.Release.Refinement.SafeCheckPreservationExamples": 0,
+    "Benitoite.Release.Refinement.SafeCheckReflection": 48,
+    "Benitoite.Release.Refinement.SafeCheckSimulation": 98,
+    "Benitoite.Release.Refinement.SafeCheckTyping": 51,
+    "Benitoite.Release.Refinement.SurfaceCheckedMainExamples": 354,
+    "Benitoite.Release.Refinement.SurfaceDeclarationAgreement": 24,
+    "Benitoite.Release.Refinement.SurfaceLibrary": 21,
+    "Benitoite.Release.Refinement.SurfaceMain": 106,
+    "Benitoite.Release.Refinement.SurfaceMainExamples": 25,
+    "Benitoite.Release.Refinement.SurfaceStandardSupport": 57
+  },
+  "all_declarations": 112437,
+  "added_module_declarations": 1128,
+  "local_declarations": 130,
+  "added_private": 520,
+  "required_named_declarations": 32,
+  "primitive_rows": 392,
+  "support_atoms": 12,
+  "fixed_point_rounds": 2,
+  "axiom_sets": {
+    "none": 49984,
+    "propext": 28851,
+    "Quot.sound + propext": 4637,
+    "Classical.choice + Quot.sound + propext": 28950,
+    "Classical.choice": 2,
+    "Classical.choice + propext": 2,
+    "Quot.sound": 11
+  },
+  "added_axiom_sets": {
+    "Classical.choice + Quot.sound + propext": 603,
+    "none": 382,
+    "propext": 268,
+    "Quot.sound + propext": 5
+  },
+  "new_axioms": 0,
+  "sorryAx": 0,
+  "owned_declarations_digest": {
+    "bytes": 293104,
+    "sha256": "dadab2283d1507340fc08c521f397c8d7059883865663b42b0ba2e9c666abd84"
+  },
+  "all_declarations_digest": {
+    "bytes": 8184156,
+    "sha256": "d4ed7f620c707ac904e896ad315d1cc6ea5f1aa4d70e4ad496473c528878264d"
+  },
+  "record_bytes_before_summary": 1728489,
+  "build_warning_count": 385
+}

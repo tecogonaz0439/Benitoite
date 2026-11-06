@@ -3367,6 +3367,18 @@ abbrev AtError := Detail Val
 
 `CheckErasureExamples` の `standard_agreement` は、任意の P の合成表について同じ署名と δ を供給する。`integer_witnesses` は任意の外部宣言表について正常値 1 と −1 の全入力条件・型付けと、真だけの消去・偽の保持を示す。`undecided_witness` は型付きの `Option.None` の欄の評価が不能となり、同じ CheckError の payload を保つことを示す。`integer_observations` は正常な成功値に任意の継続とストアの観測保存を適用する。
 
+`SafeCheckErasure.erase` は、計算の子を走査し、`let`・条件分岐・照合の腕とガード・処理節・遅延と専用構築器の本体にある成功した検査を消去する。値の中へは入らず、ラムダと実行時の閉包の本体を保持する。`eraseProgram` はトップレベルの定義の本体をこの関数で写す。main の計算は別に同じ `erase` で写す。型・署名・外部宣言・実装の宣言は保つ。
+
+消去の静的な条件 `Site T U v` は、U の閉じた整形式、両型の正規形、芯の一致、`accepts v U = true` と、元の呼出しと置換先の安定性 `Stable` である。安定性は、任意の捕捉による view、値置換、型・行置換、範囲具体化で両計算が変わらないことである。実引数が変数である呼出し、拒否又は評価不能の呼出しは保持する。消去はこの静的な命題を使う非計算的な関数であり、Rust の最適化器の実装ではない。
+
+理由: 組込みの応答関係は、値として渡された閉包のコードを区別できる。ラムダの本体を保持し、構文上の計算の位置だけを写すことで、応答関係に閉包の書換えへの不変性を追加せず、同じ入力値で実行を比較する。
+
+`Code`・`ClosureRel`・`FrameRel`・`ContRel`・`CellRel`・`StoreRel`・`StateRel` は、消去の前後のコード、捕捉、枠、保存した遅延と継続、実行状態を対応付ける。通常の値・失敗の理由列・終了コードは同じ値のまま対応する。`state_step` は元の一段を同じラベルの一段又は事象なしの省略へ、`state_reflect` は消去後の一段を元の非空の有限な実行へ写す。省略できる根の検査の段には減少する自然数の尺度を持つ。
+
+`observations_preserved` は、対応する任意の二状態について、全ての有限の事象列と終端の観測が両方向で一致することを示す。終端の観測は正常値、失敗の payload の全列、終了コードと理由列を区別する。`infinite_preserved` は無限実行の存在の同値、`diverging_prefixes_preserved` は任意の有限の事象列の後に非停止を選べることの同値を示す。`effects_preserved` は、事象だけを読む `Event.Covered` に `observations_preserved` を適用した直接の系であり、同じ事象列への同じ効果の被覆を保つ。型付けの効果の保存は、`computation_preservation` が同じ効果で結論する。ストアの構文の等号や、事象なしの段を含む実行列の長さの等号は結論に含めない。
+
+`program_preservation` は、P の整形式と同じ B での型付け、`RefinementCheck.Declarations P`、B の検査の署名の一致から、`eraseProgram P` の整形式と型付けを導く。`computation_preservation` は任意の元の型付き計算を、同じ結果型・効果・局所文脈で消去したプログラムへ写す。値文脈の正則性は追加しない。範囲パラメータを持つ定義は全ての適格な具体化で扱う。観測の保存の前提 `Agreement B` は検査の署名と δ の二等式であり、`Agreement.complete` が完成した標準表の同じ行から供給する。
+
 ### 篩の正規形と制約の読み方
 
 `Ty.carrierFacts` は、芯の七整数型と Byte の上下限を自己変数0に対する二述語で表し、Decimal では `decimalRepresented self` を一述語で表す。他の芯には空列を返す。`Ty.assume` は、継続型では空列、それ以外では `carrierFacts ++ refinementPredicates` を返す。`Ctx.facts` は文脈の元の番号を保ち、各列の自己をその番号の変数で開く。`Ty.assumeWithCarrier` と `Ctx.factsWithCarrier` は、それぞれ同じ定義の略記である。型付けの部分型規則と捕捉の事実の条件は、この型域を含む列を使う。`Const.NumericRepresented.carrierFacts` は、`Const.NumericRepresented` を満たす定数について、型域の全述語が自己モデルで真であることを示す。型付きの定数からこの前提を得るときは `ConstOK.represented` を使う。Integer64 は構文が持つ上下限を用いる。`ValueMeaning` の構成子は、芯の形、明示した篩の真、型域の事実の真の三条件を持つ。
@@ -4485,6 +4497,16 @@ def EffectSoundnessStatement (P : Program) (B : Builtins) (σ : PathEnv) : Prop 
 標準の宣言を含む利用者のプログラム P には、`StandardModel.included_guarantees` で主定理を適用する。前提は、名前の一覧 L の整形式、P の data 宣言の有限の一覧 `DataTable P`、標準の宣言の包含 `Includes externals P`、完成した表の仮定側の契約 `Completion L T A`、含まれる外部宣言表の構造検証 `(program externals).ExternalWF`、同じ完成した表 `complete L T A` での追加宣言の検査 `Program.Additions (program externals) P (complete L T A)` である。外部宣言が空であることは要求しない。data 宣言の一覧は、全構成子の lookup との一致、名前の重複がないこと、制約の要約の収束、変性の検査を含む。追加宣言の検査は脱糖の型保存から受ける義務であり、この系が表層の検査器の受理から直接導くものではない。
 
 結論の `ProgramGuarantees P (complete L T A) σ` は、進行、一段と実行列の保存、実行関数の健全性、開始の型付け、一段と到達先の対象健全性（IO の形と事象一般の形）、エフェクトの健全性とそのラムダ名の条件を型付けから供給する形を持つ。開始の閉包の型付け・開始の条件・実行列、実行関数の応答と場所の選択、一段の対象健全性の `σ.Valid` は、それぞれの結論の前提に残る。Task・TaskGroup の七名は完成した表で署名を持たず、それらを呼ぶプログラムはこの系の範囲に含まれない。
+
+篩を含む表層のプログラムには、`Surface.surface_guarantees` を適用する。`Surface.linkProgram` は、収集した型の宣言を使い、利用者の定義を脱糖して優先し、残る標準の核の本体をそのまま保持する。`CheckedUnder p q`、表層の整形式、q の宣言と結合後の P の対応 `Realizes`、`q.B = complete L T A` を受け、`link_additions` が性質1から同じ表の Additions を構成する。範囲パラメータを持つ本体も全具体化の性質1を使う。標準の包含・data の一覧・Completion・外部宣言表の構造検証は、それぞれ別の前提である。核のプログラムの整形式を checker の結論として仮定せず、表層の整形式と標準の包含から構成する。`Realizes` の外部宣言の整形式の欄は、標準の包含と標準側の外部宣言の整形式から供給する。
+
+`Surface.Program.HasMain p ε` は、main の lookup、空の型・行・範囲パラメータと値引数、Unit 又は Result[Unit,String] の結果、宣言した効果 ε を表す。他の関数のパラメータを制限しない。`linked_main` はこの条件から開始の型付け・閉性・保持値の適格性を作る。起点の束縛は同じ初期状態の `σ.Ready` で受ける。結論 `MainGuarantees` は開始の `StateTyE`、ε が空の場合の事象と未処理操作の排除、到達した IO の全対象を同じ ε が許すことを含む。
+
+`Surface.checkProgramAccepted_main` は、実入口 `checkProgramAccepted` の成功と、その入力の Sound・名前の全件性・定義と実装の支持・宣言の保存から CheckedUnder と Accepted を得て、これらの結論へ接続する。表層の整形式は独立に受ける。`Surface.MainExamples.main_guarantees` は、標準本体と篩付きの外部関数の宣言を保持する表層の空の main、完成した表、有効な起点環境で、主定理の全前提を同時に満たす。この証人は CheckedUnder を導出から構成し、有限の checker 入力の Sound や実入口の成功の証明とは区別する。
+
+`Surface.CheckedMainExamples.main_guarantees` は、標準関数 `Range.checkInteger` を呼ぶ main について、入力の Sound と実入口の成功も同時に満たす。構成元には `.custom (complete …)` を使う。`StandardSupport.complete` は、仮定側の署名がない完成表の全署名の支持を12原子の有限一覧で供給する。
+
+`DeclarationAgreement.check` は、宣言の全 lookup を覆う有限の関数名・実装名の一覧について、核の本体の存在と署名の一致を照合する。関数は型・行のパラメータ、引数名と型、結果型、効果、範囲の種類列を比較し、実装は型・辞書のパラメータ、型クラス、対象型を比較する。`realizes_of_check` は、両側の署名の有限支持と判定の成功、型の宣言の一致、外部宣言の整形式から `Realizes` を導く。
 
 1. 脱糖の型の保存: [型システム](01-06-type-system.md)の型検査を通ったプログラムを脱糖すると、すべての定義に型が付く。
 2. 進行と保存: 型が付いた状態は、`⟨return V, []⟩` であるか、遷移できる。遷移した先の状態も型が付くか、`error(r)` である。IO の応答は、関数の戻り値の型の値であるとする。

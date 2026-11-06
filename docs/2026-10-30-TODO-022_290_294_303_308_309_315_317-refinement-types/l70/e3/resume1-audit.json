@@ -1,0 +1,58 @@
+{
+  "command": [
+    "/usr/bin/lockf",
+    "-t",
+    "3600",
+    "<shared-lock>",
+    "lake",
+    "env",
+    "lean",
+    "-M",
+    "12288",
+    "<tmp>/audit.lean"
+  ],
+  "cwd": "formal",
+  "started": "2026-11-06T23:53:09.626621+09:00",
+  "ended": "2026-11-06T23:54:28.246018+09:00",
+  "exit": 0,
+  "seconds": 78.60845450000001,
+  "inputs_count": 7492,
+  "inputs_sha256": "1a79eceea501bac74f404f76f1734b5126d4a4e519aa176202fd70ef1f50f4d9",
+  "inputs_unchanged": true,
+  "local_inputs": {
+    "obstruction.lean": {
+      "bytes": 17309,
+      "sha256": "f1d8a97d8655431ffaf09415c9350b379943094de01a7f8c0682968bc33de530"
+    },
+    "pattern-context-obstruction.lean": {
+      "bytes": 5264,
+      "sha256": "86ab73ecb041dff9040ea806ff5f266b98e7b96babe5186966e9165176e43e25"
+    },
+    "audit-tail.lean": {
+      "bytes": 2259,
+      "sha256": "131a8b230c09e442171662b3cc6fc1846f9008060b073f309aad6981b48e9314"
+    },
+    "inventory_resume1.py": {
+      "bytes": 2309,
+      "sha256": "ae7fd6cd2ad6c978edc331f2f2e912a10f504eab9f67a71dff1efa2c7611e926"
+    },
+    "run_checks_resume1.py": {
+      "bytes": 2662,
+      "sha256": "1d79d87043f31bc3ec5c7ca096052f8fa267c8a8e8f09d8eb3720995e67d6657"
+    },
+    "verify_resume1.py": {
+      "bytes": 6065,
+      "sha256": "c2768b0de6684ca7dc6fa969b60a63ff1374cc0c148bd662b81dc8a023c7a8d0"
+    }
+  },
+  "local_inputs_unchanged": true,
+  "output": "<tmp>/audit.log",
+  "output_digest": {
+    "bytes": 26881271,
+    "sha256": "c4f71459715c8ebafe0d5a7b0c254cb0ad7f8533fbd54e789214a2455d9bb0b5"
+  },
+  "generated_input": {
+    "bytes": 24844,
+    "sha256": "91fde89bea5e17d793a817551192e457237b638994ecbc3d0b768d1b9f78697a"
+  }
+}
