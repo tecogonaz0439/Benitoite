@@ -509,10 +509,16 @@ private def sourceResolvedDefinition : Def :=
       (PredicateProjectionCalls.encodedCall "%Predicate.0" [.base .unit] textProjection
         (.local 0) (textSource (.base .unit)) (.var 0)) true) }
 
+private theorem source_names_inventory :
+    PredicateGeneratedNames.sourceNames (sourceInput true) (sourceProgram true) = ["String.charactersIn"] := by
+  rfl
+
 private theorem source_prepared :
     CheckPreparation.prepare (sourceInput true) (sourceProgram true) =
       ⟨CheckPreparation.input (sourceInput true) sourceRows,
        CheckPreparation.resolveProgram sourceRows (sourceProgram true)⟩ := by
+  unfold CheckPreparation.prepare PredicateGeneratedNames.forbidden
+  rw [source_names_inventory]
   cbv
 
 private theorem source_definitions (name : FunName) :

@@ -94,6 +94,36 @@ mutual
         contextsBlock (List.replicate pattern.binders none ++ locals) rest
 end
 
+private theorem surfacePreorder_length_pos (e : Expr) :
+    0 < (Identity.surfacePreorder e).length := by
+  rw [Identity.surfacePreorder.eq_def]
+  exact Nat.zero_lt_succ _
+
+mutual
+  private theorem contextsExpr_length (locals : List (Option Ty)) (e : Expr) :
+      (contextsExpr locals e).length = (Identity.surfacePreorder e).length := by
+    have positive := surfacePreorder_length_pos e
+    cases e <;> simp only [contextsExpr, List.length_cons, List.length_replicate]
+    all_goals first
+      | exact congrArg (· + 1) (contextsBlock_length _ _)
+      | exact congrArg (· + 1) (contextsExpr_length _ _)
+      | omega
+
+  /-- 文脈の列は、元の先行順の出現列と同じ長さを持つ。 -/
+  theorem contextsBlock_length (locals : List (Option Ty)) (body : Block) :
+      (contextsBlock locals body).length = (Identity.preorderBlock body).length := by
+    cases body <;> simp only [contextsBlock, Identity.preorderBlock, List.length_append,
+      contextsExpr_length, contextsBlock_length, List.length_nil]
+end
+
+/-- 文脈との zip は、元の出現を一つも切り捨てない。 -/
+theorem occurrences_zip_contexts_length (params : List Ty)
+    (key : Benitoite.Scope.Inference.Key) (body : Block) :
+    ((occurrences key body).zip (contextsBlock (params.reverse.map some) body)).length =
+      (occurrences key body).length := by
+  simp only [List.length_zip, contextsBlock_length, occurrences, List.length_map,
+    List.length_zipIdx, Nat.min_self]
+
 /-- 元の先行順の全出現と同じ番号で、パラメータから選べる範囲だけを記録する。 -/
 def selections (rules : List Rule) (params : List Ty) (key : Benitoite.Scope.Inference.Key)
     (body : Block) : List (Benitoite.Scope.Inference.Key × Selection) :=
@@ -177,11 +207,13 @@ theorem acceptSelection_sound {ks : List Kind} {s : Selection}
 def chosen (rules : List Rule) (params : List Ty) (body : Block) : Option Selection :=
   select rules params body
 
-/-- 各出現について記号側の選択があれば全具体化の被覆を検査し、なければ局所の由来を読む。 -/
+/-- 空の範囲文脈で閉じた由来の判定が成功した本体を受理する。
+それ以外は、各出現の記号側の全具体化の被覆、又は局所の由来を検査する。 -/
 def acceptBody (rules : List Rule) (ks : List Kind) (params : List Ty)
     (ok : ConName) (T : Benitoite.Scope.Inference.ScopeTable Refinement.Val) (L : Limits)
     (key : Benitoite.Scope.Inference.Key) (scope : Interval.BindingScope) (body : Block) :
     Except (Benitoite.Scope.Inference.Key × CoverFailure) Unit :=
+  if ks.isEmpty && (ScopeAccept.acceptBody ok T L key scope body).toBool then .ok () else
   let result := analyzeBody ok T L key scope body
   allOk (occurrences key body) fun pair =>
     let selected := if (T.ruleAt pair.1).isSome then
@@ -193,10 +225,12 @@ def acceptBody (rules : List Rule) (ks : List Kind) (params : List Ty)
     | .ok () => .ok ()
     | .error f => .error (pair.1, f)
 
-/-- 全出現に対し、選べたパラメータの全適格具体化の被覆、又は局所の由来の受理を保持する。 -/
+/-- 空の範囲文脈での閉じた由来の全出現の被覆、又は選択に応じた全適格具体化の被覆を保持する。
+閉じた由来の判定の成功は、任意の規則表について記号側の選択の被覆を含むとは限らないため、二つの結論を区別する。 -/
 def BodyRanges (rules : List Rule) (ks : List Kind) (params : List Ty)
     (ok : ConName) (T : Benitoite.Scope.Inference.ScopeTable Refinement.Val) (L : Limits)
     (key : Benitoite.Scope.Inference.Key) (scope : Interval.BindingScope) (body : Block) : Prop :=
+  (ks = [] ∧ ScopeAccept.BodyRanges ok T L key scope body) ∨
   let result := analyzeBody ok T L key scope body
   ∀ pair ∈ occurrences key body, (T.ruleAt pair.1).isSome = true →
     match (selections rules params key body).lookup pair.1 with
@@ -208,29 +242,55 @@ def BodyRanges (rules : List Rule) (ks : List Kind) (params : List Ty)
 theorem acceptBody_sound {rules ks params ok T L key scope body}
     (h : acceptBody rules ks params ok T L key scope body = .ok ()) :
     BodyRanges rules ks params ok T L key scope body := by
-  intro pair member present
-  have hp := allOk_ok h pair member
-  dsimp only at hp
-  simp only [present, ite_true] at hp
-  cases hs : (selections rules params key body).lookup pair.1 with
-  | none =>
-    simp only [hs] at hp ⊢
-    split at hp
-    · assumption
-    · cases hp
-  | some s =>
-    simp only [hs] at hp ⊢
-    cases ha : acceptSelection ks s with
-    | error e => simp only [ha] at hp; cases hp
-    | ok u => cases u; exact fun rs hr => acceptSelection_sound ha rs hr
+  unfold acceptBody at h
+  split at h
+  · next closed =>
+    obtain ⟨empty, accepted⟩ := Bool.and_eq_true_iff.mp closed
+    have old : ScopeAccept.acceptBody ok T L key scope body = .ok () := by
+      cases result : ScopeAccept.acceptBody ok T L key scope body with
+      | error failure => simp only [result, Except.toBool, Bool.false_eq_true] at accepted
+      | ok value => cases value; rfl
+    exact Or.inl ⟨List.nil_of_isEmpty empty, ScopeAccept.acceptBody_ranges_all old⟩
+  · apply Or.inr
+    dsimp only
+    intro pair member present
+    have hp := allOk_ok h pair member
+    dsimp only at hp
+    simp only [present, ite_true] at hp
+    cases hs : (selections rules params key body).lookup pair.1 with
+    | none =>
+      simp only [hs] at hp ⊢
+      split at hp
+      · assumption
+      · cases hp
+    | some s =>
+      simp only [hs] at hp ⊢
+      cases ha : acceptSelection ks s with
+      | error e => simp only [ha] at hp; cases hp
+      | ok u => cases u; exact fun rs hr => acceptSelection_sound ha rs hr
 
-/-- 記号側が選ぶ出現のない閉じた本体は、元の局所解析の受理と同じである。 -/
+/-- 範囲パラメータのない閉じた由来の判定が成功すれば、選択の有無によらず記号側を含む受理も成功する。 -/
+theorem acceptBody_no_ranges_of_closed {rules params ok T L key scope body}
+    (h : ScopeAccept.acceptBody ok T L key scope body = .ok ()) :
+    acceptBody rules [] params ok T L key scope body = .ok () := by
+  unfold acceptBody
+  simp only [List.isEmpty_nil, h, Except.toBool, Bool.and_self, ↓reduceIte]
+
+/-- 記号側が選ぶ出現のない閉じた本体は、閉じた由来の判定と同じ結果となる。 -/
 @[simp] theorem acceptBody_no_ranges (rules : List Rule) (params : List Ty)
     (ok : ConName) (T : Benitoite.Scope.Inference.ScopeTable Refinement.Val) (L : Limits)
     (key : Benitoite.Scope.Inference.Key) (scope : Interval.BindingScope) (body : Block)
     (noneSelected : selections rules params key body = []) :
     acceptBody rules [] params ok T L key scope body = ScopeAccept.acceptBody ok T L key scope body := by
-  simp only [acceptBody, ScopeAccept.acceptBody, noneSelected, List.lookup_nil, ite_self]
-  rfl
+  by_cases accepted : ScopeAccept.acceptBody ok T L key scope body = .ok ()
+  · rw [acceptBody_no_ranges_of_closed accepted, accepted]
+  · have rejected : (ScopeAccept.acceptBody ok T L key scope body).toBool = false := by
+      cases result : ScopeAccept.acceptBody ok T L key scope body with
+      | error failure => rfl
+      | ok value => cases value; exact False.elim (accepted result)
+    unfold acceptBody
+    simp only [List.isEmpty_nil, rejected, Bool.and_false]
+    simp only [ScopeAccept.acceptBody, noneSelected, List.lookup_nil, ite_self]
+    rfl
 
 end Benitoite.Release.Refinement.Surface.OpenScopeAccept

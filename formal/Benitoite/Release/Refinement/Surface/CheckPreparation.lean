@@ -1,5 +1,5 @@
 import Benitoite.Release.Refinement.Surface.CheckInput
-import Benitoite.Release.Refinement.Surface.PredicateRowCollection
+import Benitoite.Release.Refinement.Surface.PredicateGeneratedNames
 
 /-! # プログラムの実入口での判定の呼出しの解決
 
@@ -13,8 +13,41 @@ open PredicateProjection
 /-- 公開の標準名の意味が、構成データから定まる表。 -/
 def enabled : Check.BuiltinSource → Bool
   | .standard _ | .predicates _ _ => true
-  | .resolved base _ => enabled base
+  | .resolved base rows => enabled base && rows.all (fun row => row.1.startsWith "%Predicate.")
   | .custom _ | .unrestrictedRanges _ => false
+
+theorem enabled_resolved_base {base rows} (active : enabled (.resolved base rows) = true) :
+    enabled base = true := (Bool.and_eq_true_iff.mp active).1
+
+private theorem api_no_prefix (api : PredicateResponse.API) :
+    api.name.startsWith "%Predicate." = false := by
+  cases api with
+  | floating width test => cases width <;> cases test <;> cbv
+  | _ => cbv
+
+/-- 接頭辞を持つ内部行の表は、公開の判定の名前を登録しない。 -/
+theorem prefixed_public_lookup_none {rows : Table.Rows}
+    (prefixed : rows.all (fun row => row.1.startsWith "%Predicate.") = true)
+    (api : PredicateResponse.API) : rows.lookup api.name = none := by
+  cases found : rows.lookup api.name with
+  | none => rfl
+  | some row =>
+    have member := ScopeSignatures.lookup_mem found
+    have hasPrefix := List.all_eq_true.mp prefixed (api.name, row) member
+    rw [api_no_prefix] at hasPrefix
+    cases hasPrefix
+
+theorem enabled_resolved_public {base rows} (active : enabled (.resolved base rows) = true)
+    (api : PredicateResponse.API) : rows.lookup api.name = none :=
+  prefixed_public_lookup_none (Bool.and_eq_true_iff.mp active).2 api
+
+/-- 自動生成した行を重ねても、公開の標準名の解決を有効に保つ。 -/
+theorem enabled_generated {base program sources forbidden} (active : enabled base = true) :
+    enabled (.resolved base (PredicateRowCollection.collectAvoid program sources forbidden)) = true := by
+  apply Bool.and_eq_true_iff.mpr
+  refine ⟨active, List.all_eq_true.mpr ?_⟩
+  intro pair member
+  exact PredicateRowCollection.collectAvoid_prefix member
 
 /-- 入力の有限な名前の一覧にある、全定義と全実装メソッドの本体。 -/
 def sources (q : Check.Input) (p : Program) : List Expr :=
@@ -101,9 +134,86 @@ structure Prepared where
 /-- 収集・登録・解決は一回の入口で行い、内部行のない入力はそのまま返す。 -/
 def prepare (q : Check.Input) (p : Program) : Prepared :=
   if enabled q.builtinSource then
-    let rows := PredicateRowCollection.collect p (sources q p)
+    let rows := PredicateRowCollection.collectAvoid p (sources q p) (PredicateGeneratedNames.forbidden q p)
     if rows.isEmpty then ⟨q, p⟩ else ⟨input q rows, resolveProgram rows p⟩
   else ⟨q, p⟩
+
+/-- 実際の収集表は、元の核構文と構成済みの内部行の全ての名前を避ける。 -/
+theorem collected_fresh {q : Check.Input} {p : Program} {key row}
+    (member : (key, row) ∈ PredicateRowCollection.collectAvoid p (sources q p)
+      (PredicateGeneratedNames.forbidden q p)) :
+    key ∉ PredicateGeneratedNames.sourceNames q p ∧
+      key ∉ PredicateGeneratedNames.builtinNames q.builtinSource := by
+  have fresh := PredicateRowCollection.collectAvoid_fresh member
+  constructor
+  · intro found
+    exact fresh (List.mem_append_left _ found)
+  · intro found
+    exact fresh (List.mem_append_right _ found)
+
+theorem collected_def_fresh {q : Check.Input} {p : Program}
+    (complete : ∀ name d, p.defs name = some d → name ∈ q.defs)
+    {key row name d} (member : (key, row) ∈ PredicateRowCollection.collectAvoid p (sources q p)
+      (PredicateGeneratedNames.forbidden q p))
+    (found : (desugarProgram q.opPrim p).defs name = some d) :
+    key ∉ PredicateGeneratedNames.compNames d.body := by
+  intro present
+  exact (collected_fresh member).1 (PredicateGeneratedNames.kernel_def_names complete found present)
+
+theorem collected_method_fresh {q : Check.Input} {p : Program}
+    {key row name id method body} (member : (key, row) ∈ PredicateRowCollection.collectAvoid p (sources q p)
+      (PredicateGeneratedNames.forbidden q p))
+    (listed : name ∈ q.impls) (methodListed : method ∈ q.methods)
+    (found : (desugarProgram q.opPrim p).impls name = some id)
+    (methodFound : id.methods method = some body) : key ∉ PredicateGeneratedNames.compNames body := by
+  intro present
+  exact (collected_fresh member).1
+    (PredicateGeneratedNames.kernel_method_names listed methodListed found methodFound present)
+
+private theorem rows_lookup_none {rows : Table.Rows} {key}
+    (absent : key ∉ rows.map Prod.fst) : rows.lookup key = none := by
+  cases found : rows.lookup key with
+  | none => rfl
+  | some row =>
+    have member := ScopeSignatures.lookup_mem found
+    exact False.elim (absent (List.mem_map_of_mem member))
+
+private theorem builtin_sig_none {source : Check.BuiltinSource} {key}
+    (active : enabled source = true) (standard : key ∉ StandardModel.nameLists.composed)
+    (absent : key ∉ PredicateGeneratedNames.builtinNames source) : source.builtins.sig key = none := by
+  induction source with
+  | custom _ | unrestrictedRanges _ => cases active
+  | standard program =>
+    cases found : (StandardModel.builtins program).sig key with
+    | none => first | rfl | exact found
+    | some signature =>
+      obtain ⟨row, member, same, _⟩ := (StandardModel.builtins_lookup_iff program key signature).mp found
+      apply False.elim
+      apply standard
+      change key ∈ StandardModel.Primitive.all.map StandardModel.Primitive.name
+      exact List.mem_map.mpr ⟨row, member, same.symm⟩
+  | predicates data rows =>
+    have unregistered := rows_lookup_none absent
+    change (if key ∈ StandardModel.nameLists.composed then _ else
+      if key ∈ (Table.names rows).assumed then (rows.lookup key).map Row.signature else none) = none
+    rw [ite_eq_right standard, unregistered]
+    split <;> rfl
+  | resolved base rows ih =>
+    have baseAbsent : key ∉ PredicateGeneratedNames.builtinNames base :=
+      fun h => absent (List.mem_append_left _ h)
+    have rowsAbsent : key ∉ rows.map Prod.fst := fun h => absent (List.mem_append_right _ h)
+    have unregistered := rows_lookup_none rowsAbsent
+    change (match rows.lookup key with | some row => some row.signature | none => base.builtins.sig key) = none
+    rw [unregistered]
+    exact ih (enabled_resolved_base active) baseAbsent
+
+/-- 追加する全ての名前は、解決前の入力の署名表でも未登録である。 -/
+theorem collected_builtin_fresh {q : Check.Input} {p : Program} {key row}
+    (active : enabled q.builtinSource = true)
+    (member : (key, row) ∈ PredicateRowCollection.collectAvoid p (sources q p)
+      (PredicateGeneratedNames.forbidden q p)) : q.B.sig key = none := by
+  exact builtin_sig_none active (PredicateRowCollection.collectAvoid_standard_fresh member).1
+    (collected_fresh member).2
 
 /-- 準備した入力は恒等、又は一つの収集表による登録と本体の解決である。 -/
 theorem prepare_cases (q : Check.Input) (p : Program) :
@@ -114,6 +224,22 @@ theorem prepare_cases (q : Check.Input) (p : Program) :
     split
     · exact Or.inl rfl
     · exact Or.inr ⟨_, rfl⟩
+  · exact Or.inl rfl
+
+/-- 準備が内部行を登録するときは、各キーの元の核本体からの不在と元の表からの不在も得る。 -/
+theorem prepare_cases_fresh (q : Check.Input) (p : Program) :
+    prepare q p = ⟨q,p⟩ ∨ ∃ rows, prepare q p = ⟨input q rows, resolveProgram rows p⟩ ∧
+      ∀ key row, (key, row) ∈ rows →
+        key ∉ PredicateGeneratedNames.sourceNames q p ∧ q.B.sig key = none := by
+  unfold prepare
+  split
+  · next active =>
+    dsimp only
+    split
+    · exact Or.inl rfl
+    · refine Or.inr ⟨_, rfl, ?_⟩
+      intro key row member
+      exact ⟨(collected_fresh member).1, collected_builtin_fresh active member⟩
   · exact Or.inl rfl
 
 /-- 本体の解決は、関数・辞書・外部宣言を含む全ての宣言を保つ。 -/
@@ -141,10 +267,65 @@ theorem prepare_sound {q : Check.Input} (hq : q.Sound) (p : Program) : (prepare 
   · rw [h]; exact hq
   · rw [h]; exact input_sound hq rows
 
-/-- 独自の表は、従来の同じプログラムを同じ表で検査する。 -/
+/-- 独自の表は、同じプログラムを同じ表で検査する。 -/
 theorem prepare_custom (q : Check.Input) (p : Program) (B : Builtins)
     (source : q.builtinSource = .custom B) : prepare q p = ⟨q,p⟩ := by
   simp only [prepare, source, enabled, Bool.false_eq_true, ite_false]
+
+/-- 公開の判定を上書きする内部構成は、その入力とプログラムをそのまま返す。 -/
+theorem prepare_public_override {q : Check.Input} (p : Program) (base : Refinement.Program) (row : Row)
+    (source : q.builtinSource = .resolved (.standard base) [("Float.isFinite", row)]) :
+    prepare q p = ⟨q,p⟩ := by
+  have inactive : enabled q.builtinSource = false := by rw [source]; cbv
+  simp only [prepare, inactive, Bool.false_eq_true, ite_false]
+
+namespace Examples
+
+private def entry : Row := .scalar (.floating .binary64 .finite)
+
+private def body : Block := .last (.call (.primName "Float.isFinite" [] [] []) [none] [0]
+  (.cons (.local 0) .nil))
+
+private def definition (hidden : Bool) : Def where
+  tparams := []
+  neffs := 0
+  names := ["x"]
+  params := [.base .float]
+  ret := .base .boolean
+  eff := Eff.empty
+  body := if hidden then .discard
+    (.binary .add (.base .integer) (.literal (.integer ⟨0,by decide⟩))
+      (.literal (.integer ⟨1,by decide⟩))) body else body
+
+private def program (hidden : Bool) : Program where
+  defs := fun name => if name = "test" then some (definition hidden) else none
+  cons := fun _ => none
+
+private def source (existing hidden : Bool) : Check.BuiltinSource :=
+  let base := Check.BuiltinSource.standard (program hidden).declarations.core
+  if existing then .resolved base [(PredicateRowCollection.name 7, entry)] else base
+
+private def input (existing hidden : Bool) : Check.Input where
+  D := (program hidden).declarations
+  builtinSource := source existing hidden
+  opPrim := fun _ _ => some (PredicateRowCollection.name 12, [])
+  formation := { atoms := [], ctors := fun _ => [] }
+  proofSteps := 1
+  defs := ["test"]
+
+/-- 内部行を含まない入力は0から、構成済みの行を持つ入力はその番号の後から生成する。 -/
+example (existing : Bool) :
+    (prepare (input existing false) (program false)).input.builtinSource =
+      .resolved (source existing false)
+        [(PredicateRowCollection.name (if existing then 8 else 0), entry)] := by
+  cases existing <;> cbv
+
+/-- 演算子の解決が核へ挿入する名前も避け、表にある7と元の核にある12の後から生成する。 -/
+example : (prepare (input true true) (program true)).input.builtinSource =
+    .resolved (source true true) [(PredicateRowCollection.name 13, entry)] := by
+  cbv
+
+end Examples
 
 end
 end Benitoite.Release.Refinement.Surface.CheckPreparation

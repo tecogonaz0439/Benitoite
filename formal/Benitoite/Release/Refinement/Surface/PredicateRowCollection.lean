@@ -83,6 +83,52 @@ theorem name_prefix (index : Nat) : (name index).startsWith "%Predicate." = true
   apply String.startsWith_string_iff.mpr
   exact ⟨(Nat.repr index).toList, by simp [name]⟩
 
+/-- 内部名の接頭辞に続く自然数を読む。数として読めない末尾は番号を持たない。 -/
+def generatedIndex? (key : PrimName) : Option Nat :=
+  if key.startsWith "%Predicate." then
+    (String.ofList (key.toList.drop "%Predicate.".toList.length)).toNat?
+  else none
+
+theorem generatedIndex?_name (index : Nat) : generatedIndex? (name index) = some index := by
+  unfold generatedIndex?
+  rw [name_prefix]
+  simp only [↓reduceIte, name, String.toList_append, List.drop_left, String.ofList_toList,
+    Nat.toNat?_repr]
+
+/-- 既存の有限な名前列に現れる番号より大きい開始番号。番号の範囲を列挙しない。 -/
+def start : List PrimName → Nat
+  | [] => 0
+  | key :: rest => match generatedIndex? key with
+    | none => start rest
+    | some index => max (index + 1) (start rest)
+
+theorem generated_lt_start {keys key index} (member : key ∈ keys)
+    (number : generatedIndex? key = some index) : index < start keys := by
+  induction keys with
+  | nil => cases member
+  | cons head rest ih =>
+    rcases List.mem_cons.mp member with rfl | member
+    · simp only [start, number]
+      exact Nat.lt_of_lt_of_le (Nat.lt_succ_self index) (Nat.le_max_left _ _)
+    · have lower := ih member
+      unfold start
+      cases generatedIndex? head with
+      | none => exact lower
+      | some n => exact Nat.lt_of_lt_of_le lower (Nat.le_max_right _ _)
+
+theorem name_not_mem {keys index} (lower : start keys ≤ index) : name index ∉ keys := by
+  intro member
+  have := generated_lt_start member (generatedIndex?_name index)
+  omega
+
+theorem start_zero {keys : List PrimName}
+    (plain : ∀ key ∈ keys, generatedIndex? key = none) : start keys = 0 := by
+  induction keys with
+  | nil => rfl
+  | cons key rest ih =>
+    rw [start, plain key List.mem_cons_self]
+    exact ih (fun name member => plain name (List.mem_cons_of_mem _ member))
+
 private theorem composed_fresh (index : Nat) : name index ∉ StandardModel.nameLists.composed := by
   intro member
   change name index ∈ StandardModel.Primitive.all.map StandardModel.Primitive.name at member
@@ -123,6 +169,53 @@ def entries (program : Program) (sources : List Expr) : List Row := sources.filt
 
 def collect (program : Program) (sources : List Expr) : Table.Rows := numbered (entries program sources)
 
+/-- 禁止された名前の番号より後から、収集した内部行だけに連続した番号を付ける。 -/
+def collectAvoid (program : Program) (sources : List Expr) (forbidden : List PrimName) : Table.Rows :=
+  numberedFrom (start forbidden) (entries program sources)
+
+private theorem collectAvoid_member {program sources forbidden key row}
+    (member : (key, row) ∈ collectAvoid program sources forbidden) :
+    ∃ index, start forbidden ≤ index ∧ key = name index ∧ row ∈ entries program sources := by
+  obtain ⟨⟨entry,index⟩, numbered, same⟩ := List.mem_map.mp member
+  cases same
+  have bounds := List.mk_mem_zipIdx_iff_le_and_getElem?_sub.mp numbered
+  exact ⟨index,bounds.1,rfl,List.mem_of_getElem? bounds.2⟩
+
+/-- 各生成キーは、禁止された全ての名前と異なる。 -/
+theorem collectAvoid_fresh {program sources forbidden key row}
+    (member : (key, row) ∈ collectAvoid program sources forbidden) : key ∉ forbidden := by
+  obtain ⟨index, lower, rfl, _⟩ := collectAvoid_member member
+  exact name_not_mem lower
+
+theorem collectAvoid_prefix {program sources forbidden key row}
+    (member : (key, row) ∈ collectAvoid program sources forbidden) :
+    key.startsWith "%Predicate." = true := by
+  obtain ⟨index, _, rfl, _⟩ := collectAvoid_member member
+  exact name_prefix index
+
+theorem collectAvoid_standard_fresh {program sources forbidden key row}
+    (member : (key, row) ∈ collectAvoid program sources forbidden) :
+    key ∉ StandardModel.nameLists.composed ∧ key ∉ StandardModel.nameLists.io ∧
+      key ∉ StandardModel.nameLists.state ∧ key ∉ StandardModel.nameLists.outside ∧
+      key ∉ StandardModel.nameLists.delta := by
+  obtain ⟨index, _, rfl, _⟩ := collectAvoid_member member
+  exact name_fresh index
+
+theorem collectAvoid_contains {program sources forbidden source row}
+    (member : source ∈ sources) (selected : candidate program source = some row) :
+    ∃ key, (collectAvoid program sources forbidden).lookup key = some row := by
+  have found : row ∈ entries program sources := List.mem_filterMap.mpr ⟨source, member, selected⟩
+  obtain ⟨index, bound, same⟩ := List.getElem_of_mem found
+  refine ⟨name (start forbidden + index), numberedFrom_lookup ?_⟩
+  apply List.mk_mem_zipIdx_iff_le_and_getElem?_sub.mpr
+  refine ⟨by omega, ?_⟩
+  simpa only [Nat.add_sub_cancel_left, same] using List.getElem?_eq_getElem bound
+
+theorem collectAvoid_zero {program sources forbidden}
+    (plain : ∀ key ∈ forbidden, generatedIndex? key = none) :
+    collectAvoid program sources forbidden = collect program sources := by
+  simp only [collectAvoid, start_zero plain, collect, numbered]
+
 def forExpr (program : Program) (source : Expr) : Table.Rows := collect program (Identity.surfacePreorder source)
 
 def forBlock (program : Program) (source : Block) : Table.Rows := collect program (Identity.preorderBlock source)
@@ -156,6 +249,17 @@ theorem collect_valid {P : Refinement.Program} {program sources}
   · intro key row member
     obtain ⟨index, rfl, _⟩ := numbered_member member
     exact name_fresh index
+
+theorem collectAvoid_valid {P : Refinement.Program} {program sources forbidden}
+    (valid : ∀ source ∈ sources, ∀ row, candidate program source = some row → Table.RowValid P row) :
+    Table.Rows.Valid P (collectAvoid program sources forbidden) := by
+  constructor
+  · intro key row member
+    obtain ⟨_, _, _, found⟩ := collectAvoid_member member
+    obtain ⟨source, hs, selected⟩ := List.mem_filterMap.mp found
+    exact valid source hs row selected
+  · intro key row member
+    exact collectAvoid_standard_fresh member
 
 /-- 収集した表と、その同じ表で解決した式を一緒に保つ。 -/
 structure PreparedExpr where

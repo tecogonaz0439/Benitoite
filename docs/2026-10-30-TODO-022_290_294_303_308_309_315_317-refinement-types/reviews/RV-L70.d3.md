@@ -128,3 +128,64 @@ Lean はすべて `<repo>/formal/` から実行し、同時に一つだけとし
 | 4 | 読み取り専用の照会。`predicateOverlay`・`accepted_property1`・`observations_preserved` の読者、`san_benito` の群 E の後半の変更のうち実入口の言明を読むファイル | 重ねた表の値の仮定と表の条件の補題はない。二つの定理に読者はない。`SurfaceLibrary` の主保証の系が旧い `checkProgramAccepted_sound` を読む |
 
 担当が記した既定ビルド1,577ジョブ・公理監査・照合の結果は保存された記録として読み、本確認で実行した検査としては数えていない。確認用の最終入力は、`ClosedForward9.lean` が2,730バイト（SHA-256 `872ecc665703fe1f517b750b5499c63c705ddc580236dc494e4bb8e5d8effa6b`）である。
+
+## 再開10の処置の確認
+
+2026-11-07。群 D の再開10の処置を確かめた。対象は同じ worktree の未コミットの差分で、基準は `1395ebfb01be54bc53299c610c70477c1231898c` である（`san_benito` の群 E の後半を結合した版。HEAD が一致することを確かめた）。読んだものは、本体の作業木の依頼文 `work/m014/L70.d-r10-prompt.md`・`L70.d-r10-claude-preamble.md` と報告 `L70.d-r10-claude-report.md`、[再開9・10の記録](../l70/d/resume9-10.md)の「再開10」、[群 D の結果](../l70/d/results.md)の要約、`resume10/checks.py` と各実行の要約である。Lean のソースは次を読んだ。
+
+- `PredicateSimulationTraces`・`PredicateSimulationInvariant`・`PredicateSimulationRuntime` の `StateRel`・`PredicateSimulationObservations` の `terminal`。
+- `PredicateProgramObservations`・`PredicateProgramSemantics`・`PredicateProgramGuarantees`。
+- `PredicateMainExamples` の主な言明、`OpenScopeAccept` の受理と `no_ranges` の系、`OpenScopeForwardExamples`。
+- 群 E の後半の `SurfaceLibrary`・`SurfaceCheckedMainExamples` の差分。
+
+模倣の90余りのモジュールの個々の場合の証明は読んでいない。言明・定義・公理依存を確かめ、場合の網羅は Lean の検査に依った。確認は再開10の処置の確認の一回である。
+
+### 結論
+
+**可。前節までの重・中の所見はすべて処置された。足す所見は軽1件・情報2件である。** 前節の重2・中4・中5・軽3・情5も処置された。
+
+模倣は、名前解決の前の核（公開の行の δ と元の表）と準備後の核（内部の行と重ねた表）の間で、両方向に一段ずつ示されている。`observations_preserved` の四つの同値は、その模倣から導かれる。公開呼出しを `if` の条件に書いた main について、受理・主保証・観測の同値が仮定なしで成り立つ。公理は `propext`・`Classical.choice`・`Quot.sound` だけである（検査5）。
+
+| 所見 | 判定 | 根拠 |
+|---|---|---|
+| 重1（意味の一致）・重2・中4 | 可 | 下の小節 |
+| 中5 | 可 | `acceptBody` は範囲の種類列が空で閉じた由来の判定が成功すれば成功する（`acceptBody_no_ranges_of_closed`）。`accepted_no_ranges_of_closed` は、範囲パラメータのない全定義で旧規則の受理から `Accepted` と旧い閉じた `BodyRanges` を返す。これは保存的な拡張の系である。`closed_extension` は五形で、旧規則が `unknownSource` で断り、新規則が受理する例を示す。`acceptBody_no_ranges`（選択なし）は等号の系から導く形に整理された |
+| 軽3 | 可 | results.md は83,230バイト、resume9-10.md は48,012バイトである |
+| 情5 | 可 | `contextsBlock_length` が文脈の列と `preorderBlock` の長さの一致を、`occurrences_zip_contexts_length` が `zip` で出現を落とさないことを示す |
+
+### 重1・重2・中4
+
+**模倣の形。** `Trace.Forward` は、元の一段に、同じラベルを出す対象側の有限実行を対応させる。対象側は一段以上進むか、又は事象を出さずに留まり、順位が真に減る。この順位の減少は型の上で要求される。`Setting.forward` は順位 `administrativeRank` で、`Setting.backward` は順位を定数0として示す。定数0の順位は減らないので、逆向きでは元の側が必ず一段以上進む。`Trace.accessible` は順位の整礎性から停止性を移す。有限の事象列・無限の実行・非停止・効果の被覆の保存は、すべてこの二つから導かれる。`Setting.forward`・`Setting.backward` は既定ビルドで検査された証明であり、Step の全ての規則の場合を含む。関係 `InvariantRel` は、状態の構造的な対応 `StateRel`、元の状態の生成名の不在、準備後の状態の型付けの組である。`StateRel` は終端の失敗と終了の payload を同じ値で対応させ、公開判定の途中（引数の束縛と取り出しの関数の呼出し）だけに専用の構成子を持つ。
+
+**`observations_preserved`。** 比べるのは、`original`（元のプログラムを標準の本体と結合した核と、元の表 `q.B`）と、`resolved`（準備後の核と、準備後の表）の実行である。四つの同値は、`Trace.observations`・`Trace.infinite`・`Trace.diverging_prefixes`・`InvariantRel.effects` を、受理から作った `Setting` と main の開始の関係に当てて得ている。`Iff.rfl` ではない。準備が恒等のときだけ、二つの核と表が等しいことから直接得る。終端の観測 `terminal` は、失敗と終了を全 payload で、正常値を値の対応の同値類で比べる。Boolean の真と偽は区別される（同じファイルの例）。中4は処置された。
+
+**前提の `p.WellFormed`。** 群 E の主保証の系は、準備後のプログラムの整形式 `hwf` を表層の整形式として別に受ける。元のプログラムの整形式も同じ種類の前提で、構文の前段が供給する条件である。生成した欄の行の `Valid` を元の宣言の整形式から導くために使っている。`PredicateMainExamples` は `source_wellFormed` でこれを証明している。前提として妥当である。
+
+**main の証人。** `PredicateMainExamples.main_observations` は、事象列と観測を全称にした言明で、ほかに仮定を持たない（検査5の `#check`）。`main_guarantees` は、`String.charactersIn` を条件に書いた main について、`Accepted`・`ProgramGuarantees`・`MainGuarantees` を、内部行を加えた表 `Table.builtins data rows` の下で仮定なしで結論する。`entry_succeeds` は公開呼出しのままのソースで実入口の成功を示す。
+
+**重ねた表。** `PredicateOverlayTable.builtins_eq` は、`Rows.Valid` と整形式の下で、重ねた表と内部行を加えた完成表の全欄の等号を示す。これで、群 D の `.predicates` の表の条件（`core`）がそのまま使える。`PredicateOverlayValues.prepared_standard_values` は、標準の構成データを持つ入力の準備後の表について、値の仮定を任意の核で示す。`accepted_standard_property1` はこれを `hvalues` へ渡し、`CheckPredicateProgramExamples.path_property1` が読む。重2は処置された。
+
+**群 E の後半の追随。** `SurfaceLibrary.checkProgramAccepted_guarantees`・`checkProgramAccepted_main` は、型付けと保証の対象を準備後のプログラムと表へ移した。`CheckedMainExamples.main_guarantees` は言明を変えず仮定なしのままで、`checker_succeeds` の証明だけが `checkPreparedProgram` への展開に変わった。
+
+**01-12 の記述。** 「処理系は名前解決を行わず、公開の呼出しを公開の行の δ で実行してよい」は、`observations_preserved` の結論（公開の行の実行と解決後の実行の観測の同値）と、その前提（実入口の受理と主保証の系の前提）に合う。正常値の比較が値の対応の同値類であることも、同じ章の理由に書かれている。処理系の δ と形式化の公開の行の δ の対応は、この定理の外の後段の照合である（情7）。
+
+### 足す所見
+
+| 番号 | 重さ | 場所 | 問題 | 修正案 | 確度 |
+|---|---|---|---|---|---|
+| 軽4 | 軽 | `PredicateSimulationAlgebra.lean:189`・`448`、`PredicateSimulationTyping.lean:8`・`105`、`PredicateSimulationPipeSafety.lean:100`、`PredicateSimulationOpenPipeSafety.lean:6`・`103`・`232`、resume9-10.md の maxHeartbeats の段落 | 報告は「4か所」とするが、指定は4モジュールの8か所にある。記録の「除いた写しで四つとも timeout」は、モジュール単位の確認か指定ごとの確認かが読めない | 指定ごとに既定の上限での timeout を記録するか、モジュール単位の確認であることを書く | 読めば確定 |
+| 情7 | 情報 | 01-12 の「処理系は名前解決を行わず…実行してよい」 | 形式化が保証するのは、公開の行の δ による実行と解決後の実行の観測の同値である。処理系の組込みの実装が公開の行の δ に一致することは、従来どおり後段（R 系）の照合が受け持つ。正常値は値の対応の同値類で比べるので、関数値の閉包のコードの一致までは主張しない | R 系の照合の表に、公開の行の δ と終端の観測の比べ方を受け口として写す | 読めば確定 |
+| 情8 | 情報 | `resume10/checks.py` の `audit_input` | 監査は二種類の名前を対象に数えない。(1) 監査の実行中に実現され lookup できない62件。(2) 待ち行列に入れる段で `hasMacroScopes` を持つ名前で、こちらは環境に既にある名前も含む。どちらも依存先としては、それを使う宣言の `#print axioms` に推移的に含まれる。したがって、監査対象の定理の公理を見落とす余地はない。ただし (2) の名前は、それ自体が `axiom` であるかの照合（`AUDIT_AXIOM`）を通らない。ソースの `axiom` の字句の検査が補っているので、実害はないと読める | (2) で除いた名前の件数を記録し、その全てが `axiomInfo` でないことを同じ実行で照合する | 読めば確定。(2) の件数は確かめていない |
+
+### 実行した検査
+
+| 番号 | 内容・入力 | 結果 |
+|---|---|---|
+| 5 | `<tmp>/R10Axioms.lean`。`main_observations`・`main_guarantees`（群 D と群 E の後半）・`builtins_eq`・`prepared_standard_values`・`contextsBlock_length`・`occurrences_zip_contexts_length`・`accepted_no_ranges_of_closed` の `#check`。`main_observations`・両 `main_guarantees`・`observations_preserved`・`Setting.forward`・`Setting.backward`・`accepted_standard_property1`・`closed_extension` の `#print axioms` | 終了0。言明は上のとおりで、公理は `propext`・`Classical.choice`・`Quot.sound` だけ。初稿は群 E の後半の名前空間を誤って終了1となり、名前を直した |
+| 6 | 読み取り専用の照会。`accepted_standard_property1`・`prepared_standard_values`・`builtins_eq` の読者、新規・変更のファイルの `sorry`・`axiom`・`native_decide`・`#eval`・`maxHeartbeats`、`checks.py` の監査の台本の書き換え | 三つとも読者がある。禁止した構文はない。上限の指定は軽4のとおり |
+
+担当が記した既定ビルド1,678ジョブ・公理監査128,566宣言・照合の終了0は保存された記録として読み、本確認で実行した検査としては数えていない。確認用の最終入力は、`R10Axioms.lean` が1,409バイト（SHA-256 `88e10d5194edb1a4a84fb2d2cb724f1f180cb9b1da772ee460b07f20209c51bb`）である。
+
+## 取りまとめの追記
+
+- 2026-11-07: 再開10の処置の確認は可。初回の重1・中1〜3、処置の確認の重1（意味の一致）・重2・中4・中5 は閉じた。中5 の受理の拡大は、設計者の見直しの対象として plan.md に記録した。軽4 は取りまとめが `l70/d/resume9-10.md` の末尾に訂正を書いた。情8 は群 H の L70.46 へ申し送る。情7 は R 段の照合が受け持つ。

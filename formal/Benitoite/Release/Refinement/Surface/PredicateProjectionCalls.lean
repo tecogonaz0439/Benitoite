@@ -109,19 +109,28 @@ def resolveExpr (rows : Rows) (p : Program) : Expr → Expr :=
 def resolveBlock (rows : Rows) (p : Program) : Block → Block :=
   PredicateCalls.resolveBlockWith (resolveCall rows p)
 
+/-- 解決の成功時に、実解析・候補・行のlookupと保持した検査用の構文を取り出す。 -/
+theorem resolve_spec {rows p entry source output} (resolved : resolve rows p entry source = some output) :
+    ∃ (parsed : Parsed p source), ∃ projection types name term,
+      PredicateAccessorTargets.parse p source = some parsed ∧
+      candidate parsed entry = some (projection, types) ∧
+      rows.lookup name = some (.projected projection) ∧ parsed.value.toTerm? = some term ∧
+      output = encodedCall name types projection parsed.root source term := by
+  unfold resolve at resolved
+  obtain ⟨parsed, parse, resolved⟩ := Option.bind_eq_some_iff.mp resolved
+  obtain ⟨pair, candidate, resolved⟩ := Option.bind_eq_some_iff.mp resolved
+  rcases pair with ⟨projection, types⟩
+  obtain ⟨name, named, resolved⟩ := Option.bind_eq_some_iff.mp resolved
+  obtain ⟨term, observed, resolved⟩ := Option.bind_eq_some_iff.mp resolved
+  cases resolved
+  exact ⟨parsed, projection, types, name, term, parse, candidate, internalName_lookup named, observed, rfl⟩
+
 private theorem resolve_shape {rows p entry source output} (h : resolve rows p entry source = some output) :
     ∃ name types projection root value term,
       rows.lookup name = some (.projected projection) ∧ root.valueOf? = some value ∧ value.toTerm? = some term ∧
       output = encodedCall name types projection root source term := by
-  unfold resolve at h
-  obtain ⟨target, hp, h⟩ := Option.bind_eq_some_iff.mp h
-  obtain ⟨pair, hc, h⟩ := Option.bind_eq_some_iff.mp h
-  rcases pair with ⟨projection, types⟩
-  obtain ⟨name, hn, h⟩ := Option.bind_eq_some_iff.mp h
-  obtain ⟨term, ht, h⟩ := Option.bind_eq_some_iff.mp h
-  cases h
-  exact ⟨name, types, projection, target.root, target.value, term,
-    internalName_lookup hn, target.root_value, ht, rfl⟩
+  obtain ⟨parsed, projection, types, name, term, parse, candidate, lookup, observed, encoded⟩ := resolve_spec h
+  exact ⟨name, types, projection, parsed.root, parsed.value, term, lookup, parsed.root_value, observed, encoded⟩
 
 /-- 解決に成功した欄の判定は、元の値を一度だけ内部の行へ渡す。 -/
 theorem resolve_desugar {rows p entry source output} (h : resolve rows p entry source = some output)

@@ -14,17 +14,27 @@ private theorem body_ranges_of_accepted {A key scope body}
     BodyRanges A key scope body := by
   exact ScopeAccept.acceptBody_ranges_all h
 
-/-- 定義の種類列が空なら閉じた規則の全出現の被覆、非空なら閉じた規則と記号的な規則の選択に応じた被覆。 -/
+/-- 空の種類列での閉じた由来の全出現の被覆、又は記号的な規則の選択に応じた被覆。 -/
 def DefinitionRanges (A : AcceptInput) (name : FunName) (d : Def) : Prop :=
   OpenScopeAccept.BodyRanges A.openRules d.rangeParams d.coreParams A.ok
     (tableFor A (bodyKey name) d.body) A.limits (bodyKey name) (entryScope d.coreParams.length) d.body
 
-/-- 空の範囲文脈では、全出現・全記録と記録のない場合の閉じた規則の契約を得る。 -/
+/-- 空の範囲文脈で記号側の選択がないとき、全出現について閉じた由来の契約を得る。 -/
 theorem Accepted.def_ranges_no_ranges {A q p} (h : Accepted A q p) {n d}
     (hd : p.defs n = some d) (hr : d.rangeParams = [])
     (noneSelected : OpenScopeAccept.selections A.openRules d.coreParams (bodyKey n) d.body = []) :
     BodyRanges A (bodyKey n) (entryScope d.coreParams.length) d.body :=
   body_ranges_of_accepted (h.def_body_no_ranges hd hr noneSelected)
+
+/-- 閉じた由来の判定が成功した範囲パラメータのないプログラムは、記号側を含む受理と同じ閉じた全被覆をともに持つ。 -/
+theorem accepted_no_ranges_of_closed {A : AcceptInput} {q : Check.Input} {p : Program}
+    (hr : ∀ n d, p.defs n = some d → d.rangeParams = [])
+    (hd : ∀ n d, p.defs n = some d → acceptFn A n d.coreParams.length d.body = .ok ())
+    (hm : ∀ i id, p.impls i = some id → ∀ m body, id.methods m = some body →
+      acceptMethod A q i m id body = .ok ()) :
+    Accepted A q p ∧ ∀ n d, p.defs n = some d →
+      BodyRanges A (bodyKey n) (entryScope d.coreParams.length) d.body :=
+  ⟨Accepted.of_no_ranges hr hd hm, fun n d found => body_ranges_of_accepted (hd n d found)⟩
 
 /-- 受理したプログラムの各関数について、選択した規則の範囲契約を得る。 -/
 theorem Accepted.def_ranges {A q p} (h : Accepted A q p) {n d} (hd : p.defs n = some d) :

@@ -104,6 +104,64 @@ theorem closed_entry (form : Form) :
   refine ⟨range_decision_sound form true false, ?_⟩
   cases form <;> cbv
 
+/-- 固定範囲を持つ五形は、閉じた由来の判定では未知として拒否され、記号側を含む判定では受理される。 -/
+theorem closed_extension (form : Form) :
+    (match acceptFn required "forward" (definition form true false).coreParams.length
+        (definition form true false).body with
+      | .error (_, .unknownSource) => True
+      | _ => False) ∧
+    acceptDef required "forward" (definition form true false) = .ok () := by
+  cases form <;> cbv
+
+private def topDefinition (form : Form) : Def :=
+  { definition form true false with
+    params := if form = .write then [.opaque "Scope.PathIn" (.fixed .top), .base .string]
+      else [.opaque "Scope.PathIn" (.fixed .top)],
+    ret := if form = .write then .base .unit else .opaque "Scope.PathIn" (.fixed .top),
+    eff := if form = .write then .mk (fun a => decide (a = .name "File.Write" (.fixed .top))) []
+      else Eff.empty,
+    body := body form (.fixed .top) }
+
+private def topProgram (form : Form) : Program :=
+  { program form true false with
+    defs := fun name => if name = "forward" then some (topDefinition form) else none }
+
+/-- Top の閉じた契約で閉じた由来の判定が成功した五形は、全定義の受理と同じ閉じた全被覆をともに持つ。
+定義だけのプログラムなので、ここでの受理の結論は任意の型付け入力について成り立つ。 -/
+theorem closed_conservative (form : Form) (q : Check.Input) :
+    Accepted required q (topProgram form) ∧
+    ∀ n d, (topProgram form).defs n = some d →
+      CheckAccept.BodyRanges required (bodyKey n) (entryScope d.coreParams.length) d.body := by
+  apply accepted_no_ranges_of_closed
+  · intro n d found
+    change (if n = "forward" then some (topDefinition form) else none) = some d at found
+    split at found
+    · cases found
+      cases form <;> rfl
+    · cases found
+  · intro n d found
+    change (if n = "forward" then some (topDefinition form) else none) = some d at found
+    split at found
+    · next same =>
+      subst n
+      cases found
+      cases form <;> rfl
+    · cases found
+  · intro i id found
+    cases found
+
+/-- 文脈との対応は、五形のどの出現も切り捨てず、元の順序も保つ。 -/
+example (form : Form) (closed wrong : Bool) :
+    let d := definition form closed wrong
+    let found := ScopeAccept.occurrences (bodyKey "forward") d.body
+    (found.zip (contextsBlock (d.coreParams.reverse.map some) d.body)).map Prod.fst = found := by
+  dsimp only
+  apply List.map_fst_zip
+  have aligned := occurrences_zip_contexts_length
+    (definition form closed wrong).coreParams (bodyKey "forward") (definition form closed wrong).body
+  rw [List.length_zip] at aligned
+  omega
+
 /-- 形ごとの受理の段は、元のパラメータと異なる範囲変数を選ぶ契約を拒否する。 -/
 theorem different_source (form : Form) :
     match acceptDef required "forward" (definition form false true) with

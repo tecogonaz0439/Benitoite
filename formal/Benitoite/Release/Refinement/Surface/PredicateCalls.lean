@@ -65,21 +65,45 @@ private def identifyCore : API → List Expr → Option (Entry × Expr)
 def identify (api : API) (args : List Expr) : Option (Entry × Expr) :=
   identifyCore api (args.map stripParens)
 
+/-- 実identifyが読み取った、括弧を除いた宣言順の引数の形。 -/
+inductive Identified : API → Entry → Expr → List Expr → Prop
+  | path {pattern p target} : parseAtPattern .path (.const (.string pattern)) = some (.path p) →
+      Identified .path (.path p) target [.literal (.string pattern), target]
+  | host {pattern p target} : parseAtPattern .host (.const (.string pattern)) = some (.host p) →
+      Identified .host (.host p) target [.literal (.string pattern), target]
+  | characters (lo hi target) :
+      Identified .characters (.characters lo hi) target [target, .literal (.character lo), .literal (.character hi)]
+  | floating (width test target) :
+      Identified (.floating width test) (.floating width test) target [target]
+
+/-- 解析の成功は、固定条件と対象を含む同じ有限な引数列を与える。 -/
+theorem identify_spec {api args entry target} (identified : identify api args = some (entry, target)) :
+    Identified api entry target (args.map stripParens) := by
+  unfold identify identifyCore at identified
+  split at identified
+  · split at identified
+    · cases identified
+      simp_all only []
+      exact .path (by assumption)
+    · cases identified
+  · split at identified
+    · cases identified
+      simp_all only []
+      exact .host (by assumption)
+    · cases identified
+  · cases identified; simp_all only []; exact .characters _ _ _
+  · cases identified; simp_all only []; exact .floating _ _ _
+  · cases identified
+
 /-- 解析したリテラルの絶対範囲は、内部の行に必要な整形式を満たす。 -/
 theorem identify_valid {api args entry target} (h : identify api args = some (entry, target)) : entry.Valid := by
-  unfold identify identifyCore at h
-  split at h
-  · split at h
-    · cases h
-      exact (parseAtPattern_formed (by assumption)).2.1
-    · cases h
-  · split at h
-    · cases h
-      exact (parseAtPattern_formed (by assumption)).2.1
-    · cases h
-  · cases h; trivial
-  · cases h; trivial
-  · cases h
+  have specification := identify_spec h
+  generalize normalized : args.map stripParens = expressions at specification
+  cases specification with
+  | path parsed => exact (parseAtPattern_formed parsed).2.1
+  | host parsed => exact (parseAtPattern_formed parsed).2.1
+  | characters => trivial
+  | floating => trivial
 
 /-- 公開名から取り出したパスの文字列の条件と、同じ内部行の全入力の応答は一致する。 -/
 theorem path_delta {pattern p}

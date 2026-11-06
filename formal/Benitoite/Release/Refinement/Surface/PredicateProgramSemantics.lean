@@ -1,11 +1,11 @@
 import Benitoite.Release.Refinement.Surface.CheckAccept
 import Benitoite.Release.Refinement.CheckErasure
+import Benitoite.Release.Refinement.Surface.PredicatePublicDeltas
 
-/-! # 公開ソースの解決とプログラムの意味
+/-! # 実入口が準備した核と性質1
 
-公開の判定の名前解決は型付けより前に行う。公開ソースの意味は、実入口と同じ全本体の収集・登録・解決を
-経たプログラムの脱糖で定める。解決済みの内部表現には通常の表層の脱糖を適用する。
-直接の公開呼出しへ精密な型を付けてから、異なる表で実行することはしない。
+実入口が用意する核は、全本体の収集・登録・解決に続く通常の脱糖である。
+名前解決の前の実行との観測の同値は `PredicateProgramObservations` で示す。
 -/
 namespace Benitoite.Release.Refinement.Surface.PredicateProgramSemantics
 open PredicateRows PredicateResponse PredicateProjection MatchFacts
@@ -15,56 +15,9 @@ noncomputable section
 def core (ready : CheckPreparation.Prepared) : Refinement.Program :=
   desugarProgram ready.input.opPrim ready.program
 
-/-- 公開ソースのプログラムの意味。収集・名前解決を通常の脱糖に先行させる。 -/
+/-- 実入口が準備したプログラムの核。収集・名前解決に続いて通常の脱糖を行う。 -/
 def meaning (q : Check.Input) (p : Program) : Refinement.Program :=
   core (CheckPreparation.prepare q p)
-
-/-- 公開ソースの事象列と終端は、実入口が用意した同じ核の遷移関係で観測する。 -/
-def execution (q : Check.Input) (p : Program) (σ : PathEnv)
-    (start : State) (events : List Event) (finish : State) : Prop :=
-  Steps (meaning q p) (CheckPreparation.prepare q p).input.B σ start events finish
-
-/-- 無限の実行も、同じ全プログラムと同じ入力表の各段で観測する。 -/
-def infinite (q : Check.Input) (p : Program) (σ : PathEnv)
-    (start : State) (labels : Nat → Option Event) : Prop :=
-  CheckErasure.InfiniteExecution (meaning q p) (CheckPreparation.prepare q p).input.B σ start labels
-
-/-- 条件を固定した公開行と内部行は、同じ入力で同じδを持つ。 -/
-structure PublicDeltaAgreement : Prop where
-  path : ∀ pattern path, parseAtPattern .path (.const (.string pattern)) = some (.path path) → ∀ value,
-    (Entry.path path).delta [] [] [] [.const (.string value)] =
-      API.path.delta API.path.name [] [] [] [.const (.string pattern), .const (.string value)]
-  host : ∀ pattern host, parseAtPattern .host (.const (.string pattern)) = some (.host host) → ∀ value,
-    (Entry.host host).delta [] [] [] [.const (.string value)] =
-      API.host.delta API.host.name [] [] [] [.const (.string pattern), .const (.string value)]
-  characters : ∀ lo hi value, (Entry.characters lo hi).delta [] [] [] [.const (.string value)] =
-    API.characters.delta API.characters.name [] [] [] [.const (.string value), .const (.character lo), .const (.character hi)]
-  floating : ∀ width test values, (Entry.floating width test).delta [] [] [] values =
-    (API.floating width test).delta (API.floating width test).name [] [] [] values
-  projected : ∀ (projection : Projection) types root leaf,
-    types.length = projection.ntys → readPath root projection.route = some leaf →
-    projection.delta types [] [] [root] = projection.entry.delta [] [] [] [leaf]
-
-theorem public_deltas : PublicDeltaAgreement := by
-  refine ⟨fun _ _ h => PredicateCalls.path_delta h, fun _ _ h => PredicateCalls.host_delta h,
-    PredicateCalls.characters_delta, PredicateCalls.floating_delta, ?_⟩
-  intro projection types root leaf count read
-  simp [Projection.delta, Projection.run, count, read, Entry.delta]
-
-/-- 公開ソースと、その実入口が返す解決済み表現のプログラムの意味は一致する。
-事象列と最終状態を等号で保つので、失敗のpayload・終了値・ストアも同じである。
-無限の実行の各段のラベルも保つ。公開行と内部行のδの対応を同じ言明に保持する。 -/
-theorem observations_preserved (q : Check.Input) (p : Program) :
-    PublicDeltaAgreement ∧
-    (∀ σ start events finish, execution q p σ start events finish ↔
-      Steps (core (CheckPreparation.prepare q p)) (CheckPreparation.prepare q p).input.B σ start events finish) ∧
-    (∀ σ start events finish, finish.Final →
-      (execution q p σ start events finish ↔
-        Steps (core (CheckPreparation.prepare q p)) (CheckPreparation.prepare q p).input.B σ start events finish)) ∧
-    (∀ σ start labels, infinite q p σ start labels ↔
-      CheckErasure.InfiniteExecution (core (CheckPreparation.prepare q p))
-        (CheckPreparation.prepare q p).input.B σ start labels) :=
-  ⟨public_deltas, fun _ _ _ _ => Iff.rfl, fun _ _ _ _ _ => Iff.rfl, fun _ _ _ => Iff.rfl⟩
 
 /-- 実入口の受理は、解決後の型付けと通常の性質1へ接続する。
 入力の健全性は元の表から構成する。全件性・有限支持とプログラムの整形式・値の束縛の仮定は区別する。 -/
