@@ -1047,7 +1047,7 @@ mutual
       HasTypeClausesQ P B StoreTy.empty Q C Γ Φ R εb (desugarClauses op cs) t ε Δ := by
     match h with
     | .nil => exact .nil
-    | .cons hsig hn hcount hk hw hbody hrest =>
+    | .cons _ hsig hn hcount hk hw hbody hrest =>
       have ih := HasBlockQ.desugar hbody hR hA
       rw [← hideBuilders_empty] at ih
       exact .cons (clauseSig_sameTypes hR hsig) hn hcount hk hw ih (HasClausesQ.desugar hrest hR hA)

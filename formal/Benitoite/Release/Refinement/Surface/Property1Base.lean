@@ -12,7 +12,7 @@ namespace Benitoite.Release.Refinement.Surface
 variable {P : Refinement.Program} {B : Builtins} {Q : NoFailCtx} {C : TypeCtx}
 
 /-- 宣言の表 D と核のプログラム P の対応。型の宣言が同じで、関数と実装の署名が一致する。
-対応する関数の範囲パラメータは空である。本体は比べない。 -/
+対応する関数の範囲パラメータの種類列も一致する。本体は比べない。 -/
 structure Declarations.Realizes (D : Declarations) (P : Refinement.Program) : Prop where
   types : D.core.SameTypes P
   funs : ∀ f fd, D.funs f = some fd → ∃ d, P.defs f = some d ∧ d.tparams = fd.tparams ∧
@@ -21,12 +21,13 @@ structure Declarations.Realizes (D : Declarations) (P : Refinement.Program) : Pr
     id.dictParams = is.dictParams ∧ id.cls = is.cls ∧ id.target = is.target
   /-- 外部宣言の表の構造検証。`Program.WellTyped` の欄と同じ条件である。 -/
   externalWF : P.ExternalWF
-  /-- 宣言の表にある関数に対応する核の関数は、範囲パラメータを持たない。 -/
-  ranges : ∀ f fd, D.funs f = some fd → ∀ d, P.defs f = some d → d.rkinds = []
+  /-- 宣言の表にある関数と対応する核の関数は、範囲パラメータの種類列が一致する。 -/
+  ranges : ∀ f fd, D.funs f = some fd → ∀ d, P.defs f = some d → d.rkinds = fd.rangeParams
 
 /-- 範囲パラメータを持たない核では、宣言の対応は型・関数・実装・外部宣言の四条件と同値である。 -/
 theorem Declarations.realizes_no_ranges {D : Declarations}
-    (hr : ∀ f d, P.defs f = some d → d.rkinds = []) :
+    (hr : ∀ f d, P.defs f = some d → d.rkinds = [])
+    (hs : ∀ f fd, D.funs f = some fd → fd.rangeParams = []) :
     D.Realizes P ↔ D.core.SameTypes P ∧
       (∀ f fd, D.funs f = some fd → ∃ d, P.defs f = some d ∧ d.tparams = fd.tparams ∧
         d.neffs = fd.neffs ∧ d.names = fd.coreNames ∧ d.params = fd.coreParams ∧ d.ret = fd.ret ∧ d.eff = fd.eff) ∧
@@ -35,7 +36,7 @@ theorem Declarations.realizes_no_ranges {D : Declarations}
   constructor
   · intro h; exact ⟨h.types, h.funs, h.impls, h.externalWF⟩
   · rintro ⟨ht, hf, hi, he⟩
-    exact ⟨ht, hf, hi, he, fun f _ _ d hd => hr f d hd⟩
+    exact ⟨ht, hf, hi, he, fun f fd hf d hd => (hr f d hd).trans (hs f fd hf).symm⟩
 
 theorem Declarations.Realizes.cons {D : Declarations} (h : D.Realizes P) : D.cons = P.cons := h.types.cons
 theorem Declarations.Realizes.ops {D : Declarations} (h : D.Realizes P) : D.ops = P.ops := h.types.ops

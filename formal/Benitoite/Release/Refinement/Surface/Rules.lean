@@ -100,22 +100,24 @@ def ViewExhaustive (D : Declarations) (view : CoverageView) (a : Ty) (ps : List 
 辞書を含む全引数の依存列 t を持つ。辞書 ds は値の引数より前に渡す。 -/
 inductive CallHeadTy (D : Declarations) (B : Builtins) (Q : NoFailCtx) (C : TypeCtx) (Γ : Ctx) :
     Expr → Tel → List DictEv → Prop
-  | fn {f fd ts es} : D.funs f = some fd → fd.dictParams = [] → NamesWF fd.coreNames fd.coreParams →
+  | fn {f fd ts es rs} : D.funs f = some fd → fd.dictParams = [] → NamesWF fd.coreNames fd.coreParams →
+      RangesFit rs fd.rangeParams →
       Admissible B C Γ.length (TypeCtx.constraints fd.tparams) fd.neffs
         (Qsig fd.coreParams fd.ret fd.eff) Q ts es fd.eff →
-      SignatureInstance D.core C Γ fd.tel (TypeCtx.kinds fd.tparams) ts es →
-      CallHeadTy D B Q C Γ (.funName f ts es) (instantiatedTel fd.tel ts es) []
-  | fnDicts {f fd ts es ds names ps} : D.funs f = some fd → fd.dictParams ≠ [] →
-      NamesWF fd.coreNames fd.coreParams →
+      SignatureInstance D.core C Γ (rangeTel rs fd.tel) (TypeCtx.kinds fd.tparams) ts es →
+      CallHeadTy D B Q C Γ (.funName f ts es (rs.map RangeIx.fixed)) (instantiatedTel (rangeTel rs fd.tel) ts es) []
+  | fnDicts {f fd ts es ds names ps rs} : D.funs f = some fd → fd.dictParams ≠ [] →
+      NamesWF fd.coreNames fd.coreParams → RangesFit rs fd.rangeParams →
       Admissible B C Γ.length (TypeCtx.constraints fd.tparams) fd.neffs
         (Qsig fd.coreParams fd.ret fd.eff) Q ts es fd.eff →
-      SignatureInstance D.core C Γ fd.tel (TypeCtx.kinds fd.tparams) ts es →
-      CallHeadTy D B Q C Γ (.funDicts f ts es ds names ps) (instantiatedTel fd.tel ts es) ds
-  | prim {b s ts es rs} : B.sig b = some s → B.RangeAdmissible b s (rs.map RangeExpr.absolute) →
+      SignatureInstance D.core C Γ (rangeTel rs fd.tel) (TypeCtx.kinds fd.tparams) ts es →
+      CallHeadTy D B Q C Γ (.funDicts f ts es ds names ps (rs.map RangeIx.fixed))
+        (instantiatedTel (rangeTel rs fd.tel) ts es) ds
+  | prim {b s ts es rs} : B.sig b = some s → B.RangeAdmissible b s rs →
       NamesWF s.names s.params → PrimitiveAdmissible C Γ.length s Q ts es →
-      SignatureInstance D.core C Γ (Tel.instR (rs.map RangeExpr.absolute) s.tel) (TypeCtx.kinds s.tparams) ts es →
-      CallHeadTy D B Q C Γ (.primName b ts es rs)
-        (instantiatedTel (Tel.instR (rs.map RangeExpr.absolute) s.tel) ts es) []
+      SignatureInstance D.core C Γ (Tel.instR rs s.tel) (TypeCtx.kinds s.tparams) ts es →
+      CallHeadTy D B Q C Γ (.primName b ts es (rs.map RangeIx.fixed))
+        (instantiatedTel (Tel.instR rs s.tel) ts es) []
   | op {o od ts} : D.ops o = some od → od.dictParams = [] → NamesWF od.names od.params →
       SatAll B C ts od.tparams →
       SignatureInstance D.core C Γ od.tel (List.replicate od.tparams.length .value) ts [] →
@@ -133,6 +135,12 @@ inductive CallHeadTy (D : Declarations) (B : Builtins) (Q : NoFailCtx) (C : Type
   /-- 01-12「外部の型と関数」: 外部関数の名前。依存列は宣言の依存列を型引数で具体化したもので、辞書を持たない。 -/
   | external {f d ts} : D.core.externalFunction f = some d → ExternalCallAdmissible D.core B C d ts →
       CallHeadTy D B Q C Γ (.externalName f ts) (Tel.bind (typeEnv ts) d.parameters) []
+
+/-- 選んだ組込みの操作一覧に属する発行専用の関数を、処理する節として書かない。
+利用者の操作一覧を選んだラベルと、それ以外の種類の組込みはこの条件で断らない。 -/
+def ClauseAllowed (D : Declarations) (B : Builtins) (o : OpRef) : Prop :=
+  ∀ b s l bs, o = .prim b → B.sig b = some s → D.effects l = none →
+    B.effects l = some bs → b ∈ bs → s.kind ≠ .pathBases
 
 /-- 穴を含む引数のうち、固定の式の個数。 -/
 def HoleArgs.fixedCount : HoleArgs → Nat
@@ -250,19 +258,19 @@ mutual
         HasTypeQ D B opPrim Q [] C (Γ.map fun _ => none) [] R .other body a Eff.empty →
         HasTypeQ D B opPrim Q Δ C Γ Φ R p (.constE a body) a Eff.empty
     /-- 01-12「名前とリテラル」: トップレベルの関数 f。辞書の引数を持たない関数に限る。 -/
-    | E_Fun {Δ C Γ Φ R p f ts es t} :
-        CallHeadTy D B Q C Γ (.funName f ts es) t [] →
-        HasTypeQ D B opPrim Q Δ C Γ Φ R p (.funName f ts es) (.dependentFn t) Eff.empty
+    | E_Fun {Δ C Γ Φ R p f ts es rs t} :
+        CallHeadTy D B Q C Γ (.funName f ts es rs) t [] →
+        HasTypeQ D B opPrim Q Δ C Γ Φ R p (.funName f ts es rs) (.dependentFn t) Eff.empty
     /-- 01-12「型クラス」の表の第 4 行: return λ(ȳ:Ā). f[T̄; Ē](Ū, ȳ)。Ā は値の引数だけ。 -/
-    | E_FunDicts {Δ C Γ Φ R p f ts es ds names ps t r ε r' e'} :
-        CallHeadTy D B Q C Γ (.funDicts f ts es ds names ps) t ds →
+    | E_FunDicts {Δ C Γ Φ R p f ts es ds names ps rs t r ε r' e'} :
+        CallHeadTy D B Q C Γ (.funDicts f ts es ds names ps rs) t ds →
         NamesWF names ps → Ty.Annotation D.core C Γ (.fn names ps r ε) →
         ValsTel D B C (hideConts Γ) ps.length (bindParams (hideConts Γ) ps) (liftMany ps.length Φ)
           (ds.map (fun d => d.toVal.rename (· + ps.length)) ++ boundVars ps.length)
           (Tel.shiftV ps.length 0 t) r' e' →
         Ty.LeQ D.core (bindParams (hideConts Γ) ps) (liftMany ps.length Φ) r' (r.shiftV ps.length 0) →
         Eff.Covers (bindParams (hideConts Γ) ps) (liftMany ps.length Φ) (Eff.shiftV ps.length 0 ε) e' →
-        HasTypeQ D B opPrim Q Δ C Γ Φ R p (.funDicts f ts es ds names ps) (.fn names ps r ε) Eff.empty
+        HasTypeQ D B opPrim Q Δ C Γ Φ R p (.funDicts f ts es ds names ps rs) (.fn names ps r ε) Eff.empty
     /-- 同表第 2 行: return λ(ȳ:Ā). V.m[S̄; Ē](Ū, ȳ)。 -/
     | E_MethName {Δ C Γ Φ R p d m ss es us names ps t r ε r' e'} :
         CallHeadTy D B Q C Γ (.methName d m ss es us names ps) t us →
@@ -959,7 +967,7 @@ mutual
       BuilderCtx → TypeCtx → Ctx → List Pred → Option Ty → Eff → Clauses → Ty → Eff → Prop
     | nil {Δ C Γ Φ R εb t ε} : HasClausesQ D B opPrim Q Δ C Γ Φ R εb .nil t ε
     | cons {Δ C Γ Φ R εb o n ntys body cs t ε sg ndicts} :
-        ClauseSig D.core B εb o sg → NamesWF sg.names sg.params → ndicts + n = sg.params.length →
+        ClauseAllowed D B o → ClauseSig D.core B εb o sg → NamesWF sg.names sg.params → ndicts + n = sg.params.length →
         ntys = sg.tparams.length → sg.WF →
         HasBlockQ D B opPrim Q [] (sg.tparams ++ C) (sg.context Γ t ε)
           (liftMany (sg.params.length + 1) Φ)

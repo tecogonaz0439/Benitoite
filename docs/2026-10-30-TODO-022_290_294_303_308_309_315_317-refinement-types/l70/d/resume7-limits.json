@@ -1,0 +1,22 @@
+{
+ "formal/Benitoite/Release/Refinement/Surface/OpenSurfaceScoped.lean": {
+  "options": [
+   "set_option maxHeartbeats 400000 in"
+  ],
+  "reason": "HasTypeQ.scopedの相互証明が既定の200000でタイムアウトすることを削除試行で確認。",
+  "failure_log": {
+   "bytes": 715,
+   "sha256": "136251681375d0e80d5b5c744ad5c659fbdae4483520e2092394f0f5d64f7075"
+  }
+ },
+ "formal/Benitoite/Release/Refinement/Surface/OpenSurfaceProperty1.lean": {
+  "options": [
+   "set_option maxHeartbeats 400000 in"
+  ],
+  "reason": "完成したHasTypeQ.desugarの相互証明を既定200000で再試行し、whnfのタイムアウトを確認。",
+  "failure_log": {
+   "bytes": 707,
+   "sha256": "1c86fb26cfba9149e2076fa8b841e821696bceb807d06b90d8e6e61e1bb04380"
+  }
+ }
+}
