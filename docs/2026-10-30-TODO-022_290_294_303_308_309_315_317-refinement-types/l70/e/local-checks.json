@@ -1,0 +1,62 @@
+{
+ "default_build_after_merge": {
+  "start": "2026-11-06 16:12:44 JST",
+  "end": "2026-11-06 16:25:48 JST",
+  "seconds_including_lock_wait": 784.181,
+  "rc": 0
+ },
+ "examples_after_path_and_join_fix": [
+  {
+   "module": "CheckDataHintExamples",
+   "rc": 0,
+   "seconds": 0.405
+  },
+  {
+   "module": "CheckDeclarationExamples",
+   "rc": 0,
+   "seconds": 0.549
+  },
+  {
+   "module": "CheckExamples",
+   "rc": 0,
+   "seconds": 1.997
+  },
+  {
+   "module": "CheckPatternExamples",
+   "rc": 0,
+   "seconds": 0.393
+  },
+  {
+   "module": "CheckInferExamples",
+   "rc": 0,
+   "seconds": 25.784
+  }
+ ],
+ "dependency_logs": [
+  {
+   "file": "stage3-foundation.log",
+   "bytes": 1751,
+   "sha256": "67a6d368709a21b4b39cc887383cc83e6d6d2cc9e28ed82442ebcecd7d21dbb8"
+  },
+  {
+   "file": "stage3-finite.log",
+   "bytes": 75,
+   "sha256": "298d87ee04a87d4b9e8bb751e662c54717b18f1fda57f1d3ac1def6182bc2752"
+  },
+  {
+   "file": "stage3-entries-retry.log",
+   "bytes": 1374,
+   "sha256": "51e8a28d641942bb54624b5b33abde175603a8a3a87ba0af956290dc682db529"
+  },
+  {
+   "file": "stage3-program-retry.log",
+   "bytes": 1998,
+   "sha256": "6f4d8c4504319a37a94aa8e9865619b51a20a866cab595afe621aa6a544141a2"
+  },
+  {
+   "file": "stage5-dependencies.log",
+   "bytes": 5027,
+   "sha256": "b525e5c71682fb36013215ed4b95945f3dd6584be4396e94fc081dde19d8c276"
+  }
+ ]
+}
