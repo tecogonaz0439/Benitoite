@@ -101,3 +101,29 @@ Lean はすべて `<repo>/formal/` から実行し、同時に一つだけとし
 | 5 | 記録を書き換えない Python と読み取りの git による照合。未追跡の60ソースの禁止構文、根の import、`audit-summary.json` のソースの SHA-256、`Rule` のタグの集計、記録の内訳の大きさ | 禁止構文0件、60モジュールの import が各一度、SHA-256 は60件とも一致。タグは E 72・B 11・Types/Each 各2・Fixed/Arms 各3・Clauses 2・Spread 4・Join 2・JoinParts 3・Interp 5 |
 
 担当が記した既定ビルド（1,436ジョブ）・全環境の公理監査（99,743宣言）・`verify.py` の成功は保存された記録として読み、本レビューで実行した検査には数えていない。
+
+## Opus による処置の確認（2026-11-06）
+
+対象はブランチ `m014/l70.e` のコミット `a1bfc14a`（前は `66779f9c`）である。担当の報告と [results.md](../l70/e/results.md) の「再開1」、`66779f9c..a1bfc14a` の差分を読み、Lean は `<repo>/formal/` から `lake env lean -M 12288 <file>` で一つずつ実行した（`-o` なし）。確認用の入力は指定された scratchpad の `rv-l70-e1/` に置いた。`lake build`・cargo・`scripts/check.sh`・担当の台本・git の書き込み操作は行っていない。担当が記した既定ビルド・公理監査・照合の成功は記録として読んだ。
+
+### 結論
+
+**可。** 重1・中1〜中4・軽1・情報5は処置済みである。残った所見は情報2件で、いずれも後段への申し送りであり、この群の完了を妨げない。
+
+### 確かめたこと
+
+- 重1: `Check.Input` から `guide`・`inferred`・`superGuides` が、形成の入力から `hints` が除かれ、外から読むのは `logicCertificates : List Nat → Nat → Option ExchangeCertificate`（証明と基本操作列の二欄）だけである。`checkExpr`・`checkBlock` は `CheckInfer.inferExpr`・`inferBlock` の結果を `CheckFinite` で有限化し、`checkExprAt`・`checkBlockAt` で再検査する。宣言の本体は `inferBlockExpected` を通す。`checkExpr_ok` は支持付きの案内の存在を返し、`checkExpr_sound` 等は外部の案内の支持の前提を除いただけで、型付けの結論は同じである。宣言・プログラム・受理・材料版の健全性も `hg`・`hsg` を除いただけであり、新しい前提はない。`LogicCertificate.query` は診断だけが読み、`LogicCertificate.check` は読まない。既定ビルドの `CheckInferExamples` は案内を書かずに unit・let・if・Boolean の match（網羅と不足）・利用者関数と組込みの呼出し・handle/resume・篩の導入と忘却・戻り値の篩・`@proofSteps` を実入口で受理・拒否し、`refined_result_typed` で健全性を適用している。
+- 検査A（`Probe.lean`、5,205 bytes、SHA-256 `1bfebc0d6a20292c788fc4d22e152519eb6c253619e6fa2bbba630d168cd6172`、終了0）: 同じ材料で、6段の入れ子の if、30段の括弧と block、20段の else-if、40個の let を式・ブロック・宣言の入口へかけて全て ok。節の中で別の操作を行って再開する handle、lambda の呼出し、効果を宣言した lambda とその呼出し、パイプ、if のみ、List も ok。純粋と宣言した lambda の本体で操作を行うものは rejected で、正しい。構造の燃料が実用の入れ子で尽きる例は見つからなかった。
+- 旧 checker との対応: 旧の `join`（`Finite.tyJoin`）は最上位の関数型の効果の和と同一型だけを結合し、新しい `joinType` も同じ範囲を部分型の候補で扱う。if・handle・lambda・パイプの形でも差は見つからなかった。旧が受理して新が拒否する形として確定したのは値域外の数値だけである。篩を持たない入力では論理の証明書を要しないので、交換の書き出しだけを改めたコーパスを新しい七入口へかける F-REG は成り立つ見込みがある。Rust が書き出す適格な入力についての成功保存を未証明として名指し、F-REG を受け口とした申し送りは妥当である。
+- 中1: `classify` の `.unproved` を rejected に、unknown を会計の打ち切りだけに限った（`unknown_accounting`）。推論の失敗は `Failure.rejected`・`stopped` を保ち、再検査の失敗は `guideDecision` が全問い合わせを調べて実際の malformed を優先する（`guide_malformed_rejected`）。各入口の `*_unknown` は打ち切りの存在を結論し、打ち切りだけが原因とは言わない。入れ子・混在・候補選択の両側の例がある。
+- 中2: 検査B（`MatchReport.lean`、831 bytes、SHA-256 `d3a963c169a7b63ddc99467acb6df2a401f6aa2730ef29b84aba53e7c70b22c9`、終了0）: 前回の検査3と同じ Month と `1..12` の腕で、`checkMatchWithView` の `exhaustive` が true、`uncovered` が none になった。`checkMatchWithView_exhaustive_sound`・`_unreachable_sound`・`irrefutableWithView_sound` の言明は前と同じである。
+- 中3・中4・軽1・情報5: 接点の一覧に `Val.prim` の `RangeIx`・`AnnotationR`/`TelBodyTyR`・`RangeAdmissible`/`instTel` がある。07-04 の対応表に70モジュールの12行がある。`E_Refine`・`E_Sub` は `child path 0` を渡す。C の `l70/e/` は244 KB、最大のファイルは results.md の約52 KB である。情報3・4は申し送りに一行ずつある。
+- 言明の差: 担当の表のとおりで、前提の削除と、到達しない腕の lookup の二補助の結論を初期領域内の報告へ替えた点だけである。網羅性の三言明・実入口と宣言・プログラム・受理の結論は変わらない。型付けの規則と群 E 以外の核・表層のモジュールは差分にない。
+- 守ること: 変更した Lean ファイルに `sorry`・`axiom`・`native_decide`・`set_option`・`#eval`・`#print`・`admit`・`implemented_by`・`extern`・`partial def` はない。根の import は新規10モジュールの追加だけである。検査C（`Axioms.lean`、815 bytes、SHA-256 `2225c7b0c2f0f790fe5c51356f79534fafd68ce642650b23e0a39b4e8b7da64a`）で、実入口・宣言・プログラム・受理の健全性と unknown の言明、`proofFailure_malformed`、二つの適用例の公理は `propext`・`Classical.choice`・`Quot.sound` だけだった。網羅性の三定理は名前空間の指定を誤って表示できなかったが、言明は前と同じで、担当の全環境の監査に含まれる。手元の絶対パスは記録にない。
+
+### 残った所見
+
+| 番号 | 重さ | 内容 | 扱い |
+|---|---|---|---|
+| 情報6 | 情報 | 推論の燃料 `4 * 節数 + 4` が足りることは証明していない。尽きれば `structural` の停止として unknown を返す。言明と写しはこれを打ち切りに含めると書いており、健全性には影響しない。検査Aの入れ子では尽きなかった | F-REG で unknown の理由が `structural` の入力が出ないかを見る |
+| 情報7 | 情報 | `logicCertificates` の鍵（位置と番号）は推論が内部で決める。例えば if の分岐の事実は `1 + (分岐に応じた差) + i` の番号である。交換の契約として 01-12 に書いていない。既定ビルドの例は全ての鍵に同じ証明書を返す表を使うので、鍵の取り違えを捕まえない | 篩を持つ入力を書き出す L70.40a の前に、鍵の決め方を交換の契約として定めるか、Rust が同じ規則で鍵を作ることを確かめる |
