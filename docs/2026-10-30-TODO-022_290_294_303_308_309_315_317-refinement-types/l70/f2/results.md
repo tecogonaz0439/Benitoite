@@ -804,3 +804,12 @@ CheckError の expected の実診断の書式との一致は R40・R60、Rust/Le
 群 F2 の二つの完了条件（新しい行の合成と、作り直した一覧による NameLists.WF・composed_rows・completion_core）は、ともに完了である。
 最初の明示時刻18:27:48から照合終了19:27:26までは約59分38秒であり、先行する読み込みの未採取の部分を含めていない。
 照合後の変更は、本書への実行済みの数値と判定の追記だけである。
+
+## 群 F2 の作業末の work の検査（取りまとめ）
+
+- 基準: `889638bca324ea78e7eb50daea4cf402febbcedc`（群 E の前半までの san_benito）。HEAD は、群 F2 の成果（`8a0ea85c`）へ san_benito を取り込んだものである（衝突なし）。
+- 事前に `formal/.lake/build/lib/lean/Benitoite/Release/Refinement` と `formal/.lake/build/ir/Benitoite/Release/Refinement` を消した。
+- コマンド: `scripts/check.sh --level work --base 889638bca324ea78e7eb50daea4cf402febbcedc`（`/usr/bin/time -l` で測定）。選ばれた検査は spec_tally・spec_examples（01-12 の変更による）・formal_build。
+- 終了状態 0（selected checks passed。spec_examples は7件成功）。外側の時間 910.87秒（錠の待ちの後、19:51〜20:06）、最大常駐量 4,392,550,400 バイト。
+- 生の記録は `<tmp>` に置いた（6,669 バイト、SHA-256 `935f01afbcab1b5038c135fc061edf880e8e7d8d3f192350a7145751522b3974`）。
+- 計画からのずれ: J70-9 の結果型は群 D の作業へ回した（plan.md）。
