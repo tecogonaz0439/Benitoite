@@ -3304,11 +3304,27 @@ abbrev AtError := Detail Val
 
 `Val.toTerm?` は観測できない根を `none` とする。複合値の観測は `List (Option Term)` で各要素・欄を保持するので、関数・Reference・Lazy の欄を観測できなくても、data の根や隣の不変な欄は残せる。`slotBind` は `none` を保つ。全域の構文操作 `termBind` の既定値を、観測の成功の証拠として使わない。
 
-`Refinement.Surface.Desugar` は、表層の関数の参照を空の範囲引数を持つ `Val.fnRef` へ写し、組み込みの参照の閉じた範囲引数を `RangeIx.fixed` に包んで `Val.prim` へ渡す。宣言した関数・フィールドを取り出す関数・構成子の判定の関数は、いずれも空の `Def.rkinds` を持つ。宣言の表と核のプログラムの対応 `Declarations.Realizes` は、型・関数・実装の署名と外部宣言の条件に加え、対応する関数の `rkinds = []` を要求する。核の全関数の範囲パラメータが空なら、この対応は前記の四条件と同値である（`Declarations.realizes_no_ranges`）。脱糖したプログラムについては `desugarProgram_ranges` がこの前提を供給する。性質1は、照合対象の型注釈から核の `C_Match` の宣言の前提を供給し、空の範囲文脈での注釈と本体の判断を `Ty.AnnotationR` と `TelBodyTyR` へ移す。処理済みの効果は、核の `handled`（`handledSelected` はその別名）を脱糖の前後で同じ操作の表と節の操作名の列から読むことで一致する。
+`Refinement.Surface.Desugar` は、表層の関数と組込みの参照の範囲引数を `RangeIx` の列として `Val.fnRef` と `Val.prim` へ渡す。閉じた範囲は `.fixed`、宣言した範囲の変数は `.rvar` で表す。宣言した関数の `FunDecl.rangeParams` は核の `Def.rkinds` へ写し、生成した射影と構成子の判定の関数は空の列を持つ。宣言の表と核のプログラムの対応 `Declarations.Realizes` は、型・関数・実装の署名と外部宣言の条件に加え、対応する関数の `rkinds = fd.rangeParams` を要求する。表層と核の関数の範囲パラメータがともに空なら、この対応は前記の四条件と同値である（`Declarations.realizes_no_ranges`）。`desugarProgram_ranges` は対応する種類列の一致を返し、`desugarProgram_ranges_no_ranges` は範囲のない表層のプログラムに空の列を返す。
+
+範囲文脈を持つ表層の型付けは `Surface.OpenSurface` の相互帰納的な判断で定める。`CallHeadTy.fn` と `fnDicts` は、呼出し元の種類列に適合する範囲引数列 `RangeArguments` を要求する。`.rvar i` は同じ位置の宣言の種類に一致し、`.fixed r` は整形式・正準形・種類の適合を満たす。参照先の依存列には、その宣言した範囲の深さでの `RangesScoped` と `WF` を要求する。`E_Fun`・`E_FunDicts` と、直接の呼出し・パイプの呼出し・パイプの適用・部分適用の四規則は同じ呼出し頭を使う。引数の対応と並べ替え、元の文脈での引数の型付け、篩と部分型、効果の被覆、照合の網羅性の条件も検査する。核の本体全体が全具体化で型付くことを、表層の規則の前提にはしない。
+
+許容を読む葉は、全ての適格な具体化について、関数の制約の照合と組込みの型引数の許容を要求する。組込みの葉は、宣言した深さでの署名の形成 `PrimSig.Scoped` も要求する。これらは値の置換の仮定から導く条件ではなく、表層の葉で検査する条件である。`Surface.RangeStandard.admits_instR` と `sat_instR` は合成表の全lookupについて許容と制約の照合の保存を示し、`signature_ranges` は同じ表の署名の範囲の形成を示す。
+
+使用する宣言の構文の条件は、葉ごとに検査する。利用者の関数は依存列の `RangesScoped` と `WF` を宣言した種類列の深さで満たす。操作とメソッドの宣言は範囲深さ0で同じ二条件を満たす。辞書の実装の対象型と、コンストラクタの各欄は `RangesScoped 0` を満たす。照合とパターン束縛の葉は、参照するプログラムの全コンストラクタの欄の範囲閉性 `PatternRangesClosed` を要求する。外部関数を参照する葉は、当該宣言の依存列の `RangesScoped 0` を要求する。操作を処理する節の葉は、節の署名の各引数型と結果型について、範囲閉性と正規形が元の型に等しいことを要求する（`ClauseSyntax`）。これらは開いた表層の使用箇所の条件であり、プログラムから外部宣言や利用者の操作を除く条件ではない。
+
+表層の `Def.WellTyped` は、契約名とkind、`AnnotationR`、および `BodyTyR` を要求する。範囲文脈は宣言の `rangeParams` である。`BodyTyR` は範囲パラメータが空なら通常の `BodyTy`、非空なら `OpenSurface.BodyTy` で本体を一度型付ける。`Def.wellTyped_no_ranges` は空の種類列について元の注釈と本体の判断への同値を示す。性質1は、同じ有限な表層の導出から全ての適格な具体化の核の本体の判断を構成し、`TelBodyTyR` を得る。処理済みの効果は、核の `handled`（`handledSelected` はその別名）を脱糖の前後で同じ操作の表と節の操作名の列から読むことで一致する。
+
+`Surface.ClauseAllowed` は、選ばれた組込みの操作の一覧に属する `pathBases` の種類の操作を処理する節を断る。利用者の操作の一覧があるラベルでは、組込みの一覧へのこの検査を適用しない。`HasClausesQ.cons` と範囲文脈を持つ節の規則はこの条件を持つ。`RangeClauseExamples.standard_issue_clause_rejected` は合成表の発行の操作の節に型付けの導出がないこと、`user_clause_accepted` は同じ `Process.Environment` に属する利用者の操作の節を型付けられることを示す。
+
+`Builtins.ValueAssumptions` は、組込みの型引数の許容判定 `PrimSig.admits` について、値の改名と値の置換による保存を要求する。範囲の具体化による保存は要求しない。`Refinement.Surface.RangeAdmissibilityExample.existing_premises_insufficient` は、この仮定と表層の `BodyTy`、範囲深さ1での脱糖したソースの形成を満たし、適格な範囲の具体化後に核の本体の型付けを持たない例である。型引数は、効果に範囲変数を持つ関数型である。表はその型引数を許容し、範囲変数を Top に置き換えた型引数を拒む。
+
+`Refinement.Surface.RangeSignatureExample.admissibility_premises_insufficient` は、型引数の許容と制約の照合が範囲の具体化の前後で常に成立する表について、本体の全具体化の型付けが従わないことを示す。組込みの署名は範囲パラメータを持たず、結果の参照型の内容にある関数型の潜在効果に、範囲変数を持つ。表層の本体の型付け、宣言の対応、値の置換の仮定、範囲深さ1での本体と署名の形成は成立する。呼出し元の範囲を具体化しても、空の型・行・範囲引数を持つ組込みの参照は変わらず、表の署名に残った範囲変数は具体化されない。`instantiated_value_rejected` は核の組込みの参照の逆転と参照型の不変性から、期待する具体化後の型付けを否定する。組込みの署名自身の範囲深さでの形成 `PrimSig.Scoped` は、値の置換の仮定とは別の条件である。
 
 `Refinement.Surface.Expr.valueOf?` は、脱糖がそのまま返す値を取り出す。局所の名前、リテラル、Unit、引数のない構成子に加え、直接の負号を持つ `negInt`・`negFloat`・`negDecimal`・`negInteger8`・`negInteger16`・`negInteger32`・`negFloat32` を含む。Decimal は係数を負にし、固定幅整数は大きさを Int に移して負にし、Float32 は符号ビットを反転する。取り出した値の観測について篩を事実から導ければ、表層の `HasTypeQ.E_Refine` は同じ式に篩付きの型を与え、脱糖は核の `V_Refine` へ写る（`desugar_valueOf`・`HasTypeQ.desugar`）。
 
 `Refinement.Surface.AliasDecl.expand` は、別名の本体へ型引数・範囲引数・値引数の順に置換を適用する。宣言の整形式は、本体が宣言した型・範囲・値の文脈で整形式・整列済み・宣言済みであることを要求する（`AliasDecl.WellFormed`）。型引数の数と kind、各像の三つの形成条件（`AliasTypeArgs`）から、`AliasDecl.subst_formation` は `a.body.subst ts []` の三つの形成条件を型引数を代入した文脈 `a.typeContext ts` で導く。文脈は値の番号を保ち、正規化前の型の像を格納する。`AliasDecl.expand_annotation` は、この形成、同じ数の整形式で種類の合う閉じた範囲引数、型引数を代入して範囲を具体化した文脈 `a.instantiatedContext ts rs` から展開先の文脈への値引数の像（`AliasArgs`）を使い、展開の注釈の整形式を導く。値引数の像は全 sort について整列と宣言を照合する。型パラメータが空という前提は持たない。
+
+`Surface.RangeAliases` の `AliasDecl.expandOpen` は、呼出し元の開いた範囲引数を型の別名へ渡す。型引数を置換した本体の範囲変数を `aliasRangeEnv` で写し、値引数を置換する。`AliasDecl.expandOpen_annotation` は、宣言の形成、型引数の条件、`RangeArguments` と、開いた範囲を写した文脈 `openContext` の下の値引数の条件から、呼出し元の範囲文脈における展開の `AnnotationR` を得る。`pathAlias_expandOpen_annotation` はpathの種類の範囲変数 `.rvar 0` を別名へ渡す注釈を検査する。
 
 ### 篩の正規形と制約の読み方
 

@@ -1,4 +1,5 @@
 import Benitoite.Release.Refinement.Surface.Property1
+import Benitoite.Release.Refinement.Surface.OpenSurfaceProperty1
 
 /-!
 # 表層のプログラムの型付けと、定義・実装の型の保存
@@ -20,12 +21,22 @@ inductive BodyTy (D : Declarations) (B : Builtins) (opPrim : OpPrim) (Q : NoFail
   | param {C Γ Φ name a rest body} : BodyTy D B opPrim Q C (Γ.extend a) (Φ.map Pred.lift) rest body →
       BodyTy D B opPrim Q C Γ Φ (.param name a rest) body
 
+/-- 範囲文脈が空なら既存の判断を使い、非空なら開いた表層の有限な導出を使う。 -/
+def BodyTyR (D : Declarations) (B : Builtins) (op : OpPrim) (Q : NoFailCtx)
+    (ks : List Scope.Domain.Kind) (C : TypeCtx) (Γ : Ctx) (Φ : List Pred) (t : Tel) (body : Block) : Prop :=
+  if ks = [] then BodyTy D B op Q C Γ Φ t body else OpenSurface.BodyTy D B ks op Q C Γ Φ t body
+
+/-- 範囲パラメータのない本体は、元の表層の本体の判断と同値である。 -/
+@[simp] theorem bodyTyR_nil {D B op Q C Γ Φ t body} :
+    BodyTyR D B op Q [] C Γ Φ t body ↔ BodyTy D B op Q C Γ Φ t body := by
+  simp [BodyTyR]
+
 /-- 関数の定義の型付け。 -/
 def Def.WellTyped (D : Declarations) (B : Builtins) (opPrim : OpPrim) (d : Def) : Prop :=
   NamesWF d.coreNames d.coreParams ∧
   Ty.HasKind D.core (TypeCtx.kinds d.tparams) (.dependentFn d.toFunDecl.tel) .value ∧
-  Ty.Annotation D.core d.tparams [] (.dependentFn d.toFunDecl.tel) ∧
-  BodyTy D B opPrim (QTel d.toFunDecl.tel) d.tparams [] [] d.toFunDecl.tel d.body
+  Ty.AnnotationR D.core d.rangeParams d.tparams [] (.dependentFn d.toFunDecl.tel) ∧
+  BodyTyR D B opPrim (QTel d.toFunDecl.tel) d.rangeParams d.tparams [] [] d.toFunDecl.tel d.body
 
 /-- 本体のソース照合だけに使う view を替えた宣言の表。 -/
 def Declarations.withView (D : Declarations) (view : CoverageView) : Declarations := { D with view := view }
@@ -54,11 +65,28 @@ theorem BodyTy.desugar {D op Q C Γ Φ t body} (h : BodyTy D B op Q C Γ Φ t bo
   | done hb => exact .done (hb.desugar hR hA)
   | param _ ih => exact .param ih
 
+/-- 範囲のない定義の条件は、元の名前・kind・注釈・本体の四条件へ戻る。 -/
+theorem Def.wellTyped_no_ranges {D op d} (hr : d.rangeParams = []) :
+    Def.WellTyped D B op d ↔ NamesWF d.coreNames d.coreParams ∧
+      Ty.HasKind D.core (TypeCtx.kinds d.tparams) (.dependentFn d.toFunDecl.tel) .value ∧
+      Ty.Annotation D.core d.tparams [] (.dependentFn d.toFunDecl.tel) ∧
+      BodyTy D B op (QTel d.toFunDecl.tel) d.tparams [] [] d.toFunDecl.tel d.body := by
+  simp only [Def.WellTyped, hr, Ty.annotationR_nil, bodyTyR_nil]
+
+/-- 表層の本体の一度の導出から、核の全適格具体化の判断を得る。 -/
+theorem BodyTyR.desugar {D op Q ks C Γ Φ t body} (h : BodyTyR D B op Q ks C Γ Φ t body)
+    (hR : D.Realizes P) (hA : Builtins.ValueAssumptions P B) :
+    TelBodyTyR P B StoreTy.empty Q ks C Γ Φ t (desugarBlock op .tail body) := by
+  by_cases hk : ks = []
+  · subst ks
+    exact telBodyTyR_nil.mpr ((bodyTyR_nil.mp h).desugar hR hA)
+  · exact (by simpa only [BodyTyR, hk, ite_false] using h : OpenSurface.BodyTy D B ks op Q C Γ Φ t body).desugar hR hA
+
 theorem Def.WellTyped.desugar {D op d} (h : Def.WellTyped D B op d) (hR : D.Realizes P)
     (hA : Builtins.ValueAssumptions P B) : Refinement.Def.WellTyped P B (desugarDef op d) := by
   obtain ⟨hn, hk, ha, hb⟩ := h
-  exact ⟨hn, hk.sameTypes hR.types, Ty.annotationR_nil.mpr (ha.sameTypes hR.types),
-    telBodyTyR_nil.mpr (hb.desugar hR hA)⟩
+  exact ⟨hn, hk.sameTypes hR.types, ⟨ha.wf, ha.sorted, ha.declared.sameTypes hR.types⟩,
+    hb.desugar hR hA⟩
 
 theorem ImplDecl.WellTyped.desugar {D op id views} (h : ImplDecl.WellTyped D B op id views)
     (hR : ∀ v, (D.withView v).Realizes P) (hD : D.Realizes P)

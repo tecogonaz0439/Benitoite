@@ -29,28 +29,30 @@ theorem CallHeadTy.app_value {D Γ Φ f t ds v dl} (h : CallHeadTy D B Q C Γ f 
     (hd : directCallee f = some (.app v dl)) (hR : D.Realizes P) :
     HasTypeVQ P B StoreTy.empty Q C Γ Φ v (.dependentFn t) ∧ dl = DictEv.toValList ds := by
   cases h with
-  | fn hf hdp hn ha hs =>
+  | @fn f fd ts es rs hf hdp hn hr ha hs =>
     simp only [directCallee, Option.some.injEq, CallHead.app.injEq] at hd
     obtain ⟨rfl, rfl⟩ := hd
     obtain ⟨d, hdf, htp, hne, hnm, hpa, hre, hef⟩ := hR.funs _ _ hf
     have htel := FunDecl.tel_eq hnm hpa hre hef
     refine ⟨?_, by simp [DictEv.toValList]⟩
-    have hv := HasTypeVQ.fun_empty (Ψ := StoreTy.empty) (Q := Q) (Γ := Γ) (Φ := Φ) (B := B) hdf
-      (by rw [hnm, hpa]; exact hn) (hR.ranges _ _ hf _ hdf)
+    have hv := HasTypeVQ.V_Fun (Ψ := StoreTy.empty) (Q := Q) (Γ := Γ) (Φ := Φ) (B := B) (rs := rs) hdf
+      (by rw [hnm, hpa]; exact hn)
+      (by change RangesFit rs d.rkinds; rw [hR.ranges _ _ hf _ hdf]; exact hr)
       (by rw [htp, hne, hpa, hre, hef]; exact ha)
-      (by rw [htel, htp]; exact hs.sameTypes hR.types)
-    rwa [htel] at hv
-  | fnDicts hf hdp hn ha hs =>
+      (by cases rs <;> simpa only [Refinement.Def.instTel, rangeTel, htel, htp] using hs.sameTypes hR.types)
+    cases rs <;> simpa only [Refinement.Def.instTel, rangeTel, htel] using hv
+  | @fnDicts f fd ts es ds names ps rs hf hdp hn hr ha hs =>
     simp only [directCallee, Option.some.injEq, CallHead.app.injEq] at hd
     obtain ⟨rfl, rfl⟩ := hd
     obtain ⟨d, hdf, htp, hne, hnm, hpa, hre, hef⟩ := hR.funs _ _ hf
     have htel := FunDecl.tel_eq hnm hpa hre hef
     refine ⟨?_, rfl⟩
-    have hv := HasTypeVQ.fun_empty (Ψ := StoreTy.empty) (Q := Q) (Γ := Γ) (Φ := Φ) (B := B) hdf
-      (by rw [hnm, hpa]; exact hn) (hR.ranges _ _ hf _ hdf)
+    have hv := HasTypeVQ.V_Fun (Ψ := StoreTy.empty) (Q := Q) (Γ := Γ) (Φ := Φ) (B := B) (rs := rs) hdf
+      (by rw [hnm, hpa]; exact hn)
+      (by change RangesFit rs d.rkinds; rw [hR.ranges _ _ hf _ hdf]; exact hr)
       (by rw [htp, hne, hpa, hre, hef]; exact ha)
-      (by rw [htel, htp]; exact hs.sameTypes hR.types)
-    rwa [htel] at hv
+      (by cases rs <;> simpa only [Refinement.Def.instTel, rangeTel, htel, htp] using hs.sameTypes hR.types)
+    cases rs <;> simpa only [Refinement.Def.instTel, rangeTel, htel] using hv
   | prim hb hr hn ha hs =>
     simp only [directCallee, Option.some.injEq, CallHead.app.injEq] at hd
     obtain ⟨rfl, rfl⟩ := hd

@@ -7,7 +7,7 @@ set_option pp.deepTerms.threshold 1000000
 
 /-! 群 D の公理監査。群で足したモジュールと、群で変えたモジュールの全宣言（private と、
 印字時に実体化する生成宣言を含む）を所属モジュールから数え、`#print axioms` で調べる。
-対象のモジュールは `audit-modules.json`（`verify.py` が git の差分から作り直して照合する）から読む。
+対象のモジュールは `audit-modules.json`（`verify.py` が開始時の指紋から作り直して照合する）から読む。
 必須の名前は `required-names.json` から読む。具体値の評価をしない。 -/
 open Lean Elab Command in
 run_cmd do

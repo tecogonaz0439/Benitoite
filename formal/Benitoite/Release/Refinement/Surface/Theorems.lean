@@ -1,5 +1,6 @@
 import Benitoite.Release.Refinement.Surface.TesterTyping
 import Benitoite.Release.Refinement.HandlerEffects
+import Benitoite.Release.Refinement.Surface.OpenSurfaceScoped
 
 /-!
 # 脱糖の型の保存（性質 1）
@@ -81,8 +82,8 @@ def ImplDecl.Scoped (D : Declarations) (id : ImplDecl) : Prop :=
 structure Program.WellFormed (p : Program) : Prop where
   types : p.declarations.core.WellFormed
   defs : ∀ f d, p.defs f = some d → NamesWF d.coreNames d.coreParams ∧
-    SignatureScoped p.declarations.core d.tparams d.neffs d.toFunDecl.tel ∧
-    d.body.Scoped d.tparams.length d.neffs d.coreParams.length
+    SignatureScopedR p.declarations.core d.rangeParams d.tparams d.neffs d.toFunDecl.tel ∧
+    d.body.Scoped d.tparams.length d.neffs d.coreParams.length (nr := d.rangeParams.length)
   impls : ∀ i id, p.impls i = some id → ImplDecl.Scoped p.declarations id
   accessors : ∀ f c k, p.accessors f = some (c, k) → p.defs f = none → ∀ cd, p.cons c = some cd →
     AccessorOk p.declarations c cd k
@@ -101,24 +102,77 @@ theorem declarationsFor_sameTypes (op : OpPrim) (p : Program) (v : CoverageView)
     (p.declarationsFor v).core.SameTypes (desugarProgram op p) :=
   ⟨rfl, rfl, rfl, rfl, rfl, rfl⟩
 
-/-- 脱糖した関数・射影・構成子の判定の関数は、空の範囲パラメータ列を持つ。 -/
-theorem desugarProgram_ranges {op : OpPrim} {p : Program} {f d}
+/-- 脱糖は関数の範囲パラメータを保ち、生成する射影と判定の関数には空の列を置く。 -/
+theorem desugarProgram_ranges {op : OpPrim} {p : Program} {v : CoverageView} {f fd d}
+    (hf : (p.declarationsFor v).funs f = some fd)
+    (hd : (desugarProgram op p).defs f = some d) : d.rkinds = fd.rangeParams := by
+  simp only [Program.declarationsFor, Program.lookupFun] at hf
+  simp only [desugarProgram, Program.lookupFun] at hd
+  cases hdef : p.defs f with
+  | some sd =>
+    simp only [hdef, Option.some.injEq] at hf hd
+    subst hf; subst hd; rfl
+  | none =>
+    simp only [hdef] at hf hd
+    cases ha : p.accessors f with
+    | some ck =>
+      obtain ⟨c, k⟩ := ck
+      simp only [ha] at hf hd
+      cases hc : p.cons c with
+      | none => simp [hc] at hf
+      | some cd =>
+        simp only [hc, Option.map_some, Option.some.injEq] at hf hd
+        subst hf; subst hd; rfl
+    | none =>
+      simp only [ha] at hf hd
+      cases ht : p.testers f with
+      | none => simp [ht] at hf
+      | some c =>
+        simp only [ht] at hf hd
+        cases hc : p.cons c with
+        | none => simp [hc] at hf
+        | some cd =>
+          simp only [hc, Option.map_some, Option.some.injEq] at hf hd
+          subst hf; subst hd; rfl
+
+/-- 範囲パラメータのない表層のプログラムは、空の範囲列を持つ核へ写る。 -/
+theorem desugarProgram_ranges_no_ranges {op : OpPrim} {p : Program} {f d}
+    (hs : ∀ f sd, p.defs f = some sd → sd.rangeParams = [])
     (hd : (desugarProgram op p).defs f = some d) : d.rkinds = [] := by
   simp only [desugarProgram, Program.lookupFun] at hd
-  split at hd
-  · cases hd; rfl
-  · split at hd
-    · obtain ⟨cd, _, he⟩ := Option.map_eq_some_iff.mp hd
-      cases he; rfl
-    · split at hd
-      · cases hd
-      · obtain ⟨cd, _, he⟩ := Option.map_eq_some_iff.mp hd
-        cases he; rfl
+  cases hdef : p.defs f with
+  | some sd =>
+    simp only [hdef, Option.some.injEq] at hd
+    subst d
+    exact hs f sd hdef
+  | none =>
+    simp only [hdef] at hd
+    cases ha : p.accessors f with
+    | some ck =>
+      obtain ⟨c, k⟩ := ck
+      simp only [ha] at hd
+      cases hc : p.cons c with
+      | none => simp [hc] at hd
+      | some cd =>
+        simp only [hc, Option.map_some, Option.some.injEq] at hd
+        subst d
+        rfl
+    | none =>
+      simp only [ha] at hd
+      cases ht : p.testers f with
+      | none => simp [ht] at hd
+      | some c =>
+        simp only [ht] at hd
+        cases hc : p.cons c with
+        | none => simp [hc] at hd
+        | some cd =>
+          simp only [hc, Option.map_some, Option.some.injEq] at hd
+          subst d
+          rfl
 
 theorem declarationsFor_realizes {op : OpPrim} {p : Program} (hwf : p.WellFormed) (v : CoverageView) :
     (p.declarationsFor v).Realizes (desugarProgram op p) := by
-  apply (Declarations.realizes_no_ranges (fun _ _ hd => desugarProgram_ranges hd)).mpr
-  refine ⟨declarationsFor_sameTypes op p v, ?_, ?_, hwf.types.external.sameTypes (declarationsFor_sameTypes op p closedView)⟩
+  refine ⟨declarationsFor_sameTypes op p v, ?_, ?_, hwf.types.external.sameTypes (declarationsFor_sameTypes op p closedView), ?_⟩
   · intro f fd hf
     simp only [Program.declarationsFor, Program.lookupFun] at hf
     simp only [desugarProgram, Program.lookupFun]
@@ -155,15 +209,36 @@ theorem declarationsFor_realizes {op : OpPrim} {p : Program} (hwf : p.WellFormed
     simp only [Program.declarationsFor, Option.map_eq_some_iff] at hi
     obtain ⟨id, hid, rfl⟩ := hi
     exact ⟨desugarImpl op id, by simp [desugarProgram, hid], rfl, rfl, rfl, rfl⟩
+  · intro f fd hf d hd
+    exact desugarProgram_ranges hf hd
 
-theorem BodyTy.scoped {D op Q C Γ Φ t body ne} (h : BodyTy D B op Q C Γ Φ t body)
-    (hs : body.Scoped C.length ne (Γ.length + telBinders t)) :
-    (desugarBlock op .tail body).SourceScoped 0 C.length ne (Γ.length + telBinders t) := by
+theorem BodyTy.scoped_ranges {D op Q C Γ Φ t body ne nr} (h : BodyTy D B op Q C Γ Φ t body)
+    (hs : body.Scoped C.length ne (Γ.length + telBinders t) (nr := nr)) :
+    (desugarBlock op .tail body).SourceScoped nr C.length ne (Γ.length + telBinders t) := by
   induction h with
-  | done hb => exact hb.scoped hs
+  | done hb => exact hb.scoped_ranges hs
   | param _ ih =>
     have := ih (by simpa [telBinders, Ctx.extend, Nat.add_assoc, Nat.add_comm 1] using hs)
     simpa [telBinders, Ctx.extend, Nat.add_assoc, Nat.add_comm 1] using this
+
+theorem BodyTy.scoped {D op Q C Γ Φ t body ne} (h : BodyTy D B op Q C Γ Φ t body)
+    (hs : body.Scoped C.length ne (Γ.length + telBinders t)) :
+    (desugarBlock op .tail body).SourceScoped 0 C.length ne (Γ.length + telBinders t) :=
+  h.scoped_ranges hs
+
+/-- 関数の範囲文脈の下でも、元のソースの四名前空間の深さを保つ。 -/
+theorem BodyTyR.scoped {D op Q ks C Γ Φ t body ne} (h : BodyTyR D B op Q ks C Γ Φ t body)
+    (hs : body.Scoped C.length ne (Γ.length + telBinders t) (nr := ks.length)) :
+    (desugarBlock op .tail body).SourceScoped ks.length C.length ne (Γ.length + telBinders t) := by
+  by_cases hk : ks = []
+  · subst ks
+    exact (bodyTyR_nil.mp h).scoped hs
+  · exact (by simpa only [BodyTyR, hk, ite_false] using h : OpenSurface.BodyTy D B ks op Q C Γ Φ t body).scoped hs
+
+/-- 同じ型の宣言を持つプログラムへ、範囲文脈の署名の形成を移す。 -/
+theorem signatureScopedR_sameTypes {P P' : Refinement.Program} {ks C ne t}
+    (h : SignatureScopedR P ks C ne t) (hs : P.SameTypes P') : SignatureScopedR P' ks C ne t :=
+  ⟨h.1, h.2.1, h.2.2.1.sameTypes hs, ⟨h.2.2.2.wf, h.2.2.2.sorted, h.2.2.2.declared.sameTypes hs⟩⟩
 
 theorem telBinders_signatureTel : ∀ (ns : List String) (ps : List Ty) (r : Ty) (e : Eff), ns.length = ps.length →
     telBinders (signatureTel ns ps r e) = ps.length
@@ -301,9 +376,7 @@ theorem desugar_typed {p : Program} {B : Builtins} {opPrim : OpPrim}
     rcases lookupFun_desugar hd with ⟨sd, hsd, rfl⟩ | ⟨hnd, c, k, cd, ha, hc, rfl⟩ | ⟨hnd, hna, c, cd, ht, hc, rfl⟩
     · obtain ⟨hn, hsig, hsc⟩ := hwf.defs f sd hsd
       obtain ⟨-, -, -, hb⟩ := hwt.defs f sd hsd
-      refine ⟨hn, by
-        have hs := hsig.sameTypes hS
-        exact ⟨hs.1, hs.2.1, hs.2.2.1, Ty.annotationR_nil.mpr hs.2.2.2⟩, ?_⟩
+      refine ⟨hn, signatureScopedR_sameTypes hsig hS, ?_⟩
       have h := hb.scoped (ne := sd.neffs) (by
         simpa [FunDecl.tel, telBinders_signatureTel _ _ _ _ hn.1] using hsc)
       simpa [FunDecl.tel, telBinders_signatureTel _ _ _ _ hn.1, desugarDef, Refinement.Def.ntys] using h

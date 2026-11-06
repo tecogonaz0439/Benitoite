@@ -35,11 +35,11 @@ theorem JoinTy.typed {D Γ0 tadd k Γ' Φ' depth left rest e b op R L} (h : Join
   induction h generalizing R L with
   | last hv hle hc =>
     have hg := hh.glue (R := R) (L := L) rfl hR hA hm hm hv hle hc (string_annotation _ _ _)
-    simp only [List.map_nil] at hg; rw [addHead_apply] at hg
+    rw [addHead_apply] at hg
     simpa [joinStringFrom, hop] using hg
   | @step k Γ' Φ' depth left right x xs r e' e hv ho ha hc _ ih =>
     have hg := hh.glue (R := R) (L := L) rfl hR hA hm hm hv .refl hc ha
-    simp only [List.map_nil] at hg; rw [addHead_apply] at hg
+    rw [addHead_apply] at hg
     have hm1 : ShiftMap 1 0 Γ' (Γ'.extend r) := by
       simpa [bindParams_single] using ShiftMap.outer Γ' [r]
     have hrest := ih (R := R.map (Ty.shiftV 1 0)) (L := localExtend 1 L) (ShiftMap.comp hm hm1)

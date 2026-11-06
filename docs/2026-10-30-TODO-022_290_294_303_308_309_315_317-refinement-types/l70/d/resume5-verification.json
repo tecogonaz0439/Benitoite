@@ -1,0 +1,104 @@
+{
+ "b_work": "e70794188e24de95b5bb424f9d75090f77d1c703",
+ "changed": [
+  "docs/design/01-spec/01-12-core-calculus.md",
+  "docs/design/07-quality/07-04-formal-semantics.md",
+  "formal/Benitoite/Release/Refinement/Surface/Examples.lean"
+ ],
+ "new": [
+  "formal/Benitoite/Release/Refinement/Surface/RangeAdmissibilityExample.lean"
+ ],
+ "modules": [
+  "Benitoite.Release.Refinement.Surface.Examples",
+  "Benitoite.Release.Refinement.Surface.RangeAdmissibilityExample"
+ ],
+ "default_imports": true,
+ "ledger": 266,
+ "existing_statements": 268,
+ "added_theorems": 20,
+ "new_signatures": {
+  "formal/Benitoite/Release/Refinement/Surface/RangeAdmissibilityExample.lean": {
+   "atoms": "a7df8266067528a2668f5c71c020e0cb7e9d071de5c2cdba32f21b3a5d077e97",
+   "norm_argument": "3fe79bc7bc4470352f857433153109058eaef2610492523de36a71acc475d8b0",
+   "argument_rename": "d48e47edca8004e67115d427550a37e3869b1e6080adb674b99092ae90599fe3",
+   "argument_subst": "071d8ff31629269235cba9c0766d978b21610d291f4221c57371c77180a26565",
+   "values": "510dc835a14589153330314356762c498ade9ab66693aade93d4a03ead378790",
+   "open_admits": "4d94facd5081759886101cfcb36296a264ceed18d73212e36d366d13173d29c2",
+   "instantiated_argument": "d199edb7c647a5df487a711492ea14831c259f768bffa0e3c9d8f8a3840c923a",
+   "instantiated_admits_rejected": "59e9375690dd9442153512e75c938e47debd9d16536e01a7836a596f69f8777d",
+   "argument_annotation": "c3c9d45cde7d74dc50db8f982b2ffeb476d783dfb98e7cf5e093d3cbcfb6ed2b",
+   "argument_sourceScoped": "673f640a53ae66fbe5254f34771c38f9ace0d161614219b3b2cb1fe5140a5b94",
+   "admissible": "6367f94747695e58a07fc605f34a270e78b18a04690ae09d1b60df06d29e1e66",
+   "signature_instance": "9bd253abb341ad189fa81fddbe43cf1f9eaaef6cf88847f73dd9e441e6c14a92",
+   "surface_typed": "0ee9898d694fbaf66e3fb4f4f7c0377fddc0f04a2514b24c615517391ba646b9",
+   "instantiated_value_rejected": "b90aac6b2b598862152161dbda3651c628bbde19d21bce4519f0a300c8805f80",
+   "instantiated_source_rejected": "a45963ae82f5b843d3c36ff77736e3697953136d96f6dc2bf9ae29fcc1e30114",
+   "body_typed": "5fef278e99c2221c064a08810010e4fcda482b7c277f3ee4bf988342ebc0b5e8",
+   "instantiated_body_rejected": "d1e28f73ca1aa4a1ce7119fbd19749f9e5f5fd56a3b08bb74869a794cbb15e17",
+   "realizes": "edc312474fa2d4a29e4a9cd857d917365af16b4b91745e0848569d445bd28633",
+   "code_sourceScoped": "3ae4b25d1e94d5d1716a8f8da646923fbaaa570a4c5a9d02a7acc1a2e64b3a9c",
+   "existing_premises_insufficient": "df3992de7b19125c4350048cbf1171df3dc9df42ed49978069280f185566b6d7"
+  }
+ },
+ "jobs": 1384,
+ "declarations": 289,
+ "private": 153,
+ "names_bytes": 27724,
+ "names_sha256": "a38b1d47c90d05ab07cf091598f406959283ad3242bac40785ed28c425d715be",
+ "axiom_sets": {
+  "(none)": 123,
+  "Classical.choice,Quot.sound,propext": 92,
+  "Quot.sound,propext": 1,
+  "propext": 73
+ },
+ "per_module": {
+  "Benitoite.Release.Refinement.Surface.Examples": 147,
+  "Benitoite.Release.Refinement.Surface.RangeAdmissibilityExample": 142
+ },
+ "sources": {
+  "docs/design/01-spec/01-12-core-calculus.md": "24686c812b57d5deaf3b38d5da3a08c9986772dab4e65fdadceb28fc88e372dd",
+  "docs/design/07-quality/07-04-formal-semantics.md": "71aae1f4afdf067fb036a04e576aaa54b73829b75612a6bff89b038ff34b14be",
+  "formal/Benitoite/Release/Refinement/Surface/Examples.lean": "a384926d16cc73068c8ad4cc17924cd82ff7fb67c16828a0431349b9548de90a",
+  "formal/Benitoite/Release/Refinement/Surface/RangeAdmissibilityExample.lean": "c16da91e898d0e4ce85f0026eeaa223db4a8991c942302b131061a7cebe6c621"
+ },
+ "build": {
+  "command": [
+   "lockf",
+   "-t",
+   "3600",
+   "<shared-lock>",
+   "lake",
+   "build"
+  ],
+  "started": "2026-11-06T07:14:06.947249+00:00",
+  "finished": "2026-11-06T07:25:54.552874+00:00",
+  "seconds": 707.555518,
+  "exit_code": 0,
+  "bytes": 186284,
+  "sha256": "b727abf90fab0a3508e7b076a2d3a364e40b9d3afe1d9494496447412e53b7d4",
+  "inputs": 1137,
+  "fingerprint": "e26cdb09a41701506d163757ccea835bf961606bc96e435da5a190db8a8de421"
+ },
+ "axioms": {
+  "command": [
+   "lockf",
+   "-t",
+   "3600",
+   "<shared-lock>",
+   "lake",
+   "env",
+   "lean",
+   "-M",
+   "12288",
+   "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l70/d/axioms.lean"
+  ],
+  "started": "2026-11-06T07:27:04.402547+00:00",
+  "finished": "2026-11-06T07:27:29.902013+00:00",
+  "seconds": 25.447793667,
+  "exit_code": 0,
+  "bytes": 130636,
+  "sha256": "ecf5603b40191de93195bb25e8b10fa05a10b93a10f620e5f5ddeab2ba83b82e",
+  "inputs": 1137,
+  "fingerprint": "e26cdb09a41701506d163757ccea835bf961606bc96e435da5a190db8a8de421"
+ }
+}
