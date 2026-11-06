@@ -231,9 +231,23 @@ theorem PureRow.front {P : Program} {B : Builtins} [RowLookup B] : PureRowOn P B
   PureRow.of_response (hrow := by decide) .p377 (delta := StandardSafe.frontDelta) rfl rfl (fun _ _ _ _ => rfl)
     (fun _ _ _ _ _ _ _ args => StandardSafe.front_response args)
 
-/-- 範囲付きの純粋な6行と %List.getFront。 -/
+/-- 純粋な所属・文字集合・Float 分類の行。 -/
+theorem PureRow.predicate {P B} [RowLookup B] (row : Primitive) (api : PredicateResponse.API)
+    (hn : row.name = api.name) (hs : row.signatureWith B.sat = api.signature)
+    (hd : row.provider.delta = api.delta) (hk : row.readsKeys = false := by decide) :
+    PureRowOn P B row.name := by
+  refine PureRow.of_response (hrow := hk) row hn hs (fun _ _ _ _ => by rw [hd]) ?_
+  intro Ψ ts es rs ws a e args
+  exact PredicateResponse.response api args
+
+/-- 一般の検査は、同じプログラムの誤りの宣言で Result の両側を型付ける。 -/
+theorem PureRow.check {P B} [env : RowEnv P B] : PureRowOn P B Primitive.p392.name :=
+  PureRow.of_response (hrow := by decide) .p392 rfl rfl (fun _ _ _ _ => rfl)
+    (fun _ _ _ _ _ _ _ args => RefinementCheck.response env.check checkExpectedText args)
+
+/-- 範囲付きの純粋な行、前からの取得、純粋な判定と一般の検査。 -/
 def Primitive.scopePure : Primitive → Bool
-  | .p185 | .p186 | .p188 | .p281 | .p282 | .p283 | .p377 => true
+  | .p185 | .p186 | .p188 | .p281 | .p282 | .p283 | .p377 | .p378 | .p379 | .p380 | .p381 | .p382 | .p383 | .p384 | .p385 | .p386 | .p387 | .p388 | .p389 | .p390 | .p391 | .p392 => true
   | _ => false
 
 theorem scope_rows_of {P : Program} {B : Builtins} [RowEnv P B] (row : Primitive)
@@ -246,6 +260,21 @@ theorem scope_rows_of {P : Program} {B : Builtins} [RowEnv P B] (row : Primitive
   case p282 => exact PureRow.scope .p282 _ rfl rfl rfl rfl
   case p283 => exact PureRow.scope .p283 _ rfl rfl rfl rfl
   case p377 => exact PureRow.front
+  case p378 => exact PureRow.predicate .p378 (.path) rfl rfl rfl
+  case p379 => exact PureRow.predicate .p379 (.host) rfl rfl rfl
+  case p380 => exact PureRow.predicate .p380 (.characters) rfl rfl rfl
+  case p381 => exact PureRow.predicate .p381 (.floating .binary64 .finite) rfl rfl rfl
+  case p382 => exact PureRow.predicate .p382 (.floating .binary64 .infinite) rfl rfl rfl
+  case p383 => exact PureRow.predicate .p383 (.floating .binary64 .positiveInfinity) rfl rfl rfl
+  case p384 => exact PureRow.predicate .p384 (.floating .binary64 .negativeInfinity) rfl rfl rfl
+  case p385 => exact PureRow.predicate .p385 (.floating .binary64 .positiveZero) rfl rfl rfl
+  case p386 => exact PureRow.predicate .p386 (.floating .binary64 .negativeZero) rfl rfl rfl
+  case p387 => exact PureRow.predicate .p387 (.floating .binary32 .finite) rfl rfl rfl
+  case p388 => exact PureRow.predicate .p388 (.floating .binary32 .positiveInfinity) rfl rfl rfl
+  case p389 => exact PureRow.predicate .p389 (.floating .binary32 .negativeInfinity) rfl rfl rfl
+  case p390 => exact PureRow.predicate .p390 (.floating .binary32 .positiveZero) rfl rfl rfl
+  case p391 => exact PureRow.predicate .p391 (.floating .binary32 .negativeZero) rfl rfl rfl
+  case p392 => exact PureRow.check
   all_goals cases pure
 
 theorem scope_rows (externals : List (ExternalKey × ExternalDecl)) (row : Primitive)

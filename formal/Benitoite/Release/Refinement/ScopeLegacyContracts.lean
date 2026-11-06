@@ -75,7 +75,7 @@ example (p : PathPattern) (v : Val) (b : PathBase) (q : PathPattern) :
 example (p : PathPattern) :
     checkPath p (.const (.string "/")) = some (Checked.Scope.makePath p []) ∧
     checkPath p (.const (.string ".")) = none ∧ checkPath p (.const (.string "~")) = none := by
-  simp [checkPath,pathInput,parseAtInput]
+  simp [checkPath,pathInput,parseAtInput,parseTargetInput]
 
 end ScopeLegacyContracts
 end

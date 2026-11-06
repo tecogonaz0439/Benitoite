@@ -89,6 +89,10 @@ def RowEnv.ofAgree {L : NameLists} (hL : L.WF) {externals} {P : Program} (T : Da
     show (∃ r, primitive row.name = some r ∧ r.provider.ioResponse row.name ts es ws out obs) ↔ _
     rw [primitive_lookup]
     simp
+  check := {
+    file := ScopeDeclarations.HasHttp.file (HasDeclarations.ofExtends hI.extends_ (http_declarations externals))
+    error := hI.extends_.cons _ _ (check_declarations externals).error
+    arity := hI.extends_.dataArity (check_declarations externals).arity }
   options := ListOptionDeclarations.ofExtends hI.extends_ (option_declarations externals)
   http := HasDeclarations.ofExtends hI.extends_ (http_declarations externals)
   rounding := DecimalDeclarations.ofExtends hI.extends_

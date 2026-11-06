@@ -1,4 +1,6 @@
 import Benitoite.Release.Refinement.StandardModelCollectionInputs
+import Benitoite.Release.Refinement.StandardModelPredicateInputs
+import Benitoite.Release.Refinement.StandardModelCheckInputs
 
 /-! # 合成表の範囲付きの純粋な行とIO・終了の行の契約の前提を満たす入力
 
@@ -348,7 +350,15 @@ theorem IORow.Satisfiable.readText {externals} (row : Primitive) (hsig : row.sig
     ⟨by scope_simp [], by scope_simp [], by scope_simp [(arities externals).2.2.1]⟩ rfl rfl
     (by scope_simp []) rfl (by scope_simp []) (.cons (sample_typed _) .nil) (by intro w hw; simp at hw; subst hw; trivial)
 
-/-- 範囲付きのパスと要求の六行と内部の %List.getFront は、合成プログラムで契約の前提を満たす入力を持つ。 -/
+/-- 純粋な判定の正常な基本型の入力を、合成表の入力の存在へ接続する。 -/
+theorem PureRow.Satisfiable.predicate {externals} (row : Primitive) (api : PredicateResponse.API)
+    (hn : row.name = api.name) (hs : row.signature = api.signature) :
+    PureRow.Satisfiable (program externals) row.name := by
+  refine ⟨StoreTy.empty,api.signature,[],[],[],api.sample true,.base .boolean,Eff.empty,?_,?_⟩
+  · rw [← hs]; exact row_lookup _ row
+  · rw [hn]; exact PredicateResponse.sample_arguments _ _ _ api true
+
+/-- 範囲付きの行、前からの取得、純粋な判定と一般の検査は、全入力条件を満たす正常値を持つ。 -/
 theorem scope_inputs (externals : List (ExternalKey × ExternalDecl)) (row : Primitive)
     (ranged : row.scopePure = true) : PureRow.Satisfiable (program externals) row.name := by
   cases row
@@ -359,6 +369,24 @@ theorem scope_inputs (externals : List (ExternalKey × ExternalDecl)) (row : Pri
   case p282 => exact PureRow.Satisfiable.pathInValue .p282 rfl
   case p283 => exact PureRow.Satisfiable.widenPathIn .p283 rfl
   case p377 => exact PureRow.Satisfiable.front .p377 rfl
+  case p378 => exact PureRow.Satisfiable.predicate .p378 (.path) rfl rfl
+  case p379 => exact PureRow.Satisfiable.predicate .p379 (.host) rfl rfl
+  case p380 => exact PureRow.Satisfiable.predicate .p380 (.characters) rfl rfl
+  case p381 => exact PureRow.Satisfiable.predicate .p381 (.floating .binary64 .finite) rfl rfl
+  case p382 => exact PureRow.Satisfiable.predicate .p382 (.floating .binary64 .infinite) rfl rfl
+  case p383 => exact PureRow.Satisfiable.predicate .p383 (.floating .binary64 .positiveInfinity) rfl rfl
+  case p384 => exact PureRow.Satisfiable.predicate .p384 (.floating .binary64 .negativeInfinity) rfl rfl
+  case p385 => exact PureRow.Satisfiable.predicate .p385 (.floating .binary64 .positiveZero) rfl rfl
+  case p386 => exact PureRow.Satisfiable.predicate .p386 (.floating .binary64 .negativeZero) rfl rfl
+  case p387 => exact PureRow.Satisfiable.predicate .p387 (.floating .binary32 .finite) rfl rfl
+  case p388 => exact PureRow.Satisfiable.predicate .p388 (.floating .binary32 .positiveInfinity) rfl rfl
+  case p389 => exact PureRow.Satisfiable.predicate .p389 (.floating .binary32 .negativeInfinity) rfl rfl
+  case p390 => exact PureRow.Satisfiable.predicate .p390 (.floating .binary32 .positiveZero) rfl rfl
+  case p391 => exact PureRow.Satisfiable.predicate .p391 (.floating .binary32 .negativeZero) rfl rfl
+  case p392 =>
+    exact ⟨StoreTy.empty,RefinementCheck.signature,[.base .integer,RefinementCheck.nonnegative],[],[],
+      [.const (.integer ⟨1,by decide⟩)],RefinementCheck.result RefinementCheck.nonnegative,Eff.empty,
+      row_lookup _ .p392,RefinementCheck.integer_inputs externals ⟨1,by decide⟩⟩
   all_goals cases ranged
 
 /-- IOと終了の全10行は、合成プログラムで契約の前提を満たす入力を持つ。 -/

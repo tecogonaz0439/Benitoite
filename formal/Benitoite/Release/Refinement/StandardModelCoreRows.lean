@@ -4,8 +4,8 @@ import Benitoite.Release.Refinement.StandardModelSubstitution
 
 /-! # 合成表の全行の種類の分類と応答・効果・対象の条件
 
-合成表の377行を種類で分け、純粋な361行（数値166・演算子109・文字列とコレクション79・範囲付きの
-純粋な6と %List.getFront）の契約、IOと終了の10行の契約、参照と明示遅延の5行、発行の1行から、
+合成表の392行を種類で分け、純粋な376行（数値166・演算子109・文字列とコレクション79・範囲付きの
+純粋な6と %List.getFront・純粋判定14・一般の検査1）の契約、IOと終了の10行の契約、参照と明示遅延の5行、発行の1行から、
 `Builtins.ResponseAssumptions`・`TargetAgreement` と効果・形の欄を同じ表で組み立てる。 -/
 namespace Benitoite.Release.Refinement.StandardModel
 noncomputable section

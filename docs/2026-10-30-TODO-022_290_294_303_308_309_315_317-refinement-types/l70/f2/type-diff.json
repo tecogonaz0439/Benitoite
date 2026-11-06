@@ -1,0 +1,122 @@
+{
+  "manual_signature_diffs": [
+    {
+      "name": "Benitoite.Release.Refinement.StandardModel.admits_formWith",
+      "before": "(S : Benitoite.Release.SummaryTable) (row : Primitive) :\n    AdmitsSatWith S (row.signatureWith (ModelConstraints.sat S)) ∨ row = .p266",
+      "after": "(S : Benitoite.Release.SummaryTable) (row : Primitive) :\n    AdmitsSatWith S (row.signatureWith (ModelConstraints.sat S)) ∨ row = .p266 ∨ row = .p392"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.StandardModel.admits_form",
+      "before": "(row : Primitive) : AdmitsSat row.signature ∨ row = .p266",
+      "after": "(row : Primitive) : AdmitsSat row.signature ∨ row = .p266 ∨ row = .p392"
+    }
+  ],
+  "baseline": "a5a3f7d8993c6f96d8ab90285ddee274347f3862",
+  "exit": 0,
+  "seconds": 21.057113291999997,
+  "changed": [
+    {
+      "name": "Benitoite.Release.Refinement.StandardModel.Primitive.casesOn",
+      "before_type_bytes": 64002,
+      "after_type_bytes": 66537,
+      "before_type_sha256": "322952d1d143e3d755d9c069e5f321590eb29b6b383667d87bd09d1f0f08270c",
+      "after_type_sha256": "e723ad6d1dbd737060e47e06a5c19a06c2fe97cd59dcba8ad424bbbcbf07b09c"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.StandardModel.Primitive.name.match_1",
+      "before_type_bytes": 93368,
+      "after_type_bytes": 97362,
+      "before_type_sha256": "b242f697204a0dba2d5eefb1aa4dc2648620770e029774ede36ba12526633c1b",
+      "after_type_sha256": "11f296f604b5e0dac4e5d8bfb224c120f28cab9cb6bbcdeea1caf7134a275375"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.StandardModel.Primitive.noConfusion",
+      "before_type_bytes": 1049,
+      "after_type_bytes": 1141,
+      "before_type_sha256": "d3bb14a3ab56fe3eca4bba2bc284c0f89b42567b8305384320ade18e0b03add0",
+      "after_type_sha256": "f2555ef5f062ea74f2c0bdbaf4dcea91a9073f4d74d80b5ec6b8200a3df38472"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.StandardModel.Primitive.noConfusionType",
+      "before_type_bytes": 602,
+      "after_type_bytes": 694,
+      "before_type_sha256": "4c7b39f8c17c8bbc795bc7b008318c26979dfacc604d2b42f86a88d75d78c5d5",
+      "after_type_sha256": "b7a12290a5fa72b208ddbb5d941ac67a79bde1dc7afec18a287d14278b990df0"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.StandardModel.Primitive.rec",
+      "before_type_bytes": 63998,
+      "after_type_bytes": 66533,
+      "before_type_sha256": "9d24ef3dc9f3cdac5c10b282c7ac9f39ba7b0b3a38acd6320afbc60e88654b48",
+      "after_type_sha256": "66b250731878e96b48790db547ac28d9d3f718dc633ddd7c92dc17f1f3acaa37"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.StandardModel.Primitive.recOn",
+      "before_type_bytes": 64002,
+      "after_type_bytes": 66537,
+      "before_type_sha256": "322952d1d143e3d755d9c069e5f321590eb29b6b383667d87bd09d1f0f08270c",
+      "after_type_sha256": "e723ad6d1dbd737060e47e06a5c19a06c2fe97cd59dcba8ad424bbbcbf07b09c"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.StandardModel.RowEnv.casesOn",
+      "before_type_bytes": 5476,
+      "after_type_bytes": 5681,
+      "before_type_sha256": "0d4a4d636ac13cd67c9c9aa37316d8eddb58cdefd8a019aa713eba077ac351e1",
+      "after_type_sha256": "5b3db1db90f3ae71e457c0460ccfd0022608c9ac6dce98f962724c35d86e6811"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.StandardModel.RowEnv.mk",
+      "before_type_bytes": 4573,
+      "after_type_bytes": 4743,
+      "before_type_sha256": "845a57a4d4b07cf292d7ae7d83a33d67d42ba7e80a9c42b40045c92ae579d2e0",
+      "after_type_sha256": "3e3e6c497d60eafcb6d2626ee8c0da637ad34a1270281e9b6e9bfeb645cc1d1b"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.StandardModel.RowEnv.mk._flat_ctor",
+      "before_type_bytes": 11650,
+      "after_type_bytes": 11819,
+      "before_type_sha256": "c9930f6ca0c515f2ef6036f2573faaecdc895703150f594d7b437889df616439",
+      "after_type_sha256": "a64b47ed63c0466fa501b9ba7a84224555b9797557359708e44e6f4a39f5302b"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.StandardModel.RowEnv.mk.noConfusion",
+      "before_type_bytes": 10520,
+      "after_type_bytes": 10935,
+      "before_type_sha256": "579ec44156975dd4a5895cabb4f4cb7a1c14b0b91e88df6894624f900021465b",
+      "after_type_sha256": "a2b42b969bcc62e35730246689358430ae2218b8aa202395fff3e32cdc9a0694"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.StandardModel.RowEnv.rec",
+      "before_type_bytes": 5473,
+      "after_type_bytes": 5679,
+      "before_type_sha256": "05a9f9ef7ab61c0d949e2d1c206100346b175119fbe5c3669eaad0dbf30ca534",
+      "after_type_sha256": "933bdb9fc781b907539f23ea9d7f16c9506b8a6faed3671bc777fb6ff39d902a"
+    },
+    {
+      "name": "Benitoite.Release.Refinement.StandardModel.RowEnv.recOn",
+      "before_type_bytes": 5476,
+      "after_type_bytes": 5681,
+      "before_type_sha256": "0d4a4d636ac13cd67c9c9aa37316d8eddb58cdefd8a019aa713eba077ac351e1",
+      "after_type_sha256": "5b3db1db90f3ae71e457c0460ccfd0022608c9ac6dce98f962724c35d86e6811"
+    }
+  ],
+  "unchanged_count": 1603,
+  "historical_readers": {
+    "Primitive.store_rows": {
+      "type_source_identical": true,
+      "sha256": "12842e90ba2ef98f5da3436fa7064523115254662055b952fc102cf3cc9cf3cb"
+    },
+    "store_lookup": {
+      "type_source_identical": true,
+      "sha256": "849c6535b40e972f00d547b5a04da6f8cadc0d436d4ebb2933ed339e0dda3d3b"
+    },
+    "reference_rows": {
+      "type_source_identical": true,
+      "sha256": "b852181296f57ac99bdb6a07792330b0767d288b5612d82c344c53e3e2c74d94"
+    }
+  },
+  "raw_log_bytes": 800464,
+  "raw_log_sha256": "0c7788c415e2209630496d8565c40850257a4cc0a59db87aa0db16ef2bea6dfc",
+  "input_sha256": "ac8ca6d1fb83ff26c079ffd5a70b09b980bf50a3184b592312c7fb6b073683d9",
+  "scope": "Primitive とその定義の生成宣言、RowEnv の構築と除去。名前の付替えだけを正規化する。"
+}
