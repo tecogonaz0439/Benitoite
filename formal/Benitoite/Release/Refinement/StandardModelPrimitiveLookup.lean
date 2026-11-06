@@ -382,6 +382,22 @@ private theorem lookup_p376 : primitive "Reference.update" = some Primitive.p376
 private theorem lookup_p377 : primitive "%List.getFront" = some Primitive.p377 := rfl
 
 /-- 任意の台帳行を同じ合成表でlookupできる。 -/
+private theorem lookup_p378 : primitive "Scope.pathMatches" = some Primitive.p378 := rfl
+private theorem lookup_p379 : primitive "Scope.hostMatches" = some Primitive.p379 := rfl
+private theorem lookup_p380 : primitive "String.charactersIn" = some Primitive.p380 := rfl
+private theorem lookup_p381 : primitive "Float.isFinite" = some Primitive.p381 := rfl
+private theorem lookup_p382 : primitive "Float.isInfinite" = some Primitive.p382 := rfl
+private theorem lookup_p383 : primitive "Float.isPositiveInfinity" = some Primitive.p383 := rfl
+private theorem lookup_p384 : primitive "Float.isNegativeInfinity" = some Primitive.p384 := rfl
+private theorem lookup_p385 : primitive "Float.isPositiveZero" = some Primitive.p385 := rfl
+private theorem lookup_p386 : primitive "Float.isNegativeZero" = some Primitive.p386 := rfl
+private theorem lookup_p387 : primitive "Float32.isFinite" = some Primitive.p387 := rfl
+private theorem lookup_p388 : primitive "Float32.isPositiveInfinity" = some Primitive.p388 := rfl
+private theorem lookup_p389 : primitive "Float32.isNegativeInfinity" = some Primitive.p389 := rfl
+private theorem lookup_p390 : primitive "Float32.isPositiveZero" = some Primitive.p390 := rfl
+private theorem lookup_p391 : primitive "Float32.isNegativeZero" = some Primitive.p391 := rfl
+private theorem lookup_p392 : primitive "Refinement.check" = some Primitive.p392 := rfl
+
 theorem primitive_lookup (row : Primitive) : primitive row.name = some row := by
   cases row with
   | p001 => exact lookup_p001
@@ -761,6 +777,21 @@ theorem primitive_lookup (row : Primitive) : primitive row.name = some row := by
   | p375 => exact lookup_p375
   | p376 => exact lookup_p376
   | p377 => exact lookup_p377
+  | p378 => exact lookup_p378
+  | p379 => exact lookup_p379
+  | p380 => exact lookup_p380
+  | p381 => exact lookup_p381
+  | p382 => exact lookup_p382
+  | p383 => exact lookup_p383
+  | p384 => exact lookup_p384
+  | p385 => exact lookup_p385
+  | p386 => exact lookup_p386
+  | p387 => exact lookup_p387
+  | p388 => exact lookup_p388
+  | p389 => exact lookup_p389
+  | p390 => exact lookup_p390
+  | p391 => exact lookup_p391
+  | p392 => exact lookup_p392
 
 theorem signatures_iff (name : String) (s : PrimSig) : signature name = some s ↔
     ∃ row ∈ Primitive.all, name = row.name ∧ s = row.signature := by

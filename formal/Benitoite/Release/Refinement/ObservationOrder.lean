@@ -404,20 +404,26 @@ private theorem observeAs_scalar_mono {η ξ s t} (h : ObservationEnvModel.InfoL
   have hh := Observation.OptionInfoLE.scalar (.some hi) (ho ▸ hs)
   exact he.trans (Option.some.inj hh).symm
 
-private theorem memberReady_mono {η ξ k t r} (h : ObservationEnvModel.InfoLE η ξ)
+private theorem memberReady_interpret_mono {η ξ k t r} (h : ObservationEnvModel.InfoLE η ξ)
     (hr : memberReady η k t r = true) : memberReady ξ k t r = true ∧
-      observeAs η (.target k) t = observeAs ξ (.target k) t := by
+      t.interpret η = t.interpret ξ := by
   cases ht : t.observe η with
   | none => simp [memberReady,ht] at hr
   | some o =>
     cases o <;> simp only [memberReady,ht] at hr <;> try cases hr
-    rename_i bs target
-    have hi := t.observe_mono η ξ h
-    have hh : t.observe ξ = some (.targetValue bs target) :=
-      Observation.OptionInfoLE.scalar (by simpa only [ht] using hi)
-        (by simp [Observation.sort])
-    exact ⟨by simpa only [memberReady,hh] using hr,
-      by simp only [observeAs,Term.observe_sound ht,Term.observe_sound hh]⟩
+    all_goals
+      have hi := t.observe_mono η ξ h
+      have hh : t.observe ξ = t.observe η := by
+        exact (Observation.OptionInfoLE.scalar (by simpa only [ht] using hi)
+          (by simp [Observation.sort])).trans ht.symm
+      rw [ht] at hh
+      exact ⟨by simpa only [memberReady,hh] using hr,
+        (Term.observe_sound ht).trans (Term.observe_sound hh).symm⟩
+
+private theorem memberReady_mono {η ξ k t r} (h : ObservationEnvModel.InfoLE η ξ) (hr : memberReady η k t r = true) :
+    memberReady ξ k t r = true ∧ observeAs η (.target k) t = observeAs ξ (.target k) t := by
+  obtain ⟨ready, same⟩ := memberReady_interpret_mono h hr
+  exact ⟨ready, by simp only [observeAs, same]⟩
 
 private theorem Pred.atom_mono {p : Pred} {η ξ : ObservationEnvModel}
     (h : ObservationEnvModel.InfoLE η ξ) (ha : p.atomReady η = true) :
@@ -445,8 +451,9 @@ private theorem Pred.atom_mono {p : Pred} {η ξ : ObservationEnvModel}
   | decimalRepresented a | charactersIn a lo hi =>
     exact ⟨(termReady_mono h ha).1,by simp only [Pred.atomValue,observeAs_scalar_mono h ha (by decide)]⟩
   | member k a r =>
-    obtain ⟨hr,he⟩ := memberReady_mono h ha
-    exact ⟨hr,by simp only [Pred.atomValue,he]⟩
+    have hr := (memberReady_mono h ha).1
+    have he := (memberReady_interpret_mono h ha).2
+    exact ⟨hr,by simp only [Pred.atomValue,observeAs,he]⟩
   | constructorIs a c =>
     obtain ⟨hr,hi⟩ := termReady_mono h ha
     refine ⟨hr,?_⟩

@@ -693,10 +693,13 @@ def roundingMode : StandardKeyTyping.DataDecl :=
 /-- バイト列の整数の読み書きの二つのバイト順。Bytes.readUnsignedなどの引数の型が読む。 -/
 def byteOrder : StandardKeyTyping.DataDecl :=
   ⟨"ByteOrder",0,[("ByteOrder.BigEndian",[]),("ByteOrder.LittleEndian",[])]⟩
+/-- 明示的な篩の検査の誤り。expected は診断用の文字列である。 -/
+def checkError : StandardKeyTyping.DataDecl :=
+  ⟨"Refinement.CheckError",0,[("Refinement.CheckError",[.base .string])]⟩
 def baseDeclarations : List StandardKeyTyping.DataDecl :=
   StandardOrdinaryCoreBodies.declarations ++ ScopeDeclarations.base.filter
     (fun d => !(StandardOrdinaryCoreBodies.declarations.any (fun old => old.name == d.name))) ++
-    [byteOrder] ++ [roundingMode]
+    [byteOrder] ++ [checkError] ++ [roundingMode]
 /-- At の診断の公開の宣言は最後に置き、既存の構成子の並びを保つ。Option は標準の宣言を使う。 -/
 def declarations : List StandardKeyTyping.DataDecl := baseDeclarations ++ ScopeDeclarations.publicDecls
 def constructors : List (String × ConDecl) := declarations.flatMap StandardKeyTyping.DataDecl.entries
@@ -751,7 +754,7 @@ theorem option_declarations (externals : List (ExternalKey × ExternalDecl)) :
     rcases (constructors_split mem).symm with mem | mem
     · obtain ⟨_, hd, _⟩ := ScopeDeclarations.public_entry mem
       exact absurd owner (ScopeDeclarations.public_not_option _ hd).1
-    simp [baseDeclarations,byteOrder,roundingMode,StandardOrdinaryCoreBodies.declarations,
+    simp [baseDeclarations,byteOrder,roundingMode,checkError,StandardOrdinaryCoreBodies.declarations,
       ScopeDeclarations.base,ScopeDeclarations.file,ScopeDeclarations.result,ScopeDeclarations.scopeError,
       ScopeDeclarations.pair,ScopeDeclarations.clientRequest,ScopeDeclarations.requestCheckError,
       StandardKeyTyping.DataDecl.entries,StandardOrdinaryCoreBodies.Record.owner,StandardSafe.names] at mem

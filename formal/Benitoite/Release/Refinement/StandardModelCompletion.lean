@@ -528,10 +528,23 @@ example : StandardModel.nameLists.delta.length = 80 ∧ StandardModel.nameLists.
     StandardModel.nameLists.state.length = 16 ∧ StandardModel.nameLists.outside.length = 7 :=
   ⟨rfl, rfl, rfl, rfl⟩
 
-/-- 合成済みの効果のラベルは `Console.Write` を含む（レビューの反例は標準の一覧でも断られる）。 -/
+/-- 操作の効果を持つ行のラベルは、合成済みのラベルの一覧に含まれる。 -/
+theorem StandardModel.composedEffect_member (row : StandardModel.Primitive) {l : EffName}
+    (h : row.signature.opEff = some l) : l ∈ StandardModel.nameLists.composedEffects := by
+  apply List.mem_cons_of_mem
+  apply List.mem_filterMap.mpr
+  have hr := StandardModel.lookup_primitive (by
+    simp only [StandardModel.signature,StandardModel.primitive_lookup,Option.map_some] :
+      StandardModel.signature row.name = some row.signature)
+  obtain ⟨row',hm,hn,_⟩ := hr
+  have same := (StandardModel.primitive_lookup row).symm.trans (hn ▸ StandardModel.primitive_lookup row')
+  cases Option.some.inj same
+  exact ⟨row,hm,h⟩
+
+/-- 合成済みの効果のラベルは `Console.Write` を含む。 -/
 example (externals : List (ExternalKey × ExternalDecl)) :
     ¬ StandardModel.Completion StandardModel.nameLists (StandardModel.dataTable externals) StandardModel.reviewA :=
-  StandardModel.reviewA_not_completion _ (StandardModel.nameLists_wf.effects _ (by decide)) _
+  StandardModel.reviewA_not_completion _ (StandardModel.composedEffect_member .p373 rfl) _
 
 end
 end Benitoite.Release.Refinement

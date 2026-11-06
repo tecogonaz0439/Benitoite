@@ -1,5 +1,6 @@
 import Benitoite.Release.Refinement.Observation
 import Benitoite.Release.Refinement.ClosedDecidable
+import Benitoite.Release.Refinement.TargetText
 
 /-! # 閉じた有限述語の評価と二値の解釈 -/
 namespace Benitoite.Release.Refinement
@@ -55,6 +56,12 @@ def Observation.compare (o : Comparison) (a b : Observation) : Bool := match a,b
   | .unitValue, .unitValue => o.fromEqLt true false false
   | _,_ => false
 
+/-- String の対象は絶対形だけを読み、解析できなければ所属しない。 -/
+def stringMember (k : Scope.Domain.Kind) (r : RangeExpr) (s : String) : Bool :=
+  match parseTargetInput k s with
+  | some (.absolute t) => decide (SnapshotMem none k r t)
+  | _ => false
+
 def Pred.atomValue (η : ObservationEnvModel) : Pred → Bool
   | .truth => true | .falsity => false
   | .eq a b => decide (integerAs η a = integerAs η b)
@@ -69,8 +76,10 @@ def Pred.atomValue (η : ObservationEnvModel) : Pred → Bool
     | .decimal c s => decide (c.natAbs < 2^96 ∧ s ≤ 28) | _ => false
   | .charactersIn a lo hi => match observeAs η .string a with
     | .string s => s.toList.all (fun c => decide (lo.toNat ≤ c.toNat ∧ c.toNat ≤ hi.toNat)) | _ => false
-  | .member k a r => match observeAs η (.target k) a with
-    | .targetValue bs t => decide (SnapshotMem bs k r t) | _ => false
+  | .member k a r => match a.interpret η with
+    | some (.string s) => stringMember k r s
+    | _ => match observeAs η (.target k) a with
+      | .targetValue bs t => decide (SnapshotMem bs k r t) | _ => false
   | .constructorIs a c => match observeAs η .data a with
     | .dataValue d _ => decide (d = c) | _ => false
   | .and _ _ | .or _ _ | .not _ => false
@@ -96,12 +105,14 @@ theorem termReady_observation {η : ObservationEnvModel} {s : «Sort»} {t : Ter
     have hi := Term.observe_sound ho
     exact ⟨o,rfl,hs,hi,by simp [observeAs,hi,hs]⟩
 
-/-- 解決不能な所属はfalseという観測値でなく、評価不能として扱う。 -/
+/-- String は解析失敗を偽とする。起点を必要とする未解決の範囲は評価不能として扱う。 -/
 def memberReady (η : ObservationEnvModel) (k : Scope.Domain.Kind) (a : Term) (r : RangeExpr) : Bool :=
   match a.observe η with
   | some (.targetValue bs t) => decide (t.kind = k ∧ t.WF ∧ r.WF ∧ r.FitsKind k) &&
       (match bs with | none => true | some σ => decide σ.Valid) &&
       (resolveSnapshot bs r).isSome
+  | some (.string _) => decide ((k = .path ∨ k = .host) ∧ r.WF ∧ r.FitsKind k) &&
+      (resolveSnapshot none r).isSome
   | _ => false
 
 def Pred.atomReady (η : ObservationEnvModel) : Pred → Bool

@@ -393,7 +393,7 @@ example : run (.absolute (.path (.exact []))) [.const (.string "/"),.const (.str
     run (.absolute (.path (.exact []))) [.const (.string "/"),.const (.string ".")] =
     error (.absolute (.path (.exact []))) (invalidTarget "." text.PATH) := by
   have suffix : "/".endsWith "/**" = false := by decide
-  simp [run,parsePattern,suffix,parseAtInput,Checked.Scope.makePath,PathPattern.WF,PathWordWF,
+  simp [run,parsePattern,suffix,parseAtInput,parseTargetInput,Checked.Scope.makePath,PathPattern.WF,PathWordWF,
     PathPattern.Matches,Range.MemK,Range.Mem,Target.kind]
 
 

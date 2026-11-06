@@ -336,7 +336,7 @@ theorem field_rows (externals : List (ExternalKey × ExternalDecl)) :
     rw [hargs] at ha
     obtain ⟨b, _, rfl⟩ := List.mem_map.mp ha
     exact ⟨(b.sourceScoped 0 0 0).2.1, (b.sourceScoped 0 0 0).2.2⟩
-  simp only [baseDeclarations, byteOrder, roundingMode, StandardOrdinaryCoreBodies.declarations,
+  simp only [baseDeclarations, byteOrder, roundingMode, checkError, StandardOrdinaryCoreBodies.declarations,
     ScopeDeclarations.base, ScopeDeclarations.file, ScopeDeclarations.result, ScopeDeclarations.scopeError,
     ScopeDeclarations.pair, ScopeDeclarations.clientRequest, ScopeDeclarations.requestCheckError,
     StandardOrdinaryCoreBodies.Record.owner, StandardOrdinaryCoreBodies.Record.fields,

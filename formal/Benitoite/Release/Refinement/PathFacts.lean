@@ -23,6 +23,8 @@ theorem Pred.Sorted.map {Γ Δ : Ctx} {self other : Option Ty} {ν : Observation
     | exact ⟨Term.hasSort_termBind h.1 _ hs hr, Term.hasSort_termBind h.2 _ hs hr⟩
     | exact ⟨h.1, Term.hasSort_termBind h.2.1 _ hs hr, Term.hasSort_termBind h.2.2 _ hs hr⟩
     | exact Term.hasSort_termBind h _ hs hr
+    | exact h.elim (fun ht => Or.inl (Term.hasSort_termBind ht _ hs hr))
+        (fun ht => Or.inr ⟨ht.1, Term.hasSort_termBind ht.2 _ hs hr⟩)
     | exact ⟨Pred.Sorted.map (Γ := Γ) (Δ := Δ) (self := self) (other := other) (ν := ν) h.1 hs hr, Pred.Sorted.map (Γ := Γ) (Δ := Δ) (self := self) (other := other) (ν := ν) h.2 hs hr⟩
     | exact Pred.Sorted.map (Γ := Γ) (Δ := Δ) (self := self) (other := other) (ν := ν) h hs hr
 

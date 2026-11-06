@@ -4,7 +4,7 @@ import Benitoite.Release.Refinement.StandardModelPureInputs
 
 /-! # 合成表の全署名の形成
 
-合成表の377行の署名は、合成プログラムの同じ宣言の上で `PrimSig.Scoped` を満たす。出典の表の族ごとに、
+合成表の392行の署名は、合成プログラムの同じ宣言の上で `PrimSig.Scoped` を満たす。出典の表の族ごとに、
 全ての構成子の署名を検査し、行の振り分けで各行をその族の署名へ対応させる。範囲付きのパス・要求の
 行とIOの行は、ModelTargets・ModelHttpの既存の形成の補題を同じ宣言で読む。 -/
 namespace Benitoite.Release.Refinement.StandardModel
@@ -349,6 +349,40 @@ theorem scoped_store (externals : List (ExternalKey × ExternalDecl)) :
       Eff.WF,Eff.single,Eff.empty,Eff.Canonical,Eff.norm,Ty.normTys,Ty.HasKind,kindsTel,kindsList,kindsEff,
       TypeCtx.kinds,TypeCtx.valueParam,Tel.Sorted,Ty.Sorted,sortedTys,sortedEff,Tel.Declared,Ty.Declared,declaredTys,
       declaredEff,PrimSig.OperationWF,BinderTypes.TargetWF,Ty.TargetWF,Ordinary,Ty.core]
+
+/-- 所属・文字集合・Float 分類の純粋な署名の形成。 -/
+theorem scoped_predicate (externals : List (ExternalKey × ExternalDecl)) (api : PredicateResponse.API) :
+    PrimSig.Scoped (program externals) api.signature := by
+  cases api <;> try (rename_i w t; cases w)
+  all_goals constructor <;> simp [PredicateResponse.API.signature,PredicateResponse.API.names,PredicateResponse.API.inputs,PrimSig.tel,signatureTel,NamesWF,Ty.SourceScoped,Eff.SourceScoped,Ty.WF,Tel.WF,Ty.WFList,RangeIx.WF,
+      Ty.RowsIn,Tel.RowsIn,Ty.RowsInList,Eff.RowsIn,Ty.RangesScoped,Tel.RangesScoped,rangesScopedTypes,Eff.RangesScoped,
+      Eff.WF,Eff.single,Eff.empty,Eff.Canonical,Eff.norm,Ty.normTys,Ty.HasKind,kindsTel,kindsList,kindsEff,
+      TypeCtx.kinds,TypeCtx.valueParam,Tel.Sorted,Ty.Sorted,sortedTys,sortedEff,Tel.Declared,Ty.Declared,declaredTys,
+      declaredEff,PrimSig.OperationWF,BinderTypes.TargetWF,Ty.TargetWF,atErrorType,Pred.Sorted,Pred.WF,Pred.VarsIn,
+      Pred.Declared,Term.Declared,Term.HasSort,Term.Shape,Term.References,Term.VarsIn,Ctx.Readable,Ctx.declarationSelf,
+      Ty.NotContCore,Ty.HasSort,Ty.sort?,Measure.input,Measure.output,Ctx.extend,Ordinary,Ty.core,
+      ScopedIOResponse.ResultKind.type,Tel.argumentsEnv,Ty.refineNorm,Ty.packRefinements,Ty.refinementPredicates,
+      Pred.conjuncts,Pred.ofConjuncts,StandardPureResults.Kind.type,embedTy,embedTys,Benitoite.Interval.IntKind.type,
+      StandardOperatorArguments.signature,StandardFloatMathResponse.base,
+      Ty.shiftV,shiftVTys,Eff.shiftV,Tel.shiftV,StandardHeadTail.length,StandardCollectionPrecision.length,
+      StandardCollectionPrecision.size,Eff.row]
+/-- 一般の検査は、二つの値型の引数と同じ Result・CheckError 宣言を読む。 -/
+theorem scoped_check (externals : List (ExternalKey × ExternalDecl)) :
+    PrimSig.Scoped (program externals) RefinementCheck.signature := by
+  have hr : (program externals).DataArity "Result" 2 := ((http_declarations externals) ScopeDeclarations.result (by simp [ScopeDeclarations.http,ScopeDeclarations.file])).1
+  have he := (check_declarations externals).arity
+  constructor <;> simp [RefinementCheck.signature,RefinementCheck.result,RefinementCheck.errorType,hr,he,TyCon.arity_data hr,TyCon.arity_data he,PrimSig.tel,signatureTel,NamesWF,Ty.SourceScoped,Eff.SourceScoped,Ty.WF,Tel.WF,Ty.WFList,RangeIx.WF,
+      Ty.RowsIn,Tel.RowsIn,Ty.RowsInList,Eff.RowsIn,Ty.RangesScoped,Tel.RangesScoped,rangesScopedTypes,Eff.RangesScoped,
+      Eff.WF,Eff.single,Eff.empty,Eff.Canonical,Eff.norm,Ty.normTys,Ty.HasKind,kindsTel,kindsList,kindsEff,
+      TypeCtx.kinds,TypeCtx.valueParam,Tel.Sorted,Ty.Sorted,sortedTys,sortedEff,Tel.Declared,Ty.Declared,declaredTys,
+      declaredEff,PrimSig.OperationWF,BinderTypes.TargetWF,Ty.TargetWF,atErrorType,Pred.Sorted,Pred.WF,Pred.VarsIn,
+      Pred.Declared,Term.Declared,Term.HasSort,Term.Shape,Term.References,Term.VarsIn,Ctx.Readable,Ctx.declarationSelf,
+      Ty.NotContCore,Ty.HasSort,Ty.sort?,Measure.input,Measure.output,Ctx.extend,Ordinary,Ty.core,
+      ScopedIOResponse.ResultKind.type,Tel.argumentsEnv,Ty.refineNorm,Ty.packRefinements,Ty.refinementPredicates,
+      Pred.conjuncts,Pred.ofConjuncts,StandardPureResults.Kind.type,embedTy,embedTys,Benitoite.Interval.IntKind.type,
+      StandardOperatorArguments.signature,StandardFloatMathResponse.base,
+      Ty.shiftV,shiftVTys,Eff.shiftV,Tel.shiftV,StandardHeadTail.length,StandardCollectionPrecision.length,
+      StandardCollectionPrecision.size,Eff.row]
 
 /-- 合成表の全lookupの署名は、同じ合成プログラムの上で形成される。 -/
 theorem sig_scoped (externals : List (ExternalKey × ExternalDecl)) :
@@ -715,6 +749,21 @@ theorem sig_scoped (externals : List (ExternalKey × ExternalDecl)) :
   case p375 => exact store.1
   case p376 => exact store.2.1
   case p377 => exact store.2.2.2
+  case p378 => exact scoped_predicate externals (.path)
+  case p379 => exact scoped_predicate externals (.host)
+  case p380 => exact scoped_predicate externals (.characters)
+  case p381 => exact scoped_predicate externals (.floating .binary64 .finite)
+  case p382 => exact scoped_predicate externals (.floating .binary64 .infinite)
+  case p383 => exact scoped_predicate externals (.floating .binary64 .positiveInfinity)
+  case p384 => exact scoped_predicate externals (.floating .binary64 .negativeInfinity)
+  case p385 => exact scoped_predicate externals (.floating .binary64 .positiveZero)
+  case p386 => exact scoped_predicate externals (.floating .binary64 .negativeZero)
+  case p387 => exact scoped_predicate externals (.floating .binary32 .finite)
+  case p388 => exact scoped_predicate externals (.floating .binary32 .positiveInfinity)
+  case p389 => exact scoped_predicate externals (.floating .binary32 .negativeInfinity)
+  case p390 => exact scoped_predicate externals (.floating .binary32 .positiveZero)
+  case p391 => exact scoped_predicate externals (.floating .binary32 .negativeZero)
+  case p392 => exact scoped_check externals
   case p185 => exact http_scoped externals (b := "Http.checkRequestIn") rfl
   case p186 => exact http_scoped externals (b := "Http.requestInValue") rfl
   case p187 => exact http_scoped externals (b := "Http.sendIn") rfl

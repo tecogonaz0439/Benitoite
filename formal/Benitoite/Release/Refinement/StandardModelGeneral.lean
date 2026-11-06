@@ -250,6 +250,21 @@ theorem http_declarations (externals : List (ExternalKey × ExternalDecl)) :
   · intro c hc
     exact lookup_of_mem (List.mem_flatMap.mpr ⟨d, List.mem_append_right _ hd, hc⟩)
 
+/-- 合成プログラムは明示的な検査の誤りと標準 Result を宣言する。 -/
+theorem check_declarations (externals : List (ExternalKey × ExternalDecl)) :
+    RefinementCheck.Declarations (program externals) := by
+  refine ⟨(http_declarations externals).file,rfl,⟨⟨"Refinement.CheckError",_,rfl,rfl⟩,?_⟩⟩
+  intro c cd hc owner
+  have mem : (c,cd) ∈ constructors := by
+    change constructors.lookup c = some cd at hc
+    obtain ⟨before,after,he,_⟩ := List.lookup_eq_some_iff.mp hc
+    rw [he]; exact List.mem_append_right _ List.mem_cons_self
+  obtain ⟨decl,hd,entry⟩ := List.mem_flatMap.mp mem
+  obtain ⟨field,_,he⟩ := List.mem_map.mp entry
+  cases he
+  have all : ∀ d ∈ declarations, d.name = "Refinement.CheckError" → d.ntys = 0 := by decide
+  exact all decl hd owner
+
 /-- 合成プログラムはDecimalの応答が読むOptionと丸めの五方式を宣言し、丸め方式のデータ名を持つ
 構成子は五つの方式に限る。 -/
 theorem rounding_declarations (externals : List (ExternalKey × ExternalDecl)) :
@@ -269,7 +284,7 @@ theorem rounding_declarations (externals : List (ExternalKey × ExternalDecl)) :
     exact absurd owner (other decl pub)
   rcases List.mem_append.mp member with old | last
   · have other : ∀ d ∈ StandardOrdinaryCoreBodies.declarations ++ ScopeDeclarations.base.filter
-        (fun d => !(StandardOrdinaryCoreBodies.declarations.any (fun old => old.name == d.name))) ++ [byteOrder],
+        (fun d => !(StandardOrdinaryCoreBodies.declarations.any (fun old => old.name == d.name))) ++ [byteOrder] ++ [checkError],
         d.name ≠ "RoundingMode" := by decide
     exact absurd owner (other decl old)
   cases List.mem_singleton.mp last
@@ -332,7 +347,7 @@ theorem variance_valid (externals : List (ExternalKey × ExternalDecl)) :
         obtain ⟨b, hb, rfl⟩ := List.mem_map.mp ha
         rw [hn]
         exact ⟨b.annotation pub _ _ (hk b hb), b.kind pub _ (hk b hb), b.varianceOK _ _ _⟩
-    simp only [baseDeclarations, byteOrder, roundingMode, StandardOrdinaryCoreBodies.declarations,
+    simp only [baseDeclarations, byteOrder, roundingMode, checkError, StandardOrdinaryCoreBodies.declarations,
       ScopeDeclarations.base, ScopeDeclarations.file, ScopeDeclarations.result, ScopeDeclarations.scopeError,
       ScopeDeclarations.pair, ScopeDeclarations.clientRequest, ScopeDeclarations.requestCheckError,
       StandardOrdinaryCoreBodies.Record.owner, StandardOrdinaryCoreBodies.Record.fields,
@@ -371,7 +386,7 @@ theorem map_set_declarations (externals : List (ExternalKey × ExternalDecl)) :
   rcases (constructors_split (cons_mem h)).symm with mem | mem
   · obtain ⟨_, hd, _⟩ := ScopeDeclarations.public_entry mem
     exact absurd owner (ScopeDeclarations.public_not_option _ hd).2.1
-  simp only [baseDeclarations, byteOrder, roundingMode, StandardOrdinaryCoreBodies.declarations,
+  simp only [baseDeclarations, byteOrder, roundingMode, checkError, StandardOrdinaryCoreBodies.declarations,
     ScopeDeclarations.base, ScopeDeclarations.file, ScopeDeclarations.result, ScopeDeclarations.scopeError,
     ScopeDeclarations.pair, ScopeDeclarations.clientRequest, ScopeDeclarations.requestCheckError,
     StandardOrdinaryCoreBodies.Record.owner, StandardOrdinaryCoreBodies.Record.fields,
@@ -386,6 +401,7 @@ theorem map_set_declarations (externals : List (ExternalKey × ExternalDecl)) :
 class RowEnv (P : Program) (B : Builtins) extends RowLookup B where
   options : StandardActualListBodies.ListOptionDeclarations P
   http : ScopeDeclarations.HasHttp P
+  check : RefinementCheck.Declarations P
   rounding : StandardDecimalResponse.Declarations P
   mapSet : StandardCollections.MapSetDeclarations P
   keys : StandardKeyTyping.Table P B
@@ -398,6 +414,7 @@ instance RowEnv.base (externals : List (ExternalKey × ExternalDecl)) :
     RowEnv (program externals) (builtins (program externals)) where
   options := option_declarations externals
   http := http_declarations externals
+  check := check_declarations externals
   rounding := rounding_declarations externals
   mapSet := map_set_declarations externals
   keys := table externals

@@ -14,6 +14,8 @@ theorem io_op (P : Program) :
   intro b s lookup kind
   obtain ⟨row, _, rfl, rfl⟩ := (builtins_lookup_iff P b s).mp lookup
   have io := io_classes row kind
+  have he : (builtins P).effects = effects := rfl
+  simp only [Builtins.ShapeOk,he]
   cases row
   case p157 =>
     obtain ⟨bs, hb, hm⟩ := effects_member .p157 (l := "File.Write") rfl (by decide)
@@ -41,10 +43,24 @@ theorem io_op (P : Program) :
     exact ⟨_, bs, rfl, rfl, hb, hm, rfl, rfl, rfl, "Http.RequestIn", rfl, rfl⟩
   case p372 =>
     obtain ⟨bs, hb, hm⟩ := effects_member .p372 (l := "Process.Exit") rfl (by decide)
-    exact ⟨_, bs, rfl, rfl, hb, hm, rfl, rfl, rfl⟩
+    refine ⟨"Process.Exit", bs, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
+    · rfl
+    · rfl
+    · exact hb
+    · exact hm
+    · rfl
+    · rfl
+    · rfl
   case p373 =>
     obtain ⟨bs, hb, hm⟩ := effects_member .p373 (l := "Console.Write") rfl (by decide)
-    exact ⟨_, bs, rfl, rfl, hb, hm, rfl, rfl, rfl⟩
+    refine ⟨"Console.Write", bs, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
+    · rfl
+    · rfl
+    · exact hb
+    · exact hm
+    · rfl
+    · rfl
+    · rfl
   all_goals cases io
 
 /-- 発行の種類の行は、Example.pathBasesの一行で、発行の八欄とEnvironmentの所属を持つ。 -/
