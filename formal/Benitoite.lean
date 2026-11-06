@@ -905,3 +905,5 @@ import Benitoite.Release.Refinement.RangeSourceProperties
 import Benitoite.Release.Refinement.RangeFunctionExamples
 import Benitoite.Release.Refinement.MainEffects
 import Benitoite.Release.Refinement.EffectSoundnessExamples
+import Benitoite.Release.Refinement.StandardModelApplication
+import Benitoite.Release.Refinement.StandardModelApplicationExamples

@@ -4365,6 +4365,10 @@ def EffectSoundnessStatement (P : Program) (B : Builtins) (σ : PathEnv) : Prop 
 `effect_soundness_noLamNames` は、同じプログラム・表・環境と同じ空の効果の閉包の型付けに加え、`q.Adequate σ`・`q.ClosedNoLamNames 0`・`InitialPrepared P B σ (.run q [] Store.empty)` を受ける。`StartCondition.of_typed_noLamNames` で開始の条件を作り、上の言明と同じ全到達状態の二条件を結論する。ラムダ名の整形式は型付けが供給する。
 
 
+標準の宣言を含む利用者のプログラム P には、`StandardModel.included_guarantees` で主定理を適用する。前提は、名前の一覧 L の整形式、P の data 宣言の有限の一覧 `DataTable P`、標準の宣言の包含 `Includes externals P`、完成した表の仮定側の契約 `Completion L T A`、含まれる外部宣言表の構造検証 `(program externals).ExternalWF`、同じ完成した表 `complete L T A` での追加宣言の検査 `Program.Additions (program externals) P (complete L T A)` である。外部宣言が空であることは要求しない。data 宣言の一覧は、全構成子の lookup との一致、名前の重複がないこと、制約の要約の収束、変性の検査を含む。追加宣言の検査は脱糖の型保存から受ける義務であり、この系が表層の検査器の受理から直接導くものではない。
+
+結論の `ProgramGuarantees P (complete L T A) σ` は、進行、一段と実行列の保存、実行関数の健全性、開始の型付け、一段と到達先の対象健全性（IO の形と事象一般の形）、エフェクトの健全性とそのラムダ名の条件を型付けから供給する形を持つ。開始の閉包の型付け・開始の条件・実行列、実行関数の応答と場所の選択、一段の対象健全性の `σ.Valid` は、それぞれの結論の前提に残る。Task・TaskGroup の七名は完成した表で署名を持たず、それらを呼ぶプログラムはこの系の範囲に含まれない。
+
 1. 脱糖の型の保存: [型システム](01-06-type-system.md)の型検査を通ったプログラムを脱糖すると、すべての定義に型が付く。
 2. 進行と保存: 型が付いた状態は、`⟨return V, []⟩` であるか、遷移できる。遷移した先の状態も型が付くか、`error(r)` である。IO の応答は、関数の戻り値の型の値であるとする。
 3. エフェクトの健全性: `· ⊢c M : A ! { }` が成り立ち、M がエフェクト変数を含まないとき、`⟨M, []⟩` からの実行は IO の事象を伴う遷移をしない。
