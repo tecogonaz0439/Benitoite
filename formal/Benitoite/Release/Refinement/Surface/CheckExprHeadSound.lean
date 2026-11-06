@@ -10,7 +10,7 @@ theorem fun_step {h cs} : ExprSoundAt (.node .E_Fun h cs) := by
   dsimp only at hc
   replace hc := (Bool.and_eq_true_iff.mp hc).2
   split at hc
-  · rename_i f ts es
+  · rename_i f ts es xs
     split at hc
     · rename_i t ds ht
       have hh := Bool.and_eq_true_iff.mp hc
@@ -64,7 +64,7 @@ theorem funDicts_step {h cs} : ExprSoundAt (.node .E_FunDicts h cs) := by
   dsimp only at hc
   replace hc := (Bool.and_eq_true_iff.mp hc).2
   split at hc
-  · rename_i f ts es ds names ps
+  · rename_i f ts es ds names ps xs
     split at hc
     · rename_i t returned ht
       simp only [allChecks, Bool.and_eq_true, and_true, decide_eq_true_eq] at hc

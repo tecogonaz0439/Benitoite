@@ -91,6 +91,34 @@ structure Program.WellFormed (p : Program) : Prop where
   testers : ∀ f c, p.testers f = some c → p.defs f = none ∧ p.accessors f = none ∧
     ∀ cd, p.cons c = some cd → TesterOk p.declarations c cd
 
+/-- 範囲パラメータを持たないプログラムの整形式は、範囲の深さ0の署名と本体の条件へ戻る。 -/
+theorem Program.wellFormed_no_ranges {p : Program}
+    (hs : ∀ f d, p.defs f = some d → d.rangeParams = []) :
+    p.WellFormed ↔
+      p.declarations.core.WellFormed ∧
+      (∀ f d, p.defs f = some d → NamesWF d.coreNames d.coreParams ∧
+        SignatureScoped p.declarations.core d.tparams d.neffs d.toFunDecl.tel ∧
+        d.body.Scoped d.tparams.length d.neffs d.coreParams.length) ∧
+      (∀ i id, p.impls i = some id → ImplDecl.Scoped p.declarations id) ∧
+      (∀ f c k, p.accessors f = some (c, k) → p.defs f = none → ∀ cd, p.cons c = some cd →
+        AccessorOk p.declarations c cd k) ∧
+      (∀ f c, p.testers f = some c → p.defs f = none ∧ p.accessors f = none ∧
+        ∀ cd, p.cons c = some cd → TesterOk p.declarations c cd) := by
+  have hd : ∀ f d (_ : p.defs f = some d),
+      (NamesWF d.coreNames d.coreParams ∧
+        SignatureScopedR p.declarations.core d.rangeParams d.tparams d.neffs d.toFunDecl.tel ∧
+        d.body.Scoped d.tparams.length d.neffs d.coreParams.length (nr := d.rangeParams.length)) ↔
+      (NamesWF d.coreNames d.coreParams ∧
+        SignatureScoped p.declarations.core d.tparams d.neffs d.toFunDecl.tel ∧
+        d.body.Scoped d.tparams.length d.neffs d.coreParams.length) := by
+    intro f d h
+    simp only [hs f d h, List.length_nil, SignatureScopedR, SignatureScoped, Ty.annotationR_nil]
+  constructor
+  · intro h
+    exact ⟨h.types, fun f d hf => (hd f d hf).mp (h.defs f d hf), h.impls, h.accessors, h.testers⟩
+  · rintro ⟨ht, hf, hi, ha, he⟩
+    exact ⟨ht, fun f d h => (hd f d h).mpr (hf f d h), hi, ha, he⟩
+
 /-- 表層のプログラムの型付け。関数と実装のメソッドは本体ごとの view で型付ける。 -/
 structure Program.WellTyped (p : Program) (B : Builtins) (opPrim : OpPrim) : Prop where
   variance : p.declarations.core.VarianceValid

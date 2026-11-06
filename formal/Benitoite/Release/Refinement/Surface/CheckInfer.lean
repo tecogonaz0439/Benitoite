@@ -263,14 +263,14 @@ mutual
           let s ← inferExprFuel fuel q certs rows [] C (Γ.map fun _ => none) [] R .other (child path 0) body
           let s := coerceExpr q certs (Γ.map fun _ => none) [] (child path 0) body s a Eff.empty
           pure (node a Eff.empty .E_Const {} [s.guide])
-      | .funName _ _ _ | .primName _ _ _ _ | .opName _ _ => do
+      | .funName _ _ _ _ | .primName _ _ _ _ | .opName _ _ => do
           let (t, _, hg) ← headInfo q rows C Γ path e
           let rule := match e with | .funName .. => Rule.E_Fun | .primName .. => .E_Prim | _ => .E_Op
           pure (node (.dependentFn t) Eff.empty rule {heads := [hg]})
       | .externalName _ _ => do
           let (t, _, _) ← headInfo q rows C Γ path e
           pure (node (.dependentFn t) Eff.empty .E_ExternalName)
-      | .funDicts _ _ _ ds names ps | .opDicts _ _ ds names ps | .methName _ _ _ _ ds names ps => do
+      | .funDicts _ _ _ ds names ps _ | .opDicts _ _ ds names ps | .methName _ _ _ _ ds names ps => do
           let (t, _, hg) ← headInfo q rows C Γ path e
           let k := ps.length
           let env := bindParams (hideConts Γ) ps

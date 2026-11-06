@@ -1,11 +1,12 @@
 import Benitoite.Release.Refinement.Surface.CheckGuide
+import Benitoite.Release.Refinement.Surface.CheckBuiltinSource
 
 /-! 検査器が読む宣言・組み込みの表と、論理の証明書。 -/
 namespace Benitoite.Release.Refinement.Surface.Check
 
 structure Input where
   D : Declarations
-  B : Builtins
+  builtinSource : BuiltinSource
   opPrim : OpPrim
   formation : CheckFormation.Input
   satDec : CheckArguments.SatDec := fun _ _ _ => false
@@ -25,6 +26,9 @@ structure Input where
   methodParamNames : ImplName → MethName → List String := fun _ _ => []
   functionSteps : FunName → Nat := fun _ => proofSteps
   methodSteps : ImplName → MethName → Nat := fun _ _ => proofSteps
+
+/-- 選択した構成元の実際の組込みの表。 -/
+def Input.B (q : Input) : Builtins := q.builtinSource.builtins
 
 /-- 材料の有限支持と既存の型クラス・組み込みの許容判定との対応。型付けや証明書の健全性は仮定しない。 -/
 structure Input.Sound (q : Input) : Prop where

@@ -1,5 +1,6 @@
 import Benitoite.Release.Refinement.Surface.CheckEntrypoints
 import Benitoite.Release.Refinement.Surface.CheckDeclarationBase
+import Benitoite.Release.Refinement.Surface.CheckOpenDeclarations
 
 /-! 関数と型クラスの実装を、宣言の署名と本体の表層の規則で検査する。 -/
 namespace Benitoite.Release.Refinement.Surface.CheckDeclarations
@@ -104,8 +105,11 @@ private def definitionDetails (q : Check.Input) (path : List Nat) (d : Def) : Ch
 def checkDef (q : Check.Input) (path : List Nat) (d : Def) : Check.Result Unit :=
   Except.bind (Check.require path "proof step limit must be positive"
     (match d.proofSteps with | none => true | some n => decide (0 < n)))
-    (fun _ => diagnosed (checkDefWith bodyChecker (definitionInput q d) path d)
-      (fun _ => definitionDetails (definitionInput q d) path d))
+    (fun _ => if d.rangeParams = [] then
+      diagnosed (checkDefWith bodyChecker (definitionInput q d) path d)
+        (fun _ => definitionDetails (definitionInput q d) path d)
+      else CheckOpenDeclarations.checkDef q path d)
+
 
 private def implementationDetails (q : Check.Input) (i : ImplName) (path : List Nat)
     (id : ImplDecl) (views : MethName → CoverageView) : Check.Result Unit :=
@@ -122,13 +126,13 @@ def checkImpl (q : Check.Input) (i : ImplName) (path : List Nat) (id : ImplDecl)
     (fun _ => implementationDetails q i path id views)
 
 /-- 詳細な診断を付けた関数検査の成功は、署名と本体の検査の成功を保つ。 -/
-theorem checkDef_ok {q path d} (h : checkDef q path d = .ok ()) :
+theorem checkDef_ok {q path d} (hk : d.rangeParams = []) (h : checkDef q path d = .ok ()) :
     checkDefWith bodyChecker (definitionInput q d) path d = .ok () := by
   unfold checkDef at h
   cases hv : Check.require path "proof step limit must be positive"
       (match d.proofSteps with | none => true | some n => decide (0 < n)) with
   | error err => simp [hv, Except.bind] at h
-  | ok value => exact diagnosed_ok (by simpa only [hv, Except.bind] using h)
+  | ok value => exact diagnosed_ok (by simpa only [hv, Except.bind, hk, ite_true] using h)
 
 /-- 詳細な診断を付けた実装検査の成功は、署名と本体の検査の成功を保つ。 -/
 theorem checkImpl_ok {q i path id views} (h : checkImpl q i path id views = .ok ()) :
@@ -191,7 +195,7 @@ private theorem methodsResult_unknown {q i path id cd views methods error}
         exact ⟨n, List.mem_cons_of_mem _ hn, data⟩
 
 /-- 関数入口のunknownには、依存列の末尾での実際の打ち切りがある。 -/
-theorem checkDef_unknown {q path d error} (h : checkDef q path d = .error error)
+private theorem checkDef_closed_unknown {q path d error} (hk : d.rangeParams = []) (h : checkDef q path d = .error error)
     (hu : error.kind = .unknown) :
     BodyTelStopped (definitionInput q d) (telQ d.neffs d.toFunDecl.tel) d.tparams [] []
       (path ++ [1]) d.toFunDecl.tel d.body := by
@@ -204,12 +208,45 @@ theorem checkDef_unknown {q path d error} (h : checkDef q path d = .error error)
     rw [require_rejected hv] at hu
     cases hu
   | ok value =>
-    simp only [hv, Except.bind] at h
+    simp only [hv, Except.bind, hk, ite_true] at h
     have hd := diagnosed_unknown h hu (fun _ hh => require_rejected hh)
     unfold definitionDetails at hd
     split at hd
     · exact bodyTelResult_unknown hd hu
     · cases hd
+
+/-- 関数の宣言した範囲の有無に従う、本体の打ち切りの記録。 -/
+def DefinitionStopped (q : Check.Input) (path : List Nat) (d : Def) : Prop :=
+  if d.rangeParams = [] then
+    BodyTelStopped (definitionInput q d) (telQ d.neffs d.toFunDecl.tel) d.tparams [] []
+      (path ++ [1]) d.toFunDecl.tel d.body
+  else CheckOpenDeclarations.BodyTelStopped (CheckOpenDeclarations.definitionInput q d)
+    (telQ d.neffs d.toFunDecl.tel) d.tparams [] [] (path ++ [1]) d.toFunDecl.tel d.body
+
+/-- 関数入口の unknown は、同じ範囲文脈の本体での実際の打ち切りに由来する。 -/
+theorem checkDef_unknown {q path d error} (h : checkDef q path d = .error error)
+    (hu : error.kind = .unknown) : DefinitionStopped q path d := by
+  by_cases hk : d.rangeParams = []
+  · simpa only [DefinitionStopped, hk, ite_true] using checkDef_closed_unknown hk h hu
+  · simp only [DefinitionStopped, hk, ite_false]
+    unfold checkDef at h
+    cases hv : Check.require path "proof step limit must be positive"
+        (match d.proofSteps with | none => true | some n => decide (0 < n)) with
+    | error err =>
+      simp only [hv, Except.bind, Except.error.injEq] at h
+      subst err
+      rw [require_rejected hv] at hu
+      cases hu
+    | ok value =>
+      exact CheckOpenDeclarations.checkDef_unknown
+        (by simpa only [hv, Except.bind, hk, ite_false] using h) hu
+
+/-- 範囲のない定義では、元の本体の打ち切りの言明を返す。 -/
+theorem checkDef_no_ranges_unknown {q path d error} (hk : d.rangeParams = [])
+    (h : checkDef q path d = .error error) (hu : error.kind = .unknown) :
+    BodyTelStopped (definitionInput q d) (telQ d.neffs d.toFunDecl.tel) d.tparams [] []
+      (path ++ [1]) d.toFunDecl.tel d.body := by
+  simpa only [DefinitionStopped, hk, ite_true] using checkDef_unknown h hu
 
 /-- 実装入口のunknownには、一覧にあるメソッド本体の実際の打ち切りがある。 -/
 theorem checkImpl_unknown {q i path id views error} (h : checkImpl q i path id views = .error error)

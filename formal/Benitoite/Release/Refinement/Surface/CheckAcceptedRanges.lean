@@ -9,31 +9,24 @@ open ScopeState ScopeLower ScopeAccept
 def BodyRanges (A : AcceptInput) (key : Key) (scope : Interval.BindingScope) (body : Block) : Prop :=
   let T := tableFor A key body
   let records := (analyzeBody A.ok T A.limits key scope body).2
-  ∀ (k : Key) (b : PrimName) (ts : List Ty) (es : List Eff) (rs : List Range)
+  ∀ (k : Key) (b : PrimName) (ts : List Ty) (es : List Eff) (ix : List RangeIx)
       (labels : List (Option String)) (positions : List Nat) (args : Exprs) (xs : List Arg)
       (rule : ScopeRule Refinement.Val),
-    (k, .call (.primName b ts es rs) labels positions args) ∈ occurrences key body →
-    contractOrder positions (lowerArgs (argsKey k (.primName b ts es rs)) args) = some xs →
+    (k, .call (.primName b ts es ix) labels positions args) ∈ occurrences key body →
+    contractOrder positions (lowerArgs (argsKey k (.primName b ts es ix)) args) = some xs →
     T.ruleAt k = some rule →
-    (∀ st, (k, st) ∈ records →
-      (∀ (i : Nat) (S r : Range), rs[i]? = some S →
-        (rule.index (xs.map (absArg T st)))[i]? = some r → S.Covers r) ∧
-      (∀ (i : Nat) (r : Range), (rule.index (xs.map (absArg T st)))[i]? = some r → ∃ S, rs[i]? = some S)) ∧
-    ((∀ st, (k, st) ∉ records) →
-      (∀ (i : Nat) (S r : Range), rs[i]? = some S →
-        (rule.index (xs.map (absArg T factFree)))[i]? = some r → S.Covers r) ∧
-      (∀ (i : Nat) (r : Range), (rule.index (xs.map (absArg T factFree)))[i]? = some r → ∃ S, rs[i]? = some S))
+    (∀ st, (k, st) ∈ records → ∀ (i : Nat) (r : Range),
+      (rule.index (xs.map (absArg T st)))[i]? = some r →
+      ∃ S, ix[i]? = some (.fixed (.absolute S)) ∧ S.Covers r) ∧
+    ((∀ st, (k, st) ∉ records) → ∀ (i : Nat) (r : Range),
+      (rule.index (xs.map (absArg T factFree)))[i]? = some r →
+      ∃ S, ix[i]? = some (.fixed (.absolute S)) ∧ S.Covers r)
 
 private theorem body_ranges_of_accepted {A key scope body}
     (h : acceptBody A.ok (tableFor A key body) A.limits key scope body = .ok ()) :
     BodyRanges A key scope body := by
-  intro k b ts es rs labels positions args xs rule hocc hxs hrule
-  constructor
-  · intro st hst
-    exact ⟨acceptBody_sound h hocc hxs hrule st hst, acceptBody_some h hocc hxs hrule st hst⟩
-  · intro hnone
-    exact ⟨acceptBody_sound_unrecorded h hocc hxs hrule hnone,
-      acceptBody_some_unrecorded h hocc hxs hrule hnone⟩
+  intro k b ts es ix labels positions args xs rule hocc hxs hrule
+  exact acceptBody_ranges h hocc hxs hrule
 
 /-- 受理したプログラムの各関数について、全出現・全記録と記録の無い場合の範囲契約を得る。 -/
 theorem Accepted.def_ranges {A q p} (h : Accepted A q p) {n d} (hd : p.defs n = some d) :

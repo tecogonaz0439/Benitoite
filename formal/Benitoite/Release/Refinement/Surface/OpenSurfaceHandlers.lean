@@ -1,5 +1,6 @@
 import Benitoite.Release.Refinement.Surface.OpenSurfaceBasicExpr
 import Benitoite.Release.Refinement.Surface.Property1Match
+import Benitoite.Release.Refinement.Surface.NormalContext
 
 /-! # 開いた範囲文脈のハンドラと節列の型保存 -/
 namespace Benitoite.Release.Refinement.Surface.OpenSurface
@@ -260,34 +261,60 @@ theorem clauses_nil_core {P B op Q Δ C Γ Φ R eb t e} (rs : List RangeExpr) :
   rw [desugarClauses, hn]
   exact .nil
 
-/-- 捕捉する操作の宣言の型に、自由な範囲変数と未正規化の注釈を残さない。 -/
+/-- 捕捉する操作の宣言の型に、自由な範囲変数を残さない。 -/
 def ClauseSyntax (sg : OpSig) : Prop :=
-  (∀ a ∈ sg.params, a.RangesScoped 0 ∧ a.norm = a) ∧ sg.ret.RangesScoped 0 ∧ sg.ret.norm = sg.ret
+  (∀ a ∈ sg.params, a.RangesScoped 0) ∧ sg.ret.RangesScoped 0
 
-theorem rangeCtx_clauseContext_closed (rs : List RangeExpr) (sg : OpSig) (Γ : Ctx) (t : Ty) (e : Eff)
+private theorem normCtx_extendMany (Γ : Ctx) (ps : List Ty) :
+    (Γ.extendMany ps).map (Option.map Ty.norm) =
+      Ctx.extendMany (Γ.map (Option.map Ty.norm)) (ps.map Ty.norm) := by
+  induction ps generalizing Γ with
+  | nil => rfl
+  | cons a ps ih =>
+    simp only [Ctx.extendMany, List.map_cons, ih, Ctx.extend, List.map_cons, List.map_map,
+      Option.map_some, Option.map_map, Function.comp_def, Ty.norm_shiftV]
+
+/-- 閉じた操作の型は、正規化した文脈で元の署名と照合できる。 -/
+theorem rangeCtx_clauseContext_normEq (rs : List RangeExpr) (sg : OpSig) (Γ : Ctx) (t : Ty) (e : Eff)
     (hs : ClauseSyntax sg) :
-    rangeCtx rs (sg.context Γ t e) = sg.context (rangeCtx rs Γ) (rangeTy rs t) (rangeEff rs e) := by
+    (rangeCtx rs (sg.context Γ t e)).NormEq
+      (sg.context (rangeCtx rs Γ) (rangeTy rs t) (rangeEff rs e)) := by
   rw [rangeCtx_clauseContext]
-  have hps : sg.params.map (rangeTy rs) = sg.params := by
-    apply Eq.trans (b := sg.params.map id) ?_ (List.map_id _)
+  have hps : (sg.params.map (rangeTy rs)).map Ty.norm = sg.params.map Ty.norm := by
+    rw [List.map_map]
     apply List.map_congr_left
     intro a ha
-    rw [rangeTy_closed rs a (hs.1 a ha).1]
-    cases rs with
-    | nil => rfl
-    | cons r rs => exact (hs.1 a ha).2
-  have hret : rangeTy rs sg.ret = sg.ret := by
-    rw [rangeTy_closed rs sg.ret hs.2.1]
-    cases rs with
-    | nil => rfl
-    | cons r rs => exact hs.2.2
-  rw [hps, hret]
+    change (rangeTy rs a).norm = a.norm
+    rw [rangeTy_closed rs a (hs.1 a ha)]
+    cases rs <;> simp only [Ty.norm_idem]
+  have hret : (rangeTy rs sg.ret).norm = sg.ret.norm := by
+    rw [rangeTy_closed rs sg.ret hs.2]
+    cases rs <;> simp only [Ty.norm_idem]
+  simp only [Ctx.NormEq, OpSig.context, Ctx.extend, List.map_cons, Option.map_some,
+    OpSig.continuation, List.length_map, Ty.norm, Ty.norm_shiftV, hret]
+  congr 1
+  have he := congrArg (List.map (Option.map (Ty.shiftV 1 0)))
+    ((normCtx_extendMany ((rangeCtx rs Γ).shiftE sg.tparams.length) (sg.params.map (rangeTy rs))).trans
+      (by rw [hps, ← normCtx_extendMany]))
+  simpa only [List.map_map, Option.map_map, Function.comp_def, Ty.norm_shiftV] using he
+
+private theorem rangeCtx_normal (rs : List RangeExpr) (hne : rs ≠ []) (Γ : Ctx) :
+    ∀ (i : Nat) (a : Ty), (rangeCtx rs Γ)[i]? = some (some a) → a.norm = a := by
+  cases rs with
+  | nil => exact False.elim (hne rfl)
+  | cons r rs =>
+    intro i a ha
+    simp only [rangeCtx, Ctx.mapRanges, List.getElem?_map] at ha
+    obtain ⟨oa, _, he⟩ := Option.map_eq_some_iff.mp ha
+    cases oa with
+    | none => cases he
+    | some a => cases he; exact Ty.norm_idem _
 
 private theorem handler_clauses_cons_instR (rs : List RangeExpr) (o : OpRef) (n k : Nat) (m : Comp) (cs : List Clause) :
     Clause.instRList rs (.mk o n k m :: cs) = .mk o n k (m.instR rs) :: Clause.instRList rs cs := by cases rs <;> rfl
 
 theorem clauses_cons_core {D : Declarations} {P B ks op Q Δ C Γ Φ R eb o n ntys body cs t e sg ndicts}
-    (hR : D.Realizes P) (σ : Instance ks) (_hallowed : ClauseAllowed D B o)
+    (hR : D.Realizes P) (hA : Builtins.ValueAssumptions P B) (σ : Instance ks) (_hallowed : ClauseAllowed D B o)
     (hsig : ClauseSig D.core B eb o sg) (hn : NamesWF sg.names sg.params)
     (hcount : ndicts + n = sg.params.length) (hk : ntys = sg.tparams.length) (hw : sg.WF)
     (hs : ClauseSyntax sg)
@@ -299,14 +326,22 @@ theorem clauses_cons_core {D : Declarations} {P B ks op Q Δ C Γ Φ R eb o n nt
     (hrest : ClausesCore P B op Q Δ C Γ Φ R eb cs t e σ.val) :
     ClausesCore P B op Q Δ C Γ Φ R eb (.cons o n ntys body cs ndicts) t e σ.val := by
   have hb' := hb
-  simp only [BlockCore, rangeCtx_clauseContext_closed _ _ _ _ _ hs, rangeTy_shiftV,
+  simp only [BlockCore, rangeTy_shiftV,
     rangeTy_shiftTypes, rangeEff_shiftV, rangeEff_shiftTypes, handler_rangeLocal_nil,
     Option.map_map, Function.comp_def] at hb'
   rw [← hideBuilders_empty] at hb'
   unfold ClausesCore
   rw [desugarClauses, handler_clauses_cons_instR]
-  exact .cons (clauseSig_sameTypes hR (clauseSig_rangeEff hsig σ.val)) hn hcount hk hw
-    (by simpa only [Option.map_map, Function.comp_def] using hb') hrest
+  apply HasTypeClausesQ.cons (clauseSig_sameTypes hR (clauseSig_rangeEff hsig σ.val)) hn hcount hk hw ?_ hrest
+  cases hr : σ.val with
+  | nil => simpa only [hr, rangeCtx, rangeTy, rangeEff, Option.map_map, Function.comp_def] using hb'
+  | cons r rs =>
+    have hc := NormalContext.comp hb' hA (by intro l t hl; cases hl)
+      (rangeCtx_clauseContext_normEq σ.val sg Γ t e hs)
+      (rangeCtx_normal σ.val (by simp [hr]) _)
+      (NormalContext.clause_shape hw (rangeCtx_normal σ.val (by simp [hr]) Γ)
+        (rangeTy σ.val t) (rangeEff σ.val e))
+    simpa only [hr, Option.map_map, Function.comp_def] using hc
 
 end
 end Benitoite.Release.Refinement.Surface.OpenSurface

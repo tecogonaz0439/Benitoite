@@ -346,13 +346,42 @@ theorem acceptCall_some {T : ScopeTable Refinement.Val} {records : Records} {exc
 def occurrences (key : Key) (body : Block) : List (Key × Expr) :=
   (Identity.preorderBlock body).zipIdx key.surfacePreorder |>.map fun (e, i) => (⟨key.definition, i⟩, e)
 
-/-- 一つの出現の受理。組み込みの名前を頭に持つ直接の呼び出しだけが範囲の列を持つ。 -/
+/-- 局所解析が扱う、閉じた絶対範囲の列を取り出す。 -/
+def absoluteRanges : List RangeIx → Option (List Range)
+  | [] => some []
+  | .fixed (.absolute r) :: xs => (absoluteRanges xs).map (r :: ·)
+  | _ => none
+
+@[simp] theorem absoluteRanges_fixed (rs : List Range) :
+    absoluteRanges (rs.map (fun r => RangeIx.fixed (.absolute r))) = some rs := by
+  induction rs <;> simp_all [absoluteRanges]
+
+theorem absoluteRanges_some {xs : List RangeIx} {rs : List Range}
+    (h : absoluteRanges xs = some rs) : xs = rs.map (fun r => RangeIx.fixed (.absolute r)) := by
+  induction xs generalizing rs with
+  | nil => cases h; rfl
+  | cons x xs ih =>
+    cases x with
+    | rvar _ => cases h
+    | fixed r =>
+      cases r with
+      | based _ _ | secrets => cases h
+      | absolute r =>
+        simp only [absoluteRanges, Option.map_eq_some_iff] at h
+        obtain ⟨rest, hr, rfl⟩ := h
+        simp only [List.map_cons]
+        exact congrArg (List.cons _) (ih hr)
+
+/-- 一つの出現の受理。閉じた絶対範囲を持つ直接の呼出しを、局所解析の記録で照合する。 -/
 def acceptOccurrence (T : ScopeTable Refinement.Val) (records : Records) (exceeded : Bool) (k : Key) :
     Expr → Except CoverFailure Unit
-  | .call (.primName b ts es rs) _ positions args =>
-    match contractOrder positions (lowerArgs (argsKey k (.primName b ts es rs)) args) with
-    | some xs => acceptCall T records exceeded k xs rs
-    | none => acceptCall T records exceeded k [] rs
+  | .call (.primName b ts es ix) _ positions args =>
+    match absoluteRanges ix with
+    | none => match T.ruleAt k with | none => .ok () | some _ => .error .unknownSource
+    | some rs =>
+      match contractOrder positions (lowerArgs (argsKey k (.primName b ts es ix)) args) with
+      | some xs => acceptCall T records exceeded k xs rs
+      | none => acceptCall T records exceeded k [] rs
   | _ => .ok ()
 
 /-- 定義の本体の受理。Scope の局所解析を一度走らせ、全ての出現の呼び出しを記録と照らす。最初に拒否した出現の番号と
@@ -384,13 +413,13 @@ theorem acceptBody_occurrence {ok : ConName} {T : ScopeTable Refinement.Val} {L 
 theorem acceptBody_sound {ok : ConName} {T : ScopeTable Refinement.Val} {L : Limits} {key : Key}
     {scope : Interval.BindingScope} {body : Block} (h : acceptBody ok T L key scope body = .ok ())
     {k : Key} {b : PrimName} {ts : List Ty} {es : List Eff} {rs : List Range} {labels positions args xs}
-    (hocc : (k, .call (.primName b ts es rs) labels positions args) ∈ occurrences key body)
-    (hxs : contractOrder positions (lowerArgs (argsKey k (.primName b ts es rs)) args) = some xs)
+    (hocc : (k, .call (.primName b ts es (rs.map (fun r => RangeIx.fixed (.absolute r)))) labels positions args) ∈ occurrences key body)
+    (hxs : contractOrder positions (lowerArgs (argsKey k (.primName b ts es (rs.map (fun r => RangeIx.fixed (.absolute r))))) args) = some xs)
     {rule : ScopeRule Refinement.Val} (hrule : T.ruleAt k = some rule) :
     ∀ st, (k, st) ∈ (analyzeBody ok T L key scope body).2 → ∀ (i : Nat) (S r : Range), rs[i]? = some S →
       (rule.index (xs.map (absArg T st)))[i]? = some r → S.Covers r := by
   have := acceptBody_occurrence h _ _ hocc
-  simp only [acceptOccurrence, hxs] at this
+  simp only [acceptOccurrence, absoluteRanges_fixed, hxs] at this
   exact acceptCall_sound this hrule
 
 /-- 受理した本体の規則付きの呼び出しの範囲の列は、記録のどの状態でも規則が範囲を選ぶ全ての位置に契約の範囲を持つ
@@ -398,13 +427,13 @@ theorem acceptBody_sound {ok : ConName} {T : ScopeTable Refinement.Val} {L : Lim
 theorem acceptBody_some {ok : ConName} {T : ScopeTable Refinement.Val} {L : Limits} {key : Key}
     {scope : Interval.BindingScope} {body : Block} (h : acceptBody ok T L key scope body = .ok ())
     {k : Key} {b : PrimName} {ts : List Ty} {es : List Eff} {rs : List Range} {labels positions args xs}
-    (hocc : (k, .call (.primName b ts es rs) labels positions args) ∈ occurrences key body)
-    (hxs : contractOrder positions (lowerArgs (argsKey k (.primName b ts es rs)) args) = some xs)
+    (hocc : (k, .call (.primName b ts es (rs.map (fun r => RangeIx.fixed (.absolute r)))) labels positions args) ∈ occurrences key body)
+    (hxs : contractOrder positions (lowerArgs (argsKey k (.primName b ts es (rs.map (fun r => RangeIx.fixed (.absolute r))))) args) = some xs)
     {rule : ScopeRule Refinement.Val} (hrule : T.ruleAt k = some rule) :
     ∀ st, (k, st) ∈ (analyzeBody ok T L key scope body).2 → ∀ (i : Nat) (r : Range),
       (rule.index (xs.map (absArg T st)))[i]? = some r → ∃ S, rs[i]? = some S := by
   have := acceptBody_occurrence h _ _ hocc
-  simp only [acceptOccurrence, hxs] at this
+  simp only [acceptOccurrence, absoluteRanges_fixed, hxs] at this
   exact acceptCall_some this hrule
 
 
@@ -412,28 +441,58 @@ theorem acceptBody_some {ok : ConName} {T : ScopeTable Refinement.Val} {L : Limi
 theorem acceptBody_sound_unrecorded {ok : ConName} {T : ScopeTable Refinement.Val} {L : Limits} {key : Key}
     {scope : Interval.BindingScope} {body : Block} (h : acceptBody ok T L key scope body = .ok ())
     {k : Key} {b : PrimName} {ts : List Ty} {es : List Eff} {rs : List Range} {labels positions args xs}
-    (hocc : (k, .call (.primName b ts es rs) labels positions args) ∈ occurrences key body)
-    (hxs : contractOrder positions (lowerArgs (argsKey k (.primName b ts es rs)) args) = some xs)
+    (hocc : (k, .call (.primName b ts es (rs.map (fun r => RangeIx.fixed (.absolute r)))) labels positions args) ∈ occurrences key body)
+    (hxs : contractOrder positions (lowerArgs (argsKey k (.primName b ts es (rs.map (fun r => RangeIx.fixed (.absolute r))))) args) = some xs)
     {rule : ScopeRule Refinement.Val} (hrule : T.ruleAt k = some rule)
     (hnone : ∀ st, (k, st) ∉ (analyzeBody ok T L key scope body).2) :
     ∀ (i : Nat) (S r : Range), rs[i]? = some S →
       (rule.index (xs.map (absArg T factFree)))[i]? = some r → S.Covers r := by
   have hc := acceptBody_occurrence h _ _ hocc
-  simp only [acceptOccurrence, hxs] at hc
+  simp only [acceptOccurrence, absoluteRanges_fixed, hxs] at hc
   exact acceptCall_sound_unrecorded hc hrule hnone
 
 /-- 記録のない本体の出現でも、規則が選ぶ全ての位置に契約がある。 -/
 theorem acceptBody_some_unrecorded {ok : ConName} {T : ScopeTable Refinement.Val} {L : Limits} {key : Key}
     {scope : Interval.BindingScope} {body : Block} (h : acceptBody ok T L key scope body = .ok ())
     {k : Key} {b : PrimName} {ts : List Ty} {es : List Eff} {rs : List Range} {labels positions args xs}
-    (hocc : (k, .call (.primName b ts es rs) labels positions args) ∈ occurrences key body)
-    (hxs : contractOrder positions (lowerArgs (argsKey k (.primName b ts es rs)) args) = some xs)
+    (hocc : (k, .call (.primName b ts es (rs.map (fun r => RangeIx.fixed (.absolute r)))) labels positions args) ∈ occurrences key body)
+    (hxs : contractOrder positions (lowerArgs (argsKey k (.primName b ts es (rs.map (fun r => RangeIx.fixed (.absolute r))))) args) = some xs)
     {rule : ScopeRule Refinement.Val} (hrule : T.ruleAt k = some rule)
     (hnone : ∀ st, (k, st) ∉ (analyzeBody ok T L key scope body).2) :
     ∀ (i : Nat) (r : Range), (rule.index (xs.map (absArg T factFree)))[i]? = some r → ∃ S, rs[i]? = some S := by
   have hc := acceptBody_occurrence h _ _ hocc
-  simp only [acceptOccurrence, hxs] at hc
+  simp only [acceptOccurrence, absoluteRanges_fixed, hxs] at hc
   exact acceptCall_some_unrecorded hc hrule hnone
+
+/-- 選んだ規則がある全ての出現について、未具体化の契約も検査から除外しない。
+成功時には各位置の絶対範囲の証人を返すので、任意の範囲具体化でも同じ被覆が成り立つ。 -/
+theorem acceptBody_ranges {ok : ConName} {T : ScopeTable Refinement.Val} {L : Limits} {key : Key}
+    {scope : Interval.BindingScope} {body : Block} (h : acceptBody ok T L key scope body = .ok ())
+    {k : Key} {b : PrimName} {ts : List Ty} {es : List Eff} {ix : List RangeIx} {labels positions args xs}
+    (hocc : (k, .call (.primName b ts es ix) labels positions args) ∈ occurrences key body)
+    (hxs : contractOrder positions (lowerArgs (argsKey k (.primName b ts es ix)) args) = some xs)
+    {rule : ScopeRule Refinement.Val} (hrule : T.ruleAt k = some rule) :
+    (∀ st, (k, st) ∈ (analyzeBody ok T L key scope body).2 → ∀ (i : Nat) (r : Range),
+      (rule.index (xs.map (absArg T st)))[i]? = some r →
+      ∃ S, ix[i]? = some (.fixed (.absolute S)) ∧ S.Covers r) ∧
+    ((∀ st, (k, st) ∉ (analyzeBody ok T L key scope body).2) → ∀ (i : Nat) (r : Range),
+      (rule.index (xs.map (absArg T factFree)))[i]? = some r →
+      ∃ S, ix[i]? = some (.fixed (.absolute S)) ∧ S.Covers r) := by
+  have hc := acceptBody_occurrence h _ _ hocc
+  cases habs : absoluteRanges ix with
+  | none => simp only [acceptOccurrence, habs, hrule, reduceCtorEq] at hc
+  | some rs =>
+    have heq := absoluteRanges_some habs
+    subst ix
+    constructor
+    · intro st hst i r hr
+      obtain ⟨S, hS⟩ := acceptBody_some h hocc hxs hrule st hst i r hr
+      exact ⟨S, by simp only [List.getElem?_map, hS, Option.map_some],
+        acceptBody_sound h hocc hxs hrule st hst i S r hS hr⟩
+    · intro hnone i r hr
+      obtain ⟨S, hS⟩ := acceptBody_some_unrecorded h hocc hxs hrule hnone i r hr
+      exact ⟨S, by simp only [List.getElem?_map, hS, Option.map_some],
+        acceptBody_sound_unrecorded h hocc hxs hrule hnone i S r hS hr⟩
 
 /-! ## 規則を持つ表による受理と拒否 -/
 
@@ -455,7 +514,7 @@ private def table : ScopeTable Refinement.Val :=
 private def limits : Limits := ⟨⟨100, 100⟩, ⟨100, 100⟩⟩
 
 private def body (contract : Range) (arg : Expr) : Block :=
-  .last (.call (.primName "Example.range" [] [] [contract]) [none] [0] (.cons arg .nil))
+  .last (.call (.primName "Example.range" [] [] [.fixed (.absolute contract)]) [none] [0] (.cons arg .nil))
 
 /-- 非空の規則表が実際の値を返す入力を持つ。 -/
 example : table.ruleAt ⟨"Example.body", 0⟩ = some rule ∧

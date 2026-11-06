@@ -16,6 +16,7 @@ inductive DataHint where
 structure Input where
   atoms : List Atom
   ctors : DataName → List ConName
+  rangeKinds : List Scope.Domain.Kind := []
 
 def CtorsComplete (P : Refinement.Program) (ctors : DataName → List ConName) : Prop :=
   ∀ c cd, P.cons c = some cd → c ∈ ctors cd.data

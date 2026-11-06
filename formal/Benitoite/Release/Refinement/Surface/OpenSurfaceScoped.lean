@@ -499,6 +499,7 @@ mutual
       scopedClauses nr C.length ne Γ.length (desugarClauses op cs) := by
     match h with
     | .nil => trivial
+    | .closed _ h => exact Surface.HasClausesQ.scoped_ranges h hs
     | .cons _ _ _ hcount hk _ _ hb hrest =>
       refine ⟨?_, HasClausesQ.scoped (nr := nr) hrest hs.2⟩
       have ih := HasBlockQ.scoped (nr := nr) hb (by simpa [hcount, hk, Nat.add_comm] using hs.1)

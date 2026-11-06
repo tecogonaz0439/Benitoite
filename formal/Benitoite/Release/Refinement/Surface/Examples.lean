@@ -65,6 +65,17 @@ theorem mainProgram_wellFormed : mainProgram.WellFormed where
   accessors := fun _ _ _ h => by simp [mainProgram] at h
   testers := fun _ _ h => by simp [mainProgram] at h
 
+example : ∀ f d, mainProgram.defs f = some d →
+    NamesWF d.coreNames d.coreParams ∧
+      SignatureScoped mainProgram.declarations.core d.tparams d.neffs d.toFunDecl.tel ∧
+      d.body.Scoped d.tparams.length d.neffs d.coreParams.length :=
+  ((Program.wellFormed_no_ranges (by
+    intro f d hd
+    simp only [mainProgram] at hd
+    split at hd
+    · cases hd; rfl
+    · cases hd)).mp mainProgram_wellFormed).2.1
+
 theorem mainProgram_wellTyped (B : Builtins) (op : OpPrim) : mainProgram.WellTyped B op where
   variance := ⟨fun _ _ h => by simp [Program.declarationsFor, Program.declarations, Declarations.core, mainProgram] at h,
     fun _ _ h => by simp [Program.declarationsFor, Program.declarations, Declarations.core, mainProgram] at h⟩

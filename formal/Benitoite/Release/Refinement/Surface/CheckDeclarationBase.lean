@@ -59,16 +59,19 @@ private theorem require_ok {path reason ok} (h : Check.require path reason ok = 
 /-- 定義の名前・形成・署名の行と、本体の依存列を照合する。 -/
 def checkDefWith (check : BlockChecker) (q : Check.Input) (path : List Nat) (d : Def) : Check.Result Unit :=
   Check.require path "function declaration or body is invalid"
-    (decide (NamesWF d.coreNames d.coreParams) &&
+    (decide (d.rangeParams = []) && (decide (NamesWF d.coreNames d.coreParams) &&
       (rowsTelCheck q.formation.atoms d.neffs d.toFunDecl.tel &&
         (CheckFormation.kindTy q.formation q.D.core (TypeCtx.kinds d.tparams) (.dependentFn d.toFunDecl.tel) .value &&
           (Check.annotation q d.tparams [] (path ++ [0]) (.dependentFn d.toFunDecl.tel) &&
-            checkBodyTel check q (telQ d.neffs d.toFunDecl.tel) d.tparams [] [] (path ++ [1]) d.toFunDecl.tel d.body))))
+            checkBodyTel check q (telQ d.neffs d.toFunDecl.tel) d.tparams [] [] (path ++ [1]) d.toFunDecl.tel d.body)))))
 
 theorem checkDefWith_sound {check : BlockChecker} (hs : BlockCheckerSound check) {q path d}
     (hq : q.Sound) (hd : DefSupport q d)
     (h : checkDefWith check q path d = .ok ()) : d.WellTyped q.D q.B q.opPrim := by
-  have hh := require_ok h
+  have hcheck := Bool.and_eq_true_iff.mp (require_ok h)
+  have hnil : d.rangeParams = [] := of_decide_eq_true hcheck.1
+  apply (Def.wellTyped_no_ranges hnil).mpr
+  have hh := hcheck.2
   simp only [Bool.and_eq_true, decide_eq_true_eq] at hh
   have hr := (rowsTelCheck_spec d.neffs d.toFunDecl.tel hd.signature).mp hh.2.1
   have hQ : NoFailCtxOf (telQ d.neffs d.toFunDecl.tel) = QTel d.toFunDecl.tel :=

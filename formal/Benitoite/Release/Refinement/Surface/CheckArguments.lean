@@ -1,3 +1,4 @@
+import Benitoite.Release.Refinement.RangeFormation
 import Benitoite.Release.Refinement.Surface.CheckFormation
 import Benitoite.Release.Refinement.Surface.CheckSubtyping
 import Benitoite.Release.Refinement.Surface.CheckAdmissible
@@ -635,17 +636,67 @@ def HeadGuide.Support (atoms : List Atom) : HeadGuide → Prop
   | .plain => True
   | .method _ a g => a.Support (· ∈ atoms) ∧ g.Support atoms
 
-/-- 実際に選んだ型・行・範囲の具体化の支持。範囲の全ての具体化を同じ有限一覧に入れることは要求しない。 -/
+/-- 選んだ範囲の具体化について、有限の原子一覧がその像を含む。 -/
+def RangeSupport (atoms : List Atom) (xs : List RangeIx) : Prop :=
+  ∀ rs, closedRanges xs = some rs → ∀ (a : Atom), a ∈ atoms → a.instR rs ∈ atoms
+
+/-- 範囲引数が空なら、原子の像を追加する必要はない。 -/
+theorem rangeSupport_nil (atoms : List Atom) : RangeSupport atoms [] := by
+  intro rs h a ha
+  cases h
+  cases a <;> simpa only [Atom.instR, RangeIx.inst_nil] using ha
+
+private theorem rangeTel_raw_support {atoms : List Atom} {t : Tel} {rs : List RangeExpr}
+    (ht : Tel.Support (· ∈ atoms) t) (hr : ∀ (a : Atom), a ∈ atoms → a.instR rs ∈ atoms) :
+    (Tel.rawMapRanges (rangeAt 0 rs) t).Support (· ∈ atoms) := by
+  rw [Tel.rawMapRanges_rangesOnly]
+  exact Tel.rawBind_support _ _ _ _ ht (SupportTransport.rangesOnly rs hr)
+
+/-- 関数の空の範囲具体化は署名を保ち、非空では範囲を具体化する。 -/
+def functionRangeTel (q : CheckFormation.Input) (rs : List RangeExpr) (t : Tel) : Tel :=
+  match rs with | [] => t | _ => CheckFormation.instRangeTel q rs t
+
+theorem functionRangeTel_eq {q : CheckFormation.Input} {rs : List RangeExpr} {t : Tel}
+    (ht : t.Support (· ∈ q.atoms)) (hr : ∀ a ∈ q.atoms, a.instR rs ∈ q.atoms) :
+    functionRangeTel q rs t = rangeTel rs t := by
+  cases rs with
+  | nil => rfl
+  | cons r rs => exact CheckFormation.instRangeTel_eq (rangeTel_raw_support ht hr)
+
+theorem functionRangeTel_support {q : CheckFormation.Input} {rs : List RangeExpr} {t : Tel}
+    (ht : t.Support (· ∈ q.atoms)) (hr : ∀ a ∈ q.atoms, a.instR rs ∈ q.atoms) :
+    (functionRangeTel q rs t).Support (· ∈ q.atoms) := by
+  cases rs with
+  | nil => exact ht
+  | cons r rs => exact CheckFormation.instRangeTel_support (rangeTel_raw_support ht hr)
+
+/-- 閉じた範囲列の種類と構文上の形成を有限に照合する。 -/
+def rangesFit (rs : List RangeExpr) (ks : List Scope.Domain.Kind) : Bool :=
+  rangeKinds rs ks && rs.all (fun r => decide (r.WF ∧ r.Canonical))
+
+theorem rangesFit_sound {rs ks} (h : rangesFit rs ks = true) : RangesFit rs ks := by
+  obtain ⟨hk, hw⟩ := Bool.and_eq_true_iff.mp h
+  obtain ⟨hlen, hkind⟩ := rangeKinds_sound hk
+  exact ⟨hlen, hkind, fun r hr => of_decide_eq_true (List.all_eq_true.mp hw r hr)⟩
+
+/-- 実際に選んだ型・行・範囲の具体化の支持。全ての具体化を同じ有限一覧に要求しない。 -/
 def HeadInputsSupport (q : CheckFormation.Input) (B : Builtins) : Expr → Prop
-  | .funName _ ts es | .funDicts _ ts es _ _ _ =>
-      Ty.SupportList (· ∈ q.atoms) ts ∧ ∀ e ∈ es, e.Support (· ∈ q.atoms)
+  | .funName _ ts es xs | .funDicts _ ts es _ _ _ xs =>
+      Ty.SupportList (· ∈ q.atoms) ts ∧ (∀ e ∈ es, e.Support (· ∈ q.atoms)) ∧ RangeSupport q.atoms xs
   | .methName d _ ts es _ _ _ => DictSupport q.atoms d ∧
       Ty.SupportList (· ∈ q.atoms) ts ∧ ∀ e ∈ es, e.Support (· ∈ q.atoms)
-  | .primName b ts es rs =>
+  | .primName b ts es xs =>
       Ty.SupportList (· ∈ q.atoms) ts ∧ (∀ e ∈ es, e.Support (· ∈ q.atoms)) ∧
-        ∀ s, B.sig b = some s → (Tel.rawMapRanges (rangeAt 0 (rs.map RangeExpr.absolute)) s.tel).Support (· ∈ q.atoms)
+        ∀ rs, closedRanges xs = some rs → ∀ s, B.sig b = some s →
+          (Tel.rawMapRanges (rangeAt 0 rs) s.tel).Support (· ∈ q.atoms)
   | .opName _ ts | .opDicts _ ts _ _ _ | .externalName _ ts => Ty.SupportList (· ∈ q.atoms) ts
   | _ => True
+
+/-- 範囲引数のない関数名では、元の型・行の支持だけで足りる。 -/
+theorem function_empty_support {q : CheckFormation.Input} {B f ts es}
+    (ht : Ty.SupportList (· ∈ q.atoms) ts) (he : ∀ e ∈ es, e.Support (· ∈ q.atoms)) :
+    HeadInputsSupport q B (.funName f ts es []) :=
+  ⟨ht, he, rangeSupport_nil q.atoms⟩
 
 private def acceptHead (ok : Bool) (t : Tel) (ds : List DictEv) : Option (Tel × List DictEv) :=
   if ok then some (t, ds) else none
@@ -654,24 +705,29 @@ private def acceptHead (ok : Bool) (t : Tel) (ds : List DictEv) : Option (Tel ×
 def head (q : CheckFormation.Input) (D : Declarations) (B : Builtins) (sat : SatDec)
     (admits : AdmitsDec) (admitsR : RangeAdmitsDec) (caller : List Bool)
     (C : TypeCtx) (Γ : Ctx) (path : List Nat) : Expr → HeadGuide → Option (Tel × List DictEv)
-  | .funName f ts es, .plain => do
+  | .funName f ts es xs, .plain => do
+      let rs ← closedRanges xs
       let fd ← D.funs f
-      acceptHead (decide (fd.dictParams = []) && (decide (NamesWF fd.coreNames fd.coreParams) &&
+      let t := functionRangeTel q rs fd.tel
+      acceptHead (rangesFit rs fd.rangeParams && (decide (fd.dictParams = []) && (decide (NamesWF fd.coreNames fd.coreParams) &&
         (satAll q.atoms sat C ts (TypeCtx.constraints fd.tparams) &&
           (CheckAdmissible.instantiationCheck q caller C Γ.length fd.neffs fd.coreParams fd.ret fd.eff ts es &&
-            CheckFormation.signatureInstance q D.core C Γ path fd.tel (TypeCtx.kinds fd.tparams) ts es))))
-        (CheckFormation.instTel q fd.tel ts es) []
-  | .funDicts f ts es ds _names _ps, .plain => do
+            CheckFormation.signatureInstance q D.core C Γ path t (TypeCtx.kinds fd.tparams) ts es)))))
+        (CheckFormation.instTel q t ts es) []
+  | .funDicts f ts es ds _names _ps xs, .plain => do
+      let rs ← closedRanges xs
       let fd ← D.funs f
-      acceptHead (decide (fd.dictParams ≠ []) && (decide (NamesWF fd.coreNames fd.coreParams) &&
+      let t := functionRangeTel q rs fd.tel
+      acceptHead (rangesFit rs fd.rangeParams && (decide (fd.dictParams ≠ []) && (decide (NamesWF fd.coreNames fd.coreParams) &&
         (satAll q.atoms sat C ts (TypeCtx.constraints fd.tparams) &&
           (CheckAdmissible.instantiationCheck q caller C Γ.length fd.neffs fd.coreParams fd.ret fd.eff ts es &&
-            CheckFormation.signatureInstance q D.core C Γ path fd.tel (TypeCtx.kinds fd.tparams) ts es))))
-        (CheckFormation.instTel q fd.tel ts es) ds
-  | .primName b ts es rs, .plain => do
+            CheckFormation.signatureInstance q D.core C Γ path t (TypeCtx.kinds fd.tparams) ts es)))))
+        (CheckFormation.instTel q t ts es) ds
+  | .primName b ts es xs, .plain => do
+      let rs ← closedRanges xs
       let signature ← B.sig b
-      let t := CheckFormation.instRangeTel q (rs.map RangeExpr.absolute) signature.tel
-      acceptHead (rangeAdmissible admitsR b signature (rs.map RangeExpr.absolute) &&
+      let t := CheckFormation.instRangeTel q rs signature.tel
+      acceptHead (rangeAdmissible admitsR b signature rs &&
         (decide (NamesWF signature.names signature.params) &&
           (admits b (TypeCtx.constraints C) (ts.map (Ty.normWith q.atoms)) &&
             (CheckAdmissible.primitiveAdmissibleCheck q caller C Γ.length signature ts es &&
@@ -725,55 +781,79 @@ theorem head_sound {q D B sat admits admitsR caller C Γ path source guide t ds}
     (h : head q D B sat admits admitsR caller C Γ path source guide = some (t, ds)) :
     CallHeadTy D B (CheckAdmissible.NoFailCtxOf caller) C Γ source t ds := by
   cases source <;> cases guide <;> simp only [head, reduceCtorEq] at h
-  case funName.plain f ts es =>
-    cases hf : D.funs f with
-    | none => simp [hf] at h
-    | some fd =>
-      simp only [hf, Option.bind_eq_bind, Option.bind_some] at h
-      obtain ⟨hc, rfl, rfl⟩ := acceptHead_some h
-      simp only [Bool.and_eq_true, decide_eq_true_eq] at hc
-      have hs := hD.funs f fd hf
-      rw [CheckFormation.instTel_eq hs.2.2.2 hi.1 hi.2]
-      exact .fn hf hc.1 hc.2.1
-        (CheckAdmissible.instantiationCheck_admissible hs.1 hs.2.1 hs.2.2.1 hi.1 hi.2
-          (satAll_sound hsat hi.1 hc.2.2.1) hc.2.2.2.1)
-        (CheckFormation.signatureInstance_sound hq hΓ hs.2.2.2 hi.1 hi.2 hc.2.2.2.2)
-  case funDicts.plain f ts es dictionaries names params =>
-    cases hf : D.funs f with
-    | none => simp [hf] at h
-    | some fd =>
-      simp only [hf, Option.bind_eq_bind, Option.bind_some] at h
-      obtain ⟨hc, rfl, rfl⟩ := acceptHead_some h
-      simp only [Bool.and_eq_true, decide_eq_true_eq] at hc
-      have hs := hD.funs f fd hf
-      rw [CheckFormation.instTel_eq hs.2.2.2 hi.1 hi.2]
-      exact .fnDicts hf hc.1 hc.2.1
-        (CheckAdmissible.instantiationCheck_admissible hs.1 hs.2.1 hs.2.2.1 hi.1 hi.2
-          (satAll_sound hsat hi.1 hc.2.2.1) hc.2.2.2.1)
-        (CheckFormation.signatureInstance_sound hq hΓ hs.2.2.2 hi.1 hi.2 hc.2.2.2.2)
-  case primName.plain b ts es rs =>
-    cases hb : B.sig b with
-    | none => simp [hb] at h
-    | some sg =>
-      simp only [hb, Option.bind_eq_bind, Option.bind_some] at h
-      obtain ⟨hc, rfl, rfl⟩ := acceptHead_some h
-      simp only [Bool.and_eq_true, decide_eq_true_eq] at hc
-      have hs := hD.prims b sg hb
-      have hrs := hi.2.2 sg hb
-      have ht := CheckFormation.instRangeTel_support hrs
-      have hm := hadmits b sg (TypeCtx.constraints C) (ts.map (Ty.normWith q.atoms)) hb hc.2.2.1
-      have heq : ts.map (Ty.normWith q.atoms) = Ty.normTys ts := by
-        rw [Ty.normTys_eq_map]
-        apply List.map_congr_left
-        intro a ha
-        exact Ty.normWith_eq_norm q.atoms a (Ty.SupportList.iff.mp hi.1 a ha)
-      rw [heq] at hm
-      have hsig := CheckFormation.signatureInstance_sound hq hΓ ht hi.1 hi.2.1 hc.2.2.2.2
-      rw [CheckFormation.instRangeTel_eq hrs] at hsig
-      rw [CheckFormation.instTel_eq ht hi.1 hi.2.1, CheckFormation.instRangeTel_eq hrs]
-      exact .prim hb (rangeAdmissible_sound hadmitsR hc.1) hc.2.1
-        (CheckAdmissible.primitiveAdmissibleCheck_sound hs.1 hs.2.1 hs.2.2.1 hs.2.2.2 hi.1 hi.2.1 hm hc.2.2.2.1)
-        hsig
+  case funName.plain f ts es xs =>
+    cases hrs : closedRanges xs with
+    | none => simp [hrs] at h
+    | some rs =>
+      have hxs := (closedRanges_eq_some xs rs).mp hrs
+      subst xs
+      simp only [closedRanges_fixed] at h
+      cases hf : D.funs f with
+      | none => simp [hf] at h
+      | some fd =>
+        simp only [hf, Option.bind_eq_bind, Option.bind_some] at h
+        obtain ⟨hc, rfl, rfl⟩ := acceptHead_some h
+        simp only [Bool.and_eq_true, decide_eq_true_eq] at hc
+        have hs := hD.funs f fd hf
+        have hr := hi.2.2 rs (closedRanges_fixed rs)
+        have ht := functionRangeTel_support hs.2.2.2 hr
+        rw [CheckFormation.instTel_eq ht hi.1 hi.2.1, functionRangeTel_eq hs.2.2.2 hr]
+        have hsig := CheckFormation.signatureInstance_sound hq hΓ ht hi.1 hi.2.1 hc.2.2.2.2.2
+        rw [functionRangeTel_eq hs.2.2.2 hr] at hsig
+        exact .fn hf hc.2.1 hc.2.2.1 (rangesFit_sound hc.1)
+          (CheckAdmissible.instantiationCheck_admissible hs.1 hs.2.1 hs.2.2.1 hi.1 hi.2.1
+            (satAll_sound hsat hi.1 hc.2.2.2.1) hc.2.2.2.2.1) hsig
+  case funDicts.plain f ts es dictionaries names params xs =>
+    cases hrs : closedRanges xs with
+    | none => simp [hrs] at h
+    | some rs =>
+      have hxs := (closedRanges_eq_some xs rs).mp hrs
+      subst xs
+      simp only [closedRanges_fixed] at h
+      cases hf : D.funs f with
+      | none => simp [hf] at h
+      | some fd =>
+        simp only [hf, Option.bind_eq_bind, Option.bind_some] at h
+        obtain ⟨hc, rfl, rfl⟩ := acceptHead_some h
+        simp only [Bool.and_eq_true, decide_eq_true_eq] at hc
+        have hs := hD.funs f fd hf
+        have hr := hi.2.2 rs (closedRanges_fixed rs)
+        have ht := functionRangeTel_support hs.2.2.2 hr
+        rw [CheckFormation.instTel_eq ht hi.1 hi.2.1, functionRangeTel_eq hs.2.2.2 hr]
+        have hsig := CheckFormation.signatureInstance_sound hq hΓ ht hi.1 hi.2.1 hc.2.2.2.2.2
+        rw [functionRangeTel_eq hs.2.2.2 hr] at hsig
+        exact .fnDicts hf hc.2.1 hc.2.2.1 (rangesFit_sound hc.1)
+          (CheckAdmissible.instantiationCheck_admissible hs.1 hs.2.1 hs.2.2.1 hi.1 hi.2.1
+            (satAll_sound hsat hi.1 hc.2.2.2.1) hc.2.2.2.2.1) hsig
+  case primName.plain b ts es xs =>
+    cases hrs : closedRanges xs with
+    | none => simp [hrs] at h
+    | some rs =>
+      have hxs := (closedRanges_eq_some xs rs).mp hrs
+      subst xs
+      simp only [closedRanges_fixed] at h
+      cases hb : B.sig b with
+      | none => simp [hb] at h
+      | some sg =>
+        simp only [hb, Option.bind_eq_bind, Option.bind_some] at h
+        obtain ⟨hc, rfl, rfl⟩ := acceptHead_some h
+        simp only [Bool.and_eq_true, decide_eq_true_eq] at hc
+        have hs := hD.prims b sg hb
+        have hraw := hi.2.2 rs (closedRanges_fixed rs) sg hb
+        have ht := CheckFormation.instRangeTel_support hraw
+        have hm := hadmits b sg (TypeCtx.constraints C) (ts.map (Ty.normWith q.atoms)) hb hc.2.2.1
+        have heq : ts.map (Ty.normWith q.atoms) = Ty.normTys ts := by
+          rw [Ty.normTys_eq_map]
+          apply List.map_congr_left
+          intro a ha
+          exact Ty.normWith_eq_norm q.atoms a (Ty.SupportList.iff.mp hi.1 a ha)
+        rw [heq] at hm
+        have hsig := CheckFormation.signatureInstance_sound hq hΓ ht hi.1 hi.2.1 hc.2.2.2.2
+        rw [CheckFormation.instRangeTel_eq hraw] at hsig
+        rw [CheckFormation.instTel_eq ht hi.1 hi.2.1, CheckFormation.instRangeTel_eq hraw]
+        exact .prim hb (rangeAdmissible_sound hadmitsR hc.1) hc.2.1
+          (CheckAdmissible.primitiveAdmissibleCheck_sound hs.1 hs.2.1 hs.2.2.1 hs.2.2.2 hi.1 hi.2.1 hm hc.2.2.2.1)
+          hsig
   case opName.plain o ts =>
     cases ho : D.ops o with
     | none => simp [ho] at h
@@ -836,7 +916,7 @@ theorem head_sound {q D B sat admits admitsR caller C Γ path source guide t ds}
 
 /-- 直接の頭が前置する、ソースの辞書の列。 -/
 def headDictionaries : Expr → List DictEv
-  | .funDicts _ _ _ ds _ _ | .opDicts _ _ ds _ _ | .methName _ _ _ _ ds _ _ => ds
+  | .funDicts _ _ _ ds _ _ _ | .opDicts _ _ ds _ _ | .methName _ _ _ _ ds _ _ => ds
   | _ => []
 
 /-- 探索結果の依存列は同じ有限原子に支持され、辞書はソースに書かれた列をそのまま返す。 -/
@@ -845,27 +925,42 @@ theorem head_result_support {q D B sat admits admitsR caller C Γ path source gu
     (h : head q D B sat admits admitsR caller C Γ path source guide = some (t, ds)) :
     t.Support (· ∈ q.atoms) ∧ ds = headDictionaries source := by
   cases source <;> cases guide <;> simp only [head, reduceCtorEq] at h
-  case funName.plain f ts es =>
-    cases hf : D.funs f with
-    | none => simp [hf] at h
-    | some fd =>
-      simp only [hf, Option.bind_eq_bind, Option.bind_some] at h
-      obtain ⟨_, rfl, rfl⟩ := acceptHead_some h
-      exact ⟨CheckFormation.instTel_support (hD.funs f fd hf).2.2.2 hi.1 hi.2, rfl⟩
-  case funDicts.plain f ts es dictionaries names params =>
-    cases hf : D.funs f with
-    | none => simp [hf] at h
-    | some fd =>
-      simp only [hf, Option.bind_eq_bind, Option.bind_some] at h
-      obtain ⟨_, rfl, rfl⟩ := acceptHead_some h
-      exact ⟨CheckFormation.instTel_support (hD.funs f fd hf).2.2.2 hi.1 hi.2, rfl⟩
-  case primName.plain b ts es rs =>
-    cases hb : B.sig b with
-    | none => simp [hb] at h
-    | some sg =>
-      simp only [hb, Option.bind_eq_bind, Option.bind_some] at h
-      obtain ⟨_, rfl, rfl⟩ := acceptHead_some h
-      exact ⟨CheckFormation.instTel_support (CheckFormation.instRangeTel_support (hi.2.2 sg hb)) hi.1 hi.2.1, rfl⟩
+  case funName.plain f ts es xs =>
+    cases hrs : closedRanges xs with
+    | none => simp [hrs] at h
+    | some rs =>
+      simp only [hrs] at h
+      cases hf : D.funs f with
+      | none => simp [hf] at h
+      | some fd =>
+        simp only [hf, Option.bind_eq_bind, Option.bind_some] at h
+        obtain ⟨_, rfl, rfl⟩ := acceptHead_some h
+        exact ⟨CheckFormation.instTel_support
+          (functionRangeTel_support (hD.funs f fd hf).2.2.2 (hi.2.2 rs hrs)) hi.1 hi.2.1, rfl⟩
+  case funDicts.plain f ts es dictionaries names params xs =>
+    cases hrs : closedRanges xs with
+    | none => simp [hrs] at h
+    | some rs =>
+      simp only [hrs] at h
+      cases hf : D.funs f with
+      | none => simp [hf] at h
+      | some fd =>
+        simp only [hf, Option.bind_eq_bind, Option.bind_some] at h
+        obtain ⟨_, rfl, rfl⟩ := acceptHead_some h
+        exact ⟨CheckFormation.instTel_support
+          (functionRangeTel_support (hD.funs f fd hf).2.2.2 (hi.2.2 rs hrs)) hi.1 hi.2.1, rfl⟩
+  case primName.plain b ts es xs =>
+    cases hrs : closedRanges xs with
+    | none => simp [hrs] at h
+    | some rs =>
+      simp only [hrs] at h
+      cases hb : B.sig b with
+      | none => simp [hb] at h
+      | some sg =>
+        simp only [hb, Option.bind_eq_bind, Option.bind_some] at h
+        obtain ⟨_, rfl, rfl⟩ := acceptHead_some h
+        exact ⟨CheckFormation.instTel_support
+          (CheckFormation.instRangeTel_support (hi.2.2 rs hrs sg hb)) hi.1 hi.2.1, rfl⟩
   case opName.plain o ts =>
     cases ho : D.ops o with
     | none => simp [ho] at h
@@ -924,7 +1019,8 @@ end
 theorem primitive_empty_support {q D B b ts} (hD : HeadTableSupport q.atoms D B)
     (ht : Ty.SupportList (· ∈ q.atoms) ts) : HeadInputsSupport q B (.primName b ts [] []) := by
   refine ⟨ht, by simp, ?_⟩
-  intro signature hs
+  intro rs hrs signature hs
+  cases hrs
   change (signature.tel.rawMapRanges (rangeAt 0 [])).Support (· ∈ q.atoms)
   rw [emptyRanges_tel]
   exact (hD.prims b signature hs).2.2.2

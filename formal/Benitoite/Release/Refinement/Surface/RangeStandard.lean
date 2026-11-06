@@ -5,6 +5,7 @@ import Benitoite.Release.Refinement.StandardModelWellFormed
 import Benitoite.Release.Refinement.Surface.OpenPatterns
 import Benitoite.Release.Refinement.Surface.OpenStandardClauses
 import Benitoite.Release.Refinement.Surface.OpenSurfaceHandlers
+import Benitoite.Release.Refinement.Surface.OpenLeafFormation
 
 /-! # 合成表の許容と範囲の具体化
 
@@ -63,6 +64,94 @@ theorem admits_instR {P : Refinement.Program} {b s C ts} (hs : (StandardModel.bu
       have ordered := h.2.2 rfl t ht
       simpa only [StandardListRemainingResponse.orderedType, scalar_ranges] using ordered
 
+/-- 開いた型の正規形に一度適用した制約の照合を、全具体化へ接続する。 -/
+theorem sat_range_norm (P : Refinement.Program) (C : List TParam) (a : Ty) (p : TParam)
+    (rs : List RangeExpr) :
+    (StandardModel.builtins P).sat C (rangeTy rs a).norm p ↔
+      (StandardModel.builtins P).sat C a.norm p := by
+  cases rs with
+  | nil => rfl
+  | cons r rs =>
+    have he : a.norm.instR (r :: rs) = (rangeTy (r :: rs) a).norm := by
+      simp only [rangeTy, Ty.instR, Ty.substRAt, Ty.mapRanges, Ty.norm_rawMapRanges, Ty.norm_idem]
+    rw [← he]
+    exact sat_instR P C a.norm p (r :: rs)
+
+/-- 合成表の制約の全具体化の葉は、元の開いた型の有限な照合から得る。 -/
+theorem satisfies_of_check {P : Refinement.Program} {ks C ts ps}
+    (h : SatAll (StandardModel.builtins P) C ts ps) :
+    OpenSurface.Satisfies (StandardModel.builtins P) ks C ts ps := by
+  intro σ
+  apply h.map (rangeTy σ.val)
+  intro a ha p hp
+  exact (sat_range_norm P (TypeCtx.constraints C) a p σ.val).mpr hp
+
+/-- 合成表の組込みの葉を、一度の開いた構文の検査と許容の保存から導く。 -/
+theorem primitive_of_check {P : Refinement.Program} {ks C nv b s Q ts es}
+    (hs : (StandardModel.builtins P).sig b = some s)
+    (h : OpenLeafFormation.PrimitiveCheck ks C nv s Q ts es) :
+    OpenSurface.Primitive ks C nv s Q ts es := by
+  intro σ
+  apply OpenLeafFormation.primitive_at h σ
+  cases hr : σ.val with
+  | nil =>
+    change s.admits (TypeCtx.constraints C) (Ty.normTys (ts.map id))
+    simpa only [List.map_id] using h.admits
+  | cons r rs =>
+    have ha := admits_instR hs h.admits (r :: rs)
+    have he : (Ty.normTys ts).map (Ty.instR (r :: rs)) = Ty.normTys (ts.map (rangeTy (r :: rs))) := by
+      simp only [Ty.normTys_eq_map, List.map_map]
+      exact List.map_congr_left (fun a _ => by
+        simp only [Function.comp_apply, rangeTy, Ty.instR, Ty.substRAt, Ty.mapRanges,
+          Ty.norm_rawMapRanges, Ty.norm_idem])
+    simpa only [hr, he] using ha
+
+/-- 関数の許容の全欄を、一度の開いた構文の検査から導く。 -/
+theorem admits_of_check {P : Refinement.Program} {ks C nv ps ne Qs Q ts es e}
+    (h : OpenLeafFormation.AdmitsCheck (StandardModel.builtins P) ks C nv ps ne Qs Q ts es e) :
+    OpenSurface.Admits (StandardModel.builtins P) ks C nv ps ne Qs Q ts es e :=
+  fun σ => OpenLeafFormation.admits_at h σ (satisfies_of_check h.types σ)
+
+/-- 標準の範囲引数の許容を、範囲変数を残した有限な構文で照合する。 -/
+def RangeCheck (b : PrimName) (xs : List RangeIx) : Prop :=
+  (∀ ix ∈ xs, ix = .fixed .top) ∨
+  ((b = "Scope.widenPathIn" ∨ b = "Http.widenRequestIn") ∧
+    ∃ inner outer, xs = [inner, outer] ∧ (outer = .fixed .top ∨ outer.Covers inner)) ∨
+  ((b = "File.readTextIn" ∨ b = "File.readBytesIn" ∨ b = "File.writeTextIn" ∨
+    b = "File.appendTextIn" ∨ b = "File.writeBytesIn" ∨ b = "File.appendBytesIn" ∨
+    b = "Http.sendIn" ∨ b = "Scope.checkPathIn" ∨ b = "Http.checkRequestIn" ∨
+    b = "Scope.pathInValue" ∨ b = "Http.requestInValue") ∧ xs.length = 1)
+
+/-- 範囲の種類と標準の有限な許容条件から、範囲の全具体化の葉を得る。 -/
+theorem ranges_of_check {P : Refinement.Program} {ks b s xs}
+    (hx : RangeArguments ks xs s.rkinds) (h : RangeCheck b xs) :
+    OpenSurface.RangesAdmit (StandardModel.builtins P) ks b s xs := by
+  intro σ
+  have hf := OpenSurface.ranges_fit_close hx σ.property
+  refine ⟨hf.1, hf.2.1, hf.2.2, ?_⟩
+  rcases h with htop | ⟨hname, inner, outer, rfl, hc⟩ | ⟨hname, hlen⟩
+  · apply Or.inl
+    intro r hr
+    obtain ⟨ix, hi, rfl⟩ := List.mem_map.mp hr
+    rw [htop ix hi]
+    rfl
+  · apply Or.inr
+    have he := OpenSurface.ranges_close hx σ.property
+    simp only [List.map_cons, List.map_nil, List.cons.injEq] at he
+    have hcov : (OpenSurface.closeRange σ.val outer).Covers (OpenSurface.closeRange σ.val inner) := by
+      rcases hc with rfl | hc
+      · exact RangeExpr.top_covers _
+      · have hcov := hc.inst σ.val
+        rw [he.2.1, he.1] at hcov
+        exact hcov
+    change ScopeSignatures.admitsR b _
+    rcases hname with rfl | rfl <;>
+      exact ⟨OpenSurface.closeRange σ.val inner, OpenSurface.closeRange σ.val outer, rfl, hcov⟩
+  · apply Or.inr
+    change ScopeSignatures.admitsR b _
+    rcases hname with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl <;>
+      simpa [ScopeSignatures.admitsR] using hlen
+
 /-- 合成表の署名は、宣言した範囲の深さで形成されている。 -/
 theorem signature_ranges (externals : List (ExternalKey × ExternalDecl)) {b s}
     (hs : (StandardModel.builtins (StandardModel.program externals)).sig b = some s) :
@@ -91,7 +180,9 @@ theorem declarations_empty (externals : List (ExternalKey × ExternalDecl)) :
 theorem clause_formation {externals e b sg}
     (h : ClauseSig (StandardModel.program externals)
       (StandardModel.builtins (StandardModel.program externals)) e (.prim b) sg) :
-    OpenSurface.ClauseSyntax sg := OpenStandardClauses.standard_clauseSig_prim h
+    OpenSurface.ClauseSyntax sg := by
+  have hs := OpenStandardClauses.standard_clauseSig_prim h
+  exact ⟨fun a ha => (hs.1 a ha).1, hs.2.1⟩
 
 /-- 標準の固定宣言は、外部関数の宣言を追加しない。 -/
 theorem external_signature_formation {f d}

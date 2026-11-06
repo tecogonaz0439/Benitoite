@@ -13,7 +13,7 @@ mutual
   /-- 全ての構成子と相互帰納容器を辿る先行順。容器自身に番号を割り当てない。 -/
   def surfacePreorder (source : Expr) : List Expr :=
     source :: (match source with
-    | .local _ | .funName _ _ _ | .funDicts _ _ _ _ _ _ | .methName _ _ _ _ _ _ _
+    | .local _ | .funName _ _ _ _ | .funDicts _ _ _ _ _ _ _ | .methName _ _ _ _ _ _ _
     | .primName _ _ _ _ | .opName _ _ | .opDicts _ _ _ _ _ | .raise _ _
     | .nullCon _ _ | .conValue _ _ _ _ | .literal _ | .negInt _ | .negFloat _
     | .negDecimal _ _ | .negInteger8 _ | .negInteger16 _ | .negInteger32 _

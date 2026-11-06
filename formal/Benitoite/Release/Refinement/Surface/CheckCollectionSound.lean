@@ -88,6 +88,8 @@ theorem checkClausesAt_step {g : Guide} (ih : SoundBelow g) : ClausesSoundAt g :
   · rename_i o n ntys body rest ndicts hints gb gr
     split at h
     · rename_i sg hsg
+      have hallowed := (Bool.and_eq_true_iff.mp h).1
+      replace h := (Bool.and_eq_true_iff.mp h).2
       simp only [allChecks, Bool.and_eq_true, and_true, decide_eq_true_eq] at h
       have hsig := CheckHandler.clauseSig_sound heb
         (fun b s hb => (hq.tables.prims b s hb).2.2.2) hsg
@@ -99,7 +101,7 @@ theorem checkClausesAt_step {g : Guide} (ih : SoundBelow g) : ClausesSoundAt g :
           (R.map (fun r => (shiftTypes sg.tparams.length 0 r).shiftV (sg.params.length + 1) 0)) := by
         simpa only [Option.map_map, Function.comp_def] using
           (hR.shiftTypes sg.tparams.length 0).shift (sg.params.length + 1)
-      exact .cons hsig h.1.1 h.1.2.1 h.1.2.2 (CheckHandler.sigWF_sound hfields.1 hfields.2 h.2.1)
+      exact .cons (CheckHandler.clauseAllowed_sound hallowed) hsig h.1.1 h.1.2.1 h.1.2.2 (CheckHandler.sigWF_sound hfields.1 hfields.2 h.2.1)
         ((ih gb (by simp_wf; omega)).block hq (by intro i kind hi; cases i <;> cases hi)
           (clause_context_support hΓ hfields.1 hfields.2 ha he) hR' hs.1
           (type_shift_support (Ty.rawShift_support _ _ _ ha) _ _)

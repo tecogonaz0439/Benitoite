@@ -1,3 +1,4 @@
+import Benitoite.Release.Refinement.Surface.Property1
 import Benitoite.Release.Refinement.Surface.OpenSurfaceArms
 import Benitoite.Release.Refinement.Surface.OpenSurfaceBlocks
 import Benitoite.Release.Refinement.Surface.OpenSurfaceBuilder
@@ -211,8 +212,13 @@ mutual
       ClausesCore P B op Q Δ C Γ Φ R eb cs t ε σ.val := by
     match h with
     | .nil => exact clauses_nil_core σ.val
+    | .closed hk hclosed =>
+      subst ks
+      have hr : σ.val = [] := List.eq_nil_of_length_eq_zero (by simpa using σ.property.1)
+      simpa only [ClausesCore, hr, rangeCtx, rangeTy, rangeEff, rangeLocal, Clause.instRList, show rangeTy [] = id from rfl, Option.map_id, id_eq] using
+        Benitoite.Release.Refinement.Surface.HasClausesQ.desugar hclosed hR hA
     | .cons ha hs hn hc hk hw hsyntax hb hr =>
-      exact clauses_cons_core hR σ ha hs hn hc hk hw hsyntax (hb.desugar hR hA σ) (hr.desugar hR hA σ)
+      exact clauses_cons_core hR hA σ ha hs hn hc hk hw hsyntax (hb.desugar hR hA σ) (hr.desugar hR hA σ)
 
   theorem HasBlockQ.desugar {D B ks op Q Δ C Γ Φ R p body a ε}
       (h : HasBlockQ D B ks op Q Δ C Γ Φ R p body a ε) (hR : D.Realizes P)

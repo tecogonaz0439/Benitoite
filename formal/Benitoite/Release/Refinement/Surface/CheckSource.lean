@@ -15,8 +15,8 @@ mutual
     | .negInteger8 _ | .negInteger16 _ | .negInteger32 _ | .negFloat32 _ | .unit => True
     | .builderOp _ _ es k => k.contents.Support (· ∈ q.atoms) ∧ ExprsSupport q B es
     | .constE a e => a.Support (· ∈ q.atoms) ∧ ExprSupport q B e
-    | e@(.funName _ _ _) | e@(.primName _ _ _ _) | e@(.opName _ _) | e@(.externalName _ _) => HeadInputsSupport q B e
-    | e@(.funDicts _ _ _ ds _ ps) | e@(.opDicts _ _ ds _ ps) | e@(.methName _ _ _ _ ds _ ps) =>
+    | e@(.funName _ _ _ _) | e@(.primName _ _ _ _) | e@(.opName _ _) | e@(.externalName _ _) => HeadInputsSupport q B e
+    | e@(.funDicts _ _ _ ds _ ps _) | e@(.opDicts _ _ ds _ ps) | e@(.methName _ _ _ _ ds _ ps) =>
         HeadInputsSupport q B e ∧ DictsSupport q.atoms ds ∧ Ty.SupportList (· ∈ q.atoms) ps
     | .raise t e => t.Support (· ∈ q.atoms) ∧ e.Support (· ∈ q.atoms)
     | .handleFail e t body clause => e.Support (· ∈ q.atoms) ∧ t.Support (· ∈ q.atoms) ∧
@@ -76,5 +76,35 @@ mutual
         ExprSupport q B e ∧ BlockSupport q B rest
     | .discard e rest | .seq e rest => ExprSupport q B e ∧ BlockSupport q B rest
 end
+
+
+mutual
+  private theorem exprSupport_transport {q : CheckFormation.Input} {B ks e} :
+      ExprSupport {q with rangeKinds := ks} B e ↔ ExprSupport q B e := by
+    cases e <;> simp only [ExprSupport, HeadInputsSupport, exprSupport_transport, exprsSupport_transport, messageSupport_transport, holesSupport_transport, armsSupport_transport, clausesSupport_transport, blockSupport_transport]
+  private theorem exprsSupport_transport {q : CheckFormation.Input} {B ks es} :
+      ExprsSupport {q with rangeKinds := ks} B es ↔ ExprsSupport q B es := by
+    cases es <;> simp only [ExprsSupport, exprSupport_transport, exprsSupport_transport]
+  private theorem messageSupport_transport {q : CheckFormation.Input} {B ks m} :
+      MessageSupport {q with rangeKinds := ks} B m ↔ MessageSupport q B m := by
+    cases m <;> simp only [MessageSupport, exprSupport_transport]
+  private theorem holesSupport_transport {q : CheckFormation.Input} {B ks args} :
+      HolesSupport {q with rangeKinds := ks} B args ↔ HolesSupport q B args := by
+    cases args <;> simp only [HolesSupport, exprSupport_transport, holesSupport_transport]
+  private theorem armsSupport_transport {q : CheckFormation.Input} {B ks arms} :
+      ArmsSupport {q with rangeKinds := ks} B arms ↔ ArmsSupport q B arms := by
+    cases arms <;> simp only [ArmsSupport, messageSupport_transport, blockSupport_transport, armsSupport_transport]
+  private theorem clausesSupport_transport {q : CheckFormation.Input} {B ks clauses} :
+      ClausesSupport {q with rangeKinds := ks} B clauses ↔ ClausesSupport q B clauses := by
+    cases clauses <;> simp only [ClausesSupport, blockSupport_transport, clausesSupport_transport]
+  private theorem blockSupport_transport {q : CheckFormation.Input} {B ks b} :
+      BlockSupport {q with rangeKinds := ks} B b ↔ BlockSupport q B b := by
+    cases b <;> simp only [BlockSupport, exprSupport_transport, blockSupport_transport]
+end
+
+/-- 範囲の種類の一覧の更新は、ソースの原子の有限支持を変えない。 -/
+theorem blockSupport_rangeKinds {q : CheckFormation.Input} {B ks b} :
+    BlockSupport {q with rangeKinds := ks} B b ↔ BlockSupport q B b :=
+  blockSupport_transport
 
 end Benitoite.Release.Refinement.Surface.CheckSource

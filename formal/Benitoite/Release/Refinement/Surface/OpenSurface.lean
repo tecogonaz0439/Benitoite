@@ -983,10 +983,14 @@ mutual
   inductive HasClausesQ (D : Declarations) (B : Builtins) (ks : List Scope.Domain.Kind) (opPrim : OpPrim) (Q : NoFailCtx) :
       BuilderCtx → TypeCtx → Ctx → List Pred → Option Ty → Eff → Clauses → Ty → Eff → Prop
     | nil {Δ C Γ Φ R εb t ε} : HasClausesQ D B ks opPrim Q Δ C Γ Φ R εb .nil t ε
+    /-- 空の範囲文脈では、元の節列の全導出を受ける。 -/
+    | closed {Δ C Γ Φ R εb cs t ε} :
+        ks = [] → Surface.HasClausesQ D B opPrim Q Δ C Γ Φ R εb cs t ε →
+        HasClausesQ D B ks opPrim Q Δ C Γ Φ R εb cs t ε
     | cons {Δ C Γ Φ R εb o n ntys body cs t ε sg ndicts} :
         ClauseAllowed D B o → ClauseSig D.core B εb o sg → NamesWF sg.names sg.params → ndicts + n = sg.params.length →
         ntys = sg.tparams.length → sg.WF →
-        ((∀ a ∈ sg.params, a.RangesScoped 0 ∧ a.norm = a) ∧ sg.ret.RangesScoped 0 ∧ sg.ret.norm = sg.ret) →
+        ((∀ a ∈ sg.params, a.RangesScoped 0) ∧ sg.ret.RangesScoped 0) →
         HasBlockQ D B ks opPrim Q [] (sg.tparams ++ C) (sg.context Γ t ε)
           (liftMany (sg.params.length + 1) Φ)
           (R.map (fun r => (shiftTypes sg.tparams.length 0 r).shiftV (sg.params.length + 1) 0)) .other body
