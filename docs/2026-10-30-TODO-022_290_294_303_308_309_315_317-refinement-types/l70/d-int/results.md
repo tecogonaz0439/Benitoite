@@ -287,3 +287,13 @@ Lean の本番のモジュールの行数は計38行増え、検査例のモジ�
 局所検査の初回では、String の sort の簡約、範囲の具体化と置換の関数の等号の明示、表に依存する定義の `noncomputable` 指定を直した。初回失敗と修正後の出力の指紋は `resume1-local-checks.json` に残した。記録の補助集計では Python の文字コードの入力と、変更前のソースを復元する際の改行を直した。どちらも最終検査の再実行や本番の追加変更を要していない。
 
 今回の依頼の分の既定ビルド・全宣言の公理監査・照合を完了した。群 F2 と消去の実装、核、群 B・C・F1、旧 Release、処理系、指定された計画・詳細・README・レビューの記録は変更していない。新しい停止条件に当たる事実と、取りまとめへ追加の判断を求める点はない。上の「止めずに進めた変更」の三行を見直しの対象として渡す。独立レビュー・受け入れと work の共通検査は取りまとめが受け持つ。コミット・ブランチの変更・push・`scripts/check.sh` は行っていない。
+
+## 群 D の結合の作業末の work の検査（取りまとめ）
+
+- 基準: `97ba11d50086afe1178f862262a8b3e7ab4ff551`（群 F2 と消去までの san_benito）。HEAD は `1823be67`（RV-L70.d2 の処置と群 E の追随 `a7ade0e5`、san_benito の取り込み `b3445f14`、群 F2・消去との結合の追随）。
+- 取り込み直した後の最初の検査（21:24〜21:40）は、既定ビルドが `Surface/OpenPatterns`・`CheckBuiltinSource` で失敗した（終了1）。群 F2 の String の所属と、合成表が `noncomputable` であることに追随していなかったためである。再開1で追随させた。
+- 事前に `formal/.lake/build/lib/lean/Benitoite/Release/Refinement` と `formal/.lake/build/ir/Benitoite/Release/Refinement` を消した。
+- コマンド: `scripts/check.sh --level work --base 97ba11d50086afe1178f862262a8b3e7ab4ff551`（`/usr/bin/time -l` で測定）。選ばれた検査は spec_tally・spec_examples・formal_build。
+- 終了状態 0（selected checks passed。spec_examples は7件成功）。外側の時間 915.30秒（21:58〜22:14）、最大常駐量 4,140,597,248 バイト。
+- 生の記録は `<tmp>` に置いた（6,733 バイト、SHA-256 `9d5c69e3985b36c7a2ec8b38391f54779b94c85467fcb3debcbcc83378aa991b`）。
+- 処置の確認者が流せなかった Lean の確かめ（`#check` と公理の8件）は、取りまとめがこの作業木で流した。8件とも、許可した三公理だけに依存した。確認者の入力の最後の `example` は、入力の名前の誤りで通らなかった（本番の誤りではない）。

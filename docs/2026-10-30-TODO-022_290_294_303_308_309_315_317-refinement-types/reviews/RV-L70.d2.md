@@ -130,3 +130,7 @@ Lean はすべて `<repo>/formal/` から実行し、同時に一つだけとし
 | 2 | `<tmp>/rv-l70-dint/Check.lean`（1,657 バイト、SHA-256 `07aa23329612f32d76f9adf3ab36526fef7a3dd9c9c227c0ae5e866f38eb8d87`）。`nested_clause_open`・`checkDef_no_ranges_sound`・`Program.wellFormed_no_ranges`・`programStopped_no_ranges`・`acceptBody_ranges` の `#check`、受理例と健全性の `#print axioms`、`Http.widenRequestIn[x, x]` の出現で規則がある場合に `acceptOccurrence` が `unknownSource` を返すことの `example` | **実行していない。** 取りまとめの `lake build` が 21:40 に終わった時点で、作業木の生成物に `RangeClauseExamples`・`CheckOpenStandardExamples`・`CheckOpenAcceptanceExamples`・`CheckProgramSound` などの `.olean` がなく、`lake env lean` で import できなかった。`formal/.lake` に書き込まない指示に従い、ビルドもしていない。上の結論は読むことで確定した範囲に拠る。公理と既定ビルドについては、担当の記録（1,529ジョブの既定ビルド、全環境の公理監査、最終 `verify`）を報告として読み、本レビューの検査には数えていない。取りまとめのビルドが成功した後に、この入力を一度実行することを勧める |
 
 `lake build`・cargo・`scripts/check.sh`・台本の実行・git の書き込み操作は行っていない。変更したリポジトリのファイルは本書だけである。
+
+## 取りまとめの追記
+
+2026-11-06。群 D の再開5〜7と、結合の枝での処置・群 E の追随・群 F2 との結合の追随は、Codex が行った。本レビューと処置の確認は Claude（Opus 5.5）が行い、処置の確認は可であった。情1（範囲変数を必須の判定の位置に書くと受理の段で断られる）は、群 D の再開8で外す。軽1も同じ再開で直す。情2・情3は記録だけとした（plan.md）。work の検査は、取りまとめが結合の枝で行い、終了0であった（`C/l70/d-int/results.md`）。
