@@ -1,0 +1,53 @@
+{
+  "b_work": "e70794188e24de95b5bb424f9d75090f77d1c703",
+  "changed": [
+    "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l70/c/results.md",
+    "docs/design/01-spec/01-12-core-calculus.md",
+    "docs/design/07-quality/07-04-formal-semantics.md",
+    "formal/Benitoite.lean"
+  ],
+  "added_modules": [
+    "Benitoite.Release.Refinement.StandardModelApplication",
+    "Benitoite.Release.Refinement.StandardModelApplicationExamples"
+  ],
+  "jobs": 1385,
+  "protected_files": 7130,
+  "sources": {
+    "Benitoite.Release.Refinement.StandardModelApplication": "7e34f3a80e8f717580095aace6a4feff77fa52ba7c408dc214b61efa42d47d59",
+    "Benitoite.Release.Refinement.StandardModelApplicationExamples": "024dc3dc2d574101ef5c8d9de4e565e662b4cd55f8a2f421750ae4eb91fc7e83"
+  },
+  "excluded_reviews": "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/reviews/",
+  "baseline_review_files": 152,
+  "legacy_files_restored": [
+    "verify.py",
+    "axioms.lean",
+    "audit-modules.json",
+    "required-names.json",
+    "audit-summary.json"
+  ],
+  "check_record_prefix": "resume4",
+  "axioms": {
+    "environment_declarations": 92356,
+    "environment_modules": 1124,
+    "rounds": 2,
+    "new_declarations": 53,
+    "new_private": 9,
+    "new_modules": {
+      "Benitoite.Release.Refinement.StandardModelApplication": 28,
+      "Benitoite.Release.Refinement.StandardModelApplicationExamples": 25
+    },
+    "required": 27,
+    "declaration_list_bytes": 4335,
+    "declaration_list_sha256": "0ae22b3729a4020e6ef18e8f9f0513262e73385354779ee69e31fc7287f7f94c",
+    "sets": {
+      "(none)": 43366,
+      "Classical.choice": 2,
+      "Classical.choice,Quot.sound,propext": 24048,
+      "Classical.choice,propext": 2,
+      "Quot.sound": 10,
+      "Quot.sound,propext": 4038,
+      "propext": 20890
+    }
+  },
+  "records_bytes_before_summary": 124183
+}

@@ -974,3 +974,5 @@ import Benitoite.Release.Refinement.Surface.CheckDataHintExamples
 import Benitoite.Release.Refinement.Surface.CheckInferFailure
 import Benitoite.Release.Refinement.Surface.CheckInferResult
 import Benitoite.Release.Refinement.Surface.CheckDiagnostics
+import Benitoite.Release.Refinement.StandardModelApplication
+import Benitoite.Release.Refinement.StandardModelApplicationExamples
