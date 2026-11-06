@@ -85,7 +85,7 @@ mutual
     case checkedAt r snapshot target req => cases req <;> exact ⟨h,had⟩
     case checkedRequest => exact ⟨h,had⟩
     case closure => exact ⟨h,had⟩
-    case fnRef => exact ⟨⟨builder_types_wf hc h.1,builder_rows_wf hc h.2⟩,trivial⟩
+    case fnRef => exact ⟨⟨builder_types_wf hc h.1,builder_rows_wf hc h.2.1,h.2.2⟩,trivial⟩
     case prim => exact ⟨⟨builder_types_wf hc h.1,builder_rows_wf hc h.2.1,h.2.2⟩,trivial⟩
     case externalRef => exact ⟨builder_types_wf hc h,trivial⟩
     case externalHandle => exact ⟨builder_types_wf hc h,trivial⟩

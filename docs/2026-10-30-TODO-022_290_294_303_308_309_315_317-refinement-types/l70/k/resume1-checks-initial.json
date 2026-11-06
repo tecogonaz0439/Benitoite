@@ -1,0 +1,40 @@
+{
+  "base": "dcaa396bad7a60d4da9b99d07ad9b75c0f328b07",
+  "source_snapshot": {
+    "bytes": 171643,
+    "sha256": "ad7b84d02d8da81596972115907a80a77bf4af16617102089ab9036ec1fdf5de"
+  },
+  "source_count": 1108,
+  "production_modules_added": [],
+  "production_declarations_added": 0,
+  "checks": {
+    "range-resume-trial": {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "<tmp>/range-resume-trial-audit.lean"
+      ],
+      "cwd": "formal",
+      "start": "2026-11-06T11:34:32+0900",
+      "end": "2026-11-06T11:34:33+0900",
+      "seconds": 1.141,
+      "exit": 1,
+      "raw": {
+        "bytes": 1549,
+        "sha256": "322d9a2efd76ca3f2c4a797b7e75a1b02889ff7f0147ba8bca8cf929447c6079"
+      },
+      "maximum_rss": "未取得（計画上の非採取）",
+      "input": {
+        "bytes": 21154,
+        "sha256": "3aa3172c7824e3939158d440fe796433d15fcb4802afa75140504b872f773a7d"
+      },
+      "saved_input": {
+        "bytes": 20291,
+        "sha256": "4e8cf26270979c4fdc325dd84baa74264915ec3e20108d2886b62c46dff3604b"
+      }
+    }
+  }
+}

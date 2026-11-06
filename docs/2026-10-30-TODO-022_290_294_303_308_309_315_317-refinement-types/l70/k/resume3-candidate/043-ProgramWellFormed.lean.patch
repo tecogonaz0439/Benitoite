@@ -1,0 +1,20 @@
+--- a/formal/Benitoite/Release/Refinement/ProgramWellFormed.lean
++++ b/formal/Benitoite/Release/Refinement/ProgramWellFormed.lean
+@@ -6,10 +6,15 @@
+ namespace Benitoite.Release.Refinement
+ noncomputable section
+ 
++/-- 範囲パラメータを持つ依存列の四名前空間の上限。 -/
++def SignatureScopedR (P : Program) (ks : List Scope.Domain.Kind) (C : TypeCtx) (ne : Nat) (t : Tel) : Prop :=
++  (Ty.dependentFn t).SourceScoped ks.length C.length ne 0 ∧ t.RowsIn (· < ne) ∧
++    Ty.HasKind P (TypeCtx.kinds C) (.dependentFn t) .value ∧ Ty.AnnotationR P ks C [] (.dependentFn t)
++
+ def Def.Scoped (P : Program) (d : Def) : Prop :=
+   NamesWF d.names d.params ∧
+-    SignatureScoped P d.tparams d.neffs d.tel ∧
+-    d.body.SourceScoped 0 d.ntys d.neffs d.params.length
++    SignatureScopedR P d.rkinds d.tparams d.neffs d.tel ∧
++    d.body.SourceScoped d.rkinds.length d.ntys d.neffs d.params.length
+ 
+ def ConDecl.Scoped (P : Program) (cd : ConDecl) : Prop :=
+   ∀ a ∈ cd.args, a.SourceScoped 0 cd.ntys 0 0 ∧

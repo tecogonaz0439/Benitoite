@@ -1,0 +1,20 @@
+--- formal/Benitoite/Release/Refinement/ApplicationInputs.lean
++++ formal/Benitoite/Release/Refinement/ApplicationInputs.lean
+@@ -61,7 +61,7 @@
+ /-- primitiveの実開始から、元の署名の依存列へ同じ実引数を戻す。 -/
+ theorem StateTyE.primitive_contract_inputs {P B σ Eb q k μ b ts es rs ws}
+     (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)
+-    (state : StateTyE P B σ Eb (.run q k μ)) (view : q.view = .app (.prim b ts es rs) ws) :
++    (state : StateTyE P B σ Eb (.run q k μ)) (view : q.view = .app (.prim b ts es (List.map RangeIx.fixed rs)) ws) :
+     ∃ Ψ R a e sg r ef, StoreOk P B σ Ψ μ ∧ ClosureTy P B Ψ [] R q a e ∧
+       B.sig b = some sg ∧ B.RangeAdmissible b sg rs ∧
+       PrimitiveAdmissible [] 0 sg Qempty ts es ∧
+@@ -81,7 +81,7 @@
+ /-- 結果の篩を読む後段も、元の同じ実開始から署名と型付き列を受ける。 -/
+ example {P B σ Eb q k μ b ts es rs ws}
+     (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)
+-    (state : StateTyE P B σ Eb (.run q k μ)) (view : q.view = .app (.prim b ts es rs) ws) :
++    (state : StateTyE P B σ Eb (.run q k μ)) (view : q.view = .app (.prim b ts es (List.map RangeIx.fixed rs)) ws) :
+     ∃ Ψ sg r ef, B.sig b = some sg ∧
+       HasTypeTelArgsQ P B Ψ Qempty [] [] [] ws
+         (instantiatedTel (Tel.instR rs sg.tel) ts es) r ef := by

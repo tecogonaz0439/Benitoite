@@ -1,0 +1,11 @@
+--- formal/Benitoite/Release/Refinement/StandardActualListBodies.lean
++++ formal/Benitoite/Release/Refinement/StandardActualListBodies.lean
+@@ -237,7 +237,7 @@
+     all_goals rintro (_|(_|j)) a p ha hp <;> list_simp
+     all_goals subst_vars; list_simp
+     all_goals first | exact sat 0 (by decide) | exact sat 1 (by decide)
+-  have typed := HasTypeVQ.V_Fun (Ψ := Ψ) (Φ := Φ) lookup names admissible (from_instance filter)
++  have typed := HasTypeVQ.fun_empty (Ψ := Ψ) (Φ := Φ) lookup names (by rfl) admissible (from_instance filter)
+   apply typed.convert
+   · have fold := fold_from filter
+     cases filter <;> list_simp

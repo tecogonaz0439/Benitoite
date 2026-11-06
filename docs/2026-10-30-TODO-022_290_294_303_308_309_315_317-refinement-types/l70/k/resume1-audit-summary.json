@@ -1,0 +1,95 @@
+{
+  "sources_unchanged_since_final_checks_started": 1108,
+  "production_modules_added": [],
+  "production_declarations_added": 0,
+  "default_import_check": "本番の追加0。追加がある場合は根のimportを照合する",
+  "copied_judgments": [
+    "HasTypeVQ",
+    "HasTypeVsQ",
+    "HasTypeEachQ",
+    "HasTypeCQ",
+    "HasTypeTelArgsQ",
+    "TelBodyTy",
+    "CaptureOk",
+    "DependentClosureTy",
+    "CheckedWitness",
+    "AtCallAdmissible",
+    "HasTypeArmsQ",
+    "HasTypeClausesQ",
+    "HasFailureClause",
+    "ImageOk"
+  ],
+  "changed_rules_in_trial": [
+    "C_Handle: handledをhandledDに替える"
+  ],
+  "audits": {
+    "range-resume-trial": {
+      "targets": 548,
+      "private_targets": 12,
+      "rounds": 2,
+      "axiom_sets": {
+        "none": 427,
+        "Classical.choice + Quot.sound + propext": 65,
+        "propext": 56
+      },
+      "allowed_axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ],
+      "unapproved_axioms": 0,
+      "target_list": {
+        "bytes": 34659,
+        "sha256": "e5d32e9f865bcb7cee3395173555b0ea6b254610cab28b26e7d23a0ab6880a0d"
+      }
+    },
+    "legacy-resume-trial": {
+      "targets": 355,
+      "private_targets": 35,
+      "rounds": 2,
+      "axiom_sets": {
+        "none": 36,
+        "Classical.choice + Quot.sound + propext": 296,
+        "Quot.sound + propext": 2,
+        "propext": 21
+      },
+      "allowed_axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ],
+      "unapproved_axioms": 0,
+      "target_list": {
+        "bytes": 26422,
+        "sha256": "e8b37d5f4e6a2830d6388a9dcfe6fb7f335ffb449d347148051e43f880410d0d"
+      }
+    },
+    "axioms": {
+      "targets": 89315,
+      "private_targets": 23678,
+      "rounds": 2,
+      "axiom_sets": {
+        "none": 42395,
+        "Classical.choice": 2,
+        "Classical.choice + Quot.sound + propext": 22646,
+        "Classical.choice + propext": 2,
+        "Quot.sound": 9,
+        "Quot.sound + propext": 3954,
+        "propext": 20307
+      },
+      "allowed_axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ],
+      "unapproved_axioms": 0,
+      "target_list": {
+        "bytes": 5966138,
+        "sha256": "8682c03bfcab935d0a70708f04a9102797087127342d18318a75f6bf46f7b77c"
+      },
+      "modules": 1092
+    }
+  },
+  "seconds": 1.292,
+  "verification": "成功。K.2〜K.5と範囲の保存の完了を意味しない"
+}

@@ -41,6 +41,39 @@ theorem HasTypeVQ.inv_var {P B Ψ Q C Γ Φ v T i}
       .V_Raise .. | .V_LocRef .. | .V_LocLazy .. | .V_Bytes .. | .V_Con .. |
       .V_Super .. | .V_List .. => cases hv
 
+theorem HasTypeVQ.inv_fnRef_ranges {P B Ψ Q C Γ Φ T f ts es ranges v}
+    (h : HasTypeVQ P B Ψ Q C Γ Φ v T) (hv : v = .fnRef f ts es ranges) :
+    ∃ d u rs,
+      ranges = rs.map RangeIx.fixed ∧
+      Def.RangeAdmissible d rs ∧
+      (P.defs f = some d) ∧
+      (NamesWF d.names d.params) ∧
+      (Admissible B C Γ.length (TypeCtx.constraints d.tparams) d.neffs
+          (Qsig d.params d.ret d.eff) Q ts es d.eff) ∧
+      (SignatureInstance P C Γ (d.instTel rs) (TypeCtx.kinds d.tparams) ts es) ∧
+      T.fnCore = some u ∧ TelClosure P Γ Φ (instantiatedTel (d.instTel rs) ts es) u := by
+  match h with
+  | .V_Fun h0 h1 hr h2 h3 => cases hv; exact ⟨_, _, _, rfl, hr, h0, h1, h2, h3, rfl, .refl⟩
+  | .V_Normal (a := T0) h =>
+    obtain ⟨d, u, rs, hrs, hr, h0, h1, h2, h3, hu, rel⟩ := h.inv_fnRef_ranges hv
+    have hl : Ty.LeQ P Γ Φ T0 T0.norm := .convert (Ty.norm_idem T0).symm
+    obtain ⟨w, hw, step⟩ := hl.fnCore hu
+    exact ⟨d, w, rs, hrs, hr, h0, h1, h2, h3, hw, rel.trans step⟩
+  | .V_Sub h hl .. =>
+    obtain ⟨d, u, rs, hrs, hr, h0, h1, h2, h3, hu, rel⟩ := h.inv_fnRef_ranges hv
+    obtain ⟨w, hw, step⟩ := hl.fnCore hu
+    exact ⟨d, w, rs, hrs, hr, h0, h1, h2, h3, hw, rel.trans step⟩
+  | .V_Refine h .. =>
+    obtain ⟨d, u, rs, hrs, hr, h0, h1, h2, h3, hu, rel⟩ := h.inv_fnRef_ranges hv
+    exact ⟨d, u, rs, hrs, hr, h0, h1, h2, h3, hu, rel⟩
+  | .V_Var .. | .V_Const .. | .V_Lam .. | .V_DependentLam .. |
+      .V_Closure .. | .V_Prim .. | .V_Op .. | .V_ExternalRef .. |
+      .V_ExternalHandle .. | .V_PathBases .. | .V_ScopePattern .. | .V_Checked .. |
+      .V_CheckedRequest .. | .V_CheckedAt .. | .V_AtError .. | .V_Map .. |
+      .V_Set .. | .V_Dict .. | .V_Raise .. | .V_LocRef .. |
+      .V_LocLazy .. | .V_Bytes .. | .V_Con .. | .V_Super .. |
+      .V_List .. => cases hv
+
 theorem HasTypeVQ.inv_fnRef {P B Ψ Q C Γ Φ T f ts es v}
     (h : HasTypeVQ P B Ψ Q C Γ Φ v T) (hv : v = .fnRef f ts es) :
     ∃ d u,
@@ -50,30 +83,14 @@ theorem HasTypeVQ.inv_fnRef {P B Ψ Q C Γ Φ T f ts es v}
           (Qsig d.params d.ret d.eff) Q ts es d.eff) ∧
       (SignatureInstance P C Γ d.tel (TypeCtx.kinds d.tparams) ts es) ∧
       T.fnCore = some u ∧ TelClosure P Γ Φ (instantiatedTel d.tel ts es) u := by
-  match h with
-  | .V_Fun h0 h1 h2 h3 => cases hv; exact ⟨_, _, h0, h1, h2, h3, rfl, .refl⟩
-  | .V_Normal (a := T0) h =>
-    obtain ⟨d, u, h0, h1, h2, h3, hu, rel⟩ := h.inv_fnRef hv
-    have hl : Ty.LeQ P Γ Φ T0 T0.norm := .convert (Ty.norm_idem T0).symm
-    obtain ⟨w, hw, step⟩ := hl.fnCore hu
-    exact ⟨d, w, h0, h1, h2, h3, hw, rel.trans step⟩
-  | .V_Sub h hl .. =>
-    obtain ⟨d, u, h0, h1, h2, h3, hu, rel⟩ := h.inv_fnRef hv
-    obtain ⟨w, hw, step⟩ := hl.fnCore hu
-    exact ⟨d, w, h0, h1, h2, h3, hw, rel.trans step⟩
-  | .V_Refine h .. =>
-    obtain ⟨d, u, h0, h1, h2, h3, hu, rel⟩ := h.inv_fnRef hv
-    exact ⟨d, u, h0, h1, h2, h3, hu, rel⟩
-  | .V_Var .. | .V_Const .. | .V_Lam .. | .V_DependentLam .. |
-      .V_Closure .. | .V_Prim .. | .V_Op .. | .V_ExternalRef .. |
-      .V_ExternalHandle .. | .V_PathBases .. | .V_ScopePattern .. | .V_Checked .. |
-      .V_CheckedRequest .. | .V_CheckedAt .. | .V_AtError .. | .V_Map .. |
-      .V_Set .. | .V_Dict .. | .V_Raise .. | .V_LocRef .. |
-      .V_LocLazy .. | .V_Bytes .. | .V_Con .. | .V_Super .. |
-      .V_List .. => cases hv
+  obtain ⟨d,u,rs,hrs,_,hd,hn,ha,hi,hu,hl⟩ := h.inv_fnRef_ranges hv
+  have hempty : rs = [] := by simpa only [List.map_eq_nil_iff] using hrs.symm
+  subst rs
+  exact ⟨d,u,hd,hn,ha,by simpa only [Def.instTel_nil] using hi,hu,
+    by simpa only [Def.instTel_nil] using hl⟩
 
 theorem HasTypeVQ.inv_prim {P B Ψ Q C Γ Φ T b ts es rs v}
-    (h : HasTypeVQ P B Ψ Q C Γ Φ v T) (hv : v = .prim b ts es rs) :
+    (h : HasTypeVQ P B Ψ Q C Γ Φ v T) (hv : v = .prim b ts es (List.map RangeIx.fixed rs)) :
     ∃ s u,
       (B.sig b = some s) ∧
       (B.RangeAdmissible b s rs) ∧
@@ -82,7 +99,11 @@ theorem HasTypeVQ.inv_prim {P B Ψ Q C Γ Φ T b ts es rs v}
       (SignatureInstance P C Γ (Tel.instR rs s.tel) (TypeCtx.kinds s.tparams) ts es) ∧
       T.fnCore = some u ∧ TelClosure P Γ Φ (instantiatedTel (Tel.instR rs s.tel) ts es) u := by
   match h with
-  | .V_Prim h0 h1 h2 h3 h4 => cases hv; exact ⟨_, _, h0, h1, h2, h3, h4, rfl, .refl⟩
+  | .V_Prim (rs := args) h0 h1 h2 h3 h4 =>
+    obtain ⟨rfl,rfl,rfl,he⟩ := Val.prim.inj hv
+    have he : args = rs := (List.map_inj_right (fun _ _ h => RangeIx.fixed.inj h)).mp he
+    subst args
+    exact ⟨_, _, h0, h1, h2, h3, h4, rfl, .refl⟩
   | .V_Normal (a := T0) h =>
     obtain ⟨d, u, h0, h1, h2, h3, h4, hu, rel⟩ := h.inv_prim hv
     have hl : Ty.LeQ P Γ Φ T0 T0.norm := .convert (Ty.norm_idem T0).symm
@@ -114,7 +135,7 @@ example {P B Ψ Q C Γ Φ T f ts es}
 
 /-- 正規化後のprimitiveでも、同じ範囲実引数の適格性を保つ。 -/
 example {P B Ψ Q C Γ Φ T b ts es rs}
-    (h : HasTypeVQ P B Ψ Q C Γ Φ (.prim b ts es rs) T) :
+    (h : HasTypeVQ P B Ψ Q C Γ Φ (.prim b ts es (List.map RangeIx.fixed rs)) T) :
     ∃ s, B.sig b = some s ∧ B.RangeAdmissible b s rs := by
   obtain ⟨s,_,hs,range,_,_,_,_,_⟩ := h.V_Normal.inv_prim rfl
   exact ⟨s,hs,range⟩

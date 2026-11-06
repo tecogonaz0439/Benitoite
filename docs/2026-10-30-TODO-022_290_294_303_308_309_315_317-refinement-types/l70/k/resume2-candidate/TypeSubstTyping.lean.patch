@@ -1,0 +1,45 @@
+--- formal/Benitoite/Release/Refinement/TypeSubstTyping.lean
++++ formal/Benitoite/Release/Refinement/TypeSubstTyping.lean
+@@ -77,15 +77,16 @@
+ 
+ theorem case_V_Fun :
+ ∀ {Ψ : StoreTy} {Q : Benitoite.Release.NoFailCtx} {C : TypeCtx} {Γ : Ctx} {Φ : List Pred}
+-  {f : Benitoite.Release.FunName} {d : Def} {ts : List Ty} {es : List Eff},
++  {f : Benitoite.Release.FunName} {d : Def} {ts : List Ty} {es : List Eff} {rs : List RangeExpr},
+   P.defs f = some d →
+     NamesWF d.names d.params →
++      Def.RangeAdmissible d rs →
+       Admissible B C (List.length Γ) (TypeCtx.constraints d.tparams) d.neffs (Qsig d.params d.ret d.eff) Q ts es d.eff →
+-        SignatureInstance P C Γ d.tel (TypeCtx.kinds d.tparams) ts es →
+-          VGoal P B Ψ Q C Γ Φ (Val.fnRef f ts es) (Ty.dependentFn (instantiatedTel d.tel ts es)) := by
+-  intro Ψ Q C Γ Φ f d ts es hd hn ha hs C0 C1 us fs Q' hC hf hi hc hq
+-  subst C
+-  exact gate_fun_case hf hi hc hq (.V_Fun hd hn ha hs)
++        SignatureInstance P C Γ (d.instTel rs) (TypeCtx.kinds d.tparams) ts es →
++          VGoal P B Ψ Q C Γ Φ (Val.fnRef f ts es (List.map RangeIx.fixed rs)) (Ty.dependentFn (instantiatedTel (d.instTel rs) ts es)) := by
++  intro Ψ Q C Γ Φ f d ts es rs hd hn hr ha hs C0 C1 us fs Q' hC hf hi hc hq
++  subst C
++  exact gate_fun_case_ranges hf hi hc hq (.V_Fun hd hn hr ha hs)
+ 
+ theorem case_V_Prim :
+ ∀ {Ψ : StoreTy} {Q : Benitoite.Release.NoFailCtx} {C : TypeCtx} {Γ : Ctx} {Φ : List Pred}
+@@ -95,7 +96,7 @@
+       NamesWF s.names s.params →
+         PrimitiveAdmissible C (List.length Γ) s Q ts es →
+           SignatureInstance P C Γ (Tel.instR rs s.tel) (TypeCtx.kinds s.tparams) ts es →
+-            VGoal P B Ψ Q C Γ Φ (Val.prim b ts es rs) (Ty.dependentFn (instantiatedTel (Tel.instR rs s.tel) ts es)) := by
++            VGoal P B Ψ Q C Γ Φ (Val.prim b ts es (List.map RangeIx.fixed rs)) (Ty.dependentFn (instantiatedTel (Tel.instR rs s.tel) ts es)) := by
+   intro Ψ Q C Γ Φ b s ts es rs hl hr hn ha hsi C0 C1 us fs Q' hC hf hi hc hq
+   subst C
+   have rows := Tel.rowsIn_instR ha.sourceTelRows rs
+@@ -1290,8 +1291,8 @@
+       exact @case_V_DependentLam P B _ _ _ _ _ _ _ x7 x8 (@deriveBody _ _ _ _ _ _ _ _ _ (x8))
+     | @HasTypeVQ.V_Closure _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 =>
+       exact @case_V_Closure P B _ _ _ _ _ _ _ _ x8 x9 x10 (@deriveClosure _ _ _ _ _ (x10))
+-    | @HasTypeVQ.V_Fun _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 =>
+-      exact @case_V_Fun P B _ _ _ _ _ _ _ _ _ x9 x10 x11 x12
++    | @HasTypeVQ.V_Fun _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 =>
++      exact @case_V_Fun P B _ _ _ _ _ _ _ _ _ _ x10 x11 x12 x13 x14
+     | @HasTypeVQ.V_Prim _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 =>
+       exact @case_V_Prim P B _ _ _ _ _ _ _ _ _ _ x10 x11 x12 x13 x14
+     | @HasTypeVQ.V_Op _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 =>

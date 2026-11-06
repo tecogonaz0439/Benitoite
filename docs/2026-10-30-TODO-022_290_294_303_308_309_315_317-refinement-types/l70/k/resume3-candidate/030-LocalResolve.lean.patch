@@ -1,0 +1,11 @@
+--- a/formal/Benitoite/Release/Refinement/LocalResolve.lean
++++ b/formal/Benitoite/Release/Refinement/LocalResolve.lean
+@@ -7,7 +7,7 @@
+   def Val.resolveLocals (ρ : Nat → LocalRef) : Val → Val
+     | .var i => .var i
+     | .const c => .const c
+-    | .fnRef f tys effs => .fnRef f tys effs
++    | .fnRef f tys effs rs => .fnRef f tys effs rs
+     | .prim b tys effs rs => .prim b tys effs rs
+     | .lam names params body => .lam names params (Comp.resolveLocals (upLocalSubst params.length ρ) body)
+     | .dependentLam t body => .dependentLam t (Comp.resolveLocals (upLocalSubst (telBinders t) ρ) body)

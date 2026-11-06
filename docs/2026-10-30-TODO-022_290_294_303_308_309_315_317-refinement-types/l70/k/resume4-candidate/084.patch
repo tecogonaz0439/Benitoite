@@ -1,0 +1,77 @@
+--- formal/Benitoite/Release/Refinement/StandardHeadTailBodies.lean
++++ formal/Benitoite/Release/Refinement/StandardHeadTailBodies.lean
+@@ -55,9 +55,9 @@
+   ⟨if filter then "List.filter" else "List.map",params filter,1,publicTel filter,some (publicBody filter),.core,
+     [if filter then .listFilter else .listMap]⟩
+ def fromDefinition (filter : Bool) : Def :=
+-  ⟨params filter,1,(fromTel filter).names,(fromTel filter).inputs,(fromTel filter).result,(fromTel filter).effect,fromBody filter⟩
++  ⟨params filter,1,(fromTel filter).names,(fromTel filter).inputs,(fromTel filter).result,(fromTel filter).effect,fromBody filter, []⟩
+ def publicDefinition (filter : Bool) : Def :=
+-  ⟨params filter,1,(publicTel filter).names,(publicTel filter).inputs,(publicTel filter).result,(publicTel filter).effect,publicBody filter⟩
++  ⟨params filter,1,(publicTel filter).names,(publicTel filter).inputs,(publicTel filter).result,(publicTel filter).effect,publicBody filter, []⟩
+ 
+ private theorem row_self : substAtoms [Eff.row 0] (Eff.row 0).atoms = (Eff.row 0).atoms := by
+   funext a
+@@ -142,7 +142,7 @@
+     all_goals first | (constructor <;> walk_simp) | walk_simp
+     all_goals rintro (_|(_|j)) a p ha hp <;> walk_simp <;> subst_vars
+     all_goals exact inp.sat _ _
+-  have typed := HasTypeVQ.V_Fun (Ψ := Ψ) (Φ := Φ) (inp.helpers filter) names ad (from_instance filter)
++  have typed := HasTypeVQ.fun_empty (Ψ := Ψ) (Φ := Φ) (inp.helpers filter) names (by rfl) ad (from_instance filter)
+   have same : instantiatedTel (fromDefinition filter).tel (arguments filter) [Eff.row 0] = fromTel filter := by
+     cases filter <;> walk_simp
+   rw [same] at typed
+@@ -579,11 +579,15 @@
+                            · walk_hyp)
+                     · apply HasTypeArmsQ.nil
+                       constructor <;> walk_simp
++                · walk_simp
++                  all_goals first | declarations_solve inp | (refine ⟨?_,?_,?_⟩ <;> declarations_solve inp)
+                 · simpa only [unguardedPats,List.map_cons,List.map_nil,List.append_nil,List.cons_append,List.nil_append,headType,tailType,Ty.shiftV,shiftVTys] using option_exhaustive inp (.list (.tvar 0)) _
+               · walk_simp
+             · walk_simp
+           · apply HasTypeArmsQ.nil
+             constructor <;> walk_simp
++      · walk_simp
++        all_goals first | declarations_solve inp | (refine ⟨?_,?_,?_⟩ <;> declarations_solve inp)
+       · simpa only [unguardedPats,List.map_cons,List.map_nil,List.append_nil,List.cons_append,List.nil_append,headType,tailType,Ty.shiftV,shiftVTys] using option_exhaustive inp (.tvar 0) _
+     · walk_simp
+ 
+@@ -594,8 +598,8 @@
+   refine ⟨fromDefinition filter,rfl,?_,?_,?_,?_⟩
+   · cases filter <;> walk_simp
+   · cases filter <;> walk_simp
+-  · exact from_annotation filter
+-  · simpa only [Def.tel,fromDefinition,StandardContracts.signatureTel_rebuild] using from_body inp filter
++  · exact (from_annotation (P := P) (Γ := []) filter).range_empty
++  · simpa only [Def.tel,fromDefinition,StandardContracts.signatureTel_rebuild,telBodyTyR_nil] using from_body inp filter
+ 
+ /-- 公開の二引数を保ち、元の列と空の累積でhelperの不変条件を開始する。 -/
+ theorem public_typed {P B} (inp : Inputs P B) (filter : Bool) :
+@@ -660,7 +664,7 @@
+     all_goals first | (constructor <;> walk_simp) | walk_simp
+     all_goals rintro (_|(_|j)) a p ha hp <;> walk_simp <;> subst_vars
+     all_goals exact inp.sat _ _
+-  have typed := HasTypeVQ.V_Fun (Ψ := Ψ) (Φ := Φ) lookup names ad (public_instance filter)
++  have typed := HasTypeVQ.fun_empty (Ψ := Ψ) (Φ := Φ) lookup names (by rfl) ad (public_instance filter)
+   have same : instantiatedTel (publicDefinition filter).tel (arguments filter) [Eff.row 0] = publicTel filter := by
+     cases filter <;> walk_simp
+   rw [same] at typed
+@@ -673,7 +677,7 @@
+ def nonemptyRow : StandardContracts.Row :=
+   ⟨"Internal.NonEmptyList.map",params false,1,nonemptyTel,some nonemptyBody,.core,[.nonempty,.listMap]⟩
+ def nonemptyDefinition : Def :=
+-  ⟨params false,1,nonemptyTel.names,nonemptyTel.inputs,nonemptyTel.result,nonemptyTel.effect,nonemptyBody⟩
++  ⟨params false,1,nonemptyTel.names,nonemptyTel.inputs,nonemptyTel.result,nonemptyTel.effect,nonemptyBody, []⟩
+ 
+ private theorem positive_eq {Ξ : List Pred} (xs ys : Term)
+     (eq : Entails Ξ (.eq (length ys) (length xs)))
+@@ -726,7 +730,7 @@
+ def nonemptyPublicRow : StandardContracts.Row :=
+   ⟨"NonEmptyList.map",params false,1,nonemptyPublicTel,some nonemptyBody,.core,[.nonempty,.listMap]⟩
+ def nonemptyPublicDefinition : Def :=
+-  ⟨params false,1,nonemptyPublicTel.names,nonemptyPublicTel.inputs,nonemptyPublicTel.result,nonemptyPublicTel.effect,nonemptyBody⟩
++  ⟨params false,1,nonemptyPublicTel.names,nonemptyPublicTel.inputs,nonemptyPublicTel.result,nonemptyPublicTel.effect,nonemptyBody, []⟩
+ 
+ /-- 固定19行の内部契約を保ち、公開名valueの同じ本体も検査する。 -/
+ theorem nonempty_public_typed {P B} (inp : Inputs P B)

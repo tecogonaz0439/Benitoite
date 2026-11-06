@@ -41,7 +41,7 @@ theorem HasTypeCQ.read_values {P B Ψ Q C Γ Φ R m a e L}
     (h : HasTypeCQ P B Ψ Q C Γ Φ R m a e L) :
     ∀ v ∈ m.readValues, ∃ b, HasTypeVQ P B Ψ Q C Γ Φ v b := by
   match h with
-  | .C_Return hv | .C_Escape hv _ | .C_If hv _ _ _ | .C_Match hv _ _ _ |
+  | .C_Return hv | .C_Escape hv _ | .C_If hv _ _ _ | .C_Match hv _ _ _ _ |
     .C_Use hv _ _ _ | .C_Resume _ hv _ | .C_ResumeL _ hv _ |
     .C_ResumeNorm _ hv _ | .C_ResumeLNorm _ _ hv _ =>
     intro v hh

@@ -1,0 +1,34 @@
+--- formal/Benitoite/Release/Refinement/NormalReplyExamples.lean
++++ formal/Benitoite/Release/Refinement/NormalReplyExamples.lean
+@@ -441,7 +441,7 @@
+   have hb := call_typed (b := "Example.unit") (s := pureSig) (by simp [modelBuiltins]) (Or.inl rfl)
+   have ht := source_state (σ := σ) hb (unit_annotation (Or.inl rfl)) rfl (by simp [call,Comp.ClosedAt,Val.ClosedAt,Val.ClosedList]) (by trivial)
+   exact ht.store_reply model_wellFormed model_wellTyped model_core hσ
+-    (.E_Prim (s := pureSig) rfl (by simp [modelBuiltins]) rfl rfl)
++    (.E_Prim (rs := []) (s := pureSig) rfl (by simp [modelBuiltins]) rfl rfl)
+ 
+ private theorem io_reply (σ : PathEnv) (hσ : σ.Valid) :
+     Returned σ (Eff.single processEnvironmentEff) (call "Example.ioUnit")
+@@ -449,7 +449,7 @@
+   have hb := call_typed (b := "Example.ioUnit") (s := ioSig) (by simp [modelBuiltins]) (Or.inr rfl)
+   have ht := source_state (σ := σ) hb (unit_annotation (Or.inr rfl)) rfl (by simp [call,Comp.ClosedAt,Val.ClosedAt,Val.ClosedList]) (by trivial)
+   exact ht.store_reply model_wellFormed model_wellTyped model_core hσ
+-    (.E_IO (s := ioSig) rfl (by simp [modelBuiltins]) rfl (by simp [NoHandler]) ⟨rfl,rfl,rfl⟩)
++    (.E_IO (rs := []) (s := ioSig) rfl (by simp [modelBuiltins]) rfl (by simp [NoHandler]) ⟨rfl,rfl,rfl⟩)
+ 
+ private theorem external_reply (σ : PathEnv) (hσ : σ.Valid) :
+     Returned σ Eff.empty (.externalCall (.mk 0) [] []) none (.const .unit) := by
+@@ -553,11 +553,11 @@
+     rcases hh with rfl | rfl
+     · have hb := call_typed (b := "Example.unit") (s := pureSig) (by simp [modelBuiltins]) (Or.inl rfl)
+       have ht := source_state (σ := σ) hb (unit_annotation (Or.inl rfl)) rfl (by simp [call,Comp.ClosedAt,Val.ClosedAt,Val.ClosedList]) (by trivial)
+-      exact ht.selected_primitive_step (sg := pureSig) model_wellFormed model_wellTyped model_core rfl
++      exact ht.selected_primitive_step (rs := []) (sg := pureSig) model_wellFormed model_wellTyped model_core rfl
+         (by simp [modelBuiltins]) (Or.inl rfl) (by simp [NoHandler])
+     · have hb := call_typed (b := "Example.ioUnit") (s := ioSig) (by simp [modelBuiltins]) (Or.inr rfl)
+       have ht := source_state (σ := σ) hb (unit_annotation (Or.inr rfl)) rfl (by simp [call,Comp.ClosedAt,Val.ClosedAt,Val.ClosedList]) (by trivial)
+-      exact ht.selected_primitive_step model_wellFormed model_wellTyped model_core rfl
++      exact ht.selected_primitive_step (rs := []) model_wellFormed model_wellTyped model_core rfl
+           (sg := ioSig) (by simp [modelBuiltins]) (Or.inr (Or.inl rfl)) (by simp [NoHandler])
+   · exact ⟨⟨_,_,step_builder_new_selected (StoreOk.empty _ _ σ) rfl⟩,
+       ⟨_,_,step_lazy_selected (StoreOk.empty _ _ σ) rfl⟩⟩

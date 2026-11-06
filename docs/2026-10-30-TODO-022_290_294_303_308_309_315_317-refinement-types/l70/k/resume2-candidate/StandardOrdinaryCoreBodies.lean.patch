@@ -1,0 +1,11 @@
+--- formal/Benitoite/Release/Refinement/StandardOrdinaryCoreBodies.lean
++++ formal/Benitoite/Release/Refinement/StandardOrdinaryCoreBodies.lean
+@@ -383,7 +383,7 @@
+    | (solve | core_simp)
+    | (solve | intro a ha; cases List.mem_singleton.mp ha; constructor <;> core_simp)
+    | (solve | constructor; core_simp; rintro (_|i) a k ha hk <;> core_simp <;> subst_vars; constructor <;> core_simp)
+- apply (HasTypeVQ.V_Fun (Ψ := Ψ) (Φ := Φ) lookup names ad inst).convert
++ apply (HasTypeVQ.fun_empty (Ψ := Ψ) (Φ := Φ) lookup names (by rfl) ad inst).convert
+  · have fold := Ty.foldFn_toTel ⟨["value"],[g.record.type],g.result,Eff.empty,by simp [NamesWF]⟩
+    cases g <;> core_simp
+    all_goals simpa [FnView.toTel,Ty.toTel,Getter.record,Getter.result,Getter.position,Record.type,Record.arity,Record.fields,Ty.shiftV,shiftVTys,Eff.shiftV,Eff.empty] using fold

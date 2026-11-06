@@ -1,0 +1,20 @@
+--- formal/Benitoite/Release/Refinement/StandardHeadTailBodies.lean
++++ formal/Benitoite/Release/Refinement/StandardHeadTailBodies.lean
+@@ -142,7 +142,7 @@
+     all_goals first | (constructor <;> walk_simp) | walk_simp
+     all_goals rintro (_|(_|j)) a p ha hp <;> walk_simp <;> subst_vars
+     all_goals exact inp.sat _ _
+-  have typed := HasTypeVQ.V_Fun (Ψ := Ψ) (Φ := Φ) (inp.helpers filter) names ad (from_instance filter)
++  have typed := HasTypeVQ.fun_empty (Ψ := Ψ) (Φ := Φ) (inp.helpers filter) names (by rfl) ad (from_instance filter)
+   have same : instantiatedTel (fromDefinition filter).tel (arguments filter) [Eff.row 0] = fromTel filter := by
+     cases filter <;> walk_simp
+   rw [same] at typed
+@@ -660,7 +660,7 @@
+     all_goals first | (constructor <;> walk_simp) | walk_simp
+     all_goals rintro (_|(_|j)) a p ha hp <;> walk_simp <;> subst_vars
+     all_goals exact inp.sat _ _
+-  have typed := HasTypeVQ.V_Fun (Ψ := Ψ) (Φ := Φ) lookup names ad (public_instance filter)
++  have typed := HasTypeVQ.fun_empty (Ψ := Ψ) (Φ := Φ) lookup names (by rfl) ad (public_instance filter)
+   have same : instantiatedTel (publicDefinition filter).tel (arguments filter) [Eff.row 0] = publicTel filter := by
+     cases filter <;> walk_simp
+   rw [same] at typed

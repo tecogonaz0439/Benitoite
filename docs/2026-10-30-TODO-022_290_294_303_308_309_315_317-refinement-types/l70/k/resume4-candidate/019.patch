@@ -1,0 +1,20 @@
+--- formal/Benitoite/Release/Refinement/Embedding.lean
++++ formal/Benitoite/Release/Refinement/Embedding.lean
+@@ -15,7 +15,7 @@
+     | .var i => .var i
+     | .const c => .const (embedConst c)
+     | .fnRef f ts es => .fnRef f (embedTys ts) (es.map embedEff)
+-    | .prim b ts es rs => .prim b (embedTys ts) (es.map embedEff) (rs.map embedRange)
++    | .prim b ts es rs => .prim b (embedTys ts) (es.map embedEff) (List.map RangeIx.fixed (rs.map embedRange))
+     | .lam ns ps body => .lam ns (embedTys ps) (embedComp body)
+     | .con c ts vs => .con c (embedTys ts) (embedVals vs)
+     | .list vs => .list (embedVals vs)
+@@ -62,7 +62,7 @@
+ 
+ def embedDef (d : Benitoite.Release.Def) : Def :=
+   ⟨d.tparams.map embedTParam, d.neffs, d.names, embedParameters d.params,
+-    (embedTy d.ret).shiftV d.params.length 0, (embedEff d.eff).shiftV d.params.length 0, embedComp d.body⟩
++    (embedTy d.ret).shiftV d.params.length 0, (embedEff d.eff).shiftV d.params.length 0, embedComp d.body, []⟩
+ 
+ def embedConDecl (d : Benitoite.Release.ConDecl) : ConDecl := ⟨d.data, d.ntys, embedTys d.args⟩
+ 

@@ -139,9 +139,9 @@ mutual
   inductive Val where
     | var (i : Nat)
     | const (c : Const)
-    | fnRef (f : FunName) (tys : List Ty) (effs : List Eff)
+    | fnRef (f : FunName) (tys : List Ty) (effs : List Eff) (rs : List RangeIx := [])
     /-- 組み込みの関数 `b[T̄; Ē; R̄]`。`rs` は具体化した範囲の列。 -/
-    | prim (b : PrimName) (tys : List Ty) (effs : List Eff) (rs : List RangeExpr)
+    | prim (b : PrimName) (tys : List Ty) (effs : List Eff) (rs : List RangeIx)
     | lam (names : List String) (params : List Ty) (body : Comp)
     | dependentLam (signature : Tel) (body : Comp)
     | closure (signature : Tel) (body : Closure)
@@ -258,6 +258,8 @@ structure Def where
   ret : Ty
   eff : Eff
   body : Comp
+  /-- 宣言した範囲パラメータの種類。 -/
+  rkinds : List Scope.Domain.Kind := []
 
 def Def.ntys (d : Def) : Nat := d.tparams.length
 

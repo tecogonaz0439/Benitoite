@@ -1,0 +1,83 @@
+--- formal/Benitoite/Release/Refinement/LegacyHandlerEmbedding.lean
++++ formal/Benitoite/Release/Refinement/LegacyHandlerEmbedding.lean
+@@ -46,8 +46,34 @@
+   | cons c cs ih => cases c <;> simp only [handles,Benitoite.Release.handles,embedClauses,
+       embedClause,List.any_cons,Clause.op,Benitoite.Release.Clause.op] at ih ⊢ <;> rw [ih]
+ 
++/-- 旧節の署名の対応先は、起点の発行を行う新しい kind にはならない。 -/
++theorem LegacyClausesInput.primitive_not_issue {K P0 B0 B Δ cs}
++    (input : LegacyClausesInput K P0 B0 B Δ cs) (tables : LegacyTables K P0 B0 B)
++    {b s} (hh : Benitoite.Release.handles cs (.prim b) = true) (hs : B.sig b = some s) :
++    s.kind ≠ .pathBases := by
++  induction cs with
++  | nil => cases hh
++  | cons c cs ih =>
++    cases c with
++    | fail e body =>
++      exact ih input.2.2 (by simpa [Benitoite.Release.handles,Benitoite.Release.Clause.op] using hh)
++    | mk o n k body =>
++      simp only [Benitoite.Release.handles,List.any_cons,Bool.or_eq_true,
++        Benitoite.Release.Clause.op,beq_iff_eq] at hh
++      rcases hh with rfl | hh
++      · obtain ⟨sg,lookup,_⟩ := input.1
++        cases hb : B0.sig b with
++        | none => simp [Benitoite.Release.opSig,Benitoite.Release.opSigAt,hb] at lookup
++        | some s0 =>
++          obtain ⟨s',hs',corr⟩ := tables.primitives b s0 hb
++          cases Option.some.inj (hs.symm.trans hs')
++          rw [corr.kind]
++          cases s0.kind <;> simp [embedPrimKind]
++      · exact ih input.2 hh
++
+ theorem legacy_handled_sub {K P0 B0 B} (tables : LegacyTables K P0 B0 B)
+-    (cs : List Benitoite.Release.Clause) :
++    (cs : List Benitoite.Release.Clause) {Δ}
++    (input : LegacyClausesInput K P0 B0 B Δ cs) :
+     Eff.Sub (embedEff (Benitoite.Release.handled P0 B0 cs))
+       (handled (embedProgramWithKinds K P0) B (embedClauses cs)) := by
+   refine ⟨?_,?_⟩
+@@ -86,8 +112,25 @@
+                 Benitoite.Release.Eff.test,Benitoite.Release.Eff.atoms,hx] using ha
+           have hh : handles (embedClauses cs) = Benitoite.Release.handles cs :=
+             funext (legacy_handles cs)
+-          rw [hh]
+-          exact hall
++          have hn : issuesSelected (embedProgramWithKinds K P0) B l = false := by
++            cases hp : P0.effects l with
++            | some users => simp [issuesSelected,embedProgramWithKinds_effects,hp]
++            | none =>
++              have hx' := hx
++              simp only [Benitoite.Release.effOps,hp,Option.map_eq_some_iff] at hx'
++              obtain ⟨bs,hbs,hmap⟩ := hx'
++              simp only [issuesSelected,embedProgramWithKinds_effects,hp,Builtins.issuesIn,tables.effects,hbs]
++              apply List.any_eq_false.mpr
++              intro b hb
++              cases hs : B.sig b with
++              | none => simp
++              | some s =>
++                simp only [decide_eq_true_eq]
++                apply input.primitive_not_issue tables _ hs
++                apply List.all_eq_true.mp hall (.prim b)
++                rw [←hmap]
++                exact List.mem_map.mpr ⟨b,hb,rfl⟩
++          simpa only [hh,hall,hn,Bool.not_false,Bool.and_true]
+   · intro t ht
+     obtain ⟨u,hu,_⟩ := ht
+     cases hu
+@@ -96,6 +139,7 @@
+ 
+ theorem handle_case {K P0 B0 B κ Ψ Q C Γ R m cs t em e L}
+     (tables : LegacyTables K P0 B0 B)
++    (input : LegacyClausesInput K P0 B0 B ⟨κ,C,0,Γ.length⟩ cs)
+     (sub : Benitoite.Release.Eff.Sub em (Benitoite.Release.Eff.union e (Benitoite.Release.handled P0 B0 cs)))
+     (body : LegacyJudgment.Embedded K P0 B (.comp κ Ψ Q C Γ R m t em L))
+     (clauses : LegacyJudgment.Embedded K P0 B (.clauses κ Ψ Q C Γ R em cs t e L)) :
+@@ -104,7 +148,7 @@
+   apply HasTypeCQ.C_Handle (body Φ) _ (clauses Φ)
+   have hs := legacy_eff_sub sub
+   rw [legacy_union] at hs
+-  have hh := legacy_handled_sub tables cs
++  have hh := legacy_handled_sub tables cs input
+   refine ⟨?_,?_⟩
+   · intro a ha
+     rcases (Eff.mem_union_iff _ _ _).mp (hs.1 a ha) with ha | ha

@@ -1,0 +1,11 @@
+--- formal/Benitoite/Release/Refinement/StandardSafeBodies.lean
++++ formal/Benitoite/Release/Refinement/StandardSafeBodies.lean
+@@ -511,7 +511,7 @@
+    | (solve | intro t ht; cases List.mem_singleton.mp ht; constructor <;> safe_simp)
+    | (solve | refine ⟨rfl,?_⟩; rintro (_|i) t k ht hk <;> safe_simp <;> subst_vars <;> safe_simp)
+    | (solve | intro e he; cases he)
+- have typed := HasTypeVQ.V_Fun (Ψ:=StoreTy.empty) (Φ:=Φ) lookup ns ad inst
++ have typed := HasTypeVQ.fun_empty (Ψ:=StoreTy.empty) (Φ:=Φ) lookup ns (by rfl) ad inst
+  simpa [headDefinition,safeHead,headRow,nonempty,nonemptyType,nonemptyPredicate,a,
+   Def.tel,signatureTel,instantiatedTel,Tel.bind,Tel.rawBind,Ty.rawBind,rawBindTys,
+   Ty.bind,Ty.norm,Ty.normTys,Tel.norm,Eff.rawBind,Eff.norm,Eff.empty,rowFails,substAtoms_nil,

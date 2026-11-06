@@ -28,19 +28,6 @@ private theorem head_alts {P} : AltsTy P headAlts (nonempty a) [a,.list a] := by
  · intro alt h; cases List.mem_singleton.mp h
    exact ⟨[a,.list a],head_pattern,List.Perm.refl _,rfl⟩
 
-private theorem head_body {P B} : TelBodyTy P B StoreTy.empty (QTel (safeHead a)) C [] [] (safeHead a) headBody := by
- apply TelBodyTy.param
- apply TelBodyTy.done
- apply HasTypeCQ.C_Match (obs := none)
- · exact .V_Var rfl (by intro b t e h; cases h)
- · intro t ht; cases ht
- · apply HasTypeArmsQ.plainEmpty head_alts
-   · simp [pathFacts,FactsWF]
-   · exact .C_Return (.V_Var rfl (by intro b t e h; cases h))
-   · apply HasTypeArmsQ.nil
-     exact ⟨by simp [a,C,Ty.WF,Ty.shiftV],trivial,trivial⟩
- · simpa [headBody,headAlts,unguardedPats,Ty.shiftV,a,nonempty,nonemptyType,nonemptyPredicate,predBind,termBind,termBind?] using nonempty_exhaustive P a
-
 private theorem head_annotation {P} : Ty.Annotation P C [] (.dependentFn (safeHead a)) := by
  unfold a
  constructor
@@ -53,12 +40,27 @@ private theorem head_annotation {P} : Ty.Annotation P C [] (.dependentFn (safeHe
      · simp [Ty.WF]
      · rfl
 
+
+private theorem head_body {P B} : TelBodyTy P B StoreTy.empty (QTel (safeHead a)) C [] [] (safeHead a) headBody := by
+ apply TelBodyTy.param
+ apply TelBodyTy.done
+ apply HasTypeCQ.C_Match (obs := none)
+ · exact .V_Var rfl (by intro b t e h; cases h)
+ · intro t ht; cases ht
+ · apply HasTypeArmsQ.plainEmpty head_alts
+   · simp [pathFacts,FactsWF]
+   · exact .C_Return (.V_Var rfl (by intro b t e h; cases h))
+   · apply HasTypeArmsQ.nil
+     exact ⟨by simp [a,C,Ty.WF,Ty.shiftV],trivial,trivial⟩
+ · exact (Tel.regular_context (Ctx.Regular.empty _ C) (head_annotation (P := P))).declared 0 _ rfl
+ · simpa [headBody,headAlts,unguardedPats,Ty.shiftV,a,nonempty,nonemptyType,nonemptyPredicate,predBind,termBind,termBind?] using nonempty_exhaustive P a
+
 theorem head_row_typed (P : Program) (B : Builtins) : headRow.BodyTyped P B := by
  refine ⟨_,rfl,?_,?_,?_,?_⟩
  · simp [headRow,safeHead,Tel.names,Tel.inputs,NamesWF]
  · simp [headRow,Def.tel,signatureTel,safeHead,Tel.names,Tel.inputs,Tel.result,Tel.effect,
    nonempty,nonemptyType,Ty.HasKind,kindsTel,kindsList,kindsEff,C,a,TypeCtx.kinds,TypeCtx.valueParam,Ty.NotContCore,Ty.core,Ty.shiftV,Eff.empty]
- · exact head_annotation
+ · exact head_annotation.range_empty
  · exact head_body
 
 def toListBody : Comp := .ret (.var 0)
@@ -109,7 +111,7 @@ theorem toList_row_typed (P : Program) (B : Builtins) : toListRow.BodyTyped P B 
  · simp [toListRow,Def.tel,signatureTel,nonemptyToList,Tel.names,Tel.inputs,Tel.result,Tel.effect,
    nonempty,nonemptyType,Ty.HasKind,kindsTel,kindsList,kindsEff,C,a,TypeCtx.kinds,
    TypeCtx.valueParam,Ty.NotContCore,Ty.core,Ty.shiftV,Eff.empty]
- · exact toList_annotation
+ · exact toList_annotation.range_empty
  · exact toList_body
 
 
@@ -215,7 +217,7 @@ private theorem get_annotation : Ty.Annotation safeProgram C [] (.dependentFn (s
  (by simp [declarationRows,InternalContracts.all,List.zipIdx,a])
 
 theorem get_row_typed : getRow.BodyTyped safeProgram builtins := by
- refine ⟨_,rfl,?_,?_,get_annotation,get_body⟩
+ refine ⟨_,rfl,?_,?_,get_annotation.range_empty,get_body⟩
  · safe_simp
  · safe_simp
 
@@ -268,6 +270,14 @@ private theorem cx_alts (index : Bool) (p : Pred) :
  · intro alt h; cases List.mem_singleton.mp h
    exact ⟨_,cx_pattern index p,List.Perm.refl _,rfl⟩
 
+private theorem checked_annotation : Ty.Annotation safeProgram C [] (.dependentFn (checkedGet names a)) :=
+ declarations_annotation ⟨"CheckedIndex.get",C,0,checkedGet names a,none,.core,[]⟩
+ (by simp [declarationRows,InternalContracts.all,List.zipIdx,a])
+private theorem same_annotation : Ty.Annotation safeProgram D2 [] (.dependentFn (sameLengthGet names a (.tvar 1))) :=
+ declarations_annotation ⟨"sameLengthGet",D2,0,sameLengthGet names a (.tvar 1),none,.core,[]⟩
+ (by simp [declarationRows,InternalContracts.all,List.zipIdx,a])
+
+
 private theorem checked_body : TelBodyTy safeProgram builtins StoreTy.empty (QTel (checkedGet names a)) C [] []
  (checkedGet names a) checkedGetBody := by
  apply TelBodyTy.param
@@ -280,6 +290,7 @@ private theorem checked_body : TelBodyTy safeProgram builtins StoreTy.empty (QTe
    · exact .C_Return (.V_Var rfl (by intro b t e h; cases h))
    · apply HasTypeArmsQ.nil
      exact ⟨by safe_simp,trivial,trivial⟩
+ · exact (Tel.regular_context (Ctx.Regular.empty _ C) (checked_annotation)).declared 0 _ rfl
  · simpa [checkedGetBody,cxPattern,cxAlts,unguardedPats,checkedIndexType,Ty.shiftV,a,
      predBind,termBind,termBind?,indexValue,indexValues,getField,length] using cx_exhaustive false a
        (.and (.le (.integer 0) (indexValue names (.var 0)))
@@ -300,23 +311,17 @@ private theorem same_body : TelBodyTy safeProgram builtins StoreTy.empty (QTel (
      exact read_carrier (.V_Var rfl (by intro b t e h; cases h)) ⟨by safe_simp,trivial,trivial⟩
    · apply HasTypeArmsQ.nil
      exact ⟨by safe_simp,trivial,trivial⟩
+ · exact (Tel.regular_context (Ctx.Regular.empty _ D2) (same_annotation)).declared 1 _ rfl
  · simpa [sameLengthBody,cxPattern,cxAlts,unguardedPats,checkedIndexType,Ty.shiftV,a,
      predBind,termBind,termBind?,indexValue,indexValues,getField,length] using cx_exhaustive true a
        (.and (.le (.integer 0) (indexValue names (.var 0)))
          (.lt (indexValue names (.var 0)) (length (indexValues names (.var 0)))))
 
-private theorem checked_annotation : Ty.Annotation safeProgram C [] (.dependentFn (checkedGet names a)) :=
- declarations_annotation ⟨"CheckedIndex.get",C,0,checkedGet names a,none,.core,[]⟩
- (by simp [declarationRows,InternalContracts.all,List.zipIdx,a])
-private theorem same_annotation : Ty.Annotation safeProgram D2 [] (.dependentFn (sameLengthGet names a (.tvar 1))) :=
- declarations_annotation ⟨"sameLengthGet",D2,0,sameLengthGet names a (.tvar 1),none,.core,[]⟩
- (by simp [declarationRows,InternalContracts.all,List.zipIdx,a])
-
 theorem checked_row_typed : checkedRow.BodyTyped safeProgram builtins := by
- refine ⟨_,rfl,?_,?_,checked_annotation,checked_body⟩ <;> safe_simp
+ refine ⟨_,rfl,?_,?_,checked_annotation.range_empty,checked_body⟩ <;> safe_simp
 
 theorem same_row_typed : sameRow.BodyTyped safeProgram builtins := by
- refine ⟨_,rfl,?_,?_,same_annotation,same_body⟩ <;> safe_simp
+ refine ⟨_,rfl,?_,?_,same_annotation.range_empty,same_body⟩ <;> safe_simp
 
 private def outputType : Ty := .data names.result [nonempty a,.data names.emptyListError []]
 private def emptyErrorType : Ty := .data names.emptyListError []
@@ -379,6 +384,11 @@ private theorem list_exhaustive : Exhaustive safeProgram (.list a) [.list [] non
  | nil => exact ⟨.list [] none [],by simp,by simp [matchVal,matchList]⟩
  | cons x xs => exact ⟨headRestPattern,by simp,by simp [headRestPattern,matchVal,matchList]⟩
 
+private theorem fromList_annotation : Ty.Annotation safeProgram C [] (.dependentFn (nonemptyFromList names a)) :=
+ declarations_annotation ⟨"NonEmptyList.fromList",C,0,nonemptyFromList names a,none,.core,[]⟩
+ (by simp [declarationRows,InternalContracts.all,List.zipIdx,a])
+
+
 private theorem fromList_body : TelBodyTy safeProgram builtins StoreTy.empty (QTel (nonemptyFromList names a)) C [] []
  (nonemptyFromList names a) fromListBody := by
  apply TelBodyTy.param
@@ -409,14 +419,11 @@ private theorem fromList_body : TelBodyTy safeProgram builtins StoreTy.empty (QT
        · safe_simp
      · apply HasTypeArmsQ.nil
        exact ⟨(output_annotation _).wf,(output_annotation _).sorted,(output_annotation _).declared⟩
+ · exact (Tel.regular_context (Ctx.Regular.empty _ C) (fromList_annotation)).declared 0 _ rfl
  · simpa [fromListBody,headAlts,unguardedPats,Ty.shiftV,a] using list_exhaustive
 
-private theorem fromList_annotation : Ty.Annotation safeProgram C [] (.dependentFn (nonemptyFromList names a)) :=
- declarations_annotation ⟨"NonEmptyList.fromList",C,0,nonemptyFromList names a,none,.core,[]⟩
- (by simp [declarationRows,InternalContracts.all,List.zipIdx,a])
-
 theorem fromList_row_typed : fromListRow.BodyTyped safeProgram builtins := by
- refine ⟨_,rfl,?_,?_,fromList_annotation,?_⟩
+ refine ⟨_,rfl,?_,?_,fromList_annotation.range_empty,?_⟩
  · safe_simp
  · safe_simp
  · exact fromList_body
@@ -485,7 +492,7 @@ example {row} (mem : row ∈ bodyRows) :
 example {row} (mem : row ∈ declarationRows) :
  Ty.Annotation safeProgram row.tparams [] (.dependentFn row.tel) := declarations_annotation row mem
 
-private def headDefinition : Def := ⟨C,0,["xs"],[nonempty a],a,Eff.empty,headBody⟩
+private def headDefinition : Def := ⟨C,0,["xs"],[nonempty a],a,Eff.empty,headBody, []⟩
 private theorem head_reference {Γ Φ Q} :
  HasTypeVQ safeProgram builtins StoreTy.empty Q C Γ Φ
  (.fnRef headRow.name [a] []) (.dependentFn (safeHead a)) := by
@@ -511,7 +518,7 @@ private theorem head_reference {Γ Φ Q} :
    | (solve | intro t ht; cases List.mem_singleton.mp ht; constructor <;> safe_simp)
    | (solve | refine ⟨rfl,?_⟩; rintro (_|i) t k ht hk <;> safe_simp <;> subst_vars <;> safe_simp)
    | (solve | intro e he; cases he)
- have typed := HasTypeVQ.V_Fun (Ψ:=StoreTy.empty) (Φ:=Φ) lookup ns ad inst
+ have typed := HasTypeVQ.fun_empty (Ψ:=StoreTy.empty) (Φ:=Φ) lookup ns (by rfl) ad inst
  simpa [headDefinition,safeHead,headRow,nonempty,nonemptyType,nonemptyPredicate,a,
   Def.tel,signatureTel,instantiatedTel,Tel.bind,Tel.rawBind,Ty.rawBind,rawBindTys,
   Ty.bind,Ty.norm,Ty.normTys,Tel.norm,Eff.rawBind,Eff.norm,Eff.empty,rowFails,substAtoms_nil,
@@ -1142,6 +1149,9 @@ private theorem precise_body (g : PreciseGetter) :
       exact ⟨⟨g.input,lookup,ordinary⟩,g.input,lookup,by cases g <;> rfl⟩
     · exact .plain (precise_alts g) (precise_links g) (precise_field_wf g)
         (precise_path_wf g) (precise_return g _ _ _) (.nil (precise_result_annotation g))
+    · have hr := Tel.regular_context (Ctx.Regular.empty safeProgram g.context) (precise_annotation g)
+      rw [htel,hinput,hrest] at hr
+      exact hr.declared 0 _ (by cases g <;> rfl)
     · simpa only [PreciseGetter.body,unguardedPats,PreciseGetter.alts,List.map_cons,List.map_nil,List.append_nil] using precise_exhaustive g
 
 /-- 固定19行のうち精密getter九行を、同じ依存列と実本体で検査する。 -/
@@ -1153,8 +1163,8 @@ theorem precise_row_typed (g : PreciseGetter) : g.row.BodyTyped safeProgram buil
       | exact TyCon.arity_data checkedInteger_arity
       | exact TyCon.arity_data checkedLength_arity
       | exact TyCon.arity_data checkedIndex_arity
-  · simpa only [PreciseGetter.row,Def.tel,StandardContracts.signatureTel_rebuild] using precise_annotation g
-  · simpa only [PreciseGetter.row,Def.tel,StandardContracts.signatureTel_rebuild] using precise_body g
+  · simpa only [PreciseGetter.row,Def.tel,StandardContracts.signatureTel_rebuild] using (precise_annotation g).range_empty
+  · simpa only [PreciseGetter.row,Def.tel,StandardContracts.signatureTel_rebuild,telBodyTyR_nil] using precise_body g
 
 /-- 九行を同じ有限の表で読み、追加の意味論的仮定を要求しない。 -/
 theorem precise_rows_typed : ∀ g ∈ PreciseGetter.all, g.row.BodyTyped safeProgram builtins :=

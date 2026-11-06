@@ -224,7 +224,7 @@ theorem embedContTy {K : DeclarationKinds} {P0 : Benitoite.Release.Program}
       (CaptureOk.empty _ _ _ _) _ (legacy_close_return hr) htype _ _ _ ha _ _
     · have hsub := legacy_eff_sub hs
       rw [legacy_union] at hsub
-      have hh := legacy_handled_sub tables cs
+      have hh := legacy_handled_sub tables cs code.regular.2.1
       refine ⟨?_,?_⟩
       · intro a ha
         rcases (Eff.mem_union_iff _ _ _).mp (hsub.1 a ha) with ha | ha

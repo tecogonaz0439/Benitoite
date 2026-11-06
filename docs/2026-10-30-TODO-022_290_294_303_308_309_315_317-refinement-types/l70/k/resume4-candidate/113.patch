@@ -1,0 +1,57 @@
+--- formal/Benitoite/Release/Refinement/TypingDeclared.lean
++++ formal/Benitoite/Release/Refinement/TypingDeclared.lean
+@@ -22,7 +22,7 @@
+   | .V_DependentLam ha _ | .V_Closure ha _ _ => exact ha.declared
+   | .V_Lam _ _ _ _ hd => exact hd
+   | .V_List _ _ _ hd => exact hd
+-  | .V_Fun _ _ _ hi | .V_Prim _ _ _ _ hi | .V_Op _ _ _ hi => exact hi.result.declared
++  | .V_Fun _ _ _ _ hi | .V_Prim _ _ _ _ hi | .V_Op _ _ _ hi => exact hi.result.declared
+   | .V_ExternalRef _ _ _ hi => exact hi.result.declared
+   | .V_ExternalHandle _ _ _ _ _ _ ha => exact ha.declared
+   | .V_Map _ _ _ _ ha hb => exact ⟨ha.declared, hb.declared⟩
+@@ -37,6 +37,36 @@
+       .V_CheckedRequest _ _ _ _ _ _ | .V_CheckedAt _ => trivial
+   | .V_AtError hs => exact hs.errorType_declared
+   | .V_Normal hv => exact (hv.declared hΓ).norm
++  | .V_Sub _ _ _ _ hd => exact hd
++  | .V_Refine _ _ _ _ _ _ hda hdp => exact ⟨hda, hdp⟩
++
++theorem HasTypeVQ.declared_capture {P B store Q C Γ Φ v a}
++    (h : HasTypeVQ P B store Q C Γ Φ v a) (hΓ : ∀ (i : Nat) (a : Ty), Γ[i]? = some (some a) → Ty.CaptureDeclared P C Γ a) :
++    Ty.Declared P C Γ a := by
++  match h with
++  | .V_Var (a := a) hi ho =>
++    have hd := hΓ _ _ hi
++    cases a <;> try exact hd
++    case cont b t e => exact False.elim (ho b t e rfl)
++  | .V_Const (c := c) _ => cases c <;> trivial
++  | .V_DependentLam ha _ | .V_Closure ha _ _ => exact ha.declared
++  | .V_Lam _ _ _ _ hd => exact hd
++  | .V_List _ _ _ hd => exact hd
++  | .V_Fun _ _ _ _ hi | .V_Prim _ _ _ _ hi | .V_Op _ _ _ hi => exact hi.result.declared
++  | .V_ExternalRef _ _ _ hi => exact hi.result.declared
++  | .V_ExternalHandle _ _ _ _ _ _ ha => exact ha.declared
++  | .V_Map _ _ _ _ ha hb => exact ⟨ha.declared, hb.declared⟩
++  | .V_Set _ _ ha => exact ha.declared
++  | .V_Dict _ _ _ _ _ _ _ ha => exact ha.declared
++  | .V_Con _ _ _ _ _ ha => exact ha.declared
++  | .V_Super _ _ _ hd => exact hd
++  | .V_Raise ha hot hoe hkind => exact ha.declared
++  | .V_LocRef _ hd | .V_LocLazy _ hd => exact hd
++  | .V_Bytes _ => trivial
++  | .V_PathBases _ | .V_ScopePattern _ _ _ | .V_Checked _ _ _ |
++      .V_CheckedRequest _ _ _ _ _ _ | .V_CheckedAt _ => trivial
++  | .V_AtError hs => exact hs.errorType_declared
++  | .V_Normal hv => exact (hv.declared_capture hΓ).norm
+   | .V_Sub _ _ _ _ hd => exact hd
+   | .V_Refine _ _ _ _ _ _ hda hdp => exact ⟨hda, hdp⟩
+ 
+@@ -83,7 +113,7 @@
+   | .C_If _ _ hm _ => exact hm.declared hΓ
+   | .C_Handle hb _ _ | .C_Handle_Fail hb _ _ _ => exact hb.declared hΓ
+   | .C_Lazy _ ha | .C_Escape _ ha | .C_Meth _ _ _ _ _ _ _ _ _ ha => exact ha.declared
+-  | .C_Match _ _ ha _ => exact ha.declared
++  | .C_Match _ _ ha hdecl _ => exact ha.declared
+   | .C_Resume _ _ hd | .C_ResumeL _ _ hd => exact hd
+   | .C_Use _ _ hb _ => exact hb.declared hΓ
+   | .C_Normal hb => exact (hb.declared hΓ).norm

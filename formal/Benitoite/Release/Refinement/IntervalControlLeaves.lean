@@ -184,7 +184,7 @@ theorem typed_first_failure {P B σ Eb q k μ events errors lastK lastStore}
       events = preEvents ++ event.toList ++ suffix ∧
       ∀ (focus : Closure) (atK : Cont) (atStore : Store) (b : PrimName)
         (ts : List Ty) (es : List Eff) (ranges : List RangeExpr) (ws : List Val) (sg : PrimSig),
-        before = .run focus atK atStore → focus.view = .app (.prim b ts es ranges) ws →
+        before = .run focus atK atStore → focus.view = .app (.prim b ts es (List.map RangeIx.fixed ranges)) ws →
         B.sig b = some sg → sg.kind = .pure →
         event = none ∧ ∃ r, firstErrors = [r] ∧
           B.delta b (Ty.normTys ts) (es.map Eff.norm) ranges ws = some (.err r) :=

@@ -1,0 +1,111 @@
+--- a/formal/Benitoite/Release/Refinement/LeafInputs.lean
++++ b/formal/Benitoite/Release/Refinement/LeafInputs.lean
+@@ -10,6 +10,30 @@
+ noncomputable section
+ 
+ /-- fnRefの同じ実開始から、元契約へ実引数を戻す。 -/
++theorem StateTyE.fnRef_contract_inputs_ranges {P B σ Eb q k μ f ts es rs ws}
++    (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)
++    (state : StateTyE P B σ Eb (.run q k μ))
++    (view : q.view = .app (.fnRef f ts es (rs.map RangeIx.fixed)) ws) :
++    ∃ Ψ R a ec d result effects, StoreOk P B σ Ψ μ ∧ ClosureTy P B Ψ [] R q a ec ∧
++      (P.defs f = some d) ∧
++      (NamesWF d.names d.params) ∧
++      (Admissible B [] 0 (TypeCtx.constraints d.tparams) d.neffs
++          (Qsig d.params d.ret d.eff) Qempty ts es d.eff) ∧
++      (SignatureInstance P [] [] (d.instTel rs) (TypeCtx.kinds d.tparams) ts es) ∧
++      HasTypeTelArgsQ P B Ψ Qempty [] [] [] ws (instantiatedTel (d.instTel rs) ts es) result effects ∧
++      Ty.LeQ P [] [] result a ∧ Eff.Covers [] [] ec effects := by
++  obtain ⟨Ψ,R,a,ec,target,r0,e0,store,typed,hf,_,args,le,cov⟩ :=
++    state.app_inputs hP hPB hB view
++  obtain ⟨d,u,rs',hrs,hrange,h0,h1,h2,h3,core,relation⟩ := hf.inv_fnRef_ranges rfl
++  have hsame : rs = rs' := by
++    have hc := congrArg closedRanges hrs
++    simpa only [closedRanges_fixed, Option.some.injEq] using hc
++  subst rs'
++  cases Option.some.inj core
++  obtain ⟨result,effects,original,step,cover⟩ := relation.apply
++    (by intro i a hi; cases hi) (h3.result) args
++  exact ⟨Ψ,R,a,ec,d,result,effects,store,typed,h0,h1,h2,h3,original,step.trans le,cov.trans cover⟩
++
+ theorem StateTyE.fnRef_contract_inputs {P B σ Eb q k μ f ts es ws}
+     (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)
+     (state : StateTyE P B σ Eb (.run q k μ))
+@@ -22,13 +46,7 @@
+       (SignatureInstance P [] [] d.tel (TypeCtx.kinds d.tparams) ts es) ∧
+       HasTypeTelArgsQ P B Ψ Qempty [] [] [] ws (instantiatedTel d.tel ts es) result effects ∧
+       Ty.LeQ P [] [] result a ∧ Eff.Covers [] [] ec effects := by
+-  obtain ⟨Ψ,R,a,ec,target,r0,e0,store,typed,hf,_,args,le,cov⟩ :=
+-    state.app_inputs hP hPB hB view
+-  obtain ⟨d,u,h0,h1,h2,h3,core,relation⟩ := hf.inv_fnRef rfl
+-  cases Option.some.inj core
+-  obtain ⟨result,effects,original,step,cover⟩ := relation.apply
+-    (by intro i a hi; cases hi) (h3.result) args
+-  exact ⟨Ψ,R,a,ec,d,result,effects,store,typed,h0,h1,h2,h3,original,step.trans le,cov.trans cover⟩
++  simpa only [Def.instTel_nil] using state.fnRef_contract_inputs_ranges hP hPB hB view
+ 
+ example {P B σ Eb q k μ f ts es ws}
+     (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)
+@@ -632,7 +650,7 @@
+ /-- force_thunk_allが選んだ同じ開始に、構文ごとの入力を供給する。 -/
+ example {P B σ Eb q b ts es rs l k μ s m}
+     (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)
+-    (h : StateTyE P B σ Eb (.run q k μ)) (hv : q.view = .app (.prim b ts es rs) [.loc l])
++    (h : StateTyE P B σ Eb (.run q k μ)) (hv : q.view = .app (.prim b ts es (List.map RangeIx.fixed rs)) [.loc l])
+     (hs : B.sig b = some s) (hk : s.kind = .force) (hl : μ l = some (.thunk m)) :
+     ((State.run q k μ)).Inputs P B σ Eb ∧ ((State.run m (.update l::k) μ)).Inputs P B σ Eb ∧ (∀ callee callArgs, (m).view = .app callee callArgs → CallInputs P B callee callArgs) := by
+   have next := (StateTyE.force_thunk_all hP hPB hB h hv hs hk hl).2
+@@ -641,7 +659,7 @@
+ /-- force_done_allが選んだ同じ開始に、構文ごとの入力を供給する。 -/
+ example {P B σ Eb q b ts es rs l k μ s v}
+     (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)
+-    (h : StateTyE P B σ Eb (.run q k μ)) (hv : q.view = .app (.prim b ts es rs) [.loc l])
++    (h : StateTyE P B σ Eb (.run q k μ)) (hv : q.view = .app (.prim b ts es (List.map RangeIx.fixed rs)) [.loc l])
+     (hs : B.sig b = some s) (hk : s.kind = .force) (hl : μ l = some (.done v)) :
+     ((State.run q k μ)).Inputs P B σ Eb ∧ ((State.run (Closure.pure (.ret v)) k μ)).Inputs P B σ Eb ∧ (∀ callee callArgs, ((Closure.pure (.ret v))).view = .app callee callArgs → CallInputs P B callee callArgs) := by
+   have next := (StateTyE.force_done_all hP hPB hB h hv hs hk hl).2
+@@ -753,7 +771,7 @@
+ /-- reference_new_allの実開始と同じ行先について、構文ごとの入力を保持する。 -/
+ example {P B σ Eb q b ts es rs v k μ s l}
+     (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)
+-    (h : StateTyE P B σ Eb (.run q k μ)) (hv : q.view = .app (.prim b ts es rs) [v])
++    (h : StateTyE P B σ Eb (.run q k μ)) (hv : q.view = .app (.prim b ts es (List.map RangeIx.fixed rs)) [v])
+     (hs : B.sig b = some s) (hk : s.kind = .refNew) (hl : μ l = none) :
+     ((State.run q k μ)).Inputs P B σ Eb ∧ ((State.run (Closure.pure (.ret (.loc l))) k (μ.set l (.val v)))).Inputs P B σ Eb := by
+   have next := (StateTyE.reference_new_all hP hPB hB h hv hs hk hl).2
+@@ -762,7 +780,7 @@
+ /-- reference_get_allの実開始と同じ行先について、構文ごとの入力を保持する。 -/
+ example {P B σ Eb q b ts es rs l k μ s v}
+     (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)
+-    (h : StateTyE P B σ Eb (.run q k μ)) (hv : q.view = .app (.prim b ts es rs) [.loc l])
++    (h : StateTyE P B σ Eb (.run q k μ)) (hv : q.view = .app (.prim b ts es (List.map RangeIx.fixed rs)) [.loc l])
+     (hs : B.sig b = some s) (hk : s.kind = .refGet) (hl : μ l = some (.val v)) :
+     ((State.run q k μ)).Inputs P B σ Eb ∧ ((State.run (Closure.pure (.ret v)) k μ)).Inputs P B σ Eb := by
+   have next := (StateTyE.reference_get_all hP hPB hB h hv hs hk hl).2
+@@ -771,7 +789,7 @@
+ /-- reference_set_allの実開始と同じ行先について、構文ごとの入力を保持する。 -/
+ example {P B σ Eb q b ts es rs l v k μ s}
+     (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)
+-    (h : StateTyE P B σ Eb (.run q k μ)) (hv : q.view = .app (.prim b ts es rs) [.loc l,v])
++    (h : StateTyE P B σ Eb (.run q k μ)) (hv : q.view = .app (.prim b ts es (List.map RangeIx.fixed rs)) [.loc l,v])
+     (hs : B.sig b = some s) (hk : s.kind = .refSet) :
+     ((State.run q k μ)).Inputs P B σ Eb ∧ ((State.run (Closure.pure (.ret (.const .unit))) k (μ.set l (.val v)))).Inputs P B σ Eb := by
+   have next := (StateTyE.reference_set_all hP hPB hB h hv hs hk).2
+@@ -780,7 +798,7 @@
+ /-- reference_update_allの実開始と同じ行先について、構文ごとの入力を保持する。 -/
+ example {P B σ Eb q b ts es rs l f k μ s}
+     (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)
+-    (h : StateTyE P B σ Eb (.run q k μ)) (hv : q.view = .app (.prim b ts es rs) [.loc l,f])
++    (h : StateTyE P B σ Eb (.run q k μ)) (hv : q.view = .app (.prim b ts es (List.map RangeIx.fixed rs)) [.loc l,f])
+     (hsig : B.sig b = some s) (hkind : s.kind = .refUpdate) :
+     ((State.run q k μ)).Inputs P B σ Eb ∧ ((State.run (Closure.pure (.letIn (.app (.prim B.refGet ts [] []) [.loc l])
+         (.letIn (.app (f.rename (·+1)) [.var 0]) (.app (.prim B.refSet ts [] []) [.loc l,.var 0])))) k μ)).Inputs P B σ Eb := by
+@@ -929,7 +947,7 @@
+ example {P B σ Eb q b s ts es rs ws k μ k1 cs k2 c l hcap}
+     (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)
+     (hdecl : P.EffectsOk B)
+-    (h : StateTyE P B σ Eb (.run q k μ)) (hv : q.view = .app (.prim b ts es rs) ws)
++    (h : StateTyE P B σ Eb (.run q k μ)) (hv : q.view = .app (.prim b ts es (List.map RangeIx.fixed rs)) ws)
+     (hsig : B.sig b = some s) (hkind : s.kind = .io ∨ s.kind = .exit ∨ s.kind = .pathBases)
+     (hsp : SplitAt (.prim b) k k1 hcap cs k2) (hc : findClause cs (.prim b) = some c)
+     (hf : μ l = none) :

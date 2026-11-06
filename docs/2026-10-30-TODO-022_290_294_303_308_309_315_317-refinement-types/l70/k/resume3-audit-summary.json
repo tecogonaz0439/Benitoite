@@ -1,0 +1,78 @@
+{
+  "sources_restored": 1105,
+  "final_snapshot_count": 1108,
+  "candidate_files": 92,
+  "candidate_new_modules": [
+    "Benitoite.Release.Refinement.RangeCode",
+    "Benitoite.Release.Refinement.RangeFunctionExamples",
+    "Benitoite.Release.Refinement.RangeSourceProperties",
+    "Benitoite.Release.Refinement.RangeTypeProperties",
+    "Benitoite.Release.Refinement.RangeTyping"
+  ],
+  "candidate_compiled_modules": 177,
+  "production_modules_added": [],
+  "candidate_default_imports": "五つすべて既定importから到達する",
+  "production_declarations_added": 0,
+  "full_audit": {
+    "targets": 89315,
+    "counts": [
+      89315
+    ],
+    "private_targets": 23678,
+    "modules": 1092,
+    "rounds": [
+      2
+    ],
+    "axiom_sets": {
+      "none": 42395,
+      "Classical.choice": 2,
+      "Classical.choice + Quot.sound + propext": 22646,
+      "Classical.choice + propext": 2,
+      "Quot.sound": 9,
+      "Quot.sound + propext": 3954,
+      "propext": 20307
+    },
+    "unapproved_axioms": 0,
+    "target_list": {
+      "bytes": 5966138,
+      "sha256": "8682c03bfcab935d0a70708f04a9102797087127342d18318a75f6bf46f7b77c"
+    }
+  },
+  "candidate_closure_audit": {
+    "targets": 31273,
+    "counts": [
+      31267,
+      6
+    ],
+    "private_targets": 7358,
+    "modules": 316,
+    "rounds": [
+      2,
+      2
+    ],
+    "axiom_sets": {
+      "none": 13683,
+      "Classical.choice + Quot.sound + propext": 9214,
+      "Classical.choice + propext": 1,
+      "Quot.sound": 10,
+      "Quot.sound + propext": 1251,
+      "propext": 7114
+    },
+    "unapproved_axioms": 0,
+    "target_list": {
+      "bytes": 1920636,
+      "sha256": "e1b31ea22832b28dbf852d4535635f4def5fbe6ecf0cc8fc884f1bdf50bd2a2a"
+    }
+  },
+  "trial_declarations": [
+    "Benitoite.Release.Refinement.DefinitionInputsResumeTrial.OldInputsStatement",
+    "Benitoite.Release.Refinement.DefinitionInputsResumeTrial.not_reader_regular",
+    "Benitoite.Release.Refinement.DefinitionInputsResumeTrial.reader_obstruction",
+    "Benitoite.Release.Refinement.DefinitionInputsResumeTrial.old_inputs_statement_false",
+    "Benitoite.Release.Refinement.DefinitionInputsResumeTrial.range_context_inhabited",
+    "Benitoite.Release.Refinement.DefinitionInputsResumeTrial.concrete_call"
+  ],
+  "replay_seconds": 282.72,
+  "seconds": 1.108,
+  "verification": "成功。K.2〜K.5の完成ではなく、停止点と保存・復元・監査の照合"
+}

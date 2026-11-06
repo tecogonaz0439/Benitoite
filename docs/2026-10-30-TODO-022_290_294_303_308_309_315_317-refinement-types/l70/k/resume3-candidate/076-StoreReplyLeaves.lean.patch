@@ -1,0 +1,72 @@
+--- a/formal/Benitoite/Release/Refinement/StoreReplyLeaves.lean
++++ b/formal/Benitoite/Release/Refinement/StoreReplyLeaves.lean
+@@ -7,20 +7,20 @@
+ inductive StoreReplyInputs (P : Program) (B : Builtins) (σ : PathEnv) :
+     State → Option Event → State → Prop where
+   | E_RefNew {b ts es rs v k μ s l} {q : Closure} :
+-      q.view = (.app (.prim b ts es rs) [v]) →
++      q.view = (.app (.prim b ts es (List.map RangeIx.fixed rs)) [v]) →
+       B.sig b = some s → s.kind = .refNew → μ l = none →
+       StoreReplyInputs P B σ (.run q k μ) none (.run (Closure.pure (.ret (.loc l))) k (μ.set l (.val v)))
+   | E_RefGet {b ts es rs l k μ s v} {q : Closure} :
+-      q.view = (.app (.prim b ts es rs) [.loc l]) →
++      q.view = (.app (.prim b ts es (List.map RangeIx.fixed rs)) [.loc l]) →
+       B.sig b = some s → s.kind = .refGet → μ l = some (.val v) →
+       StoreReplyInputs P B σ (.run q k μ) none (.run (Closure.pure (.ret v)) k μ)
+   | E_RefSet {b ts es rs l v k μ s} {q : Closure} :
+-      q.view = (.app (.prim b ts es rs) [.loc l, v]) →
++      q.view = (.app (.prim b ts es (List.map RangeIx.fixed rs)) [.loc l, v]) →
+       B.sig b = some s → s.kind = .refSet →
+       StoreReplyInputs P B σ (.run q k μ) none
+         (.run (Closure.pure (.ret (.const .unit))) k (μ.set l (.val v)))
+   | E_RefUpdate {b ts es rs l f k μ s} {q : Closure} :
+-      q.view = (.app (.prim b ts es rs) [.loc l, f]) →
++      q.view = (.app (.prim b ts es (List.map RangeIx.fixed rs)) [.loc l, f]) →
+       B.sig b = some s → s.kind = .refUpdate →
+       StoreReplyInputs P B σ (.run q k μ) none
+         (.run (Closure.pure (.letIn (.app (.prim B.refGet ts [] []) [.loc l])
+@@ -31,11 +31,11 @@
+       μ l = none →
+       StoreReplyInputs P B σ (.run q k μ) none (.run (Closure.pure (.ret (.loc l))) k (μ.set l (.thunk (Closure.mk q.capture m))))
+   | E_ForceDone {b ts es rs l k μ s v} {q : Closure} :
+-      q.view = (.app (.prim b ts es rs) [.loc l]) →
++      q.view = (.app (.prim b ts es (List.map RangeIx.fixed rs)) [.loc l]) →
+       B.sig b = some s → s.kind = .force → μ l = some (.done v) →
+       StoreReplyInputs P B σ (.run q k μ) none (.run (Closure.pure (.ret v)) k μ)
+   | E_Force {b ts es rs l k μ s m} {q : Closure} :
+-      q.view = (.app (.prim b ts es rs) [.loc l]) →
++      q.view = (.app (.prim b ts es (List.map RangeIx.fixed rs)) [.loc l]) →
+       B.sig b = some s → s.kind = .force → μ l = some (.thunk m) →
+       StoreReplyInputs P B σ (.run q k μ) none (.run m (.update l :: k) μ)
+   | E_Update {v l k μ} {q : Closure} :
+@@ -44,25 +44,25 @@
+   | E_ErrPopUpdate {rs l k μ} : StoreReplyInputs P B σ (.error rs (.update l :: k) μ) none (.error rs k μ)
+   | E_ExitPopUpdate {n rs l k μ} : StoreReplyInputs P B σ (.exit n rs (.update l :: k) μ) none (.exit n rs k μ)
+   | E_Prim {b ts es rs ws k μ s v} {q : Closure} :
+-      q.view = (.app (.prim b ts es rs) ws) →
++      q.view = (.app (.prim b ts es (List.map RangeIx.fixed rs)) ws) →
+       B.sig b = some s → s.kind = .pure → B.delta b (Ty.normTys ts) (es.map Eff.norm) rs ws = some (.val v) →
+       StoreReplyInputs P B σ (.run q k μ) none (.run (Closure.pure (.ret v)) k μ)
+   | E_Err {b ts es rs ws k μ s r} {q : Closure} :
+-      q.view = (.app (.prim b ts es rs) ws) →
++      q.view = (.app (.prim b ts es (List.map RangeIx.fixed rs)) ws) →
+       B.sig b = some s → s.kind = .pure → B.delta b (Ty.normTys ts) (es.map Eff.norm) rs ws = some (.err r) →
+       StoreReplyInputs P B σ (.run q k μ) none (.error [r] k μ)
+   | E_IO {b ts es rs ws k μ s v obs} {q : Closure} :
+-      q.view = (.app (.prim b ts es rs) ws) →
++      q.view = (.app (.prim b ts es (List.map RangeIx.fixed rs)) ws) →
+       B.sig b = some s → s.kind = .io → NoHandler k (.prim b) →
+       B.ioResponse b (Ty.normTys ts) (es.map Eff.norm) ws (.val v) obs →
+       StoreReplyInputs P B σ (.run q k μ) (some (.io b ws (.val v) obs)) (.run (Closure.pure (.ret v)) k μ)
+   | E_IOErr {b ts es rs ws k μ s r obs} {q : Closure} :
+-      q.view = (.app (.prim b ts es rs) ws) →
++      q.view = (.app (.prim b ts es (List.map RangeIx.fixed rs)) ws) →
+       B.sig b = some s → (s.kind = .io ∨ s.kind = .exit) → NoHandler k (.prim b) →
+       B.ioResponse b (Ty.normTys ts) (es.map Eff.norm) ws (.err r) obs →
+       StoreReplyInputs P B σ (.run q k μ) (some (.io b ws (.err r) obs)) (.error [r] k μ)
+   | E_Exit {b ts es rs ws k μ s n obs} {q : Closure} :
+-      q.view = (.app (.prim b ts es rs) ws) →
++      q.view = (.app (.prim b ts es (List.map RangeIx.fixed rs)) ws) →
+       B.sig b = some s → s.kind = .exit → NoHandler k (.prim b) →
+       B.ioResponse b (Ty.normTys ts) (es.map Eff.norm) ws (.exit n) obs →
+       StoreReplyInputs P B σ (.run q k μ) (some (.io b ws (.exit n) obs)) (.exit n [] k μ)
