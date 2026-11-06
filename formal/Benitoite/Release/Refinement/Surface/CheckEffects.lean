@@ -1,6 +1,8 @@
 import Benitoite.Release.Refinement.Surface.CheckTablesBase
 
 /-! エフェクトの所属と操作の宣言の双方向の照合。 -/
+noncomputable section
+
 namespace Benitoite.Release.Refinement.Surface.CheckTables
 
 /-- 所属する各操作の宣言と、組み込みの効果名との分離を調べる。 -/

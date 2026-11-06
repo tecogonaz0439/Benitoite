@@ -5,6 +5,8 @@ import Benitoite.Release.Refinement.Surface.CheckOpenArgumentLeaves
 import Benitoite.Release.Refinement.Surface.CheckOpenRangeSupport
 
 /-! # 範囲文脈の辞書と実引数の有限な検査 -/
+noncomputable section
+
 namespace Benitoite.Release.Refinement.Surface.CheckOpenArguments
 open CheckArguments CheckCompare CheckSubtyping
 open Check (BuiltinSource)

@@ -3,6 +3,8 @@ import Benitoite.Release.Refinement.Surface.CheckFinite
 import Benitoite.Release.Refinement.Surface.CheckDiagnostics
 
 /-! ソースから型・効果・案内を計算し、同じ規則で再検査する公開入口。 -/
+noncomputable section
+
 namespace Benitoite.Release.Refinement.Surface.Check
 
 /-- 計算した案内の型と効果を、有限の原子の表現に揃える。 -/

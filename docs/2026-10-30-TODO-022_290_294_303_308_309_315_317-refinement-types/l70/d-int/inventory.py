@@ -33,6 +33,9 @@ def sources():
               for p in (ROOT / "formal").rglob("*.lean") if ".lake" not in p.parts}
     result.update({"formal/" + n: digest(ROOT / "formal" / n)
                    for n in ["lakefile.toml", "lake-manifest.json", "lean-toolchain"]})
+    result.update({n: digest(ROOT / n) for n in [
+        "docs/design/01-spec/01-12-core-calculus.md",
+        "docs/design/07-quality/07-04-formal-semantics.md"]})
     return result
 
 
@@ -47,7 +50,7 @@ def changed_paths(tmp):
     changed = sorted(p for p in base if current[p] != base[p])
     added = sorted(set(current) - set(base))
     prefix = "formal/Benitoite/Release/Refinement/Surface/"
-    named = {"OpenBody", "OpenSurface", "OpenSurfaceHandlers", "OpenSurfaceProperty1",
+    named = {"OpenPatterns", "OpenBody", "OpenSurface", "OpenSurfaceHandlers", "OpenSurfaceProperty1",
              "OpenSurfaceScoped", "Theorems", "Examples", "RangeClauseExamples", "RangeStandard",
              "ScopeLower", "ScopeAccept", "Identity", "NormalContext", "OpenLeafFormation", "OpenRangeFormationCheck", "RangeLeafExamples"}
     allowed_docs = {"docs/design/01-spec/01-12-core-calculus.md",
@@ -107,7 +110,7 @@ def prepare(tmp):
     save(HERE / "statement-differences.json", summary)
     baseline_files = ["baseline-files.json", "baseline-signatures.json", "protected-records.json", "baseline-root.lean"]
     save(HERE / "baseline-summary.json", {
-        "b_work": "601a52cae1ffc9bbef9be71e3b56c83f0afdfa4d",
+        "b_work": "b3445f140ee8ddfcd9c95dd1de756ca1dbcaca52",
         "inputs": {name: dict(bytes=(tmp / name).stat().st_size, sha256=digest(tmp / name)) for name in baseline_files},
     })
     save(HERE / "inventory-summary.json", dict(changed=changed, added=added, modules=len(modules),

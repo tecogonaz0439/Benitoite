@@ -8,6 +8,8 @@ import Benitoite.Release.Refinement.Surface.CheckOpenArguments
 束縛した実引数を依存列に沿って検査し、中間の型と効果を一つずつ照合する。
 案内は中間型と有限な証明書だけを持つ（設計書 01-12「リストの展開」「文字列補間」）。
 -/
+noncomputable section
+
 namespace Benitoite.Release.Refinement.Surface.CheckOpen
 
 open Check CheckArguments CheckSubtyping CheckCompare

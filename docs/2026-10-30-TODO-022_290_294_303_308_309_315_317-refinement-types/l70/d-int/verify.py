@@ -56,12 +56,24 @@ for p, rows in ledger.items():
         assert d_baseline[p][name] == h
 
 diffs, current = statements(tmp)
+start_signatures = json.loads((tmp / "baseline-signatures.json").read_text())
+for path, rows in d_baseline.items():
+    for name in rows:
+        assert current[path][name] == start_signatures[path][name], ("今回の群Dの変更", path, name)
 assert diffs == json.loads((tmp / "statement-differences.json").read_text()), "記録後の言明の変更"
 # 群Eの全既存言明を比較し、名前の欠落を個別に報告する。
 e_paths = {p: rows for p, rows in json.loads((tmp / "baseline-signatures.json").read_text()).items()
            if Path(p).stem.startswith("Check")}
-e_count = sum(map(len, e_paths.values()))
+e_all_count = sum(map(len, e_paths.values()))
+e_ledger = json.loads((HERE / "resume1-e-ledger.json").read_text())
+e_count = sum(map(len, e_ledger.values()))
+assert e_count == 617
+for p, rows in e_ledger.items():
+    for name, signature in rows.items():
+        assert current[p][name] == signature, ("群Eの617言明の変更", p, name)
+
 e_changed = {p: d for p, d in diffs.items() if Path(p).stem.startswith("Check")}
+assert not e_changed, ("今回の群Eの言明の差", e_changed)
 for p, rows in e_paths.items():
     assert set(rows) <= set(current.get(p, {})), ("群Eの既存言明の削除", p, sorted(set(rows)-set(current.get(p, {}))))
 
@@ -81,7 +93,7 @@ for name in ["HasTypeQ", "HasTypesQ", "HasEachQ", "HasFixedQ", "HasArmsQ", "HasC
 assert opened["BodyTy"] == ["done", "param"]
 lookup_rows = re.findall(r"(?m)^private theorem lookup_(p\d+) : primitive ",
     (ROOT / "formal/Benitoite/Release/Refinement/StandardModelPrimitiveLookup.lean").read_text())
-assert len(lookup_rows) == len(set(lookup_rows)) == 377
+assert len(lookup_rows) == len(set(lookup_rows)) == 392
 
 for group in [HERE, HERE.parent / "d"]:
     files = [p for p in group.rglob("*") if p.is_file() and "__pycache__" not in p.parts]
@@ -121,16 +133,22 @@ owned_names = {n for m, _, _, n in re.findall(r"^AUDIT_DECL (\S+) (\S+) (\d+) (.
 assert sum(owned_module.values()) == len(owned_names)
 decls = re.findall(r"^AUDIT_DECL (\S+) (\S+) (\d+) (.+)$", audit, re.M)
 assert len(decls) == len(targets)
+owned_records = [dict(module=m, kind=k, line=int(line), name=n)
+                 for m,k,line,n in decls if m in owned_module]
+save(tmp / "owned-declarations.json", owned_records)
 assert set(json.loads((HERE / "required-names.json").read_text())) <= set(targets)
 names = ("\n".join(sorted(targets)) + "\n").encode()
-summary = dict(b_work="601a52cae1ffc9bbef9be71e3b56c83f0afdfa4d", changed=changed, added=added,
+summary = dict(b_work="b3445f140ee8ddfcd9c95dd1de756ca1dbcaca52", changed=changed, added=added,
                modules=len(modules), default_imports=True, d_statements=308, d_unchanged=306,
-               d_approved_differences=2, earlier_ledger=266, e_statements=e_count,
+               d_approved_differences=2, d_unchanged_from_b_work=308,
+               earlier_ledger=266, e_statements=e_count, e_all_statements=e_all_count,
                e_changed=sum(len(x["changed"]) for x in e_changed.values()),
                declarations=len(targets), private=sum(x.startswith("_private.") for x in targets),
                names_bytes=len(names), names_sha256=hashlib.sha256(names).hexdigest(),
                environment_modules=len(per_module), environment_modules_sha256=fingerprint(per_module),
                owned_declarations=len(owned_names), owned_private=sum(x.startswith("_private.") for x in owned_names),
+               owned_records_bytes=(tmp / "owned-declarations.json").stat().st_size,
+               owned_records_sha256=digest(tmp / "owned-declarations.json"),
                per_module=owned_module, axiom_sets={",".join(k) or "(none)":v for k,v in sorted(sets.items())},
                jobs=jobs, primitive_rows=len(lookup_rows), fingerprint=fingerprint(sources()))
 save(HERE / "verification.json", summary)

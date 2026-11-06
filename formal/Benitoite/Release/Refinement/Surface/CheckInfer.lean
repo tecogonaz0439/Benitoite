@@ -9,6 +9,8 @@ import Benitoite.Release.Refinement.Surface.CheckDiagnostics
 子の推論結果と宣言の署名から中間の型・効果を計算し、独立の規則の検査へ渡す有限な案内を作る。
 証明書には論理の有限な証拠だけを読み、規則の木や中間の型を入力に要求しない。
 -/
+noncomputable section
+
 namespace Benitoite.Release.Refinement.Surface.CheckInfer
 open Check CheckArguments CheckSubtyping CheckCompare
 

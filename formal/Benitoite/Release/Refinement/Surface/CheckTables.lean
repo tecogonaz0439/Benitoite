@@ -2,6 +2,8 @@ import Benitoite.Release.Refinement.Surface.CheckDeclarations
 import Benitoite.Release.Refinement.Surface.CheckEffects
 
 /-! 全プログラムの有限検査。定義とメソッドの予算と view は本体ごとに選ぶ。 -/
+noncomputable section
+
 namespace Benitoite.Release.Refinement.Surface.CheckTables
 
 /-- 変性と効果の所属を検査し、一覧にある全ての定義と実装の本体を検査する。 -/

@@ -218,7 +218,7 @@ private def malformedInput : Check.Input :=
     proofSteps := 1
     logicCertificates := fun _ _ => some {certificate := .use 99, actions := []} }
 
-private def malformedGuide : Guide :=
+private noncomputable def malformedGuide : Guide :=
   match CheckInfer.inferBlock malformedInput ⟨malformedInput.logicCertificates⟩
       [] [] [] [] [] none .other [] nestedRefinement with
   | .ok s => (finiteSynth malformedInput s).guide

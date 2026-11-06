@@ -10,6 +10,8 @@ import Benitoite.Release.Refinement.Surface.CheckTry
 ソース位置ごとの有限の案内を、宣言・型注釈・論理の証明書と照合する。部分型の成功は証明書の独立の検査による。
 案内が無い場合と証明できない場合は成功と扱わない。各再帰は案内の子へ進み、ソースの篩の導入と部分型も同じ条件で検査する。
 -/
+noncomputable section
+
 namespace Benitoite.Release.Refinement.Surface.Check
 open CheckCompare CheckSubtyping CheckTry
 

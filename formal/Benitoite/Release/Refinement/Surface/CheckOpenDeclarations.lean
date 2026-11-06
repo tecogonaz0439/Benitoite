@@ -5,6 +5,8 @@ import Benitoite.Release.Refinement.Surface.CheckFinite
 import Benitoite.Release.Refinement.Surface.CheckDeclarationBase
 
 /-! # 範囲パラメータを持つ関数の本体の推論と有限な検査 -/
+noncomputable section
+
 namespace Benitoite.Release.Refinement.Surface.CheckOpenDeclarations
 open Check CheckAdmissible
 

@@ -86,3 +86,47 @@ Lean はすべて `<repo>/formal/` から実行し、同時に一つだけとし
 担当が記した既定ビルド1,422ジョブ・公理監査4,590宣言・照合の終了0は保存された報告として読み、本レビューで実行した検査としては数えていない。`verify.py` は実行していない。
 
 確認用の最終入力は、`ClauseNormal.lean` が2,177バイト（SHA-256 `f23108cc78109f92e365bb2ac336c95a56554329c2608162ed6e2985928cbd01`）、`Axioms.lean` が647バイト（SHA-256 `e025eb657f5c32c5819c0da6586c576fce3843c4d7e813d8de895cf7c69c72fc`）である。
+
+## Opus による処置の確認と群 E の追随のレビュー（2026-11-06）
+
+対象はブランチ `m014/l70.d-int` のコミット `a7ade0e5` で、`git diff 601a52ca a7ade0e5` を読んだ。その後の `b3445f14`（群 F2 と消去の取り込み）の衝突の解き方は確かめていない。読んだのは、依頼文、報告、[d-int の結果](../l70/d-int/results.md)・`closed-notes.md`・`leaf-notes.md`、[群 D の結果](../l70/d/results.md)、01-12・07-04 の差分、変更した Lean のうち `OpenSurface`・`OpenSurfaceHandlers`・`OpenSurfaceProperty1`・`OpenSurfaceScoped`・`OpenBody`・`NormalContext` の言明、`RangeClauseExamples`・`RangeStandard`・`OpenLeafFormation` の言明、`CheckBuiltinSource`・`CheckInput`・`CheckHandler`・`CheckOpenArgumentLeaves`・`CheckOpenArguments.head`・`CheckOpen.checkClausesAt`・`CheckOpenDeclarations`・`CheckDeclarations`・`CheckDeclarationBase`・`CheckDeclarationsSound`・`CheckProgramSound`・`CheckTables`・`ScopeAccept`・`Theorems` の差分、実入口の例（`CheckOpenExamples`・`CheckOpenStandardExamples`・`CheckOpenAcceptanceExamples`・`CheckClauseExamples`）である。
+
+### 結論
+
+**可。残った所見は軽1件、情報3件である。** 重1・中1・中2・軽1・軽2は処置された。群 E の追随にも、健全性を弱める接続や、隠れた信頼条件は見当たらない。
+
+| 番号 | 重さ | 場所 | 問題 | 修正案 |
+|---|---|---|---|---|
+| 軽1 | 軽 | 01-12 の拒否の理由 `CoverFailure` を定める段落（「`unknownSource`（由来を認定できず Top になった）」） | `acceptOccurrence` は、必須の規則が選ばれた位置の契約が固定した絶対範囲でない場合（`.rvar`・based・secrets）にも `unknownSource` を返す。同じ章の `CheckAccept` の段落はこれを書いているが、理由の定義の段落は Top の由来の場合だけを定義しており、二つの記述が合わない | 定義の段落に、開いた契約の場合も `unknownSource` を返すことを一文で加える。処理系の E0519 の分類へ写すときに、別の理由にするかは処理系側の改造で決める |
+| 情1 | 情報 | `ScopeAccept.acceptOccurrence`、`CheckOpenStandardExamples.endpoint_forward`、07-04「実入口の例は…標準の endpoint 組込みを受理する」 | 開いた契約を `unknownSource` で断るのは、全具体化の被覆を求める以上必要である。狭い具体化は推論した範囲を覆わないためで、Top に読み替えないのは正しい。ただし実用上は、範囲パラメータを持つ関数の中で、検査・射影・拡大の規則が選ぶ位置に範囲変数を書くと、必ず受理の段で断られる（例 `Scope.checkPathIn[x]`、`Http.widenRequestIn[x, …]` の内側）。`endpoint_forward`（`Http.widenRequestIn[x, x]`）は `checkDef` の型付けでは通る。しかし、規則表が拡大に `widenRule` を与えるなら（添字は位置0を選ぶ）、`checkProgramAccepted` の受理の段で `unknownSource` になる。閉じた関数で引数が未知のときに Top だけを受理するのと同じ程度の制限であり、新しい信頼条件ではない | 設計者の見直しの表のこの行に、実用への影響（範囲変数を受けた関数の中では、検査・拡大の規則の位置に範囲変数を書けないこと）を添える。07-04 の「受理する」は型付けの入口の受理であることを明記する |
+| 情2 | 情報 | `CheckHandler.clauseAllowed`、`ClauseAllowed` | checker は pathBases の組込みの節を、効果の一覧の所属を問わず全て断る。表層の `ClauseAllowed` が断るのは、選んだ一覧の場合だけである。一致は片方向（checker の方が強い）で、01-12 もそう書いている。余分に断るのは pathBases の節だけで、これは呼ばれない節である。利用者の操作と通常の IO の節は、閉じた実入口（`CheckClauseExamples`）で受理される。開いた `checkClausesAt` も同じ `clauseAllowed` を読む | なし |
+| 情3 | 情報 | `CheckOpenArgumentLeaves.typeArguments`・`ranges`、`Check.BuiltinSource` | 任意の表（`.custom`）では、組込みへ渡す型引数の範囲閉性と固定した範囲引数を求める。そのため任意の表では、範囲変数を組込みへ渡せない。標準表（`.standard`）は `RangeStandard` の保存補題を使い、この制限を受けない。固定範囲の受理も元の `admitsR`（`s.Covers r`）と同じ被覆で、全 Top の場合だけ広い。`.unrestrictedRanges` は `admitsR` を真に置き換えた別の表であり、元の表についての主張ではないことが記録されている。実際のプログラムが標準表を選ぶ限り、書ける形は狭まらない | 実入口の材料（`Materials`）がどの構成元を選ぶかを、群 E の後段の交換の受け口で固定するときに確かめる |
+
+### 観点ごとの根拠
+
+**重1。** `OpenSurface.HasClausesQ.cons` と `ClauseSyntax` は `a.norm = a` を求めなくなり、範囲閉性 `RangesScoped 0` だけを残した。`clauses_cons_core` は、空の具体化では元の本体をそのまま使う。非空の具体化では、`rangeCtx_clauseContext_normEq` が与える文脈の正規形の一致を使い、`NormalContext.comp` で節の文脈へ型付けを移す。この移送が読むのは既存の `Builtins.ValueAssumptions` だけで、新しい仮定はない。空の範囲文脈では、構成子 `closed` が元の節列の全導出を受ける。性質1の `.closed` の場合は元の `HasClausesQ.desugar` に、スコープの場合は `scoped_ranges` に帰着する。非空の範囲文脈で残る差は `RangesScoped 0` だけである。これは `OpSig` の範囲深さ0の形成で、宣言の形成と標準表の `clause_formation` が供給する。checker も `clauseSyntaxCheck` で同じ条件を検査する。前回のレビューの反例（引数型が `.refined (.refined Integer falsity) falsity` の利用者の操作）は、範囲を除いた規則と空の開いた文脈では `nested_clause_no_ranges` で、任意の `ks` では `nested_clause_open` で受理される。後者は、その型が正規形でないことも同じ言明に含む。
+
+**中1。** 七つの葉は、`OpenLeafFormation` の有限な形成の構造（`PrimitiveCheck`・`AdmitsCheck`・`SignatureCheck`・`MethodRowsCheck`）と、`RangeStandard.primitive_of_check`・`satisfies_of_check`・`admits_of_check`・`ranges_of_check`、`external_of_check`・`ranges_of_fixed` から導かれる。`admits_instR` は `primitive_of_check` が読み、`sat_instR` は `sat_range_norm` を経て `satisfies_of_check` が読む。この二つを本番の `CheckOpenArgumentLeaves.satAll_sound`・`primitive_leaf`・`admissible_leaf`・`ranges_sound` が呼び、`CheckOpenArguments.head` の検査の成功から葉が得られる。したがって、`example` でない読者がある。型引数が空でない受理例 `RangeLeafExamples.list_length_reference` も置かれた。
+
+**中2。** 差の表には、`primName` の欄、通常の `CallHeadTy.prim`・`fn`・`fnDicts`、`Program.WellFormed.defs`、`Check.Input.B`、`CheckFormation.Input`、群 E の3言明の行が加わった。`Program.wellFormed_no_ranges` は、全関数の `rangeParams = []` の下で、元の `SignatureScoped`・範囲深さ0の `Scoped` を含む五条件と同値になる。`Examples` の `example` がこれを `mainProgram` に適用している。
+
+**群 E の追随。** 617言明の差は `checkDef_ok`・`checkDef_unknown`・`checkDef_sound` の3件である。それぞれ次の系で元の形へ戻る。
+
+- `checkDef_ok`: 空列の前提 `hk` を加えた。
+- `checkDef_unknown`: `checkDef_no_ranges_unknown` と `programStopped_no_ranges` で元の `BodyTelStopped`・存在形に戻る。
+- `checkDef_sound`: `checkDef_no_ranges_sound` で戻る。ただし `d.rangeParams = []` を前提にする。範囲の欄を加えた後の系として自然であり、元の定理の適用範囲を狭めるものではない。
+
+非空の場合に読む構成子一覧の完全性は、`checkProgram_sound` が既存の `hn.ctorNames` から供給する。プログラムの健全性に新しい外部条件は加わっていない。開いた本体は次の手順で検査する。推論 `inferBlockExpected` が案内を計算し、`CheckFinite.guide` で有限化し、`CheckOpen.checkBlockAt` で再検査する。`OpenSurface.BodyTy` はこの再検査の成功と `checkBlockAt_sound` だけから導き、推論の結果は信頼しない。`OpenSound` が含む `constructorsClosed` も、入口で実際に計算している。実入口の受理例（`function_forward`・`primitive_forward`・`alias_annotation`・`endpoint_forward`）は、いずれも `checkDef` に案内を渡さず、`cbv` で計算して閉じている。`function_forward_wellTyped` は、入力の全 `Sound` と支持を構成して公開の `checkDef_sound` を適用している。閉じた補助入口 `checkDefWith` は空列を検査し、元の健全性へ `Def.wellTyped_no_ranges` で戻る。非空の場合を閉じた成功と同一視する経路はない。
+
+**止めずに進めた変更。** 開いた契約の `unknownSource` は情1、任意の表の範囲閉性は情3のとおりである。どちらも制限であるが、全具体化の量化の下で必要なものか、任意の表に限られるものである。新しい信頼条件ではない。表のほかの行（`Le`・`Covers` の未使用の構成子の削除、`ValueAssumptions` の受け渡し、`Identity`・`ScopeLower` の欄数）にも、書ける形の制限や新しい仮定は見当たらない。
+
+**守ること。** 変更した Lean のファイルに `axiom`・`sorry`・`#eval`・`native_decide` はない。`maxHeartbeats 400000` は前回と同じ二か所だけである。`cbv_opaque`・`cbv_eval` の局所属性は、例のファイルにだけある。読者のない private 宣言は、変更した主要なファイルを読んだ範囲では見当たらない。全宣言の照合は、担当の公理監査の記録に拠り、本レビューでは数えていない。軽1（`OpenBody` の未使用の構成子）は削除された。軽2の記録の大きさは、`d/results.md` 60,111 バイト、`d/resume5-7-details.md` 47,459 バイトであり、ファイルごとの上限を下回る。
+
+### 実行した検査
+
+| 番号 | 内容 | 結果 |
+|---|---|---|
+| 1 | 読み取り専用の `git diff`・`grep` による照会。前記のファイルの差分、`admits_instR`・`sat_instR`・`ClauseSyntax`・`unrestrictedRanges`・`widenRule` の読者、禁止した構文 | 前記のとおり |
+| 2 | `<tmp>/rv-l70-dint/Check.lean`（1,657 バイト、SHA-256 `07aa23329612f32d76f9adf3ab36526fef7a3dd9c9c227c0ae5e866f38eb8d87`）。`nested_clause_open`・`checkDef_no_ranges_sound`・`Program.wellFormed_no_ranges`・`programStopped_no_ranges`・`acceptBody_ranges` の `#check`、受理例と健全性の `#print axioms`、`Http.widenRequestIn[x, x]` の出現で規則がある場合に `acceptOccurrence` が `unknownSource` を返すことの `example` | **実行していない。** 取りまとめの `lake build` が 21:40 に終わった時点で、作業木の生成物に `RangeClauseExamples`・`CheckOpenStandardExamples`・`CheckOpenAcceptanceExamples`・`CheckProgramSound` などの `.olean` がなく、`lake env lean` で import できなかった。`formal/.lake` に書き込まない指示に従い、ビルドもしていない。上の結論は読むことで確定した範囲に拠る。公理と既定ビルドについては、担当の記録（1,529ジョブの既定ビルド、全環境の公理監査、最終 `verify`）を報告として読み、本レビューの検査には数えていない。取りまとめのビルドが成功した後に、この入力を一度実行することを勧める |
+
+`lake build`・cargo・`scripts/check.sh`・台本の実行・git の書き込み操作は行っていない。変更したリポジトリのファイルは本書だけである。

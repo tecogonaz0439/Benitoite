@@ -11,7 +11,7 @@ import subprocess
 from pathlib import Path
 from inventory import HERE, ROOT, save, signatures
 
-BASE = "601a52cae1ffc9bbef9be71e3b56c83f0afdfa4d"
+BASE = "b3445f140ee8ddfcd9c95dd1de756ca1dbcaca52"
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--tmp", type=Path, required=True)
 args = parser.parse_args()

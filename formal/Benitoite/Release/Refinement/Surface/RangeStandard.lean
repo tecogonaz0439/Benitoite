@@ -50,7 +50,7 @@ private theorem scalar_ranges (a : Ty) (rs : List RangeExpr) :
 theorem admits_instR {P : Refinement.Program} {b s C ts} (hs : (StandardModel.builtins P).sig b = some s)
     (h : s.admits C ts) (rs : List RangeExpr) : s.admits C (ts.map (Ty.instR rs)) := by
   obtain ⟨row, _, rfl, rfl⟩ := (StandardModel.builtins_lookup_iff P b s).mp hs
-  rcases StandardModel.admits_form row with form | rfl
+  rcases StandardModel.admits_form row with form | rfl | rfl
   · apply (form _ _).mpr
     apply ModelConstraints.admits_map (S := StandardModel.summaries) (f := Ty.instR rs) _ ((form _ _).mp h)
     intro a p ha
@@ -63,6 +63,9 @@ theorem admits_instR {P : Refinement.Program} {b s C ts} (hs : (StandardModel.bu
       obtain ⟨t, ht, rfl⟩ := List.mem_map.mp ha
       have ordered := h.2.2 rfl t ht
       simpa only [StandardListRemainingResponse.orderedType, scalar_ranges] using ordered
+  · change PublicNames.checkAdmits C (ts.map (Ty.instR rs))
+    rw [show Ty.instR rs = Ty.bind (.rangesOnly rs) from funext fun a => Ty.instR_eq_bind a rs]
+    exact RefinementCheck.admits_bind (C := C) (D := C) (.rangesOnly rs) h
 
 /-- 開いた型の正規形に一度適用した制約の照合を、全具体化へ接続する。 -/
 theorem sat_range_norm (P : Refinement.Program) (C : List TParam) (a : Ty) (p : TParam)

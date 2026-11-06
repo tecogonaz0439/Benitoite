@@ -3,6 +3,8 @@ import Benitoite.Release.Refinement.Surface.CheckDeclarationBase
 import Benitoite.Release.Refinement.Surface.CheckOpenDeclarations
 
 /-! 関数と型クラスの実装を、宣言の署名と本体の表層の規則で検査する。 -/
+noncomputable section
+
 namespace Benitoite.Release.Refinement.Surface.CheckDeclarations
 open CheckAdmissible
 

@@ -4,6 +4,8 @@ import Benitoite.Release.Refinement.Surface.CheckFinite
 import Benitoite.Release.Refinement.Surface.CheckTablesBase
 
 /-! 依存する引数の束縛と、関数・実装の署名の有限検査。 -/
+noncomputable section
+
 namespace Benitoite.Release.Refinement.Surface.CheckDeclarations
 open Check CheckCompare CheckAdmissible
 

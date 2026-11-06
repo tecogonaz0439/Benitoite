@@ -2,6 +2,8 @@ import Benitoite.Release.Refinement.Surface.CheckProgramSound
 import Benitoite.Release.Refinement.Surface.CheckAcceptBase
 
 /-! 型付けの検査と、全本体の必須の判定の受理を行う入口。 -/
+noncomputable section
+
 namespace Benitoite.Release.Refinement.Surface.CheckAccept
 open CheckTables CheckDeclarations ScopeAccept
 

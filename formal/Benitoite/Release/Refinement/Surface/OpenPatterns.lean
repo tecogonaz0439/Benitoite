@@ -527,19 +527,26 @@ private theorem observeAs_scalar_mono {η ξ s t} (h : ObservationEnvModel.Patte
 
 private theorem memberReady_mono {η ξ k t r} (h : ObservationEnvModel.PatternLE η ξ)
     (hr : memberReady η k t r = true) : memberReady ξ k t r = true ∧
-      observeAs η (.target k) t = observeAs ξ (.target k) t := by
+      t.interpret η = t.interpret ξ := by
   cases ht : t.observe η with
   | none => simp [memberReady,ht] at hr
   | some o =>
     cases o <;> simp only [memberReady,ht] at hr <;> try cases hr
-    rename_i bs target
-    have hi := t.patternObserve_mono η ξ h
-    have hh : t.observe ξ = some (.targetValue bs target) := by
-      apply pattern_target_inv (by simpa only [ht] using hi)
-      simp only [Bool.and_eq_true, decide_eq_true_eq] at hr
-      exact hr.1.1.2.1
-    exact ⟨by simpa only [memberReady,hh] using hr,
-      by simp only [observeAs,Term.observe_sound ht,Term.observe_sound hh]⟩
+    case string s =>
+      have hi := t.patternObserve_mono η ξ h
+      obtain ⟨p,hp,hh⟩ := pattern_scalar_inv (by simpa only [ht] using hi)
+        (by intro k; simp [Observation.sort])
+      cases hh
+      exact ⟨by simpa only [memberReady,hp] using hr,
+        by rw [Term.observe_sound ht,Term.observe_sound hp]⟩
+    case targetValue bs target =>
+      have hi := t.patternObserve_mono η ξ h
+      have hh : t.observe ξ = some (.targetValue bs target) := by
+        apply pattern_target_inv (by simpa only [ht] using hi)
+        simp only [Bool.and_eq_true, decide_eq_true_eq] at hr
+        exact hr.1.1.2.1
+      exact ⟨by simpa only [memberReady,hh] using hr,
+        by rw [Term.observe_sound ht,Term.observe_sound hh]⟩
 
 private theorem Pred.atom_mono {p : Pred} {η ξ : ObservationEnvModel}
     (h : ObservationEnvModel.PatternLE η ξ) (ha : p.atomReady η = true) :
@@ -571,7 +578,7 @@ private theorem Pred.atom_mono {p : Pred} {η ξ : ObservationEnvModel}
     exact ⟨(patternTermReady_mono h ha (by intro k; cases k <;> decide)).1,by simp only [Pred.atomValue,observeAs_scalar_mono h ha (by decide) (by intro k; cases k <;> decide)]⟩
   | member k a r =>
     obtain ⟨hr,he⟩ := memberReady_mono h ha
-    exact ⟨hr,by simp only [Pred.atomValue,he]⟩
+    exact ⟨hr,by simp only [Pred.atomValue,observeAs,he]⟩
   | constructorIs a c =>
     obtain ⟨hr,hi⟩ := patternTermReady_mono h ha (by intro k; cases k <;> decide)
     refine ⟨hr,?_⟩

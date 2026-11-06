@@ -9,7 +9,7 @@ inductive BuiltinSource where
   | standard (program : Refinement.Program)
   | unrestrictedRanges (table : Builtins)
 
-def BuiltinSource.builtins : BuiltinSource → Builtins
+noncomputable def BuiltinSource.builtins : BuiltinSource → Builtins
   | .custom B => B
   | .standard P => StandardModel.builtins P
   | .unrestrictedRanges B => { B with admitsR := fun _ _ => True }
