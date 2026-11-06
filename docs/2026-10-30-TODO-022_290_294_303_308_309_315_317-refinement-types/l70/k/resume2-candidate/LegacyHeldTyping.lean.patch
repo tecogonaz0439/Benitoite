@@ -1,0 +1,11 @@
+--- formal/Benitoite/Release/Refinement/LegacyHeldTyping.lean
++++ formal/Benitoite/Release/Refinement/LegacyHeldTyping.lean
+@@ -94,7 +94,7 @@
+   case V_CheckedRequest => simpa only [embedHeldVal,embedVal,closeVal,legacyTypeCtx,embedTParamsWithKinds,List.zip_nil_left,List.map_nil] using embedHasTypeVQ K [] wf tables parent []
+   case V_Fun =>
+     obtain ⟨fd,hfd,ha,args,rows⟩ := reg.2.1
+-    simpa only [embedHeldVal,embedVal,closeVal,close_types args,close_rows rows,
++    simpa only [embedHeldVal,embedVal,closeVal_fnRef,close_types args,close_rows rows,
+       legacyTypeCtx,embedTParamsWithKinds,List.zip_nil_left,List.map_nil]
+       using embedHasTypeVQ K [] wf tables parent []
+   case V_Prim =>

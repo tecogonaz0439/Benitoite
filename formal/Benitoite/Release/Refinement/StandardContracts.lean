@@ -36,7 +36,7 @@ structure Row where
 def Row.definition (r : Row) : Option Def :=
   match r.implementation, r.body with
   | .core, some body => some ⟨r.tparams, r.neffs, r.tel.names,
-      r.tel.inputs, r.tel.result, r.tel.effect, body⟩
+      r.tel.inputs, r.tel.result, r.tel.effect, body, []⟩
   | _, _ => none
 
 theorem signatureTel_rebuild (t : Tel) :

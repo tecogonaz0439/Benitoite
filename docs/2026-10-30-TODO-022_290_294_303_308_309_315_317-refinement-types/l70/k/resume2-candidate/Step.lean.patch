@@ -1,0 +1,209 @@
+--- formal/Benitoite/Release/Refinement/Step.lean
++++ formal/Benitoite/Release/Refinement/Step.lean
+@@ -21,7 +21,7 @@
+     have hk : NoHandler k o := fun cap h' hm => h cap h' (List.mem_cons_of_mem _ hm)
+     cases f <;> try simp only [splitHandler,ih hk,Option.map_none]
+     case handleF cap cs =>
+-      simp only [splitHandler,h cap cs List.mem_cons_self,Bool.false_eq_true,ite_false,ih hk,Option.map_none]
++      simp only [h cap cs List.mem_cons_self,Bool.false_eq_true,ite_false]
+ 
+ def releaseStep (rel : Val → Option ErrKind) (v : Val) (ok : State) (err : ErrKind → State) :
+     Option (Option Event × State) := match rel v with
+@@ -76,13 +76,17 @@
+           | some (.val v) => some (none, .run (Closure.pure (.ret v)) k μ)
+           | some (.err r) => some (none, .error [r] k μ)
+           | _ => none
+-  | (.app (.fnRef f ts es) ws), k, μ =>
+-      match P.defs f with
+-      | some d =>
+-          if ws.length = d.params.length ∧ ts.length = d.ntys ∧ es.length = d.neffs then
+-            some (none, .run (Closure.mk (Capture.empty.extendMany ws) (d.body.substTy ts es)) (markPush k) μ)
+-          else none
+-      | none => none
++  | (.app (.fnRef f ts es ranges) ws), k, μ =>
++      match closedRanges ranges with
++      | none => none
++      | some rs =>
++        match P.defs f with
++        | some d =>
++            if ws.length = d.params.length ∧ ts.length = d.ntys ∧ es.length = d.neffs then
++              some (none, .run (Closure.mk (Capture.empty.extendMany ws)
++                ((d.body.instR rs).substTy ts es)) (markPush k) μ)
++            else none
++        | none => none
+   | (.app (.op o ts) ws), k, μ =>
+       match splitHandler (.user o) k with
+       | some (k1, hcap, h, k2) =>
+@@ -101,52 +105,55 @@
+             (.drop κ :: k2) (μ.set κ (.cont (k1 ++ [.handleF hcap [.fail e body]]))))
+       | _ => none
+   | (.app (.prim b ts es rs) ws), k, μ =>
+-      match B.sig b with
+-      | none => none
+-      | some s =>
+-          match s.kind, ws with
+-          | .pure, _ =>
+-              match B.delta b (Ty.normTys ts) (es.map Eff.norm) rs ws with
+-              | some (.val v) => some (none, .run (Closure.pure (.ret v)) k μ)
+-              | some (.err r) => some (none, .error [r] k μ)
+-              | _ => none
+-          | .io, _ | .exit, _ | .pathBases, _ =>
+-              match splitHandler (.prim b) k with
+-              | some (k1, hcap, h, k2) =>
+-                  match findClause h (.prim b) with
+-                  | some c =>
+-                      let κ := fresh μ
+-                      some (none, .run (Closure.mk (hcap.extendMany (ws ++ [.loc κ])) (c.body.substTy ts []))
+-                        (.drop κ :: k2) (μ.set κ (.cont (k1 ++ [.handleF hcap h]))))
+-                  | none => none
+-              | none =>
+-                if s.kind = .pathBases then
+-                  if ts.isEmpty && es.isEmpty && rs.isEmpty && ws.isEmpty then
+-                    some (none, .run (.mk q.capture (.issuePathBases b)) k μ)
+-                  else none
+-                else match s.kind, oracle b (Ty.normTys ts) (es.map Eff.norm) ws with
+-                  | .io, (.val v, obs) => some (some (.io b ws (.val v) obs), .run (Closure.pure (.ret v)) k μ)
+-                  | _, (.err r, obs) => some (some (.io b ws (.err r) obs), .error [r] k μ)
+-                  | .exit, (.exit n, obs) => some (some (.io b ws (.exit n) obs), .exit n [] k μ)
+-                  | _, _ => none
+-          | .refNew, [v] =>
+-              let l := fresh μ
+-              some (none, .run (Closure.pure (.ret (.loc l))) k (μ.set l (.val v)))
+-          | .refGet, [.loc l] =>
+-              match μ l with
+-              | some (.val v) => some (none, .run (Closure.pure (.ret v)) k μ)
+-              | _ => none
+-          | .refSet, [.loc l, v] => some (none, .run (Closure.pure (.ret (.const .unit))) k (μ.set l (.val v)))
+-          | .refUpdate, [.loc l, f] =>
+-              some (none, .run (Closure.pure (.letIn (.app (.prim B.refGet ts [] []) [.loc l])
+-                (.letIn (.app (f.rename (· + 1)) [.var 0])
+-                  (.app (.prim B.refSet ts [] []) [.loc l, .var 0])))) k μ)
+-          | .force, [.loc l] =>
+-              match μ l with
+-              | some (.done v) => some (none, .run (Closure.pure (.ret v)) k μ)
+-              | some (.thunk m) => some (none, .run m (.update l :: k) μ)
+-              | _ => none
+-          | _, _ => none
++      match closedRanges rs with
++      | none => none
++      | some rs =>
++        match B.sig b with
++        | none => none
++        | some s =>
++            match s.kind, ws with
++            | .pure, _ =>
++                match B.delta b (Ty.normTys ts) (es.map Eff.norm) rs ws with
++                | some (.val v) => some (none, .run (Closure.pure (.ret v)) k μ)
++                | some (.err r) => some (none, .error [r] k μ)
++                | _ => none
++            | .io, _ | .exit, _ | .pathBases, _ =>
++                match splitHandler (.prim b) k with
++                | some (k1, hcap, h, k2) =>
++                    match findClause h (.prim b) with
++                    | some c =>
++                        let κ := fresh μ
++                        some (none, .run (Closure.mk (hcap.extendMany (ws ++ [.loc κ])) (c.body.substTy ts []))
++                          (.drop κ :: k2) (μ.set κ (.cont (k1 ++ [.handleF hcap h]))))
++                    | none => none
++                | none =>
++                  if s.kind = .pathBases then
++                    if ts.isEmpty && es.isEmpty && rs.isEmpty && ws.isEmpty then
++                      some (none, .run (.mk q.capture (.issuePathBases b)) k μ)
++                    else none
++                  else match s.kind, oracle b (Ty.normTys ts) (es.map Eff.norm) ws with
++                    | .io, (.val v, obs) => some (some (.io b ws (.val v) obs), .run (Closure.pure (.ret v)) k μ)
++                    | _, (.err r, obs) => some (some (.io b ws (.err r) obs), .error [r] k μ)
++                    | .exit, (.exit n, obs) => some (some (.io b ws (.exit n) obs), .exit n [] k μ)
++                    | _, _ => none
++            | .refNew, [v] =>
++                let l := fresh μ
++                some (none, .run (Closure.pure (.ret (.loc l))) k (μ.set l (.val v)))
++            | .refGet, [.loc l] =>
++                match μ l with
++                | some (.val v) => some (none, .run (Closure.pure (.ret v)) k μ)
++                | _ => none
++            | .refSet, [.loc l, v] => some (none, .run (Closure.pure (.ret (.const .unit))) k (μ.set l (.val v)))
++            | .refUpdate, [.loc l, f] =>
++                some (none, .run (Closure.pure (.letIn (.app (.prim B.refGet ts [] []) [.loc l])
++                  (.letIn (.app (f.rename (· + 1)) [.var 0])
++                    (.app (.prim B.refSet ts [] []) [.loc l, .var 0])))) k μ)
++            | .force, [.loc l] =>
++                match μ l with
++                | some (.done v) => some (none, .run (Closure.pure (.ret v)) k μ)
++                | some (.thunk m) => some (none, .run m (.update l :: k) μ)
++                | _ => none
++            | _, _ => none
+   | (.issuePathBases b), k, μ =>
+       match B.sig b with
+       | some sg =>
+@@ -256,28 +263,28 @@
+ 
+ /-- raw の項の型引数は保持し、信頼条件へ渡す入力だけを正規化する。 -/
+ theorem step_prim_val {P B σ oracle externalOracle rel fresh q b ts es rs ws k μ sg v}
+-    (hq : q.view = .app (.prim b ts es rs) ws) (hs : B.sig b = some sg)
++    (hq : q.view = .app (.prim b ts es (List.map RangeIx.fixed rs)) ws) (hs : B.sig b = some sg)
+     (hk : sg.kind = .pure)
+     (hd : B.delta b (Ty.normTys ts) (es.map Eff.norm) rs ws = some (.val v)) :
+     step P B σ oracle externalOracle rel fresh (.run q k μ) =
+       some (none,.run (Closure.pure (.ret v)) k μ) ∧
+     Step P B σ (.run q k μ) none (.run (Closure.pure (.ret v)) k μ) := by
+   constructor
+-  · simp only [step,hq,stepRun,hs,hk,hd]
++  · simp only [step,hq,stepRun,closedRanges_fixed,hs,hk,hd]
+   · exact .E_Prim hq hs hk hd
+ 
+ theorem step_prim_err {P B σ oracle externalOracle rel fresh q b ts es rs ws k μ sg r}
+-    (hq : q.view = .app (.prim b ts es rs) ws) (hs : B.sig b = some sg)
++    (hq : q.view = .app (.prim b ts es (List.map RangeIx.fixed rs)) ws) (hs : B.sig b = some sg)
+     (hk : sg.kind = .pure)
+     (hd : B.delta b (Ty.normTys ts) (es.map Eff.norm) rs ws = some (.err r)) :
+     step P B σ oracle externalOracle rel fresh (.run q k μ) = some (none,.error [r] k μ) ∧
+     Step P B σ (.run q k μ) none (.error [r] k μ) := by
+   constructor
+-  · simp only [step,hq,stepRun,hs,hk,hd]
++  · simp only [step,hq,stepRun,closedRanges_fixed,hs,hk,hd]
+   · exact .E_Err hq hs hk hd
+ 
+ theorem step_io_val {P B σ oracle externalOracle rel fresh q b ts es rs ws k μ sg v obs}
+-    (hq : q.view = .app (.prim b ts es rs) ws) (hs : B.sig b = some sg)
++    (hq : q.view = .app (.prim b ts es (List.map RangeIx.fixed rs)) ws) (hs : B.sig b = some sg)
+     (hk : sg.kind = .io) (hn : NoHandler k (.prim b))
+     (ho : oracle b (Ty.normTys ts) (es.map Eff.norm) ws = (.val v,obs))
+     (hr : B.ioResponse b (Ty.normTys ts) (es.map Eff.norm) ws (.val v) obs) :
+@@ -286,11 +293,11 @@
+     Step P B σ (.run q k μ) (some (.io b ws (.val v) obs)) (.run (Closure.pure (.ret v)) k μ) := by
+   simp only [Ty.normTys_eq_map] at ho
+   constructor
+-  · simp [step,hq,stepRun,hs,hk,hn.splitHandler_none,ho]
++  · simp [step,hq,stepRun,closedRanges_fixed,hs,hk,hn.splitHandler_none,ho]
+   · exact .E_IO hq hs hk hn hr
+ 
+ theorem step_io_err {P B σ oracle externalOracle rel fresh q b ts es rs ws k μ sg r obs}
+-    (hq : q.view = .app (.prim b ts es rs) ws) (hs : B.sig b = some sg)
++    (hq : q.view = .app (.prim b ts es (List.map RangeIx.fixed rs)) ws) (hs : B.sig b = some sg)
+     (hk : sg.kind = .io ∨ sg.kind = .exit) (hn : NoHandler k (.prim b))
+     (ho : oracle b (Ty.normTys ts) (es.map Eff.norm) ws = (.err r,obs))
+     (hr : B.ioResponse b (Ty.normTys ts) (es.map Eff.norm) ws (.err r) obs) :
+@@ -299,11 +306,11 @@
+     Step P B σ (.run q k μ) (some (.io b ws (.err r) obs)) (.error [r] k μ) := by
+   simp only [Ty.normTys_eq_map] at ho
+   constructor
+-  · rcases hk with hk | hk <;> simp [step,hq,stepRun,hs,hk,hn.splitHandler_none,ho]
++  · rcases hk with hk | hk <;> simp [step,hq,stepRun,closedRanges_fixed,hs,hk,hn.splitHandler_none,ho]
+   · exact .E_IOErr hq hs hk hn hr
+ 
+ theorem step_io_exit {P B σ oracle externalOracle rel fresh q b ts es rs ws k μ sg n obs}
+-    (hq : q.view = .app (.prim b ts es rs) ws) (hs : B.sig b = some sg)
++    (hq : q.view = .app (.prim b ts es (List.map RangeIx.fixed rs)) ws) (hs : B.sig b = some sg)
+     (hk : sg.kind = .exit) (hn : NoHandler k (.prim b))
+     (ho : oracle b (Ty.normTys ts) (es.map Eff.norm) ws = (.exit n,obs))
+     (hr : B.ioResponse b (Ty.normTys ts) (es.map Eff.norm) ws (.exit n) obs) :
+@@ -312,7 +319,7 @@
+     Step P B σ (.run q k μ) (some (.io b ws (.exit n) obs)) (.exit n [] k μ) := by
+   simp only [Ty.normTys_eq_map] at ho
+   constructor
+-  · simp [step,hq,stepRun,hs,hk,hn.splitHandler_none,ho]
++  · simp [step,hq,stepRun,closedRanges_fixed,hs,hk,hn.splitHandler_none,ho]
+   · exact .E_Exit hq hs hk hn hr
+ 
+ /-- 関数を空捕捉で閉じてから適用し、計算した一歩と同じ実行規則を返す。 -/

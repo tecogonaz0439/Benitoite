@@ -1,0 +1,134 @@
+--- formal/Benitoite/Release/Refinement/StandardListBodies.lean
++++ formal/Benitoite/Release/Refinement/StandardListBodies.lean
+@@ -81,7 +81,7 @@
+ 
+ def listFromDefinition (filter : Bool) : Def :=
+   ⟨valueParams (if filter then 1 else 2),1,(fromTel filter).names,(fromTel filter).inputs,
+-    (fromTel filter).result,(fromTel filter).effect,listFromBody filter⟩
++    (fromTel filter).result,(fromTel filter).effect,listFromBody filter, []⟩
+ 
+ local macro "list_simp" : tactic => `(tactic|
+   simp_all [valueParams,resultType,callbackType,fromTel,fromName,typeArgs,
+@@ -139,8 +139,6 @@
+     HasTypeVQ P B Ψ Q (valueParams (if filter then 1 else 2)) Γ Φ
+       (.prim "%Integer.add" [] [] [])
+       (.fn ["a","b"] [.base .integer,.base .integer] (.base .integer) Eff.empty) := by
+-  have emptyRange : mapRangeAtoms (rangeAt 0 []) (fun _ => false) = (fun _ => false) := by
+-    funext a; simp [mapRangeAtoms]
+   have ann := variable_annotation (P := P) (Γ := Γ) filter i inside
+   have ar : ∃ n, P.DataArity "Option" n ∧ 1 = n := ⟨1,arity,rfl⟩
+   have kind : Ty.HasKind P (TypeCtx.kinds (valueParams (if filter then 1 else 2))) (.tvar i) .value := by
+@@ -158,7 +156,7 @@
+       · intro e he; cases he
+       · constructor <;> list_simp
+     · list_simp
+-      simpa [emptyRange,FnView.toTel,Ty.toTel,shiftVTys,Ty.shiftV,Eff.shiftV,Eff.empty] using Ty.foldFn_toTel ⟨["xs","i"],[.list (.tvar i),.base .integer],.data "Option" [.tvar i],Eff.empty,by simp [NamesWF]⟩
++      simpa [FnView.toTel,Ty.toTel,shiftVTys,Ty.shiftV,Eff.shiftV,Eff.empty] using Ty.foldFn_toTel ⟨["xs","i"],[.list (.tvar i),.base .integer],.data "Option" [.tvar i],Eff.empty,by simp [NamesWF]⟩
+     · constructor <;> list_simp
+   · constructor
+     · apply primitive_typed append
+@@ -173,7 +171,7 @@
+         · intro e he; cases he
+         · constructor <;> list_simp
+       · list_simp
+-        simpa [emptyRange,FnView.toTel,Ty.toTel,shiftVTys,Ty.shiftV,Eff.shiftV,Eff.empty] using Ty.foldFn_toTel ⟨["xs","x"],[.list (.tvar i),.tvar i],.list (.tvar i),Eff.empty,by simp [NamesWF]⟩
++        simpa [FnView.toTel,Ty.toTel,shiftVTys,Ty.shiftV,Eff.shiftV,Eff.empty] using Ty.foldFn_toTel ⟨["xs","x"],[.list (.tvar i),.tvar i],.list (.tvar i),Eff.empty,by simp [NamesWF]⟩
+       · constructor <;> list_simp
+     · apply primitive_typed addition
+       · list_simp
+@@ -187,7 +185,7 @@
+         · intro e he; cases he
+         · constructor <;> list_simp
+       · list_simp
+-        simpa [emptyRange,FnView.toTel,Ty.toTel,shiftVTys,Ty.shiftV,Eff.shiftV,Eff.empty] using Ty.foldFn_toTel ⟨["a","b"],[.base .integer,.base .integer],.base .integer,Eff.empty,by simp [NamesWF]⟩
++        simpa [FnView.toTel,Ty.toTel,shiftVTys,Ty.shiftV,Eff.shiftV,Eff.empty] using Ty.foldFn_toTel ⟨["a","b"],[.base .integer,.base .integer],.base .integer,Eff.empty,by simp [NamesWF]⟩
+       · constructor <;> list_simp
+ 
+ private theorem from_annotation {P Γ} (filter : Bool) :
+@@ -241,7 +239,7 @@
+     all_goals rintro (_|(_|j)) a p ha hp <;> list_simp
+     all_goals subst_vars; list_simp
+     all_goals first | exact sat 0 (by decide) | exact sat 1 (by decide)
+-  have typed := HasTypeVQ.V_Fun (Ψ := Ψ) (Φ := Φ) lookup names admissible (from_instance filter)
++  have typed := HasTypeVQ.fun_empty (Ψ := Ψ) (Φ := Φ) lookup names (by rfl) admissible (from_instance filter)
+   apply typed.convert
+   · have fold := fold_from filter
+     cases filter <;> list_simp
+@@ -384,6 +382,7 @@
+                    · list_simp)
+             · list_simp
+           · apply HasTypeArmsQ.nil; constructor <;> list_simp
++      · list_simp
+       · simpa [unguardedPats,Ty.shiftV,shiftVTys] using option_exhaustive decls (.tvar 0)
+     · list_simp
+ 
+@@ -399,7 +398,7 @@
+   refine ⟨listFromDefinition filter,rfl,?_,?_,?_,?_⟩
+   · cases filter <;> list_simp
+   · cases filter <;> list_simp
+-  · exact from_annotation filter
++  · exact ⟨(from_annotation (P := P) (Γ := []) filter).wf,(from_annotation (P := P) (Γ := []) filter).sorted,(from_annotation (P := P) (Γ := []) filter).declared⟩
+   · cases filter <;> exact from_body _ decls get append addition lookup sat
+ 
+ /-- 公開 map/filter は同じ helper を、添字0と空のaccで一度呼ぶ。 -/
+@@ -504,7 +503,6 @@
+     mapRangeAtoms,Tel.bind,Tel.rawBind,Tel.norm,Ty.rawBind,Ty.norm,Ty.normTys,rawBindTys,
+     typeEnvAt,SubstEnv.up,Eff.rawBind,Eff.norm,Eff.empty,rowFails,substAtoms_nil,instAtoms_nil,
+     Ty.shiftV_of_wf_zero wf]
+-  funext a; simp [mapRangeAtoms]
+ 
+ /-- 同じ実 Steps の append 直前で、callback の実値と acc の要素型を元の契約から読む。 -/
+ theorem list_append_reached_typed {P B σ Eb source events q k μ U acc y}
+@@ -519,7 +517,7 @@
+       HasTypeEachQ P B Ψ Qempty [] [] [] acc U.norm := by
+   have reached := initial.steps_preserved hP hPB hdecl hB hσ trace
+   obtain ⟨Ψ,R,a,e,sg,r,ef,store,_,hs,_,_,inst,args,_,_⟩ :=
+-    reached.primitive_contract_inputs hP hPB hB view
++    reached.primitive_contract_inputs (rs := []) hP hPB hB view
+   cases Option.some.inj (hs.symm.trans lookup)
+   have ann := inst.types U (by simp)
+   rw [append_tel ann.wf] at args
+@@ -696,7 +694,7 @@
+ private def repeatDefinition : Def :=
+   ⟨[],0,[],[],.list (.base .unit),Eff.empty,
+     .letIn (.app (.fnRef "List.mapFrom" [.base .unit,.base .unit] [Eff.empty])
+-      [.list [.const .unit],unitIdentity,one,.list [.const .unit]]) repeatTail⟩
++      [.list [.const .unit],unitIdentity,one,.list [.const .unit]]) repeatTail, []⟩
+ private def repeatProgram : Program :=
+   { program with defs := fun name =>
+     if name = "Example.repeat" then some repeatDefinition else program.defs name }
+@@ -743,9 +741,9 @@
+       (.run (.mk (listCapture [.const .unit] receivedIdentity ⟨1,by decide⟩ [.const .unit]) unitFromBody)
+         repeatCont Store.empty) := by
+     refine .cons (.E_Mark firstView) (.cons (.E_Return rfl)
+-      (.cons (.E_Fun (d := repeatDefinition) rfl rfl rfl rfl rfl)
++      (.cons (.E_Fun (rs := []) (d := repeatDefinition) rfl rfl rfl rfl rfl)
+         (.cons (.E_Let rfl)
+-          (.cons (.E_Fun (d := listFromDefinition false) rfl rfl rfl rfl rfl) ?_))))
++          (.cons (.E_Fun (rs := []) (d := listFromDefinition false) rfl rfl rfl rfl rfl) ?_))))
+     simp [unitFromBody,listCapture,receivedIdentity,unitIdentity,repeatDefinition,repeatTail,repeatCont,
+         Comp.substTy,Comp.substTyAt,Val.substTyAt,Val.substTyAtList,substTypeAt,substRowAt,
+         Ty.bind,Eff.bind,typeEnvAt,Ty.rawBind,Eff.rawBind,rawBindTys,
+@@ -845,7 +843,7 @@
+   ⟨[],0,[],[],.list (.base .unit),Eff.empty,
+     .letIn (.handle
+       (.app (.fnRef "List.mapFrom" [.base .unit,.base .unit] [failEffect])
+-        [.list [],failingCallback,zero,.list []]) failHandler) failTail⟩
++        [.list [],failingCallback,zero,.list []]) failHandler) failTail, []⟩
+ private def repeatFailProgram : Program :=
+   { program with defs := fun name =>
+     if name = "Example.repeatFail" then some repeatFailDefinition else program.defs name }
+@@ -890,11 +888,11 @@
+   refine .step (ReturnAt.not_length (by simp [failCont])) (.E_DropRel rfl rfl) ?_
+   refine .step (ReturnAt.not_length (by simp [failCont])) (.E_Return rfl) ?_
+   refine .step (ReturnAt.not_length (by simp [failCont]))
+-    (.E_Fun (d := repeatFailDefinition) (ts := []) (es := []) (ws := []) rfl rfl rfl rfl rfl) ?_
++    (.E_Fun (rs := []) (d := repeatFailDefinition) (ts := []) (es := []) (ws := []) rfl rfl rfl rfl rfl) ?_
+   refine .step (ReturnAt.not_length (by simp [failCont,markPush])) (.E_Let rfl) ?_
+   refine .step (ReturnAt.not_length (by simp [failCont,markPush])) (.E_Handle rfl) ?_
+   refine .step (ReturnAt.not_length (by simp [failCont,markPush]))
+-    (.E_Fun (d := listFromDefinition false) rfl rfl rfl rfl rfl) ?_
++    (.E_Fun (rs := []) (d := listFromDefinition false) rfl rfl rfl rfl rfl) ?_
+   simpa [set_overwrite,Closure.capture,Closure.code,Capture.values,listFromDefinition,zero,Clause.substTyAtList,unitFromBodyAt,listCapture,repeatFailDefinition,failTail,failCont,usedStore,saved,
+     Comp.substTy,Comp.substTyAt,Val.substTyAt,Val.substTyAtList,substTypeAt,substRowAt,
+     Ty.bind,Eff.bind,typeEnvAt,Ty.rawBind,Eff.rawBind,rawBindTys,

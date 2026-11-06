@@ -52,14 +52,14 @@ theorem call_typed (P : Program) (Ψ : StoreTy) :
 /-- 発行は専用の二遷移を使い、同じ σ の事象を宣言効果で覆う。 -/
 theorem issue {P σ q k μ}
     (hv : q.view = .app (.prim pathBasesName [] [] []) [])
-    (hn : NoHandler k (.prim pathBasesName)) (hσ : σ.Valid) :
+    (hσ : σ.Valid) :
     Step P Model.builtins σ (.run q k μ) none
       (.run (.mk q.capture (.issuePathBases pathBasesName)) k μ) ∧
     Step P Model.builtins σ (.run (.mk q.capture (.issuePathBases pathBasesName)) k μ)
       (some (.pathBases pathBasesName σ)) (.run (Closure.pure (.ret (.pathBases σ))) k μ) ∧
     Event.Covered Model.builtins [] [] pathBases.eff (.pathBases pathBasesName σ) ∧
     ∃ bs, Model.builtins.effects processEnvironmentEff = some bs ∧ pathBasesName ∈ bs := by
-  exact ⟨.E_PathBasesApply hv rfl rfl hn,.E_IssuePathBases rfl rfl rfl rfl hσ,
+  exact ⟨.E_PathBasesApply hv rfl rfl,.E_IssuePathBases rfl rfl rfl rfl hσ,
     Eff.Covers.refl [] [] _,(Model.pathBases_shape (b := pathBasesName) rfl rfl).membership⟩
 
 /-- let の結果として発行した同じ σ を、At の bases の束縛に渡す。 -/
@@ -74,7 +74,7 @@ theorem issue_to_at (P : Program) (σ : PathEnv) (kind name shape pattern input 
   let body := Comp.checkAt kind name shape (some (.var 0)) pattern input index
   have hi := issue (P := P) (σ := σ)
     (q := Closure.pure (.app (.prim pathBasesName [] [] []) []))
-    (k := [.letF (Closure.pure body)]) (μ := Store.empty) rfl (by simp [NoHandler]) hσ
+    (k := [.letF (Closure.pure body)]) (μ := Store.empty) rfl hσ
   exact .cons (.E_Let rfl) (.cons hi.1 (.cons hi.2.1 (.cons (.E_Return rfl) .nil)))
 
 /-- At の成功した準備は、発行した σ と同じ snapshot だけを使う。 -/

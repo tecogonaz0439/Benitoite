@@ -1,0 +1,22 @@
+--- formal/Benitoite/Release/Refinement/Narrowing.lean
++++ formal/Benitoite/Release/Refinement/Narrowing.lean
+@@ -447,7 +447,7 @@
+     | .V_Closure ha hw hb => exact .V_Closure (hm.annotation ha) hw hb
+     | .V_List he hw hs hd =>
+       exact .V_List (context_each he hA hstore hm hf) (by simpa only [hm.length] using hw) (hm.sorted hs) (hd.context hm.declaration)
+-    | .V_Fun hd hn ha hi => exact .V_Fun hd hn (by simpa only [hm.length] using ha) (hm.signature hi)
++    | .V_Fun hd hn hr ha hi => exact .V_Fun hd hn hr (by simpa only [hm.length] using ha) (hm.signature hi)
+     | .V_Prim hb hr hn ha hi => exact .V_Prim hb hr hn (by simpa only [hm.length] using ha) (hm.signature hi)
+     | .V_Op ho hn ha hi => exact .V_Op ho hn ha (hm.signature hi)
+     | .V_ExternalRef hd hw ha hi => exact .V_ExternalRef hd hw ha (hm.signature hi)
+@@ -527,8 +527,8 @@
+           ⟨hm.length,hm.continuations,fun i a hi ho => (hm.lookup i a hi ho).weaken_conditions hA hstore
+             (by intro p hp; exact .hyp (List.mem_append_right _ (List.mem_cons_of_mem _ hp)))⟩
+           (Entails.conditions_cons hf (.hyp (List.mem_append_right _ List.mem_cons_self)))
+-    | .C_Match hv ho ha hx =>
+-      refine .C_Match (context_value hv hA hstore hm hf) ?_ (context_arms ha hA hstore hm hf) hx
++    | .C_Match hv ho ha hdecl hx =>
++      refine .C_Match (context_value hv hA hstore hm hf) ?_ (context_arms ha hA hstore hm hf) (hdecl.context hm.declaration) hx
+       intro t ht
+       obtain ⟨hv,s,hs⟩ := ho t ht
+       exact ⟨hv,s,by simpa only [termBind_id] using Term.hasSort_termBind hs _ hm.values hm.references⟩

@@ -1,0 +1,29 @@
+--- formal/Benitoite/Release/Refinement/StandardModelListBodies.lean
++++ formal/Benitoite/Release/Refinement/StandardModelListBodies.lean
+@@ -232,7 +232,7 @@
+     all_goals rintro (_|(_|j)) a p ha hp <;> list_simp
+     all_goals subst_vars; list_simp
+     all_goals first | exact sat 0 (by decide) | exact sat 1 (by decide)
+-  have typed := HasTypeVQ.V_Fun (Ψ := Ψ) (Φ := Φ) lookup names admissible (from_instance filter)
++  have typed := HasTypeVQ.fun_empty (Ψ := Ψ) (Φ := Φ) lookup names (by rfl) admissible (from_instance filter)
+   apply typed.convert
+   · have fold := fold_from filter
+     cases filter <;> list_simp
+@@ -580,7 +580,7 @@
+     all_goals first | (constructor <;> walk_simp) | walk_simp
+     all_goals rintro (_|(_|j)) a p ha hp <;> walk_simp <;> subst_vars
+     all_goals exact inp.sat _ _
+-  have typed := HasTypeVQ.V_Fun (Ψ := Ψ) (Φ := Φ) (inp.helpers filter) names ad (from_instance filter)
++  have typed := HasTypeVQ.fun_empty (Ψ := Ψ) (Φ := Φ) (inp.helpers filter) names (by rfl) ad (from_instance filter)
+   have same : instantiatedTel (fromDefinition filter).tel (arguments filter) [Eff.row 0] = fromTel filter := by
+     cases filter <;> walk_simp
+   rw [same] at typed
+@@ -1116,7 +1116,7 @@
+     all_goals first | (constructor <;> walk_simp) | walk_simp
+     all_goals rintro (_|(_|j)) a p ha hp <;> walk_simp <;> subst_vars
+     all_goals exact inp.sat _ _
+-  have typed := HasTypeVQ.V_Fun (Ψ := Ψ) (Φ := Φ) lookup names ad (public_instance filter)
++  have typed := HasTypeVQ.fun_empty (Ψ := Ψ) (Φ := Φ) lookup names (by rfl) ad (public_instance filter)
+   have same : instantiatedTel (publicDefinition filter).tel (arguments filter) [Eff.row 0] = publicTel filter := by
+     cases filter <;> walk_simp
+   rw [same] at typed

@@ -1,0 +1,81 @@
+--- formal/Benitoite/Release/Refinement/TypeSubstCallSites.lean
++++ formal/Benitoite/Release/Refinement/TypeSubstCallSites.lean
+@@ -25,39 +25,59 @@
+   | none => rfl
+   | some x => cases x <;> rfl
+ 
++/-- 範囲の具体化を含む参照から、本体へ渡す型と行の条件を取り出す。 -/
++theorem HasTypeVQ.fun_body_input_ranges {P B Ψ Q C Γ Φ v a f ts es rs d}
++    (h : HasTypeVQ P B Ψ Q C Γ Φ v a) (hC : C = []) (hΓ : Γ = [])
++    (hv : v = .fnRef f ts es (rs.map RangeIx.fixed)) (hd : P.defs f = some d) :
++    d.RangeAdmissible rs ∧
++    SignatureInstance P [] [] (d.instTel rs) (TypeCtx.kinds d.tparams) ts es ∧
++    Admissible B [] 0 (TypeCtx.constraints d.tparams) d.neffs
++      (Qsig d.params d.ret d.eff) Q ts es d.eff := by
++  obtain ⟨d',u,rs',hrs,hr,hl,_,ha,hi,_,_⟩ := h.inv_fnRef_ranges hv
++  have he : rs = rs' := by
++    have hc := congrArg closedRanges hrs
++    simpa only [closedRanges_fixed, Option.some.injEq] using hc
++  subst rs'
++  cases hC; cases hΓ
++  cases Option.some.inj (hl.symm.trans hd)
++  exact ⟨hr,hi,ha⟩
++
+ theorem HasTypeVQ.fun_body_input {P B Ψ Q C Γ Φ v a f ts es d}
+     (h : HasTypeVQ P B Ψ Q C Γ Φ v a) (hC : C = []) (hΓ : Γ = []) (hv : v = .fnRef f ts es)
+     (hd : P.defs f = some d) :
+     SignatureInstance P [] [] d.tel (TypeCtx.kinds d.tparams) ts es ∧
+     Admissible B [] 0 (TypeCtx.constraints d.tparams) d.neffs (Qsig d.params d.ret d.eff) Q ts es d.eff := by
+-  match h with
+-  | .V_Fun hl _ ha hs =>
+-    cases hC; cases hΓ; cases hv
+-    have he := Option.some.inj (hl.symm.trans hd)
+-    subst he
+-    exact ⟨hs,ha⟩
+-  | .V_Sub hv' .. | .V_Normal hv' | .V_Refine hv' .. => exact hv'.fun_body_input hC hΓ hv hd
+-  | .V_Var .. | .V_Const .. | .V_Lam .. | .V_DependentLam .. | .V_Closure .. | .V_Op .. |
+-    .V_Prim .. | .V_ExternalRef .. | .V_ExternalHandle .. | .V_PathBases .. | .V_ScopePattern .. |
+-    .V_Checked .. | .V_CheckedRequest .. | .V_CheckedAt .. | .V_AtError .. | .V_Map .. | .V_Set .. |
+-    .V_Dict .. | .V_Raise .. | .V_LocRef .. | .V_LocLazy .. | .V_Bytes .. | .V_Con .. | .V_Super .. |
+-    .V_List .. => cases hv
+-termination_by structural h
+-
+-theorem type_subst_fun_body {P B Ψ Φ0 callerTy f d ts es}
++  obtain ⟨d',u,hl,_,ha,hi,_,_⟩ := h.inv_fnRef hv
++  cases hC; cases hΓ
++  cases Option.some.inj (hl.symm.trans hd)
++  exact ⟨hi,ha⟩
++
++/-- 関数本体の範囲を閉じた後、型と行を具体化する。 -/
++theorem type_subst_fun_body_ranges {P B Ψ Φ0 callerTy f d ts es rs}
+     (hf : P.WellFormed ∧ P.WellTyped B ∧ B.CoreAssumptions P)
+     (hd : P.defs f = some d)
+-    (hcall : HasTypeVQ P B Ψ Qempty [] [] Φ0 (.fnRef f ts es) callerTy) :
+-    TelBodyTy P B StoreTy.empty Qempty [] [] [] (Tel.substAt 0 ts es d.tel) (d.body.substTy ts es) := by
+-  obtain ⟨hi,ha⟩ := hcall.fun_body_input rfl rfl rfl hd
++    (hcall : HasTypeVQ P B Ψ Qempty [] [] Φ0
++      (.fnRef f ts es (rs.map RangeIx.fixed)) callerTy) :
++    TelBodyTy P B StoreTy.empty Qempty [] [] []
++      (Tel.substAt 0 ts es (d.instTel rs)) ((d.body.instR rs).substTy ts es) := by
++  obtain ⟨hr,hi,ha⟩ := hcall.fun_body_input_ranges rfl rfl rfl hd
+   have wt := hf.2.1.defs f d hd
+   have inp : ClosedTypeSubstInput P B d.tparams [] [] ts es :=
+     {toTypeSubstInput := hi.closedInput ha.types,context := CaptureContextRegular.empty P d.tparams}
+   have hq : RowTransport (QTel d.tel) Qempty es := by
+     rw [Def.QTel_eq_Qsig d wt.1]
+     exact ha.noFailRows
++  have hb := wt.2.2.2 rs hr
++  have hc := (hf.1.defs f d hd).2.2.instR hr.1 hr.2.2
+   exact type_subst_body ⟨hf.1,hf.2.1,hf.2.2,StoreTy.WF.empty⟩ inp
+-    (Or.inr ⟨0,d.ntys,d.neffs,d.params.length,(hf.1.defs f d hd).2.2⟩) hq wt.2.2.2
++    (Or.inr ⟨0,d.ntys,d.neffs,d.params.length,hc⟩) hq hb
++
++theorem type_subst_fun_body {P B Ψ Φ0 callerTy f d ts es}
++    (hf : P.WellFormed ∧ P.WellTyped B ∧ B.CoreAssumptions P)
++    (hd : P.defs f = some d)
++    (hcall : HasTypeVQ P B Ψ Qempty [] [] Φ0 (.fnRef f ts es) callerTy) :
++    TelBodyTy P B StoreTy.empty Qempty [] [] [] (Tel.substAt 0 ts es d.tel) (d.body.substTy ts es) := by
++  simpa only [Def.instTel_nil, Comp.instR_nil] using type_subst_fun_body_ranges hf hd hcall
+ 
+ theorem type_subst_method_body {P B Ψ Q Φ R a e L i us vs name ss fs ws}
+     (hf : P.WellFormed ∧ P.WellTyped B ∧ B.CoreAssumptions P ∧ Ψ.WF)

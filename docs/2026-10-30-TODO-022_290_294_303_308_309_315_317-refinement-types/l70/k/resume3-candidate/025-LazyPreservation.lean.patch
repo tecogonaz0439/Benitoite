@@ -1,0 +1,35 @@
+--- a/formal/Benitoite/Release/Refinement/LazyPreservation.lean
++++ b/formal/Benitoite/Release/Refinement/LazyPreservation.lean
+@@ -69,9 +69,9 @@
+ 
+ theorem StateTyE.force_done_transition {P B σ Eb b ts es rs l k μ s v}
+     (hA : Builtins.CoreAssumptions P B)
+-    (h : StateTyE P B σ Eb (.run (Closure.pure (.app (.prim b ts es rs) [.loc l])) k μ))
++    (h : StateTyE P B σ Eb (.run (Closure.pure (.app (.prim b ts es (List.map RangeIx.fixed rs)) [.loc l])) k μ))
+     (hs : B.sig b = some s) (hk : s.kind = .force) (hl : μ l = some (.done v)) :
+-    Step P B σ (.run (Closure.pure (.app (.prim b ts es rs) [.loc l])) k μ) none
++    Step P B σ (.run (Closure.pure (.app (.prim b ts es (List.map RangeIx.fixed rs)) [.loc l])) k μ) none
+       (.run (Closure.pure (.ret v)) k μ) ∧
+     StateTyE P B σ Eb (.run (Closure.pure (.ret v)) k μ) := by
+   obtain ⟨Ψ,R,a,c,ε,e,hsμ,hq,he,hcont,had,hclosed,hkc,hμc⟩ := h
+@@ -89,9 +89,9 @@
+ 
+ theorem StateTyE.force_thunk_transition {P B σ Eb b ts es rs l k μ s m}
+     (hA : Builtins.CoreAssumptions P B)
+-    (h : StateTyE P B σ Eb (.run (Closure.pure (.app (.prim b ts es rs) [.loc l])) k μ))
++    (h : StateTyE P B σ Eb (.run (Closure.pure (.app (.prim b ts es (List.map RangeIx.fixed rs)) [.loc l])) k μ))
+     (hs : B.sig b = some s) (hk : s.kind = .force) (hl : μ l = some (.thunk m)) :
+-    Step P B σ (.run (Closure.pure (.app (.prim b ts es rs) [.loc l])) k μ) none
++    Step P B σ (.run (Closure.pure (.app (.prim b ts es (List.map RangeIx.fixed rs)) [.loc l])) k μ) none
+       (.run m (.update l :: k) μ) ∧
+     StateTyE P B σ Eb (.run m (.update l :: k) μ) := by
+   obtain ⟨Ψ,R,a,c,ε,e,hsμ,hq,he,hcont,had,hclosed,hkc,hμc⟩ := h
+@@ -195,7 +195,7 @@
+   | .V_Const (c := c) _ => cases c <;> trivial
+   | .V_Lam _ ha .. => subst C Γ; exact ha
+   | .V_DependentLam ha _ | .V_Closure ha .. => subst C Γ; exact ha.wf
+-  | .V_Fun _ _ _ hi | .V_Prim _ _ _ _ hi | .V_Op _ _ _ hi | .V_ExternalRef _ _ _ hi =>
++  | .V_Fun _ _ _ _ hi | .V_Prim _ _ _ _ hi | .V_Op _ _ _ hi | .V_ExternalRef _ _ _ hi =>
+     subst C Γ; exact hi.result.wf
+   | .V_ExternalHandle _ _ _ _ _ _ ha | .V_Dict _ _ _ _ _ _ _ ha | .V_Con _ _ _ _ _ ha =>
+     subst C Γ; exact ha.wf

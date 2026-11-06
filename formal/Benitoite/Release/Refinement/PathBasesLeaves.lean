@@ -30,12 +30,12 @@ private theorem path_arguments {P B Ψ b s r e}
 theorem StateTyE.path_bases_apply_all {P B σ Eb q b s k μ}
     (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)
     (h : StateTyE P B σ Eb (.run q k μ)) (hv : q.view = .app (.prim b [] [] []) [])
-    (hsig : B.sig b = some s) (hkind : s.kind = .pathBases) (hnh : NoHandler k (.prim b)) :
+    (hsig : B.sig b = some s) (hkind : s.kind = .pathBases) :
     Step P B σ (.run q k μ) none (.run (.mk q.capture (.issuePathBases b)) k μ) ∧
     StateTyE P B σ Eb (.run (.mk q.capture (.issuePathBases b)) k μ) := by
-  refine ⟨.E_PathBasesApply hv hsig hkind hnh,?_⟩
+  refine ⟨.E_PathBasesApply hv hsig hkind,?_⟩
   obtain ⟨Ψ,R,a,c,e,e1,hs,hq,he,hk,had,hcl,hkc,hμ⟩ := h
-  obtain ⟨r,ef,ha,hle,hcov⟩ := hq.primitive_view_inputs hP hPB hB hs.wf hs.sorted hs.declared hcl hv hsig
+  obtain ⟨r,ef,ha,hle,hcov⟩ := hq.primitive_view_inputs (rs := []) hP hPB hB hs.wf hs.sorted hs.declared hcl hv hsig
   obtain ⟨rfl,rfl⟩ := path_arguments hB hsig hkind ha
   obtain ⟨cap,Γ,Φ,Rs,m,as,es,L,ρ,hqeq,hcap,hbody,hl,hR,hat,het,hrs⟩ := hq.open_zero
   have hb := hB.issuePathBases_typed (Ψ := Ψ) (Q := Qempty) (C := []) (Γ := Γ) (Φ := Φ) (R := Rs) (Δ := []) hsig hkind

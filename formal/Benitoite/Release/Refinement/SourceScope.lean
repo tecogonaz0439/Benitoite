@@ -42,9 +42,10 @@ mutual
   def Val.SourceScoped (nr nt ne nv : Nat) : Val → Prop
     | .var i => i < nv
     | .const _ | .bytesV _ => True
-    | .fnRef _ ts es => scopedTypes nr nt ne nv ts ∧ scopedRows nr nt ne nv es
+    | .fnRef _ ts es rs => scopedTypes nr nt ne nv ts ∧ scopedRows nr nt ne nv es ∧
+        (∀ ix ∈ rs, ix.WF nr ∧ ∀ r, ix = .fixed r → r.WF ∧ r.Canonical)
     | .prim _ ts es rs => scopedTypes nr nt ne nv ts ∧ scopedRows nr nt ne nv es ∧
-        (∀ r ∈ rs, r.WF ∧ r.Canonical)
+        (∀ ix ∈ rs, ix.WF nr ∧ ∀ r, ix = .fixed r → r.WF ∧ r.Canonical)
     | .lam ns ps body => NamesWF ns ps ∧ scopedTypes nr nt ne nv ps ∧
         body.SourceScoped nr nt ne (nv + ps.length)
     | .dependentLam t body => (Ty.dependentFn t).SourceScoped nr nt ne nv ∧

@@ -1,0 +1,92 @@
+--- a/formal/Benitoite/Release/Refinement/ScopedTargetInputs.lean
++++ b/formal/Benitoite/Release/Refinement/ScopedTargetInputs.lean
+@@ -20,7 +20,7 @@
+ theorem response_inputs {P B σ Eb q k μ b ts es rs ws}
+     (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)
+     (state : StateTyE P B σ Eb (.run q k μ))
+-    (view : q.view = .app (.prim b ts es rs) ws) :
++    (view : q.view = .app (.prim b ts es (List.map RangeIx.fixed rs)) ws) :
+     State.Inputs P B σ Eb (.run q k μ) ∧
+     ∃ Ψ R a e sg r ef,
+       StoreOk P B σ Ψ μ ∧ ClosureTy P B Ψ [] R q a e ∧ B.sig b = some sg ∧
+@@ -49,7 +49,7 @@
+ theorem pure_steps {P B σ Eb q k μ b ts es rs ws sg}
+     (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P) (valid : σ.Valid)
+     (state : StateTyE P B σ Eb (.run q k μ))
+-    (view : q.view = .app (.prim b ts es rs) ws)
++    (view : q.view = .app (.prim b ts es (List.map RangeIx.fixed rs)) ws)
+     (hs : B.sig b = some sg) (kind : sg.kind = .pure) :
+     ∃ Ψ a e out,
+       BuiltinArgs P B Ψ b sg (Ty.normTys ts) (es.map Eff.norm) rs ws a e ∧
+@@ -71,7 +71,7 @@
+     (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)
+     (targets : B.TargetAgreement P) (valid : σ.Valid)
+     (state : StateTyE P B σ Eb (.run q k μ))
+-    (view : q.view = .app (.prim b ts es rs) ws)
++    (view : q.view = .app (.prim b ts es (List.map RangeIx.fixed rs)) ws)
+     (hs : B.sig b = some sg) (kind : sg.kind = .io ∨ sg.kind = .exit)
+     (noHandler : NoHandler k (.prim b)) :
+     ∃ Ψ a e,
+@@ -118,7 +118,7 @@
+ theorem handled_step {P B σ Eb q b sg ts es rs ws k μ k1 cs k2 c l hcap}
+     (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)
+     (declared : P.EffectsOk B) (state : StateTyE P B σ Eb (.run q k μ))
+-    (view : q.view = .app (.prim b ts es rs) ws)
++    (view : q.view = .app (.prim b ts es (List.map RangeIx.fixed rs)) ws)
+     (hs : B.sig b = some sg) (kind : sg.kind = .io ∨ sg.kind = .exit ∨ sg.kind = .pathBases)
+     (split : SplitAt (.prim b) k k1 hcap cs k2) (clause : findClause cs (.prim b) = some c)
+     (fresh : μ l = none) :
+@@ -233,7 +233,7 @@
+     (hP : P.WellFormed) (hPB : P.WellTyped ModelTargets.builtins)
+     (hB : ModelTargets.builtins.CoreAssumptions P) (valid : σ.Valid)
+     (state : StateTyE P ModelTargets.builtins σ Eb (.run q k μ))
+-    (view : q.view = .app (.prim b ts es rs) ws)
++    (view : q.view = .app (.prim b ts es (List.map RangeIx.fixed rs)) ws)
+     (hs : ModelTargets.builtins.sig b = some sg) (kind : sg.kind = .pure) :
+     ∃ out, ModelTargets.builtins.delta b (Ty.normTys ts) (es.map Eff.norm) rs ws = some out ∧
+       Step P ModelTargets.builtins σ (.run q k μ) none (destination out k μ) ∧
+@@ -246,7 +246,7 @@
+     (hP : P.WellFormed) (hPB : P.WellTyped ModelTargets.builtins)
+     (hB : ModelTargets.builtins.CoreAssumptions P) (valid : σ.Valid)
+     (state : StateTyE P ModelTargets.builtins σ Eb (.run q k μ))
+-    (view : q.view = .app (.prim b ts es rs) ws)
++    (view : q.view = .app (.prim b ts es (List.map RangeIx.fixed rs)) ws)
+     (hs : ModelTargets.builtins.sig b = some sg) (kind : sg.kind = .io ∨ sg.kind = .exit)
+     (noHandler : NoHandler k (.prim b)) :
+     ∃ out obs, ModelTargets.builtins.ioResponse b (Ty.normTys ts) (es.map Eff.norm) ws out obs ∧
+@@ -262,7 +262,7 @@
+     (hP : P.WellFormed) (hPB : P.WellTyped ModelHttp.builtins)
+     (hB : ModelHttp.builtins.CoreAssumptions P) (valid : σ.Valid)
+     (state : StateTyE P ModelHttp.builtins σ Eb (.run q k μ))
+-    (view : q.view = .app (.prim b ts es rs) ws)
++    (view : q.view = .app (.prim b ts es (List.map RangeIx.fixed rs)) ws)
+     (hs : ModelHttp.builtins.sig b = some sg) (kind : sg.kind = .pure) :
+     ∃ out, ModelHttp.builtins.delta b (Ty.normTys ts) (es.map Eff.norm) rs ws = some out ∧
+       Step P ModelHttp.builtins σ (.run q k μ) none (destination out k μ) ∧
+@@ -275,7 +275,7 @@
+     (hP : P.WellFormed) (hPB : P.WellTyped ModelHttp.builtins)
+     (hB : ModelHttp.builtins.CoreAssumptions P) (valid : σ.Valid)
+     (state : StateTyE P ModelHttp.builtins σ Eb (.run q k μ))
+-    (view : q.view = .app (.prim b ts es rs) ws)
++    (view : q.view = .app (.prim b ts es (List.map RangeIx.fixed rs)) ws)
+     (hs : ModelHttp.builtins.sig b = some sg) (kind : sg.kind = .io ∨ sg.kind = .exit)
+     (noHandler : NoHandler k (.prim b)) :
+     ∃ out obs, ModelHttp.builtins.ioResponse b (Ty.normTys ts) (es.map Eff.norm) ws out obs ∧
+@@ -290,7 +290,7 @@
+ example {P B σ Eb q k μ b ts es rs ws sg externalOracle rel fresh}
+     (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)
+     (state : StateTyE P B σ Eb (.run q k μ))
+-    (view : q.view = .app (.prim b ts es rs) ws)
++    (view : q.view = .app (.prim b ts es (List.map RangeIx.fixed rs)) ws)
+     (hs : B.sig b = some sg) (kind : sg.kind = .pure ∨ sg.kind = .io ∨ sg.kind = .exit)
+     (noHandler : NoHandler k (.prim b)) :
+     (∃ Ψ a e, BuiltinArgs P B Ψ b sg (Ty.normTys ts) (es.map Eff.norm) rs ws a e) ∧
+@@ -305,7 +305,7 @@
+     (hP : P.WellFormed) (hPB : P.WellTyped ModelHttp.builtins)
+     (hB : ModelHttp.builtins.CoreAssumptions P) (declared : P.EffectsOk ModelHttp.builtins)
+     (state : StateTyE P ModelHttp.builtins σ Eb (.run q k μ))
+-    (view : q.view = .app (.prim "Http.sendIn" ts es rs) ws)
++    (view : q.view = .app (.prim "Http.sendIn" ts es (List.map RangeIx.fixed rs)) ws)
+     (split : SplitAt (.prim "Http.sendIn") k k1 hcap cs k2)
+     (clause : findClause cs (.prim "Http.sendIn") = some c) (fresh : μ l = none) :
+     Step P ModelHttp.builtins σ (.run q k μ) none

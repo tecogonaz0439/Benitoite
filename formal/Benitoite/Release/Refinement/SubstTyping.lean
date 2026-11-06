@@ -1034,8 +1034,8 @@ mutual
           (ht.closedAnnotation hc ha) hw hb).V_Normal
     | .V_List he hw hs hd =>
       exact .V_List (subst_each he hA hT hstore ρ ht hf) (ht.wf hw hs) (ht.sorted hs) (hd.bind_values ht.declaration)
-    | .V_Fun hd hn ha hi =>
-      have hh := HasTypeVQ.V_Fun (Ψ := store) (Φ := Ξ) hd hn (ht.admissible hA hi.types hi.rows ha) (ht.signature hi)
+    | .V_Fun hd hn hr ha hi =>
+      have hh := HasTypeVQ.V_Fun (Ψ := store) (Φ := Ξ) hd hn hr (ht.admissible hA hi.types hi.rows ha) (ht.signature hi)
       simpa only [Val.subst, instantiatedTel_subst hi.source] using hh.V_Normal
     | .V_Prim hb hr hn ha hi =>
       have hh := HasTypeVQ.V_Prim (Ψ := store) (Φ := Ξ) hb hr hn (ht.primitive hA hb hi.types hi.rows ha) (ht.signature hi)
@@ -1209,9 +1209,10 @@ mutual
                 rcases List.mem_append.mp hq with hq | hq
                 · exact List.mem_append_left _ hq
                 · exact List.mem_append_right _ (List.mem_cons_of_mem _ hq)))
-    | .C_Match (obs := obs) hv ho ha hx =>
+    | .C_Match (obs := obs) hv ho ha hdecl hx =>
       refine .C_Match (subst_value hv hA hT hstore ρ ht.images hf) ?_
         (subst_arms ha hA hT hstore ρ ht hL hf)
+        (hdecl.bind_values ht.declaration)
         (by rw [unguardedPats_subst]; exact hx.subst_values σ)
       intro t hobs
       cases obs with

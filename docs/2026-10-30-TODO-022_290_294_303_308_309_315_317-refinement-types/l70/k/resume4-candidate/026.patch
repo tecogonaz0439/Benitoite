@@ -1,0 +1,81 @@
+--- formal/Benitoite/Release/Refinement/HandlerGeneral.lean
++++ formal/Benitoite/Release/Refinement/HandlerGeneral.lean
+@@ -1303,11 +1303,11 @@
+   exact Or.inl ⟨.name l ix,h,rfl,trivial⟩
+ 
+ private theorem primitive_effect_shape {P : Program} {B : Builtins} {b : PrimName} {s : PrimSig} (hB : B.CoreAssumptions P)
+-    (hs : B.sig b = some s) (hk : s.kind = .io ∨ s.kind = .exit ∨ s.kind = .pathBases) :
++    (hs : B.sig b = some s) (hk : s.kind = .io ∨ s.kind = .exit) :
+     ∃ l bs, s.opEff = some l ∧ B.effects l = some bs ∧ b ∈ bs ∧ s.neffs = 0 ∧
+       ((s.rkinds = [] ∧ s.eff = Eff.single l) ∨
+        ∃ k, s.rkinds = [k] ∧ s.eff = .mk (fun a => decide (a = .name l (.rvar 0))) []) := by
+-  rcases hk with hk | hk | hk
++  rcases hk with hk | hk
+   · obtain ⟨l,bs,ho,hn,he,hb,hshape⟩ := hB.io_op b s hs (Or.inl hk)
+     refine ⟨l,bs,ho,he,hb,hn,?_⟩
+     cases hsh : s.shape <;> simp only [hsh] at hshape
+@@ -1320,9 +1320,6 @@
+     case untargeted => exact Or.inl ⟨hshape.2.1,hshape.2.2⟩
+     case topTargeted => exact Or.inl ⟨hshape.2.1,hshape.2.2⟩
+     case single k p => exact Or.inr ⟨k,hshape.2.1,hshape.2.2.1⟩
+-  · have sh := hB.pathBases_shape b s hs hk
+-    obtain ⟨bs,he,hb⟩ := sh.membership
+-    exact ⟨processEnvironmentEff,bs,sh.operation,he,hb,sh.rows,Or.inl ⟨sh.ranges,sh.effect⟩⟩
+ 
+ private theorem primitive_inst_member {s : PrimSig} {l : EffName} {rs : List RangeExpr}
+     (hshape : (s.rkinds = [] ∧ s.eff = Eff.single l) ∨
+@@ -1368,12 +1365,43 @@
+   refine ⟨jx,ha,?_⟩
+   cases ix <;> cases jx <;> first | exact hc.2 | cases hc
+ 
++/-- IO・終了の型付きの呼出しから、継続の効果の原子と操作の表の所属を得る。 -/
++theorem StateTyE.primitive_effect_input {P B σ Eb q b s ts es rs ws k μ}
++    (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)
++    (h : StateTyE P B σ Eb (.run q k μ))
++    (hv : q.view = .app (.prim b ts es (List.map RangeIx.fixed rs)) ws)
++    (hsig : B.sig b = some s) (hkind : s.kind = .io ∨ s.kind = .exit) :
++    ∃ Ψ R a z e l bs ix, ContTy P B σ Ψ R e k a z Eb none ∧
++      B.effects l = some bs ∧ b ∈ bs ∧ e.mem (.name l ix) := by
++  obtain ⟨Ψ,R,a,z,e,e1,hs,hq,he,hk,_,hclosed,_⟩ := h
++  have hcode := hq.app_view_typed hP hPB hB hs.wf hs.sorted hs.declared hv
++  have hg : ∀ w ∈ ws, w.Ground := by
++    intro w hw
++    exact hq.view_read_ground hclosed (by rw [hv]; exact List.mem_cons_of_mem _ hw)
++  obtain ⟨callerTy,hcall⟩ := hcode.read_values (.prim b ts es (List.map RangeIx.fixed rs)) List.mem_cons_self
++  obtain ⟨hranges,hadm,_⟩ := hcall.primitive_inputs hsig
++  obtain ⟨eff,bs,_,heffects,hb,hnrows,hshape⟩ := primitive_effect_shape hB hsig hkind
++  have hes : es = [] := List.length_eq_zero_iff.mp (hadm.rowCount.trans hnrows)
++  subst es
++  obtain ⟨r,f,hba,_,hcov⟩ := hcode.primitive_call hg rfl hsig
++  have hargs : HasTypeTelArgsQ P B Ψ Qempty [] [] [] ws (instantiatedTel (Tel.instR rs s.tel) ts []) r f := by
++    have hh := hba.arguments
++    rw [instantiatedTel_norm_images] at hh
++    exact hh
++  obtain ⟨ix,hmem,_⟩ := primitive_inst_member hshape hranges.1
++  have hm : f.mem (.name eff (.fixed ix)) := by
++    change f.atoms (.name eff (.fixed ix)) = true
++    rw [primitive_arguments_atoms hargs]
++    exact hmem
++  obtain ⟨ix1,hm1,_⟩ := covered_name_general hcov hm
++  exact ⟨Ψ,R,a,z,e,eff,bs,ix1,hk,heffects,hb,he.1 _ hm1⟩
++
+ /-- 組込みの実引数と効果表から、同じ捕捉の節へ移る全操作の葉。 -/
+ theorem StateTyE.operation_primitive {P B σ Eb q b s ts es rs ws k μ k1 cs k2 c l hcap}
+     (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)
+     (hdecl : P.EffectsOk B)
+-    (h : StateTyE P B σ Eb (.run q k μ)) (hv : q.view = .app (.prim b ts es rs) ws)
+-    (hsig : B.sig b = some s) (hkind : s.kind = .io ∨ s.kind = .exit ∨ s.kind = .pathBases)
++    (h : StateTyE P B σ Eb (.run q k μ)) (hv : q.view = .app (.prim b ts es (List.map RangeIx.fixed rs)) ws)
++    (hsig : B.sig b = some s) (hkind : s.kind = .io ∨ s.kind = .exit)
+     (hsp : SplitAt (.prim b) k k1 hcap cs k2) (hc : findClause cs (.prim b) = some c)
+     (hf : μ l = none) :
+     StateTyE P B σ Eb (.run (.mk (hcap.extendMany (ws ++ [.loc l])) (c.body.substTy ts []))
+@@ -1383,7 +1411,7 @@
+   have hg : ∀ w ∈ ws, w.Ground := by
+     intro w hw
+     exact hq.view_read_ground hclosed (by rw [hv]; exact List.mem_cons_of_mem _ hw)
+-  obtain ⟨callerTy,hcall⟩ := hcode.read_values (.prim b ts es rs) List.mem_cons_self
++  obtain ⟨callerTy,hcall⟩ := hcode.read_values (.prim b ts es (List.map RangeIx.fixed rs)) List.mem_cons_self
+   obtain ⟨hranges,hadm,hi⟩ := hcall.primitive_inputs hsig
+   obtain ⟨eff,bs,hop,heffects,hb,hnrows,hshape⟩ := primitive_effect_shape hB hsig hkind
+   have hes : es = [] := List.length_eq_zero_iff.mp (hadm.rowCount.trans hnrows)

@@ -55,7 +55,7 @@ private theorem plain_code (P : Program) (B : Builtins) :
     HasTypeCQ P B StoreTy.empty Qempty [] [] [] none (.match root plainArms) (.base .unit) Eff.empty [] := by
   refine .C_Match (root_typed P B) (obs := none) (by intro t h; cases h)
     (.plainEmpty (pair_alts P _) (by intro p hp; cases hp) (ret_unit _)
-      (.plainEmpty (wild_alts P _) (by intro p hp; cases hp) (ret_unit _) (.nil unit_annotation))) ?_
+      (.plainEmpty (wild_alts P _) (by intro p hp; cases hp) (ret_unit _) (.nil unit_annotation))) trivial ?_
   intro v hv
   exact ⟨.wild,by simp [unguardedPats,plainArms,pairs,wild],by simp [matchVal]⟩
 
@@ -64,7 +64,7 @@ private theorem guard_code (P : Program) (B : Builtins) (b : Bool) :
   refine .C_Match (root_typed P B) (obs := none) (by intro t h; cases h)
     (.guardedEmpty (pair_alts P _) (by intro p hp; cases hp) boolean_annotation
       (.C_Return (boolean_typed b)) (ret_unit _)
-      (.plainEmpty (wild_alts P _) (by intro p hp; cases hp) (ret_unit _) (.nil unit_annotation))) ?_
+      (.plainEmpty (wild_alts P _) (by intro p hp; cases hp) (ret_unit _) (.nil unit_annotation))) trivial ?_
   intro v hv
   exact ⟨.wild,by simp [unguardedPats,guardArms,wild],by simp [matchVal]⟩
 

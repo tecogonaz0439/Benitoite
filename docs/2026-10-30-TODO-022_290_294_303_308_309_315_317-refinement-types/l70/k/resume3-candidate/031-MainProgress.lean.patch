@@ -1,0 +1,33 @@
+--- a/formal/Benitoite/Release/Refinement/MainProgress.lean
++++ b/formal/Benitoite/Release/Refinement/MainProgress.lean
+@@ -438,7 +438,7 @@
+ /-- 組み込みの関数の呼出しは、種類ごとの規則で遷移する。IO・終了・PathBases は、処理する枠があればその節へ移る。 -/
+ theorem StateTyE.primitive_progress {P B σ Eb q k μ b ts es rs ws}
+     (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)
+-    (h : StateTyE P B σ Eb (.run q k μ)) (hv : q.view = .app (.prim b ts es rs) ws) :
++    (h : StateTyE P B σ Eb (.run q k μ)) (hv : q.view = .app (.prim b ts es (List.map RangeIx.fixed rs)) ws) :
+     ∃ l s', Step P B σ (.run q k μ) l s' := by
+   obtain ⟨_,_,_,_,sg,_,_,_,_,hsig,hra,hpa,_⟩ := h.primitive_contract_inputs hP hPB hB hv
+   have hparts := h
+@@ -746,17 +746,17 @@
+     ∃ l s', Step P B σ (.run q k μ) l s' := by
+   obtain ⟨Ψ,R,a,e,t,r,ef,_,_,hf,_,_,_,_⟩ := h.app_inputs hP hPB hB hv
+   rcases hf.canonical_function (t := t) rfl with
+-    ⟨g,ts,es,rfl⟩ | ⟨b,ts,es,rs,rfl⟩ | ⟨o,ts,rfl⟩ | ⟨ns,ps,body,rfl⟩ | ⟨t',body,rfl⟩ |
++    ⟨g,ts,es,rs,rfl⟩ | ⟨b,ts,es,rs,rfl⟩ | ⟨o,ts,rfl⟩ | ⟨ns,ps,body,rfl⟩ | ⟨t',body,rfl⟩ |
+       ⟨rt,body,rfl⟩ | ⟨t',e',rfl⟩ | ⟨g,ts,rfl⟩
+-  · obtain ⟨_,_,_,_,d,_,_,_,_,hd,hnames,had,_,hargs,_,_⟩ := h.fnRef_contract_inputs hP hPB hB hv
++  · obtain ⟨_,_,_,_,d,_,_,_,_,hd,hnames,had,_,hargs,_,_⟩ := h.fnRef_contract_inputs_ranges hP hPB hB hv
+     have hws : ws.length = d.params.length := by
+       rw [hargs.length]
+-      simp only [Tel.arity,instantiatedTel,Tel.names_bind,Def.tel]
++      simp only [Tel.arity,instantiatedTel,Tel.names_bind,Def.instTel_names,Def.tel]
+       rw [signatureTel_names _ _ _ _ hnames.1]
+       exact hnames.1
+     have hts : ts.length = d.ntys := by
+       simpa [TypeCtx.constraints,Def.ntys] using had.types.1
+-    exact ⟨_,_,(h.fun_step hP hPB hB hv hd hws hts had.rowCount).1⟩
++    exact ⟨_,_,(h.fun_step_ranges hP hPB hB hv hd hws hts had.rowCount).1⟩
+   · exact h.primitive_progress hP hPB hB hv
+   · exact h.operation_progress hP hPB hdecl hB hEb hv
+   · exact ⟨_,_,(h.lambda_inputs hP hPB hB hv rfl).1⟩

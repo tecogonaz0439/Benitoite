@@ -146,8 +146,8 @@ theorem fun_case {K P0 B0 B κ Ψ Q C Γ f d ts es}
     (args.annotations rfl count _) args.kindArgs (rows.annotations rfl count _) rows.rowKinds
     (by simpa only [embedDefWithKinds,embedDef,Def.tel,legacy_embedParameters,
       legacy_shiftV,legacy_shiftVEff] using legacy_instantiated_annotation d.names d.params d.ret d.eff ts es ha)
-  have hv := HasTypeVQ.V_Fun (Ψ := embedStoreTy Ψ) (Φ := Φ) (embedProgramWithKinds_def lookup)
-    hn (by simpa only [embedDefWithKinds,embedDef,TypeCtx.constraints,
+  have hv := HasTypeVQ.fun_empty (Ψ := embedStoreTy Ψ) (Φ := Φ) (embedProgramWithKinds_def lookup)
+    hn (by rfl) (by simpa only [embedDefWithKinds,embedDef,TypeCtx.constraints,
       embedTParamsWithKinds_constraints _ _ (kinds.1 f d lookup),List.length_map,legacy_embedParameters,
       legacy_shiftV,legacy_shiftVEff] using ha') si
   exact .V_Sub hv (.convert (by

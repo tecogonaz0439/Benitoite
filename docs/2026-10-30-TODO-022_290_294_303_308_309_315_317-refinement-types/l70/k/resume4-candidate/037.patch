@@ -1,0 +1,27 @@
+--- formal/Benitoite/Release/Refinement/LegacyProgramTyping.lean
++++ formal/Benitoite/Release/Refinement/LegacyProgramTyping.lean
+@@ -46,9 +46,9 @@
+     rw [legacyTypeCtx_kinds (wf.1 f d lookup)]
+     exact hk
+   · rw [htel]
+-    exact ha.toTel
++    exact ⟨ha.toTel.wf,ha.toTel.sorted,ha.toTel.declared⟩
+   · rw [htel,←legacy_signatureTel,QTel_signatureTel _ _ _ _ hn,legacy_Qsig]
+-    simpa only [legacy_signatureTel,embedDefWithKinds,embedDef,legacyTypeCtx] using ht
++    simpa only [TelBodyTyR, ↓reduceIte, legacy_signatureTel,embedDefWithKinds,embedDef,legacyTypeCtx] using ht
+ 
+ private theorem legacy_substAt (a : Benitoite.Release.Ty) (c : Nat)
+     (ts : List Benitoite.Release.Ty) (es : List Benitoite.Release.Eff) :
+@@ -250,10 +250,10 @@
+     refine ⟨?_,?_,?_⟩
+     · simpa only [embedDefWithKinds,embedDef,legacy_embedParameters,NamesWF,embedTys_eq_map,List.length_map]
+         using (show d0.names.length = d0.params.length ∧ d0.names.Nodup from ho.1)
+-    · simpa only [embedDefWithKinds,embedDef,Def.tel,legacy_embedParameters,legacy_shiftV,legacy_shiftVEff,legacyTypeCtx] using hsig
++    · simpa only [embedDefWithKinds,embedDef,Def.tel,legacy_embedParameters,legacy_shiftV,legacy_shiftVEff,legacyTypeCtx] using (show SignatureScopedR _ [] _ _ _ from ⟨hsig.1,hsig.2.1,hsig.2.2.1,⟨hsig.2.2.2.wf,hsig.2.2.2.sorted,hsig.2.2.2.declared⟩⟩)
+     · have hcount : (embedTParamsWithKinds d0.tparams (K.functionParams f)).length = d0.tparams.length := legacyTypeCtx_length (wf.1 f d0 hd0)
+       simpa only [embedDefWithKinds,embedDef,Def.ntys,legacy_embedParameters,embedTys_eq_map,List.length_map,
+-        hcount] using inputs.functions f d0 hd0
++        hcount, List.length_nil] using inputs.functions f d0 hd0
+   · intro c cd hc
+     obtain ⟨cd0,hc0,rfl⟩ := Option.map_eq_some_iff.mp hc
+     exact ⟨tables.dataArity hc0,tables.constructor_scoped hc0⟩

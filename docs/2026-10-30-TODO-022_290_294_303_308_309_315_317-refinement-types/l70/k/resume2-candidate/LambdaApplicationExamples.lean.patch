@@ -1,0 +1,20 @@
+--- formal/Benitoite/Release/Refinement/LambdaApplicationExamples.lean
++++ formal/Benitoite/Release/Refinement/LambdaApplicationExamples.lean
+@@ -152,7 +152,7 @@
+ theorem delta_return_path {P B σ b sg ts es rs}
+     (hs : B.sig b = some sg) (hk : sg.kind = .pure)
+     (hd : B.delta b (Ty.normTys ts) (es.map Eff.norm) rs [] = some (.val nested))
+-    (start : Closure) (hv : start.view = .app (.prim b ts es rs) []) :
++    (start : Closure) (hv : start.view = .app (.prim b ts es (List.map RangeIx.fixed rs)) []) :
+     let continuation := Closure.pure (.app (.var 0) [])
+     let next := continuation.apply [nested]
+     Step P B σ (.run start [.letF continuation] Store.empty) none
+@@ -181,7 +181,7 @@
+ example {P} {B : Builtins} {σ b sg ts} {es : List Eff} {rs} {start : Closure}
+     (hs : B.sig b = some sg) (hk : sg.kind = .pure)
+     (hd : B.delta b (Ty.normTys ts) (es.map Eff.norm) rs [] = some (.val nested))
+-    (hv : start.view = .app (.prim b ts es rs) []) :
++    (hv : start.view = .app (.prim b ts es (List.map RangeIx.fixed rs)) []) :
+     Step P B σ afterFirst none (target [.mark] Store.empty) :=
+   (delta_return_path hs hk hd start hv).2.2.2
+ 

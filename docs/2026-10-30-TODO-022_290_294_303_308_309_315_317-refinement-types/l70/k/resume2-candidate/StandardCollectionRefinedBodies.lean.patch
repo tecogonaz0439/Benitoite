@@ -1,0 +1,11 @@
+--- formal/Benitoite/Release/Refinement/StandardCollectionRefinedBodies.lean
++++ formal/Benitoite/Release/Refinement/StandardCollectionRefinedBodies.lean
+@@ -166,7 +166,7 @@
+       | (solve | constructor <;> constructor <;> precision_simp)
+       | (solve | constructor <;> precision_simp)
+       | (rintro (_|(_|i)) a k ha hk <;> precision_simp <;> subst_vars <;> constructor <;> precision_simp)
+-  have typed := HasTypeVQ.V_Fun (Ψ := StoreTy.empty) (Φ := Φ) lookup names ad inst
++  have typed := HasTypeVQ.fun_empty (Ψ := StoreTy.empty) (Φ := Φ) lookup names (by rfl) ad inst
+   have same : instantiatedTel (collectionListDefinition filter).tel (listArgs map filter) [Eff.row 0] =
+       listTel map filter := by
+     simp only [list_decl]

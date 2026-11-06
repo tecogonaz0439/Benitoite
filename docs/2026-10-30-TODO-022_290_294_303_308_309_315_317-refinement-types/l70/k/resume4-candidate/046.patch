@@ -1,0 +1,32 @@
+--- formal/Benitoite/Release/Refinement/MatchPaths.lean
++++ formal/Benitoite/Release/Refinement/MatchPaths.lean
+@@ -52,9 +52,10 @@
+ theorem HasTypeCQ.match_legacy {P B Ψ Q C Γ Φ R v arms a b e L}
+     (hv : HasTypeVQ P B Ψ Q C Γ Φ v a)
+     (ha : HasTypeArmsQ P B Ψ Q C Γ Φ R none arms a b e L)
++    (hd : Ty.Declared P C Γ a)
+     (hx : Exhaustive P a (unguardedPats arms)) :
+     HasTypeCQ P B Ψ Q C Γ Φ R (.match v arms) b e L :=
+-  .C_Match hv (by intro t ht; cases ht) ha hx
++  .C_Match hv (by intro t ht; cases ht) ha hd hx
+ 
+ /-- Boolean の self を実際の結果で開く。整形式は値の真偽に依存しない。 -/
+ theorem Ty.Annotation.open_boolean {P C Γ p} (b : Bool)
+@@ -187,7 +188,7 @@
+     cases hframes
+     have ha := hb.result_annotation
+     rw [←hat,←het] at ha
+-    have hh := ClosureTy.capture_resolved_closed hc (.C_Match hv ho har hx) hl ha hR hr
++    have hh := ClosureTy.capture_resolved_closed hc (.C_Match hv ho har (hv.declared_capture hc.declared) hx) hl ha hR hr
+     simp only [Comp.resolveLocals,HasTypeVQ.resolve_id hv,←hea] at hh
+     rw [hat,het] at hh
+     exact ⟨_,_,_,_,⟨_,hev,hh⟩,he,hk,hp⟩
+@@ -339,7 +340,7 @@
+       (∀ t, obs = some t → v.toTerm? = some t ∧ ∃ sort, t.HasSort Γ sort) ∧
+       HasTypeArmsQ P B Ψ Q C Γ Φ R obs arms a b e L ∧ Exhaustive P a (unguardedPats arms) := by
+   match h with
+-  | .C_Match hv ho ha hx => cases hm; exact ⟨_,_,hv,ho,ha,hx⟩
++  | .C_Match hv ho ha hdecl hx => cases hm; exact ⟨_,_,hv,ho,ha,hx⟩
+   | .C_Sub h hl he hw hs hd =>
+     obtain ⟨a,obs,hv,ho,ha,hx⟩ := h.match_arms hm
+     exact ⟨a,obs,hv,ho,ha.sub_result hl he ⟨hw,hs,hd⟩,hx⟩

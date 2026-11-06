@@ -877,3 +877,8 @@ import Benitoite.Release.Refinement.HostRangeParams
 import Benitoite.Release.Refinement.ProgramExtensionTransport
 import Benitoite.Release.Refinement.StandardModelGeneral
 import Benitoite.Release.Refinement.StandardModelComposedRows
+
+import Benitoite.Release.Refinement.RangeSourceProperties
+import Benitoite.Release.Refinement.RangeFunctionExamples
+import Benitoite.Release.Refinement.MainEffects
+import Benitoite.Release.Refinement.EffectSoundnessExamples

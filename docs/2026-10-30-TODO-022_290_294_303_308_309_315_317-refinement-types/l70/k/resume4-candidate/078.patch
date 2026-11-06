@@ -1,0 +1,38 @@
+--- formal/Benitoite/Release/Refinement/StandardAliasBodies.lean
++++ formal/Benitoite/Release/Refinement/StandardAliasBodies.lean
+@@ -337,7 +337,7 @@
+ def API.all : List API := [.Integer64_toString,.Integer64_parse,.Integer64_toFloat,.Integer64_floorDivide,.Integer64_floorModulo,.Integer64_absolute,.Integer64_minimum,.Integer64_maximum,.Integer64_bitwiseAnd,.Integer64_bitwiseOr,.Integer64_bitwiseExclusiveOr,.Integer64_bitwiseNot,.Integer64_shiftLeft,.Integer64_shiftRight,.Integer64_shiftRightUnsigned,.UnsignedInteger_fromInteger,.UnsignedInteger_toInteger,.UnsignedInteger_parse,.UnsignedInteger_toString,.UnsignedInteger_toFloat,.UnsignedInteger_toDecimal,.UnsignedInteger_fromDecimal,.UnsignedInteger_absolute,.UnsignedInteger_minimum,.UnsignedInteger_maximum,.UnsignedInteger_floorDivide,.UnsignedInteger_floorModulo,.UnsignedInteger_bitwiseAnd,.UnsignedInteger_bitwiseOr,.UnsignedInteger_bitwiseExclusiveOr,.UnsignedInteger_bitwiseNot,.UnsignedInteger_shiftLeft,.UnsignedInteger_shiftRight,.UnsignedInteger8_fromInteger,.UnsignedInteger8_toInteger,.UnsignedInteger8_toString,.UnsignedInteger8_bitwiseAnd,.UnsignedInteger8_bitwiseOr,.UnsignedInteger8_bitwiseExclusiveOr,.UnsignedInteger8_bitwiseNot,.UnsignedInteger8_shiftLeft,.UnsignedInteger8_shiftRight,.Float64_toString,.Float64_parse,.Float64_truncate,.Float64_isNaN,.Float64_absolute,.Float64_floor,.Float64_ceiling,.Float64_round,.Float64_squareRoot]
+ 
+ def API.definition (api : API) : Def :=
+- ⟨[],0,api.names,api.inputs,api.result,Eff.empty,api.body⟩
++ ⟨[],0,api.names,api.inputs,api.result,Eff.empty,api.body, []⟩
+ 
+ def program : Program :=
+  {StandardCollectionModel.program with defs := (fun name =>
+@@ -350,7 +350,7 @@
+ 
+ local macro "alias_simp" : tactic => `(tactic|
+  simp_all [API.signature,API.names,API.inputs,API.result,API.target,API.row,API.body,
+-  StandardContracts.Row.definition,Def.WellTyped,Def.tel,PrimSig.tel,signatureTel,
++  StandardContracts.Row.definition,Def.WellTyped,Ty.annotationR_nil,telBodyTyR_nil,Def.tel,PrimSig.tel,signatureTel,
+   Tel.names,Tel.inputs,Tel.result,Tel.effect,
+   TypeCtx.kinds,TypeCtx.constraints,TypeAnnotations,Ty.Annotation,
+   Ty.WF,Tel.WF,Ty.WFList,Ty.Sorted,Tel.Sorted,sortedTys,sortedEff,
+@@ -374,7 +374,7 @@
+  HasTypeVQ P B Ψ Q [] Γ Φ (.prim api.target [] [] [])
+   (.fn api.names api.inputs api.result Eff.empty) := by
+  have kind := TyCon.arity_data arity
+- apply (HasTypeVQ.V_Prim lookup ?_ ?_ ?_ ?_).convert ?_ (signature_formed arity api Γ)
++ apply (HasTypeVQ.V_Prim (rs := []) lookup ?_ ?_ ?_ ?_).convert ?_ (signature_formed arity api Γ)
+  · cases api <;> alias_simp
+  · cases api <;> alias_simp
+  · cases api <;> constructor <;> alias_simp
+@@ -390,7 +390,7 @@
+ theorem body_typed_of {P B} (arity : P.DataArity "Option" 1) (api : API)
+  (lookup : B.sig api.target=some api.signature) : api.row.BodyTyped P B := by
+  have kind := TyCon.arity_data arity
+- refine ⟨⟨[],0,api.names,api.inputs,api.result,Eff.empty,api.body⟩,?_,?_,?_,?_,?_⟩
++ refine ⟨⟨[],0,api.names,api.inputs,api.result,Eff.empty,api.body,[]⟩,?_,?_,?_,?_,?_⟩
+  · cases api <;> rfl
+  · cases api <;> alias_simp
+  · cases api <;> alias_simp

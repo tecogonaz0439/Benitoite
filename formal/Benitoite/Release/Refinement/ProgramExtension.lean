@@ -95,11 +95,11 @@ def Program.FreshEffects (P P' : Program) (B : Builtins) : Prop :=
 theorem Program.Additions.freshEffects {P P' B} (h : Program.Additions P P' B) :
     Program.FreshEffects P P' B := h.builtinEffects
 
-/-- 旧宣言の値と計算の型付けの移送。文脈の型が P で宣言済みのとき、P の導出は P' の導出である。 -/
+/-- 旧宣言の値と計算の型付けの移送。P の導出は P' の導出である。 -/
 def Program.ExtendsTypingStatement (P P' : Program) (B : Builtins) : Prop :=
   Program.Extends P P' → Program.FreshEffects P P' B → P.WellFormed →
-    (∀ Ψ Q C Γ Φ v a, Ctx.Declared P C Γ → HasTypeVQ P B Ψ Q C Γ Φ v a → HasTypeVQ P' B Ψ Q C Γ Φ v a) ∧
-    (∀ Ψ Q C Γ Φ R m a ε Δ, Ctx.Declared P C Γ → HasTypeCQ P B Ψ Q C Γ Φ R m a ε Δ →
+    (∀ Ψ Q C Γ Φ v a, HasTypeVQ P B Ψ Q C Γ Φ v a → HasTypeVQ P' B Ψ Q C Γ Φ v a) ∧
+    (∀ Ψ Q C Γ Φ R m a ε Δ, HasTypeCQ P B Ψ Q C Γ Φ R m a ε Δ →
       HasTypeCQ P' B Ψ Q C Γ Φ R m a ε Δ)
 
 /-- 旧宣言の網羅性の移送。P で宣言済みの型について、網羅性は P と P' で同じである。 -/

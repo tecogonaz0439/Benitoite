@@ -1,0 +1,37 @@
+--- formal/Benitoite/Release/Refinement/StandardCollectionRefinedBodies.lean
++++ formal/Benitoite/Release/Refinement/StandardCollectionRefinedBodies.lean
+@@ -119,7 +119,7 @@
+       .refined (.list (.tvar (if filter then 0 else 1)))
+         (if filter then .le (StandardCollectionPrecision.length (.var 0)) (StandardCollectionPrecision.length (.var 2))
+          else .eq (StandardCollectionPrecision.length (.var 0)) (StandardCollectionPrecision.length (.var 2))),
+-      Eff.row 0,StandardHeadTail.publicBody filter⟩ := by cases filter <;> rfl
++      Eff.row 0,StandardHeadTail.publicBody filter,[]⟩ := by cases filter <;> rfl
+ 
+ local macro "precision_simp" : tactic => `(tactic|
+  ((try simp_all [list_decl,listTel,StandardCollectionPrecision.signature,StandardBodies.collectionPrimitiveSig,
+@@ -166,7 +166,7 @@
+       | (solve | constructor <;> constructor <;> precision_simp)
+       | (solve | constructor <;> precision_simp)
+       | (rintro (_|(_|i)) a k ha hk <;> precision_simp <;> subst_vars <;> constructor <;> precision_simp)
+-  have typed := HasTypeVQ.V_Fun (Ψ := StoreTy.empty) (Φ := Φ) lookup names ad inst
++  have typed := HasTypeVQ.fun_empty (Ψ := StoreTy.empty) (Φ := Φ) lookup names (by rfl) ad inst
+   have same : instantiatedTel (collectionListDefinition filter).tel (listArgs map filter) [Eff.row 0] =
+       listTel map filter := by
+     simp only [list_decl]
+@@ -634,7 +634,7 @@
+ private def pairAlts (second : Bool) : List Alt := [⟨pairPattern second,[0]⟩]
+ private theorem pair_decl (second : Bool) : collectionPairProjection second =
+     ⟨[TypeCtx.valueParam,TypeCtx.valueParam],0,["p"],[pairInput],.tvar (if second then 1 else 0),Eff.empty,
+-      .match (.var 0) [.mk (pairAlts second) none (.ret (.var 0))]⟩ := by cases second <;> rfl
++      .match (.var 0) [.mk (pairAlts second) none (.ret (.var 0))],[]⟩ := by cases second <;> rfl
+ private theorem pair_alts (second : Bool) : AltsTy program (pairAlts second) pairInput [.tvar (if second then 1 else 0)] := by
+   cases second <;> refine ⟨by simp [pairAlts],rfl,?_,?_⟩
+   all_goals first
+@@ -677,6 +677,7 @@
+        · apply HasTypeArmsQ.plainEmpty (pair_alts _) (by simp [pathFacts,FactsWF])
+          · exact .C_Return (by collection_var)
+          · apply HasTypeArmsQ.nil; constructor <;> precision_simp
++       · simp only [pairInput]; precision_simp
+        · exact pair_exhaustive _)
+ 
+ /-- 同じ表に置く全十一の定義を、参照先も含めて検査する。 -/

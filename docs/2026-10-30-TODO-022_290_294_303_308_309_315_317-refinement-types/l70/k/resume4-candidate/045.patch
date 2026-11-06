@@ -1,0 +1,11 @@
+--- formal/Benitoite/Release/Refinement/MainTargets.lean
++++ formal/Benitoite/Release/Refinement/MainTargets.lean
+@@ -36,7 +36,7 @@
+ private theorem io_call_target {P B σ Eb q k μ b ts es rs ws sg out obs}
+     (hP : P.WellFormed) (hPB : P.WellTyped B) (hdecl : P.EffectsOk B) (hB : B.CoreAssumptions P)
+     (ht : B.TargetAgreement P) (h : StateTyE P B σ Eb (.run q k μ))
+-    (hv : q.view = .app (.prim b ts es rs) ws) (hsig : B.sig b = some sg)
++    (hv : q.view = .app (.prim b ts es (List.map RangeIx.fixed rs)) ws) (hsig : B.sig b = some sg)
+     (hk : sg.kind = .io ∨ sg.kind = .exit) (hn : NoHandler k (.prim b))
+     (hr : B.ioResponse b (Ty.normTys ts) (es.map Eff.norm) ws out obs) :
+     ∃ e l, B.sig b = some e ∧ e.opEff = some l ∧ ∀ t ∈ obs, Eff.Allows σ B.effKind Eb l t := by

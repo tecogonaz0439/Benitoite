@@ -38,7 +38,7 @@ mutual
   def closeVal (cap : Capture) : Val → Val
     | .var i => cap.env i
     | .const c => .const c
-    | .fnRef f ts es => .fnRef f (ts.map cap.closeTy) (es.map cap.closeEff)
+    | .fnRef f ts es rs => .fnRef f (ts.map cap.closeTy) (es.map cap.closeEff) rs
     | .prim b ts es rs => .prim b (ts.map cap.closeTy) (es.map cap.closeEff) rs
     | .lam ns ps body => .closure (cap.closeTel (lambdaShape ns ps)) (.mk cap body)
     | .dependentLam t body => .closure (cap.closeTel t) (.mk cap body)
@@ -65,6 +65,12 @@ mutual
     | [] => []
     | v :: vs => closeVal cap v :: closeVals cap vs
 end
+
+/-- 関数参照の型と行を閉じ、範囲の実引数はそのまま保つ。 -/
+theorem closeVal_fnRef (cap : Capture) (f : FunName) (ts : List Ty) (es : List Eff)
+    (rs : List RangeIx) :
+    closeVal cap (.fnRef f ts es rs) = .fnRef f (ts.map cap.closeTy) (es.map cap.closeEff) rs := by
+  simp only [closeVal]
 
 /-- 一歩で読む値だけを閉じる。内側のcodeは捕捉環境と一緒に残す。 -/
 def Closure.view (q : Closure) : Comp := match q.code with

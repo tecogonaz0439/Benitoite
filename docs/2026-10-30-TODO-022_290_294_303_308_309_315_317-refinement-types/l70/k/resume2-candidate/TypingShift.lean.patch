@@ -1,0 +1,13 @@
+--- formal/Benitoite/Release/Refinement/TypingShift.lean
++++ formal/Benitoite/Release/Refinement/TypingShift.lean
+@@ -625,8 +625,8 @@
+         (DependentClosureTy.store hb hA hstore hpres)
+     | .V_List he hw hs hd =>
+       exact .V_List (HasTypeEachQ.shift_values he hA hstore hpres hm hf) (hm.wf hw) (hm.sorted hs) (hm.declared hd)
+-    | .V_Fun hd hn ha hi =>
+-      have hh := HasTypeVQ.V_Fun (Ψ := store') (Φ := Ξ) hd hn (hm.admissible hA hi.types hi.rows ha) (hm.signature hi)
++    | .V_Fun hd hn hr ha hi =>
++      have hh := HasTypeVQ.V_Fun (Ψ := store') (Φ := Ξ) hd hn hr (hm.admissible hA hi.types hi.rows ha) (hm.signature hi)
+       simpa only [Val.rename, renameTy_shiftIndex, renameEff_shiftIndex,
+         instantiatedTel_shift hi.source] using hh
+     | .V_Prim hb hr hn ha hi =>

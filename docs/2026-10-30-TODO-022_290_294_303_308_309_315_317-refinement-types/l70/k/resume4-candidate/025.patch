@@ -1,0 +1,32 @@
+--- formal/Benitoite/Release/Refinement/HandlerContracts.lean
++++ formal/Benitoite/Release/Refinement/HandlerContracts.lean
+@@ -64,12 +64,28 @@
+ 
+ def handles (h : List Clause) (o : OpRef) : Bool := h.any (fun c => c.op==o)
+ 
++/-- 選ばれた組込みの一覧に、範囲の起点を発行する関数がある。 -/
++def Builtins.issuesIn (B : Builtins) (l : EffName) : Bool :=
++  match B.effects l with
++  | some bs => bs.any fun b => match B.sig b with
++      | some s => decide (s.kind = .pathBases)
++      | none => false
++  | none => false
++
++/-- 利用者の一覧を選んだラベルでは、組込みの一覧を読まない。 -/
++def issuesSelected (P : Program) (B : Builtins) (l : EffName) : Bool :=
++  match P.effects l with
++  | some _ => false
++  | none => B.issuesIn l
++
+ def handled (P : Program) (B : Builtins) (h : List Clause) : Eff :=
+   .mk (fun a => match a with
+     | .name l _ => match effOps P B l with
+-      | some (o::os) => (o::os).all (handles h)
++      | some (o::os) => (o::os).all (handles h) && !issuesSelected P B l
+       | _ => false
+     | .rho _ => false) []
++
++abbrev handledSelected (P : Program) (B : Builtins) (h : List Clause) : Eff := handled P B h
+ 
+ def BinderTypes.LocalWF (nt : Nat) : Nat → List Ty → Prop
+   | _,[] => True

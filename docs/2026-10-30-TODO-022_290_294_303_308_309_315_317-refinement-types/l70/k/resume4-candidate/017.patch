@@ -1,0 +1,24 @@
+--- formal/Benitoite/Release/Refinement/ContextTransport.lean
++++ formal/Benitoite/Release/Refinement/ContextTransport.lean
+@@ -41,8 +41,8 @@
+       exact .V_DependentLam x7 (TelBodyTy.q_mono x8 hq)
+     | @HasTypeVQ.V_Closure _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 =>
+       exact .V_Closure x8 x9 x10
+-    | @HasTypeVQ.V_Fun _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 =>
+-      exact .V_Fun x9 x10 (x11.q_mono hq) x12
++    | @HasTypeVQ.V_Fun _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 =>
++      exact .V_Fun x10 x11 x12 (x13.q_mono hq) x14
+     | @HasTypeVQ.V_Prim _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 =>
+       exact .V_Prim x10 x11 x12 (x13.q_mono hq) x14
+     | @HasTypeVQ.V_Op _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 =>
+@@ -126,8 +126,8 @@
+       exact .C_DependentApp (HasTypeVQ.q_mono x12 hq) (HasTypeTelArgsQ.q_mono x13 hq)
+     | @HasTypeCQ.C_If _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 =>
+       exact .C_If (HasTypeVQ.q_mono x13 hq) x14 (HasTypeCQ.q_mono x15 hq) (HasTypeCQ.q_mono x16 hq)
+-    | @HasTypeCQ.C_Match _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 =>
+-      exact .C_Match (HasTypeVQ.q_mono x13 hq) x14 (HasTypeArmsQ.q_mono x15 hq) x16
++    | @HasTypeCQ.C_Match _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 =>
++      exact .C_Match (HasTypeVQ.q_mono x13 hq) x14 (HasTypeArmsQ.q_mono x15 hq) x16 x17
+     | @HasTypeCQ.C_Lazy _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 =>
+       exact .C_Lazy (HasTypeCQ.q_mono x9 hq) x10
+     | @HasTypeCQ.C_Escape _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 =>

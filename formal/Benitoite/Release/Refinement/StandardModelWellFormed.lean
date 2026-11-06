@@ -11,8 +11,8 @@ set_option linter.unusedSimpArgs false
 
 /-- 依存列の行・範囲の上限と、本体の深さの条件。型の注釈と種類は型付けから読む。 -/
 def BodyScoped (d : Def) : Prop :=
-  (Ty.dependentFn d.tel).RowsIn (· < d.neffs) ∧ (Ty.dependentFn d.tel).RangesScoped 0 ∧
-    d.tel.RowsIn (· < d.neffs) ∧ d.body.SourceScoped 0 d.ntys d.neffs d.params.length
+  (Ty.dependentFn d.tel).RowsIn (· < d.neffs) ∧ (Ty.dependentFn d.tel).RangesScoped d.rkinds.length ∧
+    d.tel.RowsIn (· < d.neffs) ∧ d.body.SourceScoped d.rkinds.length d.ntys d.neffs d.params.length
 
 theorem Def.scoped_of_typed {P B} {d : Def} (typed : d.WellTyped P B) (formed : BodyScoped d) :
     d.Scoped P := by

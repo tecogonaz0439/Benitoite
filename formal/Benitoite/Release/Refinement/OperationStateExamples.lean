@@ -1,4 +1,5 @@
 import Benitoite.Release.Refinement.HandlerGeneral
+import Benitoite.Release.Refinement.PathBasesLeaves
 
 /-! # 操作・失敗・再開の全状態の具体例 -/
 namespace Benitoite.Release.Refinement
@@ -180,10 +181,27 @@ private def primitiveClauses (σ : PathEnv) : List Clause :=
 
 theorem primitive_pathBases {P B σ}
     (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)
-    (hdecl : P.EffectsOk B) (hsig : B.sig "Example.pathBases" = some primitiveSig) (hσ : σ.Valid) :
+    (hsig : B.sig "Example.pathBases" = some primitiveSig) (hσ : σ.Valid) :
     StateTyE P B σ primitiveEffect
-      (.run (.mk (Capture.empty.extendMany [.loc 0]) (.ret (.pathBases σ))) [.drop 0]
-        (Store.empty.set 0 (.cont [.handleF Capture.empty (primitiveClauses σ)]))) := by
+      (.run (.mk Capture.empty (.app (.prim "Example.pathBases" [] [] []) []))
+        [.handleF Capture.empty (primitiveClauses σ)] Store.empty) ∧
+    Step P B σ
+      (.run (.mk Capture.empty (.app (.prim "Example.pathBases" [] [] []) []))
+        [.handleF Capture.empty (primitiveClauses σ)] Store.empty) none
+      (.run (.mk Capture.empty (.issuePathBases "Example.pathBases"))
+        [.handleF Capture.empty (primitiveClauses σ)] Store.empty) ∧
+    StateTyE P B σ primitiveEffect
+      (.run (.mk Capture.empty (.issuePathBases "Example.pathBases"))
+        [.handleF Capture.empty (primitiveClauses σ)] Store.empty) ∧
+    Step P B σ
+      (.run (.mk Capture.empty (.issuePathBases "Example.pathBases"))
+        [.handleF Capture.empty (primitiveClauses σ)] Store.empty)
+      (some (.pathBases "Example.pathBases" σ))
+      (.run (Closure.pure (.ret (.pathBases σ)))
+        [.handleF Capture.empty (primitiveClauses σ)] Store.empty) ∧
+    StateTyE P B σ primitiveEffect
+      (.run (Closure.pure (.ret (.pathBases σ)))
+        [.handleF Capture.empty (primitiveClauses σ)] Store.empty) := by
   have ha {C Γ} : Ty.Annotation P C Γ (.dependentFn (.done .pathBases (Eff.single processEnvironmentEff))) :=
     ⟨by simp [Ty.WF,Tel.WF,Ty.WFList,Eff.WF,Eff.single,Eff.Canonical,Eff.norm,Ty.normTys],by trivial,by trivial⟩
   have heq : instantiatedTel (Tel.instR [] primitiveSig.tel) [] [] = .done .pathBases (Eff.single processEnvironmentEff) := by
@@ -226,8 +244,8 @@ theorem primitive_pathBases {P B σ}
   have hh := (initial (σ := σ) hcode
     ⟨by simp [Ty.WF,Tel.WF,Ty.WFList,Eff.WF,primitiveEffect,Eff.union,Eff.single,Eff.norm,Eff.fails,Eff.Canonical,Ty.normTys],by trivial,by trivial⟩
     rfl (by simp [primitiveClauses,Comp.ClosedAt,Val.ClosedAt,Val.ClosedList,Clause.ClosedList]) (by trivial)).handle_step hB rfl
-  exact hh.operation_primitive hP hPB hB hdecl (l := 0) rfl hsig (Or.inr (Or.inr rfl))
-    (k1 := []) (k2 := []) ⟨rfl,rfl,by intro cap cs hm; cases hm⟩ rfl rfl
+  obtain ⟨hst,hi⟩ := hh.path_bases_apply_all hP hPB hB rfl hsig rfl
+  exact ⟨hh,hst,hi,hi.issue_path_bases_all rfl hsig rfl rfl hσ⟩
 
 
 /-! ## 表の条件を同時に満たす操作の例 -/

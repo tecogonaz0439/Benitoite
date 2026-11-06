@@ -78,9 +78,10 @@ mutual
     case const => exact ⟨trivial,trivial⟩
     case bytesV => exact ⟨trivial,trivial⟩
     case scopePattern => exact ⟨trivial,trivial⟩
-    case fnRef => exact ⟨⟨source_types_inst_wf ht he ho h.1,source_rows_inst_wf ht he ho h.2⟩,trivial⟩
+    case fnRef => exact ⟨⟨source_types_inst_wf ht he ho h.1,source_rows_inst_wf ht he ho h.2.1,
+      fun ix hix => ⟨(h.2.2 ix hix).1, fun r heq => ((h.2.2 ix hix).2 r heq).1⟩⟩,trivial⟩
     case prim => exact ⟨⟨source_types_inst_wf ht he ho h.1,source_rows_inst_wf ht he ho h.2.1,
-      fun r hr => (h.2.2 r hr).1⟩,trivial⟩
+      fun ix hix => ⟨(h.2.2 ix hix).1, fun r heq => ((h.2.2 ix hix).2 r heq).1⟩⟩,trivial⟩
     case externalRef => exact ⟨source_types_inst_wf ht he ho h,trivial⟩
     case op => exact ⟨source_types_inst_wf ht he ho h,trivial⟩
     case raise => exact ⟨⟨source_type_inst_wf ht he ho h.1,source_type_inst_wf ht he ho h.2⟩,trivial⟩

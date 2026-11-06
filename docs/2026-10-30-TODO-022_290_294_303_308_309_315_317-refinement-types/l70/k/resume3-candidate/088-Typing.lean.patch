@@ -1,0 +1,48 @@
+--- a/formal/Benitoite/Release/Refinement/Typing.lean
++++ b/formal/Benitoite/Release/Refinement/Typing.lean
+@@ -1,4 +1,5 @@
+ import Benitoite.Release.Refinement.Subst
++import Benitoite.Release.Refinement.RangeCode
+ import Benitoite.Release.Refinement.FieldFacts
+ import Benitoite.Release.Refinement.LocalResolve
+ import Benitoite.Release.Refinement.Le
+@@ -162,15 +163,17 @@
+     | V_Closure {Ψ Q C Γ Φ runtime t body} : Ty.Annotation P C Γ (.dependentFn t) →
+         Tel.RuntimeShape runtime t → DependentClosureTy P B Ψ body t →
+         HasTypeVQ P B Ψ Q C Γ Φ (.closure runtime body) (.dependentFn t)
+-    | V_Fun {Ψ Q C Γ Φ f d ts es} : P.defs f = some d → NamesWF d.names d.params →
++    | V_Fun {Ψ Q C Γ Φ f d ts es rs} : P.defs f = some d → NamesWF d.names d.params →
++        Def.RangeAdmissible d rs →
+         Admissible B C Γ.length (TypeCtx.constraints d.tparams) d.neffs
+           (Qsig d.params d.ret d.eff) Q ts es d.eff →
+-        SignatureInstance P C Γ d.tel (TypeCtx.kinds d.tparams) ts es →
+-        HasTypeVQ P B Ψ Q C Γ Φ (.fnRef f ts es) (.dependentFn (instantiatedTel d.tel ts es))
++        SignatureInstance P C Γ (d.instTel rs) (TypeCtx.kinds d.tparams) ts es →
++        HasTypeVQ P B Ψ Q C Γ Φ (.fnRef f ts es (rs.map RangeIx.fixed))
++          (.dependentFn (instantiatedTel (d.instTel rs) ts es))
+     | V_Prim {Ψ Q C Γ Φ b s ts es rs} : B.sig b = some s → B.RangeAdmissible b s rs →
+         NamesWF s.names s.params → PrimitiveAdmissible C Γ.length s Q ts es →
+         SignatureInstance P C Γ (Tel.instR rs s.tel) (TypeCtx.kinds s.tparams) ts es →
+-        HasTypeVQ P B Ψ Q C Γ Φ (.prim b ts es rs)
++        HasTypeVQ P B Ψ Q C Γ Φ (.prim b ts es (rs.map RangeIx.fixed))
+           (.dependentFn (instantiatedTel (Tel.instR rs s.tel) ts es))
+     | V_Op {Ψ Q C Γ Φ o od ts} : P.ops o = some od → NamesWF od.names od.params →
+         SatAll B C ts od.tparams →
+@@ -602,4 +605,17 @@
+     (Δ : LocalCtx) (Γ : Ctx) (Φ : List Pred) (R : Option Ty) (m : Comp) (a : Ty) (ε : Eff) :=
+   HasTypeCQ P B Ψ Qempty C Γ Φ R m a ε Δ
+ 
++/-- 範囲パラメータを持たない関数参照。 -/
++theorem HasTypeVQ.fun_empty {P B Ψ Q C Γ Φ f d ts es}
++    (hd : P.defs f = some d) (hn : NamesWF d.names d.params) (hr : d.rkinds = [])
++    (ha : Admissible B C Γ.length (TypeCtx.constraints d.tparams) d.neffs
++      (Qsig d.params d.ret d.eff) Q ts es d.eff)
++    (hi : SignatureInstance P C Γ d.tel (TypeCtx.kinds d.tparams) ts es) :
++    HasTypeVQ P B Ψ Q C Γ Φ (.fnRef f ts es)
++      (.dependentFn (instantiatedTel d.tel ts es)) := by
++  have had : d.RangeAdmissible [] := by
++    simp [Def.RangeAdmissible, RangesFit, hr]
++  simpa only [List.map_nil, Def.instTel_nil] using
++    HasTypeVQ.V_Fun hd hn had ha (by simpa only [Def.instTel_nil] using hi)
++
+ end Benitoite.Release.Refinement

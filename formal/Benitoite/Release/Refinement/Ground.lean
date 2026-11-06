@@ -19,9 +19,10 @@ mutual
     | .var i => i < nv
     | .const _ | .loc _ | .bytesV _ | .checked _ | .pathBases _ | .scopePattern _ | .atError _ => True
     | .checkedAt _ _ _ req => match req with | none => True | some v => v.ClosedAt 0 0
-    | .fnRef _ ts es => (∀ a ∈ ts, a.WF 0 nt nv) ∧ (∀ e ∈ es, Eff.WF 0 nt nv e ∧ e.Canonical)
+    | .fnRef _ ts es rs => (∀ a ∈ ts, a.WF 0 nt nv) ∧
+        (∀ e ∈ es, Eff.WF 0 nt nv e ∧ e.Canonical) ∧ (∀ ix ∈ rs, ix.WF 0 ∧ ∀ r, ix = .fixed r → r.WF)
     | .prim _ ts es rs => (∀ a ∈ ts, a.WF 0 nt nv) ∧
-        (∀ e ∈ es, Eff.WF 0 nt nv e ∧ e.Canonical) ∧ (∀ r ∈ rs, r.WF)
+        (∀ e ∈ es, Eff.WF 0 nt nv e ∧ e.Canonical) ∧ (∀ ix ∈ rs, ix.WF 0 ∧ ∀ r, ix = .fixed r → r.WF)
     | .externalRef _ ts | .externalHandle _ ts => ∀ a ∈ ts, a.WF 0 nt nv
     | .lam ns ps body => NamesWF ns ps ∧ (∀ a ∈ ps, a.WF 0 nt nv) ∧
         Comp.ClosedAt nt (nv + ps.length) body

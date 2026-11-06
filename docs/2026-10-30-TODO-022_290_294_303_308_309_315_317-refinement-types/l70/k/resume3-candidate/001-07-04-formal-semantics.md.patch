@@ -1,0 +1,28 @@
+--- a/docs/design/07-quality/07-04-formal-semantics.md
++++ b/docs/design/07-quality/07-04-formal-semantics.md
+@@ -311,6 +311,8 @@
+ `embedContTy`・`embedStoreOk`・`embedStateTyE` は、`DeclarationKinds.WF`・`LegacyTables` と、それぞれ既存の `LegacyContInput`・`LegacyStoreInput`・`LegacyStateInput` を前提とする。枠7形と継続10規則、セル6形と有限ストア、状態4形の新しい型付けを片方向に構成する。任意の同じ `σ` と、状態の同じ `embedEff Eb` を使う。`StateTyE` の構成は `σ.Valid` を必要とせず、`StateTy` に含まれる `σ.Valid` と末尾の効果の `BuiltinOnly (embedProgramWithKinds K P0) B (embedEff Eb)` は、その判断の使用時に供給する。新しい型付け・状態の型付け・遷移を旧入力の条件へ追加しない。`LegacyStateEmbeddingExamples` は保持値を生の lambda のまま写した像の型付けの否定と、同じ旧継続・状態の保持値を空の捕捉で閉じた像の型付け、run・error・exit と空ストアへの適用を含む。`list_lambda_state` は lambda を保持する List を非空 List のパターンで照合し、束縛結果が空捕捉で閉じた lambda の像であることも示す。
+ 
+ `embedDefWellTyped`・`embedImplWellTyped`・`embedProgramWellTyped`・`embedProgramWellFormed` は、宣言の kind 表の形成と `LegacyTables`、宣言の lookup と既存の旧本体入力から、新しい宣言の判断を構成する。後三者は `LegacyDeclarationInputs` を、実装・プログラムの型付けは元の旧 `WellTyped` を、プログラムの形成は元の旧 `WellFormed` を使う。旧実装の型付けは、クラスとメソッド・上位辞書の対応も供給する。メソッドは代入前の `Qsig` を保ち、辞書の値引数の後に通常の引数を束縛する。本体の新しい型付けは七入口から構成し、前提の欄にはしない。`LegacyProgramEmbeddingExamples` は同じプログラムと組み込み表で恒等関数の本体・全プログラムの型付け・形成へ適用する。`LegacyImplementationEmbeddingExamples.implementation_parents` は、二つのクラスと二つの Unit の実装について、旧宣言の入力と旧の型付け・形成、新しい実装・プログラムの型付け・形成、実際のメソッドと上位辞書の lookup を同時に構成する。
++
++`RangeCode` は項の範囲置換・正規化と、範囲引数の読み出しを定義する。`RangeTyping` は範囲文脈の下の十四判断と、全ての適格な閉じた具体化への入口を定める。`RangeFunctionExamples` は File.readTextIn を呼ぶ関数と、path・host・endpoint の全種類の対象を返す関数の型付けを示す。
+ 
+ `ProgramTyping` は関数・実装の `WellTyped`、`QTel` と `Qsig` の一致、および `Program.WellTyped` を定義する。後者は同じ P の `VarianceValid`・`ExternalWF` と全 lookup の本体の型付けを持つ。`ProgramWellFormed` は各宣言の `Scoped`、依存列の上限・kind・`Annotation`、同名 data の arity、格納済み metadata の適格性を定義し、四名前空間の `SourceScoped` は `SourceScope` から読む。メソッド本体は代入前の Q を使い、`method_body` が呼出し規則の Qsig で同じ本体を取り出す。実装の辞書型の kind と操作の辞書型の先頭の対応も検査する。意味の所属を信頼する欄と、呼出し側への新しい NoFail の前提は追加しない。
+ 
+@@ -339,7 +341,7 @@
+ | 構築器・ストア・継続 | `BuilderStateLeaves` の三遷移、`BuilderValueTyping` の全成功応答と `RuntimeBuilderScope` の閉性・適格性。`StoreGeneral` の汎用更新・割当て・空き場所、`ContinuationGeneral` の末尾の被覆・包含・全 release/drop の条件。`ReadLocalRefs`・`LocalInvariant` は同じ導出が読む位置を検査し StateTyE から導く。捕捉の全位置を調べる条件とは区別する |
+ | 応答と開始準備 | `ReplyState`・`ExternalStateLeaves`・`AtStateInputs`・`AtStateLeaves`・`PathBasesLeaves` の13遷移。上表の前提の差を保つ。`SourcePreparation` の同じ初期状態への接続。応答の存在と表層の開始の合成は含めない |
+ 
+-`SourceScope` は四名前空間の SourceScoped と通常の SignatureScoped を定め、`PrimitiveScoped` は組み込みの宣言の範囲深さを保持する。`RangeFormation` は WFImages と行・範囲の支持の移送から具体化後の SourceScoped を導き、範囲の写像で Sorted・Declared・kind を保存する。効果原子の範囲と Fail の型の WF は別に検査する。
++`SourceScope` は四名前空間の SourceScoped と通常の SignatureScoped を定め、`PrimitiveScoped` は組み込みの宣言の範囲深さを保持する。`RangeFormation` は WFImages と行・範囲の支持の移送から型の具体化後の SourceScoped を導く。`RangeTypeProperties` は範囲の写像で Sorted・Declared・kind を保存し、`RangeSourceProperties` は値・計算・腕・節の具体化で四名前空間の上限を保存する。効果原子の範囲と Fail の型の WF は別に検査する。
+ 
+ `TypeValueExchange` は値依存の開いた型・行像について、型置換と値置換、捕捉した型・依存列・戻り先・局所 kind の交換を証明する。lambda の閉包は捕捉環境を保持する。`TypeSubstBindings` は値束縛の1・n・n+1・2、型束縛のk・1を扱う写像を持ち、同じ S02Internal.C の入力を子へ接続する。OpSig の文脈の写像は正規化したパラメータを読み、原文との等号を仮定しない。
+ 
+@@ -1112,6 +1114,7 @@
+ | VarianceFormation・VarianceTransport | 同節の `Sorted` の移送、型引数の比較と欄の単調性。中間の型引数の注釈を要求しない |
+ | LegacyKinds・LegacyDeclarations・LegacyInput・LegacyRegularity・LegacyTables・LegacyTableFacts・LegacyValues | 「旧判断の適格な入力」。kind を保持する宣言の写し、七判断46局所規則と全中間判断の入力、旧判断への復元、通常節の元の操作署名の形成と同じ長さの範囲具体化への移送、constructor 欄と不変の変性、旧受理から新受理への表の条件、操作の辞書の先頭と添字・実装の辞書型の kind の入力、四つの値の葉と正規化の限定等号。型付けの全埋め込みは LegacyEmbedding に、状態の入力は LegacyStateInputs に対応する。状態の型付けの埋め込みは LegacyStateTyping が行う。一段遷移の可換性は含まない |
+ | TypeRegularity・TypeBounds・TypeRows・TypeVariables・TypeShiftFacts・EffectFacts | 「篩の正規形と制約の読み方」。WFの像の条件付き置換、四名前空間の再帰条件、型移動の比較と整列、効果の構造等号と行置換 |
++| RangeCode・RangeTyping・RangeTypeProperties・RangeSourceProperties・RangeFunctionExamples | 「篩を含むコア計算の形式化」と「篩を含む定義とプログラムの適格性」。範囲引数を持つ構文、項の具体化、十四判断と四名前空間の保存、全三種類の利用者の関数 |
+ | SourceScope・PrimitiveScoped・RangeFormation | 「篩を含むコア計算の形式化」と「篩を含む定義とプログラムの適格性」。四名前空間の支持、組み込みの依存列の形成と範囲具体化後の形成 |
+ | LegacyTyping・LegacyValueCases・LegacyCallInputs・LegacyPrimitiveCase・LegacyOperationCase・LegacyLambdaCase・LegacyCollectionCases・LegacyHeldCases・LegacySubCases・LegacyValueEmbedding | 「旧判断の適格な入力」。七判断を任意の Φ で述べる結論と node の帰納、子の結論から値19規則の親を再構成する補題、定数の構文の全導出の埋め込み。空・非空の局所文脈の橋は ValueAssumptions を要求しない。全導出の合成は LegacyEmbedding が行う |
+ | LegacyTypeAlgebra・LegacyRangeAlgebra | 同節の型・行置換と範囲具体化の等号、非依存の署名と依存列の具体化、NoFail と行の入力。組み込みの型の二通りの具体化は、旧結果型と型・行引数の既存の入力から対応させる。効果の具体化の等号は正規化後 |

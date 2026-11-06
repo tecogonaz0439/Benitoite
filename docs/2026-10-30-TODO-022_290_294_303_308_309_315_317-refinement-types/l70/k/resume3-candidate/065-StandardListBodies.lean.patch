@@ -1,0 +1,64 @@
+--- a/formal/Benitoite/Release/Refinement/StandardListBodies.lean
++++ b/formal/Benitoite/Release/Refinement/StandardListBodies.lean
+@@ -81,7 +81,7 @@
+ 
+ def listFromDefinition (filter : Bool) : Def :=
+   ⟨valueParams (if filter then 1 else 2),1,(fromTel filter).names,(fromTel filter).inputs,
+-    (fromTel filter).result,(fromTel filter).effect,listFromBody filter⟩
++    (fromTel filter).result,(fromTel filter).effect,listFromBody filter, []⟩
+ 
+ local macro "list_simp" : tactic => `(tactic|
+   simp_all [valueParams,resultType,callbackType,fromTel,fromName,typeArgs,
+@@ -241,7 +241,7 @@
+     all_goals rintro (_|(_|j)) a p ha hp <;> list_simp
+     all_goals subst_vars; list_simp
+     all_goals first | exact sat 0 (by decide) | exact sat 1 (by decide)
+-  have typed := HasTypeVQ.V_Fun (Ψ := Ψ) (Φ := Φ) lookup names admissible (from_instance filter)
++  have typed := HasTypeVQ.fun_empty (Ψ := Ψ) (Φ := Φ) lookup names (by rfl) admissible (from_instance filter)
+   apply typed.convert
+   · have fold := fold_from filter
+     cases filter <;> list_simp
+@@ -696,7 +696,7 @@
+ private def repeatDefinition : Def :=
+   ⟨[],0,[],[],.list (.base .unit),Eff.empty,
+     .letIn (.app (.fnRef "List.mapFrom" [.base .unit,.base .unit] [Eff.empty])
+-      [.list [.const .unit],unitIdentity,one,.list [.const .unit]]) repeatTail⟩
++      [.list [.const .unit],unitIdentity,one,.list [.const .unit]]) repeatTail, []⟩
+ private def repeatProgram : Program :=
+   { program with defs := fun name =>
+     if name = "Example.repeat" then some repeatDefinition else program.defs name }
+@@ -743,9 +743,9 @@
+       (.run (.mk (listCapture [.const .unit] receivedIdentity ⟨1,by decide⟩ [.const .unit]) unitFromBody)
+         repeatCont Store.empty) := by
+     refine .cons (.E_Mark firstView) (.cons (.E_Return rfl)
+-      (.cons (.E_Fun (d := repeatDefinition) rfl rfl rfl rfl rfl)
++      (.cons (.E_Fun (rs := []) (d := repeatDefinition) rfl rfl rfl rfl rfl)
+         (.cons (.E_Let rfl)
+-          (.cons (.E_Fun (d := listFromDefinition false) rfl rfl rfl rfl rfl) ?_))))
++          (.cons (.E_Fun (rs := []) (d := listFromDefinition false) rfl rfl rfl rfl rfl) ?_))))
+     simp [unitFromBody,listCapture,receivedIdentity,unitIdentity,repeatDefinition,repeatTail,repeatCont,
+         Comp.substTy,Comp.substTyAt,Val.substTyAt,Val.substTyAtList,substTypeAt,substRowAt,
+         Ty.bind,Eff.bind,typeEnvAt,Ty.rawBind,Eff.rawBind,rawBindTys,
+@@ -845,7 +845,7 @@
+   ⟨[],0,[],[],.list (.base .unit),Eff.empty,
+     .letIn (.handle
+       (.app (.fnRef "List.mapFrom" [.base .unit,.base .unit] [failEffect])
+-        [.list [],failingCallback,zero,.list []]) failHandler) failTail⟩
++        [.list [],failingCallback,zero,.list []]) failHandler) failTail, []⟩
+ private def repeatFailProgram : Program :=
+   { program with defs := fun name =>
+     if name = "Example.repeatFail" then some repeatFailDefinition else program.defs name }
+@@ -890,11 +890,11 @@
+   refine .step (ReturnAt.not_length (by simp [failCont])) (.E_DropRel rfl rfl) ?_
+   refine .step (ReturnAt.not_length (by simp [failCont])) (.E_Return rfl) ?_
+   refine .step (ReturnAt.not_length (by simp [failCont]))
+-    (.E_Fun (d := repeatFailDefinition) (ts := []) (es := []) (ws := []) rfl rfl rfl rfl rfl) ?_
++    (.E_Fun (rs := []) (d := repeatFailDefinition) (ts := []) (es := []) (ws := []) rfl rfl rfl rfl rfl) ?_
+   refine .step (ReturnAt.not_length (by simp [failCont,markPush])) (.E_Let rfl) ?_
+   refine .step (ReturnAt.not_length (by simp [failCont,markPush])) (.E_Handle rfl) ?_
+   refine .step (ReturnAt.not_length (by simp [failCont,markPush]))
+-    (.E_Fun (d := listFromDefinition false) rfl rfl rfl rfl rfl) ?_
++    (.E_Fun (rs := []) (d := listFromDefinition false) rfl rfl rfl rfl rfl) ?_
+   simpa [set_overwrite,Closure.capture,Closure.code,Capture.values,listFromDefinition,zero,Clause.substTyAtList,unitFromBodyAt,listCapture,repeatFailDefinition,failTail,failCont,usedStore,saved,
+     Comp.substTy,Comp.substTyAt,Val.substTyAt,Val.substTyAtList,substTypeAt,substRowAt,
+     Ty.bind,Eff.bind,typeEnvAt,Ty.rawBind,Eff.rawBind,rawBindTys,

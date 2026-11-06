@@ -1,0 +1,20 @@
+--- formal/Benitoite/Release/Refinement/SubstCongruence.lean
++++ formal/Benitoite/Release/Refinement/SubstCongruence.lean
+@@ -56,7 +56,7 @@
+     | .V_DependentLam ha hb =>
+       simp only [Val.subst,telBindValues_congr ha.sorted.references hs]
+       rw [TelBodyTy.subst_congr (ρ := ρ) (η := η) hb hs.hide]
+-    | .V_Fun hd hn had hi => simp only [Val.subst,hi.types.subst_congr hs,hi.rows.subst_congr hs]
++    | .V_Fun hd hn hr had hi => simp only [Val.subst,hi.types.subst_congr hs,hi.rows.subst_congr hs]
+     | .V_Prim hb hr hn had hi => simp only [Val.subst,hi.types.subst_congr hs,hi.rows.subst_congr hs]
+     | .V_Op ho hn had hi => simp only [Val.subst,hi.types.subst_congr hs]
+     | .V_ExternalRef hd hw had hi => simp only [Val.subst,hi.types.subst_congr hs]
+@@ -110,7 +110,7 @@
+     | .C_DependentApp hf hargs => simp only [Comp.subst,HasTypeVQ.subst_congr (ρ := ρ) (η := η) hf hs,HasTypeTelArgsQ.subst_congr (ρ := ρ) (η := η) hargs hs]
+     | .C_If hv ht hm hn => simp only [Comp.subst,HasTypeVQ.subst_congr (ρ := ρ) (η := η) hv hs,
+         HasTypeCQ.subst_congr hm hs hL,HasTypeCQ.subst_congr hn hs hL]
+-    | .C_Match hv ho har hx => simp only [Comp.subst,HasTypeVQ.subst_congr (ρ := ρ) (η := η) hv hs,HasTypeArmsQ.subst_congr har hs hL]
++    | .C_Match hv ho har hdecl hx => simp only [Comp.subst,HasTypeVQ.subst_congr (ρ := ρ) (η := η) hv hs,HasTypeArmsQ.subst_congr har hs hL]
+     | .C_Lazy hb ha => simp only [Comp.subst,HasTypeCQ.subst_congr (ρ := ρ) (η := η) hb hs.hide (LocalSubstAgree.empty _ _)]
+     | .C_Escape hv ha => simp only [Comp.subst,HasTypeVQ.subst_congr (ρ := ρ) (η := η) hv hs]
+     | .C_Use hv hr hm he => simp only [Comp.subst,HasTypeVQ.subst_congr (ρ := ρ) (η := η) hv hs,HasTypeCQ.subst_congr hm hs hL]

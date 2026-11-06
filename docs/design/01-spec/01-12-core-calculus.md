@@ -3101,7 +3101,7 @@ builders_no_captureとbuilders_block_no_captureは、Aligned Γ ΔからEnvReads
 
 【決定】本節から「篩を含む状態の型付け」までは、`Benitoite.Release.Refinement` の定義と規則の写しである。ここでの `Ty`・`HasTypeVQ`・`HasTypeCQ`・`Step` などは、すべてこの名前空間のものを指す。表層の文法を追加する節ではない。
 
-`BuiltinTypingTransport` の `Builtins.TypingFieldsEq B B'` は、同じプログラムPについて `sig`・`sat`・`admitsR`・`isResource`・`valKind`・`valContent`・`effects` の一致を要求する。これらを型付けが読む七つの射影（`Builtins.TypingFieldsEq` の七欄）と呼ぶ。十四の型付け判断は、全添字を保ちBだけをB'へ移せる。`C_Handle` の `handled` は `effOps` を通じてeffectsを読み、`C_Use`はisResource、`ConstOK`はvalKindとvalContentを読む。`ExternalSurface.ref_typed/call_typed` は外部宣言のlookup・整形式・適格な型引数と、依存列に沿う実引数から、参照と直接呼出しの型付けを構成する。これは既存の型付け規則の読者である。
+`BuiltinTypingTransport` の `Builtins.TypingFieldsEq B B'` は、同じプログラムPについて `sig`・`sat`・`admitsR`・`isResource`・`valKind`・`valContent`・`effects` の一致を要求する。これらを型付けが読む七つの射影（`Builtins.TypingFieldsEq` の七欄）と呼ぶ。十四の型付け判断は、全添字を保ちBだけをB'へ移せる。`C_Handle` の `handled` は `effOps` を通じてeffectsを読み、選んだ組込みの一覧のsigから発行専用のkindがないことを読み、`C_Use`はisResource、`ConstOK`はvalKindとvalContentを読む。`ExternalSurface.ref_typed/call_typed` は外部宣言のlookup・整形式・適格な型引数と、依存列に沿う実引数から、参照と直接呼出しの型付けを構成する。これは既存の型付け規則の読者である。
 
 `ExternalSurface` の表層の葉は、外部宣言を読む五つの接点を既存の型付け規則へ渡す。`type_declared_iff` は、整形式の有限表で外部型 `.external id args` が宣言済みであることと、`args` が空で同じIDの型宣言があることの同値を示す。`ref_of_lookup` は関数のlookupから署名の形成を読み、型引数が空であること、具体化した依存列が宣言の依存列の正規形 `Tel.norm d.parameters` に等しいこと、その終端の効果が `callEffect d` であることと参照の型付けを返す。`callEffect d` は、usesが空なら空効果、そうでなければStateだけを持つ効果である。`ref_inputs` は型付きの参照から同じlookup・空の型引数と、宣言の依存列の正規形からの `TelClosure` を返す。`ref_arguments` は、部分型を経た参照の型の依存列に沿う実引数を、呼出し側の `Ctx.WF` と `SignatureInstance` の注釈を使う `TelClosure.apply` で宣言の依存列へ戻す。`call_of_lookup` は直接の飽和呼出しについて、実引数の数が宣言の引数の数に等しいことと、呼出しの効果が `callEffect d` であることを返す。`args_effect` は、失敗の型を持たない終端の効果が全実引数の束縛で変わらないことを示す。`named_call` と `partial_call` は、ソース順の値と宣言上の位置の置換から一般の並べ替え（表層の `recordFields`）で作った宣言順の列について、各値が一つの位置にちょうど一度置かれ全位置が埋まることを示す。前者は直接呼出しの型付けと、ラベルが具体化の後の同じ引数名を指すことを返し、後者は外部参照を頭とする適用（`apply_typed`）の型付けを返す。どちらも任意の型と値の文脈で成り立つので、部分適用の生成ラムダの本体の文脈にも適用できる。ソース順の評価と束縛、穴のラムダの型付けは一般の脱糖の規則が定める。外部参照は呼出しの頭に置く形であり、Leanの `Val.Source` は外部参照の値を拒否しない。
 
@@ -3136,6 +3136,35 @@ builders_no_captureとbuilders_block_no_captureは、Aligned Γ ΔからEnvReads
 `StandardModel.body_typed` は、任意の外部宣言について、全130本体（`Body.all`）が合成プログラムと合成表で型付くことを示す。各本体の証明は、元の本体の証明の構成を、合成プログラムの宣言・合成表の署名・写した関数参照の名前の上で閉じたものである。`definition_typed` は成功した全lookupの定義へ広げ、`program_typed` は外部宣言の表の構造検証 `ExternalWF` の下で `Program.WellTyped` を示す。`body_scoped` は全130本体の依存列の行と範囲の上限と本体の深さの条件を、`cons_scoped` は全構成子のデータ名のarityの一意性と欄の適格性を示し、`program_wellFormed` は `ExternalWF` の下で `Program.WellFormed` を示す。`StandardModel.core externals` は任意の外部宣言について `Builtins.CoreAssumptions` の全28欄を、`targets` は `TargetAgreement` を、同じ合成プログラムと合成表で示す。これらはLeanの既存の証拠がある行の合成であり、Rustの全登録の意味の証明とは区別する。
 
 `collection_inputs`・`scope_inputs`・`io_inputs` は、文字列・バイト列・リスト・写像・集合の79行、範囲付きのパスと要求の六つの純粋な行と %List.getFront、IOと終了の10行のそれぞれで、合成表のlookupが返す署名の `BuiltinArgs` を満たす入力があること（`PureRow.Satisfiable`・`IORow.Satisfiable`）を示す。型引数はIntegerであり、引数の値は基本型の定数、空の列・バイト列・写像・集合、全体を許す範囲（`.absolute .top`）の下で保持したパスと要求である。結果型が引数の値を読む署名（head・tail・append・精密なMapとSetの構築と射影・%Map.replaceValues）では、全署名の形成（`sig_scoped`）と型の具体化から依存列の注釈を得て、引数の値を一つずつ束縛する。そのため `collection_inputs` は外部宣言の表の構造検証 `ExternalWF` を前提に取る。`substitution_inputs`・`admits_sat_input`・`io_field_inputs` は、置換の八欄・admits_sat・IOの四欄と `TargetAgreement` の前提を、Integerと鍵の制約を持つ型変数・Map.getの行・File.readTextInの行で満たす。`positive_inputs` は、外部関数 `0 < self` を一つ持つ外部宣言の表（`positiveExternals`）で、正常値1の生応答により外部応答の二欄の前提を満たし、同じ入力のerrの応答も同じ関係に属することを示す。`normal_facts` は、純粋な行の正常応答の項観測から結果型の篩の事実を返す。これらの定理は契約の前提を満たす入力の存在を示し、契約そのものは各行と各欄の定理が全入力について示す。
+
+利用者の関数の宣言 `Def` は、型パラメータ `tparams`、行の個数 `neffs`、引数名 `names`、引数型 `params`、結果型 `ret`、効果 `eff`、本体 `body` と範囲パラメータの種類の列 `rkinds` を持つ。範囲の種類は path・host・endpoint の全体である。関数参照 `Val.fnRef f ts es rs` と組込み参照 `Val.prim b ts es rs` は、範囲引数を `List RangeIx` として保持する。固定範囲は `fixed`、宣言した範囲変数は `rvar` で表す。閉じた型付けの規則は、閉じた範囲式列を `List.map RangeIx.fixed` で項へ格納する。
+
+`RangesFit rs ks` は、列の長さの一致、各位置の `FitsKind`、各範囲の `WF ∧ Canonical` を要求する。`Def.RangeAdmissible d rs` は `RangesFit rs d.rkinds` である。`Def.instTel d rs` は、空の列では `d.tel`、非空の列では `Tel.instR rs d.tel` である。関数の参照と適用の規則は次のとおりである。
+
+```lean
+| V_Fun {Ψ Q C Γ Φ f d ts es rs} : P.defs f = some d → NamesWF d.names d.params →
+    Def.RangeAdmissible d rs →
+    Admissible B C Γ.length (TypeCtx.constraints d.tparams) d.neffs
+      (Qsig d.params d.ret d.eff) Q ts es d.eff →
+    SignatureInstance P C Γ (d.instTel rs) (TypeCtx.kinds d.tparams) ts es →
+    HasTypeVQ P B Ψ Q C Γ Φ (.fnRef f ts es (rs.map RangeIx.fixed))
+      (.dependentFn (instantiatedTel (d.instTel rs) ts es))
+| V_Prim {Ψ Q C Γ Φ b s ts es rs} : B.sig b = some s → B.RangeAdmissible b s rs →
+    NamesWF s.names s.params → PrimitiveAdmissible C Γ.length s Q ts es →
+    SignatureInstance P C Γ (Tel.instR rs s.tel) (TypeCtx.kinds s.tparams) ts es →
+    HasTypeVQ P B Ψ Q C Γ Φ (.prim b ts es (rs.map RangeIx.fixed))
+      (.dependentFn (instantiatedTel (Tel.instR rs s.tel) ts es))
+| E_Fun {f ts es rs ws k μ d} {q : Closure} :
+    q.view = (.app (.fnRef f ts es (List.map RangeIx.fixed rs)) ws) →
+    P.defs f = some d →
+    ws.length = d.params.length → ts.length = d.ntys → es.length = d.neffs →
+    Step P B σ (.run q k μ) none
+      (.run (Closure.mk (Capture.empty.extendMany ws) ((d.body.instR rs).substTy ts es)) (markPush k) μ)
+```
+
+`Val.instR` と `Comp.instR` は、本体内の型・効果・関数参照・組込み参照の範囲引数と、入れ子の計算・腕・節を具体化する。空の列では項を保ち、非空の列では範囲を置換し、型と効果を正規化する。理由: 範囲の置換だけでは Fail の型の列の順序や重複が変わり、正規形を保つとは限らないためである。`closedRanges` は固定範囲だけの列を閉じた範囲式の列へ戻し、実行関数はこの読み出しが成功した参照を適用する。
+
+範囲文脈 `ks` の下の十四判断は、`RangesFit rs ks` を満たす全ての閉じた列 `rs` で具体化した判断を要求する。型・効果・依存列・値文脈・局所文脈にも同じ具体化を当て、実行時ストアは閉じたまま保つ。`HasTypeVQR`・`HasTypeVsQR`・`HasTypeEachQR`・`HasTypeCQR`・`HasTypeTelArgsQR`・`CaptureOkR`・`DependentClosureTyR`・`CheckedWitnessR`・`AtCallAdmissibleR`・`HasTypeArmsQR`・`HasTypeClausesQR`・`HasFailureClauseR`・`ImageOkR` と、それぞれの `instR` がこの条件を読む。`TelBodyTyR` は空の種類列では元の `TelBodyTy`、非空なら全ての適格な具体化での `TelBodyTy` である。`RangesFit.top` は任意の種類列に適格な具体化を与える。
 
 篩型は `Ty.refined a p` で表す。`a` は篩を付ける型、`p` は有限構文の述語である。依存する関数型は `Ty.dependentFn t` で表し、引数列 `Tel` は、終端の `Tel.done result effect` と、引数を加える `Tel.param name argument rest` の二構成子を持つ。
 
@@ -3315,19 +3344,19 @@ abbrev AtError := Detail Val
 
 `ComputationInputs` の `Comp.Inputs` は、計算の全16構文の入力を表す。ret は到達型での値の型付け、if は各 Boolean の経路条件の下で到達型・外効果による両枝の本体の型付けを保持する。他の14構文は元の直接規則の前提と到達結果の `LeQ`・外効果の `Covers` を保持する。`HasTypeCQ.inputs` は同じ計算の導出からこの入力を返す。handle は通常節と失敗節、resume は変数又は場所と生の型又は正規形の各直接規則の選言を保つ。match は同じ照合値、obs が some の場合の観測項と sort、元の腕、`Exhaustive` を返す。
 
-`LeafInputs` の `Closure.Inputs` は元のコードと捕捉・局所参照の解決を保持し、`State.Inputs` は全四状態の同じ実ストア・継続・適格性・閉性を保持する。`ClosureTy.inputs`・`StateTyE.inputs` はこれらを元の導出から取り出す。`Def.WellTyped.inputs` と `ImplDecl.WellTyped.method_inputs` は元の本体の文脈と直接入力を返す。fnRef・op・lam・dependentLam・closure・raise・externalRef の各 `StateTyE.*_contract_inputs` は、同じ実開始から元の依存列へ同じ実引数を戻す。primitive は `ApplicationInputs.primitive_contract_inputs` を使う。選択後の本体・戻り値・節・thunk・継続についても、保存の葉の行先に `StateTyE.inputs` と閉じた app の形成を適用する読者を置く。`match_inputs` は元の obs・sort・腕・網羅性を、`if_inputs` は実際の Boolean と選択した枝を返す。`guard_op_inputs` は guard 枠が先頭のとき、元の操作の実引数列と、その効果を空行が被覆することを返す。
+`LeafInputs` の `Closure.Inputs` は元のコードと捕捉・局所参照の解決を保持し、`State.Inputs` は全四状態の同じ実ストア・継続・適格性・閉性を保持する。`ClosureTy.inputs`・`StateTyE.inputs` はこれらを元の導出から取り出す。`Def.WellTyped.inputs` は全ての適格な範囲の具体化について、具体化した署名の文脈形成と、同じ具体化後の本体の直接入力を返す。範囲パラメータが空の定義では `Def.WellTyped.inputs_no_ranges` が元の本体の文脈と直接入力を返す。`ImplDecl.WellTyped.method_inputs` は元のメソッド本体の直接入力を返す。fnRef・op・lam・dependentLam・closure・raise・externalRef の各 `StateTyE.*_contract_inputs` は、同じ実開始から元の依存列へ同じ実引数を戻す。primitive は `ApplicationInputs.primitive_contract_inputs` を使う。選択後の本体・戻り値・節・thunk・継続についても、保存の葉の行先に `StateTyE.inputs` と閉じた app の形成を適用する読者を置く。`match_inputs` は元の obs・sort・腕・網羅性を、`if_inputs` は実際の Boolean と選択した枝を返す。`guard_op_inputs` は guard 枠が先頭のとき、元の操作の実引数列と、その効果を空行が被覆することを返す。
 
 Lean の捕捉を持つ実行関係の `Step.E_Lam` は、`q.view = .app f ws`、`closeVal Capture.empty f = .closure signature body`、`ws.length = signature.arity` を前提に、`run q k μ` から `run (body.apply ws) (markPush k) μ` へ無事象で進む。f が closure の値なら空捕捉で閉じても同じ値になり、通常・依存 lambda なら空捕捉の closure になる。捕捉変数が返した生の lambda もこの前提で扱う。実行関数 `step` はこの三構文を同じ閉じ方で処理し、`step_lambda` が同じ計算結果と実行関係を返す。`ClosureStateLeaves.lambda_beta_all` は元状態からこの行先の型付けを構成し、`LeafInputs.lambda_inputs` は元の型付き実引数列から個数の一致も導く。閉じた値を空捕捉で閉じる型保存は `close_value_typed` と `CaptureOk.empty` を使う。ここでの捕捉の表現は Lean の写しであり、規範の E-Lam の λ への適用は前掲のとおりである。
 
 `HasTypeVQ.inv_var` は元の変数のlookup型aとOrdinary、到達型Tの芯bとの等号、`Ty.LeQ P Γ Φ a.norm.core b`を返す。最外の篩をこの部分型関係へ加えない。`inv_list_core`は元の要素型aの型付けとAnnotation、`T.norm.core = list b`、要素の`Ty.LeQ P Γ Φ a b`を返す。変数や列そのものの篩の事実は、同じ値の観測項を使う`HasTypeVQ.facts`から読む。値に固有の篩があるときに、元の型全体からTへのLeQを逆転の結論とはしない。
 
-`inv_fnRef`・`inv_prim`・`inv_op`・`inv_lam`・`inv_dependentLam`・`inv_raise` は、元の直接規則の前提と、到達型の `fnCore = some u`、元の依存列から u への `TelClosure` を返す。宣言・型実引数・名前・本体契約・元の注釈を各規則どおりに保持し、`inv_raise` は同じ Fail の型を保持する。`inv_lam_wf` は元の lambda の名前と注釈の形成を取り出す。
+`inv_fnRef_ranges`・`inv_fnRef`・`inv_prim`・`inv_op`・`inv_lam`・`inv_dependentLam`・`inv_raise` は、元の直接規則の前提と、到達型の `fnCore = some u`、元の依存列から u への `TelClosure` を返す。宣言・型実引数・名前・本体契約・元の注釈を各規則どおりに保持し、`inv_raise` は同じ Fail の型を保持する。`inv_lam_wf` は元の lambda の名前と注釈の形成を取り出す。
 
 `inv_dict`・`inv_super` は、元の実装・辞書・宣言を各規則どおりに保持し、到達型の正規形の芯が同じ辞書型であることを返す。
 
 `CanonicalValues` の閉じた値の構文逆転は、`HasTypeVQ P B Ψ Q C [] Φ v T` を前提とする。`canonical_scalar` は `T.norm.core = base tag` から同じ tag の定数・`ConstOK` を、`canonical_boolean` は Boolean 定数を返す。`canonical_list` は `T.listCore = some a` から List の構文・元要素型の導出・到達要素型への `LeQ` を返す。`canonical_data` は data の芯から通常の構成子又は `atError` を返す。`inv_atError` は同じ `ResultShape.Declared` と errorType の芯の等号を返し、通常の構成子の逆転を使わない。七つの文字列欄の宣言と型付けは `AtContracts`・`AtTyping` の規則を用いる。最外の篩の事実は `facts` から別に読む。`Inhabits.not_falsity` は `Inhabits P (refined a falsity) v` を排除する。この排除の入力は値の所属であり、任意の経路条件の下の raw な型付けではない。
 
-`canonical_function` は `fnCore = some t` から fnRef・prim・op・lam・dependentLam・closure・raise・externalRef の八構文を返す。関数の元契約の注釈と到達列への `TelClosure` は各構文の逆転で取り出す。Map・Set・Bytes・Dict・external・PathBases・ScopePattern は対応する芯の等号から各値の構文を返す。scoped 又は opaque の芯を表す `Holds` からは、不透明型の定数又は checked・checkedRequest・checkedAt を返す。変数型・型適用・型構成子・継続の芯は、閉じた通常値の導出から排除する。これらの形は値の型付けの導出から取り出し、意味上の所属だけから推測しない。
+`canonical_function` は `fnCore = some t` から fnRef・prim・op・lam・dependentLam・closure・raise・externalRef の八構文を返す。fnRef と prim の枝は閉じた範囲式の列も存在量化し、値の範囲引数がその列の fixed の像であることを返す。関数の元契約の注釈と到達列への `TelClosure` は各構文の逆転で取り出す。Map・Set・Bytes・Dict・external・PathBases・ScopePattern は対応する芯の等号から各値の構文を返す。scoped 又は opaque の芯を表す `Holds` からは、不透明型の定数又は checked・checkedRequest・checkedAt を返す。変数型・型適用・型構成子・継続の芯は、閉じた通常値の導出から排除する。これらの形は値の型付けの導出から取り出し、意味上の所属だけから推測しない。
 
 `inv_externalRef` は元の外部宣言・宣言の WF・`ExternalCallAdmissible`・`SignatureInstance` と到達型の `fnCore`・`TelClosure` を返す。`inv_externalHandle` は同じ名目 ID の宣言・component・resource・型引数の個数・注釈と元の型からの `LeQ` を返す。`inv_pathBases` は同じ snapshot の Valid と PathBases からの `LeQ` を、`inv_scopePattern` は同じ範囲の WF・Canonical・FitsKind と ScopePattern からの `LeQ` を返す。保持値三形は既存の `HeldValues` の逆転を用い、同じ要求・groundVal・reqTarget・CheckedWitness を保持する。
 
@@ -3422,7 +3451,7 @@ Lean の捕捉を持つ実行関係の `Step.E_Lam` は、`q.view = .app f ws`�
 
 ### 篩を含む定義とプログラムの適格性
 
-【決定】`Def.WellTyped P B d` は、契約名の `NamesWF`、宣言した kind の列での `dependentFn d.tel` の value kind、同じ宣言列と空の値文脈での同じ型の `Annotation`、および空のストアでの `TelBodyTy` を要求する。本体の NoFail の文脈は `QTel d.tel`、型文脈は宣言の `d.tparams`、初期の値文脈と Φ は空である。`TelBodyTy.param` は引数の注釈で値文脈を拡張し、Φ を移す。`done a e` は、本体を結果型 a、効果 e、return の契約 `some a`、空の局所文脈で検査する。
+【決定】`Def.WellTyped P B d` は、契約名の `NamesWF`、宣言した kind の列での `dependentFn d.tel` の value kind、同じ宣言列と空の値文脈での同じ型の `AnnotationR`、および空のストアでの `TelBodyTyR` を要求する。範囲文脈は `d.rkinds` であり、`AnnotationR` は WF の範囲深さをこの列の長さとし、Sorted と Declared は同じ文脈で検査する。本体の NoFail の文脈は `QTel d.tel`、型文脈は宣言の `d.tparams`、初期の値文脈と Φ は空である。`TelBodyTy.param` は引数の注釈で値文脈を拡張し、Φ を移す。`done a e` は、本体を結果型 a、効果 e、return の契約 `some a`、空の局所文脈で検査する。
 
 `NamesWF ns ps` の下で `QTel (signatureTel ns ps r e) = Qsig ps r e` が成り立つ。`Def.QTel_eq_Qsig` と `MethSig.QTel_eq_Qsig` は、この等号を各宣言へ適用する。呼出し側の `Admissible`・`MethodRowsAdmissible` が読む条件と同じであり、新たな NoFail の前提を呼出し側に要求しない。
 
@@ -3432,7 +3461,7 @@ Lean の捕捉を持つ実行関係の `Step.E_Lam` は、`q.view = .app f ws`�
 
 `OpSig.tparams` は TypeCtx である。利用者操作は `TypeCtx.values od.tparams`、組み込み操作は `s.tparams` を保持する。通常節の型文脈は `sg.tparams ++ C`、Fail 節の型文脈は `TypeCtx.valueParam :: C` である。`SignatureScoped` は別の kind 文脈を受け取らず、同じ C の長さ・kind・Annotation を読む。
 
-`Program.WellFormed P` は、各宣言の `Scoped`、同名 data の全構成子の arity の一致、`MetadataScoped`、`ExternalWF` を要求する。依存列の `SignatureScoped` は、範囲・型・行・値の上限、kind、順に拡張する値文脈での `Annotation` を検査する。本体と上位辞書の `SourceScoped nr nt ne nv` は、四名前空間の深さを受け取り、lambda・let・依存列・腕・節で束縛数を増やす。実行時専用の構文と場所への直接参照を拒む。`Eff.WF` が読まない効果原子の範囲添字は `RangesScoped` で再帰検査する。構成子の欄には上限・行なし・`Annotation`・value kind、操作には依存列と辞書の添字、および `dictParams` の辞書型の列と `params` の先頭の一致を要求する。実装の辞書引数の型にも value kind を要求し、クラス宣言の存在とその引数の kind を検査する。メソッドは自身の型パラメータにクラス引数一つを加え、最後の kind をクラスの `argumentKind` とする。実装の本体はメソッドと実装の型パラメータ、辞書と値引数の下で検査する。
+`Program.WellFormed P` は、各宣言の `Scoped`、同名 data の全構成子の arity の一致、`MetadataScoped`、`ExternalWF` を要求する。依存列の `SignatureScoped` は、範囲・型・行・値の上限、kind、順に拡張する値文脈での `Annotation` を検査する。関数の `Def.Scoped` は `SignatureScopedR` と本体の範囲深さ `d.rkinds.length` を要求する。本体と上位辞書の `SourceScoped nr nt ne nv` は、四名前空間の深さを受け取り、lambda・let・依存列・腕・節で束縛数を増やす。実行時専用の構文と場所への直接参照を拒む。`Eff.WF` が読まない効果原子の範囲添字は `RangesScoped` で再帰検査する。構成子の欄には上限・行なし・`Annotation`・value kind、操作には依存列と辞書の添字、および `dictParams` の辞書型の列と `params` の先頭の一致を要求する。実装の辞書引数の型にも value kind を要求し、クラス宣言の存在とその引数の kind を検査する。メソッドは自身の型パラメータにクラス引数一つを加え、最後の kind をクラスの `argumentKind` とする。実装の本体はメソッドと実装の型パラメータ、辞書と値引数の下で検査する。
 
 `MetadataScoped` は、格納された各 `some info` の変性の列の長さと arity、同名構成子の arity、requirements と publicBoundary の全ての型の上限・行なし・`Annotation`・value kind を検査する。`dataInfo d = none` ならその項目への全称条件、requirements 又は publicBoundary が空ならその列への全称条件だけが空に成り立つ。対応する構成子を持たない metadata の同名 arity の条件も空に成り立つ。構成子の欄の形成・変性と、存在する構成子どうしの arity の一致はそれぞれの条件として残る。これらは格納された表に対する検査であり、原ソースの辞書制約・公開境界の収集の完全性を主張しない。この形式化は、その収集の完全性と原ソースとの一致を保証しない。
 
@@ -3502,7 +3531,7 @@ structure PrimSig.Scoped (P : Program) (s : PrimSig) : Prop where
 
 網羅性の対応には、実行の値の写し `embedVal` と別に、照合が読む構造を保持する旧値 `legacyPatternVal` を使う。構成子と List の子を再帰的に写し、`checkedAt` と保持要求は同じ対象の旧 `checked` に、`atError` は標準の At 構成子と同じ七文字列に対応させる。パターンがビット値を比較しない Float64 は旧の `.float 0` に写し、Float32 のビット列は保持する。構造を読まない値の内部は復元しない。`legacy_matchVal` と `legacy_matchList` は、全てのパターンについて照合結果と束縛列の対応を証明する。この関数が型付け又は実行を保存するとは主張しない。
 
-`legacy_inhabits` は、`LegacyTables`、新しい `Inhabits P (embedTy a) v`、旧 `a.WF 0 nt` から、対応する旧値の旧 `Inhabits` を構成する。構成子の欄と List の要素にも下降する。`embedExhaustive` は、この対応と照合結果の対応を使い、`LegacyTables`、旧型の `a.WF 0 nt`、旧 `Exhaustive P0 a ps` から、同じ `ps` の新 `Exhaustive` を証明する。範囲の変数を持つ `opaque o (rvar 0)` には旧の所属値がなく、旧の空パターン列は網羅的だが、新しい `checkedAt` が属するため新しい空パターン列は網羅的でない。この型は旧型の範囲の深さ0の `WF` で拒否する。C_Match の照合値の子の `LegacyNodeRegular` からは、型入力の `WF` を `legacy_wf` で旧型へ移して供給する。
+`legacy_inhabits` は、`LegacyTables`、新しい `Inhabits P (embedTy a) v`、旧 `a.WF 0 nt` から、対応する旧値の旧 `Inhabits` を構成する。構成子の欄と List の要素にも下降する。`embedExhaustive` は、この対応と照合結果の対応を使い、`LegacyTables`、旧型の `a.WF 0 nt`、旧 `Exhaustive P0 a ps` から、同じ `ps` の新 `Exhaustive` を証明する。範囲の変数を持つ `opaque o (rvar 0)` には旧の所属値がなく、旧の空パターン列は網羅的だが、新しい `checkedAt` が属するため新しい空パターン列は網羅的でない。この型は旧型の範囲の深さ0の `WF` で拒否する。C_Match の照合値の子の `LegacyNodeRegular` からは、型入力の `WF` を `legacy_wf` で旧型へ移して供給する。同じ型入力の `annotation_at` から、照合する型の `Declared` も供給する。
 
 `LegacyOutputInput.embed` は、`DeclarationKinds.WF`・`LegacyTables`・`LegacyOutputInput` から、同じ旧導出の七判断の `Embedded` を構成する。値19・列4・計算17・腕3・通常節2・失敗節1の全46規則を、同じ `induct_regular` で合成する。`embedHasTypeVQ`・`embedHasTypeVsQ`・`embedHasTypeEachQ`・`embedHasTypeCQ`・`embedHasTypeArmsQ`・`embedHasTypeClausesQ`・`embedHasFailureClause` が判断ごとの入口である。表現可能性と対象保持は各 node の入力、宣言の kind の長さは `DeclarationKinds.WF`、表の片方向の対応は `LegacyTables` で検査する。文脈と項の入力は node に含まれ、旧型付けは `LegacyOutputInput.old` から導けるため、七入口の独立の前提にはしない。末尾が `_empty` の七つの系は空の `Φ` に特殊化し、同じ表の具体の値・列・計算・腕・通常節・失敗節へ適用する。
 
@@ -3730,6 +3759,20 @@ let の到達先の型付けでは、前半と後半の計算を外側の効果�
 
 【決定】`C_If` は Boolean 値 v の観測 `v.toTerm? = some t` を要求し、真枝を `boolCond t true :: Φ`、偽枝を `boolCond t false :: Φ` で検査する。`boolCond` は Boolean の等号の述語である。Refinement の計算には短絡 And/Or の独立の構成子はない。この規則と、真偽の if 遷移に対する経路条件の代表がある。
 
+照合の規則は、照合する型の宣言と網羅性を別々に要求する。完全な形は次のとおりである。
+
+```lean
+| C_Match {Ψ Q C Γ Φ Δ R v obs arms a b ε} :
+    HasTypeVQ P B Ψ Q C Γ Φ v a →
+    (∀ t, obs = some t → v.toTerm? = some t ∧ ∃ s, t.HasSort Γ s) →
+    HasTypeArmsQ P B Ψ Q C Γ Φ R obs arms a b ε Δ →
+    Ty.Declared P C Γ a →
+    Exhaustive P a (unguardedPats arms) →
+    HasTypeCQ P B Ψ Q C Γ Φ R (.match v arms) b ε Δ
+```
+
+理由: 宣言のないdata型では住む値がなく、網羅性だけでは、宣言を足したプログラムへの移送を保証できないためである。
+
 腕の判断 `HasTypeArmsQ` は、被検査値の観測 `obs : Option Term` を添字に持つ。`C_Match` は、`obs = some t` なら被検査値の実際の観測が t であり t が種類を持つことを要求し、同じ obs を全腕へ渡す。`none` のとき `pathFacts` は空である。`some t` のときは次の有限な `PathTest` を t に適用する。
 
 | パターンの形 | 成功した腕での事実 | ガードなしの腕に失敗した後の事実 |
@@ -3911,12 +3954,39 @@ def failureContext (Γ : Ctx) (E : Ty) : Ctx :=
   ((Γ.shiftE 1).extend (shiftTypes 1 0 E)).extendNone
 ```
 
-PathBases と At の追加の遷移は次の五規則である。AtPrepared の成功/失敗と検査の成功/失敗を区別し、保存した snapshot があるときは実行の σ と等しいことを要求する。E_OpPrim も併記し、専用 pathBases を節が処理できることを明示する。これ以外の遷移をこの差分の列挙で置き換えない。
+処理済みの効果は、`effOps` が選んだ一覧について判定する。利用者の一覧があれば組込みの一覧を読まず、組込みの一覧を選んだときは発行専用のkindが一つでもあれば、そのラベルを除かない。定義の完全な形は次のとおりである。
+
+```lean
+def Builtins.issuesIn (B : Builtins) (l : EffName) : Bool :=
+  match B.effects l with
+  | some bs => bs.any fun b => match B.sig b with
+      | some s => decide (s.kind = .pathBases)
+      | none => false
+  | none => false
+
+/-- 利用者の一覧を選んだラベルでは、組込みの一覧を読まない。 -/
+def issuesSelected (P : Program) (B : Builtins) (l : EffName) : Bool :=
+  match P.effects l with
+  | some _ => false
+  | none => B.issuesIn l
+
+def handled (P : Program) (B : Builtins) (h : List Clause) : Eff :=
+  .mk (fun a => match a with
+    | .name l _ => match effOps P B l with
+      | some (o::os) => (o::os).all (handles h) && !issuesSelected P B l
+      | _ => false
+    | .rho _ => false) []
+
+abbrev handledSelected (P : Program) (B : Builtins) (h : List Clause) : Eff := handled P B h
+```
+
+`Program.EffectsOk B` の分離の条件の下では、`handledSelected_eq_d` により、この定義は組込みの `issuesIn` を直接使う案Dと等しい。`pathBases_never_handled` は、同じ条件と `CoreAssumptions.pathBases_shape` から、どの節も発行の効果を消さないことを示す。旧導出の埋め込みでは、既存の旧節の入力から組込みの署名を取り出す。旧kindの像に発行専用のkindがないため、旧導出の `handled` の包含を保つ。
+
+PathBases と At の追加の遷移は次の五規則である。AtPrepared の成功/失敗と検査の成功/失敗を区別し、保存した snapshot があるときは実行の σ と等しいことを要求する。E_OpPrim は IO と終了だけを捕捉する。専用 pathBases の適用と発行は、処理節の有無によらず同じ継続を保つ。これ以外の遷移をこの差分の列挙で置き換えない。
 
 ```lean
   | E_PathBasesApply {q : Closure} {b sg k μ} :
       q.view = .app (.prim b [] [] []) [] → B.sig b = some sg → sg.kind = .pathBases →
-      NoHandler k (.prim b) →
       Step P B σ (.run q k μ) none (.run (.mk q.capture (.issuePathBases b)) k μ)
   | E_IssuePathBases {q : Closure} {b sg k μ} :
       q.view = .issuePathBases b → B.sig b = some sg → sg.kind = .pathBases →
@@ -3945,8 +4015,8 @@ PathBases と At の追加の遷移は次の五規則である。AtPrepared の�
         (.run (Closure.pure (.ret (.con shape.error
           [.scoped name kind index, q.capture.closeTy shape.errorType] [.atError detail]))) k μ)
   | E_OpPrim {b ts es rs ws k μ s k1 h k2 c κ} {q : Closure} {hcap : Capture} :
-      q.view = (.app (.prim b ts es rs) ws) →
-      B.sig b = some s → (s.kind = .io ∨ s.kind = .exit ∨ s.kind = .pathBases) →
+      q.view = .app (.prim b ts es (rs.map RangeIx.fixed)) ws →
+      B.sig b = some s → (s.kind = .io ∨ s.kind = .exit) →
       SplitAt (.prim b) k k1 hcap h k2 → findClause h (.prim b) = some c → μ κ = none →
       Step P B σ (.run q k μ) none
         (.run (Closure.mk (hcap.extendMany (ws ++ [.loc κ])) (c.body.substTy ts [])) (.drop κ :: k2) (μ.set κ (.cont (k1 ++ [.handleF hcap h]))))
@@ -4272,7 +4342,22 @@ inductive ContTy (P : Program) (B : Builtins) (σ : PathEnv) (Ψ : StoreTy) :
 
 ### 確かめる性質
 
-【方針】次の性質が成り立つように、本章と[型システム](01-06-type-system.md)を定める。形式検証の段階 1（[ロードマップ](../00-overview/00-03-roadmap.md)）で、ランダムに生成したプログラムを使って反例を探す。反例が見つかれば、仕様の誤りとして直す。以下で性質 1〜3 の証明に使う型付けと遷移は `Benitoite.Release` のものである。篩を含む `Benitoite.Release.Refinement` の定義への全状態の定理の適用は、この記述に含めない。性質 2 と性質 3 は、形式検証の段階 2 で、規則を Lean 4 で定義し、組み込みの関数についての仮定のもとで証明した。性質 1 は、前述の「表層からの脱糖」の全体（形式化の段階 C1・C2。`match` のパターンの拡張は段階 C7）と、初回リリース版の拡張の脱糖のうち段階 C4・C5・C6 で形式化したものについて、表層の型付けを満たす型の情報を付けた表層のプログラムを脱糖すると、すべての定義に型が付き、定義が範囲の条件を満たすことを証明した。この性質 1 と性質 3 を組み合わせ、表層の `main` のエフェクトが空なら、脱糖したプログラムの実行は IO の事象を伴う遷移をせず、どの `handle` の枠も処理しない操作を呼ばないことも証明した（[形式意味論と検証](../07-quality/07-04-formal-semantics.md)）。形式化した規則は Lean の定義を正とする（前述の「本章の位置付け」）。
+【方針】次の性質が成り立つように、本章と[型システム](01-06-type-system.md)を定める。形式検証の段階 1（[ロードマップ](../00-overview/00-03-roadmap.md)）で、ランダムに生成したプログラムを使って反例を探す。反例が見つかれば、仕様の誤りとして直す。以下で性質 1〜3 の証明に使う型付けと遷移は `Benitoite.Release` のものである。篩を含む `Benitoite.Release.Refinement` の性質2・3は、後述の同じ体系の言明と定理で述べる。性質 2 と性質 3 は、形式検証の段階 2 で、規則を Lean 4 で定義し、組み込みの関数についての仮定のもとで証明した。性質 1 は、前述の「表層からの脱糖」の全体（形式化の段階 C1・C2。`match` のパターンの拡張は段階 C7）と、初回リリース版の拡張の脱糖のうち段階 C4・C5・C6 で形式化したものについて、表層の型付けを満たす型の情報を付けた表層のプログラムを脱糖すると、すべての定義に型が付き、定義が範囲の条件を満たすことを証明した。この性質 1 と性質 3 を組み合わせ、表層の `main` のエフェクトが空なら、脱糖したプログラムの実行は IO の事象を伴う遷移をせず、どの `handle` の枠も処理しない操作を呼ばないことも証明した（[形式意味論と検証](../07-quality/07-04-formal-semantics.md)）。形式化した規則は Lean の定義を正とする（前述の「本章の位置付け」）。
+
+篩を含む体系の `effect_soundness` は次の言明を証明する。初期の効果を空に固定し、任意の実行列で到達した状態について、事象のある次の遷移と未処理の操作を排除する。
+
+```lean
+def EffectSoundnessStatement (P : Program) (B : Builtins) (σ : PathEnv) : Prop :=
+  P.WellFormed → P.WellTyped B → P.EffectsOk B → B.CoreAssumptions P →
+    ∀ q a, ClosureTy P B StoreTy.empty [] none q a Eff.empty → StartCondition P B σ q →
+      ∀ evs s, Steps P B σ (.run q [] Store.empty) evs s →
+        (∀ ev s', ¬ Step P B σ s (some ev) s') ∧ ¬ UnhandledOp s
+```
+
+保存は継続の末尾の効果を保つ。IOは操作の表の所属と型付きの実引数から、解放は継続の全解放枠から、起点発行は閉包の効果の被覆から、事象に必要な原子を得る。発行のラベルは `handledSelected` が除かないため、処理節の有無によらず末尾へ残る。`MainEffects` の `StateTyE.no_event` と `StateTyE.no_unhandledOp` が、空の末尾の効果についてこの二条件を示す。
+
+`effect_soundness_noLamNames` は、同じプログラム・表・環境と同じ空の効果の閉包の型付けに加え、`q.Adequate σ`・`q.ClosedNoLamNames 0`・`InitialPrepared P B σ (.run q [] Store.empty)` を受ける。`StartCondition.of_typed_noLamNames` で開始の条件を作り、上の言明と同じ全到達状態の二条件を結論する。ラムダ名の整形式は型付けが供給する。
+
 
 1. 脱糖の型の保存: [型システム](01-06-type-system.md)の型検査を通ったプログラムを脱糖すると、すべての定義に型が付く。
 2. 進行と保存: 型が付いた状態は、`⟨return V, []⟩` であるか、遷移できる。遷移した先の状態も型が付くか、`error(r)` である。IO の応答は、関数の戻り値の型の値であるとする。
