@@ -866,3 +866,6 @@ import Benitoite.Release.Refinement.Surface.Syntax
 import Benitoite.Release.Refinement.Surface.Typing
 import Benitoite.Release.Refinement.AtPatternText
 import Benitoite.Exchange.Refined
+import Benitoite.Release.Refinement.ProgramExtensionTransport
+import Benitoite.Release.Refinement.StandardModelGeneral
+import Benitoite.Release.Refinement.StandardModelComposedRows

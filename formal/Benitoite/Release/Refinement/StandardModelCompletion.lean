@@ -1,4 +1,5 @@
 import Benitoite.Release.Refinement.StandardModelCore
+import Benitoite.Release.Refinement.StandardModelGeneral
 import Benitoite.Release.Refinement.ProgramExtension
 import Benitoite.Release.Refinement.StandardModelNameLists
 
@@ -142,6 +143,46 @@ theorem Builtins.core_of_parts {P : Program} {B : Builtins} {N M : PrimName → 
     ⟨fun Ψ b sg ts es rs ws a e out obs h =>
       pick h (·.io_target Ψ b sg ts es rs ws a e out obs · h) (·.io_target Ψ b sg ts es rs ws a e out obs · h)⟩⟩
 
+/-- 利用者のプログラムの data 型の宣言の有限の一覧。構成子の lookup はこの一覧の lookup であり、型の制約（等値・鍵）
+の判定と、鍵の符号化が読む構成子の並びはこの一覧から作る。変性の検査を満たす。 -/
+structure StandardModel.DataTable (P : Program) where
+  declarations : List StandardKeyTyping.DataDecl
+  constructorNames : ((declarations.flatMap StandardKeyTyping.DataDecl.entries).map Prod.fst).Nodup
+  dataNames : (declarations.map StandardKeyTyping.DataDecl.name).Nodup
+  cons_eq : P.cons = fun c => (declarations.flatMap StandardKeyTyping.DataDecl.entries).lookup c
+  converged : Benitoite.Release.summariesConverged (declarations.map StandardKeyTyping.DataDecl.summaryInput)
+    (Benitoite.Release.dataSummaries (declarations.map StandardKeyTyping.DataDecl.summaryInput)) = true
+  valid : P.VarianceValid
+
+/-- 宣言の一覧の要約による型の制約の判定。 -/
+def StandardModel.DataTable.sat {P : Program} (T : StandardModel.DataTable P) : List TParam → Ty → TParam → Prop :=
+  ModelConstraints.sat (Benitoite.Release.dataSummaries (T.declarations.map StandardKeyTyping.DataDecl.summaryInput))
+
+/-- 鍵の符号化が読む構成子の並び。 -/
+def StandardModel.DataTable.keyNames {P : Program} (T : StandardModel.DataTable P) : List ConName :=
+  (T.declarations.flatMap StandardKeyTyping.DataDecl.entries).map Prod.fst
+
+/-- 宣言の一覧と同じ型の制約の判定を持つ表の鍵の宣言表。 -/
+def StandardModel.DataTable.table {P : Program} (T : StandardModel.DataTable P) {B : Builtins} (h : B.sat = T.sat) :
+    StandardKeyTyping.Table P B :=
+  ⟨T.declarations, T.constructorNames, T.dataNames, T.cons_eq, T.converged, fun C a p => by rw [h]; rfl⟩
+
+/-- 利用者のプログラムの宣言の一覧で型の制約と鍵の符号化を作った合成表。 -/
+def StandardModel.DataTable.base {P : Program} (T : StandardModel.DataTable P) : Builtins :=
+  StandardModel.baseBuiltinsFor T.sat T.keyNames
+
+/-- 合成プログラムの宣言の一覧。 -/
+def StandardModel.dataTable (externals : List (ExternalKey × ExternalDecl)) :
+    StandardModel.DataTable (StandardModel.program externals) :=
+  ⟨StandardModel.declarations, (StandardModel.table externals).constructorNames,
+    (StandardModel.table externals).dataNames, (StandardModel.table externals).cons_eq,
+    (StandardModel.table externals).converged, StandardModel.variance_valid externals⟩
+
+/-- 合成プログラムの宣言の一覧で作った合成表は、合成表である。 -/
+theorem StandardModel.dataTable_base (externals : List (ExternalKey × ExternalDecl)) :
+    (StandardModel.dataTable externals).base = StandardModel.baseBuiltins :=
+  StandardModel.baseBuiltinsFor_base
+
 /-- 仮定側の表。δ・IO 応答・通常資源の状態の名前の署名と応答、その資源の種類と解放、効果の種類。 -/
 structure StandardModel.AssumedTable where
   sig : PrimName → Option PrimSig
@@ -180,37 +221,39 @@ def StandardModel.assumedOps (L : StandardModel.NameLists) (A : StandardModel.As
     List PrimName :=
   L.assumed.filter (fun b => (A.sig b).bind PrimSig.opEff == some l)
 
-/-- 完成した表の欄。合成済みの側は合成表の値を仮定側の表で上書きしない。 -/
-def StandardModel.completeBase (L : StandardModel.NameLists) (A : StandardModel.AssumedTable) : Builtins :=
-  {StandardModel.baseBuiltins with
-    sig := fun b => if b ∈ L.composed then StandardModel.baseBuiltins.sig b
+/-- 完成した表の欄。合成済みの側は、利用者のプログラムの宣言の一覧で作った合成表の値を仮定側の表で上書きしない。 -/
+def StandardModel.completeBase (L : StandardModel.NameLists) {P : Program} (T : StandardModel.DataTable P)
+    (A : StandardModel.AssumedTable) : Builtins :=
+  {T.base with
+    sig := fun b => if b ∈ L.composed then T.base.sig b
       else if b ∈ L.assumed then A.sig b else none
-    delta := fun b => if b ∈ L.composed then StandardModel.baseBuiltins.delta b else A.delta b
-    ioResponse := fun b => if b ∈ L.composed then StandardModel.baseBuiltins.ioResponse b else A.ioResponse b
-    isResource := fun o => if o ∈ L.resources then A.isResource o else StandardModel.baseBuiltins.isResource o
-    effects := fun l => match StandardModel.baseBuiltins.effects l with
+    delta := fun b => if b ∈ L.composed then T.base.delta b else A.delta b
+    ioResponse := fun b => if b ∈ L.composed then T.base.ioResponse b else A.ioResponse b
+    isResource := fun o => if o ∈ L.resources then A.isResource o else T.base.isResource o
+    effects := fun l => match T.base.effects l with
       | some bs => some (bs ++ StandardModel.assumedOps L A l)
       | none => if StandardModel.assumedOps L A l = [] then none else some (StandardModel.assumedOps L A l)
-    effKind := fun l => if l ∈ L.composedEffects then StandardModel.baseBuiltins.effKind l else A.effKind l }
+    effKind := fun l => if l ∈ L.composedEffects then T.base.effKind l else A.effKind l }
 
 /-- 完成した表。外部応答は P の外部宣言から作り、解放は資源の分類による抽象の応答と仮定側の応答の和である。 -/
-def StandardModel.complete (L : StandardModel.NameLists) (P : Program) (A : StandardModel.AssumedTable) : Builtins :=
-  ExternalModel.builtins P (StandardModel.completeBase L A)
-    (fun v r => ResourceRelease.response (StandardModel.completeBase L A).isResource v r ∨ A.releaseResponse v r)
+def StandardModel.complete (L : StandardModel.NameLists) {P : Program} (T : StandardModel.DataTable P)
+    (A : StandardModel.AssumedTable) : Builtins :=
+  ExternalModel.builtins P (StandardModel.completeBase L T A)
+    (fun v r => ResourceRelease.response (StandardModel.completeBase L T A).isResource v r ∨ A.releaseResponse v r)
 
 /-- 仮定側の表の契約。署名は仮定側の名前だけに置き、区分ごとの種類を持ち、仮定側の名前の行の条件と、仮定側の資源の
 種類の解放の存在を満たす。合成済みの効果のラベル・State のラベル・合成表の資源の解放へ立ち入らない。 -/
-structure StandardModel.Completion (L : StandardModel.NameLists) (P : Program) (A : StandardModel.AssumedTable) :
-    Prop where
+structure StandardModel.Completion (L : StandardModel.NameLists) {P : Program} (T : StandardModel.DataTable P)
+    (A : StandardModel.AssumedTable) : Prop where
   domain : ∀ b, (A.sig b).isSome → b ∈ L.assumed
   deltaKind : ∀ b s, A.sig b = some s → b ∈ L.delta → s.kind = .pure
   ioKind : ∀ b s, A.sig b = some s → b ∈ L.io ∨ b ∈ L.state → s.kind = .io ∨ s.kind = .exit
-  rows : Builtins.RowConditions (· ∈ L.assumed) P (StandardModel.complete L P A)
-  release : Builtins.ReleaseOn (· ∈ L.resources) P (StandardModel.complete L P A)
+  rows : Builtins.RowConditions (· ∈ L.assumed) P (StandardModel.complete L T A)
+  release : Builtins.ReleaseOn (· ∈ L.resources) P (StandardModel.complete L T A)
   resourceDomain : ∀ o, A.isResource o = true → o ∈ L.resources
   effKindComposed : ∀ l, l ∈ L.composedEffects → A.effKind l = none
   stateFree : ∀ b s, A.sig b = some s → s.opEff ≠ some stateEff
-  releaseComposed : ∀ Ψ v o r, HasTypeV P (StandardModel.complete L P A) Ψ [] [] [] v (.opaque o (.fixed .top)) →
+  releaseComposed : ∀ Ψ v o r, HasTypeV P (StandardModel.complete L T A) Ψ [] [] [] v (.opaque o (.fixed .top)) →
     o ∉ L.resources → A.releaseResponse v r → ResourceRelease.response StandardModel.baseBuiltins.isResource v r
 
 /-- 合成済みの名前で表が一致すること（合成表の行の証明を任意の表へ移す前提）。`ShapeOk` が読む効果表の所属と
@@ -264,66 +307,76 @@ structure StandardModel.Includes (externals : List (ExternalKey × ExternalDecl)
   internal : ∀ f d, (StandardModel.program externals).defs f = none → P.defs f = some d → ¬ f.startsWith "%"
   publicCollisions : ∀ n, n ∈ FunctionNames.collisionNames → P.defs n = none
 
-/-! ## 言明（証明は合成済みの行の一般化の単位が閉じる） -/
+/-! ## 言明 -/
 
-/-- 合成済みの名前の行の条件。合成表と合成済みの名前で一致する任意の表へ、合成表の行の証明を移す。 -/
+/-- 合成済みの名前の行の条件。利用者のプログラムの宣言の一覧で作った合成表と合成済みの名前で一致する任意の表で、
+合成表の行の証明を述べる。 -/
 def StandardModel.ComposedRowsStatement (L : StandardModel.NameLists)
     (externals : List (ExternalKey × ExternalDecl)) : Prop :=
-  L.WF → ∀ P B, StandardModel.Includes externals P → Builtins.ComposedAgree L StandardModel.baseBuiltins B →
-    Builtins.RowConditions (· ∈ L.composed) P B
+  L.WF → ∀ P (T : StandardModel.DataTable P) B, StandardModel.Includes externals P →
+    Builtins.ComposedAgree L T.base B → Builtins.RowConditions (· ∈ L.composed) P B
 
 /-- 合成表の資源の種類の解放の存在。合成表の解放の応答を含む任意の表へ移す。 -/
 def StandardModel.ComposedReleaseStatement (L : StandardModel.NameLists)
     (externals : List (ExternalKey × ExternalDecl)) : Prop :=
-  L.WF → ∀ P B, StandardModel.Includes externals P → Builtins.ComposedAgree L StandardModel.baseBuiltins B →
+  L.WF → ∀ P (T : StandardModel.DataTable P) B, StandardModel.Includes externals P →
+    Builtins.ComposedAgree L T.base B →
     (∀ v r, ResourceRelease.response StandardModel.baseBuiltins.isResource v r → B.releaseResponse v r) →
     Builtins.ReleaseOn (fun o => StandardModel.baseBuiltins.isResource o = true) P B
 
 /-- 完成した表の、表全体の条件。 -/
 def StandardModel.TableConditionsStatement (L : StandardModel.NameLists)
     (externals : List (ExternalKey × ExternalDecl)) : Prop :=
-  L.WF → ∀ P A, StandardModel.Includes externals P → StandardModel.Completion L P A →
-    Builtins.TableConditions P (StandardModel.complete L P A)
+  L.WF → ∀ P (T : StandardModel.DataTable P) A, StandardModel.Includes externals P → StandardModel.Completion L T A →
+    Builtins.TableConditions P (StandardModel.complete L T A)
 
 /-- 完成した表の信頼条件と対象の条件。 -/
 def StandardModel.CompletionCoreStatement (L : StandardModel.NameLists)
     (externals : List (ExternalKey × ExternalDecl)) : Prop :=
-  L.WF → ∀ P A, StandardModel.Includes externals P → StandardModel.Completion L P A →
-    Builtins.CoreAssumptions P (StandardModel.complete L P A) ∧
-      Builtins.TargetAgreement P (StandardModel.complete L P A)
+  L.WF → ∀ P (T : StandardModel.DataTable P) A, StandardModel.Includes externals P → StandardModel.Completion L T A →
+    Builtins.CoreAssumptions P (StandardModel.complete L T A) ∧
+      Builtins.TargetAgreement P (StandardModel.complete L T A)
 
 /-! ## 合成済みの側を上書きしないこと -/
 
+/-- 宣言の一覧で作った合成表の署名を持つ名前は、合成表の署名を持つ名前と同じである。 -/
+theorem StandardModel.DataTable.base_sig_isSome {P : Program} (T : StandardModel.DataTable P) (b : PrimName) :
+    (T.base.sig b).isSome = (StandardModel.baseBuiltins.sig b).isSome := by
+  show ((StandardModel.primitive b).map _).isSome = ((StandardModel.primitive b).map _).isSome
+  cases StandardModel.primitive b <;> rfl
+
 /-- 合成済みのラベルでは、どの仮定側の表でも、完成した表の効果の種類は合成表の値である。 -/
-theorem StandardModel.complete_effKind_composed (L : StandardModel.NameLists) (P : Program)
-    (A : StandardModel.AssumedTable) (l : EffName) (hl : l ∈ L.composedEffects) :
-    (StandardModel.complete L P A).effKind l = StandardModel.baseBuiltins.effKind l := by
+theorem StandardModel.complete_effKind_composed (L : StandardModel.NameLists) {P : Program}
+    (T : StandardModel.DataTable P) (A : StandardModel.AssumedTable) (l : EffName) (hl : l ∈ L.composedEffects) :
+    (StandardModel.complete L T A).effKind l = T.base.effKind l := by
   simp [StandardModel.complete, ExternalModel.builtins, StandardModel.completeBase, hl]
 
-/-- 合成表の `ShapeOk` は完成した表でも成り立つ（`io_op` の合成済みの名前の場合）。 -/
-theorem StandardModel.complete_shapeOk_composed (L : StandardModel.NameLists) (hL : L.WF) (P : Program)
-    (A : StandardModel.AssumedTable) {b : PrimName} {s : PrimSig}
-    (h : StandardModel.baseBuiltins.ShapeOk b s) : (StandardModel.complete L P A).ShapeOk b s := by
+/-- 宣言の一覧で作った合成表の `ShapeOk` は完成した表でも成り立つ（`io_op` の合成済みの名前の場合）。 -/
+theorem StandardModel.complete_shapeOk_composed (L : StandardModel.NameLists) (hL : L.WF) {P : Program}
+    (T : StandardModel.DataTable P) (A : StandardModel.AssumedTable) {b : PrimName} {s : PrimSig}
+    (h : T.base.ShapeOk b s) : (StandardModel.complete L T A).ShapeOk b s := by
   obtain ⟨l, bs, ho, hn, he, hb, hm⟩ := h
-  have hl : l ∈ L.composedEffects := hL.effects l (by simp [he])
-  have hk : (StandardModel.complete L P A).effKind l = StandardModel.baseBuiltins.effKind l :=
-    StandardModel.complete_effKind_composed L P A l hl
-  have hv : (StandardModel.complete L P A).valKind = StandardModel.baseBuiltins.valKind := rfl
+  have hl : l ∈ L.composedEffects := hL.effects l (by
+    change (T.base.effects l).isSome = true
+    simp [he])
+  have hk : (StandardModel.complete L T A).effKind l = T.base.effKind l :=
+    StandardModel.complete_effKind_composed L T A l hl
+  have hv : (StandardModel.complete L T A).valKind = T.base.valKind := rfl
   refine ⟨l, bs ++ StandardModel.assumedOps L A l, ho, hn, ?_, List.mem_append_left _ hb, ?_⟩
   · simp [StandardModel.complete, ExternalModel.builtins, StandardModel.completeBase, he]
   · rw [hk, hv]; exact hm
 
-/-- 完成した表は合成表と合成済みの名前で一致する。 -/
-theorem StandardModel.complete_agree (L : StandardModel.NameLists) (P : Program)
+/-- 完成した表は、宣言の一覧で作った合成表と合成済みの名前で一致する。 -/
+theorem StandardModel.complete_agree (L : StandardModel.NameLists) {P : Program} (T : StandardModel.DataTable P)
     (A : StandardModel.AssumedTable) :
-    Builtins.ComposedAgree L StandardModel.baseBuiltins (StandardModel.complete L P A) where
+    Builtins.ComposedAgree L T.base (StandardModel.complete L T A) where
   sig b hb := by simp [StandardModel.complete, ExternalModel.builtins, StandardModel.completeBase, hb]
   delta b hb := by simp [StandardModel.complete, ExternalModel.builtins, StandardModel.completeBase, hb]
   ioResponse b hb := by simp [StandardModel.complete, ExternalModel.builtins, StandardModel.completeBase, hb]
   effects l bs b he hb := ⟨bs ++ StandardModel.assumedOps L A l,
     by simp [StandardModel.complete, ExternalModel.builtins, StandardModel.completeBase, he],
     List.mem_append_left _ hb⟩
-  effKind l hl := StandardModel.complete_effKind_composed L P A l hl
+  effKind l hl := StandardModel.complete_effKind_composed L T A l hl
   isResource o ho := by simp [StandardModel.complete, ExternalModel.builtins, StandardModel.completeBase, ho]
   sat := rfl
   valKind := rfl
@@ -333,22 +386,22 @@ theorem StandardModel.complete_agree (L : StandardModel.NameLists) (P : Program)
   refSet := rfl
 
 /-- 仮定側の操作が State のラベルを使わなければ、完成した表の State の効果表は空のままである。 -/
-theorem StandardModel.complete_state_effect (L : StandardModel.NameLists) (P : Program)
-    (A : StandardModel.AssumedTable) (hc : StandardModel.Completion L P A) :
-    (StandardModel.complete L P A).effects stateEff = some [] := by
+theorem StandardModel.complete_state_effect (L : StandardModel.NameLists) {P : Program}
+    (T : StandardModel.DataTable P) (A : StandardModel.AssumedTable) (hc : StandardModel.Completion L T A) :
+    (StandardModel.complete L T A).effects stateEff = some [] := by
   have hfree : StandardModel.assumedOps L A stateEff = [] := by
     simp only [StandardModel.assumedOps, List.filter_eq_nil_iff]
     intro b _
     cases hs : A.sig b with
     | none => simp
     | some s => simpa using hc.stateFree b s hs
-  have hbase : StandardModel.baseBuiltins.effects stateEff = some [] := StandardModel.state_effect P
+  have hbase : T.base.effects stateEff = some [] := StandardModel.state_effect (StandardModel.program [])
   simp [StandardModel.complete, ExternalModel.builtins, StandardModel.completeBase, hbase, hfree]
 
 /-- 完成した表の署名を持つ名前は、合成済みか仮定側の名前である。 -/
-theorem StandardModel.complete_sig_cover (L : StandardModel.NameLists) (P : Program)
+theorem StandardModel.complete_sig_cover (L : StandardModel.NameLists) {P : Program} (T : StandardModel.DataTable P)
     (A : StandardModel.AssumedTable) {b : PrimName} {s : PrimSig}
-    (h : (StandardModel.complete L P A).sig b = some s) : b ∈ L.composed ∨ b ∈ L.assumed := by
+    (h : (StandardModel.complete L T A).sig b = some s) : b ∈ L.composed ∨ b ∈ L.assumed := by
   by_cases hb : b ∈ L.composed
   · exact Or.inl hb
   · by_cases ha : b ∈ L.assumed
@@ -356,23 +409,26 @@ theorem StandardModel.complete_sig_cover (L : StandardModel.NameLists) (P : Prog
     · simp [StandardModel.complete, ExternalModel.builtins, StandardModel.completeBase, hb, ha] at h
 
 /-- 完成した表の資源の種類は、合成表の資源か仮定側の資源の種類である。 -/
-theorem StandardModel.complete_resource_cover (L : StandardModel.NameLists) (P : Program)
-    (A : StandardModel.AssumedTable) {o : OpaqueName}
-    (h : (StandardModel.complete L P A).isResource o = true) :
+theorem StandardModel.complete_resource_cover (L : StandardModel.NameLists) {P : Program}
+    (T : StandardModel.DataTable P) (A : StandardModel.AssumedTable) {o : OpaqueName}
+    (h : (StandardModel.complete L T A).isResource o = true) :
     StandardModel.baseBuiltins.isResource o = true ∨ o ∈ L.resources := by
   by_cases ho : o ∈ L.resources
   · exact Or.inr ho
   · left
-    simpa [StandardModel.complete, ExternalModel.builtins, StandardModel.completeBase, ho] using h
+    have hb : T.base.isResource o = true := by
+      simpa [StandardModel.complete, ExternalModel.builtins, StandardModel.completeBase, ho] using h
+    exact hb
 
 /-- 完成した表の解放の応答は、合成表の資源の値について合成表の解放の応答を含む。 -/
-theorem StandardModel.complete_release_composed (L : StandardModel.NameLists) (hL : L.WF) (P : Program)
-    (A : StandardModel.AssumedTable) {v : Val} {r : Option Benitoite.Release.ErrKind}
+theorem StandardModel.complete_release_composed (L : StandardModel.NameLists) (hL : L.WF) {P : Program}
+    (T : StandardModel.DataTable P) (A : StandardModel.AssumedTable) {v : Val} {r : Option Benitoite.Release.ErrKind}
     (h : ResourceRelease.response StandardModel.baseBuiltins.isResource v r) :
-    (StandardModel.complete L P A).releaseResponse v r := by
+    (StandardModel.complete L T A).releaseResponse v r := by
   obtain ⟨o, i, hv, ho⟩ := h
   have hn : o ∉ L.resources := fun hm => by simp [hL.resources o hm] at ho
-  exact Or.inl ⟨o, i, hv, by simpa [StandardModel.completeBase, hn] using ho⟩
+  have hb : T.base.isResource o = true := ho
+  exact Or.inl ⟨o, i, hv, by simpa [StandardModel.completeBase, hn] using hb⟩
 
 /-- 完成した表の信頼条件は、合成済みの行・合成表の資源の解放・表全体の条件から組み立てられる（29欄の対応表）。 -/
 theorem StandardModel.completion_core_of (L : StandardModel.NameLists) (externals : List (ExternalKey × ExternalDecl))
@@ -380,15 +436,15 @@ theorem StandardModel.completion_core_of (L : StandardModel.NameLists) (external
     (release : StandardModel.ComposedReleaseStatement L externals)
     (table : StandardModel.TableConditionsStatement L externals) :
     StandardModel.CompletionCoreStatement L externals := by
-  intro hL P A hI hc
+  intro hL P T A hI hc
   exact Builtins.core_of_parts (N := (· ∈ L.composed)) (M := (· ∈ L.assumed))
     (R := fun o => StandardModel.baseBuiltins.isResource o = true) (S := (· ∈ L.resources))
-    (fun _ _ h => StandardModel.complete_sig_cover L P A h)
-    (fun _ h => StandardModel.complete_resource_cover L P A h)
-    (rows hL P _ hI (StandardModel.complete_agree L P A)) hc.rows
-    (release hL P _ hI (StandardModel.complete_agree L P A)
-      (fun _ _ h => StandardModel.complete_release_composed L hL P A h)) hc.release
-    (table hL P A hI hc)
+    (fun _ _ h => StandardModel.complete_sig_cover L T A h)
+    (fun _ h => StandardModel.complete_resource_cover L T A h)
+    (rows hL P T _ hI (StandardModel.complete_agree L T A)) hc.rows
+    (release hL P T _ hI (StandardModel.complete_agree L T A)
+      (fun _ _ h => StandardModel.complete_release_composed L hL T A h)) hc.release
+    (table hL P T A hI hc)
 
 /-! ## レビューの反例: 合成済みのラベルに効果の種類を与える仮定側の表 -/
 
@@ -403,17 +459,18 @@ def StandardModel.reviewA : StandardModel.AssumedTable where
 
 /-- この表は契約の `effKindComposed` を満たさない。 -/
 theorem StandardModel.reviewA_not_completion (L : StandardModel.NameLists)
-    (hc : "Console.Write" ∈ L.composedEffects) (P : Program) :
-    ¬ StandardModel.Completion L P StandardModel.reviewA := by
+    (hc : "Console.Write" ∈ L.composedEffects) {P : Program} (T : StandardModel.DataTable P) :
+    ¬ StandardModel.Completion L T StandardModel.reviewA := by
   intro h
   have := h.effKindComposed "Console.Write" hc
   simp [StandardModel.reviewA] at this
 
 /-- 構成の側でも、この表の種類は合成済みのラベルに現れない。 -/
-example (L : StandardModel.NameLists) (hc : "Console.Write" ∈ L.composedEffects) (P : Program) :
-    (StandardModel.complete L P StandardModel.reviewA).effKind "Console.Write" =
+example (L : StandardModel.NameLists) (hc : "Console.Write" ∈ L.composedEffects) {P : Program}
+    (T : StandardModel.DataTable P) :
+    (StandardModel.complete L T StandardModel.reviewA).effKind "Console.Write" =
       StandardModel.baseBuiltins.effKind "Console.Write" :=
-  StandardModel.complete_effKind_composed L P _ _ hc
+  StandardModel.complete_effKind_composed L T _ _ hc
 
 /-! ## 標準の名前の一覧 -/
 
@@ -472,8 +529,9 @@ example : StandardModel.nameLists.delta.length = 80 ∧ StandardModel.nameLists.
   ⟨rfl, rfl, rfl, rfl⟩
 
 /-- 合成済みの効果のラベルは `Console.Write` を含む（レビューの反例は標準の一覧でも断られる）。 -/
-example (P : Program) : ¬ StandardModel.Completion StandardModel.nameLists P StandardModel.reviewA :=
-  StandardModel.reviewA_not_completion _ (StandardModel.nameLists_wf.effects _ (by decide)) P
+example (externals : List (ExternalKey × ExternalDecl)) :
+    ¬ StandardModel.Completion StandardModel.nameLists (StandardModel.dataTable externals) StandardModel.reviewA :=
+  StandardModel.reviewA_not_completion _ (StandardModel.nameLists_wf.effects _ (by decide)) _
 
 end
 end Benitoite.Release.Refinement

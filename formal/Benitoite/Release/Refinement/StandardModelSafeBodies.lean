@@ -3,8 +3,10 @@ import Benitoite.Release.Refinement.StandardModelCoreBodies
 /-! # 合成表の上の安全な入口と精密なgetterの本体
 
 安全な入口の内部の本体（列の添字の取得・検査済みの添字・同じ長さの列の取得・非空の列の構成）と
-九つの精密なgetterを、合成プログラムの同じ構成子と合成表の内部の組込み %List.getFront の上で、
-元の証明の構成（StandardSafeAnnotations・StandardSafeBodies）で検査する。 -/
+九つの精密なgetterを、合成プログラムの同じ構成子と内部の組込み %List.getFront を持つ本体の型付けの環境
+（`StandardModel.BodyEnv`）の上で、元の証明の構成（StandardSafeAnnotations・StandardSafeBodies）で検査する。
+型の注釈・パターン・腕の条件は合成プログラムで示し、旧宣言の移送の関係で環境のプログラムへ移す。網羅性は、
+環境のプログラムの構成子を合成プログラムの構成子へ戻して示す。 -/
 namespace Benitoite.Release.Refinement.StandardSafe.Composed
 open InternalContracts
 noncomputable section
@@ -269,13 +271,13 @@ local macro "safe_simp" : tactic => `(tactic|
   Ctx.declarationSelf,length,indexValue,indexValues,getField,checkedIndexType,Tel.argumentsEnv,
   valEnv,Val.toTerm?,upValues,Ty.refineNorm,Ty.packRefinements,Ty.refinementPredicates,Pred.conjuncts,Pred.ofConjuncts,Tel.names,Tel.inputs,Tel.result,Tel.effect])
 
-private theorem front_function {P Γ Φ Q} (two : Bool) :
- HasTypeVQ P (StandardModel.builtins (StandardModel.program externals)) StoreTy.empty Q (if two then D2 else C) Γ Φ
+private theorem front_function {P : Program} {B : Builtins} [env : StandardModel.BodyEnv externals P B] {Γ Φ Q} (two : Bool) :
+ HasTypeVQ P (B) StoreTy.empty Q (if two then D2 else C) Γ Φ
   (.prim "%List.getFront" [.tvar (if two then 1 else 0)] [] [])
   (.fn ["xs","index"] [.list (.tvar (if two then 1 else 0)),.base .integer]
     (.tvar (if two then 1 else 0)) Eff.empty) := by
- have lookup : (StandardModel.builtins (StandardModel.program externals)).sig "%List.getFront" = some frontSig := by rfl
- have range : (StandardModel.builtins (StandardModel.program externals)).RangeAdmissible "%List.getFront" frontSig [] := by safe_simp
+ have lookup : (B).sig "%List.getFront" = some frontSig := StandardModel.RowLookup.sig_eq rfl rfl
+ have range : (B).RangeAdmissible "%List.getFront" frontSig [] := by safe_simp
  have names : NamesWF frontSig.names frontSig.params := by safe_simp
  have admissible : PrimitiveAdmissible (if two then D2 else C) Γ.length frontSig Q
   [.tvar (if two then 1 else 0)] [] := by
@@ -302,7 +304,7 @@ private theorem front_function {P Γ Φ Q} (two : Bool) :
         ⟨["xs","index"],[.list (.tvar 1),.base .integer],.tvar 1,Eff.empty,by simp [NamesWF]⟩)
  · cases two <;> constructor <;> safe_simp
 
-private theorem get_body : TelBodyTy (StandardModel.program externals) (StandardModel.builtins (StandardModel.program externals)) StoreTy.empty (QTel (safeGet a)) C [] []
+private theorem get_body {P : Program} {B : Builtins} [env : StandardModel.BodyEnv externals P B] : TelBodyTy P (B) StoreTy.empty (QTel (safeGet a)) C [] []
  (safeGet a) safeGetBody := by
  apply TelBodyTy.param
  apply TelBodyTy.param
@@ -315,8 +317,11 @@ private theorem get_annotation : Ty.Annotation (StandardModel.program externals)
  declarations_annotation ⟨"safeGet",C,0,safeGet a,none,.core,[]⟩
  (by simp [declarationRows,InternalContracts.all,List.zipIdx,a])
 
-theorem get_row_typed : getRow.BodyTyped (StandardModel.program externals) (StandardModel.builtins (StandardModel.program externals)) := by
- refine ⟨_,rfl,?_,?_,get_annotation,get_body⟩
+theorem get_row_typed {P : Program} {B : Builtins} [env : StandardModel.BodyEnv externals P B] : getRow.BodyTyped P (B) := by
+ have cxP : TyCon.arity P (.data names.checkedIndex) = some 1 := TyCon.arity_ofExtends env.extends_ cx_arity
+ have resultP : TyCon.arity P (.data names.result) = some 2 := TyCon.arity_ofExtends env.extends_ result_kind_arity
+ have emptyP : TyCon.arity P (.data names.emptyListError) = some 0 := TyCon.arity_ofExtends env.extends_ empty_kind_arity
+ refine ⟨_,rfl,?_,?_,(get_annotation (externals := externals)).ofExtends env.extends_,get_body⟩
  · safe_simp
  · safe_simp
 
@@ -336,17 +341,19 @@ private theorem cx_pattern (index : Bool) (p : Pred) :
    · exact .cons .P_Wild (.cons .P_Wild (.cons .P_Var .nil))
    · exact .cons .P_Wild (.cons .P_Var (.cons .P_Wild .nil))
 
-private theorem cx_only {c cd} (h : (StandardModel.program externals).cons c = some cd) (owner : cd.data = names.checkedIndex) :
+private theorem cx_only {P : Program} {B : Builtins} [env : StandardModel.BodyEnv externals P B] {c cd}
+ (hP : P.cons c = some cd) (owner : cd.data = names.checkedIndex) :
  c=names.checkedIndexCtor ∧ cd=⟨names.checkedIndex,1,[.list (.tvar 0),.base .integer,.tvar 0]⟩ := by
+ have h : (StandardModel.program externals).cons c = some cd := env.extends_.consData hP owner (Or.inl checkedIndex_arity.1)
  have mem := StandardModel.data_only names.checkedIndex [names.checkedIndexCtor] (by decide) h owner
  rw [List.mem_singleton] at mem
  subst mem
  exact ⟨rfl,Option.some.inj (h.symm.trans rfl)⟩
 
-private theorem cx_exhaustive (index : Bool) (T : Ty) (p : Pred) :
- Exhaustive (StandardModel.program externals) (.refined (.data names.checkedIndex [T]) p) [cxPattern index] := by
+private theorem cx_exhaustive {P : Program} {B : Builtins} [env : StandardModel.BodyEnv externals P B] (index : Bool) (T : Ty) (p : Pred) :
+ Exhaustive P (.refined (.data names.checkedIndex [T]) p) [cxPattern index] := by
  intro v hv
- have hc : Inhabits (StandardModel.program externals) (.data names.checkedIndex [T.norm]) v := by
+ have hc : Inhabits P (.data names.checkedIndex [T.norm]) v := by
   simpa [Ty.refined_norm_core,Ty.norm,Ty.normTys,Ty.core] using hv.core
  rcases hc.data_inv _ _ rfl with ⟨c,tys,args,cd,rfl,lookup,owner,ntys,wf,fields⟩ | impossible
  · obtain ⟨rfl,rfl⟩ := cx_only lookup owner
@@ -366,14 +373,14 @@ private theorem cx_alts (index : Bool) (p : Pred) :
  · intro alt h; cases List.mem_singleton.mp h
    exact ⟨_,cx_pattern index p,List.Perm.refl _,rfl⟩
 
-private theorem checked_body : TelBodyTy (StandardModel.program externals) (StandardModel.builtins (StandardModel.program externals)) StoreTy.empty (QTel (checkedGet names a)) C [] []
+private theorem checked_body {P : Program} {B : Builtins} [env : StandardModel.BodyEnv externals P B] : TelBodyTy P (B) StoreTy.empty (QTel (checkedGet names a)) C [] []
  (checkedGet names a) checkedGetBody := by
  apply TelBodyTy.param
  apply TelBodyTy.done
  apply HasTypeCQ.C_Match (obs := none)
  · exact .V_Var rfl (by intro b t e h; cases h)
  · intro t ht; cases ht
- · apply HasTypeArmsQ.plainEmpty (cx_alts false _)
+ · apply HasTypeArmsQ.plainEmpty ((cx_alts (externals := externals) false _).ofExtends env.extends_)
    · simp [pathFacts,FactsWF]
    · exact .C_Return (.V_Var rfl (by intro b t e h; cases h))
    · apply HasTypeArmsQ.nil
@@ -383,7 +390,7 @@ private theorem checked_body : TelBodyTy (StandardModel.program externals) (Stan
        (.and (.le (.integer 0) (indexValue names (.var 0)))
          (.lt (indexValue names (.var 0)) (length (indexValues names (.var 0)))))
 
-private theorem same_body : TelBodyTy (StandardModel.program externals) (StandardModel.builtins (StandardModel.program externals)) StoreTy.empty (QTel (sameLengthGet names a (.tvar 1))) D2 [] []
+private theorem same_body {P : Program} {B : Builtins} [env : StandardModel.BodyEnv externals P B] : TelBodyTy P (B) StoreTy.empty (QTel (sameLengthGet names a (.tvar 1))) D2 [] []
  (sameLengthGet names a (.tvar 1)) sameLengthBody := by
  apply TelBodyTy.param
  apply TelBodyTy.param
@@ -391,7 +398,7 @@ private theorem same_body : TelBodyTy (StandardModel.program externals) (Standar
  apply HasTypeCQ.C_Match (obs := none)
  · exact .V_Var rfl (by intro b t e h; cases h)
  · intro t ht; cases ht
- · apply HasTypeArmsQ.plainEmpty (cx_alts true _)
+ · apply HasTypeArmsQ.plainEmpty ((cx_alts (externals := externals) true _).ofExtends env.extends_)
    · simp [pathFacts,FactsWF]
    · apply HasTypeCQ.C_App (front_function true)
      refine .cons ?_ (.cons (.V_Var rfl (by intro b t e h; cases h)) .nil)
@@ -410,11 +417,17 @@ private theorem same_annotation : Ty.Annotation (StandardModel.program externals
  declarations_annotation ⟨"sameLengthGet",D2,0,sameLengthGet names a (.tvar 1),none,.core,[]⟩
  (by simp [declarationRows,InternalContracts.all,List.zipIdx,a])
 
-theorem checked_row_typed : checkedRow.BodyTyped (StandardModel.program externals) (StandardModel.builtins (StandardModel.program externals)) := by
- refine ⟨_,rfl,?_,?_,checked_annotation,checked_body⟩ <;> safe_simp
+theorem checked_row_typed {P : Program} {B : Builtins} [env : StandardModel.BodyEnv externals P B] : checkedRow.BodyTyped P (B) := by
+ have cxP : TyCon.arity P (.data names.checkedIndex) = some 1 := TyCon.arity_ofExtends env.extends_ cx_arity
+ have resultP : TyCon.arity P (.data names.result) = some 2 := TyCon.arity_ofExtends env.extends_ result_kind_arity
+ have emptyP : TyCon.arity P (.data names.emptyListError) = some 0 := TyCon.arity_ofExtends env.extends_ empty_kind_arity
+ refine ⟨_,rfl,?_,?_,(checked_annotation (externals := externals)).ofExtends env.extends_,checked_body⟩ <;> safe_simp
 
-theorem same_row_typed : sameRow.BodyTyped (StandardModel.program externals) (StandardModel.builtins (StandardModel.program externals)) := by
- refine ⟨_,rfl,?_,?_,same_annotation,same_body⟩ <;> safe_simp
+theorem same_row_typed {P : Program} {B : Builtins} [env : StandardModel.BodyEnv externals P B] : sameRow.BodyTyped P (B) := by
+ have cxP : TyCon.arity P (.data names.checkedIndex) = some 1 := TyCon.arity_ofExtends env.extends_ cx_arity
+ have resultP : TyCon.arity P (.data names.result) = some 2 := TyCon.arity_ofExtends env.extends_ result_kind_arity
+ have emptyP : TyCon.arity P (.data names.emptyListError) = some 0 := TyCon.arity_ofExtends env.extends_ empty_kind_arity
+ refine ⟨_,rfl,?_,?_,(same_annotation (externals := externals)).ofExtends env.extends_,same_body⟩ <;> safe_simp
 
 private def outputType : Ty := .data names.result [nonempty a,.data names.emptyListError []]
 private def emptyErrorType : Ty := .data names.emptyListError []
@@ -432,26 +445,28 @@ private theorem result_kinds : TypeArgsKinded (StandardModel.program externals) 
  rintro (_|(_|i)) t k ht hk <;> simp at ht hk <;> subst_vars <;> safe_simp
  all_goals simp [emptyErrorType,Ty.HasKind,empty_kind_arity,Ty.NotContCore,Ty.core,kindsList]
 
-private theorem error_typed {Γ Φ Q} : HasTypeVQ (StandardModel.program externals) (StandardModel.builtins (StandardModel.program externals)) StoreTy.empty Q C Γ Φ
+private theorem error_typed {P : Program} {B : Builtins} [env : StandardModel.BodyEnv externals P B] {Γ Φ Q} : HasTypeVQ P (B) StoreTy.empty Q C Γ Φ
  (.con "Benitoite.NonEmptyList.EmptyListError.EmptyList" [] []) emptyErrorType := by
- refine .V_Con (cd := ⟨names.emptyListError,0,[]⟩) rfl rfl
+ refine .V_Con (cd := ⟨names.emptyListError,0,[]⟩) (env.extends_.cons _ _ rfl) rfl
   ⟨rfl,by intro i t k h; cases h⟩ (by intro a h; cases h) .nil ?_
- exact ⟨trivial,trivial,⟨⟨0,emptyListError_arity,rfl⟩,trivial⟩⟩
+ exact ⟨trivial,trivial,⟨⟨0,env.extends_.dataArity emptyListError_arity,rfl⟩,trivial⟩⟩
 
-private theorem error_result {Γ Φ Q} : HasTypeVQ (StandardModel.program externals) (StandardModel.builtins (StandardModel.program externals)) StoreTy.empty Q C Γ Φ
+private theorem error_result {P : Program} {B : Builtins} [env : StandardModel.BodyEnv externals P B] {Γ Φ Q} : HasTypeVQ P (B) StoreTy.empty Q C Γ Φ
  (.con "Benitoite.Result.Result.Error" [nonempty a,emptyErrorType]
   [.con "Benitoite.NonEmptyList.EmptyListError.EmptyList" [] []]) outputType := by
- refine .V_Con (cd := ⟨names.result,2,[.tvar 1]⟩) rfl rfl result_kinds
-  (by intro a h; cases List.mem_singleton.mp h; simp [Ty.WF]) ?_ (output_annotation Γ)
- have values := HasTypeVsQ.cons (error_typed (externals := externals) (Γ:=Γ) (Φ:=Φ) (Q:=Q)) HasTypeVsQ.nil
+ refine .V_Con (cd := ⟨names.result,2,[.tvar 1]⟩) (env.extends_.cons _ _ rfl) rfl
+  ((result_kinds (externals := externals)).ofExtends env.extends_)
+  (by intro a h; cases List.mem_singleton.mp h; simp [Ty.WF]) ?_ ((output_annotation (externals := externals) Γ).ofExtends env.extends_)
+ have values := HasTypeVsQ.cons (error_typed (externals := externals) (P := P) (B := B) (Γ:=Γ) (Φ:=Φ) (Q:=Q)) HasTypeVsQ.nil
  simpa [emptyErrorType,Ty.subst,Ty.substAt,substTypeAt,Ty.bind,Ty.rawBind,
   Ty.norm,Ty.normTys,rawBindTys,typeEnvAt] using values
 
-private theorem ok_result {Γ Φ Q v} (value : HasTypeVQ (StandardModel.program externals) (StandardModel.builtins (StandardModel.program externals)) StoreTy.empty Q C Γ Φ v (nonempty a)) :
- HasTypeVQ (StandardModel.program externals) (StandardModel.builtins (StandardModel.program externals)) StoreTy.empty Q C Γ Φ
+private theorem ok_result {P : Program} {B : Builtins} [env : StandardModel.BodyEnv externals P B] {Γ Φ Q v} (value : HasTypeVQ P (B) StoreTy.empty Q C Γ Φ v (nonempty a)) :
+ HasTypeVQ P (B) StoreTy.empty Q C Γ Φ
  (.con "Benitoite.Result.Result.Ok" [nonempty a,emptyErrorType] [v]) outputType := by
- refine .V_Con (cd := ⟨names.result,2,[.tvar 0]⟩) rfl rfl result_kinds
-  (by intro a h; cases List.mem_singleton.mp h; simp [Ty.WF]) ?_ (output_annotation Γ)
+ refine .V_Con (cd := ⟨names.result,2,[.tvar 0]⟩) (env.extends_.cons _ _ rfl) rfl
+  ((result_kinds (externals := externals)).ofExtends env.extends_)
+  (by intro a h; cases List.mem_singleton.mp h; simp [Ty.WF]) ?_ ((output_annotation (externals := externals) Γ).ofExtends env.extends_)
  have values := HasTypeVsQ.cons value HasTypeVsQ.nil
  simpa [nonempty,nonemptyType,nonemptyPredicate,a,Ty.subst,Ty.substAt,substTypeAt,Ty.bind,Ty.rawBind,
   Ty.norm,Ty.normTys,rawBindTys,typeEnvAt,Ty.shiftV,Ty.refineNorm,Ty.packRefinements,
@@ -470,14 +485,14 @@ private theorem list_head_alts : AltsTy (StandardModel.program externals) headAl
  · intro alt h; cases List.mem_singleton.mp h
    exact ⟨_,.P_List (.cons .P_Var .nil) .nil (by intro h; cases h),List.Perm.refl _,rfl⟩
 
-private theorem list_exhaustive : Exhaustive (StandardModel.program externals) (.list a) [.list [] none [],headRestPattern] := by
+private theorem list_exhaustive {P : Program} : Exhaustive P (.list a) [.list [] none [],headRestPattern] := by
  intro v hv
  obtain ⟨xs,rfl,_⟩ := hv.list_inv _ rfl
  cases xs with
  | nil => exact ⟨.list [] none [],by simp,by simp [matchVal,matchList]⟩
  | cons x xs => exact ⟨headRestPattern,by simp,by simp [headRestPattern,matchVal,matchList]⟩
 
-private theorem fromList_body : TelBodyTy (StandardModel.program externals) (StandardModel.builtins (StandardModel.program externals)) StoreTy.empty (QTel (nonemptyFromList names a)) C [] []
+private theorem fromList_body {P : Program} {B : Builtins} [env : StandardModel.BodyEnv externals P B] : TelBodyTy P (B) StoreTy.empty (QTel (nonemptyFromList names a)) C [] []
  (nonemptyFromList names a) fromListBody := by
  apply TelBodyTy.param
  apply TelBodyTy.done
@@ -486,11 +501,11 @@ private theorem fromList_body : TelBodyTy (StandardModel.program externals) (Sta
  · intro t h; cases Option.some.inj h
    refine ⟨rfl,.list,?_⟩
    safe_simp
- · apply HasTypeArmsQ.plainEmpty empty_alts
+ · apply HasTypeArmsQ.plainEmpty ((empty_alts (externals := externals)).ofExtends env.extends_)
    · simp [pathFacts,matchedTests,patternTest?,nonemptyPattern,PathTest.predicate,excludedTests,excludedTest?,headAlts,headRestPattern,FactsWF,Pred.VarsIn]
      all_goals first | (solve | safe_simp) | (solve | constructor <;> constructor <;> safe_simp)
    · exact .C_Return error_result
-   · apply HasTypeArmsQ.plainEmpty list_head_alts
+   · apply HasTypeArmsQ.plainEmpty ((list_head_alts (externals := externals)).ofExtends env.extends_)
      · simp [pathFacts,matchedTests,patternTest?,nonemptyPattern,PathTest.predicate,excludedTests,excludedTest?,headAlts,headRestPattern,FactsWF,Pred.VarsIn]
        all_goals first | (solve | safe_simp) | (solve | constructor <;> safe_simp)
      · apply HasTypeCQ.C_Return
@@ -506,15 +521,18 @@ private theorem fromList_body : TelBodyTy (StandardModel.program externals) (Sta
        · trivial
        · safe_simp
      · apply HasTypeArmsQ.nil
-       exact ⟨(output_annotation (externals := externals) _).wf,(output_annotation (externals := externals) _).sorted,(output_annotation (externals := externals) _).declared⟩
+       exact (output_annotation (externals := externals) _).ofExtends env.extends_
  · simpa [fromListBody,headAlts,unguardedPats,Ty.shiftV,a] using list_exhaustive
 
 private theorem fromList_annotation : Ty.Annotation (StandardModel.program externals) C [] (.dependentFn (nonemptyFromList names a)) :=
  declarations_annotation ⟨"NonEmptyList.fromList",C,0,nonemptyFromList names a,none,.core,[]⟩
  (by simp [declarationRows,InternalContracts.all,List.zipIdx,a])
 
-theorem fromList_row_typed : fromListRow.BodyTyped (StandardModel.program externals) (StandardModel.builtins (StandardModel.program externals)) := by
- refine ⟨_,rfl,?_,?_,fromList_annotation,?_⟩
+theorem fromList_row_typed {P : Program} {B : Builtins} [env : StandardModel.BodyEnv externals P B] : fromListRow.BodyTyped P (B) := by
+ have cxP : TyCon.arity P (.data names.checkedIndex) = some 1 := TyCon.arity_ofExtends env.extends_ cx_arity
+ have resultP : TyCon.arity P (.data names.result) = some 2 := TyCon.arity_ofExtends env.extends_ result_kind_arity
+ have emptyP : TyCon.arity P (.data names.emptyListError) = some 0 := TyCon.arity_ofExtends env.extends_ empty_kind_arity
+ refine ⟨_,rfl,?_,?_,(fromList_annotation (externals := externals)).ofExtends env.extends_,?_⟩
  · safe_simp
  · safe_simp
  · exact fromList_body
@@ -643,26 +661,28 @@ private theorem precise_field_wf (g : PreciseGetter) :
     simp [Ty.WF]
 
 
-private theorem precise_only (g : PreciseGetter) {c cd}
-    (lookup : (StandardModel.program externals).cons c = some cd) (owner : cd.data = g.owner) :
+private theorem precise_only {P : Program} {B : Builtins} [env : StandardModel.BodyEnv externals P B] (g : PreciseGetter) {c cd}
+    (lookupP : P.cons c = some cd) (owner : cd.data = g.owner) :
     c = g.owner ∧ cd.args = g.fields := by
+  have lookup : (StandardModel.program externals).cons c = some cd := env.extends_.consData lookupP owner
+    (by cases g <;> exact Or.inl (by first | exact checkedInteger_arity.1 | exact checkedLength_arity.1 | exact checkedIndex_arity.1))
   have mem := StandardModel.data_only g.owner [g.owner] (by cases g <;> decide) lookup owner
   rw [List.mem_singleton] at mem
   subst mem
   refine ⟨rfl,?_⟩
   cases g <;> cases Option.some.inj (lookup.symm.trans rfl) <;> rfl
 
-private theorem precise_exhaustive (g : PreciseGetter) :
-    Exhaustive (StandardModel.program externals) g.input [g.pattern] := by
+private theorem precise_exhaustive {P : Program} {B : Builtins} [env : StandardModel.BodyEnv externals P B] (g : PreciseGetter) :
+    Exhaustive P g.input [g.pattern] := by
   intro v hv
   have hc := hv.core
   cases g
   case minimum =>
-    change Inhabits (StandardModel.program externals) (.data names.checkedInteger []) v at hc
+    change Inhabits P (.data names.checkedInteger []) v at hc
     rcases hc.data_inv _ _ rfl with ⟨c,tys,args,cd,rfl,lookup,owner,ntys,wf,fields⟩ | impossible
     · obtain ⟨ceq,feq⟩ := precise_only .minimum lookup owner
       subst c
-      have cdEq : cd = ⟨names.checkedInteger,0,PreciseGetter.fields .minimum⟩ := Option.some.inj lookup.symm
+      have cdEq : cd = ⟨names.checkedInteger,0,PreciseGetter.fields .minimum⟩ := Option.some.inj ((env.extends_.consData lookup owner (Or.inl (by first | exact checkedInteger_arity.1 | exact checkedLength_arity.1 | exact checkedIndex_arity.1))).symm)
       cases cdEq
       cases fields with | cons v0 fields =>
        cases fields with | cons v1 fields =>
@@ -671,11 +691,11 @@ private theorem precise_exhaustive (g : PreciseGetter) :
          exact ⟨PreciseGetter.pattern .minimum,by simp,by rfl⟩
     · simp [names] at impossible
   case maximum =>
-    change Inhabits (StandardModel.program externals) (.data names.checkedInteger []) v at hc
+    change Inhabits P (.data names.checkedInteger []) v at hc
     rcases hc.data_inv _ _ rfl with ⟨c,tys,args,cd,rfl,lookup,owner,ntys,wf,fields⟩ | impossible
     · obtain ⟨ceq,feq⟩ := precise_only .maximum lookup owner
       subst c
-      have cdEq : cd = ⟨names.checkedInteger,0,PreciseGetter.fields .maximum⟩ := Option.some.inj lookup.symm
+      have cdEq : cd = ⟨names.checkedInteger,0,PreciseGetter.fields .maximum⟩ := Option.some.inj ((env.extends_.consData lookup owner (Or.inl (by first | exact checkedInteger_arity.1 | exact checkedLength_arity.1 | exact checkedIndex_arity.1))).symm)
       cases cdEq
       cases fields with | cons v0 fields =>
        cases fields with | cons v1 fields =>
@@ -684,11 +704,11 @@ private theorem precise_exhaustive (g : PreciseGetter) :
          exact ⟨PreciseGetter.pattern .maximum,by simp,by rfl⟩
     · simp [names] at impossible
   case value =>
-    change Inhabits (StandardModel.program externals) (.data names.checkedInteger []) v at hc
+    change Inhabits P (.data names.checkedInteger []) v at hc
     rcases hc.data_inv _ _ rfl with ⟨c,tys,args,cd,rfl,lookup,owner,ntys,wf,fields⟩ | impossible
     · obtain ⟨ceq,feq⟩ := precise_only .value lookup owner
       subst c
-      have cdEq : cd = ⟨names.checkedInteger,0,PreciseGetter.fields .value⟩ := Option.some.inj lookup.symm
+      have cdEq : cd = ⟨names.checkedInteger,0,PreciseGetter.fields .value⟩ := Option.some.inj ((env.extends_.consData lookup owner (Or.inl (by first | exact checkedInteger_arity.1 | exact checkedLength_arity.1 | exact checkedIndex_arity.1))).symm)
       cases cdEq
       cases fields with | cons v0 fields =>
        cases fields with | cons v1 fields =>
@@ -697,11 +717,11 @@ private theorem precise_exhaustive (g : PreciseGetter) :
          exact ⟨PreciseGetter.pattern .value,by simp,by rfl⟩
     · simp [names] at impossible
   case lengthMinimum =>
-    change Inhabits (StandardModel.program externals) (.data names.checkedLength [a]) v at hc
+    change Inhabits P (.data names.checkedLength [a]) v at hc
     rcases hc.data_inv _ _ rfl with ⟨c,tys,args,cd,rfl,lookup,owner,ntys,wf,fields⟩ | impossible
     · obtain ⟨ceq,feq⟩ := precise_only .lengthMinimum lookup owner
       subst c
-      have cdEq : cd = ⟨names.checkedLength,1,PreciseGetter.fields .lengthMinimum⟩ := Option.some.inj lookup.symm
+      have cdEq : cd = ⟨names.checkedLength,1,PreciseGetter.fields .lengthMinimum⟩ := Option.some.inj ((env.extends_.consData lookup owner (Or.inl (by first | exact checkedInteger_arity.1 | exact checkedLength_arity.1 | exact checkedIndex_arity.1))).symm)
       cases cdEq
       cases fields with | cons v0 fields =>
        cases fields with | cons v1 fields =>
@@ -711,11 +731,11 @@ private theorem precise_exhaustive (g : PreciseGetter) :
           exact ⟨PreciseGetter.pattern .lengthMinimum,by simp,by rfl⟩
     · simp [names] at impossible
   case lengthMaximum =>
-    change Inhabits (StandardModel.program externals) (.data names.checkedLength [a]) v at hc
+    change Inhabits P (.data names.checkedLength [a]) v at hc
     rcases hc.data_inv _ _ rfl with ⟨c,tys,args,cd,rfl,lookup,owner,ntys,wf,fields⟩ | impossible
     · obtain ⟨ceq,feq⟩ := precise_only .lengthMaximum lookup owner
       subst c
-      have cdEq : cd = ⟨names.checkedLength,1,PreciseGetter.fields .lengthMaximum⟩ := Option.some.inj lookup.symm
+      have cdEq : cd = ⟨names.checkedLength,1,PreciseGetter.fields .lengthMaximum⟩ := Option.some.inj ((env.extends_.consData lookup owner (Or.inl (by first | exact checkedInteger_arity.1 | exact checkedLength_arity.1 | exact checkedIndex_arity.1))).symm)
       cases cdEq
       cases fields with | cons v0 fields =>
        cases fields with | cons v1 fields =>
@@ -725,11 +745,11 @@ private theorem precise_exhaustive (g : PreciseGetter) :
           exact ⟨PreciseGetter.pattern .lengthMaximum,by simp,by rfl⟩
     · simp [names] at impossible
   case checkedLength =>
-    change Inhabits (StandardModel.program externals) (.data names.checkedLength [a]) v at hc
+    change Inhabits P (.data names.checkedLength [a]) v at hc
     rcases hc.data_inv _ _ rfl with ⟨c,tys,args,cd,rfl,lookup,owner,ntys,wf,fields⟩ | impossible
     · obtain ⟨ceq,feq⟩ := precise_only .checkedLength lookup owner
       subst c
-      have cdEq : cd = ⟨names.checkedLength,1,PreciseGetter.fields .checkedLength⟩ := Option.some.inj lookup.symm
+      have cdEq : cd = ⟨names.checkedLength,1,PreciseGetter.fields .checkedLength⟩ := Option.some.inj ((env.extends_.consData lookup owner (Or.inl (by first | exact checkedInteger_arity.1 | exact checkedLength_arity.1 | exact checkedIndex_arity.1))).symm)
       cases cdEq
       cases fields with | cons v0 fields =>
        cases fields with | cons v1 fields =>
@@ -739,11 +759,11 @@ private theorem precise_exhaustive (g : PreciseGetter) :
           exact ⟨PreciseGetter.pattern .checkedLength,by simp,by rfl⟩
     · simp [names] at impossible
   case lengthValues =>
-    change Inhabits (StandardModel.program externals) (.data names.checkedLength [a]) v at hc
+    change Inhabits P (.data names.checkedLength [a]) v at hc
     rcases hc.data_inv _ _ rfl with ⟨c,tys,args,cd,rfl,lookup,owner,ntys,wf,fields⟩ | impossible
     · obtain ⟨ceq,feq⟩ := precise_only .lengthValues lookup owner
       subst c
-      have cdEq : cd = ⟨names.checkedLength,1,PreciseGetter.fields .lengthValues⟩ := Option.some.inj lookup.symm
+      have cdEq : cd = ⟨names.checkedLength,1,PreciseGetter.fields .lengthValues⟩ := Option.some.inj ((env.extends_.consData lookup owner (Or.inl (by first | exact checkedInteger_arity.1 | exact checkedLength_arity.1 | exact checkedIndex_arity.1))).symm)
       cases cdEq
       cases fields with | cons v0 fields =>
        cases fields with | cons v1 fields =>
@@ -753,11 +773,11 @@ private theorem precise_exhaustive (g : PreciseGetter) :
           exact ⟨PreciseGetter.pattern .lengthValues,by simp,by rfl⟩
     · simp [names] at impossible
   case indexValue =>
-    change Inhabits (StandardModel.program externals) (.data names.checkedIndex [a]) v at hc
+    change Inhabits P (.data names.checkedIndex [a]) v at hc
     rcases hc.data_inv _ _ rfl with ⟨c,tys,args,cd,rfl,lookup,owner,ntys,wf,fields⟩ | impossible
     · obtain ⟨ceq,feq⟩ := precise_only .indexValue lookup owner
       subst c
-      have cdEq : cd = ⟨names.checkedIndex,1,PreciseGetter.fields .indexValue⟩ := Option.some.inj lookup.symm
+      have cdEq : cd = ⟨names.checkedIndex,1,PreciseGetter.fields .indexValue⟩ := Option.some.inj ((env.extends_.consData lookup owner (Or.inl (by first | exact checkedInteger_arity.1 | exact checkedLength_arity.1 | exact checkedIndex_arity.1))).symm)
       cases cdEq
       cases fields with | cons v0 fields =>
        cases fields with | cons v1 fields =>
@@ -766,11 +786,11 @@ private theorem precise_exhaustive (g : PreciseGetter) :
          exact ⟨PreciseGetter.pattern .indexValue,by simp,by rfl⟩
     · simp [names] at impossible
   case indexValues =>
-    change Inhabits (StandardModel.program externals) (.data names.checkedIndex [a]) v at hc
+    change Inhabits P (.data names.checkedIndex [a]) v at hc
     rcases hc.data_inv _ _ rfl with ⟨c,tys,args,cd,rfl,lookup,owner,ntys,wf,fields⟩ | impossible
     · obtain ⟨ceq,feq⟩ := precise_only .indexValues lookup owner
       subst c
-      have cdEq : cd = ⟨names.checkedIndex,1,PreciseGetter.fields .indexValues⟩ := Option.some.inj lookup.symm
+      have cdEq : cd = ⟨names.checkedIndex,1,PreciseGetter.fields .indexValues⟩ := Option.some.inj ((env.extends_.consData lookup owner (Or.inl (by first | exact checkedInteger_arity.1 | exact checkedLength_arity.1 | exact checkedIndex_arity.1))).symm)
       cases cdEq
       cases fields with | cons v0 fields =>
        cases fields with | cons v1 fields =>
@@ -935,11 +955,11 @@ private theorem precise_index_entails :
     simp [Ty.assume,Ty.carrierFacts,Ty.refinementPredicates,Pred.conjuncts,Ty.core]
   exact .and_intro field (.and_intro (integer_lower _ _ _ field lower) (integer_strictUpper _ _ _ field upper))
 
-private theorem precise_return (g : PreciseGetter) (Q : NoFailCtx) (R : Option Ty) (L : LocalCtx) :
-    HasTypeCQ (StandardModel.program externals) (StandardModel.builtins (StandardModel.program externals)) StoreTy.empty Q g.context g.armContext g.armConditions
+private theorem precise_return {P : Program} {B : Builtins} [env : StandardModel.BodyEnv externals P B] (g : PreciseGetter) (Q : NoFailCtx) (R : Option Ty) (L : LocalCtx) :
+    HasTypeCQ P (B) StoreTy.empty Q g.context g.armContext g.armConditions
       R (.ret (.var 0)) (g.tel.result.shiftV 1 0) Eff.empty L := by
   apply HasTypeCQ.C_Return
-  have ha := precise_result_shift_annotation (externals := externals) g
+  have ha := (precise_result_shift_annotation (externals := externals) g).ofExtends env.extends_
   cases g
   case minimum =>
     apply HasTypeVQ.V_Refine (t := .var 0) (sort := .integer)
@@ -1023,8 +1043,8 @@ private theorem precise_return (g : PreciseGetter) (Q : NoFailCtx) (R : Option T
     · exact ha.declared.1
     · exact ha.declared.2
 
-private theorem precise_body (g : PreciseGetter) :
-    TelBodyTy (StandardModel.program externals) (StandardModel.builtins (StandardModel.program externals)) StoreTy.empty (QTel g.tel) g.context [] [] g.tel g.body := by
+private theorem precise_body {P : Program} {B : Builtins} [env : StandardModel.BodyEnv externals P B] (g : PreciseGetter) :
+    TelBodyTy P (B) StoreTy.empty (QTel g.tel) g.context [] [] g.tel g.body := by
   cases htel : g.tel with
   | done r e => cases g <;> cases htel
   | param label input rest =>
@@ -1041,20 +1061,22 @@ private theorem precise_body (g : PreciseGetter) :
       have lookup : (Ctx.extend [] g.input)[0]? = some (some g.input) := by cases g <;> rfl
       have ordinary : Ordinary g.input := by cases g <;> intro b t e h <;> cases h
       exact ⟨⟨g.input,lookup,ordinary⟩,g.input,lookup,by cases g <;> rfl⟩
-    · exact .plain (precise_alts g) (precise_links g) (precise_field_wf g)
-        (precise_path_wf g) (precise_return g _ _ _) (.nil (precise_result_annotation g))
+    · exact .plain ((precise_alts (externals := externals) g).ofExtends env.extends_) (precise_links g)
+        ((precise_field_wf (externals := externals) g).ofExtends env.extends_)
+        ((precise_path_wf (externals := externals) g).ofExtends env.extends_) (precise_return g _ _ _)
+        (.nil ((precise_result_annotation (externals := externals) g).ofExtends env.extends_))
     · simpa only [PreciseGetter.body,unguardedPats,PreciseGetter.alts,List.map_cons,List.map_nil,List.append_nil] using precise_exhaustive g
 
 /-- 固定19行のうち精密getter九行を、同じ依存列と実本体で検査する。 -/
-theorem precise_row_typed (g : PreciseGetter) : g.row.BodyTyped (StandardModel.program externals) (StandardModel.builtins (StandardModel.program externals)) := by
+theorem precise_row_typed {P : Program} {B : Builtins} [env : StandardModel.BodyEnv externals P B] (g : PreciseGetter) : g.row.BodyTyped P (B) := by
   refine ⟨_,rfl,?_,?_,?_,?_⟩
   · cases g <;> precise_simp
   · cases g <;> precise_simp
     all_goals first
-      | exact TyCon.arity_data checkedInteger_arity
-      | exact TyCon.arity_data checkedLength_arity
-      | exact TyCon.arity_data checkedIndex_arity
-  · simpa only [PreciseGetter.row,Def.tel,StandardContracts.signatureTel_rebuild] using precise_annotation g
+      | exact TyCon.arity_data (env.extends_.dataArity checkedInteger_arity)
+      | exact TyCon.arity_data (env.extends_.dataArity checkedLength_arity)
+      | exact TyCon.arity_data (env.extends_.dataArity checkedIndex_arity)
+  · simpa only [PreciseGetter.row,Def.tel,StandardContracts.signatureTel_rebuild] using (precise_annotation (externals := externals) g).ofExtends env.extends_
   · simpa only [PreciseGetter.row,Def.tel,StandardContracts.signatureTel_rebuild] using precise_body g
 
 end

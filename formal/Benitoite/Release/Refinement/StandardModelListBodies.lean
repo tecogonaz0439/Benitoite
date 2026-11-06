@@ -1,4 +1,5 @@
 import Benitoite.Release.Refinement.StandardModelResponse
+import Benitoite.Release.Refinement.StandardModelGeneral
 
 /-! # 合成表の名前で参照するListのmapとfilterの本体
 
@@ -1222,28 +1223,43 @@ private theorem precise_public (filter : Bool) :
     (if filter then Body.b104 else Body.b103).definition = StandardModelPreciseList.publicDefinition filter := by
   cases filter <;> rfl
 
-private theorem precise_inputs (externals : List (ExternalKey × ExternalDecl)) :
-    StandardModelPreciseList.Inputs (program externals) (builtins (program externals)) :=
-  ⟨option_declarations externals, rfl, rfl, rfl, by intro filter; cases filter <;> rfl, by intro C a; rfl⟩
+section
+variable {externals : List (ExternalKey × ExternalDecl)} {P : Program} {B : Builtins}
 
-/-- 通常側・精密側のListのmapとfilterと補助の八本は、任意の外部宣言の合成表で型付く。 -/
-theorem list_bodies_typed (externals : List (ExternalKey × ExternalDecl)) (filter : Bool) :
-    (if filter then Body.b130 else Body.b129).definition.WellTyped (program externals) (builtins (program externals)) ∧
-    (if filter then Body.b002 else Body.b001).definition.WellTyped (program externals) (builtins (program externals)) ∧
-    (if filter then Body.b102 else Body.b101).definition.WellTyped (program externals) (builtins (program externals)) ∧
-    (if filter then Body.b104 else Body.b103).definition.WellTyped (program externals) (builtins (program externals)) := by
-  have inputs := precise_inputs externals
+/-- 行の環境の表の List.get は、通常の helper が読む署名である。 -/
+theorem get_signature_of [RowEnv P B] : B.sig "List.get" = some StandardBodies.listGetSig := by
+  have h : B.sig Primitive.p259.name = some (Primitive.p259.signatureWith B.sat) := RowLookup.sig _
+  rw [RowEnv.sat_eq (P := P)] at h
+  refine h.trans ?_
+  change some (StandardListRemainingResponse.API.signature _ .get) = some StandardBodies.listGetSig
+  simp [StandardListRemainingResponse.API.signature,StandardListRemainingResponse.API.constraint,
+    StandardListRemainingResponse.API.names,StandardListRemainingResponse.API.inputs,
+    StandardListRemainingResponse.API.result,StandardBodies.listGetSig]
+  rfl
+
+private theorem precise_inputs [env : BodyEnv externals P B] : StandardModelPreciseList.Inputs P B :=
+  ⟨env.options, RowLookup.sig_eq rfl rfl, RowLookup.sig_eq rfl rfl, RowLookup.sig_eq rfl rfl,
+    fun filter => env.extends_.defs _ _ (by cases filter <;> rfl), RowEnv.sat_empty (P := P)⟩
+
+/-- 通常側・精密側のListのmapとfilterと補助の八本は、本体の型付けの環境で型付く。 -/
+theorem list_bodies_typed_of [env : BodyEnv externals P B] (filter : Bool) :
+    (if filter then Body.b130 else Body.b129).definition.WellTyped P B ∧
+    (if filter then Body.b002 else Body.b001).definition.WellTyped P B ∧
+    (if filter then Body.b102 else Body.b101).definition.WellTyped P B ∧
+    (if filter then Body.b104 else Body.b103).definition.WellTyped P B := by
+  have inputs := precise_inputs (externals := externals) (P := P) (B := B)
+  have get := get_signature_of (P := P) (B := B)
   refine ⟨?_, ?_, ?_, ?_⟩
   · rw [ordinary_from]
-    apply StandardModelOrdinaryList.from_typed filter (option_declarations externals) (get_signature _)
+    apply StandardModelOrdinaryList.from_typed filter env.options get
     · intro Ψ Q Γ Φ i hi
       exact StandardModelPreciseList.append_ordinary inputs filter i hi
-    · rfl
-    · cases filter <;> rfl
-    · intro i hi; rfl
+    · exact RowLookup.sig_eq rfl rfl
+    · exact env.extends_.defs _ _ (by cases filter <;> rfl)
+    · intro i hi; exact RowEnv.sat_empty (P := P) _ _
   · rw [ordinary_public]
-    obtain ⟨d, hd, ht⟩ := StandardModelOrdinaryList.higher_typed (P := program externals)
-      (B := builtins (program externals)) filter (by cases filter <;> rfl) (by intro i hi; rfl)
+    obtain ⟨d, hd, ht⟩ := StandardModelOrdinaryList.higher_typed (P := P) (B := B) filter
+      (env.extends_.defs _ _ (by cases filter <;> rfl)) (by intro i hi; exact RowEnv.sat_empty (P := P) _ _)
     cases filter <;> cases Option.some.inj (hd.symm.trans rfl) <;> exact ht
   · rw [precise_from]
     obtain ⟨d, hd, ht⟩ := StandardModelPreciseList.from_typed inputs filter
@@ -1254,12 +1270,27 @@ theorem list_bodies_typed (externals : List (ExternalKey × ExternalDecl)) (filt
     cases Option.some.inj (hd.symm.trans rfl)
     exact ht
 
-/-- 非空の列の精密なmapは、合成表の精密なList.mapを参照して型付く。 -/
-theorem nonempty_map_typed (externals : List (ExternalKey × ExternalDecl)) :
-    Body.b105.definition.WellTyped (program externals) (builtins (program externals)) := by
-  obtain ⟨d, hd, ht⟩ := StandardModelPreciseList.nonempty_public_typed (precise_inputs externals) rfl
+/-- 非空の列の精密なmapは、表の精密なList.mapを参照して型付く。 -/
+theorem nonempty_map_typed_of [env : BodyEnv externals P B] : Body.b105.definition.WellTyped P B := by
+  obtain ⟨d, hd, ht⟩ := StandardModelPreciseList.nonempty_public_typed (precise_inputs (externals := externals))
+    (env.extends_.defs _ _ rfl)
   cases Option.some.inj (hd.symm.trans rfl)
   exact ht
+
+end
+
+/-- 通常側・精密側のListのmapとfilterと補助の八本は、任意の外部宣言の合成表で型付く。 -/
+theorem list_bodies_typed (externals : List (ExternalKey × ExternalDecl)) (filter : Bool) :
+    (if filter then Body.b130 else Body.b129).definition.WellTyped (program externals) (builtins (program externals)) ∧
+    (if filter then Body.b002 else Body.b001).definition.WellTyped (program externals) (builtins (program externals)) ∧
+    (if filter then Body.b102 else Body.b101).definition.WellTyped (program externals) (builtins (program externals)) ∧
+    (if filter then Body.b104 else Body.b103).definition.WellTyped (program externals) (builtins (program externals)) :=
+  list_bodies_typed_of (externals := externals) filter
+
+/-- 非空の列の精密なmapは、合成表の精密なList.mapを参照して型付く。 -/
+theorem nonempty_map_typed (externals : List (ExternalKey × ExternalDecl)) :
+    Body.b105.definition.WellTyped (program externals) (builtins (program externals)) :=
+  nonempty_map_typed_of (externals := externals)
 
 end
 end Benitoite.Release.Refinement.StandardModel

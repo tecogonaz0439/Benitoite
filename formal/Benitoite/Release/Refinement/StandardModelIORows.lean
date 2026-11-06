@@ -3,47 +3,55 @@ import Benitoite.Release.Refinement.StandardModelCollectionRows
 /-! # 合成表の範囲付きの純粋な行・IOの行・終了の行
 
 範囲付きのパスと要求の六つの純粋な行と、範囲付きのファイルとHTTPの七つのIOの行は、既存の任意の
-P/Bの応答の補題（ScopeResponse・ScopedIOResponse）から、合成表の同じlookup・同じBuiltinArgs・同じ
-IO応答の関係の応答を得る。範囲を持たないprint・exit・File.readTextは、ModelTargetsのモデルの同じ
+P/Bの応答の補題（ScopeResponse・ScopedIOResponse）から、行の環境の表の同じlookup・同じBuiltinArgs・同じ
+IO応答の関係の応答を得る（`StandardModel.IORowOn`。合成表の契約は `IORow`）。範囲を持たないprint・exit・File.readTextは、ModelTargetsのモデルの同じ
 応答の関係を合成表で読む。新しいIOの意味は定義しない。 -/
 namespace Benitoite.Release.Refinement.StandardModel
 noncomputable section
 
-/-- 合成表の名前 `b` のIO・終了の応答の契約。`io_typed`・`io_kind`・`io_exists` と
+/-- 名前 `b` のIO・終了の応答の契約。`io_typed`・`io_kind`・`io_exists` と
 `TargetAgreement.io_target` の欄を一つの名前へ制限したもの。 -/
-def IORow (P : Program) (b : PrimName) : Prop :=
-  ∀ Ψ sg ts es rs ws a e, (builtins P).sig b = some sg →
-    BuiltinArgs P (builtins P) Ψ b sg ts es rs ws a e →
-    (∀ out obs, (builtins P).ioResponse b ts es ws out obs →
-      Outcome.Typed P (builtins P) Ψ out a ∧ AdequateResult ws out ∧
+def IORowOn (P : Program) (B : Builtins) (b : PrimName) : Prop :=
+  ∀ Ψ sg ts es rs ws a e, B.sig b = some sg →
+    BuiltinArgs P B Ψ b sg ts es rs ws a e →
+    (∀ out obs, B.ioResponse b ts es ws out obs →
+      Outcome.Typed P B Ψ out a ∧ AdequateResult ws out ∧
       ((sg.kind = .io ∧ ∀ n, out ≠ .exit n) ∨ (sg.kind = .exit ∧ ∀ v, out ≠ .val v)) ∧
       Scope.Signature.ShapeTargets Val.target? (sg.shapeAt ws) ws obs) ∧
-    ∃ out obs, (builtins P).ioResponse b ts es ws out obs
+    ∃ out obs, B.ioResponse b ts es ws out obs
 
-private theorem io_row_of {P : Program} {row : Primitive} {ts es ws out obs}
-    (h : (builtins P).ioResponse row.name ts es ws out obs) :
-    row.provider.ioResponse row.name ts es ws out obs := by
-  obtain ⟨r, found, hr⟩ := h
-  cases Option.some.inj (found.symm.trans (primitive_lookup row))
-  exact hr
+/-- 合成表の名前 `b` のIO・終了の応答の契約。 -/
+abbrev IORow (P : Program) (b : PrimName) : Prop := IORowOn P (builtins P) b
 
-private theorem io_row_to {P : Program} {row : Primitive} {ts es ws out obs}
+private theorem io_row_of {B : Builtins} [RowLookup B] {row : Primitive} {ts es ws out obs}
+    (h : B.ioResponse row.name ts es ws out obs) :
+    row.provider.ioResponse row.name ts es ws out obs :=
+  (RowLookup.io row ts es ws out obs).mp h
+
+private theorem io_row_to {B : Builtins} [RowLookup B] {row : Primitive} {ts es ws out obs}
     (h : row.provider.ioResponse row.name ts es ws out obs) :
-    (builtins P).ioResponse row.name ts es ws out obs :=
-  ⟨row, primitive_lookup row, h⟩
+    B.ioResponse row.name ts es ws out obs :=
+  (RowLookup.io row ts es ws out obs).mpr h
+
+private theorem valKind_eq {B : Builtins} [RowLookup B] (o : OpaqueName) :
+    B.valKind o = signatureBase.valKind o := by rw [RowLookup.valKind (B := B)]
+
+private theorem valContent_eq {B : Builtins} [RowLookup B] (o : OpaqueName) :
+    B.valContent o = signatureBase.valContent o := by rw [RowLookup.valContent (B := B)]
 
 /-- 範囲付きのファイルの六行とHttp.sendInの行。応答の関係は出典のモデルの同じ範囲付きIOの関係である。 -/
-theorem IORow.scoped {externals} (row : Primitive) (op : ScopedIOResponse.Operation)
-    (hname : row.name = op.name) (hsig : row.signature = op.signature)
+theorem IORow.scoped {P : Program} {B : Builtins} [env : RowEnv P B] (row : Primitive) (op : ScopedIOResponse.Operation)
+    (hname : row.name = op.name) (hsig : row.signatureWith B.sat = op.signature)
     (hprovider : ∀ ts es ws out obs, row.provider.ioResponse op.name ts es ws out obs ↔
       ScopedIOResponse.ioResponse op.name ts es ws out obs) :
-    IORow (program externals) row.name := by
+    IORowOn P B row.name := by
   intro Ψ sg ts es rs ws a e lookup args
-  cases Option.some.inj (lookup.symm.trans (row_lookup _ row))
+  cases Option.some.inj (lookup.symm.trans (RowLookup.sig row))
   rw [hname, hsig] at args
   have kind : op.signature.kind = .io ∨ op.signature.kind = .exit := by cases op <;> exact Or.inl rfl
-  have response := ScopedIOResponse.response (http_declarations externals).file op.lookup kind rfl rfl rfl
-    ⟨rfl, rfl⟩ ⟨rfl, rfl⟩ ⟨rfl, rfl⟩ args
+  have response := ScopedIOResponse.response env.http.file op.lookup kind (valKind_eq _) (valKind_eq _)
+    (valContent_eq _) ⟨valKind_eq _, valContent_eq _⟩ ⟨valKind_eq _, valContent_eq _⟩
+    ⟨valKind_eq _, valContent_eq _⟩ args
   rw [hsig]
   refine ⟨fun out obs h => ?_, ?_⟩
   · have hr := (hprovider ts es ws out obs).mp (hname ▸ io_row_of h)
@@ -123,9 +131,9 @@ private theorem read_safe {P B Ψ out ws} (hp : ScopeDeclarations.HasFile P)
   | err reason => exact ⟨trivial,by intro σ _ _; trivial,by intro n; simp⟩
 
 /-- 出力の行。応答はModelTargetsのモデルの同じ関係（単位の値、観測なし）である。 -/
-theorem IORow.print {externals} : IORow (program externals) Primitive.p373.name := by
+theorem IORow.print {P : Program} {B : Builtins} [env : RowEnv P B] : IORowOn P B Primitive.p373.name := by
   intro Ψ sg ts es rs ws a e lookup args
-  cases Option.some.inj (lookup.symm.trans (row_lookup _ .p373))
+  cases Option.some.inj (lookup.symm.trans (RowLookup.sig Primitive.p373))
   have result := legacy_result (Or.inl rfl) args
   refine ⟨fun out obs h => ?_, ⟨_, [], io_row_to (Or.inr (Or.inl ⟨rfl, rfl, rfl⟩))⟩⟩
   rcases io_row_of h with ⟨op, _, hn, _⟩ | ⟨_, rfl, rfl⟩ | ⟨hn, _⟩ | ⟨hn, _⟩
@@ -135,9 +143,9 @@ theorem IORow.print {externals} : IORow (program externals) Primitive.p373.name 
   all_goals exact absurd hn (by decide)
 
 /-- 終了の行。応答はModelTargetsのモデルの同じ関係（引数の整数の終了、観測なし）である。 -/
-theorem IORow.exit {externals} : IORow (program externals) Primitive.p372.name := by
+theorem IORow.exit {P : Program} {B : Builtins} [env : RowEnv P B] : IORowOn P B Primitive.p372.name := by
   intro Ψ sg ts es rs ws a e lookup args
-  cases Option.some.inj (lookup.symm.trans (row_lookup _ .p372))
+  cases Option.some.inj (lookup.symm.trans (RowLookup.sig Primitive.p372))
   refine ⟨fun out obs h => ?_, ⟨_, [], io_row_to (Or.inr (Or.inr (Or.inl ⟨rfl, rfl, rfl⟩)))⟩⟩
   rcases io_row_of h with ⟨op, _, hn, _⟩ | ⟨hn, _⟩ | ⟨_, rfl, rfl⟩ | ⟨hn, _⟩
   · cases op <;> exact absurd hn (by decide)
@@ -159,9 +167,9 @@ private theorem readObs_kind (ws : List Val) :
 
 /-- Topの対象の読取りの行。応答はModelTargetsのモデルの同じ関係（文字列か誤りの結果、解析できた
 パスの観測）である。 -/
-theorem IORow.readText {externals} : IORow (program externals) Primitive.p160.name := by
+theorem IORow.readText {P : Program} {B : Builtins} [env : RowEnv P B] : IORowOn P B Primitive.p160.name := by
   intro Ψ sg ts es rs ws a e lookup args
-  cases Option.some.inj (lookup.symm.trans (row_lookup _ .p160))
+  cases Option.some.inj (lookup.symm.trans (RowLookup.sig Primitive.p160))
   have result := legacy_result (Or.inr (Or.inr rfl)) args
   refine ⟨fun out obs h => ?_,
     ⟨_, ModelTargets.readObs ws, io_row_to (Or.inr (Or.inr (Or.inr ⟨rfl, .error 0, rfl⟩)))⟩⟩
@@ -170,7 +178,7 @@ theorem IORow.readText {externals} : IORow (program externals) Primitive.p160.na
   · exact absurd hn (by decide)
   · exact absurd hn (by decide)
   · rw [result]
-    obtain ⟨typed, adequate, nonexit⟩ := read_safe (B := builtins (program externals)) (Ψ := Ψ) (ws := ws) (http_declarations externals).file rfl rfl reply
+    obtain ⟨typed, adequate, nonexit⟩ := read_safe (B := B) (Ψ := Ψ) (ws := ws) env.http.file (valKind_eq _) (valContent_eq _) reply
     refine ⟨typed, adequate, Or.inl ⟨rfl, nonexit⟩, readObs_kind ws⟩
 
 /-- 合成表のIOと終了の全10行（範囲付きのファイル六行・Http.sendIn・print・exit・File.readText）。 -/
@@ -180,8 +188,8 @@ def Primitive.io : Primitive → Bool
 
 /-- IOと終了の全10行の全BuiltinArgsと全応答は、合成表の同じIO応答の関係で型付き・適格で、対象の
 条件を満たし、応答が少なくとも一つある。 -/
-theorem io_rows (externals : List (ExternalKey × ExternalDecl)) (row : Primitive) (io : row.io = true) :
-    IORow (program externals) row.name := by
+theorem io_rows_of {P : Program} {B : Builtins} [RowEnv P B] (row : Primitive)
+    (io : row.io = true) : IORowOn P B row.name := by
   cases row
   case p157 => exact IORow.scoped .p157 .appendBytes rfl rfl (targets_scoped _ (by decide))
   case p158 => exact IORow.scoped .p158 .appendText rfl rfl (targets_scoped _ (by decide))
@@ -195,26 +203,32 @@ theorem io_rows (externals : List (ExternalKey × ExternalDecl)) (row : Primitiv
   case p373 => exact IORow.print
   all_goals cases io
 
+theorem io_rows (externals : List (ExternalKey × ExternalDecl)) (row : Primitive)
+    (io : row.io = true) : IORow (program externals) row.name :=
+  io_rows_of row io
+
 /-! ## 範囲付きのパスと要求の六つの純粋な行と内部の %List.getFront -/
 
 /-- 範囲付きのパスと要求の検査・値の取り出し・明示の拡大の行。δは同じScopeResponseのδである。 -/
-theorem PureRow.scope {externals} (row : Primitive) (sg : PrimSig)
-    (hentry : ScopeSignatures.entries.lookup row.name = some sg) (hsig : row.signature = sg)
+theorem PureRow.scope {P : Program} {B : Builtins} [env : RowEnv P B] (row : Primitive) (sg : PrimSig)
+    (hentry : ScopeSignatures.entries.lookup row.name = some sg) (hsig : row.signatureWith B.sat = sg)
     (kind : sg.kind = .pure)
-    (hprovider : row.provider.delta = ScopeResponse.delta) :
-    PureRow (program externals) row.name := by
-  refine PureRow.of_row row (fun Ψ ts es rs ws a e args => ?_)
+    (hprovider : row.provider.delta = ScopeResponse.delta)
+    (hrow : row.readsKeys = false := by decide) :
+    PureRowOn P B row.name := by
+  refine PureRow.of_row (hrow := hrow) row (fun Ψ ts es rs ws a e args => ?_)
   rw [hsig] at args
-  obtain ⟨out, delta, nonexit, typed, adequate, _⟩ := ScopeResponse.response (http_declarations externals)
-    hentry kind rfl rfl rfl rfl
-    (fun _ _ h => ScopeResponse.widen_admitted (Or.inl rfl) h)
-    (fun _ _ h => ScopeResponse.widen_admitted (Or.inr rfl) h) args
+  have ha : B.admitsR = signatureBase.admitsR := RowLookup.admitsR
+  obtain ⟨out, delta, nonexit, typed, adequate, _⟩ := ScopeResponse.response env.http
+    hentry kind (valKind_eq _) (valContent_eq _) (valKind_eq _) (valContent_eq _)
+    (fun _ _ h => ScopeResponse.widen_admitted (Or.inl rfl) (by rw [ha] at h; exact h))
+    (fun _ _ h => ScopeResponse.widen_admitted (Or.inr rfl) (by rw [ha] at h; exact h)) args
   rw [hprovider]
   exact ⟨out, delta, typed, adequate, nonexit⟩
 
 /-- 安全な入口の本体が呼ぶ内部の列の前からの取得の行。δは同じ %List.getFront のδである。 -/
-theorem PureRow.front {P : Program} : PureRow P Primitive.p377.name :=
-  PureRow.of_response .p377 (delta := StandardSafe.frontDelta) rfl rfl (fun _ _ _ _ => rfl)
+theorem PureRow.front {P : Program} {B : Builtins} [RowLookup B] : PureRowOn P B Primitive.p377.name :=
+  PureRow.of_response (hrow := by decide) .p377 (delta := StandardSafe.frontDelta) rfl rfl (fun _ _ _ _ => rfl)
     (fun _ _ _ _ _ _ _ args => StandardSafe.front_response args)
 
 /-- 範囲付きの純粋な6行と %List.getFront。 -/
@@ -222,8 +236,8 @@ def Primitive.scopePure : Primitive → Bool
   | .p185 | .p186 | .p188 | .p281 | .p282 | .p283 | .p377 => true
   | _ => false
 
-theorem scope_rows (externals : List (ExternalKey × ExternalDecl)) (row : Primitive)
-    (pure : row.scopePure = true) : PureRow (program externals) row.name := by
+theorem scope_rows_of {P : Program} {B : Builtins} [RowEnv P B] (row : Primitive)
+    (pure : row.scopePure = true) : PureRowOn P B row.name := by
   cases row
   case p185 => exact PureRow.scope .p185 _ rfl rfl rfl rfl
   case p186 => exact PureRow.scope .p186 _ rfl rfl rfl rfl
@@ -233,6 +247,10 @@ theorem scope_rows (externals : List (ExternalKey × ExternalDecl)) (row : Primi
   case p283 => exact PureRow.scope .p283 _ rfl rfl rfl rfl
   case p377 => exact PureRow.front
   all_goals cases pure
+
+theorem scope_rows (externals : List (ExternalKey × ExternalDecl)) (row : Primitive)
+    (pure : row.scopePure = true) : PureRow (program externals) row.name :=
+  scope_rows_of row pure
 
 end
 end Benitoite.Release.Refinement.StandardModel
