@@ -724,24 +724,57 @@ private theorem pair_projection (externals : List (ExternalKey × ExternalDecl))
   rw [pair_lookup]
   cases second <;> rfl
 
+section
+variable {externals : List (ExternalKey × ExternalDecl)} {P : Program} {B : Builtins}
+
+/-- 精密なMapとSetのmap・filterの四本は、本体の型付けの環境で型付く。 -/
+theorem refined_collection_typed_of [env : BodyEnv externals P B] (map filter : Bool) :
+    (if map then (if filter then Body.b109 else Body.b108) else (if filter then Body.b111 else Body.b110)).definition.WellTyped
+      P B := by
+  obtain ⟨d, hd, ht⟩ := StandardModelRefinedCollection.higher_typed env.keys map filter
+    (fun _ => core_arity_of (externals := externals) (P := P) (B := B) .pair) (fun _ => env.extends_.cons _ _ rfl)
+    (fun _ second => env.extends_.defs _ _ (pair_projection externals second))
+    (by
+      intro build
+      cases map <;> cases build
+      · exact RowLookup.sig_with .p292 rfl rfl
+      · exact RowLookup.sig_with .p288 rfl rfl
+      · exact RowLookup.sig_with .p277 rfl rfl
+      · exact RowLookup.sig_with .p271 rfl rfl)
+    (RowLookup.sig_with .p076 rfl rfl) (env.extends_.defs _ _ (by cases filter <;> rfl))
+  cases map <;> cases filter <;> cases Option.some.inj (hd.symm.trans rfl) <;> exact ht
+
+/-- 通常側のMapとSetのmap・filterの四本は、本体の型付けの環境で型付く。 -/
+theorem ordinary_collection_typed_of [env : BodyEnv externals P B] (map filter : Bool) :
+    (if map then (if filter then Body.b009 else Body.b008) else (if filter then Body.b013 else Body.b012)).definition.WellTyped
+      P B := by
+  obtain ⟨d, hd, ht⟩ := StandardModelOrdinaryCollection.higher_typed env.keys map filter
+    (fun _ => core_arity_of (externals := externals) (P := P) (B := B) .pair) (fun _ => env.extends_.cons _ _ rfl)
+    (fun _ second => env.extends_.defs _ _ (pair_projection externals second))
+    (by
+      intro build
+      cases map <;> cases build
+      · exact RowLookup.sig_with .p292 rfl rfl
+      · exact RowLookup.sig_with .p288 rfl rfl
+      · exact RowLookup.sig_with .p277 rfl rfl
+      · exact RowLookup.sig_with .p271 rfl rfl)
+    (if filter then Body.b002 else Body.b001).definition.body
+    (env.extends_.defs _ _ (by cases filter <;> rfl))
+  cases map <;> cases filter <;> cases Option.some.inj (hd.symm.trans rfl) <;> exact ht
+
+end
+
 /-- 精密なMapとSetのmap・filterの四本は、任意の外部宣言の合成表で型付く。 -/
 theorem refined_collection_typed (externals : List (ExternalKey × ExternalDecl)) (map filter : Bool) :
     (if map then (if filter then Body.b109 else Body.b108) else (if filter then Body.b111 else Body.b110)).definition.WellTyped
-      (program externals) (builtins (program externals)) := by
-  obtain ⟨d, hd, ht⟩ := StandardModelRefinedCollection.higher_typed (table externals) map filter
-    (fun _ => core_arity externals .pair) (fun _ => rfl) (fun _ second => pair_projection externals second)
-    (by intro build; cases map <;> cases build <;> rfl) rfl (by cases filter <;> rfl)
-  cases map <;> cases filter <;> cases Option.some.inj (hd.symm.trans rfl) <;> exact ht
+      (program externals) (builtins (program externals)) :=
+  refined_collection_typed_of (externals := externals) map filter
 
 /-- 通常側のMapとSetのmap・filterの四本は、任意の外部宣言の合成表で型付く。 -/
 theorem ordinary_collection_typed (externals : List (ExternalKey × ExternalDecl)) (map filter : Bool) :
     (if map then (if filter then Body.b009 else Body.b008) else (if filter then Body.b013 else Body.b012)).definition.WellTyped
-      (program externals) (builtins (program externals)) := by
-  obtain ⟨d, hd, ht⟩ := StandardModelOrdinaryCollection.higher_typed (table externals) map filter
-    (fun _ => core_arity externals .pair) (fun _ => rfl) (fun _ second => pair_projection externals second)
-    (by intro build; cases map <;> cases build <;> rfl) (if filter then Body.b002 else Body.b001).definition.body
-    (by cases filter <;> rfl)
-  cases map <;> cases filter <;> cases Option.some.inj (hd.symm.trans rfl) <;> exact ht
+      (program externals) (builtins (program externals)) :=
+  ordinary_collection_typed_of (externals := externals) map filter
 
 end
 end Benitoite.Release.Refinement.StandardModel

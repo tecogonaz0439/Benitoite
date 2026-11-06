@@ -86,9 +86,18 @@ structure Program.Additions (P P' : Program) (B : Builtins) : Prop where
   opEffects : ∀ o od, P.ops o = none → P'.ops o = some od → ∃ os, P'.effects od.eff = some os ∧ o ∈ os
   builtinEffects : ∀ l os, P.effects l = none → P'.effects l = some os → B.effects l = none
 
+/-- P に無く P' にある効果のラベルを、組込みの表が持たない。P' が組込みのラベルへ利用者の操作を足すと、
+ハンドラが処理済みとする効果（`handled`）が P' で小さくなるので、旧宣言の移送はこの条件を要する。 -/
+def Program.FreshEffects (P P' : Program) (B : Builtins) : Prop :=
+  ∀ l os, P.effects l = none → P'.effects l = some os → B.effects l = none
+
+/-- 追加宣言の義務は、追加された効果のラベルが組込みの表に無いことを含む。 -/
+theorem Program.Additions.freshEffects {P P' B} (h : Program.Additions P P' B) :
+    Program.FreshEffects P P' B := h.builtinEffects
+
 /-- 旧宣言の値と計算の型付けの移送。文脈の型が P で宣言済みのとき、P の導出は P' の導出である。 -/
 def Program.ExtendsTypingStatement (P P' : Program) (B : Builtins) : Prop :=
-  Program.Extends P P' → P.WellFormed →
+  Program.Extends P P' → Program.FreshEffects P P' B → P.WellFormed →
     (∀ Ψ Q C Γ Φ v a, Ctx.Declared P C Γ → HasTypeVQ P B Ψ Q C Γ Φ v a → HasTypeVQ P' B Ψ Q C Γ Φ v a) ∧
     (∀ Ψ Q C Γ Φ R m a ε Δ, Ctx.Declared P C Γ → HasTypeCQ P B Ψ Q C Γ Φ R m a ε Δ →
       HasTypeCQ P' B Ψ Q C Γ Φ R m a ε Δ)
@@ -100,7 +109,7 @@ def Program.ExtendsExhaustiveStatement (P P' : Program) : Prop :=
 
 /-- 旧宣言の関数と実装の型付けの移送。 -/
 def Program.ExtendsDeclarationStatement (P P' : Program) (B : Builtins) : Prop :=
-  Program.Extends P P' → P.WellFormed →
+  Program.Extends P P' → Program.FreshEffects P P' B → P.WellFormed →
     (∀ d, d.Scoped P → Def.WellTyped P B d → Def.WellTyped P' B d) ∧
     (∀ id, id.Scoped P → ImplDecl.WellTyped P B id → ImplDecl.WellTyped P' B id)
 

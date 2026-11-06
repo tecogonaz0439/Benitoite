@@ -17,20 +17,22 @@ private theorem scalar_delta (api : StandardScalarResponse.API) (ts es rs ws) :
     StandardScalarResponse.API.delta]
 
 /-- Byte・Character・Floatの変換・ビット演算・分類の行。 -/
-theorem PureRow.scalar {externals} (row : Primitive) (api : StandardScalarResponse.API)
-    (hname : row.name = api.name) (hsig : row.signature = api.signature)
-    (hprovider : row.provider.delta = (StandardScalarResponse.table signatureBase).delta) :
-    PureRow (program externals) row.name :=
-  PureRow.of_response row hname hsig (fun ts es rs ws => by rw [hprovider]; exact scalar_delta api ts es rs ws)
-    (fun _ _ _ _ _ _ _ args => StandardScalarResponse.response api (option_declarations externals).some_decl
-      (option_declarations externals).none_decl (option_declarations externals).arity args)
+theorem PureRow.scalar {P : Program} {B : Builtins} [env : RowEnv P B] (row : Primitive) (api : StandardScalarResponse.API)
+    (hname : row.name = api.name) (hsig : row.signatureWith B.sat = api.signature)
+    (hprovider : row.provider.delta = (StandardScalarResponse.table signatureBase).delta)
+    (hrow : row.readsKeys = false := by decide) :
+    PureRowOn P B row.name :=
+  PureRow.of_response (hrow := hrow) row hname hsig (fun ts es rs ws => by rw [hprovider]; exact scalar_delta api ts es rs ws)
+    (fun _ _ _ _ _ _ _ args => StandardScalarResponse.response api env.options.some_decl
+      env.options.none_decl env.options.arity args)
 
 /-- Byte.toStringの行。 -/
-theorem PureRow.byteString {P : Program} (row : Primitive) (hname : row.name = "Byte.toString")
-    (hsig : row.signature = StandardByteStringResponse.signature)
-    (hprovider : row.provider.delta = StandardByteStringResponse.delta) :
-    PureRow P row.name :=
-  PureRow.of_response row hname hsig (fun ts es rs ws => by rw [hprovider])
+theorem PureRow.byteString {P : Program} {B : Builtins} [RowLookup B] (row : Primitive) (hname : row.name = "Byte.toString")
+    (hsig : row.signatureWith B.sat = StandardByteStringResponse.signature)
+    (hprovider : row.provider.delta = StandardByteStringResponse.delta)
+    (hrow : row.readsKeys = false := by decide) :
+    PureRowOn P B row.name :=
+  PureRow.of_response (hrow := hrow) row hname hsig (fun ts es rs ws => by rw [hprovider])
     (fun _ _ _ _ _ _ _ args => StandardByteStringResponse.response args)
 
 private theorem character_delta (api : StandardCharacterResponse.API) (ts es rs ws) :
@@ -41,11 +43,12 @@ private theorem character_delta (api : StandardCharacterResponse.API) (ts es rs 
     split <;> rename_i heq <;> exact heq.symm
 
 /-- Characterの分類と文字列の行。 -/
-theorem PureRow.character {P : Program} (row : Primitive) (api : StandardCharacterResponse.API)
-    (hname : row.name = api.name) (hsig : row.signature = api.signature)
-    (hprovider : row.provider.delta = (StandardCharacterResponse.table signatureBase).delta) :
-    PureRow P row.name :=
-  PureRow.of_response row hname hsig
+theorem PureRow.character {P : Program} {B : Builtins} [RowLookup B] (row : Primitive) (api : StandardCharacterResponse.API)
+    (hname : row.name = api.name) (hsig : row.signatureWith B.sat = api.signature)
+    (hprovider : row.provider.delta = (StandardCharacterResponse.table signatureBase).delta)
+    (hrow : row.readsKeys = false := by decide) :
+    PureRowOn P B row.name :=
+  PureRow.of_response (hrow := hrow) row hname hsig
     (fun ts es rs ws => by rw [hprovider]; exact character_delta api ts es rs ws)
     (fun _ _ _ _ _ _ _ args => StandardCharacterResponse.response api args)
 
@@ -55,24 +58,26 @@ private theorem numericRemaining_delta (api : StandardNumericRemainingResponse.A
   cases api <;> rfl
 
 /-- Float・Float32・Decimalの文字列・相互の変換の行。Decimal.fromFloatは同じbitsから正常値を作る。 -/
-theorem PureRow.numericRemaining {externals} (row : Primitive) (api : StandardNumericRemainingResponse.API)
-    (hname : row.name = api.name) (hsig : row.signature = api.signature)
-    (hprovider : row.provider.delta = (StandardNumericRemainingResponse.table signatureBase).delta) :
-    PureRow (program externals) row.name :=
-  PureRow.of_response row hname hsig
+theorem PureRow.numericRemaining {P : Program} {B : Builtins} [env : RowEnv P B] (row : Primitive) (api : StandardNumericRemainingResponse.API)
+    (hname : row.name = api.name) (hsig : row.signatureWith B.sat = api.signature)
+    (hprovider : row.provider.delta = (StandardNumericRemainingResponse.table signatureBase).delta)
+    (hrow : row.readsKeys = false := by decide) :
+    PureRowOn P B row.name :=
+  PureRow.of_response (hrow := hrow) row hname hsig
     (fun ts es rs ws => by rw [hprovider]; exact numericRemaining_delta api ts es rs ws)
     (fun _ _ _ _ _ _ _ args => StandardNumericRemainingResponse.response api
-      (option_declarations externals).some_decl (option_declarations externals).none_decl
-      (option_declarations externals).arity args)
+      env.options.some_decl env.options.none_decl
+      env.options.arity args)
 
 /-- 整数の各幅の床除算・絶対値・ビット演算・シフトの行。 -/
-theorem PureRow.integerAPI {P : Program} (row : Primitive) (k : IntKind) (api : StandardIntegerAPI.API)
+theorem PureRow.integerAPI {P : Program} {B : Builtins} [RowLookup B] (row : Primitive) (k : IntKind) (api : StandardIntegerAPI.API)
     (available : StandardIntegerAPI.API.available k api)
     (hname : row.name = StandardIntegerAPI.API.name k api)
-    (hsig : row.signature = StandardIntegerAPI.API.signature k api)
-    (hprovider : row.provider.delta = integerDelta) :
-    PureRow P row.name :=
-  PureRow.of_response row hname hsig (fun ts es rs ws => by rw [hprovider])
+    (hsig : row.signatureWith B.sat = StandardIntegerAPI.API.signature k api)
+    (hprovider : row.provider.delta = integerDelta)
+    (hrow : row.readsKeys = false := by decide) :
+    PureRowOn P B row.name :=
+  PureRow.of_response (hrow := hrow) row hname hsig (fun ts es rs ws => by rw [hprovider])
     (fun _ _ _ _ _ _ _ args => StandardIntegerAPI.response k api available args)
 
 private theorem integerText_delta (k : IntKind) (api : StandardIntegerTextResponse.API) (ts es rs ws) :
@@ -81,37 +86,40 @@ private theorem integerText_delta (k : IntKind) (api : StandardIntegerTextRespon
   cases k <;> cases api <;> rfl
 
 /-- 整数の各幅の文字列・Floatへの変換と解析の行。 -/
-theorem PureRow.integerText {externals} (row : Primitive) (k : IntKind) (api : StandardIntegerTextResponse.API)
+theorem PureRow.integerText {P : Program} {B : Builtins} [env : RowEnv P B] (row : Primitive) (k : IntKind) (api : StandardIntegerTextResponse.API)
     (hname : row.name = StandardIntegerTextResponse.name k api)
-    (hsig : row.signature = StandardIntegerTextResponse.signature k api)
-    (hprovider : row.provider.delta = (StandardIntegerTextResponse.table signatureBase).delta) :
-    PureRow (program externals) row.name :=
-  PureRow.of_response row hname hsig
+    (hsig : row.signatureWith B.sat = StandardIntegerTextResponse.signature k api)
+    (hprovider : row.provider.delta = (StandardIntegerTextResponse.table signatureBase).delta)
+    (hrow : row.readsKeys = false := by decide) :
+    PureRowOn P B row.name :=
+  PureRow.of_response (hrow := hrow) row hname hsig
     (fun ts es rs ws => by rw [hprovider]; exact integerText_delta k api ts es rs ws)
     (fun _ _ _ _ _ _ _ args => StandardIntegerTextResponse.response k api
-      (option_declarations externals).some_decl (option_declarations externals).none_decl
-      (option_declarations externals).arity args)
+      env.options.some_decl env.options.none_decl
+      env.options.arity args)
 
 /-- 整数の各幅とIntegerの相互の変換の行。 -/
-theorem PureRow.conversion {externals} (row : Primitive) (k : IntKind) (fromInteger : Bool)
+theorem PureRow.conversion {P : Program} {B : Builtins} [env : RowEnv P B] (row : Primitive) (k : IntKind) (fromInteger : Bool)
     (available : k ≠ .integer64)
     (hname : row.name = StandardConversionResponse.name k fromInteger)
-    (hsig : row.signature = StandardConversionResponse.signature k fromInteger)
-    (hprovider : row.provider.delta = integerDelta) :
-    PureRow (program externals) row.name :=
-  PureRow.of_response row hname hsig (fun ts es rs ws => by rw [hprovider])
+    (hsig : row.signatureWith B.sat = StandardConversionResponse.signature k fromInteger)
+    (hprovider : row.provider.delta = integerDelta)
+    (hrow : row.readsKeys = false := by decide) :
+    PureRowOn P B row.name :=
+  PureRow.of_response (hrow := hrow) row hname hsig (fun ts es rs ws => by rw [hprovider])
     (fun _ _ _ _ _ _ _ args => StandardConversionResponse.response k fromInteger available
-      (option_declarations externals).some_decl (option_declarations externals).none_decl
-      (option_declarations externals).arity args)
+      env.options.some_decl env.options.none_decl
+      env.options.arity args)
 
 /-- Decimalの丸め・絶対値・切り捨てと、IntegerとUnsignedInteger64との変換の行。丸め方式の
 宣言は合成プログラムが供給する。 -/
-theorem PureRow.decimal {externals} (row : Primitive) (api : StandardDecimalResponse.API)
-    (hname : row.name = api.name) (hsig : row.signature = api.signature)
-    (hprovider : row.provider.delta = decimalDelta) :
-    PureRow (program externals) row.name :=
-  PureRow.of_response row hname hsig (fun ts es rs ws => by rw [hprovider])
-    (fun _ _ _ _ _ _ _ args => StandardDecimalResponse.response_of (rounding_declarations externals) api args)
+theorem PureRow.decimal {P : Program} {B : Builtins} [env : RowEnv P B] (row : Primitive) (api : StandardDecimalResponse.API)
+    (hname : row.name = api.name) (hsig : row.signatureWith B.sat = api.signature)
+    (hprovider : row.provider.delta = decimalDelta)
+    (hrow : row.readsKeys = false := by decide) :
+    PureRowOn P B row.name :=
+  PureRow.of_response (hrow := hrow) row hname hsig (fun ts es rs ws => by rw [hprovider])
+    (fun _ _ _ _ _ _ _ args => StandardDecimalResponse.response_of env.rounding api args)
 
 private theorem floatMath_delta (single : Bool) (api : StandardFloatMathResponse.API) (ts es rs ws) :
     (StandardFloatMathResponse.table signatureBase).delta (StandardFloatMathResponse.name single api)
@@ -120,24 +128,26 @@ private theorem floatMath_delta (single : Bool) (api : StandardFloatMathResponse
   cases single <;> cases api <;> rfl
 
 /-- FloatとFloat32の丸め・絶対値・平方根の行。 -/
-theorem PureRow.floatMath {externals} (row : Primitive) (single : Bool) (api : StandardFloatMathResponse.API)
+theorem PureRow.floatMath {P : Program} {B : Builtins} [env : RowEnv P B] (row : Primitive) (single : Bool) (api : StandardFloatMathResponse.API)
     (hname : row.name = StandardFloatMathResponse.name single api)
-    (hsig : row.signature = StandardFloatMathResponse.signature single api)
-    (hprovider : row.provider.delta = (StandardFloatMathResponse.table signatureBase).delta) :
-    PureRow (program externals) row.name :=
-  PureRow.of_response row hname hsig
+    (hsig : row.signatureWith B.sat = StandardFloatMathResponse.signature single api)
+    (hprovider : row.provider.delta = (StandardFloatMathResponse.table signatureBase).delta)
+    (hrow : row.readsKeys = false := by decide) :
+    PureRowOn P B row.name :=
+  PureRow.of_response (hrow := hrow) row hname hsig
     (fun ts es rs ws => by rw [hprovider]; exact floatMath_delta single api ts es rs ws)
     (fun _ _ _ _ _ _ _ args => StandardFloatMathResponse.response single api
-      (option_declarations externals).some_decl (option_declarations externals).none_decl
-      (option_declarations externals).arity args)
+      env.options.some_decl env.options.none_decl
+      env.options.arity args)
 
 /-- 整数の各幅の最小・最大の行。 -/
-theorem PureRow.minMax {P : Program} (row : Primitive) (k : IntKind) (maximum : Bool)
+theorem PureRow.minMax {P : Program} {B : Builtins} [RowLookup B] (row : Primitive) (k : IntKind) (maximum : Bool)
     (hname : row.name = StandardIntegerResponse.minMaxName k maximum)
-    (hsig : row.signature = StandardIntegerResponse.minMaxSig k)
-    (hprovider : row.provider.delta = integerDelta) :
-    PureRow P row.name :=
-  PureRow.of_response row hname hsig (fun ts es rs ws => by rw [hprovider])
+    (hsig : row.signatureWith B.sat = StandardIntegerResponse.minMaxSig k)
+    (hprovider : row.provider.delta = integerDelta)
+    (hrow : row.readsKeys = false := by decide) :
+    PureRowOn P B row.name :=
+  PureRow.of_response (hrow := hrow) row hname hsig (fun ts es rs ws => by rw [hprovider])
     (fun _ _ _ _ _ _ _ args => by
       obtain ⟨out, delta, typed, adequate, nonexit, _⟩ := StandardIntegerResponse.minMax_response k maximum args
       exact ⟨out, delta, typed, adequate, nonexit⟩)
@@ -149,8 +159,8 @@ def Primitive.numeric : Primitive → Bool
   | _ => false
 
 /-- 数値の公開モジュールの全166行の全BuiltinArgsは、合成表の同じlookupで型付きの非exitの応答を持つ。 -/
-theorem numeric_rows (externals : List (ExternalKey × ExternalDecl)) (row : Primitive)
-    (numeric : row.numeric = true) : PureRow (program externals) row.name := by
+theorem numeric_rows_of {P : Program} {B : Builtins} [RowEnv P B] (row : Primitive)
+    (numeric : row.numeric = true) : PureRowOn P B row.name := by
   cases row
   case p111 => exact PureRow.scalar .p111 .byteAnd rfl rfl rfl
   case p112 => exact PureRow.scalar .p112 .byteXor rfl rfl rfl
@@ -319,6 +329,10 @@ theorem numeric_rows (externals : List (ExternalKey × ExternalDecl)) (row : Pri
   case p370 => exact PureRow.conversion .p370 .unsignedInteger64 false (by decide) rfl rfl rfl
   case p371 => exact PureRow.integerText .p371 .unsignedInteger64 .toString rfl rfl rfl
   all_goals cases numeric
+
+theorem numeric_rows (externals : List (ExternalKey × ExternalDecl)) (row : Primitive)
+    (numeric : row.numeric = true) : PureRow (program externals) row.name :=
+  numeric_rows_of row numeric
 
 /-- 合成プログラムの宣言を読むDecimal.roundと、同じbitsを読むDecimal.fromFloatの行。 -/
 example (externals : List (ExternalKey × ExternalDecl)) :
