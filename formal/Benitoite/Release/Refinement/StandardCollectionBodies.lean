@@ -67,7 +67,7 @@ def collectionPairProjection (second : Bool) : Def :=
     .tvar (if second then 1 else 0),Eff.empty,
     .match (.var 0) [.mk [⟨.con "Pair.Pair"
       [if second then .wild else .var,if second then .var else .wild],[0]⟩] none
-      (.ret (.var 0)) ]⟩
+      (.ret (.var 0)) ], []⟩
 
 local macro "collection_simp" : tactic => `(tactic|
   simp_all [keyParam,higherParams,pairType,sourceType,outputElement,outputType,higherCallback,higherTel,
@@ -169,7 +169,7 @@ def collectionListDefinition (filter : Bool) : Def :=
   ⟨List.replicate (if filter then 1 else 2) TypeCtx.valueParam,1,["xs",if filter then "p" else "f"],
     [.list (.tvar 0),.fn ["value"] [.tvar 0] (if filter then .base .boolean else .tvar 1) (Eff.row 0)],
     .list (.tvar (if filter then 0 else 1)),Eff.row 0,
-    (listHigherRow filter).body.getD (.ret (.const .unit))⟩
+    (listHigherRow filter).body.getD (.ret (.const .unit)), []⟩
 
 theorem collectionListDefinition_eq (filter : Bool) :
     (listHigherRow filter).definition = some (collectionListDefinition filter) := by
@@ -223,7 +223,7 @@ private theorem list_function {P B Γ Φ Q} (table : StandardKeyTyping.Table P B
       | (solve | constructor <;> constructor <;> higher_simp)
       | (solve | constructor <;> higher_simp)
       | (rintro (_|(_|i)) a k ha hk <;> higher_simp <;> subst_vars <;> constructor <;> higher_simp)
-  have typed := HasTypeVQ.V_Fun (Ψ := StoreTy.empty) (Φ := Φ) lookup names ad inst
+  have typed := HasTypeVQ.fun_empty (Ψ := StoreTy.empty) (Φ := Φ) lookup names (by rfl) ad inst
   apply typed.convert
   · cases map <;> cases filter <;> higher_simp
     all_goals first
@@ -263,7 +263,7 @@ theorem pair_function {P B Γ Φ Q} (table : StandardKeyTyping.Table P B)
     all_goals first
       | (solve | constructor <;> (constructor <;> collection_simp))
       | (rintro (_|(_|i)) a k ha hk <;> collection_simp <;> subst_vars <;> constructor <;> collection_simp)
-  have typed := HasTypeVQ.V_Fun (Ψ := StoreTy.empty) (Φ := Φ) lookup names ad inst
+  have typed := HasTypeVQ.fun_empty (Ψ := StoreTy.empty) (Φ := Φ) lookup names (by rfl) ad inst
   apply typed.convert
   · cases filter <;> cases second <;> collection_simp
     all_goals first

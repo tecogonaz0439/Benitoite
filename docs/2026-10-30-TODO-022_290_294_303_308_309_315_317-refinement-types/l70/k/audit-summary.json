@@ -1,0 +1,45 @@
+{
+  "base": "dcaa396bad7a60d4da9b99d07ad9b75c0f328b07",
+  "sources_unchanged_since_checks_started": 1108,
+  "production_modules_added": [],
+  "production_declarations_added": 0,
+  "default_import_check": "本番への追加0。追加がある場合は根のimportを照合する",
+  "audit_targets": 89315,
+  "private_targets": 23678,
+  "audit_modules": 1092,
+  "audit_rounds": 2,
+  "target_list": {
+    "bytes": 5966138,
+    "sha256": "8682c03bfcab935d0a70708f04a9102797087127342d18318a75f6bf46f7b77c"
+  },
+  "axiom_sets": {
+    "none": 42395,
+    "Classical.choice": 2,
+    "Classical.choice + Quot.sound + propext": 22646,
+    "Classical.choice + propext": 2,
+    "Quot.sound": 9,
+    "Quot.sound + propext": 3954,
+    "propext": 20307
+  },
+  "allowed_axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "unapproved_axioms": 0,
+  "trial_declarations": [
+    "Benitoite.Release.Refinement.legacy_match_declared_trial",
+    "Benitoite.Release.Refinement.EffectTrial.issuesIn",
+    "Benitoite.Release.Refinement.EffectTrial.handledD",
+    "Benitoite.Release.Refinement.EffectTrial.never_handled",
+    "Benitoite.Release.Refinement.EffectTrial.empty_handle_sub_rejected",
+    "Benitoite.Release.Refinement.EffectTrial.pathBases_not_operation",
+    "Benitoite.Release.Refinement.RangeArgumentTrial.rootOnly",
+    "Benitoite.Release.Refinement.RangeArgumentTrial.root_valid",
+    "Benitoite.Release.Refinement.RangeArgumentTrial.no_closed_argument",
+    "Benitoite.Release.Refinement.RangeArgumentTrial.no_closed_input_and_effect",
+    "Benitoite.Release.Refinement.RangeArgumentTrial.parameter_instantiation"
+  ],
+  "seconds": 1.336,
+  "verification": "成功。K.1(c)の停止を解消したことは意味しない"
+}

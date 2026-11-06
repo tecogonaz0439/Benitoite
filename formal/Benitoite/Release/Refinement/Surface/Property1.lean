@@ -250,7 +250,8 @@ mutual
         simpa [bindParams_single] using hb.under [a]
       simp only [desugarExpr]
       refine .C_Match (.V_Var (by simp only [Ctx.extend, List.getElem?_cons_zero]) ((Ty.ordinary_shiftV _ _ _).mpr ho))
-        (obs := scrutObs (Γ.extend a)) (fun t ht => ?_) (HasArmsQ.desugar harms hR hA hb1) ?_ |> fun hm =>
+        (obs := scrutObs (Γ.extend a)) (fun t ht => ?_) (HasArmsQ.desugar harms hR hA hb1)
+        (by simpa [bindParams_single] using ((ha.sameTypes hR.types).under [a]).declared) ?_ |> fun hm =>
           .C_Let (HasTypeQ.desugar he hR hA) hm hb'.declared
       · unfold scrutObs at ht
         split at ht
@@ -297,7 +298,8 @@ mutual
       refine .C_Let ihe ?_ htA.declared
       refine .C_Match (obs := none) (.V_Var (a := (Ty.data d [t, e']).shiftV 1 0)
         (by simp only [Ctx.extend, List.getElem?_cons_zero])
-        (by intro b t e; simp [Ty.core, Ty.shiftV])) (fun _ h => by cases h) ?_ ?_
+        (by intro b t e; simp [Ty.core, Ty.shiftV])) (fun _ h => by cases h) ?_
+        (by simpa [bindParams_single] using (ha'.under [Ty.data d [t, e']]).declared) ?_
       · refine HasTypeArmsQ.plainEmpty (AltsTy.single ((hp1.sameTypes hR.types).shift_values 1 0))
           (by intro q hq; cases hq) ?_ ?_
         · simp only [List.map_cons, List.map_nil, List.length_cons, List.length_nil, Nat.zero_add,
@@ -354,7 +356,8 @@ mutual
       refine .C_Let ihe ?_ htA.declared
       refine .C_Match (obs := none) (.V_Var (a := (Ty.data d [t]).shiftV 1 0)
         (by simp only [Ctx.extend, List.getElem?_cons_zero])
-        (by intro b t e; simp [Ty.core, Ty.shiftV])) (fun _ h => by cases h) ?_ ?_
+        (by intro b t e; simp [Ty.core, Ty.shiftV])) (fun _ h => by cases h) ?_
+        (by simpa [bindParams_single] using (ha'.under [Ty.data d [t]]).declared) ?_
       · refine HasTypeArmsQ.plainEmpty (AltsTy.single ((hp1.sameTypes hR.types).shift_values 1 0))
           (by intro q hq; cases hq) ?_ ?_
         · simp only [List.map_cons, List.map_nil, List.length_cons, List.length_nil, Nat.zero_add,
@@ -398,7 +401,8 @@ mutual
       refine .C_Let ihe ?_ htA.declared
       refine .C_Match (obs := none) (.V_Var (a := (Ty.data d [t]).shiftV 1 0)
         (by simp only [Ctx.extend, List.getElem?_cons_zero])
-        (by intro b t e; simp [Ty.core, Ty.shiftV])) (fun _ h => by cases h) ?_ ?_
+        (by intro b t e; simp [Ty.core, Ty.shiftV])) (fun _ h => by cases h) ?_
+        (by simpa [bindParams_single] using (ha'.under [Ty.data d [t]]).declared) ?_
       · refine HasTypeArmsQ.plainEmpty (AltsTy.single ((hp1.sameTypes hR.types).shift_values 1 0))
           (by intro q hq; cases hq) ?_ ?_
         · simp only [List.map_cons, List.map_nil, List.length_cons, List.length_nil, Nat.zero_add,
@@ -442,7 +446,8 @@ mutual
       refine .C_Let ihe ?_ htA.declared
       refine .C_Match (obs := none) (.V_Var (a := (Ty.data d [t]).shiftV 1 0)
         (by simp only [Ctx.extend, List.getElem?_cons_zero])
-        (by intro b t e; simp [Ty.core, Ty.shiftV])) (fun _ h => by cases h) ?_ ?_
+        (by intro b t e; simp [Ty.core, Ty.shiftV])) (fun _ h => by cases h) ?_
+        (by simpa [bindParams_single] using (ha'.under [Ty.data d [t]]).declared) ?_
       · refine HasTypeArmsQ.plainEmpty (AltsTy.single ((hp1.sameTypes hR.types).shift_values 1 0))
           (by intro q hq; cases hq) ?_ ?_
         · simp only [List.map_cons, List.map_nil, List.length_cons, List.length_nil, Nat.zero_add,
@@ -497,7 +502,8 @@ mutual
       refine .C_Let ihe ?_ htA.declared
       refine .C_Match (obs := none) (.V_Var (a := (Ty.data d [t, et]).shiftV 1 0)
         (by simp only [Ctx.extend, List.getElem?_cons_zero])
-        (by intro b t e; simp [Ty.core, Ty.shiftV])) (fun _ h => by cases h) ?_ ?_
+        (by intro b t e; simp [Ty.core, Ty.shiftV])) (fun _ h => by cases h) ?_
+        (by simpa [bindParams_single] using (ha'.under [Ty.data d [t, et]]).declared) ?_
       · refine HasTypeArmsQ.plainEmpty (AltsTy.single ((hp1.sameTypes hR.types).shift_values 1 0))
           (by intro q hq; cases hq) ?_ ?_
         · simp only [List.map_cons, List.map_nil, List.length_cons, List.length_nil, Nat.zero_add,
@@ -551,7 +557,8 @@ mutual
       refine .C_Let ihe ?_ htA.declared
       refine .C_Match (obs := none) (.V_Var (a := (Ty.data d [t, et]).shiftV 1 0)
         (by simp only [Ctx.extend, List.getElem?_cons_zero])
-        (by intro b t e; simp [Ty.core, Ty.shiftV])) (fun _ h => by cases h) ?_ ?_
+        (by intro b t e; simp [Ty.core, Ty.shiftV])) (fun _ h => by cases h) ?_
+        (by simpa [bindParams_single] using (ha'.under [Ty.data d [t, et]]).declared) ?_
       · refine HasTypeArmsQ.plainEmpty (AltsTy.single ((hp1.sameTypes hR.types).shift_values 1 0))
           (by intro q hq; cases hq) ?_ ?_
         · simp only [List.map_cons, List.map_nil, List.length_cons, List.length_nil, Nat.zero_add,
@@ -836,7 +843,7 @@ mutual
       have hX0 := hd0.under (Ty.data cd.data ts :: as)
       simp only [List.length_cons] at hX hX0
       refine .C_Match (obs := none) (.V_Var (bindParams_lookup_head Γ _ as) (by intro b t e; simp [Ty.core, Ty.shiftV]))
-        (fun _ h => by cases h) ?_ ((hex.sameTypes hR.types).shiftV (as.length + 1) 0)
+        (fun _ h => by cases h) ?_ hX0.declared ((hex.sameTypes hR.types).shiftV (as.length + 1) 0)
       refine HasTypeArmsQ.plainEmpty (hal.sameTypes hR.types) (by intro q hq; cases hq) ?_ (.nil hX)
       simp only [pathFacts, List.nil_append]
       have hY := hX.under δ
@@ -869,7 +876,7 @@ mutual
       have hX := ha'.under (Ty.data cd.data ts :: as)
       simp only [List.length_cons] at hX
       refine .C_Match (obs := none) (.V_Var (bindParams_lookup_head Γ _ as) (by intro b t e; simp [Ty.core, Ty.shiftV]))
-        (fun _ h => by cases h) ?_ ((hex.sameTypes hR.types).shiftV (as.length + 1) 0)
+        (fun _ h => by cases h) ?_ hX.declared ((hex.sameTypes hR.types).shiftV (as.length + 1) 0)
       refine HasTypeArmsQ.plainEmpty (hal.sameTypes hR.types) (by intro q hq; cases hq) ?_ (.nil hX)
       simp only [pathFacts, List.nil_append]
       have hY := hX.under δ
@@ -1076,7 +1083,9 @@ mutual
       refine .C_Let (HasTypeQ.desugar he hR hA) ?_ trivial
       simp only [mkArm]
       refine .C_Match (obs := none) (.V_Var (a := t.shiftV 1 0) (by simp only [Ctx.extend, List.getElem?_cons_zero])
-        ((Ty.ordinary_shiftV _ _ _).mpr ho)) (fun _ h => by cases h) ?_ ((hex.exhaustive.sameTypes hR.types).shiftV 1 0)
+        ((Ty.ordinary_shiftV _ _ _).mpr ho)) (fun _ h => by cases h) ?_
+        (by simpa [bindParams_single] using ((ht.sameTypes hR.types).under [t]).declared)
+        ((hex.exhaustive.sameTypes hR.types).shiftV 1 0)
       refine HasTypeArmsQ.plainEmpty (AltsTy.single ((hp.sameTypes hR.types).shift_values 1 0))
         (by intro q hq; cases hq) (.C_Eff (.C_Return (.V_Const trivial)) (Eff.covers_empty _ _ _)) (.nil ?_)
       exact ⟨trivial, trivial, trivial⟩
@@ -1086,7 +1095,9 @@ mutual
       refine .C_Let (HasTypeQ.desugar he hR hA) ?_ ha'.declared
       simp only [mkArm, hbn]
       refine .C_Match (obs := none) (.V_Var (a := t.shiftV 1 0) (by simp only [Ctx.extend, List.getElem?_cons_zero])
-        ((Ty.ordinary_shiftV _ _ _).mpr ho)) (fun _ h => by cases h) ?_ ((hex.exhaustive.sameTypes hR.types).shiftV 1 0)
+        ((Ty.ordinary_shiftV _ _ _).mpr ho)) (fun _ h => by cases h) ?_
+        (by simpa [bindParams_single] using ((ht.sameTypes hR.types).under [t]).declared)
+        ((hex.exhaustive.sameTypes hR.types).shiftV 1 0)
       have hbd := shift_arm (a := t) hA (HasBlockQ.desugar hrest hR hA)
       have hal := AltsTy.single ((hp.sameTypes hR.types).shift_values 1 0)
       rw [hbn] at hal

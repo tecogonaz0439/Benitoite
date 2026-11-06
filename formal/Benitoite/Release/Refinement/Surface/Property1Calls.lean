@@ -35,8 +35,9 @@ theorem CallHeadTy.app_value {D Γ Φ f t ds v dl} (h : CallHeadTy D B Q C Γ f 
     obtain ⟨d, hdf, htp, hne, hnm, hpa, hre, hef⟩ := hR.funs _ _ hf
     have htel := FunDecl.tel_eq hnm hpa hre hef
     refine ⟨?_, by simp [DictEv.toValList]⟩
-    have hv := HasTypeVQ.V_Fun (Ψ := StoreTy.empty) (Q := Q) (Γ := Γ) (Φ := Φ) (B := B) hdf
-      (by rw [hnm, hpa]; exact hn) (by rw [htp, hne, hpa, hre, hef]; exact ha)
+    have hv := HasTypeVQ.fun_empty (Ψ := StoreTy.empty) (Q := Q) (Γ := Γ) (Φ := Φ) (B := B) hdf
+      (by rw [hnm, hpa]; exact hn) (hR.ranges _ _ hf _ hdf)
+      (by rw [htp, hne, hpa, hre, hef]; exact ha)
       (by rw [htel, htp]; exact hs.sameTypes hR.types)
     rwa [htel] at hv
   | fnDicts hf hdp hn ha hs =>
@@ -45,8 +46,9 @@ theorem CallHeadTy.app_value {D Γ Φ f t ds v dl} (h : CallHeadTy D B Q C Γ f 
     obtain ⟨d, hdf, htp, hne, hnm, hpa, hre, hef⟩ := hR.funs _ _ hf
     have htel := FunDecl.tel_eq hnm hpa hre hef
     refine ⟨?_, rfl⟩
-    have hv := HasTypeVQ.V_Fun (Ψ := StoreTy.empty) (Q := Q) (Γ := Γ) (Φ := Φ) (B := B) hdf
-      (by rw [hnm, hpa]; exact hn) (by rw [htp, hne, hpa, hre, hef]; exact ha)
+    have hv := HasTypeVQ.fun_empty (Ψ := StoreTy.empty) (Q := Q) (Γ := Γ) (Φ := Φ) (B := B) hdf
+      (by rw [hnm, hpa]; exact hn) (hR.ranges _ _ hf _ hdf)
+      (by rw [htp, hne, hpa, hre, hef]; exact ha)
       (by rw [htel, htp]; exact hs.sameTypes hR.types)
     rwa [htel] at hv
   | prim hb hr hn ha hs =>
@@ -145,7 +147,7 @@ theorem CallHeadTy.glue {D Γ Γ0 k0 Γ' Φ' R L k f t ds h ws r e b ε} (hh : C
     subst hd
     obtain ⟨hv0, -⟩ := CallHeadTy.app_value (Φ := []) hh0 rfl hR
     simp only [CallHead.rename, CallHead.apply, Val.renameList_map, DictEv.toValList_map, List.map_map,
-      Function.comp_def]
+      Function.comp_def] at hv0 ⊢
     exact .C_Sub (app_glue hA storeEmpty_wf hv0 hm hargs) (hle.sameTypes hR.types) hc hb'.wf hb'.sorted hb'.declared
 
 theorem CallHeadTy.direct {D Γ f t ds} (h : CallHeadTy D B Q C Γ f t ds) : ∃ hd, directCallee f = some hd := by

@@ -57,7 +57,8 @@ theorem BodyTy.desugar {D op Q C Γ Φ t body} (h : BodyTy D B op Q C Γ Φ t bo
 theorem Def.WellTyped.desugar {D op d} (h : Def.WellTyped D B op d) (hR : D.Realizes P)
     (hA : Builtins.ValueAssumptions P B) : Refinement.Def.WellTyped P B (desugarDef op d) := by
   obtain ⟨hn, hk, ha, hb⟩ := h
-  exact ⟨hn, hk.sameTypes hR.types, ha.sameTypes hR.types, hb.desugar hR hA⟩
+  exact ⟨hn, hk.sameTypes hR.types, Ty.annotationR_nil.mpr (ha.sameTypes hR.types),
+    telBodyTyR_nil.mpr (hb.desugar hR hA)⟩
 
 theorem ImplDecl.WellTyped.desugar {D op id views} (h : ImplDecl.WellTyped D B op id views)
     (hR : ∀ v, (D.withView v).Realizes P) (hD : D.Realizes P)

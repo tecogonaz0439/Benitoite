@@ -335,7 +335,7 @@ private theorem tail_annotation : Ty.Annotation program C [] (.dependentFn (safe
 
 /-- 既存sliceの精密応答を読む本体。固定された長さn−1を保持する。 -/
 theorem tail_row_typed : tailRow.BodyTyped program builtins := by
- refine ⟨_,rfl,?_,?_,tail_annotation,tail_body⟩
+ refine ⟨_,rfl,?_,?_,tail_annotation.range_empty,tail_body⟩
  · simp [tailRow,safeTail,Tel.names,Tel.inputs,NamesWF]
  · simp [tailRow,safeTail,Tel.names,Tel.inputs,Tel.result,Tel.effect,Def.tel,signatureTel,
    Ty.HasKind,kindsTel,kindsList,kindsEff,nonempty,nonemptyType,C,a,TypeCtx.kinds,

@@ -111,8 +111,8 @@ theorem gate_fun_list {P B} {Ψ : StoreTy}
       cases hi
     · intro i hi; simp [Qsig, QTys, QTy, QEff, funDecl, Eff.empty] at hi
       cases hi
-  have src := HasTypeVQ.V_Fun (P := P) (B := B) (Ψ := Ψ) (Q := Qempty) (Φ := []) hfun
-    (by gate_simp) (by simpa [funDecl, TypeCtx.constraints, ctorParam] using had) si
+  have src := HasTypeVQ.fun_empty (P := P) (B := B) (Ψ := Ψ) (Q := Qempty) (Φ := []) hfun
+    (by gate_simp) (by rfl) (by simpa [funDecl, TypeCtx.constraints, ctorParam] using had) si
   exact gate_fun_case hf inp.toTypeSubstInput (Or.inl rfl) (by intro i hi; cases hi) src
 def methodSig : MethSig := {
   tparams := [TypeCtx.valueParam], neffs := 0, names := ["xs"],

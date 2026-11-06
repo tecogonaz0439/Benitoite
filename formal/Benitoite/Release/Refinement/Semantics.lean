@@ -94,7 +94,6 @@ inductive Step (P : Program) (B : Builtins) (σ : PathEnv) : State → Option Ev
       Step P B σ (.run q k μ) none (.error [r] k μ)
   | E_PathBasesApply {q : Closure} {b sg k μ} :
       q.view = .app (.prim b [] [] []) [] → B.sig b = some sg → sg.kind = .pathBases →
-      NoHandler k (.prim b) →
       Step P B σ (.run q k μ) none (.run (.mk q.capture (.issuePathBases b)) k μ)
   | E_IssuePathBases {q : Closure} {b sg k μ} :
       q.view = .issuePathBases b → B.sig b = some sg → sg.kind = .pathBases →
@@ -122,12 +121,12 @@ inductive Step (P : Program) (B : Builtins) (σ : PathEnv) : State → Option Ev
       Step P B σ (.run q k μ) none
         (.run (Closure.pure (.ret (.con shape.error
           [.scoped name kind index, q.capture.closeTy shape.errorType] [.atError detail]))) k μ)
-  | E_Fun {f ts es ws k μ d} {q : Closure} :
-      q.view = (.app (.fnRef f ts es) ws) →
+  | E_Fun {f ts es rs ws k μ d} {q : Closure} :
+      q.view = (.app (.fnRef f ts es (List.map RangeIx.fixed rs)) ws) →
       P.defs f = some d →
       ws.length = d.params.length → ts.length = d.ntys → es.length = d.neffs →
       Step P B σ (.run q k μ) none
-        (.run (Closure.mk (Capture.empty.extendMany ws) (d.body.substTy ts es)) (markPush k) μ)
+        (.run (Closure.mk (Capture.empty.extendMany ws) ((d.body.instR rs).substTy ts es)) (markPush k) μ)
   
   | E_Meth {i ts vs m ss es ws k μ id body cd ms} {q : Closure} :
       q.view = (.meth (.dict i ts vs) m ss es ws) →
@@ -173,48 +172,48 @@ inductive Step (P : Program) (B : Builtins) (σ : PathEnv) : State → Option Ev
   | E_ExitPopGuard {n rs v arms next body k μ} {cap : Capture} :
       Step P B σ (.exit n rs (.guardF v cap arms next body :: k) μ) none (.exit n rs k μ)
   | E_Prim {b ts es rs ws k μ s v} {q : Closure} :
-      q.view = (.app (.prim b ts es rs) ws) →
+      q.view = (.app (.prim b ts es (List.map RangeIx.fixed rs)) ws) →
       B.sig b = some s → s.kind = .pure → B.delta b (Ty.normTys ts) (es.map Eff.norm) rs ws = some (.val v) →
       Step P B σ (.run q k μ) none (.run (Closure.pure (.ret v)) k μ)
   | E_Err {b ts es rs ws k μ s r} {q : Closure} :
-      q.view = (.app (.prim b ts es rs) ws) →
+      q.view = (.app (.prim b ts es (List.map RangeIx.fixed rs)) ws) →
       B.sig b = some s → s.kind = .pure → B.delta b (Ty.normTys ts) (es.map Eff.norm) rs ws = some (.err r) →
       Step P B σ (.run q k μ) none (.error [r] k μ)
   
   | E_IO {b ts es rs ws k μ s v obs} {q : Closure} :
-      q.view = (.app (.prim b ts es rs) ws) →
+      q.view = (.app (.prim b ts es (List.map RangeIx.fixed rs)) ws) →
       B.sig b = some s → s.kind = .io → NoHandler k (.prim b) →
       B.ioResponse b (Ty.normTys ts) (es.map Eff.norm) ws (.val v) obs →
       Step P B σ (.run q k μ) (some (.io b ws (.val v) obs)) (.run (Closure.pure (.ret v)) k μ)
   
   | E_IOErr {b ts es rs ws k μ s r obs} {q : Closure} :
-      q.view = (.app (.prim b ts es rs) ws) →
+      q.view = (.app (.prim b ts es (List.map RangeIx.fixed rs)) ws) →
       B.sig b = some s → (s.kind = .io ∨ s.kind = .exit) → NoHandler k (.prim b) →
       B.ioResponse b (Ty.normTys ts) (es.map Eff.norm) ws (.err r) obs →
       Step P B σ (.run q k μ) (some (.io b ws (.err r) obs)) (.error [r] k μ)
   
   | E_Exit {b ts es rs ws k μ s n obs} {q : Closure} :
-      q.view = (.app (.prim b ts es rs) ws) →
+      q.view = (.app (.prim b ts es (List.map RangeIx.fixed rs)) ws) →
       B.sig b = some s → s.kind = .exit → NoHandler k (.prim b) →
       B.ioResponse b (Ty.normTys ts) (es.map Eff.norm) ws (.exit n) obs →
       Step P B σ (.run q k μ) (some (.io b ws (.exit n) obs)) (.exit n [] k μ)
   
   | E_RefNew {b ts es rs v k μ s l} {q : Closure} :
-      q.view = (.app (.prim b ts es rs) [v]) →
+      q.view = (.app (.prim b ts es (List.map RangeIx.fixed rs)) [v]) →
       B.sig b = some s → s.kind = .refNew → μ l = none →
       Step P B σ (.run q k μ) none (.run (Closure.pure (.ret (.loc l))) k (μ.set l (.val v)))
   | E_RefGet {b ts es rs l k μ s v} {q : Closure} :
-      q.view = (.app (.prim b ts es rs) [.loc l]) →
+      q.view = (.app (.prim b ts es (List.map RangeIx.fixed rs)) [.loc l]) →
       B.sig b = some s → s.kind = .refGet → μ l = some (.val v) →
       Step P B σ (.run q k μ) none (.run (Closure.pure (.ret v)) k μ)
   | E_RefSet {b ts es rs l v k μ s} {q : Closure} :
-      q.view = (.app (.prim b ts es rs) [.loc l, v]) →
+      q.view = (.app (.prim b ts es (List.map RangeIx.fixed rs)) [.loc l, v]) →
       B.sig b = some s → s.kind = .refSet →
       Step P B σ (.run q k μ) none
         (.run (Closure.pure (.ret (.const .unit))) k (μ.set l (.val v)))
   
   | E_RefUpdate {b ts es rs l f k μ s} {q : Closure} :
-      q.view = (.app (.prim b ts es rs) [.loc l, f]) →
+      q.view = (.app (.prim b ts es (List.map RangeIx.fixed rs)) [.loc l, f]) →
       B.sig b = some s → s.kind = .refUpdate →
       Step P B σ (.run q k μ) none
         (.run (Closure.pure (.letIn (.app (.prim B.refGet ts [] []) [.loc l])
@@ -225,11 +224,11 @@ inductive Step (P : Program) (B : Builtins) (σ : PathEnv) : State → Option Ev
       μ l = none →
       Step P B σ (.run q k μ) none (.run (Closure.pure (.ret (.loc l))) k (μ.set l (.thunk (Closure.mk q.capture m))))
   | E_ForceDone {b ts es rs l k μ s v} {q : Closure} :
-      q.view = (.app (.prim b ts es rs) [.loc l]) →
+      q.view = (.app (.prim b ts es (List.map RangeIx.fixed rs)) [.loc l]) →
       B.sig b = some s → s.kind = .force → μ l = some (.done v) →
       Step P B σ (.run q k μ) none (.run (Closure.pure (.ret v)) k μ)
   | E_Force {b ts es rs l k μ s m} {q : Closure} :
-      q.view = (.app (.prim b ts es rs) [.loc l]) →
+      q.view = (.app (.prim b ts es (List.map RangeIx.fixed rs)) [.loc l]) →
       B.sig b = some s → s.kind = .force → μ l = some (.thunk m) →
       Step P B σ (.run q k μ) none (.run m (.update l :: k) μ)
   | E_Update {v l k μ} {q : Closure} :
@@ -311,8 +310,8 @@ inductive Step (P : Program) (B : Builtins) (σ : PathEnv) : State → Option Ev
         (.run (Closure.mk (hcap.extendMany [v, .loc κ]) (body.substTy [T] [])) (.drop κ :: k2) (μ.set κ (.cont (k1 ++ [.handleF hcap [.fail E body]]))))
   
   | E_OpPrim {b ts es rs ws k μ s k1 h k2 c κ} {q : Closure} {hcap : Capture} :
-      q.view = (.app (.prim b ts es rs) ws) →
-      B.sig b = some s → (s.kind = .io ∨ s.kind = .exit ∨ s.kind = .pathBases) →
+      q.view = (.app (.prim b ts es (List.map RangeIx.fixed rs)) ws) →
+      B.sig b = some s → (s.kind = .io ∨ s.kind = .exit) →
       SplitAt (.prim b) k k1 hcap h k2 → findClause h (.prim b) = some c → μ κ = none →
       Step P B σ (.run q k μ) none
         (.run (Closure.mk (hcap.extendMany (ws ++ [.loc κ])) (c.body.substTy ts [])) (.drop κ :: k2) (μ.set κ (.cont (k1 ++ [.handleF hcap h]))))

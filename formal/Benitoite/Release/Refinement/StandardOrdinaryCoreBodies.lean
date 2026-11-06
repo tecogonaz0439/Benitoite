@@ -74,7 +74,7 @@ def Getter.pattern (g : Getter) : Pat := .con g.record.owner
 def Getter.alts (g : Getter) : List Alt := [⟨g.pattern,[0]⟩]
 def Getter.body (g : Getter) : Comp := .match (.var 0) [.mk g.alts none (.ret (.var 0))]
 def Getter.definition (g : Getter) : Def :=
- ⟨g.record.params,0,["value"],[g.record.type],g.result,Eff.empty,g.body⟩
+ ⟨g.record.params,0,["value"],[g.record.type],g.result,Eff.empty,g.body, []⟩
 def Getter.publicName : Getter → String
  | .minimum => "Range.minimum" | .maximum => "Range.maximum" | .integerValue => "Range.value"
  | .lengthMinimum => "Range.lengthMinimum" | .lengthMaximum => "Range.lengthMaximum"
@@ -345,6 +345,7 @@ theorem getter_typed_of {P : Program} (records : Records P) (B : Builtins) (g : 
      · apply HasTypeArmsQ.plainEmpty (getter_alts records _) (by simp [pathFacts,FactsWF])
        · exact .C_Return (.V_Var rfl (by intro b t e; core_simp))
        · apply HasTypeArmsQ.nil; constructor <;> core_simp
+     · core_simp
      · exact getter_exhaustive records _)
 
 /-- 自動getterの通常契約は、nominalの一腕matchから検査する。 -/
@@ -383,7 +384,7 @@ theorem getter_reference_of {P B Ψ Q Γ Φ}
    | (solve | core_simp)
    | (solve | intro a ha; cases List.mem_singleton.mp ha; constructor <;> core_simp)
    | (solve | constructor; core_simp; rintro (_|i) a k ha hk <;> core_simp <;> subst_vars; constructor <;> core_simp)
- apply (HasTypeVQ.V_Fun (Ψ := Ψ) (Φ := Φ) lookup names ad inst).convert
+ apply (HasTypeVQ.fun_empty (Ψ := Ψ) (Φ := Φ) lookup names (by rfl) ad inst).convert
  · have fold := Ty.foldFn_toTel ⟨["value"],[g.record.type],g.result,Eff.empty,by simp [NamesWF]⟩
    cases g <;> core_simp
    all_goals simpa [FnView.toTel,Ty.toTel,Getter.record,Getter.result,Getter.position,Record.type,Record.arity,Record.fields,Ty.shiftV,shiftVTys,Eff.shiftV,Eff.empty] using fold

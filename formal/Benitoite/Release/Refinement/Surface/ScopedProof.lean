@@ -100,13 +100,13 @@ theorem directCallee_scoped {nt ne nv k f h ws} (hf : f.Scoped nt ne nv) (hd : d
   have hk : (fun x => x + k) = shiftIndex k 0 := (shiftIndex_add k).symm
   cases f <;> simp only [directCallee, Option.some.injEq, reduceCtorEq] at hd <;> subst hd <;>
     simp only [CallHead.rename, CallHead.apply, hk] at hf ⊢
-  · exact ⟨⟨scopedTypes_shiftV hf.1, scopedRows_shiftV hf.2⟩, hw⟩
-  · exact ⟨⟨scopedTypes_shiftV hf.1, scopedRows_shiftV hf.2.1⟩,
+  · exact ⟨⟨scopedTypes_shiftV hf.1, scopedRows_shiftV hf.2, by simp⟩, hw⟩
+  · exact ⟨⟨scopedTypes_shiftV hf.1, scopedRows_shiftV hf.2.1, by simp⟩,
       scopedValues_append (scopedValues.shift (Nat.zero_le _) (DictEv.ScopedList.toValList hf.2.2.1)) hw⟩
   · exact ⟨Val.SourceScoped.shift (Nat.zero_le _) (DictEv.Scoped.toVal hf.1), scopedTypes_shiftV hf.2.1,
       scopedRows_shiftV hf.2.2.1,
       scopedValues_append (scopedValues.shift (Nat.zero_le _) (DictEv.ScopedList.toValList hf.2.2.2.1)) hw⟩
-  · exact ⟨⟨scopedTypes_shiftV hf.1, scopedRows_shiftV hf.2.1, by simpa using hf.2.2⟩, hw⟩
+  · exact ⟨⟨scopedTypes_shiftV hf.1, scopedRows_shiftV hf.2.1, by simpa [RangeIx.WF] using hf.2.2⟩, hw⟩
   · exact ⟨scopedTypes_shiftV hf, hw⟩
   · exact ⟨scopedTypes_shiftV hf.1,
       scopedValues_append (scopedValues.shift (Nat.zero_le _) (DictEv.ScopedList.toValList hf.2.1)) hw⟩
@@ -345,10 +345,11 @@ mutual
       exact ⟨hs.2.1.shiftV _ 0, (show _ < _ by have := hs.1; omega), by simpa using boundVars_scoped _ Γ.length⟩
     | .E_Local _ _ => exact hs
     | .E_Const hb => simpa [desugarExpr] using HasTypeQ.scoped hb (by simpa [Expr.Scoped] using hs)
-    | .E_Fun _ | .E_Op _ => exact hs
-    | .E_Prim _ => exact ⟨hs.1, hs.2.1, by simpa using hs.2.2⟩
+    | .E_Fun _ => exact ⟨hs.1, hs.2, by simp⟩
+    | .E_Op _ => exact hs
+    | .E_Prim _ => exact ⟨hs.1, hs.2.1, by simpa [RangeIx.WF] using hs.2.2⟩
     | .E_FunDicts (ps := ps) _ _ _ _ _ _ =>
-      refine ⟨hs.2.2.2.1, hs.2.2.2.2, ⟨scopedTypes_shiftTs _ hs.1, scopedRows_shiftEs _ hs.2.1⟩,
+      refine ⟨hs.2.2.2.1, hs.2.2.2.2, ⟨scopedTypes_shiftTs _ hs.1, scopedRows_shiftEs _ hs.2.1, by simp⟩,
         scopedValues_append ?_ (boundVars_scoped _ _)⟩
       have := scopedValues.shift (k := ps.length) (c := 0) (Nat.zero_le _) (DictEv.ScopedList.toValList hs.2.2.1)
       simpa only [shiftIndex_add] using this

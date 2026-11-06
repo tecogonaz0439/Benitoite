@@ -62,7 +62,7 @@ theorem testerDef_wellTyped {P : Refinement.Program} {D : Declarations} {c cd}
     Refinement.Def.WellTyped P B (testerDef c cd) := by
   obtain ⟨hk, ha, -, hp⟩ := h
   have ha' := ha.sameTypes hR.types
-  refine ⟨by simp [testerDef, testerDecl, NamesWF], hk.sameTypes hR.types, ha', ?_⟩
+  refine ⟨by simp [testerDef, testerDecl, NamesWF], hk.sameTypes hR.types, Ty.annotationR_nil.mpr ha', ?_⟩
   let dt := Ty.data cd.data ((List.range cd.ntys).map Ty.tvar)
   let C := (testerDecl c cd).tparams
   let Γ1 := Ctx.extend [] dt
@@ -105,10 +105,12 @@ theorem testerDef_wellTyped {P : Refinement.Program} {D : Declarations} {c cd}
   have hm2 : matchedTests [⟨.wild, List.range Pat.wild.binders⟩] = [] := by simp [matchedTests, patternTest?]
   have he2 : excludedTests [⟨.wild, List.range Pat.wild.binders⟩] = [] := by simp [excludedTests, excludedTest?]
   have hnwf : Pred.WellFormed P C Γ1 (.not (.constructorIs (.var 0) c)) := ⟨hcwf.wf, hcwf.sorted, hcwf.declared⟩
+  apply telBodyTyR_nil.mpr
   refine .param (.done ?_)
   simp only [testerDef, mkArm]
   refine .C_Match (obs := some (.var 0)) (.V_Var (a := dt.shiftV 1 0) (by simp [Ctx.extend]; rfl)
-    (by intro b t e; simp [Ty.core, Ty.shiftV, dt])) (fun t ht => ?_) ?_ ?_
+    (by intro b t e; simp [Ty.core, Ty.shiftV, dt])) (fun t ht => ?_) ?_
+    (by simpa [bindParams_single] using (hdt.under [dt]).declared) ?_
   · cases ht; exact ⟨rfl, .data, hsort⟩
   · refine HasTypeArmsQ.plainEmpty (AltsTy.single ((hp.sameTypes hR.types).shift_values 1 0)) ?_ ?_ ?_
     · rw [hm1, he1]

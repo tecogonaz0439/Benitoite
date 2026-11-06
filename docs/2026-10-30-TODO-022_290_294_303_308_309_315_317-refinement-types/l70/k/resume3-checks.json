@@ -1,0 +1,55 @@
+{
+  "base": "dcaa396bad7a60d4da9b99d07ad9b75c0f328b07",
+  "source_count": 1108,
+  "production_modules_added": [],
+  "checks": {
+    "build": {
+      "command": [
+        "/usr/bin/lockf",
+        "-t",
+        "3600",
+        "<lock>",
+        "lake",
+        "build"
+      ],
+      "cwd": "formal",
+      "start": "2026-11-06T12:44:16+0900",
+      "end": "2026-11-06T12:47:53+0900",
+      "exit": 0,
+      "seconds": 217.837,
+      "raw": {
+        "bytes": 73766,
+        "sha256": "d15d724d32fd0514cadc9ec5ccb76e3a87d83277bc12aeb38c4b77ab6407c50a"
+      },
+      "maximum_rss": "未取得（計画上の非採取）"
+    },
+    "axioms": {
+      "command": [
+        "/usr/bin/lockf",
+        "-t",
+        "3600",
+        "<lock>",
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l70/k/axioms.lean"
+      ],
+      "cwd": "formal",
+      "start": "2026-11-06T12:47:53+0900",
+      "end": "2026-11-06T12:48:52+0900",
+      "exit": 0,
+      "seconds": 58.179,
+      "raw": {
+        "bytes": 16711471,
+        "sha256": "6340cb763ef8a8fa99640ead34b7235c014c2e0f087c99c3f86d538fd1f682ad"
+      },
+      "maximum_rss": "未取得（計画上の非採取）"
+    }
+  },
+  "source_snapshot": {
+    "bytes": 171643,
+    "sha256": "ad7b84d02d8da81596972115907a80a77bf4af16617102089ab9036ec1fdf5de"
+  }
+}

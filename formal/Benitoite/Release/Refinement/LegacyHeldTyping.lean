@@ -94,7 +94,7 @@ private theorem held_induct {K P0 B0 B j} (wf : K.WF P0) (tables : LegacyTables 
   case V_CheckedRequest => simpa only [embedHeldVal,embedVal,closeVal,legacyTypeCtx,embedTParamsWithKinds,List.zip_nil_left,List.map_nil] using embedHasTypeVQ K [] wf tables parent []
   case V_Fun =>
     obtain ⟨fd,hfd,ha,args,rows⟩ := reg.2.1
-    simpa only [embedHeldVal,embedVal,closeVal,close_types args,close_rows rows,
+    simpa only [embedHeldVal,embedVal,closeVal_fnRef,close_types args,close_rows rows,
       legacyTypeCtx,embedTParamsWithKinds,List.zip_nil_left,List.map_nil]
       using embedHasTypeVQ K [] wf tables parent []
   case V_Prim =>

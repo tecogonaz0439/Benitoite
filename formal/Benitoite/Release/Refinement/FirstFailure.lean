@@ -29,7 +29,7 @@ def FirstFailureHandoff : Prop :=
       events = preEvents ++ event.toList ++ suffix ∧
       ∀ (focus : Closure) (atK : Cont) (atStore : Store) (b : PrimName)
         (ts : List Ty) (es : List Eff) (ranges : List RangeExpr) (ws : List Val) (sg : PrimSig),
-        before = .run focus atK atStore → focus.view = .app (.prim b ts es ranges) ws →
+        before = .run focus atK atStore → focus.view = .app (.prim b ts es (List.map RangeIx.fixed ranges)) ws →
         B.sig b = some sg → sg.kind = .pure →
         event = none ∧ ∃ r, firstErrors = [r] ∧ B.delta b (Ty.normTys ts) (es.map Eff.norm) ranges ws = some (.err r)
 
@@ -60,10 +60,14 @@ theorem first_error {P B σ s target events}
 /-- pure の呼出しから error に入る一歩は、同じ実引数の δ の拒否である。 -/
 theorem pure_failure {P B σ q k μ event errors firstK firstStore b ts es ranges ws sg}
     (step : Step P B σ (.run q k μ) event (.error errors firstK firstStore))
-    (view : q.view = .app (.prim b ts es ranges) ws)
+    (view : q.view = .app (.prim b ts es (List.map RangeIx.fixed ranges)) ws)
     (signature : B.sig b = some sg) (pure : sg.kind = .pure) :
     event = none ∧ ∃ r, errors = [r] ∧ B.delta b (Ty.normTys ts) (es.map Eff.norm) ranges ws = some (.err r) := by
-  cases step <;> simp_all
+  have map_inj : Function.Injective (List.map RangeIx.fixed) :=
+    fun xs ys he => by
+      have hc := congrArg closedRanges he
+      simpa only [closedRanges_fixed, Option.some.injEq] using hc
+  cases step <;> simp_all [map_inj.eq_iff]
 
 /-- 最初の error の位置で pure の δ を観測する。算術との一致は前提に含めない。 -/
 theorem first_failure_handoff : FirstFailureHandoff := by

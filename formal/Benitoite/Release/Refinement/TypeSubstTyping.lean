@@ -77,15 +77,16 @@ theorem case_V_Closure :
 
 theorem case_V_Fun :
 ∀ {Ψ : StoreTy} {Q : Benitoite.Release.NoFailCtx} {C : TypeCtx} {Γ : Ctx} {Φ : List Pred}
-  {f : Benitoite.Release.FunName} {d : Def} {ts : List Ty} {es : List Eff},
+  {f : Benitoite.Release.FunName} {d : Def} {ts : List Ty} {es : List Eff} {rs : List RangeExpr},
   P.defs f = some d →
     NamesWF d.names d.params →
+      Def.RangeAdmissible d rs →
       Admissible B C (List.length Γ) (TypeCtx.constraints d.tparams) d.neffs (Qsig d.params d.ret d.eff) Q ts es d.eff →
-        SignatureInstance P C Γ d.tel (TypeCtx.kinds d.tparams) ts es →
-          VGoal P B Ψ Q C Γ Φ (Val.fnRef f ts es) (Ty.dependentFn (instantiatedTel d.tel ts es)) := by
-  intro Ψ Q C Γ Φ f d ts es hd hn ha hs C0 C1 us fs Q' hC hf hi hc hq
+        SignatureInstance P C Γ (d.instTel rs) (TypeCtx.kinds d.tparams) ts es →
+          VGoal P B Ψ Q C Γ Φ (Val.fnRef f ts es (List.map RangeIx.fixed rs)) (Ty.dependentFn (instantiatedTel (d.instTel rs) ts es)) := by
+  intro Ψ Q C Γ Φ f d ts es rs hd hn hr ha hs C0 C1 us fs Q' hC hf hi hc hq
   subst C
-  exact gate_fun_case hf hi hc hq (.V_Fun hd hn ha hs)
+  exact gate_fun_case_ranges hf hi hc hq (.V_Fun hd hn hr ha hs)
 
 theorem case_V_Prim :
 ∀ {Ψ : StoreTy} {Q : Benitoite.Release.NoFailCtx} {C : TypeCtx} {Γ : Ctx} {Φ : List Pred}
@@ -95,7 +96,7 @@ theorem case_V_Prim :
       NamesWF s.names s.params →
         PrimitiveAdmissible C (List.length Γ) s Q ts es →
           SignatureInstance P C Γ (Tel.instR rs s.tel) (TypeCtx.kinds s.tparams) ts es →
-            VGoal P B Ψ Q C Γ Φ (Val.prim b ts es rs) (Ty.dependentFn (instantiatedTel (Tel.instR rs s.tel) ts es)) := by
+            VGoal P B Ψ Q C Γ Φ (Val.prim b ts es (List.map RangeIx.fixed rs)) (Ty.dependentFn (instantiatedTel (Tel.instR rs s.tel) ts es)) := by
   intro Ψ Q C Γ Φ b s ts es rs hl hr hn ha hsi C0 C1 us fs Q' hC hf hi hc hq
   subst C
   have rows := Tel.rowsIn_instR ha.sourceTelRows rs
@@ -600,13 +601,14 @@ theorem case_C_Match :
   HasTypeVQ P B Ψ Q C Γ Φ v a →
     (∀ (t : Benitoite.Release.Refinement.Term), obs = some t → v.toTerm? = some t ∧ ∃ s, Term.HasSort Γ t s) →
       HasTypeArmsQ P B Ψ Q C Γ Φ R obs arms a b ε Δ →
+        Ty.Declared P C Γ a →
         Exhaustive P a (unguardedPats arms) →
           VGoal P B Ψ Q C Γ Φ v a →
             ArmsGoal P B Ψ Q C Γ Φ R obs arms a b ε Δ → CGoal P B Ψ Q C Γ Φ R (Comp.match v arms) b ε Δ := by
-  intro Ψ Q C Γ Φ Δ R v obs arms a b e hv ho ha he iv ia C0 C1 us fs Q' hC hf hi hc hq
+  intro Ψ Q C Γ Φ Δ R v obs arms a b e hv ho ha hdecl he iv ia C0 C1 us fs Q' hC hf hi hc hq
   subst C
   refine .C_Match (iv rfl hf hi (hc.binders 0 0 (fun _ _ _ _ h => h.1)) hq) ?_
-    (ia rfl hf hi (hc.binders 0 0 (fun _ _ _ _ h => h.2)) hq) ?_
+    (ia rfl hf hi (hc.binders 0 0 (fun _ _ _ _ h => h.2)) hq) (hdecl.typeSubst hf hi) ?_
   · intro t ht
     obtain ⟨hv,s,hs⟩ := ho t ht
     exact ⟨by simpa only [Val.toTerm_typeSubst] using hv,s,
@@ -1290,8 +1292,8 @@ VGoal P B z0 z1 z2 z3 z4 z5 z6 := by
       exact @case_V_DependentLam P B _ _ _ _ _ _ _ x7 x8 (@deriveBody _ _ _ _ _ _ _ _ _ (x8))
     | @HasTypeVQ.V_Closure _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 =>
       exact @case_V_Closure P B _ _ _ _ _ _ _ _ x8 x9 x10 (@deriveClosure _ _ _ _ _ (x10))
-    | @HasTypeVQ.V_Fun _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 =>
-      exact @case_V_Fun P B _ _ _ _ _ _ _ _ _ x9 x10 x11 x12
+    | @HasTypeVQ.V_Fun _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 =>
+      exact @case_V_Fun P B _ _ _ _ _ _ _ _ _ _ x10 x11 x12 x13 x14
     | @HasTypeVQ.V_Prim _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 =>
       exact @case_V_Prim P B _ _ _ _ _ _ _ _ _ _ x10 x11 x12 x13 x14
     | @HasTypeVQ.V_Op _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 =>
@@ -1375,8 +1377,8 @@ CGoal P B z0 z1 z2 z3 z4 z5 z6 z7 z8 z9 := by
       exact @case_C_DependentApp P B _ _ _ _ _ _ _ _ _ _ _ _ x12 x13 (@deriveV _ _ _ _ _ _ _ _ _ (x12)) (@deriveArgs _ _ _ _ _ _ _ _ _ _ _ (x13))
     | @HasTypeCQ.C_If _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 =>
       exact @case_C_If P B _ _ _ _ _ _ _ _ _ _ _ _ _ x13 x14 x15 x16 (@deriveV _ _ _ _ _ _ _ _ _ (x13)) (@deriveC _ _ _ _ _ _ _ _ _ _ _ _ (x15)) (@deriveC _ _ _ _ _ _ _ _ _ _ _ _ (x16))
-    | @HasTypeCQ.C_Match _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 =>
-      exact @case_C_Match P B _ _ _ _ _ _ _ _ _ _ _ _ _ x13 x14 x15 x16 (@deriveV _ _ _ _ _ _ _ _ _ (x13)) (@deriveArms _ _ _ _ _ _ _ _ _ _ _ _ _ _ (x15))
+    | @HasTypeCQ.C_Match _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 =>
+      exact @case_C_Match P B _ _ _ _ _ _ _ _ _ _ _ _ _ x13 x14 x15 x16 x17 (@deriveV _ _ _ _ _ _ _ _ _ (x13)) (@deriveArms _ _ _ _ _ _ _ _ _ _ _ _ _ _ (x15))
     | @HasTypeCQ.C_Lazy _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 =>
       exact @case_C_Lazy P B _ _ _ _ _ _ _ _ _ x9 x10 (@deriveC _ _ _ _ _ _ _ _ _ _ _ _ (x9))
     | @HasTypeCQ.C_Escape _ _ x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 =>

@@ -30,9 +30,10 @@ mutual
     | .var i => i < nv
     | .const _ | .loc _ | .bytesV _ | .checked _ | .pathBases _ | .scopePattern _ | .atError _ => True
     | .checkedAt _ _ _ _ => True
-    | .fnRef _ ts es => (∀ a ∈ ts, a.WF 0 nt nv) ∧ (∀ e ∈ es, Eff.WF 0 nt nv e ∧ e.Canonical)
+    | .fnRef _ ts es rs => (∀ a ∈ ts, a.WF 0 nt nv) ∧
+        (∀ e ∈ es, Eff.WF 0 nt nv e ∧ e.Canonical) ∧ (∀ ix ∈ rs, ix.WF 0 ∧ ∀ r, ix = .fixed r → r.WF)
     | .prim _ ts es rs => (∀ a ∈ ts, a.WF 0 nt nv) ∧
-        (∀ e ∈ es, Eff.WF 0 nt nv e ∧ e.Canonical) ∧ (∀ r ∈ rs, r.WF)
+        (∀ e ∈ es, Eff.WF 0 nt nv e ∧ e.Canonical) ∧ (∀ ix ∈ rs, ix.WF 0 ∧ ∀ r, ix = .fixed r → r.WF)
     | .externalRef _ ts | .externalHandle _ ts => ∀ a ∈ ts, a.WF 0 nt nv
     | .lam _ ps body => (∀ a ∈ ps, a.WF 0 nt nv) ∧ Comp.ClosedNoLamNames nt (nv + ps.length) body
     | .dependentLam t body => Tel.WF 0 nt nv t ∧ Comp.ClosedNoLamNames nt (nv + telBinders t) body
@@ -268,7 +269,7 @@ mutual
       intro ρ nt nv hc
       exact ⟨hv.closed_noLamNames_resolved _ _ _ hc.1,hm.closed_noLamNames_resolved _ _ _ hc.2.1,
         hn.closed_noLamNames_resolved _ _ _ hc.2.2⟩
-    | .C_Match hv _ harms _ =>
+    | .C_Match hv _ harms hdecl _ =>
       intro ρ nt nv hc
       exact ⟨hv.closed_noLamNames_resolved _ _ _ hc.1,harms.closed_noLamNames_resolved _ _ _ hc.2⟩
     | .C_Lazy hm _ =>

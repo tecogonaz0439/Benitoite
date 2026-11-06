@@ -200,7 +200,7 @@ theorem guard_arms_typing (P : Program) (B : Builtins) (Ψ : StoreTy) :
 /-- wildcard の後続腕を保持した match 本体も同じ結果型で検査する。 -/
 theorem guard_match_typing (P : Program) (B : Builtins) (Ψ : StoreTy) :
     HasTypeCQ P B Ψ Qempty [] booleanContext [] none guardMatch falseType Eff.empty [] := by
-  refine .C_Match (.V_Const trivial) (obs := none) (by intro t ht; cases ht) (guard_arms_typing P B Ψ) ?_
+  refine .C_Match (.V_Const trivial) (obs := none) (by intro t ht; cases ht) (guard_arms_typing P B Ψ) trivial ?_
   intro v _
   exact ⟨.wild,by simp [guardArms,unguardedPats,wildAlts],by simp [matchVal]⟩
 

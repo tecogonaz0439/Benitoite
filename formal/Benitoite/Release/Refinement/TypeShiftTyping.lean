@@ -38,9 +38,9 @@ mutual
     | .V_List hv hw hs hd =>
       exact .V_List (HasTypeEachQ.shift_types hv hA hstore hC hn hm)
         (by simpa only [hn,hm.length] using Ty.wf_shiftTypes hw k c) (Ty.sorted_shiftTypes hs hm) (hd.shiftTypes hm hC)
-    | .V_Fun hd hnames ha hi =>
+    | .V_Fun hd hnames hr ha hi =>
       have hc := hi.kinds.1
-      have hh := HasTypeVQ.V_Fun (Ψ := store) (Q := Q) (Φ := Φ) hd hnames (hm.admissible hn hA hC hi.types hi.rows ha) ((hm.signature hn hi hC))
+      have hh := HasTypeVQ.V_Fun (Ψ := store) (Q := Q) (Φ := Φ) hd hnames hr (hm.admissible hn hA hC hi.types hi.rows ha) ((hm.signature hn hi hC))
       simpa only [Val.shiftEAt,shiftTypes,hi.shiftTel k c] using hh
     | .V_Prim hb hr hnames ha hi =>
       have hc := hi.kinds.1
@@ -172,9 +172,9 @@ mutual
       exact .C_If (HasTypeVQ.shift_types hv hA hstore hC hn hm)
         (by simpa only [Val.toTerm_shiftEAt] using ht)
         (HasTypeCQ.shift_types hb hA hstore hC hn hm) (HasTypeCQ.shift_types he hA hstore hC hn hm)
-    | .C_Match hv ho ha hx =>
+    | .C_Match hv ho ha hdecl hx =>
       refine .C_Match (HasTypeVQ.shift_types hv hA hstore hC hn hm) ?_
-        (HasTypeArmsQ.shift_types ha hA hstore hC hn hm) (by rw [unguardedPats_shiftEAt]; exact hx.shift_types k c)
+        (HasTypeArmsQ.shift_types ha hA hstore hC hn hm) (hdecl.shiftTypes hm hC) (by rw [unguardedPats_shiftEAt]; exact hx.shift_types k c)
       intro t ht
       obtain ⟨hv,s,hs⟩ := ho t ht
       exact ⟨by simpa only [Val.toTerm_shiftEAt] using hv,s,(by simpa only [termBind_id] using Term.hasSort_termBind hs _ hm.images hm.references)⟩

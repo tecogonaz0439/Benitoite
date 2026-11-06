@@ -1,0 +1,64 @@
+{
+  "restored_sources": 1108,
+  "production_modules_added": [],
+  "production_declarations_added": 0,
+  "production_readers_adopted": 0,
+  "candidate_modules": 81,
+  "candidate_existing_modules": 76,
+  "candidate_new_modules": 5,
+  "candidate_patch_bytes": 241118,
+  "saved_signature": {
+    "bytes": 12190,
+    "sha256": "bf5f23603a1f5cfed1fbe9645037a56b36304129c11095f22ac910285be2fe19"
+  },
+  "audits": {
+    "canonical-resume-trial": {
+      "targets": 555,
+      "private_targets": 12,
+      "rounds": 2,
+      "axiom_sets": {
+        "none": 429,
+        "Classical.choice + Quot.sound + propext": 69,
+        "Quot.sound + propext": 1,
+        "propext": 56
+      },
+      "allowed_axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ],
+      "unapproved_axioms": 0,
+      "target_list": {
+        "bytes": 37311,
+        "sha256": "4408322ec569531a482055ef534bf092e8de113f9138c4301ced760361cea043"
+      }
+    },
+    "axioms": {
+      "targets": 89315,
+      "private_targets": 23678,
+      "rounds": 2,
+      "axiom_sets": {
+        "none": 42395,
+        "Classical.choice": 2,
+        "Classical.choice + Quot.sound + propext": 22646,
+        "Classical.choice + propext": 2,
+        "Quot.sound": 9,
+        "Quot.sound + propext": 3954,
+        "propext": 20307
+      },
+      "allowed_axioms": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ],
+      "unapproved_axioms": 0,
+      "target_list": {
+        "bytes": 5966138,
+        "sha256": "8682c03bfcab935d0a70708f04a9102797087127342d18318a75f6bf46f7b77c"
+      },
+      "modules": 1092
+    }
+  },
+  "seconds": 0.832,
+  "verification": "成功。開始状態の復元と停止の証拠の照合であり、K.2〜K.5の完了ではない"
+}

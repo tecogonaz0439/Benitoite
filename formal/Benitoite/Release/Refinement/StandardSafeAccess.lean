@@ -68,7 +68,6 @@ private theorem front_tel {U : Ty} (wf : U.WF 0 0 0) :
   Tel.bind,Tel.rawBind,Tel.norm,Ty.rawBind,Ty.norm,Ty.normTys,rawBindTys,
   typeEnvAt,SubstEnv.up,Eff.rawBind,Eff.norm,Eff.empty,rowFails,substAtoms_nil,instAtoms_nil,
   Ty.shiftV_of_wf_zero wf]
- funext a; simp [mapRangeAtoms]
 
 private theorem each_elements {P B Ψ a xs} (h : ∀ x ∈ xs, HasTypeVQ P B Ψ Qempty [] [] [] x a) :
  HasTypeEachQ P B Ψ Qempty [] [] [] xs a := by

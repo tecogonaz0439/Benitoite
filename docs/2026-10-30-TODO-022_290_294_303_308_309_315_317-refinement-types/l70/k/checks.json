@@ -1,0 +1,132 @@
+{
+  "base": "dcaa396bad7a60d4da9b99d07ad9b75c0f328b07",
+  "source_snapshot": {
+    "bytes": 171643,
+    "sha256": "ad7b84d02d8da81596972115907a80a77bf4af16617102089ab9036ec1fdf5de"
+  },
+  "source_count": 1108,
+  "production_modules_added": [],
+  "production_declarations_added": 0,
+  "checks": {
+    "match-trial": {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l70/k/match-trial.lean"
+      ],
+      "cwd": "formal",
+      "start": "2026-11-06T11:01:57+0900",
+      "end": "2026-11-06T11:01:57+0900",
+      "seconds": 0.539,
+      "exit": 0,
+      "raw": {
+        "bytes": 118,
+        "sha256": "b437cab8d865230929ed46a4e4bfe3c37622f7f70602035f7f9a5d5f88dbfcea"
+      },
+      "maximum_rss": "未取得（計画上の非採取）",
+      "input": {
+        "bytes": 668,
+        "sha256": "31dfc5251e7ef227f3bb8d3b43a299818bd773cf435defdd9f698dd3df2cc227"
+      }
+    },
+    "effect-trial": {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l70/k/effect-trial.lean"
+      ],
+      "cwd": "formal",
+      "start": "2026-11-06T11:01:57+0900",
+      "end": "2026-11-06T11:01:58+0900",
+      "seconds": 1.014,
+      "exit": 0,
+      "raw": {
+        "bytes": 505,
+        "sha256": "3b920c875a23e5632ece7c3815ff60b28d65bcec89e0f025ad35e3cbd89b632f"
+      },
+      "maximum_rss": "未取得（計画上の非採取）",
+      "input": {
+        "bytes": 2388,
+        "sha256": "06ea5d18f94827e04402174aefc3eb44f4d16d5f5face1adbee9df9ac14886da"
+      }
+    },
+    "range-trial": {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l70/k/range-trial.lean"
+      ],
+      "cwd": "formal",
+      "start": "2026-11-06T11:01:58+0900",
+      "end": "2026-11-06T11:01:59+0900",
+      "seconds": 0.708,
+      "exit": 0,
+      "raw": {
+        "bytes": 612,
+        "sha256": "f9a00c7cd39af078ef9bbff0884a7f80eebcd204d72a09ddff5c2dbc1652b72f"
+      },
+      "maximum_rss": "未取得（計画上の非採取）",
+      "input": {
+        "bytes": 2107,
+        "sha256": "11bd8c51b5dbc8d1bd715597a20bc38a1d1a2bd70035917a9dc65eff7681f065"
+      }
+    },
+    "build": {
+      "command": [
+        "/usr/bin/lockf",
+        "-t",
+        "3600",
+        "<lock>",
+        "lake",
+        "build"
+      ],
+      "cwd": "formal",
+      "start": "2026-11-06T11:01:59+0900",
+      "end": "2026-11-06T11:01:59+0900",
+      "seconds": 0.365,
+      "exit": 0,
+      "raw": {
+        "bytes": 45164,
+        "sha256": "44b00b3ffa8520051529b7e04f0db7a3a605e3b2ed45e81aeb7bf49e17cf6381"
+      },
+      "maximum_rss": "未取得（計画上の非採取）"
+    },
+    "axioms": {
+      "command": [
+        "/usr/bin/lockf",
+        "-t",
+        "3600",
+        "<lock>",
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l70/k/axioms.lean"
+      ],
+      "cwd": "formal",
+      "start": "2026-11-06T11:01:59+0900",
+      "end": "2026-11-06T11:02:49+0900",
+      "seconds": 49.73,
+      "exit": 0,
+      "raw": {
+        "bytes": 16711471,
+        "sha256": "6340cb763ef8a8fa99640ead34b7235c014c2e0f087c99c3f86d538fd1f682ad"
+      },
+      "maximum_rss": "未取得（計画上の非採取）",
+      "input": {
+        "bytes": 1825,
+        "sha256": "74a04d7cb1290d7dcd5512f550e4c5a1210b2f9f3d39bb1396ef8c55aea98fe3"
+      }
+    }
+  }
+}
