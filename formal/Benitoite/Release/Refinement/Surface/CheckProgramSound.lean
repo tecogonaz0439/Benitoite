@@ -39,7 +39,7 @@ theorem checkProgram_sound {q : Check.Input} {p : Program}
   · intro n d hget
     obtain ⟨path, hp⟩ := checkNamed_sound hdefs n (hn.defs n d hget) d hget
     exact checkDef_sound ((hq.withView _).withProofSteps _)
-      ⟨(hd n d hget).signature, (hd n d hget).body⟩ hp
+      ⟨(hd n d hget).signature, (hd n d hget).body⟩ (fun _ => hn.ctorNames) hp
   · apply effectsCheck_sound (ho := hn.operations) (h := he)
     intro l os hget
     have heffects : q.D.effects = p.effects := congrArg Refinement.Program.effects hext.2.2.1

@@ -23,9 +23,9 @@ private def builtins : Builtins :=
 
 private def input : Check.Input where
   D := declarations
-  B := builtins
+  builtinSource := .custom builtins
   opPrim := fun _ _ => none
-  formation := ⟨[], fun _ => []⟩
+  formation := ⟨[], fun _ => [], []⟩
   proofSteps := 1
   methods := ["run"]
   supers := ["Root"]
@@ -151,7 +151,7 @@ theorem implementation_accept_reject :
 theorem definitions_typed :
     definition.WellTyped input.D input.B input.opPrim ∧
     implementation.WellTyped input.D input.B input.opPrim ∧ ContractsMatch input "implementation" implementation :=
-  ⟨checkDef_sound input_sound definition_support definition_accept_reject.1,
+  ⟨checkDef_no_ranges_sound input_sound definition_support rfl definition_accept_reject.1,
     checkImpl_sound input_sound implementation_support implementation_names implementation_accept_reject.1,
     checkImpl_contracts implementation_names implementation_accept_reject.1⟩
 

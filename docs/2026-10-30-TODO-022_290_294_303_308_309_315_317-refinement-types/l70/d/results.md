@@ -311,3 +311,83 @@ _private.Benitoite.Release.Refinement.Surface.Aliases.0.Benitoite.Release.Refine
 - 終了状態 0（selected checks passed。spec_examples は 7 件成功）。外側の時間 965.78秒（11:50〜12:06）、最大常駐量 4,236,165,120 バイト。
 - 生の記録は `<tmp>` に置いた（6,624 バイト、SHA-256 `015fc69a6a6cb064293f575de776222468cae415fd6276769b566bc5da07a6ab`）。
 - 計画からのずれ: なし。検査の後に変えたのは RV-L70.d.md の追記と本節だけである（Lean と設計書は変えていない）。
+
+## 再開5（範囲パラメータを持つ利用者の関数）
+
+許容の保存の反例を確認して停止した。[停止の根拠](resume5-obstruction.md)と[詳細・時刻・検査](resume5-7-details.md#再開5範囲パラメータを持つ利用者の関数)を参照。
+
+## 再開6（範囲パラメータを持つ利用者の関数、案 A）
+
+署名自身の範囲の有効範囲が必要な反例を確認して停止した。[停止の根拠](resume6-obstruction.md)と[詳細・時刻・検査](resume5-7-details.md#再開6範囲パラメータを持つ利用者の関数案-a)を参照。
+
+## 再開7（範囲パラメータを持つ利用者の関数）
+
+三つの形の規則と全具体化の性質1を実装した。既定ビルド・4,590宣言の公理監査・照合は終了0。[詳細・時刻・検査](resume5-7-details.md#再開7範囲パラメータを持つ利用者の関数)を参照。独立レビュー RV-L70.d2 は重1・中2・軽2を指摘した。処置は[結合の記録](../d-int/results.md)に記す。
+
+### 葉の条件と合成表
+
+表中の新しい条件は、開いた表層の使用箇所の葉に置いた。表全体への独立した信頼条件にしていない。
+
+| 葉の条件 | 一度の有限な検査・供給元 | 全具体化の葉又は形成への接続 |
+|---|---|---|
+| `Primitive` | 開いた型・行の形成と個数、元の正規化した型引数の許容、行・Q・NoFailを `OpenLeafFormation.PrimitiveCheck` にまとめる | `RangeStandard.primitive_of_check` が `admits_instR` を読み、全欄を供給。任意の表の範囲閉の型引数には `OpenLeafFormation.primitive_of_closed` |
+| `Satisfies` | 元の開いた型の正規形に `SatAll` を一度照合する | `RangeStandard.satisfies_of_check` → `sat_range_norm` → `sat_instR`。範囲閉の型引数には `OpenLeafFormation.satisfies_of_closed` |
+| `Admits` | 開いた深さの型・行、元の `SatAll`、個数・行・Q・NoFailを `OpenLeafFormation.AdmitsCheck` にまとめる | `RangeStandard.admits_of_check`。範囲閉の型引数には `OpenLeafFormation.admits_of_closed` |
+| `Signature` | 元の依存列の開いた深さでの `WF`、型・行と具体化結果の `AnnotationR`、kindを `OpenLeafFormation.SignatureCheck` にまとめる | `OpenLeafFormation.SignatureCheck.sound`。具体化と型・行の代入の交換、注釈の形成保存を使う |
+| `MethodRows` | `OpenLeafFormation.MethodRowsCheck` が開いた行の形成と個数・宣言の行・Q・NoFailを読む | `OpenLeafFormation.MethodRowsCheck.sound` |
+| `ExternalAdmits` | 当該外部署名の `tparams=[]` と元の `ExternalCallAdmissible` | `OpenLeafFormation.external_of_check`。単相の外部署名では型引数列が空なので任意の表で成立する |
+| `RangesAdmit` | 標準表では種類列との `RangeArguments` と `RangeStandard.RangeCheck`（全Top・一引数の対象操作・widenの被覆又は外側Top） | `RangeStandard.ranges_of_check`。任意の表の固定範囲には `OpenLeafFormation.ranges_of_fixed`。`RangeIx.Covers.inst` を使い、未束縛の変数をTopに替えて受理しない |
+| `Annotations`・`RowAnnotations` | 型と行の `AnnotationR`。群 E の `CheckOpenFormation` が深さ付きの `wfTy`・sort・宣言・kindを検査する | `OpenSurface.annotation` と `OpenLeafFormation.SignatureCheck.sound` が、同じ具体化の注釈へ移す |
+| 範囲引数の種類と上限 `RangeArguments` | `.rvar` の位置と種類、固定範囲の整形式・正準形・種類を要素ごとに照合する | `RangeArgument.close`・`OpenSurface.ranges_fit_close` |
+| 組込みの `PrimSig.Scoped` | 使用する署名の深さ・型と行の形成・kind・宣言の検査 | 標準表は `StandardModel.sig_scoped`。範囲の部分は `RangeStandard.signature_ranges` |
+| 関数の依存列の宣言した深さでの `RangesScoped`・`WF` | 当該関数の署名の有限な形成 | 標準表は `RangeStandard.function_formation` |
+| 操作・メソッドの依存列の範囲深さ0の `RangesScoped`・`WF` | 当該署名の有限な形成。効果の原子の範囲は `OpenRangeFormationCheck.tel` で支持を走査する | 標準表の操作・型クラス・実装は `RangeStandard.declarations_empty`。利用者の宣言は当該署名を検査する |
+| 辞書の型列と実装の対象型、構成子の欄の形成 | 型の構造の検査。必要な範囲閉性は `OpenRangeFormationCheck.ty`、型列は `tys`、効果は `eff` で検査する | 各 `_sound` が `RangesScoped` を供給する。標準表の実装は空で、構成子は `StandardModel.cons_scoped` |
+| 照合・パターン束縛の `PatternRangesClosed` | 全構成子の有限一覧について欄の範囲閉性を検査し、一覧の完全性で全lookupへ戻す | 標準表は `RangeStandard.pattern_ranges_closed`。群 E の本番の検査は、完全性とBool成功から葉を供給する |
+| 節の署名の範囲閉性 `ClauseSyntax` | 各引数型と結果型を範囲深さ0で検査する。正規形を要求しない | 標準の組込みの節は `RangeStandard.clause_formation`・`OpenStandardClauses.standard_clauseSig_prim`。利用者の操作も同じ有限な閉性を検査する |
+| 当該外部署名の依存列の `RangesScoped 0` | `OpenRangeFormationCheck.tel` による当該署名の検査 | 標準の固定表に外部宣言がないことは `RangeStandard.external_signature_formation`。利用者の外部宣言を持つプログラム全体は除かない |
+
+全名の接頭辞は `Benitoite.Release.Refinement.Surface.`（核の補題 `StandardModel`・`RangeIx.Covers.inst` を除く）である。群 E の具体の接点と最終の検査の結果は[結合の記録](../d-int/results.md)を参照する。元の保存補題を例だけから読む形にはせず、上表の標準表の導入補題が本番で合成する。
+
+全377組込みのlookupについて、許容と制約の保存を証明した。この二条件によって渡せなくなる標準の組込み名・型引数の形は0件である。標準操作の節についても、範囲閉性を満たさない署名はない。外部関数の葉は、当該外部署名に未宣言の範囲変数が残る形を受けない。外部宣言を持つP全体を除く条件は置いていない。この外部宣言の条件と、標準の固定表の充足は区別して受け入れ時に確認する。
+
+`OpenPatterns` はパターンの型付け・`Exhaustive`・`ViewExhaustive` の範囲写像と具体化の保存を証明する。具体化で型を満たす値の形が増える場合は、同じ値を戻すのではなく、元の型の別の値へ反映し、述語の確定値とパターンの成功を保つ。将来の拡張では、範囲を持つ未知の欄だけを同じ欄数の任意の値を含む関数型へ写し、既存の宣言と公開の診断の宣言を保つ。網羅性を全具体化で仮定し直す条件は加えていない。
+
+### 言明の差
+
+266件の台帳と、結合・再開5・6を含む開始時の全308言明を比較した。既存306言明は同じで、変更は次の2件だけである。いずれも新しい種類列を読むことで元の言明が一般には偽になり、列の対応又は空の列の宣言を加える差である。
+
+| 入口 | 元の署名 | 新しい署名・強いられる理由 | 元の形に戻る場合 |
+|---|---|---|---|
+| `desugarProgram_ranges` | 脱糖した関数のlookupから `d.rkinds = []` | 表層の対応するfdのlookupも受け、`d.rkinds = fd.rangeParams`。非空の列を核へ写すため、常に空という結論は偽 | `desugarProgram_ranges_no_ranges` が、表層の全関数の種類列が空のとき、元のkernel lookupから空の列を返す |
+| `Declarations.realizes_no_ranges` | 核の全関数の種類列が空なら、Realizesと元の四条件が同値 | 表層の全関数の種類列が空という宣言hsも受ける。対応の定義が `rkinds = fd.rangeParams` なので、核だけが空では対応を導けない | 表層と核の種類列がともに空のとき元の四条件との同値を返す |
+| `desugar_typed`・`Def.WellTyped.desugar`・通常の `BodyTy.desugar` | 元の型保存の言明 | 同じ。定義の `WellTyped` が宣言の範囲文脈を読む変更は、前記の表に明記した | `Def.wellTyped_no_ranges` と `bodyTyR_nil` が元の名前・kind・注釈・本体の形を返す |
+| `HasTypeQ.desugar`・列・腕・節・ブロック、`CallHeadTy.app_value`・`glue` | 元の表層の性質1の言明 | 同じ。新しい開いた判断の保存は `OpenSurface` の別の入口 | 元の入口をそのまま使える |
+| `AliasDecl.expand_annotation` など別名の旧入口 | 閉じた範囲の形成と展開の言明 | 同じ。開いた範囲の入口を別に追加 | 元の入口をそのまま使える |
+| `ScopedProof` の19言明と `BodyTy.scoped` | 範囲深さ0の元の言明 | **すべて同じ**。一般化した証明は `_ranges` 名へ分け、旧名は元の署名の系として残した | `NoRangeScopedExamples` の19例と `Examples` の本体の例が旧名へ直接適用する |
+
+範囲のない部分も含む、定義・構文・規則の差は次のとおりである。署名の308件の照合とは分けて記す。
+
+| 定義・規則 | 元の形 | 現在の形と理由 | 範囲のない場合 |
+|---|---|---|---|
+| `Expr.primName` | 範囲欄は `List Scope.Domain.Range` | `List RangeIx`。開いた添字と `RangeExpr` の固定範囲を保持する | 旧列 `rs` は `rs.map (RangeIx.fixed ∘ RangeExpr.absolute)` |
+| `Expr.funName` | 範囲欄なし | 省略可能な `List RangeIx := []` を末尾に持つ | 空の列で元の呼出し形 |
+| `Expr.funDicts` | 範囲欄なし | 辞書・実名・引数型の後に同じ範囲欄を持つ | 同上 |
+| 通常の `CallHeadTy.prim` | 絶対範囲の列を具体化 | 閉じた `RangeExpr` 列を `RangeIx.fixed` で包み、`B.RangeAdmissible` と `Tel.instR` を読む。`based`・`secrets` も受ける | 絶対範囲を埋め込めば元の前提・結論を得る |
+| 通常の `CallHeadTy.fn` | 具体化前の `fd.tel` で署名を照合 | `RangesFit rs fd.rangeParams`、`rangeTel rs fd.tel`、ソースのfixed列を要求する | `fd.rangeParams=[]` なら個数条件から `rs=[]`、`rangeTel [] fd.tel=fd.tel` |
+| 通常の `CallHeadTy.fnDicts` | 同上、辞書を持つ | 同じ範囲の適合と具体化を、辞書の本数・実名・型の条件と併用する | 同上 |
+| `CallHeadTy` を読む通常の `E_Fun`・`E_FunDicts` と直接呼出し・pipe・部分適用 | 関数に範囲欄なし | 同じ頭を通じて範囲欄を保持する | 範囲欄が空のとき元の頭を読む |
+| `directCallee`・`desugarExpr` | 関数の範囲引数を持たない | 関数の範囲欄を核の `Val.fnRef` へ渡す。組込みの範囲欄は `RangeIx` のまま渡す | 空列又は旧絶対範囲の埋込みで元の値 |
+| `desugarDef` | 核の `rkinds=[]` | 表層の `d.rangeParams` を保持する | 空列なら元の定義 |
+| `Def.WellTyped` | 通常の `Annotation` と `BodyTy` | 種類列の下の `AnnotationR` と `BodyTyR` | `Def.wellTyped_no_ranges` |
+| `Program.WellFormed.defs` | `SignatureScoped` と深さ0の本体の `Scoped` | `SignatureScopedR` と `nr=d.rangeParams.length` の本体 | `Program.wellFormed_no_ranges` が他の四欄も含めた元の五条件との同値を返す |
+| `Declarations.Realizes.ranges` | 核の種類列が空 | 対応する表層の `fd.rangeParams` と一致 | `Declarations.realizes_no_ranges` |
+| `Expr/Block/Clauses/DictEv` 等の `Scoped` | 範囲深さ0 | 省略可能な範囲深さ `nr:=0` を持つ | 引数を省けば元の意味。既存のスコープの定理の署名は保つ |
+| 通常の `HasClausesQ.cons` | 発行専用の節も受ける | `ClauseAllowed` を要求し、選んだ組込みの一覧の発行専用の節を断る | 効かない形の拒否という承認済みの差。利用者の操作を断らない |
+| 開いた `HasClausesQ.cons` | 各引数型と結果型の範囲閉性と正規性を要求 | 範囲閉性だけを要求し、正規形の等しい文脈を移送する | `HasClausesQ.closed` が空の種類列で通常の全節列を受ける |
+
+
+一般化19件は `DictEv.Scoped.toVal`・`DictEv.ScopedList.toValList`・`directCallee_scoped`・`recordUpdateValues_scoped`・`exitCall_scoped`・`recordUpdateValues_scoped'`・`spreadFinish_scoped`・`JoinTy.scoped`・`JoinPartsTy.scoped`・`InterpTy.scoped`・`holeTypes_scoped`・`argVals_scoped`・`fixedShift_scoped`・`HasTypeQ.scoped`・`HasFixedQ.scoped`・`HasTypesQ.scoped`・`HasArmsQ.scoped`・`HasClausesQ.scoped`・`HasBlockQ.scoped` である。これらの旧headerは開始時のSHA-256と一致する。`ScopedList nt ne nv ds` の旧呼出し形も、追加のnrをdsの後の省略可能引数に置いて維持した。
+
+`resume7-signature-differences.json` は2件を一行ずつ元・新の指紋で記録する。`resume7-signatures.json` は開始時の308件、266件の元の台帳は結合の記録を読む。前段の固定した核の署名と主な十言明には差を作っていない。
+

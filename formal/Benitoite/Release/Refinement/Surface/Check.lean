@@ -10,6 +10,8 @@ import Benitoite.Release.Refinement.Surface.CheckTry
 ソース位置ごとの有限の案内を、宣言・型注釈・論理の証明書と照合する。部分型の成功は証明書の独立の検査による。
 案内が無い場合と証明できない場合は成功と扱わない。各再帰は案内の子へ進み、ソースの篩の導入と部分型も同じ条件で検査する。
 -/
+noncomputable section
+
 namespace Benitoite.Release.Refinement.Surface.Check
 open CheckCompare CheckSubtyping CheckTry
 
@@ -69,7 +71,7 @@ mutual
           resultEq q t Eff.empty a ε && checkExprAt q rows [] C (Γ.map fun _ => none) [] R .other (child path 0) body t Eff.empty gb
         | _, _ => false
       | .E_Fun => match e, children with
-        | e@(.funName _ _ _), [] => match head q rows C Γ path e h 0 with
+        | e@(.funName _ _ _ _), [] => match head q rows C Γ path e h 0 with
           | some (t, ds) => ds.isEmpty && resultEq q (.dependentFn t) Eff.empty a ε
           | none => false
         | _, _ => false
@@ -84,7 +86,7 @@ mutual
           | none => false
         | _, _ => false
       | .E_FunDicts => match e, children with
-        | e@(.funDicts _ _ _ ds names ps), [] => match head q rows C Γ path e h 0 with
+        | e@(.funDicts _ _ _ ds names ps _), [] => match head q rows C Γ path e h 0 with
           | some (t, _) =>
             let r := h.ty 0; let ec := h.eff 0; let r' := h.ty 1; let e' := h.eff 1
             let Γ' := bindParams (hideConts Γ) ps; let Φ' := liftMany ps.length Φ
@@ -837,7 +839,7 @@ mutual
     | .nil, .node .Clauses_nil _ [] => true
     | .cons o n ntys body rest ndicts, .node .Clauses_cons h [gb, gr] =>
       match CheckHandler.clauseSig q.formation q.D.core q.B εbody o (h.range 0) with
-      | some sg => allChecks [decide (NamesWF sg.names sg.params ∧ ndicts + n = sg.params.length ∧ ntys = sg.tparams.length),
+      | some sg => CheckHandler.clauseAllowed q.B o && allChecks [decide (NamesWF sg.names sg.params ∧ ndicts + n = sg.params.length ∧ ntys = sg.tparams.length),
           CheckHandler.sigWF q.formation sg,
           checkBlockAt q rows [] (sg.tparams ++ C) (sg.context Γ a ε) (liftMany (sg.params.length + 1) Φ)
             (R.map (fun r => (shiftTypes sg.tparams.length 0 r).shiftV (sg.params.length + 1) 0)) .other

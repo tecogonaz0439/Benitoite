@@ -1,5 +1,6 @@
 import Benitoite.Release.Refinement.Surface.CheckAdmissible
 import Benitoite.Release.Refinement.HandlerContracts
+import Benitoite.Release.Refinement.Surface.Rules
 
 /-! ハンドラの効果・範囲・節の署名を有限な入力で検査する（設計書 01-12「ハンドラ」）。 -/
 namespace Benitoite.Release.Refinement.Surface.CheckHandler
@@ -104,6 +105,18 @@ theorem clauseSig_sound {q : CheckFormation.Input} {P : Refinement.Program} {B :
       · next hr => exact (rowsTelCheck_spec _ _ (hs b s hb)).mp hr
       · cases h
   · cases h
+
+/-- 発行専用の組込みは、実行時に節を呼ばないため、節として受け付けない。 -/
+def clauseAllowed (B : Builtins) : OpRef → Bool
+  | .user _ | .fail => true
+  | .prim b => match B.sig b with
+    | none => true
+    | some sg => decide (sg.kind ≠ .pathBases)
+
+theorem clauseAllowed_sound {D B o} (h : clauseAllowed B o = true) : ClauseAllowed D B o := by
+  intro b s l bs ho hs _ _ _
+  subst o
+  simpa only [clauseAllowed, hs, decide_eq_true_eq] using h
 
 /-- 節の引数を宣言順に読み、前の引数を参照する型の変数の上限を確かめる。 -/
 def localWF (q : CheckFormation.Input) (nt : Nat) : Nat → List Ty → Bool

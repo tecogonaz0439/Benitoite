@@ -1,3 +1,10 @@
+import Benitoite.Release.Refinement.Surface.RangeAdmissibilityExample
+import Benitoite.Release.Refinement.Surface.RangeSignatureExample
+import Benitoite.Release.Refinement.Surface.RangeAliases
+import Benitoite.Release.Refinement.Surface.RangeStandard
+import Benitoite.Release.Refinement.Surface.RangeClauseExamples
+import Benitoite.Release.Refinement.Surface.RangeFunctionExamples
+import Benitoite.Release.Refinement.Surface.NoRangeScopedExamples
 import Benitoite.Release.Refinement.Surface.Theorems
 import Benitoite.Release.Refinement.StandardModelSubstitution
 import Benitoite.Release.Refinement.LogicSound
@@ -48,7 +55,7 @@ theorem mainProgram_wellFormed : mainProgram.WellFormed where
     · cases hd
       refine ⟨by simp [FunDecl.coreNames, FunDecl.coreParams, FunDecl.dictTys, internalNames, NamesWF, mainDef], ?_, trivial⟩
       rw [mainDef_tel]
-      refine ⟨⟨(mainTel_annotation (P := (mainProgram.declarations).core)).wf, ?_, ?_⟩, ?_, ?_, mainTel_annotation _⟩
+      refine ⟨⟨(mainTel_annotation (P := (mainProgram.declarations).core)).wf, ?_, ?_⟩, ?_, ?_, (mainTel_annotation _).range_empty⟩
       · simp [Ty.RowsIn, Tel.RowsIn, Eff.RowsIn, Eff.empty, Ty.RowsInList]
       · simp [Ty.RangesScoped, Tel.RangesScoped, Eff.RangesScoped, Eff.empty, rangesScopedTypes]
       · simp [Tel.RowsIn, Ty.RowsIn, Eff.RowsIn, Eff.empty, Ty.RowsInList]
@@ -57,6 +64,17 @@ theorem mainProgram_wellFormed : mainProgram.WellFormed where
   impls := fun _ _ h => by simp [mainProgram] at h
   accessors := fun _ _ _ h => by simp [mainProgram] at h
   testers := fun _ _ h => by simp [mainProgram] at h
+
+example : ∀ f d, mainProgram.defs f = some d →
+    NamesWF d.coreNames d.coreParams ∧
+      SignatureScoped mainProgram.declarations.core d.tparams d.neffs d.toFunDecl.tel ∧
+      d.body.Scoped d.tparams.length d.neffs d.coreParams.length :=
+  ((Program.wellFormed_no_ranges (by
+    intro f d hd
+    simp only [mainProgram] at hd
+    split at hd
+    · cases hd; rfl
+    · cases hd)).mp mainProgram_wellFormed).2.1
 
 theorem mainProgram_wellTyped (B : Builtins) (op : OpPrim) : mainProgram.WellTyped B op where
   variance := ⟨fun _ _ h => by simp [Program.declarationsFor, Program.declarations, Declarations.core, mainProgram] at h,
@@ -67,7 +85,7 @@ theorem mainProgram_wellTyped (B : Builtins) (op : OpPrim) : mainProgram.WellTyp
     split at hd
     · cases hd
       refine ⟨by simp [FunDecl.coreNames, FunDecl.coreParams, FunDecl.dictTys, internalNames, NamesWF, mainDef], ?_,
-        by rw [mainDef_tel]; exact mainTel_annotation _, ?_⟩
+        by rw [mainDef_tel]; exact (mainTel_annotation _).range_empty, ?_⟩
       · rw [mainDef_tel]; simp [Ty.HasKind, kindsTel, kindsEff, kindsList, Eff.empty]
       · rw [mainDef_tel]; exact .done .B_Empty
     · cases hd
@@ -299,5 +317,12 @@ theorem guardArms_typed (D : Declarations) (B : Builtins) (op : OpPrim) (Q : NoF
     refine .B_Last (.E_Refine (s := .boolean) (.E_Literal trivial) rfl rfl rfl (hsortedT _) (hwfT _) ?_ (hann _)
       (hpdT _))
     exact entails_closed (by simpa [isTrue, boolCond, Pred.open, predBind, termBind, termBind?] using closed_true_true)
+
+/-- 範囲文脈が空の本体には、元のスコープ保存の言明をそのまま適用できる。 -/
+example {B : Builtins} {D op Q C Γ Φ t body ne}
+    (h : BodyTy D B op Q C Γ Φ t body)
+    (hs : body.Scoped C.length ne (Γ.length + telBinders t)) :
+    (desugarBlock op .tail body).SourceScoped 0 C.length ne (Γ.length + telBinders t) :=
+  h.scoped hs
 
 end Benitoite.Release.Refinement.Surface.Examples

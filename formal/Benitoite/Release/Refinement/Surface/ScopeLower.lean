@@ -34,7 +34,7 @@ def guardSize : Option Expr → Nat
 
 /-- 直接の呼び出しの頭。関数名か組み込みの名前の参照である（間接呼び出し・関数値・メソッドは含めない）。 -/
 def directHead : Expr → Bool
-  | .funName _ _ _ | .primName _ _ _ _ => true
+  | .funName _ _ _ _ | .primName _ _ _ _ => true
   | _ => false
 
 /-- 引数の形。 -/

@@ -55,7 +55,7 @@ private def builtins : Builtins where
 /-- 案内や位置ごとの型の欄を持たず、ソースと署名の表を渡す。 -/
 private def input : Check.Input where
   D := declarations
-  B := builtins
+  builtinSource := .custom builtins
   opPrim := fun _ _ => none
   formation := { atoms := [.name "Example.E" (.fixed .top), .name "Example.F" (.fixed .top)], ctors := fun _ => [] }
   admitsDec := fun _ _ _ => true
@@ -140,7 +140,7 @@ private def closedOne : ExchangeCertificate :=
 private def proofInput : Check.Input :=
   { input with
     D := { funs := fun _ => none, cons := fun _ => none }
-    B := { builtins with sig := fun _ => none, delta := fun _ _ _ _ _ => none }
+    builtinSource := .custom { builtins with sig := fun _ => none, delta := fun _ _ _ _ _ => none }
     formation := { atoms := [], ctors := fun _ => [] }
     effects := [], ops := []
     logicCertificates := fun _ _ => some closedOne }
@@ -207,8 +207,8 @@ theorem refined_result_contract :
 
 /-- 同じ篩付きの戻り値の受理に、入力の全条件を満たして健全性の定理を適用する。 -/
 theorem refined_result_typed : (refinedResult one).WellTyped proofInput.D proofInput.B proofInput.opPrim :=
-  CheckDeclarations.checkDef_sound proofInput_sound
-    ⟨⟨by trivial, Check.empty_effect_support _⟩, by trivial⟩ refined_result_contract.1
+  CheckDeclarations.checkDef_no_ranges_sound proofInput_sound
+    ⟨⟨by trivial, Check.empty_effect_support _⟩, by trivial⟩ rfl refined_result_contract.1
 
 private def nestedRefinement : Block :=
   .lastDiscard (.paren (.constE oneType (.literal one)))
@@ -218,7 +218,7 @@ private def malformedInput : Check.Input :=
     proofSteps := 1
     logicCertificates := fun _ _ => some {certificate := .use 99, actions := []} }
 
-private def malformedGuide : Guide :=
+private noncomputable def malformedGuide : Guide :=
   match CheckInfer.inferBlock malformedInput ⟨malformedInput.logicCertificates⟩
       [] [] [] [] [] none .other [] nestedRefinement with
   | .ok s => (finiteSynth malformedInput s).guide
@@ -322,13 +322,13 @@ private def rangedDefinition (r : Scope.Domain.Range) : Def where
   params := []
   ret := .base .unit
   eff := Eff.empty
-  body := .last (.call (.primName "Example.required" [] [] [r]) [] [] .nil)
+  body := .last (.call (.primName "Example.required" [] [] [.fixed (.absolute r)]) [] [] .nil)
 
 private def rangedMaterials (r : Scope.Domain.Range) : CheckTables.Materials where
   defs := [("Example.main", rangedDefinition r)]
 
 private def rangedInput (r : Scope.Domain.Range) : Check.Input :=
-  (rangedMaterials r).input { input with B := rangedBuiltins, admitsRDec := fun _ _ => true }
+  (rangedMaterials r).input { input with builtinSource := .custom rangedBuiltins, admitsRDec := fun _ _ => true }
 
 private def requiredRule : Benitoite.Scope.Inference.ScopeRule Refinement.Val where
   index := fun _ => [.path (.tree ["data"])]
@@ -358,7 +358,7 @@ example :
     (match CheckAccept.checkProgramAccepted (stoppedMaterials.input proofInput) acceptance
         stoppedMaterials.program with
       | .error (.typing error) => error.kind = .unknown | _ => False) ∧
-    CheckTables.ProgramStopped (stoppedMaterials.input proofInput) stoppedMaterials.program := by
+    CheckTables.ClosedProgramStopped (stoppedMaterials.input proofInput) stoppedMaterials.program := by
   have hu : (match CheckAccept.checkProgramAccepted (stoppedMaterials.input proofInput) acceptance
       stoppedMaterials.program with
     | .error (.typing error) => error.kind = .unknown | _ => False) := by
@@ -371,7 +371,12 @@ example :
     cases error with
     | cover key reason => simp only [h] at hu
     | typing error =>
-      exact CheckAccept.checkProgramAccepted_unknown h (by simpa only [h] using hu)
+      apply CheckTables.programStopped_no_ranges (h := CheckAccept.checkProgramAccepted_unknown h (by simpa only [h] using hu))
+      intro n d hd
+      change (if "Example.proof" = n then some (proofDefinition 1) else none) = some d at hd
+      split at hd
+      · cases hd; rfl
+      · cases hd
 
 /-- 支持を満たす案内の有限表現は、型・効果も含めて同じ再検査の結果を返す。 -/
 example {q : Check.Input} {rows : List Bool} {Δ : BuilderCtx} {C : TypeCtx} {Γ : Ctx}
@@ -400,7 +405,7 @@ private def pureSource : Expr :=
 
 private def pureInput : Check.Input where
   D := { funs := fun _ => none, cons := fun _ => none }
-  B := Model.builtins
+  builtinSource := .custom Model.builtins
   opPrim := fun _ _ => none
   formation := { atoms := [], ctors := fun _ => [] }
   proofSteps := 1

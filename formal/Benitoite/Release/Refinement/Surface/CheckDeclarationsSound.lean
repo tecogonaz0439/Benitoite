@@ -19,9 +19,23 @@ private theorem bodyChecker_sound : BlockCheckerSound bodyChecker := by
       hΓ ha hb ha he (CheckFinite.guide_support _ _) hc
 
 theorem checkDef_sound {q path d} (hq : q.Sound) (hd : DefSupport q d)
+    (hc : d.rangeParams ≠ [] → CheckVariance.CtorsComplete q.D.core q.ctorNames)
     (h : checkDef q path d = .ok ()) : d.WellTyped q.D q.B q.opPrim := by
-  exact checkDefWith_sound (q := definitionInput q d) bodyChecker_sound
-    (hq.withProofSteps (d.proofSteps.getD q.proofSteps)) ⟨hd.signature, hd.body⟩ (checkDef_ok h)
+  by_cases hk : d.rangeParams = []
+  · exact checkDefWith_sound (q := definitionInput q d) bodyChecker_sound
+      (hq.withProofSteps (d.proofSteps.getD q.proofSteps)) ⟨hd.signature, hd.body⟩ (checkDef_ok hk h)
+  · unfold checkDef at h
+    generalize hv : Check.require path "proof step limit must be positive" _ = guard at h
+    cases guard with
+    | error err => simp only [Except.bind] at h; cases h
+    | ok value =>
+      exact CheckOpenDeclarations.checkDef_sound hq hd (hc hk) hk
+        (by simpa only [Except.bind, hk, ite_false] using h)
+
+/-- 範囲のない関数では、元の健全性の条件だけで同じ結論を得る。 -/
+theorem checkDef_no_ranges_sound {q path d} (hq : q.Sound) (hd : DefSupport q d)
+    (hk : d.rangeParams = []) (h : checkDef q path d = .ok ()) : d.WellTyped q.D q.B q.opPrim :=
+  checkDef_sound hq hd (fun hne => False.elim (hne hk)) h
 
 theorem checkImpl_sound {q i path id views} (hq : q.Sound) (hi : ImplSupport q id)
     (hn : ImplNamesComplete q id)

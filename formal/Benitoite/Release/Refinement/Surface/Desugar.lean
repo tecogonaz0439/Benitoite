@@ -73,12 +73,12 @@ def CallHead.apply : CallHead → List Val → Comp
 
 /-- Rust prepare と同じく裸の名前だけを直接の頭にする。括弧は値の形を保つ。 -/
 def directCallee : Expr → Option CallHead
-  | .funName f ts es => some (.app (.fnRef f ts es) [])
+  | .funName f ts es rs => some (.app (.fnRef f ts es rs) [])
   -- 01-12「型クラス」第 3 行: 制約を持つ関数の呼び出し。
-  | .funDicts f ts es ds _ _ => some (.app (.fnRef f ts es) (DictEv.toValList ds))
+  | .funDicts f ts es ds _ _ rs => some (.app (.fnRef f ts es rs) (DictEv.toValList ds))
   -- 同表第 1 行: メソッドの呼び出し。
   | .methName d m ss es us _ _ => some (.meth d.toVal m ss es (DictEv.toValList us))
-  | .primName b ts es rs => some (.app (.prim b ts es ((rs.map RangeExpr.absolute).map RangeIx.fixed)) [])
+  | .primName b ts es rs => some (.app (.prim b ts es rs) [])
   -- 01-12「外部の型と関数」: 外部関数の直接の呼出し。
   | .externalName f ts => some (.external f ts)
   -- 01-12「ハンドラ」: 利用者の操作を直接呼ぶ op(e1,…,en)。
@@ -223,19 +223,19 @@ mutual
     -- `e` の中の定数の名前も同じく置き換える。
     | .constE _ body => desugarExpr opPrim .other body
     -- 同節: トップレベルの関数の名前 f | return f[T̄; Ē]
-    | .funName f ts es => .ret (.fnRef f ts es)
+    | .funName f ts es rs => .ret (.fnRef f ts es rs)
     -- 01-12「型クラス」第 4 行: return λ(ȳ:Ā). f[T̄; Ē](Ū, ȳ)。
     -- 処理系は名前の変数なのでずらさない。de Bruijn の番号ではラムダ引数の下へ移すため、
     -- 値引数の個数だけずらす（意味は Rust dictionary_lambda と同じ）。
-    | .funDicts f ts es ds names ps => .ret (.lam names ps
-        (.app (.fnRef f (shiftTs ps.length ts) (shiftEs ps.length es))
+    | .funDicts f ts es ds names ps rs => .ret (.lam names ps
+        (.app (.fnRef f (shiftTs ps.length ts) (shiftEs ps.length es) rs)
           (Val.renameList (· + ps.length) (DictEv.toValList ds) ++ boundVars ps.length)))
     -- 同表第 2 行: return λ(ȳ:Ā). V.m[S̄; Ē](Ū, ȳ)。V と Ū の両方をずらす。
     | .methName d m ss es us names ps => .ret (.lam names ps
         (.meth (d.toVal.rename (· + ps.length)) m (shiftTs ps.length ss) (shiftEs ps.length es)
           (Val.renameList (· + ps.length) (DictEv.toValList us) ++ boundVars ps.length)))
     -- 同節: prelude の関数 M.g | return b[T̄; Ē]（Σ にあるものは関数の名前）
-    | .primName b ts es rs => .ret (.prim b ts es ((rs.map RangeExpr.absolute).map RangeIx.fixed))
+    | .primName b ts es rs => .ret (.prim b ts es rs)
     -- 01-12「ハンドラ」: 利用者の操作の名前 op を、呼ばずに値として使う | return op[T̄]
     | .opName o ts => .ret (.op o ts)
     -- 01-12「形式化した操作の制約と節の辞書」: 辞書を値の作成時に捕え、
@@ -497,7 +497,7 @@ end
 -- | fn f[ᾱ;ρ̄](x̄:Ā):B ! ε = ⟦B0⟧。型パラメータの制約はそのまま写す。
 def desugarDef (opPrim : OpPrim) (d : Def) : Refinement.Def :=
   -- 01-12「型クラス」: 制約ごとの Dict[Cl, α] の引数を値の引数の前に持つ。
-  { tparams := d.tparams, neffs := d.neffs, rkinds := [], names := d.coreNames, params := d.coreParams, ret := d.ret, eff := d.eff,
+  { tparams := d.tparams, neffs := d.neffs, rkinds := d.rangeParams, names := d.coreNames, params := d.coreParams, ret := d.ret, eff := d.eff,
     body := desugarBlock opPrim .tail d.body }
 
 -- 01-12「型クラス」D-Impl: 上位の辞書 Ui は値、メソッド Mj は末尾位置で移す。

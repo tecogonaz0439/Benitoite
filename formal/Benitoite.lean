@@ -976,6 +976,16 @@ import Benitoite.Release.Refinement.Surface.CheckInferResult
 import Benitoite.Release.Refinement.Surface.CheckDiagnostics
 import Benitoite.Release.Refinement.StandardModelApplication
 import Benitoite.Release.Refinement.StandardModelApplicationExamples
+
+import Benitoite.Release.Refinement.Surface.RangeLeafExamples
+
+import Benitoite.Release.Refinement.Surface.CheckOpenExamples
+
+import Benitoite.Release.Refinement.Surface.CheckOpenStandardExamples
+
+import Benitoite.Release.Refinement.Surface.CheckOpenAcceptanceExamples
+
+import Benitoite.Release.Refinement.Surface.CheckClauseExamples
 import Benitoite.Release.Refinement.TargetText
 import Benitoite.Release.Refinement.StringMembership
 import Benitoite.Release.Refinement.BooleanResult

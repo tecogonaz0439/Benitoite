@@ -34,7 +34,7 @@ private def builtins : Builtins where
   admitsR := fun _ _ => True
 
 private def body (r : Range) : Block :=
-  .last (.call (.primName "Example.required" [] [] [r]) [] [] .nil)
+  .last (.call (.primName "Example.required" [] [] [.fixed (.absolute r)]) [] [] .nil)
 
 private def definition (r : Range) : Def where
   tparams := []
@@ -73,7 +73,7 @@ private def program (r : Range) : Program where
 
 private def input (r : Range) : Check.Input where
   D := (program r).declarations
-  B := builtins
+  builtinSource := .custom builtins
   opPrim := fun _ _ => none
   formation := { atoms := [], ctors := fun _ => [] }
   admitsDec := fun _ _ _ => true
@@ -174,7 +174,7 @@ private theorem accept_names_complete (r : Range) : CheckAccept.NamesComplete (i
 private theorem body_support (r : Range) : Check.BlockSupport (input r) (body r) := by
   refine ⟨⟨trivial, ?_, ?_⟩, trivial⟩
   · intro e he; cases he
-  · intro s hs
+  · intro rs hrs s hs
     change (if "Example.required" = "Example.required" then some requiredSignature else none) = some s at hs
     simp only [ite_true, Option.some.injEq] at hs
     subst s

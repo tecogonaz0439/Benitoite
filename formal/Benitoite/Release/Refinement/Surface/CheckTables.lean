@@ -2,6 +2,8 @@ import Benitoite.Release.Refinement.Surface.CheckDeclarations
 import Benitoite.Release.Refinement.Surface.CheckEffects
 
 /-! 全プログラムの有限検査。定義とメソッドの予算と view は本体ごとに選ぶ。 -/
+noncomputable section
+
 namespace Benitoite.Release.Refinement.Surface.CheckTables
 
 /-- 変性と効果の所属を検査し、一覧にある全ての定義と実装の本体を検査する。 -/
@@ -43,11 +45,30 @@ private theorem checkNamed_error {table : String → Option α} {check path name
 /-- 関数又はメソッドの本体で、実際の推論か証明書の会計が停止した。 -/
 def ProgramStopped (q : Check.Input) (p : Program) : Prop :=
   (∃ n d path, p.defs n = some d ∧
+    CheckDeclarations.DefinitionStopped
+      {q with D := q.D.withView (p.functionViews n), proofSteps := q.functionSteps n} path d) ∨
+  (∃ n id path cd, p.impls n = some id ∧ q.D.classes id.cls = some cd ∧
+    CheckDeclarations.MethodsStopped q n (path ++ [1]) id cd (p.methodViews n))
+
+/-- 関数の範囲列が空であるときの、本体の停止の存在形。 -/
+def ClosedProgramStopped (q : Check.Input) (p : Program) : Prop :=
+  (∃ n d path, p.defs n = some d ∧
     CheckDeclarations.BodyTelStopped
-      (CheckDeclarations.definitionInput {q with D := q.D.withView (p.functionViews n), proofSteps := q.functionSteps n} d)
+      (CheckDeclarations.definitionInput
+        {q with D := q.D.withView (p.functionViews n), proofSteps := q.functionSteps n} d)
       (CheckAdmissible.telQ d.neffs d.toFunDecl.tel) d.tparams [] [] (path ++ [1]) d.toFunDecl.tel d.body) ∨
   (∃ n id path cd, p.impls n = some id ∧ q.D.classes id.cls = some cd ∧
     CheckDeclarations.MethodsStopped q n (path ++ [1]) id cd (p.methodViews n))
+
+/-- 全関数の範囲列が空なら、本体の停止を元の存在形へ戻せる。 -/
+theorem programStopped_no_ranges {q p}
+    (hk : ∀ n d, p.defs n = some d → d.rangeParams = [])
+    (h : ProgramStopped q p) : ClosedProgramStopped q p := by
+  rcases h with ⟨n, d, path, hd, hs⟩ | hs
+  · left
+    refine ⟨n, d, path, hd, ?_⟩
+    simpa only [CheckDeclarations.DefinitionStopped, hk n d hd, ite_true] using hs
+  · exact Or.inr hs
 
 private theorem require_not_unknown {path reason test error}
     (h : Check.require path reason test = .error error) (hu : error.kind = .unknown) : False := by

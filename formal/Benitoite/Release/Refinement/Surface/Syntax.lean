@@ -138,16 +138,16 @@ mutual
     /-- 01-12「トップレベルの定数」。宣言の型と本体を参照の位置に埋め込む（P5）。
     本体の中の定数参照も埋め込んだ有限の木。型引数を受け取らず、局所変数を捕えない。 -/
     | constE (ty : Ty) (body : Expr)
-    | funName (f : FunName) (tys : List Ty) (effs : List Eff)
+    | funName (f : FunName) (tys : List Ty) (effs : List Eff) (ranges : List RangeIx := [])
     /-- 01-12「型クラス」の表の第 4 行。params は具体化した値の引数の型。 -/
     | funDicts (f : FunName) (tys : List Ty) (effs : List Eff)
-        (dicts : List DictEv) (names : List String) (params : List Ty)
+        (dicts : List DictEv) (names : List String) (params : List Ty) (ranges : List RangeIx := [])
     /-- 同表の第 2 行。dicts はメソッド自身の制約、params は辞書を除いた引数型。 -/
     | methName (dict : DictEv) (m : MethName) (tys : List Ty) (effs : List Eff)
         (dicts : List DictEv) (names : List String) (params : List Ty)
     /-- 組み込みの関数の名前。`ranges` は型検査器が選んだ範囲の変数の具体化（範囲の変数のない項目では空の列。
     設計書 01-12「型の情報を付けた表層の構文と型付け」）。 -/
-    | primName (b : PrimName) (tys : List Ty) (effs : List Eff) (ranges : List Scope.Domain.Range)
+    | primName (b : PrimName) (tys : List Ty) (effs : List Eff) (ranges : List RangeIx)
     | opName (o : OpName) (tys : List Ty)
     /-- 辞書は操作名を解決した位置で選ぶ。params と names は公開の値引数だけ。 -/
     | opDicts (o : OpName) (tys : List Ty) (dicts : List DictEv)
