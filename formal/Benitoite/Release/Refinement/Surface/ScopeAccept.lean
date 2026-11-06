@@ -18,8 +18,9 @@ open Benitoite.Scope.Domain (Range)
 /-! ## 拒否の理由と必須の判定の結果 -/
 
 /-- 範囲の被覆を確認できなかった理由（DET-05。診断 E0519 の `reason`）。`notCovered` は既知の範囲を契約が覆わない、
-`atomicCoverOnly` は一原子ずつの被覆では確認できない（複数の原子の和なら覆いうる）、`unknownSource` は由来を
-認定できず Top になった、`budgetExceeded` は必須の判定の予算を超えて Top になった。 -/
+`atomicCoverOnly` は一原子ずつの被覆では確認できない（複数の原子の和なら覆いうる）。`unknownSource` は由来を
+認定できず Top になった場合、又は未具体化の契約の全具体化に対する被覆を確認できない場合である。
+`budgetExceeded` は必須の判定の予算を超えて Top になった場合である。 -/
 inductive CoverFailure where
   | notCovered
   | atomicCoverOnly
@@ -493,6 +494,29 @@ theorem acceptBody_ranges {ok : ConName} {T : ScopeTable Refinement.Val} {L : Li
       obtain ⟨S, hS⟩ := acceptBody_some_unrecorded h hocc hxs hrule hnone i r hr
       exact ⟨S, by simp only [List.getElem?_map, hS, Option.map_some],
         acceptBody_sound_unrecorded h hocc hxs hrule hnone i S r hS hr⟩
+
+/-- 全出現で、閉じた規則が選ぶ範囲の契約と被覆がある。未記録の出現も事実を持たない状態で含める。 -/
+def BodyRanges (ok : ConName) (T : ScopeTable Refinement.Val) (L : Limits) (key : Key)
+    (scope : Interval.BindingScope) (body : Block) : Prop :=
+  let records := (analyzeBody ok T L key scope body).2
+  ∀ (k : Key) (b : PrimName) (ts : List Ty) (es : List Eff) (ix : List RangeIx)
+      (labels : List (Option String)) (positions : List Nat) (args : Exprs) (xs : List Arg)
+      (rule : ScopeRule Refinement.Val),
+    (k, .call (.primName b ts es ix) labels positions args) ∈ occurrences key body →
+    contractOrder positions (lowerArgs (argsKey k (.primName b ts es ix)) args) = some xs →
+    T.ruleAt k = some rule →
+    (∀ st, (k, st) ∈ records → ∀ (i : Nat) (r : Range),
+      (rule.index (xs.map (absArg T st)))[i]? = some r →
+      ∃ S, ix[i]? = some (.fixed (.absolute S)) ∧ S.Covers r) ∧
+    ((∀ st, (k, st) ∉ records) → ∀ (i : Nat) (r : Range),
+      (rule.index (xs.map (absArg T factFree)))[i]? = some r →
+      ∃ S, ix[i]? = some (.fixed (.absolute S)) ∧ S.Covers r)
+
+/-- 閉じた規則による受理から、全出現をまとめた範囲の契約を得る。 -/
+theorem acceptBody_ranges_all {ok T L key scope body}
+    (h : acceptBody ok T L key scope body = .ok ()) : BodyRanges ok T L key scope body := by
+  intro k b ts es ix labels positions args xs rule hocc hxs hrule
+  exact acceptBody_ranges h hocc hxs hrule
 
 /-! ## 規則を持つ表による受理と拒否 -/
 

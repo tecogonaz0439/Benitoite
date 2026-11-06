@@ -998,3 +998,16 @@ import Benitoite.Release.Refinement.MembershipInferenceBoundary
 import Benitoite.Release.Refinement.StandardModelCheckInputs
 import Benitoite.Release.Refinement.CheckErasure
 import Benitoite.Release.Refinement.CheckErasureExamples
+import Benitoite.Release.Refinement.Surface.CheckPredicateExamples
+import Benitoite.Release.Refinement.Surface.CheckPredicateFallbackExamples
+import Benitoite.Release.Refinement.Surface.CheckPredicateProjectionExamples
+import Benitoite.Release.Refinement.Surface.PredicateRowCollectionExamples
+import Benitoite.Release.Refinement.Surface.PredicateProjectionTableExamples
+import Benitoite.Release.Refinement.Surface.PredicateRowsTableExamples
+import Benitoite.Release.Refinement.Surface.OpenScopeExamples
+
+import Benitoite.Release.Refinement.Surface.CheckPredicateProgramExamples
+
+import Benitoite.Release.Refinement.Surface.OpenScopeForwardExamples
+
+import Benitoite.Release.Refinement.Surface.PredicateProgramSemantics

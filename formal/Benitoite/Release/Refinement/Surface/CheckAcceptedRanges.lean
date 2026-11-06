@@ -7,31 +7,29 @@ open ScopeState ScopeLower ScopeAccept
 
 /-- 全出現で規則が選ぶ範囲を契約が覆い、選んだ全位置に契約がある。記録が無い出現は事実を持たない状態で判定する。 -/
 def BodyRanges (A : AcceptInput) (key : Key) (scope : Interval.BindingScope) (body : Block) : Prop :=
-  let T := tableFor A key body
-  let records := (analyzeBody A.ok T A.limits key scope body).2
-  ∀ (k : Key) (b : PrimName) (ts : List Ty) (es : List Eff) (ix : List RangeIx)
-      (labels : List (Option String)) (positions : List Nat) (args : Exprs) (xs : List Arg)
-      (rule : ScopeRule Refinement.Val),
-    (k, .call (.primName b ts es ix) labels positions args) ∈ occurrences key body →
-    contractOrder positions (lowerArgs (argsKey k (.primName b ts es ix)) args) = some xs →
-    T.ruleAt k = some rule →
-    (∀ st, (k, st) ∈ records → ∀ (i : Nat) (r : Range),
-      (rule.index (xs.map (absArg T st)))[i]? = some r →
-      ∃ S, ix[i]? = some (.fixed (.absolute S)) ∧ S.Covers r) ∧
-    ((∀ st, (k, st) ∉ records) → ∀ (i : Nat) (r : Range),
-      (rule.index (xs.map (absArg T factFree)))[i]? = some r →
-      ∃ S, ix[i]? = some (.fixed (.absolute S)) ∧ S.Covers r)
+  ScopeAccept.BodyRanges A.ok (tableFor A key body) A.limits key scope body
 
 private theorem body_ranges_of_accepted {A key scope body}
     (h : acceptBody A.ok (tableFor A key body) A.limits key scope body = .ok ()) :
     BodyRanges A key scope body := by
-  intro k b ts es ix labels positions args xs rule hocc hxs hrule
-  exact acceptBody_ranges h hocc hxs hrule
+  exact ScopeAccept.acceptBody_ranges_all h
 
-/-- 受理したプログラムの各関数について、全出現・全記録と記録の無い場合の範囲契約を得る。 -/
-theorem Accepted.def_ranges {A q p} (h : Accepted A q p) {n d} (hd : p.defs n = some d) :
+/-- 定義の種類列が空なら閉じた規則の全出現の被覆、非空なら閉じた規則と記号的な規則の選択に応じた被覆。 -/
+def DefinitionRanges (A : AcceptInput) (name : FunName) (d : Def) : Prop :=
+  OpenScopeAccept.BodyRanges A.openRules d.rangeParams d.coreParams A.ok
+    (tableFor A (bodyKey name) d.body) A.limits (bodyKey name) (entryScope d.coreParams.length) d.body
+
+/-- 空の範囲文脈では、全出現・全記録と記録のない場合の閉じた規則の契約を得る。 -/
+theorem Accepted.def_ranges_no_ranges {A q p} (h : Accepted A q p) {n d}
+    (hd : p.defs n = some d) (hr : d.rangeParams = [])
+    (noneSelected : OpenScopeAccept.selections A.openRules d.coreParams (bodyKey n) d.body = []) :
     BodyRanges A (bodyKey n) (entryScope d.coreParams.length) d.body :=
-  body_ranges_of_accepted (h.def_body hd)
+  body_ranges_of_accepted (h.def_body_no_ranges hd hr noneSelected)
+
+/-- 受理したプログラムの各関数について、選択した規則の範囲契約を得る。 -/
+theorem Accepted.def_ranges {A q p} (h : Accepted A q p) {n d} (hd : p.defs n = some d) :
+    DefinitionRanges A n d := by
+  exact OpenScopeAccept.acceptBody_sound (h.def_body hd)
 
 /-- 受理したプログラムの各実装メソッドにも、同じ全出現の範囲契約が成り立つ。 -/
 theorem Accepted.method_ranges {A q p} (h : Accepted A q p) {i id m body}

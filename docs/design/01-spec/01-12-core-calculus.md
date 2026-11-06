@@ -2855,9 +2855,9 @@ IP のパターンは族と区間 `[lo, hi]` を持ち、完全一致は一点�
 
 ### Scope の必須の判定の受理と拒否の理由
 
-【決定】表層の組み込みの名前が持つ範囲の列の選び方の条件と、狭い契約の受理の判定、拒否の理由は、`Benitoite.Surface.ScopeAccept` の `Surface/ScopeAccept.lean` を正とし、本節はその定義と言明の写しである。表層の検査器の範囲の具体化は `Surface/CheckRanges.lean` を正とする。型付け・脱糖・主定理と `Builtins.Assumptions` は本節の受理の判定を使わない（効果の上限の被覆による包含は型付けの C-Sub・E_Sub・B_Sub が受け持ち、本節の原子の受理 `acceptAtom` とは別の定義である）。受理の判定は、型付けの規則に加えて確かめる必要条件である。理由: 範囲の列を構文に書かせた上で、その範囲が注釈を信用したものでなく必須の判定の結果に覆われることを、型付けの規則と主定理の前提を変えずに確かめるためである。
+【決定】表層の組み込みの名前が持つ範囲の列の選び方の条件と、狭い契約の受理の判定、拒否の理由は、`Benitoite.Surface.ScopeAccept` の `Surface/ScopeAccept.lean` を正とし、本節はその定義と言明の写しである。表層の検査器の範囲の具体化は `Surface/CheckRanges.lean` を正とする。型付け・脱糖・主定理と `Builtins.Assumptions` は本節の受理の判定を使わない（効果の上限の被覆による包含は型付けの C-Sub・E_Sub・B_Sub が受け持ち、本節の原子の受理 `acceptAtom` とは別の定義である）。受理の判定は、型付けの規則に加えて確かめる必要条件である。理由: 範囲の列を構文に書かせた上で、呼出しに書いた契約の範囲が、局所の由来又は型付けで検査済みのパラメータ型から選ぶ範囲を覆うことを確かめるためである。パラメータ型が保持する範囲は、その定義の型付けで検査された事実であり、実引数の値がその型に合うことは呼出し側の型付けが保証する。局所束縛の注釈だけから新しい由来を作らない。
 
-拒否の理由 `CoverFailure`（診断 E0519 の `reason`）は、`notCovered`（既知の範囲を契約が覆わない）、`atomicCoverOnly`（同名の非 Top の閉じた原子が二つ以上ある場合の保守的な分類であり、和の被覆を証明した理由ではない）、`unknownSource`（由来を認定できず Top になった）、`budgetExceeded`（必須の判定の予算を超えて Top になった）である。必須の判定が一つの範囲の位置について返す結果 `Required` は、既知の範囲 `known r`、未知 `unknown`、予算の超過 `exceeded` であり、型の添字は既知なら r、ほかは Top である。規則の `index` が返した範囲は、Top なら、解析の最後の Run が予算を超えていれば `exceeded`、そうでなければ `unknown` と読み、Top でなければ `known` と読む（`Required.ofIndex`）。したがって `acceptCall` の経路では既知の Top（`known .top`）は作られない。由来を認定できなかった Top も、引数の型に明示した Top から来た Top も `unknown` になり、拒否の理由は `unknownSource` である。最後の Run が予算を超えていれば、地点を問わず Top の位置の拒否の理由は全て `budgetExceeded` である（記録は超過の地点を持たない）。明示の Top の型から来た Top を区別する印は持たない。超過前の記録が返す非 Top の範囲と、超過後もリテラルおよび `const` の直接参照から読める非 Top の範囲は `known` のままである。局所の文字列のパターンは既知にしない。
+拒否の理由 `CoverFailure`（診断 E0519 の `reason`）は、`notCovered`（既知の範囲を契約が覆わない）、`atomicCoverOnly`（同名の非 Top の閉じた原子が二つ以上ある場合の保守的な分類であり、和の被覆を証明した理由ではない）、`unknownSource`（局所の由来を認定できず Top になった、又は開いた契約の全具体化の被覆を認定できない）、`budgetExceeded`（必須の判定の予算を超えて Top になった）である。必須の判定が一つの範囲の位置について返す結果 `Required` は、既知の範囲 `known r`、未知 `unknown`、予算の超過 `exceeded` であり、型の添字は既知なら r、ほかは Top である。規則の `index` が返した範囲は、Top なら、解析の最後の Run が予算を超えていれば `exceeded`、そうでなければ `unknown` と読み、Top でなければ `known` と読む（`Required.ofIndex`）。したがって `acceptCall` の経路では既知の Top（`known .top`）は作られない。由来を認定できなかった Top も、引数の型に明示した Top から来た Top も `unknown` になり、拒否の理由は `unknownSource` である。最後の Run が予算を超えていれば、地点を問わず Top の位置の拒否の理由は全て `budgetExceeded` である（記録は超過の地点を持たない）。明示の Top の型から来た Top を区別する印は持たない。超過前の記録が返す非 Top の範囲と、超過後もリテラルおよび `const` の直接参照から読める非 Top の範囲は `known` のままである。局所の文字列のパターンは既知にしない。
 
 範囲の受理 `acceptRange q S` は、契約の範囲 S が Top なら受理し、Top でなければ、q が `known r` で S が r を覆う（「操作の対象の範囲の領域と被覆」の `Range.Covers`）ときだけ受理する。覆わなければ `notCovered`、q が未知なら `unknownSource`、予算の超過なら `budgetExceeded` を返す。Top を覆うのは Top だけであり、`/**` の契約も既知の Top を受理しない（`acceptRange` を単独で使う場合の性質。上記のとおり `acceptCall` の経路の Top は未知か予算の超過である）。原子の受理 `acceptAtom upper src a` は、効果の原子 a を上限の原子の並び upper のどれか一原子が覆う（`Atom.Covers`）ときだけ受理する。受理しない理由は、範囲の位置が Top の名前の原子なら、由来 src が未知か予算の超過のとき `unknownSource`・`budgetExceeded`、既知のとき `notCovered` である。閉じた範囲の原子なら、upper に同じ名前の Top でない閉じた範囲の原子が二つ以上あるとき `atomicCoverOnly`、そうでなければ `notCovered` である。和による被覆は判定しない。
 
@@ -2869,7 +2869,7 @@ IP のパターンは族と区間 `[lo, hi]` を持ち、完全一致は一点�
 
 表層の検査器は、組み込みの名前の範囲の列を、表と合う判定 `admitsRDec`（検査の入力の欄。既定は何も許さない）で許容を確かめ（`rangeAdmissibleCheck`）、署名に現れる原子の具体化の像が候補の原子の集合にあることを確かめ（`instClosed`）、計算できる正規化で具体化した署名 `instSig` を計算する。これは `s.inst R̄` と等しい（`instSig_eq`）。空の列の許容は範囲の変数のない項目だけで通り（`rangeAdmissibleCheck_nil_iff`）、正規形の署名では空の列の具体化は署名を変えない（`instSig_nil`）。交換の材料から作る検査の入力（`CheckTables.Materials.input`）は判定を持たず、全て Top の列だけを通す。交換の入口の準備（`Exchange.CheckInput.prepare`）は、型表の `admitsR` から作る判定を入力に入れる。
 
-【決定】型検査器の入口 `CheckAccept.checkProgramAccepted` は、表層の型付けの検査 `CheckTables.checkProgram` が成功したプログラムの全ての定義の本体と、全ての実装の全てのメソッドの本体を `acceptBody` で受理し、最初に拒否した出現の鍵と理由を返す（`Surface/CheckAccept.lean`）。本体の表は、本体の出現のうち組み込みの名前を頭に持つ直接の呼び出しを、標準の所有元のその名前へ解決した表 `standardTable (primResolve key body) rules` である（型の情報を付けた表層の構文では、同じ綴りの利用者の関数は `funName` で現れ、表に入らない）。本体の始まりの鍵は定義の名前と番号 0、束縛番号の土台は引数（辞書の引数を含む）の位置に番号 `0..n-1` を割り当てたもの（`entryScope n`）である。プログラム全体の受理の述語 `Accepted A m` は、全ての定義の本体と全てのメソッドの本体の受理である。入口が成功すれば、型付けの検査の結論と `Accepted` の両方が成り立つ（`checkProgramAccepted_sound`・`checkProgramAccepted_empty`）。規則を持たない受理の入力（旧の像）では、入口は型付けの検査と同じ結果を返す（`checkProgramAccepted_noRules`）。健全な規則の項目で受理したプログラムの定義の本体には、接続定理（「Scope の局所解析の接続定理」）が当たる（`accepted_check_connection`）。理由: 狭い契約を必須の判定の結果を確かめたときだけ受理することを、型検査器の入口とプログラム全体の述語で述べるためである。受理は主定理の前提に入れず、コアの実行と表層の評価（`ReachBlock`）の対応は示さない（設計書 07-04「証明する性質」）。
+【決定】型検査器の入口 `CheckAccept.checkProgramAccepted` は、表層の型付けの検査 `CheckTables.checkProgram` が成功したプログラムの全ての定義の本体をパラメータの範囲と局所の由来から受理し、全ての実装の全てのメソッドの本体を閉じた由来で受理し、最初に拒否した出現の鍵と理由を返す（`Surface/CheckAccept.lean`）。本体の表は、本体の出現のうち組み込みの名前を頭に持つ直接の呼び出しを、標準の所有元のその名前へ解決した表 `standardTable (primResolve key body) rules` である（型の情報を付けた表層の構文では、同じ綴りの利用者の関数は `funName` で現れ、表に入らない）。本体の始まりの鍵は定義の名前と番号 0、束縛番号の土台は引数（辞書の引数を含む）の位置に番号 `0..n-1` を割り当てたもの（`entryScope n`）である。プログラム全体の受理の述語 `Accepted A m` は、全ての定義の本体と全てのメソッドの本体の受理である。入口が成功すれば、準備後のプログラムの型付けと元の本体の `Accepted` の両方が成り立つ（`checkProgramAccepted_sound`・`checkProgramAccepted_empty`）。規則を持たない受理の入力（旧の像）では、入口は型付けの検査と同じ結果を返す（`checkProgramAccepted_noRules`）。健全な規則の項目で受理したプログラムの定義の本体には、接続定理（「Scope の局所解析の接続定理」）が当たる（`accepted_check_connection`）。理由: 狭い契約を必須の判定の結果又は型付け済みのパラメータの範囲で覆うことを、型検査器の入口とプログラム全体の述語で述べるためである。受理は主定理の前提に入れず、コアの実行と表層の評価（`ReachBlock`）の対応は示さない（設計書 07-04「証明する性質」）。
 
 | 定理 | 示す性質 |
 |---|---|
@@ -3132,6 +3132,24 @@ builders_no_captureとbuilders_block_no_captureは、Aligned Γ ΔからEnvReads
 `StandardModel.PureRow P b` は、合成表の名前bについて、`delta_typed` と同じ形の契約である。合成表のlookupが返す署名と、その署名の全 `BuiltinArgs` から、合成表のδが非exitの型付きの応答を返し、その応答が適格であることを表す。`PureRow.of_row` は、組込みの表の行（`StandardModel.Primitive`）の出典の表のδが行の署名の全 `BuiltinArgs` で型付きの応答を返すとき、合成表の同じ名前の契約を返す。`first_sixteen` は、演算子の表の並びの最初の十六行（七整数型のdiv/modとFloatのadd/subtract）を、任意のPで既存の `StandardOperatorResponse.response` へ接続する。`numeric_rows` は、数値の公開モジュール（Byte・Character・Float・Float32・Decimal・Integerと各幅）の全166行を、`operator_rows` は、%で始まる組込みの行から %Map.replaceValues・%eq・%ne を除いた107行と全構造値の %eq/%ne の2行（計109行）を、それぞれ同じ契約へ接続する。各行の証拠は既存の任意のP/Bの応答か、合成プログラムが供給する宣言の下の応答であり、部分表の `table_response` を使わない。合成プログラムは丸めの五方式の宣言 `StandardModel.roundingMode` を持ち、`http_declarations` は範囲付きのHTTPのモデルが読むResult・ScopeError・Pair・要求・要求の誤りの構成子とarityを、`rounding_declarations` はDecimalの応答が読むOptionと五方式の宣言を示す。`PureRow.Satisfiable P b` は、名前bのlookupが返す署名の `BuiltinArgs` を満たす入力があることである。`numeric_inputs` と `operator_inputs` は、数値の166行と演算子の109行のそれぞれで、この前提を基本型の定数の引数列で満たす入力を示す。Decimal.roundは合成プログラムの丸め方式の構成子を、%eq/%neは型引数Integerを使う。これらは行ごとの契約であり、全ての純粋な行の `delta_typed` と合成表の全条件の充足とは区別する。
 
 `PredicateResponse` の純粋な行は `Scope.pathMatches(pattern:, path:)`・`Scope.hostMatches(pattern:, host:)`・`String.charactersIn(text:, minimum:, maximum:)` と Float・Float32 の分類である。引数は公開の名前と基本型を保ち、結果は `Boolean`、効果は空である。所属の pattern は絶対形を解析し、解析失敗と相対形は偽とする。リテラルの pattern の所属、文字集合のリテラルの両端、Float の分類について、δ の Boolean と公開名から写した述語の閉じた評価は一致する。任意の String の対象を含む。`BooleanResult.typed` は、Boolean の値が期待型の外側の篩を閉じた評価で満たすなら、同じ期待型の型付けを与える。
+
+`Surface.PredicateRows` は、述語へ写せる公開の判定の呼出しを、リテラルの条件で特殊化した内部の有限な行へ解決する。結果は `{b : Boolean | (b = true ∧ p) ∨ (¬(b = true) ∧ ¬p)}` であり、p は同じ引数についての所属・文字集合・Float の分類である。対象の項を結果の自己変数の下へ一つずらす。条件が動的で述語へ写せない呼出しは公開の署名の `Boolean` を保つ。範囲変数を含む関数の本体でも、内部の行は固定した条件と対象だけを持つ同じ署名を使う。範囲パラメータを取る内部の判定や述語の新しい構成子は置かない。
+
+`PredicateCalls` は、引数のラベルと契約位置、括弧を除いたリテラルの条件、対象の値の項を調べて内部名を選ぶ。レコードの取り出しの列は `PredicateAccessorTargets`・`PredicateProjectionCalls` が宣言した取り出し関数から読み、途中の data の欄と末尾の判定の sort を検査する。`PredicateProjectionPath.AccessPath` は同じプログラムの取り出しの正しさと網羅性から欄の値の型を得る。`PredicateAccessorPaths.checkChain` は宣言の欄型を各段で具体化し、型名・型引数の個数・欄の位置を照合した証拠付きの経路を返す。投影の内部行は元の record 値を一度受け取り、その欄の観測について同じ真偽の篩を返す。元の取り出しのソースは純粋な式として再検査するので、入れ子の型引数も検査される。`PredicateProjectSource` の反転の補題は、この元のソースの型付けを取り出す。
+
+型付けの `E_PredicateCall` は、値へ写せる対象一つを依存列の `ValsTel` で検査し、列の戻り値を結果の注釈へ部分型で広げる。`E_PredicateProject` は、同じ対象の元の record と、純粋な元の取り出しの式の型付けを要求する。両規則は、穴が無く、引数の内部番号が0の `partialCall` の形を内部の符号化として使う。投影では検査用の元のソースを番号1にも保持する。脱糖はそれぞれ内部名への直接の値引数一つの呼出しになり、番号1のソースを重ねて評価しない（`desugar_predicateCall`・`desugar_predicateProject`）。通常の部分適用は穴を一つ以上持つ。性質1と有効範囲の証明はこの二規則の場合を含み、開いた範囲文脈では全ての適格な具体化へ同じ証明を適用する。`E_If` は結果の篩と条件の真偽を既存の事実の列へ加えるので、両枝で p とその否定をそれぞれ使用できる。
+
+`PredicateRowsResponse`・`PredicateProjectionObservation`・`PredicateProjectionResponse` は、内部の行の全入力について、同じ閉じた述語の評価と応答の型付けを示す。`PredicateRowsTable`・`PredicateProjectionTable` は標準の合成表の行を保って内部行を追加し、行の条件と表の健全性を構成する。投影の応答は、同じプログラムの既存の `WellFormed` と `VarianceValid` を使う。`PredicateRowCollection` は元のソースの全出現から行を収集し、出現順の番号を名前に使い、標準名との非衝突と実際の lookup を示す。
+
+`CheckPreparation.prepare` は、検査の有限一覧にある全定義と全実装メソッドの本体から行を収集し、同じ表で全本体を解決する。定義・実装の名前の一覧の完全性は、検査の健全性と同じ条件である。`resolveProgram_declarations` は、関数・実装・外部宣言を含む利用者の宣言が保存されることを示す。`Check.BuiltinSource.resolved` は元の表の欄を保ち、内部行の署名と純粋なδを追加する。標準の構成データを持つ表を解決の対象とし、独自の表では同じ綴りの公開名の意味を仮定しない。行のないプログラムは恒等に準備する。`input_sound`・`prepare_sound` は、追加する全署名の有限支持と型引数の個数の許容を構成し、元の `Input.Sound` から準備後の同じ条件を導く。
+
+| 呼出しの形 | 結果型 |
+|---|---|
+| 公開の直接呼出しで、条件のリテラルと対象の値又は取り出しの列を述語へ写せる形 | 真偽と同じ対象の述語が一致する篩付きのBoolean |
+| 動的なpattern・文字集合の両端、又は観測できる値と取り出しの列を持たない対象 | 公開署名のBoolean |
+| パイプ `x |> Float.isFinite` など、公開の関数値を受ける形 | 公開署名のBoolean |
+
+公開ソースのプログラムの意味は、全本体の収集・登録・解決を通常の脱糖に先行させた `PredicateProgramSemantics.meaning` で定める。解決済みの表現は、同じ入力表とプログラムを持つ `Prepared` とし、その意味 `core` は通常の `desugarProgram` である。`observations_preserved` は、公開ソースの事象列・終端状態・無限の実行が、実入口の準備した表現の同じ遷移関係と一致することを述べる。最終状態を同じまま保つので、正常値・失敗のpayload・終了値・ストアも同じである。`PublicDeltaAgreement`・`public_deltas` は、所属・文字集合・浮動小数点の各公開行と内部行のδの等式、及び欄の読み取り後の同じscalarのδへの等式を、この言明の一部として返す。理由: 公開名の解決を型付けと実行で共有し、型付けだけに内部行を使わないためである。
 
 `RefinementCheck.signature` は二つの値型の型引数 `[T,U]`、引数 `value: T`、結果 `Result[U,Refinement.CheckError]`、空の効果を持つ。許容は `U.norm = (T{self | p}).norm` となる有限述語 p の存在である。`CheckAdmissibility` はこの関係を値の改名・置換と型パラメータの改名・具体化で保つ。`RefinementCheck.accepts` は期待型の外側の篩を閉じた評価で確認し、全てが `some true` のときだけ同じ値を `Result.Ok` に包む。`some false` と `none` は `Result.Error` に包んだ `Refinement.CheckError { expected: String }` を返す。観測できない自己変数の型では、述語を開かずに閉じた評価を行う。基の型の core の一致も確認する。`run_ok` が正常の枝の等式、`run_refined_rejected` が偽と評価不能の拒否の等式を与える。表示器は δ の引数であり、その書式はこの型付けの保証に含まれない。
 
@@ -3502,11 +3520,11 @@ Lean の捕捉を持つ実行関係の `Step.E_Lam` は、`q.view = .app f ws`�
 
 `Check.BuiltinSource` は、任意の組込みの表、宣言データから構成する標準表、範囲の許容を真とする表を区別する。`Check.Input.B` はこのデータから同じ表を返す。標準表を含む表全体の取り出しと、その表を使う検査関数は `noncomputable` として定義する。具体の入力の受理は定義の簡約で検査する。任意の表では、開いた型引数の範囲閉性を検査して元の許容を使う。標準表では `RangeStandard` の具体化保存から許容の葉を導く。範囲許容を真とする構成は、元の表の許容の保存を仮定せず、実際に読む表の `admitsR` を定義する。範囲引数の個数と種類は別に検査する。`.custom B` は元の B と定義的に同じである。
 
-`CheckOpen` は、宣言した範囲の種類列の下で同じ95規則を検査する。`CheckOpenFormation` は、その深さで注釈・署名・組込みの宣言を検査し、`CheckOpenArgumentLeaves` は七つの全具体化の葉を有限な検査から構成する。範囲写像は原子の有限一覧を走査して計算し、`CheckOpenRangeSupport` が支持の検査成功から数学的な写像との一致を示す。構成子の欄の範囲閉性は `constructorsClosed` で実際に検査し、一覧の完全性と合わせて使う。この検査の成功を外部の信頼条件にしない。`CheckOpenInfer` は同じソースから型・効果・案内を計算し、`CheckOpen.guideSound` と `checkBlockAt_sound` が再検査の成功を `OpenSurface` の導出へ写す。
+`CheckOpen` は、宣言した範囲の種類列の下で同じ97規則を検査する。`CheckOpenFormation` は、その深さで注釈・署名・組込みの宣言を検査し、`CheckOpenArgumentLeaves` は七つの全具体化の葉を有限な検査から構成する。範囲写像は原子の有限一覧を走査して計算し、`CheckOpenRangeSupport` が支持の検査成功から数学的な写像との一致を示す。構成子の欄の範囲閉性は `constructorsClosed` で実際に検査し、一覧の完全性と合わせて使う。この検査の成功を外部の信頼条件にしない。`CheckOpenInfer` は同じソースから型・効果・案内を計算し、`CheckOpen.guideSound` と `checkBlockAt_sound` が再検査の成功を `OpenSurface` の導出へ写す。
 
 `CheckDataHint` は、項・宣言・値文脈から、欄の射影と構成子の判定に必要な型の候補を支持の証明とともに生成する。形成の入力には、構成子の一覧、原子の一覧、範囲の種類列を置く。種類列の既定値は空であり、通常の検査は範囲深さ0を用いる。`CheckOpenFormation.annotation_nil` は、空の種類列で注釈の検査が通常の計算と一致することを示す。位置ごとの型の案内を置かず、生成した候補を `dataCheck` で再検査する。
 
-検査は `Surface.Rules` の式72規則、ブロック11規則、列・リストの要素・固定の式・腕・節の12規則を扱う。`guideSound` は、全ての案内について七つの判断を同時に証明する。各 `check*At_sound` は、宣言と組み込みの表の有限支持、ソースの注釈・案内・文脈・結果型と効果の有限支持、検査成功から、同じソースと文脈での表層の型付けを導く。入力の条件には、構成子の一覧の全件性、型クラスと組み込みの許容判定の Bool と既存の `sat`・`admits`・`admitsR` との対応、演算子が返す型引数の有限支持を含む。型付け又は含意の正しさは入力に要求しない。型・依存列・効果・型の列の全構成子について形成・宣言済み・kind・行の条件を検査し、辞書・値引数・依存列引数・呼出しの頭、パターン、リスト展開と補間の各補助判断へ接続する。
+検査は `Surface.Rules` の式74規則、ブロック11規則、列・リストの要素・固定の式・腕・節の12規則を扱う。`guideSound` は、全ての案内について七つの判断を同時に証明する。各 `check*At_sound` は、宣言と組み込みの表の有限支持、ソースの注釈・案内・文脈・結果型と効果の有限支持、検査成功から、同じソースと文脈での表層の型付けを導く。入力の条件には、構成子の一覧の全件性、型クラスと組み込みの許容判定の Bool と既存の `sat`・`admits`・`admitsR` との対応、演算子が返す型引数の有限支持を含む。型付け又は含意の正しさは入力に要求しない。型・依存列・効果・型の列の全構成子について形成・宣言済み・kind・行の条件を検査し、辞書・値引数・依存列引数・呼出しの頭、パターン、リスト展開と補間の各補助判断へ接続する。
 
 部分型は、有限の `LeCertificate`・依存列の証明書・型引数の証明書を再検査して `Ty.LeQ` などの判断へ接続する。篩の含意は `LogicCertificate.result` が `checkAccounted` を呼んで調べる。結果は成功、会計の打ち切りによる `unknown`、不正な証明書の拒否に分かれ、成功だけが型付けの根拠になる。関数の上限は関数ごとの入力から選び、宣言の `proofSteps` の正の指定があればそれを優先する。0の明示指定は拒否する。基本操作列の計上と実装の全実作業との一致は「篩の係数と基本操作の計上」で定める別の条件であり、生の操作列の検査だけから実作業全体の上限は結論しない。
 
@@ -3518,13 +3536,33 @@ Lean の捕捉を持つ実行関係の `Step.E_Lam` は、`q.view = .app f ws`�
 
 範囲パラメータを持つ定義では、`checkDef` は宣言の種類列を形成の入力へ設定し、開いた推論と再検査から `OpenSurface.BodyTy` を導く。`checkDef_sound` は、種類列が非空の場合に構成子の有限一覧の完全性を要求する。構成子の範囲閉性そのものは本体の検査で調べる。空の種類列では通常の分岐を使い、`checkDef_no_ranges_sound` が追加の完全性の条件なしに元の結論を返す。プログラムの健全性では、既存の `NamesComplete.ctorNames` から各定義の一覧の完全性を供給する。
 
-`DefinitionStopped` は、宣言の種類列の有無に対応する実際の推論と会計の打ち切りを表す。`checkDef_no_ranges_unknown` は、空の列で元の `BodyTelStopped` を返す。`ProgramStopped` は各関数にこの `DefinitionStopped` を用い、`programStopped_no_ranges` は全関数の種類列が空なら元の存在形 `ClosedProgramStopped` を返す。
+`DefinitionStopped` は、宣言の種類列の有無に対応する実際の推論と会計の打ち切りを表す。`checkDef_no_ranges_unknown` は、空の列で元の `BodyTelStopped` を返す。`checkProgram_unknown`・`checkProgramAccepted_unknown` は準備後の入力と本体の `ProgramStopped` を返す。`ProgramStopped` は各関数にこの `DefinitionStopped` を用い、`programStopped_no_ranges` は全関数の種類列が空なら元の存在形 `ClosedProgramStopped` を返す。
 
 操作の節の有限検査 `clauseAllowed` は、利用者操作と通常の組込みの節を許し、pathBases の節を拒否する。これは `ClauseAllowed` を導く十分条件であり、双方向の判定の一致は主張しない。pathBases の発行は専用の発行規則を用い、その節を呼び出さない。
 
-プログラムの入口 `CheckTables.checkProgram` は、変性の全欄、効果に列挙した操作と操作宣言の双方向の対応、組み込みの効果名との分離、全定義と全実装を検査する。`CheckedUnder` は、同じ宣言表の下での全本体の型付け、変性、元の宣言の保存、効果の適格性を表す。`checkProgram_sound` は名前の一覧の完全性を明示した一般の言明であり、宣言表がプログラム自身の表と同じなら `checkProgram_empty` が `Program.WellTyped` を導く。有限の `Materials` はプログラムの全表と名前の一覧を同じ材料から作り、関数と実装の空欄だけを署名で補う。材料についての系は、名前の完全性・実装の名前の完全性・構成子の一覧の全件性・元の宣言の保存を構成から導く。これらの全件性と、型・効果の支持や既存の許容判定との対応を区別する。
+プログラムの入口 `CheckTables.checkProgram` は `CheckPreparation.prepare` で全本体を収集・解決した後、同じ入力表の `checkPreparedProgram` で変性・効果の所属・全定義と全実装を検査する。`CheckedUnder` は、その解決済みプログラムの同じ宣言表の下での全本体の型付け、変性、元の宣言の保存、効果の適格性を表す。`checkProgram_sound` は準備後の入力とプログラムの `CheckedUnder` を返し、補完がなければ `checkProgram_empty` が準備後の `Program.WellTyped` を導く。`prepare_names`・`prepare_impl_names`・`prepare_extension` は、名前の一覧の完全性と利用者の宣言の保存を元の入力から移す。有限の `Materials` の系もこの入口を使い、全件性を材料から導く。ソースの注釈と署名の有限支持、既存の許容判定との対応は別に受け取る。
 
-`CheckAccept.checkProgramAccepted` は、同じプログラムの型付けの検査に続けて、全定義と全実装メソッドの必須の判定を受理する。プログラム全体の受理 `Accepted A q p` は、全ての実在する本体の `acceptBody` の成功である。`checkProgramAccepted_sound` は `CheckedUnder p q ∧ Accepted A q p` を、宣言の補完が無ければ `checkProgramAccepted_empty` は `Program.WellTyped` と `Accepted` の両方を返す。材料の系では名前の完全性を外部条件に足さない。規則を持つ呼出しの表は `standardTable (primResolve key body) rules` であり、組み込み名を頭に持つ直接の呼出しを解決する。記録の無い出現も、事実を持たない状態で必須の判定を行う。`CheckAcceptedRanges` の `BodyRanges` は、範囲変数・based・secrets を含む全ての `List RangeIx` の呼出しの出現・選んだ規則・記録した全状態について、推論した範囲を契約が覆うことと、規則が選ぶ全位置に契約が存在することを表す。`Accepted.def_ranges`・`Accepted.method_ranges` は、受理した各定義と各実装メソッドへこの性質を導き、記録の無い出現にも事実を持たない状態で同じ二条件を導く。必須の規則が選ばれた位置で固定した絶対範囲の契約を取り出せなければ、`unknownSource` を返す。`acceptBody_ranges` は、成功した各位置の固定契約と被覆の証人を返す。通常の絶対範囲の列を固定範囲へ埋め込む四つの `acceptBody_sound`・`some` と両 unrecorded の系は、元の被覆と存在の結論を保つ。受理は範囲の推論と契約の被覆を照合する性質であり、コアの実行と表層の局所評価の一致を前提にしない。理由: 型付けの正しさと、狭い契約を確認済みの範囲でだけ受理する性質を、同じ入口の別々の結論として示すためである。
+`CheckAccept.checkProgramAccepted` は、公開ソースを `checkProgram` で収集・解決して型付けた後、元の本体の全出現で必須の判定を受理する。`checkProgramAccepted_sound` の結論は、準備後のプログラムと入力の `CheckedUnder`、及び元のプログラムの `Accepted A q p` である。必須の判定の鍵と診断の位置は元の先行順で読む。材料の系は名前の完全性を材料から導く。`PredicateProgramSemantics.accepted_property1` は、元の入力の健全性、元の一覧の完全性、準備後の本体と署名の有限支持、実装名の完全性、宣言表の一致、受理の一覧の完全性、準備後のプログラムの整形式、同じ核のプログラムと表の `Builtins.ValueAssumptions` を分けて受け取り、実入口の受理から、解決後の表層の型付け・元の本体の受理・性質1の三結論を導く。外部宣言のないプログラムへの制限は置かない。
+
+閉じた由来を読む `ScopeAccept.BodyRanges` は、範囲変数・based・secrets を含む全ての `List RangeIx` の呼出しの出現・選んだ規則・記録した全状態について、推論した範囲を契約が覆うことと、規則が選ぶ全位置に固定した絶対範囲の契約が存在することを表す。`ScopeAccept.acceptBody_ranges_all` は受理からこの性質を導く。固定した絶対範囲の契約を取り出せない位置は `unknownSource` とする。通常の絶対範囲の列を固定範囲へ埋め込む四つの `acceptBody_sound`・`some` と両 unrecorded の系は、同じ被覆と存在を結論とする。
+
+`OpenScopeAccept` は、型が保持する範囲を転送する呼出しについて、固定範囲と範囲変数を同じ規則で判定する。規則は `Scope.widenPathIn`・`Http.widenRequestIn`・`Scope.pathInValue`・`Http.requestInValue`・`File.readTextIn`・`File.readBytesIn`・`Http.sendIn` と、`File.writeTextIn`・`File.appendTextIn`・`File.writeBytesIn`・`File.appendBytesIn` の十一行である。`selectExpr` は、契約位置が宣言の全引数位置の置換であり、引数とラベルの個数が行のarityと一致し、位置0の引数が元のパラメータ参照である直接呼出しを選ぶ。パラメータ型の外側の篩を除き、指定した対象型が保持する範囲を読む。呼出しのラベルと各引数の型は先行する型付けが検査する。
+
+記号的な被覆 `OpenScopeAccept.covers outer inner` は、同じ `RangeIx`、外側の Top、又は被覆する固定範囲どうしのとき真とする。`acceptSelection` は、元の範囲変数が宣言の内側にあり、契約の位置0が存在し、この被覆が真のとき成功する。成功すれば、全ての `RangesFit rs kinds` について、元の範囲と位置0の契約の具体化が存在し、後者が前者を覆う（`acceptSelection_sound`）。異なる範囲変数間の被覆を推測しない。契約が無ければ `notCovered`、記号を含む被覆を示せなければ `unknownSource` とする。記号側の規則は入力型から元の範囲を選び、局所解析の閉じた `ScopeRule.index` を具体化して得る範囲とは区別する。
+
+`OpenScopeAccept.contextsBlock` は文列を辿り、元のパラメータの型が見える位置を記録する。束縛とパターンの後は未知の位置を加え、局所の注釈から型の範囲を新しく認定しない。`selections` は元の全出現の先行順と同じ鍵で選択を記録する。
+
+| 受理する転送の形 | 範囲を読む参照 |
+|---|---|
+| 直接の末尾呼出し | 元のパラメータ |
+| 束縛又は式文の後の呼出し | 新しい束縛の分だけ位置をずらした元のパラメータ |
+| 呼出しの結果を束縛して返す本体 | 束縛の右辺にある呼出しの元のパラメータ |
+| ブロック式の末尾の呼出し | 同じブロックで見える元のパラメータ |
+| 書き込みなど二引数の呼出し | 書いた順から契約位置0へ対応させた元のパラメータ。内容の引数は範囲の選択に使わない |
+
+`OpenScopeAccept.acceptBody` は全出現を検査する。同じ出現に必須規則があり選択もあれば `acceptSelection`、選べなければ同じ局所解析の記録を用いる `acceptOccurrence` で判定する。分岐・ラムダ・一般の引数式の内側、再包装した値、局所の注釈だけに依存する転送は、記号側では選ばない。局所の由来でも認定できない狭い契約は `unknownSource` になる。リテラルとconstの既存の選び方は局所解析が扱う。
+
+`CheckAcceptedRanges.DefinitionRanges` と `Accepted.def_ranges` は、全出現について、選べた記号の全適格具体化の被覆と契約の存在、又は局所の由来による受理を返す。種類列が空でもパラメータが固定範囲を保持すれば同じ記号側を使う。`acceptBody_no_ranges`・`acceptDef_no_ranges`・`Accepted.def_ranges_no_ranges` は、空の種類列に加えて記号側の選択がない本体について、元の閉じた `BodyRanges` を回復する。実装メソッドの `Accepted.method_ranges` は閉じた由来の全出現の `BodyRanges` を返す。受理を、コアの実行での値の所属の保証へ読み替えない。
 
 ### 篩を含む定義とプログラムの適格性
 

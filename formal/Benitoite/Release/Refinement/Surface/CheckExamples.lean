@@ -256,10 +256,10 @@ theorem required_programs_typed :
     (program (.path (.tree ["data"]))).WellTyped builtins (fun _ _ => none) ∧
     (program (.path (.tree ["other"]))).WellTyped builtins (fun _ _ => none) := by
   constructor
-  · exact CheckTables.checkProgram_empty (input_sound _) (names_complete _) (definitions_support _)
+  · exact CheckTables.checkProgram_empty (q := input _) (input_sound _) (names_complete _) (definitions_support _)
       (implementations_support _) (implementations_names_complete _)
       rfl required_programs_checked.1
-  · exact CheckTables.checkProgram_empty (input_sound _) (names_complete _) (definitions_support _)
+  · exact CheckTables.checkProgram_empty (q := input _) (input_sound _) (names_complete _) (definitions_support _)
       (implementations_support _) (implementations_names_complete _)
       rfl required_programs_checked.2
 
@@ -267,7 +267,7 @@ theorem required_programs_typed :
 theorem required_entry_checked :
     CheckTables.CheckedUnder (program (.path (.tree ["data"]))) (input (.path (.tree ["data"]))) ∧
     CheckAccept.Accepted acceptInput (input (.path (.tree ["data"]))) (program (.path (.tree ["data"]))) :=
-  checkProgramAccepted_sound (input_sound _) (names_complete _) (definitions_support _)
+  checkProgramAccepted_sound (q := input _) (input_sound _) (names_complete _) (definitions_support _)
     (implementations_support _) (implementations_names_complete _)
     (declarations_extend _) (accept_names_complete _) (by with_unfolding_all rfl)
 
@@ -275,7 +275,7 @@ theorem required_entry_checked :
 theorem required_entry_accepted :
     (program (.path (.tree ["data"]))).WellTyped builtins (fun _ _ => none) ∧
     CheckAccept.Accepted acceptInput (input (.path (.tree ["data"]))) (program (.path (.tree ["data"]))) :=
-  checkProgramAccepted_empty (input_sound _) (names_complete _) (definitions_support _)
+  checkProgramAccepted_empty (q := input _) (input_sound _) (names_complete _) (definitions_support _)
     (implementations_support _) (implementations_names_complete _)
     rfl (accept_names_complete _) (by with_unfolding_all rfl)
 
@@ -284,7 +284,7 @@ theorem required_entry_ranges :
     BodyRanges acceptInput (bodyKey "Example.main") (entryScope 0) (body (.path (.tree ["data"]))) ∧
     BodyRanges acceptInput (bodyKey (acceptInput.methodKey "Example.UnitRequired" "run"))
       (entryScope 0) (body (.path (.tree ["data"]))) :=
-  ⟨required_entry_accepted.2.def_ranges (n := "Example.main") (d := definition (.path (.tree ["data"]))) (by with_unfolding_all rfl),
+  ⟨required_entry_accepted.2.def_ranges_no_ranges (n := "Example.main") (d := definition (.path (.tree ["data"]))) (by with_unfolding_all rfl) rfl (by rfl),
     required_entry_accepted.2.method_ranges (i := "Example.UnitRequired") (m := "run")
       (id := implementation (.path (.tree ["data"]))) (body := body (.path (.tree ["data"]))) (by with_unfolding_all rfl) (by with_unfolding_all rfl)⟩
 

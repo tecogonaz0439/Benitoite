@@ -452,6 +452,23 @@ mutual
         Eff.Covers (bindParams Γ as) (liftMany as.length Φ) (Eff.shiftV as.length 0 ε) e →
         Ty.Annotation D.core C Γ b →
         HasTypeQ D B opPrim Q Δ C Γ Φ R p (.call f labels positions args) b ε
+    /-- 値として観測できる判定の引数を、元の値の文脈のまま内部の組込みへ渡す。穴のない形は内部の呼出しの符号化である。 -/
+    | E_PredicateCall {Δ C Γ Φ R p name ts es xs target v t r ec b ε} :
+        CallHeadTy D B Q C Γ (.primName name ts es xs) t [] →
+        target.valueOf? = some v →
+        ValsTel D B C Γ 0 Γ Φ [v] t r ec →
+        Ty.LeQ D.core Γ Φ r b → Eff.Covers Γ Φ ε ec → Ty.Annotation D.core C Γ b →
+        HasTypeQ D B opPrim Q Δ C Γ Φ R p
+          (.partialCall (.primName name ts es xs) [] (.expr none 0 target .nil) b ε) b ε
+    /-- 欄の判定の内部呼出し。元の取り出しの式を同じ契約で検査し、実行時には受け手の値を内部行へ直接渡す。 -/
+    | E_PredicateProject {Δ C Γ Φ R p name ts es xs root v source input t r ec b ε} :
+        CallHeadTy D B Q C Γ (.primName name ts es xs) t [] →
+        root.valueOf? = some v →
+        HasTypeQ D B opPrim Q Δ C Γ Φ R .other source input Eff.empty →
+        ValsTel D B C Γ 0 Γ Φ [v] t r ec →
+        Ty.LeQ D.core Γ Φ r b → Eff.Covers Γ Φ ε ec → Ty.Annotation D.core C Γ b →
+        HasTypeQ D B opPrim Q Δ C Γ Φ R p
+          (.partialCall (.primName name ts es xs) [] (.expr none 0 root (.expr none 1 source .nil)) b ε) b ε
     /-- 01-12「外部の型と関数」: 外部関数の直接の呼出し。引数を書いた順に束縛してから宣言の位置順に渡す。 -/
     | E_CallExternal {Δ C Γ Φ R p f d ts labels positions args as r e b ε} :
         D.core.externalFunction f = some d → ExternalCallAdmissible D.core B C d ts →

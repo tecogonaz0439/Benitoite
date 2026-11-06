@@ -85,6 +85,22 @@ mutual
       exact conCall_core hc hn hk hw hcl ha hv hR hA σ (hargs.desugar hR hA σ)
     | .E_CallDirect hh _ hargs hv hl hc hb =>
       exact callDirect_core hh hv hl hc hb hR hA σ (hargs.desugar hR hA σ)
+    | .E_PredicateCall hh hvalue hvals hle hc hb =>
+      have hb' := annotation (B := B) (annotation_sameTypes hb hR.types) σ
+      have hhead := (hh.app_value (Φ := Φ) (dl := []) rfl hR σ).1
+      have hargs := hvals.core (Q := Q) hR hA (ShiftMap.self Γ) σ
+      have hresult := HasTypeCQ.C_Sub (R := R.map (rangeTy σ.val)) (Δ := rangeLocal σ.val Δ)
+        (.C_DependentApp hhead hargs) ((OpenBody.Le.source (hle.sameTypes hR.types)).at σ)
+        ((OpenBody.Covers.source hc).at σ) hb'.wf hb'.sorted hb'.declared
+      simpa only [ExprCore, desugar_predicateCall hvalue, comp_app_instR, List.map_cons, List.map_nil] using hresult
+    | .E_PredicateProject hh hvalue _ hvals hle hc hb =>
+      have hb' := annotation (B := B) (annotation_sameTypes hb hR.types) σ
+      have hhead := (hh.app_value (Φ := Φ) (dl := []) rfl hR σ).1
+      have hargs := hvals.core (Q := Q) hR hA (ShiftMap.self Γ) σ
+      have hresult := HasTypeCQ.C_Sub (R := R.map (rangeTy σ.val)) (Δ := rangeLocal σ.val Δ)
+        (.C_DependentApp hhead hargs) ((OpenBody.Le.source (hle.sameTypes hR.types)).at σ)
+        ((OpenBody.Covers.source hc).at σ) hb'.wf hb'.sorted hb'.declared
+      simpa only [ExprCore, desugar_predicateProject hvalue, comp_app_instR, List.map_cons, List.map_nil] using hresult
     | .E_CallExternal hf hsc ha hok hargs hv hl hc hb =>
       exact callExternal_core hR hA σ hf hsc ha hok (hargs.desugar hR hA σ) hv hl hc hb
     | .E_Call hnd hf _ hargs hv hl hc hb =>
@@ -103,17 +119,17 @@ mutual
       exact pipeApplyDirect_core hp hh hv hle hc hb hR hA σ (hl.desugar hR hA σ)
     | .E_PipeApply hp hnd hl hf hv hle hc hb =>
       exact pipeApply_core hp hnd hv hle hc hb hR hA σ (hl.desugar hR hA σ) (hf.desugar hR hA σ)
-    | .E_PartialCallDirect _ hh _ hn ha hfix hv hl hc =>
-      exact partialCallDirect_core hh hn ha hv hl hc hR hA σ
+    | .E_PartialCallDirect hholes hh _ hn ha hfix hv hl hc =>
+      exact partialCallDirect_core hholes hh hn ha hv hl hc hR hA σ
         (by simpa only [FixedCore, rangeLocal_nil] using hfix.desugar hR hA σ)
-    | .E_PartialCall hnd _ hf _ hn ha hfix hv hl hc =>
-      exact partialCall_core hnd hn ha hv hl hc hR hA σ
+    | .E_PartialCall hnd hholes hf _ hn ha hfix hv hl hc =>
+      exact partialCall_core hholes hnd hn ha hv hl hc hR hA σ
         (by simpa only [FixedCore, rangeLocal_nil] using hfix.desugar hR hA σ) (hf.desugar hR hA σ)
-    | .E_PartialCallDirectDep _ hh _ hn hnon ha har hfix hcov hv hl hc =>
-      exact partialCallDirectDep_core hh hn hnon ha har hcov hv hl hc hR hA σ
+    | .E_PartialCallDirectDep hholes hh _ hn hnon ha har hfix hcov hv hl hc =>
+      exact partialCallDirectDep_core hholes hh hn hnon ha har hcov hv hl hc hR hA σ
         (by simpa only [FixedCore, rangeLocal_nil] using hfix.desugar hR hA σ)
-    | .E_PartialCallDep hnd _ hf _ hn hnon ha har hfix hcov hv hl hc =>
-      exact partialCallDep_core hnd hn hnon ha har hcov hv hl hc hR hA σ
+    | .E_PartialCallDep hnd hholes hf _ hn hnon ha har hfix hcov hv hl hc =>
+      exact partialCallDep_core hholes hnd hn hnon ha har hcov hv hl hc hR hA σ
         (by simpa only [FixedCore, rangeLocal_nil] using hfix.desugar hR hA σ) (hf.desugar hR hA σ)
     | .E_PartialCon hc hn _ hok hnames hkn hWF hcl hdata ha hfix hv hl =>
       exact partialCon_core hc hn hnames hkn hWF hcl hdata ha hv hl hR hA σ

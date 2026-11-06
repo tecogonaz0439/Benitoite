@@ -4,6 +4,11 @@ import Benitoite.Release.Refinement.Surface.CheckSoundSupport
 namespace Benitoite.Release.Refinement.Surface.Check
 open CheckArguments
 
+/-- 直接に値へ写るソースは、その値に現れる型の有限支持を保つ。 -/
+theorem source_value_support {q e v} (hs : ExprSupport q e) (hv : e.valueOf? = some v) :
+    ValueSupport q.formation.atoms v := by
+  cases e <;> simp only [Expr.valueOf?] at hv <;> cases hv <;> first | trivial | exact hs
+
 theorem value_support_member {s vs v} (hv : ValuesSupport s vs) (hm : v ∈ vs) : ValueSupport s v := by
   induction vs with
   | nil => cases hm
