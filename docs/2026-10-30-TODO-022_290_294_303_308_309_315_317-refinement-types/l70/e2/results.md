@@ -104,3 +104,12 @@ O016・O084・O090のこの担当の検査と記録、O118の二モジュール�
 ## 取りまとめの訂正（RV-L70.e2 の中1）
 
 義務の表で残る担当を「なし」とした二つの行（消去の観測の保存、型付けの保存）は、計算の根に働く消去についての結果である。本体・`let`・閉包の中の `check` の消去と、その観測の保存は、群 E の後半（L70.34 と一緒の依頼）が受け持つ。O066 はそこで閉じる。
+
+## 群 E の消去の作業末の work の検査（取りまとめ）
+
+- 基準: `256f78e69124f0d8a7e8b01517be61009524fdd8`（群 F2 までの san_benito）。HEAD `c005e898` は、消去の成果へ san_benito を取り込んだもの（衝突なし）。
+- 事前に `formal/.lake/build/lib/lean/Benitoite/Release/Refinement` と `formal/.lake/build/ir/Benitoite/Release/Refinement` を消した。
+- コマンド: `scripts/check.sh --level work --base 256f78e69124f0d8a7e8b01517be61009524fdd8`（`/usr/bin/time -l` で測定）。選ばれた検査は spec_tally・spec_examples・formal_build。
+- 終了状態 0（selected checks passed。spec_examples は7件成功）。外側の時間 931.29秒（21:01〜21:17）、最大常駐量 4,392,091,648 バイト。
+- 生の記録は `<tmp>` に置いた（6,732 バイト、SHA-256 `bc1c55529909517f6ba758b1bc58f2354f6d3ea4dbee5e38fa3561b5300b1b59`）。
+- 計画からのずれ: 本体の中の消去は群 E の後半へ回した（plan.md）。
