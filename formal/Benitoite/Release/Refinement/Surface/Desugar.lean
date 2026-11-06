@@ -78,7 +78,7 @@ def directCallee : Expr → Option CallHead
   | .funDicts f ts es ds _ _ => some (.app (.fnRef f ts es) (DictEv.toValList ds))
   -- 同表第 1 行: メソッドの呼び出し。
   | .methName d m ss es us _ _ => some (.meth d.toVal m ss es (DictEv.toValList us))
-  | .primName b ts es rs => some (.app (.prim b ts es (rs.map RangeExpr.absolute)) [])
+  | .primName b ts es rs => some (.app (.prim b ts es ((rs.map RangeExpr.absolute).map RangeIx.fixed)) [])
   -- 01-12「外部の型と関数」: 外部関数の直接の呼出し。
   | .externalName f ts => some (.external f ts)
   -- 01-12「ハンドラ」: 利用者の操作を直接呼ぶ op(e1,…,en)。
@@ -235,7 +235,7 @@ mutual
         (.meth (d.toVal.rename (· + ps.length)) m (shiftTs ps.length ss) (shiftEs ps.length es)
           (Val.renameList (· + ps.length) (DictEv.toValList us) ++ boundVars ps.length)))
     -- 同節: prelude の関数 M.g | return b[T̄; Ē]（Σ にあるものは関数の名前）
-    | .primName b ts es rs => .ret (.prim b ts es (rs.map RangeExpr.absolute))
+    | .primName b ts es rs => .ret (.prim b ts es ((rs.map RangeExpr.absolute).map RangeIx.fixed))
     -- 01-12「ハンドラ」: 利用者の操作の名前 op を、呼ばずに値として使う | return op[T̄]
     | .opName o ts => .ret (.op o ts)
     -- 01-12「形式化した操作の制約と節の辞書」: 辞書を値の作成時に捕え、
@@ -497,7 +497,7 @@ end
 -- | fn f[ᾱ;ρ̄](x̄:Ā):B ! ε = ⟦B0⟧。型パラメータの制約はそのまま写す。
 def desugarDef (opPrim : OpPrim) (d : Def) : Refinement.Def :=
   -- 01-12「型クラス」: 制約ごとの Dict[Cl, α] の引数を値の引数の前に持つ。
-  { tparams := d.tparams, neffs := d.neffs, names := d.coreNames, params := d.coreParams, ret := d.ret, eff := d.eff,
+  { tparams := d.tparams, neffs := d.neffs, rkinds := [], names := d.coreNames, params := d.coreParams, ret := d.ret, eff := d.eff,
     body := desugarBlock opPrim .tail d.body }
 
 -- 01-12「型クラス」D-Impl: 上位の辞書 Ui は値、メソッド Mj は末尾位置で移す。
@@ -511,14 +511,14 @@ def desugarImpl (opPrim : OpPrim) (id : ImplDecl) : Refinement.ImplDecl :=
 -- match r { C_R(q1,…,qn) ⇒ return z }（qi は変数 z、そのほかは _。Rust getters と同じ）。
 def accessorDef (c : ConName) (cd : ConDecl) (k : Nat) : Refinement.Def :=
   let d := accessorDecl c cd k
-  { tparams := d.tparams, neffs := d.neffs, names := d.names, params := d.params, ret := d.ret, eff := d.eff,
+  { tparams := d.tparams, neffs := d.neffs, rkinds := [], names := d.names, params := d.params, ret := d.ret, eff := d.eff,
     body := .match (.var 0) [mkArm (accessorPattern c cd.args.length k) (.ret (.var 0))] }
 
 -- 01-12「構成子の判定の関数」: isC[ᾱ;](value:D[ᾱ]):Boolean{…} ! {} =
 -- match value { C(_,…,_) ⇒ return true | _ ⇒ return false }。
 def testerDef (c : ConName) (cd : ConDecl) : Refinement.Def :=
   let d := testerDecl c cd
-  { tparams := d.tparams, neffs := d.neffs, names := d.names, params := d.params, ret := d.ret, eff := d.eff,
+  { tparams := d.tparams, neffs := d.neffs, rkinds := [], names := d.names, params := d.params, ret := d.ret, eff := d.eff,
     body := .match (.var 0) [mkArm (.con c (List.replicate cd.args.length .wild)) (.ret (.const (.boolean true))),
       mkArm .wild (.ret (.const (.boolean false)))] }
 

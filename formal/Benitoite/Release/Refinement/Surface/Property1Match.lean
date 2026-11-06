@@ -83,7 +83,7 @@ theorem handled_desugarClauses {D : Declarations} {op cs} (hR : D.Realizes P) :
     have h2 : cs.skeleton.any (fun c => c.op == o) = (cs.skeleton.map Clause.op).any (· == o) := by
       simp [List.any_map, Function.comp_def]
     simp only [handles, h1, h2, e]
-  unfold handled effOps
+  unfold handled effOps issuesSelected
   rw [hh, ← hR.types.effects]
 
 theorem bindParams_two (Γ : Ctx) (x y : Ty) : bindParams Γ [x, y] = (Γ.extend x).extend (y.shiftV 1 0) := by

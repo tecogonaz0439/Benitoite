@@ -3304,6 +3304,8 @@ abbrev AtError := Detail Val
 
 `Val.toTerm?` は観測できない根を `none` とする。複合値の観測は `List (Option Term)` で各要素・欄を保持するので、関数・Reference・Lazy の欄を観測できなくても、data の根や隣の不変な欄は残せる。`slotBind` は `none` を保つ。全域の構文操作 `termBind` の既定値を、観測の成功の証拠として使わない。
 
+`Refinement.Surface.Desugar` は、表層の関数の参照を空の範囲引数を持つ `Val.fnRef` へ写し、組み込みの参照の閉じた範囲引数を `RangeIx.fixed` に包んで `Val.prim` へ渡す。宣言した関数・フィールドを取り出す関数・構成子の判定の関数は、いずれも空の `Def.rkinds` を持つ。宣言の表と核のプログラムの対応 `Declarations.Realizes` は、型・関数・実装の署名と外部宣言の条件に加え、対応する関数の `rkinds = []` を要求する。核の全関数の範囲パラメータが空なら、この対応は前記の四条件と同値である（`Declarations.realizes_no_ranges`）。脱糖したプログラムについては `desugarProgram_ranges` がこの前提を供給する。性質1は、照合対象の型注釈から核の `C_Match` の宣言の前提を供給し、空の範囲文脈での注釈と本体の判断を `Ty.AnnotationR` と `TelBodyTyR` へ移す。処理済みの効果は、核の `handled`（`handledSelected` はその別名）を脱糖の前後で同じ操作の表と節の操作名の列から読むことで一致する。
+
 `Refinement.Surface.Expr.valueOf?` は、脱糖がそのまま返す値を取り出す。局所の名前、リテラル、Unit、引数のない構成子に加え、直接の負号を持つ `negInt`・`negFloat`・`negDecimal`・`negInteger8`・`negInteger16`・`negInteger32`・`negFloat32` を含む。Decimal は係数を負にし、固定幅整数は大きさを Int に移して負にし、Float32 は符号ビットを反転する。取り出した値の観測について篩を事実から導ければ、表層の `HasTypeQ.E_Refine` は同じ式に篩付きの型を与え、脱糖は核の `V_Refine` へ写る（`desugar_valueOf`・`HasTypeQ.desugar`）。
 
 `Refinement.Surface.AliasDecl.expand` は、別名の本体へ型引数・範囲引数・値引数の順に置換を適用する。宣言の整形式は、本体が宣言した型・範囲・値の文脈で整形式・整列済み・宣言済みであることを要求する（`AliasDecl.WellFormed`）。型引数の数と kind、各像の三つの形成条件（`AliasTypeArgs`）から、`AliasDecl.subst_formation` は `a.body.subst ts []` の三つの形成条件を型引数を代入した文脈 `a.typeContext ts` で導く。文脈は値の番号を保ち、正規化前の型の像を格納する。`AliasDecl.expand_annotation` は、この形成、同じ数の整形式で種類の合う閉じた範囲引数、型引数を代入して範囲を具体化した文脈 `a.instantiatedContext ts rs` から展開先の文脈への値引数の像（`AliasArgs`）を使い、展開の注釈の整形式を導く。値引数の像は全 sort について整列と宣言を照合する。型パラメータが空という前提は持たない。
