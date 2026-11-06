@@ -134,3 +134,38 @@ C/l70/k/ は386ファイル、2,117,955バイトである。各ファイルは10
 | 記録の大きさの集計（`find … -exec cat {} + \| wc -c`） | 群 K は2,117,955バイト。patch の三つの束は計1,070,788バイト |
 
 `lake build`・cargo・`scripts/check.sh`・記録を書き換える台本は実行していない。
+
+## Opus による処置の確認（2026-11-06）
+
+対象は処置のコミット `6c100e89`（前は `de7fbf28`）である。担当の報告（再開5）、[群 K の結果](../l70/k/results.md)の「再開5」、[署名の副表](../l70/k/resume4-signatures.md)、[削除の台帳](../l70/k/removed-records.json)、range-kernel.md・c-match.md・resume2/3 の定義の候補・resume3-obstruction.md の差分、07-04 と R/RangeCode.lean の差分、残した台本（verify.py・signatures.py・evidence.py・run_final.py・definitions_resume4.py）を読んだ。Lean は `<repo>/formal/` から `lake env lean -M 12288 <tmp>/check2.lean` を一回だけ実行した（終了0、約2.7秒、`-o` なし）。`lake build`・cargo・`scripts/check.sh`・記録を書き換える台本・git の書き込み操作は行っていない。
+
+### 結論
+
+**可。** 中1・中2・軽1・軽2・情報6は処置済みである。処置は Lean の言明・定義を変えていない（Lean の差分は `Def.instTel_of_ne_nil` の3行の削除だけ）。残った所見は軽1件である。
+
+| 所見 | 確認の結果 |
+|---|---|
+| 中1 | 済み。副表は A〜G の160行で、節ごとの行数は表の件数（106・12・3・3・14・21・1）と一致する。本レビューが名指した13件、`case_V_Fun`・二つの `.ofExtends`・`pathBases_not_handled` は全て行がある。各行に元・新・条件・範囲なしの系がある。本レビューの比較の173行との対応と、差と誤って数えた7件の帰属も末尾にある。results.md「再開5」は名指しの宣言を種類ごとの表で補っている。`LegacyClausesInput` を(ii)に含める扱いは plan.md の 2026-11-06 の取りまとめの判断(3)と一致する |
+| 中2 | 済み。results.md に、十四判断が全適格具体化の量化であり `instR` の保存は定義から従うこと、実質は群 D の性質1が負うこと、受け口の言明の案、証明の案と代案、見込み（最初の確認30〜60分、全体は不明）がある。受け口の案の `TelBodyTy P B Ψ Q C (rangeCtx rs Γ) Φ (rangeTel rs t) (… .instR rs)` は、本番の `TelBodyTyR.instR` の結論の形と引数の並びに一致する（`#check` で確かめた）。range-kernel.md は第1・2節を実装前の案と区別し、第3節から受け口へ参照する。07-04 の本文と表は「定義から従う具体化の保存」と書き分けた |
+| 軽1 | 済み。宣言は環境にない（`env.contains` が偽）。定義の写し（resume4-definitions.md）からも同じ3行を除いた。01-12 には元から写しがない。残る名前は取り消した候補の記録と verify.py の照合だけである |
+| 軽2 | 済み。07-04 の表の行に MainEffects と EffectSoundnessExamples の役割を足した |
+| 情報6 | 済み。351ファイル・1,673,888バイトを除き、残りは42ファイル、各100KB以下である。台帳は全ファイルの名前・大きさ・SHA-256と束ごとの SHA-256 を持つ。残した md から除いたファイルへの参照は、results.md の再開4までの当時の記録（節の冒頭で当時の記録と断っている）と resume3-obstruction.md の「当時の台本は除いた」という記述だけである。停止の判断の根拠（定義の候補・反例・試行の .lean）は残っている。残した台本は除いたファイルを読まず、除いた内容の照合は固定コミットから `git show` で読む |
+
+### 残った所見
+
+| 番号 | 重さ | 場所 | 問題 | 修正案 | 確度 |
+|---|---|---|---|---|---|
+| 確1 | 軽 | resume4-signatures.md の A の `Ty.Declared.rawMapRanges`・`Tel.Declared.rawMapRanges`・`Ty.Sorted.rawMapRanges`・`Tel.Sorted.rawMapRanges`・`Ty.HasKind.rawMapRanges` の5行 | 新しい側を「宣言なし」とし、理由を「旧閉範囲列は fixed の像で読む」としている。実際は5件とも新規モジュール RangeTypeProperties へ移っただけで、言明は基準と同じである（`#check` とモジュールの所属で確かめた）。signatures.py が新規モジュールを比較から除くため、移動が削除に見えた。160件のうち5件は署名の差ではない | 5行を「RangeTypeProperties へ移した。言明は同じ」に改め、件数を差155件と移動5件に分ける。台本で新規モジュールへ移った同名の宣言を照合する。急がないので、次に記録を触るときでよい | 高 |
+
+### 実行した検査
+
+| 検査 | 結果 |
+|---|---|
+| `lake env lean -M 12288 <tmp>/check2.lean` | 終了0、約2.7秒。`effect_soundness` が `∀ P B σ, EffectSoundnessStatement P B σ` を持ち、公理依存は `propext`・`Classical.choice`・`Quot.sound`。`TelBodyTyR.instR` の言明を読んだ。`Def.instTel_of_ne_nil` は環境にない。`Ty.Declared.rawMapRanges` などは RangeTypeProperties にあり、言明は基準と同じ |
+| 副表の節ごとの行数と名指しの宣言の `grep` | 件数の表と一致。名指しの宣言は全て行がある |
+| 残した記録から台帳の名前への参照の検索（読むだけの Python） | 上の情報6の行のとおり |
+| 群 K の記録と 07-04 の追加行の、手元の絶対パス・`work/`・docs/todo へのリンクの検索 | 該当なし（verify.py の検査の正規表現だけ） |
+
+## 取りまとめの追記
+
+2026-11-06。群 K は Codex が実装し、本レビューと処置の確認は Claude（Opus 5.5）が行った。処置の確認の結論は可である。確1（`*.rawMapRanges` の5件は言明を変えずに RangeTypeProperties へ移っただけで、署名の差ではない）は記録の分類の誤りであり、署名の差は実質155件と読む。Lean と設計書は直さない。情報1〜5の扱いは plan.md の取りまとめの判断に記した（情報3は設計者の見直しの対象）。work の検査は、群 D までの san_benito へ群 K を取り込んで表層を追随させた結合の枝 `m014/l70.k-int` で取りまとめが行った（`C/l70/k-int/results.md`）。
