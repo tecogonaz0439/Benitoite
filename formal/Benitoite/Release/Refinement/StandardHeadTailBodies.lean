@@ -357,7 +357,7 @@ private theorem option_paths {P B C Γ a p} (inp : Inputs P B)
   · cases List.mem_singleton.mp hq
     exact ⟨base.wf,base.sorted,base.declared⟩
 
-private def tailLinks : List FieldLink := [⟨0,0,[someField],some .listLength⟩]
+private def tailLinks : List FieldLink := [⟨0,0,[someField],some .listLength,[]⟩]
 private theorem tail_links : LinksValid (optionAlts true) 1 tailLinks := by
   intro l hl
   cases List.mem_singleton.mp hl
@@ -369,7 +369,7 @@ local macro "walk_var" : tactic => `(tactic|
 local macro "walk_fields" inp:ident : tactic => `(tactic|
  (intro p hp
   cases List.mem_singleton.mp hp
-  constructor <;> simp only [tailLinks,fieldFacts,FieldLink.predicate,routeTerm,viewTerm]
+  constructor <;> simp only [tailLinks,fieldFacts,FieldLink.predicate,FieldLink.sort,fieldRelation,routeTerm,viewTerm]
   all_goals walk_simp
   all_goals first | (solve | omega) | declarations_solve $inp))
 

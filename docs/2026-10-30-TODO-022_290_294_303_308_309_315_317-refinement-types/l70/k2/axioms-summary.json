@@ -1,0 +1,66 @@
+{
+  "command": [
+    "/usr/bin/lockf",
+    "-t",
+    "3600",
+    "<shared-lock>",
+    "lake",
+    "env",
+    "lean",
+    "-M",
+    "12288",
+    "<tmp>/audit-input.lean"
+  ],
+  "cwd": "formal",
+  "base": "5cb33d0e5ecf5b8b9d2ffa02e88a70084d89e50e",
+  "branch": "m014/l70.k2",
+  "started": "2026-11-06T19:15:40.920011+00:00",
+  "finished": "2026-11-06T19:16:49.915984+00:00",
+  "seconds": 68.99596625,
+  "exit_code": 0,
+  "raw": {
+    "bytes": 28455156,
+    "sha256": "21b5c62d4563feeb64dfaca9336d5c9da7caa3c05a8ce5209d7ac175fae51cf2"
+  },
+  "inputs": 1315,
+  "fingerprint": "522ed0c6bf05330508395155bead947621796e09e793c2daa1ebb6870dc24adf",
+  "scope": {
+    "bytes": 7126,
+    "sha256": "92c72cf7bc365ee00a6359c413ca9054f463f83993eb8652b625169a845d4acd"
+  },
+  "toolchain": "leanprover/lean4:v4.34.1",
+  "audit_inputs": {
+    "counterexamples.lean": {
+      "bytes": 3848,
+      "sha256": "e1a622fe5f81b0494240982a83f9b64e199df4cd7d9d9d1408a16713bdc4b5c9"
+    },
+    "axioms.lean": {
+      "bytes": 2259,
+      "sha256": "ecb38ff238ebae61f25a207bd8975b3df9c465d6dfe5dfe29b91212bb96c1f41"
+    },
+    "run_check.py": {
+      "bytes": 8772,
+      "sha256": "a91e8e23cf7b59aadba1081dfab5024d1de899ae86a76b63eeadf69e5f48fc6a"
+    },
+    "scope-input.json": {
+      "bytes": 55421,
+      "sha256": "973e5e8ceac6c35de244bf24b5968c20b7647fe0560736c88e15851b0ead9203"
+    },
+    "generate_certificates.lean": {
+      "bytes": 6109,
+      "sha256": "52359a53f792da6205e73e7ca7f0b2b1bfc709f897771dffd53226588e17cfb2"
+    },
+    "certificate-summary.json": {
+      "bytes": 630,
+      "sha256": "9c53ed106093ac359b969c8258e6be28f8e45f5462a4974c388de34c38daf036"
+    },
+    "certificate-candidates.txt": {
+      "bytes": 11414,
+      "sha256": "ed87ce8beb8eae9a1fe08eb7fd36117447e17833d80f14401d5e996c43b24e40"
+    }
+  },
+  "generated_input": {
+    "bytes": 13557,
+    "sha256": "83174e57cd5a5db15c90073c5ade0dcd24ff9cdb1dae412f4bee4bf7ae7ac9ae"
+  }
+}

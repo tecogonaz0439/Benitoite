@@ -1012,3 +1012,7 @@ import Benitoite.Release.Refinement.SafeCheckPreservationExamples
 import Benitoite.Release.Refinement.SurfaceStandardSupport
 import Benitoite.Release.Refinement.SurfaceDeclarationAgreement
 import Benitoite.Release.Refinement.SurfaceCheckedMainExamples
+import Benitoite.Release.Refinement.Surface.FieldProjectionExamples
+import Benitoite.Release.Refinement.Surface.FieldCheckerExamples
+import Benitoite.Release.Refinement.FieldRelationSyntax
+import Benitoite.Release.Refinement.FieldAtomSound

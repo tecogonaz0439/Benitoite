@@ -1,0 +1,447 @@
+{
+  "command": [
+    "/usr/bin/lockf",
+    "-t",
+    "3600",
+    "<shared-lock>",
+    "lake",
+    "env",
+    "lean",
+    "-M",
+    "12288",
+    "<tmp>/audit-input.lean"
+  ],
+  "cwd": "formal",
+  "base": "5cb33d0e5ecf5b8b9d2ffa02e88a70084d89e50e",
+  "branch": "m014/l70.k2",
+  "started": "2026-11-06T19:15:40.920011+00:00",
+  "finished": "2026-11-06T19:16:49.915984+00:00",
+  "seconds": 68.99596625,
+  "exit_code": 0,
+  "raw": {
+    "bytes": 28455156,
+    "sha256": "21b5c62d4563feeb64dfaca9336d5c9da7caa3c05a8ce5209d7ac175fae51cf2"
+  },
+  "inputs": 1315,
+  "fingerprint": "522ed0c6bf05330508395155bead947621796e09e793c2daa1ebb6870dc24adf",
+  "scope": {
+    "bytes": 7126,
+    "sha256": "92c72cf7bc365ee00a6359c413ca9054f463f83993eb8652b625169a845d4acd"
+  },
+  "toolchain": "leanprover/lean4:v4.34.1",
+  "audit_inputs": {
+    "counterexamples.lean": {
+      "bytes": 3848,
+      "sha256": "e1a622fe5f81b0494240982a83f9b64e199df4cd7d9d9d1408a16713bdc4b5c9"
+    },
+    "axioms.lean": {
+      "bytes": 2259,
+      "sha256": "ecb38ff238ebae61f25a207bd8975b3df9c465d6dfe5dfe29b91212bb96c1f41"
+    },
+    "run_check.py": {
+      "bytes": 8772,
+      "sha256": "a91e8e23cf7b59aadba1081dfab5024d1de899ae86a76b63eeadf69e5f48fc6a"
+    },
+    "scope-input.json": {
+      "bytes": 55421,
+      "sha256": "973e5e8ceac6c35de244bf24b5968c20b7647fe0560736c88e15851b0ead9203"
+    },
+    "generate_certificates.lean": {
+      "bytes": 6109,
+      "sha256": "52359a53f792da6205e73e7ca7f0b2b1bfc709f897771dffd53226588e17cfb2"
+    },
+    "certificate-summary.json": {
+      "bytes": 630,
+      "sha256": "9c53ed106093ac359b969c8258e6be28f8e45f5462a4974c388de34c38daf036"
+    },
+    "certificate-candidates.txt": {
+      "bytes": 11414,
+      "sha256": "ed87ce8beb8eae9a1fe08eb7fd36117447e17833d80f14401d5e996c43b24e40"
+    }
+  },
+  "generated_input": {
+    "bytes": 13557,
+    "sha256": "83174e57cd5a5db15c90073c5ade0dcd24ff9cdb1dae412f4bee4bf7ae7ac9ae"
+  },
+  "status": "再開3の最終の全環境の公理監査",
+  "targets": 114465,
+  "target_list": {
+    "bytes": 8433997,
+    "sha256": "e1563dd08c1fab312188bb9631a9f0ff2c54b4a6d482ae6c8e1cc15a097e1bb2"
+  },
+  "project_modules": 1299,
+  "local_declarations": [
+    "Benitoite.Release.Refinement.K2Obstruction.float32_field_nan",
+    "Benitoite.Release.Refinement.K2Obstruction.float32_nan_self_eq_false",
+    "Benitoite.Release.Refinement.K2Obstruction.float32_value_typed",
+    "Benitoite.Release.Refinement.K2Obstruction.float64_field_nan",
+    "Benitoite.Release.Refinement.K2Obstruction.float64_nan_self_eq_false",
+    "Benitoite.Release.Refinement.K2Obstruction.float64_signed_zero_distinguished",
+    "Benitoite.Release.Refinement.K2Obstruction.float64_value_typed",
+    "Benitoite.Release.Refinement.K2Obstruction.nan_witnesses",
+    "_private._stdin.0.Benitoite.Release.Refinement.Observation.sort.match_1.eq_1",
+    "_private._stdin.0.Benitoite.Release.Refinement.Observation.sort.match_1.eq_10",
+    "_private._stdin.0.Benitoite.Release.Refinement.Observation.sort.match_1.eq_11",
+    "_private._stdin.0.Benitoite.Release.Refinement.Observation.sort.match_1.eq_12",
+    "_private._stdin.0.Benitoite.Release.Refinement.Observation.sort.match_1.eq_13",
+    "_private._stdin.0.Benitoite.Release.Refinement.Observation.sort.match_1.eq_14",
+    "_private._stdin.0.Benitoite.Release.Refinement.Observation.sort.match_1.eq_2",
+    "_private._stdin.0.Benitoite.Release.Refinement.Observation.sort.match_1.eq_3",
+    "_private._stdin.0.Benitoite.Release.Refinement.Observation.sort.match_1.eq_4",
+    "_private._stdin.0.Benitoite.Release.Refinement.Observation.sort.match_1.eq_5",
+    "_private._stdin.0.Benitoite.Release.Refinement.Observation.sort.match_1.eq_6",
+    "_private._stdin.0.Benitoite.Release.Refinement.Observation.sort.match_1.eq_7",
+    "_private._stdin.0.Benitoite.Release.Refinement.Observation.sort.match_1.eq_8",
+    "_private._stdin.0.Benitoite.Release.Refinement.Observation.sort.match_1.eq_9",
+    "_private._stdin.0.Benitoite.Release.Refinement.Observation.sort.match_1.splitter",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.Payload",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.Payload._sizeOf_1",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.Payload._sizeOf_inst",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.Payload.bytes",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.Payload.bytes.elim",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.Payload.bytes.sizeOf_spec",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.Payload.casesOn",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.Payload.ctorElim",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.Payload.ctorElimType",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.Payload.ctorIdx",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.Payload.decimal",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.Payload.decimal.elim",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.Payload.decimal.sizeOf_spec",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.Payload.float32",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.Payload.float32.elim",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.Payload.float32.sizeOf_spec",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.Payload.float64",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.Payload.float64.elim",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.Payload.float64.sizeOf_spec",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.Payload.map",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.Payload.map.elim",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.Payload.map.sizeOf_spec",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.Payload.noConfusion",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.Payload.noConfusionType",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.Payload.rec",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.Payload.recOn",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.Payload.set",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.Payload.set.elim",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.Payload.set.sizeOf_spec",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.Payload.string",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.Payload.string.elim",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.Payload.string.sizeOf_spec",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.bodyProof",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.bodyProof._sparseCasesOn_1",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.bodyProof._sparseCasesOn_2",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.bodyProof.match_1",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.box",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.certificate",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.closeLinear",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.closeLinear._f",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.closeLinear._sparseCasesOn_1",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.closeLinear._sunfold",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.closeLinear._unsafe_rec",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.closeLinear.match_1",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.field",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.payloadArguments",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.payloadArguments._sparseCasesOn_1",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.payloadArguments.match_1",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.payloadAtom",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.payloadAtom.match_1",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.payloadProof",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.payloadProof._sparseCasesOn_1",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.payloadProof.match_1",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.payloadSort",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.payloadType",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.payloadType.match_1",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.showLinear",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.showProof",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.showProof._f",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.showProof._sparseCasesOn_1",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.showProof._sunfold",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.showProof._unsafe_rec",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.showProof.match_1",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.showStep",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.showStep.match_1",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.showStep.match_3",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.solve",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.solve._f",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.solve._sunfold",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.solve._unsafe_rec",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.solve.match_1",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.solve.match_3",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.solve.match_5",
+    "_private._stdin.0.Benitoite.Release.Refinement.Surface.K2CertificateGeneration.solve.match_7",
+    "_private._stdin.0.Benitoite.Release.Refinement.Term.observe.match_1.eq_1",
+    "_private._stdin.0.Benitoite.Release.Refinement.Term.observe.match_1.eq_2",
+    "_private._stdin.0.Benitoite.Release.Refinement.Term.observe.match_1.splitter",
+    "_private._stdin.0.Benitoite.Release.Refinement.Term.observe.match_1.splitter._sparseCasesOn_2",
+    "_private._stdin.0.Benitoite.Release.Refinement.Term.observe.match_3.eq_1",
+    "_private._stdin.0.Benitoite.Release.Refinement.Term.observe.match_3.eq_2",
+    "_private._stdin.0.Benitoite.Release.Refinement.Term.observe.match_3.splitter",
+    "_private._stdin.0.Benitoite.Release.Refinement.Term.observe.match_3.splitter._sparseCasesOn_2",
+    "auditChangedModules",
+    "auditNewModules"
+  ],
+  "module_records": {
+    "Benitoite": {
+      "declarations": 0,
+      "targets": {
+        "bytes": 1,
+        "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+      }
+    },
+    "Benitoite.Release.Refinement.Basic": {
+      "declarations": 149,
+      "targets": {
+        "bytes": 9851,
+        "sha256": "ba42553c1fd07c57dd713134971a4a2eb3ae1dbb440ffc71b372c20c5bf3ccb6"
+      }
+    },
+    "Benitoite.Release.Refinement.BuiltinLogic": {
+      "declarations": 163,
+      "targets": {
+        "bytes": 15951,
+        "sha256": "0a03e35f3d9c494c6de5e72d87a314f1185c603a202706d78afac643ddf3d6a1"
+      }
+    },
+    "Benitoite.Release.Refinement.BuiltinSchema": {
+      "declarations": 145,
+      "targets": {
+        "bytes": 15657,
+        "sha256": "64c14b5befe7b59cb515e9139edf6e3202a4a297a5db654719c01c734e2ca1a7"
+      }
+    },
+    "Benitoite.Release.Refinement.CapturedFacts": {
+      "declarations": 8,
+      "targets": {
+        "bytes": 435,
+        "sha256": "e5ebf8615c7916091b50a8d8cb610fa475758ad0fee2f9d73b5e2565605f0068"
+      }
+    },
+    "Benitoite.Release.Refinement.FieldFacts": {
+      "declarations": 117,
+      "targets": {
+        "bytes": 7706,
+        "sha256": "6d3e61aad0e75f7b0dab38eb0d9e74b52511aaf27bf471bea785605d3686e8f2"
+      }
+    },
+    "Benitoite.Release.Refinement.Logic": {
+      "declarations": 55,
+      "targets": {
+        "bytes": 2678,
+        "sha256": "98da3e5d61ccec25bc01fbedd52b3664ed4c29be96f17392592a8cc31b4471f0"
+      }
+    },
+    "Benitoite.Release.Refinement.LogicSound": {
+      "declarations": 5,
+      "targets": {
+        "bytes": 480,
+        "sha256": "625eefb135804e1483c664a695473de011dae6d07056992470e373bd68d25764"
+      }
+    },
+    "Benitoite.Release.Refinement.MatchFacts": {
+      "declarations": 394,
+      "targets": {
+        "bytes": 33158,
+        "sha256": "e33ea36b4e5bd92b16fe0d8c294bee2bc066826fc45ef638f125651a77792e23"
+      }
+    },
+    "Benitoite.Release.Refinement.MatchStateLeaves": {
+      "declarations": 37,
+      "targets": {
+        "bytes": 2849,
+        "sha256": "e40daa7bdb38b834b9942c1e7ef71655f7fccd86f61690870e2676d00ce647d0"
+      }
+    },
+    "Benitoite.Release.Refinement.PreparedLeafSyntax": {
+      "declarations": 84,
+      "targets": {
+        "bytes": 5105,
+        "sha256": "2a68c452fcc30eb7d2ab792dc34ac66ba98b944fbc17c31fc1d5925dfa0f32c3"
+      }
+    },
+    "Benitoite.Release.Refinement.StandardHeadTailBodies": {
+      "declarations": 216,
+      "targets": {
+        "bytes": 25392,
+        "sha256": "91afd22e624b863c159388c340e52a36a6950d2088c76b8847d7654c29737758"
+      }
+    },
+    "Benitoite.Release.Refinement.StandardModelListBodies": {
+      "declarations": 278,
+      "targets": {
+        "bytes": 37311,
+        "sha256": "e38cb07d2700c1024b5e1f14e7850ea9495bb81553ce3cabf2f69fb23dec3d94"
+      }
+    },
+    "Benitoite.Release.Refinement.StandardModelSafeBodies": {
+      "declarations": 145,
+      "targets": {
+        "bytes": 18779,
+        "sha256": "da9de1d1ecc2b3cf66f5146a438884103c701defb05b667dc396e6497334c10e"
+      }
+    },
+    "Benitoite.Release.Refinement.StandardSafeBodies": {
+      "declarations": 331,
+      "targets": {
+        "bytes": 29849,
+        "sha256": "7db85d47fd529f9cbcd393f6fa0ee9e521f5ae2a2af5bdc7efc46a5b8ba76370"
+      }
+    },
+    "Benitoite.Release.Refinement.Surface.Basic": {
+      "declarations": 222,
+      "targets": {
+        "bytes": 13460,
+        "sha256": "abf50a5a0122e99db003b7274b9f017c77aaa571b2416909c98ffb1df106cc9f"
+      }
+    },
+    "Benitoite.Release.Refinement.Surface.CheckDeclarationExamples": {
+      "declarations": 56,
+      "targets": {
+        "bytes": 7207,
+        "sha256": "8190d541463b0023722fb7e24b664663617f672090237061a9a8a53d2116346d"
+      }
+    },
+    "Benitoite.Release.Refinement.Surface.CheckExamples": {
+      "declarations": 59,
+      "targets": {
+        "bytes": 6718,
+        "sha256": "63fb1216dc3ca0ab20c54f18e90c9e4920f5b4acb90830fc6a9564404d3f0044"
+      }
+    },
+    "Benitoite.Release.Refinement.Surface.CheckInferCertificates": {
+      "declarations": 362,
+      "targets": {
+        "bytes": 44450,
+        "sha256": "1d04fcff34caf2be04dcd0edc271d92f5000e4fe0b9b7e41d00e414aea54ef02"
+      }
+    },
+    "Benitoite.Release.Refinement.Surface.CheckMaterials": {
+      "declarations": 148,
+      "targets": {
+        "bytes": 10782,
+        "sha256": "acfb901fc3ce5a41d6f503aaf3623ed9702ea4d76e30268869b64b55c75b3001"
+      }
+    },
+    "Benitoite.Release.Refinement.Surface.CheckPatternExamples": {
+      "declarations": 24,
+      "targets": {
+        "bytes": 2407,
+        "sha256": "39c9006baf194ba831b6c1c030cfaec37564264952f535fdb700f93085a54bfe"
+      }
+    },
+    "Benitoite.Release.Refinement.Surface.CheckPatternFacts": {
+      "declarations": 61,
+      "targets": {
+        "bytes": 6028,
+        "sha256": "5cb4115dbd67e3d8c165048b1c3df1b66f5c00b032de7398f0e2b898f6b499b2"
+      }
+    },
+    "Benitoite.Release.Refinement.Surface.Desugar": {
+      "declarations": 158,
+      "targets": {
+        "bytes": 8783,
+        "sha256": "76c8c511c5540848a8e8952df539798ef93f84ab3b544ebecb3811e186c36686"
+      }
+    },
+    "Benitoite.Release.Refinement.Surface.Syntax": {
+      "declarations": 1294,
+      "targets": {
+        "bytes": 74025,
+        "sha256": "17e6a762898c5df6d317fd30c8e3f160ac8f4193d24a70d01db5aab508598c44"
+      }
+    },
+    "Benitoite.Release.Refinement.Surface.Theorems": {
+      "declarations": 85,
+      "targets": {
+        "bytes": 5968,
+        "sha256": "2397652ca3358f44ea976eae69ca4b92fa2dc3f429b7bf1d583d15c781ba7587"
+      }
+    },
+    "Benitoite.Release.Refinement.FieldAtomSound": {
+      "declarations": 25,
+      "targets": {
+        "bytes": 2546,
+        "sha256": "9ec8d8b3585bca1b3c79befc07d8011b44aac56b149da93c8b0b4ec10a5122fd"
+      }
+    },
+    "Benitoite.Release.Refinement.FieldRelationSyntax": {
+      "declarations": 86,
+      "targets": {
+        "bytes": 5892,
+        "sha256": "6207afbb1661ed7f932d339877bcd0908090193d3e029577127a401db2079cb5"
+      }
+    },
+    "Benitoite.Release.Refinement.FieldRelations": {
+      "declarations": 81,
+      "targets": {
+        "bytes": 7731,
+        "sha256": "e5ce2476ff74b813ab037e1f98f016d013ab1f05d97413478d0fcf2d1168d82e"
+      }
+    },
+    "Benitoite.Release.Refinement.Surface.FieldCheckerExamples": {
+      "declarations": 1592,
+      "targets": {
+        "bytes": 202094,
+        "sha256": "fe835be4dfd0379c80f850ca2c6b2a77d3c7ca11e85f2d144b70d8634e219a55"
+      }
+    },
+    "Benitoite.Release.Refinement.Surface.FieldProjectionExamples": {
+      "declarations": 98,
+      "targets": {
+        "bytes": 11913,
+        "sha256": "0c0da34d34199727937edbe96e05cfaf5685d35546d5b72b65f79dfaaa5bb371"
+      }
+    }
+  },
+  "changed_production_modules": [
+    "Benitoite",
+    "Benitoite.Release.Refinement.Basic",
+    "Benitoite.Release.Refinement.BuiltinLogic",
+    "Benitoite.Release.Refinement.BuiltinSchema",
+    "Benitoite.Release.Refinement.CapturedFacts",
+    "Benitoite.Release.Refinement.FieldFacts",
+    "Benitoite.Release.Refinement.Logic",
+    "Benitoite.Release.Refinement.LogicSound",
+    "Benitoite.Release.Refinement.MatchFacts",
+    "Benitoite.Release.Refinement.MatchStateLeaves",
+    "Benitoite.Release.Refinement.PreparedLeafSyntax",
+    "Benitoite.Release.Refinement.StandardHeadTailBodies",
+    "Benitoite.Release.Refinement.StandardModelListBodies",
+    "Benitoite.Release.Refinement.StandardModelSafeBodies",
+    "Benitoite.Release.Refinement.StandardSafeBodies",
+    "Benitoite.Release.Refinement.Surface.Basic",
+    "Benitoite.Release.Refinement.Surface.CheckDeclarationExamples",
+    "Benitoite.Release.Refinement.Surface.CheckExamples",
+    "Benitoite.Release.Refinement.Surface.CheckInferCertificates",
+    "Benitoite.Release.Refinement.Surface.CheckMaterials",
+    "Benitoite.Release.Refinement.Surface.CheckPatternExamples",
+    "Benitoite.Release.Refinement.Surface.CheckPatternFacts",
+    "Benitoite.Release.Refinement.Surface.Desugar",
+    "Benitoite.Release.Refinement.Surface.Syntax",
+    "Benitoite.Release.Refinement.Surface.Theorems"
+  ],
+  "new_production_modules": [
+    "Benitoite.Release.Refinement.FieldAtomSound",
+    "Benitoite.Release.Refinement.FieldRelationSyntax",
+    "Benitoite.Release.Refinement.FieldRelations",
+    "Benitoite.Release.Refinement.Surface.FieldCheckerExamples",
+    "Benitoite.Release.Refinement.Surface.FieldProjectionExamples"
+  ],
+  "closure_rounds": 2,
+  "axiom_sets": {
+    "none": 50904,
+    "Classical.choice": 2,
+    "Classical.choice + Quot.sound + propext": 29083,
+    "Classical.choice + propext": 2,
+    "Quot.sound": 11,
+    "Quot.sound + propext": 4648,
+    "propext": 29815
+  },
+  "new_axioms": 0,
+  "sorryAx": 0,
+  "signature_count": 1989,
+  "declarations": {
+    "declarations-summary.json": {
+      "bytes": 11322,
+      "sha256": "4fe5416f86deb6924096d9f97767ed94f35c345916b9880d2e9feefe5357e3c4"
+    }
+  }
+}
