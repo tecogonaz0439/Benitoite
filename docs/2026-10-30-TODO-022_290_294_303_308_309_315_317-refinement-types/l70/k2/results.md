@@ -593,3 +593,12 @@ formal/ から:
 - `verify.py` は、写しの本文でなく要約の名前の一覧で例の名前を照らすように直した。直した後の照合は終了0だった。
 - 置き換えの前の `audit-summary.json` の指紋は残していない。置き換えで変えたのは `declarations` の欄だけであり、`audit_inputs` の7件の指紋と宣言の件数は監査のときのままである。
 - 群の記録は約250 KB になった。
+
+## 取りまとめの work の検査
+
+- 基準: `5cb33d0e5ecf5b8b9d2ffa02e88a70084d89e50e`（HEAD との差、50ファイル）。
+- コマンド: `scripts/check.sh --level work --base 5cb33d0e5ecf5b8b9d2ffa02e88a70084d89e50e`（Refinement の生成物を消してから、ビルドの錠の下で実行）。
+- 選ばれた検査: spec_tally、spec_examples（7件）、formal_build。
+- 結果: 終了0。外側の時間 965.28秒、最大常駐量約4.2GB。並行して別の worktree で群 D の Lean が動いていた。
+- 生の記録: 6,732バイト、SHA-256 `d42834c00d6478cd548f5ef2ef35acc5f3de6ffa6be08081b5ec6cd7735b00f2`（`<tmp>` に置いた）。
+- 計画からのずれ: なし。
