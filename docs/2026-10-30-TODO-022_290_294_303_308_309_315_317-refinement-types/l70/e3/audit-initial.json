@@ -1,0 +1,39 @@
+{
+  "command": [
+    "/usr/bin/lockf",
+    "-t",
+    "3600",
+    "<shared-lock>",
+    "lake",
+    "env",
+    "lean",
+    "-M",
+    "12288",
+    "<tmp>/audit.lean"
+  ],
+  "cwd": "formal",
+  "started": "2026-11-06T22:30:17.149216+09:00",
+  "ended": "2026-11-06T22:30:19.391924+09:00",
+  "exit": 1,
+  "seconds": 1.875790666,
+  "inputs_count": 7481,
+  "inputs_sha256": "0347f24f8141e71fbfb012f54d5802eb1b713ffc4fb277a73520bfb5a5e0380d",
+  "inputs_unchanged": true,
+  "output": "<tmp>/audit.log",
+  "output_digest": {
+    "bytes": 1485,
+    "sha256": "27048f88e3dcec97173a26a3a7fb4a5749846db67913836428959053e41949ea"
+  },
+  "local_input": {
+    "bytes": 17309,
+    "sha256": "f1d8a97d8655431ffaf09415c9350b379943094de01a7f8c0682968bc33de530"
+  },
+  "audit_tail": {
+    "bytes": 2253,
+    "sha256": "d441527c7d1a4c9c4e0dc8fca9bb1872d86717fb282291378787ef03c57d3537"
+  },
+  "generated_input": {
+    "bytes": 19574,
+    "sha256": "183375747b083e9ceae2908cebb43bba05bc2fa4a084cba5c7fc48fc73abf021"
+  }
+}

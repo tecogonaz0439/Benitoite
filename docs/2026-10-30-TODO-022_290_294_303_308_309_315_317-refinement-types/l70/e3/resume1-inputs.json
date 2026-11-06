@@ -1,0 +1,127 @@
+{
+  "changed_existing": [
+    "docs/design/01-spec/01-12-core-calculus.md",
+    "docs/design/07-quality/07-04-formal-semantics.md",
+    "formal/Benitoite.lean"
+  ],
+  "added": {
+    "formal/Benitoite/Release/Refinement/SafeCheckErasure.lean": {
+      "bytes": 11810,
+      "sha256": "bdc11f48afe21940166f55576ece555ef4f3806e37f3e99bb1050c87a39751f7"
+    },
+    "formal/Benitoite/Release/Refinement/SafeCheckErasureExamples.lean": {
+      "bytes": 7174,
+      "sha256": "e7354586142aacf17291403f3f21ccf03082b95b705629a86003004465ff4b7c"
+    },
+    "formal/Benitoite/Release/Refinement/SafeCheckObservations.lean": {
+      "bytes": 10385,
+      "sha256": "83d07bb7e5c48b3c181a76d389814af83132b4cc72470e6a41850f00c004b738"
+    },
+    "formal/Benitoite/Release/Refinement/SafeCheckPreservation.lean": {
+      "bytes": 23253,
+      "sha256": "5b5b0a4249f1621514cae4cb0dc01648d4b10107badc1a3cff2213c10442f22b"
+    },
+    "formal/Benitoite/Release/Refinement/SafeCheckPreservationExamples.lean": {
+      "bytes": 3462,
+      "sha256": "75f2ce07a481dd4938497dff7ab9dff4ebee668cdec8bb0124ef21432639e2a5"
+    },
+    "formal/Benitoite/Release/Refinement/SafeCheckReflection.lean": {
+      "bytes": 26557,
+      "sha256": "462e206b44d671ffff302175b137a3bd3208bae38fda3aeae5a3f306b3633948"
+    },
+    "formal/Benitoite/Release/Refinement/SafeCheckSimulation.lean": {
+      "bytes": 33939,
+      "sha256": "40d03aacc8a9a7772eb9779af9ab79aaa14d849638dd10d22c60a9c84a3cabff"
+    },
+    "formal/Benitoite/Release/Refinement/SafeCheckTyping.lean": {
+      "bytes": 13321,
+      "sha256": "9272d646ed1f31a545e10481716eb5e23dbe146a5faa219e1f6059b1349d8bb4"
+    },
+    "formal/Benitoite/Release/Refinement/SurfaceLibrary.lean": {
+      "bytes": 14883,
+      "sha256": "783c0a47682eb3455500dc91d06ceb02a91ba2b63d61b7ca4c1127ee4dd3c672"
+    },
+    "formal/Benitoite/Release/Refinement/SurfaceMain.lean": {
+      "bytes": 8105,
+      "sha256": "fbb578bd125e903ffdaf2b359688f8181e69b776f244226c24fc53a43675957d"
+    },
+    "formal/Benitoite/Release/Refinement/SurfaceMainExamples.lean": {
+      "bytes": 11856,
+      "sha256": "eae9a87d022c6eee1c2c5d3a403911c0096e96987b664ad1754bbb67d4212f17"
+    }
+  },
+  "changed_digests": {
+    "docs/design/01-spec/01-12-core-calculus.md": {
+      "before": {
+        "bytes": 987562,
+        "sha256": "258711a42617d795ed11cc0e52eb140c05626804fdec86f154a318909133b2d0"
+      },
+      "after": {
+        "bytes": 992726,
+        "sha256": "55bfeee9f767565e892bd67a3cf906cd0ba425255521ecd1dfa8b0d55f433728"
+      }
+    },
+    "docs/design/07-quality/07-04-formal-semantics.md": {
+      "before": {
+        "bytes": 678107,
+        "sha256": "16be7e2351829fe4d7a91df7cfe0aeb4505b221855ca2db3086ba2a0bce361e5"
+      },
+      "after": {
+        "bytes": 680959,
+        "sha256": "4b52fface27c9dd9c2c542ee9fbb34af8d1b74d40bb16ba1a5a4764205fd9e02"
+      }
+    },
+    "formal/Benitoite.lean": {
+      "before": {
+        "bytes": 52670,
+        "sha256": "651f1becf1952ee58b9c8efb227f1b10b62acd5981f3cd24e4d10ad90c516a3f"
+      },
+      "after": {
+        "bytes": 53285,
+        "sha256": "a2e9c9ce9984a5412fe17946bc5bfdfc9c7b28841722c2b54da0e6e01c8535ae"
+      }
+    }
+  },
+  "initial_count": 7481,
+  "current_count": 7492,
+  "current_sha256": "1a79eceea501bac74f404f76f1734b5126d4a4e519aa176202fd70ef1f50f4d9",
+  "modules": [
+    "Benitoite.Release.Refinement.SafeCheckErasure",
+    "Benitoite.Release.Refinement.SafeCheckErasureExamples",
+    "Benitoite.Release.Refinement.SafeCheckObservations",
+    "Benitoite.Release.Refinement.SafeCheckPreservation",
+    "Benitoite.Release.Refinement.SafeCheckPreservationExamples",
+    "Benitoite.Release.Refinement.SafeCheckReflection",
+    "Benitoite.Release.Refinement.SafeCheckSimulation",
+    "Benitoite.Release.Refinement.SafeCheckTyping",
+    "Benitoite.Release.Refinement.SurfaceLibrary",
+    "Benitoite.Release.Refinement.SurfaceMain",
+    "Benitoite.Release.Refinement.SurfaceMainExamples"
+  ],
+  "local_inputs": {
+    "obstruction.lean": {
+      "bytes": 17309,
+      "sha256": "f1d8a97d8655431ffaf09415c9350b379943094de01a7f8c0682968bc33de530"
+    },
+    "pattern-context-obstruction.lean": {
+      "bytes": 5264,
+      "sha256": "86ab73ecb041dff9040ea806ff5f266b98e7b96babe5186966e9165176e43e25"
+    },
+    "audit-tail.lean": {
+      "bytes": 2259,
+      "sha256": "131a8b230c09e442171662b3cc6fc1846f9008060b073f309aad6981b48e9314"
+    },
+    "inventory_resume1.py": {
+      "bytes": 2309,
+      "sha256": "ae7fd6cd2ad6c978edc331f2f2e912a10f504eab9f67a71dff1efa2c7611e926"
+    },
+    "run_checks_resume1.py": {
+      "bytes": 2662,
+      "sha256": "1d79d87043f31bc3ec5c7ca096052f8fa267c8a8e8f09d8eb3720995e67d6657"
+    },
+    "verify_resume1.py": {
+      "bytes": 6065,
+      "sha256": "c2768b0de6684ca7dc6fa969b60a63ff1374cc0c148bd662b81dc8a023c7a8d0"
+    }
+  }
+}

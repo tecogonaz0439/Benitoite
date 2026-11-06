@@ -1,0 +1,30 @@
+{
+  "command": [
+    "/usr/bin/lockf",
+    "-t",
+    "3600",
+    "<shared-lock>",
+    "lake",
+    "env",
+    "lean",
+    "-M",
+    "12288",
+    "-o",
+    "<build>/SurfaceCheckedMainExamples.olean",
+    "Benitoite/Release/Refinement/SurfaceCheckedMainExamples.lean"
+  ],
+  "cwd": "formal",
+  "started": "2026-11-07T01:06:14.770951+09:00",
+  "ended": "2026-11-07T01:06:36.564007+09:00",
+  "exit": 1,
+  "seconds": 21.793137209,
+  "output": "<tmp>/final-local-initial.log",
+  "output_digest": {
+    "bytes": 172,
+    "sha256": "935e4f89067accd3799edc74a35557dc7ca9ac80e9797242333e4c66dba9bfe0"
+  },
+  "source_digest": {
+    "bytes": 31225,
+    "sha256": "9da53b106bf161d2c0fa3d2b2e02377267f06f8c28d399a761b6ccf126b19c10"
+  }
+}
