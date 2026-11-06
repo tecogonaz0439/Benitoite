@@ -1,0 +1,122 @@
+{
+ "b_work": "49f17471442229baf668e7b1f7b6dac8151c6dcf",
+ "head": "49f17471442229baf668e7b1f7b6dac8151c6dcf",
+ "changed": [
+  "docs/design/07-quality/07-04-formal-semantics.md",
+  "formal/Benitoite.lean",
+  "formal/Benitoite/Release/Refinement/BuilderStateLeaves.lean",
+  "formal/Benitoite/Release/Refinement/MainStatements.lean",
+  "formal/Benitoite/Release/Refinement/Step.lean"
+ ],
+ "untracked": [
+  "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l70/b/audit-modules.json",
+  "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l70/b/audit-summary.json",
+  "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l70/b/axioms.lean",
+  "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l70/b/effect-counterexample.lean",
+  "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l70/b/effect-fix.md",
+  "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l70/b/readers.json",
+  "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l70/b/readers.lean",
+  "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l70/b/required-names.json",
+  "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l70/b/results.md",
+  "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l70/b/verify.py",
+  "docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/reviews/RV-L70.b.md",
+  "formal/Benitoite/Release/Refinement/MainProgress.lean",
+  "formal/Benitoite/Release/Refinement/MainStepSound.lean",
+  "formal/Benitoite/Release/Refinement/MainTargets.lean",
+  "formal/Benitoite/Release/Refinement/MainTheorems.lean",
+  "formal/Benitoite/Release/Refinement/StartLamNames.lean"
+ ],
+ "unprivated": {
+  "Benitoite.Release.Refinement.Step": [
+   "def stepMatch",
+   "def stepRun"
+  ],
+  "Benitoite.Release.Refinement.BuilderStateLeaves": [
+   "theorem builder_cell_convert",
+   "theorem builder_local_inv",
+   "theorem builder_operation_inputs",
+   "theorem builder_view_operation"
+  ]
+ },
+ "build": {
+  "jobs": 1347,
+  "bytes": 45353,
+  "sha256": "dc347da663565413b6c4d757fe1d1529563dd226af9cb1f3591266ed4eb6c11d"
+ },
+ "rebuilds": [
+  {
+   "bytes": 68765,
+   "sha256": "8053329cb8b0b443c4f9a1ae6334f4b3f0f053f1a1980f346d36476a2b85ba0a"
+  },
+  {
+   "bytes": 57590,
+   "sha256": "d8e778654b73ec86e1b182a5a8047ebaa773c9826e21d11ced9bdcd89edc6fbd"
+  },
+  {
+   "bytes": 45596,
+   "sha256": "90e86e1dd7bb1313c7102aa2de79b8b04968032ceb185d0132713d59127f4def"
+  }
+ ],
+ "axioms": {
+  "bytes": 304637,
+  "sha256": "d51ae66b0ad09cc4033addf0e0c0272822f32a83035d77c525a54c82021b25f3",
+  "targets": 719,
+  "new_module_declarations": 397,
+  "private": 368,
+  "sets": {
+   "(none)": 162,
+   "Classical.choice,Quot.sound,propext": 269,
+   "Quot.sound,propext": 7,
+   "propext": 281
+  },
+  "modules": {
+   "Benitoite.Release.Refinement.BuilderStateLeaves": 29,
+   "Benitoite.Release.Refinement.MainProgress": 150,
+   "Benitoite.Release.Refinement.MainStatements": 36,
+   "Benitoite.Release.Refinement.MainStepSound": 149,
+   "Benitoite.Release.Refinement.MainTargets": 4,
+   "Benitoite.Release.Refinement.MainTheorems": 17,
+   "Benitoite.Release.Refinement.StartLamNames": 77,
+   "Benitoite.Release.Refinement.Step": 257
+  },
+  "kinds": {
+   "Benitoite.Release.Refinement.BuilderStateLeaves definition": 11,
+   "Benitoite.Release.Refinement.BuilderStateLeaves theorem": 18,
+   "Benitoite.Release.Refinement.MainProgress constructor": 4,
+   "Benitoite.Release.Refinement.MainProgress definition": 47,
+   "Benitoite.Release.Refinement.MainProgress inductive": 2,
+   "Benitoite.Release.Refinement.MainProgress recursor": 2,
+   "Benitoite.Release.Refinement.MainProgress theorem": 95,
+   "Benitoite.Release.Refinement.MainStatements constructor": 2,
+   "Benitoite.Release.Refinement.MainStatements definition": 21,
+   "Benitoite.Release.Refinement.MainStatements inductive": 2,
+   "Benitoite.Release.Refinement.MainStatements recursor": 2,
+   "Benitoite.Release.Refinement.MainStatements theorem": 9,
+   "Benitoite.Release.Refinement.MainStepSound definition": 59,
+   "Benitoite.Release.Refinement.MainStepSound theorem": 90,
+   "Benitoite.Release.Refinement.MainTargets theorem": 4,
+   "Benitoite.Release.Refinement.MainTheorems definition": 2,
+   "Benitoite.Release.Refinement.MainTheorems theorem": 15,
+   "Benitoite.Release.Refinement.StartLamNames definition": 59,
+   "Benitoite.Release.Refinement.StartLamNames theorem": 18,
+   "Benitoite.Release.Refinement.Step definition": 71,
+   "Benitoite.Release.Refinement.Step theorem": 186
+  }
+ },
+ "required": 57,
+ "counterexample": {
+  "source_sha256": "c566dbd772b60027c6a0be5b80b712ec8cec8dc5e99773a469bb92fb3a0256e0",
+  "log_bytes": 214,
+  "log_sha256": "247f2d156f7292cac8cb128b11c5e6a9452312a5d73f0bd3c3859ff927b3d21b"
+ },
+ "sources": {
+  "Benitoite.Release.Refinement.MainProgress": "7ea591c0e79203a3ec902498f0596463a2a51e0075b640ce2e66e990d76f23d5",
+  "Benitoite.Release.Refinement.MainStepSound": "0a7ebe186da51f10a739a6905722ea2a32c907aaa05e58c3b53bb533c7880abf",
+  "Benitoite.Release.Refinement.MainTargets": "bb579d9514c9566bfd2c5c5325356ff6a2dff62774ecb2d3b85885a03f22d9dd",
+  "Benitoite.Release.Refinement.MainTheorems": "452335d22d63ad4da2bd75d41c96db5c2588c37a61f83a0d7635a24c02c92df2",
+  "Benitoite.Release.Refinement.StartLamNames": "0bed34697534747dcd1ba37d95a7383f0107247e9df515c58e54278aec986476",
+  "Benitoite.Release.Refinement.BuilderStateLeaves": "cdf52293bfff29869e55c97466b608b481c9eaaf732179954d81b5e8ba7153f2",
+  "Benitoite.Release.Refinement.MainStatements": "e81ccd4aa7b576c80fc402a4fa24d7edd9cab4bd03864ed17e4833295e0128d5",
+  "Benitoite.Release.Refinement.Step": "1e561d51ce379e2c4ad01c8853571a0abd062401c4dfa03b8f4247e939fda586"
+ }
+}

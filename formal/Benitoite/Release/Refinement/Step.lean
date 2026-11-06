@@ -28,7 +28,7 @@ def releaseStep (rel : Val → Option ErrKind) (v : Val) (ok : State) (err : Err
   | none => some (some (.release v none), ok)
   | some r => some (some (.release v (some r)), err r)
 
-private def stepRun (P : Program) (B : Builtins) (σ : PathEnv) (oracle : Oracle) (externalOracle : ExternalOracle) (rel : Val → Option ErrKind)
+def stepRun (P : Program) (B : Builtins) (σ : PathEnv) (oracle : Oracle) (externalOracle : ExternalOracle) (rel : Val → Option ErrKind)
     (fresh : Store → Nat) (q : Closure) : Comp → Cont → Store → Option (Option Event × State)
   | (.builderLet kind body), k, μ =>
       let l := fresh μ
@@ -215,7 +215,7 @@ private def stepRun (P : Program) (B : Builtins) (σ : PathEnv) (oracle : Oracle
       | _ => none
   | (.resume _ _), _, _ => none
 
-private def stepMatch (v : Val) (cap : Capture) (arms : List Arm) (next : Nat) (k : Cont) (μ : Store) :
+def stepMatch (v : Val) (cap : Capture) (arms : List Arm) (next : Nat) (k : Cont) (μ : Store) :
     Option (Option Event × State) :=
   match arms[next]? with
   | none => none

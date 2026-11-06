@@ -200,7 +200,7 @@ private theorem builder_arguments_resolve {P B Ψ Q C Γ Φ Rs m a e L kind op r
     .C_IssuePathBases .. | .C_CheckAt .. => cases hm
 termination_by structural h
 
-private theorem builder_view_operation {P B Ψ R q a e kind op ref args}
+theorem builder_view_operation {P B Ψ R q a e kind op ref args}
     (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)
     (hw : Ψ.WF) (hs : Ψ.Sorted) (hd : StoreTy.Declared P Ψ)
     (hq : ClosureTy P B Ψ [] R q a e) (hv : q.view = .builderOp kind op ref args) :
@@ -218,7 +218,7 @@ private theorem builder_view_operation {P B Ψ R q a e kind op ref args}
   all_goals (simp only [Comp.resolveLocals,Closure.view,Closure.code] at hv; injection hv)
 
 
-private theorem builder_operation_inputs {P B Ψ Q C Γ Φ R code a e L kind op ref args}
+theorem builder_operation_inputs {P B Ψ Q C Γ Φ R code a e L kind op ref args}
     (h : HasTypeCQ P B Ψ Q C Γ Φ R code a e L) (hh : code = .builderOp kind op ref args) :
     Ty.Annotation P C Γ kind.contents ∧ LocalRef.HasKind Ψ L ref kind ∧
       HasTypeVsQ P B Ψ Q C Γ Φ args (op.parameters kind) ∧ Ty.LeQ P Γ Φ (op.resultType kind) a := by
@@ -238,7 +238,7 @@ private theorem builder_operation_inputs {P B Ψ Q C Γ Φ R code a e L kind op 
     .C_IssuePathBases .. | .C_CheckAt .. => cases hh
 termination_by structural h
 
-private theorem builder_local_inv {Ψ L kind ref l}
+theorem builder_local_inv {Ψ L kind ref l}
     (h : LocalRef.HasKind Ψ L ref kind) (hh : ref = .loc l) :
     ∃ k, Ψ l = some (.builder k) ∧ k.norm = kind.norm := by
   match h with
@@ -256,7 +256,7 @@ private theorem builder_cell_annotation {P B Ψ kind c}
   · exact ⟨h.2.1.wf,h.2.1.sorted,h.2.1.declared⟩
   · exact ⟨trivial,trivial,trivial⟩
 
-private theorem builder_cell_convert {P B Ψ source target c}
+theorem builder_cell_convert {P B Ψ source target c}
     (h : BuilderCellOk P B Ψ source c) (ha : Ty.Annotation P [] [] target.contents)
     (he : source.norm = target.norm) : BuilderCellOk P B Ψ target c := by
   cases source <;> cases target <;> try cases he

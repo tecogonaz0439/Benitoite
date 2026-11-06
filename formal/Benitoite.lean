@@ -859,6 +859,11 @@ import Benitoite.Release.Refinement.ScopePublicValues
 import Benitoite.Release.Refinement.ScopePublicTyping
 import Benitoite.Release.Refinement.PublicNames
 import Benitoite.Release.Refinement.MainStatements
+import Benitoite.Release.Refinement.MainProgress
+import Benitoite.Release.Refinement.MainStepSound
+import Benitoite.Release.Refinement.MainTargets
+import Benitoite.Release.Refinement.StartLamNames
+import Benitoite.Release.Refinement.MainTheorems
 import Benitoite.Release.Refinement.ProgramExtension
 import Benitoite.Release.Refinement.StandardModelNameLists
 import Benitoite.Release.Refinement.StandardModelCompletion
