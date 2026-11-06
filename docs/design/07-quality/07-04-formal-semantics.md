@@ -312,7 +312,7 @@ return と let の接続は、子の独立評価・実際の有限な実行・�
 
 `embedDefWellTyped`・`embedImplWellTyped`・`embedProgramWellTyped`・`embedProgramWellFormed` は、宣言の kind 表の形成と `LegacyTables`、宣言の lookup と既存の旧本体入力から、新しい宣言の判断を構成する。後三者は `LegacyDeclarationInputs` を、実装・プログラムの型付けは元の旧 `WellTyped` を、プログラムの形成は元の旧 `WellFormed` を使う。旧実装の型付けは、クラスとメソッド・上位辞書の対応も供給する。メソッドは代入前の `Qsig` を保ち、辞書の値引数の後に通常の引数を束縛する。本体の新しい型付けは七入口から構成し、前提の欄にはしない。`LegacyProgramEmbeddingExamples` は同じプログラムと組み込み表で恒等関数の本体・全プログラムの型付け・形成へ適用する。`LegacyImplementationEmbeddingExamples.implementation_parents` は、二つのクラスと二つの Unit の実装について、旧宣言の入力と旧の型付け・形成、新しい実装・プログラムの型付け・形成、実際のメソッドと上位辞書の lookup を同時に構成する。
 
-`RangeCode` は項の範囲置換・正規化と、範囲引数の読み出しを定義する。`RangeTyping` は範囲文脈の下の十四判断と、全ての適格な閉じた具体化への入口を定める。空の範囲文脈の注釈と本体の型付けは、通常の判断と同値である。`Def.WellTyped.inputs` は全適格具体化後の文脈形成と本体入力を返し、範囲パラメータが空の系 `inputs_no_ranges` は元の本体を返す。関数の正準形は範囲引数も存在量化し、値の関数参照の範囲引数が空のときは `canonical_function_no_ranges` で空引数の形へ戻る。`RangeFunctionExamples` は File.readTextIn を呼ぶ関数と、path・host・endpoint の全種類の対象を返す関数の型付けを示す。
+`RangeCode` は項の範囲置換・正規化と、範囲引数の読み出しを定義する。`RangeTyping` は範囲文脈の下の十四判断を、全ての適格な閉じた具体化について通常の判断が成り立つこととして定める。各判断の `instR` による具体化の保存は、この全称量化の定義から従う。`TelBodyTyR` は空の範囲文脈では通常の本体の判断、非空では全適格具体化の通常の本体の判断を要求する。空の範囲文脈の注釈と本体の型付けは、通常の判断と同値である。`Def.WellTyped.inputs` は全適格具体化後の文脈形成と本体入力を返し、範囲パラメータが空の系 `inputs_no_ranges` は元の本体を返す。関数の正準形は範囲引数も存在量化し、値の関数参照の範囲引数が空のときは `canonical_function_no_ranges` で空引数の形へ戻る。`RangeFunctionExamples` は File.readTextIn を呼ぶ関数と、path・host・endpoint の全種類の対象を返す関数の型付けを示す。
 
 `ProgramTyping` は関数・実装の `WellTyped`、`QTel` と `Qsig` の一致、および `Program.WellTyped` を定義する。後者は同じ P の `VarianceValid`・`ExternalWF` と全 lookup の本体の型付けを持つ。`ProgramWellFormed` は各宣言の `Scoped`、依存列の上限・kind・`Annotation`、同名 data の arity、格納済み metadata の適格性を定義し、四名前空間の `SourceScoped` は `SourceScope` から読む。メソッド本体は代入前の Q を使い、`method_body` が呼出し規則の Qsig で同じ本体を取り出す。実装の辞書型の kind と操作の辞書型の先頭の対応も検査する。意味の所属を信頼する欄と、呼出し側への新しい NoFail の前提は追加しない。
 
@@ -1126,7 +1126,7 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 | VarianceFormation・VarianceTransport | 同節の `Sorted` の移送、型引数の比較と欄の単調性。中間の型引数の注釈を要求しない |
 | LegacyKinds・LegacyDeclarations・LegacyInput・LegacyRegularity・LegacyTables・LegacyTableFacts・LegacyValues | 「旧判断の適格な入力」。kind を保持する宣言の写し、七判断46局所規則と全中間判断の入力、旧判断への復元、通常節の元の操作署名の形成と同じ長さの範囲具体化への移送、constructor 欄と不変の変性、旧受理から新受理への表の条件、操作の辞書の先頭と添字・実装の辞書型の kind の入力、四つの値の葉と正規化の限定等号。型付けの全埋め込みは LegacyEmbedding に、状態の入力は LegacyStateInputs に対応する。状態の型付けの埋め込みは LegacyStateTyping が行う。一段遷移の可換性は含まない |
 | TypeRegularity・TypeBounds・TypeRows・TypeVariables・TypeShiftFacts・EffectFacts | 「篩の正規形と制約の読み方」。WFの像の条件付き置換、四名前空間の再帰条件、型移動の比較と整列、効果の構造等号と行置換 |
-| RangeCode・RangeTyping・RangeTypeProperties・RangeSourceProperties・RangeFunctionExamples | 「篩を含むコア計算の形式化」と「篩を含む定義とプログラムの適格性」。範囲引数を持つ構文、項の具体化、十四判断と四名前空間の保存、全三種類の利用者の関数 |
+| RangeCode・RangeTyping・RangeTypeProperties・RangeSourceProperties・RangeFunctionExamples | 「篩を含むコア計算の形式化」と「篩を含む定義とプログラムの適格性」。範囲引数を持つ構文と項の具体化、全適格具体化で量化した十四判断とその定義から従う具体化の保存、具体化による四名前空間の上限の保存、全三種類の利用者の関数 |
 | SourceScope・PrimitiveScoped・RangeFormation | 「篩を含むコア計算の形式化」と「篩を含む定義とプログラムの適格性」。四名前空間の支持、組み込みの依存列の形成と範囲具体化後の形成 |
 | LegacyTyping・LegacyValueCases・LegacyCallInputs・LegacyPrimitiveCase・LegacyOperationCase・LegacyLambdaCase・LegacyCollectionCases・LegacyHeldCases・LegacySubCases・LegacyValueEmbedding | 「旧判断の適格な入力」。七判断を任意の Φ で述べる結論と node の帰納、子の結論から値19規則の親を再構成する補題、定数の構文の全導出の埋め込み。空・非空の局所文脈の橋は ValueAssumptions を要求しない。全導出の合成は LegacyEmbedding が行う |
 | LegacyTypeAlgebra・LegacyRangeAlgebra | 同節の型・行置換と範囲具体化の等号、非依存の署名と依存列の具体化、NoFail と行の入力。組み込みの型の二通りの具体化は、旧結果型と型・行引数の既存の入力から対応させる。効果の具体化の等号は正規化後 |
@@ -1169,7 +1169,7 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 | ScopePublic・ScopePublicValues・ScopePublicTyping | 同節。At の診断の公開形の宣言・内部の値からの写し・型付け・観測・鍵・網羅性と、公開形で観測される準備と検査の失敗を扱う |
 | PublicNames | 「篩を含むコア計算の形式化」。公開名と内部の依存列の行・合成表の鍵・組み込み・述語の構成子・型の対応を扱う |
 | MainStatements | 「篩を含むコア計算の形式化」。主な定理の言明・終端・開始の条件・実行関数の選択の条件を扱う |
-| MainProgress・MainStepSound・MainTargets・StartLamNames・MainTheorems・MainEffects・EffectSoundnessExamples | 同節。進行・保存・実行関数の健全性・開始の状態の型付け・IO の事象の一段と到達先の対象健全性の証明と、ラムダ名の整形式を外した閉じ方から、任意の型が付いた開始の閉包の開始の条件を得ることを扱う |
+| MainProgress・MainStepSound・MainTargets・StartLamNames・MainTheorems・MainEffects・EffectSoundnessExamples | 同節。進行・保存・実行関数の健全性・開始の状態の型付け・IO の事象の一段と到達先の対象健全性の証明と、ラムダ名の整形式を外した閉じ方から、任意の型が付いた開始の閉包の開始の条件を得ることを扱う。MainEffects はエフェクトの健全性、EffectSoundnessExamples は空の効果での拒否と発行の効果での受理の証人、および空の効果で主定理の前提を満たす証人を示す |
 | ProgramExtension | 同節。旧宣言の移送の関係・追加宣言の義務・移送と合成の言明を扱う |
 | ProgramExtensionTransport | 同節。旧宣言の移送の関係の下での前提・14判断・整形式・変性・効果の検査の移送と、宣言済みの型の網羅性の同値を扱う |
 | StandardModelNameLists・StandardModelCompletion | 同節。組込みの表の完成、宣言の一覧による型の制約の判定、信頼条件の29欄の組立て、合成済みの側を上書きしない契約、標準の名前の一覧と公開名の写像を扱う |

@@ -3,7 +3,7 @@ import argparse
 import json
 import re
 from pathlib import Path
-from resume4_tools import HERE, ROOT, digest
+from evidence import HERE, ROOT, digest
 
 R = 'formal/Benitoite/Release/Refinement/'
 
@@ -26,7 +26,6 @@ def declaration(text, name, signature=False):
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--originals',type=Path,required=True)
     args=parser.parse_args()
     records={}
     def read(module):
@@ -52,32 +51,8 @@ def main():
     out=header+'\n\n'.join('## '+name+'\n\n```lean\n'+body+'\n```' for name,body in chunks)+'\n'
     assert len(out.encode()) <=100000,len(out.encode())
     (HERE/'resume4-definitions.md').write_text(out)
-    pairs=[('LeafInputs','Def.WellTyped.inputs',True,'Def.WellTyped.inputs_no_ranges'),
-           ('CanonicalValues','HasTypeVQ.canonical_function',True,'HasTypeVQ.canonical_function_no_ranges'),
-           ('MatchPaths','HasTypeCQ.match_legacy',True,'LegacyCompCases.match_case'),
-           ('TypeSubstTyping','case_C_Match',True,'LegacyCompCases.match_type_subst'),
-           ('ProgramExtension','Program.ExtendsTypingStatement',False,'Program.extends_typing_declared_context'),
-           ('LegacyHandlerEmbedding','legacy_handled_sub',True,'embedHasTypeCQ'),
-           ('LegacyHandlerEmbedding','handle_case',True,'LegacyRule.embed_comp')]
-    corollaries={
-        'Def.WellTyped.inputs_no_ranges':('LeafInputs','Def.WellTyped.inputs_no_ranges'),
-        'HasTypeVQ.canonical_function_no_ranges':('CanonicalValues','HasTypeVQ.canonical_function_no_ranges'),
-        'LegacyCompCases.match_case':('LegacyControlEmbedding','match_case'),
-        'LegacyCompCases.match_type_subst':('LegacyControlEmbedding','match_type_subst'),
-        'Program.extends_typing_declared_context':('ProgramExtensionTransport','Program.extends_typing_declared_context'),
-        'embedHasTypeCQ':('LegacyEmbedding','embedHasTypeCQ'),
-        'LegacyRule.embed_comp':('LegacyEmbedding','LegacyRule.embed_comp')}
-    text='# 前段の署名の完全な差\n\n理由と系の条件は [結果](results.md#前段の署名の差再開4) の表に置く。以下は開始時の入力と候補の本番の入力から写した完全な宣言である。`case_C_Match` の名前空間は `S02Internal`、`handle_case` は `LegacyCompCases`、他の共通の名前空間は `Benitoite.Release.Refinement` である。\n\n'
-    for module,name,sig,corollary in pairs:
-        old=(args.originals/(R+module+'.lean')).read_text()
-        now=read(module)
-        cmodule,cname=corollaries[corollary]
-        csig=declaration(read(cmodule),cname,True)
-        text+='## '+name+'\n\n元の署名:\n\n```lean\n'+declaration(old,name,sig)+'\n```\n\n新しい署名:\n\n```lean\n'+declaration(now,name,sig)+'\n```\n\n系の完全名: `Benitoite.Release.Refinement.'+corollary+'`。\n\n```lean\n'+csig+'\n```\n\n'
-    assert len(text.encode()) <=100000
-    (HERE/'resume4-signatures.md').write_text(text)
     (HERE/'resume4-definition-inputs.json').write_text(json.dumps(records,ensure_ascii=False,indent=2)+'\n')
-    print(json.dumps({'definitions_bytes':len(out.encode()),'signatures_bytes':len(text.encode()),'inputs':len(records)}))
+    print(json.dumps({'definitions_bytes':len(out.encode()),'inputs':len(records)}))
 
 
 if __name__=='__main__':

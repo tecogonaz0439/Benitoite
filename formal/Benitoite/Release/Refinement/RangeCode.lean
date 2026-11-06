@@ -282,9 +282,6 @@ theorem fixed_ranges_of_wf0 {rs : List RangeIx} (h : ∀ ix ∈ rs, ix.WF 0) :
     | fixed r => exact ⟨r :: ρ,rfl⟩
     | rvar i => have hi := h (.rvar i) (by simp); cases Nat.not_lt_zero i hi
 
-theorem Def.instTel_of_ne_nil (d : Def) {rs : List RangeExpr} (h : rs ≠ []) :
-    d.instTel rs = Tel.instR rs d.tel := by cases rs <;> simp_all [Def.instTel]
-
 noncomputable def Capture.instR (rs : List RangeExpr) (cap : Capture) : Capture :=
   match rs, cap with
   | [], _ => cap
