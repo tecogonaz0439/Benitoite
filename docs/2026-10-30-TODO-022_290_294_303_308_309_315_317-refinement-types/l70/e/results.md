@@ -347,3 +347,15 @@ L70.41が読む網羅性の入口は `checkMatchWithView`（未被覆・到達�
 
 
 既定ビルドが再表示した警告365行は、開始時の既定ビルドの警告行と重複数も含めて完全に一致した。全て群E以外であり、群Eの警告と新しい警告は0である。対象外の本番のファイルは直していない。
+
+## 群 E の前半の作業末の work の検査（取りまとめ）
+
+- 基準: `32efd281670eb330862ac89098ed64eb5d0c90d8`（群 C までの san_benito）。HEAD は `e9487273` で、群 E の処置（`a1bfc14a`）と処置の確認の記録に、san_benito を取り込んだものである。根の import の衝突は、両方の行を残して解いた。
+- 事前に `formal/.lake/build/lib/lean/Benitoite/Release/Refinement` と `formal/.lake/build/ir/Benitoite/Release/Refinement` を消した。
+- コマンド: `scripts/check.sh --level work --base 32efd281670eb330862ac89098ed64eb5d0c90d8`（`/usr/bin/time -l` で測定）。
+  - 選ばれた検査は spec_tally・spec_examples（01-12 の変更による）・formal_build。
+- 終了状態 0（selected checks passed）。
+  - spec_examples は7件成功した。
+  - 外側の時間は 916.05秒（19:05〜19:20）、最大常駐量は 4,344,610,816 バイト。
+- 生の記録は `<tmp>` に置いた（6,670 バイト、SHA-256 `505320f6106b06da47b5deeb1d3aebb6524d7da7574f969e9d991e02b6d6628f`）。
+- 計画からのずれ: L70.33・.34 はこの取り込みに含めない（plan.md）。
