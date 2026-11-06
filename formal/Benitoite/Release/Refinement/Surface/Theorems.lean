@@ -101,8 +101,23 @@ theorem declarationsFor_sameTypes (op : OpPrim) (p : Program) (v : CoverageView)
     (p.declarationsFor v).core.SameTypes (desugarProgram op p) :=
   ⟨rfl, rfl, rfl, rfl, rfl, rfl⟩
 
+/-- 脱糖した関数・射影・構成子の判定の関数は、空の範囲パラメータ列を持つ。 -/
+theorem desugarProgram_ranges {op : OpPrim} {p : Program} {f d}
+    (hd : (desugarProgram op p).defs f = some d) : d.rkinds = [] := by
+  simp only [desugarProgram, Program.lookupFun] at hd
+  split at hd
+  · cases hd; rfl
+  · split at hd
+    · obtain ⟨cd, _, he⟩ := Option.map_eq_some_iff.mp hd
+      cases he; rfl
+    · split at hd
+      · cases hd
+      · obtain ⟨cd, _, he⟩ := Option.map_eq_some_iff.mp hd
+        cases he; rfl
+
 theorem declarationsFor_realizes {op : OpPrim} {p : Program} (hwf : p.WellFormed) (v : CoverageView) :
     (p.declarationsFor v).Realizes (desugarProgram op p) := by
+  apply (Declarations.realizes_no_ranges (fun _ _ hd => desugarProgram_ranges hd)).mpr
   refine ⟨declarationsFor_sameTypes op p v, ?_, ?_, hwf.types.external.sameTypes (declarationsFor_sameTypes op p closedView)⟩
   · intro f fd hf
     simp only [Program.declarationsFor, Program.lookupFun] at hf
@@ -166,11 +181,14 @@ theorem accessorDef_wellTyped {P : Refinement.Program} {D : Declarations} {c cd 
     Refinement.Def.WellTyped P B (accessorDef c cd k) := by
   obtain ⟨hk, ha, -, field, hp, hn, ho, hex, hobs⟩ := h
   have ha' := ha.sameTypes hR.types
-  refine ⟨by simp [accessorDef, accessorDecl, NamesWF], hk.sameTypes hR.types, ha', ?_⟩
+  refine ⟨by simp [accessorDef, accessorDecl, NamesWF], hk.sameTypes hR.types, Ty.annotationR_nil.mpr ha', ?_⟩
   let dt := Ty.data cd.data ((List.range cd.ntys).map Ty.tvar)
   let ret := (accessorDecl c cd k).ret
+  have hdt : Ty.Annotation P (accessorDecl c cd k).tparams [] dt :=
+    ⟨ha'.wf.1, ha'.sorted.1, ha'.declared.1⟩
   have hret : Ty.Annotation P (accessorDecl c cd k).tparams (Ctx.extend [] dt) ret :=
     ⟨ha'.wf.2.1, ha'.sorted.2.1, ha'.declared.2.1⟩
+  apply telBodyTyR_nil.mpr
   refine .param (.done ?_)
   simp only [accessorDef, mkArm]
   by_cases hob : accessorObserved cd k = true
@@ -188,7 +206,8 @@ theorem accessorDef_wellTyped {P : Refinement.Program} {D : Declarations} {c cd 
       simp only [accessorObserved, Bool.or_eq_true, beq_iff_eq] at hob
       rcases hob with h | h <;> simp [accessorSort, h]
     refine .C_Match (obs := some (.var 0)) (.V_Var (a := dt.shiftV 1 0) (by simp [Ctx.extend]; rfl)
-      (by intro b t e; simp [Ty.core, Ty.shiftV, dt])) (fun t ht => ?_) ?_ ((hex.sameTypes hR.types).shiftV 1 0)
+      (by intro b t e; simp [Ty.core, Ty.shiftV, dt])) (fun t ht => ?_) ?_
+      (by simpa [bindParams_single] using (hdt.under [dt]).declared) ((hex.sameTypes hR.types).shiftV 1 0)
     · cases ht
       exact ⟨rfl, .data, by simp [Term.HasSort, Term.References, Term.Shape, Ctx.extend, Ty.HasSort, Ty.sort?,
         Ty.shiftV, Term.VarsIn, Ctx.Readable]⟩
@@ -223,7 +242,8 @@ theorem accessorDef_wellTyped {P : Refinement.Program} {D : Declarations} {c cd 
   · have hretEq : ret = accessorBase cd k := by
       simp [ret, accessorDecl, accessorRet, hob]
     refine .C_Match (obs := none) (.V_Var (a := dt.shiftV 1 0) (by simp [Ctx.extend]; rfl)
-      (by intro b t e; simp [Ty.core, Ty.shiftV, dt])) (fun _ h => by cases h) ?_ ((hex.sameTypes hR.types).shiftV 1 0)
+      (by intro b t e; simp [Ty.core, Ty.shiftV, dt])) (fun _ h => by cases h) ?_
+      (by simpa [bindParams_single] using (hdt.under [dt]).declared) ((hex.sameTypes hR.types).shiftV 1 0)
     refine HasTypeArmsQ.plainEmpty (AltsTy.single ((hp.sameTypes hR.types).shift_values 1 0))
       (by intro q hq; cases hq) ?_ (.nil hret)
     simp only [List.map_cons, List.map_nil, List.length_cons, List.length_nil, Nat.zero_add, bindParams_single]
@@ -281,17 +301,23 @@ theorem desugar_typed {p : Program} {B : Builtins} {opPrim : OpPrim}
     rcases lookupFun_desugar hd with ⟨sd, hsd, rfl⟩ | ⟨hnd, c, k, cd, ha, hc, rfl⟩ | ⟨hnd, hna, c, cd, ht, hc, rfl⟩
     · obtain ⟨hn, hsig, hsc⟩ := hwf.defs f sd hsd
       obtain ⟨-, -, -, hb⟩ := hwt.defs f sd hsd
-      refine ⟨hn, hsig.sameTypes hS, ?_⟩
+      refine ⟨hn, by
+        have hs := hsig.sameTypes hS
+        exact ⟨hs.1, hs.2.1, hs.2.2.1, Ty.annotationR_nil.mpr hs.2.2.2⟩, ?_⟩
       have h := hb.scoped (ne := sd.neffs) (by
         simpa [FunDecl.tel, telBinders_signatureTel _ _ _ _ hn.1] using hsc)
       simpa [FunDecl.tel, telBinders_signatureTel _ _ _ _ hn.1, desugarDef, Refinement.Def.ntys] using h
     · obtain ⟨-, -, hsig, -⟩ := hwf.accessors f c k ha hnd cd hc
-      refine ⟨by simp [accessorDef, accessorDecl, NamesWF], hsig.sameTypes hS, ?_⟩
+      refine ⟨by simp [accessorDef, accessorDecl, NamesWF], by
+        have hs := hsig.sameTypes hS
+        exact ⟨hs.1, hs.2.1, hs.2.2.1, Ty.annotationR_nil.mpr hs.2.2.2⟩, ?_⟩
       simp only [accessorDef, mkArm, Comp.SourceScoped, Val.SourceScoped, scopedArms]
       exact ⟨by simp [accessorDecl], trivial, by simp only [accessorDecl, List.length_cons, List.length_nil]; omega, trivial⟩
     · obtain ⟨-, -, hok⟩ := hwf.testers f c ht
       obtain ⟨-, -, hsig, -⟩ := hok cd hc
-      refine ⟨by simp [testerDef, testerDecl, NamesWF], hsig.sameTypes hS, ?_⟩
+      refine ⟨by simp [testerDef, testerDecl, NamesWF], by
+        have hs := hsig.sameTypes hS
+        exact ⟨hs.1, hs.2.1, hs.2.2.1, Ty.annotationR_nil.mpr hs.2.2.2⟩, ?_⟩
       simp only [testerDef, mkArm, Comp.SourceScoped, Val.SourceScoped, scopedArms]
       exact ⟨by simp [testerDecl], trivial, trivial, trivial, trivial, trivial⟩
   · intro c cd hc

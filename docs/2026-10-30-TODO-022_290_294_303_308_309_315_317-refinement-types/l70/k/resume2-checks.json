@@ -1,0 +1,88 @@
+{
+  "base": "dcaa396bad7a60d4da9b99d07ad9b75c0f328b07",
+  "source_snapshot": {
+    "bytes": 171643,
+    "sha256": "ad7b84d02d8da81596972115907a80a77bf4af16617102089ab9036ec1fdf5de"
+  },
+  "source_count": 1108,
+  "production_modules_added": [],
+  "production_declarations_added": 0,
+  "checks": {
+    "build": {
+      "command": [
+        "/usr/bin/lockf",
+        "-t",
+        "3600",
+        "<lock>",
+        "lake",
+        "build"
+      ],
+      "cwd": "formal",
+      "start": "2026-11-06T12:10:54+0900",
+      "end": "2026-11-06T12:24:26+0900",
+      "seconds": 812.584,
+      "exit": 0,
+      "raw": {
+        "bytes": 84504,
+        "sha256": "91cc5255632c29cf5db71cf9860ecc811fd42d903d8fffcfc7cefd05067690c1"
+      },
+      "maximum_rss": "未取得（計画上の非採取）"
+    },
+    "canonical-resume-trial": {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "<tmp>/canonical-resume-trial-audit.lean"
+      ],
+      "cwd": "formal",
+      "start": "2026-11-06T12:24:26+0900",
+      "end": "2026-11-06T12:24:28+0900",
+      "seconds": 1.576,
+      "exit": 0,
+      "raw": {
+        "bytes": 101713,
+        "sha256": "2db21895aad961b54dcd98a8d6d31c72497e3166c478f0f3cfde804ffe302d99"
+      },
+      "maximum_rss": "未取得（計画上の非採取）",
+      "input": {
+        "bytes": 23744,
+        "sha256": "a4ce35e3173ec0d39e47cf90402978ef1b4ccbf9de8e59208d4dc0cd7dd94ff7"
+      },
+      "saved_input": {
+        "bytes": 22875,
+        "sha256": "046822e505011c9a2137eb71e3609591c60c7eca41858856558776f52357918e"
+      }
+    },
+    "axioms": {
+      "command": [
+        "/usr/bin/lockf",
+        "-t",
+        "3600",
+        "<lock>",
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "../docs/2026-10-30-TODO-022_290_294_303_308_309_315_317-refinement-types/l70/k/axioms.lean"
+      ],
+      "cwd": "formal",
+      "start": "2026-11-06T12:24:28+0900",
+      "end": "2026-11-06T12:25:16+0900",
+      "seconds": 48.458,
+      "exit": 0,
+      "raw": {
+        "bytes": 16711471,
+        "sha256": "6340cb763ef8a8fa99640ead34b7235c014c2e0f087c99c3f86d538fd1f682ad"
+      },
+      "maximum_rss": "未取得（計画上の非採取）",
+      "input": {
+        "bytes": 1825,
+        "sha256": "74a04d7cb1290d7dcd5512f550e4c5a1210b2f9f3d39bb1396ef8c55aea98fe3"
+      }
+    }
+  }
+}

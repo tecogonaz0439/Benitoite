@@ -45,7 +45,7 @@ theorem StoreOk.selectFresh_empty {P B σ Ψ μ} (h : StoreOk P B σ Ψ μ) :
 
 /-- pure の応答は δ 自身から得る。exit は契約で排除される。 -/
 theorem step_pure_selected {P B σ oracle externalOracle rel fresh q b ts es rs ws k μ sg Ψ a e}
-    (hB : B.CoreAssumptions P) (hq : q.view = .app (.prim b ts es rs) ws)
+    (hB : B.CoreAssumptions P) (hq : q.view = .app (.prim b ts es (List.map RangeIx.fixed rs)) ws)
     (hs : B.sig b = some sg) (hk : sg.kind = .pure)
     (ha : BuiltinArgs P B Ψ b sg (Ty.normTys ts) (es.map Eff.norm) rs ws a e) :
     ∃ event dest, step P B σ oracle externalOracle rel fresh (.run q k μ) = some (event,dest) ∧
@@ -58,7 +58,7 @@ theorem step_pure_selected {P B σ oracle externalOracle rel fresh q b ts es rs 
 
 /-- 同じ選択関数を全入力で使い、型付き入力での存在から応答との適合を得る。 -/
 theorem step_io_selected {P B σ externalOracle rel fresh q b ts es rs ws k μ sg Ψ a e}
-    (hB : B.CoreAssumptions P) (hq : q.view = .app (.prim b ts es rs) ws)
+    (hB : B.CoreAssumptions P) (hq : q.view = .app (.prim b ts es (List.map RangeIx.fixed rs)) ws)
     (hs : B.sig b = some sg) (hk : sg.kind = .io ∨ sg.kind = .exit)
     (hn : NoHandler k (.prim b))
     (ha : BuiltinArgs P B Ψ b sg (Ty.normTys ts) (es.map Eff.norm) rs ws a e) :
@@ -126,14 +126,14 @@ private theorem SplitAt.splitHandler_some {o k k1 cap h k2} (hs : SplitAt o k k1
 
 /-- Reference.new でも、実行と規則に同じ空き場所を供給する。 -/
 theorem step_ref_new_selected {P B σ oracle externalOracle rel q b ts es rs v k μ Ψ sg}
-    (h : StoreOk P B σ Ψ μ) (hv : q.view = .app (.prim b ts es rs) [v])
+    (h : StoreOk P B σ Ψ μ) (hv : q.view = .app (.prim b ts es (List.map RangeIx.fixed rs)) [v])
     (hs : B.sig b = some sg) (hk : sg.kind = .refNew) :
     step P B σ oracle externalOracle rel Store.selectFresh (.run q k μ) =
       some (none,.run (Closure.pure (.ret (.loc μ.selectFresh))) k (μ.set μ.selectFresh (.val v))) ∧
     Step P B σ (.run q k μ) none
       (.run (Closure.pure (.ret (.loc μ.selectFresh))) k (μ.set μ.selectFresh (.val v))) := by
   constructor
-  · simp only [step,hv]; change (match B.sig b with | none => none | some s => _) = _
+  · simp only [step,hv,stepRun,closedRanges_fixed]; change (match B.sig b with | none => none | some s => _) = _
     rw [hs]; simp only [hk]
   · exact .E_RefNew hv hs hk h.selectFresh_empty.1
 
@@ -175,10 +175,10 @@ theorem step_raise_selected {P B σ oracle externalOracle rel q t e v k μ Ψ k1
     rw [hs.splitHandler_some]
   · exact .E_OpFail hv hs hμ.selectFresh_empty.1
 
-/-- IO・exit・PathBases の節がある場合にも、同じ保存継続を選ぶ。 -/
+/-- IO・exit の節がある場合にも、同じ保存継続を選ぶ。 -/
 theorem step_prim_handler_selected {P B σ oracle externalOracle rel q b ts es rs ws k μ Ψ sg k1 hcap h k2 c}
-    (hμ : StoreOk P B σ Ψ μ) (hv : q.view = .app (.prim b ts es rs) ws)
-    (hs : B.sig b = some sg) (hk : sg.kind = .io ∨ sg.kind = .exit ∨ sg.kind = .pathBases)
+    (hμ : StoreOk P B σ Ψ μ) (hv : q.view = .app (.prim b ts es (List.map RangeIx.fixed rs)) ws)
+    (hs : B.sig b = some sg) (hk : sg.kind = .io ∨ sg.kind = .exit)
     (hh : SplitAt (.prim b) k k1 hcap h k2) (hc : findClause h (.prim b) = some c) :
     step P B σ oracle externalOracle rel Store.selectFresh (.run q k μ) =
       some (none,.run (.mk (hcap.extendMany (ws ++ [.loc μ.selectFresh])) (c.body.substTy ts []))
@@ -187,15 +187,15 @@ theorem step_prim_handler_selected {P B σ oracle externalOracle rel q b ts es r
       (.run (.mk (hcap.extendMany (ws ++ [.loc μ.selectFresh])) (c.body.substTy ts []))
         (.drop μ.selectFresh :: k2) (μ.set μ.selectFresh (.cont (k1 ++ [.handleF hcap h])))) := by
   constructor
-  · simp only [step,hv]; change (match B.sig b with | none => none | some s => _) = _
+  · simp only [step,hv,stepRun,closedRanges_fixed]; change (match B.sig b with | none => none | some s => _) = _
     rw [hs]
-    rcases hk with hk | hk | hk <;> simp only [hk]
+    rcases hk with hk | hk <;> simp only [hk]
     all_goals rw [hh.splitHandler_some]; simp only [hc]
   · exact .E_OpPrim hv hs hk hh hc hμ.selectFresh_empty.1
 
 /-- fresh を使う残り四枝の入力。行先の型付けは含めない。 -/
 inductive FreshStepInputs (B : Builtins) (q : Closure) (k : Cont) (μ : Store) : State → Prop where
-  | reference {b ts es rs v sg} : q.view = .app (.prim b ts es rs) [v] →
+  | reference {b ts es rs v sg} : q.view = .app (.prim b ts es (List.map RangeIx.fixed rs)) [v] →
       B.sig b = some sg → sg.kind = .refNew →
       FreshStepInputs B q k μ (.run (Closure.pure (.ret (.loc μ.selectFresh))) k (μ.set μ.selectFresh (.val v)))
   | operation {o ts ws k1 hcap h k2 c} : q.view = .app (.op o ts) ws →
@@ -208,8 +208,8 @@ inductive FreshStepInputs (B : Builtins) (q : Closure) (k : Cont) (μ : Store) :
       FreshStepInputs B q k μ
         (.run (.mk (hcap.extendMany [v,.loc μ.selectFresh]) (body.substTy [t] []))
           (.drop μ.selectFresh :: k2) (μ.set μ.selectFresh (.cont (k1 ++ [.handleF hcap [.fail err body]]))))
-  | primitive {b ts es rs ws sg k1 hcap h k2 c} : q.view = .app (.prim b ts es rs) ws →
-      B.sig b = some sg → (sg.kind = .io ∨ sg.kind = .exit ∨ sg.kind = .pathBases) →
+  | primitive {b ts es rs ws sg k1 hcap h k2 c} : q.view = .app (.prim b ts es (List.map RangeIx.fixed rs)) ws →
+      B.sig b = some sg → (sg.kind = .io ∨ sg.kind = .exit) →
       SplitAt (.prim b) k k1 hcap h k2 → findClause h (.prim b) = some c →
       FreshStepInputs B q k μ
         (.run (.mk (hcap.extendMany (ws ++ [.loc μ.selectFresh])) (c.body.substTy ts []))
@@ -252,7 +252,7 @@ theorem step_release_selected {P B σ oracle externalOracle fresh q k μ w v} {e
 /-- 元の捕捉と導出から型付き入力を得て、実行関数の選択を接続する。 -/
 theorem StateTyE.selected_primitive_step {P B σ Eb externalOracle rel fresh q b ts es rs ws k μ sg}
     (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)
-    (h : StateTyE P B σ Eb (.run q k μ)) (hv : q.view = .app (.prim b ts es rs) ws)
+    (h : StateTyE P B σ Eb (.run q k μ)) (hv : q.view = .app (.prim b ts es (List.map RangeIx.fixed rs)) ws)
     (hs : B.sig b = some sg) (hk : sg.kind = .pure ∨ sg.kind = .io ∨ sg.kind = .exit)
     (hn : NoHandler k (.prim b)) :
     ∃ event dest, step P B σ B.selectOracle

@@ -204,7 +204,7 @@ mutual
     | .C_If hv _ hm hn =>
       simp only [Comp.resolveLocals,HasTypeVQ.resolve_id hv]
       exact .ite (HasTypeVQ.localRefs hv) (HasTypeCQ.localRefs hm hL hΨ) (HasTypeCQ.localRefs hn hL hΨ)
-    | .C_Match hv _ ha _ =>
+    | .C_Match hv _ ha hdecl _ =>
       simp only [Comp.resolveLocals,HasTypeVQ.resolve_id hv]
       exact .matchC (HasTypeVQ.localRefs hv) (HasTypeArmsQ.localRefs ha hL hΨ)
     | .C_Lazy hm _ =>

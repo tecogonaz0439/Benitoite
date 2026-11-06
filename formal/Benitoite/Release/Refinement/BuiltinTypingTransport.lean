@@ -40,7 +40,7 @@ theorem ExternalCallAdmissible.of_fields {P B B' C d ts}
 
 theorem handled_of_fields {P B B' cs} (h : Builtins.TypingFieldsEq B B') :
     handled P B cs = handled P B' cs := by
-  simp only [handled, effOps, h.effects]
+  simp only [handled, effOps, issuesSelected, Builtins.issuesIn, h.effects, h.sig]
 
 theorem ClauseSig.of_fields {P B B' e o sg} (h : Builtins.TypingFieldsEq B B')
     (hc : ClauseSig P B e o sg) : ClauseSig P B' e o sg := by
@@ -56,7 +56,7 @@ mutual
     | .V_Lam h0 h1 h2 h3 h4 => exact .V_Lam h0 h1 h2 (h3.of_fields fields) h4
     | .V_DependentLam h0 h1 => exact .V_DependentLam h0 (h1.of_fields fields)
     | .V_Closure h0 h1 h2 => exact .V_Closure h0 h1 (h2.of_fields fields)
-    | .V_Fun h0 h1 h2 h3 => exact .V_Fun h0 h1 (h2.of_fields fields) h3
+    | .V_Fun h0 h1 hr h2 h3 => exact .V_Fun h0 h1 hr (h2.of_fields fields) h3
     | .V_Prim h0 h1 h2 h3 h4 => exact .V_Prim (fields.sig ▸ h0) (h1.of_fields fields) h2 h3 h4
     | .V_Op h0 h1 h2 h3 => exact .V_Op h0 h1 (h2.of_fields fields) h3
     | .V_ExternalRef h0 h1 h2 h3 => exact .V_ExternalRef h0 h1 (h2.of_fields fields) h3
@@ -103,7 +103,7 @@ mutual
     | .C_App h0 h1 => exact .C_App (h0.of_fields fields) (h1.of_fields fields)
     | .C_DependentApp h0 h1 => exact .C_DependentApp (h0.of_fields fields) (h1.of_fields fields)
     | .C_If h0 h1 h2 h3 => exact .C_If (h0.of_fields fields) h1 (h2.of_fields fields) (h3.of_fields fields)
-    | .C_Match h0 h1 h2 h3 => exact .C_Match (h0.of_fields fields) h1 (h2.of_fields fields) h3
+    | .C_Match h0 h1 h2 hdecl h3 => exact .C_Match (h0.of_fields fields) h1 (h2.of_fields fields) hdecl h3
     | .C_Lazy h0 h1 => exact .C_Lazy (h0.of_fields fields) h1
     | .C_Escape h0 h1 => exact .C_Escape (h0.of_fields fields) h1
     | .C_Use h0 h1 h2 h3 => exact .C_Use (h0.of_fields fields) (fields.resources ▸ h1) (h2.of_fields fields) h3

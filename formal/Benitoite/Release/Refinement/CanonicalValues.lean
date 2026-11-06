@@ -301,8 +301,8 @@ private theorem typeCode_le {P Γ Φ a b} (h : Ty.LeQ P Γ Φ a b) :
 private def valueForm : Nat → Val → Prop
   | 0, v => ∃ c, v = .const c
   | 1, v =>
-      (∃ f ts es, v = .fnRef f ts es) ∨
-      (∃ b ts es rs, v = .prim b ts es rs) ∨
+      (∃ f ts es, ∃ rs : List RangeExpr, v = .fnRef f ts es (rs.map RangeIx.fixed)) ∨
+      (∃ b ts es rs, v = .prim b ts es (List.map RangeIx.fixed rs)) ∨
       (∃ o ts, v = .op o ts) ∨
       (∃ ns ps body, v = .lam ns ps body) ∨
       (∃ t body, v = .dependentLam t body) ∨
@@ -331,7 +331,7 @@ private theorem valueForm_typed {P B Ψ Q C Γ Φ v T}
   | .V_Sub h le .. => rw [←typeCode_le le]; exact valueForm_typed h hΓ
   | .V_Normal h => rw [typeCode_norm]; exact valueForm_typed h hΓ
   | .V_Refine h .. => simpa only [typeCode] using valueForm_typed h hΓ
-  | .V_Fun .. => exact Or.inl ⟨_,_,_,rfl⟩
+  | .V_Fun .. => exact Or.inl ⟨_,_,_,_,rfl⟩
   | .V_Prim .. => exact Or.inr (Or.inl ⟨_,_,_,_,rfl⟩)
   | .V_Op .. => exact Or.inr (Or.inr (Or.inl ⟨_,_,rfl⟩))
   | .V_Lam .. => exact Or.inr (Or.inr (Or.inr (Or.inl ⟨_,_,_,rfl⟩)))
@@ -358,8 +358,8 @@ private theorem typeCode_fn {T t} (h : T.fnCore = some t) : typeCode T = 1 := by
 
 theorem HasTypeVQ.canonical_function {P B Ψ Q C Φ v T t}
     (h : HasTypeVQ P B Ψ Q C [] Φ v T) (ht : T.fnCore = some t) :
-    (∃ f ts es, v = .fnRef f ts es) ∨
-      (∃ b ts es rs, v = .prim b ts es rs) ∨
+    (∃ f ts es, ∃ rs : List RangeExpr, v = .fnRef f ts es (rs.map RangeIx.fixed)) ∨
+      (∃ b ts es rs, v = .prim b ts es (List.map RangeIx.fixed rs)) ∨
       (∃ o ts, v = .op o ts) ∨
       (∃ ns ps body, v = .lam ns ps body) ∨
       (∃ t body, v = .dependentLam t body) ∨
@@ -368,6 +368,30 @@ theorem HasTypeVQ.canonical_function {P B Ψ Q C Φ v T t}
   have hf := valueForm_typed h rfl
   rw [typeCode_fn ht] at hf
   exact hf
+
+/-- 関数参照の範囲引数が空である値についての正準形。 -/
+theorem HasTypeVQ.canonical_function_no_ranges {P B Ψ Q C Φ v T t}
+    (h : HasTypeVQ P B Ψ Q C [] Φ v T) (ht : T.fnCore = some t)
+    (hempty : ∀ f ts es rs, v = .fnRef f ts es rs → rs = []) :
+    (∃ f ts es, v = .fnRef f ts es) ∨
+      (∃ b ts es rs, v = .prim b ts es rs) ∨
+      (∃ o ts, v = .op o ts) ∨
+      (∃ ns ps body, v = .lam ns ps body) ∨
+      (∃ t body, v = .dependentLam t body) ∨
+      (∃ runtime body, v = .closure runtime body) ∨
+      (∃ t e, v = .raise t e) ∨ (∃ f ts, v = .externalRef f ts) := by
+  rcases h.canonical_function ht with ⟨f,ts,es,rs,hv⟩ | other
+  · have he := hempty f ts es _ hv
+    rw [he] at hv
+    exact Or.inl ⟨f,ts,es,hv⟩
+  · rcases other with ⟨b,ts,es,rs,hv⟩ | other
+    · exact Or.inr (Or.inl ⟨b,ts,es,rs.map RangeIx.fixed,hv⟩)
+    · exact Or.inr (Or.inr other)
+
+example {P B Ψ Q C Φ v T t}
+    (h : HasTypeVQ P B Ψ Q C [] Φ v T) (ht : T.fnCore = some t)
+    (hempty : ∀ f ts es rs, v = .fnRef f ts es rs → rs = []) :=
+  h.canonical_function_no_ranges ht hempty
 
 theorem HasTypeVQ.canonical_map {P B Ψ Q C Φ v T a b}
     (h : HasTypeVQ P B Ψ Q C [] Φ v T) (ht : T.norm.core = .map a b) :
@@ -449,10 +473,10 @@ theorem HasTypeVQ.canonical_held {P B Ψ Q C Φ v T o kind ix}
 example {P B Ψ Q C Φ v T u} (h : HasTypeVQ P B Ψ Q C [] Φ v T)
     (ht : T.fnCore = some u) :
     ∃ t, Ty.Annotation P C [] (.dependentFn t) ∧ TelClosure P [] Φ t u := by
-  rcases h.canonical_function ht with ⟨f,ts,es,hv⟩ | ⟨b,ts,es,rs,hv⟩ |
+  rcases h.canonical_function ht with ⟨f,ts,es,rs,hv⟩ | ⟨b,ts,es,rs,hv⟩ |
     ⟨o,ts,hv⟩ | ⟨ns,ps,body,hv⟩ | ⟨t,body,hv⟩ | ⟨runtime,body,hv⟩ |
     ⟨a,e,hv⟩ | ⟨f,ts,hv⟩
-  · obtain ⟨d,w,_,_,_,hi,hw,rel⟩ := h.inv_fnRef hv
+  · obtain ⟨d,w,rs',hrs,_,_,_,_,hi,hw,rel⟩ := h.inv_fnRef_ranges hv
     cases Option.some.inj (hw.symm.trans ht)
     exact ⟨_,hi.result,rel⟩
   · obtain ⟨sg,w,_,_,_,_,hi,hw,rel⟩ := h.inv_prim hv

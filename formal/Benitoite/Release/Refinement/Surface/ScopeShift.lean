@@ -58,7 +58,7 @@ mutual
       (v.rename (shiftIndex k c)).SourceScoped nr nt ne (nv + k)
     | _, _, _, .var _, _, h => shiftIndex_lt h
     | _, _, _, .const _, _, h | _, _, _, .bytesV _, _, h => h
-    | _, _, _, .fnRef _ _ _, _, h => ⟨scopedTypes_shiftV h.1, scopedRows_shiftV h.2⟩
+    | _, _, _, .fnRef _ _ _ _, _, h => ⟨scopedTypes_shiftV h.1, scopedRows_shiftV h.2.1, h.2.2⟩
     | _, _, _, .prim _ _ _ _, _, h => ⟨scopedTypes_shiftV h.1, scopedRows_shiftV h.2.1, h.2.2⟩
     | _, nv, c, .lam ns ps body, hc, h => by
         refine ⟨⟨by simpa using h.1.1, h.1.2⟩, scopedTypes_shiftV h.2.1, ?_⟩

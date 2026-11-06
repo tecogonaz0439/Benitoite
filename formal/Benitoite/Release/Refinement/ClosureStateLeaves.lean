@@ -219,28 +219,28 @@ theorem StateTyE.mark_step {P B σ Eb q k μ v}
   · intro a ha; cases ha
   · intro t ht; obtain ⟨u,hu,_⟩ := ht; cases hu
 
-theorem StateTyE.fun_step {P B σ Eb q k μ f d ts es ws}
+theorem StateTyE.fun_step_ranges {P B σ Eb q k μ f d ts es rs ws}
     (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)
     (h : StateTyE P B σ Eb (.run q k μ))
-    (hv : q.view = .app (.fnRef f ts es) ws) (hd : P.defs f = some d)
+    (hv : q.view = .app (.fnRef f ts es (rs.map RangeIx.fixed)) ws) (hd : P.defs f = some d)
     (hws : ws.length = d.params.length) (hts : ts.length = d.ntys) (hes : es.length = d.neffs) :
     Step P B σ (.run q k μ) none
-      (.run (.mk (Capture.empty.extendMany ws) (d.body.substTy ts es)) (markPush k) μ) ∧
+      (.run (.mk (Capture.empty.extendMany ws) ((d.body.instR rs).substTy ts es)) (markPush k) μ) ∧
     StateTyE P B σ Eb
-      (.run (.mk (Capture.empty.extendMany ws) (d.body.substTy ts es)) (markPush k) μ)
+      (.run (.mk (Capture.empty.extendMany ws) ((d.body.instR rs).substTy ts es)) (markPush k) μ)
  := by
   obtain ⟨Ψ,R,a,b,ε,e,hs,hq,he,hk,had,hclosed,hkc,hμc⟩ := h
-  have hread : (Val.fnRef f ts es) ∈ q.view.readValues := by rw [hv]; exact List.mem_cons_self
+  have hread : (Val.fnRef f ts es (rs.map RangeIx.fixed)) ∈ q.view.readValues := by rw [hv]; exact List.mem_cons_self
   obtain ⟨T,hfn⟩ := hq.view_read_typed hP hPB hB hs.wf hs.sorted hs.declared hread
-  have hi := (hfn.fun_body_input rfl rfl rfl hd).1
+  obtain ⟨hrange,hi,_⟩ := hfn.fun_body_input_ranges rfl rfl rfl hd
   have hcode := hq.app_view_typed hP hPB hB hs.wf hs.sorted hs.declared hv
   have hg : ∀ v ∈ ws, v.Ground := by
     intro v hm; apply hq.view_read_ground hclosed; rw [hv]; exact List.mem_cons_of_mem _ hm
-  obtain ⟨r,g,hdst,hle,hcov⟩ := hcode.fun_apply_all hP hPB hB hs rfl hd hg
+  obtain ⟨r,g,hdst,hle,hcov⟩ := hcode.fun_apply_all_ranges hP hPB hB hs rfl hd hg
   have hann := hdst.annotation
   have hr : Ty.Annotation P [] [] r := ⟨hann.wf.1,hann.sorted.1,hann.declared.1⟩
   obtain ⟨hdst,hsub⟩ := hdst.widen_atoms (he.covers.trans hcov)
-  have hbody := (hP.defs f d hd).2.2
+  have hbody := (hP.defs f d hd).2.2.instR hrange.1 hrange.2.2
   rw [←hts] at hbody
   have hbody' := Comp.SourceScoped.runtime_inst (ts := ts) (es := es) (c := 0)
     (by simpa only [Nat.zero_add] using hbody) (fun t ht => (hi.types t ht).wf)
@@ -251,10 +251,22 @@ theorem StateTyE.fun_step {P B σ Eb q k μ f d ts es ws}
     ⟨Ψ,some r,r,b,ε,_,hs,hdst,hsub,(ContTy.K_Sub hk hle).markPush hr,?_,?_,hkc.markPush,hμc⟩⟩
   · exact ⟨(show Capture.Adequate σ Capture.empty from trivial).extendMany hva.2,hbody'.2⟩
   · refine ⟨(show Capture.Closed Capture.empty from trivial).extendMany hg,?_⟩
-    change (d.body.substTy ts es).ClosedAt 0 ((Capture.empty.extendMany ws).values.length+0)
+    change ((d.body.instR rs).substTy ts es).ClosedAt 0 ((Capture.empty.extendMany ws).values.length+0)
     rw [Capture.extendMany_values]
     simpa only [Comp.substTy,Capture.empty,Capture.values,List.length_append,List.length_map,
       List.length_reverse,List.length_nil,Nat.add_zero,←hws] using hbody'.1
+
+theorem StateTyE.fun_step {P B σ Eb q k μ f d ts es ws}
+    (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)
+    (h : StateTyE P B σ Eb (.run q k μ))
+    (hv : q.view = .app (.fnRef f ts es) ws) (hd : P.defs f = some d)
+    (hws : ws.length = d.params.length) (hts : ts.length = d.ntys) (hes : es.length = d.neffs) :
+    Step P B σ (.run q k μ) none
+      (.run (.mk (Capture.empty.extendMany ws) (d.body.substTy ts es)) (markPush k) μ) ∧
+    StateTyE P B σ Eb
+      (.run (.mk (Capture.empty.extendMany ws) (d.body.substTy ts es)) (markPush k) μ)
+ := by
+  simpa only [Comp.instR_nil] using h.fun_step_ranges (rs := []) hP hPB hB hv hd hws hts hes
 
 theorem StateTyE.method_step {P B σ Eb q k μ i us vs name ss es ws id cd ms body}
     (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)
@@ -374,6 +386,20 @@ theorem StateTy.mark_step {P B σ q k μ v}
   obtain ⟨hst,hdst⟩ := StateTyE.mark_step hP hPB hB hs hview
   exact ⟨hst,hσ,Eb,hEb,hdst⟩
 
+theorem StateTy.fun_step_ranges {P B σ q k μ f d ts es rs ws}
+    (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)
+    (h : StateTy P B σ (.run q k μ))
+    (hv : q.view = .app (.fnRef f ts es (rs.map RangeIx.fixed)) ws) (hd : P.defs f = some d)
+    (hws : ws.length = d.params.length) (hts : ts.length = d.ntys) (hes : es.length = d.neffs) :
+    Step P B σ (.run q k μ) none
+      (.run (.mk (Capture.empty.extendMany ws) ((d.body.instR rs).substTy ts es)) (markPush k) μ) ∧
+    StateTy P B σ
+      (.run (.mk (Capture.empty.extendMany ws) ((d.body.instR rs).substTy ts es)) (markPush k) μ)
+ := by
+  obtain ⟨hσ,Eb,hEb,hs⟩ := h
+  obtain ⟨hst,hdst⟩ := StateTyE.fun_step_ranges hP hPB hB hs hv hd hws hts hes
+  exact ⟨hst,hσ,Eb,hEb,hdst⟩
+
 theorem StateTy.fun_step {P B σ q k μ f d ts es ws}
     (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)
     (h : StateTy P B σ (.run q k μ))
@@ -384,9 +410,7 @@ theorem StateTy.fun_step {P B σ q k μ f d ts es ws}
     StateTy P B σ
       (.run (.mk (Capture.empty.extendMany ws) (d.body.substTy ts es)) (markPush k) μ)
  := by
-  obtain ⟨hσ,Eb,hEb,hs⟩ := h
-  obtain ⟨hst,hdst⟩ := StateTyE.fun_step hP hPB hB hs hv hd hws hts hes
-  exact ⟨hst,hσ,Eb,hEb,hdst⟩
+  simpa only [Comp.instR_nil] using h.fun_step_ranges (rs := []) hP hPB hB hv hd hws hts hes
 
 theorem StateTy.method_step {P B σ q k μ i us vs name ss es ws id cd ms body}
     (hP : P.WellFormed) (hPB : P.WellTyped B) (hB : B.CoreAssumptions P)

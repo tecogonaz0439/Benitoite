@@ -180,10 +180,10 @@ theorem Builtins.CoreAssumptions.pathBases_empty_values {P B Ψ Q C Γ Φ s b ts
 /-- E_PathBasesApplyの実際の遷移から到達先のviewを反転する局所の場合。 -/
 theorem Builtins.CoreAssumptions.pathBases_apply_destination {P B σ q b s k μ}
     (h : Builtins.CoreAssumptions P B) (hv : q.view = .app (.prim b [] [] []) [])
-    (hs : B.sig b = some s) (hk : s.kind = .pathBases) (hn : NoHandler k (.prim b)) :
+    (hs : B.sig b = some s) (hk : s.kind = .pathBases) :
     Step P B σ (.run q k μ) none (.run (.mk q.capture (.issuePathBases b)) k μ) ∧
     ∀ Ψ Q C Γ Φ R Δ, HasTypeCQ P B Ψ Q C Γ Φ R
       (.issuePathBases b) .pathBases (Eff.single processEnvironmentEff) Δ :=
-  ⟨.E_PathBasesApply hv hs hk hn, fun _ _ _ _ _ _ _ => h.issuePathBases_typed hs hk⟩
+  ⟨.E_PathBasesApply hv hs hk, fun _ _ _ _ _ _ _ => h.issuePathBases_typed hs hk⟩
 
 end Benitoite.Release.Refinement

@@ -291,7 +291,7 @@ example (P : Program) (hp : HasHttp P) (Ψ : StoreTy) (σ : PathEnv) (hσ : σ.V
     have first : Step P B σ
         (.run (Closure.pure (.app (.prim pathBasesName [] [] []) [])) [.letF (Closure.pure body)] Store.empty)
         none (.run (Closure.pure (.issuePathBases pathBasesName)) [.letF (Closure.pure body)] Store.empty) :=
-      .E_PathBasesApply rfl rfl rfl (by simp [NoHandler])
+      .E_PathBasesApply rfl rfl rfl
     have issued : Step P B σ
         (.run (Closure.pure (.issuePathBases pathBasesName)) [.letF (Closure.pure body)] Store.empty)
         (some (.pathBases pathBasesName σ))
