@@ -119,3 +119,13 @@ Lean 4.34.1を固定し、`formal/` から実行した。単独のLeanは `lake 
 最終照合は15:08:16〜15:08:17 JST、外側0.706秒、終了0だった。変更12ファイル、監査10モジュール、既定import、266署名、1,076宣言、許可した公理の集合と記録の上限を照合した。照合の生出力は247バイト、SHA-256は `b5461ea4148a642b70b7450d2e781a1fd81e3ac59c3d3955195bf2cbb00818dd` である。
 
 終了は2026-11-06 15:08 JST（分単位）。開始15:02 JSTからの外側の所要は約6分で、能動時間と待ち時間は分離していない。見込みを下回り、2時間の上限には達していない。最終照合の後に変更したのは、この結果の追記と照合の要約だけである。最終記録は全15ファイル、合計75,365バイト（各100 KB以下）である。
+
+## 群 K と群 D の結合の作業末の work の検査（取りまとめ）
+
+- 基準: `ed8910b4b0403d18fd5d42098e2deacecdf619a3`（群 D までの san_benito）。HEAD は `c03a960f`（結合の処置のコミット `aea449ae` へ、群 K のレビューの処置 `6c100e89` を取り込み直したもの）。
+- 取り込み直しで変わった Lean は `RangeCode.lean` の読者のない補題3行の削除だけで、`Surface/` は `aea449ae` と同じである。群 D の266定理の言明の照合（再開1、終了0）はそのまま当てはまる。
+- 事前に `formal/.lake/build/lib/lean/Benitoite/Release/Refinement` と `formal/.lake/build/ir/Benitoite/Release/Refinement` を消した。
+- コマンド: `scripts/check.sh --level work --base ed8910b4b0403d18fd5d42098e2deacecdf619a3`（`/usr/bin/time -l` で測定）。選ばれた検査は spec_tally・spec_examples（01-12 の変更による）・formal_build。
+- 終了状態 0（selected checks passed。spec_examples は7件成功）。外側の時間 965.68秒（15:27〜15:43）、最大常駐量 4,229,922,816 バイト。
+- 生の記録は `<tmp>` に置いた（6,625 バイト、SHA-256 `c784d0206f4d9e98eb87863fd34c0b61aa04c708435addd4e63d1908096ce7db`）。
+- 計画からのずれ: なし。検査の後に変えたのは、RV-L70.k.md と RV-L70.k-int.md の追記と本節だけである。

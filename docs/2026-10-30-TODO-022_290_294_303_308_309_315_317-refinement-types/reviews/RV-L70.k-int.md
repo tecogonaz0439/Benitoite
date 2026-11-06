@@ -68,3 +68,7 @@
 | 1 | `<tmp>/` の Python の台本（`python3 -I`）で、`git show HEAD:` と作業木の `R/Surface/` の全25ファイルの定理の言明を、括弧の深さを数えて抽出して比べた。台帳の各ファイルの件数とも比べた | 開始時 266 定理がすべて一致、追加2件。台帳は `LetChain.lean` で 7（実数 8）。漏れは `@[simp] theorem bindParams_nil` |
 | 2 | `<repo>/formal/` で `lake env lean -M 12288 <tmp>/check1.lean`（`import Benitoite.Release.Refinement.Surface.Theorems`）。内容は、`d.rangeParams = [.path]` の任意の表層の関数で `(desugarDef op d).rkinds = []` が `rfl` で成り立つこと、`Declarations.realizes_no_ranges`・`desugarProgram_ranges` の `#check`、両者と `desugar_typed` の `#print axioms`、`Realizes.ranges` の射影の型 | 名前の誤りを直した3回目で終了0。外側 0.36 秒、最大常駐量 約 834 MB。`realizes_no_ranges` は `propext`、`desugarProgram_ranges`・`desugar_typed` は `propext`・`Classical.choice`・`Quot.sound` だけに依存 |
 | 3 | `grep` で `Realizes` の利用者と `rangeParams` の読者を `formal/` 全体から探した | `Realizes` は `R/Surface/` の9ファイルだけ。`rangeParams` を読むのは別名（`Aliases.lean`）と例の1行（`Typing.lean:71`）だけで、関数の整形式・型付け・脱糖は読まない |
+
+## 取りまとめの追記
+
+2026-11-06。結合の表層の追随は Codex が行い、独立レビューは Claude（Opus 5.5）が行った。中1・軽1・軽2・情2は再開1で処置し、照合は266件で終了0であった。情1（表層の `FunDecl.rangeParams` が読まれない）は、群 D の続きで範囲パラメータの表層の規則を足すときに読ませる。情3に従い、群 K のレビューの処置を取り込み直した後の状態で取りまとめが work の検査を行い、終了0（965.68秒）であった。取り込み直しで表層は変わっていない。
