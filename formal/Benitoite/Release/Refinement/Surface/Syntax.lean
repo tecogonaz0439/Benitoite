@@ -231,6 +231,8 @@ mutual
     | handleE (body : Block) (clauses : Clauses)
     /-- 節の継続の番号。内側の handle の本体では外側の節の継続も指せる。 -/
     | resume (k : Nat) (e : Expr)
+    /-- 外部関数の参照（設計書 01-12「外部の型と関数」）。型引数は検査器が決めた具体化である。 -/
+    | externalName (f : ExternalFunctionId) (tys : List Ty)
 
   inductive Exprs where
     | nil
@@ -321,6 +323,10 @@ structure Declarations where
   records : ConName → Option RecordDecl := fun _ => none
   /-- 生成した構成子の判定の関数の名前から、判定する構成子の名前を引く。 -/
   testers : FunName → Option ConName := fun _ => none
+  /-- 外部の型と関数の宣言の表。 -/
+  externals : List (ExternalKey × ExternalDecl) := []
+  /-- data 型の変性の宣言。 -/
+  dataInfo : DataName → Option DataVarianceDecl := fun _ => none
 
 structure Def extends FunDecl where
   body : Block
@@ -347,6 +353,8 @@ structure Program where
   aliases : String → Option AliasDecl := fun _ => none
   records : ConName → Option RecordDecl := fun _ => none
   testers : FunName → Option ConName := fun _ => none
+  externals : List (ExternalKey × ExternalDecl) := []
+  dataInfo : DataName → Option DataVarianceDecl := fun _ => none
 
 /-- 構築器の局所の文脈。専用位置の種類を値の環境と同じ番号で持つ。 -/
 abbrev BuilderCtx := List (Option BuilderKind)
