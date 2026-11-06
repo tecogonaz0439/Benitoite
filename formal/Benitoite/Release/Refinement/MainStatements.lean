@@ -93,9 +93,9 @@ def EffectSoundnessStatement (P : Program) (B : Builtins) (σ : PathEnv) : Prop 
         (∀ ev s', ¬ Step P B σ s (some ev) s') ∧ ¬ UnhandledOp s
 
 /-- 一段の対象健全性。継続の末尾に効果 Eb を固定した状態の IO の事象の観測の対象は、その操作の名前の Eb の原子が
-σ の下で許す。 -/
+σ の下で許す。事象の実引数の型付けを閉じた view から得るので、プログラムの整形式と型付けを前提に読む。 -/
 def StepTargetStatement (P : Program) (B : Builtins) (σ : PathEnv) : Prop :=
-  P.EffectsOk B → B.CoreAssumptions P → B.TargetAgreement P → σ.Valid →
+  P.WellFormed → P.WellTyped B → P.EffectsOk B → B.CoreAssumptions P → B.TargetAgreement P → σ.Valid →
     ∀ Eb s s' b ws o obs, StateTyE P B σ Eb s → Step P B σ s (some (.io b ws o obs)) s' →
       ∃ e l, B.sig b = some e ∧ e.opEff = some l ∧ ∀ t ∈ obs, Eff.Allows σ B.effKind Eb l t
 
