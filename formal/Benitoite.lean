@@ -986,3 +986,5 @@ import Benitoite.Release.Refinement.CheckAdmissibility
 import Benitoite.Release.Refinement.StandardModelPredicateInputs
 import Benitoite.Release.Refinement.MembershipInferenceBoundary
 import Benitoite.Release.Refinement.StandardModelCheckInputs
+import Benitoite.Release.Refinement.CheckErasure
+import Benitoite.Release.Refinement.CheckErasureExamples

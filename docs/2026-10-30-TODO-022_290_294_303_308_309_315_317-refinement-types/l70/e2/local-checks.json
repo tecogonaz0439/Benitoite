@@ -1,0 +1,126 @@
+{
+  "checks": [
+    {
+      "start": "2026-11-06T20:33:32.274743+09:00",
+      "seconds": 1.2984840000000002,
+      "exit": 1,
+      "raw_bytes": 16646,
+      "raw_sha256": "a7ea6b984d2e6055a5670a3983e7cdd24a5f5b27beca30905977d72631e88bdd",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "-o",
+        ".lake/build/lib/lean/Benitoite/Release/Refinement/CheckErasure.olean",
+        "Benitoite/Release/Refinement/CheckErasure.lean"
+      ],
+      "cwd": "formal",
+      "raw_label": "<tmp>/l70-e2-local-01.log"
+    },
+    {
+      "start": "2026-11-06T20:34:05.532367+09:00",
+      "seconds": 1.4206875829999999,
+      "exit": 0,
+      "raw_bytes": 0,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "-o",
+        ".lake/build/lib/lean/Benitoite/Release/Refinement/CheckErasure.olean",
+        "Benitoite/Release/Refinement/CheckErasure.lean"
+      ],
+      "cwd": "formal",
+      "raw_label": "<tmp>/l70-e2-local-02.log"
+    },
+    {
+      "start": "2026-11-06T20:34:20.145760+09:00",
+      "seconds": 0.788258166,
+      "exit": 1,
+      "raw_bytes": 502,
+      "raw_sha256": "e67081cf94c44d96f79e65a5a9204adab1d282a15deced1bca1ab131e83980d5",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "-o",
+        ".lake/build/lib/lean/Benitoite/Release/Refinement/CheckErasureExamples.olean",
+        "Benitoite/Release/Refinement/CheckErasureExamples.lean"
+      ],
+      "cwd": "formal",
+      "raw_label": "<tmp>/l70-e2-local-03.log"
+    },
+    {
+      "start": "2026-11-06T20:34:32.776253+09:00",
+      "seconds": 0.78426425,
+      "exit": 1,
+      "raw_bytes": 5873,
+      "raw_sha256": "bc6efba2790ff3af4c8f7facedad41457b15ef1efcb8bd4adc473388570cdaf0",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "-o",
+        ".lake/build/lib/lean/Benitoite/Release/Refinement/CheckErasureExamples.olean",
+        "Benitoite/Release/Refinement/CheckErasureExamples.lean"
+      ],
+      "cwd": "formal",
+      "raw_label": "<tmp>/l70-e2-local-04.log"
+    },
+    {
+      "start": "2026-11-06T20:34:43.516538+09:00",
+      "seconds": 0.794094125,
+      "exit": 0,
+      "raw_bytes": 0,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-M",
+        "12288",
+        "-o",
+        ".lake/build/lib/lean/Benitoite/Release/Refinement/CheckErasureExamples.olean",
+        "Benitoite/Release/Refinement/CheckErasureExamples.lean"
+      ],
+      "cwd": "formal",
+      "raw_label": "<tmp>/l70-e2-local-05.log"
+    }
+  ],
+  "refresh": {
+    "modules": 480,
+    "seconds": 1292.4,
+    "exit": 0,
+    "raw": {
+      "bytes": 160255,
+      "sha256": "38e0b3b6dfe4aee7d5303dd414de08b947162760bb75d167e7dd2b71e0a43d88"
+    },
+    "module_list": {
+      "bytes": 21106,
+      "sha256": "8fec98e03268daa1fd1095c9f0bcd748285be347d7ee2538c3aa23e0c74ae5db"
+    },
+    "command_template": [
+      "lake",
+      "env",
+      "lean",
+      "-M",
+      "12288",
+      "-o",
+      ".lake/build/lib/lean/<module>.olean",
+      "<module>.lean"
+    ],
+    "cwd": "formal",
+    "reproduction": "refresh_dependencies.py --tmp <tmp>",
+    "raw_label": "<tmp>/l70-e2-refresh.log",
+    "module_list_label": "<tmp>/l70-e2-refresh.txt"
+  }
+}

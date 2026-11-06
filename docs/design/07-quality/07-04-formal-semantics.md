@@ -95,6 +95,8 @@
 
 `RefinementCheck`・`CheckAdmissibility`・`RefinementCheckResponse` は、二つの型引数の許容の保存、期待型の外側の篩の閉じた評価、`some true` だけの成功と偽・評価不能の拒否、同じ値を保持する Result の型付けを示す。Result と CheckError の構成子と arity は同じプログラムの宣言から得る。`StandardModel.RowEnv.check` の宣言の条件は合成プログラムから供給し、`Includes` の宣言の移送で利用者のプログラムへ移す。表示器の文字列の書式は型付けの保証に含めない。合成表の表示文字列は不透明な診断本文として扱う。
 
+`CheckErasure` の消去は、正規形の型引数・基の型の一致・空の捕捉環境で呼出しが変わらないこと・値ごとの `RefinementCheck.accepts v U = true` を前提にする。部分型と含意から成功を導かない。偽と評価不能の呼出しは残す。`erase_typed` は同じ全入力条件から消去の前後の篩付きの Result と空の効果を示す。`observations_preserved` は任意の継続とストアについて、事象なしの一段を除いた有限・無限の実行列と、同じ事象列・同じ終端を保つ。除く一段以外の評価の回数と順、停止・非停止、値・失敗の payload・ストア・効果をこの形で扱う。表の署名と δ の一致は同じ行についての等式であり、新しい独立の信頼条件ではない。`CheckErasure.standard_agreement` が合成表の同じ行を供給し、任意の外部宣言の上で真・偽・評価不能の正常な入力と保存定理の適用を置く。
+
 `StandardModelPredicateInputs` は新しい純粋判定の全十四行について、受理と拒否の両側で全ての `BuiltinArgs` と合成表の lookup・δ の応答を満たす。`StandardModelCheckInputs` は整数の受理・拒否と、正常な Option.None の欄の観測が評価不能になる場合を同じ check の入力型で満たす。`MembershipInferenceBoundary` は、長さの事実から所属を導く論理の導出と証明書の受理を排除し、連結の結果の長さが等しくても所属が異なる対照と、純粋な判定が保持対象を作らないことを示す。
 
 `StandardModelCollectionInputs`・`StandardModelIOInputs`・`StandardModelConditionInputs` は、合成表の文字列・バイト列・リスト・写像・集合の79行、範囲付きのパスと要求の6行と %List.getFront、IOと終了の10行の契約の前提と、28+1欄のうち置換の八欄・admits_sat・外部応答の二欄・IOの四欄と対象の条件の前提を、合成表の上の正常な入力が満たすことを示す。結果型が引数の値を読む行の入力は外部宣言の表の構造検証を前提に取り、外部応答の二欄の入力は外部関数を一つ持つ外部宣言の表で示す。純粋な行の正常応答の篩の事実も同じ表で読む。
@@ -1100,6 +1102,7 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 | StandardModelPureRows・StandardModelNumericRows・StandardModelOperatorRows・StandardModelPureInputs | 「篩を含むコア計算の形式化」。合成表の名前ごとの純粋な応答の契約、演算子の表の最初の十六行・数値の公開モジュールの166行・演算子の107行と構造の等号の2行への既存の応答の接続、各行の契約の前提を満たす入力、丸めの五方式とHTTPのモデルの共有の宣言 |
 | BooleanResult・PredicateResponse | 「篩を含むコア計算の形式化」。純粋な所属・文字集合・Float 分類の δ と全入力の応答、公開名から写した閉じた述語との一致、Boolean を篩付き期待型で型付ける入口 |
 | RefinementCheck・CheckAdmissibility・RefinementCheckResponse | 同節。一般の検査の型引数の許容と保存、真だけの成功と偽・評価不能の拒否、同じ値の Result と CheckError の型付け |
+| CheckErasure・CheckErasureExamples | 「閉じた評価で成功が示された検査の消去」。閉じた評価の成功だけを消去する規則、同じ篩付きの結果型と効果、事象なしの一段を除いた有限・無限の実行と終端の保存、合成表と正常な入力の対照 |
 | StandardModelPredicateInputs・StandardModelCheckInputs・MembershipInferenceBoundary | 同節。新しい純粋な行の正常入力・受理と拒否、評価不能の拒否、長さから所属を導くことの排除、保持対象を作らないこと |
 | StandardModelCollectionRows・StandardModelIORows・StandardModelCoreRows・StandardModelSubstitution・StandardModelScoped・StandardModelCore | 「篩を含むコア計算の形式化」。合成表の種類がpureの全行とIO・終了の行の契約、制約と許容の保存則、全署名の形成、任意の外部宣言の全28欄のCoreAssumptionsとTargetAgreement |
 | StandardModelListBodies・StandardModelCoreBodies・StandardModelSafeBodies・StandardModelCollectionBodies・StandardModelProgram・StandardModelWellFormed | 同節。合成表の上の全130本体の型付け、格納された宣言の適格性、外部宣言の表の構造検証の下のWellTypedとWellFormed |

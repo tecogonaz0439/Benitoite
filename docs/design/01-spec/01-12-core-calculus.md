@@ -3316,6 +3316,18 @@ abbrev AtError := Detail Val
 
 `Refinement.Surface.AliasDecl.expand` は、別名の本体へ型引数・範囲引数・値引数の順に置換を適用する。宣言の整形式は、本体が宣言した型・範囲・値の文脈で整形式・整列済み・宣言済みであることを要求する（`AliasDecl.WellFormed`）。型引数の数と kind、各像の三つの形成条件（`AliasTypeArgs`）から、`AliasDecl.subst_formation` は `a.body.subst ts []` の三つの形成条件を型引数を代入した文脈 `a.typeContext ts` で導く。文脈は値の番号を保ち、正規化前の型の像を格納する。`AliasDecl.expand_annotation` は、この形成、同じ数の整形式で種類の合う閉じた範囲引数、型引数を代入して範囲を具体化した文脈 `a.instantiatedContext ts rs` から展開先の文脈への値引数の像（`AliasArgs`）を使い、展開の注釈の整形式を導く。値引数の像は全 sort について整列と宣言を照合する。型パラメータが空という前提は持たない。
 
+### 閉じた評価で成功が示された検査の消去
+
+`CheckErasure.call T U v` は、評価済みの値 v 一つを引数とする `Refinement.check` のコアの呼出しである。`CheckErasure.erase : Comp → Comp` は、その呼出しが空の捕捉環境で閉じても変わらず、T と U が正規形で、`T.core = U.core` と `RefinementCheck.accepts v U = true` が成り立つときだけ、`return (Result.Ok[U,Refinement.CheckError](v))` へ置き換える。他の計算はそのまま返す。`erase_check` がこの規則を与える。型付けの入力を満たすことと、閉じた評価が成功することは別の前提であり、部分型や含意の証明書から消去の前提を導かない。`erase_rejected` と `erase_refined_rejected` は、偽と評価不能の呼出しを残すことを示す。
+
+理由: コアの呼出しの実引数は値であり、この置換は実引数の計算を複製しない。空の捕捉環境での不変性を検査することで、ラムダを実行時の閉包へ変える処理を、構文上の等号の証明から省かない。
+
+`erase_typed` は、同じ P と B とストアの型付けの下で、Result と CheckError の宣言、検査の署名の lookup、同じ型引数・値の `BuiltinArgs` から、消去の前後をともに `Result[U,Refinement.CheckError]` と空の効果で型付ける。値文脈・型文脈・事実は空であり、return の型 R と局所文脈 Δ は任意である。拒否される検査の呼出しも、この型付けを保つ。
+
+`observations_preserved` は、同じプログラム・組込みの表・起点環境と任意の継続 k・ストア μ について述べる。元の閉包 q の view が検査の呼出しであり、B の署名とこの入力の δ が `RefinementCheck` の行に一致すること、および消去の前提を要求する。消去前の状態は `run q k μ`、消去後は `run (Closure.pure (erase (call T U v))) k μ` である。消去前の状態は事象なしの一段で消去後の状態へ移り、その行先とラベルは一意である。事象なしの段も含む有限の実行列 `Execution` では、その一段を除いた残りのラベル列と終状態が一致する。`Steps` では全ての事象列と終端が一致する。各段の状態とラベルを持つ `InfiniteExecution` でも、その一段を除いた列が一致する。したがって、除いた検査の一段以外の評価の回数と順、停止・非停止、終端の値・失敗の payload・ストア、効果の事象を保つ。`Execution.steps` は有限の実行列を既存の `Steps` へ写す。
+
+`CheckErasureExamples` の `standard_agreement` は、任意の P の合成表について同じ署名と δ を供給する。`integer_witnesses` は任意の外部宣言表について正常値 1 と −1 の全入力条件・型付けと、真だけの消去・偽の保持を示す。`undecided_witness` は型付きの `Option.None` の欄の評価が不能となり、同じ CheckError の payload を保つことを示す。`integer_observations` は正常な成功値に任意の継続とストアの観測保存を適用する。
+
 ### 篩の正規形と制約の読み方
 
 `Ty.carrierFacts` は、芯の七整数型と Byte の上下限を自己変数0に対する二述語で表し、Decimal では `decimalRepresented self` を一述語で表す。他の芯には空列を返す。`Ty.assume` は、継続型では空列、それ以外では `carrierFacts ++ refinementPredicates` を返す。`Ctx.facts` は文脈の元の番号を保ち、各列の自己をその番号の変数で開く。`Ty.assumeWithCarrier` と `Ctx.factsWithCarrier` は、それぞれ同じ定義の略記である。型付けの部分型規則と捕捉の事実の条件は、この型域を含む列を使う。`Const.NumericRepresented.carrierFacts` は、`Const.NumericRepresented` を満たす定数について、型域の全述語が自己モデルで真であることを示す。型付きの定数からこの前提を得るときは `ConstOK.represented` を使う。Integer64 は構文が持つ上下限を用いる。`ValueMeaning` の構成子は、芯の形、明示した篩の真、型域の事実の真の三条件を持つ。
