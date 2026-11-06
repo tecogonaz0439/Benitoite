@@ -1,0 +1,434 @@
+[
+  {
+    "tag": "E_BuilderOp",
+    "source": ".builderOp op i args kind",
+    "children": "[ga]",
+    "rhs_sha256": "a22836477320a4a5098221b802cdc856ce10d3bca34db8be86e7c595b0121ac8"
+  },
+  {
+    "tag": "E_Local",
+    "source": ".local i",
+    "children": "[]",
+    "rhs_sha256": "755a83e49c1ca925cee3fd9b17399b5b80e4217082614e740bff55f1bf182a7f"
+  },
+  {
+    "tag": "E_Const",
+    "source": ".constE t body",
+    "children": "[gb]",
+    "rhs_sha256": "9f43601a260f926850433fab16e206db028835bd6f727db1b27d286a08b2eb93"
+  },
+  {
+    "tag": "E_Fun",
+    "source": "e@(.funName _ _ _)",
+    "children": "[]",
+    "rhs_sha256": "61d65f986f66c6e6c7ed314ebafdc22dd1291fbbb8beed620bf9186cc1edca84"
+  },
+  {
+    "tag": "E_Prim",
+    "source": "e@(.primName _ _ _ _)",
+    "children": "[]",
+    "rhs_sha256": "61d65f986f66c6e6c7ed314ebafdc22dd1291fbbb8beed620bf9186cc1edca84"
+  },
+  {
+    "tag": "E_Op",
+    "source": "e@(.opName _ _)",
+    "children": "[]",
+    "rhs_sha256": "61d65f986f66c6e6c7ed314ebafdc22dd1291fbbb8beed620bf9186cc1edca84"
+  },
+  {
+    "tag": "E_FunDicts",
+    "source": "e@(.funDicts _ _ _ ds names ps)",
+    "children": "[]",
+    "rhs_sha256": "06f37b4132e9a3dff6b10cb47ff89ac6e19314f128cd48f3f8eb25bf081ff5ac"
+  },
+  {
+    "tag": "E_MethName",
+    "source": "e@(.methName _ _ _ _ ds names ps)",
+    "children": "[]",
+    "rhs_sha256": "06f37b4132e9a3dff6b10cb47ff89ac6e19314f128cd48f3f8eb25bf081ff5ac"
+  },
+  {
+    "tag": "E_OpDicts",
+    "source": "e@(.opDicts _ _ ds names ps)",
+    "children": "[]",
+    "rhs_sha256": "06f37b4132e9a3dff6b10cb47ff89ac6e19314f128cd48f3f8eb25bf081ff5ac"
+  },
+  {
+    "tag": "E_Raise",
+    "source": ".raise t error",
+    "children": "[]",
+    "rhs_sha256": "da388d44f85a4479ef3f47cfbc6183598ebdbe23424ec58d1bd3cd4d9d8851e0"
+  },
+  {
+    "tag": "E_HandleFail",
+    "source": ".handleFail E t body clause",
+    "children": "[gb, gc]",
+    "rhs_sha256": "f3ff708d554336c59db87a2543c2bce5f424825fa10efecc164ad78c2d8d27d6"
+  },
+  {
+    "tag": "E_ExternalName",
+    "source": ".externalName f ts",
+    "children": "[]",
+    "rhs_sha256": "e6eac816c9cd90a792658bf147ffa4739ea365524f2847098ab66a06164b94d4"
+  },
+  {
+    "tag": "E_NullCon",
+    "source": ".nullCon c ts",
+    "children": "[]",
+    "rhs_sha256": "efed3f67f5574c169cd5a4df6bd4719b7203e113f7b3da0866b6f4c072a1501d"
+  },
+  {
+    "tag": "E_ConValue",
+    "source": ".conValue c ts names ps",
+    "children": "[]",
+    "rhs_sha256": "97e9e90c17f60bbb086fafbe02b2d19be59a7b7aba9a6f9c74968f97ef76fea5"
+  },
+  {
+    "tag": "E_Literal",
+    "source": ".literal l",
+    "children": "[]",
+    "rhs_sha256": "24aa1993dc9baaa3cfff09c79531ce865a5397b90de42de613a02d6b04bdb685"
+  },
+  {
+    "tag": "E_NegInt",
+    "source": ".negInt _",
+    "children": "[]",
+    "rhs_sha256": "b0c7b4e3bdc5cbac7f8ad33eea222cf0da896d9fe2c29f382d6089e92bbc6415"
+  },
+  {
+    "tag": "E_NegFloat",
+    "source": ".negFloat _",
+    "children": "[]",
+    "rhs_sha256": "3f6f4ea3ec5080f4dbec144e5d816465793defadf2680884fbcfbc650fb66798"
+  },
+  {
+    "tag": "E_NegDecimal",
+    "source": ".negDecimal n scale",
+    "children": "[]",
+    "rhs_sha256": "f12abbeaa30d9cee831b9c22d7b12838e49881b80888aeaef68278574548c5f8"
+  },
+  {
+    "tag": "E_NegInteger8",
+    "source": ".negInteger8 n",
+    "children": "[]",
+    "rhs_sha256": "f3c7a1b9396052e6330a55e510ce20414e36cee8d96b630550509497901ee172"
+  },
+  {
+    "tag": "E_NegInteger16",
+    "source": ".negInteger16 n",
+    "children": "[]",
+    "rhs_sha256": "77cbd0a36a80eb595165bca755561d3213973b511bc589147e2ae1dbb35e451b"
+  },
+  {
+    "tag": "E_NegInteger32",
+    "source": ".negInteger32 n",
+    "children": "[]",
+    "rhs_sha256": "ec5b2e17c74cc8a5cf5adb022e1110bfaaadfe3ffbedcba183165ef61bef2548"
+  },
+  {
+    "tag": "E_NegFloat32",
+    "source": ".negFloat32 _",
+    "children": "[]",
+    "rhs_sha256": "58b2c4f92d8d521a526eadb41bd5e80a670a892c14f4da3b3e6a2a3bfddd3d1a"
+  },
+  {
+    "tag": "E_Unit",
+    "source": ".unit",
+    "children": "[]",
+    "rhs_sha256": "bf7da2e3764024bae93d859cbf4e3fa4c8b2e9fc6e40fc868d6ef86acaad3dbf"
+  },
+  {
+    "tag": "E_Block",
+    "source": ".block body",
+    "children": "[gb]",
+    "rhs_sha256": "e4885a3f39d1de1f651a74fcbd2b17c5079a37a48ca4ecaa4c0609ecb0a9f813"
+  },
+  {
+    "tag": "E_Paren",
+    "source": ".paren e",
+    "children": "[ge]",
+    "rhs_sha256": "527d3339356f5e0970f205dbafb429b13633f90f4049d7a1e1237e1b62378f90"
+  },
+  {
+    "tag": "E_Record",
+    "source": ".record c ts positions args",
+    "children": "[ga]",
+    "rhs_sha256": "eb03810f8343972e430b0457453c7292e1e0582ce6b661e059220ac59ac37d7b"
+  },
+  {
+    "tag": "E_RecordRefined",
+    "source": ".record c ts positions args",
+    "children": "[ga]",
+    "rhs_sha256": "5b8215ccee06b16857319da06eaeb86188fd5dda4aee9627974869e17120ca0a"
+  },
+  {
+    "tag": "E_RecordUpdate",
+    "source": ".recordUpdate c ts n positions base args",
+    "children": "[gb, ga]",
+    "rhs_sha256": "56fb3516803ca173bfd74cdbe5a012d04b7bc88470ded8062de93b5000132c5f"
+  },
+  {
+    "tag": "E_RecordUpdateRefined",
+    "source": ".recordUpdate c ts n positions base args",
+    "children": "[gb, ga]",
+    "rhs_sha256": "17c723b306d1efd591852bf2d3fbd65d3ef44a26d9c1d393028e83d977d66308"
+  },
+  {
+    "tag": "E_ConCall",
+    "source": ".conCall c ts args",
+    "children": "[ga]",
+    "rhs_sha256": "f5f1e9e4f57a4c3413b0890a874e2347ba1db97395df7f42b91c15d85f69f175"
+  },
+  {
+    "tag": "E_CallDirect",
+    "source": ".call f labels positions args",
+    "children": "[ga]",
+    "rhs_sha256": "e1bd55115322faf5170a2ad846d5d235c04cb3d8573d7b42a8fc8d97c1a942fe"
+  },
+  {
+    "tag": "E_CallExternal",
+    "source": ".call (.externalName f ts) labels positions args",
+    "children": "[ga]",
+    "rhs_sha256": "233d203b37b3fa3be5870c391539ac8ebe065d28b5a240aa6759253a9699803b"
+  },
+  {
+    "tag": "E_Call",
+    "source": ".call f labels positions args",
+    "children": "[gf, ga]",
+    "rhs_sha256": "debbf96afd910f65cbbb6d90143fa7b17b271ada9a5740d994d83c80574aafe3"
+  },
+  {
+    "tag": "E_PipeConCall",
+    "source": ".pipe lhs (.conCall c ts args)",
+    "children": "[gl, ga]",
+    "rhs_sha256": "b37ff1b09bb2e4e52ea6d624b9f3c02063934e7bcdae68d0f0def4c7844cd0b9"
+  },
+  {
+    "tag": "E_PipeConValue",
+    "source": ".pipe lhs (.conValue c ts _ _)",
+    "children": "[gl]",
+    "rhs_sha256": "3b9fd3b44f98c0c02a9ef7a5df12d2f4cebdd278300522d86b29aa3fddcfc804"
+  },
+  {
+    "tag": "E_PipeCallDirect",
+    "source": ".pipe lhs (.call f labels positions args)",
+    "children": "[gl, ga]",
+    "rhs_sha256": "55a136b37154b992311308173c9cd0190f95a728855830c033270e9f20cc34b4"
+  },
+  {
+    "tag": "E_PipeCall",
+    "source": ".pipe lhs (.call f labels positions args)",
+    "children": "[gl, gf, ga]",
+    "rhs_sha256": "1bb6b82111216cc52fa90cb94ee65d43b61c9db1b1cb8a8ddcbda3a513c3044c"
+  },
+  {
+    "tag": "E_PipeApplyDirect",
+    "source": ".pipe lhs rhs",
+    "children": "[gl]",
+    "rhs_sha256": "8e808569febd57951ed42e0cb29fecbc6f16178fb78bf4aa29a7d44688a76707"
+  },
+  {
+    "tag": "E_PipeApply",
+    "source": ".pipe lhs rhs",
+    "children": "[gl, gr]",
+    "rhs_sha256": "00bd59a12acc9bf398236cffc31bac2cad4843345cfa839740e207361f63b372"
+  },
+  {
+    "tag": "E_PartialCallDirect",
+    "source": ".partialCall f names args ret eff",
+    "children": "[ga]",
+    "rhs_sha256": "9f56a3dc9349a3c5d0dbaa048d738af1bc65606460b41d3b02ac4217923f5d85"
+  },
+  {
+    "tag": "E_PartialCall",
+    "source": ".partialCall f names args ret eff",
+    "children": "[gf, ga]",
+    "rhs_sha256": "85b590a55751a19fc0bd72b7532ba2dfa4cf8f95b66212b9ef4bdf1fb4f73536"
+  },
+  {
+    "tag": "E_PartialCallDirectDep",
+    "source": ".partialCall f names args ret eff",
+    "children": "[ga]",
+    "rhs_sha256": "96aba32273de2e59310c026c699d145384f34223546ca79297e69c8ce11c58b8"
+  },
+  {
+    "tag": "E_PartialCallDep",
+    "source": ".partialCall f names args ret eff",
+    "children": "[gf, ga]",
+    "rhs_sha256": "3dc2214fef8e2af9a38f085f976d9d8699fb4c6e144084fbf5158d97ebe9cbf6"
+  },
+  {
+    "tag": "E_PartialCon",
+    "source": ".partialCon c ts args",
+    "children": "[ga]",
+    "rhs_sha256": "035242b7c61b7b1e87731b950d62052a63e9c91272f72e19416c501f218b672b"
+  },
+  {
+    "tag": "E_Binary",
+    "source": ".binary o t lhs rhs",
+    "children": "[gl, gr]",
+    "rhs_sha256": "52e6cdce766bbfddf680f8a2e563a8bac624159ab7e0599ccc2573046a2b018e"
+  },
+  {
+    "tag": "E_Neg",
+    "source": ".neg t e",
+    "children": "[ge]",
+    "rhs_sha256": "ca98adcf14ee1fdbe213200aa3f0d3ab540e81840c1118d9ef0da7ae6ef2e401"
+  },
+  {
+    "tag": "E_Not",
+    "source": ".not e",
+    "children": "[ge]",
+    "rhs_sha256": "bb15fae48e2c5ee1ee2591293b75c523ede1c8686b03163216d5f46378a1e5d4"
+  },
+  {
+    "tag": "E_And",
+    "source": ".and lhs rhs",
+    "children": "[gl, gr]",
+    "rhs_sha256": "17ab5f875deb28161f7a3503347b1f92f0e57a54365ff99a84eb775655854e01"
+  },
+  {
+    "tag": "E_Or",
+    "source": ".or lhs rhs",
+    "children": "[gl, gr]",
+    "rhs_sha256": "51b779f9ea9d74d4dfe3b9b12bc06bd4bbf9a3f9322569b38e6dc9e56566a7d6"
+  },
+  {
+    "tag": "E_List",
+    "source": ".list t es",
+    "children": "[ges]",
+    "rhs_sha256": "d2c982f019d00bddfe4b665aa1a7579341c3506b3c673793bc0ee9bf07d59a82"
+  },
+  {
+    "tag": "E_ListRefined",
+    "source": ".list t es",
+    "children": "[ges]",
+    "rhs_sha256": "2cb1fb8acd1b203bbdd81eac64456c3a768e589d12972c734bfe2a242ad513ea"
+  },
+  {
+    "tag": "E_ListSpread",
+    "source": ".listSpread t f before spread after",
+    "children": "[gb, gs, ga, gu]",
+    "rhs_sha256": "253c113627c9bb7fb26a86b0bc097b5f8397073aea23243a2821c18bb47ba02f"
+  },
+  {
+    "tag": "E_Interpolation",
+    "source": ".interpolation parts es fs",
+    "children": "[ges, gu]",
+    "rhs_sha256": "fd9e8936dcef5c71fa502d615712073c6e50e4834dc96ac7e5d8872af9c37695"
+  },
+  {
+    "tag": "E_Lam",
+    "source": ".lam names ps r ec body",
+    "children": "[gb]",
+    "rhs_sha256": "43fc532f9ab52001e8cc7697cace7d4a7f465f59d99fb418ec187af32ee1a4e6"
+  },
+  {
+    "tag": "E_If",
+    "source": ".ite cond yes no",
+    "children": "[gc, gy, gn]",
+    "rhs_sha256": "135452ffabf9ceff4f14f8b9fa2b139f81643ad77d46655b0a946678f35ab6bc"
+  },
+  {
+    "tag": "E_ElseIf",
+    "source": ".elseIf cond yes no",
+    "children": "[gc, gy, gn]",
+    "rhs_sha256": "0bc66cfe957c19334adb7c4daf47c80538f72955215bf6e305d88f7c826db4a7"
+  },
+  {
+    "tag": "E_IfOnly",
+    "source": ".ifOnly cond yes",
+    "children": "[gc, gy]",
+    "rhs_sha256": "fb947c2c1f70b72c68564e136a956d8a7c3099da31197263837cd45c4383a0d1"
+  },
+  {
+    "tag": "E_Match",
+    "source": ".matchE b e arms",
+    "children": "[ge, ga]",
+    "rhs_sha256": "74eb7147001e12de3f34693fdbcc739e43e461d3fc25dd60ee485b54e8c2933a"
+  },
+  {
+    "tag": "E_ReturnTail",
+    "source": ".returnE _ e",
+    "children": "[ge]",
+    "rhs_sha256": "4b55868d380c0a454ad798a5445293f9f9dd6197accfdbd9070fae1cd6790b9c"
+  },
+  {
+    "tag": "E_ReturnOther",
+    "source": ".returnE t e",
+    "children": "[ge]",
+    "rhs_sha256": "ecfb3d374074d445003e0f6c89ae1d9efee4e1941d2faeadc5c9f9e60c1508b6"
+  },
+  {
+    "tag": "E_TryResult",
+    "source": ".tryResult [u, error] ok err e",
+    "children": "[ge]",
+    "rhs_sha256": "04ab6ca10b5f9fbe4f66c65ca996dcab78187f38c3e977e6fdc5c126b918d07a"
+  },
+  {
+    "tag": "E_TryOption",
+    "source": ".tryOption [u] someCon noneCon e",
+    "children": "[ge]",
+    "rhs_sha256": "8ca6684c2aae1b4177fc769875aef4536fb0f5f3c6c4081c06cce8b262ccdca7"
+  },
+  {
+    "tag": "E_TryResultDie",
+    "source": ".tryResultDie t ok err dict showMethod exit e none",
+    "children": "[ge]",
+    "rhs_sha256": "bc37c676970340bd1fb47488af62f84930e9dac4cc4e041837ff7f558f6cc731"
+  },
+  {
+    "tag": "E_TryResultDieMessage",
+    "source": ".tryResultDie t ok err dict showMethod exit e (some m)",
+    "children": "[ge, gm]",
+    "rhs_sha256": "629f31d1272b03253eb0e7fb60d6da4604a11d5b59f6cfccb35f5e7349de7c19"
+  },
+  {
+    "tag": "E_TryOptionDie",
+    "source": ".tryOptionDie t someCon noneCon exit e none",
+    "children": "[ge]",
+    "rhs_sha256": "1313897f6ddd2d3d57ffd8f19a73e6a6e1465cdb6a0f842dd36e4b24051d621c"
+  },
+  {
+    "tag": "E_TryOptionDieMessage",
+    "source": ".tryOptionDie t someCon noneCon exit e (some m)",
+    "children": "[ge, gm]",
+    "rhs_sha256": "45ec3c3d6cfad333d7e2584743303350df7e4de7a15c1654ab3dd2c8c1d31dde"
+  },
+  {
+    "tag": "E_With",
+    "source": ".withE o e body",
+    "children": "[ge, gb]",
+    "rhs_sha256": "f61ea6c27686a248db146b90ba606dcc07d48cf693d30619676f4a1338f3b91a"
+  },
+  {
+    "tag": "E_Lazy",
+    "source": ".lazyE body",
+    "children": "[gb]",
+    "rhs_sha256": "0dcbef1b5121ca270e9e813094d36e74da4769185b3f4581a85a0e3dabe5ad91"
+  },
+  {
+    "tag": "E_Handle",
+    "source": ".handleE body cs",
+    "children": "[gb, gc]",
+    "rhs_sha256": "617b1b6a2519f5dbeabc7162a610d5eb39279ab080ffc572f23475645bee77f0"
+  },
+  {
+    "tag": "E_Resume",
+    "source": ".resume k e",
+    "children": "[ge]",
+    "rhs_sha256": "9ad413e85bdf679970c389456b044bc2b496c6442673655b21a0fab0f9cadadb"
+  },
+  {
+    "tag": "E_Refine",
+    "source": "e",
+    "children": "[ge]",
+    "rhs_sha256": "85093faf7e661165205f2d1053b74e6b211a42489752561234dfce9836d0e7a5"
+  },
+  {
+    "tag": "E_Sub",
+    "source": "e",
+    "children": "[ge]",
+    "rhs_sha256": "333f36927609ff1b7133367415bee1bcc42354c693ea0857185d38c05d4dec49"
+  }
+]

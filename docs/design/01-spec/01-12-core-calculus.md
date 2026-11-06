@@ -3424,6 +3424,20 @@ Lean の捕捉を持つ実行関係の `Step.E_Lam` は、`q.view = .app f ws`�
 
 `ScopedTargetExamples.equal_resolution_distinct_base` は、異なる起点の lookup が一致するときの同じパターンの所属の同値と、異なる起点間の静的被覆の不成立を分けて示す。`split_endpoint` は全対象について、ポート区間 0..4 と 5..9 の和が意味上は 0..9 を含んでも、一原子の静的被覆にはならないことを示す。`secrets_members` は未指定の none と解決済みの空列 some [] を区別し、任意の有限一覧の所属を各要素への所属で表す。`widened_input` は同じ保持値の型と対象所属を被覆する範囲へ移し、`absolute_projection` は拡大後も同じ保持絶対対象からパスの文字列を返す。
 
+### 篩を含む表層の検査と受理
+
+【決定】篩付きの型の情報を付けた表層の検査は、`Benitoite.Release.Refinement.Surface.Check` の `checkExprAt`・`checkBlockAt`・`checkTypesAt`・`checkEachAt`・`checkFixedAt`・`checkArmsAt`・`checkClausesAt` と、辞書の二つの検査で定める。各位置の案内 `Guide` は、選んだ規則、型・効果・述語などの有限の情報、子の案内、論理と部分型の生の証明書を持つ。ソース又は型付けの証明を二重に格納しない。再帰は子の案内へ進む構造再帰であり、案内が無い場合と、照合に成功しない場合を成功と扱わない。式とブロックの公開入口 `checkExpr`・`checkBlock` は、その位置の型と効果を再検査し、成功した同じ組を返す。
+
+検査は `Surface.Rules` の式72規則、ブロック11規則、列・リストの要素・固定の式・腕・節の12規則を扱う。`guideSound` は、全ての案内について七つの判断を同時に証明する。各 `check*At_sound` は、宣言と組み込みの表の有限支持、ソースの注釈・案内・文脈・結果型と効果の有限支持、検査成功から、同じソースと文脈での表層の型付けを導く。入力の条件には、構成子の一覧の全件性、型クラスと組み込みの許容判定の Bool と既存の `sat`・`admits`・`admitsR` との対応、演算子が返す型引数の有限支持を含む。型付け又は含意の正しさは入力に要求しない。型・依存列・効果・型の列の全構成子について形成・宣言済み・kind・行の条件を検査し、辞書・値引数・依存列引数・呼出しの頭、パターン、リスト展開と補間の各補助判断へ接続する。
+
+部分型は、有限の `LeCertificate`・依存列の証明書・型引数の証明書を再検査して `Ty.LeQ` などの判断へ接続する。篩の含意は `LogicCertificate.result` が `checkAccounted` を呼んで調べる。結果は成功、打ち切り等による `unknown`、不正な証明書の拒否に分かれ、成功だけが型付けの根拠になる。関数の上限は関数ごとの入力から選び、宣言の `proofSteps` の正の指定があればそれを優先する。0の明示指定は拒否する。基本操作列の計上と実装の全実作業との一致は「篩の係数と基本操作の計上」で定める別の条件であり、生の操作列の検査だけから実作業全体の上限は結論しない。
+
+`checkExprAt_single`・`checkBlockAt_single` は、成功した結果の型と効果が、全ての子で同じ正規形の Fail 型と署名由来の行の条件を満たすことを示す（`SingleTy`・`SingleEff`）。宣言の入口 `CheckDeclarations.checkDef` は依存列の引数を順に束縛し、署名由来の `QTel` で本体を検査する。`checkImpl` は対象の kind、辞書の注釈、全メソッドと全上位辞書、実際の引数名と宣言の契約名の一致を検査する。`checkDef_sound`・`checkImpl_sound` は同じ定義と実装の `WellTyped` を導き、`checkImpl_contracts` は実際の名前の一致を導く。
+
+プログラムの入口 `CheckTables.checkProgram` は、変性の全欄、効果に列挙した操作と操作宣言の双方向の対応、組み込みの効果名との分離、全定義と全実装を検査する。`CheckedUnder` は、同じ宣言表の下での全本体の型付け、変性、元の宣言の保存、効果の適格性を表す。`checkProgram_sound` は名前の一覧の完全性を明示した一般の言明であり、宣言表がプログラム自身の表と同じなら `checkProgram_empty` が `Program.WellTyped` を導く。有限の `Materials` はプログラムの全表と名前の一覧を同じ材料から作り、関数と実装の空欄だけを署名で補う。材料についての系は、名前の完全性・実装の名前の完全性・構成子の一覧の全件性・元の宣言の保存を構成から導く。これらの全件性と、型・効果の支持や既存の許容判定との対応を区別する。
+
+`CheckAccept.checkProgramAccepted` は、同じプログラムの型付けの検査に続けて、全定義と全実装メソッドの必須の判定を受理する。プログラム全体の受理 `Accepted A q p` は、全ての実在する本体の `acceptBody` の成功である。`checkProgramAccepted_sound` は `CheckedUnder p q ∧ Accepted A q p` を、宣言の補完が無ければ `checkProgramAccepted_empty` は `Program.WellTyped` と `Accepted` の両方を返す。材料の系では名前の完全性を外部条件に足さない。規則を持つ呼出しの表は `standardTable (primResolve key body) rules` であり、組み込み名を頭に持つ直接の呼出しを解決する。記録の無い出現も、事実を持たない状態で必須の判定を行う。`CheckAcceptedRanges` の `BodyRanges` は、全ての呼出しの出現・選んだ規則・記録した全状態について、推論した範囲を契約が覆うことと、規則が選ぶ全位置に契約が存在することを表す。`Accepted.def_ranges`・`Accepted.method_ranges` は、受理した各定義と各実装メソッドへこの性質を導き、記録の無い出現にも事実を持たない状態で同じ二条件を導く。受理は範囲の推論と契約の被覆を照合する性質であり、コアの実行と表層の局所評価の一致を前提にしない。理由: 型付けの正しさと、狭い契約を確認済みの範囲でだけ受理する性質を、同じ入口の別々の結論として示すためである。
+
 ### 篩を含む定義とプログラムの適格性
 
 【決定】`Def.WellTyped P B d` は、契約名の `NamesWF`、宣言した kind の列での `dependentFn d.tel` の value kind、同じ宣言列と空の値文脈での同じ型の `Annotation`、および空のストアでの `TelBodyTy` を要求する。本体の NoFail の文脈は `QTel d.tel`、型文脈は宣言の `d.tparams`、初期の値文脈と Φ は空である。`TelBodyTy.param` は引数の注釈で値文脈を拡張し、Φ を移す。`done a e` は、本体を結果型 a、効果 e、return の契約 `some a`、空の局所文脈で検査する。
@@ -3535,6 +3549,12 @@ structure PrimSig.Scoped (P : Program) (s : PrimSig) : Prop where
 【決定】この名前空間の `Inhabits P a v` は、照合が読む値の形の上側近似である。篩の規則は、`Inhabits P a v` と `RefinementPossible p v` から `Inhabits P (refined a p) v` を作る。`selfObservation v` は `v.toTerm?` を空の外側環境で観測した結果である。`RefinementPossible p v` は、番号0へこの観測を置き、外側の全位置を未観測の `none` にした三値評価が `some false` と異なることである。評価不能の値は残し、篩が偽と確定した値だけを除く。`checkedAt range snapshot target request` は、範囲を忘れた任意の `opaque o ix` の値の形にも含める。
 
 網羅性は `Exhaustive P a ps := ∀ v, Inhabits P a.norm v → ∃ p ∈ ps, (matchVal p v).isSome` と定める。プログラムの宣言 P に加えて組み込み表・値の文脈・経路条件を引数へ足さない。Month の1以上12以下、偽の篩、非空 List は観測した自己から初期領域へ反映する。外側の値に依存する長さの等号だけでは空 List を除かない。有限の含意を用いて被検査値へ非空の自己述語を持つ型を付け、その型の網羅性を適用する。
+
+`Benitoite.Release.Refinement.Coverage.coverage P ctors view a ps` は、型の初期領域と行列の有用性から `exhaustive`・反例の抽象的な形を持つ `nonExhaustive`・`unknown` のいずれかを返す。初期領域は通常の型、偽の篩による空型、Month、非空 List、自己の長さが閉じた整数に等しい List の五つである。長さは任意の Int を量化し、負の長さの型は値を持たない。観測できない述語は通常の型の判定へ渡す。反例の抽象的な形から、実行時の値の実在は結論しない。
+
+`coverage_sound` は、任意の宣言 P・型 a・パターン列 ps について、構成子の一覧が P の全ての構成子を含むことと、判定が `exhaustive` であることから `Exhaustive P a ps` を導く。`coverage_extension_sound` は、既存の構成子の宣言を保ち、view が許す型にだけ構成子を加える任意の拡張先 Q（`ConstructorExtension P Q view`）について、同じ型とパターン列の `Exhaustive Q a ps` を導く。拡張先の構成子の有限列挙は要求しない。`typed_nonempty_coverage` は、開いた文脈での元の List の型付け、同じ値の項への観測、非空の自己述語の sort と宣言済みの条件、文脈の事実からの含意を受け、同じ値の非空型の型付けと判定したパターン列の網羅性を返す。
+
+腕又は選択肢を除くのは、先行する腕だけで覆われたことを判定が `exhaustive` と答えた場合に限る。`keepAlternative`・`retainedAlternatives`・`retained` は `unknown` を残し、`unknown_keeps_alternative`・`unknown_keeps_arms` は全ての入力の一覧についてこの保守性を示す。燃料切れは反例の有無にかかわらず `unknown` となる。理由: 確認できなかったことを、到達できないことの根拠にしないためである。
 
 パターン型付けの `P_Refined` は、a で型付けした同じパターンを `refined a p` へ移し、束縛する型の列を保つ。`P_Convert` は、`a.norm = b.norm` と `PatTy P pat a δ` から `PatTy P pat b (δ.map Ty.norm)` を作る。変換後の束縛型も正規形とする。理由: 入れ子の篩を平坦化しても、その途中の篩型を束縛した導出を値置換の後に保持するためである。部分型の含意から任意の入力型へ移す規則ではない。
 
