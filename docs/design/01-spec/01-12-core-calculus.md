@@ -3275,6 +3275,10 @@ abbrev AtError := Detail Val
 
 `Val.toTerm?` は観測できない根を `none` とする。複合値の観測は `List (Option Term)` で各要素・欄を保持するので、関数・Reference・Lazy の欄を観測できなくても、data の根や隣の不変な欄は残せる。`slotBind` は `none` を保つ。全域の構文操作 `termBind` の既定値を、観測の成功の証拠として使わない。
 
+`Refinement.Surface.Expr.valueOf?` は、脱糖がそのまま返す値を取り出す。局所の名前、リテラル、Unit、引数のない構成子に加え、直接の負号を持つ `negInt`・`negFloat`・`negDecimal`・`negInteger8`・`negInteger16`・`negInteger32`・`negFloat32` を含む。Decimal は係数を負にし、固定幅整数は大きさを Int に移して負にし、Float32 は符号ビットを反転する。取り出した値の観測について篩を事実から導ければ、表層の `HasTypeQ.E_Refine` は同じ式に篩付きの型を与え、脱糖は核の `V_Refine` へ写る（`desugar_valueOf`・`HasTypeQ.desugar`）。
+
+`Refinement.Surface.AliasDecl.expand` は、別名の本体へ型引数・範囲引数・値引数の順に置換を適用する。宣言の整形式は、本体が宣言した型・範囲・値の文脈で整形式・整列済み・宣言済みであることを要求する（`AliasDecl.WellFormed`）。型引数の数と kind、各像の三つの形成条件（`AliasTypeArgs`）から、`AliasDecl.subst_formation` は `a.body.subst ts []` の三つの形成条件を型引数を代入した文脈 `a.typeContext ts` で導く。文脈は値の番号を保ち、正規化前の型の像を格納する。`AliasDecl.expand_annotation` は、この形成、同じ数の整形式で種類の合う閉じた範囲引数、型引数を代入して範囲を具体化した文脈 `a.instantiatedContext ts rs` から展開先の文脈への値引数の像（`AliasArgs`）を使い、展開の注釈の整形式を導く。値引数の像は全 sort について整列と宣言を照合する。型パラメータが空という前提は持たない。
+
 ### 篩の正規形と制約の読み方
 
 `Ty.carrierFacts` は、芯の七整数型と Byte の上下限を自己変数0に対する二述語で表し、Decimal では `decimalRepresented self` を一述語で表す。他の芯には空列を返す。`Ty.assume` は、継続型では空列、それ以外では `carrierFacts ++ refinementPredicates` を返す。`Ctx.facts` は文脈の元の番号を保ち、各列の自己をその番号の変数で開く。`Ty.assumeWithCarrier` と `Ctx.factsWithCarrier` は、それぞれ同じ定義の略記である。型付けの部分型規則と捕捉の事実の条件は、この型域を含む列を使う。`Const.NumericRepresented.carrierFacts` は、`Const.NumericRepresented` を満たす定数について、型域の全述語が自己モデルで真であることを示す。型付きの定数からこの前提を得るときは `ConstOK.represented` を使う。Integer64 は構文が持つ上下限を用いる。`ValueMeaning` の構成子は、芯の形、明示した篩の真、型域の事実の真の三条件を持つ。
