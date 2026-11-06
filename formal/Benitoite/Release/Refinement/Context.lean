@@ -121,7 +121,7 @@ def Pred.Sorted (Γ : Ctx) (self : Option Ty) : Pred → Prop
       a.HasSort Δ .string
   | .member k a _ =>
       let Δ := match self with | none => Γ | some a => some a :: Γ
-      a.HasSort Δ (.target k)
+      a.HasSort Δ (.target k) ∨ ((k = .path ∨ k = .host) ∧ a.HasSort Δ .string)
   | .constructorIs a _ =>
       let Δ := match self with | none => Γ | some a => some a :: Γ
       a.HasSort Δ .data
@@ -142,6 +142,7 @@ theorem Pred.Sorted.references {Γ : Ctx} {self : Option Ty} {p : Pred}
     | exact ⟨Term.HasSort.references h.1, Term.HasSort.references h.2⟩
     | exact ⟨Term.HasSort.references h.2.1, Term.HasSort.references h.2.2⟩
     | exact Term.HasSort.references h
+    | exact h.elim Term.HasSort.references (fun hs => hs.2.references)
     | exact ⟨Pred.Sorted.references h.1, Pred.Sorted.references h.2⟩
     | exact Pred.Sorted.references h
 

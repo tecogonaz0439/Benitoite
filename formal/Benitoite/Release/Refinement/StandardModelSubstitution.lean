@@ -85,9 +85,10 @@ private theorem list_remaining_admits {S : Benitoite.Release.SummaryTable} (api 
 
 /-- 要約の表 S の制約で作った署名の、List.sort以外の全行の許容は、S の制約の骨格の判定と同値である。 -/
 theorem admits_formWith (S : Benitoite.Release.SummaryTable) (row : Primitive) :
-    AdmitsSatWith S (row.signatureWith (ModelConstraints.sat S)) ∨ row = .p266 := by
+    AdmitsSatWith S (row.signatureWith (ModelConstraints.sat S)) ∨ row = .p266 ∨ row = .p392 := by
   cases row
-  case p266 => exact Or.inr rfl
+  case p266 => exact Or.inr (Or.inl rfl)
+  case p392 => exact Or.inr (Or.inr rfl)
   case p257 => exact Or.inl (list_remaining_admits .contains (by decide))
   case p258 => exact Or.inl (list_remaining_admits .drop (by decide))
   case p259 => exact Or.inl (list_remaining_admits .get (by decide))
@@ -98,7 +99,7 @@ theorem admits_formWith (S : Benitoite.Release.SummaryTable) (row : Primitive) :
     | exact Or.inl (exact_admits _ (fun _ _ => Iff.rfl))
 
 /-- 合成表のList.sort以外の全行の許容は、制約の骨格の判定と同値である。 -/
-theorem admits_form (row : Primitive) : AdmitsSat row.signature ∨ row = .p266 := by
+theorem admits_form (row : Primitive) : AdmitsSat row.signature ∨ row = .p266 ∨ row = .p392 := by
   have h := admits_formWith summaries row
   have he : row.signatureWith (ModelConstraints.sat summaries) = row.signature := Primitive.signatureWith_base row
   rwa [he] at h
@@ -188,36 +189,56 @@ theorem substitution_assumptions (P : Program) : (builtins P).SubstitutionAssump
   admits_rename := by
     intro b sg C Γ Δ ts ξ hs _ _ _ h
     obtain ⟨row, _, rfl, rfl⟩ := (builtins_lookup_iff P b sg).mp hs
-    rcases admits_form row with form | rfl
+    rcases admits_form row with form | rfl | rfl
     · exact admits_map _ form (fun a p ha => (ModelConstraints.sat_rename _ _ a p ξ).mpr ha) h
     · exact sort_map _ (fun a ha => ordered_rawBind _ ha) h
+    · exact RefinementCheck.admits_rawBind (C := []) (D := []) _ h
   sat_values := by
     intro Ψ Q C Γ Δ Ξ ν a p _ _ h
     exact (ModelConstraints.sat_values _ _ a p ν).mpr h
   admits_values := by
     intro b sg Ψ Q C Γ Δ Ξ ν ts hs _ _ h
     obtain ⟨row, _, rfl, rfl⟩ := (builtins_lookup_iff P b sg).mp hs
-    rcases admits_form row with form | rfl
+    rcases admits_form row with form | rfl | rfl
     · exact admits_map _ form (fun a p ha => (ModelConstraints.sat_values _ _ a p ν).mpr ha) h
     · exact sort_map _ (fun a ha => ordered_bind _ ha) h
+    · exact RefinementCheck.admits_bind (C := []) (D := []) _ h
   sat_renameTypes := by
     intro C D Γ Δ a p ρ ren _ _ h
     exact ModelConstraints.sat_renameTypes ren h
   admits_renameTypes := by
     intro b sg C D Γ Δ ts ρ hs ren _ _ h
     obtain ⟨row, _, rfl, rfl⟩ := (builtins_lookup_iff P b sg).mp hs
-    rcases admits_form row with form | rfl
+    rcases admits_form row with form | rfl | rfl
     · exact (form _ _).mpr (ModelConstraints.admits_renameTypes ren ((form _ ts).mp h))
     · exact sort_map _ (fun a ha => ordered_renameTypes _ ha) h
+    · exact RefinementCheck.admits_renameTypes (C := []) (D := []) _ h
   sat_subst := by
     intro C0 C1 a p ts es h wf images count
     exact ModelConstraints.sat_subst h wf images count
   admits_subst := by
     intro b sg C0 C1 ts ts' es' hs h wf images count
     obtain ⟨row, _, rfl, rfl⟩ := (builtins_lookup_iff P b sg).mp hs
-    rcases admits_form row with form | rfl
+    rcases admits_form row with form | rfl | rfl
     · exact (form _ _).mpr (ModelConstraints.admits_subst ((form _ ts).mp h) wf images count)
     · exact sort_map _ (fun a ha => ordered_bind _ ha) h
+    · exact RefinementCheck.admits_bind (C := []) (D := []) _ h
+
+private theorem check_sat {S : Benitoite.Release.SummaryTable} {B : Builtins}
+    (hs : B.sat = ModelConstraints.sat S) {C ts}
+    (h : PublicNames.checkAdmits (TypeCtx.constraints C) (Ty.normTys ts)) :
+    SatAll B C ts [{},{}] := by
+  have count := RefinementCheck.admits_count h
+  rw [Ty.normTys_eq_map,List.length_map] at count
+  refine ⟨count,?_⟩
+  intro i t p _ hp
+  have he : p = ({} : TParam) := by
+    cases i with | zero => cases hp; rfl | succ i => cases i with
+    | zero => cases hp; rfl
+    | succ i => simp at hp
+  subst p
+  rw [hs]
+  exact ModelConstraints.sat_unconstrained _ _ _
 
 /-- 組込みの許容は、同じ型引数列の制約と個数も満たす。 -/
 theorem admits_sat (P : Program) :
@@ -225,7 +246,7 @@ theorem admits_sat (P : Program) :
       SatAll (builtins P) C ts (s.tparams.map TParamDecl.constraints) := by
   intro b s C ts hs h
   obtain ⟨row, _, rfl, rfl⟩ := (builtins_lookup_iff P b s).mp hs
-  rcases admits_form row with form | rfl
+  rcases admits_form row with form | rfl | rfl
   · obtain ⟨count, all⟩ := (form _ _).mp h
     refine ⟨by simpa [Ty.normTys_eq_map] using count, ?_⟩
     intro i t p ht hp
@@ -241,6 +262,7 @@ theorem admits_sat (P : Program) :
     cases i with
     | zero => cases Option.some.inj hp; exact ModelConstraints.sat_unconstrained _ _ _
     | succ i => simp at hp
+  · exact check_sat rfl h
 
 /-! ## 要約の表 S の制約で作った署名の許容の保存則
 
@@ -250,25 +272,28 @@ theorem admits_sat (P : Program) :
 theorem admits_rename_with (S : Benitoite.Release.SummaryTable) (row : Primitive) {C ts} (ξ : Nat → Nat)
     (h : (row.signatureWith (ModelConstraints.sat S)).admits C ts) :
     (row.signatureWith (ModelConstraints.sat S)).admits C (ts.map (renameTy ξ)) := by
-  rcases admits_formWith S row with form | rfl
+  rcases admits_formWith S row with form | rfl | rfl
   · exact admits_map _ form (fun a p ha => (ModelConstraints.sat_rename _ _ a p ξ).mpr ha) h
   · exact sort_map _ (fun a ha => ordered_rawBind _ ha) h
+  · exact RefinementCheck.admits_rawBind (C := []) (D := []) _ h
 
 theorem admits_values_with (S : Benitoite.Release.SummaryTable) (row : Primitive) {C ts} (ν : Nat → Val)
     (h : (row.signatureWith (ModelConstraints.sat S)).admits C ts) :
     (row.signatureWith (ModelConstraints.sat S)).admits C (ts.map (substTyValues ν)) := by
-  rcases admits_formWith S row with form | rfl
+  rcases admits_formWith S row with form | rfl | rfl
   · exact admits_map _ form (fun a p ha => (ModelConstraints.sat_values _ _ a p ν).mpr ha) h
   · exact sort_map _ (fun a ha => ordered_bind _ ha) h
+  · exact RefinementCheck.admits_bind (C := []) (D := []) _ h
 
 theorem admits_renameTypes_with (S : Benitoite.Release.SummaryTable) (row : Primitive) {C C' ts ρ}
     (ren : TypeParamRenaming C C' ρ)
     (h : (row.signatureWith (ModelConstraints.sat S)).admits (TypeCtx.constraints C) ts) :
     (row.signatureWith (ModelConstraints.sat S)).admits (TypeCtx.constraints C')
       (ts.map (fun a => a.renameTypes ρ)) := by
-  rcases admits_formWith S row with form | rfl
+  rcases admits_formWith S row with form | rfl | rfl
   · exact (form _ _).mpr (ModelConstraints.admits_renameTypes ren ((form _ ts).mp h))
   · exact sort_map _ (fun a ha => ordered_renameTypes _ ha) h
+  · exact RefinementCheck.admits_renameTypes (C := []) (D := []) _ h
 
 theorem admits_subst_with (S : Benitoite.Release.SummaryTable) (row : Primitive) {B : Builtins}
     (hs : B.sat = ModelConstraints.sat S) {C0 C1 ts ts' es'}
@@ -277,16 +302,17 @@ theorem admits_subst_with (S : Benitoite.Release.SummaryTable) (row : Primitive)
     (count : ts'.length = C0.length) :
     (row.signatureWith (ModelConstraints.sat S)).admits (TypeCtx.constraints C1)
       (ts.map (Ty.substAt C1.length ts' es')) := by
-  rcases admits_formWith S row with form | rfl
+  rcases admits_formWith S row with form | rfl | rfl
   · rw [SatAll, hs] at images
     exact (form _ _).mpr (ModelConstraints.admits_subst ((form _ ts).mp h) wf images count)
   · exact sort_map _ (fun a ha => ordered_bind _ ha) h
+  · exact RefinementCheck.admits_bind (C := []) (D := []) _ h
 
 theorem admits_sat_with (S : Benitoite.Release.SummaryTable) (row : Primitive) {B : Builtins}
     (hs : B.sat = ModelConstraints.sat S) {C ts}
     (h : (row.signatureWith (ModelConstraints.sat S)).admits (TypeCtx.constraints C) (Ty.normTys ts)) :
     SatAll B C ts ((row.signatureWith (ModelConstraints.sat S)).tparams.map TParamDecl.constraints) := by
-  rcases admits_formWith S row with form | rfl
+  rcases admits_formWith S row with form | rfl | rfl
   · obtain ⟨count, all⟩ := (form _ _).mp h
     refine ⟨by simpa [Ty.normTys_eq_map] using count, ?_⟩
     intro i t p ht hp
@@ -304,6 +330,7 @@ theorem admits_sat_with (S : Benitoite.Release.SummaryTable) (row : Primitive) {
     cases i with
     | zero => cases Option.some.inj hp; exact ModelConstraints.sat_unconstrained _ _ _
     | succ i => simp at hp
+  · exact check_sat hs h
 
 end
 end Benitoite.Release.Refinement.StandardModel

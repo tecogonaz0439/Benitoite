@@ -232,7 +232,7 @@ example (text : String) :
       (.val (ScopeDelta.resultValue true (.base .string) (.opaque "IOError" .top)
         (.const (.string text)))) [.path []] := by
   refine ⟨rfl,rfl,rfl,Or.inr (Or.inr (Or.inr ⟨rfl,.ok (.text text),?_⟩))⟩
-  simp [ModelTargets.readObs,ScopeLegacyContracts.pathInput,parseAtInput]
+  simp [ModelTargets.readObs,ScopeLegacyContracts.pathInput,parseAtInput,parseTargetInput]
 
 /-- 全ての型付き exit 応答は、val を返さない。 -/
 example (code : Integer64Value) (Ψ : StoreTy) {out obs}

@@ -3131,7 +3131,13 @@ builders_no_captureとbuilders_block_no_captureは、Aligned Γ ΔからEnvReads
 
 `StandardModel.PureRow P b` は、合成表の名前bについて、`delta_typed` と同じ形の契約である。合成表のlookupが返す署名と、その署名の全 `BuiltinArgs` から、合成表のδが非exitの型付きの応答を返し、その応答が適格であることを表す。`PureRow.of_row` は、組込みの表の行（`StandardModel.Primitive`）の出典の表のδが行の署名の全 `BuiltinArgs` で型付きの応答を返すとき、合成表の同じ名前の契約を返す。`first_sixteen` は、演算子の表の並びの最初の十六行（七整数型のdiv/modとFloatのadd/subtract）を、任意のPで既存の `StandardOperatorResponse.response` へ接続する。`numeric_rows` は、数値の公開モジュール（Byte・Character・Float・Float32・Decimal・Integerと各幅）の全166行を、`operator_rows` は、%で始まる組込みの行から %Map.replaceValues・%eq・%ne を除いた107行と全構造値の %eq/%ne の2行（計109行）を、それぞれ同じ契約へ接続する。各行の証拠は既存の任意のP/Bの応答か、合成プログラムが供給する宣言の下の応答であり、部分表の `table_response` を使わない。合成プログラムは丸めの五方式の宣言 `StandardModel.roundingMode` を持ち、`http_declarations` は範囲付きのHTTPのモデルが読むResult・ScopeError・Pair・要求・要求の誤りの構成子とarityを、`rounding_declarations` はDecimalの応答が読むOptionと五方式の宣言を示す。`PureRow.Satisfiable P b` は、名前bのlookupが返す署名の `BuiltinArgs` を満たす入力があることである。`numeric_inputs` と `operator_inputs` は、数値の166行と演算子の109行のそれぞれで、この前提を基本型の定数の引数列で満たす入力を示す。Decimal.roundは合成プログラムの丸め方式の構成子を、%eq/%neは型引数Integerを使う。これらは行ごとの契約であり、全ての純粋な行の `delta_typed` と合成表の全条件の充足とは区別する。
 
-`StandardModel.program externals` の構成子表は、範囲付きのHTTPのモデルの宣言と丸めの五方式に加え、バイト列の整数の読み書きが読む二つのバイト順（`StandardModel.byteOrder`）を宣言する。写像と集合の鍵の符号化は、合成プログラムの全構成子の名前の並び（`StandardModel.constructorNames`）を読む。合成表は、安全な入口の本体が呼ぶ内部の組込み %List.getFront の行を持ち、その署名とδは `StandardSafe.frontSig` と `StandardSafe.frontDelta` である。`collection_rows` は文字列・バイト列・リスト・写像・集合の純粋な79行を、`scope_rows` は範囲付きのパスと要求の六つの純粋な行と %List.getFront を `PureRow` へ接続し、`pure_rows` は種類がpureの全361行の契約を返す。`io_rows` は、IOと終了の10行について、全 `BuiltinArgs` と全てのIO応答から、型付きで適格な結果・応答の種類・対象の条件と、応答の存在を示す。
+`PredicateResponse` の純粋な行は `Scope.pathMatches(pattern:, path:)`・`Scope.hostMatches(pattern:, host:)`・`String.charactersIn(text:, minimum:, maximum:)` と Float・Float32 の分類である。引数は公開の名前と基本型を保ち、結果は `Boolean`、効果は空である。所属の pattern は絶対形を解析し、解析失敗と相対形は偽とする。リテラルの pattern の所属、文字集合のリテラルの両端、Float の分類について、δ の Boolean と公開名から写した述語の閉じた評価は一致する。任意の String の対象を含む。`BooleanResult.typed` は、Boolean の値が期待型の外側の篩を閉じた評価で満たすなら、同じ期待型の型付けを与える。
+
+`RefinementCheck.signature` は二つの値型の型引数 `[T,U]`、引数 `value: T`、結果 `Result[U,Refinement.CheckError]`、空の効果を持つ。許容は `U.norm = (T{self | p}).norm` となる有限述語 p の存在である。`CheckAdmissibility` はこの関係を値の改名・置換と型パラメータの改名・具体化で保つ。`RefinementCheck.accepts` は期待型の外側の篩を閉じた評価で確認し、全てが `some true` のときだけ同じ値を `Result.Ok` に包む。`some false` と `none` は `Result.Error` に包んだ `Refinement.CheckError { expected: String }` を返す。観測できない自己変数の型では、述語を開かずに閉じた評価を行う。基の型の core の一致も確認する。`run_ok` が正常の枝の等式、`run_refined_rejected` が偽と評価不能の拒否の等式を与える。表示器は δ の引数であり、その書式はこの型付けの保証に含まれない。
+
+`RefinementCheckResponse.response` は同じプログラムの Result と CheckError の構成子と arity から、全ての `BuiltinArgs` について応答の存在・型付け・閉性・対象の適格性・非 exit を与える。合成プログラムはこれらの宣言を供給する。`MembershipInferenceBoundary` の `string_length_not_member` と `string_length_certificate_rejected` は、同じ文字列のバイト長と文字数の二つの事実から所属を導けず、その含意の証明書を検査器が受理しないことを示す。純粋な判定は Boolean を返し、保持対象と要求を構築しない。
+
+`StandardModel.program externals` の構成子表は、範囲付きのHTTPのモデルの宣言と丸めの五方式に加え、バイト列の整数の読み書きが読む二つのバイト順（`StandardModel.byteOrder`）を宣言する。写像と集合の鍵の符号化は、合成プログラムの全構成子の名前の並び（`StandardModel.constructorNames`）を読む。合成表は、安全な入口の本体が呼ぶ内部の組込み %List.getFront の行を持ち、その署名とδは `StandardSafe.frontSig` と `StandardSafe.frontDelta` である。`collection_rows` は文字列・バイト列・リスト・写像・集合の純粋な79行を、`scope_rows` は範囲付きのパスと要求の六つの純粋な行、%List.getFront、所属の二つの判定、文字集合の判定、Float の六つと Float32 の五つの分類、一般の篩の検査を `PureRow` へ接続し、`pure_rows` は種類がpureの全376行の契約を返す。`io_rows` は、IOと終了の10行について、全 `BuiltinArgs` と全てのIO応答から、型付きで適格な結果・応答の種類・対象の条件と、応答の存在を示す。
 
 `StandardModel.body_typed` は、任意の外部宣言について、全130本体（`Body.all`）が合成プログラムと合成表で型付くことを示す。各本体の証明は、元の本体の証明の構成を、合成プログラムの宣言・合成表の署名・写した関数参照の名前の上で閉じたものである。`definition_typed` は成功した全lookupの定義へ広げ、`program_typed` は外部宣言の表の構造検証 `ExternalWF` の下で `Program.WellTyped` を示す。`body_scoped` は全130本体の依存列の行と範囲の上限と本体の深さの条件を、`cons_scoped` は全構成子のデータ名のarityの一意性と欄の適格性を示し、`program_wellFormed` は `ExternalWF` の下で `Program.WellFormed` を示す。`StandardModel.core externals` は任意の外部宣言について `Builtins.CoreAssumptions` の全28欄を、`targets` は `TargetAgreement` を、同じ合成プログラムと合成表で示す。これらはLeanの既存の証拠がある行の合成であり、Rustの全登録の意味の証明とは区別する。
 
@@ -3330,6 +3336,18 @@ abbrev AtError := Detail Val
 `Refinement.Surface.AliasDecl.expand` は、別名の本体へ型引数・範囲引数・値引数の順に置換を適用する。宣言の整形式は、本体が宣言した型・範囲・値の文脈で整形式・整列済み・宣言済みであることを要求する（`AliasDecl.WellFormed`）。型引数の数と kind、各像の三つの形成条件（`AliasTypeArgs`）から、`AliasDecl.subst_formation` は `a.body.subst ts []` の三つの形成条件を型引数を代入した文脈 `a.typeContext ts` で導く。文脈は値の番号を保ち、正規化前の型の像を格納する。`AliasDecl.expand_annotation` は、この形成、同じ数の整形式で種類の合う閉じた範囲引数、型引数を代入して範囲を具体化した文脈 `a.instantiatedContext ts rs` から展開先の文脈への値引数の像（`AliasArgs`）を使い、展開の注釈の整形式を導く。値引数の像は全 sort について整列と宣言を照合する。型パラメータが空という前提は持たない。
 
 `Surface.RangeAliases` の `AliasDecl.expandOpen` は、呼出し元の開いた範囲引数を型の別名へ渡す。型引数を置換した本体の範囲変数を `aliasRangeEnv` で写し、値引数を置換する。`AliasDecl.expandOpen_annotation` は、宣言の形成、型引数の条件、`RangeArguments` と、開いた範囲を写した文脈 `openContext` の下の値引数の条件から、呼出し元の範囲文脈における展開の `AnnotationR` を得る。`pathAlias_expandOpen_annotation` はpathの種類の範囲変数 `.rvar 0` を別名へ渡す注釈を検査する。
+
+### 閉じた評価で成功が示された検査の消去
+
+`CheckErasure.call T U v` は、評価済みの値 v 一つを引数とする `Refinement.check` のコアの呼出しである。`CheckErasure.erase : Comp → Comp` は、その呼出しが空の捕捉環境で閉じても変わらず、T と U が正規形で、`T.core = U.core` と `RefinementCheck.accepts v U = true` が成り立つときだけ、`return (Result.Ok[U,Refinement.CheckError](v))` へ置き換える。他の計算はそのまま返す。`erase_check` がこの規則を与える。型付けの入力を満たすことと、閉じた評価が成功することは別の前提であり、部分型や含意の証明書から消去の前提を導かない。`erase_rejected` と `erase_refined_rejected` は、偽と評価不能の呼出しを残すことを示す。
+
+理由: コアの呼出しの実引数は値であり、この置換は実引数の計算を複製しない。空の捕捉環境での不変性を検査することで、ラムダを実行時の閉包へ変える処理を、構文上の等号の証明から省かない。
+
+`erase_typed` は、同じ P と B とストアの型付けの下で、Result と CheckError の宣言、検査の署名の lookup、同じ型引数・値の `BuiltinArgs` から、消去の前後をともに `Result[U,Refinement.CheckError]` と空の効果で型付ける。値文脈・型文脈・事実は空であり、return の型 R と局所文脈 Δ は任意である。拒否される検査の呼出しも、この型付けを保つ。
+
+`observations_preserved` は、同じプログラム・組込みの表・起点環境と任意の継続 k・ストア μ について述べる。元の閉包 q の view が検査の呼出しであり、B の署名とこの入力の δ が `RefinementCheck` の行に一致すること、および消去の前提を要求する。消去前の状態は `run q k μ`、消去後は `run (Closure.pure (erase (call T U v))) k μ` である。消去前の状態は事象なしの一段で消去後の状態へ移り、その行先とラベルは一意である。事象なしの段も含む有限の実行列 `Execution` では、その一段を除いた残りのラベル列と終状態が一致する。`Steps` では全ての事象列と終端が一致する。各段の状態とラベルを持つ `InfiniteExecution` でも、その一段を除いた列が一致する。したがって、除いた検査の一段以外の評価の回数と順、停止・非停止、終端の値・失敗の payload・ストア、効果の事象を保つ。`Execution.steps` は有限の実行列を既存の `Steps` へ写す。
+
+`CheckErasureExamples` の `standard_agreement` は、任意の P の合成表について同じ署名と δ を供給する。`integer_witnesses` は任意の外部宣言表について正常値 1 と −1 の全入力条件・型付けと、真だけの消去・偽の保持を示す。`undecided_witness` は型付きの `Option.None` の欄の評価が不能となり、同じ CheckError の payload を保つことを示す。`integer_observations` は正常な成功値に任意の継続とストアの観測保存を適用する。
 
 ### 篩の正規形と制約の読み方
 
@@ -3703,7 +3721,7 @@ information order に当たる `Observation.InfoLE` は、scalar と対象の sn
 
 ### 閉じた述語の評価と捕捉
 
-【決定】`Pred.evalClosed` は、最初に `WF 0` と `Sorted [] none` を検査し、成功したときだけ空の観測環境で `evalWith` を評価する。原子は、必要な観測、種類、比較の許容、対象の所属を解決できることを `atomReady` で確認してから真偽を求める。観測や範囲の解決に失敗した原子の結果は `none` である。
+【決定】`Pred.evalClosed` は、最初に `WF 0` と `Sorted [] none` を検査し、成功したときだけ空の観測環境で `evalWith` を評価する。原子は、必要な観測、種類、比較の許容、対象の所属を解決できることを `atomReady` で確認してから真偽を求める。観測や範囲の解決に失敗した原子の結果は `none` である。path・host の所属の項には、対応する対象の sort に加えて String の sort を許す。String は `TargetText` の `parseTargetInput` で解析し、絶対形の対象への解析が成功した場合に、起点の写しなしの所属を判定する。解析失敗と相対形の対象は偽とする。範囲の整形式・種類・起点なしでの解決の検査に失敗した場合は `none` である。対象値は保持する snapshot の規則で判定する。
 
 `evalWith` の And/Or/Not は強い Kleene の三値（strong Kleene three-valued logic）で定める。T は `some true`、F は `some false`、U は `none` を表す。
 

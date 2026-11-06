@@ -56,9 +56,13 @@ theorem Pred.member_mono {η : ObservationEnvModel} {k : Kind} {a : Term}
     (Pred.member k a s).interpret η = true := by
   change (Pred.member k a r).atomValue η = true at hm
   change (Pred.member k a s).atomValue η = true
-  unfold Pred.atomValue at hm ⊢
-  cases ho : observeAs η (.target k) a <;> simp only [ho] at hm ⊢ <;> try cases hm
-  exact of_decide_eq_true hm |>.mono hc |> decide_eq_true
+  simp only [Pred.atomValue] at hm ⊢
+  split at hm
+  · unfold stringMember at hm ⊢
+    split at hm <;> try cases hm
+    exact of_decide_eq_true hm |>.mono hc |> decide_eq_true
+  · cases ho : observeAs η (.target k) a <;> simp only [ho] at hm ⊢ <;> try cases hm
+    exact of_decide_eq_true hm |>.mono hc |> decide_eq_true
 
 example {η : ObservationEnvModel} {a : Term} {r s : RangeExpr} (hc : s.Covers r) :
     ((Pred.member .path a r).interpret η = true → (Pred.member .path a s).interpret η = true) ∧
@@ -117,9 +121,20 @@ theorem HasTypeVQ.target_member_interpret {P B Ψ Q v T o k r σ η a}
       (Pred.member k a r).interpret η = true := by
   obtain ⟨t,he,hm,_⟩ := hv.canonical_target ht hk ha
   refine ⟨t,he,hm,?_⟩
-  change (match observeAs η (.target k) a with
-    | .targetValue bs t => decide (SnapshotMem bs k r t) | _ => false) = true
-  rw [observed t he]
+  have hn : ∀ text, a.interpret η ≠ some (.string text) := by
+    intro text hs
+    have hh := observed t he
+    cases k <;> simp [observeAs, hs, Observation.sort, Observation.default] at hh
+  have hmem : (Pred.member k a r).atomValue η =
+      (match observeAs η (.target k) a with
+       | .targetValue bs t => decide (SnapshotMem bs k r t) | _ => false) := by
+    simp only [Pred.atomValue]
+    cases hx : a.interpret η with
+    | none => rfl
+    | some obs =>
+      cases obs <;> try rfl
+  change (Pred.member k a r).atomValue η = true
+  rw [hmem, observed t he]
   exact decide_eq_true (show SnapshotMem (some σ) k r t from ⟨valid,hm⟩)
 
 /-- パス・ホスト・端点のいずれも、Topを含む同じ範囲と同じ観測を使う。 -/

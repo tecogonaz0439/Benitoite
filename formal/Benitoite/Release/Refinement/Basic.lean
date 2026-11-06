@@ -220,6 +220,8 @@ theorem Pred.sorted_bind {Γ Δ : Ctx} {a b : Ty} {p : Pred}
     | exact ⟨Term.hasSort_termBind h.1 _ hsu hru, Term.hasSort_termBind h.2 _ hsu hru⟩
     | exact ⟨h.1, Term.hasSort_termBind h.2.1 _ hsu hru, Term.hasSort_termBind h.2.2 _ hsu hru⟩
     | exact Term.hasSort_termBind h _ hsu hru
+    | exact h.elim (fun ht => Or.inl (Term.hasSort_termBind ht _ hsu hru))
+        (fun ht => Or.inr ⟨ht.1, Term.hasSort_termBind ht.2 _ hsu hru⟩)
     | exact ⟨Pred.sorted_bind h.1 ν ha ho hs hr, Pred.sorted_bind h.2 ν ha ho hs hr⟩
     | exact Pred.sorted_bind h ν ha ho hs hr
 

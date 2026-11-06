@@ -108,20 +108,29 @@ private theorem observeAs_bind_scalar_mono {η ξ s t} (ν : ObservationEnv) (h 
   have hh := Observation.OptionInfoLE.scalar (.some hi) (ho ▸ hs)
   exact he.trans (Option.some.inj hh).symm
 
-private theorem memberReady_bind_mono {η ξ k t r} (ν : ObservationEnv) (h : ∀ i, Observation.OptionInfoLE (η i) ((ν i).bind (Term.observe ξ)))
+private theorem memberReady_bind_interpret_mono {η ξ k t r} (ν : ObservationEnv) (h : ∀ i, Observation.OptionInfoLE (η i) ((ν i).bind (Term.observe ξ)))
     (hr : memberReady η k t r = true) : memberReady ξ k (termBind ν t) r = true ∧
-      observeAs η (.target k) t = observeAs ξ (.target k) (termBind ν t) := by
+      t.interpret η = (termBind ν t).interpret ξ := by
   cases ht : t.observe η with
   | none => simp [memberReady,ht] at hr
   | some o =>
     cases o <;> simp only [memberReady,ht] at hr <;> try cases hr
-    rename_i bs target
-    have hi := (t.bind_observe_info ν η ξ h).2
-    have hh : (termBind ν t).observe ξ = some (.targetValue bs target) :=
-      Observation.OptionInfoLE.scalar (by simpa only [ht] using hi)
-        (by simp [Observation.sort])
-    exact ⟨by simpa only [memberReady,hh] using hr,
-      by simp only [observeAs,Term.observe_sound ht,Term.observe_sound hh]⟩
+    all_goals
+      have hi := (t.bind_observe_info ν η ξ h).2
+      have hh : (termBind ν t).observe ξ = t.observe η := by
+        exact (Observation.OptionInfoLE.scalar (by simpa only [ht] using hi)
+          (by simp [Observation.sort])).trans ht.symm
+      rw [ht] at hh
+      exact ⟨by simpa only [memberReady,hh] using hr,
+        (Term.observe_sound ht).trans (Term.observe_sound hh).symm⟩
+
+private theorem memberReady_bind_mono {η ξ k t r} (ν : ObservationEnv)
+    (h : ∀ i, Observation.OptionInfoLE (η i) ((ν i).bind (Term.observe ξ)))
+    (hr : memberReady η k t r = true) :
+    memberReady ξ k (termBind ν t) r = true ∧
+      observeAs η (.target k) t = observeAs ξ (.target k) (termBind ν t) := by
+  obtain ⟨ready, same⟩ := memberReady_bind_interpret_mono ν h hr
+  exact ⟨ready, by simp only [observeAs, same]⟩
 
 private theorem Pred.atom_bind_mono {p : Pred} {η ξ : ObservationEnvModel} (ν : ObservationEnv)
     (h : ∀ i, Observation.OptionInfoLE (η i) ((ν i).bind (Term.observe ξ))) (ha : p.atomReady η = true) :
@@ -149,8 +158,9 @@ private theorem Pred.atom_bind_mono {p : Pred} {η ξ : ObservationEnvModel} (ν
   | decimalRepresented a | charactersIn a lo hi =>
     exact ⟨(termReady_bind_mono ν h ha).1,by simp only [predBind,Pred.atomValue,observeAs_bind_scalar_mono ν h ha (by decide)]⟩
   | member k a r =>
-    obtain ⟨hr,he⟩ := memberReady_bind_mono ν h ha
-    exact ⟨hr,by simp only [predBind,Pred.atomValue,he]⟩
+    have hr := (memberReady_bind_mono ν h ha).1
+    have he := (memberReady_bind_interpret_mono ν h ha).2
+    exact ⟨hr,by simp only [predBind,Pred.atomValue,observeAs,he]⟩
   | constructorIs a c =>
     obtain ⟨hr,hi⟩ := termReady_bind_mono ν h ha
     refine ⟨hr,?_⟩

@@ -1,0 +1,51 @@
+{
+  "composed_count": 392,
+  "composed_sha256": "36838d0471bb6f3d25dc5cbecd6734bc82cfcf73893e3c3fd2a9fa4c83007e90",
+  "new_rows": {
+    "p378": "Scope.pathMatches",
+    "p379": "Scope.hostMatches",
+    "p380": "String.charactersIn",
+    "p381": "Float.isFinite",
+    "p382": "Float.isInfinite",
+    "p383": "Float.isPositiveInfinity",
+    "p384": "Float.isNegativeInfinity",
+    "p385": "Float.isPositiveZero",
+    "p386": "Float.isNegativeZero",
+    "p387": "Float32.isFinite",
+    "p388": "Float32.isPositiveInfinity",
+    "p389": "Float32.isNegativeInfinity",
+    "p390": "Float32.isPositiveZero",
+    "p391": "Float32.isNegativeZero",
+    "p392": "Refinement.check"
+  },
+  "assumed_counts": {
+    "delta": 80,
+    "io": 47,
+    "state": 16,
+    "outside": 7,
+    "resource": 4
+  },
+  "composed_effects": [
+    "State",
+    "Process.Environment",
+    "File.Write",
+    "File.Write",
+    "File.Read",
+    "File.Read",
+    "File.Read",
+    "File.Write",
+    "File.Write",
+    "Http.Connect",
+    "Process.Exit",
+    "Console.Write"
+  ],
+  "distinct_effects": [
+    "Console.Write",
+    "File.Read",
+    "File.Write",
+    "Http.Connect",
+    "Process.Environment",
+    "Process.Exit",
+    "State"
+  ]
+}
