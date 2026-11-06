@@ -1,0 +1,220 @@
+{
+ "surface_rules": {
+  "HasTypeQ": 72,
+  "HasBlockQ": 11,
+  "HasTypesQ": 2,
+  "HasEachQ": 2,
+  "HasFixedQ": 3,
+  "HasArmsQ": 3,
+  "HasClausesQ": 2
+ },
+ "interpolation_rules": {
+  "SpreadTy": 4,
+  "JoinTy": 2,
+  "JoinPartsTy": 3,
+  "InterpTy": 5
+ },
+ "constructors": {
+  "HasTypeQ": [
+   "E_BuilderOp",
+   "E_Local",
+   "E_Const",
+   "E_Fun",
+   "E_FunDicts",
+   "E_MethName",
+   "E_Prim",
+   "E_Raise",
+   "E_HandleFail",
+   "E_Op",
+   "E_OpDicts",
+   "E_ExternalName",
+   "E_NullCon",
+   "E_ConValue",
+   "E_Refine",
+   "E_Literal",
+   "E_NegInt",
+   "E_NegFloat",
+   "E_NegDecimal",
+   "E_NegInteger8",
+   "E_NegInteger16",
+   "E_NegInteger32",
+   "E_NegFloat32",
+   "E_Unit",
+   "E_Block",
+   "E_Paren",
+   "E_Record",
+   "E_RecordUpdate",
+   "E_RecordRefined",
+   "E_RecordUpdateRefined",
+   "E_ConCall",
+   "E_CallDirect",
+   "E_CallExternal",
+   "E_Call",
+   "E_PipeConCall",
+   "E_PipeConValue",
+   "E_PipeCallDirect",
+   "E_PipeCall",
+   "E_PipeApplyDirect",
+   "E_PipeApply",
+   "E_PartialCallDirect",
+   "E_PartialCall",
+   "E_PartialCallDirectDep",
+   "E_PartialCallDep",
+   "E_PartialCon",
+   "E_Binary",
+   "E_Neg",
+   "E_Not",
+   "E_And",
+   "E_Or",
+   "E_List",
+   "E_ListRefined",
+   "E_ListSpread",
+   "E_Interpolation",
+   "E_Lam",
+   "E_If",
+   "E_ElseIf",
+   "E_IfOnly",
+   "E_Match",
+   "E_ReturnTail",
+   "E_ReturnOther",
+   "E_TryResult",
+   "E_TryOption",
+   "E_TryResultDie",
+   "E_TryResultDieMessage",
+   "E_TryOptionDie",
+   "E_TryOptionDieMessage",
+   "E_With",
+   "E_Lazy",
+   "E_Handle",
+   "E_Resume",
+   "E_Sub"
+  ],
+  "HasBlockQ": [
+   "B_BuilderBind",
+   "B_Empty",
+   "B_Last",
+   "B_LastBind",
+   "B_LastDiscard",
+   "B_Bind",
+   "B_Discard",
+   "B_Seq",
+   "B_LastPat",
+   "B_BindPat",
+   "B_Sub"
+  ],
+  "HasTypesQ": [
+   "Types_nil",
+   "Types_cons"
+  ],
+  "HasEachQ": [
+   "Each_nil",
+   "Each_cons"
+  ],
+  "HasFixedQ": [
+   "Fixed_nil",
+   "Fixed_expr",
+   "Fixed_hole"
+  ],
+  "HasArmsQ": [
+   "Arms_nil",
+   "Arms_plain",
+   "Arms_guarded"
+  ],
+  "HasClausesQ": [
+   "Clauses_nil",
+   "Clauses_cons"
+  ],
+  "SpreadTy": [
+   "Spread_only",
+   "Spread_front",
+   "Spread_back",
+   "Spread_middle"
+  ],
+  "JoinTy": [
+   "Join_last",
+   "Join_step"
+  ],
+  "JoinPartsTy": [
+   "JoinParts_empty",
+   "JoinParts_single",
+   "JoinParts_many"
+  ],
+  "InterpTy": [
+   "Interp_done",
+   "Interp_text",
+   "Interp_stringExpr",
+   "Interp_converted",
+   "Interp_formatted"
+  ]
+ },
+ "old_theorems": [
+  {
+   "old": "checkExpr_sound",
+   "new": "Benitoite.Release.Refinement.Surface.Check.checkExprAt_sound"
+  },
+  {
+   "old": "checkBlock_sound",
+   "new": "Benitoite.Release.Refinement.Surface.Check.checkBlockAt_sound"
+  },
+  {
+   "old": "checkExpr_single",
+   "new": "Benitoite.Release.Refinement.Surface.Check.checkExprAt_single"
+  },
+  {
+   "old": "checkBlock_single",
+   "new": "Benitoite.Release.Refinement.Surface.Check.checkBlockAt_single"
+  },
+  {
+   "old": "checkArms_sound",
+   "new": "Benitoite.Release.Refinement.Surface.Check.checkArmsAt_sound"
+  },
+  {
+   "old": "checkClauses_sound",
+   "new": "Benitoite.Release.Refinement.Surface.Check.checkClausesAt_sound"
+  },
+  {
+   "old": "checkTypes_sound",
+   "new": "Benitoite.Release.Refinement.Surface.Check.checkTypesAt_sound"
+  },
+  {
+   "old": "checkEach_sound",
+   "new": "Benitoite.Release.Refinement.Surface.Check.checkEachAt_sound"
+  },
+  {
+   "old": "checkHoleArgs_sound",
+   "new": "Benitoite.Release.Refinement.Surface.Check.checkFixedAt_sound"
+  },
+  {
+   "old": "checkDict_sound",
+   "new": "Benitoite.Release.Refinement.Surface.CheckArguments.dict_sound"
+  },
+  {
+   "old": "checkDicts_sound",
+   "new": "Benitoite.Release.Refinement.Surface.CheckArguments.dicts_sound"
+  },
+  {
+   "old": "checkDef_sound",
+   "new": "Benitoite.Release.Refinement.Surface.CheckDeclarations.checkDef_sound"
+  },
+  {
+   "old": "checkImpl_sound",
+   "new": "Benitoite.Release.Refinement.Surface.CheckDeclarations.checkImpl_sound"
+  },
+  {
+   "old": "checkProgram_sound",
+   "new": "Benitoite.Release.Refinement.Surface.CheckTables.Materials.checkProgram_sound"
+  },
+  {
+   "old": "checkProgram_empty",
+   "new": "Benitoite.Release.Refinement.Surface.CheckTables.Materials.checkProgram_empty"
+  },
+  {
+   "old": "checkProgram_sound_contracts",
+   "new": "Benitoite.Release.Refinement.Surface.CheckTables.Materials.checkProgram_sound_contracts"
+  },
+  {
+   "old": "checkProgram_empty_contracts",
+   "new": "Benitoite.Release.Refinement.Surface.CheckTables.Materials.checkProgram_empty_contracts"
+  }
+ ]
+}
