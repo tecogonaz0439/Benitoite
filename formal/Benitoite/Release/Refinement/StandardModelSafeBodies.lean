@@ -548,7 +548,7 @@ local macro "precise_simp" : tactic => `(tactic|
    PreciseGetter.alts,PreciseGetter.measure,PreciseGetter.ref,PreciseGetter.links,
    PreciseGetter.row,checkedIntegerProjection,checkedLengthProjection,checkedLength,
    checkedLengthValues,checkedIndexProjection,checkedIndexValues,checkedIntegerType,checkedLengthType,
-   integerField,lengthField,lengthValues,viewTerm,fieldFacts,FieldLink.predicate,routeTerm]
+   integerField,lengthField,lengthValues,viewTerm,fieldFacts,FieldLink.predicate,FieldLink.sort,fieldRelation,routeTerm]
   <;> safe_simp))
 
 private theorem precise_annotation (g : PreciseGetter) :

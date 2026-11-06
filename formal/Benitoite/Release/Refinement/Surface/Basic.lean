@@ -1,5 +1,6 @@
 import Benitoite.Release.Refinement.Surface.Syntax
 import Benitoite.Release.Refinement.Patterns
+import Benitoite.Release.Refinement.FieldRelations
 import Benitoite.Release.BuiltinTable
 
 /-!
@@ -402,41 +403,45 @@ def Declarations.core (D : Declarations) : Refinement.Program where
 /-- フィールドを取り出す関数の基の結果型。引数 `value` の下へ移した欄の型である。 -/
 def accessorBase (cd : ConDecl) (k : Nat) : Ty := ((cd.args[k]?).getD (.base .unit)).shiftV 1 0
 
-/-- 観測できる欄。欄の事実 `FieldLink` は整数の欄の値と List の欄の長さを結ぶ。 -/
-def accessorObserved (cd : ConDecl) (k : Nat) : Bool :=
-  (accessorBase cd k).sort? == some .integer || (accessorBase cd k).sort? == some .list
+/-- 欄の基の型に対応する、宣言された構成子の有限列。 -/
+def accessorConstructors (ctors : DataName → List ConName) (cd : ConDecl) (k : Nat) : List ConName :=
+  match (accessorBase cd k).core with | .data d _ => ctors d | _ => []
 
-/-- 欄の観測の sort。List の欄は List、ほかは整数である。 -/
+/-- 値の比較・分類・測度又は構成子判定を持つ欄。対象の所属は列挙しない。 -/
+def accessorObserved (cd : ConDecl) (k : Nat) (cs : List ConName := []) : Bool :=
+  match (accessorBase cd k).sort? with
+  | none | some (.target _) => false
+  | some .data => !cs.isEmpty
+  | some _ => true
+
+/-- 欄の型が持つ観測の sort。 -/
 def accessorSort (cd : ConDecl) (k : Nat) : «Sort» :=
-  if (accessorBase cd k).sort? = some .list then .list else .integer
+  (accessorBase cd k).sort?.getD .integer
 
-/-- 欄の観測を比べる測度。List の欄は長さ、整数の欄は値そのものを比べる。 -/
+/-- 測度だけを持つ sort ではその測度を選ぶ。値の比較を持つ sort の測度は関係に含める。 -/
 def accessorMeasure (cd : ConDecl) (k : Nat) : Option Measure :=
-  if (accessorBase cd k).sort? = some .list then some .listLength else none
-
-/-- 測度を通した項（`viewTerm` と同じ形）。 -/
-def accessorView (m : Option Measure) (t : Term) : Term :=
-  match m with | none => t | some m => .measure m t
+  match accessorSort cd k with
+  | .list => some .listLength | .bytes => some .bytesLength
+  | .map => some .mapSize | .set => some .setSize | _ => none
 
 /-- 欄の観測の参照。 -/
 def accessorRef (c : ConName) (cd : ConDecl) (k : Nat) : FieldRef := ⟨cd.data, c, k, accessorSort cd k⟩
 
-/-- 取り出しの関数の結果の篩。結果（番号 0）の観測が、引数（番号 1）の欄の観測に等しい。 -/
-def accessorPred (c : ConName) (cd : ConDecl) (k : Nat) : Pred :=
-  .eq (accessorView (accessorMeasure cd k) (.var 0))
-    (accessorView (accessorMeasure cd k) (.field (accessorRef c cd k) (.var 1)))
+/-- 取り出しの結果と引数の欄について、比較・分類・測度・構成子の判定を結ぶ。 -/
+def accessorPred (c : ConName) (cd : ConDecl) (k : Nat) (cs : List ConName := []) : Pred :=
+  fieldRelation (accessorSort cd k) cs (accessorMeasure cd k) (.var 0)
+    (.field (accessorRef c cd k) (.var 1))
 
-/-- フィールドを取り出す関数の結果型。観測できる欄では `accessorPred` の篩を持つ（整数の欄は値の等号、List の欄は
-長さの等号）。これにより欄の依存を写した record 全体の篩の事実が、射影の結果へ流れる。 -/
-def accessorRet (c : ConName) (cd : ConDecl) (k : Nat) : Ty :=
-  if accessorObserved cd k then .refined (accessorBase cd k) (accessorPred c cd k)
+/-- 観測できる欄の結果は、欄の観測との関係を篩に持つ。 -/
+def accessorRet (c : ConName) (cd : ConDecl) (k : Nat) (cs : List ConName := []) : Ty :=
+  if accessorObserved cd k cs then .refined (accessorBase cd k) (accessorPred c cd k cs)
   else accessorBase cd k
 
 /-- 01-05 の型パラメータは無制約。番号は構成子の宣言と同じ。 -/
-def accessorDecl (c : ConName) (cd : ConDecl) (k : Nat) : FunDecl :=
+def accessorDecl (c : ConName) (cd : ConDecl) (k : Nat) (cs : List ConName := []) : FunDecl :=
   { tparams := List.replicate cd.ntys TypeCtx.valueParam, neffs := 0,
     names := ["value"], params := [.data cd.data ((List.range cd.ntys).map Ty.tvar)],
-    ret := accessorRet c cd k, eff := Eff.empty }
+    ret := accessorRet c cd k cs, eff := Eff.empty }
 
 /-! ## record の欄の依存 -/
 
@@ -490,19 +495,19 @@ def testerDecl (c : ConName) (cd : ConDecl) : FunDecl :=
 /-- 通常の定義を先に引き、次にフィールドを取り出す関数、最後に構成子の判定の関数を引く。宣言と脱糖後の Σ が同じ
 優先順を使う。判定の関数と同名の定義・取り出しの関数は整形式が拒む。 -/
 def Program.lookupFun {α : Type} (p : Program) (ordinary : Def → α)
-    (accessor : ConName → ConDecl → Nat → α) (tester : ConName → ConDecl → α) (f : FunName) : Option α :=
+    (accessor : ConName → ConDecl → Nat → List ConName → α) (tester : ConName → ConDecl → α) (f : FunName) : Option α :=
   match p.defs f with
   | some d => some (ordinary d)
   | none => match p.accessors f with
-      | some (c, k) => (p.cons c).map fun cd => accessor c cd k
+      | some (c, k) => (p.cons c).map fun cd => accessor c cd k (accessorConstructors p.dataConstructors cd k)
       | none => match p.testers f with
           | none => none
           | some c => (p.cons c).map fun cd => tester c cd
 
 /-- 本体ごとの view を渡す宣言の表。 -/
 def Program.declarationsFor (p : Program) (view : CoverageView) : Declarations :=
-  { view := view, funs := p.lookupFun Def.toFunDecl accessorDecl testerDecl,
-    cons := p.cons, conFields := p.conFields, ops := p.ops, effects := p.effects,
+  { view := view, funs := p.lookupFun Def.toFunDecl (@accessorDecl) testerDecl,
+    cons := p.cons, conFields := p.conFields, dataConstructors := p.dataConstructors, ops := p.ops, effects := p.effects,
     classes := p.classes, impls := fun i => (p.impls i).map ImplDecl.toImplSig,
     aliases := p.aliases, records := p.records, testers := p.testers,
     externals := p.externals, dataInfo := p.dataInfo }

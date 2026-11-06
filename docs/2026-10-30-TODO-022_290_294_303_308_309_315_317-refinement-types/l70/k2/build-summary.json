@@ -1,0 +1,29 @@
+{
+  "command": [
+    "/usr/bin/lockf",
+    "-t",
+    "3600",
+    "<shared-lock>",
+    "lake",
+    "build"
+  ],
+  "cwd": "formal",
+  "base": "5cb33d0e5ecf5b8b9d2ffa02e88a70084d89e50e",
+  "branch": "m014/l70.k2",
+  "started": "2026-11-06T19:01:03.007889+00:00",
+  "finished": "2026-11-06T19:15:32.572091+00:00",
+  "seconds": 869.563837542,
+  "exit_code": 0,
+  "raw": {
+    "bytes": 238789,
+    "sha256": "e34fd0b297a348397abc1a2d22466c4389415bbec44254383adb319502d3d8bc"
+  },
+  "inputs": 1315,
+  "fingerprint": "522ed0c6bf05330508395155bead947621796e09e793c2daa1ebb6870dc24adf",
+  "scope": {
+    "bytes": 7126,
+    "sha256": "92c72cf7bc365ee00a6359c413ca9054f463f83993eb8652b625169a845d4acd"
+  },
+  "toolchain": "leanprover/lean4:v4.34.1",
+  "jobs": 1560
+}

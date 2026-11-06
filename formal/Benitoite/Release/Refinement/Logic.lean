@@ -1,4 +1,5 @@
 import Benitoite.Release.Refinement.CertificateKernel
+import Benitoite.Release.Refinement.FieldRelationSyntax
 
 namespace Benitoite.Release.Refinement
 
@@ -23,6 +24,14 @@ inductive Entails : List Pred → Pred → Prop where
   | integer_le {Ξ n m} : n ≤ m → Entails Ξ (.le (.integer n) (.integer m))
   | integer_lt {Ξ n m} : n < m → Entails Ξ (.lt (.integer n) (.integer m))
   | closed {Ξ p} : p.WF 0 → p.Sorted [] none → p.evalClosed = some true → Entails Ξ p
+  /-- 同じ閉じた観測の測度を結ぶ。測度の部分評価が不能でも、モデルの両辺は同じ射影を持つ。 -/
+  | measured {Ξ a b m o} : a.Closed → b.Closed →
+      a.observe (fun _ => none) = some o → b.observe (fun _ => none) = some o →
+      Entails Ξ (.eq (.measure m a) (.measure m b))
+
+  /-- 解釈を保存する原子だけを、欄の関係の左辺から右辺へ移す。 -/
+  | fieldAtom {Ξ s cs a b p q} : FieldAtom s cs a b p q →
+      Entails Ξ (fieldRelation s cs none a b) → Entails Ξ p → Entails Ξ q
 
   | checkedAt {Ξ p q c} (ν : ObservationEnv) :
       CertificateKernel.check p q c = true → Entails Ξ (predBind ν p) → Entails Ξ (predBind ν q)
@@ -67,6 +76,8 @@ theorem Entails.weaken {Ξ p} (h : Entails Ξ p) {Δ} (hm : ∀ q ∈ Ξ, q ∈ 
   | integer_le h => exact .integer_le h
   | integer_lt h => exact .integer_lt h
   | closed hw hs he => exact .closed hw hs he
+  | measured ha hb oa ob => exact .measured ha hb oa ob
+  | fieldAtom atom _ _ ih₁ ih₂ => exact .fieldAtom atom (ih₁ hm) (ih₂ hm)
   | checkedAt ν hc _ ih => exact .checkedAt ν hc (ih hm)
 
 private theorem consTransport {Ξ Δ : List Pred} (hm : ∀ q ∈ Ξ, Entails Δ q) (p : Pred) :
@@ -99,6 +110,8 @@ theorem Entails.cut {Ξ p} (h : Entails Ξ p) {Δ} (hm : ∀ q ∈ Ξ, Entails �
   | integer_le h => exact .integer_le h
   | integer_lt h => exact .integer_lt h
   | closed hw hs he => exact .closed hw hs he
+  | measured ha hb oa ob => exact .measured ha hb oa ob
+  | fieldAtom atom _ _ ih₁ ih₂ => exact .fieldAtom atom (ih₁ hm) (ih₂ hm)
   | checkedAt ν hc _ ih => exact .checkedAt ν hc (ih hm)
 
 end Benitoite.Release.Refinement

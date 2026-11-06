@@ -114,7 +114,7 @@ theorem CaptureOk.field_facts {P B Ψ R Γ Φ cap alts δ obs vs v ws links}
     (hw : FactsWF P [] (Refinement.bindParams Γ δ) (fieldFacts δ.length obs links)) :
     CaptureOk P B Ψ R (Refinement.bindParams Γ δ)
       (fieldFacts δ.length obs links ++ liftMany δ.length Φ) (cap.extendMany ws) := by
-  apply hb.addEvaluatedFacts hw
+  apply hb.addEntailedFacts hw
   cases obs with
   | none => intro p hp; cases hp
   | some t =>
@@ -131,29 +131,25 @@ theorem CaptureOk.field_facts {P B Ψ R Γ Φ cap alts δ obs vs v ws links}
       rw [←hlen]
       exact capture_slot cap hslot
     have hfield := hw _ (List.mem_map.mpr ⟨link,hl,rfl⟩)
-    have hvar : ∃ s, (Term.var (δ.length-1-link.slot)).HasSort (Refinement.bindParams Γ δ) s := by
-      have hleft := hfield.sorted.1
-      cases hm : link.measure with
-      | none => rw [hm] at hleft; exact ⟨.integer,hleft⟩
-      | some m => rw [hm] at hleft; exact ⟨m.input,hleft.1,hleft.2.1⟩
-    obtain ⟨s,hvar⟩ := hvar
+    obtain ⟨_,_,_,_,_,_,_,hvalid⟩ := valid link hl
+    have hsorts := fieldRelation_sorted hvalid hfield.sorted
+    have hvar := hsorts.1
     obtain ⟨a,ha,has⟩ := hvar.2
-    obtain ⟨tw,htw,_⟩ := hb.substOk.observations _ a s ha has
+    obtain ⟨tw,htw,_⟩ := hb.substOk.observations _ a link.sort ha has
     change ((cap.extendMany ws).env (δ.length-1-link.slot)).toTerm? = some tw at htw
     rw [envslot] at htw
     have heq : predBind (valEnv (cap.extendMany ws).env).values (link.predicate δ.length t) =
-        .eq (viewTerm link.measure tw)
-          (viewTerm link.measure (routeTerm (termBind (valEnv cap.env).values t) link.route)) := by
-      simp only [FieldLink.predicate,predBind,viewTerm_bind,routeTerm_bind]
+        fieldRelation link.sort link.constructors link.measure tw
+          (routeTerm (termBind (valEnv cap.env).values t) link.route) := by
+      simp only [FieldLink.predicate,fieldRelation_bind,routeTerm_bind]
       rw [←hlen,capture_lift_term]
       simp only [termBind_var,valEnv,hlen,envslot,htw,Option.getD_some]
     have hwc := hfield.map hb.substOk.observations hb.substOk.references hb.substOk.declaration
     rw [heq] at hwc ⊢
-    unfold Pred.evalClosed
-    rw [if_pos ⟨hwc.wf,hwc.sorted⟩]
-    obtain ⟨_,_,_,_,_,_,_,allowed⟩ := valid link hl
-    exact MatchFacts.field_equality_true hread (by rw [root]; rfl) htw
-      allowed hwc.sorted.1.2 hwc.sorted.2.2
+    have hclosed := fieldRelation_sorted hvalid hwc.sorted
+    exact MatchFacts.field_relation_entails hread (by rw [root]; rfl) htw
+      hclosed.1 hclosed.2 hwc.sorted
+
 
 
 private theorem prefix_tail {v arms n arm} (h : MatchPrefix v (arm :: arms) (n+1)) :

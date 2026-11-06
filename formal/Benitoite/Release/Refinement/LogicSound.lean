@@ -1,4 +1,5 @@
 import Benitoite.Release.Refinement.Logic
+import Benitoite.Release.Refinement.FieldAtomSound
 
 namespace Benitoite.Release.Refinement
 
@@ -48,6 +49,14 @@ theorem Entails.sound {Φ : List Pred} {p : Pred} (h : Entails Φ p) :
     intro η _
     rw [Pred.interpret_closed hw η]
     exact Pred.evalClosed_sound hw hs he
+  | measured ha hb oa ob =>
+    intro η _
+    have hai := Term.observe_sound ((Term.observe_closed ha η).trans oa)
+    have hbi := Term.observe_sound ((Term.observe_closed hb η).trans ob)
+    simp [Pred.interpret, Pred.atomValue, integerAs, observeAs, Term.interpret, hai, hbi]
+  | fieldAtom atom _ _ ih₁ ih₂ =>
+    intro η hm
+    exact (atom.sound η (ih₁ η hm)).symm.trans (ih₂ η hm)
   | checkedAt ν hc _ ih =>
     intro η hm
     exact CertificateKernel.implication_sound_at hc ν η (ih η hm)

@@ -90,6 +90,68 @@ theorem orderComplement_sound_at {s : «Sort»} (hs : s = .character ∨ s = .de
       (predBind ν (.not (.compare s .le a b))).interpret η := by
   exact observation_order_complement hs _ _ (observeAs_sort η s _) (observeAs_sort η s _)
 
+theorem fieldTransfer_sound_at {s cs a b p q r}
+    (atom : FieldAtom s cs a b p q) (hr : r ∈ fieldTransfer s cs a b p q)
+    (ν : ObservationEnv) (η : ObservationEnvModel) :
+    (predBind ν r).interpret η = true := by
+  have forward {p q} (h : FieldAtom s cs a b p q) :
+      (predBind ν (implies (.and (fieldRelation s cs none a b) p) q)).interpret η = true := by
+    apply implies_sound_at ν η
+    simp only [predBind, Pred.interpret, Bool.and_eq_true]
+    intro ⟨rel, hp⟩
+    have rel' := (fieldRelation_bind ν s cs none a b) ▸ rel
+    exact ((h.bind ν).sound η rel').symm.trans hp
+  simp only [fieldTransfer, List.mem_cons, List.not_mem_nil, or_false] at hr
+  rcases hr with rfl | rfl
+  · exact forward atom
+  · exact forward (.reverse atom)
+
+theorem fieldCandidates_sound_at {s cs args p} (hp : p ∈ fieldCandidates s cs args)
+    (ν : ObservationEnv) (η : ObservationEnvModel) :
+    (predBind ν p).interpret η = true := by
+  unfold fieldCandidates at hp
+  split at hp
+  · rename_i a b t
+    rcases List.mem_append.mp hp with hp | hp
+    · split at hp
+      · rename_i hs
+        have hs' : FieldRelation.Scalar s := by simpa [FieldRelation.Scalar] using hs
+        obtain ⟨o, _, hp⟩ := List.mem_flatMap.mp hp
+        rcases List.mem_append.mp hp with hp | hp
+        · exact fieldTransfer_sound_at (.compareLeft hs' o t) hp ν η
+        · exact fieldTransfer_sound_at (.compareRight hs' o t) hp ν η
+      · simp at hp
+    · split at hp
+      · split at hp
+        · exact fieldTransfer_sound_at (.constructorIs _ ‹_ ∈ cs›) hp ν η
+        · simp at hp
+      · simp at hp
+  · split at hp
+    · exact fieldTransfer_sound_at (.charactersIn _ _) hp ν η
+    · simp at hp
+  · obtain ⟨w, _, hp⟩ := List.mem_flatMap.mp hp
+    obtain ⟨c, _, hp⟩ := List.mem_flatMap.mp hp
+    exact fieldTransfer_sound_at (.floatClass w c) hp ν η
+  · simp at hp
+
+theorem measuredCandidates_sound_at {a b p} (hp : p ∈ measuredCandidates a b)
+    (ν : ObservationEnv) (η : ObservationEnvModel) :
+    (predBind ν p).interpret η = true := by
+  unfold measuredCandidates at hp
+  split at hp
+  · rename_i h
+    obtain ⟨ha, hb, o, oa, ob⟩ := sameClosedObservation_sound h
+    obtain ⟨m, _, rfl⟩ := List.mem_map.mp hp
+    have bound (t : Term) (h : t.Closed) : termBind ν t = t := by
+      have hh := Term.bind_congr (σ := ν) (τ := fun i => some (.var i))
+        (Term.varsIn_mono h (fun i hi => by omega))
+      simp only [termBind, hh, termBind?_id, Option.getD_some]
+    have hai := Term.observe_sound ((Term.observe_closed ha η).trans oa)
+    have hbi := Term.observe_sound ((Term.observe_closed hb η).trans ob)
+    simp [predBind, termBind_measure, bound a ha, bound b hb,
+      Pred.interpret, Pred.atomValue, integerAs, observeAs, Term.interpret, hai, hbi]
+  · simp at hp
+
 theorem candidates_sound_at {lemma args p} (hp : p ∈ candidates lemma args)
     (ν : ObservationEnv) (η : ObservationEnvModel) :
     (predBind ν p).interpret η = true := by
@@ -165,6 +227,8 @@ theorem candidates_sound_at {lemma args p} (hp : p ∈ candidates lemma args)
     obtain ⟨w, _, hp⟩ := List.mem_flatMap.mp hp
     obtain ⟨c, _, rfl⟩ := List.mem_map.mp hp
     exact floatClass_sound_at w c a b ν η
+  · exact fieldCandidates_sound_at hp ν η
+  · exact measuredCandidates_sound_at hp ν η
   · simp at hp
 
 end BuiltinSchema

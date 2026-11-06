@@ -608,7 +608,7 @@ def PreciseGetter.measure : PreciseGetter → Option Measure
  | .indexValue => none
  | .indexValues => some .listLength
 def PreciseGetter.ref (g : PreciseGetter) : FieldRef := ⟨g.owner,g.owner,g.position,if g.measure.isSome then .list else .integer⟩
-def PreciseGetter.links (g : PreciseGetter) : List FieldLink := [⟨0,0,[g.ref],g.measure⟩]
+def PreciseGetter.links (g : PreciseGetter) : List FieldLink := [⟨0,0,[g.ref],g.measure,[]⟩]
 def PreciseGetter.body (g : PreciseGetter) : Comp := .match (.var 0) [.mk g.alts none (.ret (.var 0))]
 def PreciseGetter.row (g : PreciseGetter) : StandardContracts.Row := ⟨"Range." ++ (match g with
  | .minimum => "minimum"
@@ -629,7 +629,7 @@ local macro "precise_simp" : tactic => `(tactic|
    PreciseGetter.alts,PreciseGetter.measure,PreciseGetter.ref,PreciseGetter.links,
    PreciseGetter.row,checkedIntegerProjection,checkedLengthProjection,checkedLength,
    checkedLengthValues,checkedIndexProjection,checkedIndexValues,checkedIntegerType,checkedLengthType,
-   integerField,lengthField,lengthValues,viewTerm,fieldFacts,FieldLink.predicate,routeTerm]
+   integerField,lengthField,lengthValues,viewTerm,fieldFacts,FieldLink.predicate,FieldLink.sort,fieldRelation,routeTerm]
   <;> safe_simp))
 
 private theorem precise_annotation (g : PreciseGetter) :

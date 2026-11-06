@@ -944,5 +944,30 @@ theorem field_equality_true {v w : Val} {route : List FieldRef} {t tw : Term}
     · simp [viewTerm,Term.observe,ho,Observation.measure,Option.bind,Option.map]
     · simp [viewTerm,Term.observe,hright,Observation.measure,Option.bind,Option.map]
 
+/-- 実際の欄の部分観測から、値・分類・測度・構成子の関係の閉じた導出を得る。 -/
+theorem field_relation_entails {v w : Val} {route : List FieldRef} {t tw : Term}
+    {s : «Sort»} {cs : List ConName} {m : Option Measure}
+    (hr : readPath v route = some w)
+    (ht : t.observe (fun _ => none) = v.toTerm?.bind (Term.observe (fun _ => none)))
+    (hw : w.toTerm? = some tw)
+    (sl : tw.HasSort [] s) (sr : (routeTerm t route).HasSort [] s)
+    (sorted : (fieldRelation s cs m tw (routeTerm t route)).Sorted [] none) :
+    Entails [] (fieldRelation s cs m tw (routeTerm t route)) := by
+  have evaluated (he : (fieldRelation s cs m tw (routeTerm t route)).evalWith (fun _ => none) = some true) :
+      Entails [] (fieldRelation s cs m tw (routeTerm t route)) :=
+    .closed sorted.wf_none sorted (by
+      rw [Pred.evalClosed, ite_eq_left ⟨sorted.wf_none,sorted⟩]
+      exact he)
+  by_cases hm : m = some .listLength
+  · subst m
+    exact evaluated (field_equality_true hr ht hw (Or.inr rfl) sorted.1.2 sorted.2.2)
+  by_cases hi : m = none ∧ s = .integer
+  · obtain ⟨rfl,rfl⟩ := hi
+    exact evaluated (field_equality_true hr ht hw (Or.inl rfl) sorted.1.2 sorted.2.2)
+  obtain ⟨o,ho,hos⟩ := value_observe_shape hw sl.2 (fun _ => none)
+  have ho' : w.toTerm?.bind (Term.observe (fun _ => none)) = some o := by rw [hw]; exact ho
+  have hright := readPath_observe hr ht sr.2 ho' hos
+  exact fieldRelation_entails (Term.references_wf sl.1) (Term.references_wf sr.1) ho hright hos sorted
+
 
 end Benitoite.Release.Refinement.MatchFacts

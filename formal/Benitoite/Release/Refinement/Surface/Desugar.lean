@@ -509,8 +509,8 @@ def desugarImpl (opPrim : OpPrim) (id : ImplDecl) : Refinement.ImplDecl :=
 
 -- 01-12「レコード」: R.fi | Σ の fn R.fi[ᾱ;](r:R[ᾱ]):Ai ! {} =
 -- match r { C_R(q1,…,qn) ⇒ return z }（qi は変数 z、そのほかは _。Rust getters と同じ）。
-def accessorDef (c : ConName) (cd : ConDecl) (k : Nat) : Refinement.Def :=
-  let d := accessorDecl c cd k
+def accessorDef (c : ConName) (cd : ConDecl) (k : Nat) (cs : List ConName := []) : Refinement.Def :=
+  let d := accessorDecl c cd k cs
   { tparams := d.tparams, neffs := d.neffs, rkinds := [], names := d.names, params := d.params, ret := d.ret, eff := d.eff,
     body := .match (.var 0) [mkArm (accessorPattern c cd.args.length k) (.ret (.var 0))] }
 
@@ -523,7 +523,7 @@ def testerDef (c : ConName) (cd : ConDecl) : Refinement.Def :=
       mkArm .wild (.ret (.const (.boolean false)))] }
 
 def desugarProgram (opPrim : OpPrim) (p : Program) : Refinement.Program :=
-  { defs := p.lookupFun (desugarDef opPrim) accessorDef testerDef, cons := p.cons,
+  { defs := p.lookupFun (desugarDef opPrim) (@accessorDef) testerDef, cons := p.cons,
     ops := p.ops, effects := p.effects, classes := p.classes,
     impls := fun i => (p.impls i).map (desugarImpl opPrim),
     externals := p.externals, dataInfo := p.dataInfo }

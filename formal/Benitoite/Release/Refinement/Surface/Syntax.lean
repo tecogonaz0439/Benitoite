@@ -313,6 +313,8 @@ structure Declarations where
   cons : ConName → Option ConDecl
   /-- レコード構成子だけが持つ宣言順のフィールド名。 -/
   conFields : ConName → Option (List String) := fun _ => none
+  /-- 原ソースの data 宣言の構成子の有限列。射影の結果の構成子判定に使う。 -/
+  dataConstructors : DataName → List ConName := fun _ => []
   ops : OpName → Option OpDecl := fun _ => none
   effects : EffName → Option (List OpName) := fun _ => none
   classes : ClassName → Option ClassDecl := fun _ => none
@@ -344,6 +346,8 @@ structure Program where
   defs : FunName → Option Def
   cons : ConName → Option ConDecl
   conFields : ConName → Option (List String) := fun _ => none
+  /-- 原ソースの data 宣言の構成子の有限列。射影の結果の構成子判定に使う。 -/
+  dataConstructors : DataName → List ConName := fun _ => []
   ops : OpName → Option OpDecl := fun _ => none
   effects : EffName → Option (List OpName) := fun _ => none
   classes : ClassName → Option ClassDecl := fun _ => none
