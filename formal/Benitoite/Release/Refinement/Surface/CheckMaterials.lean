@@ -72,6 +72,11 @@ structure Materials where
   trustedFuns : List (FunName × FunDecl) := []
   trustedImpls : List (ImplName × ImplSig) := []
 
+/-- 構成子は、同じ材料の実際の所属の欄によって data ごとに列挙する。 -/
+def Materials.constructors (m : Materials) (d : DataName) : List ConName :=
+  (m.cons.filter (fun entry => entry.2.data == d)).map Prod.fst
+
+
 /-- 生成関数・型の別名・外部宣言も含む、全ての表を同じ材料で作る。 -/
 def Materials.program (m : Materials) : Program where
   functionViews := m.functionViews
@@ -79,6 +84,7 @@ def Materials.program (m : Materials) : Program where
   defs := lookup m.defs
   cons := lookup m.cons
   conFields := lookup m.conFields
+  dataConstructors := m.constructors
   ops := lookup m.ops
   effects := lookup m.effects
   classes := lookup (m.classes.map (fun (n, c) => (n, c.decl)))
@@ -96,9 +102,6 @@ def extend (D : Declarations) (fs : List (FunName × FunDecl)) (is : List (ImplN
 
 def Materials.declarations (m : Materials) : Declarations := extend m.program.declarations m.trustedFuns m.trustedImpls
 
-/-- 構成子は、同じ材料の実際の所属の欄によって data ごとに列挙する。 -/
-def Materials.constructors (m : Materials) (d : DataName) : List ConName :=
-  (m.cons.filter (fun entry => entry.2.data == d)).map Prod.fst
 
 def Materials.methodNames (m : Materials) (i : ImplName) (name : MethName) : List String :=
   match lookup m.impls i with

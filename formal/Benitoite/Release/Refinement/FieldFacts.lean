@@ -1,4 +1,4 @@
-import Benitoite.Release.Refinement.PathFacts
+import Benitoite.Release.Refinement.FieldRelations
 
 /-! # 構成子の欄とパターン束縛の等号 -/
 namespace Benitoite.Release.Refinement
@@ -11,19 +11,24 @@ inductive BinderPath : Pat → Nat → List FieldRef → Prop where
       ref.position = j → BinderPath p i route →
       BinderPath (.con c ps) (Pat.bindersList (ps.take j) + i) (ref :: route)
 
-/-- 整数欄は値、List欄は長さを比較する。 -/
+/-- 束縛位置、欄の経路、測度と構成子の判定の有限列。 -/
 structure FieldLink where
   slot : Nat
   raw : Nat
   route : List FieldRef
   measure : Option Measure
+  constructors : List ConName := []
+
+/-- 経路の最後に宣言した欄の sort。 -/
+def FieldLink.sort (link : FieldLink) : «Sort» :=
+  ((link.route.getLast?).map FieldRef.result).getD .integer
 
 /-- 独立の意味論的前提を置かず、パターンとslotsだけで経路を検査する。 -/
 def FieldLink.Valid (alts : List Alt) (n : Nat) (link : FieldLink) : Prop :=
   ∃ alt, alts = [alt] ∧ (∃ c ps, alt.pat = .con c ps) ∧
     link.slot < n ∧ alt.slots[link.slot]? = some link.raw ∧
     BinderPath alt.pat link.raw link.route ∧ link.route ≠ [] ∧
-    (link.measure = none ∨ link.measure = some .listLength)
+    FieldRelation.Valid link.sort link.constructors link.measure
 
 def LinksValid (alts : List Alt) (n : Nat) (links : List FieldLink) : Prop :=
   ∀ link ∈ links, link.Valid alts n
@@ -36,8 +41,8 @@ def viewTerm (m : Option Measure) (t : Term) : Term :=
   match m with | none => t | some m => .measure m t
 
 def FieldLink.predicate (n : Nat) (t : Term) (link : FieldLink) : Pred :=
-  .eq (viewTerm link.measure (.var (n-1-link.slot)))
-    (viewTerm link.measure (routeTerm (termBind (fun i => some (.var (n+i))) t) link.route))
+  fieldRelation link.sort link.constructors link.measure (.var (n-1-link.slot))
+    (routeTerm (termBind (fun i => some (.var (n+i))) t) link.route)
 
 def fieldFacts (n : Nat) (obs : Option Term) (links : List FieldLink) : List Pred :=
   match obs with | none => [] | some t => links.map (FieldLink.predicate n t)
@@ -76,7 +81,7 @@ theorem fieldFacts_rename {n obs alts links} (valid : LinksValid alts n links) (
     intro link hl
     obtain ⟨alt,_,_,hs,_,_,_⟩ := valid link hl
     have hb : n-1-link.slot < n := by omega
-    simp only [Function.comp_def,FieldLink.predicate,predBind,viewTerm_bind,routeTerm_bind]
+    simp only [Function.comp_def,FieldLink.predicate,fieldRelation_bind,routeTerm_bind]
     rw [lift_receiver_rename]
     simp [upRen,hb]
 
@@ -125,7 +130,7 @@ theorem fieldFacts_bind_of_some {n obs alts links ν u}
     intro link hl
     obtain ⟨_,_,_,hs,_,_,_⟩ := valid link hl
     have hb : n-1-link.slot < n := by omega
-    simp only [FieldLink.predicate,predBind,viewTerm_bind,routeTerm_bind]
+    simp only [FieldLink.predicate,fieldRelation_bind,routeTerm_bind]
     rw [hr]
     simp [upTerms,hb]
 

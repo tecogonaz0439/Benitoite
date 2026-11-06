@@ -40,6 +40,12 @@ theorem Entails.bind {Ξ p} (h : Entails Ξ p) (σ : ObservationEnv) :
   | closed hw hs he =>
     rw [Pred.bind_closed hw σ]
     exact .closed hw hs he
+  | @measured Ξ a b m o ha hb oa ob =>
+    rw [Pred.bind_closed (show (Pred.eq (.measure m a) (.measure m b)).WF 0 from ⟨ha,hb⟩) σ]
+    exact .measured ha hb oa ob
+  | fieldAtom atom _ _ ih₁ ih₂ =>
+    rw [fieldRelation_bind] at ih₁
+    exact .fieldAtom (atom.bind σ) ih₁ ih₂
   | checkedAt ν hc _ ih =>
     simp only [predBind_comp] at ih ⊢
     exact .checkedAt (fun i => (ν i).bind (termBind? σ)) hc ih

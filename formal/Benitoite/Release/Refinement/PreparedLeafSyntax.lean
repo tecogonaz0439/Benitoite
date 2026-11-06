@@ -7,6 +7,8 @@ inductive BuiltinLemma where
   | closed | lengthNonnegative | measureNonnegative | booleanApart
   | compareComplement | charactersSubset | constructorApart | sameObservation
   | scalarOrder | characterCodeRange | characterCompare | floatCompareClass
+  | fieldAtom (sort : «Sort») (constructors : List ConName)
+  | measured
   deriving DecidableEq
 
 structure PreparedLeaf where

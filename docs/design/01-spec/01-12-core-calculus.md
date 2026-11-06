@@ -557,7 +557,7 @@ record 更新と try の内部照合の checker は、宣言表の view によ�
 - レコードの構築は、構成子の宣言があり、型引数の個数が宣言と合い、位置の並びがフィールドの位置 0, …, n−1 の並べ替えであることを求める。書いた順の各式は、その位置のフィールドの型を型引数で具体化した型で検査する。構築の型は `R[T̄]`、エフェクトは各式のエフェクトの和である。
 - レコードの更新は、型引数の個数とフィールドの総数が宣言と合い、書き換える位置の並びが空でなく、重複せず、どの位置も総数より小さいことを求める。元の式 e は型 `R[T̄]`（T̄ は更新が持つ型引数）で、末尾位置にないものとして検査し、書いた順の各式は、その位置のフィールドの型を T̄ で具体化した型で検査する。前提に、脱糖が作る一つの分岐のパターン（書き換える位置を `_` にしたもの）の網羅性を置く（`try` と同じ）。更新の型は `R[T̄]`、エフェクトは e と各式のエフェクトの和である。
 - レコードのパターンには独立した型付けの規則を置かず、宣言の順に並べたコアのパターンを、本章の「パターン」の型付け規則で検査する。位置の条件のうち、空でないこと・重複しないこと・範囲内であることを個別に検査するのは更新だけである。構築は位置の並びが並べ替えであることだけを求め、パターンは位置を検査しない。
-- フィールドを取り出す関数の表は、表層のプログラムの範囲の条件（`Program.WellFormed`）に含めた条件 `RecordsOk` で検査する。表のどの項目（関数の名前 f、構成子 C、位置 k）についても、f が普通の関数の定義の表にないこと、C の宣言があり k がそのフィールドの数より小さいこと、C の属する型の構成子が C だけであることを求める。取り出す関数の型は、レコードの型パラメータを制約なしで持ち、引数の型が `R[ᾱ]`、戻り値の型が k 番目のフィールドの型、エフェクトが空である（01-05・01-06 と同じ）。`RecordsOk` の下では普通の関数と取り出す関数の名前が重ならないので、`lookupFun` が `defs` を先に引く順は結果に影響しない。
+- フィールドを取り出す関数の表は、表層のプログラムの範囲の条件（`Program.WellFormed`）に含めた条件 `RecordsOk` で検査する。表のどの項目（関数の名前 f、構成子 C、位置 k）についても、f が普通の関数の定義の表にないこと、C の宣言があり k がそのフィールドの数より小さいこと、C の属する型の構成子が C だけであることを求める。取り出す関数の型は、レコードの型パラメータを制約なしで持ち、引数の型が `R[ᾱ]`、戻り値の型が `accessorRet C cd k cs`、エフェクトが空である。`accessorRet` は、観測可能な欄では k 番目の欄の基の型に `accessorPred` の篩を付ける。対象、sort のない型、構成子列が空の data では基の型を返す。`cs` は欄の data 型の構成子列である。`RecordsOk` の下では普通の関数と取り出す関数の名前が重ならないので、`lookupFun` が `defs` を先に引く順は結果に影響しない。
 - レコードの表層の型付けは、[代数的データ型とパターンマッチ](01-05-data-types.md)の「レコード（初回リリース版）」より広い。構築は構成子が一つの型かを問わず、フィールドが 0 個の構成子にも使える。パターンは、位置の重複・範囲外、位置と子のパターンの並びの長さの違い、`..` を書かずに省いたフィールド、フィールドを一つも書かない形を排除しない（同じ位置を二度書けば、最初に書いたものを使う）。性質 1 は広い側で証明したので、01-05 の規則を満たすプログラムについても成り立つ。
 - トップレベルの定数の参照は、埋め込んだ本体を、使う位置の制約の並び C と R のまま、局所の束縛を持たない空の環境で、末尾位置にないものとして、宣言の型と空のエフェクトで検査し、宣言の型を持つ。エフェクトは空である。定数の参照は必ず抜けない（本体の中を辿らない）。理由: 本体を R = `none` で検査するには、型付けの判断の R を変える補題が要る。R を保つ形でも性質 1 は成り立つので、その補題を足さない。
 - 定数の参照の型付けは、[型システム](01-06-type-system.md)の「定数の型（初回リリース版）」より広い。定数式に書ける式の種類（[構文](01-02-syntax.md)の「定数（初回リリース版）」）を検査しないので、利用者の関数の呼び出しやラムダも、空のエフェクトで型が付けば本体として受け入れる。定数式の計算が実行時エラーの条件に当たらないことと、`Map.fromList`・`Set.fromList` の鍵と要素の重複を検査しない。R を保つので、本体の `return` と `try` に型が付く場合がある（ソース言語の定数式はこれらを含まない）。宣言の型と本体に、使う位置の型パラメータを使うことを許す（01-06 は定数の型を具体的な型に限る）。性質 1 は広い側で証明したので、01-06 の検査を通ったプログラムについても成り立つ。本章の「トップレベルの定数」の「`⟦e⟧` はどこで評価しても同じ値を返して終わり」を性質 1 の対象に含めないのは、この広さのためである。
@@ -662,7 +662,7 @@ record 更新と try の内部照合の checker は、宣言表の view によ�
 |---|---|
 | `R(g1: e1, …, gn: en)`（`g` は書いた順のフィールド名） | `let x1 ⇐ ⟦e1⟧ in … let xn ⇐ ⟦en⟧ in return C_R[T̄](y1, …, yn)`（`yi` は、宣言の i 番目のフィールドを書いた位置の `xj`） |
 | `R(..e, g1: e1, …, gk: ek)` | `let r ⇐ ⟦e⟧ in let x1 ⇐ ⟦e1⟧ in … let xk ⇐ ⟦ek⟧ in match r { C_R(q1, …, qn) ⇒ return C_R[T̄](y1, …, yn) }`（`qi` は、宣言の i 番目のフィールドを書き換えるなら `_`、そうでなければ新しい変数 `zi`。`yi` は、書き換えるなら対応する `xj`、そうでなければ `zi`。すべてのフィールドを書き換えるときも `match` を作る。`T̄` は e の型 `R[T̄]` の型引数であり、更新の結果は e と同じ型を持つ） |
-| フィールドを取り出す関数 `R.fi` | Σ の定義 `fn R.fi[ᾱ; ]([r]; r:R[ᾱ]) : Ai ! { } = match r { C_R(q1, …, qn) ⇒ return z }` を参照する（`qi` は変数 z、そのほかの `qj` は `_`） |
+| フィールドを取り出す関数 `R.fi` | Σ の定義 `fn R.fi[ᾱ; ]([r]; r:R[ᾱ]) : accessorRet C_R cd i cs ! { } = match r { C_R(q1, …, qn) ⇒ return z }` を参照する（`qi` は変数 z、そのほかの `qj` は `_`） |
 | パターン `R(g1: p1, …, gk: pk)`、`R(g1: p1, …, ..)` | `C_R(q1, …, qn)`（`qi` は、宣言の i 番目のフィールドを書いたなら対応する `pj'`、書いていなければ `_`） |
 
 更新とフィールドを取り出す関数のパターンは、使わないフィールドを `_` にして束縛しない。理由: 使わないフィールドを変数に束縛しても `_` にしても、照合する値と分岐の結果は変わらない。`_` にした形は処理系の脱糖と同じであり、差分テストで正規化を足さずに比べられる。
@@ -3821,7 +3821,58 @@ information order に当たる `Observation.InfoLE` は、scalar と対象の sn
 
 Not は T/F を反転し、U を保つ。`evalWith` は左右の部分述語の結果の組でこの表を定め、左の失敗だけで全体を打ち切る順序を規則にしない。通常の計算の短絡 `or` は左を先に実行し、左の計算が実行時エラーなら右を実行せず止まる。述語の評価では、左が U でも右が T なら Or は T となる。両者は異なる評価である。
 
-成功の健全性は `Pred.evalWith_sound`・`evalClosed_sound` が二値の `Pred.interpret` との一致として述べる。閉じた述語のすべてが評価できるとはしない。`ClosedObservable` を満たすときの完全性は `evalClosed_complete` にある。`Entails.closed`・`Entails.ground` は、閉じて種類も適合する述語の評価が T のときだけ導出を作る。`Entails` は仮定、真、偽の除去、And/Or/Not、等号・整数の比較、閉じた評価と、証明書の検査を使う `checkedAt` の19構成子を持つ。`checkedAt ν hc hp` は、元の述語pからqへの証明書の検査成功hcと、`predBind ν p`の導出hpから、`predBind ν q`を導く。`checked`は恒等置換による導出である。意味上の任意の含意を前提として導出を代用しない。
+成功の健全性は `Pred.evalWith_sound`・`evalClosed_sound` が二値の `Pred.interpret` との一致として述べる。閉じた述語のすべてが評価できるとはしない。`ClosedObservable` を満たすときの完全性は `evalClosed_complete` にある。`Entails.closed`・`Entails.ground` は、閉じて種類も適合する述語の評価が T のときだけ導出を作る。`Entails` は仮定、真、偽の除去、And/Or/Not、等号・整数の比較、閉じた評価と、証明書の検査を使う `checkedAt`・`measured`・`fieldAtom` の21構成子を持つ。`checkedAt ν hc hp` は、元の述語pからqへの証明書の検査成功hcと、`predBind ν p`の導出hpから、`predBind ν q`を導く。`checked`は恒等置換による導出である。意味上の任意の含意を前提として導出を代用しない。
+
+`Entails.measured` は、閉じた二項の元の部分観測が同じ値として成功することから、その測度の整数射影の等号を導く。測度の部分観測の成功は要求しない。Bytes の正常性、Map・Set の鍵の観測が不足する場合には、測度の `evalClosed` は `none` であるが、同じ元の観測に対する全域モデルの射影は一致する。この規則は、評価不能を部分評価の成功へ変えない。`Entails.sound` はこの場合も含み、`bind` は閉じた項の置換不変性から、`weaken`・`cut` は仮定を使わない規則として保存する。
+
+```lean
+  | measured {Ξ a b m o} : a.Closed → b.Closed →
+      a.observe (fun _ => none) = some o → b.observe (fun _ => none) = some o →
+      Entails Ξ (.eq (.measure m a) (.measure m b))
+```
+
+
+`Entails.fieldAtom` は、欄の関係と左辺の項についての原子から、右辺の項について同じ原子を導く。`FieldAtom` は解釈を保存する原子の組を構文で列挙する。比較は Character・Decimal・Float 二幅・Boolean・String・Unit の両方の位置に対応し、相手の項は固定する。原子の形成には各 sort の `Comparison.Allowed` を別に求める。String の `charactersIn`、Float の六分類、有限列に含まれる data の `constructorIs` も移せる。`reverse` は原子の組の向きを反転する。整数と測度の等号からの書換えは、整数の既存の規則を使う。
+
+```lean
+/-- 数値又は値の等号で比較の結果を保存する sort。 -/
+def FieldRelation.Scalar (s : «Sort») : Prop :=
+  s = .character ∨ s = .decimal ∨ s = .float64 ∨ s = .float32 ∨
+    s = .boolean ∨ s = .string ∨ s = .unit
+
+/-- 欄の関係の下で同じ二値を返す原子の組。比較のもう一方の項は固定する。 -/
+inductive FieldAtom : «Sort» → List ConName → Term → Term → Pred → Pred → Prop where
+  | compareLeft {s cs a b} (hs : FieldRelation.Scalar s) (o : Comparison) (t : Term) :
+      FieldAtom s cs a b (.compare s o a t) (.compare s o b t)
+  | compareRight {s cs a b} (hs : FieldRelation.Scalar s) (o : Comparison) (t : Term) :
+      FieldAtom s cs a b (.compare s o t a) (.compare s o t b)
+  | charactersIn {cs a b} (lo hi : Char) :
+      FieldAtom .string cs a b (.charactersIn a lo hi) (.charactersIn b lo hi)
+  | floatClass {cs a b} (w : FloatWidth) (c : FloatClass) :
+      FieldAtom (match w with | .binary32 => .float32 | .binary64 => .float64) cs a b
+        (.floatClass w c a) (.floatClass w c b)
+  | constructorIs {cs a b} (c : ConName) (hc : c ∈ cs) :
+      FieldAtom .data cs a b (.constructorIs a c) (.constructorIs b c)
+  | reverse {s cs a b p q} : FieldAtom s cs a b p q → FieldAtom s cs a b q p
+```
+
+```lean
+  | fieldAtom {Ξ s cs a b p q} : FieldAtom s cs a b p q →
+      Entails Ξ (fieldRelation s cs none a b) → Entails Ξ p → Entails Ξ q
+```
+
+`FieldAtom.sound` は、関係の解釈が真なら対応する両原子の解釈が等しいことを、任意の全域モデルについて示す。Decimal の数値等号は正の十進の倍率を使って順序を保存する。Float の比較は、IEEE 等号又は両辺の NaN の下で、両幅とも相手の項との各比較を保存する。六分類は関係の各判定同値から保存される。`weaken` と `cut` は二つの子の導出を移し、`bind` は関係の置換の可換性と原子の組の置換保存を使う。証明書の健全性は `Entails.sound` へ接続し、証明書の検査にこの規則の真を仮定しない。
+
+移せない原子は次のとおりである。これらを `FieldAtom` に含めない。
+
+| 原子 | 関係を満たしても解釈が変わる例 |
+|---|---|
+| Decimal の `decimalRepresented` | `decimal 0 0` と `decimal 0 29` は数値として等しいが、桁の上限を満たすのは前者だけである |
+| String の `member` | 全変数の観測が欠落するモデルで `var 0` と空文字列は String の比較と二測度で一致するが、path の `.top` への所属は前者が真、後者が偽となる。比較の既定値と、`member` が読む元の観測は異なる |
+| 有限列にない data の `constructorIs`、data の内部の欄の述語 | 列が `[Other]` なら `A` と `B` はともに列の判定を満たさないので関係が真となるが、`A` の判定は異なる。同じ `Box` の構成子でも内部の整数 0 と 1 は区別しない |
+
+Decimal の表現可能性は、型が運搬する事実から別に得る。String の実際の二つの観測が同じ文字列として成功する場合には `member` の解釈も等しいが、この規則の前提である欄の関係だけからは、その成功を要求できない。
+
 
 `Linear` は数学Intの係数列とboundを持ち、`Holds` は係数と整数環境の内積がbound以下であることを表す。`Linear.toPred keys` は、鍵の各項に係数を掛けて加算する整数述語を作る。意味との対応は、鍵と係数の列長の一致を要求しない。係数に対応する鍵がない位置では、`keyEnv`が整数0を返す。鍵が余る場合は、係数列の末尾で加算を終える。`Linear.toPred_sound_at` は、任意の構文の値置換νを受けた述語の真と、置換された各鍵の整数射影における `Holds` を対応させる。鍵の相異性を要求しない。`Pred.scaled_le_at` と `eq_positive_at` は、同じνの像の上で非負の定数倍と等号を介した正値の含意を示す。閉じた葉と同一原子の正負も、その像の上で扱う。これらは意味の補題であり、`Entails` の追加の構成子ではない。
 
@@ -3867,8 +3918,59 @@ compare/floatClass/decimalRepresented/charactersIn/member/constructorIsの6原�
 | characterCodeRange | 1 | 文字コードの0以上0x10ffff以下とサロゲート範囲外。`Char.valid`と実際のmeasureを使う |
 | characterCompare | 6 | Characterのeq/ne/lt/le/gt/geと文字コードの整数比較の双方向の対応 |
 | floatCompareClass | 12 | 二幅と六分類。実際のbitsの指数部・仮数部・符号から分類と比較の有限の節を導く |
+| fieldAtom s cs | 引数とsortに応じて24・12・2又は0 | `fieldRelation s cs none a b` の下で、比較の両位置、StringのcharactersIn、Floatの六分類、csに含まれる構成子判定を双方向に移す含意。sortと構成子列は登録種類の引数であり、項の引数列に規則番号を埋め込まない。`FieldAtom.sound`と`FieldAtom.bind`で任意の置換像の解釈を保存する |
+| measured | 7又は0 | 閉じた両項の成功した観測を構造で照合し、一致するとき全七測度の整数射影の等号を候補とする。測度の部分評価の成功は要求しない。`sameClosedObservation_sound`がEntails.measuredと同じ閉性・同じ成功した観測の前提を返す |
 
-表の合計は12種類100分岐である。Floatのfinite・NaN・正負のInfinityは排他的に全体を覆う。正負のゼロはfiniteの部分であり、互いに排他的で、数としては等しい。NaNの節はeqと四つの順序比較の不成立を返す。正のInfinityは有限項より大きく、その項以下にはならず、負のInfinityは有限項より小さく、その項以上にはならない。この節と分類の全被覆から、有限な両端点の間の項がfiniteであることを導ける。比較の対称性・推移性は、成功する比較を前提とする含意であり、NaNへの反射則を含まない。Decimalは正の10の冪の交差積を使い、IEEEの共通補題は仮数部・指数部の幅を引数にして二幅へ適用する。閉じた比較30形と分類12形は、実際の`evalClosed`の結果に照合する。比較は数の4sortの`a < b`の組に加え、等しい端点と逆向きの端点の48件も照合する。
+登録種類は14種類である。closedからfloatCompareClassまでの12種類は、表の代表の引数で合計100分岐を持つ。fieldAtomとmeasuredの候補数は、sort・構成子列・引数の形と観測の照合結果で決まる。Floatのfinite・NaN・正負のInfinityは排他的に全体を覆う。正負のゼロはfiniteの部分であり、互いに排他的で、数としては等しい。NaNの節はeqと四つの順序比較の不成立を返す。正のInfinityは有限項より大きく、その項以下にはならず、負のInfinityは有限項より小さく、その項以上にはならない。この節と分類の全被覆から、有限な両端点の間の項がfiniteであることを導ける。比較の対称性・推移性は、成功する比較を前提とする含意であり、NaNへの反射則を含まない。Decimalは正の10の冪の交差積を使い、IEEEの共通補題は仮数部・指数部の幅を引数にして二幅へ適用する。閉じた比較30形と分類12形は、実際の`evalClosed`の結果に照合する。比較は数の4sortの`a < b`の組に加え、等しい端点と逆向きの端点の48件も照合する。
+
+欄の移送の候補は次の有限の節である。比較はCharacter・Decimal・Float二幅・Boolean・String・Unitに限る。dataの構成子判定は指定したcsへの所属を要求する。比較の演算の利用者向けの制限は、別のsortの形成で検査する。decimalRepresented・Stringのmember・列外の構成子・dataの内部の欄を移す候補は持たない。
+
+```lean
+/-- 関係の下で二つの原子を双方向へ移す有限の節。 -/
+def fieldTransfer (s : «Sort») (cs : List ConName) (a b : Term) (p q : Pred) : List Pred :=
+  [implies (.and (fieldRelation s cs none a b) p) q,
+   implies (.and (fieldRelation s cs none a b) q) p]
+
+/-- 比較の相手、文字の端点、構成子名は実際の項として渡す。 -/
+def fieldCandidates (s : «Sort») (cs : List ConName) (arguments : List Term) : List Pred :=
+  match arguments with
+  | [a,b,t] =>
+      (if s ∈ [«Sort».character, .decimal, .float64, .float32, .boolean, .string, .unit] then
+        comparisons.flatMap fun o =>
+          fieldTransfer s cs a b (.compare s o a t) (.compare s o b t) ++
+          fieldTransfer s cs a b (.compare s o t a) (.compare s o t b)
+       else []) ++
+      (match s,t with
+       | .data, .string c => if c ∈ cs then
+           fieldTransfer .data cs a b (.constructorIs a c) (.constructorIs b c) else []
+       | _, _ => [])
+  | [a,b,.character lo,.character hi] =>
+      if s = .string then fieldTransfer .string cs a b (.charactersIn a lo hi) (.charactersIn b lo hi)
+      else []
+  | [a,b] =>
+      (match s with | .float32 => [FloatWidth.binary32] | .float64 => [.binary64] | _ => []).flatMap fun w =>
+        classes.flatMap fun c =>
+          fieldTransfer (floatSort w) cs a b (.floatClass w c a) (.floatClass w c b)
+  | _ => []
+```
+
+測度の候補は次の形である。観測の構造比較は、Floatのビット列、Decimalの係数とscale、欠けたスロット、構成子名、列の順序、対象の起点をそのまま照合する。数値等号や鍵の等号へ読み替えない。sameClosedObservation_soundは両項の閉性と、両観測が同じsome oであることを返す。
+
+```lean
+/-- 閉じた両項の成功した観測を、欠けたスロットも含めて構造で照合する。 -/
+def sameClosedObservation (a b : Term) : Bool :=
+  decide (a.Closed ∧ b.Closed) &&
+    match a.observe (fun _ => none), b.observe (fun _ => none) with
+    | some x, some y => observationEq x y
+    | _, _ => false
+/-- 測度の部分評価が不能でも、同じ閉じた観測の全七測度を結ぶ。 -/
+def measuredCandidates (a b : Term) : List Pred :=
+  if sameClosedObservation a b then
+    measures.map fun m => .eq (.measure m a) (.measure m b)
+  else []
+```
+
+Surface.FieldCheckerExamplesは有限材料から生成するrecordの取り出し関数を本体で呼び、DecimalとFloat二幅の順序、StringのcharactersIn、Map・Set・Bytesの大きさを戻り値の契約へ移す。checkProgramとcheckProgramAcceptedで同じ本体を受理し、その成功を既存の健全性から型付けへ接続する。閉じた欄と同じスロットの測度を結ぶ例は、鍵の観測の欠け又は不適格なBytesによってevalClosedがnoneとなる場合も扱う。StringのmemberとDecimalの表現可能性の未登録の移送を持つ葉は拒否する。候補はPreparedLeaf.checkRaw・CertificateKernelの既存の検査を通し、証明書や型付けの健全性の独立の前提にしない。
 
 `PreparedLeaf.raw_sound_at`は、raw検査成功と、渡された仮定列の各述語が同じνとηで真であることから、葉の述語の同じ像が真であることを示す。証明書を置換後に作り直すことや、開いた葉の構文が置換で不変であることは要求しない。旧の`PreparedLeaf.check`・`entails`・`machine_exact`・`stable`は、閉じた二種類を受ける入口である。
 
@@ -3878,7 +3980,7 @@ compare/floatClass/decimalRepresented/charactersIn/member/constructorIsの6原�
 
 上層の`Certificate.checkIn`は、rawの検査成功、最上位の`c.keys (Pred.ofConjuncts Φ) goal`に対する`KeyTable.checkIn`、goalと全仮定のsort・宣言、途中の各証明書の適格性を同時に要求する。substituteの適格性は`EqProof.substituteIn`と子の適格性であり、refuteの適格性は全builtinの述語のsort・宣言と子の適格性である。`checkSorted`はsortとraw検査をまとめる別の入口である。鍵・宣言・途中の適格性を照合した結果と、raw検査器の実行可能性を区別する。
 
-`Entails`のweaken・cut・sound・bindは19構成子を扱う。checkedAtの場合、weakenとcutは子の帰納仮定、soundは`implication_sound_at`を使う。bindは、元のνと外側のτを`fun i => (ν i).bind (termBind? τ)`へ合成し、`predBind_comp`で両述語の像を対応させる。公開の`Entails.bind`は、元の導出と任意の値置換から、仮定列と結論を同じ置換で写した導出を返す。型・行・範囲・値の移送や型付けに、証明書の健全性という独立の仮定を加えない。
+`Entails`のweaken・cut・sound・bindは21構成子を扱う。measuredは子の導出を持たず、閉じた項の置換不変性を使う。fieldAtomは関係と原子の二つの子の導出を持ち、soundは`FieldAtom.sound`、bindは`FieldAtom.bind`と`fieldRelation_bind`を使う。checkedAtの場合、weakenとcutは子の帰納仮定、soundは`implication_sound_at`を使う。bindは、元のνと外側のτを`fun i => (ν i).bind (termBind? τ)`へ合成し、`predBind_comp`で両述語の像を対応させる。公開の`Entails.bind`は、元の導出と任意の値置換から、仮定列と結論を同じ置換で写した導出を返す。型・行・範囲・値の移送や型付けに、証明書の健全性という独立の仮定を加えない。
 
 `measure_machine_exact` は、本番の `Observation.measure` の正常結果と受け手の部分観測の成功から、measure項の部分観測と二値の解釈が同じ非負整数になることを導く。`measure_stable` は、元の各変数の観測から置換像の部分観測への `OptionInfoLE` と、元のmeasureの正常結果を前提に、置換後も同じ結果を得ることを示す。失敗した観測の存在や、開いた述語そのものの不変は結論しない。
 
@@ -3955,12 +4057,76 @@ let の到達先の型付けでは、前半と後半の計算を外側の効果�
 
 `HasTypeArmsQ.plain` は、成功の経路条件を Φ に加えて束縛数だけ移し、束縛と欄の等号を先頭に加えて本体を検査する。`δ` を腕が束縛する型の列、`n = δ.length` とすると、本体の条件は `fieldFacts n obs links ++ liftMany n (pathFacts obs (matchedTests alts) ++ Φ)` である。残りの腕は従来どおり除外の事実だけを Φ に加えて検査する。欄の等号には束縛後の `bindParams Γ δ` での `FactsWF`、経路条件には元の Γ での `FactsWF` を要求する。
 
-`FieldLink` は、並べ替え後の束縛位置 `slot`、左から数えた元の束縛位置 `raw`、構成子の欄の経路 `route`、観測する `measure` を持つ。`LinksValid alts n links` は各要素について、選択肢が一つの構成子パターンであること、`slot < n`、`alt.slots[slot]? = some raw`、その元の束縛へ至る `BinderPath`、空でない経路、`measure` が `none` 又は `some listLength` であることを検査する。経路の各段では、`BinderPath.con` が構成子名と欄番号を照合し、左の欄にある束縛数を加えて巣の束縛番号を定める。欄が整数の sort であること、所有元・型引数・結果の sort は、生成した等号の `FactsWF`（`Pred.Sorted`・`FieldRef.Declared`）が検査する。or パターンには欄の等号を生成しない。
+`FieldLink` は、並べ替え後の束縛位置 `slot`、左から数えた元の束縛位置 `raw`、構成子の欄の経路 `route`、観測する `measure`、判定する構成子の有限列 `constructors` を持つ。観測の sort は経路の最後の `FieldRef.result` から読む。`LinksValid alts n links` は各要素について、一つの構成子パターン、`slot < n`、`alt.slots[slot]? = some raw`、元の束縛へ至る `BinderPath`、空でない経路と `FieldRelation.Valid` を検査する。測度を指定するときは入力の sort と欄の sort の一致を、指定しないときは対象以外の sort と data の空でない構成子列を要求する。所有元・型引数・結果の sort と構成子名の宣言は、生成した関係の `FactsWF`（`Pred.Sorted`・`Pred.Declared`・`FieldRef.Declared`）で照合する。or パターンには欄の関係を生成しない。
+
+```lean
+structure FieldLink where
+  slot : Nat
+  raw : Nat
+  route : List FieldRef
+  measure : Option Measure
+  constructors : List ConName := []
+
+/-- 経路の最後に宣言した欄の sort。 -/
+def FieldLink.sort (link : FieldLink) : «Sort» :=
+  ((link.route.getLast?).map FieldRef.result).getD .integer
+
+/-- 独立の意味論的前提を置かず、パターンとslotsだけで経路を検査する。 -/
+def FieldLink.Valid (alts : List Alt) (n : Nat) (link : FieldLink) : Prop :=
+  ∃ alt, alts = [alt] ∧ (∃ c ps, alt.pat = .con c ps) ∧
+    link.slot < n ∧ alt.slots[link.slot]? = some link.raw ∧
+    BinderPath alt.pat link.raw link.route ∧ link.route ≠ [] ∧
+    FieldRelation.Valid link.sort link.constructors link.measure
+```
+
+値と測度の関係は次の定義による。整数は専用の等号、Character・Decimal・Boolean・String・Unit は反射的な `compare eq` を使う。Character は符号位置、String はバイト数と文字数も結ぶ。Float 二幅は IEEE 等号と両辺の NaN の選言に加え、六分類それぞれの判定同値を持つ。data は有限列の全構成子の判定を結ぶ。対象の `member` の範囲は有限に列挙できないので、対象の関係を欄の事実に加えない。
+
+```lean
+/-- 二つの二値の判定が一致することを、既存の論理結合で表す。 -/
+def predicateIff (p q : Pred) : Pred :=
+  .or (.and p q) (.and (.not p) (.not q))
+
+/-- Float の等号は NaN 同士を含み、六つの分類はゼロの符号も区別する。 -/
+def floatFieldRelation (w : FloatWidth) (a b : Term) : Pred :=
+  .and (.or (.compare (match w with | .binary32 => .float32 | .binary64 => .float64) .eq a b)
+    (.and (.floatClass w .nan a) (.floatClass w .nan b)))
+    ([FloatClass.finite, .nan, .positiveInfinity, .negativeInfinity, .positiveZero, .negativeZero].foldr
+      (fun c p => .and (predicateIff (.floatClass w c a) (.floatClass w c b)) p) .truth)
+
+/-- 構成子の有限列の各判定を保存する。 -/
+def constructorFieldRelation (cs : List ConName) (a b : Term) : Pred :=
+  cs.foldr (fun c p => .and (predicateIff (.constructorIs a c) (.constructorIs b c)) p) .truth
+
+/-- 値の比較と、その sort で観測できる測度を結ぶ。 -/
+def fieldRelation (s : «Sort») (cs : List ConName) (m : Option Measure) (a b : Term) : Pred :=
+  match m with
+  | some m => .eq (.measure m a) (.measure m b)
+  | none => match s with
+    | .integer => .eq a b
+    | .float64 => floatFieldRelation .binary64 a b
+    | .float32 => floatFieldRelation .binary32 a b
+    | .character => .and (.compare .character .eq a b) (.eq (.measure .characterCode a) (.measure .characterCode b))
+    | .string => .and (.compare .string .eq a b)
+        (.and (.eq (.measure .stringBytes a) (.measure .stringBytes b))
+          (.eq (.measure .stringCharacters a) (.measure .stringCharacters b)))
+    | .decimal | .boolean | .unit => .compare s .eq a b
+    | .list => .eq (.measure .listLength a) (.measure .listLength b)
+    | .bytes => .eq (.measure .bytesLength a) (.measure .bytesLength b)
+    | .map => .eq (.measure .mapSize a) (.measure .mapSize b)
+    | .set => .eq (.measure .setSize a) (.measure .setSize b)
+    | .data => constructorFieldRelation cs a b
+    | .target _ => .truth
+
+/-- 測度の入力 sort と、data の空でない構成子列を照合する。対象の所属は列挙しない。 -/
+def FieldRelation.Valid (s : «Sort») (cs : List ConName) : Option Measure → Prop
+  | some m => s = m.input
+  | none => match s with | .target _ => False | .data => cs ≠ [] | _ => True
+```
 
 ```lean
 def FieldLink.predicate (n : Nat) (t : Term) (link : FieldLink) : Pred :=
-  .eq (viewTerm link.measure (.var (n-1-link.slot)))
-    (viewTerm link.measure (routeTerm (termBind (fun i => some (.var (n+i))) t) link.route))
+  fieldRelation link.sort link.constructors link.measure (.var (n-1-link.slot))
+    (routeTerm (termBind (fun i => some (.var (n+i))) t) link.route)
 
 def fieldFacts (n : Nat) (obs : Option Term) (links : List FieldLink) : List Pred :=
   match obs with | none => [] | some t => links.map (FieldLink.predicate n t)
@@ -3995,9 +4161,13 @@ def fieldFacts (n : Nat) (obs : Option Term) (links : List FieldLink) : List Pre
         HasTypeArmsQ P B Ψ Q C Γ Φ R obs (.mk alts (some guard) body :: arms) a b ε Δ
 ```
 
-`routeTerm` は観測項へ経路の欄を順に適用する。`viewTerm none` はその項、`viewTerm (some listLength)` はその List の長さである。新しい束縛の de Bruijn 番号は `n-1-slot`、照合対象の外側の番号は `n+i` とする。理由: 実際の `slots` の並べ替えと捕捉の延長に従って、束縛した整数値又は List の長さを元の欄と結ぶためである。篩型の照合の規則では、構成子の腕の文脈へ、照合で明らかになる対象と束縛の関係を加える方式が知られている（Jhala と Vazou のチュートリアルの規則 Chk-Alt は、構成子の結果の型を対象の型へ meet で結ぶ）。本書はこの関係を、measure の代わりに欄の射影の等号で表す。出典: Ranjit Jhala, Niki Vazou. “Refinement Types: A Tutorial”. arXiv:2010.07763v1, 2020, §7.3.3. [arXiv:2010.07763](https://arxiv.org/abs/2010.07763)。
+`routeTerm` は観測項へ経路の欄を順に適用する。`viewTerm none` はその項、`viewTerm (some m)` は測度 m を適用した項である。新しい束縛の de Bruijn 番号は `n-1-slot`、照合対象の外側の番号は `n+i` とする。理由: 実際の `slots` の並べ替えと捕捉の延長に従って、束縛値の比較・分類・測度・構成子の判定を元の欄と結ぶためである。篩型の照合の規則では、構成子の腕の文脈へ、照合で明らかになる対象と束縛の関係を加える方式が知られている（Jhala と Vazou のチュートリアルの規則 Chk-Alt は、構成子の結果の型を対象の型へ meet で結ぶ）。本書はこの関係を、欄の観測の比較・分類・測度・構成子の判定で表す。出典: Ranjit Jhala, Niki Vazou. “Refinement Types: A Tutorial”. arXiv:2010.07763v1, 2020, §7.3.3. [arXiv:2010.07763](https://arxiv.org/abs/2010.07763)。
 
-`MatchFacts.FieldLink.matched` は任意の巣の経路と実際の照合成功から、選ばれた欄と束縛値の一致を示す。`CaptureOk.field_facts` は任意の捕捉の延長と、その同じ観測から生成した等号の真を示す。値置換では `fieldFacts_bind` が、型の付いた観測と整形式から部分的な `termBind?` の成功を導く。置換の失敗を既定の観測値へ置き換えて真とする前提を加えない。主な十言明の字面と量化は保つ。
+`MatchFacts.FieldLink.matched` は任意の巣の経路と実際の照合成功から、選ばれた欄と束縛値の一致を示す。`MatchFacts.field_relation_entails` は同じ観測から関係の閉じた導出を構成する。整数の値・List の長さ・値の比較・Float の分類・構成子の判定は `some true` の部分評価から、ほかの測度は `Entails.measured` から導く。`CaptureOk.field_facts` は `CaptureOk.addEntailedFacts` でその導出を任意の捕捉の延長へ追加する。値置換では `fieldFacts_bind` が、型の付いた観測と整形式から部分的な `termBind?` の成功を導く。置換の失敗を既定の観測値へ置き換えて真とする前提を加えない。主な十言明の字面と量化は保つ。
+
+`Surface.accessorRet c cd k cs` は、欄の型が観測可能な sort を持つとき、基の結果型 `accessorBase cd k` に `accessorPred c cd k cs` の篩を付ける。述語は `fieldRelation (accessorSort cd k) cs (accessorMeasure cd k) (var 0) (field (accessorRef c cd k) (var 1))` である。`accessorMeasure` は List・Bytes・Map・Set の測度を選び、ほかの sort は `none` とする。対象、sort のない型、構成子列が空の data は基の型を返す。`accessorDef_wellTyped` は同じ関係を `accessorLink` の事実から導いて結果へ導入する。
+
+表層の `Program.dataConstructors` と `Declarations.dataConstructors` は data ごとの構成子の有限列を持つ。`accessorConstructors` は欄の基の data 型の列を選び、`lookupFun` は宣言と本体の生成へ同じ列を渡す。有限材料の `Materials.program` は、既存の `Materials.constructors` をこの欄へ供給する。`Materials.constructors_complete` は実際の宣言の全構成子が列に含まれることを示す。核の `ConDecl` は欄の基の型の列を持つ。
 
 `guarded` は、欄の等号と成功の経路条件の下で、`hideConts` した文脈・R=none・空の効果で guard を検査する。ストア Ψ と広げた局所文脈は保つ。guard の結果型を `Boolean{p}` とし、本体は `p.open (boolean true)` を加えた文脈で検査する。**guarded の後続の腕は元の Φ で検査する。** guard が偽であった事実も、パターンの除外も後続へ渡さない。
 

@@ -63,7 +63,7 @@ theorem alternatives_typed {q : CheckFormation.Input} {P : Refinement.Program} (
   exact ⟨altsTy_sound hq (by trivial) h, altsTy_support hq (by trivial) h⟩
 
 private def field : FieldRef := ⟨"Box", "Box.Make", 0, .integer⟩
-private def link : FieldLink := ⟨0, 0, [field], none⟩
+private def link : FieldLink := ⟨0, 0, [field], none, []⟩
 private def constructorAlt : Alt := ⟨.con "Box.Make" [.var], [0]⟩
 
 theorem field_path : BinderPath constructorAlt.pat 0 [field] := binderPathCheck_sound rfl

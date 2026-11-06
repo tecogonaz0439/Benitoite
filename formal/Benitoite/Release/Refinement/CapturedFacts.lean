@@ -45,6 +45,18 @@ theorem CaptureOk.addEvaluated {P B Ψ R Γ Φ cap p}
     CaptureOk P B Ψ R Γ (p :: Φ) cap :=
   hc.addEntailed hp (CaptureOk.evaluated_fact he)
 
+/-- 閉じた導出の有限列を捕捉の事実へ追加する。 -/
+theorem CaptureOk.addEntailedFacts {P B Ψ R Γ Φ cap added}
+    (hc : CaptureOk P B Ψ R Γ Φ cap) (hw : FactsWF P [] Γ added)
+    (he : ∀ p ∈ added, Entails [] (predBind (valEnv cap.env).values p)) :
+    CaptureOk P B Ψ R Γ (added ++ Φ) cap := by
+  induction added with
+  | nil => exact hc
+  | cons p ps ih =>
+    exact (ih (fun q hq => hw q (List.mem_cons_of_mem _ hq))
+      (fun q hq => he q (List.mem_cons_of_mem _ hq))).addEntailed
+        (hw p List.mem_cons_self) (he p List.mem_cons_self)
+
 /-- 局所名で書かれた導出を、捕捉した値で閉じて仮定なしで再構成する。 -/
 theorem CaptureOk.close_entails {P B Ψ R Γ Φ cap p}
     (hc : CaptureOk P B Ψ R Γ Φ cap)

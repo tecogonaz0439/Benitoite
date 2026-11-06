@@ -225,7 +225,7 @@ private theorem material_input_sound : (materials.input input).Sound := by
       · cases h; trivial
       · cases h
     · intro f fd h
-      change ((materials.program.lookupFun Def.toFunDecl accessorDecl testerDecl f).or none) = some fd at h
+      change ((materials.program.lookupFun Def.toFunDecl (@accessorDecl) testerDecl f).or none) = some fd at h
       simp only [Program.lookupFun] at h
       split at h
       · rename_i d hd

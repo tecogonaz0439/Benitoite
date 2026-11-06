@@ -1,5 +1,6 @@
 import Benitoite.Release.Refinement.BuiltinFacts
 import Benitoite.Release.Refinement.ScalarLogic
+import Benitoite.Release.Refinement.FieldAtomSound
 
 /-! # 登録済みの有限な論理補題の節 -/
 namespace Benitoite.Release.Refinement
@@ -92,6 +93,94 @@ def floatClass (w : FloatWidth) (c : FloatClass) (a b : Term) : Pred :=
       (.and (.and (.floatClass w .finite a) (.compare (floatSort w) .eq a (floatZero w false)))
         (.not (.floatClass w .positiveZero a))))
 
+/-- 関係の下で二つの原子を双方向へ移す有限の節。 -/
+def fieldTransfer (s : «Sort») (cs : List ConName) (a b : Term) (p q : Pred) : List Pred :=
+  [implies (.and (fieldRelation s cs none a b) p) q,
+   implies (.and (fieldRelation s cs none a b) q) p]
+
+/-- 比較の相手、文字の端点、構成子名は実際の項として渡す。 -/
+def fieldCandidates (s : «Sort») (cs : List ConName) (arguments : List Term) : List Pred :=
+  match arguments with
+  | [a,b,t] =>
+      (if s ∈ [«Sort».character, .decimal, .float64, .float32, .boolean, .string, .unit] then
+        comparisons.flatMap fun o =>
+          fieldTransfer s cs a b (.compare s o a t) (.compare s o b t) ++
+          fieldTransfer s cs a b (.compare s o t a) (.compare s o t b)
+       else []) ++
+      (match s,t with
+       | .data, .string c => if c ∈ cs then
+           fieldTransfer .data cs a b (.constructorIs a c) (.constructorIs b c) else []
+       | _, _ => [])
+  | [a,b,.character lo,.character hi] =>
+      if s = .string then fieldTransfer .string cs a b (.charactersIn a lo hi) (.charactersIn b lo hi)
+      else []
+  | [a,b] =>
+      (match s with | .float32 => [FloatWidth.binary32] | .float64 => [.binary64] | _ => []).flatMap fun w =>
+        classes.flatMap fun c =>
+          fieldTransfer (floatSort w) cs a b (.floatClass w c a) (.floatClass w c b)
+  | _ => []
+
+mutual
+  private def observationEq : Observation → Observation → Bool
+    | .integer a, .integer b => decide (a = b)
+    | .character a, .character b => decide (a = b)
+    | .float64 a, .float64 b => decide (a = b)
+    | .float32 a, .float32 b => decide (a = b)
+    | .decimal a s, .decimal b t => decide (a = b ∧ s = t)
+    | .boolean a, .boolean b => decide (a = b)
+    | .unitValue, .unitValue => true
+    | .string a, .string b => decide (a = b)
+    | .listValue xs, .listValue ys | .setValue xs, .setValue ys => observationSlotsEq xs ys
+    | .bytesValue xs, .bytesValue ys => decide (xs = ys)
+    | .mapValue ks vs, .mapValue ls ws => observationSlotsEq ks ls && observationSlotsEq vs ws
+    | .dataValue c xs, .dataValue d ys => decide (c = d) && observationSlotsEq xs ys
+    | .targetValue a t, .targetValue b u => decide (a = b ∧ t = u)
+    | _, _ => false
+  private def observationSlotEq : Option Observation → Option Observation → Bool
+    | none, none => true
+    | some a, some b => observationEq a b
+    | _, _ => false
+  private def observationSlotsEq : List (Option Observation) → List (Option Observation) → Bool
+    | [], [] => true
+    | a :: as, b :: bs => observationSlotEq a b && observationSlotsEq as bs
+    | _, _ => false
+end
+
+mutual
+  private theorem observationEq_spec (a b : Observation) : observationEq a b = true ↔ a = b := by
+    cases a <;> cases b <;>
+      simp [observationEq, observationSlotsEq_spec, Bool.and_eq_true]
+  private theorem observationSlotEq_spec (a b : Option Observation) : observationSlotEq a b = true ↔ a = b := by
+    cases a <;> cases b <;> simp [observationSlotEq, observationEq_spec]
+  private theorem observationSlotsEq_spec (as bs : List (Option Observation)) :
+      observationSlotsEq as bs = true ↔ as = bs := by
+    cases as <;> cases bs <;> simp [observationSlotsEq, observationSlotEq_spec, observationSlotsEq_spec, Bool.and_eq_true]
+end
+
+/-- 閉じた両項の成功した観測を、欠けたスロットも含めて構造で照合する。 -/
+def sameClosedObservation (a b : Term) : Bool :=
+  decide (a.Closed ∧ b.Closed) &&
+    match a.observe (fun _ => none), b.observe (fun _ => none) with
+    | some x, some y => observationEq x y
+    | _, _ => false
+
+/-- 同じ成功した観測を持つ閉じた二項だけを受ける。 -/
+theorem sameClosedObservation_sound {a b : Term} (h : sameClosedObservation a b = true) :
+    a.Closed ∧ b.Closed ∧ ∃ o, a.observe (fun _ => none) = some o ∧ b.observe (fun _ => none) = some o := by
+  simp only [sameClosedObservation, Bool.and_eq_true, decide_eq_true_eq] at h
+  obtain ⟨closed, h⟩ := h
+  split at h
+  · rename_i x y hx hy
+    have he := (observationEq_spec x y).mp h
+    exact ⟨closed.1, closed.2, x, hx, he ▸ hy⟩
+  · cases h
+
+/-- 測度の部分評価が不能でも、同じ閉じた観測の全七測度を結ぶ。 -/
+def measuredCandidates (a b : Term) : List Pred :=
+  if sameClosedObservation a b then
+    measures.map fun m => .eq (.measure m a) (.measure m b)
+  else []
+
 /-- 引数は実際の項だけを持ち、規則番号を項として符号化しない。 -/
 def candidates (lemma : BuiltinLemma) (arguments : List Term) : List Pred :=
   match lemma, arguments with
@@ -124,6 +213,8 @@ def candidates (lemma : BuiltinLemma) (arguments : List Term) : List Pred :=
   | .characterCompare, [a,b] => comparisons.map (fun o => characterCompare o a b)
   | .floatCompareClass, [a,b] =>
       [FloatWidth.binary32, .binary64].flatMap (fun w => classes.map (fun c => floatClass w c a b))
+  | .fieldAtom s cs, args => fieldCandidates s cs args
+  | .measured, [a,b] => measuredCandidates a b
   | _, _ => []
 
 end BuiltinSchema

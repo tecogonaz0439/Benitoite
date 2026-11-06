@@ -1057,3 +1057,7 @@ import Benitoite.Release.Refinement.Surface.PredicateSimulationBackward
 import Benitoite.Release.Refinement.Surface.PredicateSimulationSourceCode
 import Benitoite.Release.Refinement.Surface.PredicateSimulationProgram
 import Benitoite.Release.Refinement.Surface.PredicateProgramObservations
+import Benitoite.Release.Refinement.Surface.FieldProjectionExamples
+import Benitoite.Release.Refinement.Surface.FieldCheckerExamples
+import Benitoite.Release.Refinement.FieldRelationSyntax
+import Benitoite.Release.Refinement.FieldAtomSound

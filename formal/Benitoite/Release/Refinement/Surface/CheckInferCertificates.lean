@@ -362,15 +362,19 @@ mutual
   decreasing_by all_goals (simp_wf <;> omega)
 end
 
-/-- 単一の構成子のパターンから、整数欄と List の長さに使う束縛の経路を計算する。 -/
+/-- 単一の構成子のパターンから、値・測度・構成子の判定に使う束縛の経路を計算する。 -/
 def inferFieldLinks (q : Check.Input) (alts : List Alt) (scrutineeType : Ty) : List FieldLink :=
   match alts with
   | [alt@⟨.con _ _, _⟩] =>
       (binderRoutes q alt.pat scrutineeType [] 0).flatMap fun (raw, route, type) =>
         if route.isEmpty then [] else
         match alt.slots.zipIdx.find? (fun (i, _) => decide (i = raw)), type.sort? with
-        | some (_, slot), some .integer => [⟨slot, raw, route, none⟩]
-        | some (_, slot), some .list => [⟨slot, raw, route, some .listLength⟩]
+        | some (_, slot), some s =>
+            let cs := match type.core with | .data d _ => q.formation.ctors d | _ => []
+            let m := match s with
+              | .list => some .listLength | .bytes => some .bytesLength
+              | .map => some .mapSize | .set => some .setSize | _ => none
+            if decide (FieldRelation.Valid s cs m) then [⟨slot, raw, route, m, cs⟩] else []
         | _, _ => []
   | _ => []
 

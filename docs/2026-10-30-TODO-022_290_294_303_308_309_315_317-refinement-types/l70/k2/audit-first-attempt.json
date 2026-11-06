@@ -1,0 +1,44 @@
+{
+  "command": [
+    "/usr/bin/lockf",
+    "-t",
+    "3600",
+    "<shared-lock>",
+    "lake",
+    "env",
+    "lean",
+    "-M",
+    "12288",
+    "<tmp>/audit-input.lean"
+  ],
+  "cwd": "formal",
+  "started": "2026-11-06T16:49:01.984699+00:00",
+  "finished": "2026-11-06T16:49:02.952242+00:00",
+  "seconds": 0.967487042,
+  "exit_code": 1,
+  "raw": {
+    "bytes": 1486,
+    "sha256": "6369c8b0b22c92a1b8d6f599908a2fa5fe996cbe5e042d79c16ca01f635fbfb7"
+  },
+  "inputs": 1310,
+  "fingerprint": "8ed13a492153086f3135046b225ad587702eb433fd33d5edb57857955ffadf8d",
+  "toolchain": "leanprover/lean4:v4.34.1",
+  "audit_inputs": {
+    "counterexamples.lean": {
+      "bytes": 3848,
+      "sha256": "e1a622fe5f81b0494240982a83f9b64e199df4cd7d9d9d1408a16713bdc4b5c9"
+    },
+    "axioms.lean": {
+      "bytes": 1919,
+      "sha256": "a379c207f188ca51eefd3b68a766bd77405ea51c351875f589f4cfc162b679c7"
+    },
+    "run_check.py": {
+      "bytes": 5884,
+      "sha256": "0b3650e4044208aad2a59fc49e7f564144d9d86827ae9e3a2b0fe780238389e1"
+    }
+  },
+  "generated_input": {
+    "bytes": 5779,
+    "sha256": "cb9acc7e136ac8ff867738f6ed12cc4add8580b4fa94607aaae699796981ef24"
+  }
+}

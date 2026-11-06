@@ -106,7 +106,7 @@ private theorem input_sound (r : Range) : (input r).Sound := by
       · cases h; trivial
       · cases h
     · intro f fd h
-      change (program r).lookupFun Def.toFunDecl accessorDecl testerDecl f = some fd at h
+      change (program r).lookupFun Def.toFunDecl (@accessorDecl) testerDecl f = some fd at h
       simp only [Program.lookupFun, program] at h
       split at h
       · rename_i d hd
@@ -310,7 +310,7 @@ private theorem materials_program (r : Range) : (materials r).program = program 
   simp [materials, CheckTables.Materials.program, program, CheckTables.ClassMaterial.decl,
     CheckTables.ImplMaterial.decl, CheckTables.lookup, implementation, classDeclaration,
     eq_comm]
-  exact ⟨rfl, rfl⟩
+  exact ⟨rfl, rfl, rfl⟩
 
 private theorem materials_declarations (r : Range) : (materials r).declarations = (program r).declarations :=
   (CheckTables.Materials.declarations_empty (m := materials r) rfl rfl).trans

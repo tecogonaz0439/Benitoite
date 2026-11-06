@@ -20,24 +20,24 @@ def accessorAlt (c : ConName) (cd : ConDecl) (k : Nat) : Alt :=
   ⟨accessorPattern c cd.args.length k, List.range (accessorPattern c cd.args.length k).binders⟩
 
 /-- 取り出しの関数の照合で、束縛した欄を引数の欄の観測へ結ぶ事実。 -/
-def accessorLink (c : ConName) (cd : ConDecl) (k : Nat) : FieldLink :=
-  ⟨0, 0, [accessorRef c cd k], accessorMeasure cd k⟩
+def accessorLink (c : ConName) (cd : ConDecl) (k : Nat) (cs : List ConName := []) : FieldLink :=
+  ⟨0, 0, [accessorRef c cd k], accessorMeasure cd k, cs⟩
 
 /-- 構成子の欄を取り出す関数を脱糖が生成するための条件。署名の宣言・形成と、欄のパターンの型と網羅性を持つ。
-整数の欄では、照合の経路の事実と、束縛した欄と欄の観測の等号の事実が整形式であることも求める。 -/
-def AccessorOk (D : Declarations) (c : ConName) (cd : ConDecl) (k : Nat) : Prop :=
-  Ty.HasKind D.core (TypeCtx.kinds (accessorDecl c cd k).tparams) (.dependentFn (accessorDecl c cd k).tel) .value ∧
-  Ty.Annotation D.core (accessorDecl c cd k).tparams [] (.dependentFn (accessorDecl c cd k).tel) ∧
-  SignatureScoped D.core (accessorDecl c cd k).tparams 0 (accessorDecl c cd k).tel ∧
+観測できる欄では、照合の経路の事実と欄の関係の事実の形成も求める。 -/
+def AccessorOk (D : Declarations) (c : ConName) (cd : ConDecl) (k : Nat) (cs : List ConName := accessorConstructors D.dataConstructors cd k) : Prop :=
+  Ty.HasKind D.core (TypeCtx.kinds (accessorDecl c cd k cs).tparams) (.dependentFn (accessorDecl c cd k cs).tel) .value ∧
+  Ty.Annotation D.core (accessorDecl c cd k cs).tparams [] (.dependentFn (accessorDecl c cd k cs).tel) ∧
+  SignatureScoped D.core (accessorDecl c cd k cs).tparams 0 (accessorDecl c cd k cs).tel ∧
   ∃ field, PatTy D.core (accessorPattern c cd.args.length k) (.data cd.data ((List.range cd.ntys).map Ty.tvar)) [field] ∧
     (field.shiftV 1 0).norm = (accessorBase cd k).norm ∧ Ordinary field ∧
     Exhaustive D.core (.data cd.data ((List.range cd.ntys).map Ty.tvar)) [accessorPattern c cd.args.length k] ∧
-    (accessorObserved cd k = true → k < cd.args.length ∧
-      FactsWF D.core (accessorDecl c cd k).tparams (Ctx.extend [] (.data cd.data ((List.range cd.ntys).map Ty.tvar)))
+    (accessorObserved cd k cs = true → k < cd.args.length ∧
+      FactsWF D.core (accessorDecl c cd k cs).tparams (Ctx.extend [] (.data cd.data ((List.range cd.ntys).map Ty.tvar)))
         (pathFacts (some (.var 0)) (matchedTests [accessorAlt c cd k] ++ excludedTests [accessorAlt c cd k])) ∧
-      FactsWF D.core (accessorDecl c cd k).tparams
+      FactsWF D.core (accessorDecl c cd k cs).tparams
         (bindParams (Ctx.extend [] (.data cd.data ((List.range cd.ntys).map Ty.tvar))) [field.shiftV 1 0])
-        (fieldFacts 1 (some (.var 0)) [accessorLink c cd k]))
+        (fieldFacts 1 (some (.var 0)) [accessorLink c cd k cs]))
 
 theorem sort_shiftV (k c : Nat) : (a : Ty) → (a.shiftV k c).sort? = a.sort?
   | .refined a _ => by simp only [Ty.shiftV, Ty.sort?]; exact sort_shiftV k c a
@@ -279,42 +279,43 @@ theorem telBinders_signatureTel : ∀ (ns : List String) (ps : List Ty) (r : Ty)
 
 /-- フィールドを取り出す関数の型付け。整数の欄では、照合する値を観測し、束縛した欄と欄の観測の等号の事実から結果の篩を
 導く。 -/
-theorem accessorDef_wellTyped {P : Refinement.Program} {D : Declarations} {c cd k}
-    (hR : D.Realizes P) (h : AccessorOk D c cd k) :
-    Refinement.Def.WellTyped P B (accessorDef c cd k) := by
+theorem accessorDef_wellTyped {P : Refinement.Program} {D : Declarations} {c cd k cs}
+    (hR : D.Realizes P) (h : AccessorOk D c cd k cs) :
+    Refinement.Def.WellTyped P B (accessorDef c cd k cs) := by
   obtain ⟨hk, ha, -, field, hp, hn, ho, hex, hobs⟩ := h
   have ha' := ha.sameTypes hR.types
   refine ⟨by simp [accessorDef, accessorDecl, NamesWF], hk.sameTypes hR.types, Ty.annotationR_nil.mpr ha', ?_⟩
   let dt := Ty.data cd.data ((List.range cd.ntys).map Ty.tvar)
-  let ret := (accessorDecl c cd k).ret
-  have hdt : Ty.Annotation P (accessorDecl c cd k).tparams [] dt :=
+  let ret := (accessorDecl c cd k cs).ret
+  have hdt : Ty.Annotation P (accessorDecl c cd k cs).tparams [] dt :=
     ⟨ha'.wf.1, ha'.sorted.1, ha'.declared.1⟩
-  have hret : Ty.Annotation P (accessorDecl c cd k).tparams (Ctx.extend [] dt) ret :=
+  have hret : Ty.Annotation P (accessorDecl c cd k cs).tparams (Ctx.extend [] dt) ret :=
     ⟨ha'.wf.2.1, ha'.sorted.2.1, ha'.declared.2.1⟩
   apply telBodyTyR_nil.mpr
   refine .param (.done ?_)
   simp only [accessorDef, mkArm]
-  by_cases hob : accessorObserved cd k = true
+  by_cases hob : accessorObserved cd k cs = true
   · obtain ⟨hlt, hpw, hfw⟩ := hobs hob
-    have hretEq : ret = .refined (accessorBase cd k) (accessorPred c cd k) := by
+    have hretEq : ret = .refined (accessorBase cd k) (accessorPred c cd k cs) := by
       simp [ret, accessorDecl, accessorRet, hob]
     have hA1 := hret.under [field.shiftV 1 0]
     rw [hretEq, shiftV_refined] at hA1
     simp only [bindParams_single, List.length_cons, List.length_nil, Nat.zero_add] at hA1
-    have hB : Ty.Annotation P (accessorDecl c cd k).tparams ((Ctx.extend [] dt).extend (field.shiftV 1 0))
+    have hB : Ty.Annotation P (accessorDecl c cd k cs).tparams ((Ctx.extend [] dt).extend (field.shiftV 1 0))
         ((accessorBase cd k).shiftV 1 0) := ⟨hA1.wf.1, hA1.sorted.1, hA1.declared.1⟩
     have hsort : ((accessorBase cd k).shiftV 1 0).HasSort (accessorSort cd k) := by
       unfold Ty.HasSort
       rw [sort_shiftV]
-      simp only [accessorObserved, Bool.or_eq_true, beq_iff_eq] at hob
-      rcases hob with h | h <;> simp [accessorSort, h]
+      cases hs : (accessorBase cd k).sort? with
+      | none => simp [accessorObserved, hs] at hob
+      | some s => simp [accessorSort, hs]
     refine .C_Match (obs := some (.var 0)) (.V_Var (a := dt.shiftV 1 0) (by simp [Ctx.extend]; rfl)
       (by intro b t e; simp [Ty.core, Ty.shiftV, dt])) (fun t ht => ?_) ?_
       (by simpa [bindParams_single] using (hdt.under [dt]).declared) ((hex.sameTypes hR.types).shiftV 1 0)
     · cases ht
       exact ⟨rfl, .data, by simp [Term.HasSort, Term.References, Term.Shape, Ctx.extend, Ty.HasSort, Ty.sort?,
         Ty.shiftV, Term.VarsIn, Ctx.Readable]⟩
-    · refine HasTypeArmsQ.plain (links := [accessorLink c cd k])
+    · refine HasTypeArmsQ.plain (links := [accessorLink c cd k cs])
         (AltsTy.single ((hp.sameTypes hR.types).shift_values 1 0))
         (fun l hl => ?_) ?_ (hpw.sameTypes hR.types) ?_ (.nil hret)
       · simp only [List.mem_singleton] at hl
@@ -322,19 +323,24 @@ theorem accessorDef_wellTyped {P : Refinement.Program} {D : Declarations} {c cd 
         have hb1 : (accessorPattern c cd.args.length k).binders = 1 := by
           simpa using (MatchFacts.PatTy.binders_length hp).symm
         refine ⟨_, rfl, ⟨c, _, rfl⟩, by simp [accessorLink], by simp [accessorLink, hb1], ?_,
-          by simp [accessorLink], by simp only [accessorLink, accessorMeasure]; split <;> simp⟩
-        simpa [accessorLink] using accessor_binderPath c cd k hlt
+          by simp [accessorLink], ?_⟩
+        · simpa [accessorLink] using accessor_binderPath c cd k hlt
+        · simp only [accessorLink, FieldLink.sort, List.getLast?_cons, List.getLast?_nil,
+            Option.map_some, Option.getD_some, accessorRef]
+          unfold accessorMeasure
+          cases hs : (accessorBase cd k).sort? with
+          | none => simp [accessorObserved, hs] at hob
+          | some s =>
+            cases s <;> simp_all [accessorSort, FieldRelation.Valid, accessorObserved, Measure.input]
       · simpa using (hfw.sameTypes hR.types)
       · have hent : Entails (((Ctx.extend [] dt).extend (field.shiftV 1 0)).facts ++
-            (fieldFacts 1 (some (.var 0)) [accessorLink c cd k] ++
+            (fieldFacts 1 (some (.var 0)) [accessorLink c cd k cs] ++
               List.map Pred.lift (pathFacts (some (.var 0)) (matchedTests [accessorAlt c cd k]))))
-            ((liftRef 1 (accessorPred c cd k)).open (.var 0)) := by
+            ((liftRef 1 (accessorPred c cd k cs)).open (.var 0)) := by
           refine .hyp (List.mem_append_right _ (List.mem_append_left _ ?_))
-          unfold accessorPred
-          cases hm : accessorMeasure cd k <;>
-            simp [fieldFacts, FieldLink.predicate, accessorLink, viewTerm, accessorView, routeTerm, termBind, termBind?,
-              liftRef, Pred.open, predBind, hm]
-        have hretEq' : (accessorDecl c cd k).ret = .refined (accessorBase cd k) (accessorPred c cd k) := hretEq
+          simp [fieldFacts, FieldLink.predicate, FieldLink.sort, accessorLink, accessorPred,
+            accessorRef, routeTerm, liftRef, Pred.open, fieldRelation_bind, termBind, termBind?]
+        have hretEq' : (accessorDecl c cd k cs).ret = .refined (accessorBase cd k) (accessorPred c cd k cs) := hretEq
         simp only [hretEq', shiftV_refined, Option.map_some,
           List.map_nil, List.append_nil]
         refine .C_Eff (.C_Return ?_) (Eff.covers_empty _ _ _)
@@ -352,7 +358,7 @@ theorem accessorDef_wellTyped {P : Refinement.Program} {D : Declarations} {c cd 
     simp only [List.map_cons, List.map_nil, List.length_cons, List.length_nil, Nat.zero_add, bindParams_single]
     have hA1 := hret.under [field.shiftV 1 0]
     simp only [bindParams_single, List.length_cons, List.length_nil, Nat.zero_add] at hA1
-    have hretEq' : (accessorDecl c cd k).ret = accessorBase cd k := hretEq
+    have hretEq' : (accessorDecl c cd k cs).ret = accessorBase cd k := hretEq
     rw [hretEq] at hA1
     try rw [hretEq']
     exact .C_Eff (.C_Return (.V_Sub (.V_Var (a := (field.shiftV 1 0).shiftV 1 0) (by simp [Ctx.extend])
@@ -362,7 +368,7 @@ theorem accessorDef_wellTyped {P : Refinement.Program} {D : Declarations} {c cd 
 theorem lookupFun_desugar {op : OpPrim} {p : Program} {f d}
     (h : (desugarProgram op p).defs f = some d) :
     (∃ sd, p.defs f = some sd ∧ d = desugarDef op sd) ∨
-      (p.defs f = none ∧ ∃ c k cd, p.accessors f = some (c, k) ∧ p.cons c = some cd ∧ d = accessorDef c cd k) ∨
+      (p.defs f = none ∧ ∃ c k cd, p.accessors f = some (c, k) ∧ p.cons c = some cd ∧ d = accessorDef c cd k (accessorConstructors p.dataConstructors cd k)) ∨
       (p.defs f = none ∧ p.accessors f = none ∧ ∃ c cd, p.testers f = some c ∧ p.cons c = some cd ∧
         d = testerDef c cd) := by
   simp only [desugarProgram, Program.lookupFun] at h

@@ -45,7 +45,7 @@ private def fieldLinkValid (alts : List Alt) (n : Nat) (link : FieldLink) : Bool
   | [⟨.con c ps, slots⟩] =>
       decide (link.slot < n) && (decide (slots[link.slot]? = some link.raw) &&
         (binderPathCheck link.route (.con c ps) link.raw &&
-          (decide (link.route ≠ []) && decide (link.measure = none ∨ link.measure = some .listLength))))
+          (decide (link.route ≠ []) && decide (FieldRelation.Valid link.sort link.constructors link.measure))))
   | _ => false
 
 private theorem fieldLinkValid_spec (alts : List Alt) (n : Nat) (link : FieldLink) :
