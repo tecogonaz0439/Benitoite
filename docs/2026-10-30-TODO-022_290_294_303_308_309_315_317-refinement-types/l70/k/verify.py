@@ -1,87 +1,115 @@
-"""停止時の記録、全環境監査と本番の非変更を再照合する。gitは呼ばない。"""
+"""再開5の固定基準・import・保護範囲・全環境監査と記録を照合する。"""
 import argparse
 import collections
+import hashlib
 import json
 from pathlib import Path
 import re
 import time
-from run_checks import HERE, ROOT, digest, snapshot
-from inventory import inventory
+from evidence import HERE,ROOT,HEAD,BASE,digest,fingerprint,git,import_closure,audit,snapshot
+from signatures import revision_rows,render,category
 
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--tmp", type=Path, required=True)
-    args = parser.parse_args()
-    tick = time.monotonic()
-    checks = json.loads((HERE / "checks.json").read_text())
-    source = args.tmp / "sources-before.json"
-    assert checks["source_snapshot"] == digest(source)
-    before = json.loads(source.read_text())
-    assert before == snapshot(), "検査開始時から本番か写しが変わった"
-    assert json.loads((HERE / "readers.json").read_text()) == inventory()
-    added = set(snapshot()) - set(before)
-    new_modules = sorted(p[7:-5].replace("/", ".") for p in added if p.endswith(".lean"))
-    assert new_modules == checks["production_modules_added"] == []
-    # 本番を足した場合に、既定importから漏れているモジュールを受け入れない。
-    imports = (ROOT / "formal/Benitoite.lean").read_text()
-    for module in new_modules:
-        assert re.search(r"^import " + re.escape(module) + "$", imports, re.M)
-    local_names = []
-    for label, row in checks["checks"].items():
-        assert row["exit"] == 0, (label, row["exit"])
-        raw = args.tmp / (label + ".log")
-        assert digest(raw) == row["raw"]
-        text = raw.read_text()
-        assert not re.search(r"\berror:|sorryAx|AUDIT_(?:MISSING|AXIOM|FIXED_POINT_LIMIT|MODULE_MISSING)", text)
-        if label.endswith("trial"):
-            assert "warning:" not in text
-            assert row["input"] == digest(HERE / (label + ".lean"))
-            printed = re.findall(r"^'(.*?)' (?:does not depend on any axioms|depends on axioms: \[([^]]*)\])", text, re.M | re.S)
-            declarations = re.findall(r"^(?:def|theorem) (\S+)", (HERE / (label + ".lean")).read_text(), re.M)
-            assert sorted(n.split(".")[-1] for n, _ in printed) == sorted(declarations)
-            assert all(set(a.strip() for a in ax.split(",") if a.strip()) <=
-                       {"propext", "Quot.sound", "Classical.choice"} for _, ax in printed)
-            local_names.extend(n for n, _ in printed)
-        if label == "axioms":
-            assert row["input"] == digest(HERE / "axioms.lean")
-    reference = json.loads((HERE / "reference-check.json").read_text())
-    assert reference["exit"] == 0
-    assert reference["input"] == digest(HERE.parent / "b/effect-counterexample.lean")
-    assert reference["raw"] == digest(args.tmp / "reference-trial.log")
-    audit = (args.tmp / "axioms.log").read_text()
-    names = re.findall(r"^AUDIT_TARGET (.+)$", audit, re.M)
-    count = int(re.search(r"^AUDIT_COUNT (\d+)$", audit, re.M)[1])
-    assert len(names) == len(set(names)) == count
-    dependencies = re.findall(r"^'(.*?)' (?:does not depend on any axioms|depends on axioms: \[([^]]*)\])", audit, re.M | re.S)
-    assert collections.Counter(n for n, _ in dependencies) == collections.Counter(names)
-    allowed = {"propext", "Quot.sound", "Classical.choice"}
-    sets = collections.Counter(tuple(sorted(a.strip() for a in axioms.split(",") if a.strip())) for _, axioms in dependencies)
-    assert all(set(axioms) <= allowed for axioms in sets)
-    module_counts = re.findall(r"^AUDIT_MODULE (\S+) (\d+)$", audit, re.M)
-    assert sum(int(n) for _, n in module_counts) == count
-    target_file = args.tmp / "audit-targets.txt"
-    target_file.write_text("\n".join(names) + "\n")
-    for path in HERE.iterdir():
-        if not path.is_file():
-            continue
-        assert path.stat().st_size <= 100000, path.name
-        content = path.read_text()
-        assert str(ROOT) not in content and not re.search(r"\]\([^)]*docs/todo", content)
-    summary = {"base": checks["base"], "sources_unchanged_since_checks_started": len(before),
-               "production_modules_added": new_modules, "production_declarations_added": 0,
-               "default_import_check": "本番への追加0。追加がある場合は根のimportを照合する",
-               "audit_targets": count, "private_targets": sum(n.startswith("_private.") for n in names),
-               "audit_modules": len(module_counts), "audit_rounds": int(re.search(r"^AUDIT_ROUNDS (\d+)$", audit, re.M)[1]),
-               "target_list": digest(target_file),
-               "axiom_sets": {" + ".join(k) or "none": v for k, v in sorted(sets.items())},
-               "allowed_axioms": sorted(allowed), "unapproved_axioms": 0,
-               "trial_declarations": local_names,
-               "seconds": round(time.monotonic() - tick, 3),
-               "verification": "成功。K.1(c)の停止を解消したことは意味しない"}
-    (HERE / "audit-summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2) + "\n")
-    print(json.dumps(summary, ensure_ascii=False))
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--tmp',type=Path,required=True)
+    args=parser.parse_args()
+    tick=time.monotonic()
+    assert git('rev-parse','HEAD').decode().strip()==HEAD
+    assert git('branch','--show-current').decode().strip()=='m014/l70.k'
+    # 本番で許した差は読者のない補題の削除と、07-04の二所見だけ。
+    changed=git('diff','--name-only',HEAD,'--','formal','docs/design').decode().splitlines()
+    allowed=['docs/design/07-quality/07-04-formal-semantics.md',
+             'formal/Benitoite/Release/Refinement/RangeCode.lean']
+    assert sorted(changed)==sorted(allowed),changed
+    assert not git('ls-files','--others','--exclude-standard','--','formal').strip()
+    diff=git('diff','--binary',HEAD,'--','formal','docs/design')
+    range_path=ROOT/allowed[1]
+    old=git('show',HEAD+':'+allowed[1]).decode()
+    removed='theorem Def.instTel_of_ne_nil (d : Def) {rs : List RangeExpr} (h : rs ≠ []) :\n    d.instTel rs = Tel.instR rs d.tel := by cases rs <;> simp_all [Def.instTel]\n\n'
+    assert old.count(removed)==1 and old.replace(removed,'')==range_path.read_text()
+    def tree(revision):
+        return set(git('ls-tree','-r','--name-only',revision,'formal').decode().splitlines())
+    new=sorted(p[7:-5].replace('/','.') for p in tree(HEAD)-tree(BASE) if p.endswith('.lean'))
+    assert len(new)==7 and set(new)<=import_closure()
+    required=['Benitoite.Release.Refinement.'+s for s in [
+        'effect_soundness','effect_soundness_noLamNames','Def.WellTyped.inputs_no_ranges',
+        'HasTypeVQ.canonical_function_no_ranges','Program.extends_typing',
+        'Program.extends_declaration','Program.compose','LegacyCompCases.match_type_subst',
+        'Program.extends_typing_declared_context','EffectSoundnessExamples.environment_witness',
+        'EffectSoundnessExamples.handler_bypass_witness','EffectSoundnessExamples.unit_noLamNames_witness']]
+    checks={}
+    current_inputs=snapshot()
+    current=fingerprint(current_inputs)
+    post_build_document_edit=None
+    for label in ['build','axioms']:
+        row=json.loads((HERE/('resume5-'+label+'.json')).read_text())
+        assert row['exit']==0 and row['head']==HEAD
+        assert row['source_before']==row['source_after']
+        before=json.loads((args.tmp/(label+'-sources.json')).read_text())
+        assert fingerprint(before)==row['source_before']
+        assert set(before)==set(current_inputs)
+        altered=[name for name in before if before[name]!=current_inputs[name]]
+        if altered:
+            assert label=='build' and altered==['docs/design/07-quality/07-04-formal-semantics.md']
+            path=ROOT/altered[0]
+            text=path.read_text()
+            prior=text.replace('具体化による四名前空間の上限の保存','四名前空間の操作との可換')
+            data=prior.encode()
+            assert before[altered[0]]=={'bytes':len(data),'sha256':hashlib.sha256(data).hexdigest()}
+            post_build_document_edit={'file':altered[0],'before':before[altered[0]],'after':current_inputs[altered[0]],
+                                      'reason':'ビルド後に表の語句を、実装済みの上限の保存へ訂正。Lean入力は全件一致'}
+        assert row['raw']==digest(args.tmp/(label+'.log'))
+        checks[label]=row
+    assert 'Build completed successfully' in (args.tmp/'build.log').read_text()
+    assert checks['axioms']['input']==digest(HERE/'axioms.lean')
+    summary,names,modules=audit((args.tmp/'axioms.log').read_text(),required)
+    assert set(new)<=modules
+    assert not any(n.endswith('.Def.instTel_of_ne_nil') for n in names)
+    targets=args.tmp/'audit-targets.txt'
+    targets.write_text('\n'.join(names)+'\n')
+    summary['target_list']=digest(targets)
+    rows=revision_rows()
+    assert render(rows)==(HERE/'resume4-signatures.md').read_text()
+    raw=(json.dumps(rows,ensure_ascii=False,indent=2)+'\n').encode()
+    assert raw==(args.tmp/'signatures.json').read_bytes()
+    definitions=json.loads((HERE/'resume4-definition-inputs.json').read_text())
+    assert all(digest(ROOT/name)==ha for name,ha in definitions.items())
+    deleted=json.loads((HERE/'removed-records.json').read_text())
+    for row in deleted['files']:
+        assert not (HERE/row[0]).exists(),row[0]
+        # 削除前の内容を固定コミットから読み、台帳の大きさとハッシュを検査する。
+        data=git('show',HEAD+':'+str(HERE.relative_to(ROOT)/row[0]))
+        assert [len(data),hashlib.sha256(data).hexdigest()]==row[1:]
+    assert deleted['removed_bytes']==sum(row[1] for row in deleted['files'])
+    files=[p for p in HERE.rglob('*') if p.is_file() and '__pycache__' not in p.parts]
+    for p in files:
+        assert p.stat().st_size<=100000,p.name
+        text=p.read_text()
+        assert str(ROOT) not in text and not re.search(r'\]\([^)]*docs/todo',text),p.name
+        if p.suffix=='.md':
+            prose=re.sub(r'^```[^\n]*\n.*?^```[ \t]*$', '', text, flags=re.M|re.S)
+            for target in re.findall(r'\]\(([^)]+)\)',prose):
+                if '://' not in target and not target.startswith('#'):
+                    assert (p.parent/target.split('#')[0]).exists(),(p.name,target)
+    assert sum(p.stat().st_size for p in files)<650000
+    out={'head':HEAD,'signature_base':BASE,'protected':'Surface・旧Release・MainStatements・01-12・固定設定を含む formal と設計書の他の差分0',
+         'production_change':'RangeCode の未使用補題1件の削除のみ',
+         'new_modules':new,'default_imports':'全7モジュールが既定importから到達し、全環境監査にも存在',
+         'fingerprint':current,'post_build_document_edit':post_build_document_edit,
+         'production_and_design_diff':{'bytes':len(diff),'sha256':hashlib.sha256(diff).hexdigest()},
+         'evidence_inputs':{p.name:digest(p) for p in sorted(HERE.glob('*.py'))},
+         'review_input':digest(HERE.parents[1]/'reviews/RV-L70.k.md'),
+         'checks':{k:digest(HERE/('resume5-'+k+'.json')) for k in checks},
+         'audit':summary,'signatures':{'rows':len(rows),'kinds':dict(collections.Counter(r['kind'] for r in rows)),
+             'categories':dict(collections.Counter(category(r) for r in rows)),
+             'raw':{'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest()}},
+         'removed_records':digest(HERE/'removed-records.json'),'removed_files':len(deleted['files']),
+         'removed_bytes':deleted['removed_bytes'],'record_files_before_summary':len(files),
+         'record_bytes_before_summary':sum(p.stat().st_size for p in files),
+         'seconds':round(time.monotonic()-tick,3),'verification':'成功'}
+    (HERE/'resume5-verification.json').write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n')
+    print(json.dumps(out,ensure_ascii=False))
 
 
-if __name__ == "__main__":
-    main()
+if __name__=='__main__':main()

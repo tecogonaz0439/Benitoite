@@ -2,6 +2,8 @@
 
 ## 基準と制約
 
+再開4までの各節は当時の記録である。再開5で中間の記録と旧台本を整理した。過去のコマンドと件数は当時の実行を示し、現在の再現には末尾の再開5の台本を使う。除いたファイルは [削除の台帳](removed-records.json) に列挙した。
+
 - B_WORK: `dcaa396bad7a60d4da9b99d07ad9b75c0f328b07`。
 - 指定ブランチ: `m014/l70.k`。git 操作を行わない。
 - 共通依頼文、plan の停止条件と2026-11-06の判断、群 K の材料を読むことから開始した。`private/AGENTS.md` はこの作業木には無い。
@@ -273,7 +275,7 @@ A案（`Val.prim` と新しい `Val.fnRef` の範囲引数を開いた `RangeIx`
 
 これは `handledSelected` の判断の再確認ではない。承認された範囲の中の `Def.instTel` や正規化の補題の調整でも止めていない。依頼が別に例外として挙げた「前段で固定した署名の変更」に当たるため、K.2 の先へ進まず、候補を保存した。読者の追随でこの署名も候補として書き換えた後に固定対象と判明したので、その変更を本番へ残さず、今回の開始時の全本番ソースへ戻した。git の操作は行っていない。
 
-[差分の目録](resume2-candidate.json)と `resume2-candidate/` の81個の差分に途中の実装を保存した。各差分は100 KB未満、合計241,118 bytesである。これは未完・未採用の候補であり、既定importへ組み込んだ完成モジュールではない。前回からの未コミット変更は開始時のハッシュと同じ状態に保った。
+整理前は81個の差分に途中の実装を保存した。再開5では差分の束と目録を除き、[削除の台帳](removed-records.json)に大きさとハッシュを残した。各差分は100 KB未満、合計241,118 bytesである。これは未完・未採用の候補であり、既定importへ組み込んだ完成モジュールではない。前回からの未コミット変更は開始時のハッシュと同じ状態に保った。
 
 型付きの必要な形は [canonical-resume-trial.lean](canonical-resume-trial.lean) で確かめる。範囲の試行を独立した名前空間へ写し、任意の適格な path 範囲で型付く `File.readTextIn` の利用者の関数参照と `fnCore` の前提に、旧結論の否定を組み合わせる。旧結論の否定は全ての関数名・型引数列・行引数列・非空の範囲列について構成子の分離だけで示す。Top の正常な具体化も証人に置く。これは14判断の新しい核全体をビルドした証拠ではなく、承認された形を受け入れるなら旧結論を保持できないことの局所の証拠である。
 
@@ -290,7 +292,7 @@ A案（`Val.prim` と新しい `Val.fnRef` の範囲引数を開いた `RangeIx`
 - `RangeIx.WF` は固定範囲自身の整形式性を検査しない。したがって、ソースでは固定範囲の `WF ∧ Canonical` を、閉性では固定範囲の `WF` を別に保った。
 - 範囲の写像による宣言・ソート・種類の保存の既存の補題は、import の循環を避けるため `RangeFormation` から `RangeTypeProperties` へ移す候補にした。補題の名前と内容は保った。
 
-編集した候補は既存76モジュールと新規5モジュールの計81である。本番へ採用した新規宣言・規則の変更・追随済み読者は、いずれも0である。候補の全読者の追随が完了したと数えない。[局所記録の要約](resume2-local-summary.json)には依存の再出力174回（終了0が173、終了1が1）を示すが、これは各時点の入力での局所検査であり、最新版の候補全体の成功ではない。
+編集した候補は既存76モジュールと新規5モジュールの計81である。本番へ採用した新規宣言・規則の変更・追随済み読者は、いずれも0である。候補の全読者の追随が完了したと数えない。[局所記録の要約（整理前の記録）](removed-records.json)には依存の再出力174回（終了0が173、終了1が1）を示すが、これは各時点の入力での局所検査であり、最新版の候補全体の成功ではない。
 
 候補には、`ReferencePreservation` の空の範囲列の推論の明示と、`RangeSourceProperties` の相互定理の構造再帰の判定の修正が残る。後者は停止時の初回の検査で判明した。定義の例と、path・host・endpoint の全種類の利用者の関数の証拠も保存したが、正規化付きの最新版の例のモジュールは未検査である。旧成果物と新しい構文が混在した際の `closeVal.eq_def` の重複は、一部の依存を再出力して解消した後、本番の復元に伴ってその再出力分も無効化した。
 
@@ -395,13 +397,13 @@ F03 の固定された `HasTypeVQ.canonical_function` の関数参照の枝を�
 
 ### K.2 の保存候補
 
-[差分の目録](resume3-candidate.json)と `resume3-candidate/` に92ファイルの差を保存した（各100 KB未満、差分の合計300,566 bytes）。内訳は既存のRefinementの84モジュール、新規5モジュール、根のimport、設計書の写し2ファイルである。新規5モジュールは `RangeCode`・`RangeTypeProperties`・`RangeTyping`・`RangeSourceProperties`・`RangeFunctionExamples` であり、候補では全て既定importから到達する。候補の定義・規則の完全な形は [定義の候補](resume3-definition-candidates.md)に置く。
+[差分の目録（整理前の記録）](removed-records.json)と `resume3-candidate/` に92ファイルの差を保存した（各100 KB未満、差分の合計300,566 bytes）。内訳は既存のRefinementの84モジュール、新規5モジュール、根のimport、設計書の写し2ファイルである。新規5モジュールは `RangeCode`・`RangeTypeProperties`・`RangeTyping`・`RangeSourceProperties`・`RangeFunctionExamples` であり、候補では全て既定importから到達する。候補の定義・規則の完全な形は [定義の候補](resume3-definition-candidates.md)に置く。
 
 保存候補では、再開2の既知の二箇所を修正し、承認された正準形の枝を接続した。値の範囲置換・14判断の具体化の入口、型のDeclared・Sorted・kindの保存、ソースの有効範囲の保存、範囲付きの本体の型付けと関数適用の保存の依存先を追随させた。位置引数でDefを作る既存の関数へは範囲の空列を加え、空列の推論ができなくなった呼出しには明示の指定を加えた。TypeSubstCallSitesでは値の逆転とソースの範囲具体化を直接importし、本体を具体化した後で型と行を代入する。
 
 候補の `RangeFunctionExamples.reader_wellTyped`・`reader_body`・`reader_open_reference`・`reader_root_call` は、path の実際の読み出しを持つ定義・全適格具体化・開いた参照・通常のパスを渡す呼出しを示す。`target_wellTyped`・`target_body`・`target_reference`・`target_call_top` はpath・host・endpointの全種類を量化する。`target_host_reference` は非Topのhost範囲も扱う。これらは局所の型検査を通ったが、全プログラムの主定理の接続の完了ではない。
 
-全読者を検査する既定ビルドを修正に応じて進めたところ、最後は `LeafInputs` と `FirstFailure` の二モジュールで失敗した。`LeafInputs` の固定署名の問題を上で確定したため、以降の追随は行っていない。FirstFailureには実行関数の範囲引数の読み出しへの追随が残る。13回の候補ビルドの出力は [大きさとSHA-256](resume3-candidate-builds.json)だけを保存し、生出力を改造へ置かない。
+全読者を検査する既定ビルドを修正に応じて進めたところ、最後は `LeafInputs` と `FirstFailure` の二モジュールで失敗した。`LeafInputs` の固定署名の問題を上で確定したため、以降の追随は行っていない。FirstFailureには実行関数の範囲引数の読み出しへの追随が残る。13回の候補ビルドの出力は [大きさとSHA-256（整理前の記録）](removed-records.json)だけを保存し、生出力を改造へ置かない。
 
 ### 前段の署名の差の追加行
 
@@ -452,7 +454,7 @@ F03 の固定された `HasTypeVQ.canonical_function` の関数参照の枝を�
 
 `run_resume3_checks.py --tmp <tmp> --lock <lock>` で、指定の錠の下、formalから固定Leanの既定ビルドと全環境の公理監査を各一度実行した。`replay_resume3.py --tmp <tmp> --lock <lock>` は、別の一時領域だけに保存候補を再構成した。初回の再構成は一時のライブラリに未変更の依存を置く処理が足りず、Syntaxのimportで失敗した。未変更の成果物を読み取り用のリンクで供給し、再出力するモジュールのリンクを先に外す形へ直して、別の一時領域で再実行した。これは台本の設定の修正であり、反例の変更ではない。
 
-[既定ビルドと監査の記録](resume3-checks.json)、[候補の再構成の記録](resume3-replay-checks.json)、[最終照合の要約](resume3-audit-summary.json)に入力・出力の大きさとSHA-256・終了・時間を保存した。候補ビルドの最後の失敗と、停止後に開始状態へ復元した本番の成功を区別する。scripts/check.shは指定どおり実行していない。
+[既定ビルドと監査の記録](resume3-checks.json)、[候補の再構成の記録（整理前の記録）](removed-records.json)、[最終照合の要約](resume3-audit-summary.json)に入力・出力の大きさとSHA-256・終了・時間を保存した。候補ビルドの最後の失敗と、停止後に開始状態へ復元した本番の成功を区別する。scripts/check.shは指定どおり実行していない。
 
 | 検査 | 中身と結果 | 外側の時間 |
 |---|---|---:|
@@ -610,7 +612,7 @@ K.2の空の範囲引数での正準形の系は、組込みの枝の存在量�
 
 ### 完全な定義と署名の写し
 
-[核の全定義・規則と二つの主証明](resume4-definitions.md) は本番から台本で抜き出した。[前段の完全署名の差と系](resume4-signatures.md) は開始時の入力と本番の入力から作る。`definitions_resume4.py` が同じ入力から再生成し、`resume4-definition-inputs.json` が出どころのハッシュを持つ。全ファイルの差は `resume4-candidate.json` と小さなpatchに保存し、`export_resume4.py` とverifyで開始時の入力から再構成を照合する。本番の候補は作業木に残す。
+[核の全定義・規則と二つの主証明](resume4-definitions.md) は本番から台本で抜き出した。[前段の完全署名の差と系](resume4-signatures.md) は開始時の入力と本番の入力から作る。`definitions_resume4.py` が同じ入力から再生成し、`resume4-definition-inputs.json` が出どころのハッシュを持つ。再開4では全ファイルの差をpatchから再構成して照合した。再開5では重複するpatchと旧再構成台本を除いた。全差分は固定コミット `de7fbf28` と基準 `dcaa396b` の差分を正とし、署名は `signatures.py`、現行の定義の写しは `definitions_resume4.py` で再生成する。本番の候補は作業木に残す。
 
 ### 作業末の検査（再開4）
 
@@ -622,7 +624,7 @@ K.2の空の範囲引数での正準形の系は、組込みの枝の存在量�
 
 ビルドと監査はformalから固定のLean 4.34.1で、指定の錠の下で順番に実行した。監査のLeanにも `-M 12288` を付けた。検査前後とverify時の1,115入力の指紋は全て `6bf5ff59a63d5a535b3ff2f396a3b0f10dc5264696abc027ce3778e3c91e2b5b` で一致した。主な言明を置くMainStatementsは開始時と一致し、Surface・旧Releaseを変更していない。`scripts/check.sh`・RustとLeanの全比較・独立レビュー・受け入れは本担当では実行していない。
 
-本番の候補は開始時の内容へ戻していない。開始時の1,108入力と候補1,115入力の差は117件であり、新規7モジュールが根のimportから到達する。核の既存7モジュールと追随読者100モジュールの完全な目録は `resume4-verification.json`、全差分は `resume4-candidate.json` に置く。patchは計529,104バイトであり、開始時の入力から全件を再構成して本番と一致した。1〜22件の部分の検査から全体を推定していない。
+本番の候補は開始時の内容へ戻していない。開始時の1,108入力と候補1,115入力の差は117件であり、新規7モジュールが根のimportから到達する。核の既存7モジュールと追随読者100モジュールの完全な目録は `resume4-verification.json`、全差分は固定コミット `de7fbf28` と基準 `dcaa396b` の差分を正とする。patchは計529,104バイトであり、開始時の入力から全件を再構成して本番と一致した。1〜22件の部分の検査から全体を推定していない。
 
 ### 公理の依存（再開4）
 
@@ -659,3 +661,156 @@ K.2は35分14秒、K.3は26分15秒、K.4は22分23秒、K.5は14分30秒であ�
 | 独立レビュー・設計者の核の差の見直し | 取りまとめ | 不明 |
 | 群DのSurfaceの追随、結合の検査 | 取りまとめ・群D | 不明 |
 | 作業末のworkの検査、改造全体の検査・受け入れ | 取りまとめ | 不明 |
+
+## 再開5（RV-L70.k の処置）
+
+### 基準と処置
+
+B_WORK・HEAD は `de7fbf28cdebef9f5b62a7eb8457aecdaa988faa`、ブランチは `m014/l70.k` と読み取りで確認した。署名比較の基準は `dcaa396bad7a60d4da9b99d07ad9b75c0f328b07` である。共通依頼文と RV-L70.k を読み、中1・中2・軽1・軽2・情報6を処置した。情報1〜5の実装と plan への追記は行っていない。private/AGENTS.md はこの作業木にない。
+
+| 所見 | 処置 |
+|---|---|
+| 中1 | 公開宣言を基準と HEAD の git archive から独自の台本で比較し、全160件を [種類別の副表](resume4-signatures.md) に記した。下表はレビューが名指した入口と従来の7行を、一件ずつ補った36行である |
+| 中2 | 核の十四判断の具体化の保存を定義による性質と記し、性質1への受け口と見込みを下に追加。range-kernel.md の第1・2節を初期案と区別し、第3節にも同じ受け口への参照を追加。07-04 の本文とモジュール表を修正 |
+| 軽1 | 既定ビルドに読者のない `Def.instTel_of_ne_nil` を削除。代わりの宣言は足していない。核の定義・型付け・Step の規則は変更していない |
+| 軽2 | 07-04 の MainEffects・EffectSoundnessExamples の行に、エフェクトの健全性、空の効果での拒否と発行の効果での受理、および主定理の前提を満たす証人の役割を追加 |
+| 情報6 | 重複patch・取り消した候補・中間JSON・それだけを読む旧台本を整理し、削除した全ファイルの大きさとSHA-256を保存。最終の verify は削除した記録を読まない |
+
+### 公開署名・定義の比較
+
+`python3 -B <K>/signatures.py --output <tmp>/signatures.json --render` は終了0。既存の公開宣言の頭部・構成子・欄の差が122件（theorem 87、除いたdef 1、構成子33、追加欄1）、頭部が同じdefの定義本体の差が38件、合計160件である。追加欄は `Def.rkinds`。新規7モジュールと既存モジュールへの新規公開宣言は、固定済みの署名の変更として数えていない。生の完全な比較結果は197,962バイト、SHA-256 `e71bc11c1ae1e05255f6bca495764a7cd17aa5296f2c228269b68b889ae9d2e2` であり、一時領域に置く。各宣言の元・新は固定コミットと台本から再生成できる。
+
+| 差の種類（副表） | 件数 |
+|---|---:|
+| A 範囲の列・構成子の欄 | 106 |
+| B 範囲の具体化・範囲の深さ | 12 |
+| C Ty.Declared | 3 |
+| D 処理済みの効果 | 3 |
+| E 発行の規則 | 14 |
+| F 群Cの宣言前提・独立の移送の除去 | 21 |
+| G 束縛子名だけの表記 | 1 |
+| 合計 | 160 |
+
+レビューの173行は同じ集計範囲ではない。そこには新規モジュール7、公開宣言の追加31、private の追加・変更・削除27、公開の変更・削除108がある。独自の比較では字下げされた宣言も読み、群Cの14判断の `.ofExtends` などを補った。Step・FreshStepInputs・StoreReplyInputs・Def を構成子と欄へ分けた。レビューの7件は、後続の字下げされた宣言やコメントの差をまとめて拾ったもので、その宣言自体の頭部と本体は不変だった。7件も副表末尾に名前と差の帰属先を列挙した。
+
+以下の相対名は全て `Benitoite.Release.Refinement` 内である。条件iは承認した核の導入で旧言明が偽になること、iiは全具体化・深さ・欄・宣言前提の追加、iiiは範囲なし・空引数・旧導出の系を保つことであり、三つは同時に確認する。発行の別承認と群Cの不要前提の削除は三条件と区別する。全160行の詳細は副表を正とする。
+
+| A の宣言 | 元 → 新 | 条件・範囲なしの系 |
+|---|---|---|
+| `StateTyE.primitive_contract_inputs` | 項の閉範囲列 → `List.map RangeIx.fixed` の像 | i・ii（欄）・iii。空列で元の字面。別名の系なし |
+| `IntervalConnection.H04.FirstFailureHandoff` | 項の閉範囲列 → `List.map RangeIx.fixed` の像 | i・ii（欄）・iii。空列で元の字面。別名の系なし |
+| `IntervalConnection.H04.pure_failure` | 項の閉範囲列 → `List.map RangeIx.fixed` の像 | i・ii（欄）・iii。空列で元の字面。別名の系なし |
+| `IntervalControlLeaves.typed_first_failure` | 項の閉範囲列 → `List.map RangeIx.fixed` の像 | i・ii（欄）・iii。空列で元の字面。別名の系なし |
+| `ScopedTargetInputs.io_steps` | 項の閉範囲列 → `List.map RangeIx.fixed` の像 | i・ii（欄）・iii。空列で元の字面。別名の系なし |
+| `ScopedTargetInputs.pure_steps` | 項の閉範囲列 → `List.map RangeIx.fixed` の像 | i・ii（欄）・iii。空列で元の字面。別名の系なし |
+| `ScopedTargetInputs.response_inputs` | 項の閉範囲列 → `List.map RangeIx.fixed` の像 | i・ii（欄）・iii。空列で元の字面。別名の系なし |
+| `StateTyE.selected_primitive_step` | 項の閉範囲列 → `List.map RangeIx.fixed` の像 | i・ii（欄）・iii。空列で元の字面。別名の系なし |
+| `StoreReplyInputs.E_Err` | 項の閉範囲列 → `List.map RangeIx.fixed` の像 | i・ii（欄）・iii。空列で元の字面。別名の系なし |
+| `StoreReplyInputs.E_Exit` | 項の閉範囲列 → `List.map RangeIx.fixed` の像 | i・ii（欄）・iii。空列で元の字面。別名の系なし |
+| `StoreReplyInputs.E_Force` | 項の閉範囲列 → `List.map RangeIx.fixed` の像 | i・ii（欄）・iii。空列で元の字面。別名の系なし |
+| `StoreReplyInputs.E_ForceDone` | 項の閉範囲列 → `List.map RangeIx.fixed` の像 | i・ii（欄）・iii。空列で元の字面。別名の系なし |
+| `StoreReplyInputs.E_IO` | 項の閉範囲列 → `List.map RangeIx.fixed` の像 | i・ii（欄）・iii。空列で元の字面。別名の系なし |
+| `StoreReplyInputs.E_IOErr` | 項の閉範囲列 → `List.map RangeIx.fixed` の像 | i・ii（欄）・iii。空列で元の字面。別名の系なし |
+| `StoreReplyInputs.E_Prim` | 項の閉範囲列 → `List.map RangeIx.fixed` の像 | i・ii（欄）・iii。空列で元の字面。別名の系なし |
+| `StoreReplyInputs.E_RefGet` | 項の閉範囲列 → `List.map RangeIx.fixed` の像 | i・ii（欄）・iii。空列で元の字面。別名の系なし |
+| `StoreReplyInputs.E_RefNew` | 項の閉範囲列 → `List.map RangeIx.fixed` の像 | i・ii（欄）・iii。空列で元の字面。別名の系なし |
+| `StoreReplyInputs.E_RefSet` | 項の閉範囲列 → `List.map RangeIx.fixed` の像 | i・ii（欄）・iii。空列で元の字面。別名の系なし |
+| `StoreReplyInputs.E_RefUpdate` | 項の閉範囲列 → `List.map RangeIx.fixed` の像 | i・ii（欄）・iii。空列で元の字面。別名の系なし |
+| `HasTypeVQ.inv_prim` | 項の閉範囲列 → `List.map RangeIx.fixed` の像 | i・ii（欄）・iii。空列で元の字面。別名の系なし |
+
+| B の宣言 | 元 → 新 | 条件・範囲なしの系 |
+|---|---|---|
+| `HasTypeVQ.canonical_function` | `∃ f ts es` → 閉範囲列 `rs` とその fixed の像も存在量化 | i・ii・iii。`Benitoite.Release.Refinement.HasTypeVQ.canonical_function_no_ranges` |
+| `Def.WellTyped.inputs` | 元のtel/bodyの入力 → 全適格rsで instTel/instR 後の入力 | i・ii・iii。`Benitoite.Release.Refinement.Def.WellTyped.inputs_no_ranges` |
+| `S02Internal.case_V_Fun` | 範囲なし参照とd.tel → rs・RangeAdmissible・固定像・d.instTel rs | i・ii・iii。rkinds=[] と rs=[] で元の形。別名の系なし |
+
+| C の宣言 | 元 → 新 | 条件・範囲なしの系 |
+|---|---|---|
+| `HasTypeCQ.match_legacy` | 値・腕・網羅性 → 同じ前提に `Ty.Declared P C Γ a` | i・ii・iii。`Benitoite.Release.Refinement.LegacyCompCases.match_case` |
+| `S02Internal.case_C_Match` | 値・腕・網羅性 → 同じ前提に `Ty.Declared P C Γ a` | i・ii・iii。`Benitoite.Release.Refinement.LegacyCompCases.match_type_subst` |
+
+| D の宣言 | 元 → 新 | 条件・範囲なしの系 |
+|---|---|---|
+| `LegacyCompCases.handle_case` | 旧の節の入力なし → `LegacyClausesInput` を前提に追加 | i・ii・iii。`Benitoite.Release.Refinement.LegacyRule.embed_comp`（公開頭部不変） |
+| `legacy_handled_sub` | 旧の節の入力なし → `LegacyClausesInput` を前提に追加 | i・ii・iii。`Benitoite.Release.Refinement.embedHasTypeCQ`（公開頭部不変） |
+
+| E の宣言 | 元 → 新 | 条件・範囲なしの系 |
+|---|---|---|
+| `Builtins.CoreAssumptions.pathBases_not_handled` | handles=false の前提付き → 宣言を削除し、前提不要の定理へ | i（発行の別承認）。`Benitoite.Release.Refinement.Builtins.CoreAssumptions.pathBases_never_handled` |
+| `StateTyE.operation_primitive` | 閉範囲列と pathBases を含む種類の選言 → 固定像と pathBases を除く選言 | i（発行）・ii（欄）。iiiは空列への部分だけ。pathBases枝は承認済みS13で戻さない |
+| `ScopedTargetInputs.handled_step` | 閉範囲列と pathBases を含む種類の選言 → 固定像と pathBases を除く選言 | i（発行）・ii（欄）。iiiは空列への部分だけ。pathBases枝は承認済みS13で戻さない |
+| `ScopedTargetInputs.path_bases_apply` | `NoHandler` の前提付き → 前提を削除 | i（発行の別承認）。同名の入口へ旧前提を捨てて適用。範囲に依存しない |
+| `step_prim_handler_selected` | 閉範囲列と pathBases を含む種類の選言 → 固定像と pathBases を除く選言 | i（発行）・ii（欄）。iiiは空列への部分だけ。pathBases枝は承認済みS13で戻さない |
+| `StoreReplyInputs.E_PathBasesApply` | `NoHandler` の前提付き → 前提を削除 | i（発行の別承認）。同名の入口へ旧前提を捨てて適用。範囲に依存しない |
+
+| F の宣言 | 元 → 新 | 条件・範囲なしの系 |
+|---|---|---|
+| `Program.ExtendsTypingStatement` | 文脈の Declared 前提付き → その前提を削除 | 不要前提の削除。`Benitoite.Release.Refinement.Program.extends_typing_declared_context` |
+| `Def.WellTyped.ofExtends` | `hex : Program.ExhaustiveTransport P P′` → `hwf : P.WellFormed` | i・ii（宣言前提）・iii（公開入口の既存hwf）。単独の旧hexだけの系なし |
+| `ImplDecl.WellTyped.ofExtends` | `hex : Program.ExhaustiveTransport P P′` → `hwf : P.WellFormed` | i・ii（宣言前提）・iii（公開入口の既存hwf）。単独の旧hexだけの系なし |
+
+
+### 性質1への受け口と見込み（中2）
+
+`HasTypeVQR` など十四判断は、`RangesFit rs ks` を満たす全ての閉範囲列について通常の判断を要求する。`instR` はこの全称量化の適用であり、開いた核の導出に対する相互帰納を実装したものではない。`TelBodyTyR` の空文脈の枝は通常の本体の判断をそのまま要求し、非空の枝は全具体化を要求する。`TelBodyTyR.instR` の空文脈の証明は `RangesFit rs []` から rs=[] を得るだけである。K.2の「保存」をこの実質と区別して読む。
+
+実質の証明は、群Dの続きの性質1（L70.26〜.28、範囲パラメータを持つ利用者の関数の表層の規則）である。受け口は、表層で種類列ksの下の開いた本体bodyを一度検査した導出と、その注釈・宣言の整形式性から、任意の `rs` と `RangesFit rs ks` について次を得る言明である。`desugar body` は群Dの脱糖が返す新しい核のCompを表す略記であり、新しい実装済みの関数名ではない。
+
+```text
+表層の本体の検査の導出（P, B, ks, Ψ, Q, C, Γ, Φ, t, body）
+  → ∀ rs, RangesFit rs ks →
+      TelBodyTy P B Ψ Q C (rangeCtx rs Γ) Φ
+        (rangeTel rs t) ((desugar body).instR rs)
+```
+
+関数の宣言では Ψ=StoreTy.empty、Q=QTel t、Γ=[]、Φ=[] とし、ks=d.rkinds、t=d.tel、desugar body=d.body へ接続する。これを全rsについてまとめて `TelBodyTyR` を得て、表層の注釈から `Ty.AnnotationR` を供給し、既存の `Def.WellTyped` の条件を満たす。`TelBodyTyR` を表層の規則の前提にそのまま要求するだけでは、この受け口を証明したことにならない。
+
+証明の案は、性質1を任意の適格rsで一般化して表層の導出に帰納し、脱糖と範囲の具体化の可換性を使って、各場合を通常の核の規則へ接続することである。代案は、表層での範囲置換の型付け保存を先に証明し、閉じた性質1へ渡す方法である。どちらも、値・計算・引数列・腕・節・本体の相互の場合、型・行の正規化、束縛の下の範囲深さと文脈、関数と組込みへの範囲引数を扱う。核の `h rs hr` という一行をその証明量の見込みに使わない。
+
+| 群Dへ渡す残りの作業 | 見込み | 検査・受け入れ |
+|---|---:|---|
+| 開いた関数本体・関数間の範囲引数・組込みへの転送について、上の言明と帰納の接続を具体化 | 最初の30〜60分。全規則の追加所要は不明 | 新規の信頼条件を足さず、全適格具体化へ同じ導出から型を供給できるかを局所で確認 |
+| 性質1の相互の場合と宣言への接続 | 不明。最初の接続の結果と場合数から更新 | 既定ビルド・公理監査・群Dの署名の比較を、群Dの末尾へ割り当てる。Kの検査で代用しない |
+| 独立レビュー・結合後の検査・受け入れ | 不明 | 取りまとめが群Dの残りの担当と計画へ反映する |
+
+これは群Dの既存の表層追随の見込みに、全具体化の性質1の証明を明示して再見積もりする申し送りである。本作業では全体の数値を確定する実測がなく、機械的な署名追随だけで済むとは見積もらない。plan・detail・Surfaceは変更していない。
+
+### 記録の整理（情報6）
+
+全差分はコミット `de7fbf28` と基準 `dcaa396b` の差分を正とする。取り消した候補の判断に要る定義の写し・反例・試行は残した。最終の要約と停止時点の要約を残し、途中のビルドはb12・b21・b27・b30に絞った。現在の写しを作る `definitions_resume4.py`、固定版の署名を比べる `signatures.py`、作業末の検査をする `run_final.py`・`evidence.py`・`verify.py` と監査入力 `axioms.lean` を残した。削除したpatchを再適用する台本は残していない。
+
+[削除の台帳](removed-records.json) は351ファイルの相対名・大きさ・SHA-256を持つ。束のSHA-256は、相対名順に「相対名のUTF-8、NUL、内容」を連結して計算した。verifyは各ファイルの削除前の内容を固定HEADから読み、台帳と一致することも確かめる。
+
+| 除いた記録 | 件数 | bytes | 束のSHA-256 |
+|---|---:|---:|---|
+| 旧台本 | 12 | 52,506 | `9a647cb60ba1f15619cdfce19eb7dfc5751511b8c785931abf358ee514e92e67` |
+| 中間のJSON | 49 | 550,594 | `fa7a029a1f311f3326390c8bbe8b1553c5267f0ca58edaf37a0c7710cc985e9a` |
+| resume2-candidate | 81 | 241,118 | `cfbc39f306d3e28afde38e1d12f164c89fc9884afd57c41d89ba81399c99398e` |
+| resume3-candidate | 92 | 300,566 | `b0fde8c46450d37985c7834c4d9eaa7662e12777a8ed2fd3cbb9c5ccb0932ebf` |
+| resume4-candidate | 117 | 529,104 | `b5c91ed92f00e668d72c0787efaa93407af90cb6ffe5d213c05db2a2fec9ec51` |
+
+計1,673,888バイトを除いた。再開前は386ファイル・2,117,955バイトであった。残した記録の最終の件数と大きさ、および作業末の検査は以下に記す。
+
+### 作業末の検査と所要（再開5）
+
+| 検査（各一回） | 結果 | 外側の時間 |
+|---|---|---:|
+| formal から固定Lean 4.34.1の既定 `lake build` | 終了0、1,360ジョブ成功。既存の警告あり | 786.901秒 |
+| 全環境の公理監査（private・生成宣言を含む） | 終了0、89,969宣言、private 23,910、1,099モジュール、固定点2巡。許可外の公理・sorryAxは0 | 47.206秒 |
+| `python3 -B <K>/verify.py --tmp <tmp>` | 終了0。全7モジュールの既定importと監査への所属、160差分の再生成、351削除の内容、保護範囲、写し・リンク・大きさを照合 | 6.551秒 |
+
+ビルドと監査は `run_final.py build` と `run_final.py audit` に `--tmp <tmp> --lock <lock>` を渡し、指定のlockfの下で順に実行した。コマンド・開始/終了・入力と出力のハッシュは [ビルド](resume5-build.json)・[監査](resume5-axioms.json)、台本と未追跡レビュー入力のハッシュ・照合結果は [最終照合](resume5-verification.json) に残した。
+
+ビルド後に07-04の表の語句を「具体化による四名前空間の上限の保存」へ訂正した。ビルド・監査の各実行中は入力が不変であり、両実行のLeanと固定設定の入力も全件一致する。最終照合はこの文書一箇所の差の前後のハッシュも確認した。RSSは未取得（計画上の非採取）。
+
+| 一時領域の生出力・一覧 | bytes | SHA-256 |
+|---|---:|---|
+| 既定ビルド | 214,456 | `d0ca83d69ab27866e9c72565e0f337f72ac1c57a66dfe6fad3f2914028048ad6` |
+| 全環境の監査 | 16,850,017 | `707fe1375074f22ddcd13d345a7dbe711b271e3a6a989b18d50db9ae69e82709` |
+| 全監査対象名の一覧 | 6,015,528 | `07f84da8f28a0c752c86d95a1aa872e31cecde2d1d8f2774efd19e52c691627d` |
+
+残した記録は **42ファイル、579,153バイト**、最大のファイルは99,849バイトである。各ファイル100KB以下、群全体約0.58MBに収めた。宣言名の生一覧と完全な署名比較の生出力は一時領域だけに置き、台本から再生成できる。
+
+最初の時刻記録14:57:09から15:25:21までの外側の所要は28分12秒である。冒頭の依頼文の読み込みはこの記録の前で、別途の時刻を取得していない。能動時間と待ちを分離していない。scripts/check.shは指示どおり実行していない。gitの状態を変える操作はしていない。
+
+取りまとめには、群Dの性質1の担当と見込み（最初の接続確認30〜60分）を計画へ反映してもらう。独立した処置の確認と結合後の検査・受け入れは未実施である。新しい仕様判断は求めない。

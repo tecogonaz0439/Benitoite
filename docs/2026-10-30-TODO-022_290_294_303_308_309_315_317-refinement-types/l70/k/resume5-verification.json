@@ -1,0 +1,128 @@
+{
+  "head": "de7fbf28cdebef9f5b62a7eb8457aecdaa988faa",
+  "signature_base": "dcaa396bad7a60d4da9b99d07ad9b75c0f328b07",
+  "protected": "Surface・旧Release・MainStatements・01-12・固定設定を含む formal と設計書の他の差分0",
+  "production_change": "RangeCode の未使用補題1件の削除のみ",
+  "new_modules": [
+    "Benitoite.Release.Refinement.EffectSoundnessExamples",
+    "Benitoite.Release.Refinement.MainEffects",
+    "Benitoite.Release.Refinement.RangeCode",
+    "Benitoite.Release.Refinement.RangeFunctionExamples",
+    "Benitoite.Release.Refinement.RangeSourceProperties",
+    "Benitoite.Release.Refinement.RangeTypeProperties",
+    "Benitoite.Release.Refinement.RangeTyping"
+  ],
+  "default_imports": "全7モジュールが既定importから到達し、全環境監査にも存在",
+  "fingerprint": {
+    "files": 1115,
+    "bytes": 167168,
+    "sha256": "11e1f1a55a7f0a8a1e9eac94a21940a1f3424adc16d66423d30acb422abeee09"
+  },
+  "post_build_document_edit": {
+    "file": "docs/design/07-quality/07-04-formal-semantics.md",
+    "before": {
+      "bytes": 639095,
+      "sha256": "e79793ab233368bc4e3d993627fb6de662a7300ab69231053bbb412c894aeb88"
+    },
+    "after": {
+      "bytes": 639110,
+      "sha256": "13f515218e30249528cb83aa872b2d627e4b67556fa6cb73b1d6253172e91b89"
+    },
+    "reason": "ビルド後に表の語句を、実装済みの上限の保存へ訂正。Lean入力は全件一致"
+  },
+  "production_and_design_diff": {
+    "bytes": 10424,
+    "sha256": "6ded5c8d6e53dede7ff6cd6764b722d2693cc169202c0bc269164be0b158070d"
+  },
+  "evidence_inputs": {
+    "definitions_resume4.py": {
+      "bytes": 3095,
+      "sha256": "934b95bb8f48a66655b1210265447154d67d4683ed3c22b83a117f2c9dd4c6fe"
+    },
+    "evidence.py": {
+      "bytes": 2799,
+      "sha256": "ec7926bfecf3096f19f87c4854cb149bb4a974f292e361e899dedd9c57a900d2"
+    },
+    "run_final.py": {
+      "bytes": 2251,
+      "sha256": "1169265452886dddef1d4a10a066c1c8c2f4af5b7fcd3e9e09bbe965e2ba67e2"
+    },
+    "signatures.py": {
+      "bytes": 16477,
+      "sha256": "0cfd935435c338230a097ff72e1452d05cb8678baa94c983bf4fa6d4734e0a0c"
+    },
+    "verify.py": {
+      "bytes": 7262,
+      "sha256": "817003a3dda10ee3a8a8bbf7aa98fdec0df05280397a6b6ed0df34ef5b8b8b7f"
+    }
+  },
+  "review_input": {
+    "bytes": 30226,
+    "sha256": "28871397ed8aec7a62d2ddd1b29be32f5d14526066e25b5911d1296947c21def"
+  },
+  "checks": {
+    "build": {
+      "bytes": 759,
+      "sha256": "2a0f4d0d3a976449d20d8ad25460f13cd6ef3fa275f2a0e2c215e65906a53603"
+    },
+    "axioms": {
+      "bytes": 1009,
+      "sha256": "642e8ab35edf5db6f4e2fa0cef24abe3d616b425ef260da6fbf6152655825db5"
+    }
+  },
+  "audit": {
+    "targets": 89969,
+    "private_targets": 23910,
+    "modules": 1099,
+    "rounds": [
+      2
+    ],
+    "axiom_sets": {
+      "none": 42624,
+      "Classical.choice": 2,
+      "Classical.choice + Quot.sound + propext": 22982,
+      "Classical.choice + propext": 2,
+      "Quot.sound": 10,
+      "Quot.sound + propext": 3963,
+      "propext": 20386
+    },
+    "unapproved_axioms": 0,
+    "target_list": {
+      "bytes": 6015528,
+      "sha256": "07f84da8f28a0c752c86d95a1aa872e31cecde2d1d8f2774efd19e52c691627d"
+    }
+  },
+  "signatures": {
+    "rows": 160,
+    "kinds": {
+      "theorem": 87,
+      "definition": 38,
+      "def": 1,
+      "constructor": 33,
+      "field": 1
+    },
+    "categories": {
+      "A": 106,
+      "E": 14,
+      "B": 12,
+      "D": 3,
+      "C": 3,
+      "F": 21,
+      "G": 1
+    },
+    "raw": {
+      "bytes": 197962,
+      "sha256": "e71bc11c1ae1e05255f6bca495764a7cd17aa5296f2c228269b68b889ae9d2e2"
+    }
+  },
+  "removed_records": {
+    "bytes": 40361,
+    "sha256": "fb76bf66b56ec64add79eddc87e79e2aa474b9a20f340ac2dd64f10ef38d10a4"
+  },
+  "removed_files": 351,
+  "removed_bytes": 1673888,
+  "record_files_before_summary": 41,
+  "record_bytes_before_summary": 572559,
+  "seconds": 6.551,
+  "verification": "成功"
+}

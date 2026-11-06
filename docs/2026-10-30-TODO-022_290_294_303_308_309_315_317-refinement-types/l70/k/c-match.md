@@ -16,7 +16,7 @@ R/Typing.lean の `HasTypeCQ.C_Match` に、照合する値の型 `a` が P で�
     HasTypeCQ P B Ψ Q C Γ Φ R (.match v arms) b ε Δ
 ```
 
-理由: 網羅性 `Exhaustive P a ps` は P で `a` に住む値の全称であり、P に構成子の無い data 型を含む `a` では空疎に成り立つ。組込みの操作の節の文脈（`HasTypeClausesQ.cons` の署名は `B.sig` から作る）はこうした型を持てるので、照合の型の宣言を規則が持たないと、構成子を足した P' へ網羅性が移らない（反例は [counterexamples.lean](counterexamples.lean) の反例2）。処理系は照合の型を宣言から解決するので、受理するプログラムは変わらない見込みである（R10b で照合する）。
+理由: 網羅性 `Exhaustive P a ps` は P で `a` に住む値の全称であり、P に構成子の無い data 型を含む `a` では空疎に成り立つ。組込みの操作の節の文脈（`HasTypeClausesQ.cons` の署名は `B.sig` から作る）はこうした型を持てるので、照合の型の宣言を規則が持たないと、構成子を足した P' へ網羅性が移らない（反例は [counterexamples.lean](../c/counterexamples.lean) の反例2）。処理系は照合の型を宣言から解決するので、受理するプログラムは変わらない見込みである（R10b で照合する）。
 
 ## 2. 群 C が置いた言明と、変更の後の形
 
