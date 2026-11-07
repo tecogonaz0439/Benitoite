@@ -117,3 +117,66 @@ R50 の義務「検査器が閉包の外の行を読まないことの接続」�
 | 情2 | (2) を R50 の申し送りの表に足した | results-claude.md「F-REG・R50 への申し送り」 | 修正案のとおり |
 | 情3 | 処置しない（固定入力の README と `resultConstructors` の説明は並行の文書の担当の受け持ちのファイルを含むので、この区間では変えない） | — | 取りまとめの依頼の対象外 |
 | 情4〜情6 | なし | — | — |
+
+## 処置の確認
+
+2026-11-07。対象は HEAD `83ee549f`、差分は `git diff 4823e272 HEAD` の Lean・交換・試験の部分である（RV-L70.g-docs の処置の文書の部分は別の担当が見る）。読んだものは、上の「処置」、[results-claude.md](../l70/g/results-claude.md) の「RV-L70.g の処置」以後、本体の作業木の `plan.md` の確認点の先頭の二項目、X/`BuiltinAgreement.lean`・`CanonicalNames.lean`・`CheckInput.lean` の差分の全体、`SurfaceCheck/Batch.lean` の準備の失敗の報告、`formal/tests/` の `test_range_sources.py`・`test_named_exchange.py`・`test_batch2_exchange.py`・`test_batch3_exchange.py`・`test_batch5_exchange.py`・`test_range_rejections.py`・`test_range_exchange.py` の差分、`range-exchange/standard-scope-declarations.json`、`check_named.py` の差分である。
+
+実行したこと: 固定入力の試験 `test_named_exchange`（13試験）・`test_extensible_exchange`（22）・`test_range_exchange`（9）・`test_batch3_exchange`（7、外側4秒）は全て OK だった。`test_range_rejections.py` は書き出しの出力の引数が要る台本で、引数なしの起動は278行の要件で止まった。処置の確かめには使っていない。`lake`・`check.sh`・`check-formal.sh`・git の書き込み操作は行っていない。
+
+### 結論
+
+**可。** 中1・中2・軽1〜軽7・情2 は閉じた。情3 の処置しないという判断も妥当である。処置で足した変更に、意味のある差を隠すものや未分類の失敗を通すものは見つからなかった。新しい軽の所見が4件あるが、どれも後段への申し送りか小さな直しで足りる。
+
+### 所見ごとの確認
+
+| 番号 | 確認 |
+|---|---|
+| 中1 | 閉じた。`DataAgrees` は、構成子の数の一致と、交換の各構成子について同じ名前の標準の構成子があり、型引数の数と引数の型（`tysEq`）が一致することを要求する。照合用の構成子の名前は一意であり（`uniqueKeys` と写しの単射）、数が同じなので、構成子の名前の集合も一致する。順序を比べないのは妥当である。篩付きの核の構成子は名前で引き（`ConDecl` は番号を持たない）、網羅性の判定も名前で行うので、順序の違いは検査器の判断に効かない。builtin の Result・Option も `standardData` に入り、`count` で構成子の欠けを断る（元の所見の (b)）。利用者の data を照らさないことも差を隠さない。利用者の data は標準の宣言に対応する意味を持たず、検査器は交換の名前でしか引かないからである。写らなかった標準ライブラリの data は、`displayCounterparts` で写らないこと自体を差にする（At が22入力になった）。残りは軽8 |
+| 中2 | 閉じた。分類の経路でも報告を読む。不一致0、`preparationFailure` と拒否の数の一致、末尾の照合の件数（拒否した入力を除く定義の注釈の和）を要求し、期待の件数と分類の理由は断った入力の分を除いて照らす（`classified_all`・`remaining_counts`）。分類の表にない拒否が一件でもあれば `None` を返して失敗にする。`preparationErrors` の各行は `group`・`input` を持つ（`Batch.lean` 226〜228行）ので、除く入力の特定も正しい。拒否した入力の名前が件数の表の鍵にない場合は `KeyError` になる。これは失敗の側に倒れる |
+| 軽1 | 閉じた。期待の核（`core`）を数える元から外しても、検査器は `inScope` の `surface` だけを読む（`prepareParts` の `.inScope surface _`）ので、閉包が期待の核に依らなくなった。`neg` は欄の名前で数える。`dataTypes` を外しても、検査器が読む網羅性の view の data の名前は表層の `coverageView` の値として数えられる。`impls` は名前が値に現れる実装だけを数える。実装のメソッドの本体は定義の `implementation` の欄に実装の名前を持つので、検査する利用者の実装は数えられる。例外は軽10 |
+| 軽2 | 処置は記録の形で、取りまとめの判断（plan.md の先頭の項目）と設計者の見直しの対象として確定している。`Prepared.unknownBuiltins` と、単独・一括の両方の報告の欄に残る。最後に一覧の外を断る形にすることが R50 の義務に入っている。所見の「黙って通る」は解消した |
+| 軽3 | 閉じた |
+| 軽4 | 閉じた。`prepare_constraints` は `canonical_eq`（`rfl`）と `admits_normKey` から証明され、補題の読者になった。言明は記録どおりで、新しい前提はない |
+| 軽5 | (1) 検査器が具体的な理由を返さないことは、取りまとめの判断として了解する。(2) 閉じた |
+| 軽6 | 閉じた（`graph.lean`・`graph_inputs.py`・`f09.json` の `graph_script`） |
+| 軽7・情2 | F-REG・R50 の申し送りの表に入った |
+| 情3 | 処置しない理由は妥当である |
+
+### 処置で足した変更の確認
+
+- `prepare_agrees` の (2) と `dataDisagreements_nil`・`dataCheck_sound`: 証明に仮定の追加はない。`prepareParts` は差の一覧が空でなければ先に断り、その後に `dataGaps = []` の証拠を取るので、報告と証拠は食い違わない。
+- `prepare_constraints`: 上の軽4のとおり。
+- `standard-scope-declarations.json`（21件）: 標準表から書き出したもので、range の固定入力はこれで準備の data の照合を通る。準備を通ったこと自体が、標準の宣言との一致の確かめになっている。固定入力は Lean の検査器を試す入力であり、処理系の書き出しの形（6構成子）は、書き出しを読む試験で At として分類したまま残る。これは取りまとめの判断のとおりである。
+- `KNOWN_DESUGAR_DIFFERENCES`: 列挙した差があるのに消えたときは失敗になり、列挙の外の差は不一致のまま残る。終了状態を0に直すのは、残りの不一致がないときだけである。残りは軽9。
+- batch3 の試験の時間の上限60秒: `run_tool` の全ての入口の上限であり、判定には効かない。今回の実行は4秒だった。
+
+### 新しい所見
+
+| 番号 | 重さ | 場所 | 問題 | 修正案 | 確度 |
+|---|---|---|---|---|---|
+| 軽8 | 軽 | X/`BuiltinAgreement.lean` の `DataAgrees`、`StandardKeyTyping.DataDecl`、R50 の申し送りの表 | 標準の宣言は名前・型引数の数・構成子と引数の型しか持たない。交換の data の、record の欄の名前（`conFields`）・`extensible`・変性は照らせない。`extensible` は網羅性の判定に効くが、照合の外にある。あわせて、`prepare_agrees` の説明の「構成子の名前の列」は、順序を比べない実装と合わない | R50 の義務の表に「data の欄の名前・`extensible`・変性と完成表の data の表との一致」を足す。説明は「構成子の名前の集合」に直す | 読めば確定 |
+| 軽9 | 軽 | `formal/tests/test_named_exchange.py` の `known_desugar` | 既知の差は（入力・定義・経路）だけで照らし、差の中身（期待が実際の型に欄の関係の篩を足した形であること）を照らさない。同じ経路に別の原因の差が出ても、既知の差として数えられる | 一致とみなす条件に、`expected` の `refined.base` が `actual` と等しく、篩が `field` の関係であることを加える | 読めば確定 |
+| 軽10 | 軽 | X/`CheckInput.lean` の `closureOf` | 利用者の実装のうち、本体を持つメソッドがなく、名前が入力の値に現れない実装（印の型クラスの実装など）は、数える元に入らない。検査器はその実装の対象の型を読む（`ImplEntry.convert`）。対象が標準ライブラリの data なら、その data は照合の対象から漏れる | 利用者の実装（`input.impls` のうち `s.impls` にないもの）は常に数える。標準ライブラリの実装の一覧（`s.impls`）だけを名前で絞る | 読めば確定。該当する入力の有無は調べていない |
+| 軽11 | 軽 | `formal/tests/test_range_rejections.py` の分類の経路（`classified_all` の後の `continue`） | 期待した拒否の入力が標準表との差で準備の段に断られると、検査器の拒否を確かめずに分類として残す。今は0件だが、0件であることを要求していない | この試験は標準表に合わせた固定入力だけを読むので、`preparationRejected` が0であることを要求する | 読めば確定 |
+
+### F-REG・R50 への申し送りの確認
+
+results-claude.md の申し送りの表は、元の所見の残りを全て持っている。
+
+- F-REG: `Http.sendIn`・At・結果型の篩・`unknownBuiltins`・軽7の内部行。
+- R50: 閉包の外の行・標準の data の支持・鍵の印の接続・`DefSupport`・`ImplSupport`・`unknownBuiltins` の振り分け。
+- R10b: 既知の差。
+
+足りないのは軽8の data の欄の名前・`extensible`・変性の1行だけである。
+
+## 処置の確認の後の処置
+
+2026-11-07、基準 `83ee549f`。結果は [results-claude.md](../l70/g/results-claude.md) の「処置の確認の後の処置」にある。
+
+| 番号 | 処置 | 場所 |
+|---|---|---|
+| 軽8 | R50 の申し送りの表に「data の欄の名前・`extensible`・変性と完成表の data の表との一致」を足した。説明の「構成子の名前の列」を「集合」に直した | X/`CheckInput.lean` の `prepare_agrees` の説明、07-04 の data の照合の文、results-claude.md |
+| 軽9 | 経路に加えて差の中身（期待の結果型が実際の結果型に欄の関係の篩を付けた形）を照らす。違えば既知の差として数えない | `formal/tests/test_named_exchange.py` の `known_shape`・`known_desugar` |
+| 軽10 | 利用者の実装を全て数え、標準ライブラリの信頼する実装だけを名前で絞る。1,455入力の準備の段の件数は変わらなかった | X/`CheckInput.lean` の `closureOf`、07-04 の `prims` の箇条 |
+| 軽11 | 拒否の独立入力で準備の段に分類された入力が0であることを要求する | `formal/tests/test_range_rejections.py` |

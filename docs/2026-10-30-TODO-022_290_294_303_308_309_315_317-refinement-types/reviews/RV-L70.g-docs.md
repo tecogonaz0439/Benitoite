@@ -173,3 +173,63 @@ die のモデル: 表の `E_TryResultDie` の前提（`Ty.Annotation`、ok と e
 
 - `formal/Benitoite/Release/Syntax.lean` 10行のコメントは、「進め方」とともに「段階 A（`Benitoite.Core`）の定義は…」と削除したモジュールを書く。この回は Lean を変えない判断なので、記録だけにした。
 - `formal/README.md` の「レビュー」の節の、記録の置き場所を段階 A・B・C・E の名前で示す一文は、過去の記録の場所を示すものとして残した。段階の名前の定義は設計書から除いたので、読み手には記録の側の名前として読める。
+
+## 処置の確認
+
+2026-11-07。対象は作業木の HEAD `83ee549f` の `git diff 4823e272 HEAD -- docs/design formal/README.md` と、`formal`・`crates` のうちコメントだけを変えた行、上の「処置」の三回分と[書き直しの記録](../l70/g/docs-rewrite.md)の追記である。取りまとめが直した `formal/Benitoite/Release/Syntax.lean` の冒頭のコメントと `formal/README.md` の「レビュー」の一文、Lean の担当が書いた 07-04「篩を含む形式化の範囲」の照合の段落も見た。方法は初回と同じである（Lean のソースの grep、見出しと参照の `git grep`、01-12 の ```text のブロックの新旧の比較、spec-coverage の自己検査と通常の実行）。Lean・`lake build`・`scripts/check.sh`・git の書き込み操作は行っていない。変えたのは本節の追記だけである。
+
+### 結論
+
+**可。** 重1・中1・中2・軽1〜7・情1・情2・情4 は閉じた。新しく残る所見は軽2件・情報1件であり、受け入れを止めない。
+
+### 所見ごとの確認
+
+| 番号 | 判定 | 確かめたこと |
+|---|---|---|
+| 重1 | 閉じた | 07-04 の表の三行（1430〜1432行）は篩付きの名前だけで書かれている。`StateTyE.local_invariant`・`LocalStateInvariant`（R `LocalInvariant.lean` 133・144行）、`HasFixedQ.desugar`（S `Property1.lean`）、`block_step`（S `CheckExprSimpleSound.lean` 142行。S `CheckSound.lean` 52行が E_Block の場合に使う）、`Block.Exits`（S `Basic.lean` 370行）は実在する。捕捉禁止とセルの保持の三性質は「持たない」と書かれ、01-12「構築器の局所宣言と捕捉」と一致する。`toLocal_kindAt`・`congrΔ`・`builders_no_capture`・`ArgTypesQ`・corpus 13 は 07-04 から消えた |
+| 中1 | 閉じた | 「道具と置き場所」の構築器・独立入力・Fail・try の段落は corpus 16・sidecar 8 に揃い、旧版の読者と `Surface.BuilderExamples` の記述は消えた。`Exchange.BuilderExamples` の段落は Lean の `#guard`（52〜57行）と一致する。838行の区間の全比較の段落も版 16/8 に改められた |
+| 中2 | 閉じた | 01-12「die のモデル」の地の文は、show と exit を頭の型付けで検査し、純粋性と exit の種類を検査しないと書く。`Process.Exit` を ε が覆うのは exit の署名の効果が `Process.Exit` の表に限る、という条件も入った。S `Rules.lean` 827〜890行と S `Check.lean` 676〜740行に合う |
+| 軽1 | 閉じた | 2822行は `HasFixedQ` になった |
+| 軽2 | 閉じた | 1155行の名前は篩付きのものになった。`HasTypeVQ.closed_noLamNames` などは R `StartLamNames.lean` に実在する |
+| 軽3 | 閉じた | 見出しは「Scope の必須の判定のプログラム全体の受理」に改められた。旧の見出しを引く箇所は、`docs/archive` と改造の過去の記録の外に残っていない。07-04 の44行と1427行は新しい名前を引く。spec-coverage は二つとも終了0 |
+| 軽4 | 閉じた | 07-04 23・25行と 01-12 4461行の置き場所と前提は、R `MainEffects.lean` 111行と R `SurfaceMain.lean` 109行に合う |
+| 軽5 | 閉じた | `Option BuilderReply` の none の二つの場合と `builderApply_value_scope` の前提と結論（`Ground` を含む）が、R `BuilderExec.lean` 58〜69行と R `BuilderValueTyping.lean` 137行に合う |
+| 軽6 | 一部残る | 62行の定義の文は言い換えられた。ただし67行の「照合の対象の中の差は断る」が残り、定義を除いた語が一度だけ使われている（下の軽8） |
+| 軽7 | 閉じた | 記録の表の `SingleFail` の右欄と綴り（`Limits`・`pres_failure`・`HasClausesQ.cons_sig_unique` など）は直った。`analyze_pending`・`renumber` の行は消えた |
+| 情1・情2・情4 | 閉じた | 672行は `CoreAssumptions` になった。`BuilderExamples`・`FormatExamples` のコメントは、今その例を扱う節を引く |
+
+### 二回目・三回目と取りまとめの直し
+
+- 01-12 の `clauseIx` の項（545行）: `HasClausesQ.cons` は `ClauseSig D.core B εb o sg` を前提に持つ（S `Rules.lean` 986〜987行）。`ClauseIxOk` は Top か `Eff.ClauseRangeIs` で（R `HandlerContracts.lean` 30〜40行）、本文の「行の変数を持たず、l の原子を持ち、範囲の位置が全て同じ閉じた範囲 S」と一致する。`ClauseSig` の三つ目の連言（署名の行の範囲 `s.tel.RowsIn`）は書かれていないが、本文は添字の許し方を述べる文なので、前提の落としとはしない。
+- 01-12 の表層のブロック式（480行）と die の `ExprSupport`（922行）: `Expr.Scoped`・`Expr.Exits`・`ExprSupport` と、性質 1 の E_Block の場合は実在する。
+- 07-04「進め方」: 五部分の表は、README の「構成」の表と、既定 import の実際の構成（旧 Release の74モジュール、旧 Surface の3モジュール）に合う。網羅性の段落の `AlternativeSelected` は R `Coverage.lean` 2119〜2123行の言明に合う。設計書の章に段階 A〜C の名前は残っていない。段階 E・E1・E2 は「証明する性質」が定義する。
+- 07-04 の表の旧 Release の行: 段の欄が「旧 Release の共有の定義（篩付きの核への埋め込みの定義域）」に揃い、表の前の説明（1381行）が二種類の行の読み方を書く。引く `stateTy_of_old`・`BuiltinOnly.iff_old` は既定 import の旧モジュールに実在する。
+- `Release/Syntax.lean` の冒頭のコメント: 引く 07-04「進め方」の表の「旧 Release の共有の定義」の行が、埋め込みの定義域と書くので対応する。コメントだけの変更である。
+- `formal/README.md` の「レビュー」の一文: 段階の名前を、過去の記録を作った当時の名前として読ませる書き方であり、設計書の定義を前提にしない。
+- Rust の試験のコメント4箇所: 引く節は 07-04「道具と置き場所」になり、コメントの行だけが変わった。
+
+### Lean の担当の照合の段落
+
+07-04 62〜71行を `Exchange/CheckInput.lean`・`BuiltinAgreement.lean`・`CanonicalNames.lean` と照らした。`surfaceWords`（95行。欄 `core`・`dataTypes` を除く）と `closureOf`（116行。`impls` を空にして数え、名前が現れる実装だけを足す。演算子は値か欄の名前で数える）は本文と一致する。`Prepared.standardData`・`unknownBuiltins`・`canonicalRawSig`・`canonicalCons`・`canonicalAtoms` の欄、`DataAgrees`（構成子の数・型引数の数・同じ名前の構成子の引数の `tysEq`。順序は比べない）と `dataCheck`、`DataListAgrees`、`CanonicalNames.displayCounterparts`・`primitiveTargets` も、本文の説明と一致する。`prepare_agrees` の結論は二つの連言（`ShapeEq` の一致と `DataListAgrees p.canonicalAtoms p.canonicalCons p.standardData`）であり、`prepare_constraints` の結論（`canonicalSig n = normKeys raw` と `admits` の同値）も本文と一致する。
+
+### 残る所見
+
+| 番号 | 重さ | 場所 | 問題 | 修正案 | 確度 |
+|---|---|---|---|---|---|
+| 軽8 | 軽 | 07-04 67行「照合の対象の中の差は断る」 | 軽6の処置で「照合の対象」の定義を言い換えたが、この句に語が残った。今は定義のない語である | 「`closureOf` の名前の中の差は断る」などに改める | 読めば確定 |
+| 軽9 | 軽 | 07-04 71行「`tysEq` の一致は、標準の宣言の構成子の引数が照合の原子の一覧で支持されるとき等号になる（`tysEq_sound`）」 | `tysEq_sound`（S `CheckArguments.lean` 240行）は、比べる両方の列の支持（`ha`・`hb`）を前提に取る。本文は標準の側の支持だけを書く | 「両方の引数の列が原子の一覧で支持されるとき」とする | 読めば確定 |
+| 情5 | 情報 | `Exchange/BuiltinAgreement.lean` 10行（この差分で書き直した行）、`Exchange/CheckInput.lean` 7行・412行、`SurfaceCheck/Main.lean` 4行、`SurfaceCheck/Validation.lean` 4行 | 交換の照合や入口を扱わなくなった 07-04「証明する性質」を、今も引く。処置の記録が「並行の担当が変更中」として残した箇所である。`BuiltinAgreement.lean` 10行は、今回の Lean の変更で書き直した行に残っている | 次の Lean の単位で、照合の三ファイルは「篩を含む形式化の範囲」、入口の二ファイルは「道具と置き場所」に改める | 読めば確定 |
+
+### 公開の記録の決まりと文書の形
+
+追加行に、docs/todo へのリンク、手元の絶対パス、`reference/`・`private/` の参照、【未決】【要検証】はない。01-12 の ```text のブロック24個は `4823e272` と一致する。新しい造語は見当たらない。
+
+## 処置の確認の後の処置
+
+2026-11-07、基準 `83ee549f`。結果は [results-claude.md](../l70/g/results-claude.md) の「処置の確認の後の処置」にある。
+
+| 番号 | 処置 | 場所 |
+|---|---|---|
+| 軽8 | 「照合の対象の中の差は断る」を「`closureOf` が作る名前の中の差は断る」にした | 07-04「証明する性質」の照合の段落 |
+| 軽9 | `tysEq_sound` の説明を、比べる両方の引数の列の支持を前提にする形にした。照合用の表の側の支持は形成の証拠にあり、標準の側の支持は示していない | 同上 |
+| 情5 | 処置なし（取りまとめの判断） | — |

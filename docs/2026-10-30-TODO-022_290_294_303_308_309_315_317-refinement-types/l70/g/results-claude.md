@@ -347,3 +347,31 @@ R50 への申し送り（追加）:
 | `cargo test -p benitoite --test desugar_export --test coverage_export` | 終了0 |
 | `python3 -B -m unittest scripts.check.test_policy` | 終了0 |
 | `spec_coverage.py --self-test`・通常の実行 | どちらも終了0 |
+
+## 処置の確認の後の処置（83ee549f から。2026-11-07 17:12〜17:40）
+
+| 所見 | 処置 |
+|---|---|
+| RV-L70.g 軽8 | 下の申し送りの表に足した。`prepare_agrees` の説明（`CheckInput.lean`）と 07-04 の data の照合の文で、構成子の名前は集合として一致すること、欄の名前・`extensible`・変性は比べないことを書いた |
+| RV-L70.g 軽9 | `known_desugar` は、経路に加えて差の中身（期待の結果型が、実際の結果型を基にして欄の関係の述語の篩を付けた形であること。`known_shape`）を照らす。中身が違えば既知の差として数えず、列挙した差が消えたものとして失敗にする |
+| RV-L70.g 軽10 | `closureOf` は、利用者の実装（標準ライブラリの信頼する実装の一覧にないもの）を全て数え、標準ライブラリの実装だけを名前で絞る。07-04 の `prims` の箇条も合わせた。1,455入力の準備の段の件数は前と同じだった（準備を通った1,399、断った55。named-programs の各入力の準備の結果も前とバイト単位で同じ） |
+| RV-L70.g 軽11 | `test_range_rejections.py` は、拒否の独立入力のうち準備の段で分類された入力が0であることを要求する |
+| RV-L70.g-docs 軽8 | 07-04 の「照合の対象の中の差は断る」を「`closureOf` が作る名前の中の差は断る」にした |
+| RV-L70.g-docs 軽9 | 07-04 の `tysEq_sound` の説明を、比べる両方の引数の列の支持を前提にする形にし、照合用の表の側の支持は形成の証拠にあり、標準の側の支持は示していないことを書いた |
+
+R50 への申し送り（追加）:
+
+| 対象 | 内容 | 担当 |
+|---|---|---|
+| data の欄の名前・拡張可能性・変性 | 標準の data の宣言（`StandardKeyTyping.DataDecl`）は名前・型引数の数・構成子と引数の型しか持たないので、交換の data の record の欄の名前（`conFields`）・`extensible`・変性は照らしていない。`extensible` は網羅性の判定に効くので、完成表の data の表との一致を示す | R50 |
+
+作業末の検査:
+
+| 検査 | 結果 |
+|---|---|
+| 既定ビルド（共有ロック下） | 終了0（2,323ジョブ、17:16:55〜17:17:02） |
+| 公理監査（16,057宣言）・照合 | `sorryAx` と新しい公理は0、照合は成功 |
+| 全ての固定入力の試験（width・named・extensible・try・batch2・batch3・batch4・range）と書き出しを読む6試験 | 全て終了0 |
+| `cargo test -p benitoite --test desugar_export --test coverage_export` | 終了0 |
+| `test_policy` | 終了0 |
+| `spec_coverage.py --self-test`・通常の実行 | どちらも終了0 |

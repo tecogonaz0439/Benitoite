@@ -109,15 +109,18 @@ def dataStep (b : BuiltinInput) (names : List String) : List String :=
   (names ++ dataNamed b (Std.HashSet.ofList reached)).eraseDups
 
 /-- 閉包を作る。参照は、入力の JSON の期待の核を除いた部分に値として現れる文字列で数える（組込み・data・構成子の
-名前と一致する文字列）。実装の宣言は、その名前が入力に現れるときに数える。演算子の表の行は、その演算子の名前が同じ部分に値か欄の名前として現れるとき、その行の組込みを
+名前と一致する文字列）。実装の宣言は、利用者の実装を全て、標準ライブラリの信頼する実装を名前が入力に現れるときに数える。演算子の表の行は、その演算子の名前が同じ部分に値か欄の名前として現れるとき、その行の組込みを
 参照する（単項の負号は欄の名前 `neg` だけに現れる）。標準ライブラリの関数は、名前が入力に現れるとき、その宣言の型を
 プログラムが使う型に含める。data の段は data の宣言の数より一つ多く繰り返す（一段ごとに宣言を一つ以上加えるか、
 変わらなくなる）。 -/
 def closureOf (input : Input) (b : BuiltinInput) (s : StdlibInput) (operators : List OperatorEntry) : Closure :=
-  -- 実装の表（`impls`）は標準ライブラリの全ての実装を並べるので、名前が入力に現れる実装の宣言だけを数える。
+  -- 実装の表（`impls`）は標準ライブラリの全ての実装を並べるので、標準ライブラリの信頼する実装は名前が入力に現れる
+  -- ものだけを数える。利用者の実装は、メソッドの本体がなく名前が現れなくても検査器が対象の型を読むので、全て数える。
   let (values0, keys) := surfaceWords (#[], #[]) (toJson { input with impls := [] })
   let named := Std.HashSet.ofArray values0
-  let values := values0 ++ (jsonStrings (toJson (input.impls.filter fun i => named.contains i.name))).toArray
+  let trusted := Std.HashSet.ofList (s.impls.map (·.signature.name))
+  let values := values0 ++ (jsonStrings (toJson (input.impls.filter fun i =>
+    !trusted.contains i.name || named.contains i.name))).toArray
   let used := Std.HashSet.ofArray values
   let words := Std.HashSet.ofArray (values ++ keys)
   let funs := s.functions.filter fun f => used.contains f.name
@@ -524,7 +527,7 @@ theorem prepare_entry {input : Input} {b : BuiltinInput} {s : StdlibInput} {oper
 /-- 準備が成功すれば、次の二つが成り立つ。(1) 名前を標準の名前へ写した表の、閉包（`closureOf`）の組込みの名前のうち
 標準表の合成済みの名前の署名は、整形式の名前の一覧で作ったどの完成表の署名とも欄が一致する（型パラメータの制約の
 命題と仮定側の名前を除く）。写した表の型パラメータの制約は鍵の印をそろえてある（`prepare_constraints`）。(2) 閉包の
-標準ライブラリの data（`Prepared.standardData`）のうち標準の宣言と同じ名前を持つものは、構成子の名前の列・型引数の数・引数の型（原子の一覧での構造比較）が
+標準ライブラリの data（`Prepared.standardData`）のうち標準の宣言と同じ名前を持つものは、構成子の名前の集合・型引数の数・引数の型（原子の一覧での構造比較）が
 標準の宣言と一致する。閉包の組込みのうち標準表の合成済みの名前でも名前の写しの仮定側の名前でもないもの
 （`Prepared.unknownBuiltins`）は照らさない。検査器の表と写した表の対応（名前の写しと鍵の印のそろえ）と、検査器が閉包の外の行を読まないことは、この定理は
 述べない。 -/

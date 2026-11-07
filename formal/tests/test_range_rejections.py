@@ -361,6 +361,9 @@ def run_rejections(exports, output):
             row['leanProvenance'] = {'bodyOperationsLimit': 0, 'lastRunExceededByDefinition': True,
                 'atomFailureByDefinition': 'budgetExceeded', 'atomFailureObserved': None}
         outcomes.append(row)
+    # 拒否の独立入力は標準表に合わせた固定入力なので、準備の段で分類される入力はない（あれば検査器の拒否を確かめていない）。
+    require(not [o['name'] for o in outcomes if 'preparationRejected' in o],
+            ('independent rejection inputs rejected at preparation', [o['name'] for o in outcomes if 'preparationRejected' in o]))
     require(sum(o['comparison'] == 'required' for o in outcomes) == 3, 'test_range_rejections.py:256: requirement failed')
     require(sum(o['comparison'] == 'typing' for o in outcomes) == 5, 'test_range_rejections.py:257: requirement failed')
     main = [o for o in outcomes if o['name'] in rust]

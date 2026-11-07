@@ -33,8 +33,27 @@ KNOWN_DESUGAR_DIFFERENCES = [
     {"input": "independent-named", "definition": "Pair.left (fn:12)", "path": "definition.header.ret",
      "reason": "篩付きの脱糖は取得関数の結果型に欄の関係の篩を付ける（Surface.accessorRet）が、交換の核（処理系の"
                "書き出しと同じ形）は付けない",
-     "obligation": "R10b: 処理系の脱糖と書き出しが取得関数の結果型に同じ篩を付けたら、この列挙から除く"},
+     "obligation": "R10b: 処理系の脱糖と書き出しが取得関数の結果型に同じ篩を付けたら、この列挙から除く",
+     # 差の中身: Lean の脱糖の結果型（expected）は、交換の核の結果型（actual）に、欄の関係の述語の篩を付けた形である。
+     "shape": "accessor field refinement"},
 ]
+
+
+def _mentions_field(predicate):
+    if isinstance(predicate, dict):
+        return "field" in predicate or any(_mentions_field(v) for v in predicate.values())
+    if isinstance(predicate, list):
+        return any(_mentions_field(v) for v in predicate)
+    return False
+
+
+def known_shape(known, mismatch):
+    """既知の差の中身の照合。取得関数の結果型の篩の差は、期待の結果型が実際の結果型に欄の関係の篩を付けた形である。"""
+    if known["shape"] == "accessor field refinement":
+        refined = mismatch.get("expected", {}).get("refined") if isinstance(mismatch.get("expected"), dict) else None
+        return (refined is not None and refined.get("base") == mismatch.get("actual")
+                and _mentions_field(refined.get("predicate")))
+    return False
 
 
 def known_desugar(result, report, data):
@@ -45,7 +64,10 @@ def known_desugar(result, report, data):
     if report is None or not present:
         return result, report
     keys = {(k["input"], k["definition"], k["path"]) for k in present}
-    found = [m for m in report["mismatches"] if (m["input"], m["definition"], m["path"]) in keys]
+    by_key = {(k["input"], k["definition"], k["path"]): k for k in present}
+    # 経路が同じでも中身が既知の差の形でなければ、未知の差として不一致に残す。
+    found = [m for m in report["mismatches"] if (m["input"], m["definition"], m["path"]) in keys
+             and known_shape(by_key[(m["input"], m["definition"], m["path"])], m)]
     if {(m["input"], m["definition"], m["path"]) for m in found} != keys:
         raise AssertionError(f"known desugar differences disappeared: {sorted(keys)}")
     report = copy.deepcopy(report)
