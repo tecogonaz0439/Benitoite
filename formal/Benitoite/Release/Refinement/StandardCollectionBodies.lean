@@ -237,7 +237,6 @@ private theorem list_function {P B Γ Φ Q} (table : StandardKeyTyping.Table P B
           ⟨["xs","p"],[.list (pairType 1),.fn ["value"] [pairType 1] (.base .boolean) (Eff.row 0)],.list (pairType 1),Eff.row 0,by simp [NamesWF]⟩
   · cases map <;> cases filter <;> constructor <;> higher_simp
 
-set_option maxHeartbeats 1000000 in
 theorem pair_function {P B Γ Φ Q} (table : StandardKeyTyping.Table P B)
     (filter second : Bool) (arity : P.DataArity "Pair" 2)
     (lookup : P.defs (if second then "Pair.second" else "Pair.first") = some (collectionPairProjection second)) :
@@ -284,7 +283,6 @@ private theorem lift_pure {P B Ψ Q C Γ Φ R m a Δ} (ann : Ty.Annotation P C �
 local macro "collection_var" : tactic => `(tactic|
   (refine HasTypeVQ.V_Var rfl ?_; intro b t e; higher_simp))
 
-set_option maxHeartbeats 1000000 in
 theorem map_wrapper {P B Γ Φ Q} (table : StandardKeyTyping.Table P B)
     (filter : Bool) (arity : P.DataArity "Pair" 2)
     (pairDecl : P.cons "Pair.Pair" = some ⟨"Pair",2,[.tvar 0,.tvar 1]⟩)
@@ -347,7 +345,6 @@ theorem map_wrapper {P B Γ Φ Q} (table : StandardKeyTyping.Table P B)
     · higher_simp
 
 
-set_option maxHeartbeats 1000000 in
 /-- 四本の静的な本体型付け。callback の動的な保存を前提にしない。 -/
 theorem collectionHigher_body_typed {P B} (table : StandardKeyTyping.Table P B)
     (map filter : Bool) (arity : map = true → P.DataArity "Pair" 2)

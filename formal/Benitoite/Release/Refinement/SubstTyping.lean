@@ -11,7 +11,6 @@ import Benitoite.Release.Refinement.PatternTransport
 値の像から整数観測と有限の事実を先に導き、部分型の葉へ cut する。
 -/
 namespace Benitoite.Release.Refinement
-set_option maxHeartbeats 1600000
 
 def ClosedTy (P : Program) (B : Builtins) (store : StoreTy) (v : Val) (a : Ty) : Prop :=
   ∀ Q C Γ Φ, HasTypeVQ P B store Q C Γ Φ v a

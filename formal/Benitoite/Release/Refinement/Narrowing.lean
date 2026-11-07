@@ -9,8 +9,6 @@ namespace Benitoite.Release.Refinement
 
 variable {P : Program}
 
-set_option maxRecDepth 4096
-set_option maxHeartbeats 2000000
 
 
 /-- 継続の型の位置は、通常値の部分型による置換と区別して同じ型を保つ。 -/

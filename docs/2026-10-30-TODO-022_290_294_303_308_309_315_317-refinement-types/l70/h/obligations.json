@@ -1,0 +1,2949 @@
+{
+ "counts": {
+  "handoffs": {
+   "完了（L70 の分）": 65,
+   "完了（L70 の分。読者を要しない）": 1,
+   "完了（L70 の分。記録）": 11,
+   "他段": 1
+  },
+  "obligations": {
+   "完了（L70 の分）": 49,
+   "完了（L70 の分。記録）": 8,
+   "他段": 2
+  },
+  "four_handoffs": {
+   "実質": 66,
+   "自明": 1,
+   "対象外（Lean の証拠なし）": 11
+  },
+  "four_obligations": {
+   "実質": 48,
+   "対象外（Lean の証拠なし）": 11
+  },
+  "with_reader": 91
+ },
+ "main_readers": [
+  {
+   "reader": "Release.Refinement.progress",
+   "evidence": "Release.Refinement.ProgressStatement",
+   "where": "type",
+   "path_length": 2
+  },
+  {
+   "reader": "Release.Refinement.preservation",
+   "evidence": "Release.Refinement.PreservationStatement",
+   "where": "type",
+   "path_length": 2
+  },
+  {
+   "reader": "Release.Refinement.preservation",
+   "evidence": "Release.Refinement.StateTyE.step_preserved",
+   "where": "value",
+   "path_length": 2
+  },
+  {
+   "reader": "Release.Refinement.steps_preservation",
+   "evidence": "Release.Refinement.StepsPreservationStatement",
+   "where": "type",
+   "path_length": 2
+  },
+  {
+   "reader": "Release.Refinement.step_sound",
+   "evidence": "Release.Refinement.StepSoundStatement",
+   "where": "type",
+   "path_length": 2
+  },
+  {
+   "reader": "Release.Refinement.initial_typing",
+   "evidence": "Release.Refinement.InitialTypingStatement",
+   "where": "type",
+   "path_length": 2
+  },
+  {
+   "reader": "Release.Refinement.effect_soundness",
+   "evidence": "Release.Refinement.EffectSoundnessStatement",
+   "where": "type",
+   "path_length": 2
+  },
+  {
+   "reader": "Release.Refinement.step_target_sound",
+   "evidence": "Release.Refinement.StepTargetStatement",
+   "where": "type",
+   "path_length": 2
+  },
+  {
+   "reader": "Release.Refinement.reachable_target_sound",
+   "evidence": "Release.Refinement.ReachableTargetStatement",
+   "where": "type",
+   "path_length": 2
+  },
+  {
+   "reader": "Release.Refinement.reachable_target_sound_event",
+   "evidence": "Release.Refinement.ReachableTargetEventStatement",
+   "where": "type",
+   "path_length": 2
+  },
+  {
+   "reader": "Release.Refinement.Surface.desugar_typed",
+   "evidence": "Release.Refinement.Surface.HasBlockQ.desugar",
+   "where": "value",
+   "path_length": 4
+  },
+  {
+   "reader": "Release.Refinement.Surface.surface_effect_soundness",
+   "evidence": "Release.Refinement.Surface.desugar_typed",
+   "where": "value",
+   "path_length": 2
+  },
+  {
+   "reader": "Release.Refinement.Surface.surface_effect_soundness",
+   "evidence": "Release.Refinement.effect_soundness",
+   "where": "value",
+   "path_length": 2
+  },
+  {
+   "reader": "Release.Refinement.Surface.surface_target_sound",
+   "evidence": "Release.Refinement.Surface.desugar_typed",
+   "where": "value",
+   "path_length": 2
+  },
+  {
+   "reader": "Release.Refinement.Surface.surface_target_sound",
+   "evidence": "Release.Refinement.reachable_target_sound",
+   "where": "value",
+   "path_length": 2
+  },
+  {
+   "reader": "Release.Refinement.StandardModel.included_guarantees",
+   "evidence": "Release.Refinement.StandardModel.completion_core",
+   "where": "value",
+   "path_length": 3
+  },
+  {
+   "reader": "Release.Refinement.StandardModel.included_guarantees",
+   "evidence": "Release.Refinement.progress",
+   "where": "value",
+   "path_length": 3
+  },
+  {
+   "reader": "Release.Refinement.StandardModel.included_guarantees",
+   "evidence": "Release.Refinement.reachable_target_sound",
+   "where": "value",
+   "path_length": 3
+  },
+  {
+   "reader": "Release.Refinement.Surface.surface_guarantees",
+   "evidence": "Release.Refinement.StandardModel.included_guarantees",
+   "where": "value",
+   "path_length": 2
+  },
+  {
+   "reader": "Release.Refinement.Surface.surface_guarantees",
+   "evidence": "Release.Refinement.Surface.HasBlockQ.desugar",
+   "where": "value",
+   "path_length": 5
+  },
+  {
+   "reader": "Release.Refinement.Surface.CheckAccept.checkProgramAccepted_sound",
+   "evidence": "Release.Refinement.Surface.CheckTables.checkProgram_sound",
+   "where": "value",
+   "path_length": 2
+  },
+  {
+   "reader": "Release.Refinement.Surface.checkProgramAccepted_main",
+   "evidence": "Release.Refinement.Surface.CheckAccept.checkProgramAccepted_sound",
+   "where": "value",
+   "path_length": 2
+  },
+  {
+   "reader": "Release.Refinement.Surface.CheckedMainExamples.main_guarantees",
+   "evidence": "Release.Refinement.Surface.checkProgramAccepted_main",
+   "where": "value",
+   "path_length": 2
+  },
+  {
+   "reader": "main@@SurfaceCheck.Main",
+   "evidence": "Release.Refinement.Surface.CheckAccept.checkProgramAccepted",
+   "where": "value",
+   "path_length": 4
+  },
+  {
+   "reader": "main@@SurfaceCheck.Main",
+   "evidence": "Exchange.CheckInput.prepare",
+   "where": "value",
+   "path_length": 3
+  },
+  {
+   "reader": "main",
+   "evidence": "Release.Refinement.Surface.desugarProgram",
+   "where": "value",
+   "path_length": 5
+  },
+  {
+   "reader": "main@@CoverageDiff.Main",
+   "evidence": "Release.Refinement.checkMatchWithView",
+   "where": "value",
+   "path_length": 4
+  },
+  {
+   "reader": "main@@IntervalDiff.Main",
+   "evidence": "Release.Refinement.IntervalReport.connect",
+   "where": "value",
+   "path_length": 8
+  }
+ ],
+ "handoffs": [
+  {
+   "id": "L60-H01",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 C の `StandardModel.ApplicationExamples.user_guarantees`",
+   "evidence": {
+    "Release.Refinement.initial_typing": "theorem",
+    "Release.Refinement.StandardModel.core": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.StandardModel.included_guarantees"
+   ],
+   "paths": {
+    "Release.Refinement.StandardModel.included_guarantees": {
+     "Release.Refinement.initial_typing": 3,
+     "Release.Refinement.StandardModel.core": 5
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": "利用者のプログラムへの系が開始の型付けと合成表の Core を同じ表で読む"
+  },
+  {
+   "id": "L60-H02",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分。読者を要しない）",
+   "four": "自明",
+   "witness": "外部参照の適用は前提を持たない遷移（群 B の判断(3)）",
+   "evidence": {
+    "Release.Refinement.progress": "theorem"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": "外部参照の適用は E_ExternalApply が前提を持たないので契約の入力を読まない"
+  },
+  {
+   "id": "L60-H03",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 C の `StandardModel.ApplicationExamples.user_guarantees`",
+   "evidence": {
+    "Release.Refinement.ScopeResponse.response": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.StandardModel.included_guarantees"
+   ],
+   "paths": {
+    "Release.Refinement.StandardModel.included_guarantees": {
+     "Release.Refinement.ScopeResponse.response": 7
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R30/R50",
+   "note": "標準の表の行の葉は主定理の系が読む"
+  },
+  {
+   "id": "L60-H04",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 C の `StandardModel.ApplicationExamples.user_guarantees`",
+   "evidence": {
+    "Release.Refinement.ScopedIOResponse.response": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.StandardModel.included_guarantees"
+   ],
+   "paths": {
+    "Release.Refinement.StandardModel.included_guarantees": {
+     "Release.Refinement.ScopedIOResponse.response": 7
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R30/R50",
+   "note": "実装の比較は R30/R50"
+  },
+  {
+   "id": "L60-H06",
+   "group_or_class": "C",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 C の `StandardModel.ApplicationExamples.user_guarantees`",
+   "evidence": {
+    "Release.Refinement.SignatureScoped.ofExtends": "theorem",
+    "Release.Refinement.StandardModel.RowEnv.ofAgree": "definition"
+   },
+   "readers": [
+    "Release.Refinement.StandardModel.included_guarantees"
+   ],
+   "paths": {
+    "Release.Refinement.StandardModel.included_guarantees": {
+     "Release.Refinement.SignatureScoped.ofExtends": 6,
+     "Release.Refinement.StandardModel.RowEnv.ofAgree": 5
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R10b",
+   "note": "ソース生成の実装は R10b"
+  },
+  {
+   "id": "L60-H08",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 E の `Surface.CheckedMainExamples.main_guarantees`・`Surface.MainExamples.main_guarantees`",
+   "evidence": {
+    "Release.Refinement.StartCondition.of_typed_noLamNames": "theorem",
+    "Release.Refinement.initial_typing": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.surface_guarantees"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.surface_guarantees": {
+     "Release.Refinement.StartCondition.of_typed_noLamNames": 5,
+     "Release.Refinement.initial_typing": 4
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": "開始の定理と表層の主定理が同じ開始の条件を使う"
+  },
+  {
+   "id": "L60-H11",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 B の四分類の表（MainTheorems の三つの例）と群 K の空疎でない適用例",
+   "evidence": {
+    "Release.Refinement.Builtins.CoreAssumptions.pathBases_never_handled": "theorem",
+    "Release.Refinement.Builtins.CoreAssumptions.pathBases_shape": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.effect_soundness"
+   ],
+   "paths": {
+    "Release.Refinement.effect_soundness": {
+     "Release.Refinement.Builtins.CoreAssumptions.pathBases_never_handled": 3,
+     "Release.Refinement.Builtins.CoreAssumptions.pathBases_shape": 4
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R30",
+   "note": "効果の健全性の pathBases の事象の場合（群 K）"
+  },
+  {
+   "id": "L60-H22",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 B の四分類の表（MainTheorems の三つの例）と群 K の空疎でない適用例",
+   "evidence": {
+    "Release.Refinement.progress": "theorem",
+    "Release.Refinement.preservation": "theorem",
+    "Release.Refinement.step_sound": "theorem",
+    "Release.Refinement.effect_soundness": "theorem",
+    "Release.Refinement.effect_soundness_noLamNames": "theorem",
+    "Release.Refinement.step_target_sound": "theorem",
+    "Release.Refinement.reachable_target_sound": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.StandardModel.included_guarantees"
+   ],
+   "paths": {
+    "Release.Refinement.StandardModel.included_guarantees": {
+     "Release.Refinement.progress": 3,
+     "Release.Refinement.preservation": 3,
+     "Release.Refinement.step_sound": 3,
+     "Release.Refinement.effect_soundness": 3,
+     "Release.Refinement.effect_soundness_noLamNames": 3,
+     "Release.Refinement.step_target_sound": 3,
+     "Release.Refinement.reachable_target_sound": 3
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": "五つの主定理と noLamNames"
+  },
+  {
+   "id": "L60-H25",
+   "group_or_class": "C",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 C の `StandardModel.ApplicationExamples.user_guarantees`",
+   "evidence": {
+    "Release.Refinement.StandardModel.composed_rows": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.StandardModel.included_guarantees"
+   ],
+   "paths": {
+    "Release.Refinement.StandardModel.included_guarantees": {
+     "Release.Refinement.StandardModel.composed_rows": 4
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R10b/R50",
+   "note": "比較は R10b/R50"
+  },
+  {
+   "id": "L60-H28",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 B の四分類の表（MainTheorems の三つの例）と群 K の空疎でない適用例",
+   "evidence": {
+    "Release.Refinement.StateTyE.external_response_step": "theorem",
+    "Release.Refinement.StateTyE.selected_primitive_step": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.progress"
+   ],
+   "paths": {
+    "Release.Refinement.progress": {
+     "Release.Refinement.StateTyE.external_response_step": 4,
+     "Release.Refinement.StateTyE.selected_primitive_step": 6
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": ""
+  },
+  {
+   "id": "L60-H30",
+   "group_or_class": "G",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 E の四分類の表（正常な前提の証人）",
+   "evidence": {
+    "Release.Refinement.Surface.CheckAccept.checkProgramAccepted": "definition",
+    "Exchange.CheckInput.prepare": "definition",
+    "Release.Refinement.Surface.CheckAccept.checkProgramAccepted_sound": "theorem"
+   },
+   "readers": [
+    "main@@SurfaceCheck.Main"
+   ],
+   "paths": {
+    "main@@SurfaceCheck.Main": {
+     "Release.Refinement.Surface.CheckAccept.checkProgramAccepted": 4,
+     "Exchange.CheckInput.prepare": 3
+    }
+   },
+   "unread_evidence": [
+    "Release.Refinement.Surface.CheckAccept.checkProgramAccepted_sound"
+   ],
+   "remaining": "R50（F-CONN）",
+   "note": "F-REG の実行は取りまとめ（未実施）。入口の切替は f09.json"
+  },
+  {
+   "id": "L60-S05",
+   "group_or_class": "C",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 C の `StandardModel.ApplicationExamples.user_guarantees`",
+   "evidence": {
+    "Release.Refinement.StandardModel.composed_rows": "theorem",
+    "Release.Refinement.StandardModel.composed_release": "theorem",
+    "Release.Refinement.StandardModel.table_conditions": "theorem",
+    "Release.Refinement.StandardModel.completion_core": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.StandardModel.included_guarantees"
+   ],
+   "paths": {
+    "Release.Refinement.StandardModel.included_guarantees": {
+     "Release.Refinement.StandardModel.composed_rows": 4,
+     "Release.Refinement.StandardModel.composed_release": 4,
+     "Release.Refinement.StandardModel.table_conditions": 4,
+     "Release.Refinement.StandardModel.completion_core": 3
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": ""
+  },
+  {
+   "id": "L60-S09",
+   "group_or_class": "C",
+   "verdict": "完了（L70 の分。記録）",
+   "four": "対象外（Lean の証拠なし）",
+   "witness": "",
+   "evidence": {},
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R50",
+   "note": "Rust の受理から ExternalSignature.WF への一方向として対応表に記した（c/results.md の再開3）"
+  },
+  {
+   "id": "L60-S14",
+   "group_or_class": "G",
+   "verdict": "完了（L70 の分。記録）",
+   "four": "対象外（Lean の証拠なし）",
+   "witness": "",
+   "evidence": {},
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R50",
+   "note": "入口の切替の記録（g/results.md の L70.41・f09.json）"
+  },
+  {
+   "id": "L60-受口1",
+   "group_or_class": "C",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 C の `StandardModel.ApplicationExamples.user_guarantees`",
+   "evidence": {
+    "Release.Refinement.StandardModel.Includes": "inductive"
+   },
+   "readers": [
+    "Release.Refinement.StandardModel.included_guarantees"
+   ],
+   "paths": {
+    "Release.Refinement.StandardModel.included_guarantees": {
+     "Release.Refinement.StandardModel.Includes": 2
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R50",
+   "note": "Includes の externals の欄から外部宣言の表の整形式を得る"
+  },
+  {
+   "id": "L60-受口2",
+   "group_or_class": "D",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 D の四分類の表（desugar_typed の三前提を適用例で満たす）",
+   "evidence": {
+    "Release.Refinement.ExternalCallAdmissible": "inductive",
+    "Release.Refinement.ExternalSurface.call_typed": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.ExternalCallAdmissible": 5
+    }
+   },
+   "unread_evidence": [
+    "Release.Refinement.ExternalSurface.call_typed"
+   ],
+   "remaining": "R10b/R50",
+   "note": "部分適用の .lam と .dependentLam の選択は性質1の規則。処理系との対応は R10b/R50"
+  },
+  {
+   "id": "L60-受口3",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 B の四分類の表（MainTheorems の三つの例）と群 K の空疎でない適用例",
+   "evidence": {
+    "Release.Refinement.StateTyE.external_response_step": "theorem",
+    "Release.Refinement.step_external_selected": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.progress",
+    "Release.Refinement.step_sound"
+   ],
+   "paths": {
+    "Release.Refinement.progress": {
+     "Release.Refinement.StateTyE.external_response_step": 4
+    },
+    "Release.Refinement.step_sound": {
+     "Release.Refinement.StateTyE.external_response_step": 4
+    }
+   },
+   "unread_evidence": [
+    "Release.Refinement.step_external_selected"
+   ],
+   "remaining": "なし",
+   "note": ""
+  },
+  {
+   "id": "L60-受口4",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 B の四分類の表（MainTheorems の三つの例）と群 K の空疎でない適用例",
+   "evidence": {
+    "Release.Refinement.ContTy.release_response_exists": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.progress"
+   ],
+   "paths": {
+    "Release.Refinement.progress": {
+     "Release.Refinement.ContTy.release_response_exists": 4
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": ""
+  },
+  {
+   "id": "L60-受口5",
+   "group_or_class": "C",
+   "verdict": "完了（L70 の分。記録）",
+   "four": "実質",
+   "witness": "群 C の三つの無名の適用例",
+   "evidence": {
+    "Release.Refinement.ExternalModels.ModelCase.composition": "theorem"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": "三モデルの適用例は既定ビルドの無名の例（名前の読者なし）"
+  },
+  {
+   "id": "L60-受口6",
+   "group_or_class": "C",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 C の対応表",
+   "evidence": {
+    "Release.Refinement.FunctionNames.publicTarget": "definition",
+    "Release.Refinement.StandardModel.publicTarget_defs": "theorem"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R40",
+   "note": "処理系の公開名の切替は R40"
+  },
+  {
+   "id": "L60-群D",
+   "group_or_class": "G",
+   "verdict": "完了（L70 の分。記録）",
+   "four": "対象外（Lean の証拠なし）",
+   "witness": "",
+   "evidence": {},
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": "旧 Surface を削除し、旧 recordFields の読者は残らない（g/f09.json）"
+  },
+  {
+   "id": "L60-Rounding",
+   "group_or_class": "C",
+   "verdict": "完了（L70 の分。記録）",
+   "four": "対象外（Lean の証拠なし）",
+   "witness": "",
+   "evidence": {},
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R50",
+   "note": "Lean のデータ名と5構成子の表（c/results.md の再開3）"
+  },
+  {
+   "id": "L60-MapSet",
+   "group_or_class": "C",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 C の `StandardModel.ApplicationExamples.user_guarantees`",
+   "evidence": {
+    "Release.Refinement.StandardModel.Includes.constructor_entry": "theorem",
+    "Release.Refinement.StandardModel.complete_delta": "theorem"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R50",
+   "note": "処理系の並びとの比較は R50"
+  },
+  {
+   "id": "L60-getFront",
+   "group_or_class": "C",
+   "verdict": "完了（L70 の分。記録）",
+   "four": "対象外（Lean の証拠なし）",
+   "witness": "",
+   "evidence": {},
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": "% で始まる内部名を利用者が使わない Includes の欄（c/results.md）"
+  },
+  {
+   "id": "L60-仮定150",
+   "group_or_class": "C",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 C の `StandardModel.ApplicationExamples.user_guarantees`",
+   "evidence": {
+    "Release.Refinement.StandardModel.Completion": "inductive",
+    "Release.Refinement.StandardModel.completion_core": "theorem",
+    "Release.Refinement.StandardModel.complete_agree": "theorem",
+    "Release.Refinement.StandardModel.complete_shapeOk_composed": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.StandardModel.included_guarantees"
+   ],
+   "paths": {
+    "Release.Refinement.StandardModel.included_guarantees": {
+     "Release.Refinement.StandardModel.Completion": 2,
+     "Release.Refinement.StandardModel.completion_core": 3,
+     "Release.Refinement.StandardModel.complete_agree": 3
+    }
+   },
+   "unread_evidence": [
+    "Release.Refinement.StandardModel.complete_shapeOk_composed"
+   ],
+   "remaining": "R50",
+   "note": "区分を混ぜない。実登録との対応は R50"
+  },
+  {
+   "id": "L50-H01",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 B の四分類の表（MainTheorems の三つの例）と群 K の空疎でない適用例",
+   "evidence": {
+    "Release.Refinement.StateTyE.app_inputs": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.progress"
+   ],
+   "paths": {
+    "Release.Refinement.progress": {
+     "Release.Refinement.StateTyE.app_inputs": 5
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": "canonical_held は読者を要しない（群 B の判断(3)）"
+  },
+  {
+   "id": "L50-H02",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 B の四分類の表（MainTheorems の三つの例）と群 K の空疎でない適用例",
+   "evidence": {
+    "Release.Refinement.StateTyE.app_inputs": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.progress"
+   ],
+   "paths": {
+    "Release.Refinement.progress": {
+     "Release.Refinement.StateTyE.app_inputs": 5
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": ""
+  },
+  {
+   "id": "L50-H03",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 C の `StandardModel.ApplicationExamples.user_guarantees`",
+   "evidence": {
+    "Release.Refinement.StandardModel.composed_rows": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.StandardModel.included_guarantees"
+   ],
+   "paths": {
+    "Release.Refinement.StandardModel.included_guarantees": {
+     "Release.Refinement.StandardModel.composed_rows": 4
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": "進行は任意の B の信頼条件の欄から正常応答を読み、標準の表では composed_rows が欄を供給する。`StandardModel.normal_facts` は既定ビルドに残るが名前の読者はない"
+  },
+  {
+   "id": "L50-H04",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 B の四分類の表（MainTheorems の三つの例）と群 K の空疎でない適用例",
+   "evidence": {
+    "Release.Refinement.Builtins.TargetAgreement.obs_allowed": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.reachable_target_sound"
+   ],
+   "paths": {
+    "Release.Refinement.reachable_target_sound": {
+     "Release.Refinement.Builtins.TargetAgreement.obs_allowed": 5
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R30/R50",
+   "note": ""
+  },
+  {
+   "id": "L50-H06",
+   "group_or_class": "C",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 C の `StandardModel.ApplicationExamples.user_guarantees`",
+   "evidence": {
+    "Release.Refinement.SignatureScoped.ofExtends": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.StandardModel.included_guarantees"
+   ],
+   "paths": {
+    "Release.Refinement.StandardModel.included_guarantees": {
+     "Release.Refinement.SignatureScoped.ofExtends": 6
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R10b",
+   "note": ""
+  },
+  {
+   "id": "L50-H08",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 B の四分類の表（MainTheorems の三つの例）と群 K の空疎でない適用例",
+   "evidence": {
+    "Release.Refinement.InitialPrepared": "inductive"
+   },
+   "readers": [
+    "Release.Refinement.reachable_target_sound"
+   ],
+   "paths": {
+    "Release.Refinement.reachable_target_sound": {
+     "Release.Refinement.InitialPrepared": 3
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": "Ready を全状態の不変条件にしない"
+  },
+  {
+   "id": "L50-H11",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 B の四分類の表（MainTheorems の三つの例）と群 K の空疎でない適用例",
+   "evidence": {
+    "Release.Refinement.Builtins.CoreAssumptions.pathBases_shape": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.effect_soundness"
+   ],
+   "paths": {
+    "Release.Refinement.effect_soundness": {
+     "Release.Refinement.Builtins.CoreAssumptions.pathBases_shape": 4
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R30",
+   "note": ""
+  },
+  {
+   "id": "L50-H20",
+   "group_or_class": "U",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 U の四分類の表（`ScopePublic.program`）",
+   "evidence": {
+    "Release.Refinement.Detail.publicTree_typed": "theorem",
+    "Release.Refinement.Detail.values_typed": "theorem"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R30/R60",
+   "note": ""
+  },
+  {
+   "id": "L50-H21",
+   "group_or_class": "U",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 U の四分類の表（`ScopePublic.program`）",
+   "evidence": {
+    "Release.Refinement.ResultShape.StandardError": "definition",
+    "Release.Refinement.ScopePublic.constructor_exhaustive": "theorem"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R60",
+   "note": ""
+  },
+  {
+   "id": "L50-H22",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 B の四分類の表（MainTheorems の三つの例）と群 K の空疎でない適用例",
+   "evidence": {
+    "Release.Refinement.StateTyE.step_preserved": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.steps_preservation"
+   ],
+   "paths": {
+    "Release.Refinement.steps_preservation": {
+     "Release.Refinement.StateTyE.step_preserved": 3
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": "保存と主定理が同じ正規化済みの bind を使う"
+  },
+  {
+   "id": "L50-H24",
+   "group_or_class": "C",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 C の `StandardModel.ApplicationExamples.user_guarantees`",
+   "evidence": {
+    "Release.Refinement.StandardModel.completion_core": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.StandardModel.included_guarantees"
+   ],
+   "paths": {
+    "Release.Refinement.StandardModel.included_guarantees": {
+     "Release.Refinement.StandardModel.completion_core": 3
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": "系は合成表の証拠だけを読む"
+  },
+  {
+   "id": "L50-H25",
+   "group_or_class": "C",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 C の `StandardModel.ApplicationExamples.user_guarantees`",
+   "evidence": {
+    "Release.Refinement.StandardModel.composed_rows": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.StandardModel.included_guarantees"
+   ],
+   "paths": {
+    "Release.Refinement.StandardModel.included_guarantees": {
+     "Release.Refinement.StandardModel.composed_rows": 4
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": ""
+  },
+  {
+   "id": "L50-H28",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 B の四分類の表（MainTheorems の三つの例）と群 K の空疎でない適用例",
+   "evidence": {
+    "Release.Refinement.ProgressStatement": "definition",
+    "Release.Refinement.ReachableTargetStatement": "definition"
+   },
+   "readers": [
+    "Release.Refinement.progress",
+    "Release.Refinement.reachable_target_sound"
+   ],
+   "paths": {
+    "Release.Refinement.progress": {
+     "Release.Refinement.ProgressStatement": 2
+    },
+    "Release.Refinement.reachable_target_sound": {
+     "Release.Refinement.ReachableTargetStatement": 2
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": "任意の Ψ・全適格 σ・全入力で述べる"
+  },
+  {
+   "id": "L50-H30",
+   "group_or_class": "G",
+   "verdict": "完了（L70 の分。記録）",
+   "four": "対象外（Lean の証拠なし）",
+   "witness": "",
+   "evidence": {},
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R50",
+   "note": "F-REG を新機能の接続と呼ばない（07-04「証明する性質」・g/results.md）"
+  },
+  {
+   "id": "L50-H31",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 B の四分類の表（MainTheorems の三つの例）と群 K の空疎でない適用例",
+   "evidence": {
+    "Release.Refinement.Builtins.ExternalAssumptions.external_adequate": "theorem",
+    "Release.Refinement.Detail.values_typed": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.progress"
+   ],
+   "paths": {
+    "Release.Refinement.progress": {
+     "Release.Refinement.Builtins.ExternalAssumptions.external_adequate": 8
+    }
+   },
+   "unread_evidence": [
+    "Release.Refinement.Detail.values_typed"
+   ],
+   "remaining": "R30/R60",
+   "note": ""
+  },
+  {
+   "id": "L50-受口1",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 B の四分類の表（MainTheorems の三つの例）と群 K の空疎でない適用例",
+   "evidence": {
+    "Release.Refinement.AtPrepared.current": "theorem",
+    "Release.Refinement.StateTyE.at_step": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.progress"
+   ],
+   "paths": {
+    "Release.Refinement.progress": {
+     "Release.Refinement.AtPrepared.current": 6,
+     "Release.Refinement.StateTyE.at_step": 4
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": ""
+  },
+  {
+   "id": "L50-受口2",
+   "group_or_class": "U",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 U の四分類の表（`ScopePublic.program`）",
+   "evidence": {
+    "Release.Refinement.Detail.publicTree_typed": "theorem",
+    "Release.Refinement.ResultShape.StandardError": "definition"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R30/R60",
+   "note": ""
+  },
+  {
+   "id": "L50-U1",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 B の四分類の表（MainTheorems の三つの例）と群 K の空疎でない適用例",
+   "evidence": {
+    "Release.Refinement.Builtins.TargetAgreement.obs_allowed": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.reachable_target_sound"
+   ],
+   "paths": {
+    "Release.Refinement.reachable_target_sound": {
+     "Release.Refinement.Builtins.TargetAgreement.obs_allowed": 5
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R30/R50",
+   "note": "同じ保持値を使う"
+  },
+  {
+   "id": "L50-実行",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 E の `Surface.CheckedMainExamples.main_guarantees`・`Surface.MainExamples.main_guarantees`",
+   "evidence": {
+    "Release.Refinement.steps_preservation": "theorem",
+    "Release.Refinement.reachable_target_sound": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.surface_target_sound"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.surface_target_sound": {
+     "Release.Refinement.reachable_target_sound": 2
+    }
+   },
+   "unread_evidence": [
+    "Release.Refinement.steps_preservation"
+   ],
+   "remaining": "なし",
+   "note": ""
+  },
+  {
+   "id": "L40-F01",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 B の四分類の表（MainTheorems の三つの例）と群 K の空疎でない適用例",
+   "evidence": {
+    "Release.Refinement.HasTypeVQ.canonical_function": "theorem",
+    "Release.Refinement.HasTypeVQ.inv_op": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.progress"
+   ],
+   "paths": {
+    "Release.Refinement.progress": {
+     "Release.Refinement.HasTypeVQ.canonical_function": 5,
+     "Release.Refinement.HasTypeVQ.inv_op": 7
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": ""
+  },
+  {
+   "id": "L40-F05",
+   "group_or_class": "C",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 C の `StandardModel.ApplicationExamples.user_guarantees`",
+   "evidence": {
+    "Release.Refinement.StandardModel.DataTable": "inductive"
+   },
+   "readers": [
+    "Release.Refinement.StandardModel.included_guarantees"
+   ],
+   "paths": {
+    "Release.Refinement.StandardModel.included_guarantees": {
+     "Release.Refinement.StandardModel.DataTable": 2
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R10b",
+   "note": ""
+  },
+  {
+   "id": "L40-F07",
+   "group_or_class": "G",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 G の区間の接続の具体例（IntervalConnectionExamples）",
+   "evidence": {
+    "Release.Refinement.IntervalReport.connect": "definition"
+   },
+   "readers": [
+    "main@@IntervalDiff.Main"
+   ],
+   "paths": {
+    "main@@IntervalDiff.Main": {
+     "Release.Refinement.IntervalReport.connect": 8
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R10b/R50",
+   "note": ""
+  },
+  {
+   "id": "L40-J40-2",
+   "group_or_class": "G",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 G の区間の接続の具体例（IntervalConnectionExamples）",
+   "evidence": {
+    "Release.Refinement.IntervalReport.returned_mark": "theorem"
+   },
+   "readers": [
+    "main@@IntervalDiff.Main"
+   ],
+   "paths": {
+    "main@@IntervalDiff.Main": {
+     "Release.Refinement.IntervalReport.returned_mark": 9
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R10b/R50",
+   "note": ""
+  },
+  {
+   "id": "L40-後段1",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 B の四分類の表（MainTheorems の三つの例）と群 K の空疎でない適用例",
+   "evidence": {
+    "Release.Refinement.StateTyE.match_inputs": "theorem",
+    "Release.Refinement.Capture.typed_coverage": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.progress"
+   ],
+   "paths": {
+    "Release.Refinement.progress": {
+     "Release.Refinement.StateTyE.match_inputs": 4,
+     "Release.Refinement.Capture.typed_coverage": 4
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": ""
+  },
+  {
+   "id": "L40-後段2",
+   "group_or_class": "G",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 G の区間の接続の具体例（IntervalConnectionExamples）",
+   "evidence": {
+    "Release.Refinement.IntervalReport.connect": "definition"
+   },
+   "readers": [
+    "main@@IntervalDiff.Main"
+   ],
+   "paths": {
+    "main@@IntervalDiff.Main": {
+     "Release.Refinement.IntervalReport.connect": 8
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R50",
+   "note": ""
+  },
+  {
+   "id": "L40-後段3",
+   "group_or_class": "D",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 D の四分類の表（desugar_typed の三前提を適用例で満たす）",
+   "evidence": {
+    "Release.Refinement.Surface.HasTypeQ.desugar": "theorem",
+    "Release.Refinement.Surface.HasBlockQ.desugar": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.Surface.HasBlockQ.desugar": 4
+    }
+   },
+   "unread_evidence": [
+    "Release.Refinement.Surface.HasTypeQ.desugar"
+   ],
+   "remaining": "R10b/R50",
+   "note": "短絡は ite へ脱糖する"
+  },
+  {
+   "id": "L40-O135",
+   "group_or_class": "他段",
+   "verdict": "他段",
+   "four": "対象外（Lean の証拠なし）",
+   "witness": "",
+   "evidence": {},
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "取りまとめが R40 の詳細化で担当を確定",
+   "note": "通常 decoder の接続"
+  },
+  {
+   "id": "L30-A2",
+   "group_or_class": "E",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 E の四分類の表（正常な前提の証人）",
+   "evidence": {
+    "Release.Refinement.Ty.LeQ.refine": "constructor"
+   },
+   "readers": [
+    "Release.Refinement.Surface.Check.checkExprAt_sound"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.Check.checkExprAt_sound": {
+     "Release.Refinement.Ty.LeQ.refine": 8
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R20",
+   "note": ""
+  },
+  {
+   "id": "L30-A4",
+   "group_or_class": "D",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 D の四分類の表（desugar_typed の三前提を適用例で満たす）",
+   "evidence": {
+    "Release.Refinement.Surface.AliasDecl.expand": "definition"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R10a",
+   "note": "別名の展開の定義"
+  },
+  {
+   "id": "L30-転記",
+   "group_or_class": "D",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 D の四分類の表（desugar_typed の三前提を適用例で満たす）",
+   "evidence": {
+    "Release.Refinement.Surface.HasTypeQ.desugar": "theorem",
+    "Release.Refinement.Surface.HasBlockQ.desugar": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.Surface.HasBlockQ.desugar": 4
+    }
+   },
+   "unread_evidence": [
+    "Release.Refinement.Surface.HasTypeQ.desugar"
+   ],
+   "remaining": "R10b",
+   "note": ""
+  },
+  {
+   "id": "L20-J1",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 B の四分類の表（MainTheorems の三つの例）と群 K の空疎でない適用例",
+   "evidence": {
+    "Release.Refinement.StateTyE.step_preserved": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.preservation"
+   ],
+   "paths": {
+    "Release.Refinement.preservation": {
+     "Release.Refinement.StateTyE.step_preserved": 2
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": ""
+  },
+  {
+   "id": "L20-J2",
+   "group_or_class": "D",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 D の四分類の表（desugar_typed の三前提を適用例で満たす）",
+   "evidence": {
+    "Release.Refinement.Surface.HasTypeQ.desugar": "theorem",
+    "Release.Refinement.Surface.HasBlockQ.desugar": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.Surface.HasBlockQ.desugar": 4
+    }
+   },
+   "unread_evidence": [
+    "Release.Refinement.Surface.HasTypeQ.desugar"
+   ],
+   "remaining": "R10b/R50",
+   "note": ""
+  },
+  {
+   "id": "L20-J3",
+   "group_or_class": "D",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 D の四分類の表（desugar_typed の三前提を適用例で満たす）",
+   "evidence": {
+    "Release.Refinement.Surface.HasTypeQ.desugar": "theorem",
+    "Release.Refinement.Surface.HasBlockQ.desugar": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.Surface.HasBlockQ.desugar": 4
+    }
+   },
+   "unread_evidence": [
+    "Release.Refinement.Surface.HasTypeQ.desugar"
+   ],
+   "remaining": "R10b",
+   "note": ""
+  },
+  {
+   "id": "L20-J4",
+   "group_or_class": "G",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 G の区間の接続の具体例（IntervalConnectionExamples）",
+   "evidence": {
+    "Release.Refinement.IntervalReport.failed": "theorem"
+   },
+   "readers": [
+    "main@@IntervalDiff.Main"
+   ],
+   "paths": {
+    "main@@IntervalDiff.Main": {
+     "Release.Refinement.IntervalReport.failed": 12
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R50",
+   "note": ""
+  },
+  {
+   "id": "L20-J5",
+   "group_or_class": "G",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 K の埋め込みの例",
+   "evidence": {
+    "Release.Refinement.embedProgramWellTyped": "theorem",
+    "Release.Refinement.embedStateTyE": "theorem"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": "C05 は旧導出の埋め込みの定理として残る（07-04 の表）"
+  },
+  {
+   "id": "L20-J6",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 E の `Surface.CheckedMainExamples.main_guarantees`・`Surface.MainExamples.main_guarantees`",
+   "evidence": {
+    "Release.Refinement.reachable_target_sound": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.surface_target_sound"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.surface_target_sound": {
+     "Release.Refinement.reachable_target_sound": 2
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": ""
+  },
+  {
+   "id": "L20-J7",
+   "group_or_class": "D",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 D の四分類の表（desugar_typed の三前提を適用例で満たす）",
+   "evidence": {
+    "Release.Refinement.Ty.HasKind": "definition"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.Ty.HasKind": 2
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R10b",
+   "note": ""
+  },
+  {
+   "id": "L20-187",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 B の四分類の表（MainTheorems の三つの例）と群 K の空疎でない適用例",
+   "evidence": {
+    "Release.Refinement.StateTyE.match_inputs": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.progress"
+   ],
+   "paths": {
+    "Release.Refinement.progress": {
+     "Release.Refinement.StateTyE.match_inputs": 4
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": ""
+  },
+  {
+   "id": "L20-189",
+   "group_or_class": "E",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 E の四分類の表（正常な前提の証人）",
+   "evidence": {
+    "Release.Refinement.Coverage.typed_nonempty_coverage": "theorem"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R10b/R50",
+   "note": "網羅性の初期領域"
+  },
+  {
+   "id": "L20-190",
+   "group_or_class": "G",
+   "verdict": "完了（L70 の分。記録）",
+   "four": "対象外（Lean の証拠なし）",
+   "witness": "",
+   "evidence": {},
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R50",
+   "note": "入口の切替（f09.json）。比較の実行は R50"
+  },
+  {
+   "id": "L00b-主",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 B の四分類の表（MainTheorems の三つの例）と群 K の空疎でない適用例",
+   "evidence": {
+    "Release.Refinement.ProgressStatement": "definition",
+    "Release.Refinement.PreservationStatement": "definition",
+    "Release.Refinement.StepSoundStatement": "definition",
+    "Release.Refinement.EffectSoundnessStatement": "definition",
+    "Release.Refinement.ReachableTargetStatement": "definition"
+   },
+   "readers": [
+    "Release.Refinement.progress",
+    "Release.Refinement.preservation",
+    "Release.Refinement.step_sound",
+    "Release.Refinement.effect_soundness",
+    "Release.Refinement.reachable_target_sound"
+   ],
+   "paths": {
+    "Release.Refinement.progress": {
+     "Release.Refinement.ProgressStatement": 2
+    },
+    "Release.Refinement.preservation": {
+     "Release.Refinement.PreservationStatement": 2
+    },
+    "Release.Refinement.step_sound": {
+     "Release.Refinement.StepSoundStatement": 2
+    },
+    "Release.Refinement.effect_soundness": {
+     "Release.Refinement.EffectSoundnessStatement": 2
+    },
+    "Release.Refinement.reachable_target_sound": {
+     "Release.Refinement.ReachableTargetStatement": 2
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": "主定理の型が言明の定義を読む"
+  },
+  {
+   "id": "L00b-表層",
+   "group_or_class": "D",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 D の四分類の表（desugar_typed の三前提を適用例で満たす）",
+   "evidence": {
+    "Release.Refinement.Surface.HasTypeQ.desugar": "theorem",
+    "Release.Refinement.Surface.HasBlockQ.desugar": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.Surface.HasBlockQ.desugar": 4
+    }
+   },
+   "unread_evidence": [
+    "Release.Refinement.Surface.HasTypeQ.desugar"
+   ],
+   "remaining": "R10b",
+   "note": ""
+  },
+  {
+   "id": "L00b-区間",
+   "group_or_class": "G",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 G の区間の接続の具体例（IntervalConnectionExamples）",
+   "evidence": {
+    "Release.Refinement.IntervalReport.connect": "definition"
+   },
+   "readers": [
+    "main@@IntervalDiff.Main"
+   ],
+   "paths": {
+    "main@@IntervalDiff.Main": {
+     "Release.Refinement.IntervalReport.connect": 8
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R50",
+   "note": ""
+  },
+  {
+   "id": "L00b-G05",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 B の四分類の表（MainTheorems の三つの例）と群 K の空疎でない適用例",
+   "evidence": {
+    "Release.Refinement.Builtins.CoreAssumptions.io_op": "theorem",
+    "Release.Refinement.Builtins.ShapeOk": "definition"
+   },
+   "readers": [
+    "Release.Refinement.effect_soundness"
+   ],
+   "paths": {
+    "Release.Refinement.effect_soundness": {
+     "Release.Refinement.Builtins.CoreAssumptions.io_op": 6,
+     "Release.Refinement.Builtins.ShapeOk": 6
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": "具体化後の効果の原子"
+  },
+  {
+   "id": "plan-1103",
+   "group_or_class": "G",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 K の埋め込みの例",
+   "evidence": {
+    "Release.Refinement.embedProgramWellTyped": "theorem"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": "07-04 のモジュールの表に読者として書いた"
+  },
+  {
+   "id": "plan-1102",
+   "group_or_class": "G",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 G の区間の接続の具体例（IntervalConnectionExamples）",
+   "evidence": {
+    "Release.Refinement.IntervalConnection.ValueRel": "inductive"
+   },
+   "readers": [
+    "main@@IntervalDiff.Main"
+   ],
+   "paths": {
+    "main@@IntervalDiff.Main": {
+     "Release.Refinement.IntervalConnection.ValueRel": 9
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R50",
+   "note": ""
+  },
+  {
+   "id": "plan-1101",
+   "group_or_class": "D",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 D の四分類の表（desugar_typed の三前提を適用例で満たす）",
+   "evidence": {
+    "Release.Refinement.Program.WellTyped": "inductive"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.Program.WellTyped": 2
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R10b",
+   "note": "変性の前提は Program.WellTyped.variance"
+  },
+  {
+   "id": "plan-RV03",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 B の四分類の表（MainTheorems の三つの例）と群 K の空疎でない適用例",
+   "evidence": {
+    "Release.Refinement.InitialTypingStatement": "definition"
+   },
+   "readers": [
+    "Release.Refinement.initial_typing"
+   ],
+   "paths": {
+    "Release.Refinement.initial_typing": {
+     "Release.Refinement.InitialTypingStatement": 2
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": ""
+  },
+  {
+   "id": "plan-RVat",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分。記録）",
+   "four": "対象外（Lean の証拠なし）",
+   "witness": "",
+   "evidence": {},
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": "L70.03 の棚卸しで照合した（a/inventory.md 第8節）"
+  },
+  {
+   "id": "plan-D28",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 B の四分類の表（MainTheorems の三つの例）と群 K の空疎でない適用例",
+   "evidence": {
+    "Release.Refinement.Builtins.CoreAssumptions.pathBases_never_handled": "theorem",
+    "Release.Refinement.HasTypeCQ.C_IssuePathBases": "constructor"
+   },
+   "readers": [
+    "Release.Refinement.effect_soundness"
+   ],
+   "paths": {
+    "Release.Refinement.effect_soundness": {
+     "Release.Refinement.Builtins.CoreAssumptions.pathBases_never_handled": 3,
+     "Release.Refinement.HasTypeCQ.C_IssuePathBases": 6
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R30",
+   "note": ""
+  },
+  {
+   "id": "RV-L60.c",
+   "group_or_class": "C",
+   "verdict": "完了（L70 の分。記録）",
+   "four": "対象外（Lean の証拠なし）",
+   "witness": "",
+   "evidence": {},
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": "任意の行。適用例に足していない"
+  },
+  {
+   "id": "U02-署名",
+   "group_or_class": "U",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 U の四分類の表（`ScopePublic.program`）",
+   "evidence": {
+    "Release.Refinement.PublicNames.safeEntries": "definition"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "L70.37・.38 で δ の行（群 F2）",
+   "note": ""
+  },
+  {
+   "id": "U02-原則5",
+   "group_or_class": "G",
+   "verdict": "完了（L70 の分。記録）",
+   "four": "対象外（Lean の証拠なし）",
+   "witness": "",
+   "evidence": {},
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "D10",
+   "note": "01-12・07-04 の写しの該当箇所に理由を書いた（g/spec-copies.md）"
+  }
+ ],
+ "obligations": [
+  {
+   "id": "O005",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 D の四分類の表（desugar_typed の三前提を適用例で満たす）",
+   "evidence": {
+    "Release.Refinement.Program.WellTyped": "inductive"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.Program.WellTyped": 2
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R10b",
+   "note": "変性の前提を表層から供給する"
+  },
+  {
+   "id": "O012",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 D の四分類の表（desugar_typed の三前提を適用例で満たす）",
+   "evidence": {
+    "Release.Refinement.Surface.HasTypeQ.desugar": "theorem",
+    "Release.Refinement.Surface.HasBlockQ.desugar": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.Surface.HasBlockQ.desugar": 4
+    }
+   },
+   "unread_evidence": [
+    "Release.Refinement.Surface.HasTypeQ.desugar"
+   ],
+   "remaining": "R10b/R50",
+   "note": ""
+  },
+  {
+   "id": "O016",
+   "group_or_class": "共通",
+   "verdict": "完了（L70 の分。記録）",
+   "four": "対象外（Lean の証拠なし）",
+   "witness": "",
+   "evidence": {},
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "各段のレビュー",
+   "note": "段の全宣言と主定理の公理監査（h/audit-summary.json）"
+  },
+  {
+   "id": "O033",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 D の四分類の表（desugar_typed の三前提を適用例で満たす）",
+   "evidence": {
+    "Release.Refinement.Program.WellTyped": "inductive"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.Program.WellTyped": 2
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R10b",
+   "note": ""
+  },
+  {
+   "id": "O037",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 E の四分類の表（正常な前提の証人）",
+   "evidence": {
+    "Release.Refinement.Surface.HasTypeQ.desugar": "theorem",
+    "Release.Refinement.Surface.HasBlockQ.desugar": "theorem",
+    "Release.Refinement.Surface.Check.checkExprAt_sound": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.Surface.HasBlockQ.desugar": 4
+    }
+   },
+   "unread_evidence": [
+    "Release.Refinement.Surface.HasTypeQ.desugar",
+    "Release.Refinement.Surface.Check.checkExprAt_sound"
+   ],
+   "remaining": "R10b/R50",
+   "note": ""
+  },
+  {
+   "id": "O038",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 B の四分類の表（MainTheorems の三つの例）と群 K の空疎でない適用例",
+   "evidence": {
+    "Release.Refinement.StateTyE.step_preserved": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.preservation"
+   ],
+   "paths": {
+    "Release.Refinement.preservation": {
+     "Release.Refinement.StateTyE.step_preserved": 2
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": ""
+  },
+  {
+   "id": "O056",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 D の四分類の表（desugar_typed の三前提を適用例で満たす）",
+   "evidence": {
+    "Release.Refinement.Surface.HasTypeQ.desugar": "theorem",
+    "Release.Refinement.Surface.HasBlockQ.desugar": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.Surface.HasBlockQ.desugar": 4
+    }
+   },
+   "unread_evidence": [
+    "Release.Refinement.Surface.HasTypeQ.desugar"
+   ],
+   "remaining": "R10b",
+   "note": ""
+  },
+  {
+   "id": "O057",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 B の四分類の表（MainTheorems の三つの例）と群 K の空疎でない適用例",
+   "evidence": {
+    "Release.Refinement.progress": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.StandardModel.included_guarantees"
+   ],
+   "paths": {
+    "Release.Refinement.StandardModel.included_guarantees": {
+     "Release.Refinement.progress": 3
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": ""
+  },
+  {
+   "id": "O058",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 B の四分類の表（MainTheorems の三つの例）と群 K の空疎でない適用例",
+   "evidence": {
+    "Release.Refinement.preservation": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.StandardModel.included_guarantees"
+   ],
+   "paths": {
+    "Release.Refinement.StandardModel.included_guarantees": {
+     "Release.Refinement.preservation": 3
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": ""
+  },
+  {
+   "id": "O059",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 B の四分類の表（MainTheorems の三つの例）と群 K の空疎でない適用例",
+   "evidence": {
+    "Release.Refinement.step_sound": "theorem"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": "計算から関係の向きだけ"
+  },
+  {
+   "id": "O060",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 B の四分類の表（MainTheorems の三つの例）と群 K の空疎でない適用例",
+   "evidence": {
+    "Release.Refinement.effect_soundness": "theorem",
+    "Release.Refinement.effect_soundness_noLamNames": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.StandardModel.included_guarantees"
+   ],
+   "paths": {
+    "Release.Refinement.StandardModel.included_guarantees": {
+     "Release.Refinement.effect_soundness": 3,
+     "Release.Refinement.effect_soundness_noLamNames": 3
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": ""
+  },
+  {
+   "id": "O061",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 E の `Surface.CheckedMainExamples.main_guarantees`・`Surface.MainExamples.main_guarantees`",
+   "evidence": {
+    "Release.Refinement.step_target_sound": "theorem",
+    "Release.Refinement.reachable_target_sound": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.surface_target_sound"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.surface_target_sound": {
+     "Release.Refinement.step_target_sound": 3,
+     "Release.Refinement.reachable_target_sound": 2
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": ""
+  },
+  {
+   "id": "O066",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 E2 の四分類の表（`CheckErasureExamples`）",
+   "evidence": {
+    "Release.Refinement.Surface.CheckTables.checkProgram_sound": "theorem",
+    "Release.Refinement.checkMatchWithView_exhaustive_sound": "theorem",
+    "Release.Refinement.CheckErasure.erase_typed": "theorem"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R50",
+   "note": "消去は案 B の範囲（ラムダの中を消去しない）"
+  },
+  {
+   "id": "O068",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 D の四分類の表（desugar_typed の三前提を適用例で満たす）",
+   "evidence": {
+    "Release.Refinement.Surface.HasTypeQ.desugar": "theorem",
+    "Release.Refinement.Surface.HasBlockQ.desugar": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.Surface.HasBlockQ.desugar": 4
+    }
+   },
+   "unread_evidence": [
+    "Release.Refinement.Surface.HasTypeQ.desugar"
+   ],
+   "remaining": "R10b",
+   "note": ""
+  },
+  {
+   "id": "O079",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 E の四分類の表（正常な前提の証人）",
+   "evidence": {
+    "Release.Refinement.Coverage.typed_nonempty_coverage": "theorem"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R10b/R50",
+   "note": ""
+  },
+  {
+   "id": "O086",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 E の四分類の表（正常な前提の証人）",
+   "evidence": {
+    "Release.Refinement.Surface.CheckAccept.checkProgramAccepted": "definition",
+    "Exchange.CheckInput.prepare": "definition",
+    "Release.Refinement.Surface.CheckAccept.checkProgramAccepted_sound": "theorem"
+   },
+   "readers": [
+    "main@@SurfaceCheck.Main"
+   ],
+   "paths": {
+    "main@@SurfaceCheck.Main": {
+     "Release.Refinement.Surface.CheckAccept.checkProgramAccepted": 4,
+     "Exchange.CheckInput.prepare": 3
+    }
+   },
+   "unread_evidence": [
+    "Release.Refinement.Surface.CheckAccept.checkProgramAccepted_sound"
+   ],
+   "remaining": "R50（両理由0件）/K10",
+   "note": "旧の除外の実数と理由の記録は g42/results.md"
+  },
+  {
+   "id": "O088",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 C の `StandardModel.ApplicationExamples.user_guarantees`",
+   "evidence": {
+    "Release.Refinement.ExternalCallAdmissible": "inductive",
+    "Release.Refinement.ExternalSurface.call_typed": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.ExternalCallAdmissible": 5
+    }
+   },
+   "unread_evidence": [
+    "Release.Refinement.ExternalSurface.call_typed"
+   ],
+   "remaining": "R50",
+   "note": ""
+  },
+  {
+   "id": "O090",
+   "group_or_class": "共通",
+   "verdict": "完了（L70 の分。記録）",
+   "four": "対象外（Lean の証拠なし）",
+   "witness": "",
+   "evidence": {},
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R10b/R50",
+   "note": "return と共通値の余裕は表層の名指し行の内数（群 D の記録）"
+  },
+  {
+   "id": "O098",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 F1 の四分類の表",
+   "evidence": {
+    "Release.Refinement.PathBasesDiffer": "definition",
+    "Release.Refinement.outsideAllEnvs_iff_checkAt": "theorem"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R60",
+   "note": ""
+  },
+  {
+   "id": "O099",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 F1 の四分類の表",
+   "evidence": {
+    "Release.Refinement.IPPattern.mappedOnly_iff": "theorem"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R60",
+   "note": ""
+  },
+  {
+   "id": "O116",
+   "group_or_class": "記録",
+   "verdict": "完了（L70 の分。記録）",
+   "four": "対象外（Lean の証拠なし）",
+   "witness": "",
+   "evidence": {},
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": "admit の改名の読者0件（a/inventory.json）と写し（g/spec-copies.md）"
+  },
+  {
+   "id": "O121",
+   "group_or_class": "共通",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 E の四分類の表（正常な前提の証人）",
+   "evidence": {
+    "Release.Refinement.Surface.CheckAccept.checkProgramAccepted": "definition",
+    "Exchange.CheckInput.prepare": "definition",
+    "Release.Refinement.Surface.CheckAccept.checkProgramAccepted_sound": "theorem"
+   },
+   "readers": [
+    "main@@SurfaceCheck.Main"
+   ],
+   "paths": {
+    "main@@SurfaceCheck.Main": {
+     "Release.Refinement.Surface.CheckAccept.checkProgramAccepted": 4,
+     "Exchange.CheckInput.prepare": 3
+    }
+   },
+   "unread_evidence": [
+    "Release.Refinement.Surface.CheckAccept.checkProgramAccepted_sound"
+   ],
+   "remaining": "R50（F-CONN）/K10/V10",
+   "note": "F-REG の入口。F-REG の実行は取りまとめ（未実施）"
+  },
+  {
+   "id": "O136",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 D の四分類の表（desugar_typed の三前提を適用例で満たす）",
+   "evidence": {
+    "Release.Refinement.Surface.HasTypeQ.desugar": "theorem",
+    "Release.Refinement.Surface.HasBlockQ.desugar": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.Surface.HasBlockQ.desugar": 4
+    }
+   },
+   "unread_evidence": [
+    "Release.Refinement.Surface.HasTypeQ.desugar"
+   ],
+   "remaining": "R10b/R20/R50/V10",
+   "note": ""
+  },
+  {
+   "id": "O138",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 E の四分類の表（正常な前提の証人）",
+   "evidence": {
+    "Release.Refinement.Surface.HasTypeQ.desugar": "theorem",
+    "Release.Refinement.Surface.HasBlockQ.desugar": "theorem",
+    "Release.Refinement.Coverage.typed_nonempty_coverage": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.Surface.HasBlockQ.desugar": 4
+    }
+   },
+   "unread_evidence": [
+    "Release.Refinement.Surface.HasTypeQ.desugar",
+    "Release.Refinement.Coverage.typed_nonempty_coverage"
+   ],
+   "remaining": "R10b/R50/V10",
+   "note": ""
+  },
+  {
+   "id": "O139",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 D の四分類の表（desugar_typed の三前提を適用例で満たす）",
+   "evidence": {
+    "Release.Refinement.Ty.LeQ": "inductive"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.Ty.LeQ": 4
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R10b/R50/V10",
+   "note": ""
+  },
+  {
+   "id": "O140",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 D の四分類の表（desugar_typed の三前提を適用例で満たす）",
+   "evidence": {
+    "Release.Refinement.Ty.LeQ": "inductive"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.Ty.LeQ": 4
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R10b/R40/R50/V10",
+   "note": ""
+  },
+  {
+   "id": "O141",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 E の `Surface.CheckedMainExamples.main_guarantees`・`Surface.MainExamples.main_guarantees`",
+   "evidence": {
+    "Release.Refinement.reachable_target_sound": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.surface_target_sound"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.surface_target_sound": {
+     "Release.Refinement.reachable_target_sound": 2
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R10b/R30/R50/R60/V10",
+   "note": ""
+  },
+  {
+   "id": "O142",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 U の四分類の表（`ScopePublic.program`）",
+   "evidence": {
+    "Release.Refinement.PublicNames.safeEntries": "definition"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R10b/R40/R50/V10",
+   "note": ""
+  },
+  {
+   "id": "O143",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 U の四分類の表（`ScopePublic.program`）",
+   "evidence": {
+    "Release.Refinement.PublicNames.safeEntries": "definition"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R10b/R40/R50/V10",
+   "note": ""
+  },
+  {
+   "id": "O157",
+   "group_or_class": "記録",
+   "verdict": "完了（L70 の分。記録）",
+   "four": "対象外（Lean の証拠なし）",
+   "witness": "",
+   "evidence": {},
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R50/D10/V10",
+   "note": "07-04 の外部除外の段落（g/spec-copies.md）"
+  },
+  {
+   "id": "O159",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "対象外（Lean の証拠なし）",
+   "witness": "",
+   "evidence": {},
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": "完全名の対照表（a/inventory.md）、削除と F09 の三条件（g/f09.json）"
+  },
+  {
+   "id": "O167",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 D の四分類の表（desugar_typed の三前提を適用例で満たす）",
+   "evidence": {
+    "Release.Refinement.Surface.RefinementBinderOk": "definition"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R10a/R20/R10b/R40/R60/V10",
+   "note": ""
+  },
+  {
+   "id": "O169",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 G の区間の接続の具体例（IntervalConnectionExamples）",
+   "evidence": {
+    "Release.Refinement.IntervalReport.connect": "definition"
+   },
+   "readers": [
+    "main@@IntervalDiff.Main"
+   ],
+   "paths": {
+    "main@@IntervalDiff.Main": {
+     "Release.Refinement.IntervalReport.connect": 8
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R10b/R50",
+   "note": ""
+  },
+  {
+   "id": "O170",
+   "group_or_class": "他段",
+   "verdict": "他段",
+   "four": "対象外（Lean の証拠なし）",
+   "witness": "",
+   "evidence": {},
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R10a/R60/D10",
+   "note": "構文の少数測定を行わない（設計者の決定）"
+  },
+  {
+   "id": "O002",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 B の四分類の表（MainTheorems の三つの例）と群 K の空疎でない適用例",
+   "evidence": {
+    "Release.Refinement.StateTyE.step_preserved": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.preservation"
+   ],
+   "paths": {
+    "Release.Refinement.preservation": {
+     "Release.Refinement.StateTyE.step_preserved": 2
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": "型置換の読者は新判断だけ（f09.json の逆戻りの照合）"
+  },
+  {
+   "id": "O003",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 D の四分類の表（desugar_typed の三前提を適用例で満たす）",
+   "evidence": {
+    "Release.Refinement.Surface.HasTypeQ.desugar": "theorem",
+    "Release.Refinement.Surface.HasBlockQ.desugar": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.Surface.HasBlockQ.desugar": 4
+    }
+   },
+   "unread_evidence": [
+    "Release.Refinement.Surface.HasTypeQ.desugar"
+   ],
+   "remaining": "なし",
+   "note": ""
+  },
+  {
+   "id": "O004",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分。記録）",
+   "four": "対象外（Lean の証拠なし）",
+   "witness": "",
+   "evidence": {},
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": "Nat の変数表現のまま切り替えた"
+  },
+  {
+   "id": "O006",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 B の四分類の表（MainTheorems の三つの例）と群 K の空疎でない適用例",
+   "evidence": {
+    "Release.Refinement.StateTyE.step_preserved": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.preservation"
+   ],
+   "paths": {
+    "Release.Refinement.preservation": {
+     "Release.Refinement.StateTyE.step_preserved": 2
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": ""
+  },
+  {
+   "id": "O008",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 B の四分類の表（MainTheorems の三つの例）と群 K の空疎でない適用例",
+   "evidence": {
+    "Release.Refinement.StateTyE.step_preserved": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.preservation"
+   ],
+   "paths": {
+    "Release.Refinement.preservation": {
+     "Release.Refinement.StateTyE.step_preserved": 2
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": ""
+  },
+  {
+   "id": "O013",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 C の `StandardModel.ApplicationExamples.user_guarantees`",
+   "evidence": {
+    "Release.Refinement.StandardModel.included_guarantees": "theorem"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R50/V10",
+   "note": "対象なし opaque の排除は同じ量化"
+  },
+  {
+   "id": "O027",
+   "group_or_class": "共通",
+   "verdict": "他段",
+   "four": "対象外（Lean の証拠なし）",
+   "witness": "",
+   "evidence": {},
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "取りまとめ・R20/R70",
+   "note": "正式 RSS は取りまとめの段末の work"
+  },
+  {
+   "id": "O029",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 D の四分類の表（desugar_typed の三前提を適用例で満たす）",
+   "evidence": {
+    "Release.Refinement.Surface.HasTypeQ.desugar": "theorem",
+    "Release.Refinement.Surface.HasBlockQ.desugar": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.Surface.HasBlockQ.desugar": 4
+    }
+   },
+   "unread_evidence": [
+    "Release.Refinement.Surface.HasTypeQ.desugar"
+   ],
+   "remaining": "R10b",
+   "note": ""
+  },
+  {
+   "id": "O031",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 B の四分類の表（MainTheorems の三つの例）と群 K の空疎でない適用例",
+   "evidence": {
+    "Release.Refinement.StateTyE.step_preserved": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.preservation"
+   ],
+   "paths": {
+    "Release.Refinement.preservation": {
+     "Release.Refinement.StateTyE.step_preserved": 2
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": ""
+  },
+  {
+   "id": "O035",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 B の四分類の表（MainTheorems の三つの例）と群 K の空疎でない適用例",
+   "evidence": {
+    "Release.Refinement.Builtins.TargetAgreement.obs_allowed": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.reachable_target_sound"
+   ],
+   "paths": {
+    "Release.Refinement.reachable_target_sound": {
+     "Release.Refinement.Builtins.TargetAgreement.obs_allowed": 5
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R30/R50",
+   "note": ""
+  },
+  {
+   "id": "O036",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 E の `Surface.CheckedMainExamples.main_guarantees`・`Surface.MainExamples.main_guarantees`",
+   "evidence": {
+    "Release.Refinement.reachable_target_sound": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.surface_target_sound"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.surface_target_sound": {
+     "Release.Refinement.reachable_target_sound": 2
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": ""
+  },
+  {
+   "id": "O042",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 K の埋め込みの例",
+   "evidence": {
+    "Release.Refinement.embedProgramWellTyped": "theorem",
+    "Release.Refinement.embedStateTyE": "theorem"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": ""
+  },
+  {
+   "id": "O043",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 E の四分類の表（正常な前提の証人）",
+   "evidence": {
+    "Release.Refinement.Ty.LeQ.refine": "constructor"
+   },
+   "readers": [
+    "Release.Refinement.Surface.Check.checkExprAt_sound"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.Check.checkExprAt_sound": {
+     "Release.Refinement.Ty.LeQ.refine": 8
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": ""
+  },
+  {
+   "id": "O044",
+   "group_or_class": "記録",
+   "verdict": "完了（L70 の分。記録）",
+   "four": "対象外（Lean の証拠なし）",
+   "witness": "",
+   "evidence": {},
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "D10",
+   "note": "V_Checked・V_CheckedRequest の写し（01-12）"
+  },
+  {
+   "id": "O046",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 D の四分類の表（desugar_typed の三前提を適用例で満たす）",
+   "evidence": {
+    "Release.Refinement.Surface.HasTypeQ.desugar": "theorem",
+    "Release.Refinement.Surface.HasBlockQ.desugar": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.Surface.HasBlockQ.desugar": 4
+    }
+   },
+   "unread_evidence": [
+    "Release.Refinement.Surface.HasTypeQ.desugar"
+   ],
+   "remaining": "なし",
+   "note": "規則は Entails を前提に読む"
+  },
+  {
+   "id": "O048",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 B の四分類の表（MainTheorems の三つの例）と群 K の空疎でない適用例",
+   "evidence": {
+    "Release.Refinement.Builtins.TargetAgreement.obs_allowed": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.reachable_target_sound"
+   ],
+   "paths": {
+    "Release.Refinement.reachable_target_sound": {
+     "Release.Refinement.Builtins.TargetAgreement.obs_allowed": 5
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R30/R50",
+   "note": ""
+  },
+  {
+   "id": "O051",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 B の四分類の表（MainTheorems の三つの例）と群 K の空疎でない適用例",
+   "evidence": {
+    "Release.Refinement.StartCondition.of_typed_noLamNames": "theorem"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": ""
+  },
+  {
+   "id": "O053",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 D の四分類の表（desugar_typed の三前提を適用例で満たす）",
+   "evidence": {
+    "Release.Refinement.Surface.HasTypeQ.desugar": "theorem",
+    "Release.Refinement.Surface.HasBlockQ.desugar": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.Surface.HasBlockQ.desugar": 4
+    }
+   },
+   "unread_evidence": [
+    "Release.Refinement.Surface.HasTypeQ.desugar"
+   ],
+   "remaining": "R10b",
+   "note": ""
+  },
+  {
+   "id": "O054",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 D の四分類の表（desugar_typed の三前提を適用例で満たす）",
+   "evidence": {
+    "Release.Refinement.Surface.HasTypeQ.desugar": "theorem",
+    "Release.Refinement.Surface.HasBlockQ.desugar": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.Surface.HasBlockQ.desugar": 4
+    }
+   },
+   "unread_evidence": [
+    "Release.Refinement.Surface.HasTypeQ.desugar"
+   ],
+   "remaining": "R10b",
+   "note": ""
+  },
+  {
+   "id": "O065",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 C の `StandardModel.ApplicationExamples.user_guarantees`",
+   "evidence": {
+    "Release.Refinement.StandardModel.completion_core": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.StandardModel.included_guarantees"
+   ],
+   "paths": {
+    "Release.Refinement.StandardModel.included_guarantees": {
+     "Release.Refinement.StandardModel.completion_core": 3
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "note": ""
+  },
+  {
+   "id": "O084",
+   "group_or_class": "共通",
+   "verdict": "完了（L70 の分。記録）",
+   "four": "対象外（Lean の証拠なし）",
+   "witness": "",
+   "evidence": {},
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R/K",
+   "note": "篩・σ・external の差の切り分けの記録（各群の results.md）と停止条件"
+  },
+  {
+   "id": "O087",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 C の `StandardModel.ApplicationExamples.user_guarantees`",
+   "evidence": {
+    "Release.Refinement.ExternalNominal.transformations": "theorem",
+    "Release.Refinement.Program.ExternalWF": "inductive"
+   },
+   "readers": [
+    "Release.Refinement.StandardModel.included_guarantees"
+   ],
+   "paths": {
+    "Release.Refinement.StandardModel.included_guarantees": {
+     "Release.Refinement.Program.ExternalWF": 2
+    }
+   },
+   "unread_evidence": [
+    "Release.Refinement.ExternalNominal.transformations"
+   ],
+   "remaining": "R50",
+   "note": "外部型の名目性の移送は既定ビルドの定理。系は外部宣言の表の整形式を読む"
+  },
+  {
+   "id": "O097",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 U の四分類の表（`ScopePublic.program`）",
+   "evidence": {
+    "Release.Refinement.Detail.publicTree_typed": "theorem"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R30/R60",
+   "note": ""
+  },
+  {
+   "id": "O118",
+   "group_or_class": "共通",
+   "verdict": "完了（L70 の分。記録）",
+   "four": "対象外（Lean の証拠なし）",
+   "witness": "",
+   "evidence": {},
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R50/R60/D10/V10",
+   "note": "段の追加・変更モジュールのコメントに工程 ID なし（h/comments.json）"
+  },
+  {
+   "id": "O135",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "witness": "群 D の四分類の表（desugar_typed の三前提を適用例で満たす）",
+   "evidence": {
+    "Release.Refinement.Surface.HasTypeQ.desugar": "theorem",
+    "Release.Refinement.Surface.HasBlockQ.desugar": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.Surface.HasBlockQ.desugar": 4
+    }
+   },
+   "unread_evidence": [
+    "Release.Refinement.Surface.HasTypeQ.desugar"
+   ],
+   "remaining": "R10b/R40/R50/V10",
+   "note": "通常 decoder の接続は他段"
+  }
+ ],
+ "inputs": {
+  "tables.md": {
+   "bytes": 21851,
+   "sha256": "cfadaaed7dab7fb933753802007562039be201145eb944e2f489269b014dd427"
+  },
+  "obligations.py": {
+   "bytes": 31032,
+   "sha256": "98a5805bd03d8b1aca82bb73137429e1c92988e3c6f038b4e462e23ece90156c"
+  }
+ },
+ "paths": {
+  "note": "経路の長さ（読者から証拠までの定数の数）だけを残す",
+  "full": {
+   "bytes": 36758,
+   "sha256": "c980edd7db5f7053c6b46eb1d5fa4336939769fa7eba8ca907061d46ae9b47a8"
+  }
+ }
+}

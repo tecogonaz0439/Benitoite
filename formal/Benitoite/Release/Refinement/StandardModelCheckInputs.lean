@@ -72,7 +72,7 @@ theorem integer_inputs (externals : List (ExternalKey × ExternalDecl)) (n : Int
       Ctx.Readable,Term.Shape,Ty.HasSort,Ty.sort?,Ordinary,Ty.core]
   · simp [nonnegative,Ty.Declared,Pred.Declared,Term.Declared,Ctx.declarationSelf,Ctx.Readable,Ctx.extend,Ty.shiftV,Ordinary]
 
-/-- Ok と CheckError は同じ全入力条件で、D19 の真偽に従って分かれる。 -/
+/-- Ok と CheckError は同じ全入力条件で、篩の閉じた評価の真偽に従って分かれる。 -/
 theorem integer_accept_reject (render : Ty → String) :
     delta render PublicNames.checkName [.base .integer,nonnegative] [] [] [.const (.integer ⟨1,by decide⟩)] =
       some (.val (ok nonnegative (.const (.integer ⟨1,by decide⟩)))) ∧

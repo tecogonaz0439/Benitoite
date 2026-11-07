@@ -1,5 +1,7 @@
 import Benitoite.Release.Refinement.StepLeafSelection
 import Benitoite.Release.Refinement.ContinuationGeneral
+import Benitoite.Release.Refinement.BuilderStore
+import Benitoite.Release.Refinement.IntervalControlLeaves
 
 /-! # 構築器・継続破棄・資源の解放の具体的な全状態の適用例 -/
 namespace Benitoite.Release.Refinement.HandlerStoreExamples
@@ -548,6 +550,102 @@ theorem concrete_release_frames (σ : PathEnv) (escape : Bool) :
         (.run (Closure.pure (if escape then .escape (.const .unit) else .ret (.const .unit))) [.release resource] Store.empty) event dest := by
   refine ⟨_,_,step_release_selected (escape := escape) (w := .const .unit) ?_ ((release_cont σ).release_response_exists model_core)⟩
   cases escape <;> rfl
+
+/-- 専用項の一歩（新しい専用セルと String の copy）は事象を伴わず、Reference の値セルを変えない。 -/
+theorem builder_steps_keep_ordinary (σ : PathEnv) :
+    (∃ ev s', Step modelProgram modelBuiltins σ
+        (.run (Closure.pure (.builderLet .string (.ret (.const .unit)))) [] Store.empty) ev s' ∧
+      ev = none ∧ OrdinaryStoreEq Store.empty (Store.empty.set 0 (.builder (.string "")))) ∧
+    (∃ ev s', Step modelProgram modelBuiltins σ
+        (.run (Closure.pure (.builderOp .string .copy (.loc 0) [])) []
+          (Store.empty.set 0 (.builder (.string "")))) ev s' ∧
+      ev = none ∧ OrdinaryStoreEq (Store.empty.set 0 (.builder (.string "")))
+        ((Store.empty.set 0 (.builder (.string ""))).set 0 (.builder (.string "")))) := by
+  have hnew : Step modelProgram modelBuiltins σ
+      (.run (Closure.pure (.builderLet .string (.ret (.const .unit)))) [] Store.empty) none
+      (.run (Closure.mk Capture.empty ((Comp.ret (.const .unit)).subst builderValueSubst (builderLocalSubst 0)))
+        [] (Store.empty.set 0 (.builder (BuilderKind.empty .string)))) :=
+    .E_BuilderNew (kind := .string) rfl rfl
+  have hop : Step modelProgram modelBuiltins σ
+      (.run (Closure.pure (.builderOp .string .copy (.loc 0) [])) [] (Store.empty.set 0 (.builder (.string ""))))
+      none (.run (Closure.pure (.ret (.const (.string "")))) []
+        ((Store.empty.set 0 (.builder (.string ""))).set 0 (.builder (.string "")))) :=
+    .E_BuilderOp (kind := .string) rfl (by simp [Store.set]) rfl
+  exact ⟨⟨_,_,hnew,builder_step_no_event (hs := hnew) (by trivial),builder_step_frame (hs := hnew) (by trivial)⟩,
+    ⟨_,_,hop,builder_step_no_event (hs := hop) (by trivial),builder_step_frame (hs := hop) (by trivial)⟩⟩
+
+/-- 型の付いた具体のストアで、捕捉の保存継続を新しい場所に置いても専用セルが同じ場所と内容で残る。 -/
+theorem builder_cell_capture (σ : PathEnv) :
+    ∃ Ψ kind c, StoreOk modelProgram modelBuiltins σ Ψ (Store.empty.set 0 (.builder (.string ""))) ∧
+      (Store.empty.set 0 (.builder (.string ""))) 0 = some (.builder c) ∧
+      ((Store.empty.set 0 (.builder (.string ""))).set 1 (.cont saved)) 0 = some (.builder c) ∧
+      BuilderCellOk modelProgram modelBuiltins (Ψ.put 1 location) kind c := by
+  obtain ⟨Ψ,_,_,_,_,_,hs,_⟩ := string_builder_copy σ
+  obtain ⟨kind,hl,_⟩ := hs.cell 0 (.builder (.string "")) (by simp [Store.set])
+  have hf : Ψ 1 = none := by
+    cases hx : Ψ 1 with
+    | none => rfl
+    | some x => exact False.elim (hs.domain 1 x hx (by simp [Store.set,Store.empty]))
+  obtain ⟨c,hc,hc',ht⟩ := capture_builder_cell (saved := saved) (ct := location) model_core.values hs hf hl
+  exact ⟨Ψ,kind,c,hs,hc,hc',ht⟩
+
+/-- 未使用の継続と専用セルを持つ具体のストアで、再開の更新は専用セルの場所と内容を保ち、
+構築器だけの保存継続の破棄は事象も解放枠も足さない。 -/
+theorem builder_cell_resume_drop (σ : PathEnv) :
+    (∃ c, (savedStore.set 1 (.builder (.string ""))) 1 = some (.builder c) ∧
+      ((savedStore.set 1 (.builder (.string ""))).set 0 .used) 1 = some (.builder c) ∧
+      BuilderCellOk modelProgram modelBuiltins (storeType.put 1 (.builder .string)) .string c) ∧
+    (∃ ev s', Step modelProgram modelBuiltins σ (.run (Closure.pure (.ret value)) [.drop 0] savedStore) ev s' ∧
+      ev = none ∧ s' = .run (Closure.pure (.ret value)) [] (savedStore.set 0 .used)) ∧
+    OrdinaryStoreEq savedStore (savedStore.set 0 .used) := by
+  have hcell : CellOk modelProgram modelBuiltins σ (storeType.put 1 (.builder .string)) 1 (.builder (.string "")) :=
+    ⟨.string,by simp [StoreTy.put],⟨by simp [BuilderContents.size],trivial⟩,trivial⟩
+  have hs := (saved_ok σ).allocate_cell model_core.values (l := 1) (x := .builder .string)
+    (by simp [savedStore,Store.set,Store.empty]) trivial trivial trivial hcell
+  have hl : savedStore 0 = some (.cont saved) := by simp [savedStore,Store.set]
+  have hstep : Step modelProgram modelBuiltins σ (.run (Closure.pure (.ret value)) [.drop 0] savedStore) none
+      (.run (Closure.pure (.ret value)) (releases saved ++ []) (savedStore.set 0 .used)) :=
+    .E_DropRel rfl hl
+  have hb : BuilderOnlyFrames saved := by intro f hf; cases List.mem_singleton.mp hf; trivial
+  exact ⟨resume_builder_cell hs (κ := 0) (saved := saved) (by simp [Store.set,hl]) (by simp [StoreTy.put]),
+    ⟨_,_,hstep,drop_local_silent rfl hl (builder_frames_releases_nil hb) hstep⟩,drop_local_frame hl⟩
+
+
+/-- 二つの専用項の一歩の通常セルの比較を合成し、逆向きにも読む（新しい専用セルの後に同じ場所の更新）。 -/
+theorem builder_steps_ordinary_compose :
+    OrdinaryStoreEq Store.empty ((Store.empty.set 0 (.builder (.string ""))).set 0 (.builder (.string ""))) ∧
+      OrdinaryStoreEq ((Store.empty.set 0 (.builder (.string ""))).set 0 (.builder (.string ""))) Store.empty := by
+  have h := OrdinaryStoreEq.trans (builder_new_frame (μ := Store.empty) (l := 0) (c := .string "") rfl)
+    (builder_update_frame (l := 0) (old := .string "") (c := .string "") (by simp [Store.set]))
+  exact ⟨h, h.symm⟩
+
+
+/-- 使用済みの継続の再開は、空の継続と使用済みの場所を持つ型付きの開始から一歩で error へ進む。 -/
+theorem resume_used_start (σ : PathEnv) :
+    StateTyE modelProgram modelBuiltins σ empty
+      (.run (Closure.pure (.resume (.loc 0) value)) [] usedStore) := by
+  have hk : ContTy modelProgram modelBuiltins σ storeType none empty [] result result empty none :=
+    .K_Empty (sub_refl _) result_annotation
+  have ht : HasTypeCQ modelProgram modelBuiltins storeType Qempty [] [] [] none
+      (.resume (.loc 0) value) result empty [] :=
+    .C_ResumeL (b := result) (by simp [storeType,StoreTy.put,location]) (value_typed _) trivial
+  have hq := ClosureTy.pure ht result_annotation.done_empty (by intros; contradiction) result_normal
+    (by intros; contradiction)
+  exact ⟨storeType,none,result,result,empty,empty,used_ok σ,hq,sub_refl _,hk,
+    ⟨trivial,⟨trivial,⟨trivial,trivial⟩⟩⟩,⟨trivial,⟨trivial,⟨trivial,trivial⟩⟩⟩,no_frames_closed,store_closed.1⟩
+
+/-- 最初の失敗の受渡し（`IntervalControlLeaves.typed_first_failure`）の前提を満たす具体の入力。型付きの開始と、
+使用済みの継続の再開で error に至る有限実行を与え、受渡しの定理を適用する。 -/
+theorem first_failure_witness (σ : PathEnv) :
+    StateTyE modelProgram modelBuiltins σ empty (.run (Closure.pure (.resume (.loc 0) value)) [] usedStore) ∧
+      Steps modelProgram modelBuiltins σ (.run (Closure.pure (.resume (.loc 0) value)) [] usedStore) []
+        (.error [rResume] [] usedStore) ∧
+      (State.run (Closure.pure (.resume (.loc 0) value)) [] usedStore).Inputs modelProgram modelBuiltins σ empty := by
+  have h := resume_used_start σ
+  have r : Steps modelProgram modelBuiltins σ (.run (Closure.pure (.resume (.loc 0) value)) [] usedStore) []
+      (.error [rResume] [] usedStore) :=
+    .cons (.E_ResumeErr rfl (by simp [usedStore,Store.set])) .nil
+  exact ⟨h, r, (IntervalControlLeaves.typed_first_failure h r).1⟩
 
 end
 end Benitoite.Release.Refinement.HandlerStoreExamples

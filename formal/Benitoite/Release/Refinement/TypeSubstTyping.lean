@@ -5,8 +5,6 @@ import Benitoite.Release.Refinement.TypeSubstAux
 
 namespace Benitoite.Release.Refinement.S02Internal
 variable {P : Program} {B : Builtins}
-set_option maxRecDepth 4096
-set_option maxHeartbeats 2000000
 
 theorem case_V_Var :
 ∀ {Ψ : StoreTy} {Q : Benitoite.Release.NoFailCtx} {C : TypeCtx} {Γ : Ctx} {Φ : List Pred} {i : Nat} {a : Ty},

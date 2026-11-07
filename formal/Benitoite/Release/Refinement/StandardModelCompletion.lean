@@ -272,7 +272,7 @@ structure Builtins.ComposedAgree (L : StandardModel.NameLists) (S B : Builtins) 
   refGet : B.refGet = S.refGet
   refSet : B.refSet = S.refSet
 
-/-- 衝突18名の公開名が指す内部名。R40 の後の標準ライブラリは精密側を指す。 -/
+/-- 衝突18名の公開名が指す内部名。公開名は精密側を指す（設計書 07-04「篩を含む形式化の範囲」）。 -/
 def FunctionNames.publicTarget (n : String) : String :=
   if n ∈ FunctionNames.collisionNames then FunctionNames.rename true n else n
 

@@ -7,8 +7,6 @@ noncomputable section
 namespace ScopeDelta
 open Scope.Domain ScopeSignatures ScopeDeclarations
 
-set_option maxRecDepth 4000
-set_option maxHeartbeats 2000000
 
 /- 純粋チェックが返す処理系と同じ説明。 -/
 namespace text

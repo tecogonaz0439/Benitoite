@@ -4,7 +4,6 @@ import Benitoite.Release.Refinement.HandlerContracts
 /-! 型置換と固定した宣言表の行支持（設計書 07-04「01-12 との対応」）。 -/
 namespace Benitoite.Release.Refinement.TypeSubstRowObstruction
 noncomputable section
-set_option maxHeartbeats 2000000
 
 def inner : Ty := .fn [] [] (.base .unit) (Eff.row 0)
 def ioSig : PrimSig := {

@@ -3,31 +3,30 @@ import Benitoite.Release.Model
 import Benitoite.Scope.RangeCover
 
 /-!
-# 範囲付きの組み込みの関数の表の項目（L20.7）
+# 範囲付きの組み込みの関数の表の項目
 
-決定の判断 8 と L00.08 の一括の問いの問 22（DET-03）・問 23（DET-04）の表の項目を、本番の署名 `PrimSig` で置く
-（plan-l10-l50 の注「表の項目」）。七つの IO（`File.readTextIn`・`readBytesIn`・`writeTextIn`・`appendTextIn`・
+範囲付きの組み込みの関数の表の項目と、誤り型 `Http.RequestCheckError` の構成子を、本番の署名 `PrimSig` で置く。七つの IO（`File.readTextIn`・`readBytesIn`・`writeTextIn`・`appendTextIn`・
 `writeBytesIn`・`appendBytesIn`・`Http.sendIn`）、検査（`Scope.checkPathIn`・`Http.checkRequestIn`）、射影
 （`Scope.pathInValue`・`Http.requestInValue`）、拡大（`Scope.widenPathIn`・`Http.widenRequestIn`）の 13 項目である。
-範囲の変数の個数は問 22 の表の右の列、七つの IO の形は単一の対象（`File.*In` は `single path 0`、`Http.sendIn` は
+範囲の変数の個数は各項目の署名の範囲の列の長さ、七つの IO の形は単一の対象（`File.*In` は `single path 0`、`Http.sendIn` は
 `single endpoint 0`）、効果は `L[rvar 0]` である。
 
-表のデータ（問 11）: `effKind` は `File.Read`・`File.Write` が path、`Http.Connect` が endpoint。`valKind` は
+表のデータ: `effKind` は `File.Read`・`File.Write` が path、`Http.Connect` が endpoint。`valKind` は
 `Scope.PathIn` が path、`Http.RequestIn` が endpoint。`admitsR` は、検査・射影・IO が一つの範囲を、拡大が入力の範囲
 R と戻りの範囲 S の組で S が R を覆うものを許す（種類の一致は `RangeAdmissible` の `FitsKind` が確かめる）。範囲付きの
-値型は資源の型にしない（`isResource = false`）。表のデータの正しさは信頼の対象であり、Rust の表との照合は R30・K10 が
-行う（設計書 07-04「形式化で仮定するもの」）。
+値型は資源の型にしない（`isResource = false`）。表のデータの正しさは信頼の対象であり、Rust の表との照合は形式化の外
+で行う（設計書 07-04「形式化で仮定するもの」）。
 
 δ と応答の関係（実装）は表の引数とし、本モジュールは項目の形の性質（`sig_scoped`・`io_op` の欄）だけを示す。
 δ と応答の関係を与えて全ての欄を満たす実例は `Release/ModelTargets.lean` にある。
 
-誤り型の構成子（問 23）: `Http.RequestCheckError` は `InvalidUrl(message: String)` と `Scope(error: Scope.ScopeError)`
+誤り型の構成子: `Http.RequestCheckError` は `InvalidUrl(message: String)` と `Scope(error: Scope.ScopeError)`
 の二つである（`requestCheckErrorCons`）。結果の型 `Result` の構成子の宣言はプログラムの側にある（`Release.Program.cons`）。
 
-`Http.RequestIn` の値は検査した要求を保持する（決定の判断 7）。値の形は検査済みの要求の値
+`Http.RequestIn` の値は検査した要求を保持する。値の形は検査済みの要求の値
 `Val.checkedRequest t req`（実効の endpoint の対象 t と、`Http.ClientRequest` のレコードの閉じた値 req）であり、表の
 データ `valContent` は `Http.RequestIn` の値が保持する要求の型を `Http.ClientRequest` のレコードの型 `clientRequestTy`
-とする（L40.3b・L40.3c）。`Http.checkRequestIn`・
+とする。`Http.checkRequestIn`・
 `Http.requestInValue`・`Http.sendIn` の δ と応答を与えて全ての欄を満たす実例は `Release/ModelHttp.lean` にある。
 -/
 
@@ -52,7 +51,7 @@ def responseTy : Ty := .opaqueTop "Http.Response"
 def clientRequestTy : Ty := .data "Http.ClientRequest" []
 def requestCheckErrorTy : Ty := .data "Http.RequestCheckError" []
 
-/-- `Http.RequestCheckError` の構成子（問 23 の DET-04）。 -/
+/-- `Http.RequestCheckError` の構成子。 -/
 def requestCheckErrorCons : ConName → Option ConDecl
   | "Http.RequestCheckError.InvalidUrl" => some ⟨"Http.RequestCheckError", 0, [.base .string]⟩
   | "Http.RequestCheckError.Scope" => some ⟨"Http.RequestCheckError", 0, [scopeErrorTy]⟩
@@ -223,7 +222,7 @@ theorem io_op {b : PrimName} {s : PrimSig} (h : (builtins delta ioResponse).sig 
         requestInValue, widenPathIn, widenRequestIn] at hk)
     | (refine ioIn_shapeOk (by simp [builtins, stateEff]; rfl) ?_ rfl rfl rfl; simp)
 
-/-- 範囲付きの値型は資源の型ではない（`release_exists` の量化を旧と同じに保つ。L20.4 の申し送り 8）。 -/
+/-- 範囲付きの値型は資源の型ではない（`release_exists` の量化を旧と同じに保つ）。 -/
 theorem not_resource (o : OpaqueName) : (builtins delta ioResponse).isResource o = false := rfl
 
 /-- 表のデータの値。 -/

@@ -11,7 +11,7 @@ def errorJson (e : Benitoite.Release.Refinement.Surface.Check.Error) : Json :=
   | .rejected => Json.mkObj [("path", toJson e.path), ("reason", toJson e.reason)]
   | .unknown => Json.mkObj [("path", toJson e.path), ("reason", toJson e.reason), ("kind", toJson "unknown")]
 
-/-- 型付けの誤りは従来の形（`error`）、必須の判定の拒否は出現の鍵と DET-05 の理由（`cover`）で書く。 -/
+/-- 型付けの誤りは従来の形（`error`）、必須の判定の拒否は出現の鍵と診断 E0519 の理由（`cover`）で書く。 -/
 def resultJson : Except Benitoite.Release.Refinement.Surface.CheckAccept.EntryError Unit → Json
   | .ok _ => Json.mkObj [("ok", toJson true)]
   | .error (.typing e) => Json.mkObj [("ok", toJson false), ("error", errorJson e)]

@@ -4,8 +4,6 @@ import Benitoite.Release.Refinement.StandardSafeBodies
 namespace Benitoite.Release.Refinement.StandardSafeSlice
 open InternalContracts StandardSafe
 noncomputable section
-set_option maxRecDepth 5000
-set_option maxHeartbeats 1000000
 set_option linter.unusedSimpArgs false
 
 /-- 実組込みと同じfront/backの検査。列の全長に機械整数の上限を仮定しない。 -/

@@ -2,12 +2,11 @@ import Benitoite.Scope.TopCompat
 import Benitoite.Scope.RepresentationExamplesI
 
 /-!
-# 旧 Top との互換の例と、構造の等号の利用側の試し（L00.06 のモデル）
+# 旧 Top との互換の例と、構造の等号の利用側の試し
 
-0.0.13 の L00.06 のモデルである。採用定義 `Scope.TopCompat`（`TopEmbedding`・`GEff`・`lift`）を、採用した案 (i) の
-L00.01 のモデルの原子（`CandidateI.Atom`）で具体化し、旧の言明を Top の互換の系として取り戻す例と、意味の被覆の
-相互包含から等号を導かない反例（判断 5。`semCovers_not_eq`）を置く。採らなかった案 (ii) の原子の具体化は
-L00.08 で消した。範囲の位置 `Ix` を持つ原子での具体化は `Scope.SwitchExamples` の 5 節にある。
+採用定義 `Scope.TopCompat`（`TopEmbedding`・`GEff`・`lift`）を、原子のモデル（`CandidateI.Atom`）で具体化し、旧の言明を
+Top の互換の系として取り戻す例と、意味の被覆の相互包含から等号を導かない反例（`semCovers_not_eq`）を置く。
+範囲の位置 `Ix` を持つ原子での具体化は `Scope.SwitchExamples` の 5 節にある。
 -/
 
 namespace Benitoite.Scope.CompatExamples

@@ -1,0 +1,175 @@
+{
+ "note": "群 H3 の監査の担当が本番から外した設定（外した写しの単独の検査で既定値で終了0。34箇所を同時に外した既定ビルドも終了0）。行は外す前の行番号。",
+ "removed": [
+  {
+   "file": "Benitoite/Release/Refinement/CallBodyScope.lean",
+   "line": 7,
+   "text": "set_option maxRecDepth 4096"
+  },
+  {
+   "file": "Benitoite/Release/Refinement/CurrentSignatureRows.lean",
+   "line": 10,
+   "text": "set_option maxHeartbeats 2000000"
+  },
+  {
+   "file": "Benitoite/Release/Refinement/HandlerTyping.lean",
+   "line": 6,
+   "text": "set_option maxHeartbeats 2000000"
+  },
+  {
+   "file": "Benitoite/Release/Refinement/Narrowing.lean",
+   "line": 13,
+   "text": "set_option maxHeartbeats 2000000"
+  },
+  {
+   "file": "Benitoite/Release/Refinement/Narrowing.lean",
+   "line": 12,
+   "text": "set_option maxRecDepth 4096"
+  },
+  {
+   "file": "Benitoite/Release/Refinement/RequestDelta.lean",
+   "line": 8,
+   "text": "set_option maxHeartbeats 2000000"
+  },
+  {
+   "file": "Benitoite/Release/Refinement/RequestDelta.lean",
+   "line": 7,
+   "text": "set_option maxRecDepth 4000"
+  },
+  {
+   "file": "Benitoite/Release/Refinement/ScopeDelta.lean",
+   "line": 11,
+   "text": "set_option maxHeartbeats 2000000"
+  },
+  {
+   "file": "Benitoite/Release/Refinement/ScopeDelta.lean",
+   "line": 10,
+   "text": "set_option maxRecDepth 4000"
+  },
+  {
+   "file": "Benitoite/Release/Refinement/StandardAliasBodies.lean",
+   "line": 6,
+   "text": "set_option maxRecDepth 5000"
+  },
+  {
+   "file": "Benitoite/Release/Refinement/StandardCollectionBodies.lean",
+   "line": 350,
+   "text": "set_option maxHeartbeats 1000000 in"
+  },
+  {
+   "file": "Benitoite/Release/Refinement/StandardCollectionBodies.lean",
+   "line": 287,
+   "text": "set_option maxHeartbeats 1000000 in"
+  },
+  {
+   "file": "Benitoite/Release/Refinement/StandardCollectionBodies.lean",
+   "line": 240,
+   "text": "set_option maxHeartbeats 1000000 in"
+  },
+  {
+   "file": "Benitoite/Release/Refinement/StandardCollectionRefinedBodies.lean",
+   "line": 184,
+   "text": "set_option maxHeartbeats 2000000 in"
+  },
+  {
+   "file": "Benitoite/Release/Refinement/StandardCollectionRefinedBodies.lean",
+   "line": 132,
+   "text": "set_option maxHeartbeats 2000000 in"
+  },
+  {
+   "file": "Benitoite/Release/Refinement/StandardCollectionRefinedBodies.lean",
+   "line": 8,
+   "text": "set_option maxRecDepth 5000"
+  },
+  {
+   "file": "Benitoite/Release/Refinement/StandardHeadTailBodies.lean",
+   "line": 7,
+   "text": "set_option maxRecDepth 5000"
+  },
+  {
+   "file": "Benitoite/Release/Refinement/StandardOrdinaryCoreBodies.lean",
+   "line": 9,
+   "text": "set_option maxRecDepth 5000"
+  },
+  {
+   "file": "Benitoite/Release/Refinement/StandardOrdinaryCoreProgram.lean",
+   "line": 8,
+   "text": "set_option maxRecDepth 6000"
+  },
+  {
+   "file": "Benitoite/Release/Refinement/StandardOrdinaryListBodies.lean",
+   "line": 6,
+   "text": "set_option maxRecDepth 5000"
+  },
+  {
+   "file": "Benitoite/Release/Refinement/StandardSafeAccess.lean",
+   "line": 10,
+   "text": "set_option maxHeartbeats 1000000"
+  },
+  {
+   "file": "Benitoite/Release/Refinement/StandardSafeAccess.lean",
+   "line": 9,
+   "text": "set_option maxRecDepth 5000"
+  },
+  {
+   "file": "Benitoite/Release/Refinement/StandardSafeBodies.lean",
+   "line": 8,
+   "text": "set_option maxHeartbeats 1000000"
+  },
+  {
+   "file": "Benitoite/Release/Refinement/StandardSafeBodies.lean",
+   "line": 7,
+   "text": "set_option maxRecDepth 5000"
+  },
+  {
+   "file": "Benitoite/Release/Refinement/StandardSafeSlice.lean",
+   "line": 8,
+   "text": "set_option maxHeartbeats 1000000"
+  },
+  {
+   "file": "Benitoite/Release/Refinement/StandardSafeSlice.lean",
+   "line": 7,
+   "text": "set_option maxRecDepth 5000"
+  },
+  {
+   "file": "Benitoite/Release/Refinement/SubstTyping.lean",
+   "line": 14,
+   "text": "set_option maxHeartbeats 1600000"
+  },
+  {
+   "file": "Benitoite/Release/Refinement/SubstTypingObstruction.lean",
+   "line": 15,
+   "text": "set_option maxHeartbeats 2000000"
+  },
+  {
+   "file": "Benitoite/Release/Refinement/TypeSubstCallSites.lean",
+   "line": 7,
+   "text": "set_option maxHeartbeats 2000000"
+  },
+  {
+   "file": "Benitoite/Release/Refinement/TypeSubstCalls.lean",
+   "line": 8,
+   "text": "set_option maxHeartbeats 2000000"
+  },
+  {
+   "file": "Benitoite/Release/Refinement/TypeSubstGateExamples.lean",
+   "line": 6,
+   "text": "set_option maxHeartbeats 4000000"
+  },
+  {
+   "file": "Benitoite/Release/Refinement/TypeSubstRowObstruction.lean",
+   "line": 7,
+   "text": "set_option maxHeartbeats 2000000"
+  },
+  {
+   "file": "Benitoite/Release/Refinement/TypeSubstTyping.lean",
+   "line": 9,
+   "text": "set_option maxHeartbeats 2000000"
+  },
+  {
+   "file": "Benitoite/Release/Refinement/TypeSubstTyping.lean",
+   "line": 8,
+   "text": "set_option maxRecDepth 4096"
+  }
+ ]
+}

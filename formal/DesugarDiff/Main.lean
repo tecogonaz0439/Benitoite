@@ -438,7 +438,7 @@ def run (args : List String) : IO UInt32 := do
   printSummary "random" random
   for m in mismatches do
     IO.println s!"mismatch: {m.group}/{m.input}: {m.definition}: {m.path}"
-  -- Top でない範囲の数。全て Top だけの入力の一致を範囲の比較の成功に数えないための件数である（L50.2）。
+  -- Top でない範囲の数。全て Top だけの入力の一致を範囲の比較の成功に数えないための件数である。
   let nonTop := countNonTopRanges (← IO.ofExcept (exchangeJson "corpus" json))
   IO.FS.writeFile report ((Json.mkObj [("golden", toJson golden), ("random", toJson random),
     ("mismatches", toJson mismatches), ("nonTopRanges", toJson nonTop)]).pretty ++ "\n")

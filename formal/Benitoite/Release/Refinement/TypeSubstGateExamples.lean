@@ -3,7 +3,6 @@ import Benitoite.Release.Refinement.TypeSubstCalls
 /-! 型引数と注釈の本体の境界（設計書 07-04「01-12 との対応」）。 -/
 namespace Benitoite.Release.Refinement.TypeSubstGateExamples
 noncomputable section
-set_option maxHeartbeats 4000000
 
 private theorem singleton_kinded {P : Program} {C : TypeCtx} {a : Ty} {k : TyKind} (hk : a.HasKind P (TypeCtx.kinds C) k)
     (ho : k = .value → Ordinary a) : TypeArgsKinded P C [a] [k] := by

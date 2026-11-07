@@ -1,0 +1,2956 @@
+{
+ "counts": {
+  "handoffs": {
+   "完了（L70 の分）": 66,
+   "完了（L70 の分。読者を要しない）": 1,
+   "完了（L70 の分。記録）": 10,
+   "他段": 1
+  },
+  "obligations": {
+   "完了（L70 の分）": 48,
+   "完了（L70 の分。記録）": 9,
+   "他段": 2
+  },
+  "four_handoffs": {
+   "実質": 64,
+   "自明": 1,
+   "対象外（Lean の証拠なし）": 11,
+   "対象外（定義が判定の対象）": 2
+  },
+  "four_obligations": {
+   "実質": 45,
+   "対象外（Lean の証拠なし）": 11,
+   "自明": 2,
+   "対象外（定義が判定の対象）": 1
+  },
+  "with_reader": 92,
+  "group_h": {
+   "handoffs": {
+    "完了（L70 の分）": 65,
+    "完了（L70 の分。読者を要しない）": 1,
+    "完了（L70 の分。記録）": 11,
+    "他段": 1
+   },
+   "obligations": {
+    "完了（L70 の分）": 49,
+    "完了（L70 の分。記録）": 8,
+    "他段": 2
+   },
+   "four_handoffs": {
+    "実質": 66,
+    "自明": 1,
+    "対象外（Lean の証拠なし）": 11
+   },
+   "four_obligations": {
+    "実質": 48,
+    "対象外（Lean の証拠なし）": 11
+   }
+  },
+  "revised": {
+   "handoffs": 29,
+   "obligations": 26
+  },
+  "group_h_flags": {
+   "unread": 27,
+   "no_theorem": 24
+  }
+ },
+ "main_readers": [
+  {
+   "reader": "Release.Refinement.progress",
+   "evidence": "Release.Refinement.ProgressStatement",
+   "where": "type",
+   "path_length": 2
+  },
+  {
+   "reader": "Release.Refinement.preservation",
+   "evidence": "Release.Refinement.PreservationStatement",
+   "where": "type",
+   "path_length": 2
+  },
+  {
+   "reader": "Release.Refinement.preservation",
+   "evidence": "Release.Refinement.StateTyE.step_preserved",
+   "where": "value",
+   "path_length": 2
+  },
+  {
+   "reader": "Release.Refinement.steps_preservation",
+   "evidence": "Release.Refinement.StepsPreservationStatement",
+   "where": "type",
+   "path_length": 2
+  },
+  {
+   "reader": "Release.Refinement.step_sound",
+   "evidence": "Release.Refinement.StepSoundStatement",
+   "where": "type",
+   "path_length": 2
+  },
+  {
+   "reader": "Release.Refinement.initial_typing",
+   "evidence": "Release.Refinement.InitialTypingStatement",
+   "where": "type",
+   "path_length": 2
+  },
+  {
+   "reader": "Release.Refinement.effect_soundness",
+   "evidence": "Release.Refinement.EffectSoundnessStatement",
+   "where": "type",
+   "path_length": 2
+  },
+  {
+   "reader": "Release.Refinement.step_target_sound",
+   "evidence": "Release.Refinement.StepTargetStatement",
+   "where": "type",
+   "path_length": 2
+  },
+  {
+   "reader": "Release.Refinement.reachable_target_sound",
+   "evidence": "Release.Refinement.ReachableTargetStatement",
+   "where": "type",
+   "path_length": 2
+  },
+  {
+   "reader": "Release.Refinement.reachable_target_sound_event",
+   "evidence": "Release.Refinement.ReachableTargetEventStatement",
+   "where": "type",
+   "path_length": 2
+  },
+  {
+   "reader": "Release.Refinement.Surface.desugar_typed",
+   "evidence": "Release.Refinement.Surface.HasBlockQ.desugar",
+   "where": "value",
+   "path_length": 4
+  },
+  {
+   "reader": "Release.Refinement.Surface.surface_effect_soundness",
+   "evidence": "Release.Refinement.Surface.desugar_typed",
+   "where": "value",
+   "path_length": 2
+  },
+  {
+   "reader": "Release.Refinement.Surface.surface_effect_soundness",
+   "evidence": "Release.Refinement.effect_soundness",
+   "where": "value",
+   "path_length": 2
+  },
+  {
+   "reader": "Release.Refinement.Surface.surface_target_sound",
+   "evidence": "Release.Refinement.Surface.desugar_typed",
+   "where": "value",
+   "path_length": 2
+  },
+  {
+   "reader": "Release.Refinement.Surface.surface_target_sound",
+   "evidence": "Release.Refinement.reachable_target_sound",
+   "where": "value",
+   "path_length": 2
+  },
+  {
+   "reader": "Release.Refinement.StandardModel.included_guarantees",
+   "evidence": "Release.Refinement.StandardModel.completion_core",
+   "where": "value",
+   "path_length": 3
+  },
+  {
+   "reader": "Release.Refinement.StandardModel.included_guarantees",
+   "evidence": "Release.Refinement.progress",
+   "where": "value",
+   "path_length": 3
+  },
+  {
+   "reader": "Release.Refinement.StandardModel.included_guarantees",
+   "evidence": "Release.Refinement.reachable_target_sound",
+   "where": "value",
+   "path_length": 3
+  },
+  {
+   "reader": "Release.Refinement.Surface.surface_guarantees",
+   "evidence": "Release.Refinement.StandardModel.included_guarantees",
+   "where": "value",
+   "path_length": 2
+  },
+  {
+   "reader": "Release.Refinement.Surface.surface_guarantees",
+   "evidence": "Release.Refinement.Surface.HasBlockQ.desugar",
+   "where": "value",
+   "path_length": 5
+  },
+  {
+   "reader": "Release.Refinement.Surface.CheckAccept.checkProgramAccepted_sound",
+   "evidence": "Release.Refinement.Surface.CheckTables.checkProgram_sound",
+   "where": "value",
+   "path_length": 2
+  },
+  {
+   "reader": "Release.Refinement.Surface.checkProgramAccepted_main",
+   "evidence": "Release.Refinement.Surface.CheckAccept.checkProgramAccepted_sound",
+   "where": "value",
+   "path_length": 2
+  },
+  {
+   "reader": "Release.Refinement.Surface.CheckedMainExamples.main_guarantees",
+   "evidence": "Release.Refinement.Surface.checkProgramAccepted_main",
+   "where": "value",
+   "path_length": 2
+  },
+  {
+   "reader": "main@@SurfaceCheck.Main",
+   "evidence": "Release.Refinement.Surface.CheckAccept.checkProgramAccepted",
+   "where": "value",
+   "path_length": 4
+  },
+  {
+   "reader": "main@@SurfaceCheck.Main",
+   "evidence": "Exchange.CheckInput.prepare",
+   "where": "value",
+   "path_length": 3
+  },
+  {
+   "reader": "main@@DesugarDiff.Main",
+   "evidence": "Release.Refinement.Surface.desugarProgram",
+   "where": "value",
+   "path_length": 5
+  },
+  {
+   "reader": "main@@CoverageDiff.Main",
+   "evidence": "Release.Refinement.checkMatchWithView",
+   "where": "value",
+   "path_length": 4
+  },
+  {
+   "reader": "main@@IntervalDiff.Main",
+   "evidence": "Release.Refinement.IntervalReport.connect",
+   "where": "value",
+   "path_length": 8
+  },
+  {
+   "reader": "Release.Refinement.Program.extends_typing",
+   "evidence": "Release.Refinement.Program.ExtendsTypingStatement",
+   "where": "type",
+   "path_length": 2
+  },
+  {
+   "reader": "Release.Refinement.Program.extends_exhaustive",
+   "evidence": "Release.Refinement.Program.ExtendsExhaustiveStatement",
+   "where": "type",
+   "path_length": 2
+  },
+  {
+   "reader": "Release.Refinement.Program.extends_declaration",
+   "evidence": "Release.Refinement.Program.ExtendsDeclarationStatement",
+   "where": "type",
+   "path_length": 2
+  },
+  {
+   "reader": "Release.Refinement.Program.compose",
+   "evidence": "Release.Refinement.Program.ComposeStatement",
+   "where": "type",
+   "path_length": 2
+  },
+  {
+   "reader": "Release.Refinement.StandardModel.composed_rows",
+   "evidence": "Release.Refinement.StandardModel.ComposedRowsStatement",
+   "where": "type",
+   "path_length": 2
+  },
+  {
+   "reader": "Release.Refinement.StandardModel.composed_release",
+   "evidence": "Release.Refinement.StandardModel.ComposedReleaseStatement",
+   "where": "type",
+   "path_length": 2
+  },
+  {
+   "reader": "Release.Refinement.StandardModel.table_conditions",
+   "evidence": "Release.Refinement.StandardModel.TableConditionsStatement",
+   "where": "type",
+   "path_length": 2
+  },
+  {
+   "reader": "Release.Refinement.StandardModel.completion_core",
+   "evidence": "Release.Refinement.StandardModel.CompletionCoreStatement",
+   "where": "type",
+   "path_length": 2
+  },
+  {
+   "reader": "main@@BuiltinCheck.Main",
+   "evidence": "Exchange.BuiltinEntry.toMaterial",
+   "where": "value",
+   "path_length": 4
+  },
+  {
+   "reader": "main@@SurfaceCheck.All",
+   "evidence": "Release.Refinement.Surface.CheckDeclarations.checkDef",
+   "where": "value",
+   "path_length": 4
+  },
+  {
+   "reader": "main@@SurfaceCheck.All",
+   "evidence": "Exchange.CheckInput.prepare",
+   "where": "value",
+   "path_length": 3
+  },
+  {
+   "reader": "main@@CoverageProgramDiff.Main",
+   "evidence": "Release.Refinement.checkMatchWithView",
+   "where": "value",
+   "path_length": 4
+  },
+  {
+   "reader": "main@@CoverageProgramDiff.Main",
+   "evidence": "Release.Refinement.irrefutableWithView",
+   "where": "value",
+   "path_length": 4
+  }
+ ],
+ "handoffs": [
+  {
+   "id": "L60-H01",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.initial_typing": "theorem",
+    "Release.Refinement.StandardModel.core": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.StandardModel.included_guarantees"
+   ],
+   "paths": {
+    "Release.Refinement.StandardModel.included_guarantees": {
+     "Release.Refinement.initial_typing": 3,
+     "Release.Refinement.StandardModel.core": 5
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": false
+  },
+  {
+   "id": "L60-H02",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分。読者を要しない）",
+   "four": "自明",
+   "evidence": {
+    "Release.Refinement.Step.E_ExternalApply": "constructor"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": true
+  },
+  {
+   "id": "L60-H03",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.ScopeResponse.response": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.StandardModel.included_guarantees"
+   ],
+   "paths": {
+    "Release.Refinement.StandardModel.included_guarantees": {
+     "Release.Refinement.ScopeResponse.response": 7
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R30/R50",
+   "revision": false
+  },
+  {
+   "id": "L60-H04",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.ScopedIOResponse.response": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.StandardModel.included_guarantees"
+   ],
+   "paths": {
+    "Release.Refinement.StandardModel.included_guarantees": {
+     "Release.Refinement.ScopedIOResponse.response": 7
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R30/R50",
+   "revision": false
+  },
+  {
+   "id": "L60-H06",
+   "group_or_class": "C",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.SignatureScoped.ofExtends": "theorem",
+    "Release.Refinement.StandardModel.RowEnv.ofAgree": "definition"
+   },
+   "readers": [
+    "Release.Refinement.StandardModel.included_guarantees"
+   ],
+   "paths": {
+    "Release.Refinement.StandardModel.included_guarantees": {
+     "Release.Refinement.SignatureScoped.ofExtends": 6,
+     "Release.Refinement.StandardModel.RowEnv.ofAgree": 5
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R10b",
+   "revision": false
+  },
+  {
+   "id": "L60-H08",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.StartCondition.of_typed_noLamNames": "theorem",
+    "Release.Refinement.initial_typing": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.surface_guarantees"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.surface_guarantees": {
+     "Release.Refinement.StartCondition.of_typed_noLamNames": 5,
+     "Release.Refinement.initial_typing": 4
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": false
+  },
+  {
+   "id": "L60-H11",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.Builtins.CoreAssumptions.pathBases_never_handled": "theorem",
+    "Release.Refinement.Builtins.CoreAssumptions.pathBases_shape": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.effect_soundness"
+   ],
+   "paths": {
+    "Release.Refinement.effect_soundness": {
+     "Release.Refinement.Builtins.CoreAssumptions.pathBases_never_handled": 3,
+     "Release.Refinement.Builtins.CoreAssumptions.pathBases_shape": 4
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R30",
+   "revision": false
+  },
+  {
+   "id": "L60-H22",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.progress": "theorem",
+    "Release.Refinement.preservation": "theorem",
+    "Release.Refinement.step_sound": "theorem",
+    "Release.Refinement.effect_soundness": "theorem",
+    "Release.Refinement.effect_soundness_noLamNames": "theorem",
+    "Release.Refinement.step_target_sound": "theorem",
+    "Release.Refinement.reachable_target_sound": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.StandardModel.included_guarantees"
+   ],
+   "paths": {
+    "Release.Refinement.StandardModel.included_guarantees": {
+     "Release.Refinement.progress": 3,
+     "Release.Refinement.preservation": 3,
+     "Release.Refinement.step_sound": 3,
+     "Release.Refinement.effect_soundness": 3,
+     "Release.Refinement.effect_soundness_noLamNames": 3,
+     "Release.Refinement.step_target_sound": 3,
+     "Release.Refinement.reachable_target_sound": 3
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": false
+  },
+  {
+   "id": "L60-H25",
+   "group_or_class": "C",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.StandardModel.composed_rows": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.StandardModel.included_guarantees"
+   ],
+   "paths": {
+    "Release.Refinement.StandardModel.included_guarantees": {
+     "Release.Refinement.StandardModel.composed_rows": 4
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R10b/R50",
+   "revision": false
+  },
+  {
+   "id": "L60-H28",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.StateTyE.external_response_step": "theorem",
+    "Release.Refinement.StateTyE.selected_primitive_step": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.progress"
+   ],
+   "paths": {
+    "Release.Refinement.progress": {
+     "Release.Refinement.StateTyE.external_response_step": 4,
+     "Release.Refinement.StateTyE.selected_primitive_step": 6
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": false
+  },
+  {
+   "id": "L60-H30",
+   "group_or_class": "G",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.Surface.CheckAccept.checkProgramAccepted": "definition",
+    "Exchange.CheckInput.prepare": "definition",
+    "Release.Refinement.Surface.CheckAccept.checkProgramAccepted_sound": "theorem"
+   },
+   "readers": [
+    "main@@SurfaceCheck.Main",
+    "Release.Refinement.Surface.CheckAccept.checkProgramAccepted_sound"
+   ],
+   "paths": {
+    "main@@SurfaceCheck.Main": {
+     "Release.Refinement.Surface.CheckAccept.checkProgramAccepted": 4,
+     "Exchange.CheckInput.prepare": 3
+    },
+    "Release.Refinement.Surface.CheckAccept.checkProgramAccepted_sound": {
+     "Release.Refinement.Surface.CheckAccept.checkProgramAccepted": 2,
+     "Release.Refinement.Surface.CheckAccept.checkProgramAccepted_sound": 1
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R50（F-CONN）",
+   "revision": true
+  },
+  {
+   "id": "L60-S05",
+   "group_or_class": "C",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.StandardModel.composed_rows": "theorem",
+    "Release.Refinement.StandardModel.composed_release": "theorem",
+    "Release.Refinement.StandardModel.table_conditions": "theorem",
+    "Release.Refinement.StandardModel.completion_core": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.StandardModel.included_guarantees"
+   ],
+   "paths": {
+    "Release.Refinement.StandardModel.included_guarantees": {
+     "Release.Refinement.StandardModel.composed_rows": 4,
+     "Release.Refinement.StandardModel.composed_release": 4,
+     "Release.Refinement.StandardModel.table_conditions": 4,
+     "Release.Refinement.StandardModel.completion_core": 3
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": false
+  },
+  {
+   "id": "L60-S09",
+   "group_or_class": "C",
+   "verdict": "完了（L70 の分。記録）",
+   "four": "対象外（Lean の証拠なし）",
+   "evidence": {},
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R50",
+   "revision": false
+  },
+  {
+   "id": "L60-S14",
+   "group_or_class": "G",
+   "verdict": "完了（L70 の分。記録）",
+   "four": "対象外（Lean の証拠なし）",
+   "evidence": {},
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R50",
+   "revision": false
+  },
+  {
+   "id": "L60-受口1",
+   "group_or_class": "C",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.StandardModel.Includes": "inductive",
+    "Release.Refinement.StandardModel.Includes.externalWF": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.StandardModel.included_guarantees"
+   ],
+   "paths": {
+    "Release.Refinement.StandardModel.included_guarantees": {
+     "Release.Refinement.StandardModel.Includes": 2,
+     "Release.Refinement.StandardModel.Includes.externalWF": 3
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R50",
+   "revision": true
+  },
+  {
+   "id": "L60-受口2",
+   "group_or_class": "D",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.ExternalCallAdmissible": "inductive",
+    "Release.Refinement.Surface.desugar_typed": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.ExternalCallAdmissible": 5,
+     "Release.Refinement.Surface.desugar_typed": 1
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R10b/R50",
+   "revision": true
+  },
+  {
+   "id": "L60-受口3",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.StateTyE.external_response_step": "theorem",
+    "Release.Refinement.StepSelection.external": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.progress",
+    "Release.Refinement.step_sound"
+   ],
+   "paths": {
+    "Release.Refinement.progress": {
+     "Release.Refinement.StateTyE.external_response_step": 4
+    },
+    "Release.Refinement.step_sound": {
+     "Release.Refinement.StateTyE.external_response_step": 4,
+     "Release.Refinement.StepSelection.external": 4
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": true
+  },
+  {
+   "id": "L60-受口4",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.ContTy.release_response_exists": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.progress"
+   ],
+   "paths": {
+    "Release.Refinement.progress": {
+     "Release.Refinement.ContTy.release_response_exists": 4
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": false
+  },
+  {
+   "id": "L60-受口5",
+   "group_or_class": "C",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.ExternalModels.ModelCase.composition": "theorem",
+    "Release.Refinement.ExternalModel.external_assumptions": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.ExternalModels.ModelCase.composition"
+   ],
+   "paths": {
+    "Release.Refinement.ExternalModels.ModelCase.composition": {
+     "Release.Refinement.ExternalModels.ModelCase.composition": 1,
+     "Release.Refinement.ExternalModel.external_assumptions": 3
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": true
+  },
+  {
+   "id": "L60-受口6",
+   "group_or_class": "C",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.FunctionNames.publicTarget": "definition",
+    "Release.Refinement.StandardModel.publicTarget_defs": "theorem"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R40",
+   "revision": false
+  },
+  {
+   "id": "L60-群D",
+   "group_or_class": "G",
+   "verdict": "完了（L70 の分。記録）",
+   "four": "対象外（Lean の証拠なし）",
+   "evidence": {},
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": false
+  },
+  {
+   "id": "L60-Rounding",
+   "group_or_class": "C",
+   "verdict": "完了（L70 の分。記録）",
+   "four": "対象外（Lean の証拠なし）",
+   "evidence": {},
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R50",
+   "revision": false
+  },
+  {
+   "id": "L60-MapSet",
+   "group_or_class": "C",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.StandardModel.Includes.constructor_entry": "theorem",
+    "Release.Refinement.StandardModel.complete_delta": "theorem"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R50",
+   "revision": false
+  },
+  {
+   "id": "L60-getFront",
+   "group_or_class": "C",
+   "verdict": "完了（L70 の分。記録）",
+   "four": "対象外（Lean の証拠なし）",
+   "evidence": {},
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": false
+  },
+  {
+   "id": "L60-仮定150",
+   "group_or_class": "C",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.StandardModel.Completion": "inductive",
+    "Release.Refinement.StandardModel.completion_core": "theorem",
+    "Release.Refinement.StandardModel.complete_agree": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.StandardModel.included_guarantees"
+   ],
+   "paths": {
+    "Release.Refinement.StandardModel.included_guarantees": {
+     "Release.Refinement.StandardModel.Completion": 2,
+     "Release.Refinement.StandardModel.completion_core": 3,
+     "Release.Refinement.StandardModel.complete_agree": 3
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R50",
+   "revision": true
+  },
+  {
+   "id": "L50-H01",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.StateTyE.app_inputs": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.progress"
+   ],
+   "paths": {
+    "Release.Refinement.progress": {
+     "Release.Refinement.StateTyE.app_inputs": 5
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": false
+  },
+  {
+   "id": "L50-H02",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.StateTyE.app_inputs": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.progress"
+   ],
+   "paths": {
+    "Release.Refinement.progress": {
+     "Release.Refinement.StateTyE.app_inputs": 5
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": false
+  },
+  {
+   "id": "L50-H03",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.Builtins.ResponseAssumptions.delta_typed": "theorem",
+    "Release.Refinement.StandardModel.composed_rows": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.progress",
+    "Release.Refinement.StandardModel.included_guarantees"
+   ],
+   "paths": {
+    "Release.Refinement.progress": {
+     "Release.Refinement.Builtins.ResponseAssumptions.delta_typed": 7
+    },
+    "Release.Refinement.StandardModel.included_guarantees": {
+     "Release.Refinement.Builtins.ResponseAssumptions.delta_typed": 6,
+     "Release.Refinement.StandardModel.composed_rows": 4
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": true
+  },
+  {
+   "id": "L50-H04",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.Builtins.TargetAgreement.obs_allowed": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.reachable_target_sound"
+   ],
+   "paths": {
+    "Release.Refinement.reachable_target_sound": {
+     "Release.Refinement.Builtins.TargetAgreement.obs_allowed": 5
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R30/R50",
+   "revision": false
+  },
+  {
+   "id": "L50-H06",
+   "group_or_class": "C",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.SignatureScoped.ofExtends": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.StandardModel.included_guarantees"
+   ],
+   "paths": {
+    "Release.Refinement.StandardModel.included_guarantees": {
+     "Release.Refinement.SignatureScoped.ofExtends": 6
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R10b",
+   "revision": false
+  },
+  {
+   "id": "L50-H08",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.InitialPrepared": "inductive",
+    "Release.Refinement.InitialPrepared.ready": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.reachable_target_sound"
+   ],
+   "paths": {
+    "Release.Refinement.reachable_target_sound": {
+     "Release.Refinement.InitialPrepared": 3,
+     "Release.Refinement.InitialPrepared.ready": 2
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": true
+  },
+  {
+   "id": "L50-H11",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.Builtins.CoreAssumptions.pathBases_shape": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.effect_soundness"
+   ],
+   "paths": {
+    "Release.Refinement.effect_soundness": {
+     "Release.Refinement.Builtins.CoreAssumptions.pathBases_shape": 4
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R30",
+   "revision": false
+  },
+  {
+   "id": "L50-H20",
+   "group_or_class": "U",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.Detail.publicTree_typed": "theorem",
+    "Release.Refinement.Detail.values_typed": "theorem"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R30/R60",
+   "revision": false
+  },
+  {
+   "id": "L50-H21",
+   "group_or_class": "U",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.ResultShape.StandardError": "definition",
+    "Release.Refinement.ScopePublic.constructor_exhaustive": "theorem"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R60",
+   "revision": false
+  },
+  {
+   "id": "L50-H22",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.StateTyE.step_preserved": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.steps_preservation"
+   ],
+   "paths": {
+    "Release.Refinement.steps_preservation": {
+     "Release.Refinement.StateTyE.step_preserved": 3
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": false
+  },
+  {
+   "id": "L50-H24",
+   "group_or_class": "C",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.StandardModel.completion_core": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.StandardModel.included_guarantees"
+   ],
+   "paths": {
+    "Release.Refinement.StandardModel.included_guarantees": {
+     "Release.Refinement.StandardModel.completion_core": 3
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": false
+  },
+  {
+   "id": "L50-H25",
+   "group_or_class": "C",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.StandardModel.composed_rows": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.StandardModel.included_guarantees"
+   ],
+   "paths": {
+    "Release.Refinement.StandardModel.included_guarantees": {
+     "Release.Refinement.StandardModel.composed_rows": 4
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": false
+  },
+  {
+   "id": "L50-H28",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.ProgressStatement": "definition",
+    "Release.Refinement.ReachableTargetStatement": "definition",
+    "Release.Refinement.progress": "theorem",
+    "Release.Refinement.reachable_target_sound": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.progress",
+    "Release.Refinement.reachable_target_sound"
+   ],
+   "paths": {
+    "Release.Refinement.progress": {
+     "Release.Refinement.ProgressStatement": 2,
+     "Release.Refinement.progress": 1
+    },
+    "Release.Refinement.reachable_target_sound": {
+     "Release.Refinement.ReachableTargetStatement": 2,
+     "Release.Refinement.reachable_target_sound": 1
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": true
+  },
+  {
+   "id": "L50-H30",
+   "group_or_class": "G",
+   "verdict": "完了（L70 の分。記録）",
+   "four": "対象外（Lean の証拠なし）",
+   "evidence": {},
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R50",
+   "revision": false
+  },
+  {
+   "id": "L50-H31",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.Builtins.ExternalAssumptions.external_adequate": "theorem",
+    "Release.Refinement.Detail.values_typed": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.progress",
+    "Release.Refinement.reachable_target_sound"
+   ],
+   "paths": {
+    "Release.Refinement.progress": {
+     "Release.Refinement.Builtins.ExternalAssumptions.external_adequate": 8
+    },
+    "Release.Refinement.reachable_target_sound": {
+     "Release.Refinement.Builtins.ExternalAssumptions.external_adequate": 6,
+     "Release.Refinement.Detail.values_typed": 8
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R30/R60",
+   "revision": true
+  },
+  {
+   "id": "L50-受口1",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.AtPrepared.current": "theorem",
+    "Release.Refinement.StateTyE.at_step": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.progress"
+   ],
+   "paths": {
+    "Release.Refinement.progress": {
+     "Release.Refinement.AtPrepared.current": 6,
+     "Release.Refinement.StateTyE.at_step": 4
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": false
+  },
+  {
+   "id": "L50-受口2",
+   "group_or_class": "U",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.Detail.publicTree_typed": "theorem",
+    "Release.Refinement.ResultShape.StandardError": "definition"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R30/R60",
+   "revision": false
+  },
+  {
+   "id": "L50-U1",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.Builtins.TargetAgreement.obs_allowed": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.reachable_target_sound"
+   ],
+   "paths": {
+    "Release.Refinement.reachable_target_sound": {
+     "Release.Refinement.Builtins.TargetAgreement.obs_allowed": 5
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R30/R50",
+   "revision": false
+  },
+  {
+   "id": "L50-実行",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.StateTyE.steps_preserved": "theorem",
+    "Release.Refinement.reachable_target_sound": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.surface_target_sound"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.surface_target_sound": {
+     "Release.Refinement.StateTyE.steps_preserved": 3,
+     "Release.Refinement.reachable_target_sound": 2
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": true
+  },
+  {
+   "id": "L40-F01",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.HasTypeVQ.canonical_function": "theorem",
+    "Release.Refinement.HasTypeVQ.inv_op": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.progress"
+   ],
+   "paths": {
+    "Release.Refinement.progress": {
+     "Release.Refinement.HasTypeVQ.canonical_function": 5,
+     "Release.Refinement.HasTypeVQ.inv_op": 7
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": false
+  },
+  {
+   "id": "L40-F05",
+   "group_or_class": "C",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.StandardModel.DataTable": "inductive",
+    "Release.Refinement.StandardModel.composed_rows": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.StandardModel.included_guarantees"
+   ],
+   "paths": {
+    "Release.Refinement.StandardModel.included_guarantees": {
+     "Release.Refinement.StandardModel.DataTable": 2,
+     "Release.Refinement.StandardModel.composed_rows": 4
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R10b",
+   "revision": true
+  },
+  {
+   "id": "L40-F07",
+   "group_or_class": "G",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.IntervalReport.connect": "definition",
+    "Release.Refinement.IntervalFailure.analyzeExpr_failure": "theorem"
+   },
+   "readers": [
+    "main@@IntervalDiff.Main"
+   ],
+   "paths": {
+    "main@@IntervalDiff.Main": {
+     "Release.Refinement.IntervalReport.connect": 8,
+     "Release.Refinement.IntervalFailure.analyzeExpr_failure": 10
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R10b/R50",
+   "revision": true
+  },
+  {
+   "id": "L40-J40-2",
+   "group_or_class": "G",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.IntervalReport.returned_mark": "theorem"
+   },
+   "readers": [
+    "main@@IntervalDiff.Main"
+   ],
+   "paths": {
+    "main@@IntervalDiff.Main": {
+     "Release.Refinement.IntervalReport.returned_mark": 9
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R10b/R50",
+   "revision": false
+  },
+  {
+   "id": "L40-後段1",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.StateTyE.match_inputs": "theorem",
+    "Release.Refinement.Capture.typed_coverage": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.progress"
+   ],
+   "paths": {
+    "Release.Refinement.progress": {
+     "Release.Refinement.StateTyE.match_inputs": 4,
+     "Release.Refinement.Capture.typed_coverage": 4
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": false
+  },
+  {
+   "id": "L40-後段2",
+   "group_or_class": "G",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.IntervalControlLeaves.typed_first_failure": "theorem",
+    "Release.Refinement.IntervalConnection.H04.first_failure_handoff": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.IntervalControlLeaves.typed_first_failure"
+   ],
+   "paths": {
+    "Release.Refinement.IntervalControlLeaves.typed_first_failure": {
+     "Release.Refinement.IntervalControlLeaves.typed_first_failure": 1,
+     "Release.Refinement.IntervalConnection.H04.first_failure_handoff": 2
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R50",
+   "revision": true
+  },
+  {
+   "id": "L40-後段3",
+   "group_or_class": "D",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.Surface.HasBlockQ.desugar": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.Surface.HasBlockQ.desugar": 4
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R10b/R50",
+   "revision": true
+  },
+  {
+   "id": "L40-O135",
+   "group_or_class": "他段",
+   "verdict": "他段",
+   "four": "対象外（Lean の証拠なし）",
+   "evidence": {},
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "取りまとめが R40 の詳細化で担当を確定",
+   "revision": false
+  },
+  {
+   "id": "L30-A2",
+   "group_or_class": "E",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.Ty.LeQ.refine": "constructor",
+    "Release.Refinement.Surface.Check.subtype_sound": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.CheckTables.checkProgram_sound"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.CheckTables.checkProgram_sound": {
+     "Release.Refinement.Ty.LeQ.refine": 12,
+     "Release.Refinement.Surface.Check.subtype_sound": 8
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R20",
+   "revision": true
+  },
+  {
+   "id": "L30-A4",
+   "group_or_class": "D",
+   "verdict": "完了（L70 の分）",
+   "four": "対象外（定義が判定の対象）",
+   "evidence": {
+    "Release.Refinement.Surface.AliasDecl.expand": "definition"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R10a",
+   "revision": true
+  },
+  {
+   "id": "L30-転記",
+   "group_or_class": "D",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.Surface.HasBlockQ.desugar": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.Surface.HasBlockQ.desugar": 4
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R10b",
+   "revision": true
+  },
+  {
+   "id": "L20-J1",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.StateTyE.step_preserved": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.preservation"
+   ],
+   "paths": {
+    "Release.Refinement.preservation": {
+     "Release.Refinement.StateTyE.step_preserved": 2
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": false
+  },
+  {
+   "id": "L20-J2",
+   "group_or_class": "D",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.Surface.HasBlockQ.desugar": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.Surface.HasBlockQ.desugar": 4
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R10b/R50",
+   "revision": true
+  },
+  {
+   "id": "L20-J3",
+   "group_or_class": "D",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.Surface.HasBlockQ.desugar": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.Surface.HasBlockQ.desugar": 4
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R10b",
+   "revision": true
+  },
+  {
+   "id": "L20-J4",
+   "group_or_class": "G",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.IntervalReport.failed": "theorem"
+   },
+   "readers": [
+    "main@@IntervalDiff.Main"
+   ],
+   "paths": {
+    "main@@IntervalDiff.Main": {
+     "Release.Refinement.IntervalReport.failed": 12
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R50",
+   "revision": false
+  },
+  {
+   "id": "L20-J5",
+   "group_or_class": "G",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.embedProgramWellTyped": "theorem",
+    "Release.Refinement.embedStateTyE": "theorem"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": false
+  },
+  {
+   "id": "L20-J6",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.reachable_target_sound": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.surface_target_sound"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.surface_target_sound": {
+     "Release.Refinement.reachable_target_sound": 2
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": false
+  },
+  {
+   "id": "L20-J7",
+   "group_or_class": "D",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.Ty.HasKind": "definition",
+    "Release.Refinement.Surface.desugar_typed": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.Ty.HasKind": 2,
+     "Release.Refinement.Surface.desugar_typed": 1
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R10b",
+   "revision": true
+  },
+  {
+   "id": "L20-187",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.StateTyE.match_inputs": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.progress"
+   ],
+   "paths": {
+    "Release.Refinement.progress": {
+     "Release.Refinement.StateTyE.match_inputs": 4
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": false
+  },
+  {
+   "id": "L20-189",
+   "group_or_class": "E",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.Coverage.typed_nonempty_coverage": "theorem"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R10b/R50",
+   "revision": false
+  },
+  {
+   "id": "L20-190",
+   "group_or_class": "G",
+   "verdict": "完了（L70 の分。記録）",
+   "four": "対象外（Lean の証拠なし）",
+   "evidence": {},
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R50",
+   "revision": false
+  },
+  {
+   "id": "L00b-主",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.ProgressStatement": "definition",
+    "Release.Refinement.PreservationStatement": "definition",
+    "Release.Refinement.StepSoundStatement": "definition",
+    "Release.Refinement.EffectSoundnessStatement": "definition",
+    "Release.Refinement.ReachableTargetStatement": "definition",
+    "Release.Refinement.progress": "theorem",
+    "Release.Refinement.preservation": "theorem",
+    "Release.Refinement.step_sound": "theorem",
+    "Release.Refinement.effect_soundness": "theorem",
+    "Release.Refinement.reachable_target_sound": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.progress",
+    "Release.Refinement.preservation",
+    "Release.Refinement.step_sound",
+    "Release.Refinement.effect_soundness",
+    "Release.Refinement.reachable_target_sound"
+   ],
+   "paths": {
+    "Release.Refinement.progress": {
+     "Release.Refinement.ProgressStatement": 2,
+     "Release.Refinement.progress": 1
+    },
+    "Release.Refinement.preservation": {
+     "Release.Refinement.PreservationStatement": 2,
+     "Release.Refinement.preservation": 1
+    },
+    "Release.Refinement.step_sound": {
+     "Release.Refinement.StepSoundStatement": 2,
+     "Release.Refinement.step_sound": 1
+    },
+    "Release.Refinement.effect_soundness": {
+     "Release.Refinement.EffectSoundnessStatement": 2,
+     "Release.Refinement.effect_soundness": 1
+    },
+    "Release.Refinement.reachable_target_sound": {
+     "Release.Refinement.ReachableTargetStatement": 2,
+     "Release.Refinement.reachable_target_sound": 1
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": true
+  },
+  {
+   "id": "L00b-表層",
+   "group_or_class": "D",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.Surface.HasBlockQ.desugar": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.Surface.HasBlockQ.desugar": 4
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R10b",
+   "revision": true
+  },
+  {
+   "id": "L00b-区間",
+   "group_or_class": "G",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.IntervalReport.connect": "definition",
+    "Release.Refinement.IntervalReport.normal_run": "theorem",
+    "Release.Refinement.IntervalReport.returned_mark": "theorem",
+    "Release.Refinement.IntervalFailure.analyzeExpr_failure": "theorem"
+   },
+   "readers": [
+    "main@@IntervalDiff.Main"
+   ],
+   "paths": {
+    "main@@IntervalDiff.Main": {
+     "Release.Refinement.IntervalReport.connect": 8,
+     "Release.Refinement.IntervalReport.normal_run": 10,
+     "Release.Refinement.IntervalReport.returned_mark": 9,
+     "Release.Refinement.IntervalFailure.analyzeExpr_failure": 10
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R50",
+   "revision": true
+  },
+  {
+   "id": "L00b-G05",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.Builtins.CoreAssumptions.io_op": "theorem",
+    "Release.Refinement.Builtins.ShapeOk": "definition"
+   },
+   "readers": [
+    "Release.Refinement.effect_soundness"
+   ],
+   "paths": {
+    "Release.Refinement.effect_soundness": {
+     "Release.Refinement.Builtins.CoreAssumptions.io_op": 6,
+     "Release.Refinement.Builtins.ShapeOk": 6
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": false
+  },
+  {
+   "id": "plan-1103",
+   "group_or_class": "G",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.embedProgramWellTyped": "theorem"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": false
+  },
+  {
+   "id": "plan-1102",
+   "group_or_class": "G",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.IntervalConnection.ValueRel": "inductive",
+    "Release.Refinement.IntervalReport.normal_run": "theorem"
+   },
+   "readers": [
+    "main@@IntervalDiff.Main"
+   ],
+   "paths": {
+    "main@@IntervalDiff.Main": {
+     "Release.Refinement.IntervalConnection.ValueRel": 9,
+     "Release.Refinement.IntervalReport.normal_run": 10
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R50",
+   "revision": true
+  },
+  {
+   "id": "plan-1101",
+   "group_or_class": "D",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.Program.WellTyped": "inductive",
+    "Release.Refinement.Surface.desugar_typed": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.Program.WellTyped": 2,
+     "Release.Refinement.Surface.desugar_typed": 1
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R10b",
+   "revision": true
+  },
+  {
+   "id": "plan-RV03",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.InitialTypingStatement": "definition",
+    "Release.Refinement.initial_typing": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.initial_typing"
+   ],
+   "paths": {
+    "Release.Refinement.initial_typing": {
+     "Release.Refinement.InitialTypingStatement": 2,
+     "Release.Refinement.initial_typing": 1
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": true
+  },
+  {
+   "id": "plan-RVat",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分。記録）",
+   "four": "対象外（Lean の証拠なし）",
+   "evidence": {},
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": false
+  },
+  {
+   "id": "plan-D28",
+   "group_or_class": "B",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.Builtins.CoreAssumptions.pathBases_never_handled": "theorem",
+    "Release.Refinement.HasTypeCQ.C_IssuePathBases": "constructor"
+   },
+   "readers": [
+    "Release.Refinement.effect_soundness"
+   ],
+   "paths": {
+    "Release.Refinement.effect_soundness": {
+     "Release.Refinement.Builtins.CoreAssumptions.pathBases_never_handled": 3,
+     "Release.Refinement.HasTypeCQ.C_IssuePathBases": 6
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R30",
+   "revision": false
+  },
+  {
+   "id": "RV-L60.c",
+   "group_or_class": "C",
+   "verdict": "完了（L70 の分。記録）",
+   "four": "対象外（Lean の証拠なし）",
+   "evidence": {},
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": false
+  },
+  {
+   "id": "U02-署名",
+   "group_or_class": "U",
+   "verdict": "完了（L70 の分）",
+   "four": "対象外（定義が判定の対象）",
+   "evidence": {
+    "Release.Refinement.PublicNames.safeEntries": "definition"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R10a（後段への義務の表の1）",
+   "revision": true
+  },
+  {
+   "id": "U02-原則5",
+   "group_or_class": "G",
+   "verdict": "完了（L70 の分。記録）",
+   "four": "対象外（Lean の証拠なし）",
+   "evidence": {},
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "D10",
+   "revision": false
+  }
+ ],
+ "obligations": [
+  {
+   "id": "O005",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.Program.WellTyped": "inductive",
+    "Release.Refinement.Surface.desugar_typed": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.Program.WellTyped": 2,
+     "Release.Refinement.Surface.desugar_typed": 1
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R10b",
+   "revision": true
+  },
+  {
+   "id": "O012",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.Surface.HasBlockQ.desugar": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.Surface.HasBlockQ.desugar": 4
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R10b/R50",
+   "revision": true
+  },
+  {
+   "id": "O016",
+   "group_or_class": "共通",
+   "verdict": "完了（L70 の分。記録）",
+   "four": "対象外（Lean の証拠なし）",
+   "evidence": {},
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "各段のレビュー",
+   "revision": false
+  },
+  {
+   "id": "O033",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.Program.WellTyped": "inductive",
+    "Release.Refinement.Surface.desugar_typed": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.Program.WellTyped": 2,
+     "Release.Refinement.Surface.desugar_typed": 1
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R10b",
+   "revision": true
+  },
+  {
+   "id": "O037",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.Surface.HasBlockQ.desugar": "theorem",
+    "Release.Refinement.Surface.Check.checkBlockAt_sound": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed",
+    "Release.Refinement.Surface.CheckTables.checkProgram_sound"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.Surface.HasBlockQ.desugar": 4
+    },
+    "Release.Refinement.Surface.CheckTables.checkProgram_sound": {
+     "Release.Refinement.Surface.Check.checkBlockAt_sound": 5
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R10b/R50",
+   "revision": true
+  },
+  {
+   "id": "O038",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.StateTyE.step_preserved": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.preservation"
+   ],
+   "paths": {
+    "Release.Refinement.preservation": {
+     "Release.Refinement.StateTyE.step_preserved": 2
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": false
+  },
+  {
+   "id": "O056",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.Surface.HasBlockQ.desugar": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.Surface.HasBlockQ.desugar": 4
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R10b",
+   "revision": true
+  },
+  {
+   "id": "O057",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.progress": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.StandardModel.included_guarantees"
+   ],
+   "paths": {
+    "Release.Refinement.StandardModel.included_guarantees": {
+     "Release.Refinement.progress": 3
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": false
+  },
+  {
+   "id": "O058",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.preservation": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.StandardModel.included_guarantees"
+   ],
+   "paths": {
+    "Release.Refinement.StandardModel.included_guarantees": {
+     "Release.Refinement.preservation": 3
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": false
+  },
+  {
+   "id": "O059",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.step_sound": "theorem"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": false
+  },
+  {
+   "id": "O060",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.effect_soundness": "theorem",
+    "Release.Refinement.effect_soundness_noLamNames": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.StandardModel.included_guarantees"
+   ],
+   "paths": {
+    "Release.Refinement.StandardModel.included_guarantees": {
+     "Release.Refinement.effect_soundness": 3,
+     "Release.Refinement.effect_soundness_noLamNames": 3
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": false
+  },
+  {
+   "id": "O061",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.step_target_sound": "theorem",
+    "Release.Refinement.reachable_target_sound": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.surface_target_sound"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.surface_target_sound": {
+     "Release.Refinement.step_target_sound": 3,
+     "Release.Refinement.reachable_target_sound": 2
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": false
+  },
+  {
+   "id": "O066",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.Surface.CheckTables.checkProgram_sound": "theorem",
+    "Release.Refinement.checkMatchWithView_exhaustive_sound": "theorem",
+    "Release.Refinement.CheckErasure.erase_typed": "theorem"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R50",
+   "revision": false
+  },
+  {
+   "id": "O068",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.Surface.HasBlockQ.desugar": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.Surface.HasBlockQ.desugar": 4
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R10b",
+   "revision": true
+  },
+  {
+   "id": "O079",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.Coverage.typed_nonempty_coverage": "theorem"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R10b/R50",
+   "revision": false
+  },
+  {
+   "id": "O086",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.Surface.CheckAccept.checkProgramAccepted": "definition",
+    "Exchange.CheckInput.prepare": "definition",
+    "Release.Refinement.Surface.CheckAccept.checkProgramAccepted_sound": "theorem"
+   },
+   "readers": [
+    "main@@SurfaceCheck.Main",
+    "Release.Refinement.Surface.CheckAccept.checkProgramAccepted_sound"
+   ],
+   "paths": {
+    "main@@SurfaceCheck.Main": {
+     "Release.Refinement.Surface.CheckAccept.checkProgramAccepted": 4,
+     "Exchange.CheckInput.prepare": 3
+    },
+    "Release.Refinement.Surface.CheckAccept.checkProgramAccepted_sound": {
+     "Release.Refinement.Surface.CheckAccept.checkProgramAccepted": 2,
+     "Release.Refinement.Surface.CheckAccept.checkProgramAccepted_sound": 1
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R50（両理由0件）/K10",
+   "revision": true
+  },
+  {
+   "id": "O088",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.ExternalCallAdmissible": "inductive",
+    "Release.Refinement.Surface.desugar_typed": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.ExternalCallAdmissible": 5,
+     "Release.Refinement.Surface.desugar_typed": 1
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R50",
+   "revision": true
+  },
+  {
+   "id": "O090",
+   "group_or_class": "共通",
+   "verdict": "完了（L70 の分。記録）",
+   "four": "対象外（Lean の証拠なし）",
+   "evidence": {},
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R10b/R50",
+   "revision": false
+  },
+  {
+   "id": "O098",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.PathBasesDiffer": "definition",
+    "Release.Refinement.outsideAllEnvs_iff_checkAt": "theorem"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R60",
+   "revision": false
+  },
+  {
+   "id": "O099",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.IPPattern.mappedOnly_iff": "theorem"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R60",
+   "revision": false
+  },
+  {
+   "id": "O116",
+   "group_or_class": "記録",
+   "verdict": "完了（L70 の分。記録）",
+   "four": "対象外（Lean の証拠なし）",
+   "evidence": {},
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": false
+  },
+  {
+   "id": "O121",
+   "group_or_class": "共通",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.Surface.CheckAccept.checkProgramAccepted": "definition",
+    "Exchange.CheckInput.prepare": "definition",
+    "Release.Refinement.Surface.CheckAccept.checkProgramAccepted_sound": "theorem"
+   },
+   "readers": [
+    "main@@SurfaceCheck.Main",
+    "Release.Refinement.Surface.CheckAccept.checkProgramAccepted_sound"
+   ],
+   "paths": {
+    "main@@SurfaceCheck.Main": {
+     "Release.Refinement.Surface.CheckAccept.checkProgramAccepted": 4,
+     "Exchange.CheckInput.prepare": 3
+    },
+    "Release.Refinement.Surface.CheckAccept.checkProgramAccepted_sound": {
+     "Release.Refinement.Surface.CheckAccept.checkProgramAccepted": 2,
+     "Release.Refinement.Surface.CheckAccept.checkProgramAccepted_sound": 1
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R50（F-CONN）/K10/V10",
+   "revision": true
+  },
+  {
+   "id": "O136",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.Surface.HasBlockQ.desugar": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.Surface.HasBlockQ.desugar": 4
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R10b/R20/R50/V10",
+   "revision": true
+  },
+  {
+   "id": "O138",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.Surface.HasBlockQ.desugar": "theorem",
+    "Release.Refinement.Coverage.coverage_sound": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed",
+    "Release.Refinement.Surface.CheckTables.checkProgram_sound"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.Surface.HasBlockQ.desugar": 4
+    },
+    "Release.Refinement.Surface.CheckTables.checkProgram_sound": {
+     "Release.Refinement.Coverage.coverage_sound": 10
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R10b/R50/V10",
+   "revision": true
+  },
+  {
+   "id": "O139",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.Ty.LeQ": "inductive",
+    "Release.Refinement.Surface.desugar_typed": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.Ty.LeQ": 4,
+     "Release.Refinement.Surface.desugar_typed": 1
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R10b/R50/V10",
+   "revision": true
+  },
+  {
+   "id": "O140",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.Ty.LeQ": "inductive",
+    "Release.Refinement.Surface.desugar_typed": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.Ty.LeQ": 4,
+     "Release.Refinement.Surface.desugar_typed": 1
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R10b/R40/R50/V10",
+   "revision": true
+  },
+  {
+   "id": "O141",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.reachable_target_sound": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.surface_target_sound"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.surface_target_sound": {
+     "Release.Refinement.reachable_target_sound": 2
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R10b/R30/R50/R60/V10",
+   "revision": false
+  },
+  {
+   "id": "O142",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "自明",
+   "evidence": {
+    "Release.Refinement.PublicNames.safeEntries": "definition",
+    "Release.Refinement.PublicNames.unified_same_tel": "theorem",
+    "Release.Refinement.PublicNames.composed_lookup": "theorem"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R10b/R40/R50/V10",
+   "revision": true
+  },
+  {
+   "id": "O143",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "自明",
+   "evidence": {
+    "Release.Refinement.PublicNames.safeEntries": "definition",
+    "Release.Refinement.PublicNames.safeEntries_rows": "theorem",
+    "Release.Refinement.PublicNames.composed_lookup": "theorem"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R10b/R40/R50/V10",
+   "revision": true
+  },
+  {
+   "id": "O157",
+   "group_or_class": "記録",
+   "verdict": "完了（L70 の分。記録）",
+   "four": "対象外（Lean の証拠なし）",
+   "evidence": {},
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R50/D10/V10",
+   "revision": false
+  },
+  {
+   "id": "O159",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分。記録）",
+   "four": "対象外（Lean の証拠なし）",
+   "evidence": {},
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": true
+  },
+  {
+   "id": "O167",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "対象外（定義が判定の対象）",
+   "evidence": {
+    "Release.Refinement.Surface.RefinementBinderOk": "definition"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R10a/R20/R10b/R40/R60/V10",
+   "revision": true
+  },
+  {
+   "id": "O169",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.IntervalReport.connect": "definition",
+    "Release.Refinement.IntervalReport.normal_run": "theorem",
+    "Release.Refinement.IntervalReport.returned_mark": "theorem",
+    "Release.Refinement.IntervalFailure.analyzeExpr_failure": "theorem"
+   },
+   "readers": [
+    "main@@IntervalDiff.Main"
+   ],
+   "paths": {
+    "main@@IntervalDiff.Main": {
+     "Release.Refinement.IntervalReport.connect": 8,
+     "Release.Refinement.IntervalReport.normal_run": 10,
+     "Release.Refinement.IntervalReport.returned_mark": 9,
+     "Release.Refinement.IntervalFailure.analyzeExpr_failure": 10
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R10b/R50",
+   "revision": true
+  },
+  {
+   "id": "O170",
+   "group_or_class": "他段",
+   "verdict": "他段",
+   "four": "対象外（Lean の証拠なし）",
+   "evidence": {},
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R10a/R60/D10",
+   "revision": false
+  },
+  {
+   "id": "O002",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.StateTyE.step_preserved": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.preservation"
+   ],
+   "paths": {
+    "Release.Refinement.preservation": {
+     "Release.Refinement.StateTyE.step_preserved": 2
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": false
+  },
+  {
+   "id": "O003",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.Surface.HasBlockQ.desugar": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.Surface.HasBlockQ.desugar": 4
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": true
+  },
+  {
+   "id": "O004",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分。記録）",
+   "four": "対象外（Lean の証拠なし）",
+   "evidence": {},
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": false
+  },
+  {
+   "id": "O006",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.StateTyE.step_preserved": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.preservation"
+   ],
+   "paths": {
+    "Release.Refinement.preservation": {
+     "Release.Refinement.StateTyE.step_preserved": 2
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": false
+  },
+  {
+   "id": "O008",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.StateTyE.step_preserved": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.preservation"
+   ],
+   "paths": {
+    "Release.Refinement.preservation": {
+     "Release.Refinement.StateTyE.step_preserved": 2
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": false
+  },
+  {
+   "id": "O013",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.StandardModel.included_guarantees": "theorem"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R50/V10",
+   "revision": false
+  },
+  {
+   "id": "O027",
+   "group_or_class": "共通",
+   "verdict": "他段",
+   "four": "対象外（Lean の証拠なし）",
+   "evidence": {},
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "取りまとめ・R20/R70",
+   "revision": false
+  },
+  {
+   "id": "O029",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.Surface.HasBlockQ.desugar": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.Surface.HasBlockQ.desugar": 4
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R10b",
+   "revision": true
+  },
+  {
+   "id": "O031",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.StateTyE.step_preserved": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.preservation"
+   ],
+   "paths": {
+    "Release.Refinement.preservation": {
+     "Release.Refinement.StateTyE.step_preserved": 2
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": false
+  },
+  {
+   "id": "O035",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.Builtins.TargetAgreement.obs_allowed": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.reachable_target_sound"
+   ],
+   "paths": {
+    "Release.Refinement.reachable_target_sound": {
+     "Release.Refinement.Builtins.TargetAgreement.obs_allowed": 5
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R30/R50",
+   "revision": false
+  },
+  {
+   "id": "O036",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.reachable_target_sound": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.surface_target_sound"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.surface_target_sound": {
+     "Release.Refinement.reachable_target_sound": 2
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": false
+  },
+  {
+   "id": "O042",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.embedProgramWellTyped": "theorem",
+    "Release.Refinement.embedStateTyE": "theorem"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": false
+  },
+  {
+   "id": "O043",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.Ty.LeQ.refine": "constructor",
+    "Release.Refinement.Surface.Check.subtype_sound": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.CheckTables.checkProgram_sound"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.CheckTables.checkProgram_sound": {
+     "Release.Refinement.Ty.LeQ.refine": 12,
+     "Release.Refinement.Surface.Check.subtype_sound": 8
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": true
+  },
+  {
+   "id": "O044",
+   "group_or_class": "記録",
+   "verdict": "完了（L70 の分。記録）",
+   "four": "対象外（Lean の証拠なし）",
+   "evidence": {},
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "D10",
+   "revision": false
+  },
+  {
+   "id": "O046",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.Surface.HasBlockQ.desugar": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.Surface.HasBlockQ.desugar": 4
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": true
+  },
+  {
+   "id": "O048",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.Builtins.TargetAgreement.obs_allowed": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.reachable_target_sound"
+   ],
+   "paths": {
+    "Release.Refinement.reachable_target_sound": {
+     "Release.Refinement.Builtins.TargetAgreement.obs_allowed": 5
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R30/R50",
+   "revision": false
+  },
+  {
+   "id": "O051",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.StartCondition.of_typed_noLamNames": "theorem"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": false
+  },
+  {
+   "id": "O053",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.Surface.HasBlockQ.desugar": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.Surface.HasBlockQ.desugar": 4
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R10b",
+   "revision": true
+  },
+  {
+   "id": "O054",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.Surface.HasBlockQ.desugar": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.Surface.HasBlockQ.desugar": 4
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R10b",
+   "revision": true
+  },
+  {
+   "id": "O065",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.StandardModel.completion_core": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.StandardModel.included_guarantees"
+   ],
+   "paths": {
+    "Release.Refinement.StandardModel.included_guarantees": {
+     "Release.Refinement.StandardModel.completion_core": 3
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "なし",
+   "revision": false
+  },
+  {
+   "id": "O084",
+   "group_or_class": "共通",
+   "verdict": "完了（L70 の分。記録）",
+   "four": "対象外（Lean の証拠なし）",
+   "evidence": {},
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R/K",
+   "revision": false
+  },
+  {
+   "id": "O087",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.Program.ExternalWF": "inductive",
+    "Release.Refinement.StandardModel.Includes.externalWF": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.StandardModel.included_guarantees"
+   ],
+   "paths": {
+    "Release.Refinement.StandardModel.included_guarantees": {
+     "Release.Refinement.Program.ExternalWF": 2,
+     "Release.Refinement.StandardModel.Includes.externalWF": 3
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R50",
+   "revision": true
+  },
+  {
+   "id": "O097",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.Detail.publicTree_typed": "theorem"
+   },
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R30/R60",
+   "revision": false
+  },
+  {
+   "id": "O118",
+   "group_or_class": "共通",
+   "verdict": "完了（L70 の分。記録）",
+   "four": "対象外（Lean の証拠なし）",
+   "evidence": {},
+   "readers": [],
+   "paths": {},
+   "unread_evidence": [],
+   "remaining": "R50/R60/D10/V10",
+   "revision": false
+  },
+  {
+   "id": "O135",
+   "group_or_class": "技術",
+   "verdict": "完了（L70 の分）",
+   "four": "実質",
+   "evidence": {
+    "Release.Refinement.Surface.HasBlockQ.desugar": "theorem"
+   },
+   "readers": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "paths": {
+    "Release.Refinement.Surface.desugar_typed": {
+     "Release.Refinement.Surface.HasBlockQ.desugar": 4
+    }
+   },
+   "unread_evidence": [],
+   "remaining": "R10b/R40/R50/V10",
+   "revision": true
+  }
+ ],
+ "inputs": {
+  "tables.md": {
+   "bytes": 21851,
+   "sha256": "cfadaaed7dab7fb933753802007562039be201145eb944e2f489269b014dd427"
+  },
+  "obligations.py": {
+   "bytes": 55799,
+   "sha256": "2ef89b4f470158ee2e95644da472c7e6dafa72ef63d04b1d7f52233519a4ff0b"
+  }
+ },
+ "paths": {
+  "note": "経路の長さ（読者から証拠までの定数の数）だけを残す",
+  "full": {
+   "bytes": 50675,
+   "sha256": "dd10a9e1058b75b176f050faea299b1525fb9eb95a0c0482925f8e18dc16c9f6"
+  }
+ }
+}

@@ -3,7 +3,6 @@ import Benitoite.Release.Refinement.AtPatterns
 
 namespace Benitoite.Release.Refinement
 
-set_option maxHeartbeats 2000000
 
 /-- 専用発行へ進む前の通常の操作は、他の効果と同じ節の署名を持つ。 -/
 theorem Builtins.CoreAssumptions.pathBases_clause_signature {P B b s eb}

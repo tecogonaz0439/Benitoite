@@ -104,7 +104,7 @@ def PrimSig.StoreShape (s : PrimSig) : Prop :=
   | .pathBases => False
   | .pure | .io | .exit => True
 
-/-- D28の信頼条件。宣言の形成と応答の条件を同じ表で読む。 -/
+/-- 信頼条件（設計書 07-04「篩を含む形式化の信頼条件」）。宣言の形成と応答の条件を同じ表で読む。 -/
 structure Builtins.CoreAssumptions (P : Program) (B : Builtins) : Prop extends
     Builtins.SubstitutionAssumptions P B, Builtins.ExternalAssumptions P B, Builtins.ResponseAssumptions P B where
   sig_scoped : ∀ b s, B.sig b = some s → PrimSig.Scoped P s

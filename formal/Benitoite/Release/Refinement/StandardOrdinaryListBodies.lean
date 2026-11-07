@@ -3,7 +3,6 @@ import Benitoite.Release.Refinement.StandardOrdinaryCoreBodies
 /-! # Listの通常のfoldと走査の実本体 -/
 namespace Benitoite.Release.Refinement.StandardOrdinaryListBodies
 noncomputable section
-set_option maxRecDepth 5000
 set_option maxHeartbeats 4000000
 set_option linter.unusedSimpArgs false
 open StandardOrdinaryCoreBodies

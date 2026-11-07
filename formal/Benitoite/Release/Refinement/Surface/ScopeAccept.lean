@@ -17,7 +17,7 @@ open Benitoite.Scope.Domain (Range)
 
 /-! ## 拒否の理由と必須の判定の結果 -/
 
-/-- 範囲の被覆を確認できなかった理由（DET-05。診断 E0519 の `reason`）。`notCovered` は既知の範囲を契約が覆わない、
+/-- 範囲の被覆を確認できなかった理由（診断 E0519 の `reason`）。`notCovered` は既知の範囲を契約が覆わない、
 `atomicCoverOnly` は一原子ずつの被覆では確認できない（複数の原子の和なら覆いうる）。`unknownSource` は由来を
 認定できず Top になった場合、又は未具体化の契約の全具体化に対する被覆を確認できない場合である。
 `budgetExceeded` は必須の判定の予算を超えて Top になった場合である。 -/

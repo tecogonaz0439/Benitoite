@@ -1,0 +1,111 @@
+{
+ "which": "final",
+ "formal": "<repo>/formal",
+ "lock": "共有ロック",
+ "runs": {
+  "library": {
+   "start": "2026-11-07T19:04:30+0900",
+   "exit": 0,
+   "seconds": 60.6,
+   "input": {
+    "bytes": 9094,
+    "sha256": "d2221669eb42721fe8fe4f61bdae07b89182cd191fca8aeece15cfe588c1c37e"
+   },
+   "output": {
+    "bytes": 256079774,
+    "sha256": "d7e21f839071870954bcb8ef9a618eef4d5e3f7cf613f4dbfd9440e9e57ef5f4"
+   }
+  },
+  "desugarDiff": {
+   "start": "2026-11-07T19:05:30+0900",
+   "exit": 0,
+   "seconds": 12.8,
+   "input": {
+    "bytes": 4751,
+    "sha256": "bf4185d77eb907b749af4f70a460f532b19eac902d13bb0f969836ba4a2ac1ac"
+   },
+   "output": {
+    "bytes": 76271,
+    "sha256": "acc626ba1761b32e75027219f5b0d2eca4d79c51dacabd54f91f7e598cd034de"
+   }
+  },
+  "builtinCheck": {
+   "start": "2026-11-07T19:05:43+0900",
+   "exit": 0,
+   "seconds": 12.8,
+   "input": {
+    "bytes": 4752,
+    "sha256": "bd283f51ad68c78e0454d4bcdba4c6c8f1189dda14d5d1c256f3c12f10e0dfd0"
+   },
+   "output": {
+    "bytes": 39847,
+    "sha256": "008fc99c1b64b81d435d31fe2904c285898919f7d8c5703f7a4952c9b0694319"
+   }
+  },
+  "coverageDiff": {
+   "start": "2026-11-07T19:05:56+0900",
+   "exit": 0,
+   "seconds": 12.9,
+   "input": {
+    "bytes": 4752,
+    "sha256": "efb6325c8cf9f3ac995b038e0d27cda58df33cbeefbc06b611c06bb9cfdb9132"
+   },
+   "output": {
+    "bytes": 162904,
+    "sha256": "9436c28a21dcf9e28cc8e0a0e5ded6cc294f2cf0635fcc9ec376a57fb0bbc234"
+   }
+  },
+  "coverageProgramDiff": {
+   "start": "2026-11-07T19:06:09+0900",
+   "exit": 0,
+   "seconds": 12.9,
+   "input": {
+    "bytes": 4759,
+    "sha256": "fdf3f2b8e0577f30afcd2c5672f7cb6bab6870a922d41a208cb7a0c6e665bb64"
+   },
+   "output": {
+    "bytes": 106919,
+    "sha256": "0c36f23e7224fecdcbeb59e77bce4eab06936b5ab3704bcd0294083a347ce38d"
+   }
+  },
+  "surfaceCheck": {
+   "start": "2026-11-07T19:06:22+0900",
+   "exit": 0,
+   "seconds": 13.0,
+   "input": {
+    "bytes": 4752,
+    "sha256": "baa5ab6dbeb7f69aae75707e7af06a493f7dce6666bced8b60c79646c5b0dd53"
+   },
+   "output": {
+    "bytes": 18909,
+    "sha256": "8e1c07e46e5c339ce75ab405e2479065f43dfd1b2d0a7a720506cff834f14cc9"
+   }
+  },
+  "surfaceCheckAll": {
+   "start": "2026-11-07T19:06:35+0900",
+   "exit": 0,
+   "seconds": 13.1,
+   "input": {
+    "bytes": 4751,
+    "sha256": "7a2f1b2815647625983aa8f9418f76ece10666d036fbf09668c9633e15ec28e8"
+   },
+   "output": {
+    "bytes": 210257,
+    "sha256": "8ad3df3ad394693cd0f36bc99374ea6e7ee085b73fe8041f245c73b84e8edaa5"
+   }
+  },
+  "intervalDiff": {
+   "start": "2026-11-07T19:06:48+0900",
+   "exit": 0,
+   "seconds": 13.3,
+   "input": {
+    "bytes": 4752,
+    "sha256": "bb72405f7d1c73ea4f0302ef7ba3747f776120dcbbaa8166b53ff329d4b85031"
+   },
+   "output": {
+    "bytes": 5200,
+    "sha256": "1e907be452fb54ae5b5cd4296a8dd1eab772345705ec4aa5201b6d08e63ae768"
+   }
+  }
+ }
+}

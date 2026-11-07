@@ -3,7 +3,6 @@ import Benitoite.Release.Refinement.StandardByteStringResponse
 /-! # 公開の型別名ラッパーを元の組込みへ接続する通常本体 -/
 namespace Benitoite.Release.Refinement.StandardAliasBodies
 noncomputable section
-set_option maxRecDepth 5000
 set_option maxHeartbeats 2000000
 
 inductive API where

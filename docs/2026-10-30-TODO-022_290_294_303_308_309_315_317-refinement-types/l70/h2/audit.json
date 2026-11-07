@@ -1,0 +1,501 @@
+{
+ "modules": [
+  "Benitoite.Release.Refinement.BuilderStore",
+  "Benitoite.Release.Refinement.FailureExamples",
+  "Benitoite.Release.Refinement.HandlerStoreExamples",
+  "Benitoite.Release.Refinement.Surface.BuilderExamples",
+  "Benitoite.Release.Refinement.Surface.CheckSupport",
+  "Benitoite.Release.Refinement.Surface.FailureExamples",
+  "Benitoite.Release.Refinement.Surface.LogExamples",
+  "Benitoite.Release.Refinement.Surface.ScopeConnection",
+  "Benitoite.Release.Refinement.Surface.ScopeConnectionExamples",
+  "Benitoite.Release.Refinement.Surface.ScopeEval",
+  "Benitoite.Release.Refinement.Surface.ScopeReach",
+  "Benitoite.Release.Refinement.SurfaceTargetObservedExamples",
+  "Benitoite.Release.Refinement.SurfaceTargetReachExamples"
+ ],
+ "declarations": 2647,
+ "by_module": {
+  "Benitoite.Release.Refinement.BuilderStore": 47,
+  "Benitoite.Release.Refinement.FailureExamples": 14,
+  "Benitoite.Release.Refinement.HandlerStoreExamples": 129,
+  "Benitoite.Release.Refinement.Surface.BuilderExamples": 3,
+  "Benitoite.Release.Refinement.Surface.CheckSupport": 335,
+  "Benitoite.Release.Refinement.Surface.FailureExamples": 537,
+  "Benitoite.Release.Refinement.Surface.LogExamples": 725,
+  "Benitoite.Release.Refinement.Surface.ScopeConnection": 57,
+  "Benitoite.Release.Refinement.Surface.ScopeConnectionExamples": 38,
+  "Benitoite.Release.Refinement.Surface.ScopeEval": 107,
+  "Benitoite.Release.Refinement.Surface.ScopeReach": 547,
+  "Benitoite.Release.Refinement.SurfaceTargetObservedExamples": 65,
+  "Benitoite.Release.Refinement.SurfaceTargetReachExamples": 43
+ },
+ "private": 1846,
+ "macro_scoped": 0,
+ "unresolved": 0,
+ "axiom_sets": {
+  "Classical.choice + Quot.sound + propext": 418,
+  "propext": 1297,
+  "なし": 925,
+  "Quot.sound + propext": 6,
+  "Quot.sound": 1
+ },
+ "sorryAx": 0,
+ "new_axioms": 0,
+ "axiom_declarations": 0,
+ "allowed": [
+  "Classical.choice",
+  "Quot.sound",
+  "propext"
+ ],
+ "required": {
+  "Benitoite.Release.Refinement.builder_step_no_event": {
+   "module": "Benitoite.Release.Refinement.BuilderStore",
+   "kind": "theorem",
+   "type_sha256": "455ea2604a5cbdf04e8ddcd451a170541d0f342ea835d84e88fb5d373c718450",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.builder_step_frame": {
+   "module": "Benitoite.Release.Refinement.BuilderStore",
+   "kind": "theorem",
+   "type_sha256": "ac523e7c8671a57df091fb4271153c75cb066c0a839c22e5ce680e1464bf630c",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.capture_builder_cell": {
+   "module": "Benitoite.Release.Refinement.BuilderStore",
+   "kind": "theorem",
+   "type_sha256": "78bb792cafad1ad87457b14f171f134ac220cb674cfae6c9ba1f9e916424cf4f",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.resume_builder_cell": {
+   "module": "Benitoite.Release.Refinement.BuilderStore",
+   "kind": "theorem",
+   "type_sha256": "3bbcc19bfed34c0465119470a5fa3ddb438edad8a55025f25dbefd8e537f5502",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.builder_frames_releases_nil": {
+   "module": "Benitoite.Release.Refinement.BuilderStore",
+   "kind": "theorem",
+   "type_sha256": "be4e047d3f12e21f889866e12d7207a8bb2c034b78ae2948018646b990ec0435",
+   "axioms": [
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.drop_local_silent": {
+   "module": "Benitoite.Release.Refinement.BuilderStore",
+   "kind": "theorem",
+   "type_sha256": "02fa8377eec788144a877bd1c88dda643dbd01b12efa7816f773721f509d1b7c",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.drop_local_frame": {
+   "module": "Benitoite.Release.Refinement.BuilderStore",
+   "kind": "theorem",
+   "type_sha256": "0f6d6b6e86281b5e8e2f3690d53ffec9c83104e87297c24a37cd7d6f471d8160",
+   "axioms": [
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.Check.interpAllowed_complete": {
+   "module": "Benitoite.Release.Refinement.Surface.CheckSupport",
+   "kind": "theorem",
+   "type_sha256": "826fd857062166a038c2ab78aee085de37d4cf8df328d96a6e75f14a496a07b4",
+   "axioms": [
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.Check.interpAllowed_spec": {
+   "module": "Benitoite.Release.Refinement.Surface.CheckSupport",
+   "kind": "theorem",
+   "type_sha256": "fa79cea16059c5e323e1ee0d2b40283dee8ba63e116bdc898433374f9f7b1202",
+   "axioms": [
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.ScopeState.absStep_sound": {
+   "module": "Benitoite.Release.Refinement.Surface.ScopeEval",
+   "kind": "theorem",
+   "type_sha256": "4bdd32e5377e88b5f03bb38570ddde14a33717d61f9f28f497e9c2ccb67955d9",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.ScopeState.Run.step_models": {
+   "module": "Benitoite.Release.Refinement.Surface.ScopeEval",
+   "kind": "theorem",
+   "type_sha256": "4fa453cc70a6071f7ccbd9921a87d9485c84f925b7ef99e69b1c3bc7431abc31",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.ScopeState.requiredIndex_checked": {
+   "module": "Benitoite.Release.Refinement.Surface.ScopeEval",
+   "kind": "theorem",
+   "type_sha256": "db3bc10fcc4ccf8e9f034abc129167dc35eb68a788e91d26e9f05a1dcbfb429e",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.ScopeLower.rhsEval_step": {
+   "module": "Benitoite.Release.Refinement.Surface.ScopeReach",
+   "kind": "theorem",
+   "type_sha256": "f520facaaa6c7d6c596f6ad7a7e4e8e2e12d79256a0300742156ae6fbf23fde3",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.ScopeLower.armEnter_steps": {
+   "module": "Benitoite.Release.Refinement.Surface.ScopeReach",
+   "kind": "theorem",
+   "type_sha256": "87c7570a7a07b414b0d68f29238dd8f7f3d72f07bea09e694c00469394237551",
+   "axioms": [
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.ScopeLower.analyzeBody_sound": {
+   "module": "Benitoite.Release.Refinement.Surface.ScopeReach",
+   "kind": "theorem",
+   "type_sha256": "f94f666d7686d50340bba570400d9ed2ea47f7e2f2cc35b1eec2ba00ee64b642",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.ScopeLower.analyzeBody_requiredIndex": {
+   "module": "Benitoite.Release.Refinement.Surface.ScopeReach",
+   "kind": "theorem",
+   "type_sha256": "128e85001697ea390bcb0792add74e21f1403677a6f18a4be4286a2f661a3ab0",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.ScopeLower.reachAt_occurrences": {
+   "module": "Benitoite.Release.Refinement.Surface.ScopeReach",
+   "kind": "theorem",
+   "type_sha256": "96d9683dfac23363451bfcf4167d9656fdab60273052f29fd5d4c2d8dfe59b0b",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.ScopeSound.scope_check_connection": {
+   "module": "Benitoite.Release.Refinement.Surface.ScopeConnection",
+   "kind": "theorem",
+   "type_sha256": "9a25068c07d7fd6cb4099c02c34fdf35a82685a4628701664aa15d4d789e56cb",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.ScopeSound.scope_local_connection": {
+   "module": "Benitoite.Release.Refinement.Surface.ScopeConnection",
+   "kind": "theorem",
+   "type_sha256": "4800d16f48a125f5f45675626590d7eb58115fa220eb902990d2071ce8c8552c",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.ScopeSound.scope_local_typed": {
+   "module": "Benitoite.Release.Refinement.Surface.ScopeConnection",
+   "kind": "theorem",
+   "type_sha256": "3a580d709c39f9b1fc2c8a547c18f47eec776a5b9faded1c8db5558969abed16",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.ScopeSound.scope_check_core": {
+   "module": "Benitoite.Release.Refinement.Surface.ScopeConnection",
+   "kind": "theorem",
+   "type_sha256": "233959c9046d3c59ea098c63bf07995580105815b0665bc29eb4c883c60d6e3e",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.ScopeSound.http_check_connection": {
+   "module": "Benitoite.Release.Refinement.Surface.ScopeConnection",
+   "kind": "theorem",
+   "type_sha256": "23c4242f7ea7d43320680e16d64ad6f0476bbc5f0cf5f0ada6e8c7696c83355a",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.ScopeSound.scope_check_connection_at": {
+   "module": "Benitoite.Release.Refinement.Surface.ScopeConnection",
+   "kind": "theorem",
+   "type_sha256": "c9a448d9faa8d4442191a41eb7594ca06dea5548bc91a70f4dcefbadaa6c9834",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.ScopeSound.scope_local_connection_at": {
+   "module": "Benitoite.Release.Refinement.Surface.ScopeConnection",
+   "kind": "theorem",
+   "type_sha256": "260598dce9ba37ac3facd88bb0c42a30102085d8f33309171b96611fcd252c92",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.ScopeSound.accepted_check_connection": {
+   "module": "Benitoite.Release.Refinement.Surface.ScopeConnection",
+   "kind": "theorem",
+   "type_sha256": "cb97370410c67858e8863d7d947222c6430b957f64d929e4713a1a73d0cbbf37",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.ScopeSound.OccurrenceAccepted.of_body": {
+   "module": "Benitoite.Release.Refinement.Surface.ScopeConnection",
+   "kind": "theorem",
+   "type_sha256": "66cc12b2c7b31b97a47e8a599c2908c657efb1dacb3fffefd62de78eeeb78f06",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.ScopeSound.OccurrenceAccepted.of_open": {
+   "module": "Benitoite.Release.Refinement.Surface.ScopeConnection",
+   "kind": "theorem",
+   "type_sha256": "0be9832eea4cb26059321f39a9876c938b9f39236960bc95891f4c858589d77f",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.ScopeSound.OccurrenceAccepted.of_def": {
+   "module": "Benitoite.Release.Refinement.Surface.ScopeConnection",
+   "kind": "theorem",
+   "type_sha256": "1a7e13120d2093acd050b09549ede3470a2c55415cc3aaa57d4532fce30037a7",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetReachExamples.main_reach": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetReachExamples",
+   "kind": "theorem",
+   "type_sha256": "64f0f8d32f21e66ad85016c9f3b501457082c4be11cf0ecc8d8e63b8c010e8b9",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.LogExamples.emit_checked": {
+   "module": "Benitoite.Release.Refinement.Surface.LogExamples",
+   "kind": "theorem",
+   "type_sha256": "c0f91d111af3d5d00d8e04cc3467497579da100933d812890c63d38f751ba3ca",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.LogExamples.handled_checked": {
+   "module": "Benitoite.Release.Refinement.Surface.LogExamples",
+   "kind": "theorem",
+   "type_sha256": "36fab3dfde167ff8122222f8565a74abdb086b7a82709e9bc575e5d788f6812f",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.LogExamples.partial_retains_log": {
+   "module": "Benitoite.Release.Refinement.Surface.LogExamples",
+   "kind": "theorem",
+   "type_sha256": "c40ad78a0f60af6200ac16109078d140098f6878e582e24d0754e4d70068d6e8",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.LogExamples.console_pure_rejected": {
+   "module": "Benitoite.Release.Refinement.Surface.LogExamples",
+   "kind": "theorem",
+   "type_sha256": "7a5182fb6f25364cb7dcb6a76889e90fe07332232105c154183a0397cb42c8ff",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.FailureExamples.raised_checked": {
+   "module": "Benitoite.Release.Refinement.Surface.FailureExamples",
+   "kind": "theorem",
+   "type_sha256": "65f01cc781ab1e5a2b791ce83f03109065a17da342d134062ec59052a9f794f7",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.FailureExamples.caught_checked": {
+   "module": "Benitoite.Release.Refinement.Surface.FailureExamples",
+   "kind": "theorem",
+   "type_sha256": "93a57b7763ff61694781aaff46983358a7542d40d87c7bab2eb83b045706f97f",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.FailureExamples.failure_rejected": {
+   "module": "Benitoite.Release.Refinement.Surface.FailureExamples",
+   "kind": "theorem",
+   "type_sha256": "49cd65dbe64f87388103a664cbe500c93f348485a1aa9359928ae88198dadce6",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.FailureExamples.fromResult_ok": {
+   "module": "Benitoite.Release.Refinement.FailureExamples",
+   "kind": "theorem",
+   "type_sha256": "73c0ecfb71413ed31a7df5a6b4fbe83e9ad68eb9ecafe6251513533fdf691dcc",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.FailureExamples.fromResult_error": {
+   "module": "Benitoite.Release.Refinement.FailureExamples",
+   "kind": "theorem",
+   "type_sha256": "0ee5d5b5babf648434ba9820c9fd9fe1bd8decff990ebfc6d500a50dd7a2ed86",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.FailureExamples.toResult_return": {
+   "module": "Benitoite.Release.Refinement.FailureExamples",
+   "kind": "theorem",
+   "type_sha256": "c8a4929378948467545073c15c55917a06a67f3e848eefe2db83c68a52e8b8a3",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.FailureExamples.toResult_raise": {
+   "module": "Benitoite.Release.Refinement.FailureExamples",
+   "kind": "theorem",
+   "type_sha256": "10adb9981120a4953d674af8d417739c7a1d2dbe7fdfb4e1e203f4df53516aa9",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.BuilderExamples.dedicated_lowering": {
+   "module": "Benitoite.Release.Refinement.Surface.BuilderExamples",
+   "kind": "theorem",
+   "type_sha256": "96638a4a05e004bd46f79cd8561014fc5e3d15d571f8c6b09500a2ca2bb703a0",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetObservedExamples.main_observed": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetObservedExamples",
+   "kind": "theorem",
+   "type_sha256": "3b39443bd3dc421075aa76e4e8b8641528dd21dfcc5d936aa7c1cbc53ef57182",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetObservedExamples.wrong_rule_unsound": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetObservedExamples",
+   "kind": "theorem",
+   "type_sha256": "3b4fa910c65eba73c19762b0ea92e149224d7821f18aeb5a42ef89b90a10d38a",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetObservedExamples.narrow_rejected": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetObservedExamples",
+   "kind": "theorem",
+   "type_sha256": "aecf9571266757a009a624ac970db246652ffe6a475bcb27d9fc9f7ebf4a8659",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  }
+ },
+ "raw": {
+  "bytes": 7723085,
+  "sha256": "6dbead3de35d4e929e8ccce3cc09f89dc75c58e169ddd35354194b1c0f563736"
+ },
+ "inputs": {
+  "axioms.lean": {
+   "bytes": 4644,
+   "sha256": "6301d0a994350482038ba18cd60f7b68acd5cae6db9eb05fd61e9813209593fe"
+  },
+  "audit.py": {
+   "bytes": 5541,
+   "sha256": "dcc3a46afe97fcea9cb85a78a13fce616398fbb7b9f9137a48b9cdc1f2bb49ba"
+  },
+  "changes.json": {
+   "bytes": 6068,
+   "sha256": "204378bbf07cdfb2e3947a912863602f52bf6d621fc2c7c10bb519ea793bdceb"
+  }
+ }
+}

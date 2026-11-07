@@ -3,31 +3,31 @@ import Benitoite.Release.TargetTable
 import Benitoite.Release.Lemmas.TargetSound
 
 /-!
-# 二つの信頼条件を満たす組み込みの関数の実例（L20.7）
+# 二つの信頼条件を満たす組み込みの関数の実例
 
-`Model.assumptions`（IO を持たない表）の新版である（RV-L00 軽6）。旧の条件 `CoreAssumptions` と対象一致の条件
+`Model.assumptions`（IO を持たない表）の新版である。旧の条件 `CoreAssumptions` と対象一致の条件
 `TargetAgreement` の両方を満たす組み込みの関数の表を一つ作り、定理の前提が空虚に成り立っていないことを確かめる。
 表の項目は次の六つである。
 
 | 項目 | 種類 | 形 | 署名 | δ・応答・観測 |
 |---|---|---|---|---|
 | `Reference.get`・`Reference.set` | 可変のセル | — | `Model` と同じ | ストアの規則 |
-| `Scope.checkPathIn` | pure | — | 問 22 の表（`TargetTable.checkPathIn`） | 動的なパターンと具体化した R の両方を確かめる（問 24 の 6） |
+| `Scope.checkPathIn` | pure | — | 範囲付きの組み込みの関数の表（`TargetTable.checkPathIn`） | 動的なパターンと具体化した R の両方を確かめる |
 | `print` | io | 対象なし | `(text: String) -> Unit uses Console.Write` | `()`、観測は空 |
 | `exit` | exit | 対象なし | `(code: Integer) -> Unit uses Process.Exit` | `exit(n)`、観測は空 |
-| `File.writeTextIn` | io | 単一の対象 | 問 22 の表（`TargetTable.writeTextIn`） | `Ok(())` か `Err(e)`、観測は最初の引数の対象一つ |
-| `File.readText` | io | 旧 Top（`topTargeted .path`） | `(path: String) -> Result[String, IOError] uses File.Read` | `Ok("")` か `Err(e)`、観測は文字列の引数を解析した path の対象（RV-L40 軽8） |
+| `File.writeTextIn` | io | 単一の対象 | 範囲付きの組み込みの関数の表（`TargetTable.writeTextIn`） | `Ok(())` か `Err(e)`、観測は最初の引数の対象一つ |
+| `File.readText` | io | 旧 Top（`topTargeted .path`） | `(path: String) -> Result[String, IOError] uses File.Read` | `Ok("")` か `Err(e)`、観測は文字列の引数を解析した path の対象 |
 
 文字列のパターンと対象の解析は形式化の外側であり、関数 `pat`・`tgt` を引数に取る。`Result` の構成子はプログラムの
 側の宣言であり、仮定は `Ok`・`Err` を宣言したプログラム（`HasResult`）について成り立つ。範囲付きの値型は資源の型に
 しない。資源の型は不透明型 `File.Handle` 一つであり、解放の応答は常に `none` である（`release_exists` の前提を満たす
-値があることは `handle_release`。RV-L40 軽8）。範囲付きの IO の項目を持つこの表で、範囲付きの効果を宣言したプログラムに `progress` を当てる例と、L20.1 の
-反例の状態が案 BA の `BuiltinOnly` のもとで `StateTy` に入る例を末尾に置く。
+値があることは `handle_release`）。範囲付きの IO の項目を持つこの表で、範囲付きの効果を宣言したプログラムに `progress` を当てる例と、
+範囲の位置が Top でない効果を持つ状態が `BuiltinOnly` のもとで `StateTy` に入る例を末尾に置く。
 
-三つの実例の表の役割（L50.3 の整理）: `Model.assumptions` は対象の種類を持たない表（旧の像。範囲付きの値型も IO の
+三つの実例の表の役割: `Model.assumptions` は対象の種類を持たない表（旧の像。範囲付きの値型も IO の
 項目も持たない）、本ファイルの `ModelTargets.assumptions` は `Scope.checkPathIn`・`File.writeTextIn` の範囲付きの
 項目、`Release.ModelHttp.assumptions` は Http の三項目を持つ。Http の項目を本ファイルの表に足さず別の表にしたのは、
-本ファイルの仮定の証明を三項目の分だけ広げるより、同じ形の別の表にするほうが小さいためである（L40.3b）。`Result` の
+本ファイルの仮定の証明を三項目の分だけ広げるより、同じ形の別の表にするほうが小さいためである。`Result` の
 構成子の宣言と表によらない補題（`okDecl`・`errDecl`・`ok_typed`・`err_typed`・`singleton_of_admissible`・
 `ref_scoped_get`・`ref_scoped_set`）は本ファイルにだけ置き、`ModelHttp` はそれを使う。
 -/
@@ -101,7 +101,7 @@ def readObs (tgt : String → Option Target) : List Val → List Target
       | none => []
   | _ => []
 
-/-- 検査の δ（問 24 の 6、案 A）。動的なパターン q と具体化した範囲 r の両方に対象が属し、種類が path のときだけ
+/-- 検査の δ。動的なパターン q と具体化した範囲 r の両方に対象が属し、種類が path のときだけ
 `Ok(checked(t))` を返す。それ以外は `Err` を返す。 -/
 def checkRun (pat : String → Option Range) (tgt : String → Option Target) (r : Range) : List Val → Outcome
   | [.const (.string ps), .const (.string raw)] =>
@@ -289,7 +289,7 @@ theorem checkRun_typed {P : Program} (hP : HasResult P) {Ψ : StoreTy} (r : Rang
       · exact herr
   · exact herr
 
-/-- 検査の δ の契約（案 A。L40.2 の `CheckSpec.Contract` と同じ内容）。`Ok` の成功値は検査済みの対象の値であり、
+/-- 検査の δ の契約（`CheckSpec.Contract` と同じ内容）。`Ok` の成功値は検査済みの対象の値であり、
 対象は種類 path を持ち、動的なパターン q と具体化した範囲 r の両方に属する。 -/
 theorem checkRun_contract {r : Range} {ws : List Val} {ts : List Ty} {w : Val}
     (h : checkRun pat tgt r ws = .val (.con "Ok" ts [w])) :
@@ -350,7 +350,7 @@ abbrev B : Builtins := builtins pat tgt
 
 def str (x : String) : Val := .const (.string x)
 
-/-! ### 検査の δ は動的なパターンと具体化した R の両方を確かめる（問 24 の 6） -/
+/-! ### 検査の δ は動的なパターンと具体化した R の両方を確かめる -/
 
 /-- パターン `/data/**` の検査を `[/data/**]` で具体化すると、`/data/a.txt` は `Ok(checked(/data/a.txt))` になる。 -/
 theorem check_ok :
@@ -375,7 +375,7 @@ theorem check_pattern_rejects :
 
 /-! ### 範囲付きの効果を宣言したプログラム
 
-L20.1 の反例と同じ形のプログラム。定義 `f : () -> Unit uses File.Write[ix]`（本体は `return ()`）と、`Result` の構成子を
+範囲の位置が Top でない効果を宣言したプログラム。定義 `f : () -> Unit uses File.Write[ix]`（本体は `return ()`）と、`Result` の構成子を
 持つ。 -/
 
 def resultCons : ConName → Option ConDecl := fun c =>
@@ -480,7 +480,7 @@ theorem builtinOnly_write {P : Program} (hP : P.effects "File.Write" = none) (ix
     BuiltinOnly P B (Eff.singleAt "File.Write" ix) :=
   ⟨rfl, fun a ha => ⟨"File.Write", ix, (Eff.mem_singleAt _ _ _).mp ha, hP, by simp [B, builtins, stateEff]⟩⟩
 
-/-- 同じ効果は、範囲の位置が Top でなければ旧の `BuiltinOnly` を満たさない（L20.1 の壁）。 -/
+/-- 同じ効果は、範囲の位置が Top でなければ旧の `BuiltinOnly` を満たさない（旧の `BuiltinOnly` が範囲付きの効果を受けない理由）。 -/
 theorem not_builtinOnlyOld_write {P : Program} : ¬ BuiltinOnlyOld P B (Eff.singleAt "File.Write" dataTree) := by
   intro h
   obtain ⟨l, he, -⟩ := h.2 (.name "File.Write" dataTree) ((Eff.mem_singleAt _ _ _).mpr rfl)
@@ -531,7 +531,7 @@ theorem ioState_step {σ : Store} :
       (.run (.ret (.con "Ok" writeTys [.const .unit])) [] σ) :=
   .E_IO (s := TargetTable.writeTextIn) sig_write rfl (fun _ h => by cases h) (.inr (.inr (.inl ⟨rfl, .inl rfl, rfl⟩)))
 
-/-! ### 旧 Top の形の IO の項目と資源の型（RV-L40 軽8）
+/-! ### 旧 Top の形の IO の項目と資源の型
 
 `File.readText(path: "/data/a.txt")`（効果は Top の原子 `File.Read`）。形の検査（`ShapeOk`）と対象一致の条件
 （`io_target`）が旧 Top の形 `topTargeted .path` で当たり、観測 `[/data/a.txt]` は空でない。 -/

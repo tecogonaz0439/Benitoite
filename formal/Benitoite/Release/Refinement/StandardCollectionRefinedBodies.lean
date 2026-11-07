@@ -5,7 +5,6 @@ import Benitoite.Release.Refinement.StandardMapReplaceValues
 /-! # 大きさの上限を検査するMap・Setの高階本体 -/
 namespace Benitoite.Release.Refinement.StandardCollectionRefinedBodies
 noncomputable section
-set_option maxRecDepth 5000
 set_option maxHeartbeats 4000000
 set_option linter.unusedSimpArgs false
 open StandardCollections
@@ -129,7 +128,6 @@ local macro "precision_simp" : tactic => `(tactic|
    Term.HasSort,Term.Shape,Term.References,Term.VarsIn,Ctx.Readable,Ctx.declarationSelf,Ty.NotContCore,Ty.HasSort,Ty.sort?,Measure.input,Measure.output,Tel.argumentsEnv,valEnv,Val.toTerm?,Pred.open,
    Ty.refineNorm,Ty.packRefinements,Ty.refinementPredicates,Pred.conjuncts,Pred.ofConjuncts,
    predBind,termBind,termBind?,upValues]) <;> (try higher_simp)))
-set_option maxHeartbeats 2000000 in
 private theorem list_function {P B Γ Φ Q} (table : StandardKeyTyping.Table P B)
     (map filter : Bool) (arity : map = true → P.DataArity "Pair" 2)
     (lookup : P.defs (if filter then "List.filter" else "List.map") = some (collectionListDefinition filter)) :
@@ -181,7 +179,6 @@ private def primitiveTel (map filter build : Bool) : Tel :=
     (.done (.refined (primitiveResult map filter build)
       (StandardCollectionPrecision.predicate map build (.var 0) (.var 1))) Eff.empty)
 
-set_option maxHeartbeats 2000000 in
 private theorem primitive_function {P B Γ Φ Q} (table : StandardKeyTyping.Table P B)
     (map filter build : Bool) (arity : map = true → P.DataArity "Pair" 2)
     (lookup : B.sig (primitiveName map build) = some (collectionPrimitiveSig B.sat map build)) :

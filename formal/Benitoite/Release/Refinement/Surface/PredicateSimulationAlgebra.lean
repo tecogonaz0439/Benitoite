@@ -186,7 +186,6 @@ mutual
     | fail h g => exact .fail (Code.rename h _) (Clauses.rename g _)
 end
 
-set_option maxHeartbeats 400000 in
 mutual
   theorem Value.substTy {source rows v w} (h : Value source rows v w) (c : Nat) (ts : List Ty) (es : List Eff) :
       Value source rows (Val.substTyAt c ts es v) (Val.substTyAt c ts es w) := by

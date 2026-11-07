@@ -4,7 +4,6 @@ import Benitoite.Release.Refinement.StandardActualListBodies
 /-! # 残りの列と累積の長さを検査するmap・filter -/
 namespace Benitoite.Release.Refinement.StandardHeadTail
 noncomputable section
-set_option maxRecDepth 5000
 set_option maxHeartbeats 4000000
 set_option linter.unusedSimpArgs false
 

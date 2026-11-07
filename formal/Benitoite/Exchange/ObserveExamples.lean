@@ -25,7 +25,7 @@ def lanEp : Target := .endpoint ⟨lanHost, ⟨443, by decide⟩⟩
 -- 範囲外のポートと幅を超えるアドレスは誤りにする。
 #guard !(decodeTarget (Json.mkObj [("endpoint", Json.mkObj [("host", encodeHostTarget apiHost), ("port", toJson 65536)])])).isOk
 
--- 拒否の理由の四つの名前（DET-05）と往復。
+-- 拒否の理由の四つの名前（診断 E0519 の理由）と往復。
 #guard [CoverFailure.notCovered, .atomicCoverOnly, .unknownSource, .budgetExceeded].map encodeCoverFailure ==
   [.str "notCovered", .str "atomicCoverOnly", .str "unknownSource", .str "budgetExceeded"]
 #guard [CoverFailure.notCovered, .atomicCoverOnly, .unknownSource, .budgetExceeded].all fun f =>

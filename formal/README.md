@@ -47,7 +47,7 @@ scripts/check-formal.sh
 
 全比較は Rust と Lean の接続を閉じる区切りと最終の関係状態に割り当てる。既定ビルド・独立入力だけの検査・全件を使わない局所比較の成功は、それぞれの範囲の証拠である。全比較の結果を保存・引用するときは、一時的な `target/` のログだけに依存せず、入力一覧・ハッシュ・各入口の件数・除外理由・実行状態を永続の記録へ残す。具体的な割り当てと引用条件は [07-03「実装の規約と静的な検査」](../docs/design/07-quality/07-03-compiler-testing.md#実装の規約と静的な検査)に従う。
 
-定理が仮定する公理は、次のように確かめる。Lean の標準の公理（`propext`・`Quot.sound`・`Classical.choice`）のほかに `sorryAx` などが現れたら、証明が完了していない。一覧は、篩付きの核と表層の主定理（[07-04「証明する性質」](../docs/design/07-quality/07-04-formal-semantics.md#証明する性質)）と、それを支える主な補題（性質 1 の相互帰納、検査器と受理と網羅性の健全性、構築器の葉、交換の入力の準備）である。
+定理が仮定する公理は、次のように確かめる。Lean の標準の公理（`propext`・`Quot.sound`・`Classical.choice`）のほかに `sorryAx` などが現れたら、証明が完了していない。一覧は、篩付きの核と表層の主定理（[07-04「証明する性質」](../docs/design/07-quality/07-04-formal-semantics.md#証明する性質)）と、それを支える主な補題（性質 1 の相互帰納、検査器と受理と網羅性の健全性、Scope の局所解析と受理した本体の評価の接続、構築器の葉とセルの保持、補間の部分の判定の同値、交換の入力の準備）と、表層の対象健全性の前提を満たす main の例（`TargetReachExamples.main_reach`）と、到達しない選択肢の実行時の系、明示拡大の行き先の一意性、範囲付きの上限の具体例と節の添字の許容を外した規則の反例である。
 
 ```sh
 cat > /tmp/axioms.lean <<'LEAN'
@@ -77,11 +77,49 @@ import Benitoite
 #print axioms Benitoite.Release.Refinement.Surface.CheckAccept.checkProgramAccepted_sound
 #print axioms Benitoite.Release.Refinement.Surface.CheckAccept.acceptProgram_sound
 #print axioms Benitoite.Release.Refinement.Surface.ScopeSound.productionRules_sound
+#print axioms Benitoite.Release.Refinement.Surface.ScopeLower.analyzeBody_sound
+#print axioms Benitoite.Release.Refinement.Surface.ScopeLower.analyzeBody_requiredIndex
+#print axioms Benitoite.Release.Refinement.Surface.ScopeSound.scope_check_connection
+#print axioms Benitoite.Release.Refinement.Surface.ScopeSound.scope_local_connection
+#print axioms Benitoite.Release.Refinement.Surface.ScopeSound.scope_local_typed
+#print axioms Benitoite.Release.Refinement.Surface.ScopeSound.scope_check_core
+#print axioms Benitoite.Release.Refinement.Surface.ScopeSound.http_check_connection
+#print axioms Benitoite.Release.Refinement.builder_step_no_event
+#print axioms Benitoite.Release.Refinement.builder_step_frame
+#print axioms Benitoite.Release.Refinement.capture_builder_cell
+#print axioms Benitoite.Release.Refinement.resume_builder_cell
+#print axioms Benitoite.Release.Refinement.drop_local_silent
+#print axioms Benitoite.Release.Refinement.Surface.Check.interpAllowed_spec
+#print axioms Benitoite.Release.Refinement.Surface.TargetReachExamples.main_reach
+#print axioms Benitoite.Release.Refinement.Surface.TargetObservedExamples.main_observed
+#print axioms Benitoite.Release.Refinement.Surface.TargetObservedExamples.wrong_rule_unsound
+#print axioms Benitoite.Release.Refinement.Surface.TargetObservedExamples.narrow_rejected
+#print axioms Benitoite.Release.Refinement.Surface.TargetStepExamples.no_write_event_passwd
+#print axioms Benitoite.Release.Refinement.Surface.TargetStepExamples.readCall_no_passwd
+#print axioms Benitoite.Release.Refinement.Surface.TargetStepExamples.handleLogs_never_observes_data
+#print axioms Benitoite.Release.Refinement.Surface.TargetStepExamples.wrong_rule_unsound
+#print axioms Benitoite.Release.Refinement.Surface.TargetStepExamples.handleEtc_rejected
+#print axioms Benitoite.Release.Refinement.Surface.TargetCoverExamples.main_reach
+#print axioms Benitoite.Release.Refinement.Surface.TargetCoverExamples.program_target_sound
+#print axioms Benitoite.Release.Refinement.Surface.TargetCoverExamples.main_never_passwd
+#print axioms Benitoite.Release.Refinement.Surface.TargetWriteExamples.main_reach
+#print axioms Benitoite.Release.Refinement.Surface.TargetWriteExamples.program_target_sound
+#print axioms Benitoite.Release.Refinement.Surface.TargetWriteExamples.main_never_passwd
+#print axioms Benitoite.Release.Refinement.Surface.Monad2Examples.desugared_typed
 #print axioms Benitoite.Release.Refinement.Coverage.coverage_sound
 #print axioms Benitoite.Release.Refinement.Coverage.coverage_extension_sound
 #print axioms Benitoite.Release.Refinement.checkMatchWithView_exhaustive_sound
 #print axioms Benitoite.Release.Refinement.irrefutableWithView_sound
 #print axioms Benitoite.Release.Refinement.checkMatchWithView_unreachable_sound
+#print axioms Benitoite.Release.Refinement.checkMatchWithView_unreachable_runtime
+#print axioms Benitoite.Release.Refinement.checkMatchWithView_unreachable_runtime_of_C_Match
+#print axioms Benitoite.Release.Refinement.firstAlt_not_unreachable
+#print axioms Benitoite.Release.Refinement.HasTypeArmsQ.slotsOk
+#print axioms Benitoite.Release.Refinement.ScopeWiden.widenPathIn_target_unique
+#print axioms Benitoite.Release.Refinement.Surface.ScopeLower.analyzeBody_numbered
+#print axioms Benitoite.Release.Refinement.Surface.ScopeState.requestLitBound_known_ports_wf
+#print axioms Benitoite.Release.Refinement.Surface.ScopeSound.scope_local_typed_of_typed
+#print axioms Benitoite.Release.Refinement.Surface.Check.builderOp_empty_rejected
 #print axioms Benitoite.Release.Refinement.usefulWithView_extension_exhaustive
 #print axioms Benitoite.Release.Refinement.builderApply_value_typed
 #print axioms Benitoite.Release.Refinement.StateTyE.builder_new
@@ -160,7 +198,7 @@ python3 -B formal/tests/test_interval_exchange.py
 
 | ディレクトリ・ファイル | 内容 | 01-12 の節 |
 |---|---|---|
-| `Benitoite/Release/Refinement/` | 篩付きの核。構文（`Syntax`）、型付け（`Typing`）、遷移（`Semantics`）、状態の型付け（`StateTyping`）、信頼条件、標準の宣言と組み込みの表のモデル、網羅性（`Coverage`・`CoverageInitial`・`CoverageExtension`）、旧の判断の埋め込み（`Legacy*`） | 「篩を含むコア計算の形式化」から「篩を含む状態の型付け」まで |
+| `Benitoite/Release/Refinement/` | 篩付きの核。構文（`Syntax`）、型付け（`Typing`）、遷移（`Semantics`）、状態の型付け（`StateTyping`）、信頼条件、標準の宣言と組み込みの表のモデル、網羅性（`Coverage`・`CoverageInitial`・`CoverageExtension`・`CoverageRuntime`）、旧の判断の埋め込み（`Legacy*`） | 「篩を含むコア計算の形式化」から「篩を含む状態の型付け」まで |
 | `Benitoite/Release/Refinement/MainStatements.lean` / `MainTheorems.lean` / `MainEffects.lean` | 性質 2・3 と対象健全性の言明と証明 | 確かめる性質 |
 | `Benitoite/Release/Refinement/StandardModelApplication.lean` / `SurfaceLibrary.lean` / `SurfaceMain.lean` | 標準の宣言を含むプログラムへの主定理の適用、表層の main についての主定理 | 確かめる性質 |
 | `Benitoite/Release/Refinement/Surface/` | 篩付きの表層の構文・型付け・脱糖・性質 1（`Property1*`・`Theorems`）、検査器と健全性（`Check*`）、範囲を具体化する表層（`OpenSurface*`）、Scope の局所解析と必須の判定の受理（`Scope*`・`CheckAccept*`） | 型の情報を付けた表層の構文と型付け、篩を含む表層の検査と受理、Scope の局所解析の節 |

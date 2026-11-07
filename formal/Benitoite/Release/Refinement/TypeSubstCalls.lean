@@ -5,7 +5,6 @@ import Benitoite.Release.Refinement.MethodArguments
 /-! 呼出しの本体の型置換（設計書 07-04「01-12 との対応」）。 -/
 namespace Benitoite.Release.Refinement
 noncomputable section
-set_option maxHeartbeats 2000000
 
 private theorem row_kinds_subst {P C0 C1 e ts es}
     (h : kindsEff P (TypeCtx.kinds (C1 ++ C0)) e)

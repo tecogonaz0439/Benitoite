@@ -86,13 +86,13 @@ theorem run_ok {render t u v} (hcore : t.core = u.core) (htrue : accepts v u = t
 theorem run_rejected {render t u v} (h : accepts v u = false) :
     run render t u v = .val (rejected u (render u)) := by simp [run,h]
 
-/-- 観測できる自己変数の一つの篩は、D19 が some true を返す場合に限り成功する。 -/
+/-- 観測できる自己変数の一つの篩は、篩の閉じた評価が some true を返す場合に限り成功する。 -/
 theorem accepts_refined {v a p sort term}
     (hs : a.sort? = some sort) (ht : v.toTerm? = some term) :
     accepts v (.refined a p) = (accepts v a && (p.open term).closedTrue) := by
   simp only [accepts,hs,ht]
 
-/-- D19 が偽又は評価不能なら、篩の外側の検査は誤りを返す。 -/
+/-- 篩の閉じた評価が偽又は評価不能なら、篩の外側の検査は誤りを返す。 -/
 theorem run_refined_rejected {render t a p v sort term}
     (hs : a.sort? = some sort) (ht : v.toTerm? = some term)
     (he : (p.open term).evalClosed = some false ∨ (p.open term).evalClosed = none) :

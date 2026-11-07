@@ -1,0 +1,894 @@
+{
+ "roots": [
+  "Builtins.CoreAssumptions",
+  "Builtins.TargetAgreement"
+ ],
+ "structures": [
+  "Builtins.CoreAssumptions",
+  "Builtins.TargetAgreement",
+  "Builtins.SubstitutionAssumptions",
+  "Builtins.ExternalAssumptions",
+  "Builtins.ResponseAssumptions",
+  "Builtins.ValueAssumptions",
+  "Builtins.TypeAssumptions"
+ ],
+ "base_structures": [
+  "Builtins.CoreAssumptions",
+  "Builtins.TargetAgreement",
+  "Builtins.SubstitutionAssumptions",
+  "Builtins.ExternalAssumptions",
+  "Builtins.ResponseAssumptions",
+  "Builtins.ValueAssumptions",
+  "Builtins.TypeAssumptions"
+ ],
+ "new_conditions": [],
+ "rows": [
+  {
+   "structure": "Builtins.CoreAssumptions",
+   "fields": 16,
+   "ctor_type_same": true,
+   "field_rows": [
+    {
+     "field": "toSubstitutionAssumptions",
+     "type_same": true,
+     "closure": 3259,
+     "changed": 467,
+     "states": {
+      "同じ": 2792,
+      "型が変わった": 59,
+      "本体が変わった": 45,
+      "構成子の列が変わった": 3,
+      "足した": 247,
+      "閉包に入った": 17,
+      "削除した": 56,
+      "閉包から外れた": 40
+     },
+     "direct_changed": []
+    },
+    {
+     "field": "toExternalAssumptions",
+     "type_same": true,
+     "closure": 3259,
+     "changed": 467,
+     "states": {
+      "同じ": 2792,
+      "型が変わった": 59,
+      "本体が変わった": 45,
+      "構成子の列が変わった": 3,
+      "足した": 247,
+      "閉包に入った": 17,
+      "削除した": 56,
+      "閉包から外れた": 40
+     },
+     "direct_changed": []
+    },
+    {
+     "field": "toResponseAssumptions",
+     "type_same": true,
+     "closure": 3259,
+     "changed": 467,
+     "states": {
+      "同じ": 2792,
+      "型が変わった": 59,
+      "本体が変わった": 45,
+      "構成子の列が変わった": 3,
+      "足した": 247,
+      "閉包に入った": 17,
+      "削除した": 56,
+      "閉包から外れた": 40
+     },
+     "direct_changed": []
+    },
+    {
+     "field": "sig_scoped",
+     "type_same": true,
+     "closure": 3259,
+     "changed": 467,
+     "states": {
+      "同じ": 2792,
+      "型が変わった": 59,
+      "本体が変わった": 45,
+      "構成子の列が変わった": 3,
+      "足した": 247,
+      "閉包に入った": 17,
+      "削除した": 56,
+      "閉包から外れた": 40
+     },
+     "direct_changed": []
+    },
+    {
+     "field": "sat_unconstrained",
+     "type_same": true,
+     "closure": 3259,
+     "changed": 467,
+     "states": {
+      "同じ": 2792,
+      "型が変わった": 59,
+      "本体が変わった": 45,
+      "構成子の列が変わった": 3,
+      "足した": 247,
+      "閉包に入った": 17,
+      "削除した": 56,
+      "閉包から外れた": 40
+     },
+     "direct_changed": []
+    },
+    {
+     "field": "admits_sat",
+     "type_same": true,
+     "closure": 3259,
+     "changed": 467,
+     "states": {
+      "同じ": 2792,
+      "型が変わった": 59,
+      "本体が変わった": 45,
+      "構成子の列が変わった": 3,
+      "足した": 247,
+      "閉包に入った": 17,
+      "削除した": 56,
+      "閉包から外れた": 40
+     },
+     "direct_changed": []
+    },
+    {
+     "field": "release_exists",
+     "type_same": true,
+     "closure": 3259,
+     "changed": 467,
+     "states": {
+      "同じ": 2792,
+      "型が変わった": 59,
+      "本体が変わった": 45,
+      "構成子の列が変わった": 3,
+      "足した": 247,
+      "閉包に入った": 17,
+      "削除した": 56,
+      "閉包から外れた": 40
+     },
+     "direct_changed": []
+    },
+    {
+     "field": "pathBases_shape",
+     "type_same": true,
+     "closure": 3259,
+     "changed": 467,
+     "states": {
+      "同じ": 2792,
+      "型が変わった": 59,
+      "本体が変わった": 45,
+      "構成子の列が変わった": 3,
+      "足した": 247,
+      "閉包に入った": 17,
+      "削除した": 56,
+      "閉包から外れた": 40
+     },
+     "direct_changed": []
+    },
+    {
+     "field": "io_op",
+     "type_same": true,
+     "closure": 3259,
+     "changed": 467,
+     "states": {
+      "同じ": 2792,
+      "型が変わった": 59,
+      "本体が変わった": 45,
+      "構成子の列が変わった": 3,
+      "足した": 247,
+      "閉包に入った": 17,
+      "削除した": 56,
+      "閉包から外れた": 40
+     },
+     "direct_changed": []
+    },
+    {
+     "field": "opEff_io",
+     "type_same": true,
+     "closure": 3259,
+     "changed": 467,
+     "states": {
+      "同じ": 2792,
+      "型が変わった": 59,
+      "本体が変わった": 45,
+      "構成子の列が変わった": 3,
+      "足した": 247,
+      "閉包に入った": 17,
+      "削除した": 56,
+      "閉包から外れた": 40
+     },
+     "direct_changed": []
+    },
+    {
+     "field": "effect_ops",
+     "type_same": true,
+     "closure": 3259,
+     "changed": 467,
+     "states": {
+      "同じ": 2792,
+      "型が変わった": 59,
+      "本体が変わった": 45,
+      "構成子の列が変わった": 3,
+      "足した": 247,
+      "閉包に入った": 17,
+      "削除した": 56,
+      "閉包から外れた": 40
+     },
+     "direct_changed": []
+    },
+    {
+     "field": "state_effect",
+     "type_same": true,
+     "closure": 3259,
+     "changed": 467,
+     "states": {
+      "同じ": 2792,
+      "型が変わった": 59,
+      "本体が変わった": 45,
+      "構成子の列が変わった": 3,
+      "足した": 247,
+      "閉包に入った": 17,
+      "削除した": 56,
+      "閉包から外れた": 40
+     },
+     "direct_changed": []
+    },
+    {
+     "field": "ref_get",
+     "type_same": true,
+     "closure": 3259,
+     "changed": 467,
+     "states": {
+      "同じ": 2792,
+      "型が変わった": 59,
+      "本体が変わった": 45,
+      "構成子の列が変わった": 3,
+      "足した": 247,
+      "閉包に入った": 17,
+      "削除した": 56,
+      "閉包から外れた": 40
+     },
+     "direct_changed": []
+    },
+    {
+     "field": "ref_set",
+     "type_same": true,
+     "closure": 3259,
+     "changed": 467,
+     "states": {
+      "同じ": 2792,
+      "型が変わった": 59,
+      "本体が変わった": 45,
+      "構成子の列が変わった": 3,
+      "足した": 247,
+      "閉包に入った": 17,
+      "削除した": 56,
+      "閉包から外れた": 40
+     },
+     "direct_changed": []
+    },
+    {
+     "field": "store_shape",
+     "type_same": true,
+     "closure": 3259,
+     "changed": 467,
+     "states": {
+      "同じ": 2792,
+      "型が変わった": 59,
+      "本体が変わった": 45,
+      "構成子の列が変わった": 3,
+      "足した": 247,
+      "閉包に入った": 17,
+      "削除した": 56,
+      "閉包から外れた": 40
+     },
+     "direct_changed": []
+    },
+    {
+     "field": "store_admits",
+     "type_same": true,
+     "closure": 3259,
+     "changed": 467,
+     "states": {
+      "同じ": 2792,
+      "型が変わった": 59,
+      "本体が変わった": 45,
+      "構成子の列が変わった": 3,
+      "足した": 247,
+      "閉包に入った": 17,
+      "削除した": 56,
+      "閉包から外れた": 40
+     },
+     "direct_changed": []
+    }
+   ]
+  },
+  {
+   "structure": "Builtins.ExternalAssumptions",
+   "fields": 3,
+   "ctor_type_same": true,
+   "field_rows": [
+    {
+     "field": "external_typed",
+     "type_same": true,
+     "closure": 3168,
+     "changed": 468,
+     "states": {
+      "同じ": 2700,
+      "型が変わった": 59,
+      "本体が変わった": 44,
+      "構成子の列が変わった": 3,
+      "足した": 247,
+      "閉包に入った": 19,
+      "削除した": 56,
+      "閉包から外れた": 40
+     },
+     "direct_changed": []
+    },
+    {
+     "field": "external_exists",
+     "type_same": true,
+     "closure": 3168,
+     "changed": 468,
+     "states": {
+      "同じ": 2700,
+      "型が変わった": 59,
+      "本体が変わった": 44,
+      "構成子の列が変わった": 3,
+      "足した": 247,
+      "閉包に入った": 19,
+      "削除した": 56,
+      "閉包から外れた": 40
+     },
+     "direct_changed": []
+    },
+    {
+     "field": "external_no_targets",
+     "type_same": true,
+     "closure": 3168,
+     "changed": 468,
+     "states": {
+      "同じ": 2700,
+      "型が変わった": 59,
+      "本体が変わった": 44,
+      "構成子の列が変わった": 3,
+      "足した": 247,
+      "閉包に入った": 19,
+      "削除した": 56,
+      "閉包から外れた": 40
+     },
+     "direct_changed": []
+    }
+   ]
+  },
+  {
+   "structure": "Builtins.ResponseAssumptions",
+   "fields": 4,
+   "ctor_type_same": true,
+   "field_rows": [
+    {
+     "field": "delta_typed",
+     "type_same": true,
+     "closure": 3174,
+     "changed": 469,
+     "states": {
+      "同じ": 2705,
+      "型が変わった": 59,
+      "本体が変わった": 45,
+      "構成子の列が変わった": 3,
+      "足した": 247,
+      "閉包に入った": 19,
+      "削除した": 56,
+      "閉包から外れた": 40
+     },
+     "direct_changed": []
+    },
+    {
+     "field": "io_typed",
+     "type_same": true,
+     "closure": 3174,
+     "changed": 469,
+     "states": {
+      "同じ": 2705,
+      "型が変わった": 59,
+      "本体が変わった": 45,
+      "構成子の列が変わった": 3,
+      "足した": 247,
+      "閉包に入った": 19,
+      "削除した": 56,
+      "閉包から外れた": 40
+     },
+     "direct_changed": []
+    },
+    {
+     "field": "io_kind",
+     "type_same": true,
+     "closure": 3174,
+     "changed": 469,
+     "states": {
+      "同じ": 2705,
+      "型が変わった": 59,
+      "本体が変わった": 45,
+      "構成子の列が変わった": 3,
+      "足した": 247,
+      "閉包に入った": 19,
+      "削除した": 56,
+      "閉包から外れた": 40
+     },
+     "direct_changed": []
+    },
+    {
+     "field": "io_exists",
+     "type_same": true,
+     "closure": 3174,
+     "changed": 469,
+     "states": {
+      "同じ": 2705,
+      "型が変わった": 59,
+      "本体が変わった": 45,
+      "構成子の列が変わった": 3,
+      "足した": 247,
+      "閉包に入った": 19,
+      "削除した": 56,
+      "閉包から外れた": 40
+     },
+     "direct_changed": []
+    }
+   ]
+  },
+  {
+   "structure": "Builtins.SubstitutionAssumptions",
+   "fields": 2,
+   "ctor_type_same": true,
+   "field_rows": [
+    {
+     "field": "toValueAssumptions",
+     "type_same": true,
+     "closure": 3158,
+     "changed": 468,
+     "states": {
+      "同じ": 2690,
+      "型が変わった": 59,
+      "本体が変わった": 44,
+      "構成子の列が変わった": 3,
+      "足した": 247,
+      "閉包に入った": 19,
+      "削除した": 56,
+      "閉包から外れた": 40
+     },
+     "direct_changed": []
+    },
+    {
+     "field": "toTypeAssumptions",
+     "type_same": true,
+     "closure": 3158,
+     "changed": 468,
+     "states": {
+      "同じ": 2690,
+      "型が変わった": 59,
+      "本体が変わった": 44,
+      "構成子の列が変わった": 3,
+      "足した": 247,
+      "閉包に入った": 19,
+      "削除した": 56,
+      "閉包から外れた": 40
+     },
+     "direct_changed": []
+    }
+   ]
+  },
+  {
+   "structure": "Builtins.TargetAgreement",
+   "fields": 1,
+   "ctor_type_same": true,
+   "field_rows": [
+    {
+     "field": "io_target",
+     "type_same": true,
+     "closure": 3155,
+     "changed": 469,
+     "states": {
+      "同じ": 2686,
+      "型が変わった": 59,
+      "本体が変わった": 45,
+      "構成子の列が変わった": 3,
+      "足した": 247,
+      "閉包に入った": 19,
+      "削除した": 56,
+      "閉包から外れた": 40
+     },
+     "direct_changed": []
+    }
+   ]
+  },
+  {
+   "structure": "Builtins.TypeAssumptions",
+   "fields": 4,
+   "ctor_type_same": true,
+   "field_rows": [
+    {
+     "field": "sat_renameTypes",
+     "type_same": true,
+     "closure": 2107,
+     "changed": 169,
+     "states": {
+      "同じ": 1938,
+      "型が変わった": 13,
+      "本体が変わった": 10,
+      "構成子の列が変わった": 2,
+      "足した": 114,
+      "閉包に入った": 24,
+      "削除した": 6
+     },
+     "direct_changed": []
+    },
+    {
+     "field": "admits_renameTypes",
+     "type_same": true,
+     "closure": 2107,
+     "changed": 169,
+     "states": {
+      "同じ": 1938,
+      "型が変わった": 13,
+      "本体が変わった": 10,
+      "構成子の列が変わった": 2,
+      "足した": 114,
+      "閉包に入った": 24,
+      "削除した": 6
+     },
+     "direct_changed": []
+    },
+    {
+     "field": "sat_subst",
+     "type_same": true,
+     "closure": 2107,
+     "changed": 169,
+     "states": {
+      "同じ": 1938,
+      "型が変わった": 13,
+      "本体が変わった": 10,
+      "構成子の列が変わった": 2,
+      "足した": 114,
+      "閉包に入った": 24,
+      "削除した": 6
+     },
+     "direct_changed": []
+    },
+    {
+     "field": "admits_subst",
+     "type_same": true,
+     "closure": 2107,
+     "changed": 169,
+     "states": {
+      "同じ": 1938,
+      "型が変わった": 13,
+      "本体が変わった": 10,
+      "構成子の列が変わった": 2,
+      "足した": 114,
+      "閉包に入った": 24,
+      "削除した": 6
+     },
+     "direct_changed": []
+    }
+   ]
+  },
+  {
+   "structure": "Builtins.ValueAssumptions",
+   "fields": 4,
+   "ctor_type_same": true,
+   "field_rows": [
+    {
+     "field": "sat_rename",
+     "type_same": true,
+     "closure": 3140,
+     "changed": 468,
+     "states": {
+      "同じ": 2672,
+      "型が変わった": 59,
+      "本体が変わった": 44,
+      "構成子の列が変わった": 3,
+      "足した": 247,
+      "閉包に入った": 19,
+      "削除した": 56,
+      "閉包から外れた": 40
+     },
+     "direct_changed": []
+    },
+    {
+     "field": "admits_rename",
+     "type_same": true,
+     "closure": 3140,
+     "changed": 468,
+     "states": {
+      "同じ": 2672,
+      "型が変わった": 59,
+      "本体が変わった": 44,
+      "構成子の列が変わった": 3,
+      "足した": 247,
+      "閉包に入った": 19,
+      "削除した": 56,
+      "閉包から外れた": 40
+     },
+     "direct_changed": []
+    },
+    {
+     "field": "sat_values",
+     "type_same": true,
+     "closure": 3140,
+     "changed": 468,
+     "states": {
+      "同じ": 2672,
+      "型が変わった": 59,
+      "本体が変わった": 44,
+      "構成子の列が変わった": 3,
+      "足した": 247,
+      "閉包に入った": 19,
+      "削除した": 56,
+      "閉包から外れた": 40
+     },
+     "direct_changed": []
+    },
+    {
+     "field": "admits_values",
+     "type_same": true,
+     "closure": 3140,
+     "changed": 468,
+     "states": {
+      "同じ": 2672,
+      "型が変わった": 59,
+      "本体が変わった": 44,
+      "構成子の列が変わった": 3,
+      "足した": 247,
+      "閉包に入った": 19,
+      "削除した": 56,
+      "閉包から外れた": 40
+     },
+     "direct_changed": []
+    }
+   ]
+  }
+ ],
+ "closure": {
+  "constants": 3270,
+  "by_state": {
+   "同じ": 2802,
+   "型が変わった": 59,
+   "本体が変わった": 46,
+   "構成子の列が変わった": 3,
+   "足した": 247,
+   "閉包に入った": 17,
+   "削除した": 56,
+   "閉包から外れた": 40
+  },
+  "by_state_kind": {
+   "削除した/definition": 53,
+   "削除した/theorem": 3,
+   "同じ/constructor": 633,
+   "同じ/definition": 1677,
+   "同じ/inductive": 156,
+   "同じ/recursor": 71,
+   "同じ/theorem": 265,
+   "型が変わった/constructor": 8,
+   "型が変わった/definition": 37,
+   "型が変わった/recursor": 14,
+   "本体が変わった/definition": 46,
+   "構成子の列が変わった/inductive": 3,
+   "足した/constructor": 26,
+   "足した/definition": 209,
+   "足した/inductive": 5,
+   "足した/recursor": 3,
+   "足した/theorem": 4,
+   "閉包から外れた/definition": 40,
+   "閉包に入った/definition": 13,
+   "閉包に入った/recursor": 2,
+   "閉包に入った/theorem": 2
+  },
+  "named_changed": {
+   "削除した": [
+    "Detail.textFields",
+    "breakDoubleColon",
+    "canonicalV6",
+    "hexDigit",
+    "hexText",
+    "hexText.loop",
+    "numericHost",
+    "parseAuthority",
+    "parseHexGroup",
+    "parseHost",
+    "parseIPv4",
+    "parseIPv4._proof_1",
+    "parseIPv6",
+    "parseIPv6._proof_1",
+    "parseNatDec",
+    "parseV6Parts",
+    "splitChars",
+    "splitText",
+    "urlAlphabet",
+    "urlAuthority",
+    "urlPort",
+    "urlPort._proof_1",
+    "v6Groups",
+    "validPercent"
+   ],
+   "型が変わった": [
+    "AtCallAdmissible.mk",
+    "Def.mk",
+    "FieldLink.mk",
+    "HasTypeCQ.C_Match",
+    "HasTypeVQ.V_Fun",
+    "HasTypeVQ.V_Prim",
+    "Val.fnRef",
+    "Val.prim",
+    "Val.rec_1",
+    "Val.rec_2",
+    "Val.rec_3",
+    "Val.rec_4",
+    "Val.rec_5",
+    "Val.rec_6",
+    "Val.rec_7"
+   ],
+   "本体が変わった": [
+    "BuiltinSchema.candidates",
+    "Detail.values",
+    "FieldLink.Valid",
+    "FieldLink.predicate",
+    "Pred.atomReady",
+    "Pred.atomValue",
+    "ResultShape.StandardError",
+    "Val.below_1",
+    "Val.below_2",
+    "Val.below_3",
+    "Val.below_4",
+    "Val.below_5",
+    "Val.below_6",
+    "Val.below_7",
+    "Val.brecOn.go",
+    "atErrorFields",
+    "handled",
+    "memberReady",
+    "parseUrlTarget"
+   ],
+   "構成子の列が変わった": [
+    "AtCallAdmissible",
+    "BuiltinLemma",
+    "Entails"
+   ],
+   "足した": [
+    "AtCallAdmissible.text",
+    "BuiltinLemma.fieldAtom",
+    "BuiltinLemma.measured",
+    "BuiltinSchema.fieldCandidates",
+    "BuiltinSchema.fieldTransfer",
+    "BuiltinSchema.measuredCandidates",
+    "BuiltinSchema.observationEq",
+    "BuiltinSchema.sameClosedObservation",
+    "Builtins.issuesIn",
+    "Def.RangeAdmissible",
+    "Def.instTel",
+    "Def.rkinds",
+    "Detail.publicTree",
+    "Entails.fieldAtom",
+    "Entails.measured",
+    "FieldAtom",
+    "FieldAtom.charactersIn",
+    "FieldAtom.compareLeft",
+    "FieldAtom.compareRight",
+    "FieldAtom.constructorIs",
+    "FieldAtom.floatClass",
+    "FieldAtom.reverse",
+    "FieldLink.constructors",
+    "FieldLink.sort",
+    "FieldRelation.Scalar",
+    "FieldRelation.Valid",
+    "Program.HasScopePublic",
+    "Program.HasScopePublic.mk",
+    "RangesFit",
+    "ScopePublic.PublicData",
+    "ScopePublic.PublicData.constructors",
+    "ScopePublic.PublicData.mk",
+    "ScopePublic.PublicData.name",
+    "ScopePublic.PublicTree",
+    "ScopePublic.PublicTree.below_1",
+    "ScopePublic.PublicTree.brecOn.go",
+    "ScopePublic.PublicTree.bytes",
+    "ScopePublic.PublicTree.con",
+    "ScopePublic.PublicTree.integer",
+    "ScopePublic.PublicTree.list",
+    "ScopePublic.PublicTree.none",
+    "ScopePublic.PublicTree.rec_1",
+    "ScopePublic.PublicTree.some",
+    "ScopePublic.PublicTree.text",
+    "ScopePublic.PublicTree.toTerm",
+    "ScopePublic.PublicTree.toVal",
+    "ScopePublic.PublicTy",
+    "ScopePublic.PublicTy.brecOn.go",
+    "ScopePublic.PublicTy.bytes",
+    "ScopePublic.PublicTy.data",
+    "ScopePublic.PublicTy.integer",
+    "ScopePublic.PublicTy.list",
+    "ScopePublic.PublicTy.option",
+    "ScopePublic.PublicTy.string",
+    "ScopePublic.PublicTy.ty",
+    "ScopePublic.all",
+    "ScopePublic.atDetailDecl",
+    "ScopePublic.atFailureDecl",
+    "ScopePublic.atFailureTree?",
+    "ScopePublic.atInputDecl"
+   ],
+   "閉包から外れた": [
+    "Benitoite.Scope.Domain.instReprCIDR",
+    "Benitoite.Scope.Domain.instReprCIDR.repr",
+    "Benitoite.Scope.Domain.instReprEndpoint",
+    "Benitoite.Scope.Domain.instReprEndpoint.repr",
+    "Benitoite.Scope.Domain.instReprEndpointPattern",
+    "Benitoite.Scope.Domain.instReprEndpointPattern.repr",
+    "Benitoite.Scope.Domain.instReprFamily",
+    "Benitoite.Scope.Domain.instReprFamily.repr",
+    "Benitoite.Scope.Domain.instReprHostPattern",
+    "Benitoite.Scope.Domain.instReprHostPattern.repr",
+    "Benitoite.Scope.Domain.instReprHostTarget",
+    "Benitoite.Scope.Domain.instReprHostTarget.repr",
+    "Benitoite.Scope.Domain.instReprIPAddr",
+    "Benitoite.Scope.Domain.instReprIPAddr.repr",
+    "Benitoite.Scope.Domain.instReprIPPattern",
+    "Benitoite.Scope.Domain.instReprIPPattern.repr",
+    "Benitoite.Scope.Domain.instReprNamePattern",
+    "Benitoite.Scope.Domain.instReprNamePattern.repr",
+    "Benitoite.Scope.Domain.instReprPathPattern",
+    "Benitoite.Scope.Domain.instReprPathPattern.repr",
+    "Benitoite.Scope.Domain.instReprPortRange",
+    "Benitoite.Scope.Domain.instReprPortRange.repr",
+    "Benitoite.Scope.Domain.instReprRange",
+    "Benitoite.Scope.Domain.instReprRange.repr",
+    "Benitoite.Scope.Domain.instReprTarget",
+    "Benitoite.Scope.Domain.instReprTarget.repr",
+    "instReprAtFailure",
+    "instReprAtFailure.repr",
+    "instReprPathBase",
+    "instReprPathBase.repr",
+    "instReprRangeExpr",
+    "instReprRangeExpr.repr",
+    "instReprTargetInput",
+    "instReprTargetInput.repr",
+    "viewTerm"
+   ],
+   "閉包に入った": [
+    "Detail.originalPattern",
+    "Detail.originalTarget",
+    "Observation.below_1",
+    "Observation.below_2",
+    "Observation.brecOn.go",
+    "Observation.rec_1",
+    "Observation.rec_2",
+    "Term.Closed",
+    "Term.closedDecidable",
+    "instDecidableEqPrimKind",
+    "instDecidableEqPrimKind._proof_1",
+    "instDecidableEqPrimKind._proof_2",
+    "termWF"
+   ]
+  },
+  "named_changed_counts": {
+   "削除した": 24,
+   "型が変わった": 15,
+   "本体が変わった": 19,
+   "構成子の列が変わった": 3,
+   "足した": 137,
+   "閉包から外れた": 35,
+   "閉包に入った": 13
+  },
+  "listing": {
+   "bytes": 191773,
+   "sha256": "55f2aa1ffdca995e43b9665e3427a4a9446dd6d76f46a695952c76f5b287d32d"
+  }
+ },
+ "inputs": {
+  "trust.py": {
+   "bytes": 10888,
+   "sha256": "621edf7eaeb7c7efa49dce730934ccaab6425ebf44ac700364daf34c2a522d8e"
+  },
+  "stage.py": {
+   "bytes": 24770,
+   "sha256": "b1817ef52d1c717e1452af9bb638554fca15ed0bd8c7a19b3d0525ed7bc31c2f"
+  }
+ }
+}
