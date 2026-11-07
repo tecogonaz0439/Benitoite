@@ -114,3 +114,14 @@
 - 情8: stage-results.md「旧の性質の照合」の「別の形（旧の判断どうしの同値）」9行の理由に、D29 の限定部分の同値（旧の等号の位置での埋め込みの同値。`embed_normal_eq_iff`・`embedTy_ordinary_iff` など）との関係を一文で足した。
 - 確情2: 群 H3 の Lean の担当と群 H4 の必須の名前のうち文書に名前のない85名は、補助と例なので 01-12・07-04・README に載せない（取りまとめの判断）。`verify.py` は一覧を出力するだけとする。
 
+
+## 取りまとめの作業末の検査（2026-11-08）
+
+| 項目 | 値 |
+|---|---|
+| 基準 | `084c8f6a848a035fc9d2240b638ff9411f629536`（群 H の開始時の san_benito） |
+| HEAD | `1652ccf22`（RV-L70.h・RV-L70.h2 の処置の確認は可） |
+| コマンド | `formal/.lake/build` の `Benitoite/Release/Refinement` の lib と ir を消した後、`/usr/bin/lockf -t 3600 <tmp>/lean-build.lock /usr/bin/time -l scripts/check.sh --level work --base <基準>` |
+| 選んだ単位 | spec_tally・spec_examples（7通過）・formal_build（138ファイルの差分） |
+| 結果 | 終了0 |
+| 外側の時間 | 1,932秒（約32分）。最大常駐 約4.98 GB |
