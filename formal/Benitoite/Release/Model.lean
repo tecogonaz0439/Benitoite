@@ -48,8 +48,7 @@ def builtins : Builtins where
   sat := fun _ _ _ => True
   refGet := "Reference.get"
   refSet := "Reference.set"
-  -- 署名表のデータ（問 11）。この表のエフェクト（`State`）は対象を持たず、不透明型と資源の型は範囲付きの値型でない
-  -- （RV-PL10 中3 (b)）。範囲の変数を持つ項目がないので、具体化の制約は何も許さない（Top の列だけを許す）。
+  -- 署名表のデータ。この表のエフェクト（`State`）は対象を持たず、不透明型と資源の型は範囲付きの値型でない。範囲の変数を持つ項目がないので、具体化の制約は何も許さない（Top の列だけを許す）。
   effKind := fun _ => none
   valKind := fun _ => none
   admitsR := fun _ _ => False

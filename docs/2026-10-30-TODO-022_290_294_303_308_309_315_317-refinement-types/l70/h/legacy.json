@@ -1,0 +1,2634 @@
+{
+ "rows": 129,
+ "names": 135,
+ "verdicts": {
+  "導ける": 28,
+  "別の形": 70,
+  "失った": 31
+ },
+ "lost_weights": {
+  "軽い": 13,
+  "重い": 18
+ },
+ "old_missing_in_base": [
+  "PrimRangeExamples",
+  "Surface.Check.FailureExamples",
+  "Release.FailureExamples",
+  "Release.CoverageExamples",
+  "ScopeLimits"
+ ],
+ "items": [
+  {
+   "names": [
+    "LocalCtx.kindAt_extend"
+   ],
+   "old_file": "`Release/Typing.lean`",
+   "old_in_base": {
+    "LocalCtx.kindAt_extend": [
+     "Benitoite.Release.LocalCtx.kindAt_extend"
+    ]
+   },
+   "verdict": "導ける",
+   "evidence": {
+    "Release.LocalCtx.kindAt_extend": {
+     "name": "Benitoite.Release.LocalCtx.kindAt_extend",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Typing"
+    }
+   },
+   "reason": "同じ定理が既定 import に残る旧モジュールにある",
+   "weight": null
+  },
+  {
+   "names": [
+    "builder_value_no_free_local"
+   ],
+   "old_file": "`Release/LocalScope.lean`",
+   "old_in_base": {
+    "builder_value_no_free_local": [
+     "Benitoite.Release.builder_value_no_free_local"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.StateTyE.local_invariant": {
+     "name": "Benitoite.Release.Refinement.StateTyE.local_invariant",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.LocalInvariant"
+    },
+    "Refinement.LocalStateInvariant": {
+     "name": "Benitoite.Release.Refinement.LocalStateInvariant",
+     "kind": "definition",
+     "module": "Benitoite.Release.Refinement.LocalInvariant"
+    }
+   },
+   "reason": "型の付いた状態の不変条件として、通常セルの値と専用 List の要素に自由な専用参照がないことを述べる。任意の型付き値についての言明ではない",
+   "weight": null
+  },
+  {
+   "names": [
+    "NoFreeBuilders",
+    "Val.NoFreeBuilders"
+   ],
+   "old_file": "`Release/LocalScope.lean`",
+   "old_in_base": {
+    "NoFreeBuilders": [
+     "Benitoite.Release.NoFreeBuilders",
+     "Benitoite.Release.Val.NoFreeBuilders"
+    ],
+    "Val.NoFreeBuilders": [
+     "Benitoite.Release.Val.NoFreeBuilders"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.Val.NoFreeBuilders": {
+     "name": "Benitoite.Release.Refinement.Val.NoFreeBuilders",
+     "kind": "definition",
+     "module": "Benitoite.Release.Refinement.ReadLocalRefs"
+    },
+    "Refinement.LocalStateInvariant": {
+     "name": "Benitoite.Release.Refinement.LocalStateInvariant",
+     "kind": "definition",
+     "module": "Benitoite.Release.Refinement.LocalInvariant"
+    }
+   },
+   "reason": "篩付きの核の同名の述語を状態の不変条件の条件に使う",
+   "weight": null
+  },
+  {
+   "names": [
+    "OrdinaryStoreEq"
+   ],
+   "old_file": "`Release/Lemmas/BuilderStore.lean`",
+   "old_in_base": {
+    "OrdinaryStoreEq": [
+     "Benitoite.Release.OrdinaryStoreEq"
+    ]
+   },
+   "verdict": "失った",
+   "evidence": {},
+   "reason": "Reference の値セルだけを比べる関係。読者の builder_step_frame 系とともに対応物がない",
+   "weight": "軽い"
+  },
+  {
+   "names": [
+    "builder_step_no_event"
+   ],
+   "old_file": "`Release/Lemmas/BuilderStore.lean`",
+   "old_in_base": {
+    "builder_step_no_event": [
+     "Benitoite.Release.builder_step_no_event"
+    ]
+   },
+   "verdict": "失った",
+   "evidence": {},
+   "reason": "専用項の一歩が事象を伴わないことは篩付きの核で述べていない（Step の規則の直接の系として足せる見込み）",
+   "weight": "重い"
+  },
+  {
+   "names": [
+    "builder_step_frame"
+   ],
+   "old_file": "`Release/Lemmas/BuilderStore.lean`",
+   "old_in_base": {
+    "builder_step_frame": [
+     "Benitoite.Release.builder_step_frame"
+    ]
+   },
+   "verdict": "失った",
+   "evidence": {},
+   "reason": "専用項の一歩が通常の Reference の値セルを変えないことは篩付きの核で述べていない（Step の規則の直接の系として足せる見込み）",
+   "weight": "重い"
+  },
+  {
+   "names": [
+    "cont_local_store_weaken"
+   ],
+   "old_file": "`Release/Lemmas/BuilderStore.lean`",
+   "old_in_base": {
+    "cont_local_store_weaken": [
+     "Benitoite.Release.cont_local_store_weaken"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.StateTyE.step_preserved": {
+     "name": "Benitoite.Release.Refinement.StateTyE.step_preserved",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.FiniteStepPreservation"
+    }
+   },
+   "reason": "ストアの拡張での継続の型付けの保存は、全遷移の保存の証明の内部で扱う",
+   "weight": null
+  },
+  {
+   "names": [
+    "capture_builder_cell"
+   ],
+   "old_file": "`Release/Lemmas/BuilderStore.lean`",
+   "old_in_base": {
+    "capture_builder_cell": [
+     "Benitoite.Release.capture_builder_cell"
+    ]
+   },
+   "verdict": "失った",
+   "evidence": {},
+   "reason": "捕捉の一歩が既存の専用セルの場所と内容を保つことは述べていない。保存は型付けだけを結論する",
+   "weight": "重い"
+  },
+  {
+   "names": [
+    "resume_builder_cell"
+   ],
+   "old_file": "`Release/Lemmas/BuilderStore.lean`",
+   "old_in_base": {
+    "resume_builder_cell": [
+     "Benitoite.Release.resume_builder_cell"
+    ]
+   },
+   "verdict": "失った",
+   "evidence": {},
+   "reason": "再開の一歩が専用セルの場所と内容を保つことは述べていない。保存は型付けだけを結論する",
+   "weight": "重い"
+  },
+  {
+   "names": [
+    "BuilderOnlyFrames"
+   ],
+   "old_file": "`Release/Lemmas/BuilderStore.lean`",
+   "old_in_base": {
+    "BuilderOnlyFrames": [
+     "Benitoite.Release.BuilderOnlyFrames"
+    ]
+   },
+   "verdict": "失った",
+   "evidence": {},
+   "reason": "解放枠を持たない枠列の述語。読者の builder_frames_releases_nil とともに対応物がない",
+   "weight": "軽い"
+  },
+  {
+   "names": [
+    "builder_frames_releases_nil"
+   ],
+   "old_file": "`Release/Lemmas/BuilderStore.lean`",
+   "old_in_base": {
+    "builder_frames_releases_nil": [
+     "Benitoite.Release.builder_frames_releases_nil"
+    ]
+   },
+   "verdict": "失った",
+   "evidence": {},
+   "reason": "構築器だけの枠列が解放枠を足さないことは述べていない",
+   "weight": "軽い"
+  },
+  {
+   "names": [
+    "drop_local_silent"
+   ],
+   "old_file": "`Release/Lemmas/BuilderStore.lean`",
+   "old_in_base": {
+    "drop_local_silent": [
+     "Benitoite.Release.drop_local_silent"
+    ]
+   },
+   "verdict": "失った",
+   "evidence": {},
+   "reason": "E_DropRel の後続が事象なしで追加の解放枠を持たないことは述べていない（Step の規則の直接の系として足せる見込み）",
+   "weight": "重い"
+  },
+  {
+   "names": [
+    "local_steps_invariant"
+   ],
+   "old_file": "`Release/Lemmas/LocalInvariant.lean`",
+   "old_in_base": {
+    "local_steps_invariant": [
+     "Benitoite.Release.local_steps_invariant"
+    ]
+   },
+   "verdict": "導ける",
+   "evidence": {
+    "Refinement.steps_preservation": {
+     "name": "Benitoite.Release.Refinement.steps_preservation",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.MainTheorems"
+    },
+    "Refinement.StateTyE.local_invariant": {
+     "name": "Benitoite.Release.Refinement.StateTyE.local_invariant",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.LocalInvariant"
+    }
+   },
+   "reason": "有限の遷移列の行先の型付け（steps_preservation）に状態の局所の不変条件（local_invariant）を当てる",
+   "weight": null
+  },
+  {
+   "names": [
+    "capture_local_valid"
+   ],
+   "old_file": "`Release/Lemmas/LocalInvariant.lean`",
+   "old_in_base": {
+    "capture_local_valid": [
+     "Benitoite.Release.capture_local_valid"
+    ]
+   },
+   "verdict": "導ける",
+   "evidence": {
+    "Refinement.preservation": {
+     "name": "Benitoite.Release.Refinement.preservation",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.MainTheorems"
+    },
+    "Refinement.StateTyE.local_invariant": {
+     "name": "Benitoite.Release.Refinement.StateTyE.local_invariant",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.LocalInvariant"
+    }
+   },
+   "reason": "一段の保存に局所の不変条件を当てる",
+   "weight": null
+  },
+  {
+   "names": [
+    "resume_local_valid"
+   ],
+   "old_file": "`Release/Lemmas/LocalInvariant.lean`",
+   "old_in_base": {
+    "resume_local_valid": [
+     "Benitoite.Release.resume_local_valid"
+    ]
+   },
+   "verdict": "導ける",
+   "evidence": {
+    "Refinement.preservation": {
+     "name": "Benitoite.Release.Refinement.preservation",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.MainTheorems"
+    },
+    "Refinement.StateTyE.local_invariant": {
+     "name": "Benitoite.Release.Refinement.StateTyE.local_invariant",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.LocalInvariant"
+    }
+   },
+   "reason": "一段の保存に局所の不変条件を当てる",
+   "weight": null
+  },
+  {
+   "names": [
+    "builderApply_total_typed"
+   ],
+   "old_file": "`Release/Lemmas/BuilderTyping.lean`",
+   "old_in_base": {
+    "builderApply_total_typed": [
+     "Benitoite.Release.builderApply_total_typed"
+    ]
+   },
+   "verdict": "導ける",
+   "evidence": {
+    "Refinement.StateTyE.builder_progress": {
+     "name": "Benitoite.Release.Refinement.StateTyE.builder_progress",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.MainProgress"
+    },
+    "Refinement.builderApply_value_typed": {
+     "name": "Benitoite.Release.Refinement.builderApply_value_typed",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.BuilderValueTyping"
+    }
+   },
+   "reason": "型付きの引数からの応答の存在（進行の葉）と成功時の型の保存",
+   "weight": null
+  },
+  {
+   "names": [
+    "builderApply_closed"
+   ],
+   "old_file": "`Release/Lemmas/BuilderTyping.lean`",
+   "old_in_base": {
+    "builderApply_closed": [
+     "Benitoite.Release.builderApply_closed"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.builderApply_value_scope": {
+     "name": "Benitoite.Release.Refinement.builderApply_value_scope",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.BuilderValueTyping"
+    }
+   },
+   "reason": "閉性は応答の値の有効範囲の補題で扱う",
+   "weight": null
+  },
+  {
+   "names": [
+    "BuilderCtx.Aligned"
+   ],
+   "old_file": "`Surface/Builders.lean`",
+   "old_in_base": {
+    "BuilderCtx.Aligned": [
+     "Benitoite.Surface.BuilderCtx.Aligned"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.LocalCtx": {
+     "name": "Benitoite.Release.Refinement.LocalCtx",
+     "kind": "definition",
+     "module": "Benitoite.Release.Refinement.Syntax"
+    }
+   },
+   "reason": "表層と核が同じ局所の文脈を使うので、整列の条件を置かない",
+   "weight": null
+  },
+  {
+   "names": [
+    "BuilderCtx.toLocal_kindAt"
+   ],
+   "old_file": "`Surface/Builders.lean`",
+   "old_in_base": {
+    "BuilderCtx.toLocal_kindAt": [
+     "Benitoite.Surface.BuilderCtx.toLocal_kindAt"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.LocalCtx": {
+     "name": "Benitoite.Release.Refinement.LocalCtx",
+     "kind": "definition",
+     "module": "Benitoite.Release.Refinement.Syntax"
+    }
+   },
+   "reason": "同上",
+   "weight": null
+  },
+  {
+   "names": [
+    "congrΔ"
+   ],
+   "old_file": "`Surface/Typing.lean`",
+   "old_in_base": {
+    "congrΔ": [
+     "Benitoite.Surface.HasArmsQ.congrΔ",
+     "Benitoite.Surface.HasBlockQ.congrΔ",
+     "Benitoite.Surface.HasClausesQ.congrΔ"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.Surface.HasTypeQ.desugar": {
+     "name": "Benitoite.Release.Refinement.Surface.HasTypeQ.desugar",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.Property1"
+    }
+   },
+   "reason": "性質1は任意の局所の文脈で述べ、分類表の間の移送を要らない",
+   "weight": null
+  },
+  {
+   "names": [
+    "BuilderFree"
+   ],
+   "old_file": "`Surface/BuilderFree.lean`",
+   "old_in_base": {
+    "BuilderFree": [
+     "Benitoite.Surface.Arms.BuilderFree",
+     "Benitoite.Surface.Block.BuilderFree",
+     "Benitoite.Surface.Clauses.BuilderFree"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.Surface.HasTypeQ.desugar": {
+     "name": "Benitoite.Release.Refinement.Surface.HasTypeQ.desugar",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.Property1"
+    }
+   },
+   "reason": "構築器を含まない入力を別に扱わず、性質1が全構文を扱う",
+   "weight": null
+  },
+  {
+   "names": [
+    "builderFree_iff"
+   ],
+   "old_file": "`Surface/Typing.lean`",
+   "old_in_base": {
+    "builderFree_iff": [
+     "Benitoite.Surface.HasArmsQ.builderFree_iff",
+     "Benitoite.Surface.HasBlockQ.builderFree_iff",
+     "Benitoite.Surface.HasClausesQ.builderFree_iff"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.Surface.HasTypeQ.desugar": {
+     "name": "Benitoite.Release.Refinement.Surface.HasTypeQ.desugar",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.Property1"
+    }
+   },
+   "reason": "同上",
+   "weight": null
+  },
+  {
+   "names": [
+    "BuilderInvariant"
+   ],
+   "old_file": "`Surface/CheckLemmas.lean`",
+   "old_in_base": {
+    "BuilderInvariant": [
+     "Benitoite.Surface.Check.BuilderInvariant"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.Surface.Check.checkExprAt_sound": {
+     "name": "Benitoite.Release.Refinement.Surface.Check.checkExprAt_sound",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.CheckSound"
+    }
+   },
+   "reason": "検査器の健全性の内部の支持の条件で扱う",
+   "weight": null
+  },
+  {
+   "names": [
+    "builderFinish_typed"
+   ],
+   "old_file": "`Surface/Lemmas/BuilderLower.lean`",
+   "old_in_base": {
+    "builderFinish_typed": [
+     "Benitoite.Surface.builderFinish_typed"
+    ]
+   },
+   "verdict": "導ける",
+   "evidence": {
+    "Refinement.Surface.HasTypeQ.desugar": {
+     "name": "Benitoite.Release.Refinement.Surface.HasTypeQ.desugar",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.Property1"
+    }
+   },
+   "reason": "性質1の専用操作の場合（同じ文脈・型・効果でのコアの型付け）",
+   "weight": null
+  },
+  {
+   "names": [
+    "builderOp_desugar_typed"
+   ],
+   "old_file": "`Surface/Lemmas/BuilderLower.lean`",
+   "old_in_base": {
+    "builderOp_desugar_typed": [
+     "Benitoite.Surface.builderOp_desugar_typed"
+    ]
+   },
+   "verdict": "導ける",
+   "evidence": {
+    "Refinement.Surface.HasTypeQ.desugar": {
+     "name": "Benitoite.Release.Refinement.Surface.HasTypeQ.desugar",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.Property1"
+    }
+   },
+   "reason": "性質1の専用操作の場合",
+   "weight": null
+  },
+  {
+   "names": [
+    "builderBlock_desugar_typed"
+   ],
+   "old_file": "`Surface/Lemmas/BuilderLower.lean`",
+   "old_in_base": {
+    "builderBlock_desugar_typed": [
+     "Benitoite.Surface.builderBlock_desugar_typed"
+    ]
+   },
+   "verdict": "導ける",
+   "evidence": {
+    "Refinement.Surface.HasBlockQ.desugar": {
+     "name": "Benitoite.Release.Refinement.Surface.HasBlockQ.desugar",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.Property1"
+    }
+   },
+   "reason": "性質1の局所宣言の場合",
+   "weight": null
+  },
+  {
+   "names": [
+    "contents_injective"
+   ],
+   "old_file": "`Surface/BuilderCheck.lean`",
+   "old_in_base": {
+    "contents_injective": [
+     "Benitoite.Surface.BuilderKind.contents_injective"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.Surface.Check.checkExprAt_sound": {
+     "name": "Benitoite.Release.Refinement.Surface.Check.checkExprAt_sound",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.CheckSound"
+    }
+   },
+   "reason": "検査器は内容の型の一致を直接確かめ、健全性で型付けへ結ぶ",
+   "weight": null
+  },
+  {
+   "names": [
+    "builderOp_empty_rejected"
+   ],
+   "old_file": "`Surface/CheckLemmas.lean`",
+   "old_in_base": {
+    "builderOp_empty_rejected": [
+     "Benitoite.Surface.Check.builderOp_empty_rejected"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.Surface.Check.checkExprAt_sound": {
+     "name": "Benitoite.Release.Refinement.Surface.Check.checkExprAt_sound",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.CheckSound"
+    }
+   },
+   "reason": "検査器の成功は型付けを与え、専用操作の型付けは局所の文脈の専用位置を要るので、宣言のない専用操作は受理されない。拒否そのものは定理として述べていない",
+   "weight": null
+  },
+  {
+   "names": [
+    "builders_no_capture"
+   ],
+   "old_file": "`Surface/Lemmas/BuilderNoCapture.lean`",
+   "old_in_base": {
+    "builders_no_capture": [
+     "Benitoite.Surface.builders_no_capture"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.hideBuilders": {
+     "name": "Benitoite.Release.Refinement.hideBuilders",
+     "kind": "definition",
+     "module": "Benitoite.Release.Refinement.Typing"
+    },
+    "Refinement.Surface.HasTypeQ.desugar": {
+     "name": "Benitoite.Release.Refinement.Surface.HasTypeQ.desugar",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.Property1"
+    },
+    "Refinement.StateTyE.local_invariant": {
+     "name": "Benitoite.Release.Refinement.StateTyE.local_invariant",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.LocalInvariant"
+    }
+   },
+   "reason": "脱糖の出力はコアで型付き（性質1）であり、ラムダ・遅延・節の本体の型付けは専用位置を隠した文脈で行う。捕捉の禁止は型付けの境界と状態の不変条件で述べ、脱糖の出力の構文の性質としては述べていない",
+   "weight": null
+  },
+  {
+   "names": [
+    "builders_block_no_capture"
+   ],
+   "old_file": "`Surface/Lemmas/BuilderNoCapture.lean`",
+   "old_in_base": {
+    "builders_block_no_capture": [
+     "Benitoite.Surface.builders_block_no_capture"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.hideBuilders": {
+     "name": "Benitoite.Release.Refinement.hideBuilders",
+     "kind": "definition",
+     "module": "Benitoite.Release.Refinement.Typing"
+    },
+    "Refinement.Surface.HasBlockQ.desugar": {
+     "name": "Benitoite.Release.Refinement.Surface.HasBlockQ.desugar",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.Property1"
+    }
+   },
+   "reason": "同上（局所宣言の後続）",
+   "weight": null
+  },
+  {
+   "names": [
+    "builders_ordinary_result"
+   ],
+   "old_file": "`Surface/Lemmas/BuilderCapture.lean`",
+   "old_in_base": {
+    "builders_ordinary_result": [
+     "Benitoite.Surface.builders_ordinary_result"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.Surface.HasTypeQ.desugar": {
+     "name": "Benitoite.Release.Refinement.Surface.HasTypeQ.desugar",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.Property1"
+    }
+   },
+   "reason": "結果の型の範囲条件は性質1の結論の型付けに含まれる",
+   "weight": null
+  },
+  {
+   "names": [
+    "builderExprBoundary_no_capture"
+   ],
+   "old_file": "`Surface/Lemmas/BuilderCapture.lean`",
+   "old_in_base": {
+    "builderExprBoundary_no_capture": [
+     "Benitoite.Surface.builderExprBoundary_no_capture"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.hideBuilders": {
+     "name": "Benitoite.Release.Refinement.hideBuilders",
+     "kind": "definition",
+     "module": "Benitoite.Release.Refinement.Typing"
+    },
+    "Refinement.Surface.HasTypeQ.desugar": {
+     "name": "Benitoite.Release.Refinement.Surface.HasTypeQ.desugar",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.Property1"
+    }
+   },
+   "reason": "builders_no_capture と同じ",
+   "weight": null
+  },
+  {
+   "names": [
+    "dedicated_lowering"
+   ],
+   "old_file": "`Surface/BuilderExamples.lean`",
+   "old_in_base": {
+    "dedicated_lowering": [
+     "Benitoite.Surface.BuilderExamples.dedicated_lowering"
+    ]
+   },
+   "verdict": "失った",
+   "evidence": {},
+   "reason": "通常引数と discard の番号を独立の期待コアで照合する脱糖の例。篩付きの表層に同じ例はない",
+   "weight": "軽い"
+  },
+  {
+   "names": [
+    "scope_check_connection"
+   ],
+   "old_file": "`Surface/ScopeSound.lean`",
+   "old_in_base": {
+    "scope_check_connection": [
+     "Benitoite.Surface.ScopeSound.scope_check_connection"
+    ]
+   },
+   "verdict": "失った",
+   "evidence": {},
+   "reason": "受理した本体の評価と Scope の局所解析・検査の成功値の接続。篩付きの受理の健全性（acceptProgram_sound）は範囲の被覆だけを述べる",
+   "weight": "重い"
+  },
+  {
+   "names": [
+    "scope_local_connection"
+   ],
+   "old_file": "`Surface/ScopeSound.lean`",
+   "old_in_base": {
+    "scope_local_connection": [
+     "Benitoite.Surface.ScopeSound.scope_local_connection"
+    ]
+   },
+   "verdict": "失った",
+   "evidence": {},
+   "reason": "接続定理（射影・拡大が指す値）。同上",
+   "weight": "重い"
+  },
+  {
+   "names": [
+    "scope_local_typed"
+   ],
+   "old_file": "`Surface/ScopeSound.lean`",
+   "old_in_base": {
+    "scope_local_typed": [
+     "Benitoite.Surface.ScopeSound.scope_local_typed"
+    ]
+   },
+   "verdict": "失った",
+   "evidence": {},
+   "reason": "接続定理の型付けの系。同上",
+   "weight": "重い"
+  },
+  {
+   "names": [
+    "scope_check_core"
+   ],
+   "old_file": "`Surface/ScopeSound.lean`",
+   "old_in_base": {
+    "scope_check_core": [
+     "Benitoite.Surface.ScopeSound.scope_check_core"
+    ]
+   },
+   "verdict": "失った",
+   "evidence": {},
+   "reason": "接続定理（検査の成功値とコアの実行の形）。同上",
+   "weight": "重い"
+  },
+  {
+   "names": [
+    "http_check_connection"
+   ],
+   "old_file": "`Surface/ScopeSound.lean`",
+   "old_in_base": {
+    "http_check_connection": [
+     "Benitoite.Surface.ScopeSound.http_check_connection"
+    ]
+   },
+   "verdict": "失った",
+   "evidence": {},
+   "reason": "接続定理の Http.checkRequestIn への適用。同上",
+   "weight": "重い"
+  },
+  {
+   "names": [
+    "reachAt_occurrences"
+   ],
+   "old_file": "`Surface/ScopeOccurrence.lean`",
+   "old_in_base": {
+    "reachAt_occurrences": [
+     "Benitoite.Surface.ScopeOccurrence.reachAt_occurrences"
+    ]
+   },
+   "verdict": "失った",
+   "evidence": {},
+   "reason": "接続定理の前提を到達から得る補助",
+   "weight": "軽い"
+  },
+  {
+   "names": [
+    "main_reach"
+   ],
+   "old_file": "`Surface/CoverExamples.lean`",
+   "old_in_base": {
+    "main_reach": [
+     "Benitoite.Surface.CoverExamples.main_reach"
+    ]
+   },
+   "verdict": "失った",
+   "evidence": {},
+   "reason": "表層の対象健全性の前提を満たし IO の事象に到達する具体例。篩付きの表層の主定理の前提の証人（main_guarantees）はあるが、事象への到達の例はない",
+   "weight": "軽い"
+  },
+  {
+   "names": [
+    "main_never_passwd"
+   ],
+   "old_file": "`Surface/CoverExamples.lean`",
+   "old_in_base": {
+    "main_never_passwd": [
+     "Benitoite.Surface.CoverExamples.main_never_passwd"
+    ]
+   },
+   "verdict": "導ける",
+   "evidence": {
+    "Refinement.Surface.surface_target_sound": {
+     "name": "Benitoite.Release.Refinement.Surface.surface_target_sound",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.SurfaceMain"
+    }
+   },
+   "reason": "表層の対象健全性の適用（具体のプログラムの例は置いていない）",
+   "weight": null
+  },
+  {
+   "names": [
+    "no_write_event_passwd"
+   ],
+   "old_file": "`Release/TargetStepExamples.lean`",
+   "old_in_base": {
+    "no_write_event_passwd": [
+     "Benitoite.Release.TargetStepExamples.no_write_event_passwd"
+    ]
+   },
+   "verdict": "導ける",
+   "evidence": {
+    "Refinement.step_target_sound": {
+     "name": "Benitoite.Release.Refinement.step_target_sound",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.MainTheorems"
+    }
+   },
+   "reason": "一段の対象健全性の適用（具体例は置いていない）",
+   "weight": null
+  },
+  {
+   "names": [
+    "ioCall_no_passwd"
+   ],
+   "old_file": "`Release/TargetReachExamples.lean`",
+   "old_in_base": {
+    "ioCall_no_passwd": [
+     "Benitoite.Release.TargetReachExamples.ioCall_no_passwd"
+    ]
+   },
+   "verdict": "導ける",
+   "evidence": {
+    "Refinement.reachable_target_sound": {
+     "name": "Benitoite.Release.Refinement.reachable_target_sound",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.MainTheorems"
+    }
+   },
+   "reason": "到達先の対象健全性の適用（具体例は置いていない）",
+   "weight": null
+  },
+  {
+   "names": [
+    "handleLog_never_observes_data"
+   ],
+   "old_file": "`Release/TargetReachExamples.lean`",
+   "old_in_base": {
+    "handleLog_never_observes_data": [
+     "Benitoite.Release.TargetReachExamples.handleLog_never_observes_data"
+    ]
+   },
+   "verdict": "導ける",
+   "evidence": {
+    "Refinement.reachable_target_sound": {
+     "name": "Benitoite.Release.Refinement.reachable_target_sound",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.MainTheorems"
+    }
+   },
+   "reason": "同上",
+   "weight": null
+  },
+  {
+   "names": [
+    "wrong_rule_unsound"
+   ],
+   "old_file": "`Release/TargetReachExamples.lean`",
+   "old_in_base": {
+    "wrong_rule_unsound": [
+     "Benitoite.Release.TargetReachExamples.wrong_rule_unsound"
+    ]
+   },
+   "verdict": "失った",
+   "evidence": {},
+   "reason": "誤った規則のもとで対象健全性が破れる反例。規則の必要性を示す例であり、篩付きの核に同じ反例はない",
+   "weight": "軽い"
+  },
+  {
+   "names": [
+    "stateTy_of_old"
+   ],
+   "old_file": "`Release/Lemmas/PresHelpers.lean`",
+   "old_in_base": {
+    "stateTy_of_old": [
+     "Benitoite.Release.stateTy_of_old"
+    ]
+   },
+   "verdict": "導ける",
+   "evidence": {
+    "Release.stateTy_of_old": {
+     "name": "Benitoite.Release.stateTy_of_old",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Lemmas.PresHelpers"
+    }
+   },
+   "reason": "同じ定理が既定 import に残る旧モジュールにある",
+   "weight": null
+  },
+  {
+   "names": [
+    "Ty.wf_iff_old",
+    "Eff.wf_iff_old"
+   ],
+   "old_file": "`Release/RangeWF.lean`",
+   "old_in_base": {
+    "Ty.wf_iff_old": [
+     "Benitoite.Release.Ty.wf_iff_old"
+    ],
+    "Eff.wf_iff_old": [
+     "Benitoite.Release.Eff.wf_iff_old"
+    ]
+   },
+   "verdict": "導ける",
+   "evidence": {
+    "Release.Ty.wf_iff_old": {
+     "name": "Benitoite.Release.Ty.wf_iff_old",
+     "kind": "theorem",
+     "module": "Benitoite.Release.RangeWF"
+    },
+    "Release.Eff.wf_iff_old": {
+     "name": "Benitoite.Release.Eff.wf_iff_old",
+     "kind": "theorem",
+     "module": "Benitoite.Release.RangeWF"
+    }
+   },
+   "reason": "同じ定理が既定 import に残る旧モジュールにある",
+   "weight": null
+  },
+  {
+   "names": [
+    "ePrim_premises_iff_old"
+   ],
+   "old_file": "`Surface/PrimRange.lean`",
+   "old_in_base": {
+    "ePrim_premises_iff_old": [
+     "Benitoite.Surface.ePrim_premises_iff_old"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.embedProgramWellTyped": {
+     "name": "Benitoite.Release.Refinement.embedProgramWellTyped",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.LegacyProgramTyping"
+    }
+   },
+   "reason": "旧の像との同値は、旧導出の埋め込みで扱う",
+   "weight": null
+  },
+  {
+   "names": [
+    "ioKind_iff_noObs"
+   ],
+   "old_file": "`Release/Lemmas/Observation.lean`",
+   "old_in_base": {
+    "ioKind_iff_noObs": [
+     "Benitoite.Release.Builtins.ioKind_iff_noObs"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.embedProgramWellTyped": {
+     "name": "Benitoite.Release.Refinement.embedProgramWellTyped",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.LegacyProgramTyping"
+    }
+   },
+   "reason": "同上",
+   "weight": null
+  },
+  {
+   "names": [
+    "le_iff_leOld"
+   ],
+   "old_file": "`Release/CoverCompat.lean`",
+   "old_in_base": {
+    "le_iff_leOld": [
+     "Benitoite.Release.Ty.le_iff_leOld"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.embedProgramWellTyped": {
+     "name": "Benitoite.Release.Refinement.embedProgramWellTyped",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.LegacyProgramTyping"
+    }
+   },
+   "reason": "同上",
+   "weight": null
+  },
+  {
+   "names": [
+    "Builtins.fieldNew_iff_old"
+   ],
+   "old_file": "`Release/Lemmas/PrimRanges.lean`",
+   "old_in_base": {
+    "Builtins.fieldNew_iff_old": [
+     "Benitoite.Release.Builtins.fieldNew_iff_old"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.embedProgramWellTyped": {
+     "name": "Benitoite.Release.Refinement.embedProgramWellTyped",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.LegacyProgramTyping"
+    }
+   },
+   "reason": "同上",
+   "weight": null
+  },
+  {
+   "names": [
+    "PrimRangeExamples"
+   ],
+   "old_file": "`Release/Lemmas/PrimRanges.lean`",
+   "old_in_base": {
+    "PrimRangeExamples": []
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.StandardModel.statement_premises": {
+     "name": "Benitoite.Release.Refinement.StandardModel.statement_premises",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.MainStatements"
+    }
+   },
+   "reason": "範囲付きの項目の表が信頼条件を満たすことは合成表で示す",
+   "weight": null
+  },
+  {
+   "names": [
+    "emit_checked"
+   ],
+   "old_file": "`Surface/LogExamples.lean`",
+   "old_in_base": {
+    "emit_checked": [
+     "Benitoite.Surface.LogExamples.emit_checked"
+    ]
+   },
+   "verdict": "失った",
+   "evidence": {},
+   "reason": "Log の検査器の具体例。篩付きの検査器に同じ例はない",
+   "weight": "軽い"
+  },
+  {
+   "names": [
+    "desugared_typed"
+   ],
+   "old_file": "`Surface/Monad2Examples.lean`",
+   "old_in_base": {
+    "desugared_typed": [
+     "Benitoite.Surface.Monad2Examples.desugared_typed"
+    ]
+   },
+   "verdict": "導ける",
+   "evidence": {
+    "Refinement.Surface.desugar_typed": {
+     "name": "Benitoite.Release.Refinement.Surface.desugar_typed",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.Theorems"
+    }
+   },
+   "reason": "性質1の適用（三クラスのプログラムの例は置いていない）",
+   "weight": null
+  },
+  {
+   "names": [
+    "SingleFail"
+   ],
+   "old_file": "`Surface/SingleFail.lean`",
+   "old_in_base": {
+    "SingleFail": [
+     "Benitoite.Surface.SingleFail"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.Surface.SingleFail": {
+     "name": "Benitoite.Release.Refinement.Surface.SingleFail",
+     "kind": "definition",
+     "module": "Benitoite.Release.Refinement.Surface.CheckSingle"
+    }
+   },
+   "reason": "篩付きの表層の同名の条件（失敗型を正規形で比べる）と判定",
+   "weight": null
+  },
+  {
+   "names": [
+    "Surface.Check.FailureExamples",
+    "Release.FailureExamples"
+   ],
+   "old_file": "`Surface/FailureExamples.lean・Release/FailureExamples.lean`",
+   "old_in_base": {
+    "Surface.Check.FailureExamples": [],
+    "Release.FailureExamples": []
+   },
+   "verdict": "失った",
+   "evidence": {},
+   "reason": "型付きの失敗の公開の検査入口と有限遷移の例。篩付きに同じ例はない",
+   "weight": "軽い"
+  },
+  {
+   "names": [
+    "checkMatch_unreachable_runtime"
+   ],
+   "old_file": "`Release/Lemmas/CoverageRuntime.lean`",
+   "old_in_base": {
+    "checkMatch_unreachable_runtime": [
+     "Benitoite.Release.checkMatch_unreachable_runtime"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.checkMatchWithView_unreachable_sound": {
+     "name": "Benitoite.Release.Refinement.checkMatchWithView_unreachable_sound",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Coverage"
+    }
+   },
+   "reason": "照合の上で選ばれないことまでを述べ、実行時の系は述べない",
+   "weight": null
+  },
+  {
+   "names": [
+    "checkMatch_unreachable_runtime_of_C_Match"
+   ],
+   "old_file": "`Release/Lemmas/CoverageRuntime.lean`",
+   "old_in_base": {
+    "checkMatch_unreachable_runtime_of_C_Match": [
+     "Benitoite.Release.checkMatch_unreachable_runtime_of_C_Match"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.checkMatchWithView_unreachable_sound": {
+     "name": "Benitoite.Release.Refinement.checkMatchWithView_unreachable_sound",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Coverage"
+    }
+   },
+   "reason": "同上",
+   "weight": null
+  },
+  {
+   "names": [
+    "exhaustive_view"
+   ],
+   "old_file": "`Surface/CheckPatterns.lean`",
+   "old_in_base": {
+    "exhaustive_view": [
+     "Benitoite.Surface.CheckTools.exhaustive_view"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.checkMatchWithView_exhaustive_sound": {
+     "name": "Benitoite.Release.Refinement.checkMatchWithView_exhaustive_sound",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Coverage"
+    }
+   },
+   "reason": "view 付きの網羅性の判定の健全性で扱う",
+   "weight": null
+  },
+  {
+   "names": [
+    "constructors_withView_sound"
+   ],
+   "old_file": "`Surface/CheckTablesSound.lean`",
+   "old_in_base": {
+    "constructors_withView_sound": [
+     "Benitoite.Surface.CheckTables.constructors_withView_sound"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.Surface.Input.Sound.withView": {
+     "name": "Benitoite.Release.Refinement.Surface.Check.Input.Sound.withView",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.CheckTablesBase"
+    }
+   },
+   "reason": "準備後の入力の健全性の view の版で扱う",
+   "weight": null
+  },
+  {
+   "names": [
+    "Release.CoverageExamples",
+    "CoverageIntegerExamples.lean"
+   ],
+   "old_file": "`Release/CoverageIntegerExamples.lean`",
+   "old_in_base": {
+    "Release.CoverageExamples": []
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.CoverageExamples.month_accept_reject": {
+     "name": "Benitoite.Release.Refinement.CoverageExamples.month_accept_reject",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.CoverageExamples"
+    }
+   },
+   "reason": "篩付きの網羅性の例の名前空間 `Refinement.CoverageExamples`（整数の穴・境界・相関・ガード・燃料切れの独立の期待値と同じ組かは確かめていない）",
+   "weight": null
+  },
+  {
+   "names": [
+    "SlotsOk"
+   ],
+   "old_file": "`Release/Lemmas/CoverageRuntime.lean`",
+   "old_in_base": {
+    "SlotsOk": [
+     "Benitoite.Release.SlotsOk"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.checkMatchWithView_unreachable_sound": {
+     "name": "Benitoite.Release.Refinement.checkMatchWithView_unreachable_sound",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Coverage"
+    }
+   },
+   "reason": "束縛の並べ替えの条件は、照合の健全性の内部で扱う",
+   "weight": null
+  },
+  {
+   "names": [
+    "desugar_primName"
+   ],
+   "old_file": "`Surface/PrimRange.lean`",
+   "old_in_base": {
+    "desugar_primName": [
+     "Benitoite.Surface.desugar_primName"
+    ]
+   },
+   "verdict": "導ける",
+   "evidence": {
+    "Refinement.Surface.HasTypeQ.desugar": {
+     "name": "Benitoite.Release.Refinement.Surface.HasTypeQ.desugar",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.Property1"
+    }
+   },
+   "reason": "性質1の組込みの呼出しの場合",
+   "weight": null
+  },
+  {
+   "names": [
+    "StringAddOk"
+   ],
+   "old_file": "`Surface/Typing.lean`",
+   "old_in_base": {
+    "StringAddOk": [
+     "Benitoite.Surface.StringAddOk"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.Surface.HasTypeQ.desugar": {
+     "name": "Benitoite.Release.Refinement.Surface.HasTypeQ.desugar",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.Property1"
+    }
+   },
+   "reason": "補間の連結は二項演算と同じ頭の型付けで扱う",
+   "weight": null
+  },
+  {
+   "names": [
+    "DieExitOk"
+   ],
+   "old_file": "`Surface/Typing.lean`",
+   "old_in_base": {
+    "DieExitOk": [
+     "Benitoite.Surface.DieExitOk"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.Surface.HasTypeQ.desugar": {
+     "name": "Benitoite.Release.Refinement.Surface.HasTypeQ.desugar",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.Property1"
+    }
+   },
+   "reason": "終了の操作の型付けは呼出しの頭の型付けで扱う",
+   "weight": null
+  },
+  {
+   "names": [
+    "DieShowOk"
+   ],
+   "old_file": "`Surface/Typing.lean`",
+   "old_in_base": {
+    "DieShowOk": [
+     "Benitoite.Surface.DieShowOk"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.Surface.HasTypeQ.desugar": {
+     "name": "Benitoite.Release.Refinement.Surface.HasTypeQ.desugar",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.Property1"
+    }
+   },
+   "reason": "表示のメソッドの型付けは呼出しの頭の型付けで扱う",
+   "weight": null
+  },
+  {
+   "names": [
+    "rangeFree"
+   ],
+   "old_file": "`Surface/PrimRange.lean`",
+   "old_in_base": {
+    "rangeFree": [
+     "Benitoite.Surface.Def.Scoped.rangeFree",
+     "Benitoite.Surface.Program.WellFormed.rangeFree"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.Surface.desugar_typed": {
+     "name": "Benitoite.Release.Refinement.Surface.desugar_typed",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.Theorems"
+    }
+   },
+   "reason": "範囲の条件は表層の整形式（desugar_typed の前提）で扱う",
+   "weight": null
+  },
+  {
+   "names": [
+    "acceptEffCover"
+   ],
+   "old_file": "`Surface/Check.lean`",
+   "old_in_base": {
+    "acceptEffCover": [
+     "Benitoite.Surface.Check.acceptEffCover"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.Surface.Check.checkExprAt_sound": {
+     "name": "Benitoite.Release.Refinement.Surface.Check.checkExprAt_sound",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.CheckSound"
+    }
+   },
+   "reason": "効果の被覆による受理は検査器の効果の比較と健全性で扱う",
+   "weight": null
+  },
+  {
+   "names": [
+    "clauseRangeIn_eq"
+   ],
+   "old_file": "`Surface/ClauseIxRule.lean`",
+   "old_in_base": {
+    "clauseRangeIn_eq": [
+     "Benitoite.Surface.clauseRangeIn_eq"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.Surface.Check.checkExprAt_sound": {
+     "name": "Benitoite.Release.Refinement.Surface.Check.checkExprAt_sound",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.CheckSound"
+    }
+   },
+   "reason": "節の添字の計算は検査器の節の判定と健全性で扱う",
+   "weight": null
+  },
+  {
+   "names": [
+    "clauseSig_iff_old_of_rangeFree"
+   ],
+   "old_file": "`Surface/DesugarRange.lean`",
+   "old_in_base": {
+    "clauseSig_iff_old_of_rangeFree": [
+     "Benitoite.Surface.clauseSig_iff_old_of_rangeFree"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.embedProgramWellTyped": {
+     "name": "Benitoite.Release.Refinement.embedProgramWellTyped",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.LegacyProgramTyping"
+    }
+   },
+   "reason": "旧の像との同値は旧導出の埋め込みで扱う",
+   "weight": null
+  },
+  {
+   "names": [
+    "interpolate_typed"
+   ],
+   "old_file": "`Surface/Lemmas/Extensions.lean`",
+   "old_in_base": {
+    "interpolate_typed": [
+     "Benitoite.Surface.interpolate_typed"
+    ]
+   },
+   "verdict": "導ける",
+   "evidence": {
+    "Refinement.Surface.HasTypeQ.desugar": {
+     "name": "Benitoite.Release.Refinement.Surface.HasTypeQ.desugar",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.Property1"
+    }
+   },
+   "reason": "性質1の補間の場合",
+   "weight": null
+  },
+  {
+   "names": [
+    "interpolation_types_atoms"
+   ],
+   "old_file": "`Surface/CheckLemmas.lean`",
+   "old_in_base": {
+    "interpolation_types_atoms": [
+     "Benitoite.Surface.Check.interpolation_types_atoms"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.Surface.Check.checkExprAt_sound": {
+     "name": "Benitoite.Release.Refinement.Surface.Check.checkExprAt_sound",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.CheckSound"
+    }
+   },
+   "reason": "検査器の支持の条件で扱う",
+   "weight": null
+  },
+  {
+   "names": [
+    "interpAllowed_spec"
+   ],
+   "old_file": "`Surface/CheckPredicates.lean`",
+   "old_in_base": {
+    "interpAllowed_spec": [
+     "Benitoite.Surface.CheckTools.interpAllowed_spec"
+    ]
+   },
+   "verdict": "失った",
+   "evidence": {},
+   "reason": "補間の部分の判定と条件の同値（両向き）。篩付きは判定から条件への向きだけで、判定が条件を満たす入力を全て受け付ける向き（受理の完全性）は述べていない",
+   "weight": "重い"
+  },
+  {
+   "names": [
+    "interpolation_case"
+   ],
+   "old_file": "`Surface/CheckSoundCollections.lean`",
+   "old_in_base": {
+    "interpolation_case": [
+     "Benitoite.Surface.Check.interpolation_case"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.Surface.Check.checkExprAt_sound": {
+     "name": "Benitoite.Release.Refinement.Surface.Check.checkExprAt_sound",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.CheckSound"
+    }
+   },
+   "reason": "検査器の健全性の補間の場合",
+   "weight": null
+  },
+  {
+   "names": [
+    "computes_interpolation"
+   ],
+   "old_file": "`Surface/CheckComputeCalls.lean`",
+   "old_in_base": {
+    "computes_interpolation": [
+     "Benitoite.Surface.Check.computes_interpolation"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.Surface.Check.checkExprAt_sound": {
+     "name": "Benitoite.Release.Refinement.Surface.Check.checkExprAt_sound",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.CheckSound"
+    }
+   },
+   "reason": "検査器が計算する型の支持の条件は検査器の健全性の内部で扱う",
+   "weight": null
+  },
+  {
+   "names": [
+    "storeShape_iff_old"
+   ],
+   "old_file": "`Release/Lemmas/PrimRanges.lean`",
+   "old_in_base": {
+    "storeShape_iff_old": [
+     "Benitoite.Release.PrimSig.storeShape_iff_old"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.embedProgramWellTyped": {
+     "name": "Benitoite.Release.Refinement.embedProgramWellTyped",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.LegacyProgramTyping"
+    }
+   },
+   "reason": "旧の像との同値は旧導出の埋め込みで扱う",
+   "weight": null
+  },
+  {
+   "names": [
+    "checkDieShow"
+   ],
+   "old_file": "`Surface/Check.lean`",
+   "old_in_base": {
+    "checkDieShow": [
+     "Benitoite.Surface.Check.checkDieShow"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.Surface.Check.checkExprAt_sound": {
+     "name": "Benitoite.Release.Refinement.Surface.Check.checkExprAt_sound",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.CheckSound"
+    }
+   },
+   "reason": "検査器の or die の場合",
+   "weight": null
+  },
+  {
+   "names": [
+    "exprExits"
+   ],
+   "old_file": "`Surface/CheckPredicates.lean`",
+   "old_in_base": {
+    "exprExits": [
+     "Benitoite.Surface.CheckTools.exprExits"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.Surface.Check.checkExprAt_sound": {
+     "name": "Benitoite.Release.Refinement.Surface.Check.checkExprAt_sound",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.CheckSound"
+    }
+   },
+   "reason": "式が必ず抜けることの判定は検査器の支持の判定で扱う",
+   "weight": null
+  },
+  {
+   "names": [
+    "ContTyOld.toNew"
+   ],
+   "old_file": "`Release/Lemmas/ClauseIx.lean`",
+   "old_in_base": {
+    "ContTyOld.toNew": [
+     "Benitoite.Release.ContTyOld.toNew"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.embedStateTyE": {
+     "name": "Benitoite.Release.Refinement.embedStateTyE",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.LegacyStateTyping"
+    }
+   },
+   "reason": "旧の継続の型付けは旧導出の埋め込みで扱う",
+   "weight": null
+  },
+  {
+   "names": [
+    "opSig_eq_old"
+   ],
+   "old_file": "`Release/Lemmas/PrimRanges.lean`",
+   "old_in_base": {
+    "opSig_eq_old": [
+     "Benitoite.Release.opSig_eq_old"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.embedProgramWellTyped": {
+     "name": "Benitoite.Release.Refinement.embedProgramWellTyped",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.LegacyProgramTyping"
+    }
+   },
+   "reason": "旧の像との同値は旧導出の埋め込みで扱う",
+   "weight": null
+  },
+  {
+   "names": [
+    "contTy_exists_iff_old"
+   ],
+   "old_file": "`Release/Lemmas/ClauseIx.lean`",
+   "old_in_base": {
+    "contTy_exists_iff_old": [
+     "Benitoite.Release.contTy_exists_iff_old"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.embedStateTyE": {
+     "name": "Benitoite.Release.Refinement.embedStateTyE",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.LegacyStateTyping"
+    }
+   },
+   "reason": "同上",
+   "weight": null
+  },
+  {
+   "names": [
+    "clauseIx_ok"
+   ],
+   "old_file": "`Surface/ClauseIxRule.lean`",
+   "old_in_base": {
+    "clauseIx_ok": [
+     "Benitoite.Surface.clauseIx_ok"
+    ]
+   },
+   "verdict": "導ける",
+   "evidence": {
+    "Refinement.Surface.HasTypeQ.desugar": {
+     "name": "Benitoite.Release.Refinement.Surface.HasTypeQ.desugar",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.Property1"
+    }
+   },
+   "reason": "性質1の handle の場合（節の添字はコアの型付けが許す添字）",
+   "weight": null
+  },
+  {
+   "names": [
+    "handle_desugar_same_body_effect"
+   ],
+   "old_file": "`Surface/DesugarRange.lean`",
+   "old_in_base": {
+    "handle_desugar_same_body_effect": [
+     "Benitoite.Surface.handle_desugar_same_body_effect"
+    ]
+   },
+   "verdict": "導ける",
+   "evidence": {
+    "Refinement.Surface.HasTypeQ.desugar": {
+     "name": "Benitoite.Release.Refinement.Surface.HasTypeQ.desugar",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.Property1"
+    }
+   },
+   "reason": "同上",
+   "weight": null
+  },
+  {
+   "names": [
+    "allows_end_of_prim_call"
+   ],
+   "old_file": "`Release/Lemmas/TargetPropagation.lean`",
+   "old_in_base": {
+    "allows_end_of_prim_call": [
+     "Benitoite.Release.ContTy.allows_end_of_prim_call"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.step_target_sound": {
+     "name": "Benitoite.Release.Refinement.step_target_sound",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.MainTheorems"
+    }
+   },
+   "reason": "一段の対象健全性の証明の内部で扱う",
+   "weight": null
+  },
+  {
+   "names": [
+    "allows_hole_of_split"
+   ],
+   "old_file": "`Release/Lemmas/TargetPropagation.lean`",
+   "old_in_base": {
+    "allows_hole_of_split": [
+     "Benitoite.Release.ContTy.allows_hole_of_split"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.step_target_sound": {
+     "name": "Benitoite.Release.Refinement.step_target_sound",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.MainTheorems"
+    }
+   },
+   "reason": "同上",
+   "weight": null
+  },
+  {
+   "names": [
+    "allows_clause_end"
+   ],
+   "old_file": "`Release/Lemmas/TargetPropagation.lean`",
+   "old_in_base": {
+    "allows_clause_end": [
+     "Benitoite.Release.ContTy.allows_clause_end"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.step_target_sound": {
+     "name": "Benitoite.Release.Refinement.step_target_sound",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.MainTheorems"
+    }
+   },
+   "reason": "同上",
+   "weight": null
+  },
+  {
+   "names": [
+    "mem_handled_of_nameTop"
+   ],
+   "old_file": "`Release/Lemmas/TargetPropagation.lean`",
+   "old_in_base": {
+    "mem_handled_of_nameTop": [
+     "Benitoite.Release.mem_handled_of_nameTop"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.step_target_sound": {
+     "name": "Benitoite.Release.Refinement.step_target_sound",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.MainTheorems"
+    }
+   },
+   "reason": "同上",
+   "weight": null
+  },
+  {
+   "names": [
+    "releases_append"
+   ],
+   "old_file": "`Release/Lemmas/TargetPropagation.lean`",
+   "old_in_base": {
+    "releases_append": [
+     "Benitoite.Release.NoHandler.releases_append"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.step_target_sound": {
+     "name": "Benitoite.Release.Refinement.step_target_sound",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.MainTheorems"
+    }
+   },
+   "reason": "同上",
+   "weight": null
+  },
+  {
+   "names": [
+    "DictionaryScoped"
+   ],
+   "old_file": "`Surface/WellFormed.lean`",
+   "old_in_base": {
+    "DictionaryScoped": [
+     "Benitoite.Release.OpDecl.DictionaryScoped"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.Surface.desugar_typed": {
+     "name": "Benitoite.Release.Refinement.Surface.desugar_typed",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.Theorems"
+    }
+   },
+   "reason": "辞書の条件は表層の整形式で扱う",
+   "weight": null
+  },
+  {
+   "names": [
+    "op_dicts_typed"
+   ],
+   "old_file": "`Surface/Lemmas/Dict.lean`",
+   "old_in_base": {
+    "op_dicts_typed": [
+     "Benitoite.Surface.op_dicts_typed"
+    ]
+   },
+   "verdict": "導ける",
+   "evidence": {
+    "Refinement.Surface.HasTypeQ.desugar": {
+     "name": "Benitoite.Release.Refinement.Surface.HasTypeQ.desugar",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.Property1"
+    }
+   },
+   "reason": "性質1の操作の場合",
+   "weight": null
+  },
+  {
+   "names": [
+    "op_value_typed"
+   ],
+   "old_file": "`Surface/Lemmas/Dict.lean`",
+   "old_in_base": {
+    "op_value_typed": [
+     "Benitoite.Surface.op_value_typed"
+    ]
+   },
+   "verdict": "導ける",
+   "evidence": {
+    "Refinement.Surface.HasTypeQ.desugar": {
+     "name": "Benitoite.Release.Refinement.Surface.HasTypeQ.desugar",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.Property1"
+    }
+   },
+   "reason": "同上",
+   "weight": null
+  },
+  {
+   "names": [
+    "clause_dict_scope"
+   ],
+   "old_file": "`Surface/Lemmas/Dict.lean`",
+   "old_in_base": {
+    "clause_dict_scope": [
+     "Benitoite.Surface.clause_dict_scope"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.preservation": {
+     "name": "Benitoite.Release.Refinement.preservation",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.MainTheorems"
+    }
+   },
+   "reason": "保存の操作の場合の内部で扱う",
+   "weight": null
+  },
+  {
+   "names": [
+    "clause_dict_instantiate"
+   ],
+   "old_file": "`Surface/Lemmas/Dict.lean`",
+   "old_in_base": {
+    "clause_dict_instantiate": [
+     "Benitoite.Surface.clause_dict_instantiate"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.preservation": {
+     "name": "Benitoite.Release.Refinement.preservation",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.MainTheorems"
+    }
+   },
+   "reason": "同上",
+   "weight": null
+  },
+  {
+   "names": [
+    "ArgTypesQ"
+   ],
+   "old_file": "`Surface/Lemmas/Sequence.lean`",
+   "old_in_base": {
+    "ArgTypesQ": [
+     "Benitoite.Surface.ArgTypesQ"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.Surface.HasTypeQ.desugar": {
+     "name": "Benitoite.Release.Refinement.Surface.HasTypeQ.desugar",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.Property1"
+    }
+   },
+   "reason": "性質1の穴の場合の内部で扱う",
+   "weight": null
+  },
+  {
+   "names": [
+    "sequenceArgs_typed"
+   ],
+   "old_file": "`Surface/Lemmas/Sequence.lean`",
+   "old_in_base": {
+    "sequenceArgs_typed": [
+     "Benitoite.Surface.sequenceArgs_typed"
+    ]
+   },
+   "verdict": "導ける",
+   "evidence": {
+    "Refinement.Surface.HasTypeQ.desugar": {
+     "name": "Benitoite.Release.Refinement.Surface.HasTypeQ.desugar",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.Property1"
+    }
+   },
+   "reason": "性質1の呼出しの場合",
+   "weight": null
+  },
+  {
+   "names": [
+    "recordFields_source"
+   ],
+   "old_file": "`Surface/Lemmas/Calls.lean`",
+   "old_in_base": {
+    "recordFields_source": [
+     "Benitoite.Surface.CallOk.recordFields_source"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.Surface.HasTypeQ.desugar": {
+     "name": "Benitoite.Release.Refinement.Surface.HasTypeQ.desugar",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.Property1"
+    }
+   },
+   "reason": "欄の並べ替えは性質1の呼出しの場合の内部で扱う",
+   "weight": null
+  },
+  {
+   "names": [
+    "MethodInput"
+   ],
+   "old_file": "`Surface/Check.lean`",
+   "old_in_base": {
+    "MethodInput": [
+     "Benitoite.Surface.Check.MethodInput"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.Surface.CheckTables.checkProgram_sound": {
+     "name": "Benitoite.Release.Refinement.Surface.CheckTables.checkProgram_sound",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.CheckProgramSound"
+    }
+   },
+   "reason": "実装の検査は検査器のプログラム全体の健全性で扱う",
+   "weight": null
+  },
+  {
+   "names": [
+    "pres_failure"
+   ],
+   "old_file": "`Release/Lemmas/PresFailure.lean`",
+   "old_in_base": {
+    "pres_failure": [
+     "Benitoite.Release.pres_failure"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.preservation": {
+     "name": "Benitoite.Release.Refinement.preservation",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.MainTheorems"
+    }
+   },
+   "reason": "保存の Fail 節の場合の内部で扱う",
+   "weight": null
+  },
+  {
+   "names": [
+    "Prepared.writeEffNames"
+   ],
+   "old_file": "`Exchange/CheckInput.lean`（`dc22b231` にはなく、基準 `05341b96` にある）",
+   "old_in_base": {
+    "Prepared.writeEffNames": [
+     "Benitoite.Exchange.CheckInput.Prepared.writeEffNames"
+    ]
+   },
+   "verdict": "失った",
+   "evidence": {},
+   "reason": "交換の書き出しの効果の名前の完全性。篩付きの交換は Lean から効果を書き出さない",
+   "weight": "軽い"
+  },
+  {
+   "names": [
+    "Prepared.writeEffNames_complete"
+   ],
+   "old_file": "`Exchange/CheckInput.lean`（`dc22b231` にはなく、基準 `05341b96` にある）",
+   "old_in_base": {
+    "Prepared.writeEffNames_complete": [
+     "Benitoite.Exchange.CheckInput.Prepared.writeEffNames_complete"
+    ]
+   },
+   "verdict": "失った",
+   "evidence": {},
+   "reason": "同上",
+   "weight": "軽い"
+  },
+  {
+   "names": [
+    "acceptAtom"
+   ],
+   "old_file": "`Surface/ScopeAccept.lean`",
+   "old_in_base": {
+    "acceptAtom": [
+     "Benitoite.Surface.ScopeAccept.acceptAtom"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.Surface.CheckAccept.acceptProgram_sound": {
+     "name": "Benitoite.Release.Refinement.Surface.CheckAccept.acceptProgram_sound",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.CheckAcceptBase"
+    }
+   },
+   "reason": "篩付きの受理は効果の原子を受理せず、効果の上限は型付けの被覆で検査する",
+   "weight": null
+  },
+  {
+   "names": [
+    "atomFailure"
+   ],
+   "old_file": "`Surface/ScopeAccept.lean`",
+   "old_in_base": {
+    "atomFailure": [
+     "Benitoite.Surface.ScopeAccept.atomFailure"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.Surface.CheckAccept.acceptProgram_sound": {
+     "name": "Benitoite.Release.Refinement.Surface.CheckAccept.acceptProgram_sound",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.CheckAcceptBase"
+    }
+   },
+   "reason": "同上",
+   "weight": null
+  },
+  {
+   "names": [
+    "noRules"
+   ],
+   "old_file": "`Surface/CheckAccept.lean`",
+   "old_in_base": {
+    "noRules": [
+     "Benitoite.Surface.CheckAccept.AcceptInput.noRules"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Exchange.ScopeAcceptanceEntry.acceptInput_none_noRules": {
+     "name": "Benitoite.Exchange.ScopeAcceptanceEntry.acceptInput_none_noRules",
+     "kind": "theorem",
+     "module": "Benitoite.Exchange.Observe"
+    }
+   },
+   "reason": "規則のない受理の入力は交換の観測の入力で扱う",
+   "weight": null
+  },
+  {
+   "names": [
+    "Limits",
+    "ScopeLimits"
+   ],
+   "old_file": "`Surface/ScopeState.lean`",
+   "old_in_base": {
+    "Limits": [
+     "Benitoite.Surface.ScopeState.Limits"
+    ],
+    "ScopeLimits": []
+   },
+   "verdict": "導ける",
+   "evidence": {
+    "Refinement.Surface.ScopeState.Limits": {
+     "name": "Benitoite.Release.Refinement.Surface.ScopeState.Limits",
+     "kind": "inductive",
+     "module": "Benitoite.Release.Refinement.Surface.ScopeState"
+    }
+   },
+   "reason": "同名の構造体が篩付きの表層にある",
+   "weight": null
+  },
+  {
+   "names": [
+    "requestLitBound_known_ports_wf"
+   ],
+   "old_file": "`Surface/ScopeState.lean`",
+   "old_in_base": {
+    "requestLitBound_known_ports_wf": [
+     "Benitoite.Surface.ScopeState.requestLitBound_known_ports_wf"
+    ]
+   },
+   "verdict": "失った",
+   "evidence": {},
+   "reason": "リテラルの要求が既知にする範囲のポートの区間が整形式であることの補題。篩付きの表層の局所解析の状態（`Refinement.Surface.ScopeState`）に同じ補題はなく、受理の健全性の結論にも現れない",
+   "weight": "軽い"
+  },
+  {
+   "names": [
+    "RhsEval"
+   ],
+   "old_file": "`Surface/ScopeLower.lean`",
+   "old_in_base": {
+    "RhsEval": [
+     "Benitoite.Surface.ScopeLower.RhsEval"
+    ]
+   },
+   "verdict": "失った",
+   "evidence": {},
+   "reason": "表層の具体の評価と局所解析の接続の定義。篩付きの表層にない",
+   "weight": "重い"
+  },
+  {
+   "names": [
+    "ArmEnter"
+   ],
+   "old_file": "`Surface/ScopeLower.lean`",
+   "old_in_base": {
+    "ArmEnter": [
+     "Benitoite.Surface.ScopeLower.ArmEnter"
+    ]
+   },
+   "verdict": "失った",
+   "evidence": {},
+   "reason": "同上",
+   "weight": "重い"
+  },
+  {
+   "names": [
+    "ReachBlock"
+   ],
+   "old_file": "`Surface/ScopeLower.lean`",
+   "old_in_base": {
+    "ReachBlock": [
+     "Benitoite.Surface.ScopeLower.ReachBlock"
+    ]
+   },
+   "verdict": "失った",
+   "evidence": {},
+   "reason": "同上",
+   "weight": "重い"
+  },
+  {
+   "names": [
+    "rhsEval_step"
+   ],
+   "old_file": "`Surface/ScopeLower.lean`",
+   "old_in_base": {
+    "rhsEval_step": [
+     "Benitoite.Surface.ScopeLower.rhsEval_step"
+    ]
+   },
+   "verdict": "失った",
+   "evidence": {},
+   "reason": "同上の中心の補題",
+   "weight": "重い"
+  },
+  {
+   "names": [
+    "armEnter_steps"
+   ],
+   "old_file": "`Surface/ScopeLower.lean`",
+   "old_in_base": {
+    "armEnter_steps": [
+     "Benitoite.Surface.ScopeLower.armEnter_steps"
+    ]
+   },
+   "verdict": "失った",
+   "evidence": {},
+   "reason": "同上",
+   "weight": "重い"
+  },
+  {
+   "names": [
+    "analyzeBody_sound"
+   ],
+   "old_file": "`Surface/ScopeLower.lean`",
+   "old_in_base": {
+    "analyzeBody_sound": [
+     "Benitoite.Surface.ScopeLower.analyzeBody_sound"
+    ]
+   },
+   "verdict": "失った",
+   "evidence": {},
+   "reason": "関数の本体の局所解析の健全性（到達した文の始まりの記録が局所の値に対応する）",
+   "weight": "重い"
+  },
+  {
+   "names": [
+    "analyzeBody_requiredIndex"
+   ],
+   "old_file": "`Surface/ScopeLower.lean`",
+   "old_in_base": {
+    "analyzeBody_requiredIndex": [
+     "Benitoite.Surface.ScopeLower.analyzeBody_requiredIndex"
+    ]
+   },
+   "verdict": "失った",
+   "evidence": {},
+   "reason": "必須の判定の健全性（記録が範囲を付けた位置の値はその範囲の対象を保持する）",
+   "weight": "重い"
+  },
+  {
+   "names": [
+    "analyzeBody_numbered"
+   ],
+   "old_file": "`Surface/ScopeLower.lean`",
+   "old_in_base": {
+    "analyzeBody_numbered": [
+     "Benitoite.Surface.ScopeLower.analyzeBody_numbered"
+    ]
+   },
+   "verdict": "失った",
+   "evidence": {},
+   "reason": "局所解析の記録の番号の不変条件（健全性の補助）",
+   "weight": "軽い"
+  },
+  {
+   "names": [
+    "widenRanges"
+   ],
+   "old_file": "`Surface/ScopeAccept.lean`",
+   "old_in_base": {
+    "widenRanges": [
+     "Benitoite.Surface.ScopeAccept.widenRanges"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.Surface.OpenScopeAccept.contextsBlock_length": {
+     "name": "Benitoite.Release.Refinement.Surface.OpenScopeAccept.contextsBlock_length",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.OpenScopeAccept"
+    }
+   },
+   "reason": "明示拡大の範囲は範囲を具体化する表層の受理で扱う",
+   "weight": null
+  },
+  {
+   "names": [
+    "widenPathIn_target_unique"
+   ],
+   "old_file": "`Surface/ScopeAccept.lean`",
+   "old_in_base": {
+    "widenPathIn_target_unique": [
+     "Benitoite.Surface.ScopeAccept.widenPathIn_target_unique"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.Surface.OpenScopeAccept.contextsBlock_length": {
+     "name": "Benitoite.Release.Refinement.Surface.OpenScopeAccept.contextsBlock_length",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.OpenScopeAccept"
+    }
+   },
+   "reason": "同上",
+   "weight": null
+  },
+  {
+   "names": [
+    "clauseIxIn"
+   ],
+   "old_file": "`Surface/ClauseIxRule.lean`",
+   "old_in_base": {
+    "clauseIxIn": [
+     "Benitoite.Surface.clauseIxIn"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.Surface.Check.checkExprAt_sound": {
+     "name": "Benitoite.Release.Refinement.Surface.Check.checkExprAt_sound",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.CheckSound"
+    }
+   },
+   "reason": "節の添字の計算は検査器の節の判定と健全性で扱う",
+   "weight": null
+  },
+  {
+   "names": [
+    "clauseOpSigIn"
+   ],
+   "old_file": "`Surface/ClauseIxRule.lean`",
+   "old_in_base": {
+    "clauseOpSigIn": [
+     "Benitoite.Surface.clauseOpSigIn"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.Surface.Check.checkExprAt_sound": {
+     "name": "Benitoite.Release.Refinement.Surface.Check.checkExprAt_sound",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.CheckSound"
+    }
+   },
+   "reason": "同上",
+   "weight": null
+  },
+  {
+   "names": [
+    "opSigAt_clauseIxIn"
+   ],
+   "old_file": "`Surface/ClauseIxRule.lean`",
+   "old_in_base": {
+    "opSigAt_clauseIxIn": [
+     "Benitoite.Surface.opSigAt_clauseIxIn"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.Surface.Check.checkExprAt_sound": {
+     "name": "Benitoite.Release.Refinement.Surface.Check.checkExprAt_sound",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.CheckSound"
+    }
+   },
+   "reason": "同上",
+   "weight": null
+  },
+  {
+   "names": [
+    "of_clauseIx"
+   ],
+   "old_file": "`Surface/ClauseIxRule.lean`",
+   "old_in_base": {
+    "of_clauseIx": [
+     "Benitoite.Surface.ClauseSig.of_clauseIx"
+    ]
+   },
+   "verdict": "導ける",
+   "evidence": {
+    "Refinement.Surface.HasTypeQ.desugar": {
+     "name": "Benitoite.Release.Refinement.Surface.HasTypeQ.desugar",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.Property1"
+    }
+   },
+   "reason": "性質1の handle の場合",
+   "weight": null
+  },
+  {
+   "names": [
+    "HasClausesQ.cons_sig_unique"
+   ],
+   "old_file": "`Surface/DesugarRange.lean`",
+   "old_in_base": {
+    "HasClausesQ.cons_sig_unique": [
+     "Benitoite.Surface.HasClausesQ.cons_sig_unique"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.Surface.HasTypeQ.desugar": {
+     "name": "Benitoite.Release.Refinement.Surface.HasTypeQ.desugar",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.Property1"
+    }
+   },
+   "reason": "性質1は節の操作の型の一意性を使わない",
+   "weight": null
+  },
+  {
+   "names": [
+    "cleanTy"
+   ],
+   "old_file": "`Surface/CheckPredicates.lean`",
+   "old_in_base": {
+    "cleanTy": [
+     "Benitoite.Surface.CheckTools.cleanTy"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.Surface.Check.checkExprAt_sound": {
+     "name": "Benitoite.Release.Refinement.Surface.Check.checkExprAt_sound",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.CheckSound"
+    }
+   },
+   "reason": "型の形成の判定は検査器の形成の判定で扱う",
+   "weight": null
+  },
+  {
+   "names": [
+    "cleanTopEff"
+   ],
+   "old_file": "`Surface/CheckPredicates.lean`",
+   "old_in_base": {
+    "cleanTopEff": [
+     "Benitoite.Surface.CheckTools.cleanTopEff"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.Surface.Check.checkExprAt_sound": {
+     "name": "Benitoite.Release.Refinement.Surface.Check.checkExprAt_sound",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.Surface.CheckSound"
+    }
+   },
+   "reason": "同上",
+   "weight": null
+  },
+  {
+   "names": [
+    "Ty.WFOld",
+    "Eff.WFOld"
+   ],
+   "old_file": "`Release/RangeWF.lean`",
+   "old_in_base": {
+    "Ty.WFOld": [
+     "Benitoite.Release.Ty.WFOld"
+    ],
+    "Eff.WFOld": [
+     "Benitoite.Release.Eff.WFOld"
+    ]
+   },
+   "verdict": "導ける",
+   "evidence": {
+    "Release.Ty.WFOld": {
+     "name": "Benitoite.Release.Ty.WFOld",
+     "kind": "definition",
+     "module": "Benitoite.Release.RangeWF"
+    },
+    "Release.Eff.WFOld": {
+     "name": "Benitoite.Release.Eff.WFOld",
+     "kind": "definition",
+     "module": "Benitoite.Release.RangeWF"
+    }
+   },
+   "reason": "同じ定義が既定 import に残る旧モジュールにある",
+   "weight": null
+  },
+  {
+   "names": [
+    "sat_unconstrained_iff_old"
+   ],
+   "old_file": "`Release/RangeWF.lean`",
+   "old_in_base": {
+    "sat_unconstrained_iff_old": [
+     "Benitoite.Release.sat_unconstrained_iff_old"
+    ]
+   },
+   "verdict": "導ける",
+   "evidence": {
+    "Release.sat_unconstrained_iff_old": {
+     "name": "Benitoite.Release.sat_unconstrained_iff_old",
+     "kind": "theorem",
+     "module": "Benitoite.Release.RangeWF"
+    }
+   },
+   "reason": "同じ定理が既定 import に残る旧モジュールにある",
+   "weight": null
+  },
+  {
+   "names": [
+    "end_of_noHandler_ix"
+   ],
+   "old_file": "`Release/Lemmas/EffectSound.lean`",
+   "old_in_base": {
+    "end_of_noHandler_ix": [
+     "Benitoite.Release.ContTy.end_of_noHandler_ix"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.step_target_sound": {
+     "name": "Benitoite.Release.Refinement.step_target_sound",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.MainTheorems"
+    }
+   },
+   "reason": "一段の対象健全性の証明の内部で扱う",
+   "weight": null
+  },
+  {
+   "names": [
+    "program_target_sound"
+   ],
+   "old_file": "`Surface/CoverExamples.lean`",
+   "old_in_base": {
+    "program_target_sound": [
+     "Benitoite.Surface.CoverExamples.program_target_sound"
+    ]
+   },
+   "verdict": "導ける",
+   "evidence": {
+    "Refinement.Surface.surface_target_sound": {
+     "name": "Benitoite.Release.Refinement.Surface.surface_target_sound",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.SurfaceMain"
+    }
+   },
+   "reason": "表層の対象健全性の適用（被覆で型付く定義を含む具体のプログラムの例は置いていない）",
+   "weight": null
+  },
+  {
+   "names": [
+    "main_typed_eff"
+   ],
+   "old_file": "`Surface/Lemmas/Program.lean`",
+   "old_in_base": {
+    "main_typed_eff": [
+     "Benitoite.Surface.main_typed_eff"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.Surface.main_typed": {
+     "name": "Benitoite.Release.Refinement.Surface.main_typed",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.SurfaceMain"
+    }
+   },
+   "reason": "開始の呼出しの型付けは表層の main の型付けの補題で扱う",
+   "weight": null
+  },
+  {
+   "names": [
+    "eff_cases"
+   ],
+   "old_file": "`Release/ShapeOk.lean`",
+   "old_in_base": {
+    "eff_cases": [
+     "Benitoite.Release.Builtins.ShapeOk.eff_cases"
+    ]
+   },
+   "verdict": "導ける",
+   "evidence": {
+    "Release.ShapeOk.eff_cases": {
+     "name": "Benitoite.Release.Builtins.ShapeOk.eff_cases",
+     "kind": "theorem",
+     "module": "Benitoite.Release.ShapeOk"
+    }
+   },
+   "reason": "同じ定理が既定 import に残る共有の定義にある",
+   "weight": null
+  },
+  {
+   "names": [
+    "handled_false"
+   ],
+   "old_file": "`Release/Lemmas/Preservation.lean`",
+   "old_in_base": {
+    "handled_false": [
+     "Benitoite.Release.NoHandler.handled_false"
+    ]
+   },
+   "verdict": "別の形",
+   "evidence": {
+    "Refinement.preservation": {
+     "name": "Benitoite.Release.Refinement.preservation",
+     "kind": "theorem",
+     "module": "Benitoite.Release.Refinement.MainTheorems"
+    }
+   },
+   "reason": "保存の操作の場合の内部で扱う",
+   "weight": null
+  }
+ ],
+ "inputs": {
+  "docs-rewrite.md": {
+   "bytes": 72443,
+   "sha256": "ec376bfd261ebb31203d2dc8d5df555034a1f9f234aab370b63ee904057e8547"
+  },
+  "legacy.py": {
+   "bytes": 24775,
+   "sha256": "878cf6bde4b25b918608ff33cf73f392dfa663ff58adc903b6693d401693e7ba"
+  }
+ }
+}

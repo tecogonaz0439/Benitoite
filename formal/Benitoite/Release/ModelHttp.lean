@@ -4,9 +4,9 @@ import Benitoite.Release.Lemmas.Membership
 import Benitoite.Release.ModelTargets
 
 /-!
-# 検査済みの要求の値と Http の項目の実例（L40.3b・L40.3c）
+# 検査済みの要求の値と Http の項目の実例
 
-`Http.RequestIn` の値は、検査した同じ要求と実効の endpoint を保持する（決定の判断 7）。値の形は検査済みの要求の値
+`Http.RequestIn` の値は、検査した同じ要求と実効の endpoint を保持する。値の形は検査済みの要求の値
 `Val.checkedRequest t req`（`t` は実効の endpoint の対象、`req` は `Http.ClientRequest` のレコードの閉じた値）であり、
 型付けは規則 V-CheckedRequest で行う（設計書 01-12「構文」「型付け規則」）。本モジュールは、旧の条件
 `CoreAssumptions` と対象一致の条件 `TargetAgreement` の両方を満たし、Http の三項目を持つ組み込みの関数の表を置き、
@@ -15,13 +15,13 @@ import Benitoite.Release.ModelTargets
 | 項目 | 種類 | 形 | 署名 | δ・応答・観測 |
 |---|---|---|---|---|
 | `Reference.get`・`Reference.set` | 可変のセル | — | `Model` と同じ | ストアの規則 |
-| `Http.checkRequestIn` | pure | — | 問 22 の表（`TargetTable.checkRequestIn`） | 動的な範囲と具体化した R の両方を確かめ、成功値は渡された要求のレコードをそのまま保持する |
-| `Http.requestInValue` | pure | — | 問 22 の表（`TargetTable.requestInValue`） | 検査済みの要求の値から保持するレコードを返す |
-| `Http.sendIn` | io | 単一の対象 | 問 22 の表（`TargetTable.sendIn`） | `Ok(response)` か `Err(e)`、観測は要求の endpoint 一つ（リダイレクトを追わない） |
+| `Http.checkRequestIn` | pure | — | 範囲付きの組み込みの関数の表（`TargetTable.checkRequestIn`） | 動的な範囲と具体化した R の両方を確かめ、成功値は渡された要求のレコードをそのまま保持する |
+| `Http.requestInValue` | pure | — | 範囲付きの組み込みの関数の表（`TargetTable.requestInValue`） | 検査済みの要求の値から保持するレコードを返す |
+| `Http.sendIn` | io | 単一の対象 | 範囲付きの組み込みの関数の表（`TargetTable.sendIn`） | `Ok(response)` か `Err(e)`、観測は要求の endpoint 一つ（リダイレクトを追わない） |
 
 ホストのパターンとポートの組の解析 `hostPat`、要求のレコードの値から実効の endpoint を得る処理 `reqTarget`（`url` の欄の
 取り出しと URL の解析）は形式化の外側であり、関数として引数に取る（設計書 07-04「形式化で仮定するもの」）。例では、
-`url` の欄を取り出して文字列の解析に渡す `urlTarget` を使う。誤り型 `Http.RequestCheckError` の構成子（問 23）、
+`url` の欄を取り出して文字列の解析に渡す `urlTarget` を使う。誤り型 `Http.RequestCheckError` の構成子、
 `Result` の構成子、`Http.ClientRequest` のレコードの構成子はプログラムの側の宣言であり、仮定はそれらを宣言した
 プログラム（`HasHttp`）について成り立つ。
 
@@ -38,7 +38,7 @@ namespace Benitoite.Release.ModelHttp
 open Benitoite.Release
 open Scope.Domain (Range Target Kind)
 
--- `Result` の構成子の宣言と、表によらない補題は `ModelTargets` のものを使う（L50.3 の実例の整理）。
+-- `Result` の構成子の宣言と、表によらない補題は `ModelTargets` のものを使う（三つの実例の表の役割は `ModelTargets` の冒頭）。
 open Benitoite.Release.ModelTargets (okDecl errDecl ok_typed err_typed singleton_of_admissible)
 
 def invalidUrlDecl : ConDecl := ⟨"Http.RequestCheckError", 0, [.base .string]⟩
@@ -54,7 +54,7 @@ def pairTy : Ty := .data "Pair" [.base .string, .base .string]
 def clientRequestDecl : ConDecl :=
   ⟨"Http.ClientRequest", 0, [.base .string, .base .string, .list pairTy, .bytes, .base .integer]⟩
 
-/-- プログラムが `Ok`・`Err`、`Http.RequestCheckError` の二つの構成子（問 23）と `Http.ClientRequest` のレコードの構成子を
+/-- プログラムが `Ok`・`Err`、`Http.RequestCheckError` の二つの構成子と `Http.ClientRequest` のレコードの構成子を
 宣言している。 -/
 def HasHttp (P : Program) : Prop :=
   P.cons "Ok" = some okDecl ∧ P.cons "Err" = some errDecl ∧
@@ -162,7 +162,7 @@ mutual
         exact ⟨groundVal_varsIn v h.1, groundVals_varsIn vs h.2⟩
 end
 
-/-- 要求の検査の δ（問 24 の 6、案 A）。要求 req が型の変数を含まず（`groundVal`）、ホストのパターンとポートの組から得た動的な範囲 q と、
+/-- 要求の検査の δ。要求 req が型の変数を含まず（`groundVal`）、ホストのパターンとポートの組から得た動的な範囲 q と、
 具体化した範囲 r の両方に要求の実効の endpoint t が属し、種類が endpoint のときだけ、渡された要求 req をそのまま保持する
 `Ok(checkedRequest(t, req))` を返す。要求から endpoint を得られなければ（型の変数を含む要求も）`InvalidUrl`、そのほかは
 `Scope` の誤りを返す。 -/
@@ -368,7 +368,7 @@ theorem checkRun_typed {P : Program} (hP : HasHttp P) {Ψ : StoreTy} (r : Range)
       · exact hinv
   · exact hinv
 
-/-- 要求の検査の δ の契約（案 A。L40.2 の `CheckSpec.Contract` の要求の版）。`Ok` の成功値は検査済みの要求の値で
+/-- 要求の検査の δ の契約（`CheckSpec.Contract` の要求の版）。`Ok` の成功値は検査済みの要求の値で
 あり、渡された要求のレコード（型の変数を含まない値）をそのまま保持し、実効の endpoint は種類 endpoint を持ち、動的な
 範囲 q と具体化した範囲 r の両方に属する。 -/
 theorem checkRun_contract {r : Range} {ws : List Val} {ts : List Ty} {w : Val}
@@ -422,7 +422,7 @@ end
 
 /-! ## 旧の像
 
-L40.3b の前の表（`Model.builtins`）と L20.7 の実例の表（`ModelTargets.builtins`）は値が保持する要求の型を持たず
+IO を持たない実例の表（`Model.builtins`）と範囲付きの項目の実例の表（`ModelTargets.builtins`）は値が保持する要求の型を持たず
 （`valContent` は既定の全て `none`）、検査済みの要求の値はそれらの表でどの型も持たない
 （`HasTypeVQ.not_checkedRequest_of_noValContent`）。 -/
 

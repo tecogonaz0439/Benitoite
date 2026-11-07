@@ -9,13 +9,13 @@ import Benitoite.Release.Refinement.Surface.ScopeSound
 
 - 観測: IO の事象が作用した対象（`Scope.Domain.Target`）とその有限列。名前の原子の閉じた範囲の列が観測を許す
   ことの判定 `observationAllowed` と、その健全性（`Eff.Allows`）。
-- 拒否の理由: DET-05 の列挙 `CoverFailure`（`notCovered`・`atomicCoverOnly`・`unknownSource`・`budgetExceeded`）と、
+- 拒否の理由: 診断 E0519 の理由と同じ列挙 `CoverFailure`（`notCovered`・`atomicCoverOnly`・`unknownSource`・`budgetExceeded`）と、
   入口の拒否（出現の鍵と理由）。
 - 必須の判定の入力（corpus の入力ごとの `scopeAcceptance`）: リテラルのパスのパターンとホストのパターンを
   処理系の解析器が読んだ結果の表と、本体と全体の上限。型検査器は、表のうち実行時の検査と同じ解析
   （`ScopeDelta.parsePattern`・`RequestDelta.parseHostPattern`）と一致する項目だけを既知の範囲に使う（`acceptInput`）。
-- 範囲の入力の検査: 範囲が整形式で正規形であること（問4）、プログラムと表の範囲の位置に範囲の変数がないか、
-  署名の範囲の変数の番号が上限より小さいこと（問3）。一つの節点の検査は全域の関数で書き、健全性を示す。JSON の
+- 範囲の入力の検査: 範囲が整形式で正規形であること、プログラムと表の範囲の位置に範囲の変数がないか、
+  署名の範囲の変数の番号が上限より小さいこと。一つの節点の検査は全域の関数で書き、健全性を示す。JSON の
   全体を辿る部分（`Version.lean` の `validateRangeInput`）は `partial` であり、Lean では証明しない（既存の交換の
   読み込みと同じ扱い）。
 -/
@@ -109,7 +109,7 @@ def observationAllowed (κ : String → Option Kind) (atoms : List Benitoite.Rel
     | _ => false
 
 /-- 観測の許可の判定の健全性。原子の列の原子が全て効果 ε に属するなら、許可と判定した観測の各対象を ε が許す
-（`Release.Eff.Allows`。L20.6 の観測、L30 の対象健全性の結論の形）。 -/
+（`Release.Eff.Allows`。IO の事象の観測についての、対象健全性の結論の形）。 -/
 theorem observationAllowed_sound {κ : String → Option Kind} {atoms : List Benitoite.Release.Atom} {l : String}
     {obs : List Target} {ε : Benitoite.Release.Eff} (hε : ∀ a ∈ atoms, Benitoite.Release.Eff.mem ε a)
     (h : observationAllowed κ atoms l obs = true) : ∀ t ∈ obs, Benitoite.Release.Eff.Allows κ ε l t := by
@@ -145,7 +145,7 @@ def decodeCoverFailure (j : Json) : Except String CoverFailure :=
 theorem decodeCoverFailure_encode (f : CoverFailure) : decodeCoverFailure (encodeCoverFailure f) = .ok f := by
   cases f <;> rfl
 
-/-- 理由の名前は四つで互いに異なる（DET-05 の列挙の名前をそのまま使う）。 -/
+/-- 理由の名前は四つで互いに異なる（診断 E0519 の理由の名前をそのまま使う）。 -/
 theorem encodeCoverFailure_injective {f g : CoverFailure} (h : encodeCoverFailure f = encodeCoverFailure g) :
     f = g := by
   have := congrArg decodeCoverFailure h
@@ -254,7 +254,7 @@ theorem ScopeAcceptanceEntry.acceptInput_none_noRules (d : String) :
 
 /-! ## 範囲の入力の検査（一つの節点） -/
 
-/-- 範囲が整形式で正規形であること（問4）。 -/
+/-- 範囲が整形式で正規形であること。 -/
 def checkRangeInput (r : Range) : Except String Unit :=
   if r.WF ∧ r.Canonical then .ok () else .error "range is not well formed or not canonical"
 
@@ -267,7 +267,7 @@ theorem checkRangeInput_sound {r : Range} (h : checkRangeInput r = .ok ()) : r.W
 theorem checkRangeInput_complete {r : Range} (h : r.WF ∧ r.Canonical) : checkRangeInput r = .ok () := by
   simp [checkRangeInput, h]
 
-/-- 範囲の位置の検査。範囲の変数の番号は上限 n より小さく（問3。プログラムと表の型は n = 0）、閉じた範囲は整形式で
+/-- 範囲の位置の検査。範囲の変数の番号は上限 n より小さく（プログラムと表の型は n = 0）、閉じた範囲は整形式で
 正規形である。 -/
 def checkIxInput (n : Nat) : Ix → Except String Unit
   | .fixed r => checkRangeInput r
@@ -283,7 +283,7 @@ theorem checkIxInput_sound {n : Nat} {ix : Ix} (h : checkIxInput n ix = .ok ()) 
     · exact ⟨hi, fun _ he => by cases he⟩
     · simp [checkIxInput, hi] at h
 
-/-- 上限 0 で検査した範囲の位置は閉じた範囲である（プログラムの型に範囲の変数がない。問3）。 -/
+/-- 上限 0 で検査した範囲の位置は閉じた範囲である（プログラムの型に範囲の変数がない）。 -/
 theorem checkIxInput_zero {ix : Ix} (h : checkIxInput 0 ix = .ok ()) : ∃ r, ix = .fixed r := by
   cases ix with
   | fixed r => exact ⟨r, rfl⟩
