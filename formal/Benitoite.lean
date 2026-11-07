@@ -276,6 +276,7 @@ import Benitoite.Release.Refinement.StoreGeneral
 import Benitoite.Release.Refinement.BuilderStateLeaves
 import Benitoite.Release.Refinement.BuilderValueTyping
 import Benitoite.Release.Refinement.ContinuationGeneral
+import Benitoite.Release.Refinement.BuilderStore
 import Benitoite.Release.Refinement.HandlerStoreExamples
 import Benitoite.Release.Refinement.HiddenCaptureBoundary
 import Benitoite.Release.Refinement.CaptureReadBoundary
@@ -848,6 +849,10 @@ import Benitoite.Release.Refinement.Surface.ScopeLower
 import Benitoite.Release.Refinement.Surface.ScopeState
 import Benitoite.Release.Refinement.Surface.ScopeRules
 import Benitoite.Release.Refinement.Surface.ScopeSound
+import Benitoite.Release.Refinement.Surface.ScopeEval
+import Benitoite.Release.Refinement.Surface.ScopeReach
+import Benitoite.Release.Refinement.Surface.ScopeConnection
+import Benitoite.Release.Refinement.Surface.ScopeConnectionExamples
 import Benitoite.Release.Refinement.RangeSourceProperties
 import Benitoite.Release.Refinement.RangeFunctionExamples
 import Benitoite.Release.Refinement.MainEffects
@@ -913,6 +918,12 @@ import Benitoite.Release.Refinement.SafeCheckPreservationExamples
 import Benitoite.Release.Refinement.SurfaceStandardSupport
 import Benitoite.Release.Refinement.SurfaceDeclarationAgreement
 import Benitoite.Release.Refinement.SurfaceCheckedMainExamples
+import Benitoite.Release.Refinement.SurfaceTargetReachExamples
+import Benitoite.Release.Refinement.SurfaceTargetObservedExamples
+import Benitoite.Release.Refinement.Surface.LogExamples
+import Benitoite.Release.Refinement.Surface.FailureExamples
+import Benitoite.Release.Refinement.FailureExamples
+import Benitoite.Release.Refinement.Surface.BuilderExamples
 import Benitoite.Release.Refinement.Surface.PredicateOverlayValues
 import Benitoite.Release.Refinement.Surface.PredicateProgramGuarantees
 import Benitoite.Release.Refinement.Surface.PredicateMainExamples

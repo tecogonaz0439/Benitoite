@@ -47,7 +47,7 @@ scripts/check-formal.sh
 
 全比較は Rust と Lean の接続を閉じる区切りと最終の関係状態に割り当てる。既定ビルド・独立入力だけの検査・全件を使わない局所比較の成功は、それぞれの範囲の証拠である。全比較の結果を保存・引用するときは、一時的な `target/` のログだけに依存せず、入力一覧・ハッシュ・各入口の件数・除外理由・実行状態を永続の記録へ残す。具体的な割り当てと引用条件は [07-03「実装の規約と静的な検査」](../docs/design/07-quality/07-03-compiler-testing.md#実装の規約と静的な検査)に従う。
 
-定理が仮定する公理は、次のように確かめる。Lean の標準の公理（`propext`・`Quot.sound`・`Classical.choice`）のほかに `sorryAx` などが現れたら、証明が完了していない。一覧は、篩付きの核と表層の主定理（[07-04「証明する性質」](../docs/design/07-quality/07-04-formal-semantics.md#証明する性質)）と、それを支える主な補題（性質 1 の相互帰納、検査器と受理と網羅性の健全性、構築器の葉、交換の入力の準備）である。
+定理が仮定する公理は、次のように確かめる。Lean の標準の公理（`propext`・`Quot.sound`・`Classical.choice`）のほかに `sorryAx` などが現れたら、証明が完了していない。一覧は、篩付きの核と表層の主定理（[07-04「証明する性質」](../docs/design/07-quality/07-04-formal-semantics.md#証明する性質)）と、それを支える主な補題（性質 1 の相互帰納、検査器と受理と網羅性の健全性、Scope の局所解析と受理した本体の評価の接続、構築器の葉とセルの保持、補間の部分の判定の同値、交換の入力の準備）と、表層の対象健全性の前提を満たす main の例（`TargetReachExamples.main_reach`）である。
 
 ```sh
 cat > /tmp/axioms.lean <<'LEAN'
@@ -77,6 +77,23 @@ import Benitoite
 #print axioms Benitoite.Release.Refinement.Surface.CheckAccept.checkProgramAccepted_sound
 #print axioms Benitoite.Release.Refinement.Surface.CheckAccept.acceptProgram_sound
 #print axioms Benitoite.Release.Refinement.Surface.ScopeSound.productionRules_sound
+#print axioms Benitoite.Release.Refinement.Surface.ScopeLower.analyzeBody_sound
+#print axioms Benitoite.Release.Refinement.Surface.ScopeLower.analyzeBody_requiredIndex
+#print axioms Benitoite.Release.Refinement.Surface.ScopeSound.scope_check_connection
+#print axioms Benitoite.Release.Refinement.Surface.ScopeSound.scope_local_connection
+#print axioms Benitoite.Release.Refinement.Surface.ScopeSound.scope_local_typed
+#print axioms Benitoite.Release.Refinement.Surface.ScopeSound.scope_check_core
+#print axioms Benitoite.Release.Refinement.Surface.ScopeSound.http_check_connection
+#print axioms Benitoite.Release.Refinement.builder_step_no_event
+#print axioms Benitoite.Release.Refinement.builder_step_frame
+#print axioms Benitoite.Release.Refinement.capture_builder_cell
+#print axioms Benitoite.Release.Refinement.resume_builder_cell
+#print axioms Benitoite.Release.Refinement.drop_local_silent
+#print axioms Benitoite.Release.Refinement.Surface.Check.interpAllowed_spec
+#print axioms Benitoite.Release.Refinement.Surface.TargetReachExamples.main_reach
+#print axioms Benitoite.Release.Refinement.Surface.TargetObservedExamples.main_observed
+#print axioms Benitoite.Release.Refinement.Surface.TargetObservedExamples.wrong_rule_unsound
+#print axioms Benitoite.Release.Refinement.Surface.TargetObservedExamples.narrow_rejected
 #print axioms Benitoite.Release.Refinement.Coverage.coverage_sound
 #print axioms Benitoite.Release.Refinement.Coverage.coverage_extension_sound
 #print axioms Benitoite.Release.Refinement.checkMatchWithView_exhaustive_sound

@@ -208,4 +208,24 @@ theorem interpAllowed_sound {ps} (h : interpAllowed ps = true) : InterpPart.Allo
       exact ⟨of_decide_eq_true hh.1, ih hh.2⟩
     all_goals exact ih h
 
+/-- 補間の部分の判定は、条件を満たす部分の並びをすべて受け付ける。 -/
+theorem interpAllowed_complete {ps} (h : InterpPart.Allowed ps) : interpAllowed ps = true := by
+  induction ps with
+  | nil => rfl
+  | cons p ps ih =>
+    cases p <;> simp only [interpAllowed, InterpPart.Allowed] at h ⊢
+    case converted t =>
+      refine Bool.and_eq_true_iff.mpr ⟨?_, ih h.2⟩
+      rcases h.1 with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl <;> rfl
+    case formatted t spec => exact Bool.and_eq_true_iff.mpr ⟨decide_eq_true h.1, ih h.2⟩
+    all_goals exact ih h
+
+/-- 補間の部分の判定は、条件 `InterpPart.Allowed` と同値である。 -/
+theorem interpAllowed_spec (ps : List InterpPart) : interpAllowed ps = true ↔ InterpPart.Allowed ps :=
+  ⟨interpAllowed_sound, interpAllowed_complete⟩
+
+/-- 文字列の式・変換・書式なしの部分の並びは、条件から判定の受理が従う。 -/
+example : interpAllowed [.text "n = ", .converted (.base .integer), .stringExpr] = true :=
+  (interpAllowed_spec _).mpr ⟨Or.inl rfl, trivial⟩
+
 end Benitoite.Release.Refinement.Surface.Check

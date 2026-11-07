@@ -722,7 +722,7 @@ interpolate op (.formatted T spec :: ps) (v :: vs) (h :: hs) acc =
 
 篩付きの表層の補間の部分の型付け `InterpTy.formatted`（`Surface.Rules`）は、書式化の頭の依存列へ値と七定数（`FormatSpec.arguments`）を渡し、結果型と効果を後続の部分へ渡す。脱糖は同じ頭を値と定数の列に適用する。性質 1（`Surface.Property1`）はこの場合を含む。
 
-実行可能な表層検査の `interpAllowed`（`Surface.CheckSupport`）は、書式付きの部分について `Valid T spec` の決定と残りの部分の判定をともに要求し、`interpAllowed_sound` が判定の成功から `Allowed` を導く。補間の検査はさらに、式と頭の型・個数、頭を得る式の空のエフェクト、頭の直接性、二部分以上の場合の純粋なString加算を検査する。頭の型には、valueと七定数の契約名・引数型・Stringの結果型・空のエフェクトを要求する。補間全体のエフェクトには、値の式のエフェクトだけを集計する。
+実行可能な表層検査の `interpAllowed`（`Surface.CheckSupport`）は、書式付きの部分について `Valid T spec` の決定と残りの部分の判定をともに要求し、`interpAllowed_sound` が判定の成功から `Allowed` を、`interpAllowed_complete` が `Allowed` から判定の成功を導く。`interpAllowed_spec` は両者の同値である。補間の検査はさらに、式と頭の型・個数、頭を得る式の空のエフェクト、頭の直接性、二部分以上の場合の純粋なString加算を検査する。頭の型には、valueと七定数の契約名・引数型・Stringの結果型・空のエフェクトを要求する。補間全体のエフェクトには、値の式のエフェクトだけを集計する。
 
 補間の検査の健全性は `Surface.CheckInterpolation` の `checkInterpAt_sound` である。
 
@@ -1069,6 +1069,8 @@ C-Handle は最上位の `Eff.WF(ε)` を独立の前提に持たない。Releas
 - 節が `resume` を呼ばずに値で終わると、E-DropRel が、捨てる続きの中の `release` の枠を内側から順に実行する。捨てる続きの中に `drop κ'` の枠があれば（続きの中の節が、再開する前に外側のハンドラの操作を呼んだとき）、その枠に達したときに、同じ規則で κ' の続きの中の `release` の枠も実行する。したがって、入れ子に捨てた続きの中のリソースも、内側から順に一度ずつ解放する。`escape`、実行時エラーの状態、終了の状態が `drop κ` の枠を通るときも、σ(κ) = cont(K') なら、同じく `releases(K')` を継続の先頭に加え、κ を used にしてから進む。σ(κ) = used なら、`drop κ` の枠を取り除くだけである。`drop κ` の枠には、この扱いだけを使い、E-EscLet・E-ErrPop・E-ExitPop を使わない。
 - `escape` と、実行時エラーの状態と終了の状態は、`handle` の枠を取り除いて進む（E-EscLet の「let の枠」と、E-ErrPop・E-ExitPop の「release の枠でも drop の枠でもない枠」に `handle` の枠を含める）。
 
+`Surface.LogExamples` は、組み込みの効果 `Log` の二つの操作と `Console.Write` の操作を持つ表で、実行可能な表層検査が、操作の呼び出しを効果 `{Log}` で受理し（`emit_checked`）、二つの操作を処理する `handle` で `Log` を除き（`handled_checked`）、一つの操作だけを処理する `handle` では `Log` を残すこと（`partial_retains_log`）を確かめる。処理した後の `Console.Write` を空の効果の宣言で隠す関数は拒否し、`{Console.Write}` の宣言では受理する（`console_pure_rejected`）。
+
 #### 形式化した型付き失敗の捕捉
 
 【決定】形式化したReleaseに、失敗専用の操作識別子 `OpRef.fail`、値 `raise[T,E]`、節 `Clause.fail E N` を加える。本節はLeanの定義と証明の写しであり、表層言語・Rustの処理系と交換（corpus 16・sidecar 8）に接続している。通常の操作の署名を引く `opSig` はFailに署名を返さず、通常節の型付け `HasTypeClausesQ` はFailを受けない。Failの節は `HasFailureClause` でちょうど一節として型付けする。理由: エラー型を固定する中断節と、型引数を持ち再開できる通常節を区別するためである。
@@ -1091,7 +1093,7 @@ Failの節は、境界のエラー型Eを外側で固定し、結果型の変数
 
 保存する継続の効果は `cap = norm (Rest ∪ ec)` とする。K_Emptyの上にK_Handle_Failを置き、K1を復元して、保存継続に `ContTy R ein (K1 ++ [handleF H]) T t cap Rh` を付ける。新しいストアの型は `Ψ κ = cont T t cap Rh` である。Restとecの両方がeoutに含まれるので、capにStateがあればeoutにもStateがあり、既存のK_Dropで解放を型付けできる。節の0番は利用不能であり、その位置の値を変えても置換結果が変わらない。捕捉後の本体の型付けは、0番のκの型を要求せず、1番のエラー値の型から導く。
 
-`FailureExamples.lean`は、通常のmatchでResultの成功値を返し失敗値をraiseする変換と、通常のhandleで成功・失敗をResultへ戻す変換について、型付けと四つの有限遷移を示す。Failを捕捉した例の最終ストアには、既存のdropが残すusedセルを含む。
+`Refinement.FailureExamples` は、通常のmatchでResultの成功値を返し失敗値をraiseする変換と、通常のhandleで成功・失敗をResultへ戻す変換について、四つの有限遷移を示す（`fromResult_ok`・`fromResult_error`・`toResult_return`・`toResult_raise`）。Failを捕捉した例の最終ストアの場所0は、既存のdropが残すusedセルである。
 
 #### 型付きの失敗の表層検査
 
@@ -1102,6 +1104,8 @@ Failの節は、境界のエラー型Eを外側で固定し、結果型の変数
 【決定】単一Failの条件 `SingleFail Q e` は、eのFail列に型Tがあれば、すべての失敗型がTと等しく、同じ位置の行がすべてQに属することである。Fail列が空なら行を制限しない。`SingleTy`・`SingleTys`・`SingleEff` は、関数の潜在効果とFailのエラー型の内部までこの条件を再帰的に検査する。関数・辞書付き関数・メソッド・組み込みの値化には具体化後の型のSingleTyを、呼び出しとパイプには合流後のSingleEffを要求する。部分適用には構築する関数型のSingleTy、if・else ifには結果型と合流後の効果の両方を要求する。Releaseの効果の包含にはこの条件を加えない。
 
 実行可能な表層検査はstrictとrelaxedの両方で、式とブロックの結果を返す前にSingleTyとSingleEffを検査する。期待型の受け入れ、型の結び、許容効果への包含でも移動先を検査する。各署名から計算したQだけを使い、本体で不足した条件をQに加えない。二つの行へ異なるFailを渡す場合は、元の署名がFailを含まなくても具体化した位置で拒否する。同じエラー型の重複と、Failを持たない通常の行の和は受理する。
+
+`Surface.FailureExamples` は、実行可能な表層検査で、直接のraiseがFail[String]を残すこと（`raised_checked`）、同じ型の捕捉がFailを除くことと、節からIntegerへraiseし直すとFail[Integer]だけが残ること（`caught_checked`）、捕捉する型の取り違えと予約した0番のresumeを拒否すること（`failure_rejected`）を確かめる。
 
 捕捉の最小効果は、本体の推論した効果からFail列だけを除いたRestと、節の効果ecの和である。Restの名前と行を保ち、NoFailと本体の `singleFail E ∪ Rest` への包含を検査する。節は移動したtで検査し、その効果を型束縛の外へ代入で戻す。戻した効果を再びshiftして元と一致することを検査し、rigidなTの漏れを拒否する。節が同じEや別型のEへ再raiseするFailはecに残し、この捕捉では除かない。
 
@@ -2763,7 +2767,33 @@ IP のパターンは族と区間 `[lo, hi]` を持ち、完全一致は一点�
 
 ### Scope の必須の判定のプログラム全体の受理
 
-【決定】全定義と全実装メソッドの受理は `Surface.CheckAccept`（`CheckAcceptBase` を含む）が定める。`acceptProgram` は、本体を持つ全ての定義と全ての実装メソッドで必須の判定が成功すること（`Accepted`）を判定し、`acceptProgram_sound` がその健全性を示す。型検査器の実入口 `checkProgramAccepted` は型付けの検査と受理を続けて行い、`checkProgramAccepted_sound` は、成功から準備後のプログラムの型付けと `Accepted` を同時に結論する。受理の規則の表の健全性は `Surface.ScopeSound.productionRules_sound` が与える。実行の規則と δ への接続は「篩を含む表層の検査と受理」と 07-04「証明する性質」に写す。
+【決定】全定義と全実装メソッドの受理は `Surface.CheckAccept`（`CheckAcceptBase` を含む）が定める。`acceptProgram` は、本体を持つ全ての定義と全ての実装メソッドで必須の判定が成功すること（`Accepted`）を判定し、`acceptProgram_sound` がその健全性を示す。型検査器の実入口 `checkProgramAccepted` は型付けの検査と受理を続けて行い、`checkProgramAccepted_sound` は、成功から準備後のプログラムの型付けと `Accepted` を同時に結論する。受理の規則の表の健全性は `Surface.ScopeSound.productionRules_sound` が与える。実例の表の δ による規則は「篩を含む表層の検査と受理」に、受理と表層の具体の評価と核の実行の接続は次節に写す。
+
+### Scope の局所解析の接続定理
+
+【決定】受理した本体の評価と Scope の局所解析の接続は、`Surface.ScopeEval`・`Surface.ScopeReach`・`Surface.ScopeConnection` が定める。型付け・脱糖・進行・保存・エフェクトの健全性は、これらの定義を使わない。
+
+`ScopeEval` は、局所解析の一段（`ScopeState.Step`）に、篩付きの核の値の具体の評価 `StepEval` を置く。局所の具体の値 `Locals` は束縛の位置ごとの `Option Refinement.Val` の列である。同定された直接の呼び出しは契約の順の引数で表の規則を評価し（`EvalScope`）、同定されない呼び出しと未知の値は任意の値を返してよい。`Ok` の腕は、位置の値が Ok の構成子の値のときだけその中身を束縛する。`absStep_sound` は、規則の表が健全（`TableSound (models ok pattern) T`）で、局所の状態の事実が具体の局所に対応する（`ScopeState.Models`）なら、一段の後も対応することを示す。`Run.step_models` は、予算付きの一段が、上限の値によらず、超過して由来を忘れる場合も含めて対応を保つことを示す。`requiredIndex_checked` は、必須の判定が Top でない添字を付けた位置の値が、その添字の範囲に属する対象を保持すること（`Val.target?`）を示す。
+
+`ScopeReach` は、篩付きの表層の構文の上に、本体の評価が番号 k の文の始まりへ局所 env′ で到達し、その文の右辺が x である関係 `ReachAtBlock` と、右辺を問わない `ReachBlock` を置く。引数（`ArgEval`）は、リテラルと `const` の直接参照をその定数、局所の参照をその値、射影の形の呼び出しを表の規則の値（同定されなければ任意の値）とし、それ以外の式の値を読まない。束縛の右辺（`RhsEval`）は、同定された直接の呼び出しを契約の順の引数で表の規則により評価し、局所の参照をその値とし、それ以外は任意の値とする。右辺の具体の評価は右辺の一段の具体の評価であり（`rhsEval_step`）、腕の入口の具体の束縛は入口の一段の具体の評価である（`armEnter_steps`）。照合の腕の文脈は照合する値（任意の値）を一つ束縛した上に置き、局所の値の一つの選択肢 `C(p)` の腕は、その値が構成子 C の値のときだけ入る（`ArmEnter`）。ラムダ・遅延・handle の保護本体と節・失敗の節の入口の局所は任意である。表層の具体の評価は脱糖と核の実行とは独立の関係であり、両者の一致は結論しない。
+
+| 定理 | 結論 |
+|---|---|
+| `analyzeBody_sound` | 表が健全なら、本体の評価が番号 k の文の始まりへ局所 env′ で到達するとき、解析の記録に (k, st) があり、st は env′ に対応する |
+| `analyzeBody_requiredIndex` | 同じ到達で、記録の状態が Top でない添字を付けた位置の値は、その範囲に属する対象を保持する |
+| `reachAt_occurrences` | 到達した文の右辺 x について、(k, x) は本体の出現の一覧 `occurrences` に入る |
+
+`ScopeConnection` は、本体 body の番号 k の出現 e を、その本体の局所解析の記録で照らして受理したこと（`OccurrenceAccepted`）を前提に、次の接続を示す。閉じた由来の本体の受理 `ScopeAccept.acceptBody` は全ての出現でこれを与える（`OccurrenceAccepted.of_body`）。範囲を具体化する本体の受理 `OpenScopeAccept.acceptBody` は、型が保持する範囲を選ぶ規則（`selections`）が選ばなかった出現でこれを与える（`OccurrenceAccepted.of_open`）。プログラム全体の受理 `Accepted`（`acceptProgram_sound` の結論）は、定義の本体ではその出現で（`OccurrenceAccepted.of_def`）、実装メソッドの本体（閉じた由来の受理。`Accepted.method_body`）では全ての出現で、これを与える。
+
+| 定理 | 前提 | 結論 |
+|---|---|---|
+| `scope_check_connection` | 表の健全性、検査の規則（`checkRule C run`）を持つ出現 k の受理、到達、右辺の評価が `Ok(w)` を返すこと | 記録の状態 st と契約の順の引数 xs と値の列 vs があり、規則の実行は vs で値を返した。w は対象 t を保持し、t は検査の種類を持ち、推論した範囲 R（`C.bound` の添字）に属する。型検査器が受理した範囲の列は位置 0 の範囲 S を持ち、S は R を覆い、t は S に属する |
+| `scope_local_connection` | 表の健全性、`index [a] = [argIndex a]` の規則（射影と明示拡大の `projectRule`。`projectRule_index`）を持つ出現 k の受理、局所の位置 i を唯一の引数とする呼び出しへの到達 | 記録の状態 st と位置 0 の範囲 S があり、S は st の位置 i の必須の判定の添字 R を覆う。R が Top なら S も Top であり、R が Top でなければ位置 i の値は R と S の両方に属する対象を保持する |
+| `scope_local_typed` | 前行の前提、S が Top でないこと、名前 name の種類と S の種類の一致、値が `checked t` で name が内容型を持たないか、値が `checkedRequest t req` で name が endpoint の種類と内容型を持ち、req がその型の閉じた値で `groundVal req` と `req.reqTarget = some t` を満たすこと | 位置 i の値は核の範囲付きの型 `scoped name kd (fixed (absolute S))` を持つ（V_Checked・V_CheckedRequest） |
+| `scope_check_core` | 検査の規則の実行が本番の表 B の δ（`deltaRunAt B b ts es`）で、引数の評価が vs、δ が値 v を返し、b が純粋な署名を持つこと | 脱糖は組み込みの名前を同じ範囲の列を持つ核の項 `prim b ts es rs` にし、それを vs へ適用する状態は E_Prim で `ret v` へ進む。v の成功値には `scope_check_connection` と同じ接続が成り立つ |
+| `http_check_connection` | 本番の規則の表（`productionRules`）、`Http.checkRequestIn` に解決した出現の受理、到達、右辺の評価が `Ok(w)` を返すこと | w は渡された要求 req をそのまま保持する `checkedRequest (endpoint t) req` であり、`req.reqTarget = some (endpoint t)` が成り立ち、t は推論した範囲 R と受理した範囲 S に属し、S は R を覆う |
+
+`scope_check_connection_at`・`scope_local_connection_at` は、閉じた由来の本体の受理と、到達した文の右辺を添字に持つ到達だけを前提にとる系である。`accepted_check_connection` は、名前の全件性と `acceptProgram` の成功から、定義の本体の選ばれなかった出現について検査の成功値の接続を得る系である。前提は表の健全性・出現の受理・表層の具体の評価だけであり、区間解析の結果と検査の δ の契約を読まない（R への所属は規則の健全性から、S への所属は被覆の健全性から得る）。型が保持する範囲を選ぶ規則が選んだ出現の範囲は、全ての具体化での被覆（`OpenScopeAccept.acceptSelection_sound`）が与え、本節の定理の対象に含めない。`Surface.ScopeConnectionExamples` は、検査の結果を局所に保存して `Ok` の腕で射影へ渡す本体と、局所の値を引数にする要求の検査の本体に、受理と到達の具体の導出を当て、各定理の前提が満たせることを確かめる。
 
 ### Resultの法則と二引数辞書の具体例
 
@@ -2817,6 +2847,8 @@ IP のパターンは族と区間 `[lo, hi]` を持ち、完全一致は一点�
 
 型の付いた状態でのこの三規則の保存と進行の葉（`StateTyE.builder_new`・`builder_operation`・`builder_error`・`builder_progress`）と、専用操作が実在する専用セルを指すこと（`StateTyE.builder_live`）は、「篩を含む状態の型付け」に写す。空の Δ の状態では `LocalRef.HasKind` が `bound` を分類しないので、型の付いた状態の専用操作の参照は専用の場所である。`HandlerStoreExamples` の `builder_allocations`・`string_builder_copy`・`list_builder_overflow` は、三種類の空のセルの割り当て、String の copy、論理上限の長さの List への追記の失敗を具体の状態で確かめる。物理コピー・容量・GC・即時のメモリ返却は、これらの定理の結論に含めない。
 
+`Refinement.BuilderStore` は、専用の一歩・捕捉・再開・保存継続の破棄とストアのセルの関係を示す。`OrdinaryStoreEq μ μ′` は、二つのストアの Reference の値セル（`Cell.val`）が同じであることである。`builder_step_no_event` は、閉包の view が専用項（`builderLet`・`builderOp`）である状態の一歩が、上限超過と抽象 Byte の失敗も含めて事象を伴わないことを示し、`builder_step_frame` は、その一歩の後続のストアが元のストアと `OrdinaryStoreEq` の関係にあることを示す。`capture_builder_cell` は、`StoreOk P B σ Ψ μ` と値の信頼条件 `B.ValueAssumptions P` のもとで、ストア型が場所を与えない κ に保存継続を置いても、ストア型が `LocTy.builder kind` を与える場所の専用セルが同じ場所に同じ内容で残り、κ に場所の型を加えたストア型の下でも `BuilderCellOk` を満たすことを示す。`resume_builder_cell` は、継続セルを使用済みにする再開の更新が専用セルの場所と内容と `BuilderCellOk` を保つことを示す。`drop_local_silent` は、値を返して未再開の保存継続を破棄する一歩（E_DropRel）が、保存継続が解放枠を持たなければ（`releases saved = []`）事象を伴わず、解放枠を足さずに `ret` の状態へ進むことを示す。release と drop の枠を持たない枠列（`BuilderOnlyFrames`）は `builder_frames_releases_nil` でこの前提を満たし、`drop_local_frame` は、使用済みへの更新が Reference の値セルを変えないことを示す。`HandlerStoreExamples` の `builder_steps_keep_ordinary`・`builder_cell_capture`・`builder_cell_resume_drop` は、これらを具体の状態で確かめる。
+
 ### 構築器の表層の局所文脈
 
 【決定】篩付きの表層の七判断 `HasTypeQ`・`HasTypesQ`・`HasEachQ`・`HasFixedQ`・`HasArmsQ`・`HasClausesQ`・`HasBlockQ`（`Refinement.Surface.Rules`）は、NoFail の文脈 Q の直後、型パラメータの文脈 C の前に、構築器の局所の文脈 `BuilderCtx` を添字として持つ。`BuilderCtx` は核の `LocalCtx` と同じ `List (Option BuilderKind)` であり、Γ と同じ番号で専用位置の種類を持つ。定義の本体の型付けは空の Δ から始める。
@@ -2844,7 +2876,7 @@ IP のパターンは族と区間 `[lo, hi]` を持ち、完全一致は一点�
 
 引数の効果を ε とすると、操作の式の効果は ε である。構築器の位置は通常の環境 Γ の none に対応し、通常の局所参照では読めない。操作の結果は通常の型である。理由: セルだけを専用位置として追跡し、取り出した不変値は通常の型とエフェクトの規則で扱うためである。
 
-脱糖（`Refinement.Surface.Desugar`）は、通常引数の脱糖をソース順に一度ずつ評価する計算の列 ms とし、`sequence ms` の続きで `builderOp kind′ op (bound (i + ms.length)) vs` を生成する。kind′ は kind の中の値の番号を ms.length だけずらしたものであり、専用位置の番号も引数の let の個数だけずらす。copy・length・append・appendAll はいずれも専用操作であり、参照の読み書きや純粋な結合関数の呼び出しへ展開しない。
+脱糖（`Refinement.Surface.Desugar`）は、通常引数の脱糖をソース順に一度ずつ評価する計算の列 ms とし、`sequence ms` の続きで `builderOp kind′ op (bound (i + ms.length)) vs` を生成する。kind′ は kind の中の値の番号を ms.length だけずらしたものであり、専用位置の番号も引数の let の個数だけずらす。copy・length・append・appendAll はいずれも専用操作であり、参照の読み書きや純粋な結合関数の呼び出しへ展開しない。`Surface.BuilderExamples` の `dedicated_lowering` は、String の専用位置への追記と copy の脱糖を、独立に書いた期待の核の項と照合する。
 
 検査器の `Check.checkExprAt`（`Refinement.Surface.Check`）は、Δ から専用位置の種類を読み、その内容の型と注記の内容の型の一致、注記の形成、通常引数、引数の型の条件、結果の型の一致を確かめる。`checkExprAt_sound`（`Refinement.Surface.CheckSound`）の E_BuilderOp の場合は `builderOp_step` である。検査器の入力の支持 `ExprSupport` は注記の内容の型の支持を要求し、`BuilderSupport` は Δ の各種類の内容の型の支持を表す。
 
@@ -4486,6 +4518,8 @@ def EffectSoundnessStatement (P : Program) (B : Builtins) (σ : PathEnv) : Prop 
 `Surface.checkProgramAccepted_main` は、実入口 `checkProgramAccepted` の成功と、その入力の Sound・名前の全件性・定義と実装の支持・宣言の保存から CheckedUnder と Accepted を得て、これらの結論へ接続する。表層の整形式は独立に受ける。`Surface.MainExamples.main_guarantees` は、標準本体と篩付きの外部関数の宣言を保持する表層の空の main、完成した表、有効な起点環境で、主定理の全前提を同時に満たす。この証人は CheckedUnder を導出から構成し、有限の checker 入力の Sound や実入口の成功の証明とは区別する。
 
 `Surface.CheckedMainExamples.main_guarantees` は、標準関数 `Range.checkInteger` を呼ぶ main について、入力の Sound と実入口の成功も同時に満たす。構成元には `.custom (complete …)` を使う。`StandardSupport.complete` は、仮定側の署名がない完成表の全署名の支持を12原子の有限一覧で供給する。
+
+`Surface.TargetReachExamples.main_reach` は、`print("hi")` を呼ぶ main を、標準の型の宣言を収集した表層のプログラムとして置き、範囲付きのパス操作と対象なしの IO を持つ実例の表 `ExternalModels.targets` の下で、表層の整形式・型付け・`CoreAssumptions`・`TargetAgreement`・`HasMain`・`σ.Ready` を満たすことを示す。同じ開始状態から print の IO の事象を伴う遷移へ到達するので、`surface_target_sound` の前提は空疎でない。この事象の観測は空である。`Surface.TargetObservedExamples.main_observed` は、`File.readText("/data/a.txt")` を呼び効果 `{File.Read}` を宣言する main について同じ前提を満たし、開始状態から観測 `/data/a.txt` を持つ読取りの事象へ到達し、その観測を宣言した効果が許すことを示す。`wrong_rule_unsound` は、効果の名前だけを照合して範囲を照合しない誤った包含（`NameOnlyCovers`）が `/etc/passwd` を読む main を効果 `{File.Read["/data/**"]}` で受け入れ、その実行が上限の許さない `/etc/passwd` を観測することを示す。`narrow_rejected` は、本番の規則がこの main をその効果で型付けないことを、到達先の対象健全性から導く。
 
 `DeclarationAgreement.check` は、宣言の全 lookup を覆う有限の関数名・実装名の一覧について、核の本体の存在と署名の一致を照合する。関数は型・行のパラメータ、引数名と型、結果型、効果、範囲の種類列を比較し、実装は型・辞書のパラメータ、型クラス、対象型を比較する。`realizes_of_check` は、両側の署名の有限支持と判定の成功、型の宣言の一致、外部宣言の整形式から `Realizes` を導く。
 

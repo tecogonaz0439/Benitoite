@@ -271,6 +271,15 @@ L70.45 で設計書から除いた旧の名前（[g/docs-rewrite.md](g/docs-rewr
 | 旧の具体例の篩付きの版 | 表層の対象健全性の前提を満たし IO の事象に到達する例（`main_reach`）、誤った規則で対象健全性が破れる反例（`wrong_rule_unsound`）、Log の検査器の例（`emit_checked`）、型付きの失敗の公開の検査入口と有限遷移の例（`FailureExamples`）、脱糖の番号の照合の例（`dedicated_lowering`） | 軽い（主定理の結論は変わらない） | 段の開始版の `Surface/CoverExamples.lean`・`Release/TargetReachExamples.lean`・`Surface/LogExamples.lean`・`Surface/FailureExamples.lean`・`Release/FailureExamples.lean`・`Surface/BuilderExamples.lean` |
 | 交換の書き出しの効果の名前の完全性 | `Prepared.writeEffNames`・`writeEffNames_complete`（原子を落とさずに効果を書き出す）。篩付きの交換は Lean から効果を書き出さないので、要らなくなった可能性がある | 軽い | 段の開始版 `formal/Benitoite/Exchange/CheckInput.lean` |
 
+群 H2 は、上の「失った保証」の31行を篩付きの核と表層の上で述べ直した（[h2/results.md](h2/results.md)。旧の行ごとの定理の完全名と述べ直さない理由は同書の「旧の行ごとの記録」）。重い18行は全て述べ直した（構築器の一歩の通常セルと事象の性質は `Refinement.BuilderStore`、補間の判定の完全性は `Surface.Check.interpAllowed_spec`、Scope の局所解析と受理した本体の評価の接続は `Surface.ScopeEval`・`ScopeReach`・`ScopeConnection`）。軽い13行のうち9行（`OrdinaryStoreEq`・`BuilderOnlyFrames`・`builder_frames_releases_nil`・`reachAt_occurrences`・`main_reach`・`wrong_rule_unsound`・`emit_checked`・型付きの失敗の例・`dedicated_lowering`）を述べ直し、4行（`Prepared.writeEffNames`・`writeEffNames_complete`・`requestLitBound_known_ports_wf`・`analyzeBody_numbered`）は理由を記して述べ直していない。旧の保証が篩付きの規則の下で成り立たない例はなかった。足したモジュール 11 と変えたモジュール 2 の全宣言 2,647 を公理監査し（[h2/audit.json](h2/audit.json)）、許可した三公理の外と `sorryAx` は 0 である。
+
+| 判定（群 H2 の後） | 行 |
+|---|---:|
+| 新しい主定理・定理から導ける | 28 |
+| 新しい形式化では別の形で扱う | 70 |
+| 群 H2 で述べ直した（重い 18・軽い 9） | 27 |
+| 述べ直していない（軽い 4） | 4 |
+
 ## 01-12・07-04・formal/README.md の主定理の一覧の照合
 
 `formal/README.md` の主定理の一覧（`#print axioms` の41名）、07-04「証明する性質」の定理の名前、01-12「確かめる性質」の主な名前（`Surface.desugar_typed`・`surface_effect_soundness`・`checkProgramAccepted_main`・`linked_main`・`StandardModel.included_guarantees`・`Surface.surface_guarantees`・`CheckedMainExamples.main_guarantees`・`StartCondition.of_typed_noLamNames`）が最終版の環境にあることを [verify.py](verify.py) で照合した。README の「旧 `Release` の74モジュールと旧 `Surface` の3モジュール」は既定 import の閉包の数（74・3）と一致し、Core は0である。食い違いはなく、文書は変えていない。
