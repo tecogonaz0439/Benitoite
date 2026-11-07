@@ -27,6 +27,46 @@ TOOLS = {
     "surfaceCheckAll": ("corpus", "builtins", "stdlib"),
 }
 
+# 脱糖の比較の既知の差。列挙した差だけなら一致として数え、列挙の外の差は従来どおり不一致にする。列挙した定義が
+# 入力にあるのに差が消えたときは失敗にする（test_range_known_differences.py と同じ考え方）。
+KNOWN_DESUGAR_DIFFERENCES = [
+    {"input": "independent-named", "definition": "Pair.left (fn:12)", "path": "definition.header.ret",
+     "reason": "篩付きの脱糖は取得関数の結果型に欄の関係の篩を付ける（Surface.accessorRet）が、交換の核（処理系の"
+               "書き出しと同じ形）は付けない",
+     "obligation": "R10b: 処理系の脱糖と書き出しが取得関数の結果型に同じ篩を付けたら、この列挙から除く"},
+]
+
+
+def known_desugar(result, report, data):
+    """desugarDiff の結果から既知の差を除く。列挙した定義があるのに差がないときは AssertionError にする。"""
+    present = [k for k in KNOWN_DESUGAR_DIFFERENCES
+               if any(i["name"] == k["input"] and any(d["name"] == k["definition"] for d in i["definitions"])
+                      for i in data["corpus"]["inputs"])]
+    if report is None or not present:
+        return result, report
+    keys = {(k["input"], k["definition"], k["path"]) for k in present}
+    found = [m for m in report["mismatches"] if (m["input"], m["definition"], m["path"]) in keys]
+    if {(m["input"], m["definition"], m["path"]) for m in found} != keys:
+        raise AssertionError(f"known desugar differences disappeared: {sorted(keys)}")
+    report = copy.deepcopy(report)
+    report["mismatches"] = [m for m in report["mismatches"] if m not in found]
+    report["knownDifferences"] = found
+    for m in found:
+        counts = report[m["group"]]["definitions"]
+        counts["mismatched"] -= 1
+        counts["matched"] += 1
+    for group in {m["group"] for m in found}:
+        inputs = {m["input"] for m in found if m["group"] == group}
+        for name in inputs:
+            if not any(m["input"] == name and m["group"] == group for m in report["mismatches"]):
+                programs = report[group]["programs"]
+                programs["mismatched"] -= 1
+                programs["matched"] += 1
+    if result.returncode == 1 and not report["mismatches"] and all(
+            report[g]["programs"]["mismatched"] == 0 for g in ("golden", "random") if g in report):
+        result = subprocess.CompletedProcess(result.args, 0, result.stdout, result.stderr)
+    return result, report
+
 
 def surface(data, index):
     return data["corpus"]["inputs"][0]["definitions"][index]["scope"]["inScope"]["surface"]
@@ -88,7 +128,10 @@ class ExchangeTests(unittest.TestCase):
             args += [selected, "2"]
         # 書き出しの全件の検査（batch3 の47定義で約9秒）が収まる上限にする。
         result = subprocess.run([str(BIN / tool), *args], text=True, capture_output=True, timeout=60)
-        return result, json.loads(report.read_text()) if report.exists() else None
+        loaded = json.loads(report.read_text()) if report.exists() else None
+        if tool == "desugarDiff":
+            return known_desugar(result, loaded, data)
+        return result, loaded
 
     def test_six_entries_accept_independent_input(self):
         for tool in TOOLS:

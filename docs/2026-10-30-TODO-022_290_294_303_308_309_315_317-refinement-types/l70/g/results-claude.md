@@ -317,3 +317,33 @@ Lean は変えていないので、既定ビルド・公理監査・照合は前
 | 固定入力の試験（named・extensible・range） | 終了1。残る失敗は named 10・extensible 1（R10b の取得関数の差、前と同じ）と、range 19（全て data `Scope.ScopeError` の差 `At`。固定入力の Scope.ScopeError は処理系と同じ6構成子で、標準の宣言は At を含む7構成子） |
 | 書き出しを読む試験（範囲の実ソース・範囲の予算・既知の差・batch3・batch5・batch2 の書き出し） | 全て終了0（件数は上の 2） |
 | named-programs を除く表層の検査（47文書の一括検査） | 上の 1。準備を通った58入力で一致386・不一致0 |
+
+## 取りまとめの判断の後の処置（71d0b10d から。2026-11-07 16:38〜17:10）
+
+基準は `71d0b10d`。git の書き込み、`check.sh`・`check-formal.sh` の全体の実行、named-programs の検査の本体の実行はしていない。
+
+| 判断 | 処置 |
+|---|---|
+| 1. 軽2 は記録の形で確定 | 07-04「証明する性質」の照合の段落に、標準表にも名前の写しにもない組込みは署名を比べず入力も断らずに `Prepared.unknownBuiltins` と報告の欄に残すことと、その理由を書いた。あわせて段落を今の実装（閉包の数え方、data の宣言の照合、`prepare_agrees` の二つの連言、`prepare_constraints`）に合わせた。F-REG の集計のため、表層の一括検査の報告（`SurfaceCheck/Batch.lean`）に欄 `unknownBuiltins`（名前ごとの入力の数）と `unknownBuiltinInputs`（入力ごとの名前）を足した。単独の検査の報告の欄 `unknownBuiltins` は前の区間で足してある。全比較の台本は報告を残すので、台本の集約は変えていない。named-programs の順序を保った20入力の試しでは、`TaskGroup.open` 14・`%Boolean.toString` 14・`Csv.parseWith` 1（15入力）を報告した |
+| 2. range の固定入力 | 標準表の `Scope.ScopeError`（At を含む7構成子）と、At の詳細から届く data の宣言の系（`Scope.AtDetail` など21件。`Option` を含む）を、標準表から書き出したファイル `formal/tests/range-exchange/standard-scope-declarations.json` として置き、`test_range_exchange.py` の data の宣言・要約・属性の一覧に使う。書き出しの台本は [standard-scope-declarations.lean](standard-scope-declarations.lean)。range の試験は全て通り、拒否の独立入力16件も全て検査器まで進む（準備の段で断った入力0） |
+| 3. named・extensible の既知の差 | `test_named_exchange.py` に `KNOWN_DESUGAR_DIFFERENCES`（`independent-named` の `Pair.left (fn:12)` の `definition.header.ret`、義務 R10b）と `known_desugar` を置き、`run_tool` の desugarDiff の結果に当てる。列挙した差だけなら一致として数え（終了状態と件数を直す）、列挙の外の差は不一致のまま、列挙した定義が入力にあるのに差がないときは AssertionError にする。extensible も同じ実行器を使う。消えた差と列挙の外の差の扱いは、作った報告を直接与えて確かめた |
+| 4. 名前一致で止めた件 | 「RV-L70.g の処置」の「途中で直したこと」に記録してある |
+
+R50 への申し送り（追加）:
+
+| 対象 | 内容 | 担当 |
+|---|---|---|
+| `unknownBuiltins` の名前 | 名前を、標準表を広げて合成済みの行にするものと、仮定側の名前の一覧（`NameLists`）に置くものに分ける。最後に、一覧の外の名前を準備の段で断る形にする | R50 |
+
+作業末の検査:
+
+| 検査 | 結果 |
+|---|---|
+| 既定ビルド（共有ロック下） | 終了0（2,323ジョブ、16:43:21〜17:04:46。最大常駐 5.00 GB） |
+| 公理監査（`verify_g2.py`。足した16・変えた59モジュール、共有ロック下、17:05:18〜17:07:20） | 16,057宣言。`sorryAx` と新しい公理は0。連結の SHA-256 `737aa3fa116854120650a2d5a622b4569e77b5eaf30f27edc383976e100a450b` |
+| 照合（`verify_g2.py`） | 成功 |
+| 固定入力の試験（width・named・extensible・try・batch2・batch3・batch4・range） | 全て終了0 |
+| 書き出しを読む試験（範囲の実ソース・範囲の予算・既知の差・batch3・batch5・batch2） | 全て終了0。範囲の実ソースは一致4・分類した拒否13・不一致0、拒否の独立入力で準備の段で断った入力0 |
+| `cargo test -p benitoite --test desugar_export --test coverage_export` | 終了0 |
+| `python3 -B -m unittest scripts.check.test_policy` | 終了0 |
+| `spec_coverage.py --self-test`・通常の実行 | どちらも終了0 |

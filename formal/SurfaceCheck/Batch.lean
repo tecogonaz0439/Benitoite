@@ -27,6 +27,8 @@ structure Report where
   tailMatches : Nat := 0
   outcomes : Array Json := #[]
   preparationErrors : Array Json := #[]
+  /-- 準備を通った入力ごとの、標準表にも名前の写しにもない組込みの名前（`Prepared.unknownBuiltins`）。 -/
+  unknownBuiltins : Array (String × List String) := #[]
 
 def bump (c : Counts) (category : String) : Counts :=
   match category with
@@ -226,7 +228,10 @@ def run (args : List String) : IO UInt32 := do
       r := { r with counts := { r.counts with preparationFailure := r.counts.preparationFailure + 1 }, preparationErrors := r.preparationErrors.push (Json.mkObj [
         ("group",toJson ((j.getObjValAs? String "group").toOption)),
         ("input",toJson ((j.getObjValAs? String "name").toOption)),("reason",toJson e)]) }
-    | .ok (input,b,p) => r := checkInput r input b p
+    | .ok (input,b,p) =>
+      r := checkInput r input b p
+      if !p.unknownBuiltins.isEmpty then
+        r := { r with unknownBuiltins := r.unknownBuiltins.push (input.name, p.unknownBuiltins) }
     if eligible % 100 == 0 then IO.println s!"surfaceCheckAll: inputs={eligible} mismatches={r.counts.mismatched}"
   if bs.size != eligible || ss.size != eligible then
     r := { r with counts := { r.counts with preparationFailure := r.counts.preparationFailure + 1 }, preparationErrors := r.preparationErrors.push (Json.mkObj [("reason",toJson "sidecar input count mismatch")]) }
@@ -246,7 +251,12 @@ def run (args : List String) : IO UInt32 := do
     ("mismatchExamples",toJson (r.outcomes.filter fun j =>
       (j.getObjValAs? String "category").toOption == some "mismatched")),
     ("nonTopRanges",toJson (Benitoite.Exchange.countNonTopRanges (Json.arr inputs))),
-    ("elapsedNanos",toJson (stop-start)),("outcomes",toJson r.outcomes),("preparationErrors",toJson r.preparationErrors)]
+    ("elapsedNanos",toJson (stop-start)),("outcomes",toJson r.outcomes),("preparationErrors",toJson r.preparationErrors),
+    -- 標準表にも名前の写しにもない組込みの名前ごとの入力の数と、入力ごとの名前（照らさずに残す）。
+    ("unknownBuiltins",Json.mkObj (((r.unknownBuiltins.toList.flatMap (·.2)).eraseDups.map fun n =>
+      (n, toJson (r.unknownBuiltins.toList.filter (·.2.contains n)).length)))),
+    ("unknownBuiltinInputs",Json.arr (r.unknownBuiltins.map fun (i, ns) =>
+      Json.mkObj [("input",toJson i),("names",toJson ns)]))]
   IO.FS.writeFile reportFile (output.pretty ++ "\n")
   IO.println counts.compress
   if r.counts.preparationFailure > 0 then return 2

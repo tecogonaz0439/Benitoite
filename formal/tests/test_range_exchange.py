@@ -160,13 +160,19 @@ RESULT_DATA = {"name": "Result", "typeName": "Result", "isRecord": False, "exten
                "builtin": "result", "ntys": 2, "ctors": [
                    {"name": "Ok", "constructorName": "Ok", "args": [{"tvar": {"index": 0}}], "fields": None},
                    {"name": "Error", "constructorName": "Error", "args": [{"tvar": {"index": 1}}], "fields": None}], 'variances': ['invariant'] * 2, 'requirements': [], 'publicBoundary': []}
-SCOPE_ERROR_DATA = {"name": SCOPE_ERROR_NAME, "typeName": SCOPE_ERROR_NAME, "isRecord": False,
-                    "extensible": False, "package": "stdlib", "builtin": "ordinary", "ntys": 0, "ctors": [
-                        {"name": f"{SCOPE_ERROR_NAME}.{c}", "constructorName": c, "args": args, "fields": None}
-                        for c, args in (("InvalidPattern", [STR, STR]), ("InvalidTarget", [STR, STR]),
-                                        ("InvalidPortRange", [INT, INT]), ("InvalidPort", [INT]),
-                                        ("OutsideScope", [STR, STR]), ("PortOutsideScope", [INT, INT, INT]))],
-                    'variances': [], 'requirements': [], 'publicBoundary': []}
+# 標準表の Scope.ScopeError（構成子 At を含む7構成子）と、At の詳細から届く data の宣言の系。固定入力は Lean の
+# 検査器を試す入力なので、処理系の今の書き出し（At のない6構成子）でなく標準表に合わせる（準備の段の data の照合）。
+STANDARD_SCOPE = json.loads((Path(__file__).with_name("range-exchange") /
+                             "standard-scope-declarations.json").read_text())["declarations"]
+
+
+def standard_data(d):
+    return {"name": d["name"], "typeName": d["name"], "isRecord": False, "extensible": False, "package": "stdlib",
+            "builtin": "option" if d["name"] == "Option" else "ordinary", "ntys": d["ntys"], "ctors": d["ctors"],
+            "variances": ["invariant"] * d["ntys"], "requirements": [], "publicBoundary": []}
+
+
+SCOPE_ERROR_DATA = standard_data(next(d for d in STANDARD_SCOPE if d["name"] == SCOPE_ERROR_NAME))
 CHECK_ERROR_DATA = {"name": "Http.RequestCheckError", "typeName": "Http.RequestCheckError", "isRecord": False,
                     "extensible": False, "package": "stdlib", "builtin": "ordinary", "ntys": 0, "ctors": [
                         {"name": "Http.RequestCheckError.InvalidUrl", "constructorName": "InvalidUrl",
@@ -182,7 +188,8 @@ CLIENT_REQUEST_DATA = {"name": "Http.ClientRequest", "typeName": "Http.ClientReq
                            {"name": "Http.ClientRequest", "constructorName": "ClientRequest",
                             "args": [STR, STR, {"list": {"elem": PAIR_SS}}, "bytes", INT],
                             "fields": ["method", "url", "headers", "body", "timeoutMilliseconds"]}], 'variances': ['invariant'] * 0, 'requirements': [], 'publicBoundary': []}
-DATA_DECLS = [RESULT_DATA, SCOPE_ERROR_DATA, CHECK_ERROR_DATA, PAIR_DATA, CLIENT_REQUEST_DATA]
+DATA_DECLS = [RESULT_DATA, SCOPE_ERROR_DATA, CHECK_ERROR_DATA, PAIR_DATA, CLIENT_REQUEST_DATA] + [
+    standard_data(d) for d in STANDARD_SCOPE if d["name"] != SCOPE_ERROR_NAME]
 DATA_TYPES = [{**{k: d[k] for k in ("name", "typeName", "isRecord", "extensible", "package", "builtin")},
                "constructors": [[c["name"], c["constructorName"]] for c in d["ctors"]]}
               for d in DATA_DECLS]
@@ -198,7 +205,7 @@ SUMMARIES = [
     {"name": "Pair", "eq": {"always": False, "dependsOn": [0, 1]}, "key": {"always": False, "dependsOn": [0, 1]}},
     {"name": "Http.ClientRequest", "eq": {"always": False, "dependsOn": []},
      "key": {"always": False, "dependsOn": []}},
-]
+] + [{"name": d["name"], **d["summary"]} for d in STANDARD_SCOPE if d["name"] != SCOPE_ERROR_NAME]
 
 
 def prim(name, names, params, ret, eff, kind, op_eff, rkinds, shape):

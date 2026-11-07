@@ -67,6 +67,7 @@
     "Benitoite.Release.Refinement.Surface.Property1Die",
     "Benitoite.Release.Refinement.Surface.Rules",
     "Benitoite.Release.Refinement.Surface.Syntax",
+    "Benitoite.Release.Syntax",
     "Benitoite.Release.TargetTable",
     "Benitoite.Scope.CompatExamples",
     "Benitoite.Surface.Syntax",
@@ -81,25 +82,25 @@
   ],
   "default_modules": 1301,
   "axioms": {
-    "targets": 15221,
+    "targets": 16057,
     "axioms": {
-      "none": 7763,
-      "propext": 3304,
+      "none": 8515,
+      "propext": 3386,
       "Quot.sound,propext": 391,
-      "Classical.choice,Quot.sound,propext": 3763
+      "Classical.choice,Quot.sound,propext": 3765
     },
     "parts": {
       "library": {
-        "targets": 14230,
+        "targets": 15064,
         "axioms": {
-          "none": 7259,
-          "propext": 3193,
+          "none": 8010,
+          "propext": 3275,
           "Quot.sound,propext": 390,
-          "Classical.choice,Quot.sound,propext": 3388
+          "Classical.choice,Quot.sound,propext": 3389
         },
         "output": {
-          "bytes": 3201874,
-          "sha256": "143a3b13d6b0addd69cdad8559901c2237cc5abc8e641283d0b4f44cd19a2aef"
+          "bytes": 3320701,
+          "sha256": "c824a62479962f6f0cab5e188ba3a4cf67d994effe305c7e5c4ce296aea607eb"
         }
       },
       "BuiltinCheck.Main": {
@@ -152,15 +153,15 @@
         }
       },
       "SurfaceCheck.Batch": {
-        "targets": 119,
+        "targets": 121,
         "axioms": {
-          "none": 50,
+          "none": 51,
           "propext": 20,
-          "Classical.choice,Quot.sound,propext": 49
+          "Classical.choice,Quot.sound,propext": 50
         },
         "output": {
-          "bytes": 18066,
-          "sha256": "889f1d3181e8ec8d74b7358d6b254b2729846ac1115ff37849d547c745aa8bde"
+          "bytes": 18409,
+          "sha256": "3ba0f22ffdc81b92e8aeabdffbc1b215f15eeae95d44eef201ff42ac364ad7f0"
         }
       },
       "SurfaceCheck.Main": {
@@ -203,8 +204,8 @@
   },
   "audit_inputs": {
     "library": {
-      "bytes": 8388,
-      "sha256": "eccd0c37159b088d15c1d66161c884cf363d624fef14d7e1dc490553e1e81bb6"
+      "bytes": 8447,
+      "sha256": "b3f092fbe566e95a7904b2d02b8b1702cd383e066c85d3e6d67c1853e5650678"
     },
     "BuiltinCheck.Main": {
       "bytes": 2329,
