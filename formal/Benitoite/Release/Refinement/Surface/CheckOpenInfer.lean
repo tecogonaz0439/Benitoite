@@ -62,7 +62,14 @@ private def node (a : Ty) (e : Eff) (r : Rule) (h : Hints := {}) (cs : List Guid
   {type := a, effect := e, guide := .node r h cs}
 
 private def effectUnion (q : Check.Input) (e f : Eff) : Eff := Check.union q e f
-private def outerType (n : Nat) (t : Ty) : Ty := t.renameValues (unshiftValue n 0)
+/-- 束縛した n 個の値を指す篩の層は、外側の文脈で意味を持たないので除く。
+除いた後の型は元の型の篩の一部だけを持ち、元の型からの包含は篩を捨てる部分型で閉じる。 -/
+private def dropBound (n : Nat) : Ty → Ty
+  | .refined a p => if decide (p.VarsIn (fun i => i = 0 ∨ n < i)) then .refined (dropBound n a) p else dropBound n a
+  | t => t
+
+/-- 束縛した値を除いた外側の文脈の型。残る値の番号を n だけ戻す。 -/
+private def outerType (n : Nat) (t : Ty) : Ty := (dropBound n t).renameValues (unshiftValue n 0)
 private def outerEffect (n : Nat) (e : Eff) : Eff := e.renameValues (unshiftValue n 0)
 
 /-- 値の篩の導入は、その値の項について論理の証明書を検査する規則を作る。 -/
@@ -512,6 +519,24 @@ mutual
               | .error failure => .failure failure
             Guide.node .E_Handle {effects := [sb.effect], proofLists := [observed]} [fitted.guide,clauses])}
       | .pipe lhs rhs => inferPipeFuel fuel q certs rows Δ C Γ Φ R path lhs rhs
+      | .partialCall f@(.primName _ _ _ _) [] (.expr none 0 root (.expr none 1 source .nil)) ret eff => do
+          let value ← need path "predicate receiver is not a value" root.valueOf?
+          let original ← inferExprFuel fuel q certs rows Δ C Γ Φ R .other (child path 0) source
+          let (t, ds, hg) ← headInfo q rows C Γ path f
+          if !ds.isEmpty then fail path "predicate primitive has dictionaries" else do
+            let (r, ec, gs) ← valTelInfo q certs C Γ 0 Γ Φ path [value] t
+            pure (node ret eff .E_PredicateProject
+              {types := [r, original.type], effects := [ec], arguments := [gs], heads := [hg],
+               subtypes := [inferLe q certs Γ Φ path 0 r ret]}
+              [(coerceExpr q certs Γ Φ (child path 0) source original original.type Eff.empty).guide])
+      | .partialCall f@(.primName _ _ _ _) [] (.expr none 0 target .nil) ret eff => do
+          let value ← need path "predicate target is not a value" target.valueOf?
+          let (t, ds, hg) ← headInfo q rows C Γ path f
+          if !ds.isEmpty then fail path "predicate primitive has dictionaries" else do
+            let (r, ec, gs) ← valTelInfo q certs C Γ 0 Γ Φ path [value] t
+            pure (node ret eff .E_PredicateCall
+              {types := [r], effects := [ec], arguments := [gs], heads := [hg],
+               subtypes := [inferLe q certs Γ Φ path 0 r ret]})
       | .partialCall f names args ret eff => inferPartialFuel fuel q certs rows C Γ Φ path f names args ret eff
       | .partialCon c ts args => inferPartialConFuel fuel q certs rows C Γ Φ path c ts args
       | .tryResult _ _ _ source => do

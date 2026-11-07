@@ -1,0 +1,203 @@
+{
+ "default_imports": true,
+ "axiom_dependencies_complete": true,
+ "audit_postcheck_corrected": true,
+ "audit_invocations": 1,
+ "declaration_completion_invocations": 2,
+ "modules": 66,
+ "d_statements": 308,
+ "d_approved_differences": 2,
+ "d_additional_differences": 0,
+ "e_ledger_statements": 617,
+ "e_statements": 883,
+ "e_differences": {
+  "formal/Benitoite/Release/Refinement/Surface/CheckAccept.lean": {
+   "checkProgramAccepted_empty": {
+    "before": "ed352027db153289fbc9cf82bce92923ec6c16a3d20db8ace6614b01776634cf",
+    "after": "e95959ef14e79086d66878f352759b6cf1f6319013f86d6c6917d504d01305b4"
+   },
+   "checkProgramAccepted_sound": {
+    "before": "f9de55a22d992f653a9009dd5521e7ddc578834f0adf1ca7faf9927376201d64",
+    "after": "f989137972020774392cdd90faa226ed3ce3980fb59c70909f1a84a4bd635f5b"
+   },
+   "checkProgramAccepted_unknown": {
+    "before": "7aafc68750dada4b740aa2bb60269f7941a7652d07ff25b98f0a69b5515deae9",
+    "after": "b0771745c20131abe5647d895268811cebc25d1cfa6bacfcda0e27269f074840"
+   }
+  },
+  "formal/Benitoite/Release/Refinement/Surface/CheckAcceptBase.lean": {
+   "Accepted.def_body_no_ranges": {
+    "before": "5a7db898bd55b12016fd9c6e0b74a11e3995e2924e4a90471d5f48ee8fab399b",
+    "after": "4a3cdfa1a109bdd37c80633058a13e537768f00bcd23f69cf97e73314b16186c"
+   },
+   "acceptDef_no_ranges": {
+    "before": "7b4c4691afcd19deb52a1059600b86a97ec977541b7379ad4261a7dfe160161d",
+    "after": "fda77ebcc7efe96a3583a224b2230f8c96034365da1fba58b7b2cb5dd72144a8"
+   }
+  },
+  "formal/Benitoite/Release/Refinement/Surface/CheckAcceptedRanges.lean": {
+   "Accepted.def_ranges_no_ranges": {
+    "before": "67ed29bb007c1ec949ea4984991c08dd0c260858c0b9daecd6d125d9f22b9ac2",
+    "after": "90ec6943a87540dd0bcec55f50a9af546ddc694e925a5476734e257795587cea"
+   }
+  },
+  "formal/Benitoite/Release/Refinement/Surface/CheckMaterialsSound.lean": {
+   "Materials.checkProgramAccepted_empty": {
+    "before": "37fcc4afd4f053ca6a84171e1ab2f5f7c894102206495ad1ef92fe097f7daf3d",
+    "after": "c79524dba922f3b34f4648d91d86701efe6a4b880b9f4ea74ac62efef56129d6"
+   },
+   "Materials.checkProgramAccepted_sound": {
+    "before": "5471e5df24c5aca674532df0cbe18254193344795ab9ddfc60829122ff0211f2",
+    "after": "6f4e5731420b4f9a100551f55722360ba9c99cdf5676fcaa328c50c175a8f857"
+   },
+   "Materials.checkProgram_empty": {
+    "before": "30408c450d6bb625384c97369161da11e47a4ecd3fc85d048fb1e9acff8f76a5",
+    "after": "a1e2e0d41838967a3c760d442938ca67bbd59aa952141cfcbd943ab16fd49ef3"
+   },
+   "Materials.checkProgram_empty_contracts": {
+    "before": "c574b00e2709becf1bbf24e0133ebcc6f75ad297bd41041cf87bda045dd8929b",
+    "after": "f6c331fbffebf347a0df8d85bc5930d409bd5b37a70c27230aef8478b53e2ca8"
+   },
+   "Materials.checkProgram_sound": {
+    "before": "104b7cebd59596dc87595159a5067cc38155ff544dec64532276c231b30d8ed8",
+    "after": "045039d660ec3283b91ae80d7b0071a733a32524287251855a91a7f7256eae14"
+   },
+   "Materials.checkProgram_sound_contracts": {
+    "before": "b8d9f34726fde55c7b577303d30dccb8177dfdd46464d636c792ed63c620660d",
+    "after": "19a638073cdb4d79ed17f5a059c045c323f83a2b223bd65f268504dec14ce283"
+   }
+  },
+  "formal/Benitoite/Release/Refinement/Surface/CheckProgramSound.lean": {
+   "checkProgram_contracts": {
+    "before": "dec14d0efc33e8e4fd2afc6324668e3c22da19375f21229c48d74cb021de8227",
+    "after": "8a002f67849b12160d609bc857b7cb675911d2c9efd85cd6912b22ae3ae6db22"
+   },
+   "checkProgram_empty": {
+    "before": "5ea2c6ecde1644ac31665872e1b40b72b22006b30302e8981dfa7bac50b6753f",
+    "after": "17658b91d147f6c3e84f5ffd3ee1acbc65c1d62ee998a0286433250c5d750e8c"
+   },
+   "checkProgram_empty_contracts": {
+    "before": "da02894da445ab0a3d20dcf2ebe4756e5051b57bf93efdaec2cdb43638eb05e7",
+    "after": "6fcc6042751bcecbcfe20268c1124f61c1bafda982060dfcc4c678328ad0869c"
+   },
+   "checkProgram_sound": {
+    "before": "4778a9ae2782b916da64b9a0b4a29e1a7ae7db8b23ebb3ad06f3e8e8faae134f",
+    "after": "0fcc5e0f780d41c4e8737443c6d8fc93c812b8099fe5f0dea51cd11e39c02955"
+   },
+   "checkProgram_sound_contracts": {
+    "before": "3dd7250849736d4e9035af7df1c5ff06141ee11fc073a73355d434ab29091306",
+    "after": "8fc805204e240e3159683bb8a3d10118b84044b0afebf788d6cd6fcf11bd6268"
+   },
+   "program_parts": {
+    "before": "e8f71bfe5861a6463ef87e4a83a22fd7f52508bb6e8dbb3f750083e9efa4c41e",
+    "after": "9b3f17917616d447f0b8899f20b5b103475208de365aab8de4e5a2370ff95edb"
+   }
+  },
+  "formal/Benitoite/Release/Refinement/Surface/CheckTables.lean": {
+   "checkProgram_unknown": {
+    "before": "b40e077734d9662f001ddb1cf3d7ab7176bd8aaa213d613fe82549dc5113383f",
+    "after": "bc658785a663a5307268915297049d13eaadf925025025539108e1b93a415a93"
+   }
+  }
+ },
+ "e_ledger_differences": 18,
+ "raw_compatible_statements": [
+  "checkProgram_sound",
+  "checkProgram_empty",
+  "checkProgram_contracts",
+  "checkProgram_sound_contracts",
+  "checkProgram_empty_contracts",
+  "checkProgram_unknown"
+ ],
+ "statements_before": 1948,
+ "statements_after": 2425,
+ "statements_added": 477,
+ "statements_removed": 0,
+ "statements_changed": 20,
+ "ordinary_rules": 97,
+ "declarations": 120931,
+ "owned_declarations": 15069,
+ "owned_private": 9345,
+ "names_bytes": 9343150,
+ "names_sha256": "4cc204643d3334be1fd8ef6ae5444cd74c9629b4675b826f38df9278762e33ae",
+ "declarations_bytes": 3680059,
+ "declarations_sha256": "77fcfaa44ab8851e872bd5b085c0bdcf9bbe0ada42c491628f1c925c74241a4b",
+ "per_module": {
+  "Benitoite": 0,
+  "Benitoite.Release.Refinement.Surface.Check": 695,
+  "Benitoite.Release.Refinement.Surface.CheckAccept": 39,
+  "Benitoite.Release.Refinement.Surface.CheckAcceptBase": 47,
+  "Benitoite.Release.Refinement.Surface.CheckAcceptedRanges": 6,
+  "Benitoite.Release.Refinement.Surface.CheckBuiltinSource": 51,
+  "Benitoite.Release.Refinement.Surface.CheckExamples": 59,
+  "Benitoite.Release.Refinement.Surface.CheckExprPartialSound": 64,
+  "Benitoite.Release.Refinement.Surface.CheckGuide": 471,
+  "Benitoite.Release.Refinement.Surface.CheckInfer": 587,
+  "Benitoite.Release.Refinement.Surface.CheckInferCertificates": 360,
+  "Benitoite.Release.Refinement.Surface.CheckMaterialsSound": 6,
+  "Benitoite.Release.Refinement.Surface.CheckOpen": 688,
+  "Benitoite.Release.Refinement.Surface.CheckOpenArgumentLeaves": 67,
+  "Benitoite.Release.Refinement.Surface.CheckOpenExprPartialSound": 65,
+  "Benitoite.Release.Refinement.Surface.CheckOpenInfer": 585,
+  "Benitoite.Release.Refinement.Surface.CheckOpenSound": 3,
+  "Benitoite.Release.Refinement.Surface.CheckPredicateExamples": 1521,
+  "Benitoite.Release.Refinement.Surface.CheckPredicateFallbackExamples": 920,
+  "Benitoite.Release.Refinement.Surface.CheckPredicateProgramExamples": 1136,
+  "Benitoite.Release.Refinement.Surface.CheckPredicateProjectionExamples": 2215,
+  "Benitoite.Release.Refinement.Surface.CheckPreparation": 61,
+  "Benitoite.Release.Refinement.Surface.CheckProgramSound": 16,
+  "Benitoite.Release.Refinement.Surface.CheckPropositional": 27,
+  "Benitoite.Release.Refinement.Surface.CheckSound": 9,
+  "Benitoite.Release.Refinement.Surface.CheckTables": 10,
+  "Benitoite.Release.Refinement.Surface.CheckValueSupport": 13,
+  "Benitoite.Release.Refinement.Surface.Desugar": 321,
+  "Benitoite.Release.Refinement.Surface.OpenScopeAccept": 149,
+  "Benitoite.Release.Refinement.Surface.OpenScopeExamples": 713,
+  "Benitoite.Release.Refinement.Surface.OpenScopeForwardExamples": 1061,
+  "Benitoite.Release.Refinement.Surface.OpenSurface": 417,
+  "Benitoite.Release.Refinement.Surface.OpenSurfacePartial": 15,
+  "Benitoite.Release.Refinement.Surface.OpenSurfaceProperty1": 23,
+  "Benitoite.Release.Refinement.Surface.OpenSurfaceScoped": 50,
+  "Benitoite.Release.Refinement.Surface.PredicateAccessorPaths": 75,
+  "Benitoite.Release.Refinement.Surface.PredicateAccessorTargets": 122,
+  "Benitoite.Release.Refinement.Surface.PredicateCalls": 117,
+  "Benitoite.Release.Refinement.Surface.PredicateProgramSemantics": 18,
+  "Benitoite.Release.Refinement.Surface.PredicateProjectSource": 8,
+  "Benitoite.Release.Refinement.Surface.PredicateProjectionCalls": 28,
+  "Benitoite.Release.Refinement.Surface.PredicateProjectionFixture": 88,
+  "Benitoite.Release.Refinement.Surface.PredicateProjectionObservation": 65,
+  "Benitoite.Release.Refinement.Surface.PredicateProjectionPath": 19,
+  "Benitoite.Release.Refinement.Surface.PredicateProjectionResponse": 34,
+  "Benitoite.Release.Refinement.Surface.PredicateProjectionSpec": 73,
+  "Benitoite.Release.Refinement.Surface.PredicateProjectionTable": 42,
+  "Benitoite.Release.Refinement.Surface.PredicateProjectionTableExamples": 6,
+  "Benitoite.Release.Refinement.Surface.PredicateRangeLeaves": 38,
+  "Benitoite.Release.Refinement.Surface.PredicateRowCollection": 75,
+  "Benitoite.Release.Refinement.Surface.PredicateRowCollectionExamples": 238,
+  "Benitoite.Release.Refinement.Surface.PredicateRows": 134,
+  "Benitoite.Release.Refinement.Surface.PredicateRowsResponse": 7,
+  "Benitoite.Release.Refinement.Surface.PredicateRowsTable": 25,
+  "Benitoite.Release.Refinement.Surface.PredicateRowsTableExamples": 12,
+  "Benitoite.Release.Refinement.Surface.PredicateStandardAtoms": 1,
+  "Benitoite.Release.Refinement.Surface.PredicateStandardFamilies": 21,
+  "Benitoite.Release.Refinement.Surface.PredicateStandardSupport": 3,
+  "Benitoite.Release.Refinement.Surface.PredicateStandardSupport1": 98,
+  "Benitoite.Release.Refinement.Surface.PredicateStandardSupport2": 98,
+  "Benitoite.Release.Refinement.Surface.PredicateStandardSupport3": 98,
+  "Benitoite.Release.Refinement.Surface.PredicateStandardSupport4": 98,
+  "Benitoite.Release.Refinement.Surface.Property1": 42,
+  "Benitoite.Release.Refinement.Surface.Rules": 409,
+  "Benitoite.Release.Refinement.Surface.ScopeAccept": 197,
+  "Benitoite.Release.Refinement.Surface.ScopedProof": 310
+ },
+ "axiom_sets": {
+  "(none)": 52650,
+  "Classical.choice": 2,
+  "Classical.choice,Quot.sound,propext": 29852,
+  "Classical.choice,propext": 2,
+  "Quot.sound": 11,
+  "Quot.sound,propext": 4671,
+  "propext": 33743
+ },
+ "fingerprint": "d617194664ddd7b1a607b3f12c4d88b71cb93f821839bd9db1915389e37c434d"
+}

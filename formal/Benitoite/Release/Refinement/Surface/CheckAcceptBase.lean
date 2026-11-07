@@ -1,5 +1,6 @@
 import Benitoite.Release.Refinement.Surface.CheckInput
 import Benitoite.Release.Refinement.Surface.ScopeAccept
+import Benitoite.Release.Refinement.Surface.OpenScopeAccept
 
 /-! 全定義・全実装メソッドの必須の判定の受理。 -/
 namespace Benitoite.Release.Refinement.Surface.CheckAccept
@@ -10,6 +11,10 @@ structure AcceptInput where
   rules : String → Option (ScopeRule Refinement.Val)
   limits : Limits
   methodKey : ImplName → MethName → String
+  /-- 型が保持する開いた範囲を選ぶ規則。閉じた由来の規則とは別の構成データである。 -/
+  openRules : List OpenScopeAccept.Rule :=
+    [.pathWiden, .requestWiden, .pathValue, .requestValue, .readText, .readBytes, .send,
+      .writeText, .appendText, .writeBytes, .appendBytes]
 
 def bodyKey (name : String) : Key := ⟨name, 0⟩
 
@@ -27,7 +32,24 @@ def acceptFn (A : AcceptInput) (name : String) (nlocals : Nat) (body : Block) : 
   acceptBody A.ok (tableFor A (bodyKey name) body) A.limits (bodyKey name) (entryScope nlocals) body
 
 def acceptDef (A : AcceptInput) (name : FunName) (d : Def) : Except (Key × CoverFailure) Unit :=
-  acceptFn A name d.coreParams.length d.body
+  OpenScopeAccept.acceptBody A.openRules d.rangeParams d.coreParams A.ok
+    (tableFor A (bodyKey name) d.body) A.limits (bodyKey name) (entryScope d.coreParams.length) d.body
+
+/-- 範囲パラメータがなく記号側の選択もない定義は、閉じた由来の判定と同じ結果となる。 -/
+theorem acceptDef_no_ranges (A : AcceptInput) (name : FunName) (d : Def) (h : d.rangeParams = [])
+    (noneSelected : OpenScopeAccept.selections A.openRules d.coreParams (bodyKey name) d.body = []) :
+    acceptDef A name d = acceptFn A name d.coreParams.length d.body := by
+  unfold acceptDef
+  rw [h]
+  exact OpenScopeAccept.acceptBody_no_ranges _ _ _ _ _ _ _ _ noneSelected |>.trans (by rfl)
+
+/-- 範囲パラメータのない定義の閉じた由来の判定が成功すれば、記号側の選択の有無によらず受理する。 -/
+theorem acceptDef_no_ranges_of_closed {A : AcceptInput} {name : FunName} {d : Def}
+    (hr : d.rangeParams = [])
+    (h : acceptFn A name d.coreParams.length d.body = .ok ()) : acceptDef A name d = .ok () := by
+  unfold acceptDef
+  rw [hr]
+  exact OpenScopeAccept.acceptBody_no_ranges_of_closed h
 
 def acceptMethod (A : AcceptInput) (q : Check.Input) (i : ImplName) (m : MethName)
     (id : ImplDecl) (body : Block) : Except (Key × CoverFailure) Unit :=
@@ -48,6 +70,14 @@ def acceptProgram (A : AcceptInput) (q : Check.Input) (p : Program) : Except (Ke
 def Accepted (A : AcceptInput) (q : Check.Input) (p : Program) : Prop :=
   (∀ n d, p.defs n = some d → acceptDef A n d = .ok ()) ∧
   ∀ i id, p.impls i = some id → ∀ m body, id.methods m = some body → acceptMethod A q i m id body = .ok ()
+
+/-- 全定義の範囲パラメータが空で全本体の閉じた由来の判定が成功するプログラムは、記号側を含む受理も成功する。 -/
+theorem Accepted.of_no_ranges {A : AcceptInput} {q : Check.Input} {p : Program}
+    (hr : ∀ n d, p.defs n = some d → d.rangeParams = [])
+    (hd : ∀ n d, p.defs n = some d → acceptFn A n d.coreParams.length d.body = .ok ())
+    (hm : ∀ i id, p.impls i = some id → ∀ m body, id.methods m = some body →
+      acceptMethod A q i m id body = .ok ()) : Accepted A q p :=
+  ⟨fun n d found => acceptDef_no_ranges_of_closed (hr n d found) (hd n d found), hm⟩
 
 def NamesComplete (q : Check.Input) (p : Program) : Prop :=
   (∀ n d, p.defs n = some d → n ∈ q.defs) ∧
@@ -72,8 +102,19 @@ theorem acceptProgram_sound {A q p} (hn : NamesComplete q p)
     simpa only [hb] using hm
 
 theorem Accepted.def_body {A q p} (h : Accepted A q p) {n d} (hd : p.defs n = some d) :
-    acceptBody A.ok (tableFor A (bodyKey n) d.body) A.limits (bodyKey n)
+    OpenScopeAccept.acceptBody A.openRules d.rangeParams d.coreParams A.ok
+      (tableFor A (bodyKey n) d.body) A.limits (bodyKey n)
       (entryScope d.coreParams.length) d.body = .ok () := h.1 n d hd
+
+/-- 空の範囲文脈で記号側の選択がないとき、受理から閉じた由来の判定の成功を得る。 -/
+theorem Accepted.def_body_no_ranges {A q p} (h : Accepted A q p) {n d}
+    (hd : p.defs n = some d) (hr : d.rangeParams = [])
+    (noneSelected : OpenScopeAccept.selections A.openRules d.coreParams (bodyKey n) d.body = []) :
+    ScopeAccept.acceptBody A.ok (tableFor A (bodyKey n) d.body) A.limits (bodyKey n)
+      (entryScope d.coreParams.length) d.body = .ok () := by
+  have hb := h.1 n d hd
+  rw [acceptDef_no_ranges A n d hr noneSelected] at hb
+  exact hb
 
 theorem Accepted.method_body {A q p} (h : Accepted A q p) {i id m body}
     (hi : p.impls i = some id) (hm : id.methods m = some body) :

@@ -38,6 +38,8 @@ inductive Rule where
   | E_RecordUpdateRefined
   | E_ConCall
   | E_CallDirect
+  | E_PredicateCall
+  | E_PredicateProject
   | E_CallExternal
   | E_Call
   | E_PipeConCall

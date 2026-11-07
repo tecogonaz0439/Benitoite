@@ -384,6 +384,27 @@ mutual
             valsTel q C Γ 2 Γ' Φ' path [.var 1] (Tel.shiftV 2 0 t) r e' h 0,
             subtype q Γ' Φ' h 0 r (a.shiftV 2 0), covers q (ε.shiftV 2 0) e', annotation q C Γ path a]
         | _, _ => false
+      | .E_PredicateProject => match e, children with
+        | .partialCall f@(.primName _ _ _ _) [] (.expr none 0 root (.expr none 1 source .nil)) ret eff, [gs] =>
+          match root.valueOf?, head q rows C Γ path f h 0 with
+          | some v, some (t, []) =>
+            allChecks [resultEq q ret eff a ε,
+              checkExprAt q rows Δ C Γ Φ R .other (child path 0) source (h.ty 1) Eff.empty gs,
+              valsTel q C Γ 0 Γ Φ path [v] t (h.ty 0) (h.eff 0) h 0,
+              subtype q Γ Φ h 0 (h.ty 0) ret, covers q eff (h.eff 0),
+              annotation q C Γ path ret]
+          | _, _ => false
+        | _, _ => false
+      | .E_PredicateCall => match e, children with
+        | .partialCall f@(.primName _ _ _ _) [] (.expr none 0 target .nil) ret eff, [] =>
+          match target.valueOf?, head q rows C Γ path f h 0 with
+          | some v, some (t, []) =>
+            allChecks [resultEq q ret eff a ε,
+              valsTel q C Γ 0 Γ Φ path [v] t (h.ty 0) (h.eff 0) h 0,
+              subtype q Γ Φ h 0 (h.ty 0) ret, covers q eff (h.eff 0),
+              annotation q C Γ path ret]
+          | _, _ => false
+        | _, _ => false
       | .E_PartialCallDirect => match e, children with
         | .partialCall f names args ret eff, [ga] => match head q rows C Γ path f h 0 with
           | some (t, ds) =>

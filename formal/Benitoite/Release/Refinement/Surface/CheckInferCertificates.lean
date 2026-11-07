@@ -1,4 +1,5 @@
 import Benitoite.Release.Refinement.Surface.CheckInput
+import Benitoite.Release.Refinement.Surface.CheckPropositional
 
 /-!
 # ソースと署名からの検査用証明書の構成
@@ -22,7 +23,10 @@ def logicProof (certs : Certificates) (Φ : List Pred) (path : List Nat) (index 
     | none =>
         match ((Pred.ofConjuncts Φ).conjuncts.zipIdx.find? (fun (p, _) => predEq p goal)) with
         | some (_, i) => { certificate := .use i, actions := [] }
-        | none => { certificate := .leaf ⟨goal, .closed, [], []⟩, actions := [] }
+        | none =>
+            let closed : ExchangeCertificate := { certificate := .leaf ⟨goal, .closed, [], []⟩, actions := [] }
+            if goal.closedTrue then closed
+            else (CheckPropositional.candidate Φ goal).getD closed
   { certificate := raw.certificate, actions := raw.actions, query := some ⟨path, Φ, goal⟩ }
 
 mutual
