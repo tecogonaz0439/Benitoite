@@ -190,15 +190,14 @@ def run (args : List String) : IO UInt32 := do
   let b ← IO.ofExcept (readBuiltins rawB)
   let bj ← IO.ofExcept (exchangeJson "builtins" rawB)
   let sj ← IO.ofExcept (exchangeJson "stdlib" (← readJson stdlibFile))
-  let expected := Benitoite.Exchange.sidecarVersion c.version
+  let expected := Benitoite.Exchange.sidecarVersion
   if b.version != expected || (← IO.ofExcept (sj.getObjValAs? Nat "version")) != expected then
     throw (IO.userError "exchange version pair mismatch")
-  if c.version >= 9 then
-    for i in c.inputs.filter (fun i => i.excluded.isEmpty) do
-      let some bi := b.inputs.find? (fun bi => bi.group == i.group && bi.name == i.name)
-        | throw (IO.userError "missing builtin input")
-      if i.dataTypes != bi.dataDecls.map DataEntry.info then
-        throw (IO.userError "corpus/builtin data type metadata mismatch")
+  for i in c.inputs.filter (fun i => i.excluded.isEmpty) do
+    let some bi := b.inputs.find? (fun bi => bi.group == i.group && bi.name == i.name)
+      | throw (IO.userError "missing builtin input")
+    if i.dataTypes != bi.dataDecls.map DataEntry.info then
+      throw (IO.userError "corpus/builtin data type metadata mismatch")
   let inputs ← IO.ofExcept ((corpus.getObjVal? "inputs").bind Json.getArr?)
   let bs ← IO.ofExcept ((bj.getObjVal? "inputs").bind Json.getArr?)
   let ss ← IO.ofExcept ((sj.getObjVal? "inputs").bind Json.getArr?)

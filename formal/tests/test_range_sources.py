@@ -134,12 +134,12 @@ def main():
         directory=args.exports/name
         corpus=read(directory/'named-programs-corpus.json')
         item=corpus['inputs'][0]
-        require(corpus['version']==15 and item['excluded']==[],name+': corpus')
+        require(corpus['version']==16 and item['excluded']==[],name+': corpus')
         require(len(item['definitions'])==case['definitions'], name+': all definitions')
         require(all('inScope' in d['scope'] or 'accessor' in d['scope'] for d in item['definitions']),name+': excluded body')
         # 候補の欄にだけ範囲が残る退行を、二入口に渡す同じ入力で拒否する。
         for entry in corpus['inputs']:
-            entry.pop('candidates',None)
+            entry['candidates']=[]
         clean=args.output/name/'corpus.json';clean.parent.mkdir(parents=True,exist_ok=True)
         clean.write_text(json.dumps(corpus)+'\n')
         n=non_top(corpus)
@@ -162,7 +162,7 @@ def main():
         if name=='user-spelling':
             require(actual['required']==[], 'same spelling recognized as standard Scope rule')
         builtin=directory/'named-programs-builtins.json';stdlib=directory/'named-programs-stdlib.json'
-        require(read(builtin)['version']==7 and read(stdlib)['version']==7,name+': table versions')
+        require(read(builtin)['version']==8 and read(stdlib)['version']==8,name+': table versions')
         report=run('desugarDiff',[clean],args.output/name/'desugar.json')
         require(report['golden']['definitions']==dict(matched=case['definitions'],mismatched=0,outside=0,excluded=0),name+': desugar definitions')
         require(report['nonTopRanges']==n,name+': desugar nonTopRanges')

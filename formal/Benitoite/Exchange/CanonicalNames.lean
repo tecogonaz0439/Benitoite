@@ -13,6 +13,8 @@ structure CanonicalNames where
   dataNames : List (String × String) := []
   constructorNames : List (String × String) := []
   opaqueNames : List (String × String) := []
+  /-- 真なら構成子の名前の欄だけを写し、primitive・効果・型の名前は保つ。 -/
+  constructorsOnly : Bool := false
 
 namespace CanonicalNames
 
@@ -217,8 +219,16 @@ private def objectContext (outer : String) (value : Json) : String :=
   else if (value.getObjVal? "ctors").isOk then "dataEntry"
   else outer
 
+private def constructorField (context field : String) : Bool :=
+  (field == "name" && ["con", "record", "recordUpdate", "conCall", "conValue", "nullCon", "partialCon",
+    "constructorEntry"].contains context) ||
+  field == "constructor" || field == "con" || field == "ok" || field == "err" ||
+    field == "someCon" || field == "noneCon"
+
 private def renameString (names : CanonicalNames) (context field value : String) : String :=
-  if field == "name" then
+  if names.constructorsOnly then
+    if constructorField context field then lookup names.constructorNames value else value
+  else if field == "name" then
     if ["data", "dataEntry", "summaries"].contains context then lookup names.dataNames value
     else if ["con", "record", "recordUpdate", "conCall", "conValue", "nullCon", "partialCon",
       "constructorEntry"].contains context then lookup names.constructorNames value
@@ -248,11 +258,11 @@ private partial def rewrite (names : CanonicalNames) (context : String) : Json �
         let rewritten := if field == "annotations" then child else match child with
           | .str text => .str (renameString names context field text)
           | .arr values =>
-              if field == "statePure" || field == "supplementalPrims" then
+              if !names.constructorsOnly && (field == "statePure" || field == "supplementalPrims") then
                 .arr (values.map fun value => match value with | .str name => .str (primitiveName name) | _ => value)
               else if field == "coverageView" then
                 .arr (values.map fun value => match value with | .str name => .str (lookup names.dataNames name) | _ => value)
-              else if field == "ops" && context == "effects" then
+              else if !names.constructorsOnly && field == "ops" && context == "effects" then
                 .arr (values.map fun value => match value with | .str name => .str (primitiveName name) | _ => rewrite names next value)
               else if field == "supplementalData" then
                 .arr (values.map fun value => match value with
@@ -272,6 +282,15 @@ private partial def rewrite (names : CanonicalNames) (context : String) : Json �
 
 /-- 同じ入力の元の識別子を、証拠から決まった名前へ写す。資源の番号と文字列の値は保つ。 -/
 def json (names : CanonicalNames) (value : Json) : Json := rewrite names "" value
+
+/-- 交換の Result の構成子の名前（`Ok`・`Error`）と、篩付きの表層の実例の表の名前（`Result.Ok`・`Result.Error`）を
+入れ替える対応。入れ替えなので、二度写すと元に戻る。 -/
+def resultConstructors : CanonicalNames :=
+  { constructorNames := [("Ok", "Result.Ok"), ("Result.Ok", "Ok"), ("Error", "Result.Error"),
+      ("Result.Error", "Error")], constructorsOnly := true }
+
+/-- 交換の文書の構成子の名前の欄だけを `resultConstructors` で写す（設計書 07-04「交換の形式の版」）。 -/
+def resultJson (value : Json) : Json := resultConstructors.json value
 
 end CanonicalNames
 end Benitoite.Exchange

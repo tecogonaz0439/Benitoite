@@ -1,5 +1,5 @@
 {
-  "version": 9,
+  "version": 16,
   "operators": [],
   "inputs": [
     {
@@ -12,7 +12,13 @@
           "isRecord": false,
           "extensible": true,
           "package": "author",
-          "builtin": "ordinary"
+          "builtin": "ordinary",
+          "constructors": [
+            [
+              "Only",
+              "Only"
+            ]
+          ]
         },
         {
           "name": "Rec",
@@ -20,7 +26,13 @@
           "isRecord": true,
           "extensible": true,
           "package": "author",
-          "builtin": "ordinary"
+          "builtin": "ordinary",
+          "constructors": [
+            [
+              "Rec",
+              "ParseError"
+            ]
+          ]
         },
         {
           "name": "Unused",
@@ -28,7 +40,13 @@
           "isRecord": false,
           "extensible": true,
           "package": "author",
-          "builtin": "ordinary"
+          "builtin": "ordinary",
+          "constructors": [
+            [
+              "Unused",
+              "Unused"
+            ]
+          ]
         },
         {
           "name": "Wrap",
@@ -36,7 +54,13 @@
           "isRecord": false,
           "extensible": false,
           "package": "author",
-          "builtin": "ordinary"
+          "builtin": "ordinary",
+          "constructors": [
+            [
+              "Wrap",
+              "Wrap"
+            ]
+          ]
         }
       ],
       "excluded": [],
@@ -65,7 +89,11 @@
                       "name": "Unit"
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "last": {
@@ -135,7 +163,11 @@
                       "name": "Unit"
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "letIn": {
@@ -190,7 +222,8 @@
                 "supers": []
               }
             }
-          }
+          },
+          "annotations": {}
         },
         {
           "name": "external (fn:1)",
@@ -216,7 +249,11 @@
                       "name": "Unit"
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "last": {
@@ -306,7 +343,11 @@
                       "name": "Unit"
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "letIn": {
@@ -381,7 +422,8 @@
                 "supers": []
               }
             }
-          }
+          },
+          "annotations": {}
         },
         {
           "name": "recordAuthor (fn:2)",
@@ -407,7 +449,11 @@
                       "name": "Unit"
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "last": {
@@ -479,7 +525,11 @@
                       "name": "Unit"
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "letIn": {
@@ -536,7 +586,8 @@
                 "supers": []
               }
             }
-          }
+          },
+          "annotations": {}
         },
         {
           "name": "recordExternal (fn:3)",
@@ -562,7 +613,11 @@
                       "name": "Unit"
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "last": {
@@ -654,7 +709,11 @@
                       "name": "Unit"
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "letIn": {
@@ -731,7 +790,8 @@
                 "supers": []
               }
             }
-          }
+          },
+          "annotations": {}
         },
         {
           "name": "externalBind (fn:4)",
@@ -757,7 +817,11 @@
                       "name": "Unit"
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "bindPat": {
@@ -819,7 +883,11 @@
                       "name": "Unit"
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "letIn": {
@@ -878,7 +946,8 @@
                 "supers": []
               }
             }
-          }
+          },
+          "annotations": {}
         },
         {
           "name": "method (fn:5)",
@@ -904,7 +973,11 @@
                       "name": "Unit"
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "last": {
@@ -994,7 +1067,11 @@
                       "name": "Unit"
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "letIn": {
@@ -1069,7 +1146,8 @@
                 "supers": []
               }
             }
-          }
+          },
+          "annotations": {}
         }
       ],
       "constants": [],
@@ -1102,10 +1180,15 @@
                     "name": "Unit"
                   }
                 },
-                "eff": []
+                "eff": [],
+                "effParams": [],
+                "tparamKinds": [],
+                "rangeParams": [],
+                "proofSteps": null
               }
             }
-          ]
+          ],
+          "argumentKind": "value"
         }
       ],
       "impls": [
@@ -1120,7 +1203,27 @@
             }
           }
         }
-      ]
+      ],
+      "aliases": [],
+      "records": [],
+      "testers": [],
+      "externals": [],
+      "logicCertificates": [],
+      "candidates": [],
+      "scopeAcceptance": {
+        "patterns": [],
+        "hosts": [],
+        "limits": {
+          "body": {
+            "operations": 1000000,
+            "items": 1000000
+          },
+          "whole": {
+            "operations": 10000000,
+            "items": 10000000
+          }
+        }
+      }
     }
   ],
   "annotations": {

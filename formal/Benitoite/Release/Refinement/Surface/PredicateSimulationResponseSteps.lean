@@ -488,10 +488,12 @@ private theorem active_release_constant {configuration : Check.BuiltinSource} {v
     ∃ name payload, value = .const (.opaque name payload) := by
   induction configuration with
   | custom _ | unrestrictedRanges _ => cases active
-  | standard program =>
+  | standard program B built =>
+    subst built
     obtain ⟨name,payload,same,_resource⟩ := response
     exact ⟨name,payload,same⟩
-  | predicates data entries =>
+  | predicates data entries B built =>
+    subst built
     rcases response with response | impossible
     · obtain ⟨name,payload,same,_resource⟩ := response
       exact ⟨name,payload,same⟩

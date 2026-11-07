@@ -108,7 +108,7 @@ def input_expected(state, phases=(), skipped=0, definitions=1):
 
 
 def corpus(profile, definitions):
-    return dict(kind='interval-corpus', version=1, surfaceVersion=14,
+    return dict(kind='interval-corpus', version=1, surfaceVersion=16,
                 traversalVersion=1, profile=profile, inputs=[input_of(d) for d in definitions])
 
 
@@ -223,7 +223,7 @@ def typed_normal(name, value):
 
 def call(declaration, args, labels, positions, primitive=False):
     return {'call': dict(callee={('primName' if primitive else 'funName'):
-                                dict(name=declaration, tys=[], effs=[])},
+                                dict(name=declaration, tys=[], effs=[], ranges=[])},
                          labels=labels, positions=positions, args=args)}
 
 
@@ -579,7 +579,7 @@ def exercise_profiles(runner, corpora):
             value = head.pop('primName')
             head['opName'] = dict(name=value['name'], tys=[])
         else:
-            head['primName']['tys' if kind == 'typed' else 'effs'] = [INTEGER] if kind == 'typed' else [{'name': {'value': 'Console.Write'}}]
+            head['primName']['tys' if kind == 'typed' else 'effs'] = [INTEGER] if kind == 'typed' else [{'name': {'value': 'Console.Write', 'ix': {'fixed': 'top'}}}]
         runner.invoke('profile-head-'+kind, 'analyze', changed, 2)
     # 幅付きの全域だけを返す別本体を、Integer64欄のbottomだけで非Topと数えない。
     ty = {'base': {'name': 'Integer8'}}
@@ -775,7 +775,7 @@ def exercise(directory, executable, source_dir=None, rust_dirs=(), vm_dir=None, 
     for mode in ('analyze', 'eval'):
         r = runner.invoke('empty-'+mode, mode, empty, 1, 'emptyComparison')
         assert r['matched'] and not r['accepted']
-    unknown = definition('unknown', last({'funName': dict(name='User.value', tys=[], effs=[])}),
+    unknown = definition('unknown', last({'funName': dict(name='User.value', tys=[], effs=[], ranges=[])}),
                          [INTEGER]*2, [], expected('top', (8, 3, 7), boolean_range=(True, True),
                          other=True, may_fail=True, coverage='unsupported'), {'excluded': 'notClosedOrFuel'})
     only_top = corpus('base', [unknown])

@@ -3,10 +3,12 @@
 import argparse
 import collections
 import json
+import re
 from pathlib import Path
 from records import HERE, ROOT, ENTRIES, closure, digest, module_graph, read_graph, write
 
 R = "Benitoite.Release.Refinement."
+GENERATED = re.compile(r"\.(eq_\d+|eq_def|_sparseCasesOn_\d+\.else_eq)$")
 
 
 def is_embedding(name, row):
@@ -65,14 +67,20 @@ def main():
 
     graphs = {"default": read_graph(args.default)}
     inputs = {"default": digest(args.default)}
+    regenerated_counts = {}
     for item in args.entry:
         key, filename = item.split("=", 1)
         assert key in ENTRIES and key not in graphs, key
         own = read_graph(Path(filename))
         graph = dict(graphs["default"])
+        regenerated = 0
         for name, row in own.items():
-            assert name not in graph or graph[name] == row, (key, name, "declaration differs")
+            if name in graph and graph[name] != row:
+                # 等式・場合分けの補題は読み込んだ環境ごとに作り直され、所属と依存が変わる。入口の環境の行を使う。
+                assert GENERATED.search(name), (key, name, "declaration differs")
+                regenerated += 1
             graph[name] = row
+        regenerated_counts[key] = regenerated
         graphs[key] = graph
         inputs[key] = digest(Path(filename))
     assert set(graphs) == {"default"} | set(ENTRIES), "7入口の個別の宣言グラフを指定する"
@@ -107,6 +115,7 @@ def main():
     record = {"deletion_modules": len(deleted), "kept_release": len(kept),
               "kept_surface": sorted(plan["keep_surface"]), "release_groups": [31, 19, 24],
               "proper_judgments": len(proper), "checks": findings, "inputs": inputs,
+              "regenerated_lemmas": regenerated_counts,
               "module_table": digest(HERE / "modules-for-spec.md")}
     write(HERE / "f09.json", record)
     print(json.dumps({"modules_deleted": len(deleted), "release_kept": len(kept),

@@ -467,7 +467,7 @@ metadata が none の項目、requirements/publicBoundary の空列、対応す�
 
 `Surface.Desugar` は脱糖を定め、`Surface.Theorems` の `desugar_typed` は性質 1 を述べる。表層のプログラムが整形式で型付き（`Program.WellFormed`・`Program.WellTyped`）、組み込みの表が値の束縛を移す仮定（`Builtins.ValueAssumptions`）を満たすなら、脱糖したプログラムは整形式で型付き、エフェクトの宣言が整合する。型の判断の前提は宣言の表のプログラムで述べ、同じ型の宣言を持つプログラムへの移送（`Surface.Transport` の `Program.SameTypes`）で脱糖したプログラムへ移す。関数の定義の依存列は表層の宣言の依存列と同じであり、篩付きの結果型と効果を保つ。脱糖は宣言した関数、フィールドを取り出す関数、構成子ごとの判定の関数（`testerDef`）を同じ優先順で生成する。判定の関数の結果は「結果が true であることと引数の構成子が一致すること」の篩を持ち（`testerPred`）、照合の経路の事実から型付く（`testerDef_wellTyped`）。判定の関数と同名の関数とフィールドを取り出す関数は整形式が拒む。宣言の対応 `Declarations.Realizes` は、対応する核の関数の `rkinds = fd.rangeParams` を要求する。脱糖は `FunDecl.rangeParams` を `Def.rkinds` へ写す。`desugarProgram_ranges` はこの種類列の一致を示す。表層と核の範囲パラメータがともに空なら `Declarations.realizes_no_ranges` が元の四条件との同値を示し、`desugarProgram_ranges_no_ranges` が空の列を示す。照合の宣言の前提は表層の型注釈から得て、処理済みの効果の一致には核の `handled`（`handledSelected` はその別名）を使い、脱糖の前後で同じ操作の表と節の操作名の列を読む。脱糖はソースの有効範囲を保つ（`Surface.ScopedProof`）。最小の main への適用例（`Surface.Examples` の `mainProgram_desugar_typed`）は合成表で前提を満たす。部分適用の脱糖 `holeLam` は、非依存のラムダを選ぶ条件（結果型と効果が、外側の型を穴の数だけずらした像であること）を命題で書く。`ValueRenamingFixed` の `Ty.renameFixed`・`Eff.renameFixed` は、型と効果が値の改名で変わらないことの有限の判定であり（篩の述語は構造の等号で比べる）、`shiftImage_pair_iff` はこの判定と選択の条件の同値を示す。`@[csimp]` の等号 `holeLam_eq_decide` により、実行する脱糖は同じ選択を判定で計算する `holeLamDecide` を使う。`holeLam` の定義と性質 1 の証明は判定に依存しない。
 
-`Surface.CheckOpen` は、宣言の範囲文脈の下で97規則と七判断を有限に検査し、`CheckOpenInfer` はソースから型・効果・案内を計算する。型・行・署名の形成と、七つの全具体化の葉は有限検査から導く。標準表と判定の内部行を加えた表では実際の構成の具体化保存を使い、任意の表では範囲閉性を検査する。`CheckBuiltinSource` は表を構成するデータであり、任意の表の保存を新たな信頼条件にしない。標準表全体の取り出しと、それに依存する検査関数は `noncomputable` として定義し、実入口の受理例は定義を簡約して確かめる。範囲写像は原子の一覧から計算し、その像の有限支持と数学的な写像との一致を示す。構成子の範囲閉性も実際に検査し、一覧の完全性と合わせて `OpenSurface` の前提を満たす。
+`Surface.CheckOpen` は、宣言の範囲文脈の下で97規則と七判断を有限に検査し、`CheckOpenInfer` はソースから型・効果・案内を計算する。型・行・署名の形成と、七つの全具体化の葉は有限検査から導く。標準表と判定の内部行を加えた表では実際の構成の具体化保存を使い、任意の表では範囲閉性を検査する。`CheckBuiltinSource` は表を構成するデータであり、任意の表の保存を新たな信頼条件にしない。標準表と判定の内部行を加えた表の構成元は、構成した表とその構成の等号を持つ（01-12「篩を含む表層の検査と受理」）。表の取り出しと、それを読む検査関数・実入口の準備は実行コードを持つ。範囲写像は原子の一覧から計算し、その像の有限支持と数学的な写像との一致を示す。構成子の範囲閉性も実際に検査し、一覧の完全性と合わせて `OpenSurface` の前提を満たす。
 
 `CheckDeclarations.checkDef` は範囲の種類列が空なら通常の本体、非空なら開いた本体を検査する。`checkDef_sound` は非空の場合にだけ構成子一覧の完全性を読み、空の場合は `checkDef_no_ranges_sound` が元の前提と結論を返す。プログラムの健全性は既存の名前の完全性からこの一覧の完全性を得る。推論の停止は `DefinitionStopped` に範囲の有無を反映し、`checkDef_no_ranges_unknown` と `programStopped_no_ranges` が元の停止の形を返す。実入口の例は関数間の範囲変数、host・endpoint の組込み、開いた path の別名注釈、標準の endpoint 組込みを受理する。小表の代表例では入力の全健全性と支持を構成し、公開の定義の健全性を適用する。
 
@@ -783,15 +783,15 @@ Http の項目を持つ実例は `Release.ModelHttp.assumptions` である。次
 
 【決定】七つの実行ファイルは篩付きの判断を読む。`desugarDiff` は交換の表層を篩付きの表層へ変換し（`Exchange.Convert`）、篩付きの表層の脱糖で核の項を作る。`coverageDiff`・`coverageProgramDiff` は篩付きの網羅性の判定（01-12「篩を読む網羅性と値の意味」）と反例の表示 `Release.Refinement.CoverageShow` を使い、燃料の記録も判定と同じ初期領域の問いで数える。`builtinCheck` は交換した組み込みの表を篩付きの核の組み込みの表として作って照合する。`surfaceCheck`・`surfaceCheckAll` は、`Exchange.CheckInput.prepare` で作った入力に、篩付きの表層の `CheckAccept.checkProgramAccepted` を、関数と実装を選ぶ検査では `CheckDeclarations.checkDef`・`checkImpl` と `CheckAccept.acceptDef`・`acceptMethod` を、全体の入口と同じ位置・view・証明の上限で適用する（01-12「篩を含む表層の検査と受理」）。会計の打ち切りによる unknown は、出力の誤りに `"kind": "unknown"` を付けて拒否と区別する。`intervalDiff` は、篩付きの表層から注釈を消した対象構文を解析と独立評価に渡す（「区間解析の独立交換の読者」）。規範の検査器・受理・脱糖はそのまま実行でき（01-12 の `Check.BuiltinSource`、前述の `holeLam` の判定）、入口は実行用の複製を持たない。各入口の `main` から型と値に現れる定数の閉包を辿ると、旧 `Benitoite.Surface` のモジュールは区間の入力の構文（`Surface.Syntax`・`Surface.FormatSpec`）だけであり、旧 `Benitoite.Release` の定数は篩付きの核と共有する構文・型・順序・組み込みの表の要約などの定義だけである。旧の型付け・実行・網羅性の判断と旧の主定理の名前、`Benitoite.Core` は現れない。理由: 処理系の出力の比較を、主定理と同じ判断に対して行うためである。
 
-【決定】交換の読者はcorpus 8・9・10・11・12・13・14・15、builtins・stdlib・coverage・coverage-programの各2・3・4・5・6・7を受理する（版15/7は後述の「交換の形式の版」）。`surfaceCheck`・`surfaceCheckAll` は型検査器の入口（`CheckAccept.checkProgramAccepted`。上の「証明する性質」）を使い、必須の判定の拒否を出現の鍵と `ScopeAccept.CoverFailure` の理由で報告する。`intervalDiff` は埋め込みの Surface 14 と 15 を受理する（「区間解析の独立交換の読者」）。名前・行の効果の列は集合として読み、型内部も同じ変換を行う。書き戻しの `fromEff` と比較の `canonicalJson` は、Lean側の原子の符号順で整列して重複を除く。比較では両辺の列自体を正規化し、支持の一覧で要素を切り捨てない。基本型の別名以外の型の形と、契約名・引数・節の並びは保持する。理由: Rustの列順へ内部の符号順を要求せず、表現の移行による順序だけの差分を避けながら、効果の要素の違いを検出するためである。
+【決定】交換の読者は corpus 16 と、builtins・stdlib・coverage・coverage-program の各 8 だけを受理し、ほかの版は再生成を求めて拒否する（`Exchange/Version.lean` の `exchangeJson`。版の内容は後述の「交換の形式の版」）。`surfaceCheck`・`surfaceCheckAll` は型検査器の入口（`CheckAccept.checkProgramAccepted`。上の「証明する性質」）を使い、必須の判定の拒否を出現の鍵と `ScopeAccept.CoverFailure` の理由で報告する。`intervalDiff` は埋め込みの Surface 16 だけを受理する（「区間解析の独立交換の読者」）。名前・行の効果の列は集合として読み、型内部も同じ変換を行う。書き戻しの `fromEff` と比較の `canonicalJson` は、Lean側の原子の符号順で整列して重複を除く。比較では両辺の列自体を正規化し、支持の一覧で要素を切り捨てない。基本型の別名以外の型の形と、契約名・引数・節の並びは保持する。理由: Rustの列順へ内部の符号順を要求せず、表現の移行による順序だけの差分を避けながら、効果の要素の違いを検出するためである。
 
 【方針】抽象機械の遷移は、関係として定義するとともに、一歩の遷移を計算する関数としても定義し、両者が一致することを証明する。関数の形は、小さなコア計算のプログラムを Lean の中で実行し、01-12 の規則の書き写しの誤りを証明の前に見つけるために使う。段階 B1 の関数は、新しい場所と応答の選び方を固定するので、型が付いた状態について、関数が返す遷移が関係の遷移であること（健全性）だけを証明する。
 
-六つの入口はcorpus 15と型表・プログラム網羅性7、corpus 14と型表・網羅性6、corpus 13と型表・網羅性5、corpus 11・12と型表・網羅性4を受け付ける。corpus 12の構築器は版13での再生成を求めて拒否する。書式付き補間はcorpus 14/sidecar 6で受理し、それ以前の版の深い位置へ混ぜた入力は再生成を求めて拒否する。corpus 10と型表3も引き続き受け付ける。新しい try の処置のない corpus 9 と型表 3、属性のない閉じた旧形式 8/2/2 も互換入力として受け付ける。同じ検査へ渡す corpus と型表の版の組を揃える。新版の必須欄、契約名・ラベル・位置の欠落を自動補完しない。旧版に属性・view・新しい型表示の欄を混ぜた入力は、空や false の指定でも拒否する。網羅性 2 の `RawDecl.typeName` は旧来からある欄として保つ。現在の Rust の通常の書き出しは corpus 15・型表 7・プログラム網羅性 7 である。区間の corpus の Surface は 15 とし、埋め込みの表層に範囲の欄を書く。通常の各入力は `scopeAcceptance` の `patterns`・`hosts`・`limits` と、組み込みの呼び出しの `ranges` を書く。独立した Coverage の入力は版4を保つ。辞書付き操作の実ソースの局所出力を六入口で比較し、全件の比較は改造の検査の担当と時期に従う。型表の dataDecls と corpus の dataTypes は補充した標準型も含め同じ宣言順から作る。所属は宣言側のモジュールから求め、builtin の印は解決済みの標準ライブラリの BindingId から出す。`coverage_export` は既存の閉じた乱択 1 万件を保持し、同じ型・パターンに拡張指定と作者側／外部側の view を加えた網羅性 4 の独立入力も 1 万件出力する。data・record・入れ子・束縛・ガード・選ばれない選択肢の境界入力を併せ、`check-formal.sh` が `future-corpus.json` を `coverageDiff` で比較する。対象外の理由も照合する。段階 A の `Core` は保持する。
+六つの入口は corpus 16 と型表・プログラム網羅性 8 の組を受け付け、同じ検査へ渡す corpus と型表の版の組を揃える。新版の必須欄、契約名・ラベル・位置の欠落を自動補完しない。Rust の通常の書き出しは corpus 16・型表 8・プログラム網羅性 8 であり、独立した Coverage の入力も版 8 で書く。区間の corpus の Surface は 16 とし、埋め込みの表層に範囲の欄を書く。通常の各入力は `scopeAcceptance` の `patterns`・`hosts`・`limits` と、組み込みの呼び出しの `ranges` を書く。独立した Coverage の入力は版4を保つ。辞書付き操作の実ソースの局所出力を六入口で比較し、全件の比較は改造の検査の担当と時期に従う。型表の dataDecls と corpus の dataTypes は補充した標準型も含め同じ宣言順から作る。所属は宣言側のモジュールから求め、builtin の印は解決済みの標準ライブラリの BindingId から出す。`coverage_export` は既存の閉じた乱択 1 万件を保持し、同じ型・パターンに拡張指定と作者側／外部側の view を加えた独立入力も 1 万件出力する。data・record・入れ子・束縛・ガード・選ばれない選択肢の境界入力を併せ、`check-formal.sh` が `future-corpus.json` を `coverageDiff` で比較する。対象外の理由も照合する。
 
 【決定】corpus 13の表層構築器はbuilderBind（kind・rest）とbuilderOp（op・index・args・kind）を持つ。kindはString/Listの要素型/Bytesを区別し、indexは通常局所名・継続・辞書と共有する番号である。専用コアのbuilderLetとbuilderOp、通常値と区別するbound/locのLocalRefも交換する。新タグの必須欄の欠落、曖昧なタグ、kindの余分な欄を拒否する。旧corpusとsidecarへ新しい専用項を混ぜた場合も、未知の入れ子を含め拒否する。refs/newRef/getRef/setRefは新版でも拒否し、版12の構築器は版13での再生成を求める。構築器なしの版12の扱いは保つ。batch2の拒否と既定補完はcorpus 11未満・sidecar 4未満だけに行う。sidecarの対応はcorpus 8→2、9/10→3、11/12→4、13→5とする。定数の本体ではbuilderBindとbuilderOpを拒否する。理由: 旧State付き構築器を新規則へ黙って読み替えず、構築器なしの旧入力は同じ規則で検査するためである。
 
-Rustの現在の書き出しはcorpus 15・sidecar 7であり、型検査済みの専用宣言・操作からkind・通常値と共有する局所番号と専用コアを保持し、旧refsを出力しない。test_batch3_exchange.pyは版12の再生成の拒否理由と構築器なしの11定義の意味を確認し、旧corpusを拒否入力として保持する。19構築器定義の意味の受理/拒否は、版13/5のtest_batch4_exchange.pyとbatch4-exchangeへ移した。構築器を含まない旧形式は引き続き同じ規則で読む。
+Rustの現在の書き出しはcorpus 16・sidecar 8であり、型検査済みの専用宣言・操作からkind・通常値と共有する局所番号と専用コアを保持し、旧refsを出力しない。test_batch3_exchange.pyは版12の再生成の拒否理由と構築器なしの11定義の意味を確認し、旧corpusを拒否入力として保持する。19構築器定義の意味の受理/拒否は、test_batch4_exchange.pyとbatch4-exchangeへ移した。
 
 【決定】交換13/5の独立入力は45定義・通常網羅性6件・プログラム網羅性3件を六入口へ渡す。三種類の構築器と共有番号、blockの値とreturn、穴と固定式のソース順、有界Integerの両端と全域、Logの通常宣言・送り直し・外側Console.Writeと展開済み位置を厳密な期待コア/判定と比較する。共通のexchangeJsonは、比較専用の期待コアや未使用の定数も含め、Const.integerの値を全版でmin64〜max64に制限する。Integer64の型名は型の入れ子とsidecarでもIntegerへ正規化する。coverage固有の整数・区間端点はreadIntで検査する。理由: 型付き表層へ変換されない期待値や未使用の本体を、範囲検査の抜け道にしないためである。
 
@@ -831,19 +831,19 @@ Rust のソース照合の判定は、本体の所属と型表の `@extensible` 
 
 ### 交換の形式の版
 
-【決定】corpus 15・sidecar 7 は範囲を交換する（`formal/Benitoite/Exchange/Range.lean`）。名前の原子は `{"name":{"value":l,"ix":I}}`、不透明型は `{"opaque":{"name":o,"ix":I}}` とし、範囲の位置 I は `{"fixed":R}` か `{"rvar":i}` である。範囲 R は文字列 `"top"` か、種類の名前を鍵に持つ一つの欄の対象（`path` の `exact`・`tree`、`host` の `name`（`exact`・`one`・`many`）と `ip`（`exact`・`cidr`）、`endpoint` の `host` と `ports` の `lo`・`hi`）である。項 `prim` と表層 `primName` は範囲の列 `ranges` を持つ。型表の組み込みの項目は範囲の変数の種類 `rkinds` と IO の形 `shape` を、型表の入力は表のデータ `effKinds`・`valKinds`・`admitsR`・`valContents` を持つ。`valContents` の項目は名前 `name` と保持する要求の型 `content`（交換の型。`Http.RequestIn` には `Http.ClientRequest` のレコードの型 `{"data":{"name":…,"args":[]}}`）であり、Release の型へ変換できない内容は拒否する（`Exchange/Builtins.lean` の `ContentEntry`。型の名前の文字列だけを持つ内容は読まない）。`admitsR` の規則は、種類と個数の合う全ての列を許す `any` と、j 番目の範囲が i 番目の範囲を覆う列だけを許す `covers`（明示拡大）であり、表にない項目は Top の列だけを許す。`rvar` は型表の署名にだけ置け、corpus と他の sidecar では拒否する。新版の欄を欠いた入力と、余りの欄を持つ範囲は拒否し、Top で補わない。族の幅を超えるアドレスと 65535 を超えるポートも誤りにする。理由: 旧形式を暗黙に狭い範囲として読まず、範囲の列と原子を黙って捨てずに比較の両辺へ渡すためである。
+【決定】corpus 16・sidecar 8 は範囲を交換する（`formal/Benitoite/Exchange/Range.lean`）。名前の原子は `{"name":{"value":l,"ix":I}}`、不透明型は `{"opaque":{"name":o,"ix":I}}` とし、範囲の位置 I は `{"fixed":R}` か `{"rvar":i}` である。範囲 R は文字列 `"top"` か、種類の名前を鍵に持つ一つの欄の対象（`path` の `exact`・`tree`、`host` の `name`（`exact`・`one`・`many`）と `ip`（`exact`・`cidr`）、`endpoint` の `host` と `ports` の `lo`・`hi`）である。項 `prim` と表層 `primName` は範囲の列 `ranges` を持つ。型表の組み込みの項目は範囲の変数の種類 `rkinds` と IO の形 `shape` を、型表の入力は表のデータ `effKinds`・`valKinds`・`admitsR`・`valContents` を持つ。`valContents` の項目は名前 `name` と保持する要求の型 `content`（交換の型。`Http.RequestIn` には `Http.ClientRequest` のレコードの型 `{"data":{"name":…,"args":[]}}`）であり、Release の型へ変換できない内容は拒否する（`Exchange/Builtins.lean` の `ContentEntry`。型の名前の文字列だけを持つ内容は読まない）。`admitsR` の規則は、種類と個数の合う全ての列を許す `any` と、j 番目の範囲が i 番目の範囲を覆う列だけを許す `covers`（明示拡大）であり、表にない項目は Top の列だけを許す。`rvar` は型表の署名にだけ置け、corpus と他の sidecar では拒否する。新版の欄を欠いた入力と、余りの欄を持つ範囲は拒否し、Top で補わない。族の幅を超えるアドレスと 65535 を超えるポートも誤りにする。理由: 旧形式を暗黙に狭い範囲として読まず、範囲の列と原子を黙って捨てずに比較の両辺へ渡すためである。
 
-旧版（corpus 14 以前・sidecar 6 以前）に範囲の欄を置いた入力は拒否する。旧版の名前の原子と不透明型は明示の Top の範囲の位置を、組み込みの呼び出しは空の範囲の列を加えてから読み（`Exchange/Version.lean` の `legacyRanges` と `Exchange/Range.lean` の `legacyRangeNode`）、型表の項目は範囲の変数のない対象なしの形、表のデータは空とする（`Builtins` の既定の値。旧の像）。一つの節点の変換が Top の構築関数に写ることは `legacy_name_atom_top`・`legacy_opaque_top`・`legacy_atom_toRelease`・`legacy_opaque_toRelease` で示す。範囲の書き出しと読み込みの往復は `decodeRange_encodeRange`・`decodeIx_encodeIx` で示す。JSON の全体を辿る変換は `partial def` であり、証明しない。
+範囲の書き出しと読み込みの往復は `decodeRange_encodeRange`・`decodeIx_encodeIx` で示す。JSON の全体を辿る変換は `partial def` であり、証明しない。
 
 書き出し（`fromEff`）は、名前と行の原子を一覧の原子の符号順に書く。一覧が効果の原子を全て含めば、書いた列を読むと元の効果に戻る（`readAtoms_writeAtoms`・`fromEffNames_ok`）。候補の中に一覧にない原子があれば誤りにする（`fromEffNames_error_of_unlisted`）。原子が全て Top の効果は、読んで書き戻すと同じ効果を表し、Top の原子だけを持つ（`top_eff_roundtrip`）。Release の効果は原子の述語なので、誤りにする判定は候補に相対的である。検査器の入力の準備（`Exchange.CheckInput.prepare`）は、交換の原子の一覧を、入力・型表（署名の範囲の変数の原子を含む）・標準ライブラリの宣言の原子と、呼び出しの範囲の列で署名の原子を具体化した原子（`instAtoms`）から作り、検査器の原子の集合 `q.atoms` をその像にする。この経路の書き出し `Prepared.writeEffNames` は `q.atoms` を候補にし、検査器の不変条件 `AtomsIn q.atoms` を満たす効果を必ず書き出して、黙って落とす原子がない（`Prepared.writeEffNames_complete`）。脱糖の入口 `desugarDiff` は型表を読まず、corpus の原子の一覧を書き出しの一覧と候補の両方に使うので、この版の候補では何も拒否しない。そこで書く効果の原子が一覧にあることは、入力から読んだ効果と一覧の上の代入だけを書くことに依り、Lean では証明しない。検査済みの対象の値と要求の値は交換形式に現れず、書き出しは `unsupported` にする。
 
-【決定】corpus 15・sidecar 7 は、観測・拒否の理由・必須の判定の入力も交換する（`formal/Benitoite/Exchange/Observe.lean`）。観測は IO の事象が作用した対象（`{"path":語}`、`{"host":{"name":語}|{"ip":A}}`、`{"endpoint":{"host":…,"port":n}}`）の配列であり、名前の原子の閉じた範囲の列が観測を許す判定 `observationAllowed` は `Eff.Allows` を与える（`observationAllowed_sound`）。拒否の理由は `ScopeAccept.CoverFailure` に対応する名前の文字列 `"notCovered"`・`"atomicCoverOnly"`・`"unknownSource"`・`"budgetExceeded"` であり、入口の拒否は出現の鍵（定義の名前と先行順の番号）と理由の組である。corpus 15 の各入力は必須の判定の入力 `scopeAcceptance`（リテラルのパスのパターンとホストのパターンを処理系の解析器が読んだ結果の表 `patterns`・`hosts`、本体と全体の上限 `limits`）を必須とする。文字列の解析は形式化の外側であり、Lean はこの表を信頼して、本番の実例の表の δ による規則の項目（`ScopeSound.productionRules`。健全性に条件はない）を作る。旧版の入力は `scopeAcceptance` を置かせず、規則のない受理の入力（旧の像）で読む。
+【決定】corpus 16・sidecar 8 は、観測・拒否の理由・必須の判定の入力も交換する（`formal/Benitoite/Exchange/Observe.lean`）。観測は IO の事象が作用した対象（`{"path":語}`、`{"host":{"name":語}|{"ip":A}}`、`{"endpoint":{"host":…,"port":n}}`）の配列であり、名前の原子の閉じた範囲の列が観測を許す判定 `observationAllowed` は `Eff.Allows` を与える（`observationAllowed_sound`）。拒否の理由は `ScopeAccept.CoverFailure` に対応する名前の文字列 `"notCovered"`・`"atomicCoverOnly"`・`"unknownSource"`・`"budgetExceeded"` であり、入口の拒否は出現の鍵（定義の名前と先行順の番号）と理由の組である。corpus 15 の各入力は必須の判定の入力 `scopeAcceptance`（リテラルのパスのパターンとホストのパターンを処理系の解析器が読んだ結果の表 `patterns`・`hosts`、本体と全体の上限 `limits`）を必須とする。文字列の解析は形式化の外側であり、Lean はこの表を信頼して、本番の実例の表の δ による規則の項目（`ScopeSound.productionRules`。健全性に条件はない）を作る。旧版の入力は `scopeAcceptance` を置かせず、規則のない受理の入力（旧の像）で読む。
 
 【決定】新版の入力は、全ての範囲の位置の閉じた範囲と範囲の列の範囲、必須の判定の入力のパターンが、整形式（`Range.WF`）で正規形（`Range.Canonical`）であることを確かめる。プログラムと表の型の範囲の位置は範囲の変数を持たず、型表の署名の範囲の変数の番号はその項目の `rkinds` の個数より小さく、`admitsR` の `covers` の番号も同じ個数より小さい（`Exchange/Version.lean` の `validateRangeInput`）。一つの節点の検査 `checkRangeInput`・`checkIxInput`・`checkAdmitsRuleInput` の健全性を示し（`checkRangeInput_sound`・`checkIxInput_sound`・`checkIxInput_zero`・`checkAdmitsRuleInput_sound`）、JSON の全体を辿る部分は証明しない。最小のポートが最大より大きいエンドポイントの範囲は整形式でないので、範囲の位置・範囲の列のどちらに書いても拒否する（`Exchange.ObserveExamples` と `formal/tests/test_range_exchange.py` の例）。
 
 【決定】脱糖の入口 `desugarDiff` の書き出しの候補は、型表から作らず、corpus の原子の一覧のままとする。Rust の書き出しは、入力に現れる原子に加え、署名の固定の原子と、呼び出しの範囲の列で具体化した署名の原子を corpus の `candidates` に添える。この欄は閉じた原子だけを持ち、署名の範囲の変数を corpus へ移さない。`candidates` は Lean の交換の入力の必須欄ではなく、`desugarDiff` が corpus 全体から原子を集める対象に入るだけで、脱糖の比較結果に影響しない。理由: 脱糖の比較は corpus の表層と期待のコアだけを読み、型表を入口の引数に加えると Rust の書き出しと比較の手順の引数が変わる。一方、脱糖は新しい原子を作らず、範囲を項の範囲の列にだけ書くので、候補を型表の原子まで広げても書き出しの結果は変わらない。具体化した範囲の原子を書く経路（検査器の入力）は、型表から作る候補 `q.atoms` を使う（`Prepared.writeEffNames_complete`）。
 
-Rust の共通の書き出しは、署名の範囲変数・効果の原子・不透明型・表データを corpus 15・sidecar 7 へ切り替えている。標準の `Result.Ok` の交換名は、必須判定の読者の成功腕の名前と同じ `Ok` にする。認定には解決済みの標準の束縛を使い、同名の利用者構成子と区別する。署名の範囲変数は `rkinds` の個数で検査し、項には書かない。本番の `valContents` は実 `Http.ClientRequest` のレコードの型を、署名と `dataDecls` にある同じ `data:N` の名前で書く。Lean の読者は内容の型を Release の型へ変換するだけで、宣言の存在と二つの署名の型との一致は検査しないため、Rust の通常の書き出しを独立した期待値で照合する。区間の corpus の Surface は 15 とし、埋め込みの表層に範囲の欄を書く。除外を含む通常の各入力は、処理系の解析器が読んだ `patterns`・`hosts` と、本体と全体の局所解析の上限四値を持つ `scopeAcceptance` を書き、呼び出しの範囲の列も書く。番号付けのイベント上限は `limits` に含めない。`builtinCheck`・`desugarDiff`・`surfaceCheckAll`・`surfaceCheck` に渡す通常ソースの短い書き出しの局所照合は、`scripts/check-formal.sh` の全比較と区別する。局所照合の成功を全比較の成功として引用しない。範囲の Lean の側の独立入力（`formal/tests/test_range_exchange.py`）は、corpus 15・sidecar 7 の手書きの入力を六入口と `intervalDiff` へ渡し、原子の種類別（パス・endpoint のホスト名と IP）、Top でない範囲、拒否と理由（`notCovered`・`unknownSource`・`budgetExceeded`）、予算の停止による由来の忘却、被覆だけの効果の上限の受理、入力の検査の拒否を確かめる。全て Top だけの入力や空の入力の一致を成功に数えない。`desugarDiff` と `surfaceCheckAll` の報告は、入力の Top でない範囲の数（`nonTopRanges`。`Exchange/Version.lean` の `countNonTopRanges`）を書き、範囲を全て Top にした入力では 0 と報告する。`atomicCoverOnly` は効果の上限の原子の受理（`acceptAtom`）の理由であり、型検査器の入口は効果の上限の拒否を型付けの誤りとして報告するので、この独立入力には現れない（`Surface/ScopeAcceptExamples.lean` で確かめる）。Rust の全関係定義の交換の比較は、独立入力・拒否入力・区間解析と実 VM の比較とともに `scripts/check-formal.sh` へ接続している。
+Rust の共通の書き出しは、署名の範囲変数・効果の原子・不透明型・表データを corpus 16・sidecar 8 で書く。標準の `Result.Ok` の交換名は `Ok` とする。Lean の読者は、検査した交換の文書（独立の網羅性を除く）と区間の交換の構成子の名前の欄で、`Ok`・`Error` と `Result.Ok`・`Result.Error` を入れ替えてから読む（`Exchange.CanonicalNames.resultJson`）。このため、篩付きの表層の構成子の名前は実例の表の δ と同じであり、必須判定の受理の入力の成功腕の名前も `Result.Ok` である（`Exchange.Observe` の `acceptInput`）。Rust の書き出しと Lean の結果の比較は同じ入れ替えをした両辺で行う。認定には解決済みの標準の束縛を使い、同名の利用者構成子と区別する。署名の範囲変数は `rkinds` の個数で検査し、項には書かない。本番の `valContents` は実 `Http.ClientRequest` のレコードの型を、署名と `dataDecls` にある同じ `data:N` の名前で書く。Lean の読者は内容の型を Release の型へ変換するだけで、宣言の存在と二つの署名の型との一致は検査しないため、Rust の通常の書き出しを独立した期待値で照合する。区間の corpus の Surface は 16 とし、埋め込みの表層に範囲の欄を書く。除外を含む通常の各入力は、処理系の解析器が読んだ `patterns`・`hosts` と、本体と全体の局所解析の上限四値を持つ `scopeAcceptance` を書き、呼び出しの範囲の列も書く。番号付けのイベント上限は `limits` に含めない。`builtinCheck`・`desugarDiff`・`surfaceCheckAll`・`surfaceCheck` に渡す通常ソースの短い書き出しの局所照合は、`scripts/check-formal.sh` の全比較と区別する。局所照合の成功を全比較の成功として引用しない。範囲の Lean の側の独立入力（`formal/tests/test_range_exchange.py`）は、corpus 16・sidecar 8 の手書きの入力を六入口と `intervalDiff` へ渡し、原子の種類別（パス・endpoint のホスト名と IP）、Top でない範囲、拒否と理由（`notCovered`・`unknownSource`・`budgetExceeded`）、予算の停止による由来の忘却、被覆だけの効果の上限の受理、入力の検査の拒否を確かめる。全て Top だけの入力や空の入力の一致を成功に数えない。`desugarDiff` と `surfaceCheckAll` の報告は、入力の Top でない範囲の数（`nonTopRanges`。`Exchange/Version.lean` の `countNonTopRanges`）を書き、範囲を全て Top にした入力では 0 と報告する。`atomicCoverOnly` は効果の上限の原子の受理（`acceptAtom`）の理由であり、型検査器の入口は効果の上限の拒否を型付けの誤りとして報告するので、この独立入力には現れない（`Surface/ScopeAcceptExamples.lean` で確かめる）。Rust の全関係定義の交換の比較は、独立入力・拒否入力・区間解析と実 VM の比較とともに `scripts/check-formal.sh` へ接続している。
 
 【決定】範囲の独立実ソースは `crates/benitoite/tests/desugar_export/range-sources/` に、予算の実ソースは同じ階層の `range-budget/` に置く。入力と期待値を比較前に固定し、成功・拒否、全 Top の互換入力と非 Top の入力、型表と本体の全関係定義を一覧に載せる。`formal/tests/test_range_sources.py`・`test_range_rejections.py`・`test_range_budget_sources.py`・`test_range_known_differences.py` が、既存の六入口と独立交換へ接続する。範囲の群では、`candidates` を除いた同じ入力を `desugarDiff` と `surfaceCheckAll` へ渡し、両方の `nonTopRanges` がソースから手で数えた件数と一致すること、対象外と深さ除外がないこと、全定義の一致または指定した拒否を要求する。元から全 Top の互換群は非 Top の成功件数へ加えない。プログラム網羅性が空の群は空であることを記録し、非空の独立網羅性の一致と区別する。
 
@@ -1355,6 +1355,122 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 | AtPatternText | 「篩を含む状態の型付け」。At の pattern の文字列の解析と、その誤りの分類を扱う |
 | MappedHostPatterns・PathBaseDifference | 「操作の対象の範囲の領域と被覆」。IPv4 射影の IPv6 だけを表す host の条件の判定と、At の pattern と対象の起点の違いを、範囲の所属・型付け・網羅性を変えない判定として扱う |
 | HostRangeParams | 同節。種類 host の範囲の変数の具体化の許容・所属・被覆・置換を扱う |
+
+【決定】規範の判断と主定理は篩付きの核と表層に置く。既定の import に残す旧 `Release` と旧 `Surface` のモジュールは、下の埋め込みの定義域・共有の定義とその依存・全宣言の依存の三表と、区間の入力の構文の表のものに限る。最初の表は、篩付きの表層と交換・区間をつなぐモジュールである。表のモジュール名は `Benitoite.` の下を表す。
+
+篩付きの表層と区間の接続のモジュールは次のとおりである。
+
+| モジュール | 役割 | 読者 |
+|---|---|---|
+| `Exchange.CanonicalNames` | 同じ交換入力の標準ライブラリの属性・型と構成子の対応・公開宣言名の有限表から識別名を定める。文字列の値と型引数付きの不透明型の区別を保つ。Result の構成子の名前を篩付きの表層の名前と入れ替える（`resultJson`） | `Exchange.CheckInput`、`Exchange.Version`、`Interval.Exchange` |
+| `Release.Refinement.Surface.SourceRename` | 表層の値の参照と型注釈を同じ改名で移す。内側の束縛を保護する。 | `Exchange.Convert`、`Interval.SurfaceSyntax`、`Interval.SurfaceCode` |
+| `Interval.SurfaceSyntax` | 篩と範囲の注釈を消して区間の構文へ写し、照合対象の追加スロットを除く。旧構文を篩付き表層へ持ち上げる。 | `Interval.Exchange`、`Interval.SurfaceCode` |
+| `Interval.SurfaceCode` | 区間の構文を篩付き表層へ持ち上げ、篩付き核の脱糖結果を作る。照合の腕の束縛を揃える。 | `Release.Refinement.IntervalConnection`、`FirstFailure`、`IntervalReport`、接続の具体例 |
+| `Interval.ReportFlow` | 実解析の報告から正常値と失敗成分を読み、記録されていない return の値を未知とする。三成分の所属の証拠を添える。 | `Release.Refinement.IntervalReport` |
+| `Release.Refinement.IntervalReport` | 実報告に条件付きの新核の接続を添える。同じ入力の解析・独立評価・型付き有限実行を結び、return の mark と同じ trace の失敗を扱う。 | `Interval.Exchange` と具体の正常値・return の適用 |
+
+
+旧 `Release` の判断は埋め込みの定義域であり、篩付き核の言明を旧判断の言明へ戻す規範ではない。保持する74モジュールは、埋め込みの定義域の31、共有の定義とその依存の19、保持するモジュールの全宣言を閉じる24からなる。以下の三表は重ならない。
+
+埋め込みの定義域（31）は次のとおりである。
+
+`Release.Refinement.LegacyProgramTyping` と `LegacyStateTyping` は、プログラム・定義・impl・ストア・継続・状態の判断を篩付き核へ埋め込む。
+
+| モジュール | 役割 | 読者 |
+|---|---|---|
+| `Release.Atom` | 埋め込みの定義域。型に依存しないエフェクトの原子 | `Release.Refinement.LegacyProgramTyping`・`LegacyStateTyping` の埋め込みと、その依存 |
+| `Release.BuilderContents` | 埋め込みの定義域。専用セルの内容と論理上限 | `Release.Refinement.LegacyProgramTyping`・`LegacyStateTyping` の埋め込みと、その依存 |
+| `Release.Effect` | 埋め込みの定義域。型を保持するエフェクトの操作 | `Release.Refinement.LegacyProgramTyping`・`LegacyStateTyping` の埋め込みと、その依存 |
+| `Release.EffectCoverDef` | 埋め込みの定義域。原子と効果の被覆の定義 | `Release.Refinement.LegacyProgramTyping`・`LegacyStateTyping` の埋め込みと、その依存 |
+| `Release.Lemmas.Canonical` | 埋め込みの定義域。閉じた値の形と、パターンの照合（契約名を持つコア） | `Release.Refinement.LegacyProgramTyping`・`LegacyStateTyping` の埋め込みと、その依存 |
+| `Release.Lemmas.Inversion` | 埋め込みの定義域。型付けの逆転の補題（契約名を持つコア） | `Release.Refinement.LegacyProgramTyping`・`LegacyStateTyping` の埋め込みと、その依存 |
+| `Release.LocalRef` | 埋め込みの定義域。局所参照の番号と置換 | `Release.Refinement.LegacyProgramTyping`・`LegacyStateTyping` の埋め込みと、その依存 |
+| `Release.NoFail` | 埋め込みの定義域。署名由来の NoFail 文脈と行の代入 | `Release.Refinement.LegacyProgramTyping`・`LegacyStateTyping` の埋め込みと、その依存 |
+| `Release.Normalize` | 埋め込みの定義域。型とエフェクトの正規形 | `Release.Refinement.LegacyProgramTyping`・`LegacyStateTyping` の埋め込みと、その依存 |
+| `Release.Order.Atoms` | 埋め込みの定義域。名前と行の関数の固定順序 | `Release.Refinement.LegacyProgramTyping`・`LegacyStateTyping` の埋め込みと、その依存 |
+| `Release.Order.Labels` | 埋め込みの定義域。型の木が持つラベル | `Release.Refinement.LegacyProgramTyping`・`LegacyStateTyping` の埋め込みと、その依存 |
+| `Release.Order.Range` | 埋め込みの定義域。範囲と範囲の位置の符号と固定順序 | `Release.Refinement.LegacyProgramTyping`・`LegacyStateTyping` の埋め込みと、その依存 |
+| `Release.Order.SortUnique` | 埋め込みの定義域。全順序による整列と重複除去 | `Release.Refinement.LegacyProgramTyping`・`LegacyStateTyping` の埋め込みと、その依存 |
+| `Release.Order.Tree` | 埋め込みの定義域。ラベル付きの多分木の辞書式順序 | `Release.Refinement.LegacyProgramTyping`・`LegacyStateTyping` の埋め込みと、その依存 |
+| `Release.Order.Types` | 埋め込みの定義域。共有する型の辞書式順序 | `Release.Refinement.LegacyProgramTyping`・`LegacyStateTyping` の埋め込みと、その依存 |
+| `Release.RangeInst` | 埋め込みの定義域。署名の範囲の変数の具体化と範囲の具体化の許容 | `Release.Refinement.LegacyProgramTyping`・`LegacyStateTyping` の埋め込みと、その依存 |
+| `Release.RangeInstDef` | 埋め込みの定義域。署名の範囲の変数の具体化の定義 | `Release.Refinement.LegacyProgramTyping`・`LegacyStateTyping` の埋め込みと、その依存 |
+| `Release.RangeWF` | 埋め込みの定義域。範囲の変数の整形式性と旧の定義との対応 | `Release.Refinement.LegacyProgramTyping`・`LegacyStateTyping` の埋め込みと、その依存 |
+| `Release.Semantics` | 埋め込みの定義域。実行の規則 | `Release.Refinement.LegacyProgramTyping`・`LegacyStateTyping` の埋め込みと、その依存 |
+| `Release.Subst` | 埋め込みの定義域。置き換えとパターンの照合 | `Release.Refinement.LegacyProgramTyping`・`LegacyStateTyping` の埋め込みと、その依存 |
+| `Release.Syntax` | 埋め込みの定義域。契約名を持つコア計算の構文 | `Release.Refinement.LegacyProgramTyping`・`LegacyStateTyping` の埋め込みと、その依存 |
+| `Release.TypeBounds` | 埋め込みの定義域。正規化前の型の範囲と整形式 | `Release.Refinement.LegacyProgramTyping`・`LegacyStateTyping` の埋め込みと、その依存 |
+| `Release.TypeRegularity` | 埋め込みの定義域。型の整形式と正規形 | `Release.Refinement.LegacyProgramTyping`・`LegacyStateTyping` の埋め込みと、その依存 |
+| `Release.TypeRows` | 埋め込みの定義域。Fail の内部を含む行の範囲 | `Release.Refinement.LegacyProgramTyping`・`LegacyStateTyping` の埋め込みと、その依存 |
+| `Release.TypeShift` | 埋め込みの定義域。型とエフェクトの変数移動 | `Release.Refinement.LegacyProgramTyping`・`LegacyStateTyping` の埋め込みと、その依存 |
+| `Release.TypeSubst` | 埋め込みの定義域。型と行の同時代入 | `Release.Refinement.LegacyProgramTyping`・`LegacyStateTyping` の埋め込みと、その依存 |
+| `Release.TypeSubstLemmas` | 埋め込みの定義域。正規化と同時代入の接続 | `Release.Refinement.LegacyProgramTyping`・`LegacyStateTyping` の埋め込みと、その依存 |
+| `Release.TypeVariables` | 埋め込みの定義域。型と効果に現れる変数 | `Release.Refinement.LegacyProgramTyping`・`LegacyStateTyping` の埋め込みと、その依存 |
+| `Release.Types` | 埋め込みの定義域。共有する型とエフェクトの表現 | `Release.Refinement.LegacyProgramTyping`・`LegacyStateTyping` の埋め込みと、その依存 |
+| `Release.Typing` | 埋め込みの定義域。型付け規則 | `Release.Refinement.LegacyProgramTyping`・`LegacyStateTyping` の埋め込みと、その依存 |
+| `Release.WellFormed` | 埋め込みの定義域。型とエフェクトの変数の範囲 | `Release.Refinement.LegacyProgramTyping`・`LegacyStateTyping` の埋め込みと、その依存 |
+
+共有の定義とその依存（19）は次のとおりである。
+
+| モジュール | 役割 | 読者 |
+|---|---|---|
+| `Release.ApproxAdapter` | 共有の定義。旧 Release の値から、整数と Boolean だけを読む共有近似への写し | `Release.Refinement.ApproxAdapter` |
+| `Release.Assumptions` | 共有の定義。形式化で仮定するもの | `Release.Lemmas.ContLemmas`、`Release.Lemmas.Regularity`、`Release.ShapeOk` |
+| `Release.BuilderExec` | 共有の定義。専用内容に対する一操作 | `Release.Refinement.BuilderExec`、`Release.Semantics` |
+| `Release.BuiltinTable` | 共有の定義。組み込みの制約とデータ型の要約の計算 | `Exchange.Builtins`、`Release.Refinement.StandardKeyTyping`、`Release.Refinement.Surface.Basic`、`Surface.Syntax` |
+| `Release.Coverage` | 共有の定義。契約名を持つ型の網羅性判定と健全性 | `Release.Refinement.Surface.Syntax`、`Surface.Syntax` |
+| `Release.EffectCover` | 共有の定義。効果の許可の関係と被覆 | `Release.Lemmas.TargetSound` |
+| `Release.Examples` | 共有の定義。抽象機械の実行の例（契約名を持つコア） | `Release.Refinement.CurrentSignatureRows` |
+| `Release.Finite` | 共有の定義。再帰的な有限支持の上で計算する型の比較と正規化 | 保持する定義の宣言の依存 |
+| `Release.Lemmas.Basic` | 共有の定義。エフェクトの集合と型の包含の基本の補題 | `Release.Lemmas.Inversion`、`Release.Lemmas.Rename`、`Release.Lemmas.TyLemmas` |
+| `Release.Lemmas.Closed` | 共有の定義。項が閉じていることの保存 | `Release.Lemmas.ContLemmas` |
+| `Release.Lemmas.PresHelpers` | 共有の定義。保存の証明の補助（契約名を持つコア） | `Release.Model`、`Release.Refinement.LegacyStateInputs` |
+| `Release.Lemmas.Rename` | 共有の定義。環境とストアの型付けの弱化 | `Release.Lemmas.ContLemmas`、`Release.Lemmas.Irrelevant`、`Release.Lemmas.NoFailContext`、`Release.Lemmas.Regularity` |
+| `Release.Lemmas.TySubst` | 共有の定義。型とエフェクトの置き換えで型付けが保たれること（契約名を持つコア） | `Release.Coverage`、`Release.CoverageTypes`、`Release.Lemmas.StoreLemmas`、`Release.Lemmas.TySubstMain`、`Release.Refinement.TypeArgumentRegularity` |
+| `Release.Model` | 共有の定義。仮定を満たす組み込みの関数の例 | `Release.Lemmas.Membership`、`Release.Refinement.CurrentSignatureRows`、`Release.TargetTable` |
+| `Release.ModelHttp` | 共有の定義。検査済みの要求の値と Http の項目の実例 | `Release.Refinement.CurrentSignatureRows`、`Release.Refinement.ModelHttp` |
+| `Release.Order.FiniteAtoms` | 共有の定義。有限支持での比較。入力の順序と重複によらず、符号が最小の相違点を選ぶ | `Release.Finite`、`Release.Refinement.FiniteCompare` |
+| `Release.TargetTable` | 共有の定義。範囲付きの組み込みの関数の表の項目 | `Release.ModelHttp`、`Release.ModelTargets`、`Release.Refinement.ScopeLegacyContracts`、`Release.Refinement.TargetTable` |
+| `Release.TypeComposition` | 共有の定義。一般の代入の一致と合成 | `Release.EffectCoverDef`、`Release.NoFail`、`Release.SubstEnv`、`Release.TypeCongruence`、`Release.TypeSupport` |
+| `Release.TypeSupport` | 共有の定義。型と効果の再帰的な支持 | `Release.Finite` |
+
+保持するモジュールの全宣言の依存（24）は次のとおりである。
+
+| モジュール | 役割 | 読者 |
+|---|---|---|
+| `Release.Admissible` | 保持する定義の依存。宣言の全行を具体化する許容条件 | `Release.Lemmas.NoFailContext` |
+| `Release.CoverageTypes` | 保持する定義の依存。網羅性が観察する型の形 | `Release.Coverage` |
+| `Release.FailureEffects` | 保持する定義の依存。Fail の一要素の効果と型代入の対応。型の内部の正規化も保持する | `Release.Lemmas.TySubstMain` |
+| `Release.Lemmas.ContLemmas` | 保持する定義の依存。継続の型付けの補題（契約名を持つコア） | `Release.Lemmas.FailureCont`、`Release.Lemmas.StoreLemmas` |
+| `Release.Lemmas.FailureBase` | 保持する定義の依存。Fail 節の形と保存継続の末尾 | `Release.Lemmas.ContLemmas` |
+| `Release.Lemmas.FailureCont` | 保持する定義の依存。Fail の伝播と捕捉するエラー型の一致 | `Release.Lemmas.Canonical` |
+| `Release.Lemmas.Irrelevant` | 保持する定義の依存。利用不能な変数の位置と値置換 | `Release.Lemmas.FailureBase` |
+| `Release.Lemmas.Membership` | 保持する定義の依存。値の所属の葉の規則（V-Checked）の補題 | `Release.ModelHttp`、`Release.ModelTargets` |
+| `Release.Lemmas.MembershipBase` | 保持する定義の依存。値の所属の葉の規則（V-Checked）の逆転と範囲の拡大 | `Release.Lemmas.Membership`、`Release.Lemmas.TargetSound` |
+| `Release.Lemmas.Names` | 保持する定義の依存。型付けから従うラムダの契約名 | `Release.Model` |
+| `Release.Lemmas.NoFailContext` | 保持する定義の依存。NoFail の文脈を広げる弱化。Q は型付け判断のパラメータである | `Release.Lemmas.SubstTyping` |
+| `Release.Lemmas.OuterC` | 保持する定義の依存。外側の型パラメータの並びを加える弱化（契約名を持つコア） | `Release.Lemmas.SubstTyping` |
+| `Release.Lemmas.Regularity` | 保持する定義の依存。型の正しさの伝播（契約名を持つコア） | `Release.Lemmas.FailureCont`、`Release.Lemmas.OuterC` |
+| `Release.Lemmas.StoreLemmas` | 保持する定義の依存。ストアの更新と、状態の型付けの補助の補題（契約名を持つコア） | `Release.Lemmas.PresHelpers` |
+| `Release.Lemmas.SubstTyping` | 保持する定義の依存。値の置き換えで型付けが保たれること（契約名を持つコア） | `Release.Lemmas.PresHelpers`、`Release.Lemmas.TySubst` |
+| `Release.Lemmas.TargetSound` | 保持する定義の依存。対象一致の条件から観測の許可を導く | `Release.Model`、`Release.ModelHttp`、`Release.ModelTargets` |
+| `Release.Lemmas.TyLemmas` | 保持する定義の依存。型の正しさ、ずらし、置き換えの補題 | `Release.Lemmas.Closed`、`Release.Lemmas.Regularity` |
+| `Release.Lemmas.TySubstMain` | 保持する定義の依存。型とエフェクトの置き換えで型付けが保たれること：本体（契約名を持つコア） | `Release.Lemmas.Canonical` |
+| `Release.LocalTyping` | 保持する定義の依存。局所参照の種類と共有番号の対応 | `Release.Lemmas.Rename` |
+| `Release.ModelTargets` | 保持する定義の依存。二つの信頼条件を満たす組み込みの関数の実例 | `Release.ModelHttp`、`Release.Refinement.CurrentSignatureRows` |
+| `Release.ShapeOk` | 保持する定義の依存。IO の項目の形の検査と旧の `io_op` | `Release.Lemmas.TargetSound`、`Release.Lemmas.TySubstMain`、`Release.TargetTable` |
+| `Release.SubstEnv` | 保持する定義の依存。型と行の一般の代入 | `Release.RangeInst`、`Release.TypeScopedSubst` |
+| `Release.TypeCongruence` | 保持する定義の依存。変数の範囲を用いる代入の一致 | `Release.TypeScopedSubst` |
+| `Release.TypeScopedSubst` | 保持する定義の依存。範囲内の型と行の代入 | `Release.EffectCover`、`Release.FailureEffects`、`Release.Lemmas.TyLemmas` |
+
+
+次の3モジュールは型注釈を消した区間の入力データを定める。表層の checker・型付け・脱糖の判断を含まない。
+
+| モジュール | 役割 | 読者 |
+|---|---|---|
+| `Surface.Syntax` | 型とエフェクトの注釈を持つ式・文・腕・節、パターンと位置のデータ。区間へ渡す構文を定める | `Interval.Identity`、`Interval.SurfaceSyntax`、区間の独立評価と解析 |
+| `Surface.BuilderSyntax` | 構築器の種類・操作・スロットの構文データ | `Surface.Syntax` |
+| `Surface.FormatSpec` | 解析済みの文字列補間の書式と、書式化の内部頭のデータ | `Surface.Syntax` |
 
 以下の既存の表は Release などの対応である。
 

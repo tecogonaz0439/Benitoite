@@ -75,28 +75,28 @@ class TryExchangeTests(unittest.TestCase):
                     self.assertEqual(result.returncode, 2, result.stderr + result.stdout)
                     self.assertIn('unknown Expr constructor', result.stderr + json.dumps(report))
 
-    def test_old_corpus_rejects_new_actions_even_when_nested(self):
-        for version in (8, 9):
-            for tag in ('tryResultDie', 'tryOptionDie', 'tryResultReturn', 'tryOptionReturn'):
-                for tool in CORPUS_TOOLS:
-                    with self.subTest(version=version, tag=tag, tool=tool):
-                        data = copy.deepcopy(self.data)
-                        data['corpus']['version'] = version
-                        # Reject before decoding, including new tags hidden in unused constants.
-                        data['corpus']['inputs'][0]['constants'] = [{'nested': {tag: {}}}]
-                        result, report = self.run_tool(tool, data)
-                        self.assertEqual(result.returncode, 2, result.stderr + result.stdout)
-                        self.assertIn('field requires new exchange version:', result.stderr + json.dumps(report))
+    def test_old_versions_are_rejected(self):
+        for tool, files in TOOLS.items():
+            for field in files:
+                for version in (range(8, 16) if field == 'corpus' else range(2, 8)):
+                    data = copy.deepcopy(self.data)
+                    data[field]['version'] = version
+                    with self.subTest(tool=tool, field=field, version=version):
+                        result, _ = self.run_tool(tool, data)
+                        self.assertEqual(result.returncode, 2, result.stdout)
+                        self.assertIn('version', result.stderr)
 
-    def test_corpus_nine_remains_compatible_without_new_actions(self):
-        data = {name: json.loads((Path(__file__).with_name('named-exchange') / f'{name}.json').read_text())
-                for name in shared['FILES']}
-        data['corpus']['version'] = 9
+    def test_current_input_and_old_version_refusal(self):
         for tool in TOOLS:
             with self.subTest(tool=tool):
-                result, report = shared['ExchangeTests'].run_tool(
-                    self, tool, data, input_name='independent-named')
-                self.assertEqual(result.returncode, 0, result.stderr + result.stdout + json.dumps(report))
+                result, report = self.run_tool(tool)
+                self.assertEqual(result.returncode, 0, result.stderr + json.dumps(report))
+                data = copy.deepcopy(self.data)
+                first = TOOLS[tool][0]
+                data[first]['version'] = 15 if first == 'corpus' else 7
+                result, _ = self.run_tool(tool, data)
+                self.assertEqual(result.returncode, 2, result.stdout)
+                self.assertIn('version', result.stderr)
 
     def test_try_cannot_silently_drop_other_action_fields(self):
         for index, field, value in [(0, 'action', 'return'), (0, 'messageExtra', None),
@@ -121,7 +121,7 @@ class TryExchangeTests(unittest.TestCase):
 
     def test_checker_checks_exchanged_die_contracts(self):
         impure = {'call': {'callee': {'primName': {'name': 'prim:8',
-                   'tys': [{'base': {'name': 'String'}}], 'effs': []}},
+                   'tys': [{'base': {'name': 'String'}}], 'effs': [], 'ranges': []}},
                    'labels': [None], 'positions': [0],
                    'args': [{'literal': {'value': {'integer': {'value': 1}}}}]}}
         cases = [('dict', {'local': {'index': 1}}, 'expected a dictionary type'),

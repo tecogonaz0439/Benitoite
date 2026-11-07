@@ -57,9 +57,9 @@ def widen_case(source, target):
 def effect_case(need, upper, effect='File.Read'):
     callee = HELPERS['definition']('fn:900', HELPERS['header']([], [], UNIT, [atom(effect, need)]),
         {'last': {'expr': 'unit'}}, copy.deepcopy(UNIT_CORE))
-    call = {'call': {'callee': {'funName': {'name': 'fn:900', 'tys': [], 'effs': []}},
+    call = {'call': {'callee': {'funName': {'name': 'fn:900', 'tys': [], 'effs': [], 'ranges': []}},
                     'labels': [], 'positions': [], 'args': []}}
-    core = {'app': {'callee': {'fnRef': {'name': 'fn:900', 'tys': [], 'effs': []}}, 'args': []}}
+    core = {'app': {'callee': {'fnRef': {'name': 'fn:900', 'tys': [], 'effs': [], 'ranges': []}}, 'args': []}}
     sample = HELPERS['definition']('fn:901', HELPERS['header']([], [], UNIT, [atom(effect, r) for r in upper]),
         {'last': {'expr': call}}, core)
     return [callee, sample]
@@ -130,8 +130,8 @@ def fixtures():
         inputs.append(input_)
         tables.append(table)
         stdlib.append({'group': 'golden', 'name': name, 'functions': [], 'impls': []})
-    return {'corpus': {'version': 15, 'operators': [], 'annotations': {'tailMatch': [0, 0]}, 'inputs': inputs},
-            'builtins': {'version': 7, 'inputs': tables}, 'stdlib': {'version': 7, 'inputs': stdlib}}
+    return {'corpus': {'version': 16, 'operators': [], 'annotations': {'tailMatch': [0, 0]}, 'inputs': inputs},
+            'builtins': {'version': 8, 'inputs': tables}, 'stdlib': {'version': 8, 'inputs': stdlib}}
 
 
 def write_inputs(directory):
@@ -219,13 +219,11 @@ def compare_contract_counterparts(exports, output):
                 return [normalize(v) for v in value]
             if not isinstance(value, dict):
                 return value
-            # 独立交換ではScopeErrorを抽象型として置く。同じ標準の宣言へ対応させる。
-            if value.get('opaque', {}).get('name') == HELPERS['SCOPE_ERROR_T']:
-                return {'declaredType': 'ScopeError'}
             if 'data' in value:
                 ty = value['data']
                 label = type_names.get(ty['name'], ty['name'])
-                if label == 'ScopeError':
+                # 独立交換の ScopeError は標準の名前の data で置く。同じ標準の宣言へ対応させる。
+                if label in ('ScopeError', HELPERS['SCOPE_ERROR_NAME']):
                     require(ty['args'] == [], (name, 'ScopeError type arguments'))
                     return {'declaredType': label}
                 return {'data': {**ty, 'name': label, 'args': normalize(ty['args'])}}

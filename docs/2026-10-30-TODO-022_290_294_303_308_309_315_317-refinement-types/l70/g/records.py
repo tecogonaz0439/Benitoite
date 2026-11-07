@@ -83,7 +83,8 @@ def audit(path):
     names = {n for _, n in targets}
     assert len(targets) == len(names) > 0
     assert not re.search(r"AUDIT_(?:AXIOM|MISSING|FIXED_POINT_LIMIT)|sorryAx|error:", text)
-    printed = re.findall(r"'([^']+)' (?:depends on axioms: \[([^\]]*)\]|does not depend on any axioms)", text)
+    # 名前が引用符を含むことがあるので、行頭から最後の引用符までを名前とする。
+    printed = re.findall(r"^'(.+)' (?:depends on axioms: \[([^\]]*)\]|does not depend on any axioms)", text, re.M)
     assert {n for n, _ in printed} == names, "target and printed axiom lists differ"
     allowed = {"propext", "Classical.choice", "Quot.sound"}
     sets = {}

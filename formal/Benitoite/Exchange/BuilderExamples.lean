@@ -51,7 +51,7 @@ private def versioned (version : Nat) : Json :=
 
 #guard (exchangeJson "corpus" (versioned 16)).isOk
 #guard !(exchangeJson "corpus" (versioned 15)).isOk
-#guard sidecarVersion 16 == 8
+#guard sidecarVersion == 8
 
 -- 新版は参照先を受け取らず、種類の欠落・余分な欄も拒否する。
 #guard !(decode "{\"builderBind\":{\"kind\":\"string\",\"refs\":{},\"rest\":\"empty\"}}").isOk

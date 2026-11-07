@@ -1,5 +1,5 @@
 {
-  "version": 10,
+  "version": 16,
   "operators": [],
   "annotations": {
     "tailMatch": [
@@ -18,7 +18,17 @@
           "isRecord": false,
           "extensible": false,
           "package": "stdlib",
-          "builtin": "result"
+          "builtin": "result",
+          "constructors": [
+            [
+              "con:ok",
+              "Ok"
+            ],
+            [
+              "con:error",
+              "Error"
+            ]
+          ]
         },
         {
           "name": "Option",
@@ -26,7 +36,17 @@
           "isRecord": false,
           "extensible": false,
           "package": "stdlib",
-          "builtin": "option"
+          "builtin": "option",
+          "constructors": [
+            [
+              "con:some",
+              "Some"
+            ],
+            [
+              "con:none",
+              "None"
+            ]
+          ]
         }
       ],
       "excluded": [],
@@ -80,10 +100,19 @@
                   "eff": [
                     {
                       "name": {
-                        "value": "Process.Exit"
+                        "value": "Process.Exit",
+                        "ix": {
+                          "fixed": "top"
+                        }
                       }
                     }
-                  ]
+                  ],
+                  "effParams": [],
+                  "tparamKinds": [
+                    "value"
+                  ],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "last": {
@@ -190,10 +219,19 @@
                   "eff": [
                     {
                       "name": {
-                        "value": "Process.Exit"
+                        "value": "Process.Exit",
+                        "ix": {
+                          "fixed": "top"
+                        }
                       }
                     }
-                  ]
+                  ],
+                  "effParams": [],
+                  "tparamKinds": [
+                    "value"
+                  ],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "letIn": {
@@ -294,7 +332,8 @@
                                               }
                                             }
                                           ],
-                                          "effs": []
+                                          "effs": [],
+                                          "ranges": []
                                         }
                                       },
                                       "args": [
@@ -323,7 +362,8 @@
                 "supers": []
               }
             }
-          }
+          },
+          "annotations": {}
         },
         {
           "name": "tryResultDie-True (fn:1)",
@@ -374,10 +414,19 @@
                   "eff": [
                     {
                       "name": {
-                        "value": "Process.Exit"
+                        "value": "Process.Exit",
+                        "ix": {
+                          "fixed": "top"
+                        }
                       }
                     }
-                  ]
+                  ],
+                  "effParams": [],
+                  "tparamKinds": [
+                    "value"
+                  ],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "last": {
@@ -488,10 +537,19 @@
                   "eff": [
                     {
                       "name": {
-                        "value": "Process.Exit"
+                        "value": "Process.Exit",
+                        "ix": {
+                          "fixed": "top"
+                        }
                       }
                     }
-                  ]
+                  ],
+                  "effParams": [],
+                  "tparamKinds": [
+                    "value"
+                  ],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "letIn": {
@@ -603,7 +661,8 @@
                                                   }
                                                 }
                                               ],
-                                              "effs": []
+                                              "effs": [],
+                                              "ranges": []
                                             }
                                           },
                                           "args": [
@@ -634,7 +693,8 @@
                 "supers": []
               }
             }
-          }
+          },
+          "annotations": {}
         },
         {
           "name": "tryOptionDie-False (fn:2)",
@@ -675,10 +735,17 @@
                   "eff": [
                     {
                       "name": {
-                        "value": "Process.Exit"
+                        "value": "Process.Exit",
+                        "ix": {
+                          "fixed": "top"
+                        }
                       }
                     }
-                  ]
+                  ],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "last": {
@@ -753,10 +820,17 @@
                   "eff": [
                     {
                       "name": {
-                        "value": "Process.Exit"
+                        "value": "Process.Exit",
+                        "ix": {
+                          "fixed": "top"
+                        }
                       }
                     }
-                  ]
+                  ],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "letIn": {
@@ -847,7 +921,8 @@
                                               }
                                             }
                                           ],
-                                          "effs": []
+                                          "effs": [],
+                                          "ranges": []
                                         }
                                       },
                                       "args": [
@@ -876,7 +951,8 @@
                 "supers": []
               }
             }
-          }
+          },
+          "annotations": {}
         },
         {
           "name": "tryOptionDie-True (fn:3)",
@@ -917,10 +993,17 @@
                   "eff": [
                     {
                       "name": {
-                        "value": "Process.Exit"
+                        "value": "Process.Exit",
+                        "ix": {
+                          "fixed": "top"
+                        }
                       }
                     }
-                  ]
+                  ],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "last": {
@@ -999,10 +1082,17 @@
                   "eff": [
                     {
                       "name": {
-                        "value": "Process.Exit"
+                        "value": "Process.Exit",
+                        "ix": {
+                          "fixed": "top"
+                        }
                       }
                     }
-                  ]
+                  ],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "letIn": {
@@ -1104,7 +1194,8 @@
                                                   }
                                                 }
                                               ],
-                                              "effs": []
+                                              "effs": [],
+                                              "ranges": []
                                             }
                                           },
                                           "args": [
@@ -1135,7 +1226,8 @@
                 "supers": []
               }
             }
-          }
+          },
+          "annotations": {}
         },
         {
           "name": "tryResult (fn:4)",
@@ -1189,7 +1281,13 @@
                       ]
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [
+                    "value"
+                  ],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "last": {
@@ -1313,7 +1411,13 @@
                       ]
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [
+                    "value"
+                  ],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "letIn": {
@@ -1452,7 +1556,8 @@
                 "supers": []
               }
             }
-          }
+          },
+          "annotations": {}
         },
         {
           "name": "tryResultReturn (fn:5)",
@@ -1506,7 +1611,13 @@
                       ]
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [
+                    "value"
+                  ],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "last": {
@@ -1630,7 +1741,13 @@
                       ]
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [
+                    "value"
+                  ],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "letIn": {
@@ -1769,7 +1886,8 @@
                 "supers": []
               }
             }
-          }
+          },
+          "annotations": {}
         },
         {
           "name": "tryOption (fn:6)",
@@ -1808,7 +1926,11 @@
                       ]
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "last": {
@@ -1902,7 +2024,11 @@
                       ]
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "letIn": {
@@ -2021,7 +2147,8 @@
                 "supers": []
               }
             }
-          }
+          },
+          "annotations": {}
         },
         {
           "name": "tryOptionReturn (fn:7)",
@@ -2060,7 +2187,11 @@
                       ]
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "last": {
@@ -2154,7 +2285,11 @@
                       ]
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "letIn": {
@@ -2273,7 +2408,8 @@
                 "supers": []
               }
             }
-          }
+          },
+          "annotations": {}
         },
         {
           "name": "message-lambda (fn:8)",
@@ -2314,10 +2450,17 @@
                   "eff": [
                     {
                       "name": {
-                        "value": "Process.Exit"
+                        "value": "Process.Exit",
+                        "ix": {
+                          "fixed": "top"
+                        }
                       }
                     }
-                  ]
+                  ],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "last": {
@@ -2374,7 +2517,10 @@
                                         "eff": [
                                           {
                                             "name": {
-                                              "value": "A"
+                                              "value": "A",
+                                              "ix": {
+                                                "fixed": "top"
+                                              }
                                             }
                                           }
                                         ],
@@ -2470,10 +2616,17 @@
                   "eff": [
                     {
                       "name": {
-                        "value": "Process.Exit"
+                        "value": "Process.Exit",
+                        "ix": {
+                          "fixed": "top"
+                        }
                       }
                     }
-                  ]
+                  ],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "letIn": {
@@ -2641,7 +2794,8 @@
                                                   }
                                                 }
                                               ],
-                                              "effs": []
+                                              "effs": [],
+                                              "ranges": []
                                             }
                                           },
                                           "args": [
@@ -2672,7 +2826,10 @@
                   [
                     {
                       "name": {
-                        "value": "A"
+                        "value": "A",
+                        "ix": {
+                          "fixed": "top"
+                        }
                       }
                     }
                   ]
@@ -2680,7 +2837,8 @@
                 "supers": []
               }
             }
-          }
+          },
+          "annotations": {}
         },
         {
           "name": "impl-dictionary (fn:9)",
@@ -2726,10 +2884,17 @@
                   "eff": [
                     {
                       "name": {
-                        "value": "Process.Exit"
+                        "value": "Process.Exit",
+                        "ix": {
+                          "fixed": "top"
+                        }
                       }
                     }
-                  ]
+                  ],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "last": {
@@ -2817,10 +2982,17 @@
                   "eff": [
                     {
                       "name": {
-                        "value": "Process.Exit"
+                        "value": "Process.Exit",
+                        "ix": {
+                          "fixed": "top"
+                        }
                       }
                     }
-                  ]
+                  ],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "letIn": {
@@ -2923,7 +3095,8 @@
                                               }
                                             }
                                           ],
-                                          "effs": []
+                                          "effs": [],
+                                          "ranges": []
                                         }
                                       },
                                       "args": [
@@ -2952,7 +3125,8 @@
                 "supers": []
               }
             }
-          }
+          },
+          "annotations": {}
         },
         {
           "name": "input-lambda (fn:10)",
@@ -2993,10 +3167,17 @@
                   "eff": [
                     {
                       "name": {
-                        "value": "Process.Exit"
+                        "value": "Process.Exit",
+                        "ix": {
+                          "fixed": "top"
+                        }
                       }
                     }
-                  ]
+                  ],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "last": {
@@ -3048,7 +3229,10 @@
                                         "eff": [
                                           {
                                             "name": {
-                                              "value": "B"
+                                              "value": "B",
+                                              "ix": {
+                                                "fixed": "top"
+                                              }
                                             }
                                           }
                                         ],
@@ -3127,7 +3311,10 @@
                                         "eff": [
                                           {
                                             "name": {
-                                              "value": "A"
+                                              "value": "A",
+                                              "ix": {
+                                                "fixed": "top"
+                                              }
                                             }
                                           }
                                         ],
@@ -3223,10 +3410,17 @@
                   "eff": [
                     {
                       "name": {
-                        "value": "Process.Exit"
+                        "value": "Process.Exit",
+                        "ix": {
+                          "fixed": "top"
+                        }
                       }
                     }
-                  ]
+                  ],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "letIn": {
@@ -3460,7 +3654,8 @@
                                                   }
                                                 }
                                               ],
-                                              "effs": []
+                                              "effs": [],
+                                              "ranges": []
                                             }
                                           },
                                           "args": [
@@ -3491,14 +3686,20 @@
                   [
                     {
                       "name": {
-                        "value": "B"
+                        "value": "B",
+                        "ix": {
+                          "fixed": "top"
+                        }
                       }
                     }
                   ],
                   [
                     {
                       "name": {
-                        "value": "A"
+                        "value": "A",
+                        "ix": {
+                          "fixed": "top"
+                        }
                       }
                     }
                   ]
@@ -3506,7 +3707,8 @@
                 "supers": []
               }
             }
-          }
+          },
+          "annotations": {}
         }
       ],
       "constants": [],
@@ -3519,7 +3721,8 @@
             "code"
           ],
           "arity": 1,
-          "ntys": 1
+          "ntys": 1,
+          "effectKind": "ordinary"
         }
       ],
       "classes": [
@@ -3547,10 +3750,15 @@
                     "name": "String"
                   }
                 },
-                "eff": []
+                "eff": [],
+                "effParams": [],
+                "tparamKinds": [],
+                "rangeParams": [],
+                "proofSteps": null
               }
             }
-          ]
+          ],
+          "argumentKind": "value"
         }
       ],
       "impls": [
@@ -3565,7 +3773,27 @@
             }
           }
         }
-      ]
+      ],
+      "aliases": [],
+      "records": [],
+      "testers": [],
+      "externals": [],
+      "logicCertificates": [],
+      "candidates": [],
+      "scopeAcceptance": {
+        "patterns": [],
+        "hosts": [],
+        "limits": {
+          "body": {
+            "operations": 1000000,
+            "items": 1000000
+          },
+          "whole": {
+            "operations": 10000000,
+            "items": 10000000
+          }
+        }
+      }
     }
   ]
 }

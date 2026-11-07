@@ -62,9 +62,9 @@ end
 
 /-- 構成済みの内部行の名前を、重ねた表の全層から集める。 -/
 def builtinNames : Check.BuiltinSource → List PrimName
-  | .predicates _ rows => rows.map Prod.fst
+  | .predicates _ rows .. => rows.map Prod.fst
   | .resolved base rows => builtinNames base ++ rows.map Prod.fst
-  | .standard _ | .custom _ | .unrestrictedRanges _ => []
+  | .standard .. | .custom _ | .unrestrictedRanges _ => []
 
 /-- 全本体を実際に脱糖してから組込み名を集め、演算子の解決や隠れた呼出しも含める。 -/
 def sourceNames (q : Check.Input) (p : Program) : List PrimName :=

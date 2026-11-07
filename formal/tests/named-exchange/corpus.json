@@ -1,5 +1,5 @@
 {
-  "version": 10,
+  "version": 16,
   "operators": [
     {
       "op": "eq",
@@ -42,7 +42,11 @@
                       "name": "Integer"
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "last": {
@@ -94,7 +98,11 @@
                       "name": "Integer"
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "ret": {
@@ -109,7 +117,8 @@
                 "supers": []
               }
             }
-          }
+          },
+          "annotations": {}
         },
         {
           "name": "reordered (fn:2)",
@@ -126,7 +135,11 @@
                       "name": "Integer"
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "last": {
@@ -143,7 +156,8 @@
                               "funName": {
                                 "name": "fn:1",
                                 "tys": [],
-                                "effs": []
+                                "effs": [],
+                                "ranges": []
                               }
                             },
                             "labels": [
@@ -198,7 +212,11 @@
                       "name": "Integer"
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "letIn": {
@@ -236,7 +254,8 @@
                               "fnRef": {
                                 "name": "fn:1",
                                 "tys": [],
-                                "effs": []
+                                "effs": [],
+                                "ranges": []
                               }
                             },
                             "args": [
@@ -261,7 +280,8 @@
                 "supers": []
               }
             }
-          }
+          },
+          "annotations": {}
         },
         {
           "name": "identity (fn:3)",
@@ -293,7 +313,11 @@
                       "eff": []
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "last": {
@@ -394,7 +418,11 @@
                       "eff": []
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "ret": {
@@ -429,7 +457,8 @@
                 "supers": []
               }
             }
-          }
+          },
+          "annotations": {}
         },
         {
           "name": "partial (fn:4)",
@@ -461,7 +490,11 @@
                       "eff": []
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "last": {
@@ -493,7 +526,8 @@
                               "funName": {
                                 "name": "fn:1",
                                 "tys": [],
-                                "effs": []
+                                "effs": [],
+                                "ranges": []
                               }
                             },
                             "names": [
@@ -573,7 +607,11 @@
                       "eff": []
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "ret": {
@@ -610,7 +648,8 @@
                                   "fnRef": {
                                     "name": "fn:1",
                                     "tys": [],
-                                    "effs": []
+                                    "effs": [],
+                                    "ranges": []
                                   }
                                 },
                                 "args": [
@@ -639,7 +678,8 @@
                 "supers": []
               }
             }
-          }
+          },
+          "annotations": {}
         },
         {
           "name": "pipe (fn:5)",
@@ -656,7 +696,11 @@
                       "name": "Integer"
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "last": {
@@ -684,7 +728,8 @@
                                   "funName": {
                                     "name": "fn:1",
                                     "tys": [],
-                                    "effs": []
+                                    "effs": [],
+                                    "ranges": []
                                   }
                                 },
                                 "labels": [
@@ -730,7 +775,11 @@
                       "name": "Integer"
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "letIn": {
@@ -768,7 +817,8 @@
                               "fnRef": {
                                 "name": "fn:1",
                                 "tys": [],
-                                "effs": []
+                                "effs": [],
+                                "ranges": []
                               }
                             },
                             "args": [
@@ -793,7 +843,8 @@
                 "supers": []
               }
             }
-          }
+          },
+          "annotations": {}
         },
         {
           "name": "callback (fn:6)",
@@ -814,7 +865,11 @@
                       }
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "last": {
@@ -835,7 +890,8 @@
                               "primName": {
                                 "name": "List.map",
                                 "tys": [],
-                                "effs": []
+                                "effs": [],
+                                "ranges": []
                               }
                             },
                             "labels": [
@@ -934,7 +990,11 @@
                       }
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "letIn": {
@@ -1005,7 +1065,8 @@
                               "prim": {
                                 "name": "List.map",
                                 "tys": [],
-                                "effs": []
+                                "effs": [],
+                                "ranges": []
                               }
                             },
                             "args": [
@@ -1032,7 +1093,8 @@
                 "supers": []
               }
             }
-          }
+          },
+          "annotations": {}
         },
         {
           "name": "operation (fn:7)",
@@ -1052,10 +1114,17 @@
                   "eff": [
                     {
                       "name": {
-                        "value": "Ask"
+                        "value": "Ask",
+                        "ix": {
+                          "fixed": "top"
+                        }
                       }
                     }
-                  ]
+                  ],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "last": {
@@ -1118,10 +1187,17 @@
                   "eff": [
                     {
                       "name": {
-                        "value": "Ask"
+                        "value": "Ask",
+                        "ix": {
+                          "fixed": "top"
+                        }
                       }
                     }
-                  ]
+                  ],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "letIn": {
@@ -1161,7 +1237,8 @@
                 "supers": []
               }
             }
-          }
+          },
+          "annotations": {}
         },
         {
           "name": "implementation (fn:8)",
@@ -1186,7 +1263,11 @@
                       "name": "Integer"
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "last": {
@@ -1232,7 +1313,11 @@
                       "name": "Integer"
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "ret": {
@@ -1247,7 +1332,8 @@
                 "supers": []
               }
             }
-          }
+          },
+          "annotations": {}
         },
         {
           "name": "methodValue (fn:9)",
@@ -1279,7 +1365,11 @@
                       "eff": []
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "last": {
@@ -1368,7 +1458,11 @@
                       "eff": []
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "ret": {
@@ -1415,7 +1509,8 @@
                 "supers": []
               }
             }
-          }
+          },
+          "annotations": {}
         },
         {
           "name": "PosPairValue (fn:10)",
@@ -1454,7 +1549,11 @@
                       "eff": []
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "last": {
@@ -1553,7 +1652,11 @@
                       "eff": []
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "ret": {
@@ -1607,7 +1710,8 @@
                 "supers": []
               }
             }
-          }
+          },
+          "annotations": {}
         },
         {
           "name": "PairValue (fn:11)",
@@ -1646,7 +1750,11 @@
                       "eff": []
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "last": {
@@ -1745,7 +1853,11 @@
                       "eff": []
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "ret": {
@@ -1799,7 +1911,8 @@
                 "supers": []
               }
             }
-          }
+          },
+          "annotations": {}
         },
         {
           "name": "Pair.left (fn:12)",
@@ -1848,7 +1961,11 @@
                       "name": "Integer"
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "matchC": {
@@ -1895,7 +2012,8 @@
                 "supers": []
               }
             }
-          }
+          },
+          "annotations": {}
         },
         {
           "name": "equality (fn:13)",
@@ -1912,7 +2030,11 @@
                       "name": "Boolean"
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "last": {
@@ -1973,7 +2095,11 @@
                       "name": "Boolean"
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "letIn": {
@@ -2017,7 +2143,8 @@
                                     }
                                   }
                                 ],
-                                "effs": []
+                                "effs": [],
+                                "ranges": []
                               }
                             },
                             "args": [
@@ -2042,7 +2169,8 @@
                 "supers": []
               }
             }
-          }
+          },
+          "annotations": {}
         },
         {
           "name": "generic (fn:14)",
@@ -2072,7 +2200,13 @@
                       "index": 0
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [
+                    "value"
+                  ],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "last": {
@@ -2139,7 +2273,13 @@
                       "index": 0
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [
+                    "value"
+                  ],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "ret": {
@@ -2154,7 +2294,8 @@
                 "supers": []
               }
             }
-          }
+          },
+          "annotations": {}
         },
         {
           "name": "dictionaryValue (fn:15)",
@@ -2186,7 +2327,11 @@
                       "eff": []
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "last": {
@@ -2242,7 +2387,8 @@
                                 }
                               }
                             ],
-                            "eff": []
+                            "eff": [],
+                            "ranges": []
                           }
                         }
                       }
@@ -2282,7 +2428,11 @@
                       "eff": []
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "ret": {
@@ -2310,7 +2460,8 @@
                                     }
                                   }
                                 ],
-                                "effs": []
+                                "effs": [],
+                                "ranges": []
                               }
                             },
                             "args": [
@@ -2339,7 +2490,8 @@
                 "supers": []
               }
             }
-          }
+          },
+          "annotations": {}
         },
         {
           "name": "stdlibValue (fn:16)",
@@ -2371,7 +2523,11 @@
                       "eff": []
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "last": {
@@ -2401,7 +2557,8 @@
                           "funName": {
                             "name": "stdlib:identity",
                             "tys": [],
-                            "effs": []
+                            "effs": [],
+                            "ranges": []
                           }
                         }
                       }
@@ -2441,7 +2598,11 @@
                       "eff": []
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "ret": {
@@ -2449,7 +2610,8 @@
                       "fnRef": {
                         "name": "stdlib:identity",
                         "tys": [],
-                        "effs": []
+                        "effs": [],
+                        "ranges": []
                       }
                     }
                   }
@@ -2458,7 +2620,8 @@
                 "supers": []
               }
             }
-          }
+          },
+          "annotations": {}
         },
         {
           "name": "builtinOperation (fn:17)",
@@ -2478,10 +2641,17 @@
                   "eff": [
                     {
                       "name": {
-                        "value": "Console"
+                        "value": "Console",
+                        "ix": {
+                          "fixed": "top"
+                        }
                       }
                     }
-                  ]
+                  ],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "last": {
@@ -2498,7 +2668,8 @@
                               "primName": {
                                 "name": "Console.writeLine",
                                 "tys": [],
-                                "effs": []
+                                "effs": [],
+                                "ranges": []
                               }
                             },
                             "labels": [
@@ -2545,10 +2716,17 @@
                   "eff": [
                     {
                       "name": {
-                        "value": "Console"
+                        "value": "Console",
+                        "ix": {
+                          "fixed": "top"
+                        }
                       }
                     }
-                  ]
+                  ],
+                  "effParams": [],
+                  "tparamKinds": [],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "letIn": {
@@ -2571,7 +2749,8 @@
                           "prim": {
                             "name": "Console.writeLine",
                             "tys": [],
-                            "effs": []
+                            "effs": [],
+                            "ranges": []
                           }
                         },
                         "args": [
@@ -2589,7 +2768,8 @@
                 "supers": []
               }
             }
-          }
+          },
+          "annotations": {}
         }
       ],
       "constants": [],
@@ -2618,11 +2798,20 @@
             "eff": [
               {
                 "name": {
-                  "value": "Ask"
+                  "value": "Ask",
+                  "ix": {
+                    "fixed": "top"
+                  }
                 }
               }
-            ]
-          }
+            ],
+            "effParams": [],
+            "tparamKinds": [],
+            "rangeParams": [],
+            "proofSteps": null
+          },
+          "dictParams": [],
+          "effectKind": "ordinary"
         }
       ],
       "effects": [
@@ -2640,7 +2829,8 @@
             "text"
           ],
           "arity": 1,
-          "ntys": 0
+          "ntys": 0,
+          "effectKind": "ordinary"
         }
       ],
       "classes": [
@@ -2668,10 +2858,15 @@
                     "name": "Integer"
                   }
                 },
-                "eff": []
+                "eff": [],
+                "effParams": [],
+                "tparamKinds": [],
+                "rangeParams": [],
+                "proofSteps": null
               }
             }
-          ]
+          ],
+          "argumentKind": "value"
         }
       ],
       "impls": [
@@ -2694,7 +2889,13 @@
           "isRecord": false,
           "extensible": false,
           "package": "author",
-          "builtin": "ordinary"
+          "builtin": "ordinary",
+          "constructors": [
+            [
+              "PosPair",
+              "PosPair"
+            ]
+          ]
         },
         {
           "name": "Pair",
@@ -2702,9 +2903,35 @@
           "isRecord": true,
           "extensible": false,
           "package": "author",
-          "builtin": "ordinary"
+          "builtin": "ordinary",
+          "constructors": [
+            [
+              "Pair",
+              "Pair"
+            ]
+          ]
         }
-      ]
+      ],
+      "aliases": [],
+      "records": [],
+      "testers": [],
+      "externals": [],
+      "logicCertificates": [],
+      "candidates": [],
+      "scopeAcceptance": {
+        "patterns": [],
+        "hosts": [],
+        "limits": {
+          "body": {
+            "operations": 1000000,
+            "items": 1000000
+          },
+          "whole": {
+            "operations": 10000000,
+            "items": 10000000
+          }
+        }
+      }
     },
     {
       "group": "golden",
@@ -2755,10 +2982,17 @@
                     "index": 1
                   }
                 },
-                "eff": []
+                "eff": [],
+                "effParams": [],
+                "tparamKinds": [
+                  "value"
+                ],
+                "rangeParams": [],
+                "proofSteps": null
               }
             }
-          ]
+          ],
+          "argumentKind": "value"
         }
       ],
       "impls": [
@@ -2829,7 +3063,14 @@
                       }
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [
+                    "value",
+                    "value"
+                  ],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "last": {
@@ -2912,7 +3153,14 @@
                       }
                     }
                   },
-                  "eff": []
+                  "eff": [],
+                  "effParams": [],
+                  "tparamKinds": [
+                    "value",
+                    "value"
+                  ],
+                  "rangeParams": [],
+                  "proofSteps": null
                 },
                 "body": {
                   "ret": {
@@ -2927,10 +3175,31 @@
                 "supers": []
               }
             }
-          }
+          },
+          "annotations": {}
         }
       ],
-      "dataTypes": []
+      "dataTypes": [],
+      "aliases": [],
+      "records": [],
+      "testers": [],
+      "externals": [],
+      "logicCertificates": [],
+      "candidates": [],
+      "scopeAcceptance": {
+        "patterns": [],
+        "hosts": [],
+        "limits": {
+          "body": {
+            "operations": 1000000,
+            "items": 1000000
+          },
+          "whole": {
+            "operations": 10000000,
+            "items": 10000000
+          }
+        }
+      }
     }
   ],
   "annotations": {

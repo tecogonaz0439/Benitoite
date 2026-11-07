@@ -66,7 +66,6 @@ def run (args : List String) : IO UInt32 := do
   let rawCorpus ← readJson corpusFile
   let _ ← IO.ofExcept (readCorpus rawCorpus)
   let corpus ← IO.ofExcept (exchangeJson "corpus" rawCorpus)
-  let version ← IO.ofExcept (corpus.getObjValAs? Nat "version")
   let inputJson ← IO.ofExcept (selectInput corpus group name)
   let input ← IO.ofExcept (fromJson? inputJson : Except String Input)
   let operators ← IO.ofExcept (corpus.getObjValAs? (List OperatorEntry) "operators")
@@ -74,13 +73,13 @@ def run (args : List String) : IO UInt32 := do
   let _ ← IO.ofExcept (readBuiltins rawB)
   let bj ← IO.ofExcept (exchangeJson "builtins" rawB)
   let sj ← IO.ofExcept (exchangeJson "stdlib" (← readJson stdlibFile))
-  let expected := sidecarVersion version
+  let expected := sidecarVersion
   if (← IO.ofExcept (bj.getObjValAs? Nat "version")) != expected ||
       (← IO.ofExcept (sj.getObjValAs? Nat "version")) != expected then
     throw (IO.userError "exchange version pair mismatch")
   let b ← IO.ofExcept ((selectInput bj group name).bind (fromJson? · : Json → Except String BuiltinInput))
   let s ← IO.ofExcept ((selectInput sj group name).bind (fromJson? · : Json → Except String StdlibInput))
-  if version >= 9 && input.dataTypes != b.dataDecls.map DataEntry.info then
+  if input.dataTypes != b.dataDecls.map DataEntry.info then
     throw (IO.userError "corpus/builtin data type metadata mismatch")
   if !input.excluded.isEmpty then throw (IO.userError s!"Rust check excluded input: {input.excluded}")
   let prepared ← IO.ofExcept (prepare input b s operators)

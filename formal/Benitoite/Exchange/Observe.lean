@@ -5,7 +5,7 @@ import Benitoite.Release.Refinement.Surface.ScopeSound
 /-!
 # 交換の形式の観測・拒否の理由・必須の判定の入力と、範囲の入力の検査
 
-corpus 15・sidecar 7 の交換の形式に、次のものを加える（設計書 07-04「交換の形式の版」）。
+交換の形式（設計書 07-04「交換の形式の版」）のうち、次のものを扱う。
 
 - 観測: IO の事象が作用した対象（`Scope.Domain.Target`）とその有限列。名前の原子の閉じた範囲の列が観測を許す
   ことの判定 `observationAllowed` と、その健全性（`Eff.Allows`）。
@@ -226,10 +226,10 @@ def ScopeAcceptanceEntry.host (s : ScopeAcceptanceEntry) (text : String) : Optio
 読む。 -/
 def ScopeAcceptanceEntry.acceptInput :
     Option ScopeAcceptanceEntry → Benitoite.Release.Refinement.Surface.CheckAccept.AcceptInput
-  | none => ⟨"Ok", fun _ => none, ⟨⟨0, 0⟩, ⟨0, 0⟩⟩, fun i m => i ++ "." ++ m⟩
+  | none => { ok := "Result.Ok", rules := fun _ => none, limits := ⟨⟨0, 0⟩, ⟨0, 0⟩⟩, methodKey := fun i m => i ++ "." ++ m }
   | some s =>
-    ⟨"Ok", (Benitoite.Release.Refinement.Surface.ScopeSound.productionRules s.pattern s.host).lookup, s.limits,
-      fun i m => i ++ "." ++ m⟩
+    { ok := "Result.Ok", rules := (Benitoite.Release.Refinement.Surface.ScopeSound.productionRules s.pattern s.host).lookup
+      limits := s.limits, methodKey := fun i m => i ++ "." ++ m }
 
 /-- 交換の入力から作る規則の表は健全である（表の条件はない）。 -/
 theorem ScopeAcceptanceEntry.acceptInput_sound (s : ScopeAcceptanceEntry) :
@@ -237,7 +237,7 @@ theorem ScopeAcceptanceEntry.acceptInput_sound (s : ScopeAcceptanceEntry) :
       R.Sound (Benitoite.Release.Refinement.Surface.ScopeState.models (ScopeAcceptanceEntry.acceptInput (some s)).ok
         s.pattern) ∧
       (ScopeAcceptanceEntry.acceptInput (some s)).rules = R.lookup :=
-  ⟨_, Benitoite.Release.Refinement.Surface.ScopeSound.productionRules_sound s.pattern s.host (show "Ok" ≠ "Result.Error" by decide) s.pattern, rfl⟩
+  ⟨_, Benitoite.Release.Refinement.Surface.ScopeSound.productionRules_sound s.pattern s.host (show "Result.Ok" ≠ "Result.Error" by decide) s.pattern, rfl⟩
 
 /-- 受理が本体ごとに引く表（`CheckAccept.tableFor`）は、どの本体でも健全である。 -/
 theorem ScopeAcceptanceEntry.acceptInput_tableSound (s : ScopeAcceptanceEntry)
@@ -246,7 +246,7 @@ theorem ScopeAcceptanceEntry.acceptInput_tableSound (s : ScopeAcceptanceEntry)
       (Benitoite.Release.Refinement.Surface.ScopeState.models (ScopeAcceptanceEntry.acceptInput (some s)).ok s.pattern)
       (Benitoite.Release.Refinement.Surface.CheckAccept.tableFor (ScopeAcceptanceEntry.acceptInput (some s)) key body) :=
   Benitoite.Release.Refinement.Surface.ScopeState.Rules.lookup_sound
-    (Benitoite.Release.Refinement.Surface.ScopeSound.productionRules_sound s.pattern s.host (show "Ok" ≠ "Result.Error" by decide) s.pattern) _
+    (Benitoite.Release.Refinement.Surface.ScopeSound.productionRules_sound s.pattern s.host (show "Result.Ok" ≠ "Result.Error" by decide) s.pattern) _
 
 /-- 必須の判定の入力を持たない入力は規則のない受理の入力で読む。どの宣言にも規則がない。 -/
 theorem ScopeAcceptanceEntry.acceptInput_none_noRules (d : String) :

@@ -724,10 +724,13 @@ def decodeCorpus (j : Json) : Except String Corpus := do
   let surfaceVersion ← j.getObjValAs? Nat "surfaceVersion"
   if surfaceVersion != Benitoite.Exchange.Refined.corpusVersion then
     throw "unsupported Surface version; regenerate with the current exchange version"
+  -- 区間の交換の定義は範囲パラメータを宣言しないので、範囲の変数を持たない。固定の範囲は整形式で正規形である。
+  Benitoite.Exchange.validateRanges 0 j
   if (← j.getObjValAs? Nat "traversalVersion") != 1 then throw "unsupported traversal version"
   let profile ← j.getObjValAs? String "profile"
   if !["base", "flow", "width", "range", "domain"].contains profile then throw "unsupported interval profile"
-  let inputs ← (← (← j.getObjVal? "inputs").getArr?).toList.mapM (readInput profile)
+  -- Result の構成子の名前は、コーパスの交換と同じく篩付きの表層の名前へ写して読む。
+  let inputs ← (← (Benitoite.Exchange.CanonicalNames.resultJson j).getObjVal? "inputs" >>= Json.getArr?).toList.mapM (readInput profile)
   unique "input" (inputs.map (·.name))
   pure ⟨inputs, profile⟩
 

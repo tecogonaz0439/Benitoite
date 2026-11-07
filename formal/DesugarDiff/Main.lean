@@ -420,7 +420,7 @@ def run (args : List String) : IO UInt32 := do
   let raw ← IO.FS.readFile file
   let json ← IO.ofExcept (Json.parse raw)
   let corpus ← IO.ofExcept (readCorpus json)
-  -- 原子は版の変換の後の形から集める（旧版の原子は明示の Top を持つ）。
+  -- 原子は交換の JSON の入口が検査した後の形から集める。
   let atoms := (collectAtoms (← IO.ofExcept (exchangeJson "corpus" json))).eraseDups
   let initial : Summary := {
     constructions := extensionNames.map (fun n => (n, 0))

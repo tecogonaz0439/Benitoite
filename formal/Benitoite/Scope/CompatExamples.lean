@@ -1,5 +1,4 @@
 import Benitoite.Scope.TopCompat
-import Benitoite.Surface.Lemmas.Sequence
 import Benitoite.Scope.RepresentationExamplesI
 
 /-!
@@ -23,9 +22,6 @@ def embI : TopEmbedding RepresentationExamples.CandidateI.Atom where
   to_of := RepresentationExamples.CandidateI.Atom.toRelease_ofRelease
   of_to := RepresentationExamples.CandidateI.Atom.toRelease_eq_some
 
-/-- 系の言明は既存の定理の言明と同じ命題である（既存の定理を変えずに置き換えられる）。 -/
-example : (∀ a b : Eff, Eff.union a (Eff.union b Eff.empty) = Eff.union a b) :=
-  fun a b => Surface.union_empty_right_nested a b
 example : (∀ a b : Eff, Eff.union a (Eff.union b Eff.empty) = Eff.union a b) :=
   embI.old_union_empty_right_nested
 example : (∀ a b : Eff, Eff.union a (Eff.union Eff.empty b) = Eff.union a b) :=

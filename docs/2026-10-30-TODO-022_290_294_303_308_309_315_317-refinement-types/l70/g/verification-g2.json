@@ -1,0 +1,232 @@
+{
+  "start": "d9cf242d97ac3b93c439177da0e67a625a87f626",
+  "merge": "dc22b231",
+  "new_modules": [
+    "Benitoite.Exchange.BuiltinAgreement",
+    "Benitoite.Exchange.CanonicalNames",
+    "Benitoite.Exchange.CheckSupport",
+    "Benitoite.Exchange.FormationTypes",
+    "Benitoite.Exchange.RefinedExamples",
+    "Benitoite.Exchange.RefinedJson",
+    "Benitoite.Interval.ReportFlow",
+    "Benitoite.Interval.SurfaceCode",
+    "Benitoite.Interval.SurfaceSyntax",
+    "Benitoite.Release.Refinement.CoverageShow",
+    "Benitoite.Release.Refinement.IntervalReport",
+    "Benitoite.Release.Refinement.Surface.FieldPlacement",
+    "Benitoite.Release.Refinement.Surface.ScopeRules",
+    "Benitoite.Release.Refinement.Surface.ScopeSound",
+    "Benitoite.Release.Refinement.Surface.SourceRename",
+    "Benitoite.Release.Refinement.ValueRenamingFixed"
+  ],
+  "changed_modules": [
+    "Benitoite",
+    "Benitoite.Exchange.BuilderExamples",
+    "Benitoite.Exchange.Builtins",
+    "Benitoite.Exchange.CheckInput",
+    "Benitoite.Exchange.Convert",
+    "Benitoite.Exchange.IntegerExamples",
+    "Benitoite.Exchange.Observe",
+    "Benitoite.Exchange.ObserveExamples",
+    "Benitoite.Exchange.Range",
+    "Benitoite.Exchange.RangeExamples",
+    "Benitoite.Exchange.Refined",
+    "Benitoite.Exchange.Syntax",
+    "Benitoite.Exchange.Version",
+    "Benitoite.Interval.Exchange",
+    "Benitoite.Interval.ExchangeExamples",
+    "Benitoite.Release.Model",
+    "Benitoite.Release.ModelHttp",
+    "Benitoite.Release.ModelTargets",
+    "Benitoite.Release.Refinement.AtInput",
+    "Benitoite.Release.Refinement.AtPatternText",
+    "Benitoite.Release.Refinement.CurrentSignatureRows",
+    "Benitoite.Release.Refinement.ExternalLeafSelection",
+    "Benitoite.Release.Refinement.ExternalSurfaceLeaves",
+    "Benitoite.Release.Refinement.FirstFailure",
+    "Benitoite.Release.Refinement.IntervalConnection",
+    "Benitoite.Release.Refinement.IntervalConnectionExamples",
+    "Benitoite.Release.Refinement.Surface.CheckBuiltinSource",
+    "Benitoite.Release.Refinement.Surface.CheckInput",
+    "Benitoite.Release.Refinement.Surface.CheckOpenArgumentLeaves",
+    "Benitoite.Release.Refinement.Surface.CheckOpenStandardExamples",
+    "Benitoite.Release.Refinement.Surface.CheckPreparation",
+    "Benitoite.Release.Refinement.Surface.Desugar",
+    "Benitoite.Release.Refinement.Surface.PredicateGeneratedNames",
+    "Benitoite.Release.Refinement.Surface.PredicateSimulationActiveProviders",
+    "Benitoite.Release.Refinement.Surface.PredicateSimulationLookup",
+    "Benitoite.Release.Refinement.Surface.PredicateSimulationResponseSteps",
+    "Benitoite.Release.Refinement.Surface.PredicateSimulationStateOperations",
+    "Benitoite.Release.Refinement.Surface.PredicateSimulationTraces",
+    "Benitoite.Release.TargetTable",
+    "Benitoite.Scope.CompatExamples",
+    "BuiltinCheck.Main",
+    "CoverageDiff.Main",
+    "CoverageProgramDiff.Main",
+    "DesugarDiff.Main",
+    "SurfaceCheck.Batch",
+    "SurfaceCheck.Main",
+    "SurfaceCheck.Validation",
+    "SurfaceCheck.Walk"
+  ],
+  "default_modules": 1300,
+  "axioms": {
+    "targets": 9981,
+    "axioms": {
+      "none": 4849,
+      "propext": 2093,
+      "Quot.sound,propext": 315,
+      "Classical.choice,Quot.sound,propext": 2724
+    },
+    "parts": {
+      "library": {
+        "targets": 8990,
+        "axioms": {
+          "none": 4345,
+          "propext": 1982,
+          "Quot.sound,propext": 314,
+          "Classical.choice,Quot.sound,propext": 2349
+        },
+        "output": {
+          "bytes": 1984528,
+          "sha256": "2c0443fee067cba08f6ed4b9445c1135f40e3498bcdf6edcfd76dd0636f7e927"
+        }
+      },
+      "BuiltinCheck.Main": {
+        "targets": 83,
+        "axioms": {
+          "none": 58,
+          "propext": 12,
+          "Classical.choice,Quot.sound,propext": 12,
+          "Quot.sound,propext": 1
+        },
+        "output": {
+          "bytes": 9216,
+          "sha256": "dffb105164adaa3771e66c61732c3a4aeb19283f6452123e2d8ce4c0278291ab"
+        }
+      },
+      "CoverageDiff.Main": {
+        "targets": 308,
+        "axioms": {
+          "none": 128,
+          "propext": 25,
+          "Classical.choice,Quot.sound,propext": 155
+        },
+        "output": {
+          "bytes": 43318,
+          "sha256": "e762608f0d6fad4ef90c3754eec401feeee534d84b38eeba5a031c1971882816"
+        }
+      },
+      "CoverageProgramDiff.Main": {
+        "targets": 204,
+        "axioms": {
+          "none": 141,
+          "propext": 11,
+          "Classical.choice,Quot.sound,propext": 52
+        },
+        "output": {
+          "bytes": 31122,
+          "sha256": "61ec21d8cc6f88697c28e6a51ed3006f4a6df7788ae3d4eab654429b72bdd52e"
+        }
+      },
+      "DesugarDiff.Main": {
+        "targets": 150,
+        "axioms": {
+          "none": 59,
+          "propext": 21,
+          "Classical.choice,Quot.sound,propext": 70
+        },
+        "output": {
+          "bytes": 17648,
+          "sha256": "95b0aa80593490cdaef26dc3a560c371ee87d7c8cc5a321f702b3a1862239379"
+        }
+      },
+      "SurfaceCheck.Batch": {
+        "targets": 119,
+        "axioms": {
+          "none": 50,
+          "propext": 20,
+          "Classical.choice,Quot.sound,propext": 49
+        },
+        "output": {
+          "bytes": 18066,
+          "sha256": "889f1d3181e8ec8d74b7358d6b254b2729846ac1115ff37849d547c745aa8bde"
+        }
+      },
+      "SurfaceCheck.Main": {
+        "targets": 24,
+        "axioms": {
+          "Classical.choice,Quot.sound,propext": 8,
+          "none": 8,
+          "propext": 8
+        },
+        "output": {
+          "bytes": 2536,
+          "sha256": "6c285741c0133f16526f7e1d957db782793a219b53edce036450b377d8e6f3ad"
+        }
+      },
+      "SurfaceCheck.Validation": {
+        "targets": 20,
+        "axioms": {
+          "Classical.choice,Quot.sound,propext": 4,
+          "none": 10,
+          "propext": 6
+        },
+        "output": {
+          "bytes": 4066,
+          "sha256": "98e547d52ce21d2d113d53f12610369eec5a5e4e1dac4d13868fd8021e879629"
+        }
+      },
+      "SurfaceCheck.Walk": {
+        "targets": 83,
+        "axioms": {
+          "none": 50,
+          "propext": 8,
+          "Classical.choice,Quot.sound,propext": 25
+        },
+        "output": {
+          "bytes": 11062,
+          "sha256": "5bc2bc7d03d8b436362ceaf63cead286271c649d953d20a82409d6f2eb9e0cf6"
+        }
+      }
+    }
+  },
+  "audit_inputs": {
+    "library": {
+      "bytes": 7402,
+      "sha256": "d72529c4d627ec701380b739dc4e1a05a991165a85bb9dcb8f2c7c359af2ed71"
+    },
+    "BuiltinCheck.Main": {
+      "bytes": 2329,
+      "sha256": "c1936e26ddfafcce8a821876e5aa6bc845b0c409327760535f768c34bc29a946"
+    },
+    "CoverageDiff.Main": {
+      "bytes": 2329,
+      "sha256": "708004e3c894381b5f0a7e7fa8971cfb6dfec9cc560473435a1c12c198bd209e"
+    },
+    "CoverageProgramDiff.Main": {
+      "bytes": 2343,
+      "sha256": "76435b5b79bfea857bf5c7774b8fbb542d202aed9b763a4e26c8ff4ca9ec90e4"
+    },
+    "DesugarDiff.Main": {
+      "bytes": 2327,
+      "sha256": "368c4745929c8547ce4fa69e312f8b09beec635f6eed215bd687e111de7d8e4c"
+    },
+    "SurfaceCheck.Batch": {
+      "bytes": 2331,
+      "sha256": "548912338faa4fb80236b2406f1fece46235eda89eb73e87206070562ac99ece"
+    },
+    "SurfaceCheck.Main": {
+      "bytes": 2329,
+      "sha256": "cff1bfc5004317657da4c6dfc9a4670e49267542a2e4ee0ebff0983a5c1daa03"
+    },
+    "SurfaceCheck.Validation": {
+      "bytes": 2341,
+      "sha256": "dbff34b262d6a945bf0bdea9c473e4ef9f45655486e8655d29e45a8c9c1631b7"
+    },
+    "SurfaceCheck.Walk": {
+      "bytes": 2329,
+      "sha256": "8963724dff8e00e163a77954bf57e237f7e4003cf52305286249d0d51f27e36b"
+    }
+  }
+}

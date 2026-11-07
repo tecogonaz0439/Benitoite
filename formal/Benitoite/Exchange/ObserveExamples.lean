@@ -135,12 +135,12 @@ def acceptCheck (e : Option ScopeAcceptanceEntry) (contract : Range) : Bool :=
 
 /-- 交換の入力から作る規則の表の健全性の適用例。 -/
 example : ∃ R : ScopeState.Rules,
-    R.Sound (ScopeState.models "Ok" agreeingEntry.pattern) ∧
+    R.Sound (ScopeState.models "Result.Ok" agreeingEntry.pattern) ∧
       (ScopeAcceptanceEntry.acceptInput (some agreeingEntry)).rules = R.lookup :=
   ScopeAcceptanceEntry.acceptInput_sound agreeingEntry
 
 /-- 上の本体の受理が引く表は健全である。 -/
-example : Benitoite.Scope.Inference.TableSound (ScopeState.models "Ok" agreeingEntry.pattern)
+example : Benitoite.Scope.Inference.TableSound (ScopeState.models "Result.Ok" agreeingEntry.pattern)
     (CheckAccept.tableFor (ScopeAcceptanceEntry.acceptInput (some agreeingEntry)) ⟨"main", 0⟩ (checkBody dataTree)) :=
   ScopeAcceptanceEntry.acceptInput_tableSound agreeingEntry _ _
 

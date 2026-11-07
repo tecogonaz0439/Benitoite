@@ -257,3 +257,131 @@ L70.44 の削除は L70.42 の取り込みの後に作業木へ適用する。�
 ## 待機中の準備（2026-11-07 10:55）
 
 `Scope.ScopeError` の不一致は、取りまとめの判断で書き出しの側（L70.42 の追補）で直す。照合の側に写しは足していない。L70.42 の結合の後に、`Scope.checkPathIn` の準備の失敗（新版の固定入力の候補の18入力）が消えることを確かめる。判断2の写す位置と書き戻しの経路の一覧を [ok-name-inventory.md](ok-name-inventory.md) に置いた（まだ変えていない）。
+
+## 二人目の Claude の担当の区間（結合の後。2026-11-07 11:24〜）
+
+基準は結合の版 `dc22b231a7f9f75089434c80d06e7f14f70a8eab`（HEAD と一致を確認）。git の書き込み、`scripts/check.sh`・`scripts/check-formal.sh` の全体の実行はしていない。サブエージェントは起動していない。`<tmp2>` は一時領域 `/private/tmp/benitoite-l70-g2` を表す。
+
+### 時刻
+
+| 区間 | 開始 | 終了 | 結果 |
+|---|---|---|---|
+| 結合直後の既定ビルド | 11:26:09 | 11:40:12 | 終了1。失敗は `PredicateSimulationTraces`（名前 `Program` の解決）と `PredicateGeneratedNames`（パターン）の2モジュールと、その下流 |
+| 1. 案 (a)：実行できる形に戻す | 11:42 | 11:48:31 | 既定ビルド終了0。7入口のリンクを含む |
+| 2. 実入口の契約への追随 | 11:47 | 12:18:42 | 既定ビルド終了0 |
+| 3. 準備の失敗の確認・固定入力の候補の適用 | 11:50 | 12:35 | 下の表 |
+| 4. L70.44 削除の適用 | 12:23:43 | 12:39 | 既定ビルド終了0（12:23:50〜12:34:35、2,322ジョブ）、F09 の三条件 |
+| 6. 判断2（成功値の名前の写し） | 12:40 | 12:50 | 既定ビルド終了0、比較器の前後一致 |
+| 5. 07-04 の写し | 12:45 | 12:50 | 下記。残りは「残る写し」 |
+| 7. L70.42 の申し送り | 11:48 | 11:50 | 下記 |
+| 8. 作業末の検査 | 12:51 | 13:00 | 下の「作業末の検査」 |
+
+### 1. 規範の checker を実行できる形に戻す（案 (a)）
+
+- `Check.BuiltinSource.predicates` に、構成した表とその構成の等号（`table := PredicateProjection.Table.builtins data rows`、`built : table = … := by rfl`）を持たせた。`.standard` と同じ形である。
+- `.resolved` には欄を足していない。等号は元の構成元の表 `base.builtins` を参照するが、帰納型の構成子はその型の関数を参照できないためである。代わりに `predicateOverlay` から `noncomputable` を除いた。重ねる操作が読む内部行の署名と応答（`Row.signature`・`Row.delta`）は実行コードを持つことを確認用入力で確かめた（`isNoncomputable` が偽）。
+- `BuiltinSource.builtins` と `Check.Input.B` は実行コードを持つ。7入口の実行ファイルはリンクした。
+- 場合分けの追随は次の7ファイルである。`.predicates`・`.standard` の欄を受けて `subst built` で書き換える（証明の本文は同じ補題）。`CheckPreparation`・`CheckOpenArgumentLeaves`・`PredicateGeneratedNames`・`PredicateSimulationStateOperations`・`PredicateSimulationResponseSteps`・`PredicateSimulationActiveProviders`・`PredicateSimulationLookup`。
+- `PredicateSimulationTraces` の `Program` は、群 G の import の追加で表層の `Surface.Program` を指すようになっていたので、`Refinement.Program` と書いた（3箇所。意味は同じ）。
+- 01-12「篩を含む表層の検査と受理」の `Check.BuiltinSource` の段落と、07-04 の `Surface.CheckOpen` の段落を今の状態（三つの構成元が表を持つ・重ねた表を返す・検査器と実入口の準備は実行できる）に合わせた。
+
+### 2. 実入口の契約への追随
+
+- `Exchange.Observe` の受理の入力は、群 D が足した欄 `openRules` を既定値で持つよう、欄の名前で構成した（規則のない入力も同じ既定値。群 D の実入口と同じ）。
+- `Exchange.CheckInput.Parts` に、検査器の表が交換した組込みの表であることの欄（`table`・`custom`）を足した。新しい定理 `prepare_entry` は、準備が成功した入力では、実入口の準備 `CheckPreparation.prepare` がどの本体も入力ごとそのまま返し、準備後の入力も健全であることを示す。群 D の実入口の健全性（`checkProgramAccepted_sound`）の前提 `(CheckPreparation.prepare q p).input.Sound` はこれで供給できる。
+- 7入口のソースは、`CheckTables.checkProgram` の中で準備を通るので変えていない。
+
+### 3. 準備の失敗の確認
+
+固定入力の候補（一時領域 `/private/tmp/benitoite-l70-g/fixture-candidates/tests/`）を `formal/tests` へ当てた。52ファイルのうち L70.42 が変えていた3ファイル（`test_batch2_exchange.py`・`test_batch3_exchange.py`・`interval_vm_compare.py`）は三方向で照らし、衝突した2箇所は作業木の側（L70.42 の版）を採った。続いて次を直した。
+
+| ファイル | 変更 | 理由 |
+|---|---|---|
+| `test_range_exchange.py` | `Scope.ScopeError` を data（標準と同じ6構成子・要約）で置き、不透明型 `102:[]` と公開名の行を除いた。`Http.RequestCheckError` の要約を、欄が全て導出できる値に改めた | 取りまとめの判断（data の側が正しい）。標準の宣言（`Scope.bnt`）と同じ |
+| `test_range_exchange.py` | 組込みの参照の範囲の差し替え2箇所を `{"fixed": …}` の形にした。効果の上限の拒否の期待の文言を篩付きの検査器の文言にした。区間の版の試験に、`test_interval_exchange.py` と同じ燃料の初期値を与えた | 候補が版16の形に直していなかった。旧の版の比較を版16の単独の照合に置き換えたとき、深さの停止で `matched` が偽になっていた |
+| `test_range_rejections.py` | 独立入力の ScopeError を data として標準の宣言へ対応させる | 上と同じ |
+| `test_range_sources.py` | 候補の欄を除く代わりに空にする | 版16では `candidates` は必須の欄である |
+
+結果:
+
+| 対象 | 結果 |
+|---|---|
+| `test_range_exchange.py`（9試験） | 終了0。ScopeError を直す前は、準備の失敗で3試験が落ちていた |
+| 拒否の独立入力（`test_range_rejections.py --freeze` の入力を `surfaceCheckAll` で検査） | 準備の失敗0（以前は16）。一致18・不一致8（不一致は期待した拒否の8件） |
+| 範囲の実ソース（`test_range_sources.py`、L70.42 の新しい書き出し） | 最初の事例 `host-one` の `surfaceCheck` が準備の失敗で止まる（下の F-REG の表の1行目） |
+| ほかの固定入力の試験 | width 1・named 27・extensible 54・try 10・batch2 4・batch3 33・batch4 18 の失敗、batch5 は終了0。準備の失敗は、意図して壊した入力（extensible の12件、named の `%eq`）だけである。失敗の多くは Lean の入口の文言の期待（旧の検査器の理由の文、`unsupported exchange field: refs` などの拒否の文言）で、batch3・batch4 には一致の件数の差（不一致4）もある。取りまとめの全比較（F-REG）で扱う |
+
+`Scope.checkPathIn` の18入力（range 2・rejections 16）の準備の失敗は消えた。
+
+### 4. L70.44 削除の適用と F09 の三条件
+
+- `deletion.py` で計画を作り直した。前回の計画と同じ（146モジュール・42コマンド・残す旧 Release 74・旧 Surface の構文3）。`--apply` で適用し、根の `Benitoite.lean` から削除したモジュールの import 118行を除き、`--verify-applied` は成功した。既定ビルドは終了0。
+- 削除したモジュールを参照する台本・試験はなかった（`scripts/`・`tools/`・`formal/tests` を grep）。
+- F09 の照合（`f09.py`）は、既定環境と7入口の宣言グラフ（[graph.lean](graph.lean)。今の Lean で書けない `mod.startsWith` の部分適用を直した写しを `<tmp2>/f09/` で使った）で行った。(1) 削除後の閉包: 既定 import に削除したモジュールはなく、旧 Surface は構文の3モジュール、旧 Release は74モジュール。(2) 逆戻り: 既定環境と7入口のどれも0件。(3) 残す旧 Release: 31・19・24 に分かれ、全てが [modules-for-spec.md](modules-for-spec.md) の表にある。記録は [f09.json](f09.json)。
+  - `f09.py` は、等式・場合分けの自動生成の補題（`eq_N`・`eq_def`・`_sparseCasesOn_N.else_eq`）について、読み込んだ環境ごとに所属と依存が変わる差を許すよう改めた（入口ごとに318〜446件。それ以外の宣言の差は従来どおり誤り）。
+- 7入口の依存の照合（`entries_closure.py`）も削除の後に再実行し、`pass: true`（(a)〜(d) と入口のソースの違反0）。
+- `admit` の名前（TODO-294）: `formal/` の `.lean` に単語 `admit` は0件。
+
+### 5. 07-04 の写し
+
+- 「01-12 との対応」の「以下の既存の表は Release などの対応である」の前に、既定 import に残す旧 Release・旧 Surface のモジュールの表（篩付きの表層と区間の接続、埋め込みの定義域31、共有の定義とその依存19、全宣言の依存24、区間の入力の構文3）を置いた。内容は modules-for-spec.md と同じで、`Exchange.CanonicalNames` の行に Result の構成子の入れ替えと読者を足した。
+- 「道具と置き場所」と「交換の形式の版」の版の段落を、corpus 16・sidecar 8 だけを受ける今の状態にした（旧版の読み分けの記述を除いた）。成功値の名前の入れ替えを「交換の形式の版」に書いた。
+
+残る写し（この区間で終えられなかったもの。取りまとめの判断を求める）:
+
+| 箇所 | 内容 |
+|---|---|
+| 01-12「Scope の局所解析の状態と規則の表」〜「Scope の局所解析の接続定理」（2726〜2910行付近） | 削除した旧 Surface の `ScopeState`・`ScopeLower`・`ScopeAccept`・`ScopeSound`・`CheckAccept`・`DesugarRange`・`ScopeOccurrence` を正とする【決定】。篩付きの `Surface.ScopeState`・`ScopeRules`・`ScopeSound` などへ改めるか除く |
+| 01-12 の 186・192・247・534・535・545・1067・2670・2722 行付近 | 削除した旧 Release・旧 Surface のファイルを根拠に挙げる文 |
+| 07-04「証明する性質」の冒頭（44〜64行） | 旧 `Release/Theorems.lean`・旧 `Surface/Theorems.lean` などを性質の証明の場所とする記述。新判断だけを規範とする文へ改める |
+| 07-04 の 696・698・724・726・846・1079・1129 行付近と「以下の既存の表」の旧ファイルの行（1391〜1432行付近） | 削除したファイルの名前 |
+| 01-12「本章の位置付け」、07-04「目的と範囲」 | 新判断だけを規範とする位置付けの文 |
+| `formal/README.md` | 段階 A（`Core/`）・段階 C（旧 `Surface/`）・旧 `Release` の削除したファイルの行と、旧主定理の `#print axioms` の一覧 |
+
+### 6. 判断2（成功値の名前の写し）
+
+- 交換の境界の一か所で写す形にした。`Exchange.exchangeJson`（コーパス・型表・stdlib・プログラムの網羅性の文書の検査の入口）は、検査した文書の構成子の名前の欄で `Ok`↔`Result.Ok`・`Error`↔`Result.Error` を入れ替えて返す（`CanonicalNames.resultJson`）。区間の交換の読者も同じ写しを通して読む。独立の網羅性の文書は自身の宣言だけを読むので写さない。
+  - 写す欄の決め方は、既存の `CanonicalNames.json` の文脈の判定を使い、構成子の欄だけを写す設定（`constructorsOnly`）を足した。primitive・効果・型の名前は写さない。
+  - 写しは入れ替えなので、二度写すと元に戻る。処理系の書き出しと Lean の結果は、同じ写しをした両辺で比べる。
+- `Exchange.Observe.acceptInput` の成功値の名前を `Result.Ok` にした。受理の規則の健全性（`acceptInput_sound`・`acceptInput_tableSound`）は `ScopeState.models "Result.Ok"` についての主張になり、実例の表の δ の成功値と同じ名前を読む。`ObserveExamples` の二つの適用例を合わせた。
+- 一致の確認（L70.42 の新しい書き出し `/private/tmp/benitoite-l70-g42/new/desugar/`、写しの前後の実行ファイルを比べた。台本 `<tmp2>/okcmp.sh`）: path-in・request-in・named-declarations・generated-record-property・manifest の5コーパスで desugarDiff・builtinCheck・surfaceCheckAll・coverageProgramDiff（ある2件）、区間の interval-manifest-corpus・reader-corpus・point の analyze と eval。終了状態は全て前後で同じ。報告は surfaceCheckAll の経過時間の欄を除いてバイト単位で同じ。固定入力の試験の失敗の件数も前後で同じ。
+
+### 7. L70.42 のレビューの申し送り
+
+- `CanonicalNames.ofInputs` の読者は `Exchange.CheckInput.prepareParts`（照合用の表）にある。
+- `sidecarVersion` の名残の引数を除き（`def sidecarVersion : Nat := 8`）、呼出し4箇所と例2件を合わせた。旧版の分岐（`version >= 9` の条件）を `SurfaceCheck/Main.lean`・`SurfaceCheck/Batch.lean`・`BuiltinCheck/Main.lean` から除いた（読者は版16だけを受ける）。
+- 旧版の読み方を述べるコメントを `Exchange/Observe.lean`（冒頭）・`Exchange/CheckInput.lean`（2箇所）・`DesugarDiff/Main.lean` から除くか、今の性質で書き直した。
+
+### 止めずに進めた変更（この区間）
+
+| 理由・反例 | 選んだ案 | 退けた案 | 範囲のない場合の系 |
+|---|---|---|---|
+| 結合で `.predicates` の表（標準表の構成）が非計算的になり、checker 全体が実行コードを失った | `.predicates` に構成した表と構成の等号を持たせる（`.standard` と同じ）。`.resolved` は等号を書けないので欄を足さず、計算できる `predicateOverlay` から `noncomputable` を除く | `.resolved` にも表を持たせる（構成子の型が自身の関数を参照するので書けない）、検査器が読む欄だけを別に取り出す案 (b) | 規則・`Input.Sound` は変えない。`.predicates T rows` と書いた箇所は既定値で同じ表を得る |
+| 群 D の `AcceptInput` に欄 `openRules` が加わり、交換の受理の入力が構成できなくなった | 欄の名前で構成し、`openRules` は群 D の既定値（実入口と同じ） | 規則のない入力では空の列にする（実入口と違う受理になる） | 開いた範囲の規則は宣言の型が保持する範囲だけを読む |
+| 区間の交換の読者は範囲の変数の位置を検査せず、宣言のない範囲の変数を持つ入力を受理していた（候補の試験 `v16-rvar`） | 区間の交換の全体を `validateRanges 0` で検査し、範囲の変数を拒否する。区間の定義は範囲パラメータを宣言しないので保守的な側 | 受理のまま期待を変える | 新しい書き出しの区間の交換（12文書）と区間の固定入力に範囲の変数はない（数えた） |
+| 交換の Result の構成子の名前 `Ok` が実例の表の `Result.Ok` と違い、受理の規則の健全性が空の主張だった | 交換の文書の検査の入口で構成子の名前を入れ替える（上の 6） | 変換の各所（約25箇所）で名前を写し、書き戻しの各所で逆に写す案 | 入れ替えは全単射で、比較は両辺に同じ写しをするので一致の判定は変わらない |
+| 群 D の実入口の健全性は準備後の入力の健全性を前提にする | `Parts` に独自の表の事実を足し、`prepare_entry` で準備が恒等で健全であることを示す | 交換の入口ごとに準備の展開を書く | 準備は独自の表では恒等である（`CheckPreparation.prepare_custom`） |
+
+### F-REG への申し送り（この区間の追加）
+
+| 対象 | 入力の形・確認点 | 処置 |
+|---|---|---|
+| 標準表との一致の判定による準備の失敗 | 処理系の署名が標準表の行と合わない組込み: `Http.sendIn`（成功値の `Http.Response` を処理系は record の data、標準表は不透明型で持つ）、`Map`・`Set`・`List` の19名（`Map.fromList` など。標準表は結果型に篩（例: 大きさ ≤ 元の長さ）を持ち、処理系の書き出しは持たない）、`Scope.checkPathIn`（標準表の `Scope.ScopeError` は処理系にない構成子 `At` を持ち、構成子の数が違うので名前を写せない）。L70.42 の新しい書き出しの組込みの表の1,455入力のうち、少なくとも35入力がこれらの名前を持つ（台本 `<tmp2>/cover_prims.py`・`run_cover.py`、被覆する51入力で判定した。入力ごとに data の写しが変わる `checkPathIn` は名前を持つ入力の数で数えた） | 入力を省かない。拒否をやめて記録だけにするか、照合で篩を外して比べるかは取りまとめの判断点 |
+| 固定入力の試験の文言と件数 | 上の 3 の表の失敗。篩付きの検査器の拒否の理由の文と、旧の期待の文が違う。batch3・batch4 に一致の件数の差 | F-REG の全比較で数える |
+
+### 作業末の検査
+
+| 検査 | 結果 |
+|---|---|
+| 既定ビルド（共有ロック下。最後の Lean の変更の後） | 終了0（2,323ジョブ。根に `Exchange.RefinedExamples` を足した後） |
+| 公理監査（[verify_g2.py](verify_g2.py) が作る、群 G が足した16・変えた48モジュールの全宣言。private・生成宣言を含む。入口の根は `main` が衝突するので根ごとに9入力。共有ロック下、12:54:24〜12:56:09） | 9,981宣言。公理なし4,849・`propext` 2,093・`propext, Quot.sound` 315・`propext, Classical.choice, Quot.sound` 2,724。`sorryAx` と新しい公理は0。最大常駐 2.23 GB（ライブラリの入力）。生の出力9ファイルは計2.2 MB、連結の SHA-256 `36c783d8b30200dab69710c66f6c08a4daf8aaa33352b60941ec8291da945afa` |
+| 照合（`verify_g2.py`） | 成功。足した16モジュールは全て既定 import に入る。足した・変えたモジュールに `sorry` と `axiom` はない。処理系の本体（`crates/benitoite/src/`）の変更は0。記録は [verification-g2.json](verification-g2.json) |
+| `cargo test -p benitoite --test desugar_export --test coverage_export` | 終了0（網羅性 3通過・1無視、脱糖 49通過・1無視） |
+| `python3 -B -m unittest scripts.check.test_policy` | 終了0 |
+
+`verify.py` は群 G の開始時の一時領域の入力の写しに依るので、結合の後の状態には使えない。`verify_g2.py` が git の版（開始版・群 G の途中の保存・結合の版）から対象を作り直す。照合の途中で、群 G が足した `Exchange.RefinedExamples` が既定 import になかったことが分かり、根に足した。
+
+### 計画からのずれ
+
+- 削除したモジュールの写しの直し（上の「残る写し」）を終えていない。
+- 11:55頃、試験の確認の途中で、対象を指定した `lake -d formal build intervalDiff` を共有ロックなしで誤って起動し、約2分後に停止の道具で止めた。残った処理はなく、その後の既定ビルドは共有ロック下で終了0であった。

@@ -162,6 +162,9 @@ def certificateTable (entries : List LogicCertificateEntry) :
 structure Parts where
   materials : Materials
   base : Benitoite.Release.Refinement.Surface.Check.Input
+  /-- 検査器の表は交換した組込みの表（独自の表）である。 -/
+  table : Benitoite.Release.Refinement.Builtins
+  custom : base.builtinSource = .custom table
   constructors : Bool
   records : Bool
   implNames : Bool
@@ -203,7 +206,6 @@ def prepareParts (input : Input) (b : BuiltinInput) (s : StdlibInput)
     throw "sidecar input identity mismatch"
   if !input.dataTypes.isEmpty && input.dataTypes != b.dataDecls.map DataEntry.info then
     throw "corpus/builtin data type metadata mismatch"
-  -- 新版の空表を旧版と混同しない検査は JSON の入口で行う。
   let operations ← input.operationProgram
   -- 型付けへ変換すると使わなくなる交換専用の注釈も、境界で検査する。
   validateClauses operations input.primOps (toJson input)
@@ -350,7 +352,7 @@ def prepareParts (input : Input) (b : BuiltinInput) (s : StdlibInput)
     proofSteps := defaultProofSteps
     logicCertificates := certificateTable input.logicCertificates }
   let q := m.input base
-  -- 必須の判定の受理の入力。旧版の入力は null（規則のない受理の入力）。
+  -- 必須の判定の受理の入力。null は規則のない受理の入力を表す。
   let scope : Option ScopeAcceptanceEntry ←
     if input.scopeAcceptance == Json.null then pure none else some <$> fromJson? input.scopeAcceptance
   -- 実装のメソッドの本体の鍵は、その本体の定義の名前（関数の鍵と同じ変換）とする。
@@ -361,7 +363,8 @@ def prepareParts (input : Input) (b : BuiltinInput) (s : StdlibInput)
   let accept := { accept with methodKey := fun i mn =>
     ((methodNames.find? fun (a, b, _) => a == i && b == mn).map (·.2.2)).getD (accept.methodKey i mn) }
   return {
-    materials := m, base, constructors := constructorsOk b m, records := recordChecks.all id
+    materials := m, base, table := builtinsOf b S ms, custom := rfl
+    constructors := constructorsOk b m, records := recordChecks.all id
     implNames := implNamesOk m q.methods q.supers, outside, atoms, accept, atoms_eq := rfl, support
     prims := builtinsOf_support b S prims, sat := satDecOf_sound b S ms, admits := admitsDecOf_sound b S ms
     ranges := admitsRDecOf_sound b S ms, operators := makeOpPrim_support atoms operators atomsR, builtinNames
@@ -384,6 +387,24 @@ theorem prepare_sound {input : Input} {b : BuiltinInput} {s : StdlibInput} {oper
     rw [hp] at h
     cases h
     exact x.sound
+
+/-- 交換の表は独自の表なので、実入口の準備（`CheckPreparation.prepare`）はどの本体も入力ごとそのまま返し、
+準備後の入力も健全である。実入口の健全性（`CheckAccept.checkProgramAccepted_sound`）の前提の入力はこれで供給する。 -/
+theorem prepare_entry {input : Input} {b : BuiltinInput} {s : StdlibInput} {operators : List OperatorEntry}
+    {p : Prepared} (h : prepare input b s operators = .ok p)
+    (program : Benitoite.Release.Refinement.Surface.Program) :
+    Benitoite.Release.Refinement.Surface.CheckPreparation.prepare p.input program = ⟨p.input, program⟩ ∧
+      (Benitoite.Release.Refinement.Surface.CheckPreparation.prepare p.input program).input.Sound := by
+  have hs := prepare_sound h
+  unfold prepare at h
+  cases hp : prepareParts input b s operators with
+  | error e => rw [hp] at h; cases h
+  | ok x =>
+    rw [hp] at h
+    cases h
+    have same := Benitoite.Release.Refinement.Surface.CheckPreparation.prepare_custom x.prepared.input program
+      x.table x.custom
+    exact ⟨same, by rw [same]; exact hs⟩
 
 /-- 準備が成功すれば、名前を標準の名前へ写した表の、標準表の合成済みの名前の署名は、整形式の名前の一覧で作った
 どの完成表の署名とも欄が一致する（型パラメータの制約の命題と仮定側の名前を除く）。検査器の表と写した表の対応は

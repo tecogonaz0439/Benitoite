@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 8,
   "inputs": [
     {
       "group": "golden",
@@ -33,14 +33,23 @@
           "eff": [
             {
               "name": {
-                "value": "Process.Exit"
+                "value": "Process.Exit",
+                "ix": {
+                  "fixed": "top"
+                }
               }
             }
           ],
           "kind": "exit",
           "opEff": "Process.Exit",
           "classConstraints": [],
-          "unconvertibleTypes": []
+          "unconvertibleTypes": [],
+          "effParams": [],
+          "tparamKinds": [
+            "value"
+          ],
+          "rkinds": [],
+          "shape": "untargeted"
         }
       ],
       "effects": [
@@ -98,7 +107,13 @@
                 }
               ]
             }
-          ]
+          ],
+          "variances": [
+            "invariant",
+            "invariant"
+          ],
+          "requirements": [],
+          "publicBoundary": []
         },
         {
           "name": "Option",
@@ -127,7 +142,12 @@
               "fields": null,
               "args": []
             }
-          ]
+          ],
+          "variances": [
+            "invariant"
+          ],
+          "requirements": [],
+          "publicBoundary": []
         }
       ],
       "summaries": [
@@ -166,7 +186,12 @@
       ],
       "statePure": [],
       "supplementalData": [],
-      "supplementalPrims": []
+      "supplementalPrims": [],
+      "effKinds": [],
+      "valKinds": [],
+      "admitsR": [],
+      "valContents": [],
+      "opaqueNames": []
     }
   ]
 }

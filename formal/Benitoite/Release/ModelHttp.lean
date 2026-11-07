@@ -1,7 +1,5 @@
-import Benitoite.Release.Theorems
 import Benitoite.Release.TargetTable
 import Benitoite.Release.Lemmas.TargetSound
-import Benitoite.Release.Lemmas.PrimRanges
 import Benitoite.Release.Lemmas.Membership
 import Benitoite.Release.ModelTargets
 
@@ -41,7 +39,7 @@ open Benitoite.Release
 open Scope.Domain (Range Target Kind)
 
 -- `Result` の構成子の宣言と、表によらない補題は `ModelTargets` のものを使う（L50.3 の実例の整理）。
-open Benitoite.Release.ModelTargets (okDecl errDecl ok_typed err_typed singleton_of_admissible ref_scoped_get ref_scoped_set)
+open Benitoite.Release.ModelTargets (okDecl errDecl ok_typed err_typed singleton_of_admissible)
 
 def invalidUrlDecl : ConDecl := ⟨"Http.RequestCheckError", 0, [.base .string]⟩
 def scopeDecl : ConDecl := ⟨"Http.RequestCheckError", 0, [TargetTable.scopeErrorTy]⟩
@@ -265,23 +263,6 @@ theorem sig_value : (builtins hostPat reqTarget).sig "Http.requestInValue" = som
   simp [builtins]
 theorem sig_send : (builtins hostPat reqTarget).sig "Http.sendIn" = some TargetTable.sendIn := by simp [builtins]
 
-theorem send_scoped : TargetTable.sendIn.Scoped :=
-  TargetTable.entries_scoped ("Http.sendIn", _) (by
-    unfold TargetTable.entries
-    exact .tail _ (.tail _ (.tail _ (.tail _ (.tail _ (.tail _ (.tail _ (.tail _ (.head _)))))))))
-
-theorem check_scoped : TargetTable.checkRequestIn.Scoped :=
-  TargetTable.entries_scoped ("Http.checkRequestIn", _) (by
-    unfold TargetTable.entries
-    exact .tail _ (.tail _ (.tail _ (.tail _ (.tail _ (.tail _ (.tail _ (.tail _ (.tail _ (.tail _
-      (.head _)))))))))))
-
-theorem value_scoped : TargetTable.requestInValue.Scoped :=
-  TargetTable.entries_scoped ("Http.requestInValue", _) (by
-    unfold TargetTable.entries
-    exact .tail _ (.tail _ (.tail _ (.tail _ (.tail _ (.tail _ (.tail _ (.tail _ (.tail _ (.tail _ (.tail _
-      (.tail _ (.head _)))))))))))))
-
 theorem checkRequestIn_ret (r : Range) :
     Ty.subst [] [] (TargetTable.checkRequestIn.inst [r]).ret = .data "Result" (checkTys r) := by
   simp [TargetTable.checkRequestIn, TargetTable.pureIn, TargetTable.resultTy, TargetTable.requestIn, checkTys,
@@ -438,169 +419,6 @@ theorem valueRun_typed {P : Program} (hP : HasHttp P) {Ψ : StoreTy} (r : Range)
   · exact hdef
 
 end
-
-/-- 実例: `Ok`・`Err` と `Http.RequestCheckError` の構成子を宣言したどのプログラムについても、旧の条件と対象一致の
-条件の両方を満たす。 -/
-theorem assumptions (hostPat : String → Int → Int → Option Range) (reqTarget : Val → Option Target) (P : Program)
-    (hP : HasHttp P) : (builtins hostPat reqTarget).Assumptions P where
-  sig_scoped := by
-    intro b s h
-    rcases sig_cases h with ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩
-    · exact ref_scoped_get
-    · exact ref_scoped_set
-    · exact check_scoped
-    · exact value_scoped
-    · exact send_scoped
-  admits_subst := by
-    intro b s C0 C1 ts ts' es' h ha _ _
-    rcases sig_cases h with ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ <;>
-      first
-      | simpa [Model.refGetSig, Model.refSetSig] using ha
-      | (simp only [TargetTable.checkRequestIn, TargetTable.requestInValue, TargetTable.sendIn, TargetTable.ioIn,
-          TargetTable.pureIn] at ha ⊢
-         subst ha; rfl)
-  sat_subst := fun _ _ _ _ _ _ _ _ _ => trivial
-  sat_unconstrained := fun _ _ => trivial
-  admits_sat := by
-    intro b s C ts h ha
-    rcases sig_cases h with ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ <;>
-      first
-      | exact ⟨by simpa [Model.refGetSig, Model.refSetSig] using ha, fun _ _ _ _ _ => trivial⟩
-      | (simp only [TargetTable.checkRequestIn, TargetTable.requestInValue, TargetTable.sendIn, TargetTable.ioIn,
-          TargetTable.pureIn] at ha ⊢
-         subst ha
-         exact ⟨rfl, fun _ _ _ h _ => by simp at h⟩)
-  sat_local := fun _ _ _ _ _ _ => trivial
-  admits_local := by
-    intro b s C1 C0 ts h _ ha
-    rcases sig_cases h with ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ <;> exact ha
-  delta_typed := by
-    intro Ψ b s rs ts es ws h hk hR htl hel _ hw
-    rcases sig_cases h with ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨-, rfl⟩ <;>
-      try (exfalso; simp [Model.refGetSig, Model.refSetSig, TargetTable.sendIn, TargetTable.ioIn] at hk)
-    all_goals
-      have hts : ts = [] := List.eq_nil_of_length_eq_zero htl
-      have hes : es = [] := List.eq_nil_of_length_eq_zero hel
-      subst hts hes
-      obtain ⟨r, rfl⟩ := singleton_of_admissible rfl hR
-    · refine ⟨checkRun hostPat reqTarget r ws, by simp [builtins], ?_, ?_⟩
-      · intro n hn
-        unfold checkRun at hn
-        split at hn
-        · split at hn
-          · split at hn
-            · cases hn
-            · split at hn
-              · split at hn <;> cases hn
-              · cases hn
-          · cases hn
-        · cases hn
-      · rw [checkRequestIn_ret]
-        rw [checkRequestIn_params] at hw
-        exact checkRun_typed hP r ws hw
-    · refine ⟨valueRun ws, by simp [builtins], ?_, ?_⟩
-      · intro n hn
-        unfold valueRun at hn
-        split at hn
-        · split at hn <;> cases hn
-        · cases hn
-      · rw [requestInValue_ret]
-        rw [requestIn_params] at hw
-        exact valueRun_typed hP r ws hw
-  io_kind := by
-    intro b s ts es ws o obs h hr
-    rcases sig_cases h with ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ <;>
-      simp only [builtins] at hr
-    · simp at hr
-    · simp at hr
-    · simp at hr
-    · simp at hr
-    · obtain ⟨-, ho, -⟩ := hr
-      refine .inl ⟨rfl, fun n => ?_⟩
-      rcases ho with rfl | rfl <;> simp
-  io_typed := by
-    intro Ψ b s rs ts es ws o obs h hk hR htl hel _ _ hr
-    rcases sig_cases h with ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ <;>
-      try (exfalso; simp [Model.refGetSig, Model.refSetSig, TargetTable.checkRequestIn, TargetTable.requestInValue,
-        TargetTable.pureIn] at hk)
-    have hts : ts = [] := List.eq_nil_of_length_eq_zero htl
-    have hes : es = [] := List.eq_nil_of_length_eq_zero hel
-    subst hts hes
-    simp only [builtins] at hr
-    obtain ⟨-, ho, -⟩ := hr
-    obtain ⟨r, rfl⟩ := singleton_of_admissible rfl hR
-    rw [sendIn_ret]
-    rcases ho with rfl | rfl
-    · exact ⟨ok_typed hP.1 (by simpa [sendTys, response, TargetTable.responseTy, Const.type, Ty.shift_opaque] using
-          (HasTypeVQ.V_Const (P := P) (B := builtins hostPat reqTarget) (Ψ := Ψ) (Q := Qempty) (C := []) (Γ := [])
-            (c := .opaque "Http.Response" 0))),
-        by simp [sendTys, response, TargetTable.responseTy, TargetTable.networkErrorTy, Val.VarsIn, Ty.VarsInList,
-          Ty.VarsIn, Val.VarsInList]⟩
-    · exact ⟨err_typed hP.2.1 (by simpa [sendTys, networkFailure, TargetTable.networkErrorTy, Const.type,
-          Ty.shift_opaque] using
-          (HasTypeVQ.V_Const (P := P) (B := builtins hostPat reqTarget) (Ψ := Ψ) (Q := Qempty) (C := []) (Γ := [])
-            (c := .opaque "NetworkError" 0))),
-        by simp [sendTys, networkFailure, TargetTable.responseTy, TargetTable.networkErrorTy, Val.VarsIn,
-          Ty.VarsInList, Ty.VarsIn, Val.VarsInList]⟩
-  io_exists := by
-    intro Ψ b s rs ts es ws h hk _ _ _ _ _
-    rcases sig_cases h with ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ <;>
-      try (exfalso; simp [Model.refGetSig, Model.refSetSig, TargetTable.checkRequestIn, TargetTable.requestInValue,
-        TargetTable.pureIn] at hk)
-    exact ⟨_, _, rfl, .inl rfl, rfl⟩
-  io_op := by
-    intro b s h hk
-    rcases sig_cases h with ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ <;>
-      try (exfalso; simp [Model.refGetSig, Model.refSetSig, TargetTable.checkRequestIn, TargetTable.requestInValue,
-        TargetTable.pureIn] at hk)
-    exact TargetTable.ioIn_shapeOk (bs := ["Http.sendIn"]) (by simp [builtins, stateEff]) (by simp) rfl rfl rfl
-  effect_ops := by
-    intro l bs b h hb
-    rcases effects_cases h with ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ <;>
-      simp only [List.mem_singleton, List.not_mem_nil] at hb
-    subst hb; exact ⟨_, sig_send, .inl rfl, rfl⟩
-  opEff_io := by
-    intro b s l h hl
-    rcases sig_cases h with ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ <;>
-      first
-      | (exfalso; simp [Model.refGetSig, Model.refSetSig, TargetTable.checkRequestIn, TargetTable.requestInValue,
-          TargetTable.pureIn] at hl)
-      | exact .inl rfl
-  state_effect := by simp [builtins]
-  store_shape := by
-    intro b s h
-    rcases sig_cases h with ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ <;>
-      simp [PrimSig.StoreShape, PrimSig.ntys, Model.refGetSig, Model.refSetSig, TargetTable.checkRequestIn,
-        TargetTable.requestInValue, TargetTable.sendIn, TargetTable.ioIn, TargetTable.pureIn]
-  store_admits := by
-    intro b s C ts h h1 h2 h3 hl
-    rcases sig_cases h with ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ <;>
-      first
-      | simpa [PrimSig.ntys, Model.refGetSig, Model.refSetSig] using hl
-      | (exfalso; simp [TargetTable.checkRequestIn, TargetTable.requestInValue, TargetTable.sendIn, TargetTable.ioIn,
-          TargetTable.pureIn] at h1 h2 h3)
-  ref_get := ⟨Model.refGetSig, by simp [builtins], rfl⟩
-  ref_set := ⟨Model.refSetSig, by simp [builtins], rfl⟩
-  release_exists := fun _ _ _ _ _ => ⟨none, rfl⟩
-  io_target := by
-    intro Ψ b s rs ts es ws o obs h hk _ _ _ _ _ hr
-    rcases sig_cases h with ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ <;>
-      simp only [builtins] at hr
-    · simp at hr
-    · simp at hr
-    · simp at hr
-    · simp at hr
-    · obtain ⟨-, -, rfl⟩ := hr
-      -- 単一の対象の形: 最初の引数が対象を保持すれば観測はその対象一つ、そうでなければ旧 Top の形で空。
-      match ws with
-      | [] => simp [PrimSig.shapeAt, TargetTable.sendIn, TargetTable.ioIn, firstTarget,
-          Scope.Signature.ShapeTargets]
-      | v :: _ =>
-          cases hv : v.target? with
-          | none => simp [PrimSig.shapeAt, TargetTable.sendIn, TargetTable.ioIn, firstTarget, hv,
-              Scope.Signature.ShapeTargets]
-          | some t => simp [PrimSig.shapeAt, TargetTable.sendIn, TargetTable.ioIn, firstTarget, hv,
-              Scope.Signature.ShapeTargets]
 
 /-! ## 旧の像
 
@@ -774,8 +592,6 @@ theorem httpProg_wellTyped : httpProg.WellTyped B :=
 theorem httpProg_effectsOk : httpProg.EffectsOk B :=
   ⟨fun _ _ _ h => (by cases h), fun _ _ h => (by cases h), fun _ _ h => (by cases h)⟩
 
-theorem httpProg_assumptions : B.Assumptions httpProg := assumptions hostPat reqTarget httpProg httpProg_hasHttp
-
 def sendCall : Comp := .app (.prim "Http.sendIn" [] [] [apiRange]) [checkedReq]
 
 theorem send_admissible : B.RangeAdmissible "Http.sendIn" TargetTable.sendIn [apiRange] := by
@@ -783,9 +599,6 @@ theorem send_admissible : B.RangeAdmissible "Http.sendIn" TargetTable.sendIn [ap
   · exact ⟨by decide, Scope.Domain.Range.fitsKinds_nil⟩
   · intro r hr; simp only [List.mem_singleton] at hr; subst hr; decide
   · intro r hr; simp only [List.mem_singleton] at hr; subst hr; decide
-
-theorem send_prim_admissible : PrimitiveAdmissible [] (TargetTable.sendIn.inst [apiRange]) Qempty [] [] :=
-  PrimitiveAdmissible.of_noRows_inst send_scoped (by decide) rfl rfl rfl (by simp)
 
 theorem acceptHeader_typed {Ψ : StoreTy} : HasTypeV httpProg B Ψ [] [] acceptHeader pairTy :=
   .V_Con (cd := pairDecl) (by simp [httpProg, httpCons]) rfl
@@ -831,15 +644,6 @@ theorem sendCall_args {Ψ : StoreTy} :
   rw [sendIn_params]
   exact .cons checkedReq_typed .nil
 
-theorem sendCall_typed {Ψ : StoreTy} :
-    HasTypeC httpProg B Ψ [] [] none sendCall (Ty.subst [] [] (TargetTable.sendIn.inst [apiRange]).ret)
-      (Eff.substAt 0 [] [] (TargetTable.sendIn.inst [apiRange]).eff) := by
-  have hv := HasTypeVQ.V_Prim (P := httpProg) (B := B) (Ψ := Ψ) (Q := Qempty) (C := []) (Γ := [])
-    (b := "Http.sendIn") (s := TargetTable.sendIn) (rs := [apiRange]) (ts := []) (es := [])
-    sig_send send_admissible ⟨rfl, by decide⟩ send_prim_admissible
-  rw [fnTy_eq] at hv
-  exact .C_App hv sendCall_args
-
 /-- 送信の効果は `Http.Connect[api.example.com:443]` である。 -/
 theorem send_eff : Eff.substAt 0 [] [] (TargetTable.sendIn.inst [apiRange]).eff =
     Eff.singleAt "Http.Connect" (.fixed apiRange) := by
@@ -852,11 +656,6 @@ theorem sendCall_closed : sendCall.ClosedNoEffVars := by
     Val.VarsInList]
 
 def sendState : State := .run sendCall [] Store.empty
-
-/-- 送信の呼び出しの状態は、末尾に `{Http.Connect[api.example.com:443]}` を固定した状態の型付けを持つ。 -/
-theorem sendState_typedE : StateTyE httpProg B (Eff.singleAt "Http.Connect" (.fixed apiRange)) sendState := by
-  have h := stateTyE_init_eff httpProg_wellFormed httpProg_assumptions.core sendCall_typed sendCall_closed
-  rwa [send_eff] at h
 
 /-- 処理する節がないので、応答の関係で進み、事象は検査済みの要求の値を引数に持ち、観測は検査した endpoint 一つ
 である（リダイレクトを追わない）。 -/
@@ -896,35 +695,6 @@ theorem projected_url_typed {Ψ : StoreTy} :
     ∃ cd, httpProg.cons "Http.ClientRequest" = some cd ∧ cd.args[1]? = some (.base .string) ∧
       HasTypeV httpProg B Ψ [] [] req TargetTable.clientRequestTy :=
   ⟨clientRequestDecl, by simp [httpProg, httpCons], rfl, mkReq_typed _⟩
-
-/-- 対象一致の条件の単一の対象の形（endpoint）: 観測は対象の位置の引数が保持する endpoint ちょうど一つである。 -/
-theorem send_io_target :
-    Scope.Signature.ShapeTargets Val.target? (TargetTable.sendIn.shapeAt [checkedReq]) [checkedReq] [apiT] :=
-  httpProg_assumptions.io_target StoreTy.empty "Http.sendIn" TargetTable.sendIn [apiRange] [] [] [checkedReq]
-    (.val (.con "Ok" sendTys [response])) [apiT] sig_send (.inl rfl) send_admissible rfl rfl rfl sendCall_args
-    ⟨rfl, .inl rfl, rfl⟩
-
-/-- 一段の対象健全性を Http の項目に当てる。観測した endpoint `api.example.com:443` は、末尾の効果の
-`Http.Connect` の原子が許す。 -/
-theorem sendState_target_sound :
-    ∀ t ∈ [apiT], B.Allows (Eff.singleAt "Http.Connect" (.fixed apiRange)) "Http.Connect" t := by
-  obtain ⟨e, l, he, hl, h⟩ := step_target_sound httpProg_effectsOk httpProg_assumptions.core
-    httpProg_assumptions.target sendState_typedE sendState_step
-  rw [sig_send] at he
-  cases he
-  cases hl
-  exact h
-
-/-- 到達先の対象健全性を Http の項目に当てる。初期の効果 `{Http.Connect[api.example.com:443]}` で型付いた初期状態
-（到達は零歩）から起こる送信の事象の観測は、初期の効果の `Http.Connect` の原子が許す。 -/
-theorem sendState_reachable_target_sound :
-    ∀ t ∈ [apiT], B.Allows (Eff.substAt 0 [] [] (TargetTable.sendIn.inst [apiRange]).eff) "Http.Connect" t := by
-  obtain ⟨e, l, he, hl, h⟩ := reachable_target_sound httpProg_wellFormed httpProg_wellTyped httpProg_effectsOk
-    httpProg_assumptions.core httpProg_assumptions.target sendCall_typed sendCall_closed .refl sendState_step
-  rw [sig_send] at he
-  cases he
-  cases hl
-  exact h
 
 /-- 観測した endpoint は、効果の範囲の外の endpoint ではない: 範囲 `other.example.com:443` の `Http.Connect` は
 `api.example.com:443` を許さない。 -/

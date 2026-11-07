@@ -22,11 +22,11 @@ def base(name):
 
 
 def header(ret, params=()):
-    return {"tparams": [], "neffs": 0, "names": ["x"] if len(params) == 1 else ["left", "right"] if len(params) == 2 else [], "params": list(params), "ret": ret, "eff": []}
+    return {"tparams": [], "neffs": 0, "names": ["x"] if len(params) == 1 else ["left", "right"] if len(params) == 2 else [], "params": list(params), "ret": ret, "eff": [], 'tparamKinds': [], 'effParams': [], 'rangeParams': [], 'proofSteps': None}
 
 
 def primitive(name, params, ret):
-    return {"name": name, **header(ret, params), "names": (["b"] if name.startswith("UnsignedInteger8.") else ["n"]) if name.endswith(".toString") else ["value"] if len(params) == 1 else ["left", "right"] if len(params) == 2 else [], "kind": "pure", "opEff": None,
+    return {"name": name, **dict(tparams=[], tparamKinds=[], neffs=0, effParams=[], params=list(params), ret=ret, eff=[], rkinds=[], shape="untargeted"), "names": (["b"] if name.startswith("UnsignedInteger8.") else ["n"]) if name.endswith(".toString") else ["value"] if len(params) == 1 else ["left", "right"] if len(params) == 2 else [], "kind": "pure", "opEff": None,
             "classConstraints": [], "unconvertibleTypes": []}
 
 
@@ -35,7 +35,7 @@ def definition(index, name, ret, expr, core, params=()):
     return {"name": f"{name} (fn:{index})", "scope": {"inScope": {
         "surface": {"package": "author", "coverageView": [], "header": h, "body": {"last": {"expr": {"returnE": {"ret": ret, "inner": expr}}}},
                     "dictParams": [], "implementation": None, "method": None, "supers": []},
-        "core": {"header": h, "body": core, "lambdaEffects": [], "supers": []}}}}
+        "core": {"header": h, "body": core, "lambdaEffects": [], "supers": []}}}, 'annotations': {}}
 
 
 def inputs():
@@ -64,17 +64,17 @@ def inputs():
         name = f"{ty}.toString"
         expr = {"interpolation": {"parts": [{"converted": {"ty": base(ty)}}],
                                   "es": [{"local": {"index": 0}}],
-                                  "converters": [{"primName": {"name": name, "tys": [], "effs": []}}]}}
+                                  "converters": [{"primName": {"name": name, "tys": [], "effs": [], 'ranges': []}}]}}
         core = json.loads(json.dumps(fixture["interpolationCore"]).replace("$primitive", name))
         defs.append(definition(len(defs), name, base("String"), expr, core, [base(ty)]))
         prims.append(primitive(name, [base(ty)], base("String")))
     identity = {"group": "golden", "name": "width-exchange"}
     corpus = {"version": fixture["exchangeVersions"]["corpus"], "operators": fixture["operators"], "annotations": {"tailMatch": [0, 0]},
               "inputs": [{**identity, "dataTypes": [], "excluded": [], "definitions": defs, "constants": [],
-                          "ops": [], "effects": [], "primOps": [], "classes": [], "impls": []}]}
+                          "ops": [], "effects": [], "primOps": [], "classes": [], "impls": [], 'candidates': [], 'aliases': [], 'records': [], 'testers': [], 'externals': [], 'logicCertificates': [], 'scopeAcceptance': {'patterns': [], 'hosts': [], 'limits': {'body': {'operations': 1000000, 'items': 1000000}, 'whole': {'operations': 10000000, 'items': 10000000}}}}]}
     builtins = {"version": fixture["exchangeVersions"]["types"], "inputs": [{**identity, "prims": prims,
                 "effects": [{"name": "State", "ops": []}], "resources": [], "dataDecls": [],
-                "summaries": [], "statePure": [], "supplementalData": [], "supplementalPrims": []}]}
+                "summaries": [], "statePure": [], "supplementalData": [], "supplementalPrims": [], 'effKinds': [], 'valKinds': [], 'admitsR': [], 'valContents': [], 'opaqueNames': []}]}
     stdlib = {"version": fixture["exchangeVersions"]["types"], "inputs": [{**identity, "functions": [], "impls": []}]}
     return corpus, builtins, stdlib
 

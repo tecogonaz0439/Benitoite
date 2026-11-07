@@ -50,7 +50,7 @@ class Batch2ExchangeTests(unittest.TestCase):
                         data[file]['version'] = version
                         result, _ = self.run_tool(tool, data)
                         self.assertEqual(result.returncode, 2, result.stdout)
-                        self.assertIn('new exchange version', result.stderr)
+                        self.assertIn('version', result.stderr)
         for field in ('effParams',):
             data = copy.deepcopy(self.data)
             del shared['surface'](data, 0)['header'][field]

@@ -1,7 +1,7 @@
 """手書きの新形式を六つの CLI で検査する。期待コアは脱糖から作らない。
 
 JSON の必須欄、契約とラベル・位置、宣言表、比較の正規化を入口で確かめる。
-契約名の導入前の版へ新版の欄を混ぜた入力の拒否も検査する。8/2/2 の閉じた互換入力は
+契約名の導入前の版へ新版の欄を混ぜた入力の拒否も検査する。16/8 の閉じた互換入力は
 別の test_extensible_exchange.py で確認する。
 """
 
@@ -43,7 +43,7 @@ def effect_order_input(data, effects):
           "params": [{"base": {"name": "Integer"}}],
           "ret": {"base": {"name": "Integer"}}, "eff": effects}}}}
     h = {"tparams": [], "neffs": 2, "names": ["value"],
-         "params": [ty], "ret": ty, "eff": []}
+         "params": [ty], "ret": ty, "eff": [], 'tparamKinds': [], 'effParams': [{'noFail': False} for _ in range(2)], 'rangeParams': [], 'proofSteps': None}
     data["corpus"]["inputs"][0]["definitions"].append({
         "name": "effectOrder (fn:100)", "scope": {"inScope": {
             "surface": {"header": copy.deepcopy(h), "dictParams": [],
@@ -52,10 +52,10 @@ def effect_order_input(data, effects):
                 "body": {"last": {"expr": {"returnE": {
                     "ret": copy.deepcopy(ty), "inner": {"local": {"index": 0}}}}}}},
             "core": {"header": copy.deepcopy(h), "lambdaEffects": [], "supers": [],
-                "body": {"ret": {"value": {"var": {"index": 0}}}}}}}})
+                "body": {"ret": {"value": {"var": {"index": 0}}}}}}}, 'annotations': {}})
     # 四形式の側の読者にも同じ潜在効果を渡す。期待値はワイルドカードによる全域である。
     data["builtins"]["inputs"][0]["prims"].append({
-        "name": "effectOrder", **copy.deepcopy(h), "kind": "pure", "opEff": None,
+        "name": "effectOrder", **{k: v for k, v in copy.deepcopy(h).items() if k not in ("rangeParams", "proofSteps")}, "rkinds": [], "shape": "untargeted", "kind": "pure", "opEff": None,
         "classConstraints": [], "unconvertibleTypes": []})
     data["stdlib"]["inputs"][0]["functions"].append({
         "name": "fn:101", "header": copy.deepcopy(h), "dictParams": []})
@@ -117,18 +117,15 @@ class ExchangeTests(unittest.TestCase):
         self.assertEqual(report["definition"], "fn:2")
         self.assertEqual(len(report["checkNanos"]), 2)
 
-    def test_legacy_effect_order_and_membership(self):
-        legacy = runpy.run_path(str(Path(__file__).with_name("test_extensible_exchange.py")))["legacy"]
+    def test_effect_order_and_membership(self):
         # Atom.code の順序。Python側にその符号の実装は置かない。
         effects = [{"rho": {"index": 0}}, {"rho": {"index": 1}},
-                   {"name": {"value": "Ask"}}, {"name": {"value": "Console"}}]
-        for version in (8, 9, 10):
+                   {"name": {"value": "Ask", 'ix': {'fixed': 'top'}}}, {"name": {"value": "Console", 'ix': {'fixed': 'top'}}}]
+        for version in (16,):
             for order in (effects, list(reversed(effects)) + effects[:1]):
                 data = effect_order_input(self.data, order)
                 core = data["corpus"]["inputs"][0]["definitions"][-1]["scope"]["inScope"]["core"]
                 core["header"]["params"][0]["list"]["elem"]["fn"]["eff"] = list(reversed(effects))
-                if version == 8:
-                    data = legacy(data)
                 data["corpus"]["version"] = version
                 for tool in TOOLS:
                     with self.subTest(version=version, order=order, tool=tool):
@@ -161,7 +158,7 @@ class ExchangeTests(unittest.TestCase):
                     self.assertEqual(mismatch["definition"], "effectOrder (fn:100)")
                     self.assertIn("header.params[0].list.elem.fn.eff", mismatch["path"])
                     self.assertNotEqual(mismatch["expected"], mismatch["actual"])
-                    # 旧版の名前の原子は明示の Top の範囲の位置を加えて読む（corpus 15 の報告の形。L50.1）。
+                    # 名前の原子は明示の Top の範囲の位置を持つ。
                     explicit_top = [{"name": {**a["name"], "ix": {"fixed": "top"}}} if "name" in a else a
                                     for a in effects]
                     self.assertEqual(mismatch["expectedDefinition"]["header"]["params"][0]["list"]["elem"]["fn"]["eff"],
@@ -188,23 +185,16 @@ class ExchangeTests(unittest.TestCase):
                     self.assertEqual(report["mismatchExamples"][0]["error"], {"path": [0, 0], "ancestors": [],
                                      "reason": "implementation method parameter names mismatch"})
 
-    def test_pre_contract_versions_reject_new_contract_fields(self):
+    def test_old_versions_are_rejected(self):
         for tool, files in TOOLS.items():
-            with self.subTest(tool=tool):
-                data = copy.deepcopy(self.data)
-                data[files[0]]["version"] = 7 if files[0] == "corpus" else 1
-                result, _ = self.run_tool(tool, data)
-                self.assertEqual(result.returncode, 2, result.stdout)
-                field = "positions" if tool == "coverageProgramDiff" else "names"
-                self.assertEqual(result.stderr, f"{tool}: field requires new exchange version: {field}\n")
-                # 版そのものの拒否も保持し、新版の欄を混ぜた拒否と区別する。
-                kind = files[0]
-                version = data[kind]["version"]
-                data[kind] = {"version": version}
-                result, _ = self.run_tool(tool, data)
-                self.assertEqual(result.returncode, 2, result.stdout)
-                self.assertIn("unsupported", result.stderr)
-                self.assertEqual(result.stderr, f"{tool}: unsupported {kind} exchange version: {version}\n")
+            for field in files:
+                for version in (range(0, 16) if field == 'corpus' else range(0, 8)):
+                    data = copy.deepcopy(self.data)
+                    data[field]['version'] = version
+                    with self.subTest(tool=tool, field=field, version=version):
+                        result, _ = self.run_tool(tool, data)
+                        self.assertEqual(result.returncode, 2, result.stdout)
+                        self.assertIn('version', result.stderr)
 
     def test_required_names_are_not_filled(self):
         for tool in ("desugarDiff", "builtinCheck", "surfaceCheck", "surfaceCheckAll"):

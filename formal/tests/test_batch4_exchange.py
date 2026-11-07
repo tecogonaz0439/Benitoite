@@ -1,4 +1,4 @@
-"""corpus13/sidecar5 の独立入力を六入口で比較する。Cargo は起動しない。"""
+"""corpus16/sidecar8 の独立入力を六入口で比較する。Cargo は起動しない。"""
 import copy
 import json
 from pathlib import Path
@@ -119,12 +119,12 @@ class Batch4ExchangeTests(unittest.TestCase):
         copied = root['rest']['last']['expr']['returnE']['inner']
         string = {'base': {'name': 'String'}}
         integer = {'base': {'name': 'Integer'}}
-        state = [{'name': {'value': 'State'}}]
+        state = [{'name': {'value': 'State', 'ix': {'fixed': 'top'}}}]
         lam = {'lam': dict(names=[], params=[], ret=string, eff=state,
                           body={'last': {'expr': {'returnE': dict(ret=string, inner=copied)}}})}
         fixed = {'expr': dict(label='left', position=0, inner=copied)}
         hole = {'hole': dict(label='right', position=1, ty=string)}
-        add = {'primName': dict(name='add', tys=[], effs=[])}
+        add = {'primName': dict(name='add', tys=[], effs=[], ranges=[])}
         partial = {'partialCall': dict(callee=add, names=['left', 'right'], args=[fixed, hole], ret=string, eff=state)}
         callee = copy.deepcopy(partial)
         callee['partialCall']['args'] = [dict(hole=dict(label='left', position=0, ty=string)), hole]
@@ -133,7 +133,7 @@ class Batch4ExchangeTests(unittest.TestCase):
         variants = [lam, {'lazyE': dict(body={'last': {'expr': copied}})}, partial, callee,
             {'partialCon': dict(name='PosPair', tys=[], args=[{'expr': dict(label=None, position=0, inner=copied)},
                                                         {'hole': dict(label=None, position=1, ty=integer)}])},
-            {'call': dict(callee={'funName': dict(name='task', tys=[], effs=[])}, labels=['f'], positions=[0], args=[lam])},
+            {'call': dict(callee={'funName': dict(name='task', tys=[], effs=[], ranges=[])}, labels=['f'], positions=[0], args=[lam])},
             {'handleFail': dict(error=string, result=string, body={'last': {'expr': {'literal': {'value': {'string': {'value': 'ok'}}}}}},
                                 clause={'last': {'expr': {'builderOp': dict(copied['builderOp'], index=2)}}})}]
         for n, expression in enumerate(variants):
@@ -196,36 +196,15 @@ class Batch4ExchangeTests(unittest.TestCase):
                     self.assertIn('integer outside i64', result.stderr)
 
     def test_version_boundaries_and_pairs(self):
-        for f in FILES:
-            versions = range(8, 13) if f == 'corpus' else range(2, 6)
-            fields = ('block', 'builderBind', 'builderOp', 'builderLet', 'localRef')
-            for version in versions:
-                for field in fields:
+        for tool, files in TOOLS.items():
+            for field in files:
+                for version in (range(8, 16) if field == 'corpus' else range(2, 8)):
                     data = copy.deepcopy(self.data)
-                    # 正例全体の別のタグに先に拒否されない入力で版境界を観測する。
-                    data[f] = dict(version=version, deep=[{'unknown': {field: None}}])
-                    tool = {'corpus': 'desugarDiff', 'builtins': 'builtinCheck', 'stdlib': 'surfaceCheck',
-                            'coverage': 'coverageDiff', 'coverage-program': 'coverageProgramDiff'}[f]
-                    if f in ('builtins', 'stdlib'):
-                        # この二形式はcorpusの後に読まれる。
-                        tool = 'builtinCheck' if f == 'builtins' else 'surfaceCheck'
-                    with self.subTest(file=f, version=version, field=field):
+                    data[field]['version'] = version
+                    with self.subTest(tool=tool, field=field, version=version):
                         result, _ = self.run_tool(tool, data)
                         self.assertEqual(result.returncode, 2, result.stdout)
-                        reason = ('regenerate with version 13' if f == 'corpus' and version == 12
-                                  and field in ('builderBind', 'builderOp', 'builderLet')
-                                  else f'new exchange version: {field}')
-                        self.assertIn(reason, result.stderr)
-        for f in ('builtins', 'stdlib', 'coverage-program'):
-            data = copy.deepcopy(self.data)
-            data[f]['version'] = 4
-            for tool, fs in TOOLS.items():
-                if f not in fs or len(fs) == 1:
-                    continue
-                with self.subTest(pair=tool, file=f):
-                    result, _ = self.run_tool(tool, data)
-                    self.assertEqual(result.returncode, 2, result.stdout)
-                    self.assertIn('version pair mismatch', result.stderr)
+                        self.assertIn('version', result.stderr)
 
     def test_new_corpus_rejects_all_legacy_reference_fields(self):
         for field in ('refs', 'newRef', 'getRef', 'setRef'):
@@ -233,19 +212,11 @@ class Batch4ExchangeTests(unittest.TestCase):
             data['corpus']['deep'] = [{'unknown': {field: {}}}]
             result, _ = self.run_tool('desugarDiff', data)
             self.assertEqual(result.returncode, 2, result.stdout)
-            self.assertIn(f'new exchange version: {field}', result.stderr)
+            self.assertIn(f'unsupported exchange field: {field}', result.stderr)
 
     def test_integer_readers_and_aliases(self):
-        for version in range(8, 15):
-            # 8〜10の閉じた互換は既存の正例から作り、範囲外だけを変異させる。
-            directory = 'named-exchange' if version < 11 else 'batch2-exchange'
-            base = {f: json.loads((FIXTURES.parent / directory / f'{f}.json').read_text()) for f in FILES}
-            if version == 8:
-                legacy = runpy.run_path(str(FIXTURES.parent / 'test_extensible_exchange.py'))['legacy']
-                base = legacy(base)
-            base['corpus']['version'] = version
-            for f in FILES[1:]:
-                base[f]['version'] = 2 if version == 8 else 3 if version < 11 else 6 if version >= 14 else 5 if version == 13 else 4
+        for version in (16,):
+            base = {f: json.loads((FIXTURES.parent / 'batch2-exchange' / f'{f}.json').read_text()) for f in FILES}
             for value in (-9223372036854775809, 9223372036854775808):
                 data = copy.deepcopy(base)
                 data['corpus']['inputs'][0]['constants'] = [dict(name='oversized', package='author',
@@ -266,7 +237,7 @@ class Batch4ExchangeTests(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stderr + json.dumps(report))
         for f, tool, location in [('coverage', 'coverageDiff', 'pattern'),
                                    ('coverage-program', 'coverageProgramDiff', 'pattern')]:
-            for version in range(2, 6):
+            for version in (8,):
                 for value in (-9223372036854775809, 9223372036854775808):
                     data = copy.deepcopy(self.data)
                     data[f]['version'] = version

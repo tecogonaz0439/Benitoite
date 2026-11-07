@@ -1,5 +1,6 @@
 import Benitoite.Exchange.Syntax
 import Benitoite.Exchange.Observe
+import Benitoite.Exchange.CanonicalNames
 
 /-! # 交換の版と入力の完全性
 
@@ -199,7 +200,8 @@ def validateRangeInput (kind : String) (j : Json) : Except String Unit := do
     if kind == "corpus" then
       for i in inputs do validateScopeAcceptance i
 
-/-- 入力の種類ごとに同じ新版だけを受ける。旧版と未知の版は変換せず拒否する。 -/
+/-- 入力の種類ごとに同じ新版だけを受ける。旧版と未知の版は変換せず拒否する。検査した文書の Result の構成子の名前は、
+篩付きの表層の名前へ写して返す（`CanonicalNames.resultJson`）。独立の網羅性の文書は自身の宣言だけを読むので写さない。 -/
 def exchangeJson (kind : String) (j : Json) : Except String Json := do
   let version ← j.getObjValAs? Nat "version"
   let expected : Nat := if kind == "corpus" then 16 else 8
@@ -220,10 +222,10 @@ def exchangeJson (kind : String) (j : Json) : Except String Json := do
   validateSyntaxFields j
   validateIntegerConstants j
   validateRangeInput kind j
-  return j
+  return if kind == "coverage" then j else CanonicalNames.resultJson j
 
 /-- コーパス16と付随の表8を一組として用いる。 -/
-def sidecarVersion (_corpusVersion : Nat) : Nat := 8
+def sidecarVersion : Nat := 8
 
 def validateDataTypes (ds : List DataTypeInfo) : Except String Unit := do
   if (ds.map (·.name)).eraseDups.length != ds.length then throw "duplicate data type metadata"

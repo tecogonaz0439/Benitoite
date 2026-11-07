@@ -6,7 +6,7 @@ noncomputable section
 open SafeCheckErasure CheckErasure
 
 /-- 一段に対応する有限実行。対応する実行が空のときは、元の順位が減る。 -/
-def Forward (P : Program) (B : Builtins) (Q : Program) (D : Builtins)
+def Forward (P : Refinement.Program) (B : Builtins) (Q : Refinement.Program) (D : Builtins)
     (σ : PathEnv) (R : State → State → Prop) (rank : State → Nat) : Prop :=
   ∀ {s t label s'}, R s t → Step P B σ s label s' →
     ∃ t', Steps Q D σ t label.toList t' ∧ R s' t' ∧
@@ -78,7 +78,7 @@ theorem diverging_prefixes {P B Q D σ R leftRank rightRank s t}
     exact ⟨z',steps',(divergence forward backward rel).mpr nontermination⟩
 
 /-- 対応する状態の終端観測は、事象を出さない有限実行で対応する。 -/
-def TerminalForward {Observation : Type} (Q : Program) (D : Builtins) (σ : PathEnv)
+def TerminalForward {Observation : Type} (Q : Refinement.Program) (D : Builtins) (σ : PathEnv)
     (R : State → State → Prop) (left right : State → Observation → Prop) : Prop :=
   ∀ {s t observation}, R s t → left s observation →
     ∃ t', Steps Q D σ t [] t' ∧ right t' observation

@@ -63,7 +63,7 @@ private def primWith (rkinds : List Kind) (eff : List Atom) : Json :=
 private def missingRanges : Json := Json.mkObj [("prim", Json.mkObj [("name", .str "File.readText"),
   ("tys", Json.arr #[]), ("effs", Json.arr #[])])]
 #guard !(decodeVal missingRanges).isOk
-#guard sidecarVersion 16 == 8
+#guard sidecarVersion == 8
 
 private def atoms : Eff := [.name "State" .top, writeAtom, .name "File.Read" .top]
 
