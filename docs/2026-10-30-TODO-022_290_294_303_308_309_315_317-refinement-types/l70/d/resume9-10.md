@@ -137,6 +137,7 @@ factory() は次のラムダを返す。
 | `execution`・`infinite` の定義 | 群 E の主保証は標準の本体を結合した核で述べるため、観測の同値も同じ核で述べる必要がある | 元のプログラムを標準の本体と結合した核 `original` で定義し、`PredicateProgramObservations` へ移す | 結合しない `desugarProgram` の核のまま比べる（標準の関数本体を呼ぶ実行を対象にできない） | 標準の本体を引数で受ける。準備が恒等なら `resolved` と同じ核になる |
 | 値・コード・状態の対応の構成子 | 初期の試作の `Code.floating`・`StateRel.floatingArgument`・`floatingApplication` は一つの公開判定だけを扱い、`Code.scalar`・`StateRel.scalarPhase` が全15 API を同じ形で扱う | 試作の構成子と、それだけを読む補題を除き、浮動小数点の判定も `Code.scalar` で表す | 二重の構成子を残す（全規則の場合分けが重複する） | 範囲によらない内部の関係の変更 |
 | `structural_fail_operation` | `E_OpFail` は raise の誤りの型と節の誤りの型を別に持つ。補題は両者を同じ型に限っていた | 二つの型を別の変数にした | 補題を使わず個別に書く | 内部の補題の一般化 |
+| `CheckInfer`・`CheckOpenInfer` の外側の型 `outerType` | 篩が束縛した実引数を指す結果型を外側へ移すと、別の値を指す篩になり、部分型の問い合わせが証明できない。取り出しの関数の呼出しを期待型のない位置に書くと、整数・String・Float などの欄で拒否された | 束縛した値を指す篩の層を除いてから番号を戻す。推論の案内の生成だけを変え、再検査は変えない | 実引数の項を代入する（前提に束縛した値と実引数の等号がなく、問い合わせは閉じない）、利用者に証明書を求める（書ける形を狭める）、検査器の部分型の規則を変える | 範囲によらない。篩が束縛した値を指さない型は以前と同じ型になる |
 
 この表の受理の拡大は、取りまとめが設計者の見直しの対象として集める。内部の長さ補題と値の四条件の証明は、型付け・Step の規則を変更しない。
 
@@ -260,3 +261,59 @@ Claude の区間は 06:14〜07:45 頃（約1時間30分）であり、再開10�
 - RV-L70.d3 の「再開10の処置の確認」は可（軽4・情7・情8）。
 - 軽4: 再開10で足した `maxHeartbeats 400000` の指定は、4つのモジュール（`PredicateSimulationAlgebra`・`PredicateSimulationTyping`・`PredicateSimulationPipeSafety`・`PredicateSimulationOpenPipeSafety`）に計8か所ある（2・2・1・3）。上の段落の「四つ」はモジュールの数である。既定の上限での timeout はモジュールごとに確かめたもので、指定ごとには確かめていない。読者のない補題を除いた件数（50件）は、担当の数えたものであり、独立には確かめていない。
 - 情8: 監査の台本は、マクロのスコープを持つ名前を対象から外している。外した件数の記録と、どれも `axiom` でないことの照合は、群 H の段全体の公理監査（L70.46）で行う。
+
+### 結合の追随（群 K2 との結合 e9f7522a の後）
+
+取りまとめが m014/l70.d3 に san_benito（d9cf242d、群 K2 を含む）を結合した後、既定ビルドが失敗した。群 K2 は取り出しの関数の宣言 `accessorDecl`・`accessorDef`・`accessorLink` に構成子の列の引数を足し、`Program.declarationsFor` と脱糖はその列に `accessorConstructors p.dataConstructors cd k` を渡す。`accessorRet` は String・Float などの全 sort の欄で、結果を欄との関係で篩う。群 K2 の定義は変えずに、次を追随させた（08:10〜08:25）。
+
+| モジュール | 追随 |
+|---|---|
+| `PredicateProjectionFixture` | 取り出しの署名を `accessorConstructors program.declarations.dataConstructors` を渡す形にした。String・Float の欄が観測できる欄になったので、`AccessorOk` の照合の経路の事実と欄の関係の事実の `FactsWF`（WF・Sorted・Declared）を二つの欄について構成した。data の欄は構成子の列が空なので観測しない |
+| `PredicateGeneratedNames` | `accessor_names` を任意の構成子の列について述べる形にした（本体は列によらない） |
+| `PredicateSimulationProjectionInputs` | `GetterEnvironment.lookup` の取り出しの定義に、元のプログラムの構成子の列を渡す |
+| `PredicateSimulationAdministrativePath` | `getter_specialized` を任意の構成子の列について述べ、取り出しの呼出しの段で同じ列を使う |
+| `PredicateSimulationProgram` | 脱糖の取り出しの定義の lookup の式を新しい形に合わせた |
+| `FieldCheckerExamples`（群 K2 の例） | 群 D が足した `AcceptInput.openRules` の既定値を使うため、無名の構成子を欄名の構成に改めた。値は変えていない |
+
+これらの後の既定ビルド（共有ロック、08:18〜08:20）は、`CheckPredicateProjectionExamples` だけで失敗した（他の全モジュールは構築済み。この例を import するのは根だけである）。失敗した言明は、欄の判定を条件に置いた両枝の受理の例 `text_branches`・`nested_float_branches` などである。原因を局所の評価で確かめた。String の欄の取り出しの関数の呼出し `Predicate.Box.text[Unit](x)` は、単独の `Check.checkExpr` でも `type or certificate check failed` で拒否される。推論が作る問い合わせは一件で、前提は結果の篩 `x0 =ₛ field(x1) ∧ …`、目標は同じ形で受け手が `x2` を指す `x0 =ₛ field(x2) ∧ …` であり、`guideDecision` は rejected になる。Float の欄 `Predicate.Box.number` も同じく拒否され、篩のない data の欄 `Predicate.Outer.inner` の呼出しは受理される。群 K2 で String・Float の欄の結果が篩われる前は、この問い合わせは生じなかった。群 K2 の受理の例は、交換の証明書を入力に与え、期待型のある末尾位置で同じ形の呼出しを検査している。
+
+この例を通すには、検査器の呼出しの規則が作る問い合わせの番号の対応を直すか、例の入力に交換の証明書を与える必要がある。前者は検査器（群 D の受け持ちの外）の変更、後者は String・Float の欄の取り出しを条件に書く利用者のプログラムが証明書なしには受理されなくなることを例で認めることになり、利用者の書ける形を狭める。どちらも依頼の止める条件に当たるので、08:25 に止めて取りまとめの判断を求めた。
+
+#### 取り出しの関数の呼出しの拒否の原因と修正（08:25〜）
+
+取りまとめの判断（案1、検査器の問い合わせの生成を直す）を受けて、原因を確かめた。`CheckInfer` の呼出しの規則は、実引数を k 個束縛した文脈で結果型 r を計算し、外側の文脈の型を `outerType k r`（値の番号を k だけ戻す改名）とする。再検査は r から外側の型を k だけ持ち上げた型への部分型を求める。r の篩が束縛した実引数を指すとき、番号を戻す写像 `unshiftValue k 0` は自然数の引き算で束縛の番号を 0 に潰すので、篩は外側の文脈の番号 0 の値を指すようになる。そのため部分型の問い合わせは、前提が束縛した実引数 `x1`、目標が外側の値を持ち上げた `x2` を指す。二つの値を結ぶ事実はないので、問い合わせは証明できない。番号の持ち上げ自体は正しく、外側の型を作るときに束縛した値を指す篩を持ち出したことが誤りである。
+
+整数の欄の取り出しも同じ誤りを持っていた。基準の版の `CheckInfer` に一時的に戻して検査すると、期待型のない位置と条件の判定の実引数に整数の欄の取り出しを書いた本体は、String の欄と同じく `checkProgram` で拒否された（確認の後に修正した版へ戻した）。群 K2 より前の例は、取り出しを期待型のある末尾位置（`exprAs` の経路）でだけ呼んでいた。この経路は期待型への問い合わせを作るので、誤りは現れなかった。線形算術で偶然に閉じていたのではない。群 K2 が String・Float などの欄の結果を篩ったことで、条件の判定の例が初めてこの経路を通った。
+
+修正は `CheckInfer` と `CheckOpenInfer` の `outerType` に限る。外側へ移す前に、束縛した値（篩の中の番号 1〜k）を指す篩の層を除く（`dropBound`）。除いた後の型は元の型の篩の一部だけを持ち、再検査の部分型は篩を捨てる規則で閉じる。束縛した値を指さない篩はそのまま残す。`CheckInfer` は案内を作るだけで、受理から型付けへの健全性は `checkExprAt` の再検査と `guideSound` が保つ。検査器の規則・`Entails`・群 K2 の定義（`FieldFacts`・`FieldRelations`・`accessorRet`）は変えていない。証明の追随は要らなかった。
+
+`Surface.FieldAccessorEntryExamples` を足した。交換の証明書を持たない入力で、整数・String・Float・Decimal・構成子の関係を持つ data の欄の取り出しを、期待型のない位置（評価して捨てる）と条件の判定の実引数に書いた本体を、`checkProgram` と `checkProgramAccepted` が受理する（`integer_accessor_checked` など五件）。欄について何も知らない値の取り出しを文字集合の契約の戻り値に置いた本体は拒否する（`unproved_contract_rejected`）。`CheckPredicateProjectionExamples` の欄の判定の両枝の例と、群 K2 の `FieldCheckerExamples` の受理の例は、修正後も通る。
+
+修正の判断は「止めずに進めた変更」の表の最後の行に記す。
+
+#### 修正後の検査（08:46〜）
+
+検査の台本は [resume10/merge_checks.py](resume10/merge_checks.py) である。変えたモジュールは、上の表の六つに `CheckInfer`・`CheckOpenInfer`・`FieldAccessorEntryExamples`（新規）・`CheckPredicateProjectionExamples`（証明の追随なし）を加えた十である（[resume10/merge/audit-modules.json](resume10/merge/audit-modules.json)）。生の出力は大きさと SHA-256 だけを残す。
+
+| 検査 | 時刻 | 外側の時間 | 終了 | 生の出力 |
+|---|---|---|---|---|
+| 既定ビルド `lake build`（共有ロック、1684 の作業） | 08:46:24〜08:52:51 | 386.57 秒 | 0 | 188554 バイト、`bd5c82317ae4edc54d187c8a5b4a5608c60719ea8b02b1ec4d8186f0602c360f` |
+| 公理監査（共有ロック、`lake env lean -M 12288`、全環境から十モジュールの宣言を選ぶ） | 08:53:01〜08:55:06 | 125.60 秒 | 0 | 94885207 バイト、`8905d619332cb50e586e55537f1b6e5ca385bbd8ce6a33864b8a57b8fc423b10` |
+| 照合（[resume10/merge/verification.json](resume10/merge/verification.json)） | 08:56 | — | 0 | — |
+
+ビルドの記録に `error:` はなく、変えたモジュールの警告もない。検査の前後で formal/ と二つの設計書の章の SHA-256 の指紋は一致した（`6a6d9ab3b769ca5b5dfb838af2129e3787dab7cabd780613e36595aff22ae1ac`）。公理監査は到達する 130969 件の宣言を対象とし、十モジュールが持つ 6290 件の公理の集合は、なし 2449・`propext` 3334・`Quot.sound, propext` 9・`Classical.choice, Quot.sound, propext` 498 である。`sorryAx` と新しい公理はなく、解決できない名前は 0 件であった。必須の名前（[resume10/merge/required-names.json](resume10/merge/required-names.json)）はすべて対象に含まれる。結合の版 e9f7522a との言明の差は、`PredicateGeneratedNames.accessor_names` と `PredicateSimulationAdministrativePath.getter_specialized` の変更（構成子の列の引数を足した）と、新規のモジュールの六件だけである。`CheckInfer`・`CheckOpenInfer`・`CheckPredicateProjectionExamples`・`FieldCheckerExamples` の言明は変わっていない。
+
+#### 依存する篩を代入で残す案の確認と停止（09:05〜）
+
+取りまとめの判断（実引数が外側の変数か閉じた値なら、結果型の篩の束縛した番号へ代入して外側へ移す）を受けて、実装の前に、再検査がその案内を受理できるかを確かめた。代入した外側の型 b に対し、呼出しの規則 `E_CallDirect` の再検査が求めるのは、実引数を束縛した文脈での `r ≤ b.shiftV k 0` である。r の篩は束縛した実引数 `x1` の欄を指し、b の篩は外側の受け手 `x2` の欄を指す。文脈の事実は、束縛した値の型の篩と外側の事実だけであり、`x1` と `x2` を結ぶ事実はない。
+
+この問い合わせは、期待型のある末尾位置で戻り値の契約を欄の関係そのもの（`accessorRet` と同じ篩）にした本体が作る問い合わせと同じ形である。局所の確認（[resume10/merge/substitution-probe.lean](resume10/merge/substitution-probe.lean)、`lake env lean -M 12288`、終了0、約4秒）で次を確かめた。
+
+- String と整数の欄のどちらでも、その本体を証明書なしの `checkProgram` は拒否する。
+- 実引数の型を自己の等号で篩って `x1 =data x2` を前提に足しても、自動の候補 `CheckPropositional.candidate` は、String と整数のどちらの欄の関係も移さない。
+
+論理の核の等号の証拠 `EqProof.checkRaw` は、仮定の等号を整数の等号（`.integer` の型式）でだけ使い、欄の合同 `.field` は内側を構造の一致でしか認めない。そのため、data の値の等号から欄の観測の等号を導く証明書は、証明書を与えても作れない。
+
+したがって、代入で作った型は再検査で常に断られ、取り出しの呼出しは再び拒否される。断られたら `dropBound` に戻す形にすると、結果は今の版と変わらない。依存する篩を残すには、呼出しの規則で実引数の束縛に外側の値との関係を与えるか、論理の核に data の等号による欄の合同を加える必要がある。どちらも既存規則・`Entails` の変更であり、止める条件に当たるので、実装せずに止めた。この区間では formal/ と設計書を変えていない。
+
+レビューの軽5の処置（09:40〜10:21）: `FieldAccessorEntryExamples.unproved_argument_rejected` を足した。条件の実引数の位置で、欄について何も知らない値の取り出しを `String{charactersIn}` を要求する引数へ渡す本体を、証明書なしの `checkProgram` が断る。その後の検査はすべて終了0である。外側の時間は共有ロックの待ちを含む。既定ビルドは 789.40 秒（188560 バイト、`50307031d4a29dc524b9bee23ede9eec0f205e5a603a021e5070648d67d6ad34`）。変えた十モジュールの公理監査は 1142.26 秒（95264007 バイト、`0196bcf9aedf869f88f6d8ce0ff591d355a190ab7144a1c1bd67153d87375fbc`）で、6306 件に `sorryAx` も新しい公理もなく、解決できない名前は 0 件だった。照合も通った（指紋 `191ad74fef5a2f256d222f1ab0f839122aa206d3635031f98c0027993b2f6d76`）。`resume10/merge/` の要約は、この検査の結果で置き換えた。

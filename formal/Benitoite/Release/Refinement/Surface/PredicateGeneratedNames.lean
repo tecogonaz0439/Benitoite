@@ -102,8 +102,8 @@ mutual
       dictionaryList_names, List.nil_append]
 end
 
-theorem accessor_names (constructor : ConName) (declaration : ConDecl) (field : Nat) :
-    compNames (accessorDef constructor declaration field).body = [] := by
+theorem accessor_names (constructor : ConName) (declaration : ConDecl) (field : Nat) (constructors : List ConName) :
+    compNames (accessorDef constructor declaration field constructors).body = [] := by
   rfl
 
 theorem tester_names (constructor : ConName) (declaration : ConDecl) :

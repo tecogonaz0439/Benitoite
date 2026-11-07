@@ -77,7 +77,7 @@ theorem resolved_program_rel (op : OpPrim) (rows : PredicateProjection.Table.Row
     | none =>
       simp only [Option.map_none]
       cases ((match p.accessors name with
-        | some (c, k) => (p.cons c).map fun cd => accessorDef c cd k
+        | some (c, k) => (p.cons c).map fun cd => accessorDef c cd k (accessorConstructors p.dataConstructors cd k)
         | none => match p.testers name with
           | none => none
           | some c => (p.cons c).map fun cd => testerDef c cd).orElse (fun _ => base.defs name)) with

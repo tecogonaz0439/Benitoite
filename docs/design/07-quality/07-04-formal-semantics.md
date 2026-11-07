@@ -443,7 +443,7 @@ metadata が none の項目、requirements/publicBoundary の空列、対応す�
 
 `Surface.CheckPropositional` は有限な命題の分解から生の論理の証明書を作る。Booleanのtrueとfalseの排他には既存の組込み補題を使い、含意の受理は同じ `checkAccounted` で再検査する。`Surface.CheckPredicateExamples` は十四の公開名とFloat32.isInfiniteから解決した内部形の条件を検査し、同じ枝を素のBooleanの条件にすると拒否する。範囲パラメータを持つ本体にも同じ例を適用する。`Surface.CheckPredicateFallbackExamples` は動的なpatternと文字集合の両端を持つ呼出しを、公開のBooleanの結果型で受理する。`Surface.PredicateProjectionFixture`・`Surface.CheckPredicateProjectionExamples` は、genericなrecordと入れ子の取り出し、開いた範囲を含む型引数、両枝の事実、元の取り出しの型引数が不適格な拒否の対照を持つ。
 
-`Surface.CheckInfer` はソースと宣言から型・効果・有限の案内を計算する。入力に規則の木や位置ごとの中間の型・効果を持たせず、論理の証明書を検査位置ごとに読む。関数の署名の結果型と効果は、ブロックの末尾の式まで渡す。ハンドラは継続ごとの再開の引数の要求を集めて効果を反復し、その候補を厳密に再検査する。`Surface.CheckFinite` は生成した案内の有限支持を入力によらず示し、支持を満たす案内では同じ案内を返すことを証明する（`guide_eq`）。実入口 `checkExpr`・`checkBlock` と宣言の本体の入口は、推論成功後にその案内で再検査する。健全性は生成した案内の支持と `guideSound` との合成で得る。
+`Surface.CheckInfer` はソースと宣言から型・効果・有限の案内を計算する。入力に規則の木や位置ごとの中間の型・効果を持たせず、論理の証明書を検査位置ごとに読む。関数の署名の結果型と効果は、ブロックの末尾の式まで渡す。ハンドラは継続ごとの再開の引数の要求を集めて効果を反復し、その候補を厳密に再検査する。`Surface.CheckFinite` は生成した案内の有限支持を入力によらず示し、支持を満たす案内では同じ案内を返すことを証明する（`guide_eq`）。実入口 `checkExpr`・`checkBlock` と宣言の本体の入口は、推論成功後にその案内で再検査する。健全性は生成した案内の支持と `guideSound` との合成で得る。呼出しと束縛の外へ型を移すときは、束縛した値を指す篩の層を除いてから値の番号を戻す。
 
 `Surface.CheckDataHint` は欄の射影と構成子の判定の型の候補をソースから生成し、既存の形成の検査で照合する。入力に中間の型の案内を置かない。交換の証明書は証明と基本操作列だけを持ち、位置・前提・結論の診断用情報は内部で生成する。`Surface.CheckDiagnostics` は会計の実際の打ち切りと不正の拒否を分ける。各段の推論は拒否と打ち切りを区別し、式・ブロック・宣言・プログラム・受理の各入口の `unknown` から、同じ入力の推論又は問い合わせの会計の打ち切りを導く。検査済みの不正を打ち切りより優先し、会計で打ち切った生証明書の不正は断定しない。
 
@@ -1156,6 +1156,7 @@ Lean の `E_Const` は定数式の形の制限を形式化せず、使用側の 
 | NumericContracts・NormalResultLeaves・ObservationContractsExamples | 「閉じた述語の評価と捕捉」。七幅の正常な加減算・乗算と符号付き負号から数の一致・表現可能性・toTerm?を構成する。正常応答から有限の閉じた葉と置換像の導出を作る。255以下のByteと同じ数のUnsignedInteger16の表現可能性（変換演算との一致は含めない）、DecimalのConstOKと型域、本番の比較・分類への接続。抽象δの型保存だけから演算との一致は結論しない |
 | KeyContracts | 同節の十一の鍵の有限構造の相互帰納、閉じた項の鍵コードの成功とKey.equalへの接続、Decimalの正準化の数の保存と衝突時の数の等値。閉じた鍵と縮約の成功からMap・Setの大きさを同定する。Mapの大きさには値の観測を要求せず、Map自体の鍵化には値も要求する |
 | Surface.FieldCheckerExamples | recordの取り出し関数を持つ有限材料の実入口。Decimal・Float二幅の順序、StringのcharactersIn、Map・Set・Bytesの大きさについてcheckProgramとcheckProgramAcceptedが受理し、同じ成功から型付けを導く。measuredの葉は、閉じた欄の同じ観測の測度が部分評価不能でも受理され、closedの葉への差し替えは拒否される。Stringのmember・Decimalの表現可能性の未登録の移送の拒否を、署名の形成と区別して照合する |
+| Surface.FieldAccessorEntryExamples | 証明書を持たない入力で、String・Float・Decimal・data の欄の取り出しを期待型のない位置と条件の判定の実引数に書いた本体を、checkProgram と checkProgramAccepted が受理する。欄について何も知らない値の取り出しが文字集合の契約を満たさない本体は拒否する |
 | PreparedLeaf・PreparedLeafExamples・PreparedSortExamples・FieldObservationExamples | 同節の葉の上層checkInとentailsIn/bind_entails、既存Ty.LeQ.refineへのchecked_refinement、全十六sortの値からの観測成功、本番measureの三条件、非空Listの同じ長さの証明書と既存の網羅性の入口、Booleanの偽側と不変欄連鎖。四つの名前空間の既存Transportを使い、型域の像と開いたΓでの型域の真を供給する。sameObservationの規則は論理を強めないままとする |
 | ValueInversion | 「篩の正規形と制約の読み方」の変数の元のlookup型と芯の到達関係、Listの要素の導出・注釈・部分型と到達芯の等号。fnRef・prim・op・lam・dependentLam・raiseの逆転は元の直接前提と到達型のfnCore・TelClosureを返し、inv_lam_wfは元のlambdaの形成を取り出す。dict・superの逆転は元の実装・辞書・宣言と辞書の芯の等号を保持する。最外の篩の事実は同じ値のfactsで読む |
 | CollectionInversion | 同節のMap・Set・Bytesの芯の射影と構文の逆転。Mapは元の鍵列・値列、同長・sat・注釈、鍵の正規形の等号と値のLeQを返す。Setは元列・sat・注釈と要素の正規形の等号、Bytesは全要素が255以下であることとBytesの芯の等号を返す |

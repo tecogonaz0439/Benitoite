@@ -62,7 +62,14 @@ private def node (a : Ty) (e : Eff) (r : Rule) (h : Hints := {}) (cs : List Guid
   {type := a, effect := e, guide := .node r h cs}
 
 private def effectUnion (q : Check.Input) (e f : Eff) : Eff := Check.union q e f
-private def outerType (n : Nat) (t : Ty) : Ty := t.renameValues (unshiftValue n 0)
+/-- 束縛した n 個の値を指す篩の層は、外側の文脈で意味を持たないので除く。
+除いた後の型は元の型の篩の一部だけを持ち、元の型からの包含は篩を捨てる部分型で閉じる。 -/
+private def dropBound (n : Nat) : Ty → Ty
+  | .refined a p => if decide (p.VarsIn (fun i => i = 0 ∨ n < i)) then .refined (dropBound n a) p else dropBound n a
+  | t => t
+
+/-- 束縛した値を除いた外側の文脈の型。残る値の番号を n だけ戻す。 -/
+private def outerType (n : Nat) (t : Ty) : Ty := (dropBound n t).renameValues (unshiftValue n 0)
 private def outerEffect (n : Nat) (e : Eff) : Eff := e.renameValues (unshiftValue n 0)
 
 /-- 値の篩の導入は、その値の項について論理の証明書を検査する規則を作る。 -/

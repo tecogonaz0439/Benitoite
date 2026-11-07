@@ -26,7 +26,9 @@ structure GetterEnvironment (source : Program) (P : Refinement.Program) : Prop w
   constructors : ∀ constructor declaration, source.cons constructor = some declaration → P.cons constructor = some declaration
   lookup : ∀ function constructor position declaration,
     source.defs function = none → source.accessors function = some (constructor, position) →
-    source.cons constructor = some declaration → P.defs function = some (accessorDef constructor declaration position)
+    source.cons constructor = some declaration → P.defs function =
+      some (accessorDef constructor declaration position
+        (accessorConstructors source.dataConstructors declaration position))
 
 /-- 通常の脱糖は、sourceのgetter表と同じ定義を生成する。 -/
 theorem getter_environment (source : Program) (op : OpPrim) : GetterEnvironment source (desugarProgram op source) where

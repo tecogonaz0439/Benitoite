@@ -3972,6 +3972,10 @@ def measuredCandidates (a b : Term) : List Pred :=
 
 Surface.FieldCheckerExamplesは有限材料から生成するrecordの取り出し関数を本体で呼び、DecimalとFloat二幅の順序、StringのcharactersIn、Map・Set・Bytesの大きさを戻り値の契約へ移す。checkProgramとcheckProgramAcceptedで同じ本体を受理し、その成功を既存の健全性から型付けへ接続する。閉じた欄と同じスロットの測度を結ぶ例は、鍵の観測の欠け又は不適格なBytesによってevalClosedがnoneとなる場合も扱う。StringのmemberとDecimalの表現可能性の未登録の移送を持つ葉は拒否する。候補はPreparedLeaf.checkRaw・CertificateKernelの既存の検査を通し、証明書や型付けの健全性の独立の前提にしない。
 
+`CheckInfer` は、呼出しと束縛の外の文脈へ型を移すとき、束縛した値を指す篩の層を除いてから値の番号を戻す。除いた後の型は元の型の篩の一部だけを持ち、再検査の部分型は篩を捨てる規則で閉じる。期待型のある位置では、期待型への部分型の問い合わせを作る。`Surface.FieldAccessorEntryExamples` は、String・Float・Decimal・構成子の関係を持つ data の欄の取り出しを、期待型のない位置と条件の判定の実引数に書いた本体を、証明書なしで `checkProgram` と `checkProgramAccepted` が受理することを示す。欄について何も知らない値の取り出しが文字集合の契約を満たさない本体は拒否する。
+
+理由: 束縛した実引数を指す篩を外側の番号へ移すと、別の値を指す篩になり、その部分型の問い合わせは証明できない。篩の層を除いても、受理から型付けへの健全性は案内の再検査が保つ。
+
 `PreparedLeaf.raw_sound_at`は、raw検査成功と、渡された仮定列の各述語が同じνとηで真であることから、葉の述語の同じ像が真であることを示す。証明書を置換後に作り直すことや、開いた葉の構文が置換で不変であることは要求しない。旧の`PreparedLeaf.check`・`entails`・`machine_exact`・`stable`は、閉じた二種類を受ける入口である。
 
 `Certificate`はuse・leaf・substitute・consume・cases・discard・refuteの7構成子を持つ。`check Φ goal`は、生の仮定列Φを受け、useは存在する位置の述語との構造一致、leafは葉の述語との構造一致とraw検査、consume/casesは先頭のAnd/Or、discardは先頭の削除を検査する。refuteはΦの各連言を平坦化してpremiseを作り、premise・goal・証明書中の述語から鍵列を再計算する。その同じ鍵列で`premise ∧ ¬goal`をNNFへ再計算し、反証を検査する。`Certificate.sound_at`は7構成子の一回の帰納で、同じνとηの上でのΦの真からgoalの真を導く。

@@ -38,8 +38,8 @@ inductive AdministrativeStep (source : Program) : State → State → Prop
   | mark {q : Closure} {value : Val} {k : Cont} {μ : Store} (view : q.view = .ret value) :
       AdministrativeStep source (.run q (.mark :: k) μ) (.run (.pure (.ret value)) k μ)
 
-private theorem getter_specialized (step : PredicateAccessorTargets.Step) (cap : Capture) :
-    ((accessorDef step.constructor step.declaration step.position).body.instR []).substTy (step.types.map cap.closeTy) [] = getterMatch step := by
+private theorem getter_specialized (step : PredicateAccessorTargets.Step) (cap : Capture) (constructors : List ConName) :
+    ((accessorDef step.constructor step.declaration step.position constructors).body.instR []).substTy (step.types.map cap.closeTy) [] = getterMatch step := by
   rw [Comp.instR_nil]
   rfl
 
@@ -49,7 +49,8 @@ theorem AdministrativeStep.realize {source before after P B σ} (path : Administ
   | letIn cap first rest k μ => exact .E_Let rfl
   | returnValue view => exact .E_Return view
   | getter step missing accessor declaration count cap receiver next k μ view =>
-    have typeCount : (step.types.map cap.closeTy).length = (accessorDef step.constructor step.declaration step.position).ntys := by
+    have typeCount : (step.types.map cap.closeTy).length = (accessorDef step.constructor step.declaration step.position
+        (accessorConstructors source.dataConstructors step.declaration step.position)).ntys := by
       simpa only [List.length_map,Def.ntys,accessorDef,accessorDecl,List.length_replicate] using count
     simpa only [getter_specialized,markPush] using
       (Step.E_Fun (P := P) (B := B) (σ := σ) (rs := []) view
@@ -108,7 +109,7 @@ theorem AdministrativeStep.unique {source before after P B σ label destination}
     all_goals simp_all [Closure.view]
   | getter step missing accessor declaration count cap receiver next k μ view =>
     have found := environment.lookup _ _ _ _ missing accessor declaration
-    have specialized := getter_specialized step cap
+    have specialized := getter_specialized step cap (accessorConstructors source.dataConstructors step.declaration step.position)
     cases actual <;> simp_all [closeVal]
     all_goals subst_vars
     all_goals simp_all [Closure.view,Closure.code,Closure.capture,getterCall,markPush]

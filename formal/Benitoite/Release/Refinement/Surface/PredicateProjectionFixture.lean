@@ -149,11 +149,13 @@ private def Getter.field : Getter → Ty
 
 private def Getter.signature (g : Getter) : FunDecl :=
   accessorDecl g.constructor g.declaration g.position
+    (accessorConstructors program.declarations.dataConstructors g.declaration g.position)
 
 private theorem getter_support (g : Getter) :
     (Ty.dependentFn g.signature.tel).Support (· ∈ formation.atoms) := by
   cases g <;> simp [Getter.signature, Getter.declaration, Getter.position,
-    accessorDecl, accessorRet, accessorObserved, accessorBase, Ty.shiftV, Ty.sort?, shiftVTys, box, outer, FunDecl.tel,
+    accessorDecl, accessorRet, accessorObserved, accessorBase, accessorConstructors,
+    Program.declarations, Program.declarationsFor, program, Ty.shiftV, Ty.sort?, shiftVTys, box, outer, FunDecl.tel,
     FunDecl.coreNames, FunDecl.coreParams, FunDecl.dictTys, internalNames, signatureTel,
     Ty.Support, Tel.Support, Ty.SupportList, Eff.Support, Eff.empty]
 
@@ -183,7 +185,8 @@ theorem funs_support (atoms : List Atom) {name fd}
   obtain ⟨g,rfl⟩ := getter_cases found
   cases g <;> simp [Getter.signature, Getter.declaration, Getter.position,
     CheckArguments.SignatureSupport, FunDecl.coreParams, FunDecl.coreNames, FunDecl.dictTys,
-    accessorDecl, accessorRet, accessorObserved, accessorBase, Ty.shiftV, Ty.sort?, shiftVTys,
+    accessorDecl, accessorRet, accessorObserved, accessorBase, accessorConstructors,
+    Program.declarations, Program.declarationsFor, program, Ty.shiftV, Ty.sort?, shiftVTys,
     box, outer, FunDecl.tel, internalNames, signatureTel, Ty.Support, Tel.Support,
     Ty.SupportList, Eff.Support, Eff.empty]
 
@@ -201,7 +204,8 @@ private theorem getter_signature (g : Getter) :
     SignatureScoped program.declarations.core g.signature.tparams 0 g.signature.tel := by
   refine ⟨⟨(getter_annotation g).wf, ?_, ?_⟩, ?_, getter_kind g, getter_annotation g⟩
   all_goals cases g <;> simp [Getter.signature, Getter.declaration, Getter.position,
-    accessorDecl, accessorRet, accessorObserved, accessorBase, Ty.shiftV, Ty.sort?, shiftVTys, box, outer, FunDecl.tel,
+    accessorDecl, accessorRet, accessorObserved, accessorBase, accessorConstructors,
+    Program.declarations, Program.declarationsFor, program, Ty.shiftV, Ty.sort?, shiftVTys, box, outer, FunDecl.tel,
     FunDecl.coreNames, FunDecl.coreParams, FunDecl.dictTys, internalNames, signatureTel,
     Ty.RowsIn, Tel.RowsIn, Ty.RowsInList, Eff.RowsIn, Eff.empty,
     Ty.RangesScoped, Tel.RangesScoped, rangesScopedTypes, Eff.RangesScoped]
@@ -235,7 +239,29 @@ private theorem getter_ok (g : Getter) :
     getter_exhaustive g, ?_⟩
   · cases g <;> rfl
   · cases g <;> trivial
-  · cases g <;> simp [Getter.declaration, Getter.position, accessorObserved, accessorBase, Ty.shiftV, Ty.sort?, shiftVTys, box, outer]
+  · have empty : ∀ d, program.declarations.dataConstructors d = [] := fun _ => rfl
+    cases g
+    case inner =>
+      intro observed
+      simp [Getter.declaration, Getter.position, accessorObserved, accessorBase, accessorConstructors, empty,
+        Ty.shiftV, Ty.sort?, shiftVTys, outer] at observed
+    all_goals intro _
+    all_goals refine ⟨by decide, ?_, ?_⟩
+    all_goals intro p member
+    all_goals simp [Getter.declaration, Getter.position, Getter.constructor, pathFacts, matchedTests,
+      excludedTests, patternTest?, excludedTest?, irrefutableField, accessorAlt,
+      accessorPattern, fieldFacts, accessorLink, FieldLink.predicate, FieldLink.sort, accessorRef, accessorMeasure,
+      accessorConstructors, accessorBase, box, Ty.shiftV, Ty.sort?,
+      fieldRelation, floatFieldRelation, routeTerm, termBind, termBind?, accessorSort] at member
+    all_goals first | (rcases member with rfl | ⟨_,⟨_,rfl⟩,rfl⟩) | subst member
+    all_goals refine ⟨?_, ?_, ?_⟩
+    all_goals simp [Getter.declaration, Getter.position, Getter.constructor, Getter.field, box, PathTest.predicate,
+      Pred.WF, Pred.VarsIn, Term.VarsIn, Pred.Sorted, Term.HasSort, Term.References, Term.Shape, Ctx.Readable,
+      Ty.HasSort, Ty.sort?, Ty.shiftV, Comparison.Allowed, Measure.input, Measure.output, Ctx.extend, bindParams,
+      Pred.Declared, Term.Declared, FieldRef.Declared, Ctx.declarationSelf, predicateIff]
+    all_goals first
+      | exact ⟨_, ⟨_, .var rfl rfl⟩, _, rfl, rfl⟩
+      | exact ⟨_, .var rfl rfl, _, rfl, rfl, rfl, _, rfl, by simp [Ty.WF], rfl⟩
 
 /-- 両dataの欄と、三つの取り出しの関数の署名・パターン・網羅性を満たす。 -/
 theorem formed : program.WellFormed where
