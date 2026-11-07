@@ -236,7 +236,11 @@ fn export_interval_range() {
     }
     fs::write(
         output.join("range-bindings.json"),
-        exchange::to_vec(&json!({"version":1,"inputs":bindings})).unwrap(),
+        exchange::to_vec(
+            exchange::Document::Record,
+            &json!({"version":1,"inputs":bindings}),
+        )
+        .unwrap(),
     )
     .unwrap();
     let annotations = export_annotations(&export.inputs);
@@ -571,7 +575,11 @@ pub(super) fn export_interval_identity() {
                         "next":[".point","2"],"identities":[[".point","0"],[".point","1"]],"unsupported":false}});
                 fs::write(
                     output.join("point.json"),
-                    exchange::to_vec(&source::corpus(&raw, connected, expected)).unwrap(),
+                    exchange::to_vec(
+                        exchange::Document::Interval,
+                        &source::corpus(&raw, connected, expected),
+                    )
+                    .unwrap(),
                 )
                 .unwrap();
             }
@@ -579,15 +587,18 @@ pub(super) fn export_interval_identity() {
     }
     fs::write(
         output.join("reader-corpus.json"),
-        exchange::to_vec(&json!({
-        "kind":"interval-corpus","version":1,"surfaceVersion":15,"traversalVersion":1,
-        "profile":"domain","inputs":inputs}))
+        exchange::to_vec(
+            exchange::Document::Interval,
+            &json!({
+        "kind":"interval-corpus","version":1,"surfaceVersion":16,"traversalVersion":1,
+        "profile":"domain","inputs":inputs}),
+        )
         .unwrap(),
     )
     .unwrap();
     fs::write(
         output.join("correspondence.json"),
-        exchange::to_vec(&json!(records)).unwrap(),
+        exchange::to_vec(exchange::Document::Interval, &json!(records)).unwrap(),
     )
     .unwrap();
     manifests.finish();

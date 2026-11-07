@@ -31,7 +31,7 @@ structure BuiltinEntry where
   opEff : Option String
   classConstraints : List (String × Nat)
   unconvertibleTypes : List String
-  /-- 範囲の変数ごとの対象の種類（`PrimSig.rkinds`）と IO の形（`PrimSig.shape`）。sidecar 7 で加えた。 -/
+  /-- 範囲の変数ごとの対象の種類（`PrimSig.rkinds`）と IO の形（`PrimSig.shape`）。 -/
   rkinds : List Scope.Domain.Kind
   shape : Scope.Signature.IOShape
   deriving ToJson, FromJson
@@ -98,8 +98,8 @@ structure BuiltinInput where
   /-- 元の入力が import していない標準ライブラリの宣言。名前は入力の表へ移してある。 -/
   supplementalData : List (String × String)
   supplementalPrims : List String
-  /-- 表のデータ（`Builtins.effKind`・`valKind`・`admitsR`・`valContent`）。sidecar 7 で加えた。旧版は空の表
-  （`Builtins` の既定の値）で読む。正しさは信頼の対象である（設計書 07-04「形式化で仮定するもの」）。 -/
+  /-- 表のデータ（`Builtins.effKind`・`valKind`・`admitsR`・`valContent`）。欄は必須であり、空の表も明示する。
+  正しさは信頼の対象である（設計書 07-04「形式化で仮定するもの」）。 -/
   effKinds : List KindEntry
   valKinds : List KindEntry
   admitsR : List AdmitsEntry

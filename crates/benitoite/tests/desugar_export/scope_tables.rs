@@ -1,6 +1,6 @@
 //! 署名と表のデータを手書きの独立入力と照合する（設計書 07-04「交換の形式の版」）。
 use super::exchange::{
-    Surface, builtin_export, complete_stdlib, named_builtin_tables, scope_export, to_vec,
+    Document, Surface, builtin_export, complete_stdlib, named_builtin_tables, scope_export, to_vec,
 };
 use benitoite::base::BindingId;
 use benitoite::builtins;
@@ -128,9 +128,13 @@ end function
         &json!({"fixed":"top"})
     ));
     let output = super::export_directory("path-in");
-    let corpus = json!({"version":15,"operators":super::exchange::operators(),
+    let corpus = json!({"version":16,"operators":super::exchange::operators(),
         "inputs":[input],"annotations":{"tailMatch":[0,0]}});
-    std::fs::write(output.join("path-in-corpus.json"), to_vec(&corpus).unwrap()).unwrap();
+    std::fs::write(
+        output.join("path-in-corpus.json"),
+        to_vec(Document::Corpus, &corpus).unwrap(),
+    )
+    .unwrap();
     super::named::write_tables(&output, "path-in", &p, &corpus["inputs"][0]);
 }
 
@@ -223,10 +227,10 @@ end function
         &json!({"rvar":0})
     ));
     let output = super::export_directory("request-in");
-    let corpus = json!({"version":15,"operators":super::exchange::operators(),"inputs":[input],"annotations":{"tailMatch":[0,0]}});
+    let corpus = json!({"version":16,"operators":super::exchange::operators(),"inputs":[input],"annotations":{"tailMatch":[0,0]}});
     std::fs::write(
         output.join("request-in-corpus.json"),
-        to_vec(&corpus).unwrap(),
+        to_vec(Document::Corpus, &corpus).unwrap(),
     )
     .unwrap();
     super::named::write_tables(&output, "request-in", &p, &corpus["inputs"][0]);
@@ -275,6 +279,8 @@ fn fixtures() -> Vec<SignatureFixture> {
     let path = variable(BuiltinTypeId::PATH_IN, 0);
     let request = variable(BuiltinTypeId::REQUEST_IN, 0);
     let error = builtin(BuiltinTypeId::IO_ERROR);
+    // 標準の `Scope.ScopeError` は data 型である。合成入力の data 宣言として保持する。
+    let scope_error = Ty::Con(TyCon::Adt(BindingId(1005)), vec![], RangeIndex::TOP);
     // L40.3c と同じ五欄のレコードを、合成入力の data 宣言として保持する。
     let content = Ty::Con(TyCon::Adt(BindingId(1003)), vec![], RangeIndex::TOP);
     let path_ranges = RangeSignature {
@@ -291,7 +297,7 @@ fn fixtures() -> Vec<SignatureFixture> {
             scheme(
                 &["pattern", "path"],
                 vec![string.clone(), string.clone()],
-                result(path.clone(), error.clone()),
+                result(path.clone(), scope_error),
                 EffectSet::empty(),
             ),
             path_ranges.clone(),
@@ -551,7 +557,7 @@ pub fn scope_tables_smoke(output: &std::path::Path) {
             json!({"endpoint":{"host":{"name":{"exact":["api","example","com"]}},"ports":{"lo":443,"hi":444}}}),
         ),
     ];
-    let corpus = json!({"version":15,"operators":[],"annotations":{"tailMatch":[0,0]},"inputs":[{
+    let corpus = json!({"version":16,"operators":[],"annotations":{"tailMatch":[0,0]},"inputs":[{
         "group":"golden","name":"scope-tables","excluded":[],"definitions":definitions,"dataTypes":expected["dataTypes"],"constants":[],"ops":[],"effects":[],"primOps":[],"classes":[],"impls":[],
         "scopeAcceptance":{"patterns":[],"hosts":[],"limits":{"body":{"operations":1000,"items":1000},"whole":{"operations":10000,"items":10000}}}}]});
     let mut table = json!({"group":"golden","name":"scope-tables","prims":prims,
@@ -560,16 +566,25 @@ pub fn scope_tables_smoke(output: &std::path::Path) {
     for (key, value) in tables.as_object().unwrap() {
         table[key] = value.clone();
     }
-    for (filename, data) in [
-        ("scope-tables-corpus.json", corpus),
+    let mut opaque_names = std::collections::BTreeMap::new();
+    builtin_export::collect_opaque_names(&table, &mut opaque_names);
+    table["opaqueNames"] = json!(opaque_names.into_iter().collect::<Vec<_>>());
+    for (filename, document, data) in [
+        ("scope-tables-corpus.json", Document::Corpus, corpus),
         (
             "scope-tables-builtins.json",
-            json!({"version":7,"inputs":[table]}),
+            Document::Table,
+            json!({"version":8,"inputs":[table]}),
         ),
-        ("scope-tables-expected.json", expected),
     ] {
-        std::fs::write(output.join(filename), to_vec(&data).unwrap()).unwrap();
+        std::fs::write(output.join(filename), to_vec(document, &data).unwrap()).unwrap();
     }
+    // 独立の期待値は交換の文書ではないので、交換の欄を補わずにそのまま写す。
+    std::fs::write(
+        output.join("scope-tables-expected.json"),
+        serde_json::to_vec(&expected).unwrap(),
+    )
+    .unwrap();
 }
 
 #[test]
@@ -699,7 +714,7 @@ fn exports_closed_type_and_atom_indices_without_losing_ip_precision() {
             r#"{{"eff":[{{"name":{{"ix":{{"fixed":{expected}}},"value":"{effect_name}"}}}}],"ty":{{"opaque":{{"ix":{{"fixed":{expected}}},"name":"{type_name}"}}}}}}"#
         );
         assert_eq!(
-            String::from_utf8(to_vec(&actual).unwrap()).unwrap(),
+            String::from_utf8(to_vec(Document::Corpus, &actual).unwrap()).unwrap(),
             expected
         );
     }

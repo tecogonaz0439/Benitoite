@@ -28,11 +28,32 @@ fn rename(value: &mut Value, names: &BTreeMap<String, String>) {
     }
 }
 
-// corpus 10 の名前の原子は Top、組み込みの呼び出しは範囲変数なしの空列とする。
+// corpus 10 の名前の原子は Top、関数と組み込みの呼び出しは範囲変数なしの空列とする。頭部は値の種類の
+// 型パラメータ・範囲パラメータなし・証明探索の上限なしとする（版16の必須欄）。
 // 固定入力は変更せず、現在の出力との比較に必要な表現だけを合わせる。
 fn legacy_scope_defaults(value: &mut Value) {
     match value {
         Value::Object(fields) => {
+            if let Some(Value::Array(tparams)) = fields.get("tparams")
+                && fields.contains_key("neffs")
+            {
+                assert!(
+                    !fields.contains_key("tparamKinds"),
+                    "corpus 10 has no type parameter kinds"
+                );
+                let kinds = json!(vec!["value"; tparams.len()]);
+                fields.insert("tparamKinds".into(), kinds);
+                fields.insert("rangeParams".into(), json!([]));
+                fields.insert("proofSteps".into(), Value::Null);
+            }
+            for tag in ["funName", "funDicts", "fnRef"] {
+                if let Some(Value::Object(call)) = fields.get_mut(tag)
+                    && call.contains_key("tys")
+                {
+                    assert!(!call.contains_key("ranges"), "corpus 10 has no call ranges");
+                    call.insert("ranges".into(), json!([]));
+                }
+            }
             if let Some(Value::Object(atom)) = fields.get_mut("name")
                 && atom.len() == 1
                 && atom.get("value").is_some_and(Value::is_string)
@@ -136,7 +157,11 @@ fn typed_try_exchange_matches_independent_corpus_ten() {
         }
         let table = exchange::named_builtin_tables(&p, &input, &stdlib);
         let declarations: Value = serde_json::from_slice(
-            &exchange::to_vec(&exchange::named_stdlib_declarations(&p, &core, &input)).unwrap(),
+            &exchange::to_vec(
+                exchange::Document::Stdlib,
+                &exchange::named_stdlib_declarations(&p, &core, &input),
+            )
+            .unwrap(),
         )
         .unwrap();
         let mut coverage = Value::Null;
@@ -147,13 +172,13 @@ fn typed_try_exchange_matches_independent_corpus_ten() {
             std::process::id()
         ));
         std::fs::create_dir(&directory).unwrap();
-        let mut stream = exchange::InputStream::new(&directory, "die");
+        let mut stream = exchange::InputStream::new(&directory, "die", exchange::Document::Corpus);
         stream.push(&input);
         assert_eq!(stream.count, 1);
         let path = directory.join("corpus.json");
         stream.finish(
             &path,
-            json!({"version":15,"operators":exchange::operators()}),
+            json!({"version":16,"operators":exchange::operators()}),
         );
         let written: Value = serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
         std::fs::remove_file(path).unwrap();

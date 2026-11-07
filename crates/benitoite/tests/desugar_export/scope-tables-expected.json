@@ -3,6 +3,7 @@
     {
       "name": "Scope.checkPathIn",
       "tparams": [],
+      "tparamKinds": [],
       "neffs": 0,
       "effParams": [],
       "names": [
@@ -34,11 +35,9 @@
               }
             },
             {
-              "opaque": {
-                "name": "16:[]",
-                "ix": {
-                  "fixed": "top"
-                }
+              "data": {
+                "name": "data:1005",
+                "args": []
               }
             }
           ]
@@ -57,6 +56,7 @@
     {
       "name": "File.writeTextIn",
       "tparams": [],
+      "tparamKinds": [],
       "neffs": 0,
       "effParams": [],
       "names": [
@@ -125,6 +125,7 @@
     {
       "name": "Http.checkRequestIn",
       "tparams": [],
+      "tparamKinds": [],
       "neffs": 0,
       "effParams": [],
       "names": [
@@ -190,6 +191,7 @@
     {
       "name": "File.readTextIn",
       "tparams": [],
+      "tparamKinds": [],
       "neffs": 0,
       "effParams": [],
       "names": [
@@ -252,6 +254,7 @@
     {
       "name": "File.readBytesIn",
       "tparams": [],
+      "tparamKinds": [],
       "neffs": 0,
       "effParams": [],
       "names": [
@@ -310,6 +313,7 @@
     {
       "name": "File.appendTextIn",
       "tparams": [],
+      "tparamKinds": [],
       "neffs": 0,
       "effParams": [],
       "names": [
@@ -378,6 +382,7 @@
     {
       "name": "File.writeBytesIn",
       "tparams": [],
+      "tparamKinds": [],
       "neffs": 0,
       "effParams": [],
       "names": [
@@ -442,6 +447,7 @@
     {
       "name": "File.appendBytesIn",
       "tparams": [],
+      "tparamKinds": [],
       "neffs": 0,
       "effParams": [],
       "names": [
@@ -506,6 +512,7 @@
     {
       "name": "Http.sendIn",
       "tparams": [],
+      "tparamKinds": [],
       "neffs": 0,
       "effParams": [],
       "names": [
@@ -568,6 +575,7 @@
     {
       "name": "Scope.pathInValue",
       "tparams": [],
+      "tparamKinds": [],
       "neffs": 0,
       "effParams": [],
       "names": [
@@ -601,6 +609,7 @@
     {
       "name": "Http.requestInValue",
       "tparams": [],
+      "tparamKinds": [],
       "neffs": 0,
       "effParams": [],
       "names": [
@@ -635,6 +644,7 @@
     {
       "name": "Scope.widenPathIn",
       "tparams": [],
+      "tparamKinds": [],
       "neffs": 0,
       "effParams": [],
       "names": [
@@ -672,6 +682,7 @@
     {
       "name": "Http.widenRequestIn",
       "tparams": [],
+      "tparamKinds": [],
       "neffs": 0,
       "effParams": [],
       "names": [
@@ -769,11 +780,9 @@
           "constructorName": "Scope",
           "args": [
             {
-              "opaque": {
-                "name": "16:[]",
-                "ix": {
-                  "fixed": "top"
-                }
+              "data": {
+                "name": "data:1005",
+                "args": []
               }
             }
           ],
@@ -872,6 +881,119 @@
           ]
         }
       ]
+    },
+    {
+      "name": "data:1005",
+      "typeName": "data:1005",
+      "isRecord": false,
+      "extensible": false,
+      "package": "stdlib",
+      "builtin": "ordinary",
+      "ntys": 0,
+      "ctors": [
+        {
+          "name": "Scope.ScopeError.InvalidPattern",
+          "constructorName": "InvalidPattern",
+          "args": [
+            {
+              "base": {
+                "name": "String"
+              }
+            },
+            {
+              "base": {
+                "name": "String"
+              }
+            }
+          ],
+          "fields": null
+        },
+        {
+          "name": "Scope.ScopeError.InvalidTarget",
+          "constructorName": "InvalidTarget",
+          "args": [
+            {
+              "base": {
+                "name": "String"
+              }
+            },
+            {
+              "base": {
+                "name": "String"
+              }
+            }
+          ],
+          "fields": null
+        },
+        {
+          "name": "Scope.ScopeError.InvalidPortRange",
+          "constructorName": "InvalidPortRange",
+          "args": [
+            {
+              "base": {
+                "name": "Integer"
+              }
+            },
+            {
+              "base": {
+                "name": "Integer"
+              }
+            }
+          ],
+          "fields": null
+        },
+        {
+          "name": "Scope.ScopeError.InvalidPort",
+          "constructorName": "InvalidPort",
+          "args": [
+            {
+              "base": {
+                "name": "Integer"
+              }
+            }
+          ],
+          "fields": null
+        },
+        {
+          "name": "Scope.ScopeError.OutsideScope",
+          "constructorName": "OutsideScope",
+          "args": [
+            {
+              "base": {
+                "name": "String"
+              }
+            },
+            {
+              "base": {
+                "name": "String"
+              }
+            }
+          ],
+          "fields": null
+        },
+        {
+          "name": "Scope.ScopeError.PortOutsideScope",
+          "constructorName": "PortOutsideScope",
+          "args": [
+            {
+              "base": {
+                "name": "Integer"
+              }
+            },
+            {
+              "base": {
+                "name": "Integer"
+              }
+            },
+            {
+              "base": {
+                "name": "Integer"
+              }
+            }
+          ],
+          "fields": null
+        }
+      ]
     }
   ],
   "dataTypes": [
@@ -881,7 +1003,17 @@
       "isRecord": false,
       "extensible": false,
       "package": "stdlib",
-      "builtin": "result"
+      "builtin": "result",
+      "constructors": [
+        [
+          "Ok",
+          "Ok"
+        ],
+        [
+          "Error",
+          "Error"
+        ]
+      ]
     },
     {
       "name": "data:1002",
@@ -889,7 +1021,17 @@
       "isRecord": false,
       "extensible": false,
       "package": "stdlib",
-      "builtin": "ordinary"
+      "builtin": "ordinary",
+      "constructors": [
+        [
+          "Http.RequestCheckError.InvalidUrl",
+          "InvalidUrl"
+        ],
+        [
+          "Http.RequestCheckError.Scope",
+          "Scope"
+        ]
+      ]
     },
     {
       "name": "data:1003",
@@ -897,7 +1039,13 @@
       "isRecord": true,
       "extensible": false,
       "package": "stdlib",
-      "builtin": "ordinary"
+      "builtin": "ordinary",
+      "constructors": [
+        [
+          "ClientRequest",
+          "ClientRequest"
+        ]
+      ]
     },
     {
       "name": "data:1004",
@@ -905,7 +1053,47 @@
       "isRecord": true,
       "extensible": false,
       "package": "stdlib",
-      "builtin": "ordinary"
+      "builtin": "ordinary",
+      "constructors": [
+        [
+          "Pair",
+          "Pair"
+        ]
+      ]
+    },
+    {
+      "name": "data:1005",
+      "typeName": "data:1005",
+      "isRecord": false,
+      "extensible": false,
+      "package": "stdlib",
+      "builtin": "ordinary",
+      "constructors": [
+        [
+          "Scope.ScopeError.InvalidPattern",
+          "InvalidPattern"
+        ],
+        [
+          "Scope.ScopeError.InvalidTarget",
+          "InvalidTarget"
+        ],
+        [
+          "Scope.ScopeError.InvalidPortRange",
+          "InvalidPortRange"
+        ],
+        [
+          "Scope.ScopeError.InvalidPort",
+          "InvalidPort"
+        ],
+        [
+          "Scope.ScopeError.OutsideScope",
+          "OutsideScope"
+        ],
+        [
+          "Scope.ScopeError.PortOutsideScope",
+          "PortOutsideScope"
+        ]
+      ]
     }
   ],
   "summaries": [
@@ -929,7 +1117,7 @@
     {
       "name": "data:1002",
       "eq": {
-        "always": true,
+        "always": false,
         "dependsOn": []
       },
       "key": {
@@ -963,6 +1151,17 @@
           0,
           1
         ]
+      }
+    },
+    {
+      "name": "data:1005",
+      "eq": {
+        "always": false,
+        "dependsOn": []
+      },
+      "key": {
+        "always": false,
+        "dependsOn": []
       }
     }
   ],

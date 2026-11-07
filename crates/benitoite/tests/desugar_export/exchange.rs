@@ -33,23 +33,175 @@ pub(super) mod named_calls;
 // arbitrary_precision なしの Value は Decimal の 96 ビットの仮数と IPv6 の全幅を保持できない。
 // 材料では文字列に保持し、交換形式の書き出し時だけ i128/u128 の整数として書く。
 // Lean が読む mantissa の型と数の精度を変えない（設計書 07-04「01-12 との対応」）。
-struct ExchangeJson<'a>(&'a Value);
+struct ExchangeJson<'a>(&'a Value, Document);
+
+/// 書き出す文書の種類。交換の新しい欄は、交換の文書の種類ごとに、その構造の位置にだけ補う。
+/// 交換でない文書（区間の要約・観測、範囲の束縛、試験の記録）は `Record` とし、数の書き方だけを揃えて
+/// 欄を補わない。
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub(super) enum Document {
+    /// コーパス（`Exchange.Corpus`）とその入力・定義の断片。
+    Corpus,
+    /// 組込みの表（`Exchange.BuiltinCorpus`）。
+    Table,
+    /// stdlib の宣言の表。
+    Stdlib,
+    /// プログラムの網羅性と独立の網羅性。
+    Coverage,
+    /// 区間の交換（`interval-corpus`）と、区間の交換の式の断片を持つ文書。比較器が区間の交換の入力を作る
+    /// material と、比較器がその式と照らす manifest の対応・対応表・VM の地点である。
+    Interval,
+    /// 交換でない文書。
+    Record,
+}
+
+// 交換の版16/8の必須欄のうち、現行の処理系が持たない機能の欄を、空の列・null・不変の変性で補う。
+// 文書の種類で補う規則を選び、その中で欄の組で交換の構成子を見分ける（Lean の `Exchange.Syntax`・
+// `Exchange.Builtins` の構造と同じ組）。
+// 処理系が値を持つ欄（型パラメータの種類・型クラスの引数の種類・構成子の対応・不透明型の公開名）は
+// 書き出しの各所が書く。欠けていれば補わずに誤りとし、既定の値で実値を隠さない。
+fn exchange_fields(
+    document: Document,
+    object: &serde_json::Map<String, Value>,
+) -> Result<Vec<(&'static str, Value)>, &'static str> {
+    use Document::{Corpus, Interval, Stdlib, Table};
+    let mut fields = Vec::new();
+    let mut insert = |name, value| {
+        if !object.contains_key(name) {
+            fields.push((name, value));
+        }
+    };
+    // 関数の頭部（`Header`）と組込みの項目（`BuiltinEntry`。`kind` を持つ）。
+    if matches!(document, Corpus | Stdlib | Interval | Table)
+        && let Some(Value::Array(tparams)) = object.get("tparams")
+        && object.contains_key("neffs")
+    {
+        if !tparams.is_empty() && !object.contains_key("tparamKinds") {
+            return Err("type parameters without kinds");
+        }
+        insert("tparamKinds", json!([]));
+        if !object.contains_key("kind") {
+            insert("rangeParams", json!([]));
+            insert("proofSteps", Value::Null);
+        }
+    }
+    if document == Corpus {
+        // 入力（`Input`）。現行の処理系は別名・レコード・tester・外部宣言・論理の証明書を交換しない。
+        if object.contains_key("group") && object.contains_key("excluded") {
+            for name in [
+                "aliases",
+                "records",
+                "testers",
+                "externals",
+                "logicCertificates",
+                "candidates",
+            ] {
+                insert(name, json!([]));
+            }
+        }
+        // 定義（`Definition`）。
+        if object.contains_key("scope") && object.contains_key("name") {
+            insert("annotations", json!({}));
+        }
+        // 型クラス（`ClassEntry`）。
+        if object.contains_key("name")
+            && object.contains_key("supers")
+            && object.contains_key("methods")
+            && !object.contains_key("target")
+            && !object.contains_key("argumentKind")
+        {
+            return Err("class without argument kind");
+        }
+        // data の型の所属（`DataTypeInfo`）。
+        if object.contains_key("builtin")
+            && object.contains_key("typeName")
+            && !object.contains_key("ctors")
+            && !object.contains_key("constructors")
+        {
+            return Err("data type metadata without constructors");
+        }
+    }
+    // 関数と組込みの参照（`funName`・`funDicts`・`fnRef`・`primName`・`prim`）の範囲の実引数。
+    // メソッドの参照（`methName`・`meth`。`dict` を持つ）は範囲の実引数を持たない。
+    if matches!(document, Corpus | Interval)
+        && object.contains_key("name")
+        && object.contains_key("tys")
+        && object.contains_key("effs")
+        && !object.contains_key("dict")
+    {
+        insert("ranges", json!([]));
+    }
+    if document == Table {
+        // 組込みの表の入力（`BuiltinInput`）。
+        if object.contains_key("prims")
+            && object.contains_key("dataDecls")
+            && !object.contains_key("opaqueNames")
+        {
+            return Err("builtin table without opaque type names");
+        }
+        // data の宣言（`DataEntry`）。現行の処理系は型引数を不変の一致で検査し、要求と公開境界を持たない。
+        if let Some(ntys) = object.get("ntys").and_then(Value::as_u64)
+            && object.contains_key("ctors")
+        {
+            let count = usize::try_from(ntys).unwrap();
+            insert("variances", json!(vec!["invariant"; count]));
+            insert("requirements", json!([]));
+            insert("publicBoundary", json!([]));
+        }
+    }
+    Ok(fields)
+}
+
+/// 範囲の実引数の列の各項目を、範囲の位置（`fixed`・`rvar`）の形にする。
+fn range_arguments(ranges: &Value) -> Value {
+    let ranges = ranges.as_array().unwrap().iter().map(|range| {
+        if range.get("fixed").is_some() || range.get("rvar").is_some() {
+            range.clone()
+        } else {
+            json!({ "fixed": range })
+        }
+    });
+    Value::Array(ranges.collect())
+}
 
 impl Serialize for ExchangeJson<'_> {
     fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         match self.0 {
             Value::Object(object) => {
-                let mut output = serializer.serialize_map(Some(object.len()))?;
-                for (key, value) in object {
-                    if ((key == "bits" && object.contains_key("family"))
-                        || (key == "network" && object.contains_key("prefixLen")))
+                // 補った欄も元の欄と同じ鍵順（`Value` の `BTreeMap` の順）で書く。
+                let document = self.1;
+                let added =
+                    exchange_fields(document, object).map_err(serde_core::ser::Error::custom)?;
+                let mut entries: Vec<(&str, std::borrow::Cow<'_, Value>)> = object
+                    .iter()
+                    .map(|(key, value)| (key.as_str(), std::borrow::Cow::Borrowed(value)))
+                    .chain(
+                        added
+                            .into_iter()
+                            .map(|(key, value)| (key, std::borrow::Cow::Owned(value))),
+                    )
+                    .collect();
+                entries.sort_by(|a, b| a.0.cmp(b.0));
+                let mut output = serializer.serialize_map(Some(entries.len()))?;
+                for (key, value) in &entries {
+                    let value: &Value = value;
+                    if *key == "ranges"
+                        && object.contains_key("tys")
+                        && matches!(document, Document::Corpus | Document::Interval)
+                    {
+                        output.serialize_entry(
+                            key,
+                            &ExchangeJson(&range_arguments(value), document),
+                        )?;
+                    } else if ((*key == "bits" && object.contains_key("family"))
+                        || (*key == "network" && object.contains_key("prefixLen")))
                         && let Value::String(value) = value
                     {
                         let number = value
                             .parse::<u128>()
                             .map_err(serde_core::ser::Error::custom)?;
                         output.serialize_entry(key, &number)?;
-                    } else if key == "mantissa"
+                    } else if *key == "mantissa"
                         && let Value::String(value) = value
                     {
                         let number = value
@@ -57,7 +209,7 @@ impl Serialize for ExchangeJson<'_> {
                             .map_err(serde_core::ser::Error::custom)?;
                         output.serialize_entry(key, &number)?;
                     } else {
-                        output.serialize_entry(key, &ExchangeJson(value))?;
+                        output.serialize_entry(key, &ExchangeJson(value, document))?;
                     }
                 }
                 output.end()
@@ -65,7 +217,7 @@ impl Serialize for ExchangeJson<'_> {
             Value::Array(array) => {
                 let mut output = serializer.serialize_seq(Some(array.len()))?;
                 for value in array {
-                    output.serialize_element(&ExchangeJson(value))?;
+                    output.serialize_element(&ExchangeJson(value, self.1))?;
                 }
                 output.end()
             }
@@ -76,24 +228,85 @@ impl Serialize for ExchangeJson<'_> {
     }
 }
 
-/// Decimal の仮数と IP のビット列を整数のまま書く、交換形式のバイト列。
-pub(super) fn to_vec(value: &Value) -> serde_json::Result<Vec<u8>> {
-    serde_json::to_vec(&ExchangeJson(value))
+// 関門: 交換の新しい欄を、交換の文書の種類ごとの構造の位置にだけ補う。
+// Lean の読者は交換でない文書（区間の要約・対応表など）を読まないので、誤って補った欄を捕まえられない。
+// 本番の直列化の補助を同じ断片に文書の種類ごとに当てて、補う欄の集合を固定する。
+#[test]
+fn exchange_fields_follow_the_document_kind() {
+    let fragment = json!({
+        "input":{"group":"golden","name":"x","excluded":[]},
+        "header":{"tparams":[],"neffs":0},
+        "call":{"funName":{"name":"fn:1","tys":[],"effs":[]}}
+    });
+    let added = |document| -> BTreeSet<String> {
+        let written: Value = serde_json::from_slice(&to_vec(document, &fragment).unwrap()).unwrap();
+        let mut keys = BTreeSet::new();
+        for (part, value) in written.as_object().unwrap() {
+            let value = if part == "call" {
+                &value["funName"]
+            } else {
+                value
+            };
+            let original = if part == "call" {
+                &fragment[part]["funName"]
+            } else {
+                &fragment[part]
+            };
+            for key in value.as_object().unwrap().keys() {
+                if !original.as_object().unwrap().contains_key(key) {
+                    keys.insert(format!("{part}.{key}"));
+                }
+            }
+        }
+        keys
+    };
+    let names = |xs: &[&str]| xs.iter().map(|x| (*x).to_owned()).collect::<BTreeSet<_>>();
+    let header = [
+        "header.proofSteps",
+        "header.rangeParams",
+        "header.tparamKinds",
+    ];
+    let input = [
+        "input.aliases",
+        "input.candidates",
+        "input.externals",
+        "input.logicCertificates",
+        "input.records",
+        "input.testers",
+    ];
+    let mut corpus = names(&header);
+    corpus.extend(names(&input));
+    corpus.insert("call.ranges".to_owned());
+    assert_eq!(added(Document::Corpus), corpus);
+    let mut interval = names(&header);
+    interval.insert("call.ranges".to_owned());
+    assert_eq!(added(Document::Interval), interval);
+    assert_eq!(added(Document::Stdlib), names(&header));
+    assert_eq!(added(Document::Table), names(&header));
+    assert_eq!(added(Document::Coverage), BTreeSet::new());
+    assert_eq!(added(Document::Record), BTreeSet::new());
+}
+
+/// Decimal の仮数と IP のビット列を整数のまま書くバイト列。交換の文書には新しい版の欄を補う。
+pub(super) fn to_vec(document: Document, value: &Value) -> serde_json::Result<Vec<u8>> {
+    serde_json::to_vec(&ExchangeJson(value, document))
 }
 
 // 一件ずつ交換形式へ変換し、全入力の Value と最終 JSON の複製を保持しない。
 // 集計が必要な欄は最後に揃え、Value の BTreeMap と同じ鍵順で出す。
 pub(super) struct InputStream {
+    document: Document,
     path: std::path::PathBuf,
     writer: std::io::BufWriter<std::fs::File>,
     pub count: usize,
 }
 
 impl InputStream {
-    pub fn new(output: &std::path::Path, name: &str) -> Self {
+    pub fn new(output: &std::path::Path, name: &str, document: Document) -> Self {
         let path = output.join(format!("{name}.inputs.tmp"));
         let writer = std::io::BufWriter::new(std::fs::File::create(&path).unwrap());
         Self {
+            document,
             path,
             writer,
             count: 0,
@@ -105,7 +318,7 @@ impl InputStream {
         if self.count != 0 {
             self.writer.write_all(b",").unwrap();
         }
-        serde_json::to_writer(&mut self.writer, &ExchangeJson(input)).unwrap();
+        serde_json::to_writer(&mut self.writer, &ExchangeJson(input, self.document)).unwrap();
         self.count += 1;
     }
 
@@ -127,7 +340,7 @@ impl InputStream {
                 std::io::copy(&mut std::fs::File::open(&self.path).unwrap(), &mut writer).unwrap();
                 writer.write_all(b"]").unwrap();
             } else {
-                serde_json::to_writer(&mut writer, &ExchangeJson(value)).unwrap();
+                serde_json::to_writer(&mut writer, &ExchangeJson(value, self.document)).unwrap();
             }
         }
         writer.write_all(b"}").unwrap();
@@ -161,10 +374,17 @@ fn method_name(id: BindingId) -> String {
 fn impl_name(id: NodeId) -> String {
     format!("impl:{}", id.0)
 }
+pub(super) fn param_kind(kind: types::ParamKind) -> Value {
+    match kind {
+        types::ParamKind::Value => json!("value"),
+        types::ParamKind::Ctor { arity } => json!({"constructor":{"arity":arity}}),
+    }
+}
+
 fn data_name(id: BindingId) -> String {
     format!("data:{}", id.0)
 }
-// Release.TyCon が持たない組み込みの型構成子は、版 3 でも対象外。
+// Release.TyCon が持たない組み込みの型構成子は対象外。
 fn unsupported_target(target: &TypeArg) -> Option<&'static str> {
     match target {
         TypeArg::Head(TyHead::Con(TyCon::Builtin(id)))
@@ -294,6 +514,17 @@ pub fn attach_metadata(input: &mut Value, table: &Value, coverage: &mut Value) {
             ] {
                 info.insert(key.into(), d[key].clone());
             }
+            info.insert(
+                "constructors".into(),
+                json!(
+                    d["ctors"]
+                        .as_array()
+                        .unwrap()
+                        .iter()
+                        .map(|c| json!([c["name"], c["constructorName"]]))
+                        .collect::<Vec<_>>()
+                ),
+            );
             Value::Object(info)
         })
         .collect();
@@ -697,6 +928,7 @@ impl Surface<'_> {
         if !self.type_order.is_empty() {
             ordered.sort_by_key(|(i, _)| self.type_order[*i]);
         }
+        let tparam_kinds: Vec<_> = ordered.iter().map(|(_, t)| param_kind(t.kind)).collect();
         let tparams: Vec<_> = ordered
             .into_iter()
             .map(|(_, t)| t)
@@ -714,7 +946,7 @@ impl Surface<'_> {
             .enumerate()
             .map(|(i, _)| json!({"noFail":s.no_fail.contains(&types::EffVar(u32::try_from(i).unwrap()))}))
             .collect();
-        let mut header = json!({"tparams":tparams,"neffs":s.effect_params.len(),"effParams":eff_params,"params":params,
+        let mut header = json!({"tparams":tparams,"tparamKinds":tparam_kinds,"rangeParams":[],"proofSteps":null,"neffs":s.effect_params.len(),"effParams":eff_params,"params":params,
             "ret":self.ty(&s.ret),"eff":self.eff(&s.effects)});
         assert_eq!(
             s.param_names
@@ -2912,6 +3144,7 @@ pub fn named_class_tables(p: &CheckedProgram, core: &c::CoreProgram) -> Value {
             let mut header = s.header(scheme);
             // γ̄, P に並べた後、暗黙の P をメソッドの型パラメータの宣言から除く。
             header["tparams"].as_array_mut().unwrap().pop();
+            header["tparamKinds"].as_array_mut().unwrap().pop();
             let mut params: Vec<_> = scheme.class_constraints[1..]
                 .iter()
                 .map(|c| s.dict_ty(c))
@@ -2924,7 +3157,7 @@ pub fn named_class_tables(p: &CheckedProgram, core: &c::CoreProgram) -> Value {
             ));
             methods.push(json!({"name":method_name(*m),"header":header}));
         }
-        classes.push(json!({"name":class_name(id),"supers":cl.supers.iter().map(|id| class_name(*id)).collect::<Vec<_>>(),"methods":methods}));
+        classes.push(json!({"name":class_name(id),"argumentKind":param_kind(cl.param_kind),"supers":cl.supers.iter().map(|id| class_name(*id)).collect::<Vec<_>>(),"methods":methods}));
     }
     s.type_order.clear();
 

@@ -150,8 +150,8 @@ class Batch3ExchangeTests(unittest.TestCase):
                 if mutation == 'none':
                     _, expected = rust_inputs(self.directory, 't3')
                     self.assertEqual(expected['definitions'], 9)
-                    # 旧版は corpus/sidecar の対応を保つ。今の Rust 出力の15/7も同じ件数契約で読む。
-                    for version, sidecar in ((12, 4), (13, 5), (14, 6), (15, 7)):
+                    # 今の Rust 出力の16/8を、corpus/sidecar の対応と同じ件数契約で読む。
+                    for version, sidecar in ((16, 8),):
                         compatible = copy.deepcopy(changed)
                         for f, doc in compatible.items():
                             doc['version'] = version if f == 'corpus' else sidecar
@@ -174,10 +174,10 @@ def rust_inputs(directory, profile=None):
     """五形式と、実ソースごとの固定した期待件数を照合する。"""
     data = {f: json.loads((directory / f'{f}.json').read_text()) for f in FILES}
     version = data['corpus']['version']
-    if version not in (12, 13, 14, 15):
-        raise AssertionError('expected corpus12, corpus13, corpus14 or corpus15')
+    if version != 16:
+        raise AssertionError('expected corpus16')
     for f, doc in data.items():
-        if doc['version'] != (version if f == 'corpus' else ({12: 4, 13: 5, 14: 6, 15: 7}[version])):
+        if doc['version'] != (version if f == 'corpus' else 8):
             raise AssertionError(f'{f}: corpus/sidecar version mismatch')
     inputs = data['corpus']['inputs']
     if not inputs or not any(i['definitions'] for i in inputs):

@@ -169,7 +169,11 @@ fn export_vm(output: &Path, label: &str, text: &str) {
     fs::write(output.join("instrumented.bnt"), instrumented).unwrap();
     fs::write(
         output.join("vm-sites.json"),
-        exchange::to_vec(&json!({"version":1,"sites":sites})).unwrap(),
+        exchange::to_vec(
+            exchange::Document::Interval,
+            &json!({"version":1,"sites":sites}),
+        )
+        .unwrap(),
     )
     .unwrap();
     eprintln!("VM interval export: {} operations", sites.len());

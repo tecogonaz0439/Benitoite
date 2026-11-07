@@ -54,7 +54,7 @@ fn export_range_sources() {
                 "last Run must exceed its budget"
             );
             fs::write(output.join("effect-top-exceeded-provenance.json"),
-                exchange::to_vec(&json!({"numberingComplete":true,"lastRunExceeded":true,
+                exchange::to_vec(exchange::Document::Record, &json!({"numberingComplete":true,"lastRunExceeded":true,
                     "stop":format!("{:?}",analysis.stopped),"operations":analysis.metrics.body_operations})).unwrap()).unwrap();
         }
         let codes: Vec<_> = checked
@@ -146,7 +146,7 @@ fn export_range_sources() {
     }
     fs::write(
         output.join("rust-observed.json"),
-        exchange::to_vec(&json!(observed)).unwrap(),
+        exchange::to_vec(exchange::Document::Record, &json!(observed)).unwrap(),
     )
     .unwrap();
 }

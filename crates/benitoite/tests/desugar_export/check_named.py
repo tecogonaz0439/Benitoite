@@ -34,22 +34,6 @@ def run(tool, args, report, status=0):
     return read(report) if report.exists() else None
 
 
-def explicit_top_ranges(value):
-    """旧版の独立期待値を、同じ意味の版15の明示Topと空の範囲の列へ移す。"""
-    if isinstance(value, list):
-        return [explicit_top_ranges(v) for v in value]
-    if not isinstance(value, dict):
-        return value
-    out = {k: explicit_top_ranges(v) for k, v in value.items()}
-    for key, field in (("name", "value"), ("opaque", "name")):
-        if list(out) == [key] and isinstance(out[key], dict) and field in out[key]:
-            out[key] = {**out[key], "ix": {"fixed": "top"}}
-    for key in ("prim", "primName"):
-        if list(out) == [key] and isinstance(out[key], dict) and "tys" in out[key]:
-            out[key] = {**out[key], "ranges": []}
-    return out
-
-
 def non_top_ranges(value):
     """候補の欄を除き、比較する型・項に現れる非Topの範囲を数える。"""
     if isinstance(value, list):
@@ -63,7 +47,8 @@ def non_top_ranges(value):
         if key == "ix" and isinstance(child, dict) and child.get("fixed", "top") != "top":
             total += 1
         if key == "ranges":
-            total += sum(r != "top" for r in child)
+            # 範囲の実引数は範囲の位置（`fixed`・`rvar`）で書く。
+            total += sum(r != {"fixed": "top"} for r in child)
         total += non_top_ranges(child)
     return total
 
@@ -246,7 +231,7 @@ def check_width(directory, expected):
     builtins = directory / "builtins.json"
     stdlib = directory / "stdlib-decls.json"
     corpus = read(corpus_path)
-    require(corpus["version"] == 15, "width corpus version")
+    require(corpus["version"] == 16, "width corpus version")
     require([(i["name"], len(i["definitions"])) for i in corpus["inputs"]] ==
             [tuple(entry) for entry in expected["inputs"]], "width inputs and definitions")
     for item in corpus["inputs"]:
@@ -579,7 +564,7 @@ def main():
                for entry in manifest["named"]}
     coverage = coverage_dir / "named-corpus.json"
     data = read(coverage)
-    # 独立Coverageの版4と、corpus15に付くプログラムsidecarの版7は別契約。
+    # 独立Coverageも、corpus16に付くプログラムsidecarと同じ版8で書く。
     require(data["version"] == manifest["coverageExports"]["named-"]["version"], "coverage version")
     require(len(data["cases"]) == manifest["namedCoverageCases"], "coverage cases")
     report = run("coverageDiff", [coverage], coverage_dir / "named-report.json")
@@ -596,7 +581,7 @@ def main():
     future = read(coverage_dir / "future-report.json")
     require({k: future[k] for k in manifest["futureCoverageReport"]} == manifest["futureCoverageReport"],
             "all independent coverage with views")
-    print("named export: manifest agrees; corpus 15, tables/program coverage 7 and independent coverage 4 match all six entries")
+    print("named export: manifest agrees; corpus 16, tables/program coverage 8 and independent coverage 8 match all six entries")
 
 
 if __name__ == "__main__":

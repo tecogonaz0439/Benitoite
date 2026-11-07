@@ -1,0 +1,50 @@
+{
+ "counts": {
+  "tableInputs": 1455,
+  "prims": 117792
+ },
+ "primNames": 448,
+ "dataTypesWrittenAsOpaque": {},
+ "differingPrimitives": {
+  "Http.checkRequestIn": [
+   {
+    "count": 11,
+    "files": [
+     "desugar/named-declarations-builtins.json",
+     "desugar/range-sources/host-many/named-programs-builtins.json",
+     "desugar/range-sources/host-one/named-programs-builtins.json",
+     "desugar/range-sources/ipv4-cidr/named-programs-builtins.json",
+     "desugar/range-sources/ipv4-exact/named-programs-builtins.json"
+    ],
+    "signature": "{\"eff\": [], \"names\": [\"hostPattern\", \"minimumPort\", \"maximumPort\", \"request\"], \"params\": [{\"base\": {\"name\": \"String\"}}, {\"base\": {\"name\": \"Integer\"}}, {\"base\": {\"name\": \"Integer\"}}, {\"data\": {\"args\": [], \"name\": \"ClientRequest\"}}], \"ret\": {\"data\": {\"args\": [{\"opaque\": {\"ix\": {\"rvar\": 0}, \"name\": \"Benitoite.Network.Http.RequestIn\"}}, {\"data\": {\"args\": [], \"name\": \"RequestCheckError\"}}], \"name\": \"Re"
+   },
+   {
+    "count": 1,
+    "files": [
+     "desugar/scope-tables-builtins.json"
+    ],
+    "signature": "{\"eff\": [], \"names\": [\"hostPattern\", \"minimumPort\", \"maximumPort\", \"request\"], \"params\": [{\"base\": {\"name\": \"String\"}}, {\"base\": {\"name\": \"Integer\"}}, {\"base\": {\"name\": \"Integer\"}}, {\"data\": {\"args\": [], \"name\": \"ClientRequest\"}}], \"ret\": {\"data\": {\"args\": [{\"opaque\": {\"ix\": {\"rvar\": 0}, \"name\": \"Benitoite.Network.Http.RequestIn\"}}, {\"data\": {\"args\": [], \"name\": \"data:1002\"}}], \"name\": \"data:1001\""
+   }
+  ],
+  "Scope.checkPathIn": [
+   {
+    "count": 9,
+    "files": [
+     "desugar/named-declarations-builtins.json",
+     "desugar/path-in-builtins.json",
+     "desugar/range-budget/inner-exceeded-outer-recovered/builtins.json",
+     "desugar/range-budget/last-run-exceeded/builtins.json",
+     "desugar/range-sources/all-top/named-programs-builtins.json"
+    ],
+    "signature": "{\"eff\": [], \"names\": [\"pattern\", \"path\"], \"params\": [{\"base\": {\"name\": \"String\"}}, {\"base\": {\"name\": \"String\"}}], \"ret\": {\"data\": {\"args\": [{\"opaque\": {\"ix\": {\"rvar\": 0}, \"name\": \"Benitoite.Scope.PathIn\"}}, {\"data\": {\"args\": [], \"name\": \"ScopeError\"}}], \"name\": \"Result\"}}, \"rkinds\": [\"path\"], \"shape\": \"untargeted\", \"tparamKinds\": [], \"tparams\": []}"
+   },
+   {
+    "count": 1,
+    "files": [
+     "desugar/scope-tables-builtins.json"
+    ],
+    "signature": "{\"eff\": [], \"names\": [\"pattern\", \"path\"], \"params\": [{\"base\": {\"name\": \"String\"}}, {\"base\": {\"name\": \"String\"}}], \"ret\": {\"data\": {\"args\": [{\"opaque\": {\"ix\": {\"rvar\": 0}, \"name\": \"Benitoite.Scope.PathIn\"}}, {\"data\": {\"args\": [], \"name\": \"data:1005\"}}], \"name\": \"data:1001\"}}, \"rkinds\": [\"path\"], \"shape\": \"untargeted\", \"tparamKinds\": [], \"tparams\": []}"
+   }
+  ]
+ }
+}
