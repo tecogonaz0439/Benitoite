@@ -86,7 +86,8 @@ class ExchangeTests(unittest.TestCase):
         args.append(str(report))
         if selected is not None:
             args += [selected, "2"]
-        result = subprocess.run([str(BIN / tool), *args], text=True, capture_output=True, timeout=10)
+        # 書き出しの全件の検査（batch3 の47定義で約9秒）が収まる上限にする。
+        result = subprocess.run([str(BIN / tool), *args], text=True, capture_output=True, timeout=60)
         return result, json.loads(report.read_text()) if report.exists() else None
 
     def test_six_entries_accept_independent_input(self):

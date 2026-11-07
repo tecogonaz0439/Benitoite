@@ -839,7 +839,7 @@ mutual
         HasTypeQ D B ks opPrim Q Δ C Γ Φ R .other e (.data d [t]) ε →
         Exhaustive D.core (.data d [t]) [.con someCon [.var], .con noneCon []] →
         HasTypeQ D B ks opPrim Q Δ C Γ Φ R p (.tryOption [u] someCon noneCon e) t ε
-    /-- 01-12「die の先行モデル」: Result の or die。失敗側は誤りの値を表示のメソッドで String にし、終了の組み込みの
+    /-- 01-12「die のモデル」: Result の or die。失敗側は誤りの値を表示のメソッドで String にし、終了の組み込みの
     関数を 1 で呼ぶ。表示は照合の束縛の下、終了はさらに原因の束縛の下で型付ける。 -/
     | E_TryResultDie {Δ C Γ Φ R p ok err d e t et t1 e1 ε dict showMethod exit ts rs es' tx r ex} : PatternRangesClosed D.core →
         Ty.AnnotationR D.core ks C Γ (.data d [t, et]) → Ordinary t1 →

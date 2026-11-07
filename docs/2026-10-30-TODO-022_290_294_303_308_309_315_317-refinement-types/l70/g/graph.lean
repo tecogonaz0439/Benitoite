@@ -15,7 +15,7 @@ run_cmd do
       let some idx := env.getModuleIdxFor? n | continue
       let mod := env.header.moduleNames[idx.toNat]!.toString
       unless mod.startsWith "Benitoite" ||
-        ["DesugarDiff", "BuiltinCheck", "CoverageDiff", "CoverageProgramDiff", "SurfaceCheck", "IntervalDiff"].any mod.startsWith do continue
+        ["DesugarDiff", "BuiltinCheck", "CoverageDiff", "CoverageProgramDiff", "SurfaceCheck", "IntervalDiff"].any (fun p => mod.startsWith p) do continue
       let typeDeps := ci.type.foldConsts ({} : Std.HashSet Name) fun c cs => cs.insert c
       let valueDeps := match ci.value? (allowOpaque := true) with
         | some value => value.foldConsts ({} : Std.HashSet Name) fun c cs => cs.insert c

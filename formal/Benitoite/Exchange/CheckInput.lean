@@ -90,6 +90,15 @@ partial def jsonStrings : Json → List String
   | .obj xs => xs.toArray.toList.flatMap fun (_, v) => jsonStrings v
   | _ => []
 
+/-- 入力の JSON の、期待の核（欄 `core`）と data の属性の一覧（欄 `dataTypes`。全ての data を並べる）を除いた部分に
+現れる文字列と欄の名前。検査器は期待の核を読まないので、参照は表層の部分だけで数える。 -/
+partial def surfaceWords (acc : Array String × Array String) : Json → Array String × Array String
+  | .str s => (acc.1.push s, acc.2)
+  | .arr xs => xs.foldl surfaceWords acc
+  | .obj xs => xs.toArray.foldl (fun acc (key, x) =>
+      if key == "core" || key == "dataTypes" then acc else surfaceWords (acc.1, acc.2.push key) x) acc
+  | _ => acc
+
 /-- 名前の集合に、名前か構成子の名前が含まれる data の宣言の名前。 -/
 def dataNamed (b : BuiltinInput) (names : Std.HashSet String) : List String :=
   (b.dataDecls.filter fun d => names.contains d.name || d.ctors.any fun c => names.contains c.name).map (·.name)
@@ -99,16 +108,22 @@ def dataStep (b : BuiltinInput) (names : List String) : List String :=
   let reached := (b.dataDecls.filter fun d => names.contains d.name).flatMap fun d => jsonStrings (toJson d.ctors)
   (names ++ dataNamed b (Std.HashSet.ofList reached)).eraseDups
 
-/-- 閉包を作る。参照は、入力の JSON に値として現れる文字列で数える（組込み・data・構成子の名前と一致する文字列）。
-演算子の表の行は、その演算子の名前が入力に現れるとき、その行の組込みを参照する。標準ライブラリの関数は、名前が
-入力に現れるとき、その宣言の型をプログラムが使う型に含める。data の段は data の宣言の数より一つ多く繰り返す
-（一段ごとに宣言を一つ以上加えるか、変わらなくなる）。 -/
+/-- 閉包を作る。参照は、入力の JSON の期待の核を除いた部分に値として現れる文字列で数える（組込み・data・構成子の
+名前と一致する文字列）。実装の宣言は、その名前が入力に現れるときに数える。演算子の表の行は、その演算子の名前が同じ部分に値か欄の名前として現れるとき、その行の組込みを
+参照する（単項の負号は欄の名前 `neg` だけに現れる）。標準ライブラリの関数は、名前が入力に現れるとき、その宣言の型を
+プログラムが使う型に含める。data の段は data の宣言の数より一つ多く繰り返す（一段ごとに宣言を一つ以上加えるか、
+変わらなくなる）。 -/
 def closureOf (input : Input) (b : BuiltinInput) (s : StdlibInput) (operators : List OperatorEntry) : Closure :=
-  let used := Std.HashSet.ofList (jsonStrings (toJson input))
+  -- 実装の表（`impls`）は標準ライブラリの全ての実装を並べるので、名前が入力に現れる実装の宣言だけを数える。
+  let (values0, keys) := surfaceWords (#[], #[]) (toJson { input with impls := [] })
+  let named := Std.HashSet.ofArray values0
+  let values := values0 ++ (jsonStrings (toJson (input.impls.filter fun i => named.contains i.name))).toArray
+  let used := Std.HashSet.ofArray values
+  let words := Std.HashSet.ofArray (values ++ keys)
   let funs := s.functions.filter fun f => used.contains f.name
-  let opPrims := Std.HashSet.ofList ((operators.filter fun o => used.contains o.op).map (·.name))
+  let opPrims := Std.HashSet.ofList ((operators.filter fun o => words.contains o.op).map (·.name))
   let prims := b.prims.filter fun p => used.contains p.name || opPrims.contains p.name
-  let typed := Std.HashSet.ofList (jsonStrings (toJson input) ++ jsonStrings (toJson (funs.map (·.header))) ++
+  let typed := Std.HashSet.ofList (values.toList ++ jsonStrings (toJson (funs.map (·.header))) ++
     jsonStrings (toJson prims))
   let data := (List.range (b.dataDecls.length + 1)).foldl (fun names _ => dataStep b names)
     (dataNamed b typed).eraseDups
@@ -137,8 +152,20 @@ structure Prepared where
   /-- 標準表との照合に使った表の署名（型パラメータの鍵の印を `BuiltinAgreement.normKeys` でそろえた）。
   検査器の表ではない。 -/
   canonicalSig : String → Option Benitoite.Release.Refinement.PrimSig
+  /-- 鍵の印をそろえる前の、名前を写した表の署名。 -/
+  canonicalRawSig : String → Option Benitoite.Release.Refinement.PrimSig
+  /-- 名前を写した表の構成子の表。標準の data の宣言との照合に使う。 -/
+  canonicalCons : List (String × Benitoite.Release.Refinement.ConDecl)
+  /-- 標準表との照合に使った原子の一覧（写した入力の原子の一覧と標準の署名の原子の一覧の和）。 -/
+  canonicalAtoms : List Benitoite.Release.Refinement.Atom
   /-- 標準表との一致の判定の対象（`closureOf`）。 -/
   closure : Closure
+  /-- 閉包の data のうち、標準ライブラリの data（標準ライブラリの宣言か、Result・Option）の名前。標準の宣言と
+  照らすのはこの data だけである（利用者の data の名前が標準の宣言の名前と同じでも照らさない）。 -/
+  standardData : List String
+  /-- 閉包の組込みの名前のうち、標準表の合成済みの名前でも名前の写しの仮定側の名前でもないもの。署名は照らさず、
+  報告に残す。 -/
+  unknownBuiltins : List String
 
 /-- rho の明示使用だけでなく、宣言された未使用の引数も含める。 -/
 partial def maxEffArgs : Json → Nat
@@ -226,16 +253,25 @@ structure Parts where
   builtinNames : List String
   canonicalNames : List String
   canonicalSig : String → Option Benitoite.Release.Refinement.PrimSig
+  canonicalRawSig : String → Option Benitoite.Release.Refinement.PrimSig
+  canonical_eq : canonicalSig = fun n => (canonicalRawSig n).map BuiltinAgreement.normKeys
+  canonicalCons : List (String × Benitoite.Release.Refinement.ConDecl)
+  canonicalAtoms : List Benitoite.Release.Refinement.Atom
   closure : Closure
+  standardData : List String
   /-- 名前を標準の名前へ写した表で、閉包の組込みの名前のうち標準表の合成済みの名前の署名の欄が、標準表の行と
   一致する。 -/
   agreement : BuiltinAgreement.Agrees (BuiltinAgreement.composedNames closure.prims) canonicalSig
     BuiltinAgreement.standardSig
+  /-- 閉包の data のうち標準の宣言と同じ名前を持つものは、標準の宣言と一致する。 -/
+  dataAgreement : BuiltinAgreement.DataListAgrees canonicalAtoms canonicalCons standardData
+  unknownBuiltins : List String
 
 /-- 検査器の入力は、同じ宣言材料から表と名前の一覧を作った入力である。 -/
 def Parts.prepared (x : Parts) : Prepared :=
   ⟨x.materials, x.materials.input x.base, x.constructors, x.records, x.implNames, x.outside, x.atoms,
-    x.atoms_eq, x.accept, x.builtinNames, x.canonicalNames, x.canonicalSig, x.closure⟩
+    x.atoms_eq, x.accept, x.builtinNames, x.canonicalNames, x.canonicalSig, x.canonicalRawSig, x.canonicalCons,
+    x.canonicalAtoms, x.closure, x.standardData, x.unknownBuiltins⟩
 
 /-- 準備の成果の検査器の入力は健全である（`Check.Input.Sound`）。 -/
 theorem Parts.sound (x : Parts) : x.prepared.input.Sound :=
@@ -382,16 +418,40 @@ def prepareParts (input : Input) (b : BuiltinInput) (s : StdlibInput)
   let primsC ← formedMaterials atomsC bc
   let msC := primsC.map Subtype.val
   let canonicalNames := msC.map (·.1.name)
-  -- 型パラメータの制約は鍵の印をそろえて比べる（`BuiltinAgreement.sat_normKey`）。
-  let canonicalSig := fun n => ((builtinsOf bc SC msC).sig n).map BuiltinAgreement.normKeys
+  -- 型パラメータの制約は鍵の印をそろえて比べる（`BuiltinAgreement.admits_normKey`）。
+  let canonicalRawSig := (builtinsOf bc SC msC).sig
+  let canonicalSig := fun n => (canonicalRawSig n).map BuiltinAgreement.normKeys
+  let consC ← bc.dataDecls.flatMapM (formedConstructors atomsC)
+  let canonicalCons := consC.map Subtype.val
+  let canonicalAtoms := atomsC ++ Benitoite.Release.Refinement.Surface.StandardSupport.atoms
   -- 照合の対象は、プログラムが参照する組込みと、型を通じて届く data の閉包に限る。閉包の中の差は断る。
   let sC : StdlibInput ← fromJson? (names.json (toJson s))
   let operatorsC : List OperatorEntry ← fromJson? (names.json (toJson operators))
   let closure := closureOf inputC bc sC operatorsC
+  -- 閉包の組込みの署名、data の宣言、組込みの名前の三つの差を、それぞれの名前の一覧とともに一度に断る。
+  let signatureGaps := (BuiltinAgreement.composedNames closure.prims).filter
+    fun n => !BuiltinAgreement.standardCheck atomsC canonicalSig [n]
+  let standardData := closure.data.filter fun n =>
+    (bc.dataDecls.find? (·.name == n)).any fun d => d.package == "stdlib" || d.builtin != .ordinary
+  let dataGaps := BuiltinAgreement.dataDisagreements canonicalAtoms canonicalCons standardData
+  -- 標準の名前へ写らなかった標準ライブラリの data で、表示名が写されていない標準の宣言に対応するもの。
+  let unmapped := (standardData.filterMap fun n => bc.dataDecls.find? (·.name == n)).flatMap fun d =>
+    if (Benitoite.Release.Refinement.StandardModel.declarations.find? (·.name == d.name)).isSome then []
+    else (CanonicalNames.displayCounterparts d.builtin d.package d.name d.typeName).filter
+      fun c => !bc.dataDecls.any (·.name == c)
+  let unknown := closure.prims.filter fun n =>
+    (Benitoite.Release.Refinement.StandardModel.primitive n).isNone && !CanonicalNames.primitiveTargets.contains n
+  -- 標準表にも名前の写しにもない組込みは、標準表が仮定側として持つかを決められないので、断らずに報告に残す。
+  let report := [("builtin signature disagrees with the standard table", signatureGaps),
+    ("data declaration disagrees with the standard table", dataGaps ++ unmapped)].filter (!·.2.isEmpty)
+  if !report.isEmpty then
+    throw ("; ".intercalate (report.map fun (reason, ns) => s!"{reason}: {ns}"))
   let agreed : PLift (BuiltinAgreement.standardCheck atomsC canonicalSig closure.prims = true) ←
     if h : BuiltinAgreement.standardCheck atomsC canonicalSig closure.prims = true then pure ⟨h⟩
-    else throw s!"builtin signature disagrees with the standard table: {(BuiltinAgreement.composedNames closure.prims).filter
-        fun n => !BuiltinAgreement.standardCheck atomsC canonicalSig [n]}"
+    else throw s!"builtin signature disagrees with the standard table: {signatureGaps}"
+  let dataAgreed : PLift (dataGaps = []) ←
+    if h : dataGaps = [] then pure ⟨h⟩ else throw s!"data declaration disagrees with the standard table: {dataGaps}"
+
   let base : Benitoite.Release.Refinement.Surface.Check.Input := {
     D := { funs := fun _ => none, cons := fun _ => none }
     builtinSource := .custom (builtinsOf b S ms)
@@ -419,9 +479,12 @@ def prepareParts (input : Input) (b : BuiltinInput) (s : StdlibInput)
     implNames := implNamesOk m q.methods q.supers, outside, atoms, accept, atoms_eq := rfl, support
     prims := builtinsOf_support b S prims, sat := satDecOf_sound b S ms, admits := admitsDecOf_sound b S ms
     ranges := admitsRDecOf_sound b S ms, operators := makeOpPrim_support atoms operators atomsR, builtinNames
-    canonicalNames, canonicalSig, closure
+    canonicalNames, canonicalSig, canonicalRawSig, canonical_eq := rfl, canonicalCons, canonicalAtoms, closure,
+    standardData
     agreement := BuiltinAgreement.standardCheck_sound
-      (BuiltinAgreement.normKeys_support (builtinsOf_support bc SC primsC)) agreed.down }
+      (BuiltinAgreement.normKeys_support (builtinsOf_support bc SC primsC)) agreed.down
+    dataAgreement := BuiltinAgreement.dataDisagreements_nil dataAgreed.down
+    unknownBuiltins := unknown }
 
 /-- 交換の入力の準備。成功した準備の検査器の入力は健全である（`prepare_sound`）。 -/
 def prepare (input : Input) (b : BuiltinInput) (s : StdlibInput)
@@ -458,23 +521,52 @@ theorem prepare_entry {input : Input} {b : BuiltinInput} {s : StdlibInput} {oper
       x.table x.custom
     exact ⟨same, by rw [same]; exact hs⟩
 
-/-- 準備が成功すれば、名前を標準の名前へ写した表の、閉包（`closureOf`）の組込みの名前のうち標準表の合成済みの
-名前の署名は、整形式の名前の一覧で作ったどの完成表の署名とも欄が一致する（型パラメータの制約の命題と仮定側の名前を
-除く）。写した表の型パラメータの制約は鍵の印をそろえてある（`BuiltinAgreement.normKeys`）。検査器の表と写した表の
-対応（名前の写しと鍵の印のそろえ）と、検査器が閉包の外の行を読まないことは、この定理は述べない。 -/
+/-- 準備が成功すれば、次の二つが成り立つ。(1) 名前を標準の名前へ写した表の、閉包（`closureOf`）の組込みの名前のうち
+標準表の合成済みの名前の署名は、整形式の名前の一覧で作ったどの完成表の署名とも欄が一致する（型パラメータの制約の
+命題と仮定側の名前を除く）。写した表の型パラメータの制約は鍵の印をそろえてある（`prepare_constraints`）。(2) 閉包の
+標準ライブラリの data（`Prepared.standardData`）のうち標準の宣言と同じ名前を持つものは、構成子の名前の列・型引数の数・引数の型（原子の一覧での構造比較）が
+標準の宣言と一致する。閉包の組込みのうち標準表の合成済みの名前でも名前の写しの仮定側の名前でもないもの
+（`Prepared.unknownBuiltins`）は照らさない。検査器の表と写した表の対応（名前の写しと鍵の印のそろえ）と、検査器が閉包の外の行を読まないことは、この定理は
+述べない。 -/
 theorem prepare_agrees {input : Input} {b : BuiltinInput} {s : StdlibInput} {operators : List OperatorEntry}
     {p : Prepared} (h : prepare input b s operators = .ok p)
     {L : Benitoite.Release.Refinement.StandardModel.NameLists} (hL : L.WF)
     {P : Benitoite.Release.Refinement.Program} (T : Benitoite.Release.Refinement.StandardModel.DataTable P)
     (A : Benitoite.Release.Refinement.StandardModel.AssumedTable) :
-    ∀ n ∈ BuiltinAgreement.composedNames p.closure.prims, ∃ s s', p.canonicalSig n = some s ∧
-      (Benitoite.Release.Refinement.StandardModel.complete L T A).sig n = some s' ∧ BuiltinAgreement.ShapeEq s s' := by
+    (∀ n ∈ BuiltinAgreement.composedNames p.closure.prims, ∃ s s', p.canonicalSig n = some s ∧
+      (Benitoite.Release.Refinement.StandardModel.complete L T A).sig n = some s' ∧ BuiltinAgreement.ShapeEq s s') ∧
+    BuiltinAgreement.DataListAgrees p.canonicalAtoms p.canonicalCons p.standardData := by
   unfold prepare at h
   cases hp : prepareParts input b s operators with
   | error e => rw [hp] at h; cases h
   | ok x =>
     rw [hp] at h
     cases h
-    exact BuiltinAgreement.agrees_complete x.agreement hL T A
+    exact ⟨BuiltinAgreement.agrees_complete x.agreement hL T A, x.dataAgreement⟩
+
+/-- 準備が成功すれば、照合に使った署名は、名前を写した表の署名の型パラメータの鍵の印をそろえたものであり、
+そろえても型パラメータの制約の判定（`ModelConstraints.admits`）は変わらない（`BuiltinAgreement.admits_normKey`）。
+`prepare_agrees` の (1) の一致は、この意味で名前を写した表の制約についても成り立つ。 -/
+theorem prepare_constraints {input : Input} {b : BuiltinInput} {s : StdlibInput} {operators : List OperatorEntry}
+    {p : Prepared} (h : prepare input b s operators = .ok p) {n : String} {sg : Benitoite.Release.Refinement.PrimSig}
+    (hs : p.canonicalSig n = some sg) :
+    ∃ raw, p.canonicalRawSig n = some raw ∧ sg = BuiltinAgreement.normKeys raw ∧
+      ∀ S C ts, Benitoite.Release.Refinement.ModelConstraints.admits S (sg.tparams.map (·.constraints)) C ts ↔
+        Benitoite.Release.Refinement.ModelConstraints.admits S (raw.tparams.map (·.constraints)) C ts := by
+  unfold prepare at h
+  cases hp : prepareParts input b s operators with
+  | error e => rw [hp] at h; cases h
+  | ok x =>
+    rw [hp] at h
+    cases h
+    change x.canonicalSig n = some sg at hs
+    rw [x.canonical_eq] at hs
+    obtain ⟨raw, hraw, rfl⟩ := Option.map_eq_some_iff.mp hs
+    refine ⟨raw, hraw, rfl, fun S C ts => ?_⟩
+    have hmap : (BuiltinAgreement.normKeys raw).tparams.map (·.constraints) =
+        (raw.tparams.map (·.constraints)).map BuiltinAgreement.normKey := by
+      simp [BuiltinAgreement.normKeys, List.map_map, Function.comp_def]
+    rw [hmap]
+    exact BuiltinAgreement.admits_normKey S _ C ts
 
 end Benitoite.Exchange.CheckInput

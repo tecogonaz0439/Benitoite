@@ -352,7 +352,7 @@ partial def canonicalJson : Json → Json
   | j => j
 
 /-! 契約名とソース順を保持する独立した交換の入口。
-設計書 07-04「証明する性質」の検査対象と既存形式を区別する。 -/
+設計書 07-04「道具と置き場所」の検査対象と既存形式を区別する。 -/
 def floatFromBits (bits : UInt64) : Except String Float := do
   let value := Float.ofBits bits
   if value.toBits != bits then throw s!"Float bits cannot round-trip: {bits}"
@@ -794,7 +794,7 @@ mutual
 end
 
 /-! 契約名とソース順を保持する独立した交換の入口。
-設計書 07-04「証明する性質」の検査対象と既存形式を区別する。 -/
+設計書 07-04「道具と置き場所」の検査対象と既存形式を区別する。 -/
 mutual
   partial def Expr.lambdaEffects (constants : List ConstantEntry := []) : Expr → List Eff
     | .constName name => ((constants.find? (fun e => e.name == name)).map (fun e => e.body.lambdaEffects constants)).getD []

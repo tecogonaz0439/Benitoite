@@ -1,4 +1,4 @@
-//! 新交換形式の独立入力（設計書 07-04「証明する性質」）。
+//! 新交換形式の独立入力（設計書 07-04「道具と置き場所」）。
 use super::*;
 use benitoite::syntax::ast::{Expr, Item, Stmt};
 use benitoite::typeck::CallPlan;
@@ -456,7 +456,7 @@ impl Export {
 // 全件の振り分けと同じ補助を使い、追加した実行入力を短い検査でも新形式へ出す。
 // 生成した関数が参照する通常の標準宣言も、独立した検査の入力に含める。
 // 実行の自己検査では交換時の宣言・名前・型の欠落を検出できない
-// （設計書 07-04「証明する性質」）。
+// （設計書 07-04「道具と置き場所」）。
 #[test]
 fn export_generated_record_property() {
     let root = Path::new(env!("CARGO_MANIFEST_DIR"))

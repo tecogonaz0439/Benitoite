@@ -286,6 +286,13 @@ def run_rejections(exports, output):
         require(dd['golden']['definitions'] == dict(matched=count, mismatched=0, outside=0, excluded=0), (name, dd))
         require(dd['nonTopRanges'] == expected['nonTopRanges'], (name, 'desugar ranges', dd['nonTopRanges']))
         exit_, sa, elapsed_sa = invoke('surfaceCheckAll', current, output, name)
+        # 標準表との差（分類の表の原因）で準備の段が断った入力は、原因とともに分類して残す。
+        gaps = (runpy.run_path(str(Path(__file__).with_name('test_range_sources.py')))['classified_all'](
+            sa, json.loads(current['corpus'].read_text())) if exit_ == 2 else None)
+        if gaps is not None:
+            outcomes.append({'name': name, 'comparison': expected['comparison'], 'preparationRejected': gaps,
+                             'definitions': count, 'nonTopRanges': expected['nonTopRanges']})
+            continue
         rejected = expected['comparison'] != 'accepted'
         require(exit_ == int(rejected), (name, sa))
         require(sa['nonTopRanges'] == expected['nonTopRanges'], (name, 'surface ranges', sa['nonTopRanges']))
@@ -362,7 +369,7 @@ def run_rejections(exports, output):
         'requiredIndependentExpectationComparisons': 3, 'requiredSameInputDirectComparisons': 0, 'typingRejectionComparisons': 4,
         'independentAtomicUnionRejections': 1, 'acceptedCounterparts': 8,
         'definitions': sum(o['definitions'] for o in outcomes), 'nonTopRanges': sum(o['nonTopRanges'] for o in outcomes),
-        'outcomes': outcomes}
+        'preparationRejected': sum('preparationRejected' in o for o in outcomes), 'outcomes': outcomes}
     (output/'summary.json').write_text(json.dumps(summary, ensure_ascii=False, indent=2)+'\n')
     return summary
 

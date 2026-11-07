@@ -8,7 +8,8 @@ import tempfile
 import unittest
 
 shared = runpy.run_path(str(Path(__file__).with_name('test_named_exchange.py')))
-GAPS = runpy.run_path(str(Path(__file__).with_name('test_range_sources.py')))['preparation_gaps']
+SOURCES = runpy.run_path(str(Path(__file__).with_name('test_range_sources.py')))
+GAPS = SOURCES['preparation_gaps']
 FILES, TOOLS = shared['FILES'], shared['TOOLS']
 FIXTURES = Path(__file__).with_name('batch2-exchange')
 
@@ -150,17 +151,14 @@ class Batch2ExchangeTests(unittest.TestCase):
                     check_rust(self.directory)
 
 
-def surface_gaps(tool, result, report):
-    """表層の検査の準備の段が、標準表との差（分類の表の原因）だけで断ったときの原因。ほかは None。"""
+def surface_gaps(tool, result, report, corpus):
+    """表層の検査の準備の段が、標準表との差（分類の表の原因）だけで断ったときの原因。ほかは None。全件の入口は、
+    残りの入力の照合（不一致0・準備の失敗の件数・末尾の照合の件数）を `classified_all` で行う。"""
     if result.returncode != 2:
         return None
     if tool == 'surfaceCheck':
         return GAPS(result.stdout + result.stderr)
-    found = [GAPS(e['reason']) for e in (report or {}).get('preparationErrors', [])]
-    if found and all(g is not None for g in found):
-        return {'inputs': len(found), 'names': sorted({n for g in found for n in g['names']}),
-                'causes': sorted({c for g in found for c in g['causes']})}
-    return None
+    return SOURCES['classified_all'](report, corpus) if report is not None else None
 
 
 def check_rust(directory):
@@ -184,7 +182,7 @@ def check_rust(directory):
                     result, report = shared['ExchangeTests'].run_tool(case, tool, data, None, i['name'])
                     if i['group'] != 'golden':
                         raise AssertionError('local batch2 inputs must use group golden')
-                    gaps = surface_gaps(tool, result, report)
+                    gaps = surface_gaps(tool, result, report, data['corpus'])
                     if gaps is not None:
                         rejected.append({'tool': tool, 'input': i['name'], **gaps})
                         continue
@@ -192,9 +190,12 @@ def check_rust(directory):
                     case.assertEqual(report['result'], {'ok': True})
             else:
                 result, report = case.run_tool(tool, data)
-                gaps = surface_gaps(tool, result, report) if tool == 'surfaceCheckAll' else None
+                gaps = surface_gaps(tool, result, report, data['corpus']) if tool == 'surfaceCheckAll' else None
                 if gaps is not None:
                     rejected.append({'tool': tool, **gaps})
+                    # 残りの入力の照合は classified_all が行った。範囲外・遅延の制限・Q11 の分類も0とする。
+                    for key in ('outOfScope', 'lazyRestriction', 'q11'):
+                        case.assertEqual(report['counts'][key], 0)
                     continue
                 case.assertEqual(result.returncode, 0, result.stderr + result.stdout + json.dumps(report))
                 if tool == 'desugarDiff':

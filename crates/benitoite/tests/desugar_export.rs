@@ -750,7 +750,7 @@ fn export_independent_program_exchange() {
     let output = export_directory("independent-program");
     let stdlib = exchange::complete_stdlib();
     let mut independent = CorpusStream::new(&output, "independent-program-");
-    // 呼び出しを含まない本体も、名前を保持して比較する（設計書 07-04「証明する性質」）。
+    // 呼び出しを含まない本体も、名前を保持して比較する（設計書 07-04「道具と置き場所」）。
     let checked = pipeline::check_text(
         "independent-program",
         b"function identity(x: Integer) -> Integer\n return match x with\n case _ -> x\n end match\nend function\n",

@@ -189,7 +189,6 @@ def check_rust(directory, report_path):
     checker = runpy.run_path(str(Path(__file__).resolve().parents[2] /
                                 'crates/benitoite/tests/desugar_export/check_named.py'))
     require, run = checker['require'], checker['run']
-    GAPS = runpy.run_path(str(Path(__file__).with_name('test_range_sources.py')))['preparation_gaps']
     data = {f: json.loads((directory / f'{f}.json').read_text()) for f in FILES}
     manifest = json.loads((FIXTURES / 'rust-manifest.json').read_text())
     counts = {i['name']: len(i['definitions']) for i in data['corpus']['inputs']}
@@ -246,19 +245,12 @@ def check_rust(directory, report_path):
         for index, name in enumerate(selections):
             args = [directory / f'{f}.json' for f in files]
             if name is not None: args += ['golden', name]
-            try:
-                report = run(tool, args, directory / f'{tool}-{index}-report.json')
-            except AssertionError as error:
-                # 標準表との差で準備の段が断った入力は、原因の名前とともに分類して残す。
-                gaps = GAPS(str(error)) if tool == 'surfaceCheck' else None
-                out = directory / f'{tool}-{index}-report.json'
-                if tool == 'surfaceCheckAll' and out.exists():
-                    found = [GAPS(e['reason']) for e in json.loads(out.read_text()).get('preparationErrors', [])]
-                    if found and all(g is not None for g in found):
-                        gaps = {'inputs': len(found), 'causes': sorted({c for g in found for c in g['causes']})}
-                if gaps is None:
-                    raise
-                reports[tool].append({'preparationRejected': gaps})
+            # 標準表との差で準備の段が断った入力は、原因の名前とともに分類して残す。全件の入口は、分類した拒否が
+            # あっても残りの入力の照合を続ける（check_named.py の run_surface）。
+            runner = checker['run_surface'] if tool.startswith('surface') else run
+            report = runner(tool, args, directory / f'{tool}-{index}-report.json')
+            if report is None:
+                reports[tool].append({'preparationRejected': checker['PREPARATION_REJECTED'][-1]})
                 continue
             if tool == 'desugarDiff':
                 require(report['golden']['definitions'] == dict(matched=manifest['definitions'], mismatched=0,
@@ -270,8 +262,9 @@ def check_rust(directory, report_path):
                         report['fuelExhausted'] == 0, f'{tool}: counts')
             elif tool == 'surfaceCheck': require(report['result'] == {'ok': True}, f'E2: {name}')
             else:
-                require(report['counts'] == dict(matched=manifest['definitions'], mismatched=0, outOfScope=0,
-                        q11=0, lazyRestriction=0, preparationFailure=0), 'batch5 E2 counts')
+                expected, _ = checker['remaining_counts'](dict(matched=manifest['definitions'], mismatched=0,
+                    outOfScope=0, q11=0, lazyRestriction=0, preparationFailure=0), [], report, counts)
+                require(report['counts'] == expected, 'batch5 E2 counts')
             reports[tool].append(report)
     if all('atoms' in reports['surfaceCheck'][i] for i in (1, 2)):
         require(reports['surfaceCheck'][1]['atoms'] == reports['surfaceCheck'][2]['atoms'],

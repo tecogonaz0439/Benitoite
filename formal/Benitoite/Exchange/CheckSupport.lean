@@ -5,7 +5,7 @@ import Benitoite.Exchange.Builtins
 
 交換の型と効果を有限の原子の一覧に対する支持の証拠とともに形成し（`Exchange.FormationTypes`）、宣言材料の全ての
 署名の支持から、検査器の入力の表の支持（`CheckArguments.HeadTableSupport`）を導く。型付けの正しさは含まない
-（設計書 07-04「証明する性質」）。
+（設計書 07-04「篩を含む形式化の範囲」）。
 -/
 namespace Benitoite.Exchange.CheckSupport
 open Benitoite.Release.Refinement.Surface.CheckTables (Materials ClassMaterial ImplMaterial lookup lookup_mem lookup_map)

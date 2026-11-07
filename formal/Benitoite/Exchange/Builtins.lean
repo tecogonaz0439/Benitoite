@@ -5,7 +5,7 @@ import Benitoite.Release.Refinement.StandardKeyTyping
 import Benitoite.Release.Refinement.Surface.CheckCompare
 
 /-! 契約名とソース順を保持する独立した交換の入口。
-設計書 07-04「証明する性質」の検査対象と既存形式を区別する。 -/
+設計書 07-04「道具と置き場所」の検査対象と既存形式を区別する。 -/
 namespace Benitoite.Exchange
 open Lean
 

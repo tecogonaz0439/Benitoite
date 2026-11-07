@@ -303,3 +303,20 @@
 | 見つけたが直していない | 01-12「型の情報を付けた表層の構文と型付け」の `handle` の項（545 行付近）の `clauseIx B εb o`（規則の値 `Eff.clauseRange`） | 篩付きの核にこの名前はなく、節の添字は `Refinement.HandlerContracts` の `ClauseSig`・`ClauseIxOk`（Top か規則の値）が定める。旧の照合が拾わなかった逆引用符の名前である。規則の記述の書き直しを要するので、取りまとめへ回した |
 
 同名の定義が旧 Release に残り、篩付きにも対応物がある名前（`checkMatchWithView_*`・`HasTypeCL` など）の区別は、この照合でもしていない。照合は名前の有無を見るだけであり、名前が指す定義が篩付きか旧モジュールかは、名前ごとに読み分ける必要がある。
+
+### 取りまとめの判断の後の続き（RV-L70.g-docs の処置の二回目、2026-11-07 16:05〜16:20）
+
+最後の照合の拡大で「見つけたが直していない」とした `clauseIx` と、範囲の外の古い記述を直した。所見ごとの処置は [RV-L70.g-docs](../../reviews/RV-L70.g-docs.md) の「処置」の節の続きにある。
+
+| 箇所 | 処置 |
+|---|---|
+| 01-12「型の情報を付けた表層の構文と型付け」の `handle` の項 | `clauseIx B εb o` と「表層は Top を選ばない」の決定を、篩付きの `ClauseSig`・`ClauseIxOk`・`Eff.ClauseRangeIs` と `clauseIxCheck_sound` で書き直した |
+| 01-12「表層のブロック式」と「die のモデル」 | `Expr.AtomsIn` と clean・捕捉の相互帰納を、`Expr.Scoped`・`Expr.Exits`・`ExprSupport` と `HasBlockQ.desugar` に改めた |
+| 07-04「01-12 との対応」の表 | 36行の段の欄を篩付きの核・表層と旧 Release の共有の定義に分け、削除した証明・旧の主定理・`Benitoite.Core`・定義のない `assumptions` を引く文を除いた。表の前に行の読み方を書いた |
+| Lean のコメント | 「die の先行モデル」7箇所と 07-04「証明する性質」9箇所を今の節へ改めた。並行の担当が変更中の4ファイルの5箇所は記録だけにした |
+
+除いた名前（定義がないもの）: `Release.Model.assumptions`・`Release.ModelTargets.assumptions`・`Release.ModelHttp.assumptions`（旧 `Release` のファイルの文書コメントにだけ現れる）。
+
+### 07-04「進め方」の書き直し（RV-L70.g-docs の処置の三回目、2026-11-07 16:35〜16:45）
+
+07-04「進め方」の段階 A〜E の表と完了の記述を除き、今の構成の五部分の表、完了の条件、網羅性の判定と表層の検査器の段落に書き直した。経緯は設計書に残さず、この記録と改造の過去の記録が持つ。除いた主な記述は、段階 B1 が段階 A を写して `Benitoite.Release` に置き段階 A を `Benitoite.Core` に残すこと、段階 C を `Benitoite.Surface` に置くこと、段階 E1・E2 の完了日と旧の11件の健全性、旧の選ばれない選択肢の実行時の系（`firstAlt` への接続）、段階ごとの担当の経緯である。段階の名前を引く 07-04 の3箇所と 01-12 の1箇所も直した。Rust の試験のコメント4箇所を 07-04「道具と置き場所」へ改めた。

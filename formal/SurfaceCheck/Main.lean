@@ -100,6 +100,7 @@ def run (args : List String) : IO UInt32 := do
     ("definitions", toJson prepared.materials.defs.length),
     ("implementations", toJson prepared.materials.impls.length),
     ("trustedFunctions", toJson prepared.materials.trustedFuns.length),
+    ("unknownBuiltins", toJson prepared.unknownBuiltins),
     ("trustedImplementations", toJson prepared.materials.trustedImpls.length),
     ("constructorsOk", toJson prepared.constructors), ("recordsOk", toJson prepared.records),
     ("implNamesOk", toJson prepared.implNames), ("result", resultJson result)]

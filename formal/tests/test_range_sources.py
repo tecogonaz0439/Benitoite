@@ -49,23 +49,67 @@ def run(tool, args, out, expected=0):
     return read(out)
 
 
-# 標準表との一致の判定（プログラムが参照する組込みの閉包の行）が断る組込みと、その原因。処理系の書き出しが篩付きの
-# 標準表にまだ追いついていない差であり、照合では外さない（Http.Response の表現、Scope.ScopeError の構成子 At、
-# 結果型の篩）。鍵の型パラメータの等値の印は、照合が鍵の印にそろえて比べるので差にならない。
+# 標準表との一致の判定（プログラムが参照する組込みと data の閉包）が断る名前と、その原因。処理系の書き出しが
+# 篩付きの標準表にまだ追いついていない差であり、照合では外さない（Http.Response の表現、Scope.ScopeError の構成子
+# At、結果型の篩）。鍵の型パラメータの等値の印は、照合が鍵の印にそろえて比べるので差にならない。
 STANDARD_GAPS = {'Http.sendIn': 'Http.sendIn', 'Scope.checkPathIn': 'Scope.ScopeError.At',
                  **{n: 'refined result' for n in ('List.append', 'List.head', 'List.tail', 'Map.fromList', 'Map.toList',
                                                   'Set.fromList', 'Set.toList')}}
+# data の宣言の差。Http.RequestCheckError は構成子の引数の Scope.ScopeError が標準の名前へ写らないことによる。
+DATA_GAPS = {'Scope.ScopeError': 'Scope.ScopeError.At', 'Http.RequestCheckError': 'Scope.ScopeError.At'}
+# 準備の段の拒否の文の二つの部分。
+GAP_REASONS = {'builtin signature disagrees with the standard table': STANDARD_GAPS,
+               'data declaration disagrees with the standard table': DATA_GAPS}
 
 
 def preparation_gaps(text):
-    """準備の段の拒否の文から、標準表との差の名前と原因を読む。差以外の拒否なら None。"""
-    match = re.search(r'builtin signature disagrees with the standard table: \[([^\]]*)\]', text)
-    if not match:
+    """準備の段の拒否の文から、標準表との差の名前と原因を読む。分類の表にない差や差以外の拒否なら None。"""
+    parts = re.findall(r'(builtin signature disagrees with the standard table|data declaration disagrees with the '
+                       r'standard table): \[([^\]]*)\]', text)
+    if not parts:
         return None
-    names = [n.strip() for n in match.group(1).split(',') if n.strip()]
-    if not names or any(n not in STANDARD_GAPS for n in names):
+    names, causes = [], set()
+    for reason, listed in parts:
+        found = [n.strip() for n in listed.split(',') if n.strip()]
+        table = GAP_REASONS[reason]
+        if not found or any(n not in table for n in found):
+            return None
+        names += found
+        causes |= {table[n] for n in found}
+    return {'names': names, 'causes': sorted(causes)}
+
+
+def classified_all(report, corpus):
+    """surfaceCheckAll の報告で、準備の段の拒否が全て分類の表の原因なら、残りの入力の照合を行って分類を返す。
+    残りの入力の照合は、不一致0、準備の失敗の件数と拒否の数の一致、末尾の照合の件数（拒否した入力を除く定義の
+    注釈の和）の一致である。分類できない拒否があれば None、分類した拒否がなければ空の分類を返す。"""
+    errors = report.get('preparationErrors', [])
+    found = [preparation_gaps(e.get('reason', '')) for e in errors]
+    if any(g is None for g in found):
         return None
-    return {'names': names, 'causes': sorted({STANDARD_GAPS[n] for n in names})}
+    counts = report['counts']
+    require(counts['preparationFailure'] == len(errors), 'classified rejections: preparation failure count')
+    require(counts['mismatched'] == 0, 'classified rejections: mismatches in the remaining inputs')
+    rejected = {(e.get('group'), e.get('input')) for e in errors}
+    tail = [0, 0]
+    for item in corpus['inputs']:
+        if item.get('excluded') or (item['group'], item['name']) in rejected:
+            continue
+        for definition in item['definitions']:
+            t = definition.get('annotations', {}).get('tailMatch', [0, 0])
+            tail = [tail[0] + t[0], tail[1] + t[1]]
+    require([report['tailMatches'], report['replacements']] == tail,
+            f"classified rejections: tail matches {[report['tailMatches'], report['replacements']]} != {tail}")
+    return {'inputs': len(errors), 'rejected': sorted(n for _, n in rejected),
+            'names': sorted({n for g in found for n in g['names']}),
+            'causes': sorted({c for g in found for c in g['causes']}), 'matched': counts['matched']}
+
+
+def surface_checks(item):
+    """入力の表層の検査の件数（実装のメソッドと上位辞書は実装一件として数える）。"""
+    surfaces = [d['scope']['inScope']['surface'] for d in item['definitions'] if 'inScope' in d['scope']]
+    return sum(s['implementation'] is None for s in surfaces) + len({s['implementation'] for s in surfaces
+                                                                    if s['implementation'] is not None})
 
 
 def expected_range(text):

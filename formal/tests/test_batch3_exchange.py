@@ -205,7 +205,8 @@ def check_rust(directory):
     case = Batch3ExchangeTests()
     case.setUp()
     # 標準表との差で準備の段が断った入力は、原因の名前とともに分類して残す。
-    gaps = runpy.run_path(str(Path(__file__).with_name('test_range_sources.py')))['preparation_gaps']
+    sources = runpy.run_path(str(Path(__file__).with_name('test_range_sources.py')))
+    gaps = sources['preparation_gaps']
     rejected = []
     try:
         for tool in TOOLS:
@@ -221,10 +222,14 @@ def check_rust(directory):
                 continue
             result, report = case.run_tool(tool, data)
             if tool == 'surfaceCheckAll' and result.returncode == 2 and report is not None:
-                found = [gaps(e['reason']) for e in report.get('preparationErrors', [])]
-                if found and all(f is not None for f in found):
-                    rejected.append({'tool': tool, 'inputs': len(found),
-                                     'causes': sorted({c for f in found for c in f['causes']})})
+                # 分類した拒否があっても、残りの入力の照合（不一致0・準備の失敗の件数・末尾の照合の件数）を続ける。
+                found = sources['classified_all'](report, data['corpus'])
+                if found is not None:
+                    rejected.append({'tool': tool, **found})
+                    removed = sum(sources['surface_checks'](i) for i in inputs if i['name'] in found['rejected'])
+                    case.assertEqual(report['counts']['matched'], expected['surfaceChecks'] - removed)
+                    for k in ('outOfScope', 'lazyRestriction', 'q11'):
+                        case.assertEqual(report['counts'][k], 0)
                     continue
             empty_coverage = tool == 'coverageProgramDiff' and expected['programCoverageCases'] == 0
             case.assertEqual(result.returncode, 1 if empty_coverage else 0, result.stderr + result.stdout + json.dumps(report))

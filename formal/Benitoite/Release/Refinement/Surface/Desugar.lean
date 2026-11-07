@@ -196,7 +196,7 @@ def mkArm (pat : Pat) (body : Comp) : Arm :=
 
 /-- 原因は失敗側の環境、説明は元の環境で脱糖済みである。説明の束縛の下へ原因を
 移すことで、説明・表示・既存の exit の順を保つ。報告の情報はコアの外で扱うが、
-説明と原因の計算は省かない（設計書 01-12「die の先行モデル」）。 -/
+説明と原因の計算は省かない（設計書 01-12「die のモデル」）。 -/
 def dieFailure (t : Ty) (exit : PrimName) (depth : Nat) (cause : Comp)
     (message : Option Comp) : Comp :=
   let finish := fun k => Comp.app (.prim exit [t.shiftV k 0] [] []) [.const (.integer ⟨1, by decide⟩)]
@@ -419,7 +419,7 @@ mutual
     | .tryOption ts someCon noneCon e => .letIn (desugarExpr opPrim .other e)
         (.match (.var 0) [mkArm (.con someCon [.var]) (.ret (.var 0)),
           mkArm (.con noneCon []) (.escape (.con noneCon (shiftTs 1 ts) []))])
-    -- 01-12「die の先行モデル」: 入力は一度だけ。失敗側には入力の let と失敗値の
+    -- 01-12「die のモデル」: 入力は一度だけ。失敗側には入力の let と失敗値の
     -- パターンの二つの束縛があり、説明と辞書はその外側のスコープから移す。
     | .tryResultDie t ok err dict showMethod exit e message =>
         let cause := Comp.meth (dict.toVal.rename (· + 2)) showMethod [] [] [.var 0]

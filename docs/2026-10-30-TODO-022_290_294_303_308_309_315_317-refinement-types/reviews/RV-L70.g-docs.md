@@ -137,3 +137,39 @@ die のモデル: 表の `E_TryResultDie` の前提（`Ty.Annotation`、ok と e
 - 篩付きの表層の Lean のコメント6箇所（`Surface/Rules.lean`・`Desugar.lean` 二箇所・`OpenSurface.lean`・`Property1Die.lean`・`Surface/Syntax.lean`）と旧 `Surface/Syntax.lean` が、01-12 にない見出し「die の先行モデル」を引く（今の見出しは「die のモデル」）。
 - `Exchange/` の Lean のコメント（`BuiltinAgreement`・`Builtins`・`CheckInput` 二箇所・`CheckSupport`・`Convert` 二箇所・`Syntax`）と `Surface/ScopeSound.lean` が、交換の検査を扱わなくなった 07-04「証明する性質」を引く。
 - 01-12「表層のブロック式」の「式と文列の型保存・clean・範囲保存・捕捉の相互帰納」、07-04 の表の「確かめる性質」の行の `ClosedNoEffVars`・「旧版の変数の範囲条件」、および表の旧 Release の行（段階 B・C・E の説明）は、旧の形式化の記述が残っている可能性がある。この単位では照らしていない。
+
+### 取りまとめの判断の後の続き（2026-11-07 16:05〜16:20）
+
+取りまとめの判断（範囲の外の古い記述は L70.44 の削除の結果なので、この単位で直す。並行の Lean の担当が変更中のファイルは変えず、直す行を記録に挙げる）に従った。基準は `808e6086` である。
+
+| 対象 | 処置 | 変えた場所 | 理由・確かめたこと |
+|---|---|---|---|
+| 01-12 の `clauseIx` | 直した | 01-12「型の情報を付けた表層の構文と型付け」の `handle` の項の【決定】 | S `Rules.lean` の `HasClausesQ.cons` は核と同じ `ClauseSig D.core B εb o sg`（R `HandlerContracts.lean`）を前提に持ち、添字は Top か規則の値（`ClauseIxOk`・`Eff.ClauseRangeIs`）である。「表層は規則の値だけを使い Top を選ばない」の決定と理由は今の規則に合わないので、表層と核が同じ条件を使う形に改めた。検査器は入力の案内が与える添字を `clauseIxCheck` で判定し、成功から `ClauseIxOk` を導く（S `Check.lean` 862行、`CheckHandler.lean`） |
+| 01-12「表層のブロック式」 | 直した | 第2段落の先頭の二文、同じ趣旨の「die のモデル」の `Expr.AtomsIn` | 篩付きの表層に `Expr.AtomsIn` と clean・捕捉の相互帰納はない。`Expr.Scoped`（S `Scoped.lean` 50行）・`Expr.Exits`（S `Basic.lean` 365行）・検査器の支持 `ExprSupport`（S `CheckSource.lean` 27行）と、性質 1 の E_Block の場合（S `Property1.lean` 49行の `HasBlockQ.desugar`）に改めた |
+| 07-04 の表の旧 Release の行 | 直した | 「01-12 との対応」の表の前の説明、36行の段の欄と古い主張、表の後の【決定】、同節の外の `Release.ModelTargets`・`Release.ModelHttp` の段落と依存の表の一行 | 段の欄の「段階 A・B・C・E の…を拡張」を、篩付きの核・表層の行と「旧 Release の共有の定義（篩付きの核への埋め込みの定義域）」の行に分けて書き直し、表の前に二種類の行の読み方を書いた。削除した証明を引く文（旧の主定理の言明を変えないこと、`E_OpPrim` の保存、Http の対象健全性の例、`Benitoite.Core` が残ること、段階 E2 の11件の健全性と最小の型を返す検査の関数）を除き、篩付きの対応（`clauseIxCheck` の結論、`checkExprAt_sound` など七判断の健全性、`CheckInfer` と `Check` の二段の検査、`step_sound`、`StartCondition`、`ClosedNoLamNames`）に改めた。旧 Release は型の種類を検査しないが篩付きの核は検査する（R `Context/Declarations.lean` の `TypeArgsKindedAt`）ので、ハンドラと型クラスの行の「形式化の型付けは種類を検査しない」を旧 Release に限った。旧の `Model.assumptions`・`ModelTargets.assumptions`・`ModelHttp.assumptions` は定義がない（`formal/` の全体で定義を探した）ので、それを引く文を除いた |
+| Lean のコメントの「die の先行モデル」 | 直した（7箇所） | R `Surface/Desugar.lean` 二箇所・`OpenSurface.lean`・`Property1Die.lean`・`Rules.lean`・`Surface/Syntax.lean`、旧 `Surface/Syntax.lean` | 01-12 の今の見出し「die のモデル」に改めた。コメントの行だけを変えた |
+| Lean のコメントの 07-04「証明する性質」 | 直した（9箇所）・記録だけ（4ファイルの5箇所） | 直した: `Exchange/Builtins.lean`・`Convert.lean` 二箇所・`Syntax.lean`、`BuiltinCheck/Main.lean`・`CoverageDiff/Main.lean`・`CoverageProgramDiff/Main.lean`・`SurfaceCheck/Batch.lean` を「道具と置き場所」へ、`Exchange/CheckSupport.lean` を「篩を含む形式化の範囲」へ | 交換の入口と実行ファイルは今「道具と置き場所」が扱い、交換から作る材料の支持は「篩を含む形式化の範囲」の `Exchange.CheckSupport` の段落が扱う。R `Surface/ScopeSound.lean` 9行の参照は、「証明する性質」が `productionRules_sound` を今も扱うので残した。並行の担当が変更中の `Exchange/BuiltinAgreement.lean` 10行・`Exchange/CheckInput.lean` 7行と412行付近（「篩を含む形式化の範囲」の `standardCheck`・`closureOf`・`prepare` の段落へ改めるのがよい）、`SurfaceCheck/Main.lean` 4行（「道具と置き場所」）・`SurfaceCheck/Validation.lean` 4行（「道具と置き場所」）は変えていない |
+
+検査: 共有ロックの下の既定の `lake build` は終了0（16:12〜16:30、2,323ジョブ、`sorry` の警告0件。`Surface/Rules.lean` のコメントの変更で依存するモジュールを再ビルドした）。`spec_coverage.py --self-test` と通常の実行は終了0。相対リンクと見出しの切れは0（01-12 の数式の字面の誤検出1件を除く）。01-12 の ```text のブロック24個は変えていない。
+
+範囲の外で見つけ、直していないもの（取りまとめへ）:
+
+- 07-04「進め方」の節の全体（段階 A〜E の表と完了の記述）は、削除した `Benitoite.Core`・旧 `Benitoite.Surface` の定義と証明を今の置き場所として書く（「段階 A の定義と証明は、`Benitoite.Core` に残す」「段階 C の定義と証明は…`Benitoite.Surface` に置き」、段階 E2 の11件の健全性など）。節の構成を書き直す判断が要る。
+- Rust の試験のコメント4箇所（`crates/benitoite/tests/desugar_export.rs` 753行、`desugar_export/named.rs` 1行・459行、`desugar_export/named_calls.rs` 1行）も 07-04「証明する性質」を交換の根拠として引く。
+
+### 取りまとめの判断の後の続き（三回目、2026-11-07 16:35〜16:45）
+
+取りまとめの判断（「進め方」の節を今の構成に書き直し、段階の経緯を設計書に残さない。Rust の試験のコメント4箇所を「道具と置き場所」へ改める）に従った。
+
+| 対象 | 処置 | 変えた場所 | 理由・確かめたこと |
+|---|---|---|---|
+| 07-04「進め方」 | 書き直した | 節の全体（見出しは変えていない） | 段階 A〜E の三つの表と完了の記述を除き、今の構成の五部分（篩付きの核、篩付きの表層、交換と7入口、旧 Release の共有の定義、区間解析）と独立の小証明の置き場所を表にした。完了の条件（`sorry` なし、標準の三公理だけ、仮定は「形式化で仮定するもの」だけ）と、レビューの後に証明へ入ることを【決定】として残した。網羅性の判定の段落は今の定理に合わせ、選ばれない選択肢の系が照合の上の選択（`AlternativeSelected`）までで、`firstAlt` への接続を含まないと書いた（R `Coverage.lean` 2119行）。検査器の段落は `CheckInfer` と `Check` の二段に改め、旧の11件の健全性と最小の型を返す関数の記述を除いた。見出しは、R の外の `Release/Syntax.lean` 10行のコメントが引くので保った |
+| 「進め方」の外の段階の名前 | 直した | 07-04「道具と置き場所」の遷移を計算する関数の段落（段階 B1）、「01-12 との対応」の Lean を正とする【決定】（段階 A・B・C7）、「レビューと、見つかった誤りの扱い」の担当の【方針】（段階 A・B・C の経緯）、01-12 の効果の所属の段落（段階 B の写し） | 定義を除いた段階 A・B・C の名前を、今の部分の名前に改めた。担当の経緯は除き、担当は改造の計画で決めると書いた。段階 1・2（ロードマップの段階）と段階 E・E1・E2（「証明する性質」が定める）は今も定義があるので残した |
+| Rust の試験のコメント | 直した（4箇所） | `crates/benitoite/tests/desugar_export.rs` 753行、`desugar_export/named.rs` 1行・459行、`desugar_export/named_calls.rs` 1行 | 07-04「証明する性質」を「道具と置き場所」に改めた。コメントの行だけを変え、`check_named.py` には触れていない。`rustfmt --edition 2024 --check` は三ファイルで終了0 |
+
+検査: `spec_coverage.py --self-test` と通常の実行は終了0。相対リンクと見出しの切れは0（01-12 の数式の字面の誤検出1件を除く）。01-12 の ```text のブロックは変えていない。Lean は変えていないので、ビルドしていない。
+
+範囲の外で見つけ、直していないもの:
+
+- `formal/Benitoite/Release/Syntax.lean` 10行のコメントは、「進め方」とともに「段階 A（`Benitoite.Core`）の定義は…」と削除したモジュールを書く。この回は Lean を変えない判断なので、記録だけにした。
+- `formal/README.md` の「レビュー」の節の、記録の置き場所を段階 A・B・C・E の名前で示す一文は、過去の記録の場所を示すものとして残した。段階の名前の定義は設計書から除いたので、読み手には記録の側の名前として読める。

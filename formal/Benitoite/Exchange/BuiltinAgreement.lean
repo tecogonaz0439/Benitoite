@@ -1,12 +1,14 @@
 import Benitoite.Exchange.CheckSupport
 import Benitoite.Release.Refinement.SurfaceStandardSupport
 
-/-! # 交換した組み込みの表と標準表の署名の一致
+/-! # 交換した組み込みの表と標準表の一致
 
-交換した組み込みの表の署名を、交換に現れる名前の有限の一覧について、標準表の合成済みの行の署名と照らす。
-型と効果は同じ有限の原子の一覧による構造比較で照合し、型パラメータの制約の命題（`admits`）は比べない。
-成功から、一覧の名前ごとの署名の一致を得る（設計書 07-04「証明する性質」）。名前は交換の名前のまま照らし、
-標準表の合成済みの名前でない名前は仮定側の名前として照らさない。
+交換した組み込みの表の署名と data の宣言を、名前の有限の一覧について、標準表の合成済みの行の署名と標準の
+data の宣言に照らす。表は、交換の内部名を同じ入力の宣言から決まる標準の名前へ写した照合用の表である
+（`Exchange.CanonicalNames.ofInputs`。写しと一覧の作り方は `Exchange.CheckInput`）。型と効果は同じ有限の原子の
+一覧による構造比較で照合し、型パラメータの制約の命題（`admits`）は比べない。型パラメータの制約は、照合用の表の
+側の鍵の印をそろえてから比べる（`normKeys`）。成功から、一覧の名前ごとの一致を得る（設計書 07-04「証明する性質」）。
+標準表の合成済みの名前でない組み込みの名前は、仮定側の名前として署名を照らさない。
 -/
 namespace Benitoite.Exchange.BuiltinAgreement
 open Benitoite.Exchange.CheckSupport
@@ -221,5 +223,63 @@ theorem agrees_complete {names : List R.PrimName} {sig : R.PrimName → Option R
   · rw [hstd] at hs'
     cases hs'
     exact ⟨s, row.signatureWith T.sat, hs, complete_sig hL T A hrow, heq.trans (signatureWith_shape T.sat row).symm⟩
+
+/-! ## 標準の data の宣言との照合 -/
+
+/-- 照合用の構成子の表のうち、data `n` の構成子（表の順）。 -/
+def dataConstructors (cons : List (String × Benitoite.Release.Refinement.ConDecl)) (n : String) :
+    List (String × Benitoite.Release.Refinement.ConDecl) :=
+  cons.filter fun c => c.2.data == n
+
+/-- data の宣言の一致。照合用の構成子の表の data の構成子の数が標準の宣言の構成子の数と同じで、各構成子について、
+型引数の数が同じで、同じ名前の標準の構成子があり、引数の型が原子の一覧での構造比較（`tysEq`）で一致する。
+構成子の名前は照合用の表で一意なので（準備の `uniqueKeys`）、構成子の名前の集合も一致する。順序は比べない。 -/
+structure DataAgrees (atoms : List R.Atom) (cons : List (String × Benitoite.Release.Refinement.ConDecl))
+    (decl : Benitoite.Release.Refinement.StandardKeyTyping.DataDecl) : Prop where
+  count : (dataConstructors cons decl.name).length = decl.constructors.length
+  fields : ∀ c ∈ dataConstructors cons decl.name, c.2.ntys = decl.ntys ∧
+    ∃ args, decl.constructors.lookup c.1 = some args ∧
+      Benitoite.Release.Refinement.Surface.CheckArguments.tysEq atoms c.2.args args = true
+
+/-- data の宣言の一致の有限判定。 -/
+def dataCheck (atoms : List R.Atom) (cons : List (String × Benitoite.Release.Refinement.ConDecl))
+    (decl : Benitoite.Release.Refinement.StandardKeyTyping.DataDecl) : Bool :=
+  decide ((dataConstructors cons decl.name).length = decl.constructors.length) &&
+    (dataConstructors cons decl.name).all fun c =>
+      decide (c.2.ntys = decl.ntys) && match decl.constructors.lookup c.1 with
+        | some args => Benitoite.Release.Refinement.Surface.CheckArguments.tysEq atoms c.2.args args
+        | none => false
+
+theorem dataCheck_sound {atoms : List R.Atom} {cons : List (String × Benitoite.Release.Refinement.ConDecl)}
+    {decl : Benitoite.Release.Refinement.StandardKeyTyping.DataDecl} (h : dataCheck atoms cons decl = true) :
+    DataAgrees atoms cons decl := by
+  simp only [dataCheck, Bool.and_eq_true, decide_eq_true_eq, List.all_eq_true] at h
+  refine ⟨h.1, fun c hc => ?_⟩
+  have hc' := h.2 c hc
+  refine ⟨hc'.1, ?_⟩
+  revert hc'
+  cases hl : decl.constructors.lookup c.1 with
+  | none => simp
+  | some args => intro hc'; exact ⟨args, rfl, hc'.2⟩
+
+/-- 名前の一覧の data のうち、標準の宣言と同じ名前を持つものが全て標準の宣言と一致する。 -/
+def DataListAgrees (atoms : List R.Atom) (cons : List (String × Benitoite.Release.Refinement.ConDecl))
+    (data : List String) : Prop :=
+  ∀ n ∈ data, ∀ decl, Benitoite.Release.Refinement.StandardModel.declarations.find? (·.name == n) = some decl →
+    DataAgrees atoms cons decl
+
+/-- 名前の一覧の data のうち、標準の宣言と同じ名前を持ち、標準の宣言と一致しない data の名前。 -/
+def dataDisagreements (atoms : List R.Atom) (cons : List (String × Benitoite.Release.Refinement.ConDecl))
+    (data : List String) : List String :=
+  data.filter fun n => match Benitoite.Release.Refinement.StandardModel.declarations.find? (·.name == n) with
+    | some decl => !dataCheck atoms cons decl
+    | none => false
+
+theorem dataDisagreements_nil {atoms : List R.Atom} {cons : List (String × Benitoite.Release.Refinement.ConDecl)}
+    {data : List String} (h : dataDisagreements atoms cons data = []) : DataListAgrees atoms cons data := by
+  intro n hn decl hd
+  have hnot : n ∉ dataDisagreements atoms cons data := by rw [h]; simp
+  simp only [dataDisagreements, List.mem_filter, hd, not_and, Bool.not_eq_true'] at hnot
+  exact dataCheck_sound (by simpa using hnot hn)
 
 end Benitoite.Exchange.BuiltinAgreement

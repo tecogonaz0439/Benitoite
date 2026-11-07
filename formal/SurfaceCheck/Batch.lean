@@ -1,7 +1,7 @@
 import SurfaceCheck.Walk
 
 /-! 全入力の宣言を一度準備し、定義と実装ごとの検査結果を保持する。
-検査は全プログラムの入口と同じ本体の位置・view・証明の上限で行う（設計書 07-04「証明する性質」）。 -/
+検査は全プログラムの入口と同じ本体の位置・view・証明の上限で行う（設計書 07-04「道具と置き場所」）。 -/
 namespace SurfaceCheck.Batch
 open Lean Benitoite.Release.Refinement Benitoite.Release.Refinement.Surface
 open Benitoite.Exchange.CheckInput Benitoite.Release.Refinement.Surface.CheckTables

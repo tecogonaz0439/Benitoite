@@ -176,6 +176,6 @@ python3 -B formal/tests/test_interval_exchange.py
 
 ## レビュー
 
-定義と言明のレビューの依頼と回答は、改造のディレクトリの `reviews/` に置き、改造を終えたら改造のディレクトリと一緒に `docs/archive/` へ移す。これまでの記録は次の場所にある。段階 A・B は `docs/archive/2026-10-09-implement-first-release/formal-reviews/`、段階 C1〜C3 は `docs/archive/2026-10-09-TODO-162-desugar-formalization/reviews/`、段階 C4〜C7 は `docs/archive/2026-10-10-TODO-162-desugar-formalization-phase2/reviews/`、段階 E1・E2 は `docs/archive/2026-10-10-TODO-162-desugar-formalization-phase3/reviews/`。これらの記録に残る ADR・OPEN の番号は、初回リリース版の設計書の写し（`docs/archive/2026-10-09-design-first-release/` の `decisions/` と `open-issues.md`）を指す。
+定義と言明のレビューの依頼と回答は、改造のディレクトリの `reviews/` に置き、改造を終えたら改造のディレクトリと一緒に `docs/archive/` へ移す。これまでの記録は、記録を作った当時の形式化の段階の名前ごとに、次の場所にある。段階 A・B は `docs/archive/2026-10-09-implement-first-release/formal-reviews/`、段階 C1〜C3 は `docs/archive/2026-10-09-TODO-162-desugar-formalization/reviews/`、段階 C4〜C7 は `docs/archive/2026-10-10-TODO-162-desugar-formalization-phase2/reviews/`、段階 E1・E2 は `docs/archive/2026-10-10-TODO-162-desugar-formalization-phase3/reviews/`。これらの記録に残る ADR・OPEN の番号は、初回リリース版の設計書の写し（`docs/archive/2026-10-09-design-first-release/` の `decisions/` と `open-issues.md`）を指す。
 
 レビューでは、定義が変更の理由と 01-12 の規則の意図と一致すること、01-12 の写しが定義と一致すること、定理の言明が 01-12 の性質と一致すること、仮定が 07-04 に挙げたものに限られることを確かめる。証明の本体は、`lake build` を通ればレビューしない（07-04「レビューと、見つかった誤りの扱い」）。

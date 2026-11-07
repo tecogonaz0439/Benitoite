@@ -25,6 +25,7 @@
     "Benitoite.Exchange.Builtins",
     "Benitoite.Exchange.CheckInput",
     "Benitoite.Exchange.Convert",
+    "Benitoite.Exchange.FormatExamples",
     "Benitoite.Exchange.IntegerExamples",
     "Benitoite.Exchange.Observe",
     "Benitoite.Exchange.ObserveExamples",
@@ -56,14 +57,19 @@
     "Benitoite.Release.Refinement.Surface.CheckOpenStandardExamples",
     "Benitoite.Release.Refinement.Surface.CheckPreparation",
     "Benitoite.Release.Refinement.Surface.Desugar",
+    "Benitoite.Release.Refinement.Surface.OpenSurface",
     "Benitoite.Release.Refinement.Surface.PredicateGeneratedNames",
     "Benitoite.Release.Refinement.Surface.PredicateSimulationActiveProviders",
     "Benitoite.Release.Refinement.Surface.PredicateSimulationLookup",
     "Benitoite.Release.Refinement.Surface.PredicateSimulationResponseSteps",
     "Benitoite.Release.Refinement.Surface.PredicateSimulationStateOperations",
     "Benitoite.Release.Refinement.Surface.PredicateSimulationTraces",
+    "Benitoite.Release.Refinement.Surface.Property1Die",
+    "Benitoite.Release.Refinement.Surface.Rules",
+    "Benitoite.Release.Refinement.Surface.Syntax",
     "Benitoite.Release.TargetTable",
     "Benitoite.Scope.CompatExamples",
+    "Benitoite.Surface.Syntax",
     "BuiltinCheck.Main",
     "CoverageDiff.Main",
     "CoverageProgramDiff.Main",
@@ -75,25 +81,25 @@
   ],
   "default_modules": 1301,
   "axioms": {
-    "targets": 11788,
+    "targets": 15221,
     "axioms": {
-      "none": 5447,
-      "propext": 2971,
-      "Quot.sound,propext": 389,
-      "Classical.choice,Quot.sound,propext": 2981
+      "none": 7763,
+      "propext": 3304,
+      "Quot.sound,propext": 391,
+      "Classical.choice,Quot.sound,propext": 3763
     },
     "parts": {
       "library": {
-        "targets": 10797,
+        "targets": 14230,
         "axioms": {
-          "none": 4943,
-          "propext": 2860,
-          "Quot.sound,propext": 388,
-          "Classical.choice,Quot.sound,propext": 2606
+          "none": 7259,
+          "propext": 3193,
+          "Quot.sound,propext": 390,
+          "Classical.choice,Quot.sound,propext": 3388
         },
         "output": {
-          "bytes": 2539239,
-          "sha256": "b495b36be266a45d75058b4452d2d3e1c6d1d1d0402403943ee1eb0f37318dcd"
+          "bytes": 3201874,
+          "sha256": "143a3b13d6b0addd69cdad8559901c2237cc5abc8e641283d0b4f44cd19a2aef"
         }
       },
       "BuiltinCheck.Main": {
@@ -197,8 +203,8 @@
   },
   "audit_inputs": {
     "library": {
-      "bytes": 7844,
-      "sha256": "7b960db8ae720190cdabf4fce806521800c1d527f73a6f42b9bd33ff2edfa9b9"
+      "bytes": 8388,
+      "sha256": "eccd0c37159b088d15c1d66161c884cf363d624fef14d7e1dc490553e1e81bb6"
     },
     "BuiltinCheck.Main": {
       "bytes": 2329,

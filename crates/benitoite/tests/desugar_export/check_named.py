@@ -35,37 +35,62 @@ def run(tool, args, report, status=0):
 
 
 # 標準表との差で準備の段が断った表層の検査。最初の準備の失敗で止めず、原因とともに残す。
-# 分類の表は formal/tests/test_range_sources.py の STANDARD_GAPS・preparation_gaps を使う。
+# 分類の表と残りの入力の照合は formal/tests/test_range_sources.py の preparation_gaps・classified_all を使う。
 PREPARATION_REJECTED = []
-_GAPS = []
+_SOURCES = []
+
+
+def sources():
+    if not _SOURCES:
+        _SOURCES.append(runpy.run_path(str(ROOT / "formal/tests/test_range_sources.py")))
+    return _SOURCES[0]
 
 
 def preparation_gaps(text):
-    if not _GAPS:
-        _GAPS.append(runpy.run_path(str(ROOT / "formal/tests/test_range_sources.py"))["preparation_gaps"])
-    return _GAPS[0](text)
+    return sources()["preparation_gaps"](text)
 
 
 def run_surface(tool, args, report, status=0):
     """表層の検査の入口を実行する。準備の段が標準表との差（分類の表の原因）だけで断ったときは、その原因を
-    PREPARATION_REJECTED に残して None を返す。ほかの失敗は run と同じく止める。"""
+    PREPARATION_REJECTED に残す。単独の入口は None を返す。全件の入口は、残りの入力の照合（不一致0・準備の失敗の
+    件数・末尾の照合の件数）を行い、報告に分類（欄 classified）を付けて返す。ほかの失敗は run と同じく止める。"""
     try:
         return run(tool, args, report, status)
     except AssertionError as error:
         if f"got 2:" not in str(error):
             raise
-        gaps = None
         if tool == "surfaceCheck":
             gaps = preparation_gaps(str(error))
-        elif report.exists():
-            found = [preparation_gaps(e["reason"]) for e in read(report).get("preparationErrors", [])]
-            if found and all(g is not None for g in found):
-                gaps = {"inputs": len(found), "names": sorted({n for g in found for n in g["names"]}),
-                        "causes": sorted({c for g in found for c in g["causes"]})}
+            if gaps is None:
+                raise
+            PREPARATION_REJECTED.append({"tool": tool, "report": report.name, **gaps})
+            return None
+        if not report.exists():
+            raise
+        result = read(report)
+        gaps = sources()["classified_all"](result, read(Path(args[0])))
         if gaps is None:
             raise
         PREPARATION_REJECTED.append({"tool": tool, "report": report.name, **gaps})
-        return None
+        result["classified"] = gaps
+        return result
+
+
+def remaining_counts(expected, outcomes, report, checks):
+    """全件の入口の期待の件数から、分類した拒否で準備の段が断った入力の分を除く。outcomes は期待の一致以外の
+    結果（欄 input と category）、checks は入力ごとの表層の検査の件数である。"""
+    gaps = report.get("classified")
+    if gaps is None:
+        return expected, outcomes
+    rejected = set(gaps["rejected"])
+    kept = [o for o in outcomes if o["input"] not in rejected]
+    counts = {k: 0 for k in expected}
+    for o in kept:
+        counts[o["category"]] = counts.get(o["category"], 0) + 1
+    counts["matched"] = expected["matched"] - sum(checks[n] - sum(o["input"] == n for o in outcomes)
+                                                  for n in rejected)
+    counts["preparationFailure"] = len(rejected)
+    return counts, kept
 
 
 def preparation_summary():
@@ -240,9 +265,10 @@ def check_named(directory, entry, versions):
         reports[tool] = runner(tool, args, directory / f"{stem}-{tool}-report.json")
     require(reports["desugarDiff"]["golden"]["definitions"] == {
         "matched": entry["definitions"], "mismatched": 0, "outside": 0, "excluded": 0}, stem)
+    surface_rejected = "classified" in reports["surfaceCheckAll"]
     if range_count is not None:
         for tool in ("desugarDiff", "surfaceCheckAll"):
-            if reports[tool] is not None:
+            if tool == "desugarDiff" or not surface_rejected:
                 require(reports[tool]["nonTopRanges"] == range_count > 0,
                         f"{stem}: {tool}: range count differs or all Top")
     require(reports["builtinCheck"]["errors"] == [], stem)
@@ -250,10 +276,10 @@ def check_named(directory, entry, versions):
         require(reports["surfaceCheck"]["result"] == {"ok": True}, stem)
     # 実装のメソッドと上位辞書は表層では実装一件として検査するので、実装を含む例は surfaceChecks で数える。
     surface_checks = entry.get("surfaceChecks", entry.get("scopes", {}).get("inScope", entry["definitions"]))
-    if reports["surfaceCheckAll"] is not None:
-        require(reports["surfaceCheckAll"]["counts"] == {
-            "matched": surface_checks, "q11": 0, "outOfScope": 0, "lazyRestriction": 0,
-            "mismatched": 0, "preparationFailure": 0}, stem)
+    expected_counts, _ = remaining_counts({
+        "matched": surface_checks, "q11": 0, "outOfScope": 0, "lazyRestriction": 0,
+        "mismatched": 0, "preparationFailure": 0}, [], reports["surfaceCheckAll"], {stem: surface_checks})
+    require(reports["surfaceCheckAll"]["counts"] == expected_counts, stem)
     if entry["coverage"] is not None:
         path = directory / f"{stem}-coverage.json"
         coverage = read(path)
@@ -290,8 +316,9 @@ def check_width(directory, expected):
     report = run("builtinCheck", [corpus_path, builtins], directory / "builtin-report.json")
     require(report["errors"] == [] and report["checkedInputs"] == len(expected["inputs"]), "width builtin")
     report = run_surface("surfaceCheckAll", [corpus_path, builtins, stdlib], directory / "surface-report.json")
-    if report is not None:
-        require(report["counts"] == expected["surfaceCounts"], "width surface")
+    counts, _ = remaining_counts(expected["surfaceCounts"], [], report,
+                                 {name: definitions for name, definitions in expected["inputs"]})
+    require(report["counts"] == counts, "width surface")
     # この独立入力には照合・束縛がない。空の比較を成功として数えない入口の終了状態も保つ。
     report = run("coverageProgramDiff", [directory / "coverage.json", builtins], directory / "coverage-report.json", 1)
     require(report["matched"] == 0 and report["mismatched"] == 0 and report["outOfScope"] == 0
@@ -331,6 +358,7 @@ def check_programs(directory, manifest):
         tables[path] = (table, keyed(table["inputs"]))
     definitions = 0
     surface_definitions = 0
+    checks_by_input = {}
     for index, item in enumerate(corpus["inputs"]):
         if index % 100 == 0:
             print(f"single surface checks: {index}/{len(keys)} inputs", flush=True)
@@ -356,6 +384,7 @@ def check_programs(directory, manifest):
         require(len(implementations) == entry.get("implementations", 0), f"{item['name']}: implementations")
         require(surface_checks == entry.get("surfaceChecks", scopes.get("inScope", 0)), f"{item['name']}: surface checks")
         surface_definitions += surface_checks
+        checks_by_input[item["name"]] = surface_checks
         path = directory / f"{Path(item['name']).stem}-surface-report.json"
         # 単一入力の入口には対応する表だけを渡す。全件の入口は下で元の corpus を読む。
         # 各回に全入力を読み直す費用を避け、全入力の独立した単一検査を維持する。
@@ -381,11 +410,12 @@ def check_programs(directory, manifest):
     report = run("builtinCheck", [corpus_path, builtins], directory / f"{stem}-builtin-report.json")
     require(report["errors"] == [], "general builtins")
     report = run_surface("surfaceCheckAll", [corpus_path, builtins, stdlib], directory / f"{stem}-surface-report.json")
-    if report is not None:
-        require(report["counts"] == manifest["programReports"]["surfaceCounts"], "general surface")
-        require(sorted((o for o in report["outcomes"] if o["category"] != "matched"),
-                       key=lambda o: json.dumps(o, sort_keys=True)) == manifest["programReports"]["surfaceOutcomes"],
-                "general surface classification reasons changed")
+    counts, outcomes = remaining_counts(manifest["programReports"]["surfaceCounts"],
+                                        manifest["programReports"]["surfaceOutcomes"], report, checks_by_input)
+    require(report["counts"] == counts, "general surface")
+    require(sorted((o for o in report["outcomes"] if o["category"] != "matched"),
+                   key=lambda o: json.dumps(o, sort_keys=True)) == outcomes,
+            "general surface classification reasons changed")
     coverage = read(coverage_path)
     require(coverage["version"] == versions["coverage"], "general coverage version")
     require([(i["group"], i["name"]) for i in coverage["inputs"]] ==

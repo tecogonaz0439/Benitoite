@@ -100,6 +100,9 @@ private def primitiveAliases : List (String × String) := [
 /-- 表にない primitive の名前を推測しない。 -/
 def primitiveName (name : String) : String := lookup primitiveAliases name
 
+/-- 公開宣言名との対応の有限表が写す先の primitive の名前（仮定側の組み込みの関数の名前）。 -/
+def primitiveTargets : List String := primitiveAliases.map Prod.snd
+
 private def effectAliases : List (String × String) := [
   ("IO.Console.Write","Console.Write"), ("IO.Console.Read","Console.Read"),
   ("IO.File.Read","File.Read"), ("IO.File.Write","File.Write"),
@@ -154,6 +157,15 @@ private def standardData (info : DataTypeInfo) : Except String (Option Benitoite
   unique info.name (if !literalSource.isEmpty then literalSource
     else if !literalType.isEmpty then literalType
     else if !publicType.isEmpty then publicType else candidates)
+
+/-- 標準ライブラリの data の属性から、表示名が対応する標準の宣言の名前。構成子は照らさない（照らすのは
+`standardData`）。 -/
+def displayCounterparts (builtin : BuiltinData) (package name typeName : String) : List String :=
+  if package != "stdlib" && builtin == .ordinary then [] else
+  (Benitoite.Release.Refinement.StandardModel.declarations.filter fun declaration => match builtin with
+    | .result => declaration.name == "Result" || declaration.name == name
+    | .option => declaration.name == "Option"
+    | .ordinary => sameDisplay typeName declaration.name).map (·.name)
 
 private def addData (names : CanonicalNames) (info : DataTypeInfo) : Except String CanonicalNames := do
   let some declaration ← standardData info | return names

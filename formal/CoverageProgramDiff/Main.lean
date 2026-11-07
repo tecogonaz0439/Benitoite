@@ -5,7 +5,7 @@ import Lean
 /-! 契約名とソース順を保持する独立した交換の入口。
 処理系が受理したプログラムの照合と束縛を、篩付きの型の網羅性の判定
 （設計書 01-12「篩を読む網羅性と値の意味」）で検査する。
-設計書 07-04「証明する性質」の検査対象と既存形式を区別する。 -/
+設計書 07-04「道具と置き場所」の検査対象と既存形式を区別する。 -/
 open Lean Benitoite.Release.Refinement
 open Benitoite.Release (Pat ConName DataName)
 namespace CoverageProgramDiff
