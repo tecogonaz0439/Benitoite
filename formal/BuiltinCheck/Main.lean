@@ -1,7 +1,7 @@
 import Benitoite.Exchange.Builtins
 
 /-! 契約名とソース順を保持する独立した交換の入口。
-設計書 07-04「証明する性質」の検査対象と既存形式を区別する。 -/
+設計書 07-04「道具と置き場所」の検査対象と既存形式を区別する。 -/
 open Lean Benitoite.Exchange
 
 /-- 表層・コアの交換形式の参照を辿る。型の data 名は構成子名と混同しない。 -/
@@ -82,7 +82,7 @@ def validate (input : Input) (b : BuiltinInput) : InputReport := Id.run do
         errors := errors ++ [s!"{p.name}: kind/opEff mismatch"]
     if let some l := p.opEff then
       -- 単一の対象の形の操作の効果は範囲の変数 0 の原子、ほかは Top の原子である（`Builtins.ShapeOk`）。
-      let ix : Benitoite.Scope.Signature.Ix := match p.shape with | .single .. => .rvar 0 | _ => .fixed .top
+      let ix : Benitoite.Release.Refinement.RangeIx := match p.shape with | .single .. => .rvar 0 | _ => .top
       if p.eff != [.name l ix] || p.neffs != 0 ||
           !((b.effectOps l).getD []).contains p.name then
         errors := errors ++ [s!"{p.name}: invalid operation effect"]
@@ -152,7 +152,7 @@ def run (args : List String) : IO UInt32 := do
     throw (IO.userError "usage: builtinCheck corpus.json builtins.json builtin-report.json")
   let corpus ← IO.ofExcept ((Json.parse (← IO.FS.readFile corpusFile)) >>= readCorpus)
   let tables ← IO.ofExcept ((Json.parse (← IO.FS.readFile tableFile)) >>= readBuiltins)
-  if sidecarVersion corpus.version != tables.version then throw (IO.userError "exchange version pair mismatch")
+  if sidecarVersion != tables.version then throw (IO.userError "exchange version pair mismatch")
   if duplicateNames (tables.inputs.map (fun b => s!"{b.group}/{b.name}")) then
     throw (IO.userError "duplicate input table")
   let checked := corpus.inputs.filter (fun i => i.excluded.isEmpty)
@@ -161,7 +161,7 @@ def run (args : List String) : IO UInt32 := do
   for input in checked do
     let some b := tables.inputs.find? (fun b => b.group == input.group && b.name == input.name) |
       throw (IO.userError s!"missing input table: {input.group}/{input.name}")
-    if corpus.version >= 9 && input.dataTypes != b.dataDecls.map DataEntry.info then
+    if input.dataTypes != b.dataDecls.map DataEntry.info then
       throw (IO.userError "corpus/builtin data type metadata mismatch")
     reports := reports ++ [validate input b]
   let missing := (reports.flatMap InputReport.missingPrims).eraseDups

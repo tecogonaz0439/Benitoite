@@ -1,4 +1,4 @@
-"""corpus 15/sidecar 7 の範囲の独立入力を六入口で検査する（L50.2）。Cargo は起動しない。
+"""corpus 16/sidecar 8 の範囲の独立入力を六入口で検査する（L50.2）。Cargo は起動しない。
 
 範囲付きの原子と不透明型・組み込みの呼び出しの範囲の列・型表の範囲の変数と表のデータ・必須の判定の入力
 （scopeAcceptance）を、Rust の書き出しや Lean の脱糖から作らずに手で書く。原子の種類別（パス・endpoint）、
@@ -39,7 +39,9 @@ EPLAN = {"endpoint": {"host": LAN["host"], "ports": {"lo": 443, "hi": 443}}}
 
 # 交換の不透明型の名前は「識別番号:型引数の JSON」の形である（Exchange.Builtins の Ty.hasOpaqueArguments）。
 # 表のデータ（valKinds など）も同じ名前で引く。
-PATH_IN, SCOPE_ERROR_T, IO_ERROR_T, REQUEST_IN = "101:[]", "102:[]", "103:[]", "105:[]"
+PATH_IN, IO_ERROR_T, REQUEST_IN = "101:[]", "103:[]", "105:[]"
+# 標準の Scope.ScopeError は data 型である（Scope.bnt の宣言。処理系の書き出しも data として書く）。
+SCOPE_ERROR_NAME = "Scope.ScopeError"
 
 
 def opaque(name, r=TOP):
@@ -58,7 +60,7 @@ def result(a, e):
     return {"data": {"name": "Result", "args": [a, e]}}
 
 
-SCOPE_ERROR = opaque(SCOPE_ERROR_T)
+SCOPE_ERROR = {"data": {"name": SCOPE_ERROR_NAME, "args": []}}
 IO_ERROR = opaque(IO_ERROR_T)
 # Http.ClientRequest は五つの欄のレコード（Rust の Http.bnt と同じ欄）。検査済みの要求の値はこのレコードの値を保持し、
 # 表のデータ valContents は Http.RequestIn にこの型を与える（L40.3c）。
@@ -69,7 +71,7 @@ CHECK_ERROR = {"data": {"name": "Http.RequestCheckError", "args": []}}
 
 def header(names, params, ret, eff=()):
     return {"tparams": [], "neffs": 0, "effParams": [], "names": list(names), "params": list(params),
-            "ret": ret, "eff": list(eff)}
+            "ret": ret, "eff": list(eff), 'tparamKinds': [], 'rangeParams': [], 'proofSteps': None}
 
 
 def lit(s):
@@ -85,7 +87,7 @@ def local(i):
 
 
 def prim_call(name, ranges, labels, args):
-    return {"call": {"callee": {"primName": {"name": name, "tys": [], "effs": [], "ranges": ranges}},
+    return {"call": {"callee": {"primName": {"name": name, "tys": [], "effs": [], "ranges": [{"fixed": r} for r in ranges]}},
                      "labels": labels, "positions": list(range(len(args))), "args": args}}
 
 
@@ -99,7 +101,7 @@ def core_var(i):
 
 def core_app(name, ranges, n):
     # 引数は全て束縛した後で番号 n-1,…,0 になる（Surface.Desugar.boundVars）。
-    return {"app": {"callee": {"prim": {"name": name, "tys": [], "effs": [], "ranges": ranges}},
+    return {"app": {"callee": {"prim": {"name": name, "tys": [], "effs": [], "ranges": [{"fixed": r} for r in ranges]}},
                     "args": [{"var": {"index": i}} for i in reversed(range(n))]}}
 
 
@@ -114,7 +116,7 @@ def definition(key, h, body, core_body, lambda_effects=()):
         "surface": {"header": h, "body": body, "dictParams": [], "implementation": None, "method": None,
                     "supers": [], "coverageView": [], "package": "author"},
         "core": {"header": copy.deepcopy(h), "body": core_body, "lambdaEffects": list(lambda_effects),
-                 "supers": []}}}}
+                 "supers": []}}}, 'annotations': {}}
 
 
 def check_path_def(key, pattern, ranges, params=("raw",), param_types=(STR,)):
@@ -157,43 +159,59 @@ def check_request_def(key, host, lo, hi, ranges):
 RESULT_DATA = {"name": "Result", "typeName": "Result", "isRecord": False, "extensible": False, "package": "stdlib",
                "builtin": "result", "ntys": 2, "ctors": [
                    {"name": "Ok", "constructorName": "Ok", "args": [{"tvar": {"index": 0}}], "fields": None},
-                   {"name": "Error", "constructorName": "Error", "args": [{"tvar": {"index": 1}}], "fields": None}]}
+                   {"name": "Error", "constructorName": "Error", "args": [{"tvar": {"index": 1}}], "fields": None}], 'variances': ['invariant'] * 2, 'requirements': [], 'publicBoundary': []}
+# 標準表の Scope.ScopeError（構成子 At を含む7構成子）と、At の詳細から届く data の宣言の系。固定入力は Lean の
+# 検査器を試す入力なので、処理系の今の書き出し（At のない6構成子）でなく標準表に合わせる（準備の段の data の照合）。
+STANDARD_SCOPE = json.loads((Path(__file__).with_name("range-exchange") /
+                             "standard-scope-declarations.json").read_text())["declarations"]
+
+
+def standard_data(d):
+    return {"name": d["name"], "typeName": d["name"], "isRecord": False, "extensible": False, "package": "stdlib",
+            "builtin": "option" if d["name"] == "Option" else "ordinary", "ntys": d["ntys"], "ctors": d["ctors"],
+            "variances": ["invariant"] * d["ntys"], "requirements": [], "publicBoundary": []}
+
+
+SCOPE_ERROR_DATA = standard_data(next(d for d in STANDARD_SCOPE if d["name"] == SCOPE_ERROR_NAME))
 CHECK_ERROR_DATA = {"name": "Http.RequestCheckError", "typeName": "Http.RequestCheckError", "isRecord": False,
                     "extensible": False, "package": "stdlib", "builtin": "ordinary", "ntys": 0, "ctors": [
                         {"name": "Http.RequestCheckError.InvalidUrl", "constructorName": "InvalidUrl",
                          "args": [STR], "fields": None},
                         {"name": "Http.RequestCheckError.Scope", "constructorName": "Scope",
-                         "args": [SCOPE_ERROR], "fields": None}]}
+                         "args": [SCOPE_ERROR], "fields": None}], 'variances': ['invariant'] * 0, 'requirements': [], 'publicBoundary': []}
 PAIR_DATA = {"name": "Pair", "typeName": "Pair", "isRecord": True, "extensible": False, "package": "stdlib",
              "builtin": "ordinary", "ntys": 2, "ctors": [
                  {"name": "Pair", "constructorName": "Pair", "args": [{"tvar": {"index": 0}}, {"tvar": {"index": 1}}],
-                  "fields": ["first", "second"]}]}
+                  "fields": ["first", "second"]}], 'variances': ['invariant'] * 2, 'requirements': [], 'publicBoundary': []}
 CLIENT_REQUEST_DATA = {"name": "Http.ClientRequest", "typeName": "Http.ClientRequest", "isRecord": True,
                        "extensible": False, "package": "stdlib", "builtin": "ordinary", "ntys": 0, "ctors": [
                            {"name": "Http.ClientRequest", "constructorName": "ClientRequest",
                             "args": [STR, STR, {"list": {"elem": PAIR_SS}}, "bytes", INT],
-                            "fields": ["method", "url", "headers", "body", "timeoutMilliseconds"]}]}
-DATA_DECLS = [RESULT_DATA, CHECK_ERROR_DATA, PAIR_DATA, CLIENT_REQUEST_DATA]
-DATA_TYPES = [{k: d[k] for k in ("name", "typeName", "isRecord", "extensible", "package", "builtin")}
+                            "fields": ["method", "url", "headers", "body", "timeoutMilliseconds"]}], 'variances': ['invariant'] * 0, 'requirements': [], 'publicBoundary': []}
+DATA_DECLS = [RESULT_DATA, SCOPE_ERROR_DATA, CHECK_ERROR_DATA, PAIR_DATA, CLIENT_REQUEST_DATA] + [
+    standard_data(d) for d in STANDARD_SCOPE if d["name"] != SCOPE_ERROR_NAME]
+DATA_TYPES = [{**{k: d[k] for k in ("name", "typeName", "isRecord", "extensible", "package", "builtin")},
+               "constructors": [[c["name"], c["constructorName"]] for c in d["ctors"]]}
               for d in DATA_DECLS]
 # 等値と鍵の導出の要約。always が真のときは常に導出できない（satisfiesB は !s.eq.always を求める）。Result と Pair は
-# 二つの型引数に依存する。Http.RequestCheckError は不透明型の欄を持つので等値は常に導出できない（鍵も等値を要するので
-# 導出できない）。Http.ClientRequest の欄は文字列・Pair のリスト・Bytes・整数だけなので、
+# 二つの型引数に依存する。Scope.ScopeError の欄は文字列・整数だけであり、Http.RequestCheckError の欄は文字列と
+# Scope.ScopeError だけである。Http.ClientRequest の欄は文字列・Pair のリスト・Bytes・整数だけである。この三つの
 # 要約は等値・鍵とも always が偽で、型引数への依存を持たない（Lean の summarizeTy が計算する値。導出を妨げる欄がない）。
 SUMMARIES = [
     {"name": "Result", "eq": {"always": False, "dependsOn": [0, 1]}, "key": {"always": False, "dependsOn": [0, 1]}},
-    {"name": "Http.RequestCheckError", "eq": {"always": True, "dependsOn": []},
+    {"name": SCOPE_ERROR_NAME, "eq": {"always": False, "dependsOn": []}, "key": {"always": False, "dependsOn": []}},
+    {"name": "Http.RequestCheckError", "eq": {"always": False, "dependsOn": []},
      "key": {"always": False, "dependsOn": []}},
     {"name": "Pair", "eq": {"always": False, "dependsOn": [0, 1]}, "key": {"always": False, "dependsOn": [0, 1]}},
     {"name": "Http.ClientRequest", "eq": {"always": False, "dependsOn": []},
      "key": {"always": False, "dependsOn": []}},
-]
+] + [{"name": d["name"], **d["summary"]} for d in STANDARD_SCOPE if d["name"] != SCOPE_ERROR_NAME]
 
 
 def prim(name, names, params, ret, eff, kind, op_eff, rkinds, shape):
     return {"name": name, "tparams": [], "neffs": 0, "effParams": [], "names": names, "params": params, "ret": ret,
             "eff": eff, "kind": kind, "opEff": op_eff, "classConstraints": [], "unconvertibleTypes": [],
-            "rkinds": rkinds, "shape": shape}
+            "rkinds": rkinds, "shape": shape, 'tparamKinds': []}
 
 
 PRIMS = [
@@ -248,33 +266,33 @@ def corpus_input(name, cases, limits):
     return {"group": "golden", "name": name, "excluded": [], "dataTypes": DATA_TYPES,
             "definitions": [copy.deepcopy(d) for d, _ in cases.values()], "constants": [], "ops": [],
             "effects": [], "primOps": [], "classes": [], "impls": [],
-            "scopeAcceptance": {**copy.deepcopy(SCOPE), "limits": limits}}
+            "scopeAcceptance": {**copy.deepcopy(SCOPE), "limits": limits}, 'candidates': [], 'aliases': [], 'records': [], 'testers': [], 'externals': [], 'logicCertificates': []}
 
 
 def builtin_input(name):
     return {"group": "golden", "name": name, "prims": copy.deepcopy(PRIMS),
             "effects": [{"name": "State", "ops": []}, {"name": "File.Write", "ops": ["File.writeTextIn"]}],
             "resources": [], "dataDecls": copy.deepcopy(DATA_DECLS), "summaries": copy.deepcopy(SUMMARIES),
-            "statePure": [], "supplementalData": [], "supplementalPrims": [], **copy.deepcopy(TABLE_DATA)}
+            "statePure": [], "supplementalData": [], "supplementalPrims": [], **copy.deepcopy(TABLE_DATA), 'opaqueNames': [[PATH_IN, 'Scope.PathIn'], [REQUEST_IN, 'Http.RequestIn'], [IO_ERROR_T, 'IOError']]}
 
 
 def fixtures():
     names = [("range-paths", PATH_CASES, WIDE), ("range-budget", BUDGET_CASES, ZERO)]
     return {
-        "corpus": {"version": 15, "operators": [], "annotations": {"tailMatch": [0, 0]},
+        "corpus": {"version": 16, "operators": [], "annotations": {"tailMatch": [0, 0]},
                    "inputs": [corpus_input(n, c, lim) for n, c, lim in names]},
-        "builtins": {"version": 7, "inputs": [builtin_input(n) for n, _, _ in names]},
-        "stdlib": {"version": 7, "inputs": [{"group": "golden", "name": n, "functions": [], "impls": []}
+        "builtins": {"version": 8, "inputs": [builtin_input(n) for n, _, _ in names]},
+        "stdlib": {"version": 8, "inputs": [{"group": "golden", "name": n, "functions": [], "impls": []}
                                             for n, _, _ in names]},
         # 範囲付きの原子を潜在効果に持つ関数の型の照合（通常の網羅性）。
-        "coverage": {"version": 7, "seedXor": 0, "randomCases": 0, "boundaryCases": 1, "kinds": {}, "cases": [
+        "coverage": {"version": 8, "seedXor": 0, "randomCases": 0, "boundaryCases": 1, "kinds": {}, "cases": [
             {"name": "ranged-function", "decls": [], "ty": {"kind": "function", "names": ["value"],
              "params": [{"kind": "integer", "args": []}], "ret": {"kind": "integer", "args": []},
              "eff": [atom("File.Write", TREE)]}, "arms": [{"guarded": False, "alts": [{"kind": "wild"}]}],
              "pattern": {"kind": "wild"}, "expected": {"exhaustive": True, "uncovered": None, "unreachable": []},
              "irrefutable": True, "irrefutableWitness": None, "coverageView": [], "package": "author"}]},
         # 範囲付きの値型の照合（プログラムの網羅性）。Ok と Error の二つの腕で網羅する。
-        "coverage-program": {"version": 7, "inputs": [
+        "coverage-program": {"version": 8, "inputs": [
             {"group": "golden", "name": "range-paths", "matches": [{"node": 1,
              "scrutineeTy": result(opaque(PATH_IN, TREE), SCOPE_ERROR),
              "arms": [{"alts": [{"con": {"name": "Ok", "args": ["wild"]}}], "guarded": False},
@@ -295,7 +313,7 @@ def non_top_ranges(value):
         if k == "ix" and v.get("fixed", TOP) != TOP:
             count += 1
         if k == "ranges":
-            count += sum(1 for r in v if r != TOP)
+            count += sum(1 for r in v if r != {"fixed": TOP})
         count += non_top_ranges(v)
     return count
 
@@ -408,17 +426,18 @@ class RangeExchangeTests(unittest.TestCase):
         d = data["corpus"]["inputs"][0]["definitions"][4]
         for part in ("surface", "core"):
             d["scope"]["inScope"][part]["header"]["eff"] = [atom("File.Write", ATREE)]
-        d["scope"]["inScope"]["surface"]["body"]["last"]["expr"]["returnE"]["inner"]["call"]["callee"]["primName"]["ranges"] = [TREE]
+        d["scope"]["inScope"]["surface"]["body"]["last"]["expr"]["returnE"]["inner"]["call"]["callee"]["primName"]["ranges"] = [{"fixed": TREE}]
         d["scope"]["inScope"]["surface"]["header"]["params"] = [opaque(PATH_IN, TREE)]
         result, report = self.run_tool("surfaceCheck", data, selected="fn:5")
         self.assertEqual(result.returncode, 1, result.stderr)
-        self.assertEqual(report["result"]["error"]["reason"], "effect exceeds the allowed effect")
+        # 篩付きの検査器は、推論した効果を上限で再検査して断る（入口の理由は再検査の失敗の分類）。
+        self.assertEqual(report["result"]["error"]["reason"], "type or certificate check failed")
         # Top の原子は範囲付きの上限に覆われない。
         data = copy.deepcopy(self.data)
         d = data["corpus"]["inputs"][0]["definitions"][4]
         for part in ("surface", "core"):
             d["scope"]["inScope"][part]["header"]["eff"] = [atom("File.Write", TREE)]
-        d["scope"]["inScope"]["surface"]["body"]["last"]["expr"]["returnE"]["inner"]["call"]["callee"]["primName"]["ranges"] = [TOP]
+        d["scope"]["inScope"]["surface"]["body"]["last"]["expr"]["returnE"]["inner"]["call"]["callee"]["primName"]["ranges"] = [{"fixed": TOP}]
         d["scope"]["inScope"]["surface"]["header"]["params"] = [opaque(PATH_IN, TOP)]
         result, report = self.run_tool("surfaceCheck", data, selected="fn:5")
         self.assertEqual(result.returncode, 1, result.stderr)
@@ -436,7 +455,7 @@ class RangeExchangeTests(unittest.TestCase):
             if "ix" in out and "fixed" in out["ix"]:
                 out["ix"] = {"fixed": TOP}
             if "ranges" in out:
-                out["ranges"] = [TOP for _ in out["ranges"]]
+                out["ranges"] = [{"fixed": TOP} for _ in out["ranges"]]
             return out
         data["corpus"]["inputs"] = to_top(data["corpus"]["inputs"])
         result, report = self.run_tool("desugarDiff", data)
@@ -468,12 +487,12 @@ class RangeExchangeTests(unittest.TestCase):
             opaque_var(PATH_IN)]
         outcome, _ = self.run_tool("desugarDiff", data)
         self.assertEqual(outcome.returncode, 2)
-        self.assertIn("rvar", outcome.stderr)
+        self.assertIn("range variable", outcome.stderr)
         data = copy.deepcopy(self.data)
         data["builtins"]["inputs"][0]["prims"][0]["ret"] = result(opaque_var(PATH_IN, 1), SCOPE_ERROR)
         outcome, _ = self.run_tool("builtinCheck", data)
         self.assertEqual(outcome.returncode, 2)
-        self.assertIn("range variable index out of bounds", outcome.stderr)
+        self.assertIn("range variable outside declaration", outcome.stderr)
         data = copy.deepcopy(self.data)
         data["builtins"]["inputs"][0]["admitsR"][0]["rule"] = {"covers": {"inner": 0, "outer": 1}}
         outcome, _ = self.run_tool("builtinCheck", data)
@@ -482,10 +501,10 @@ class RangeExchangeTests(unittest.TestCase):
         # 最小のポートが最大より大きい区間（整形式でない範囲）は、呼び出しの範囲の列に書いても拒否する（L40.3d）。
         data = copy.deepcopy(self.data)
         d = data["corpus"]["inputs"][0]["definitions"][5]
-        d["scope"]["inScope"]["surface"]["body"]["bind"]["expr"]["call"]["callee"]["primName"]["ranges"] = [INVERTED]
+        d["scope"]["inScope"]["surface"]["body"]["bind"]["expr"]["call"]["callee"]["primName"]["ranges"] = [{"fixed": INVERTED}]
         outcome, _ = self.run_tool("desugarDiff", data)
         self.assertEqual(outcome.returncode, 2, outcome.stdout)
-        self.assertIn("range is not well formed or not canonical", outcome.stderr)
+        self.assertIn("range is not well-formed and canonical", outcome.stderr)
         # 保持する要求の型は型として書く。L40.3c より前の、型の名前の文字列を書いた入力は読まない。
         data = copy.deepcopy(self.data)
         data["builtins"]["inputs"][0]["valContents"][0]["content"] = "104:[]"
@@ -499,21 +518,6 @@ class RangeExchangeTests(unittest.TestCase):
         self.assertEqual(outcome.returncode, 2)
 
 
-def with_explicit_ranges(value):
-    """Surface 14 の名前の原子・不透明型・組み込みの呼び出しに明示の Top と空の範囲の列を書いた Surface 15 の形。"""
-    if isinstance(value, list):
-        return [with_explicit_ranges(v) for v in value]
-    if not isinstance(value, dict):
-        return value
-    out = {k: with_explicit_ranges(v) for k, v in value.items()}
-    if list(out) == ["name"] and isinstance(out["name"], dict) and "value" in out["name"]:
-        out["name"] = {**out["name"], "ix": {"fixed": TOP}}
-    if list(out) == ["opaque"] and isinstance(out["opaque"], dict) and "name" in out["opaque"]:
-        out["opaque"] = {**out["opaque"], "ix": {"fixed": TOP}}
-    for key in ("prim", "primName"):
-        if list(out) == [key] and isinstance(out[key], dict) and "tys" in out[key]:
-            out[key] = {**out[key], "ranges": []}
-    return out
 
 
 class IntervalSurfaceVersionTests(unittest.TestCase):
@@ -542,34 +546,26 @@ class IntervalSurfaceVersionTests(unittest.TestCase):
 
     def domain(self):
         # domain の profile は組み込みの呼び出し（primName）を持つ。範囲の列の欄を書き足す節点がある。
-        return self.interval["extra_fixtures"]()[2]
+        base = self.interval["extra_fixtures"]()[2]
+        # 深さで止まらないよう、test_interval_exchange.py と同じ燃料の初期値を使う。
+        self.interval["set_fuel"](base, self.interval["selected_fuel"](base))
+        return base
 
-    def test_surface15_same_analysis(self):
+    def test_surface16_keeps_independent_analysis_and_evaluation(self):
         base = self.domain()
-        # 埋め込みの Surface に範囲の位置を持つ節点があること（全て Top の変換だけの一致を成功と数えない）。
-        explicit = with_explicit_ranges(base)
-        self.assertNotEqual(json.dumps(explicit), json.dumps(base))
-        for mode in ("analyze", "eval"):
-            with self.subTest(mode=mode):
-                old, old_report = self.run_interval(f"v14-{mode}", base, mode)
-                new = {**copy.deepcopy(explicit), "surfaceVersion": 15}
-                fresh, new_report = self.run_interval(f"v15-{mode}", new, mode)
-                # 単独の profile の受け入れの条件（全 profile の照合）は test_interval_exchange.py が受け持つ。ここでは
-                # 版14と版15の報告と終了状態が同じであること（範囲の欄は区間解析の結果を変えない）を確かめる。
-                self.assertIn(old.returncode, (0, 1), old.stderr)
-                self.assertEqual(fresh.returncode, old.returncode, fresh.stderr)
-                self.assertEqual(old_report, new_report)
-                self.assertNotIn("invalidInput", json.dumps(new_report))
+        self.assertEqual(base['surfaceVersion'], 16)
+        for mode in ('analyze', 'eval'):
+            result, report = self.run_interval(f'v16-{mode}', base, mode)
+            self.assertIn(result.returncode, (0, 1), result.stderr)
+            self.assertNotIn('invalidInput', json.dumps(report))
+            self.assertTrue(report['matched'])
 
     def test_surface_version_boundaries(self):
         base = self.domain()
-        # 版14に範囲の欄、版15に欠けた範囲の欄・範囲の変数・正規形でない範囲を置かせない。
-        cases = [("v14-ix", {**with_explicit_ranges(base), "surfaceVersion": 14}),
-                 ("v15-missing", {**copy.deepcopy(base), "surfaceVersion": 15})]
-        rvar = with_explicit_ranges(base)
-        rvar["surfaceVersion"] = 15
-        rvar["inputs"][0]["modules"][0]["definitions"][0]["params"] = [opaque_var(PATH_IN)]
-        cases.append(("v15-rvar", rvar))
+        cases = [(f'v{version}', {**copy.deepcopy(base), 'surfaceVersion': version}) for version in (14, 15, 17)]
+        rvar = copy.deepcopy(base)
+        rvar['inputs'][0]['modules'][0]['definitions'][0]['params'] = [opaque_var(PATH_IN)]
+        cases.append(('v16-rvar', rvar))
         for label, corpus in cases:
             with self.subTest(label=label):
                 result, _ = self.run_interval(label, corpus)

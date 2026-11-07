@@ -174,7 +174,11 @@ fn export_width_smoke() {
     write_exchange(&output, inputs, builtin_inputs, stdlib_inputs, annotations);
     fs::write(
         output.join("coverage.json"),
-        exchange::to_vec(&json!({"version":7,"inputs":coverage_inputs})).unwrap(),
+        exchange::to_vec(
+            exchange::Document::Coverage,
+            &json!({"version":8,"inputs":coverage_inputs}),
+        )
+        .unwrap(),
     )
     .unwrap();
     // メモリ上の表だけでなく、Lean が読むファイルにも境界値とビットが残ることを確かめる。
@@ -438,7 +442,11 @@ fn export_known_scope_failures_as_excluded() {
     fs::create_dir_all(&output).unwrap();
     fs::write(
         output.join("known-scope-failures.json"),
-        exchange::to_vec(&json!({"version":15,"inputs":inputs})).unwrap(),
+        exchange::to_vec(
+            exchange::Document::Corpus,
+            &json!({"version":16,"inputs":inputs}),
+        )
+        .unwrap(),
     )
     .unwrap();
 }
@@ -467,21 +475,29 @@ fn write_exchange(
     stdlib_inputs: Vec<Value>,
     annotations: std::collections::BTreeMap<String, [usize; 2]>,
 ) -> Value {
-    let corpus = json!({"version":15,"operators":exchange::operators(),"inputs":inputs,"annotations":annotations});
+    let corpus = json!({"version":16,"operators":exchange::operators(),"inputs":inputs,"annotations":annotations});
     fs::write(
         output.join("corpus.json"),
-        exchange::to_vec(&corpus).unwrap(),
+        exchange::to_vec(exchange::Document::Corpus, &corpus).unwrap(),
     )
     .unwrap();
     // 新しい契約名を型表にも保持する。
     fs::write(
         output.join("builtins.json"),
-        exchange::to_vec(&json!({"version":7,"inputs":builtin_inputs})).unwrap(),
+        exchange::to_vec(
+            exchange::Document::Table,
+            &json!({"version":8,"inputs":builtin_inputs}),
+        )
+        .unwrap(),
     )
     .unwrap();
     fs::write(
         output.join("stdlib-decls.json"),
-        exchange::to_vec(&json!({"version":7,"inputs":stdlib_inputs})).unwrap(),
+        exchange::to_vec(
+            exchange::Document::Stdlib,
+            &json!({"version":8,"inputs":stdlib_inputs}),
+        )
+        .unwrap(),
     )
     .unwrap();
     corpus
@@ -502,10 +518,26 @@ impl CorpusStream {
     fn new(output: &Path, prefix: &str) -> Self {
         Self {
             intervals: interval::manifest::Export::new(&output.join(format!("{prefix}interval"))),
-            inputs: exchange::InputStream::new(output, &format!("{prefix}corpus")),
-            builtins: exchange::InputStream::new(output, &format!("{prefix}builtins")),
-            declarations: exchange::InputStream::new(output, &format!("{prefix}stdlib")),
-            coverage: exchange::InputStream::new(output, &format!("{prefix}coverage")),
+            inputs: exchange::InputStream::new(
+                output,
+                &format!("{prefix}corpus"),
+                exchange::Document::Corpus,
+            ),
+            builtins: exchange::InputStream::new(
+                output,
+                &format!("{prefix}builtins"),
+                exchange::Document::Table,
+            ),
+            declarations: exchange::InputStream::new(
+                output,
+                &format!("{prefix}stdlib"),
+                exchange::Document::Stdlib,
+            ),
+            coverage: exchange::InputStream::new(
+                output,
+                &format!("{prefix}coverage"),
+                exchange::Document::Coverage,
+            ),
             annotations: export_annotations(&[]),
             counts: [0; 3],
         }
@@ -594,19 +626,19 @@ impl CorpusStream {
         self.intervals.finish();
         self.inputs.finish(
             &output.join(format!("{stem}-corpus.json")),
-            json!({"version":15,"operators":exchange::operators(),"annotations":self.annotations}),
+            json!({"version":16,"operators":exchange::operators(),"annotations":self.annotations}),
         );
         self.builtins.finish(
             &output.join(format!("{stem}-builtins.json")),
-            json!({"version":7}),
+            json!({"version":8}),
         );
         self.declarations.finish(
             &output.join(format!("{stem}-stdlib.json")),
-            json!({"version":7}),
+            json!({"version":8}),
         );
         self.coverage.finish(
             &output.join(format!("{stem}-coverage.json")),
-            json!({"version":7}),
+            json!({"version":8}),
         );
     }
 }
@@ -718,7 +750,7 @@ fn export_independent_program_exchange() {
     let output = export_directory("independent-program");
     let stdlib = exchange::complete_stdlib();
     let mut independent = CorpusStream::new(&output, "independent-program-");
-    // 呼び出しを含まない本体も、名前を保持して比較する（設計書 07-04「証明する性質」）。
+    // 呼び出しを含まない本体も、名前を保持して比較する（設計書 07-04「道具と置き場所」）。
     let checked = pipeline::check_text(
         "independent-program",
         b"function identity(x: Integer) -> Integer\n return match x with\n case _ -> x\n end match\nend function\n",
@@ -814,7 +846,7 @@ fn export_preserves_decimal_mantissas_as_exact_json_integers() {
         .find(|definition| definition["name"].as_str().unwrap().starts_with("sample ("))
         .unwrap();
     assert!(sample["scope"].get("inScope").is_some());
-    let bytes = exchange::to_vec(sample).unwrap();
+    let bytes = exchange::to_vec(exchange::Document::Corpus, sample).unwrap();
     let written = String::from_utf8(bytes).unwrap();
     for decimal in [
         r#""decimal":{"mantissa":79228162514264337593543950335,"scale":0}"#,
@@ -849,7 +881,7 @@ fn export_preserves_float64_bits_and_numeric_strings() {
         None,
         &mut Vec::new(),
     );
-    let bytes = exchange::to_vec(&input).unwrap();
+    let bytes = exchange::to_vec(exchange::Document::Corpus, &input).unwrap();
     let written: Value = serde_json::from_slice(&bytes).unwrap();
     for expected in [
         json!({"float":{"bits":"4607182418800017408"}}),
@@ -977,11 +1009,11 @@ fn export_named_types_smoke() {
     );
     let table = exchange::named_builtin_tables(&p, &input, &exchange::complete_stdlib());
     exchange::attach_metadata(&mut input, &table, &mut Value::Null);
-    let corpus = json!({"version":15,"operators":exchange::operators(),
+    let corpus = json!({"version":16,"operators":exchange::operators(),
         "inputs":[input],"annotations":{"tailMatch":[0,0]}});
     fs::write(
         output.join("named-types-corpus.json"),
-        exchange::to_vec(&corpus).unwrap(),
+        exchange::to_vec(exchange::Document::Corpus, &corpus).unwrap(),
     )
     .unwrap();
     named::write_tables(&output, "named-types", &p, &corpus["inputs"][0]);
@@ -1061,17 +1093,17 @@ fn export_named_declarations_smoke() {
     ));
 
     let annotations = export_annotations(std::slice::from_ref(&input));
-    let corpus = json!({"version":15,"operators":exchange::operators(),
+    let corpus = json!({"version":16,"operators":exchange::operators(),
         "inputs":[input],"annotations":annotations});
     fs::write(
         output.join("named-declarations-corpus.json"),
-        exchange::to_vec(&corpus).unwrap(),
+        exchange::to_vec(exchange::Document::Corpus, &corpus).unwrap(),
     )
     .unwrap();
     named::write_tables(&output, "named-declarations", &p, &corpus["inputs"][0]);
 }
 
-// 関門: 実ソースの辞書の全呼び出しを15/7の五形式へ渡す。
+// 関門: 実ソースの辞書の全呼び出しを版16/8の五形式へ渡す。
 // 対象外と空の比較は失敗にし、独立したLeanの六入口が結果を照合する。
 #[test]
 fn export_batch2_op() {
@@ -1176,10 +1208,10 @@ fn write_batch2(output: &Path, export: named::Export) {
         annotations,
     );
     fs::rename(output.join("stdlib-decls.json"), output.join("stdlib.json")).unwrap();
-    let coverage = json!({"version":7,"inputs":export.coverage});
+    let coverage = json!({"version":8,"inputs":export.coverage});
     fs::write(
         output.join("coverage-program.json"),
-        exchange::to_vec(&coverage).unwrap(),
+        exchange::to_vec(exchange::Document::Coverage, &coverage).unwrap(),
     )
     .unwrap();
     let ty = benitoite::types::Ty::Con(
@@ -1244,8 +1276,11 @@ fn write_batch2_coverage(output: &Path, ty: &benitoite::types::Ty, ty_json: Valu
     ];
     fs::write(
         output.join("coverage.json"),
-        exchange::to_vec(&json!({"version":7,"seedXor":0,"randomCases":0,
-        "boundaryCases":cases.len(),"kinds":{},"cases":cases}))
+        exchange::to_vec(
+            exchange::Document::Coverage,
+            &json!({"version":8,"seedXor":0,"randomCases":0,
+        "boundaryCases":cases.len(),"kinds":{},"cases":cases}),
+        )
         .unwrap(),
     )
     .unwrap();

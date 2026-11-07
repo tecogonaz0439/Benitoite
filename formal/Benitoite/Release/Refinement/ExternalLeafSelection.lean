@@ -384,7 +384,7 @@ private theorem two_typed (B : Builtins) (Ψ : StoreTy) (Γ : Ctx) :
     HasTypeVQ program B Ψ Qempty [] Γ [] two (.base .integer) := .V_Const trivial
 
 private theorem swapped :
-    Benitoite.Surface.recordFields pairSignature.parameters.arity [1,0] [two,one] (.const .unit) = [one,two] := rfl
+    Benitoite.Release.Refinement.Surface.recordFields pairSignature.parameters.arity [1,0] [two,one] (.const .unit) = [one,two] := rfl
 
 /-- 型IDの参照: 宣言した型IDだけを受理し、未知のIDと型引数を持つ参照を同じ表で拒否する。 -/
 example (C : TypeCtx) (Γ : Ctx) (args : List Ty) (nonempty : args ≠ []) :
@@ -412,7 +412,7 @@ example (B : Builtins) (Ψ : StoreTy) (T : Ty) :
 
 /-- 直接の飽和呼出しと名前付き引数: `pair(b = 2, a = 1)` は宣言順の `[1, 2]` へ並び、同じ表で型付く。 -/
 example (B : Builtins) (Ψ : StoreTy) :
-    Benitoite.Surface.recordFields pairSignature.parameters.arity [1,0] [two,one] (.const .unit) = [one,two] ∧
+    Benitoite.Release.Refinement.Surface.recordFields pairSignature.parameters.arity [1,0] [two,one] (.const .unit) = [one,two] ∧
     HasTypeCQ program B Ψ Qempty [] [] [] none (.externalCall ⟨1⟩ [] [one,two]) (.base .integer) Eff.empty [] ∧
     Eff.empty = ExternalSurface.callEffect pairSignature ∧
     [one,two].length = pairSignature.parameters.arity := by
@@ -434,7 +434,7 @@ example (B : Builtins) (Ψ : StoreTy) :
   let Γ := Ctx.extend [] (.base .integer)
   have hole : HasTypeVQ program B Ψ Qempty [] Γ [] (.var 0) (.base .integer) := .V_Var rfl (by simp [Ordinary])
   have args := pair_arguments B Ψ Γ (.var 0) two hole (two_typed B Ψ Γ)
-  have ordered : Benitoite.Surface.recordFields pairSignature.parameters.arity [1,0] [two,.var 0] (.const .unit) =
+  have ordered : Benitoite.Release.Refinement.Surface.recordFields pairSignature.parameters.arity [1,0] [two,.var 0] (.const .unit) =
       [.var 0,two] := rfl
   rw [← ordered] at args
   obtain ⟨_,_,typed⟩ := ExternalSurface.partial_call (R := none) (Δ := []) (.const .unit) externalWF pair_lookup

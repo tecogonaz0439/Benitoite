@@ -1,0 +1,51 @@
+{
+  "external_function": {
+    "source": "named-programs-corpus.json",
+    "inputs": 30,
+    "reason": "external function"
+  },
+  "external_type": {
+    "source": "named-programs-interval/interval-manifest.json",
+    "inputs": 4,
+    "definitions": 12,
+    "reason": "externalType",
+    "entries": [
+      {
+        "group": "golden",
+        "name": "testdata/external/resource",
+        "definitions": [
+          ".createMany",
+          ".main"
+        ]
+      },
+      {
+        "group": "golden",
+        "name": "testdata/external/wit-docs-declarations",
+        "definitions": [
+          ".main"
+        ]
+      },
+      {
+        "group": "golden",
+        "name": "testdata/packages/json-wasm-same",
+        "definitions": [
+          ".compare",
+          ".pointers"
+        ]
+      },
+      {
+        "group": "golden",
+        "name": "testdata/packages/wasm-regex-same",
+        "definitions": [
+          ".compare",
+          "WasmRegex.Pattern.compile",
+          "WasmRegex.Pattern.isMatch",
+          "WasmRegex.Pattern.find",
+          "WasmRegex.Pattern.findAll",
+          "WasmRegex.Pattern.replaceAll",
+          "WasmRegex.Pattern.count"
+        ]
+      }
+    ]
+  }
+}

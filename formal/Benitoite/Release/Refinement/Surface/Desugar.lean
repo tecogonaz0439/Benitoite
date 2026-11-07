@@ -1,4 +1,5 @@
 import Benitoite.Release.Refinement.Surface.Basic
+import Benitoite.Release.Refinement.ValueRenamingFixed
 
 /-!
 # 表層からの脱糖
@@ -195,7 +196,7 @@ def mkArm (pat : Pat) (body : Comp) : Arm :=
 
 /-- 原因は失敗側の環境、説明は元の環境で脱糖済みである。説明の束縛の下へ原因を
 移すことで、説明・表示・既存の exit の順を保つ。報告の情報はコアの外で扱うが、
-説明と原因の計算は省かない（設計書 01-12「die の先行モデル」）。 -/
+説明と原因の計算は省かない（設計書 01-12「die のモデル」）。 -/
 def dieFailure (t : Ty) (exit : PrimName) (depth : Nat) (cause : Comp)
     (message : Option Comp) : Comp :=
   let finish := fun k => Comp.app (.prim exit [t.shiftV k 0] [] []) [.const (.integer ⟨1, by decide⟩)]
@@ -217,6 +218,20 @@ def holeLam (ns : List String) (ps : List Ty) (r : Ty) (e : Eff) (body : Comp) :
   open Classical in
   if ∃ (r0 : Ty) (e0 : Eff), r = r0.shiftV ps.length 0 ∧ e = Eff.shiftV ps.length 0 e0 then .lam ns ps body
   else .dependentLam (holeTel ns ps 0 r e) body
+
+/-- 部分適用のラムダの選択を、移し直しの改名で変わらないことの有限判定で計算する。 -/
+def holeLamDecide (ns : List String) (ps : List Ty) (r : Ty) (e : Eff) (body : Comp) : Val :=
+  if (r.renameFixed (shiftImage ps.length) && Eff.renameFixed (shiftImage ps.length) e) = true then
+    .lam ns ps body
+  else .dependentLam (holeTel ns ps 0 r e) body
+
+/-- 実行する脱糖は、選択の条件と同値な有限判定を使う（設計書 01-12「部分適用」）。 -/
+@[csimp] theorem holeLam_eq_decide : @holeLam = @holeLamDecide := by
+  funext ns ps r e body
+  unfold holeLam holeLamDecide
+  by_cases h : ∃ (r0 : Ty) (e0 : Eff), r = r0.shiftV ps.length 0 ∧ e = Eff.shiftV ps.length 0 e0
+  · rw [ite_eq_left h, ite_eq_left ((shiftImage_pair_iff ps.length r e).mp h)]
+  · rw [ite_eq_right h, ite_eq_right (fun h' => h ((shiftImage_pair_iff ps.length r e).mpr h'))]
 
 mutual
   def desugarExpr (opPrim : OpPrim) (p : Position) : Expr → Comp
@@ -404,7 +419,7 @@ mutual
     | .tryOption ts someCon noneCon e => .letIn (desugarExpr opPrim .other e)
         (.match (.var 0) [mkArm (.con someCon [.var]) (.ret (.var 0)),
           mkArm (.con noneCon []) (.escape (.con noneCon (shiftTs 1 ts) []))])
-    -- 01-12「die の先行モデル」: 入力は一度だけ。失敗側には入力の let と失敗値の
+    -- 01-12「die のモデル」: 入力は一度だけ。失敗側には入力の let と失敗値の
     -- パターンの二つの束縛があり、説明と辞書はその外側のスコープから移す。
     | .tryResultDie t ok err dict showMethod exit e message =>
         let cause := Comp.meth (dict.toVal.rename (· + 2)) showMethod [] [] [.var 0]

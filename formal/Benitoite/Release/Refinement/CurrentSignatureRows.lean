@@ -61,29 +61,6 @@ theorem scoped_signature {s : Benitoite.Release.PrimSig} (h : s.Scoped) :
     exact (Eff.rowsIn_iff_support _ _).mp (embed_rows_eff s.eff h.2.2.2.1)
 
 -- 現行の三モデルの lookup 全件と範囲付きの表15項目を包含する。
-theorem model_rows {P : Benitoite.Release.Program} {b s} (h : (Benitoite.Release.Model.builtins).sig b = some s) :
-    (copiedTel s).RowsIn (· < s.neffs) :=
-  scoped_signature ((Benitoite.Release.Model.assumptions P).sig_scoped b s h)
-
-theorem target_entries_rows : ∀ entry ∈ Benitoite.Release.TargetTable.entries,
-    (copiedTel entry.2).RowsIn (· < entry.2.neffs) :=
-  fun entry h => scoped_signature (Benitoite.Release.TargetTable.entries_scoped entry h)
-
-theorem model_targets_rows
-    {pat : String → Option Scope.Domain.Range} {tgt : String → Option Scope.Domain.Target}
-    {P : Benitoite.Release.Program} (hp : Benitoite.Release.ModelTargets.HasResult P) {b s}
-    (h : (Benitoite.Release.ModelTargets.builtins pat tgt).sig b = some s) :
-    (copiedTel s).RowsIn (· < s.neffs) :=
-  scoped_signature ((Benitoite.Release.ModelTargets.assumptions pat tgt P hp).sig_scoped b s h)
-
-theorem model_http_rows
-    {hostPat : String → Int → Int → Option Scope.Domain.Range}
-    {reqTarget : Benitoite.Release.Val → Option Scope.Domain.Target}
-    {P : Benitoite.Release.Program} (hp : Benitoite.Release.ModelHttp.HasHttp P) {b s}
-    (h : (Benitoite.Release.ModelHttp.builtins hostPat reqTarget).sig b = some s) :
-    (copiedTel s).RowsIn (· < s.neffs) :=
-  scoped_signature ((Benitoite.Release.ModelHttp.assumptions hostPat reqTarget P hp).sig_scoped b s h)
-
 theorem examples_scoped {b s} (h : Benitoite.Release.Examples.builtins.sig b = some s) :
     s.Scoped := by
   simp only [Benitoite.Release.Examples.builtins] at h

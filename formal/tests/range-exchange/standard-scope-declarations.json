@@ -1,0 +1,1113 @@
+{
+ "about": "標準表（Lean の StandardModel.declarations）の Scope.ScopeError と、その構成子の引数から届く data の宣言を交換の形で書いたもの。改造の l70/g/standard-scope-declarations.lean が書き出す。名前・構成子・引数の型・等値と鍵の要約は標準表のものである。",
+ "declarations": [
+  {
+   "ctors": [
+    {
+     "args": [
+      {
+       "base": {
+        "name": "String"
+       }
+      },
+      {
+       "base": {
+        "name": "String"
+       }
+      }
+     ],
+     "constructorName": "InvalidPattern",
+     "fields": null,
+     "name": "Scope.ScopeError.InvalidPattern"
+    },
+    {
+     "args": [
+      {
+       "base": {
+        "name": "String"
+       }
+      },
+      {
+       "base": {
+        "name": "String"
+       }
+      }
+     ],
+     "constructorName": "InvalidTarget",
+     "fields": null,
+     "name": "Scope.ScopeError.InvalidTarget"
+    },
+    {
+     "args": [
+      {
+       "base": {
+        "name": "Integer"
+       }
+      },
+      {
+       "base": {
+        "name": "Integer"
+       }
+      }
+     ],
+     "constructorName": "InvalidPortRange",
+     "fields": null,
+     "name": "Scope.ScopeError.InvalidPortRange"
+    },
+    {
+     "args": [
+      {
+       "base": {
+        "name": "Integer"
+       }
+      }
+     ],
+     "constructorName": "InvalidPort",
+     "fields": null,
+     "name": "Scope.ScopeError.InvalidPort"
+    },
+    {
+     "args": [
+      {
+       "base": {
+        "name": "String"
+       }
+      },
+      {
+       "base": {
+        "name": "String"
+       }
+      }
+     ],
+     "constructorName": "OutsideScope",
+     "fields": null,
+     "name": "Scope.ScopeError.OutsideScope"
+    },
+    {
+     "args": [
+      {
+       "base": {
+        "name": "Integer"
+       }
+      },
+      {
+       "base": {
+        "name": "Integer"
+       }
+      },
+      {
+       "base": {
+        "name": "Integer"
+       }
+      }
+     ],
+     "constructorName": "PortOutsideScope",
+     "fields": null,
+     "name": "Scope.ScopeError.PortOutsideScope"
+    },
+    {
+     "args": [
+      {
+       "data": {
+        "args": [],
+        "name": "Scope.AtDetail"
+       }
+      }
+     ],
+     "constructorName": "At",
+     "fields": null,
+     "name": "Scope.ScopeError.At"
+    }
+   ],
+   "name": "Scope.ScopeError",
+   "ntys": 0,
+   "summary": {
+    "eq": {
+     "always": false,
+     "dependsOn": []
+    },
+    "key": {
+     "always": false,
+     "dependsOn": []
+    }
+   }
+  },
+  {
+   "ctors": [
+    {
+     "args": [
+      {
+       "data": {
+        "args": [],
+        "name": "Scope.AtFailure"
+       }
+      },
+      {
+       "data": {
+        "args": [],
+        "name": "Scope.AtInput"
+       }
+      },
+      {
+       "data": {
+        "args": [],
+        "name": "Scope.AtInput"
+       }
+      },
+      {
+       "data": {
+        "args": [
+         {
+          "data": {
+           "args": [],
+           "name": "Scope.RangeExpression"
+          }
+         }
+        ],
+        "name": "Option"
+       }
+      },
+      {
+       "data": {
+        "args": [
+         {
+          "data": {
+           "args": [],
+           "name": "Scope.TargetInput"
+          }
+         }
+        ],
+        "name": "Option"
+       }
+      },
+      {
+       "data": {
+        "args": [
+         {
+          "list": {
+           "elem": {
+            "data": {
+             "args": [],
+             "name": "Scope.RangeAtom"
+            }
+           }
+          }
+         }
+        ],
+        "name": "Option"
+       }
+      },
+      {
+       "data": {
+        "args": [
+         {
+          "data": {
+           "args": [],
+           "name": "Scope.Target"
+          }
+         }
+        ],
+        "name": "Option"
+       }
+      },
+      {
+       "data": {
+        "args": [
+         {
+          "data": {
+           "args": [],
+           "name": "Scope.PathBase"
+          }
+         }
+        ],
+        "name": "Option"
+       }
+      },
+      {
+       "data": {
+        "args": [
+         {
+          "data": {
+           "args": [],
+           "name": "Scope.PathBase"
+          }
+         }
+        ],
+        "name": "Option"
+       }
+      }
+     ],
+     "constructorName": "AtDetail",
+     "fields": null,
+     "name": "Scope.AtDetail"
+    }
+   ],
+   "name": "Scope.AtDetail",
+   "ntys": 0,
+   "summary": {
+    "eq": {
+     "always": false,
+     "dependsOn": []
+    },
+    "key": {
+     "always": false,
+     "dependsOn": []
+    }
+   }
+  },
+  {
+   "ctors": [
+    {
+     "args": [
+      {
+       "data": {
+        "args": [],
+        "name": "Scope.PathBase"
+       }
+      }
+     ],
+     "constructorName": "Unbound",
+     "fields": null,
+     "name": "Scope.AtFailure.Unbound"
+    },
+    {
+     "args": [],
+     "constructorName": "SecretsUnbound",
+     "fields": null,
+     "name": "Scope.AtFailure.SecretsUnbound"
+    },
+    {
+     "args": [],
+     "constructorName": "InvalidPattern",
+     "fields": null,
+     "name": "Scope.AtFailure.InvalidPattern"
+    },
+    {
+     "args": [],
+     "constructorName": "InvalidTarget",
+     "fields": null,
+     "name": "Scope.AtFailure.InvalidTarget"
+    },
+    {
+     "args": [],
+     "constructorName": "DynamicCondition",
+     "fields": null,
+     "name": "Scope.AtFailure.DynamicCondition"
+    },
+    {
+     "args": [],
+     "constructorName": "StaticIndex",
+     "fields": null,
+     "name": "Scope.AtFailure.StaticIndex"
+    }
+   ],
+   "name": "Scope.AtFailure",
+   "ntys": 0,
+   "summary": {
+    "eq": {
+     "always": false,
+     "dependsOn": []
+    },
+    "key": {
+     "always": false,
+     "dependsOn": []
+    }
+   }
+  },
+  {
+   "ctors": [
+    {
+     "args": [
+      {
+       "base": {
+        "name": "String"
+       }
+      }
+     ],
+     "constructorName": "Text",
+     "fields": null,
+     "name": "Scope.AtInput.Text"
+    },
+    {
+     "args": [
+      {
+       "data": {
+        "args": [],
+        "name": "Scope.RangeExpression"
+       }
+      }
+     ],
+     "constructorName": "Pattern",
+     "fields": null,
+     "name": "Scope.AtInput.Pattern"
+    }
+   ],
+   "name": "Scope.AtInput",
+   "ntys": 0,
+   "summary": {
+    "eq": {
+     "always": false,
+     "dependsOn": []
+    },
+    "key": {
+     "always": false,
+     "dependsOn": []
+    }
+   }
+  },
+  {
+   "ctors": [
+    {
+     "args": [],
+     "constructorName": "None",
+     "fields": null,
+     "name": "Option.None"
+    },
+    {
+     "args": [
+      {
+       "tvar": {
+        "index": 0
+       }
+      }
+     ],
+     "constructorName": "Some",
+     "fields": null,
+     "name": "Option.Some"
+    }
+   ],
+   "name": "Option",
+   "ntys": 1,
+   "summary": {
+    "eq": {
+     "always": false,
+     "dependsOn": [
+      0
+     ]
+    },
+    "key": {
+     "always": false,
+     "dependsOn": [
+      0
+     ]
+    }
+   }
+  },
+  {
+   "ctors": [
+    {
+     "args": [
+      {
+       "data": {
+        "args": [],
+        "name": "Scope.RangeAtom"
+       }
+      }
+     ],
+     "constructorName": "Absolute",
+     "fields": null,
+     "name": "Scope.RangeExpression.Absolute"
+    },
+    {
+     "args": [
+      {
+       "data": {
+        "args": [],
+        "name": "Scope.PathBase"
+       }
+      },
+      {
+       "data": {
+        "args": [],
+        "name": "Scope.PathPattern"
+       }
+      }
+     ],
+     "constructorName": "Based",
+     "fields": null,
+     "name": "Scope.RangeExpression.Based"
+    },
+    {
+     "args": [],
+     "constructorName": "Secrets",
+     "fields": null,
+     "name": "Scope.RangeExpression.Secrets"
+    }
+   ],
+   "name": "Scope.RangeExpression",
+   "ntys": 0,
+   "summary": {
+    "eq": {
+     "always": false,
+     "dependsOn": []
+    },
+    "key": {
+     "always": false,
+     "dependsOn": []
+    }
+   }
+  },
+  {
+   "ctors": [
+    {
+     "args": [
+      {
+       "data": {
+        "args": [],
+        "name": "Scope.Target"
+       }
+      }
+     ],
+     "constructorName": "Absolute",
+     "fields": null,
+     "name": "Scope.TargetInput.Absolute"
+    },
+    {
+     "args": [
+      {
+       "list": {
+        "elem": {
+         "base": {
+          "name": "String"
+         }
+        }
+       }
+      }
+     ],
+     "constructorName": "RelativePath",
+     "fields": null,
+     "name": "Scope.TargetInput.RelativePath"
+    },
+    {
+     "args": [
+      {
+       "list": {
+        "elem": {
+         "base": {
+          "name": "String"
+         }
+        }
+       }
+      }
+     ],
+     "constructorName": "HomePath",
+     "fields": null,
+     "name": "Scope.TargetInput.HomePath"
+    }
+   ],
+   "name": "Scope.TargetInput",
+   "ntys": 0,
+   "summary": {
+    "eq": {
+     "always": false,
+     "dependsOn": []
+    },
+    "key": {
+     "always": false,
+     "dependsOn": []
+    }
+   }
+  },
+  {
+   "ctors": [
+    {
+     "args": [],
+     "constructorName": "Top",
+     "fields": null,
+     "name": "Scope.RangeAtom.Top"
+    },
+    {
+     "args": [
+      {
+       "data": {
+        "args": [],
+        "name": "Scope.PathPattern"
+       }
+      }
+     ],
+     "constructorName": "Path",
+     "fields": null,
+     "name": "Scope.RangeAtom.Path"
+    },
+    {
+     "args": [
+      {
+       "data": {
+        "args": [],
+        "name": "Scope.HostPattern"
+       }
+      }
+     ],
+     "constructorName": "Host",
+     "fields": null,
+     "name": "Scope.RangeAtom.Host"
+    },
+    {
+     "args": [
+      {
+       "data": {
+        "args": [],
+        "name": "Scope.EndpointPattern"
+       }
+      }
+     ],
+     "constructorName": "Endpoint",
+     "fields": null,
+     "name": "Scope.RangeAtom.Endpoint"
+    }
+   ],
+   "name": "Scope.RangeAtom",
+   "ntys": 0,
+   "summary": {
+    "eq": {
+     "always": false,
+     "dependsOn": []
+    },
+    "key": {
+     "always": false,
+     "dependsOn": []
+    }
+   }
+  },
+  {
+   "ctors": [
+    {
+     "args": [
+      {
+       "list": {
+        "elem": {
+         "base": {
+          "name": "String"
+         }
+        }
+       }
+      }
+     ],
+     "constructorName": "Path",
+     "fields": null,
+     "name": "Scope.Target.Path"
+    },
+    {
+     "args": [
+      {
+       "data": {
+        "args": [],
+        "name": "Scope.HostTarget"
+       }
+      }
+     ],
+     "constructorName": "Host",
+     "fields": null,
+     "name": "Scope.Target.Host"
+    },
+    {
+     "args": [
+      {
+       "data": {
+        "args": [],
+        "name": "Scope.Endpoint"
+       }
+      }
+     ],
+     "constructorName": "Endpoint",
+     "fields": null,
+     "name": "Scope.Target.Endpoint"
+    }
+   ],
+   "name": "Scope.Target",
+   "ntys": 0,
+   "summary": {
+    "eq": {
+     "always": false,
+     "dependsOn": []
+    },
+    "key": {
+     "always": false,
+     "dependsOn": []
+    }
+   }
+  },
+  {
+   "ctors": [
+    {
+     "args": [],
+     "constructorName": "Root",
+     "fields": null,
+     "name": "Scope.PathBase.Root"
+    },
+    {
+     "args": [],
+     "constructorName": "Cwd",
+     "fields": null,
+     "name": "Scope.PathBase.Cwd"
+    },
+    {
+     "args": [],
+     "constructorName": "Home",
+     "fields": null,
+     "name": "Scope.PathBase.Home"
+    },
+    {
+     "args": [],
+     "constructorName": "Work",
+     "fields": null,
+     "name": "Scope.PathBase.Work"
+    },
+    {
+     "args": [],
+     "constructorName": "Tmp",
+     "fields": null,
+     "name": "Scope.PathBase.Tmp"
+    }
+   ],
+   "name": "Scope.PathBase",
+   "ntys": 0,
+   "summary": {
+    "eq": {
+     "always": false,
+     "dependsOn": []
+    },
+    "key": {
+     "always": false,
+     "dependsOn": []
+    }
+   }
+  },
+  {
+   "ctors": [
+    {
+     "args": [
+      {
+       "list": {
+        "elem": {
+         "base": {
+          "name": "String"
+         }
+        }
+       }
+      }
+     ],
+     "constructorName": "Exact",
+     "fields": null,
+     "name": "Scope.PathPattern.Exact"
+    },
+    {
+     "args": [
+      {
+       "list": {
+        "elem": {
+         "base": {
+          "name": "String"
+         }
+        }
+       }
+      }
+     ],
+     "constructorName": "Tree",
+     "fields": null,
+     "name": "Scope.PathPattern.Tree"
+    }
+   ],
+   "name": "Scope.PathPattern",
+   "ntys": 0,
+   "summary": {
+    "eq": {
+     "always": false,
+     "dependsOn": []
+    },
+    "key": {
+     "always": false,
+     "dependsOn": []
+    }
+   }
+  },
+  {
+   "ctors": [
+    {
+     "args": [
+      {
+       "data": {
+        "args": [],
+        "name": "Scope.NamePattern"
+       }
+      }
+     ],
+     "constructorName": "Name",
+     "fields": null,
+     "name": "Scope.HostPattern.Name"
+    },
+    {
+     "args": [
+      {
+       "data": {
+        "args": [],
+        "name": "Scope.IPPattern"
+       }
+      }
+     ],
+     "constructorName": "IP",
+     "fields": null,
+     "name": "Scope.HostPattern.IP"
+    }
+   ],
+   "name": "Scope.HostPattern",
+   "ntys": 0,
+   "summary": {
+    "eq": {
+     "always": false,
+     "dependsOn": []
+    },
+    "key": {
+     "always": false,
+     "dependsOn": []
+    }
+   }
+  },
+  {
+   "ctors": [
+    {
+     "args": [
+      {
+       "data": {
+        "args": [],
+        "name": "Scope.HostPattern"
+       }
+      },
+      {
+       "data": {
+        "args": [],
+        "name": "Scope.PortRange"
+       }
+      }
+     ],
+     "constructorName": "EndpointPattern",
+     "fields": null,
+     "name": "Scope.EndpointPattern"
+    }
+   ],
+   "name": "Scope.EndpointPattern",
+   "ntys": 0,
+   "summary": {
+    "eq": {
+     "always": false,
+     "dependsOn": []
+    },
+    "key": {
+     "always": false,
+     "dependsOn": []
+    }
+   }
+  },
+  {
+   "ctors": [
+    {
+     "args": [
+      {
+       "list": {
+        "elem": {
+         "base": {
+          "name": "String"
+         }
+        }
+       }
+      }
+     ],
+     "constructorName": "Name",
+     "fields": null,
+     "name": "Scope.HostTarget.Name"
+    },
+    {
+     "args": [
+      {
+       "data": {
+        "args": [],
+        "name": "Scope.IPAddress"
+       }
+      }
+     ],
+     "constructorName": "IP",
+     "fields": null,
+     "name": "Scope.HostTarget.IP"
+    }
+   ],
+   "name": "Scope.HostTarget",
+   "ntys": 0,
+   "summary": {
+    "eq": {
+     "always": false,
+     "dependsOn": []
+    },
+    "key": {
+     "always": false,
+     "dependsOn": []
+    }
+   }
+  },
+  {
+   "ctors": [
+    {
+     "args": [
+      {
+       "data": {
+        "args": [],
+        "name": "Scope.HostTarget"
+       }
+      },
+      {
+       "base": {
+        "name": "Integer"
+       }
+      }
+     ],
+     "constructorName": "Endpoint",
+     "fields": null,
+     "name": "Scope.Endpoint"
+    }
+   ],
+   "name": "Scope.Endpoint",
+   "ntys": 0,
+   "summary": {
+    "eq": {
+     "always": false,
+     "dependsOn": []
+    },
+    "key": {
+     "always": false,
+     "dependsOn": []
+    }
+   }
+  },
+  {
+   "ctors": [
+    {
+     "args": [
+      {
+       "data": {
+        "args": [],
+        "name": "Scope.IPFamily"
+       }
+      },
+      "bytes"
+     ],
+     "constructorName": "IPAddress",
+     "fields": null,
+     "name": "Scope.IPAddress"
+    }
+   ],
+   "name": "Scope.IPAddress",
+   "ntys": 0,
+   "summary": {
+    "eq": {
+     "always": false,
+     "dependsOn": []
+    },
+    "key": {
+     "always": false,
+     "dependsOn": []
+    }
+   }
+  },
+  {
+   "ctors": [
+    {
+     "args": [
+      {
+       "list": {
+        "elem": {
+         "base": {
+          "name": "String"
+         }
+        }
+       }
+      }
+     ],
+     "constructorName": "Exact",
+     "fields": null,
+     "name": "Scope.NamePattern.Exact"
+    },
+    {
+     "args": [
+      {
+       "list": {
+        "elem": {
+         "base": {
+          "name": "String"
+         }
+        }
+       }
+      }
+     ],
+     "constructorName": "One",
+     "fields": null,
+     "name": "Scope.NamePattern.One"
+    },
+    {
+     "args": [
+      {
+       "list": {
+        "elem": {
+         "base": {
+          "name": "String"
+         }
+        }
+       }
+      }
+     ],
+     "constructorName": "Many",
+     "fields": null,
+     "name": "Scope.NamePattern.Many"
+    }
+   ],
+   "name": "Scope.NamePattern",
+   "ntys": 0,
+   "summary": {
+    "eq": {
+     "always": false,
+     "dependsOn": []
+    },
+    "key": {
+     "always": false,
+     "dependsOn": []
+    }
+   }
+  },
+  {
+   "ctors": [
+    {
+     "args": [
+      {
+       "data": {
+        "args": [],
+        "name": "Scope.IPAddress"
+       }
+      }
+     ],
+     "constructorName": "Exact",
+     "fields": null,
+     "name": "Scope.IPPattern.Exact"
+    },
+    {
+     "args": [
+      {
+       "data": {
+        "args": [],
+        "name": "Scope.CIDR"
+       }
+      }
+     ],
+     "constructorName": "CIDR",
+     "fields": null,
+     "name": "Scope.IPPattern.CIDR"
+    }
+   ],
+   "name": "Scope.IPPattern",
+   "ntys": 0,
+   "summary": {
+    "eq": {
+     "always": false,
+     "dependsOn": []
+    },
+    "key": {
+     "always": false,
+     "dependsOn": []
+    }
+   }
+  },
+  {
+   "ctors": [
+    {
+     "args": [
+      {
+       "base": {
+        "name": "Integer"
+       }
+      },
+      {
+       "base": {
+        "name": "Integer"
+       }
+      }
+     ],
+     "constructorName": "PortRange",
+     "fields": null,
+     "name": "Scope.PortRange"
+    }
+   ],
+   "name": "Scope.PortRange",
+   "ntys": 0,
+   "summary": {
+    "eq": {
+     "always": false,
+     "dependsOn": []
+    },
+    "key": {
+     "always": false,
+     "dependsOn": []
+    }
+   }
+  },
+  {
+   "ctors": [
+    {
+     "args": [],
+     "constructorName": "V4",
+     "fields": null,
+     "name": "Scope.IPFamily.V4"
+    },
+    {
+     "args": [],
+     "constructorName": "V6",
+     "fields": null,
+     "name": "Scope.IPFamily.V6"
+    }
+   ],
+   "name": "Scope.IPFamily",
+   "ntys": 0,
+   "summary": {
+    "eq": {
+     "always": false,
+     "dependsOn": []
+    },
+    "key": {
+     "always": false,
+     "dependsOn": []
+    }
+   }
+  },
+  {
+   "ctors": [
+    {
+     "args": [
+      {
+       "data": {
+        "args": [],
+        "name": "Scope.IPFamily"
+       }
+      },
+      "bytes",
+      {
+       "base": {
+        "name": "Integer"
+       }
+      }
+     ],
+     "constructorName": "CIDR",
+     "fields": null,
+     "name": "Scope.CIDR"
+    }
+   ],
+   "name": "Scope.CIDR",
+   "ntys": 0,
+   "summary": {
+    "eq": {
+     "always": false,
+     "dependsOn": []
+    },
+    "key": {
+     "always": false,
+     "dependsOn": []
+    }
+   }
+  }
+ ]
+}

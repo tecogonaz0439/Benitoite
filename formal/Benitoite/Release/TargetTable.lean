@@ -211,24 +211,6 @@ theorem pureIn_scoped {names : List String} {params : List Ty} {ret : Ty} {ks : 
   ⟨hn, hp, hr, ⟨fun i h => by simp at h, trivial, fun x hx => by simp at hx⟩,
     hpos, fun l hl => by simp [pureIn] at hl⟩
 
-/-- 表の全ての項目は `PrimSig.Scoped`（`sig_scoped` の欄の内容）を満たす。 -/
-theorem entries_scoped : ∀ e ∈ entries, e.2.Scoped := by
-  intro e he
-  simp only [entries, List.mem_cons, List.not_mem_nil, or_false] at he
-  rcases he with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
-  · exact (Model.assumptions Model.emptyProgram).sig_scoped "Reference.get" _ (by simp [Model.builtins])
-  · exact (Model.assumptions Model.emptyProgram).sig_scoped "Reference.set" _ (by simp [Model.builtins])
-  all_goals first
-    | (apply ioIn_scoped <;>
-        simp [NamesWF, pathIn, requestIn, resultTy, ioErrorTy, networkErrorTy, responseTy, Ty.VarsInList, Ty.VarsIn,
-          Scope.Signature.Ix.WF])
-    | (apply pureIn_scoped <;>
-        simp [NamesWF, pathIn, requestIn, resultTy, scopeErrorTy, requestCheckErrorTy, clientRequestTy, Ty.VarsInList,
-          Ty.VarsIn, Scope.Signature.Ix.WF])
-
-theorem sig_scoped {b : PrimName} {s : PrimSig} (h : (builtins delta ioResponse).sig b = some s) : s.Scoped :=
-  entries_scoped (b, s) (sig_mem h)
-
 /-- 七つの IO の項目は形の検査を通る（`io_op` の欄の内容）。可変のセルと純粋な項目は IO を行わない。 -/
 theorem io_op {b : PrimName} {s : PrimSig} (h : (builtins delta ioResponse).sig b = some s)
     (hk : s.kind = .io ∨ s.kind = .exit) : (builtins delta ioResponse).ShapeOk b s := by

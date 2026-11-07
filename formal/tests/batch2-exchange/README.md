@@ -1,6 +1,6 @@
-# 交換11/4の独立入力
+# 交換16/8の独立入力
 
-型付きFail、NoFailの行、操作と節の辞書を五形式・六入口で検査する。corpusの期待コアは手書きであり、Leanの脱糖やRustの書き出しを使って生成しない。既存のnamed-exchangeから宣言表の準備を共有し、新しい契約の七定義に絞っている。旧版互換の主な検査は既存の四つの交換テストが受け持つ。
+型付きFail、NoFailの行、操作と節の辞書を五形式・六入口で検査する。corpusの期待コアは手書きであり、Leanの脱糖やRustの書き出しを使って生成しない。named-exchangeから宣言表の準備を共有し、契約の異なる七定義を持つ。新版の受理と旧版の拒否を対照する。
 
 | 定義 | 独立して確認する内容 |
 |---|---|
@@ -18,4 +18,4 @@ coverageは関数型内のFail、レコードのパターン、Characterの全�
 python3 -B formal/tests/test_batch2_exchange.py
 ```
 
-O2/F3の局所Rust出力は、同じコマンドに `--rust-dir target/formal-batch2-op` または `--rust-dir target/formal-batch2-failure` を付けて読む。このオプションは存在する11/4の五形式を必須とし、Cargoを起動しない。完全な交換契約と切り替えの担当は改造のL4bの文書に記録する。
+操作と失敗の局所Rust出力は、同じコマンドに `--rust-dir target/formal-batch2-op` または `--rust-dir target/formal-batch2-failure` を付けて読む。このオプションは存在する16/8の五形式を必須とし、Cargoを起動しない。

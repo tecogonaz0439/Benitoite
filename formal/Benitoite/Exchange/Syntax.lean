@@ -1,9 +1,9 @@
 import Lean
-import Benitoite.Surface.Desugar
+import Benitoite.Exchange.RefinedJson
 import Benitoite.Exchange.Range
 
 /-! 契約名とソース順を保持する独立した交換の入口。
-設計書 07-04「証明する性質」の検査対象と既存形式を区別する。 -/
+設計書 07-04「道具と置き場所」の検査対象と既存形式を区別する。 -/
 namespace Benitoite.Exchange
 open Lean
 
@@ -14,14 +14,14 @@ inductive TyCon where
 
 mutual
   inductive Atom where
-    /-- 名前の原子と範囲の位置（corpus 15・sidecar 7。旧版は明示の Top で読む。`Exchange/Range.lean`）。 -/
-    | name (value : String) (ix : Scope.Signature.Ix)
+    /-- 名前の原子と範囲の位置（固定の範囲・基準からの範囲・範囲変数を区別する。`Exchange/Range.lean`）。 -/
+    | name (value : String) (ix : Benitoite.Release.Refinement.RangeIx)
     | rho (index : Nat)
     | fail (error : Ty)
   inductive Ty where
     | base (name : String)
-    /-- 不透明型と範囲の位置（corpus 15・sidecar 7。旧版は明示の Top で読む）。 -/
-    | opaque (name : String) (ix : Scope.Signature.Ix)
+    /-- 不透明型と範囲の位置（固定の範囲・基準からの範囲・範囲変数を区別する）。 -/
+    | opaque (name : String) (ix : Benitoite.Release.Refinement.RangeIx)
     | data (name : String) (args : List Ty)
     | list (elem : Ty)
     | fn (names : List String) (params : List Ty) (ret : Ty) (eff : List Atom)
@@ -34,6 +34,13 @@ mutual
     | dict (cls : String) (arg : Ty)
     | tapp (index : Nat) (args : List Ty)
     | ctor (head : TyCon)
+    | refined (base : Ty) (predicate : Benitoite.Release.Refinement.Pred)
+    | dependentFn (names : List String) (params : List Ty) (ret : Ty) (eff : List Atom)
+    | cont (argument result : Ty) (eff : List Atom)
+    | external (id : Nat) (args : List Ty)
+    | scoped (name : String) (kind : Benitoite.Scope.Domain.Kind) (ix : Benitoite.Release.Refinement.RangeIx)
+    | pathBases
+    | scopePattern (kind : Benitoite.Scope.Domain.Kind)
 
 
 end
@@ -42,12 +49,12 @@ abbrev Eff := List Atom
 
 mutual
   partial def encodeAtom : Atom → Json
-    | .name n ix => Json.mkObj [("name", encodeNameBody n ix)]
+    | .name n ix => Json.mkObj [("name", encodeRefinedNameBody n ix)]
     | .rho i => Json.mkObj [("rho", Json.mkObj [("index", toJson i)])]
     | .fail t => Json.mkObj [("kind", toJson "fail"), ("error", encodeTy t)]
   partial def encodeTy : Ty → Json
     | .base x0 => Json.mkObj [("base", Json.mkObj [("name", toJson x0)])]
-    | .opaque x0 ix => Json.mkObj [("opaque", encodeOpaqueBody x0 ix)]
+    | .opaque x0 ix => Json.mkObj [("opaque", encodeRefinedOpaqueBody x0 ix)]
     | .data x0 x1 => Json.mkObj [("data", Json.mkObj [("name", toJson x0), ("args", Json.arr (x1.map encodeTy).toArray)])]
     | .list x0 => Json.mkObj [("list", Json.mkObj [("elem", encodeTy x0)])]
     | .fn x0 x1 x2 x3 => Json.mkObj [("fn", Json.mkObj [("names", toJson x0), ("params", Json.arr (x1.map encodeTy).toArray), ("ret", encodeTy x2), ("eff", Json.arr (x3.map encodeAtom).toArray)])]
@@ -60,6 +67,14 @@ mutual
     | .dict x0 x1 => Json.mkObj [("dict", Json.mkObj [("cls", toJson x0), ("arg", encodeTy x1)])]
     | .tapp x0 x1 => Json.mkObj [("tapp", Json.mkObj [("index", toJson x0), ("args", Json.arr (x1.map encodeTy).toArray)])]
     | .ctor x0 => Json.mkObj [("ctor", Json.mkObj [("head", toJson x0)])]
+    | .refined a p => Json.mkObj [("refined", Json.mkObj [("base", encodeTy a), ("predicate", toJson p)])]
+    | .dependentFn ns ps r e => Json.mkObj [("dependentFn", Json.mkObj [("names", toJson ns), ("params", Json.arr (ps.map encodeTy).toArray), ("ret", encodeTy r), ("eff", Json.arr (e.map encodeAtom).toArray)])]
+    | .cont a r e => Json.mkObj [("cont", Json.mkObj [("argument", encodeTy a), ("result", encodeTy r), ("eff", Json.arr (e.map encodeAtom).toArray)])]
+    | .external i as => Json.mkObj [("external", Json.mkObj [("id", toJson i), ("args", Json.arr (as.map encodeTy).toArray)])]
+    | .scoped n k ix => Json.mkObj [("scoped", Json.mkObj [("name", toJson n), ("kind", toJson k), ("ix", encodeRefinedIx ix)])]
+    | .pathBases => toJson "pathBases"
+    | .scopePattern k => Json.mkObj [("scopePattern", Json.mkObj [("kind", toJson k)])]
+
 end
 mutual
   partial def decodeAtom (j : Json) : Except String Atom := do
@@ -67,17 +82,17 @@ mutual
       if k != toJson "fail" || (← j.getObj?).toArray.size != 2 then throw "invalid Fail atom"
       return .fail (← decodeTy (← j.getObjVal? "error"))
     if let .ok o := j.getObjVal? "name" then
-      let (l, ix) ← decodeNameBody o
+      let (l, ix) ← decodeRefinedNameBody o
       -- 新版の必須の欄を補わず、余りの欄を読み捨てない。
-      if encodeNameBody l ix != o then throw "unexpected effect atom fields"
+      if encodeRefinedNameBody l ix != o then throw "unexpected effect atom fields"
       return .name l ix
     if let .ok o := j.getObjVal? "rho" then return .rho (← o.getObjValAs? Nat "index")
     throw "unknown effect atom"
   partial def decodeTy (j : Json) : Except String Ty := do
     if let .ok o := j.getObjVal? "base" then return .base (← fromJson? (← o.getObjVal? "name"))
     if let .ok o := j.getObjVal? "opaque" then
-      let (n, ix) ← decodeOpaqueBody o
-      if encodeOpaqueBody n ix != o then throw "unexpected opaque type fields"
+      let (n, ix) ← decodeRefinedOpaqueBody o
+      if encodeRefinedOpaqueBody n ix != o then throw "unexpected opaque type fields"
       return .opaque n ix
     if let .ok o := j.getObjVal? "data" then return .data (← fromJson? (← o.getObjVal? "name")) (← (← (← o.getObjVal? "args").getArr?).toList.mapM decodeTy)
     if let .ok o := j.getObjVal? "list" then return .list (← decodeTy (← o.getObjVal? "elem"))
@@ -91,6 +106,14 @@ mutual
     if let .ok o := j.getObjVal? "dict" then return .dict (← fromJson? (← o.getObjVal? "cls")) (← decodeTy (← o.getObjVal? "arg"))
     if let .ok o := j.getObjVal? "tapp" then return .tapp (← fromJson? (← o.getObjVal? "index")) (← (← (← o.getObjVal? "args").getArr?).toList.mapM decodeTy)
     if let .ok o := j.getObjVal? "ctor" then return .ctor (← fromJson? (← o.getObjVal? "head"))
+
+    if let .ok o := j.getObjVal? "refined" then return .refined (← decodeTy (← o.getObjVal? "base")) (← o.getObjValAs? Benitoite.Release.Refinement.Pred "predicate")
+    if let .ok o := j.getObjVal? "dependentFn" then return .dependentFn (← o.getObjValAs? (List String) "names") (← (← (← o.getObjVal? "params").getArr?).toList.mapM decodeTy) (← decodeTy (← o.getObjVal? "ret")) (← (← (← o.getObjVal? "eff").getArr?).toList.mapM decodeAtom)
+    if let .ok o := j.getObjVal? "cont" then return .cont (← decodeTy (← o.getObjVal? "argument")) (← decodeTy (← o.getObjVal? "result")) (← (← (← o.getObjVal? "eff").getArr?).toList.mapM decodeAtom)
+    if let .ok o := j.getObjVal? "external" then return .external (← o.getObjValAs? Nat "id") (← (← (← o.getObjVal? "args").getArr?).toList.mapM decodeTy)
+    if let .ok o := j.getObjVal? "scoped" then return .scoped (← o.getObjValAs? String "name") (← o.getObjValAs? Benitoite.Scope.Domain.Kind "kind") (← decodeRefinedIxStrict (← o.getObjVal? "ix"))
+    if j == toJson "pathBases" then return .pathBases
+    if let .ok o := j.getObjVal? "scopePattern" then return .scopePattern (← o.getObjValAs? Benitoite.Scope.Domain.Kind "kind")
     throw "unknown type constructor"
 end
 instance : ToJson Atom := ⟨encodeAtom⟩
@@ -199,13 +222,14 @@ mutual
     | builderOp (op : BuilderOp) (index : Nat) (args : List Expr) (kind : BuilderKind)
     | local (index : Nat)
     | constName (name : String)
-    | funName (name : String) (tys : List Ty) (effs : List Eff)
+    | funName (name : String) (tys : List Ty) (effs : List Eff) (ranges : List Benitoite.Release.Refinement.RangeIx := [])
     | funDicts (name : String) (tys : List Ty) (effs : List Eff)
-        (dicts : List DictEv) (names : List String) (params : List Ty) (eff : Eff)
+        (dicts : List DictEv) (names : List String) (params : List Ty) (eff : Eff) (ranges : List Benitoite.Release.Refinement.RangeIx := [])
     | methName (dict : DictEv) (name : String) (tys : List Ty) (effs : List Eff)
         (dicts : List DictEv) (names : List String) (params : List Ty) (eff : Eff)
-    /-- 型検査器が選んだ範囲の列を持つ（corpus 15。旧版は空の列で読む）。 -/
-    | primName (name : String) (tys : List Ty) (effs : List Eff) (ranges : List Scope.Domain.Range)
+    /-- 型検査器が選んだ範囲の列を持つ（範囲の位置の列をそのまま保持する）。 -/
+    | primName (name : String) (tys : List Ty) (effs : List Eff) (ranges : List Benitoite.Release.Refinement.RangeIx)
+    | externalName (id : Nat) (tys : List Ty)
     | opName (name : String) (tys : List Ty)
     | opDicts (name : String) (tys : List Ty) (dicts : List DictEv) (names : List String) (params : List Ty) (eff : Eff)
     | raise (result error : Ty)
@@ -282,11 +306,12 @@ mutual
   partial def encodeExpr : Expr → Json
     | .builderOp op index args kind => Json.mkObj [("builderOp", Json.mkObj [("op", toJson op), ("index", toJson index), ("args", Json.arr (args.map encodeExpr).toArray), ("kind", toJson kind)])]
     | .constName name => Json.mkObj [("constName", Json.mkObj [("name", toJson name)])]
-    | .funDicts name tys effs dicts names params eff => Json.mkObj [("funDicts", Json.mkObj [("names", toJson names), ("name", toJson name), ("tys", toJson tys), ("effs", toJson effs), ("dicts", toJson dicts), ("params", toJson params), ("eff", toJson eff)])]
+    | .funDicts name tys effs dicts names params eff ranges => Json.mkObj [("funDicts", Json.mkObj [("names", toJson names), ("name", toJson name), ("tys", toJson tys), ("effs", toJson effs), ("dicts", toJson dicts), ("params", toJson params), ("eff", toJson eff), ("ranges", toJson ranges)])]
     | .methName dict name tys effs dicts names params eff => Json.mkObj [("methName", Json.mkObj [("names", toJson names), ("dict", toJson dict), ("name", toJson name), ("tys", toJson tys), ("effs", toJson effs), ("dicts", toJson dicts), ("params", toJson params), ("eff", toJson eff)])]
+    | .externalName id tys => Json.mkObj [("externalName", Json.mkObj [("id", toJson id), ("tys", toJson tys)])]
     | .local index => Json.mkObj [("local", Json.mkObj [("index", toJson index)])]
-    | .funName name tys effs => Json.mkObj [("funName", Json.mkObj [("name", toJson name), ("tys", toJson tys), ("effs", toJson effs)])]
-    | .primName name tys effs ranges => Json.mkObj [("primName", Json.mkObj [("name", toJson name), ("tys", toJson tys), ("effs", toJson effs), ("ranges", encodeRanges ranges)])]
+    | .funName name tys effs ranges => Json.mkObj [("funName", Json.mkObj [("name", toJson name), ("tys", toJson tys), ("effs", toJson effs), ("ranges", toJson ranges)])]
+    | .primName name tys effs ranges => Json.mkObj [("primName", Json.mkObj [("name", toJson name), ("tys", toJson tys), ("effs", toJson effs), ("ranges", toJson ranges)])]
     | .nullCon name tys => Json.mkObj [("nullCon", Json.mkObj [("name", toJson name), ("tys", toJson tys)])]
     | .conValue name tys names params => Json.mkObj [("conValue", Json.mkObj [("names", toJson names), ("name", toJson name), ("tys", toJson tys), ("params", toJson params)])]
     | .literal value => Json.mkObj [("literal", Json.mkObj [("value", toJson value)])]
@@ -410,15 +435,16 @@ mutual
     if let .ok o := j.getObjVal? "constName" then
       return .constName (← fromJson? (← o.getObjVal? "name"))
     if let .ok o := j.getObjVal? "funDicts" then
-      return .funDicts (← fromJson? (← o.getObjVal? "name")) (← fromJson? (← o.getObjVal? "tys")) (← fromJson? (← o.getObjVal? "effs")) (← fromJson? (← o.getObjVal? "dicts")) (← fromJson? (← o.getObjVal? "names")) (← fromJson? (← o.getObjVal? "params")) (← fromJson? (← o.getObjVal? "eff"))
+      return .funDicts (← fromJson? (← o.getObjVal? "name")) (← fromJson? (← o.getObjVal? "tys")) (← fromJson? (← o.getObjVal? "effs")) (← fromJson? (← o.getObjVal? "dicts")) (← fromJson? (← o.getObjVal? "names")) (← fromJson? (← o.getObjVal? "params")) (← fromJson? (← o.getObjVal? "eff")) (← o.getObjValAs? (List Benitoite.Release.Refinement.RangeIx) "ranges")
     if let .ok o := j.getObjVal? "methName" then
       return .methName (← fromJson? (← o.getObjVal? "dict")) (← fromJson? (← o.getObjVal? "name")) (← fromJson? (← o.getObjVal? "tys")) (← fromJson? (← o.getObjVal? "effs")) (← fromJson? (← o.getObjVal? "dicts")) (← fromJson? (← o.getObjVal? "names")) (← fromJson? (← o.getObjVal? "params")) (← fromJson? (← o.getObjVal? "eff"))
+    if let .ok o := j.getObjVal? "externalName" then return .externalName (← o.getObjValAs? Nat "id") (← o.getObjValAs? (List Ty) "tys")
     if let .ok o := j.getObjVal? "local" then
       return .local (← fromJson? (← o.getObjVal? "index"))
     if let .ok o := j.getObjVal? "funName" then
-      return .funName (← fromJson? (← o.getObjVal? "name")) (← fromJson? (← o.getObjVal? "tys")) (← fromJson? (← o.getObjVal? "effs"))
+      return .funName (← fromJson? (← o.getObjVal? "name")) (← fromJson? (← o.getObjVal? "tys")) (← fromJson? (← o.getObjVal? "effs")) (← o.getObjValAs? (List Benitoite.Release.Refinement.RangeIx) "ranges")
     if let .ok o := j.getObjVal? "primName" then
-      return .primName (← fromJson? (← o.getObjVal? "name")) (← fromJson? (← o.getObjVal? "tys")) (← fromJson? (← o.getObjVal? "effs")) (← decodeRanges (← o.getObjVal? "ranges"))
+      return .primName (← fromJson? (← o.getObjVal? "name")) (← fromJson? (← o.getObjVal? "tys")) (← fromJson? (← o.getObjVal? "effs")) (← o.getObjValAs? (List Benitoite.Release.Refinement.RangeIx) "ranges")
     if let .ok o := j.getObjVal? "nullCon" then
       return .nullCon (← fromJson? (← o.getObjVal? "name")) (← fromJson? (← o.getObjVal? "tys"))
     if let .ok o := j.getObjVal? "conValue" then
@@ -585,12 +611,14 @@ mutual
   inductive Val where
     | var (index : Nat)
     | const (value : Const)
-    | fnRef (name : String) (tys : List Ty) (effs : List Eff)
-    /-- 具体化した範囲の列を持つ（corpus 15。旧版は空の列で読む）。 -/
-    | prim (name : String) (tys : List Ty) (effs : List Eff) (ranges : List Scope.Domain.Range)
+    | fnRef (name : String) (tys : List Ty) (effs : List Eff) (ranges : List Benitoite.Release.Refinement.RangeIx := [])
+    /-- 具体化した範囲の列を持つ（範囲の位置の列をそのまま保持する）。 -/
+    | prim (name : String) (tys : List Ty) (effs : List Eff) (ranges : List Benitoite.Release.Refinement.RangeIx)
     | op (name : String) (tys : List Ty)
     | raise (result error : Ty)
     | lam (names : List String) (params : List Ty) (body : Comp)
+    | dependentLam (signature : Ty) (body : Comp)
+    | externalRef (id : Nat) (tys : List Ty)
     | con (name : String) (tys : List Ty) (args : List Val)
     | list (elems : List Val)
     | dict (name : String) (tys : List Ty) (args : List Val)
@@ -602,6 +630,8 @@ mutual
     | ret (value : Val)
     | letIn (bound body : Comp)
     | app (callee : Val) (args : List Val)
+    | externalCall (id : Nat) (tys : List Ty) (args : List Val)
+    | issuePathBases (name : String)
     | meth (dict : Val) (name : String) (tys : List Ty) (effs : List Eff) (args : List Val)
     | ite (cond : Val) (yes no : Comp)
     | matchC (scrutinee : Val) (arms : List CoreArm)
@@ -619,12 +649,14 @@ end
 deriving instance BEq for Val, Comp, CoreArm, CoreClause
 mutual
   partial def encodeVal : Val → Json
+    | .dependentLam signature body => Json.mkObj [("dependentLam", Json.mkObj [("signature", toJson signature), ("body", encodeComp body)])]
+    | .externalRef id tys => Json.mkObj [("externalRef", Json.mkObj [("id", toJson id), ("tys", toJson tys)])]
     | .dict name tys args => Json.mkObj [("dict", Json.mkObj [("name", toJson name), ("tys", toJson tys), ("args", Json.arr (args.map encodeVal).toArray)])]
     | .super dict cls => Json.mkObj [("super", Json.mkObj [("dict", encodeVal dict), ("cls", toJson cls)])]
     | .var index => Json.mkObj [("var", Json.mkObj [("index", toJson index)])]
     | .const value => Json.mkObj [("const", Json.mkObj [("value", toJson value)])]
-    | .fnRef name tys effs => Json.mkObj [("fnRef", Json.mkObj [("name", toJson name), ("tys", toJson tys), ("effs", toJson effs)])]
-    | .prim name tys effs ranges => Json.mkObj [("prim", Json.mkObj [("name", toJson name), ("tys", toJson tys), ("effs", toJson effs), ("ranges", encodeRanges ranges)])]
+    | .fnRef name tys effs ranges => Json.mkObj [("fnRef", Json.mkObj [("name", toJson name), ("tys", toJson tys), ("effs", toJson effs), ("ranges", toJson ranges)])]
+    | .prim name tys effs ranges => Json.mkObj [("prim", Json.mkObj [("name", toJson name), ("tys", toJson tys), ("effs", toJson effs), ("ranges", toJson ranges)])]
     | .lam names params body => Json.mkObj [("lam", Json.mkObj [("names", toJson names), ("params", toJson params), ("body", encodeComp body)])]
     | .con name tys args => Json.mkObj [("con", Json.mkObj [("name", toJson name), ("tys", toJson tys), ("args", Json.arr (args.map encodeVal).toArray)])]
     | .list elems => Json.mkObj [("list", Json.mkObj [("elems", Json.arr (elems.map encodeVal).toArray)])]
@@ -632,6 +664,8 @@ mutual
     | .op name tys => Json.mkObj [("op", Json.mkObj [("name", toJson name), ("tys", toJson tys)])]
     | .raise result error => Json.mkObj [("raise", Json.mkObj [("result", toJson result), ("error", toJson error)])]
   partial def encodeComp : Comp → Json
+    | .externalCall id tys args => Json.mkObj [("externalCall", Json.mkObj [("id", toJson id), ("tys", toJson tys), ("args", Json.arr (args.map encodeVal).toArray)])]
+    | .issuePathBases name => Json.mkObj [("issuePathBases", Json.mkObj [("name", toJson name)])]
     | .builderLet kind body => Json.mkObj [("builderLet", Json.mkObj [("kind", toJson kind), ("body", encodeComp body)])]
     | .builderOp kind op ref args => Json.mkObj [("builderOp", Json.mkObj [("kind", toJson kind), ("op", toJson op), ("ref", toJson ref), ("args", Json.arr (args.map encodeVal).toArray)])]
     | .meth dict name tys effs args => Json.mkObj [("meth", Json.mkObj [("dict", encodeVal dict), ("name", toJson name), ("tys", toJson tys), ("effs", toJson effs), ("args", Json.arr (args.map encodeVal).toArray)])]
@@ -653,6 +687,8 @@ mutual
 end
 mutual
   partial def decodeVal (j : Json) : Except String Val := do
+    if let .ok o := j.getObjVal? "dependentLam" then return .dependentLam (← o.getObjValAs? Ty "signature") (← decodeComp (← o.getObjVal? "body"))
+    if let .ok o := j.getObjVal? "externalRef" then return .externalRef (← o.getObjValAs? Nat "id") (← o.getObjValAs? (List Ty) "tys")
     checkBatch2ExprFields j
     if let .ok o := j.getObjVal? "raise" then return .raise (← o.getObjValAs? Ty "result") (← o.getObjValAs? Ty "error")
     if let .ok o := j.getObjVal? "dict" then
@@ -664,9 +700,9 @@ mutual
     if let .ok o := j.getObjVal? "const" then
       return .const (← fromJson? (← o.getObjVal? "value"))
     if let .ok o := j.getObjVal? "fnRef" then
-      return .fnRef (← fromJson? (← o.getObjVal? "name")) (← fromJson? (← o.getObjVal? "tys")) (← fromJson? (← o.getObjVal? "effs"))
+      return .fnRef (← fromJson? (← o.getObjVal? "name")) (← fromJson? (← o.getObjVal? "tys")) (← fromJson? (← o.getObjVal? "effs")) (← o.getObjValAs? (List Benitoite.Release.Refinement.RangeIx) "ranges")
     if let .ok o := j.getObjVal? "prim" then
-      return .prim (← fromJson? (← o.getObjVal? "name")) (← fromJson? (← o.getObjVal? "tys")) (← fromJson? (← o.getObjVal? "effs")) (← decodeRanges (← o.getObjVal? "ranges"))
+      return .prim (← fromJson? (← o.getObjVal? "name")) (← fromJson? (← o.getObjVal? "tys")) (← fromJson? (← o.getObjVal? "effs")) (← o.getObjValAs? (List Benitoite.Release.Refinement.RangeIx) "ranges")
     if let .ok o := j.getObjVal? "lam" then
       return .lam (← fromJson? (← o.getObjVal? "names")) (← fromJson? (← o.getObjVal? "params")) (← decodeComp (← o.getObjVal? "body"))
     if let .ok o := j.getObjVal? "con" then
@@ -679,6 +715,8 @@ mutual
       return .op (← fromJson? (← o.getObjVal? "name")) (← fromJson? (← o.getObjVal? "tys"))
     throw "unknown Val constructor"
   partial def decodeComp (j : Json) : Except String Comp := do
+    if let .ok o := j.getObjVal? "externalCall" then return .externalCall (← o.getObjValAs? Nat "id") (← o.getObjValAs? (List Ty) "tys") (← (← (← o.getObjVal? "args").getArr?).toList.mapM decodeVal)
+    if let .ok o := j.getObjVal? "issuePathBases" then return .issuePathBases (← o.getObjValAs? String "name")
     checkCoreBuilderFields j
     if let .ok o := j.getObjVal? "builderLet" then
       return .builderLet (← o.getObjValAs? BuilderKind "kind") (← decodeComp (← o.getObjVal? "body"))
@@ -729,12 +767,15 @@ structure EffParam where
 
 structure Header where
   tparams : List (Bool × Bool)
+  tparamKinds : List Benitoite.Release.Refinement.TyKind := tparams.map (fun _ => .value)
   neffs : Nat
   effParams : List EffParam
   names : List String
   params : List Ty
   ret : Ty
   eff : Eff
+  rangeParams : List Benitoite.Scope.Domain.Kind := []
+  proofSteps : Option Nat := none
   deriving BEq, ToJson, FromJson
 
 structure SurfaceDef where
@@ -767,6 +808,7 @@ inductive Scope where
   deriving ToJson, FromJson
 structure Definition where
   name : String
+  annotations : Json := Json.mkObj []
   scope : Scope
   deriving ToJson, FromJson
 structure OpEntry where
@@ -794,6 +836,7 @@ structure MethodEntry where
   deriving ToJson, FromJson
 structure ClassEntry where
   name : String
+  argumentKind : Benitoite.Release.Refinement.TyKind := .value
   supers : List String
   methods : List MethodEntry
   deriving ToJson, FromJson
@@ -823,7 +866,35 @@ structure DataTypeInfo where
   typeName : String
   isRecord : Bool
   extensible : Bool
+  constructors : List (String × String) := []
   deriving BEq, ToJson, FromJson
+
+structure AliasEntry where
+  name : String
+  tparams : List (Bool × Bool)
+  tparamKinds : List Benitoite.Release.Refinement.TyKind := tparams.map (fun _ => .value)
+  valueParams : List (String × Ty)
+  rangeParams : List Benitoite.Scope.Domain.Kind
+  body : Ty
+  deriving ToJson, FromJson
+
+structure RecordEntry where
+  constructor : String
+  data : String
+  ntys : Nat
+  fields : List (String × Ty)
+  deriving ToJson, FromJson
+
+structure TesterEntry where
+  function : String
+  constructor : String
+  deriving ToJson, FromJson
+
+inductive ExternalEntry where
+  | type (id component : Nat) (displayName : String) (arity resource : Nat)
+  | function (id component : Nat) (displayName : String) (header : Header)
+      (uses : List Benitoite.Release.Refinement.ExternalUse)
+  deriving ToJson, FromJson
 
 structure Input where
   dataTypes : List DataTypeInfo
@@ -832,14 +903,20 @@ structure Input where
   excluded : List String
   definitions : List Definition
   constants : List ConstantEntry
+  candidates : Eff := []
   ops : List OpEntry
   effects : List EffectEntry
   primOps : List PrimOpEntry
   classes : List ClassEntry
   impls : List ImplEntry
-  /-- 必須の判定の入力（corpus 15。`Exchange/Observe.lean` の `ScopeAcceptanceEntry`）。旧版は `null`（規則のない受理
-  の入力、旧の像）で読む。中身は `CheckInput.prepare` が読む。 -/
+  /-- 必須の判定の入力。`Exchange/Observe.lean` の `ScopeAcceptanceEntry` を保持し、
+  `CheckInput.prepare` が規則の受理の入力へ写す。 -/
   scopeAcceptance : Json
+  aliases : List AliasEntry := []
+  records : List RecordEntry := []
+  testers : List TesterEntry := []
+  externals : List ExternalEntry := []
+  logicCertificates : List LogicCertificateEntry := []
   deriving ToJson, FromJson
 structure OperatorEntry where
   op : String
@@ -849,6 +926,7 @@ structure OperatorEntry where
 structure Corpus where
   version : Nat
   operators : List OperatorEntry
+  annotations : Json := Json.mkObj []
   inputs : List Input
   deriving ToJson, FromJson
 end Benitoite.Exchange

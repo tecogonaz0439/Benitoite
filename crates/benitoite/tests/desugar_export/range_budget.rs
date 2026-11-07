@@ -168,7 +168,7 @@ fn export_range_budget_sources() {
         });
         fs::write(
             directory.join("rust.json"),
-            exchange::to_vec(&report).unwrap(),
+            exchange::to_vec(exchange::Document::Record, &report).unwrap(),
         )
         .unwrap();
         if complete {
@@ -181,24 +181,32 @@ fn export_range_budget_sources() {
             let table = exchange::named_builtin_tables(&program, &input, &stdlib);
             exchange::attach_metadata(&mut input, &table, &mut Value::Null);
             input["scopeAcceptance"]["limits"] = case["limits"].clone();
-            let corpus = json!({"version":15,"operators":exchange::operators(),"inputs":[input],"annotations":{"tailMatch":[0,0]}});
+            let corpus = json!({"version":16,"operators":exchange::operators(),"inputs":[input],"annotations":{"tailMatch":[0,0]}});
             fs::write(
                 directory.join("corpus.json"),
-                exchange::to_vec(&corpus).unwrap(),
+                exchange::to_vec(exchange::Document::Corpus, &corpus).unwrap(),
             )
             .unwrap();
             fs::write(
                 directory.join("builtins.json"),
-                exchange::to_vec(&json!({"version":7,"inputs":[table]})).unwrap(),
+                exchange::to_vec(
+                    exchange::Document::Table,
+                    &json!({"version":8,"inputs":[table]}),
+                )
+                .unwrap(),
             )
             .unwrap();
-            fs::write(directory.join("stdlib.json"), exchange::to_vec(&json!({"version":7,"inputs":[{"group":"golden","name":name,"functions":[],"impls":[]}]})).unwrap()).unwrap();
+            fs::write(directory.join("stdlib.json"), exchange::to_vec(exchange::Document::Stdlib, &json!({"version":8,"inputs":[{"group":"golden","name":name,"functions":[],"impls":[]}]})).unwrap()).unwrap();
         }
         manifest.push(json!({"name":name,"source":case["source"],"rustCalls":calls.len(),"numberingComplete":complete,"lean":case["lean"]["comparison"]}));
     }
     fs::write(
         root.join("manifest.json"),
-        exchange::to_vec(&json!({"version":1,"inputs":manifest})).unwrap(),
+        exchange::to_vec(
+            exchange::Document::Record,
+            &json!({"version":1,"inputs":manifest}),
+        )
+        .unwrap(),
     )
     .unwrap();
     fs::write(root.join("expected.json"), EXPECTED).unwrap();

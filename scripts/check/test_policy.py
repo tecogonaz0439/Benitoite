@@ -365,11 +365,11 @@ class PolicyTests(unittest.TestCase):
                 coverage_count = {'k3': 0, 'k4': 1, 'm1': 7, 't3': 1}[profile]
                 program[0]['matches'] = [{} for _ in range(coverage_count)]
                 for name, data in {
-                    'corpus': dict(version=15, inputs=inputs),
-                    'builtins': dict(version=7, inputs=keys),
-                    'stdlib': dict(version=7, inputs=keys),
-                    'coverage': dict(version=7, cases=[{}]),
-                    'coverage-program': dict(version=7, inputs=program),
+                    'corpus': dict(version=16, inputs=inputs),
+                    'builtins': dict(version=8, inputs=keys),
+                    'stdlib': dict(version=8, inputs=keys),
+                    'coverage': dict(version=8, cases=[{}]),
+                    'coverage-program': dict(version=8, inputs=program),
                 }.items():
                     (directory / (name + '.json')).write_text(json.dumps(data))
             bin_dir = root / 'formal/.lake/build/bin'

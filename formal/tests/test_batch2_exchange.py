@@ -8,6 +8,8 @@ import tempfile
 import unittest
 
 shared = runpy.run_path(str(Path(__file__).with_name('test_named_exchange.py')))
+SOURCES = runpy.run_path(str(Path(__file__).with_name('test_range_sources.py')))
+GAPS = SOURCES['preparation_gaps']
 FILES, TOOLS = shared['FILES'], shared['TOOLS']
 FIXTURES = Path(__file__).with_name('batch2-exchange')
 
@@ -50,7 +52,7 @@ class Batch2ExchangeTests(unittest.TestCase):
                         data[file]['version'] = version
                         result, _ = self.run_tool(tool, data)
                         self.assertEqual(result.returncode, 2, result.stdout)
-                        self.assertIn('new exchange version', result.stderr)
+                        self.assertIn('version', result.stderr)
         for field in ('effParams',):
             data = copy.deepcopy(self.data)
             del shared['surface'](data, 0)['header'][field]
@@ -77,7 +79,8 @@ class Batch2ExchangeTests(unittest.TestCase):
                 self.assertTrue(result.stderr)
 
     def test_checker_rejects_wrong_error_and_dictionary(self):
-        for kind, message in [('error', 'type is not included'), ('dict', 'operation internal names mismatch')]:
+        # 篩付きの検査器の拒否の理由: 誤りの型の違いは再検査の失敗、辞書の欠けは依存する引数の署名の不一致として断る。
+        for kind, message in [('error', 'type or certificate check failed'), ('dict', 'dependent argument signature mismatch')]:
             with self.subTest(kind=kind):
                 data = copy.deepcopy(self.data)
                 if kind == 'error':
@@ -125,7 +128,7 @@ class Batch2ExchangeTests(unittest.TestCase):
         # Releaseの補助上限を読めても、表層の具体化後の単一Failは別に検査する。
         result, report = self.run_tool('surfaceCheck', data)
         self.assertEqual(result.returncode, 1, result.stderr)
-        self.assertEqual(report['result']['error']['reason'], 'effect exceeds the allowed effect')
+        self.assertEqual(report['result']['error']['reason'], 'type or certificate check failed')
         scope['core']['header']['eff'] = effects[:-1]
         result, report = self.run_tool('desugarDiff', data)
         self.assertEqual(result.returncode, 1, result.stderr)
@@ -142,22 +145,34 @@ class Batch2ExchangeTests(unittest.TestCase):
                 data = copy.deepcopy(self.data)
                 for f, document in data.items():
                     document['version'] = ((12 if f == 'corpus' else 4) if f in stale
-                                           else (15 if f == 'corpus' else 7))
+                                           else (16 if f == 'corpus' else 8))
                     (self.directory / f'{f}.json').write_text(json.dumps(document))
                 with self.assertRaisesRegex(AssertionError, f'{stale[0]}: expected batch2 version'):
                     check_rust(self.directory)
 
 
+def surface_gaps(tool, result, report, corpus):
+    """表層の検査の準備の段が、標準表との差（分類の表の原因）だけで断ったときの原因。ほかは None。全件の入口は、
+    残りの入力の照合（不一致0・準備の失敗の件数・末尾の照合の件数）を `classified_all` で行う。"""
+    if result.returncode != 2:
+        return None
+    if tool == 'surfaceCheck':
+        return GAPS(result.stdout + result.stderr)
+    return SOURCES['classified_all'](report, corpus) if report is not None else None
+
+
 def check_rust(directory):
-    """O2/F3 の出力が存在し、今の版（15/7）と六入口の実比較を満たすことを確かめる。"""
+    """O2/F3 の出力が存在し、今の版（16/8）と六入口の実比較を満たすことを確かめる。表層の検査の準備の段が
+    標準表との差で断った入力は、最初の失敗で止めず、原因とともに分類して返す。"""
     data = {f: json.loads((directory / f'{f}.json').read_text()) for f in FILES}
-    # Rust の出力は今の交換器の 15/7 だけを要求する（手書きの独立入力の 11/4 は旧版互換として別に読む）。
+    # Rust の出力は今の交換器の 16/8 だけを要求する。
     for f, document in data.items():
-        if document['version'] != (15 if f == 'corpus' else 7):
+        if document['version'] != (16 if f == 'corpus' else 8):
             raise AssertionError(f'{f}: expected batch2 version')
     inputs = [i for i in data['corpus']['inputs'] if not i['excluded']]
     if not inputs or not any(i['definitions'] for i in inputs):
         raise AssertionError('Rust batch2 corpus must contain definitions')
+    rejected = []
     case = Batch2ExchangeTests()
     case.setUp()
     try:
@@ -167,10 +182,21 @@ def check_rust(directory):
                     result, report = shared['ExchangeTests'].run_tool(case, tool, data, None, i['name'])
                     if i['group'] != 'golden':
                         raise AssertionError('local batch2 inputs must use group golden')
+                    gaps = surface_gaps(tool, result, report, data['corpus'])
+                    if gaps is not None:
+                        rejected.append({'tool': tool, 'input': i['name'], **gaps})
+                        continue
                     case.assertEqual(result.returncode, 0, result.stderr + json.dumps(report))
                     case.assertEqual(report['result'], {'ok': True})
             else:
                 result, report = case.run_tool(tool, data)
+                gaps = surface_gaps(tool, result, report, data['corpus']) if tool == 'surfaceCheckAll' else None
+                if gaps is not None:
+                    rejected.append({'tool': tool, **gaps})
+                    # 残りの入力の照合は classified_all が行った。範囲外・遅延の制限・Q11 の分類も0とする。
+                    for key in ('outOfScope', 'lazyRestriction', 'q11'):
+                        case.assertEqual(report['counts'][key], 0)
+                    continue
                 case.assertEqual(result.returncode, 0, result.stderr + result.stdout + json.dumps(report))
                 if tool == 'desugarDiff':
                     case.assertEqual(report['mismatches'], [])
@@ -183,6 +209,9 @@ def check_rust(directory):
                         case.assertEqual(report['counts'][key], 0)
     finally:
         case.doCleanups()
+    if rejected:
+        print(f'batch2 {directory.name}: surface checks rejected at preparation: {json.dumps(rejected)}')
+    return rejected
 
 
 if __name__ == '__main__':

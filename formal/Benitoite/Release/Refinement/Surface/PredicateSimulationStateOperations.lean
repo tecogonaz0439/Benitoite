@@ -16,7 +16,7 @@ theorem enabled_reference_names {config : Check.BuiltinSource}
     config.builtins.refGet = "Reference.get" ∧ config.builtins.refSet = "Reference.set" := by
   induction config with
   | custom _ | unrestrictedRanges _ => cases active
-  | standard _ | predicates _ _ => exact ⟨rfl,rfl⟩
+  | standard _ _ built | predicates _ _ _ built => subst built; exact ⟨rfl,rfl⟩
   | resolved base entries ih => exact ih (CheckPreparation.enabled_resolved_base active)
 
 theorem enabled_references_avoid {config : Check.BuiltinSource} {keys : List PrimName}

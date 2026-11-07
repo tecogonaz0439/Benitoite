@@ -3,7 +3,10 @@ import Benitoite.Exchange.CheckInput
 /-! 末尾の照合の結果型を検査と同じ位置で補正し、分類に使う構文を保存する。
 設計書 01-12「型の情報を付けた表層の構文と型付け」に対応する。 -/
 namespace SurfaceCheck
-open Benitoite.Release Benitoite.Surface Benitoite.Surface.Check Benitoite.Surface.CheckTools
+open Benitoite.Release.Refinement Benitoite.Release.Refinement.Surface Benitoite.Release.Refinement.Surface.Check
+
+/-- 有限の原子の一覧で正規化した型の一致。 -/
+def tyEq (q : Input) (a b : Ty) : Bool := CheckCompare.normTyEq q.formation.atoms a b
 structure Node where
   path : List Nat
   expr : Expr
@@ -62,11 +65,11 @@ mutual
     | .matchE t a arms =>
       if p == .tail then modify fun s => { s with tailMatches := s.tailMatches + 1 }
       let mut t' := t
-      if p == .tail && armsExits arms then
+      if p == .tail && decide arms.Exits then
         if let some r := R then
-          if !tyEq q.atoms t r then
+          if !tyEq q t r then
             t' := r
-            modify fun s => { s with changes := s.changes.push path, nonUnit := s.nonUnit + if tyEq q.atoms t (.base .unit) then 0 else 1 }
+            modify fun s => { s with changes := s.changes.push path, nonUnit := s.nonUnit + if tyEq q t (.base .unit) then 0 else 1 }
       return .matchE t' (← walkExpr q R .other (child path 0) none a) (← walkArms q R p (child path 1) t' arms)
     | .returnE t a =>
       return .returnE t (← walkExpr q R p (child path 0) R a)
@@ -123,7 +126,7 @@ mutual
     | .nil => pure .nil
     | .cons o n nt body rest ndicts => do
       if let .prim name := o then modify fun s => { s with prims := name :: s.prims }
-      return .cons o n nt (← walkBlock q (R.map (shiftTy q.atoms nt 0)) .other (child path 0) none body) (← walkClauses q R (child path 1) rest) ndicts
+      return .cons o n nt (← walkBlock q (R.map (CheckDeclarations.shiftType q nt)) .other (child path 0) none body) (← walkClauses q R (child path 1) rest) ndicts
 end
 
 -- 分類に使う全ノードの列を独立に期待する。説明を落とす場合と、説明に外側の

@@ -13,7 +13,7 @@ open Check (BuiltinSource)
 /-- 任意の表では範囲閉の型引数を確認し、標準行と判定の内部行の構成データを持つ表では、その定義から示した保存を用いる。 -/
 def typeArguments (q : CheckFormation.Input) (source : BuiltinSource) (ts : List Ty) : Bool :=
   match source with
-  | .standard _ | .predicates _ _ => true
+  | .standard .. | .predicates .. => true
   | .resolved base _ => typeArguments q base ts
   | .custom _ | .unrestrictedRanges _ => ts.all (OpenRangeFormationCheck.ty q.atoms 0)
 
@@ -35,8 +35,9 @@ theorem satAll_sound {q : CheckFormation.Input} {source : BuiltinSource} {sat C 
   obtain ⟨ha, hc⟩ := Bool.and_eq_true_iff.mp h
   have ht' := CheckArguments.satAll_sound hs ht ha
   cases source with
-  | standard P => exact RangeStandard.satisfies_of_check ht'
-  | predicates data entries =>
+  | standard P B built => subst built; exact RangeStandard.satisfies_of_check ht'
+  | predicates data entries B built =>
+    subst built
     exact PredicateRangeLeaves.satisfies_of_check
       ((PredicateProjection.Table.sat_eq data entries).trans (StandardModel.DataTable.sat_eq data)) ht'
   | resolved base entries =>
@@ -50,8 +51,9 @@ theorem primitive_leaf {q : CheckFormation.Input} {source : BuiltinSource} {b s 
     (ht : Ty.SupportList (· ∈ q.atoms) ts) (hc : typeArguments q source ts = true) :
     OpenSurface.Primitive q.rangeKinds C nv s Q ts es := by
   cases source with
-  | standard P => exact RangeStandard.primitive_of_check hs h
-  | predicates data entries =>
+  | standard P B built => subst built; exact RangeStandard.primitive_of_check hs h
+  | predicates data entries B built =>
+    subst built
     rcases PredicateProjection.Table.lookup_cases data hs with ⟨row, _, rfl⟩ | ⟨row, _, rfl⟩
     · exact PredicateRangeLeaves.primitive_standard
         (S := Benitoite.Release.dataSummaries (data.declarations.map StandardKeyTyping.DataDecl.summaryInput)) h
@@ -73,8 +75,9 @@ theorem admissible_leaf {q : CheckFormation.Input} {source : BuiltinSource} {C n
     (ht : Ty.SupportList (· ∈ q.atoms) ts) (hc : typeArguments q source ts = true) :
     OpenSurface.Admits source.builtins q.rangeKinds C nv ps ne Qs Q ts es e := by
   cases source with
-  | standard P => exact RangeStandard.admits_of_check h
-  | predicates data entries =>
+  | standard P B built => subst built; exact RangeStandard.admits_of_check h
+  | predicates data entries B built =>
+    subst built
     exact PredicateRangeLeaves.admits_of_check
       ((PredicateProjection.Table.sat_eq data entries).trans (StandardModel.DataTable.sat_eq data)) h
   | resolved base entries =>
@@ -146,7 +149,7 @@ theorem standardRanges_sound {b xs} (h : standardRanges b xs = true) : RangeStan
 def ranges (source : BuiltinSource) (admits : RangeAdmitsDec) (b : PrimName) (s : PrimSig)
     (xs : List RangeIx) : Bool :=
   match source with
-  | .standard _ | .predicates _ _ => standardRanges b xs
+  | .standard .. | .predicates .. => standardRanges b xs
   | .resolved base _ => ranges base admits b s xs
   | .unrestrictedRanges _ => true
   | .custom _ => match closedRanges xs with
@@ -158,8 +161,9 @@ theorem ranges_sound {q : CheckFormation.Input} {source : BuiltinSource} {admits
     (hx : RangeArguments q.rangeKinds xs s.rkinds) (h : ranges source admits b s xs = true) :
     OpenSurface.RangesAdmit source.builtins q.rangeKinds b s xs := by
   cases source with
-  | standard P => exact RangeStandard.ranges_of_check hx (standardRanges_sound h)
-  | @predicates P data entries =>
+  | standard P B built => subst built; exact RangeStandard.ranges_of_check hx (standardRanges_sound h)
+  | @predicates P data entries B built =>
+    subst built
     exact RangeStandard.ranges_of_check (P := P) hx (standardRanges_sound h)
   | resolved base entries => exact ranges_sound (source := base) hs hx h
   | unrestrictedRanges B =>

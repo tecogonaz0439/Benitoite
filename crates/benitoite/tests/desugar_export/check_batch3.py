@@ -52,7 +52,7 @@ def check_builder_sources(data):
         actual = next(d["scope"]["inScope"] for d in inputs["builders"]["definitions"]
                       if d["name"].startswith(actual_name + " ("))
         actual = renamed(copy.deepcopy(actual))
-        expected = SHARED["explicit_top_ranges"](next(d["scope"]["inScope"] for d in independent["inputs"][0]["definitions"]
+        expected = copy.deepcopy(next(d["scope"]["inScope"] for d in independent["inputs"][0]["definitions"]
                                       if d["name"].endswith(f"(fn:{expected_id})")))
         # 所属とviewは実際のロード結果。独立入力の架空の所属とは比較しない。
         for key in ("package", "coverageView"):
@@ -94,7 +94,7 @@ def check(directory, report_path):
     data, expected = BATCH3["rust_inputs"](directory)
     check_builder_sources(data)
     for name, doc in data.items():
-        require(doc["version"] == (15 if name == "corpus" else 7), f"{name}: exchange version")
+        require(doc["version"] == (16 if name == "corpus" else 8), f"{name}: exchange version")
     inputs = data["corpus"]["inputs"]
     require(inputs, "empty Rust corpus")
     names = [item["name"] for item in inputs]

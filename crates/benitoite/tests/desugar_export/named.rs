@@ -1,4 +1,4 @@
-//! 新交換形式の独立入力（設計書 07-04「証明する性質」）。
+//! 新交換形式の独立入力（設計書 07-04「道具と置き場所」）。
 use super::*;
 use benitoite::syntax::ast::{Expr, Item, Stmt};
 use benitoite::typeck::CallPlan;
@@ -29,13 +29,22 @@ pub(super) fn write_tables(output: &Path, stem: &str, p: &pipeline::CheckedProgr
     let table = exchange::named_builtin_tables(p, input, &exchange::complete_stdlib());
     fs::write(
         output.join(format!("{stem}-builtins.json")),
-        exchange::to_vec(&json!({"version":7,"inputs":[table]})).unwrap(),
+        exchange::to_vec(
+            exchange::Document::Table,
+            &json!({"version":8,"inputs":[table]}),
+        )
+        .unwrap(),
     )
     .unwrap();
-    let stdlib = json!({"version":7,"inputs":[{"group":input["group"],"name":input["name"],"functions":[],"impls":[]}]});
+    // 入力が参照する標準ライブラリの関数（標準の record の取得関数を含む）の宣言を、本体なしで書く。
+    // 入力は型クラスと実装の表を持たないので、信頼する実装は書かない。
+    let core = pipeline::desugar_checked(p).unwrap();
+    let declarations = exchange::named_stdlib_declarations(p, &core, input);
+    let stdlib = json!({"version":8,"inputs":[{"group":input["group"],"name":input["name"],
+        "functions":declarations["functions"],"impls":[]}]});
     fs::write(
         output.join(format!("{stem}-stdlib.json")),
-        exchange::to_vec(&stdlib).unwrap(),
+        exchange::to_vec(exchange::Document::Stdlib, &stdlib).unwrap(),
     )
     .unwrap();
 }
@@ -57,13 +66,17 @@ fn write_named(
     }
     fs::write(
         output.join(format!("{stem}-corpus.json")),
-        exchange::to_vec(&json!({"version":15,"operators":exchange::operators(),"inputs":inputs,"annotations":export_annotations(&inputs)}))
+        exchange::to_vec(exchange::Document::Corpus, &json!({"version":16,"operators":exchange::operators(),"inputs":inputs,"annotations":export_annotations(&inputs)}))
             .unwrap(),
     )
     .unwrap();
     fs::write(
         output.join(format!("{stem}-builtins.json")),
-        exchange::to_vec(&json!({"version":7,"inputs":tables})).unwrap(),
+        exchange::to_vec(
+            exchange::Document::Table,
+            &json!({"version":8,"inputs":tables}),
+        )
+        .unwrap(),
     )
     .unwrap();
     let stdlib = inputs
@@ -72,12 +85,20 @@ fn write_named(
         .collect::<Vec<_>>();
     fs::write(
         output.join(format!("{stem}-stdlib.json")),
-        exchange::to_vec(&json!({"version":7,"inputs":stdlib})).unwrap(),
+        exchange::to_vec(
+            exchange::Document::Stdlib,
+            &json!({"version":8,"inputs":stdlib}),
+        )
+        .unwrap(),
     )
     .unwrap();
     fs::write(
         output.join(format!("{stem}-coverage.json")),
-        exchange::to_vec(&json!({"version":7,"inputs":coverage})).unwrap(),
+        exchange::to_vec(
+            exchange::Document::Coverage,
+            &json!({"version":8,"inputs":coverage}),
+        )
+        .unwrap(),
     )
     .unwrap();
 }
@@ -422,7 +443,11 @@ impl Export {
         write_named(output, stem, self.inputs, self.tables, self.coverage);
         fs::write(
             output.join(format!("{stem}-stdlib.json")),
-            exchange::to_vec(&json!({"version":7,"inputs":self.declarations})).unwrap(),
+            exchange::to_vec(
+                exchange::Document::Stdlib,
+                &json!({"version":8,"inputs":self.declarations}),
+            )
+            .unwrap(),
         )
         .unwrap();
     }
@@ -431,7 +456,7 @@ impl Export {
 // 全件の振り分けと同じ補助を使い、追加した実行入力を短い検査でも新形式へ出す。
 // 生成した関数が参照する通常の標準宣言も、独立した検査の入力に含める。
 // 実行の自己検査では交換時の宣言・名前・型の欠落を検出できない
-// （設計書 07-04「証明する性質」）。
+// （設計書 07-04「道具と置き場所」）。
 #[test]
 fn export_generated_record_property() {
     let root = Path::new(env!("CARGO_MANIFEST_DIR"))

@@ -1,0 +1,89 @@
+{
+  "recorded": "2026-11-07T05:36:57.290913+09:00",
+  "command": "formal/ で lake env lean -M 12288 -o <module.olean> <module.lean> を一つずつ実行",
+  "note": "局所の検査。既定ビルドと最終の宣言の公理監査・依存照合は取りまとめが別に実行する。",
+  "modules": [
+    {
+      "module": "Benitoite.Release.Refinement.Surface.SourceRename",
+      "bytes": 9747,
+      "sha256": "8a5eccded1303501c3641840e52180e18641b72c87378014c5dc09a03534c662",
+      "exit": 0,
+      "warnings": 0
+    },
+    {
+      "module": "Benitoite.Interval.SurfaceSyntax",
+      "bytes": 30012,
+      "sha256": "49c7dfc358342024c52890b4b7b52fe749fdfa9380a3bcde9b8d95c781eb0bfb",
+      "exit": 0,
+      "warnings": 0
+    },
+    {
+      "module": "Benitoite.Interval.SurfaceCode",
+      "bytes": 1896,
+      "sha256": "1511a74473ddfda813001a0492980b9c8345a6fcd23b35cd14a3e2c648e58d9b",
+      "exit": 0,
+      "warnings": 0
+    },
+    {
+      "module": "Benitoite.Interval.ReportFlow",
+      "bytes": 2479,
+      "sha256": "64e0cec2cf342c26b6babf373329c26f2abf7f8fef7fa724f0729df465acd392",
+      "exit": 0,
+      "warnings": 0
+    },
+    {
+      "module": "Benitoite.Release.Refinement.IntervalReport",
+      "bytes": 8503,
+      "sha256": "b98a74abe1cd6484eada37d0e2a20cdc4a1af4c042ca1bd8bb6521e56a6daf44",
+      "exit": 0,
+      "warnings": 0
+    },
+    {
+      "module": "Benitoite.Release.Refinement.IntervalConnection",
+      "bytes": 46604,
+      "sha256": "5e1f6077ed763a1ffddb6ae7c628793d1340abf7a733881cd10de1d80fea2e7a",
+      "exit": 0,
+      "warnings": 0
+    },
+    {
+      "module": "Benitoite.Release.Refinement.FirstFailure",
+      "bytes": 14705,
+      "sha256": "afb678437b286bfe9809b3d5ef0969c0186a9651cd1f3da67187bed5bebb8148",
+      "exit": 0,
+      "warnings": 0
+    },
+    {
+      "module": "Benitoite.Release.Refinement.IntervalConnectionExamples",
+      "bytes": 29756,
+      "sha256": "4fb134a67f9e5e132b36480a7fc895a0c5c3ad32b08ab2d9e16899cf0e0b4802",
+      "exit": 0,
+      "warnings": 0
+    },
+    {
+      "module": "Benitoite.Interval.Exchange",
+      "bytes": 61924,
+      "sha256": "6e6d0f7ba8ad5e622e64ab30eb759dcfb3675a51e15bfdcb3ca46b650f0481e3",
+      "exit": 0,
+      "warnings": 0
+    },
+    {
+      "module": "Benitoite.Interval.ExchangeExamples",
+      "bytes": 18120,
+      "sha256": "52a89ca047cb18288040f370a5cc0de40bd331b754bce67f8cb2fa4e11797a7c",
+      "exit": 0,
+      "warnings": 0
+    }
+  ],
+  "retained_raw_logs": [
+    {
+      "file": "<tmp>/surface-syntax-local.log",
+      "bytes": 78,
+      "sha256": "d2993bc68ad9a63f711c8f5473155e2ba00fdcd461220cc3849185f2f9ad93e6"
+    },
+    {
+      "file": "<tmp>/interval-examples-local.log",
+      "bytes": 78,
+      "sha256": "d2993bc68ad9a63f711c8f5473155e2ba00fdcd461220cc3849185f2f9ad93e6"
+    }
+  ]
+}

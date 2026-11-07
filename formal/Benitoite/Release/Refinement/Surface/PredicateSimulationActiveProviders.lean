@@ -15,10 +15,12 @@ theorem active_signature_cases {config : Check.BuiltinSource} {name signature}
     (∃ row : PredicateProjection.Row, signature = row.signature ∧ config.builtins.delta name = row.delta) := by
   induction config with
   | custom _ | unrestrictedRanges _ => cases active
-  | standard P =>
+  | standard P B built =>
+    subst built
     obtain ⟨row,_member,rfl,rfl⟩ := (StandardModel.builtins_lookup_iff P name signature).mp found
     exact Or.inl ⟨row,rfl,(StandardModel.Primitive.signatureWith_base row).symm⟩
-  | predicates data entries =>
+  | predicates data entries B built =>
+    subst built
     change (if name ∈ StandardModel.nameLists.composed then
       (StandardModel.primitive name).map (StandardModel.Primitive.signatureWith data.sat)
       else if name ∈ (PredicateProjection.Table.names entries).assumed then
@@ -83,13 +85,15 @@ theorem active_io_response {source rows xs ys config}
       config.builtins.ioResponse name ts es ys out observations := by
   induction config with
   | custom _ | unrestrictedRanges _ => cases active
-  | standard P =>
+  | standard P B built =>
+    subst built
     change (∃ row, StandardModel.primitive name = some row ∧ row.provider.ioResponse name ts es xs out observations) ↔
       (∃ row, StandardModel.primitive name = some row ∧ row.provider.ioResponse name ts es ys out observations)
     constructor <;> rintro ⟨row,selected,response⟩
     · exact ⟨row,selected,(fixed_io_response related row _ _ _ _ _).mp response⟩
     · exact ⟨row,selected,(fixed_io_response related row _ _ _ _ _).mpr response⟩
-  | predicates data entries =>
+  | predicates data entries B built =>
+    subst built
     change ((if name ∈ StandardModel.nameLists.composed then data.base.ioResponse name else fun _ _ _ _ _ => False)
       ts es xs out observations) ↔
       ((if name ∈ StandardModel.nameLists.composed then data.base.ioResponse name else fun _ _ _ _ _ => False)
@@ -109,10 +113,12 @@ theorem active_io_noMint {keys config name ts es values out observations}
     (response : config.builtins.ioResponse name ts es values out observations) : OutcomeAvoid keys out := by
   induction config with
   | custom _ | unrestrictedRanges _ => cases active
-  | standard P =>
+  | standard P B built =>
+    subst built
     obtain ⟨row,_selected,response⟩ := response
     exact fixed_io_noMint response
-  | predicates data entries =>
+  | predicates data entries B built =>
+    subst built
     change ((if name ∈ StandardModel.nameLists.composed then data.base.ioResponse name else fun _ _ _ _ _ => False)
       ts es values out observations) at response
     split at response

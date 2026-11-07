@@ -1,4 +1,4 @@
-"""corpus12/sidecar4 の独立入力を六入口で比較する。Cargo は起動しない。"""
+"""corpus16/sidecar8 の独立入力を六入口で比較する。Cargo は起動しない。"""
 import argparse
 import copy
 import json
@@ -59,49 +59,36 @@ class Batch3ExchangeTests(unittest.TestCase):
                     self.assertEqual(report['counts'], dict(matched=11, mismatched=0, outOfScope=0,
                                      q11=0, lazyRestriction=0, preparationFailure=0))
 
-    def test_corpus12_builders_require_regeneration(self):
+    def test_legacy_builder_fields_are_rejected(self):
         for tool in ('desugarDiff', 'builtinCheck', 'surfaceCheck', 'surfaceCheckAll'):
             result, _ = self.run_tool(tool)
             self.assertEqual(result.returncode, 2, result.stdout)
-            self.assertIn('builder syntax requires exchange version 13; regenerate with version 13', result.stderr)
+            self.assertIn('unsupported exchange field: refs', result.stderr)
 
-    def test_old_versions_reject_nested_builder_information(self):
-        for f in FILES:
-            for version in ([8, 9, 10, 11] if f == 'corpus' else [2, 3, 4]):
-                for field in ('builderBind', 'builderOp', 'refs', 'newRef', 'getRef', 'setRef'):
-                    data = copy.deepcopy(self.data)
-                    data['corpus']['inputs'][0]['definitions'] = []
-                    data[f]['version'] = version
-                    data[f]['deep'] = [{'unknown': {field: None}}]
-                    tool = next(t for t, fs in TOOLS.items() if f in fs)
-                    with self.subTest(file=f, version=version, field=field):
+    def test_old_versions_are_rejected(self):
+        for tool, files in TOOLS.items():
+            for field in files:
+                for version in (range(8, 16) if field == 'corpus' else range(2, 8)):
+                    # 旧の構築器の欄（refs）は版より先に断るので、版だけが誤りの入力で確かめる。
+                    data = copy.deepcopy(builder_free(self.data))
+                    data[field]['version'] = version
+                    with self.subTest(tool=tool, field=field, version=version):
                         result, _ = self.run_tool(tool, data)
                         self.assertEqual(result.returncode, 2, result.stdout)
-                        self.assertIn(f'new exchange version: {field}', result.stderr)
+                        self.assertIn('version', result.stderr)
 
-    def test_corpus11_batch2_and_sidecar_versions(self):
-        self.data = builder_free(self.data)
+    def test_current_batch2_input_and_unknown_versions(self):
         data = {f: json.loads((Path(__file__).with_name('batch2-exchange') / f'{f}.json').read_text()) for f in FILES}
-        for v in (11, 12):
-            data['corpus']['version'] = v
-            for tool in TOOLS:
-                with self.subTest(version=v, tool=tool):
-                    result, report = shared['ExchangeTests'].run_tool(self, tool, data, None, 'independent-batch2')
-                    self.assertEqual(result.returncode, 0, result.stderr + json.dumps(report))
-        for f in ('builtins', 'stdlib'):
-            data = copy.deepcopy(self.data)
-            data[f]['version'] = 3
-            result, _ = self.run_tool('surfaceCheck', data)
-            self.assertEqual(result.returncode, 2, result.stdout)
+        for tool in TOOLS:
+            result, report = shared['ExchangeTests'].run_tool(self, tool, data, None, 'independent-batch2')
+            self.assertEqual(result.returncode, 0, result.stderr + json.dumps(report))
         for f in FILES:
-            # corpus 15・sidecar 7 は受理する版になった（L50.1）。受理しない版の一覧はその次の版を使う。
-            for v in ((0, 1, 5, 6, 7, 16) if f == 'corpus' else (0, 1, 8, 13)):
-                data = copy.deepcopy(self.data)
-                data[f]['version'] = v
-                tool = next(t for t, fs in TOOLS.items() if f in fs)
-                result, _ = self.run_tool(tool, data)
-                self.assertEqual(result.returncode, 2, result.stdout)
-                self.assertIn('version', result.stderr)
+            data = copy.deepcopy(builder_free(self.data))
+            data[f]['version'] = 17 if f == 'corpus' else 9
+            tool = next(t for t, fs in TOOLS.items() if f in fs)
+            result, _ = self.run_tool(tool, data)
+            self.assertEqual(result.returncode, 2, result.stdout)
+            self.assertIn('version', result.stderr)
 
     def test_monad2_wrong_super_and_error_type(self):
         self.data = builder_free(self.data)
@@ -150,8 +137,8 @@ class Batch3ExchangeTests(unittest.TestCase):
                 if mutation == 'none':
                     _, expected = rust_inputs(self.directory, 't3')
                     self.assertEqual(expected['definitions'], 9)
-                    # 旧版は corpus/sidecar の対応を保つ。今の Rust 出力の15/7も同じ件数契約で読む。
-                    for version, sidecar in ((12, 4), (13, 5), (14, 6), (15, 7)):
+                    # 今の Rust 出力の16/8を、corpus/sidecar の対応と同じ件数契約で読む。
+                    for version, sidecar in ((16, 8),):
                         compatible = copy.deepcopy(changed)
                         for f, doc in compatible.items():
                             doc['version'] = version if f == 'corpus' else sidecar
@@ -174,10 +161,10 @@ def rust_inputs(directory, profile=None):
     """五形式と、実ソースごとの固定した期待件数を照合する。"""
     data = {f: json.loads((directory / f'{f}.json').read_text()) for f in FILES}
     version = data['corpus']['version']
-    if version not in (12, 13, 14, 15):
-        raise AssertionError('expected corpus12, corpus13, corpus14 or corpus15')
+    if version != 16:
+        raise AssertionError('expected corpus16')
     for f, doc in data.items():
-        if doc['version'] != (version if f == 'corpus' else ({12: 4, 13: 5, 14: 6, 15: 7}[version])):
+        if doc['version'] != (version if f == 'corpus' else 8):
             raise AssertionError(f'{f}: corpus/sidecar version mismatch')
     inputs = data['corpus']['inputs']
     if not inputs or not any(i['definitions'] for i in inputs):
@@ -217,15 +204,33 @@ def check_rust(directory):
     inputs = data['corpus']['inputs']
     case = Batch3ExchangeTests()
     case.setUp()
+    # 標準表との差で準備の段が断った入力は、原因の名前とともに分類して残す。
+    sources = runpy.run_path(str(Path(__file__).with_name('test_range_sources.py')))
+    gaps = sources['preparation_gaps']
+    rejected = []
     try:
         for tool in TOOLS:
             if tool == 'surfaceCheck':
                 for i in inputs:
                     result, report = shared['ExchangeTests'].run_tool(case, tool, data, None, i['name'])
+                    found = gaps(result.stderr) if result.returncode == 2 else None
+                    if found is not None:
+                        rejected.append({'tool': tool, 'input': i['name'], **found})
+                        continue
                     case.assertEqual(result.returncode, 0, result.stderr + json.dumps(report))
                     case.assertEqual(report['result'], {'ok': True})
                 continue
             result, report = case.run_tool(tool, data)
+            if tool == 'surfaceCheckAll' and result.returncode == 2 and report is not None:
+                # 分類した拒否があっても、残りの入力の照合（不一致0・準備の失敗の件数・末尾の照合の件数）を続ける。
+                found = sources['classified_all'](report, data['corpus'])
+                if found is not None:
+                    rejected.append({'tool': tool, **found})
+                    removed = sum(sources['surface_checks'](i) for i in inputs if i['name'] in found['rejected'])
+                    case.assertEqual(report['counts']['matched'], expected['surfaceChecks'] - removed)
+                    for k in ('outOfScope', 'lazyRestriction', 'q11'):
+                        case.assertEqual(report['counts'][k], 0)
+                    continue
             empty_coverage = tool == 'coverageProgramDiff' and expected['programCoverageCases'] == 0
             case.assertEqual(result.returncode, 1 if empty_coverage else 0, result.stderr + result.stdout + json.dumps(report))
             if tool == 'desugarDiff':
@@ -249,6 +254,7 @@ def check_rust(directory):
                     case.assertEqual(report['counts'][k], 0)
     finally:
         case.doCleanups()
+    print(json.dumps({'preparationRejected': rejected}, ensure_ascii=False))
 
 
 if __name__ == '__main__':

@@ -1,7 +1,7 @@
 import Benitoite.Exchange.Version
 
 /-!
-# 交換の観測・拒否の理由・範囲の入力の検査の小例（L50.2）
+# 交換の観測・拒否の理由・必須の判定の入力・範囲の入力の検査の小例
 
 `Exchange/Observe.lean` の読み書きと判定、`Version.lean` の範囲の入力の検査（`validateRangeInput`）を、小さな入力で
 確かめる（設計書 07-04「交換の形式の版」）。具体の確かめは `#guard`（コンパイルした判定の評価）で行う。
@@ -9,7 +9,7 @@ import Benitoite.Exchange.Version
 
 namespace Benitoite.Exchange.ObserveExamples
 open Lean Benitoite.Exchange Benitoite.Scope.Domain Benitoite.Scope.Signature
-open Benitoite.Surface.ScopeAccept (CoverFailure)
+open Benitoite.Release.Refinement.Surface.ScopeAccept (CoverFailure)
 
 def dataA : Target := .path ["data", "a.txt"]
 def apiHost : HostTarget := .name ["api", "example", "com"]
@@ -77,7 +77,7 @@ def invertedEp : Range := .endpoint ⟨.name (.exact ["api", "example", "com"]),
 #guard (checkAdmitsRuleInput 2 (.covers 0 1)).isOk
 
 private def corpusWith (atom : Json) (scope : Json) : Json :=
-  Json.mkObj [("version", toJson 15), ("inputs", Json.arr #[Json.mkObj [("eff", Json.arr #[atom]),
+  Json.mkObj [("version", toJson 16), ("operators", Json.arr #[]), ("inputs", Json.arr #[Json.mkObj [("eff", Json.arr #[atom]),
     ("scopeAcceptance", scope)]])]
 
 private def scopeOf (r : Range) : Json :=
@@ -85,17 +85,13 @@ private def scopeOf (r : Range) : Json :=
     ("hosts", Json.arr #[]), ("limits", encodeLimits ⟨⟨1, 1⟩, ⟨1, 1⟩⟩)]
 
 -- 新版の corpus は、全ての範囲の位置と必須の判定の入力の範囲を検査し、必須の判定の入力を必須とする。
-#guard (exchangeJson "corpus" (corpusWith (toJson (Atom.name "File.Write" (.fixed dataTree))) (scopeOf dataTree))).isOk
-#guard !(exchangeJson "corpus" (corpusWith (toJson (Atom.name "File.Write" (.fixed hostBits))) (scopeOf dataTree))).isOk
-#guard !(exchangeJson "corpus" (corpusWith (toJson (Atom.name "File.Write" (.fixed dataTree))) (scopeOf lan32))).isOk
-#guard !(exchangeJson "corpus" (corpusWith (toJson (Atom.name "File.Write" (.fixed dataTree))) Json.null)).isOk
-#guard !(exchangeJson "corpus" (corpusWith (toJson (Atom.name "Http.Connect" (.fixed invertedEp))) (scopeOf dataTree))).isOk
--- 旧版の corpus は必須の判定の入力を置かせず、null（規則のない受理の入力）で読む。
-#guard match exchangeJson "corpus" (Json.mkObj [("version", toJson 14), ("inputs", Json.arr #[Json.mkObj []])]) with
-  | .ok j => ((j.getObjVal? "inputs").bind (·.getArrVal? 0) |>.bind (·.getObjVal? "scopeAcceptance")).toOption ==
-      some Json.null
-  | .error _ => false
-#guard !(exchangeJson "corpus" (Json.mkObj [("version", toJson 14),
+#guard (exchangeJson "corpus" (corpusWith (toJson (Atom.name "File.Write" (.fixed (.absolute dataTree)))) (scopeOf dataTree))).isOk
+#guard !(exchangeJson "corpus" (corpusWith (toJson (Atom.name "File.Write" (.fixed (.absolute hostBits)))) (scopeOf dataTree))).isOk
+#guard !(exchangeJson "corpus" (corpusWith (toJson (Atom.name "File.Write" (.fixed (.absolute dataTree)))) (scopeOf lan32))).isOk
+#guard !(exchangeJson "corpus" (corpusWith (toJson (Atom.name "File.Write" (.fixed (.absolute dataTree)))) Json.null)).isOk
+#guard !(exchangeJson "corpus" (corpusWith (toJson (Atom.name "Http.Connect" (.fixed (.absolute invertedEp)))) (scopeOf dataTree))).isOk
+-- 旧版の corpus は版の誤りで断る。
+#guard !(exchangeJson "corpus" (Json.mkObj [("version", toJson 15), ("operators", Json.arr #[]),
   ("inputs", Json.arr #[Json.mkObj [("scopeAcceptance", scopeOf dataTree)]])])).isOk
 
 -- 必須の判定の入力の欄の余り・重複した綴りは拒否する。
@@ -105,5 +101,49 @@ private def scopeOf (r : Range) : Json :=
     Json.mkObj [("text", .str "/a"), ("range", encodeRange dataTree)],
     Json.mkObj [("text", .str "/a"), ("range", encodeRange dataTree)]]), ("hosts", Json.arr #[]),
   ("limits", encodeLimits ⟨⟨1, 1⟩, ⟨1, 1⟩⟩)]) : Except String ScopeAcceptanceEntry).isOk
+
+/-! ## 必須の判定の受理の入力 -/
+
+section Acceptance
+open Benitoite.Release.Refinement.Surface
+open Benitoite.Release.Refinement.Surface.CheckAccept (acceptFn)
+
+/-- 処理系の解析器の表が、実行時の検査と同じ解析と一致する入力。 -/
+def agreeingEntry : ScopeAcceptanceEntry := ⟨[⟨"/data/**", dataTree⟩], [], ⟨⟨100, 100⟩, ⟨100, 100⟩⟩⟩
+/-- 処理系の解析器の表が、実行時の検査と同じ解析と一致しない入力。 -/
+def disagreeingEntry : ScopeAcceptanceEntry :=
+  ⟨[⟨"/data/**", .path (.tree ["other"])⟩], [], ⟨⟨100, 100⟩, ⟨100, 100⟩⟩⟩
+
+/-- `Scope.checkPathIn("/data/**", "/data/a.txt")` を一度呼ぶ本体。contract は結果の型の範囲である。 -/
+def checkBody (contract : Range) : Benitoite.Release.Refinement.Surface.Block :=
+  .last (.call (.primName "Scope.checkPathIn" [] [] [.fixed (.absolute contract)]) [none, none] [0, 1]
+    (.cons (.literal (.string "/data/**")) (.cons (.literal (.string "/data/a.txt")) .nil)))
+
+def acceptCheck (e : Option ScopeAcceptanceEntry) (contract : Range) : Bool :=
+  (acceptFn (ScopeAcceptanceEntry.acceptInput e) "main" 0 (checkBody contract)).toBool
+
+-- 表と解析が一致すれば、リテラルのパターンの範囲を覆う契約を受理し、狭い契約を拒否する。
+#guard acceptCheck (some agreeingEntry) dataTree
+#guard acceptCheck (some agreeingEntry) .top
+#guard !acceptCheck (some agreeingEntry) (.path (.exact ["data", "a.txt"]))
+-- 表と解析が一致しない項目は未知（Top）として読み、Top の契約だけを受理する。
+#guard !acceptCheck (some disagreeingEntry) dataTree
+#guard !acceptCheck (some disagreeingEntry) (.path (.tree ["other"]))
+#guard acceptCheck (some disagreeingEntry) .top
+-- 必須の判定の入力を持たない入力は規則がなく、契約を確かめない。
+#guard acceptCheck none (.path (.exact ["data", "a.txt"]))
+
+/-- 交換の入力から作る規則の表の健全性の適用例。 -/
+example : ∃ R : ScopeState.Rules,
+    R.Sound (ScopeState.models "Result.Ok" agreeingEntry.pattern) ∧
+      (ScopeAcceptanceEntry.acceptInput (some agreeingEntry)).rules = R.lookup :=
+  ScopeAcceptanceEntry.acceptInput_sound agreeingEntry
+
+/-- 上の本体の受理が引く表は健全である。 -/
+example : Benitoite.Scope.Inference.TableSound (ScopeState.models "Result.Ok" agreeingEntry.pattern)
+    (CheckAccept.tableFor (ScopeAcceptanceEntry.acceptInput (some agreeingEntry)) ⟨"main", 0⟩ (checkBody dataTree)) :=
+  ScopeAcceptanceEntry.acceptInput_tableSound agreeingEntry _ _
+
+end Acceptance
 
 end Benitoite.Exchange.ObserveExamples

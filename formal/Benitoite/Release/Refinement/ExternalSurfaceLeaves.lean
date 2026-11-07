@@ -1,7 +1,7 @@
 import Benitoite.Release.Refinement.BuiltinTypingTransport
 import Benitoite.Release.Refinement.ExternalNominal
 import Benitoite.Release.Refinement.TelApplication
-import Benitoite.Surface.Lemmas.Calls
+import Benitoite.Release.Refinement.Surface.FieldPlacement
 
 /-! # 外部宣言を読む表層・脱糖の型付き入力 -/
 namespace Benitoite.Release.Refinement.ExternalSurface
@@ -181,12 +181,12 @@ theorem ref_arguments {P B Ψ Q C Γ Φ f ts T u ws a e}
 private theorem placement {d : ExternalSignature} {vs : List Val} {positions : List Nat} (fallback : Val)
     (order : positions.Perm (List.range d.parameters.arity)) (count : vs.length = positions.length) :
     (∀ k (hk : k < positions.length),
-      (Benitoite.Surface.recordFields d.parameters.arity positions vs fallback)[positions[k]]? =
+      (Benitoite.Release.Refinement.Surface.recordFields d.parameters.arity positions vs fallback)[positions[k]]? =
         some (vs[k]'(by omega))) ∧
     (∀ i, i < d.parameters.arity → ∃ k, ∃ hk : k < positions.length, positions[k] = i) ∧
-    (Benitoite.Surface.recordFields d.parameters.arity positions vs fallback).length = d.parameters.arity := by
-  refine ⟨fun k hk => Benitoite.Surface.recordFields_getElem fallback order count hk,?_,by
-    simp [Benitoite.Surface.recordFields]⟩
+    (Benitoite.Release.Refinement.Surface.recordFields d.parameters.arity positions vs fallback).length = d.parameters.arity := by
+  refine ⟨fun k hk => Benitoite.Release.Refinement.Surface.recordFields_getElem fallback order count hk,?_,by
+    simp [Benitoite.Release.Refinement.Surface.recordFields]⟩
   intro i hi
   obtain ⟨k,hk,equal⟩ := List.getElem_of_mem (order.mem_iff.mpr (List.mem_range.mpr hi))
   exact ⟨k,hk,equal⟩
@@ -202,16 +202,16 @@ theorem named_call {P B Ψ Q C Γ Φ R Δ f d ts vs positions labels a e} (fallb
     (count : vs.length = positions.length)
     (named : labels = positions.map fun i => d.parameters.names[i]?)
     (args : HasTypeTelArgsQ P B Ψ Q C Γ Φ
-      (Benitoite.Surface.recordFields d.parameters.arity positions vs fallback)
+      (Benitoite.Release.Refinement.Surface.recordFields d.parameters.arity positions vs fallback)
       (Tel.bind (typeEnv ts) d.parameters) a e) :
     (∀ k (hk : k < positions.length),
-      (Benitoite.Surface.recordFields d.parameters.arity positions vs fallback)[positions[k]]? =
+      (Benitoite.Release.Refinement.Surface.recordFields d.parameters.arity positions vs fallback)[positions[k]]? =
         some (vs[k]'(by omega)) ∧
       labels[k]? = some ((Tel.bind (typeEnv ts) d.parameters).names[positions[k]]?)) ∧
     (∀ i, i < d.parameters.arity → ∃ k, ∃ hk : k < positions.length, positions[k] = i) ∧
     e = callEffect d ∧
     HasTypeCQ P B Ψ Q C Γ Φ R
-      (.externalCall f ts (Benitoite.Surface.recordFields d.parameters.arity positions vs fallback)) a e Δ := by
+      (.externalCall f ts (Benitoite.Release.Refinement.Surface.recordFields d.parameters.arity positions vs fallback)) a e Δ := by
   obtain ⟨placed,filled,_⟩ := placement fallback order count
   obtain ⟨_,_,effect,typed⟩ := call_of_lookup (R := R) (Δ := Δ) wf lookup admissible args
   refine ⟨fun k hk => ⟨placed k hk,?_⟩,filled,effect,typed⟩
@@ -227,14 +227,14 @@ theorem partial_call {P B Ψ Q C Γ Φ R Δ f d ts vs positions a e} (fallback :
     (order : positions.Perm (List.range d.parameters.arity))
     (count : vs.length = positions.length)
     (args : HasTypeTelArgsQ P B Ψ Q C Γ Φ
-      (Benitoite.Surface.recordFields d.parameters.arity positions vs fallback)
+      (Benitoite.Release.Refinement.Surface.recordFields d.parameters.arity positions vs fallback)
       (Tel.bind (typeEnv ts) d.parameters) a e) :
     (∀ k (hk : k < positions.length),
-      (Benitoite.Surface.recordFields d.parameters.arity positions vs fallback)[positions[k]]? =
+      (Benitoite.Release.Refinement.Surface.recordFields d.parameters.arity positions vs fallback)[positions[k]]? =
         some (vs[k]'(by omega))) ∧
     e = callEffect d ∧
     HasTypeCQ P B Ψ Q C Γ Φ R
-      (.app (.externalRef f ts) (Benitoite.Surface.recordFields d.parameters.arity positions vs fallback)) a e Δ := by
+      (.app (.externalRef f ts) (Benitoite.Release.Refinement.Surface.recordFields d.parameters.arity positions vs fallback)) a e Δ := by
   obtain ⟨placed,_,_⟩ := placement fallback order count
   obtain ⟨_,_,effect,_⟩ := call_of_lookup (R := R) (Δ := Δ) wf lookup admissible args
   exact ⟨placed,effect,apply_typed lookup (wf.function_lookup lookup) admissible inst args⟩

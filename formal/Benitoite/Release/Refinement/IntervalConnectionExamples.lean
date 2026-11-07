@@ -38,11 +38,15 @@ theorem binding_and_return (P : Program) (B : Builtins) (σ : PathEnv) :
     have hl : Runs P B σ failures (.mk (Capture.empty.extend v) (.ret (.var 0)))
         (.letF (.mk (Capture.empty.extend v) (.escape (.var 0))) :: [.mark]) μ' (.normal .unit) := atom rfl hv
     have hc := connect_return (op := op) (resultType := Benitoite.Release.Ty.base .unit)
-      (key := Benitoite.Interval.advanceKey key 1) (source := .local 0) henv' (by rfl)
+      (key := Benitoite.Interval.advanceKey key 1) (source := .local 0) henv' (by simp only [ExprCode, Benitoite.Interval.SurfaceCode.expr, Benitoite.Interval.SurfaceSyntax.liftExpr, Benitoite.Interval.SurfaceSyntax.liftPosition, Surface.desugarExpr] <;> rfl)
       (EvalPartial.local _ _ 0 .unit rfl) hl
     exact hc.2.2.2
   have result := connect_bind (op := op) (position := .other) (kind := Benitoite.Surface.BindKind.bind)
-    (k := [.mark]) henv (by rfl) (show BlockCode op .other (.last (.returnE (.base .unit) (.local 0))) body from rfl)
+    (k := [.mark]) henv (by simp only [ExprCode, Benitoite.Interval.SurfaceCode.expr, Benitoite.Interval.SurfaceSyntax.liftExpr, Benitoite.Interval.SurfaceSyntax.liftPosition, Surface.desugarExpr] <;> rfl) (show BlockCode op .other (.last (.returnE (.base .unit) (.local 0))) body from by
+          simp only [BlockCode, Benitoite.Interval.SurfaceCode.block,
+            Benitoite.Interval.SurfaceSyntax.liftExpr, Benitoite.Interval.SurfaceSyntax.liftBlock,
+            Benitoite.Interval.SurfaceSyntax.liftPosition, Surface.desugarExpr,
+            Surface.desugarBlock, body] <;> rfl)
     heval teval head tail
   exact ⟨result.1,result.2.1,result.2.2,result.2.2.returned_mark⟩
 
@@ -83,7 +87,11 @@ theorem integer_arm (P : Program) (B : Builtins) (σ : PathEnv) :
     ⟨[],alternative,[],[.integer integer],[integerCore],rfl,(by simp),rfl,rfl,rfl,rfl⟩
   have ev : EvalBlock {env with locals := [some (.integer integer)]} key (.last (.local 0)) (.base .integer)
       (.normal (.integer integer)) [] := .last _ _ _ _ _ _ (.local _ _ 0 (.integer integer) rfl)
-  exact connect_integer_arm (env := env) (cap := Capture.empty) (ξ := id) (op := op) (position := .other) (EnvRel.at (.nil : EnvRel env Capture.empty)) (.cons integerRel .nil) sel ev integerRel rfl rfl rfl (atom rfl integerRel)
+  exact connect_integer_arm (env := env) (cap := Capture.empty) (ξ := id) (op := op) (position := .other) (EnvRel.at (.nil : EnvRel env Capture.empty)) (.cons integerRel .nil) sel ev integerRel (by
+          simp only [Benitoite.Interval.SurfaceCode.block, Benitoite.Interval.SurfaceSyntax.liftExpr,
+            Benitoite.Interval.SurfaceSyntax.liftBlock,
+            Benitoite.Interval.SurfaceSyntax.liftPosition, Surface.desugarExpr,
+            Surface.desugarBlock, Comp.rename, Val.rename, upRen] <;> rfl) rfl rfl (atom rfl integerRel)
 
 /-- 幅付き整数も同じ slots と変数番号で束縛する。 -/
 theorem width_arm (P : Program) (B : Builtins) (σ : PathEnv) (kind : Benitoite.Interval.IntKind)
@@ -104,7 +112,11 @@ theorem width_arm (P : Program) (B : Builtins) (σ : PathEnv) (kind : Benitoite.
       (EvalBlock.last _ _ _ _ _ _ (EvalPartial.local _ _ 0 (.ofInteger kind n) rfl))
   have hr : ValueRel (.ofInteger kind n) (.const (embedConst (Benitoite.Interval.IntegerValue.toConst kind n))) :=
     .integer kind n
-  exact connect_width_arm (env := env) (cap := Capture.empty) (ξ := id) (op := op) (position := .other) (EnvRel.at (.nil : EnvRel env Capture.empty)) (.cons hr .nil) sel ev hr rfl rfl rfl (atom rfl hr)
+  exact connect_width_arm (env := env) (cap := Capture.empty) (ξ := id) (op := op) (position := .other) (EnvRel.at (.nil : EnvRel env Capture.empty)) (.cons hr .nil) sel ev hr (by
+          simp only [Benitoite.Interval.SurfaceCode.block, Benitoite.Interval.SurfaceSyntax.liftExpr,
+            Benitoite.Interval.SurfaceSyntax.liftBlock,
+            Benitoite.Interval.SurfaceSyntax.liftPosition, Surface.desugarExpr,
+            Surface.desugarBlock, Comp.rename, Val.rename, upRen] <;> rfl) rfl rfl (atom rfl hr)
 
 private def names : Benitoite.Interval.RangeNames := ⟨"Range","Range.Checked","Result","RangeError","Result.Ok","Result.Error","InvalidBounds","OutOfRange"⟩
 private def result : ConcreteValue := .con names.result [.base .unit,.data names.error []] names.ok [.unit]
@@ -127,7 +139,10 @@ theorem result_arm (P : Program) (B : Builtins) (σ : PathEnv) :
     simpa [firstAlt,matchVal,selectSlots,Benitoite.Surface.Alternative.toCoreList,
       Benitoite.Surface.Alternative.toCore,alternative,Benitoite.Surface.Pattern.toCore] using hm.symm
   subst ws
-  exact ⟨.ret (.const .unit),rfl,rfl,atom rfl unitRel⟩
+  refine ⟨.ret (.const .unit),?_,rfl,atom rfl unitRel⟩
+  simp only [Benitoite.Interval.SurfaceCode.block, Benitoite.Interval.SurfaceSyntax.liftBlock,
+    Benitoite.Interval.SurfaceSyntax.liftExpr, Benitoite.Interval.SurfaceSyntax.liftPosition,
+    Surface.desugarBlock, Surface.desugarExpr, Comp.rename, Val.rename] <;> rfl
 
 /-- Ok/Error の逆の tag と Unit/構造値は関係せず、同じ Ok の腕だけが成功する。 -/
 theorem result_tag_contrast :
@@ -311,16 +326,17 @@ theorem skipped_arm (P : Program) (B : Builtins) (σ : PathEnv) :
   exact (runs_match_body (env := env) (cap := Capture.empty) (.nil : EnvRel env Capture.empty)
     (.nil : ValuesRel [] []) rfl rfl (atom rfl unitRel)).2
 
-/-- 脱糖の腕が追加する照合値の位置と、元の変数の順を取り違えない。 -/
+/-- 脱糖の腕は、パターンの束縛を保護して元の変数の前へ照合対象を挿入する。 -/
 theorem arm_code_and_environment :
-    let arms := embedArms (Benitoite.Surface.desugarArms op .other (.cons [alternative] none (.last (.local 0)) .nil))
-    arms = [.mk alts none (embedComp ((Benitoite.Surface.desugarBlock op .other (.last (.local 0))).rename
-      (Benitoite.Release.upRen 1 (·+1))))] ∧
+    let arms := Benitoite.Interval.SurfaceCode.arms op .other
+      (.cons [alternative] none (.last (.local 0)) .nil)
+    arms = [.mk alts none (.ret (.var 0))] ∧
     (env.locals.length = Capture.empty.values.length) := by
-  dsimp only
-  have hc : ArmsCode op .other (.cons [alternative] none (.last (.local 0)) .nil)
-      (embedArms (Benitoite.Surface.desugarArms op .other (.cons [alternative] none (.last (.local 0)) .nil))) := rfl
-  exact ⟨arms_code_cons hc,EnvRel.length (.nil : EnvRel env Capture.empty)⟩
+  refine ⟨?_,EnvRel.length (.nil : EnvRel env Capture.empty)⟩
+  simp only [Benitoite.Interval.SurfaceCode.arms, Benitoite.Interval.SurfaceSyntax.liftArms,
+    Benitoite.Interval.SurfaceSyntax.liftMaybe, Benitoite.Interval.SurfaceSyntax.liftBlock,
+    Benitoite.Interval.SurfaceSyntax.liftExpr, Benitoite.Interval.SurfaceSyntax.liftPosition,
+    Surface.SourceRename.block_last, Surface.SourceRename.expr_local] <;> rfl
 
 /-- 腕の変数0と、照合値の追加位置を越える外側の変数1を同時に読む。 -/
 theorem inserted_scrutinee :

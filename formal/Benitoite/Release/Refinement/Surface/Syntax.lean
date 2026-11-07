@@ -215,7 +215,7 @@ mutual
     /-- die の先行構文。成功型と標準の参照を持ち、囲む関数の戻り値を持たない。
     辞書と説明は入力と同じ字句スコープにある。型付けは E_TryResultDie・E_TryOptionDie、
     検査は checkExprR の die の場合で行う。処理系には未接続である
-    （設計書 01-12「die の先行モデル」、07-04「道具と置き場所」）。 -/
+    （設計書 01-12「die のモデル」、07-04「道具と置き場所」）。 -/
     | tryResultDie (successTy : Ty) (ok err : ConName) (dict : DictEv) (showMethod : MethName)
         (exit : PrimName) (e : Expr) (message : Option Expr)
     /-- Option の失敗原因は固定の String であり、Show の辞書を必要としない。 -/

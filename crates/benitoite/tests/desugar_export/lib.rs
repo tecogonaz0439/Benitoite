@@ -28,32 +28,6 @@ fn rename(value: &mut Value, names: &BTreeMap<String, String>) {
     }
 }
 
-// corpus 10 の名前の原子は Top、組み込みの呼び出しは範囲変数なしの空列とする。
-// 固定入力は変更せず、現在の出力との比較に必要な表現だけを合わせる。
-fn legacy_scope_defaults(value: &mut Value) {
-    match value {
-        Value::Object(fields) => {
-            if let Some(Value::Object(atom)) = fields.get_mut("name")
-                && atom.len() == 1
-                && atom.get("value").is_some_and(Value::is_string)
-            {
-                atom.insert("ix".into(), json!({"fixed":"top"}));
-            }
-            for tag in ["prim", "primName"] {
-                if let Some(Value::Object(call)) = fields.get_mut(tag)
-                    && call.contains_key("tys")
-                {
-                    assert!(!call.contains_key("ranges"), "corpus 10 has no call ranges");
-                    call.insert("ranges".into(), json!([]));
-                }
-            }
-            fields.values_mut().for_each(legacy_scope_defaults);
-        }
-        Value::Array(values) => values.iter_mut().for_each(legacy_scope_defaults),
-        Value::Null | Value::Bool(_) | Value::Number(_) | Value::String(_) => {}
-    }
-}
-
 // 関門: Die の辞書・標準参照・説明と独立した期待コアへの投影を守る。
 // 本番 parser は拒否を保つため、統合入力にはこの分岐へ達する入力がない。
 // 既存の cfg(test) の解析入口を使い、本番の API やフラグは加えない。
@@ -136,7 +110,11 @@ fn typed_try_exchange_matches_independent_corpus_ten() {
         }
         let table = exchange::named_builtin_tables(&p, &input, &stdlib);
         let declarations: Value = serde_json::from_slice(
-            &exchange::to_vec(&exchange::named_stdlib_declarations(&p, &core, &input)).unwrap(),
+            &exchange::to_vec(
+                exchange::Document::Stdlib,
+                &exchange::named_stdlib_declarations(&p, &core, &input),
+            )
+            .unwrap(),
         )
         .unwrap();
         let mut coverage = Value::Null;
@@ -147,13 +125,13 @@ fn typed_try_exchange_matches_independent_corpus_ten() {
             std::process::id()
         ));
         std::fs::create_dir(&directory).unwrap();
-        let mut stream = exchange::InputStream::new(&directory, "die");
+        let mut stream = exchange::InputStream::new(&directory, "die", exchange::Document::Corpus);
         stream.push(&input);
         assert_eq!(stream.count, 1);
         let path = directory.join("corpus.json");
         stream.finish(
             &path,
-            json!({"version":15,"operators":exchange::operators()}),
+            json!({"version":16,"operators":exchange::operators()}),
         );
         let written: Value = serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
         std::fs::remove_file(path).unwrap();
@@ -227,7 +205,8 @@ fn typed_try_exchange_matches_independent_corpus_ten() {
         let mut actual = actual.clone();
         rename(&mut actual, &names);
         let mut expected = fixture["inputs"][0]["definitions"][index]["scope"]["inScope"].clone();
-        legacy_scope_defaults(&mut expected);
+        // 固定入力は版16で書かれているので、そのまま比べる。
+        assert_eq!(fixture["version"], 16);
         // 旧版の独立入力の意味を保ち、新版の必須の空の行条件だけを補う。
         for layer in ["surface", "core"] {
             assert_eq!(expected[layer]["header"]["neffs"], 0);

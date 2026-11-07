@@ -1,6 +1,6 @@
 # try の処置の交換形式の独立入力
 
-corpus 10・型表 3・網羅性 3 を六つの実行ファイルへ渡す。`corpus.json` の期待コアは手書きであり、Lean の脱糖や Rust の書き出しから生成しない。`test_try_exchange.py` が共通の CLI 呼び出しを `test_named_exchange.py` と共有し、`scripts/check-formal.sh` から実行する。
+corpus 16・型表 8・網羅性 8 を六つの実行ファイルへ渡す。`corpus.json` の期待コアは手書きであり、Lean の脱糖や Rust の書き出しから生成しない。`test_try_exchange.py` が共通の CLI 呼び出しを `test_named_exchange.py` と共有し、`scripts/check-formal.sh` から実行する。
 
 | 定義 | 確かめる契約 |
 |---|---|

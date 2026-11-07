@@ -171,7 +171,7 @@ fn export_batch3(directory: &str, sources: &[(&str, &str)]) {
     write_batch2(&output, export);
 }
 
-// 関門: 本番 parser の block・局所束縛・ガードを交換13/5へ書き出す。
+// 関門: 本番 parser の block・局所束縛・ガードを交換の版16/8へ書き出す。
 // 実行時の順序と回数は vm_handlers の独立した期待値が受け持つ。
 #[test]
 fn export_batch4_blocks() {

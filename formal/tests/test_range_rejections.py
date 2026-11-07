@@ -57,9 +57,9 @@ def widen_case(source, target):
 def effect_case(need, upper, effect='File.Read'):
     callee = HELPERS['definition']('fn:900', HELPERS['header']([], [], UNIT, [atom(effect, need)]),
         {'last': {'expr': 'unit'}}, copy.deepcopy(UNIT_CORE))
-    call = {'call': {'callee': {'funName': {'name': 'fn:900', 'tys': [], 'effs': []}},
+    call = {'call': {'callee': {'funName': {'name': 'fn:900', 'tys': [], 'effs': [], 'ranges': []}},
                     'labels': [], 'positions': [], 'args': []}}
-    core = {'app': {'callee': {'fnRef': {'name': 'fn:900', 'tys': [], 'effs': []}}, 'args': []}}
+    core = {'app': {'callee': {'fnRef': {'name': 'fn:900', 'tys': [], 'effs': [], 'ranges': []}}, 'args': []}}
     sample = HELPERS['definition']('fn:901', HELPERS['header']([], [], UNIT, [atom(effect, r) for r in upper]),
         {'last': {'expr': call}}, core)
     return [callee, sample]
@@ -130,8 +130,8 @@ def fixtures():
         inputs.append(input_)
         tables.append(table)
         stdlib.append({'group': 'golden', 'name': name, 'functions': [], 'impls': []})
-    return {'corpus': {'version': 15, 'operators': [], 'annotations': {'tailMatch': [0, 0]}, 'inputs': inputs},
-            'builtins': {'version': 7, 'inputs': tables}, 'stdlib': {'version': 7, 'inputs': stdlib}}
+    return {'corpus': {'version': 16, 'operators': [], 'annotations': {'tailMatch': [0, 0]}, 'inputs': inputs},
+            'builtins': {'version': 8, 'inputs': tables}, 'stdlib': {'version': 8, 'inputs': stdlib}}
 
 
 def write_inputs(directory):
@@ -219,15 +219,13 @@ def compare_contract_counterparts(exports, output):
                 return [normalize(v) for v in value]
             if not isinstance(value, dict):
                 return value
-            # 独立交換ではScopeErrorを抽象型として置く。同じ標準の宣言へ対応させる。
-            if value.get('opaque', {}).get('name') == HELPERS['SCOPE_ERROR_T']:
-                return {'declaredType': 'ScopeError'}
             if 'data' in value:
                 ty = value['data']
                 label = type_names.get(ty['name'], ty['name'])
-                if label == 'ScopeError':
+                # 独立交換の ScopeError は標準の名前の data で置く。同じ標準の宣言へ対応させる。
+                if label in ('ScopeError', HELPERS['SCOPE_ERROR_NAME']):
                     require(ty['args'] == [], (name, 'ScopeError type arguments'))
-                    return {'declaredType': label}
+                    return {'declaredType': 'ScopeError'}
                 return {'data': {**ty, 'name': label, 'args': normalize(ty['args'])}}
             if 'lastBind' in value:
                 return normalize({'bind': {**value['lastBind'], 'rest': {'last': {'expr': 'unit'}}}})
@@ -288,6 +286,13 @@ def run_rejections(exports, output):
         require(dd['golden']['definitions'] == dict(matched=count, mismatched=0, outside=0, excluded=0), (name, dd))
         require(dd['nonTopRanges'] == expected['nonTopRanges'], (name, 'desugar ranges', dd['nonTopRanges']))
         exit_, sa, elapsed_sa = invoke('surfaceCheckAll', current, output, name)
+        # 標準表との差（分類の表の原因）で準備の段が断った入力は、原因とともに分類して残す。
+        gaps = (runpy.run_path(str(Path(__file__).with_name('test_range_sources.py')))['classified_all'](
+            sa, json.loads(current['corpus'].read_text())) if exit_ == 2 else None)
+        if gaps is not None:
+            outcomes.append({'name': name, 'comparison': expected['comparison'], 'preparationRejected': gaps,
+                             'definitions': count, 'nonTopRanges': expected['nonTopRanges']})
+            continue
         rejected = expected['comparison'] != 'accepted'
         require(exit_ == int(rejected), (name, sa))
         require(sa['nonTopRanges'] == expected['nonTopRanges'], (name, 'surface ranges', sa['nonTopRanges']))
@@ -306,8 +311,9 @@ def run_rejections(exports, output):
             require('required check is not covered:' in text and expected['reason'] in text, (name, outcome))
         else:
             require('cover' not in actual and actual['ok'] is False, (name, actual))
-            require(actual['error']['reason'] == 'effect exceeds the allowed effect', (name, actual))
-            require('effect exceeds the allowed effect' in json.dumps(sa['outcomes']), (name, sa))
+            # 篩付きの検査器は推論した効果を上限で再検査して断る。入口の理由は再検査の失敗の分類である。
+            require(actual['error']['reason'] == 'type or certificate check failed', (name, actual))
+            require('type or certificate check failed' in json.dumps(sa['outcomes']), (name, sa))
         row = {'name': name, 'comparison': expected['comparison'], 'lean': actual,
                'definitions': count, 'nonTopRanges': expected['nonTopRanges'],
                'seconds': {'desugarDiff': elapsed_dd, 'surfaceCheckAll': elapsed_sa, 'surfaceCheck': elapsed_sc}}
@@ -355,6 +361,9 @@ def run_rejections(exports, output):
             row['leanProvenance'] = {'bodyOperationsLimit': 0, 'lastRunExceededByDefinition': True,
                 'atomFailureByDefinition': 'budgetExceeded', 'atomFailureObserved': None}
         outcomes.append(row)
+    # 拒否の独立入力は標準表に合わせた固定入力なので、準備の段で分類される入力はない（あれば検査器の拒否を確かめていない）。
+    require(not [o['name'] for o in outcomes if 'preparationRejected' in o],
+            ('independent rejection inputs rejected at preparation', [o['name'] for o in outcomes if 'preparationRejected' in o]))
     require(sum(o['comparison'] == 'required' for o in outcomes) == 3, 'test_range_rejections.py:256: requirement failed')
     require(sum(o['comparison'] == 'typing' for o in outcomes) == 5, 'test_range_rejections.py:257: requirement failed')
     main = [o for o in outcomes if o['name'] in rust]
@@ -363,7 +372,7 @@ def run_rejections(exports, output):
         'requiredIndependentExpectationComparisons': 3, 'requiredSameInputDirectComparisons': 0, 'typingRejectionComparisons': 4,
         'independentAtomicUnionRejections': 1, 'acceptedCounterparts': 8,
         'definitions': sum(o['definitions'] for o in outcomes), 'nonTopRanges': sum(o['nonTopRanges'] for o in outcomes),
-        'outcomes': outcomes}
+        'preparationRejected': sum('preparationRejected' in o for o in outcomes), 'outcomes': outcomes}
     (output/'summary.json').write_text(json.dumps(summary, ensure_ascii=False, indent=2)+'\n')
     return summary
 

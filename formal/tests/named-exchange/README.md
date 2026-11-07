@@ -11,20 +11,20 @@ python3 -I formal/tests/test_named_exchange.py
 
 ## 版と入口
 
-六つの正式入口は corpus 10・型表 3・網羅性 3 を受理する。新しい try の処置を持たない 9/3/3 と、属性・view・新版の型表示の欄を持たない 8/2/2 は互換入力として受理し、8/2/2 では閉じた型だけを扱う。それより前の版と、新版の欄を混ぜた旧版を拒否する。欠けた名前と新版の必須欄は補完しない。
+六つの正式入口は corpus 16・付随の表 8 だけを受理する。旧版は入力を変換せず拒否する。欠けた名前と必須欄は補完しない。型パラメータのkind、範囲の文脈と実引数、証明探索の上限、データと構成子の対応、必須の判定の入力、空の宣言表も明示する。
 
 | 正式入口 | 入力と引数 |
 |---|---|
-| `desugarDiff` | corpus 10、report のパス |
-| `builtinCheck` | corpus 10、組み込み型表 3、report のパス |
-| `coverageDiff` | 網羅性 3（`coverage_export` の形）、report のパス |
-| `coverageProgramDiff` | プログラム単位の網羅性 3、組み込み型表 3、report のパス |
-| `surfaceCheck` | corpus 10、組み込み型表 3、標準ライブラリ型表 3、group、input、report のパス。任意で関数の鍵と反復回数 |
-| `surfaceCheckAll` | corpus 10、組み込み型表 3、標準ライブラリ型表 3、report のパス |
+| `desugarDiff` | corpus 16、report のパス |
+| `builtinCheck` | corpus 16、組み込み型表 8、report のパス |
+| `coverageDiff` | 網羅性 8（`coverage_export` の形）、report のパス |
+| `coverageProgramDiff` | プログラム単位の網羅性 8、組み込み型表 8、report のパス |
+| `surfaceCheck` | corpus 16、組み込み型表 8、標準ライブラリ型表 8、group、input、report のパス。任意で関数の鍵と反復回数 |
+| `surfaceCheckAll` | corpus 16、組み込み型表 8、標準ライブラリ型表 8、report のパス |
 
 実行ファイルは `formal/.lake/build/bin/` に作られる。終了状態は成功が 0、不一致・型検査による拒否が 1、形式や準備の誤りが 2 である。全件の入口は、末尾 match の補正、対象外の分類、補正の個数の照合を行う。契約名、ラベルと位置には補正を加えない。
 
-## corpus 8 と型表 2 の欄
+## corpus 16 と型表 8 の欄
 
 契約名と対応位置の欄を次の形にする。名前がない入力を位置名で補わない。ゼロ引数の名前も `[]` として必ず書く。
 
@@ -32,6 +32,10 @@ python3 -I formal/tests/test_named_exchange.py
 |---|---|
 | `Ty.fn` | `names: List String` を `params` と平行して保持する。内側の関数型にも必須 |
 | `Header`、`BuiltinEntry` | `names: List String`。長さと一意性を検査する |
+| `Header` | `tparamKinds`は`tparams`と同順・同数のkind、`rangeParams`は範囲の変数の種類の列、`proofSteps`は証明探索の上限または`null` |
+| `Input` | `aliases`・`records`・`testers`・`externals`・`logicCertificates`・`candidates`は空でも明示する。`scopeAcceptance`は解析したパターンの表と上限を持つ |
+| `DataTypeInfo` | `constructors`に交換の構成子名と実際の構成子名の対を全宣言について保持する |
+| `BuiltinInput`、`DataEntry` | `opaqueNames`は不透明型の交換名と実名の対。データは`variances`・`requirements`・`publicBoundary`を保持する |
 | 表層とコアの `lam` | `names: List String`。コアでも消さず比較する |
 | `funDicts`、`methName`、`conValue` | 値化のラムダの利用者向け `names`。型や辞書の並びと区別する |
 | `call` | `labels: List (Option String)`、`positions: List Nat`、`args: List Expr`。三つともソース順。名前なしの一引数は `[null]` と `[0]` |
@@ -49,9 +53,9 @@ python3 -I formal/tests/test_named_exchange.py
 
 比較の正規化で揃えるものは、エフェクトの原子の順序と基本型の別名である。契約名、ラベル、位置とソース順、辞書の内部名は消さない。ラベル・位置と契約の一致は型検査の入口が確認し、脱糖の入口は独立した期待コアとの比較を行う。
 
-## 網羅性 2
+## 網羅性 8
 
-`coverage-program.json` は `scrutineeTy` と `ty` に corpus 8 と同じ `Ty` を使う。関数型の名前欠落は解析の誤り、長さや一意性の不正は入力の誤りとして拒否する。既存の対象外の型の変換失敗を報告する経路は保つ。
+`coverage-program.json` は `scrutineeTy` と `ty` に corpus 16 と同じ `Ty` を使う。関数型の名前欠落は解析の誤り、長さや一意性の不正は入力の誤りとして拒否する。既存の対象外の型の変換失敗を報告する経路は保つ。
 
 `coverage.json` は `coverage_export` の既存の `kind` の形式を保つ。新しい関数型だけ、次の欄を使う。
 

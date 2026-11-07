@@ -12,7 +12,7 @@ open PredicateProjection
 
 /-- 公開の標準名の意味が、構成データから定まる表。 -/
 def enabled : Check.BuiltinSource → Bool
-  | .standard _ | .predicates _ _ => true
+  | .standard .. | .predicates .. => true
   | .resolved base rows => enabled base && rows.all (fun row => row.1.startsWith "%Predicate.")
   | .custom _ | .unrestrictedRanges _ => false
 
@@ -183,7 +183,8 @@ private theorem builtin_sig_none {source : Check.BuiltinSource} {key}
     (absent : key ∉ PredicateGeneratedNames.builtinNames source) : source.builtins.sig key = none := by
   induction source with
   | custom _ | unrestrictedRanges _ => cases active
-  | standard program =>
+  | standard program B built =>
+    subst built
     cases found : (StandardModel.builtins program).sig key with
     | none => first | rfl | exact found
     | some signature =>
@@ -192,7 +193,8 @@ private theorem builtin_sig_none {source : Check.BuiltinSource} {key}
       apply standard
       change key ∈ StandardModel.Primitive.all.map StandardModel.Primitive.name
       exact List.mem_map.mpr ⟨row, member, same.symm⟩
-  | predicates data rows =>
+  | predicates data rows B built =>
+    subst built
     have unregistered := rows_lookup_none absent
     change (if key ∈ StandardModel.nameLists.composed then _ else
       if key ∈ (Table.names rows).assumed then (rows.lookup key).map Row.signature else none) = none

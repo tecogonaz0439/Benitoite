@@ -80,8 +80,8 @@ theorem source_lookup {source : Check.BuiltinSource} (active : CheckPreparation.
     RowLookup source.builtins := by
   induction source with
   | custom _ | unrestrictedRanges _ => cases active
-  | standard P => exact RowLookup.builtins P
-  | predicates data rows => exact table_lookup data rows
+  | standard P B built => subst built; exact RowLookup.builtins P
+  | predicates data rows B built => subst built; exact table_lookup data rows
   | resolved base rows ih =>
     obtain ⟨enabled,prefixed⟩ := Bool.and_eq_true_iff.mp active
     exact overlay_lookup (ih enabled) rows (prefixed_absent prefixed)

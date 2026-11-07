@@ -125,7 +125,7 @@ def parseBasedRest (base : PathBase) (rest : String) : Option RangeExpr :=
   else if rest.startsWith "/" ∧ rest ≠ "/" then (parseAbsolutePathPattern rest).map (.based base)
   else none
 
-/-- パス条件の文字列（設計書 01-07「範囲」の書き方）。絶対形、明示した基準（`{root}`・`{cwd}`・`{home}`・`~`・
+/-- パス条件の文字列（設計書 01-07「閉じた範囲引数」の書き方）。絶対形、明示した基準（`{root}`・`{cwd}`・`{home}`・`~`・
 `{work}`・`{tmp}`）からの形、`{secrets}`、裸の相対形（`data/a`・`./data/a`・`.`・`./**`。root からの形）を読む。
 `..`・途中の `.`・空の要素・余分な末尾の `/`・`~user` は拒否する。 -/
 def parsePathPatternText (s : String) : Option RangeExpr :=

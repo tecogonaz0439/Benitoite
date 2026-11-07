@@ -1,10 +1,13 @@
 import Benitoite.Exchange.Builtins
-import Benitoite.Release.CoverageShow
+import Benitoite.Release.Refinement.CoverageShow
 import Lean
 
 /-! 契約名とソース順を保持する独立した交換の入口。
-設計書 07-04「証明する性質」の検査対象と既存形式を区別する。 -/
-open Lean Benitoite.Release
+処理系が受理したプログラムの照合と束縛を、篩付きの型の網羅性の判定
+（設計書 01-12「篩を読む網羅性と値の意味」）で検査する。
+設計書 07-04「道具と置き場所」の検査対象と既存形式を区別する。 -/
+open Lean Benitoite.Release.Refinement
+open Benitoite.Release (Pat ConName DataName)
 namespace CoverageProgramDiff
 open Benitoite.Exchange
 
@@ -46,7 +49,7 @@ def program (ds : List DataMaterial) : Program :=
 def pattern (p : Pattern) : Except String Pat := do
   return (← p.toSurface).toCore
 
-def arms (as : List RawArm) : Except String (List Benitoite.Release.Arm) :=
+def arms (as : List RawArm) : Except String (List Benitoite.Release.Refinement.Arm) :=
   as.mapM fun a => do
     if a.alts.isEmpty then throw "empty alternatives"
     let ps ← a.alts.mapM pattern
@@ -107,7 +110,8 @@ def compareBinding (P : Program) (ctors : DataName → List ConName) (ds : List 
         return ⟨"outOfScope", 0, toJson e⟩
     | .ok t => pure t
   let p ← pattern b.pattern
-  let r := usefulReportWithView P ctors view [t] [[p]] [.wild]
+  -- 束縛の判定と同じ初期領域の問いから、燃料切れと反例を読む。
+  let r := Coverage.domainReport P ctors view (Coverage.initialDomain t) [p]
   let ok := irrefutableWithView P ctors view t p
   return ⟨if ok then "matched" else "mismatched", if r.fuelExhausted then 1 else 0,
     Json.mkObj [("irrefutable",toJson ok),

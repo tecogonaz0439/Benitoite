@@ -2,13 +2,17 @@ import Benitoite.Exchange.CheckInput
 
 /-! 契約名とソース順を保持する独立した交換の入口。
 設計書 07-04「証明する性質」の検査対象と既存形式を区別する。 -/
-open Lean Benitoite.Exchange Benitoite.Exchange.CheckInput Benitoite.Surface.CheckTables
+open Lean Benitoite.Exchange Benitoite.Exchange.CheckInput Benitoite.Release.Refinement.Surface.CheckTables
 
-def errorJson (e : Benitoite.Surface.Check.Error) : Json :=
-  Json.mkObj [("path", toJson e.path), ("reason", toJson e.reason)]
+
+/-- 型付けの誤りの位置と理由。会計の打ち切り（unknown）は拒否と分けて書く。 -/
+def errorJson (e : Benitoite.Release.Refinement.Surface.Check.Error) : Json :=
+  match e.kind with
+  | .rejected => Json.mkObj [("path", toJson e.path), ("reason", toJson e.reason)]
+  | .unknown => Json.mkObj [("path", toJson e.path), ("reason", toJson e.reason), ("kind", toJson "unknown")]
 
 /-- 型付けの誤りは従来の形（`error`）、必須の判定の拒否は出現の鍵と DET-05 の理由（`cover`）で書く。 -/
-def resultJson : Except Benitoite.Surface.CheckAccept.EntryError Unit → Json
+def resultJson : Except Benitoite.Release.Refinement.Surface.CheckAccept.EntryError Unit → Json
   | .ok _ => Json.mkObj [("ok", toJson true)]
   | .error (.typing e) => Json.mkObj [("ok", toJson false), ("error", errorJson e)]
   | .error (.cover k f) => Json.mkObj [("ok", toJson false),
@@ -25,19 +29,21 @@ def selectInput (j : Json) (group name : String) : Except String Json := do
     | throw s!"missing input: {group}/{name}"
   return input
 
-/-- IO を挟んで計算し、同じ純粋な検査結果の共有を計測に混ぜない。 -/
-@[noinline] def timedCheck (q : Benitoite.Surface.Check.Input) (A : Benitoite.Surface.CheckAccept.AcceptInput)
-    (m : Materials) (names : Names) (selected : Option String) :
-    IO (Except Benitoite.Surface.CheckAccept.EntryError Unit × Nat) := do
+/-- IO を挟んで計算し、同じ純粋な検査結果の共有を計測に混ぜない。関数だけを選ぶ検査も、全プログラムの入口と
+同じ位置・view・証明の上限を使う（`CheckTables.checkProgram`）。 -/
+@[noinline] def timedCheck (q : Benitoite.Release.Refinement.Surface.Check.Input) (A : Benitoite.Release.Refinement.Surface.CheckAccept.AcceptInput)
+    (m : Materials) (selected : Option String) :
+    IO (Except Benitoite.Release.Refinement.Surface.CheckAccept.EntryError Unit × Nat) := do
   let start ← IO.monoNanosNow
   -- 型検査器の入口は型付けの検査に必須の判定の受理を組み込む（`CheckAccept.checkProgramAccepted`）。
   let outcome ← match selected with
-    | none => pure (Benitoite.Surface.CheckAccept.checkProgramAccepted q A m names)
+    | none => pure (Benitoite.Release.Refinement.Surface.CheckAccept.checkProgramAccepted q A m.program)
     | some name =>
       let some d := m.program.defs name | throw (IO.userError s!"not an ordinary definition: {name}")
-      pure <| match Benitoite.Surface.Check.checkDef { q with D := q.D.withView (m.functionViews name) } [] d with
+      let bodyQ := { q with D := q.D.withView (m.functionViews name), proofSteps := q.functionSteps name }
+      pure <| match Benitoite.Release.Refinement.Surface.CheckDeclarations.checkDef bodyQ [0, q.defs.idxOf name] d with
         | .error e => .error (.typing e)
-        | .ok () => match Benitoite.Surface.CheckAccept.acceptDef A name d with
+        | .ok () => match Benitoite.Release.Refinement.Surface.CheckAccept.acceptDef A name d with
           | .error (k, f) => .error (.cover k f)
           | .ok () => .ok ()
   -- 結果のタグを評価してから時計を読む。
@@ -60,7 +66,6 @@ def run (args : List String) : IO UInt32 := do
   let rawCorpus ← readJson corpusFile
   let _ ← IO.ofExcept (readCorpus rawCorpus)
   let corpus ← IO.ofExcept (exchangeJson "corpus" rawCorpus)
-  let version ← IO.ofExcept (corpus.getObjValAs? Nat "version")
   let inputJson ← IO.ofExcept (selectInput corpus group name)
   let input ← IO.ofExcept (fromJson? inputJson : Except String Input)
   let operators ← IO.ofExcept (corpus.getObjValAs? (List OperatorEntry) "operators")
@@ -68,13 +73,13 @@ def run (args : List String) : IO UInt32 := do
   let _ ← IO.ofExcept (readBuiltins rawB)
   let bj ← IO.ofExcept (exchangeJson "builtins" rawB)
   let sj ← IO.ofExcept (exchangeJson "stdlib" (← readJson stdlibFile))
-  let expected := sidecarVersion version
+  let expected := sidecarVersion
   if (← IO.ofExcept (bj.getObjValAs? Nat "version")) != expected ||
       (← IO.ofExcept (sj.getObjValAs? Nat "version")) != expected then
     throw (IO.userError "exchange version pair mismatch")
   let b ← IO.ofExcept ((selectInput bj group name).bind (fromJson? · : Json → Except String BuiltinInput))
   let s ← IO.ofExcept ((selectInput sj group name).bind (fromJson? · : Json → Except String StdlibInput))
-  if version >= 9 && input.dataTypes != b.dataDecls.map DataEntry.info then
+  if input.dataTypes != b.dataDecls.map DataEntry.info then
     throw (IO.userError "corpus/builtin data type metadata mismatch")
   if !input.excluded.isEmpty then throw (IO.userError s!"Rust check excluded input: {input.excluded}")
   let prepared ← IO.ofExcept (prepare input b s operators)
@@ -83,9 +88,9 @@ def run (args : List String) : IO UInt32 := do
     throw (IO.userError s!"table checks: constructors={prepared.constructors} records={prepared.records} implNames={prepared.implNames}")
   let ready ← IO.monoNanosNow
   let mut times : List Nat := []
-  let mut result : Except Benitoite.Surface.CheckAccept.EntryError Unit := .ok ()
+  let mut result : Except Benitoite.Release.Refinement.Surface.CheckAccept.EntryError Unit := .ok ()
   for _ in List.range repetitions do
-    let (outcome, ns) ← timedCheck prepared.input prepared.accept prepared.materials prepared.materials.names selected
+    let (outcome, ns) ← timedCheck prepared.input prepared.accept prepared.materials selected
     result := outcome
     times := times ++ [ns]
   let output := Json.mkObj [
@@ -95,6 +100,7 @@ def run (args : List String) : IO UInt32 := do
     ("definitions", toJson prepared.materials.defs.length),
     ("implementations", toJson prepared.materials.impls.length),
     ("trustedFunctions", toJson prepared.materials.trustedFuns.length),
+    ("unknownBuiltins", toJson prepared.unknownBuiltins),
     ("trustedImplementations", toJson prepared.materials.trustedImpls.length),
     ("constructorsOk", toJson prepared.constructors), ("recordsOk", toJson prepared.records),
     ("implNamesOk", toJson prepared.implNames), ("result", resultJson result)]

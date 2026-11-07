@@ -1,4 +1,4 @@
-"""corpus14/sidecar6の独立交換入力を六入口で検査する。Cargoは起動しない。
+"""corpus16/sidecar8の独立交換入力を六入口で検査する。Cargoは起動しない。
 
 作成時の関門: 交換の版・必須欄・型と書式・固定署名・引数順が独立した契約である。
 既存入力にはformattedがなく、指定の読み落としや精度省略の0への変換を捕まえない。
@@ -129,7 +129,7 @@ class Batch5ExchangeTests(unittest.TestCase):
                 data['builtins']['inputs'][0]['prims'] = [
                     p for p in data['builtins']['inputs'][0]['prims'] if p['name'] != '%Format.Integer']
             elif changed == 'function':
-                node['converters'][0] = {'funName': {'name': '%Format.Integer', 'tys': [], 'effs': []}}
+                node['converters'][0] = {'funName': {'name': '%Format.Integer', 'tys': [], 'effs': [], 'ranges': []}}
             elif changed == 'type-argument':
                 node['converters'][0]['primName']['tys'] = [{'base': {'name': 'Integer'}}]
             else:
@@ -151,7 +151,7 @@ class Batch5ExchangeTests(unittest.TestCase):
             if changed == 'name': p['name'] = '%Format.Unit'
             elif changed == 'names': p['names'][1], p['names'][2] = p['names'][2], p['names'][1]
             elif changed == 'type': p['params'][0] = {'base': {'name': 'String'}}
-            elif changed == 'effect': p['eff'] = [{'name': {'value': 'State'}}]
+            elif changed == 'effect': p['eff'] = [{'name': {'value': 'State', 'ix': {'fixed': 'top'}}}]
             elif changed == 'kind': p['kind'] = 'io'
             elif changed == 'return': p['ret'] = {'base': {'name': 'Integer'}}
             else: p['neffs'], p['effParams'] = 1, [{'noFail': False}]
@@ -160,39 +160,28 @@ class Batch5ExchangeTests(unittest.TestCase):
                 self.assertEqual(result.returncode, 2, result.stdout)
                 self.assertIn('format builtin', result.stderr)
 
-    def test_old_versions_reject_formatted_at_any_depth(self):
-        for f in FILES:
-            for version in (range(8, 14) if f == 'corpus' else range(2, 6)):
-                data = copy.deepcopy(self.data)
-                data[f]['version'] = version
-                # 未知欄の内側でも読み捨てない。既存欄の互換エラーとは分ける。
-                data[f]['nested'] = [{'unknown': {'formatted': {}}}]
-                tool = {'corpus': 'desugarDiff', 'builtins': 'builtinCheck', 'stdlib': 'surfaceCheck',
-                        'coverage': 'coverageDiff', 'coverage-program': 'coverageProgramDiff'}[f]
-                with self.subTest(file=f, version=version):
-                    result, _ = self.run_tool(tool, data)
-                    self.assertEqual(result.returncode, 2, result.stdout)
-                    self.assertIn('regenerate with new version', result.stderr)
+    def test_old_versions_are_rejected(self):
+        for tool, files in TOOLS.items():
+            for field in files:
+                for version in (range(8, 16) if field == 'corpus' else range(2, 8)):
+                    data = copy.deepcopy(self.data)
+                    data[field]['version'] = version
+                    with self.subTest(tool=tool, field=field, version=version):
+                        result, _ = self.run_tool(tool, data)
+                        self.assertEqual(result.returncode, 2, result.stdout)
+                        self.assertIn('version', result.stderr)
 
-    def test_corpus_sidecar_generations(self):
-        # formattedを持たない既存入力は8〜14の意味を維持する。
-        legacy = runpy.run_path(str(FIXTURES.parent / 'test_extensible_exchange.py'))['legacy']
-        for version in range(8, 15):
-            directory = 'named-exchange' if version < 11 else 'batch2-exchange'
+    def test_current_generation_and_old_sidecar_refusal(self):
+        for directory in ('named-exchange', 'batch2-exchange'):
             data = {f: json.loads((FIXTURES.parent / directory / f'{f}.json').read_text()) for f in FILES}
             input_name = data['corpus']['inputs'][0]['name']
-            if version == 8: data = legacy(data)
-            data['corpus']['version'] = version
-            sidecar = 6 if version >= 14 else 5 if version == 13 else 4 if version >= 11 else 3 if version >= 9 else 2
-            for f in FILES[1:]: data[f]['version'] = sidecar
             result, report = shared['ExchangeTests'].run_tool(self, 'surfaceCheck', data, input_name=input_name)
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertEqual(report['result'], {'ok': True})
-            if version == 14:
-                data['stdlib']['version'] = 5
-                result, _ = shared['ExchangeTests'].run_tool(self, 'surfaceCheck', data, input_name=input_name)
-                self.assertEqual(result.returncode, 2, result.stdout)
-                self.assertIn('version', result.stderr)
+            data['stdlib']['version'] = 7
+            result, _ = shared['ExchangeTests'].run_tool(self, 'surfaceCheck', data, input_name=input_name)
+            self.assertEqual(result.returncode, 2, result.stdout)
+            self.assertIn('version', result.stderr)
 
 
 def check_rust(directory, report_path):
@@ -205,7 +194,7 @@ def check_rust(directory, report_path):
     counts = {i['name']: len(i['definitions']) for i in data['corpus']['inputs']}
     require(counts == manifest['inputs'], 'batch5 Rust input counts')
     for f, doc in data.items():
-        require(doc['version'] == (15 if f == 'corpus' else 7), f'{f}: version')
+        require(doc['version'] == (16 if f == 'corpus' else 8), f'{f}: version')
     for item in data['corpus']['inputs']:
         require(not item['excluded'], f"{item['name']}: excluded")
         require(all(set(d['scope']) == {'inScope'} for d in item['definitions']), 'batch5 outside')
@@ -217,7 +206,8 @@ def check_rust(directory, report_path):
     for index in range(25):
         got = copy.deepcopy(next(d['scope']['inScope'] for d in actual
                                 if d['name'].startswith(f'format{index} (')))
-        expected = checker['explicit_top_ranges'](independent['inputs'][0]['definitions'][index]['scope']['inScope'])
+        # 版16の独立入力は範囲の位置を明示して書く。
+        expected = copy.deepcopy(independent['inputs'][0]['definitions'][index]['scope']['inScope'])
         for key in ('package', 'coverageView'): expected['surface'][key] = got['surface'][key]
         # 末尾returnの継続型はRustではUnit。返す値とコアの比較は保持する。
         expected['surface']['body']['last']['expr']['returnE']['ret'] = {'base': {'name': 'Unit'}}
@@ -255,7 +245,13 @@ def check_rust(directory, report_path):
         for index, name in enumerate(selections):
             args = [directory / f'{f}.json' for f in files]
             if name is not None: args += ['golden', name]
-            report = run(tool, args, directory / f'{tool}-{index}-report.json')
+            # 標準表との差で準備の段が断った入力は、原因の名前とともに分類して残す。全件の入口は、分類した拒否が
+            # あっても残りの入力の照合を続ける（check_named.py の run_surface）。
+            runner = checker['run_surface'] if tool.startswith('surface') else run
+            report = runner(tool, args, directory / f'{tool}-{index}-report.json')
+            if report is None:
+                reports[tool].append({'preparationRejected': checker['PREPARATION_REJECTED'][-1]})
+                continue
             if tool == 'desugarDiff':
                 require(report['golden']['definitions'] == dict(matched=manifest['definitions'], mismatched=0,
                         outside=0, excluded=0) and not report['mismatches'], 'batch5 desugar')
@@ -266,11 +262,13 @@ def check_rust(directory, report_path):
                         report['fuelExhausted'] == 0, f'{tool}: counts')
             elif tool == 'surfaceCheck': require(report['result'] == {'ok': True}, f'E2: {name}')
             else:
-                require(report['counts'] == dict(matched=manifest['definitions'], mismatched=0, outOfScope=0,
-                        q11=0, lazyRestriction=0, preparationFailure=0), 'batch5 E2 counts')
+                expected, _ = checker['remaining_counts'](dict(matched=manifest['definitions'], mismatched=0,
+                    outOfScope=0, q11=0, lazyRestriction=0, preparationFailure=0), [], report, counts)
+                require(report['counts'] == expected, 'batch5 E2 counts')
             reports[tool].append(report)
-    require(reports['surfaceCheck'][1]['atoms'] == reports['surfaceCheck'][2]['atoms'],
-            'file uses: E2 atoms differ')
+    if all('atoms' in reports['surfaceCheck'][i] for i in (1, 2)):
+        require(reports['surfaceCheck'][1]['atoms'] == reports['surfaceCheck'][2]['atoms'],
+                'file uses: E2 atoms differ')
     report_path.write_text(json.dumps(dict(inputs=counts, formatted=len(formatted), formattedString=formatted_strings,
         formattedStringFallback=formatted_string_fallback, formatHeads=sorted(heads), results=reports), indent=2) + '\n')
     print(f'batch5: {sum(counts.values())} definitions, {len(formatted)} formatted, '

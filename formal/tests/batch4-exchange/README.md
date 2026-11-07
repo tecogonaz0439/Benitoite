@@ -1,6 +1,6 @@
-# 交換13/5の独立入力
+# 交換16/8の構築器の独立入力
 
-corpus 13と四形式のsidecar 5を六つの交換CLIへ渡す。期待コアはRustの書き出しやLeanの脱糖から生成していない。旧独立入力の通常コードは保持し、専用構築器のコアと追加例のLet・局所番号・評価順を手で列挙した。比較時にLetを除去する正規化は使わない。
+corpus 16と四形式のsidecar 8を六つの交換CLIへ渡す。期待コアはRustの書き出しやLeanの脱糖から生成していない。専用構築器のコアとLet・局所番号・評価順を手で列挙する。比較時にLetを除去する正規化は使わない。
 
 ```sh
 python3 -B formal/tests/test_batch4_exchange.py
@@ -40,15 +40,15 @@ python3 -B formal/tests/test_batch4_exchange.py
 
 三つの既存coverage入力を保ち、Integer全域・二範囲の全域・一点の穴を加えた。otherは未被覆値の表示を持たず、穴の表示の期待は現在の交換の `_` である。非網羅的であることを厳密に比較する。coverage-programにはInteger全域のmatchを一つ加えた。
 
-旧batch3のcorpus.jsonは版12の拒否入力として保持する。test_batch3_exchange.pyの六入口の意味の比較は、構築器のないfn:8・101〜106・220〜223の11定義と既存coverage 3/2件に限り、その集合では末尾matchが0なので注釈を[0,0]とする。全30定義を渡した場合は「版13で再生成」の理由で拒否する。旧19構築器定義の意味の検査は本入力へ移しており、旧版を受理する互換変換はない。
+batch3のcorpus.jsonは版16の必須欄を持つが、構築器のrefsを含む拒否入力である。test_batch3_exchange.pyは構築器のないfn:8・101〜106・220〜223の11定義とcoverage 3/2件を正例として読む。その集合では末尾matchが0なので注釈は[0,0]である。全30定義はrefsの禁止で拒否する。専用構築器の意味の検査は本入力が受け持つ。
 
 旧test_batch3の必須欄・未知欄・種類・通常値化・局所番号・効果・七捕捉境界・辞書と継続・定数内構築器のassertはtest_batch4へ移した。refsの必須性はkindの必須性へ、getRefの破損はkind注記の不一致へ、専用操作のStateの拒否は通常引数のAskの効果の拒否へ対応させた。refs/newRef/getRef/setRefは新版でも全て拒否する。新版の拒否理由を厳密に照合し、存在しなくなった参照先の型検査で捕捉禁止を代用しない。named-exchangeのfn:4も、穴のLet一つだけを除いた期待コアへ移した。
 
-Pythonの変異検査は版8〜13/sidecar2〜5の境界、版の組み合わせ、旧refs、新構成子・必須欄・余分な欄、整数の範囲とInteger64の別名、block内の捕捉とlazy内return、期待コアのLet・順序・専用参照、Logの効果の隠蔽を確認する。範囲外の整数は未使用の定数・期待コアでも入口の終了2とする。型の誤りと比較不一致は終了1で区別する。
+Pythonの変異検査は版16/8の受理と旧版の拒否、旧refs、新構成子・必須欄・余分な欄、整数の範囲とInteger64の別名、block内の捕捉とlazy内return、期待コアのLet・順序・専用参照、Logの効果の隠蔽を確認する。範囲外の整数は未使用の定数・期待コアでも入口の終了2とする。型の誤りと比較不一致は終了1で区別する。
 
 ## Rustへの引き渡し
 
-Rustの通常出力は13/5へ切り替え済みであり、機能別の局所入力は本番parserから五形式を書き出す。以下は実装済みの入力である。局所比較の成功だけで全corpusの一致を主張しない。全件の版と件数はtests/desugar_exportのexchange-manifest.jsonとrouting-manifest.jsonで固定し、全比較は `scripts/check-formal.sh` で行い、2026-10-21の2回目（`76ed2d5e`、終了0）で完了した。最後の全入力1,789件・73,836定義・Coverage 22,482件が一致し、機能別の本番parser入力も六入口で一致した。
+機能別の局所入力は本番parserから五形式を書き出す。以下は入力の受け持ちである。局所比較の成功だけで全corpusの一致を主張しない。全件の版と件数はtests/desugar_exportのexchange-manifest.jsonとrouting-manifest.jsonで固定し、全比較は `scripts/check-formal.sh` が受け持つ。
 
 | 担当 | 実装済みの局所入力 | 入口の割り当て |
 |---|---|---|

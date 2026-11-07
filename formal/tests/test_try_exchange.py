@@ -75,28 +75,28 @@ class TryExchangeTests(unittest.TestCase):
                     self.assertEqual(result.returncode, 2, result.stderr + result.stdout)
                     self.assertIn('unknown Expr constructor', result.stderr + json.dumps(report))
 
-    def test_old_corpus_rejects_new_actions_even_when_nested(self):
-        for version in (8, 9):
-            for tag in ('tryResultDie', 'tryOptionDie', 'tryResultReturn', 'tryOptionReturn'):
-                for tool in CORPUS_TOOLS:
-                    with self.subTest(version=version, tag=tag, tool=tool):
-                        data = copy.deepcopy(self.data)
-                        data['corpus']['version'] = version
-                        # Reject before decoding, including new tags hidden in unused constants.
-                        data['corpus']['inputs'][0]['constants'] = [{'nested': {tag: {}}}]
-                        result, report = self.run_tool(tool, data)
-                        self.assertEqual(result.returncode, 2, result.stderr + result.stdout)
-                        self.assertIn('field requires new exchange version:', result.stderr + json.dumps(report))
+    def test_old_versions_are_rejected(self):
+        for tool, files in TOOLS.items():
+            for field in files:
+                for version in (range(8, 16) if field == 'corpus' else range(2, 8)):
+                    data = copy.deepcopy(self.data)
+                    data[field]['version'] = version
+                    with self.subTest(tool=tool, field=field, version=version):
+                        result, _ = self.run_tool(tool, data)
+                        self.assertEqual(result.returncode, 2, result.stdout)
+                        self.assertIn('version', result.stderr)
 
-    def test_corpus_nine_remains_compatible_without_new_actions(self):
-        data = {name: json.loads((Path(__file__).with_name('named-exchange') / f'{name}.json').read_text())
-                for name in shared['FILES']}
-        data['corpus']['version'] = 9
+    def test_current_input_and_old_version_refusal(self):
         for tool in TOOLS:
             with self.subTest(tool=tool):
-                result, report = shared['ExchangeTests'].run_tool(
-                    self, tool, data, input_name='independent-named')
-                self.assertEqual(result.returncode, 0, result.stderr + result.stdout + json.dumps(report))
+                result, report = self.run_tool(tool)
+                self.assertEqual(result.returncode, 0, result.stderr + json.dumps(report))
+                data = copy.deepcopy(self.data)
+                first = TOOLS[tool][0]
+                data[first]['version'] = 15 if first == 'corpus' else 7
+                result, _ = self.run_tool(tool, data)
+                self.assertEqual(result.returncode, 2, result.stdout)
+                self.assertIn('version', result.stderr)
 
     def test_try_cannot_silently_drop_other_action_fields(self):
         for index, field, value in [(0, 'action', 'return'), (0, 'messageExtra', None),
@@ -121,14 +121,16 @@ class TryExchangeTests(unittest.TestCase):
 
     def test_checker_checks_exchanged_die_contracts(self):
         impure = {'call': {'callee': {'primName': {'name': 'prim:8',
-                   'tys': [{'base': {'name': 'String'}}], 'effs': []}},
+                   'tys': [{'base': {'name': 'String'}}], 'effs': [], 'ranges': []}},
                    'labels': [None], 'positions': [0],
                    'args': [{'literal': {'value': {'integer': {'value': 1}}}}]}}
-        cases = [('dict', {'local': {'index': 1}}, 'expected a dictionary type'),
-                 ('showMethod', 'show', 'unknown die display method'),
-                 ('exit', 'exit', 'unknown die exit primitive'),
-                 ('message', {'local': {'index': 1}}, 'type is not included in the expected type'),
-                 ('message', impure, 'effect exceeds the allowed effect')]
+        # 篩付きの検査器の拒否の理由。辞書でない局所の値は呼出しの頭を解決できず、表示のメソッドと終了の組込みの
+        # 誤りは呼出しの署名の誤り、表示の型と効果の誤りは案内の再検査の失敗として断る。
+        cases = [('dict', {'local': {'index': 1}}, 'call head cannot be resolved'),
+                 ('showMethod', 'show', 'call signature is invalid'),
+                 ('exit', 'exit', 'call signature is invalid'),
+                 ('message', {'local': {'index': 1}}, 'type or certificate check failed'),
+                 ('message', impure, 'type or certificate check failed')]
         for field, value, reason in cases:
             for tool in ('surfaceCheck', 'surfaceCheckAll'):
                 with self.subTest(field=field, tool=tool):
@@ -139,9 +141,8 @@ class TryExchangeTests(unittest.TestCase):
                     error = (report['result']['error'] if tool == 'surfaceCheck'
                              else report['mismatchExamples'][0]['error'])
                     self.assertEqual(error['reason'], reason)
-                    suffix = [] if field == 'exit' else [1] if field == 'message' else [2]
-                    self.assertEqual(error['path'], ([0, 0, 0, 0, 0] if tool == 'surfaceCheck'
-                                                     else [0, 0, 0]) + suffix)
+                    # 篩付きの検査器の位置は、二つの入口で同じ（定義の根からの番号）である。
+                    self.assertEqual(error['path'], [0, 0, 1] if field == 'message' else [0, 0, 1, 0, 0])
                     if tool == 'surfaceCheckAll':
                         self.assertEqual(report['counts']['mismatched'], 1)
 

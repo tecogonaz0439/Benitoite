@@ -1,6 +1,6 @@
+import Benitoite.Release.Lemmas.Membership
 import Benitoite.Release.TargetTable
 import Benitoite.Release.Lemmas.TargetSound
-import Benitoite.Release.Lemmas.PrimRanges
 
 /-!
 # 二つの信頼条件を満たす組み込みの関数の実例（L20.7）
@@ -224,16 +224,6 @@ theorem readTextSig_scoped : readTextSig.Scoped := by
   simp [PrimSig.Scoped, readTextSig, PrimSig.ntys, PrimSig.nranges, NamesWF, Ty.VarsInList, Ty.VarsIn, Eff.VarsIn,
     Eff.single, Eff.ofAtoms, TargetTable.ioErrorTy]
 
-theorem write_scoped : TargetTable.writeTextIn.Scoped :=
-  TargetTable.entries_scoped ("File.writeTextIn", _) (by
-    unfold TargetTable.entries
-    exact .tail _ (.tail _ (.tail _ (.tail _ (.head _)))))
-
-theorem check_scoped : TargetTable.checkPathIn.Scoped :=
-  TargetTable.entries_scoped ("Scope.checkPathIn", _) (by
-    unfold TargetTable.entries
-    exact .tail _ (.tail _ (.tail _ (.tail _ (.tail _ (.tail _ (.tail _ (.tail _ (.tail _ (.head _))))))))))
-
 /-- 範囲の列の許容から、一つの範囲の項目の列は一つの範囲である。 -/
 theorem singleton_of_admissible {B : Builtins} {b : PrimName} {s : PrimSig} {rs : List Range} {k : Kind}
     (hk : s.rkinds = [k]) (h : B.RangeAdmissible b s rs) : ∃ r, rs = [r] := by
@@ -318,11 +308,6 @@ theorem checkRun_contract {r : Range} {ws : List Val} {ts : List Ty} {w : Val}
       · simp at h
   · simp at h
 
-theorem ref_scoped_get : Model.refGetSig.Scoped :=
-  (Model.assumptions Model.emptyProgram).sig_scoped "Reference.get" _ (by simp [Model.builtins])
-theorem ref_scoped_set : Model.refSetSig.Scoped :=
-  (Model.assumptions Model.emptyProgram).sig_scoped "Reference.set" _ (by simp [Model.builtins])
-
 end
 
 /-- 旧 Top の読み込みの項目の結果の型（範囲の変数を持たないので、具体化は型を変えない）。 -/
@@ -341,194 +326,6 @@ theorem readObs_kind {tgt : String → Option Target} (ws : List Val) : ∀ t �
       · simp at ht
     · simp at ht
   · simp at ht
-
-/-- 新版の実例: `Ok`・`Err` を宣言したどのプログラムについても、旧の条件と対象一致の条件の両方を満たす。 -/
-theorem assumptions (pat : String → Option Range) (tgt : String → Option Target) (P : Program) (hP : HasResult P) :
-    (builtins pat tgt).Assumptions P where
-  sig_scoped := by
-    intro b s h
-    rcases sig_cases h with ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩
-    · exact ref_scoped_get
-    · exact ref_scoped_set
-    · exact printSig_scoped
-    · exact exitSig_scoped
-    · exact write_scoped
-    · exact check_scoped
-    · exact readTextSig_scoped
-  admits_subst := by
-    intro b s C0 C1 ts ts' es' h ha _ _
-    rcases sig_cases h with ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ <;>
-      first
-      | simpa [Model.refGetSig, Model.refSetSig] using ha
-      | (simp only [printSig, exitSig, readTextSig, TargetTable.writeTextIn, TargetTable.ioIn, TargetTable.checkPathIn,
-          TargetTable.pureIn] at ha ⊢
-         subst ha; rfl)
-  sat_subst := fun _ _ _ _ _ _ _ _ _ => trivial
-  sat_unconstrained := fun _ _ => trivial
-  admits_sat := by
-    intro b s C ts h ha
-    rcases sig_cases h with ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ <;>
-      first
-      | exact ⟨by simpa [Model.refGetSig, Model.refSetSig] using ha, fun _ _ _ _ _ => trivial⟩
-      | (simp only [printSig, exitSig, readTextSig, TargetTable.writeTextIn, TargetTable.ioIn, TargetTable.checkPathIn,
-          TargetTable.pureIn] at ha ⊢
-         subst ha
-         exact ⟨rfl, fun _ _ _ h _ => by simp at h⟩)
-  sat_local := fun _ _ _ _ _ _ => trivial
-  admits_local := by
-    intro b s C1 C0 ts h _ ha
-    rcases sig_cases h with ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ <;> exact ha
-  delta_typed := by
-    intro Ψ b s rs ts es ws h hk hR htl hel _ _
-    rcases sig_cases h with ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨rfl, rfl⟩ | ⟨-, rfl⟩ <;>
-      try (exfalso; simp [Model.refGetSig, Model.refSetSig, printSig, exitSig, readTextSig, TargetTable.writeTextIn,
-        TargetTable.ioIn] at hk)
-    obtain ⟨r, rfl⟩ := singleton_of_admissible rfl hR
-    have hts : ts = [] := List.eq_nil_of_length_eq_zero htl
-    have hes : es = [] := List.eq_nil_of_length_eq_zero hel
-    subst hts hes
-    refine ⟨checkRun pat tgt r ws, by simp [builtins], ?_, ?_⟩
-    · intro n hn
-      unfold checkRun at hn
-      split at hn
-      · split at hn
-        · split at hn <;> cases hn
-        · cases hn
-      · cases hn
-    · rw [checkPathIn_ret]
-      exact checkRun_typed hP r ws
-  io_kind := by
-    intro b s ts es ws o obs h hr
-    rcases sig_cases h with ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ <;>
-      simp only [builtins] at hr
-    · simp at hr
-    · simp at hr
-    · obtain ⟨-, rfl, -⟩ := hr.resolve_right (by simp)
-      exact .inl ⟨rfl, by simp⟩
-    · obtain ⟨-, rfl, -⟩ := (hr.resolve_left (by simp)).resolve_right (by simp)
-      exact .inr ⟨rfl, by simp⟩
-    · obtain ⟨-, ho, -⟩ := ((hr.resolve_left (by simp)).resolve_left (by simp)).resolve_right (by simp)
-      refine .inl ⟨rfl, fun n => ?_⟩
-      rcases ho with rfl | rfl <;> simp
-    · simp at hr
-    · obtain ⟨-, ho, -⟩ := ((hr.resolve_left (by simp)).resolve_left (by simp)).resolve_left (by simp)
-      refine .inl ⟨rfl, fun n => ?_⟩
-      rcases ho with rfl | rfl <;> simp
-  io_typed := by
-    intro Ψ b s rs ts es ws o obs h hk hR htl hel _ _ hr
-    rcases sig_cases h with ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ <;>
-      try (exfalso; simp [Model.refGetSig, Model.refSetSig, TargetTable.checkPathIn, TargetTable.pureIn] at hk)
-    all_goals
-      have hts : ts = [] := List.eq_nil_of_length_eq_zero htl
-      have hes : es = [] := List.eq_nil_of_length_eq_zero hel
-      subst hts hes
-      simp only [builtins] at hr
-    · obtain ⟨-, rfl, -⟩ := hr.resolve_right (by simp)
-      rw [unit_ret rs printSig rfl]
-      exact ⟨by simpa [Const.type] using (HasTypeVQ.V_Const (P := P) (B := builtins pat tgt) (Ψ := Ψ) (Q := Qempty)
-        (C := []) (Γ := []) (c := .unit)), by simp [Val.VarsIn]⟩
-    · obtain ⟨-, rfl, -⟩ := (hr.resolve_left (by simp)).resolve_right (by simp)
-      trivial
-    · obtain ⟨-, ho, -⟩ := ((hr.resolve_left (by simp)).resolve_left (by simp)).resolve_right (by simp)
-      obtain ⟨r, rfl⟩ := singleton_of_admissible rfl hR
-      rw [writeTextIn_ret]
-      rcases ho with rfl | rfl
-      · exact ⟨ok_typed hP.1 (by simpa [writeTys, Const.type, Ty.shift] using
-            (HasTypeVQ.V_Const (P := P) (B := builtins pat tgt) (Ψ := Ψ) (Q := Qempty) (C := []) (Γ := [])
-              (c := .unit))),
-          by simp [writeTys, TargetTable.ioErrorTy, Val.VarsIn, Ty.VarsInList, Ty.VarsIn, Val.VarsInList]⟩
-      · exact ⟨err_typed hP.2 (by simpa [writeTys, ioFailure, TargetTable.ioErrorTy, Const.type, Ty.shift_opaque] using
-            (HasTypeVQ.V_Const (P := P) (B := builtins pat tgt) (Ψ := Ψ) (Q := Qempty) (C := []) (Γ := [])
-              (c := .opaque "IOError" 0))),
-          by simp [writeTys, ioFailure, TargetTable.ioErrorTy, Val.VarsIn, Ty.VarsInList, Ty.VarsIn,
-            Val.VarsInList]⟩
-    · obtain ⟨-, ho, -⟩ := ((hr.resolve_left (by simp)).resolve_left (by simp)).resolve_left (by simp)
-      rw [readText_ret]
-      rcases ho with rfl | rfl
-      · exact ⟨ok_typed hP.1 (by simpa [readTys, Const.type, Ty.shift] using
-            (HasTypeVQ.V_Const (P := P) (B := builtins pat tgt) (Ψ := Ψ) (Q := Qempty) (C := []) (Γ := [])
-              (c := .string ""))),
-          by simp [readTys, TargetTable.ioErrorTy, Val.VarsIn, Ty.VarsInList, Ty.VarsIn, Val.VarsInList]⟩
-      · exact ⟨err_typed hP.2 (by simpa [readTys, ioFailure, TargetTable.ioErrorTy, Const.type, Ty.shift_opaque] using
-            (HasTypeVQ.V_Const (P := P) (B := builtins pat tgt) (Ψ := Ψ) (Q := Qempty) (C := []) (Γ := [])
-              (c := .opaque "IOError" 0))),
-          by simp [readTys, ioFailure, TargetTable.ioErrorTy, Val.VarsIn, Ty.VarsInList, Ty.VarsIn,
-            Val.VarsInList]⟩
-  io_exists := by
-    intro Ψ b s rs ts es ws h hk _ _ _ _ _
-    rcases sig_cases h with ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ <;>
-      try (exfalso; simp [Model.refGetSig, Model.refSetSig, TargetTable.checkPathIn, TargetTable.pureIn] at hk)
-    · exact ⟨_, _, .inl ⟨rfl, rfl, rfl⟩⟩
-    · exact ⟨_, _, .inr (.inl ⟨rfl, rfl, rfl⟩)⟩
-    · exact ⟨_, _, .inr (.inr (.inl ⟨rfl, .inl rfl, rfl⟩))⟩
-    · exact ⟨_, _, .inr (.inr (.inr ⟨rfl, .inl rfl, rfl⟩))⟩
-  io_op := by
-    intro b s h hk
-    rcases sig_cases h with ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ <;>
-      try (exfalso; simp [Model.refGetSig, Model.refSetSig, TargetTable.checkPathIn, TargetTable.pureIn] at hk)
-    · exact ⟨"Console.Write", ["print"], rfl, rfl, by simp [builtins, stateEff], by simp, rfl, rfl, rfl⟩
-    · exact ⟨"Process.Exit", ["exit"], rfl, rfl, by simp [builtins, stateEff], by simp, rfl, rfl, rfl⟩
-    · exact TargetTable.ioIn_shapeOk (bs := ["File.writeTextIn"]) (by simp [builtins, stateEff]) (by simp) rfl rfl rfl
-    · exact ⟨"File.Read", ["File.readText"], rfl, rfl, by simp [builtins, stateEff], by simp, rfl, rfl, rfl⟩
-  effect_ops := by
-    intro l bs b h hb
-    rcases effects_cases h with ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ <;>
-      simp only [List.mem_singleton, List.not_mem_nil] at hb
-    · subst hb; exact ⟨printSig, sig_print, .inl rfl, rfl⟩
-    · subst hb; exact ⟨exitSig, sig_exit, .inr rfl, rfl⟩
-    · subst hb; exact ⟨_, sig_write, .inl rfl, rfl⟩
-    · subst hb; exact ⟨readTextSig, sig_read, .inl rfl, rfl⟩
-  opEff_io := by
-    intro b s l h hl
-    rcases sig_cases h with ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ <;>
-      first
-      | (exfalso; simp [Model.refGetSig, Model.refSetSig, TargetTable.checkPathIn, TargetTable.pureIn] at hl)
-      | exact .inl rfl
-      | exact .inr rfl
-  state_effect := by simp [builtins]
-  store_shape := by
-    intro b s h
-    rcases sig_cases h with ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ <;>
-      simp [PrimSig.StoreShape, PrimSig.ntys, Model.refGetSig, Model.refSetSig, printSig, exitSig, readTextSig,
-        TargetTable.writeTextIn, TargetTable.ioIn, TargetTable.checkPathIn, TargetTable.pureIn]
-  store_admits := by
-    intro b s C ts h h1 h2 h3 hl
-    rcases sig_cases h with ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ | ⟨-, rfl⟩ <;>
-      first
-      | simpa [PrimSig.ntys, Model.refGetSig, Model.refSetSig] using hl
-      | (exfalso; simp [printSig, exitSig, readTextSig, TargetTable.writeTextIn, TargetTable.ioIn, TargetTable.checkPathIn,
-          TargetTable.pureIn] at h1 h2 h3)
-  ref_get := ⟨Model.refGetSig, by simp [builtins], rfl⟩
-  ref_set := ⟨Model.refSetSig, by simp [builtins], rfl⟩
-  release_exists := fun _ _ _ _ _ => ⟨none, rfl⟩
-  io_target := by
-    intro Ψ b s rs ts es ws o obs h hk _ _ _ _ _ hr
-    rcases sig_cases h with ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ <;>
-      simp only [builtins] at hr
-    · simp at hr
-    · simp at hr
-    · obtain ⟨-, -, rfl⟩ := hr.resolve_right (by simp)
-      rfl
-    · obtain ⟨-, -, rfl⟩ := (hr.resolve_left (by simp)).resolve_right (by simp)
-      rfl
-    · obtain ⟨-, -, rfl⟩ := ((hr.resolve_left (by simp)).resolve_left (by simp)).resolve_right (by simp)
-      -- 単一の対象の形: 最初の引数が検査済みの対象なら観測はその対象一つ、そうでなければ旧 Top の形で空。
-      match ws with
-      | [] => simp [PrimSig.shapeAt, TargetTable.writeTextIn, TargetTable.ioIn, firstTarget,
-          Scope.Signature.ShapeTargets]
-      | .checked t :: _ => simp [PrimSig.shapeAt, TargetTable.writeTextIn, TargetTable.ioIn, firstTarget,
-          Val.target?, Scope.Signature.ShapeTargets]
-      | .checkedRequest t _ :: _ => simp [PrimSig.shapeAt, TargetTable.writeTextIn, TargetTable.ioIn, firstTarget,
-          Val.target?, Scope.Signature.ShapeTargets]
-      | .var _ :: _ | .const _ :: _ | .fnRef _ _ _ :: _ | .prim _ _ _ _ :: _ | .lam _ _ _ :: _ | .con _ _ _ :: _
-        | .list _ :: _ | .op _ _ :: _ | .raise _ _ :: _ | .loc _ :: _ | .mapV _ _ :: _ | .setV _ :: _
-        | .bytesV _ :: _ | .dict _ _ _ :: _ | .super _ _ :: _ =>
-          simp [PrimSig.shapeAt, TargetTable.writeTextIn, TargetTable.ioIn, firstTarget, Val.target?,
-            Scope.Signature.ShapeTargets]
-    · simp at hr
-    · obtain ⟨-, -, rfl⟩ := ((hr.resolve_left (by simp)).resolve_left (by simp)).resolve_left (by simp)
-      -- 旧 Top の形: 観測は種類 path の対象だけである。
-      exact readObs_kind ws
 
 /-! ## 例
 
@@ -644,10 +441,6 @@ theorem progOf_wellTyped (ix : Scope.Signature.Ix) : (progOf ix).WellTyped B := 
 theorem progOf_effectsOk (ix : Scope.Signature.Ix) : (progOf ix).EffectsOk B :=
   ⟨fun _ _ _ h => (by cases h), fun _ _ h => (by cases h), fun _ _ h => (by cases h)⟩
 
-/-- 例のプログラムについて、新版の実例の仮定（旧の条件と対象一致の条件）が成り立つ。 -/
-theorem progOf_assumptions (ix : Scope.Signature.Ix) : B.Assumptions (progOf ix) :=
-  assumptions pat tgt (progOf ix) (progOf_hasResult ix)
-
 /-- 呼び出し `f()`。 -/
 def callF : Comp := .app (.fnRef "f" [] []) []
 
@@ -696,31 +489,6 @@ theorem not_builtinOnlyOld_write {P : Program} : ¬ BuiltinOnlyOld P B (Eff.sing
 /-- 状態 `⟨f(), [], ∅⟩`。 -/
 def s0 : State := .run callF [] Store.empty
 
-/-- L20.1 の反例の状態（範囲付きの効果 `File.Write[/data/**]` を宣言した関数の呼び出し）は、案 BA の `BuiltinOnly`
-のもとで公開の `StateTy` に入る。 -/
-theorem s0_stateTy : StateTy (progOf dataTree) B s0 := by
-  have h := stateTyE_init_eff (progOf_wellFormed dataTree_wf) (progOf_assumptions dataTree).core
-    (callF_typed dataTree) callF_closed
-  rw [substAt_singleAt] at h
-  exact stateTy_iff.mpr ⟨_, builtinOnly_write rfl dataTree, h⟩
-
-/-- 範囲付きの IO の項目を持つ表で、範囲付きの効果を宣言したプログラムに進行の定理が当たる（前提は旧の条件だけ）。 -/
-theorem s0_progress : s0.Final ∨ ∃ l s', Step (progOf dataTree) B s0 l s' :=
-  progress (progOf_wellTyped dataTree) (progOf_effectsOk dataTree) (progOf_assumptions dataTree).core s0_stateTy
-
-/-- 保存の定理を繰り返すと、型の付いた状態から到達する全ての状態に型が付く。 -/
-theorem steps_stateTy {s s' : State} (hs : Steps (progOf dataTree) B s s') (h : StateTy (progOf dataTree) B s) :
-    StateTy (progOf dataTree) B s' := by
-  induction hs with
-  | refl => exact h
-  | step hst _ ih =>
-      exact ih (preservation (progOf_wellFormed dataTree_wf) (progOf_wellTyped dataTree) (progOf_effectsOk dataTree)
-        (progOf_assumptions dataTree).core h hst)
-
-/-- 保存の定理も同じ状態から到達する全ての状態に当たる。 -/
-theorem s0_preservation {s : State} (hs : Steps (progOf dataTree) B s0 s) : StateTy (progOf dataTree) B s :=
-  steps_stateTy hs s0_stateTy
-
 /-! ### 範囲付きの IO の呼び出し
 
 `File.writeTextIn[;;/data/**](checked(/data/a.txt), "x")`。 -/
@@ -734,9 +502,6 @@ theorem write_admissible : B.RangeAdmissible "File.writeTextIn" TargetTable.writ
   · intro r hr; simp only [List.mem_singleton] at hr; subst hr; decide
   · intro r hr; simp only [List.mem_singleton] at hr; subst hr; decide
 
-theorem write_prim_admissible : PrimitiveAdmissible [] (TargetTable.writeTextIn.inst [range]) Qempty [] [] :=
-  PrimitiveAdmissible.of_noRows_inst write_scoped (by decide) rfl rfl rfl (by simp)
-
 theorem write_params :
     (TargetTable.writeTextIn.inst [range]).params.map (Ty.subst [] []) =
       [.opaque "Scope.PathIn" (.fixed range), .base .string] := by
@@ -747,15 +512,6 @@ theorem ioCall_args {P : Program} {Ψ : StoreTy} :
     HasTypeVs P B Ψ [] [] [.checked target, str "x"] ((TargetTable.writeTextIn.inst [range]).params.map (Ty.subst [] [])) := by
   rw [write_params]
   exact .cons (.V_Checked rfl (by decide)) (.cons .V_Const .nil)
-
-theorem ioCall_typed {P : Program} {Ψ : StoreTy} :
-    HasTypeC P B Ψ [] [] none ioCall (Ty.subst [] [] (TargetTable.writeTextIn.inst [range]).ret)
-      (Eff.substAt 0 [] [] (TargetTable.writeTextIn.inst [range]).eff) := by
-  have hv := HasTypeVQ.V_Prim (P := P) (B := B) (Ψ := Ψ) (Q := Qempty) (C := []) (Γ := [])
-    (b := "File.writeTextIn") (s := TargetTable.writeTextIn) (rs := [range]) (ts := []) (es := [])
-    sig_write write_admissible ⟨rfl, by decide⟩ write_prim_admissible
-  rw [fnTy_eq] at hv
-  exact .C_App hv ioCall_args
 
 theorem write_eff : Eff.substAt 0 [] [] (TargetTable.writeTextIn.inst [range]).eff =
     Eff.singleAt "File.Write" dataTree := by
@@ -768,16 +524,6 @@ theorem ioCall_closed : ioCall.ClosedNoEffVars := by
 
 def ioState : State := .run ioCall [] Store.empty
 
-/-- 範囲付きの IO の呼び出しの状態は `StateTy` に入る（末尾は `File.Write[/data/**]`）。 -/
-theorem ioState_stateTy : StateTy (progOf dataTree) B ioState := by
-  have h := stateTyE_init_eff (progOf_wellFormed dataTree_wf) (progOf_assumptions dataTree).core ioCall_typed ioCall_closed
-  rw [write_eff] at h
-  exact stateTy_iff.mpr ⟨_, builtinOnly_write rfl dataTree, h⟩
-
-/-- 範囲付きの IO の呼び出しの状態に進行の定理が当たる。 -/
-theorem ioState_progress : ioState.Final ∨ ∃ l s', Step (progOf dataTree) B ioState l s' :=
-  progress (progOf_wellTyped dataTree) (progOf_effectsOk dataTree) (progOf_assumptions dataTree).core ioState_stateTy
-
 /-- 処理する節がないので、応答の関係で進み、事象は観測 `[/data/a.txt]` を持つ。 -/
 theorem ioState_step {σ : Store} :
     Step (progOf dataTree) B (.run ioCall [] σ)
@@ -785,26 +531,12 @@ theorem ioState_step {σ : Store} :
       (.run (.ret (.con "Ok" writeTys [.const .unit])) [] σ) :=
   .E_IO (s := TargetTable.writeTextIn) sig_write rfl (fun _ h => by cases h) (.inr (.inr (.inl ⟨rfl, .inl rfl, rfl⟩)))
 
-/-- 対象一致の条件から、観測した対象 `/data/a.txt` は具体化した効果 `File.Write[/data/**]` が許す（κ は表の
-`effKind`）。 -/
-theorem ioState_obs_allowed :
-    ∀ t ∈ [target], B.Allows (TargetTable.writeTextIn.inst [range]).eff "File.Write" t := by
-  obtain ⟨l, hl, h⟩ := (progOf_assumptions dataTree).obs_allowed (Ψ := StoreTy.empty) (ts := []) (es := [])
-    (o := .val (.con "Ok" writeTys [.const .unit])) sig_write (.inl rfl) write_admissible rfl rfl rfl ioCall_args
-    (.inr (.inr (.inl ⟨rfl, .inl rfl, rfl⟩)))
-  cases hl
-  exact h
-
 /-! ### 旧 Top の形の IO の項目と資源の型（RV-L40 軽8）
 
 `File.readText(path: "/data/a.txt")`（効果は Top の原子 `File.Read`）。形の検査（`ShapeOk`）と対象一致の条件
 （`io_target`）が旧 Top の形 `topTargeted .path` で当たり、観測 `[/data/a.txt]` は空でない。 -/
 
 def readCall : Comp := .app (.prim "File.readText" [] [] []) [str "/data/a.txt"]
-
-/-- 旧 Top の形の項目は形の検査を通る（`io_op` の欄から得る）。 -/
-theorem read_shapeOk : B.ShapeOk "File.readText" readTextSig :=
-  (progOf_assumptions dataTree).io_op _ _ sig_read (.inl rfl)
 
 theorem read_admissible : B.RangeAdmissible "File.readText" readTextSig [] := by
   refine ⟨⟨Scope.Domain.Range.fitsKinds_nil, ?_, Or.inl ?_⟩, ?_⟩ <;> intro r hr <;> cases hr
@@ -821,12 +553,6 @@ theorem read_response :
     B.ioResponse "File.readText" [] [] [str "/data/a.txt"] (.val (.con "Ok" readTys [.const (.string "")])) [target] :=
   .inr (.inr (.inr ⟨rfl, .inl rfl, by simp [readObs, str, tgt, target]; rfl⟩))
 
-/-- 対象一致の条件は、旧 Top の形の項目で空でない観測について当たる（観測の対象は種類 path である）。 -/
-theorem read_io_target :
-    Scope.Signature.ShapeTargets Val.target? (readTextSig.shapeAt [str "/data/a.txt"]) [str "/data/a.txt"] [target] :=
-  (progOf_assumptions dataTree).io_target StoreTy.empty "File.readText" readTextSig [] [] [] _ _ _ sig_read (.inl rfl)
-    read_admissible rfl rfl rfl read_args read_response
-
 theorem read_io_target_kind : readTextSig.shapeAt [str "/data/a.txt"] = .topTargeted .path := rfl
 
 /-- 処理する節がないので、応答の関係で進み、事象は観測 `[/data/a.txt]` を持つ。 -/
@@ -835,23 +561,6 @@ theorem read_step {σ : Store} :
       (some (.io "File.readText" [str "/data/a.txt"] (.val (.con "Ok" readTys [.const (.string "")])) [target]))
       (.run (.ret (.con "Ok" readTys [.const (.string "")])) [] σ) :=
   .E_IO (s := readTextSig) sig_read rfl (fun _ h => by cases h) read_response
-
-/-- 観測した対象 `/data/a.txt` は、項目の効果の Top の原子 `File.Read` が許す（`obs_allowed`）。 -/
-theorem read_obs_allowed : ∀ t ∈ [target], B.Allows (readTextSig.inst []).eff "File.Read" t := by
-  obtain ⟨l, hl, h⟩ := (progOf_assumptions dataTree).obs_allowed (Ψ := StoreTy.empty) (ts := []) (es := [])
-    sig_read (.inl rfl) read_admissible rfl rfl rfl read_args read_response
-  cases hl
-  exact h
-
-/-- 資源の型 `File.Handle` の値は型が付き、`release_exists` の前提を満たす（欄は空に成り立たない）。 -/
-theorem handle_release {P : Program} (hP : HasResult P) :
-    HasTypeV P B StoreTy.empty [] [] (.const (.opaque "File.Handle" 0)) (.opaqueTop "File.Handle") ∧
-      B.isResource "File.Handle" = true ∧ ∃ r, B.releaseResponse (.const (.opaque "File.Handle" 0)) r := by
-  have hv : HasTypeV P B StoreTy.empty [] [] (.const (.opaque "File.Handle" 0)) (.opaqueTop "File.Handle") := by
-    simpa [Const.type] using (HasTypeVQ.V_Const (P := P) (B := B) (Ψ := StoreTy.empty) (Q := Qempty) (C := []) (Γ := [])
-      (c := .opaque "File.Handle" 0))
-  have hr : B.isResource "File.Handle" = true := rfl
-  exact ⟨hv, hr, (assumptions pat tgt P hP).release_exists _ _ _ hv hr⟩
 
 end Examples
 

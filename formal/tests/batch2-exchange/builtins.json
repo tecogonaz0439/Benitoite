@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 8,
   "inputs": [
     {
       "group": "golden",
@@ -58,7 +58,10 @@
           "opEff": null,
           "classConstraints": [],
           "unconvertibleTypes": [],
-          "effParams": []
+          "effParams": [],
+          "tparamKinds": [],
+          "rkinds": [],
+          "shape": "untargeted"
         },
         {
           "name": "%eq",
@@ -96,7 +99,12 @@
           "opEff": null,
           "classConstraints": [],
           "unconvertibleTypes": [],
-          "effParams": []
+          "effParams": [],
+          "tparamKinds": [
+            "value"
+          ],
+          "rkinds": [],
+          "shape": "untargeted"
         },
         {
           "name": "Console.writeLine",
@@ -120,7 +128,10 @@
           "eff": [
             {
               "name": {
-                "value": "Console"
+                "value": "Console",
+                "ix": {
+                  "fixed": "top"
+                }
               }
             }
           ],
@@ -128,7 +139,10 @@
           "opEff": "Console",
           "classConstraints": [],
           "unconvertibleTypes": [],
-          "effParams": []
+          "effParams": [],
+          "tparamKinds": [],
+          "rkinds": [],
+          "shape": "untargeted"
         }
       ],
       "effects": [
@@ -163,14 +177,18 @@
                     "name": "Integer"
                   }
                 }
-              ]
+              ],
+              "constructorName": "PosPair"
             }
           ],
           "typeName": "PosPair",
           "isRecord": false,
           "extensible": false,
           "package": "author",
-          "builtin": "ordinary"
+          "builtin": "ordinary",
+          "variances": [],
+          "requirements": [],
+          "publicBoundary": []
         },
         {
           "name": "Pair",
@@ -193,14 +211,18 @@
                     "name": "Integer"
                   }
                 }
-              ]
+              ],
+              "constructorName": "Pair"
             }
           ],
           "typeName": "Pair",
           "isRecord": true,
           "extensible": false,
           "package": "author",
-          "builtin": "ordinary"
+          "builtin": "ordinary",
+          "variances": [],
+          "requirements": [],
+          "publicBoundary": []
         }
       ],
       "summaries": [
@@ -229,7 +251,12 @@
       ],
       "statePure": [],
       "supplementalData": [],
-      "supplementalPrims": []
+      "supplementalPrims": [],
+      "effKinds": [],
+      "valKinds": [],
+      "admitsR": [],
+      "valContents": [],
+      "opaqueNames": []
     }
   ]
 }

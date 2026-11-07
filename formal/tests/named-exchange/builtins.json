@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 8,
   "inputs": [
     {
       "group": "golden",
@@ -57,7 +57,11 @@
           "kind": "pure",
           "opEff": null,
           "classConstraints": [],
-          "unconvertibleTypes": []
+          "unconvertibleTypes": [],
+          "effParams": [],
+          "tparamKinds": [],
+          "rkinds": [],
+          "shape": "untargeted"
         },
         {
           "name": "%eq",
@@ -94,7 +98,13 @@
           "kind": "pure",
           "opEff": null,
           "classConstraints": [],
-          "unconvertibleTypes": []
+          "unconvertibleTypes": [],
+          "effParams": [],
+          "tparamKinds": [
+            "value"
+          ],
+          "rkinds": [],
+          "shape": "untargeted"
         },
         {
           "name": "Console.writeLine",
@@ -118,14 +128,21 @@
           "eff": [
             {
               "name": {
-                "value": "Console"
+                "value": "Console",
+                "ix": {
+                  "fixed": "top"
+                }
               }
             }
           ],
           "kind": "io",
           "opEff": "Console",
           "classConstraints": [],
-          "unconvertibleTypes": []
+          "unconvertibleTypes": [],
+          "effParams": [],
+          "tparamKinds": [],
+          "rkinds": [],
+          "shape": "untargeted"
         }
       ],
       "effects": [
@@ -160,14 +177,18 @@
                     "name": "Integer"
                   }
                 }
-              ]
+              ],
+              "constructorName": "PosPair"
             }
           ],
           "typeName": "PosPair",
           "isRecord": false,
           "extensible": false,
           "package": "author",
-          "builtin": "ordinary"
+          "builtin": "ordinary",
+          "variances": [],
+          "requirements": [],
+          "publicBoundary": []
         },
         {
           "name": "Pair",
@@ -190,14 +211,18 @@
                     "name": "Integer"
                   }
                 }
-              ]
+              ],
+              "constructorName": "Pair"
             }
           ],
           "typeName": "Pair",
           "isRecord": true,
           "extensible": false,
           "package": "author",
-          "builtin": "ordinary"
+          "builtin": "ordinary",
+          "variances": [],
+          "requirements": [],
+          "publicBoundary": []
         }
       ],
       "summaries": [
@@ -226,7 +251,12 @@
       ],
       "statePure": [],
       "supplementalData": [],
-      "supplementalPrims": []
+      "supplementalPrims": [],
+      "effKinds": [],
+      "valKinds": [],
+      "admitsR": [],
+      "valContents": [],
+      "opaqueNames": []
     },
     {
       "group": "golden",
@@ -243,7 +273,12 @@
       "summaries": [],
       "statePure": [],
       "supplementalData": [],
-      "supplementalPrims": []
+      "supplementalPrims": [],
+      "effKinds": [],
+      "valKinds": [],
+      "admitsR": [],
+      "valContents": [],
+      "opaqueNames": []
     }
   ]
 }

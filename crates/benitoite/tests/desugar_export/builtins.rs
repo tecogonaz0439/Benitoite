@@ -229,6 +229,43 @@ fn qualified_data(p: &CheckedProgram, adt: &types::AdtDef) -> String {
     )
 }
 
+// 不透明型の元の交換名と、同じ固定表の宣言名の対応を明示する。
+// 型引数を含む元の名は残す。値のStringを型名として解釈しない。
+pub(crate) fn collect_opaque_names(value: &Value, names: &mut BTreeMap<String, String>) {
+    match value {
+        Value::Object(fields) => {
+            if let Some(name) = fields
+                .get("opaque")
+                .and_then(|t| t.get("name"))
+                .and_then(Value::as_str)
+            {
+                let (id, _) = name.split_once(':').unwrap();
+                let id = BuiltinTypeId(id.parse().unwrap());
+                let definition = id.def().unwrap();
+                assert!(matches!(
+                    definition.class,
+                    BuiltinTypeClass::Opaque | BuiltinTypeClass::Resource
+                ));
+                let public = std::iter::once("Benitoite")
+                    .chain(definition.module.iter().copied())
+                    .chain(std::iter::once(definition.name))
+                    .collect::<Vec<_>>()
+                    .join(".");
+                names.insert(name.to_owned(), public);
+            }
+            for value in fields.values() {
+                collect_opaque_names(value, names);
+            }
+        }
+        Value::Array(values) => {
+            for value in values {
+                collect_opaque_names(value, names);
+            }
+        }
+        Value::Null | Value::Bool(_) | Value::Number(_) | Value::String(_) => {}
+    }
+}
+
 /// 使用する prim と組み込みの操作全体、データ型の宣言と要約を入力の識別子とともに返す。
 pub fn named_builtin_tables(p: &CheckedProgram, input: &Value, stdlib: &CheckedProgram) -> Value {
     let mut names = BTreeMap::new();
@@ -475,6 +512,10 @@ pub fn named_builtin_tables(p: &CheckedProgram, input: &Value, stdlib: &CheckedP
         .as_object_mut()
         .unwrap()
         .extend(data.as_object().unwrap().clone());
+    let mut opaque_names = BTreeMap::new();
+    collect_opaque_names(input, &mut opaque_names);
+    collect_opaque_names(&output, &mut opaque_names);
+    output["opaqueNames"] = json!(opaque_names.into_iter().collect::<Vec<_>>());
     output
 }
 
@@ -526,7 +567,12 @@ pub(crate) fn export_prim(
     let params: Vec<_> = scheme.params.iter().map(|t| surface.ty(t)).collect();
     let eff_params: Vec<_> = scheme.effect_params.iter().enumerate().map(|(i, _)|
         json!({"noFail":scheme.no_fail.contains(&types::EffVar(u32::try_from(i).unwrap()))})).collect();
-    let prim = json!({"name":name,"tparams":tparams,"neffs":scheme.effect_params.len(),"effParams":eff_params,
+    let tparam_kinds: Vec<_> = scheme
+        .type_params
+        .iter()
+        .map(|t| super::param_kind(t.kind))
+        .collect();
+    let prim = json!({"name":name,"tparams":tparams,"tparamKinds":tparam_kinds,"neffs":scheme.effect_params.len(),"effParams":eff_params,
         "params":params,"ret":surface.ty(&scheme.ret),"eff":surface.eff(&scheme.effects),
         "kind":kind,"opEff":op_eff,"classConstraints":surface.dict_params(&scheme.class_constraints),
         "unconvertibleTypes":unconvertible,"names":scheme.param_names,

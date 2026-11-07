@@ -4,7 +4,7 @@ import Benitoite.Release.Refinement.ApproxAdapter
 import Benitoite.Interval.ApproxAdapter
 import Benitoite.Interval.BudgetAnalyze
 import Benitoite.Interval.Environment
-import Benitoite.Surface.Desugar
+import Benitoite.Interval.SurfaceCode
 
 /-! # 独立評価の値・捕捉・制御と実行の対応 -/
 namespace Benitoite.Release.Refinement.IntervalConnection
@@ -50,13 +50,13 @@ def EnvRel (env : Benitoite.Interval.ConcreteEnv) (cap : Capture) : Prop :=
   EnvValuesRel env.locals cap.values
 
 def ExprCode (op : Benitoite.Surface.OpPrim) (position : Benitoite.Surface.Position) (source : Benitoite.Surface.Expr) (code : Comp) : Prop :=
-  code = embedComp (Benitoite.Surface.desugarExpr op position source)
+  code = (Benitoite.Interval.SurfaceCode.expr op position source)
 
 def BlockCode (op : Benitoite.Surface.OpPrim) (position : Benitoite.Surface.Position) (source : Benitoite.Surface.Block) (code : Comp) : Prop :=
-  code = embedComp (Benitoite.Surface.desugarBlock op position source)
+  code = (Benitoite.Interval.SurfaceCode.block op position source)
 
 def ArmsCode (op : Benitoite.Surface.OpPrim) (position : Benitoite.Surface.Position) (source : Benitoite.Surface.Arms) (arms : List Arm) : Prop :=
-  arms = embedArms (Benitoite.Surface.desugarArms op position source)
+  arms = (Benitoite.Interval.SurfaceCode.arms op position source)
 
 /-- 失敗理由と実際の理由列の対応は算術・δの葉が具体化する。 -/
 def ResultRel (failures : Benitoite.Interval.Failure → List ErrKind → Prop) :
@@ -241,7 +241,9 @@ theorem connect_return {P B σ failures env cap op key resultType source type ou
     Benitoite.Interval.EvalPartial env ⟨.returnE resultType source,resultType,key⟩ (Benitoite.Interval.returnOutcome outcome) trace ∧
     EnvRel env cap ∧ Runs P B σ failures (.mk cap (.letIn m (.escape (.var 0)))) k μ (Benitoite.Interval.returnOutcome outcome) := by
   refine ⟨?_,.returnE _ _ _ _ _ _ _ eval,henv,run.return_operand⟩
-  exact congrArg (fun code => Comp.letIn code (.escape (.var 0))) hcode
+  simpa only [ExprCode, Benitoite.Interval.SurfaceCode.expr,
+    Benitoite.Interval.SurfaceSyntax.liftExpr, Benitoite.Interval.SurfaceSyntax.liftPosition,
+    Surface.desugarExpr] using congrArg (fun code => Comp.letIn code (.escape (.var 0))) hcode
 
 /-- let の独立評価は同じ値を前置し、実行はその値に対応する実値を捕捉へ前置する。 -/
 theorem connect_bind {P B σ failures env cap op position key kind boundType source rest type c outcome et rt m n k μ}
@@ -254,8 +256,11 @@ theorem connect_bind {P B σ failures env cap op position key kind boundType sou
     BlockCode op position (.bind kind boundType source rest) (.letIn m n) ∧
     Benitoite.Interval.EvalBlock env key (.bind kind boundType source rest) type outcome (et ++ rt) ∧
     Runs P B σ failures (.mk cap (.letIn m n)) k μ outcome := by
-  refine ⟨(by cases hm; cases hn; rfl),.bind _ _ _ _ _ _ _ _ _ _ _ heval teval,?_⟩
-  exact head.let_normal (fun v μ' hv => tail v μ' hv (henv.extend hv))
+  refine ⟨?_,.bind _ _ _ _ _ _ _ _ _ _ _ heval teval,?_⟩
+  · cases hm; cases hn
+    simp only [BlockCode, Benitoite.Interval.SurfaceCode.block, Benitoite.Interval.SurfaceCode.expr,
+      Benitoite.Interval.SurfaceSyntax.liftBlock, Benitoite.Interval.SurfaceSyntax.liftPosition, Surface.desugarBlock]
+  · exact head.let_normal (fun v μ' hv => tail v μ' hv (henv.extend hv))
 
 /-- 実際に選んだ束縛列で、元の環境と捕捉を同じ順序に延長する。 -/
 theorem runs_match_body {P B σ failures env cap v arms next alts body ws cs k μ outcome}
@@ -406,7 +411,7 @@ def ArmBodyConnection (env : Benitoite.Interval.ConcreteEnv) (cap : Capture) (ξ
     (op : Benitoite.Surface.OpPrim) (position : Benitoite.Surface.Position) (body : Benitoite.Surface.Block)
     (code : Comp) (cs : List Benitoite.Interval.ConcreteValue) (vs : List Val) : Prop :=
   EnvRelAt {env with locals := cs.reverse.map some ++ env.locals} (cap.extendMany vs) (Benitoite.Release.upRen vs.length ξ) ∧
-    code = embedComp ((Benitoite.Surface.desugarBlock op position body).rename (Benitoite.Release.upRen vs.length ξ))
+    code = ((Benitoite.Interval.SurfaceCode.block op position body).rename (Benitoite.Release.upRen vs.length ξ))
 
 /-- パターンの失敗を区別し、成功時には束縛列を再帰的に対応付ける。 -/
 def MatchRel : Option (List Benitoite.Interval.ConcreteValue) → Option (List Val) → Prop
@@ -524,7 +529,7 @@ theorem connect_integer_arm {P B σ failures env cap key value alternatives sour
     (eval : Benitoite.Interval.EvalBlock {env with locals := selected.reverse.map some ++ env.locals}
       key sourceBody type outcome trace)
     (hvalue : ValueRel (.integer value) runtimeValue)
-    (hcode : code = embedComp ((Benitoite.Surface.desugarBlock op position sourceBody).rename (Benitoite.Release.upRen ws.length ξ)))
+    (hcode : code = ((Benitoite.Interval.SurfaceCode.block op position sourceBody).rename (Benitoite.Release.upRen ws.length ξ)))
     (hi : arms[next]? = some (.mk (Benitoite.Surface.Alternative.toCoreList alternatives) none code))
     (hm : firstAlt runtimeValue (Benitoite.Surface.Alternative.toCoreList alternatives) = some ws)
     (run : Runs P B σ failures (.mk (cap.extendMany ws) code) k μ outcome) :
@@ -541,7 +546,7 @@ theorem connect_width_arm {P B σ failures env cap key kind value alternatives s
     (eval : Benitoite.Interval.EvalBlock {env with locals := selected.reverse.map some ++ env.locals}
       key sourceBody type outcome trace)
     (hvalue : ValueRel (.ofInteger kind value) runtimeValue)
-    (hcode : code = embedComp ((Benitoite.Surface.desugarBlock op position sourceBody).rename (Benitoite.Release.upRen ws.length ξ)))
+    (hcode : code = ((Benitoite.Interval.SurfaceCode.block op position sourceBody).rename (Benitoite.Release.upRen ws.length ξ)))
     (hi : arms[next]? = some (.mk (Benitoite.Surface.Alternative.toCoreList alternatives) none code))
     (hm : firstAlt runtimeValue (Benitoite.Surface.Alternative.toCoreList alternatives) = some ws)
     (run : Runs P B σ failures (.mk (cap.extendMany ws) code) k μ outcome) :
@@ -561,7 +566,7 @@ theorem connect_result_arm {P B σ failures env cap key names types tag payload 
     (hvalue : ValueRel (.con names.result types tag [payload]) runtimeValue)
     (branch : ∀ ws, firstAlt runtimeValue (Benitoite.Surface.Alternative.toCoreList alternatives) = some ws →
       ValuesRel selected ws → ∃ code,
-        code = embedComp ((Benitoite.Surface.desugarBlock op position sourceBody).rename (Benitoite.Release.upRen ws.length ξ)) ∧
+        code = ((Benitoite.Interval.SurfaceCode.block op position sourceBody).rename (Benitoite.Release.upRen ws.length ξ)) ∧
         arms[next]? = some (.mk (Benitoite.Surface.Alternative.toCoreList alternatives) none code) ∧
         Runs P B σ failures (.mk (cap.extendMany ws) code) k μ outcome) :
     Benitoite.Interval.EvalResultArms env key names (.con names.result types tag [payload]) tag payload (.cons alternatives none sourceBody sourceRest) type outcome trace ∧
@@ -696,16 +701,20 @@ theorem connect_bind_failed {P B σ failures env cap key kind boundType source r
       Runs P B σ failures (.mk cap (.letIn m n)) k μ (.failed reason) :=
   ⟨.bindAbrupt _ _ _ _ _ _ _ _ _ eval trivial,run.let_failed⟩
 
-/-- guard を持つ場合も、脱糖で追加した照合値の一位置を残す。 -/
+/-- 腕のガードと本体は、照合対象のスロットを構文で挿入した後に脱糖する。 -/
 theorem arms_code_cons {op position alternatives guard body rest arms}
     (h : ArmsCode op position (.cons alternatives guard body rest) arms) :
-    arms = .mk (Benitoite.Surface.Alternative.toCoreList alternatives)
-      (guard.map (fun g => embedComp ((Benitoite.Surface.desugarExpr op .other g).rename
-        (Benitoite.Release.upRen (Benitoite.Release.Arm.bindersOf (Benitoite.Surface.Alternative.toCoreList alternatives)) (·+1)))))
-      (embedComp ((Benitoite.Surface.desugarBlock op position body).rename
-        (Benitoite.Release.upRen (Benitoite.Release.Arm.bindersOf (Benitoite.Surface.Alternative.toCoreList alternatives)) (·+1)))) ::
-      embedArms (Benitoite.Surface.desugarArms op position rest) := by
-  cases guard <;> exact h
+    arms = .mk
+      (Surface.Alternative.toCoreList (alternatives.map Benitoite.Interval.SurfaceSyntax.liftAlternative))
+      (guard.map (Benitoite.Interval.SurfaceCode.armExpr op
+        (Benitoite.Release.Arm.bindersOf (Benitoite.Surface.Alternative.toCoreList alternatives))))
+      (Benitoite.Interval.SurfaceCode.armBlock op position
+        (Benitoite.Release.Arm.bindersOf (Benitoite.Surface.Alternative.toCoreList alternatives)) body) ::
+      Benitoite.Interval.SurfaceCode.arms op position rest := by
+  cases guard <;> simpa only [ArmsCode, Benitoite.Interval.SurfaceCode.arms,
+    Benitoite.Interval.SurfaceSyntax.liftArms, Benitoite.Interval.SurfaceSyntax.liftMaybe,
+    Surface.desugarArms, Option.map_none, Option.map_some,
+    Benitoite.Interval.SurfaceCode.armExpr, Benitoite.Interval.SurfaceCode.armBlock] using h
 
 /-- 型付きの source の戻り先は、既存の escape の葉で検査される。 -/
 theorem typed_returned_mark {P B σ Eb q k μ c v}

@@ -12,20 +12,7 @@ TOOLS = shared['TOOLS']
 FILES = shared['FILES']
 
 
-def legacy(data):
-    """属性のない旧形式の正の入力。新版の欄を完全に除く。"""
-    def strip(value, kind):
-        if isinstance(value, list):
-            return [strip(x, kind) for x in value]
-        if not isinstance(value, dict):
-            return value
-        return {k: strip(v, kind) for k, v in value.items()
-                if k not in ('builtin', 'package', 'coverageView', 'extensible', 'isRecord', 'dataTypes')
-                and not (k in ('typeName', 'constructorName') and kind != 'coverage')}
-    result = {k: strip(v, k) for k, v in data.items()}
-    for k, v in result.items():
-        v['version'] = 8 if k == 'corpus' else 2
-    return result
+
 
 
 def drop_view_names(value, names):
@@ -66,31 +53,24 @@ class ExtensibleExchangeTests(unittest.TestCase):
                 else:
                     self.assertEqual(report['errors'], [])
 
-    def test_closed_legacy_input_is_accepted_by_all_entries(self):
+    def test_closed_current_input_is_accepted_by_all_entries(self):
         data = {name: json.loads((Path(__file__).with_name('named-exchange') / f'{name}.json').read_text())
                 for name in FILES}
         for tool in TOOLS:
             with self.subTest(tool=tool):
-                result, _ = self.run_tool(tool, legacy(data), input_name='independent-named')
+                result, _ = self.run_tool(tool, data, input_name='independent-named')
                 self.assertEqual(result.returncode, 0, result.stderr + result.stdout)
 
-    def test_old_versions_reject_new_information_even_when_empty(self):
-        closed = {name: json.loads((Path(__file__).with_name('named-exchange') / f'{name}.json').read_text())
-                  for name in FILES}
+    def test_old_versions_are_rejected(self):
         for tool, files in TOOLS.items():
-            for field, value in [('coverageView', []), ('extensible', False),
-                                 ('isRecord', False), ('typeName', 'Unused'), ('package', 'unused'),
-                                 ('builtin', 'ordinary'), ('dataTypes', []), ('constructorName', 'Unused')]:
-                with self.subTest(tool=tool, field=field):
-                    data = legacy(closed)
-                    # 網羅性 2 の typeName は旧来から存在する。新しい型表示の印を添える。
-                    if tool == 'coverageDiff' and field in ('typeName', 'constructorName'):
-                        data[files[0]]['unusedMetadata'] = {field: value, 'isRecord': False}
-                    else:
-                        data[files[0]]['unusedMetadata'] = {field: value}
-                    result, _ = self.run_tool(tool, data, input_name='independent-named')
-                    self.assertEqual(result.returncode, 2, result.stdout)
-                    self.assertIn('requires new exchange version', result.stderr)
+            for field in files:
+                for version in (range(8, 16) if field == 'corpus' else range(2, 8)):
+                    data = copy.deepcopy(self.data)
+                    data[field]['version'] = version
+                    with self.subTest(tool=tool, field=field, version=version):
+                        result, _ = self.run_tool(tool, data)
+                        self.assertEqual(result.returncode, 2, result.stdout)
+                        self.assertIn('version', result.stderr)
 
     def test_required_new_fields_are_not_defaulted(self):
         for tool, files in TOOLS.items():
@@ -155,7 +135,8 @@ class ExtensibleExchangeTests(unittest.TestCase):
                     self.assertEqual(result.returncode, 1, result.stderr + result.stdout)
                     reason = (report['result']['error']['reason'] if tool == 'surfaceCheck'
                               else report['mismatchExamples'][0]['error']['reason'])
-                    self.assertEqual(reason, 'binding pattern is not exhaustive' if mode == 'bind' else 'match is not exhaustive')
+                    # 篩付きの検査器は、網羅しない照合と束縛を案内の再検査の失敗として断る。
+                    self.assertEqual(reason, 'type or certificate check failed')
             if mode not in ('bind', 'method'):
                 result, report = self.run_tool('surfaceCheck', data, selected=f'fn:{index}')
                 self.assertEqual(result.returncode, 1, result.stderr + result.stdout)
@@ -187,7 +168,7 @@ class ExtensibleExchangeTests(unittest.TestCase):
                 if mode == 'constructor':
                     case['decls'].append({'builtin': 'ordinary', 'package': 'author', 'name': 'Wrap', 'typeName': 'Wrap', 'isRecord': False,
                         'extensible': False, 'ntys': 0, 'fields': None,
-                        'ctors': [{'name': 'Wrap', 'constructorName': 'Wrap', 'tag': 0, 'args': [rawkind]}]})
+                        'ctors': [{'name': 'Wrap', 'constructorName': 'Wrap', 'tag': 0, 'args': [rawkind]}], 'variances': ['invariant'] * 0, 'requirements': [], 'publicBoundary': []})
                     case['ty'] = {'kind': 'data', 'name': 'Wrap', 'args': []}
                     pat = {'kind': 'con', 'name': 'Wrap', 'args': [only]}
                     patterns = [pat]
@@ -264,13 +245,13 @@ class ExtensibleExchangeTests(unittest.TestCase):
     def test_synthetic_superclass_unit_is_not_a_function_body(self):
         data = copy.deepcopy(self.data)
         h = {'tparams': [], 'neffs': 0, 'names': [], 'params': [],
-             'ret': {'base': {'name': 'Unit'}}, 'eff': []}
+             'ret': {'base': {'name': 'Unit'}}, 'eff': [], 'tparamKinds': [], 'effParams': [], 'rangeParams': [], 'proofSteps': None}
         data['corpus']['inputs'][0]['definitions'].append({
             'name': 'I supers (impl:0)', 'scope': {'inScope': {
                 'surface': {'header': h, 'body': 'empty', 'dictParams': [],
                             'implementation': 'I', 'method': None, 'supers': [], 'coverageView': [], 'package': 'author'},
                 'core': {'header': h, 'body': {'ret': {'value': {'const': {'value': 'unit'}}}},
-                         'lambdaEffects': [], 'supers': []}}}})
+                         'lambdaEffects': [], 'supers': []}}}, 'annotations': {}})
         for tool in ('desugarDiff', 'surfaceCheck', 'surfaceCheckAll'):
             with self.subTest(tool=tool):
                 result, report = self.run_tool(tool, data)
@@ -352,17 +333,15 @@ class ExtensibleExchangeTests(unittest.TestCase):
                 self.assertEqual(result.returncode, 2, result.stdout)
                 self.assertIn('duplicate body coverage view', result.stderr + json.dumps(report))
 
-    def test_legacy_sidecars_reject_new_fields(self):
-        closed = {name: json.loads((Path(__file__).with_name('named-exchange') / f'{name}.json').read_text())
-                  for name in FILES}
+    def test_old_sidecars_are_rejected(self):
         for tool in ('builtinCheck', 'coverageProgramDiff', 'surfaceCheck', 'surfaceCheckAll'):
             for key in TOOLS[tool][1:]:
+                data = copy.deepcopy(self.data)
+                data[key]['version'] = 7
                 with self.subTest(tool=tool, sidecar=key):
-                    data = legacy(closed)
-                    data[key]['inputs'][0]['unusedType'] = {'extensible': True}
-                    result, _ = self.run_tool(tool, data, input_name='independent-named')
+                    result, _ = self.run_tool(tool, data)
                     self.assertEqual(result.returncode, 2, result.stdout)
-                    self.assertIn('requires new exchange version: extensible', result.stderr)
+                    self.assertIn('version', result.stderr)
 
     def test_builtin_identity_is_unique_and_standard(self):
         for tool in TOOLS:
@@ -398,7 +377,7 @@ class ExtensibleExchangeTests(unittest.TestCase):
                                  for n, (name, args) in enumerate(zip(names, params))]
                         decl = {'name': 'Builtin', 'typeName': 'UnrelatedDisplay', 'package': 'stdlib',
                                 'builtin': builtin, 'isRecord': False, 'extensible': False,
-                                'ntys': 2 if builtin == 'result' else 1, 'ctors': ctors}
+                                'ntys': 2 if builtin == 'result' else 1, 'ctors': ctors, 'variances': ['invariant'] * (2 if builtin == 'result' else 1), 'requirements': [], 'publicBoundary': []}
                         if raw: decl['fields'] = None
                         if mode == 'name': ctors[0]['constructorName'] = 'Wrong'
                         elif mode == 'args': ctors[0]['args'] = []
@@ -411,10 +390,13 @@ class ExtensibleExchangeTests(unittest.TestCase):
                         else:
                             data['builtins']['inputs'][0]['dataDecls'].append(decl)
                             data['corpus']['inputs'][0]['dataTypes'].append(
-                                {k: decl[k] for k in ('name', 'typeName', 'package', 'builtin', 'isRecord', 'extensible')})
+                                {**{k: decl[k] for k in ('name', 'typeName', 'package', 'builtin', 'isRecord', 'extensible')},
+                                 'constructors': [[c['name'], c.get('constructorName', '')] for c in ctors]})
                         result, report = self.run_tool(tool, data)
                         self.assertEqual(result.returncode, 2, result.stdout)
+                        # 構成子名の欄を欠いた型表は、往復の一致の検査（readBuiltins）で断る。
                         self.assertIn('constructorName' if raw and mode == 'missing-name' else
+                                      'unexpected builtin fields' if mode == 'missing-name' else
                                       'invalid builtin constructor shape', result.stderr + json.dumps(report))
 
     def test_constants_cannot_hide_source_matches_or_bindings(self):
@@ -438,10 +420,10 @@ class ExtensibleExchangeTests(unittest.TestCase):
             for key in TOOLS[tool][1:]:
                 with self.subTest(tool=tool, sidecar=key):
                     data = copy.deepcopy(self.data)
-                    data[key] = legacy(self.data)[key]
+                    data[key]['version'] = 7
                     result, _ = self.run_tool(tool, data)
                     self.assertEqual(result.returncode, 2, result.stdout)
-                    self.assertIn('exchange version pair mismatch', result.stderr)
+                    self.assertIn('version', result.stderr)
 
 
 if __name__ == '__main__':

@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 8,
   "inputs": [
     {
       "group": "golden",
@@ -23,11 +23,15 @@
             {
               "name": "Only",
               "fields": null,
-              "args": []
+              "args": [],
+              "constructorName": "Only"
             }
           ],
           "package": "author",
-          "builtin": "ordinary"
+          "builtin": "ordinary",
+          "variances": [],
+          "requirements": [],
+          "publicBoundary": []
         },
         {
           "name": "Rec",
@@ -47,11 +51,15 @@
                     "name": "Unit"
                   }
                 }
-              ]
+              ],
+              "constructorName": "ParseError"
             }
           ],
           "package": "author",
-          "builtin": "ordinary"
+          "builtin": "ordinary",
+          "variances": [],
+          "requirements": [],
+          "publicBoundary": []
         },
         {
           "name": "Unused",
@@ -63,11 +71,15 @@
             {
               "name": "Unused",
               "fields": null,
-              "args": []
+              "args": [],
+              "constructorName": "Unused"
             }
           ],
           "package": "author",
-          "builtin": "ordinary"
+          "builtin": "ordinary",
+          "variances": [],
+          "requirements": [],
+          "publicBoundary": []
         },
         {
           "name": "Wrap",
@@ -86,11 +98,15 @@
                     "args": []
                   }
                 }
-              ]
+              ],
+              "constructorName": "Wrap"
             }
           ],
           "package": "author",
-          "builtin": "ordinary"
+          "builtin": "ordinary",
+          "variances": [],
+          "requirements": [],
+          "publicBoundary": []
         }
       ],
       "summaries": [
@@ -141,7 +157,12 @@
       ],
       "statePure": [],
       "supplementalData": [],
-      "supplementalPrims": []
+      "supplementalPrims": [],
+      "effKinds": [],
+      "valKinds": [],
+      "admitsR": [],
+      "valContents": [],
+      "opaqueNames": []
     }
   ]
 }
