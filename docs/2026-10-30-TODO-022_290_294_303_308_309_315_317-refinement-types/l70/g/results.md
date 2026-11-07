@@ -648,3 +648,48 @@ Lean を変えずに分類した。篩付きの脱糖は取得関数の結果型
 
 - 1回目の既定ビルドが、`SurfaceCheck/Validation.lean` の `Prepared` の例の欄の不足で終了1だった。例に空の閉包を足して2回目で終了0。
 - 数え直しの `named-programs`（1,792入力・73,853定義）の表層の一括検査は、準備を通る入力が増えて検査の本体が走るようになり、2入力・54定義の試しで約0.46秒/定義、全体で約9時間の見込みになった。3,239秒で止め（PID 指定）、`named-programs` は準備の段だけを数えた（`<tmp3>/scripts/prep.lean`。前の担当の台本の写し）。ほかの47文書は検査の本体まで走らせた。
+
+## 三人目の Claude の担当の区間の続き（f7de1668 から。2026-11-07 15:22〜15:30）
+
+基準は取りまとめのコミット `f7de1668`。git の書き込み、`scripts/check.sh`・`scripts/check-formal.sh` の全体の実行はしていない。サブエージェントは起動していない。この区間では Lean のソースを変えていない。
+
+### 1. `request-in` の表層の不一致の原因
+
+原因は Lean の検査器でなく、試験の側の書き出し（`crates/benitoite/tests/desugar_export`）の二つの欠けである。どちらも直した。
+
+| 原因 | 根拠 | 直し |
+|---|---|---|
+| 標準ライブラリの宣言の欠け | 本体は標準の record の取得関数 `Http.ClientRequest.url`（交換の名前 `fn:542`）を呼ぶ。`named::write_tables` は標準ライブラリの宣言の文書を常に空（`functions: []`）で書くので、`fn:542` は交換のどの文書にも宣言がない（コーパスの呼び出しの2箇所だけに現れる）。検査器の関数の表（利用者の定義・取得関数・信頼する関数）に `fn:542` がなく、頭の検査 `CheckOpenArguments.head` が結果なしを返して `call signature is invalid` になる。宣言のない関数の呼び出しを断るのは検査器の正しい振る舞いである | `write_tables` が、入力が参照する標準ライブラリの関数の宣言（`exchange::named_stdlib_declarations` の `functions`）を書く。入力は型クラスと実装の表を持たないので、信頼する実装は書かない |
+| 末尾の照合の注釈の件数 | 宣言を足すと検査は一致するが、一括検査が `q11Agrees` 偽で終了1になった。本体は `return match …` で末尾の照合を1件持ち、定義の注釈も `tailMatch: [1,0]` だが、コーパスの注釈を `{"tailMatch":[0,0]}` と書いていた | `scope_tables.rs` の path-in・request-in の書き出しは、ほかの書き出しと同じく定義の注釈から件数を数える（`export_annotations`） |
+
+再現の最小の入力: 標準の record の取得関数を一回呼ぶ定義（`Http.ClientRequest.url(raw)` など）の書き出しから、標準ライブラリの宣言の文書の `fn:542` の宣言を除いた入力。変える前の書き出し（`<tmp42>/new/desugar/request-in-*.json`）がこの形であり、`surfaceCheck` は理由 `call signature is invalid`、位置 `[0,0,1,1,0,0,1,0,0]`（取得関数の呼び出し）で断る。取得関数の引数を元の引数 `raw` に変えても同じ位置で断られ、呼び出しを文字列のリテラルに変えると受理する（台本と入力 `<tmp3>/reqin/`）。
+
+直した後の書き出し（作業木の `target/l70-g3-reexport/`。`cargo test -p benitoite --test desugar_export scope_tables:: export_named_`）:
+
+| 入力 | desugarDiff | builtinCheck | surfaceCheck | surfaceCheckAll |
+|---|---|---|---|---|
+| request-in | 終了0（1定義一致） | 終了0 | 終了0（受理） | 終了0（一致1、`tailMatches` 1 = 注釈 [1,0]） |
+| path-in | 終了0 | 終了0 | — | 終了2（`Scope.checkPathIn`、分類した `At`） |
+| named-types・named-declarations | — | — | — | 前と同じ（標準ライブラリの関数を参照しないので宣言の文書は空のまま。named-types 一致1、named-declarations は `At`） |
+
+分類の表に新しい原因は足していない。F-REG の書き出しはこの直しの後の書き出しを使う（L70.42 の一時領域の書き出しは古い）。R 単位の義務にはしない。
+
+### 2. 文書への申し送りの取り込み
+
+| 箇所 | 内容 |
+|---|---|
+| 07-04「証明する性質」の `Exchange.BuiltinAgreement.standardCheck` の段落 | 一段落を四段落と箇条に分けた。判定の定義と照合用の表（名前の写し）・検査器の表の区別、判定の対象（照合の対象 `Exchange.CheckInput.closureOf` の `prims`・`data` の定義）、鍵の印のそろえ（`normKey`・`satB_normKey`・`sat_normKey`・`admits_normKey`）、`standardCheck_sound`・`agrees_complete`・`prepare_agrees` の新しい言明と述べないこと（名前の写しと鍵の印のそろえ、検査器が照合の対象の外の行を読まないこと） |
+| 01-12「形式化した操作の制約と節の辞書」 | 辞書の位置の自然数の引き算の切り詰め、規則 `DictEv.HasType.clause` が番号の範囲を前提に置かないこと、checker の範囲の確かめ（`DictEv.inScope`、`clause dictionary scope mismatch`、辞書の推論）を一段落足した |
+
+設計書では、実行時の値の「閉包」と紛れないよう、閉包の語を使わず「照合の対象」と書いた（`closureOf` と Lean の名前はそのまま）。見出しは変えていない。
+
+### 検査
+
+| 検査 | 結果 |
+|---|---|
+| `cargo test -p benitoite --test desugar_export --test coverage_export` | 終了0（網羅性 3通過・1無視、脱糖 49通過・1無視） |
+| `rustfmt --check`（変えた2ファイル）・`cargo clippy -p benitoite --test desugar_export -- -D warnings` | 終了0 |
+| `python3 tools/spec-coverage/spec_coverage.py --self-test`・通常の実行 | どちらも終了0 |
+| 相対リンク（07-04・01-12・results.md） | 切れたリンクなし（01-12 の数式の `](…)` の形は対象外） |
+
+Lean は変えていないので、既定ビルド・公理監査・照合は前の区間の結果のままである。

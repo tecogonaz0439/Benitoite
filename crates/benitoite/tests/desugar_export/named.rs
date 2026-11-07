@@ -36,7 +36,12 @@ pub(super) fn write_tables(output: &Path, stem: &str, p: &pipeline::CheckedProgr
         .unwrap(),
     )
     .unwrap();
-    let stdlib = json!({"version":8,"inputs":[{"group":input["group"],"name":input["name"],"functions":[],"impls":[]}]});
+    // 入力が参照する標準ライブラリの関数（標準の record の取得関数を含む）の宣言を、本体なしで書く。
+    // 入力は型クラスと実装の表を持たないので、信頼する実装は書かない。
+    let core = pipeline::desugar_checked(p).unwrap();
+    let declarations = exchange::named_stdlib_declarations(p, &core, input);
+    let stdlib = json!({"version":8,"inputs":[{"group":input["group"],"name":input["name"],
+        "functions":declarations["functions"],"impls":[]}]});
     fs::write(
         output.join(format!("{stem}-stdlib.json")),
         exchange::to_vec(exchange::Document::Stdlib, &stdlib).unwrap(),

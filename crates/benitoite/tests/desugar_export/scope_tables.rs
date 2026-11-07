@@ -128,8 +128,9 @@ end function
         &json!({"fixed":"top"})
     ));
     let output = super::export_directory("path-in");
+    let annotations = super::export_annotations(std::slice::from_ref(&input));
     let corpus = json!({"version":16,"operators":super::exchange::operators(),
-        "inputs":[input],"annotations":{"tailMatch":[0,0]}});
+        "inputs":[input],"annotations":annotations});
     std::fs::write(
         output.join("path-in-corpus.json"),
         to_vec(Document::Corpus, &corpus).unwrap(),
@@ -227,7 +228,9 @@ end function
         &json!({"rvar":0})
     ));
     let output = super::export_directory("request-in");
-    let corpus = json!({"version":16,"operators":super::exchange::operators(),"inputs":[input],"annotations":{"tailMatch":[0,0]}});
+    // 表層の注釈の件数は、ほかの書き出しと同じく定義の注釈から数える。
+    let annotations = super::export_annotations(std::slice::from_ref(&input));
+    let corpus = json!({"version":16,"operators":super::exchange::operators(),"inputs":[input],"annotations":annotations});
     std::fs::write(
         output.join("request-in-corpus.json"),
         to_vec(Document::Corpus, &corpus).unwrap(),
