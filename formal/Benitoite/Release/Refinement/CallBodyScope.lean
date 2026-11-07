@@ -4,7 +4,6 @@ import Benitoite.Release.Refinement.TypeSubstCallSites
 /-! # 宣言本体の具体化後の閉性（設計書 01-12「篩を含む状態の型付け」） -/
 namespace Benitoite.Release.Refinement
 noncomputable section
-set_option maxRecDepth 4096
 
 theorem type_image_value_wf {ts : List Ty} (ht : ∀ a ∈ ts, a.WF 0 0 0) (nv : Nat) :
     ∀ a ∈ ts, a.WF 0 0 nv := by

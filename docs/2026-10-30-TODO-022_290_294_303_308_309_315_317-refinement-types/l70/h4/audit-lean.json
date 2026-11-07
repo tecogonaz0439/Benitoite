@@ -1,0 +1,911 @@
+{
+ "modules": [
+  "Benitoite.Release.Refinement.SurfaceTargetCoverExamples",
+  "Benitoite.Release.Refinement.Surface.Monad2Examples",
+  "Benitoite.Release.Refinement.SurfaceTargetWriteExamples"
+ ],
+ "declarations": 629,
+ "by_module": {
+  "Benitoite.Release.Refinement.Surface.Monad2Examples": 254,
+  "Benitoite.Release.Refinement.SurfaceTargetCoverExamples": 182,
+  "Benitoite.Release.Refinement.SurfaceTargetWriteExamples": 193
+ },
+ "private": 326,
+ "macro_scoped": 0,
+ "unresolved": 0,
+ "axiom_sets": {
+  "Classical.choice + Quot.sound + propext": 188,
+  "propext": 198,
+  "なし": 234,
+  "Quot.sound + propext": 9
+ },
+ "sorryAx": 0,
+ "new_axioms": 0,
+ "axiom_declarations": 0,
+ "allowed": [
+  "Classical.choice",
+  "Quot.sound",
+  "propext"
+ ],
+ "required": {
+  "Benitoite.Release.Refinement.Surface.TargetCoverExamples.exact_covered": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetCoverExamples",
+   "kind": "theorem",
+   "type_sha256": "ddc044a9291b0274b05894f33d2bfca8014baae1c378fc38cd3e8b820eb4a23b",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetCoverExamples.mainEff_covers": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetCoverExamples",
+   "kind": "theorem",
+   "type_sha256": "6455a3451a74c106b2a5d31f3c9cf293efedfa79e010e3b7f42b947d68f3c77d",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetCoverExamples.narrow_not_sub": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetCoverExamples",
+   "kind": "theorem",
+   "type_sha256": "912d8d13cfa830688d930ae4d2e7dbb673f7fe5d2fb8edd8aedec3aa9ade6343",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetCoverExamples.check_typed": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetCoverExamples",
+   "kind": "theorem",
+   "type_sha256": "8cf700046488cca748c3731913928a5142333e45cb4fc8ef72b82eecc2aede09",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetCoverExamples.read_typed_in": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetCoverExamples",
+   "kind": "theorem",
+   "type_sha256": "0f87b55980f164d662604d5fd4f8845ace9bab989190f5e0ecfab72d70cdcc90",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetCoverExamples.read_typed": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetCoverExamples",
+   "kind": "theorem",
+   "type_sha256": "858939c2dacf8b118188a9277511d0232445947dcf12cb7297e162ac1d529636",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetCoverExamples.armCtx_obs": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetCoverExamples",
+   "kind": "theorem",
+   "type_sha256": "71dc5c303b387344c282d2b698c3c45d99611c8cf454b941c09368db550eb0fd",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetCoverExamples.okAlt_ty": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetCoverExamples",
+   "kind": "theorem",
+   "type_sha256": "d4f7334abb357b5ba3141379ee2fdc9cfc543224a0bde45d69d0e1b080afaa17",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetCoverExamples.wildAlt_ty": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetCoverExamples",
+   "kind": "theorem",
+   "type_sha256": "0eb2cbc538d42725a844fd8b2c1909dbd950e3c6d595c77702cbee4abc8c5b5e",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetCoverExamples.arms_typed": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetCoverExamples",
+   "kind": "theorem",
+   "type_sha256": "a2733e397c16abbdcf0f3acfb5f5e661cb0240bddf6b8f9cadce49663a48588f",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetCoverExamples.arms_exhaustive": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetCoverExamples",
+   "kind": "theorem",
+   "type_sha256": "8dd65166ee2d19f1bb2e55c9dfe6e094cd06ce49e227088f058359c9ce598958",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetCoverExamples.body_typed": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetCoverExamples",
+   "kind": "theorem",
+   "type_sha256": "6585eba19d2722bda840b4923bd3a058872b99996237280e85cf409f6f27328d",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetCoverExamples.narrow_annotation": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetCoverExamples",
+   "kind": "theorem",
+   "type_sha256": "ea6cb4683dc86f2fef0911c9035634c70f5972ce1b3a866e9b800acbab90273b",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetCoverExamples.callG_typed": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetCoverExamples",
+   "kind": "theorem",
+   "type_sha256": "7cfa7b449c915248eb5413955d2c7090bc1112a5ae2c3a6cb1da7e9fa0d7ee1c",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetCoverExamples.defTable_cases": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetCoverExamples",
+   "kind": "theorem",
+   "type_sha256": "247a5d9c93b5d176c8cc710e3b31410f893e8a114d24dd33f6fca1984d062ac0",
+   "axioms": []
+  },
+  "Benitoite.Release.Refinement.Surface.TargetCoverExamples.wellFormed": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetCoverExamples",
+   "kind": "theorem",
+   "type_sha256": "c38a3dbfed6c870f4f8b76424484b559c212c8ca02221d8c9e5d2744dcfc96f6",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetCoverExamples.wellTyped": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetCoverExamples",
+   "kind": "theorem",
+   "type_sha256": "f4fae12a98360f4de021be28e454f992dcb774866b5d2246aa9d0e638967f304",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetCoverExamples.hasFile": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetCoverExamples",
+   "kind": "theorem",
+   "type_sha256": "982582e77c6e7f682819ad388efc3edf7180e3c56d3efbfcbaf782da2ca9eea9",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetCoverExamples.hasMain": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetCoverExamples",
+   "kind": "theorem",
+   "type_sha256": "c76e4cfe806e07bb526c778df43b3130cdb79240db0fd6560412d7bbdbf793e5",
+   "axioms": [
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetCoverExamples.ready": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetCoverExamples",
+   "kind": "theorem",
+   "type_sha256": "6830e7997b6efcc09e613aa7c911c88139dc39d761bf6397d88a5be539dc2e80",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetCoverExamples.check_delta": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetCoverExamples",
+   "kind": "theorem",
+   "type_sha256": "1b58dae09c99c21e698cce4ee46494dee6c9673bee67e807b25e1f298ffaab90",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetCoverExamples.main_reach": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetCoverExamples",
+   "kind": "theorem",
+   "type_sha256": "a3b1f900557b3812d87b04dad9ff10d118af9666f438972a899d25f556ad3c59",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetCoverExamples.program_target_sound": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetCoverExamples",
+   "kind": "theorem",
+   "type_sha256": "175b6f0da94fda79ea7e3c4ce888a171c3dbb0a7c1edac5c1d99e47e405656e5",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetCoverExamples.main_reach_allowed": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetCoverExamples",
+   "kind": "theorem",
+   "type_sha256": "60d6ef2ebcb04f0e43f672b627623da4acbe79b442d6982333ded8c08738d900",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetCoverExamples.passwd_not_allowed": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetCoverExamples",
+   "kind": "theorem",
+   "type_sha256": "49d29cce875d4caba7158c13911d1189c2f696c1c2e5f248f06f02dccf27998a",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetCoverExamples.main_never_passwd": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetCoverExamples",
+   "kind": "theorem",
+   "type_sha256": "36153c2d74dbebd8a318418362d41697875aa9c98cb633de9d2dde8d2af30be2",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.Monad2Examples.cons_ok": {
+   "module": "Benitoite.Release.Refinement.Surface.Monad2Examples",
+   "kind": "theorem",
+   "type_sha256": "4e3f328ab56e236a65fc6cca478706f09808e7d4ccdafd2262f91190898e16ca",
+   "axioms": [
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.Monad2Examples.cons_err": {
+   "module": "Benitoite.Release.Refinement.Surface.Monad2Examples",
+   "kind": "theorem",
+   "type_sha256": "d6add36cc241e5a5ca8af27091bbd510b88054760111329e316d0b75cbc778bc",
+   "axioms": [
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.Monad2Examples.cons_cases": {
+   "module": "Benitoite.Release.Refinement.Surface.Monad2Examples",
+   "kind": "theorem",
+   "type_sha256": "dd02923a92e402400fafe20a3b8383ff2f3a63ee4f608d23e3ed7c02d93f105d",
+   "axioms": [
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.Monad2Examples.data_arity": {
+   "module": "Benitoite.Release.Refinement.Surface.Monad2Examples",
+   "kind": "theorem",
+   "type_sha256": "8599289f65b179da213e5c1be031049975d7d3973a08652e296b1b7fb105834f",
+   "axioms": [
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.Monad2Examples.map_tel": {
+   "module": "Benitoite.Release.Refinement.Surface.Monad2Examples",
+   "kind": "theorem",
+   "type_sha256": "ec5bfdf46c411de68f62e5b5466c3059d5bb23d2dc6789d833b71fb91cb151a8",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.Monad2Examples.pure_tel": {
+   "module": "Benitoite.Release.Refinement.Surface.Monad2Examples",
+   "kind": "theorem",
+   "type_sha256": "a2d0e4e1a200829743bf619406e06919ed7d492de2bb2978f40689cccd57de0b",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.Monad2Examples.apply_tel": {
+   "module": "Benitoite.Release.Refinement.Surface.Monad2Examples",
+   "kind": "theorem",
+   "type_sha256": "8fef4745c9abee5ed6e7352e043a6e9e3277c7784a5529256800ec0ff7675e70",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.Monad2Examples.flatMap_tel": {
+   "module": "Benitoite.Release.Refinement.Surface.Monad2Examples",
+   "kind": "theorem",
+   "type_sha256": "b6799c95be3d755b87b0e203f3ff3e46b5898630a12e8b8c3e7879bd31653e6c",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.Monad2Examples.ok_typed": {
+   "module": "Benitoite.Release.Refinement.Surface.Monad2Examples",
+   "kind": "theorem",
+   "type_sha256": "cb2caab0efc7bca3932478e4fd0b02f061a513e06826ae9389cfbc5e4d8e0fd2",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.Monad2Examples.err_typed": {
+   "module": "Benitoite.Release.Refinement.Surface.Monad2Examples",
+   "kind": "theorem",
+   "type_sha256": "5b21382e012c1071cf9ea89fd27ec4d45d537aa568005f4be2aea7ac42bf4f69",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.Monad2Examples.call_typed": {
+   "module": "Benitoite.Release.Refinement.Surface.Monad2Examples",
+   "kind": "theorem",
+   "type_sha256": "e3536998b5dd0aedaf0051ebf9045d5d608fa955b0ac888c643f0a3360e3c3e3",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.Monad2Examples.ctors_complete": {
+   "module": "Benitoite.Release.Refinement.Surface.Monad2Examples",
+   "kind": "theorem",
+   "type_sha256": "23aefb87ff116fd5febbd94bd578b1309cbae44a419574d5a90ba2203c1ca2e1",
+   "axioms": [
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.Monad2Examples.cases_exhaustive": {
+   "module": "Benitoite.Release.Refinement.Surface.Monad2Examples",
+   "kind": "theorem",
+   "type_sha256": "1ac2377f68ebb1fce25ab3896b82374aaac3b961036a62f7dd7ae03adcfd4d83",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.Monad2Examples.cases_typed": {
+   "module": "Benitoite.Release.Refinement.Surface.Monad2Examples",
+   "kind": "theorem",
+   "type_sha256": "a0bad4c22b159c22b67a3af0b0286603ca1046e2a7f6acc01ab9f5433b93463c",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.Monad2Examples.map_body": {
+   "module": "Benitoite.Release.Refinement.Surface.Monad2Examples",
+   "kind": "theorem",
+   "type_sha256": "d04d35234691dd7559996f3c835f1a72a0782572627b717093a32a408d7583be",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.Monad2Examples.pure_body": {
+   "module": "Benitoite.Release.Refinement.Surface.Monad2Examples",
+   "kind": "theorem",
+   "type_sha256": "f688c3d1e207c230f4b899fbd61166f5f830b4fd4643d378e7d8908854849b1e",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.Monad2Examples.flatMap_body": {
+   "module": "Benitoite.Release.Refinement.Surface.Monad2Examples",
+   "kind": "theorem",
+   "type_sha256": "e8737a1091fe64996b71164d377a5ed310de84308de23441dc42f21e814ec47e",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.Monad2Examples.apply_body": {
+   "module": "Benitoite.Release.Refinement.Surface.Monad2Examples",
+   "kind": "theorem",
+   "type_sha256": "39df05ac691fd6a90dfd5092fd477da06381fab655a405be940448760aab384a",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.Monad2Examples.generic_instantiated": {
+   "module": "Benitoite.Release.Refinement.Surface.Monad2Examples",
+   "kind": "theorem",
+   "type_sha256": "b5f4b34a834ade8fb44f83efcee3ebb8d78a9e3afd41ad68454676f5df6a00ec",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.Monad2Examples.functor_dict": {
+   "module": "Benitoite.Release.Refinement.Surface.Monad2Examples",
+   "kind": "theorem",
+   "type_sha256": "497c36fbddac879828084326ec430c53f8248d2deb26af402a30f50d0049c86f",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.Monad2Examples.generic_body": {
+   "module": "Benitoite.Release.Refinement.Surface.Monad2Examples",
+   "kind": "theorem",
+   "type_sha256": "dc76e9527259275623efdc7f92ff6fc785df93306a47595dc269fad204b77e6e",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.Monad2Examples.functor_typed": {
+   "module": "Benitoite.Release.Refinement.Surface.Monad2Examples",
+   "kind": "theorem",
+   "type_sha256": "8e2b8f77341f894812f134924fb20fbb9842e48946a18a53ba3998922e5ebde6",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.Monad2Examples.applicative_typed": {
+   "module": "Benitoite.Release.Refinement.Surface.Monad2Examples",
+   "kind": "theorem",
+   "type_sha256": "16a3df2f8492c1dc4cf41dce32581548b662a1a99eb9b15ba1af3dc0d347a127",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.Monad2Examples.monad_typed": {
+   "module": "Benitoite.Release.Refinement.Surface.Monad2Examples",
+   "kind": "theorem",
+   "type_sha256": "4dd97b920187df679383684e270be2435d4e080258f170636bc82a95cf297205",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.Monad2Examples.impl_cases": {
+   "module": "Benitoite.Release.Refinement.Surface.Monad2Examples",
+   "kind": "theorem",
+   "type_sha256": "34d2a48a6164a2d691c83eba432e83c8f42a683650670a1a311508f0ee6ca532",
+   "axioms": [
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.Monad2Examples.generic_typed": {
+   "module": "Benitoite.Release.Refinement.Surface.Monad2Examples",
+   "kind": "theorem",
+   "type_sha256": "49eb0c73470d5706333d6dbab3785acf90b369df36c5636f8d1366497d6eebf3",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.Monad2Examples.program_wellTyped": {
+   "module": "Benitoite.Release.Refinement.Surface.Monad2Examples",
+   "kind": "theorem",
+   "type_sha256": "07c9905a4c4272855ebad5604cb251ae2252c125e72f9e19bce7fec646c0bd85",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.Monad2Examples.functor_scoped": {
+   "module": "Benitoite.Release.Refinement.Surface.Monad2Examples",
+   "kind": "theorem",
+   "type_sha256": "b62b04c03f3055efe485109ea07ec973695d508f83b0cfc0705d1a2101509f37",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.Monad2Examples.applicative_scoped": {
+   "module": "Benitoite.Release.Refinement.Surface.Monad2Examples",
+   "kind": "theorem",
+   "type_sha256": "65d3b7bd512e455e0902eb490149908bf3926b3ece8954196641d57e8bdcbff3",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.Monad2Examples.monad_scoped": {
+   "module": "Benitoite.Release.Refinement.Surface.Monad2Examples",
+   "kind": "theorem",
+   "type_sha256": "08e2ec0905f4a4d0fb56336972a9425b6f10df2203d063e811862b223658f2ed",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.Monad2Examples.program_wellFormed": {
+   "module": "Benitoite.Release.Refinement.Surface.Monad2Examples",
+   "kind": "theorem",
+   "type_sha256": "f24d4ee8783a9215760cd376e1b6a71a584c22f6b752660673787313db5259bb",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.Monad2Examples.value_assumptions": {
+   "module": "Benitoite.Release.Refinement.Surface.Monad2Examples",
+   "kind": "theorem",
+   "type_sha256": "26ad1b1a9e686a098597dd942d856c25a68294a6a82175876acfa809cfc54478",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.Monad2Examples.desugared_typed": {
+   "module": "Benitoite.Release.Refinement.Surface.Monad2Examples",
+   "kind": "theorem",
+   "type_sha256": "4d62cb23523d56aae045d439da8a190840cde62a22900b44595a203a031be66f",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetWriteExamples.exact_covered": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetWriteExamples",
+   "kind": "theorem",
+   "type_sha256": "46ffc9607bc962ff0a35f4eabd9a9035621a76dac2dccd2175e7d8658ab4aee1",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetWriteExamples.mainEff_covers": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetWriteExamples",
+   "kind": "theorem",
+   "type_sha256": "302d78ec9362cd6d18b8c2f1caa38cdb2555fa6688f093c0620cd6ff3b93bb07",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetWriteExamples.narrow_not_sub": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetWriteExamples",
+   "kind": "theorem",
+   "type_sha256": "4c82fe43199a013f2e4acdb5b3739d12e477beb68c74f91d20a2a74fef0d0b76",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetWriteExamples.check_typed": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetWriteExamples",
+   "kind": "theorem",
+   "type_sha256": "65c60093a98a7d582c0eb4b124846eff8efc2230ee8ebd0a325d0d68b5415dee",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetWriteExamples.write_typed_in": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetWriteExamples",
+   "kind": "theorem",
+   "type_sha256": "33a1e88b600cdaae6a6ec280f0773a24e57f03c3b03036fd79e95f9f3e044c1e",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetWriteExamples.write_typed": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetWriteExamples",
+   "kind": "theorem",
+   "type_sha256": "47b367352bfa55286addab632ac3486a93efa7c2e0990a456d8f8dae6877ece6",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetWriteExamples.armCtx_obs": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetWriteExamples",
+   "kind": "theorem",
+   "type_sha256": "357d913ae0afc2cb82b12e2c4b3663f88f772abeaa5f36b9c9b84dad23a59da3",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetWriteExamples.okAlt_ty": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetWriteExamples",
+   "kind": "theorem",
+   "type_sha256": "db0fe1d34e13591d3e50f4e3794346a9caee708a7a2ac50ba3443ee4765b19a1",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetWriteExamples.errAlt_ty": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetWriteExamples",
+   "kind": "theorem",
+   "type_sha256": "49b7282ccc99e3c956590266cafe53a1c6e1f416b02352285839cd0e69a96178",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetWriteExamples.nodup_map_inj": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetWriteExamples",
+   "kind": "theorem",
+   "type_sha256": "a5c59decffc1b0a3cbfd5699764ee4492c17e586fa5249f1756f6677dca00da8",
+   "axioms": [
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetWriteExamples.result_mem": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetWriteExamples",
+   "kind": "theorem",
+   "type_sha256": "5b61779427e87c6d5da6cda8bf5e2838d9fe0a654116ca5caf3f48d906f718d9",
+   "axioms": [
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetWriteExamples.result_ctor": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetWriteExamples",
+   "kind": "theorem",
+   "type_sha256": "e242f17f4d42d333532b66ec0511f678c76fddb98f09eafa6f15a372b7e99a15",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetWriteExamples.ctors_complete": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetWriteExamples",
+   "kind": "theorem",
+   "type_sha256": "f0c1e14685c5075d1faea88f55957616689b433af3e58f792c82ca05712794c7",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetWriteExamples.arms_exhaustive": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetWriteExamples",
+   "kind": "theorem",
+   "type_sha256": "da7985109e658c78b16c935a7f9532f45bc0c5169e36912e9b73bf268ac4be92",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetWriteExamples.callG_typed": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetWriteExamples",
+   "kind": "theorem",
+   "type_sha256": "856d4238c6bfbaba8e97904abdaadf34ebf4c040fc6c87071b8fc13031859ff2",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetWriteExamples.callF_typed": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetWriteExamples",
+   "kind": "theorem",
+   "type_sha256": "41f965b5d303a129e445d850cac29221bd73fd3a088483c7bcce66fef3a5b00a",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetWriteExamples.arms_typed": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetWriteExamples",
+   "kind": "theorem",
+   "type_sha256": "3824e30e995c483a6ed8ba8ea5ca1bfeb726e412d5c85ccfb18b310df22efffe",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetWriteExamples.body_typed": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetWriteExamples",
+   "kind": "theorem",
+   "type_sha256": "9a4d6be26986d09574610558a2b27e296bcb35dc6eedfbd57d8591e0d93ee0ad",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetWriteExamples.defTable_cases": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetWriteExamples",
+   "kind": "theorem",
+   "type_sha256": "6bbe81263ad22a07298340b228732b22635c5d94636312004657c76ccefb41dd",
+   "axioms": []
+  },
+  "Benitoite.Release.Refinement.Surface.TargetWriteExamples.wellFormed": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetWriteExamples",
+   "kind": "theorem",
+   "type_sha256": "a220f37d4aedda822b3193310f4ba00cc364375227e079f7ef283fe5d3d87c97",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetWriteExamples.wellTyped": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetWriteExamples",
+   "kind": "theorem",
+   "type_sha256": "342abae64c1b0977b26bb9b1ac7fddace9fcd339d78df720c41780f01a67688f",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetWriteExamples.hasFile": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetWriteExamples",
+   "kind": "theorem",
+   "type_sha256": "ebe4fb4661f9ce474b7407d980bf367835300aee64436c529d6130cfedc29222",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetWriteExamples.hasMain": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetWriteExamples",
+   "kind": "theorem",
+   "type_sha256": "f97032846c8e533e8b4e382ddd2387fcf5b15683d0bb20e7ac83d55d548ad95c",
+   "axioms": [
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetWriteExamples.ready": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetWriteExamples",
+   "kind": "theorem",
+   "type_sha256": "8c08822cdb09aa132301886589489c02e4acd7dd7333de5d02ea5643d18ae0bc",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetWriteExamples.check_delta": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetWriteExamples",
+   "kind": "theorem",
+   "type_sha256": "8d23b0a200b96e8de337b73724d3b48b00f6ed8be1f941d53bc00a058da4a7f8",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetWriteExamples.main_reach": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetWriteExamples",
+   "kind": "theorem",
+   "type_sha256": "f0cbc5c08bcb26f3fe9dc0a35b760289b207b8d51a906beae527cdf3d1cfb6b2",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetWriteExamples.program_target_sound": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetWriteExamples",
+   "kind": "theorem",
+   "type_sha256": "f3dfa182edf116dab92a407f8ce1982686f3400eb31f1f3cf7640a7d88138a19",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetWriteExamples.main_reach_allowed": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetWriteExamples",
+   "kind": "theorem",
+   "type_sha256": "899e71f6367651efcf278fa34f80a9579b57911137a70ebfaad154ca9382f949",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetWriteExamples.passwd_not_allowed": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetWriteExamples",
+   "kind": "theorem",
+   "type_sha256": "901ae605d4ffea7cb634c1b0a75b91ba668f9d0a7c29b9e86e004b424b486c52",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.TargetWriteExamples.main_never_passwd": {
+   "module": "Benitoite.Release.Refinement.SurfaceTargetWriteExamples",
+   "kind": "theorem",
+   "type_sha256": "683faf3b1eadb0f2f8c5ac18865b81459a6d450b929590f660dc1be4003a2fd6",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  }
+ },
+ "raw": {
+  "bytes": 1413164,
+  "sha256": "a203c087c4e29b62c09cd57772cdb9a74be2c2bc0efa4ab3102bb748c2a5a0b7"
+ },
+ "inputs": {
+  "axioms.lean": {
+   "bytes": 6412,
+   "sha256": "1f36d688aca6df786d23fade2d38396bf8914e6b06ee1c03040e2f417ad76e4a"
+  },
+  "audit-lean.py": {
+   "bytes": 5566,
+   "sha256": "7d522fd6b8d7d2e85a96181bc069d7afe9283dba1d0f0b123d79472573e4bbf7"
+  },
+  "changes-lean.json": {
+   "bytes": 7069,
+   "sha256": "b2453e0b1144f7256990a58359d982bcd714b8f367606d300bb69694971010ab"
+  }
+ }
+}

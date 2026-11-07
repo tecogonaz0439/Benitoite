@@ -98,4 +98,46 @@ theorem console_pure_rejected :
     (CheckDeclarations.checkDef input [] (entryDef (handled true) (Eff.single "Console.Write"))).toBool = true := by
   constructor <;> cbv
 
+private def enabled : Expr := call1 "Log.enabled" "level" (.literal (.integer ⟨0, by decide⟩))
+
+/-- 節が受け取った引数で同じ操作を呼び直す（送り直し）handle。 -/
+private def forwarded (body : Expr) : Expr :=
+  .handleE (.last body)
+    (.cons (.prim "Log.emit") 1 0 (.seq (call1 "Log.emit" "message" (.local 1)) (.last (.resume 0 .unit)))
+      (.cons (.prim "Log.enabled") 1 0 (.last (.resume 0 (call1 "Log.enabled" "level" (.local 1)))) .nil))
+
+/-- 二つの操作を処理し、節で何も呼ばない handle。 -/
+private def silent (body : Expr) : Expr :=
+  .handleE (.last body)
+    (.cons (.prim "Log.emit") 1 0 (.last (.resume 0 .unit))
+      (.cons (.prim "Log.enabled") 1 0 (.last (.resume 0 (.literal (.boolean false)))) .nil))
+
+/-- 問合せの操作の呼出しも効果 `{Log}` で受理し、全ての操作を処理する handle で除く。 -/
+theorem enabled_checked : effectOf enabled = some (true, false) ∧ effectOf (silent enabled) = some (false, false) := by
+  constructor <;> cbv
+
+/-- 節で同じ操作を呼び直す handle は、二つの操作のどちらの本体でも `Log` を残す。 -/
+theorem forwarded_checked :
+    effectOf (forwarded emit) = some (true, false) ∧ effectOf (forwarded enabled) = some (true, false) := by
+  constructor <;> cbv
+
+private def entry (body : Expr) (ret : Ty) (eff : Eff) : Def where
+  tparams := []
+  neffs := 0
+  names := []
+  params := []
+  ret := ret
+  eff := eff
+  body := .last body
+
+/-- 同じ表で、操作の呼出し・処理して純粋にする関数・送り直す関数・Console へ出力する関数の定義をそれぞれ受理する。 -/
+theorem program_checked :
+    (CheckDeclarations.checkDef input [] (entry emit (.base .unit) (Eff.single "Log"))).toBool = true ∧
+    (CheckDeclarations.checkDef input [] (entry enabled (.base .boolean) (Eff.single "Log"))).toBool = true ∧
+    (CheckDeclarations.checkDef input [] (entry (silent emit) (.base .unit) Eff.empty)).toBool = true ∧
+    (CheckDeclarations.checkDef input [] (entry (forwarded emit) (.base .unit) (Eff.single "Log"))).toBool = true ∧
+    (CheckDeclarations.checkDef input [] (entry (handled true) (.base .unit) (Eff.single "Console.Write"))).toBool =
+      true := by
+  refine ⟨?_, ?_, ?_, ?_, ?_⟩ <;> cbv
+
 end Benitoite.Release.Refinement.Surface.LogExamples

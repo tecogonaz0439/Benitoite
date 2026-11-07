@@ -7,7 +7,6 @@ import Benitoite.Release.ModelHttp
 import Benitoite.Release.Examples
 namespace Benitoite.Release.Refinement.CurrentSignatureRows
 noncomputable section
-set_option maxHeartbeats 2000000
 
 mutual
   theorem embed_rows {nr nt pe} (a : Benitoite.Release.Ty) (h : a.VarsIn nr nt pe) :

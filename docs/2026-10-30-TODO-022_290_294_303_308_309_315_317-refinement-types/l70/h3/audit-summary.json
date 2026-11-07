@@ -1,0 +1,1334 @@
+{
+ "targets": 126427,
+ "printed": 126403,
+ "macro_scoped": 39,
+ "macro_scoped_kinds": {
+  "definition": 39
+ },
+ "macro_scoped_axioms": {
+  "なし": 39
+ },
+ "unresolved": 0,
+ "axiom_sets": {
+  "なし": 53802,
+  "propext": 37616,
+  "Quot.sound + propext": 3789,
+  "Classical.choice + Quot.sound + propext": 31204,
+  "Classical.choice": 2,
+  "Classical.choice + propext": 2,
+  "Quot.sound": 12
+ },
+ "sorryAx": 0,
+ "new_axioms": 0,
+ "axiom_declarations": 0,
+ "allowed": [
+  "Classical.choice",
+  "Quot.sound",
+  "propext"
+ ],
+ "parts": {
+  "library": {
+   "declarations": 125440,
+   "macro_scoped": 39,
+   "unresolved": 0,
+   "raw": {
+    "bytes": 269125571,
+    "sha256": "50b14b4fe951d5abb72a0426f3e005774184bfec1da27fbfb1061996e17ee410"
+   }
+  },
+  "desugarDiff": {
+   "declarations": 150,
+   "macro_scoped": 0,
+   "unresolved": 0,
+   "raw": {
+    "bytes": 79176,
+    "sha256": "89cad94e47ffcaaec80a1546dd0ca2c2ffdb7939605d7a9ba67e605c72fdb103"
+   }
+  },
+  "builtinCheck": {
+   "declarations": 83,
+   "macro_scoped": 0,
+   "unresolved": 0,
+   "raw": {
+    "bytes": 41585,
+    "sha256": "99c04e6f38b6d19a0485469f362847813ddfe77be95a895f7c68fca5916e3ef5"
+   }
+  },
+  "coverageDiff": {
+   "declarations": 308,
+   "macro_scoped": 0,
+   "unresolved": 0,
+   "raw": {
+    "bytes": 169007,
+    "sha256": "ba415678bc2460a797c8f054ed1b0575aea41a2b701196b87478003650ccf0e4"
+   }
+  },
+  "coverageProgramDiff": {
+   "declarations": 204,
+   "macro_scoped": 0,
+   "unresolved": 0,
+   "raw": {
+    "bytes": 110845,
+    "sha256": "78e2fb967dfc6d3278c44fa3bbedf41879b2f865f2cc5d96d965f5213364b2e9"
+   }
+  },
+  "surfaceCheck": {
+   "declarations": 24,
+   "macro_scoped": 0,
+   "unresolved": 0,
+   "raw": {
+    "bytes": 19360,
+    "sha256": "b1dbf811aa2e70c5ebbebd59692bc9530ec88857d0762f3ee0dccd7c34aa5889"
+   }
+  },
+  "surfaceCheckAll": {
+   "declarations": 227,
+   "macro_scoped": 0,
+   "unresolved": 0,
+   "raw": {
+    "bytes": 214704,
+    "sha256": "adb8694f77ad8d795c93fbb43edf39cd0b91553e8729fe23545cd35994cf8907"
+   }
+  },
+  "intervalDiff": {
+   "declarations": 6,
+   "macro_scoped": 0,
+   "unresolved": 0,
+   "raw": {
+    "bytes": 5314,
+    "sha256": "1a51ad899ab205e2cc83085167ae0ad2ad64e5afdee7630d41d95d33c9eae7c1"
+   }
+  }
+ },
+ "base_parts": {
+  "library": {
+   "declarations": 85411,
+   "raw": {
+    "bytes": 118718909,
+    "sha256": "fc970f3383f0a9d3f9876520050ee1094c1d874672bd2fa8c902dbc359339c80"
+   }
+  },
+  "desugarDiff": {
+   "declarations": 150,
+   "raw": {
+    "bytes": 60905,
+    "sha256": "4060e80a461ed0c378bfdf120f5c3dfaffec8e6eaff7047e1d20bcfa3ca9d9b1"
+   }
+  },
+  "builtinCheck": {
+   "declarations": 83,
+   "raw": {
+    "bytes": 32497,
+    "sha256": "d1bc8e49a64c92388e0835166858c928a633fa4b1fbf005d5fa03d1220616248"
+   }
+  },
+  "coverageDiff": {
+   "declarations": 307,
+   "raw": {
+    "bytes": 121329,
+    "sha256": "cd878968fa35fc95d93e346766a001d8e98a25480a4ac6591b22047e76416d8c"
+   }
+  },
+  "coverageProgramDiff": {
+   "declarations": 204,
+   "raw": {
+    "bytes": 79095,
+    "sha256": "6ddbf10800613b881471c25c4104029754ca48e1c06392e93cbf74cf9a46f292"
+   }
+  },
+  "surfaceCheck": {
+   "declarations": 23,
+   "raw": {
+    "bytes": 14230,
+    "sha256": "1c73969cf0fac5ec7222b1d1fffeab40becfb6e8e51078655823cbbb6bbfec78"
+   }
+  },
+  "surfaceCheckAll": {
+   "declarations": 212,
+   "raw": {
+    "bytes": 140364,
+    "sha256": "aae0e1130b973ad7cf20ba6a203b0f48e5f72ae946dc88c04f6dbcefaa9a1c1e"
+   }
+  },
+  "intervalDiff": {
+   "declarations": 6,
+   "raw": {
+    "bytes": 4516,
+    "sha256": "b4b022622011e358a93c23ab21fa8602971595f127f4f7fed47612869e339bac"
+   }
+  }
+ },
+ "required": {
+  "Benitoite.Release.Refinement.progress": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.MainTheorems",
+   "type_sha256": "7b77fb8352768e2d74864568804e8087880600f1f45f84946c9eca3b39fa1b7f",
+   "value_sha256": null,
+   "unfolded_sha256": "ed4b7523bb69763dd689d21b6e01de6c462c9d6e5046e4586329bdfdcb4e4d34",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.preservation": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.MainTheorems",
+   "type_sha256": "78f72dfe81a3433ace4eb3f618a3cb3a2fdb944770e0cbc3d497bdf2b6cb666c",
+   "value_sha256": null,
+   "unfolded_sha256": "e845fa3e829c0565313bd7f7d49292e7135164c5a477cb75af4ebcf147085dc0",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.steps_preservation": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.MainTheorems",
+   "type_sha256": "53299e63080de4f325493d27c5c4ebb03788dc76db7ac3fcf655d8da5d4b13ca",
+   "value_sha256": null,
+   "unfolded_sha256": "fb237264a8dd558dd1286d9f8077e9a214f8d27feb4e88183a9cfa077e21f47b",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.step_sound": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.MainTheorems",
+   "type_sha256": "1bbeeb3ff874e099c56347e1dc455caaa85824d486c3aff2a12587d3538029f7",
+   "value_sha256": null,
+   "unfolded_sha256": "3e1f62e43d05b7a0f15392fc4f141430b5e95ba82d12c89414cad8484f7af2e3",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.initial_typing": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.MainTheorems",
+   "type_sha256": "9283a762c996f6a9144af614a5943284e3375304c1fa8bb0bb156b5a5c60b5e1",
+   "value_sha256": null,
+   "unfolded_sha256": "0fc5249917c11663be6bf5fe4260bd0a3da92d4eb523995e76912bddd0911c7f",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.effect_soundness": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.MainEffects",
+   "type_sha256": "44e101798453e58e0d52bf054a880c41c015032dd6f9c76103e119af88c18057",
+   "value_sha256": null,
+   "unfolded_sha256": "df92482a1c1262ba66ff5c127b7b99d9fca997c90e67c274a47c3e2432741fcb",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.effect_soundness_noLamNames": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.MainEffects",
+   "type_sha256": "811e031f8fe51dc2990ec2d3969ead6713c46b7117b5585822b8817094fd85b2",
+   "value_sha256": null,
+   "unfolded_sha256": "811e031f8fe51dc2990ec2d3969ead6713c46b7117b5585822b8817094fd85b2",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.step_target_sound": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.MainTheorems",
+   "type_sha256": "bf50383a2e8d13b92f8c042df828096821bab00a49cd8bd1899b09ef906e8f08",
+   "value_sha256": null,
+   "unfolded_sha256": "b2fd1724c8420c41c536fa856374669656b9d6bdabbc5944e6fbce33a588e60a",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.reachable_target_sound": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.MainTheorems",
+   "type_sha256": "77633486f08cec2330b58b2bcc4a6f02b050e45f83c6a4fb49239232552719ea",
+   "value_sha256": null,
+   "unfolded_sha256": "74c7149bf916a044d09ecd7a6c2d05f41a8fa397ff00643e6bb5c2d2363480ec",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.reachable_target_sound_event": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.MainTheorems",
+   "type_sha256": "b40179f4251e2ae0daa206f68f46f2c77a857ee2a8dce53208ade4ee61c617f4",
+   "value_sha256": null,
+   "unfolded_sha256": "47db4bfc5067b83d97ccdd5405bce2293492ac4c79bc115b487e943aeb659402",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.ProgressStatement": {
+   "kind": "definition",
+   "module": "Benitoite.Release.Refinement.MainStatements",
+   "type_sha256": "e529d7e1d2fcbf8c10576174a469bfbe696c2c6c937c4a1ca5f509352acd9541",
+   "value_sha256": "7593dfab3bb66e4283cbcbcdfdf4ed3d5c70caffe5fbe5e15ab9e8c66e681fa7",
+   "unfolded_sha256": null,
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.PreservationStatement": {
+   "kind": "definition",
+   "module": "Benitoite.Release.Refinement.MainStatements",
+   "type_sha256": "e529d7e1d2fcbf8c10576174a469bfbe696c2c6c937c4a1ca5f509352acd9541",
+   "value_sha256": "0a3d770b72a3506c71947a3c708f0ebcdaccebb54d75da3793bb6a5ec7ea1d12",
+   "unfolded_sha256": null,
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.StepsPreservationStatement": {
+   "kind": "definition",
+   "module": "Benitoite.Release.Refinement.MainStatements",
+   "type_sha256": "e529d7e1d2fcbf8c10576174a469bfbe696c2c6c937c4a1ca5f509352acd9541",
+   "value_sha256": "aa4d20be1695bac4eb464117d0c572038a89962a0dab43f0a897454100f70362",
+   "unfolded_sha256": null,
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.StepSoundStatement": {
+   "kind": "definition",
+   "module": "Benitoite.Release.Refinement.MainStatements",
+   "type_sha256": "dec840e5fa191f1aa86606089ffdebe9ba213fee0f70268af998c1bcb47242c8",
+   "value_sha256": "531daf5347105c1590bc815dd0c0ddeb8c4fb9cd9135cc6de544a61c4b7ec2a2",
+   "unfolded_sha256": null,
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.InitialTypingStatement": {
+   "kind": "definition",
+   "module": "Benitoite.Release.Refinement.MainStatements",
+   "type_sha256": "e529d7e1d2fcbf8c10576174a469bfbe696c2c6c937c4a1ca5f509352acd9541",
+   "value_sha256": "5c5f4841cfa2839accbcc102fedb40bec0824d6a5518abf3898f27e66fdd8dcf",
+   "unfolded_sha256": null,
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.EffectSoundnessStatement": {
+   "kind": "definition",
+   "module": "Benitoite.Release.Refinement.MainStatements",
+   "type_sha256": "e529d7e1d2fcbf8c10576174a469bfbe696c2c6c937c4a1ca5f509352acd9541",
+   "value_sha256": "21835cce3e9e6da53e501f5928d7b40a1eff6e95c1eb71086eae1e72c9a88ebc",
+   "unfolded_sha256": null,
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.StepTargetStatement": {
+   "kind": "definition",
+   "module": "Benitoite.Release.Refinement.MainStatements",
+   "type_sha256": "e529d7e1d2fcbf8c10576174a469bfbe696c2c6c937c4a1ca5f509352acd9541",
+   "value_sha256": "f44510fb72ada324b7787401d203309170c8ab8d078a053015ab636b05690f5b",
+   "unfolded_sha256": null,
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.ReachableTargetStatement": {
+   "kind": "definition",
+   "module": "Benitoite.Release.Refinement.MainStatements",
+   "type_sha256": "e529d7e1d2fcbf8c10576174a469bfbe696c2c6c937c4a1ca5f509352acd9541",
+   "value_sha256": "92cbd00aa4944572a1448af20f537986e7d064f41d595f0b1f2ecfcd7e76b864",
+   "unfolded_sha256": null,
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.ReachableTargetEventStatement": {
+   "kind": "definition",
+   "module": "Benitoite.Release.Refinement.MainStatements",
+   "type_sha256": "e529d7e1d2fcbf8c10576174a469bfbe696c2c6c937c4a1ca5f509352acd9541",
+   "value_sha256": "8c60ac9b2ce58b223cd66004e26b624790d586b4adcbc41a3b008b2a59e03a84",
+   "unfolded_sha256": null,
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.StartCondition.of_typed_noLamNames": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.StartLamNames",
+   "type_sha256": "747d5ed32b29a396d6807baad84e5bff840fc7d4dd9244d92b3bd64abf3d1019",
+   "value_sha256": null,
+   "unfolded_sha256": "747d5ed32b29a396d6807baad84e5bff840fc7d4dd9244d92b3bd64abf3d1019",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.StateTyE.no_event": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.MainEffects",
+   "type_sha256": "748b7d9881c300268ea4a1717a85e2653d94478f0f46ea44f54bc4174e6946d7",
+   "value_sha256": null,
+   "unfolded_sha256": "748b7d9881c300268ea4a1717a85e2653d94478f0f46ea44f54bc4174e6946d7",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.StateTyE.no_unhandledOp": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.MainEffects",
+   "type_sha256": "7f5fee8e15efa1181367db5026211e62c7e86677009238fe3ca6129326f92e3b",
+   "value_sha256": null,
+   "unfolded_sha256": "7f5fee8e15efa1181367db5026211e62c7e86677009238fe3ca6129326f92e3b",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.StateTyE.step_preserved": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.FiniteStepPreservation",
+   "type_sha256": "e872ef4aa0a968b6c83ba7437c05691fba7fa564973cf45bd32a2c07830cd141",
+   "value_sha256": null,
+   "unfolded_sha256": "e872ef4aa0a968b6c83ba7437c05691fba7fa564973cf45bd32a2c07830cd141",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.StateTyE.steps_preserved": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.FiniteStepPreservation",
+   "type_sha256": "d6be90ffd389ddbaf91770996f39e9dcda41fdf9b86ff013aee96cb99e2fc394",
+   "value_sha256": null,
+   "unfolded_sha256": "d6be90ffd389ddbaf91770996f39e9dcda41fdf9b86ff013aee96cb99e2fc394",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.desugar_typed": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.Surface.Theorems",
+   "type_sha256": "5e0995cc2f9f357ec47d11b6193f24ace5eda7bf26a7a6ed6e936ea33357eca4",
+   "value_sha256": null,
+   "unfolded_sha256": "5e0995cc2f9f357ec47d11b6193f24ace5eda7bf26a7a6ed6e936ea33357eca4",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.HasTypeQ.desugar": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.Surface.Property1",
+   "type_sha256": "cf4c4c655c6474f64a23f4bbcb7368e96b2cf2c8761fb7340487ed422fe0e1ba",
+   "value_sha256": null,
+   "unfolded_sha256": "cf4c4c655c6474f64a23f4bbcb7368e96b2cf2c8761fb7340487ed422fe0e1ba",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.HasBlockQ.desugar": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.Surface.Property1",
+   "type_sha256": "578141b43e39ed5590b40e6d77055199277a175ab7eaef83e9a2d0cb94c20b39",
+   "value_sha256": null,
+   "unfolded_sha256": "578141b43e39ed5590b40e6d77055199277a175ab7eaef83e9a2d0cb94c20b39",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.surface_effect_soundness": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.SurfaceMain",
+   "type_sha256": "fc3e348163fd006d81555d15ceafa0e47b8763e65d85e20c6d7c4de95d6fb1da",
+   "value_sha256": null,
+   "unfolded_sha256": "fc3e348163fd006d81555d15ceafa0e47b8763e65d85e20c6d7c4de95d6fb1da",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.surface_target_sound": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.SurfaceMain",
+   "type_sha256": "37893a0bc5452e8f71aa2da85a19e04917f0b5a0d53fd43c2354c84a45088106",
+   "value_sha256": null,
+   "unfolded_sha256": "37893a0bc5452e8f71aa2da85a19e04917f0b5a0d53fd43c2354c84a45088106",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.surface_guarantees": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.SurfaceLibrary",
+   "type_sha256": "0e2e663d107c674d626dbd347fa35d06b2bd100b885968460a50631fa700d34f",
+   "value_sha256": null,
+   "unfolded_sha256": "0e2e663d107c674d626dbd347fa35d06b2bd100b885968460a50631fa700d34f",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.linked_main": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.SurfaceLibrary",
+   "type_sha256": "cc4746eb81a2c345c97d04e7ee3e37805dd02bb7097ae434753f412cca1fe6fb",
+   "value_sha256": null,
+   "unfolded_sha256": "cc4746eb81a2c345c97d04e7ee3e37805dd02bb7097ae434753f412cca1fe6fb",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.linkProgram": {
+   "kind": "definition",
+   "module": "Benitoite.Release.Refinement.SurfaceLibrary",
+   "type_sha256": "c9b4fc5442036e3047ef858c0b8971cfa871de7e3288b357f54c0167cbeec5c9",
+   "value_sha256": "10d061d9b03d633b6d0fc10406ec21eace5483f6a6f3a4a7bd3d7d3945550682",
+   "unfolded_sha256": null,
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.link_additions": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.SurfaceLibrary",
+   "type_sha256": "ca35440c8ae755bf413a050652db032f88e4bebc091d049670b374e648f54269",
+   "value_sha256": null,
+   "unfolded_sha256": "ca35440c8ae755bf413a050652db032f88e4bebc091d049670b374e648f54269",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.checkProgramAccepted_main": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.SurfaceLibrary",
+   "type_sha256": "9dffc161b765c129c7f73718724882d0dfb6ac58d7ac13532734c4e5c49a1a30",
+   "value_sha256": null,
+   "unfolded_sha256": "9dffc161b765c129c7f73718724882d0dfb6ac58d7ac13532734c4e5c49a1a30",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.checkProgramAccepted_guarantees": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.SurfaceLibrary",
+   "type_sha256": "d1fb4baef15f81db677d08fcd9785229595c13fe62c25edd2bc8dafebbf22dad",
+   "value_sha256": null,
+   "unfolded_sha256": "d1fb4baef15f81db677d08fcd9785229595c13fe62c25edd2bc8dafebbf22dad",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.CheckedMainExamples.main_guarantees": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.SurfaceCheckedMainExamples",
+   "type_sha256": "e38a4985187cd223fec079c3ef70849b05867af8b20fc9d25a1c73be3bcb506a",
+   "value_sha256": null,
+   "unfolded_sha256": "e38a4985187cd223fec079c3ef70849b05867af8b20fc9d25a1c73be3bcb506a",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.MainExamples.main_guarantees": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.SurfaceMainExamples",
+   "type_sha256": "0c504a9c3b5021b2b6fbd81f44f270603906a05ff38a870a2daf343e59af9fc9",
+   "value_sha256": null,
+   "unfolded_sha256": "0c504a9c3b5021b2b6fbd81f44f270603906a05ff38a870a2daf343e59af9fc9",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.Check.checkExprAt_sound": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.Surface.CheckSound",
+   "type_sha256": "98099c63c2eaba3039606c2103b42d2a1ea1b8b3cd65bb2b847dd57673b8cfd1",
+   "value_sha256": null,
+   "unfolded_sha256": "98099c63c2eaba3039606c2103b42d2a1ea1b8b3cd65bb2b847dd57673b8cfd1",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.Check.checkBlockAt_sound": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.Surface.CheckSound",
+   "type_sha256": "daf5c0c8c547623fea0c63c3673711ee0745ac7a3d3785b183926f3664e9940f",
+   "value_sha256": null,
+   "unfolded_sha256": "daf5c0c8c547623fea0c63c3673711ee0745ac7a3d3785b183926f3664e9940f",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.CheckTables.checkProgram_sound": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.Surface.CheckProgramSound",
+   "type_sha256": "4d63f34651bd865a7f8516e07e614e3aedbeb256061d1ace3be5c853f2d4e1f7",
+   "value_sha256": null,
+   "unfolded_sha256": "4d63f34651bd865a7f8516e07e614e3aedbeb256061d1ace3be5c853f2d4e1f7",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.CheckAccept.checkProgramAccepted_sound": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.Surface.CheckAccept",
+   "type_sha256": "35c771fff09d8dc63c94417b393aa4fac251dd5fb3750e514ab1b92fb6b5d350",
+   "value_sha256": null,
+   "unfolded_sha256": "35c771fff09d8dc63c94417b393aa4fac251dd5fb3750e514ab1b92fb6b5d350",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.CheckAccept.acceptProgram_sound": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.Surface.CheckAcceptBase",
+   "type_sha256": "7cdd6d1403ca17debb922838a4ac18f61c7ee4c340170b6f80edc007f5285dfc",
+   "value_sha256": null,
+   "unfolded_sha256": "7cdd6d1403ca17debb922838a4ac18f61c7ee4c340170b6f80edc007f5285dfc",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Surface.ScopeSound.productionRules_sound": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.Surface.ScopeSound",
+   "type_sha256": "0ffb1d34c4e082b1425ccedab10befe4bbc16878a144e3be20c44a496c792b6d",
+   "value_sha256": null,
+   "unfolded_sha256": "0ffb1d34c4e082b1425ccedab10befe4bbc16878a144e3be20c44a496c792b6d",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.StandardModel.included_guarantees": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.StandardModelApplication",
+   "type_sha256": "7b69a7c8d048546c5b60bab626c447c8e8989a9f351c3461be0dee8e26e3291a",
+   "value_sha256": null,
+   "unfolded_sha256": "7b69a7c8d048546c5b60bab626c447c8e8989a9f351c3461be0dee8e26e3291a",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.StandardModel.completion_core": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.StandardModelComposedRows",
+   "type_sha256": "a81e354e024f9e86f088e19a98747e6bc9db839abfc58fe7e1e3dafdf00d289c",
+   "value_sha256": null,
+   "unfolded_sha256": "c90e6365bb57045a20e61a6c42cfe6d1a807621821a0987e6602753d4221bd42",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.StandardModel.completion_core_of": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.StandardModelCompletion",
+   "type_sha256": "60a1209412064a063fe31aedc5c5523a821f55af0857152f880291aa5b5ad24a",
+   "value_sha256": null,
+   "unfolded_sha256": "5200a6c15bbb9b41436e23b8917808c54972443f377a0a618e0013b749bbc4e2",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.StandardModel.included_typed": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.StandardModelComposedRows",
+   "type_sha256": "c5dd18baf7611436db404ebb170c9c7ca00297b5ca5847cbea527ba509abf4ac",
+   "value_sha256": null,
+   "unfolded_sha256": "c5dd18baf7611436db404ebb170c9c7ca00297b5ca5847cbea527ba509abf4ac",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Coverage.coverage_sound": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.CoverageInitial",
+   "type_sha256": "134aa5c6c0e930d6b4fdd47590bf7fceaec8e741fc04325f674b0e413623619e",
+   "value_sha256": null,
+   "unfolded_sha256": "134aa5c6c0e930d6b4fdd47590bf7fceaec8e741fc04325f674b0e413623619e",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Coverage.coverage_extension_sound": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.CoverageInitial",
+   "type_sha256": "3e549ca16a1a7d2c8d6da629a2680d942bdbde717401f1b05354ebe33a18495b",
+   "value_sha256": null,
+   "unfolded_sha256": "3e549ca16a1a7d2c8d6da629a2680d942bdbde717401f1b05354ebe33a18495b",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.checkMatchWithView_exhaustive_sound": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.Coverage",
+   "type_sha256": "d6fe6c5f3337a83d8bb19c1d1e61c991b05186049854270ca5fce6f4e58d5490",
+   "value_sha256": null,
+   "unfolded_sha256": "d6fe6c5f3337a83d8bb19c1d1e61c991b05186049854270ca5fce6f4e58d5490",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.irrefutableWithView_sound": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.Coverage",
+   "type_sha256": "785c008f7de1e9023b7249fd9c28561f913acd69fa9d855cb3220f428cb0dd24",
+   "value_sha256": null,
+   "unfolded_sha256": "785c008f7de1e9023b7249fd9c28561f913acd69fa9d855cb3220f428cb0dd24",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.checkMatchWithView_unreachable_sound": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.Coverage",
+   "type_sha256": "14f52fccc832b1a86a78031df010b547045023667fbe9891c05947297539a3a5",
+   "value_sha256": null,
+   "unfolded_sha256": "14f52fccc832b1a86a78031df010b547045023667fbe9891c05947297539a3a5",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.usefulWithView_extension_exhaustive": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.CoverageExtension",
+   "type_sha256": "08c601a05ed718e91c432db729ee136fe79e5e65e0d47b6882cfbe31877ba999",
+   "value_sha256": null,
+   "unfolded_sha256": "08c601a05ed718e91c432db729ee136fe79e5e65e0d47b6882cfbe31877ba999",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.builderApply_value_typed": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.BuilderValueTyping",
+   "type_sha256": "158a6c5bc88b981f270ba208b6f14727ef3e237f7a4d03e2f1a71c3a7b766e90",
+   "value_sha256": null,
+   "unfolded_sha256": "158a6c5bc88b981f270ba208b6f14727ef3e237f7a4d03e2f1a71c3a7b766e90",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.StateTyE.builder_new": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.BuilderStateLeaves",
+   "type_sha256": "fd4021f07cea499e7b0b640e7a8cb2133504b8f5c6e096ca3bf52c40d9289a64",
+   "value_sha256": null,
+   "unfolded_sha256": "fd4021f07cea499e7b0b640e7a8cb2133504b8f5c6e096ca3bf52c40d9289a64",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.StateTyE.builder_operation": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.BuilderStateLeaves",
+   "type_sha256": "448612de865351653b22b6f18c84f1cba29e5711af643c5bdef10f794eeb7a2a",
+   "value_sha256": null,
+   "unfolded_sha256": "448612de865351653b22b6f18c84f1cba29e5711af643c5bdef10f794eeb7a2a",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.StateTyE.builder_error": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.BuilderStateLeaves",
+   "type_sha256": "76c12a2541ca375b5fbda7fe0ea47527f3944f4f1590ecd86a8b953efd3585fe",
+   "value_sha256": null,
+   "unfolded_sha256": "76c12a2541ca375b5fbda7fe0ea47527f3944f4f1590ecd86a8b953efd3585fe",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.StateTyE.builder_progress": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.MainProgress",
+   "type_sha256": "35a7e211b4e5e96ae6846e8ff213a1ccc282a1527c57d21e4f82b013e1301de3",
+   "value_sha256": null,
+   "unfolded_sha256": "35a7e211b4e5e96ae6846e8ff213a1ccc282a1527c57d21e4f82b013e1301de3",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.StateTyE.builder_live": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.LocalInvariant",
+   "type_sha256": "cdaaf1222d3a196108819786d99ee2e915d7a55986808d04a690ad27f1719171",
+   "value_sha256": null,
+   "unfolded_sha256": "cdaaf1222d3a196108819786d99ee2e915d7a55986808d04a690ad27f1719171",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.StateTyE.local_invariant": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.LocalInvariant",
+   "type_sha256": "8e6b01e7f84490a79619a46c7f034e7c4522ed1a4cdacec785f0458ef0c97776",
+   "value_sha256": null,
+   "unfolded_sha256": "8e6b01e7f84490a79619a46c7f034e7c4522ed1a4cdacec785f0458ef0c97776",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Exchange.CheckInput.prepare_sound": {
+   "kind": "theorem",
+   "module": "Benitoite.Exchange.CheckInput",
+   "type_sha256": "2b25270e4065ffef8c300a14bd0bbdad58f2eebca58e6dcd287b55b66ccd6023",
+   "value_sha256": null,
+   "unfolded_sha256": "2b25270e4065ffef8c300a14bd0bbdad58f2eebca58e6dcd287b55b66ccd6023",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Exchange.CheckInput.prepare_agrees": {
+   "kind": "theorem",
+   "module": "Benitoite.Exchange.CheckInput",
+   "type_sha256": "0ad1ddcd8c9ca2da97b94b9636fd033e3edd11ce386ac6cbae57499b76b05d04",
+   "value_sha256": null,
+   "unfolded_sha256": "0ad1ddcd8c9ca2da97b94b9636fd033e3edd11ce386ac6cbae57499b76b05d04",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Exchange.CheckInput.prepare_entry": {
+   "kind": "theorem",
+   "module": "Benitoite.Exchange.CheckInput",
+   "type_sha256": "8d528f96fa22e52fbc30ab7d03b9fc86bf31a773edb1f20f38b55041b61893e2",
+   "value_sha256": null,
+   "unfolded_sha256": "8d528f96fa22e52fbc30ab7d03b9fc86bf31a773edb1f20f38b55041b61893e2",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Exchange.BuiltinAgreement.standardCheck_sound": {
+   "kind": "theorem",
+   "module": "Benitoite.Exchange.BuiltinAgreement",
+   "type_sha256": "d9c1b3ed12655d0e81364846ac16a9d9c9b2397947fbef65513ab1a6554f2c57",
+   "value_sha256": null,
+   "unfolded_sha256": "d9c1b3ed12655d0e81364846ac16a9d9c9b2397947fbef65513ab1a6554f2c57",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Program.ExtendsTypingStatement": {
+   "kind": "definition",
+   "module": "Benitoite.Release.Refinement.ProgramExtension",
+   "type_sha256": "acb778ebcc13382922e21a670805ba2a367cebf3b3631116fd0a90e2912150d4",
+   "value_sha256": "b3fdcc6c3fb7123428dfe7bb1ff80cf4a0bf56ca3569b7bb20225dea4184f930",
+   "unfolded_sha256": null,
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Program.extends_typing": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.ProgramExtensionTransport",
+   "type_sha256": "6b9a9ed9735aa66c034fb26df6a199d803c6b40b6002c1bc1c76d48ee755045d",
+   "value_sha256": null,
+   "unfolded_sha256": "935902125f9e7607e79a33837f583b38ce636bbd83dc3238fe658de23cc03289",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Program.ExtendsExhaustiveStatement": {
+   "kind": "definition",
+   "module": "Benitoite.Release.Refinement.ProgramExtension",
+   "type_sha256": "e76a9834500f009748e416b2619cf7b13056a60f83c470b33d7d12a9ac619c92",
+   "value_sha256": "0edac6966337f1bf46d1c8b3d57e199be0730af9ca657e26188514341a6c5221",
+   "unfolded_sha256": null,
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Program.extends_exhaustive": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.ProgramExtensionTransport",
+   "type_sha256": "ae76ec963a272cd8d688f0ee8c068fda628b65459ca2842a0d7525e54d8bf92c",
+   "value_sha256": null,
+   "unfolded_sha256": "eab117540166bc0303b5db1fec269fdd2acd82f31be7e83fa35f15eadfdda2bb",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Program.ExtendsDeclarationStatement": {
+   "kind": "definition",
+   "module": "Benitoite.Release.Refinement.ProgramExtension",
+   "type_sha256": "acb778ebcc13382922e21a670805ba2a367cebf3b3631116fd0a90e2912150d4",
+   "value_sha256": "cef53e177135f334e81e06cc8306b488a1c89acfb9192bec6d50ca685196cfa5",
+   "unfolded_sha256": null,
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Program.extends_declaration": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.ProgramExtensionTransport",
+   "type_sha256": "94ae853648f9b6309ba6cc1d6e33dd6fdc4d8f4cd72e1b2da4eaf625980c7e7c",
+   "value_sha256": null,
+   "unfolded_sha256": "9952b6ee95d3a4f2c1a34bd1187d8c06db77920bd4d93dbd4b93567ed9eae3cc",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Program.ComposeStatement": {
+   "kind": "definition",
+   "module": "Benitoite.Release.Refinement.ProgramExtension",
+   "type_sha256": "acb778ebcc13382922e21a670805ba2a367cebf3b3631116fd0a90e2912150d4",
+   "value_sha256": "391799c14cc9f9ae5d311473931d5385b0e47fcf06330d749bcf1912eb748936",
+   "unfolded_sha256": null,
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Program.compose": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.ProgramExtensionTransport",
+   "type_sha256": "141ef9f63ed180b670c99dc1cd00a059fdb274717cbf5901391aa2259bedde80",
+   "value_sha256": null,
+   "unfolded_sha256": "2d6a8a7efef5ac008b3408b935508ace5777ab9d20cd3728010ad5ed8f98c48d",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.StandardModel.ComposedRowsStatement": {
+   "kind": "definition",
+   "module": "Benitoite.Release.Refinement.StandardModelCompletion",
+   "type_sha256": "b4ea9790a15c2c9fa6e583a8d9987055c9968bedfbd9411d0e56eddb50956c09",
+   "value_sha256": "44f353aed80834e074bfc2c5f279ab75bee603cc79570841ae5b83468c485225",
+   "unfolded_sha256": null,
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.StandardModel.composed_rows": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.StandardModelComposedRows",
+   "type_sha256": "b42f0a9ca127343f3b35965fd437eb9b9cdc308e48f214321a1868daee6a49f5",
+   "value_sha256": null,
+   "unfolded_sha256": "c603b8454092841ed7fac76e6ba6ff6e31985b2a536b075335e1cc380e4a2137",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.StandardModel.ComposedReleaseStatement": {
+   "kind": "definition",
+   "module": "Benitoite.Release.Refinement.StandardModelCompletion",
+   "type_sha256": "b4ea9790a15c2c9fa6e583a8d9987055c9968bedfbd9411d0e56eddb50956c09",
+   "value_sha256": "a2dd6c88e9a063eb306129d80c20cecf1a19b41ad00cc68eb0cd55433cadc8c8",
+   "unfolded_sha256": null,
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.StandardModel.composed_release": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.StandardModelComposedRows",
+   "type_sha256": "5ec658f5f7bdce445ce7c195abd00219aafd80ad25021d21abda9ae7cd7cfd4f",
+   "value_sha256": null,
+   "unfolded_sha256": "c5f374cf59cd7b36b0dd0a475735d30ebffadc37bf69248cb02e8f5eed988502",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.StandardModel.TableConditionsStatement": {
+   "kind": "definition",
+   "module": "Benitoite.Release.Refinement.StandardModelCompletion",
+   "type_sha256": "b4ea9790a15c2c9fa6e583a8d9987055c9968bedfbd9411d0e56eddb50956c09",
+   "value_sha256": "63e3e2b03e6cc021b477674c1404fa435a0473359f94e13d6c3656ad4d731a1b",
+   "unfolded_sha256": null,
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.StandardModel.table_conditions": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.StandardModelComposedRows",
+   "type_sha256": "0e2414cf2318dcd2211f71d4a9f110e5d83be2e07a990e6a3bf66699e591df7f",
+   "value_sha256": null,
+   "unfolded_sha256": "941d5db80765b8a090a0057775f481947ebf0a028b814549b165d5b630094f2c",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.StandardModel.CompletionCoreStatement": {
+   "kind": "definition",
+   "module": "Benitoite.Release.Refinement.StandardModelCompletion",
+   "type_sha256": "b4ea9790a15c2c9fa6e583a8d9987055c9968bedfbd9411d0e56eddb50956c09",
+   "value_sha256": "4588e1fcdb5f84869cab7434b94af27624fed1ce1aae8a1ac0e8b6a8f034a464",
+   "unfolded_sha256": null,
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.embedProgramWellTyped": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.LegacyProgramTyping",
+   "type_sha256": "e5c4c0d03f6c2d773363d4a805e74f4ce3f03959fca39ef5a81e795121c6446c",
+   "value_sha256": null,
+   "unfolded_sha256": "e5c4c0d03f6c2d773363d4a805e74f4ce3f03959fca39ef5a81e795121c6446c",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.embedProgramWellFormed": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.LegacyProgramTyping",
+   "type_sha256": "8a90e5cab91ce5eaddbec715d575e19a9d93776160e556dcb3b018ebd4624d3a",
+   "value_sha256": null,
+   "unfolded_sha256": "8a90e5cab91ce5eaddbec715d575e19a9d93776160e556dcb3b018ebd4624d3a",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.embedDefWellTyped": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.LegacyProgramTyping",
+   "type_sha256": "3e2cf83be3063366be0581d025153629c21b4eca05b77106e42bddbe15774b9c",
+   "value_sha256": null,
+   "unfolded_sha256": "3e2cf83be3063366be0581d025153629c21b4eca05b77106e42bddbe15774b9c",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.embedImplWellTyped": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.LegacyProgramTyping",
+   "type_sha256": "1b4dd64c0a759ef0b095940f20d03dd965ae41bf9df31644e7c4e998d7e1f47e",
+   "value_sha256": null,
+   "unfolded_sha256": "1b4dd64c0a759ef0b095940f20d03dd965ae41bf9df31644e7c4e998d7e1f47e",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.embedStateTyE": {
+   "kind": "theorem",
+   "module": "Benitoite.Release.Refinement.LegacyStateTyping",
+   "type_sha256": "4781f1d8ec0e34207bfc93efc6b10b762ad08e070a6826294a024ead88d08b22",
+   "value_sha256": null,
+   "unfolded_sha256": "4781f1d8ec0e34207bfc93efc6b10b762ad08e070a6826294a024ead88d08b22",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  }
+ },
+ "required_all": "required-<群>.json",
+ "shared_contents": {},
+ "signatures": {
+  "bytes": 585865,
+  "sha256": "3f510781f18a801f678bed5350c6fd20498eb641023653110abcb0c4974b16f9"
+ },
+ "module_states": {
+  "bytes": 66055,
+  "sha256": "b24b01ef4aeed5c2b548578e98228b14589b7c2eed5cacf2623450eccfe577a7"
+ },
+ "old_main": {
+  "Release.progress": {
+   "in_base": true,
+   "in_final": false,
+   "new": [
+    "Release.Refinement.progress"
+   ],
+   "new_in_final": true
+  },
+  "Release.preservation": {
+   "in_base": true,
+   "in_final": false,
+   "new": [
+    "Release.Refinement.preservation",
+    "Release.Refinement.steps_preservation"
+   ],
+   "new_in_final": true
+  },
+  "Release.step_sound": {
+   "in_base": true,
+   "in_final": false,
+   "new": [
+    "Release.Refinement.step_sound"
+   ],
+   "new_in_final": true
+  },
+  "Release.effect_soundness": {
+   "in_base": true,
+   "in_final": false,
+   "new": [
+    "Release.Refinement.effect_soundness"
+   ],
+   "new_in_final": true
+  },
+  "Release.effect_soundness_noLamNames": {
+   "in_base": true,
+   "in_final": false,
+   "new": [
+    "Release.Refinement.effect_soundness_noLamNames"
+   ],
+   "new_in_final": true
+  },
+  "Release.reachable_target_sound": {
+   "in_base": true,
+   "in_final": false,
+   "new": [
+    "Release.Refinement.reachable_target_sound"
+   ],
+   "new_in_final": true
+  },
+  "Release.reachable_target_sound_event": {
+   "in_base": true,
+   "in_final": false,
+   "new": [
+    "Release.Refinement.reachable_target_sound_event"
+   ],
+   "new_in_final": true
+  },
+  "Release.reachable_target_sound_of_assumptions": {
+   "in_base": true,
+   "in_final": false,
+   "new": [
+    "Release.Refinement.StandardModel.included_guarantees"
+   ],
+   "new_in_final": true
+  },
+  "Release.step_target_sound": {
+   "in_base": true,
+   "in_final": false,
+   "new": [
+    "Release.Refinement.step_target_sound"
+   ],
+   "new_in_final": true
+  },
+  "Release.Model.assumptions": {
+   "in_base": true,
+   "in_final": false,
+   "new": [
+    "Release.Refinement.ExternalModels.ModelCase.composition"
+   ],
+   "new_in_final": true
+  },
+  "Release.ModelTargets.assumptions": {
+   "in_base": true,
+   "in_final": false,
+   "new": [
+    "Release.Refinement.ExternalModels.ModelCase.composition"
+   ],
+   "new_in_final": true
+  },
+  "Release.ModelHttp.assumptions": {
+   "in_base": true,
+   "in_final": false,
+   "new": [
+    "Release.Refinement.ExternalModels.ModelCase.composition"
+   ],
+   "new_in_final": true
+  },
+  "Surface.desugar_typed": {
+   "in_base": true,
+   "in_final": false,
+   "new": [
+    "Release.Refinement.Surface.desugar_typed"
+   ],
+   "new_in_final": true
+  },
+  "Surface.surface_effect_soundness": {
+   "in_base": true,
+   "in_final": false,
+   "new": [
+    "Release.Refinement.Surface.surface_effect_soundness"
+   ],
+   "new_in_final": true
+  },
+  "Surface.surface_target_sound": {
+   "in_base": true,
+   "in_final": false,
+   "new": [
+    "Release.Refinement.Surface.surface_target_sound"
+   ],
+   "new_in_final": true
+  },
+  "Surface.CheckTables.checkProgram_sound": {
+   "in_base": true,
+   "in_final": false,
+   "new": [
+    "Release.Refinement.Surface.CheckTables.checkProgram_sound"
+   ],
+   "new_in_final": true
+  },
+  "Surface.CheckAccept.checkProgramAccepted_sound": {
+   "in_base": true,
+   "in_final": false,
+   "new": [
+    "Release.Refinement.Surface.CheckAccept.checkProgramAccepted_sound"
+   ],
+   "new_in_final": true
+  }
+ },
+ "inputs": {
+  "axioms.lean": {
+   "bytes": 6412,
+   "sha256": "1f36d688aca6df786d23fade2d38396bf8914e6b06ee1c03040e2f417ad76e4a"
+  },
+  "stage.py": {
+   "bytes": 24708,
+   "sha256": "70b50b9ec309ac7572d629acd8d0b79ae69e23b92a27660f8c8dce07cfe86091"
+  },
+  "required-names.json": {
+   "bytes": 22017,
+   "sha256": "2d272fc0c655a1b0479a4200be938200d681647ed65fd657452ceb94013855f3"
+  }
+ }
+}

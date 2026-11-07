@@ -6,7 +6,6 @@ import Benitoite.Release.Refinement.StandardCollectionExamples
 namespace Benitoite.Release.Refinement.StandardOrdinaryCoreBodies
 noncomputable section
 open StandardKeyTyping
-set_option maxRecDepth 5000
 set_option maxHeartbeats 4000000
 set_option linter.unusedSimpArgs false
 

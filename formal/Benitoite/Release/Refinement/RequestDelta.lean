@@ -4,8 +4,6 @@ import Benitoite.Release.Refinement.ScopeDelta
 namespace Benitoite.Release.Refinement.RequestDelta
 open Scope.Domain ScopeDeclarations ScopeSignatures
 noncomputable section
-set_option maxRecDepth 4000
-set_option maxHeartbeats 2000000
 
 /-- 字句解析は既存の対象解析に固定し、ホスト条件の exact・one・many・CIDR を組み立てる。 -/
 def parseHostPattern (raw : String) : Option HostPattern := do
@@ -485,6 +483,26 @@ example (r : RangeExpr) :
       .con "Http.ClientRequest" [] [.var 0,.const (.string "https://example.com/"),
         .list [],.bytesV [],.const (.integer ⟨1,by decide⟩)]] = error r invalidUrl := by
   constructor <;> rfl
+
+
+/-- 範囲 Top の検査でも、受け取った要求を保持する検査済みの要求の値を `Ok` で返す具体の入力がある。 -/
+theorem run_top_ok : ∃ (pattern : String) (port : Integer64Value) (req : Val) (endpoint : Endpoint),
+    run (.absolute .top) [.const (.string pattern),.const (.integer port),.const (.integer port),req] =
+      ok (.absolute .top) (.checkedRequest (.endpoint endpoint) req) ∧
+    groundVal req = true ∧ req.reqTarget = some (.endpoint endpoint) := by
+  have hg : groundVal sampleRequest = true := by decide
+  have hs : (parseUrlShape (urlText sampleRequest)).isSome = true := by cbv
+  have ht : sampleRequest.reqTarget = some (.endpoint sampleEndpoint) := parseUrlTarget_https_loopback
+  have hp : parseHostPattern "127.0.0.1" = some (.ip (.exact sampleIP)) := by
+    have star : "127.0.0.1".startsWith "*." = false := by simp
+    have many : "127.0.0.1".startsWith "**." = false := by simp
+    have parts : ("127.0.0.1".toList.splitOn '/').map String.ofList = ["127.0.0.1"] := by decide +kernel
+    simp only [parseHostPattern,star,many,Bool.false_eq_true,↓reduceIte,parts,parseAtInput_host_loopback]
+    simp [HostPattern.WF,IPPattern.WF,HostPattern.normalize,IPPattern.normalize,sampleIP]
+  refine ⟨"127.0.0.1",samplePort,sampleRequest,sampleEndpoint,?_,hg,ht⟩
+  rw [run_endpoint hg hs ht hp]
+  simp +decide [Checked.Scope.makeEndpoint,sampleEndpoint,samplePort,portValue,Integer64Value.toInt,
+    sampleIP]
 
 end
 end Benitoite.Release.Refinement.RequestDelta

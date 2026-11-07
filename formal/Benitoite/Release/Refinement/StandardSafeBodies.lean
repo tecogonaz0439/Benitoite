@@ -4,8 +4,6 @@ import Benitoite.Release.Refinement.StandardSafeAccess
 namespace Benitoite.Release.Refinement.StandardSafe
 open InternalContracts
 noncomputable section
-set_option maxRecDepth 5000
-set_option maxHeartbeats 1000000
 set_option linter.unusedSimpArgs false
 
 private theorem read_carrier {P B Ψ Q C Γ Φ v a p} (h : HasTypeVQ P B Ψ Q C Γ Φ v (.refined a p))

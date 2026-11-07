@@ -1,6 +1,7 @@
 import Benitoite.Release.Refinement.StepLeafSelection
 import Benitoite.Release.Refinement.ContinuationGeneral
 import Benitoite.Release.Refinement.BuilderStore
+import Benitoite.Release.Refinement.IntervalControlLeaves
 
 /-! # 構築器・継続破棄・資源の解放の具体的な全状態の適用例 -/
 namespace Benitoite.Release.Refinement.HandlerStoreExamples
@@ -608,6 +609,43 @@ theorem builder_cell_resume_drop (σ : PathEnv) :
   have hb : BuilderOnlyFrames saved := by intro f hf; cases List.mem_singleton.mp hf; trivial
   exact ⟨resume_builder_cell hs (κ := 0) (saved := saved) (by simp [Store.set,hl]) (by simp [StoreTy.put]),
     ⟨_,_,hstep,drop_local_silent rfl hl (builder_frames_releases_nil hb) hstep⟩,drop_local_frame hl⟩
+
+
+/-- 二つの専用項の一歩の通常セルの比較を合成し、逆向きにも読む（新しい専用セルの後に同じ場所の更新）。 -/
+theorem builder_steps_ordinary_compose :
+    OrdinaryStoreEq Store.empty ((Store.empty.set 0 (.builder (.string ""))).set 0 (.builder (.string ""))) ∧
+      OrdinaryStoreEq ((Store.empty.set 0 (.builder (.string ""))).set 0 (.builder (.string ""))) Store.empty := by
+  have h := OrdinaryStoreEq.trans (builder_new_frame (μ := Store.empty) (l := 0) (c := .string "") rfl)
+    (builder_update_frame (l := 0) (old := .string "") (c := .string "") (by simp [Store.set]))
+  exact ⟨h, h.symm⟩
+
+
+/-- 使用済みの継続の再開は、空の継続と使用済みの場所を持つ型付きの開始から一歩で error へ進む。 -/
+theorem resume_used_start (σ : PathEnv) :
+    StateTyE modelProgram modelBuiltins σ empty
+      (.run (Closure.pure (.resume (.loc 0) value)) [] usedStore) := by
+  have hk : ContTy modelProgram modelBuiltins σ storeType none empty [] result result empty none :=
+    .K_Empty (sub_refl _) result_annotation
+  have ht : HasTypeCQ modelProgram modelBuiltins storeType Qempty [] [] [] none
+      (.resume (.loc 0) value) result empty [] :=
+    .C_ResumeL (b := result) (by simp [storeType,StoreTy.put,location]) (value_typed _) trivial
+  have hq := ClosureTy.pure ht result_annotation.done_empty (by intros; contradiction) result_normal
+    (by intros; contradiction)
+  exact ⟨storeType,none,result,result,empty,empty,used_ok σ,hq,sub_refl _,hk,
+    ⟨trivial,⟨trivial,⟨trivial,trivial⟩⟩⟩,⟨trivial,⟨trivial,⟨trivial,trivial⟩⟩⟩,no_frames_closed,store_closed.1⟩
+
+/-- 最初の失敗の受渡し（`IntervalControlLeaves.typed_first_failure`）の前提を満たす具体の入力。型付きの開始と、
+使用済みの継続の再開で error に至る有限実行を与え、受渡しの定理を適用する。 -/
+theorem first_failure_witness (σ : PathEnv) :
+    StateTyE modelProgram modelBuiltins σ empty (.run (Closure.pure (.resume (.loc 0) value)) [] usedStore) ∧
+      Steps modelProgram modelBuiltins σ (.run (Closure.pure (.resume (.loc 0) value)) [] usedStore) []
+        (.error [rResume] [] usedStore) ∧
+      (State.run (Closure.pure (.resume (.loc 0) value)) [] usedStore).Inputs modelProgram modelBuiltins σ empty := by
+  have h := resume_used_start σ
+  have r : Steps modelProgram modelBuiltins σ (.run (Closure.pure (.resume (.loc 0) value)) [] usedStore) []
+      (.error [rResume] [] usedStore) :=
+    .cons (.E_ResumeErr rfl (by simp [usedStore,Store.set])) .nil
+  exact ⟨h, r, (IntervalControlLeaves.typed_first_failure h r).1⟩
 
 end
 end Benitoite.Release.Refinement.HandlerStoreExamples

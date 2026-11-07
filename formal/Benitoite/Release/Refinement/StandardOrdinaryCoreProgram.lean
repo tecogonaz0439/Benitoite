@@ -5,7 +5,6 @@ import Benitoite.Release.Refinement.StandardOrderResponse
 /-! # 通常の標準coreの有限宣言と全本体 -/
 namespace Benitoite.Release.Refinement.StandardOrdinaryCoreProgram
 noncomputable section
-set_option maxRecDepth 6000
 set_option maxHeartbeats 6000000
 set_option linter.unusedSimpArgs false
 open StandardOrdinaryCoreBodies

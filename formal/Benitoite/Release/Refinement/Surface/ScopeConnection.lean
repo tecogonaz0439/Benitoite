@@ -4,6 +4,7 @@ import Benitoite.Release.Refinement.Surface.CheckAcceptBase
 import Benitoite.Release.Refinement.Surface.Desugar
 import Benitoite.Release.Refinement.Step
 import Benitoite.Release.Refinement.HeldValues
+import Benitoite.Release.Refinement.ReferenceStore
 
 /-!
 # Scope の接続定理
@@ -286,6 +287,89 @@ theorem scope_local_typed {ok : ConName} {pattern : String → Option Range} {T 
   cases hkind
   exact target_hasTypeV ht hk rfl hmS (hc t ht)
 
+/-- `scope_local_typed` の系。値の形と保持する内容の前提を、引数の値の型付け（名前 name の範囲付きの型を保持する型）から
+得る。保持する対象と範囲の文脈を持つ値（`checkedAt`）は除く（その型付けは文脈の証人を要る）。 -/
+theorem scope_local_typed_of_typed {ok : ConName} {pattern : String → Option Range} {T : ScopeTable Refinement.Val}
+    {L : Limits} {key : Key} {scope : Interval.BindingScope} {body : Block}
+    (hT : TableSound (models ok pattern) T) {k : Key} {b : PrimName} {ts : List Ty} {es : List Eff}
+    {rs : List Range} {labels positions} {args : Exprs}
+    (hacc : OccurrenceAccepted ok T L key scope body k
+      (.call (.primName b ts es (fixedRanges rs)) labels positions args))
+    {env env' : Locals} (hreach : ReachBlock T key env body k env') {i : Nat}
+    (hxs : contractOrder positions (lowerArgs (argsKey k (.primName b ts es (fixedRanges rs))) args) = some [.loc i])
+    {rule : ScopeRule Refinement.Val} (hrule : T.ruleAt k = some rule) (hidx : ∀ a, rule.index [a] = [argIndex a])
+    {v : Refinement.Val} (found : env'[i]? = some (some v))
+    {S : Range} (hS : rs[0]? = some S) (hSne : S ≠ .top)
+    {P : Benitoite.Release.Refinement.Program} {B : Builtins} {Ψ : StoreTy} {Q : NoFailCtx} {C : TypeCtx} {Γ : Ctx}
+    {Φ : List Pred}
+    {name : OpaqueName} {kd : Scope.Domain.Kind} (hk : B.valKind name = some kd) (hfit : S.kind? = some kd)
+    {Q' : NoFailCtx} {C' : TypeCtx} {Γ' : Ctx} {Φ' : List Pred} {A : Ty} {ix : RangeIx}
+    (hv : HasTypeVQ P B Ψ Q' C' Γ' Φ' v A) (hA : A.Holds name kd ix)
+    (hnotAt : ∀ r snap t req, v ≠ .checkedAt r snap t req) :
+    HasTypeVQ P B Ψ Q C Γ Φ v (.scoped name kd (.fixed (.absolute S))) := by
+  refine scope_local_typed hT hacc hreach hxs hrule hidx found hS hSne hk hfit ?_
+  intro t ht
+  cases v with
+  | checked t' =>
+    simp only [Refinement.Val.target?, Option.some.injEq] at ht
+    subst ht
+    obtain ⟨o, k', range', ix', hk', hc, hm', ho, hcov'⟩ := hv.inv_checked rfl
+    have he := Ty.Holds.unique_name ho hA
+    subst he
+    exact Or.inl ⟨rfl, hc⟩
+  | checkedRequest t' req =>
+    simp only [Refinement.Val.target?, Option.some.injEq] at ht
+    subst ht
+    obtain ⟨o, range', A', ix', hk', hc, hh, hg, hr, hm', ho, hcov'⟩ := hv.inv_checkedRequest rfl
+    have he := Ty.Holds.unique_name ho hA
+    subst he
+    have hkd : kd = .endpoint := Option.some.inj (hk.symm.trans hk')
+    exact Or.inr ⟨req, A', rfl, hkd, hc, hh, hg, hr⟩
+  | checkedAt r snap t' req => exact absurd rfl (hnotAt r snap t' req)
+  | _ => simp [Refinement.Val.target?] at ht
+
+/-- `scope_local_typed_of_typed` のストア型の拡張の版。旧の系と同じく、拡張前のストア型 Ψ' での値の型付けを受ける。
+保持する要求の型付けは値の信頼条件のもとでストア型の拡張へ移す（`HasTypeVQ.store_extend`）。 -/
+theorem scope_local_typed_of_typed_extend {ok : ConName} {pattern : String → Option Range}
+    {T : ScopeTable Refinement.Val} {L : Limits} {key : Key} {scope : Interval.BindingScope} {body : Block}
+    (hT : TableSound (models ok pattern) T) {k : Key} {b : PrimName} {ts : List Ty} {es : List Eff}
+    {rs : List Range} {labels positions} {args : Exprs}
+    (hacc : OccurrenceAccepted ok T L key scope body k
+      (.call (.primName b ts es (fixedRanges rs)) labels positions args))
+    {env env' : Locals} (hreach : ReachBlock T key env body k env') {i : Nat}
+    (hxs : contractOrder positions (lowerArgs (argsKey k (.primName b ts es (fixedRanges rs))) args) = some [.loc i])
+    {rule : ScopeRule Refinement.Val} (hrule : T.ruleAt k = some rule) (hidx : ∀ a, rule.index [a] = [argIndex a])
+    {v : Refinement.Val} (found : env'[i]? = some (some v))
+    {S : Range} (hS : rs[0]? = some S) (hSne : S ≠ .top)
+    {P : Benitoite.Release.Refinement.Program} {B : Builtins} {Ψ Ψ' : StoreTy} {Q : NoFailCtx} {C : TypeCtx}
+    {Γ : Ctx} {Φ : List Pred}
+    {name : OpaqueName} {kd : Scope.Domain.Kind} (hk : B.valKind name = some kd) (hfit : S.kind? = some kd)
+    (hA : Builtins.ValueAssumptions P B) (hw : Ψ'.WF) (he : Ψ'.Extends Ψ)
+    {Q' : NoFailCtx} {C' : TypeCtx} {Γ' : Ctx} {Φ' : List Pred} {A : Ty} {ix : RangeIx}
+    (hv : HasTypeVQ P B Ψ' Q' C' Γ' Φ' v A) (hA' : A.Holds name kd ix)
+    (hnotAt : ∀ r snap t req, v ≠ .checkedAt r snap t req) :
+    HasTypeVQ P B Ψ Q C Γ Φ v (.scoped name kd (.fixed (.absolute S))) := by
+  refine scope_local_typed hT hacc hreach hxs hrule hidx found hS hSne hk hfit ?_
+  intro t ht
+  cases v with
+  | checked t' =>
+    simp only [Refinement.Val.target?, Option.some.injEq] at ht
+    subst ht
+    obtain ⟨o, k', range', ix', hk', hc, hm', ho, hcov'⟩ := hv.inv_checked rfl
+    have he' := Ty.Holds.unique_name ho hA'
+    subst he'
+    exact Or.inl ⟨rfl, hc⟩
+  | checkedRequest t' req =>
+    simp only [Refinement.Val.target?, Option.some.injEq] at ht
+    subst ht
+    obtain ⟨o, range', A', ix', hk', hc, hh, hg, hr, hm', ho, hcov'⟩ := hv.inv_checkedRequest rfl
+    have he' := Ty.Holds.unique_name ho hA'
+    subst he'
+    have hkd : kd = .endpoint := Option.some.inj (hk.symm.trans hk')
+    exact Or.inr ⟨req, A', rfl, hkd, hc, hh.store_extend hA hw he, hg, hr⟩
+  | checkedAt r snap t' req => exact absurd rfl (hnotAt r snap t' req)
+  | _ => simp [Refinement.Val.target?] at ht
+
 /-! ## 核の実行の形 -/
 
 /-- 接続定理（検査の成功値、核の実行の形）。受理した出現 k の検査の直接の呼び出しへ評価が局所 env' で到達し、
@@ -327,7 +411,7 @@ theorem scope_check_core {ok : ConName} {pattern : String → Option Range} {T :
 呼び出しが `Ok(w)` を返すなら、w は渡された要求 req をそのまま保持する検査済みの要求の値 `checkedRequest t req` であり、
 実効の endpoint t は推論した範囲 R に属し、型検査器が受理した範囲 S は R を覆い、t は S に属する。 -/
 theorem http_check_connection {pathTable : String → Option Range} {host : String → Option Scope.Domain.HostPattern}
-    {ok : ConName} (hne : ok ≠ "Result.Error") (facts : String → Option Range)
+    {ok : ConName} (hne : ok ≠ "Result.Error")
     {resolve : Key → Option Resolved} {L : Limits} {key : Key} {scope : Interval.BindingScope} {body : Block}
     {k : Key} {b : PrimName} {ts : List Ty} {es : List Eff} {rs : List Range} {labels positions} {args : Exprs}
     (hacc : OccurrenceAccepted ok (standardTable resolve (productionRules pathTable host).lookup) L key scope body k
@@ -340,7 +424,7 @@ theorem http_check_connection {pathTable : String → Option Range} {host : Stri
     (hres : resolve k = some ⟨.standard, checkRequestName⟩) {w : Refinement.Val} (hw : okPayload ok v = some w) :
     ∃ R t req, w = .checkedRequest (.endpoint t) req ∧ req.reqTarget = some (.endpoint t) ∧ R.Mem (.endpoint t) ∧
       ∃ S, rs[0]? = some S ∧ S.Covers R ∧ S.Mem (.endpoint t) := by
-  have hT := Rules.lookup_sound (productionRules_sound pathTable host hne facts) resolve
+  have hT := Rules.lookup_sound (productionRules_sound pathTable host hne (fun _ => none)) resolve
   have hrule : (standardTable resolve (productionRules pathTable host).lookup).ruleAt k =
       some (productionRules pathTable host).checkRequest := by
     simp [ScopeTable.ruleAt, standardTable, hres, Rules.lookup, checkRequestName, checkPathName]

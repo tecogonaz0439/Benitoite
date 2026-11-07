@@ -4,7 +4,6 @@ import Benitoite.Release.Refinement.RangeSourceProperties
 
 /-! # 関数・メソッド・通常節・失敗節の本体への型置換の適用 -/
 namespace Benitoite.Release.Refinement
-set_option maxHeartbeats 2000000
 
 theorem CaptureContextRegular.empty (P : Program) (C : TypeCtx) : CaptureContextRegular P C [] := ⟨by intro i a hi; simp at hi,by intro i a hi; simp at hi⟩
 

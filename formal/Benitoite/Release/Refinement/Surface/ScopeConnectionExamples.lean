@@ -151,6 +151,28 @@ theorem project_typed (P : Refinement.Program) (Ψ : StoreTy) :
     ⟨_, project_reach⟩ rfl rfl (projectRule_index _) rfl rfl (by intro h; cases h) rfl rfl
     (fun t ht => by cases ht; exact Or.inl ⟨rfl, rfl⟩)
 
+/-- 同じ射影の引数の値の型付け（Top の範囲付きの型）から、接続定理が狭い型 `Scope.PathIn[/data/**]` を与える。 -/
+theorem project_typed_of_typed (P : Refinement.Program) (Ψ : StoreTy) :
+    HasTypeVQ P ModelTargets.builtins Ψ Qempty [] [] [] (.checked dataTarget)
+      (.scoped "Scope.PathIn" .path (.fixed (.absolute dataRange))) :=
+  scope_local_typed_of_typed table_sound (OccurrenceAccepted.of_body accepted (reachAt_occurrences project_reach))
+    ⟨_, project_reach⟩ rfl rfl (projectRule_index _) rfl rfl (by intro h; cases h) rfl rfl
+    (Q' := Qempty) (C' := []) (Γ' := []) (Φ' := [])
+    (.V_Checked (o := "Scope.PathIn") (range := .top) rfl rfl ((Scope.Domain.Range.memK_top_iff _ _).mpr rfl))
+    (Or.inl rfl) (by intro r snap t req h; cases h)
+
+/-- 空のストア型での値の型付けから、値の信頼条件のもとで、任意のストア型での狭い型 `Scope.PathIn[/data/**]` を得る。 -/
+theorem project_typed_of_typed_extend (P : Refinement.Program) (Ψ : StoreTy)
+    (hA : Builtins.ValueAssumptions P ModelTargets.builtins) :
+    HasTypeVQ P ModelTargets.builtins Ψ Qempty [] [] [] (.checked dataTarget)
+      (.scoped "Scope.PathIn" .path (.fixed (.absolute dataRange))) :=
+  scope_local_typed_of_typed_extend table_sound (OccurrenceAccepted.of_body accepted (reachAt_occurrences project_reach))
+    ⟨_, project_reach⟩ rfl rfl (projectRule_index _) rfl rfl (by intro h; cases h) rfl rfl
+    hA StoreTy.WF.empty (fun _ _ h => by cases h)
+    (Q' := Qempty) (C' := []) (Γ' := []) (Φ' := [])
+    (.V_Checked (o := "Scope.PathIn") (range := .top) rfl rfl ((Scope.Domain.Range.memK_top_iff _ _).mpr rfl))
+    (Or.inl rfl) (by intro r snap t req h; cases h)
+
 /-- 脱糖した核の項 `Example.check[/data/**]()` は E_Prim で成功値へ進み、その成功値は推論した範囲に属する。 -/
 theorem check_core (P : Refinement.Program) (σ : PathEnv) :
     Benitoite.Release.Refinement.Step P builtins σ
@@ -227,7 +249,7 @@ theorem request_connection (pattern lo hi req : Refinement.Val) (r : Range) (v w
         (.cons (.local 0) (.cons (.local 1) (.cons (.local 2) (.cons (.local 3) .nil))))) (some v) :=
     .callStd rfl (.cons (.loc rfl) (.cons (.loc rfl) (.cons (.loc rfl) (.cons (.loc rfl) .nil)))) rfl
       (.apply (rs := [r]) _ v rfl hrun)
-  exact http_check_connection (show "Result.Ok" ≠ "Result.Error" by decide) (fun _ => none)
+  exact http_check_connection (show "Result.Ok" ≠ "Result.Error" by decide)
     (OccurrenceAccepted.of_body request_accepted (reachAt_occurrences hreach)) ⟨_, hreach⟩ hrhs rfl hw
 
 end

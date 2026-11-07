@@ -3,8 +3,10 @@
 
 対象は段の開始版から最終版までに足した・変えた formal/ の .lean（削除したものを除く）。コメント（`--` の行と `/- -/`）の中の
 工程・作業・判断・問いの番号（段・単位・群・再開・レビュー・決定・義務・問いなど）を探す。群 H の開始版（B_WORK）の
-同じファイルと今の作業木の両方を数え、今の作業木で0件であることを確かめる。記録は comments.json。
-使い方: python3 comments.py"""
+同じファイルと今の作業木の両方を数え、今の作業木で0件であることを確かめる。未追跡の .lean（まだコミットしていない
+足したファイル）も対象に含める。記録は --out（既定 ../h3。群 H の記録は ../h/comments.json）の comments.json。
+使い方: python3 comments.py [--out <記録>]"""
+import argparse
 import collections
 import json
 from pathlib import Path
@@ -29,9 +31,13 @@ def hits(text):
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--out", type=Path, default=HERE.parent / "h3")
+    args = parser.parse_args()
     status = git("diff", "--name-status", "-M", B_STAGE, "--", "formal").splitlines()
+    untracked = [p for p in git("ls-files", "--others", "--exclude-standard", "formal").splitlines() if p.endswith(".lean")]
     files = sorted({line.split("\t")[-1] for line in status if not line.startswith("D")
-                    and line.split("\t")[-1].endswith(".lean")})
+                    and line.split("\t")[-1].endswith(".lean")} | set(untracked))
     before, after = {}, {}
     for f in files:
         try:
@@ -51,7 +57,8 @@ def main():
               "pattern_sha256": __import__("hashlib").sha256(PATTERN.pattern.encode()).hexdigest(),
               "inputs": {"comments.py": digest(Path(__file__))}}
     assert not after, after
-    write(HERE / "comments.json", record)
+    args.out.mkdir(parents=True, exist_ok=True)
+    write(args.out / "comments.json", record)
     print(json.dumps({"files": len(files), "before": record["before"]["hits"], "before_files": len(before),
                       "after": 0}, ensure_ascii=False))
 

@@ -12,7 +12,6 @@ namespace Benitoite.Release.Refinement
 
 variable {P : Program}
 
-set_option maxHeartbeats 2000000
 
 private theorem lam_annotations {P B store Q C Γ Φ v a}
     (h : HasTypeVQ P B store Q C Γ Φ v a) :

@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 """義務と申し送りの最終の判定（L70.47 (a)）。../tables.md の全行（申し送り78・義務59）を、四分類と証拠の完全名・読者の経路で判定する。
 
-証拠の名前は最終版の環境で一つに決まること、「完了」の行の証拠に定理があること、読者の型又は値の定数の閉包に証拠が
-含まれること（最短の経路）を、段の最終状態の書き出し（stage.py の final-*.log）で機械的に照合する。名前の一致だけで
-判定しない。四分類は l60/detail.md 第2.4節の定義を使い、証拠の言明について判定する（前提も入力も持たない欄は自明）。
-Lean の証拠を持たない行（記録・対応表・他段）は「対象外」とする。記録は obligations.json と obligations.md。
-使い方: python3 obligations.py --tmp <一時領域>"""
+証拠の名前は最終版の環境で一つに決まること、四分類が「実質」の行の証拠に定理があること、読者を持つ行では全ての証拠が
+読者のどれかの型又は値の定数の閉包に含まれること（最短の経路。読者そのものである証拠を含む）を、段の最終状態の書き出し
+（stage.py の final-*.log）で機械的に照合する。名前の一致だけで判定しない。四分類は l60/detail.md 第2.4節の定義を使い、
+証拠の言明について判定する（前提も入力も持たない欄は自明）。定義・帰納型・構成子だけを証拠にする行は「実質」に数えない。
+Lean の証拠を持たない行（記録・対応表・他段）は「対象外」とする。
+群 H の判定（HANDOFFS_H・OBLIGATIONS_H）は残し、群 H3 の直し（REVISIONS・OBLIGATION_REVISIONS）を行ごとに当てる。
+記録は --out（既定 ../h3）の obligations.json と obligations.md。
+使い方: python3 obligations.py --tmp <一時領域> [--out <記録>] [--scratch <場所>]"""
 import argparse
 import collections
 import json
@@ -206,14 +209,227 @@ OBLIGATIONS = [
  ("O135", "技術", DONE, SUB, W_SURFACE, [S + "HasTypeQ.desugar", S + "HasBlockQ.desugar"], [S + "desugar_typed"], "R10b/R40/R50/V10", "通常 decoder の接続は他段"),
 ]
 
+# 群 H3 の直し（RV-L70.h の中3・中4・軽2・軽3・軽6）。上の表は群 H の判定のまま残し、ここで行ごとに差し替える。
+# 各項目は (差し替える欄, 理由)。欄は "verdict"・"four"・"witness"・"evidence"・"readers"・"remaining"・"note"。
+NA_DEF = "対象外（定義が判定の対象）"
+UNREAD_H = "群 H の判定で読者の閉包の外だった証拠"
+P1 = S + "HasBlockQ.desugar"
+MUTUAL = ("`Surface.HasTypeQ.desugar` は `HasBlockQ.desugar` と同じ相互の再帰の別の定数で、`desugar_typed` の閉包にない。"
+          "両者の本体の定数の集合は相互の再帰の帰納原理 brecOn を除いて同じ（台本で照合）で、式の場合は `HasBlockQ.desugar` の証明の項の中にある。行の主張"
+          "（性質1の該当の場合）は `HasBlockQ.desugar` で支えられるので、要らない証拠として除いた")
+CONNECT = [R + "IntervalReport.connect", R + "IntervalReport.normal_run", R + "IntervalReport.returned_mark",
+           R + "IntervalFailure.analyzeExpr_failure"]
+W_CONNECT = "IntervalReport.lean の無名の適用例（connect の正常値と return）と群 G の IntervalConnectionExamples"
+REVISIONS = {
+ "L60-H02": ({"witness": "外部参照の適用の規則 `Step.E_ExternalApply` は見る形の等式のほかに前提を持たず、契約の入力を読まない",
+              "evidence": [R + "Step.E_ExternalApply"],
+              "note": "tables.md の基準は「進行の外部参照の場合が名前付きの読者になる」。外部参照の適用は契約の入力を読まない"
+                      "遷移なので、読者を要しない形に基準を改めた（`StateTyE.externalRef_contract_inputs` は既定ビルドにあり読者がない）"},
+             "軽2(1): 証拠を前提のない規則 `E_ExternalApply` にし、基準を改めた理由と読者のない補題を記した"),
+ "L60-H30": ({"readers": ["main@@SurfaceCheck.Main", S + "CheckAccept.checkProgramAccepted_sound"]},
+             "中4: `checkProgramAccepted_sound` は実行ファイルの根の閉包にない（実行ファイルは定理を読まない）。定理を読者に"
+             "加え、その型が根の読む `checkProgramAccepted` を読むことを照合した"),
+ "L60-受口2": ({"evidence": [R + "ExternalCallAdmissible", S + "desugar_typed"]},
+               "中4: `ExternalSurface.call_typed` の読者は `ExternalSignatureLeaves.handle_call_typed`・`ExternalSurface.call_of_lookup`"
+               " だけで性質1の閉包にない。基準の F08 の葉は性質1が読む `ExternalCallAdmissible` なので、要らない証拠として除いた。"
+               "中3: 帰納型だけになる証拠に、葉を読む性質1 `desugar_typed` を加えた"),
+ "L60-受口3": ({"evidence": [R + "StateTyE.external_response_step", R + "StepSelection.external"]},
+               "中4: `step_external_selected` は読者がなく、`B.selectExternal` を選ぶ特定の場合の補題である。step_sound の外部の"
+               "場合が読む `StepSelection.external` に替えた（進行は `external_response_step` を読む）"),
+ "L60-受口5": ({"verdict": DONE, "four": SUB, "witness": "群 C の三つの無名の適用例（`ExternalModels` の example）",
+               "evidence": [R + "ExternalModels.ModelCase.composition", R + "ExternalModel.external_assumptions"],
+               "readers": [R + "ExternalModels.ModelCase.composition"],
+               "note": "三モデルの適用例は既定ビルドの無名の例（名前の読者なし）。適用の定理 `ModelCase.composition` が完成した表の"
+                       "外部の3欄を `ExternalModel.external_assumptions` から読む"},
+               "軽2(3): 判定「記録」と四分類「実質」の組を、適用の定理を証拠とする「完了（L70 の分）」にそろえた"),
+ "L60-仮定150": ({"evidence": [R + "StandardModel.Completion", R + "StandardModel.completion_core",
+                              R + "StandardModel.complete_agree"]},
+                 "中4: `complete_shapeOk_composed` は読者がなく、系の閉包にない。系は合成済みの側を上書きしないことを "
+                 "`complete_agree`（`ComposedAgree`）で読む。`ShapeOk` の保存は単独の定理として既定ビルドにあるが、系の主張を"
+                 "支えないので証拠から除いた"),
+ "L60-受口1": ({"evidence": [R + "StandardModel.Includes", R + "StandardModel.Includes.externalWF"]},
+               "中3: 構造体だけの証拠に、`Includes` から外部宣言の表の整形式を得る系の定理 `Includes.externalWF` を加えた"),
+ "L50-H03": ({"evidence": [R + "Builtins.ResponseAssumptions.delta_typed", R + "StandardModel.composed_rows"],
+              "readers": [R + "progress", R + "StandardModel.included_guarantees"],
+              "note": "進行の正常応答の場合は信頼条件の欄 `delta_typed`（応答の `Outcome.Typed` が結果型の篩の事実を持つ）を読み、"
+                      "標準の表では `composed_rows` が欄を供給する。`normal_facts` の4名（ScopeResponse・ModelTargets・ModelHttp・"
+                      "StandardModel）は既定ビルドにあり読者がない"},
+             "軽2(2): 進行が読む信頼条件の欄を証拠に加え、読者を `progress` にした。基準の「normal_facts を全実行へ」は欄で受ける"),
+ "L50-H08": ({"evidence": [R + "InitialPrepared", R + "InitialPrepared.ready"]},
+             "中3: 帰納型だけの証拠に、`InitialPrepared` から `Ready` を得る定理 `InitialPrepared.ready` を加えた"),
+ "L50-H28": ({"evidence": [R + "ProgressStatement", R + "ReachableTargetStatement", R + "progress",
+                           R + "reachable_target_sound"]},
+             "中3: 言明の定義だけの証拠に、それを結論とする主定理を加えた"),
+ "L50-H31": ({"readers": [R + "progress", R + "reachable_target_sound"]},
+             "中4: `Detail.values_typed` は進行の閉包になく、到達の対象健全性の閉包にある（照合の束縛の値の型付け）。基準の"
+             "「到達の対象健全性」に当たる `reachable_target_sound` を読者に加えた"),
+ "L50-実行": ({"evidence": [R + "StateTyE.steps_preserved", R + "reachable_target_sound"]},
+              "中4: 主定理 `steps_preservation` は表層の主定理の閉包にない。表層の主定理が読む到達の対象健全性は、"
+              "`steps_preservation` と同じ保存の補題 `StateTyE.steps_preserved` を読むので、証拠を閉包の中の名前に替えた"),
+ "L40-F05": ({"evidence": [R + "StandardModel.DataTable", R + "StandardModel.composed_rows"]},
+             "中3: 帰納型だけの証拠に、`DataTable` の表を読む合成の定理 `composed_rows` を加えた"),
+ "L40-F07": ({"evidence": [R + "IntervalReport.connect", R + "IntervalFailure.analyzeExpr_failure"],
+              "witness": W_CONNECT},
+             "中3: 定義だけの証拠に、接続の失敗の成分を与える定理 `IntervalFailure.analyzeExpr_failure` を加えた"),
+ "L40-後段2": ({"evidence": [R + "IntervalControlLeaves.typed_first_failure", R + "IntervalConnection.H04.first_failure_handoff"],
+               "readers": [R + "IntervalControlLeaves.typed_first_failure"],
+               "witness": "群 H3 の `HandlerStoreExamples.first_failure_witness`（使用済みの継続の再開で error に至る型付きの開始と有限実行）",
+               "note": "最初の失敗の位置の δ の理由へ結ぶ定理 `typed_first_failure` は区間の入口の閉包にない。基準は読者を名指し"
+                       "しないので、定理の言明を証拠にした。前提を満たす具体の入力の証人が `typed_first_failure` を読む（台本で照合）"},
+               "中3: 定義（`IntervalReport.connect`）だけの証拠で、`connect` は最初の失敗の受渡しを読まない。結ぶ定理を証拠に替え、"
+               "前提を満たす具体の入力の証人を群 H3 で置いた"),
+ "L40-後段3": ({"evidence": [P1]}, "中4: " + MUTUAL),
+ "L30-A2": ({"evidence": [R + "Ty.LeQ.refine", S + "Check.subtype_sound"],
+             "readers": [S + "CheckTables.checkProgram_sound"]},
+            "中3: 構成子だけの証拠に、検査器の部分型の判定の健全性 `Check.subtype_sound` を加え、読者を検査器の全体の健全性 "
+            "`CheckTables.checkProgram_sound` にした（`checkExprAt_sound` の読者は例だけ）"),
+ "L30-A4": ({"four": NA_DEF, "witness": "",
+             "note": "別名の展開の定義。展開の注釈の性質は `AliasDecl.expand_annotation`（読者 `sizedPathAlias_expand_annotation`）"},
+            "中3: 定義だけを証拠にした行。基準は定義なので四分類を対象外にした"),
+ "L30-転記": ({"evidence": [P1]}, "中4: " + MUTUAL),
+ "L20-J2": ({"evidence": [P1]}, "中4: " + MUTUAL),
+ "L20-J3": ({"evidence": [P1]}, "中4: " + MUTUAL),
+ "L20-J7": ({"evidence": [R + "Ty.HasKind", S + "desugar_typed"]},
+            "中3: 定義だけの証拠に、同じ kind の表を読む性質1 `desugar_typed` を加えた"),
+ "L00b-主": ({"evidence": [R + "ProgressStatement", R + "PreservationStatement", R + "StepSoundStatement",
+                          R + "EffectSoundnessStatement", R + "ReachableTargetStatement", R + "progress", R + "preservation",
+                          R + "step_sound", R + "effect_soundness", R + "reachable_target_sound"]},
+             "中3: 言明の定義だけの証拠に、それを結論とする主定理を加えた"),
+ "L00b-表層": ({"evidence": [P1]}, "中4: " + MUTUAL),
+ "L00b-区間": ({"evidence": CONNECT, "witness": W_CONNECT},
+               "中3: 定義だけの証拠に、接続の正常値・return・失敗の成分を与える定理を加えた"),
+ "plan-1102": ({"evidence": [R + "IntervalConnection.ValueRel", R + "IntervalReport.normal_run"], "witness": W_CONNECT},
+               "中3: 帰納型だけの証拠に、強めた `ValueRel` を前提に読む接続の定理 `IntervalReport.normal_run` を加えた"),
+ "plan-1101": ({"evidence": [R + "Program.WellTyped", S + "desugar_typed"]},
+               "中3: 帰納型だけの証拠に、`Program.WellTyped`（欄 `variance` を持つ。台本で照合）を前提に読む性質1を加えた"),
+ "plan-RV03": ({"evidence": [R + "InitialTypingStatement", R + "initial_typing"]},
+               "中3: 言明の定義だけの証拠に、それを結論とする開始の定理を加えた"),
+ "U02-署名": ({"four": NA_DEF, "witness": "", "remaining": "R10a（後段への義務の表の1）",
+              "note": "署名の表（群 F2 の δ の行は取り込み済み）。表の行の性質 `safeEntries_rows` などは自明（計算で閉じる）"},
+             "中3・軽3: 定義だけを証拠にした行。基準は表なので四分類を対象外にした。残る段を L70 の中の単位から後段に改めた"),
+}
+OBLIGATION_REVISIONS = {
+ "O005": ({"evidence": [R + "Program.WellTyped", S + "desugar_typed"]},
+          "中3: 帰納型だけの証拠に、`Program.WellTyped`（欄 `variance`）を前提に読む性質1を加えた"),
+ "O012": ({"evidence": [P1]}, "中4: " + MUTUAL),
+ "O033": ({"evidence": [R + "Program.WellTyped", S + "desugar_typed"]},
+          "中3: 帰納型だけの証拠に、`Program.WellTyped`（欄 `variance`）を前提に読む性質1を加えた"),
+ "O037": ({"evidence": [P1, S + "Check.checkBlockAt_sound"],
+           "readers": [S + "desugar_typed", S + "CheckTables.checkProgram_sound"]},
+          "中4: " + MUTUAL + "。`Check.checkExprAt_sound` は性質1の閉包になく読者は例だけで、検査器の全体の健全性 "
+          "`checkProgram_sound` は `checkBlockAt_sound` を読むので、証拠を替えて読者に加えた"),
+ "O043": ({"evidence": [R + "Ty.LeQ.refine", S + "Check.subtype_sound"],
+           "readers": [S + "CheckTables.checkProgram_sound"]},
+          "中3: 構成子だけの証拠に、検査器の部分型の判定の健全性 `Check.subtype_sound` を加え、読者を "
+          "`CheckTables.checkProgram_sound` にした"),
+ "O056": ({"evidence": [P1]}, "中4: " + MUTUAL),
+ "O068": ({"evidence": [P1]}, "中4: " + MUTUAL),
+ "O086": ({"readers": ["main@@SurfaceCheck.Main", S + "CheckAccept.checkProgramAccepted_sound"]},
+          "中4: `checkProgramAccepted_sound` を読者に加え、その型が根の読む `checkProgramAccepted` を読むことを照合した"),
+ "O087": ({"evidence": [R + "Program.ExternalWF", R + "StandardModel.Includes.externalWF"],
+           "note": "系は収集の `Includes` から外部宣言の表の整形式（専用 ID と表）を読む。型の変換が外部型の名目IDを保つ定理 "
+                   "`ExternalNominal.transformations` は既定ビルドにあり読者がない"},
+          "中4: `ExternalNominal.transformations`（型の変換が外部型の名目IDを保つこと）は読者がなく、系の閉包にない。行の主張"
+          "（表層収集で外部型を専用 ID と表に保つ）は、系が収集の `Includes` から `Program.ExternalWF` を得る定理 "
+          "`Includes.externalWF` で支えられ、型の変換の性質は要らないので除いた"),
+ "O088": ({"evidence": [R + "ExternalCallAdmissible", S + "desugar_typed"]},
+          "中4: `ExternalSurface.call_typed` は性質1の閉包にない。性質1が読む `ExternalCallAdmissible` を残し、"
+          "中3: 帰納型だけになる証拠に、葉を読む性質1 `desugar_typed` を加えた"),
+ "O121": ({"readers": ["main@@SurfaceCheck.Main", S + "CheckAccept.checkProgramAccepted_sound"]},
+          "中4: `checkProgramAccepted_sound` を読者に加え、その型が根の読む `checkProgramAccepted` を読むことを照合した"),
+ "O136": ({"evidence": [P1]}, "中4: " + MUTUAL),
+ "O138": ({"evidence": [P1, R + "Coverage.coverage_sound"],
+           "readers": [S + "desugar_typed", S + "CheckTables.checkProgram_sound"]},
+          "中4: " + MUTUAL + "。`Coverage.typed_nonempty_coverage` は例だけが読み、網羅性の健全性の閉包にない。網羅性の側は"
+          "篩付きの型の網羅の健全性 `coverage_sound`（検査器の網羅の判定の健全性 `CheckPatterns.exhaustiveWithView_sound` が読む）で受け、"
+          "`typed_nonempty_coverage` はその代表の合成なので証拠を替えた"),
+ "O139": ({"evidence": [R + "Ty.LeQ", S + "desugar_typed"]},
+          "中3: 帰納型だけの証拠に、同じ部分型 `Ty.LeQ` を読む性質1を加えた"),
+ "O140": ({"evidence": [R + "Ty.LeQ", S + "desugar_typed"]},
+          "中3: 帰納型だけの証拠に、同じ部分型 `Ty.LeQ` を読む性質1を加えた"),
+ "O142": ({"four": TRIV, "witness": "計算で閉じる表の性質（前提なし）",
+           "evidence": [R + "PublicNames.safeEntries", R + "PublicNames.unified_same_tel", R + "PublicNames.composed_lookup"],
+           "note": "`NonEmptyList.head`・`tail` の公開名へまとめた行が既存の行と同じ依存列を持ち、精密側の本体の lookup に成功する"},
+          "中3: 定義だけの証拠に、表の性質の定理を加えた。定理は計算で閉じる（前提に依存しない）ので四分類は自明"),
+ "O143": ({"four": TRIV, "witness": "計算で閉じる表の性質（前提なし）",
+           "evidence": [R + "PublicNames.safeEntries", R + "PublicNames.safeEntries_rows", R + "PublicNames.composed_lookup"],
+           "note": "`Range.getFrom` の行（内部の `sameLengthGet`）が内部の19行と同じ順にあり、精密側の本体の lookup に成功する"},
+          "中3: 定義だけの証拠に、表の性質の定理を加えた。定理は計算で閉じる（前提に依存しない）ので四分類は自明"),
+ "O159": ({"verdict": RECORD}, "軽3: 証拠の完全名がないので「完了（記録）」にした"),
+ "O167": ({"four": NA_DEF, "witness": "受理・拒否の二つの無名の例（`Surface.Predicates`）",
+           "note": "束縛名と引数名の同名の拒否（R1）は、表層の型が束縛名を持たないので名前の上の判定として置いた（群 D）"},
+          "中3: 定義だけを証拠にした行。基準は表層の整形式の判定の定義なので四分類を対象外にした"),
+ "O169": ({"evidence": CONNECT, "witness": W_CONNECT},
+          "中3: 定義だけの証拠に、独立評価と型付きの有限実行を結ぶ接続の定理を加えた"),
+ "O003": ({"evidence": [P1]}, "中4: " + MUTUAL),
+ "O029": ({"evidence": [P1]}, "中4: " + MUTUAL),
+ "O046": ({"evidence": [P1]}, "中4: " + MUTUAL),
+ "O053": ({"evidence": [P1]}, "中4: " + MUTUAL),
+ "O054": ({"evidence": [P1]}, "中4: " + MUTUAL),
+ "O135": ({"evidence": [P1]}, "中4: " + MUTUAL),
+}
+FIELDS = ["verdict", "four", "witness", "evidence", "readers", "remaining", "note"]
+# 構造体の欄で照合する主張（構造体, 欄）。
+FIELD_CHECKS = {"plan-1101": (R + "Program.WellTyped", "variance"), "O005": (R + "Program.WellTyped", "variance"),
+                "O033": (R + "Program.WellTyped", "variance")}
+# 行ごとの名前付きの証人（証人, 証拠の定理）。
+WITNESS_CHECKS = {"L40-後段2": (R + "HandlerStoreExamples.first_failure_witness", R + "IntervalControlLeaves.typed_first_failure")}
+# 相互の再帰の二定数の本体の定数の集合が同じであること。
+MUTUAL_PAIR = (S + "HasTypeQ.desugar", S + "HasBlockQ.desugar")
+
+
+def revise(rows, revisions):
+    out = []
+    for row in rows:
+        rid = row[0]
+        if rid in revisions:
+            change, reason = revisions[rid]
+            values = dict(zip(FIELDS, row[2:]))
+            values.update(change)
+            out.append((rid, row[1], *[values[f] for f in FIELDS], reason))
+        else:
+            out.append((*row, ""))
+    assert set(revisions) <= {r[0] for r in rows}, set(revisions) - {r[0] for r in rows}
+    return out
+
+
+HANDOFFS_H, OBLIGATIONS_H = HANDOFFS, OBLIGATIONS
+HANDOFFS = revise(HANDOFFS_H, REVISIONS)
+OBLIGATIONS = revise(OBLIGATIONS_H, OBLIGATION_REVISIONS)
+# 収集と標準の表の言明を結論とする7定理と、7入口の残る3根の読者（軽6）。
+MAIN_READERS += [
+ (R + "Program.extends_typing", R + "Program.ExtendsTypingStatement", "type"),
+ (R + "Program.extends_exhaustive", R + "Program.ExtendsExhaustiveStatement", "type"),
+ (R + "Program.extends_declaration", R + "Program.ExtendsDeclarationStatement", "type"),
+ (R + "Program.compose", R + "Program.ComposeStatement", "type"),
+ (R + "StandardModel.composed_rows", R + "StandardModel.ComposedRowsStatement", "type"),
+ (R + "StandardModel.composed_release", R + "StandardModel.ComposedReleaseStatement", "type"),
+ (R + "StandardModel.table_conditions", R + "StandardModel.TableConditionsStatement", "type"),
+ (R + "StandardModel.completion_core", R + "StandardModel.CompletionCoreStatement", "type"),
+ ("main@@BuiltinCheck.Main", "Exchange.BuiltinEntry.toMaterial", "value"),
+ ("main@@SurfaceCheck.All", S + "CheckDeclarations.checkDef", "value"),
+ ("main@@SurfaceCheck.All", "Exchange.CheckInput.prepare", "value"),
+ ("main@@CoverageProgramDiff.Main", R + "checkMatchWithView", "value"),
+ ("main@@CoverageProgramDiff.Main", R + "irrefutableWithView", "value"),
+]
+MAIN_READERS = [(("main@@DesugarDiff.Main" if r == "main" else r), e, w) for r, e, w in MAIN_READERS]
+
 
 ISSUES = []
+
+
+def node_key(nodes, name):
+    """根ごとの同名（`main@@DesugarDiff.Main` など）は、merged が最初の根の名前を接尾辞なしで置くので読み替える。"""
+    if name in nodes or "@@" not in name:
+        return name
+    base, module = name.split("@@")
+    return base if nodes.get(base, {}).get("module") == module else name
 
 
 def judge(nodes, rows, kind):
     out = []
     for row in rows:
-        rid, group, verdict, cls, witness, evidence, readers, remaining, note = row
+        rid, group, verdict, cls, witness, evidence, readers, remaining, note, revision = row
         resolved = {}
         for e in evidence:
             full = "Benitoite." + e
@@ -221,11 +437,12 @@ def judge(nodes, rows, kind):
                 ISSUES.append((rid, "証拠がない", e))
                 continue
             resolved[e] = nodes[full]["kind"]
-        if verdict == DONE and evidence:
-            assert any(k == "theorem" for k in resolved.values()) or cls != SUB or True, rid
+        # 四分類の「実質」は前提と結論を持つ言明（定理）について言う。定義・帰納型・構成子だけの行を実質に数えない。
+        if cls == SUB and not any(k == "theorem" for k in resolved.values()):
+            ISSUES.append((rid, "実質の行の証拠に定理がない", sorted(resolved.items())))
         paths = {}
         for r in readers:
-            full = "Benitoite." + r if not r.startswith("main@@") else r
+            full = node_key(nodes, "Benitoite." + r if not r.startswith("main@@") else r)
             if full not in nodes:
                 ISSUES.append((rid, "読者がない", r))
                 continue
@@ -236,9 +453,16 @@ def judge(nodes, rows, kind):
             if r not in paths:
                 ISSUES.append((rid, "読者の閉包に証拠がない", r))
         unread = [e for e in evidence if readers and not any(e in p for p in paths.values())]
+        # 読者を持つ行の証拠は、全て読者のどれかの閉包に入る（入らない証拠は除くか、行を完了から外す）。
+        if unread and verdict.startswith("完了"):
+            ISSUES.append((rid, "読者の閉包の外の証拠", unread))
+        if rid in FIELD_CHECKS:
+            structure, field = FIELD_CHECKS[rid]
+            if field not in nodes["Benitoite." + structure]["fields"]:
+                ISSUES.append((rid, "構造体の欄がない", structure, field))
         out.append({"id": rid, "group_or_class": group, "verdict": verdict, "four": cls, "witness": witness,
                     "evidence": resolved, "readers": readers, "paths": paths, "unread_evidence": unread,
-                    "remaining": remaining, "note": note})
+                    "remaining": remaining, "note": note, "revision": revision})
     return out
 
 
@@ -281,8 +505,19 @@ def neighbours(nodes, n):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--tmp", type=Path, required=True)
+    parser.add_argument("--out", type=Path, default=L70 / "h3")
+    parser.add_argument("--scratch", type=Path)
     args = parser.parse_args()
+    out_dir, scratch = args.out, args.scratch or args.tmp
+    out_dir.mkdir(parents=True, exist_ok=True)
     _, nodes = stage.merged(args.tmp, "final")
+    # 相互の再帰の二定数は本体の定数の集合が同じ（式の場合の証明は HasBlockQ.desugar の項の中にある）。
+    pair = ["Benitoite." + x for x in MUTUAL_PAIR]
+    # 相互の再帰の帰納原理（`HasTypeQ.brecOn`・`HasBlockQ.brecOn`）は同じ相互の組なので一つに数える。
+    def body(x):
+        return {d.replace("HasTypeQ.brecOn", "HasBlockQ.brecOn") for d in nodes[x]["deps"]}
+    if body(pair[0]) != body(pair[1]):
+        ISSUES.append(("相互の再帰", MUTUAL_PAIR))
     tables = (L70 / "tables.md").read_text()
     handoff_ids = re.findall(r"^\| ([^|]+?) \| (?:l60|l50|l40|l30|l20|l00b|plan|README|RV-L60|u02)", tables, re.M)
     obligation_ids = re.findall(r"^\| (O\d{3}) \|", tables, re.M)
@@ -293,7 +528,7 @@ def main():
     obligations = judge(nodes, OBLIGATIONS, "obligation")
     main_readers = []
     for reader, evidence, where in MAIN_READERS:
-        r = reader if reader.startswith("main") else "Benitoite." + reader
+        r = node_key(nodes, reader if reader.startswith("main") else "Benitoite." + reader)
         e = "Benitoite." + evidence
         if where == "type":
             found = e in nodes[r]["type_deps"]
@@ -304,34 +539,69 @@ def main():
         if not found:
             ISSUES.append(("主定理の読者", reader, evidence))
         main_readers.append({"reader": reader, "evidence": evidence, "where": where, "path_length": length})
+    # 群 H の記録で読者の閉包の外の証拠があった行（中4）と、実質で証拠に定理がなかった完了の行（中3）は、全て直しの
+    # 理由を持つ。
+    group_h = json.loads((HERE / "obligations.json").read_text())
+    revised = {x["id"]: x["revision"] for x in handoffs + obligations}
+    for x in group_h["handoffs"] + group_h["obligations"]:
+        if x["unread_evidence"] and "中4" not in revised[x["id"]]:
+            ISSUES.append((x["id"], "閉包の外の証拠の処置がない"))
+        if x["verdict"] == DONE and x["four"] == SUB and not any(k == "theorem" for k in x["evidence"].values()) \
+                and "中3" not in revised[x["id"]]:
+            ISSUES.append((x["id"], "定理のない証拠の処置がない"))
+    flags = {
+        "unread": sum(bool(x["unread_evidence"]) for x in group_h["handoffs"] + group_h["obligations"]),
+        "no_theorem": sum(x["verdict"] == DONE and x["four"] == SUB and x["evidence"] != {} and
+                          not any(k == "theorem" for k in x["evidence"].values())
+                          for x in group_h["handoffs"] + group_h["obligations"])}
+    # 行ごとの名前付きの証人が、証拠の定理を読む。
+    for rid, (witness, theorem) in WITNESS_CHECKS.items():
+        if not stage_path(nodes, "Benitoite." + witness, "Benitoite." + theorem):
+            ISSUES.append((rid, "証人が定理を読まない", witness))
     assert not ISSUES, "\n".join(map(str, ISSUES))
     counts = {"handoffs": dict(collections.Counter(h["verdict"] for h in handoffs)),
               "obligations": dict(collections.Counter(o["verdict"] for o in obligations)),
               "four_handoffs": dict(collections.Counter(h["four"] for h in handoffs)),
               "four_obligations": dict(collections.Counter(o["four"] for o in obligations)),
               "with_reader": sum(bool(h["readers"]) for h in handoffs + obligations)}
+    # 群 H の判定からの変化（判定・四分類の件数）。
+    def h_counts(rows, i):
+        return dict(collections.Counter(r[i] for r in rows))
+    counts["group_h"] = {"handoffs": h_counts(HANDOFFS_H, 2), "obligations": h_counts(OBLIGATIONS_H, 2),
+                         "four_handoffs": h_counts(HANDOFFS_H, 3), "four_obligations": h_counts(OBLIGATIONS_H, 3)}
+    counts["revised"] = {"handoffs": len(REVISIONS), "obligations": len(OBLIGATION_REVISIONS)}
+    counts["group_h_flags"] = flags
     record = {"counts": counts, "main_readers": main_readers, "handoffs": handoffs, "obligations": obligations,
               "inputs": {"tables.md": digest(L70 / "tables.md"), "obligations.py": digest(Path(__file__))}}
     # 経路の全体は一時領域に置き、記録には読者ごとの経路の長さと大きさ・SHA-256 を残す。
-    full = args.tmp / "obligations-paths.json"
+    full = scratch / "obligations-paths.json"
     full.write_text(json.dumps({x["id"]: x["paths"] for x in handoffs + obligations}, ensure_ascii=False, indent=0))
     for x in handoffs + obligations:
         x["paths"] = {r: {e: len(p) for e, p in v.items()} for r, v in x["paths"].items()}
     record["paths"] = {"note": "経路の長さ（読者から証拠までの定数の数）だけを残す", "full": digest(full)}
-    write(HERE / "obligations.json", record)
     lines = ["# 義務と申し送りの最終の判定", "",
-             "生成物（[obligations.py](obligations.py)）。証拠・読者は接頭辞 `Benitoite.` を省いた完全名。読者の型又は値の定数の閉包に"
-             "証拠が含まれることを段の最終状態の書き出しで確かめた（経路は obligations.json）。四分類は l60/detail.md 第2.4節の定義。", ""]
+             "生成物（[../h/obligations.py](../h/obligations.py)）。証拠・読者は接頭辞 `Benitoite.` を省いた完全名。読者を持つ行では、"
+             "全ての証拠が読者のどれかの型又は値の定数の閉包に含まれることを段の最終状態の書き出しで確かめた（経路は "
+             "obligations.json）。四分類は l60/detail.md 第2.4節の定義で、定義・帰納型・構成子だけを証拠にする行を実質に数えない。"
+             "右端の列は、群 H の判定（[../h/obligations.md](../h/obligations.md)）からの直しと、群 H の判定で読者の閉包の外だった"
+             "証拠の処置である。", ""]
     for title, rows in (("申し送り78行", handoffs), ("義務59行", obligations)):
-        lines += [f"## {title}", "", "| 行 | 群・分類 | 判定 | 四分類 | 証拠 | 読者 | 残る段 | 注記 |", "|---|---|---|---|---|---|---|---|"]
+        lines += [f"## {title}", "", "| 行 | 群・分類 | 判定 | 四分類 | 証拠 | 読者 | 残る段 | 注記 | 群 H からの直し |",
+                  "|---|---|---|---|---|---|---|---|---|"]
         for x in rows:
             ev = "・".join(f"`{e}`" for e in x["evidence"]) or "なし"
             rd = "・".join(f"`{r}`" for r in x["readers"]) or "なし"
             four = x["four"] + (f"（{x['witness']}）" if x["witness"] else "")
-            lines.append(f"| {x['id']} | {x['group_or_class']} | {x['verdict']} | {four} | {ev} | {rd} | {x['remaining']} | {x['note']} |")
+            lines.append(f"| {x['id']} | {x['group_or_class']} | {x['verdict']} | {four} | {ev} | {rd} | {x['remaining']} | "
+                         f"{x['note']} | {x['revision'] or 'なし'} |")
         lines.append("")
-    (HERE / "obligations.md").write_text("\n".join(lines) + "\n")
-    assert (HERE / "obligations.md").stat().st_size <= 100000
+    (out_dir / "obligations.md").write_text("\n".join(lines) + "\n")
+    assert (out_dir / "obligations.md").stat().st_size <= 100000
+    # 直しの文・証人・注記は obligations.md にあり、JSON には直しの有無だけを残す（記録の大きさの制限）。
+    for x in handoffs + obligations:
+        x["revision"] = bool(x["revision"])
+        del x["witness"], x["note"]
+    write(out_dir / "obligations.json", record)
     print(json.dumps(counts, ensure_ascii=False))
 
 
