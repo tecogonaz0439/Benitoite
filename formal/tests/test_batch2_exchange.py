@@ -142,18 +142,18 @@ class Batch2ExchangeTests(unittest.TestCase):
                 data = copy.deepcopy(self.data)
                 for f, document in data.items():
                     document['version'] = ((12 if f == 'corpus' else 4) if f in stale
-                                           else (15 if f == 'corpus' else 7))
+                                           else (16 if f == 'corpus' else 8))
                     (self.directory / f'{f}.json').write_text(json.dumps(document))
                 with self.assertRaisesRegex(AssertionError, f'{stale[0]}: expected batch2 version'):
                     check_rust(self.directory)
 
 
 def check_rust(directory):
-    """O2/F3 の出力が存在し、今の版（15/7）と六入口の実比較を満たすことを確かめる。"""
+    """O2/F3 の出力が存在し、今の版（16/8）と六入口の実比較を満たすことを確かめる。"""
     data = {f: json.loads((directory / f'{f}.json').read_text()) for f in FILES}
-    # Rust の出力は今の交換器の 15/7 だけを要求する（手書きの独立入力の 11/4 は旧版互換として別に読む）。
+    # Rust の出力は今の交換器の 16/8 だけを要求する。
     for f, document in data.items():
-        if document['version'] != (15 if f == 'corpus' else 7):
+        if document['version'] != (16 if f == 'corpus' else 8):
             raise AssertionError(f'{f}: expected batch2 version')
     inputs = [i for i in data['corpus']['inputs'] if not i['excluded']]
     if not inputs or not any(i['definitions'] for i in inputs):

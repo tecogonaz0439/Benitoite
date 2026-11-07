@@ -29,13 +29,17 @@ pub(super) fn write_tables(output: &Path, stem: &str, p: &pipeline::CheckedProgr
     let table = exchange::named_builtin_tables(p, input, &exchange::complete_stdlib());
     fs::write(
         output.join(format!("{stem}-builtins.json")),
-        exchange::to_vec(&json!({"version":7,"inputs":[table]})).unwrap(),
+        exchange::to_vec(
+            exchange::Document::Table,
+            &json!({"version":8,"inputs":[table]}),
+        )
+        .unwrap(),
     )
     .unwrap();
-    let stdlib = json!({"version":7,"inputs":[{"group":input["group"],"name":input["name"],"functions":[],"impls":[]}]});
+    let stdlib = json!({"version":8,"inputs":[{"group":input["group"],"name":input["name"],"functions":[],"impls":[]}]});
     fs::write(
         output.join(format!("{stem}-stdlib.json")),
-        exchange::to_vec(&stdlib).unwrap(),
+        exchange::to_vec(exchange::Document::Stdlib, &stdlib).unwrap(),
     )
     .unwrap();
 }
@@ -57,13 +61,17 @@ fn write_named(
     }
     fs::write(
         output.join(format!("{stem}-corpus.json")),
-        exchange::to_vec(&json!({"version":15,"operators":exchange::operators(),"inputs":inputs,"annotations":export_annotations(&inputs)}))
+        exchange::to_vec(exchange::Document::Corpus, &json!({"version":16,"operators":exchange::operators(),"inputs":inputs,"annotations":export_annotations(&inputs)}))
             .unwrap(),
     )
     .unwrap();
     fs::write(
         output.join(format!("{stem}-builtins.json")),
-        exchange::to_vec(&json!({"version":7,"inputs":tables})).unwrap(),
+        exchange::to_vec(
+            exchange::Document::Table,
+            &json!({"version":8,"inputs":tables}),
+        )
+        .unwrap(),
     )
     .unwrap();
     let stdlib = inputs
@@ -72,12 +80,20 @@ fn write_named(
         .collect::<Vec<_>>();
     fs::write(
         output.join(format!("{stem}-stdlib.json")),
-        exchange::to_vec(&json!({"version":7,"inputs":stdlib})).unwrap(),
+        exchange::to_vec(
+            exchange::Document::Stdlib,
+            &json!({"version":8,"inputs":stdlib}),
+        )
+        .unwrap(),
     )
     .unwrap();
     fs::write(
         output.join(format!("{stem}-coverage.json")),
-        exchange::to_vec(&json!({"version":7,"inputs":coverage})).unwrap(),
+        exchange::to_vec(
+            exchange::Document::Coverage,
+            &json!({"version":8,"inputs":coverage}),
+        )
+        .unwrap(),
     )
     .unwrap();
 }
@@ -422,7 +438,11 @@ impl Export {
         write_named(output, stem, self.inputs, self.tables, self.coverage);
         fs::write(
             output.join(format!("{stem}-stdlib.json")),
-            exchange::to_vec(&json!({"version":7,"inputs":self.declarations})).unwrap(),
+            exchange::to_vec(
+                exchange::Document::Stdlib,
+                &json!({"version":8,"inputs":self.declarations}),
+            )
+            .unwrap(),
         )
         .unwrap();
     }

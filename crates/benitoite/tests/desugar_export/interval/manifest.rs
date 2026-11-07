@@ -28,11 +28,31 @@ impl Export {
         fs::create_dir_all(output).unwrap();
         Self {
             output: output.to_owned(),
-            manifests: exchange::InputStream::new(output, "interval-manifest"),
-            materials: exchange::InputStream::new(output, "interval-material"),
-            readers: exchange::InputStream::new(output, "interval-reader"),
-            observations: exchange::InputStream::new(output, "interval-observations"),
-            summaries: exchange::InputStream::new(output, "interval-summary"),
+            manifests: exchange::InputStream::new(
+                output,
+                "interval-manifest",
+                exchange::Document::Interval,
+            ),
+            materials: exchange::InputStream::new(
+                output,
+                "interval-material",
+                exchange::Document::Interval,
+            ),
+            readers: exchange::InputStream::new(
+                output,
+                "interval-reader",
+                exchange::Document::Interval,
+            ),
+            observations: exchange::InputStream::new(
+                output,
+                "interval-observations",
+                exchange::Document::Record,
+            ),
+            summaries: exchange::InputStream::new(
+                output,
+                "interval-summary",
+                exchange::Document::Record,
+            ),
         }
     }
 
@@ -294,7 +314,7 @@ impl Export {
             json!({"kind":"interval-source-manifest","version":1,"scope":"sourceModules","excludedModuleKinds":["Prelude","Stdlib"]}),
         );
         self.materials.finish(&self.output.join("interval-material.json"),json!({"kind":"interval-source-material","version":1,"profile":"domain","expectations":"pending-X02b"}));
-        self.readers.finish(&self.output.join("interval-manifest-corpus.json"),json!({"kind":"interval-corpus","version":1,"surfaceVersion":15,"traversalVersion":1,"profile":"domain"}));
+        self.readers.finish(&self.output.join("interval-manifest-corpus.json"),json!({"kind":"interval-corpus","version":1,"surfaceVersion":16,"traversalVersion":1,"profile":"domain"}));
         self.observations.finish(
             &self.output.join("interval-observations.json"),
             json!({"kind":"interval-source-observations","version":1}),
