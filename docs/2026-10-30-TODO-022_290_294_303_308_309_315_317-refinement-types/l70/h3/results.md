@@ -105,3 +105,12 @@
 2. L40-後段2: `HandlerStoreExamples` に `resume_used_start`（使用済みの継続の再開を空の継続と使用済みの場所で型付けた開始）と `first_failure_witness`（その開始から `E_ResumeErr` の一歩で error に至る有限実行を与え、`IntervalControlLeaves.typed_first_failure` を適用する）を足した。`HandlerStoreExamples` に `IntervalControlLeaves` の import を足した（循環なし。読むのは根だけ）。所要は約10分。L40-後段2 の四分類を未確認から実質にし、台本で証人が定理を読むことを照合する。
 
 作業末の検査（一度ずつ）: 既定ビルド（00:49:41〜00:50:06、終了0、2348 jobs）、段の公理監査（00:57:17〜01:01、8入力、全て終了0。126,427名、許可の外の公理・`sorryAx`・`axiom` の宣言0。足した2定理の公理依存は三公理）、記録の作り直しと `verify.py`。必須の名前は群 H3 の監査の担当の2名（`required-names.json` の H3A）を足して305名（重なりを除き304名）。
+
+## 確認の後の小さな所見の処置（2026-11-08。RV-L70.h・RV-L70.h2 の末尾の確認）
+
+- 確軽1: `../h/stage.py` の冒頭の説明を、本体の構造のハッシュ（`Expr.hash`。束縛子の名前と種類を含まない）に合わせた（取りまとめが認めた、群 H の記録の説明の一行の訂正）。
+- 確情1: 段の公理監査の名前の数が126,430から126,427に減った理由を確かめた。変えた24ファイル（heartbeat の設定を外した23と `HandlerStoreExamples`）の変更の前後の写しを単独の Lean で検査し、ファイルの中で作られた宣言の名前を比べた。heartbeat の設定を外した23ファイルは前後で同じだった。`HandlerStoreExamples` は2定理を足し、13の生成宣言（参照した定義の等式の補題 `eq_1`・`eq_def`・`splitter`）が作られなくなった。新しい import（`IntervalControlLeaves`）の閉包の中で既に作られているためである。13のうち公開の名前の8は、別のモジュール（`ScopeSignatureFormation` など）に同じ名前で残るので数は変わらない。private の名前の5（`Tel.RangesScoped.match_1` と `kindsEff.match_1` の等式の補題と `splitter`）は名前にこのモジュールを含むので、なくなった。差は 2 − 5 = −3 である。
+- 情5: 旧の全称の形（与えられた腕の型付けの型 a ごと）を `checkMatchWithView_unreachable_runtime_of_arms` と閉じた入口の `checkMatch_unreachable_runtime_of_arms` として `CoverageRuntime` に置いた。`checkMatchWithView_unreachable_runtime_of_C_Match` の証明が前者を読み（言明は変えていない）、後者には無名の適用例を置いた。必須の名前の H3A に足した。
+- 情8: stage-results.md「旧の性質の照合」の「別の形（旧の判断どうしの同値）」9行の理由に、D29 の限定部分の同値（旧の等号の位置での埋め込みの同値。`embed_normal_eq_iff`・`embedTy_ordinary_iff` など）との関係を一文で足した。
+- 確情2: 群 H3 の Lean の担当と群 H4 の必須の名前のうち文書に名前のない85名は、補助と例なので 01-12・07-04・README に載せない（取りまとめの判断）。`verify.py` は一覧を出力するだけとする。
+

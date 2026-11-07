@@ -100,3 +100,89 @@ Scope の12行。`RhsEval`・`ArgEval`・`ArmEnter`・`ReachAtExpr` 系は旧の
 | 番号 | 入力 | 確かめたこと | 結果 |
 |---|---|---|---|
 | 1 | `<tmp>/check1.lean`（`Surface.ScopeConnection` を import） | `OccurrenceAccepted … k (.call (.primName b ts es ix) …)` と `T.ruleAt k = some rule` から `∃ rs, ix = fixedRanges rs` が従うこと | 終了0。警告なし |
+
+## 処置の確認
+
+2026-11-08。対象は HEAD `9f6ff959f` と `7069a03ff` の差分のうち、Lean のソースと文書である。監査の台本と資料は、`l70/h3/results-lean.md`・`legacy-recheck.md`・`changes-lean.json`・`audit-lean.*` を除いて対象外とした。
+
+読んだもの:
+
+- 本体の作業木の報告 `work/m014/L70.h3-lean-claude-report.md`・`L70.h4-claude-report.md`、[results-lean.md](../l70/h3/results-lean.md)、[legacy-recheck.md](../l70/h3/legacy-recheck.md)、[stage-results.md](../l70/stage-results.md) の「旧の性質の照合」。
+- 新規の `R/CoverageRuntime.lean`・`R/ScopeWiden.lean`・`R/Surface/CheckBuilderRejection.lean`・`R/Surface/ScopeLitBound.lean`・`R/Surface/ScopeNumbering.lean`・`R/Surface/ScopeRequestExamples.lean`・`R/Surface/ScopeFactExamples.lean`・`R/SurfaceTargetClauseExamples.lean`・`R/SurfaceTargetStepExamples.lean`・`R/SurfaceTargetWriteExamples.lean` の主な宣言。`R/SurfaceTargetCoverExamples.lean`・`R/Surface/Monad2Examples.lean`・`R/CoverageIntegerExamples.lean`・`R/FailureTypingExamples.lean` と `R/Surface/FailureExamples.lean`・`R/Surface/LogExamples.lean` の追加は、言明を読んだ。
+- `R/HandlerStoreExamples.lean`・`R/Surface/ScopeConnection.lean`・`R/Surface/ScopeConnectionExamples.lean`・`R/RequestDelta.lean`・`formal/Benitoite.lean` の差分と、heartbeat の設定を除いた22ファイルの差分。
+- 照合のために、旧（B_STAGE）の `Release/Lemmas/CoverageRuntime.lean`・`Surface/ScopeAccept.lean` の明示拡大の部分・`Surface/CheckLemmas.lean` の `builderOp_empty_rejected`・`Surface/Monad2Examples.lean` の `desugared_typed`・`Release/TargetStepExamples.lean`・`Release/TargetReachExamples.lean` の該当の定理。
+- 今の `Surface/CheckEntrypoints.lean` の `checkExpr`・`checkExpr_ok`、`LegacyProgramTyping.lean` の `embedProgramWellTyped`、改造の decisions.md の D29。
+
+Lean は共有ロックの下で `<tmp>/check2.lean` を一回実行した（検査2。終了0）。
+
+### 結論
+
+**可。** RV-L70.h2 の中1・軽1〜7は全て閉じた。情3への応答も妥当である。新しく失った保証に改めた14行は全て見た。述べ直した定理と例は旧の保証を弱めておらず、具体例は前提を満たして事象へ到達するので空疎でない。残る所見は情報5件だけである。
+
+### 所見ごとの処置
+
+| 所見 | 処置 | 判定 |
+|---|---|---|
+| 中1 | `SurfaceTargetClauseExamples` に旧と同じ形の反例を置いた。`WrongClausesTyped` は本番の `HasTypeClausesQ.cons` の前提のうち `ClauseSig` だけを任意の添字の `opSigAt` に替えたもので、`wrong_of_clauses` が本番の導出を誤った規則の導出へ移すので、外したのは `ClauseIxOk` だけである。`etc_not_clauseIxOk`・`wrong_rule_admits`・`wrong_rule_unsound`・`handleEtc_rejected` は、旧の `etc_not_clauseIxOk`・`wrong_rule_unsound`・`handleEtc_rejected` と同じ対照である。旧の書き込みが読取りに替わったが、`ClauseIxOk` の必要性という主張は同じである。H2 の反例は範囲の照合の例として残る | 閉じた |
+| 軽1 | `HandlerStoreExamples.builder_steps_ordinary_compose` が `trans`・`symm` を読む。results-lean.md で H2 の記述を訂正した | 閉じた |
+| 軽2 | `facts` を除き、証明の中で `fun _ => none` を渡す。01-12 の表に `ok ≠ Result.Error` を足した | 閉じた |
+| 軽3 | `Surface.ScopeLower.analyzeBody_numbered`（旧と同じ言明。照合の腕の一段を足した）と `Surface.ScopeState.requestLitBound_known_ports_wf`・`requestLitBound_known_wf`・`requestLitBound_inverted_unknown` を置き、`ScopeFactExamples` が読む | 閉じた |
+| 軽4 | 01-12 と 07-04 に、辿らない式の内側の地点と定数の埋め込み本体を到達の対象に含めないことを書いた | 閉じた |
+| 軽5 | `scope_local_typed_of_typed` と、旧と同じくストア型の拡張を受ける `scope_local_typed_of_typed_extend` を置いた。前提は二点で旧と違う。一つは値の信頼条件 `B.ValueAssumptions P` で、`CoreAssumptions` の欄である。もう一つは `checkedAt` の除外で、旧の値にない形であり、V_Checked・V_CheckedRequest の結論の形にもならない。どちらも保証を弱めない。例 `project_typed_of_typed`・`project_typed_of_typed_extend` は Top の型付けから狭い型を得る | 閉じた |
+| 軽6 | `RequestDelta.run_top_ok` と `ScopeConnectionExamples.request_connection_ok` は、δ が `Result.Ok` を返す具体の入力（`127.0.0.1`、ポート443）で `http_check_connection` の前提を満たし、結論が実際の成功値で成り立つことを示す | 閉じた |
+| 軽7 | Log の `enabled_checked`・`forwarded_checked`・`program_checked`、型付きの失敗の11定理、変換の型付け（`result_values_typed`・`toResult_typed`・`fromResult_typed`）を置いた。二引数のクラスの検査器の受理（Monad2 の旧 `program_checked`）は、設計者の決定で docs/todo の TODO-331 へ回した | 閉じた |
+| 情3 | `hsel` は第二の枝で要る。第一の枝は `OccurrenceAccepted.of_body` が与えるので、系を足さない判断でよい | 閉じた |
+
+### 新しく失った保証に改めた14行
+
+- **重い5行**
+  - `SlotsOk`・`checkMatch_unreachable_runtime`: 定義と言明は旧と同じである。`HasTypeArmsQ.slotsOk` は篩付きの腕の型付け（plain・guarded）から導く。`RuntimeSelected.of_firstAlt`・`firstAlt_not_unreachable` は照合の遷移の前提 `firstAlt v alts = some ws` へ接続しており、旧より強い。
+  - `checkMatch_unreachable_runtime_of_C_Match`: 照合の計算の型付けから、照合の型 a と値の型付けの存在を結論する形に変わった。旧の全称の形（与えられた腕の型付けの型 a ごと）も、`checkMatchWithView_unreachable_runtime` と `HasTypeArmsQ.slotsOk` から一行で従う（検査2）。
+  - `widenRanges`・`widenPathIn_target_unique`: 同じ定義と言明である。結果型は `Tel.result` で述べる。
+- **軽い9行**
+  - `builderOp_empty_rejected`: 篩付きの版は、案内付きの `checkExprAt` を空の分類表で全ての案内について偽とする。実入口の `checkExpr` は成功のとき同じ型と効果で `checkExprAt` の再検査を通る（`checkExpr_ok`）ので、実入口でも拒否が従う。
+  - `desugar_primName`: 同じ言明である。
+  - `no_write_event_passwd`: 同じ形（型付きの状態からの書き込みの事象の否定）である。
+  - `ioCall_no_passwd`: 範囲付きの読取りに替えた。観測を持つ事象への到達と許可（`readCall_observed`・`readCall_allowed`）を足した。
+  - `handleLog_never_observes_data`: 篩付きの `handled` に合わせ、三つの節を置いた。
+  - `Release.CoverageExamples`: 旧の入力と期待値を篩付きの入口で `rfl` で照合する。
+  - `main_never_passwd`・`program_target_sound`: `TargetWriteExamples` が旧と同じ書き込みと `Result.Ok(p)`・`Result.Error(e)` の照合で述べる。`surface_target_sound` の全前提を具体に与え、18遷移で書き込みの事象へ到達する。
+  - `desugared_typed`: `Monad2Examples` が三つのクラス・六つの実装・`genericMap` で性質1を適用する。
+
+### 照合のやり直しの標本
+
+「導ける」「別の形」の行から15行を読み、根拠の言明が旧の保証を含むかを確かめた。対象は番号1・6・12・13・14・15・16・26・58・59・66・77・81・100・102 である。
+
+- 前提が増えた行は、増えた前提が主定理の仮定の一部である。
+  - 6（`ContTy.store`）: `ValueAssumptions` と `WF` を要る。
+  - 15（`builder_progress`）: 状態の型付けを要る。
+  - 16（`builderApply_value_scope`）: 入力の閉性と適格性を要る。
+- 旧の述語が意図して今の言語の性質でなくなった行がある。66（`rangeFree`）は範囲パラメータを許す提供範囲の拡大によるもので、範囲パラメータのない定義では `Def.wellTyped_no_ranges` が旧の条件へ戻す。
+- 26（`contents_injective`）は検査器の内部の補題であり、利用者に宣言した保証ではない。
+
+ほかの行も、根拠が同じ言明か、より強い言明（`HasTypeVQ.localRefs` の深さ0の場合など）である。判定に誤りは見つからなかった。
+
+### 9行の「別の形（旧の判断どうし）」
+
+9行の扱いは妥当である。9行はいずれも、範囲を入れた旧の判断と範囲の前の旧の判断との同値で、両辺とも今の形式化にない判断を述べる。今の判断との関係は、旧導出の埋め込み `embedProgramWellTyped`・`embedStateTyE` が一方向で与える。範囲の前の旧の判断の導出は、旧の同値で範囲を入れた旧の判断へ移り、そこから今の判断へ埋め込まれる。失うのは逆向き（今の判断が範囲のない入力で旧より多くを受け入れないこと）だけであり、D29 が要求しないと決めた部分に当たる。
+
+### heartbeat の除去と import の追加
+
+- heartbeat の除去は22ファイルの差分で、`set_option maxHeartbeats`・`maxRecDepth` の行を34行消しただけである。ほかの行の変更はない（`RequestDelta.lean` の `run_top_ok` の追加を除く）。設定は検査の資源の上限だけを変え、言明と定義の意味を変えない。既定ビルドが通ることは報告によるもので、本確認では実行していない。
+- `IntervalControlLeaves` の import は例のファイル `HandlerStoreExamples` だけに足され、新しい例 `first_failure_witness` が `typed_first_failure` を読むためである。ほかのモジュールの言明は変わらない。
+
+### 残る所見
+
+| 番号 | 重さ | 場所 | 内容 | 修正案 | 確度 |
+|---|---|---|---|---|---|
+| 情5 | 情報 | `R/CoverageRuntime.lean` の `checkMatch_unreachable_runtime_of_C_Match` | 系の形が旧の全称（腕の型付けの型ごと）から存在（反転で得た型）に替わった。旧の形は二つの補題から一行で従う（検査2）が、その形の名前の定理はない | 任意。旧の形を系として置くか、results-lean.md の違いの欄に「旧の形は `checkMatchWithView_unreachable_runtime` と `HasTypeArmsQ.slotsOk` から従う」と書く | 実行で確定（検査2） |
+| 情6 | 情報 | `R/ScopeWiden.lean` | `widenRanges` は、旧と同じく型検査器と受理から読まれない仕様の関数であり、読者は例 `ScopeFactExamples.widen_data` だけである。検査器が実際に選ぶ拡大の範囲の列との一致は、旧と同じく結論しない | なし（旧と同じ） | 読めば確定 |
+| 情7 | 情報 | `R/SurfaceTargetStepExamples.lean` の `readCall_no_passwd`、`R/SurfaceTargetClauseExamples.lean` | 核の水準の旧の例の範囲付きの書き込みを読取りに替えた。どれも IO の失敗の応答（`E_IOErr`）へ到達する。範囲付きの書き込みの成功の応答への到達は、表層の `TargetWriteExamples.main_reach` が受け持つ | なし | 読めば確定 |
+| 情8 | 情報 | legacy-recheck.md と stage-results.md の9行の理由 | D29 は「旧の等号位置を保つ限定部分だけ前提の同値を示す」とも定める。9行の理由は D29 の「要求しない」の側だけを引いている | 理由の文に、D29 の限定部分の同値をどの定理が与え、9行がその外にあることを一文で書くと、設計者の見直しで読み違えにくい（本確認では限定部分の同値を与える定理の範囲を確かめていない。`LegacyValues` の `embed_*_iff` を見ただけである） | 読めば確定 |
+| 情9 | 情報 | `R/HandlerStoreExamples.lean` の `builder_steps_ordinary_compose` | `OrdinaryStoreEq.symm`・`trans` の読者は、二つの一歩の比較を合成する小さな具体例である。読者の決まりは満たすが、本番の読者ではない | なし | 読めば確定 |
+
+### 検査
+
+| 番号 | 入力 | 確かめたこと | 結果 |
+|---|---|---|---|
+| 2 | `<tmp>/check2.lean`（`CoverageRuntime` を import） | 腕の型付け `HasTypeArmsQ … arms a …` から、旧の `_of_C_Match` と同じ全称の形 `∀ w, Inhabits P a w → ¬ RuntimeSelected arms i j w` が従うこと | 終了0。警告なし |

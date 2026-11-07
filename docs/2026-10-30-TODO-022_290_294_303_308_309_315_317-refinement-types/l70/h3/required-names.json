@@ -1,5 +1,5 @@
 {
- "note": "main は stage-results.md「主定理の一覧と型・本体のハッシュ」の表（群 H の77名と、収集と標準の表の言明を結論とする7定理）。extra は群 H2（h2/changes.json の required）・群 H3 の Lean の担当（h3/changes-lean.json の required）・群 H4（h4/required.json）と群 H3 の監査の担当（H3A。L40-後段2 の証人）の必須の名前で、表は h3/required.md。",
+ "note": "main は stage-results.md「主定理の一覧と型・本体のハッシュ」の表（群 H の77名と、収集と標準の表の言明を結論とする7定理）。extra は群 H2（h2/changes.json の required）・群 H3 の Lean の担当（h3/changes-lean.json の required）・群 H4（h4/required.json）と群 H3 の監査の担当（H3A。L40-後段2 の証人と、旧の全称の形の系）の必須の名前で、表は h3/required.md。",
  "main": [
   "Benitoite.Release.Refinement.progress",
   "Benitoite.Release.Refinement.preservation",
@@ -314,7 +314,9 @@
   ],
   "H3A": [
    "Benitoite.Release.Refinement.HandlerStoreExamples.resume_used_start",
-   "Benitoite.Release.Refinement.HandlerStoreExamples.first_failure_witness"
+   "Benitoite.Release.Refinement.HandlerStoreExamples.first_failure_witness",
+   "Benitoite.Release.Refinement.checkMatchWithView_unreachable_runtime_of_arms",
+   "Benitoite.Release.Refinement.checkMatch_unreachable_runtime_of_arms"
   ]
  }
 }

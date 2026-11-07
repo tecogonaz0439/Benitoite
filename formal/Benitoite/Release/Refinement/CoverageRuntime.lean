@@ -247,6 +247,24 @@ theorem checkMatch_unreachable_runtime (P : Program) (ctors : DataName → List 
     ∀ v, Inhabits P a v → ¬ RuntimeSelected arms i j v :=
   checkMatchWithView_unreachable_runtime P ctors closedView a arms i j hc hs h
 
+/-- 腕の型付けの型 a ごとの全称の系（旧の判断の同じ系の形）。`SlotsOk` は腕の型付けから導く。 -/
+theorem checkMatchWithView_unreachable_runtime_of_arms
+    {P : Program} {B : Builtins} {Ψ Q C Γ Φ R obs arms a b ε L}
+    (ctors : DataName → List ConName) (view : CoverageView) (i j : Nat)
+    (ha : HasTypeArmsQ P B Ψ Q C Γ Φ R obs arms a b ε L) (hc : CtorsComplete P ctors)
+    (h : (i, j) ∈ (checkMatchWithView P ctors view a arms).unreachable) :
+    ∀ w, Inhabits P a w → ¬ RuntimeSelected arms i j w :=
+  checkMatchWithView_unreachable_runtime P ctors view a arms i j hc ha.slotsOk h
+
+/-- 閉じた入口についての腕の型付けの全称の系。 -/
+theorem checkMatch_unreachable_runtime_of_arms
+    {P : Program} {B : Builtins} {Ψ Q C Γ Φ R obs arms a b ε L}
+    (ctors : DataName → List ConName) (i j : Nat)
+    (ha : HasTypeArmsQ P B Ψ Q C Γ Φ R obs arms a b ε L) (hc : CtorsComplete P ctors)
+    (h : (i, j) ∈ (checkMatch P ctors a arms).unreachable) :
+    ∀ w, Inhabits P a w → ¬ RuntimeSelected arms i j w :=
+  checkMatchWithView_unreachable_runtime_of_arms ctors closedView i j ha hc h
+
 /-- 照合の計算の型付け（`C_Match`）から照合の型 a を取り出した系。`SlotsOk` は腕の型付けから導く。 -/
 theorem checkMatchWithView_unreachable_runtime_of_C_Match
     {P : Program} {B : Builtins} {Ψ Q C Γ Φ R b e L v arms}
@@ -255,7 +273,7 @@ theorem checkMatchWithView_unreachable_runtime_of_C_Match
     ∃ a, HasTypeVQ P B Ψ Q C Γ Φ v a ∧ ∀ i j, (i, j) ∈ (checkMatchWithView P ctors view a arms).unreachable →
       ∀ w, Inhabits P a w → ¬ RuntimeSelected arms i j w := by
   obtain ⟨a, obs, hv, _, ha, _⟩ := ht.match_arms rfl
-  exact ⟨a, hv, fun i j h => checkMatchWithView_unreachable_runtime P ctors view a arms i j hc ha.slotsOk h⟩
+  exact ⟨a, hv, fun i j h => checkMatchWithView_unreachable_runtime_of_arms ctors view i j ha hc h⟩
 
 /-- 閉じた入口についての `C_Match` の系。 -/
 theorem checkMatch_unreachable_runtime_of_C_Match
@@ -265,6 +283,13 @@ theorem checkMatch_unreachable_runtime_of_C_Match
     ∃ a, HasTypeVQ P B Ψ Q C Γ Φ v a ∧ ∀ i j, (i, j) ∈ (checkMatch P ctors a arms).unreachable →
       ∀ w, Inhabits P a w → ¬ RuntimeSelected arms i j w :=
   checkMatchWithView_unreachable_runtime_of_C_Match ctors closedView ht hc
+
+/-- 腕の型付けの全称の系の閉じた入口での適用。照合の計算の型付けの系は、反転で得た腕の型付けにこの系を当てる。 -/
+example {P : Program} {B : Builtins} {Ψ Q C Γ Φ R obs arms a b ε L}
+    (ctors : DataName → List ConName) (ha : HasTypeArmsQ P B Ψ Q C Γ Φ R obs arms a b ε L)
+    (hc : CtorsComplete P ctors) (i j : Nat) (h : (i, j) ∈ (checkMatch P ctors a arms).unreachable) :
+    ∀ w, Inhabits P a w → ¬ RuntimeSelected arms i j w :=
+  checkMatch_unreachable_runtime_of_arms ctors i j ha hc h
 
 /-- 照合の遷移の前提（分岐 i で `firstAlt v alts = some ws`）が使う選択肢は、到達しないと報告された位置ではない。 -/
 theorem firstAlt_not_unreachable (P : Program) (ctors : DataName → List ConName) (view : CoverageView)
