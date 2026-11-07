@@ -28,7 +28,7 @@ structure Input where
   methodSteps : ImplName → MethName → Nat := fun _ _ => proofSteps
 
 /-- 選択した構成元の実際の組込みの表。 -/
-def Input.B (q : Input) : Builtins := q.builtinSource.builtins
+noncomputable def Input.B (q : Input) : Builtins := q.builtinSource.builtins
 
 /-- 材料の有限支持と既存の型クラス・組み込みの許容判定との対応。型付けや証明書の健全性は仮定しない。 -/
 structure Input.Sound (q : Input) : Prop where

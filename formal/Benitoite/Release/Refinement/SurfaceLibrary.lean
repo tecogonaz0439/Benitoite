@@ -182,46 +182,48 @@ theorem linked_main {p : Program} {q : Check.Input}
 /-- 型付けと必須の判定の受理の成功を、標準の本体を保持した利用者のプログラムへ適用する。 -/
 theorem checkProgramAccepted_guarantees {p : Program} {q : Check.Input} {Ai : CheckAccept.AcceptInput}
     (hq : q.Sound) (hn : CheckTables.NamesComplete q p)
-    (hd : ∀ n d, p.defs n = some d → CheckDeclarations.DefSupport q d)
-    (hi : ∀ n id, p.impls n = some id → CheckDeclarations.ImplSupport q id)
+    (hd : ∀ n d, (CheckPreparation.prepare q p).program.defs n = some d → CheckDeclarations.DefSupport (CheckPreparation.prepare q p).input d)
+    (hi : ∀ n id, (CheckPreparation.prepare q p).program.impls n = some id → CheckDeclarations.ImplSupport (CheckPreparation.prepare q p).input id)
     (him : ∀ n id, p.impls n = some id → CheckDeclarations.ImplNamesComplete q id)
-    (hext : CheckTables.Extends q.D p.declarations) (ha : CheckAccept.NamesComplete q p)
+    (hext : CheckTables.Extends (CheckPreparation.prepare q p).input.D (CheckPreparation.prepare q p).program.declarations) (ha : CheckAccept.NamesComplete q p)
     (haccept : CheckAccept.checkProgramAccepted q Ai p = .ok ())
     {L : StandardModel.NameLists} (hL : L.WF) {externals}
-    (T : StandardModel.DataTable (linkProgram (StandardModel.program externals) q.opPrim p))
-    {A : StandardModel.AssumedTable} (hB : q.B = StandardModel.complete L T A)
-    (hI : StandardModel.Includes externals (linkProgram (StandardModel.program externals) q.opPrim p))
-    (hR : q.D.Realizes (linkProgram (StandardModel.program externals) q.opPrim p))
+    (T : StandardModel.DataTable (linkProgram (StandardModel.program externals) (CheckPreparation.prepare q p).input.opPrim (CheckPreparation.prepare q p).program))
+    {A : StandardModel.AssumedTable} (hB : (CheckPreparation.prepare q p).input.B = StandardModel.complete L T A)
+    (hI : StandardModel.Includes externals (linkProgram (StandardModel.program externals) (CheckPreparation.prepare q p).input.opPrim (CheckPreparation.prepare q p).program))
+    (hR : (CheckPreparation.prepare q p).input.D.Realizes (linkProgram (StandardModel.program externals) (CheckPreparation.prepare q p).input.opPrim (CheckPreparation.prepare q p).program))
     (hc : StandardModel.Completion L T A) (hw : (StandardModel.program externals).ExternalWF)
-    (hwf : p.WellFormed) (σ : PathEnv) :
+    (hwf : (CheckPreparation.prepare q p).program.WellFormed) (σ : PathEnv) :
     CheckAccept.Accepted Ai q p ∧
-      ProgramGuarantees (linkProgram (StandardModel.program externals) q.opPrim p) (StandardModel.complete L T A) σ := by
-  obtain ⟨hchecked,hacc⟩ := CheckAccept.checkProgramAccepted_sound hq hn hd hi him hext ha haccept
+      ProgramGuarantees (linkProgram (StandardModel.program externals) (CheckPreparation.prepare q p).input.opPrim (CheckPreparation.prepare q p).program) (StandardModel.complete L T A) σ := by
+  obtain ⟨hchecked,hacc⟩ := CheckAccept.checkProgramAccepted_sound (CheckPreparation.prepare_sound hq p) (CheckTables.prepare_names hn) hd hi
+    (CheckTables.prepare_impl_names him) hext ha haccept
   exact ⟨hacc,surface_guarantees hL T hB hI hR hc hw hwf hchecked σ⟩
 
 /-- 型付けと必須の判定の受理の成功を、標準の本体を保持した利用者のプログラムへ適用する。 -/
 theorem checkProgramAccepted_main {p : Program} {q : Check.Input} {Ai : CheckAccept.AcceptInput}
     (hq : q.Sound) (hn : CheckTables.NamesComplete q p)
-    (hd : ∀ n d, p.defs n = some d → CheckDeclarations.DefSupport q d)
-    (hi : ∀ n id, p.impls n = some id → CheckDeclarations.ImplSupport q id)
+    (hd : ∀ n d, (CheckPreparation.prepare q p).program.defs n = some d → CheckDeclarations.DefSupport (CheckPreparation.prepare q p).input d)
+    (hi : ∀ n id, (CheckPreparation.prepare q p).program.impls n = some id → CheckDeclarations.ImplSupport (CheckPreparation.prepare q p).input id)
     (him : ∀ n id, p.impls n = some id → CheckDeclarations.ImplNamesComplete q id)
-    (hext : CheckTables.Extends q.D p.declarations) (ha : CheckAccept.NamesComplete q p)
+    (hext : CheckTables.Extends (CheckPreparation.prepare q p).input.D (CheckPreparation.prepare q p).program.declarations) (ha : CheckAccept.NamesComplete q p)
     (haccept : CheckAccept.checkProgramAccepted q Ai p = .ok ())
     {L : StandardModel.NameLists} (hL : L.WF) {externals}
-    (T : StandardModel.DataTable (linkProgram (StandardModel.program externals) q.opPrim p))
-    {A : StandardModel.AssumedTable} (hB : q.B = StandardModel.complete L T A)
-    (hI : StandardModel.Includes externals (linkProgram (StandardModel.program externals) q.opPrim p))
-    (hR : q.D.Realizes (linkProgram (StandardModel.program externals) q.opPrim p))
+    (T : StandardModel.DataTable (linkProgram (StandardModel.program externals) (CheckPreparation.prepare q p).input.opPrim (CheckPreparation.prepare q p).program))
+    {A : StandardModel.AssumedTable} (hB : (CheckPreparation.prepare q p).input.B = StandardModel.complete L T A)
+    (hI : StandardModel.Includes externals (linkProgram (StandardModel.program externals) (CheckPreparation.prepare q p).input.opPrim (CheckPreparation.prepare q p).program))
+    (hR : (CheckPreparation.prepare q p).input.D.Realizes (linkProgram (StandardModel.program externals) (CheckPreparation.prepare q p).input.opPrim (CheckPreparation.prepare q p).program))
     (hc : StandardModel.Completion L T A) (hw : (StandardModel.program externals).ExternalWF)
-    (hwf : p.WellFormed) {σ : PathEnv} {ε : Eff} (hm : p.HasMain ε)
-    (hr : σ.Ready (linkProgram (StandardModel.program externals) q.opPrim p)
+    (hwf : (CheckPreparation.prepare q p).program.WellFormed) {σ : PathEnv} {ε : Eff} (hm : (CheckPreparation.prepare q p).program.HasMain ε)
+    (hr : σ.Ready (linkProgram (StandardModel.program externals) (CheckPreparation.prepare q p).input.opPrim (CheckPreparation.prepare q p).program)
       (StandardModel.complete L T A) (.run mainClosure [] Store.empty)) :
     CheckAccept.Accepted Ai q p ∧
-      ProgramGuarantees (linkProgram (StandardModel.program externals) q.opPrim p) (StandardModel.complete L T A) σ ∧
-      MainGuarantees (linkProgram (StandardModel.program externals) q.opPrim p) (StandardModel.complete L T A) σ ε := by
+      ProgramGuarantees (linkProgram (StandardModel.program externals) (CheckPreparation.prepare q p).input.opPrim (CheckPreparation.prepare q p).program) (StandardModel.complete L T A) σ ∧
+      MainGuarantees (linkProgram (StandardModel.program externals) (CheckPreparation.prepare q p).input.opPrim (CheckPreparation.prepare q p).program) (StandardModel.complete L T A) σ ε := by
   obtain ⟨hacc,hg⟩ := checkProgramAccepted_guarantees hq hn hd hi him hext ha haccept
     hL T hB hI hR hc hw hwf σ
-  obtain ⟨hchecked,_⟩ := CheckAccept.checkProgramAccepted_sound hq hn hd hi him hext ha haccept
+  obtain ⟨hchecked,_⟩ := CheckAccept.checkProgramAccepted_sound (CheckPreparation.prepare_sound hq p) (CheckTables.prepare_names hn) hd hi
+    (CheckTables.prepare_impl_names him) hext ha haccept
   exact ⟨hacc,hg,linked_main hL T hB hI hR hc hw hwf hchecked hm hr⟩
 
 end

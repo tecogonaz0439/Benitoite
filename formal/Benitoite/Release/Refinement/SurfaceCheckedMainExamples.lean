@@ -505,7 +505,8 @@ private theorem definition_check (path : List Nat) : CheckDeclarations.checkDef 
 
 /-- 標準関数の署名を補った実入力で、checker の成功を各部分の実行結果から構成する。 -/
 theorem checker_succeeds : CheckTables.checkProgram (input positiveExternals) (source positiveExternals) = .ok () := by
-  unfold CheckTables.checkProgram
+  change CheckTables.checkPreparedProgram (input positiveExternals) (source positiveExternals) = .ok ()
+  unfold CheckTables.checkPreparedProgram
   have hv : CheckVariance.check (input positiveExternals).formation (input positiveExternals).D.core
       (input positiveExternals).dataNames (input positiveExternals).ctorNames = true := by rfl
   have he : CheckTables.effectsCheck (input positiveExternals) = true := rfl

@@ -167,6 +167,35 @@ example (op : OpPrim) :
     (ExternalModels.model_core _) (ExternalModels.model_scope _).toTargetAgreement
     ⟨Examples.mainDef,rfl,rfl,rfl,rfl,rfl,rfl,Or.inl rfl,rfl⟩ (ready _ _)
 
+private theorem prepare_source (q : Check.Input) (externals : List (ExternalKey × ExternalDecl)) :
+    CheckPreparation.prepare q (source externals) = ⟨q, source externals⟩ := by
+  have sources_empty : CheckPreparation.sources q (source externals) = [] := by
+    have each : ∀ name : FunName,
+        (match (source externals).defs name with
+          | none => [] | some d => Identity.preorderBlock d.body) = [] := by
+      intro name
+      by_cases h : name = "main" <;> simp [source, Examples.mainProgram, h, Examples.mainDef, Identity.preorderBlock]
+    have empty_flatMap : ∀ names : List String, names.flatMap (fun _ => ([] : List Expr)) = [] := by
+      intro names
+      induction names with
+      | nil => rfl
+      | cons name names ih => exact ih
+    have hdefs := congrArg (fun f : FunName → List Expr => q.defs.flatMap f) (funext each)
+    change _ ++ _ = []
+    calc
+      _ = q.defs.flatMap (fun _ => ([] : List Expr)) ++
+          q.impls.flatMap (fun name => match (source externals).impls name with
+            | none => [] | some id => q.methods.flatMap fun method => match id.methods method with
+              | none => [] | some body => Identity.preorderBlock body) :=
+        congrArg (fun expressions : List Expr => expressions ++ _) hdefs
+      _ = [] := by
+        change q.defs.flatMap (fun _ => ([] : List Expr)) ++ q.impls.flatMap (fun _ => []) = []
+        rw [empty_flatMap, empty_flatMap]
+        rfl
+  have rows_empty : ∀ forbidden,
+      PredicateRowCollection.collectAvoid (source externals) [] forbidden = [] := fun _ => rfl
+  simp [CheckPreparation.prepare, sources_empty, rows_empty]
+
 /-- 実入口の成功から、具体の利用者の main の開始までを接続する。 -/
 example {q : Check.Input} {Ai : CheckAccept.AcceptInput}
     (hq : q.Sound) (hn : CheckTables.NamesComplete q (source positiveExternals))
@@ -185,8 +214,11 @@ example {q : Check.Input} {Ai : CheckAccept.AcceptInput}
       ProgramGuarantees (linkProgram (program positiveExternals) q.opPrim (source positiveExternals))
         (complete nameLists T A) environment ∧
       MainGuarantees (linkProgram (program positiveExternals) q.opPrim (source positiveExternals))
-        (complete nameLists T A) environment Eff.empty :=
-  checkProgramAccepted_main hq hn hd hi him hext ha haccept nameLists_wf T hB hI hR hc
+        (complete nameLists T A) environment Eff.empty := by
+  have apply_main := checkProgramAccepted_main (q := q) (p := source positiveExternals)
+    (Ai := Ai) (L := nameLists) (externals := positiveExternals)
+  rw [prepare_source q positiveExternals] at apply_main
+  exact apply_main hq hn hd hi him hext ha haccept nameLists_wf T hB hI hR hc
     positive_wf (wellFormed _ positive_wf)
     ⟨Examples.mainDef,rfl,rfl,rfl,rfl,rfl,rfl,Or.inl rfl,rfl⟩ (ready _ _)
 

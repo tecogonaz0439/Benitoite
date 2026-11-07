@@ -637,7 +637,7 @@ mutual
       rw [hl]
       simpa [string_shiftV] using hi.typed hR hA (ShiftMap.outer Γ as)
     | .E_PartialCallDirect (f := f) (args := args) (r := r) (ε := ε) (t := t) (ds := ds) (as := as)
-        _ hh _ hn ha hfix hv hle hc =>
+        hholes hh _ hn ha hfix hv hle hc =>
       have ha' := ha.sameTypes hR.types
       obtain ⟨hd, hdc⟩ := hh.direct
       have hfx := HasFixedQ.desugar hfix hR hA
@@ -650,7 +650,7 @@ mutual
       have hg := hh.glue (R := some ((r.shiftV args.holeTypes.length 0).shiftV as.length 0))
         (L := localExtend as.length []) hdc hR hA hm hm hv hle hc hrA
       have hdecl := ((ShiftMap.hideOuter Γ args.holeTypes).annotation ha'.fn_result).declared
-      simp only [desugarExpr, callArgs, hdc, sequenceArgs, argEvals_desugarHoleArgs, argValues_desugarHoleArgs,
+      simp only [desugarExpr, hholes, ite_false, callArgs, hdc, sequenceArgs, argEvals_desugarHoleArgs, argValues_desugarHoleArgs,
         List.length_map, hl, Nat.zero_add]
       rw [holeLam_shift]
       refine .C_Return (.V_Lam hn ha'.wf ha'.sorted ?_ ha'.declared)
@@ -658,7 +658,7 @@ mutual
       refine sequence_typed hA storeEmpty_wf hcs ?_ hdecl
       simpa [Ty.shiftV_add, Eff.shiftV_add, List.length_map] using hg
     | .E_PartialCall (f := f) (args := args) (r := r) (ε := ε) (t := t) (as := as)
-        hnd _ hf _ hn ha hfix hv hle hc =>
+        hnd hholes hf _ hn ha hfix hv hle hc =>
       have ha' := ha.sameTypes hR.types
       have hfx := HasFixedQ.desugar hfix hR hA
       have hcs := hfx.shiftParams hA args.holeTypes
@@ -670,7 +670,7 @@ mutual
       have hff' := HasTypeCQ.local_zero hff (localExtend_nil_shift _)
       have hrA0 : Ty.Annotation P C Γ r := ha'.fn_result
       have hdecl := ((ShiftMap.hideOuter Γ args.holeTypes).annotation hrA0).declared
-      simp only [desugarExpr, callArgs, hnd, sequenceArgs, argEvals_desugarHoleArgs, argValues_desugarHoleArgs,
+      simp only [desugarExpr, hholes, ite_false, callArgs, hnd, sequenceArgs, argEvals_desugarHoleArgs, argValues_desugarHoleArgs,
         List.length_map, hl]
       rw [holeLam_shift]
       refine .C_Return (.V_Lam hn ha'.wf ha'.sorted ?_ ha'.declared)
@@ -701,7 +701,7 @@ mutual
           hrA'.wf hrA'.sorted hrA'.declared
         simpa [Ty.shiftV_add, Eff.shiftV_add, List.length_map, Nat.add_comm 1, Option.map_some] using hres
     | .E_PartialCallDirectDep (f := f) (names := names) (args := args) (ret := ret) (eff := eff) (t := t) (ds := ds)
-        (as := as) _ hh _ hn hdep ha hret hfix hcov hv hle hc =>
+        (as := as) hholes hh _ hn hdep ha hret hfix hcov hv hle hc =>
       have ha' := ha.sameTypes hR.types
       have hret' := hret.sameTypes hR.types
       obtain ⟨hd, hdc⟩ := hh.direct
@@ -716,7 +716,7 @@ mutual
       rw [List.length_map] at hrA
       have hg := hh.glue (R := some (ret.shiftV as.length 0))
         (L := localExtend as.length []) hdc hR hA hm hm hv hle hc hrA
-      simp only [desugarExpr, callArgs, hdc, sequenceArgs, argEvals_desugarHoleArgs, argValues_desugarHoleArgs,
+      simp only [desugarExpr, hholes, ite_false, callArgs, hdc, sequenceArgs, argEvals_desugarHoleArgs, argValues_desugarHoleArgs,
         List.length_map, hl, Nat.zero_add]
       rw [holeLam_dependent hdep]
       refine .C_Return (.V_DependentLam ha' ?_)
@@ -727,7 +727,7 @@ mutual
       rw [bindParams_nil] at ht
       exact ht
     | .E_PartialCallDep (f := f) (names := names) (args := args) (ret := ret) (eff := eff) (t := t) (as := as)
-        hnd _ hf _ hn hdep ha hret hfix hcov hv hle hc =>
+        hnd hholes hf _ hn hdep ha hret hfix hcov hv hle hc =>
       have ha' := ha.sameTypes hR.types
       have hret' := hret.sameTypes hR.types
       have hfx := HasFixedQ.desugar hfix hR hA
@@ -739,7 +739,7 @@ mutual
       simp only [shiftIndex_add] at hff
       have hff' := HasTypeCQ.C_Eff (HasTypeCQ.withReturn (HasTypeCQ.local_zero hff (localExtend_nil_shift _)) rfl rfl
         (some ret)) hcov
-      simp only [desugarExpr, callArgs, hnd, sequenceArgs, argEvals_desugarHoleArgs, argValues_desugarHoleArgs,
+      simp only [desugarExpr, hholes, ite_false, callArgs, hnd, sequenceArgs, argEvals_desugarHoleArgs, argValues_desugarHoleArgs,
         List.length_map, hl]
       rw [holeLam_dependent hdep]
       refine .C_Return (.V_DependentLam ha' ?_)
@@ -987,6 +987,16 @@ mutual
       exact .C_Return (.V_ExternalRef hf' (hR.externalWF.function_lookup hf')
         ⟨had.count, had.kinds.sameTypes hR.types, had.constraints, had.types.sameTypes hR.types⟩
         (hsi.sameTypes hR.types))
+    | .E_PredicateCall hh hvalue hvals hle hc hb =>
+      rw [desugar_predicateCall hvalue]
+      have hb' := hb.sameTypes hR.types
+      exact .C_Sub (.C_DependentApp (hh.app_value (dl := []) rfl hR).1
+        (hvals.core hR hA (ShiftMap.self Γ))) (hle.sameTypes hR.types) hc hb'.wf hb'.sorted hb'.declared
+    | .E_PredicateProject hh hvalue _ hvals hle hc hb =>
+      rw [desugar_predicateProject hvalue]
+      have hb' := hb.sameTypes hR.types
+      exact .C_Sub (.C_DependentApp (hh.app_value (dl := []) rfl hR).1
+        (hvals.core hR hA (ShiftMap.self Γ))) (hle.sameTypes hR.types) hc hb'.wf hb'.sorted hb'.declared
     | .E_CallExternal (ts := ts) (as := as) (b := b) hf had hok hargs hv hle hc hb =>
       have hms := HasTypesQ.desugar hargs hR hA
       have hf' : P.externalFunction _ = some _ := (hR.externalFunction _).symm.trans hf

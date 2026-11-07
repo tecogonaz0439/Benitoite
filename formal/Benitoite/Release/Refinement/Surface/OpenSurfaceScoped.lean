@@ -180,6 +180,12 @@ mutual
         show _ < _; omega
       exact letChain_scoped (nv := Γ.length) _ 1 _ hms
         (show Comp.SourceScoped _ _ _ _ (.app _ _) from ⟨hvar, recordFields_scoped hbv⟩)
+    | .E_PredicateCall _ hvalue _ _ _ _ =>
+      rw [desugar_predicateCall hvalue]
+      exact ⟨hs.1, Expr.valueOf_scoped hs.2.1.1 hvalue, trivial⟩
+    | .E_PredicateProject _ hvalue _ _ _ _ _ =>
+      rw [desugar_predicateProject hvalue]
+      exact ⟨hs.1, Expr.valueOf_scoped hs.2.1.1 hvalue, trivial⟩
     | .E_CallExternal (args := args) _ _ _ _ hargs _ _ _ _ =>
       have hms := HasTypesQ.scoped (nr := nr) hargs hs.2
       simp only [desugarExpr, callComp, directCallee, Nat.zero_add, List.length_nil, List.range_zero,
@@ -364,7 +370,7 @@ mutual
       have hc := letChain_scoped (nv := Γ.length) _ 0 _ hms (by simpa using hbody)
       simp only [desugarExpr, sequence]
       simpa using hc
-    | .E_PartialCallDirect (args := args) (as := as) _ hh _ hn _ hfix _ _ _ =>
+    | .E_PartialCallDirect (args := args) (as := as) hholes hh _ hn _ hfix _ _ _ =>
       obtain ⟨hd, hdc⟩ := hh.direct
       have hfx := HasFixedQ.scoped (nr := nr) hfix (by simpa [hideConts] using hs.2.1)
       simp only [hideConts, List.length_map] at hfx
@@ -374,11 +380,11 @@ mutual
         (recordFields_scoped (n := args.positions.length) (ps := args.positions) (by simpa [Nat.add_assoc] using hv))
       have hc := letChain_scoped (nv := Γ.length + args.holeTypes.length) _ 0 _
         (fixedShift_scoped_ranges args.holeTypes.length hfx) (by simpa [List.length_map, hl, Nat.add_assoc] using hfin)
-      simp only [desugarExpr, callArgs, hdc, sequenceArgs, argEvals_desugarHoleArgs, argValues_desugarHoleArgs,
+      simp only [desugarExpr, hholes, ite_false, callArgs, hdc, sequenceArgs, argEvals_desugarHoleArgs, argValues_desugarHoleArgs,
         List.length_map, hl, Nat.zero_add]
       rw [holeLam_shift]
       exact ⟨hn, holeTypes_scoped_ranges hs.2.1, by simpa using hc⟩
-    | .E_PartialCall (args := args) (as := as) hnd _ hf _ hn _ hfix _ _ _ =>
+    | .E_PartialCall (args := args) (as := as) hnd hholes hf _ hn _ hfix _ _ _ =>
       have hfx := HasFixedQ.scoped (nr := nr) hfix (by simpa [hideConts] using hs.2.1)
       simp only [hideConts, List.length_map] at hfx
       have hf' := HasTypeQ.scoped (nr := nr) hf (by simpa [hideConts] using hs.1)
@@ -391,11 +397,11 @@ mutual
         ⟨show _ < _ by omega, recordFields_scoped (by simpa [Nat.add_assoc] using hv)⟩
       have hc := letChain_scoped (nv := Γ.length + args.holeTypes.length) _ 1 _
         (fixedShift_scoped_ranges args.holeTypes.length hfx) (by simpa [List.length_map, hl] using hbody)
-      simp only [desugarExpr, callArgs, hnd, sequenceArgs, argEvals_desugarHoleArgs, argValues_desugarHoleArgs,
+      simp only [desugarExpr, hholes, ite_false, callArgs, hnd, sequenceArgs, argEvals_desugarHoleArgs, argValues_desugarHoleArgs,
         List.length_map, hl]
       rw [holeLam_shift]
       exact ⟨hn, holeTypes_scoped_ranges hs.2.1, shiftk_scoped _ hf', by simpa [Nat.add_comm 1] using hc⟩
-    | .E_PartialCallDirectDep (args := args) (as := as) _ hh _ hn hdep _ _ hfix _ _ _ _ =>
+    | .E_PartialCallDirectDep (args := args) (as := as) hholes hh _ hn hdep _ _ hfix _ _ _ _ =>
       obtain ⟨hd, hdc⟩ := hh.direct
       have hfx := HasFixedQ.scoped (nr := nr) hfix (by simpa [hideConts] using hs.2.1)
       simp only [hideConts, List.length_map] at hfx
@@ -405,11 +411,11 @@ mutual
         (recordFields_scoped (n := args.positions.length) (ps := args.positions) (by simpa [Nat.add_assoc] using hv))
       have hc := letChain_scoped (nv := Γ.length + args.holeTypes.length) _ 0 _
         (fixedShift_scoped_ranges args.holeTypes.length hfx) (by simpa [List.length_map, hl, Nat.add_assoc] using hfin)
-      simp only [desugarExpr, callArgs, hdc, sequenceArgs, argEvals_desugarHoleArgs, argValues_desugarHoleArgs,
+      simp only [desugarExpr, hholes, ite_false, callArgs, hdc, sequenceArgs, argEvals_desugarHoleArgs, argValues_desugarHoleArgs,
         List.length_map, hl, Nat.zero_add]
       rw [holeLam_dependent hdep]
       exact ⟨hs.2.2, by rw [telBinders_holeTel _ _ _ _ _ hn.1]; simpa using hc⟩
-    | .E_PartialCallDep (args := args) (as := as) hnd _ hf _ hn hdep _ _ hfix _ _ _ _ =>
+    | .E_PartialCallDep (args := args) (as := as) hnd hholes hf _ hn hdep _ _ hfix _ _ _ _ =>
       have hfx := HasFixedQ.scoped (nr := nr) hfix (by simpa [hideConts] using hs.2.1)
       simp only [hideConts, List.length_map] at hfx
       have hf' := HasTypeQ.scoped (nr := nr) hf (by simpa [hideConts] using hs.1)
@@ -422,7 +428,7 @@ mutual
         ⟨show _ < _ by omega, recordFields_scoped (by simpa [Nat.add_assoc] using hv)⟩
       have hc := letChain_scoped (nv := Γ.length + args.holeTypes.length) _ 1 _
         (fixedShift_scoped_ranges args.holeTypes.length hfx) (by simpa [List.length_map, hl] using hbody)
-      simp only [desugarExpr, callArgs, hnd, sequenceArgs, argEvals_desugarHoleArgs, argValues_desugarHoleArgs,
+      simp only [desugarExpr, hholes, ite_false, callArgs, hnd, sequenceArgs, argEvals_desugarHoleArgs, argValues_desugarHoleArgs,
         List.length_map, hl]
       rw [holeLam_dependent hdep]
       exact ⟨hs.2.2, by rw [telBinders_holeTel _ _ _ _ _ hn.1]; exact ⟨shiftk_scoped _ hf', by simpa [Nat.add_comm 1] using hc⟩⟩

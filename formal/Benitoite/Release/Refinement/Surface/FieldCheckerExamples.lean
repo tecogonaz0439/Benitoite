@@ -39,7 +39,7 @@ private def baseInput (proof : ExchangeCertificate) : Check.Input where
   logicCertificates := fun _ _ => some proof
 
 private def acceptInput : CheckAccept.AcceptInput :=
-  ⟨"Ok", fun _ => none, ⟨⟨100,100⟩,⟨100,100⟩⟩, fun i m => i ++ "." ++ m⟩
+  { ok := "Ok", rules := fun _ => none, limits := ⟨⟨100,100⟩,⟨100,100⟩⟩, methodKey := fun i m => i ++ "." ++ m }
 
 private inductive Payload where
   | decimal | float64 | float32 | string | map | set | bytes

@@ -176,6 +176,13 @@ def callArgs (shift : Nat) (f : Expr) (callee : Comp) (positions : List Nat)
   | none => .letIn (callee.rename (· + shift))
       (sequenceArgs 1 plans (fun vs => .app (.var (argEvals plans).length) (ordered vs)))
 
+/-- 穴のない内部の判定の呼出し。値の引数を新しく束縛せず、同じ文脈で渡す。 -/
+def directValueCall? : Expr → HoleArgs → Option Comp
+  | .primName name ts es xs, .expr none 0 target .nil
+  | .primName name ts es xs, .expr none 0 target (.expr none 1 _ .nil) =>
+      target.valueOf?.map (fun v => .app (.prim name ts es xs) [v])
+  | _, _ => none
+
 /-- パターンの束縛数だけ書いた値をずらし、残すフィールドの番号を右から数える。 -/
 def recordUpdateValues (c : ConName) (n : Nat) (positions : List Nat) (vs : List Val) : List Val :=
   let b := (recordUpdatePattern c n positions).binders
@@ -327,9 +334,11 @@ mutual
     -- 01-12「表層からの脱糖」の前段: プレースホルダをラムダに展開してから移す。
     -- 01-12「リスト、ラムダ、条件分岐、match」のラムダの行: return λ(p̄). ⟦B⟧。
     -- 非穴の式と callee はラムダの本体で評価し、穴は引数の直接参照にする。
-    | .partialCall f names args ret eff => .ret (holeLam (args.holeNames names) args.holeTypes ret eff
-        (callArgs args.holeTypes.length f (desugarExpr opPrim .other f) args.positions
-          (desugarHoleArgs opPrim args.holeTypes.length args)))
+    | .partialCall f names args ret eff =>
+        let fallback := .ret (holeLam (args.holeNames names) args.holeTypes ret eff
+          (callArgs args.holeTypes.length f (desugarExpr opPrim .other f) args.positions
+            (desugarHoleArgs opPrim args.holeTypes.length args)))
+        if args.holeTypes = [] then (directValueCall? f args).getD fallback else fallback
     -- 同前段: T.C(a1,…,_,…,an) | return λ(p̄). ⟦T.C(a1,…,p,…,an)⟧
     | .partialCon c ts args => .ret (.lam (args.holeNames (positionalNames args.positions.length)) args.holeTypes
         (sequenceArgs 0 (desugarHoleArgs opPrim args.holeTypes.length args)
@@ -542,6 +551,20 @@ def desugarProgram (opPrim : OpPrim) (p : Program) : Refinement.Program :=
     ops := p.ops, effects := p.effects, classes := p.classes,
     impls := fun i => (p.impls i).map (desugarImpl opPrim),
     externals := p.externals, dataInfo := p.dataInfo }
+
+/-- 観測できる値は、新しい束縛を挿入せず同じ文脈の内部の判定へ渡す。 -/
+theorem desugar_predicateCall {op : OpPrim} {p : Position} {name ts es xs target v b ε}
+    (hv : target.valueOf? = some v) :
+    desugarExpr op p (.partialCall (.primName name ts es xs) [] (.expr none 0 target .nil) b ε) =
+      .app (.prim name ts es xs) [v] := by
+  simp [desugarExpr, HoleArgs.holeTypes, directValueCall?, hv]
+
+/-- 元の欄の式は検査用の情報として保持し、受け手の値だけを内部の行へ一度渡す。 -/
+theorem desugar_predicateProject {op : OpPrim} {p : Position} {name ts es xs root v source b ε}
+    (hv : root.valueOf? = some v) :
+    desugarExpr op p (.partialCall (.primName name ts es xs) []
+      (.expr none 0 root (.expr none 1 source .nil)) b ε) = .app (.prim name ts es xs) [v] := by
+  simp [desugarExpr, HoleArgs.holeTypes, directValueCall?, hv]
 
 end
 

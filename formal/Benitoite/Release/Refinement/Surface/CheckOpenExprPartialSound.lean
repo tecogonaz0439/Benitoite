@@ -22,6 +22,58 @@ theorem dependentCheck_sound {q k ret eff}
   have hec := (rawEffEq_spec het he).mpr hee
   simp only [dependentCheck, hrc, hec, Bool.and_self, Bool.not_true, Bool.false_eq_true] at h
 
+/-- 元の欄の呼出しも再検査し、内部の行には元の受け手だけを渡す。 -/
+theorem predicateProject_step {h children} (ih : SoundBelow (.node .E_PredicateProject h children)) :
+    ExprSoundAt (.node .E_PredicateProject h children) := by
+  intro q rows Δ C Γ Φ R p path e a ε hq hΔ hΓ hR hsrc ha he hg hc
+  rw [checkExprAt.eq_def] at hc
+  dsimp only at hc
+  replace hc := (Bool.and_eq_true_iff.mp hc).2
+  split at hc
+  · rename_i b ts es ix root source ret eff gs
+    split at hc
+    · rename_i v t hvalue hhead
+      simp only [allChecks, Bool.and_eq_true, and_true] at hc
+      obtain ⟨hout, hsource, hvals, hle, hcover, hann⟩ := hc
+      obtain ⟨rfl, rfl⟩ := resultEq_sound hsrc.2.2.1 hsrc.2.2.2 ha he hout
+      have hh := head_sound hq hΓ (source_head_inputs hsrc.1) hg.1 hhead
+      have hs := (ih gs (by simp_wf; omega)).expr hq hΔ hΓ hR hsrc.2.1.2.1
+        (hg.1.ty 1) (empty_effect_support _) hg.2.1 hsource
+      have hv := valsTel_sound (vs := [v]) hq hΓ hΓ
+        ⟨Check.source_value_support hsrc.2.1.1 hvalue, trivial⟩
+        hh.2.1 (hg.1.ty 0) (hg.1.eff 0) hg.1 hvals
+      exact .E_PredicateProject hh.1 hvalue hs hv
+        (subtype_sound (hg.1.ty 0) hsrc.2.2.1 hg.1 hle)
+        (covers_sound (hg.1.eff 0) (effect_fails_support hsrc.2.2.2) hcover)
+        (annotation_sound hq hΓ hsrc.2.2.1 hann)
+    · cases hc
+  · cases hc
+
+/-- 内部の直接呼出しは値を束縛し直さず、元の文脈の依存する結果を検査する。 -/
+theorem predicateCall_step {h children} :
+    ExprSoundAt (.node .E_PredicateCall h children) := by
+  intro q rows Δ C Γ Φ R p path e a ε hq hΔ hΓ hR hsrc ha he hg hc
+  rw [checkExprAt.eq_def] at hc
+  dsimp only at hc
+  replace hc := (Bool.and_eq_true_iff.mp hc).2
+  split at hc
+  · rename_i b ts es ix target ret eff
+    split at hc
+    · rename_i v t hvalue hhead
+      simp only [allChecks, Bool.and_eq_true, and_true] at hc
+      obtain ⟨hout, hvals, hle, hcover, hann⟩ := hc
+      obtain ⟨rfl, rfl⟩ := resultEq_sound hsrc.2.2.1 hsrc.2.2.2 ha he hout
+      have hh := head_sound hq hΓ (source_head_inputs hsrc.1) hg.1 hhead
+      have hv := valsTel_sound (vs := [v]) hq hΓ hΓ
+        ⟨Check.source_value_support hsrc.2.1.1 hvalue, trivial⟩
+        hh.2.1 (hg.1.ty 0) (hg.1.eff 0) hg.1 hvals
+      exact .E_PredicateCall hh.1 hvalue hv
+        (subtype_sound (hg.1.ty 0) hsrc.2.2.1 hg.1 hle)
+        (covers_sound (hg.1.eff 0) (effect_fails_support hsrc.2.2.2) hcover)
+        (annotation_sound hq hΓ hsrc.2.2.1 hann)
+    · cases hc
+  · cases hc
+
 theorem partialCallDirect_step {h children} (ih : SoundBelow (.node .E_PartialCallDirect h children)) :
     ExprSoundAt (.node .E_PartialCallDirect h children) := by
   intro q rows Δ C Γ Φ R p path e a ε hq hΔ hΓ hR hsrc ha he hg hc

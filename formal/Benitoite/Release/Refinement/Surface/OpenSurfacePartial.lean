@@ -30,6 +30,7 @@ theorem partial_fixed_shift {P B Q C Γ Φ ε rs} {R : Option Ty} {ms : List Com
     OpenRangeRename.comp_instR_shift] using hh
 
 theorem partialCallDirect_core {D : Declarations} {P B ks op Q Δ C Γ Φ R p f names args r ε t ds as r' e'}
+    (hholes : args.holeTypes ≠ [])
     (hh : CallHeadTy D B ks Q C Γ f t ds)
     (hn : NamesWF (args.holeNames names) args.holeTypes)
     (ha : Ty.AnnotationR D.core ks C Γ (.fn (args.holeNames names) args.holeTypes r ε))
@@ -80,7 +81,7 @@ theorem partialCallDirect_core {D : Declarations} {P B ks op Q Δ C Γ Φ R p f 
     · simpa only [List.length_map, Ty.shiftV_add, Eff.shiftV_add, Option.map_some, hnil] using hg
     · exact hr0.declared.sameTypes hR.types
   simp only [rangeCtx_bindParams, rangeCtx_hideConts, rangeTy_shiftV, rangeEff_shiftV] at hbody
-  simp only [ExprCore, desugarExpr, holeLam_shift, comp_ret_instR, lam_instR,
+  simp only [ExprCore, desugarExpr, hholes, ite_false, holeLam_shift, comp_ret_instR, lam_instR,
     rangeTy_fn, rangeEff_empty]
   refine .C_Return (.V_Lam ⟨by simpa only [List.length_map] using hn.1, hn.2⟩
     ha'.wf ha'.sorted ?_ ha'.declared)
@@ -126,6 +127,7 @@ theorem dependentLam_instR (rs : List RangeExpr) (t : Tel) (body : Comp) :
   cases rs <;> rfl
 
 theorem partialCallDirectDep_core {D : Declarations} {P B ks op Q Δ C Γ Φ R p f names args ret eff εf t ds as r' e'}
+    (hholes : args.holeTypes ≠ [])
     (hh : CallHeadTy D B ks Q C Γ f t ds)
     (hn : NamesWF (args.holeNames names) args.holeTypes)
     (hdep : ¬ ∃ (r0 : Ty) (e0 : Eff), ret = r0.shiftV args.holeTypes.length 0 ∧
@@ -178,7 +180,7 @@ theorem partialCallDirectDep_core {D : Declarations} {P B ks op Q Δ C Γ Φ R p
     apply sequence_instR (R := some ret) hA hcs
     · simpa only [List.length_map, Option.map_some, rangeLocal_nil] using hg
     · exact hret.declared.sameTypes hR.types
-  simp only [ExprCore, desugarExpr, holeLam_dependent hdep, comp_ret_instR, rangeEff_empty]
+  simp only [ExprCore, desugarExpr, hholes, ite_false, holeLam_dependent hdep, comp_ret_instR, rangeEff_empty]
   apply HasTypeCQ.C_Return
   rw [dependentLam_instR]
   apply dependentFn_range_type
@@ -286,6 +288,7 @@ theorem partial_callee_shift {P B op Q C Γ Φ f t ε rs} {R : Option Ty} {ps : 
     OpenRangeRename.comp_instR_shift] using hh'
 
 theorem partialCall_core {D : Declarations} {P B ks op Q Δ C Γ Φ R p f names args r ε t as r' e'}
+    (hholes : args.holeTypes ≠ [])
     (hnd : directCallee f = none)
     (hn : NamesWF (args.holeNames names) args.holeTypes)
     (ha : Ty.AnnotationR D.core ks C Γ (.fn (args.holeNames names) args.holeTypes r ε))
@@ -317,7 +320,7 @@ theorem partialCall_core {D : Declarations} {P B ks op Q Δ C Γ Φ R p f names 
     (by simpa only [Eff.shiftV_add] using hc) hR hA σ
     (by simpa only [Option.map_some] using hff) (by simpa only [Option.map_some] using hcs)
   simp only [rangeCtx_bindParams, rangeCtx_hideConts, rangeTy_shiftV, rangeEff_shiftV] at hbody
-  simp only [ExprCore, desugarExpr, holeLam_shift, comp_ret_instR, lam_instR,
+  simp only [ExprCore, desugarExpr, hholes, ite_false, holeLam_shift, comp_ret_instR, lam_instR,
     rangeTy_fn, rangeEff_empty]
   refine .C_Return (.V_Lam ⟨by simpa only [List.length_map] using hn.1, hn.2⟩
     ha'.wf ha'.sorted ?_ ha'.declared)
@@ -325,6 +328,7 @@ theorem partialCall_core {D : Declarations} {P B ks op Q Δ C Γ Φ R p f names 
   simpa only [List.length_map] using hbody
 
 theorem partialCallDep_core {D : Declarations} {P B ks op Q Δ C Γ Φ R p f names args ret eff εf t as r' e'}
+    (hholes : args.holeTypes ≠ [])
     (hnd : directCallee f = none)
     (hn : NamesWF (args.holeNames names) args.holeTypes)
     (hdep : ¬ ∃ (r0 : Ty) (e0 : Eff), ret = r0.shiftV args.holeTypes.length 0 ∧
@@ -358,7 +362,7 @@ theorem partialCallDep_core {D : Declarations} {P B ks op Q Δ C Γ Φ R p f nam
   have hff' := HasTypeCQ.C_Eff (HasTypeCQ.withReturn hff rfl rfl (some (rangeTy σ.val ret)))
     ((OpenBody.Covers.source hcov).at σ)
   have hbody := partial_indirect_body_core hnd hret hv hle hc hR hA σ hff' hcs
-  simp only [ExprCore, desugarExpr, holeLam_dependent hdep, comp_ret_instR, rangeEff_empty]
+  simp only [ExprCore, desugarExpr, hholes, ite_false, holeLam_dependent hdep, comp_ret_instR, rangeEff_empty]
   apply HasTypeCQ.C_Return
   rw [dependentLam_instR]
   apply dependentFn_range_type
