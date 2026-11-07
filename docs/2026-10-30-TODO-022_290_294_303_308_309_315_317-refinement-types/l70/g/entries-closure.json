@@ -1,0 +1,747 @@
+{
+ "method": "main からの幅優先の閉包。辺は型・値（不透明を含む）・_unsafe_rec・implemented_by・csimp の置き換え先・帰納型と構成子。csimp の定理は辿らない",
+ "state_before": {
+  "head": "eb4f0ef9b4a95e92d09d194d88d8eb38f7024c4f",
+  "formal_diff_sha256": "18e4546b8f44ded25af128162cfd731ea1c89ff83025bcd3e46e92b1ede73898",
+  "formal_diff_bytes": 95975,
+  "formal_untracked": 5,
+  "formal_untracked_sha256": "d263cdf5a07e7b128732968b1eae231ae5856a109cd1fe438a67b60ea49d060d"
+ },
+ "no_build_before": {
+  "exit": 0,
+  "last_line": "All targets up-to-date (2339 jobs)."
+ },
+ "retained_release_modules": 74,
+ "old_name_sets": {
+  "table_old": 62,
+  "judgments": 62,
+  "old_main": 12,
+  "surface_theorems": 14,
+  "proper_judgments": 41
+ },
+ "old_names_total": 86,
+ "excluded_shared_syntax": [
+  "Benitoite.Release.Const",
+  "Benitoite.Release.Ty.lazy"
+ ],
+ "entries": {
+  "desugarDiff": {
+   "root": "DesugarDiff.Main",
+   "source_modules": [
+    "DesugarDiff.Main"
+   ],
+   "lean_exit": 0,
+   "wall_seconds": 1.56,
+   "max_rss_bytes": 1903394816,
+   "constants": 10765,
+   "modules": 213,
+   "by_group": {
+    "DesugarDiff": 101,
+    "Exchange": 1282,
+    "Init": 6008,
+    "Lean": 203,
+    "Release": 307,
+    "Release.Refinement": 1987,
+    "Scope": 384,
+    "Shared": 12,
+    "Std": 481
+   },
+   "missing_constants": [],
+   "a_surface_modules": {},
+   "a_violations": {},
+   "b_release_modules": 12,
+   "b_release_constants": 307,
+   "b_release_by_module": {
+    "Benitoite.Release.Atom": 21,
+    "Benitoite.Release.Coverage": 2,
+    "Benitoite.Release.Order.Atoms": 2,
+    "Benitoite.Release.Order.FiniteAtoms": 6,
+    "Benitoite.Release.Order.Labels": 10,
+    "Benitoite.Release.Order.Range": 103,
+    "Benitoite.Release.Order.SortUnique": 8,
+    "Benitoite.Release.Order.Tree": 16,
+    "Benitoite.Release.Order.Types": 7,
+    "Benitoite.Release.Subst": 10,
+    "Benitoite.Release.Syntax": 75,
+    "Benitoite.Release.Types": 47
+   },
+   "b_violations": {},
+   "c_core": {},
+   "d_old_names": [],
+   "d_detail": {},
+   "csimp_replacements": [
+    "List.map -> List.mapTR by List.map_eq_mapTR",
+    "Bool.and -> Bool.Internal.and by Bool.and_eq_internalAnd",
+    "Bool.not -> Bool.Internal.not by Bool.not_eq_internalNot",
+    "List.filterMap -> List.filterMapTR by List.filterMap_eq_filterMapTR",
+    "List.append -> List.appendTR by List.append_eq_appendTR",
+    "ByteArray.append -> ByteArray.fastAppend by ByteArray.append_eq_fastAppend",
+    "List.flatMap -> List.flatMapTR by List.flatMap_eq_flatMapTR",
+    "List.length -> List.lengthTR by List.length_eq_lengthTR",
+    "Bool.or -> Bool.Internal.or by Bool.or_eq_internalOr",
+    "List.filter -> List.filterTR by List.filter_eq_filterTR",
+    "List.flatten -> List.flattenTR by List.flatten_eq_flattenTR",
+    "String.utf8EncodeChar -> String.utf8EncodeCharFast by String.utf8EncodeChar_eq_utf8EncodeCharFast",
+    "WellFounded.fix -> WellFounded.fixC by WellFounded.fix_eq_fixC",
+    "String.Slice.Pos.next -> String.Slice.Pos.nextFast by String.Slice.Pos.next_eq_nextFast",
+    "List.zipWith -> List.zipWithTR by List.zipWith_eq_zipWithTR",
+    "List.mergeSort -> List.MergeSort.Internal.mergeSortTR₂ by List.MergeSort.Internal.mergeSort_eq_mergeSortTR₂",
+    "List.replicate -> List.replicateTR by List.replicate_eq_replicateTR",
+    "Nat.rec -> Nat.recCompiled by Nat.rec_eq_recCompiled",
+    "WellFounded.fixF -> WellFounded.fixFC by WellFounded.fixF_eq_fixFC",
+    "Benitoite.Release.Refinement.Surface.holeLam -> Benitoite.Release.Refinement.Surface.holeLamDecide by Benitoite.Release.Refinement.Surface.holeLam_eq_decide",
+    "Acc.rec -> Acc.recC by Acc.rec_eq_recC",
+    "List.take -> List.takeTR by List.take_eq_takeTR",
+    "List.merge -> List.MergeSort.Internal.mergeTR by List.MergeSort.Internal.merge_eq_mergeTR",
+    "List.foldr -> List.foldrTR by List.foldr_eq_foldrTR",
+    "List.set -> List.setTR by List.set_eq_setTR",
+    "List.dropLast -> List.dropLastTR by List.dropLast_eq_dropLastTR",
+    "List.pmap -> List.pmapImpl by List.pmap_eq_pmapImpl",
+    "Lean.RArray.get -> Lean.RArray.getImpl by Lean.RArray.get_eq_getImpl"
+   ],
+   "raw": {
+    "file": "closure-desugarDiff.tsv",
+    "bytes": 1298195,
+    "sha256": "c4d0bf197d25f94ad22fbf07de902698a2cc4414c02364c11cc520b208b5d123"
+   },
+   "violation_paths": {},
+   "source_names": {
+    "in_code": 3,
+    "by_class": {
+     "new_or_other": 3
+    },
+    "violations": [],
+    "comment_only": {},
+    "per_file": {
+     "DesugarDiff.Main": 3
+    }
+   }
+  },
+  "builtinCheck": {
+   "root": "BuiltinCheck.Main",
+   "source_modules": [
+    "BuiltinCheck.Main"
+   ],
+   "lean_exit": 0,
+   "wall_seconds": 1.37,
+   "max_rss_bytes": 1902870528,
+   "constants": 9576,
+   "modules": 205,
+   "by_group": {
+    "BuiltinCheck": 57,
+    "Exchange": 1284,
+    "Init": 5796,
+    "Lean": 203,
+    "Release": 359,
+    "Release.Refinement": 1010,
+    "Scope": 383,
+    "Shared": 3,
+    "Std": 481
+   },
+   "missing_constants": [],
+   "a_surface_modules": {},
+   "a_violations": {},
+   "b_release_modules": 14,
+   "b_release_constants": 359,
+   "b_release_by_module": {
+    "Benitoite.Release.Atom": 21,
+    "Benitoite.Release.BuiltinTable": 69,
+    "Benitoite.Release.Coverage": 1,
+    "Benitoite.Release.Effect": 1,
+    "Benitoite.Release.Order.Atoms": 2,
+    "Benitoite.Release.Order.FiniteAtoms": 6,
+    "Benitoite.Release.Order.Labels": 10,
+    "Benitoite.Release.Order.Range": 103,
+    "Benitoite.Release.Order.SortUnique": 8,
+    "Benitoite.Release.Order.Tree": 16,
+    "Benitoite.Release.Order.Types": 7,
+    "Benitoite.Release.Syntax": 45,
+    "Benitoite.Release.Types": 69,
+    "Benitoite.Release.Typing": 1
+   },
+   "b_violations": {},
+   "c_core": {},
+   "d_old_names": [],
+   "d_detail": {},
+   "csimp_replacements": [
+    "List.filter -> List.filterTR by List.filter_eq_filterTR",
+    "Bool.and -> Bool.Internal.and by Bool.and_eq_internalAnd",
+    "List.map -> List.mapTR by List.map_eq_mapTR",
+    "List.flatMap -> List.flatMapTR by List.flatMap_eq_flatMapTR",
+    "List.length -> List.lengthTR by List.length_eq_lengthTR",
+    "Bool.not -> Bool.Internal.not by Bool.not_eq_internalNot",
+    "List.take -> List.takeTR by List.take_eq_takeTR",
+    "Bool.or -> Bool.Internal.or by Bool.or_eq_internalOr",
+    "List.append -> List.appendTR by List.append_eq_appendTR",
+    "List.filterMap -> List.filterMapTR by List.filterMap_eq_filterMapTR",
+    "List.flatten -> List.flattenTR by List.flatten_eq_flattenTR",
+    "ByteArray.append -> ByteArray.fastAppend by ByteArray.append_eq_fastAppend",
+    "List.mergeSort -> List.MergeSort.Internal.mergeSortTR₂ by List.MergeSort.Internal.mergeSort_eq_mergeSortTR₂",
+    "String.utf8EncodeChar -> String.utf8EncodeCharFast by String.utf8EncodeChar_eq_utf8EncodeCharFast",
+    "List.zipWith -> List.zipWithTR by List.zipWith_eq_zipWithTR",
+    "Nat.rec -> Nat.recCompiled by Nat.rec_eq_recCompiled",
+    "WellFounded.fix -> WellFounded.fixC by WellFounded.fix_eq_fixC",
+    "String.Slice.Pos.next -> String.Slice.Pos.nextFast by String.Slice.Pos.next_eq_nextFast",
+    "List.merge -> List.MergeSort.Internal.mergeTR by List.MergeSort.Internal.merge_eq_mergeTR",
+    "WellFounded.fixF -> WellFounded.fixFC by WellFounded.fixF_eq_fixFC",
+    "List.dropLast -> List.dropLastTR by List.dropLast_eq_dropLastTR",
+    "Acc.rec -> Acc.recC by Acc.rec_eq_recC",
+    "List.foldr -> List.foldrTR by List.foldr_eq_foldrTR",
+    "List.set -> List.setTR by List.set_eq_setTR",
+    "Lean.RArray.get -> Lean.RArray.getImpl by Lean.RArray.get_eq_getImpl"
+   ],
+   "raw": {
+    "file": "closure-builtinCheck.tsv",
+    "bytes": 1097764,
+    "sha256": "4e8fb0beda704ba6e066bf478624367b0caaf06117da1af219bff2b8c0caa6bd"
+   },
+   "violation_paths": {},
+   "source_names": {
+    "in_code": 6,
+    "by_class": {
+     "b_ok": 3,
+     "new_or_other": 3
+    },
+    "violations": [],
+    "comment_only": {},
+    "per_file": {
+     "BuiltinCheck.Main": 6
+    }
+   }
+  },
+  "coverageDiff": {
+   "root": "CoverageDiff.Main",
+   "source_modules": [
+    "CoverageDiff.Main"
+   ],
+   "lean_exit": 0,
+   "wall_seconds": 1.52,
+   "max_rss_bytes": 1903968256,
+   "constants": 9602,
+   "modules": 199,
+   "by_group": {
+    "CoverageDiff": 172,
+    "Exchange": 993,
+    "Init": 5693,
+    "Lean": 203,
+    "Release": 269,
+    "Release.Refinement": 1431,
+    "Scope": 356,
+    "Shared": 4,
+    "Std": 481
+   },
+   "missing_constants": [],
+   "a_surface_modules": {},
+   "a_violations": {},
+   "b_release_modules": 11,
+   "b_release_constants": 269,
+   "b_release_by_module": {
+    "Benitoite.Release.Atom": 21,
+    "Benitoite.Release.Coverage": 1,
+    "Benitoite.Release.Order.Atoms": 2,
+    "Benitoite.Release.Order.FiniteAtoms": 6,
+    "Benitoite.Release.Order.Labels": 10,
+    "Benitoite.Release.Order.Range": 103,
+    "Benitoite.Release.Order.SortUnique": 8,
+    "Benitoite.Release.Order.Tree": 16,
+    "Benitoite.Release.Order.Types": 7,
+    "Benitoite.Release.Syntax": 57,
+    "Benitoite.Release.Types": 38
+   },
+   "b_violations": {},
+   "c_core": {},
+   "d_old_names": [],
+   "d_detail": {},
+   "csimp_replacements": [
+    "Bool.not -> Bool.Internal.not by Bool.not_eq_internalNot",
+    "List.length -> List.lengthTR by List.length_eq_lengthTR",
+    "Bool.and -> Bool.Internal.and by Bool.and_eq_internalAnd",
+    "Bool.or -> Bool.Internal.or by Bool.or_eq_internalOr",
+    "List.map -> List.mapTR by List.map_eq_mapTR",
+    "List.filter -> List.filterTR by List.filter_eq_filterTR",
+    "ByteArray.append -> ByteArray.fastAppend by ByteArray.append_eq_fastAppend",
+    "List.append -> List.appendTR by List.append_eq_appendTR",
+    "List.zipIdx -> List.zipIdxTR by List.zipIdx_eq_zipIdxTR",
+    "List.flatMap -> List.flatMapTR by List.flatMap_eq_flatMapTR",
+    "List.filterMap -> List.filterMapTR by List.filterMap_eq_filterMapTR",
+    "List.take -> List.takeTR by List.take_eq_takeTR",
+    "List.flatten -> List.flattenTR by List.flatten_eq_flattenTR",
+    "String.utf8EncodeChar -> String.utf8EncodeCharFast by String.utf8EncodeChar_eq_utf8EncodeCharFast",
+    "List.replicate -> List.replicateTR by List.replicate_eq_replicateTR",
+    "WellFounded.fix -> WellFounded.fixC by WellFounded.fix_eq_fixC",
+    "String.Slice.Pos.next -> String.Slice.Pos.nextFast by String.Slice.Pos.next_eq_nextFast",
+    "List.zipWith -> List.zipWithTR by List.zipWith_eq_zipWithTR",
+    "Nat.rec -> Nat.recCompiled by Nat.rec_eq_recCompiled",
+    "WellFounded.fixF -> WellFounded.fixFC by WellFounded.fixF_eq_fixFC",
+    "List.dropLast -> List.dropLastTR by List.dropLast_eq_dropLastTR",
+    "Acc.rec -> Acc.recC by Acc.rec_eq_recC",
+    "List.foldr -> List.foldrTR by List.foldr_eq_foldrTR",
+    "List.set -> List.setTR by List.set_eq_setTR",
+    "Lean.RArray.get -> Lean.RArray.getImpl by Lean.RArray.get_eq_getImpl"
+   ],
+   "raw": {
+    "file": "closure-coverageDiff.tsv",
+    "bytes": 1110884,
+    "sha256": "5d7064e36cd89db57b0c72eb1916ccb4f235c63bf8920b50a17589ca4a000bd6"
+   },
+   "violation_paths": {},
+   "source_names": {
+    "in_code": 12,
+    "by_class": {
+     "new_or_other": 12
+    },
+    "violations": [],
+    "comment_only": {},
+    "per_file": {
+     "CoverageDiff.Main": 12
+    }
+   }
+  },
+  "coverageProgramDiff": {
+   "root": "CoverageProgramDiff.Main",
+   "source_modules": [
+    "CoverageProgramDiff.Main"
+   ],
+   "lean_exit": 0,
+   "wall_seconds": 1.41,
+   "max_rss_bytes": 1905475584,
+   "constants": 9815,
+   "modules": 207,
+   "by_group": {
+    "CoverageProgramDiff": 92,
+    "Exchange": 1179,
+    "Init": 5785,
+    "Lean": 166,
+    "Release": 269,
+    "Release.Refinement": 1475,
+    "Scope": 362,
+    "Shared": 12,
+    "Std": 475
+   },
+   "missing_constants": [],
+   "a_surface_modules": {},
+   "a_violations": {},
+   "b_release_modules": 11,
+   "b_release_constants": 269,
+   "b_release_by_module": {
+    "Benitoite.Release.Atom": 21,
+    "Benitoite.Release.Coverage": 1,
+    "Benitoite.Release.Order.Atoms": 2,
+    "Benitoite.Release.Order.FiniteAtoms": 6,
+    "Benitoite.Release.Order.Labels": 10,
+    "Benitoite.Release.Order.Range": 103,
+    "Benitoite.Release.Order.SortUnique": 8,
+    "Benitoite.Release.Order.Tree": 16,
+    "Benitoite.Release.Order.Types": 7,
+    "Benitoite.Release.Syntax": 57,
+    "Benitoite.Release.Types": 38
+   },
+   "b_violations": {},
+   "c_core": {},
+   "d_old_names": [],
+   "d_detail": {},
+   "csimp_replacements": [
+    "List.map -> List.mapTR by List.map_eq_mapTR",
+    "Bool.or -> Bool.Internal.or by Bool.or_eq_internalOr",
+    "List.length -> List.lengthTR by List.length_eq_lengthTR",
+    "Bool.and -> Bool.Internal.and by Bool.and_eq_internalAnd",
+    "Bool.not -> Bool.Internal.not by Bool.not_eq_internalNot",
+    "List.zipWith -> List.zipWithTR by List.zipWith_eq_zipWithTR",
+    "List.append -> List.appendTR by List.append_eq_appendTR",
+    "ByteArray.append -> ByteArray.fastAppend by ByteArray.append_eq_fastAppend",
+    "List.filter -> List.filterTR by List.filter_eq_filterTR",
+    "List.flatMap -> List.flatMapTR by List.flatMap_eq_flatMapTR",
+    "List.flatten -> List.flattenTR by List.flatten_eq_flattenTR",
+    "List.zipIdx -> List.zipIdxTR by List.zipIdx_eq_zipIdxTR",
+    "List.filterMap -> List.filterMapTR by List.filterMap_eq_filterMapTR",
+    "String.utf8EncodeChar -> String.utf8EncodeCharFast by String.utf8EncodeChar_eq_utf8EncodeCharFast",
+    "List.take -> List.takeTR by List.take_eq_takeTR",
+    "List.replicate -> List.replicateTR by List.replicate_eq_replicateTR",
+    "WellFounded.fix -> WellFounded.fixC by WellFounded.fix_eq_fixC",
+    "String.Slice.Pos.next -> String.Slice.Pos.nextFast by String.Slice.Pos.next_eq_nextFast",
+    "Nat.rec -> Nat.recCompiled by Nat.rec_eq_recCompiled",
+    "WellFounded.fixF -> WellFounded.fixFC by WellFounded.fixF_eq_fixFC",
+    "Acc.rec -> Acc.recC by Acc.rec_eq_recC",
+    "List.foldr -> List.foldrTR by List.foldr_eq_foldrTR",
+    "List.set -> List.setTR by List.set_eq_setTR",
+    "Lean.RArray.get -> Lean.RArray.getImpl by Lean.RArray.get_eq_getImpl"
+   ],
+   "raw": {
+    "file": "closure-coverageProgramDiff.tsv",
+    "bytes": 1143482,
+    "sha256": "a6fe084f006e715ef507161df525b533a5b8ee8750e23308e4495453189d625b"
+   },
+   "violation_paths": {},
+   "source_names": {
+    "in_code": 7,
+    "by_class": {
+     "new_or_other": 7
+    },
+    "violations": [],
+    "comment_only": {},
+    "per_file": {
+     "CoverageProgramDiff.Main": 7
+    }
+   }
+  },
+  "surfaceCheck": {
+   "root": "SurfaceCheck.Main",
+   "source_modules": [
+    "SurfaceCheck.Main"
+   ],
+   "lean_exit": 0,
+   "wall_seconds": 2.32,
+   "max_rss_bytes": 1981808640,
+   "constants": 21634,
+   "modules": 667,
+   "by_group": {
+    "Checked": 39,
+    "Exchange": 1747,
+    "Init": 6995,
+    "Interval": 126,
+    "Lean": 203,
+    "Release": 656,
+    "Release.Refinement": 10740,
+    "Scope": 567,
+    "Shared": 35,
+    "Std": 481,
+    "Surface": 21,
+    "SurfaceCheck": 24
+   },
+   "missing_constants": [],
+   "a_surface_modules": {
+    "Benitoite.Surface.Syntax": 21
+   },
+   "a_violations": {},
+   "b_release_modules": 18,
+   "b_release_constants": 656,
+   "b_release_by_module": {
+    "Benitoite.Release.Atom": 24,
+    "Benitoite.Release.BuiltinTable": 79,
+    "Benitoite.Release.Coverage": 2,
+    "Benitoite.Release.Effect": 1,
+    "Benitoite.Release.ModelHttp": 3,
+    "Benitoite.Release.NoFail": 2,
+    "Benitoite.Release.Order.Atoms": 27,
+    "Benitoite.Release.Order.FiniteAtoms": 10,
+    "Benitoite.Release.Order.Labels": 48,
+    "Benitoite.Release.Order.Range": 109,
+    "Benitoite.Release.Order.SortUnique": 12,
+    "Benitoite.Release.Order.Tree": 41,
+    "Benitoite.Release.Order.Types": 9,
+    "Benitoite.Release.Subst": 11,
+    "Benitoite.Release.Syntax": 191,
+    "Benitoite.Release.TargetTable": 5,
+    "Benitoite.Release.Types": 81,
+    "Benitoite.Release.Typing": 1
+   },
+   "b_violations": {},
+   "c_core": {},
+   "d_old_names": [],
+   "d_detail": {},
+   "csimp_replacements": [
+    "List.length -> List.lengthTR by List.length_eq_lengthTR",
+    "Bool.or -> Bool.Internal.or by Bool.or_eq_internalOr",
+    "Bool.not -> Bool.Internal.not by Bool.not_eq_internalNot",
+    "Bool.and -> Bool.Internal.and by Bool.and_eq_internalAnd",
+    "List.map -> List.mapTR by List.map_eq_mapTR",
+    "List.append -> List.appendTR by List.append_eq_appendTR",
+    "List.flatMap -> List.flatMapTR by List.flatMap_eq_flatMapTR",
+    "ByteArray.append -> ByteArray.fastAppend by ByteArray.append_eq_fastAppend",
+    "List.filter -> List.filterTR by List.filter_eq_filterTR",
+    "List.filterMap -> List.filterMapTR by List.filterMap_eq_filterMapTR",
+    "List.flatMapM -> List.flatMapMTR by List.flatMapM_eq_flatMapMTR",
+    "List.flatten -> List.flattenTR by List.flatten_eq_flattenTR",
+    "String.utf8EncodeChar -> String.utf8EncodeCharFast by String.utf8EncodeChar_eq_utf8EncodeCharFast",
+    "List.zipWith -> List.zipWithTR by List.zipWith_eq_zipWithTR",
+    "Nat.rec -> Nat.recCompiled by Nat.rec_eq_recCompiled",
+    "String.Slice.Pos.next -> String.Slice.Pos.nextFast by String.Slice.Pos.next_eq_nextFast",
+    "WellFounded.fix -> WellFounded.fixC by WellFounded.fix_eq_fixC",
+    "List.mergeSort -> List.MergeSort.Internal.mergeSortTR₂ by List.MergeSort.Internal.mergeSort_eq_mergeSortTR₂",
+    "List.zipIdx -> List.zipIdxTR by List.zipIdx_eq_zipIdxTR",
+    "List.dropLast -> List.dropLastTR by List.dropLast_eq_dropLastTR",
+    "WellFounded.fixF -> WellFounded.fixFC by WellFounded.fixF_eq_fixFC",
+    "List.take -> List.takeTR by List.take_eq_takeTR",
+    "List.splitOnP -> List.splitOnPTR by List.splitOnP_eq_splitOnPTR",
+    "List.replicate -> List.replicateTR by List.replicate_eq_replicateTR",
+    "Acc.rec -> Acc.recC by Acc.rec_eq_recC",
+    "List.merge -> List.MergeSort.Internal.mergeTR by List.MergeSort.Internal.merge_eq_mergeTR",
+    "List.foldr -> List.foldrTR by List.foldr_eq_foldrTR",
+    "List.takeWhile -> List.takeWhileTR by List.takeWhile_eq_takeWhileTR",
+    "List.set -> List.setTR by List.set_eq_setTR",
+    "List.erase -> List.eraseTR by List.erase_eq_eraseTR",
+    "List.pmap -> List.pmapImpl by List.pmap_eq_pmapImpl",
+    "Lean.RArray.get -> Lean.RArray.getImpl by Lean.RArray.get_eq_getImpl",
+    "List.eraseP -> List.erasePTR by List.eraseP_eq_erasePTR",
+    "List.eraseIdx -> List.eraseIdxTR by List.eraseIdx_eq_eraseIdxTR",
+    "Nat.repeat -> Nat.repeatTR by Nat.repeat_eq_repeatTR"
+   ],
+   "raw": {
+    "file": "closure-surfaceCheck.tsv",
+    "bytes": 3330530,
+    "sha256": "2e567ea9be6f8e63107bb632bee4fd1fbf7f5f0b759ea07a88d1adffbd97a609"
+   },
+   "violation_paths": {},
+   "source_names": {
+    "in_code": 10,
+    "by_class": {
+     "new_or_other": 10
+    },
+    "violations": [],
+    "comment_only": {},
+    "per_file": {
+     "SurfaceCheck.Main": 10
+    }
+   }
+  },
+  "surfaceCheckAll": {
+   "root": "SurfaceCheck.All",
+   "source_modules": [
+    "SurfaceCheck.All",
+    "SurfaceCheck.Batch",
+    "SurfaceCheck.Validation",
+    "SurfaceCheck.Walk"
+   ],
+   "lean_exit": 0,
+   "wall_seconds": 2.16,
+   "max_rss_bytes": 1984872448,
+   "constants": 21675,
+   "modules": 664,
+   "by_group": {
+    "Checked": 39,
+    "Exchange": 1754,
+    "Init": 7000,
+    "Interval": 126,
+    "Lean": 203,
+    "Release": 656,
+    "Release.Refinement": 10675,
+    "Scope": 567,
+    "Shared": 35,
+    "Std": 481,
+    "Surface": 21,
+    "SurfaceCheck": 118
+   },
+   "missing_constants": [],
+   "a_surface_modules": {
+    "Benitoite.Surface.Syntax": 21
+   },
+   "a_violations": {},
+   "b_release_modules": 18,
+   "b_release_constants": 656,
+   "b_release_by_module": {
+    "Benitoite.Release.Atom": 24,
+    "Benitoite.Release.BuiltinTable": 79,
+    "Benitoite.Release.Coverage": 2,
+    "Benitoite.Release.Effect": 1,
+    "Benitoite.Release.ModelHttp": 3,
+    "Benitoite.Release.NoFail": 2,
+    "Benitoite.Release.Order.Atoms": 27,
+    "Benitoite.Release.Order.FiniteAtoms": 10,
+    "Benitoite.Release.Order.Labels": 48,
+    "Benitoite.Release.Order.Range": 109,
+    "Benitoite.Release.Order.SortUnique": 12,
+    "Benitoite.Release.Order.Tree": 41,
+    "Benitoite.Release.Order.Types": 9,
+    "Benitoite.Release.Subst": 11,
+    "Benitoite.Release.Syntax": 191,
+    "Benitoite.Release.TargetTable": 5,
+    "Benitoite.Release.Types": 81,
+    "Benitoite.Release.Typing": 1
+   },
+   "b_violations": {},
+   "c_core": {},
+   "d_old_names": [],
+   "d_detail": {},
+   "csimp_replacements": [
+    "List.length -> List.lengthTR by List.length_eq_lengthTR",
+    "Bool.not -> Bool.Internal.not by Bool.not_eq_internalNot",
+    "Bool.or -> Bool.Internal.or by Bool.or_eq_internalOr",
+    "Bool.and -> Bool.Internal.and by Bool.and_eq_internalAnd",
+    "List.filter -> List.filterTR by List.filter_eq_filterTR",
+    "List.map -> List.mapTR by List.map_eq_mapTR",
+    "ByteArray.append -> ByteArray.fastAppend by ByteArray.append_eq_fastAppend",
+    "List.append -> List.appendTR by List.append_eq_appendTR",
+    "List.filterMap -> List.filterMapTR by List.filterMap_eq_filterMapTR",
+    "List.flatMapM -> List.flatMapMTR by List.flatMapM_eq_flatMapMTR",
+    "List.flatMap -> List.flatMapTR by List.flatMap_eq_flatMapTR",
+    "List.flatten -> List.flattenTR by List.flatten_eq_flattenTR",
+    "String.utf8EncodeChar -> String.utf8EncodeCharFast by String.utf8EncodeChar_eq_utf8EncodeCharFast",
+    "List.zipWith -> List.zipWithTR by List.zipWith_eq_zipWithTR",
+    "Nat.rec -> Nat.recCompiled by Nat.rec_eq_recCompiled",
+    "List.set -> List.setTR by List.set_eq_setTR",
+    "WellFounded.fix -> WellFounded.fixC by WellFounded.fix_eq_fixC",
+    "String.Slice.Pos.next -> String.Slice.Pos.nextFast by String.Slice.Pos.next_eq_nextFast",
+    "List.mergeSort -> List.MergeSort.Internal.mergeSortTR₂ by List.MergeSort.Internal.mergeSort_eq_mergeSortTR₂",
+    "List.replicate -> List.replicateTR by List.replicate_eq_replicateTR",
+    "List.zipIdx -> List.zipIdxTR by List.zipIdx_eq_zipIdxTR",
+    "List.dropLast -> List.dropLastTR by List.dropLast_eq_dropLastTR",
+    "WellFounded.fixF -> WellFounded.fixFC by WellFounded.fixF_eq_fixFC",
+    "List.take -> List.takeTR by List.take_eq_takeTR",
+    "List.splitOnP -> List.splitOnPTR by List.splitOnP_eq_splitOnPTR",
+    "Acc.rec -> Acc.recC by Acc.rec_eq_recC",
+    "List.merge -> List.MergeSort.Internal.mergeTR by List.MergeSort.Internal.merge_eq_mergeTR",
+    "List.foldr -> List.foldrTR by List.foldr_eq_foldrTR",
+    "List.takeWhile -> List.takeWhileTR by List.takeWhile_eq_takeWhileTR",
+    "List.erase -> List.eraseTR by List.erase_eq_eraseTR",
+    "List.pmap -> List.pmapImpl by List.pmap_eq_pmapImpl",
+    "Lean.RArray.get -> Lean.RArray.getImpl by Lean.RArray.get_eq_getImpl",
+    "List.eraseP -> List.erasePTR by List.eraseP_eq_erasePTR",
+    "List.eraseIdx -> List.eraseIdxTR by List.eraseIdx_eq_eraseIdxTR",
+    "Nat.repeat -> Nat.repeatTR by Nat.repeat_eq_repeatTR"
+   ],
+   "raw": {
+    "file": "closure-surfaceCheckAll.tsv",
+    "bytes": 3329966,
+    "sha256": "6927d1a2b53d363a1756d65b56d239a3f6dd58d39572bb33d698f10e6b2182bb"
+   },
+   "violation_paths": {},
+   "source_names": {
+    "in_code": 17,
+    "by_class": {
+     "new_or_other": 17
+    },
+    "violations": [],
+    "comment_only": {},
+    "per_file": {
+     "SurfaceCheck.All": 0,
+     "SurfaceCheck.Batch": 13,
+     "SurfaceCheck.Validation": 8,
+     "SurfaceCheck.Walk": 4
+    }
+   }
+  },
+  "intervalDiff": {
+   "root": "IntervalDiff.Main",
+   "source_modules": [
+    "IntervalDiff.Main"
+   ],
+   "lean_exit": 0,
+   "wall_seconds": 3.46,
+   "max_rss_bytes": 2198798336,
+   "constants": 22085,
+   "modules": 439,
+   "by_group": {
+    "Checked": 17,
+    "Exchange": 626,
+    "Init": 7337,
+    "Interval": 3597,
+    "IntervalDiff": 6,
+    "Lean": 193,
+    "Release": 656,
+    "Release.Refinement": 8201,
+    "Scope": 487,
+    "Shared": 118,
+    "Std": 481,
+    "Surface": 366
+   },
+   "missing_constants": [],
+   "a_surface_modules": {
+    "Benitoite.Surface.FormatSpec": 32,
+    "Benitoite.Surface.Syntax": 334
+   },
+   "a_violations": {},
+   "b_release_modules": 19,
+   "b_release_constants": 656,
+   "b_release_by_module": {
+    "Benitoite.Release.Atom": 22,
+    "Benitoite.Release.BuilderExec": 2,
+    "Benitoite.Release.Coverage": 9,
+    "Benitoite.Release.Effect": 1,
+    "Benitoite.Release.Lemmas.Canonical": 5,
+    "Benitoite.Release.Lemmas.Rename": 6,
+    "Benitoite.Release.LocalRef": 4,
+    "Benitoite.Release.NoFail": 2,
+    "Benitoite.Release.Order.Atoms": 27,
+    "Benitoite.Release.Order.FiniteAtoms": 6,
+    "Benitoite.Release.Order.Labels": 48,
+    "Benitoite.Release.Order.Range": 109,
+    "Benitoite.Release.Order.SortUnique": 30,
+    "Benitoite.Release.Order.Tree": 38,
+    "Benitoite.Release.Order.Types": 9,
+    "Benitoite.Release.Subst": 41,
+    "Benitoite.Release.Syntax": 191,
+    "Benitoite.Release.Types": 105,
+    "Benitoite.Release.Typing": 1
+   },
+   "b_violations": {},
+   "c_core": {},
+   "d_old_names": [],
+   "d_detail": {},
+   "csimp_replacements": [
+    "Bool.and -> Bool.Internal.and by Bool.and_eq_internalAnd",
+    "List.map -> List.mapTR by List.map_eq_mapTR",
+    "List.flatMap -> List.flatMapTR by List.flatMap_eq_flatMapTR",
+    "List.length -> List.lengthTR by List.length_eq_lengthTR",
+    "List.filter -> List.filterTR by List.filter_eq_filterTR",
+    "Bool.not -> Bool.Internal.not by Bool.not_eq_internalNot",
+    "ByteArray.append -> ByteArray.fastAppend by ByteArray.append_eq_fastAppend",
+    "Bool.or -> Bool.Internal.or by Bool.or_eq_internalOr",
+    "List.filterMap -> List.filterMapTR by List.filterMap_eq_filterMapTR",
+    "List.append -> List.appendTR by List.append_eq_appendTR",
+    "List.flatten -> List.flattenTR by List.flatten_eq_flattenTR",
+    "String.utf8EncodeChar -> String.utf8EncodeCharFast by String.utf8EncodeChar_eq_utf8EncodeCharFast",
+    "List.zipIdx -> List.zipIdxTR by List.zipIdx_eq_zipIdxTR",
+    "String.Slice.Pos.next -> String.Slice.Pos.nextFast by String.Slice.Pos.next_eq_nextFast",
+    "WellFounded.fix -> WellFounded.fixC by WellFounded.fix_eq_fixC",
+    "List.replicate -> List.replicateTR by List.replicate_eq_replicateTR",
+    "Nat.rec -> Nat.recCompiled by Nat.rec_eq_recCompiled",
+    "WellFounded.fixF -> WellFounded.fixFC by WellFounded.fixF_eq_fixFC",
+    "Acc.rec -> Acc.recC by Acc.rec_eq_recC",
+    "List.foldr -> List.foldrTR by List.foldr_eq_foldrTR",
+    "List.pmap -> List.pmapImpl by List.pmap_eq_pmapImpl",
+    "List.take -> List.takeTR by List.take_eq_takeTR",
+    "List.zipWith -> List.zipWithTR by List.zipWith_eq_zipWithTR",
+    "List.mergeSort -> List.MergeSort.Internal.mergeSortTR₂ by List.MergeSort.Internal.mergeSort_eq_mergeSortTR₂",
+    "List.erase -> List.eraseTR by List.erase_eq_eraseTR",
+    "List.merge -> List.MergeSort.Internal.mergeTR by List.MergeSort.Internal.merge_eq_mergeTR",
+    "Benitoite.Release.Refinement.Surface.holeLam -> Benitoite.Release.Refinement.Surface.holeLamDecide by Benitoite.Release.Refinement.Surface.holeLam_eq_decide",
+    "List.set -> List.setTR by List.set_eq_setTR",
+    "Lean.RArray.get -> Lean.RArray.getImpl by Lean.RArray.get_eq_getImpl",
+    "List.takeWhile -> List.takeWhileTR by List.takeWhile_eq_takeWhileTR",
+    "List.dropLast -> List.dropLastTR by List.dropLast_eq_dropLastTR",
+    "List.range' -> List.range'TR by List.range'_eq_range'TR",
+    "List.eraseP -> List.erasePTR by List.eraseP_eq_erasePTR",
+    "List.splitOnP -> List.splitOnPTR by List.splitOnP_eq_splitOnPTR",
+    "List.eraseIdx -> List.eraseIdxTR by List.eraseIdx_eq_eraseIdxTR"
+   ],
+   "raw": {
+    "file": "closure-intervalDiff.tsv",
+    "bytes": 3012861,
+    "sha256": "a7042cbf7b4823316c2193d5f36d313041864a73291170ac9f2de89f5f97aa74"
+   },
+   "violation_paths": {},
+   "source_names": {
+    "in_code": 1,
+    "by_class": {
+     "new_or_other": 1
+    },
+    "violations": [],
+    "comment_only": {},
+    "per_file": {
+     "IntervalDiff.Main": 1
+    }
+   }
+  }
+ },
+ "no_build_after": {
+  "exit": 0,
+  "last_line": "All targets up-to-date (2339 jobs)."
+ },
+ "state_after": {
+  "head": "eb4f0ef9b4a95e92d09d194d88d8eb38f7024c4f",
+  "formal_diff_sha256": "18e4546b8f44ded25af128162cfd731ea1c89ff83025bcd3e46e92b1ede73898",
+  "formal_diff_bytes": 95975,
+  "formal_untracked": 5,
+  "formal_untracked_sha256": "d263cdf5a07e7b128732968b1eae231ae5856a109cd1fe438a67b60ea49d060d"
+ },
+ "state_unchanged": true,
+ "totals": {
+  "a_violations": 0,
+  "b_violations": 0,
+  "c_core": 0,
+  "d_old_names": 0,
+  "d_proper_judgments_or_main": 0,
+  "source_violations": 0
+ },
+ "pass": true
+}

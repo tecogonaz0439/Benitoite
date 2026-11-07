@@ -1056,7 +1056,7 @@ private def substEffAt (atoms : List Benitoite.Release.Refinement.Atom) (depth :
   (e.rawBind (typeEnvAt depth ts es)).normWith atoms
 
 /-- 実装メソッドの頭は型クラス宣言から導く。上位辞書は実装ごとの一単位で比較する。 -/
-noncomputable def desugar (atoms : Eff) (entries : List OperatorEntry) (program : Benitoite.Release.Refinement.Surface.Program)
+def desugar (atoms : Eff) (entries : List OperatorEntry) (program : Benitoite.Release.Refinement.Surface.Program)
     (d : SurfaceDef) (constants : List (String × Benitoite.Release.Refinement.Surface.Expr))
     (table : List ConstantEntry) : Except String CoreDef := do
   let opPrim := makeOpPrim atoms entries
@@ -1098,7 +1098,7 @@ noncomputable def desugar (atoms : Eff) (entries : List OperatorEntry) (program 
       lambdaEffects := lambdaEffects
       supers := [] }
 /-- Program.lookupFun と desugarProgram の経路を通して取得関数を比較する。 -/
-noncomputable def desugarAccessor (atoms : Eff) (entries : List OperatorEntry)
+def desugarAccessor (atoms : Eff) (entries : List OperatorEntry)
     (program : Benitoite.Release.Refinement.Surface.Program) (name con : String) (k : Nat)
     (decl : RecordConDecl) : Except String CoreDef := do
   let some (c, index) := program.accessors name | throw "missing accessor table entry"

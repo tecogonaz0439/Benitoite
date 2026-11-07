@@ -1,9 +1,9 @@
 import Benitoite.Exchange.Range
-import Benitoite.Surface.CheckAccept
 import Benitoite.Release.Refinement.Surface.CheckAccept
+import Benitoite.Release.Refinement.Surface.ScopeSound
 
 /-!
-# 交換の形式の観測・拒否の理由・必須の判定の入力と、範囲の入力の検査（L50.2）
+# 交換の形式の観測・拒否の理由・必須の判定の入力と、範囲の入力の検査
 
 corpus 15・sidecar 7 の交換の形式に、次のものを加える（設計書 07-04「交換の形式の版」）。
 
@@ -11,8 +11,9 @@ corpus 15・sidecar 7 の交換の形式に、次のものを加える（設計�
   ことの判定 `observationAllowed` と、その健全性（`Eff.Allows`）。
 - 拒否の理由: DET-05 の列挙 `CoverFailure`（`notCovered`・`atomicCoverOnly`・`unknownSource`・`budgetExceeded`）と、
   入口の拒否（出現の鍵と理由）。
-- 必須の判定の入力（corpus 15 の入力ごとの `scopeAcceptance`）: リテラルのパスのパターンとホストのパターンを
-  処理系の解析器が読んだ結果の表と、本体と全体の上限。文字列の解析は形式化の外側であり、表を信頼する。
+- 必須の判定の入力（corpus の入力ごとの `scopeAcceptance`）: リテラルのパスのパターンとホストのパターンを
+  処理系の解析器が読んだ結果の表と、本体と全体の上限。型検査器は、表のうち実行時の検査と同じ解析
+  （`ScopeDelta.parsePattern`・`RequestDelta.parseHostPattern`）と一致する項目だけを既知の範囲に使う（`acceptInput`）。
 - 範囲の入力の検査: 範囲が整形式で正規形であること（問4）、プログラムと表の範囲の位置に範囲の変数がないか、
   署名の範囲の変数の番号が上限より小さいこと（問3）。一つの節点の検査は全域の関数で書き、健全性を示す。JSON の
   全体を辿る部分（`Version.lean` の `validateRangeInput`）は `partial` であり、Lean では証明しない（既存の交換の
@@ -219,26 +220,35 @@ def ScopeAcceptanceEntry.pattern (s : ScopeAcceptanceEntry) (text : String) : Op
 def ScopeAcceptanceEntry.host (s : ScopeAcceptanceEntry) (text : String) : Option HostPattern :=
   (s.hosts.find? (·.text == text)).map (·.pattern)
 
-/-- 交換の入力から作る受理の入力。規則は本番の実例の表の δ による六項目（`ScopeSound.productionRules`）であり、
-受理は規則の添字と事実の転送だけを読む（実行の δ は読まない）。旧版の入力（範囲を持たない）は規則のない受理の
-入力（旧の像）で読む。 -/
-def ScopeAcceptanceEntry.acceptInput : Option ScopeAcceptanceEntry → Benitoite.Surface.CheckAccept.AcceptInput
-  | none => Benitoite.Surface.CheckAccept.AcceptInput.noRules
+/-- 交換の入力から作る受理の入力。規則は実例の表の δ による六項目（`Surface.ScopeSound.productionRules`）であり、
+型検査器の既知の範囲は、処理系の解析器が読んだ表のうち実行時の検査と同じ解析と一致する項目から作る。受理は規則の
+添字と事実の転送だけを読む（実行の δ は読まない）。入力が必須の判定の入力を持たないときは、規則のない受理の入力で
+読む。 -/
+def ScopeAcceptanceEntry.acceptInput :
+    Option ScopeAcceptanceEntry → Benitoite.Release.Refinement.Surface.CheckAccept.AcceptInput
+  | none => ⟨"Ok", fun _ => none, ⟨⟨0, 0⟩, ⟨0, 0⟩⟩, fun i m => i ++ "." ++ m⟩
   | some s =>
-    ⟨"Ok", (Benitoite.Surface.ScopeSound.productionRules s.pattern (fun _ => none) s.host (fun _ => none)).lookup,
-      ⟨⟨s.limits.body.operations, s.limits.body.items⟩, ⟨s.limits.whole.operations, s.limits.whole.items⟩⟩,
+    ⟨"Ok", (Benitoite.Release.Refinement.Surface.ScopeSound.productionRules s.pattern s.host).lookup, s.limits,
       fun i m => i ++ "." ++ m⟩
 
-/-- 交換の入力から作る規則の表は健全である（条件はない）。接続定理（`CheckAccept.accepted_check_connection`）の
-前提の一つである。 -/
+/-- 交換の入力から作る規則の表は健全である（表の条件はない）。 -/
 theorem ScopeAcceptanceEntry.acceptInput_sound (s : ScopeAcceptanceEntry) :
-    ∃ R : Benitoite.Surface.ScopeState.Rules,
-      R.Sound (Benitoite.Surface.ScopeState.models (ScopeAcceptanceEntry.acceptInput (some s)).ok
-        ⟨s.pattern, fun _ => none⟩) ∧
+    ∃ R : Benitoite.Release.Refinement.Surface.ScopeState.Rules,
+      R.Sound (Benitoite.Release.Refinement.Surface.ScopeState.models (ScopeAcceptanceEntry.acceptInput (some s)).ok
+        s.pattern) ∧
       (ScopeAcceptanceEntry.acceptInput (some s)).rules = R.lookup :=
-  ⟨_, Benitoite.Surface.ScopeSound.productionRules_sound s.pattern (fun _ => none) s.host (fun _ => none), rfl⟩
+  ⟨_, Benitoite.Release.Refinement.Surface.ScopeSound.productionRules_sound s.pattern s.host (show "Ok" ≠ "Result.Error" by decide) s.pattern, rfl⟩
 
-/-- 旧版の入力は規則のない受理の入力で読み、入口は型付けの検査と同じ結果を返す（`checkProgramAccepted_noRules`）。 -/
+/-- 受理が本体ごとに引く表（`CheckAccept.tableFor`）は、どの本体でも健全である。 -/
+theorem ScopeAcceptanceEntry.acceptInput_tableSound (s : ScopeAcceptanceEntry)
+    (key : Benitoite.Scope.Inference.Key) (body : Benitoite.Release.Refinement.Surface.Block) :
+    Benitoite.Scope.Inference.TableSound
+      (Benitoite.Release.Refinement.Surface.ScopeState.models (ScopeAcceptanceEntry.acceptInput (some s)).ok s.pattern)
+      (Benitoite.Release.Refinement.Surface.CheckAccept.tableFor (ScopeAcceptanceEntry.acceptInput (some s)) key body) :=
+  Benitoite.Release.Refinement.Surface.ScopeState.Rules.lookup_sound
+    (Benitoite.Release.Refinement.Surface.ScopeSound.productionRules_sound s.pattern s.host (show "Ok" ≠ "Result.Error" by decide) s.pattern) _
+
+/-- 必須の判定の入力を持たない入力は規則のない受理の入力で読む。どの宣言にも規則がない。 -/
 theorem ScopeAcceptanceEntry.acceptInput_none_noRules (d : String) :
     (ScopeAcceptanceEntry.acceptInput none).rules d = none := rfl
 

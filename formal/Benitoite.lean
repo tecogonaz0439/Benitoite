@@ -132,6 +132,8 @@ import Benitoite.Exchange.Version
 import Benitoite.Exchange.Convert
 import Benitoite.Exchange.IntegerExamples
 import Benitoite.Exchange.Builtins
+import Benitoite.Exchange.CheckSupport
+import Benitoite.Exchange.BuiltinAgreement
 import Benitoite.Exchange.CheckInput
 import Benitoite.Exchange.RangeExamples
 import Benitoite.Exchange.Observe
@@ -904,6 +906,7 @@ import Benitoite.Release.Refinement.Coverage
 import Benitoite.Release.Refinement.CoverageExamples
 import Benitoite.Release.Refinement.CoverageExtension
 import Benitoite.Release.Refinement.CoverageInitial
+import Benitoite.Release.Refinement.CoverageShow
 import Benitoite.Release.Refinement.Surface.Check
 import Benitoite.Release.Refinement.Surface.CheckAccept
 import Benitoite.Release.Refinement.Surface.CheckAcceptBase
@@ -960,6 +963,8 @@ import Benitoite.Release.Refinement.Surface.Identity
 import Benitoite.Release.Refinement.Surface.ScopeAccept
 import Benitoite.Release.Refinement.Surface.ScopeLower
 import Benitoite.Release.Refinement.Surface.ScopeState
+import Benitoite.Release.Refinement.Surface.ScopeRules
+import Benitoite.Release.Refinement.Surface.ScopeSound
 import Benitoite.Release.Refinement.RangeSourceProperties
 import Benitoite.Release.Refinement.RangeFunctionExamples
 import Benitoite.Release.Refinement.MainEffects

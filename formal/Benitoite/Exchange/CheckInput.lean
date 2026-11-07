@@ -1,11 +1,13 @@
-import Benitoite.Surface.CheckTables
-import Benitoite.Exchange.Builtins
+import Benitoite.Exchange.BuiltinAgreement
+import Benitoite.Exchange.CanonicalNames
 import Benitoite.Exchange.Observe
 
-/-! 契約名とソース順を保持する独立した交換の入口。
-設計書 07-04「証明する性質」の検査対象と既存形式を区別する。 -/
+/-! 交換の入力から、表層の検査器の宣言材料・検査の入力・必須の判定の受理の入力を作る。
+変換は入口で一度だけ行い、検査器と受理は同じ材料から作った表を読む（設計書 07-04「証明する性質」）。 -/
 namespace Benitoite.Exchange.CheckInput
-open Lean Benitoite.Surface.CheckTables
+open Lean
+open Benitoite.Release.Refinement.Surface.CheckTables (Materials ClassMaterial ImplMaterial MethodMaterial lookup)
+open Benitoite.Exchange.CheckSupport
 
 structure FunEntry where
   name : String
@@ -31,47 +33,68 @@ structure StdlibCorpus where
   inputs : List StdlibInput
   deriving ToJson, FromJson
 
-def FunEntry.convert (f : FunEntry) : Except String Benitoite.Surface.FunDecl := do
+/-- 標準ライブラリの関数の宣言。本体を持たず、利用者の宣言の空欄を補う。引数・結果・効果は支持の証拠とともに
+形成する。 -/
+def FunEntry.convert (atoms : List Benitoite.Release.Refinement.Atom) (f : FunEntry) :
+    Except String {d : Benitoite.Release.Refinement.Surface.FunDecl // SigSupport atoms d.params d.ret d.eff} := do
   f.header.validateNoFail
   checkNames f.header.names f.header.params.length
-  return {
-    tparams := f.header.tparams.map (fun (e,k) => ⟨e,k⟩)
-    neffs := f.header.neffs, names := f.header.names, params := ← f.header.params.mapM Ty.toRelease
-    ret := ← f.header.ret.toRelease
-    eff := ← f.header.eff.toRelease, dictParams := f.dictParams }
+  let x ← formedHeader atoms f.header
+  return ⟨{
+    tparams := ← f.header.typeContext
+    neffs := f.header.neffs, names := f.header.names, params := x.val.1, ret := x.val.2.1, eff := x.val.2.2
+    dictParams := f.dictParams, rangeParams := f.header.rangeParams, proofSteps := f.header.proofSteps }, x.property⟩
 
-def ImplEntry.convert (i : ImplEntry) : Except String Benitoite.Surface.ImplSig := do
-  return {
-    tparams := i.tparams.map (fun (e,k) => ⟨e,k⟩), dictParams := i.dictParams
-    cls := i.cls
-    target := ← i.target.toRelease }
+/-- 実装の署名。対象の型は支持の証拠とともに形成する。 -/
+def ImplEntry.convert (atoms : List Benitoite.Release.Refinement.Atom) (i : ImplEntry) :
+    Except String {s : Benitoite.Release.Refinement.Surface.ImplSig // s.target.Support (· ∈ atoms)} := do
+  let t ← FormationTypes.formedTy atoms i.target
+  return ⟨{ tparams := i.tparams.map (fun (e,k) => ⟨e,k⟩), dictParams := i.dictParams, cls := i.cls, target := t.val },
+    t.property⟩
 
-def ClassEntry.convert (c : ClassEntry) : Except String ClassMaterial := do
+/-- 型クラスの宣言の材料。メソッドの署名は宣言順に保ち、引数・結果・効果を支持の証拠とともに形成する。 -/
+def ClassEntry.convert (atoms : List Benitoite.Release.Refinement.Atom) (c : ClassEntry) :
+    Except String {cm : ClassMaterial // ∀ x ∈ cm.methods, SigSupport atoms x.2.params x.2.ret x.2.eff} := do
   let methods ← c.methods.mapM fun m => do
     m.header.validateNoFail
     checkNames m.header.names m.header.params.length
-    let sg : Benitoite.Release.MethSig := {
-      tparams := m.header.tparams.map (fun (e,k) => ⟨e,k⟩), neffs := m.header.neffs
+    if !m.header.rangeParams.isEmpty || m.header.proofSteps.isSome then
+      throw "method cannot declare range parameters or proof step limit"
+    let x ← formedHeader atoms m.header
+    let sg : Benitoite.Release.Refinement.MethSig := {
+      tparams := ← m.header.typeContext, neffs := m.header.neffs
       names := m.header.names
-      params := ← m.header.params.mapM Ty.toRelease
-      ret := ← m.header.ret.toRelease, eff := ← m.header.eff.toRelease }
-    return (m.name, sg)
-  return ⟨c.supers, methods⟩
+      params := x.val.1, ret := x.val.2.1, eff := x.val.2.2 }
+    return (⟨(m.name, sg), x.property⟩ :
+      {y : String × Benitoite.Release.Refinement.MethSig // SigSupport atoms y.2.params y.2.ret y.2.eff})
+  return ⟨{ argumentKind := c.argumentKind, supers := c.supers, methods := methods.map Subtype.val },
+    fun _ hx => mem_val (xs := methods) hx⟩
+
+/-- 関数の証明の上限の指定がない本体の、論理の証明書の会計の上限。 -/
+def defaultProofSteps : Nat := 4096
 
 structure Prepared where
   materials : Materials
-  input : Benitoite.Surface.Check.Input
+  input : Benitoite.Release.Refinement.Surface.Check.Input
+  /-- data の名前が一意で、各構成子の所属がその data である。 -/
   constructors : Bool
+  /-- 取得関数の record の宣言が、構成子の表の宣言と一致する。 -/
   records : Bool
+  /-- 型クラスと実装のメソッド・上位の名前が、検査の名前の一覧に含まれる。 -/
   implNames : Bool
   /-- JSON に本体がない定義を成功扱いせず、準備の失敗として返す。 -/
   outside : List (String × List String)
   /-- 交換の原子の一覧（`atomsFor`）。検査器の原子の集合はこの一覧の像である。 -/
   atoms : Eff
-  atoms_eq : input.atoms = atoms.filterMap Atom.toRelease
-  /-- 必須の判定の受理の入力（L50.2）。新版は入力の `scopeAcceptance` から作り、旧版は規則のない受理の入力
-  （旧の像）である（`ScopeAcceptanceEntry.acceptInput`）。 -/
-  accept : Benitoite.Surface.CheckAccept.AcceptInput
+  atoms_eq : input.formation.atoms = atoms.filterMap Atom.toRelease
+  /-- 必須の判定の受理の入力。入力の `scopeAcceptance` から作る（`ScopeAcceptanceEntry.acceptInput`）。 -/
+  accept : Benitoite.Release.Refinement.Surface.CheckAccept.AcceptInput
+  /-- 検査器の組み込みの表の項目の名前（交換の名前のまま）。 -/
+  builtinNames : List String
+  /-- 標準表との照合に使った表の項目の名前（交換の内部名を標準の名前へ写した名前）。 -/
+  canonicalNames : List String
+  /-- 標準表との照合に使った表の署名。検査器の表ではない。 -/
+  canonicalSig : String → Option Benitoite.Release.Refinement.PrimSig
 
 /-- rho の明示使用だけでなく、宣言された未使用の引数も含める。 -/
 partial def maxEffArgs : Json → Nat
@@ -82,8 +105,7 @@ partial def maxEffArgs : Json → Nat
   | _ => 0
 
 /-- 交換の原子の一覧。入力・組み込みの表（署名の範囲の変数の原子を含む）・標準ライブラリの宣言に現れる原子と、
-組み込みの呼び出しの範囲の列で署名の原子を具体化した原子（`instAtoms`）を含める。検査器は具体化の像の原子が
-この集合にあることを求め（`instClosed`）、書き出しはこの集合を候補にする（`Prepared.writeEffNames`）。 -/
+組み込みの呼び出しの範囲の列で署名の原子を具体化した原子（`instAtoms`）を含める。 -/
 def atomsFor (input : Input) (b : BuiltinInput) (s : StdlibInput)
     (operators : List OperatorEntry) : Eff :=
   let json := toJson [toJson input, toJson b, toJson s, toJson operators]
@@ -91,9 +113,9 @@ def atomsFor (input : Input) (b : BuiltinInput) (s : StdlibInput)
     match b.prims.find? (·.name == n) with
     | some p => instAtoms (collectAtoms (toJson p)) rs
     | none => []
-  ((collectAtoms json) ++ [Atom.name "State" .top] ++
-    ((input.effects ++ b.effects).map fun e => Atom.name e.name .top) ++
-    (input.ops.map fun o => Atom.name o.eff .top) ++ instantiated ++
+  ((collectAtoms json) ++ [Atom.name "State" Benitoite.Release.Refinement.RangeIx.top] ++
+    ((input.effects ++ b.effects).map fun e => Atom.name e.name Benitoite.Release.Refinement.RangeIx.top) ++
+    (input.ops.map fun o => Atom.name o.eff Benitoite.Release.Refinement.RangeIx.top) ++ instantiated ++
     ((List.range (maxEffArgs json)).map Atom.rho)).eraseDups
 
 def uniqueKeys (xs : List (String × α)) : Bool :=
@@ -111,9 +133,72 @@ partial def validateFormatHeads (b : BuiltinInput) : Json → Except String Unit
       xs.toArray.toList.forM (fun (_, v) => validateFormatHeads b v)
   | _ => pure ()
 
-/-- 変換は入口で一度だけ行う。証明が使う Materials の構築は全域である。 -/
-def prepare (input : Input) (b : BuiltinInput) (s : StdlibInput)
-    (operators : List OperatorEntry) : Except String Prepared := do
+/-- data の名前が一意で、各構成子の所属が宣言された data である。 -/
+def constructorsOk (b : BuiltinInput) (m : Materials) : Bool :=
+  let names := b.dataDecls.map (·.name)
+  (names.eraseDups.length == names.length) && m.cons.all (fun (_, cd) => names.contains cd.data)
+
+/-- 交換の record の宣言を構成子の表と照合する。表を上書きしない。 -/
+def recordOk (atoms : List Benitoite.Release.Refinement.Atom) (m : Materials) (name : String)
+    (cd : Benitoite.Release.Refinement.ConDecl) : Bool :=
+  match lookup m.cons name with
+  | none => false
+  | some actual => (actual.data == cd.data) && (actual.ntys == cd.ntys) &&
+      Benitoite.Release.Refinement.Surface.CheckArguments.tysEq atoms actual.args cd.args
+
+/-- 型クラスと実装の名前が、検査の名前の一覧に含まれる。 -/
+def implNamesOk (m : Materials) (methods supers : List String) : Bool :=
+  (m.classes.flatMap fun (_,c) => c.methods.map Prod.fst).all methods.contains &&
+  (m.impls.flatMap fun (_,i) => i.methods.map Prod.fst).all methods.contains &&
+  (m.impls.flatMap fun (_,i) => i.supers.map Prod.fst).all supers.contains
+
+/-- 交換の論理の証明書の表を、検査器が位置と番号で引く関数にする（鍵は交換の契約で一意である）。 -/
+def certificateTable (entries : List LogicCertificateEntry) :
+    List Nat → Nat → Option Benitoite.Release.Refinement.Surface.CheckSubtyping.ExchangeCertificate :=
+  fun path index => (entries.find? fun e => e.path == path && e.index == index).map
+    fun e => ⟨e.certificate, e.actions⟩
+
+/-- 準備の成果と、検査器の入力の健全性の材料。宣言材料の全署名と組み込みの署名の支持、判定と表の対応を持つ。 -/
+structure Parts where
+  materials : Materials
+  base : Benitoite.Release.Refinement.Surface.Check.Input
+  constructors : Bool
+  records : Bool
+  implNames : Bool
+  outside : List (String × List String)
+  atoms : Eff
+  accept : Benitoite.Release.Refinement.Surface.CheckAccept.AcceptInput
+  atoms_eq : base.formation.atoms = atoms.filterMap Atom.toRelease
+  support : MaterialSupport base.formation.atoms materials
+  prims : ∀ b s, base.B.sig b = some s → SigSupport base.formation.atoms s.params s.ret s.eff
+  sat : Benitoite.Release.Refinement.Surface.CheckArguments.SatSound base.B base.satDec
+  admits : Benitoite.Release.Refinement.Surface.CheckArguments.AdmitsSound base.B base.admitsDec
+  ranges : Benitoite.Release.Refinement.Surface.CheckArguments.RangeAdmitsSound base.B base.admitsRDec
+  operators : ∀ o t b ts, base.opPrim o t = some (b, ts) → t.Support (· ∈ base.formation.atoms) →
+    Benitoite.Release.Refinement.Ty.SupportList (· ∈ base.formation.atoms) ts
+  builtinNames : List String
+  canonicalNames : List String
+  canonicalSig : String → Option Benitoite.Release.Refinement.PrimSig
+  /-- 名前を標準の名前へ写した表で、標準表の合成済みの名前の署名の欄が標準表の行と一致する。 -/
+  agreement : BuiltinAgreement.Agrees (BuiltinAgreement.composedNames canonicalNames) canonicalSig
+    BuiltinAgreement.standardSig
+
+/-- 検査器の入力は、同じ宣言材料から表と名前の一覧を作った入力である。 -/
+def Parts.prepared (x : Parts) : Prepared :=
+  ⟨x.materials, x.materials.input x.base, x.constructors, x.records, x.implNames, x.outside, x.atoms,
+    x.atoms_eq, x.accept, x.builtinNames, x.canonicalNames, x.canonicalSig⟩
+
+/-- 準備の成果の検査器の入力は健全である（`Check.Input.Sound`）。 -/
+theorem Parts.sound (x : Parts) : x.prepared.input.Sound :=
+  Benitoite.Release.Refinement.Surface.CheckTables.Materials.input_sound x.materials x.base
+    (Materials.fieldsSupport x.support) (Materials.headTableSupport x.support x.prims)
+    x.sat x.admits x.ranges x.operators
+
+/-- 変換は入口で一度だけ行う。検査器の表は交換した組み込みの表（`builtinsOf`）であり、型の制約・型パラメータの
+制約・範囲の許容の判定は同じ材料から作る。表の署名は有限の原子の一覧に対する支持の証拠とともに形成し、一覧に
+ない原子を持つ入力は断る。 -/
+def prepareParts (input : Input) (b : BuiltinInput) (s : StdlibInput)
+    (operators : List OperatorEntry) : Except String Parts := do
   if input.group != b.group || input.name != b.name || input.group != s.group || input.name != s.name then
     throw "sidecar input identity mismatch"
   if !input.dataTypes.isEmpty && input.dataTypes != b.dataDecls.map DataEntry.info then
@@ -124,31 +209,39 @@ def prepare (input : Input) (b : BuiltinInput) (s : StdlibInput)
   validateClauses operations input.primOps (toJson input)
   validateFormatHeads b (toJson input)
   let atoms := atomsFor input b s operators
+  let atomsR := atoms.filterMap Atom.toRelease
   let cache ← input.constantCache
   let ordinary := input.definitions.filterMap fun d => match d.scope with
     | .inScope surface _ => if surface.implementation.isNone then some (d.name, surface) else none
     | _ => none
   let defs ← ordinary.mapM fun (name,d) => do
-    return (← functionKey name, ← d.toSurface cache)
+    let key ← functionKey name
+    let sd ← d.toSurface cache
+    let x ← formedHeader atomsR d.header
+    return (⟨(key, { sd with params := x.val.1, ret := x.val.2.1, eff := x.val.2.2 }), x.property⟩ :
+      {y : String × Benitoite.Release.Refinement.Surface.Def // SigSupport atomsR y.2.params y.2.ret y.2.eff})
   let accessors := input.definitions.filterMap fun d => match d.scope with
     | .accessor name con k _ _ => some (name, (con,k))
     | _ => none
   let outside := input.definitions.filterMap fun d => match d.scope with
     | .outOfScope reasons => some (d.name, reasons)
     | _ => none
-  let data ← b.dataDecls.mapM DataEntry.toMaterial
-  let recordChecks ← (input.definitions.filterMap fun d => match d.scope with
-    | .accessor name con k decl _ => some (d.name,name,con,k,decl)
-    | _ => none).mapM fun (display,name,con,k,decl) => do
-      if (← functionKey display) != name then throw "accessor binding name mismatch"
-      let cd : Benitoite.Release.ConDecl := {
-        data := decl.data, ntys := decl.ntys, args := ← decl.args.mapM Ty.toRelease }
-      checkNames decl.fields decl.args.length
-      let actualFields := b.dataDecls.flatMap (fun d => d.ctors) |>.find? (fun c => c.name == con)
-      if actualFields.bind (·.fields) != some decl.fields then throw "record fields mismatch"
-      return (k < cd.args.length) && recordOk (atoms.filterMap Atom.toRelease) data con cd
-  let ops ← input.ops.mapM fun o => do return (o.name, ← o.toRelease)
-  let classes ← input.classes.mapM fun c => do return (c.name, ← ClassEntry.convert c)
+  let cons ← b.dataDecls.flatMapM (formedConstructors atomsR)
+  let dataInfo ← b.dataDecls.mapM fun d => do return (d.name, ← d.varianceDecl)
+  let ops ← input.ops.mapM fun o => do
+    let decl ← o.toRelease
+    let x ← formedHeader atomsR o.header
+    if hmem : atomsR.contains (Benitoite.Release.Refinement.Atom.nameTop o.eff) = true then
+      return (⟨(o.name, { decl with eff := o.eff, params := x.val.1, ret := x.val.2.1 }),
+        ⟨x.property.1, x.property.2.1, empty_support atomsR⟩, List.contains_iff_mem.mp hmem⟩ :
+        {y : String × Benitoite.Release.Refinement.OpDecl //
+          SigSupport atomsR y.2.params y.2.ret Benitoite.Release.Refinement.Eff.empty ∧
+          Benitoite.Release.Refinement.Atom.nameTop y.2.eff ∈ atomsR})
+    else throw "operation effect atom is not in the formation atom list"
+  let classes ← input.classes.mapM fun c => do
+    let cm ← ClassEntry.convert atomsR c
+    return (⟨(c.name, cm.val), cm.property⟩ :
+      {y : String × ClassMaterial // ∀ x ∈ y.2.methods, SigSupport atomsR x.2.params x.2.ret x.2.eff})
   -- sidecar の実装は元の表のシグネチャと一致しなければならない。
   let trustedImpls ← s.impls.mapM fun i => do
     let some original := input.impls.find? (fun x => x.name == i.signature.name)
@@ -158,7 +251,9 @@ def prepare (input : Input) (b : BuiltinInput) (s : StdlibInput)
       | throw "trusted implementation class missing"
     if i.methods != cl.methods.map (·.name) || i.supers != cl.supers then
       throw "trusted implementation member set mismatch"
-    return (i.signature.name, ← ImplEntry.convert i.signature)
+    let sg ← ImplEntry.convert atomsR i.signature
+    return (⟨(i.signature.name, sg.val), sg.property⟩ :
+      {y : String × Benitoite.Release.Refinement.Surface.ImplSig // y.2.target.Support (· ∈ atomsR)})
   let userImpls := input.impls.filter fun i => !s.impls.any (fun x => x.signature.name == i.name)
   let impls ← userImpls.mapM fun i => do
     let bodies := input.definitions.filterMap fun d => match d.scope with
@@ -167,11 +262,20 @@ def prepare (input : Input) (b : BuiltinInput) (s : StdlibInput)
     -- メソッド宣言は辞書込みの契約を持つ。実装自身の辞書数から内部名を作り、
     -- 利用者の実名を宣言から転記せずに比較する（設計書 01-12「型クラス」）。
     let methods ← (bodies.filterMap fun d => d.method.map (fun name =>
-      (name, Benitoite.Surface.internalNames d.dictParams.length ++ d.header.names, d.body))).mapM
-      fun (name,names,body) => do return (name, ({ names, body := ← body.toSurface cache } : Benitoite.Surface.Check.MethodInput))
+      (name, Benitoite.Release.Refinement.Surface.internalNames d.dictParams.length ++ d.header.names, d.body))).mapM
+      fun (name,names,body) => do return (name, ({ names, body := ← body.toSurface cache } : MethodMaterial))
     let supers ← (bodies.flatMap (·.supers)).mapM fun (name,d) => do return (name, ← d.toSurface)
-    return (i.name, ({ signature := ← ImplEntry.convert i, methods := methods, supers := supers } : ImplMaterial))
-  let trustedFuns ← s.functions.mapM fun f => do return (f.name, ← f.convert)
+    let sg ← ImplEntry.convert atomsR i
+    return (⟨(i.name, ({ signature := sg.val, methods, supers } : ImplMaterial)), sg.property⟩ :
+      {y : String × ImplMaterial // y.2.signature.target.Support (· ∈ atomsR)})
+  let trustedFuns ← s.functions.mapM fun f => do
+    let d ← FunEntry.convert atomsR f
+    return (⟨(f.name, d.val), d.property⟩ :
+      {y : String × Benitoite.Release.Refinement.Surface.FunDecl // SigSupport atomsR y.2.params y.2.ret y.2.eff})
+  let aliases ← input.aliases.mapM fun a => do return (a.name, ← a.toSurface)
+  let records ← input.records.mapM fun r => do return (r.constructor, ← r.toSurface)
+  let externals ← input.externals.mapM (formedExternal atomsR)
+  let testers := input.testers.map fun t => (t.function, t.constructor)
   let views ← (input.definitions.filterMap fun d => match d.scope with
     | .inScope s _ => if s.implementation.isNone || s.method.isSome then some (d.name,s) else none
     | _ => none).mapM fun (name,s) => do
@@ -186,26 +290,66 @@ def prepare (input : Input) (b : BuiltinInput) (s : StdlibInput)
       fun (_,_,_,v) => v).getD Benitoite.Release.closedView
     methodViews := fun i n => ((views.find? fun (_,impl,m,_) => impl == some i && m == some n).map
       fun (_,_,_,v) => v).getD Benitoite.Release.closedView
-    defs, conFields := b.dataDecls.flatMap (fun d => d.ctors.filterMap (fun c => c.fields.map (fun fs => (c.name,fs)))), accessors, data, ops, effects := input.effects.map fun e => (e.name,e.ops)
-    classes, impls, trustedFuns, trustedImpls }
-  if !uniqueKeys m.defs || !uniqueKeys m.accessors || !uniqueKeys m.ops ||
+    defs := defs.map Subtype.val, cons := cons.map Subtype.val
+    conFields := b.dataDecls.flatMap (fun d => d.ctors.filterMap (fun c => c.fields.map (fun fs => (c.name,fs))))
+    ops := ops.map Subtype.val, effects := input.effects.map fun e => (e.name,e.ops)
+    classes := classes.map Subtype.val, impls := impls.map Subtype.val, accessors, aliases, records, testers
+    externals := externals.map Subtype.val, dataInfo, trustedFuns := trustedFuns.map Subtype.val
+    trustedImpls := trustedImpls.map Subtype.val }
+  have support : MaterialSupport atomsR m := {
+    defs := fun _ hx => mem_val (xs := defs) hx, cons := fun _ hx => mem_val (xs := cons) hx
+    ops := fun _ hx => mem_val (xs := ops) hx, methods := fun _ hx => mem_val (xs := classes) hx
+    impls := fun _ hx => mem_val (xs := impls) hx, trustedFuns := fun _ hx => mem_val (xs := trustedFuns) hx
+    trustedImpls := fun _ hx => mem_val (xs := trustedImpls) hx
+    externals := fun _ hx => mem_val (xs := externals) hx }
+  if !uniqueKeys m.defs || !uniqueKeys m.cons || !uniqueKeys m.accessors || !uniqueKeys m.ops ||
       !uniqueKeys m.effects || !uniqueKeys m.classes || !uniqueKeys m.impls ||
+      !uniqueKeys m.aliases || !uniqueKeys m.records || !uniqueKeys m.testers || !uniqueKeys m.dataInfo ||
       !uniqueKeys m.trustedFuns || !uniqueKeys m.trustedImpls ||
       m.impls.any (fun (_,i) => !uniqueKeys i.methods || !uniqueKeys i.supers) ||
       m.classes.any (fun (_,c) => !uniqueKeys c.methods) then
     throw "duplicate declaration name"
-  let raw ← (b.prims.filter fun p => p.unconvertibleTypes.isEmpty && p.classConstraints.isEmpty).mapM
-    fun p => do return (p.name, ← p.toMaterial)
-  if !uniqueKeys raw then throw "duplicate primitive name"
+  let recordChecks ← (input.definitions.filterMap fun d => match d.scope with
+    | .accessor name con k decl _ => some (d.name,name,con,k,decl)
+    | _ => none).mapM fun (display,name,con,k,decl) => do
+      if (← functionKey display) != name then throw "accessor binding name mismatch"
+      let cd : Benitoite.Release.Refinement.ConDecl := {
+        data := decl.data, ntys := decl.ntys, args := ← decl.args.mapM Ty.toRelease }
+      checkNames decl.fields decl.args.length
+      let actualFields := b.dataDecls.flatMap (fun d => d.ctors) |>.find? (fun c => c.name == con)
+      if actualFields.bind (·.fields) != some decl.fields then throw "record fields mismatch"
+      return (k < cd.args.length) && recordOk atomsR m con cd
   let S ← b.summaryTable
-  -- 範囲の変数の種類と IO の形を表の項目から署名へ入れる。
-  let entries := (primEntries S raw).map fun e => match b.prims.find? (·.name == e.name) with
-    | some p => { e with signature := p.withRanges e.signature }
-    | none => e
-  let B := b.withTableData (builtins S entries b.toBuiltinMaterial)
-  let q := { m.input B (Benitoite.Release.satB S) (admitsDec S entries)
-    (makeOpPrim atoms operators) (atoms.filterMap Atom.toRelease) with
-    admitsRDec := AdmitsEntry.admitsRDec b.admitsR }
+  let prims ← formedMaterials atomsR b
+  let ms := prims.map Subtype.val
+  let builtinNames := ms.map (·.1.name)
+  -- 標準表との照合は、交換の内部名（data・構成子・不透明型・効果・組み込み）を同じ入力の宣言から決まる標準の
+  -- 名前へ写した表で行う。検査器の表は写さない交換の表のままである。写した後も署名の欄が標準表の行と一致しない
+  -- 入力は断る（設計書 07-04「証明する性質」）。
+  let names ← CanonicalNames.ofInputs input (toJson b)
+  let bc : BuiltinInput ← fromJson? (names.json (toJson b))
+  let inputC : Input ← fromJson? (names.json (toJson input))
+  let atomsC := (atomsFor inputC bc s operators).filterMap Atom.toRelease
+  let SC ← bc.summaryTable
+  let primsC ← formedMaterials atomsC bc
+  let msC := primsC.map Subtype.val
+  let canonicalNames := msC.map (·.1.name)
+  let canonicalSig := (builtinsOf bc SC msC).sig
+  let agreed : PLift (BuiltinAgreement.standardCheck atomsC canonicalSig canonicalNames = true) ←
+    if h : BuiltinAgreement.standardCheck atomsC canonicalSig canonicalNames = true then pure ⟨h⟩
+    else throw s!"builtin signature disagrees with the standard table: {(BuiltinAgreement.composedNames canonicalNames).filter
+        fun n => !BuiltinAgreement.standardCheck atomsC canonicalSig [n]}"
+  let base : Benitoite.Release.Refinement.Surface.Check.Input := {
+    D := { funs := fun _ => none, cons := fun _ => none }
+    builtinSource := .custom (builtinsOf b S ms)
+    opPrim := makeOpPrim atoms operators
+    formation := { atoms := atomsR, ctors := fun _ => [] }
+    satDec := satDecOf S
+    admitsDec := admitsDecOf S ms
+    admitsRDec := admitsRDecOf b
+    proofSteps := defaultProofSteps
+    logicCertificates := certificateTable input.logicCertificates }
+  let q := m.input base
   -- 必須の判定の受理の入力。旧版の入力は null（規則のない受理の入力）。
   let scope : Option ScopeAcceptanceEntry ←
     if input.scopeAcceptance == Json.null then pure none else some <$> fromJson? input.scopeAcceptance
@@ -213,24 +357,50 @@ def prepare (input : Input) (b : BuiltinInput) (s : StdlibInput)
   let methodNames ← (input.definitions.filterMap fun d => match d.scope with
     | .inScope s _ => do return (← s.implementation, ← s.method, d.name)
     | _ => none).mapM fun (i, mn, n) => do return (i, mn, ← functionKey n)
-  let base := ScopeAcceptanceEntry.acceptInput scope
-  let accept := { base with methodKey := fun i mn =>
-    ((methodNames.find? fun (a, b, _) => a == i && b == mn).map (·.2.2)).getD (base.methodKey i mn) }
-  return ⟨m, q, constructorsOk m, recordChecks.all id,
-    implNamesOk m m.names.methods m.names.supers, outside, atoms, rfl, accept⟩
+  let accept := ScopeAcceptanceEntry.acceptInput scope
+  let accept := { accept with methodKey := fun i mn =>
+    ((methodNames.find? fun (a, b, _) => a == i && b == mn).map (·.2.2)).getD (accept.methodKey i mn) }
+  return {
+    materials := m, base, constructors := constructorsOk b m, records := recordChecks.all id
+    implNames := implNamesOk m q.methods q.supers, outside, atoms, accept, atoms_eq := rfl, support
+    prims := builtinsOf_support b S prims, sat := satDecOf_sound b S ms, admits := admitsDecOf_sound b S ms
+    ranges := admitsRDecOf_sound b S ms, operators := makeOpPrim_support atoms operators atomsR, builtinNames
+    canonicalNames, canonicalSig
+    agreement := BuiltinAgreement.standardCheck_sound (builtinsOf_support bc SC primsC) agreed.down }
 
-/-- 準備した入力の効果の書き出し（名前と行の原子）。書き出しの一覧は交換の原子の一覧、候補は検査器の原子の
-集合 `q.atoms` である（RV-L40 軽6）。 -/
-def Prepared.writeEffNames (p : Prepared) (e : Benitoite.Release.Eff) : Except String Eff :=
-  fromEffNames p.atoms e p.input.atoms
+/-- 交換の入力の準備。成功した準備の検査器の入力は健全である（`prepare_sound`）。 -/
+def prepare (input : Input) (b : BuiltinInput) (s : StdlibInput)
+    (operators : List OperatorEntry) : Except String Prepared :=
+  Parts.prepared <$> prepareParts input b s operators
 
-/-- 検査器の不変条件 `AtomsIn q.atoms` を満たす効果は、この経路で必ず書き出せ、書き出した原子の列を読むと元の
-効果の所属に戻る（黙った欠落がない）。 -/
-theorem Prepared.writeEffNames_complete (p : Prepared) {e : Benitoite.Release.Eff}
-    (he : Benitoite.Release.Eff.AtomsIn p.input.atoms e) :
-    p.writeEffNames e = .ok (writeAtoms p.atoms e.test) ∧
-      Eff.readAtoms (writeAtoms p.atoms e.test) = e.test := by
-  have h : ∀ a, Benitoite.Release.Eff.test e a = true → a ∈ p.atoms.filterMap Atom.toRelease :=
-    fun a ha => p.atoms_eq ▸ support_of_atomsIn he a ha
-  exact ⟨fromEffNames_ok _ h, readAtoms_writeAtoms _ _ h⟩
+/-- 準備が成功すれば、検査器の入力は健全である。宣言材料と組み込みの表の全署名の支持は準備が形成した証拠から、
+判定の健全性は同じ材料から作った表から得る。 -/
+theorem prepare_sound {input : Input} {b : BuiltinInput} {s : StdlibInput} {operators : List OperatorEntry}
+    {p : Prepared} (h : prepare input b s operators = .ok p) : p.input.Sound := by
+  unfold prepare at h
+  cases hp : prepareParts input b s operators with
+  | error e => rw [hp] at h; cases h
+  | ok x =>
+    rw [hp] at h
+    cases h
+    exact x.sound
+
+/-- 準備が成功すれば、名前を標準の名前へ写した表の、標準表の合成済みの名前の署名は、整形式の名前の一覧で作った
+どの完成表の署名とも欄が一致する（型パラメータの制約の命題と仮定側の名前を除く）。検査器の表と写した表の対応は
+名前の写しであり、この定理は述べない。 -/
+theorem prepare_agrees {input : Input} {b : BuiltinInput} {s : StdlibInput} {operators : List OperatorEntry}
+    {p : Prepared} (h : prepare input b s operators = .ok p)
+    {L : Benitoite.Release.Refinement.StandardModel.NameLists} (hL : L.WF)
+    {P : Benitoite.Release.Refinement.Program} (T : Benitoite.Release.Refinement.StandardModel.DataTable P)
+    (A : Benitoite.Release.Refinement.StandardModel.AssumedTable) :
+    ∀ n ∈ BuiltinAgreement.composedNames p.canonicalNames, ∃ s s', p.canonicalSig n = some s ∧
+      (Benitoite.Release.Refinement.StandardModel.complete L T A).sig n = some s' ∧ BuiltinAgreement.ShapeEq s s' := by
+  unfold prepare at h
+  cases hp : prepareParts input b s operators with
+  | error e => rw [hp] at h; cases h
+  | ok x =>
+    rw [hp] at h
+    cases h
+    exact BuiltinAgreement.agrees_complete x.agreement hL T A
+
 end Benitoite.Exchange.CheckInput

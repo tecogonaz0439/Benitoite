@@ -82,7 +82,7 @@ def validate (input : Input) (b : BuiltinInput) : InputReport := Id.run do
         errors := errors ++ [s!"{p.name}: kind/opEff mismatch"]
     if let some l := p.opEff then
       -- 単一の対象の形の操作の効果は範囲の変数 0 の原子、ほかは Top の原子である（`Builtins.ShapeOk`）。
-      let ix : Benitoite.Scope.Signature.Ix := match p.shape with | .single .. => .rvar 0 | _ => .fixed .top
+      let ix : Benitoite.Release.Refinement.RangeIx := match p.shape with | .single .. => .rvar 0 | _ => .top
       if p.eff != [.name l ix] || p.neffs != 0 ||
           !((b.effectOps l).getD []).contains p.name then
         errors := errors ++ [s!"{p.name}: invalid operation effect"]

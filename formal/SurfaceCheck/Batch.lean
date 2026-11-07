@@ -1,9 +1,10 @@
 import SurfaceCheck.Walk
 
-/-! 全入力の宣言を一度準備し、定義と実装ごとの検査結果を保持する。 -/
+/-! 全入力の宣言を一度準備し、定義と実装ごとの検査結果を保持する。
+検査は全プログラムの入口と同じ本体の位置・view・証明の上限で行う（設計書 07-04「証明する性質」）。 -/
 namespace SurfaceCheck.Batch
-open Lean Benitoite.Release Benitoite.Surface Benitoite.Surface.CheckTools
-open Benitoite.Exchange.CheckInput Benitoite.Surface.CheckTables
+open Lean Benitoite.Release.Refinement Benitoite.Release.Refinement.Surface
+open Benitoite.Exchange.CheckInput Benitoite.Release.Refinement.Surface.CheckTables
 open Benitoite.Exchange (readCorpus exchangeJson readBuiltins DataEntry)
 
 structure Counts where
@@ -35,7 +36,7 @@ def bump (c : Counts) (category : String) : Counts :=
   | "lazyRestriction" => { c with lazyRestriction := c.lazyRestriction + 1 }
   | _ => { c with mismatched := c.mismatched + 1 }
 
-def tag : Benitoite.Surface.Expr → String
+def tag : Benitoite.Release.Refinement.Surface.Expr → String
   | .builderOp _ _ _ _ => "builderOp"
   | .lazyE _ => "lazyE"
   | .returnE _ _ => "returnE"
@@ -43,7 +44,7 @@ def tag : Benitoite.Surface.Expr → String
   | .constE _ _ => "constE"
   | .lam _ _ _ _ _ => "lam"
   | .methName _ _ _ _ _ _ _ => "methName"
-  | .funDicts _ _ _ _ _ _ => "funDicts"
+  | .funDicts _ _ _ _ _ _ _ => "funDicts"
   | .opDicts _ _ _ _ _ => "opDicts"
   | .partialCall _ _ _ _ _ => "partialCall"
   | .matchE _ _ _ => "matchE"
@@ -53,20 +54,29 @@ def tag : Benitoite.Surface.Expr → String
 def ancestors (w : WalkState) (path : List Nat) : Array Node :=
   w.nodes.filter fun n => n.path.isPrefixOf path
 
+/-- 有限の原子の一覧で正規化した効果の一致。 -/
+def effEq (q : Check.Input) (e f : Eff) : Bool :=
+  CheckCompare.rawEffEq q.formation.atoms (e.normWith q.formation.atoms) (f.normWith q.formation.atoms)
+
+/-- 有限の原子の一覧で正規化した型の列の一致。 -/
+def tysEq (q : Check.Input) : List Ty → List Ty → Bool
+  | [], [] => true
+  | a :: as, b :: bs => tyEq q a b && tysEq q as bs
+  | _, _ => false
+
 /-- Lazy の内部の関数だけが異なる場合に限る。診断用の再検査が失敗したら除外しない。 -/
-def lazyDifference (q : Benitoite.Surface.Check.Input) (w : WalkState)
-    (e : Benitoite.Surface.Check.Error) : Bool := Id.run do
+def lazyDifference (q : Check.Input) (w : WalkState) (e : Check.Error) : Bool := Id.run do
   if e.reason != "type is not included in the expected type" then return false
   let some n := (ancestors w e.path).back? | return false
   if n.path != e.path then return false
   let .lazyE body := n.expr | return false
   let some (.lazy (.fn names ps r eff)) := n.expected | return false
-  let .ok (.fn names' ps' r' eff', _) := Benitoite.Surface.Check.checkBlock q .strict [] [] none .other [] body
+  let .ok (.fn names' ps' r' eff', _) := Check.checkBlock q [] [] [] none .other [] body
     | return false
-  return names == names' && tysEq q.atoms ps ps' && tyEq q.atoms r r' && !effEq q.atoms eff eff'
+  return names == names' && tysEq q ps ps' && tyEq q r r' && !effEq q eff eff'
 
-def category (q : Benitoite.Surface.Check.Input) (w : WalkState) (badPrims : List String)
-    (result : Benitoite.Surface.Check.Result Unit) : String :=
+def category (q : Check.Input) (w : WalkState) (badPrims : List String)
+    (result : Check.Result Unit) : String :=
   if w.prims.any badPrims.contains then "outOfScope" else
   match result with
   | .ok _ => if w.changes.isEmpty then "matched" else "q11"
@@ -74,39 +84,50 @@ def category (q : Benitoite.Surface.Check.Input) (w : WalkState) (badPrims : Lis
     if lazyDifference q w e then "lazyRestriction" else "mismatched"
 
 def outcomeJson (group input name kind cat : String) (w : WalkState)
-    (result : Benitoite.Surface.Check.Result Unit) : Json :=
+    (result : Check.Result Unit) : Json :=
   let error := match result with
     | .ok _ => Json.null
-    | .error e => Json.mkObj [("path",toJson e.path),("reason",toJson e.reason),
+    | .error e => Json.mkObj ([("path",toJson e.path),("reason",toJson e.reason),
         ("ancestors",toJson ((ancestors w e.path).map fun n =>
-          Json.mkObj [("path",toJson n.path),("tag",toJson (tag n.expr))]))]
+          Json.mkObj [("path",toJson n.path),("tag",toJson (tag n.expr))]))] ++
+        -- 会計の打ち切り（unknown）は拒否と分けて記録し、成功に数えない。
+        (if e.kind == .unknown then [("kind",toJson "unknown")] else []))
   Json.mkObj [("group",toJson group),("input",toJson input),("definition",toJson name),
     ("kind",toJson kind),("category",toJson cat),("error",error),
     ("q11Paths",toJson w.changes),("nonUnitReplacements",toJson w.nonUnit),
     ("diagnosis",toJson (if cat != "mismatched" then "classified" else
       "requiresReview"))]
 
-def record (q : Benitoite.Surface.Check.Input) (r : Report) (group input name kind : String) (w : WalkState)
-    (badPrims : List String) (result : Benitoite.Surface.Check.Result Unit) : Report :=
+def record (q : Check.Input) (r : Report) (group input name kind : String) (w : WalkState)
+    (badPrims : List String) (result : Check.Result Unit) : Report :=
   let cat := category q w badPrims result
   { r with tailMatches := r.tailMatches + w.tailMatches, counts := bump r.counts cat, replacements := r.replacements + w.changes.size, nonUnitReplacements := r.nonUnitReplacements + w.nonUnit, outcomes := r.outcomes.push (match outcomeJson group input name kind cat w result with
       | .obj fields => Json.mkObj (fields.toArray.toList ++ [("unconvertiblePrims",toJson (w.prims.filter badPrims.contains).eraseDups)])
       | j => j) }
 
+/-- 型クラスの宣言の型を、実装の対象の型で具体化する。 -/
+def substTyAt (q : Check.Input) (depth : Nat) (ts : List Ty) (t : Ty) : Ty :=
+  (t.rawBind (typeEnvAt depth ts [])).normWith q.formation.atoms
+
+/-- 全プログラムの入口と同じ本体の位置（関数は `[0, i, 1]`、メソッドは `[1, i, 1, j]`）で末尾の照合を補正する。 -/
 def normalize (p : Prepared) : Materials × List (String × WalkState) := Id.run do
+  let q := p.input
   let defs := p.materials.defs.map fun (n,d) =>
-    let (body,w) := (walkBlock p.input (some d.ret) .tail [0] (some d.ret) d.body).run {}
+    let (body,w) := (walkBlock q (some d.ret) .tail [0, q.defs.idxOf n, 1] (some d.ret) d.body).run {}
     ((n,{ d with body }), (n,w))
   let walks := defs.map Prod.snd
   let impls := p.materials.impls.map fun (n,i) => Id.run do
-    let (methods,w) := (i.methods.mapM fun (method,(mi : Check.MethodInput)) => do
-      let ms : Option MethSig := (p.input.D.classes i.signature.cls).bind (fun c => c.methods method)
-      let result := ms.map fun (m : MethSig) => substTyAt p.input.atoms m.tparams.length [i.signature.target] [] m.ret
-      let index := p.materials.names.methods.idxOf method
-      let body' ← walkBlock p.input result .tail [0,index] result mi.body
+    let (methods,w) := (i.methods.mapM fun (method,(mi : MethodMaterial)) => do
+      let ms : Option MethSig := (q.D.classes i.signature.cls).bind (fun c => c.methods method)
+      let result := ms.map fun (m : MethSig) => substTyAt q m.tparams.length [i.signature.target] m.ret
+      let body' ← walkBlock q result .tail [1, q.impls.idxOf n, 1, q.methods.idxOf method] result mi.body
       pure (method,{ mi with body := body' })).run {}
     return ((n,{ i with methods }), (n,w))
   return ({ p.materials with defs := defs.map Prod.fst, impls := impls.map Prod.fst }, walks ++ impls.map Prod.snd)
+
+/-- 必須の判定の拒否を、出現の鍵と理由を持つ型付けの形の誤りとして記録する。 -/
+def coverError (k : Benitoite.Interval.OperationKey) (f : ScopeAccept.CoverFailure) : Check.Error :=
+  ⟨[], s!"required check is not covered: {k.surfacePreorder} {(Benitoite.Exchange.encodeCoverFailure f).compress}", .rejected⟩
 
 def checkInput (r : Report) (input : Benitoite.Exchange.Input)
     (b : Benitoite.Exchange.BuiltinInput) (p : Prepared) : Report := Id.run do
@@ -117,18 +138,19 @@ def checkInput (r : Report) (input : Benitoite.Exchange.Input)
   let bad := (b.prims.filter fun x => !x.unconvertibleTypes.isEmpty).map (·.name)
   let mut r := { r with inputs := r.inputs + 1, definitions := r.definitions + m.defs.length, implementations := r.implementations + m.impls.length }
   for (n,d) in m.defs do
-    let w := (Benitoite.Surface.CheckTables.lookup ws n).getD {}
-    let bodyQ := { q with D := q.D.withView (m.functionViews n) }
+    let w := (lookup ws n).getD {}
+    let bodyQ := { q with D := q.D.withView (m.functionViews n), proofSteps := q.functionSteps n }
+    let path := [0, q.defs.idxOf n]
     -- 型付けを通った本体は必須の判定でも受理する（`CheckAccept.acceptDef`）。拒否は理由付きの不一致にする。
-    let result := match Benitoite.Surface.Check.checkDef bodyQ [] d with
+    let result := match CheckDeclarations.checkDef bodyQ path d with
       | .error e => .error e
-      | .ok () => match Benitoite.Surface.CheckAccept.acceptDef p.accept n d with
-        | .error (k, f) => .error ⟨[], s!"required check is not covered: {k.surfacePreorder} {(Benitoite.Exchange.encodeCoverFailure f).compress}"⟩
+      | .ok () => match CheckAccept.acceptDef p.accept n d with
+        | .error (k, f) => .error (coverError k f)
         | .ok () => .ok ()
     r := record bodyQ r input.group input.name n "definition" w bad result
     if !w.changes.isEmpty then
-      let before := (Benitoite.Surface.CheckTables.lookup p.materials.defs n).map
-        (Benitoite.Surface.Check.checkDef { p.input with D := p.input.D.withView (m.functionViews n) } [])
+      let before := (lookup p.materials.defs n).map
+        (CheckDeclarations.checkDef { p.input with D := p.input.D.withView (m.functionViews n), proofSteps := q.functionSteps n } path)
       let originalError := match before with
         | some (.error e) => Json.mkObj [("path",toJson e.path),("reason",toJson e.reason)]
         | _ => Json.null
@@ -137,14 +159,14 @@ def checkInput (r : Report) (input : Benitoite.Exchange.Input)
         | .obj fields => Json.mkObj (fields.toArray.toList ++ [("q11OriginalError",originalError)])
         | _ => j }
   for (n,i) in m.impls do
-    let w := (Benitoite.Surface.CheckTables.lookup ws n).getD {}
-    let typed := Benitoite.Surface.Check.checkImpl q m.names.methods m.names.supers [] i.input (m.methodViews n)
-    let accepted := Benitoite.Surface.ScopeAccept.allOk i.methods fun (mn, mi) =>
-      Benitoite.Surface.CheckAccept.acceptMethod p.accept n mn mi
+    let w := (lookup ws n).getD {}
+    let typed := CheckDeclarations.checkImpl q n [1, q.impls.idxOf n] i.decl (m.methodViews n)
+    let accepted := ScopeAccept.allOk i.methods fun (mn, mi) =>
+      CheckAccept.acceptMethod p.accept q n mn i.decl mi.body
     let result := match typed with
       | .error e => .error e
       | .ok () => match accepted with
-        | .error (k, f) => .error ⟨[], s!"required check is not covered: {k.surfacePreorder} {(Benitoite.Exchange.encodeCoverFailure f).compress}"⟩
+        | .error (k, f) => .error (coverError k f)
         | .ok () => .ok ()
     r := record q r input.group input.name n "implementation" w bad result
   for (n,reasons) in p.outside do

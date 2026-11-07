@@ -1,10 +1,12 @@
-import Benitoite.Release.CoverageShow
+import Benitoite.Release.Refinement.CoverageShow
 import Benitoite.Exchange.Convert
 import Lean
 
 /-! 契約名とソース順を保持する独立した交換の入口。
+篩付きの型の網羅性の判定（設計書 01-12「篩を読む網羅性と値の意味」）を処理系の結果と比べる。
 設計書 07-04「証明する性質」の検査対象と既存形式を区別する。 -/
-open Lean Benitoite.Release
+open Lean Benitoite.Release.Refinement
+open Benitoite.Release (Pat Alt ListRest Integer64Value min64 max64 ConName DataName)
 namespace CoverageDiff
 
 structure RawCtor where
@@ -140,9 +142,14 @@ structure Material where
 
 def duplicate (xs : List String) : Bool := xs.eraseDups.length != xs.length
 
+/-- 宣言の属性と構成子の内部名・表示名を、組込みの表の型の情報と同じ形にする。 -/
+def RawDecl.info (d : RawDecl) : Benitoite.Exchange.DataTypeInfo :=
+  { builtin := d.builtin, package := d.package, name := d.name, typeName := d.typeName,
+    isRecord := d.isRecord, extensible := d.extensible,
+    constructors := d.ctors.map fun c => (c.name, c.constructorName) }
+
 def material (ds : List RawDecl) : Except String Material := do
-  Benitoite.Exchange.validateDataTypes (ds.map fun d =>
-    ⟨d.builtin, d.package, d.name, d.typeName, d.isRecord, d.extensible⟩)
+  Benitoite.Exchange.validateDataTypes (ds.map RawDecl.info)
   for d in ds do
     let ctors ← d.ctors.mapM fun c => do
       let args ← c.args.mapM (readTy ds d.ntys)
@@ -164,7 +171,7 @@ def material (ds : List RawDecl) : Except String Material := do
       displays := displays ++ [(c.name, ⟨d.typeName, c.constructorName,
         d.typeName == c.constructorName, d.fields⟩)]
   return ⟨cs, ds.map (fun d => (d.name, d.ctors.map RawCtor.name)), displays,
-    ds.map (fun d => ⟨d.builtin, d.package,d.name,d.typeName,d.isRecord,d.extensible⟩)⟩
+    ds.map RawDecl.info⟩
 
 def Material.program (m : Material) : Program :=
   { defs := fun _ => none, cons := fun c => (m.cons.find? (·.1 == c)).map Prod.snd,
@@ -237,27 +244,31 @@ def auditOverlap (P : Program) (ctors : DataName → List ConName) (view : Cover
       return (false,exhausted)
 
 -- MatchCoverage の欄に含まれない coveringAlternatives の呼び出しも監査する。
--- 単独の行・各接頭辞は実際の手順と同じ引数で usefulReport を呼ぶ。
+-- 網羅性・各選択肢・単独の行・各接頭辞は、実際の手順と同じ初期領域と引数で有用性の判定を呼ぶ。
 def auditMatch (m : Material) (view : CoverageView) (t : Ty) (arms : List Arm) (r : MatchCoverage) : Except String FuelCounts := do
   let mut f : FuelCounts := {}
-  let count := fun rows q => if (usefulReportWithView m.program m.constructors view [t] rows [q]).fuelExhausted then 1 else 0
-  f := { f with matchChecks := count ((unguardedPats arms).map (fun p => [p])) .wild }
+  let d := Coverage.initialDomain t
+  let flag := fun (u : UsefulnessResult) => if u.fuelExhausted then 1 else 0
+  let alternative := fun rows q => flag (Coverage.domainAlternativeReport m.program m.constructors view d rows q)
+  f := { f with matchChecks := flag (Coverage.domainReport m.program m.constructors view d (unguardedPats arms)) }
   for (arm,i) in arms.zipIdx do
     for (alt,j) in arm.alts.zipIdx do
-      f := { f with matchChecks := f.matchChecks + count ((precedingPats arms i j).map (fun p => [p])) alt.pat }
+      f := { f with matchChecks := f.matchChecks + alternative (precedingPats arms i j) alt.pat }
   for (i,j) in r.unreachable do
     let some target := (arms[i]?).bind (fun a => (a.alts[j]?).map Alt.pat) |
       throw "unreachable position outside arms"
-    let prev := precedingAlternatives arms i j
-    for (_,p) in prev do
-      f := { f with coveringSingletons := f.coveringSingletons + count [[p]] target }
-    for (_,k) in prev.zipIdx do
-      f := { f with coveringPrefixes := f.coveringPrefixes + count ((prev.take (k+1)).map (fun (_,p) => [p])) target }
-    for (_,p) in prev do
-      let (v,n) := auditOverlap m.program m.constructors view
-        (Coverage.nodes p + Coverage.nodes target + 1) t p target
-      if v != overlapsWithView m.program m.constructors view t p target then throw "overlap audit disagrees"
-      f := { f with overlaps := f.overlaps + n }
+    -- 初期領域に値を持たない選択肢は、覆う選択肢を探さない。
+    if let some restricted := d.target target then
+      let prev := precedingAlternatives arms i j
+      for (_,p) in prev do
+        f := { f with coveringSingletons := f.coveringSingletons + alternative [p] target }
+      for (_,k) in prev.zipIdx do
+        f := { f with coveringPrefixes := f.coveringPrefixes + alternative ((prev.take (k+1)).map Prod.snd) target }
+      for (_,p) in prev do
+        let (v,n) := auditOverlap m.program m.constructors view
+          (Coverage.nodes p + Coverage.nodes restricted + 1) t p restricted
+        if v != overlapsWithView m.program m.constructors view t p restricted then throw "overlap audit disagrees"
+        f := { f with overlaps := f.overlaps + n }
   if r.fuelExhausted && f.matchChecks == 0 then f := { f with matchChecks := 1 }
   return f
 
@@ -287,7 +298,7 @@ def compare (input : Input) : Except String CaseReport := do
   let original := result m r
   let ir := irrefutableWithView m.program m.constructors view t p
   let iw := (checkMatchWithView m.program m.constructors view t [.mk [⟨p,[]⟩] none (.ret (.const .unit))]).uncovered.map (CoverageWitness.showWithTypes m.display m.typeDisplay)
-  let irFuel := usefulReportWithView m.program m.constructors view [t] [[p]] [.wild]
+  let irFuel := Coverage.domainReport m.program m.constructors view (Coverage.initialDomain t) [p]
   let sameIr := ir == input.irrefutable && iw == input.irrefutableWitness
   let equal := original == input.expected && sameIr
   let fuel ← auditMatch m view t arms r

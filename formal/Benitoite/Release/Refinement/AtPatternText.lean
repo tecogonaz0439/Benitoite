@@ -3,7 +3,7 @@ import Benitoite.Release.Refinement.AtPrepare
 
 /-! # 動的な pattern の文字列
 
-At の pattern 引数は、解析済みの範囲の値のほかに動的な `String` を受ける（設計書 01-07「範囲」）。文字列は
+At の pattern 引数は、解析済みの範囲の値のほかに動的な `String` を受ける（設計書 01-07「閉じた範囲引数」）。文字列は
 `parsePatternText` で範囲の式へ読み、解析済みの値と同じく名前の種類・整形式・正規形を確かめる。
 
 - 絶対形のパス条件とホスト条件の読み方は、旧 API の純粋チェック（`ScopeDelta.parsePattern`・

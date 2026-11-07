@@ -516,6 +516,7 @@ python3 -B formal/tests/test_range_exchange.py
 |---|---|---|
 | `Benitoite/Release/Coverage.lean` | 有用性の手順（型ごとの構成子、特殊化、燃料）、`match` の判定 `checkMatch`（網羅していないときの反例、選ばれない選択肢、覆っている分岐）と束縛の文の判定 `irrefutable`、補題 U と系、手順の例 | 型付け規則の C-Match の網羅性（02-05「本体の後の検査」の正） |
 | `Benitoite/Release/CoverageShow.lean` | 反例を処理系の診断と同じ文字列にする関数と例 | |
+| `Benitoite/Release/Refinement/CoverageShow.lean` | 篩付きの網羅性の判定の反例を処理系の診断と同じ文字列にする関数と例（`coverageDiff`・`coverageProgramDiff` が使う） | 篩を読む網羅性と値の意味 |
 | `Benitoite/Release/Lemmas/CoverageRuntime.lean` | 選ばれない選択肢を、実行の規則の照合（`firstAlt` と分岐の順）に結ぶ系 | 実行の規則の `match` |
 | `Benitoite/Release/BuiltinTable.lean` | 宣言から等値の型・鍵の型の要約を求める計算と、組み込みの制約の判定 | （01-06 の組み込みの制約） |
 | `Benitoite/Surface/FiniteTools.lean` / `FinitePredicates.lean` / `FiniteExamples.lean` | 一般のFailを扱う計算用の型操作・包含・型の結び・整形式と範囲の判定、その保証と計算例。検査器全体と六実行ファイルへ接続済み | 同上 |
@@ -529,6 +530,9 @@ python3 -B formal/tests/test_range_exchange.py
 | `Benitoite/Surface/CheckTables.lean` / `CheckTablesSound.lean` / `CheckProgramSound.lean` | 有限の宣言の材料から検査の入力の表を作る関数と、その前提の証明、プログラム全体の検査と健全性（`CheckedUnder`） | |
 | `Benitoite/Surface/CheckExamples.lean` / `CheckToolsExamples.lean` / `CheckCounterexamples.lean` | 検査の関数と判定の例、処理系が 0.0.2 まで受け付けていた型検査の誤り（プレースホルダの引数の中の `return`・`try`・`resume`）を検査の関数が拒否する例 | |
 | `Benitoite/Exchange/Builtins.lean` / `CheckInput.lean` | 組み込みの関数とデータ型の宣言の交換用の表現と具体的な組み込みの関数の欄、型検査の出力の検査の入力（原子の集合を含む）の読み込み | |
+| `Benitoite/Exchange/RefinedJson.lean` | 範囲の式・範囲の位置・篩の論理の項と述語・論理の証明書の交換用の表現（JSON）と、証明書の位置と番号の重複の拒否 | 篩を含む表層の検査と受理 |
+| `Benitoite/Exchange/FormationTypes.lean` / `CheckSupport.lean` | 交換の型と効果を有限の原子の一覧に対する支持の証拠とともに形成する関数と、宣言材料の全署名の支持から検査の入力の表の支持を導く定理 | 07-04「証明する性質」 |
+| `Benitoite/Exchange/BuiltinAgreement.lean` | 交換した組み込みの表と標準表の合成済みの行の署名の欄の有限の照合と、その成功から完成表との名前ごとの一致を導く定理 | 07-04「証明する性質」 |
 | `BuiltinCheck/Main.lean` | 組み込みの関数の表の検査の実行ファイル（`lean_exe builtinCheck`） | |
 | `CoverageDiff/Main.lean` | 網羅性の手順の差分テストの実行ファイル（`lean_exe coverageDiff`） | |
 | `CoverageProgramDiff/Main.lean` | 型検査を通ったプログラムの網羅性の確かめの実行ファイル（`lean_exe coverageProgramDiff`） | |

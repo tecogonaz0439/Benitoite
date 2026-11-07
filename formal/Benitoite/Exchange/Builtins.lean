@@ -274,6 +274,13 @@ def DataEntry.toMaterial (d : DataEntry) : Except String DataMaterial := do
     if let some fs := c.fields then checkNames fs c.args.length
     return (c.name, { data := d.name, ntys := d.ntys, args := ← c.args.mapM Ty.toRelease })) }
 
+/-- data の宣言の変性と制約・公開境界。 -/
+def DataEntry.varianceDecl (d : DataEntry) : Except String Benitoite.Release.Refinement.DataVarianceDecl := do
+  return {
+    arity := d.ntys, variances := d.variances
+    requirements := ← d.requirements.mapM Ty.toRelease
+    publicBoundary := ← d.publicBoundary.mapM fun (p, t) => do return (p, ← t.toRelease) }
+
 /-- 宣言順を保存し、網羅性の型からの列挙と Program.cons の材料を同じ表から得る。 -/
 def dataConstructors (ds : List DataMaterial) (name : String) :
     List String :=
@@ -309,51 +316,113 @@ def BuiltinInput.summaryTable (b : BuiltinInput) : Except String Benitoite.Relea
 def PrimConstraint.toBuiltinConstraint (c : PrimConstraint) : Benitoite.Release.BuiltinConstraint :=
   ⟨c.equality, c.key, c.ordered⟩
 
-/-- prim の変換と admits の束縛は、sig を引くたびに繰り返さず一度だけ行う。
-対象外の印のある prim は表から除き、それ以外の変換の失敗は返す。 -/
-def BuiltinInput.primSignatures (b : BuiltinInput) (S : Benitoite.Release.SummaryTable) :
-    Except String (List (String × Benitoite.Release.Refinement.PrimSig)) := do
-  let mut sigs := []
-  for p in b.prims do
-    if p.unconvertibleTypes.isEmpty && p.classConstraints.isEmpty then
-      let m ← p.toMaterial
-      let cs := m.constraints
-      sigs := sigs ++ [(p.name, p.withRanges (m.toPrimSig (fun C ts => Benitoite.Release.admitsB S cs C (Benitoite.Release.Refinement.StandardKeyTyping.carriers ts) = true)))]
-  return sigs
+/-- 対象外の印のない prim の項目と、その材料の有限の表。対象外の印のある prim は表から除き、それ以外の変換の
+失敗は返す。変換は表を作るときに一度だけ行う。 -/
+def BuiltinInput.primMaterials (b : BuiltinInput) : Except String (List (BuiltinEntry × PrimMaterial)) :=
+  (b.prims.filter fun p => p.unconvertibleTypes.isEmpty && p.classConstraints.isEmpty).mapM
+    fun p => do return (p, ← p.toMaterial)
 
-/-- 入力ごとの具体的な組み込みの表。宣言の検査では実行の欄を使わない。
+/-- 材料の表から名前で項目を引く。同じ名前が重なるときは先頭を使う。 -/
+def primLookup (ms : List (BuiltinEntry × PrimMaterial)) (name : String) : Option (BuiltinEntry × PrimMaterial) :=
+  ms.find? (fun p => p.1.name == name)
+
+/-- 型パラメータの制約の判定。ordered を含む制約を、宣言の要約の表で判定する。 -/
+def PrimMaterial.admitsDec (S : Benitoite.Release.SummaryTable) (m : PrimMaterial)
+    (C : List Benitoite.Release.TParam) (ts : List Benitoite.Release.Refinement.Ty) : Bool :=
+  Benitoite.Release.admitsB S m.constraints C (Benitoite.Release.Refinement.StandardKeyTyping.carriers ts)
+
+/-- 項目の署名。制約の命題は同じ判定の真偽である。 -/
+def primSignature (S : Benitoite.Release.SummaryTable) (p : BuiltinEntry) (m : PrimMaterial) :
+    Benitoite.Release.Refinement.PrimSig :=
+  p.withRanges (m.toPrimSig (fun C ts => m.admitsDec S C ts = true))
+
+/-- 材料の表から作る入力ごとの組み込みの表。宣言の検査では実行の欄を使わない。
 Reference.get/set は IO の操作ではないので、使われない入力では sig が none になりうる。 -/
+def builtinsOf (b : BuiltinInput) (S : Benitoite.Release.SummaryTable) (ms : List (BuiltinEntry × PrimMaterial)) :
+    Benitoite.Release.Refinement.Builtins where
+  sig := fun name => (primLookup ms name).map fun (p, m) => primSignature S p m
+  delta := fun _ _ _ _ _ => none
+  ioResponse := fun _ _ _ _ _ _ => False
+  releaseResponse := fun _ _ => False
+  isResource := b.isResource
+  effects := b.effectOps
+  sat := fun C t p => Benitoite.Release.satB S C (Benitoite.Release.Refinement.StandardKeyTyping.carrier t) p = true
+  refGet := ((b.prims.find? (fun p => p.kind == "refGet")).map BuiltinEntry.name).getD "Reference.get"
+  refSet := ((b.prims.find? (fun p => p.kind == "refSet")).map BuiltinEntry.name).getD "Reference.set"
+  effKind := KindEntry.lookup b.effKinds
+  valKind := KindEntry.lookup b.valKinds
+  admitsR := fun n rs => ∃ old, rs = old.map Benitoite.Release.Refinement.RangeExpr.absolute ∧ AdmitsEntry.admitsR b.admitsR n old
+  valContent := ContentEntry.lookup b.valContents
+
+/-- 入力ごとの具体的な組み込みの表。 -/
 def mkBuiltins (b : BuiltinInput) : Except String Benitoite.Release.Refinement.Builtins := do
-  let S ← b.summaryTable
-  let sigs ← b.primSignatures S
-  return {
-    sig := fun name => (sigs.find? (fun p => p.1 == name)).map Prod.snd
-    delta := fun _ _ _ _ _ => none
-    ioResponse := fun _ _ _ _ _ _ => False
-    releaseResponse := fun _ _ => False
-    isResource := b.isResource
-    effects := b.effectOps
-    sat := fun C t p => Benitoite.Release.satB S C (Benitoite.Release.Refinement.StandardKeyTyping.carrier t) p = true
-    refGet := ((b.prims.find? (fun p => p.kind == "refGet")).map BuiltinEntry.name).getD "Reference.get"
-    refSet := ((b.prims.find? (fun p => p.kind == "refSet")).map BuiltinEntry.name).getD "Reference.set"
-    effKind := KindEntry.lookup b.effKinds
-    valKind := KindEntry.lookup b.valKinds
-    admitsR := fun n rs => ∃ old, rs = old.map Benitoite.Release.Refinement.RangeExpr.absolute ∧ AdmitsEntry.admitsR b.admitsR n old
-    valContent := ContentEntry.lookup b.valContents }
+  return builtinsOf b (← b.summaryTable) (← b.primMaterials)
 
-/-- 表の組み込みの表に、交換した表のデータを入れる（`CheckTables.builtins` は表のデータを持たない）。 -/
-def BuiltinInput.withTableData (b : BuiltinInput) (B : Benitoite.Release.Refinement.Builtins) : Benitoite.Release.Refinement.Builtins :=
-  { B with
-    effKind := KindEntry.lookup b.effKinds
-    valKind := KindEntry.lookup b.valKinds
-    admitsR := fun n rs => ∃ old, rs = old.map Benitoite.Release.Refinement.RangeExpr.absolute ∧ AdmitsEntry.admitsR b.admitsR n old
-    valContent := ContentEntry.lookup b.valContents }
+/-- 検査器の型パラメータの制約の判定。表の署名と同じ項目の材料で判定する。 -/
+def admitsDecOf (S : Benitoite.Release.SummaryTable) (ms : List (BuiltinEntry × PrimMaterial))
+    (name : String) (C : List Benitoite.Release.TParam) (ts : List Benitoite.Release.Refinement.Ty) : Bool :=
+  match primLookup ms name with
+  | some (_, m) => m.admitsDec S C ts
+  | none => false
 
-/-- 検査の入力の判定 `admitsRDec` は、表のデータを入れた組み込みの表の `admitsR` と合う
-（`Check.Input.Sound` の欄 `admitsR` の内容）。 -/
-theorem BuiltinInput.admitsRDec_sound (b : BuiltinInput) (B : Benitoite.Release.Refinement.Builtins) :
-    ∀ n rs, AdmitsEntry.admitsRDec b.admitsR n rs = true →
-      (b.withTableData B).admitsR n (rs.map Benitoite.Release.Refinement.RangeExpr.absolute) :=
-  fun _ rs h => ⟨rs, rfl, AdmitsEntry.admitsRDec_sound h⟩
+/-- 検査器の型の制約の判定。表の `sat` の命題は同じ判定の真偽である。 -/
+def satDecOf (S : Benitoite.Release.SummaryTable) (C : List Benitoite.Release.TParam)
+    (t : Benitoite.Release.Refinement.Ty) (p : Benitoite.Release.TParam) : Bool :=
+  Benitoite.Release.satB S C (Benitoite.Release.Refinement.StandardKeyTyping.carrier t) p
+
+/-- 範囲の式の列が全て閉じた範囲なら、その範囲の列を返す。 -/
+def absoluteRanges : List Benitoite.Release.Refinement.RangeExpr → Option (List Benitoite.Scope.Domain.Range)
+  | [] => some []
+  | .absolute r :: rs => (absoluteRanges rs).map (r :: ·)
+  | _ :: _ => none
+
+theorem absoluteRanges_eq {rs : List Benitoite.Release.Refinement.RangeExpr} {old : List Benitoite.Scope.Domain.Range}
+    (h : absoluteRanges rs = some old) : rs = old.map Benitoite.Release.Refinement.RangeExpr.absolute := by
+  induction rs generalizing old with
+  | nil => cases h; rfl
+  | cons r rs ih =>
+    cases r with
+    | absolute x =>
+      simp only [absoluteRanges, Option.map_eq_some_iff] at h
+      obtain ⟨tail, ht, rfl⟩ := h
+      simp [ih ht]
+    | based _ _ => cases h
+    | secrets => cases h
+
+/-- 検査器の範囲の許容の判定。閉じた範囲の列だけを表の規則で判定する。 -/
+def admitsRDecOf (b : BuiltinInput) (name : String) (rs : List Benitoite.Release.Refinement.RangeExpr) : Bool :=
+  match absoluteRanges rs with
+  | some old => AdmitsEntry.admitsRDec b.admitsR name old
+  | none => false
+
+/-- 型の制約の判定は、表の型の制約と合う（`Check.Input.Sound` の欄 `sat`）。 -/
+theorem satDecOf_sound (b : BuiltinInput) (S : Benitoite.Release.SummaryTable) (ms : List (BuiltinEntry × PrimMaterial)) :
+    ∀ C t p, satDecOf S C t p = true → (builtinsOf b S ms).sat C t p :=
+  fun _ _ _ h => h
+
+/-- 型パラメータの制約の判定は、表の署名の制約と合う（`Check.Input.Sound` の欄 `admits`）。 -/
+theorem admitsDecOf_sound (b : BuiltinInput) (S : Benitoite.Release.SummaryTable) (ms : List (BuiltinEntry × PrimMaterial)) :
+    ∀ name s C ts, (builtinsOf b S ms).sig name = some s → admitsDecOf S ms name C ts = true → s.admits C ts := by
+  intro name s C ts hs ha
+  unfold admitsDecOf at ha
+  cases hl : primLookup ms name with
+  | none => simp [hl] at ha
+  | some pm =>
+    rcases pm with ⟨p, m⟩
+    simp only [builtinsOf, hl, Option.map_some, Option.some.injEq] at hs
+    subst s
+    simp only [hl] at ha
+    exact ha
+
+/-- 範囲の許容の判定は、表の範囲の許容と合う（`Check.Input.Sound` の欄 `ranges`）。 -/
+theorem admitsRDecOf_sound (b : BuiltinInput) (S : Benitoite.Release.SummaryTable) (ms : List (BuiltinEntry × PrimMaterial)) :
+    ∀ name rs, admitsRDecOf b name rs = true → (builtinsOf b S ms).admitsR name rs := by
+  intro name rs h
+  unfold admitsRDecOf at h
+  cases hr : absoluteRanges rs with
+  | none => simp [hr] at h
+  | some old =>
+    simp only [hr] at h
+    exact ⟨old, absoluteRanges_eq hr, AdmitsEntry.admitsRDec_sound h⟩
 
 end Benitoite.Exchange

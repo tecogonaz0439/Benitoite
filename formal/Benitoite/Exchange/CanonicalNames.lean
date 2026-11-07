@@ -197,7 +197,10 @@ def ofInputs (input : Input) (builtin : Json) : Except String CanonicalNames := 
   let opaqueEntries ← builtin.getObjValAs? (List (String × String)) "opaqueNames"
   let opaqueNames ← opaqueEntries.foldlM (fun table entry => do
     if !noOpaqueArguments entry.1 then return table
-    let some target := knownOpaque.lookup entry.2 | return table
+    -- 公開名は、処理系の書き出しの完全名（`Benitoite.` で始まる）、その接頭辞を除いた名前、標準表の名前の
+    -- どれでも受ける。どれも有限表の同じ行を指す。
+    let some target := (knownOpaque.lookup entry.2).or (knownOpaque.lookup ("Benitoite." ++ entry.2)) |>.or
+        (if knownOpaque.any (·.2 == entry.2) then some entry.2 else none) | return table
     put table entry.1 target) []
   noCollision names.dataNames (infos.map (·.name))
   noCollision names.constructorNames (infos.flatMap fun info => info.constructors.map Prod.fst)

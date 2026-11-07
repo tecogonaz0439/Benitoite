@@ -2582,7 +2582,7 @@ CallExclusion.run_contract は入力自身のこの条件を示す。CallExclusi
 
 ### 区間解析の独立交換の読者
 
-【決定】`Interval.Exchange` は、対象構文の評価関係・解析器の外側で、独立入力と期待結果を復号する。`readCorpus : String → Except String Corpus` は生の JSON を読み、重複欄を失う前に拒否する。`decodeCorpus : Json → Except String Corpus` はすでに作られた JSON の復号であり、生の入力の入口には使わない。型・本体・定数は既存 Surface の読者と変換を使い、深い欄の一致を検査する。具体の欄と版は [07-04「区間解析の独立交換の読者」](../07-quality/07-04-formal-semantics.md#区間解析の独立交換の読者)に定める。
+【決定】`Interval.Exchange` は、対象構文の評価関係・解析器の外側で、独立入力と期待結果を復号する。`readCorpus : String → Except String Corpus` は生の JSON を読み、重複欄を失う前に拒否する。`decodeCorpus : Json → Except String Corpus` はすでに作られた JSON の復号であり、生の入力の入口には使わない。型・本体・定数は表層の交換の読者で読み、篩付きの表層へ変換した後（`Exchange.Convert`）、注釈を消して対象構文へ写す（`Interval.SurfaceSyntax`）。深い欄の一致を検査する。具体の欄と版は [07-04「区間解析の独立交換の読者」](../07-quality/07-04-formal-semantics.md#区間解析の独立交換の読者)に定める。
 
 | 定義 | 保持する内容 |
 |---|---|
@@ -2592,6 +2592,8 @@ CallExclusion.run_contract は入力自身のこの条件を示す。CallExclusi
 | `Exchange.Module` | name : String、definitions : List Definition |
 | `Exchange.Input` | name : String、fuel : Nat、limits : Budget.Limits、initial : Budget.State、constants : List Benitoite.Exchange.ConstantEntry（既存 Surface 交換の型）、modules : List Module、expectedBodies : List (String × BodyExpected)、expected : Option Json（入力全体の期待） |
 | `Exchange.Corpus` | inputs : List Input、profile : String |
+
+対象構文への写し `SurfaceSyntax.eraseExpr`・`eraseBlock` は、篩付きの表層の式と文列の構成子と子の順序を保ち、型の注釈から篩と値の依存を除く。範囲の式は絶対の範囲を保ち、基準からの相対範囲と secrets を Top へ写す。外部型の注釈は不透明型へ写し、通常の data 型の構成子の知識を与えない。外部関数の参照は、未知の値として扱う空名の関数参照へ写す。照合の腕では、パターンの束縛の外にある照合対象の一つの位置を除き、照合対象を直接読む参照も空名の関数参照へ写す。篩を持たない型・型の列・エフェクトでは、埋め込みから写すと元に戻る（`eraseTy_embed`・`eraseTys_embed`・`eraseEff_embed`）。消した注釈から型付けやエフェクトの被覆を結論しない。理由: 区間解析の対象構文と評価関係を変えずに、篩付きの表層で書き出した入力を同じ解析と独立評価へ渡すためである。
 
 `modules` の先頭を実行開始のモジュールの位置とし、その `name` だけは空文字列を認める。名前付きモジュールだけの独立入力も認める。後続モジュールの空名とモジュール名の重複は拒否する。空名の通常定義は `.point`、メソッドは `%impl:2:1:point` の形の元キーを保ち、別名を補わない。通常定義の宣言名は空にできず、モジュールとの整合・全型キー・元演算キーの検査は名前付きの場合と同じである。`QualifiedDefinition` は `.point` も満たし、メソッドの内部名は従来の専用の検査で扱う。これは交換の入力制約の修正であり、識別の定義は変えない。
 
@@ -2603,7 +2605,7 @@ width・range・domain では、正常値の期待に `widths` と `nonIntegerOt
 
 `Exchange.initialFuel : Corpus → Nat` は、定数展開後の全ての元定義の `surfaceSize (bodyRoot body)` の総和を4倍して32を加える。選んだ fuel は入力に明示し、解析と別本体の発見で同じ値を使う。深さ停止があれば値を倍にして固定コーパス全件を再実行し、選択と停止の件数を保存する。fuel が減るのは式の入れ子だけではなく、Block・Exprs・腕・節の列も含む。これは深さ停止がなくなることの証明ではない。
 
-`Exchange.analyzeCorpus : Corpus → Comparison` は、各 input を `BudgetWhole.analyze` に渡す。正常値の直積・親と保存した独立入力の候補と coverage・終了後の after・終了前の context を期待値と比較する。context は予算状態・次のキー・取得済みのキー列・未対応の印を持つ。mayFail は報告するが一致の判定に使わない。`Comparison` は JSON の report と matched・accepted を持ち、一致と受け入れを分ける。比較した本体0件、全ての比較結果が Top、または本体・段の深さ停止が残る場合は accepted を偽にする。Top の判定は元定義の根の型、別本体では元の型表にある末尾の型の正常成分で行う。整数はその幅の区間、Boolean は真偽の可能性、それ以外の型は nonIntegerOther だけで判定し、別の型の成分が Bottom であるだけでは非Topと数えない。型を取得できない本体も非Topとして数えない。
+`Exchange.analyzeCorpus : Corpus → Comparison` は、各 input を `BudgetWhole.analyze` に渡す。正常値の直積・親と保存した独立入力の候補と coverage・終了後の after・終了前の context を期待値と比較する。context は予算状態・次のキー・取得済みのキー列・未対応の印を持つ。mayFail は報告するが一致の判定に使わない。報告の各本体には、同じ実報告に添えた接続（`IntervalReport.connect`）の三成分の近似 `flow`（normal・returned・mayFail）も加える。returned は実報告が記録しないので未知とし、型表に型のない本体の flow は null とする。flow は期待値の欄を持たず、一致の判定に使わない。`Comparison` は JSON の report と matched・accepted を持ち、一致と受け入れを分ける。比較した本体0件、全ての比較結果が Top、または本体・段の深さ停止が残る場合は accepted を偽にする。Top の判定は元定義の根の型、別本体では元の型表にある末尾の型の正常成分で行う。整数はその幅の区間、Boolean は真偽の可能性、それ以外の型は nonIntegerOther だけで判定し、別の型の成分が Bottom であるだけでは非Topと数えない。型を取得できない本体も非Topとして数えない。
 
 未着手の元定義と別本体では、期待があれば `{"notAnalyzed": 停止理由}` と照合する。通常の解析結果の期待が残る場合、停止理由が異なる場合、解析した本体へ notAnalyzed を期待した場合は不一致とする。notAnalyzed の照合を正常範囲の比較件数へ足さない。数学的な manifest・未着手の理由・残る元入力も報告する。input の任意の expected は after・phaseStops・counts の各欄を独立に指定でき、与えた欄を最終報告と厳密に比較する。counts は BudgetWhole の五つの専用射影を持ち、phaseStops は段・停止理由・位置・保存済みの状態を含む順序付きの列である。本体・未着手・入力全体のいずれかの期待が不一致なら matched と accepted は偽となる。manifest の全列挙は交換の検証だけに使い、予算付き解析へ先行させない。
 
@@ -3512,7 +3514,7 @@ Lean の捕捉を持つ実行関係の `Step.E_Lam` は、`q.view = .app f ws`�
 
 `CheckFinite` は、案内に現れる型・効果を有限の原子の一覧に対する表現へ写し、その結果の支持を入力条件によらず示す。支持を満たす案内では写す前後が等しい（`guide_eq`）。実入口の健全性は、計算した案内のこの支持と `guideSound` を合成して得る。案内の支持を外部の前提に足さない。宣言の本体は `inferBlockExpected` が署名の結果型・効果を末尾の式へ渡し、値の篩の導入も同じ規則で再検査する。ハンドラの推論は、継続ごとの再開の引数の効果を集めて反復し、生成した案内で厳密な検査を行う。
 
-`Check.BuiltinSource` は、任意の組込みの表、宣言データから構成する標準表、範囲の許容を真とする表を区別する。`Check.Input.B` はこのデータから同じ表を返す。標準表を含む表全体の取り出しと、その表を使う検査関数は `noncomputable` として定義する。具体の入力の受理は定義の簡約で検査する。任意の表では、開いた型引数の範囲閉性を検査して元の許容を使う。標準表では `RangeStandard` の具体化保存から許容の葉を導く。範囲許容を真とする構成は、元の表の許容の保存を仮定せず、実際に読む表の `admitsR` を定義する。範囲引数の個数と種類は別に検査する。`.custom B` は元の B と定義的に同じである。
+`Check.BuiltinSource` は、任意の組込みの表、宣言データから構成する標準表、範囲の許容を真とする表を区別する。標準表の構成子 `.standard P B h` は、宣言データから構成した表 B と構成の等号 `h : B = StandardModel.builtins P` を持つ（既定値は構成した表と `rfl`）。`Check.Input.B` はこのデータが持つ表を返す。表を値として持つので、標準表を選んだ検査器と受理の関数も実行できる。理由: 標準表の構成は応答の欄に実行できない定義を含むので、構成元が表を値として持たないと、表を読む検査器全体が実行できなくなるためである。任意の表では、開いた型引数の範囲閉性を検査して元の許容を使う。標準表では `RangeStandard` の具体化保存から許容の葉を導く。範囲許容を真とする構成は、元の表の許容の保存を仮定せず、実際に読む表の `admitsR` を定義する。範囲引数の個数と種類は別に検査する。`.custom B` は元の B と定義的に同じである。
 
 `CheckOpen` は、宣言した範囲の種類列の下で同じ95規則を検査する。`CheckOpenFormation` は、その深さで注釈・署名・組込みの宣言を検査し、`CheckOpenArgumentLeaves` は七つの全具体化の葉を有限な検査から構成する。範囲写像は原子の有限一覧を走査して計算し、`CheckOpenRangeSupport` が支持の検査成功から数学的な写像との一致を示す。構成子の欄の範囲閉性は `constructorsClosed` で実際に検査し、一覧の完全性と合わせて使う。この検査の成功を外部の信頼条件にしない。`CheckOpenInfer` は同じソースから型・効果・案内を計算し、`CheckOpen.guideSound` と `checkBlockAt_sound` が再検査の成功を `OpenSurface` の導出へ写す。
 
@@ -3523,6 +3525,8 @@ Lean の捕捉を持つ実行関係の `Step.E_Lam` は、`q.view = .app f ws`�
 部分型は、有限の `LeCertificate`・依存列の証明書・型引数の証明書を再検査して `Ty.LeQ` などの判断へ接続する。篩の含意は `LogicCertificate.result` が `checkAccounted` を呼んで調べる。結果は成功、会計の打ち切りによる `unknown`、不正な証明書の拒否に分かれ、成功だけが型付けの根拠になる。関数の上限は関数ごとの入力から選び、宣言の `proofSteps` の正の指定があればそれを優先する。0の明示指定は拒否する。基本操作列の計上と実装の全実作業との一致は「篩の係数と基本操作の計上」で定める別の条件であり、生の操作列の検査だけから実作業全体の上限は結論しない。
 
 交換から読む `ExchangeCertificate` は、論理の証明と基本操作列だけを持つ。問い合わせの位置・前提・結論は推論が付ける内部の `LogicCertificate` に保持し、型付けの証拠には使わない。内部の推論の結果は拒否と打ち切りを分け、各段の結合でその種類を保つ。再検査に失敗した案内では `CheckDiagnostics.guideDecision` が全ての論理の問い合わせを調べる。実際に不正と判定した証明書があれば拒否し、それがなく会計の打ち切りがあれば `unknown` とする。会計の打ち切り時に未再生の生証明書を不正と断定しない。
+
+検査の入力の `logicCertificates` は、位置 `path : List Nat` と番号 `index : Nat` の組から交換の証明書を引く。鍵は、推論が論理の問い合わせを作るときに `CheckInfer.logicProof` へ渡す位置と番号そのものである。位置はプログラム全体の入口 `CheckTables.checkProgram` が渡す根から始まる。通常の関数の根は `[0, i]`（i は材料の関数の宣言順の番号）、その本体は `[0, i, 1]`、実装の根は `[1, i]`、メソッドの本体は `[1, i, 1, j]`（j は材料のメソッドの一覧の番号）である。本体の中の位置は、推論の関数が子へ進むときに付ける番号を順に足したものであり、番号は同じ位置の問い合わせを区別する。関数や実装を選んで検査する入口も、全体の入口と同じ根を使う。したがって鍵は、処理系が書き出すソースと署名の宣言順だけで決まり、交換の欄の並び・名前の綴り・探索の結果によらない。交換の読者は同じ鍵を二度持つ一覧を拒否する（`Exchange.LogicCertificateEntry.validate`）。鍵のない問い合わせでは、同じ前提の使用か閉じた述語の候補を推論が作り、同じ再検査にかける。証明書は前提とゴールについて再検査するので、鍵の決め方を新しい信頼条件にしない。理由: 処理系に規則の木や中間の型・効果を書き出させずに、交換した証明書を推論の問い合わせへ一意に対応させるためである。
 
 `checkExpr_unknown`・`checkBlock_unknown`・`checkDef_unknown`・`checkImpl_unknown`・`checkProgram_unknown`・`checkProgramAccepted_unknown` は、各入口の `unknown` に、同じ入力の推論の打ち切り又は生成した問い合わせの会計の打ち切りがあることを示す。他の型の不整合がないことや、打ち切りだけが不受理の原因であることは結論しない。
 
@@ -3537,6 +3541,18 @@ Lean の捕捉を持つ実行関係の `Step.E_Lam` は、`q.view = .app f ws`�
 プログラムの入口 `CheckTables.checkProgram` は、変性の全欄、効果に列挙した操作と操作宣言の双方向の対応、組み込みの効果名との分離、全定義と全実装を検査する。`CheckedUnder` は、同じ宣言表の下での全本体の型付け、変性、元の宣言の保存、効果の適格性を表す。`checkProgram_sound` は名前の一覧の完全性を明示した一般の言明であり、宣言表がプログラム自身の表と同じなら `checkProgram_empty` が `Program.WellTyped` を導く。有限の `Materials` はプログラムの全表と名前の一覧を同じ材料から作り、関数と実装の空欄だけを署名で補う。材料についての系は、名前の完全性・実装の名前の完全性・構成子の一覧の全件性・元の宣言の保存を構成から導く。これらの全件性と、型・効果の支持や既存の許容判定との対応を区別する。
 
 `CheckAccept.checkProgramAccepted` は、同じプログラムの型付けの検査に続けて、全定義と全実装メソッドの必須の判定を受理する。プログラム全体の受理 `Accepted A q p` は、全ての実在する本体の `acceptBody` の成功である。`checkProgramAccepted_sound` は `CheckedUnder p q ∧ Accepted A q p` を、宣言の補完が無ければ `checkProgramAccepted_empty` は `Program.WellTyped` と `Accepted` の両方を返す。材料の系では名前の完全性を外部条件に足さない。規則を持つ呼出しの表は `standardTable (primResolve key body) rules` であり、組み込み名を頭に持つ直接の呼出しを解決する。記録の無い出現も、事実を持たない状態で必須の判定を行う。`CheckAcceptedRanges` の `BodyRanges` は、範囲変数・based・secrets を含む全ての `List RangeIx` の呼出しの出現・選んだ規則・記録した全状態について、推論した範囲を契約が覆うことと、規則が選ぶ全位置に契約が存在することを表す。`Accepted.def_ranges`・`Accepted.method_ranges` は、受理した各定義と各実装メソッドへこの性質を導き、記録の無い出現にも事実を持たない状態で同じ二条件を導く。必須の規則が選ばれた位置で固定した絶対範囲の契約を取り出せなければ、`unknownSource` を返す。`acceptBody_ranges` は、成功した各位置の固定契約と被覆の証人を返す。通常の絶対範囲の列を固定範囲へ埋め込む四つの `acceptBody_sound`・`some` と両 unrecorded の系は、元の被覆と存在の結論を保つ。受理は範囲の推論と契約の被覆を照合する性質であり、コアの実行と表層の局所評価の一致を前提にしない。理由: 型付けの正しさと、狭い契約を確認済みの範囲でだけ受理する性質を、同じ入口の別々の結論として示すためである。
+
+【決定】受理が読む規則の表は、`Release.Refinement.Surface.ScopeRules` が Scope の規則の表（`Scope.Inference`）を篩付きの核の値 `Refinement.Val` で具体化して定める。値の対応 `models ok facts`（facts はパターンの文字列の事実を読む解析）では、`Result.Ok` の値を構成子の名前 ok で読み（`okPayload`）、成功値は対象を保持する値（`Val.target?` が対象を返す値）で、対象の種類が由来の種類に合い、対象が由来の添字の範囲に属する（`CheckedModels`）。リテラルの抽象の綴りは同じ文字列の定数に、整数の綴り（`intLitText`）は同じ整数の定数に対応する（`LitModels`）。規則を持つ標準の宣言は次の六つである。
+
+| 宣言 | 規則 | 具体化の範囲 | 抽象の結果 |
+|---|---|---|---|
+| `Scope.checkPathIn` | `checkRule (pathCheck pattern target known)`。実行時の検査が使うパターンと対象の解析（pattern・target）と、型検査器が文字列のリテラル（整数の綴りでないもの）から読む表（known）を別の引数に取る | 既知の範囲、未知なら Top | 同じ由来の Result の事実 |
+| `Http.checkRequestIn` | `checkRule (requestCheck hostPattern endpointOf bound)`。動的なパターンはホストのパターンの解析と二つの整数を `Port.ofInt?` で変換した区間からなる endpoint の範囲、対象は要求の実効の endpoint。型検査器の読み取り `requestLitBound known` は、ホストのパターンが文字列のリテラル、二つのポートが整数のリテラルで、ポートの区間が整形式のときだけ既知の範囲を返す | 同上 | 同上 |
+| `Scope.pathInValue`・`Http.requestInValue`・`Scope.widenPathIn`・`Http.widenRequestIn` | `projectRule run`。事実を作らない。明示拡大の行き先は戻り値の注釈から決める | 引数の必須の判定の添字（`argIndex`） | なし |
+
+`checkRule_sound` は、型検査器の既知の範囲が実行時の動的なパターンと同じ範囲であること（`CheckSpec.BoundSound`）と、δ が `Ok` の値を返すなら具体化がちょうど一つの範囲 r で、成功値が動的なパターンと r の両方に属する対象を保持すること（`CheckSpec.Contract`）から、検査の規則の健全性を導く。`pathCheck_boundSound`・`requestLitBound_boundSound` は、型検査器の読む表の項目が実行時の解析の結果に含まれることを前提にして読み取りの健全性を示す。同じ解析を両方に渡せば前提は自明である。`projectRule_sound` は事実を作らない規則の健全性、`Rules.lookup_sound` は六つの項目の健全性から表の健全性を導く。
+
+`Release.Refinement.Surface.ScopeSound.productionRules pattern host` は、六つの項目の実行を、篩付きの核の実例の表（`ModelTargets.builtins`・`ModelHttp.builtins`）の同じ名前の組み込みの関数の δ にする（`deltaRun`。値を返す結果だけを値とし、誤りと終了は値なしとする）。動的なパターンと対象は、実行時の検査と同じ解析（`ScopeDelta.parsePattern`・`parseAtInput`・`RequestDelta.parseHostPattern`・`Val.reqTarget`）で読む。型検査器の既知の範囲には、処理系の解析器がリテラルを読んだ表 `pattern`・`host` のうち、形式化した解析と同じ結果の項目だけを使い、食い違う項目は未知（Top）とする（`agreed`）。`productionRules_sound` は、Ok の構成子の名前 ok が `"Result.Error"` と異なる全ての ok について、表 `pattern`・`host` に条件を置かずに六つの項目の健全性を示す（`modelTargets_contract`・`modelHttp_contract`）。交換の入口の `ScopeAcceptanceEntry.acceptInput`（`Exchange.Observe`）は、ok を `"Ok"` とし、`productionRules` の表を引く関数を規則にして受理の入力を作る。`acceptInput_sound`・`acceptInput_tableSound` は、この健全性を受理の入力と本体ごとの表へ移す。必須の判定の入力を持たない交換の入力では、規則のない受理の入力を作る（`acceptInput_none_noRules`）。実例の表の δ の成功値の構成子の名前は `Result.Ok` なので、健全性が成功値の対応を述べるのは ok を `"Result.Ok"` とした場合である。理由: 処理系の解析器と形式化した解析の一致を新しい信頼条件にせずに、両者が一致する項目では処理系と同じ既知の範囲で受理するためである。
 
 ### 篩を含む定義とプログラムの適格性
 
@@ -4469,7 +4485,7 @@ CaptureOk は None の位置に任意の Ground な値を保存できる。そ�
 
 `IntervalConnection.ValueRel` は Unit を定数 Unit、Boolean を同じ定数、七幅の整数を同じ幅の同じ定数へ対応付ける。構造値は同じ構成子名と ValuesRel で再帰的に関係する引数列を持つ。Ok と Error の tag は区別される。構造値の型引数と所有元の型付けは別の入力であり、この関係で型付けを代用しない。rangeError は同じ構成子名と、拒否の各整数欄に一致する整数定数列を持つ。内部を同定しない other は、観測 other と実値の非変数性を要求する。toApprox_eq は、この強い関係から観測の一致を取り出す。近似と Ground から構造を復元しない。close は構造値の全引数へ再帰して関係を保持する。七つの整数幅については、ConstOK・同じ幅・同じ数値の観測を受ける const_integer_same_value が、元の定数と幅付きの具体整数から作る定数そのものの等号を返す。constOK_toApprox の存在をこの等号へ読み替えない。
 
-EnvRel は通常の局所値と捕捉を同じ位置で対応付け、None の位置の値は読まない。EnvRelAt はソース変数の読取り先を改名 ξ で指定する。照合値を一位置追加すると元の変数の読取り先を一つずらし、腕の束縛列を前置すると upRen で束縛内と外側を分ける。ArmBodyConnection は、この同じ改名による脱糖した本体のコードと、延長した捕捉の対応を持つ。ExprCode・BlockCode・ArmsCode はそれぞれ既存の表層の脱糖と embedComp/embedArms との構文の等号である。
+EnvRel は通常の局所値と捕捉を同じ位置で対応付け、None の位置の値は読まない。EnvRelAt はソース変数の読取り先を改名 ξ で指定する。照合値を一位置追加すると元の変数の読取り先を一つずらし、腕の束縛列を前置すると upRen で束縛内と外側を分ける。ArmBodyConnection は、この同じ改名による脱糖した本体のコードと、延長した捕捉の対応を持つ。ExprCode・BlockCode・ArmsCode は、それぞれ対象構文を篩付きの表層へ持ち上げて篩付きの表層の脱糖で作った核の項（`Interval.SurfaceCode` の `expr`・`block`・`arms`）との構文の等号である。腕のガードと本体は、パターンで束縛した値を改名から保護し、照合対象の位置を構文で挿入した後に脱糖する（`SurfaceCode.armExpr`・`armBlock`、`Surface.SourceRename`）。
 
 Runs は具体の有限な Steps と EndState の関係である。開始の継続と結果の継続を別に指定でき、既定では同じ継続とする。EndState は normal の ret、returned の escape、failed の error を区別する。failed の理由列は同じ独立評価の Failure との関係を明示する引数であり、応答契約や主定理の新しい前提ではない。具体の算術・δとその理由列の対応は、この局所的な合成の結論に含めない。独立評価の後続の拒否と、実行が最初に失敗する位置を同一視しない。
 
@@ -4537,6 +4553,8 @@ def FirstFailureHandoff : Prop :=
 `IntervalRelationBoundary.ValueShape` は Unit と構造値の必要条件であり、ValueRel.shape が強い関係からこの必要条件を取り出す。ground_signature_obstruction は Unit と構成子の近似が一致しても強い関係は成立せず、近似と Ground からこの必要条件を導けないことを証明する。marked_signature_obstruction は、同じ具体の適格な表と Unit を escape する型付きの元状態でも、近似の一致だけから返却値を Result.Ok の構成子へ対応付けられないことを証明する。
 
 `IntervalConnectionExamples` は、二つの let の途中の return と mark、七幅の整数、三種類の腕、照合失敗、guard の真偽と失敗、照合値の追加位置を越えて読む外側の変数を具体に適用する。normal と returned の構成子の区別、trace の同じ拒否理由を持つ overflow と対象外境界の unknown の対照も含む。concrete_interval_control と concrete_view_observation は、同じ具体の表の WellFormed・WellTyped・CoreAssumptions・有効な σ を同時に満たす。concrete_interval_control は五つの実遷移の同じ終状態に EndState と StateTyE を持つ。result_tag_contrast は Ok/Error、Unit/構造値、および入れ子の引数の不一致を拒否し、同じ Ok の選択を受理する。independent_arm_guards と independent_arm_skip は三種類の各構成子を具体に適用する。ControlLeafSelection は EscMark に加えて ErrPopMark と EscHandle の型付きの適用例を持つ。解放の実枠と fresh の選択は HandlerStoreExamples、pure/IO と builder/Lazy の選択は NormalReplyExamples の既存の具体表を使う。
+
+`Interval.ReportFlow.View report type` は、実解析の同じ報告から読む三成分の近似とその所属の証拠である。正常成分は報告の正常値を含み、失敗成分は報告の失敗可能性と同じである。報告は return の値を記録しないので、return の成分は未知とし、どの値も含む。`IntervalReport.Connection report type` は、この view に篩付きの核への条件付きの接続を添える。正常の場合の条件は、報告が同じ入力の `analyzeExpr` であること、`ProgramGuarantees`、同じ入力から篩付きの表層の脱糖で作ったコードの型付きの開始状態と ret までの有限の実行、抽象環境と具体環境の対応（`Models`）、独立評価の正常値と実値の `ValueRel` であり、結論は到達状態の型付けと正常成分への所属である。return の場合は、型付きの mark の実遷移、到達状態の型付け、return の成分を正常成分へ移した近似（`normalF`）への値の所属を結論する。失敗の場合は、同じ入力の独立評価が追跡した失敗に達すれば、失敗成分が真であることを結論する。`IntervalReport.connect` は任意の報告について接続を構成し、区間の交換の報告はこれを使う（「区間解析の独立交換の読者」）。精密な return の局所補題（`typed_returned_mark`）は、この接続とは別に使える。
 
 次に ContTy の全10構成子を示す。入力/末尾の R と効果、捕捉した注釈、hideBuilders、Adequate を含む前提は、この写しに従う。K_Guard の待機本体の GuardBodyTy は「条件とパターンからの事実」の定義による。
 
