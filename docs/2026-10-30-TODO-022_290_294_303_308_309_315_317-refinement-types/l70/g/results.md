@@ -501,3 +501,15 @@ results.md・spec-copies.md・prepare-surface.md・signature-probe.lean の一�
 ## 三人目の Claude の担当の区間とそれ以後
 
 三人目の Claude の担当の区間（7523c6fb から）、その続き（f7de1668 から）、RV-L70.g の処置の記録は [results-claude.md](results-claude.md) に分けた。
+
+## 取りまとめの作業末の検査（2026-11-07）
+
+| 項目 | 値 |
+|---|---|
+| 基準 | `05341b96dc3cb396d803028c8a19c6a9520035bc`（群 G の開始時の san_benito） |
+| HEAD | `d9597a42`（RV-L70.g と RV-L70.g-docs の処置の確認は可） |
+| コマンド | `formal/.lake/build` の `Benitoite/Release/Refinement` の lib と ir を消した後、`/usr/bin/lockf -t 3600 <tmp>/lean-build.lock /usr/bin/time -l scripts/check.sh --level work --base <基準> --test desugar_export --test coverage_export` |
+| 1回目 | 終了1。`lib_default` で `exchange_tests::typed_try_exchange_matches_independent_corpus_ten` が失敗した（1,392通過・1失敗）。群 G が版16へ書き換えた固定入力 `formal/tests/try-exchange/corpus.json` に、旧版（corpus 10）の表現を補う変換をかけて、既にある欄の検査で止まっていた。担当は統合の試験だけを流していたので、lib の試験で初めて見つかった |
+| 修正 | 取りまとめが `crates/benitoite/tests/desugar_export/lib.rs` の旧版の変換の関数を除き、固定入力の版が16であることを確かめてそのまま比べる形にした（d9597a42）。その試験・`exchange_tests`・clippy・fmt は通った |
+| 2回目 | 終了0。選んだ単位は fmt・lint_default・lib_default（1,393通過・22無視）・tests_related（coverage_export 3通過・1無視、desugar_export 49通過・1無視）・source_rules・skill_generated・spec_tally・spec_examples（7通過）・policy_selftest・formal_build |
+| 外側の時間 | 1,742秒（約29分）。最大常駐 約4.99 GB |
