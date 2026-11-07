@@ -46,9 +46,13 @@
     "Benitoite.Release.Refinement.FirstFailure",
     "Benitoite.Release.Refinement.IntervalConnection",
     "Benitoite.Release.Refinement.IntervalConnectionExamples",
+    "Benitoite.Release.Refinement.Surface.Basic",
     "Benitoite.Release.Refinement.Surface.CheckBuiltinSource",
+    "Benitoite.Release.Refinement.Surface.CheckInfer",
+    "Benitoite.Release.Refinement.Surface.CheckInferCertificates",
     "Benitoite.Release.Refinement.Surface.CheckInput",
     "Benitoite.Release.Refinement.Surface.CheckOpenArgumentLeaves",
+    "Benitoite.Release.Refinement.Surface.CheckOpenInfer",
     "Benitoite.Release.Refinement.Surface.CheckOpenStandardExamples",
     "Benitoite.Release.Refinement.Surface.CheckPreparation",
     "Benitoite.Release.Refinement.Surface.Desugar",
@@ -69,27 +73,27 @@
     "SurfaceCheck.Validation",
     "SurfaceCheck.Walk"
   ],
-  "default_modules": 1300,
+  "default_modules": 1301,
   "axioms": {
-    "targets": 9981,
+    "targets": 11788,
     "axioms": {
-      "none": 4849,
-      "propext": 2093,
-      "Quot.sound,propext": 315,
-      "Classical.choice,Quot.sound,propext": 2724
+      "none": 5447,
+      "propext": 2971,
+      "Quot.sound,propext": 389,
+      "Classical.choice,Quot.sound,propext": 2981
     },
     "parts": {
       "library": {
-        "targets": 8990,
+        "targets": 10797,
         "axioms": {
-          "none": 4345,
-          "propext": 1982,
-          "Quot.sound,propext": 314,
-          "Classical.choice,Quot.sound,propext": 2349
+          "none": 4943,
+          "propext": 2860,
+          "Quot.sound,propext": 388,
+          "Classical.choice,Quot.sound,propext": 2606
         },
         "output": {
-          "bytes": 1984528,
-          "sha256": "2c0443fee067cba08f6ed4b9445c1135f40e3498bcdf6edcfd76dd0636f7e927"
+          "bytes": 2539239,
+          "sha256": "b495b36be266a45d75058b4452d2d3e1c6d1d1d0402403943ee1eb0f37318dcd"
         }
       },
       "BuiltinCheck.Main": {
@@ -193,8 +197,8 @@
   },
   "audit_inputs": {
     "library": {
-      "bytes": 7402,
-      "sha256": "d72529c4d627ec701380b739dc4e1a05a991165a85bb9dcb8f2c7c359af2ed71"
+      "bytes": 7844,
+      "sha256": "7b960db8ae720190cdabf4fce806521800c1d527f73a6f42b9bd33ff2edfa9b9"
     },
     "BuiltinCheck.Main": {
       "bytes": 2329,

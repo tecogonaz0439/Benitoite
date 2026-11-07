@@ -89,6 +89,52 @@ theorem agrees_of_check {atoms : List R.Atom} {sig ref : R.PrimName → Option R
       simp only [hs, hr] at hc
       exact .inr ⟨s, s', rfl, rfl, shapeCheck_sound (hsig n s hs) (href n s' hr) hc⟩
 
+/-! ## 鍵の印の正規化
+
+鍵の制約は等値の制約を含む。制約の判定（`satB`）は鍵の印があれば鍵の判定だけを読むので、鍵の印を持つ制約から
+等値の印を外しても、制約の意味（`ModelConstraints.sat`・`ModelConstraints.admits`）は変わらない。照合は、交換の側の
+署名の型パラメータの制約をこの形にそろえてから比べる。 -/
+
+/-- 鍵の印を持つ制約を、鍵の印だけの制約にそろえる。 -/
+def normKey (p : Benitoite.Release.TParam) : Benitoite.Release.TParam := if p.key then { key := true } else p
+
+theorem satB_normKey (S : Benitoite.Release.SummaryTable) (C : List Benitoite.Release.TParam)
+    (t : Benitoite.Release.Ty) (p : Benitoite.Release.TParam) :
+    Benitoite.Release.satB S C t (normKey p) = Benitoite.Release.satB S C t p := by
+  cases p with
+  | mk e k => cases e <;> cases k <;> rfl
+
+theorem sat_normKey (S : Benitoite.Release.SummaryTable) (C : List Benitoite.Release.TParam)
+    (a : R.Ty) (p : Benitoite.Release.TParam) :
+    Benitoite.Release.Refinement.ModelConstraints.sat S C a (normKey p) ↔
+      Benitoite.Release.Refinement.ModelConstraints.sat S C a p := by
+  simp only [Benitoite.Release.Refinement.ModelConstraints.sat, satB_normKey]
+
+theorem admits_normKey (S : Benitoite.Release.SummaryTable) (ps C : List Benitoite.Release.TParam)
+    (ts : List R.Ty) :
+    Benitoite.Release.Refinement.ModelConstraints.admits S (ps.map normKey) C ts ↔
+      Benitoite.Release.Refinement.ModelConstraints.admits S ps C ts := by
+  simp only [Benitoite.Release.Refinement.ModelConstraints.admits, List.length_map, List.getElem?_map]
+  constructor
+  · rintro ⟨hl, h⟩
+    exact ⟨hl, fun i a p ha hp => (sat_normKey S C a p).mp (h i a (normKey p) ha (by simp [hp]))⟩
+  · rintro ⟨hl, h⟩
+    refine ⟨hl, fun i a p ha hp => ?_⟩
+    obtain ⟨p0, hp0, rfl⟩ := Option.map_eq_some_iff.mp hp
+    exact (sat_normKey S C a p0).mpr (h i a p0 ha hp0)
+
+/-- 署名の型パラメータの制約を `normKey` でそろえる。ほかの欄は変えない。 -/
+def normKeys (s : R.PrimSig) : R.PrimSig :=
+  { s with tparams := s.tparams.map fun d => { d with constraints := normKey d.constraints } }
+
+/-- 表の署名をそろえても、引数・結果・効果の支持は保たれる。 -/
+theorem normKeys_support {atoms : List R.Atom} {sig : R.PrimName → Option R.PrimSig}
+    (h : ∀ n s, sig n = some s → SigSupport atoms s.params s.ret s.eff) :
+    ∀ n s, (sig n).map normKeys = some s → SigSupport atoms s.params s.ret s.eff := by
+  intro n s hs
+  obtain ⟨s0, h0, rfl⟩ := Option.map_eq_some_iff.mp hs
+  exact h n s0 h0
+
 /-! ## 標準表の合成済みの行との照合 -/
 
 /-- 標準表の合成済みの行の署名（合成表の型の制約の判定で作った署名）。 -/

@@ -497,3 +497,154 @@ results.md・spec-copies.md・prepare-surface.md・signature-probe.lean の一�
 4. 節の辞書の証拠の番号の範囲を検査器で確かめるか（今は受理。脱糖の結果は正しい入力と同じ）。
 5. `check_named.py` と `test_batch2_exchange.py` の書き出しの照合を、準備の失敗で止まらない分類の形に直すか。
 6. 01-12 の構築器の5節、07-04「証明する性質」と「目的と範囲」、07-04 の旧ファイルの名前、`formal/README.md` の書き直しを、どの単位で行うか（上の「残っているもの」）。
+
+## 三人目の Claude の担当の区間（7523c6fb から。2026-11-07 13:46〜）
+
+基準は取りまとめのコミット `7523c6fbe63c2007f13e9067ae3cce277f279ae7`（HEAD と一致を確認）。git の書き込み、`scripts/check.sh`・`scripts/check-formal.sh` の全体の実行はしていない。サブエージェントは起動していない。`<tmp3>` はこの担当の一時領域、`<tmp42>` は L70.42 の一時領域を表す。この担当は `docs/design/` と `formal/README.md` を変えていない（並行の文書の担当の受け持ち）。
+
+### 時刻
+
+| 区間 | 開始 | 終了 | 結果 |
+|---|---|---|---|
+| 読む・調べる | 13:46 | 13:58 | |
+| 1・2・4 の Lean の変更 | 13:58 | 14:04 | 単独の検査（`lake env lean -M 12288`）で `BuiltinAgreement`・`CheckInput` を確かめた |
+| 既定ビルド（1回目） | 13:51:16 | 14:06:01 | 終了1。`SurfaceCheck/Validation.lean` の `Prepared` の例が新しい欄を欠いた |
+| 既定ビルド（2回目） | 14:04:51（ロック待ち） | 14:06:04 | 終了0（2,323ジョブ）。最大常駐 1.90 GB |
+| 5 の台本の変更・局所の実行 | 14:00 | 14:20 | 下の 5 |
+| 数え直し（表層の一括検査） | 14:06 | 15:01:39 | `named-programs` を除く47文書。`named-programs` は止めた（下の 1） |
+| 固定入力の試験 | 14:07 | 14:40 | 下の「作業末の検査」 |
+| 公理監査 | 14:30:26 | 14:32:29 | 下の「作業末の検査」 |
+| `named-programs` の準備だけの数え直し | 15:02:17 | 15:18:56 | 下の 1。最大常駐 8.58 GB |
+| 範囲の試験・局所の実行のやり直し（分類の表を変えた後） | 15:19 | 15:21 | 下の「作業末の検査」 |
+
+### 1. 一致の判定の範囲（閉包）
+
+`Exchange.CheckInput.prepareParts` の標準表との一致の判定（`BuiltinAgreement.standardCheck`）の対象を、表の全行から閉包 `Exchange.CheckInput.closureOf` の組込みの名前に限った。
+
+閉包の定義（実行できる関数。`CheckInput.lean` の「標準表との一致の判定の対象」）:
+
+- 入力は、名前を標準の名前へ写した後の交換の入力・組込みの表・標準ライブラリの宣言・演算子の表である（照合の表と同じ名前）。
+- `used`: 入力の JSON に値として現れる文字列の集合（`jsonStrings`。欄の名前は含めない）。
+- `prims`: 組込みの表の行のうち、名前が `used` に現れる行と、演算子の表の行で演算子の名前が `used` に現れる行の組込み。
+- `data`: 型の文字列の集合（入力の文字列、名前が `used` に現れる標準ライブラリの関数の宣言の文字列、`prims` の署名の文字列）に、名前か構成子の名前が含まれる data の宣言から始め、data の宣言の構成子の引数に現れる data を加える段（`dataStep`）を、data の宣言の数より一回多く繰り返す。一段ごとに宣言を一つ以上加えるか変わらなくなるので、この回数で閉じる。
+- 参照を文字列の出現で数えるので、閉包は参照する名前を含む上への近似である（文字列の値が組込みの名前と同じなら、その行も対象になる）。対象を広げる側の近似なので、判定は緩まない。
+
+判定は閉包の `prims` について行い、閉包の中の差は緩めずに断る（拒否の文は前と同じ `builtin signature disagrees with the standard table: [...]`）。`data` は判定では読まない。data の宣言の差は、その data を署名に持つ組込みの署名の差として現れる（例: `Scope.ScopeError` の構成子 `At` は `Scope.checkPathIn` の差）。
+
+`prepare_agrees` の言明を閉包の行について述べる形に改めた（下の「文書への申し送り」）。`prepare_sound`・`prepare_entry` の言明は変えていない。
+
+数え直し（L70.42 の新しい書き出しの全ての組込みの表、48文書・1,455入力）:
+
+| 対象 | 評価した入力 | 準備を通った | 準備の段で断った |
+|---|---:|---:|---:|
+| `named-programs`（準備の段だけ。`<tmp3>/scripts/prep.lean`） | 1,373 | 1,342 | 31 |
+| ほかの47文書（表層の一括検査。台本 `<tmp3>/scripts/run_all.sh`・`tally.py`） | 81 | 61 | 20 |
+| 計 | 1,454 | 1,403 | 51 |
+
+`scope-tables`（1入力）は、前と同じく組の誤り（`sidecar input identity mismatch`。合成の表で stdlib を持たない）で評価できない。
+
+準備の段で断った51入力の原因（一つの入力が複数の原因を持つ。前の区間の数は全行の判定のもの）:
+
+| 原因 | 名前 | 入力の数 | 前の区間 |
+|---|---|---:|---:|
+| `Http.sendIn` | `Http.sendIn` | 20 | 1,454 |
+| `Scope.ScopeError.At` | `Scope.checkPathIn` | 9 | 9 |
+| 結果型の篩 | `List.append` 7・`List.head` 3・`List.tail` 2・`Map.fromList` 14・`Map.toList` 4・`Set.fromList` 7・`Set.toList` 3 | 23 | 23 |
+| 鍵の印 | — | 0 | 11 |
+| その他 | — | 0 | 0 |
+
+組み合わせは、`Http.sendIn` だけ19、結果型の篩だけ22、`At` だけ9、`Http.sendIn` と結果型の篩1である。`Http.sendIn` と `At` は、プログラムがその組込みを呼ぶ入力だけに残った。
+
+準備を通った入力の表層の検査（`named-programs` を除く47文書、61入力）: 一致393・不一致1・`q11`・範囲外・遅延の制限0。不一致の1件は `request-in`（`fn:43`、`call signature is invalid`、診断 `requiresReview`）で、全行の判定のときは準備の段で隠れていた差である（F-REG への申し送り）。`named-programs` の検査の本体は全体では流していない（「計画からのずれ」）。順序を保って選んだ20入力（1,087定義）の試しでは、準備を通った19入力の一致722・不一致0、1入力が結果型の篩で準備の段で断られ、328秒だった。
+
+記録: `named-programs` の準備の結果 `<tmp3>/prep-np.jsonl`（87,549 バイト、SHA-256 `2f040e3d671bc37effb68fe2cb6d772e61c65505324ef330ad4fdc215bbddaca`）、ほかの47文書の集計 `<tmp3>/tally-run1.json`（SHA-256 `e29504c7817ab2274545506af2a1fb647a705d45faf5506a959500e4880e585f`）。
+
+### 2. 鍵の印
+
+Lean の制約の意味で、鍵の制約は等値の制約を含むことを短い証明で示せた。`Benitoite.Release.satB S C t p` は `p.key` が真なら鍵の判定 `satisfiesB S C true t` だけを読むので、鍵の印を持つ制約から等値の印を外しても値は変わらない。
+
+- `Exchange.BuiltinAgreement.normKey`（鍵の印を持つ制約を `{ key := true }` にする）
+- `Exchange.BuiltinAgreement.satB_normKey : satB S C t (normKey p) = satB S C t p`（場合分けと `rfl`）
+- `Exchange.BuiltinAgreement.sat_normKey : ModelConstraints.sat S C a (normKey p) ↔ ModelConstraints.sat S C a p`
+- `Exchange.BuiltinAgreement.admits_normKey : ModelConstraints.admits S (ps.map normKey) C ts ↔ ModelConstraints.admits S ps C ts`
+- `Exchange.BuiltinAgreement.normKeys`（署名の型パラメータの制約をそろえる）と `normKeys_support`（引数・結果・効果の支持を保つ）
+
+照合の側で、写した表の署名 `canonicalSig` を `normKeys` でそろえてから比べる。標準表の側（`TParam.keyC = { key := true }`）はそのまま比べる。検査器の表（写さない交換の表）は変えていない。数え直しで鍵の印の差は0件になった（前は15名・11入力）。R10a の義務にはしない。
+
+### 3. 取得関数の結果型の篩
+
+Lean を変えずに分類した。篩付きの脱糖は取得関数の結果型に欄の関係の篩を付ける（`Surface.accessorRet`）が、処理系の書き出し（交換の核）は付けない。desugarDiff の `definition.header.ret` が一件ずれる。固定入力では named 10件・extensible 1件、処理系の新しい書き出しでは全ての取得関数（例: generated-record-property の5件）に出る。F-REG への申し送りに R10b の義務として書いた。
+
+### 4. 節の辞書の証拠の番号
+
+検査器が範囲外の番号を断るようにした。
+
+- `Surface.DictEv.inScope`・`DictEv.inScopeList`（`Surface/Basic.lean`）: 節の辞書の番号が節の辞書の数より小さいことの判定。
+- 推論（`CheckOpenInfer.inferExprFuel`・`CheckInfer.inferExprFuel`）の `funDicts`・`opDicts`・`methName` の分岐は、辞書の列が範囲の外の番号を持てば `clause dictionary scope mismatch` で断る。
+- 辞書の推論（`CheckInfer.inferDict`。上位の辞書の案内が読む）は、範囲の外の番号で結果なしを返す。案内のない辞書は独立の辞書検査を通らないので、実装の宣言として断る。
+- 推論は検査器の案内を作る側であり、健全性の言明（案内付きの検査）とその証明は変わらない。型付けの規則（`DictEv.HasType.clause`）も変えていない。
+
+確認:
+
+- batch2 の `test_clause_metadata_and_scope` の期待（`surfaceCheck` の終了1、理由 `clause dictionary scope mismatch`）は、期待を変えずに通った（batch2 の8試験が全て通る）。
+- 新しい書き出しの全コーパス（`<tmp42>/new/desugar` の corpus 174ファイル）の節の辞書の証拠は1件で、範囲の外の番号は0件（台本 `<tmp3>/scripts/scan_clause.py`）。判定はこの形の入力だけを断るので、ソースから作られる入力の受理は変わらない。数え直しの報告にも `clause dictionary scope mismatch` の拒否は0件だった。
+
+### 5. 分類の形への統一
+
+- `crates/benitoite/tests/desugar_export/check_named.py`: 表層の検査（`surfaceCheck`・`surfaceCheckAll`）を `run_surface` で実行する。準備の段が標準表との差（`test_range_sources.py` の `STANDARD_GAPS`・`preparation_gaps` の原因）だけで断ったときは、原因を `PREPARATION_REJECTED` に残して続け、最後に `surface-preparation-rejections.json` に原因ごとの件数を書く。ほかの失敗は従来どおり止める。`run` は変えていない（`test_batch5_exchange.py` が読む）。
+- `formal/tests/test_batch2_exchange.py` の `check_rust`: 同じ分類で、準備の段で断った入力を返す。
+- `test_range_sources.py` の `STANDARD_GAPS` から鍵の印の15名を除いた（2 で差でなくなった）。
+- 局所の実行（`<tmp3>/scripts/local_named.py`。`named-types`・`named-calls`・`generated-record-property` と幅の書き出しの写しを `<tmp3>/named-local/` に置いて実行）: 変更前の実行ファイル（全入力を `Http.sendIn` で断る）で、表層の検査の8件を原因 `Http.sendIn` で分類して続け、`named-types`・`named-calls`・幅は通った。`generated-record-property` は desugarDiff の取得関数の差（3 の R10b）で止まる（準備の分類の対象外）。変更後の実行ファイルでの batch2 の書き出しの照合（`target/formal-batch2-{op,failure,character}`）は、準備の段で断った入力0件で通った。
+
+### F-REG への申し送り（この区間）
+
+| 対象 | 入力の形・件数 | 0件にする担当・義務 |
+|---|---|---|
+| `Http.sendIn`（`Http.Response` を処理系は record の data、標準表は不透明型） | 閉包の判定で断った入力 20（1,454 から減った） | R50 |
+| `Scope.ScopeError.At`（`Scope.checkPathIn`） | 9 | R30 |
+| 結果型の篩（7名） | 23 | R 段の処理系の篩の書き出し |
+| 鍵の型パラメータの等値の印 | 0（照合が鍵の印にそろえる。2） | なし（R10a の義務にしない） |
+| その他の準備の失敗 | 0 | — |
+| 準備を通った入力 | 評価した1,454のうち1,403 | F-REG の表層の検査の比較の対象になる |
+| R50 の義務: 検査器が閉包の外の行を読まないことの接続 | `prepare_agrees` は閉包の組込みの行の欄の一致だけを述べる。検査器（写さない交換の表を読む）の実行がプログラムの検査で閉包の外の組込み・data の行を読まないこと（又は読んでも結果に効かないこと）は示していない。閉包は文字列の出現で数える上への近似なので、この接続は閉包の定義の像の上で示せばよい | R50 |
+| R10b の義務: 取得関数の結果型の欄の関係の篩（3） | desugarDiff の `definition.header.ret` の差。固定入力 named 10件・extensible 1件、処理系の書き出しの全ての取得関数（generated-record-property の5件など） | R10b |
+| 表層の検査の不一致 `request-in`（`fn:43`、`call signature is invalid`） | 準備を通るようになって現れた1件。診断 `requiresReview` | F-REG の全比較で原因を確かめる |
+| `named-programs` の表層の一括検査の所要 | 準備を通る1,342入力で検査の本体が走る。試しで約0.3〜0.46秒/定義、73,853定義で6〜9時間の見込み | F-REG の全比較の時間の見積もりに入れる |
+
+### 文書への申し送り
+
+並行の文書の担当が 01-12・07-04 に取り込む内容である。
+
+| 箇所 | 内容 |
+|---|---|
+| 07-04「証明する性質」の `Exchange.BuiltinAgreement.standardCheck` の段落 | 判定の対象は、交換の表の全ての名前でなく、閉包 `Exchange.CheckInput.closureOf` の組込みの名前（`Closure.prims`）のうち標準表の合成済みの名前である。名前は、交換の内部名を同じ入力の宣言から決まる標準の名前へ写した後の名前で照らす（今の段落の「名前は交換の名前のまま照らし、標準の名前へ写さない」は今の実装と合わない）。型パラメータの制約は、写した表の側を `BuiltinAgreement.normKeys` でそろえて比べる |
+| 同上、閉包の定義 | `closureOf input b s operators : Closure`（`prims`・`data`）。参照は入力の JSON に値として現れる文字列（`jsonStrings`）で数える。`prims` は名前が現れる行と、演算子の名前が現れる演算子の表の行の組込み。`data` は、入力の文字列・名前が現れる標準ライブラリの関数の宣言・`prims` の署名に名前か構成子の名前が現れる data の宣言から、構成子の引数の data を加える段（`dataStep`）を data の宣言の数より一回多く繰り返した結果。上への近似であり、判定を緩めない。`data` は判定では読まず、data の差はそれを署名に持つ組込みの差として断る |
+| 同上、`prepare_agrees` の言明 | `theorem Exchange.CheckInput.prepare_agrees {input b s operators} {p : Prepared} (h : prepare input b s operators = .ok p) {L : StandardModel.NameLists} (hL : L.WF) {P} (T : StandardModel.DataTable P) (A : StandardModel.AssumedTable) : ∀ n ∈ BuiltinAgreement.composedNames p.closure.prims, ∃ s s', p.canonicalSig n = some s ∧ (StandardModel.complete L T A).sig n = some s' ∧ BuiltinAgreement.ShapeEq s s'`。`p.canonicalSig` は写した表の署名を `normKeys` でそろえたもの。検査器の表と写した表の対応（名前の写しと鍵の印のそろえ）と、検査器が閉包の外の行を読まないことは述べない（R50 の義務）。`prepare_sound`・`prepare_entry` は変わらない |
+| 同上、鍵の印 | `BuiltinAgreement.normKey p = if p.key then { key := true } else p`。`satB_normKey : satB S C t (normKey p) = satB S C t p`、`sat_normKey : ModelConstraints.sat S C a (normKey p) ↔ ModelConstraints.sat S C a p`、`admits_normKey : ModelConstraints.admits S (ps.map normKey) C ts ↔ ModelConstraints.admits S ps C ts`。鍵の制約は等値の制約を含むので、鍵の印を持つ制約から等値の印を外しても制約の意味は変わらない |
+| 01-12「篩を含む表層の検査と受理」の検査器の記述（節の辞書の証拠） | 検査器は、節の辞書の証拠 `DictEv.clause s i d` の番号が `i < s.dictCount` であることを確かめる（`Surface.DictEv.inScope`）。範囲の外の番号は `ClauseScope.slot` の自然数の引き算が切り詰めて範囲の中の番号と同じ位置を指すので、推論の `funDicts`・`opDicts`・`methName` の分岐が `clause dictionary scope mismatch` で断り、辞書の推論 `CheckInfer.inferDict` は結果なしを返す。型付けの規則 `DictEv.HasType.clause` は変わらない（検査器が規則より狭い） |
+
+### 止めずに進めた変更（この区間）
+
+| 理由・反例 | 選んだ案 | 退けた案 | 範囲のない場合の系 |
+|---|---|---|---|
+| 一致の判定が表の全行を照らし、プログラムが呼ばない `Http.sendIn` の差で評価できた全入力を断っていた | 判定の対象をプログラムが参照する組込みの閉包に限る（取りまとめの決定(1)）。参照は入力の文字列の出現で数える上への近似 | 参照を項の構文から正確に集める（読み落としがあると判定が緩む） | 閉包の外の行は判定しない。検査器の表・`prepare_sound` は変えない |
+| 処理系は鍵の型パラメータに等値と鍵の両方の印を書き、標準表は鍵の印だけを書く | 写した表の署名を `normKeys` でそろえて比べる（`satB_normKey`・`sat_normKey`・`admits_normKey` で意味を保つ） | `ShapeEq` の型パラメータの欄を正規化の上の等号に変える（両側をそろえる。`prepare_agrees` の結論の形が変わる） | 鍵の印のない制約は変えない |
+| `ClauseScope.slot` の自然数の引き算の切り詰めで、範囲の外の番号の節の辞書の証拠が範囲の中の番号と同じ位置を指し、受理されていた | 推論で範囲の外の番号を断る（保守的な側。交換の入力だけを狭める） | 型付けの規則 `DictEv.HasType.clause` に前提を足す（規則の変更） | ソースから作る入力は範囲の中の番号だけを持つ（数えた） |
+
+### 作業末の検査
+
+| 検査 | 結果 |
+|---|---|
+| 既定ビルド（共有ロック下。最後の Lean の変更の後） | 終了0（2,323ジョブ、14:04:51〜14:06:04、7入口のリンクを含む） |
+| 公理監査（`verify_g2.py --prepare` が作る、群 G が足した16・変えた52モジュールの全宣言。private・生成宣言を含む。この区間で変えた `Surface/Basic`・`CheckInfer`・`CheckOpenInfer`・`CheckInferCertificates` は作業木との差で対象に入る。共有ロック下、14:30:26〜14:32:29、根ごとに9入力） | 11,788宣言。公理なし5,447・`propext` 2,971・`propext, Quot.sound` 389・`propext, Classical.choice, Quot.sound` 2,981。`sorryAx` と新しい公理は0。最大常駐 2.24 GB。生の出力9ファイルは計3.2 MB、連結の SHA-256 `67be8a7abbeabe29e12f4285dd4e921c74497a3f3adb8d7f74379ae9244aacff`。記録は [verification-g2.json](verification-g2.json) |
+| 照合（`verify_g2.py`） | 成功（足した16モジュールは既定 import に入る。足した・変えたモジュールに `sorry` と `axiom` はない。処理系の本体の変更は0） |
+| `cargo test -p benitoite --test desugar_export --test coverage_export` | 終了0（網羅性 3通過・1無視、脱糖 49通過・1無視。24秒） |
+| `python3 -B -m unittest scripts.check.test_policy` | 終了0（32試験、35秒） |
+| 固定入力の試験（width・try・batch2・batch3・batch4・range） | 終了0（batch2 は前の区間の失敗1件が通った） |
+| 固定入力の試験（named・extensible） | 終了1。残る失敗は named 10件・extensible 1件で、全て 3 の取得関数の結果型の篩の desugarDiff の差（`definition.header.ret`、R10b）。前の区間と同じ件数 |
+| 書き出しを読む試験（`test_range_sources.py`・`test_range_budget_sources.py`・`test_range_known_differences.py`・`test_batch3_exchange.py --rust-dir`・`test_batch5_exchange.py --rust-dir`・batch2 の `check_rust`。書き出しは `<tmp42>/new/desugar` の写し） | 全て終了0。範囲の実ソース17事例は一致5・準備の段で断った12（`Http.sendIn` 9・`At` 3、前は17全て）・不一致0。範囲の予算の2事例は `At` で準備の段で断った。batch3・batch5・batch2 の書き出しの照合は準備の段で断った入力0 |
+
+### 計画からのずれ
+
+- 1回目の既定ビルドが、`SurfaceCheck/Validation.lean` の `Prepared` の例の欄の不足で終了1だった。例に空の閉包を足して2回目で終了0。
+- 数え直しの `named-programs`（1,792入力・73,853定義）の表層の一括検査は、準備を通る入力が増えて検査の本体が走るようになり、2入力・54定義の試しで約0.46秒/定義、全体で約9時間の見込みになった。3,239秒で止め（PID 指定）、`named-programs` は準備の段だけを数えた（`<tmp3>/scripts/prep.lean`。前の担当の台本の写し）。ほかの47文書は検査の本体まで走らせた。

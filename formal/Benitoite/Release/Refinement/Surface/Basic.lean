@@ -144,6 +144,20 @@ def ClauseScope.slot (s : ClauseScope) (i : Nat) : Nat :=
   1 + s.arity + (s.dictCount - 1 - i)
 
 mutual
+  /-- 節の辞書の番号が節の辞書の数より小さい。範囲の外の番号は、`ClauseScope.slot` の自然数の引き算が切り詰めて
+  範囲の中の番号と同じ位置を指すので、検査器はこの判定で断る。 -/
+  def DictEv.inScope : DictEv → Bool
+    | .impl _ _ ds => DictEv.inScopeList ds
+    | .local _ => true
+    | .clause s i _ => decide (i < s.dictCount)
+    | .super d _ => d.inScope
+
+  def DictEv.inScopeList : List DictEv → Bool
+    | [] => true
+    | d :: ds => d.inScope && DictEv.inScopeList ds
+end
+
+mutual
   /-- V-Dict・受け取った辞書・V-Super。計算も let も作らない。 -/
   def DictEv.toVal : DictEv → Val
     | .impl i ts ds => .dict i ts (DictEv.toValList ds)

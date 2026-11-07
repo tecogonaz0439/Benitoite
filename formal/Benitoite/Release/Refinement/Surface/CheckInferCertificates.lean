@@ -220,6 +220,7 @@ mutual
         let a ← (Γ[i]?).join
         pure (a, .local)
     | .clause scope i depth => do
+        guard (i < scope.dictCount)
         let a ← (Γ[depth + scope.slot i]?).join
         pure (a, .clause)
     | .impl i ts ds => do

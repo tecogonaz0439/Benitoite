@@ -63,7 +63,7 @@ private def material : Materials :=
 private def prepared : Prepared :=
   ⟨material, material.input q, true, true, true, [],
     q.formation.atoms.map Benitoite.Exchange.fromAtom, (Benitoite.Exchange.filterMap_toRelease_fromAtom _).symm,
-    Benitoite.Exchange.ScopeAcceptanceEntry.acceptInput none, [], [], fun _ => none⟩
+    Benitoite.Exchange.ScopeAcceptanceEntry.acceptInput none, [], [], fun _ => none, ⟨[], []⟩⟩
 -- 実装のメソッドの末尾の照合は、型クラスの宣言の結果型を実装の対象で具体化した型へ補正する。
 #guard match ((lookup (normalize prepared).1.impls "I").bind
     (fun i => lookup i.methods "pick")) with

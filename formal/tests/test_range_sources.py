@@ -49,15 +49,12 @@ def run(tool, args, out, expected=0):
     return read(out)
 
 
-# 標準表との一致の判定が断る組込みと、その原因。処理系の書き出しが篩付きの標準表にまだ追いついていない差であり、
-# 照合では外さない（Http.Response の表現、Scope.ScopeError の構成子 At、結果型の篩、鍵の型パラメータの等値の印）。
+# 標準表との一致の判定（プログラムが参照する組込みの閉包の行）が断る組込みと、その原因。処理系の書き出しが篩付きの
+# 標準表にまだ追いついていない差であり、照合では外さない（Http.Response の表現、Scope.ScopeError の構成子 At、
+# 結果型の篩）。鍵の型パラメータの等値の印は、照合が鍵の印にそろえて比べるので差にならない。
 STANDARD_GAPS = {'Http.sendIn': 'Http.sendIn', 'Scope.checkPathIn': 'Scope.ScopeError.At',
                  **{n: 'refined result' for n in ('List.append', 'List.head', 'List.tail', 'Map.fromList', 'Map.toList',
-                                                  'Set.fromList', 'Set.toList')},
-                 **{n: 'key parameter equality' for n in ('Map.contains', 'Map.empty', 'Map.get', 'Map.keys', 'Map.remove',
-                                                          'Map.set', 'Map.size', 'Map.values', 'Set.add', 'Set.contains',
-                                                          'Set.difference', 'Set.intersection', 'Set.remove', 'Set.size',
-                                                          'Set.union')}}
+                                                  'Set.fromList', 'Set.toList')}}
 
 
 def preparation_gaps(text):

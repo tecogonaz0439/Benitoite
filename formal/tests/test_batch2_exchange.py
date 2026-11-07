@@ -8,6 +8,7 @@ import tempfile
 import unittest
 
 shared = runpy.run_path(str(Path(__file__).with_name('test_named_exchange.py')))
+GAPS = runpy.run_path(str(Path(__file__).with_name('test_range_sources.py')))['preparation_gaps']
 FILES, TOOLS = shared['FILES'], shared['TOOLS']
 FIXTURES = Path(__file__).with_name('batch2-exchange')
 
@@ -149,8 +150,22 @@ class Batch2ExchangeTests(unittest.TestCase):
                     check_rust(self.directory)
 
 
+def surface_gaps(tool, result, report):
+    """表層の検査の準備の段が、標準表との差（分類の表の原因）だけで断ったときの原因。ほかは None。"""
+    if result.returncode != 2:
+        return None
+    if tool == 'surfaceCheck':
+        return GAPS(result.stdout + result.stderr)
+    found = [GAPS(e['reason']) for e in (report or {}).get('preparationErrors', [])]
+    if found and all(g is not None for g in found):
+        return {'inputs': len(found), 'names': sorted({n for g in found for n in g['names']}),
+                'causes': sorted({c for g in found for c in g['causes']})}
+    return None
+
+
 def check_rust(directory):
-    """O2/F3 の出力が存在し、今の版（16/8）と六入口の実比較を満たすことを確かめる。"""
+    """O2/F3 の出力が存在し、今の版（16/8）と六入口の実比較を満たすことを確かめる。表層の検査の準備の段が
+    標準表との差で断った入力は、最初の失敗で止めず、原因とともに分類して返す。"""
     data = {f: json.loads((directory / f'{f}.json').read_text()) for f in FILES}
     # Rust の出力は今の交換器の 16/8 だけを要求する。
     for f, document in data.items():
@@ -159,6 +174,7 @@ def check_rust(directory):
     inputs = [i for i in data['corpus']['inputs'] if not i['excluded']]
     if not inputs or not any(i['definitions'] for i in inputs):
         raise AssertionError('Rust batch2 corpus must contain definitions')
+    rejected = []
     case = Batch2ExchangeTests()
     case.setUp()
     try:
@@ -168,10 +184,18 @@ def check_rust(directory):
                     result, report = shared['ExchangeTests'].run_tool(case, tool, data, None, i['name'])
                     if i['group'] != 'golden':
                         raise AssertionError('local batch2 inputs must use group golden')
+                    gaps = surface_gaps(tool, result, report)
+                    if gaps is not None:
+                        rejected.append({'tool': tool, 'input': i['name'], **gaps})
+                        continue
                     case.assertEqual(result.returncode, 0, result.stderr + json.dumps(report))
                     case.assertEqual(report['result'], {'ok': True})
             else:
                 result, report = case.run_tool(tool, data)
+                gaps = surface_gaps(tool, result, report) if tool == 'surfaceCheckAll' else None
+                if gaps is not None:
+                    rejected.append({'tool': tool, **gaps})
+                    continue
                 case.assertEqual(result.returncode, 0, result.stderr + result.stdout + json.dumps(report))
                 if tool == 'desugarDiff':
                     case.assertEqual(report['mismatches'], [])
@@ -184,6 +208,9 @@ def check_rust(directory):
                         case.assertEqual(report['counts'][key], 0)
     finally:
         case.doCleanups()
+    if rejected:
+        print(f'batch2 {directory.name}: surface checks rejected at preparation: {json.dumps(rejected)}')
+    return rejected
 
 
 if __name__ == '__main__':

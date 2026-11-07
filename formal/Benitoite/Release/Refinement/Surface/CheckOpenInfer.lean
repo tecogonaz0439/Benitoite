@@ -283,6 +283,7 @@ mutual
           let (t, _, _) ← headInfo q rows C Γ path e
           pure (node (.dependentFn t) Eff.empty .E_ExternalName)
       | .funDicts _ _ _ ds names ps _ | .opDicts _ _ ds names ps | .methName _ _ _ _ ds names ps => do
+          unless DictEv.inScopeList ds do fail path "clause dictionary scope mismatch"
           let (t, _, hg) ← headInfo q rows C Γ path e
           let k := ps.length
           let env := bindParams (hideConts Γ) ps
