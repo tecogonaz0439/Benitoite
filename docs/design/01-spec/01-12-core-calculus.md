@@ -887,7 +887,7 @@ mark ▷ K  =  mark :: K    （それ以外）
 
 【決定】Lean の型付き表層には、`Expr.tryResultDie T ok err dict show exit e message` と `Expr.tryOptionDie T someCon noneCon exit e message` を置く。これは型付け・脱糖・表層の検査のモデルである。型付け規則と性質 1、checker の受理と健全性は両方を含む。既存の `tryResult`・`tryOption` は早期リターンの意味と受理条件を保つ。理由: 説明と表示を含む失敗側の展開が型とエフェクトを保ち、検査の成功からその型付けを導けることを確かめるためである。
 
-T は成功時の型、ok・err・someCon・noneCon は解決済みの構成子名、dict は既存の `DictEv`、show はメソッド名、exit は組み込みの関数名である。e と任意の説明 message、dict の局所参照は、全て元の字句スコープで保持する。囲む関数の戻り値の型はこの構文に含めない。辞書の型・メソッドの純粋性・exit の種類と型は、次の型付けの前提で検査する。
+T は成功時の型、ok・err・someCon・noneCon は解決済みの構成子名、dict は既存の `DictEv`、show はメソッド名、exit は組み込みの関数名である。e と任意の説明 message、dict の局所参照は、全て元の字句スコープで保持する。囲む関数の戻り値の型はこの構文に含めない。辞書 dict のメソッド show の呼出しと exit の呼出しは、次の型付けの前提で、型と効果を検査する。
 
 型付けの二規則は次の前提を持つ。C は型パラメータの制約、Γ は局所環境、R は任意の戻り先、p は任意の位置である。
 
@@ -896,11 +896,11 @@ T は成功時の型、ok・err・someCon・noneCon は解決済みの構成子�
 | `E_TryResultDie` | 成功と失敗の構成子のパターンが二つの型引数のデータ型 `d[T,E]` の値に型付き、成功の束縛の型の正規形が T の正規形に等しい。`Γ; R ⊢ e : d[T,E] ! ε`、二分岐の現在の値についての網羅性。失敗の値に辞書 dict のメソッド show を呼ぶ頭の型付け（`CallHeadTy` の `methName`）と、その結果の型が String 以下で効果が ε に覆われること。組み込みの関数 exit を型引数 T と整数 1 で呼ぶ頭の型付け（`CallHeadTy` の `primName`）と、その結果の型が T 以下で効果が ε に覆われること。下記の説明の条件 | `Γ; R ⊢ tryResultDie … : T ! ε` |
 | `E_TryOptionDie` | 成功の構成子のパターンが一つの型引数のデータ型 `d[T]` の値に型付き、成功の束縛の型の正規形が T の正規形に等しく、失敗の構成子は引数を持たない。`Γ; R ⊢ e : d[T] ! ε`、二分岐の現在の値についての網羅性、上と同じ exit の呼出しの条件、下記の説明の条件 | `Γ; R ⊢ tryOptionDie … : T ! ε` |
 
-ここで Result・Option は構成子の形を表す記法であり、モデルは既存の try と同じくデータ型の名前を固定しない。説明がある場合は、同じ C と継続の束縛を隠した `hideConts Γ`、R=None、非末尾位置で、説明が String 型・空のエフェクトを持つことを求める。これにより直接の return と外側の resume は型付けできない。内側の明示 lambda は通常どおり自分の戻り先を設定する。モデルの型付けは、説明の中の直接の die の try を、説明の中のハンドラが `Process.Exit` を処理する場合に限って受理する。そのほかの直接の try は、裸／明示 return では R=None、die では空のエフェクトの条件に反するので型付けできない。説明の中の直接の try をすべて禁じるのは、モデルの型付けの外側の構文検査である。
+ここで Result・Option は構成子の形を表す記法であり、モデルは既存の try と同じくデータ型の名前を固定しない。説明がある場合は、同じ C と継続の束縛を隠した `hideConts Γ`、R=None、非末尾位置で、説明が String 型・空のエフェクトを持つことを求める。これにより直接の return と外側の resume は型付けできない。内側の明示 lambda は通常どおり自分の戻り先を設定する。exit の署名の効果が `Process.Exit` である表では、モデルの型付けは、説明の中の直接の die の try を、説明の中のハンドラが `Process.Exit` を処理する場合に限って受理する。そのほかの直接の try は、裸／明示 return では R=None、die では空のエフェクトの条件に反するので型付けできない。説明の中の直接の try をすべて禁じるのは、モデルの型付けの外側の構文検査である。
 
-exit の呼出しの効果は ε に覆われなければならないので、`Process.Exit` は式の効果 ε に含まれる（篩付きの表層の `Surface.Rules`）。show と exit は、ほかの直接の呼出しと同じ頭の型付けで検査し、die のための専用の条件を置かない。Never 型と新しい終了操作は加えない。
+show と exit の呼出しの効果は ε に覆われなければならない（篩付きの表層の `Surface.Rules`）。したがって、標準の表のように exit の署名の効果が `Process.Exit` であれば、式の効果 ε は `Process.Exit` を覆う。show と exit は、ほかの直接の呼出しと同じ頭の型付けで検査し、die のための専用の条件を置かない。Never 型と新しい終了操作は加えない。
 
-クラス・メソッド・組み込みの識別名は解決済みの抽象名であり、標準束縛への名前解決自体はこの型保存の保証に含めない。純粋な一引数の String のメソッドと exit の種類・効果を持つ組み込みを宣言表で検査するため、型規則は標準の名前に限定するソースの条件より広い。既存の早期リターンの規則に Show の条件は加えない。
+クラス・メソッド・組み込みの識別名は解決済みの抽象名であり、標準束縛への名前解決自体はこの型保存の保証に含めない。型規則は、show の効果が空であることも、exit が終了の種類の組み込みであることや所属エフェクトが `Process.Exit` であることも検査せず、宣言表の署名による頭の型付けだけを求める。このため型規則は、標準の名前に限定するソースの条件より広い。既存の早期リターンの規則に Show の条件は加えない。
 
 篩付きの表層の検査器 `Check.checkExprAt` は、`E_TryResultDie`・`E_TryOptionDie` と説明付きの二規則の前提を同じ順に確かめる。
 
@@ -917,7 +917,7 @@ exit の呼出しの効果は ε に覆われなければならないので、`P
 
 説明は元の環境で非末尾位置として脱糖してから、Result では入力と Error の二つの束縛の下へ、Option では入力の一つの束縛の下へ `Comp.rename` で移す。辞書も Result の二つの束縛の下へ移し、説明の let があれば原因の計算全体をさらに一つ移す。ラムダなどの内部の束縛は rename の `upRen` で保護する。`dieFailure` はこの説明・原因・終了の順序を組み立てる補助である。説明と原因の計算はコアに残す。ホストへの報告の情報はモデルに含めず、exit の公開の引数は終了状態の一つだけである。
 
-この展開は exit に整数 1 を渡す。既存の `E_Exit` は `NoHandler` と `B.ioResponse … (exit(n))` を前提とし、引数と応答の n の対応は組み込みの応答に委ねる。説明や表示の純粋性は、それらの停止を保証しない。したがって型保存から、常に終了操作に達することや、必ず終了状態 1 で停止することは導かない。ハンドラが終了操作を処理する場合も、既存のハンドラの規則に従う。
+この展開は exit に整数 1 を渡す。既存の `E_Exit` は `NoHandler` と `B.ioResponse … (exit(n))` を前提とし、引数と応答の n の対応は組み込みの応答に委ねる。説明の純粋性と、show の効果が ε に覆われることは、それらの停止を保証しない。したがって型保存から、常に終了操作に達することや、必ず終了状態 1 で停止することは導かない。ハンドラが終了操作を処理する場合も、既存のハンドラの規則に従う。
 
 `Expr.Scoped` と `Expr.AtomsIn` は T・辞書・入力・任意の説明を全て検査する。`SurfaceCheck.walkExpr` は入力と説明を別の子として辿り、説明には R=None、非末尾位置、String の期待型を渡す。二つの新しい場合は `Expr.Exits` で必ず抜ける文に数えない。篩付きの表層の `HasTypeQ.desugar` は四規則から脱糖後の型 T と効果 ε を導き、`desugar_typed` と `surface_effect_soundness` は両場合を含む。`surface_effect_soundness` は純粋な main を前提とするので、die について主張するのは、`Process.Exit` を main の内側のハンドラが処理する場合に限る。`Process.Exit` を持つ main の停止は主張しない。その場合のエフェクトの追跡は、`desugar_typed` の `EffectsOk` が保証する。
 
@@ -1071,7 +1071,7 @@ C-Handle は最上位の `Eff.WF(ε)` を独立の前提に持たない。Releas
 
 #### 形式化した型付き失敗の捕捉
 
-【決定】形式化したReleaseに、失敗専用の操作識別子 `OpRef.fail`、値 `raise[T,E]`、節 `Clause.fail E N` を加える。本節はLeanの定義と証明の写しであり、表層言語・Rustの処理系と交換11/4に接続している。通常の操作の署名を引く `opSig` はFailに署名を返さず、通常節の型付け `HasTypeClausesQ` はFailを受けない。Failの節は `HasFailureClause` でちょうど一節として型付けする。理由: エラー型を固定する中断節と、型引数を持ち再開できる通常節を区別するためである。
+【決定】形式化したReleaseに、失敗専用の操作識別子 `OpRef.fail`、値 `raise[T,E]`、節 `Clause.fail E N` を加える。本節はLeanの定義と証明の写しであり、表層言語・Rustの処理系と交換（corpus 16・sidecar 8）に接続している。通常の操作の署名を引く `opSig` はFailに署名を返さず、通常節の型付け `HasTypeClausesQ` はFailを受けない。Failの節は `HasFailureClause` でちょうど一節として型付けする。理由: エラー型を固定する中断節と、型引数を持ち再開できる通常節を区別するためである。
 
 `V_Raise` は、TとEがその位置で整形式のとき、`raise[T,E] : (error:E) → T ! {Fail[E]}` を導く。Failの効果は `singleFail E` で構築し、Eを正規化する。`Val.VarsIn`はTとEの内部まで型と行の範囲を調べる。実行中の閉じた項では、両型は継続の型を内部に含まない。
 
@@ -1148,11 +1148,11 @@ Failの節は、境界のエラー型Eを外側で固定し、結果型の変数
 | `V_Op` | `NamesWF od.names od.params`（整形式から従う）。結果の `fnTy` に `od.names` を保持する |
 | `C_App` | 呼ぶ値の型は `.fn names ps r ε`。値の引数は既に宣言順に並んでいる |
 | `C_Meth` | `NamesWF ms.names ms.params`（整形式から従う）。辞書と値の引数の既存の型付けを保持する |
-| `HasTypeClauses.cons` | `NamesWF sg.names sg.params`（整形式から従う）。節の局所束縛名は操作の契約名と区別する |
+| `HasTypeClausesQ.cons` | `NamesWF sg.names sg.params`。節の局所束縛名は操作の契約名と区別する |
 | `Def.WellTyped` | 宣言の `NamesWF d.names d.params` と、既存の本体の型付け |
 | `ImplDecl.WellTyped` | 宣言側の `NamesWF ms.names ms.params` と、既存のメソッド・上位辞書の本体の型付け |
 
-`V_Fun`・`V_Prim`・`V_Op`・`C_Meth`・`HasTypeClauses.cons` の前提は、順に `Def.Scoped`、`Builtins.Assumptions.sig_scoped`、`OpDecl.Scoped`、`ClassDecl.Scoped` と `MethSig.Scoped`、`opSig_scoped` から得られる。これらを独立した外部仮定として扱わない。型付けされた項に含まれるラムダ自身の名前の整形式は、`HasTypeV.lambdaNamesWF`・`HasTypeC.lambdaNamesWF` から従う。`effect_soundness_noLamNames` は、ラムダ名の条件だけを除いた変数の範囲条件から、同じエフェクト健全性を示す。
+篩付きの核（`Refinement.Typing`）の `V_Lam`・`V_Fun`・`V_Prim`・`V_Op`・`C_Meth`・`HasTypeClausesQ.cons` は、名前の整形式を規則の前提に持つ。`V_Fun`・`V_Op`・`C_Meth` の前提は、`Program.WellFormed`（`Refinement.ProgramWellFormed`）の欄 `Def.Scoped`・`OpDecl.Scoped`・`ClassDecl.Scoped`（各メソッドの `MethSig.Scoped`）が含む `NamesWF` から得られる。`V_Prim` の前提は、信頼条件 `Builtins.CoreAssumptions` の欄 `sig_scoped` が与える `PrimSig.Scoped` の欄 `names` から得られる。これらを独立した外部仮定として扱わない。型付けされた値・計算・閉包では、ラムダ名の整形式を外した閉じ方から元の閉じ方が従う（`HasTypeVQ.closed_noLamNames`・`HasTypeCQ.closed_noLamNames`・`ClosureTy.closed_noLamNames`。`Refinement.StartLamNames`）。`effect_soundness_noLamNames`（`Refinement.MainEffects`）は、ラムダ名の条件だけを除いた閉じ方から、同じエフェクト健全性を示す。
 
 #### 表層の契約と値の配置
 
@@ -2207,7 +2207,7 @@ Range の Result の認定に失敗した式の解析では `baseMatchKind teste
 |---|---|---|
 | `readSlots`・`read`・`integer`・`integerKind` | 参照先へ進む各位置と終端の参照を environmentRead とする | 列の添字の取得・lookup・integerAt・integerKindAt |
 | `consSlot`・`push`・`bindEnv` | 環境への一項の追加に environmentWrite と environment 一項 | 列の先頭への追加・extend・bindRange |
-| `narrow`・`update`・`narrowKind`・`updateKind` | 更新位置までの参照と、作成する接頭辞の各項の更新・保持 | narrowSlots・narrowAt・narrowSlotsKind・narrowKindAt。更新位置の後ろの列は共有する |
+| `narrow`・`update`・`narrowKind`・`updateKind` | 更新位置までの参照と、作成する接頭辞の各項の更新・保持 | narrowSlots・narrowAt・narrowKindSlots・narrowKindAt。更新位置の後ろの列は共有する |
 | `forgetSlots`・`forgetEnv` | 各項の参照・更新・新しい環境項目 | map forgetSlot・forget。同定表は保存する |
 | `hull`・`joinEnvs`・`joinEnvs?` | 基準の各項に joinItem、各種類の整数位置の左右の参照、結果の各項の更新・保持 | hullSlots・hullEnv・joinConditionEnvs |
 | `indexOf`・`constant`・`comparison`・`constantKind` | 括弧と埋込み定数を含む各訪問を classification とする | localIndex・integerConstant・comparisonAt・integerKindConstant |
@@ -2761,7 +2761,7 @@ IP のパターンは族と区間 `[lo, hi]` を持ち、完全一致は一点�
 
 `acceptRange_sound` は、受理した契約の範囲が必須の判定の添字を覆うことを示す。`acceptBody_sound` は、受理した本体の、Scope の規則を持つ直接の呼び出しの範囲の列が、その出現の全ての記録の状態で規則が選ぶ範囲を各位置で覆うことを示す。`acceptBody_ranges` は、規則を選んだ全ての出現について未具体化の契約も検査から除かず、成功時に各位置の絶対範囲の証人を返す。このため任意の範囲の具体化でも同じ被覆が成り立つ。型が保持する範囲を転送する呼出しの受理は `Surface.OpenScopeAccept` が受け持ち、「篩を含む表層の検査と受理」に写す。
 
-### Scope の局所解析の接続定理
+### Scope の必須の判定のプログラム全体の受理
 
 【決定】全定義と全実装メソッドの受理は `Surface.CheckAccept`（`CheckAcceptBase` を含む）が定める。`acceptProgram` は、本体を持つ全ての定義と全ての実装メソッドで必須の判定が成功すること（`Accepted`）を判定し、`acceptProgram_sound` がその健全性を示す。型検査器の実入口 `checkProgramAccepted` は型付けの検査と受理を続けて行い、`checkProgramAccepted_sound` は、成功から準備後のプログラムの型付けと `Accepted` を同時に結論する。受理の規則の表の健全性は `Surface.ScopeSound.productionRules_sound` が与える。実行の規則と δ への接続は「篩を含む表層の検査と受理」と 07-04「証明する性質」に写す。
 
@@ -2803,23 +2803,23 @@ IP のパターンは族と区間 `[lo, hi]` を持ち、完全一致は一点�
 
 【決定】専用セルの内容 `BuilderContents`（`Refinement.BuilderExec`）は、文字列、通常値の列、自然数の列（Bytes）の三種類である。大きさ `size` は String が UTF-8 のバイト数、List が要素数、Bytes がバイト数であり、上限 `limit` は List が 16,777,216、ほかが 1,073,741,824 である（`Release.LocalRef` の `maxBuilderListLen`・`maxBuilderBytes`）。`BuilderCellOk P B Ψ kind c`（`Refinement.StateTyping`）は、内容の大きさが kind の上限以下であること、内容の種類が kind に一致すること、Bytes の各要素が 255 以下であることを要求し、List には要素型の `Ty.Annotation P [] []` と各要素の閉じた型付け `HasTypeEach` も要求する。理由: 内容の保存と長さの全域性を、実装と同じ論理上限で検査するためである。
 
-`builderApply op c args` は一操作を内容と通常値の引数に適用し、`BuilderReply`（更新後の内容と返却値、又は失敗の理由）を返す。copy は内容を通常値（`snapshot`）として返し、length は大きさを切り詰めない Integer（`lengthValue`）として返す。String の appendAll は String の列を順に連結する。追記の結果は `builderCheckUpdate` で検査し、上限を超えれば ValueTooLarge、Bytes の要素が 256 以上なら BuilderInvalidByte を返す。どちらの失敗も更新後の内容を返さない。理由: 通常の Byte と Bytes の抽象表現は任意の自然数を許すので、実装に存在しない範囲外の入力を、言語の診断を加えずに失敗として扱うためである。
+`builderApply op c args` は一操作を内容と通常値の引数に適用し、`Option BuilderReply` を返す。`BuilderReply` は更新後の内容と返却値、又は失敗の理由である。引数の形が操作と内容の種類に合わないとき、及び length で大きさが上限を超えているときは none を返す。copy は内容を通常値（`snapshot`）として返し、length は大きさを切り詰めない Integer（`lengthValue`）として返す。String の appendAll は String の列を順に連結する。追記の結果は `builderCheckUpdate` で検査し、上限を超えれば ValueTooLarge、Bytes の要素が 256 以上なら BuilderInvalidByte を返す。どちらの失敗も更新後の内容を返さない。理由: 通常の Byte と Bytes の抽象表現は任意の自然数を許すので、実装に存在しない範囲外の入力を、言語の診断を加えずに失敗として扱うためである。
 
-`builderApply_value_typed`（`Refinement.BuilderValueTyping`）は、`BuilderCellOk` と通常引数の閉じた型付けのもとで、成功した操作の更新後の内容が同じ kind の `BuilderCellOk` を満たし、返却値が `op.resultType kind` の型を持つことを示す。`builderApply_value_scope` は、成功した操作の更新後の内容と返却値の閉性と適格性（`Adequate σ`）を示す。
+`builderApply_value_typed`（`Refinement.BuilderValueTyping`）は、`BuilderCellOk` と通常引数の閉じた型付けのもとで、成功した操作の更新後の内容が同じ kind の `BuilderCellOk` を満たし、返却値が `op.resultType kind` の型を持つことを示す。`builderApply_value_scope` は、元のセルの内容と通常引数が閉じていて適格（`Adequate σ`）であれば、成功した操作の更新後の内容の閉性と適格性、返却値の基底性（`Ground`）と適格性を示す。
 
 遷移関係 `Step`（`Refinement.Semantics`）は次の三規則を持つ。どれも事象を伴わない。
 
 | 規則 | 前提と後続 |
 |---|---|
 | E_BuilderNew | 閉包の view が `builderLet kind body`、`μ ℓ = none`。ℓ に kind の空の内容を置き、本体の通常値の 0 番を Unit（`builderValueSubst`）、局所参照の 0 番を `loc ℓ`（`builderLocalSubst ℓ`）に置き換えて束縛を一つ除く |
-| E_BuilderOp | view が `builderOp kind op (loc ℓ) args`、`μ ℓ` の内容 c に `builderApply` が内容 c′ と値 v を返す。ℓ を c′ に更新し、`ret v` へ進む |
-| E_BuilderErr | 同じ内容から `builderApply` が失敗の理由 r を返す。ストアを変えずに `error [r]` へ進む |
+| E_BuilderOp | view が `builderOp kind op (loc ℓ) args`、`μ ℓ` の内容 c に `builderApply` が `some` で内容 c′ と値 v を返す。ℓ を c′ に更新し、`ret v` へ進む |
+| E_BuilderErr | 同じ内容から `builderApply` が `some` で失敗の理由 r を返す。ストアを変えずに `error [r]` へ進む |
 
 型の付いた状態でのこの三規則の保存と進行の葉（`StateTyE.builder_new`・`builder_operation`・`builder_error`・`builder_progress`）と、専用操作が実在する専用セルを指すこと（`StateTyE.builder_live`）は、「篩を含む状態の型付け」に写す。空の Δ の状態では `LocalRef.HasKind` が `bound` を分類しないので、型の付いた状態の専用操作の参照は専用の場所である。`HandlerStoreExamples` の `builder_allocations`・`string_builder_copy`・`list_builder_overflow` は、三種類の空のセルの割り当て、String の copy、論理上限の長さの List への追記の失敗を具体の状態で確かめる。物理コピー・容量・GC・即時のメモリ返却は、これらの定理の結論に含めない。
 
 ### 構築器の表層の局所文脈
 
-【決定】篩付きの表層の七判断 `HasTypeQ`・`HasTypesQ`・`HasEachQ`・`HasHoleArgsQ`・`HasArmsQ`・`HasClausesQ`・`HasBlockQ`（`Refinement.Surface.Rules`）は、NoFail の文脈 Q の直後、型パラメータの文脈 C の前に、構築器の局所の文脈 `BuilderCtx` を添字として持つ。`BuilderCtx` は核の `LocalCtx` と同じ `List (Option BuilderKind)` であり、Γ と同じ番号で専用位置の種類を持つ。定義の本体の型付けは空の Δ から始める。
+【決定】篩付きの表層の七判断 `HasTypeQ`・`HasTypesQ`・`HasEachQ`・`HasFixedQ`・`HasArmsQ`・`HasClausesQ`・`HasBlockQ`（`Refinement.Surface.Rules`）は、NoFail の文脈 Q の直後、型パラメータの文脈 C の前に、構築器の局所の文脈 `BuilderCtx` を添字として持つ。`BuilderCtx` は核の `LocalCtx` と同じ `List (Option BuilderKind)` であり、Γ と同じ番号で専用位置の種類を持つ。定義の本体の型付けは空の Δ から始める。
 
 | 検査する部分 | 渡す Δ |
 |---|---|
@@ -4458,7 +4458,7 @@ inductive ContTy (P : Program) (B : Builtins) (σ : PathEnv) (Ψ : StoreTy) :
 
 ### 確かめる性質
 
-【方針】次の性質が成り立つように、本章と[型システム](01-06-type-system.md)を定める。形式検証の段階 1（[ロードマップ](../00-overview/00-03-roadmap.md)）で、ランダムに生成したプログラムを使って反例を探す。反例が見つかれば、仕様の誤りとして直す。性質 1〜3 の証明に使う型付けと遷移は、篩付きの核 `Benitoite.Release.Refinement` と篩付きの表層のものである。性質 2 と性質 3 は、形式検証の段階 2 で、規則を Lean 4 で定義し、組み込みの関数についての信頼条件のもとで、後述の言明として証明した（`Refinement.MainTheorems`）。性質 1 は、篩付きの型の情報を付けた表層のプログラムが表層の型付けを満たせば、脱糖したプログラムが整形式で型付き、効果の宣言の条件を満たすことを証明した（`Refinement.Surface.desugar_typed`）。この性質 1 と性質 3 を組み合わせ、表層の `main` のエフェクトが空なら、脱糖したプログラムの実行は事象を伴う遷移をせず、どの `handle` の枠も処理しない操作を呼ばないことも証明した（`Refinement.Surface.surface_effect_soundness`。[形式意味論と検証](../07-quality/07-04-formal-semantics.md)）。形式化した規則は Lean の定義を正とする（前述の「本章の位置付け」）。
+【方針】次の性質が成り立つように、本章と[型システム](01-06-type-system.md)を定める。形式検証の段階 1（[ロードマップ](../00-overview/00-03-roadmap.md)）で、ランダムに生成したプログラムを使って反例を探す。反例が見つかれば、仕様の誤りとして直す。性質 1〜3 の証明に使う型付けと遷移は、篩付きの核 `Benitoite.Release.Refinement` と篩付きの表層のものである。性質 2 と性質 3 は、形式検証の段階 2 で、規則を Lean 4 で定義し、組み込みの関数についての信頼条件のもとで、後述の言明として証明した（性質 2 は `Refinement.MainTheorems`、性質 3 は `Refinement.MainEffects`）。性質 1 は、篩付きの型の情報を付けた表層のプログラムが表層の型付けを満たせば、脱糖したプログラムが整形式で型付き、効果の宣言の条件を満たすことを証明した（`Refinement.Surface.desugar_typed`）。この性質 1 と性質 3 を組み合わせ、表層の `main` のエフェクトが空なら、脱糖したプログラムの実行は事象を伴う遷移をせず、どの `handle` の枠も処理しない操作を呼ばないことも証明した（`Refinement.Surface.surface_effect_soundness`。[形式意味論と検証](../07-quality/07-04-formal-semantics.md)）。形式化した規則は Lean の定義を正とする（前述の「本章の位置付け」）。
 
 篩を含む体系の `effect_soundness` は次の言明を証明する。初期の効果を空に固定し、任意の実行列で到達した状態について、事象のある次の遷移と未処理の操作を排除する。
 

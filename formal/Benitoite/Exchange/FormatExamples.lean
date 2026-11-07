@@ -1,6 +1,6 @@
 import Benitoite.Exchange.Convert
 
-/-! 交換時の省略と明示0を区別する例（設計書 01-12「文字列補間」、07-04「証明する性質」）。
+/-! 交換時の省略と明示0を区別する例（設計書 01-12「文字列補間」、07-04「書式付き補間の交換形式」）。
 脱糖後の定数列だけでは観測できない、表層JSONの書き戻しを確認する。 -/
 namespace Benitoite.Exchange.FormatExamples
 open Lean
