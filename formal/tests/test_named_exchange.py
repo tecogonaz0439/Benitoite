@@ -178,12 +178,12 @@ class ExchangeTests(unittest.TestCase):
                 result, report = self.run_tool(tool, data, input_name="implementation-dictionaries")
                 self.assertEqual(result.returncode, 1, result.stderr + result.stdout)
                 if tool == "surfaceCheck":
-                    self.assertEqual(report["result"], {"ok": False, "error": {"path": [1, 0, 0, 0],
-                                     "reason": "implementation method parameter names mismatch"}})
+                    self.assertEqual(report["result"], {"ok": False, "error": {"path": [1, 0],
+                                     "reason": "implementation declaration or body is invalid"}})
                 else:
                     self.assertEqual(report["counts"]["mismatched"], 1)
-                    self.assertEqual(report["mismatchExamples"][0]["error"], {"path": [0, 0], "ancestors": [],
-                                     "reason": "implementation method parameter names mismatch"})
+                    self.assertEqual(report["mismatchExamples"][0]["error"], {"path": [1, 0], "ancestors": [],
+                                     "reason": "implementation declaration or body is invalid"})
 
     def test_old_versions_are_rejected(self):
         for tool, files in TOOLS.items():
@@ -226,7 +226,7 @@ class ExchangeTests(unittest.TestCase):
                 data = copy.deepcopy(self.data)
                 if mode == "names":
                     del data["stdlib"]["inputs"][0]["functions"][0]["header"]["names"]
-                    reason = "Header.names"
+                    reason = "missing exchange field: names"
                 elif mode == "identity":
                     data["stdlib"]["inputs"][0]["name"] = "another-program"
                     reason = "missing input: golden/independent-named"
@@ -238,15 +238,17 @@ class ExchangeTests(unittest.TestCase):
                 self.assertIn(reason, result.stderr)
 
     def test_checker_rejects_false_contracts(self):
+        # 篩付きの検査器は、呼出しの契約の偽りを案内の再検査の失敗として定義の本体の位置で断り、実装の宣言の偽りは
+        # 実装の宣言の誤りとして断る。演算子の組込みの名前の偽りは、準備の段の標準表との照合で断る（終了2）。
         cases = (
-            ("label", 1, [0, 1, 0, 0, 0], "call labels and positions do not match the contract"),
-            ("position", 1, [0, 1, 0, 0, 0], "call labels and positions do not match the contract"),
-            ("partial", 3, [0, 3, 0, 0, 0], "partial call contract annotation mismatch"),
-            ("hole", 3, [0, 3, 0, 0, 0], "partial call labels and positions do not match the contract"),
-            ("pipe", 4, [0, 4, 0, 0, 0, 1], "pipe labels and positions do not match the contract"),
-            ("callback", 5, [0, 5, 0, 0, 0, 1, 0], "type is not included in the expected type"),
-            ("method", 7, [1, 0, 0, 0], "implementation method parameter names mismatch"),
-            ("operator", 12, [0, 10, 0, 0, 0], "binary operator parameter names mismatch"),
+            ("label", 1, [0, 1, 1], "type or certificate check failed"),
+            ("position", 1, [0, 1, 1], "type or certificate check failed"),
+            ("partial", 3, [0, 3, 1], "type or certificate check failed"),
+            ("hole", 3, [0, 3, 1], "type or certificate check failed"),
+            ("pipe", 4, [0, 4, 1], "type or certificate check failed"),
+            ("callback", 5, [0, 5, 1], "type or certificate check failed"),
+            ("method", 7, [1, 0], "implementation declaration or body is invalid"),
+            ("operator", 12, None, "builtin signature disagrees with the standard table: [%eq]"),
         )
         for mode, index, path, reason in cases:
             with self.subTest(mode=mode):
@@ -261,6 +263,10 @@ class ExchangeTests(unittest.TestCase):
                 elif mode == "method": surface(data, index)["header"]["names"] = ["y"]
                 elif mode == "operator": data["builtins"]["inputs"][0]["prims"][1]["names"] = ["a", "b"]
                 result, report = self.run_tool("surfaceCheck", data)
+                if path is None:
+                    self.assertEqual(result.returncode, 2, result.stderr)
+                    self.assertIn(reason, result.stderr)
+                    continue
                 self.assertEqual(result.returncode, 1, result.stderr)
                 self.assertEqual(report["result"], {"ok": False, "error": {"path": path, "reason": reason}})
 
@@ -272,8 +278,8 @@ class ExchangeTests(unittest.TestCase):
         self.assertEqual(report["counts"]["mismatched"], 1)
         failure = report["mismatchExamples"][0]
         self.assertEqual(failure["kind"], "implementation")
-        self.assertEqual(failure["error"]["reason"], "implementation method parameter names mismatch")
-        self.assertEqual(failure["error"]["path"], [0, 0])
+        self.assertEqual(failure["error"]["reason"], "implementation declaration or body is invalid")
+        self.assertEqual(failure["error"]["path"], [1, 0])
 
     def test_implementation_dictionary_names_preserve_the_user_contract(self):
         data = copy.deepcopy(self.data)
@@ -285,10 +291,12 @@ class ExchangeTests(unittest.TestCase):
         program["definitions"] = [method]
         header = program["classes"][0]["methods"][0]["header"]
         header["tparams"] = [[False, False]]
+        header["tparamKinds"] = ["value"]
         header["names"] = ["%dict1", "x"]
         header["params"].insert(0, {"dict": {"cls": "Show", "arg": {"tvar": {"index": 0}}}})
         implementation = method["scope"]["inScope"]
         implementation["surface"]["header"]["tparams"] = [[False, False]]
+        implementation["surface"]["header"]["tparamKinds"] = ["value"]
         implementation["surface"]["dictParams"] = [["Show", 0]]
         implementation["core"]["header"] = copy.deepcopy(header)
         for tool in ("desugarDiff", "surfaceCheck", "surfaceCheckAll"):
@@ -309,12 +317,12 @@ class ExchangeTests(unittest.TestCase):
                 result, report = self.run_tool(tool, data)
                 self.assertEqual(result.returncode, 1, result.stderr + result.stdout)
                 if tool == "surfaceCheck":
-                    self.assertEqual(report["result"], {"ok": False, "error": {"path": [1, 0, 0, 0],
-                                     "reason": "implementation method parameter names mismatch"}})
+                    self.assertEqual(report["result"], {"ok": False, "error": {"path": [1, 0],
+                                     "reason": "implementation declaration or body is invalid"}})
                 else:
                     self.assertEqual(report["counts"]["mismatched"], 1)
-                    self.assertEqual(report["mismatchExamples"][0]["error"], {"path": [0, 0], "ancestors": [],
-                                     "reason": "implementation method parameter names mismatch"})
+                    self.assertEqual(report["mismatchExamples"][0]["error"], {"path": [1, 0], "ancestors": [],
+                                     "reason": "implementation declaration or body is invalid"})
 
     def test_comparison_preserves_names_and_source_positions(self):
         for mode in ("header", "lambda", "positions", "source-order", "dictionary-name"):

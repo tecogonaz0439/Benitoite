@@ -54,10 +54,11 @@ def non_top_ranges(value):
 
 
 def without_candidates(value):
+    # 版16の入力は candidates を必須の欄とするので、欄を除かず空にする。
     if isinstance(value, list):
         return [without_candidates(v) for v in value]
     if isinstance(value, dict):
-        return {k: without_candidates(v) for k, v in value.items() if k != "candidates"}
+        return {k: ([] if k == "candidates" else without_candidates(v)) for k, v in value.items()}
     return value
 
 

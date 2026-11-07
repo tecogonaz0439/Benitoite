@@ -135,7 +135,8 @@ class ExtensibleExchangeTests(unittest.TestCase):
                     self.assertEqual(result.returncode, 1, result.stderr + result.stdout)
                     reason = (report['result']['error']['reason'] if tool == 'surfaceCheck'
                               else report['mismatchExamples'][0]['error']['reason'])
-                    self.assertEqual(reason, 'binding pattern is not exhaustive' if mode == 'bind' else 'match is not exhaustive')
+                    # 篩付きの検査器は、網羅しない照合と束縛を案内の再検査の失敗として断る。
+                    self.assertEqual(reason, 'type or certificate check failed')
             if mode not in ('bind', 'method'):
                 result, report = self.run_tool('surfaceCheck', data, selected=f'fn:{index}')
                 self.assertEqual(result.returncode, 1, result.stderr + result.stdout)
@@ -376,7 +377,7 @@ class ExtensibleExchangeTests(unittest.TestCase):
                                  for n, (name, args) in enumerate(zip(names, params))]
                         decl = {'name': 'Builtin', 'typeName': 'UnrelatedDisplay', 'package': 'stdlib',
                                 'builtin': builtin, 'isRecord': False, 'extensible': False,
-                                'ntys': 2 if builtin == 'result' else 1, 'ctors': ctors, 'variances': ['invariant'] * 2 if builtin == 'result' else 1, 'requirements': [], 'publicBoundary': []}
+                                'ntys': 2 if builtin == 'result' else 1, 'ctors': ctors, 'variances': ['invariant'] * (2 if builtin == 'result' else 1), 'requirements': [], 'publicBoundary': []}
                         if raw: decl['fields'] = None
                         if mode == 'name': ctors[0]['constructorName'] = 'Wrong'
                         elif mode == 'args': ctors[0]['args'] = []
@@ -389,10 +390,13 @@ class ExtensibleExchangeTests(unittest.TestCase):
                         else:
                             data['builtins']['inputs'][0]['dataDecls'].append(decl)
                             data['corpus']['inputs'][0]['dataTypes'].append(
-                                {k: decl[k] for k in ('name', 'typeName', 'package', 'builtin', 'isRecord', 'extensible')})
+                                {**{k: decl[k] for k in ('name', 'typeName', 'package', 'builtin', 'isRecord', 'extensible')},
+                                 'constructors': [[c['name'], c.get('constructorName', '')] for c in ctors]})
                         result, report = self.run_tool(tool, data)
                         self.assertEqual(result.returncode, 2, result.stdout)
+                        # 構成子名の欄を欠いた型表は、往復の一致の検査（readBuiltins）で断る。
                         self.assertIn('constructorName' if raw and mode == 'missing-name' else
+                                      'unexpected builtin fields' if mode == 'missing-name' else
                                       'invalid builtin constructor shape', result.stderr + json.dumps(report))
 
     def test_constants_cannot_hide_source_matches_or_bindings(self):

@@ -77,7 +77,8 @@ class Batch2ExchangeTests(unittest.TestCase):
                 self.assertTrue(result.stderr)
 
     def test_checker_rejects_wrong_error_and_dictionary(self):
-        for kind, message in [('error', 'type is not included'), ('dict', 'operation internal names mismatch')]:
+        # 篩付きの検査器の拒否の理由: 誤りの型の違いは再検査の失敗、辞書の欠けは依存する引数の署名の不一致として断る。
+        for kind, message in [('error', 'type or certificate check failed'), ('dict', 'dependent argument signature mismatch')]:
             with self.subTest(kind=kind):
                 data = copy.deepcopy(self.data)
                 if kind == 'error':
@@ -125,7 +126,7 @@ class Batch2ExchangeTests(unittest.TestCase):
         # Releaseの補助上限を読めても、表層の具体化後の単一Failは別に検査する。
         result, report = self.run_tool('surfaceCheck', data)
         self.assertEqual(result.returncode, 1, result.stderr)
-        self.assertEqual(report['result']['error']['reason'], 'effect exceeds the allowed effect')
+        self.assertEqual(report['result']['error']['reason'], 'type or certificate check failed')
         scope['core']['header']['eff'] = effects[:-1]
         result, report = self.run_tool('desugarDiff', data)
         self.assertEqual(result.returncode, 1, result.stderr)

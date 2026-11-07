@@ -1,7 +1,7 @@
 # 担当 spec-copies の記録（L70.45 のうち削除に依らない写し）
 
 - 開始 2026-11-07 08:20 JST、終了 2026-11-07 08:40 JST（外側の時間。資料読みを含む）。
-- 作業木 `Benitoite-l70g`（ブランチ `m014/l70.g`、基準 `eb4f0ef9`）。git の書き込み操作、`scripts/check.sh`・`check-formal.sh` の実行はしていない。一時領域 `/private/tmp/benitoite-l70-g/` は読むだけである。
+- 作業木 `Benitoite-l70g`（ブランチ `m014/l70.g`、基準 `eb4f0ef9`）。git の書き込み操作、`scripts/check.sh`・`check-formal.sh` の実行はしていない。一時領域 `<tmp>/` は読むだけである。
 - 根拠: [results.md](results.md)、[exchange-contract.md](exchange-contract.md)、[scope-rules.md](scope-rules.md)、[prepare-surface.md](prepare-surface.md)、[coverage-entries.md](coverage-entries.md)、[entries-closure.md](entries-closure.md)、[interval-results.md](interval-results.md)、[exchange-results.md](exchange-results.md)、[modules-for-spec.md](modules-for-spec.md)、各モジュールの実物。Codex の担当の写しの候補（一時領域の `spec-candidates/fragments/`）は読んだが写していない（下の「書かずに残したもの」の 5）。
 
 ## 変えたファイル

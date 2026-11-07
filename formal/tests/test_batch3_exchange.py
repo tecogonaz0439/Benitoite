@@ -69,7 +69,8 @@ class Batch3ExchangeTests(unittest.TestCase):
         for tool, files in TOOLS.items():
             for field in files:
                 for version in (range(8, 16) if field == 'corpus' else range(2, 8)):
-                    data = copy.deepcopy(self.data)
+                    # 旧の構築器の欄（refs）は版より先に断るので、版だけが誤りの入力で確かめる。
+                    data = copy.deepcopy(builder_free(self.data))
                     data[field]['version'] = version
                     with self.subTest(tool=tool, field=field, version=version):
                         result, _ = self.run_tool(tool, data)
@@ -82,7 +83,7 @@ class Batch3ExchangeTests(unittest.TestCase):
             result, report = shared['ExchangeTests'].run_tool(self, tool, data, None, 'independent-batch2')
             self.assertEqual(result.returncode, 0, result.stderr + json.dumps(report))
         for f in FILES:
-            data = copy.deepcopy(self.data)
+            data = copy.deepcopy(builder_free(self.data))
             data[f]['version'] = 17 if f == 'corpus' else 9
             tool = next(t for t, fs in TOOLS.items() if f in fs)
             result, _ = self.run_tool(tool, data)
@@ -203,15 +204,28 @@ def check_rust(directory):
     inputs = data['corpus']['inputs']
     case = Batch3ExchangeTests()
     case.setUp()
+    # 標準表との差で準備の段が断った入力は、原因の名前とともに分類して残す。
+    gaps = runpy.run_path(str(Path(__file__).with_name('test_range_sources.py')))['preparation_gaps']
+    rejected = []
     try:
         for tool in TOOLS:
             if tool == 'surfaceCheck':
                 for i in inputs:
                     result, report = shared['ExchangeTests'].run_tool(case, tool, data, None, i['name'])
+                    found = gaps(result.stderr) if result.returncode == 2 else None
+                    if found is not None:
+                        rejected.append({'tool': tool, 'input': i['name'], **found})
+                        continue
                     case.assertEqual(result.returncode, 0, result.stderr + json.dumps(report))
                     case.assertEqual(report['result'], {'ok': True})
                 continue
             result, report = case.run_tool(tool, data)
+            if tool == 'surfaceCheckAll' and result.returncode == 2 and report is not None:
+                found = [gaps(e['reason']) for e in report.get('preparationErrors', [])]
+                if found and all(f is not None for f in found):
+                    rejected.append({'tool': tool, 'inputs': len(found),
+                                     'causes': sorted({c for f in found for c in f['causes']})})
+                    continue
             empty_coverage = tool == 'coverageProgramDiff' and expected['programCoverageCases'] == 0
             case.assertEqual(result.returncode, 1 if empty_coverage else 0, result.stderr + result.stdout + json.dumps(report))
             if tool == 'desugarDiff':
@@ -235,6 +249,7 @@ def check_rust(directory):
                     case.assertEqual(report['counts'][k], 0)
     finally:
         case.doCleanups()
+    print(json.dumps({'preparationRejected': rejected}, ensure_ascii=False))
 
 
 if __name__ == '__main__':

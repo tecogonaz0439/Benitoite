@@ -22,6 +22,8 @@ ROOT = Path(__file__).resolve().parents[2]
 BIN = ROOT / "formal/.lake/build/bin"
 EXPECTED = ROOT / "crates/benitoite/tests/desugar_export/range-budget/expected.json"
 HELPERS = runpy.run_path(str(ROOT / "crates/benitoite/tests/desugar_export/check_named.py"))
+# 標準表との一致の判定が断る組込みの名前と原因（test_range_sources.py と同じ表）。
+GAPS = runpy.run_path(str(Path(__file__).with_name("test_range_sources.py")))["preparation_gaps"]
 
 
 def read(path):
@@ -94,19 +96,25 @@ def main():
         process = subprocess.run(cmd, text=True, capture_output=True, timeout=60)
         elapsed = time.monotonic() - began
         report.with_suffix(".log").write_text((process.stdout + process.stderr).replace(str(ROOT), "<wt>"))
-        require(process.returncode == case["lean"]["surfaceCheckExit"], (name, process.stdout, process.stderr))
-        single = read(report)
-        require(single["result"] == {"ok": False, "cover": {"key": expected_key, "reason": case["lean"]["reason"]}}, (name, single))
-        reports.append({"tool": "surfaceCheck", "returncode": process.returncode, "outerSeconds": elapsed})
-        all_report, timing = run("surfaceCheckAll", [corpus_path, builtin_path, stdlib_path], output / "surfaceCheckAll.json", 1)
-        reports.append(timing)
-        require(all_report["nonTopRanges"] == count and count > 0, 'test_range_budget_sources.py:93: requirement failed')
-        outcomes = all_report["outcomes"]
-        require(len(outcomes) == 1, 'test_range_budget_sources.py:95: requirement failed')
-        require(outcomes[0]["category"] == case["lean"]["surfaceCheckAllCategory"], 'test_range_budget_sources.py:96: requirement failed')
-        serialized = json.dumps(outcomes[0])
-        require(case["lean"]["surfaceCheckAllReasonContains"] in serialized, 'test_range_budget_sources.py:98: requirement failed')
-        require(case["lean"]["reason"] in serialized, 'test_range_budget_sources.py:99: requirement failed')
+        # 標準表との差で準備の段が断った入力は、原因の名前とともに分類して残し、表層の検査の照合を数えない。
+        gaps = GAPS(process.stdout + process.stderr) if process.returncode == 2 else None
+        if gaps is not None:
+            reports.append({"tool": "surfaceCheck", "returncode": process.returncode, "outerSeconds": elapsed,
+                            "preparationRejected": gaps})
+        else:
+            require(process.returncode == case["lean"]["surfaceCheckExit"], (name, process.stdout, process.stderr))
+            single = read(report)
+            require(single["result"] == {"ok": False, "cover": {"key": expected_key, "reason": case["lean"]["reason"]}}, (name, single))
+            reports.append({"tool": "surfaceCheck", "returncode": process.returncode, "outerSeconds": elapsed})
+            all_report, timing = run("surfaceCheckAll", [corpus_path, builtin_path, stdlib_path], output / "surfaceCheckAll.json", 1)
+            reports.append(timing)
+            require(all_report["nonTopRanges"] == count and count > 0, 'test_range_budget_sources.py:93: requirement failed')
+            outcomes = all_report["outcomes"]
+            require(len(outcomes) == 1, 'test_range_budget_sources.py:95: requirement failed')
+            require(outcomes[0]["category"] == case["lean"]["surfaceCheckAllCategory"], 'test_range_budget_sources.py:96: requirement failed')
+            serialized = json.dumps(outcomes[0])
+            require(case["lean"]["surfaceCheckAllReasonContains"] in serialized, 'test_range_budget_sources.py:98: requirement failed')
+            require(case["lean"]["reason"] in serialized, 'test_range_budget_sources.py:99: requirement failed')
         desugar, timing = run("desugarDiff", [corpus_path], output / "desugarDiff.json", case["lean"]["desugarDiffExit"])
         reports.append(timing)
         require(desugar["golden"]["definitions"] == {"matched": 1, "mismatched": 0, "outside": 0, "excluded": 0}, 'test_range_budget_sources.py:102: requirement failed')
@@ -116,14 +124,17 @@ def main():
         require(table["errors"] == [] and table["checkedInputs"] == 1, 'test_range_budget_sources.py:106: requirement failed')
         cases.append({"name": name, "rustRules": len(rust["calls"]), "key": expected_key,
                       "reason": case["lean"]["reason"], "nonTopRangesWithoutCandidates": count,
-                      "definitions": 1, "reports": reports})
+                      "definitions": 1, "reports": reports,
+                      "lean": "preparationRejected" if gaps is not None else "compared"})
     # 固定済みの補助期待の誤りを、主契約が一致したことへ読み替えない。
     summary = {"version": 1, "success": True, "cases": cases, "rustOnlyCases": 1,
                "auxiliaryExpectedMismatches": auxiliary_mismatches,
                "auxiliaryFirstStops": auxiliary_stops,
                "auxiliaryExpectedMismatchCount": len(auxiliary_mismatches),
                "successScope": "Requiredのキー・添字・理由。補助の停止地点は訂正値との一致を要求し、初稿との不一致も保持する",
-               "leanComparedCases": 2, "requiredReasonComparisons": 2,
+               "leanComparedCases": sum(c.get("lean") == "compared" for c in cases),
+               "leanPreparationRejectedCases": sum(c.get("lean") == "preparationRejected" for c in cases),
+               "requiredReasonComparisons": sum(c.get("lean") == "compared" for c in cases),
                "maxRssBytesAuxiliary": resource.getrusage(resource.RUSAGE_CHILDREN).ru_maxrss}
     (args.output_dir / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
     print(json.dumps(summary, ensure_ascii=False))

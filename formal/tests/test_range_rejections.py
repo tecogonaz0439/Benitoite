@@ -225,7 +225,7 @@ def compare_contract_counterparts(exports, output):
                 # 独立交換の ScopeError は標準の名前の data で置く。同じ標準の宣言へ対応させる。
                 if label in ('ScopeError', HELPERS['SCOPE_ERROR_NAME']):
                     require(ty['args'] == [], (name, 'ScopeError type arguments'))
-                    return {'declaredType': label}
+                    return {'declaredType': 'ScopeError'}
                 return {'data': {**ty, 'name': label, 'args': normalize(ty['args'])}}
             if 'lastBind' in value:
                 return normalize({'bind': {**value['lastBind'], 'rest': {'last': {'expr': 'unit'}}}})
@@ -304,8 +304,9 @@ def run_rejections(exports, output):
             require('required check is not covered:' in text and expected['reason'] in text, (name, outcome))
         else:
             require('cover' not in actual and actual['ok'] is False, (name, actual))
-            require(actual['error']['reason'] == 'effect exceeds the allowed effect', (name, actual))
-            require('effect exceeds the allowed effect' in json.dumps(sa['outcomes']), (name, sa))
+            # 篩付きの検査器は推論した効果を上限で再検査して断る。入口の理由は再検査の失敗の分類である。
+            require(actual['error']['reason'] == 'type or certificate check failed', (name, actual))
+            require('type or certificate check failed' in json.dumps(sa['outcomes']), (name, sa))
         row = {'name': name, 'comparison': expected['comparison'], 'lean': actual,
                'definitions': count, 'nonTopRanges': expected['nonTopRanges'],
                'seconds': {'desugarDiff': elapsed_dd, 'surfaceCheckAll': elapsed_sa, 'surfaceCheck': elapsed_sc}}

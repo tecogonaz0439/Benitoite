@@ -93,11 +93,11 @@ class Batch4ExchangeTests(unittest.TestCase):
             self.assertEqual(result.returncode, 2, result.stdout)
 
     def test_builder_semantic_rejections(self):
-        for mutation, reason in [('kind', 'invalid local builder kind'),
-                                 ('annotation', 'invalid local builder kind'),
+        for mutation, reason in [('kind', 'type or certificate check failed'),
+                                 ('annotation', 'type or certificate check failed'),
                                  ('ordinary', 'local is missing or hidden'),
-                                 ('index', 'invalid local builder kind'),
-                                 ('effect', 'effect exceeds the allowed effect')]:
+                                 ('index', 'type or certificate check failed'),
+                                 ('effect', 'type or certificate check failed')]:
             data = copy.deepcopy(self.data)
             s = definition(data, 'fn:201')['surface']
             if mutation == 'kind': s['body']['builderBind']['kind'] = 'bytes'
@@ -142,7 +142,7 @@ class Batch4ExchangeTests(unittest.TestCase):
             with self.subTest(boundary=n):
                 result, report = self.run_tool('surfaceCheck', data, 'fn:201')
                 self.assertEqual(result.returncode, 1, result.stderr + json.dumps(report))
-                self.assertEqual(report['result']['error']['reason'], 'invalid local builder kind')
+                self.assertEqual(report['result']['error']['reason'], 'type or certificate check failed')
 
     def test_shared_numbering(self):
         for variant in ('depth', 'resume', 'value', 'received-dict', 'outer-cell'):
@@ -164,11 +164,11 @@ class Batch4ExchangeTests(unittest.TestCase):
                 self.assertEqual(result.returncode, 1, result.stderr + json.dumps(report))
                 self.assertFalse(report['result']['ok'])
                 expected = {
-                    'depth': 'clause dictionary scope mismatch',
+                    'depth': 'type or certificate check failed',
                     'resume': 'continuation is missing or hidden',
-                    'value': 'continuations cannot be used as ordinary locals',
-                    'received-dict': 'expected a dictionary type',
-                    'outer-cell': 'invalid local builder kind',
+                    'value': 'type or certificate check failed',
+                    'received-dict': 'call head cannot be resolved',
+                    'outer-cell': 'type or certificate check failed',
                 }
                 self.assertEqual(report['result']['error']['reason'], expected[variant])
 
@@ -209,7 +209,8 @@ class Batch4ExchangeTests(unittest.TestCase):
     def test_new_corpus_rejects_all_legacy_reference_fields(self):
         for field in ('refs', 'newRef', 'getRef', 'setRef'):
             data = copy.deepcopy(self.data)
-            data['corpus']['deep'] = [{'unknown': {field: {}}}]
+            # 文書の根の未知の欄は先に断るので、旧の欄は入力の中に置く。
+            data['corpus']['inputs'][0]['deep'] = [{'unknown': {field: {}}}]
             result, _ = self.run_tool('desugarDiff', data)
             self.assertEqual(result.returncode, 2, result.stdout)
             self.assertIn(f'unsupported exchange field: {field}', result.stderr)
@@ -268,7 +269,7 @@ class Batch4ExchangeTests(unittest.TestCase):
         s['body']['builderBind']['rest'] = {'last': {'expr': {'returnE': dict(ret=string, inner=block)}}}
         result, report = self.run_tool('surfaceCheck', data, 'fn:201')
         self.assertEqual(result.returncode, 1, result.stderr + json.dumps(report))
-        self.assertEqual(report['result']['error']['reason'], 'invalid local builder kind')
+        self.assertEqual(report['result']['error']['reason'], 'type or certificate check failed')
         # blockをlazyに包んでも、lazy内のreturnを許可しない。
         data = copy.deepcopy(self.data)
         returned = {'returnE': dict(ret=string, inner={'literal': {'value': {'string': {'value': 'x'}}}})}
@@ -278,7 +279,7 @@ class Batch4ExchangeTests(unittest.TestCase):
             dict(ret={'base': {'name': 'Integer'}}, inner=lazy)}}}
         result, report = self.run_tool('surfaceCheck', data, 'fn:301')
         self.assertEqual(result.returncode, 1, result.stderr + json.dumps(report))
-        self.assertEqual(report['result']['error']['reason'], 'return is outside a function')
+        self.assertEqual(report['result']['error']['reason'], 'return outside a function')
 
     def test_comparison_keeps_lets_order_and_local_references(self):
         for key, mutation in [('fn:204', 'ref'), ('fn:314', 'order'), ('fn:306', 'let')]:
@@ -304,7 +305,7 @@ class Batch4ExchangeTests(unittest.TestCase):
             definition(data, key)['surface']['header']['eff'] = []
             result, report = self.run_tool('surfaceCheck', data, key)
             self.assertEqual(result.returncode, 1, result.stderr + json.dumps(report))
-            self.assertEqual(report['result']['error']['reason'], 'effect exceeds the allowed effect')
+            self.assertEqual(report['result']['error']['reason'], 'type or certificate check failed')
 
 
 if __name__ == '__main__':

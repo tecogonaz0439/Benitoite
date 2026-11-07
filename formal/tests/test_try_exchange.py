@@ -124,11 +124,13 @@ class TryExchangeTests(unittest.TestCase):
                    'tys': [{'base': {'name': 'String'}}], 'effs': [], 'ranges': []}},
                    'labels': [None], 'positions': [0],
                    'args': [{'literal': {'value': {'integer': {'value': 1}}}}]}}
-        cases = [('dict', {'local': {'index': 1}}, 'expected a dictionary type'),
-                 ('showMethod', 'show', 'unknown die display method'),
-                 ('exit', 'exit', 'unknown die exit primitive'),
-                 ('message', {'local': {'index': 1}}, 'type is not included in the expected type'),
-                 ('message', impure, 'effect exceeds the allowed effect')]
+        # 篩付きの検査器の拒否の理由。辞書でない局所の値は呼出しの頭を解決できず、表示のメソッドと終了の組込みの
+        # 誤りは呼出しの署名の誤り、表示の型と効果の誤りは案内の再検査の失敗として断る。
+        cases = [('dict', {'local': {'index': 1}}, 'call head cannot be resolved'),
+                 ('showMethod', 'show', 'call signature is invalid'),
+                 ('exit', 'exit', 'call signature is invalid'),
+                 ('message', {'local': {'index': 1}}, 'type or certificate check failed'),
+                 ('message', impure, 'type or certificate check failed')]
         for field, value, reason in cases:
             for tool in ('surfaceCheck', 'surfaceCheckAll'):
                 with self.subTest(field=field, tool=tool):
@@ -139,9 +141,8 @@ class TryExchangeTests(unittest.TestCase):
                     error = (report['result']['error'] if tool == 'surfaceCheck'
                              else report['mismatchExamples'][0]['error'])
                     self.assertEqual(error['reason'], reason)
-                    suffix = [] if field == 'exit' else [1] if field == 'message' else [2]
-                    self.assertEqual(error['path'], ([0, 0, 0, 0, 0] if tool == 'surfaceCheck'
-                                                     else [0, 0, 0]) + suffix)
+                    # 篩付きの検査器の位置は、二つの入口で同じ（定義の根からの番号）である。
+                    self.assertEqual(error['path'], [0, 0, 1] if field == 'message' else [0, 0, 1, 0, 0])
                     if tool == 'surfaceCheckAll':
                         self.assertEqual(report['counts']['mismatched'], 1)
 

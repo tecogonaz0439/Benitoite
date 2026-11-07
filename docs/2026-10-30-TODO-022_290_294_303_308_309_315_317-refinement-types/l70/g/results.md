@@ -123,11 +123,11 @@ Codex の担当は2026-11-07 04:44:45（最初の明示採取）から06:03（�
 |---|---|---|
 | L70.40b | (1) `Exchange.CheckInput.prepare` を新しい `CheckTables.Materials`・`Check.Input`（`.custom` の表）・`CheckAccept.AcceptInput` を作る形に書き直す。(2) 必須の判定の受理の規則（旧 `Surface.ScopeState` の `checkRule`・`projectRule`・`widenRule`・`pathCheck`・`requestCheck` と `Surface.ScopeSound.productionRules`・`productionRules_sound`）は、新しい表層（`Refinement.Val`）に移植されていない。新しい `ScopeState` は225行で、規則の構成と健全性を持たない。`Exchange.Observe` の `acceptInput` は旧の受理の入力を作ったまま残した。(3) `Release.CoverageShow` を新しい網羅性の反例（`Refinement.CoverageWitness`）の表示へ移す。(4) `Exchange.Builtins` の残り（Codex の担当が `mkBuiltins` まで移した）と `CheckTables`・`CheckTablesSound` の削除 | (2) を除き2〜4時間。(2) は旧の約2,000行（規則と健全性）の移植で、群 G の見込みに含まれていない |
 | L70.41 | 7入口を新しい checker・受理・網羅性・脱糖へ切り替え、依存の書き出しで旧判断を読まないことを確かめる。規範の関数が実行コードを持つようになったので、入口は規範の関数を直接呼べる（Codex の担当の実行用の複製は不要になった）。`q.Sound` の供給（下の判断点(B)） | 2〜4時間 |
-| L70.42 | 処理系の試験の書き出しの候補（版16/8、一時領域 `/private/tmp/benitoite-l70-g/rust-candidates/`）と固定入力の候補61ファイル（`/private/tmp/benitoite-l70-g/fixture-candidates/`）は未適用。旧版の書き出しの基準（1,792入力、1,373書き出し、外部除外30入力・区間の外部型12定義）は記録済み | 適用・試験・全コーパスの書き出しで2〜3時間（全コーパスの書き出しだけで約25分） |
+| L70.42 | 処理系の試験の書き出しの候補（版16/8、一時領域 `<tmp>/rust-candidates/`）と固定入力の候補61ファイル（`<tmp>/fixture-candidates/`）は未適用。旧版の書き出しの基準（1,792入力、1,373書き出し、外部除外30入力・区間の外部型12定義）は記録済み | 適用・試験・全コーパスの書き出しで2〜3時間（全コーパスの書き出しだけで約25分） |
 | L70.44 | 削除の台本 `deletion.py` と計画 `deletion-plan.json`（146モジュール・42コマンド）、F09 の照合の台本 `f09.py` は Codex の担当が準備した。未適用・未検証 | 2〜3時間 |
-| L70.45 | 01-12・07-04 の写しの候補の断片（一時領域 `/private/tmp/benitoite-l70-g/spec-candidates/`）と、形式化のモジュールの表の下書き `modules-for-spec.md` がある。群 F1 の見出しの直しも未了 | 1〜2時間 |
+| L70.45 | 01-12・07-04 の写しの候補の断片（一時領域 `<tmp>/spec-candidates/`）と、形式化のモジュールの表の下書き `modules-for-spec.md` がある。群 F1 の見出しの直しも未了 | 1〜2時間 |
 
-一時領域 `/private/tmp/benitoite-l70-g/`（245 MB）は改造の外にあり、永久保管の場所ではない。次の担当が使うまで残す必要がある。
+一時領域 `<tmp>/`（245 MB）は改造の外にあり、永久保管の場所ではない。次の担当が使うまで残す必要がある。
 
 判断を求める点:
 
@@ -260,7 +260,7 @@ L70.44 の削除は L70.42 の取り込みの後に作業木へ適用する。�
 
 ## 二人目の Claude の担当の区間（結合の後。2026-11-07 11:24〜）
 
-基準は結合の版 `dc22b231a7f9f75089434c80d06e7f14f70a8eab`（HEAD と一致を確認）。git の書き込み、`scripts/check.sh`・`scripts/check-formal.sh` の全体の実行はしていない。サブエージェントは起動していない。`<tmp2>` は一時領域 `/private/tmp/benitoite-l70-g2` を表す。
+基準は結合の版 `dc22b231a7f9f75089434c80d06e7f14f70a8eab`（HEAD と一致を確認）。git の書き込み、`scripts/check.sh`・`scripts/check-formal.sh` の全体の実行はしていない。サブエージェントは起動していない。`<tmp2>` はこの担当の一時領域、`<tmp>` は群 G の前の担当の一時領域、`<tmp42>` は L70.42 の一時領域を表す。
 
 ### 時刻
 
@@ -293,7 +293,7 @@ L70.44 の削除は L70.42 の取り込みの後に作業木へ適用する。�
 
 ### 3. 準備の失敗の確認
 
-固定入力の候補（一時領域 `/private/tmp/benitoite-l70-g/fixture-candidates/tests/`）を `formal/tests` へ当てた。52ファイルのうち L70.42 が変えていた3ファイル（`test_batch2_exchange.py`・`test_batch3_exchange.py`・`interval_vm_compare.py`）は三方向で照らし、衝突した2箇所は作業木の側（L70.42 の版）を採った。続いて次を直した。
+固定入力の候補（一時領域 `<tmp>/fixture-candidates/tests/`）を `formal/tests` へ当てた。52ファイルのうち L70.42 が変えていた3ファイル（`test_batch2_exchange.py`・`test_batch3_exchange.py`・`interval_vm_compare.py`）は三方向で照らし、衝突した2箇所は作業木の側（L70.42 の版）を採った。続いて次を直した。
 
 | ファイル | 変更 | 理由 |
 |---|---|---|
@@ -344,7 +344,7 @@ L70.44 の削除は L70.42 の取り込みの後に作業木へ適用する。�
   - 写す欄の決め方は、既存の `CanonicalNames.json` の文脈の判定を使い、構成子の欄だけを写す設定（`constructorsOnly`）を足した。primitive・効果・型の名前は写さない。
   - 写しは入れ替えなので、二度写すと元に戻る。処理系の書き出しと Lean の結果は、同じ写しをした両辺で比べる。
 - `Exchange.Observe.acceptInput` の成功値の名前を `Result.Ok` にした。受理の規則の健全性（`acceptInput_sound`・`acceptInput_tableSound`）は `ScopeState.models "Result.Ok"` についての主張になり、実例の表の δ の成功値と同じ名前を読む。`ObserveExamples` の二つの適用例を合わせた。
-- 一致の確認（L70.42 の新しい書き出し `/private/tmp/benitoite-l70-g42/new/desugar/`、写しの前後の実行ファイルを比べた。台本 `<tmp2>/okcmp.sh`）: path-in・request-in・named-declarations・generated-record-property・manifest の5コーパスで desugarDiff・builtinCheck・surfaceCheckAll・coverageProgramDiff（ある2件）、区間の interval-manifest-corpus・reader-corpus・point の analyze と eval。終了状態は全て前後で同じ。報告は surfaceCheckAll の経過時間の欄を除いてバイト単位で同じ。固定入力の試験の失敗の件数も前後で同じ。
+- 一致の確認（L70.42 の新しい書き出し `<tmp42>/new/desugar/`、写しの前後の実行ファイルを比べた。台本 `<tmp2>/okcmp.sh`）: path-in・request-in・named-declarations・generated-record-property・manifest の5コーパスで desugarDiff・builtinCheck・surfaceCheckAll・coverageProgramDiff（ある2件）、区間の interval-manifest-corpus・reader-corpus・point の analyze と eval。終了状態は全て前後で同じ。報告は surfaceCheckAll の経過時間の欄を除いてバイト単位で同じ。固定入力の試験の失敗の件数も前後で同じ。
 
 ### 7. L70.42 のレビューの申し送り
 
@@ -366,7 +366,7 @@ L70.44 の削除は L70.42 の取り込みの後に作業木へ適用する。�
 
 | 対象 | 入力の形・確認点 | 処置 |
 |---|---|---|
-| 標準表との一致の判定による準備の失敗 | 処理系の署名が標準表の行と合わない組込み: `Http.sendIn`（成功値の `Http.Response` を処理系は record の data、標準表は不透明型で持つ）、`Map`・`Set`・`List` の19名（`Map.fromList` など。標準表は結果型に篩（例: 大きさ ≤ 元の長さ）を持ち、処理系の書き出しは持たない）、`Scope.checkPathIn`（標準表の `Scope.ScopeError` は処理系にない構成子 `At` を持ち、構成子の数が違うので名前を写せない）。L70.42 の新しい書き出しの組込みの表の1,455入力のうち、少なくとも35入力がこれらの名前を持つ（台本 `<tmp2>/cover_prims.py`・`run_cover.py`、被覆する51入力で判定した。入力ごとに data の写しが変わる `checkPathIn` は名前を持つ入力の数で数えた） | 入力を省かない。拒否をやめて記録だけにするか、照合で篩を外して比べるかは取りまとめの判断点 |
+| 標準表との一致の判定による準備の失敗 | 初めの集計（名前を写す前の組込みの名前で数え、少なくとも35入力・「19名」）は誤りだった。訂正した件数と原因は下の「取りまとめの判断の後の区間」の表にある | 同上 |
 | 固定入力の試験の文言と件数 | 上の 3 の表の失敗。篩付きの検査器の拒否の理由の文と、旧の期待の文が違う。batch3・batch4 に一致の件数の差 | F-REG の全比較で数える |
 
 ### 作業末の検査
@@ -385,3 +385,115 @@ L70.44 の削除は L70.42 の取り込みの後に作業木へ適用する。�
 
 - 削除したモジュールの写しの直し（上の「残る写し」）を終えていない。
 - 11:55頃、試験の確認の途中で、対象を指定した `lake -d formal build intervalDiff` を共有ロックなしで誤って起動し、約2分後に停止の道具で止めた。残った処理はなく、その後の既定ビルドは共有ロック下で終了0であった。
+
+## 取りまとめの判断の後の区間（ed2ab04d から。2026-11-07 13:05〜）
+
+基準は取りまとめのコミット `ed2ab04d`。git の書き込み、`scripts/check.sh`・`scripts/check-formal.sh` の全体の実行はしていない。サブエージェントは起動していない。この区間では Lean のソースを変えていない。
+
+### 記録の絶対パス
+
+results.md・spec-copies.md・prepare-surface.md・signature-probe.lean の一時領域の絶対パスを `<tmp>`（群 G の前の担当の一時領域）・`<tmp2>`（この担当の一時領域）・`<tmp42>`（L70.42 の一時領域）に改めた。`l70/g42/results.md` の冒頭の `<tmp>` の定義の行は、群 G の受け持ちの外（`g/` 以外）なので変えていない。
+
+### 1. 標準表との一致の判定で断った入力の分類
+
+前の区間の集計（少なくとも35入力、「結果型の篩の19名」）は誤りだった。処理系の書き出しの組込みの名前（`Benitoite.Network.Http.sendIn` など）を、照合の前の名前の写しの後の名前（`Http.sendIn`）と照らしていなかったためである。L70.42 の新しい書き出しの全ての組込みの表（48文書・1,455入力）に表層の一括検査の実行ファイルを当てて数え直した（台本 `<tmp2>/prep/run2.sh`。準備の段の理由を報告から読んだ）。
+
+| 結果 | 入力の数 |
+|---|---:|
+| 準備の段で断った（標準表との一致の判定） | 1,454 |
+| 組の誤りで評価できない（`scope-tables`。合成の表で stdlib を持たない） | 1 |
+| 準備を通った | 0 |
+
+原因の名前ごとの入力の数（一つの入力が複数の原因を持つ）:
+
+| 原因 | 名前 | 入力の数 | 内容 |
+|---|---|---:|---|
+| `Http.sendIn` | `Http.sendIn` | 1,454 | 成功値の `Http.Response` を、処理系は record の data、標準表は不透明型で持つ |
+| 結果型の篩 | `List.append`・`List.head`・`List.tail`・`Map.fromList`・`Map.toList`・`Set.fromList`・`Set.toList`（7名） | 23 | 標準表の結果型だけが篩を持つ |
+| 鍵の型パラメータの等値の印 | `Map.contains`・`Map.empty`・`Map.get`・`Map.keys`・`Map.remove`・`Map.set`・`Map.size`・`Map.values`・`Set.add`・`Set.contains`・`Set.difference`・`Set.intersection`・`Set.remove`・`Set.size`・`Set.union`（15名） | 11 | 鍵の型パラメータの制約を、処理系は等値と鍵の両方の印、標準表は鍵の印だけで書く。型・効果の欄は一致する |
+| `Scope.ScopeError.At` | `Scope.checkPathIn` | 9 | 標準表の `Scope.ScopeError` だけが構成子 `At` を持ち、構成子の数が違うので data の名前を写せない |
+
+組み合わせは、`Http.sendIn` だけ1,420、`Http.sendIn` と結果型の篩14、`Http.sendIn` と `At` 9、`Http.sendIn` と鍵の印と篩9、`Http.sendIn` と鍵の印2である。取りまとめの判断に挙げた「19名」は誤りで、篩の差は7名、ほかの15名は鍵の型パラメータの印の差である（確認用入力 `<tmp2>/probe/sendin.lean` で、15名は型パラメータの欄を標準表の値に置き換えると一致し、7名は結果型が違うことを確かめた）。鍵の印の差は取りまとめの判断に挙げていない原因なので、照合も標準表も変えず、分類だけを足した（下の「取りまとめに判断を求める点」）。
+
+分類の表は `formal/tests/test_range_sources.py` の `STANDARD_GAPS`・`preparation_gaps` に置き、ほかの試験も同じ表を読む。
+
+- `test_range_sources.py`: 表層の検査を、準備の段で断った・一致・不一致に分けて `summary.json` の `surfaceCheck` に残し、最初の準備の失敗で止めない。不一致があれば最後に失敗する。新しい書き出しの範囲の実ソースでは、17事例全てを準備の段で断った（原因は `Http.sendIn` 17、うち `At` 3）。一致・不一致は0。終了0。
+- `test_range_budget_sources.py`: 同じ分類にした。2事例とも準備の段で断った。終了0。
+- `test_batch3_exchange.py --rust-dir`・`test_batch5_exchange.py --rust-dir`: 処理系の書き出しを読む表層の検査を同じ分類にした。どちらも終了0（全入力を `Http.sendIn` で断った）。
+- `crates/benitoite/tests/desugar_export/check_named.py`（`check-formal.sh` の固定記録の照合）と `test_batch2_exchange.py` の書き出しの照合は、最初の表層の検査の準備の失敗で止まる。分類の形には直していない（下の「取りまとめに判断を求める点」）。
+
+### F-REG への申し送り（R30・R50 で0件にする義務）
+
+| 原因 | 断った入力（1,455のうち） | 0件にする担当 |
+|---|---:|---|
+| `Http.sendIn`（`Http.Response` の表現） | 1,454 | R50 |
+| 結果型の篩（7名） | 23 | R 段の処理系の篩の書き出し（取りまとめが担当を決める） |
+| 鍵の型パラメータの等値の印（15名） | 11 | 未定（取りまとめの判断点） |
+| `Scope.ScopeError.At`（`Scope.checkPathIn`） | 9 | R30 |
+
+ほかの原因の準備の失敗は0件である。
+
+### 2. 削除したモジュールの記述の直し
+
+| 箇所 | 処置 |
+|---|---|
+| 01-12「Scope の局所解析の状態と規則の表」〜「Scope の局所解析の接続定理」の5節 | 見出しは保ち（処理系のコメントが「Scope の必須の判定の受理と拒否の理由」を引く）、本文を篩付きの `Surface.ScopeRules`・`ScopeSound`・`ScopeState`・`ScopeLower`・`ScopeAccept`・`CheckAccept` が今示す定義と定理だけで書き直した（約190行を約50行に）。規則の表の詳細は既存の「篩を含む表層の検査と受理」に写してあるので重ねない |
+| 01-12「Logの通常宣言とハンドラの具体例」 | 対応物がないので節を除いた（見出しの参照は改造の記録だけで、処理系・道具・試験にはない） |
+| 01-12「Resultの法則と二引数辞書の具体例」 | 削除した `Surface.Monad2Examples` の段落を除き、`Library.ResultLaws` の記述を残した |
+| 01-12 の根拠の文（効果の被覆・V-Prim・網羅性の拡張・表層の型付けの範囲・継続の対象の伝播・範囲の正規化） | 削除したファイルと定理を引く文を除いた。`CoverageExtension` は篩付きの `Release/Refinement/CoverageExtension.lean` に改めた |
+
+残っているもの（この区間で終えられなかった）:
+
+| 箇所 | 内容 |
+|---|---|
+| 01-12「構築器の分類と環境の対応」〜「構築器の局所宣言と捕捉」の5節（約155行） | 旧 Release の構築器の補題と旧 Surface の構築器（`Surface.Builders`・`BuilderLower`・`BuilderFree`・`Lemmas.Builder*`・`Check`）を正とする。篩付きの表層の構築器の形式化との対応を一つずつ確かめて書き直す必要がある |
+| 07-04「目的と範囲」の段階の記述と「篩型は初回リリース版に含めない」、「証明する性質」の冒頭と旧 Release の主定理の【決定】（44〜64行付近） | 同じ名前の篩付きの定理（`Refinement.MainTheorems` の `step_target_sound`・`reachable_target_sound`、`Refinement.SurfaceMain` の `surface_target_sound`）はあるが、前提と結論の形が違う（範囲の環境 σ など）。段落ごとに今の言明へ書き直す必要がある |
+| 07-04 の 696・698・724・726・846・1079・1129 行付近と「以下の既存の表」の旧ファイルの行 | 削除したファイルの名前 |
+| `formal/README.md` | 段階 A（`Core/`）・段階 C（旧 `Surface/`）・旧 `Release` の削除したファイルの行と、旧主定理の `#print axioms` の一覧 |
+
+### 3. 固定入力の試験
+
+| 試験 | 前 | 後 | 処置 |
+|---|---:|---:|---|
+| width | 1 | 0 | 符号なしの負号の拒否の理由を `operator has no primitive` にした |
+| try | 10 | 0 | 終了の契約の偽りの拒否の理由と位置を新しい検査器のものにした（どれも拒否のまま） |
+| batch2 | 4 | 1 | 拒否の理由3件を合わせた。残る1件は受理への変化（下） |
+| batch3 | 33 | 0 | 候補の型パラメータの種類の誤り（下）を直した。旧の版の拒否の試験は、版より先に旧の構築器の欄で断るので、構築器を除いた入力で確かめる形にした |
+| batch4 | 18 | 0 | 候補の型パラメータの種類を直し、拒否の理由・位置を合わせた。旧の参照の欄は文書の根でなく入力の中に置いた（根の未知の欄を先に断るため） |
+| batch5 | 0 | 0 | 書き出しの照合の、L70.42 が除いた補助（`explicit_top_ranges`）の呼出しを除いた |
+| named | 27 | 10 | 拒否の理由・位置を合わせ、候補が欠いていた `tparamKinds` を足した。演算子の偽りは準備の段の拒否（終了2）になった。残る10件は下の取得関数の差 |
+| extensible | 54 | 1 | 候補の誤り（option の `variances` が数、`dataTypes` の `constructors` の欠け）を直し、網羅しない照合の拒否の理由と、構成子名の欠けの拒否の文言を合わせた。残る1件は下の取得関数の差 |
+| range（`test_range_exchange.py`） | — | 0 | 前の区間で直した |
+
+期待を変えたのは、変更前も変更後も同じ入口で拒否する（終了状態が同じ）入力で、新しい検査器の拒否の理由がその入力の誤りに当たるものに限った。
+
+候補の誤り: batch3・batch4 の `fn:220`〜`223` の不一致（前の区間で4件）は、候補が型構成子に適用する型パラメータ（`tapp` の頭）と `Functor2`・`Applicative2`・`Monad2` の引数の種類を `value` と書いていたためだった。処理系の書き出しと同じく `{"constructor": {"arity": 2}}` にした（台本 `<tmp2>/fix_kinds.py`。各7箇所。`manifest.json` の指紋を更新）。直した後は一致した。
+
+残る失敗（分類した原因だけ）:
+
+| 試験 | 件数 | 原因 |
+|---|---:|---|
+| named（`test_six_entries`・`test_effect_order_and_membership`・`test_comparison_preserves_names_and_source_positions`） | 10 | 取得関数の結果型の篩。篩付きの脱糖は取得関数 `Pair.left` の結果型に欄の関係の篩を付ける（群 K2 の `accessorRet`）が、交換の核（処理系の書き出しと同じ形）は付けない。脱糖の比較が `definition.header.ret` で一件ずれ、件数を数える試験が落ちる。処理系の新しい書き出しでも同じ差が出る（generated-record-property の取得関数5件） |
+| extensible（`test_closed_current_input_is_accepted_by_all_entries`） | 1 | 同上（named の入力を読む） |
+| batch2（`test_clause_metadata_and_scope`） | 1 | 拒否から受理への変化。節の辞書の証拠の番号 `constraint` を 1（節の辞書は一つ）にした入力を、旧の検査器は `clause dictionary scope mismatch` で断り、篩付きの検査器は受理する。`ClauseScope.slot` の `dictCount - 1 - i` が自然数の引き算で 0 に切り詰まり、番号 1 が番号 0 と同じ位置を指すため、脱糖した項は正しい入力と同じになる。検査器は位置の辞書の型だけを照らし、番号が節の辞書の数より小さいことを確かめない。期待は変えていない |
+
+範囲の予算の試験・既知の差の試験・区間の交換の試験（固定入力だけ）は終了0。
+
+### 作業末の検査
+
+| 検査 | 結果 |
+|---|---|
+| 既定ビルド（共有ロック下） | 終了0（2,323ジョブ）。この区間で Lean のソースは変えていない |
+| 公理監査（`verify_g2.py`。足した16・変えた48モジュールの全9,981宣言） | `sorryAx` と新しい公理は0。前の区間と同じ件数 |
+| 照合（`verify_g2.py`） | 成功 |
+| `cargo test -p benitoite --test desugar_export --test coverage_export` | 終了0 |
+| `python3 -B -m unittest scripts.check.test_policy` | 終了0 |
+
+### 取りまとめに判断を求める点
+
+1. 新しい書き出しの1,455入力のうち、評価できた1,454入力の全てが準備の段で断られる（`Http.sendIn`）。R50 までは、交換の表層の検査の比較（F-REG の surfaceCheck・surfaceCheckAll）に中身がない。
+2. 新しく見つけた原因「鍵の型パラメータの等値の印」（15名・11入力）をどの単位で0件にするか。
+3. 取得関数の結果型の篩（群 K2）による脱糖の比較の差。処理系の書き出しの全ての取得関数に出るので、F-REG の desugarDiff の不一致になる。どの単位で揃えるか。
+4. 節の辞書の証拠の番号の範囲を検査器で確かめるか（今は受理。脱糖の結果は正しい入力と同じ）。
+5. `check_named.py` と `test_batch2_exchange.py` の書き出しの照合を、準備の失敗で止まらない分類の形に直すか。
+6. 01-12 の構築器の5節、07-04「証明する性質」と「目的と範囲」、07-04 の旧ファイルの名前、`formal/README.md` の書き直しを、どの単位で行うか（上の「残っているもの」）。

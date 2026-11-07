@@ -144,7 +144,8 @@ class WidthExchangeTests(unittest.TestCase):
         result, report = self.run_input("unsigned-negation", corpus, builtins, stdlib)["surfaceCheckAll"]
         self.assertEqual(result.returncode, 1)
         self.assertEqual(report["counts"]["mismatched"], 1)
-        self.assertIn("not allowed", json.dumps(report))
+        # 篩付きの検査器は、符号なしの型の負号に組込みがないことで断る。
+        self.assertIn("operator has no primitive", json.dumps(report))
 
     def test_numeric_constant_patterns_are_rejected(self):
         fixture = json.loads(FIXTURE.read_text())

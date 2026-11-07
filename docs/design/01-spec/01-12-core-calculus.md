@@ -183,13 +183,13 @@
 
 【決定】`A ≤ A'` は、A と A' が等しいか、A が `(n̄:Ā) → B ! ε`、A' が `(n̄:Ā) → B ! ε'` で `ε ⊆ ε'` であることを表す。両方の関数型の契約名の綴りと順は同じでなければならない。`≤` は型の最も外側の関数の型のエフェクトにだけ働き、[型システム](01-06-type-system.md)の「エフェクトの包含」に当たる。V-Sub と後述の C-Sub は、値と計算の結果が現れるどの位置でも使えるので、[型システム](01-06-type-system.md)で包含の規則が働く位置をすべて含む。
 
-【決定】形式化した Release では、`≤` の関数の型の効果の `ε ⊆ ε'` と、後述の C-Sub・C-Eff の `ε ⊆ ε'` を、効果の被覆 `ε'.Covers ε`（ε の各原子を ε' のいずれか一原子が丸ごと覆い、ε の Fail の型が ε' に属すること。後述の「エフェクトの名前と開始状態」）で判定する（Lean の `Ty.Le`・`HasTypeCQ.C_Sub`・`HasTypeCQ.C_Eff`）。範囲を持たない原子（Top）を覆うのは同じ名前の Top の原子だけであり、範囲付きの原子は、同じ名前の原子のうち範囲が覆うものに覆われる。このため、上限 `{File.Write[/data/**]}` を宣言した関数の本体が `File.Write[/data/a.txt]` の効果を持つ場合と、狭い効果 `{File.Write[/data/a.txt]}` を宣言した関数を上限 `{File.Write[/data/**]}` の関数から呼ぶ場合が型付く（`Release/CoverExamples.lean`）。構造上の包含は被覆を与える（`Eff.Sub.covers`）ので、以前の規則で型付く導出は新しい規則でも型付く。内側の効果の原子がすべて範囲の位置が Top の名前の原子か行の原子であるとき、被覆は構造上の包含と同値であり（`Eff.covers_iff_sub_old`）、関数の型の潜在効果がそうであるとき `≤` は以前の包含 `Ty.LeOld` と同値である（`Ty.le_iff_leOld`。いずれも `Release/CoverCompat.lean`。規則の前提の水準の同値であり、型付けの関係全体の同値は示していない）。後述の C-Handle の `εM ⊆ ε ∪ handled(H)` と C-Handle-Fail の前提は、構造上の包含のまま保つ。理由: 上限の包含を一原子の被覆にすると、範囲付きの効果を宣言した関数の本体と呼び出しを、書き換えずに型付けられる。C-Handle の前提を構造上に保つと、保護本体の効果のどの原子がハンドラに処理されるかが名前と範囲の位置で決まり、節の添字の規則（後述の「ハンドラ」）を構造上の所属で述べられる。保護本体の効果は、この前提の前に C-Sub で被覆によって広げられる。
+【決定】形式化した Release では、`≤` の関数の型の効果の `ε ⊆ ε'` と、後述の C-Sub・C-Eff の `ε ⊆ ε'` を、効果の被覆 `ε'.Covers ε`（ε の各原子を ε' のいずれか一原子が丸ごと覆い、ε の Fail の型が ε' に属すること。後述の「エフェクトの名前と開始状態」）で判定する（Lean の `Ty.Le`・`HasTypeCQ.C_Sub`・`HasTypeCQ.C_Eff`）。範囲を持たない原子（Top）を覆うのは同じ名前の Top の原子だけであり、範囲付きの原子は、同じ名前の原子のうち範囲が覆うものに覆われる。構造上の包含は被覆を与える（`Eff.Sub.covers`）ので、以前の規則で型付く導出は新しい規則でも型付く。後述の C-Handle の `εM ⊆ ε ∪ handled(H)` と C-Handle-Fail の前提は、構造上の包含のまま保つ。理由: 上限の包含を一原子の被覆にすると、範囲付きの効果を宣言した関数の本体と呼び出しを、書き換えずに型付けられる。C-Handle の前提を構造上に保つと、保護本体の効果のどの原子がハンドラに処理されるかが名前と範囲の位置で決まり、節の添字の規則（後述の「ハンドラ」）を構造上の所属で述べられる。保護本体の効果は、この前提の前に C-Sub で被覆によって広げられる。
 
 【決定】形式化した Release の検査済みの対象の値 `checked(t)` は、値の所属の葉の規則 V-Checked だけで型付ける（Lean の `HasTypeVQ.V_Checked`）。`valKind(O)` は組み込みの表が範囲付きの値型の名前 O に与える対象の種類、`kind(t)` は対象 t の種類、`t ∈ R` は閉じた範囲 R への所属（`Range.Mem`）である。この規則が与える型 `O[R]` は範囲の変数を持たず、範囲の変数の文脈 0 で整形式である。範囲の拡大は V-Sub では行わない（`≤` は不透明型を広げない）。所属の包含・被覆・Top への拡大は、この規則の補題として示す（`Release/Lemmas/Membership.lean` の `HasTypeVQ.checked_widen`・`checked_widen_covers`・`checked_widen_top`、閉じた値については `widen_opaque`・`widen_opaque_top`）。関数の型やリストの要素の型など、型の内側へ範囲を広げる規則は置かない。理由: 拡大を最上位の不透明型の値に限れば、関数の型の内側の範囲の違いを型付けの規則に持ち込まずに済むためである。不透明型の閉じた値は、範囲が Top の型の不透明型の定数か、V-Checked で型付けた検査済みの対象の値である（`HasTypeVQ.canonical_opaque`）。表のどの名前も対象の種類を持たない（`valKind` が全て none）とき、V-Checked は使えず、不透明型の閉じた値は不透明型の定数だけである（`HasTypeVQ.not_checked_of_noValKind`・`canonical_opaque_of_noValKind`）。V-Prim は変えておらず、組み込みの関数の型は範囲を具体化しない。小例として、`Scope.PathIn` に種類 path を与えた表で、`/data/a.txt` の検査済みの対象の値が `Scope.PathIn[/data/**]` の型を持ち、`Scope.PathIn[/database/**]` の型を持たないことを示した（`MembershipExample.checked_typed`・`not_typed_database`）。
 
 【決定】形式化した Release の検査済みの要求の値 `checkedRequest(t, c)` は、規則 V-CheckedRequest だけで型付ける（Lean の `HasTypeVQ.V_CheckedRequest`）。対象 t の所属の前提は V-Checked と同じであり、加えて、組み込みの表が名前 O の値に与える要求の型 `valContent(O)` が T で、要求 c が、同じストアの型付けのもとで空の型の文脈・値の文脈・NoFail の文脈で型 T を持つことを求める。規則が与える型 `O[R]` も範囲の変数を持たない。外側の文脈を変える改名・代入・型代入・制約の並びの変更は保持する要求とその前提を変えず、ストアの型付けを変える補題（`HasTypeVQ.store`、`hideBuilders_strengthen_val`）だけが前提の導出を移す。理由: 前提を閉じた文脈に置けば、内容の型 T が閉じていることを規則に置かずに、型の代入の補題が前提をそのまま使えるためである。範囲の拡大は V-Checked と同じく規則の補題で行い、保持する要求を変えない（`HasTypeVQ.checkedRequest_widen`）。逆転は `HasTypeVQ.inv_checkedRequest`（保持する要求の導出を返す）であり、不透明型の閉じた値は、不透明型の定数、検査済みの対象の値、検査済みの要求の値のどれかである（`HasTypeVQ.canonical_opaque`）。表のどの名前も対象の種類を持たないとき（`valKind` が全て none）と、どの名前も要求の型を持たないとき（`valContent` が全て none）、V-CheckedRequest は使えない（`Release/Lemmas/Membership.lean` の `HasTypeVQ.not_checkedRequest_of_noValKind`・`not_checkedRequest_of_noValContent`）。保持する要求の型付けはプログラムの構成子の宣言によるので、構成子 `Http.ClientRequest` を宣言しないプログラムでは、検査済みの要求の値はどの型も持たない（`ModelHttp.Examples.checkedReq_not_typed_empty`）。V-Checked は変えていないので、`Http.RequestIn` の範囲付きの型には、要求を持たない検査済みの対象の値も属しうる。この値は表の δ が作らない。理由: V-Checked に `valContent` の条件を加えても、範囲が Top の `Http.RequestIn` には要求を持たない不透明型の定数が属するので、「`Http.RequestIn` の値は必ず要求を保持する」を型付けでは表せず、規則の変更だけが増えるためである。検査した要求が保たれることは、表の δ の性質として示す（`Release/ModelHttp.lean` の `check_send_preserves`。07-04「形式化で仮定するもの」）。小例として、`api.example.com:443` の検査済みの要求の値が `Http.RequestIn[api.example.com:443]` の型を持ち、`Http.RequestIn[other.example.com:443]` の型を持たないこと、射影が保持したレコードを返し、そのレコードの `url` の欄の照合が検査した要求の URL の文字列に進むことを示した（`ModelHttp.Examples.checkedReq_typed`・`checkedReq_not_other`・`value_step`・`read_url_steps`）。
 
-【決定】形式化した Release の V-Prim（Lean の `HasTypeVQ.V_Prim`）は、呼び出しの範囲の列 R̄ で署名を具体化して型付ける。前提は、表の項目 `B.sig b = s`、具体化の許容 `B.RangeAdmissible b s R̄`、具体化した署名 `s.inst R̄` の名前の整形式と `PrimitiveAdmissible` であり、型は `s.inst R̄` の関数の型に型引数と行引数を代入したものである。具体化した署名は範囲の変数を持たず、正則性（型付けた値の型が範囲の変数の文脈 0 で整形式であること）は `PrimSig.Scoped.inst_wf_zero` から、型代入との交換は具体化した署名の変数の範囲（`PrimSig.Scoped.inst_varsIn_zero`）から得る。範囲の変数のない項目では、許容される列は空の列だけで、空の具体化は署名を変えないので、V-Prim は旧の規則と同じである（`PrimSig.vPrim_premises_iff_old`、旧の形の構築は `HasTypeVQ.V_PrimNil`）。小例として、`/data/a.txt` の検査済みの対象の値を `Scope.PathIn[rvar 0]` の引数に受け取る純粋な項目と IO の項目の呼び出しが、範囲の列 `[/data/**]` で型付くことを示した（`Release/Lemmas/PrimRanges.lean` の `PrimRangeExamples.prim_typed`・`io_typed_example`）。
+【決定】形式化した Release の V-Prim（Lean の `HasTypeVQ.V_Prim`）は、呼び出しの範囲の列 R̄ で署名を具体化して型付ける。前提は、表の項目 `B.sig b = s`、具体化の許容 `B.RangeAdmissible b s R̄`、具体化した署名 `s.inst R̄` の名前の整形式と `PrimitiveAdmissible` であり、型は `s.inst R̄` の関数の型に型引数と行引数を代入したものである。具体化した署名は範囲の変数を持たず、正則性（型付けた値の型が範囲の変数の文脈 0 で整形式であること）は `PrimSig.Scoped.inst_wf_zero` から、型代入との交換は具体化した署名の変数の範囲（`PrimSig.Scoped.inst_varsIn_zero`）から得る。範囲の変数のない項目では、許容される列は空の列だけで、空の具体化は署名を変えない（旧の形の構築は `HasTypeVQ.V_PrimNil`）。
 
 #### 計算
 
@@ -244,7 +244,7 @@ end function
 
 【決定】Lean には、拡張可能な型の網羅性判定として `CoverageView := DataName → Bool`、全て false の `closedView`、`Shape.future d` と `CoverageWitness.future d` を定義している。将来の形は現在の値ではなく、`Inhabits`・`Exhaustive`・C-Match の規則を変更しない。`shapesWithView` は既存の形を残し、view が指定するデータ型にだけ欄を持たない将来の形を追加する。変数と `_` だけがこの形を覆う。閉じた view の列挙は既存の列挙と等しく、任意の view で現在の値に対応する形と特殊化の証拠が残ることを証明している。
 
-【決定】`Release/CoverageExtension.lean` の `ConstructorExtension P P' view` は、既存の構成子の宣言を変えず、`P.cons c = none` である新しい構成子を view が真の型にだけ追加する関係である。構成子以外の表は `Inhabits` が参照しないため制約しない。
+【決定】`Release/Refinement/CoverageExtension.lean` の `ConstructorExtension P P' view` は、既存の構成子の宣言を変えず、`P.cons c = none` である新しい構成子を view が真の型にだけ追加する関係である。構成子以外の表は `Inhabits` が参照しないため制約しない。
 
 `usefulWithView_extension_exhaustive` は、`CtorsComplete P ctors`、`CtorsComplete P' ctors'`、この拡張関係、および `usefulWithView P ctors view [A] (ps.map (fun p => [p])) [wild] = none` から `Exhaustive P' A ps` を導く。入れ子とリストを含み、将来の実行結果の一致は主張しない。`Represents.future` は証明内で追加後の値を将来の形に対応させる関係であり、現在の `Val` と `Inhabits` には新しい場合を足さない。理由: 現在の値についての健全性に加え、許可された構成子追加の後の値も元の分岐が覆うことを保証するためである。
 
@@ -531,8 +531,8 @@ record 更新と try の内部照合の checker は、宣言表の view によ�
 【決定】型の情報を付けた表層の構文の型付け（表層の型付け、surface typing）は、判断 `C; Γ; R; p ⊢s e : A ! ε` で表す。C は型パラメータの制約の並び、Γ は局所の束縛の型の並び、R は最も内側の関数の戻り値の型、p は式が末尾位置（[評価意味論](01-08-evaluation.md)の「末尾呼び出し」）にあるかどうかである。表層の型付けは、[型システム](01-06-type-system.md)の型推論の規則とは別の判断であり、書き込まれた情報が型の規則を満たすかを検査する。01-06 の型検査を通ったプログラムに型の情報を付けたものがこの判断を満たすことは、型推論の健全性の問いであり、形式化の対象にしない（07-04）。規則は、01-06 の「式と文の型」「式のエフェクト」「多相」「演算子の型付け」「必ず抜ける文」に次のように対応する。
 
 - 部分の式のエフェクトの和を式のエフェクトとする。呼び出しには、呼ぶ関数の型のエフェクトを加える。
-- トップレベルの関数の名前の使用は、型引数が型パラメータの制約を満たすことを、コア計算の V-Fun と同じ条件で検査する。prelude の関数の名前の使用は、V-Prim と同じ条件で検査する。【決定】prelude の関数の名前の使用（`E_Prim`）は、V-Prim と同じく、名前が持つ範囲の列 R̄ について具体化の許容 `Builtins.RangeAdmissible b s R̄` を求め、具体化した署名 `s.inst R̄` で型付ける。脱糖は範囲の列をそのままコアの項 `prim b T̄ Ē R̄` へ写す（`desugar_primName`）。演算子（`E_Binary`・`E_Neg`）、文字列補間の連結（`StringAddOk`）、die の終了（`DieExitOk`）は、項目の範囲の変数の個数 0（`s.nranges = 0`）を前提に持ち、脱糖は空の範囲の列を書く。理由: 組み込みの関数の名前は型引数と同じく型検査器が選んだ範囲を構文に持てるが、演算子の表 `opPrim` と die の終了の名前は範囲の列を与えず、脱糖 `desugarProgram opPrim p` は組み込みの表を受け取らないので、項目の範囲の変数の個数に合う列を書けないためである。範囲の変数のない `PrimSig.Scoped` の項目では、`E_Prim` の前提と型は、範囲の列が空であることと、範囲の列を持たない形の前提と型の組と同値である（`Surface/PrimRange.lean` の `ePrim_premises_iff_old`。空の列での形は `HasTypeQ.E_PrimNil`）。範囲の変数のない表では、ほかの規則に加えた前提は常に成り立つ（`Surface/RangeFree.lean` の `stringAddOk_iff_old`・`dieExitOk_iff_old`）。範囲の列の選び方（Scope の必須の判定）は、型付けの規則ではなく、後述の「Scope の必須の判定の受理と拒否の理由」の判定に置く。表層の整形式性は、プログラムの関数の型に範囲の変数を置かせない（表層の型注釈は `Ty.VarsIn 0` で読む。`Def.Scoped.rangeFree`・`Program.WellFormed.rangeFree`）。範囲の列は閉じた範囲だけを持つ。
-- 型と効果の範囲条件は、失敗型の内部まで検査する。ラムダと部分適用の関数型に埋め込む潜在効果にはCanonicalも要求する。E_Sub・B_Subと穴の引数の受け入れでは、移動先の型に、その位置の型変数の範囲と内部の正規形を含む `Ty.VarsIn C.length (fun _ => True)` を要求する。【決定】E_Sub・B_Sub は、効果をコアの C-Sub と同じ一原子の被覆（`Eff.Covers`）で広げ、型を `≤` で広げる。脱糖は E_Sub・B_Sub をコアの C-Sub に写す（`HasTypeQ.desugar`・`HasBlockQ.desugar`）。表層の検査器は、ラムダの本体、`resume` の引数、関数とメソッドの本体の効果の上限と、関数の型の潜在効果の比較（`tyLe`）を、同じ一原子の被覆で受け入れる（`Check.acceptEffCover`・`Finite.effCovers`。Top を覆うのは Top だけで、和では覆わない）。`handle` の保護本体と節、Fail の節、純粋の要求は構造上の包含で受け入れる（C-Handle・C-Handle-Fail の前提は構造上の包含であり、空の上限では二つは同じである）。`handle` の保護本体の処理しない原子は `handle` の式の効果へそのまま移るので、保護本体の構造上の包含はどの本体でも成り立ち、上限との比較は関数の本体などの被覆による受理で行う。上限 `{File.Write["/data/**"]}` の関数の中の、`File.Write` を処理しない `handle` の保護本体で `/data/a.txt` へ書くプログラムを、検査器は受理する（`Surface/CheckAcceptExamples.lean`）。検査器が型付けより狭いのは、捕捉した組み込みの操作の節の添字の選び方である。検査器は保護本体の推論した効果から規則の値を選び、型付けは保護本体の効果を B_Sub の被覆で広げてから規則の値を選べる。保護本体が `/data/a.txt` へ書き、`File.writeTextIn` の節が捕えたパスを `Scope.PathIn["/data/**"]` の引数の関数へ渡すプログラムを、検査器は型の誤りで拒否する（同じファイルの例）。上限 `{File.Write["/data/**"]}` を宣言した関数の本体が `/data/a.txt` へ書くプログラムと、狭い効果の関数を広い上限の関数から呼ぶプログラムに、表層の対象健全性が当たる（`Surface/CoverExamples.lean` の `program_wellTyped`・`program_target_sound`）。その main は `Scope.checkPathIn` の結果を照合し、`Ok` の腕で得た値を `f` へ渡す。脱糖したプログラムの開始状態から書き込みの事象（観測 `[/data/a.txt]`）に到達し（`main_reach`）、表層の対象健全性から、到達した事象の観測を上限が許し（`main_reach_allowed`）、到達したどの IO の事象の観測にも `/etc/passwd` は現れない（`main_never_passwd`）。部分適用した構成子が作る関数型の潜在効果は、引数の計算の効果を正規化したものとする。
+- トップレベルの関数の名前の使用は、型引数が型パラメータの制約を満たすことを、コア計算の V-Fun と同じ条件で検査する。prelude の関数の名前の使用は、V-Prim と同じ条件で検査する。【決定】prelude の関数の名前の使用（`E_Prim`）は、V-Prim と同じく、名前が持つ範囲の列 R̄ について具体化の許容 `Builtins.RangeAdmissible b s R̄` を求め、具体化した署名 `s.inst R̄` で型付ける。脱糖は範囲の列をそのままコアの項 `prim b T̄ Ē R̄` へ写す（`desugar_primName`）。演算子（`E_Binary`・`E_Neg`）、文字列補間の連結（`StringAddOk`）、die の終了（`DieExitOk`）は、項目の範囲の変数の個数 0（`s.nranges = 0`）を前提に持ち、脱糖は空の範囲の列を書く。理由: 組み込みの関数の名前は型引数と同じく型検査器が選んだ範囲を構文に持てるが、演算子の表 `opPrim` と die の終了の名前は範囲の列を与えず、脱糖 `desugarProgram opPrim p` は組み込みの表を受け取らないので、項目の範囲の変数の個数に合う列を書けないためである。範囲の列の選び方（Scope の必須の判定）は、型付けの規則ではなく、後述の「Scope の必須の判定の受理と拒否の理由」の判定に置く。表層の整形式性は、プログラムの関数の型に範囲の変数を置かせない（表層の型注釈は `Ty.VarsIn 0` で読む。`Def.Scoped.rangeFree`・`Program.WellFormed.rangeFree`）。範囲の列は閉じた範囲だけを持つ。
+- 型と効果の範囲条件は、失敗型の内部まで検査する。ラムダと部分適用の関数型に埋め込む潜在効果にはCanonicalも要求する。E_Sub・B_Subと穴の引数の受け入れでは、移動先の型に、その位置の型変数の範囲と内部の正規形を含む `Ty.VarsIn C.length (fun _ => True)` を要求する。【決定】E_Sub・B_Sub は、効果をコアの C-Sub と同じ一原子の被覆（`Eff.Covers`）で広げ、型を `≤` で広げる。脱糖は E_Sub・B_Sub をコアの C-Sub に写す（`HasTypeQ.desugar`・`HasBlockQ.desugar`）。表層の検査器は、ラムダの本体、`resume` の引数、関数とメソッドの本体の効果の上限と、関数の型の潜在効果の比較（`tyLe`）を、同じ一原子の被覆で受け入れる（`Check.acceptEffCover`・`Finite.effCovers`。Top を覆うのは Top だけで、和では覆わない）。`handle` の保護本体と節、Fail の節、純粋の要求は構造上の包含で受け入れる（C-Handle・C-Handle-Fail の前提は構造上の包含であり、空の上限では二つは同じである）。`handle` の保護本体の処理しない原子は `handle` の式の効果へそのまま移るので、保護本体の構造上の包含はどの本体でも成り立ち、上限との比較は関数の本体などの被覆による受理で行う。検査器が型付けより狭いのは、捕捉した組み込みの操作の節の添字の選び方である。検査器は保護本体の推論した効果から規則の値を選び、型付けは保護本体の効果を B_Sub の被覆で広げてから規則の値を選べる。部分適用した構成子が作る関数型の潜在効果は、引数の計算の効果を正規化したものとする。
 - 演算子は、演算子とオペランドの型から組み込みの関数と型引数を引く表（`opPrim`）を介して、その組み込みの関数の型から型を決める。`=` と `<>` は型引数 `[T]` の `eq[T]`・`ne[T]`、そのほかの演算子は型引数を持たない（[中間表現と脱糖](../02-impl/02-06-ir-and-lowering.md)のコア IR と同じ）。算術と順序比較の型の集まりは `Operator.allowed` でも検査する。二項の両辺は同じ型で検査し、暗黙に変換しない。形式化に加えた幅付きの型の演算の範囲は、後述の「初回リリース版の拡張」に記す。
 - `and`・`or` の右辺、`if` の分岐、Leanのブロック式の本体、ブロックの最後の文は、式の位置 p を引き継ぐ。そのほかの部分の式は末尾位置にない。
 - 末尾位置の `return e` は、e を型 R で検査し、型 R を持つ。末尾位置にない `return e` は、e を型 R で検査し、注釈の型を持つ。
@@ -542,7 +542,7 @@ record 更新と try の内部照合の checker は、宣言表の view によ�
 - `with` の束縛の式は、リソースの型（[リソース管理](01-10-resources.md)の「リソースの型」）で検査する。本体は束縛した変数を加えた環境で、末尾位置にないものとして検査し、`with` の型は本体の型、エフェクトは束縛の式と本体のエフェクトと `State` の和とする。`with` は、本体が必ず抜けるとき必ず抜ける。
 - `lazy` の本体は、継続の型の変数を隠した環境で、R を持たず、末尾位置にないものとして、空のエフェクトで検査する（本章の「ストア：可変のセルと明示遅延」）。`lazy` の型は `Lazy[A]`、エフェクトは空である。
 - 利用者の操作の名前の使用は、型引数が操作の型パラメータの制約を満たすことを V-Op と同じ条件で検査し、エフェクトを空とする。
-- `handle` は、本体を末尾位置にないものとして型 T・エフェクト εb で検査し、εb がハンドラのエフェクトと `handled(H)` の和に含まれることを求める。各節は、引数の個数と型パラメータの個数が操作の宣言と一致することを求め、本体を C-Handle と同じ環境（制約の並びに操作の型パラメータの制約を前に加え、外側の型・R・継続の潜在効果を型パラメータの個数だけずらし、継続の変数と節の引数を加えたもの）で、末尾位置にないものとして、同じ個数だけずらした型 T・エフェクト ε で検査する。節の並びのconsには外側の `Eff.WF C.length ε` を求める。`handle` の本体と節の中の途中の `return` と `try` は R を使う。【決定】捕捉した組み込みの操作の節は、操作の型を、本体のエフェクト εb から後述の「ハンドラ」の規則で選んだ節の添字 `clauseIx B εb o`（規則の値 `Eff.clauseRange`。組み込みの操作でないとき Top）で具体化した型（`opSigAt`）で検査する（`HasClausesQ` は εb を受け取る）。表層の型付けは節の添字に規則の値だけを使い、形式化した Release の型付けが規則の値と別に許す Top の添字を選ばない。理由: 型検査器は節の添字を一つに選ぶので、表層の型付けを型検査器の選び方の写しにするためである。規則の値を一つに選ぶのは、本体のエフェクト εb を固定した型付けと検査器である。表層の型付けでは、同じ εb のもとで節の操作の型は一つに決まる（`Surface/DesugarRange.lean` の `HasClausesQ.cons_sig_unique`・`HasClausesQ.cons_prim_rule`）。εb は型付けの導出が選び、`B_Sub` で広げられるので、本体に同じ名前の別の範囲の原子を足した εb では規則の値は Top になり、Top の操作の型で節を型付ける導出もできる（`Surface/ClauseIxExamples.lean` の `top_clause_typed`）。したがって、この制限で表層の型付けの集合 `p.WellTyped` は狭まらない。表層の検査器は、規則を候補の原子の一覧の上で計算する（`Surface/ClauseIxRule.lean` の `clauseRangeIn`・`clauseOpSigIn`）。候補の一覧が εb の原子を全て含むとき、計算した値は規則の値に等しい（`clauseRangeIn_eq`・`clauseOpSigIn_eq`）。範囲の変数を持たない項目では規則を計算せず、`opSig` と同じ型を引く。範囲の変数のない表では、節の操作の型の前提は `opSig D.patternProgram B o = some sg` と同値であり、節の型付けは εb によらない（`clauseSig_iff_old_of_rangeFree`・`HasClausesQ.sel_congr_of_rangeFree`）。
+- `handle` は、本体を末尾位置にないものとして型 T・エフェクト εb で検査し、εb がハンドラのエフェクトと `handled(H)` の和に含まれることを求める。各節は、引数の個数と型パラメータの個数が操作の宣言と一致することを求め、本体を C-Handle と同じ環境（制約の並びに操作の型パラメータの制約を前に加え、外側の型・R・継続の潜在効果を型パラメータの個数だけずらし、継続の変数と節の引数を加えたもの）で、末尾位置にないものとして、同じ個数だけずらした型 T・エフェクト ε で検査する。節の並びのconsには外側の `Eff.WF C.length ε` を求める。`handle` の本体と節の中の途中の `return` と `try` は R を使う。【決定】捕捉した組み込みの操作の節は、操作の型を、本体のエフェクト εb から後述の「ハンドラ」の規則で選んだ節の添字 `clauseIx B εb o`（規則の値 `Eff.clauseRange`。組み込みの操作でないとき Top）で具体化した型（`opSigAt`）で検査する（`HasClausesQ` は εb を受け取る）。表層の型付けは節の添字に規則の値だけを使い、形式化した Release の型付けが規則の値と別に許す Top の添字を選ばない。理由: 型検査器は節の添字を一つに選ぶので、表層の型付けを型検査器の選び方の写しにするためである。規則の値を一つに選ぶのは、本体のエフェクト εb を固定した型付けと検査器である。εb は型付けの導出が選び、`B_Sub` で広げられるので、本体に同じ名前の別の範囲の原子を足した εb では規則の値は Top になり、Top の操作の型で節を型付ける導出もできる。したがって、この制限で表層の型付けの集合 `p.WellTyped` は狭まらない。表層の検査器は、規則を候補の原子の一覧の上で計算する。候補の一覧が εb の原子を全て含むとき、計算した値は規則の値に等しい（`clauseRangeIn_eq`・`clauseOpSigIn_eq`）。範囲の変数を持たない項目では規則を計算せず、`opSig` と同じ型を引く。範囲の変数のない表では、節の操作の型の前提は `opSig D.patternProgram B o = some sg` と同値であり、節の型付けは εb によらない（`clauseSig_iff_old_of_rangeFree`・`HasClausesQ.sel_congr_of_rangeFree`）。
 - `resume(v)` は、指す継続の変数の型が `Cont(B → T ! ε)` のとき、v を型 B・エフェクト ε で検査し、型 T を持つ。`handle` と `resume` は必ず抜けない。
 - 辞書の根拠は、本章の「型クラス」の V-Dict・V-Super と同じ条件で検査する。受け取った辞書の引数は、環境の普通の位置にある辞書の型の変数である。制約を持つ関数の名前とメソッドの名前は、値の引数だけを持つ関数の型を持ち、決めた辞書の根拠の型は宣言の制約を型引数で具体化した型と等しいことを求める。メソッドでは、メソッドの型の引数の並びを、自身の制約の辞書の型と値の引数の型に分け、値の引数の型の先頭が辞書の型でないことを求める。名前が呼び出しの頭（呼び出し、パイプの右辺、プレースホルダの呼び出しの頭）にあれば、名前の型と呼び出しの規則から直接の呼び出しとして型を決める。実装の定義は D-Impl と同じ条件で、メソッドの本体ごとに末尾位置として検査する。
 - パイプは、[構文](01-02-syntax.md)の展開の規則 1（右辺がプレースホルダを持たない呼び出しなら、左辺の値を第 1 引数に加える）と規則 2（そのほかは右辺の値を左辺の値に適用する）の結果の呼び出しとして型を決める。
@@ -1064,7 +1064,7 @@ C-Handle は最上位の `Eff.WF(ε)` を独立の前提に持たない。Releas
 - 組み込みの操作 b には、継続に b の節を持つ `handle` の枠がないときにだけ、E-IO・E-IOErr・E-Exit を使う。枠があるときは E-Op を使う。`State` を型に持つ組み込みの関数は操作ではないので、常にストアの規則を使う。
 - 【決定】形式化した Release では、組み込みの操作の節は、操作の型を節の添字 S の列（長さ `nranges`）で具体化して型付ける（Lean の `opSigAt`。引数は `Ty.instTarget` で具体化し、結果の型は表の署名のままとする。S が Top のときは `opSig` と同じである。`opSigAt_top`）。S は、C-Handle の保護本体の効果 εM から次の規則で選ぶ（`Eff.clauseRange`）。εM が行の変数を持たず、節の操作のエフェクトの名前 L の原子をちょうど一つ持ち、その範囲の位置が閉じた範囲 R なら S = R とする。L の原子が複数ある、同名の原子が Top である、未確定の行の変数がある、同名の原子がない場合は S = Top とする。型付けが許す添字は、この規則の値と Top の二つだけである（`ClauseIxOk`。節の型付けの前提は `ClauseSig`）。どちらで型付けるかは型付けの導出が決めるので、形式化の型付けは、常に規則の値を選ぶ型検査器より広い集合を型付ける。健全性の定理はその広い集合について述べる。表層の型付けと検査器は規則の値だけを選ぶ（前述の「型の情報を付けた表層の構文と型付け」の `handle` の箇条）。理由: 行の変数を持つ多相の関数の本体で Top を選んだ節は、型の代入で行の変数を具体化すると規則の値が Top でなくなりうるが、代入の後も同じ節の型付けが成り立つ必要がある（`ClauseSig.substAt`）。規則の値だけを許すと代入で保存が成り立たない例は、規則の字面から導いたもので、Lean では確かめていない。利用者の操作の型は S によらない。
 - 【決定】形式化した Release の継続の型付けの K-Handle は、`handle` の枠の上で許すエフェクトを保護本体の効果 εb とし、`εb ⊆ εc ∪ handled(H)`（構造上の包含）と、節の効果 εc が枠の下の継続の効果 ε に被覆で含まれること（`ε.Covers εc`）を求め、節の添字を εb から選ぶ（Lean の `ContTy.K_Handle`。E-Handle の後の枠では εb = εM）。K-Handle-Fail の `Rest ⊆ ε` と `ec ⊆ ε` も被覆で判定する。理由: C-Sub が `handle` の式の効果を被覆で広げるので、E-Handle の後の枠では、節の効果が継続の効果に被覆でしか含まれないことがある。以前の K-Handle（枠の上で `εc ∪ handled(H)` を許す）は εb = `εc ∪ handled(H)` の場合である（`ContTyOld.toNew`）。`E_OpPrim` の保存では、枠より内側の継続が処理しない名前の原子が、呼び出しの効果から枠の上の効果 εb へ、それを覆う同じ名前の原子として届く（`ContTy.split`。内側の `handle` の枠を越えるたびに範囲は被覆で広がりうる）。S が Top なら、捕捉する閉じた引数は最上位の対象の位置の値だけを Top の型へ広げて節の引数の型を持つ（`HasTypeVsQ.widen_topRanges`）。S が規則の値なら、呼び出しの範囲 r を覆う εb の名前 L の原子は `L[S]` だけなので S は r を覆い、捕捉する閉じた引数は、最上位の対象の位置の値だけを、r への所属と被覆の健全性から得る S への所属で広げて節の引数の型を持つ（`HasTypeVsQ.widen_covers`。`preservationE` の `E_OpPrim` の腕）。操作の項目の結果の型は範囲の変数を持たない（前述の「構文」の `PrimSig.Scoped`）ので、呼び出しの結果の型と節の操作の型の結果は一致する（`PrimSig.Scoped.inst_ret_of_opEff`）。範囲の変数のない表では、`opSig` は旧の定義と同じであり（`opSig_eq_old`）、節の添字によらず `opSigAt` は `opSig` に等しく、節の型付けの前提は旧の前提と同値で（`ClauseSig.iff_opSig_of_rangeFree`）、継続の型付けは枠の上の効果を広げて旧の形に戻せる（`ContTy.toOld`・`contTy_exists_iff_old`）。脱糖が作る節は、表層の型付けが保護本体のエフェクトから選んだ規則の値の添字で型付ける（`HasClausesQ.desugar`。添字が許されることは `clauseIx_ok`）。脱糖は表層の保護本体のエフェクトをそのままコアの保護本体の効果 εM とする（`handle_desugar_same_body_effect`）ので、表層の型検査器が選んだ添字は、脱糖の後のコアの保護本体の効果から計算した規則の値に等しい。
-- 形式化した Release の継続の型付けは、計算の効果の範囲付きの名前の原子を、それを覆う同じ名前の原子として継続の末尾の効果へ渡す（`ContTy.name_end_ix`）。被覆は許可の包含を与える（`Eff.allows_of_mem_covers`）ので、許可は末尾まで保たれる。効果が名前 L の対象 t を許すこと（許可の関係 `Eff.Allows`。L の閉じた範囲の原子の範囲が t を含む）で読むと、次のとおりである（`Release/Lemmas/TargetPropagation.lean`）。計算の効果が許す L の対象は、L を処理する `handle` の枠が継続になければ、継続の末尾の効果も許す（`ContTy.allows_end`）。組み込みの操作 b を処理する枠がない呼び出し（E-IO・E-IOErr・E-Exit の状態）では、b の具体化した署名の効果が許す対象を継続の末尾の効果が許す（`ContTy.allows_end_of_prim_call`）。操作を処理する最も内側の枠では、計算の効果が許す対象を枠の上の効果 εb が許す（`ContTy.allows_hole_of_split`）。節は枠の下の継続の効果に被覆で含まれる εc で型付くので、節自身が行う範囲付きの IO の対象は、枠の下の継続の末尾の効果に残る（`ContTy.allows_clause_end`）。`handled(H)` は名前の原子を範囲の位置によらず除くので、処理した名前の原子は C-Handle の ε に残らず、ほかの名前の原子は同じ範囲の位置のまま ε に残る（`mem_handled_of_nameTop`・`Eff.mem_outer_of_not_handled`）。`release` の枠と `releases(K')` は `handle` の枠を含まないので、E-DropRel などで `releases(K')` を継続の先頭に加えても、操作を処理する枠の条件は変わらない（`NoHandler.releases_append`・`ContTy.allows_end_releases`）。利用者の操作の型付け V-Op と遷移 E-Op は範囲を持たず、節の操作の型は宣言の型のまま節の添字によらない（`opSigAt_user`）。例: 保護本体が `/data/**` へ書き（節の添字は `/data/**`）、節が `/logs/**` へ書く `handle` の外側の上限は `{File.Write[/logs/**]}` だけであり、初期状態から到達した節の IO の事象の観測 `/logs/l.txt` はこの上限に許され、捕捉した呼び出しの対象 `/data/a.txt` は許されない（`Release/HandlerTargetExamples.lean`。捕捉した引数を同じ範囲の書き込みへ渡す節と、利用者の操作の節の例も同じモジュールにある）。
+- 形式化した Release の継続の型付けは、計算の効果の範囲付きの名前の原子を、それを覆う同じ名前の原子として継続の末尾の効果へ渡す（`ContTy.name_end_ix`）。被覆は許可の包含を与える（`Eff.allows_of_mem_covers`）ので、許可は末尾まで保たれる。効果が名前 L の対象 t を許すこと（許可の関係 `Eff.Allows`。L の閉じた範囲の原子の範囲が t を含む）で読むと、次のとおりである。計算の効果が許す L の対象は、L を処理する `handle` の枠が継続になければ、継続の末尾の効果も許す（`ContTy.allows_end`）。組み込みの操作 b を処理する枠がない呼び出し（E-IO・E-IOErr・E-Exit の状態）では、b の具体化した署名の効果が許す対象を継続の末尾の効果が許す（`ContTy.allows_end_of_prim_call`）。操作を処理する最も内側の枠では、計算の効果が許す対象を枠の上の効果 εb が許す（`ContTy.allows_hole_of_split`）。節は枠の下の継続の効果に被覆で含まれる εc で型付くので、節自身が行う範囲付きの IO の対象は、枠の下の継続の末尾の効果に残る（`ContTy.allows_clause_end`）。`handled(H)` は名前の原子を範囲の位置によらず除くので、処理した名前の原子は C-Handle の ε に残らず、ほかの名前の原子は同じ範囲の位置のまま ε に残る（`mem_handled_of_nameTop`・`Eff.mem_outer_of_not_handled`）。`release` の枠と `releases(K')` は `handle` の枠を含まないので、E-DropRel などで `releases(K')` を継続の先頭に加えても、操作を処理する枠の条件は変わらない（`NoHandler.releases_append`・`ContTy.allows_end_releases`）。利用者の操作の型付け V-Op と遷移 E-Op は範囲を持たず、節の操作の型は宣言の型のまま節の添字によらない（`opSigAt_user`）。
 - r_resume は、継続の二度目の再開の実行時エラーの種類である。
 - 節が `resume` を呼ばずに値で終わると、E-DropRel が、捨てる続きの中の `release` の枠を内側から順に実行する。捨てる続きの中に `drop κ'` の枠があれば（続きの中の節が、再開する前に外側のハンドラの操作を呼んだとき）、その枠に達したときに、同じ規則で κ' の続きの中の `release` の枠も実行する。したがって、入れ子に捨てた続きの中のリソースも、内側から順に一度ずつ解放する。`escape`、実行時エラーの状態、終了の状態が `drop κ` の枠を通るときも、σ(κ) = cont(K') なら、同じく `releases(K')` を継続の先頭に加え、κ を used にしてから進む。σ(κ) = used なら、`drop κ` の枠を取り除くだけである。`drop κ` の枠には、この扱いだけを使い、E-EscLet・E-ErrPop・E-ExitPop を使わない。
 - `escape` と、実行時エラーの状態と終了の状態は、`handle` の枠を取り除いて進む（E-EscLet の「let の枠」と、E-ErrPop・E-ExitPop の「release の枠でも drop の枠でもない枠」に `handle` の枠を含める）。
@@ -2667,7 +2667,7 @@ Listの小モデルを実装と結ぶときは、長さと添字がIntegerで表
 
 ### 操作の対象の範囲の領域と被覆
 
-【決定】操作の対象を表す閉じた範囲と対象の分類は、`Benitoite.Scope.Domain` の `Scope/Domain.lean` を正とし、一原子の被覆の判定は同じ名前空間の `Scope/Cover.lean`（パスとホスト名）と `Scope/IPCover.lean`（IP）と `Scope/RangeCover.lean`（ポートの区間・ホストのパターン・エンドポイントのパターン・`Range` 全体）、範囲と範囲の位置の固定順序は `Benitoite.Release.Order` の `Release/Order/Range.lean`、範囲の正規化と効果の行の整列・重複除去の両立は `Benitoite.Release` の `Release/RangeNormalize.lean` を正とする。本節はその定義と言明の写しである。名前の原子と不透明型は範囲の位置 `Ix` を持ち（「表記」）、その比較と符号に本節の固定順序を使う。本節の所属と被覆は、型付け規則の検査済みの値の規則（V-Checked・V-CheckedRequest の所属）、範囲の具体化の許容、効果の一原子の被覆（C-Sub などの `Eff.Covers`。「型付け規則」）と、許可の関係（「エフェクトの名前と開始状態」）が使う。本節の言明は型付けと実行の規則を前提にしない。理由: 範囲の所属と被覆の性質を、型付けの規則から切り離した定義と言明として確かめるためである。
+【決定】操作の対象を表す閉じた範囲と対象の分類は、`Benitoite.Scope.Domain` の `Scope/Domain.lean` を正とし、一原子の被覆の判定は同じ名前空間の `Scope/Cover.lean`（パスとホスト名）と `Scope/IPCover.lean`（IP）と `Scope/RangeCover.lean`（ポートの区間・ホストのパターン・エンドポイントのパターン・`Range` 全体）、範囲と範囲の位置の固定順序は `Benitoite.Release.Order` の `Release/Order/Range.lean` を正とする。本節はその定義と言明の写しである。名前の原子と不透明型は範囲の位置 `Ix` を持ち（「表記」）、その比較と符号に本節の固定順序を使う。本節の所属と被覆は、型付け規則の検査済みの値の規則（V-Checked・V-CheckedRequest の所属）、範囲の具体化の許容、効果の一原子の被覆（C-Sub などの `Eff.Covers`。「型付け規則」）と、許可の関係（「エフェクトの名前と開始状態」）が使う。本節の言明は型付けと実行の規則を前提にしない。理由: 範囲の所属と被覆の性質を、型付けの規則から切り離した定義と言明として確かめるためである。
 
 対象はすべて解析済みの値である。パスは根からの要素の列、ホスト名は小文字化した通常の順のラベルの列（`Word = List String`）とする。IP アドレスはアドレス族（`v4` は 32 ビット、`v6` は 128 ビット）とその幅に収まる数値であり、IPv4 を射影した IPv6 アドレスも `v6` の値とする。ポートは `Fin 65536` とする。文字列からの解析は形式化の外にあり、その正しさは仮定も証明もしない。対象 `Target` はパス・ホスト（ホスト名か IP アドレス）・エンドポイント（ホストとポートの組）の三種で、種類 `Kind` は `path`・`host`・`endpoint` である。
 
@@ -2719,203 +2719,53 @@ IP のパターンは族と区間 `[lo, hi]` を持ち、完全一致は一点�
 
 効果の正規化 `Eff.norm` は範囲を正規化しない。`Eff.norm` は名前と行の所属関数を変えず、Fail の型の列だけを整列・重複除去する。形式化の効果は原子を所属関数で持つので、原子の並びと重複は効果の等号に現れない。形式化の中で範囲の正規形を条件にするのは、具体化の許容 `Builtins.RangeAdmissible`（具体化の範囲の列の各範囲に `Range.Canonical` を求める）と、交換の入力の検査（07-04「交換の形式の版」）である。型の整形式性は範囲の正規形を求めない（プログラムの型の注釈の範囲の正規形は解析器の側で扱う）。
 
-`Release/RangeNormalize.lean` は、原子の閉じた範囲を正規化する `Atom.normRange`、原子の符号 `Atom.code` の比較による原子の固定順序 `atomCompare`、原子の列の整列・重複除去 `rowNorm` と、範囲を正規化してから整列・重複除去する `rowNormRanges` を定義する。整列・重複除去の前後どちらで範囲を正規化しても結果は同じであり（`rowNormRanges_rowNorm`）、範囲が正規形の原子だけの列では、範囲の正規化は結果を変えない（`rowNormRanges_of_canonical`）。整形式の範囲を持つ名前の原子を同じ原子へ写すのは、名前が同じで範囲が相互に覆う原子だけである（`Atom.normRange_name_fixed_eq_iff`）。原子の列が表す効果 `Eff.ofAtomList` は、列の整列・重複除去で変わらない（`Eff.ofAtomList_rowNorm`）。`/32` の CIDR の原子と同じアドレスの完全一致の原子は、範囲を正規化する前は構造上の包含 `Eff.Sub` の上でも別の原子であり、範囲を正規化した行では同じ効果になる（`Eff.full_cidr_exact_atoms`）。型の中の全ての範囲を一括して正規化する写像は定義していない。
-
 ### Scope の局所解析の状態と規則の表
 
-【決定】Scope の成功値の局所解析は、規則の表・一つの評価関係・抽象値・局所状態の骨格を `Benitoite.Scope.Inference` の `Scope/Inference.lean` に、本番の値 `Release.Val` と範囲 `Scope.Domain.Range` による具体化・標準の宣言の六つの規則・一段の評価を `Benitoite.Surface.ScopeState` の `Surface/ScopeState.lean` に置き、両者を正とする。本節はその定義と言明の写しである。型付け・脱糖・進行・保存・エフェクトの健全性・脱糖の型の保存は、これらの定義を使わず、前提と結論を変えない。区間解析の `Interval.RangeState` は変えず、import もしない。理由: 検査・射影・拡大の規則を加えても評価関係の構成子を増やさず、表の項目ごとの健全性から適用全体の健全性を導くためである。
+【決定】Scope の成功値の局所解析は、規則の表・一つの評価関係・抽象値・局所状態の骨格を `Benitoite.Scope.Inference`（`Scope/Inference.lean`）に置き、篩付きの核の値による具体化を `Benitoite.Release.Refinement.Surface` の次の三つのモジュールに置く。型付け・脱糖・進行・保存・エフェクトの健全性は、これらの定義を使わない。
 
-評価関係 `EvalScope T key rs vs v` の構成子は `apply` だけであり、表 T が出現 key に選ぶ規則の `run` を、具体化した範囲の列 rs と引数の値の列 vs に適用して値 v を得る。表 `ScopeTable` は、出現の同定 `apiAt : Key → Option String`（解決済みの宣言の名前）と宣言の規則 `rules` の二段で引く。規則 `ScopeRule` は、型検査器が抽象の引数から選ぶ具体化の範囲 `index`、実行時の評価 `run`（コアの δ に当たる）、抽象の適用 `transfer` を持つ。`RuleSound M rule` は、抽象の引数が具体の引数に対応すれば、どの具体化の範囲で実行しても、抽象の結果の事実が結果の値に対応することである。`apply_sound` は、表の全ての項目が `RuleSound` を満たすこと（`TableSound`）から適用の健全性を導く。
-
-抽象値は次のとおりである。`Bound` は既知の閉じた範囲 `known r` か未知 `unknown` であり、型の添字 `Bound.index` は未知を Top にする。由来 `Origin` は、呼び出しの同定（区間解析と共有する `OperationKey`）、対象の種類、`Bound` の組である。局所の位置に置く事実 `ScopeFact` は、解析すると r になるパターンの文字列 `pattern r`、一度保存した検査の Result `result o`、同じ Result の `Ok` の成功値で束縛番号 id にだけ有効な `checked o id` の三つである。規則に渡す抽象の引数 `AbsArg` は、リテラル、束縛番号と事実を持つ局所の読み取り、直接の射影の値、未知の四つである。
-
-本番の値との対応 `models ok P` を次のように定める。ok は `Result.Ok` の構成子の名前、P はパスのパターンと対象の文字列の解析器である。文字列の解析は形式化の外にあり、型検査器がリテラルを解析する関数と実行時の検査が使う関数を同じ P とする。抽象の引数のリテラルは文字列だけを持つので、整数のリテラル n は先頭に文字 U+0000 を置いた十進の綴り `intLitText n` で表し、`litInt?` で読み戻す（`litInt?_intLitText`）。理由: 採用定義の `AbsArg` を変えずに、`Http.checkRequestIn` のポートをリテラルから読むためである。先頭が U+0000 で整数と読める文字列のリテラルは、整数のリテラルと取り違えないよう抽象の引数で未知にする。
-
-| 抽象 | 対応する本番の値 |
+| モジュール | 定めるもの |
 |---|---|
-| リテラル s | `litInt? s` が整数 n を返すなら、その整数の定数 `.const (.integer m)`（`m.toInt = n`）。それ以外は文字列の定数 `.const (.string s)` |
-| `pattern r` | 文字列の定数 s で、P が s を r に解析する |
-| `result o` | `Ok` の値（構成子の名前が ok で引数が一つ）なら、その成功値が `CheckedModels o` を満たす。それ以外の値は任意 |
-| `checked o sid`（番号 id の位置） | sid = id、かつ値が `CheckedModels o` を満たす |
-| `CheckedModels o v` | v が対象 t を保持する値（`Val.target?` が t を返す値。検査済みの対象の値 `.checked t` と検査済みの要求の値 `.checkedRequest t req`）であり、`t.kind = o.kind` かつ `o.bound.index` に t が属する |
+| `Surface.ScopeRules` | 篩付きの核の値 `Refinement.Val` との対応 `models`、標準の宣言の六つの規則（`checkRule`・`projectRule`）と健全性。内容は「篩を含む表層の検査と受理」に写す |
+| `Surface.ScopeSound` | 篩付きの核の実例の表の δ を規則にした表 `productionRules` と、その健全性 `productionRules_sound`。内容は同じ節に写す |
+| `Surface.ScopeState` | 出現の解決から作る表、抽象の一段、予算（次節） |
 
-`checkedModels_hasTypeV` は、`CheckedModels o v` を満たす値が、名前 n の対象の種類が `o.kind` である表のもとで、値の規則 V-Checked（検査済みの要求の値なら、保持する要求が閉じた文脈で `valContent n` の型を持つときの V-CheckedRequest）により `n[o.bound.index]` の型を持つことを示す（`target_hasTypeV`）。必須の判定 `ScopeState.requiredIndex` は、位置の事実が同じ成功値の事実で、読んだ位置の束縛番号と成功値番号が一致する（再照合）ときだけ由来の添字を返し、それ以外は Top を返す。`requiredIndex_checked`・`requiredIndex_hasTypeV` は、Top でない添字を付けた位置の値が、その範囲に属する対象を保持する値であり、本番の値の型付けでその範囲付きの値型を持つことを示す。抽象の引数に付ける添字 `argIndex` は同じ再照合を行い、`argIndex_readLocal` は局所の読み取りの添字が必須の判定の添字と同じであることを示す。
-
-標準の宣言の規則は次の六つである。検査の規則は `CheckSpec`（対象の種類、実行時の引数が表す動的なパターンと検査する対象、型検査器が抽象の引数から得る `Bound`）で一般化する。
-
-| 宣言 | 規則 | 具体化の範囲 `index` | 抽象の結果 |
-|---|---|---|---|
-| `Scope.checkPathIn` | `checkRule (pathCheck P)`。型検査器は先頭の引数が文字列のリテラル（整数の綴りでないもの）のときだけ、P の解析結果を既知の範囲にする | 既知の範囲、未知なら Top | `result ⟨key, path, bound⟩` |
-| `Http.checkRequestIn` | `checkRule (requestCheck …)`。動的なパターンは、ホストのパターンの文字列の解析と、二つの整数を `Port.ofInt?` で変換した区間からなるエンドポイントの範囲。対象は要求から得る実効の endpoint（形式化の外の処理）。型検査器の範囲の読み取りは引数に取り、本番は `requestLitBound` とする。これはホストのパターンが文字列のリテラルで二つのポートが整数のリテラルであり、実行時の検査と同じ解析と変換で得たポートの区間が整形式（`PortRange.WF`。最小 ≤ 最大）のときだけ既知のエンドポイントの範囲を返し、要求の値は読まない。最小が最大より大きい組は未知とする | 同上 | `result ⟨key, endpoint, bound⟩` |
-| `Scope.pathInValue`・`Http.requestInValue` | `projectRule run`。普通の値を返す | 引数の `argIndex` | なし |
-| `Scope.widenPathIn`・`Http.widenRequestIn` | `widenRule`。δ `widenRun` は、元の範囲 r と行き先 s について、s が r を一原子で覆うときだけ同じ値を返す | 引数の `argIndex`（元の範囲 R。行き先 S は型検査器が戻り値の注釈から決める） | なし |
-
-【決定】`requestLitBound` は、最小のポートが最大より大きいリテラルの組から整形式でない範囲を作らず、未知（Top）を返す。等しい組（一点の区間）と正しい順の組は既知のまま読む。理由: 整形式でない区間は所属する対象を持たないので、既知の範囲にすると、実行時の検査が必ず失敗する呼び出しで成功の側の非 Top の契約（例 `80..443`）を被覆により受理してしまう。ポートの範囲は `0 ≤ lo ≤ hi ≤ 65535` の閉区間に限る。
-
-検査の δ の契約 `CheckSpec.Contract` は、δ が `Ok` の値を返すなら、具体化がちょうど一つの範囲 r で、成功値が検査した対象 t を保持する値（`Val.target?` が t を返す）であり、t が種類を持ち、動的なパターンと r の両方に属することである。理由: `Http.checkRequestIn` の成功値は、対象だけでなく検査した要求を保持する検査済みの要求の値であり（前述の「構文」）、契約を `.checked t` に限ると Release の実例の表の要求の検査の δ が契約を満たさないためである。具体の δ `checkDelta` は動的なパターンと r の両方への所属を確かめ、成功値を引数の関数 `okVal` で作る。パスの検査の成功値 `checkedOk` は検査済みの対象の値 `.checked t`、要求の検査の成功値 `requestOk` は渡された要求（四番目の引数のレコードの値 req）をそのまま保持する検査済みの要求の値 `.checkedRequest t req` であり、どちらも対象 t を保持する（`checkedOk_target`・`requestOk_target`）。`checkDelta` は、`Ok` と `Err` の構成子の名前が違い、成功値が対象を保持すれば契約を満たす（`checkDelta_contract`）。`checkDelta_ok_mem` は、`checkDelta` の成功値が `okVal` の値であり、型の添字への所属が δ の確かめだけから従い、局所解析の正しさを使わないことを示す。Release の実例の表の検査の δ の成功値も同じ形である（後述の「Scope の局所解析の接続定理」の `modelTargets_checkRun_checkedOk`・`modelHttp_checkRun_requestOk`）。`checkDelta_known_redundant` は、動的なパターンが既知の範囲 r に解析されるなら、r での確かめと Top での確かめが同じ成否と成功値を与えることを示す。`checkRule_index_agrees` は、型検査器がコアへ渡す範囲が抽象の結果の由来の添字と同じであることを示す。Release の実例の表の検査の δ がこの契約を満たすことと、それを規則にした表は、後述の「Scope の局所解析の接続定理」にある。
-
-出現の同定は `standardTable resolve rules` で作る。resolve は出現を解決した宣言（所有元が標準か利用者のモジュールかと、宣言の名前）を返し、`apiAt` は標準の所有元に解決した宣言だけを返す（`standardTable_apiAt`）。`standardTable_user` は、利用者のモジュールに解決した出現には、標準の宣言と同じ綴りでも抽象の結果を作らず、標準の規則を適用する導出もないことを示す。`Rules.lookup` は六つの宣言の名前から項目を引き、一覧にない宣言には規則を返さない（`Rules.lookup_mem`）。
-
-| 定理 | 示す性質 |
-|---|---|
-| `checkRule_sound` | 型検査器の範囲の読み取りの健全性（`CheckSpec.BoundSound`。既知の範囲 r は、実行時の動的なパターンが r に解析されることを意味する）と δ の契約から、検査の規則の `RuleSound` |
-| `pathCheck_boundSound`・`requestLitBound_boundSound`・`requestCheck_unknown_boundSound` | `Scope.checkPathIn` の読み取りの健全性、リテラルによる `Http.checkRequestIn` の読み取りの健全性、常に未知を返す読み取りの健全性 |
-| `requestLitBound_known_ports_wf`・`requestLitBound_known_wf` | リテラルによる `Http.checkRequestIn` の読み取りが既知にする範囲は、ポートの区間が整形式のエンドポイントの範囲である。ホストのパターンの解析が整形式のパターンだけを返すなら、範囲は整形式（`Range.WF`）である |
-| `projectRule_sound`・`widenRule_sound` | 事実を作らない射影と拡大の規則の `RuleSound` |
-| `widenRun_same`・`widenRun_memK`・`widenRun_hasTypeV` | 拡大の δ は同じ値を返し、行き先は元の範囲を覆う。種類に相対的な所属と、範囲付きの値型の型付け（`HasTypeVQ.checked_widen_covers`）を行き先へ保つ |
-| `Rules.lookup_sound`・`standardTable_apply_sound` | 六つの項目の `RuleSound` から表の健全性と適用の健全性 |
-| `Boundary.rules_sound`・`Boundary.rules_sound_lit` | 本番の六つの項目の健全性。条件は `Ok` と `Err` の構成子の名前が違うことと、`Http.checkRequestIn` の範囲の読み取りの健全性だけである。読み取りが `requestLitBound` なら、条件は構成子の名前の違いだけになる |
-
-射影の規則は事実を作らないので、射影の結果は、直接渡しても局所に保存してから渡しても、既知の引数にならない。直接の引数と保存した引数の区別（射影の結果を局所に保存してから渡す場合は既知にしない）は、射影の呼び出し自身の具体化の範囲 `index` が直接の局所の事実を読むことについてである。
-
-文の一段 `Step` は、標準の直接呼び出しの結果を新しい位置へ一度だけ保存する `call key args`、位置 i の Result の `Ok` の腕で成功値を新しい位置へ束縛する `okArm i`、別名 `alias i`、未知の呼び出し・再包装・リテラルの束縛 `unknown`、合流と本体の境界 `join` である。呼び出しの引数 `Arg` は、文字列と整数のリテラル（`const` の直接参照を含む）、局所の読み取り、局所に対する直接の一引数の射影、それ以外の式（値を読まない `other`）である。引数の具体の評価 `EvalArg` では、同定されない射影の出現と `other` は任意の値を返してよい。抽象の一段 `absStep` で成功値の事実を作るのは `okArm` だけであり、読む Result の事実の由来を写し、新しい位置の束縛番号を成功値番号にする。`join` は位置を保って全ての事実を忘れる（`ScopeState.forgetAll`）。具体の一段 `StepEval` では、同定されない呼び出しと未知の値は任意の値を返してよい。`absStep_sound`・`absSteps_sound` は、表が健全で、局所状態が具体の局所に対応すれば、一段・多段の後も対応することを示す。
-
-`Surface.ScopeStateExamples` の独立例は、`/data/**` のリテラルによる直接の検査と同じ `Ok` 値の添字、射影と拡大が選ぶ範囲、未知のパターン・別名・再包装・合流・同じ綴りの利用者の関数・番号の食い違いでの Top、検査の δ の成否と Top での具体化の同じ結果、`/data/**` から `/**` への拡大と覆わない行き先の拒否を確認する。例の解析器と出現の解決は例のためのものであり、処理系の解析器・名前解決との一致の証拠ではない。
+`standardTable` は出現の解決の結果から表を作る。`apiAt` は標準の所有元に解決した宣言だけを返すので、標準の宣言と同じ綴りの利用者の関数は表に入らない。抽象の一段 `absStep` の文の一段は、標準の直接呼び出しの結果を新しい位置へ一度だけ保存する `call` と、Result の成功の腕 `okArm` などからなる。成功値の事実を作るのは `okArm` だけであり、読む Result の事実の由来を写し、新しい位置の束縛番号を成功値番号にする。抽象の引数のリテラルは文字列だけを持つので、整数のリテラルは先頭に文字 U+0000 を置いた十進の綴り `intLitText` で表し、`litInt?` で読み戻す。
 
 ### Scope の局所解析の予算と忘却
 
-【決定】Scope の必須の判定の予算は、`Surface/ScopeState.lean` の `Limits`・`Budget`・`stepCost`・`Budget.checkLimit`・`Run` で定める。本節はその定義と言明の写しである。予算の状態と上限は区間解析の予算（「区間解析の予算の状態と計上」）と共有せず、超過の補足の欄だけ同じ型 `Interval.Budget.LimitFailure`（本体か全体か、操作数か保持数か）を使う。上限 `Limits` は本体と全体の操作数と保持項目数の組であり、既定値を持たない。理由: 一方の消費が他方の打ち切りを変えると、警告の解析の変更が型の受理を変えうるためである。上限の値は処理系の測定で決め、区間解析の値を流用しない。
+【決定】局所解析の予算は `Surface.ScopeState` が定める。上限 `Limits` は本体と全体の二つの `Cap` からなり、それぞれ操作数と保持数の上限を持つ。上限は既定値を持たず、値は処理系の測定で決める。予算の状態 `Budget` は、現在の本体の累積の操作数、全体の累積の操作数、外側の本体が保持する項目の数を持つ。
 
-保持は事実を持つ位置ごとに一項と数え、由来は事実に含める（`heldItems`）。事実を持たない位置は数えない。操作数の計上点は次のとおりである。
-
-| 一段 | 操作数 `stepCost` |
-|---|---|
-| `call key args` | 出現の同定と表の参照に 1、引数ごとの操作数、事実を書き込めば 1 |
-| 引数 | 文字列と整数のリテラル・それ以外の式は 0、局所の読み取りは 1 と、同じ成功値の事実なら再照合に 1、射影はそれに適用の 1 を加える |
-| `okArm i` | Result の位置の読み取りに 1、由来を写せば 1 |
-| `alias i` | 1 |
-| `unknown` | 0 |
-| `join` | 事実を持つ位置の数（忘却の費用） |
-
-受理の問い合わせで行う再照合、合流 `rejoin`、本体の入口と出口は操作数に加えない。`join` による忘却の費用は、合流とは区別する。
-
-`Budget` は、現在の本体の累積の操作数、全体の累積の操作数、外側の本体が保持する項目の数を持つ。`Budget.checkLimit L b ops held` は本体と全体の操作数に ops を加えた候補を作り、本体の操作数、全体の操作数、本体の保持数 held、全体の保持数（外側の保持数と held の和）の順に上限を確かめる。超えた最初の上限を理由として返し、候補を採用しない。上限ちょうどは成功とする。`Budget.enter` は本体の入口（ラムダ、handle の保護本体と節、Task の入口）で現在の本体の保持を外側の保持へ移して本体の操作数を 0 から数え、`Budget.leave` は本体の出口で外側の本体の操作数と保持へ戻して全体の操作数を引き継ぐ。
-
-予算付きの状態 `Run` は、上限内で進む `running st b` か、超過の補足と全ての由来を忘れた状態を持つ `stopped f st b` である。`Run.step` は、計上が上限内なら通常の一段を行い、超えたら予算の状態を変えずに全ての由来を忘れて止まる。止まった後は位置と番号だけを通常の一段と同じに進め（`blindStep`）、由来を作らず計上もしない。超過の理由 `ExceedReason.budgetExceeded f` は、補足 f に本体か全体か、操作数か保持数かを持つ。`Run.enter` は由来を仮定しない入口の状態を作り、全体の上限の超過は内側にも及ぶ。`Run.leave` は外側の状態に戻り、内側が全体の上限を超えていたら外側も同じ理由で止まる。本体の上限の超過は外側に及ばない。
-
-| 定理 | 示す性質 |
-|---|---|
-| `Budget.checkLimit_ok`・`Budget.checkLimit_error` | 成功した計上は本体と全体の操作数に同じ数を加えて上限内にあり、拒否の理由は超えた上限を表す |
-| `Budget.enter_whole`・`Budget.leave_whole`・`Budget.leave_body` | 入口と出口で全体の操作数を引き継ぎ、出口で外側の本体の操作数と保持へ戻る |
-| `Run.step_models`・`Run.steps_models` | 上限の値によらず、超過して Top を返す場合を含めて、予算付きの解析は具体の評価に対応する |
-| `Run.exceeded_requiredIndex`（`Run.Good` の不変条件とともに） | 超過で止まった状態の必須の判定は全ての位置で Top である |
-| `Run.steps_stopped`・`Run.steps_running` | 止まった状態は止まったままで理由を変えない。上限内で終わった解析は予算のない解析と同じ局所状態を返す |
-| `Run.enter_models`・`Run.leave_models`・`Run.leave_exceeded` | 入口の状態は任意の局所に対応し、出口は外側の対応を保つ。全体の上限の超過だけが外側へ及ぶ |
-| `Analyses.required_range_independent`・`Analyses.stepScope_separate`・`Analyses.chargeRange_scope`・`Analyses.localState_range_independent` | 区間解析の局所の事実と予算、Scope の局所解析の状態と予算を並べた状態 `Analyses` で、必須の判定と超過の理由は区間解析の成分と予算を読まず、Scope の一段は区間解析の成分と予算を変えず、区間解析の予算の計上は Scope の状態と予算を変えない。束縛番号は一つを共有する（`Analyses.toLocalState`） |
-
-独立例は、上限内での予算のない解析との一致、計上の操作数（直接の検査 3、`Ok` の腕 2、忘却は事実を持つ位置の数）、本体と全体の操作数と保持数の超過の理由、超過の後の Top と位置の数、拒否した計上で予算が変わらないこと、内側の本体の全体の保持数の超過が外側へ及び本体の操作数の超過が及ばないことを固定値で確かめる。この証明は予算の状態遷移と忘却の健全性を対象とし、表層の構文の走査がこの状態を逐次消費することは結論しない。
+`Budget.checkLimit` は操作数を加え、計上の後の保持数を確かめる。超過は操作数を保持数より先に、本体を全体より先に報告し、拒否した計上の候補の状態は採用しない。予算付きの一段 `Run.step` は、計上が上限内なら通常の一段を進め、超えたら予算の状態を変えずに全ての由来を忘れて止まる。止まった後は由来を作らない一段 `blindStep` で、位置と番号だけを通常の一段と同じに進める。本体の入口 `Run.enter` は、本体の操作数を 0 にし、外側の本体が保持する項目の数を加える。全体の上限の超過で止まった解析は、本体に入っても止まったままである。本体の出口 `Run.leave` は外側の本体の操作数と保持へ戻し、全体の操作数は内側の値を引き継ぐ。内側が全体の上限の超過で止まったら、外側の由来も忘れて止まる。理由: 上限を超えた解析が由来を持ち越すと、計上していない事実で狭い契約を受理しうるためである。
 
 ### Scope の局所解析の表層からの対応
 
-【決定】型の情報を付けた表層の構文から Scope の局所解析の一段への対応と、表層の本体の上の予算付きの解析は、`Benitoite.Surface.ScopeLower` の `Surface/ScopeLower.lean` を正とし、本節はその定義と言明の写しである。表層の具体の評価（`ArgEval`・`RhsEval`・`ArmEnter`・`ReachBlock` ほか）は、脱糖と Release の実行で定める意味とは独立の関係であり、両者の一致は結論しない。型付け・脱糖・主定理と `Builtins.Assumptions` はこれらの定義を使わない。理由: 型検査器が必須の判定を問い合わせる各地点の状態を表層の構文の上で定め、その状態が地点の具体の局所に対応することを、一段の健全性（「Scope の局所解析の状態と規則の表」）へ帰着させるためである。
+【決定】篩付きの表層の構文から局所解析の一段への対応は、`Surface.ScopeLower` が定める。解析は本体の文の始まりの状態を、式の先行順の番号で記録する（`Records`）。番号の進め方は区間解析の `advanceKey` と同じであり、記録しない出現も同じ番号を使う。
 
-出現の番号は区間解析の先行順（「区間解析の対象構文の評価関係」の `surfacePreorder`・`childKey`）と同じ数え方とする。`advance key n` は番号に n を足し、`advance key 1 = childKey key []` である（`advance_one`）。子の番号は、親の番号に 1 と先行する子の部分木の大きさを足したものである。ラムダ・遅延・節の本体の出現も、区間解析の別本体の名前（「区間解析の本体の識別と元の出現の対応」）を使わず、囲む定義の番号で数える。
-
-処理系の入力と局所解析の対応は、[型検査の「Scope の必須判定の入力」](../02-impl/02-05-typechecker.md#scope-の必須判定の入力)で定める。
-
-引数の式の形 `argForm` と一段の式 `lowerArg key e` は次のとおりである。key は引数の式自身の番号である。
-
-| 引数の式 | 形 | 一段の式 |
-|---|---|---|
-| 文字列のリテラル s、本体がリテラル s の `const` の直接参照（入れ子の `const` を含む） | `str s` | `lit s` |
-| 整数のリテラル・直接負号のリテラル、本体がそれである `const` の直接参照 | `int n` | `int n` |
-| 局所の参照 i | `loc i` | `loc i` |
-| 関数名か組み込みの名前を頭に持ち、局所の参照 i だけを契約の位置 0 に渡す呼び出し | `proj i` | `proj key i` |
-| それ以外 | `other` | `other` |
-
-直接の呼び出しは、頭が関数名か組み込みの名前の参照である呼び出しとする（`directHead`）。間接呼び出し・関数値・メソッド・パイプ・穴のある部分適用は含めない。ソース順の引数の一段の式の列 `lowerArgs` は、`contractOrder positions` で契約の位置の順に並べる。positions はソース順の各引数の契約の位置であり、j 番目の契約の位置の引数は positions に j を持つ引数である。束縛の右辺の一段 `rhsStep key e` は、直接の呼び出しで並べ替えが成り立てば `call key args`、局所の参照 i なら `alias i`、それ以外は `unknown` である。規則を持つかは表が出現の番号で決める。
-
-腕の入口の一段 `armEntry ok scrut alts` は、照合する値が局所の参照 i で、腕の選択肢が一つの構成子のパターン `C(p)`（引数は変数一つ）のとき、C が ok なら `okArm i`、そうでなければ `unknown` を一つとする。それ以外の腕は、最初の選択肢の束縛の数だけの `unknown` とする。照合する値が呼び出しそのもの（保存しない Result）の match は、Ok の腕を既知にしない。
-
-解析 `analyzeExpr`・`analyzeExprs`・`analyzeBlock`・`analyzeArms`・`analyzeClauses` は、予算付きの状態 `Run` を受け取り、結果の `Run` と、文の始まりの番号と状態の組の列（記録）を返す。文の並びでは、各文の始まりの状態を記録し、右辺の内側を辿ってから、束縛なら右辺の一段、パターンの束縛ならパターンの束縛の数だけの `unknown`、専用の構築器の束縛なら `unknown` を一つ進める。discard と式文は位置を増やさない。式の内側は次のように辿る。
-
-| 式 | 内側の解析の始まりの状態 | 後の状態 |
-|---|---|---|
-| 括弧・return・呼び出し（頭と引数）・ブロック式 | 外側の状態 | 合流（`rejoin`） |
-| if の条件と枝、match の照合する値と腕 | 外側の状態。腕は外側の状態から入口の一段を進める | 合流 |
-| with の資源の式と本体 | 本体は資源の位置に `unknown` を一つ進める | 合流 |
-| ラムダ・遅延の本体 | `Run.enter`。ラムダは引数の数だけ新しい位置を置き、遅延は位置を増やさない | `Run.leave` |
-| handle の保護本体と各節、失敗の handle の保護本体と節 | `Run.enter`。保護本体は位置を増やさず、節は継続と引数と辞書の数、失敗の節は二つの新しい位置を置く | `Run.leave` の後に合流 |
-| それ以外（定数の埋め込み本体を含む） | 辿らない | 外側の状態 |
-
-合流 `rejoin outer inner` は外側の状態へ戻り、予算は内側の消費を引き継ぐ。内側が予算の超過で止まっていたら、外側の由来を忘れて同じ理由で止まる。合流は外側の位置の事実を残し、合流した値の位置（match・if の結果を束縛した位置）は由来を持たない。理由: 局所の値は束縛の後に変わらないので、枝の外の位置の事実は合流の後も成り立つ。`Run.enter` は由来を仮定しない入口の状態を作るので、Task の入口（ラムダの本体）・handle の保護本体と節では、外側で既知の Ok 値も Top になる。`analyzeBody` は関数の本体を、引数の位置を持つ束縛番号と予算の初期値から解析する。
-
-表層の具体の評価は次のとおりである。`ArgEval` は、リテラルと `const` の直接参照をその定数に、局所の参照をその値に、射影の形の呼び出しを表の規則で評価し（同定されなければ任意の値）、それ以外の式を任意の値とする。`RhsEval` は、同定された直接の呼び出しを契約の順の引数で表の規則で評価し、局所の参照をその値とし、同定されない呼び出し・間接呼び出し・それ以外の式に任意の値を許す。`ArmEnter` は、一つの選択肢 `C(p)` の腕には照合する値が構成子 C の値のときだけ入ってその引数を束縛し、それ以外の腕には最初の選択肢の束縛の数だけの任意の値を束縛する。`ReachExpr`・`ReachExprs`・`ReachBlock`・`ReachArms`・`ReachClauses` は、評価が番号 k の文の始まりへ局所 env' で到達することを、上の表の辿り方と同じ子について定める。先の文は正常に終わったものとし、束縛は `RhsEval` の値を置く。本体（ラムダ・遅延・節）の入口の局所は任意である。
-
-| 定理 | 示す性質 |
-|---|---|
-| `argEval_lower`・`argEvals_lower`・`contractOrder_evalArgs` | 引数の具体の評価は一段の式の具体の評価 `EvalArg` であり、契約の順への並べ替えはその対応を保つ |
-| `rhsEval_step` | 右辺の具体の評価は、その一段 `rhsStep` の具体の評価 `StepEval` である |
-| `armEnter_steps`・`stepsEval_unknown` | 腕の入口の具体の束縛は入口の一段の具体の評価であり、任意の値の列は同じ数の `unknown` で積める |
-| `rejoin_models`・`analyzeExpr_models` | 合流と式の解析の結果の状態は、外側の状態が対応する局所に対応する |
-| `reachBlock_sound` ほか（相互帰納）・`analyzeBody_sound` | 評価が到達した文の始まりには、その地点の具体の局所に対応する記録がある。上限の値によらず、超過して Top を返す場合を含む |
-| `analyzeBody_requiredIndex` | 到達した文の始まりの記録が Top でない添字を付けた位置の値は、その範囲に属する対象を保持する値である |
-| `WellNumbered.fresh`・`WellNumbered.freshN`・`WellNumbered.idAt_inj`・`WellNumbered.fresh_new` | 束縛番号の新規性の不変条件 `WellNumbered`（全ての位置の番号が次の番号より小さく、互いに異なる）は新しい位置の追加で保たれる。同じ番号の位置は一つであり、`okArm` が書く成功値番号は新しい位置にだけ有効である |
-| `analyzeExpr_numbered` ほか（相互帰納）・`analyzeBody_numbered` | 入口の束縛番号が不変条件を満たせば、解析の全ての記録が不変条件を満たす |
-
-`Surface.ScopeLowerExamples` の独立例は次を固定値で確かめる。一度保存した `Scope.checkPathIn` の Result と同じ Ok 値の添字、記録の番号が先行順と同じであること、ソース順を入れ替えた名前付き引数と `const` の直接参照で既知になること。局所の文字列の条件・射影の結果を局所に保存してから渡す検査・同じ綴りの利用者の関数・保存しない Result の match で Top になること。Ok の腕の中の if の枝で事実を使えること、合流した値の位置は Top で外側の Result の事実は残ること、ラムダと handle の保護本体の入口で外側の Ok 値が Top になり、ラムダの本体の中の検査は本体の中で既知になること。整数のリテラルのポートによる `Http.checkRequestIn` のエンドポイントの添字と、文字列で書いたポートと U+0000 で始まる文字列を整数と取り違えないこと。最小が最大より大きいポートの組（`443` と `80`、`65535` と `0`）の読み取りと成功値の位置の添字が Top であり、等しい組と正しい順の組（`0` と `65535` を含む）は既知のままであること。具体の評価から Ok の腕の位置の値が `/data/**` に属することを導く例と、記録が不変条件を満たす例も置く。記録の番号が重複しないことは例で確かめただけであり、一般の定理にしていない。例の解析器・ホストのパターンの解析・出現の解決は例のためのものであり、処理系の解析器・名前解決との一致の証拠ではない。
+- 直接の呼び出しの頭は、関数名か組み込みの名前の参照に限る。間接呼び出し・関数値・メソッドは含めない（`directHead`）。
+- 引数はソース順の列を契約の位置の順に並べて規則へ渡す（`contractOrder`）。リテラルと、本体がリテラルか `const` の参照である定数の直接参照だけを既知の値とする（`constArg?`）。
+- 束縛の右辺の一段は、直接の呼び出しなら `call`、局所の参照なら別名、それ以外は未知とする（`rhsStep`）。
+- 照合の腕は、照合する値とパターンの束縛を文脈に加える。局所の値の一つの選択肢 `C(p)` の腕のうち、`Result.Ok` の構成子の腕は `okArm` とし、それ以外は束縛の数だけの未知とする（`conArm?`・`armEntry`）。
+- 分岐の合流 `rejoin` は外側の状態へ戻り、予算は内側の消費を引き継ぐ。内側が止まったら、外側の由来を忘れて止まる。
+- 関数の本体の解析 `analyzeBody` は、引数の位置を持つ束縛番号から、由来を仮定せず、予算を 0 から始める。
 
 ### Scope の必須の判定の受理と拒否の理由
 
-【決定】表層の組み込みの名前が持つ範囲の列の選び方の条件と、狭い契約の受理の判定、拒否の理由は、`Benitoite.Surface.ScopeAccept` の `Surface/ScopeAccept.lean` を正とし、本節はその定義と言明の写しである。表層の検査器の範囲の具体化は `Surface/CheckRanges.lean` を正とする。型付け・脱糖・主定理と `Builtins.Assumptions` は本節の受理の判定を使わない（効果の上限の被覆による包含は型付けの C-Sub・E_Sub・B_Sub が受け持ち、本節の原子の受理 `acceptAtom` とは別の定義である）。受理の判定は、型付けの規則に加えて確かめる必要条件である。理由: 範囲の列を構文に書かせた上で、呼出しに書いた契約の範囲が、局所の由来又は型付けで検査済みのパラメータ型から選ぶ範囲を覆うことを確かめるためである。パラメータ型が保持する範囲は、その定義の型付けで検査された事実であり、実引数の値がその型に合うことは呼出し側の型付けが保証する。局所束縛の注釈だけから新しい由来を作らない。
+【決定】必須の判定の受理は `Surface.ScopeAccept` が定める。受理は全ての出現を検査する。記録のある出現は全ての記録の状態で、記録のない出現は事実を持たない状態で、規則が選ぶ範囲を契約の範囲が覆うことを確かめる。未知の由来と予算の超過が選ぶ Top を、狭い契約では受理しない。
 
-拒否の理由 `CoverFailure`（診断 E0519 の `reason`）は、`notCovered`（既知の範囲を契約が覆わない）、`atomicCoverOnly`（同名の非 Top の閉じた原子が二つ以上ある場合の保守的な分類であり、和の被覆を証明した理由ではない）、`unknownSource`（局所の由来を認定できず Top になった、又は開いた契約の全具体化の被覆を認定できない）、`budgetExceeded`（必須の判定の予算を超えて Top になった）である。必須の判定が一つの範囲の位置について返す結果 `Required` は、既知の範囲 `known r`、未知 `unknown`、予算の超過 `exceeded` であり、型の添字は既知なら r、ほかは Top である。規則の `index` が返した範囲は、Top なら、解析の最後の Run が予算を超えていれば `exceeded`、そうでなければ `unknown` と読み、Top でなければ `known` と読む（`Required.ofIndex`）。したがって `acceptCall` の経路では既知の Top（`known .top`）は作られない。由来を認定できなかった Top も、引数の型に明示した Top から来た Top も `unknown` になり、拒否の理由は `unknownSource` である。最後の Run が予算を超えていれば、地点を問わず Top の位置の拒否の理由は全て `budgetExceeded` である（記録は超過の地点を持たない）。明示の Top の型から来た Top を区別する印は持たない。超過前の記録が返す非 Top の範囲と、超過後もリテラルおよび `const` の直接参照から読める非 Top の範囲は `known` のままである。局所の文字列のパターンは既知にしない。
+拒否の理由 `CoverFailure` は処理系の診断 E0519 の理由と同じ四つである。
 
-範囲の受理 `acceptRange q S` は、契約の範囲 S が Top なら受理し、Top でなければ、q が `known r` で S が r を覆う（「操作の対象の範囲の領域と被覆」の `Range.Covers`）ときだけ受理する。覆わなければ `notCovered`、q が未知なら `unknownSource`、予算の超過なら `budgetExceeded` を返す。Top を覆うのは Top だけであり、`/**` の契約も既知の Top を受理しない（`acceptRange` を単独で使う場合の性質。上記のとおり `acceptCall` の経路の Top は未知か予算の超過である）。原子の受理 `acceptAtom upper src a` は、効果の原子 a を上限の原子の並び upper のどれか一原子が覆う（`Atom.Covers`）ときだけ受理する。受理しない理由は、範囲の位置が Top の名前の原子なら、由来 src が未知か予算の超過のとき `unknownSource`・`budgetExceeded`、既知のとき `notCovered` である。閉じた範囲の原子なら、upper に同じ名前の Top でない閉じた範囲の原子が二つ以上あるとき `atomicCoverOnly`、そうでなければ `notCovered` である。和による被覆は判定しない。
-
-呼び出しの受理 `acceptCall T records exceeded k xs R̄` は、Scope の規則を持つ出現 k（検査・射影・拡大）の呼び出しの範囲の列 R̄ を、Scope の局所解析の記録（「Scope の局所解析の表層からの対応」）と照らす。出現 k の文の始まりの記録が一つ以上あれば、その全ての記録の状態で、規則の `index` が契約の順の引数の抽象値から選ぶ範囲の列の各位置を、R̄ の同じ位置の契約が `acceptRange` で受理することを求める。記録の番号の重複は仮定しない。記録がない出現（解析が辿らない式の中の呼び出し）は外側の文の記録を使わず、事実を持たない状態で選ぶ。このときリテラルと `const` の直接参照の引数だけが既知になり、局所の引数は未知になる。規則が位置を選ばない（明示拡大の行き先）位置には制約を置かない。規則が範囲を選ぶ位置に契約の範囲がない（範囲の列が短い）呼び出しは、推論した範囲を覆う契約がないので `notCovered` で拒否する（`acceptRanges`。型付けの `RangeAdmissible` が列の長さを署名の範囲の変数の数に合わせるので、型付く呼び出しでは起きない）。理由: 接続定理の範囲の位置の結論が、空の列の呼び出しで空に成り立たないようにするためである。規則を持たない出現（七つの IO など）の範囲の列は、引数の型と戻り値の注釈が型付けで決める。本体の受理 `acceptBody` は、`analyzeBody` を一度走らせ、本体の全ての出現のうち組み込みの名前を頭に持つ直接の呼び出しを `acceptCall` で確かめ、最初に拒否した出現の番号と理由を返す。受理の判定は Scope の局所解析の記録と超過の有無だけを読み、区間解析の評価と警告の結果を読まない。
-
-明示拡大の範囲の列は、引数の型（元の範囲 R）と戻り値の注釈の型（行き先 S）から `widenRanges` で `[R, S]` と決める。行き先 S は、具体化した署名の戻りの型が同じなら同じである（`widenPathIn_target_unique`）。拡大の許容は表の制約 `admitsR`（S が R を覆う）が確かめる。
-
-【決定】受理は等号でなく被覆を求める。脱糖は受理した範囲の列をそのままコアの項の範囲の列にする（`desugar_primName`）。検査の規則を持つ呼び出しでは、規則の `index` は抽象の結果の由来の添字だけからなり（`checkRule_index_agrees`）、受理した列の位置 0 の範囲 S はその添字を覆う（`Surface/DesugarRange.lean` の `desugar_checkRule_index`）。理由: 契約の範囲を必須の判定の結果より広く書くことを許すためである。コアの検査の δ は動的なパターンと具体化した範囲 S の両方への所属を確かめるので、成功値は S そのものに属し（`desugar_checkDelta_mem`）、等号を求めなくても成功値の型の添字は正しい。
-
-表層の検査器は、組み込みの名前の範囲の列を、表と合う判定 `admitsRDec`（検査の入力の欄。既定は何も許さない）で許容を確かめ（`rangeAdmissibleCheck`）、署名に現れる原子の具体化の像が候補の原子の集合にあることを確かめ（`instClosed`）、計算できる正規化で具体化した署名 `instSig` を計算する。これは `s.inst R̄` と等しい（`instSig_eq`）。空の列の許容は範囲の変数のない項目だけで通り（`rangeAdmissibleCheck_nil_iff`）、正規形の署名では空の列の具体化は署名を変えない（`instSig_nil`）。交換の材料から作る検査の入力（`CheckTables.Materials.input`）は判定を持たず、全て Top の列だけを通す。交換の入口の準備（`Exchange.CheckInput.prepare`）は、型表の `admitsR` から作る判定を入力に入れる。
-
-【決定】型検査器の入口 `CheckAccept.checkProgramAccepted` は、表層の型付けの検査 `CheckTables.checkProgram` が成功したプログラムの全ての定義の本体をパラメータの範囲と局所の由来から受理し、全ての実装の全てのメソッドの本体を閉じた由来で受理し、最初に拒否した出現の鍵と理由を返す（`Surface/CheckAccept.lean`）。本体の表は、本体の出現のうち組み込みの名前を頭に持つ直接の呼び出しを、標準の所有元のその名前へ解決した表 `standardTable (primResolve key body) rules` である（型の情報を付けた表層の構文では、同じ綴りの利用者の関数は `funName` で現れ、表に入らない）。本体の始まりの鍵は定義の名前と番号 0、束縛番号の土台は引数（辞書の引数を含む）の位置に番号 `0..n-1` を割り当てたもの（`entryScope n`）である。プログラム全体の受理の述語 `Accepted A m` は、全ての定義の本体と全てのメソッドの本体の受理である。入口が成功すれば、準備後のプログラムの型付けと元の本体の `Accepted` の両方が成り立つ（`checkProgramAccepted_sound`・`checkProgramAccepted_empty`）。規則を持たない受理の入力（旧の像）では、入口は型付けの検査と同じ結果を返す（`checkProgramAccepted_noRules`）。健全な規則の項目で受理したプログラムの定義の本体には、接続定理（「Scope の局所解析の接続定理」）が当たる（`accepted_check_connection`）。理由: 狭い契約を必須の判定の結果又は型付け済みのパラメータの範囲で覆うことを、型検査器の入口とプログラム全体の述語で述べるためである。受理は主定理の前提に入れず、コアの実行と表層の評価（`ReachBlock`）の対応は示さない（設計書 07-04「証明する性質」）。
-
-| 定理 | 示す性質 |
+| 理由 | 意味 |
 |---|---|
-| `acceptRange_sound`・`acceptRange_of_covers` | 受理した契約の範囲は必須の判定の添字を覆い、既知の範囲を覆う契約は受理する |
-| `acceptRange_top_only`・`acceptRange_top_of_not_known` | 添字が Top なら受理する契約は Top だけであり、未知・予算の超過の位置で受理する契約は Top だけである |
-| `acceptRange_unknown`・`acceptRange_exceeded`・`acceptRange_notCovered` | 拒否の理由の対応 |
-| `acceptAtom_sound`・`acceptAtom_of_covers`・`acceptAtom_of_mem`・`acceptAtom_nameTop`・`acceptAtoms_sound` | 受理した原子は上限の一原子に覆われ、構造上の包含なら受理し、Top の原子は上限に同じ名前の Top の原子があるときだけ受理する |
-| `acceptCall_sound`・`acceptCall_sound_unrecorded`・`acceptCall_top_of_top`・`acceptBody_sound` | 受理した呼び出しの各位置の契約は、その出現の全ての記録の状態（記録がなければ事実を持たない状態）で規則が選ぶ範囲を覆い、選ぶ範囲が Top なら契約も Top である |
-| `acceptRanges_iff`・`acceptRanges_some`・`acceptCall_some`・`acceptBody_some` | 範囲の列の受理は、各位置の契約が規則の選ぶ範囲を受理することと、規則が範囲を選ぶ位置が列の中にあることの連言と同値であり、受理した範囲の列は、記録のどの状態でも規則が範囲を選ぶ全ての位置に契約の範囲を持つ |
-| `widenPathIn_inst_ret`・`widenPathIn_target_unique`・`widenRanges_pathIn` | 明示拡大の行き先は戻り値の注釈の範囲から一意に決まる。処理系の許容失敗の理由は [02-10](../02-impl/02-10-diagnostics.md) に従い、Required の超過・未知を先に分類する。Lean は型付けで範囲の列を選んでから受理するため、理由の対応は型付けでの列の選び方にも依存する。処理系との接続済みの範囲と未完の比較は [07-04](../07-quality/07-04-formal-semantics.md#01-12-との対応) で区別する |
-| `instSig_eq`・`inst_atoms`・`rangeAdmissibleCheck_sound` | 検査器の具体化は `s.inst R̄` と等しく、その原子は候補の集合にあり、許容の判定は `RangeAdmissible` を与える |
+| `notCovered` | 既知の範囲を契約が覆わない |
+| `atomicCoverOnly` | 一原子ずつの被覆では確認できない（複数の原子の和なら覆いうる） |
+| `unknownSource` | 由来を認定できず Top になった、又は未具体化の契約の全具体化に対する被覆を確認できない |
+| `budgetExceeded` | 必須の判定の予算を超えて Top になった |
 
-`Surface.ScopeAcceptExamples` の独立例は次を固定値で確かめる。既知の `/data/**` を覆う契約（`/data/**`・`/**`・Top）を受理し、`/data/a/**` と `/database/**` を `notCovered` で拒否すること、未知と予算の超過の位置で Top だけを受理すること、既知の Top を `/**` が覆わないこと。`0..9` を `0..4` と `5..9` の二原子で覆うかの判定が `atomicCoverOnly` になること、旧の Top の原子を `/**` の上限が覆わないこと。リテラルのパターンの検査の範囲の列の受理と拒否、局所の文字列のパターンの `unknownSource`、上限 0 の解析の `budgetExceeded`、リストの要素の中の呼び出しが外側の文の記録を使わないこと。最小が最大より大きいリテラルのポートの `Http.checkRequestIn` では狭い契約（`80..443` を含む）を `unknownSource` で拒否して Top だけを受理し、等しい組と正しい順の組では覆う契約を受理して覆わない契約を `notCovered` で拒否すること。整形式でない区間を既知の範囲にすると `80..443` が覆ってしまうことも示す。検査器が `Scope.checkPathIn`・`File.writeTextIn`・`Scope.widenPathIn` を範囲付きで型付けること、具体化の像の原子が候補の集合にない列・個数や種類の合わない列・被覆しない拡大を拒否すること。表層の型付けで `Scope.checkPathIn` を `/data/**` で具体化した名前が `Scope.PathIn[/data/**]` を結果に持つ型で型付き（`checkPathIn_typed`）、脱糖が同じ範囲の列のコアの項になること。出現の解決・文字列の解析器・表は例のためのものである。
-
-処理系との比較は [07-04「01-12 との対応」](../07-quality/07-04-formal-semantics.md#01-12-との対応) に従う。
+`acceptRange_sound` は、受理した契約の範囲が必須の判定の添字を覆うことを示す。`acceptBody_sound` は、受理した本体の、Scope の規則を持つ直接の呼び出しの範囲の列が、その出現の全ての記録の状態で規則が選ぶ範囲を各位置で覆うことを示す。`acceptBody_ranges` は、規則を選んだ全ての出現について未具体化の契約も検査から除かず、成功時に各位置の絶対範囲の証人を返す。このため任意の範囲の具体化でも同じ被覆が成り立つ。型が保持する範囲を転送する呼出しの受理は `Surface.OpenScopeAccept` が受け持ち、「篩を含む表層の検査と受理」に写す。
 
 ### Scope の局所解析の接続定理
 
-【決定】Scope の局所解析と型検査器の受理を、脱糖したコアの項と本番の型付け・δ へつなぐ接続定理は、`Benitoite.Surface.ScopeSound` の `Surface/ScopeSound.lean` を正とし、本節はその言明の写しである。前提は、表の健全性 `TableSound`、本体の受理 `acceptBody`、表層の具体の評価（文の始まりへの到達 `ReachBlock` と右辺の評価 `RhsEval`）、出現の番号の一致（同じ呼び出しの式が出現の一覧の番号 k にあり、評価が番号 k の文の始まりへ到達すること）だけであり、区間解析の評価と警告の結果を含まない。型付け・脱糖・主定理と `Builtins.Assumptions` は変えない。理由: 局所解析の健全性（「Scope の局所解析の表層からの対応」）と受理の健全性（「Scope の必須の判定の受理と拒否の理由」）はそれぞれ記録と具体の局所、記録と契約の関係を述べるだけなので、利用者の値が型の添字の範囲に属することは、両者を同じ記録の上で組み合わせて別に示す必要があるためである。
-
-受理の健全性 `acceptBody_sound` は出現の番号の全ての記録について述べ、局所解析の健全性 `analyzeBody_sound` は到達した地点の具体の局所に対応する記録が一つあることを述べる。接続定理はその一つの記録に受理の健全性を当てるので、記録の番号が重複しないことを仮定しない。
-
-| 定理 | 示す性質 |
-|---|---|
-| `scope_check_connection` | 検査の成功値。検査の規則を持つ呼び出しの右辺が `Ok(w)` に評価されるなら、記録の状態 st と契約の順の引数 xs があり、w は対象 t を保持し、t は検査の種類を持ち、推論した範囲 R（抽象の結果の由来の添字。続く `Ok` の腕の成功値の事実の添字）に属する。型検査器が受理した範囲の列 R̄（脱糖がそのままコアの項 `.prim b T̄ Ē R̄` に書く。`desugar_primName`）の位置 0 の範囲 S は R を覆い、t は S に属する。検査の δ の契約は前提にしない（R への所属は規則の健全性から、S への所属は被覆の健全性から得る） |
-| `scope_check_range`・`scope_local_range` | 範囲の位置が空に成り立たないこと。`scope_check_connection` と同じ前提のもとで受理した範囲の列は位置 0 の範囲 S を持ち、`scope_local_connection` の前提 `R̄[0] = S` は受理した本体の文へ到達すれば満たせる（`acceptBody_some`） |
-| `scope_local_connection` | 射影・拡大が指す値。局所の位置 i を引数にする射影（`projectRule`）・拡大（`widenRule`）の呼び出しの文へ到達するなら、記録の状態 st があり、st の位置 i の必須の判定の添字 R を S が覆う。R が Top（由来の未知・予算の超過）なら S は Top であり、R が Top でなければ、位置 i の値は R と S の両方に属する対象を保持する |
-| `scope_local_typed`・`scope_local_typed_of_typed` | 狭い契約（Top でない S）を受理した射影・拡大の引数の値は、名前 o の対象の種類が S の種類と同じなら、コアの入力の型 `o[S]` を持つ（検査済みの要求の値なら、保持する要求が閉じた文脈で `valContent o` の型を持つことも要る）。`scope_local_typed_of_typed` は、この要求の条件を、引数の値が同じプログラムで名前 o の不透明型（範囲の位置は任意）を持ち、その型付けのストアの型付けが結論のストアの型付けに含まれることから、V-CheckedRequest の逆転とストアの拡大で得る系である（NoFail の文脈・型の文脈・値の文脈は両側で任意）。保持する要求の型付けはプログラムの構成子の宣言によるので、別のプログラムでの型付けからは得ない。表の項目では `pathInValue_inst_params`・`requestInValue_inst_params`・`widenPathIn_inst_params`・`widenRequestIn_inst_params` が `s.inst R̄` の引数の型を与える |
-| `evalScope_core_step`・`evalScope_of_delta`・`scope_check_core` | 同じ R の接続。規則の実行を本番の表の δ にした規則（`deltaRun B b T̄ Ē`）では、局所解析の評価関係の値は、同じ範囲の列 R̄ を持つコアの組み込みの呼び出しが E-Prim で返す値と同じである。逆に、コアの δ が値を返せば、評価関係は同じ R̄ で同じ値を返す。`scope_check_core` はこれを `scope_check_connection` と組み合わせ、受理した検査の呼び出しの脱糖の項がコアで E-Prim の値へ進み、その成功値が R と S に属することを示す |
-| `modelTargets_contract`・`modelHttp_contract`・`productionRules_sound`・`modelTargets_checkRun_checkedOk`・`modelHttp_checkRun_requestOk` | Release の実例の表（`Scope.checkPathIn` は `Release/ModelTargets.lean`、`Http.checkRequestIn`・`Http.requestInValue` は `Release/ModelHttp.lean`）の検査の δ は Scope の検査の契約を満たし、成功値は `checkDelta` の成功値と同じ形（パスは `checkedOk`、要求は `requestOk`）であり、それを規則にした六つの項目（`productionRules`）は条件なしで健全である。`Http.checkRequestIn` の動的なパターンの解析は `hostPatOf`（ホストのパターンの解析と二つのポートの `Port.ofInt?`）、要求の実効の endpoint は `reqEndpoint`（要求のレコードの値の対象が endpoint のときだけ返す）とし、Scope の項目 `requestCheck` と Release の実例の表に同じ関数を渡す |
-| `http_check_connection` | `Http.checkRequestIn` への適用。その表で受理した本体の要求の検査が `Ok(w)` を返すなら、w は渡された要求 req をそのまま保持する検査済みの要求の値 `checkedRequest t req` であり、実効の endpoint t は R と S に属する |
-| `CheckedPath.hasTypeV`・`CheckedEndpoint.hasTypeV`（と被覆の形）・`makePath_checkRun`・`makeEndpoint_checkRun` | 旧 Scope の小モデル（「検査済みの値の独立した小モデル」）との対応。旧の検査済みの値の対象は、新しい値の形の検査済みの対象の値として、パターンの範囲（とそれを覆う範囲）を添字に持つ `Scope.PathIn[R]`・`Http.RequestIn[R]` を持つ。旧の検査が成功する入力（IP アドレスと CIDR を含む）では、Release の実例の表の検査の δ は、具体化した範囲 r が対象を含むときだけ同じ対象の `Ok` を返す |
-
-`Surface.ScopeSoundExamples` の独立例は、本番の実例の表の δ を規則にした表で次を確かめる。`/data/**` のリテラルによる検査・`case Result.Ok`・`Scope.pathInValue` の本体が受理され、接続定理の前提（出現・記録の添字・規則）が満たせること。検査の成功値と射影の引数が `/data/**` に属し、射影の引数がコアの入力の型 `Scope.PathIn[/data/**]` を持つこと。検査の呼び出しがコアで同じ範囲の列の E-Prim の値へ進むこと。CIDR `10.0.0.0/8` の中と外の IPv4 アドレスで、旧 Scope の検査の成否と、本番の実例の表の要求の検査の δ の成否が一致すること。局所の文字列のパターン（由来の未知）と上限 0 の解析（予算の超過）では狭い範囲の列を拒否して Top だけを受理し、上限 0 では記録の必須の判定が全て Top になること。必須の判定が区間解析の成分と予算を読まないこと（`Analyses.required_range_independent`）。例の解析器・ホストのパターンの解析・要求の対象・出現の解決は例のためのものであり、処理系の解析器・名前解決との一致の証拠ではない。
-
-接続定理は、評価が番号 k の文の始まりへ到達し、その文の右辺の式が出現の一覧の番号 k の式と同じであることを前提に取る。【決定】文の始まりの番号とその右辺の出現の番号が同じであることは、`Surface/ScopeOccurrence.lean` の補題で示す。到達した文の右辺 e を添字に持つ到達の関係 `ReachAtBlock`（`ReachBlock` の全ての構成子に到達した文の右辺を一つ足した写し）は `ReachBlock` の到達であり（`ReachAtBlock.toReach`）、`ReachBlock` のどの到達にも到達した文の右辺がある（`ReachBlock.toAt`）。番号 k の文の始まりへ到達し、その文の右辺が e なら、`(k, e)` は出現の一覧に入る（`reachAt_occurrences`）。到達の関係の各構成子が子へ渡す番号（`advance`・`argsKey`・`blockSize`・`guardSize`）は、出現の一覧の先行順（`Interval.surfacePreorder`）の位置と同じ数え方である。接続定理の系 `scope_check_connection_at`・`scope_local_connection_at`・`scope_local_typed_at`・`scope_check_core_at` と `CheckAccept.accepted_check_connection_at` は、`ReachBlock` と出現の一覧の前提の代わりに `ReachAtBlock` だけを前提に取る。理由: 前提の番号の一致が、実際の評価の到達について成り立つことを示すためである。
-
-### Logの通常宣言とハンドラの具体例
-
-【決定】`Surface.LogExamples` は、Logを既存の名前付き組み込みエフェクトとして扱う具体例である。`Log.Level`・`Log.Value` の通常のdata宣言と、`Log.Attribute`・`Log.Record`・`SourceLocation.Location` の通常のrecord宣言を有限の材料に置く。組み込み表には `Log.emit(record: Log.Record) -> Unit uses Log`・`Log.enabled(level: Log.Level) -> Boolean uses Log` と、`Console.Write` の出力操作を置く。位置はfile・line・columnのリテラルを含む展開済みレコードとし、hereの新しい原始操作を置かない。
-
-公開の `checkExpr` はemitとenabledにLogが残ること、両操作の完全なハンドラでLogが消えること、節から同じ操作を送り直すと外側のLogが残ることを検査する。emitだけの不完全なハンドラではLogが残る。emit節からConsoleの出力操作を呼ぶ例は、Logを処理した後にもConsole.Writeが残り、純粋な関数としての宣言を拒否する。`program_checked` は同じ宣言表を使う通常関数の一覧を公開の `checkProgram` へ渡した検査の成功を示す。
-
-この例は既存の操作・ハンドラの規則の適用であり、Log専用の効果消去規則・公理・Builtins.Assumptionsを加えない。名前解決、hereの展開処理、標準ソースの補助関数、stderrの実出力や交換入力との全体一致はこの具体例の保証に含めない。
+【決定】全定義と全実装メソッドの受理は `Surface.CheckAccept`（`CheckAcceptBase` を含む）が定める。`acceptProgram` は、本体を持つ全ての定義と全ての実装メソッドで必須の判定が成功すること（`Accepted`）を判定し、`acceptProgram_sound` がその健全性を示す。型検査器の実入口 `checkProgramAccepted` は型付けの検査と受理を続けて行い、`checkProgramAccepted_sound` は、成功から準備後のプログラムの型付けと `Accepted` を同時に結論する。受理の規則の表の健全性は `Surface.ScopeSound.productionRules_sound` が与える。実行の規則と δ への接続は「篩を含む表層の検査と受理」と 07-04「証明する性質」に写す。
 
 ### Resultの法則と二引数辞書の具体例
 
@@ -2932,15 +2782,7 @@ IP のパターンは族と区間 `[lo, hi]` を持ち、完全一致は一点�
 
 小モデルのFunctor2・Applicative2・Monad2は、操作の型と上位辞書を欄に持つ。Resultの辞書から上位射影で選んだmap・pure・applyは、直接の定義と等しい。`dictionary_type_does_not_imply_law` は、二つの型引数を使わないBoolを返す型構成子について、pureがtrue、flatMapが常にfalseを返す辞書が左単位則を満たさないことを示す。任意の利用者辞書の法則を、辞書の型だけから導くことはできない。
 
-【決定】`Surface.Monad2Examples` は、既存のProgram・Declarations・Checkを使う本体の具体例である。map・apply・flatMapのメソッドでは型変数0・1・2をA・B・X、型変数3をFとし、コールバックと結果に同じエフェクト行を使う。pureではA・Xが0・1、Fが2である。Functor2、これを上位に持つApplicative2、さらにこれを上位に持つMonad2の署名と、Resultおよび利用者の二引数型UserResultの六実装を有限の宣言表に置く。信頼する関数・実装の宣言は補わない。
-
-`result_constructor_wf`・`result_constructor_sat` は、裸の `.ctor (.data "Result")` のTy.WFと空制約のSatAllを示す。`constructor_dictionary_checked` は、その型構成子を対象とする辞書と二段の上位射影を検査する。これらは型構成子の引数の個数を検査するkind検査の証明ではない。
-
-`program_checked` は、六実装と `F: Monad2` の辞書を受けて上位のmapを呼ぶ関数の全プログラム検査成功を示す。`program_typed` はその成功を既存の検査器の健全性へ接続する。`program_wellFormed` は番号と契約名の範囲条件を示し、`desugared_typed` は既存の性質1を適用する。辞書は値引数より前に置かれ、map/flatMapの値化では外側の辞書が二引数のラムダの下で番号2へ移る。
-
-具体的な入力は両型で各12件あり、map・flatMapの成功と失敗、コールバックの失敗、pure、applyの四つの成功／失敗の組、上位辞書を使う汎用関数を含む。`expressions_checked` はそれらの検査成功、`executions_expected` は脱糖後のコアの実行結果と独立した期待値の一致を示す。Xの不一致と別の型の辞書の使用は、該当する型の不一致として拒否する。
-
-Library.ResultLawsは本体の主定理の外にある小証明であり、Monad2Examplesだけが本体の判断へ接続する。どちらも既存の進行・保存・エフェクトの健全性・型保存・検査器や網羅性の健全性の前提と結論、Builtins.Assumptionsを変更しない。Rust・標準の`.bnt`との対応は独立した期待値との照合であり、これらの証明だけで実装との一致を結論しない。理由: 純粋なResultの法則と、辞書の型付け・脱糖・実行の保証を区別するためである。
+`Library.ResultLaws` は本体の主定理の外にある小証明であり、既存の進行・保存・エフェクトの健全性・型保存・検査器や網羅性の健全性の前提と結論を変更しない。
 
 ### 構築器の分類と環境の対応
 
