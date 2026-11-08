@@ -1,5 +1,5 @@
 {
- "note": "main は stage-results.md「主定理の一覧と型・本体のハッシュ」の表（群 H の77名と、収集と標準の表の言明を結論とする7定理）。extra は群 H2（h2/changes.json の required）・群 H3 の Lean の担当（h3/changes-lean.json の required）・群 H4（h4/required.json）と群 H3 の監査の担当（H3A。L40-後段2 の証人と、旧の全称の形の系）の必須の名前で、表は h3/required.md。",
+ "note": "main は stage-results.md「主定理の一覧と型・本体のハッシュ」の表（群 H の77名と、収集と標準の表の言明を結論とする7定理）。extra は群 H2（h2/changes.json の required）・群 H3 の Lean の担当（h3/changes-lean.json の required）・群 H4（h4/required.json）と群 H3 の監査の担当（H3A。L40-後段2 の証人と、旧の全称の形の系）の必須の名前と、段末レビューの処置（L70.48。l48/changes-lean.json の required）の必須の名前で、表は h3/required.md。",
  "main": [
   "Benitoite.Release.Refinement.progress",
   "Benitoite.Release.Refinement.preservation",
@@ -317,6 +317,43 @@
    "Benitoite.Release.Refinement.HandlerStoreExamples.first_failure_witness",
    "Benitoite.Release.Refinement.checkMatchWithView_unreachable_runtime_of_arms",
    "Benitoite.Release.Refinement.checkMatch_unreachable_runtime_of_arms"
+  ],
+  "L48": [
+   "Benitoite.Exchange.CanonicalNames.fieldRef",
+   "Benitoite.Exchange.CanonicalNames.term",
+   "Benitoite.Exchange.CanonicalNames.slots",
+   "Benitoite.Exchange.CanonicalNames.pred",
+   "Benitoite.Exchange.CanonicalNames.json",
+   "Benitoite.Exchange.CanonicalNames.resultConstructors_lookup_twice",
+   "Benitoite.Exchange.CanonicalNames.resultConstructors_fieldRef_owner",
+   "Benitoite.Exchange.CanonicalNames.resultConstructors_fieldRef_twice",
+   "Benitoite.Exchange.CanonicalNames.resultConstructors_term_twice",
+   "Benitoite.Exchange.CanonicalNames.resultConstructors_slots_twice",
+   "Benitoite.Exchange.CanonicalNames.resultConstructors_pred_twice",
+   "Benitoite.Exchange.CanonicalNamesExamples.tailNames",
+   "Benitoite.Exchange.CanonicalNamesExamples.internalSomeField",
+   "Benitoite.Exchange.CanonicalNamesExamples.internalTailPredicate",
+   "Benitoite.Exchange.CanonicalNamesExamples.internalSomeField_renamed",
+   "Benitoite.Exchange.CanonicalNamesExamples.tail_predicate_renamed",
+   "Benitoite.Exchange.CanonicalNamesExamples.string_value_kept",
+   "Benitoite.Exchange.CanonicalNamesExamples.tailRow",
+   "Benitoite.Exchange.CanonicalNamesExamples.tailParams",
+   "Benitoite.Exchange.CanonicalNamesExamples.internalTailRet",
+   "Benitoite.Exchange.CanonicalNamesExamples.standardTailRet",
+   "Benitoite.Exchange.CheckInput.dataDeclStrings",
+   "Benitoite.Exchange.CheckInput.dataStep",
+   "Benitoite.Exchange.CheckInput.closureOf",
+   "Benitoite.Exchange.CheckInput.prepare_agrees",
+   "Benitoite.Release.Refinement.Frame.captures",
+   "Benitoite.Release.Refinement.Cont.captures",
+   "Benitoite.Release.Refinement.Cell.captures",
+   "Benitoite.Release.Refinement.State.CapturesEmpty",
+   "Benitoite.Release.Refinement.embedCont_captures",
+   "Benitoite.Release.Refinement.embedStore_captures",
+   "Benitoite.Release.Refinement.embedState_capturesEmpty",
+   "Benitoite.Release.Refinement.Capture.empty_all_slots",
+   "Benitoite.Release.Refinement.embedState_local_invariant",
+   "Benitoite.Release.Refinement.hidden_capture_not_embedded"
   ]
  }
 }

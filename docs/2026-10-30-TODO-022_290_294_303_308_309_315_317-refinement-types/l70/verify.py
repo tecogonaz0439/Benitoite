@@ -17,6 +17,8 @@
    必須の名前が最終版の環境にある。
 5. 群 H2・H3 で足した・変えた Lean のファイルのコメントの工程 ID・heartbeat の設定（h3/heartbeats.json の検査の外の
    増加）・sorry・#eval がない。
+4b. 段末レビューの処置（L70.48）の Lean の変更が l48/changes-lean.json の一覧と一致し、その公理監査の記録と必須の
+   名前（required-names.json の L48）がそろう。群 H3 の区間の変更には段末レビューの写し（RV-L70-stage.md）も入る。
 6. stage-results.md の件数を表の行の形で記録と照らす。記録の大きさ・手元の絶対パス・docs/todo へのリンク・相対リンク。
 使い方: python3 verify.py --tmp <群 H3 の一時領域> --h2-tmp <群 H2 の一時領域>
 （--tmp は stage.py が置いた final-*.log・base-*.log と base/formal、--h2-tmp は h2/audit.py が置いた生の出力）"""
@@ -99,10 +101,14 @@ for path in CHANGES["modified"]:
 h3_changed = {p for p in git("diff", "--name-only", B_H2, "--").splitlines() if p}
 untracked = {p for p in git("ls-files", "--others", "--exclude-standard").splitlines() if p}
 h3_changed |= untracked
-allowed = [own + "/", REVIEWS + "/", "formal/", *DESIGN]
+# 取りまとめが群 H の記録のコミット（判断・所要の記録）で計画と所要の記録も変えた。
+CHANGE_DIR = str(HERE.parent.relative_to(ROOT))
+allowed = [own + "/", REVIEWS + "/", "formal/", *DESIGN, CHANGE_DIR + "/plan.md", CHANGE_DIR + "/effort-ledger.md"]
 assert all(any(p == a or p.startswith(a) for a in allowed) for p in h3_changed), \
     sorted(p for p in h3_changed if not any(p == a or p.startswith(a) for a in allowed))
-assert all(p.startswith(REVIEWS + "/RV-L70.h") for p in h3_changed if p.startswith(REVIEWS + "/")), h3_changed
+# 段末レビュー（RV-L70-stage）の回答の写しと、その処置（L70.48）の確認（RV-L70.48）も同じ区間に入る。
+assert all(p.startswith(REVIEWS + "/RV-L70.h") or p in (REVIEWS + "/RV-L70-stage.md", REVIEWS + "/RV-L70.48.md")
+           for p in h3_changed if p.startswith(REVIEWS + "/")), h3_changed
 existed_h2 = set(git("ls-tree", "-r", "--name-only", B_H2, "formal/").split())
 h3_lean = sorted(p for p in h3_changed if p.startswith("formal/") and p.endswith(".lean") and (ROOT / p).exists())
 h3_added = [p for p in h3_lean if p not in existed_h2]
@@ -224,6 +230,21 @@ for group, group_names in required["extra"].items():
         if not documented:
             undocumented.append(n.removeprefix("Benitoite.Release.Refinement."))
 
+# 4b. L70.48（段末レビューの処置）。その基準から作業木までの Lean のファイルの変更は l48/changes-lean.json の一覧と一致し、
+# 足したモジュールは既定 import の閉包にあり、公理監査の記録（l48/audit-lean.json）の必須の名前は一覧と同じで、
+# 段の必須の名前（required-names.json の L48）にも入っている。
+L48 = HERE / "l48"
+l48_changes = read(L48 / "changes-lean.json")
+l48_lean = {p for p in git("diff", "--name-only", l48_changes["base"], "--", "formal/").splitlines()
+            if p.endswith(".lean")}
+l48_lean |= {p for p in untracked if p.startswith("formal/") and p.endswith(".lean")}
+assert l48_lean == set(l48_changes["modified"]) | set(l48_changes["added_lean"]), sorted(l48_lean)
+assert all(m in default for m in l48_changes["audited_modules"]), l48_changes["audited_modules"]
+l48_audit = read(L48 / "audit-lean.json")
+assert set(l48_audit["required"]) == set(l48_changes["required"])
+assert l48_audit["sorryAx"] == l48_audit["new_axioms"] == l48_audit["axiom_declarations"] == 0
+assert set(l48_changes["required"]) <= set(required["extra"].get("L48", [])), "L48 の必須の名前"
+
 # 5. 群 H2・H3 で足した・変えた Lean のファイル。
 heartbeats = read(H3 / "heartbeats.json")
 assert not heartbeats["inherited"]["changed_files"]["untested"], heartbeats["inherited"]["changed_files"]["untested"]
@@ -270,7 +291,7 @@ for key, title in [("handoffs", "申し送り78行"), ("obligations", "義務59�
            f"{four_counts.get('不成立', 0)} | {four_counts.get('未確認（行ごとの証人なし）', 0)} | "
            f"{four_counts.get('対象外（定義が判定の対象）', 0)} | {four_counts.get('対象外（Lean の証拠なし）', 0)} |")
     assert row in text, row
-files = [p for d in (H, H2, H3, HERE / "h4") for p in d.iterdir() if p.is_file()] + \
+files = [p for d in (H, H2, H3, HERE / "h4", HERE / "l48", HERE / "l48" / "probes") for p in d.iterdir() if p.is_file()] + \
     [HERE / "stage-results.md", HERE / "axioms.lean", Path(__file__)]
 for p in files:
     data = p.read_text()

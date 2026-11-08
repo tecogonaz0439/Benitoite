@@ -1,0 +1,55 @@
+{
+ "base": "fd280c1c0ad1c15d0b6ca0f40f6801989db66db2",
+ "modified": [
+  "formal/Benitoite.lean",
+  "formal/Benitoite/Exchange/CanonicalNames.lean",
+  "formal/Benitoite/Exchange/CheckInput.lean"
+ ],
+ "added_lean": [
+  "formal/Benitoite/Exchange/CanonicalNamesExamples.lean",
+  "formal/Benitoite/Release/Refinement/EmbeddedLocalRefs.lean"
+ ],
+ "audited_modules": [
+  "Benitoite.Exchange.CanonicalNames",
+  "Benitoite.Exchange.CanonicalNamesExamples",
+  "Benitoite.Exchange.CheckInput",
+  "Benitoite.Release.Refinement.EmbeddedLocalRefs"
+ ],
+ "required": [
+  "Benitoite.Exchange.CanonicalNames.fieldRef",
+  "Benitoite.Exchange.CanonicalNames.term",
+  "Benitoite.Exchange.CanonicalNames.slots",
+  "Benitoite.Exchange.CanonicalNames.pred",
+  "Benitoite.Exchange.CanonicalNames.json",
+  "Benitoite.Exchange.CanonicalNames.resultConstructors_lookup_twice",
+  "Benitoite.Exchange.CanonicalNames.resultConstructors_fieldRef_owner",
+  "Benitoite.Exchange.CanonicalNames.resultConstructors_fieldRef_twice",
+  "Benitoite.Exchange.CanonicalNames.resultConstructors_term_twice",
+  "Benitoite.Exchange.CanonicalNames.resultConstructors_slots_twice",
+  "Benitoite.Exchange.CanonicalNames.resultConstructors_pred_twice",
+  "Benitoite.Exchange.CanonicalNamesExamples.tailNames",
+  "Benitoite.Exchange.CanonicalNamesExamples.internalSomeField",
+  "Benitoite.Exchange.CanonicalNamesExamples.internalTailPredicate",
+  "Benitoite.Exchange.CanonicalNamesExamples.internalSomeField_renamed",
+  "Benitoite.Exchange.CanonicalNamesExamples.tail_predicate_renamed",
+  "Benitoite.Exchange.CanonicalNamesExamples.string_value_kept",
+  "Benitoite.Exchange.CanonicalNamesExamples.tailRow",
+  "Benitoite.Exchange.CanonicalNamesExamples.tailParams",
+  "Benitoite.Exchange.CanonicalNamesExamples.internalTailRet",
+  "Benitoite.Exchange.CanonicalNamesExamples.standardTailRet",
+  "Benitoite.Exchange.CheckInput.dataDeclStrings",
+  "Benitoite.Exchange.CheckInput.dataStep",
+  "Benitoite.Exchange.CheckInput.closureOf",
+  "Benitoite.Exchange.CheckInput.prepare_agrees",
+  "Benitoite.Release.Refinement.Frame.captures",
+  "Benitoite.Release.Refinement.Cont.captures",
+  "Benitoite.Release.Refinement.Cell.captures",
+  "Benitoite.Release.Refinement.State.CapturesEmpty",
+  "Benitoite.Release.Refinement.embedCont_captures",
+  "Benitoite.Release.Refinement.embedStore_captures",
+  "Benitoite.Release.Refinement.embedState_capturesEmpty",
+  "Benitoite.Release.Refinement.Capture.empty_all_slots",
+  "Benitoite.Release.Refinement.embedState_local_invariant",
+  "Benitoite.Release.Refinement.hidden_capture_not_embedded"
+ ]
+}

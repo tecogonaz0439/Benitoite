@@ -1,0 +1,324 @@
+{
+ "modules": [
+  "Benitoite.Exchange.CanonicalNames",
+  "Benitoite.Exchange.CanonicalNamesExamples",
+  "Benitoite.Exchange.CheckInput",
+  "Benitoite.Release.Refinement.EmbeddedLocalRefs"
+ ],
+ "declarations": 505,
+ "by_module": {
+  "Benitoite.Exchange.CanonicalNames": 164,
+  "Benitoite.Exchange.CanonicalNamesExamples": 10,
+  "Benitoite.Exchange.CheckInput": 258,
+  "Benitoite.Release.Refinement.EmbeddedLocalRefs": 73
+ },
+ "private": 101,
+ "macro_scoped": 0,
+ "unresolved": 0,
+ "axiom_sets": {
+  "なし": 212,
+  "Classical.choice + Quot.sound + propext": 180,
+  "propext": 111,
+  "Quot.sound + propext": 2
+ },
+ "sorryAx": 0,
+ "new_axioms": 0,
+ "axiom_declarations": 0,
+ "allowed": [
+  "Classical.choice",
+  "Quot.sound",
+  "propext"
+ ],
+ "required": {
+  "Benitoite.Exchange.CanonicalNames.fieldRef": {
+   "module": "Benitoite.Exchange.CanonicalNames",
+   "kind": "definition",
+   "type_sha256": "db3bfa0561507aff1550f6f128fce3aa9fc101e5c54ef499b019ff5ae41f6b00",
+   "axioms": []
+  },
+  "Benitoite.Exchange.CanonicalNames.term": {
+   "module": "Benitoite.Exchange.CanonicalNames",
+   "kind": "definition",
+   "type_sha256": "be7f3bf996cc7c73cd0b06be33ad2dfb749dd469251820452f8a2ce3bc3a6746",
+   "axioms": [
+    "propext"
+   ]
+  },
+  "Benitoite.Exchange.CanonicalNames.slots": {
+   "module": "Benitoite.Exchange.CanonicalNames",
+   "kind": "definition",
+   "type_sha256": "e27ef0daef7f90bbee026b450e60b2c30b8a4e238788d4746733b738d864e47d",
+   "axioms": [
+    "propext"
+   ]
+  },
+  "Benitoite.Exchange.CanonicalNames.pred": {
+   "module": "Benitoite.Exchange.CanonicalNames",
+   "kind": "definition",
+   "type_sha256": "e28bec1ac5a65dbcad30efe699b9127c7648ac87245fb4b5e625032ea694cd2b",
+   "axioms": [
+    "propext"
+   ]
+  },
+  "Benitoite.Exchange.CanonicalNames.json": {
+   "module": "Benitoite.Exchange.CanonicalNames",
+   "kind": "definition",
+   "type_sha256": "552b97f9ec0ee8eb727d56064957891f9dcc9ea8206e4d1527c9d450d3c69444",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Exchange.CanonicalNames.resultConstructors_lookup_twice": {
+   "module": "Benitoite.Exchange.CanonicalNames",
+   "kind": "theorem",
+   "type_sha256": "f648671aaf33a1ec46e4d5cc9157555697ca86efdb5658e25d7959699a8deb90",
+   "axioms": [
+    "propext"
+   ]
+  },
+  "Benitoite.Exchange.CanonicalNames.resultConstructors_fieldRef_owner": {
+   "module": "Benitoite.Exchange.CanonicalNames",
+   "kind": "theorem",
+   "type_sha256": "e1350af6e209d7f65d91af0a1d808be43d231d57c40e4e5027ce17787762f1fc",
+   "axioms": []
+  },
+  "Benitoite.Exchange.CanonicalNames.resultConstructors_fieldRef_twice": {
+   "module": "Benitoite.Exchange.CanonicalNames",
+   "kind": "theorem",
+   "type_sha256": "558257c45861c998eb983a9e0b86539b9cccad7c1b74925254a5f93d97a5f187",
+   "axioms": [
+    "propext"
+   ]
+  },
+  "Benitoite.Exchange.CanonicalNames.resultConstructors_term_twice": {
+   "module": "Benitoite.Exchange.CanonicalNames",
+   "kind": "theorem",
+   "type_sha256": "9c0d6ac36987949dc78f8094541760e2f8b9381ba19056efccf9fe77fd01e0b0",
+   "axioms": [
+    "propext"
+   ]
+  },
+  "Benitoite.Exchange.CanonicalNames.resultConstructors_slots_twice": {
+   "module": "Benitoite.Exchange.CanonicalNames",
+   "kind": "theorem",
+   "type_sha256": "bc00bd655562a004c3ea1988bfc6c5e5b31e9d51a1ec350deffe694b16da8101",
+   "axioms": [
+    "propext"
+   ]
+  },
+  "Benitoite.Exchange.CanonicalNames.resultConstructors_pred_twice": {
+   "module": "Benitoite.Exchange.CanonicalNames",
+   "kind": "theorem",
+   "type_sha256": "385a1bfd31d49289ac1fa246a6999d1f778b4b753703e4f30e54e7c8d87c6ca1",
+   "axioms": [
+    "propext"
+   ]
+  },
+  "Benitoite.Exchange.CanonicalNamesExamples.tailNames": {
+   "module": "Benitoite.Exchange.CanonicalNamesExamples",
+   "kind": "definition",
+   "type_sha256": "e3afa731784c74d44b7a4337cb065239fafd714b82bda5a03ccef35fbacacae7",
+   "axioms": []
+  },
+  "Benitoite.Exchange.CanonicalNamesExamples.internalSomeField": {
+   "module": "Benitoite.Exchange.CanonicalNamesExamples",
+   "kind": "definition",
+   "type_sha256": "960b3b0753faa26daebb24d7ff4d7fda0cc80c84a3e9f5777568527ce4737071",
+   "axioms": []
+  },
+  "Benitoite.Exchange.CanonicalNamesExamples.internalTailPredicate": {
+   "module": "Benitoite.Exchange.CanonicalNamesExamples",
+   "kind": "definition",
+   "type_sha256": "7f195389f954f2247fa028f4f8efd56b8696c198ced94478a2e5a837a4f3074f",
+   "axioms": []
+  },
+  "Benitoite.Exchange.CanonicalNamesExamples.internalSomeField_renamed": {
+   "module": "Benitoite.Exchange.CanonicalNamesExamples",
+   "kind": "theorem",
+   "type_sha256": "c0e7641501982571913c3cf1212e8334711f30e2caec17f9e7d5589a42cce037",
+   "axioms": []
+  },
+  "Benitoite.Exchange.CanonicalNamesExamples.tail_predicate_renamed": {
+   "module": "Benitoite.Exchange.CanonicalNamesExamples",
+   "kind": "theorem",
+   "type_sha256": "fa98ad1cb59b12fa6f966af7d6329d5fb959bf87df5ded6b56c7497e43569f44",
+   "axioms": [
+    "propext"
+   ]
+  },
+  "Benitoite.Exchange.CanonicalNamesExamples.string_value_kept": {
+   "module": "Benitoite.Exchange.CanonicalNamesExamples",
+   "kind": "theorem",
+   "type_sha256": "6e0c346178f6bf7a90d0f4f41c31527b333e22d7c881a72bbe51683398e0c75f",
+   "axioms": [
+    "propext"
+   ]
+  },
+  "Benitoite.Exchange.CanonicalNamesExamples.tailRow": {
+   "module": "Benitoite.Exchange.CanonicalNamesExamples",
+   "kind": "definition",
+   "type_sha256": "e196df011bdbb38ac9b79df1a31e3810cb5c5467ef0ed5b1c558c38e9db08b2a",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Exchange.CanonicalNamesExamples.tailParams": {
+   "module": "Benitoite.Exchange.CanonicalNamesExamples",
+   "kind": "definition",
+   "type_sha256": "e6ad811509f4eb9e90152363f9d1b47d6167b3795507196ab67c8a8615c37336",
+   "axioms": []
+  },
+  "Benitoite.Exchange.CanonicalNamesExamples.internalTailRet": {
+   "module": "Benitoite.Exchange.CanonicalNamesExamples",
+   "kind": "definition",
+   "type_sha256": "d426ce033efe568749310484e83c45662898ec70ee47363ddfb4dc8971f742ec",
+   "axioms": []
+  },
+  "Benitoite.Exchange.CanonicalNamesExamples.standardTailRet": {
+   "module": "Benitoite.Exchange.CanonicalNamesExamples",
+   "kind": "definition",
+   "type_sha256": "d426ce033efe568749310484e83c45662898ec70ee47363ddfb4dc8971f742ec",
+   "axioms": []
+  },
+  "Benitoite.Exchange.CheckInput.dataDeclStrings": {
+   "module": "Benitoite.Exchange.CheckInput",
+   "kind": "definition",
+   "type_sha256": "32513d6e362b89f2bc80c11ae02482e5e70acf2b9e14522bd82955256faab029",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Exchange.CheckInput.dataStep": {
+   "module": "Benitoite.Exchange.CheckInput",
+   "kind": "definition",
+   "type_sha256": "4fb8b074060524f012cd9072c9f9c2e3e2a43355dfca481743be3347a1bd3153",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Exchange.CheckInput.closureOf": {
+   "module": "Benitoite.Exchange.CheckInput",
+   "kind": "definition",
+   "type_sha256": "44cff1491ba57022d8262b36c5518c1996e30707e30452eb15d20ea78947acb3",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Exchange.CheckInput.prepare_agrees": {
+   "module": "Benitoite.Exchange.CheckInput",
+   "kind": "theorem",
+   "type_sha256": "0ad1ddcd8c9ca2da97b94b9636fd033e3edd11ce386ac6cbae57499b76b05d04",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Frame.captures": {
+   "module": "Benitoite.Release.Refinement.EmbeddedLocalRefs",
+   "kind": "definition",
+   "type_sha256": "7b6b0684c329f5fe147b348d94dc6f209da921ce0dfc1dd3171b8a6951dbfffc",
+   "axioms": []
+  },
+  "Benitoite.Release.Refinement.Cont.captures": {
+   "module": "Benitoite.Release.Refinement.EmbeddedLocalRefs",
+   "kind": "definition",
+   "type_sha256": "50da7b151f734aeb08aa2850ac525734e299784f4ac158041fee52fe73b05623",
+   "axioms": []
+  },
+  "Benitoite.Release.Refinement.Cell.captures": {
+   "module": "Benitoite.Release.Refinement.EmbeddedLocalRefs",
+   "kind": "definition",
+   "type_sha256": "4856d4d9b594162814ee6a6b24cc73ace2ee38c7a01a4a43251aeb87850d3a09",
+   "axioms": []
+  },
+  "Benitoite.Release.Refinement.State.CapturesEmpty": {
+   "module": "Benitoite.Release.Refinement.EmbeddedLocalRefs",
+   "kind": "definition",
+   "type_sha256": "e95709548e75fa1db60fe5ac343eb3df510c03be59fb261a673dc6881222504f",
+   "axioms": []
+  },
+  "Benitoite.Release.Refinement.embedCont_captures": {
+   "module": "Benitoite.Release.Refinement.EmbeddedLocalRefs",
+   "kind": "theorem",
+   "type_sha256": "58e4456d34b9855b153b8a28c352ef60910007fc4d14830326f110f3e8c60909",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.embedStore_captures": {
+   "module": "Benitoite.Release.Refinement.EmbeddedLocalRefs",
+   "kind": "theorem",
+   "type_sha256": "7e583dbbdde8bd6688927344c86a915b7c77fb237ce2f14f36008db815f99790",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.embedState_capturesEmpty": {
+   "module": "Benitoite.Release.Refinement.EmbeddedLocalRefs",
+   "kind": "theorem",
+   "type_sha256": "6b09a14b39175de444d93c87e3386f7e26a29ad3ec9d219c7d2c9f9cf85baf7b",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.Capture.empty_all_slots": {
+   "module": "Benitoite.Release.Refinement.EmbeddedLocalRefs",
+   "kind": "theorem",
+   "type_sha256": "0bc0626e748b3899efde3de7b65e62e54d6aadde971518ac4c0cd83a5d197e1e",
+   "axioms": []
+  },
+  "Benitoite.Release.Refinement.embedState_local_invariant": {
+   "module": "Benitoite.Release.Refinement.EmbeddedLocalRefs",
+   "kind": "theorem",
+   "type_sha256": "9f5d8f002238b529d77d57eda0491e3e91f7a0174e763cb60d1809e34e920a04",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Release.Refinement.hidden_capture_not_embedded": {
+   "module": "Benitoite.Release.Refinement.EmbeddedLocalRefs",
+   "kind": "theorem",
+   "type_sha256": "10d14b6fd46e924c813a94ce6abf2c2a5839c2f6cf3f4c27b15229453a8ff61a",
+   "axioms": [
+    "propext"
+   ]
+  }
+ },
+ "raw": {
+  "bytes": 589235,
+  "sha256": "a9c7463892fe39e2fda415adfac4b69c34c3215150bd60bfae5e97aefb3d74e8"
+ },
+ "inputs": {
+  "axioms.lean": {
+   "bytes": 6412,
+   "sha256": "1f36d688aca6df786d23fade2d38396bf8914e6b06ee1c03040e2f417ad76e4a"
+  },
+  "audit-lean.py": {
+   "bytes": 5639,
+   "sha256": "8c4c683ca1ec75210dc9c200f6d5b587b3a7f0d57fa25313ae4ce7e7bec84438"
+  },
+  "changes-lean.json": {
+   "bytes": 2582,
+   "sha256": "a61986e27a407361436aa7aa661bd3b77bc219a0e79661c29978dc5d9dc3886b"
+  }
+ }
+}
