@@ -38,7 +38,7 @@
 - `internalSomeField_renamed : tailNames.fieldRef internalSomeField = StandardHeadTail.someField`（`⟨"data:199","ctor:Some",0,.list⟩` が `⟨"Option","Option.Some",0,.list⟩` になる）。
 - `string_value_kept : tailNames.pred (.eq (.string "data:199") (.field internalSomeField (.var 0))) = .eq (.string "data:199") (.field StandardHeadTail.someField (.var 0))`（値の文字列は写さず、同じ述語の欄の参照は写す）。
 
-JSON の写しの全体（`CanonicalNames.json`）は部分関数なので定理にできない。一時領域の試し（`<tmp>/probe-names.lean`、既定ビルドの外）で、組込みの表の行の形に置いた内部名の結果型 `refined (data "data:199" [list (tvar 0)]) internalTailPredicate` を `tailNames.json` で写すと、標準の結果型 `refined (data "Option" [list (tvar 0)]) tailPredicate` の JSON と等しいこと、値の文字列 `"data:199"` が写されないこと、述語の外（欄 `goal`）の欄の参照も写ること、`resultJson` が所属の data を保つことを確かめた。
+JSON の写しの全体（`CanonicalNames.json`）と JSON の変換（導出した `ToJson`・`FromJson`）は部分関数なので、等式を定理にできない（`decide +kernel` も `rfl` も展開できずに止まることを確かめた）。確認の段の処置（RV-L70.48 軽1）で、既定ビルドの中の評価の例を `CanonicalNamesExamples` に置いた（下の「確認の後の処置」）。それより前に、既定ビルドの外の試し [probes/probe-names.lean](probes/probe-names.lean) で、組込みの表の行の形に置いた内部名の結果型 `refined (data "data:199" [list (tvar 0)]) internalTailPredicate` を `tailNames.json` で写すと、標準の結果型 `refined (data "Option" [list (tvar 0)]) tailPredicate` の JSON と等しいこと、値の文字列 `"data:199"` が写されないこと、述語の外（欄 `goal`）の欄の参照も写ること、`resultJson` が所属の data を保つことを確かめた。
 
 ## 1. 閉包の data の段
 
@@ -52,9 +52,9 @@ JSON の写しの全体（`CanonicalNames.json`）は部分関数なので定理
 
 件数は変わらなかった。群 G の数え方（named-programs は準備の段だけ）に倣い、named-programs の検査の本体は流していない。ほかの47文書も、群 G の表層の一括検査の代わりに準備の段だけを当てた（`surfaceCheckAll` の `Batch.run` と同じ順・同じ前段の検査・同じ準備の判定。検査の本体は流さない）。
 
-- 台本: `<tmp>/prep-all.lean`（入力ごとに `prepare` と表の判定を当て、閉包の data を前の段（構成子の引数だけ）と今の段の両方で作って差を書く。SHA-256 `06a4ed1fea05c53670568e3ca259a1c662845ef46ab0f5d023fe2a8b782bf65c`）、`<tmp>/run.sh`（48文書を共有ロックの下で一つずつ。`dc55bcb8…`）、`<tmp>/tally.py`（`formal/tests/test_range_sources.py` の `preparation_gaps` で原因を分類。`189a8c03…`）。
+- 台本: [probes/prep-all.lean](probes/prep-all.lean)（入力ごとに `prepare` と表の判定を当て、閉包の data を前の段（構成子の引数だけ）と今の段の両方で作って差を書く。SHA-256 `06a4ed1fea05c53670568e3ca259a1c662845ef46ab0f5d023fe2a8b782bf65c`）、[probes/run.sh](probes/run.sh)（48文書を共有ロックの下で一つずつ。写すときに手元の絶対パスを引数に替えた）、[probes/tally.py](probes/tally.py)（`formal/tests/test_range_sources.py` の `preparation_gaps` で原因を分類。写すときに根の位置をファイルの場所から求める形に替え、下の二つの記録から同じ集計を作り直せることを確かめた）。どれも既定ビルドに入れない。
 - 前: B_WORK の Lean（`<tmp>/base-formal`。`formal/` を複製し、変えた3ファイルを B_WORK の内容に戻して `Benitoite.Exchange.CheckInput` まで作った）。後: 作業木の Lean。
-- 記録: 前 `<tmp>/prep-base.jsonl`、後 `<tmp>/prep-new-all.jsonl`（どちらも 220,850 バイト、SHA-256 `f14e0372a2c9b72830c27cea5d7c26ee9157773194f9a9c3a9ad29a59008b1f9`。バイト単位で同じ）、集計 `<tmp>/tally-final.json`（`fc8037e7…`）。
+- 記録: 前 `<tmp>/prep-base.jsonl`、後 `<tmp>/prep-new-all.jsonl`（どちらも 220,850 バイト、SHA-256 `f14e0372a2c9b72830c27cea5d7c26ee9157773194f9a9c3a9ad29a59008b1f9`。バイト単位で同じ）、集計 [probes/tally-final.json](probes/tally-final.json)（SHA-256 `fc8037e79ae2988148283b22b63c7aedf4dfa0ac590ca251ffbcf112e53b0560`）。入力ごとの記録は大きさと SHA-256 だけを残す。
 
 | 対象 | 入力 | 準備を通った | 準備の段で断った |
 |---|---:|---:|---:|
@@ -91,11 +91,13 @@ JSON の写しの全体（`CanonicalNames.json`）は部分関数なので定理
 1. `StateTyR P B σ Eb b s`: `StateTyE` の本体で `b` を添字にした述語（`StateTyE P B σ Eb s ↔ ∃ b, StateTyR P B σ Eb b s` は定義の並べ替え）。
 2. `StateTyR.step_preserved`: `P.WellFormed → P.WellTyped B → P.EffectsOk B → B.CoreAssumptions P → σ.Valid → StateTyR P B σ Eb b s → Step P B σ s l s' → StateTyR P B σ Eb b s'`。葉の定理を全て `StateTyR … b` の形に述べ直す必要がある（証明の大部分は `b` を渡すだけで、`ContTy` の補助の定理は既に `b` を明示の添字に持つ）。主な言明（`StateTyE`・`StateTy` を読む）は変えずに足せる。見込みは葉の定理の述べ直しの機械的な書換えとビルドの繰返しで、能動時間 8〜20時間（未確認の見積もり。30ファイル・約1万行の葉の証明が対象）。
 3. `StateTyR.steps_preserved`（2 の反復）。
-4. 両端（一時領域の `<tmp>/ResultEndpoints.lean` で既定ビルドの外に試し、通った）:
+4. 両端（既定ビルドの外の試し [probes/ResultEndpoints.lean](probes/ResultEndpoints.lean)。通った。docs/todo の TODO-332 の出発点）:
    - `initial_result : ClosureTy P B StoreTy.empty [] none q a ε → StartCondition P B σ q → StateTyR P B σ ε a (.run q [] Store.empty)`（`initial_typing` と同じ証明）。
-   - `final_result_meaning : P.VarianceValid → P.WellFormed → P.WellTyped B → B.CoreAssumptions P → StateTyR P B σ Eb b (.run q [] μ) → q.view = .ret v → ValueMeaning P (fun _ => none) b v`（`ClosureTy.ret_view_typed`・`ContTy.nil_inv`・`HasTypeVQ.V_Sub`・`typed_value_meaning_closed` で閉じる）。
+   - `final_result_meaning : P.WellFormed → P.WellTyped B → B.CoreAssumptions P → StateTyR P B σ Eb b (.run q [] μ) → q.view = .ret v → ValueMeaning P (fun _ => none) b v`（`ClosureTy.ret_view_typed`・`ContTy.nil_inv`・`HasTypeVQ.V_Sub`・`typed_value_meaning_closed` で閉じる）。
 
-系は 1〜4 を合成すれば得られ、新しい公理・信頼条件・主な言明の変更は要らない。取りまとめが docs/todo の項目にする（前提に `P.VarianceValid` が要る。主定理の前提の `P.WellFormed` が含むかは項目を作るときに確かめる）。
+系は 1〜4 を合成すれば得られ、新しい公理・信頼条件・主な言明の変更は要らない。取りまとめが docs/todo の項目（TODO-332）にした。
+
+変性の妥当性の前提: 返却の側の `typed_value_meaning_closed` は `P.VarianceValid` を前提に取る（篩の意味を部分型で移すのに data の変性を使う）。主定理の前提 `P.WellTyped B`（`Program.WellTyped`、`ProgramTyping.lean`）は欄 `variance : P.VarianceValid` を持つので、この前提は主定理と同じ前提から得られ、新しい前提にならない。最初の試しは `P.VarianceValid` を別の引数に取っていたが、確認の段の処置（RV-L70.48 情3）で `hPB.variance` から得る形に直し、引数を除いた（[probes/ResultEndpoints.lean](probes/ResultEndpoints.lean)。終了0を確かめた）。`P.WellFormed` はこの欄を持たない。
 
 ## 文書への申し送り
 
@@ -120,7 +122,7 @@ JSON の写しの全体（`CanonicalNames.json`）は部分関数なので定理
 | 公理監査（L70.48 の4モジュール） | `python3 -B l48/audit-lean.py prepare|run|analyze --tmp <tmp>/audit --lock <共有ロック>` | 10:01:48 | 0 | 17.8秒 | [audit-lean.json](audit-lean.json)（実行の記録 [audit-run-lean.json](audit-run-lean.json)、入力 [changes-lean.json](changes-lean.json)、台本 [audit-lean.py](audit-lean.py)）。`CanonicalNames`・`CanonicalNamesExamples`・`CheckInput`・`EmbeddedLocalRefs` の全宣言501（private 101、マクロのスコープを持つ名前0、未解決0）。公理の組は なし 209・`propext` 111・`Quot.sound + propext` 2・`Classical.choice + Quot.sound + propext` 179。`sorryAx`・許可の外の公理・`axiom` の宣言は0。必須の名前31名 |
 | 段の公理監査の最終版の書き出し | `python3 -B h/stage.py prepare` と `run --which final --tmp <tmp>/stage --lock <共有ロック>` | 10:03:03 | 0（8入力とも） | 既定 import の閉包の入力 531.2秒（ロックの待ちを含む。named-programs の数え直しの後に走った）、7入口は各13〜15秒 | 開始版の書き出しは群 H3 の一時領域のものを使った |
 | 段の記録の作り直し | `h/stage.py analyze`・`trust.py`・`obligations.py`・`four.py`・`heartbeats.py`・`comments.py`（記録の出力先は既定の ../h3） | 10:34 | 0 | 約2分 | 下の「段の記録の変化」 |
-| 段の照合 | `python3 -B verify.py --tmp <tmp>/stage --h2-tmp <群 H2 の一時領域>` | 11:07:03 | 1 | 98秒 | 1〜5 と 4b は通り、6 の [../stage-results.md](../stage-results.md) の件数の行（`| 足した | 52,733 |`）で止まった。段末の資料の件数は文書の担当の受け持ちで、まだ前の値（52,571・126,444 など）である。照合の台本の、段末の資料の本文だけを新しい件数に差し替えた写し（`<tmp>/verify_dry.py`。本書を書き換えない）では最後まで通った（`verified`。宣言 126,606、監査の名前 126,591、必須の名前 336） |
+| 段の照合 | `python3 -B verify.py --tmp <tmp>/stage --h2-tmp <群 H2 の一時領域>` | 11:07:03 | 1 | 98秒 | 1〜5 と 4b は通り、6 の [../stage-results.md](../stage-results.md) の件数の行（`| 足した | 52,733 |`）で止まった。段末の資料の件数は文書の担当の受け持ちで、まだ前の値（52,571・126,444 など）である。照合の台本の、段末の資料の本文だけを新しい件数に差し替えた写し（[probes/verify_dry.py](probes/verify_dry.py)。本書を書き換えない）では最後まで通った（`verified`。宣言 126,606、監査の名前 126,591、必須の名前 336） |
 
 ### 段の記録の変化
 
@@ -176,5 +178,27 @@ JSON の写しの全体（`CanonicalNames.json`）は部分関数なので定理
 2. 所見6: 系は置けなかった。要る補題（結果型を添字に固定した保存）と見込み（能動時間 8〜20時間、未確認の見積もり）を docs/todo の項目にするか、L70 の中で行うかの判断。
 3. 所見5: 置いた補題は、旧の像の状態に捕捉の位置がないことと像の局所の不変条件を合わせたもので、削除した旧の構文上の述語との対応までは示していない。理由の文をこの範囲で書くか、旧の述語を置き直した対応補題まで求めるか（後者は旧の述語の再定義と、旧の値・計算の全構成子の帰納が要る）。
 4. 所見1: 閉包の変更は、処理系の書き出しが data の宣言の制約・公開境界を出すようになるまで件数に効かない。義務19 の書き直し（文書の担当）で、この閉包を照合の範囲として使う。
+
+## 確認の後の処置（RV-L70.48 の軽い所見。基準 `f1ca09389`）
+
+| 所見 | 処置 |
+|---|---|
+| 軽1 | `Exchange/CanonicalNamesExamples.lean` に、組込みの表の行の形の署名（`tailRow`。名前・引数の型 `tailParams`・結果型）を `CanonicalNames.json` に通した一致を、既定ビルドの中の評価 `#guard` として置いた。内部名の結果型 `internalTailRet`（`refined (data "data:199" [list (tvar 0)]) internalTailPredicate`）の行を写すと、標準の結果型 `standardTailRet`（`StandardHeadTail.tailSignature` の結果型を交換の型で書いたもの）の行と一致する。値の文字列 `"data:199"` は写さず同じ述語の欄の参照は写すこと、写す前の行は一致しないこと（対照）も置いた。JSON の写しと導出した JSON の変換は部分関数で、`decide +kernel` も `rfl` も展開できずに止まる（小さな `toJson Pred.truth` でも止まることを確かめた）ので、定理ではなく評価で確かめる。値は数百バイトで、`#eval` は使わない。対照を偽にした写しで、ビルドが「did not evaluate to `true`」で失敗することを確かめた |
+| 軽2 | 数え直しの台本（[probes/prep-all.lean](probes/prep-all.lean)・[probes/run.sh](probes/run.sh)・[probes/tally.py](probes/tally.py)）、集計（[probes/tally-final.json](probes/tally-final.json)）、JSON の試し（[probes/probe-names.lean](probes/probe-names.lean)）、所見6の両端の補題の試し（[probes/ResultEndpoints.lean](probes/ResultEndpoints.lean)）、照合の試し（[probes/verify_dry.py](probes/verify_dry.py)）を probes/ に写し、本文の参照を相対リンクに直した。どれも既定ビルドに入れない。写すときに手元の絶対パスを、引数かファイルの場所から求める形に替えた。写した `tally.py` は二つの記録から同じ集計（SHA-256 `fc8037e7…`）を作り直した。写した二つの Lean の試しは終了0。入力ごとの記録（各 220,850 バイト）は大きさと SHA-256 だけを残す |
+| 軽5 | `CanonicalNamesExamples` の先頭のコメントを 07-04「篩を含む形式化の範囲」に、`EmbeddedLocalRefs` の先頭のコメントを 01-12「篩を含む状態の型付け」に直した。`CheckInput.lean` の照合の段のコメント（07-04「証明する性質」）も同じ節に直した |
+| 情3 | 「6.」に、返却の側の補題が `P.VarianceValid` を前提に取ることと、それが主定理の前提 `P.WellTyped B` の欄 `variance` から得られることを書いた。両端の補題の試しを、その欄から得る形に直した |
+
+足した名前（必須の名前に加えた。[changes-lean.json](changes-lean.json) と [../h3/required-names.json](../h3/required-names.json) の群 `L48`、計35名）: `Benitoite.Exchange.CanonicalNamesExamples.tailRow`・`tailParams`・`internalTailRet`・`standardTailRet`。
+
+作業末の検査（一度ずつ）:
+
+| 検査 | 開始 | 終了状態 | 外側の時間 | 結果 |
+|---|---|---:|---|---|
+| 既定ビルド | 11:34:21 | 0 | 5秒 | 2350 jobs |
+| 公理監査（`l48/audit-lean.py`） | 11:34:26 | 0 | 14.8秒 | 4モジュールの全宣言505（private 101）。公理の組は なし 212・`propext` 111・`Quot.sound + propext` 2・`Classical.choice + Quot.sound + propext` 180。`sorryAx`・許可の外の公理・`axiom` の宣言0。必須の名前35 |
+| 段の公理監査の書き出しと記録の作り直し | 11:34:41 | 0 | 約4分 | 宣言 126,606→126,610（足した 52,733→52,737。内訳は定義 18,077→18,081、名前付きの公開 11,209→11,213。系統 Exchange の足した 1,281→1,285）。監査の名前 126,591→126,595、printed 126,567→126,571。公理の組 なし 53,872→53,875・`Classical.choice + Quot.sound + propext` 31,214→31,215。モジュールの数は変わらない |
+| 段の照合 `verify.py` | 11:38:54 | 1 | 98秒 | 群 H3 の区間の変更の範囲に確認の記録 `reviews/RV-L70.48.md` を加えた後、6 の段末の資料の件数（`| 足した | 52,737 |`）で止まった。段末の資料は文書の担当が前の値（52,733・126,606）に直してあり、この処置の4名の分だけ違う。件数だけを差し替えた写しでは最後まで通った（`verified`、必須の名前340） |
+
+照合の台本は、群 H3 の区間の変更の範囲に `reviews/RV-L70.48.md` を加え、記録の検査の対象に l48/probes/ を加えた。
 
 Lean の変更の終わり

@@ -106,8 +106,8 @@ CHANGE_DIR = str(HERE.parent.relative_to(ROOT))
 allowed = [own + "/", REVIEWS + "/", "formal/", *DESIGN, CHANGE_DIR + "/plan.md", CHANGE_DIR + "/effort-ledger.md"]
 assert all(any(p == a or p.startswith(a) for a in allowed) for p in h3_changed), \
     sorted(p for p in h3_changed if not any(p == a or p.startswith(a) for a in allowed))
-# 段末レビュー（RV-L70-stage）の回答の写しと、その処置（L70.48）の記録も同じ区間に入る。
-assert all(p.startswith(REVIEWS + "/RV-L70.h") or p == REVIEWS + "/RV-L70-stage.md"
+# 段末レビュー（RV-L70-stage）の回答の写しと、その処置（L70.48）の確認（RV-L70.48）も同じ区間に入る。
+assert all(p.startswith(REVIEWS + "/RV-L70.h") or p in (REVIEWS + "/RV-L70-stage.md", REVIEWS + "/RV-L70.48.md")
            for p in h3_changed if p.startswith(REVIEWS + "/")), h3_changed
 existed_h2 = set(git("ls-tree", "-r", "--name-only", B_H2, "formal/").split())
 h3_lean = sorted(p for p in h3_changed if p.startswith("formal/") and p.endswith(".lean") and (ROOT / p).exists())
@@ -291,7 +291,7 @@ for key, title in [("handoffs", "申し送り78行"), ("obligations", "義務59�
            f"{four_counts.get('不成立', 0)} | {four_counts.get('未確認（行ごとの証人なし）', 0)} | "
            f"{four_counts.get('対象外（定義が判定の対象）', 0)} | {four_counts.get('対象外（Lean の証拠なし）', 0)} |")
     assert row in text, row
-files = [p for d in (H, H2, H3, HERE / "h4", HERE / "l48") for p in d.iterdir() if p.is_file()] + \
+files = [p for d in (H, H2, H3, HERE / "h4", HERE / "l48", HERE / "l48" / "probes") for p in d.iterdir() if p.is_file()] + \
     [HERE / "stage-results.md", HERE / "axioms.lean", Path(__file__)]
 for p in files:
     data = p.read_text()

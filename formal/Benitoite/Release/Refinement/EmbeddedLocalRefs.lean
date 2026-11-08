@@ -6,7 +6,7 @@ import Benitoite.Release.Refinement.HiddenCaptureBoundary
 旧の構文の状態は、実行時の閉包・照合・枠・セルの捕捉を全て空にして埋め込む（`embedState`）。型の付いた状態の
 局所の不変条件（`LocalStateInvariant`）は捕捉の値を型付きの位置についてだけ調べるが、旧の像には捕捉の位置が
 ないので、型の付かない隠れた位置を持つ反例（`CaptureLocalRefsBoundary.hidden_slot_read_localrefs`）の形は
-現れない。旧の局所参照の保証は、この像の範囲で新しい不変条件から得る（設計書 01-12「構築器の分類と環境の対応」）。
+現れない。旧の局所参照の保証は、この像の範囲で新しい不変条件から得る（設計書 01-12「篩を含む状態の型付け」）。
 -/
 namespace Benitoite.Release.Refinement
 noncomputable section

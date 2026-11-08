@@ -162,7 +162,7 @@
 
 `ReadLocalRefs` の相互の条件は、型付きの値・計算・腕・節と捕捉を対象にする。専用参照の bound は深さ内、loc は同じストア型の builder の場所に限る。`Capture.LocalRefs P B Ψ Γ Φ cap` は、元の Γ・Φ と捕捉に対する Transport を残し、Γ の some の通常値の位置に値の条件を要求する。値の閉包の条件は CaptureOk と TelBodyTy を持つ。実行の Closure.LocalRefs は、同じ捕捉の CaptureOk と、ある経路条件 Ξ の下の導出、および元のコードと局所参照の解決の対応を持つ。Ξ と捕捉元の Φ の関係、R・Rs・a・e の元の ClosureTy との一致、TypeAnnotations はこの条件に含めない。経路条件・型注釈の一致は、併せて持つ StateTyE の ClosureTy が持つ。捕捉の Transport による Γ・Φ と述語の参照、元の型付けの型注釈・snapshot の検査も用いるため、None の位置を一律に無視してよいと仮定するものではない。継続の位置の値は通常値に含めず、同じ StoreOk の cont セルと ContTy で扱う。ClosedAt と Adequate の全位置の条件も引き続き必要である。
 
-`LocalInvariant` は、ClosureTy・ContTy の10構成子・CellOk の6形からこれらの条件を導き、四状態の StateTyE から `LocalStateInvariant` を導く。通常セルの値と専用 List の要素は、型付きの捕捉位置に自由な専用参照を持たない。thunk は builder を隠したストア型で検査する。`StateTyE.builder_live` は、現在の view の専用操作に現れる場所が実在する builder セルを指すことを結論する。`hidden_slot_read_localrefs` は隠れた位置の既存の状態がこの条件を満たすこと、`reject_executed_stale_builder` は存在しない場所の操作を直接実行する状態が型付けられないことを証明する。旧の構文の状態の像（`embedState`）では、実行中の閉包・照合・継続の枠・ストアのセルの捕捉が全て空であり（`embedState_capturesEmpty`）、型付きの像は `LocalStateInvariant` を満たす（`embedState_local_invariant`）。像には捕捉の位置がないので、この条件が型付きの捕捉位置だけを調べることは像の上では制限にならない。隠れた位置の反例の状態は像でない（`hidden_capture_not_embedded`）。像の状態から実行した後の状態は一般に像でないので、これらの補題は到達先の全ての状態について述べるものではない。δ が場所の番号を読んで応答を選ぶことは、このセルの有効性の条件に含めない。
+`LocalInvariant` は、ClosureTy・ContTy の10構成子・CellOk の6形からこれらの条件を導き、四状態の StateTyE から `LocalStateInvariant` を導く。通常セルの値と専用 List の要素は、型付きの捕捉位置に自由な専用参照を持たない。thunk は builder を隠したストア型で検査する。`StateTyE.builder_live` は、現在の view の専用操作に現れる場所が実在する builder セルを指すことを結論する。`hidden_slot_read_localrefs` は隠れた位置の既存の状態がこの条件を満たすこと、`reject_executed_stale_builder` は存在しない場所の操作を直接実行する状態が型付けられないことを証明する。旧の構文の状態の像（`embedState`）では、最上位の捕捉（実行中の閉包・照合・継続の枠・ストアのセル）が全て空であり（`embedState_capturesEmpty`）、型付きの像は `LocalStateInvariant` を満たす（`embedState_local_invariant`）。開始の像では最上位の捕捉に位置がないので、この条件が型付きの捕捉位置だけを調べることはその捕捉では制限にならない。値の中の閉包の捕捉は、この補題の言明に含まない。隠れた位置の反例の状態は像でない（`hidden_capture_not_embedded`）。像の状態から実行した後の状態は一般に像でないので、これらの補題は到達先の全ての状態について述べるものではない。δ が場所の番号を読んで応答を選ぶことは、このセルの有効性の条件に含めない。
 
 `StateLeaves` は任意の捕捉を持つ元状態の view から Reference の4遷移、force の2遷移と書戻しを接続する。update の関数値は closure に限定せず、遷移が作る get/set の生の型引数をそのまま型付ける。`ClosedRename` は閉じた任意の値の rename と束縛の深さの拡張を証明する。Lazy の作成と error/exit の更新枠の pop は既存の一般の葉を使う。ReferencePreservation の pure の呼出し元と closure の更新関数の代表、LazyPreservation の pure の force と定数の書戻しの代表は別に残る。
 
@@ -785,7 +785,7 @@ Rust の共通の書き出しは、署名の範囲変数・効果の原子・不
 
 交換の比較で確認するのは、保存した有限の入力について、各入口の型付け・脱糖・拒否などの結果が一致することである。被覆と構造上の包含を使う各規則の位置を一つずつ網羅したことや、Rust の型検査と実行（継続を含む）と形式化の一般の対応は、この比較の成功から結論しない。
 
-`Exchange.Refined` は、篩付きの型を運ぶ交換の版の構文と版の判定を定める。型は篩（核の述語と項）、依存する関数型、外部型、範囲付きの値型、起点の型、範囲の pattern の型を持ち、範囲の位置は基準と secrets を持つ範囲の式である。関数の宣言の頭部は範囲パラメータの種類の列と `@proofSteps` の上限を、宣言の欄は型の別名・欄どうしの依存を持つ record・生成した構成子の判定の関数を持つ。この版の読み手は版の番号が corpus 16・sidecar 8 の入力だけを受け、それより前の版を版の誤りで断る（`readVersion`）。7入口はこの版を読む。区間解析以外の六入口は `Exchange.Version` の `exchangeJson` で同じ版の番号を検査してから読み、`intervalDiff` は埋め込みの Surface の版をこの版の `corpusVersion` と照合する（「区間解析の独立交換の読者」）。
+`Exchange.Refined` は、篩付きの型を運ぶ交換の版の構文と版の判定を定める。型は篩（核の述語と項）、依存する関数型、外部型、範囲付きの値型、起点の型、範囲の pattern の型を持ち、範囲の位置は基準と secrets を持つ範囲の式である。関数の宣言の頭部は範囲パラメータの種類の列と `@proofSteps` の上限を、宣言の欄は型の別名・欄どうしの依存を持つ record・生成した構成子の判定の関数を持つ。版の番号は `Exchange.Refined` の `corpusVersion`（16）・`sidecarVersion`（8）である。7入口はこの版だけを読む。区間解析以外の六入口は `Exchange.Version` の `exchangeJson` で同じ番号を判定し（corpus は 16、それ以外の文書は 8）、ほかの版を版の誤りで断ってから読む。`intervalDiff` は埋め込みの Surface の版を `corpusVersion` と照合する（「区間解析の独立交換の読者」）。
 
 ### 区間解析の独立交換の読者
 

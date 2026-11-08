@@ -16,19 +16,19 @@ L70 は篩付きの形式化への切替の段である。新しい核の主定�
 
 | 状態 | 宣言 | 定理 | 定義（def・opaque） | 帰納型 | 構成子 | 再帰原理 | private | 生成 | マクロのスコープ | 名前付きの公開 |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| 足した | 52,733 | 32,177 | 18,077 | 395 | 1,677 | 407 | 28,511 | 12,993 | 27 | 11,209 |
+| 足した | 52,737 | 32,177 | 18,081 | 395 | 1,677 | 407 | 28,511 | 12,993 | 27 | 11,213 |
 | 削除した | 12,523 | 6,928 | 4,654 | 153 | 630 | 158 | 3,631 | 4,245 | 16 | 4,631 |
 | 型が変わった | 2,615 | 1,039 | 1,425 | 0 | 63 | 88 | 944 | 1,131 | 4 | 536 |
 | 本体が変わった | 714 | 0 | 712 | 2 | 0 | 0 | 140 | 327 | 0 | 247 |
 | 同じ | 70,544 | 39,340 | 25,898 | 783 | 3,790 | 733 | 18,589 | 27,631 | 8 | 24,316 |
 
-開始版は 86,396 宣言（既定 import の閉包 85,411 と7入口 985）、最終版は 126,606 宣言（既定 import の閉包 125,604 と7入口 1,002）である。最終版には群 H2 と群 H3 の Lean の担当と、段末レビューの処置（L70.48）の Lean の担当が足したモジュールの宣言を含む。モジュール（ファイルの import の閉包）は開始版 1,079・最終版 1,331 で、段で足したモジュールは 397（うち宣言を持たないもの2: `SafeCheckPreservationExamples`・`Surface.NoRangeScopedExamples`）、削除したモジュールは閉包の中で 145 である。L70.44 の削除の計画の146（[g/deletion-plan.json](g/deletion-plan.json)。旧 Surface 94・旧 Release 36・Core 16）のうち `Benitoite.Release.LegacyCheck` は開始版の既定 import の閉包の外のファイルだったので、閉包の差は145になる。削除した宣言 12,523 のうち 11,639 は削除したモジュールにあり、残りは残したモジュールで除いた宣言（旧三モデルの `assumptions` とその読者33、`R.CurrentSignatureRows` の4など）と、篩付きの核で置き換えた宣言である。所属のモジュールが変わった宣言は528（改名したファイル3を含む）。
+開始版は 86,396 宣言（既定 import の閉包 85,411 と7入口 985）、最終版は 126,610 宣言（既定 import の閉包 125,608 と7入口 1,002）である。最終版には群 H2 と群 H3 の Lean の担当と、段末レビューの処置（L70.48）の Lean の担当が足したモジュールの宣言を含む。モジュール（ファイルの import の閉包）は開始版 1,079・最終版 1,331 で、段で足したモジュールは 397（うち宣言を持たないもの2: `SafeCheckPreservationExamples`・`Surface.NoRangeScopedExamples`）、削除したモジュールは閉包の中で 145 である。L70.44 の削除の計画の146（[g/deletion-plan.json](g/deletion-plan.json)。旧 Surface 94・旧 Release 36・Core 16）のうち `Benitoite.Release.LegacyCheck` は開始版の既定 import の閉包の外のファイルだったので、閉包の差は145になる。削除した宣言 12,523 のうち 11,639 は削除したモジュールにあり、残りは残したモジュールで除いた宣言（旧三モデルの `assumptions` とその読者33、`R.CurrentSignatureRows` の4など）と、篩付きの核で置き換えた宣言である。所属のモジュールが変わった宣言は528（改名したファイル3を含む）。
 
 | 系統 | 足した | 削除した | 型が変わった | 本体が変わった | 同じ |
 |---|---:|---:|---:|---:|---:|
 | Release.Refinement | 7,001 | 715 | 1,956 | 412 | 40,890 |
 | Release.Refinement.Surface | 43,762 | 0 | 7 | 0 | 135 |
-| Exchange | 1,281 | 105 | 477 | 268 | 2,416 |
+| Exchange | 1,285 | 105 | 477 | 268 | 2,416 |
 | Interval | 666 | 0 | 11 | 10 | 10,999 |
 | 7入口 | 23 | 6 | 164 | 24 | 791 |
 | Release | 0 | 1,531 | 0 | 0 | 9,250 |
@@ -180,13 +180,13 @@ L70 は篩付きの形式化への切替の段である。新しい核の主定�
 
 ## 段末の公理監査
 
-[axioms.lean](axioms.lean) を既定 import の閉包と7入口の根ごとに一度ずつ、共有ロックの下で `lake env lean -M 12288` で実行した（8入力、全て終了0、[h3/runs-final.json](h3/runs-final.json)。開始版は [h3/runs-base.json](h3/runs-base.json)）。所属モジュールで選んだ全宣言を不動点（2巡。印字で実体化した宣言は0）で列挙し、`axiomInfo` の宣言がないことを確かめ、マクロのスコープを持たない名前は `#print axioms`、持つ名前は同じ関数 `collectAxioms` で調べた。名前の異なる宣言は 126,591 である。最終版の環境は群 H2 と群 H3 の Lean の担当と L70.48 の Lean の担当が足したモジュールを含む。
+[axioms.lean](axioms.lean) を既定 import の閉包と7入口の根ごとに一度ずつ、共有ロックの下で `lake env lean -M 12288` で実行した（8入力、全て終了0、[h3/runs-final.json](h3/runs-final.json)。開始版は [h3/runs-base.json](h3/runs-base.json)）。所属モジュールで選んだ全宣言を不動点（2巡。印字で実体化した宣言は0）で列挙し、`axiomInfo` の宣言がないことを確かめ、マクロのスコープを持たない名前は `#print axioms`、持つ名前は同じ関数 `collectAxioms` で調べた。名前の異なる宣言は 126,595 である。最終版の環境は群 H2 と群 H3 の Lean の担当と L70.48 の Lean の担当が足したモジュールを含む。
 
 | 公理依存の集合 | 宣言 |
 |---|---:|
-| なし | 53,872 |
+| なし | 53,875 |
 | propext | 37,699 |
-| Classical.choice + Quot.sound + propext | 31,214 |
+| Classical.choice + Quot.sound + propext | 31,215 |
 | Quot.sound + propext | 3,790 |
 | Quot.sound | 12 |
 | Classical.choice | 2 |
@@ -256,7 +256,7 @@ tables.md の全行を、証拠の完全名と読者の経路で判定した（[
 | 16 | R40 | 合成表の発行の内部名 `Example.pathBases` の改名（公開名 `Process.pathBases`） | u/results.md「申し送り」 | R40 で改名するかを決め、対応表と一致させる |
 | 17 | R40・R60 | 合成表の `CheckError.expected` は不透明な定数。処理系の実診断の書式と比べるときは比較から外すか表示器を表の引数にする | f2/results.md、plan.md 2026-11-06（RV-L70.f2 (3)） | 比較の方法を決め、差が0件 |
 | 18 | R50（F-CONN） | 交換の7入口が保証するのは交換した組込みの表の下での checker の健全性（`prepare_sound`）。主定理の前提 `q.B = complete …` との接続 | g/results.md「後段への申し送り（追加）」 | 完成表と交換の表を結ぶ定理を置き、F-CONN の全比較が成功する |
-| 19 | R50 | 検査器（写さない交換の表を読む）と、標準表との照合の対象（`closureOf` の閉包。文字列の出現で数える上への近似で、L70.48 から data の段は変性の検査が読む `requirements`・`publicBoundary` の型も辿る）の関係の接続。検査器は全件の data に変性の検査（`CheckVariance.check`）を掛けるので、閉包の外の data の行も検査の結果に効く（[RV-L70-stage](../reviews/RV-L70-stage.md) 中1）。接続は、(a) 全表の形成と整合の検査（全件の変性の検査を含む）と、(b) 本体の型検査に分ける | g/results-claude.md の F-REG への申し送り、plan.md 2026-11-07・2026-11-08（段末レビューの処置） | 交換の表と完成表の双方が (a) に成功する条件の下で、(b) に要る閉包の上の限られた対応を示し、両表での本体の検査の結果を結ぶ |
+| 19 | R50 | 検査器（写さない交換の表を読む）と、標準表との照合の対象（`closureOf` の閉包。文字列の出現で数える上への近似で、L70.48 から data の段は変性の検査が読む `requirements`・`publicBoundary` の型も辿る）の関係の接続。検査器は全件の data に変性の検査（`CheckVariance.check`）を掛けるので、閉包の外の data の行も検査の結果に効く（[RV-L70-stage](../reviews/RV-L70-stage.md) 中1）。閉包の外の行は、準備の段の組込みの素材の形成（`CheckSupport.formedMaterials` が、閉包によらず交換の表の対象外の印のない全ての組込みの署名を形成し、形成に失敗した入力を断る）を通じても検査の結果に効く（RV-L70.48 情2）。接続は、(a) 全表の形成と整合の検査（準備の段の全表の形成と、全件の変性の検査を含む）と、(b) 本体の型検査に分ける | g/results-claude.md の F-REG への申し送り、plan.md 2026-11-07・2026-11-08（段末レビューの処置） | 交換の表と完成表の双方が (a) に成功する条件の下で、(b) に要る閉包の上の限られた対応を示し、両表での本体の検査の結果を結ぶ |
 | 20 | R50 | 受理から型付けまでの接続。`Materials.checkProgramAccepted_sound` には `Check.Input.Sound` のほかに `DefSupport`・`ImplSupport` が要り、交換の準備はこれを示さない | g/results-claude.md（RV-L70.g の情2） | 7入口の成功から型付けまでを閉じる定理を置く |
 | 21 | R50 | data の欄の名前（`conFields`）・`extensible`・変性と完成表の data の表との一致。標準の data の宣言の支持（`tysEq` の等号化）、鍵の印のそろえ（`prepare_constraints` と写さない表） | g/results-claude.md（RV-L70.g の軽8 ほか） | 一致を示す |
 | 22 | R50 | `Http.sendIn`（処理系は `Http.Response` を record の data、標準表は不透明型）で準備の段に断った20入力 | g/results-claude.md | `Http.Response` の抽象と完成表を接続し、この理由の準備の失敗が0件 |

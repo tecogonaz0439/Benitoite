@@ -244,6 +244,10 @@
 | `Exchange.CanonicalNamesExamples.internalSomeField_renamed` | 定理 | `c0e7641501982571913c3cf1212e8334711f30e2caec17f9e7d5589a42cce037` | `c0e7641501982571913c3cf1212e8334711f30e2caec17f9e7d5589a42cce037` | なし |
 | `Exchange.CanonicalNamesExamples.tail_predicate_renamed` | 定理 | `fa98ad1cb59b12fa6f966af7d6329d5fb959bf87df5ded6b56c7497e43569f44` | `fa98ad1cb59b12fa6f966af7d6329d5fb959bf87df5ded6b56c7497e43569f44` | propext |
 | `Exchange.CanonicalNamesExamples.string_value_kept` | 定理 | `6e0c346178f6bf7a90d0f4f41c31527b333e22d7c881a72bbe51683398e0c75f` | `6e0c346178f6bf7a90d0f4f41c31527b333e22d7c881a72bbe51683398e0c75f` | propext |
+| `Exchange.CanonicalNamesExamples.tailRow` | 定義 | `e196df011bdbb38ac9b79df1a31e3810cb5c5467ef0ed5b1c558c38e9db08b2a` | `21a60cde549793b184fe3ee83e04a8d3e7977609741fae4988372f5f599fc5ec` | Classical.choice + Quot.sound + propext |
+| `Exchange.CanonicalNamesExamples.tailParams` | 定義 | `e6ad811509f4eb9e90152363f9d1b47d6167b3795507196ab67c8a8615c37336` | `81b80f7c39343ccbdc15666e9528d82837c883f2eab21be50dc889ec36a7426d` | なし |
+| `Exchange.CanonicalNamesExamples.internalTailRet` | 定義 | `d426ce033efe568749310484e83c45662898ec70ee47363ddfb4dc8971f742ec` | `e6075810b297e015a44ee2f01e211f58531896338d5babc03c891cf5c645ae0a` | なし |
+| `Exchange.CanonicalNamesExamples.standardTailRet` | 定義 | `d426ce033efe568749310484e83c45662898ec70ee47363ddfb4dc8971f742ec` | `afc20e3040b2a266255321220b823386dd43a32d3a64de7839e9707fa493e2f8` | なし |
 | `Exchange.CheckInput.dataDeclStrings` | 定義 | `32513d6e362b89f2bc80c11ae02482e5e70acf2b9e14522bd82955256faab029` | `9fec301a25ee6e65b78cace250ea1e189d1f082a4d0b278a317d1872b3cc98f7` | Classical.choice + Quot.sound + propext |
 | `Exchange.CheckInput.dataStep` | 定義 | `4fb8b074060524f012cd9072c9f9c2e3e2a43355dfca481743be3347a1bd3153` | `600816f8c110ef634722089153f3a03555d8f41a1426ae68f45062c9411896cd` | Classical.choice + Quot.sound + propext |
 | `Exchange.CheckInput.closureOf` | 定義 | `44cff1491ba57022d8262b36c5518c1996e30707e30452eb15d20ea78947acb3` | `bf3a1e204b301e2e70b51f5dbfddc7261a47f56f96c21480d3780d1fe98cd2c6` | Classical.choice + Quot.sound + propext |

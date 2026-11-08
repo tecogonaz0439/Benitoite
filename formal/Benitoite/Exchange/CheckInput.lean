@@ -418,7 +418,7 @@ def prepareParts (input : Input) (b : BuiltinInput) (s : StdlibInput)
   let builtinNames := ms.map (·.1.name)
   -- 標準表との照合は、交換の内部名（data・構成子・不透明型・効果・組み込み）を同じ入力の宣言から決まる標準の
   -- 名前へ写した表で行う。検査器の表は写さない交換の表のままである。写した後も署名の欄が標準表の行と一致しない
-  -- 入力は断る（設計書 07-04「証明する性質」）。
+  -- 入力は断る（設計書 07-04「篩を含む形式化の範囲」）。
   let names ← CanonicalNames.ofInputs input (toJson b)
   let bc : BuiltinInput ← fromJson? (names.json (toJson b))
   let inputC : Input ← fromJson? (names.json (toJson input))

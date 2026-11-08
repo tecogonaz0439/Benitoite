@@ -5,10 +5,10 @@
   "Benitoite.Exchange.CheckInput",
   "Benitoite.Release.Refinement.EmbeddedLocalRefs"
  ],
- "declarations": 501,
+ "declarations": 505,
  "by_module": {
   "Benitoite.Exchange.CanonicalNames": 164,
-  "Benitoite.Exchange.CanonicalNamesExamples": 6,
+  "Benitoite.Exchange.CanonicalNamesExamples": 10,
   "Benitoite.Exchange.CheckInput": 258,
   "Benitoite.Release.Refinement.EmbeddedLocalRefs": 73
  },
@@ -16,8 +16,8 @@
  "macro_scoped": 0,
  "unresolved": 0,
  "axiom_sets": {
-  "なし": 209,
-  "Classical.choice + Quot.sound + propext": 179,
+  "なし": 212,
+  "Classical.choice + Quot.sound + propext": 180,
   "propext": 111,
   "Quot.sound + propext": 2
  },
@@ -156,6 +156,34 @@
     "propext"
    ]
   },
+  "Benitoite.Exchange.CanonicalNamesExamples.tailRow": {
+   "module": "Benitoite.Exchange.CanonicalNamesExamples",
+   "kind": "definition",
+   "type_sha256": "e196df011bdbb38ac9b79df1a31e3810cb5c5467ef0ed5b1c558c38e9db08b2a",
+   "axioms": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+   ]
+  },
+  "Benitoite.Exchange.CanonicalNamesExamples.tailParams": {
+   "module": "Benitoite.Exchange.CanonicalNamesExamples",
+   "kind": "definition",
+   "type_sha256": "e6ad811509f4eb9e90152363f9d1b47d6167b3795507196ab67c8a8615c37336",
+   "axioms": []
+  },
+  "Benitoite.Exchange.CanonicalNamesExamples.internalTailRet": {
+   "module": "Benitoite.Exchange.CanonicalNamesExamples",
+   "kind": "definition",
+   "type_sha256": "d426ce033efe568749310484e83c45662898ec70ee47363ddfb4dc8971f742ec",
+   "axioms": []
+  },
+  "Benitoite.Exchange.CanonicalNamesExamples.standardTailRet": {
+   "module": "Benitoite.Exchange.CanonicalNamesExamples",
+   "kind": "definition",
+   "type_sha256": "d426ce033efe568749310484e83c45662898ec70ee47363ddfb4dc8971f742ec",
+   "axioms": []
+  },
   "Benitoite.Exchange.CheckInput.dataDeclStrings": {
    "module": "Benitoite.Exchange.CheckInput",
    "kind": "definition",
@@ -276,8 +304,8 @@
   }
  },
  "raw": {
-  "bytes": 584618,
-  "sha256": "2907eadaba0054ca4abfd69f25ec8d89e14af8b1a0f73ffad3d5a1cf2872e5c7"
+  "bytes": 589235,
+  "sha256": "a9c7463892fe39e2fda415adfac4b69c34c3215150bd60bfae5e97aefb3d74e8"
  },
  "inputs": {
   "axioms.lean": {
@@ -289,8 +317,8 @@
    "sha256": "8c4c683ca1ec75210dc9c200f6d5b587b3a7f0d57fa25313ae4ce7e7bec84438"
   },
   "changes-lean.json": {
-   "bytes": 2343,
-   "sha256": "6c9cec17c1bf3b22e81cadb036fdc5dffc6bda85823ee82ae578d8803be1b2af"
+   "bytes": 2582,
+   "sha256": "a61986e27a407361436aa7aa661bd3b77bc219a0e79661c29978dc5d9dc3886b"
   }
  }
 }
