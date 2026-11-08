@@ -77,8 +77,8 @@ def defaultProofSteps : Nat := 4096
 /-! ## 標準表との一致の判定の対象 -/
 
 /-- 標準表との一致の判定の対象（閉包）。`prims` はプログラムが参照する組込みの名前、`data` はプログラムが使う型と
-`prims` の署名の型から、data の宣言の構成子の引数の型を通じて届く data の名前である。どちらも組込みの表にある
-名前だけを持つ。 -/
+`prims` の署名の型から、data の宣言の構成子の引数・制約・公開境界の型を通じて届く data の名前である。どちらも
+組込みの表にある名前だけを持つ。 -/
 structure Closure where
   prims : List String
   data : List String
@@ -103,15 +103,21 @@ partial def surfaceWords (acc : Array String × Array String) : Json → Array S
 def dataNamed (b : BuiltinInput) (names : Std.HashSet String) : List String :=
   (b.dataDecls.filter fun d => names.contains d.name || d.ctors.any fun c => names.contains c.name).map (·.name)
 
-/-- data の名前の列に、その宣言の構成子の引数の型から届く data を一段加える。 -/
+/-- data の宣言のうち、検査器が読む型の欄（構成子の引数、変性の検査が読む制約 `requirements` と公開境界
+`publicBoundary`。`CheckVariance.metadata`）に現れる文字列。 -/
+def dataDeclStrings (d : DataEntry) : List String :=
+  jsonStrings (toJson d.ctors) ++ jsonStrings (toJson d.requirements) ++ jsonStrings (toJson d.publicBoundary)
+
+/-- data の名前の列に、その宣言の構成子の引数・制約・公開境界の型から届く data を一段加える。 -/
 def dataStep (b : BuiltinInput) (names : List String) : List String :=
-  let reached := (b.dataDecls.filter fun d => names.contains d.name).flatMap fun d => jsonStrings (toJson d.ctors)
+  let reached := (b.dataDecls.filter fun d => names.contains d.name).flatMap dataDeclStrings
   (names ++ dataNamed b (Std.HashSet.ofList reached)).eraseDups
 
 /-- 閉包を作る。参照は、入力の JSON の期待の核を除いた部分に値として現れる文字列で数える（組込み・data・構成子の
 名前と一致する文字列）。実装の宣言は、利用者の実装を全て、標準ライブラリの信頼する実装を名前が入力に現れるときに数える。演算子の表の行は、その演算子の名前が同じ部分に値か欄の名前として現れるとき、その行の組込みを
 参照する（単項の負号は欄の名前 `neg` だけに現れる）。標準ライブラリの関数は、名前が入力に現れるとき、その宣言の型を
-プログラムが使う型に含める。data の段は data の宣言の数より一つ多く繰り返す（一段ごとに宣言を一つ以上加えるか、
+プログラムが使う型に含める。data の段（`dataStep`）は、届いた data の宣言の構成子の引数・制約・公開境界の型
+（変性の検査が読む欄）に現れる data を加え、data の宣言の数より一つ多く繰り返す（一段ごとに宣言を一つ以上加えるか、
 変わらなくなる）。 -/
 def closureOf (input : Input) (b : BuiltinInput) (s : StdlibInput) (operators : List OperatorEntry) : Closure :=
   -- 実装の表（`impls`）は標準ライブラリの全ての実装を並べるので、標準ライブラリの信頼する実装は名前が入力に現れる

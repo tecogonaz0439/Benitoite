@@ -198,13 +198,13 @@ python3 -B formal/tests/test_interval_exchange.py
 
 | ディレクトリ・ファイル | 内容 | 01-12 の節 |
 |---|---|---|
-| `Benitoite/Release/Refinement/` | 篩付きの核。構文（`Syntax`）、型付け（`Typing`）、遷移（`Semantics`）、状態の型付け（`StateTyping`）、信頼条件、標準の宣言と組み込みの表のモデル、網羅性（`Coverage`・`CoverageInitial`・`CoverageExtension`・`CoverageRuntime`）、旧の判断の埋め込み（`Legacy*`） | 「篩を含むコア計算の形式化」から「篩を含む状態の型付け」まで |
+| `Benitoite/Release/Refinement/` | 篩付きの核。構文（`Syntax`）、型付け（`Typing`）、遷移（`Semantics`）、状態の型付け（`StateTyping`）、信頼条件、標準の宣言と組み込みの表のモデル、網羅性（`Coverage`・`CoverageInitial`・`CoverageExtension`・`CoverageRuntime`）、旧の判断の埋め込み（`Legacy*`）と旧の構文の状態の像の局所参照（`EmbeddedLocalRefs`） | 「篩を含むコア計算の形式化」から「篩を含む状態の型付け」まで |
 | `Benitoite/Release/Refinement/MainStatements.lean` / `MainTheorems.lean` / `MainEffects.lean` | 性質 2・3 と対象健全性の言明と証明 | 確かめる性質 |
 | `Benitoite/Release/Refinement/StandardModelApplication.lean` / `SurfaceLibrary.lean` / `SurfaceMain.lean` | 標準の宣言を含むプログラムへの主定理の適用、表層の main についての主定理 | 確かめる性質 |
 | `Benitoite/Release/Refinement/Surface/` | 篩付きの表層の構文・型付け・脱糖・性質 1（`Property1*`・`Theorems`）、検査器と健全性（`Check*`）、範囲を具体化する表層（`OpenSurface*`）、Scope の局所解析と必須の判定の受理（`Scope*`・`CheckAccept*`） | 型の情報を付けた表層の構文と型付け、篩を含む表層の検査と受理、Scope の局所解析の節 |
 | `Benitoite/Release/` の直下と `Release/Lemmas/`・`Release/Order/` | 旧 `Release` の74モジュール。篩付きの核への埋め込みの定義域、共有の定義とその依存、保持するモジュールの全宣言の依存 | 07-04「01-12 との対応」 |
 | `Benitoite/Surface/` | 区間の入力の構文の3モジュール（`Syntax`・`BuilderSyntax`・`FormatSpec`） | 区間解析の対象構文の評価関係 |
-| `Benitoite/Exchange/` | 交換の形式の読み書き、篩付きの表層への変換、検査の入力の準備（`CheckInput`）、標準表との照合（`BuiltinAgreement`）、必須の判定の入力（`Observe`） | 07-04「交換の形式の版」 |
+| `Benitoite/Exchange/` | 交換の形式の読み書き、篩付きの表層への変換、検査の入力の準備（`CheckInput`）、内部名を標準の名前へ写す名前の写し（`CanonicalNames`。例は `CanonicalNamesExamples`）、標準表との照合（`BuiltinAgreement`）、必須の判定の入力（`Observe`） | 07-04「交換の形式の版」 |
 | `Benitoite/Interval/` | 区間解析の評価関係・解析・予算と、篩付きの表層との接続 | 区間解析の節 |
 | `Benitoite/Scope/` | 操作の対象の範囲の領域と被覆、局所解析の採用定義 | 操作の対象の範囲の領域と被覆 |
 | `Benitoite/Checked/` / `Benitoite/Library/ResultLaws.lean` / `Benitoite/Shared/` | 検査済みの値の独立した小モデル、Result の法則の小証明、区間と近似の共有の定義 | 検査済みの値の独立した小モデル、Resultの法則と二引数辞書の具体例 |

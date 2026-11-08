@@ -53,6 +53,7 @@ import Benitoite.Exchange.Builtins
 import Benitoite.Exchange.CheckSupport
 import Benitoite.Exchange.BuiltinAgreement
 import Benitoite.Exchange.CheckInput
+import Benitoite.Exchange.CanonicalNamesExamples
 import Benitoite.Exchange.RangeExamples
 import Benitoite.Exchange.RefinedExamples
 import Benitoite.Exchange.Observe
@@ -279,6 +280,7 @@ import Benitoite.Release.Refinement.ContinuationGeneral
 import Benitoite.Release.Refinement.BuilderStore
 import Benitoite.Release.Refinement.HandlerStoreExamples
 import Benitoite.Release.Refinement.HiddenCaptureBoundary
+import Benitoite.Release.Refinement.EmbeddedLocalRefs
 import Benitoite.Release.Refinement.CaptureReadBoundary
 import Benitoite.Release.Refinement.ReadLocalRefs
 import Benitoite.Release.Refinement.LocalInvariant

@@ -225,6 +225,65 @@ def ofInputs (input : Input) (builtin : Json) : Except String CanonicalNames := 
   noCollision effectAliases (effects ++ input.effects.map (·.name))
   return { names with opaqueNames }
 
+/-! ## 篩の項と述語の名前の写し
+
+篩の述語の中の data と構成子の名前は、型付きの項と述語の上で写す。欄の参照（`FieldRef`）は所属の data
+（`owner`）と構成子の名前を持つので、両方を写す。値の文字列（`Term.string` など）は識別子として扱わない。
+構成子の名前の欄だけを写す対応（`constructorsOnly`）では、欄の参照の所属の data の名前も保つ。 -/
+
+open Benitoite.Release.Refinement (FieldRef Pred)
+
+/-- 欄の参照の所属の data と構成子の名前を写す。 -/
+def fieldRef (names : CanonicalNames) (r : FieldRef) : FieldRef :=
+  { r with owner := if names.constructorsOnly then r.owner else lookup names.dataNames r.owner
+           constructor := lookup names.constructorNames r.constructor }
+
+mutual
+  /-- 項の中の構成子と欄の参照の名前を写す。 -/
+  def term (names : CanonicalNames) : Benitoite.Release.Refinement.Term → Benitoite.Release.Refinement.Term
+    | .listValue xs => .listValue (slots names xs)
+    | .mapValue ks vs => .mapValue (slots names ks) (slots names vs)
+    | .setValue xs => .setValue (slots names xs)
+    | .dataValue c xs => .dataValue (lookup names.constructorNames c) (slots names xs)
+    | .field r t => .field (names.fieldRef r) (term names t)
+    | .measure m t => .measure m (term names t)
+    | .add a b => .add (term names a) (term names b)
+    | .neg a => .neg (term names a)
+    | .scale c a => .scale c (term names a)
+    | t => t
+  /-- 観測しない位置（`none`）を保って、各位置の項を写す。 -/
+  def slots (names : CanonicalNames) : List (Option Benitoite.Release.Refinement.Term) → List (Option Benitoite.Release.Refinement.Term)
+    | [] => []
+    | none :: xs => none :: slots names xs
+    | some t :: xs => some (term names t) :: slots names xs
+end
+
+/-- 述語の中の項と構成子の判定の名前を写す。 -/
+def pred (names : CanonicalNames) : Pred → Pred
+  | .eq a b => .eq (names.term a) (names.term b)
+  | .le a b => .le (names.term a) (names.term b)
+  | .lt a b => .lt (names.term a) (names.term b)
+  | .compare s o a b => .compare s o (names.term a) (names.term b)
+  | .floatClass w c v => .floatClass w c (names.term v)
+  | .decimalRepresented v => .decimalRepresented (names.term v)
+  | .charactersIn t lo hi => .charactersIn (names.term t) lo hi
+  | .member k v r => .member k (names.term v) r
+  | .constructorIs v c => .constructorIs (names.term v) (lookup names.constructorNames c)
+  | .and p q => .and (pred names p) (pred names q)
+  | .or p q => .or (pred names p) (pred names q)
+  | .not p => .not (pred names p)
+  | p => p
+
+/-- 欄の参照の交換の形（構造体から導出した四つの欄だけを持つ対象）か。 -/
+private def fieldRefJson? (value : Json) : Option FieldRef :=
+  match value with
+  | .obj entries =>
+      if entries.toArray.size == 4 && ["owner", "constructor", "position", "result"].all
+          (fun key => (value.getObjVal? key).isOk) then
+        (fromJson? value : Except String FieldRef).toOption
+      else none
+  | _ => none
+
 private def objectContext (outer : String) (value : Json) : String :=
   if (value.getObjVal? "typeName").isOk && (value.getObjVal? "builtin").isOk then "dataEntry"
   else if (value.getObjVal? "constructorName").isOk then "constructorEntry"
@@ -257,17 +316,23 @@ private def renameString (names : CanonicalNames) (context field value : String)
   else if field == "function" || field == "exit" then primitiveName value
   else value
 
-/-- 型・構成子・primitive・効果の識別欄だけを文法に沿って写す。値の文字列は保存する。 -/
+/-- 型・構成子・primitive・効果の識別欄だけを文法に沿って写す。値の文字列は保存する。篩付きの型の述語（欄
+`predicate`）は型付きの述語として読んで `pred` で写し、そのほかの位置の欄の参照も `fieldRef` で写す。 -/
 private partial def rewrite (names : CanonicalNames) (context : String) : Json → Json
   | .arr values => .arr (values.map (rewrite names context))
   | value@(.obj entries) =>
+    match fieldRefJson? value with
+    | some r => toJson (names.fieldRef r)
+    | none =>
       let context := objectContext context value
       Json.mkObj (entries.toArray.toList.map fun (field, child) =>
         let next := if ["dataTypes", "dataDecls", "ctors", "definitions", "prims", "effects", "ops", "primOps",
           "effKinds", "valKinds", "admitsR", "valContents", "operators", "summaries"].contains field
           then field
           else if entries.toArray.size == 1 then field else context
-        let rewritten := if field == "annotations" then child else match child with
+        let predicate := if field == "predicate" then (fromJson? child : Except String Pred).toOption else none
+        let rewritten := if field == "annotations" then child else
+          if let some p := predicate then toJson (names.pred p) else match child with
           | .str text => .str (renameString names context field text)
           | .arr values =>
               if !names.constructorsOnly && (field == "statePure" || field == "supplementalPrims") then
@@ -303,6 +368,76 @@ def resultConstructors : CanonicalNames :=
 
 /-- 交換の文書の構成子の名前の欄だけを `resultConstructors` で写す（設計書 07-04「交換の形式の版」）。 -/
 def resultJson (value : Json) : Json := resultConstructors.json value
+
+/-- `resultConstructors` の構成子の名前の写しは入れ替えなので、二度写すと元の名前に戻る。 -/
+theorem resultConstructors_lookup_twice (s : String) :
+    lookup resultConstructors.constructorNames (lookup resultConstructors.constructorNames s) = s := by
+  by_cases h1 : s = "Ok"
+  · subst h1; rfl
+  by_cases h2 : s = "Result.Ok"
+  · subst h2; rfl
+  by_cases h3 : s = "Error"
+  · subst h3; rfl
+  by_cases h4 : s = "Result.Error"
+  · subst h4; rfl
+  have h : lookup resultConstructors.constructorNames s = s := by
+    have e1 : (s == "Ok") = false := beq_false_of_ne h1
+    have e2 : (s == "Result.Ok") = false := beq_false_of_ne h2
+    have e3 : (s == "Error") = false := beq_false_of_ne h3
+    have e4 : (s == "Result.Error") = false := beq_false_of_ne h4
+    simp only [lookup, resultConstructors, List.lookup, e1, e2, e3, e4, Option.getD_none]
+  rw [h, h]
+
+/-- 構成子の名前の欄だけを写す対応は、欄の参照の所属の data の名前を変えない。 -/
+theorem resultConstructors_fieldRef_owner (r : FieldRef) : (resultConstructors.fieldRef r).owner = r.owner := rfl
+
+/-- 欄の参照の写しも、二度写すと元に戻る。 -/
+theorem resultConstructors_fieldRef_twice (r : FieldRef) :
+    resultConstructors.fieldRef (resultConstructors.fieldRef r) = r := by
+  cases r
+  simp only [fieldRef, resultConstructors_lookup_twice]
+  rfl
+
+mutual
+  /-- 項の写しも、二度写すと元に戻る。 -/
+  theorem resultConstructors_term_twice : (t : Benitoite.Release.Refinement.Term) →
+      resultConstructors.term (resultConstructors.term t) = t
+    | .listValue xs => by simp only [term, resultConstructors_slots_twice xs]
+    | .mapValue ks vs => by simp only [term, resultConstructors_slots_twice ks, resultConstructors_slots_twice vs]
+    | .setValue xs => by simp only [term, resultConstructors_slots_twice xs]
+    | .dataValue c xs => by simp only [term, resultConstructors_lookup_twice, resultConstructors_slots_twice xs]
+    | .field r t => by simp only [term, resultConstructors_fieldRef_twice, resultConstructors_term_twice t]
+    | .measure m t => by simp only [term, resultConstructors_term_twice t]
+    | .add a b => by simp only [term, resultConstructors_term_twice a, resultConstructors_term_twice b]
+    | .neg a => by simp only [term, resultConstructors_term_twice a]
+    | .scale c a => by simp only [term, resultConstructors_term_twice a]
+    | .var _ | .integer _ | .character _ | .float64 _ | .float32 _ | .decimal _ _ | .boolean _ | .unitValue
+    | .string _ | .bytesValue _ | .targetValue _ _ => rfl
+  /-- 位置の列の写しも、二度写すと元に戻る。 -/
+  theorem resultConstructors_slots_twice : (xs : List (Option Benitoite.Release.Refinement.Term)) →
+      resultConstructors.slots (resultConstructors.slots xs) = xs
+    | [] => rfl
+    | none :: xs => by simp only [slots, resultConstructors_slots_twice xs]
+    | some t :: xs => by simp only [slots, resultConstructors_term_twice t, resultConstructors_slots_twice xs]
+end
+
+/-- 篩の述語の写しも、二度写すと元に戻る（交換の文書を篩付きの表層の名前へ写す `resultJson` の述語の部分）。 -/
+theorem resultConstructors_pred_twice (p : Pred) :
+    resultConstructors.pred (resultConstructors.pred p) = p := by
+  induction p with
+  | and p q hp hq => simp only [pred, hp, hq]
+  | or p q hp hq => simp only [pred, hp, hq]
+  | not p hp => simp only [pred, hp]
+  | constructorIs v c => simp only [pred, resultConstructors_term_twice, resultConstructors_lookup_twice]
+  | truth | falsity => rfl
+  | _ => simp only [pred, resultConstructors_term_twice]
+
+/-- 交換の名前の Result の判定と欄の参照を持つ述語は、写すと表層の名前になり、もう一度写すと戻る。 -/
+example : resultConstructors.pred (.constructorIs (.var 0) "Ok") = .constructorIs (.var 0) "Result.Ok" ∧
+    resultConstructors.pred (resultConstructors.pred
+      (.eq (.field ⟨"Result", "Ok", 0, .integer⟩ (.var 0)) (.integer 1))) =
+      .eq (.field ⟨"Result", "Ok", 0, .integer⟩ (.var 0)) (.integer 1) :=
+  ⟨rfl, resultConstructors_pred_twice _⟩
 
 end CanonicalNames
 end Benitoite.Exchange
