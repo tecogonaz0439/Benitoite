@@ -202,3 +202,14 @@ JSON の写しの全体（`CanonicalNames.json`）と JSON の変換（導出し
 照合の台本は、群 H3 の区間の変更の範囲に `reviews/RV-L70.48.md` を加え、記録の検査の対象に l48/probes/ を加えた。
 
 Lean の変更の終わり
+
+## 取りまとめの作業末の検査（2026-11-08）
+
+| 項目 | 値 |
+|---|---|
+| 基準 | `fd280c1c0ad1c15d0b6ca0f40f6801989db66db2`（段末レビューの対象の版） |
+| HEAD | `31a2de178`（RV-L70.48 は可、軽い所見を閉じた後） |
+| コマンド | `formal/.lake/build` の `Benitoite/Release/Refinement` の lib と ir を消した後、`/usr/bin/lockf -t 3600 <tmp>/lean-build.lock /usr/bin/time -l scripts/check.sh --level work --base <基準>` |
+| 選んだ単位 | spec_tally・spec_examples（7通過）・formal_build（33ファイルの差分） |
+| 結果 | 終了0 |
+| 外側の時間 | 1,416秒（約24分）。最大常駐 約5.00 GB |
