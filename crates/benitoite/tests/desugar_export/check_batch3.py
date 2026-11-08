@@ -101,6 +101,7 @@ def check(directory, report_path):
     require(len(set(names)) == len(names), "duplicate Rust input names")
     count = 0
     surface_count = 0
+    checks = {}
     for item in inputs:
         require(item["group"] == "golden" and item["excluded"] == [], f"{item['name']}: input excluded")
         require(item["definitions"], f"{item['name']}: empty definitions")
@@ -115,6 +116,8 @@ def check(directory, report_path):
                 implementations.add(surface["implementation"])
         # メソッドと上位辞書を含む実装は、表層の入口では実装一件として検査する。
         surface_count += len(implementations)
+        checks[item["name"]] = (sum(d["scope"]["inScope"]["surface"]["implementation"] is None
+                                    for d in item["definitions"]) + len(implementations))
     for name in ("builtins", "stdlib", "coverage-program"):
         keys = [(item["group"], item["name"]) for item in data[name]["inputs"]]
         require(len(keys) == len(set(keys)) and set(keys) == {("golden", name) for name in names},
@@ -127,6 +130,8 @@ def check(directory, report_path):
             "Rust manifest totals")
     results = {}
     statuses = {}
+    rejected = []
+    rejected_causes = {}
     with tempfile.TemporaryDirectory(prefix="benitoite-batch3-check-") as temporary:
         for tool, files in TOOLS.items():
             selected_inputs = names if tool == "surfaceCheck" else [None]
@@ -137,8 +142,12 @@ def check(directory, report_path):
                 if name is not None:
                     args.extend(["golden", name])
                 empty_coverage = tool == "coverageProgramDiff" and expected["programCoverageCases"] == 0
-                result = SHARED["run"](tool, args, Path(temporary) / f"{tool}-{index}.json",
-                                       status=1 if empty_coverage else 0)
+                # 表層の入口は、標準表との差（分類の表の原因）だけで準備の段が断った入力を記録して続ける
+                # （check_named.py の run_surface）。分類できない拒否は止める。
+                runner = SHARED["run_surface"] if tool.startswith("surface") else SHARED["run"]
+                before = len(SHARED["PREPARATION_REJECTED"])
+                result = runner(tool, args, Path(temporary) / f"{tool}-{index}.json",
+                                status=1 if empty_coverage else 0)
                 if tool == "desugarDiff":
                     require(result["mismatches"] == [], f"{tool}: mismatches")
                     require(result["golden"]["definitions"] == dict(matched=count, mismatched=0, outside=0, excluded=0),
@@ -154,15 +163,33 @@ def check(directory, report_path):
                     require(result["matched"] == expected["coverageCases" if tool == "coverageDiff" else "programCoverageCases"],
                             f"{tool}: manifest counts")
                 elif tool == "surfaceCheck":
-                    require(result["result"] == {"ok": True}, f"{tool}: {name}: rejection")
+                    if result is None:
+                        rejected.append(name)
+                        rejected_causes[name] = [e["causes"] for e in SHARED["PREPARATION_REJECTED"][before:]]
+                    else:
+                        require(result["result"] == {"ok": True}, f"{tool}: {name}: rejection")
                 else:
-                    require(result["counts"] == dict(matched=surface_count, mismatched=0, outOfScope=0, q11=0,
-                            lazyRestriction=0, preparationFailure=0), f"{tool}: counts")
+                    # 分類した拒否があれば、断った入力を除いた残りの件数で照合する。
+                    expected_counts, _ = SHARED["remaining_counts"](dict(
+                        matched=surface_count, mismatched=0, outOfScope=0, q11=0, lazyRestriction=0,
+                        preparationFailure=0), [], result, checks)
+                    require(result["counts"] == expected_counts, f"{tool}: counts")
+                    classified = result.get("classified")
+                    require(sorted(classified["rejected"] if classified else []) == sorted(rejected),
+                            f"{tool}: rejected inputs differ from the single-input checks")
+                    # 断る入力と原因は batch3 の manifest（組の欄 preparationRejected。なければ0件）に固定する。
+                    # 今通している入力が分類した原因で断られるようになったときも、断られなくなったときも失敗にする。
+                    recorded = expected.get("preparationRejected", {})
+                    require(rejected_causes == {n: [c] for n, c in recorded.items()},
+                            f"{tool}: single-input rejections differ from the manifest: {rejected_causes}")
+                    require(sorted(classified["causes"] if classified else []) ==
+                            sorted({c for causes in recorded.values() for c in causes}),
+                            f"{tool}: full-check rejection causes differ from the manifest")
                 reports.append(result)
                 statuses[tool].append(1 if empty_coverage else 0)
             results[tool] = reports
     report = dict(elapsed_seconds=time.monotonic() - started, inputs=names, definitions=count,
-                  surface_checks=surface_count,
+                  surface_checks=surface_count, preparation_rejected=sorted(rejected),
                   files={name: hashlib.sha256(path.read_bytes()).hexdigest() for name, path in paths.items()},
                   results=results, statuses=statuses,
                   empty_comparisons=[tool for tool, values in statuses.items() if 1 in values])

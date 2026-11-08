@@ -340,7 +340,9 @@ class PolicyTests(unittest.TestCase):
             for name in ('crates/benitoite/tests/desugar_export/check_named.py',
                          'crates/benitoite/tests/desugar_export/check_batch3.py',
                          'crates/benitoite/tests/desugar_export/batch3/manifest.json',
-                         'formal/tests/test_batch3_exchange.py', 'formal/tests/test_named_exchange.py'):
+                         'formal/tests/test_batch3_exchange.py', 'formal/tests/test_named_exchange.py',
+                         # 分類した準備の拒否（k3）を読む分類の表。
+                         'formal/tests/test_range_sources.py'):
                 target = root / name
                 target.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(ROOT / name, target)
@@ -385,6 +387,18 @@ with open(os.environ['POLICY_LOG'], 'a') as log:
 if os.environ.get('POLICY_FAIL_PROFILE') == profile:
     sys.exit(17)
 data = json.loads(source.read_text())
+# k3 の入力は、本物の入口と同じく標準表との差（Scope.ScopeError の構成子 At）で準備の段に断られる
+# （batch3/manifest.json の preparationRejected）。拒否の文と全件の報告の欄は本物の入口の形にそろえる。
+GAP = ('builtin signature disagrees with the standard table: [Scope.checkPathIn]; '
+       'data declaration disagrees with the standard table: [Scope.ScopeError]')
+if profile == 'k3' and tool == 'surfaceCheck':
+    sys.stderr.write('surfaceCheck: ' + GAP + '\\n')
+    sys.exit(2)
+if profile == 'k3' and tool == 'surfaceCheckAll':
+    Path(sys.argv[-1]).write_text(json.dumps(dict(
+        counts=dict(matched=0, mismatched=0, outOfScope=0, q11=0, lazyRestriction=0, preparationFailure=1),
+        preparationErrors=[dict(reason=GAP, group='golden', input='scope')], tailMatches=0, replacements=0)))
+    sys.exit(2)
 if tool == 'desugarDiff':
     count = sum(len(i['definitions']) for i in data['inputs'])
     report = dict(mismatches=[], golden=dict(definitions=dict(matched=count, mismatched=0, outside=0, excluded=0)))
