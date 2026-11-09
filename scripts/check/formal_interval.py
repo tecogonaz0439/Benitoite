@@ -237,6 +237,15 @@ def counts(roots):
                 log=dict(input='log-standard', entries=sorted(TOOLS), inputHashes=log_report['files']))
 
 
+# 範囲の予算の Lean で比べるケースのうち、標準表との差で準備の段に断られると期待するケースと原因。実際の拒否の集合と
+# 完全に一致することを要求し、比べていたケースが拒否へ移っても、拒否されていたケースが比べるケースに戻っても失敗にする。
+# 義務 R30: Scope.ScopeError の構成子 At を標準表に揃えたら、2件とも比べるケースに戻るので、この表を空にする。
+EXPECTED_BUDGET_REJECTIONS = {
+    'last-run-exceeded': ['Scope.ScopeError.At'],
+    'inner-exceeded-outer-recovered': ['Scope.ScopeError.At'],
+}
+
+
 def range_counts(desugar):
     # 型表だけの一致や、範囲の群が全Topへ戻る退行を最終manifestでも拒む。
     range_sources = read(desugar/'range-source-comparison/summary.json')
@@ -272,15 +281,35 @@ def range_counts(desugar):
             commands=sum(1 if case['expected'].get('doc') else 2 for case in report_cases), status='passed'),
             'fixed reporting subset comparison incomplete')
     budget = read(desugar/'range-budget-comparison/summary.json')
-    require(budget['success'] is True and budget['rustOnlyCases'] == 1 and
-            budget['leanComparedCases'] == budget['requiredReasonComparisons'] == 2,
-            'range budget comparison incomplete')
     require(len(budget['cases']) == 3 and
             len({case['name'] for case in budget['cases']}) == 3,
             'range budget cases missing or duplicated')
+    # Lean で比べるケース（番号付けを終えた2件）は、比べたか、標準表との差（分類の表の原因）で準備の段に断られたかの
+    # どちらかである。断られたケースは数えず、名前と原因を manifest の rangeBudgetPreparationRejected に残す。
+    # R30 で Scope.ScopeError の構成子 At を標準表に揃えると、2件とも比べるケースに戻る（leanComparedCases が 2）。
+    # 断られると期待するケースは EXPECTED_BUDGET_REJECTIONS に固定する。
     lean_budget_cases = [case for case in budget['cases'] if 'key' in case]
-    require(len(lean_budget_cases) == budget['leanComparedCases'],
-            'range budget Lean report cases missing')
+    compared_budget = [case for case in lean_budget_cases if case.get('lean') == 'compared']
+    rejected_budget = [case for case in lean_budget_cases if case.get('lean') == 'preparationRejected']
+    require(budget['success'] is True and budget['rustOnlyCases'] == 1 and
+            len(lean_budget_cases) == len(compared_budget) + len(rejected_budget) == 2 and
+            budget['leanComparedCases'] == budget['requiredReasonComparisons'] == len(compared_budget) and
+            budget['leanPreparationRejectedCases'] == len(rejected_budget),
+            'range budget comparison incomplete')
+    gaps = runpy.run_path(str(ROOT/'formal/tests/test_range_sources.py'))['preparation_gaps']
+    budget_rejections = []
+    for case in rejected_budget:
+        require(re.fullmatch(r'[a-z0-9-]+', case['name']) is not None, 'range budget case name')
+        surface = [r for r in case['reports'] if r['tool'] == 'surfaceCheck']
+        # 要約の分類を信用せず、準備の段の拒否の文（保存した記録）を分類の表で読み直す。分類の外の拒否は失敗にする。
+        log = (desugar/'range-budget-comparison'/case['name']/'surfaceCheck.log').read_text()
+        found = gaps(log)
+        require(len(surface) == 1 and surface[0]['returncode'] == 2 and found is not None and
+                surface[0]['preparationRejected'] == found,
+                'range budget preparation rejection outside the classified causes: '+case['name'])
+        budget_rejections.append(dict(name=case['name'], **found))
+    require({r['name']: r['causes'] for r in budget_rejections} == EXPECTED_BUDGET_REJECTIONS,
+            'range budget preparation rejections differ from the expected cases and causes')
     require(all(case['nonTopRangesWithoutCandidates'] > 0 and case['definitions'] > 0
                 for case in lean_budget_cases),
             'range budget comparison empty or all Top')
@@ -304,7 +333,8 @@ def range_counts(desugar):
             'range known exclusions or accepted control missing')
     return dict(rangeSources=range_sources,
                 rangeSourceExpectedHashes=dict(sources=digest(source_expected_path), reports=digest(report_expected_path)),
-                rangeBudgets=budget, rangeKnownDifferences=known_differences)
+                rangeBudgets=budget, rangeBudgetPreparationRejected=budget_rejections,
+                rangeKnownDifferences=known_differences)
 
 
 def inventory(roots):

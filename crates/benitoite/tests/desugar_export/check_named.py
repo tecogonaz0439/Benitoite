@@ -24,12 +24,14 @@ def require(condition, message):
         raise AssertionError(message)
 
 
-def run(tool, args, report, status=0):
+def run(tool, args, report, status=0, timeout=60):
     report.unlink(missing_ok=True)
     process = subprocess.run([str(BIN / tool), *map(str, args), str(report)],
-                             text=True, capture_output=True, timeout=60)
+                             text=True, capture_output=True, timeout=timeout)
     report.with_suffix(".log").write_text(process.stdout + process.stderr)
-    require(process.returncode == status,
+    # 終了状態は一つか、結果の中身で判定を続ける入口のための組で指定する。
+    allowed = status if isinstance(status, tuple) else (status,)
+    require(process.returncode in allowed,
             f"{tool}: expected {status}, got {process.returncode}: {process.stdout}{process.stderr}")
     return read(report) if report.exists() else None
 
@@ -67,13 +69,21 @@ def run_surface(tool, args, report, status=0):
             return None
         if not report.exists():
             raise
-        result = read(report)
-        gaps = sources()["classified_all"](result, read(Path(args[0])))
-        if gaps is None:
+        result = classify_all(tool, report, read(report), Path(args[0]))
+        if result is None:
             raise
-        PREPARATION_REJECTED.append({"tool": tool, "report": report.name, **gaps})
-        result["classified"] = gaps
         return result
+
+
+def classify_all(tool, report, result, corpus_path):
+    """全件の入口の報告の準備の拒否が全て分類の表の原因なら、残りの入力を照合し、分類（欄 classified）を付けて返す。
+    分類できない拒否があれば None を返す。"""
+    gaps = sources()["classified_all"](result, read(corpus_path))
+    if gaps is None:
+        return None
+    PREPARATION_REJECTED.append({"tool": tool, "report": report.name, **gaps})
+    result["classified"] = gaps
+    return result
 
 
 def remaining_counts(expected, outcomes, report, checks):
@@ -260,12 +270,32 @@ def check_named(directory, entry, versions):
         "surfaceCheckAll": [corpus_path, builtins, stdlib],
     }
     reports = {}
+    single_rejections = []
     for tool, args in tools.items():
         runner = run_surface if tool.startswith("surface") else run
-        reports[tool] = runner(tool, args, directory / f"{stem}-{tool}-report.json")
+        before = len(PREPARATION_REJECTED)
+        # 脱糖の比較は既知の差（KNOWN_PROGRAM_DESUGAR_DIFFERENCES）があると 1 で終わるので、中身で判定する。
+        reports[tool] = runner(tool, args, directory / f"{stem}-{tool}-report.json",
+                               (0, 1) if tool == "desugarDiff" else 0)
+        if tool == "surfaceCheck" and reports[tool] is None:
+            single_rejections = PREPARATION_REJECTED[before:]
+    # 既知の差を除き、除いた件数を manifest の entry（欄 desugarKnownDifferences。なければ0件）と照らす。
+    reports["desugarDiff"], known = classify_program_desugar(reports["desugarDiff"], read(corpus_path))
+    require(known == entry.get("desugarKnownDifferences", {group: {"programs": 0, "definitions": 0}
+                                                           for group in ("golden", "random")}),
+            f"{stem}: known desugar differences {known}")
     require(reports["desugarDiff"]["golden"]["definitions"] == {
         "matched": entry["definitions"], "mismatched": 0, "outside": 0, "excluded": 0}, stem)
     surface_rejected = "classified" in reports["surfaceCheckAll"]
+    # 準備の段の分類した拒否は、programs と同じく entry ごとに原因を manifest（欄 preparationRejected）へ記録して
+    # 照合する。単独と全件の入口が同じ入力を同じ原因で断ったことも確かめる。
+    recorded = entry.get("preparationRejected")
+    classified = reports["surfaceCheckAll"].get("classified")
+    require(([e["causes"] for e in single_rejections] == [recorded] if recorded is not None else not single_rejections)
+            and ((classified["rejected"], classified["causes"]) == ([stem], recorded)
+                 if recorded is not None else classified is None or classified["rejected"] == []),
+            f"{stem}: preparation rejections differ from the manifest: single "
+            f"{[e['causes'] for e in single_rejections]}, all {classified and classified['causes']}")
     if range_count is not None:
         for tool in ("desugarDiff", "surfaceCheckAll"):
             if tool == "desugarDiff" or not surface_rejected:
@@ -335,6 +365,90 @@ def write_selected_tables(directory, tables, key):
     return paths
 
 
+# 全件の脱糖の比較の既知の差。名前を一つずつ挙げず、経路・定義の種類・中身の形で数える。分類した件数は manifest の
+# programReports.desugarKnownDifferences と照合し、差が増えても消えても失敗にする。列挙の外の差は不一致のまま失敗にする。
+KNOWN_PROGRAM_DESUGAR_DIFFERENCES = [
+    {"path": "definition.header.ret", "scope": "accessor", "shape": "accessor field refinement",
+     "reason": "篩付きの脱糖は取得関数の結果型に欄の関係の篩を付ける（Surface.accessorRet）が、処理系の書き出しの"
+               "コアは付けない（formal/tests/test_named_exchange.py の KNOWN_DESUGAR_DIFFERENCES と同じ差）",
+     "obligation": "R10b（R 段への義務6）: 処理系の脱糖と書き出しが取得関数の結果型に同じ篩を付けたら、この列挙と "
+                   "manifest の desugarKnownDifferences を除く"},
+]
+_NAMED_EXCHANGE = []
+
+
+def known_shape(known, mismatch):
+    # 差の中身の形の判定は、手書きの交換の既知の差と同じ関数を使い、二つの判定が分かれないようにする。
+    if not _NAMED_EXCHANGE:
+        _NAMED_EXCHANGE.append(runpy.run_path(str(ROOT / "formal/tests/test_named_exchange.py")))
+    return _NAMED_EXCHANGE[0]["known_shape"](known, mismatch)
+
+
+def known_program_difference(mismatch, definitions):
+    """既知の差の行に当たれば、その行を返す。定義の種類と中身の形に加え、定義の全体で差が結果型だけにあることを
+    確かめ、同じ経路で別の差が隠れることを防ぐ。"""
+    definition = definitions.get((mismatch["group"], mismatch["input"], mismatch["definition"]))
+    for known in KNOWN_PROGRAM_DESUGAR_DIFFERENCES:
+        if (mismatch["path"] != known["path"] or definition is None or set(definition["scope"]) != {known["scope"]}
+                or not known_shape(known, mismatch)):
+            continue
+        expected, actual = copy.deepcopy(mismatch["expectedDefinition"]), mismatch["actualDefinition"]
+        if expected["header"]["ret"] != mismatch["expected"] or actual["header"]["ret"] != mismatch["actual"]:
+            continue
+        expected["header"]["ret"] = mismatch["actual"]
+        if expected == actual:
+            return known
+    return None
+
+
+def classify_program_desugar(report, corpus):
+    """全件の desugarDiff の報告から既知の差を除いた報告と、群ごとの分類した件数を返す。"""
+    definitions = {(i["group"], i["name"], d["name"]): d for i in corpus["inputs"] for d in i["definitions"]}
+    unknown = [m for m in report["mismatches"] if known_program_difference(m, definitions) is None]
+    require(not unknown, f"general desugar: {len(unknown)} differences outside the known shapes; "
+            f"first: {json.dumps(unknown[:1])[:2000]}")
+    report = copy.deepcopy(report)
+    classified = {}
+    for group in ("golden", "random"):
+        found = [m for m in report["mismatches"] if m["group"] == group]
+        keys = {(m["input"], m["definition"]) for m in found}
+        programs = {m["input"] for m in found}
+        counts = report[group]
+        # 不一致の定義ごとに差の記録が一件ずつあり、不一致のプログラムが全て差の記録を持つことを確かめる。
+        # 記録の省略で、分類していない不一致が件数だけ一致に移ることを防ぐ。
+        require(len(keys) == len(found) == counts["definitions"]["mismatched"]
+                and len(programs) == counts["programs"]["mismatched"],
+                f"general desugar: {group}: mismatch records do not cover the mismatched counts")
+        for kind, moved in (("definitions", len(found)), ("programs", len(programs))):
+            counts[kind]["matched"] += moved
+            counts[kind]["mismatched"] -= moved
+        classified[group] = {"programs": len(programs), "definitions": len(found)}
+    report["mismatches"] = []
+    return report, classified
+
+
+def full_report(tool, args, shared, fallback, status=0):
+    """check-formal.sh が同じ入力で書いた全件の報告を読む。新しい Lean では全件の入口が長い（surfaceCheckAll は
+    数時間）ので再実行しない。報告がなければ従来どおりこの台本で実行する。"""
+    if not shared.exists():
+        runner = run_surface if tool.startswith("surface") else run
+        return runner(tool, args, fallback, status)
+    # 報告は scripts/check-formal.sh の同じ入力のパスへの実行の出力である（同じ出力ディレクトリ・同じ入力ファイル）。
+    # 入力の書き出しより古い報告は、別の入力に対する結果のおそれがあるので使わない。
+    # 入口の終了状態は報告にも check-formal.sh の出力にも残らない（status は最後の非0で上書きされる）ので照らさない。
+    # 終了状態が表す結果は、呼び出し側が報告の中身で判定する: desugarDiff は不一致の記録と群ごとの件数、builtinCheck は
+    # errors と入力の一覧、surfaceCheckAll は counts（mismatched・preparationFailure を含む）・preparationErrors・outcomes。
+    # 入口が途中で失敗して報告を書かなければ、報告は入力より古いか存在しないので、上の時刻の照合か従来の実行に落ちる。
+    stale = [str(Path(a).name) for a in args if shared.stat().st_mtime < Path(a).stat().st_mtime]
+    require(not stale, f"{tool}: {shared.name} is older than its inputs {stale}")
+    print(f"{tool}: reading the report written by check-formal.sh ({shared.relative_to(shared.parents[1])})", flush=True)
+    result = read(shared)
+    if tool == "surfaceCheckAll" and (result["counts"]["preparationFailure"] or result.get("preparationErrors")):
+        result = classify_all(tool, shared, result, Path(args[0]))
+        require(result is not None, f"{tool}: preparation rejection outside the classified causes")
+    return result
+
+
 def check_programs(directory, manifest):
     stem = "named-programs"
     corpus_path = directory / f"{stem}-corpus.json"
@@ -359,6 +473,7 @@ def check_programs(directory, manifest):
     definitions = 0
     surface_definitions = 0
     checks_by_input = {}
+    single_rejected = []
     for index, item in enumerate(corpus["inputs"]):
         if index % 100 == 0:
             print(f"single surface checks: {index}/{len(keys)} inputs", flush=True)
@@ -394,28 +509,69 @@ def check_programs(directory, manifest):
             single_corpus.write_text(json.dumps({**corpus, "inputs": [item]}))
             single_tables = write_selected_tables(selected, tables, (item["group"], item["name"]))
             args = [single_corpus, *single_tables, item["group"], item["name"]]
+            report = run_surface("surfaceCheck", args, path, 1 if "singleSurfaceFailure" in entry else 0)
+            # 準備の段の分類した拒否は、入力ごとに原因を manifest（欄 preparationRejected）へ記録して照合する。
+            # 記録のない拒否と、記録した拒否が消えたことは、どちらも失敗にする。
+            if report is None:
+                require(entry.get("preparationRejected") == PREPARATION_REJECTED[-1]["causes"],
+                        f"{item['name']}: preparation rejection not recorded in the manifest: "
+                        f"{PREPARATION_REJECTED[-1]['causes']}")
+                single_rejected.append(item["name"])
+                continue
+            require("preparationRejected" not in entry, f"{item['name']}: recorded preparation rejection disappeared")
             if "singleSurfaceFailure" in entry:
-                report = run_surface("surfaceCheck", args, path, 1)
-                if report is not None:
-                    require(report["result"] == entry["singleSurfaceFailure"], item["name"])
+                require(report["result"] == entry["singleSurfaceFailure"], item["name"])
+                # 標準表にない組込みの呼び出しの拒否は、理由の文が一般の頭の検査の文なので、未知の組込みの一覧も照合し、
+                # 別の原因の拒否と区別する。
+                if "singleSurfaceUnknownBuiltins" in entry:
+                    require(sorted(report["unknownBuiltins"]) == entry["singleSurfaceUnknownBuiltins"],
+                            f"{item['name']}: unknown builtins")
             else:
-                report = run_surface("surfaceCheck", args, path)
-                if report is not None:
-                    require(report["result"] == {"ok": True}, item["name"])
-    report = run("desugarDiff", [corpus_path], directory / f"{stem}-desugar-report.json")
+                require(report["result"] == {"ok": True}, item["name"])
+    reports = manifest["programReports"]
+    raw = full_report("desugarDiff", [corpus_path], directory / "report.json",
+                      directory / f"{stem}-desugar-report.json", (0, 1))
+    # 報告の件数が、この corpus の入力と定義の数と一致することも確かめる（別の入力に対する報告を拒む）。
+    for group in ("golden", "random"):
+        items = [i for i in corpus["inputs"] if i["group"] == group]
+        require(sum(raw[group]["programs"].values()) == len(items)
+                and sum(raw[group]["definitions"].values()) == sum(len(i["definitions"]) for i in items),
+                f"general desugar: {group}: report does not cover the corpus")
+    report, known = classify_program_desugar(raw, corpus)
+    require(reports["desugarKnownDifferences"]["shapes"] == [k["shape"] for k in KNOWN_PROGRAM_DESUGAR_DIFFERENCES]
+            and known == reports["desugarKnownDifferences"]["counts"], f"general desugar: known differences {known}")
     require({group: report[group]["programs"] for group in ("golden", "random")} ==
-            manifest["programReports"]["desugarPrograms"], "all program classifications")
-    require(report["golden"]["definitions"] == manifest["programReports"]["desugarDefinitions"], "general desugar")
-    require(report["random"]["definitions"] == manifest["programReports"]["randomDesugarDefinitions"], "generated desugar")
-    report = run("builtinCheck", [corpus_path, builtins], directory / f"{stem}-builtin-report.json")
+            reports["desugarPrograms"], "all program classifications")
+    require(report["golden"]["definitions"] == reports["desugarDefinitions"], "general desugar")
+    require(report["random"]["definitions"] == reports["randomDesugarDefinitions"], "generated desugar")
+    checked = [key for key in keys if not expected[key].get("excluded")]
+    report = full_report("builtinCheck", [corpus_path, builtins], directory / "builtin-report.json",
+                         directory / f"{stem}-builtin-report.json")
     require(report["errors"] == [], "general builtins")
-    report = run_surface("surfaceCheckAll", [corpus_path, builtins, stdlib], directory / f"{stem}-surface-report.json")
-    counts, outcomes = remaining_counts(manifest["programReports"]["surfaceCounts"],
-                                        manifest["programReports"]["surfaceOutcomes"], report, checks_by_input)
-    require(report["counts"] == counts, "general surface")
-    require(sorted((o for o in report["outcomes"] if o["category"] != "matched"),
-                   key=lambda o: json.dumps(o, sort_keys=True)) == outcomes,
-            "general surface classification reasons changed")
+    # 報告の入力の一覧が、この corpus の除外されない入力と一致することも確かめる（別の入力に対する報告を拒む）。
+    require([(i["group"], i["name"]) for i in report["inputs"]] == checked
+            and report["checkedInputs"] == len(checked), "general builtins: report does not cover the corpus")
+    report = full_report("surfaceCheckAll", [corpus_path, builtins, stdlib], directory / "surface-check/report.json",
+                         directory / f"{stem}-surface-report.json")
+    recorded = sorted(key[1] for key in checked if "preparationRejected" in expected[key])
+    classified = report.get("classified")
+    rejected = sorted(classified["rejected"]) if classified else []
+    # 全件の入口と単独の入口が断った入力は、manifest に記録した入力と一致する。
+    require(rejected == sorted(single_rejected) == recorded,
+            "general surface: rejected inputs differ between the full check, the single checks and the manifest")
+    require(report["inputs"] + len(rejected) == len(checked)
+            and report["excludedInputs"] == len(keys) - len(checked), "general surface: report does not cover the corpus")
+    counts = report["counts"]
+    require(counts == reports["surfaceCounts"], "general surface")
+    # 件数の変化が準備の分類した拒否だけで説明できること: 残りの入力の検査の件数の和が、全入力の検査の件数から
+    # 断った入力の分を引いた数に等しい。
+    require(counts["preparationFailure"] == len(rejected)
+            and sum(v for k, v in counts.items() if k != "preparationFailure") ==
+            surface_definitions - sum(checks_by_input[name] for name in rejected),
+            "general surface: counts are not explained by the classified rejections")
+    outcomes = sorted((o for o in report["outcomes"] if o["category"] != "matched"),
+                      key=lambda o: json.dumps(o, sort_keys=True))
+    require(outcomes == reports["surfaceOutcomes"], "general surface classification reasons changed")
     coverage = read(coverage_path)
     require(coverage["version"] == versions["coverage"], "general coverage version")
     require([(i["group"], i["name"]) for i in coverage["inputs"]] ==
@@ -434,7 +590,7 @@ def check_programs(directory, manifest):
             and matches == manifest["programReports"]["coverageEntries"], "general input totals")
     print(f"named programs: {len(keys)} inputs, {definitions} definitions, {matches} coverage entries agree")
     check_special_rejections(directory, corpus, tables)
-    check_program_rejections(directory, corpus, tables)
+    check_program_rejections(directory, corpus, tables, reports["desugarKnownDifferences"]["counts"])
 
 
 def nodes(value):
@@ -447,7 +603,33 @@ def nodes(value):
             yield from nodes(child)
 
 
-def check_program_rejections(directory, original, tables):
+# 契約の欄を壊した入力の拒否の理由と経路。篩付きの検査器（Refinement/Surface）は、名前の契約の不一致を個別の文で
+# 報告せず、再検査の失敗（CheckEntrypoints.lean の proofFailure）か実装の宣言の検査（CheckDeclarationBase.lean の
+# checkImplWith）の一般の文で断る。理由の文だけでは原因を区別できないので、壊した定義を指す経路も合わせて照合する。
+# 壊さない同じ入力が通ることは、check_programs の単独の検査と check_named の各 entry が確かめる。
+MUTATION_REJECTIONS = {
+    "hole-label": ("type or certificate check failed", [0, 4, 1]),
+    "hole-position": ("type or certificate check failed", [0, 4, 1]),
+    "hole-contract": ("type or certificate check failed", [0, 4, 1]),
+    "pipe-label": ("type or certificate check failed", [0, 8, 1]),
+    "pipe-position": ("type or certificate check failed", [0, 8, 1]),
+    "method-user": ("implementation declaration or body is invalid", [1, 0]),
+    "method-dictionary": ("implementation declaration or body is invalid", [1, 1]),
+    "operation": ("type or certificate check failed", [0, 1, 1]),
+    "label": ("type or certificate check failed", [0, 3, 1]),
+    "position": ("type or certificate check failed", [0, 3, 1]),
+    "hole": ("type or certificate check failed", [0, 0, 1]),
+    "partial": ("type or certificate check failed", [0, 0, 1]),
+    "inserted": ("type or certificate check failed", [0, 1, 1]),
+}
+
+
+def rejected_as_expected(report, mode):
+    reason, path = MUTATION_REJECTIONS[mode]
+    return report["result"] == {"ok": False, "error": {"reason": reason, "path": path}}
+
+
+def check_program_rejections(directory, original, tables, known_counts):
     # 静的な準備入力だけでなく、一般の解析・型検査を通った穴・挿入も壊す。
     results = []
     with tempfile.TemporaryDirectory(prefix="named-program-mutations-", dir=directory) as temp:
@@ -469,14 +651,12 @@ def check_program_rejections(directory, original, tables):
                                and n["partialCall"]["names"] == ["a", "b"]
                                and (mode != "hole-order" or all("hole" in a for a in n["partialCall"]["args"])))
                 hole = next(a["hole"] for a in partial["args"] if "hole" in a)
-                reason = "partial call labels and positions do not match the contract"
                 if mode == "hole-label":
                     hole["label"] = "fake"
                 elif mode == "hole-position":
                     hole["position"] = 0
                 elif mode == "hole-contract":
                     partial["names"].reverse()
-                    reason = "partial call contract annotation mismatch"
                 else:
                     partial["args"].reverse()
             else:
@@ -486,20 +666,32 @@ def check_program_rejections(directory, original, tables):
                     call["labels"][0] = "a"
                 else:
                     call["positions"][0] = 0
-                reason = "pipe labels and positions do not match the contract"
             path = temp / "corpus.json"
             path.write_text(json.dumps(corpus))
             if mode == "hole-order":
-                report = run("desugarDiff", [path], temp / "report.json", 1)
-                require(len(report["mismatches"]) == 1, mode)
-                results.append({"mutation": mode, "tool": "desugarDiff", "mismatches": 1})
+                # 全入力の脱糖の比較は新しい Lean で約90秒かかるので、この一回だけ上限を延ばす。全入力には既知の差
+                # （KNOWN_PROGRAM_DESUGAR_DIFFERENCES）も含まれるので、既知の差を除いた残りが壊した一件だけであることを
+                # 確かめる。既知の差の件数も manifest と照らし、壊したことで既知の差の分類が変わらないことを確かめる。
+                report = run("desugarDiff", [path], temp / "report.json", 1, timeout=600)
+                definitions = {(i["group"], i["name"], d["name"]): d for i in corpus["inputs"] for d in i["definitions"]}
+                unknown = [m for m in report["mismatches"] if known_program_difference(m, definitions) is None]
+                require(len(unknown) == 1 and unknown[0]["input"] == original_item["name"], mode)
+                known = {group: {"programs": len({m["input"] for m in report["mismatches"]
+                                                   if m["group"] == group and m not in unknown}),
+                                 "definitions": sum(m["group"] == group and m not in unknown
+                                                    for m in report["mismatches"])}
+                         for group in ("golden", "random")}
+                require(known == known_counts and report[original_item["group"]]["definitions"]["mismatched"] ==
+                        known[original_item["group"]]["definitions"] + 1, f"{mode}: known differences {known}")
+                results.append({"mutation": mode, "tool": "desugarDiff", "mismatches": 1,
+                                "knownDifferences": known})
             else:
                 report = run_surface("surfaceCheck", [path, *single_tables, item["group"], item["name"]],
                                      temp / "report.json", 1)
-                if report is None:
-                    results.append({"mutation": mode, "tool": "surfaceCheck", "preparationRejected": True})
-                    continue
-                require(report["result"]["ok"] is False and report["result"]["error"]["reason"] == reason, mode)
+                # 壊さない入力は準備の段で断られない（manifest に preparationRejected がない）ので、壊した入力が
+                # 分類した拒否になったら、変異の照合を飛ばさずに失敗にする。
+                require(report is not None, f"{mode}: mutation rejected at preparation instead of the check")
+                require(rejected_as_expected(report, mode), f"{mode}: {report['result']}")
                 results.append({"mutation": mode, "tool": "surfaceCheck", "error": report["result"]["error"]})
     (directory / "named-program-mutations-report.json").write_text(json.dumps(results, indent=2) + "\n")
     print("named checked programs: six hole/pipe mutations rejected for the intended reason")
@@ -528,10 +720,9 @@ def check_special_rejections(directory, original, tables):
             path.write_text(json.dumps(corpus))
             report = run_surface("surfaceCheck", [path, *single_tables, item["group"], item["name"]],
                                  temp / "report.json", 1)
-            reason = ("call labels and positions do not match the contract" if mode == "operation"
-                      else "implementation method parameter names mismatch")
-            if report is not None:
-                require(report["result"]["ok"] is False and report["result"]["error"]["reason"] == reason, mode)
+            # 壊した入力が準備の段の分類した拒否になったら、変異の照合を飛ばさずに失敗にする。
+            require(report is not None, f"{mode}: mutation rejected at preparation instead of the check")
+            require(rejected_as_expected(report, mode), f"{mode}: {report['result']}")
     print("named special export: three contract mutations rejected for the intended reason")
 
 
@@ -554,17 +745,14 @@ def check_rejections(directory, ordinary, static):
                 c = expression(calls(corpus)[0])["partialCall"]
                 if mode == "hole": c["args"][0]["hole"]["label"] = "fake"
                 else: c["names"] = ["b", "a"]
-                reason = "partial call labels and positions" if mode == "hole" else "partial call contract annotation"
             elif mode == "inserted":
                 expression(calls(corpus)[1])["pipe"]["rhs"]["call"]["positions"] = [0]
-                reason = "pipe labels and positions"
             else:
                 definition = next(d for d in calls(corpus) if d["name"].startswith("sample ("))
                 c = expression(definition)["call"]
                 if mode == "label": c["labels"][0] = "fake"
                 elif mode == "position": c["positions"] = [0, 0]
                 else: c["args"].reverse()
-                reason = "call labels and positions"
             path = temp / "corpus.json"
             path.write_text(json.dumps(corpus))
             if mode == "source-order":
@@ -573,8 +761,9 @@ def check_rejections(directory, ordinary, static):
             else:
                 stem = corpus["inputs"][0]["name"]
                 report = run_surface("surfaceCheck", [path, builtins, stdlib, "golden", stem], temp / "report.json", 1)
-                if report is not None:
-                    require(report["result"]["ok"] is False and reason in report["result"]["error"]["reason"], mode)
+                # 壊した入力が準備の段の分類した拒否になったら、変異の照合を飛ばさずに失敗にする。
+                require(report is not None, f"{mode}: mutation rejected at preparation instead of the check")
+                require(rejected_as_expected(report, mode), f"{mode}: {report['result']}")
     print("named export: six mutations rejected for the intended reason")
 
 
@@ -628,6 +817,8 @@ def check_remaining_batch3(directory):
     for profile in ("k3", "k4", "m1", "t3"):
         batch3["check"](directory / "batch3" / profile,
                         directory / "batch3" / f"{profile}-exchange-results.json")
+    # check_batch3 は check_named を別の名前空間で読むので、そこで記録した分類した拒否を最後の集計へ移す。
+    PREPARATION_REJECTED.extend(batch3["SHARED"]["PREPARATION_REJECTED"])
 
 
 def main():

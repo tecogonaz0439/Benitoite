@@ -43,6 +43,11 @@ def check(directory):
         assert report['result']['ok'] is False, report
         reason = report['result']['error']['reason']
         assert reason == manifest['restViolation'], report
+        # 篩付きの検査器の理由の文は呼び出しの署名の失敗一般の文なので、経路も固定する。経路は定義0（capture）の
+        # 本体の Failure.toResult の呼び出し（[0, 定義, 1] が本体、続く [0, 0] が return の呼び出し）を指し、
+        # 壊した NoFail と Rest の実引数での拒否であることを確かめる。
+        path = report['result']['error']['path']
+        assert path == manifest['restViolationPath'], report
         # 宣言が署名から得る Q と一致しなければ、読者も拒否する。
         malformed = copy.deepcopy(data)
         selected = next(i for i in malformed['corpus']['inputs'] if i['name'] == 'failure-nofail')
@@ -53,7 +58,7 @@ def check(directory):
     finally:
         case.doCleanups()
     return {'definitions': actual, 'totalDefinitions': sum(actual.values()),
-            'restViolation': reason, 'signatureMismatchExit': 2}
+            'restViolation': reason, 'restViolationPath': path, 'signatureMismatchExit': 2}
 
 
 if __name__ == '__main__':

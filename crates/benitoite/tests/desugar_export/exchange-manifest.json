@@ -7,7 +7,14 @@
       "failure-values": 5,
       "failure-nofail": 1
     },
-    "restViolation": "function instantiation violates scope or NoFail"
+    "restViolation": "call signature is invalid",
+    "restViolationPath": [
+      0,
+      0,
+      1,
+      0,
+      0
+    ]
   },
   "named": [
     {
@@ -21,7 +28,10 @@
       "rangeComparison": true,
       "definitions": 5,
       "origin": "checked-program",
-      "coverage": null
+      "coverage": null,
+      "preparationRejected": [
+        "Scope.ScopeError.At"
+      ]
     },
     {
       "stem": "named-calls",
@@ -89,7 +99,20 @@
         "matches": 5,
         "bindings": 0
       },
-      "surfaceChecks": 30
+      "surfaceChecks": 30,
+      "desugarKnownDifferences": {
+        "golden": {
+          "programs": 1,
+          "definitions": 5
+        },
+        "random": {
+          "programs": 0,
+          "definitions": 0
+        }
+      },
+      "preparationRejected": [
+        "refined result"
+      ]
     }
   ],
   "namedVersions": {
@@ -5232,7 +5255,10 @@
         "bindings": 0
       },
       "implementations": 0,
-      "surfaceChecks": 1
+      "surfaceChecks": 1,
+      "preparationRejected": [
+        "refined result"
+      ]
     },
     {
       "name": "testdata/acceptance/process_shell.bnt",
@@ -5334,21 +5360,25 @@
       "singleSurfaceFailure": {
         "ok": false,
         "error": {
-          "reason": "unknown primitive",
+          "reason": "call signature is invalid",
           "path": [
             0,
             0,
-            0,
+            1,
             1,
             0,
             0,
             0,
             1,
-            0,
             0
           ]
         }
-      }
+      },
+      "singleSurfaceUnknownBuiltins": [
+        "Task.await",
+        "TaskGroup.open",
+        "TaskGroup.spawn"
+      ]
     },
     {
       "name": "testdata/concurrency/c12-cancelled-reader.bnt",
@@ -5380,21 +5410,25 @@
       "singleSurfaceFailure": {
         "ok": false,
         "error": {
-          "reason": "unknown primitive",
+          "reason": "call signature is invalid",
           "path": [
             0,
             0,
-            0,
+            1,
             0,
             0,
             1,
-            2,
             1,
             0,
             0
           ]
         }
-      }
+      },
+      "singleSurfaceUnknownBuiltins": [
+        "Task.await",
+        "TaskGroup.open",
+        "TaskGroup.spawn"
+      ]
     },
     {
       "name": "testdata/concurrency/c12-group-join-await.bnt",
@@ -5412,20 +5446,24 @@
       "singleSurfaceFailure": {
         "ok": false,
         "error": {
-          "reason": "unknown primitive",
+          "reason": "call signature is invalid",
           "path": [
             0,
             0,
-            0,
             1,
             1,
-            0,
             1,
             0,
+            1,
             0
           ]
         }
-      }
+      },
+      "singleSurfaceUnknownBuiltins": [
+        "Task.await",
+        "TaskGroup.open",
+        "TaskGroup.spawn"
+      ]
     },
     {
       "name": "testdata/concurrency/c12-group-released.bnt",
@@ -5443,21 +5481,24 @@
       "singleSurfaceFailure": {
         "ok": false,
         "error": {
-          "reason": "unknown primitive",
+          "reason": "call signature is invalid",
           "path": [
             0,
             0,
+            1,
+            1,
+            1,
             0,
-            1,
-            1,
-            0,
-            1,
             1,
             0,
             0
           ]
         }
-      }
+      },
+      "singleSurfaceUnknownBuiltins": [
+        "TaskGroup.open",
+        "TaskGroup.spawn"
+      ]
     },
     {
       "name": "testdata/concurrency/c12-inherited-handler.bnt",
@@ -5475,21 +5516,24 @@
       "singleSurfaceFailure": {
         "ok": false,
         "error": {
-          "reason": "unknown primitive",
+          "reason": "call signature is invalid",
           "path": [
             0,
             0,
-            0,
+            1,
             1,
             0,
             1,
-            0,
             0,
             0,
             0
           ]
         }
-      }
+      },
+      "singleSurfaceUnknownBuiltins": [
+        "TaskGroup.open",
+        "TaskGroup.spawn"
+      ]
     },
     {
       "name": "testdata/concurrency/c12-race-and-timeout.bnt",
@@ -5521,20 +5565,24 @@
       "singleSurfaceFailure": {
         "ok": false,
         "error": {
-          "reason": "unknown primitive",
+          "reason": "call signature is invalid",
           "path": [
-            0,
-            0,
             0,
             0,
             1,
             0,
+            1,
             0,
             0,
             0
           ]
         }
-      }
+      },
+      "singleSurfaceUnknownBuiltins": [
+        "Task.await",
+        "TaskGroup.open",
+        "TaskGroup.spawn"
+      ]
     },
     {
       "name": "testdata/concurrency/r41-inherited-non-tail.bnt",
@@ -5552,20 +5600,23 @@
       "singleSurfaceFailure": {
         "ok": false,
         "error": {
-          "reason": "unknown primitive",
+          "reason": "call signature is invalid",
           "path": [
-            0,
-            0,
             0,
             0,
             1,
             0,
+            1,
             0,
             0,
             0
           ]
         }
-      }
+      },
+      "singleSurfaceUnknownBuiltins": [
+        "TaskGroup.open",
+        "TaskGroup.spawn"
+      ]
     },
     {
       "group": "golden",
@@ -6014,7 +6065,10 @@
         "bindings": 0
       },
       "implementations": 0,
-      "surfaceChecks": 3
+      "surfaceChecks": 3,
+      "preparationRejected": [
+        "refined result"
+      ]
     },
     {
       "name": "testdata/eval/f15_nested_capture_and_long_list.bnt",
@@ -6280,7 +6334,10 @@
         "bindings": 0
       },
       "implementations": 0,
-      "surfaceChecks": 3
+      "surfaceChecks": 3,
+      "preparationRejected": [
+        "refined result"
+      ]
     },
     {
       "name": "testdata/eval/list_hof_long.bnt",
@@ -6715,7 +6772,10 @@
         "bindings": 0
       },
       "implementations": 0,
-      "surfaceChecks": 8
+      "surfaceChecks": 8,
+      "preparationRejected": [
+        "refined result"
+      ]
     },
     {
       "name": "testdata/eval/width-float-arithmetic.bnt",
@@ -7695,7 +7755,10 @@
         "bindings": 0
       },
       "implementations": 0,
-      "surfaceChecks": 1
+      "surfaceChecks": 1,
+      "preparationRejected": [
+        "refined result"
+      ]
     },
     {
       "name": "testdata/io/l40-process-environment.bnt",
@@ -7723,7 +7786,10 @@
         "bindings": 0
       },
       "implementations": 0,
-      "surfaceChecks": 2
+      "surfaceChecks": 2,
+      "preparationRejected": [
+        "refined result"
+      ]
     },
     {
       "name": "testdata/io/l40-random-seeded.bnt",
@@ -8144,7 +8210,10 @@
         "bindings": 0
       },
       "implementations": 0,
-      "surfaceChecks": 1
+      "surfaceChecks": 1,
+      "preparationRejected": [
+        "Http.sendIn"
+      ]
     },
     {
       "name": "testdata/network/redirect.bnt",
@@ -8159,23 +8228,9 @@
       },
       "implementations": 0,
       "surfaceChecks": 2,
-      "singleSurfaceFailure": {
-        "ok": false,
-        "error": {
-          "reason": "unknown primitive",
-          "path": [
-            0,
-            1,
-            0,
-            0,
-            1,
-            0,
-            1,
-            0,
-            0
-          ]
-        }
-      }
+      "preparationRejected": [
+        "Http.sendIn"
+      ]
     },
     {
       "name": "testdata/network/respond-twice.bnt",
@@ -8190,23 +8245,9 @@
       },
       "implementations": 0,
       "surfaceChecks": 1,
-      "singleSurfaceFailure": {
-        "ok": false,
-        "error": {
-          "reason": "unknown primitive",
-          "path": [
-            0,
-            0,
-            0,
-            0,
-            1,
-            0,
-            1,
-            0,
-            0
-          ]
-        }
-      }
+      "preparationRejected": [
+        "Http.sendIn"
+      ]
     },
     {
       "name": "testdata/network/routes-and-post.bnt",
@@ -8221,21 +8262,10 @@
       },
       "implementations": 0,
       "surfaceChecks": 5,
-      "singleSurfaceFailure": {
-        "ok": false,
-        "error": {
-          "reason": "unknown primitive",
-          "path": [
-            0,
-            1,
-            0,
-            1,
-            1,
-            0,
-            0
-          ]
-        }
-      }
+      "preparationRejected": [
+        "Http.sendIn",
+        "refined result"
+      ]
     },
     {
       "name": "testdata/network/status-above-range.bnt",
@@ -8250,23 +8280,9 @@
       },
       "implementations": 0,
       "surfaceChecks": 1,
-      "singleSurfaceFailure": {
-        "ok": false,
-        "error": {
-          "reason": "unknown primitive",
-          "path": [
-            0,
-            0,
-            0,
-            0,
-            1,
-            0,
-            1,
-            0,
-            0
-          ]
-        }
-      }
+      "preparationRejected": [
+        "Http.sendIn"
+      ]
     },
     {
       "name": "testdata/network/status-below-range.bnt",
@@ -8281,23 +8297,9 @@
       },
       "implementations": 0,
       "surfaceChecks": 1,
-      "singleSurfaceFailure": {
-        "ok": false,
-        "error": {
-          "reason": "unknown primitive",
-          "path": [
-            0,
-            0,
-            0,
-            0,
-            1,
-            0,
-            1,
-            0,
-            0
-          ]
-        }
-      }
+      "preparationRejected": [
+        "Http.sendIn"
+      ]
     },
     {
       "name": "testdata/network/status-informational.bnt",
@@ -8312,23 +8314,9 @@
       },
       "implementations": 0,
       "surfaceChecks": 1,
-      "singleSurfaceFailure": {
-        "ok": false,
-        "error": {
-          "reason": "unknown primitive",
-          "path": [
-            0,
-            0,
-            0,
-            0,
-            1,
-            0,
-            1,
-            0,
-            0
-          ]
-        }
-      }
+      "preparationRejected": [
+        "Http.sendIn"
+      ]
     },
     {
       "name": "testdata/network/todo194-json-parse-server.bnt",
@@ -8343,21 +8331,9 @@
       },
       "implementations": 0,
       "surfaceChecks": 4,
-      "singleSurfaceFailure": {
-        "ok": false,
-        "error": {
-          "reason": "unknown primitive",
-          "path": [
-            0,
-            1,
-            0,
-            1,
-            1,
-            0,
-            0
-          ]
-        }
-      }
+      "preparationRejected": [
+        "Http.sendIn"
+      ]
     },
     {
       "name": "testdata/network/todo198-cancelled-accept-reregisters.bnt",
@@ -8372,24 +8348,9 @@
       },
       "implementations": 0,
       "surfaceChecks": 3,
-      "singleSurfaceFailure": {
-        "ok": false,
-        "error": {
-          "reason": "unknown primitive",
-          "path": [
-            0,
-            2,
-            0,
-            0,
-            1,
-            0,
-            1,
-            1,
-            0,
-            0
-          ]
-        }
-      }
+      "preparationRejected": [
+        "Http.sendIn"
+      ]
     },
     {
       "name": "testdata/network/unanswered-exchange.bnt",
@@ -8404,23 +8365,9 @@
       },
       "implementations": 0,
       "surfaceChecks": 1,
-      "singleSurfaceFailure": {
-        "ok": false,
-        "error": {
-          "reason": "unknown primitive",
-          "path": [
-            0,
-            0,
-            0,
-            0,
-            1,
-            0,
-            1,
-            0,
-            0
-          ]
-        }
-      }
+      "preparationRejected": [
+        "Http.sendIn"
+      ]
     },
     {
       "name": "testdata/packages/config-textkit",
@@ -8491,7 +8438,10 @@
         "bindings": 8
       },
       "implementations": 0,
-      "surfaceChecks": 51
+      "surfaceChecks": 51,
+      "preparationRejected": [
+        "refined result"
+      ]
     },
     {
       "name": "testdata/packages/json-pure-depth-object",
@@ -8506,7 +8456,10 @@
         "bindings": 8
       },
       "implementations": 0,
-      "surfaceChecks": 51
+      "surfaceChecks": 51,
+      "preparationRejected": [
+        "refined result"
+      ]
     },
     {
       "name": "testdata/packages/json-pure-same",
@@ -8521,7 +8474,10 @@
         "bindings": 8
       },
       "implementations": 0,
-      "surfaceChecks": 51
+      "surfaceChecks": 51,
+      "preparationRejected": [
+        "refined result"
+      ]
     },
     {
       "name": "testdata/packages/local-textkit",
@@ -8607,7 +8563,10 @@
         "bindings": 0
       },
       "implementations": 0,
-      "surfaceChecks": 6
+      "surfaceChecks": 6,
+      "preparationRejected": [
+        "refined result"
+      ]
     },
     {
       "group": "golden",
@@ -8846,7 +8805,10 @@
         "bindings": 0
       },
       "implementations": 0,
-      "surfaceChecks": 1
+      "surfaceChecks": 1,
+      "preparationRejected": [
+        "refined result"
+      ]
     },
     {
       "name": "testdata/stdlib/l40-collections.bnt",
@@ -8860,7 +8822,10 @@
         "bindings": 0
       },
       "implementations": 0,
-      "surfaceChecks": 1
+      "surfaceChecks": 1,
+      "preparationRejected": [
+        "refined result"
+      ]
     },
     {
       "name": "testdata/stdlib/l40-csv-invalid-delimiter.bnt",
@@ -9252,7 +9217,10 @@
         "bindings": 0
       },
       "implementations": 0,
-      "surfaceChecks": 2
+      "surfaceChecks": 2,
+      "preparationRejected": [
+        "refined result"
+      ]
     },
     {
       "group": "golden",
@@ -9342,13 +9310,10 @@
       "singleSurfaceFailure": {
         "ok": false,
         "error": {
-          "reason": "type is not included in the expected type",
+          "reason": "type or certificate check failed",
           "path": [
             0,
             0,
-            0,
-            0,
-            1,
             1
           ]
         }
@@ -9674,7 +9639,10 @@
         "bindings": 0
       },
       "implementations": 0,
-      "surfaceChecks": 2
+      "surfaceChecks": 2,
+      "preparationRejected": [
+        "refined result"
+      ]
     },
     {
       "name": "testdata/test/values.bnt",
@@ -9689,7 +9657,10 @@
         "bindings": 0
       },
       "implementations": 0,
-      "surfaceChecks": 7
+      "surfaceChecks": 7,
+      "preparationRejected": [
+        "refined result"
+      ]
     },
     {
       "name": "testdata/traits/c11-dictionary-run.bnt",
@@ -9804,7 +9775,10 @@
         "bindings": 0
       },
       "implementations": 0,
-      "surfaceChecks": 2
+      "surfaceChecks": 2,
+      "preparationRejected": [
+        "refined result"
+      ]
     },
     {
       "name": "testdata/traits/standard-traits.bnt",
@@ -9832,7 +9806,10 @@
         "bindings": 0
       },
       "implementations": 0,
-      "surfaceChecks": 1
+      "surfaceChecks": 1,
+      "preparationRejected": [
+        "refined result"
+      ]
     },
     {
       "name": "testdata/types/c11-numbers.bnt",
@@ -9902,7 +9879,10 @@
         "bindings": 0
       },
       "implementations": 0,
-      "surfaceChecks": 1
+      "surfaceChecks": 1,
+      "preparationRejected": [
+        "refined result"
+      ]
     },
     {
       "group": "golden",
@@ -10001,7 +9981,10 @@
         "bindings": 0
       },
       "implementations": 0,
-      "surfaceChecks": 1
+      "surfaceChecks": 1,
+      "preparationRejected": [
+        "refined result"
+      ]
     },
     {
       "group": "golden",
@@ -10015,7 +9998,10 @@
         "bindings": 0
       },
       "implementations": 0,
-      "surfaceChecks": 2
+      "surfaceChecks": 2,
+      "preparationRejected": [
+        "refined result"
+      ]
     },
     {
       "group": "golden",
@@ -10170,7 +10156,10 @@
         "bindings": 0
       },
       "implementations": 0,
-      "surfaceChecks": 1
+      "surfaceChecks": 1,
+      "preparationRejected": [
+        "refined result"
+      ]
     },
     {
       "group": "golden",
@@ -25742,7 +25731,10 @@
         "bindings": 0
       },
       "implementations": 0,
-      "surfaceChecks": 2
+      "surfaceChecks": 2,
+      "preparationRejected": [
+        "Scope.ScopeError.At"
+      ]
     },
     {
       "group": "golden",
@@ -25923,348 +25915,13 @@
     },
     "surfaceCounts": {
       "q11": 1,
-      "preparationFailure": 0,
-      "outOfScope": 19,
+      "preparationFailure": 32,
+      "outOfScope": 8,
       "mismatched": 0,
-      "matched": 51742,
+      "matched": 51533,
       "lazyRestriction": 0
     },
     "surfaceOutcomes": [
-      {
-        "unconvertiblePrims": [
-          "Task.await",
-          "TaskGroup.spawn"
-        ],
-        "q11Paths": [],
-        "nonUnitReplacements": 0,
-        "kind": "definition",
-        "input": "testdata/network/respond-twice.bnt",
-        "group": "golden",
-        "error": {
-          "reason": "unknown primitive",
-          "path": [
-            0,
-            0,
-            1,
-            0,
-            1,
-            0,
-            0
-          ],
-          "ancestors": [
-            {
-              "tag": "other",
-              "path": [
-                0,
-                0
-              ]
-            },
-            {
-              "tag": "other",
-              "path": [
-                0,
-                0,
-                1,
-                0
-              ]
-            },
-            {
-              "tag": "call",
-              "path": [
-                0,
-                0,
-                1,
-                0,
-                1,
-                0
-              ]
-            },
-            {
-              "tag": "other",
-              "path": [
-                0,
-                0,
-                1,
-                0,
-                1,
-                0,
-                0
-              ]
-            }
-          ]
-        },
-        "diagnosis": "classified",
-        "definition": "fn:43",
-        "category": "outOfScope"
-      },
-      {
-        "unconvertiblePrims": [
-          "Task.await",
-          "TaskGroup.spawn"
-        ],
-        "q11Paths": [],
-        "nonUnitReplacements": 0,
-        "kind": "definition",
-        "input": "testdata/network/status-above-range.bnt",
-        "group": "golden",
-        "error": {
-          "reason": "unknown primitive",
-          "path": [
-            0,
-            0,
-            1,
-            0,
-            1,
-            0,
-            0
-          ],
-          "ancestors": [
-            {
-              "tag": "other",
-              "path": [
-                0,
-                0
-              ]
-            },
-            {
-              "tag": "other",
-              "path": [
-                0,
-                0,
-                1,
-                0
-              ]
-            },
-            {
-              "tag": "call",
-              "path": [
-                0,
-                0,
-                1,
-                0,
-                1,
-                0
-              ]
-            },
-            {
-              "tag": "other",
-              "path": [
-                0,
-                0,
-                1,
-                0,
-                1,
-                0,
-                0
-              ]
-            }
-          ]
-        },
-        "diagnosis": "classified",
-        "definition": "fn:43",
-        "category": "outOfScope"
-      },
-      {
-        "unconvertiblePrims": [
-          "Task.await",
-          "TaskGroup.spawn"
-        ],
-        "q11Paths": [],
-        "nonUnitReplacements": 0,
-        "kind": "definition",
-        "input": "testdata/network/status-below-range.bnt",
-        "group": "golden",
-        "error": {
-          "reason": "unknown primitive",
-          "path": [
-            0,
-            0,
-            1,
-            0,
-            1,
-            0,
-            0
-          ],
-          "ancestors": [
-            {
-              "tag": "other",
-              "path": [
-                0,
-                0
-              ]
-            },
-            {
-              "tag": "other",
-              "path": [
-                0,
-                0,
-                1,
-                0
-              ]
-            },
-            {
-              "tag": "call",
-              "path": [
-                0,
-                0,
-                1,
-                0,
-                1,
-                0
-              ]
-            },
-            {
-              "tag": "other",
-              "path": [
-                0,
-                0,
-                1,
-                0,
-                1,
-                0,
-                0
-              ]
-            }
-          ]
-        },
-        "diagnosis": "classified",
-        "definition": "fn:43",
-        "category": "outOfScope"
-      },
-      {
-        "unconvertiblePrims": [
-          "Task.await",
-          "TaskGroup.spawn"
-        ],
-        "q11Paths": [],
-        "nonUnitReplacements": 0,
-        "kind": "definition",
-        "input": "testdata/network/status-informational.bnt",
-        "group": "golden",
-        "error": {
-          "reason": "unknown primitive",
-          "path": [
-            0,
-            0,
-            1,
-            0,
-            1,
-            0,
-            0
-          ],
-          "ancestors": [
-            {
-              "tag": "other",
-              "path": [
-                0,
-                0
-              ]
-            },
-            {
-              "tag": "other",
-              "path": [
-                0,
-                0,
-                1,
-                0
-              ]
-            },
-            {
-              "tag": "call",
-              "path": [
-                0,
-                0,
-                1,
-                0,
-                1,
-                0
-              ]
-            },
-            {
-              "tag": "other",
-              "path": [
-                0,
-                0,
-                1,
-                0,
-                1,
-                0,
-                0
-              ]
-            }
-          ]
-        },
-        "diagnosis": "classified",
-        "definition": "fn:43",
-        "category": "outOfScope"
-      },
-      {
-        "unconvertiblePrims": [
-          "Task.await",
-          "TaskGroup.spawn"
-        ],
-        "q11Paths": [],
-        "nonUnitReplacements": 0,
-        "kind": "definition",
-        "input": "testdata/network/unanswered-exchange.bnt",
-        "group": "golden",
-        "error": {
-          "reason": "unknown primitive",
-          "path": [
-            0,
-            0,
-            1,
-            0,
-            1,
-            0,
-            0
-          ],
-          "ancestors": [
-            {
-              "tag": "other",
-              "path": [
-                0,
-                0
-              ]
-            },
-            {
-              "tag": "other",
-              "path": [
-                0,
-                0,
-                1,
-                0
-              ]
-            },
-            {
-              "tag": "call",
-              "path": [
-                0,
-                0,
-                1,
-                0,
-                1,
-                0
-              ]
-            },
-            {
-              "tag": "other",
-              "path": [
-                0,
-                0,
-                1,
-                0,
-                1,
-                0,
-                0
-              ]
-            }
-          ]
-        },
-        "diagnosis": "classified",
-        "definition": "fn:43",
-        "category": "outOfScope"
-      },
       {
         "unconvertiblePrims": [
           "Task.await"
@@ -26275,13 +25932,14 @@
         "input": "testdata/concurrency/c12-deadlock.bnt",
         "group": "golden",
         "error": {
-          "reason": "unknown primitive",
+          "reason": "call signature is invalid",
           "path": [
             0,
             0,
+            1,
+            0,
             0,
             1,
-            2,
             1,
             0,
             0
@@ -26291,6 +25949,8 @@
               "tag": "returnE",
               "path": [
                 0,
+                0,
+                1,
                 0
               ]
             },
@@ -26298,6 +25958,8 @@
               "tag": "matchE",
               "path": [
                 0,
+                0,
+                1,
                 0,
                 0
               ]
@@ -26307,9 +25969,10 @@
               "path": [
                 0,
                 0,
+                1,
+                0,
                 0,
                 1,
-                2,
                 1,
                 0
               ]
@@ -26319,9 +25982,10 @@
               "path": [
                 0,
                 0,
+                1,
+                0,
                 0,
                 1,
-                2,
                 1,
                 0,
                 0
@@ -26343,13 +26007,14 @@
         "input": "testdata/concurrency/c12-group-released.bnt",
         "group": "golden",
         "error": {
-          "reason": "unknown primitive",
+          "reason": "call signature is invalid",
           "path": [
             0,
+            0,
+            1,
             1,
             1,
             0,
-            1,
             1,
             0,
             0
@@ -26359,33 +26024,10 @@
               "tag": "matchE",
               "path": [
                 0,
-                1,
-                1,
-                0
-              ]
-            },
-            {
-              "tag": "call",
-              "path": [
                 0,
                 1,
                 1,
-                0,
                 1,
-                1,
-                0
-              ]
-            },
-            {
-              "tag": "other",
-              "path": [
-                0,
-                1,
-                1,
-                0,
-                1,
-                1,
-                0,
                 0
               ]
             }
@@ -26406,14 +26048,15 @@
         "input": "testdata/concurrency/c12-group-join-await.bnt",
         "group": "golden",
         "error": {
-          "reason": "unknown primitive",
+          "reason": "call signature is invalid",
           "path": [
             0,
+            0,
+            1,
             1,
             1,
             0,
             1,
-            0,
             0
           ],
           "ancestors": [
@@ -26421,6 +26064,8 @@
               "tag": "other",
               "path": [
                 0,
+                0,
+                1,
                 1,
                 1,
                 0
@@ -26430,22 +26075,12 @@
               "tag": "call",
               "path": [
                 0,
+                0,
+                1,
                 1,
                 1,
                 0,
                 1,
-                0
-              ]
-            },
-            {
-              "tag": "other",
-              "path": [
-                0,
-                1,
-                1,
-                0,
-                1,
-                0,
                 0
               ]
             }
@@ -26453,73 +26088,6 @@
         },
         "diagnosis": "classified",
         "definition": "fn:43",
-        "category": "outOfScope"
-      },
-      {
-        "unconvertiblePrims": [
-          "Task.await",
-          "TaskGroup.spawn"
-        ],
-        "q11Paths": [],
-        "nonUnitReplacements": 0,
-        "kind": "definition",
-        "input": "testdata/network/redirect.bnt",
-        "group": "golden",
-        "error": {
-          "reason": "unknown primitive",
-          "path": [
-            0,
-            0,
-            1,
-            0,
-            1,
-            0,
-            0
-          ],
-          "ancestors": [
-            {
-              "tag": "other",
-              "path": [
-                0,
-                0
-              ]
-            },
-            {
-              "tag": "other",
-              "path": [
-                0,
-                0,
-                1,
-                0
-              ]
-            },
-            {
-              "tag": "call",
-              "path": [
-                0,
-                0,
-                1,
-                0,
-                1,
-                0
-              ]
-            },
-            {
-              "tag": "other",
-              "path": [
-                0,
-                0,
-                1,
-                0,
-                1,
-                0,
-                0
-              ]
-            }
-          ]
-        },
-        "diagnosis": "classified",
-        "definition": "fn:44",
         "category": "outOfScope"
       },
       {
@@ -26532,13 +26100,14 @@
         "input": "testdata/concurrency/c12-deadlock.bnt",
         "group": "golden",
         "error": {
-          "reason": "unknown primitive",
+          "reason": "call signature is invalid",
           "path": [
             0,
             1,
-            0,
+            1,
             1,
             0,
+            1,
             0
           ],
           "ancestors": [
@@ -26546,6 +26115,8 @@
               "tag": "other",
               "path": [
                 0,
+                1,
+                1,
                 1,
                 0
               ]
@@ -26555,107 +26126,10 @@
               "path": [
                 0,
                 1,
-                0,
-                1,
-                0
-              ]
-            },
-            {
-              "tag": "other",
-              "path": [
-                0,
-                1,
-                0,
-                1,
-                0,
-                0
-              ]
-            }
-          ]
-        },
-        "diagnosis": "classified",
-        "definition": "fn:44",
-        "category": "outOfScope"
-      },
-      {
-        "unconvertiblePrims": [
-          "TaskGroup.spawn"
-        ],
-        "q11Paths": [],
-        "nonUnitReplacements": 0,
-        "kind": "definition",
-        "input": "testdata/network/routes-and-post.bnt",
-        "group": "golden",
-        "error": {
-          "reason": "unknown primitive",
-          "path": [
-            0,
-            1,
-            1,
-            0,
-            0
-          ],
-          "ancestors": [
-            {
-              "tag": "call",
-              "path": [
-                0,
-                1,
-                1,
-                0
-              ]
-            },
-            {
-              "tag": "other",
-              "path": [
-                0,
                 1,
                 1,
                 0,
-                0
-              ]
-            }
-          ]
-        },
-        "diagnosis": "classified",
-        "definition": "fn:44",
-        "category": "outOfScope"
-      },
-      {
-        "unconvertiblePrims": [
-          "TaskGroup.spawn"
-        ],
-        "q11Paths": [],
-        "nonUnitReplacements": 0,
-        "kind": "definition",
-        "input": "testdata/network/todo194-json-parse-server.bnt",
-        "group": "golden",
-        "error": {
-          "reason": "unknown primitive",
-          "path": [
-            0,
-            1,
-            1,
-            0,
-            0
-          ],
-          "ancestors": [
-            {
-              "tag": "call",
-              "path": [
-                0,
                 1,
-                1,
-                0
-              ]
-            },
-            {
-              "tag": "other",
-              "path": [
-                0,
-                1,
-                1,
-                0,
                 0
               ]
             }
@@ -26676,12 +26150,13 @@
         "input": "testdata/concurrency/inherited_operation_task_location.bnt",
         "group": "golden",
         "error": {
-          "reason": "unknown primitive",
+          "reason": "call signature is invalid",
           "path": [
             0,
             0,
             1,
             0,
+            1,
             0,
             0,
             0
@@ -26691,6 +26166,8 @@
               "tag": "other",
               "path": [
                 0,
+                0,
+                1,
                 0
               ]
             },
@@ -26698,6 +26175,8 @@
               "tag": "other",
               "path": [
                 0,
+                0,
+                1,
                 0,
                 1,
                 0
@@ -26710,17 +26189,7 @@
                 0,
                 1,
                 0,
-                0,
-                0
-              ]
-            },
-            {
-              "tag": "other",
-              "path": [
-                0,
-                0,
                 1,
-                0,
                 0,
                 0,
                 0
@@ -26742,12 +26211,13 @@
         "input": "testdata/concurrency/r41-inherited-non-tail.bnt",
         "group": "golden",
         "error": {
-          "reason": "unknown primitive",
+          "reason": "call signature is invalid",
           "path": [
             0,
             0,
             1,
             0,
+            1,
             0,
             0,
             0
@@ -26757,6 +26227,8 @@
               "tag": "other",
               "path": [
                 0,
+                0,
+                1,
                 0
               ]
             },
@@ -26766,72 +26238,6 @@
                 0,
                 0,
                 1,
-                0
-              ]
-            },
-            {
-              "tag": "call",
-              "path": [
-                0,
-                0,
-                1,
-                0,
-                0,
-                0
-              ]
-            },
-            {
-              "tag": "other",
-              "path": [
-                0,
-                0,
-                1,
-                0,
-                0,
-                0,
-                0
-              ]
-            }
-          ]
-        },
-        "diagnosis": "classified",
-        "definition": "fn:45",
-        "category": "outOfScope"
-      },
-      {
-        "unconvertiblePrims": [
-          "Task.await",
-          "TaskGroup.spawn"
-        ],
-        "q11Paths": [],
-        "nonUnitReplacements": 0,
-        "kind": "definition",
-        "input": "testdata/network/todo198-cancelled-accept-reregisters.bnt",
-        "group": "golden",
-        "error": {
-          "reason": "unknown primitive",
-          "path": [
-            0,
-            0,
-            1,
-            0,
-            1,
-            1,
-            0,
-            0
-          ],
-          "ancestors": [
-            {
-              "tag": "other",
-              "path": [
-                0,
-                0
-              ]
-            },
-            {
-              "tag": "other",
-              "path": [
-                0,
                 0,
                 1,
                 0
@@ -26845,19 +26251,7 @@
                 1,
                 0,
                 1,
-                1,
-                0
-              ]
-            },
-            {
-              "tag": "other",
-              "path": [
                 0,
-                0,
-                1,
-                0,
-                1,
-                1,
                 0,
                 0
               ]
@@ -26879,15 +26273,16 @@
         "input": "testdata/concurrency/c12-cancelled-await.bnt",
         "group": "golden",
         "error": {
-          "reason": "unknown primitive",
+          "reason": "call signature is invalid",
           "path": [
             0,
+            0,
+            1,
             1,
             0,
             0,
             0,
             1,
-            0,
             0
           ],
           "ancestors": [
@@ -26895,6 +26290,8 @@
               "tag": "other",
               "path": [
                 0,
+                0,
+                1,
                 1,
                 0
               ]
@@ -26903,6 +26300,8 @@
               "tag": "other",
               "path": [
                 0,
+                0,
+                1,
                 1,
                 0,
                 0,
@@ -26913,24 +26312,13 @@
               "tag": "call",
               "path": [
                 0,
+                0,
+                1,
                 1,
                 0,
                 0,
                 0,
                 1,
-                0
-              ]
-            },
-            {
-              "tag": "other",
-              "path": [
-                0,
-                1,
-                0,
-                0,
-                0,
-                1,
-                0,
                 0
               ]
             }
@@ -26950,13 +26338,14 @@
         "input": "testdata/concurrency/c12-inherited-handler.bnt",
         "group": "golden",
         "error": {
-          "reason": "unknown primitive",
+          "reason": "call signature is invalid",
           "path": [
             0,
+            0,
+            1,
             1,
             0,
             1,
-            0,
             0,
             0,
             0
@@ -26966,6 +26355,8 @@
               "tag": "other",
               "path": [
                 0,
+                0,
+                1,
                 1,
                 0
               ]
@@ -26974,6 +26365,8 @@
               "tag": "other",
               "path": [
                 0,
+                0,
+                1,
                 1,
                 0,
                 1,
@@ -26984,22 +26377,11 @@
               "tag": "call",
               "path": [
                 0,
+                0,
+                1,
                 1,
                 0,
                 1,
-                0,
-                0,
-                0
-              ]
-            },
-            {
-              "tag": "other",
-              "path": [
-                0,
-                1,
-                0,
-                1,
-                0,
                 0,
                 0,
                 0
@@ -27012,159 +26394,20 @@
         "category": "outOfScope"
       },
       {
-        "unconvertiblePrims": [
-          "Task.await",
-          "TaskGroup.spawn"
-        ],
-        "q11Paths": [],
-        "nonUnitReplacements": 0,
-        "kind": "definition",
-        "input": "testdata/network/todo194-json-parse-server.bnt",
-        "group": "golden",
-        "error": {
-          "reason": "unknown primitive",
-          "path": [
-            0,
-            0,
-            1,
-            0,
-            1,
-            1,
-            0,
-            0
-          ],
-          "ancestors": [
-            {
-              "tag": "other",
-              "path": [
-                0,
-                0
-              ]
-            },
-            {
-              "tag": "other",
-              "path": [
-                0,
-                0,
-                1,
-                0
-              ]
-            },
-            {
-              "tag": "call",
-              "path": [
-                0,
-                0,
-                1,
-                0,
-                1,
-                1,
-                0
-              ]
-            },
-            {
-              "tag": "other",
-              "path": [
-                0,
-                0,
-                1,
-                0,
-                1,
-                1,
-                0,
-                0
-              ]
-            }
-          ]
-        },
-        "diagnosis": "classified",
-        "definition": "fn:46",
-        "category": "outOfScope"
-      },
-      {
-        "unconvertiblePrims": [
-          "Task.await",
-          "TaskGroup.spawn"
-        ],
-        "q11Paths": [],
-        "nonUnitReplacements": 0,
-        "kind": "definition",
-        "input": "testdata/network/routes-and-post.bnt",
-        "group": "golden",
-        "error": {
-          "reason": "unknown primitive",
-          "path": [
-            0,
-            0,
-            1,
-            0,
-            1,
-            1,
-            0,
-            0
-          ],
-          "ancestors": [
-            {
-              "tag": "other",
-              "path": [
-                0,
-                0
-              ]
-            },
-            {
-              "tag": "other",
-              "path": [
-                0,
-                0,
-                1,
-                0
-              ]
-            },
-            {
-              "tag": "call",
-              "path": [
-                0,
-                0,
-                1,
-                0,
-                1,
-                1,
-                0
-              ]
-            },
-            {
-              "tag": "other",
-              "path": [
-                0,
-                0,
-                1,
-                0,
-                1,
-                1,
-                0,
-                0
-              ]
-            }
-          ]
-        },
-        "diagnosis": "classified",
-        "definition": "fn:47",
-        "category": "outOfScope"
-      },
-      {
         "unconvertiblePrims": [],
         "q11Paths": [
           [
             0,
+            0,
+            1,
             0
           ]
         ],
         "q11OriginalError": {
-          "reason": "type is not included in the expected type",
+          "reason": "type or certificate check failed",
           "path": [
             0,
             0,
-            1,
             1
           ]
         },
@@ -27205,6 +26448,22 @@
         "excluded": 0,
         "outside": 0,
         "mismatched": 0
+      }
+    },
+    "desugarKnownDifferences": {
+      "shapes": [
+        "accessor field refinement"
+      ],
+      "obligation": "R10b",
+      "counts": {
+        "golden": {
+          "programs": 23,
+          "definitions": 70
+        },
+        "random": {
+          "programs": 1000,
+          "definitions": 7000
+        }
       }
     }
   },
